@@ -33,7 +33,7 @@ public:
   virtual ~Manager();
 
   smtk::mesh::CollectionPtr makeCollection();
-  smtk::mesh::CollectionPtr makeCollection(smtk::mesh::moab::InterfacePtr interface);
+  smtk::mesh::CollectionPtr makeCollection(smtk::mesh::InterfacePtr interface);
 
   std::size_t numberOfCollections() const;
   bool hasCollection( const smtk::mesh::CollectionPtr& collection ) const;

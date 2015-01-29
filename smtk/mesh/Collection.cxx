@@ -33,7 +33,7 @@ public:
   }
 
   InternalImpl( smtk::mesh::ManagerPtr mngr,
-               smtk::mesh::moab::InterfacePtr interface ):
+                smtk::mesh::InterfacePtr interface ):
     WeakManager(mngr),
     Interface( interface )
   {
@@ -55,7 +55,7 @@ public:
     return true;
     }
 
-  const smtk::mesh::moab::InterfacePtr& mesh_iface() const
+  const smtk::mesh::InterfacePtr& mesh_iface() const
     { return this->Interface; }
 
   smtk::mesh::Handle mesh_root_handle() const
@@ -65,7 +65,7 @@ public:
 
 private:
   smtk::weak_ptr<smtk::mesh::Manager> WeakManager;
-  smtk::mesh::moab::InterfacePtr Interface;
+  smtk::mesh::InterfacePtr Interface;
 };
 
 //----------------------------------------------------------------------------
@@ -86,7 +86,7 @@ Collection::Collection( smtk::mesh::ManagerPtr mngr ):
 }
 
 //----------------------------------------------------------------------------
-Collection::Collection( smtk::mesh::moab::InterfacePtr interface,
+Collection::Collection( smtk::mesh::InterfacePtr interface,
                         smtk::mesh::ManagerPtr mngr):
   m_entity( mngr->nextEntityId() ),
   m_name(),
@@ -104,7 +104,7 @@ Collection::~Collection()
     }
 }
 //----------------------------------------------------------------------------
-const smtk::mesh::moab::InterfacePtr& Collection::extractInterface() const
+const smtk::mesh::InterfacePtr& Collection::interface() const
 {
   return this->m_internals->mesh_iface();
 }
@@ -169,14 +169,14 @@ bool Collection::reparent(smtk::mesh::ManagerPtr newParent)
 //----------------------------------------------------------------------------
 std::size_t Collection::numberOfMeshes() const
 {
-  const smtk::mesh::moab::InterfacePtr& iface = this->m_internals->mesh_iface();
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
   return iface->numMeshes( this->m_internals->mesh_root_handle() );
 }
 
 //----------------------------------------------------------------------------
 smtk::mesh::TypeSet Collection::associatedTypes( ) const
 {
-  const smtk::mesh::moab::InterfacePtr& iface = this->m_internals->mesh_iface();
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
   return iface->compute_types( this->m_internals->mesh_root_handle() );
 }
 
@@ -213,7 +213,7 @@ smtk::mesh::MeshSet Collection::meshes( )
 //----------------------------------------------------------------------------
 std::vector< std::string > Collection::meshNames( )
 {
-  const smtk::mesh::moab::InterfacePtr& iface = this->m_internals->mesh_iface();
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
   smtk::mesh::moab::Handle handle = this->m_internals->mesh_root_handle();
 
   smtk::mesh::HandleRange entities = iface->get_meshsets(handle);
@@ -223,7 +223,7 @@ std::vector< std::string > Collection::meshNames( )
 //----------------------------------------------------------------------------
 smtk::mesh::MeshSet Collection::meshes( smtk::mesh::DimensionType dim )
 {
-  const smtk::mesh::moab::InterfacePtr& iface = this->m_internals->mesh_iface();
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
   smtk::mesh::moab::Handle handle = this->m_internals->mesh_root_handle();
   const int dim_value = static_cast<int>(dim);
 
@@ -236,7 +236,7 @@ smtk::mesh::MeshSet Collection::meshes( smtk::mesh::DimensionType dim )
 //----------------------------------------------------------------------------
 smtk::mesh::MeshSet Collection::meshes( const std::string& name )
 {
-  const smtk::mesh::moab::InterfacePtr& iface = this->m_internals->mesh_iface();
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
   smtk::mesh::moab::Handle handle = this->m_internals->mesh_root_handle();
 
   smtk::mesh::HandleRange entities = iface->get_meshsets( handle, name);

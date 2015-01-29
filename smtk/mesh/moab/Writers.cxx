@@ -117,28 +117,28 @@ namespace
 //Write everything in a file into an existing collection.
 bool write(const std::string& path, const smtk::mesh::CollectionPtr& c)
 {
-  return is_valid(c) && write_file( smtk::mesh::moab::extractInterface(c), path );
+  return is_valid(c) && write_file( smtk::mesh::moab::extract_interface(c), path );
 }
 
 //Write all the boundary sets in a file into an existing collection
 bool write_boundary(const std::string& path, const smtk::mesh::CollectionPtr& c)
 {
   const std::string tag("BOUNDARY_SET");
-  return is_valid(c) &&  write_file( smtk::mesh::moab::extractInterface(c), path, tag.c_str() );
+  return is_valid(c) &&  write_file( smtk::mesh::moab::extract_interface(c), path, tag.c_str() );
 }
 
 //Write all the neumann sets in a file into an existing collection
 bool write_neumann(const std::string& path, const smtk::mesh::CollectionPtr& c)
 {
   const std::string tag("NEUMANN_SET");
-  return is_valid(c) && write_file( smtk::mesh::moab::extractInterface(c), path, tag.c_str() );
+  return is_valid(c) && write_file( smtk::mesh::moab::extract_interface(c), path, tag.c_str() );
 }
 
 //Write all the dirichlet sets in a file into an existing collection
 bool write_dirichlet(const std::string& path, const smtk::mesh::CollectionPtr& c)
 {
   const std::string tag("DIRICHLET_SET");
-  return is_valid(c) && write_file( smtk::mesh::moab::extractInterface(c), path, tag.c_str() );
+  return is_valid(c) && write_file( smtk::mesh::moab::extract_interface(c), path, tag.c_str() );
 }
 
 

@@ -14,7 +14,6 @@ set(meshSrcs
   moab/Interface.cxx
   moab/PointConnectivityStorage.cxx
   moab/Readers.cxx
-  moab/Tags.cxx
   moab/Writers.cxx
   )
 

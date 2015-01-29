@@ -45,7 +45,7 @@ class SMTKCORE_EXPORT Collection : public smtk::enable_shared_from_this<Collecti
   //Construct a valid collection that has an associated interface
   //in the future we need a better way to make collections refer
   //to different mesh interfaces
-  Collection( smtk::mesh::moab::InterfacePtr interface,
+  Collection( smtk::mesh::InterfacePtr interface,
               smtk::mesh::ManagerPtr mngr);
 
 public:
@@ -119,16 +119,13 @@ public:
   //todo: need to be able to extract the entire surface of the mesh
   //smtk::mesh::MeshSet generateBoundarMeshes();
 
+  const smtk::mesh::InterfacePtr& interface() const;
+
 private:
   Collection( const Collection& other ); //blank since we are used by shared_ptr
   Collection& operator=( const Collection& other ); //blank since we are used by shared_ptr
 
   friend class smtk::mesh::Manager;
-  friend const smtk::mesh::moab::InterfacePtr& smtk::mesh::moab::extractInterface(smtk::mesh::CollectionPtr c);
-
-  //called by friend extractInterface to get the interface shared_ptr
-  //that we hold
-  const smtk::mesh::moab::InterfacePtr& extractInterface() const;
 
   //called by the manager that manages this collection, means that somebody
   //has requested us to be removed from a collection

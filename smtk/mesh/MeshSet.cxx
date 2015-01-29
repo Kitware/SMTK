@@ -11,7 +11,7 @@
 #include "smtk/mesh/MeshSet.h"
 #include "smtk/mesh/Collection.h"
 
-#include "smtk/mesh/moab/Interface.h"
+#include "smtk/mesh/Interface.h"
 
 namespace smtk {
 namespace mesh {
@@ -23,8 +23,7 @@ MeshSet::MeshSet(const smtk::mesh::CollectionPtr& parent,
   this->m_parent = parent;
   this->m_handle = handle;
 
-  const smtk::mesh::moab::InterfacePtr& iface =
-                                smtk::mesh::moab::extractInterface(parent);
+  const smtk::mesh::InterfacePtr& iface = parent->interface();
   //range of moab entity sets
   this->m_range = iface->get_meshsets( handle );
 }
@@ -107,8 +106,7 @@ std::size_t MeshSet::size( ) const
 //----------------------------------------------------------------------------
 smtk::mesh::CellSet MeshSet::cells( )
 {
-  const smtk::mesh::moab::InterfacePtr& iface =
-                          smtk::mesh::moab::extractInterface(this->m_parent);
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
   smtk::mesh::HandleRange range = iface->get_cells( this->m_range );
   return smtk::mesh::CellSet(this->m_parent, range);
 }
@@ -122,8 +120,7 @@ smtk::mesh::Points MeshSet::points( )
 //----------------------------------------------------------------------------
 smtk::mesh::PointConnectivity MeshSet::pointConnectivity( )
 {
-  const smtk::mesh::moab::InterfacePtr& iface =
-                          smtk::mesh::moab::extractInterface(this->m_parent);
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
   smtk::mesh::HandleRange range = iface->get_cells( this->m_range );
   return smtk::mesh::PointConnectivity(this->m_parent, range);
 }
@@ -131,8 +128,7 @@ smtk::mesh::PointConnectivity MeshSet::pointConnectivity( )
 //----------------------------------------------------------------------------
 smtk::mesh::CellSet MeshSet::cells( smtk::mesh::CellType cellType )
 {
-  const smtk::mesh::moab::InterfacePtr& iface =
-                          smtk::mesh::moab::extractInterface(this->m_parent);
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
   smtk::mesh::HandleRange range = iface->get_cells( this->m_range, cellType );
   return smtk::mesh::CellSet(this->m_parent, range);
 }
@@ -140,8 +136,7 @@ smtk::mesh::CellSet MeshSet::cells( smtk::mesh::CellType cellType )
 //----------------------------------------------------------------------------
 smtk::mesh::CellSet MeshSet::cells( smtk::mesh::CellTypes cellTypes )
 {
-  const smtk::mesh::moab::InterfacePtr& iface =
-                          smtk::mesh::moab::extractInterface(this->m_parent);
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
   smtk::mesh::HandleRange range = iface->get_cells( this->m_range, cellTypes );
   return smtk::mesh::CellSet(this->m_parent, range);
 }
@@ -149,8 +144,7 @@ smtk::mesh::CellSet MeshSet::cells( smtk::mesh::CellTypes cellTypes )
 //----------------------------------------------------------------------------
 smtk::mesh::CellSet MeshSet::cells( smtk::mesh::DimensionType dim )
 {
-  const smtk::mesh::moab::InterfacePtr& iface =
-                          smtk::mesh::moab::extractInterface(this->m_parent);
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
   smtk::mesh::HandleRange range = iface->get_cells( this->m_range, dim );
   return smtk::mesh::CellSet(this->m_parent, range);
 }
@@ -166,7 +160,8 @@ MeshSet set_intersect( const MeshSet& a, const MeshSet& b)
                                smtk::mesh::HandleRange());
     }
 
-  smtk::mesh::HandleRange result = ::moab::intersect(a.m_range, b.m_range);
+  const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
+  smtk::mesh::HandleRange result = iface->set_intersect(a.m_range, b.m_range);
   return smtk::mesh::MeshSet(a.m_parent, a.m_handle, result);
 }
 
@@ -181,7 +176,8 @@ MeshSet set_difference( const MeshSet& a, const MeshSet& b)
                                smtk::mesh::HandleRange());
     }
 
-  smtk::mesh::HandleRange result = ::moab::subtract(a.m_range, b.m_range);
+  const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
+  smtk::mesh::HandleRange result = iface->set_difference(a.m_range, b.m_range);
   return smtk::mesh::MeshSet(a.m_parent, a.m_handle, result);
 }
 
@@ -196,7 +192,8 @@ MeshSet set_union( const MeshSet& a, const MeshSet& b )
                                smtk::mesh::HandleRange());
     }
 
-  smtk::mesh::HandleRange result = ::moab::unite(a.m_range, b.m_range);
+  const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
+  smtk::mesh::HandleRange result = iface->set_union(a.m_range, b.m_range);
   return smtk::mesh::MeshSet(a.m_parent, a.m_handle, result);
 }
 

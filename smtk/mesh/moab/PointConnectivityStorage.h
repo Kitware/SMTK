@@ -23,10 +23,10 @@ class PointConnectivityStorage
 {
 public:
 
-  PointConnectivityStorage(const smtk::mesh::moab::InterfacePtr& iface,
+  PointConnectivityStorage(const smtk::mesh::InterfacePtr& iface,
                            const smtk::mesh::HandleRange& cells);
 
-  PointConnectivityStorage(const smtk::mesh::moab::InterfacePtr& iface,
+  PointConnectivityStorage(const smtk::mesh::InterfacePtr& iface,
                            const smtk::mesh::Handle& cell);
 
 

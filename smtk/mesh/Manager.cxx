@@ -132,7 +132,7 @@ smtk::mesh::CollectionPtr Manager::makeCollection()
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::CollectionPtr Manager::makeCollection(smtk::mesh::moab::InterfacePtr interface)
+smtk::mesh::CollectionPtr Manager::makeCollection(smtk::mesh::InterfacePtr interface)
 {
   smtk::mesh::CollectionPtr collection( new smtk::mesh::Collection(
                                                 interface,

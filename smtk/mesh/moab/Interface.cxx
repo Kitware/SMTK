@@ -14,15 +14,19 @@
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/MeshSet.h"
 #include "smtk/mesh/QueryTypes.h"
+#include "smtk/mesh/ContainsFunctors.h"
 
 #include "smtk/mesh/moab/CellTypeToType.h"
-#include "smtk/mesh/moab/Tags.h"
-#include "smtk/mesh/moab/Functors.h"
 
 #include "moab/Core.hpp"
 #include "moab/FileOptions.hpp"
 #include "moab/Interface.hpp"
 #include "moab/ReaderIface.hpp"
+
+#define BEING_INCLUDED_BY_INTERFACE_CXX
+//required to go after moab includes
+#include "smtk/mesh/moab/Tags.h"
+#undef BEING_USED_BY_INTERFACE_CXX
 
 #include <algorithm>
 #include <cstring>
@@ -32,17 +36,25 @@ namespace smtk {
 namespace mesh {
 namespace moab {
 
-//extract the interfacPtr from a collection
-const smtk::mesh::moab::InterfacePtr& extractInterface(smtk::mesh::CollectionPtr c)
-{
-  return c->extractInterface();
-}
-
 //construct an empty interface instance
 smtk::mesh::moab::InterfacePtr make_interface()
 {
   //Core is a fully implemented moab::Interface
   return smtk::mesh::moab::InterfacePtr( new smtk::mesh::moab::Interface() );
+}
+
+//Given a smtk::mesh Interface convert it to a smtk::mesh::moab interface
+smtk::mesh::moab::InterfacePtr extract_interface( const smtk::mesh::CollectionPtr& c)
+{
+  return smtk::dynamic_pointer_cast< smtk::mesh::moab::Interface > ( c->interface() );
+}
+
+//Given a smtk::mesh Interface convert it to a smtk::mesh::moab interface, and than
+//extract the raw moab interface pointer from that
+::moab::Interface *const extract_moab_interface( const smtk::mesh::InterfacePtr &iface)
+{
+  smtk::mesh::moab::Interface* mi = dynamic_cast< smtk::mesh::moab::Interface*>(iface.get());
+  return (mi == NULL) ? NULL : mi->moabInterface();
 }
 
 //----------------------------------------------------------------------------
@@ -104,7 +116,7 @@ smtk::mesh::HandleRange Interface::get_meshsets(smtk::mesh::Handle handle,
   ::moab::Range meshes_of_proper_dim;
 
   //construct a dim tag that matches the dimension coming in
-  tag::QueryDimTag dimTag(dimension, this);
+  tag::QueryDimTag dimTag(dimension, this->moabInterface());
 
   // get all the entities of that type in the mesh
   m_iface->get_entities_by_type_and_tag(handle,
@@ -147,7 +159,7 @@ smtk::mesh::HandleRange Interface::get_meshsets(smtk::mesh::Handle handle,
   m_iface->get_entities_by_type(handle, ::moab::MBENTITYSET, all_ents);
 
   //see which ones have a a matching name, and if so add it
-  tag::QueryNameTag query_name(this);
+  tag::QueryNameTag query_name(this->moabInterface());
   for( it i = all_ents.begin(); i != all_ents.end(); ++i )
     {
     const bool has_name = query_name.fetch_name(*i);
@@ -266,7 +278,7 @@ smtk::mesh::HandleRange Interface::get_cells(smtk::mesh::HandleRange meshsets,
 std::vector< std::string > Interface::compute_names(const smtk::mesh::HandleRange& r)
 {
   //construct a name tag query helper class
-  tag::QueryNameTag query_name(this);
+  tag::QueryNameTag query_name(this->moabInterface());
 
   typedef ::moab::Range::const_iterator it;
   std::set< std::string > unique_names;
@@ -317,9 +329,30 @@ smtk::mesh::TypeSet Interface::compute_types(smtk::mesh::Handle handle)
 }
 
 //----------------------------------------------------------------------------
+smtk::mesh::HandleRange Interface::set_intersect(const smtk::mesh::HandleRange& a,
+                                                 const smtk::mesh::HandleRange& b) const
+{
+  return ::moab::intersect(a,b);
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::HandleRange Interface::set_difference(const smtk::mesh::HandleRange& a,
+                                                  const smtk::mesh::HandleRange& b) const
+{
+  return ::moab::subtract(a,b);
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::HandleRange Interface::set_union(const smtk::mesh::HandleRange& a,
+                                             const smtk::mesh::HandleRange& b) const
+{
+  return ::moab::unite(a,b);
+}
+
+//----------------------------------------------------------------------------
 smtk::mesh::HandleRange Interface::point_intersect(const smtk::mesh::HandleRange& a,
                                                    const smtk::mesh::HandleRange& b,
-                                                   const smtk::mesh::moab::ContainsFunctor& containsFunctor)
+                                                   const smtk::mesh::ContainsFunctor& containsFunctor)
 {
   if(a.empty() || b.empty())
     { //the intersection with nothing is nothing
@@ -377,7 +410,7 @@ smtk::mesh::HandleRange Interface::point_intersect(const smtk::mesh::HandleRange
 //----------------------------------------------------------------------------
 smtk::mesh::HandleRange Interface::point_difference(const smtk::mesh::HandleRange& a,
                                                     const smtk::mesh::HandleRange& b,
-                                                    const smtk::mesh::moab::ContainsFunctor& containsFunctor)
+                                                    const smtk::mesh::ContainsFunctor& containsFunctor)
 {
   if(b.empty())
     { //taking the difference from nothing results in nothing

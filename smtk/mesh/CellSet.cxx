@@ -11,8 +11,8 @@
 #include "smtk/mesh/CellSet.h"
 #include "smtk/mesh/Collection.h"
 
-#include "smtk/mesh/moab/Interface.h"
-#include "smtk/mesh/moab/Functors.h"
+#include "smtk/mesh/Interface.h"
+#include "smtk/mesh/ContainsFunctors.h"
 
 namespace smtk {
 namespace mesh {
@@ -122,7 +122,8 @@ CellSet set_intersect( const CellSet& a, const CellSet& b)
     return smtk::mesh::CellSet(a.m_parent, smtk::mesh::HandleRange());
     }
 
-  smtk::mesh::HandleRange result = ::moab::intersect(a.m_range, b.m_range);
+  const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
+  smtk::mesh::HandleRange result = iface->set_intersect(a.m_range, b.m_range);
   return smtk::mesh::CellSet(a.m_parent, result);
 }
 
@@ -136,7 +137,8 @@ CellSet set_difference( const CellSet& a, const CellSet& b)
                                smtk::mesh::HandleRange());
     }
 
-  smtk::mesh::HandleRange result = ::moab::subtract(a.m_range, b.m_range);
+  const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
+  smtk::mesh::HandleRange result = iface->set_difference(a.m_range, b.m_range);
   return smtk::mesh::CellSet(a.m_parent, result);
 }
 
@@ -150,7 +152,8 @@ CellSet set_union( const CellSet& a, const CellSet& b )
                                smtk::mesh::HandleRange());
     }
 
-  smtk::mesh::HandleRange result = ::moab::unite(a.m_range, b.m_range);
+  const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
+  smtk::mesh::HandleRange result = iface->set_union(a.m_range, b.m_range);
   return smtk::mesh::CellSet(a.m_parent, result);
 }
 
@@ -164,19 +167,18 @@ CellSet point_intersect( const CellSet& a, const CellSet& b, ContainmentType t)
     return smtk::mesh::CellSet(a.m_parent, smtk::mesh::HandleRange());
     }
 
-  const smtk::mesh::moab::InterfacePtr& iface =
-                          smtk::mesh::moab::extractInterface(a.m_parent);
+  const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
 
   //switch the algorithm based on the containment type
   smtk::mesh::HandleRange result;
   if(t == smtk::mesh::PartiallyContained)
     {
-    smtk::mesh::moab::PartiallyContained f;
+    smtk::mesh::PartiallyContainedFunctor f;
     result = iface->point_intersect(a.m_range, b.m_range, f);
     }
   else
     {
-    smtk::mesh::moab::FullyContained f;
+    smtk::mesh::FullyContainedFunctor f;
     result = iface->point_intersect(a.m_range, b.m_range, f);
     }
   return smtk::mesh::CellSet(a.m_parent, result);
@@ -192,19 +194,18 @@ CellSet point_difference( const CellSet& a, const CellSet& b, ContainmentType t)
     return smtk::mesh::CellSet(a.m_parent, smtk::mesh::HandleRange());
     }
 
-  const smtk::mesh::moab::InterfacePtr& iface =
-                          smtk::mesh::moab::extractInterface(a.m_parent);
+  const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
 
   //switch the algorithm based on the containment type
   smtk::mesh::HandleRange result;
   if(t == smtk::mesh::PartiallyContained)
     {
-    smtk::mesh::moab::PartiallyContained f;
+    smtk::mesh::PartiallyContainedFunctor f;
     result = iface->point_difference(a.m_range, b.m_range, f);
     }
   else
     {
-    smtk::mesh::moab::FullyContained f;
+    smtk::mesh::FullyContainedFunctor f;
     result = iface->point_difference(a.m_range, b.m_range, f);
     }
 

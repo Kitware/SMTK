@@ -15,6 +15,7 @@
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
+#include "smtk/mesh/Interface.h"
 #include "smtk/mesh/CellTypes.h"
 #include "smtk/mesh/DimensionTypes.h"
 #include "smtk/mesh/Handle.h"
@@ -31,24 +32,26 @@ namespace smtk {
 namespace mesh {
 namespace moab
 {
-//forward declare classes we use
-struct ContainsFunctor;
-
-//Interface is defined in PublicPointerDefs as a typedef to moab::interface
-//We don't inherit from moab::interface since it is an abstract class
-//Requires the CollectionPtr to not be NULL
-//----------------------------------------------------------------------------
-SMTKCORE_EXPORT
-const smtk::mesh::moab::InterfacePtr& extractInterface(smtk::mesh::CollectionPtr c);
-
 //construct an empty interface instance, this is properly connected
 //to a moab database
 //----------------------------------------------------------------------------
 SMTKCORE_EXPORT
 smtk::mesh::moab::InterfacePtr make_interface();
 
+//Given a smtk::mesh Collection extract the underlying smtk::mesh::moab interface
+//from it. This requires that the collection was created with the proper interface
+//to begin with.
 //----------------------------------------------------------------------------
-class SMTKCORE_EXPORT Interface
+smtk::mesh::moab::InterfacePtr extract_interface( const smtk::mesh::CollectionPtr& c);
+
+//Given a smtk::mesh Interface convert it to a smtk::mesh::moab interface, and than
+//extract the raw moab interface pointer from that
+//----------------------------------------------------------------------------
+SMTKCORE_EXPORT
+::moab::Interface* const extract_moab_interface( const smtk::mesh::InterfacePtr &iface);
+
+//----------------------------------------------------------------------------
+class SMTKCORE_EXPORT Interface : public smtk::mesh::Interface
 {
 public:
   Interface();
@@ -106,13 +109,25 @@ public:
   smtk::mesh::TypeSet compute_types(smtk::mesh::Handle handle);
 
   //----------------------------------------------------------------------------
+  smtk::mesh::HandleRange set_intersect(const smtk::mesh::HandleRange& a,
+                                        const smtk::mesh::HandleRange& b) const;
+
+  //----------------------------------------------------------------------------
+  smtk::mesh::HandleRange set_difference(const smtk::mesh::HandleRange& a,
+                                         const smtk::mesh::HandleRange& b) const;
+
+  //----------------------------------------------------------------------------
+  smtk::mesh::HandleRange set_union(const smtk::mesh::HandleRange& a,
+                                    const smtk::mesh::HandleRange& b) const;
+
+  //----------------------------------------------------------------------------
   smtk::mesh::HandleRange point_intersect(const smtk::mesh::HandleRange& a,
                                           const smtk::mesh::HandleRange& b,
-                                          const smtk::mesh::moab::ContainsFunctor& containsFunctor);
+                                          const smtk::mesh::ContainsFunctor& containsFunctor);
   //----------------------------------------------------------------------------
   smtk::mesh::HandleRange point_difference(const smtk::mesh::HandleRange& a,
                                            const smtk::mesh::HandleRange& b,
-                                           const smtk::mesh::moab::ContainsFunctor& containsFunctor);
+                                           const smtk::mesh::ContainsFunctor& containsFunctor);
 
   ::moab::Interface * const moabInterface() const;
 

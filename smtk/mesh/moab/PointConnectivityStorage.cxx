@@ -24,7 +24,7 @@ namespace moab {
 
 //----------------------------------------------------------------------------
 PointConnectivityStorage::PointConnectivityStorage(
-                         const smtk::mesh::moab::InterfacePtr& iface,
+                         const smtk::mesh::InterfacePtr& interface,
                          const smtk::mesh::HandleRange& cells):
   ConnectivityStartPositions(),
   ConnectivityArraysLengths(),
@@ -38,7 +38,7 @@ PointConnectivityStorage::PointConnectivityStorage(
   smtk::mesh::HandleRange::const_iterator cells_current = cells.begin();
   smtk::mesh::HandleRange::const_iterator cells_end = cells.end();
 
-  ::moab::Interface* m_iface = iface->moabInterface();
+  ::moab::Interface* m_iface = smtk::mesh::moab::extract_moab_interface(interface);
 
   while(cells_current != cells_end)
     {
@@ -91,7 +91,7 @@ PointConnectivityStorage::PointConnectivityStorage(
 
 //----------------------------------------------------------------------------
 PointConnectivityStorage::PointConnectivityStorage(
-                         const smtk::mesh::moab::InterfacePtr& iface,
+                         const smtk::mesh::InterfacePtr& interface,
                          const smtk::mesh::Handle& cell):
   ConnectivityStartPositions(),
   ConnectivityArraysLengths(),
@@ -99,7 +99,7 @@ PointConnectivityStorage::PointConnectivityStorage(
   NumberOfCells(0),
   NumberOfVerts(0)
 {
-  const ::moab::Interface* m_iface = iface->moabInterface();
+  ::moab::Interface* m_iface = smtk::mesh::moab::extract_moab_interface(interface);
   const ::moab::EntityHandle* connectivity;
   int numVertsPerCell=0;
   const int numCellsInSubRange=1; //we are only passed a single cell

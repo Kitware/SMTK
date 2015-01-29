@@ -11,14 +11,13 @@
 //=============================================================================
 
 
-#ifndef __smtk_mesh_moab_Functors_h
-#define __smtk_mesh_moab_Functors_h
+#ifndef __smtk_mesh_ContainsFunctors_h
+#define __smtk_mesh_ContainsFunctors_h
 
 #include "smtk/mesh/Handle.h"
 
 namespace smtk {
 namespace mesh {
-namespace moab {
 
 //these aren't exported as they are private class that only
 //smtk::mesh should call ( currently )
@@ -30,7 +29,7 @@ struct ContainsFunctor
                           const std::size_t num_nodes) const = 0;
 };
 
-struct PartiallyContained : public ContainsFunctor
+struct PartiallyContainedFunctor : public ContainsFunctor
 {
   bool operator()(const smtk::mesh::HandleRange& points,
                   const smtk::mesh::Handle* connectivity,
@@ -45,7 +44,7 @@ struct PartiallyContained : public ContainsFunctor
   }
 };
 
-struct FullyContained : public ContainsFunctor
+struct FullyContainedFunctor : public ContainsFunctor
 {
   bool operator()(const smtk::mesh::HandleRange& points,
                   const smtk::mesh::Handle* connectivity,
@@ -60,7 +59,6 @@ struct FullyContained : public ContainsFunctor
   }
 };
 
-}
 }
 }
 

@@ -9,6 +9,9 @@
 //=========================================================================
 
 #include "smtk/mesh/PointConnectivity.h"
+#include "smtk/mesh/Collection.h"
+
+//needs to be designed to have virtual parent in smtk::mesh
 #include "smtk/mesh/moab/PointConnectivityStorage.h"
 
 namespace smtk {
@@ -19,13 +22,13 @@ class PointConnectivity::InternalStorageImpl : public
   smtk::mesh::moab::PointConnectivityStorage
 {
 public:
-  InternalStorageImpl(const smtk::mesh::moab::InterfacePtr& iface,
+  InternalStorageImpl(const smtk::mesh::InterfacePtr& iface,
                       const smtk::mesh::HandleRange& cells):
     smtk::mesh::moab::PointConnectivityStorage(iface,cells)
   {
   }
 
-  InternalStorageImpl(const smtk::mesh::moab::InterfacePtr& iface,
+  InternalStorageImpl(const smtk::mesh::InterfacePtr& iface,
                       const smtk::mesh::Handle& cell):
     smtk::mesh::moab::PointConnectivityStorage(iface,cell)
   {
@@ -37,7 +40,7 @@ public:
 PointConnectivity::PointConnectivity(const smtk::mesh::CollectionPtr& parent,
                            const smtk::mesh::HandleRange& range):
   m_parent(parent),
-  m_connectivity( new InternalStorageImpl(smtk::mesh::moab::extractInterface(parent), range) ),
+  m_connectivity( new InternalStorageImpl(parent->interface(), range) ),
   m_iteratorLocation()
 {
 
@@ -47,7 +50,7 @@ PointConnectivity::PointConnectivity(const smtk::mesh::CollectionPtr& parent,
 PointConnectivity::PointConnectivity(const smtk::mesh::CollectionPtr& parent,
                            const smtk::mesh::Handle& cell):
   m_parent(parent),
-  m_connectivity( new InternalStorageImpl(smtk::mesh::moab::extractInterface(parent), cell) ),
+  m_connectivity( new InternalStorageImpl(parent->interface(), cell) ),
   m_iteratorLocation()
 {
 

@@ -173,28 +173,28 @@ smtk::mesh::CollectionPtr read_dirichlet(const std::string& path,
 //Import everything in a file into an existing collection
 bool import(const std::string& path, const smtk::mesh::CollectionPtr& c)
 {
-  return is_valid(c) && append_file( smtk::mesh::moab::extractInterface(c), path );
+  return is_valid(c) && append_file( smtk::mesh::moab::extract_interface(c), path );
 }
 
 //Import all the boundary sets in a file into an existing collection
 bool import_boundary(const std::string& path, const smtk::mesh::CollectionPtr& c)
 {
   const std::string tag("BOUNDARY_SET");
-  return is_valid(c) && append_file( smtk::mesh::moab::extractInterface(c), path, tag.c_str() );
+  return is_valid(c) && append_file( smtk::mesh::moab::extract_interface(c), path, tag.c_str() );
 }
 
 //Import all the neumann sets in a file into an existing collection
 bool import_neumann(const std::string& path, const smtk::mesh::CollectionPtr& c)
 {
   const std::string tag("NEUMANN_SET");
-  return is_valid(c) && append_file( smtk::mesh::moab::extractInterface(c), path, tag.c_str() );
+  return is_valid(c) && append_file( smtk::mesh::moab::extract_interface(c), path, tag.c_str() );
 }
 
 //Import all the dirichlet sets in a file into an existing collection
 bool import_dirichlet(const std::string& path, const smtk::mesh::CollectionPtr& c)
 {
   const std::string tag("DIRICHLET_SET");
-  return is_valid(c) && append_file( smtk::mesh::moab::extractInterface(c), path, tag.c_str() );
+  return is_valid(c) && append_file( smtk::mesh::moab::extract_interface(c), path, tag.c_str() );
 }
 
 }
