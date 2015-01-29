@@ -76,9 +76,7 @@ namespace smtk
     class Collection;
     namespace moab
     {
-      //make the our moab interface class be the same as the moab::interface
-      //We don't inherit from moab::interface since it is an abstract class
-      typedef ::moab::Interface Interface;
+      class Interface;
     }
   }
 

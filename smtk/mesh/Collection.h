@@ -137,10 +137,7 @@ private:
   smtk::common::UUID m_entity;
   std::string m_name;
 
-  //holds a reference to both the manager and the moab interface
-  //in the future this should be switchable to allow different interface
-  //types. Using a raw pointer while we decide if we can bring in
-  //scoped_ptr / unique_ptr.
+  //holds a reference to both the manager and the specific backend interface
   class InternalImpl;
   smtk::mesh::Collection::InternalImpl* m_internals;
 };

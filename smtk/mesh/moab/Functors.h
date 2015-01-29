@@ -14,7 +14,7 @@
 #ifndef __smtk_mesh_moab_Functors_h
 #define __smtk_mesh_moab_Functors_h
 
-#include "moab/Interface.hpp"
+#include "smtk/mesh/Handle.h"
 
 namespace smtk {
 namespace mesh {
@@ -26,14 +26,14 @@ namespace moab {
 struct ContainsFunctor
 {
   virtual bool operator()(const smtk::mesh::HandleRange& points,
-                          const ::moab::EntityHandle* connectivity,
+                          const smtk::mesh::Handle* connectivity,
                           const std::size_t num_nodes) const = 0;
 };
 
 struct PartiallyContained : public ContainsFunctor
 {
   bool operator()(const smtk::mesh::HandleRange& points,
-                  const ::moab::EntityHandle* connectivity,
+                  const smtk::mesh::Handle* connectivity,
                   const std::size_t num_nodes) const
   {
   bool contains = false;
@@ -48,7 +48,7 @@ struct PartiallyContained : public ContainsFunctor
 struct FullyContained : public ContainsFunctor
 {
   bool operator()(const smtk::mesh::HandleRange& points,
-                  const ::moab::EntityHandle* connectivity,
+                  const smtk::mesh::Handle* connectivity,
                   const std::size_t num_nodes) const
   {
   bool contains = true;

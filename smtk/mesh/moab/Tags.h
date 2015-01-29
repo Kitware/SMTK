@@ -30,7 +30,7 @@ class QueryNameTag
   ::moab::Tag m_tag;
   char m_tagData[32]; //same length as NAME_TAG_SIZE
 public:
-  QueryNameTag(const smtk::mesh::moab::InterfacePtr& iface);
+  QueryNameTag(smtk::mesh::moab::Interface* iface);
 
   bool fetch_name(const smtk::mesh::Handle& entity);
 
@@ -43,7 +43,7 @@ class QueryDimTag
   ::moab::Tag m_tag;
   int m_dim;
 public:
-  QueryDimTag(int dimension, const smtk::mesh::moab::InterfacePtr& iface);
+  QueryDimTag(int dimension, smtk::mesh::moab::Interface* iface);
 
   const ::moab::Tag* moabTag() const { return &this->m_tag; }
   const ::moab::Tag& moabTagAsRef() const { return this->m_tag; }

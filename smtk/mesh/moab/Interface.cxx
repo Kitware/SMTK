@@ -21,6 +21,7 @@
 
 #include "moab/Core.hpp"
 #include "moab/FileOptions.hpp"
+#include "moab/Interface.hpp"
 #include "moab/ReaderIface.hpp"
 
 #include <algorithm>
@@ -41,57 +42,72 @@ const smtk::mesh::moab::InterfacePtr& extractInterface(smtk::mesh::CollectionPtr
 smtk::mesh::moab::InterfacePtr make_interface()
 {
   //Core is a fully implemented moab::Interface
-  return smtk::mesh::moab::InterfacePtr( new ::moab::Core() );
+  return smtk::mesh::moab::InterfacePtr( new smtk::mesh::moab::Interface() );
 }
 
+//----------------------------------------------------------------------------
+Interface::Interface():
+  m_iface( new ::moab::Core() )
+{
+
+}
 
 //----------------------------------------------------------------------------
-std::size_t numMeshes(smtk::mesh::Handle handle,
-                      const smtk::mesh::moab::InterfacePtr& iface)
+Interface::~Interface()
+{
+
+}
+
+//----------------------------------------------------------------------------
+std::size_t Interface::numMeshes(smtk::mesh::Handle handle)
 {
   int num_ents = 0;
-  iface->get_number_entities_by_type( handle, ::moab::MBENTITYSET, num_ents);
+  m_iface->get_number_entities_by_type( handle, ::moab::MBENTITYSET, num_ents);
   return static_cast<std::size_t>(num_ents);
 }
 
 //----------------------------------------------------------------------------
-bool create_meshset(smtk::mesh::HandleRange cells,
-                    smtk::mesh::Handle& meshHandle,
-                    const smtk::mesh::moab::InterfacePtr& iface)
+bool Interface::create_meshset(smtk::mesh::HandleRange cells,
+                               smtk::mesh::Handle& meshHandle)
 {
   const unsigned int options = 0;
-  ::moab::ErrorCode rval = iface->create_meshset( options , meshHandle );
+  ::moab::ErrorCode rval = m_iface->create_meshset( options , meshHandle );
   if(rval == ::moab::MB_SUCCESS)
     {
-    iface->add_entities( meshHandle, cells );
+    m_iface->add_entities( meshHandle, cells );
     }
    return (rval == ::moab::MB_SUCCESS);
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::HandleRange get_meshsets(smtk::mesh::Handle handle,
-                                     const smtk::mesh::moab::InterfacePtr& iface)
+smtk::mesh::Handle Interface::get_root()
+
+{
+  return m_iface->get_root_set();
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::HandleRange Interface::get_meshsets(smtk::mesh::Handle handle)
 
 {
   ::moab::Range range;
-  iface->get_entities_by_type(handle, ::moab::MBENTITYSET, range);
+  m_iface->get_entities_by_type(handle, ::moab::MBENTITYSET, range);
   return range;
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::HandleRange get_meshsets(smtk::mesh::Handle handle,
-                                     int dimension,
-                                     const smtk::mesh::moab::InterfacePtr& iface)
+smtk::mesh::HandleRange Interface::get_meshsets(smtk::mesh::Handle handle,
+                                                int dimension)
 
 {
   ::moab::Range all_meshes_with_dim_tag;
   ::moab::Range meshes_of_proper_dim;
 
   //construct a dim tag that matches the dimension coming in
-  tag::QueryDimTag dimTag(dimension, iface);
+  tag::QueryDimTag dimTag(dimension, this);
 
   // get all the entities of that type in the mesh
-  iface->get_entities_by_type_and_tag(handle,
+  m_iface->get_entities_by_type_and_tag(handle,
                                       ::moab::MBENTITYSET,
                                       dimTag.moabTag(),
                                       NULL,
@@ -103,7 +119,7 @@ smtk::mesh::HandleRange get_meshsets(smtk::mesh::Handle handle,
       i != all_meshes_with_dim_tag.end(); ++i)
     {
     int value = 0;
-    iface->tag_get_data(dimTag.moabTagAsRef(), &(*i), 1, &value);
+    m_iface->tag_get_data(dimTag.moabTagAsRef(), &(*i), 1, &value);
     if(value == dimTag.value())
       {
       meshes_of_proper_dim.insert(*i);
@@ -114,9 +130,8 @@ smtk::mesh::HandleRange get_meshsets(smtk::mesh::Handle handle,
 
 //----------------------------------------------------------------------------
 //find all entity sets that have this exact name tag
-smtk::mesh::HandleRange get_meshsets(smtk::mesh::Handle handle,
-                                     const std::string& name,
-                                     const smtk::mesh::moab::InterfacePtr& iface)
+smtk::mesh::HandleRange Interface::get_meshsets(smtk::mesh::Handle handle,
+                                                const std::string& name)
 
 {
   typedef std::vector< ::moab::EntityHandle >::const_iterator it;
@@ -129,10 +144,10 @@ smtk::mesh::HandleRange get_meshsets(smtk::mesh::Handle handle,
   std::vector< ::moab::EntityHandle > all_ents;
   std::vector< ::moab::EntityHandle > matching_ents;
   //get all ents
-  iface->get_entities_by_type(handle, ::moab::MBENTITYSET, all_ents);
+  m_iface->get_entities_by_type(handle, ::moab::MBENTITYSET, all_ents);
 
   //see which ones have a a matching name, and if so add it
-  tag::QueryNameTag query_name(iface);
+  tag::QueryNameTag query_name(this);
   for( it i = all_ents.begin(); i != all_ents.end(); ++i )
     {
     const bool has_name = query_name.fetch_name(*i);
@@ -153,8 +168,7 @@ smtk::mesh::HandleRange get_meshsets(smtk::mesh::Handle handle,
 
 //----------------------------------------------------------------------------
 //get all cells held by this range
-smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
-                                  const smtk::mesh::moab::InterfacePtr& iface)
+smtk::mesh::HandleRange Interface::get_cells(smtk::mesh::HandleRange meshsets)
 
 {
   // get all non-meshset entities in meshset, including in contained meshsets
@@ -163,7 +177,7 @@ smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
   for(iterator i = meshsets.begin(); i != meshsets.end(); ++i)
     {
     //get_entities_by_handle appends to the range given
-    iface->get_entities_by_handle(*i, entitiesCells, true);
+    m_iface->get_entities_by_handle(*i, entitiesCells, true);
     }
   return entitiesCells;
 }
@@ -171,9 +185,8 @@ smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
 
 //----------------------------------------------------------------------------
 //get all cells held by this range handle of a given cell type
-smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
-                                  smtk::mesh::CellType cellType,
-                                  const smtk::mesh::moab::InterfacePtr& iface)
+smtk::mesh::HandleRange Interface::get_cells(smtk::mesh::HandleRange meshsets,
+                                             smtk::mesh::CellType cellType)
 {
   int moabCellType = smtk::mesh::moab::smtkToMOABCell(cellType);
 
@@ -184,7 +197,7 @@ smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
   for(iterator i = meshsets.begin(); i != meshsets.end(); ++i)
     {
     //get_entities_by_type appends to the range given
-    iface->get_entities_by_type(*i,
+    m_iface->get_entities_by_type(*i,
                                 static_cast< ::moab::EntityType >(moabCellType),
                                 entitiesCells,
                                 true);
@@ -194,16 +207,15 @@ smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
 
 //----------------------------------------------------------------------------
 //get all cells held by this range handle of a given cell type(s)
-smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
-                                  const smtk::mesh::CellTypes& cellTypes,
-                                  const smtk::mesh::moab::InterfacePtr& iface)
+smtk::mesh::HandleRange Interface::get_cells(smtk::mesh::HandleRange meshsets,
+                                             const smtk::mesh::CellTypes& cellTypes)
 
 {
   const std::size_t cellTypesToFind = cellTypes.count();
   if( cellTypesToFind == cellTypes.size())
     { //if all the cellTypes are enabled we should just use get_cells
       //all() method can't be used as it was added in C++11
-    return get_cells( meshsets, iface);
+    return this->get_cells( meshsets );
     }
   else if(cellTypesToFind == 0)
     {
@@ -222,7 +234,7 @@ smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
 
     smtk::mesh::CellType currentCellType = static_cast<smtk::mesh::CellType>(i);
 
-    ::moab::Range cellEnts = get_cells(meshsets, currentCellType, iface);
+    ::moab::Range cellEnts = this->get_cells(meshsets, currentCellType);
 
     entitiesCells.insert(cellEnts.begin(), cellEnts.end());
     }
@@ -232,9 +244,8 @@ smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
 
 //----------------------------------------------------------------------------
 //get all cells held by this range handle of a given dimension
-smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
-                                  smtk::mesh::DimensionType dim,
-                                  const smtk::mesh::moab::InterfacePtr& iface)
+smtk::mesh::HandleRange Interface::get_cells(smtk::mesh::HandleRange meshsets,
+                                             smtk::mesh::DimensionType dim)
 
 {
   const int dimension = static_cast<int>(dim);
@@ -245,18 +256,17 @@ smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
   for(iterator i = meshsets.begin(); i != meshsets.end(); ++i)
     {
     //get_entities_by_dimension appends to the range given
-    iface->get_entities_by_dimension(*i, dimension, entitiesCells, true);
+    m_iface->get_entities_by_dimension(*i, dimension, entitiesCells, true);
     }
   return entitiesCells;
 }
 
 
 //----------------------------------------------------------------------------
-std::vector< std::string > compute_names(const smtk::mesh::HandleRange& r,
-                                         const smtk::mesh::moab::InterfacePtr& iface)
+std::vector< std::string > Interface::compute_names(const smtk::mesh::HandleRange& r)
 {
   //construct a name tag query helper class
-  tag::QueryNameTag query_name(iface);
+  tag::QueryNameTag query_name(this);
 
   typedef ::moab::Range::const_iterator it;
   std::set< std::string > unique_names;
@@ -273,11 +283,10 @@ std::vector< std::string > compute_names(const smtk::mesh::HandleRange& r,
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::TypeSet compute_types(smtk::mesh::Handle handle,
-                                  const smtk::mesh::moab::InterfacePtr& iface)
+smtk::mesh::TypeSet Interface::compute_types(smtk::mesh::Handle handle)
 {
   int numMeshes = 0;
-  iface->get_number_entities_by_type( handle, ::moab::MBENTITYSET, numMeshes);
+  m_iface->get_number_entities_by_type( handle, ::moab::MBENTITYSET, numMeshes);
 
   //iterate over all the celltypes and get the number for each
   //construct a smtk::mesh::CellTypes at the same time
@@ -294,7 +303,7 @@ smtk::mesh::TypeSet compute_types(smtk::mesh::Handle handle,
       //some of the cell types that smtk supports moab doesn't support
       //so we can't query on those.
       int num = 0;
-      iface->get_number_entities_by_type(handle,
+      m_iface->get_number_entities_by_type(handle,
                                          static_cast< ::moab::EntityType >(moabEType),
                                          num);
       ctypes[ce] = (num > 0);
@@ -308,10 +317,9 @@ smtk::mesh::TypeSet compute_types(smtk::mesh::Handle handle,
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::HandleRange point_intersect(const smtk::mesh::HandleRange& a,
-                                        const smtk::mesh::HandleRange& b,
-                                        const smtk::mesh::moab::ContainsFunctor& containsFunctor,
-                                        const smtk::mesh::moab::InterfacePtr& iface)
+smtk::mesh::HandleRange Interface::point_intersect(const smtk::mesh::HandleRange& a,
+                                                   const smtk::mesh::HandleRange& b,
+                                                   const smtk::mesh::moab::ContainsFunctor& containsFunctor)
 {
   if(a.empty() || b.empty())
     { //the intersection with nothing is nothing
@@ -319,7 +327,7 @@ smtk::mesh::HandleRange point_intersect(const smtk::mesh::HandleRange& a,
     }
 
   //first get all the points of a
-  ::moab::Range a_points; iface->get_connectivity(a, a_points);
+  ::moab::Range a_points; m_iface->get_connectivity(a, a_points);
 
   //result storage for creating the range. This is used since inserting
   //into a range is horribly slow
@@ -339,7 +347,7 @@ smtk::mesh::HandleRange point_intersect(const smtk::mesh::HandleRange& a,
     const bool corners_only = false; //explicitly state we want all nodes of the cell
 
     //grab the raw connectivity array so we don't waste any memory
-    iface->get_connectivity(*i, connectivity, num_nodes, corners_only, &storage);
+    m_iface->get_connectivity(*i, connectivity, num_nodes, corners_only, &storage);
 
     //call the contains functor to determine if this cell is considered
     //to be contained by a_points.
@@ -367,10 +375,9 @@ smtk::mesh::HandleRange point_intersect(const smtk::mesh::HandleRange& a,
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::HandleRange point_difference(const smtk::mesh::HandleRange& a,
-                                         const smtk::mesh::HandleRange& b,
-                                         const smtk::mesh::moab::ContainsFunctor& containsFunctor,
-                                         const smtk::mesh::moab::InterfacePtr& iface)
+smtk::mesh::HandleRange Interface::point_difference(const smtk::mesh::HandleRange& a,
+                                                    const smtk::mesh::HandleRange& b,
+                                                    const smtk::mesh::moab::ContainsFunctor& containsFunctor)
 {
   if(b.empty())
     { //taking the difference from nothing results in nothing
@@ -382,7 +389,7 @@ smtk::mesh::HandleRange point_difference(const smtk::mesh::HandleRange& a,
     }
 
   //first get all the points of a
-  ::moab::Range a_points; iface->get_connectivity(a, a_points);
+  ::moab::Range a_points; m_iface->get_connectivity(a, a_points);
 
   //result storage for creating the range. This is used since inserting
   //into a range is horribly slow
@@ -402,7 +409,7 @@ smtk::mesh::HandleRange point_difference(const smtk::mesh::HandleRange& a,
     const bool corners_only = false; //explicitly state we want all nodes of the cell
 
     //grab the raw connectivity array so we don't waste any memory
-    iface->get_connectivity(*i, connectivity, num_nodes, corners_only, &storage);
+    m_iface->get_connectivity(*i, connectivity, num_nodes, corners_only, &storage);
 
     //call the contains functor to determine if this cell is considered
     //to be contained by a_points. If we aren't contained than we go into
@@ -428,6 +435,12 @@ smtk::mesh::HandleRange point_difference(const smtk::mesh::HandleRange& a,
 
   return resulting_range;
 
+}
+
+//----------------------------------------------------------------------------
+::moab::Interface *const Interface::moabInterface() const
+{
+  return this->m_iface.get();
 }
 
 }

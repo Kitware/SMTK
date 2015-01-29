@@ -17,7 +17,6 @@
 
 #include "moab/Core.hpp"
 #include "moab/FileOptions.hpp"
-#include "moab/ReaderIface.hpp"
 
 namespace smtk {
 namespace mesh {
@@ -54,7 +53,8 @@ namespace
   //to a Core and query for all the tag values, and pass those as the
   //ones we want to load. If we get back no tag values and we wanted
   //to load a subset we fail.
-  ::moab::Core* core = dynamic_cast< ::moab::Core* >(interface.get());
+  ::moab::Interface* m_iface = interface->moabInterface();
+  ::moab::Core* core = dynamic_cast< ::moab::Core* >(m_iface);
   if(!core)
     {
     return false;
@@ -86,16 +86,16 @@ namespace
     num_tag_values = tag_values.size();
     }
 
-  ::moab::ErrorCode err = interface->load_file( path.c_str(),
-                                                NULL, //file set to append to
-                                                NULL, //options
-                                                subset_name_to_load,
-                                                tag_values_ptr,
-                                                num_tag_values);
+  ::moab::ErrorCode err = m_iface->load_file( path.c_str(),
+                                              NULL, //file set to append to
+                                              NULL, //options
+                                              subset_name_to_load,
+                                              tag_values_ptr,
+                                              num_tag_values);
 #ifndef NDEBUG
   if(err != ::moab::MB_SUCCESS)
     {
-    std::string msg; interface->get_last_error(msg);
+    std::string msg; m_iface->get_last_error(msg);
     std::cerr << msg << std::endl;
     std::cerr << "failed to load file: " << path << std::endl;
     }

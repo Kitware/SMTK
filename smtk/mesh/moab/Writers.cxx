@@ -10,11 +10,11 @@
 //
 //=============================================================================
 #include "smtk/mesh/moab/Writers.h"
+#include "smtk/mesh/moab/Interface.h"
+
 #include "smtk/mesh/Collection.h"
 
-#include "moab/Core.hpp"
-#include "moab/FileOptions.hpp"
-#include "moab/ReaderIface.hpp"
+#include "moab/Interface.hpp"
 
 namespace smtk {
 namespace mesh {
@@ -33,6 +33,7 @@ namespace
                    const std::string& path,
                    const char* subset_name_to_write)
   {
+  ::moab::Interface* m_iface = interface->moabInterface();
   ::moab::ErrorCode err = ::moab::MB_FAILURE;
 
   if(subset_name_to_write)
@@ -41,19 +42,19 @@ namespace
     //entities with the given tag
     ::moab::Tag subsetTag;
     //all our tags are a single integer value
-    interface->tag_get_handle(subset_name_to_write,
+    m_iface->tag_get_handle(subset_name_to_write,
                               1,
                               ::moab::MB_TYPE_INTEGER,
                               subsetTag);
 
     ::moab::Range setsToSave;
-    interface->get_entities_by_type_and_tag( interface->get_root_set(),
-                                             ::moab::MBENTITYSET,
-                                             &subsetTag,
-                                             NULL,
-                                             1,
-                                             setsToSave,
-                                             ::moab::Interface::UNION);
+    m_iface->get_entities_by_type_and_tag( m_iface->get_root_set(),
+                                           ::moab::MBENTITYSET,
+                                           &subsetTag,
+                                           NULL,
+                                           1,
+                                           setsToSave,
+                                           ::moab::Interface::UNION);
 
     if( setsToSave.empty() )
       {
@@ -69,36 +70,32 @@ namespace
          i != setsToSave.end();
          ++i)
       {
-      interface->get_entities_by_handle( *i, entsToSave);
+      m_iface->get_entities_by_handle( *i, entsToSave);
       }
 
     ::moab::Range entitiesToSave = setsToSave;
     entitiesToSave.merge( entsToSave );
     entitiesToSave.insert( 0 );
 
-    // std::cout << "start of moab_write" << std::endl;
-    // interface->list_entities(entitiesToSave);
-    // std::cout << "end of moab_write" << std::endl;
-
     //write out just the subset. We let the file extension the user specified
     //determine what writer to use.
-    err = interface->write_file(path.c_str(),
-                                NULL, //explicit writer type
-                                NULL, //options
-                                entitiesToSave);
+    err = m_iface->write_file(path.c_str(),
+                              NULL, //explicit writer type
+                              NULL, //options
+                              entitiesToSave);
 
     }
   else
     {
     //write out everything. We let the file extension the user specified
     //determine what writer to use.
-    err = interface->write_file(path.c_str());
+    err = m_iface->write_file(path.c_str());
     }
 
 #ifndef NDEBUG
   if(err != ::moab::MB_SUCCESS)
     {
-    std::string msg; interface->get_last_error(msg);
+    std::string msg; m_iface->get_last_error(msg);
     std::cerr << msg << std::endl;
     std::cerr << "failed to write file: " << path << std::endl;
     }

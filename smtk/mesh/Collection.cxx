@@ -59,7 +59,7 @@ public:
     { return this->Interface; }
 
   smtk::mesh::Handle mesh_root_handle() const
-    { return this->Interface->get_root_set(); }
+    { return this->Interface->get_root(); }
 
 
 
@@ -169,15 +169,15 @@ bool Collection::reparent(smtk::mesh::ManagerPtr newParent)
 //----------------------------------------------------------------------------
 std::size_t Collection::numberOfMeshes() const
 {
-  return smtk::mesh::moab::numMeshes(this->m_internals->mesh_root_handle(),
-                                     this->m_internals->mesh_iface() );
+  const smtk::mesh::moab::InterfacePtr& iface = this->m_internals->mesh_iface();
+  return iface->numMeshes( this->m_internals->mesh_root_handle() );
 }
 
 //----------------------------------------------------------------------------
 smtk::mesh::TypeSet Collection::associatedTypes( ) const
 {
-  return smtk::mesh::moab::compute_types(this->m_internals->mesh_root_handle(),
-                                         this->m_internals->mesh_iface() );
+  const smtk::mesh::moab::InterfacePtr& iface = this->m_internals->mesh_iface();
+  return iface->compute_types( this->m_internals->mesh_root_handle() );
 }
 
 //----------------------------------------------------------------------------
@@ -216,8 +216,8 @@ std::vector< std::string > Collection::meshNames( )
   const smtk::mesh::moab::InterfacePtr& iface = this->m_internals->mesh_iface();
   smtk::mesh::moab::Handle handle = this->m_internals->mesh_root_handle();
 
-  ::moab::Range entities = smtk::mesh::moab::get_meshsets(handle, iface);
-  return smtk::mesh::moab::compute_names(entities, iface);
+  smtk::mesh::HandleRange entities = iface->get_meshsets(handle);
+  return iface->compute_names(entities);
 }
 
 //----------------------------------------------------------------------------
@@ -227,9 +227,7 @@ smtk::mesh::MeshSet Collection::meshes( smtk::mesh::DimensionType dim )
   smtk::mesh::moab::Handle handle = this->m_internals->mesh_root_handle();
   const int dim_value = static_cast<int>(dim);
 
-  smtk::mesh::HandleRange entities = smtk::mesh::moab::get_meshsets( handle,
-                                                                     dim_value,
-                                                                     iface );
+  smtk::mesh::HandleRange entities = iface->get_meshsets( handle, dim_value);
   return smtk::mesh::MeshSet( this->shared_from_this(),
                               this->m_internals->mesh_root_handle(),
                               entities );
@@ -241,9 +239,7 @@ smtk::mesh::MeshSet Collection::meshes( const std::string& name )
   const smtk::mesh::moab::InterfacePtr& iface = this->m_internals->mesh_iface();
   smtk::mesh::moab::Handle handle = this->m_internals->mesh_root_handle();
 
-  smtk::mesh::HandleRange entities = smtk::mesh::moab::get_meshsets( handle,
-                                                                     name,
-                                                                     iface );
+  smtk::mesh::HandleRange entities = iface->get_meshsets( handle, name);
   return smtk::mesh::MeshSet( this->shared_from_this(),
                               this->m_internals->mesh_root_handle(),
                               entities );

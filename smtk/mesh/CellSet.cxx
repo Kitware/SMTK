@@ -119,8 +119,7 @@ CellSet set_intersect( const CellSet& a, const CellSet& b)
 {
   if( a.m_parent != b.m_parent )
     { //return an empty CellSet if the collections don't match
-    return smtk::mesh::CellSet(a.m_parent,
-                               smtk::mesh::HandleRange());
+    return smtk::mesh::CellSet(a.m_parent, smtk::mesh::HandleRange());
     }
 
   smtk::mesh::HandleRange result = ::moab::intersect(a.m_range, b.m_range);
@@ -162,8 +161,7 @@ CellSet point_intersect( const CellSet& a, const CellSet& b, ContainmentType t)
 {
   if( a.m_parent != b.m_parent )
     { //return an empty CellSet if the collections don't match
-    return smtk::mesh::CellSet(a.m_parent,
-                               smtk::mesh::HandleRange());
+    return smtk::mesh::CellSet(a.m_parent, smtk::mesh::HandleRange());
     }
 
   const smtk::mesh::moab::InterfacePtr& iface =
@@ -174,12 +172,12 @@ CellSet point_intersect( const CellSet& a, const CellSet& b, ContainmentType t)
   if(t == smtk::mesh::PartiallyContained)
     {
     smtk::mesh::moab::PartiallyContained f;
-    result = smtk::mesh::moab::point_intersect(a.m_range, b.m_range, f, iface);
+    result = iface->point_intersect(a.m_range, b.m_range, f);
     }
   else
     {
     smtk::mesh::moab::FullyContained f;
-    result = smtk::mesh::moab::point_intersect(a.m_range, b.m_range, f, iface);
+    result = iface->point_intersect(a.m_range, b.m_range, f);
     }
   return smtk::mesh::CellSet(a.m_parent, result);
 }
@@ -191,8 +189,7 @@ CellSet point_difference( const CellSet& a, const CellSet& b, ContainmentType t)
 {
   if( a.m_parent != b.m_parent )
     { //return an empty CellSet if the collections don't match
-    return smtk::mesh::CellSet(a.m_parent,
-                               smtk::mesh::HandleRange());
+    return smtk::mesh::CellSet(a.m_parent, smtk::mesh::HandleRange());
     }
 
   const smtk::mesh::moab::InterfacePtr& iface =
@@ -203,12 +200,12 @@ CellSet point_difference( const CellSet& a, const CellSet& b, ContainmentType t)
   if(t == smtk::mesh::PartiallyContained)
     {
     smtk::mesh::moab::PartiallyContained f;
-    result = smtk::mesh::moab::point_difference(a.m_range, b.m_range, f, iface);
+    result = iface->point_difference(a.m_range, b.m_range, f);
     }
   else
     {
     smtk::mesh::moab::FullyContained f;
-    result = smtk::mesh::moab::point_difference(a.m_range, b.m_range, f, iface);
+    result = iface->point_difference(a.m_range, b.m_range, f);
     }
 
   return smtk::mesh::CellSet(a.m_parent, result);

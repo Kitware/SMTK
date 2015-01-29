@@ -15,6 +15,8 @@
 # include <iostream>
 #endif
 
+#include "moab/Interface.hpp"
+
 namespace smtk {
 namespace mesh {
 namespace moab {
@@ -30,60 +32,61 @@ PointConnectivityStorage::PointConnectivityStorage(
   NumberOfCells(0),
   NumberOfVerts(0)
 {
+  std::size_t cellCount = 0;
+  std::size_t vertCount = 0;
 
-std::size_t cellCount = 0;
-std::size_t vertCount = 0;
+  smtk::mesh::HandleRange::const_iterator cells_current = cells.begin();
+  smtk::mesh::HandleRange::const_iterator cells_end = cells.end();
 
-smtk::mesh::HandleRange::const_iterator cells_current = cells.begin();
-smtk::mesh::HandleRange::const_iterator cells_end = cells.end();
+  ::moab::Interface* m_iface = iface->moabInterface();
 
-while(cells_current != cells_end)
-  {
-  ::moab::EntityHandle* connectivity;
-  int numVertsPerCell=0, numCellsInSubRange=0;
-
-  ::moab::ErrorCode result =
-  iface->connect_iterate(cells_current,
-                         cells.end(),
-                         connectivity,
-                         numVertsPerCell,
-                         numCellsInSubRange);
-
-
-  if(result == ::moab::MB_SUCCESS)
+  while(cells_current != cells_end)
     {
-    this->ConnectivityStartPositions.push_back(connectivity);
-    this->ConnectivityArraysLengths.push_back(numCellsInSubRange);
-    this->ConnectivityVertsPerCell.push_back(numVertsPerCell);
+    ::moab::EntityHandle* connectivity;
+    int numVertsPerCell=0, numCellsInSubRange=0;
 
-    //increment our iterator
-    cells_current += static_cast<std::size_t>(numCellsInSubRange);
+    ::moab::ErrorCode result =
+    m_iface->connect_iterate(cells_current,
+                             cells.end(),
+                             connectivity,
+                             numVertsPerCell,
+                             numCellsInSubRange);
 
-    //increment our num cells and verts counters
-    cellCount += static_cast<std::size_t>(numCellsInSubRange);
-    vertCount += static_cast<std::size_t>(numCellsInSubRange * numVertsPerCell);
+
+    if(result == ::moab::MB_SUCCESS)
+      {
+      this->ConnectivityStartPositions.push_back(connectivity);
+      this->ConnectivityArraysLengths.push_back(numCellsInSubRange);
+      this->ConnectivityVertsPerCell.push_back(numVertsPerCell);
+
+      //increment our iterator
+      cells_current += static_cast<std::size_t>(numCellsInSubRange);
+
+      //increment our num cells and verts counters
+      cellCount += static_cast<std::size_t>(numCellsInSubRange);
+      vertCount += static_cast<std::size_t>(numCellsInSubRange * numVertsPerCell);
+      }
+    else
+      {
+      //we shouldn't presume all ids coming in have connectivity. In theory
+      //if we are passed spectral elements we will get back no connectivity.
+      //the same goes for vertices
+  #ifndef NDEBUG
+      std::cerr << "Passed range that contained non cell ids" << std::endl;
+      std::cerr << "Handle ids " << *cells_current.start_of_block()
+                                 << " to "
+                                 << *cells_current.end_of_block()
+                                 << "are not cell ids" << std::endl;
+  #endif
+
+      //increment our iterator to skip all these bad ids
+      cells_current = cells_current.end_of_block();
+      ++cells_current;
+      }
     }
-  else
-    {
-    //we shouldn't presume all ids coming in have connectivity. In theory
-    //if we are passed spectral elements we will get back no connectivity.
-    //the same goes for vertices
-#ifndef NDEBUG
-    std::cerr << "Passed range that contained non cell ids" << std::endl;
-    std::cerr << "Handle ids " << *cells_current.start_of_block()
-                               << " to "
-                               << *cells_current.end_of_block()
-                               << "are not cell ids" << std::endl;
-#endif
 
-    //increment our iterator to skip all these bad ids
-    cells_current = cells_current.end_of_block();
-    ++cells_current;
-    }
-  }
-
-this->NumberOfCells = cellCount;
-this->NumberOfVerts = vertCount;
+  this->NumberOfCells = cellCount;
+  this->NumberOfVerts = vertCount;
 }
 
 //----------------------------------------------------------------------------
@@ -96,19 +99,20 @@ PointConnectivityStorage::PointConnectivityStorage(
   NumberOfCells(0),
   NumberOfVerts(0)
 {
-const ::moab::EntityHandle* connectivity;
-int numVertsPerCell=0;
-const int numCellsInSubRange=1; //we are only passed a single cell
+  const ::moab::Interface* m_iface = iface->moabInterface();
+  const ::moab::EntityHandle* connectivity;
+  int numVertsPerCell=0;
+  const int numCellsInSubRange=1; //we are only passed a single cell
 
-iface->get_connectivity(cell,
-                        connectivity,
-                        numVertsPerCell);
+  m_iface->get_connectivity(cell,
+                            connectivity,
+                            numVertsPerCell);
 
-this->ConnectivityStartPositions.push_back(connectivity);
-this->ConnectivityArraysLengths.push_back(numCellsInSubRange);
-this->ConnectivityVertsPerCell.push_back(numVertsPerCell);
+  this->ConnectivityStartPositions.push_back(connectivity);
+  this->ConnectivityArraysLengths.push_back(numCellsInSubRange);
+  this->ConnectivityVertsPerCell.push_back(numVertsPerCell);
 
-this->NumberOfCells = numCellsInSubRange;
+  this->NumberOfCells = numCellsInSubRange;
 this->NumberOfVerts = numVertsPerCell;
 }
 
