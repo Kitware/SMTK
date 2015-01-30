@@ -7,9 +7,9 @@
 
 .. _subclassing-session:
 
-**************************
+***************************
 Creating a session subclass
-**************************
+***************************
 
 Sessions exist to link foreign modeling entities to SMTK
 modeling entities, in a bidirectional way:
@@ -33,7 +33,7 @@ to implement a subclass of :smtk:`smtk::model::Session`:
 In the example above, some methods override the base
 class in order to provide required functionality while others
 just illustrate useful ways to divide tasks that should be
-common to most sessions.
+common to most session types.
 
 The first block of methods near the top of the declaration
 are required in order for instances of the session to be
@@ -153,7 +153,7 @@ This macro takes 5 parameters:
    performing them locally).
 
 Session constructor
-------------------
+-------------------
 
 Besides the macro declaration, your constructor **must** provide
 the base class with the place it stores information

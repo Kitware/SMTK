@@ -19,7 +19,7 @@ also accessible in Python, whose instances perform the following functions:
   the representations in the Manager and the modeling kernel.
   A manager may contain entity records from multiple Session sessions
   (e.g., a single Manager may contain some models back by an ACIS
-  modeling kernel session and some backed by OpenCascade session).
+  modeling kernel session and some backed by an OpenCascade session).
 
 :smtk:`Operator <smtk::model::Operator>`
   instances represent modeling operations that a modeling kernel
@@ -43,7 +43,8 @@ also accessible in Python, whose instances perform the following functions:
   tessellation data, and attributes associated with that entity.
   They also provide methods for manipulating the model Manager's storage
   but *these methods should not be used directly*; instead use an Operator
-  instance to modify the model so that the kernel and manager stay in sync.
+  instance to modify the model so that the modeling kernel and model manager
+  stay in sync.
   EntityRef subclasses include Vertex, Edge, Face, Volume, Model,
   Group, UseEntity, Loop, Shell, and so on. These are discussed
   in detail in `Model Entities`_ below.
@@ -70,17 +71,17 @@ also accessible in Python, whose instances perform the following functions:
 Model Entities
 ==============
 
-As mentioned above, the model :smtk:`Manager <smtk::model::Manager>` class is the only place where
-model topology and geometry are stored in SMTK.
-However, there are entityref-like classes, all derived from :smtk:`smtk::model::EntityRef`,
+As mentioned above, the model :smtk:`Manager <smtk::model::Manager>` class
+is the only place where model topology and geometry are stored in SMTK.
+However, there are EntityRef-like classes, all derived from :smtk:`smtk::model::EntityRef`,
 that provide easier access to model traversal.
 These classes are organized like so:
 
 .. findfigure:: entityref-classes-with-inheritance.*
 
-   Each of the orange, green, purple, and red words is the name of a entityref class.
+   Each of the orange, green, purple, and red words is the name of an EntityRef subclass.
    The black arrows show relationships between instances of them (for which the
    classes at both ends provide accessors).
 
 Each relationship shown in the figure above has a corresponding
-method in the entityref subclasses for accessing the related entities.
+method in the EntityRef subclasses for accessing the related entities.

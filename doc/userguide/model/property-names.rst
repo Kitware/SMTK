@@ -108,13 +108,13 @@ Properties used internally are in the following table:
 |                                |               | See :smtk:`Entity::defaultNameFromCounters()` to understand how the        |
 |                                |               | counter is used.                                                           |
 +--------------------------------+---------------+----------------------------------------------------------------------------+
-| session pedigree                | String or     | A session-specific persistent identifier assigned to the associated entity  |
+| session pedigree               | String or     | A session-specific persistent identifier assigned to the associated entity |
 |                                | Integer       | for use by the exporter and other tasks that need to refer to the entity   |
 |                                |               | when it is not possible to use UUIDs created by SMTK to do so.             |
 |                                |               | This happens when the original model file may not be modified and          |
 |                                |               | simulation input decks must refer to entities in that original file.       |
 |                                |               |                                                                            |
-|                                |               | Sessions should provide 0 or 1 values for each entity.                      |
+|                                |               | Sessions should provide 0 or 1 values for each entity.                     |
 +--------------------------------+---------------+----------------------------------------------------------------------------+
 | shell_counters                 | Integer       | An array of 5 integers assigned to each model entity and                   |
 |                                |               | used to generate model-unique names that are easier to read than UUIDs.    |

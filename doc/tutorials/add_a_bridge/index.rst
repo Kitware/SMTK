@@ -1,25 +1,26 @@
 ============================
-Session a new modeling kernel
+Bridge a new modeling kernel
 ============================
 
 .. highlight:: c++
 .. role:: cxx(code)
    :language: c++
 
-This tutorial covers how to session a solid modeling kernel to SMTK.
+This tutorial covers how to bridge a solid modeling kernel to SMTK.
 The details will vary according to the capabilities of the modeling
 kernel you wish to use via SMTK, but the overall process of bridging
 the kernel involves
 
-* subclassing SMTK's :smtk:`Session` class,
-* defining a map between your kernel's modeling entities and SMTK UUIDs,
+* subclassing SMTK's :smtk:`Session` class — which is used as a
+  bridge between the modeling kernel and SMTK's model manager;
+* defining a map between your kernel's modeling entities and SMTK UUIDs;
 * transcribing information about kernel modeling entities into an
-  SMTK model manager, and
+  SMTK model manager; and
 * providing SMTK operators which perform modeling operations. The only
   mandatory operator is a "read" operator used to load a file native
   to your modeling kernel into your native kernel's modeling session.
 
-This tutorial will use a simplistic session that presents an Exodus
+This tutorial will add a simplistic session type that presents an Exodus
 mesh as a model composed only of groups (element blocks, side sets,
 and node sets).
 A session like this is useful for cases where the geometry for a

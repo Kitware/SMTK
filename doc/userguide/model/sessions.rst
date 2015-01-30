@@ -1,5 +1,5 @@
 Sessions
-=======
+========
 
 As mentioned above, :smtk:`Sessions <Session>` link, or *back* SMTK model entities
 to a solid-modeling kernel's representation of those model entities.
@@ -11,10 +11,11 @@ Sessions (1) transcribe modeling-kernel entities into SMTK’s storage and
 (2) keep a list of :smtk:`Operators <Operator>` that can be used to modify the model.
 As part of the transcription process, sessions track which entities have been incompletely transcribed,
 allowing partial, on-demand transcription.
-SMTK’s existing sessions (to CGM and CMB’s discrete modeler) use the attribute systems
-those modelers provide to hold SMTK-generated universal, unique IDs (UUIDs) for each model entity;
-modeling-kernel sessions may also provide a list of UUIDs in an unambiguous traversal order
-if UUIDs cannot be stored in a model file.
+SMTK’s cgm and discrete session types use their respective attribute system's
+modeler to hold SMTK-generated universal, unique IDs (UUIDs) for each model entity;
+modeling-kernel sessions may also provide a list of UUIDs in an unambiguous traversal order.
+This is useful if UUIDs cannot be stored in a model file but also in the event where
+you do not wish to modify the file by rewriting it with UUID attributes included.
 
 When a model operation is performed,
 — depending on how much information the modeling kernel provides about affected model entities —
@@ -22,7 +23,7 @@ entities in SMTK’s storage are partially or totally marked as dirty and retran
 
 
 Registration and initialization of Sessions and Operators
---------------------------------------------------------
+---------------------------------------------------------
 
 Because sessions usually back SMTK model entities with representations in a solid
 modeling kernel, constructing a session (and thus initializing a modeling kernel)
