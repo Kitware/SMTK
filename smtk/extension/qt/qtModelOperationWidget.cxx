@@ -38,6 +38,7 @@
 #include <QSpacerItem>
 
 #include <map>
+#include <algorithm>    // std::sort
 
 using namespace smtk::attribute;
 using namespace smtk::model;
@@ -131,6 +132,7 @@ void qtModelOperationWidget::setBridge(smtk::model::BridgePtr bridge)
   if(bridge)
     {
     StringList opNames = bridge->operatorNames();
+    std::sort(opNames.begin(), opNames.end()); 
     for(StringList::const_iterator it = opNames.begin();
         it != opNames.end(); ++it)
       {
@@ -150,6 +152,7 @@ bool qtModelOperationWidget::setCurrentOperation(
     return false;
 
   StringList opNames = bridge->operatorNames();
+  std::sort(opNames.begin(), opNames.end()); 
   int idx = std::find(opNames.begin(), opNames.end(), opName) - opNames.begin();
   if(this->Internals->OperationCombo->currentIndex() != idx)
     {

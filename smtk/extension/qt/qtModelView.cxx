@@ -49,6 +49,8 @@
 #include <QColorDialog>
 
 #include <iomanip>
+#include <algorithm>    // std::sort
+
 // -----------------------------------------------------------------------------
 
 namespace smtk {
@@ -416,6 +418,7 @@ void qtModelView::showContextMenu(const QPoint &p)
   if (dp && (brSession = dp->relatedEntity().as<smtk::model::BridgeSession>()).isValid())
     {
     StringList opNames = brSession.operatorNames();
+    std::sort(opNames.begin(), opNames.end()); 
     for(StringList::const_iterator it = opNames.begin();
         it != opNames.end(); ++it)
       {

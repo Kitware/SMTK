@@ -133,6 +133,7 @@ void qtModelEntityItemCombo::init()
     item->setData((*it).entity().toString().c_str(), Qt::UserRole);
     itemModel->insertRow(row, item);
     }
+  itemModel->sort(0);
 
   connect(this->model(),
     SIGNAL(dataChanged ( const QModelIndex&, const QModelIndex&)),
