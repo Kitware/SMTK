@@ -43,11 +43,12 @@ Cursor GroupEntity::parent() const
   */
 GroupEntity& GroupEntity::addEntity(const Cursor& thing)
 {
-  this->m_manager->findOrAddEntityToGroup(this->entity(), thing.entity());
-  this->m_manager->trigger(
+  ManagerPtr mgr = this->manager();
+  mgr->findOrAddEntityToGroup(this->entity(), thing.entity());
+  mgr->trigger(
     std::make_pair(ADD_EVENT,GROUP_SUPERSET_OF_ENTITY),
     *this,
-    Cursor(this->m_manager, thing.entity()));
+    Cursor(mgr, thing.entity()));
 
   return *this;
 }
@@ -60,19 +61,20 @@ GroupEntity& GroupEntity::addEntity(const Cursor& thing)
   */
 bool GroupEntity::removeEntity(const Cursor& thing)
 {
+  ManagerPtr mgr = this->manager();
   if (this->isValid() && !thing.entity().isNull())
     {
-    int aidx = this->m_manager->findArrangementInvolvingEntity(
+    int aidx = mgr->findArrangementInvolvingEntity(
       this->m_entity, SUPERSET_OF, thing.entity());
 
     // FIXME: This really belongs inside unarrangeEntity().
     // But there we have no access to thing.entity() until too late.
-    if (this->m_manager->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
+    if (mgr->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
       {
-      this->m_manager->trigger(
+      mgr->trigger(
         std::make_pair(DEL_EVENT,GROUP_SUPERSET_OF_ENTITY),
         *this,
-        Cursor(this->m_manager, thing.entity()));
+        Cursor(mgr, thing.entity()));
 
       return true;
       }

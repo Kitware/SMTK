@@ -61,9 +61,10 @@ smtk::common::Vector3d Edge::coordinates() const
 {
   if (this->isValid())
     {
+    ManagerPtr mgr = this->manager();
     UUIDWithTessellation tessRec =
-      this->m_manager->tessellations().find(this->m_entity);
-    if (tessRec != this->m_manager->tessellations().end())
+      mgr->tessellations().find(this->m_entity);
+    if (tessRec != mgr->tessellations().end())
       {
       if (!tessRec->second.coords().empty())
         {

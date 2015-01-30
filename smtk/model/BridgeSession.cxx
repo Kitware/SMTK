@@ -32,8 +32,8 @@ namespace smtk {
 BridgeSession::BridgeSession(ManagerPtr mgr, BridgePtr brdg)
   : Cursor(mgr, brdg->sessionId())
 {
-  if (!this->m_manager->findBridgeSession(brdg->sessionId()))
-    this->m_manager->registerBridgeSession(brdg);
+  if (!!mgr && !mgr->findBridgeSession(brdg->sessionId()))
+    mgr->registerBridgeSession(brdg);
 }
 
 /**\brief Return the actual bridge this cursor references (or null).
@@ -41,9 +41,10 @@ BridgeSession::BridgeSession(ManagerPtr mgr, BridgePtr brdg)
   */
 Bridge::Ptr BridgeSession::bridge() const
 {
-  if (!this->m_manager || !this->m_entity)
+  ManagerPtr mgr = this->m_manager.lock();
+  if (!mgr || !this->m_entity)
     return Bridge::Ptr();
-  return this->m_manager->findBridgeSession(this->m_entity);
+  return mgr->findBridgeSession(this->m_entity);
 }
 
 /**\brief Return the list of operations this bridge supports.

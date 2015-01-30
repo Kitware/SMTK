@@ -61,8 +61,9 @@ ShellEntity ShellEntity::containingShellEntity() const
 /// Add the (lower-dimensional) use as a child of the shell.
 ShellEntity& ShellEntity::addUse(const UseEntity& use)
 {
-  if (this->m_manager)
-    this->m_manager->findOrAddUseToShell(this->m_entity, use.entity());
+  ManagerPtr mgr = this->manager();
+  if (mgr)
+    mgr->findOrAddUseToShell(this->m_entity, use.entity());
   return *this;
 }
 

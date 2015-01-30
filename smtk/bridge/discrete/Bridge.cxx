@@ -155,6 +155,31 @@ Bridge::Bridge()
 /// Public virtual destructor required by base class.
 Bridge::~Bridge()
 {
+  // Remove any observers on model items that this bridge added:
+  std::map<smtk::common::UUID,vtkModelItem*>::iterator mit;
+  for (mit = this->m_itemsToRefs.begin(); mit != this->m_itemsToRefs.end(); ++mit)
+    {
+    vtkInformation* mp = mit->second->GetProperties();
+    mp->RemoveObserver(this->m_itemWatcher);
+    }
+  // Remove any models that this bridge owned from s_modelsToBridges.
+  std::map<vtkDiscreteModel*,Bridge::WeakPtr>::iterator mbit;
+  for (mbit = Bridge::s_modelsToBridges.begin(); mbit != Bridge::s_modelsToBridges.end(); )
+    {
+    if (mbit->second.lock().get() == this)
+      {
+      smtk::common::UUID modelId = this->findOrSetEntityUUID(mbit->first);
+      std::map<vtkDiscreteModel*,Bridge::WeakPtr>::iterator tmp = mbit;
+      Bridge::s_modelsToBridges.erase(mbit++);
+      vtkSmartPointer<vtkDiscreteModelWrapper> modelPtr = Bridge::s_modelIdsToRefs[modelId];
+      Bridge::s_modelIdsToRefs.erase(modelId);
+      Bridge::s_modelRefsToIds.erase(modelPtr);
+      }
+    else
+      {
+      ++mbit;
+      }
+    }
   this->m_itemWatcher->Delete();
 }
 

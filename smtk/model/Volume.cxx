@@ -53,9 +53,10 @@ smtk::model::Faces Volume::faces() const
 
 Volume& Volume::setVolumeUse(const VolumeUse& volUse)
 {
+  ManagerPtr mgr = this->manager();
   if (volUse.isValid() && this->isValid())
     {
-    this->m_manager->findCreateOrReplaceCellUseOfSenseAndOrientation(
+    mgr->findCreateOrReplaceCellUseOfSenseAndOrientation(
       this->m_entity, 0, POSITIVE, volUse.entity());
     }
   return *this;

@@ -30,11 +30,12 @@ smtk::model::Edges Vertex::edges() const
 
 double* Vertex::coordinates() const
 {
+  ManagerPtr mgr = this->manager();
   if (this->isValid())
     {
     UUIDWithTessellation tessRec =
-      this->m_manager->tessellations().find(this->m_entity);
-    if (tessRec != this->m_manager->tessellations().end())
+      mgr->tessellations().find(this->m_entity);
+    if (tessRec != mgr->tessellations().end())
       {
       if (!tessRec->second.coords().empty())
         {
@@ -48,11 +49,12 @@ double* Vertex::coordinates() const
 /*
 smtk::common::Vector3d Vertex::coordinates() const
 {
+  ManagerPtr mgr = this->manager();
   if (this->isValid())
     {
     UUIDWithTessellation tessRec =
-      this->m_manager->tessellations().find(this->m_entity);
-    if (tessRec != this->m_manager->tessellations().end())
+      mgr->tessellations().find(this->m_entity);
+    if (tessRec != mgr->tessellations().end())
       {
       if (!tessRec->second.coords().empty())
         {
