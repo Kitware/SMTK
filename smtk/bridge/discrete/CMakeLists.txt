@@ -1,4 +1,4 @@
-PROJECT(smtkDiscreteBridge)
+PROJECT(smtkDiscreteSession)
 
 # Only include the VTK use-file in subdirectories
 # that require VTK include paths. Otherwise, command
@@ -25,7 +25,7 @@ include (vtkSMTKModules)
 vtk_smtk_setup_module_environment("SMTKDiscrete")
 vtk_smtk_process_modules()
 
-# Build vtk moab reader before bridge
+# Build vtk moab reader before session
 if(SMTK_BUILD_MOAB_READER)
   add_subdirectory(moabreader)
 endif()
@@ -51,7 +51,6 @@ SET(DiscreteOperationFiles
   operation/vtkCreateModelEdgesOperatorBase.cxx
   operation/vtkSplitOperator.cxx
   operation/vtkSplitOperatorBase.cxx
-  operation/vtkModelEntityOperatorBase.cxx
   operation/vtkDataSetRegionSurfaceFilter.cxx
   operation/vtkMasterPolyDataNormals.cxx
   operation/vtkMergeDuplicateCells.cxx
@@ -79,7 +78,6 @@ SET(DiscreteModelHeaders
   operation/vtkCreateModelEdgesOperatorBase.h
   operation/vtkSplitOperator.h
   operation/vtkSplitOperatorBase.h
-  operation/vtkModelEntityOperatorBase.h
   operation/vtkDataSetRegionSurfaceFilter.h
   operation/vtkMasterPolyDataNormals.h
   operation/vtkMergeDuplicateCells.h
@@ -104,8 +102,8 @@ set(_module_src
   ${DiscreteOperationFiles}
 )
 
-set(discreteBridgeSrcs
-  Bridge.cxx
+set(discreteSessionSrcs
+  Session.cxx
   CreateEdgesOperator.cxx
   EntityGroupOperator.cxx
   ImportOperator.cxx
@@ -114,8 +112,8 @@ set(discreteBridgeSrcs
   SplitFaceOperator.cxx
 )
 
-set(discreteBridgeHeaders
-  Bridge.h
+set(discreteSessionHeaders
+  Session.h
   CreateEdgesOperator.h
   EntityGroupOperator.h
   ImportOperator.h
@@ -124,13 +122,13 @@ set(discreteBridgeHeaders
   SplitFaceOperator.h
 )
 
-# Normally this would be machine-generated from Bridge.json
-# using the smtk_bridge_json CMake macro, but this version
+# Normally this would be machine-generated from Session.json
+# using the smtk_session_json CMake macro, but this version
 # has been hand-edited to include preprocessor macros that
 # add and remove engines and filetypes as support for them
 # is known at compile time.
-# include(SMTKBridgeJSON)
-# smtk_bridge_json("${CMAKE_CURRENT_SOURCE_DIR}/Bridge.json" discreteBridgeJSON)
+# include(SMTKSessionJSON)
+# smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" discreteSessionJSON)
 
 include(SMTKOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateEdgesOperator.sbt" unitOperatorXML)
@@ -140,7 +138,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/SplitFaceOperator.sbt" unitOperat
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ImportOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/EntityGroupOperator.sbt" unitOperatorXML)
 
-add_library(smtkDiscreteBridge ${_module_src} ${discreteBridgeSrcs})
+add_library(smtkDiscreteSession ${_module_src} ${discreteSessionSrcs})
 
 set (__private_dependencies)
 
@@ -149,8 +147,8 @@ if (VTK_WRAP_PYTHON)
       vtkPythonInterpreter)
 endif (VTK_WRAP_PYTHON)
 
-#set smtkDiscreteBridge to publicly link to SMTKCore and privately to vtkSMTKDiscreteModel
-target_link_libraries(smtkDiscreteBridge
+#set smtkDiscreteSession to publicly link to SMTKCore and privately to vtkSMTKDiscreteModel
+target_link_libraries(smtkDiscreteSession
   LINK_PUBLIC
     SMTKCore
   LINK_PRIVATE
@@ -168,37 +166,37 @@ target_link_libraries(smtkDiscreteBridge
   )
 
 if(SMTK_BUILD_MOAB_READER)
-  target_link_libraries(smtkDiscreteBridge
+  target_link_libraries(smtkDiscreteSession
     LINK_PRIVATE
       vtkDiscreteMoabReader
   )
 endif()
 
 
-smtk_export_header(smtkDiscreteBridge discreteBridgeExports.h)
+smtk_export_header(smtkDiscreteSession discreteSessionExports.h)
 
 # On Mac OS X, set the directory included as part of the installed library's path:
 if (BUILD_SHARED_LIBS)
-  set_target_properties(smtkDiscreteBridge PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+  set_target_properties(smtkDiscreteSession PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
 
 # Install the headers.
-smtk_public_headers(${discreteBridgeHeaders} ${DiscreteModelHeaders})
+smtk_public_headers(${discreteSessionHeaders} ${DiscreteModelHeaders})
 
 #install the library and exports the library when used from a build tree
-smtk_install_library(smtkDiscreteBridge DEPENDS SMTKCore vtkSMTKDiscreteModel)
+smtk_install_library(smtkDiscreteSession DEPENDS SMTKCore vtkSMTKDiscreteModel)
 
 if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
   #extract the headers from discrete library we built to give them to shiboken
 
-  sbk_wrap_library(smtkDiscreteBridge
+  sbk_wrap_library(smtkDiscreteSession
     GENERATOR_ARGS --avoid-protected-hack
     WORKING_DIRECTORY ${SMTK_SOURCE_DIR}/smtk
     LOCAL_INCLUDE_DIRECTORIES
       ${SMTK_SOURCE_DIR}/smtk/common
       ${SMTK_SOURCE_DIR}/smtk/attribute
       ${SMTK_SOURCE_DIR}/smtk/model
-      ${SMTK_SOURCE_DIR}/smtk/bridge
+      ${SMTK_SOURCE_DIR}/smtk/session
       ${SMTK_SOURCE_DIR}/smtk/bridge/discrete
       ${SMTK_SOURCE_DIR}/smtk/simulation
       ${SMTK_SOURCE_DIR}/smtk/io
@@ -207,11 +205,11 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
       ${SMTK_BINARY_DIR}/smtk
       ${CMAKE_CURRENT_BINARY_DIR}
     TYPESYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/typesystem.xml
-    HEADERS ${discreteBridgeHeaders}
+    HEADERS ${discreteSessionHeaders}
     DEPENDS
       SMTKCore
   )
-  target_include_directories(smtkDiscreteBridgePython
+  target_include_directories(smtkDiscreteSessionPython
     PRIVATE
       "${CMAKE_CURRENT_BINARY_DIR}"
       "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -224,7 +222,7 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
   )
 endif()
 
-if(SMTK_BUILD_BRIDGE_PLUGIN AND SMTK_BUILD_DISCRETE_BRIDGE)
+if(SMTK_BUILD_SESSION_PLUGIN AND SMTK_BUILD_DISCRETE_SESSION)
   add_subdirectory(plugin)
 endif()
 

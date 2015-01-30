@@ -69,7 +69,7 @@ enum OperatorOutcome
   * Several classes in smtk/cgm serve as examples.
   * Note that you must invoke this macro in the global namespace!
   *
-  * You must also use the smtkDeclareModelOperator macro in your bridge's header.
+  * You must also use the smtkDeclareModelOperator macro in your session's header.
   *
   * This macro takes 4 arguments:
   *
@@ -83,8 +83,8 @@ enum OperatorOutcome
   * \a ParamSpec - Either NULL or a string containing an XML description of the operator.
   *                The XML should contain an SMTK AttributeDefinition with the same name
   *                as this class's name() method returns. The smtk_
-  * \a Brdg      - The name of the Bridge subclass to which this operator belongs.
-  *                A pointer to the operator's create() method will be registered with the bridge
+  * \a Brdg      - The name of the Session subclass to which this operator belongs.
+  *                A pointer to the operator's create() method will be registered with the session
   *                during the dynamic variable initialization phase of this compilation unit
   *                (i.e., whenever the program or dynamic library containing this macro are
   *                loaded).
@@ -141,9 +141,9 @@ enum OperatorOutcome
   * often run in a remote process from the end-user application.
   *
   * Instances of the Operator class should always have a valid
-  * pointer to their owning Bridge instance.
+  * pointer to their owning Session instance.
   * Every operator's specification() Attribute is managed by the
-  * Bridge's operatorSystem().
+  * Session's operatorSystem().
   */
 class SMTKCORE_EXPORT Operator : smtkEnableSharedPtr(Operator)
 {
@@ -169,8 +169,8 @@ public:
   ManagerPtr manager() const;
   Ptr setManager(ManagerPtr s);
 
-  Bridge* bridge() const;
-  Ptr setBridge(Bridge* b);
+  Session* session() const;
+  Ptr setSession(Session* b);
 
   smtk::io::Logger& log();
 
@@ -211,8 +211,8 @@ public:
     const std::string& name,
     smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
 
-  bool associateEntity(const smtk::model::Cursor& entity);
-  void disassociateEntity(const smtk::model::Cursor& entity);
+  bool associateEntity(const smtk::model::EntityRef& entity);
+  void disassociateEntity(const smtk::model::EntityRef& entity);
   void removeAllAssociations();
   template<typename T> T associatedEntitiesAs() const;
 
@@ -224,7 +224,7 @@ public:
 #endif // SHIBOKEN_SKIP
 
 protected:
-  friend class DefaultBridge;
+  friend class DefaultSession;
 
   Operator();
   virtual ~Operator();
@@ -233,7 +233,7 @@ protected:
 
 #ifndef SHIBOKEN_SKIP
   ManagerPtr m_manager; // Model manager, not the attribute manager for the operator.
-  Bridge* m_bridge;
+  Session* m_session;
   OperatorSpecification m_specification;
   std::set<WillOperateObserver> m_willOperateTriggers;
   std::set<DidOperateObserver> m_didOperateTriggers;

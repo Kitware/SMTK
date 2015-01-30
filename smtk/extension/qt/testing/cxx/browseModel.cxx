@@ -81,19 +81,19 @@ int main(int argc, char* argv[])
   std::cout << std::setbase(10) << "Found " << plist.size() << " entries\n";
   qmodel->setPhrases(plist);
   */
-  smtk::model::Cursors cursors;
-  smtk::model::Cursor::CursorsFromUUIDs(
-    cursors, model, model->entitiesMatchingFlags(mask, false));
-  std::cout << std::setbase(10) << "Found " << cursors.size() << " entries\n";
+  smtk::model::EntityRefs entityrefs;
+  smtk::model::EntityRef::EntityRefsFromUUIDs(
+    entityrefs, model, model->entitiesMatchingFlags(mask, false));
+  std::cout << std::setbase(10) << "Found " << entityrefs.size() << " entries\n";
   view->setup(
     model,
     qmodel,
     qdelegate,
     smtk::model::EntityListPhrase::create()
-      ->setup(cursors)
+      ->setup(entityrefs)
       ->setDelegate( // set the subphrase generator:
         smtk::model::SimpleModelSubphrases::create()));
-  test(cursors.empty() || qmodel->manager() == model,
+  test(entityrefs.empty() || qmodel->manager() == model,
     "Failed to obtain Manager from QEntityItemModel.");
 
   // Enable user sorting.

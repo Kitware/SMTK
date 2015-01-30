@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CMB Discrete Model "ModelEntityGroup" Operator -->
+<!-- Description of the CMB Discrete Model "ModelGroup" Operator -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operation -->
@@ -61,7 +61,7 @@
     <AttDef Type="result(entity group)" BaseType="result">
       <ItemDefinitions>
         <ModelEntity Name="new entities" NumberOfRequiredValues="0" Extensible="1">
-        </ModelEntity>
+        </Model>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

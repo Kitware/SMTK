@@ -31,21 +31,21 @@ class SMTKCORE_EXPORT AttributeListPhrase : public DescriptivePhrase
 public:
   smtkTypeMacro(AttributeListPhrase);
   smtkSharedPtrCreateMacro(DescriptivePhrase);
-  Ptr setup(const Cursor& ent, DescriptivePhrasePtr parent);
-  Ptr setup(const Cursor& ent, const AttributeSet& subset, DescriptivePhrasePtr parent);
+  Ptr setup(const EntityRef& ent, DescriptivePhrasePtr parent);
+  Ptr setup(const EntityRef& ent, const AttributeSet& subset, DescriptivePhrasePtr parent);
 
   virtual std::string title();
   virtual std::string subtitle();
 
   virtual smtk::common::UUID relatedEntityId() const;
-  virtual Cursor relatedEntity() const;
+  virtual EntityRef relatedEntity() const;
 
 protected:
   AttributeListPhrase();
 
   virtual bool buildSubphrasesInternal();
 
-  Cursor m_entity;
+  EntityRef m_entity;
   AttributeSet m_attributes; // Subset to be presented, modifications do not affect storage!
 };
 

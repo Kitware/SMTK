@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_bridge_cgm_ImportSolid_h
-#define __smtk_bridge_cgm_ImportSolid_h
+#ifndef __smtk_session_cgm_ImportSolid_h
+#define __smtk_session_cgm_ImportSolid_h
 
 #include "smtk/bridge/cgm/cgmSMTKExports.h" // for CGMSMTK_EXPORT
 #include "smtk/PublicPointerDefs.h" // For ManagerPtr
@@ -41,4 +41,4 @@ public:
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_cgm_ImportSolid_h
+#endif // __smtk_session_cgm_ImportSolid_h

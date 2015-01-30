@@ -24,17 +24,17 @@ typedef smtk::shared_ptr<RemoteOperator> RemoteOperatorPtr;
 /**\brief A class for describing remote solid modeling operations.
   *
   * Applications that present model information from a separate process
-  * may subclass DefaultBridge and add RemoteOperator instances to it
+  * may subclass DefaultSession and add RemoteOperator instances to it
   * which mirror the other process' list of operators.
   * The ImportJSON class aids in this respect by creating
   * RemoteOperator instances from JSON descriptions of operators
-  * when a bridge session inherits DefaultBridge.
+  * when a session session inherits DefaultSession.
   *
   * The ableToOperate() and operateInternal() methods of this class
-  * will call delegate methods on their bridge (provided it inherits
-  * DefaultBridge) so that the results may be obtained from the
+  * will call delegate methods on their session (provided it inherits
+  * DefaultSession) so that the results may be obtained from the
   * separate process.
-  * The bridge is responsible for managing communication with the
+  * The session is responsible for managing communication with the
   * separate process.
   */
 class SMTKCORE_EXPORT RemoteOperator : public Operator
@@ -52,8 +52,8 @@ public:
   virtual bool ableToOperate();
 
 protected:
-  friend class Bridge;
-  friend class DefaultBridge;
+  friend class Session;
+  friend class DefaultSession;
 
   Ptr setName(const std::string& opName);
 

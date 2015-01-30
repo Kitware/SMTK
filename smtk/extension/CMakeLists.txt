@@ -4,7 +4,7 @@ if(SMTK_BUILD_QT)
 endif()
 
 if(SMTK_BUILD_VTK)
-  if(SMTK_BUILD_BRIDGE_PLUGIN)
+  if(SMTK_BUILD_SESSION_PLUGIN)
     #Only include the ParaView use-file in subdirectories
     # that require ParaView include paths.
 

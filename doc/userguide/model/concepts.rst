@@ -12,14 +12,14 @@ also accessible in Python, whose instances perform the following functions:
   model entities, their properties, their arrangement with other entities,
   their ties to the attribute system, and their tessellations.
 
-:smtk:`Bridge <smtk::model::Bridge>`
+:smtk:`Session <smtk::model::Session>`
   instances relate entries in a model Manager to a solid modeling kernel.
   You can think of the entities in a model Manager as being "backed" by
-  a solid modeling kernel; the bridge provides a way to synchronize
+  a solid modeling kernel; the session provides a way to synchronize
   the representations in the Manager and the modeling kernel.
-  A manager may contain entity records from multiple Bridge sessions
+  A manager may contain entity records from multiple Session sessions
   (e.g., a single Manager may contain some models back by an ACIS
-  modeling kernel bridge and some backed by OpenCascade bridge).
+  modeling kernel session and some backed by an OpenCascade session).
 
 :smtk:`Operator <smtk::model::Operator>`
   instances represent modeling operations that a modeling kernel
@@ -36,16 +36,17 @@ also accessible in Python, whose instances perform the following functions:
   Other operands (e.g., the geometric path along which to sweep a set of edges)
   are stored as key-value Items in the specification.
 
-:smtk:`Cursor <smtk::model::Cursor>`
+:smtk:`EntityRef <smtk::model::EntityRef>`
   instances are lightweight references into a model Manager's storage
   that represent a single entity (e.g., a vertex, edge, face, or volume)
   and provide methods for easily accessing related entities, properties,
   tessellation data, and attributes associated with that entity.
   They also provide methods for manipulating the model Manager's storage
   but *these methods should not be used directly*; instead use an Operator
-  instance to modify the model so that the kernel and manager stay in sync.
-  Cursor subclasses include Vertex, Edge, Face, Volume, ModelEntity,
-  GroupEntity, UseEntity, Loop, Shell, and so on. These are discussed
+  instance to modify the model so that the modeling kernel and model manager
+  stay in sync.
+  EntityRef subclasses include Vertex, Edge, Face, Volume, Model,
+  Group, UseEntity, Loop, Shell, and so on. These are discussed
   in detail in `Model Entities`_ below.
 
 :smtk:`DescriptivePhrase <smtk::model::DescriptivePhrase>`
@@ -70,17 +71,17 @@ also accessible in Python, whose instances perform the following functions:
 Model Entities
 ==============
 
-As mentioned above, the model :smtk:`Manager <smtk::model::Manager>` class is the only place where
-model topology and geometry are stored in SMTK.
-However, there are cursor-like classes, all derived from :smtk:`smtk::model::Cursor`,
+As mentioned above, the model :smtk:`Manager <smtk::model::Manager>` class
+is the only place where model topology and geometry are stored in SMTK.
+However, there are EntityRef-like classes, all derived from :smtk:`smtk::model::EntityRef`,
 that provide easier access to model traversal.
 These classes are organized like so:
 
-.. findfigure:: cursor-classes-with-inheritance.*
+.. findfigure:: entityref-classes-with-inheritance.*
 
-   Each of the orange, green, purple, and red words is the name of a cursor class.
+   Each of the orange, green, purple, and red words is the name of an EntityRef subclass.
    The black arrows show relationships between instances of them (for which the
    classes at both ends provide accessors).
 
 Each relationship shown in the figure above has a corresponding
-method in the cursor subclasses for accessing the related entities.
+method in the EntityRef subclasses for accessing the related entities.

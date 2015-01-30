@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_bridge_exodus_ReadOperator_h
-#define __smtk_bridge_exodus_ReadOperator_h
+#ifndef __smtk_session_exodus_ReadOperator_h
+#define __smtk_session_exodus_ReadOperator_h
 
 #include "smtk/bridge/exodus/Operator.h"
 
@@ -16,7 +16,7 @@ namespace smtk {
   namespace bridge {
     namespace exodus {
 
-class SMTKBRIDGEEXODUS_EXPORT ReadOperator : public Operator
+class SMTKSESSIONEXODUS_EXPORT ReadOperator : public Operator
 {
 public:
   smtkTypeMacro(ReadOperator);
@@ -32,4 +32,4 @@ protected:
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_exodus_ReadOperator_h
+#endif // __smtk_session_exodus_ReadOperator_h

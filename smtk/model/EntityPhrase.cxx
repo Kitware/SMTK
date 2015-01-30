@@ -11,9 +11,9 @@
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityListPhrase.h"
-#include "smtk/model/GroupEntity.h"
-#include "smtk/model/InstanceEntity.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Group.h"
+#include "smtk/model/Instance.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/PropertyListPhrase.h"
 #include "smtk/model/ShellEntity.h"
 #include "smtk/model/Manager.h"
@@ -29,7 +29,7 @@ EntityPhrase::EntityPhrase()
 
 /**\brief Prepare an EntityPhrase for display.
   */
-EntityPhrase::Ptr EntityPhrase::setup(const Cursor& entity, DescriptivePhrase::Ptr parnt)
+EntityPhrase::Ptr EntityPhrase::setup(const EntityRef& entity, DescriptivePhrase::Ptr parnt)
 {
   this->DescriptivePhrase::setup(ENTITY_SUMMARY, parnt);
   this->m_entity = entity;
@@ -77,7 +77,7 @@ std::string EntityPhrase::subtitle()
 }
 
 /// Return the entity for additional context the UI might wish to present.
-Cursor EntityPhrase::relatedEntity() const
+EntityRef EntityPhrase::relatedEntity() const
 {
   return this->m_entity;
 }
@@ -124,7 +124,7 @@ DescriptivePhrases EntityPhrase::PhrasesFromUUIDs(
   for (it = uids.begin(); it != uids.end(); ++it)
     {
     result.push_back(
-      EntityPhrase::create()->setup(Cursor(manager, *it)));
+      EntityPhrase::create()->setup(EntityRef(manager, *it)));
     }
   return result;
 }

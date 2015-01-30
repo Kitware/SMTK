@@ -106,7 +106,7 @@ enum EntityTypeBits
   GROUP_ENTITY         = 0x00000800, //!< A bit indicating a group; UUIDs may only occur 0 or 1 times. A separate flag describes constraints on group members.
   MODEL_ENTITY         = 0x00001000, //!< A bit indicating a (sub)model.
   INSTANCE_ENTITY      = 0x00002000, //!< A bit indicating an instance of model.
-  BRIDGE_SESSION       = 0x00004000, //!< A bit indicating a bridge session.
+  SESSION_SESSION       = 0x00004000, //!< A bit indicating a session session.
   // Inherent property bits (arguably inappropriate as they could be hard to maintain):
   COVER                = 0x00100000, //!< The entity must have a relation indicating which cover(s) it participates in
   PARTITION            = 0x00200000, //!< The entity must have a relation indicating which partition(s) it participates in
@@ -175,11 +175,11 @@ inline bool isChain(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) ==
 inline bool isLoop(BitFlags entityFlags)  { return (entityFlags & ANY_ENTITY) == SHELL_1D; }
 inline bool isShell(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == SHELL_2D; }
 
-inline bool isGroupEntity(BitFlags entityFlags)    { return (entityFlags & ENTITY_MASK) == GROUP_ENTITY; }
-inline bool isModelEntity(BitFlags entityFlags)    { return (entityFlags & ENTITY_MASK) == MODEL_ENTITY; }
-inline bool isInstanceEntity(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == INSTANCE_ENTITY; }
+inline bool isGroup(BitFlags entityFlags)    { return (entityFlags & ENTITY_MASK) == GROUP_ENTITY; }
+inline bool isModel(BitFlags entityFlags)    { return (entityFlags & ENTITY_MASK) == MODEL_ENTITY; }
+inline bool isInstance(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == INSTANCE_ENTITY; }
 
-inline bool isBridgeSession(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == BRIDGE_SESSION; }
+inline bool isSessionRef(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == SESSION_SESSION; }
 
   } // namespace model
 } // namespace smtk

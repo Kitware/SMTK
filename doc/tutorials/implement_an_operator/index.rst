@@ -173,7 +173,7 @@ a result attribute for you with the "outcome" parameter
 set to a value you specify.
 
 In addition to implementing the operation, the only other thing
-you must do is register the operator with the proper bridge.
+you must do is register the operator with the proper session.
 This is done using the :smtk:`smtkImplementsModelOperator` macro:
 
 .. literalinclude:: implement_an_operator.cxx
@@ -209,7 +209,7 @@ names together:
   to a compilation unit containing code that will be run
   by your application. Whenever the compilation unit's
   static variables are initialized, the operator will be
-  registered with the bridge class and any bridges constructed
+  registered with the session class and any sessions constructed
   afterwards will provide the operator.
 
   Note that "smtk\_" and "\_operator" wrap the name you pass

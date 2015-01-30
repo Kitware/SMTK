@@ -11,20 +11,20 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_bridge_exodus_PointerDefs_h
-#define __smtk_bridge_exodus_PointerDefs_h
+#ifndef __smtk_session_exodus_PointerDefs_h
+#define __smtk_session_exodus_PointerDefs_h
 
 #include "smtk/SharedPtr.h"
 #include "smtk/SystemConfig.h"
 
 namespace smtk
-{  //bridge relates pointer classes
+{  //session relates pointer classes
   namespace bridge
   {
     namespace exodus
       {
-      class Bridge;
-      typedef smtk::shared_ptr< smtk::bridge::exodus::Bridge > BridgePtr;
+      class Session;
+      typedef smtk::shared_ptr< smtk::bridge::exodus::Session > SessionPtr;
       struct EntityHandle;
       }
   }

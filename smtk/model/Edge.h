@@ -24,13 +24,13 @@ class Vertex;
 typedef std::vector<EdgeUse> EdgeUses;
 typedef std::vector<Vertex> Vertices;
 
-/**\brief A cursor subclass that provides methods specific to 1-d edge cells.
+/**\brief A entityref subclass that provides methods specific to 1-d edge cells.
   *
   */
 class SMTKCORE_EXPORT Edge : public CellEntity
 {
 public:
-  SMTK_CURSOR_CLASS(Edge,CellEntity,isEdge);
+  SMTK_ENTITYREF_CLASS(Edge,CellEntity,isEdge);
 
   EdgeUses edgeUses() const;
   Vertices vertices() const;

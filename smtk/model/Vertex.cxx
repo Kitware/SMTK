@@ -19,8 +19,8 @@ namespace smtk {
 smtk::model::Edges Vertex::edges() const
 {
   Edges result;
-  Cursors all = this->bordantEntities(/*dim = */ 1);
-  for (Cursors::iterator it = all.begin(); it != all.end(); ++it)
+  EntityRefs all = this->bordantEntities(/*dim = */ 1);
+  for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
     {
     if (it->isEdge())
       result.push_back(*it);

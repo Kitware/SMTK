@@ -13,8 +13,8 @@
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/System.h"
-#include "smtk/model/Cursor.h"
-#include "smtk/model/GroupEntity.h"
+#include "smtk/model/EntityRef.h"
+#include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/common/UUID.h"
 
@@ -68,7 +68,7 @@ void ModelEntityItemDefinition::setMembershipMask(smtk::model::BitFlags entMask)
   * manager's storage, we silently assume that the value is valid.
   * Note that only UUIDs are stored
   */
-bool ModelEntityItemDefinition::isValueValid(const smtk::model::Cursor& c) const
+bool ModelEntityItemDefinition::isValueValid(const smtk::model::EntityRef& c) const
 {
   if (!this->m_membershipMask)
     return false; // Nothing can possibly match.
@@ -103,7 +103,7 @@ bool ModelEntityItemDefinition::isValueValid(const smtk::model::Cursor& c) const
     if (!(typeMask & smtk::model::NO_SUBGROUPS) && !(typeMask & smtk::model::GROUP_ENTITY))
       typeMask |= smtk::model::GROUP_ENTITY; // if groups aren't banned, allow them.
     if (
-      !c.as<model::GroupEntity>().meetsMembershipConstraintsInternal(
+      !c.as<model::Group>().meetsMembershipConstraintsInternal(
         c, typeMask, mustBeHomogenous))
       return false;
     }

@@ -11,7 +11,7 @@
 
 #include "vtkCMBModelWriterV2.h"
 
-#include "Bridge.h"
+#include "Session.h"
 #include "vtkCellData.h"
 #include "vtkCharArray.h"
 #include "vtkModel3dmGridRepresentation.h"
@@ -465,7 +465,7 @@ void vtkCMBModelWriterV2::SetModelItemUUIDs(
   std::vector<vtkModelItem*> & items,
   const char* arrayName)
 {
-  vtkUnsignedIntArray* arr = smtk::bridge::discrete::Bridge::retrieveUUIDs(model, items);
+  vtkUnsignedIntArray* arr = smtk::bridge::discrete::Session::retrieveUUIDs(model, items);
   arr->SetName(arrayName);
   poly->GetFieldData()->AddArray(arr);
   arr->Delete();

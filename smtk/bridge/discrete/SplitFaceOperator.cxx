@@ -10,7 +10,7 @@
 
 #include "SplitFaceOperator.h"
 
-#include "smtk/bridge/discrete/Bridge.h"
+#include "smtk/bridge/discrete/Session.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -20,7 +20,7 @@
 #include "smtk/model/Operator.h"
 #include "smtk/model/Events.h"
 #include "smtk/model/Face.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Volume.h"
 
@@ -28,7 +28,7 @@
 #include "vtkModel.h"
 #include "vtkModelFace.h"
 #include "vtkModelRegion.h"
-#include "vtkModelEntity.h"
+#include "vtkModel.h"
 
 #include "SplitFaceOperator_xml.h"
 
@@ -45,18 +45,18 @@ SplitFaceOperator::SplitFaceOperator()
 
 bool SplitFaceOperator::ableToOperate()
 {
-  smtk::model::ModelEntity model;
+  smtk::model::Model model;
   return
     // The SMTK model must be valid
-    (model = this->specification()->findModelEntity("model")->value().as<smtk::model::ModelEntity>()).isValid() &&
+    (model = this->specification()->findModelEntity("model")->value().as<smtk::model::Model>()).isValid() &&
     // The CMB model must exist:
-    this->discreteBridge()->findModel(model.entity()) &&
+    this->discreteSession()->findModelEntity(model.entity()) &&
     // The CMB face to split must be valid
     this->fetchCMBFaceId() >= 0
     ;
 }
 
-/// The current discrete bridge translation from vtkDiscreteModel to smtk model
+/// The current discrete session translation from vtkDiscreteModel to smtk model
 /// does not have all the relationship set up properly, mostly the shell/face use related.
 /// Therefore we have to add the raw relationship here.
 static void internal_addRawRelationship(
@@ -81,7 +81,7 @@ static void internal_addRawRelationship(
 
 OperatorResult SplitFaceOperator::operateInternal()
 {
-  Bridge* bridge = this->discreteBridge();
+  Session* session = this->discreteSession();
 
   // Translate SMTK inputs into CMB inputs
   this->m_op->SetFeatureAngle(
@@ -90,7 +90,7 @@ OperatorResult SplitFaceOperator::operateInternal()
   this->m_op->SetId(this->fetchCMBFaceId()); // "face to split"
 
   vtkDiscreteModelWrapper* modelWrapper =
-    bridge->findModel(
+    session->findModelEntity(
       this->specification()->findModelEntity("model")->value().entity());
 
   this->m_op->Operate(modelWrapper);
@@ -102,26 +102,26 @@ OperatorResult SplitFaceOperator::operateInternal()
   if (ok)
     {
     // TODO: Read list of new Faces created by split and
-    //       use the bridge to translate them and store
+    //       use the session to translate them and store
     //       them in the OperatorResult (well, a subclass).
     smtk::model::ManagerPtr store = this->manager();
 
-    smtk::model::Cursor inFace =
+    smtk::model::EntityRef inFace =
       this->specification()->findModelEntity("face to split")->value();
     smtk::common::UUID faceUUID =inFace.entity();
     vtkModelFace* origFace = vtkModelFace::SafeDownCast(
-      bridge->entityForUUID(faceUUID));
+      session->entityForUUID(faceUUID));
 
     vtkModelRegion* v1 = origFace->GetModelRegion(0);
     vtkModelRegion* v2 = origFace->GetModelRegion(1);
-    Volume vol1 = v1 ? Volume(store, bridge->findOrSetEntityUUID(v1)) : Volume();
-    Volume vol2 = v2 ? Volume(store, bridge->findOrSetEntityUUID(v2)) : Volume();
+    Volume vol1 = v1 ? Volume(store, session->findOrSetEntityUUID(v1)) : Volume();
+    Volume vol2 = v2 ? Volume(store, session->findOrSetEntityUUID(v2)) : Volume();
 
     // First, get rid of the old face that we split.
     // Get rid of the old entity.
 /*
-    Cursors bdys = inFace.as<CellEntity>().lowerDimensionalBoundaries(-1);
-    for (Cursors::iterator bit = bdys.begin(); bit != bdys.end(); ++bit)
+    EntityRefs bdys = inFace.as<CellEntity>().lowerDimensionalBoundaries(-1);
+    for (EntityRefs::iterator bit = bdys.begin(); bit != bdys.end(); ++bit)
       {
       //std::cout << "Erasing " << bit->flagSummary(0) << " " << bit->entity() << "\n";
       store->erase(bit->entity());
@@ -130,14 +130,14 @@ OperatorResult SplitFaceOperator::operateInternal()
     store->erase(faceUUID);
 
     // Now re-add it (it will have new edges)
-    faceUUID = bridge->findOrSetEntityUUID(origFace);
-    smtk::model::Face c = bridge->addFaceToManager(faceUUID,
+    faceUUID = session->findOrSetEntityUUID(origFace);
+    smtk::model::Face c = session->addFaceToManager(faceUUID,
       origFace, store, true);
 
     internal_addRawRelationship(c, vol1, vol2);
 
     // Return the list of entities that were created
-    // so that remote bridges can track what records
+    // so that remote sessions can track what records
     // need to be re-fetched.
     vtkIdTypeArray* newFaceIds = this->m_op->GetCreatedModelFaceIDs();
     smtk::attribute::ModelEntityItem::Ptr resultEntities =
@@ -162,8 +162,8 @@ OperatorResult SplitFaceOperator::operateInternal()
       vtkIdType faceId = newFaceIds->GetValue(i);
       vtkModelFace* face = dynamic_cast<vtkModelFace*>(
         modelWrapper->GetModelEntity(vtkModelFaceType, faceId));
-      faceUUID = bridge->findOrSetEntityUUID(face);
-      smtk::model::Face cFace = bridge->addFaceToManager(faceUUID, face, store, true);
+      faceUUID = session->findOrSetEntityUUID(face);
+      smtk::model::Face cFace = session->addFaceToManager(faceUUID, face, store, true);
       newEntities->setValue(i, cFace);
       internal_addRawRelationship(cFace, vol1, vol2);
       resultEntities->setValue(i+1, cFace);
@@ -179,15 +179,15 @@ OperatorResult SplitFaceOperator::operateInternal()
   return result;
 }
 
-Bridge* SplitFaceOperator::discreteBridge() const
+Session* SplitFaceOperator::discreteSession() const
 {
-  return dynamic_cast<Bridge*>(this->bridge());
+  return dynamic_cast<Session*>(this->session());
 }
 
 int SplitFaceOperator::fetchCMBFaceId() const
 {
   vtkModelItem* item =
-    this->discreteBridge()->entityForUUID(
+    this->discreteSession()->entityForUUID(
       this->specification()->findModelEntity(
         "face to split")->value().entity());
   vtkModelEntity* face = dynamic_cast<vtkModelEntity*>(item);
@@ -207,4 +207,4 @@ smtkImplementsModelOperator(
   discrete_split_face,
   "split face",
   SplitFaceOperator_xml,
-  smtk::bridge::discrete::Bridge);
+  smtk::bridge::discrete::Session);

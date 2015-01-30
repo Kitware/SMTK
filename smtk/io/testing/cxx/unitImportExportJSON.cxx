@@ -75,8 +75,8 @@ void testLoggerSerialization2()
     "Log did not survive JSON round trip intact.");
 }
 
-void testExportCursor(
-  const Cursors& entities, JSONRecords relations, int correctCount)
+void testExportEntityRef(
+  const EntityRefs& entities, JSONRecords relations, int correctCount)
 {
   cJSON* json = cJSON_CreateObject();
   ExportJSON::forEntities(json, entities, relations, JSON_ENTITIES);
@@ -106,12 +106,12 @@ void testModelExport()
   UUIDArray::size_type modelStart = uids.size();
   uids.push_back(sm->addModel().entity());
   sm->findEntity(uids[21])->relations().push_back(uids[modelStart]);
-  Cursors entities;
-  entities.insert(Cursor(sm, uids[8])); // An edge
+  EntityRefs entities;
+  entities.insert(EntityRef(sm, uids[8])); // An edge
 
-  testExportCursor(entities, JSON_BARE, 1);
-  testExportCursor(entities, JSON_CHILDREN, 9);
-  testExportCursor(entities, JSON_MODELS, 78);
+  testExportEntityRef(entities, JSON_BARE, 1);
+  testExportEntityRef(entities, JSON_CHILDREN, 9);
+  testExportEntityRef(entities, JSON_MODELS, 78);
 
   std::string json = ExportJSON::forEntities(entities, JSON_BARE, JSON_DEFAULT);
   std::cout << "json for vertex is \n" << json << "\n";
@@ -135,7 +135,7 @@ int main(int argc, char* argv[])
   int status = 0;
   status |= ImportJSON::intoModelManager(data.c_str(), sm);
   status |= ExportJSON::fromModelManager(json, sm,
-    // Do not export bridge sessions; they will have different UUIDs
+    // Do not export session sessions; they will have different UUIDs
     static_cast<JSONFlags>(JSON_ENTITIES | JSON_TESSELLATIONS | JSON_PROPERTIES));
 
   char* exported = cJSON_Print(json);
@@ -145,7 +145,7 @@ int main(int argc, char* argv[])
 
   status |= ImportJSON::intoModelManager(exported, sm2);
   status |= ExportJSON::fromModelManager(json, sm2,
-    // Do not export bridge sessions; they will have different UUIDs
+    // Do not export session sessions; they will have different UUIDs
     static_cast<JSONFlags>(JSON_ENTITIES | JSON_TESSELLATIONS | JSON_PROPERTIES));
   char* exported2 = cJSON_Print(json);
 

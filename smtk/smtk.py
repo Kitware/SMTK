@@ -80,7 +80,7 @@ simulation = _temp.smtk.simulation
 io = _temp.smtk.io
 view = _temp.smtk.view
 
-# Try importing bridge modules. They may not be built, so don't complain on failure.
+# Try importing bridge session modules. They may not be built, so don't complain on failure.
 try:
   from collections import namedtuple
   btuple = []
@@ -97,7 +97,7 @@ try:
     _temp = _tempmain
 
   try:
-    _tempexo = __import__('SMTKBridgeExodusPython', globals(), locals(), [], -1)
+    _tempexo = __import__('SMTKSessionExodusPython', globals(), locals(), [], -1)
     _temp = _tempexo
     __import_shared_ptrs__()
     btuple.append(('exodus', _tempexo.exodus))
@@ -107,7 +107,7 @@ try:
     _temp = _tempmain
 
   try:
-    _tempdis = __import__('smtkDiscreteBridgePython', globals(), locals(), [], -1)
+    _tempdis = __import__('smtkDiscreteSessionPython', globals(), locals(), [], -1)
     _temp = _tempdis
     __import_shared_ptrs__()
     btuple.append(('discrete', _tempdis.discrete))

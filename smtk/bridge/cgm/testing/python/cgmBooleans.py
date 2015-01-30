@@ -15,7 +15,7 @@ import smtk
 
 mgr = smtk.model.Manager.create()
 sess = mgr.createSession('cgm')
-brg = sess.bridge()
+brg = sess.session()
 sess.assignDefaultName()
 print '\n\n%s: type "%s" %s %s' % \
   (sess.name(), brg.name(), sess.flagSummary(0), brg.sessionId())
@@ -24,7 +24,7 @@ print '  Site: %s' % (sess.site() or 'local')
 # We could evaluate the session tag as JSON, but most of
 # the information is available through methods above that
 # we needed to test:
-bridgetag = sess.tag()
+sessiontag = sess.tag()
 print '\n'
 
 opnames = sess.operatorNames()
@@ -115,7 +115,7 @@ def Subtract(workpiece, tool, **args):
   # Convert tool to a list
   if type(tool) != type([]):
     tool = [tool,]
-  SetVectorValue(op.findAsModelEntity('tools'), tool)
+  SetVectorValue(op.findAsModel('tools'), tool)
 
   res = op.operate()
   return res.findModelEntity('entities').value(0)

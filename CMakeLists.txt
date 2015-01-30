@@ -49,11 +49,11 @@ option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" O
 option(SMTK_BUILD_QT "Build Qt GUI" OFF)
 option(SMTK_BUILD_VTK "Build VTK component" OFF)
 option(SMTK_BUILD_CGM "Build CGM component" OFF)
-option(SMTK_BUILD_DISCRETE_BRIDGE "Build discrete model bridge components" OFF)
-option(SMTK_BUILD_BRIDGE_PLUGIN "Build paraview plugin for model bridges" OFF)
+option(SMTK_BUILD_DISCRETE_SESSION "Build discrete model session components" OFF)
+option(SMTK_BUILD_SESSION_PLUGIN "Build paraview plugin for model sessions" OFF)
 
 if (SMTK_BUILD_VTK)
-  option(SMTK_ENABLE_EXODUS_BRIDGE "Build a bridge to Exodus-II side sets" ON)
+  option(SMTK_ENABLE_EXODUS_SESSION "Build a session to Exodus-II side sets" ON)
 endif()
 
 option(SMTK_ENABLE_REMUS "Build Remus component" OFF)
@@ -142,10 +142,10 @@ endif()
 # and VTK can NOT be easily switched due to modules and macros intermixed
 ################################################################################
 ################################################################################
-# Look for Discrete bridge discrete model modules
+# Look for Discrete session discrete model modules
 ################################################################################
 
-if(SMTK_BUILD_BRIDGE_PLUGIN)
+if(SMTK_BUILD_SESSION_PLUGIN)
   find_package(ParaView REQUIRED)
 endif()
 
@@ -154,7 +154,7 @@ endif()
 ################################################################################
 
 if(SMTK_BUILD_VTK)
-  if(SMTK_BUILD_BRIDGE_PLUGIN)
+  if(SMTK_BUILD_SESSION_PLUGIN)
     find_package(ParaView REQUIRED)
   else()
     # Find the package here so environment variables are set, but
@@ -317,7 +317,7 @@ install(
   FILES
     ${PROJECT_SOURCE_DIR}/CMake/EncodeCStringFunctions.cmake
     ${PROJECT_SOURCE_DIR}/CMake/SMTKOperatorXML.cmake
-    ${PROJECT_SOURCE_DIR}/CMake/SMTKBridgeJSON.cmake
+    ${PROJECT_SOURCE_DIR}/CMake/SMTKSessionJSON.cmake
   DESTINATION
     lib/cmake/SMTK
 )
@@ -345,17 +345,17 @@ include_directories(
 )
 
 ################################################################################
-# Look for Discrete bridge discrete model modules
+# Look for Discrete session discrete model modules
 ################################################################################
 
-if(SMTK_BUILD_DISCRETE_BRIDGE)
-  if(SMTK_BUILD_BRIDGE_PLUGIN)
+if(SMTK_BUILD_DISCRETE_SESSION)
+  if(SMTK_BUILD_SESSION_PLUGIN)
     find_package(ParaView REQUIRED)
   else()
     find_package(VTK REQUIRED)
   endif()
 
-  # This option is only available when SMTK_BUILD_DISCRETE_BRIDGE is ON
+  # This option is only available when SMTK_BUILD_DISCRETE_SESSION is ON
   option(SMTK_BUILD_MOAB_READER "Build moab reader for discrete model" OFF)
 endif()
 

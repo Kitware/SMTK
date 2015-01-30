@@ -9,11 +9,11 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
-#include "smtk/model/Bridge.h"
-#include "smtk/model/DefaultBridge.h"
-#include "smtk/model/GroupEntity.h"
+#include "smtk/model/Session.h"
+#include "smtk/model/DefaultSession.h"
+#include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/Volume.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
@@ -40,7 +40,7 @@ OperatorResult CounterOperator::operateInternal()
   OperatorSpecification params = this->specification();
 
   // Get the input model to be processed:
-  ModelEntity model =
+  Model model =
     params->findModelEntity("model")->value();
 
   // Decide whether we should count cells or groups
@@ -72,25 +72,25 @@ OperatorResult CounterOperator::operateInternal()
 // ++ 3 ++
 // Implement methods from smtkDeclareModelOperator()
 // and provide an auto-init object for registering the
-// operator with the bridge.
+// operator with the session.
 smtkImplementsModelOperator(
   ex::CounterOperator, // The class name (include all namespaces)
   ex_counter,          // The "component" name (for auto-init)
   "counter",           // The user-printable operator name.
   implement_an_operator_xml, // An XML description (or NULL).
-  smtk::model::DefaultBridge); // The modeling kernel this operator uses.
+  smtk::model::DefaultSession); // The modeling kernel this operator uses.
 // -- 3 --
 
-void testOperator(ModelEntity model)
+void testOperator(Model model)
 {
-  // Get the default bridge for our model manager:
-  smtk::model::BridgePtr bridge =
-    model.manager()->bridgeForModel(UUID::null());
+  // Get the default session for our model manager:
+  smtk::model::SessionPtr session =
+    model.manager()->sessionForModel(UUID::null());
 
-  // Ask the bridge to create an operator:
+  // Ask the session to create an operator:
   ex::CounterOperator::Ptr op =
     smtk::dynamic_pointer_cast<ex::CounterOperator>(
-      bridge->op("counter"));
+      session->op("counter"));
 
   op->ensureSpecification();
   smtk::attribute::ModelEntityItemPtr input =
@@ -115,7 +115,7 @@ int main()
   Manager::Ptr manager = Manager::create();
   UUIDArray uids = smtk::model::testing::createTet(manager);
 
-  ModelEntity model = manager->addModel(3, 3, "TestModel");
+  Model model = manager->addModel(3, 3, "TestModel");
   Volume tet = Volume(manager, uids[21]);
   model.addCell(tet);
 

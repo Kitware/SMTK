@@ -30,7 +30,7 @@ AttributeListPhrase::AttributeListPhrase()
   * Note that \a subset must not contain any attribute IDs not present in entity.attributes().
   */
 AttributeListPhrase::Ptr AttributeListPhrase::setup(
-  const Cursor& entity, const AttributeSet& subset, DescriptivePhrasePtr parnt)
+  const EntityRef& entity, const AttributeSet& subset, DescriptivePhrasePtr parnt)
 {
   this->m_entity = entity;
   this->m_attributes = subset;
@@ -57,7 +57,7 @@ smtk::common::UUID AttributeListPhrase::relatedEntityId() const
   return this->m_entity.entity();
 }
 
-Cursor AttributeListPhrase::relatedEntity() const
+EntityRef AttributeListPhrase::relatedEntity() const
 {
   return this->m_entity;
 }

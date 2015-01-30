@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_bridge_cgm_Operator_h
-#define __smtk_bridge_cgm_Operator_h
+#ifndef __smtk_session_cgm_Operator_h
+#define __smtk_session_cgm_Operator_h
 
 #include "smtk/bridge/cgm/cgmSMTKExports.h"
 #include "smtk/model/Operator.h"
@@ -20,7 +20,7 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-class Bridge;
+class Session;
 
 /**\brief An operator using the CGM kernel.
   *
@@ -31,12 +31,12 @@ class Bridge;
 class CGMSMTK_EXPORT Operator : public smtk::model::Operator
 {
 protected:
-  Bridge* cgmBridge();
-  ToolDataUser* cgmData(const smtk::model::Cursor& smtkEntity);
-  RefEntity* cgmEntity(const smtk::model::Cursor& smtkEntity);
+  Session* cgmSession();
+  ToolDataUser* cgmData(const smtk::model::EntityRef& smtkEntity);
+  RefEntity* cgmEntity(const smtk::model::EntityRef& smtkEntity);
 
   template<typename T>
-  T cgmEntityAs(const smtk::model::Cursor& smtkEntity)
+  T cgmEntityAs(const smtk::model::EntityRef& smtkEntity)
     { return dynamic_cast<T>(this->cgmEntity(smtkEntity)); }
 };
 
@@ -44,4 +44,4 @@ protected:
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_cgm_Operator_h
+#endif // __smtk_session_cgm_Operator_h

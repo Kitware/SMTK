@@ -30,7 +30,7 @@
 
 namespace smtk
 {
-  class ModelEntity;
+  class Model;
 
   namespace attribute
   {
@@ -137,16 +137,16 @@ namespace smtk
       ModelEntityItemPtr associations() { return this->m_associations; }
 
       bool isEntityAssociated(const smtk::common::UUID& entity) const;
-      bool isEntityAssociated(const smtk::model::Cursor& cursor) const;
+      bool isEntityAssociated(const smtk::model::EntityRef& entityref) const;
 
       smtk::common::UUIDs associatedModelEntityIds() const;
       template<typename T> T associatedModelEntities() const;
 
       bool associateEntity(const smtk::common::UUID& entity);
-      bool associateEntity(const smtk::model::Cursor& entity);
+      bool associateEntity(const smtk::model::EntityRef& entity);
 
       void disassociateEntity(const smtk::common::UUID& entity, bool reverse = true);
-      void disassociateEntity(const smtk::model::Cursor& entity, bool reverse = true);
+      void disassociateEntity(const smtk::model::EntityRef& entity, bool reverse = true);
       void removeAllAssociations();
 
       // These methods only applies to Attributes whose
@@ -240,7 +240,7 @@ namespace smtk
       if (!itm)
         return result;
 
-      smtk::model::CursorArray::const_iterator it;
+      smtk::model::EntityRefArray::const_iterator it;
       for (it = itm->begin(); it != itm->end(); ++it) {
         typename T::value_type entry(*it);
         if (entry.isValid()) {
@@ -256,7 +256,7 @@ namespace smtk
       if (!this->m_associations)
         return result;
 
-      smtk::model::CursorArray::const_iterator it;
+      smtk::model::EntityRefArray::const_iterator it;
       for (it = this->m_associations->begin(); it != this->m_associations->end(); ++it) {
         typename T::value_type entry(*it);
         if (entry.isValid()) {

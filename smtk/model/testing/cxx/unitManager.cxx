@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Model.h"
 #include "smtk/io/ExportJSON.h"
 #include "smtk/model/Volume.h"
 
@@ -29,7 +29,7 @@ static int subgroups = 0;
 static int subcells = 0;
 static int submodels = 0;
 
-int entityManagerEvent(ManagerEventType evt, const smtk::model::Cursor&, void*)
+int entityManagerEvent(ManagerEventType evt, const smtk::model::EntityRef&, void*)
 {
   if (evt.first == ADD_EVENT)
     ++entCount;
@@ -38,17 +38,17 @@ int entityManagerEvent(ManagerEventType evt, const smtk::model::Cursor&, void*)
   return 0;
 }
 
-int addEntityToModel(ManagerEventType evt, const smtk::model::Cursor& src, const smtk::model::Cursor& related, void*)
+int addEntityToModel(ManagerEventType evt, const smtk::model::EntityRef& src, const smtk::model::EntityRef& related, void*)
 {
   if (evt.first == ADD_EVENT)
     {
-    if (src.isModelEntity())
+    if (src.isModel())
       {
-      if (related.isGroupEntity())
+      if (related.isGroup())
         ++subgroups;
       else if (related.isCellEntity())
         ++subcells;
-      else if (related.isModelEntity())
+      else if (related.isModel())
         ++submodels;
       }
     }
@@ -82,9 +82,9 @@ int main(int argc, char* argv[])
   test( smtk::model::isCellEntity(uc00Flags),      "isCellEntity(vertexFlags) incorrect");
   test(!smtk::model::isUseEntity(uc00Flags),       "isUseEntity(vertexFlags) incorrect");
   test(!smtk::model::isShellEntity(uc00Flags),     "isShellEntity(vertexFlags) incorrect");
-  test(!smtk::model::isGroupEntity(uc00Flags),     "isGroupEntity(vertexFlags) incorrect");
-  test(!smtk::model::isModelEntity(uc00Flags),     "isModelEntity(vertexFlags) incorrect");
-  test(!smtk::model::isInstanceEntity(uc00Flags),  "isInstanceEntity(vertexFlags) incorrect");
+  test(!smtk::model::isGroup(uc00Flags),     "isGroup(vertexFlags) incorrect");
+  test(!smtk::model::isModel(uc00Flags),     "isModel(vertexFlags) incorrect");
+  test(!smtk::model::isInstance(uc00Flags),  "isInstance(vertexFlags) incorrect");
 
   UUIDs nodes = sm->entitiesOfDimension(0);
   UUIDs edges = sm->entitiesOfDimension(1);
@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
   test(!search1.empty() && search1.begin()->stringProperty("name") == ijfumbler);
   search1.begin()->setStringProperty("name", "Tetrahedron");
 
-  CursorArray search2;
+  EntityRefArray search2;
   search2 = sm->findEntitiesByProperty("velocity", v2);
   test(search2.size() == 1 && search2.begin()->entity() == uids[0], "search2 i2vals");
   search2 = sm->findEntitiesByProperty("velocity", v3);
@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
   search2 = sm->findEntitiesByProperty("velocity", 42.03125);
   test(search2.size() == 1 && search2.begin()->entity() == uids[21], "search2 42.03125");
 
-  // Test Cursors-return version of entitiesMatchingFlagsAs<T>
+  // Test EntityRefs-return version of entitiesMatchingFlagsAs<T>
   search2 = sm->findEntitiesOfType(smtk::model::VOLUME, true);
   test(search2.size() == 1 && search2.begin()->entity() == uids[21]);
 
@@ -155,10 +155,10 @@ int main(int argc, char* argv[])
   test(sm->stringProperty(uids[modelStart + 0], "name")[0] == "Model A");
   test(sm->stringProperty(uids[modelStart + 26], "name")[0] == "Model AA");
   test(sm->stringProperty(uids[modelStart + 52], "name")[0] == "Model BA");
-  ModelEntity model(sm, uids[modelStart]);
+  Model model(sm, uids[modelStart]);
   for (int i = 0; i < 22; ++i)
-    model.addCell(Cursor(sm, uids[i]));
-  model.addSubmodel(ModelEntity(sm, uids[modelStart + 26]));
+    model.addCell(EntityRef(sm, uids[i]));
+  model.addSubmodel(Model(sm, uids[modelStart + 26]));
 
   sm->assignDefaultNames();
   // Verify we don't overwrite existing names

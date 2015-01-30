@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_bridge_cgm_PointerDefs_h
-#define __smtk_bridge_cgm_PointerDefs_h
+#ifndef __smtk_session_cgm_PointerDefs_h
+#define __smtk_session_cgm_PointerDefs_h
 
 #include "smtk/SharedPtr.h"
 #include "smtk/SystemConfig.h"
@@ -21,8 +21,8 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-class Bridge;
-typedef smtk::shared_ptr< smtk::bridge::cgm::Bridge > BridgePtr;
+class Session;
+typedef smtk::shared_ptr< smtk::bridge::cgm::Session > SessionPtr;
 class ImportSolid;
 class Engines;
 class ExportSolid;
@@ -31,4 +31,4 @@ class ExportSolid;
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_cgm_PointerDefs_h
+#endif // __smtk_session_cgm_PointerDefs_h

@@ -12,7 +12,7 @@
 namespace smtk {
   namespace model {
 
-DescriptivePhraseIterator::DescriptivePhraseIterator(const Cursor& entity) :
+DescriptivePhraseIterator::DescriptivePhraseIterator(const EntityRef& entity) :
   m_parent(NULL),
   m_context(entity),
   m_currentPhraseType(ENTITY_SUMMARY),
@@ -247,7 +247,7 @@ smtk::common::UUID DescriptivePhraseIterator::relatedEntityId() const
   return this->relatedEntity().entity();
 }
 
-Cursor DescriptivePhraseIterator::relatedEntity() const
+EntityRef DescriptivePhraseIterator::relatedEntity() const
 {
   switch (this->m_currentPhraseType)
     {
@@ -282,7 +282,7 @@ Cursor DescriptivePhraseIterator::relatedEntity() const
   default:
     break;
     }
-  return Cursor();
+  return EntityRef();
 }
 
 smtk::attribute::AttributeId DescriptivePhraseIterator::relatedAttributeId() const

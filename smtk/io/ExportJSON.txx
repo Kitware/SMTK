@@ -4,9 +4,9 @@
 #include "smtk/io/ExportJSON.h"
 
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/GroupEntity.h"
-#include "smtk/model/InstanceEntity.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Group.h"
+#include "smtk/model/Instance.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/ShellEntity.h"
 #include "smtk/model/UseEntity.h"
 
@@ -31,10 +31,10 @@ int ExportJSON::forEntities(
     return 1;
 
   typename T::const_iterator eit = entities.begin();
-  std::set<Cursor> queue;
+  std::set<EntityRef> queue;
   // If we are asked to return all the entities of the related model(s),
   // find the owning model
-  smtk::model::ModelEntity parent;
+  smtk::model::Model parent;
   if (relatedEntities == JSON_MODELS)
     for (typename T::const_iterator rit = entities.begin(); rit != entities.end(); ++rit)
       if ((parent = rit->owningModel()).isValid())
@@ -44,12 +44,12 @@ int ExportJSON::forEntities(
   else
     queue.insert(entities.begin(), entities.end());
 
-  Cursors visited;
+  EntityRefs visited;
   int status = 1;
   while (!queue.empty())
     {
     // Pull the first entry off the queue.
-    Cursor ent = *queue.begin();
+    EntityRef ent = *queue.begin();
     queue.erase(queue.begin());
 
     // Generate JSON for the queued entity
@@ -57,7 +57,7 @@ int ExportJSON::forEntities(
     UUIDWithEntity it = modelMgr->topology().find(ent.entity());
     if (
       (it == ent.manager()->topology().end()) ||
-      ((it->second.entityFlags() & BRIDGE_SESSION) && !(sections & JSON_BRIDGES)))
+      ((it->second.entityFlags() & SESSION_SESSION) && !(sections & JSON_SESSIONS)))
       continue;
 
     cJSON* curChild = cJSON_CreateObject();
@@ -88,35 +88,35 @@ int ExportJSON::forEntities(
     case JSON_MODELS:
     case JSON_CHILDREN:
         {
-        Cursors children;
+        EntityRefs children;
         if (ent.isCellEntity())
           {
           children = ent.boundaryEntities();
           }
         else if (ent.isUseEntity())
           {
-          children = ent.as<UseEntity>().shellEntities<Cursors>();
+          children = ent.as<UseEntity>().shellEntities<EntityRefs>();
           }
         else if (ent.isShellEntity())
           {
-          children = ent.as<ShellEntity>().uses<Cursors>();
+          children = ent.as<ShellEntity>().uses<EntityRefs>();
           }
-        else if (ent.isGroupEntity())
+        else if (ent.isGroup())
           {
-          children = ent.as<GroupEntity>().members<Cursors>();
+          children = ent.as<Group>().members<EntityRefs>();
           }
-        else if (ent.isModelEntity())
+        else if (ent.isModel())
           { // Grrr....
-          CellEntities mcells = ent.as<smtk::model::ModelEntity>().cells();
+          CellEntities mcells = ent.as<smtk::model::Model>().cells();
           children.insert(mcells.begin(), mcells.end());
 
-          GroupEntities mgroups = ent.as<smtk::model::ModelEntity>().groups();
+          GroupEntities mgroups = ent.as<smtk::model::Model>().groups();
           children.insert(mgroups.begin(), mgroups.end());
 
-          ModelEntities msubmodels = ent.as<smtk::model::ModelEntity>().submodels();
+          ModelEntities msubmodels = ent.as<smtk::model::Model>().submodels();
           children.insert(msubmodels.begin(), msubmodels.end());
           }
-        for (Cursors::const_iterator cit = children.begin(); cit != children.end(); ++cit)
+        for (EntityRefs::const_iterator cit = children.begin(); cit != children.end(); ++cit)
           if (visited.find(*cit) == visited.end())
             queue.insert(*cit);
         }

@@ -11,9 +11,9 @@
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/FloatData.h"
-#include "smtk/model/GroupEntity.h"
+#include "smtk/model/Group.h"
 #include "smtk/model/IntegerData.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/StringData.h"
 #include "smtk/extension/qt/qtEntityItemDelegate.h"

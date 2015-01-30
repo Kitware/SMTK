@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/model/BridgeSession.h"
+#include "smtk/model/SessionRef.h"
 #include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/PropertyListPhrase.h"
@@ -50,22 +50,22 @@ int main(int argc, char* argv[])
     }
   sm->assignDefaultNames();
 
-  sm->bridgeForModel(UUID::null());
-  BridgeSessions ents = sm->allSessions();
-  std::cout << ents.size() << " bridge sessions.\n";
-  test(ents.size() == 1, "Expected a single bridge session.");
+  sm->sessionForModel(UUID::null());
+  SessionRefs ents = sm->allSessions();
+  std::cout << ents.size() << " session sessions.\n";
+  test(ents.size() == 1, "Expected a single session session.");
 
   // Assign all the models to the lone (default, native) session.
   ModelEntities models =
     sm->entitiesMatchingFlagsAs<ModelEntities>(
       MODEL_ENTITY, false);
   for (ModelEntities::iterator mit = models.begin(); mit != models.end(); ++mit)
-    sm->setBridgeForModel(ents[0].bridge(), mit->entity());
+    sm->setSessionForModel(ents[0].session(), mit->entity());
 
-  CursorArray faces;
-  Cursor::CursorsFromUUIDs(
+  EntityRefArray faces;
+  EntityRef::EntityRefsFromUUIDs(
     faces, sm, sm->entitiesMatchingFlags(CELL_2D, true));
-  for (CursorArray::iterator it = faces.begin(); it != faces.end(); ++it)
+  for (EntityRefArray::iterator it = faces.begin(); it != faces.end(); ++it)
     {
     it->setColor(0.5, 0.5, 0.5, 1.); // Make every face grey.
     }

@@ -251,9 +251,9 @@ int TestEntityIOSpecs()
     // Test all of the keywords to ensure ordering is proper.
     { "any",        smtk::model::ANY_ENTITY },
     { "anydim",     smtk::model::ANY_DIMENSION },
-    { "b",          smtk::model::BRIDGE_SESSION },
+    { "b",          smtk::model::SESSION_SESSION },
     { "bdy",        smtk::model::MODEL_BOUNDARY },
-    { "bridge",     smtk::model::BRIDGE_SESSION },
+    { "session",     smtk::model::SESSION_SESSION },
     { "cell",       smtk::model::CELL_ENTITY },
     { "chain",      smtk::model::CHAIN },
     { "closed",     smtk::model::CLOSED },
@@ -316,7 +316,7 @@ int TestEntityIOSpecs()
     BitFlags expected = testToValValues[i].value;
     std::string testValue = testToValValues[i].name;
     BitFlags result = Entity::specifierStringToFlag(testValue);
-    msg << "(" << testValue << ") -> \"" << std::ios_base::hex << result << " expected " << std::ios_base::hex << expected;
+    msg << "\"" << testValue << "\" -> " << std::ios_base::hex << result << " (expected " << std::ios_base::hex << expected << ")";
     test(result == expected, msg.str());
     }
 
@@ -327,7 +327,7 @@ int TestEntityIOSpecs()
     { "any",                   smtk::model::ANY_ENTITY },
     { "none|anydim",           smtk::model::ANY_DIMENSION },
     { "none|bdy|nodim",        smtk::model::MODEL_BOUNDARY },
-    { "bridge|nodim",          smtk::model::BRIDGE_SESSION },
+    { "session|nodim",          smtk::model::SESSION_SESSION },
     { "cell|nodim",            smtk::model::CELL_ENTITY },
     { "cell|anydim",           smtk::model::CELL_ENTITY | smtk::model::ANY_DIMENSION },
     { "chain",                 smtk::model::CHAIN },

@@ -14,8 +14,8 @@
 #include "pugixml/src/pugixml.cpp"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"
-#include "smtk/model/Cursor.h"
-#include "smtk/model/GroupEntity.h"
+#include "smtk/model/EntityRef.h"
+#include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include <iostream>
 #include <algorithm>
@@ -181,7 +181,7 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node &node,
         continue;
         }
       uid = smtk::common::UUID(val.text().get());
-      item->setValue(static_cast<int>(i), smtk::model::Cursor(mmgr, uid));
+      item->setValue(static_cast<int>(i), smtk::model::EntityRef(mmgr, uid));
       }
     }
   else if (numRequiredVals == 1)
@@ -190,7 +190,7 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node &node,
     if (val)
       {
       uid = smtk::common::UUID(val.text().get());
-      item->setValue(smtk::model::Cursor(mmgr, uid));
+      item->setValue(smtk::model::EntityRef(mmgr, uid));
       }
     }
   else
@@ -229,7 +229,7 @@ void XmlDocV2Parser::processModelInfo(xml_node &root)
       xatt = gnode.attribute("Name");
       name = xatt ? xatt.value() : "noname-group";
 
-      smtk::model::GroupEntity group = manager->insertGroup(gid,mask,name);
+      smtk::model::Group group = manager->insertGroup(gid,mask,name);
       if(group.isValid())
         {
         xml_node anode;

@@ -92,8 +92,8 @@ SET(ModelFiles
   Model/vtkModelItemIterator.cxx
   Model/vtkModelItemGenericIterator.cxx
   Model/vtkModelItemListIterator.cxx
-  Model/vtkModel.cxx
   Model/vtkModelEntity.cxx
+  Model/vtkModel.cxx
   Model/vtkModelGeometricEntity.cxx
   Model/vtkModelVertex.cxx
   Model/vtkModelVertexUse.cxx
@@ -137,13 +137,13 @@ SET(DiscreteModelFiles
 )
 
 SET_SOURCE_FILES_PROPERTIES(
-  vtkDiscreteModelEntity
+  vtkDiscreteModel
   vtkDiscreteModelGeometricEntity
   vtkModelGridRepresentation
   vtkModelGeneratedGridRepresentation
   Model/vtkModel
   Model/vtkModelEdge
-  Model/vtkModelEntity
+  Model/vtkModel
   Model/vtkModelFace
   Model/vtkModelGeometricEntity
   Model/vtkModelItem
@@ -170,7 +170,7 @@ SET(DiscreteModelHeaders
   Model/vtkModelItemGenericIterator.h
   Model/vtkModelItemListIterator.h
   Model/vtkModel.h
-  Model/vtkModelEntity.h
+  Model/vtkModel.h
   Model/vtkModelGeometricEntity.h
   Model/vtkModelVertex.h
   Model/vtkModelVertexUse.h
@@ -196,7 +196,7 @@ SET(DiscreteModelHeaders
   vtkDiscreteModel.h
   vtkModelMaterial.h
   vtkDiscreteModelEdge.h
-  vtkDiscreteModelEntity.h
+  vtkDiscreteModel.h
   vtkDiscreteModelEntityGroup.h
   vtkDiscreteModelFace.h
   vtkDiscreteModelGeometricEntity.h

@@ -13,7 +13,7 @@
 import smtk
 mgr = smtk.model.Manager.create()
 sess = mgr.createSession('cgm')
-brg = sess.bridge()
+brg = sess.session()
 
 def setCoord(x,v):
   for i in range(len(v)):
@@ -52,7 +52,7 @@ epts = [
 cre = sess.op('create edge')
 t = cre.findAsInt('curve type')
 t.setValue(0,6) # 6 == line segment
-v = cre.findAsModelEntity('vertices')
+v = cre.findAsModel('vertices')
 x = cre.findAsDouble('point')
 c = cre.findAsInt('color')
 c.setValue(0, 2)
@@ -74,7 +74,7 @@ fedg = [
 crf = sess.op('create face')
 t = crf.findAsInt('surface type')
 t.setValue(0, 12)
-e = crf.findAsModelEntity('edges')
+e = crf.findAsModel('edges')
 c = crf.findAsInt('color')
 c.setValue(0, 3)
 for face in fedg:

@@ -20,7 +20,7 @@
 namespace smtk {
   namespace model {
 
-class InstanceEntity;
+class Instance;
 
 /**\brief Generate subphrases to display for a given descriptive phrase.
   *
@@ -49,12 +49,12 @@ public:
 protected:
   SubphraseGenerator() { }
 
-  void instancesOfEntity(DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result);
-  void attributesOfEntity(DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result);
-  void propertiesOfEntity(DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result);
-  void floatPropertiesOfEntity(DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result);
-  void stringPropertiesOfEntity(DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result);
-  void integerPropertiesOfEntity(DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result);
+  void instancesOfEntity(DescriptivePhrase::Ptr src, const EntityRef& ent, DescriptivePhrases& result);
+  void attributesOfEntity(DescriptivePhrase::Ptr src, const EntityRef& ent, DescriptivePhrases& result);
+  void propertiesOfEntity(DescriptivePhrase::Ptr src, const EntityRef& ent, DescriptivePhrases& result);
+  void floatPropertiesOfEntity(DescriptivePhrase::Ptr src, const EntityRef& ent, DescriptivePhrases& result);
+  void stringPropertiesOfEntity(DescriptivePhrase::Ptr src, const EntityRef& ent, DescriptivePhrases& result);
+  void integerPropertiesOfEntity(DescriptivePhrase::Ptr src, const EntityRef& ent, DescriptivePhrases& result);
 
   void cellOfUse(DescriptivePhrase::Ptr src, const UseEntity& ent, DescriptivePhrases& result);
   void boundingShellsOfUse(DescriptivePhrase::Ptr src, const UseEntity& ent, DescriptivePhrases& result);
@@ -66,17 +66,17 @@ protected:
 
   void usesOfShell(DescriptivePhrase::Ptr src, const ShellEntity& ent, DescriptivePhrases& result);
 
-  void membersOfGroup(DescriptivePhrase::Ptr src, const GroupEntity& grp, DescriptivePhrases& result);
+  void membersOfGroup(DescriptivePhrase::Ptr src, const Group& grp, DescriptivePhrases& result);
 
-  void freeSubmodelsOfModel(DescriptivePhrase::Ptr src, const ModelEntity& mod, DescriptivePhrases& result);
-  void freeGroupsInModel(DescriptivePhrase::Ptr src, const ModelEntity& mod, DescriptivePhrases& result);
-  void freeCellsOfModel(DescriptivePhrase::Ptr src, const ModelEntity& mod, DescriptivePhrases& result);
+  void freeSubmodelsOfModel(DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result);
+  void freeGroupsInModel(DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result);
+  void freeCellsOfModel(DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result);
 
-  void prototypeOfInstance(DescriptivePhrase::Ptr src, const InstanceEntity& ent, DescriptivePhrases& result);
+  void prototypeOfInstance(DescriptivePhrase::Ptr src, const Instance& ent, DescriptivePhrases& result);
 
-  void modelsOfBridgeSession(DescriptivePhrase::Ptr src, const BridgeSession& sess, DescriptivePhrases& result);
+  void modelsOfSession(DescriptivePhrase::Ptr src, const SessionRef& sess, DescriptivePhrases& result);
 
-  void entitiesOfEntityList(EntityListPhrase::Ptr src, const CursorArray& ents, DescriptivePhrases& result);
+  void entitiesOfEntityList(EntityListPhrase::Ptr src, const EntityRefArray& ents, DescriptivePhrases& result);
   void propertiesOfPropertyList(PropertyListPhrase::Ptr src, PropertyType p, DescriptivePhrases& result);
 
   void addEntityProperties(

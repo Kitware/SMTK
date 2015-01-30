@@ -15,8 +15,8 @@ import smtk
 
 mgr = smtk.model.Manager.create()
 sess = mgr.createSession('cgm')
-brg = sess.bridge() # smtk.model.Manager.createBridge('cgm')
-#sess = smtk.model.BridgeSession(mgr, brg)
+brg = sess.session() # smtk.model.Manager.createSession('cgm')
+#sess = smtk.model.SessionRef(mgr, brg)
 sess.assignDefaultName()
 print '\n\n%s: type "%s" %s %s' % \
   (sess.name(), brg.name(), sess.flagSummary(0), brg.sessionId())
@@ -27,7 +27,7 @@ for eng in sess.engines():
 # We could evaluate the session tag as JSON, but most of
 # the information is available through methods above that
 # we needed to test:
-bridgetag = sess.tag()
+sessiontag = sess.tag()
 print '\n'
 
 opnames = sess.operatorNames()

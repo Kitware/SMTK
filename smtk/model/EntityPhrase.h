@@ -22,7 +22,7 @@ class SMTKCORE_EXPORT EntityPhrase : public DescriptivePhrase
 public:
   smtkTypeMacro(EntityPhrase);
   smtkSharedPtrCreateMacro(DescriptivePhrase);
-  Ptr setup(const Cursor& entity, DescriptivePhrase::Ptr parent = DescriptivePhrasePtr());
+  Ptr setup(const EntityRef& entity, DescriptivePhrase::Ptr parent = DescriptivePhrasePtr());
   virtual ~EntityPhrase() { }
 
   virtual std::string title();
@@ -30,7 +30,7 @@ public:
   virtual bool setTitle(const std::string& newTitle);
   virtual std::string subtitle();
 
-  virtual Cursor relatedEntity() const;
+  virtual EntityRef relatedEntity() const;
   virtual FloatList relatedColor() const;
   virtual bool isRelatedColorMutable() const;
   virtual bool setRelatedColor(const FloatList& rgba);
@@ -42,7 +42,7 @@ public:
 protected:
   EntityPhrase();
 
-  Cursor m_entity;
+  EntityRef m_entity;
   int m_mutability;
 };
 

@@ -14,13 +14,13 @@
   <!-- Ignore Exodus-specific enums -->
   <suppress-warning text="skipping function 'smtk::bridge::exodus::EntityHandle::EntityHandle', unmatched parameter type 'vtkIdType'"/>
   <suppress-warning text="skipping field 'EntityHandle::entityId' with unmatched type 'vtkIdType'"/>
-  <suppress-warning text="skipping field 'Bridge::m_models' with unmatched type 'std::vector&lt;vtkSmartPointer&lt;vtkMultiBlockDataSet&gt;&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::exodus::Bridge::create', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::exodus::Bridge::SelfType&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::exodus::Bridge::toBlock', unmatched return type 'T*'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::exodus::Bridge::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::bridge::exodus::Bridge::SelfType&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::exodus::Bridge::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::exodus::Bridge::SelfType&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::exodus::Bridge::addModel', unmatched parameter type 'vtkSmartPointer&lt;vtkMultiBlockDataSet&gt;&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::exodus::Bridge::SMTK_UUID_KEY', unmatched return type 'vtkInformationStringKey*'"/>
+  <suppress-warning text="skipping field 'Session::m_models' with unmatched type 'std::vector&lt;vtkSmartPointer&lt;vtkMultiBlockDataSet&gt;&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::create', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::exodus::Session::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::toBlock', unmatched return type 'T*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::bridge::exodus::Session::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::exodus::Session::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::addModel', unmatched parameter type 'vtkSmartPointer&lt;vtkMultiBlockDataSet&gt;&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::SMTK_UUID_KEY', unmatched return type 'vtkInformationStringKey*'"/>
 
 
   <!-- Additional objects to be wrapped when building with Exodus -->
@@ -28,22 +28,22 @@
     <namespace-type name="bridge" generate = "no">
       <namespace-type name="exodus" generate = "yes">
         <enum-type name="EntityType">
-          <include file-name="smtk/bridge/exodus/Bridge.h" location="local"/>
+          <include file-name="smtk/bridge/exodus/Session.h" location="local"/>
         </enum-type>
 
-        <object-type name="Bridge">
-          <include file-name="smtk/bridge/exodus/Bridge.h" location="local"/>
+        <object-type name="Session">
+          <include file-name="smtk/bridge/exodus/Session.h" location="local"/>
         </object-type>
 
         <value-type name="EntityHandle">
-          <include file-name="smtk/bridge/exodus/Bridge.h" location="local"/>
+          <include file-name="smtk/bridge/exodus/Session.h" location="local"/>
         </value-type>
 
       </namespace-type>
     </namespace-type>
   </namespace-type>
 
-  <value-type template="smtk::shared_ptr" args="smtk::bridge::exodus::Bridge">
+  <value-type template="smtk::shared_ptr" args="smtk::bridge::exodus::Session">
   </value-type>
 
   <!-- Don't wrap methods that take pointers to Exodus classes.
@@ -51,7 +51,7 @@
        lists (e.g., it assumes smtk::model::Shell when ::Shell is
        specified), making it not only undesirable but impossible
        to wrap Exodus pointers.
-  <rejection class="smtk::bridge::exodus::Bridge" function-name="addBodyToManager"/>
+  <rejection class="smtk::bridge::exodus::Session" function-name="addBodyToManager"/>
     -->
 
   @EXTRA_OBJECTS@

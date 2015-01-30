@@ -9,11 +9,11 @@
 //=========================================================================
 #include "smtk/model/BRepModel.h"
 
-#include "smtk/model/BridgeRegistrar.h"
-#include "smtk/model/Cursor.h"
-#include "smtk/model/CursorArrangementOps.h"
-#include "smtk/model/DefaultBridge.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/SessionRegistrar.h"
+#include "smtk/model/EntityRef.h"
+#include "smtk/model/EntityRefArrangementOps.h"
+#include "smtk/model/DefaultSession.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/Manager.h"
 
 #include "smtk/AutoInit.h"
@@ -21,8 +21,8 @@
 //required for insert_iterator on VS2010+
 #include <iterator>
 
-// Force the native (default) bridge to be registered
-smtkComponentInitMacro(smtk_native_bridge);
+// Force the native (default) session to be registered
+smtkComponentInitMacro(smtk_native_session);
 
 using namespace smtk::common;
 
@@ -38,7 +38,7 @@ BRepModel::BRepModel() :
   m_floatData(new UUIDsToFloatData),
   m_stringData(new UUIDsToStringData),
   m_integerData(new UUIDsToIntegerData),
-  m_globalCounters(2,1) // first entry is bridge counter, second is model counter
+  m_globalCounters(2,1) // first entry is session counter, second is model counter
 {
   // TODO: throw() when topology == NULL?
 }
@@ -52,15 +52,15 @@ BRepModel::BRepModel(shared_ptr<UUIDsToEntities> topo) :
   m_floatData(new UUIDsToFloatData),
   m_stringData(new UUIDsToStringData),
   m_integerData(new UUIDsToIntegerData),
-  m_globalCounters(2,1) // first entry is bridge counter, second is model counter
+  m_globalCounters(2,1) // first entry is session counter, second is model counter
 {
   // TODO: throw() when topology == NULL?
 }
 
 BRepModel::~BRepModel()
 {
-  if (this->m_defaultBridge)
-    this->unregisterBridgeSession(this->m_defaultBridge);
+  if (this->m_defaultSession)
+    this->unregisterSession(this->m_defaultSession);
 }
 
 UUIDsToEntities& BRepModel::topology()
@@ -110,7 +110,7 @@ BRepModel::iter_type BRepModel::insertEntity(Entity& c)
   *
   * If the BRepModel may be cast to a Manager instance and an entity
   * is expected to have a known, fixed number of arrangements of some sort,
-  * those are created here so that cursors may always rely on their existence
+  * those are created here so that entityrefs may always rely on their existence
   * even in the absence of the related UUIDs appearing in the entity's relations.
   * For face cells (CELL_2D) entites, two HAS_USE Arrangements are created to
   * reference FaceUse instances.
@@ -139,7 +139,7 @@ BRepModel::iter_type BRepModel::setEntityOfTypeAndDimension(const UUID& uid, Bit
     Manager* store = dynamic_cast<Manager*>(this);
     if (store)
       store->trigger(std::make_pair(ADD_EVENT, ENTITY_ENTRY),
-        Cursor(store->shared_from_this(), uid));
+        EntityRef(store->shared_from_this(), uid));
     }
 
   return result.first;
@@ -503,29 +503,29 @@ UUIDs BRepModel::entitiesOfDimension(int dim)
 /**\brief Return the smtk::model::Entity associated with \a uid (or NULL).
   *
   * Note that even the const version of this method may invalidate other
-  * pointers to Entity records since it may ask a Bridge instance to fetch
+  * pointers to Entity records since it may ask a Session instance to fetch
   * a dangling UUID (one marked as existing but un-transcribed) and insert
   * the Entity into Manager. If it is important that Entity pointers remain
-  * valid, call with the second argument (\a tryBridges) set to false.
+  * valid, call with the second argument (\a trySessions) set to false.
   */
 //@{
-const Entity* BRepModel::findEntity(const UUID& uid, bool tryBridges) const
+const Entity* BRepModel::findEntity(const UUID& uid, bool trySessions) const
 {
   UUIDWithEntity it = this->m_topology->find(uid);
   if (it == this->m_topology->end())
     {
-    // Not in storage... is it in any bridge's dangling entity list?
+    // Not in storage... is it in any session's dangling entity list?
     // We use an evil const-cast here because we are working under the fiction
     // that fetching an entity that exists (even if it hasn't been transcribed
     // yet) does not affect storage.
     ManagerPtr store = smtk::dynamic_pointer_cast<Manager>(
       const_cast<BRepModel*>(this)->shared_from_this());
-    if (tryBridges && store)
+    if (trySessions && store)
       {
-      UUIDsToBridges::iterator bit;
-      for (bit = store->m_modelBridges.begin(); bit != store->m_modelBridges.end(); ++bit)
+      UUIDsToSessions::iterator bit;
+      for (bit = store->m_modelSessions.begin(); bit != store->m_modelSessions.end(); ++bit)
         {
-        if (bit->second->transcribe(Cursor(store, uid), BRIDGE_ENTITY_ARRANGED, true))
+        if (bit->second->transcribe(EntityRef(store, uid), SESSION_ENTITY_ARRANGED, true))
           {
           it = this->m_topology->find(uid);
           if (it != this->m_topology->end())
@@ -538,19 +538,19 @@ const Entity* BRepModel::findEntity(const UUID& uid, bool tryBridges) const
   return &it->second;
 }
 
-Entity* BRepModel::findEntity(const UUID& uid, bool tryBridges)
+Entity* BRepModel::findEntity(const UUID& uid, bool trySessions)
 {
   UUIDWithEntity it = this->m_topology->find(uid);
   if (it == this->m_topology->end())
-    { // Not in storage... is it in any bridge's dangling entity list?
+    { // Not in storage... is it in any session's dangling entity list?
     ManagerPtr store = smtk::dynamic_pointer_cast<Manager>(
       const_cast<BRepModel*>(this)->shared_from_this());
-    if (tryBridges && store)
+    if (trySessions && store)
       {
-      UUIDsToBridges::iterator bit;
-      for (bit = store->m_modelBridges.begin(); bit != store->m_modelBridges.end(); ++bit)
+      UUIDsToSessions::iterator bit;
+      for (bit = store->m_modelSessions.begin(); bit != store->m_modelSessions.end(); ++bit)
         {
-        if (bit->second->transcribe(Cursor(store, uid), BRIDGE_ENTITY_ARRANGED, true))
+        if (bit->second->transcribe(EntityRef(store, uid), SESSION_ENTITY_ARRANGED, true))
           {
           it = this->m_topology->find(uid);
           if (it != this->m_topology->end())
@@ -586,7 +586,7 @@ bool BRepModel::erase(const UUID& uid)
   if (ent == this->m_topology->end())
     return false;
 
-  bool isModel = isModelEntity(ent->second.entityFlags());
+  bool isModelEnt = isModel(ent->second.entityFlags());
 
   Manager* store = dynamic_cast<Manager*>(this);
   if (store)
@@ -594,7 +594,7 @@ bool BRepModel::erase(const UUID& uid)
     // Trigger an event before the erasure so the observers
     // have a chance to see what's about to disappear.
     store->trigger(std::make_pair(DEL_EVENT, ENTITY_ENTRY),
-      Cursor(store->shared_from_this(), uid));
+      EntityRef(store->shared_from_this(), uid));
 
     UUIDWithArrangementDictionary ad = store->arrangements().find(uid);
     if (ad != store->arrangements().end())
@@ -616,9 +616,9 @@ bool BRepModel::erase(const UUID& uid)
     store->attributeAssignments().erase(uid);
     }
 
-  // TODO: If this entity is a model and has an entry in m_modelBridges,
+  // TODO: If this entity is a model and has an entry in m_modelSessions,
   //       we should verify that any submodels retain a reference to the
-  //       Bridge in m_modelBridges.
+  //       Session in m_modelSessions.
 
   // Before removing the entity, loop through its relations and
   // make sure none of them retain any references back to \a uid.
@@ -635,9 +635,9 @@ bool BRepModel::erase(const UUID& uid)
   // TODO: Notify model of entity removal?
   this->m_topology->erase(uid);
 
-  // If the entity was a model, remove any bridge entry for it.
-  if (isModel)
-    this->m_modelBridges.erase(uid);
+  // If the entity was a model, remove any session entry for it.
+  if (isModelEnt)
+    this->m_modelSessions.erase(uid);
 
   return true;
 }
@@ -1083,7 +1083,7 @@ UUID BRepModel::modelOwningEntity(const UUID& ent) const
       // point to each other, which could throw us into an infinite loop. So,
       // we attempt to cast ourselves to Manager and identify a parent model.
         {
-        // Although const_pointer_cast is evil, changing the cursor classes
+        // Although const_pointer_cast is evil, changing the entityref classes
         // to accept any type of shared_ptr<X/X const> is more evil.
         ManagerPtr store =
           smtk::dynamic_pointer_cast<Manager>(
@@ -1092,7 +1092,7 @@ UUID BRepModel::modelOwningEntity(const UUID& ent) const
         if (store)
           {
           ModelEntities parents;
-          CursorArrangementOps::appendAllRelations(ModelEntity(store,ent), EMBEDDED_IN, parents);
+          EntityRefArrangementOps::appendAllRelations(Model(store,ent), EMBEDDED_IN, parents);
           if (!parents.empty())
             return parents[0].entity();
           return UUID::null();
@@ -1134,55 +1134,55 @@ UUID BRepModel::modelOwningEntity(const UUID& ent) const
   return UUID::null();
 }
 
-/**\brief Return a bridge associated with the given model.
+/**\brief Return a session associated with the given model.
   *
   * Because modeling operations require access to the un-transcribed model
   * and the original modeling kernel, operations are associated with the
-  * bridge that performs the transcription.
+  * session that performs the transcription.
   *
-  * \sa Bridge
+  * \sa Session
   */
-BridgePtr BRepModel::bridgeForModel(const UUID& uid) const
+SessionPtr BRepModel::sessionForModel(const UUID& uid) const
 {
-  // See if the passed entity has a bridge.
-  UUIDsToBridges::const_iterator it = this->m_modelBridges.find(uid);
-  if (it != this->m_modelBridges.end())
+  // See if the passed entity has a session.
+  UUIDsToSessions::const_iterator it = this->m_modelSessions.find(uid);
+  if (it != this->m_modelSessions.end())
     return it->second;
 
   // Nope? OK, see if we can go up a tree of models to find a
-  // parent that does have a bridge.
+  // parent that does have a session.
   UUID entry(uid);
   while (
     (entry = this->modelOwningEntity(entry)) &&
-    ((it = this->m_modelBridges.find(entry)) == this->m_modelBridges.end()))
+    ((it = this->m_modelSessions.find(entry)) == this->m_modelSessions.end()))
     /* keep trying */
     ;
-  if (it != this->m_modelBridges.end())
+  if (it != this->m_modelSessions.end())
     return it->second;
 
-  // Nope? Return the default bridge.
-  if (!this->m_defaultBridge)
+  // Nope? Return the default session.
+  if (!this->m_defaultSession)
     {
     BRepModel* self = const_cast<BRepModel*>(this);
-    self->m_defaultBridge = smtk::model::DefaultBridge::create();
-    self->registerBridgeSession(self->m_defaultBridge);
+    self->m_defaultSession = smtk::model::DefaultSession::create();
+    self->registerSession(self->m_defaultSession);
     }
-  return this->m_defaultBridge;
+  return this->m_defaultSession;
 }
 
-/**\brief Associate a bridge with the given model.
+/**\brief Associate a session with the given model.
   *
   * The \a uid and all its children (excepting those which have their
-  * own bridge set) will be associated with the given \a bridge.
-  * If \a uid already had a bridge entry, it will be changed to the
-  * specified \a bridge.
+  * own session set) will be associated with the given \a session.
+  * If \a uid already had a session entry, it will be changed to the
+  * specified \a session.
   *
-  * \sa Bridge
+  * \sa Session
   */
-void BRepModel::setBridgeForModel(
-  BridgePtr bridge, const UUID& uid)
+void BRepModel::setSessionForModel(
+  SessionPtr session, const UUID& uid)
 {
-  this->m_modelBridges[uid] = bridge;
+  this->m_modelSessions[uid] = session;
 }
 
 /**\brief Assign a string property named "name" to every entity without one.
@@ -1332,7 +1332,7 @@ std::string BRepModel::assignDefaultName(const UUID& uid, BitFlags entityFlags)
       }
     return tmpName;
     }
-  else if (entityFlags & BRIDGE_SESSION)
+  else if (entityFlags & SESSION_SESSION)
     {
     std::string tmpName;
     if (!this->hasStringProperty(uid,"name"))
@@ -1386,104 +1386,104 @@ std::string BRepModel::shortUUIDName(const UUID& uid, BitFlags entityFlags)
   return name;
 }
 
-/// Return a list of the names of each bridge subclass whose constructor has been registered with SMTK.
-StringList BRepModel::bridgeNames()
+/// Return a list of the names of each session subclass whose constructor has been registered with SMTK.
+StringList BRepModel::sessionNames()
 {
-  return BridgeRegistrar::bridgeNames();
+  return SessionRegistrar::sessionNames();
 }
 
-/// Return the list of file types this bridge can read (currently: a list of file extensions).
-StringData BRepModel::bridgeFileTypes(const std::string& bname, const std::string& engine)
+/// Return the list of file types this session can read (currently: a list of file extensions).
+StringData BRepModel::sessionFileTypes(const std::string& bname, const std::string& engine)
 {
-  return BridgeRegistrar::bridgeFileTypes(bname, engine);
+  return SessionRegistrar::sessionFileTypes(bname, engine);
 }
 
-/**\brief Create a bridge given the type of bridge to construct.
+/**\brief Create a session given the type of session to construct.
   *
   */
-BridgePtr BRepModel::createBridge(const std::string& bname)
+SessionPtr BRepModel::createSessionOfType(const std::string& bname)
 {
-  return BridgeRegistrar::createBridge(bname);
+  return SessionRegistrar::createSession(bname);
 }
 
-/**\brief Create a bridge, optionally forcing a session ID and/or
+/**\brief Create a session, optionally forcing a session ID and/or
   *       registering it with this manager instance.
   *
   */
-BridgePtr BRepModel::createAndRegisterBridge(
+SessionPtr BRepModel::createAndRegisterSession(
   const std::string& bname,
-  const UUID& bridgeSessionId)
+  const UUID& sessionSessionId)
 {
-  BridgePtr result = BRepModel::createBridge(bname);
+  SessionPtr result = BRepModel::createSessionOfType(bname);
   if (result)
     {
     Manager* mgr = dynamic_cast<Manager*>(this);
     if (mgr)
       result->setManager(mgr);
-    if (bridgeSessionId)
-      result->setSessionId(bridgeSessionId);
-    this->registerBridgeSession(result);
+    if (sessionSessionId)
+      result->setSessionId(sessionSessionId);
+    this->registerSession(result);
     }
   return result;
 }
 
-/// Mark the start of a modeling session by registering the \a bridge with SMTK backing storage.
-bool BRepModel::registerBridgeSession(BridgePtr bridge)
+/// Mark the start of a modeling session by registering the \a session with SMTK backing storage.
+bool BRepModel::registerSession(SessionPtr session)
 {
-  if (!bridge)
+  if (!session)
     return false;
 
-  UUID sessId = bridge->sessionId();
+  UUID sessId = session->sessionId();
   if (sessId.isNull())
     return false;
 
-  this->m_sessions[sessId] = bridge;
+  this->m_sessions[sessId] = session;
   BRepModel::iter_type brec =
-    this->setEntityOfTypeAndDimension(sessId, BRIDGE_SESSION, -1);
+    this->setEntityOfTypeAndDimension(sessId, SESSION_SESSION, -1);
   (void)brec;
 
   Manager* mgr = dynamic_cast<Manager*>(this);
   if (mgr)
-    bridge->setManager(mgr);
+    session->setManager(mgr);
   return true;
 }
 
-/// Mark the end of a modeling session by removing its \a bridge. This does not remove bridged entities.
-bool BRepModel::unregisterBridgeSession(BridgePtr bridge)
+/// Mark the end of a modeling session by removing its \a session. This does not remove sessiond entities.
+bool BRepModel::unregisterSession(SessionPtr session)
 {
-  if (!bridge)
+  if (!session)
     return false;
 
-  UUID sessId = bridge->sessionId();
+  UUID sessId = session->sessionId();
   if (sessId.isNull())
     return false;
 
-  // TODO: Erase all models related to the bridge??? (m_modelBridges)
+  // TODO: Erase all models related to the session??? (m_modelSessions)
   //       Or do we want to allow markup to continue past the life of a session?
   this->erase(sessId);
   return this->m_sessions.erase(sessId) ? true : false;
 }
 
-/// Find a bridge given its session UUID (or NULL).
-BridgePtr BRepModel::findBridgeSession(const UUID& sessId) const
+/// Find a session given its session UUID (or NULL).
+SessionPtr BRepModel::findSession(const UUID& sessId) const
 {
-  UUIDsToBridges::const_iterator it = this->m_sessions.find(sessId);
+  UUIDsToSessions::const_iterator it = this->m_sessions.find(sessId);
   if (it == this->m_sessions.end())
-    return BridgePtr();
+    return SessionPtr();
   return it->second;
 }
 
-/**\brief Return a list of bridge session IDs.
+/**\brief Return a list of session session IDs.
   *
   * The identifiers are used by remote SMTK sessions to link models and operators
   * to specific modeling sessions on the process where the data has been loaded.
   *
-  * These can be passed to BRepModel::findBridgeSession() to retrieve the Bridge.
+  * These can be passed to BRepModel::findSession() to retrieve the Session.
   */
-UUIDs BRepModel::bridgeSessions() const
+UUIDs BRepModel::sessionSessions() const
 {
   UUIDs result;
-  UUIDsToBridges::const_iterator it;
+  UUIDsToSessions::const_iterator it;
   for (it = this->m_sessions.begin(); it != this->m_sessions.end(); ++it)
     {
     result.insert(it->first);
@@ -1491,21 +1491,21 @@ UUIDs BRepModel::bridgeSessions() const
   return result;
 }
 
-/**\brief Return the set of models attached to the given bridge \a sessionId.
+/**\brief Return the set of models attached to the given session \a sessionId.
   *
   * Currently this is not an efficient query when the number of models is large.
-  * It could be accelerated by storing the inverse map of m_modelBridges.
+  * It could be accelerated by storing the inverse map of m_modelSessions.
   */
-smtk::common::UUIDs BRepModel::modelsOfBridgeSession(const smtk::common::UUID& sessionId) const
+smtk::common::UUIDs BRepModel::modelsOfSession(const smtk::common::UUID& sessionId) const
 {
   smtk::common::UUIDs modelSet;
-  BridgePtr bridge = this->findBridgeSession(sessionId);
-  if (!bridge)
+  SessionPtr session = this->findSession(sessionId);
+  if (!session)
     return modelSet;
-  UUIDsToBridges::const_iterator it;
-  for (it = this->m_modelBridges.begin(); it != this->m_modelBridges.end(); ++it)
+  UUIDsToSessions::const_iterator it;
+  for (it = this->m_modelSessions.begin(); it != this->m_modelSessions.end(); ++it)
     {
-    if (it->second == bridge)
+    if (it->second == session)
       modelSet.insert(it->first);
     }
   return modelSet;

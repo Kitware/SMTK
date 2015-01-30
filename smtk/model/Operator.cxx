@@ -42,19 +42,19 @@ using smtk::attribute::ModelEntityItem;
 namespace smtk {
   namespace model {
 
-/// Constructor. Initialize the bridge to a NULL pointer.
+/// Constructor. Initialize the session to a NULL pointer.
 Operator::Operator()
 {
-  this->m_bridge = NULL;
+  this->m_session = NULL;
 }
 
-/// Destructor. Removes its specification() from the bridge's operator system.
+/// Destructor. Removes its specification() from the session's operator system.
 Operator::~Operator()
 {
-  if (this->m_bridge)
+  if (this->m_session)
     {
     if (this->m_specification)
-      this->bridge()->operatorSystem()->removeAttribute(
+      this->session()->operatorSystem()->removeAttribute(
         this->m_specification);
     }
 }
@@ -177,7 +177,7 @@ ManagerPtr Operator::manager() const
 
 /** Set the manager which initiated the operation.
   *
-  * If a Bridge subclass manages transcription for multiple
+  * If a Session subclass manages transcription for multiple
   * model Manager instances, it is responsible for notifying
   * all of them of any changes.
   * This \a manager is merely the location holding any
@@ -191,19 +191,19 @@ Operator::Ptr Operator::setManager(ManagerPtr s)
   return shared_from_this();
 }
 
-/// Return the bridge associated with this operator (or a "null"/invalid shared-pointer).
-Bridge* Operator::bridge() const
+/// Return the session associated with this operator (or a "null"/invalid shared-pointer).
+Session* Operator::session() const
 {
-  return this->m_bridge;
+  return this->m_session;
 }
 
-/**\brief Set the bridge that owns this operation.
+/**\brief Set the session that owns this operation.
   *
   * The return value is a shared pointer to this operator.
   */
-Operator::Ptr Operator::setBridge(Bridge* b)
+Operator::Ptr Operator::setSession(Session* b)
 {
-  this->m_bridge = b;
+  this->m_session = b;
   return shared_from_this();
 }
 
@@ -228,13 +228,13 @@ smtk::io::Logger& Operator::log()
   * specification is owned by the SMTK's model manager and
   * operators are not required to have a valid manager() at all times.
   * This method will return a null pointer if there is no manager.
-  * Otherwise, it will ask the bridge and model manager for its
+  * Otherwise, it will ask the session and model manager for its
   * definition.
   */
 OperatorDefinition Operator::definition() const
 {
   Manager::Ptr mgr = this->manager();
-  Bridge* brg = this->bridge();
+  Session* brg = this->session();
   if (!mgr || !brg)
     return attribute::DefinitionPtr();
 
@@ -284,7 +284,7 @@ bool Operator::setSpecification(attribute::AttributePtr spec)
 /**\brief Ensure that a specification exists for this operator.
   *
   * Returns true when a specification was created or already existed
-  * and false upon error (e.g., when the bridge was not set or
+  * and false upon error (e.g., when the session was not set or
   * no definition exists for this operator's name).
   */
 bool Operator::ensureSpecification() const
@@ -292,11 +292,11 @@ bool Operator::ensureSpecification() const
   if (this->m_specification)
     return true;
 
-  if (!this->m_bridge)
+  if (!this->m_session)
     return false;
 
   smtk::attribute::AttributePtr spec =
-    this->m_bridge->operatorSystem()->createAttribute(this->name());
+    this->m_session->operatorSystem()->createAttribute(this->name());
   if (!spec)
     return false;
   return const_cast<Operator*>(this)->setSpecification(spec);
@@ -356,13 +356,13 @@ smtk::attribute::ModelEntityItemPtr Operator::findModelEntity(const std::string&
 }
 
 /// Associate a model entity with the operator.
-bool Operator::associateEntity(const smtk::model::Cursor& entity)
+bool Operator::associateEntity(const smtk::model::EntityRef& entity)
 {
   return this->specification()->associateEntity(entity);
 }
 
 /// Disassociate a model entity with the operator.
-void Operator::disassociateEntity(const smtk::model::Cursor& entity)
+void Operator::disassociateEntity(const smtk::model::EntityRef& entity)
 {
   this->specification()->disassociateEntity(entity);
 }
@@ -383,7 +383,7 @@ OperatorResult Operator::createResult(OperatorOutcome outcome)
   std::ostringstream rname;
   rname << "result(" << this->name() << ")";
   OperatorResult result =
-    this->bridge()->operatorSystem()->createAttribute(rname.str());
+    this->session()->operatorSystem()->createAttribute(rname.str());
   IntItemPtr outcomeItem =
     smtk::dynamic_pointer_cast<IntItem>(
       result->find("outcome"));
@@ -403,11 +403,11 @@ OperatorResult Operator::createResult(OperatorOutcome outcome)
   */
 void Operator::eraseResult(OperatorResult res)
 {
-  Bridge* brdg;
+  Session* brdg;
   smtk::attribute::System* sys;
   if (
     !res ||
-    !(brdg = this->bridge()) ||
+    !(brdg = this->session()) ||
     !(sys = brdg->operatorSystem()))
     return;
   sys->removeAttribute(res);

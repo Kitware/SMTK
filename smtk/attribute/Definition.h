@@ -21,7 +21,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h" // For smtkTypeMacro.
 #include "smtk/model/EntityTypeBits.h" // for BitFlags type
-#include "smtk/model/Cursor.h" //for Cursor version of canBeAssociated
+#include "smtk/model/EntityRef.h" //for EntityRef version of canBeAssociated
 
 #include <map>
 #include <string>
@@ -158,7 +158,7 @@ namespace smtk
       bool associatesWithGroup() const;
 
       bool canBeAssociated(smtk::model::BitFlags maskType) const;
-      bool canBeAssociated(smtk::model::Cursor entity,
+      bool canBeAssociated(smtk::model::EntityRef entity,
         std::vector<smtk::attribute::Attribute *>*conflicts) const;
 
       bool conflicts(smtk::attribute::DefinitionPtr definition) const;

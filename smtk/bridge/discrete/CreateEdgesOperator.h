@@ -8,10 +8,10 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_bridge_discrete_CreateEdgesOperator_h
-#define __smtk_bridge_discrete_CreateEdgesOperator_h
+#ifndef __smtk_session_discrete_CreateEdgesOperator_h
+#define __smtk_session_discrete_CreateEdgesOperator_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h"
+#include "smtk/bridge/discrete/discreteSessionExports.h"
 #include "smtk/model/Operator.h"
 #include "vtkCreateModelEdgesOperator.h"
 #include "vtkNew.h"
@@ -20,9 +20,9 @@ namespace smtk {
   namespace bridge {
     namespace discrete {
 
-class Bridge;
+class Session;
 
-class SMTKDISCRETEBRIDGE_EXPORT CreateEdgesOperator : public smtk::model::Operator
+class SMTKDISCRETESESSION_EXPORT CreateEdgesOperator : public smtk::model::Operator
 {
 public:
   smtkTypeMacro(CreateEdgesOperator);
@@ -35,7 +35,7 @@ public:
 protected:
   CreateEdgesOperator();
   virtual smtk::model::OperatorResult operateInternal();
-  Bridge* discreteBridge() const;
+  Session* discreteSession() const;
 
   vtkNew<vtkCreateModelEdgesOperator> m_op;
 };
@@ -44,4 +44,4 @@ protected:
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_discrete_CreateEdgesOperator_h
+#endif // __smtk_session_discrete_CreateEdgesOperator_h

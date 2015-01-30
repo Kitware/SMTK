@@ -114,7 +114,7 @@ to obtain reference information on the command-line arguments.
 It will also print a list of available modeling kernels.
 
 Each model worker exposes a single modeling kernel (via the
-:smtk:`RemusRemoteBridge` on the client, which talks to
+:smtk:`RemusRemoteSession` on the client, which talks to
 a :smtk:`RemusRPCWorker` in the worker process).
 Normally, the model worker executable expects to be given the
 following command-line arguments:

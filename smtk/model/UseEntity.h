@@ -10,8 +10,8 @@
 #ifndef __smtk_model_UseEntity_h
 #define __smtk_model_UseEntity_h
 
-#include "smtk/model/Cursor.h"
-#include "smtk/model/CursorArrangementOps.h" // For shellEntities<T>().
+#include "smtk/model/EntityRef.h"
+#include "smtk/model/EntityRefArrangementOps.h" // For shellEntities<T>().
 
 namespace smtk {
   namespace model {
@@ -21,7 +21,7 @@ class ShellEntity;
 class UseEntity;
 typedef std::vector<UseEntity> UseEntities;
 
-/**\brief A cursor subclass that provides methods specific to entity-use records.
+/**\brief A entityref subclass that provides methods specific to entity-use records.
   *
   * An entity-use record provides a way to reference how a cell is
   * employed (**used**) to bound a higher-dimensional cell.
@@ -48,10 +48,10 @@ typedef std::vector<UseEntity> UseEntities;
   * (until the need for space-time or higher-dimensional modeling drives
   * a change).
   */
-class SMTKCORE_EXPORT UseEntity : public Cursor
+class SMTKCORE_EXPORT UseEntity : public EntityRef
 {
 public:
-  SMTK_CURSOR_CLASS(UseEntity,Cursor,isUseEntity);
+  SMTK_ENTITYREF_CLASS(UseEntity,EntityRef,isUseEntity);
 
   CellEntity cell() const;
   ShellEntity boundingShellEntity() const;
@@ -68,14 +68,14 @@ public:
 template<typename T> T UseEntity::boundingShellEntities() const
 {
   T container;
-  CursorArrangementOps::appendAllRelations(*this, HAS_SHELL, container);
+  EntityRefArrangementOps::appendAllRelations(*this, HAS_SHELL, container);
   return container;
 }
 
 template<typename T> T UseEntity::shellEntities() const
 {
   T container;
-  CursorArrangementOps::appendAllRelations(*this, INCLUDES, container);
+  EntityRefArrangementOps::appendAllRelations(*this, INCLUDES, container);
   return container;
 }
 

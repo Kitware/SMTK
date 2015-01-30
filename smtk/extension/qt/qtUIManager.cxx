@@ -18,7 +18,7 @@
 #include "smtk/extension/qt/qtInputsItem.h"
 #include "smtk/extension/qt/qtAttributeView.h"
 #include "smtk/extension/qt/qtInstancedView.h"
-//#include "smtk/extension/qt/qtModelEntityView.h"
+//#include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtSimpleExpressionView.h"
 #include "smtk/extension/qt/qtDiscreteValueEditor.h"
 
@@ -404,9 +404,9 @@ void qtUIManager::processInstancedView(qtInstancedView* qtView)
   this->processBasicView(qtView);
 }
 ////----------------------------------------------------------------------------
-//void qtUIManager::processModelEntityView(qtModelEntityView* qtView)
+//void qtUIManager::processModelView(qtModelView* qtView)
 //{
-//  smtk::view::ModelEntityPtr v = smtk::dynamic_pointer_cast<smtk::view::ModelEntity>(
+//  smtk::view::ModelPtr v = smtk::dynamic_pointer_cast<smtk::view::Model>(
 //    qtView->getObject());
 
 //  this->processBasicView(qtView);
@@ -1291,8 +1291,8 @@ qtBaseView *qtUIManager::createView(smtk::view::BasePtr smtkView,
       qtUIManager::processInstancedView(qobject_cast<qtInstancedView*>(qtView));
       break;
     case smtk::view::Base::MODEL_ENTITY:
-//      qtView = new qtModelEntityView(smtkView, pWidget, this);
-//      qtUIManager::processModelEntityView(qobject_cast<qtModelEntityView*>(qtView));
+//      qtView = new qtModelView(smtkView, pWidget, this);
+//      qtUIManager::processModelView(qobject_cast<qtModelView*>(qtView));
       break;
     case smtk::view::Base::SIMPLE_EXPRESSION:
       qtView = new qtSimpleExpressionView(smtkView, pWidget, this);

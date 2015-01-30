@@ -8,10 +8,10 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_bridge_discrete_MergeOperator_h
-#define __smtk_bridge_discrete_MergeOperator_h
+#ifndef __smtk_session_discrete_MergeOperator_h
+#define __smtk_session_discrete_MergeOperator_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h"
+#include "smtk/bridge/discrete/discreteSessionExports.h"
 #include "smtk/model/Operator.h"
 #include "vtkMergeOperator.h"
 #include "vtkNew.h"
@@ -20,7 +20,7 @@ namespace smtk {
   namespace bridge {
     namespace discrete {
 
-class Bridge;
+class Session;
 
 /**\brief Merge adjacent cells into a single cell.
   *
@@ -31,7 +31,7 @@ class Bridge;
   *
   * The source and target must be adjacent and have the same parametric dimension.
   */
-class SMTKDISCRETEBRIDGE_EXPORT MergeOperator : public smtk::model::Operator
+class SMTKDISCRETESESSION_EXPORT MergeOperator : public smtk::model::Operator
 {
 public:
   smtkTypeMacro(MergeOperator);
@@ -44,7 +44,7 @@ public:
 protected:
   MergeOperator();
   virtual smtk::model::OperatorResult operateInternal();
-  Bridge* discreteBridge() const;
+  Session* discreteSession() const;
   int fetchCMBCellId(const std::string& parameterName) const;
 
   vtkNew<vtkMergeOperator> m_op;
@@ -55,4 +55,4 @@ protected:
 
 } // namespace smtk
 
-#endif // __smtk_bridge_discrete_MergeOperator_h
+#endif // __smtk_session_discrete_MergeOperator_h

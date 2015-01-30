@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/model/RemoteOperator.h"
 
-#include "smtk/model/DefaultBridge.h"
+#include "smtk/model/DefaultSession.h"
 #include "smtk/model/Manager.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -34,25 +34,25 @@ RemoteOperator::Ptr RemoteOperator::setName(const std::string& opName)
   return shared_from_this();
 }
 
-/**\brief Call the bridge's delegate method to see if the
+/**\brief Call the session's delegate method to see if the
   *       remote process can perform the operation.
   */
 bool RemoteOperator::ableToOperate()
 {
-  DefaultBridge* fwdBridge = dynamic_cast<DefaultBridge*>(this->bridge());
-  if (!fwdBridge)
+  DefaultSession* fwdSession = dynamic_cast<DefaultSession*>(this->session());
+  if (!fwdSession)
     return false;
 
-  return fwdBridge->ableToOperateDelegate(shared_from_this());
+  return fwdSession->ableToOperateDelegate(shared_from_this());
 }
 
 OperatorResult RemoteOperator::operateInternal()
 {
-  DefaultBridge* fwdBridge = dynamic_cast<DefaultBridge*>(this->bridge());
-  if (!fwdBridge)
+  DefaultSession* fwdSession = dynamic_cast<DefaultSession*>(this->session());
+  if (!fwdSession)
     return this->createResult(OPERATION_FAILED);
 
-  return fwdBridge->operateDelegate(shared_from_this());
+  return fwdSession->operateDelegate(shared_from_this());
 }
 
   } // model namespace
@@ -63,4 +63,4 @@ smtkImplementsModelOperator(
   RemoteOperator,
   "remote op",
   NULL /* no XML specification */,
-  smtk::model::DefaultBridge);
+  smtk::model::DefaultSession);

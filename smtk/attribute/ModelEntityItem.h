@@ -11,13 +11,13 @@
 // .SECTION Description
 // An attribute whose value is a model entity (such as an edge or face).
 //
-// While the actual value stored is a Cursor, only the UUID of the model entity
+// While the actual value stored is a EntityRef, only the UUID of the model entity
 // is saved when the attribute is serialized.
 // Then, when deserialized, the attribute system's refModelManager()
-// is used to recreate the cursor.
+// is used to recreate the entityref.
 // (Thus the UUID is assumed to be present in the model manager referenced by
 // the attribute system. See smtk::attrib::System::refModelManager().)
-// If the entity is not present, the returned smtk::model::Cursor
+// If the entity is not present, the returned smtk::model::EntityRef
 // instances will be invalid and no type checking of attribute values
 // can be performed.
 //
@@ -27,7 +27,7 @@
 #define __smtk_attribute_ModelEntityItem_h
 
 #include "smtk/attribute/Item.h"
-#include "smtk/model/Cursor.h"
+#include "smtk/model/EntityRef.h"
 #include "smtk/SMTKCoreExports.h"
 
 namespace smtk
@@ -50,10 +50,10 @@ public:
   bool setNumberOfValues(std::size_t newSize);
 
   std::size_t numberOfRequiredValues() const;
-  smtk::model::Cursor value(std::size_t element = 0) const;
-  bool setValue(const smtk::model::Cursor& val);
-  bool setValue(std::size_t element, const smtk::model::Cursor& val);
-  bool appendValue(const smtk::model::Cursor& val);
+  smtk::model::EntityRef value(std::size_t element = 0) const;
+  bool setValue(const smtk::model::EntityRef& val);
+  bool setValue(std::size_t element, const smtk::model::EntityRef& val);
+  bool appendValue(const smtk::model::EntityRef& val);
   bool removeValue(std::size_t element);
   virtual void reset();
   virtual std::string valueAsString() const;
@@ -64,13 +64,13 @@ public:
                         smtk::attribute::Item::CopyInfo& info);
 
   bool has(const smtk::common::UUID& entity) const;
-  bool has(const smtk::model::Cursor& entity) const;
+  bool has(const smtk::model::EntityRef& entity) const;
 
-  smtk::model::CursorArray::const_iterator begin() const;
-  smtk::model::CursorArray::const_iterator end() const;
+  smtk::model::EntityRefArray::const_iterator begin() const;
+  smtk::model::EntityRefArray::const_iterator end() const;
 
   std::ptrdiff_t find(const smtk::common::UUID& entity) const;
-  std::ptrdiff_t find(const smtk::model::Cursor& entity) const;
+  std::ptrdiff_t find(const smtk::model::EntityRef& entity) const;
 
 protected:
   friend class Definition;
@@ -80,7 +80,7 @@ protected:
 
   virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
 
-  smtk::model::CursorArray m_values;
+  smtk::model::EntityRefArray m_values;
 };
 
   } // namespace attribute

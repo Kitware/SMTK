@@ -10,16 +10,16 @@
 
 #include "CreateEdgesOperator.h"
 
-#include "smtk/bridge/discrete/Bridge.h"
+#include "smtk/bridge/discrete/Session.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
 
 #include "vtkModelItem.h"
-#include "vtkModelEntity.h"
+#include "vtkModel.h"
 
 #include "CreateEdgesOperator_xml.h"
 
@@ -36,21 +36,21 @@ CreateEdgesOperator::CreateEdgesOperator()
 
 bool CreateEdgesOperator::ableToOperate()
 {
-  smtk::model::ModelEntity model;
+  smtk::model::Model model;
   return
     // The SMTK model must be valid
-    (model = this->specification()->findModelEntity("model")->value().as<smtk::model::ModelEntity>()).isValid() &&
+    (model = this->specification()->findModelEntity("model")->value().as<smtk::model::Model>()).isValid() &&
     // The CMB model must exist:
-    this->discreteBridge()->findModel(model.entity())
+    this->discreteSession()->findModelEntity(model.entity())
     ;
 }
 
 OperatorResult CreateEdgesOperator::operateInternal()
 {
-  Bridge* bridge = this->discreteBridge();
+  Session* session = this->discreteSession();
 
   vtkDiscreteModelWrapper* modelWrapper =
-    bridge->findModel(
+    session->findModelEntity(
       this->specification()->findModelEntity("model")->value().entity());
   if (!modelWrapper)
     {
@@ -64,15 +64,15 @@ OperatorResult CreateEdgesOperator::operateInternal()
       ok ?  OPERATION_SUCCEEDED : OPERATION_FAILED);
 
   // TODO: Read list of new Edges created and
-  //       use the bridge to translate them and store
+  //       use the session to translate them and store
   //       them in the OperatorResult (well, a subclass).
 
   return result;
 }
 
-Bridge* CreateEdgesOperator::discreteBridge() const
+Session* CreateEdgesOperator::discreteSession() const
 {
-  return dynamic_cast<Bridge*>(this->bridge());
+  return dynamic_cast<Session*>(this->session());
 }
 
     } // namespace discrete
@@ -85,4 +85,4 @@ smtkImplementsModelOperator(
   discrete_create_edges,
   "create edges",
   CreateEdgesOperator_xml,
-  smtk::bridge::discrete::Bridge);
+  smtk::bridge::discrete::Session);

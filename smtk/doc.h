@@ -50,11 +50,11 @@ namespace smtk {
     * and/or topological-domain decompositions;
     * it maps smtk::common::UUID values to Entity, Arrangement, and
     * Tessellation instances.
-    * However, most developers will use the Cursor classes
+    * However, most developers will use the EntityRef classes
     * (Vertex, Edge, Face, Volume, VertexUse, EdgeUse, FaceUse, VolumeUse,
-    * Chain, Loop, Shell, GroupEntity, ModelEntity, and InstanceEntity)
+    * Chain, Loop, Shell, Group, Model, and Instance)
     * to access this information.
-    * Cursor is a base class for traversing records in Manager
+    * EntityRef is a base class for traversing records in Manager
     * and provides some capability for modifying the model.
     * Attributes may be defined on any record in storage by virtue of the
     * fact that all records in storage are named by their UUID.
@@ -94,16 +94,21 @@ namespace smtk {
   namespace io {
   }
 
-  /**\brief Bridges to solid modeling kernels.
+  /**\brief Sessions to solid modeling kernels.
     *
     */
   namespace bridge {
-    /**\brief A bridge to the Common Geometry Module (Argonne).
+    /**\brief A session using the Common Geometry Module (Argonne).
       *
       */
     namespace cgm {
     }
-    /**\brief A forwarding bridge that uses Remus.
+    /**\brief A session that imports Exodus meshes.
+      *
+      */
+    namespace exodus {
+    }
+    /**\brief A forwarding session that uses Remus.
       *
       */
     namespace remote {

@@ -24,7 +24,7 @@ PropertyListPhrase::PropertyListPhrase()
 
 /// Initialize the list with information required to generate subphrases.
 PropertyListPhrase::Ptr PropertyListPhrase::setup(
-  const Cursor& entity, PropertyType ptype, DescriptivePhrasePtr parnt)
+  const EntityRef& entity, PropertyType ptype, DescriptivePhrasePtr parnt)
 {
   this->m_entity = entity;
   this->m_propertyType = ptype;
@@ -36,7 +36,7 @@ PropertyListPhrase::Ptr PropertyListPhrase::setup(
 
 /// Initialize the list with a subset \a pnames of the \a entity's properties.
 PropertyListPhrase::Ptr PropertyListPhrase::setup(
-  const Cursor& entity, PropertyType ptype,
+  const EntityRef& entity, PropertyType ptype,
   const std::set<std::string>& pnames, DescriptivePhrasePtr parnt)
 {
   this->m_entity = entity;
@@ -69,7 +69,7 @@ smtk::common::UUID PropertyListPhrase::relatedEntityId() const
   return this->m_entity.entity();
 }
 
-Cursor PropertyListPhrase::relatedEntity() const
+EntityRef PropertyListPhrase::relatedEntity() const
 {
   return this->m_entity;
 }

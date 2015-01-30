@@ -24,7 +24,7 @@
 //   </RootObjects>
 //   <Object type="vtkCmbShell" id="1">
 //     <Properties type="vtkInformation">
-//       <vtkConceptualModelItem::COLOR values="0 0 0 0" length="4"/>
+//       <vtkConceptualModelEntityItem::COLOR values="0 0 0 0" length="4"/>
 //     </Properties>
 //     <Associations type="vtkObjectVectorMap">
 //       <Key_1 type="vtkObjectVector">
@@ -34,7 +34,7 @@
 //   </Object>
 //   <Object type="vtkCmbModelFaceUse" id="2">
 //     <Properties type="vtkInformation">
-//       <vtkConceptualModelItem::COLOR values="1 0 0 0" length="4"/>
+//       <vtkConceptualModelEntityItem::COLOR values="1 0 0 0" length="4"/>
 //     </Properties>
 //     <Associations type="vtkObjectVectorMap">
 //       <Key_0 type="vtkObjectVector">

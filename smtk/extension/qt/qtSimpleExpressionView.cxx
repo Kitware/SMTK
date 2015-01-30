@@ -466,7 +466,7 @@ void qtSimpleExpressionView::displayExpressionError(
   std::string& errorMsg, int errorPos)
 {
   QString strMessage = QString(errorMsg.c_str()) +
-    "\nThe function expression has some syntax error at cursor position: " +
+    "\nThe function expression has some syntax error at entityref position: " +
     QString::number(errorPos);
   QMessageBox::warning(this->parentWidget(), tr("SimBuilder Functions"),strMessage);
   this->Internals->ExpressionInput->setFocus();

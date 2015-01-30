@@ -21,6 +21,7 @@
   <suppress-warning text="skipping field 'System::m_derivedDefInfo' with unmatched type 'std::map&lt;smtk::attribute::DefinitionPtr,smtk::attribute::WeakDefinitionPtrSet&gt;'"/>
   <suppress-warning text="skipping field 'RefItem::m_values' with unmatched type 'std::vector&lt;attribute::WeakAttributePtr&gt;'"/>
   <suppress-warning text="skipping field 'RefItemDefinition::m_definition' with unmatched type 'smtk::weak_ptr&lt;smtk::attribute::Definition&gt;'"/>
+  <suppress-warning text="skipping field 'EntityRef::m_manager' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Manager&gt;'"/>
 
   <!-- Suppressed because they are templated methods -->
   <suppress-warning text="skipping function 'smtk::view::Group::addSubView', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
@@ -30,21 +31,21 @@
   <suppress-warning text="skipping function 'smtk::attribute::GroupItemDefinition::addItemDefinition', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
   <suppress-warning text="skipping function 'smtk::dynamicCastPointer', unmatched return type 'smtk::shared_ptr&lt;T&gt;'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Definition::addItemDefinition', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
-  <suppress-warning text="skipping function 'smtk::model::BridgeSession::models', unmatched return type 'T'"/>
-  <suppress-warning text="skipping function 'smtk::model::BridgeSession::operatorsForAssociation', unmatched parameter type 'T const&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::model::Cursor::CursorsFromUUIDs', unmatched parameter type 'S&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::model::ModelEntity::addCells', unmatched parameter type 'T const&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::model::ModelEntity::addGroups', unmatched parameter type 'T const&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::model::GroupEntity::members', unmatched return type 'T'"/>
-  <suppress-warning text="skipping function 'smtk::model::Cursor::embedEntities', unmatched parameter type 'T const&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::model::Cursor::instances', unmatched return type 'T'"/>
-  <suppress-warning text="skipping function 'smtk::model::GroupEntity::addEntities', unmatched parameter type 'T const&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::model::ModelEntity::addSubmodels', unmatched parameter type 'T const&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::model::Cursor::relationsAs', unmatched return type 'T'"/>
-  <suppress-warning text="skipping function 'smtk::model::ModelEntity::removeSubmodels', unmatched parameter type 'T const&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::model::ModelEntity::removeGroups', unmatched parameter type 'T const&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::model::ModelEntity::removeCells', unmatched parameter type 'T const&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::model::Cursor::unembedEntities', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::SessionRef::models', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::SessionRef::operatorsForAssociation', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::EntityRef::EntityRefsFromUUIDs', unmatched parameter type 'S&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Model::addCells', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Model::addGroups', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Group::members', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::EntityRef::embedEntities', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::EntityRef::instances', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::Group::addEntities', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Model::addSubmodels', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::EntityRef::relationsAs', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::Model::removeSubmodels', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Model::removeGroups', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Model::removeCells', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::EntityRef::unembedEntities', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::ShellEntity::addUses', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::entitiesMatchingFlagsAs', unmatched return type 'Collection'"/>
   <suppress-warning text="skipping function 'smtk::model::Operator::findAs', unmatched return type 'T::Ptr'"/>
@@ -64,8 +65,8 @@
 	<suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntityOfTypeAndDimension', unmatched return type 'BRepModel::iter_type'"/>
 	<suppress-warning text="skipping function 'smtk::model::BRepModel::setEntity', unmatched return type 'BRepModel::iter_type'"/>
 	<suppress-warning text="skipping function 'smtk::model::BRepModel::setEntityOfTypeAndDimension', unmatched return type 'BRepModel::iter_type'"/>
-  <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::begin', unmatched return type 'smtk::model::CursorArray::const_iterator'"/>
-  <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::end', unmatched return type 'smtk::model::CursorArray::const_iterator'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::begin', unmatched return type 'smtk::model::EntityRefArray::const_iterator'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::end', unmatched return type 'smtk::model::EntityRefArray::const_iterator'"/>
 
   <!-- Use cJSON objects. For now we will ignore these-->
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofDanglingEntities', unmatched parameter type 'cJSON*'"/>
@@ -76,9 +77,9 @@
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerIntegerProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerStringProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerTessellation', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofLocalBridgeSession', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofLocalSession', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofLog', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofRemoteBridgeSession', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofRemoteSession', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofOperator', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofOperatorResult', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::getStringArrayFromJSON', unmatched parameter type 'cJSON*'"/>
@@ -89,7 +90,7 @@
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forLog', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManager', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerArrangement', unmatched parameter type 'smtk::model::UUIDWithArrangementDictionary const&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerBridgeSession', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerSession', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerEntity', unmatched parameter type 'smtk::model::UUIDWithEntity&amp;'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerFloatProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerIntegerProperties', unmatched parameter type 'cJSON*'"/>
@@ -100,8 +101,8 @@
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperatorResult', unmatched parameter type 'smtk::model::OperatorResult const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::fromUUIDs', unmatched return type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::fromModelManager', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::io::ImportJSON::bridgeNameFromTagData', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::io::ImportJSON::bridgeFileTypesFromTagData', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::sessionNameFromTagData', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::sessionFileTypesFromTagData', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::createIntegerArray', unmatched return type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::createUUIDArray', unmatched return type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::createRPCRequest', unmatched return type 'cJSON*'"/>
@@ -122,7 +123,7 @@
   <suppress-warning text="skipping function 'smtk::model::BRepModel::BRepModel', unmatched parameter type 'shared_ptr&lt;smtk::model::BRepModel::storage_type&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_arrangements' with unmatched type 'shared_ptr&lt;UUIDsToArrangements&gt;'"/>
   <suppress-warning text="skipping field 'UUIDGenerator::P' with unmatched type 'Internal'"/>
-  <suppress-warning text="skipping field 'BRepModel::m_modelBridges' with unmatched type 'std::map&lt;smtk::common::UUID,BridgePtr&gt;'"/>
+  <suppress-warning text="skipping field 'BRepModel::m_modelSessions' with unmatched type 'std::map&lt;smtk::common::UUID,SessionPtr&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::assignDefaultNamesWithOwner', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
 
   <!-- do not support input or output streams-->
@@ -144,19 +145,19 @@
 
   <suppress-warning text="skipping field 'Manager::m_attributeAssignments' with unmatched type 'shared_ptr&lt;UUIDsToAttributeAssignments&gt;'"/>
 
-  <!-- ignore shadowing/hiding of Cursor::isValid() as it is intentional -->
-  <suppress-warning text="hiding of function 'isValid' in class 'BridgeSession'"/>
+  <!-- ignore shadowing/hiding of EntityRef::isValid() as it is intentional -->
+  <suppress-warning text="hiding of function 'isValid' in class 'SessionRef'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'CellEntity'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'Chain'"/>
-  <suppress-warning text="hiding of function 'isValid' in class 'Cursor'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'EntityRef'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'Edge'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'EdgeUse'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'Face'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'FaceUse'"/>
-  <suppress-warning text="hiding of function 'isValid' in class 'GroupEntity'"/>
-  <suppress-warning text="hiding of function 'isValid' in class 'InstanceEntity'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'Group'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'Instance'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'Loop'"/>
-  <suppress-warning text="hiding of function 'isValid' in class 'ModelEntity'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'Model'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'Shell'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'ShellEntity'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'UseEntity'"/>
@@ -164,24 +165,24 @@
   <suppress-warning text="hiding of function 'isValid' in class 'VertexUse'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'Volume'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'VolumeUse'"/>
-  <suppress-warning text="Shadowing: Cursor::isValid() const and BridgeSession::isValid() const"/>
-  <suppress-warning text="Shadowing: Cursor::isValid() const and CellEntity::isValid() const"/>
-  <suppress-warning text="Shadowing: Cursor::isValid() const and Chain::isValid() const"/>
-  <suppress-warning text="Shadowing: Cursor::isValid() const and Edge::isValid() const"/>
-  <suppress-warning text="Shadowing: Cursor::isValid() const and EdgeUse::isValid() const"/>
-  <suppress-warning text="Shadowing: Cursor::isValid() const and Face::isValid() const"/>
-  <suppress-warning text="Shadowing: Cursor::isValid() const and FaceUse::isValid() const"/>
-  <suppress-warning text="Shadowing: Cursor::isValid() const and GroupEntity::isValid() const"/>
-  <suppress-warning text="Shadowing: Cursor::isValid() const and InstanceEntity::isValid() const"/>
-  <suppress-warning text="Shadowing: Cursor::isValid() const and Loop::isValid() const"/>
-  <suppress-warning text="Shadowing: Cursor::isValid() const and ModelEntity::isValid() const"/>
-  <suppress-warning text="Shadowing: Cursor::isValid() const and Shell::isValid() const"/>
-  <suppress-warning text="Shadowing: Cursor::isValid() const and ShellEntity::isValid() const"/>
-  <suppress-warning text="Shadowing: Cursor::isValid() const and UseEntity::isValid() const"/>
-  <suppress-warning text="Shadowing: Cursor::isValid() const and Vertex::isValid() const"/>
-  <suppress-warning text="Shadowing: Cursor::isValid() const and VertexUse::isValid() const"/>
-  <suppress-warning text="Shadowing: Cursor::isValid() const and Volume::isValid() const"/>
-  <suppress-warning text="Shadowing: Cursor::isValid() const and VolumeUse::isValid() const"/>
+  <suppress-warning text="Shadowing: EntityRef::isValid() const and SessionRef::isValid() const"/>
+  <suppress-warning text="Shadowing: EntityRef::isValid() const and CellEntity::isValid() const"/>
+  <suppress-warning text="Shadowing: EntityRef::isValid() const and Chain::isValid() const"/>
+  <suppress-warning text="Shadowing: EntityRef::isValid() const and Edge::isValid() const"/>
+  <suppress-warning text="Shadowing: EntityRef::isValid() const and EdgeUse::isValid() const"/>
+  <suppress-warning text="Shadowing: EntityRef::isValid() const and Face::isValid() const"/>
+  <suppress-warning text="Shadowing: EntityRef::isValid() const and FaceUse::isValid() const"/>
+  <suppress-warning text="Shadowing: EntityRef::isValid() const and Group::isValid() const"/>
+  <suppress-warning text="Shadowing: EntityRef::isValid() const and Instance::isValid() const"/>
+  <suppress-warning text="Shadowing: EntityRef::isValid() const and Loop::isValid() const"/>
+  <suppress-warning text="Shadowing: EntityRef::isValid() const and Model::isValid() const"/>
+  <suppress-warning text="Shadowing: EntityRef::isValid() const and Shell::isValid() const"/>
+  <suppress-warning text="Shadowing: EntityRef::isValid() const and ShellEntity::isValid() const"/>
+  <suppress-warning text="Shadowing: EntityRef::isValid() const and UseEntity::isValid() const"/>
+  <suppress-warning text="Shadowing: EntityRef::isValid() const and Vertex::isValid() const"/>
+  <suppress-warning text="Shadowing: EntityRef::isValid() const and VertexUse::isValid() const"/>
+  <suppress-warning text="Shadowing: EntityRef::isValid() const and Volume::isValid() const"/>
+  <suppress-warning text="Shadowing: EntityRef::isValid() const and VolumeUse::isValid() const"/>
   <suppress-warning text="Shadowing: ShellEntity::isValid() const and Chain::isValid() const"/>
   <suppress-warning text="Shadowing: ShellEntity::isValid() const and Loop::isValid() const"/>
   <suppress-warning text="Shadowing: ShellEntity::isValid() const and Shell::isValid() const"/>
@@ -193,35 +194,35 @@
   <suppress-warning text="Shadowing: UseEntity::isValid() const and FaceUse::isValid() const"/>
   <suppress-warning text="Shadowing: UseEntity::isValid() const and VertexUse::isValid() const"/>
   <suppress-warning text="Shadowing: UseEntity::isValid() const and VolumeUse::isValid() const"/>
-  <suppress-warning text="Shadowing: CellEntity::operator==(const smtk::model::Cursor &amp; other) const and Face::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: CellEntity::operator==(const smtk::model::Cursor &amp; other) const and Vertex::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Chain::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: UseEntity::operator==(const smtk::model::Cursor &amp; other) const and VertexUse::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and InstanceEntity::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and ShellEntity::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: UseEntity::operator==(const smtk::model::Cursor &amp; other) const and FaceUse::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Volume::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and EdgeUse::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Edge::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: UseEntity::operator==(const smtk::model::Cursor &amp; other) const and EdgeUse::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Vertex::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and VolumeUse::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: CellEntity::operator==(const smtk::model::Cursor &amp; other) const and Edge::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and UseEntity::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Face::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Loop::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: ShellEntity::operator==(const smtk::model::Cursor &amp; other) const and Shell::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Shell::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and CellEntity::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: ShellEntity::operator==(const smtk::model::Cursor &amp; other) const and Loop::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and GroupEntity::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and FaceUse::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: UseEntity::operator==(const smtk::model::Cursor &amp; other) const and VolumeUse::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and ModelEntity::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: CellEntity::operator==(const smtk::model::Cursor &amp; other) const and Volume::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and VertexUse::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: ShellEntity::operator==(const smtk::model::Cursor &amp; other) const and Chain::operator==(const smtk::model::Cursor &amp; other) const"/>
-  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and BridgeSession::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: CellEntity::operator==(const smtk::model::EntityRef &amp; other) const and Face::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: CellEntity::operator==(const smtk::model::EntityRef &amp; other) const and Vertex::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator==(const smtk::model::EntityRef &amp; other) const and Chain::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: UseEntity::operator==(const smtk::model::EntityRef &amp; other) const and VertexUse::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator==(const smtk::model::EntityRef &amp; other) const and Instance::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator==(const smtk::model::EntityRef &amp; other) const and ShellEntity::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: UseEntity::operator==(const smtk::model::EntityRef &amp; other) const and FaceUse::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator==(const smtk::model::EntityRef &amp; other) const and Volume::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator==(const smtk::model::EntityRef &amp; other) const and EdgeUse::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator==(const smtk::model::EntityRef &amp; other) const and Edge::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: UseEntity::operator==(const smtk::model::EntityRef &amp; other) const and EdgeUse::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator==(const smtk::model::EntityRef &amp; other) const and Vertex::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator==(const smtk::model::EntityRef &amp; other) const and VolumeUse::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: CellEntity::operator==(const smtk::model::EntityRef &amp; other) const and Edge::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator==(const smtk::model::EntityRef &amp; other) const and UseEntity::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator==(const smtk::model::EntityRef &amp; other) const and Face::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator==(const smtk::model::EntityRef &amp; other) const and Loop::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: ShellEntity::operator==(const smtk::model::EntityRef &amp; other) const and Shell::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator==(const smtk::model::EntityRef &amp; other) const and Shell::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator==(const smtk::model::EntityRef &amp; other) const and CellEntity::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: ShellEntity::operator==(const smtk::model::EntityRef &amp; other) const and Loop::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator==(const smtk::model::EntityRef &amp; other) const and Group::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator==(const smtk::model::EntityRef &amp; other) const and FaceUse::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: UseEntity::operator==(const smtk::model::EntityRef &amp; other) const and VolumeUse::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator==(const smtk::model::EntityRef &amp; other) const and Model::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: CellEntity::operator==(const smtk::model::EntityRef &amp; other) const and Volume::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator==(const smtk::model::EntityRef &amp; other) const and VertexUse::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: ShellEntity::operator==(const smtk::model::EntityRef &amp; other) const and Chain::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator==(const smtk::model::EntityRef &amp; other) const and SessionRef::operator==(const smtk::model::EntityRef &amp; other) const"/>
 
   <!-- ignore sundry warnings associated with attribute/definition copy methods -->
   <suppress-warning text="skipping field 'CopyInfo::UnresolvedRefItems' with unmatched type 'std::queue&lt;std::pair&lt;std::string,smtk::attribute::ItemDefinitionPtr&gt;&gt;'" />
@@ -246,7 +247,7 @@
   <!-- ignore templated cast for now. -->
   <suppress-warning text="skipping function 'smtk::model::CellEntity::inclusions', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::CellEntity::uses', unmatched return type 'T'"/>
-  <suppress-warning text="skipping function 'smtk::model::Cursor::as', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::EntityRef::as', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::ShellEntity::uses', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::ShellEntity::containedShellEntities', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::UseEntity::shellEntities', unmatched return type 'T'"/>
@@ -265,7 +266,7 @@
 
   <!-- ignore shared_from_this base class-->
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'BRepModel' is not known"/>
-  <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'Bridge' is not known"/>
+  <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'Session' is not known"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'DescriptivePhrase' is not known"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'Operator' is not known"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::BRepModel::SelfType&gt;'"/>
@@ -297,7 +298,7 @@
   <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::SimpleModelSubphrases::SelfType&gt;'"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'SubphraseGenerator' is not known"/>
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::freeGroupsInModel', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
-  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::modelsOfBridgeSession', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::modelsOfSession', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::membersOfGroup', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::EntityPhrase::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::DescriptivePhrase::setDelegate', unmatched return type 'smtk::model::DescriptivePhrase::Ptr'"/>
@@ -326,29 +327,29 @@
   <suppress-warning text="skipping function 'smtk::model::Manager::unobserve', unmatched parameter type 'smtk::model::OneToOneCallback'"/>
   <suppress-warning text="skipping field 'DescriptivePhrase::m_parent' with unmatched type 'smtk::weak_ptr&lt;smtk::model::DescriptivePhrase&gt;'"/>
   <suppress-warning text="skipping function 'smtk::io::AttributeReader::readContents', unmatched parameter type 'pugi::xml_node&amp;'" />
-  <suppress-warning text="skipping function 'smtk::model::Bridge::createIODelegate', unmatched return type 'smtk::model::BridgeIOPtr'"/>
+  <suppress-warning text="skipping function 'smtk::model::Session::createIODelegate', unmatched return type 'smtk::model::SessionIOPtr'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::findEntitiesByPropertyAs', unmatched return type 'Collection'"/>
-  <suppress-warning text="skipping field 'BRepModel::m_modelBridges' with unmatched type 'std::map&lt;smtk::common::UUID,smtk::shared_ptr&lt;Bridge&gt;&gt;'"/>
+  <suppress-warning text="skipping field 'BRepModel::m_modelSessions' with unmatched type 'std::map&lt;smtk::common::UUID,smtk::shared_ptr&lt;Session&gt;&gt;'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::associations', unmatched return type 'smtk::attribute::ConstModelEntityItemPtr'"/>
 
   <!-- Ignore until we have time to support Operators -->
-  <suppress-warning text="skipping field 'BRepModel::m_modelBridges' with unmatched type 'std::map&lt;smtk::io::UUID,smtk::shared_ptr&lt;Bridge&gt;&gt;'"/>
-  <suppress-warning text="skipping field 'BRepModel::m_defaultBridge' with unmatched type 'smtk::shared_ptr&lt;Bridge&gt;'"/>
+  <suppress-warning text="skipping field 'BRepModel::m_modelSessions' with unmatched type 'std::map&lt;smtk::io::UUID,smtk::shared_ptr&lt;Session&gt;&gt;'"/>
+  <suppress-warning text="skipping field 'BRepModel::m_defaultSession' with unmatched type 'smtk::shared_ptr&lt;Session&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::Manager::SelfType&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::model::Bridge::findOperatorXMLInternal', unmatched parameter type 'smtk::model::OperatorConstructors const*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ModelEntity::operators', unmatched return type 'smtk::model::Operators'"/>
+  <suppress-warning text="skipping function 'smtk::model::Session::findOperatorXMLInternal', unmatched parameter type 'smtk::model::OperatorConstructors const*'"/>
+  <suppress-warning text="skipping function 'smtk::model::Model::operators', unmatched return type 'smtk::model::Operators'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityListPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::EntityListPhrase::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::EntityPhrase::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::SimpleModelSubphrases::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Operator::setManager', unmatched return type 'smtk::model::Operator::Ptr'"/>
-  <suppress-warning text="skipping function 'smtk::model::Operator::setBridge', unmatched return type 'smtk::model::Operator::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::Operator::setSession', unmatched return type 'smtk::model::Operator::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::Operator::associatedEntitiesAs', unmatched return type 'T'"/>
 
 
-  <suppress-warning text="skipping field 'BRepModel::s_bridges' with unmatched type 'std::map&lt;std::string,smtk::model::StaticBridgeInfo&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::registerBridge', unmatched parameter type 'smtk::model::BridgeConstructor'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::bridgeConstructor', unmatched return type 'smtk::model::BridgeConstructor'"/>
-  <suppress-warning text="skipping field 'BRepModel::m_sessions' with unmatched type 'std::map&lt;smtk::common::UUID,smtk::shared_ptr&lt;Bridge&gt;&gt;'"/>
+  <suppress-warning text="skipping field 'BRepModel::s_sessions' with unmatched type 'std::map&lt;std::string,smtk::model::StaticSessionInfo&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::registerSession', unmatched parameter type 'smtk::model::SessionConstructor'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::sessionConstructor', unmatched return type 'smtk::model::SessionConstructor'"/>
+  <suppress-warning text="skipping field 'BRepModel::m_sessions' with unmatched type 'std::map&lt;smtk::common::UUID,smtk::shared_ptr&lt;Session&gt;&gt;'"/>
 
 
   <suppress-warning text="template argument 'smtk::attribute::UUIDItemDefinition' of 'shared_ptr&lt; smtk::attribute::UUIDItemDefinition &gt;' is not known; not adding redirections"/>
@@ -360,8 +361,8 @@
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findRef', unmatched return type 'smtk::attribute::ConstRefItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findFile', unmatched return type 'smtk::attribute::ConstFileItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findDirectory', unmatched return type 'smtk::attribute::ConstDirectoryItemPtr'"/>
-  <suppress-warning text="skipping function 'smtk::model::Bridge::findOperatorConstructor', unmatched return type 'smtk::model::OperatorConstructor'"/>
-  <suppress-warning text="skipping function 'smtk::model::Bridge::findOperatorConstructorInternal', unmatched return type 'smtk::model::OperatorConstructor'"/>
+  <suppress-warning text="skipping function 'smtk::model::Session::findOperatorConstructor', unmatched return type 'smtk::model::OperatorConstructor'"/>
+  <suppress-warning text="skipping function 'smtk::model::Session::findOperatorConstructorInternal', unmatched return type 'smtk::model::OperatorConstructor'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findDouble', unmatched return type 'smtk::attribute::ConstDoubleItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findString', unmatched return type 'smtk::attribute::ConstStringItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findModelEntity', unmatched return type 'smtk::attribute::ConstModelEntityItemPtr'"/>
@@ -684,7 +685,7 @@
     <modify-function signature="removeCategory(const std::string &amp;)" remove="all"/>
   </value-type>
 
-  <value-type template="smtk::shared_ptr" args="smtk::model::Bridge"/>
+  <value-type template="smtk::shared_ptr" args="smtk::model::Session"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::DescriptivePhrase"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::EntityPhrase"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::EntityListPhrase"/>
@@ -755,7 +756,7 @@
       </inject-code>
     </add-function>
     <add-function
-      signature="findAsModelEntity(const std::string &amp;)" static="no"
+      signature="findAsModel(const std::string &amp;)" static="no"
       return-type="smtk::shared_ptr&lt; smtk::attribute::ModelEntityItem &gt;">
       <inject-code>
         smtk::shared_ptr&lt; smtk::attribute::ModelEntityItem &gt; result =
@@ -838,14 +839,14 @@
       </inject-code>
     </add-function>
 
-    <!-- Fix improper dereferencing and/or Python conversion of cursor methods -->
+    <!-- Fix improper dereferencing and/or Python conversion of entityref methods -->
     <!--
-         Methods that take an argument of the form "const Cursor&" (or some Cursor
-         subclass) do not properly dereference the pointer to the cursor which is
+         Methods that take an argument of the form "const EntityRef&" (or some EntityRef
+         subclass) do not properly dereference the pointer to the entityref which is
          what the Python wrapper actually holds.
            Example: "addChain(%1))" becomes "addChain(*%1))"
 
-         Methods that return a Cursor instance (or subclass instance) by value
+         Methods that return a EntityRef instance (or subclass instance) by value
          do not properly create a pointer to the instance instead of the
          value itself. The Python converter must have a pointer to wrap, not a
          value. We use the copy constructor to create a pointer that can be
@@ -893,13 +894,13 @@
       </inject-code>
     </modify-function>
         <add-function signature="associatedEntities()"
-                      return-type="std::vector&lt;smtk::model::Cursor*&gt;" static="no">
+                      return-type="std::vector&lt;smtk::model::EntityRef*&gt;" static="no">
           <inject-code>
-            smtk::model::CursorArray tmp =
-              (*%CPPSELF)-&gt;associatedModelEntities&lt;smtk::model::CursorArray&gt;();
+            smtk::model::EntityRefArray tmp =
+              (*%CPPSELF)-&gt;associatedModelEntities&lt;smtk::model::EntityRefArray&gt;();
             %RETURN_TYPE %0;
-            for (smtk::model::CursorArray::iterator it = tmp.begin(); it != tmp.end(); ++it)
-              %0.push_back(new smtk::model::Cursor(*it));
+            for (smtk::model::EntityRefArray::iterator it = tmp.begin(); it != tmp.end(); ++it)
+              %0.push_back(new smtk::model::EntityRef(*it));
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
@@ -1020,28 +1021,28 @@
         <include file-name="smtk/model/AttributeAssignments.h" location="local"/>
       </object-type>
 
-      <object-type name="Bridge">
-        <include file-name="smtk/model/Bridge.h" location="local"/>
+      <object-type name="Session">
+        <include file-name="smtk/model/Session.h" location="local"/>
       </object-type>
 
-      <enum-type name="BridgedInformation">
-        <include file-name="smtk/model/Bridge.h" location="local"/>
+      <enum-type name="SessiondInformation">
+        <include file-name="smtk/model/Session.h" location="local"/>
       </enum-type>
 
-      <value-type name="BridgeSession" hash-function="smtk::model::cursorHash">
-        <include file-name="smtk/model/BridgeSession.h" location="local"/>
+      <value-type name="SessionRef" hash-function="smtk::model::entityrefHash">
+        <include file-name="smtk/model/SessionRef.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
         <!-- We can add, rather than modify, signatures by not making the methods const.
-             This allows us to change the return type to an array of pointers-to-cursors,
+             This allows us to change the return type to an array of pointers-to-entityrefs,
              which shiboken properly converts. -->
         <add-function signature="models()" static="no"
-          return-type="std::vector&lt;smtk::model::ModelEntity*&gt;">
+          return-type="std::vector&lt;smtk::model::Model*&gt;">
           <inject-code>
             smtk::model::ModelEntities tmp =
               %CPPSELF-&gt;models&lt;smtk::model::ModelEntities&gt;();
             %RETURN_TYPE %0;
             for (smtk::model::ModelEntities::iterator it = tmp.begin(); it != tmp.end(); ++it)
-              %0.push_back(new smtk::model::ModelEntity(*it));
+              %0.push_back(new smtk::model::Model(*it));
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
@@ -1052,18 +1053,18 @@
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>
       </enum-type>
 
-      <value-type name="CellEntity" hash-function="smtk::model::cursorHash">
+      <value-type name="CellEntity" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/CellEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="Chain" hash-function="smtk::model::cursorHash">
+      <value-type name="Chain" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/Chain.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="Cursor" hash-function="smtk::model::cursorHash">
-        <include file-name="smtk/model/Cursor.h" location="local"/>
+      <value-type name="EntityRef" hash-function="smtk::model::entityrefHash">
+        <include file-name="smtk/model/EntityRef.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
@@ -1076,12 +1077,12 @@
         <modify-function signature="subphrases()" remove="all"/>
       </object-type>
 
-      <value-type name="Edge" hash-function="smtk::model::cursorHash">
+      <value-type name="Edge" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/Edge.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="EdgeUse" hash-function="smtk::model::cursorHash">
+      <value-type name="EdgeUse" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/EdgeUse.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
@@ -1110,46 +1111,46 @@
         </add-function>
       </object-type>
 
-      <value-type name="Face" hash-function="smtk::model::cursorHash">
+      <value-type name="Face" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/Face.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="FaceUse" hash-function="smtk::model::cursorHash">
+      <value-type name="FaceUse" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/FaceUse.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="GroupEntity" hash-function="smtk::model::cursorHash">
-        <include file-name="smtk/model/GroupEntity.h" location="local"/>
+      <value-type name="Group" hash-function="smtk::model::entityrefHash">
+        <include file-name="smtk/model/Group.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
         <add-function signature="members()" static="no"
-          return-type="std::vector&lt;smtk::model::Cursor*&gt;">
+          return-type="std::vector&lt;smtk::model::EntityRef*&gt;">
           <inject-code>
-            smtk::model::CursorArray tmp = %CPPSELF-&gt;members&lt;smtk::model::CursorArray&gt;();
+            smtk::model::EntityRefArray tmp = %CPPSELF-&gt;members&lt;smtk::model::EntityRefArray&gt;();
             %RETURN_TYPE %0;
-            for (smtk::model::CursorArray::iterator it = tmp.begin(); it != tmp.end(); ++it)
-              %0.push_back(new smtk::model::Cursor(*it));
+            for (smtk::model::EntityRefArray::iterator it = tmp.begin(); it != tmp.end(); ++it)
+              %0.push_back(new smtk::model::EntityRef(*it));
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
       </value-type>
 
-      <value-type name="InstanceEntity" hash-function="smtk::model::cursorHash">
-        <include file-name="smtk/model/InstanceEntity.h" location="local"/>
+      <value-type name="Instance" hash-function="smtk::model::entityrefHash">
+        <include file-name="smtk/model/Instance.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="Loop" hash-function="smtk::model::cursorHash">
+      <value-type name="Loop" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/Loop.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="ModelEntity" hash-function="smtk::model::cursorHash">
-        <include file-name="smtk/model/ModelEntity.h" location="local"/>
+      <value-type name="Model" hash-function="smtk::model::entityrefHash">
+        <include file-name="smtk/model/Model.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
         <!-- We can add, rather than modify, signatures by not making the methods const.
-             This allows us to change the return type to an array of pointers-to-cursors,
+             This allows us to change the return type to an array of pointers-to-entityrefs,
              which shiboken properly converts. -->
         <add-function signature="cells()" static="no"
           return-type="std::vector&lt;smtk::model::CellEntity*&gt;">
@@ -1162,22 +1163,22 @@
           </inject-code>
         </add-function>
         <add-function signature="groups()" static="no"
-          return-type="std::vector&lt;smtk::model::GroupEntity*&gt;">
+          return-type="std::vector&lt;smtk::model::Group*&gt;">
           <inject-code>
             smtk::model::GroupEntities tmp = %CPPSELF-&gt;groups();
             %RETURN_TYPE %0;
             for (smtk::model::GroupEntities::iterator it = tmp.begin(); it != tmp.end(); ++it)
-              %0.push_back(new smtk::model::GroupEntity(*it));
+              %0.push_back(new smtk::model::Group(*it));
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
         <add-function signature="submodels()" static="no"
-          return-type="std::vector&lt;smtk::model::ModelEntity*&gt;">
+          return-type="std::vector&lt;smtk::model::Model*&gt;">
           <inject-code>
             smtk::model::ModelEntities tmp = %CPPSELF-&gt;submodels();
             %RETURN_TYPE %0;
             for (smtk::model::ModelEntities::iterator it = tmp.begin(); it != tmp.end(); ++it)
-              %0.push_back(new smtk::model::ModelEntity(*it));
+              %0.push_back(new smtk::model::Model(*it));
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
@@ -1311,37 +1312,37 @@
         <include file-name="smtk/model/Events.h" location="local"/>
       </enum-type>
 
-      <value-type name="Shell" hash-function="smtk::model::cursorHash">
+      <value-type name="Shell" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/Shell.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="ShellEntity" hash-function="smtk::model::cursorHash">
+      <value-type name="ShellEntity" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/ShellEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="UseEntity" hash-function="smtk::model::cursorHash">
+      <value-type name="UseEntity" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/UseEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="Vertex" hash-function="smtk::model::cursorHash">
+      <value-type name="Vertex" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/Vertex.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="VertexUse" hash-function="smtk::model::cursorHash">
+      <value-type name="VertexUse" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/VertexUse.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="Volume" hash-function="smtk::model::cursorHash">
+      <value-type name="Volume" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/Volume.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="VolumeUse" hash-function="smtk::model::cursorHash">
+      <value-type name="VolumeUse" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/VolumeUse.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>

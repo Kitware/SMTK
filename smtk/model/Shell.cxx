@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/model/Shell.h"
 
-#include "smtk/model/CursorArrangementOps.h"
+#include "smtk/model/EntityRefArrangementOps.h"
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Volume.h"
 

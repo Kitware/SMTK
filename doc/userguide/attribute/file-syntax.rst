@@ -543,10 +543,10 @@ Ref Item Definition <Ref>
 
    Describe attribute reference items and how they are serialized
 
-Model Entity Item Definition <ModelEntity>
+Model Entity Item Definition <Model>
 """"""""""""""""""""""""""""""""""""""""""
 
-A :smtk:`ModelEntityItem`, which appears in XML as a <ModelEntity> is an
+A :smtk:`ModelEntityItem`, which appears in XML as a <Model> is an
 item belonging to an attribute stored as a UUID that refers to an
 SMTK model entity.
 These model entities may be regions, faces, edges, vertices, or even

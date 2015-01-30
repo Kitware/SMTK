@@ -23,13 +23,13 @@ class Volume;
 typedef std::vector<Shell> Shells;
 typedef std::vector<VolumeUse> VolumeUses;
 
-/**\brief A cursor subclass that provides methods specific to 0-d vertex cells.
+/**\brief A entityref subclass that provides methods specific to 0-d vertex cells.
   *
   */
 class SMTKCORE_EXPORT VolumeUse : public UseEntity
 {
 public:
-  SMTK_CURSOR_CLASS(VolumeUse,UseEntity,isVolumeUse);
+  SMTK_ENTITYREF_CLASS(VolumeUse,UseEntity,isVolumeUse);
 
   Volume volume() const; // The volume bounded by this face use (if any)
   Shells shells() const; // The toplevel boundary loops for this face (hole-loops not included)

@@ -34,8 +34,8 @@ public:
   virtual bool shouldOmitProperty(
     DescriptivePhrase::Ptr parent, PropertyType ptype, const std::string& pname) const;
 
-  virtual void setAbridgeUses(bool doAbridge);
-  bool abridgeUses() const;
+  virtual void setAsessionUses(bool doAsession);
+  bool asessionUses() const;
 
 protected:
   SimpleModelSubphrases();
@@ -44,7 +44,7 @@ protected:
   virtual void childrenOfEntityList(EntityListPhrase::Ptr, DescriptivePhrases&);
   virtual void childrenOfPropertyList(PropertyListPhrase::Ptr, DescriptivePhrases&);
 
-  bool m_abridgeUses;
+  bool m_asessionUses;
 };
 
   } // namespace model

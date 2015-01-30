@@ -33,7 +33,7 @@ enum JSONFlags
 {
   JSON_NOTHING       = 0x00, //!< Export nothing.
   JSON_ENTITIES      = 0x01, //!< Export model-entity entries in Manager (not including tessellations or properties).
-  JSON_BRIDGES       = 0x02, //!< Export bridge sessions (i.e., bridge session IDs, the bridge type, and operators).
+  JSON_SESSIONS       = 0x02, //!< Export session sessions (i.e., session session IDs, the session type, and operators).
   JSON_TESSELLATIONS = 0x04, //!< Export tessellations of model-entity entries in the Manager.
   JSON_PROPERTIES    = 0x08, //!< Export string/float/integer properties of model-entity entries in the Manager.
   JSON_DEFAULT       = 0xff  //!< By default, export everything.
@@ -84,18 +84,18 @@ public:
   static int forManagerFloatProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forManagerStringProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forManagerIntegerProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
-  static int forManagerBridgeSession(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
+  static int forManagerSession(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
   //static int forModelOperators(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forOperatorDefinitions(smtk::attribute::System* opSys, cJSON*);
   static int forOperator(smtk::model::OperatorSpecification op, cJSON*);
   static int forOperator(smtk::model::OperatorPtr op, cJSON*);
   static int forOperatorResult(smtk::model::OperatorResult res, cJSON*);
-  static int forDanglingEntities(const smtk::common::UUID& bridgeSessionId, cJSON* node, smtk::model::ManagerPtr modelMgr);
+  static int forDanglingEntities(const smtk::common::UUID& sessionSessionId, cJSON* node, smtk::model::ManagerPtr modelMgr);
 
   static int forModelWorker(
     cJSON* workerDescription,
     const std::string& meshTypeIn, const std::string& meshTypeOut,
-    smtk::model::BridgePtr bridge, const std::string& engine,
+    smtk::model::SessionPtr session, const std::string& engine,
     const std::string& site, const std::string& root,
     const std::string& workerPath, const std::string& requirementsFileName);
 

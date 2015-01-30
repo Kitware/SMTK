@@ -7,51 +7,51 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME qtModelEntityView - the ModelEntity View
+// .NAME qtModelView - the Model View
 // .SECTION Description
 // .SECTION See Also
 // qtBaseView
 
-#ifndef __smtk_attribute_qtModelEntityView_h
-#define __smtk_attribute_qtModelEntityView_h
+#ifndef __smtk_attribute_qtModelView_h
+#define __smtk_attribute_qtModelView_h
 
 #include "smtk/extension/qt/qtBaseView.h"
 
 #include <vector>
 
-class qtModelEntityViewInternals;
+class qtModelViewInternals;
 class QListWidgetItem;
 
 namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtModelEntityView : public qtBaseView
+    class QTSMTK_EXPORT qtModelView : public qtBaseView
     {
       Q_OBJECT
 
     public:
-      qtModelEntityView(smtk::view::BasePtr, QWidget* p, qtUIManager* uiman);
-      virtual ~qtModelEntityView();
+      qtModelView(smtk::view::BasePtr, QWidget* p, qtUIManager* uiman);
+      virtual ~qtModelView();
       QListWidgetItem* getSelectedItem();
       const std::vector<smtk::attribute::DefinitionPtr> &attDefinitions() const;
 
     public slots:
-      void updateModelItems();
+      void updateModelEntityItems();
       void onShowCategory();
       void onListBoxSelectionChanged(QListWidgetItem * , QListWidgetItem * );
       virtual void updateModelAssociation();
 
     protected:
       virtual void createWidget( );
-      smtk::model::ItemPtr getSelectedModelItem();
-      smtk::model::ItemPtr getModelItem(QListWidgetItem * item);
-      QListWidgetItem* addModelItem(smtk::model::ItemPtr childData);
+      smtk::model::ItemPtr getSelectedModelEntityItem();
+      smtk::model::ItemPtr getModelEntityItem(QListWidgetItem * item);
+      QListWidgetItem* addModelEntityItem(smtk::model::ItemPtr childData);
       bool isRegionDomain();
 
     private:
 
-      qtModelEntityViewInternals *Internals;
+      qtModelViewInternals *Internals;
 
     }; // class
   }; // namespace attribute

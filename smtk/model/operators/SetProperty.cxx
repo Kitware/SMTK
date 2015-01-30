@@ -9,11 +9,11 @@
 //=========================================================================
 #include "smtk/model/operators/SetProperty.h"
 
-#include "smtk/model/Bridge.h"
+#include "smtk/model/Session.h"
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Model.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
@@ -30,9 +30,9 @@ namespace smtk {
   namespace model {
 
 template<typename V, typename VL, typename VD, typename VI>
-void SetPropertyValue(const std::string& name, typename VI::Ptr item, CursorArray& entities)
+void SetPropertyValue(const std::string& name, typename VI::Ptr item, EntityRefArray& entities)
 {
-  CursorArray::iterator it;
+  EntityRefArray::iterator it;
   if (!item || item->numberOfValues() == 0)
     {
     // Erase the property of this type from these entities,
@@ -61,7 +61,7 @@ smtk::model::OperatorResult SetProperty::operateInternal()
   smtk::attribute::DoubleItemPtr floatItem = this->findDouble("float value");
   smtk::attribute::IntItemPtr integerItem = this->findInt("integer value");
 
-  CursorArray entities = this->associatedEntitiesAs<CursorArray>();
+  EntityRefArray entities = this->associatedEntitiesAs<EntityRefArray>();
 
   if (nameItem->value(0).empty())
     return this->createResult(smtk::model::OPERATION_FAILED);
@@ -77,21 +77,21 @@ smtk::model::OperatorResult SetProperty::operateInternal()
     smtk::model::OPERATION_SUCCEEDED);
 
   // Return the list of entities that were potentially
-  // modified so that remote bridges can track what records
+  // modified so that remote sessions can track what records
   // need to be re-fetched.
   smtk::attribute::ModelEntityItem::Ptr resultEntities =
     result->findModelEntity("entities");
 
   int numEntitiesOut = static_cast<int>(entities.size());
   resultEntities->setNumberOfValues(numEntitiesOut);
-  CursorArray::iterator it = entities.begin();
+  EntityRefArray::iterator it = entities.begin();
   for (int i = 0; i < numEntitiesOut; ++i, ++it)
     resultEntities->setValue(i, *it);
 
   return result;
 }
 
-  } //namespace bridge
+  } //namespace model
 } // namespace smtk
 
 #include "smtk/model/SetProperty_xml.h"
@@ -101,4 +101,4 @@ smtkImplementsModelOperator(
   set_property,
   "set property",
   SetProperty_xml,
-  smtk::model::Bridge);
+  smtk::model::Session);

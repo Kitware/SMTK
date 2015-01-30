@@ -671,7 +671,7 @@ WARN_LOGFILE           =
 INPUT                  = \
   "@SMTK_SOURCE_DIR@/smtk" \
   "@SMTK_SOURCE_DIR@/smtk/attribute" \
-  "@SMTK_SOURCE_DIR@/smtk/bridge" \
+  "@SMTK_SOURCE_DIR@/smtk/session" \
   "@SMTK_SOURCE_DIR@/smtk/bridge/remote" \
   "@SMTK_SOURCE_DIR@/smtk/bridge/cgm" \
   "@SMTK_SOURCE_DIR@/smtk/bridge/discrete" \

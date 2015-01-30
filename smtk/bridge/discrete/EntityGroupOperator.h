@@ -8,10 +8,10 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_bridge_discrete_EntityGroupOperator_h
-#define __smtk_bridge_discrete_EntityGroupOperator_h
+#ifndef __smtk_session_discrete_EntityGroupOperator_h
+#define __smtk_session_discrete_EntityGroupOperator_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h"
+#include "smtk/bridge/discrete/discreteSessionExports.h"
 #include "smtk/model/Operator.h"
 #include "vtkModelEntityGroupOperator.h"
 #include "vtkNew.h"
@@ -20,7 +20,7 @@ namespace smtk {
   namespace bridge {
     namespace discrete {
 
-class Bridge;
+class Session;
 
 /**\brief Create, desctory or modify a model entity group.
   *
@@ -29,7 +29,7 @@ class Bridge;
   * 2. Destroy, which will remove a entity group with given entity Id;
   * 3. Modify/Operate, which will add or remove entities from the given group.
   */
-class SMTKDISCRETEBRIDGE_EXPORT EntityGroupOperator : public smtk::model::Operator
+class SMTKDISCRETESESSION_EXPORT EntityGroupOperator : public smtk::model::Operator
 {
 public:
   smtkTypeMacro(EntityGroupOperator);
@@ -42,7 +42,7 @@ public:
 protected:
   EntityGroupOperator();
   virtual smtk::model::OperatorResult operateInternal();
-  Bridge* discreteBridge() const;
+  Session* discreteSession() const;
   int fetchCMBCellId(const std::string& parameterName) const;
   int fetchCMBCellId(
     smtk::attribute::ModelEntityItemPtr entItem, int idx ) const;
@@ -55,4 +55,4 @@ protected:
 
 } // namespace smtk
 
-#endif // __smtk_bridge_discrete_EntityGroupOperator_h
+#endif // __smtk_session_discrete_EntityGroupOperator_h

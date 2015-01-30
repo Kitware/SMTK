@@ -10,10 +10,10 @@
 #include "smtk/extension/vtk/vtkModelSource.h"
 
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/Cursor.h"
-#include "smtk/model/GroupEntity.h"
+#include "smtk/model/EntityRef.h"
+#include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/Tessellation.h"
 
 #include "smtk/common/UUID.h"
@@ -58,7 +58,7 @@ void vtkModelSource::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 /// Set the SMTK model to be displayed.
-void vtkModelSource::SetEntities(const smtk::model::Cursors& ents)
+void vtkModelSource::SetEntities(const smtk::model::EntityRefs& ents)
 {
   if (this->Entities == ents)
     {
@@ -69,7 +69,7 @@ void vtkModelSource::SetEntities(const smtk::model::Cursors& ents)
 }
 
 /// Get the SMTK model being displayed.
-smtk::model::Cursors vtkModelSource::GetEntities()
+smtk::model::EntityRefs vtkModelSource::GetEntities()
 {
   return this->Entities;
 }
@@ -136,26 +136,26 @@ static void AddEntityTessToPolyData(
 
 /// Fetch children for model and group entities.
 void vtkModelSource::AccumulateSortedEntities(
-  CursorsByDim& accum, vtkIdType& npts, Cursors& toplevel)
+  EntityRefsByDim& accum, vtkIdType& npts, EntityRefs& toplevel)
 {
-  for (Cursors::const_iterator it = toplevel.begin(); it != toplevel.end(); ++it)
+  for (EntityRefs::const_iterator it = toplevel.begin(); it != toplevel.end(); ++it)
     {
-    if (it->isModelEntity())
+    if (it->isModel())
       { // Add free cells
-      CellEntities freeCells = it->as<ModelEntity>().cells();
+      CellEntities freeCells = it->as<Model>().cells();
       // Find all boundaries of all free cells
       CellEntities::iterator fcit;
       for (fcit = freeCells.begin(); fcit != freeCells.end(); ++fcit)
         {
-        Cursors bdys = fcit->lowerDimensionalBoundaries(-1); // Get *all* boundaries.
+        EntityRefs bdys = fcit->lowerDimensionalBoundaries(-1); // Get *all* boundaries.
         bdys.insert(*fcit); // include the bounding cell
         // Now call ourselves recursively so that we can get npts
         this->AccumulateSortedEntities(accum, npts, bdys);
         }
       }
-    else if (it->isGroupEntity())
+    else if (it->isGroup())
       { // Add group members, but not their boundaries
-      Cursors members = it->as<GroupEntity>().members<Cursors>();
+      EntityRefs members = it->as<Group>().members<EntityRefs>();
       // Do this recursively since a group may contain other groups
       this->AccumulateSortedEntities(accum, npts, members);
       }
@@ -173,7 +173,7 @@ void vtkModelSource::AccumulateSortedEntities(
 
 /// Do the actual work of grabbing primitives from the model.
 void vtkModelSource::GenerateRepresentationFromModel(
-  vtkPolyData* pd, const CursorsByDim& accum, vtkIdType npts)
+  vtkPolyData* pd, const EntityRefsByDim& accum, vtkIdType npts)
 {
   vtkNew<vtkPoints> pts;
   vtkNew<vtkStringArray> pedigree;
@@ -193,9 +193,9 @@ void vtkModelSource::GenerateRepresentationFromModel(
   //       vertex tessellation entry. Pedigree IDs will be wrong in
   //       this case.
   // TODO: Do not handle strips currently since that would require
-  //       us to sort cursors by whether their tessellations had any
+  //       us to sort entityrefs by whether their tessellations had any
   //       strips.
-  CursorsByDim::const_iterator it;
+  EntityRefsByDim::const_iterator it;
   for (it = accum.begin(); it != accum.end(); ++it)
     {
     const Tessellation* tess = it->hasTessellation();
@@ -244,7 +244,7 @@ int vtkModelSource::RequestData(
   if (!this->CachedOutput)
     { // Populate a polydata with tessellation information from the model.
     vtkNew<vtkPolyData> rep;
-    CursorsByDim sortedEnts;
+    EntityRefsByDim sortedEnts;
     vtkIdType npts = 0;
     this->AccumulateSortedEntities(sortedEnts, npts, this->Entities);
     this->GenerateRepresentationFromModel(rep.GetPointer(), sortedEnts, npts);

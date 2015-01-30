@@ -11,7 +11,7 @@
 #define __smtk_model_DescriptivePhrase_h
 
 #include "smtk/SharedFromThis.h"
-#include "smtk/model/Cursor.h"
+#include "smtk/model/EntityRef.h"
 
 #include <string>
 #include <vector>
@@ -94,7 +94,7 @@ public:
   virtual int argFindChild(const DescriptivePhrase* child) const;
   int indexInParent() const;
 
-  virtual Cursor relatedEntity() const                         { return Cursor(); }
+  virtual EntityRef relatedEntity() const                         { return EntityRef(); }
   virtual smtk::common::UUID relatedEntityId() const           { return this->relatedEntity().entity(); }
   virtual ArrangementKind relatedArrangementKind() const       { return KINDS_OF_ARRANGEMENTS; }
   virtual smtk::common::UUID relatedAttributeId() const        { return smtk::common::UUID::null(); }

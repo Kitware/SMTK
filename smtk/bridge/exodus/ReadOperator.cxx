@@ -9,16 +9,16 @@
 //=========================================================================
 #include "smtk/bridge/exodus/ReadOperator.h"
 
-#include "smtk/bridge/exodus/Bridge.h"
+#include "smtk/bridge/exodus/Session.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/model/GroupEntity.h"
+#include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Model.h"
 
 #include "vtkExodusIIReader.h"
 #include "vtkHyperTreeGrid.h"
@@ -68,11 +68,11 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
   modelOut->GetInformation()->Set(
     vtkHyperTreeGrid::DIMENSION(),
     rdr->GetDimensionality());
-  Bridge* brdg = this->exodusBridge();
-  smtk::model::ModelEntity smtkModelOut =
+  Session* brdg = this->exodusSession();
+  smtk::model::Model smtkModelOut =
     brdg->addModel(modelOut);
 
-  // Now set model for bridge and transcribe everything.
+  // Now set model for session and transcribe everything.
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
   smtk::attribute::ModelEntityItem::Ptr resultModels =
@@ -125,4 +125,4 @@ smtkImplementsModelOperator(
   exodus_read,
   "read",
   ReadOperator_xml,
-  smtk::bridge::exodus::Bridge);
+  smtk::bridge::exodus::Session);

@@ -10,9 +10,9 @@
 #include "smtk/io/ImportJSON.h"
 
 #include "smtk/model/Arrangement.h"
-#include "smtk/model/BridgeRegistrar.h"
-#include "smtk/model/BridgeIOJSON.h"
-#include "smtk/model/DefaultBridge.h"
+#include "smtk/model/SessionRegistrar.h"
+#include "smtk/model/SessionIOJSON.h"
+#include "smtk/model/DefaultSession.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/RemoteOperator.h"
@@ -614,20 +614,20 @@ int ImportJSON::ofManagerIntegerProperties(const smtk::common::UUID& uid, cJSON*
   return status ? 0 : 1;
 }
 
-/**\brief Import JSON holding a bridge session into a local bridge.
+/**\brief Import JSON holding a session session into a local session.
   *
-  * The bridge described by \a node will be mirrored by the
-  * \a destBridge you specify.
+  * The session described by \a node will be mirrored by the
+  * \a destSession you specify.
   *
-  * You are responsible for providing the \a destBridge instance
+  * You are responsible for providing the \a destSession instance
   * into which the \a node's session will be placed.
-  * You must also provide a valid model manager, and \a destBridge
+  * You must also provide a valid model manager, and \a destSession
   * will be registered with \a context after its session ID has
   * been assigned.
-  * The \a destBridge must be of a proper type for your application
+  * The \a destSession must be of a proper type for your application
   * (i.e., be able to forward requests for data and operations).
   */
-int ImportJSON::ofRemoteBridgeSession(cJSON* node, DefaultBridgePtr destBridge, ManagerPtr context)
+int ImportJSON::ofRemoteSession(cJSON* node, DefaultSessionPtr destSession, ManagerPtr context)
 {
   int status = 0;
   cJSON* opsObj;
@@ -635,7 +635,7 @@ int ImportJSON::ofRemoteBridgeSession(cJSON* node, DefaultBridgePtr destBridge, 
   if (
     !node ||
     node->type != cJSON_Object ||
-    // Does the node have a valid bridge session ID?
+    // Does the node have a valid session session ID?
     !node->string ||
     !node->string[0] ||
     // Does the node have fields "name" and "ops" (for "operators") of type String?
@@ -649,17 +649,17 @@ int ImportJSON::ofRemoteBridgeSession(cJSON* node, DefaultBridgePtr destBridge, 
     !opsObj->valuestring[0])
     return status;
 
-  destBridge->backsRemoteBridge(
+  destSession->backsRemoteSession(
     nameObj->valuestring, smtk::common::UUID(node->string));
 
-  // Import the XML definitions of the serialized bridge session
-  // into the destination bridge's operatorSystem():
+  // Import the XML definitions of the serialized session session
+  // into the destination session's operatorSystem():
   smtk::io::Logger log;
   smtk::io::AttributeReader rdr;
   rdr.setReportDuplicateDefinitionsAsErrors(false);
   if (
     rdr.readContents(
-      *destBridge->operatorSystem(),
+      *destSession->operatorSystem(),
       opsObj->valuestring, strlen(opsObj->valuestring),
       log))
     {
@@ -674,33 +674,33 @@ int ImportJSON::ofRemoteBridgeSession(cJSON* node, DefaultBridgePtr destBridge, 
     std::cout << "  " << log.convertToString() << "\n";
     }
 
-  // Register the bridge session with the model manager:
-  context->registerBridgeSession(destBridge);
+  // Register the session session with the model manager:
+  context->registerSession(destSession);
 
   // Now register the RemoteOperator constructor with each
-  // operator in the bridge session.
+  // operator in the session session.
   // NB: This registers the constructor with the entire
-  //     bridge class, not just the destBridge instance.
-  //     If destBridge is a DefaultBridge (and not a subclass
+  //     session class, not just the destSession instance.
+  //     If destSession is a DefaultSession (and not a subclass
   //     of it), then be aware that this may override non-RemoteOperator
   //     constructors with RemoteOperator constructors for operators
   //     of the same name.
-  StringList opNames = destBridge->operatorNames();
+  StringList opNames = destSession->operatorNames();
   for (StringList::iterator it = opNames.begin(); it != opNames.end(); ++it)
     {
-    destBridge->registerOperator(*it, NULL, RemoteOperator::baseCreate);
+    destSession->registerOperator(*it, NULL, RemoteOperator::baseCreate);
     }
 
-  // Import additional state if the bridge can accept it.
+  // Import additional state if the session can accept it.
   // Note that this is tricky because createIODelegate is
-  // being called on a *remote* bridge (i.e., subclass of
-  // DefaultBridge, not Bridge) while the JSON is created
+  // being called on a *remote* session (i.e., subclass of
+  // DefaultSession, not Session) while the JSON is created
   // by a delegate obtained by calling createIODelegate
-  // on a *local* bridge (i.e., likely a direct subclass
-  // of Bridge).
-  BridgeIOJSONPtr delegate =
-    smtk::dynamic_pointer_cast<BridgeIOJSON>(
-      destBridge->createIODelegate("json"));
+  // on a *local* session (i.e., likely a direct subclass
+  // of Session).
+  SessionIOJSONPtr delegate =
+    smtk::dynamic_pointer_cast<SessionIOJSON>(
+      destSession->createIODelegate("json"));
   if (delegate)
     {
     delegate->importJSON(context, node);
@@ -708,40 +708,40 @@ int ImportJSON::ofRemoteBridgeSession(cJSON* node, DefaultBridgePtr destBridge, 
   return status;
 }
 
-/**\brief Create a local bridge and import JSON from a bridge session.
+/**\brief Create a local session and import JSON from a session session.
   *
-  * The bridge described by \a node will be mirrored by a newly-created
-  * bridge (whose type is specified by \a node) and attached to the
+  * The session described by \a node will be mirrored by a newly-created
+  * session (whose type is specified by \a node) and attached to the
   * model manager \a context you specify.
   *
   * You must provide a valid model manager, \a context, to which the
   * restored session will be registered.
   * Note that \a context must *already* contain the SMTK entity records
-  * for the bridge session!
-  * In particular, ModelEntity entries in \a context will be used to
+  * for the session session!
+  * In particular, Model entries in \a context will be used to
   * determine the URLs for the modeling kernel's native representations.
   *
   * Note that it may not be possible to create an instance of the
-  * given bridge type -- either because support has not been compiled
+  * given session type -- either because support has not been compiled
   * into SMTK or because the URL is locally inaccessible.
   * (An example of latter is calling this method on a machine different
   * from the source machine so that the original files are unavailable.)
   * In these cases, 0 will be returned.
   * 1 will be returned on success.
   *
-  * Note that it is up to individual bridge subclasses to
+  * Note that it is up to individual session subclasses to
   * provide mechanisms for loading kernel-native models while
-  * preserving UUIDs. The expected design pattern is for each bridge
-  * to provide a BridgeIOJSON delegate class that reads kernel-specific
-  * keys in the bridge session. These keys will specify the list
-  * of models associated with the bridge session. The delegate can
+  * preserving UUIDs. The expected design pattern is for each session
+  * to provide a SessionIOJSON delegate class that reads kernel-specific
+  * keys in the session session. These keys will specify the list
+  * of models associated with the session session. The delegate can
   * then query the \a context for URLs and either directly load
-  * the URL or use the "read" operator for the bridge to load the URL.
+  * the URL or use the "read" operator for the session to load the URL.
   * Since "read" operators usually insert new entries into \a context,
   * special care must be taken to avoid that behavior when importing
-  * a bridge session.
+  * a session session.
   */
-int ImportJSON::ofLocalBridgeSession(cJSON* node, ManagerPtr context)
+int ImportJSON::ofLocalSession(cJSON* node, ManagerPtr context)
 {
   int status = 0;
   cJSON* opsObj;
@@ -749,7 +749,7 @@ int ImportJSON::ofLocalBridgeSession(cJSON* node, ManagerPtr context)
   if (
     !node ||
     node->type != cJSON_Object ||
-    // Does the node have a valid bridge session ID?
+    // Does the node have a valid session session ID?
     !node->string ||
     !node->string[0] ||
     // Does the node have fields "name" and "ops" (for "operators") of type String?
@@ -763,24 +763,24 @@ int ImportJSON::ofLocalBridgeSession(cJSON* node, ManagerPtr context)
     !opsObj->valuestring[0])
     return status;
 
-  Bridge::Ptr bridge =
-    context->createAndRegisterBridge(
+  Session::Ptr session =
+    context->createAndRegisterSession(
       nameObj->valuestring,
       smtk::common::UUID(node->string));
-  if (!bridge)
+  if (!session)
     return status;
 
-  // Ignore the XML definitions of the serialized bridge session;
-  // recreating the bridge will recreate the attribute definitions.
+  // Ignore the XML definitions of the serialized session session;
+  // recreating the session will recreate the attribute definitions.
   (void)opsObj;
 
   // Import additional state.
-  // Bridges may use this to determine which model entities
-  // in the \a context are associated with the new bridge
+  // Sessions may use this to determine which model entities
+  // in the \a context are associated with the new session
   // and load the corresponding native-kernel model files.
-  BridgeIOJSONPtr delegate =
-    smtk::dynamic_pointer_cast<BridgeIOJSON>(
-      bridge->createIODelegate("json"));
+  SessionIOJSONPtr delegate =
+    smtk::dynamic_pointer_cast<SessionIOJSON>(
+      session->createIODelegate("json"));
   if (delegate)
     {
     status = delegate->importJSON(context, node);
@@ -795,15 +795,15 @@ int ImportJSON::ofLocalBridgeSession(cJSON* node, ManagerPtr context)
   * into \a op.
   *
   * If the JSON \a node contains a "sessionId" property,
-  * the storage manager \a context is searched for a Bridge with the
-  * matching UUID. If no matching Bridge exists, then
-  * a RemoteOperator is created on the default Bridge and
+  * the storage manager \a context is searched for a Session with the
+  * matching UUID. If no matching Session exists, then
+  * a RemoteOperator is created on the default Session and
   * its session ID set to the corresponding value.
   * If no "sessionId" is present in \a node, then the method returns
   * 0 (failure) and \a op is unchanged.
   *
   * If the JSON \a node has no "name" property (or has a
-  * name unknown to the Bridge), then the method returns 0 (failure).
+  * name unknown to the Session), then the method returns 0 (failure).
   *
   * Finally, parameter values stored in \a node's "param"
   * string (as XML) are read into the operator's attribute manager.
@@ -822,12 +822,12 @@ int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
     (sessionId = smtk::common::UUID(osess)).isNull())
     return 0;
 
-  BridgePtr bridge;
-  DefaultBridge::Ptr defBridge;
+  SessionPtr session;
+  DefaultSession::Ptr defSession;
   if (context)
     {
-    bridge = context->findBridgeSession(sessionId);
-    defBridge = smtk::dynamic_pointer_cast<DefaultBridge>(bridge);
+    session = context->findSession(sessionId);
+    defSession = smtk::dynamic_pointer_cast<DefaultSession>(session);
     }
 
   std::string oname;
@@ -835,7 +835,7 @@ int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
   if (!pnode || cJSON_GetStringValue(pnode, oname))
     return 0;
 
-  op = bridge->op(oname);
+  op = session->op(oname);
   if (!op)
     return 0;
 
@@ -844,7 +844,7 @@ int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
   OperatorSpecification spec;
   if (
     cJSON_GetObjectParameters(
-      node, spec, op->bridge()->operatorSystem(), "spec", "specXML"))
+      node, spec, op->session()->operatorSystem(), "spec", "specXML"))
     {
     op->setSpecification(spec);
     }
@@ -853,7 +853,7 @@ int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
 
 int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::model::RemoteOperatorPtr op)
 {
-  smtk::attribute::System* opSys = op->bridge()->operatorSystem();
+  smtk::attribute::System* opSys = op->session()->operatorSystem();
   // Deserialize the OperatorResult into \a resOut:
   int status = cJSON_GetObjectParameters(node, resOut, opSys, "result", "resultXML");
 
@@ -898,11 +898,11 @@ int ImportJSON::ofDanglingEntities(cJSON* node, ManagerPtr context)
   if (!sessId || sessId->type != cJSON_String || !sessId->valuestring || !sessId->valuestring[0])
     return 0;
 
-  smtk::common::UUID bridgeSessionId(sessId->valuestring);
-  if (bridgeSessionId.isNull())
+  smtk::common::UUID sessionSessionId(sessId->valuestring);
+  if (sessionSessionId.isNull())
     return 0;
-  BridgePtr bridge = context->findBridgeSession(bridgeSessionId);
-  if (!bridge)
+  SessionPtr session = context->findSession(sessionSessionId);
+  if (!session)
     return 0;
 
   cJSON* darray = cJSON_GetObjectItem(danglers, "entities");
@@ -917,8 +917,8 @@ int ImportJSON::ofDanglingEntities(cJSON* node, ManagerPtr context)
     smtk::common::UUID entityId(entry->string);
     if (entityId.isNull())
       continue;
-    smtk::model::Cursor c(context, entityId);
-    bridge->declareDanglingEntity(c, static_cast<BridgedInfoBits>(entry->valueint));
+    smtk::model::EntityRef c(context, entityId);
+    session->declareDanglingEntity(c, static_cast<SessiondInfoBits>(entry->valueint));
     }
 
   return 1;
@@ -978,7 +978,7 @@ int ImportJSON::ofLog(cJSON* logrecordarray, smtk::io::Logger& log)
   return numberOfRecords;
 }
 
-std::string ImportJSON::bridgeNameFromTagData(cJSON* tagData)
+std::string ImportJSON::sessionNameFromTagData(cJSON* tagData)
 {
   std::ostringstream bname;
   bname << "smtk::model[";
@@ -1011,7 +1011,7 @@ std::string ImportJSON::bridgeNameFromTagData(cJSON* tagData)
   return bname.str();
 }
 
-smtk::model::StringList ImportJSON::bridgeFileTypesFromTagData(cJSON* tagData)
+smtk::model::StringList ImportJSON::sessionFileTypesFromTagData(cJSON* tagData)
 {
   StringList fileTypes;
   cJSON* fileTypesJSON;

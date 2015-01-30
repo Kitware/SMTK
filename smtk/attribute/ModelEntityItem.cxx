@@ -108,10 +108,10 @@ bool ModelEntityItem::setNumberOfValues(std::size_t newSize)
 }
 
 /// Return the \a i-th entity stored in this item.
-smtk::model::Cursor ModelEntityItem::value(std::size_t i) const
+smtk::model::EntityRef ModelEntityItem::value(std::size_t i) const
 {
   if (i >= static_cast<std::size_t>(this->m_values.size()))
-    return smtk::model::Cursor();
+    return smtk::model::EntityRef();
   return this->m_values[i];
 }
 
@@ -120,13 +120,13 @@ smtk::model::Cursor ModelEntityItem::value(std::size_t i) const
   * This always sets the 0-th item and is a convenience method
   * for cases where only 1 value is needed.
   */
-bool ModelEntityItem::setValue(const smtk::model::Cursor& val)
+bool ModelEntityItem::setValue(const smtk::model::EntityRef& val)
 {
   return this->setValue(0, val);
 }
 
 /// Set the \a i-th value to the given item. This method does no checking to see if \a i is valid.
-bool ModelEntityItem::setValue(std::size_t i, const smtk::model::Cursor& val)
+bool ModelEntityItem::setValue(std::size_t i, const smtk::model::EntityRef& val)
 {
   const ModelEntityItemDefinition* def =
     static_cast<const ModelEntityItemDefinition *>(this->definition().get());
@@ -138,7 +138,7 @@ bool ModelEntityItem::setValue(std::size_t i, const smtk::model::Cursor& val)
   return false;
 }
 
-bool ModelEntityItem::appendValue(const smtk::model::Cursor& val)
+bool ModelEntityItem::appendValue(const smtk::model::EntityRef& val)
 {
   // First - are we allowed to change the number of values?
   const ModelEntityItemDefinition* def =
@@ -190,7 +190,7 @@ std::string ModelEntityItem::valueAsString() const
 /// Return the value of the \a i-th model item as a string. This returns the UUID of the entity.
 std::string ModelEntityItem::valueAsString(std::size_t i) const
 {
-  smtk::model::Cursor val = this->value(i);
+  smtk::model::EntityRef val = this->value(i);
   return val.entity().toString();
 }
 
@@ -203,7 +203,7 @@ std::string ModelEntityItem::valueAsString(std::size_t i) const
   * entities which have been expunged can be reported (and other
   * use cases).
   * If you want to guarantee that particular value is valid or
-  * invalid, you should use the Cursor's isValid() method after
+  * invalid, you should use the EntityRef's isValid() method after
   * fetching the value from the ModelEntityItem.
   */
 bool ModelEntityItem::isSet(std::size_t i) const
@@ -216,7 +216,7 @@ bool ModelEntityItem::isSet(std::size_t i) const
 /// Force the \a i-th value of the item to be invalid.
 void ModelEntityItem::unset(std::size_t i)
 {
-  this->setValue(i, smtk::model::Cursor());
+  this->setValue(i, smtk::model::EntityRef());
 }
 
 /// Assigns contents to be same as source item
@@ -235,7 +235,7 @@ void ModelEntityItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
     {
     if (sourceModelEntityItem->isSet(i) && info.IsSameModel)
       {
-      smtk::model::Cursor val = sourceModelEntityItem->value(i);
+      smtk::model::EntityRef val = sourceModelEntityItem->value(i);
       this->setValue(i, val);
       }
     else
@@ -256,7 +256,7 @@ bool ModelEntityItem::has(const smtk::common::UUID& entity) const
 /**\brief
   *
   */
-bool ModelEntityItem::has(const smtk::model::Cursor& entity) const
+bool ModelEntityItem::has(const smtk::model::EntityRef& entity) const
 {
   return this->find(entity) >= 0;
 }
@@ -264,7 +264,7 @@ bool ModelEntityItem::has(const smtk::model::Cursor& entity) const
 /**\brief
   *
   */
-smtk::model::CursorArray::const_iterator ModelEntityItem::begin() const
+smtk::model::EntityRefArray::const_iterator ModelEntityItem::begin() const
 {
   return this->m_values.begin();
 }
@@ -272,7 +272,7 @@ smtk::model::CursorArray::const_iterator ModelEntityItem::begin() const
 /**\brief
   *
   */
-smtk::model::CursorArray::const_iterator ModelEntityItem::end() const
+smtk::model::EntityRefArray::const_iterator ModelEntityItem::end() const
 {
   return this->m_values.end();
 }
@@ -283,7 +283,7 @@ smtk::model::CursorArray::const_iterator ModelEntityItem::end() const
 std::ptrdiff_t ModelEntityItem::find(const smtk::common::UUID& entity) const
 {
   std::ptrdiff_t idx = 0;
-  smtk::model::CursorArray::const_iterator it;
+  smtk::model::EntityRefArray::const_iterator it;
   for (it = this->begin(); it != this->end(); ++it, ++idx)
     if (it->entity() == entity)
       return idx;
@@ -293,10 +293,10 @@ std::ptrdiff_t ModelEntityItem::find(const smtk::common::UUID& entity) const
 /**\brief
   *
   */
-std::ptrdiff_t ModelEntityItem::find(const smtk::model::Cursor& entity) const
+std::ptrdiff_t ModelEntityItem::find(const smtk::model::EntityRef& entity) const
 {
   std::ptrdiff_t idx = 0;
-  smtk::model::CursorArray::const_iterator it;
+  smtk::model::EntityRefArray::const_iterator it;
   for (it = this->begin(); it != this->end(); ++it, ++idx)
     if (*it == entity)
       return idx;

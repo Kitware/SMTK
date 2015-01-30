@@ -1,16 +1,16 @@
 
 set(RemoteLibSrcs
-  RemusBridgeConnection.cxx
-  RemusBridgeConnections.cxx
-  RemusRemoteBridge.cxx
-  RemusStaticBridgeInfo.cxx
+  RemusConnection.cxx
+  RemusConnections.cxx
+  Session.cxx
+  RemusStaticSessionInfo.cxx
 )
 
 set(RemoteLibHeaders
-  RemusBridgeConnection.h
-  RemusBridgeConnections.h
-  RemusRemoteBridge.h
-  RemusStaticBridgeInfo.h
+  RemusConnection.h
+  RemusConnections.h
+  Session.h
+  RemusStaticSessionInfo.h
 )
 
 add_library(SMTKRemote ${RemoteLibSrcs})
@@ -49,7 +49,7 @@ smtk_install_library(SMTKRemote DEPENDS SMTKCore)
 
 # Add a server that accepts arguments for locations to find workers.
 add_executable(smtk-model-server
-  RemusModelServer.cxx
+  smtk-model-server.cxx
 )
 
 target_link_libraries(smtk-model-server
@@ -81,8 +81,8 @@ if (SMTK_BUILD_CGM)
   target_include_directories(smtk-model-worker PRIVATE ${CGM_INCLUDE_DIRS})
 endif()
 
-if (SMTK_BUILD_DISCRETE_BRIDGE)
-  target_link_libraries(smtk-model-worker smtkDiscreteBridge)
+if (SMTK_BUILD_DISCRETE_SESSION)
+  target_link_libraries(smtk-model-worker smtkDiscreteSession)
 endif()
 
 if (SMTK_ENABLE_TESTING)

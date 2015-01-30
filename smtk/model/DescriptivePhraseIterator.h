@@ -10,7 +10,7 @@
 #ifndef __smtk_model_DescriptivePhraseIterator_h
 #define __smtk_model_DescriptivePhraseIterator_h
 
-#include "smtk/model/Cursor.h"
+#include "smtk/model/EntityRef.h"
 
 #include <string>
 
@@ -49,7 +49,7 @@ enum DescriptivePhraseType {
 class SMTKCORE_EXPORT DescriptivePhraseIterator
 {
 public:
-  DescriptivePhraseIterator(const Cursor& entity);
+  DescriptivePhraseIterator(const EntityRef& entity);
   DescriptivePhraseIterator(const DescriptivePhraseIterator& other);
   DescriptivePhraseIterator(DescriptivePhraseIterator* parent, DescriptivePhraseType phraseType, int phraseNum);
 
@@ -61,7 +61,7 @@ public:
   DescriptivePhraseType phraseType() const;
   int numberOfSubphrases() const;
   smtk::common::UUID relatedEntityId() const;
-  Cursor relatedEntity() const;
+  EntityRef relatedEntity() const;
   smtk::attribute::AttributeId relatedAttributeId() const;
   std::string relatedPropertyName() const;
   PropertyType relatedPropertyType() const;
@@ -71,7 +71,7 @@ public:
 
 protected:
   DescriptivePhraseIterator* m_parent; // If we are a subphrase, the parent phrase. Or NULL.
-  Cursor m_context; // The entity we are describing
+  EntityRef m_context; // The entity we are describing
   DescriptivePhraseType m_currentPhraseType; // The current type of phrase we are iterating
   int m_currentPhrase; // The index of the phrase of the current type we are iterating
   int m_numberOfPhrasesOfCurrentType; // An upper bound for m_currentPhrase.

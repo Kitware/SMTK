@@ -24,13 +24,13 @@ EntityListPhrase::EntityListPhrase()
 std::string EntityListPhrase::title()
 {
   std::ostringstream message;
-  CursorArray::size_type sz = this->m_entities.size();
+  EntityRefArray::size_type sz = this->m_entities.size();
   message << sz << " ";
 
   this->buildSubphrases(); // This sets the m_{common,union}Flags members.
-  // Now determine whether all the cursors share a common type or dimension.
+  // Now determine whether all the entityrefs share a common type or dimension.
   if (this->m_commonFlags == this->m_unionFlags)
-    { // All the cursors have exactly the same flags set.
+    { // All the entityrefs have exactly the same flags set.
     message << Entity::flagSummary(this->m_commonFlags, sz == 1 ? 0 : 1);
     }
   else
@@ -62,7 +62,7 @@ std::string EntityListPhrase::subtitle()
 }
 
 /// The list of entities to be presented.
-CursorArray EntityListPhrase::relatedEntities() const
+EntityRefArray EntityListPhrase::relatedEntities() const
 {
   return this->m_entities;
 }

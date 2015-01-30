@@ -22,7 +22,7 @@ class EdgeUse;
 typedef std::vector<Loop> Loops;
 typedef std::vector<EdgeUse> EdgeUses;
 
-/**\brief A cursor subclass with methods specific to edge-loops.
+/**\brief A entityref subclass with methods specific to edge-loops.
   *
   * A loop is a collection of oriented edge-uses that form a
   * subset of the boundary of a face cell.
@@ -31,7 +31,7 @@ typedef std::vector<EdgeUse> EdgeUses;
 class SMTKCORE_EXPORT Loop : public ShellEntity
 {
 public:
-  SMTK_CURSOR_CLASS(Loop,ShellEntity,isLoop);
+  SMTK_ENTITYREF_CLASS(Loop,ShellEntity,isLoop);
 
   Face face() const;
   FaceUse faceUse() const;

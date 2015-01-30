@@ -20,7 +20,7 @@ import smtk
 
 itemNames = ["IntComp1", "IntComp2", "DoubleComp1",
              "DoubleComp2", "StringComp1", "StringComp2",
-             "ModelEntityComp1_FACE", "ModelEntityComp2_GROUP"]
+             "ModelComp1_FACE", "ModelComp2_GROUP"]
 
 if __name__ == '__main__':
     import sys
@@ -155,7 +155,7 @@ if __name__ == '__main__':
         print 'ERROR: Attribute testMEAtt not created'
         status = -1
     # III. Find the face-only attribute item and try fuzzing its arguments a bit
-    comp = att.find("ModelEntityComp1_FACE")
+    comp = att.find("ModelComp1_FACE")
     if not comp is None:
        fcomp = smtk.attribute.ModelEntityItem.CastTo(comp)
        if fcomp.appendValue(edg):
@@ -169,7 +169,7 @@ if __name__ == '__main__':
        print "ERROR: could not find the base's item"
        status = -1;
     # IV. Find the homogenous-group-only attribute item and try fuzzing its arguments a bit
-    comp = att.find("ModelEntityComp2_GROUP")
+    comp = att.find("ModelComp2_GROUP")
     if not comp is None:
        gcomp = smtk.attribute.ModelEntityItem.CastTo(comp)
        if not gcomp.appendValue(gr0):

@@ -24,13 +24,13 @@ typedef std::vector<Chain> Chains;
 typedef std::vector<Edge> Edges;
 typedef std::vector<EdgeUse> EdgeUses;
 
-/**\brief A cursor subclass that provides methods specific to 0-d vertex cells.
+/**\brief A entityref subclass that provides methods specific to 0-d vertex cells.
   *
   */
 class SMTKCORE_EXPORT VertexUse : public UseEntity
 {
 public:
-  SMTK_CURSOR_CLASS(VertexUse,UseEntity,isVertexUse);
+  SMTK_ENTITYREF_CLASS(VertexUse,UseEntity,isVertexUse);
 
   Vertex vertex() const;
   Edges edges() const;

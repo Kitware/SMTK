@@ -1,4 +1,4 @@
-if (SMTK_ENABLE_EXODUS_BRIDGE)
+if (SMTK_ENABLE_EXODUS_SESSION)
 
   find_package(ParaView REQUIRED)
   include(${PARAVIEW_USE_FILE})
@@ -10,18 +10,18 @@ if (SMTK_ENABLE_EXODUS_BRIDGE)
   # not be found.
   list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
-  add_paraview_plugin(smtkExodusBridge_Plugin "1.0"
+  add_paraview_plugin(smtkExodusSession_Plugin "1.0"
       SERVER_SOURCES
-        bridgeInit.cxx
+        sessionInit.cxx
     )
 
-  target_link_libraries(smtkExodusBridge_Plugin
+  target_link_libraries(smtkExodusSession_Plugin
     LINK_PUBLIC
       SMTKCore
-      SMTKBridgeExodus
+      SMTKSessionExodus
       vtkPVServerManagerApplication
     LINK_PRIVATE
       vtkPVServerManagerApplicationCS
   )
-  smtk_install_library(smtkExodusBridge_Plugin DEPENDS SMTKCore SMTKBridgeExodus)
+  smtk_install_library(smtkExodusSession_Plugin DEPENDS SMTKCore SMTKSessionExodus)
 endif()

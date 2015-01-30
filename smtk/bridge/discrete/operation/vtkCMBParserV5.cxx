@@ -11,7 +11,7 @@
 
 #include "vtkCMBParserV5.h"
 
-#include "Bridge.h"
+#include "Session.h"
 
 #include "vtkCharArray.h"
 #include "vtkModel3dm2DGridRepresentation.h"
@@ -49,7 +49,7 @@
 #include <string.h>
 
 /// The parser keeps a single bridge around to track all the models it imports.
-smtk::shared_ptr<smtk::bridge::discrete::Bridge> vtkCMBParserV5::s_bridge;
+smtk::shared_ptr<smtk::bridge::discrete::Session> vtkCMBParserV5::s_session;
 
 vtkStandardNewMacro(vtkCMBParserV5);
 
@@ -57,8 +57,8 @@ vtkStandardNewMacro(vtkCMBParserV5);
 
 vtkCMBParserV5::vtkCMBParserV5()
 {
-  if (!vtkCMBParserV5::s_bridge)
-    vtkCMBParserV5::s_bridge = smtk::bridge::discrete::Bridge::create();
+  if (!vtkCMBParserV5::s_session)
+    vtkCMBParserV5::s_session = smtk::bridge::discrete::Session::create();
 }
 
 vtkCMBParserV5:: ~vtkCMBParserV5()
@@ -109,7 +109,7 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
   // load in the model's UUID if it exists.
   std::vector<vtkModelItem*> modelRecords;
   modelRecords.push_back(Model);
-  vtkCMBParserV5::s_bridge->assignUUIDs(modelRecords,
+  vtkCMBParserV5::s_session->assignUUIDs(modelRecords,
     MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelUUIDsString()));
   // TODO: Handle submodels whose UUIDs are also in the field-data array.
   //       Need to know how the order in the file may be obtained.
@@ -122,7 +122,7 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
     ModelEntities[i] = material;
     }
   MaterialIdsArray->Delete();
-  vtkCMBParserV5::s_bridge->assignUUIDs(
+  vtkCMBParserV5::s_session->assignUUIDs(
     std::vector<vtkModelItem*>(ModelEntities.begin(), ModelEntities.end()),
     MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetMaterialUUIDsString()));
   this->SetModelEntityData(MasterPoly, ModelEntities, "Material", Model);
@@ -152,7 +152,7 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
         }
       vertexPointIds->Delete();
       this->SetModelEntityData(MasterPoly, ModelEntities, "ModelVertex", Model);
-      vtkCMBParserV5::s_bridge->assignUUIDs(
+      vtkCMBParserV5::s_session->assignUUIDs(
         std::vector<vtkModelItem*>(ModelEntities.begin(), ModelEntities.end()),
         MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelVertexUUIDsString()));
       }
@@ -186,7 +186,7 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
     EdgeIdsArray->Delete();
     EdgeIdsArray = 0;
     this->SetModelEntityData(MasterPoly, ModelEntities, "ModelEdge", Model);
-    vtkCMBParserV5::s_bridge->assignUUIDs(
+    vtkCMBParserV5::s_session->assignUUIDs(
       std::vector<vtkModelItem*>(ModelEntities.begin(), ModelEntities.end()),
       MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelEdgeUUIDsString()));
     EdgeVertices->Delete();
@@ -291,7 +291,7 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
     FaceMaterials = 0;
     }
   this->SetModelEntityData(MasterPoly, ModelEntities, "ModelFace", Model);
-  vtkCMBParserV5::s_bridge->assignUUIDs(
+  vtkCMBParserV5::s_session->assignUUIDs(
     std::vector<vtkModelItem*>(ModelEntities.begin(), ModelEntities.end()),
     MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelFaceUUIDsString()));
   // now that the ids are properly set we can add the cells to the model faces and/or edges
@@ -374,7 +374,7 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
     RegionMaterials->Delete();
     RegionMaterials = 0;
     this->SetModelEntityData(MasterPoly, ModelEntities, "ModelRegion", Model);
-    vtkCMBParserV5::s_bridge->assignUUIDs(
+    vtkCMBParserV5::s_session->assignUUIDs(
       std::vector<vtkModelItem*>(ModelEntities.begin(), ModelEntities.end()),
       MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelRegionUUIDsString()));
     }
@@ -457,7 +457,7 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
     GroupedEntityIds->Delete();
     GroupedEntityIds = 0;
     this->SetModelEntityData(MasterPoly, ModelEntities, "ModelEntityGroup", Model);
-    vtkCMBParserV5::s_bridge->assignUUIDs(
+    vtkCMBParserV5::s_session->assignUUIDs(
       std::vector<vtkModelItem*>(ModelEntities.begin(), ModelEntities.end()),
       MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelGroupUUIDsString()));
     }

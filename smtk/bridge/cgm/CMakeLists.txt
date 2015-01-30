@@ -2,7 +2,7 @@
 include_directories(${CGM_INCLUDE_DIRS})
 
 set(cgmSrcs
-  Bridge.cxx
+  Session.cxx
   CAUUID.cxx
   Engines.cxx
   ExportSolid.cxx
@@ -28,7 +28,7 @@ set(cgmSrcs
 )
 
 set(cgmHeaders
-  Bridge.h
+  Session.h
   CAUUID.h
   Engines.h
   ExportSolid.h
@@ -81,9 +81,9 @@ endif()
 smtk_install_library(cgmSMTK DEPENDS SMTKCore)
 
 # Normally we would uncomment this line:
-#    smtk_bridge_json("${CMAKE_CURRENT_SOURCE_DIR}/Bridge.json" cgmBridgeJSON)
+#    smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" cgmSessionJSON)
 # to generate a header file containing the JSON string defining
-# tags for the CGM bridge. However, because we wish to omit portions
+# tags for the CGM session. However, because we wish to omit portions
 # of the JSON depending on configuration options, a hand-edited header
 # is included in the source tree instead. The other option would be to
 # build a program at configure-time to conditionally create the JSON and/or header.
@@ -143,7 +143,7 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
       ${SMTK_SOURCE_DIR}/smtk/common
       ${SMTK_SOURCE_DIR}/smtk/attribute
       ${SMTK_SOURCE_DIR}/smtk/model
-      ${SMTK_SOURCE_DIR}/smtk/bridge
+      ${SMTK_SOURCE_DIR}/smtk/session
       ${SMTK_SOURCE_DIR}/smtk/bridge/cgm
       ${SMTK_SOURCE_DIR}/smtk/simulation
       ${SMTK_SOURCE_DIR}/smtk/io
@@ -159,7 +159,7 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
     PRIVATE ${CGM_INCLUDE_DIRS})
 endif()
 
-if(SMTK_BUILD_BRIDGE_PLUGIN AND SMTK_BUILD_CGM)
+if(SMTK_BUILD_SESSION_PLUGIN AND SMTK_BUILD_CGM)
   add_subdirectory(plugin)
 endif()
 

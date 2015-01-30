@@ -8,10 +8,10 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_bridge_discrete_ImportOperator_h
-#define __smtk_bridge_discrete_ImportOperator_h
+#ifndef __smtk_session_discrete_ImportOperator_h
+#define __smtk_session_discrete_ImportOperator_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h"
+#include "smtk/bridge/discrete/discreteSessionExports.h"
 #include "smtk/model/Operator.h"
 #include "vtkCMBModelBuilder.h"
 #include "vtkNew.h"
@@ -20,7 +20,7 @@ namespace smtk {
   namespace bridge {
     namespace discrete {
 
-class Bridge;
+class Session;
 
 /**\brief Read a CMB discrete model file.
   *
@@ -35,7 +35,7 @@ class Bridge;
   *    "Poly files (*.poly *.smesh)
   *    "Shape files (*.shp)
   */
-class SMTKDISCRETEBRIDGE_EXPORT ImportOperator : public smtk::model::Operator
+class SMTKDISCRETESESSION_EXPORT ImportOperator : public smtk::model::Operator
 {
 public:
   smtkTypeMacro(ImportOperator);
@@ -48,7 +48,7 @@ public:
 protected:
   ImportOperator();
   virtual smtk::model::OperatorResult operateInternal();
-  Bridge* discreteBridge() const;
+  Session* discreteSession() const;
 
   vtkNew<vtkCMBModelBuilder> m_op;
 };
@@ -57,4 +57,4 @@ protected:
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_discrete_ImportOperator_h
+#endif // __smtk_session_discrete_ImportOperator_h

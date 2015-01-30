@@ -21,7 +21,7 @@ class FaceUse;
 typedef std::vector<Shell> Shells;
 typedef std::vector<FaceUse> FaceUses;
 
-/**\brief A cursor subclass with methods specific to face-shells.
+/**\brief A entityref subclass with methods specific to face-shells.
   *
   * A shell is a collection of oriented face-uses that form a
   * subset of the boundary of a volume cell.
@@ -30,7 +30,7 @@ typedef std::vector<FaceUse> FaceUses;
 class SMTKCORE_EXPORT Shell : public ShellEntity
 {
 public:
-  SMTK_CURSOR_CLASS(Shell,ShellEntity,isShell);
+  SMTK_ENTITYREF_CLASS(Shell,ShellEntity,isShell);
 
   Volume volume() const;
   FaceUses faceUses() const;

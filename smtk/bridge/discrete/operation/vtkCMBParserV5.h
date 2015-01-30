@@ -15,7 +15,7 @@
 #ifndef __smtkdiscrete_vtkCMBParserV5_h
 #define __smtkdiscrete_vtkCMBParserV5_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
+#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
 #include "vtkCMBParserBase.h"
 #include <vector>
 
@@ -28,7 +28,7 @@ class vtkPolyData;
 namespace smtk {
   namespace bridge {
     namespace discrete {
-      class Bridge;
+      class Session;
     }
   }
 }
@@ -59,7 +59,7 @@ protected:
   // is "more" complete.
   void SetAnalysisGridData(vtkPolyData* masterPoly, vtkDiscreteModel* model);
 
-  static smtk::shared_ptr<smtk::bridge::discrete::Bridge> s_bridge;
+  static smtk::shared_ptr<smtk::bridge::discrete::Session> s_session;
 
 private:
   vtkCMBParserV5(const vtkCMBParserV5&);  // Not implemented.

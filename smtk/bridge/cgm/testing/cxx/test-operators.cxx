@@ -11,12 +11,12 @@
 //=============================================================================
 #include "smtk/io/ExportJSON.h"
 
-#include "smtk/model/Bridge.h"
-#include "smtk/model/BridgeSession.h"
+#include "smtk/model/Session.h"
+#include "smtk/model/SessionRef.h"
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/Cursor.h"
+#include "smtk/model/EntityRef.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
 #include "smtk/model/Volume.h"
 
@@ -38,7 +38,7 @@ using namespace smtk::io;
 using namespace smtk::model;
 using namespace smtk::common;
 
-smtkComponentInitMacro(smtk_cgm_bridge);
+smtkComponentInitMacro(smtk_cgm_session);
 smtkComponentInitMacro(smtk_cgm_boolean_union_operator);
 smtkComponentInitMacro(smtk_cgm_create_sphere_operator);
 smtkComponentInitMacro(smtk_cgm_create_prism_operator);
@@ -146,8 +146,8 @@ int main (int argc, char* argv[])
     }
 
   Manager::Ptr mgr = Manager::create();
-  Bridge::Ptr brg = mgr->createBridge("cgm");
-  mgr->registerBridgeSession(brg);
+  Session::Ptr brg = mgr->createSessionOfType("cgm");
+  mgr->registerSession(brg);
   StringList err(1);
   err[0] = opts.relativeChordError(); brg->setup("tessellation maximum relative chord error", err);
   err[0] = opts.angleError(); brg->setup("tessellation maximum angle error", err);
@@ -166,7 +166,7 @@ int main (int argc, char* argv[])
     std::cerr << "Sphere Fail\n";
     return 1;
     }
-  ModelEntity sphere = result->findModelEntity("entities")->value();
+  Model sphere = result->findModelEntity("entities")->value();
 
   op = brg->op("create prism");
   op->findDouble("height")->setValue(opts.prismHeight());
@@ -179,12 +179,12 @@ int main (int argc, char* argv[])
     std::cerr << "Prism Fail\n";
     return 1;
     }
-  ModelEntity prism = result->findModelEntity("entities")->value();
+  Model prism = result->findModelEntity("entities")->value();
 
   ModelEntities operands;
   operands.push_back(sphere);
   operands.push_back(prism);
-  BridgeSession bs(mgr, brg->sessionId());
+  SessionRef bs(mgr, brg->sessionId());
   StringList validOps = bs.operatorsForAssociation(operands);
   test(!validOps.empty(),
     "Expected at least 1 operator (union) that can act on model entities.");
@@ -204,7 +204,7 @@ int main (int argc, char* argv[])
 
   smtk::attribute::ModelEntityItem::Ptr bodies = result->findModelEntity("entities");
   std::cout << "Created " << bodies->value().flagSummary() << "\n";
-  std::cout << "   with " << bodies->value().as<ModelEntity>().cells().size() << " cells\n";
+  std::cout << "   with " << bodies->value().as<Model>().cells().size() << " cells\n";
   //std::ofstream json("/tmp/sphere.json");
   //json << ExportJSON::fromModelManager(mgr);
   //json.close();

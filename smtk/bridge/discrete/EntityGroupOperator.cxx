@@ -10,20 +10,20 @@
 
 #include "EntityGroupOperator.h"
 
-#include "smtk/bridge/discrete/Bridge.h"
+#include "smtk/bridge/discrete/Session.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
-#include "smtk/model/GroupEntity.h"
+#include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Model.h"
 
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEntityGroup.h"
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkModelEntity.h"
+#include "vtkModel.h"
 
 #include "EntityGroupOperator_xml.h"
 
@@ -40,14 +40,14 @@ EntityGroupOperator::EntityGroupOperator()
 
 bool EntityGroupOperator::ableToOperate()
 {
-  smtk::model::ModelEntity model;
+  smtk::model::Model model;
   bool able2Op =
     this->ensureSpecification() &&
     // The SMTK model must be valid
     (model = this->specification()->findModelEntity("model")
-      ->value().as<smtk::model::ModelEntity>()).isValid() &&
+      ->value().as<smtk::model::Model>()).isValid() &&
     // The CMB model must exist
-    this->discreteBridge()->findModel(model.entity());
+    this->discreteSession()->findModelEntity(model.entity());
 
   if(!able2Op)
     {
@@ -76,15 +76,15 @@ bool EntityGroupOperator::ableToOperate()
 OperatorResult EntityGroupOperator::operateInternal()
 {
   smtk::model::ManagerPtr pstore = this->manager();
-  Bridge* bridge = this->discreteBridge();
+  Session* session = this->discreteSession();
   // ableToOperate should have verified that model is valid
-  smtk::model::ModelEntity model = this->specification()->
-    findModelEntity("model")->value().as<smtk::model::ModelEntity>();
+  smtk::model::Model model = this->specification()->
+    findModelEntity("model")->value().as<smtk::model::Model>();
   vtkDiscreteModelWrapper* modelWrapper =
-    bridge->findModel(model.entity());
+    session->findModelEntity(model.entity());
   bool ok = false;
-  smtk::model::GroupEntity bgroup;
-  smtk::model::Cursor grpRem;
+  smtk::model::Group bgroup;
+  smtk::model::EntityRef grpRem;
   // Translate SMTK inputs into CMB inputs
   smtk::attribute::StringItem::Ptr optypeItem =
     this->specification()->findString("Operation");
@@ -104,8 +104,8 @@ OperatorResult EntityGroupOperator::operateInternal()
         (entType==vtkModelEdgeType ? smtk::model::EDGE : smtk::model::VERTEX);
       vtkDiscreteModelEntityGroup* grp = dynamic_cast<vtkDiscreteModelEntityGroup*>(
         modelWrapper->GetModelEntity(vtkDiscreteModelEntityGroupType, grpId));
-      smtk::common::UUID grpUUID = bridge->findOrSetEntityUUID(grp);
-      bgroup = bridge->addGroupToManager(grpUUID, grp, pstore, 0);
+      smtk::common::UUID grpUUID = session->findOrSetEntityUUID(grp);
+      bgroup = session->addGroupToManager(grpUUID, grp, pstore, 0);
       bgroup.setMembershipMask(mask);
       // Add group to model's relationship
       model.addGroup(bgroup);
@@ -150,10 +150,10 @@ OperatorResult EntityGroupOperator::operateInternal()
       vtkDiscreteModelEntityGroup* grp = dynamic_cast<vtkDiscreteModelEntityGroup*>(
         modelWrapper->GetModelEntity(vtkDiscreteModelEntityGroupType, grpId));
       // get rid of the group from manager
-      smtk::model::Cursor grpC =
+      smtk::model::EntityRef grpC =
         this->specification()->findModelEntity("cell group")->value();
       pstore->erase(grpC);
-      bgroup = bridge->addGroupToManager(grpC.entity(), grp, pstore, true);
+      bgroup = session->addGroupToManager(grpC.entity(), grp, pstore, true);
       std::cout << "Modified " << grpC.name() << " in " << model.name() << "\n";
       }
     }
@@ -194,15 +194,15 @@ OperatorResult EntityGroupOperator::operateInternal()
   return result;
 }
 
-Bridge* EntityGroupOperator::discreteBridge() const
+Session* EntityGroupOperator::discreteSession() const
 {
-  return dynamic_cast<Bridge*>(this->bridge());
+  return dynamic_cast<Session*>(this->session());
 }
 
 int EntityGroupOperator::fetchCMBCellId(const std::string& pname) const
 {
   vtkModelItem* item =
-    this->discreteBridge()->entityForUUID(
+    this->discreteSession()->entityForUUID(
       this->specification()->findModelEntity(pname)->value().entity());
 
   vtkModelEntity* cell = dynamic_cast<vtkModelEntity*>(item);
@@ -216,7 +216,7 @@ int EntityGroupOperator::fetchCMBCellId(
   smtk::attribute::ModelEntityItemPtr entItem, int idx ) const
 {
   vtkModelItem* item =
-    this->discreteBridge()->entityForUUID(entItem->value(idx).entity());
+    this->discreteSession()->entityForUUID(entItem->value(idx).entity());
 
   vtkModelEntity* cell = dynamic_cast<vtkModelEntity*>(item);
   if (cell)
@@ -235,4 +235,4 @@ smtkImplementsModelOperator(
   discrete_entity_group,
   "entity group",
   EntityGroupOperator_xml,
-  smtk::bridge::discrete::Bridge);
+  smtk::bridge::discrete::Session);

@@ -21,7 +21,7 @@ class VertexUse;
 typedef std::vector<Chain> Chains;
 typedef std::vector<VertexUse> VertexUses;
 
-/**\brief A cursor subclass with methods specific to vertex-chains.
+/**\brief A entityref subclass with methods specific to vertex-chains.
   *
   * A chain is a collection of vertex-uses that form a
   * subset of the boundary of an edge cell --
@@ -36,7 +36,7 @@ typedef std::vector<VertexUse> VertexUses;
 class SMTKCORE_EXPORT Chain : public ShellEntity
 {
 public:
-  SMTK_CURSOR_CLASS(Chain,ShellEntity,isChain);
+  SMTK_ENTITYREF_CLASS(Chain,ShellEntity,isChain);
 
   Edge edge() const;
   VertexUses vertexUses() const;

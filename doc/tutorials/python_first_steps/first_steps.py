@@ -94,7 +94,7 @@ smtk.io.ImportJSON.intoModelManager(json, mmgr)
 
 # Now find groups corresponding to IC/BCs:
 models = mmgr.findEntitiesByProperty('name', 'Test Model')
-model = smtk.model.ModelEntity(models[0])
+model = smtk.model.Model(models[0])
 groups = model.groups()
 if groups and len(groups):
   wallGroup = (g for g in groups if g.name() == 'wall').next()

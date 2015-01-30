@@ -16,7 +16,7 @@
 #include "smtk/SystemConfig.h"
 #include "smtk/SharedPtr.h"
 
-#include "smtk/model/Bridge.h"
+#include "smtk/model/Session.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/FloatData.h"
 #include "smtk/model/IntegerData.h"
@@ -79,8 +79,8 @@ public:
   int dimension(const smtk::common::UUID& ofEntity) const;
   std::string name(const smtk::common::UUID& ofEntity) const;
 
-  const Entity* findEntity(const smtk::common::UUID& uid, bool tryBridges = true) const;
-  Entity* findEntity(const smtk::common::UUID& uid, bool tryBridges = true);
+  const Entity* findEntity(const smtk::common::UUID& uid, bool trySessions = true) const;
+  Entity* findEntity(const smtk::common::UUID& uid, bool trySessions = true);
 
   virtual bool erase(const smtk::common::UUID& uid);
 
@@ -152,36 +152,36 @@ public:
   UUIDsToIntegerData const& integerProperties() const { return *this->m_integerData; }
 
   smtk::common::UUID modelOwningEntity(const smtk::common::UUID& uid) const;
-  BridgePtr bridgeForModel(const smtk::common::UUID& uid) const;
-  void setBridgeForModel(BridgePtr bridge, const smtk::common::UUID& uid);
+  SessionPtr sessionForModel(const smtk::common::UUID& uid) const;
+  void setSessionForModel(SessionPtr session, const smtk::common::UUID& uid);
 
   void assignDefaultNames();
   std::string assignDefaultName(const smtk::common::UUID& uid);
   static std::string shortUUIDName(const smtk::common::UUID& uid, BitFlags entityFlags);
 
-  static StringList bridgeNames();
-  static StringData bridgeFileTypes(const std::string& bname, const std::string& engine = std::string());
-  static BridgePtr createBridge(const std::string& bname);
-  BridgePtr createAndRegisterBridge(
+  static StringList sessionNames();
+  static StringData sessionFileTypes(const std::string& bname, const std::string& engine = std::string());
+  static SessionPtr createSessionOfType(const std::string& bname);
+  SessionPtr createAndRegisterSession(
     const std::string& bname,
-    const smtk::common::UUID& bridgeSessionId = smtk::common::UUID::null());
+    const smtk::common::UUID& sessionSessionId = smtk::common::UUID::null());
 
-  bool registerBridgeSession(BridgePtr session);
-  bool unregisterBridgeSession(BridgePtr session);
-  BridgePtr findBridgeSession(const smtk::common::UUID& sessionId) const;
-  smtk::common::UUIDs bridgeSessions() const;
-  smtk::common::UUIDs modelsOfBridgeSession(const smtk::common::UUID& sessionId) const;
+  bool registerSession(SessionPtr session);
+  bool unregisterSession(SessionPtr session);
+  SessionPtr findSession(const smtk::common::UUID& sessionId) const;
+  smtk::common::UUIDs sessionSessions() const;
+  smtk::common::UUIDs modelsOfSession(const smtk::common::UUID& sessionId) const;
 
 protected:
   shared_ptr<UUIDsToEntities> m_topology;
   smtk::shared_ptr<UUIDsToFloatData> m_floatData;
   smtk::shared_ptr<UUIDsToStringData> m_stringData;
   smtk::shared_ptr<UUIDsToIntegerData> m_integerData;
-  UUIDsToBridges m_modelBridges;
-  smtk::shared_ptr<Bridge> m_defaultBridge;
-  UUIDsToBridges m_sessions;
+  UUIDsToSessions m_modelSessions;
+  smtk::shared_ptr<Session> m_defaultSession;
+  UUIDsToSessions m_sessions;
   smtk::common::UUIDGenerator m_uuidGenerator;
-  IntegerList m_globalCounters; // first entry is bridge counter, second is model counter
+  IntegerList m_globalCounters; // first entry is session counter, second is model counter
 
   void assignDefaultNamesWithOwner(
     const UUIDWithEntity& irec,

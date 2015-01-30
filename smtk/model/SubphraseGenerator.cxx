@@ -9,13 +9,13 @@
 //=========================================================================
 #include "smtk/model/SubphraseGenerator.h"
 
-#include "smtk/model/BridgeSession.h"
-#include "smtk/model/ModelEntity.h"
-#include "smtk/model/GroupEntity.h"
+#include "smtk/model/SessionRef.h"
+#include "smtk/model/Model.h"
+#include "smtk/model/Group.h"
 #include "smtk/model/ShellEntity.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/UseEntity.h"
-#include "smtk/model/InstanceEntity.h"
+#include "smtk/model/Instance.h"
 
 #include "smtk/model/FloatData.h"
 #include "smtk/model/StringData.h"
@@ -74,14 +74,14 @@ bool SubphraseGenerator::shouldOmitProperty(
 }
 
 void SubphraseGenerator::instancesOfEntity(
-  DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src, const EntityRef& ent, DescriptivePhrases& result)
 {
   InstanceEntities instances = ent.instances<InstanceEntities>();
   addEntityPhrases(instances, src, this->directLimit(), result);
 }
 
 void SubphraseGenerator::attributesOfEntity(
-  DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src, const EntityRef& ent, DescriptivePhrases& result)
 {
   if (ent.hasAttributes())
     {
@@ -92,7 +92,7 @@ void SubphraseGenerator::attributesOfEntity(
 }
 
 void SubphraseGenerator::propertiesOfEntity(
-  DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src, const EntityRef& ent, DescriptivePhrases& result)
 {
   this->stringPropertiesOfEntity(src, ent, result);
   this->integerPropertiesOfEntity(src, ent, result);
@@ -100,7 +100,7 @@ void SubphraseGenerator::propertiesOfEntity(
 }
 
 void SubphraseGenerator::floatPropertiesOfEntity(
-  DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src, const EntityRef& ent, DescriptivePhrases& result)
 {
   std::set<std::string> pnames = ent.floatPropertyNames();
   if (!pnames.empty())
@@ -110,7 +110,7 @@ void SubphraseGenerator::floatPropertiesOfEntity(
 }
 
 void SubphraseGenerator::stringPropertiesOfEntity(
-  DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src, const EntityRef& ent, DescriptivePhrases& result)
 {
   std::set<std::string> pnames = ent.stringPropertyNames();
   if (!pnames.empty())
@@ -120,7 +120,7 @@ void SubphraseGenerator::stringPropertiesOfEntity(
 }
 
 void SubphraseGenerator::integerPropertiesOfEntity(
-  DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src, const EntityRef& ent, DescriptivePhrases& result)
 {
   std::set<std::string> pnames = ent.integerPropertyNames();
   if (!pnames.empty())
@@ -166,9 +166,9 @@ void SubphraseGenerator::usesOfCell(
 void SubphraseGenerator::inclusionsOfCell(
   DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result)
 {
-  Cursors inclusions = ent.inclusions<Cursors>();
+  EntityRefs inclusions = ent.inclusions<EntityRefs>();
   CellEntities boundingCells = ent.boundingCells();
-  Cursors strictInclusions;
+  EntityRefs strictInclusions;
   std::set_difference(
     inclusions.begin(), inclusions.end(),
     boundingCells.begin(), boundingCells.end(),
@@ -192,29 +192,29 @@ void SubphraseGenerator::usesOfShell(
 
 
 void SubphraseGenerator::membersOfGroup(
-  DescriptivePhrase::Ptr src, const GroupEntity& grp, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src, const Group& grp, DescriptivePhrases& result)
 {
-  CursorArray members = grp.members<CursorArray>();
+  EntityRefArray members = grp.members<EntityRefArray>();
   addEntityPhrases(members, src, this->directLimit(), result);
   // TODO: Sort by entity type, name, etc.?
 }
 
 void SubphraseGenerator::freeSubmodelsOfModel(
-  DescriptivePhrase::Ptr src, const ModelEntity& mod, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result)
 {
   ModelEntities freeSubmodelsInModel = mod.submodels();
   addEntityPhrases(freeSubmodelsInModel, src, this->directLimit(), result);
 }
 
 void SubphraseGenerator::freeGroupsInModel(
-  DescriptivePhrase::Ptr src, const ModelEntity& mod, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result)
 {
   GroupEntities freeGroups = mod.groups();
   addEntityPhrases(freeGroups, src, this->directLimit(), result);
 }
 
 void SubphraseGenerator::freeCellsOfModel(
-  DescriptivePhrase::Ptr src, const ModelEntity& mod, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result)
 {
   CellEntities freeCellsInModel = mod.cells();
   addEntityPhrases(freeCellsInModel, src, this->directLimit(), result);
@@ -222,9 +222,9 @@ void SubphraseGenerator::freeCellsOfModel(
 
 
 void SubphraseGenerator::prototypeOfInstance(
-  DescriptivePhrase::Ptr src, const InstanceEntity& ent, DescriptivePhrases& result)
+  DescriptivePhrase::Ptr src, const Instance& ent, DescriptivePhrases& result)
 {
-  Cursor instanceOf = ent.prototype();
+  EntityRef instanceOf = ent.prototype();
   if (instanceOf.isValid())
     {
     result.push_back(
@@ -234,8 +234,8 @@ void SubphraseGenerator::prototypeOfInstance(
 }
 
 
-void SubphraseGenerator::modelsOfBridgeSession(
-  DescriptivePhrase::Ptr src, const BridgeSession& sess, DescriptivePhrases& result)
+void SubphraseGenerator::modelsOfSession(
+  DescriptivePhrase::Ptr src, const SessionRef& sess, DescriptivePhrases& result)
 {
   ModelEntities modelsOf = sess.models<ModelEntities>();
   addEntityPhrases(modelsOf, src, this->directLimit(), result);
@@ -243,12 +243,12 @@ void SubphraseGenerator::modelsOfBridgeSession(
 
 
 void SubphraseGenerator::entitiesOfEntityList(
-  EntityListPhrase::Ptr src, const CursorArray& ents, DescriptivePhrases& result)
+  EntityListPhrase::Ptr src, const EntityRefArray& ents, DescriptivePhrases& result)
 {
   BitFlags commonFlags = INVALID;
   BitFlags unionFlags = 0;
 
-  for (CursorArray::const_iterator it = ents.begin(); it != ents.end(); ++it)
+  for (EntityRefArray::const_iterator it = ents.begin(); it != ents.end(); ++it)
     {
     result.push_back(
       EntityPhrase::create()->setup(*it, src));
@@ -268,7 +268,7 @@ void SubphraseGenerator::propertiesOfPropertyList(
     }
   // We need to filter the property names.
   std::set<std::string> pnames;
-  Cursor ent = src->relatedEntity();
+  EntityRef ent = src->relatedEntity();
   switch (p)
     {
   case FLOAT_PROPERTY:

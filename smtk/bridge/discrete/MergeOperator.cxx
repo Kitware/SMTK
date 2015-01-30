@@ -10,19 +10,19 @@
 
 #include "MergeOperator.h"
 
-#include "smtk/bridge/discrete/Bridge.h"
+#include "smtk/bridge/discrete/Session.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Volume.h"
 
 #include "vtkModelItem.h"
-#include "vtkModelEntity.h"
+#include "vtkModel.h"
 #include "vtkModelFace.h"
 #include "vtkModelRegion.h"
 
@@ -41,13 +41,13 @@ MergeOperator::MergeOperator()
 
 bool MergeOperator::ableToOperate()
 {
-  smtk::model::ModelEntity model;
+  smtk::model::Model model;
 
   return
     // The SMTK model must be valid
-    (model = this->specification()->findModelEntity("model")->value().as<smtk::model::ModelEntity>()).isValid() &&
+    (model = this->specification()->findModelEntity("model")->value().as<smtk::model::Model>()).isValid() &&
     // The CMB model must exist:
-    this->discreteBridge()->findModel(model.entity()) &&
+    this->discreteSession()->findModelEntity(model.entity()) &&
     // The source and target cells must be valid:
     this->fetchCMBCellId("source cell") >= 0 &&
     this->fetchCMBCellId("target cell") >= 0
@@ -56,14 +56,14 @@ bool MergeOperator::ableToOperate()
 
 OperatorResult MergeOperator::operateInternal()
 {
-  Bridge* bridge = this->discreteBridge();
+  Session* session = this->discreteSession();
 
   // Translate SMTK inputs into CMB inputs
   this->m_op->SetSourceId(this->fetchCMBCellId("source cell"));
   this->m_op->SetTargetId(this->fetchCMBCellId("target cell"));
 
   vtkDiscreteModelWrapper* modelWrapper =
-    bridge->findModel(
+    session->findModelEntity(
       this->specification()->findModelEntity("model")->value().entity());
 
   this->m_op->Operate(modelWrapper);
@@ -76,15 +76,15 @@ OperatorResult MergeOperator::operateInternal()
     {
     smtk::model::ManagerPtr store = this->manager();
 
-    smtk::model::Cursor srcEnt =
+    smtk::model::EntityRef srcEnt =
       this->specification()->findModelEntity("source cell")->value();
-    smtk::model::Cursor tgtEnt =
+    smtk::model::EntityRef tgtEnt =
       this->specification()->findModelEntity("target cell")->value();
 
     // Get rid of the old entity.
 /*
-    Cursors bdys = srcEnt.as<CellEntity>().lowerDimensionalBoundaries(-1);
-    for (Cursors::iterator bit = bdys.begin(); bit != bdys.end(); ++bit)
+    EntityRefs bdys = srcEnt.as<CellEntity>().lowerDimensionalBoundaries(-1);
+    for (EntityRefs::iterator bit = bdys.begin(); bit != bdys.end(); ++bit)
       {
       //std::cout << "Erasing " << bit->flagSummary(0) << " " << bit->entity() << "\n";
       store->erase(bit->entity());
@@ -95,20 +95,20 @@ OperatorResult MergeOperator::operateInternal()
     // re-add target
     smtk::common::UUID eid = tgtEnt.entity();
     vtkModelItem* origItem =
-      bridge->entityForUUID(eid);
+      session->entityForUUID(eid);
 
     store->erase(eid);
 
     // Now re-add it (it will have new edges)
-    eid = bridge->findOrSetEntityUUID(origItem);
-    smtk::model::Cursor c = bridge->addCMBEntityToManager(
+    eid = session->findOrSetEntityUUID(origItem);
+    smtk::model::EntityRef c = session->addCMBEntityToManager(
       eid, origItem, store, true);
     if(vtkModelFace* origFace = vtkModelFace::SafeDownCast(origItem))
       {
       vtkModelRegion* v1 = origFace->GetModelRegion(0);
       vtkModelRegion* v2 = origFace->GetModelRegion(1);
-      Volume vol1 = v1 ? Volume(store, bridge->findOrSetEntityUUID(v1)) : Volume();
-      Volume vol2 = v2 ? Volume(store, bridge->findOrSetEntityUUID(v2)) : Volume();
+      Volume vol1 = v1 ? Volume(store, session->findOrSetEntityUUID(v1)) : Volume();
+      Volume vol2 = v2 ? Volume(store, session->findOrSetEntityUUID(v2)) : Volume();
       if(vol1.isValid())
         {
         c.addRawRelation(vol1);
@@ -122,7 +122,7 @@ OperatorResult MergeOperator::operateInternal()
       }
 
     // Return the list of entities that were created
-    // so that remote bridges can track what records
+    // so that remote sessions can track what records
     // need to be re-fetched.
     smtk::attribute::ModelEntityItem::Ptr resultEntities =
       result->findModelEntity("entities");
@@ -145,15 +145,15 @@ OperatorResult MergeOperator::operateInternal()
   return result;
 }
 
-Bridge* MergeOperator::discreteBridge() const
+Session* MergeOperator::discreteSession() const
 {
-  return dynamic_cast<Bridge*>(this->bridge());
+  return dynamic_cast<Session*>(this->session());
 }
 
 int MergeOperator::fetchCMBCellId(const std::string& pname) const
 {
   vtkModelItem* item =
-    this->discreteBridge()->entityForUUID(
+    this->discreteSession()->entityForUUID(
       this->specification()->findModelEntity(pname)->value().entity());
 
   vtkModelEntity* cell = dynamic_cast<vtkModelEntity*>(item);
@@ -173,4 +173,4 @@ smtkImplementsModelOperator(
   discrete_merge,
   "merge",
   MergeOperator_xml,
-  smtk::bridge::discrete::Bridge);
+  smtk::bridge::discrete::Session);
