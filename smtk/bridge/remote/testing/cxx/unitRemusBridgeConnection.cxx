@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 
   smtk::model::Manager::Ptr mgr = smtk::model::Manager::create();
   mgr->log().setFlushToStream(
-    new std::ofstream("/tmp/unitRemusBridge.log"), true, true);
+    new std::ofstream("/tmp/unitRemusBridge.log"), true, false);
   RemusBridgeConnection::Ptr bconn =
     RemusBridgeConnection::create();
   bconn->setModelManager(mgr);
@@ -89,13 +89,18 @@ int main(int argc, char* argv[])
     return 4;
     }
 
+  opnames = bconn->operatorNames(bridgeName);
+  std::cout << "Operators for bridge \"" << bridgeName << "\":\n";
+  for (strit = opnames.begin(); strit != opnames.end(); ++strit)
+    std::cout << "  " << *strit << "\n";
+
   StringData fileTypes = bconn->supportedFileTypes(bridgeName);
+  StringData::const_iterator sdit;
   std::cout << "File types available for \"" << bridgeName << "\":\n";
-  StringData::const_iterator mapit;
-  for (mapit = fileTypes.begin(); mapit != fileTypes.end(); ++mapit)
+  for (sdit = fileTypes.begin(); sdit != fileTypes.end(); ++sdit)
     {
-    std::cout << "  " << mapit->first << "\n";
-    for (strit = mapit->second.begin(); strit != mapit->second.end(); ++strit)
+    std::cout << "  " << sdit->first << ":\n";
+    for (strit = sdit->second.begin(); strit != sdit->second.end(); ++strit)
       std::cout << "    " << *strit << "\n";
     }
 
@@ -120,7 +125,7 @@ int main(int argc, char* argv[])
     strout = "unknown"; break;
     }
   std::cout << "Read file? " << strout << " (" << readResult->findInt("outcome")->value() << ")\n";
-  std::cout << "Output model is " << readResult->findModelEntity("model")->value() << "\n";
+  std::cout << "Output model is " << readResult->findModelEntity("entities")->value() << "\n";
 
   opnames = bconn->operatorNames(bridgeSessionId);
   std::cout << "Operators for bridge \"" << bridgeSessionId << "\":\n";

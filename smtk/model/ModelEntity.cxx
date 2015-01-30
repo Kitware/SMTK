@@ -40,12 +40,13 @@ Cursor ModelEntity::parent() const
 CellEntities ModelEntity::cells() const
 {
   CellEntities result;
+  ManagerPtr mgr = this->manager();
   CursorArrangementOps::appendAllRelations(*this, INCLUDES, result);
   if (result.empty())
     { // We may have a "simple" model that has no arrangements but does have relations.
-    for (UUIDWithEntity it = this->m_manager->topology().begin(); it != this->m_manager->topology().end(); ++it)
+    for (UUIDWithEntity it = mgr->topology().begin(); it != mgr->topology().end(); ++it)
       {
-      CellEntity cell(this->m_manager, it->first);
+      CellEntity cell(mgr, it->first);
       if (cell.isValid())
         result.push_back(cell);
       }
@@ -83,23 +84,25 @@ ModelEntity& ModelEntity::removeCell(const CellEntity& c)
 
 ModelEntity& ModelEntity::addGroup(const GroupEntity& g)
 {
+  ManagerPtr mgr = this->manager();
   if (this->isValid() && g.isValid())
     {
     CursorArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, g);
     CursorArrangementOps::findOrAddSimpleRelationship(g, SUBSET_OF, *this);
-    this->m_manager->trigger(std::make_pair(ADD_EVENT, MODEL_INCLUDES_GROUP), *this, g);
+    mgr->trigger(std::make_pair(ADD_EVENT, MODEL_INCLUDES_GROUP), *this, g);
     }
   return *this;
 }
 
 ModelEntity& ModelEntity::removeGroup(const GroupEntity& g)
 {
+  ManagerPtr mgr = this->manager();
   if (this->isValid() && g.isValid())
     {
     int aidx = CursorArrangementOps::findSimpleRelationship(*this, SUPERSET_OF, g);
-    if (aidx >= 0 && this->m_manager->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
+    if (aidx >= 0 && mgr->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
       {
-      this->m_manager->trigger(ManagerEventType(DEL_EVENT, MODEL_INCLUDES_GROUP), *this, g);
+      mgr->trigger(ManagerEventType(DEL_EVENT, MODEL_INCLUDES_GROUP), *this, g);
       }
     }
   return *this;
@@ -107,23 +110,25 @@ ModelEntity& ModelEntity::removeGroup(const GroupEntity& g)
 
 ModelEntity& ModelEntity::addSubmodel(const ModelEntity& m)
 {
+  ManagerPtr mgr = this->manager();
   if (this->isValid() && m.isValid() && m.manager() == this->manager() && m.entity() != this->entity())
     {
     CursorArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, m);
     CursorArrangementOps::findOrAddSimpleRelationship(m, SUBSET_OF, *this);
-    this->m_manager->trigger(std::make_pair(ADD_EVENT, MODEL_INCLUDES_MODEL), *this, m);
+    mgr->trigger(std::make_pair(ADD_EVENT, MODEL_INCLUDES_MODEL), *this, m);
     }
   return *this;
 }
 
 ModelEntity& ModelEntity::removeSubmodel(const ModelEntity& m)
 {
+  ManagerPtr mgr = this->manager();
   if (this->isValid() && m.isValid() && m.manager() == this->manager() && m.entity() != this->entity())
     {
     int aidx = CursorArrangementOps::findSimpleRelationship(*this, SUPERSET_OF, m);
-    if (aidx >= 0 && this->m_manager->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
+    if (aidx >= 0 && mgr->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
       {
-      this->m_manager->trigger(ManagerEventType(DEL_EVENT, MODEL_INCLUDES_MODEL), *this, m);
+      mgr->trigger(ManagerEventType(DEL_EVENT, MODEL_INCLUDES_MODEL), *this, m);
       }
     }
   return *this;
@@ -140,6 +145,7 @@ OperatorPtr ModelEntity::op(const std::string& opname) const
 Operators ModelEntity::operators() const
 {
   Operators ops;
+  ManagerPtr mgr = this->manager();
   Operators::const_iterator it;
   Bridge::ConstPtr br = this->bridge();
   for (
@@ -147,7 +153,7 @@ Operators ModelEntity::operators() const
     it != br->operators().end();
     ++it)
     {
-    ops.insert((*it)->clone()->setManager(this->m_manager));
+    ops.insert((*it)->clone()->setManager(mgr));
     }
   return ops;
 }
@@ -161,7 +167,8 @@ StringList ModelEntity::operatorNames() const
 
 BridgePtr ModelEntity::bridge() const
 {
-  return this->m_manager->bridgeForModel(this->m_entity);
+  ManagerPtr mgr = this->manager();
+  return mgr->bridgeForModel(this->m_entity);
 }
 
   } // namespace model

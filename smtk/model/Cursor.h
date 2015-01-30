@@ -12,7 +12,7 @@
 /*! \file */
 
 #include "smtk/SMTKCoreExports.h" // For EXPORT macro.
-#include "smtk/PublicPointerDefs.h" // For ManagerPtr
+#include "smtk/PublicPointerDefs.h" // For WeakManagerPtr
 #include "smtk/SystemConfig.h" // For type macros.
 
 #include "smtk/common/UUID.h"
@@ -237,7 +237,7 @@ public:
   std::size_t hash() const;
 
 protected:
-  ManagerPtr m_manager;
+  WeakManagerPtr m_manager;
   smtk::common::UUID m_entity;
 
   // When embedding/unembedding, this method determines the relationship type
@@ -253,6 +253,7 @@ template<typename T>
 T Cursor::relationsAs() const
 {
   T result;
+  ManagerPtr mgr = this->m_manager.lock();
   smtk::model::Entity* entRec;
   if (!this->isValid(&entRec))
     return result;
@@ -260,7 +261,7 @@ T Cursor::relationsAs() const
   smtk::common::UUIDArray::const_iterator it;
   for (it = entRec->relations().begin(); it != entRec->relations().end(); ++it)
     {
-    typename T::value_type entry(this->m_manager, *it);
+    typename T::value_type entry(mgr, *it);
     if (entry.isValid())
       {
       result.insert(result.end(), entry);

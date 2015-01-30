@@ -53,14 +53,15 @@ template<typename T>
 T BridgeSession::models() const
 {
   T container;
-  if (!this->m_manager || !this->m_entity)
+  ManagerPtr mgr = this->m_manager.lock();
+  if (!mgr || !this->m_entity)
     return container;
 
-  smtk::common::UUIDs mids = this->m_manager->modelsOfBridgeSession(this->m_entity);
+  smtk::common::UUIDs mids = mgr->modelsOfBridgeSession(this->m_entity);
   smtk::common::UUIDs::iterator it;
   for (it = mids.begin(); it != mids.end(); ++it)
     {
-    typename T::value_type entry(this->m_manager, *it);
+    typename T::value_type entry(mgr, *it);
     if (entry.isValid())
       container.insert(container.end(), entry);
     }

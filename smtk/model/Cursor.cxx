@@ -31,42 +31,41 @@ Cursor::Cursor()
 {
 }
 
-/// Construct a cursor referencing a given \a entity residing in the given \a inManager.
-Cursor::Cursor(ManagerPtr inManager, const smtk::common::UUID& inEntity)
-  : m_manager(inManager), m_entity(inEntity)
+/// Construct a cursor referencing a given \a entity residing in the given \a mgr.
+Cursor::Cursor(ManagerPtr mgr, const smtk::common::UUID& inEntity)
+  : m_manager(mgr), m_entity(inEntity)
 {
 }
 
 /// Change the underlying manager the cursor references.
-bool Cursor::setManager(ManagerPtr inManager)
+bool Cursor::setManager(ManagerPtr mgr)
 {
-  if (inManager == this->m_manager)
+  if (mgr == this->m_manager.lock())
     {
     return false;
     }
-  this->m_manager = inManager;
+  this->m_manager = mgr;
   return true;
 }
 
 /// Return the underlying manager the cursor references.
 ManagerPtr Cursor::manager()
 {
-  return this->m_manager;
+  return this->m_manager.lock();
 }
 
 /// Return the underlying manager the cursor references.
 const ManagerPtr Cursor::manager() const
 {
-  return this->m_manager;
+  return this->m_manager.lock();
 }
 
 /// Change the UUID of the entity the cursor references.
 bool Cursor::setEntity(const smtk::common::UUID& inEntity)
 {
   if (inEntity == this->m_entity)
-    {
     return false;
-    }
+
   this->m_entity = inEntity;
   return true;
 }
@@ -85,9 +84,10 @@ const smtk::common::UUID& Cursor::entity() const
   */
 int Cursor::dimension() const
 {
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    Entity* entRec = this->m_manager->findEntity(this->m_entity);
+    Entity* entRec = mgr->findEntity(this->m_entity);
     if (entRec)
       {
       return entRec->dimension();
@@ -104,9 +104,10 @@ int Cursor::dimension() const
   */
 int Cursor::dimensionBits() const
 {
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    Entity* entRec = this->m_manager->findEntity(this->m_entity);
+    Entity* entRec = mgr->findEntity(this->m_entity);
     if (entRec)
       {
       return entRec->dimensionBits();
@@ -122,9 +123,10 @@ int Cursor::dimensionBits() const
   */
 void Cursor::setDimensionBits(BitFlags dimBits)
 {
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    Entity* entRec = this->m_manager->findEntity(this->m_entity);
+    Entity* entRec = mgr->findEntity(this->m_entity);
     if (entRec)
       {
       BitFlags old = entRec->entityFlags() & ~ANY_DIMENSION;
@@ -182,9 +184,10 @@ int Cursor::embeddingDimension() const
 /// Return the bit vector describing the entity's type. \sa isVector, isEdge, ...
 BitFlags Cursor::entityFlags() const
 {
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    Entity* entRec = this->m_manager->findEntity(this->m_entity);
+    Entity* entRec = mgr->findEntity(this->m_entity);
     if (entRec)
       {
       return entRec->entityFlags();
@@ -199,9 +202,10 @@ BitFlags Cursor::entityFlags() const
   */
 std::string Cursor::flagSummary(int form) const
 {
-  if (this->m_manager)
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr)
     {
-    Entity* ent = this->m_manager->findEntity(this->m_entity);
+    Entity* ent = mgr->findEntity(this->m_entity);
     if (ent)
       {
       std::ostringstream summary;
@@ -209,7 +213,7 @@ std::string Cursor::flagSummary(int form) const
       // additional information for some objects.
       if (ent->entityFlags() & BRIDGE_SESSION)
         {
-        Bridge::Ptr brdg = this->m_manager->findBridgeSession(this->m_entity);
+        Bridge::Ptr brdg = mgr->findBridgeSession(this->m_entity);
         if (brdg)
           {
           // if this is a DefaultBridge and there is a remote bridge name, display that;
@@ -237,7 +241,8 @@ std::string Cursor::flagSummary(int form) const
   */
 std::string Cursor::name() const
 {
-  return this->m_manager ? this->m_manager->name(this->m_entity) : "(null model)";
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr ? mgr->name(this->m_entity) : "(null model)";
 }
 
 /** Assign a name to an entity.
@@ -256,10 +261,11 @@ void Cursor::setName(const std::string& n)
   */
 std::string Cursor::assignDefaultName()
 {
-  if (!this->m_manager || !this->m_entity)
+  ManagerPtr mgr = this->m_manager.lock();
+  if (!mgr || !this->m_entity)
     return std::string();
 
-  return this->m_manager->assignDefaultName(this->m_entity);
+  return mgr->assignDefaultName(this->m_entity);
 }
 
 /// Returns true if the "visible" integer-property exists.
@@ -376,10 +382,11 @@ bool Cursor::isValid() const
   */
 bool Cursor::isValid(Entity** entityRecord) const
 {
-  bool status = this->m_manager && !this->m_entity.isNull();
+  ManagerPtr mgr = this->m_manager.lock();
+  bool status = mgr && !this->m_entity.isNull();
   if (status)
     {
-    Entity* rec = this->m_manager->findEntity(this->m_entity);
+    Entity* rec = mgr->findEntity(this->m_entity);
     status = rec ? true : false;
     if (status && entityRecord)
       {
@@ -394,11 +401,12 @@ bool Cursor::isValid(Entity** entityRecord) const
   */
 bool Cursor::checkForArrangements(ArrangementKind k, Entity*& entRec, Arrangements*& arr) const
 {
+  ManagerPtr mgr = this->m_manager.lock();
   if (this->isValid(&entRec))
     {
     arr = NULL;
     if (
-      (arr = this->m_manager->hasArrangementsOfKindForEntity(this->m_entity, k)) &&
+      (arr = mgr->hasArrangementsOfKindForEntity(this->m_entity, k)) &&
       !arr->empty())
       {
       return true;
@@ -410,11 +418,12 @@ bool Cursor::checkForArrangements(ArrangementKind k, Entity*& entRec, Arrangemen
 Cursors Cursor::bordantEntities(int ofDimension) const
 {
   Cursors result;
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    smtk::common::UUIDs uids = this->m_manager->bordantEntities(
+    smtk::common::UUIDs uids = mgr->bordantEntities(
       this->m_entity, ofDimension);
-    CursorsFromUUIDs(result, this->m_manager, uids);
+    CursorsFromUUIDs(result, mgr, uids);
     }
   return result;
 }
@@ -422,11 +431,12 @@ Cursors Cursor::bordantEntities(int ofDimension) const
 Cursors Cursor::boundaryEntities(int ofDimension) const
 {
   Cursors result;
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    smtk::common::UUIDs uids = this->m_manager->boundaryEntities(
+    smtk::common::UUIDs uids = mgr->boundaryEntities(
       this->m_entity, ofDimension);
-    CursorsFromUUIDs(result, this->m_manager, uids);
+    CursorsFromUUIDs(result, mgr, uids);
     }
   return result;
 }
@@ -434,11 +444,12 @@ Cursors Cursor::boundaryEntities(int ofDimension) const
 Cursors Cursor::lowerDimensionalBoundaries(int lowerDimension)
 {
   Cursors result;
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    smtk::common::UUIDs uids = this->m_manager->lowerDimensionalBoundaries(
+    smtk::common::UUIDs uids = mgr->lowerDimensionalBoundaries(
       this->m_entity, lowerDimension);
-    CursorsFromUUIDs(result, this->m_manager, uids);
+    CursorsFromUUIDs(result, mgr, uids);
     }
   return result;
 }
@@ -446,11 +457,12 @@ Cursors Cursor::lowerDimensionalBoundaries(int lowerDimension)
 Cursors Cursor::higherDimensionalBordants(int higherDimension)
 {
   Cursors result;
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    smtk::common::UUIDs uids = this->m_manager->higherDimensionalBordants(
+    smtk::common::UUIDs uids = mgr->higherDimensionalBordants(
       this->m_entity, higherDimension);
-    CursorsFromUUIDs(result, this->m_manager, uids);
+    CursorsFromUUIDs(result, mgr, uids);
     }
   return result;
 }
@@ -458,11 +470,12 @@ Cursors Cursor::higherDimensionalBordants(int higherDimension)
 Cursors Cursor::adjacentEntities(int ofDimension)
 {
   Cursors result;
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    smtk::common::UUIDs uids = this->m_manager->adjacentEntities(
+    smtk::common::UUIDs uids = mgr->adjacentEntities(
       this->m_entity, ofDimension);
-    CursorsFromUUIDs(result, this->m_manager, uids);
+    CursorsFromUUIDs(result, mgr, uids);
     }
   return result;
 }
@@ -483,14 +496,15 @@ Cursors Cursor::relations() const
   */
 Cursor& Cursor::addRawRelation(const Cursor& ent)
 {
+  ManagerPtr mgr = this->m_manager.lock();
   if (
-    this->m_manager &&
+    mgr &&
     !this->m_entity.isNull() &&
-    this->m_manager == ent.manager() &&
+    mgr == ent.manager() &&
     !ent.entity().isNull() &&
     ent.entity() != this->m_entity)
     {
-    Entity* entRec = this->m_manager->findEntity(this->m_entity);
+    Entity* entRec = mgr->findEntity(this->m_entity);
     if (entRec)
       entRec->appendRelation(ent.entity());
     }
@@ -506,14 +520,15 @@ Cursor& Cursor::addRawRelation(const Cursor& ent)
   */
 Cursor& Cursor::findOrAddRawRelation(const Cursor& ent)
 {
+  ManagerPtr mgr = this->m_manager.lock();
   if (
-    this->m_manager &&
+    mgr &&
     !this->m_entity.isNull() &&
-    this->m_manager == ent.manager() &&
+    mgr == ent.manager() &&
     !ent.entity().isNull() &&
     ent.entity() != this->m_entity)
     {
-    Entity* entRec = this->m_manager->findEntity(this->m_entity);
+    Entity* entRec = mgr->findEntity(this->m_entity);
     if (
       entRec &&
       std::find(
@@ -531,10 +546,11 @@ Cursor& Cursor::findOrAddRawRelation(const Cursor& ent)
   */
 const Tessellation* Cursor::hasTessellation() const
 {
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    UUIDsToTessellations::const_iterator it = this->m_manager->tessellations().find(this->m_entity);
-    if (it != this->m_manager->tessellations().end())
+    UUIDsToTessellations::const_iterator it = mgr->tessellations().find(this->m_entity);
+    if (it != mgr->tessellations().end())
       return &it->second;
     }
   return NULL;
@@ -548,9 +564,10 @@ const Tessellation* Cursor::hasTessellation() const
   */
 bool Cursor::hasAttributes() const
 {
+  ManagerPtr mgr = this->m_manager.lock();
   UUIDsToAttributeAssignments::const_iterator it =
-    this->m_manager->attributeAssignments().find(this->m_entity);
-  if (it != this->m_manager->attributeAssignments().end())
+    mgr->attributeAssignments().find(this->m_entity);
+  if (it != mgr->attributeAssignments().end())
     {
     return it->second.attributes().empty() ? false : true;
     }
@@ -561,77 +578,88 @@ bool Cursor::hasAttributes() const
  */
     bool Cursor::hasAttribute(const smtk::common::UUID &attribId) const
 {
-  return this->m_manager->hasAttribute(attribId, this->m_entity);
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr->hasAttribute(attribId, this->m_entity);
 }
 
 /**\brief Does the cursor have any attributes associated with it?
   */
 bool Cursor::associateAttribute(const smtk::common::UUID &attribId)
 {
-  return this->m_manager->associateAttribute(attribId, this->m_entity);
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr->associateAttribute(attribId, this->m_entity);
 }
 
 /**\brief Does the cursor have any attributes associated with it?
   */
 bool Cursor::disassociateAttribute(const smtk::common::UUID &attribId, bool reverse)
 {
-  return this->m_manager->disassociateAttribute(attribId, this->m_entity, reverse);
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr->disassociateAttribute(attribId, this->m_entity, reverse);
 }
 
 /**\brief Does the cursor have any attributes associated with it?
   */
 AttributeAssignments& Cursor::attributes()
 {
-  return this->m_manager->attributeAssignments()[this->m_entity];
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr->attributeAssignments()[this->m_entity];
 }
 /**\brief Does the cursor have any attributes associated with it?
   */
 AttributeSet Cursor::attributes() const
 {
-  return this->m_manager->attributeAssignments()[this->m_entity].attributes();
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr->attributeAssignments()[this->m_entity].attributes();
 }
 ///@}
 
 void Cursor::setFloatProperty(const std::string& propName, smtk::model::Float propValue)
 {
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    this->m_manager->setFloatProperty(this->m_entity, propName, propValue);
+    mgr->setFloatProperty(this->m_entity, propName, propValue);
     }
 }
 
 void Cursor::setFloatProperty(const std::string& propName, const smtk::model::FloatList& propValue)
 {
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    this->m_manager->setFloatProperty(this->m_entity, propName, propValue);
+    mgr->setFloatProperty(this->m_entity, propName, propValue);
     }
 }
 
 smtk::model::FloatList const& Cursor::floatProperty(const std::string& propName) const
 {
-  return this->m_manager->floatProperty(this->m_entity, propName);
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr->floatProperty(this->m_entity, propName);
 }
 
 smtk::model::FloatList& Cursor::floatProperty(const std::string& propName)
 {
-  return this->m_manager->floatProperty(this->m_entity, propName);
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr->floatProperty(this->m_entity, propName);
 }
 
 bool Cursor::hasFloatProperty(const std::string& propName) const
 {
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    return this->m_manager->hasFloatProperty(this->m_entity, propName);
+    return mgr->hasFloatProperty(this->m_entity, propName);
     }
   return false;
 }
 
 bool Cursor::removeFloatProperty(const std::string& propName)
 {
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    return this->m_manager->removeFloatProperty(this->m_entity, propName);
+    return mgr->removeFloatProperty(this->m_entity, propName);
     }
   return false;
 }
@@ -643,9 +671,10 @@ bool Cursor::removeFloatProperty(const std::string& propName)
   */
 bool Cursor::hasFloatProperties() const
 {
+  ManagerPtr mgr = this->m_manager.lock();
   return
-    this->m_manager->floatProperties().find(this->m_entity)
-    == this->m_manager->floatProperties().end() ?
+    mgr->floatProperties().find(this->m_entity)
+    == mgr->floatProperties().end() ?
     false : true;
 }
 
@@ -666,55 +695,63 @@ std::set<std::string> Cursor::floatPropertyNames() const
 
 FloatData& Cursor::floatProperties()
 {
-  return this->m_manager->floatProperties().find(this->m_entity)->second;
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr->floatProperties().find(this->m_entity)->second;
 }
 
 FloatData const& Cursor::floatProperties() const
 {
-  return this->m_manager->floatProperties().find(this->m_entity)->second;
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr->floatProperties().find(this->m_entity)->second;
 }
 
 
 void Cursor::setStringProperty(const std::string& propName, const smtk::model::String& propValue)
 {
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    this->m_manager->setStringProperty(this->m_entity, propName, propValue);
+    mgr->setStringProperty(this->m_entity, propName, propValue);
     }
 }
 
 void Cursor::setStringProperty(const std::string& propName, const smtk::model::StringList& propValue)
 {
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    this->m_manager->setStringProperty(this->m_entity, propName, propValue);
+    mgr->setStringProperty(this->m_entity, propName, propValue);
     }
 }
 
 smtk::model::StringList const& Cursor::stringProperty(const std::string& propName) const
 {
-  return this->m_manager->stringProperty(this->m_entity, propName);
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr->stringProperty(this->m_entity, propName);
 }
 
 smtk::model::StringList& Cursor::stringProperty(const std::string& propName)
 {
-  return this->m_manager->stringProperty(this->m_entity, propName);
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr->stringProperty(this->m_entity, propName);
 }
 
 bool Cursor::hasStringProperty(const std::string& propName) const
 {
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    return this->m_manager->hasStringProperty(this->m_entity, propName);
+    return mgr->hasStringProperty(this->m_entity, propName);
     }
   return false;
 }
 
 bool Cursor::removeStringProperty(const std::string& propName)
 {
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    return this->m_manager->removeStringProperty(this->m_entity, propName);
+    return mgr->removeStringProperty(this->m_entity, propName);
     }
   return false;
 }
@@ -726,9 +763,10 @@ bool Cursor::removeStringProperty(const std::string& propName)
   */
 bool Cursor::hasStringProperties() const
 {
+  ManagerPtr mgr = this->m_manager.lock();
   return
-    this->m_manager->stringProperties().find(this->m_entity)
-    == this->m_manager->stringProperties().end() ?
+    mgr->stringProperties().find(this->m_entity)
+    == mgr->stringProperties().end() ?
     false : true;
 }
 
@@ -749,55 +787,63 @@ std::set<std::string> Cursor::stringPropertyNames() const
 
 StringData& Cursor::stringProperties()
 {
-  return this->m_manager->stringProperties().find(this->m_entity)->second;
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr->stringProperties().find(this->m_entity)->second;
 }
 
 StringData const& Cursor::stringProperties() const
 {
-  return this->m_manager->stringProperties().find(this->m_entity)->second;
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr->stringProperties().find(this->m_entity)->second;
 }
 
 
 void Cursor::setIntegerProperty(const std::string& propName, smtk::model::Integer propValue)
 {
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    this->m_manager->setIntegerProperty(this->m_entity, propName, propValue);
+    mgr->setIntegerProperty(this->m_entity, propName, propValue);
     }
 }
 
 void Cursor::setIntegerProperty(const std::string& propName, const smtk::model::IntegerList& propValue)
 {
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    this->m_manager->setIntegerProperty(this->m_entity, propName, propValue);
+    mgr->setIntegerProperty(this->m_entity, propName, propValue);
     }
 }
 
 smtk::model::IntegerList const& Cursor::integerProperty(const std::string& propName) const
 {
-  return this->m_manager->integerProperty(this->m_entity, propName);
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr->integerProperty(this->m_entity, propName);
 }
 
 smtk::model::IntegerList& Cursor::integerProperty(const std::string& propName)
 {
-  return this->m_manager->integerProperty(this->m_entity, propName);
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr->integerProperty(this->m_entity, propName);
 }
 
 bool Cursor::hasIntegerProperty(const std::string& propName) const
 {
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    return this->m_manager->hasIntegerProperty(this->m_entity, propName);
+    return mgr->hasIntegerProperty(this->m_entity, propName);
     }
   return false;
 }
 
 bool Cursor::removeIntegerProperty(const std::string& propName)
 {
-  if (this->m_manager && !this->m_entity.isNull())
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
     {
-    return this->m_manager->removeIntegerProperty(this->m_entity, propName);
+    return mgr->removeIntegerProperty(this->m_entity, propName);
     }
   return false;
 }
@@ -809,9 +855,10 @@ bool Cursor::removeIntegerProperty(const std::string& propName)
   */
 bool Cursor::hasIntegerProperties() const
 {
+  ManagerPtr mgr = this->m_manager.lock();
   return
-    this->m_manager->integerProperties().find(this->m_entity)
-    == this->m_manager->integerProperties().end() ?
+    mgr->integerProperties().find(this->m_entity)
+    == mgr->integerProperties().end() ?
     false : true;
 }
 
@@ -832,19 +879,22 @@ std::set<std::string> Cursor::integerPropertyNames() const
 
 IntegerData& Cursor::integerProperties()
 {
-  return this->m_manager->integerProperties().find(this->m_entity)->second;
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr->integerProperties().find(this->m_entity)->second;
 }
 
 IntegerData const& Cursor::integerProperties() const
 {
-  return this->m_manager->integerProperties().find(this->m_entity)->second;
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr->integerProperties().find(this->m_entity)->second;
 }
 
 /// Return the number of arrangements of the given kind \a k.
 int Cursor::numberOfArrangementsOfKind(ArrangementKind k) const
 {
+  ManagerPtr mgr = this->m_manager.lock();
   const Arrangements* arr =
-    this->m_manager->hasArrangementsOfKindForEntity(
+    mgr->hasArrangementsOfKindForEntity(
       this->m_entity, k);
   return arr ? static_cast<int>(arr->size()) : 0;
 }
@@ -852,13 +902,15 @@ int Cursor::numberOfArrangementsOfKind(ArrangementKind k) const
 /// Return the \a i-th arrangement of kind \a k (or NULL).
 Arrangement* Cursor::findArrangement(ArrangementKind k, int i)
 {
-  return this->m_manager->findArrangement(this->m_entity, k, i);
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr->findArrangement(this->m_entity, k, i);
 }
 
 /// Return the \a i-th arrangement of kind \a k (or NULL).
 const Arrangement* Cursor::findArrangement(ArrangementKind k, int i) const
 {
-  return this->m_manager->findArrangement(this->m_entity, k, i);
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr->findArrangement(this->m_entity, k, i);
 }
 
 /**\brief Return the relation specified by the \a offset into the specified arrangement.
@@ -867,7 +919,8 @@ const Arrangement* Cursor::findArrangement(ArrangementKind k, int i) const
 Cursor Cursor::relationFromArrangement(
   ArrangementKind k, int arrangementIndex, int offset) const
 {
-  const Entity* ent = this->m_manager->findEntity(this->m_entity);
+  ManagerPtr mgr = this->m_manager.lock();
+  const Entity* ent = mgr->findEntity(this->m_entity);
   if (ent)
     {
     const Arrangement* arr = this->findArrangement(k, arrangementIndex);
@@ -876,7 +929,7 @@ Cursor Cursor::relationFromArrangement(
       int idx = arr->details()[offset];
       return idx < 0 ?
         Cursor() :
-        Cursor(this->m_manager, ent->relations()[idx]);
+        Cursor(mgr, ent->relations()[idx]);
       }
     }
   return Cursor();
@@ -889,13 +942,14 @@ Cursor Cursor::relationFromArrangement(
   */
 Cursor& Cursor::embedEntity(const Cursor& thingToEmbed)
 {
+  ManagerPtr mgr = this->m_manager.lock();
   //ManagerEventType event = std::make_pair(ADD_EVENT, INVALID_RELATIONSHIP);
   ManagerEventType event = std::make_pair(ADD_EVENT, this->embeddingRelationType(thingToEmbed));
   if (event.second != INVALID_RELATIONSHIP)
     {
     CursorArrangementOps::findOrAddSimpleRelationship(*this, INCLUDES, thingToEmbed);
     CursorArrangementOps::findOrAddSimpleRelationship(thingToEmbed, EMBEDDED_IN, *this);
-    this->m_manager->trigger(event, *this, thingToEmbed);
+    mgr->trigger(event, *this, thingToEmbed);
     }
   return *this;
 }
@@ -907,14 +961,15 @@ Cursor& Cursor::embedEntity(const Cursor& thingToEmbed)
   */
 Cursor& Cursor::unembedEntity(const Cursor& thingToEmbed)
 {
+  ManagerPtr mgr = this->m_manager.lock();
   ManagerEventType event = std::make_pair(DEL_EVENT, this->embeddingRelationType(thingToEmbed));
   if (event.second != INVALID_RELATIONSHIP)
     {
     int aidx = CursorArrangementOps::findSimpleRelationship(*this, INCLUDES, thingToEmbed);
     if (aidx >= 0)
       {
-      this->m_manager->unarrangeEntity(this->m_entity, EMBEDDED_IN, aidx);
-      this->m_manager->trigger(event, *this, thingToEmbed);
+      mgr->unarrangeEntity(this->m_entity, EMBEDDED_IN, aidx);
+      mgr->trigger(event, *this, thingToEmbed);
       }
     }
   return *this;
@@ -950,16 +1005,18 @@ Cursor Cursor::embeddedIn() const
   */
 ModelEntity Cursor::owningModel() const
 {
+  ManagerPtr mgr = this->m_manager.lock();
   return ModelEntity(
-    this->m_manager,
-    this->m_manager->modelOwningEntity(this->m_entity));
+    mgr,
+    mgr->modelOwningEntity(this->m_entity));
 }
 
 /// A comparator provided so that cursors may be included in ordered sets.
 bool Cursor::operator == (const Cursor& other) const
 {
+  ManagerPtr mgr = this->m_manager.lock();
   return (
-    (this->m_manager == other.m_manager) &&
+    (mgr == other.manager()) &&
     (this->m_entity == other.m_entity)) ?
     true :
     false;
@@ -968,11 +1025,13 @@ bool Cursor::operator == (const Cursor& other) const
 /// A comparator provided so that cursors may be included in ordered sets.
 bool Cursor::operator < (const Cursor& other) const
 {
-  if (this->m_manager < other.m_manager)
+  ManagerPtr mgr = this->m_manager.lock();
+  ManagerPtr otherMgr = other.m_manager.lock();
+  if (mgr < otherMgr)
     {
     return true;
     }
-  else if (other.m_manager < this->m_manager)
+  else if (otherMgr < mgr)
     {
     return false;
     }
@@ -985,8 +1044,9 @@ bool Cursor::operator < (const Cursor& other) const
   */
 std::size_t Cursor::hash() const
 {
+  ManagerPtr mgr = this->m_manager.lock();
   std::size_t result = this->m_entity.hash();
-  boost::hash_combine(result, reinterpret_cast<std::size_t>(this->m_manager.get()));
+  boost::hash_combine(result, reinterpret_cast<std::size_t>(mgr.get()));
   return result;
 }
 

@@ -76,7 +76,7 @@ Manager::Manager(
 /// Destroying a model manager requires us to release the default attribute manager..
 Manager::~Manager()
 {
-  this->setAttributeSystem(NULL);
+  this->setAttributeSystem(NULL, false);
 }
 //@}
 

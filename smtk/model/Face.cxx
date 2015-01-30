@@ -48,7 +48,8 @@ smtk::model::Volumes Face::volumes() const
   */
 FaceUse Face::negativeUse() const
 {
-  std::set<int> arr = this->m_manager->findCellHasUsesWithOrientation(
+  ManagerPtr mgr = this->manager();
+  std::set<int> arr = mgr->findCellHasUsesWithOrientation(
     this->m_entity, NEGATIVE);
   return arr.empty() ?
     FaceUse() :
@@ -61,7 +62,8 @@ FaceUse Face::negativeUse() const
   */
 FaceUse Face::positiveUse() const
 {
-  std::set<int> arr = this->m_manager->findCellHasUsesWithOrientation(
+  ManagerPtr mgr = this->manager();
+  std::set<int> arr = mgr->findCellHasUsesWithOrientation(
     this->m_entity, POSITIVE);
   return arr.empty() ?
     FaceUse() :
