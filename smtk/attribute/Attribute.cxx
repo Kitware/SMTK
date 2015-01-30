@@ -25,7 +25,7 @@
 #include "smtk/attribute/System.h"
 
 #include "smtk/model/Manager.h"
-#include "smtk/model/Cursor.h"
+#include "smtk/model/EntityRef.h"
 #include "smtk/common/UUIDGenerator.h"
 
 #include <iostream>
@@ -289,12 +289,12 @@ bool Attribute::isEntityAssociated(const smtk::common::UUID& entity) const
   return this->m_associations ? this->m_associations->has(entity) : false;
 }
 
-/**\brief Is the model entity of the \a cursor associated with this attribute?
+/**\brief Is the model entity of the \a entityref associated with this attribute?
   *
   */
-bool Attribute::isEntityAssociated(const smtk::model::Cursor& cursor) const
+bool Attribute::isEntityAssociated(const smtk::model::EntityRef& entityref) const
 {
-  return this->m_associations ? this->m_associations->has(cursor) : false;
+  return this->m_associations ? this->m_associations->has(entityref) : false;
 }
 
 /**\brief Return the associated model entities as a set of UUIDs.
@@ -306,7 +306,7 @@ smtk::common::UUIDs Attribute::associatedModelEntityIds() const
   if (!this->m_associations)
     return result;
 
-  smtk::model::CursorArray::const_iterator it;
+  smtk::model::EntityRefArray::const_iterator it;
   for (it = this->m_associations->begin(); it != this->m_associations->end(); ++it)
     {
     result.insert(it->entity());
@@ -315,18 +315,18 @@ smtk::common::UUIDs Attribute::associatedModelEntityIds() const
 }
 
 /*! \fn template<typename T> T Attribute::associatedModelEntities() const
- *\brief Return a container of associated cursor-subclass instances.
+ *\brief Return a container of associated entityref-subclass instances.
  *
  * This method returns a container (usually a std::vector or std::set) of
- * cursor-subclass instances (e.g., Edge, EdgeUse, Loop) that are
+ * entityref-subclass instances (e.g., Edge, EdgeUse, Loop) that are
  * associated with this attribute.
  *
- * Note that if you request a container of Cursor entities, you will obtain
+ * Note that if you request a container of EntityRef entities, you will obtain
  * <b>all</b> of the associated model entities. However, if you request
  * a container of some subclass, only entities of that type will be returned.
  * For example, if an attribute is associated with two faces, an edge,
- * a group, and a shell, calling `associatedModelEntities<Cursors>()` will
- * return 5 Cursor entries while `associatedModelEntities<CellEntities>()`
+ * a group, and a shell, calling `associatedModelEntities<EntityRefs>()` will
+ * return 5 EntityRef entries while `associatedModelEntities<CellEntities>()`
  * will return 3 entries (2 faces and 1 edge) since the other entities
  * do not construct valid CellEntity instances.
  */
@@ -341,18 +341,18 @@ bool Attribute::associateEntity(const smtk::common::UUID& entity)
 {
   return this->m_associations ?
     this->m_associations->appendValue(
-      smtk::model::Cursor(
+      smtk::model::EntityRef(
         this->modelManager(), entity)) :
     false;
 }
 
-/**\brief Associate a new-style model ID (a Cursor) with this attribute.
+/**\brief Associate a new-style model ID (a EntityRef) with this attribute.
   *
   * This function returns true when the association is valid and
   * successful. It may return false if the association is prohibited.
   * (This is not currently implemented.)
   */
-bool Attribute::associateEntity(const smtk::model::Cursor& entity)
+bool Attribute::associateEntity(const smtk::model::EntityRef& entity)
 {
   return this->m_associations ? this->m_associations->appendValue(entity) : false;
 }
@@ -383,10 +383,10 @@ void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool revers
     }
 }
 //----------------------------------------------------------------------------
-/**\brief Disassociate a new-style model entity (a Cursor) from this attribute.
+/**\brief Disassociate a new-style model entity (a EntityRef) from this attribute.
   *
   */
-void Attribute::disassociateEntity(const smtk::model::Cursor& entity, bool reverse)
+void Attribute::disassociateEntity(const smtk::model::EntityRef& entity, bool reverse)
 {
   if (!this->m_associations)
     return;
@@ -397,7 +397,7 @@ void Attribute::disassociateEntity(const smtk::model::Cursor& entity, bool rever
     this->m_associations->removeValue(idx);
     if (reverse)
       {
-      smtk::model::Cursor mutableEntity(entity);
+      smtk::model::EntityRef mutableEntity(entity);
       mutableEntity.disassociateAttribute(this->id(), false);
       }
     }

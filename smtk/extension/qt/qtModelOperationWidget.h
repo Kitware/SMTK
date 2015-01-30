@@ -39,11 +39,11 @@ namespace smtk
     public:
       qtModelOperationWidget(QWidget* p = NULL);
       virtual ~qtModelOperationWidget();
-      virtual void setBridge(smtk::model::BridgePtr bridge);
+      virtual void setSession(smtk::model::SessionPtr session);
 
     public slots:
       virtual bool setCurrentOperation(
-        const std::string& opName, smtk::model::BridgePtr bridge);
+        const std::string& opName, smtk::model::SessionPtr session);
 
     signals:
       void operationRequested(const smtk::model::OperatorPtr& brOp);

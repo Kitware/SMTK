@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_bridge_remote_RemusRPCWorker_h
-#define __smtk_bridge_remote_RemusRPCWorker_h
+#ifndef __smtk_session_remote_RemusRPCWorker_h
+#define __smtk_session_remote_RemusRPCWorker_h
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
@@ -31,7 +31,7 @@ namespace smtk {
   * This class exists to wrap an SMTK model-manager into an
   * object that services JSON-RPC requests to perform operations.
   *
-  * An instance of this class is tied to a RemusRemoteBridge
+  * An instance of this class is tied to a Session
   * on the client side.
   *
   * Model synchronization is accomplished by serializing the
@@ -81,4 +81,4 @@ private:
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_remote_RemusRPCWorker_h
+#endif // __smtk_session_remote_RemusRPCWorker_h

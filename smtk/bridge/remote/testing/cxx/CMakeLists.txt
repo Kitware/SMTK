@@ -1,18 +1,18 @@
-add_executable(unitRemusBridgeConnection
-  unitRemusBridgeConnection.cxx
+add_executable(integrationRemoteSession
+  integrationRemoteSession.cxx
 )
-target_link_libraries(unitRemusBridgeConnection
+target_link_libraries(integrationRemoteSession
   SMTKRemote
   SMTKCore
   RemusCommon
   RemusClient
 )
 if (SMTK_BUILD_CGM)
-  target_link_libraries(unitRemusBridgeConnection cgmSMTK)
+  target_link_libraries(integrationRemoteSession cgmSMTK)
 endif()
 if (SMTK_ENABLE_TESTING AND SMTK_DATA_DIR AND SMTK_BUILD_CGM)
   add_test(
-    NAME unitGenerateRemusWorker
+    NAME unitGenerateRemoteModelWorker
     COMMAND
       smtk-model-worker -generate
       -kernel=cgm -engine=OpenCascade
@@ -21,17 +21,17 @@ if (SMTK_ENABLE_TESTING AND SMTK_DATA_DIR AND SMTK_BUILD_CGM)
       -site=ctest
   )
   add_test(
-    NAME unitRemusBridgeConnection
+    NAME integrationRemoteSession
     COMMAND
-      unitRemusBridgeConnection
+      integrationRemoteSession
       ${SMTK_DATA_DIR}/cgm/pyramid.brep
       "smtk::model[cgm{OpenCascade}@ctest]"
       "local" 50505
       ${SMTK_BINARY_DIR}/Testing
   )
   set_tests_properties(
-    unitRemusBridgeConnection
+    integrationRemoteSession
     PROPERTIES
-      DEPENDS unitGenerateRemusWorker
+      DEPENDS unitGenerateRemoteModelWorker
   )
 endif()

@@ -9,14 +9,14 @@
 //=========================================================================
 #include "smtk/bridge/cgm/ImportSolid.h"
 
-#include "smtk/bridge/cgm/Bridge.h"
+#include "smtk/bridge/cgm/Session.h"
 #include "smtk/bridge/cgm/CAUUID.h"
 #include "smtk/bridge/cgm/Engines.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/GroupEntity.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Group.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/Manager.h"
 
 #include "smtk/common/UUID.h"
@@ -82,7 +82,7 @@ smtk::common::UUIDArray ImportSolid::fromFilenameIntoManager(
     return result;
     }
 
-  Bridge::Ptr bridge = Bridge::create();
+  Session::Ptr session = Session::create();
   std::string modelName = filename.substr(0, filename.find_last_of("."));
   int ne = static_cast<int>(imported.size());
   result.reserve(ne);
@@ -91,12 +91,12 @@ smtk::common::UUIDArray ImportSolid::fromFilenameIntoManager(
     RefEntity* entry = imported.get_and_step();
     smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(entry, true);
     smtk::common::UUID entId = refId->entityId();
-    Cursor smtkEntry(manager, entId);
-    if (bridge->transcribe(smtkEntry, BRIDGE_EVERYTHING, false))
+    EntityRef smtkEntry(manager, entId);
+    if (session->transcribe(smtkEntry, SESSION_EVERYTHING, false))
       result.push_back(smtkEntry.entity());
     }
-  // FIXME: Until this is implemented, Bridge will be deleted upon exit:
-  //manager->addBridge(bridge);
+  // FIXME: Until this is implemented, Session will be deleted upon exit:
+  //manager->addSession(session);
   imported.reset();
 
   return result;

@@ -31,14 +31,14 @@ class SMTKCORE_EXPORT PropertyListPhrase : public DescriptivePhrase
 public:
   smtkTypeMacro(PropertyListPhrase);
   smtkSharedPtrCreateMacro(DescriptivePhrase);
-  Ptr setup(const Cursor& entity, PropertyType ptype, DescriptivePhrasePtr parent);
-  Ptr setup(const Cursor& entity, PropertyType ptype, const std::set<std::string>& pnames, DescriptivePhrasePtr parent);
+  Ptr setup(const EntityRef& entity, PropertyType ptype, DescriptivePhrasePtr parent);
+  Ptr setup(const EntityRef& entity, PropertyType ptype, const std::set<std::string>& pnames, DescriptivePhrasePtr parent);
 
   virtual std::string title();
   virtual std::string subtitle();
 
   virtual smtk::common::UUID relatedEntityId() const;
-  virtual Cursor relatedEntity() const;
+  virtual EntityRef relatedEntity() const;
   virtual PropertyType relatedPropertyType() const;
 
   std::set<std::string>& propertyNames() { return this->m_propertyNames; }
@@ -49,7 +49,7 @@ public:
 protected:
   PropertyListPhrase();
 
-  Cursor m_entity;
+  EntityRef m_entity;
   PropertyType m_propertyType;
   std::set<std::string> m_propertyNames; // an optional subset of m_entity's properties
 };

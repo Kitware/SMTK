@@ -7,33 +7,33 @@
   <suppress-warning text="Duplicate type entry: 'smtk'"/>
 
   <!-- Ignore methods that refer directly to CGM pointers -->
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addGroupToManager', unmatched parameter type 'RefGroup*'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addEdgeToManager', unmatched parameter type 'RefEdge*'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addVertexUseToManager', unmatched parameter type 'CoVertex*'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addCGMEntityToManager', unmatched parameter type 'GroupingEntity*'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addCGMEntityToManager', unmatched parameter type 'RefEntity*'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addBodyToManager', unmatched parameter type 'Body*'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addChainToManager', unmatched parameter type 'Chain*'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addEdgeUseToManager', unmatched parameter type 'CoEdge*'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addVertexToManager', unmatched parameter type 'RefVertex*'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addFaceToManager', unmatched parameter type 'RefFace*'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addLoopToManager', unmatched parameter type 'Loop*'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addVolumeToManager', unmatched parameter type 'RefVolume*'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addCGMEntityToManager', unmatched parameter type 'SenseEntity*'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addFaceUseToManager', unmatched parameter type 'CoFace*'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addVolumeUseToManager', unmatched parameter type 'CoVolume*'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addShellToManager', unmatched parameter type 'Shell*'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addNamesIfAny', unmatched parameter type 'RefEntity*'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addRelations', unmatched parameter type 'DLIList&lt;RefEntity*&gt;&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addTessellation', unmatched parameter type 'RefEdge*'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addTessellation', unmatched parameter type 'RefVertex*'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addTessellation', unmatched parameter type 'RefFace*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addGroupToManager', unmatched parameter type 'RefGroup*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addEdgeToManager', unmatched parameter type 'RefEdge*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addVertexUseToManager', unmatched parameter type 'CoVertex*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addCGMEntityToManager', unmatched parameter type 'GroupingEntity*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addCGMEntityToManager', unmatched parameter type 'RefEntity*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addBodyToManager', unmatched parameter type 'Body*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addChainToManager', unmatched parameter type 'Chain*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addEdgeUseToManager', unmatched parameter type 'CoEdge*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addVertexToManager', unmatched parameter type 'RefVertex*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addFaceToManager', unmatched parameter type 'RefFace*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addLoopToManager', unmatched parameter type 'Loop*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addVolumeToManager', unmatched parameter type 'RefVolume*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addCGMEntityToManager', unmatched parameter type 'SenseEntity*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addFaceUseToManager', unmatched parameter type 'CoFace*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addVolumeUseToManager', unmatched parameter type 'CoVolume*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addShellToManager', unmatched parameter type 'Shell*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addNamesIfAny', unmatched parameter type 'RefEntity*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addRelations', unmatched parameter type 'DLIList&lt;RefEntity*&gt;&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addTessellation', unmatched parameter type 'RefEdge*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addTessellation', unmatched parameter type 'RefVertex*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::addTessellation', unmatched parameter type 'RefFace*'"/>
 
 
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::registerOperator', unmatched parameter type 'smtk::model::OperatorConstructor'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::findOperatorConstructor', unmatched return type 'smtk::model::OperatorConstructor'"/>
-  <suppress-warning text="skipping field 'Bridge::s_operators' with unmatched type 'std::map&lt;std::string,smtk::model::StaticOperatorInfo&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::registerStaticOperator', unmatched parameter type 'smtk::model::OperatorConstructor'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::registerOperator', unmatched parameter type 'smtk::model::OperatorConstructor'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::findOperatorConstructor', unmatched return type 'smtk::model::OperatorConstructor'"/>
+  <suppress-warning text="skipping field 'Session::s_operators' with unmatched type 'std::map&lt;std::string,smtk::model::StaticOperatorInfo&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::registerStaticOperator', unmatched parameter type 'smtk::model::OperatorConstructor'"/>
 
   <!-- Ignore CGM-specific enums -->
   <suppress-warning text="enum 'CubitEventType' does not have a type entry or is not an enum"/>
@@ -45,11 +45,12 @@
   <suppress-warning text="enum 'CubitPointContainment' does not have a type entry or is not an enum"/>
   <suppress-warning text="enum 'CubitAssocDataType' does not have a type entry or is not an enum"/>
   <suppress-warning text="enum 'CubitFacetboolOp' does not have a type entry or is not an enum"/>
+  <suppress-warning text="enum 'SizeIntervalType' does not have a type entry or is not an enum"/>
 
   <!-- Ignore miscellaneous crufty warnings -->
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::bridge::cgm::Bridge::SelfType&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::cgm::Bridge::SelfType&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::create', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::cgm::Bridge::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::bridge::cgm::Session::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::cgm::Session::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Session::create', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::cgm::Session::SelfType&gt;'"/>
 
 
   <!-- Additional objects to be wrapped when building with CGM -->
@@ -60,8 +61,8 @@
           <include file-name="smtk/bridge/cgm/CAUUID.h" location="local"/>
         </enum-type>
 
-        <object-type name="Bridge">
-          <include file-name="smtk/bridge/cgm/Bridge.h" location="local"/>
+        <object-type name="Session">
+          <include file-name="smtk/bridge/cgm/Session.h" location="local"/>
         </object-type>
 
         <object-type name="ImportSolid">
@@ -79,7 +80,7 @@
     </namespace-type>
   </namespace-type>
 
-  <value-type template="smtk::shared_ptr" args="smtk::bridge::cgm::Bridge">
+  <value-type template="smtk::shared_ptr" args="smtk::bridge::cgm::Session">
   </value-type>
 
   <!-- Don't wrap methods that take pointers to CGM classes.
@@ -88,19 +89,19 @@
        specified), making it not only undesirable but impossible
        to wrap CGM pointers.
     -->
-  <rejection class="smtk::bridge::cgm::Bridge" function-name="addBodyToManager"/>
-  <rejection class="smtk::bridge::cgm::Bridge" function-name="addVolumeUseToManager"/>
-  <rejection class="smtk::bridge::cgm::Bridge" function-name="addFaceUseToManager"/>
-  <rejection class="smtk::bridge::cgm::Bridge" function-name="addEdgeUseToManager"/>
-  <rejection class="smtk::bridge::cgm::Bridge" function-name="addVertexUseToManager"/>
-  <rejection class="smtk::bridge::cgm::Bridge" function-name="addShellToManager"/>
-  <rejection class="smtk::bridge::cgm::Bridge" function-name="addLoopToManager"/>
-  <rejection class="smtk::bridge::cgm::Bridge" function-name="addChainToManager"/>
-  <rejection class="smtk::bridge::cgm::Bridge" function-name="addVolumeToManager"/>
-  <rejection class="smtk::bridge::cgm::Bridge" function-name="addFaceToManager"/>
-  <rejection class="smtk::bridge::cgm::Bridge" function-name="addEdgeToManager"/>
-  <rejection class="smtk::bridge::cgm::Bridge" function-name="addVertexToManager"/>
-  <rejection class="smtk::bridge::cgm::Bridge" function-name="addGroupToManager"/>
+  <rejection class="smtk::bridge::cgm::Session" function-name="addBodyToManager"/>
+  <rejection class="smtk::bridge::cgm::Session" function-name="addVolumeUseToManager"/>
+  <rejection class="smtk::bridge::cgm::Session" function-name="addFaceUseToManager"/>
+  <rejection class="smtk::bridge::cgm::Session" function-name="addEdgeUseToManager"/>
+  <rejection class="smtk::bridge::cgm::Session" function-name="addVertexUseToManager"/>
+  <rejection class="smtk::bridge::cgm::Session" function-name="addShellToManager"/>
+  <rejection class="smtk::bridge::cgm::Session" function-name="addLoopToManager"/>
+  <rejection class="smtk::bridge::cgm::Session" function-name="addChainToManager"/>
+  <rejection class="smtk::bridge::cgm::Session" function-name="addVolumeToManager"/>
+  <rejection class="smtk::bridge::cgm::Session" function-name="addFaceToManager"/>
+  <rejection class="smtk::bridge::cgm::Session" function-name="addEdgeToManager"/>
+  <rejection class="smtk::bridge::cgm::Session" function-name="addVertexToManager"/>
+  <rejection class="smtk::bridge::cgm::Session" function-name="addGroupToManager"/>
 
   @EXTRA_OBJECTS@
 

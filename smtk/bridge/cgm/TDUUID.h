@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_bridge_cgm_TDUUID_h
-#define __smtk_bridge_cgm_TDUUID_h
+#ifndef __smtk_session_cgm_TDUUID_h
+#define __smtk_session_cgm_TDUUID_h
 
 #include "ToolData.hpp"
 
@@ -70,4 +70,4 @@ protected:
     } // namespace cgm
   } //namespace bridge
 } // namespace smtk
-#endif // __smtk_bridge_cgm_TDUUID_h
+#endif // __smtk_session_cgm_TDUUID_h

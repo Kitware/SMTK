@@ -44,7 +44,7 @@
 #include "smtk/view/Attribute.h"
 #include "smtk/view/Instanced.h"
 #include "smtk/view/Group.h"
-#include "smtk/view/ModelEntity.h"
+#include "smtk/view/Model.h"
 #include "smtk/view/Root.h"
 #include "smtk/view/SimpleExpression.h"
 #include <sstream>

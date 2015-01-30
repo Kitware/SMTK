@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/bridge/exodus/Operator.h"
-#include "smtk/bridge/exodus/Bridge.h"
+#include "smtk/bridge/exodus/Session.h"
 
 #include "vtkDataObject.h"
 
@@ -16,18 +16,18 @@ namespace smtk {
   namespace bridge {
     namespace exodus {
 
-/// Return a shared pointer to the bridge backing a Exodus operator.
-Bridge* Operator::exodusBridge()
+/// Return a shared pointer to the session backing a Exodus operator.
+Session* Operator::exodusSession()
 {
-  return dynamic_cast<smtk::bridge::exodus::Bridge*>(this->bridge());
+  return dynamic_cast<smtk::bridge::exodus::Session*>(this->session());
 }
 
 /**\brief A helper to return the Exodus data object associated with an \a smtkEntity.
   *
   */
-vtkDataObject* Operator::exodusData(const smtk::model::Cursor& smtkEntity)
+vtkDataObject* Operator::exodusData(const smtk::model::EntityRef& smtkEntity)
 {
-  Bridge* brdg = this->exodusBridge();
+  Session* brdg = this->exodusSession();
   if (!brdg)
     return NULL;
 
@@ -37,9 +37,9 @@ vtkDataObject* Operator::exodusData(const smtk::model::Cursor& smtkEntity)
 /**\brief A helper to return the Exodus handle associated with an \a smtkEntity.
   *
   */
-EntityHandle Operator::exodusHandle(const smtk::model::Cursor& smtkEntity)
+EntityHandle Operator::exodusHandle(const smtk::model::EntityRef& smtkEntity)
 {
-  Bridge* brdg = this->exodusBridge();
+  Session* brdg = this->exodusSession();
   if (!brdg)
     return EntityHandle();
 

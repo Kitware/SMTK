@@ -11,7 +11,7 @@ set(QAttrLibSrcs
     qtRootView.cxx
     qtAttributeView.cxx
     qtInstancedView.cxx
-    #qtModelEntityView.cxx
+    #qtModelView.cxx
     qtSimpleExpressionView.cxx
     qtFileItem.cxx
     qtAttributeRefItem.cxx
@@ -52,7 +52,7 @@ set(QAttrLibHeaders
     qtRootView.h
     qtAttributeView.h
     qtInstancedView.h
-    #qtModelEntityView.h
+    #qtModelView.h
     qtSimpleExpressionView.h
     qtFileItem.h
     qtAttributeRefItem.h

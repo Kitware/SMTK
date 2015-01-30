@@ -37,9 +37,9 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
-#include "smtk/model/Cursor.h"
+#include "smtk/model/EntityRef.h"
 #include "smtk/model/Entity.h"
-#include "smtk/model/GroupEntity.h"
+#include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/StringData.h"
 
@@ -1526,7 +1526,7 @@ void XmlV2StringWriter::processModelInfo()
           {
           xml_node anode = gnode.append_child("Attribute");
 
-          //we need to look up the attribute as the cursor only holds a reference
+          //we need to look up the attribute as the entityref only holds a reference
           //to the attributes id
           smtk::attribute::AttributePtr att =
                                         this->m_system.findAttribute( (*i) );

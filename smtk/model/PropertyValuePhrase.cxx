@@ -45,7 +45,7 @@ std::string PropertyValuePhrase::subtitle()
     p = p->parent();
   if (p)
     {
-    Cursor ent = p->relatedEntity();
+    EntityRef ent = p->relatedEntity();
     switch (this->m_propertyType)
       {
     case FLOAT_PROPERTY:
@@ -118,10 +118,10 @@ smtk::common::UUID PropertyValuePhrase::relatedEntityId() const
   return this->relatedEntity().entity();
 }
 
-Cursor PropertyValuePhrase::relatedEntity() const
+EntityRef PropertyValuePhrase::relatedEntity() const
 {
   DescriptivePhrase::Ptr p = this->parent();
-  Cursor result;
+  EntityRef result;
   while (p && !(result = p->relatedEntity()).isValid())
     p = p->parent();
   return result;

@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/model/Volume.h"
 
-#include "smtk/model/CursorArrangementOps.h"
+#include "smtk/model/EntityRefArrangementOps.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Shell.h"
@@ -42,8 +42,8 @@ Shells Volume::shells() const
 smtk::model::Faces Volume::faces() const
 {
   Faces result;
-  Cursors all = this->boundaryEntities(/*dim = */ 2);
-  for (Cursors::iterator it = all.begin(); it != all.end(); ++it)
+  EntityRefs all = this->boundaryEntities(/*dim = */ 2);
+  for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
     {
     if (it->isFace())
       result.push_back(*it);

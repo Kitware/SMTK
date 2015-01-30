@@ -13,9 +13,9 @@ floating-point values.
 
 The intent of the model property system is two-fold:
 
-1. Properties can be created by bridges to expose modeling-kernel
+1. Properties can be created by sessions to expose modeling-kernel
    data that cannot otherwise be expressed by SMTK.
-   An example of this is the Exodus bridge, which stores the
+   An example of this is the Exodus session, which stores the
    Exodus ID of each block and set it reads so that exporters
    can refer to them as they exist in the file.
 
@@ -28,7 +28,7 @@ The intent of the model property system is two-fold:
 Despite being free-form, SMTK does use the property system itself
 and so some property names are reserved for particular use.
 The list of these names is below and is followed by properties
-provided by existing bridges.
+provided by existing sessions.
 
 .. _reserved-model-properties:
 
@@ -108,13 +108,13 @@ Properties used internally are in the following table:
 |                                |               | See :smtk:`Entity::defaultNameFromCounters()` to understand how the        |
 |                                |               | counter is used.                                                           |
 +--------------------------------+---------------+----------------------------------------------------------------------------+
-| bridge pedigree                | String or     | A bridge-specific persistent identifier assigned to the associated entity  |
+| session pedigree                | String or     | A session-specific persistent identifier assigned to the associated entity  |
 |                                | Integer       | for use by the exporter and other tasks that need to refer to the entity   |
 |                                |               | when it is not possible to use UUIDs created by SMTK to do so.             |
 |                                |               | This happens when the original model file may not be modified and          |
 |                                |               | simulation input decks must refer to entities in that original file.       |
 |                                |               |                                                                            |
-|                                |               | Bridges should provide 0 or 1 values for each entity.                      |
+|                                |               | Sessions should provide 0 or 1 values for each entity.                      |
 +--------------------------------+---------------+----------------------------------------------------------------------------+
 | shell_counters                 | Integer       | An array of 5 integers assigned to each model entity and                   |
 |                                |               | used to generate model-unique names that are easier to read than UUIDs.    |
@@ -132,18 +132,18 @@ Properties used internally are in the following table:
 ..  Blank row:
 ..  |                                |               |                                                                            |
 
-.. _bridge-model-properties:
+.. _session-model-properties:
 
-Model properties of bridges
+Model properties of sessions
 ---------------------------
 
-In general, bridges should choose a prefix for their property names
+In general, sessions should choose a prefix for their property names
 so that developers can easily identify the source of the property,
 even when saved in a JSON model file.
 The exception to this rule is properties that should be universal
-across bridges, such as pedigree ID.
+across sessions, such as pedigree ID.
 
-Properties specific to the Exodus bridge are listed in the table below.
+Properties specific to the Exodus session are listed in the table below.
 
 +--------------------------------+---------------+----------------------------------------------------------------------------+
 | Property name                  | Property type | Description                                                                |

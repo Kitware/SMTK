@@ -21,8 +21,8 @@ namespace smtk {
 smtk::model::Edges Face::edges() const
 {
   Edges result;
-  Cursors all = this->boundaryEntities(/*dim = */ 1);
-  for (Cursors::iterator it = all.begin(); it != all.end(); ++it)
+  EntityRefs all = this->boundaryEntities(/*dim = */ 1);
+  for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
     {
     if (it->isEdge())
       result.push_back(*it);
@@ -33,8 +33,8 @@ smtk::model::Edges Face::edges() const
 smtk::model::Volumes Face::volumes() const
 {
   Volumes result;
-  Cursors all = this->bordantEntities(/*dim = */ 3);
-  for (Cursors::iterator it = all.begin(); it != all.end(); ++it)
+  EntityRefs all = this->bordantEntities(/*dim = */ 3);
+  for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
     {
     if (it->isVolume())
       result.push_back(*it);

@@ -8,10 +8,10 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_bridge_discrete_ReadOperator_h
-#define __smtk_bridge_discrete_ReadOperator_h
+#ifndef __smtk_session_discrete_ReadOperator_h
+#define __smtk_session_discrete_ReadOperator_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h"
+#include "smtk/bridge/discrete/discreteSessionExports.h"
 #include "smtk/model/Operator.h"
 #include "vtkCMBModelReadOperator.h"
 #include "vtkNew.h"
@@ -20,14 +20,14 @@ namespace smtk {
   namespace bridge {
     namespace discrete {
 
-class Bridge;
+class Session;
 
 /**\brief Read a CMB discrete model file.
   *
   * This requires the file to be of type/extension "cmb" (which
   * is really just a VTK XML polydata file).
   */
-class SMTKDISCRETEBRIDGE_EXPORT ReadOperator : public smtk::model::Operator
+class SMTKDISCRETESESSION_EXPORT ReadOperator : public smtk::model::Operator
 {
 public:
   smtkTypeMacro(ReadOperator);
@@ -40,7 +40,7 @@ public:
 protected:
   ReadOperator();
   virtual smtk::model::OperatorResult operateInternal();
-  Bridge* discreteBridge() const;
+  Session* discreteSession() const;
 
   vtkNew<vtkCMBModelReadOperator> m_op;
 };
@@ -49,4 +49,4 @@ protected:
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_discrete_ReadOperator_h
+#endif // __smtk_session_discrete_ReadOperator_h

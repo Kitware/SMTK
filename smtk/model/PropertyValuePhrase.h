@@ -34,7 +34,7 @@ public:
   virtual std::string subtitle();
 
   virtual smtk::common::UUID relatedEntityId() const;
-  virtual Cursor relatedEntity() const;
+  virtual EntityRef relatedEntity() const;
   virtual std::string relatedPropertyName() const;
   virtual PropertyType relatedPropertyType() const;
 

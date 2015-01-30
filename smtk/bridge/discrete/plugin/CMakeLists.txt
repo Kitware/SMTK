@@ -1,4 +1,4 @@
-if (SMTK_BUILD_DISCRETE_BRIDGE)
+if (SMTK_BUILD_DISCRETE_SESSION)
 
   find_package(ParaView REQUIRED)
   include(${PARAVIEW_USE_FILE})
@@ -10,18 +10,18 @@ if (SMTK_BUILD_DISCRETE_BRIDGE)
   # not be found.
   list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
-  add_paraview_plugin(smtkDiscreteBridge_Plugin "1.0"
+  add_paraview_plugin(smtkDiscreteSession_Plugin "1.0"
       SERVER_SOURCES
-        bridgeInit.cxx
+        sessionInit.cxx
     )
 
-  target_link_libraries(smtkDiscreteBridge_Plugin
+  target_link_libraries(smtkDiscreteSession_Plugin
     LINK_PUBLIC
       SMTKCore
-      smtkDiscreteBridge
+      smtkDiscreteSession
       vtkPVServerManagerApplication
     LINK_PRIVATE
       vtkPVServerManagerApplicationCS
   )
-  smtk_install_library(smtkDiscreteBridge_Plugin DEPENDS SMTKCore smtkDiscreteBridge)
+  smtk_install_library(smtkDiscreteSession_Plugin DEPENDS SMTKCore smtkDiscreteSession)
 endif()

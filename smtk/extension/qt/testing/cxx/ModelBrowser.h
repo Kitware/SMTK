@@ -11,7 +11,7 @@
 #define __smtk_extension_qt_testing_ModelBrowser_h
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/model/GroupEntity.h"
+#include "smtk/model/Group.h"
 
 #include <QtGui/QWidget>
 
@@ -51,7 +51,7 @@ protected:
   Internals* m_p;
   smtk::model::ManagerPtr m_manager;
 
-  smtk::model::GroupEntity groupParentOfIndex(const QModelIndex& qidx);
+  smtk::model::Group groupParentOfIndex(const QModelIndex& qidx);
 };
 
 #endif // __smtk_extension_qt_testing_ModelBrowser_h

@@ -10,7 +10,7 @@
 
 #include "ImportOperator.h"
 
-#include "smtk/bridge/discrete/Bridge.h"
+#include "smtk/bridge/discrete/Session.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
@@ -18,12 +18,12 @@
 #include "smtk/attribute/ModelEntityItem.h"
 
 #include "smtk/model/Operator.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/Manager.h"
 
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkModelItem.h"
-#include "vtkModelEntity.h"
+#include "vtkModel.h"
 #include "vtkPDataSetReader.h"
 #include "vtkDataSetRegionSurfaceFilter.h"
 #include "vtkMasterPolyDataNormals.h"
@@ -147,9 +147,9 @@ OperatorResult ImportOperator::operateInternal()
     return this->createResult(OPERATION_FAILED);
     }
 
-  smtk::common::UUID modelId = this->discreteBridge()->trackModel(
+  smtk::common::UUID modelId = this->discreteSession()->trackModel(
     mod.GetPointer(), filename, this->manager());
-  smtk::model::Cursor modelEntity(this->manager(), modelId);
+  smtk::model::EntityRef modelEntity(this->manager(), modelId);
 
   OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
 
@@ -174,16 +174,16 @@ std::string json = smtk::io::ExportJSON::fromModelManager(this->manager());
     file.close();
 */
 
-  this->manager()->setBridgeForModel(
-    this->bridge()->shared_from_this(),
+  this->manager()->setSessionForModel(
+    this->session()->shared_from_this(),
     modelId);
 
   return result;
 }
 
-Bridge* ImportOperator::discreteBridge() const
+Session* ImportOperator::discreteSession() const
 {
-  return dynamic_cast<Bridge*>(this->bridge());
+  return dynamic_cast<Session*>(this->session());
 }
 
     } // namespace discrete
@@ -196,4 +196,4 @@ smtkImplementsModelOperator(
   discrete_import,
   "import",
   ImportOperator_xml,
-  smtk::bridge::discrete::Bridge);
+  smtk::bridge::discrete::Session);

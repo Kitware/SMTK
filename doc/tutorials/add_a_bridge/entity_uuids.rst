@@ -9,7 +9,7 @@ Adding Entity UUIDs
 *******************
 
 The first step in adapting foreign modeling kernels to SMTK,
-which you should do before you start subclassing Bridge,
+which you should do before you start subclassing Session,
 is deciding how to assign UUIDs to entities in the foreign
 modeling kernel so that
 
@@ -39,7 +39,7 @@ UUIDs:
    it also saves session information, it can be used to
    "restore" a modeling session so that the same files
    are loaded on the server and the UUIDs preserved.
-   *This is the approach our Exodus bridge example takes.*
+   *This is the approach our Exodus session example takes.*
 
 The advantage to the first approach is that modeling
 kernels with attribute systems generally provide a way
@@ -51,7 +51,7 @@ the topology of the model.
 Adding UUIDs by either technique
 --------------------------------
 
-Regardless of the path you take above, your bridge should provide
+Regardless of the path you take above, your session should provide
 public methods to map both directions.
 The function mapping UUIDs to foreign entities will have a
 return type that is specific to your modeling kernel,
@@ -59,7 +59,7 @@ as will the input parameter of the inverse method that
 returns a UUID given a foreign entity;
 for our example, we've created a new type named :cxx:`EntityHandle`.
 
-.. literalinclude:: ../../../smtk/bridge/exodus/Bridge.h
+.. literalinclude:: ../../../smtk/bridge/exodus/Session.h
    :start-after: // ++ 2 ++
    :end-before: // -- 2 --
 
@@ -68,12 +68,12 @@ or group it exposes to SMTK:
 (1) the type of object being exposed (an Exodus model, an element
 block, a side set, or a node set),
 (2) the offset of the model in a vector of vtkMultiBlockDataSet
-instances held by the bridge (one per Exodus file)
+instances held by the session (one per Exodus file)
 (3) the ID of the block holding the vtkUnstructuredGrid that contains
 the tessellation information for the object (or -1 when the object
 is an Exodus MODEL since it has no tessellation, only groups).
 Given an :cxx:`EntityHandle` we can easily look up the vtkUnstructuredGrid
-in the Bridge's :cxx:`m_models` member.
+in the Session's :cxx:`m_models` member.
 
 Adding UUIDs as attributes
 --------------------------
@@ -84,7 +84,7 @@ attribute system either as a 16-byte binary blob or an ASCII string
 per entity.
 
 For example, if we wished to make VTK points and cells available
-via a bridge, we could store UUIDs on VTK grids as point and cell data arrays.
+via a session, we could store UUIDs on VTK grids as point and cell data arrays.
 It would be more space-efficient to store these in a 2-component
 :cxx:`vtkTypeUInt64Array` (2 components for a total of 128 bits per UUID),
 but much easier to debug if we store UUIDs in :cxx:`vtkStringArray`
@@ -105,10 +105,10 @@ UUIDs and assigning it to the vtkInformation object on the dataset
 or filter.
 
 Although not required by this technique, you should be aware that you
-may store information about a particular bridge session instance in
-an SMTK JSON file by subclassing the :smtk:`BridgeIOJSON` class.
+may store information about a particular session session instance in
+an SMTK JSON file by subclassing the :smtk:`SessionIOJSON` class.
 
-.. _bridge-by-sequence:
+.. _session-by-sequence:
 
 Adding UUIDs as sequences
 -------------------------
@@ -116,16 +116,16 @@ Adding UUIDs as sequences
 If you must store UUIDs in an SMTK JSON file according to some stable
 traversal order, then you should
 
-1. store the arrays in your bridge class in the proper order and use
+1. store the arrays in your session class in the proper order and use
    them to perform the lookups.
 
-   .. literalinclude:: ../../../smtk/bridge/exodus/Bridge.cxx
+   .. literalinclude:: ../../../smtk/bridge/exodus/Session.cxx
       :start-after: // ++ 2 ++
       :end-before: // -- 2 --
 
-2. subclass :smtk:`BridgeIOJSON` in order to preserve the UUID arrays:
+2. subclass :smtk:`SessionIOJSON` in order to preserve the UUID arrays:
 
-   .. literalinclude:: ../../../smtk/bridge/exodus/BridgeExodusIOJSON.h
+   .. literalinclude:: ../../../smtk/bridge/exodus/SessionExodusIOJSON.h
       :start-after: // ++ 1 ++
       :end-before: // -- 1 --
 
@@ -143,4 +143,4 @@ Future versions of SMTK will focus on incremental transcription of
 model entities to avoid significant waits the first time a model is read.
 
 Now that you understand how UUIDs will be stored and related to foreign
-modeling kernel entities, it is possible to subclass the SMTK model bridge class.
+modeling kernel entities, it is possible to subclass the SMTK model session class.

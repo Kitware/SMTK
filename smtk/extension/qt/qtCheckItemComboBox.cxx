@@ -12,7 +12,7 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/System.h"
-#include "smtk/model/Cursor.h"
+#include "smtk/model/EntityRef.h"
 #include "smtk/model/Manager.h"
 
 #include <QAbstractItemView>
@@ -115,9 +115,9 @@ void qtModelEntityItemCombo::init()
   QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
   // need to update the list, since it may be changed
   int row=1;
-  smtk::model::Cursors modelEnts = modelManager->entitiesMatchingFlagsAs<smtk::model::Cursors>(
+  smtk::model::EntityRefs modelEnts = modelManager->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(
     itemDef->membershipMask(), false);
-  for(smtk::model::Cursors::iterator it = modelEnts.begin(); it != modelEnts.end(); ++it)
+  for(smtk::model::EntityRefs::iterator it = modelEnts.begin(); it != modelEnts.end(); ++it)
     {
     if((*it).isUseEntity())
       continue;
@@ -129,7 +129,7 @@ void qtModelEntityItemCombo::init()
     item->setData(Qt::Unchecked, Qt::CheckStateRole);
     item->setCheckable(true);
     item->setCheckState(ModelEntityItem->has(*it) ? Qt::Checked : Qt::Unchecked);
-    
+
     item->setData((*it).entity().toString().c_str(), Qt::UserRole);
     itemModel->insertRow(row, item);
     }
@@ -171,7 +171,7 @@ void qtModelEntityItemCombo::itemCheckChanged(
   QString entid = item->data(Qt::UserRole).toString();
   if(!entid.isEmpty())
     {
-    smtk::model::Cursor selcursor(
+    smtk::model::EntityRef selentityref(
       ModelEntityItem->attribute()->system()->refModelManager(), entid.toStdString());
     if(item->checkState() == Qt::Checked)
       {
@@ -182,14 +182,14 @@ void qtModelEntityItemCombo::itemCheckChanged(
         {
         if(!ModelEntityItem->isSet(idx))
           {
-          success = ModelEntityItem->setValue(idx, selcursor);
+          success = ModelEntityItem->setValue(idx, selentityref);
           break;
           }
         }
 
       if(!success)
         {
-        success = ModelEntityItem->appendValue(selcursor);
+        success = ModelEntityItem->appendValue(selentityref);
         if(!success)
           {
           this->blockSignals(true);
@@ -200,7 +200,7 @@ void qtModelEntityItemCombo::itemCheckChanged(
       }
     else
       {
-      std::ptrdiff_t idx = ModelEntityItem->find(selcursor);
+      std::ptrdiff_t idx = ModelEntityItem->find(selentityref);
       if(idx >=0)
         {
         if(itemDef->isExtensible())

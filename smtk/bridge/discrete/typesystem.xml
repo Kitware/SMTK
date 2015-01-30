@@ -3,7 +3,47 @@
 
   @EXTRA_TYPESYSTEMS@
 
-  <!-- Ignore Shiboken notice that CGM lives inside SMTK namespace -->
+  <!-- Ignore Shiboken notice that discrete lives inside SMTK namespace -->
+  <suppress-warning text="Duplicate type entry: 'smtk'"/>
+
+  <!-- Ignore private namespace -->
+  <suppress-warning text="namespace 'detail' does not have a type entry"/>
+
+  <!-- Ignore warnings about wrapping kernel-private members -->
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::assignUUIDToEntity', unmatched parameter type 'vtkModelItem*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::discrete::Session::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::create', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::discrete::Session::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addProperties', unmatched parameter type 'vtkModelItem*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addShellToManager', unmatched parameter type 'vtkModelShellUse*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addTessellation', unmatched parameter type 'vtkModelGeometricEntity*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addGroupToManager', unmatched parameter type 'vtkDiscreteModelEntityGroup*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::assignUUIDs', unmatched parameter type 'std::vector&lt;vtkModelItem*&gt; const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addVolumeToManager', unmatched parameter type 'vtkModelRegion*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::findOrSetEntityUUID', unmatched parameter type 'vtkInformation*'"/>
+  <suppress-warning text="skipping field 'Session::s_modelIdsToRefs' with unmatched type 'std::map&lt;smtk::common::UUID,vtkSmartPointer&lt;vtkDiscreteModelWrapper&gt;&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addEntities', unmatched parameter type 'P&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addFaceToManager', unmatched parameter type 'vtkModelFace*'"/>
+  <suppress-warning text="skipping field 'Session::m_itemsToRefs' with unmatched type 'std::map&lt;smtk::common::UUID,vtkModelItem*&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addMaterialToManager', unmatched parameter type 'vtkModelMaterial*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addBodyToManager', unmatched parameter type 'vtkModel*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addCMBEntityToManager', unmatched parameter type 'vtkModelItem*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addEdgeUseToManager', unmatched parameter type 'vtkModelEdgeUse*'"/>
+  <suppress-warning text="skipping field 'Session::s_modelRefsToIds' with unmatched type 'std::map&lt;vtkSmartPointer&lt;vtkDiscreteModelWrapper&gt;,smtk::common::UUID&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addVertexToManager', unmatched parameter type 'vtkModelVertex*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addEntityArray', unmatched parameter type 'P&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::trackModel', unmatched parameter type 'vtkDiscreteModelWrapper*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::retrieveUUIDs', unmatched return type 'vtkUnsignedIntArray*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addEdgeToManager', unmatched parameter type 'vtkModelEdge*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::bridge::discrete::Session::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::findModelEntity', unmatched return type 'vtkDiscreteModelWrapper*'"/>
+  <suppress-warning text="skipping field 'Session::m_itemWatcher' with unmatched type 'smtk::bridge::discrete::vtkItemWatcherCommand'"/>
+  <suppress-warning text="skipping field 'Session::s_modelsToSessions' with unmatched type 'std::map&lt;vtkDiscreteModel*,smtk::bridge::discrete::Session::WeakPtr&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addLoopToManager', unmatched parameter type 'vtkModelLoopUse*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addFaceUseToManager', unmatched parameter type 'vtkModelFaceUse*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::entityForUUID', unmatched return type 'vtkModelItem*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addVertexUseToManager', unmatched parameter type 'vtkModelVertexUse*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::findOrSetEntityUUID', unmatched parameter type 'vtkModelItem*'"/>
+
   <suppress-warning text="Duplicate type entry: 'smtk'"/>
 
   <!-- Additional objects to be wrapped when building with CGM -->
@@ -11,15 +51,15 @@
     <namespace-type name="bridge" generate = "no">
       <namespace-type name="discrete" generate = "yes">
 
-        <object-type name="Bridge">
-          <include file-name="smtk/bridge/discrete/Bridge.h" location="local"/>
+        <object-type name="Session">
+          <include file-name="smtk/bridge/discrete/Session.h" location="local"/>
         </object-type>
 
       </namespace-type>
     </namespace-type>
   </namespace-type>
 
-  <value-type template="smtk::shared_ptr" args="smtk::bridge::discrete::Bridge">
+  <value-type template="smtk::shared_ptr" args="smtk::bridge::discrete::Session">
   </value-type>
 
   @EXTRA_OBJECTS@

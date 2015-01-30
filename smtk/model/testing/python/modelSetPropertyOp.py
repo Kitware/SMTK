@@ -23,7 +23,7 @@ print 'Loading %s' % model_path
 
 status = 0
 mgr = smtk.model.Manager.create()
-session = mgr.createAndRegisterBridge('native', uuid4())
+session = mgr.createAndRegisterSession('native', uuid4())
 json = None
 with open(model_path, 'r') as f:
   json = f.read()
@@ -37,7 +37,7 @@ mgr.assignDefaultNames()
 models = mgr.findEntitiesOfType(smtk.model.MODEL_ENTITY, True)
 print 'Applying operator to %d model(s)' % len(models)
 
-op = smtk.model.ModelEntity(models[0]).op('set property')
+op = smtk.model.Model(models[0]).op('set property')
 op.findAsString('name').setValue('superduperness')
 op.findAsInt('integer value').setNumberOfValues(1)
 op.findAsInt('integer value').setValue(42)
@@ -49,7 +49,7 @@ if result.findInt('outcome').value(0) != smtk.model.OPERATION_SUCCEEDED:
 print 'Checking properties'
 for x in mgr.findEntitiesOfType(smtk.model.ANY_ENTITY, False):
   sdness = x.integerProperty('superduperness')
-  if not (not x.isModelEntity()) ^ (len(sdness) == 1 and sdness[0] == 42):
+  if not (not x.isModel()) ^ (len(sdness) == 1 and sdness[0] == 42):
     print x.name(), ' has unexpected superduperness of ', sdness
     status = 1
 

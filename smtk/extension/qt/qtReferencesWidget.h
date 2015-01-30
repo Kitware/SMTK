@@ -22,7 +22,7 @@
 class qtReferencesWidgetInternals;
 class QListWidgetItem;
 class QListWidget;
-class ModelEntity;
+class Model;
 
 namespace smtk
 {

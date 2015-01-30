@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/bridge/cgm/operators/Copy.h"
 
-#include "smtk/bridge/cgm/Bridge.h"
+#include "smtk/bridge/cgm/Session.h"
 #include "smtk/bridge/cgm/CAUUID.h"
 #include "smtk/bridge/cgm/Engines.h"
 #include "smtk/bridge/cgm/TDUUID.h"
@@ -18,7 +18,7 @@
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Model.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
@@ -50,16 +50,16 @@ namespace smtk {
 
 smtk::model::OperatorResult Copy::operateInternal()
 {
-  CursorArray entitiesIn = this->associatedEntitiesAs<CursorArray>();
+  EntityRefArray entitiesIn = this->associatedEntitiesAs<EntityRefArray>();
   if (entitiesIn.size() != 1)
     {
     smtkInfoMacro(log(), "Expected a single entity to copy but was given " << entitiesIn.size() << ".");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
-  Cursor entity = entitiesIn[0];
+  EntityRef entity = entitiesIn[0];
   RefEntity* cgmOut;
-  if (entity.isModelEntity())
+  if (entity.isModel())
     {
     Body* refBody = this->cgmEntityAs<Body*>(entity);
     if (!refBody)
@@ -104,13 +104,13 @@ smtk::model::OperatorResult Copy::operateInternal()
   smtk::attribute::ModelEntityItem::Ptr resultEntities =
     result->findModelEntity("entities");
 
-  Bridge* bridge = this->cgmBridge();
+  Session* session = this->cgmSession();
   resultEntities->setNumberOfValues(1);
 
   smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(cgmOut, true);
   smtk::common::UUID entId = refId->entityId();
-  smtk::model::Cursor smtkEntry(this->manager(), entId);
-  if (bridge->transcribe(smtkEntry, smtk::model::BRIDGE_EVERYTHING, false))
+  smtk::model::EntityRef smtkEntry(this->manager(), entId);
+  if (session->transcribe(smtkEntry, smtk::model::SESSION_EVERYTHING, false))
     resultEntities->setValue(0, smtkEntry);
 
   return result;
@@ -125,4 +125,4 @@ smtkImplementsModelOperator(
   cgm_copy,
   "copy",
   Copy_xml,
-  smtk::bridge::cgm::Bridge);
+  smtk::bridge::cgm::Session);

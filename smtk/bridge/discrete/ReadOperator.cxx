@@ -10,7 +10,7 @@
 
 #include "ReadOperator.h"
 
-#include "smtk/bridge/discrete/Bridge.h"
+#include "smtk/bridge/discrete/Session.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
@@ -18,19 +18,19 @@
 #include "smtk/attribute/ModelEntityItem.h"
 
 #include "smtk/model/Operator.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/Manager.h"
 
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkModelItem.h"
-#include "vtkModelEntity.h"
+#include "vtkModel.h"
 #include <vtksys/SystemTools.hxx>
 
 #include "ReadOperator_xml.h"
 
-// #define SMTK_DISCRETE_BRIDGE_DEBUG
+// #define SMTK_DISCRETE_SESSION_DEBUG
 
-#if defined(SMTK_DISCRETE_BRIDGE_DEBUG)
+#if defined(SMTK_DISCRETE_SESSION_DEBUG)
 #include "smtk/io/ExportJSON.h"
 #include "cJSON.h"
 #endif
@@ -79,9 +79,9 @@ OperatorResult ReadOperator::operateInternal()
     return this->createResult(OPERATION_FAILED);
     }
 
-  smtk::common::UUID modelId = this->discreteBridge()->trackModel(
+  smtk::common::UUID modelId = this->discreteSession()->trackModel(
     mod.GetPointer(), fname, this->manager());
-  smtk::model::Cursor modelEntity(this->manager(), modelId);
+  smtk::model::EntityRef modelEntity(this->manager(), modelId);
 
   OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
   smtk::attribute::ModelEntityItemPtr models =
@@ -89,23 +89,23 @@ OperatorResult ReadOperator::operateInternal()
   models->setNumberOfValues(1);
   models->setValue(0, modelEntity);
 
-#if defined(SMTK_DISCRETE_BRIDGE_DEBUG)
+#if defined(SMTK_DISCRETE_SESSION_DEBUG)
   std::string json = smtk::io::ExportJSON::fromModelManager(this->manager());
     std::ofstream file("/tmp/read_op_out.json");
     file << json;
     file.close();
 #endif
 
-  this->manager()->setBridgeForModel(
-    this->bridge()->shared_from_this(),
+  this->manager()->setSessionForModel(
+    this->session()->shared_from_this(),
     modelId);
 
   return result;
 }
 
-Bridge* ReadOperator::discreteBridge() const
+Session* ReadOperator::discreteSession() const
 {
-  return dynamic_cast<Bridge*>(this->bridge());
+  return dynamic_cast<Session*>(this->session());
 }
 
     } // namespace discrete
@@ -118,4 +118,4 @@ smtkImplementsModelOperator(
   discrete_read,
   "read",
   ReadOperator_xml,
-  smtk::bridge::discrete::Bridge);
+  smtk::bridge::discrete::Session);

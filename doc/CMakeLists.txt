@@ -115,7 +115,7 @@ if (SPHINX_FOUND)
     userguide/attribute/file-syntax.rst
     userguide/model/index.rst
     userguide/model/concepts.rst
-    userguide/model/bridges.rst
+    userguide/model/sessions.rst
     userguide/model/property-names.rst
     userguide/contributing.rst
   )
@@ -126,8 +126,8 @@ if (SPHINX_FOUND)
   endif()
 
   set(SMTK_USERGUIDE_FIGS
-    userguide/figures/forwarding-bridge.svg
-    userguide/figures/cursor-classes-with-inheritance.svg
+    userguide/figures/forwarding-session.svg
+    userguide/figures/entityref-classes-with-inheritance.svg
     userguide/figures/ExampleAttributePanel.png
   )
 

@@ -30,21 +30,21 @@ public:
   virtual std::string title();
   virtual std::string subtitle();
 
-  CursorArray relatedEntities() const;
+  EntityRefArray relatedEntities() const;
   virtual void setFlags(BitFlags commonFlags, BitFlags unionFlags);
 
 protected:
   EntityListPhrase();
 
-  CursorArray m_entities;
+  EntityRefArray m_entities;
   BitFlags m_commonFlags;
   BitFlags m_unionFlags;
 };
 
-/**\brief Initialize an entity list with an iterable container of cursors.
+/**\brief Initialize an entity list with an iterable container of entityrefs.
   *
   * This templated method is provided so that arrays of **subclasses** of
-  * Cursors are also accepted.
+  * EntityRefs are also accepted.
   */
 template<typename T>
 EntityListPhrase::Ptr EntityListPhrase::setup(const T& entities, DescriptivePhrase::Ptr parnt)

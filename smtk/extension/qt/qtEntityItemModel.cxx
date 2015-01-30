@@ -73,12 +73,12 @@ public:
 };
 
 // A visitor functor called by foreach_phrase() to let the view know when to redraw data.
-static bool UpdateSubphrases(QEntityItemModel* qmodel, const QModelIndex& qidx, const Cursor& ent)
+static bool UpdateSubphrases(QEntityItemModel* qmodel, const QModelIndex& qidx, const EntityRef& ent)
 {
   DescriptivePhrasePtr phrase = qmodel->getItem(qidx);
   if (phrase)
     {
-    Cursor related = phrase->relatedEntity();
+    EntityRef related = phrase->relatedEntity();
     if (related == ent)
       {
       qmodel->subphrasesUpdated(qidx);
@@ -88,7 +88,7 @@ static bool UpdateSubphrases(QEntityItemModel* qmodel, const QModelIndex& qidx, 
 }
 
 // Callback function, invoked when a new arrangement is added to an entity.
-static int entityModified(ManagerEventType, const smtk::model::Cursor& ent, const smtk::model::Cursor&, void* callData)
+static int entityModified(ManagerEventType, const smtk::model::EntityRef& ent, const smtk::model::EntityRef&, void* callData)
 {
   QEntityItemModel* qmodel = static_cast<QEntityItemModel*>(callData);
   if (!qmodel)
@@ -438,7 +438,7 @@ Qt::ItemFlags QEntityItemModel::flags(const QModelIndex& idx) const
   Qt::ItemFlags itemFlags = QAbstractItemModel::flags(idx) |
      Qt::ItemIsEditable | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
   DescriptivePhrasePtr dp = this->getItem(idx);
-  if( dp && dp->relatedEntity().isGroupEntity() )
+  if( dp && dp->relatedEntity().isGroup() )
     itemFlags = itemFlags | Qt::ItemIsDropEnabled;
   return itemFlags;
 }
@@ -448,7 +448,7 @@ static bool FindManager(const QEntityItemModel* qmodel, const QModelIndex& qidx,
   DescriptivePhrasePtr phrase = qmodel->getItem(qidx);
   if (phrase)
     {
-    Cursor related = phrase->relatedEntity();
+    EntityRef related = phrase->relatedEntity();
     if (related.isValid())
       {
       manager = related.manager();
@@ -464,7 +464,7 @@ static bool FindManager(const QEntityItemModel* qmodel, const QModelIndex& qidx,
   * Note that it is possible for a QEntityItemModel to present information
   * on entities from multiple Manager instances.
   * However, in this case, external updates to the selection must either be
-  * made via Cursor instances (which couple UUIDs with Manager instances) or
+  * made via EntityRef instances (which couple UUIDs with Manager instances) or
   * there will be breakage.
   */
 smtk::model::ManagerPtr QEntityItemModel::manager() const

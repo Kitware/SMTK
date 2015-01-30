@@ -43,8 +43,8 @@ public:
 
   // Description:
   // Model entity ID that this source will be built upon.
-  vtkSetStringMacro(ModelEntityID);
-  vtkGetStringMacro(ModelEntityID);
+  vtkSetStringMacro(ModelID);
+  vtkGetStringMacro(ModelID);
 
   void GetUUID2BlockIdMap(std::map<smtk::common::UUID, unsigned int>& uuid2mid);
   void Dirty();
@@ -66,9 +66,9 @@ protected:
   vtkModelMultiBlockSource();
   virtual ~vtkModelMultiBlockSource();
 
-  void GenerateRepresentationFromModelEntity(
+  void GenerateRepresentationFromModel(
     vtkPolyData* poly,
-    const smtk::model::Cursor& entity,
+    const smtk::model::EntityRef& entity,
     bool genNormals);
   void GenerateRepresentationFromModel(
     vtkMultiBlockDataSet* mbds, smtk::model::ManagerPtr model);
@@ -85,14 +85,14 @@ protected:
 
   void FindEntitiesWithTessellation(
     const smtk::model::CellEntity &cellent,
-    std::map<smtk::model::Cursor, smtk::model::Cursor> &cursorMap);
+    std::map<smtk::model::EntityRef, smtk::model::EntityRef> &entityrefMap);
 
   smtk::model::ManagerPtr ModelMgr;
   vtkMultiBlockDataSet* CachedOutput;
   double DefaultColor[4];
 
   std::map<smtk::common::UUID, unsigned int> UUID2BlockIdMap; // UUIDs to block index map
-  char* ModelEntityID; // Model Entity UUID
+  char* ModelID; // Model Entity UUID
 
   int AllowNormalGeneration;
   vtkNew<vtkPolyDataNormals> NormalGenerator;

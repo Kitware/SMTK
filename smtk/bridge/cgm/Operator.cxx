@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/bridge/cgm/Operator.h"
-#include "smtk/bridge/cgm/Bridge.h"
+#include "smtk/bridge/cgm/Session.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
 #include "RefEntity.hpp"
@@ -17,10 +17,10 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-/// Return a shared pointer to the bridge backing a CGM operator.
-Bridge* Operator::cgmBridge()
+/// Return a shared pointer to the session backing a CGM operator.
+Session* Operator::cgmSession()
 {
-  return dynamic_cast<smtk::bridge::cgm::Bridge*>(this->bridge());
+  return dynamic_cast<smtk::bridge::cgm::Session*>(this->session());
 }
 
 /**\brief A helper to return the CGM ToolDataUser associated with \a smtkEntity.
@@ -31,13 +31,13 @@ Bridge* Operator::cgmBridge()
   * as it returns the result of this method dynamically cast to
   * the much more useful RefEntity.
   */
-ToolDataUser* Operator::cgmData(const smtk::model::Cursor& smtkEntity)
+ToolDataUser* Operator::cgmData(const smtk::model::EntityRef& smtkEntity)
 {
   return TDUUID::findEntityById(smtkEntity.entity());
 }
 
 /// A helper to return the CGM entity associated with \a smtkEntity.
-RefEntity* Operator::cgmEntity(const smtk::model::Cursor& smtkEntity)
+RefEntity* Operator::cgmEntity(const smtk::model::EntityRef& smtkEntity)
 {
   ToolDataUser* tdu = TDUUID::findEntityById(smtkEntity.entity());
   RefEntity* ent = dynamic_cast<RefEntity*>(tdu);

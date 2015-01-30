@@ -11,7 +11,7 @@
 
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/CursorArrangementOps.h"
+#include "smtk/model/EntityRefArrangementOps.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/UseEntity.h"
@@ -35,7 +35,7 @@ CellEntity ShellEntity::boundingCell() const
   */
 UseEntity ShellEntity::boundingUseEntity() const
 {
-  Cursor result = CursorArrangementOps::firstRelation<Cursor>(*this, EMBEDDED_IN);
+  EntityRef result = EntityRefArrangementOps::firstRelation<EntityRef>(*this, EMBEDDED_IN);
   while (result.isValid() && result.isShellEntity())
     {
     result = result.as<ShellEntity>().containingShellEntity();
@@ -55,7 +55,7 @@ UseEntity ShellEntity::boundingUseEntity() const
   */
 ShellEntity ShellEntity::containingShellEntity() const
 {
-  return CursorArrangementOps::firstRelation<ShellEntity>(*this, EMBEDDED_IN);
+  return EntityRefArrangementOps::firstRelation<ShellEntity>(*this, EMBEDDED_IN);
 }
 
 /// Add the (lower-dimensional) use as a child of the shell.

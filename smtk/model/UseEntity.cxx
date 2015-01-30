@@ -12,7 +12,7 @@
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Arrangement.h"
-#include "smtk/model/CursorArrangementOps.h"
+#include "smtk/model/EntityRefArrangementOps.h"
 
 namespace smtk {
   namespace model {
@@ -20,13 +20,13 @@ namespace smtk {
 /// Return the cell owning this cell-use.
 CellEntity UseEntity::cell() const
 {
-  return CursorArrangementOps::firstRelation<CellEntity>(*this, HAS_CELL);
+  return EntityRefArrangementOps::firstRelation<CellEntity>(*this, HAS_CELL);
 }
 
 /// Return the first (usually the only) shell in which this use participates as a boundary.
 ShellEntity UseEntity::boundingShellEntity() const
 {
-  return CursorArrangementOps::firstRelation<ShellEntity>(*this, HAS_SHELL);
+  return EntityRefArrangementOps::firstRelation<ShellEntity>(*this, HAS_SHELL);
 }
 
 /// The orientation of the cell-use relative to the underlying cell.
@@ -94,7 +94,7 @@ UseEntity& UseEntity::setBoundingShellEntity(const ShellEntity& shell)
   * Each shell added should be a top-level shell for the given use;
   * shells may contain other shells.
   * However, currently this is not detected or enforced and the
-  * existing bridges do not properly nest shells.
+  * existing sessions do not properly nest shells.
   */
 UseEntity& UseEntity::addShellEntity(const ShellEntity& shell)
 {

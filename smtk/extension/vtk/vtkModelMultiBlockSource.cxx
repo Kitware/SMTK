@@ -9,14 +9,14 @@
 //=========================================================================
 #include "smtk/extension/vtk/vtkModelMultiBlockSource.h"
 
-#include "smtk/model/Cursor.h"
+#include "smtk/model/EntityRef.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
-#include "smtk/model/GroupEntity.h"
+#include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Volume.h"
 
@@ -51,14 +51,14 @@ vtkModelMultiBlockSource::vtkModelMultiBlockSource()
     {
     this->DefaultColor[i] = 1.;
     }
-  this->ModelEntityID = NULL;
+  this->ModelID = NULL;
   this->AllowNormalGeneration = 0;
 }
 
 vtkModelMultiBlockSource::~vtkModelMultiBlockSource()
 {
   this->SetCachedOutput(NULL);
-  this->SetModelEntityID(NULL);
+  this->SetModelID(NULL);
 }
 
 void vtkModelMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
@@ -67,7 +67,7 @@ void vtkModelMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
 
   os << indent << "Model: " << this->ModelMgr.get() << "\n";
   os << indent << "CachedOutput: " << this->CachedOutput << "\n";
-  os << indent << "ModelEntityID: " << this->ModelEntityID << "\n";
+  os << indent << "ModelID: " << this->ModelID << "\n";
   os << indent << "AllowNormalGeneration: " << this->AllowNormalGeneration << "\n";
 }
 
@@ -146,16 +146,16 @@ void vtkModelMultiBlockSource::Dirty()
  */
 
 static void AddEntityTessToPolyData(
-  const smtk::model::Cursor& cursor, vtkPoints* pts, vtkPolyData* pd)
+  const smtk::model::EntityRef& entityref, vtkPoints* pts, vtkPolyData* pd)
 {
-  const smtk::model::Tessellation* tess = cursor.hasTessellation();
+  const smtk::model::Tessellation* tess = entityref.hasTessellation();
   if (!tess)
     return;
 
   vtkIdType i;
   //vtkIdType connOffset = pts->GetNumberOfPoints();
   std::vector<vtkIdType> conn;
-  std::string uuidStr = cursor.entity().toString();
+  std::string uuidStr = entityref.entity().toString();
   vtkIdType npts = tess->coords().size() / 3;
   for (i = 0; i < npts; ++i)
     {
@@ -202,26 +202,26 @@ static void AddEntityTessToPolyData(
 /// Mapping from UUID to block id
 /// Field data arrays 
 static void internal_AddBlockInfo(smtk::model::ManagerPtr manager,
-  const smtk::model::Cursor& cursor, const smtk::model::Cursor& bordantCell,
+  const smtk::model::EntityRef& entityref, const smtk::model::EntityRef& bordantCell,
   const vtkIdType& blockId,
   vtkPolyData* poly, std::map<smtk::common::UUID, unsigned int>& uuid2BlockId)
 {
-  manager->setIntegerProperty(cursor.entity(), "block_index", blockId);
-  uuid2BlockId[cursor.entity()] = static_cast<unsigned int>(blockId);
+  manager->setIntegerProperty(entityref.entity(), "block_index", blockId);
+  uuid2BlockId[entityref.entity()] = static_cast<unsigned int>(blockId);
 
   // Add Entity UUID to fieldData
   vtkNew<vtkStringArray> uuidArray;
   uuidArray->SetNumberOfComponents(1);
   uuidArray->SetNumberOfTuples(1);
   uuidArray->SetName(vtkModelMultiBlockSource::GetEntityTagName());
-  uuidArray->SetValue(0, cursor.entity().toString());
+  uuidArray->SetValue(0, entityref.entity().toString());
   poly->GetFieldData()->AddArray(uuidArray.GetPointer());
 
-  smtk::model::Cursors vols;
+  smtk::model::EntityRefs vols;
   if(bordantCell.isValid() && bordantCell.isVolume())
     vols.insert(bordantCell);
 /*
-  Cursor embIn = cursor.embeddedIn();
+  EntityRef embIn = entityref.embeddedIn();
   if(embIn.isValid() && embIn.isVolume())
       vols.insert(embIn);
   else
@@ -238,9 +238,9 @@ static void internal_AddBlockInfo(smtk::model::ManagerPtr manager,
     }
 */
 /*
-  if(cursor.isEdge())
+  if(entityref.isEdge())
     {
-    smtk::model::Edge eg = cursor.as<smtk::model::Edge>();
+    smtk::model::Edge eg = entityref.as<smtk::model::Edge>();
     for(smtk::model::EdgeUses::iterator it = eg.edgeUses().begin();
         it != eg.edgeUses().end(); ++it)
       {
@@ -248,13 +248,13 @@ static void internal_AddBlockInfo(smtk::model::ManagerPtr manager,
         vols.push_back((*it).faceUse().volume());
       }
     }
-  else if(cursor.isFace())
+  else if(entityref.isFace())
     {
-    //vols = cursor.as<smtk::model::Face>().volumes(); // not working yet
-    smtk::model::FaceUse fUse = cursor.as<smtk::model::Face>().negativeUse();
+    //vols = entityref.as<smtk::model::Face>().volumes(); // not working yet
+    smtk::model::FaceUse fUse = entityref.as<smtk::model::Face>().negativeUse();
     if(fUse.isValid())
       vols.push_back(fUse.volume());
-    fUse = cursor.as<smtk::model::Face>().positiveUse();
+    fUse = entityref.as<smtk::model::Face>().positiveUse();
     if(fUse.isValid())
       vols.push_back(fUse.volume());
     }
@@ -266,7 +266,7 @@ static void internal_AddBlockInfo(smtk::model::ManagerPtr manager,
     volArray->SetNumberOfComponents(1);
     volArray->SetNumberOfTuples(vols.size());
     int ai = 0;
-    for (smtk::model::Cursors::iterator it = vols.begin();
+    for (smtk::model::EntityRefs::iterator it = vols.begin();
          it != vols.end(); ++it, ++ai)
       {
       volArray->SetValue(ai, (*it).entity().toString());
@@ -279,14 +279,14 @@ static void internal_AddBlockInfo(smtk::model::ManagerPtr manager,
   // Add group UUID to fieldData
   vtkNew<vtkStringArray> groupArray;
   groupArray->SetNumberOfComponents(1);
-  int na = cursor.numberOfArrangementsOfKind(SUBSET_OF);
+  int na = entityref.numberOfArrangementsOfKind(SUBSET_OF);
   if(na > 0)
     {
     groupArray->SetNumberOfTuples(na);
     for (int i = 0; i < na; ++i)
       {
       groupArray->SetValue(i, 
-        cursor.relationFromArrangement(SUBSET_OF, i, 0).entity().toString());
+        entityref.relationFromArrangement(SUBSET_OF, i, 0).entity().toString());
       }
     groupArray->SetName(vtkModelMultiBlockSource::GetGroupTagName());
     poly->GetFieldData()->AddArray(groupArray.GetPointer());
@@ -294,26 +294,26 @@ static void internal_AddBlockInfo(smtk::model::ManagerPtr manager,
 }
 
 /// Loop over the model generating blocks of polydata.
-void vtkModelMultiBlockSource::GenerateRepresentationFromModelEntity(
-  vtkPolyData* pd, const smtk::model::Cursor& cursor, bool genNormals)
+void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
+  vtkPolyData* pd, const smtk::model::EntityRef& entityref, bool genNormals)
 {
   vtkNew<vtkPoints> pts;
   pd->SetPoints(pts.GetPointer());
   const smtk::model::Tessellation* tess;
-  if (!(tess = cursor.hasTessellation()))
+  if (!(tess = entityref.hasTessellation()))
     { // Oops.
     return;
     }
   vtkIdType npts = tess->coords().size() / 3;
   pts->Allocate(npts);
   smtk::model::Entity* entity;
-  if (cursor.isValid(&entity))
+  if (entityref.isValid(&entity))
     {
-    AddEntityTessToPolyData(cursor, pts.GetPointer(), pd);
+    AddEntityTessToPolyData(entityref, pts.GetPointer(), pd);
     // Only create the color array if there is a valid default:
     if (this->DefaultColor[3] >= 0.)
       {
-      FloatList rgba = cursor.color();
+      FloatList rgba = entityref.color();
       vtkNew<vtkUnsignedCharArray> cellColor;
       cellColor->SetNumberOfComponents(4);
       cellColor->SetNumberOfTuples(pd->GetNumberOfCells());
@@ -329,10 +329,10 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModelEntity(
     if (this->AllowNormalGeneration && pd->GetPolys()->GetSize() > 0)
       {
       bool reallyNeedNormals = genNormals;
-      if ( cursor.hasIntegerProperty("generate normals"))
+      if ( entityref.hasIntegerProperty("generate normals"))
         { // Allow per-entity setting to override per-model setting
         const IntegerList& prop(
-          cursor.integerProperty(
+          entityref.integerProperty(
             "generate normals"));
         reallyNeedNormals = (!prop.empty() && prop[0]);
         }
@@ -349,19 +349,19 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModelEntity(
 /// Recursively find all the entities with tessellation
 void vtkModelMultiBlockSource::FindEntitiesWithTessellation(
   const CellEntity &cellent,
-  std::map<smtk::model::Cursor, smtk::model::Cursor> &cursorMap)
+  std::map<smtk::model::EntityRef, smtk::model::EntityRef> &entityrefMap)
 {
-  CellEntities cellents = cellent.isModelEntity() ?
-    cellent.as<ModelEntity>().cells() : cellent.boundingCells();
+  CellEntities cellents = cellent.isModel() ?
+    cellent.as<Model>().cells() : cellent.boundingCells();
   for (CellEntities::const_iterator it = cellents.begin(); it != cellents.end(); ++it)
     {
     if((*it).hasTessellation())
       {
-      cursorMap[*it] = cellent;
+      entityrefMap[*it] = cellent;
       }
     else if((*it).boundingCells().size() > 0)
       {
-      this->FindEntitiesWithTessellation(*it, cursorMap);
+      this->FindEntitiesWithTessellation(*it, entityrefMap);
       }
     }
 }
@@ -370,12 +370,12 @@ void vtkModelMultiBlockSource::FindEntitiesWithTessellation(
 void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
   vtkMultiBlockDataSet* mbds, smtk::model::ManagerPtr manager)
 {
-  if(this->ModelEntityID && this->ModelEntityID[0])
+  if(this->ModelID && this->ModelID[0])
     {
-    smtk::common::UUID uid(this->ModelEntityID);
-    smtk::model::Cursor entity(manager, uid);
-    ModelEntity modelEntity = entity.isModelEntity() ?
-      entity.as<smtk::model::ModelEntity>() : entity.owningModel();
+    smtk::common::UUID uid(this->ModelID);
+    smtk::model::EntityRef entity(manager, uid);
+    Model modelEntity = entity.isModel() ?
+      entity.as<smtk::model::Model>() : entity.owningModel();
     if (modelEntity.isValid())
       {
       // See if the model has any instructions about
@@ -389,23 +389,23 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
         }
       // First, enumerate all free cells and their boundaries to
       // find those which provide tessellations.
-      // smtk::model::Cursors cursors;
-      // Map from cursor to its parent cell entity
-      std::map<smtk::model::Cursor, smtk::model::Cursor> cursorMap;
+      // smtk::model::EntityRefs entityrefs;
+      // Map from entityref to its parent cell entity
+      std::map<smtk::model::EntityRef, smtk::model::EntityRef> entityrefMap;
 
-      this->FindEntitiesWithTessellation(modelEntity, cursorMap);
+      this->FindEntitiesWithTessellation(modelEntity, entityrefMap);
 
       GroupEntities groups = modelEntity.groups();
-      mbds->SetNumberOfBlocks(cursorMap.size() + groups.size());
+      mbds->SetNumberOfBlocks(entityrefMap.size() + groups.size());
       vtkIdType i;
-      std::map<smtk::model::Cursor, smtk::model::Cursor>::iterator cit;
-      for (i = 0, cit = cursorMap.begin(); cit != cursorMap.end(); ++cit, ++i)
+      std::map<smtk::model::EntityRef, smtk::model::EntityRef>::iterator cit;
+      for (i = 0, cit = entityrefMap.begin(); cit != entityrefMap.end(); ++cit, ++i)
         {
         vtkNew<vtkPolyData> poly;
         mbds->SetBlock(i, poly.GetPointer());
         // Set the block name to the entity UUID.
         mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), cit->first.name().c_str());
-        this->GenerateRepresentationFromModelEntity(poly.GetPointer(), cit->first, modelRequiresNormals);
+        this->GenerateRepresentationFromModel(poly.GetPointer(), cit->first, modelRequiresNormals);
         // std::cout << "UUID: " << (*cit).entity().toString().c_str() << " Block: " << i << std::endl;
         // as a convenient method to get the flat block index in multiblock
         if(!(cit->first.entity().isNull()))
@@ -421,11 +421,11 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
         if (git->hasTessellation())
           {
           vtkNew<vtkPolyData> poly;
-          mbds->SetBlock(cursorMap.size() + i, poly.GetPointer());
-          mbds->GetMetaData(cursorMap.size() + i)->Set(vtkCompositeDataSet::NAME(), git->name().c_str());
-          this->GenerateRepresentationFromModelEntity(poly.GetPointer(), *git, modelRequiresNormals);
+          mbds->SetBlock(entityrefMap.size() + i, poly.GetPointer());
+          mbds->GetMetaData(entityrefMap.size() + i)->Set(vtkCompositeDataSet::NAME(), git->name().c_str());
+          this->GenerateRepresentationFromModel(poly.GetPointer(), *git, modelRequiresNormals);
           // as a convenient method to get the flat block_index in multiblock
-          internal_AddBlockInfo(manager, *git, modelEntity, cursorMap.size() + i, poly.GetPointer(), this->UUID2BlockIdMap);
+          internal_AddBlockInfo(manager, *git, modelEntity, entityrefMap.size() + i, poly.GetPointer(), this->UUID2BlockIdMap);
           }
         }
       // TODO: how do we handle submodels in a multiblock dataset? We could have
@@ -435,7 +435,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
       }
     else
       {
-      vtkGenericWarningMacro(<< "Can not find the model entity with UUID: " << this->ModelEntityID);
+      vtkGenericWarningMacro(<< "Can not find the model entity with UUID: " << this->ModelID);
       }
     }
   else
@@ -449,13 +449,13 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
       {
       vtkNew<vtkPolyData> poly;
       mbds->SetBlock(i, poly.GetPointer());
-      smtk::model::Cursor cursor(manager, it->first);
+      smtk::model::EntityRef entityref(manager, it->first);
       // Set the block name to the entity UUID.
-      mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), cursor.name().c_str());
-      this->GenerateRepresentationFromModelEntity(poly.GetPointer(), cursor, this->AllowNormalGeneration);
+      mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), entityref.name().c_str());
+      this->GenerateRepresentationFromModel(poly.GetPointer(), entityref, this->AllowNormalGeneration);
 
       // as a convenient method to get the flat block_index in multiblock
-      internal_AddBlockInfo(manager, cursor, smtk::model::Cursor(), i, poly.GetPointer(), this->UUID2BlockIdMap);
+      internal_AddBlockInfo(manager, entityref, smtk::model::EntityRef(), i, poly.GetPointer(), this->UUID2BlockIdMap);
       }
     }
 }

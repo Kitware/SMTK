@@ -1,7 +1,7 @@
 set(smtkModelPythonTests
   modelBodyCreate
-  modelBodyCursors
-  cursorTutorial
+  modelBodyEntityRefs
+  entityRefTutorial
 )
 
 # Additional tests that require SMTK_DATA_DIR

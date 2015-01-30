@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/extension/qt/qtModelEntityView.h"
+#include "smtk/extension/qt/qtModelView.h"
 
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtTableWidget.h"
@@ -25,7 +25,7 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/Item.h"
 #include "smtk/model/GroupItem.h"
-#include "smtk/view/ModelEntity.h"
+#include "smtk/view/Model.h"
 
 #include <QGridLayout>
 #include <QComboBox>
@@ -46,7 +46,7 @@
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-class qtModelEntityViewInternals
+class qtModelViewInternals
 {
 public:
   QPointer<QListWidget> ListBox;
@@ -57,35 +57,35 @@ public:
 };
 
 //----------------------------------------------------------------------------
-qtModelEntityView::
-qtModelEntityView(smtk::view::BasePtr dataObj, QWidget* p, qtUIManager* uiman) :
+qtModelView::
+qtModelView(smtk::view::BasePtr dataObj, QWidget* p, qtUIManager* uiman) :
   qtBaseView(dataObj, p, uiman)
 {
-  this->Internals = new qtModelEntityViewInternals;
+  this->Internals = new qtModelViewInternals;
   this->createWidget( );
 }
 
 //----------------------------------------------------------------------------
-qtModelEntityView::~qtModelEntityView()
+qtModelView::~qtModelView()
 {
   delete this->Internals;
 }
 
 //----------------------------------------------------------------------------
-const std::vector<smtk::attribute::DefinitionPtr> &qtModelEntityView::attDefinitions() const
+const std::vector<smtk::attribute::DefinitionPtr> &qtModelView::attDefinitions() const
 {
   return this->Internals->attDefs;
 }
 
 //----------------------------------------------------------------------------
-void qtModelEntityView::createWidget( )
+void qtModelView::createWidget( )
 {
   if(!this->getObject())
     {
     return;
     }
-  smtk::view::ModelEntityPtr mview =
-    smtk::dynamic_pointer_cast<smtk::view::ModelEntity>(this->getObject());
+  smtk::view::ModelPtr mview =
+    smtk::dynamic_pointer_cast<smtk::view::Model>(this->getObject());
   if(!mview)
     {
     return;
@@ -155,21 +155,21 @@ void qtModelEntityView::createWidget( )
 }
 
 //----------------------------------------------------------------------------
-void qtModelEntityView::updateModelAssociation()
+void qtModelView::updateModelAssociation()
 {
   bool isRegion = this->isRegionDomain();
   this->Internals->topFrame->setVisible(!isRegion);
   if(!isRegion)
     {
-    this->updateModelItems();
+    this->updateModelEntityItems();
     }
   this->onShowCategory();
 }
 //----------------------------------------------------------------------------
-bool qtModelEntityView::isRegionDomain()
+bool qtModelView::isRegionDomain()
 {
-  smtk::view::ModelEntityPtr mview =
-    smtk::dynamic_pointer_cast<smtk::view::ModelEntity>(this->getObject());
+  smtk::view::ModelPtr mview =
+    smtk::dynamic_pointer_cast<smtk::view::Model>(this->getObject());
   if(!mview)
     {
     return false;
@@ -178,13 +178,13 @@ bool qtModelEntityView::isRegionDomain()
 }
 
 //----------------------------------------------------------------------------
-void qtModelEntityView::updateModelItems()
+void qtModelView::updateModelEntityItems()
 {
   this->Internals->ListBox->blockSignals(true);
   this->Internals->ListBox->clear();
 
-  smtk::view::ModelEntityPtr mview =
-    smtk::dynamic_pointer_cast<smtk::view::ModelEntity>(this->getObject());
+  smtk::view::ModelPtr mview =
+    smtk::dynamic_pointer_cast<smtk::view::Model>(this->getObject());
   if(!mview)
     {
     this->Internals->ListBox->blockSignals(false);
@@ -197,7 +197,7 @@ void qtModelEntityView::updateModelItems()
     std::vector<smtk::model::GroupItemPtr>::iterator it = result.begin();
     for(; it!=result.end(); ++it)
       {
-      this->addModelItem(*it);
+      this->addModelEntityItem(*it);
       }
     }
   if(this->Internals->ListBox->count())
@@ -208,12 +208,12 @@ void qtModelEntityView::updateModelItems()
 }
 
 //----------------------------------------------------------------------------
-void qtModelEntityView::onShowCategory()
+void qtModelView::onShowCategory()
 {
   if(this->isRegionDomain())
     {
-    smtk::view::ModelEntityPtr mview =
-      smtk::dynamic_pointer_cast<smtk::view::ModelEntity>(this->getObject());
+    smtk::view::ModelPtr mview =
+      smtk::dynamic_pointer_cast<smtk::view::Model>(this->getObject());
     smtk::model::MaskType mask = mview->modelEntityMask() ?
       mview->modelEntityMask() : static_cast<smtk::model::MaskType>(smtk::model::Item::REGION);
     smtk::model::ModelPtr refModel = this->uiManager()->attManager()->refModel();
@@ -223,7 +223,7 @@ void qtModelEntityView::onShowCategory()
     }
   else
     {
-    smtk::model::ItemPtr theItem = this->getSelectedModelItem();
+    smtk::model::ItemPtr theItem = this->getSelectedModelEntityItem();
     if(theItem)
       {
       this->Internals->AssociationsWidget->showAttributeAssociation(
@@ -232,18 +232,18 @@ void qtModelEntityView::onShowCategory()
     }
 }
 //----------------------------------------------------------------------------
-void qtModelEntityView::onListBoxSelectionChanged(
+void qtModelView::onListBoxSelectionChanged(
   QListWidgetItem * /*current*/, QListWidgetItem * /*previous*/)
 {
   this->onShowCategory();
 }
 //-----------------------------------------------------------------------------
-smtk::model::ItemPtr qtModelEntityView::getSelectedModelItem()
+smtk::model::ItemPtr qtModelView::getSelectedModelEntityItem()
 {
-  return this->getModelItem(this->getSelectedItem());
+  return this->getModelEntityItem(this->getSelectedItem());
 }
 //-----------------------------------------------------------------------------
-smtk::model::ItemPtr qtModelEntityView::getModelItem(
+smtk::model::ItemPtr qtModelView::getModelEntityItem(
   QListWidgetItem * item)
 {
   smtk::model::Item* rawPtr = item ?
@@ -251,12 +251,12 @@ smtk::model::ItemPtr qtModelEntityView::getModelItem(
   return rawPtr ? rawPtr->pointer() : smtk::model::ItemPtr();
 }
 //-----------------------------------------------------------------------------
-QListWidgetItem *qtModelEntityView::getSelectedItem()
+QListWidgetItem *qtModelView::getSelectedItem()
 {
   return this->Internals->ListBox->currentItem();
 }
 //----------------------------------------------------------------------------
-QListWidgetItem* qtModelEntityView::addModelItem(
+QListWidgetItem* qtModelView::addModelEntityItem(
   smtk::model::ItemPtr childData)
 {
   QListWidgetItem* item = new QListWidgetItem(

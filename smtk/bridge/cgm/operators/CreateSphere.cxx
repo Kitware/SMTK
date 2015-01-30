@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/bridge/cgm/operators/CreateSphere.h"
 
-#include "smtk/bridge/cgm/Bridge.h"
+#include "smtk/bridge/cgm/Session.h"
 #include "smtk/bridge/cgm/CAUUID.h"
 #include "smtk/bridge/cgm/Engines.h"
 #include "smtk/bridge/cgm/TDUUID.h"
@@ -85,13 +85,13 @@ smtk::model::OperatorResult CreateSphere::operateInternal()
   smtk::attribute::ModelEntityItem::Ptr resultBodies =
     result->findModelEntity("entities");
 
-  Bridge* bridge = this->cgmBridge();
+  Session* session = this->cgmSession();
   resultBodies->setNumberOfValues(1);
 
   smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(cgmBody, true);
   smtk::common::UUID entId = refId->entityId();
-  smtk::model::Cursor smtkEntry(this->manager(), entId);
-  if (bridge->transcribe(smtkEntry, smtk::model::BRIDGE_EVERYTHING, false))
+  smtk::model::EntityRef smtkEntry(this->manager(), entId);
+  if (session->transcribe(smtkEntry, smtk::model::SESSION_EVERYTHING, false))
     resultBodies->setValue(0, smtkEntry);
 
   return result;
@@ -106,4 +106,4 @@ smtkImplementsModelOperator(
   cgm_create_sphere,
   "create sphere",
   CreateSphere_xml,
-  smtk::bridge::cgm::Bridge);
+  smtk::bridge::cgm::Session);

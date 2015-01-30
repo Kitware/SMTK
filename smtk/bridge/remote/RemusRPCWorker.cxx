@@ -9,12 +9,12 @@
 //=========================================================================
 #ifndef SHIBOKEN_SKIP
 #include "smtk/bridge/remote/RemusRPCWorker.h"
-#include "smtk/bridge/remote/RemusRemoteBridge.h"
+#include "smtk/bridge/remote/Session.h"
 
 #include "smtk/io/ImportJSON.h"
 #include "smtk/io/ExportJSON.h"
 
-#include "smtk/model/BridgeRegistrar.h"
+#include "smtk/model/SessionRegistrar.h"
 #include "smtk/model/Operator.h"
 
 #include "smtk/common/StringUtil.h"
@@ -167,39 +167,39 @@ void RemusRPCWorker::processJob(
         }
 
       // I. Requests:
-      //   search-bridges (available)
-      //   list-bridges (instantiated)
-      //   create-bridge
+      //   search-sessions (available)
+      //   list-sessions (instantiated)
+      //   create-session
       //   fetch-model
       //   operator-able
       //   operator-apply
 
       //smtkDebugMacro(this->manager()->log(), "  " << methStr);
-      if (methStr == "search-bridges")
+      if (methStr == "search-sessions")
         {
-        smtk::model::StringList bridgeNames = this->m_modelMgr->bridgeNames();
+        smtk::model::StringList sessionNames = this->m_modelMgr->sessionNames();
         cJSON_AddItemToObject(result, "result",
-          smtk::io::ExportJSON::createStringArray(bridgeNames));
+          smtk::io::ExportJSON::createStringArray(sessionNames));
         }
-      else if (methStr == "bridge-filetypes")
+      else if (methStr == "session-filetypes")
         {
         cJSON* bname;
         if (
           !param ||
-          !(bname = cJSON_GetObjectItem(param, "bridge-name")) ||
+          !(bname = cJSON_GetObjectItem(param, "session-name")) ||
           bname->type != cJSON_String ||
           !bname->valuestring ||
           !bname->valuestring[0])
           {
-          this->generateError(result, "Parameters not passed or bridge-name not specified.", reqIdStr);
+          this->generateError(result, "Parameters not passed or session-name not specified.", reqIdStr);
           }
         else
           {
           cJSON* typeObj = cJSON_CreateObject();
-          smtk::model::StringData bridgeFileTypes =
-            BridgeRegistrar::bridgeFileTypes(bname->valuestring);
-          for(PropertyNameWithStrings it = bridgeFileTypes.begin();
-              it != bridgeFileTypes.end(); ++it)
+          smtk::model::StringData sessionFileTypes =
+            SessionRegistrar::sessionFileTypes(bname->valuestring);
+          for(PropertyNameWithStrings it = sessionFileTypes.begin();
+              it != sessionFileTypes.end(); ++it)
             {
             if(it->second.size())
               cJSON_AddItemToObject(typeObj, it->first.c_str(),
@@ -208,28 +208,28 @@ void RemusRPCWorker::processJob(
           cJSON_AddItemToObject(result, "result", typeObj);
           }
         }
-      else if (methStr == "create-bridge")
+      else if (methStr == "create-session")
         {
-        smtk::model::StringList bridgeNames = this->m_modelMgr->bridgeNames();
-        std::set<std::string> bridgeSet(bridgeNames.begin(), bridgeNames.end());
+        smtk::model::StringList sessionNames = this->m_modelMgr->sessionNames();
+        std::set<std::string> sessionSet(sessionNames.begin(), sessionNames.end());
         cJSON* bname;
         if (
           !param ||
-          !(bname = cJSON_GetObjectItem(param, "bridge-name")) ||
+          !(bname = cJSON_GetObjectItem(param, "session-name")) ||
           bname->type != cJSON_String ||
           !bname->valuestring ||
           !bname->valuestring[0] ||
-          bridgeSet.find(bname->valuestring) == bridgeSet.end())
+          sessionSet.find(bname->valuestring) == sessionSet.end())
           {
           this->generateError(result,
-            "Parameters not passed or bridge-name not specified/invalid.",
+            "Parameters not passed or session-name not specified/invalid.",
             reqIdStr);
           }
         else
           {
           // Pass options such as engine name (if any) to static setup
-          smtk::model::BridgeStaticSetup bsetup =
-            smtk::model::BridgeRegistrar::bridgeStaticSetup(bname->valuestring);
+          smtk::model::SessionStaticSetup bsetup =
+            smtk::model::SessionRegistrar::sessionStaticSetup(bname->valuestring);
           cJSON* ename;
           if (
             bsetup &&
@@ -246,37 +246,37 @@ void RemusRPCWorker::processJob(
               }
             }
 
-          smtk::model::BridgeConstructor bctor =
-            smtk::model::BridgeRegistrar::bridgeConstructor(bname->valuestring);
+          smtk::model::SessionConstructor bctor =
+            smtk::model::SessionRegistrar::sessionConstructor(bname->valuestring);
           if (!bctor)
             {
             this->generateError(result,
-              "Unable to obtain bridge constructor", reqIdStr);
+              "Unable to obtain session constructor", reqIdStr);
             }
           else
             {
-            smtk::model::BridgePtr bridge = bctor();
-            if (!bridge || bridge->sessionId().isNull())
+            smtk::model::SessionPtr session = bctor();
+            if (!session || session->sessionId().isNull())
               {
               this->generateError(result,
-                "Unable to construct bridge or got NULL session ID.", reqIdStr);
+                "Unable to construct session or got NULL session ID.", reqIdStr);
               }
             else
               {
-              this->m_modelMgr->registerBridgeSession(bridge);
+              this->m_modelMgr->registerSession(session);
               cJSON* sess = cJSON_CreateObject();
-              smtk::io::ExportJSON::forManagerBridgeSession(
-                bridge->sessionId(), sess, this->m_modelMgr);
+              smtk::io::ExportJSON::forManagerSession(
+                session->sessionId(), sess, this->m_modelMgr);
               cJSON_AddItemToObject(result, "result", sess);
 #if 0
               // Now redefine our worker to be a new one whose
-              // requirements include a tag for this bridge session.
+              // requirements include a tag for this session session.
               // That way it can be singled out by the client that
               // initiated the session.
               r = make_JobRequirements(
                 r.meshTypes(), r.workerName(),
                 r.hasRequirements() ? r.requirements() : "");
-              r.tag(bridge->sessionId().toString());
+              r.tag(session->sessionId().toString());
               remus::worker::ServerConnection conn2 =
                 remus::worker::make_ServerConnection(
                   w->connection().endpoint());
@@ -284,9 +284,9 @@ void RemusRPCWorker::processJob(
               swapWorker = new remus::worker::Worker(r, conn2);
               smtkDebugMacro(this->manager()->log(), "Redefining worker. "
                 <<"Requirements now tagged with "
-                << bridge->sessionId().toString() << ".");
+                << session->sessionId().toString() << ".");
               //cJSON_AddItemToObject(result, "result",
-              //  cJSON_CreateString(bridge->sessionId().toString().c_str()));
+              //  cJSON_CreateString(session->sessionId().toString().c_str()));
 #endif
               }
             }
@@ -295,7 +295,7 @@ void RemusRPCWorker::processJob(
       else if (methStr == "fetch-model")
         {
         cJSON* model = cJSON_CreateObject();
-        // Never include bridge session list or tessellation data
+        // Never include session session list or tessellation data
         // Until someone makes us.
         smtk::io::ExportJSON::fromModelManager(model, this->m_modelMgr,
           static_cast<smtk::io::JSONFlags>(
@@ -341,8 +341,8 @@ void RemusRPCWorker::processJob(
           }
         }
       // II. Notifications:
-      //   delete bridge
-      else if (methStr == "delete-bridge")
+      //   delete session
+      else if (methStr == "delete-session")
         {
         missingIdFatal &= false; // Notifications do not require an "id" member in the request.
 
@@ -358,16 +358,16 @@ void RemusRPCWorker::processJob(
           }
         else
           {
-          smtk::model::BridgePtr bridge =
-            this->m_modelMgr->findBridgeSession(
+          smtk::model::SessionPtr session =
+            this->m_modelMgr->findSession(
               smtk::common::UUID(bsess->valuestring));
-          if (!bridge)
+          if (!session)
             {
-            this->generateError(result, "No bridge with given session ID.", reqIdStr);
+            this->generateError(result, "No session with given session ID.", reqIdStr);
             }
           else
             {
-            this->m_modelMgr->unregisterBridgeSession(bridge);
+            this->m_modelMgr->unregisterSession(session);
 #if 0
             // Remove tag from worker requirements.
             r = make_JobRequirements(
@@ -375,7 +375,7 @@ void RemusRPCWorker::processJob(
             swapWorker = new remus::worker::Worker(r, w->connection());
             smtkDebugMacro(this->manager()->log(), "Redefining worker. "
               << "Requirements now untagged, removed "
-              << bridge->sessionId().toString() << ".");
+              << session->sessionId().toString() << ".");
 #endif // 0
             }
           }

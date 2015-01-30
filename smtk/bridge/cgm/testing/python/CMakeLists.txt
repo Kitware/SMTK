@@ -1,4 +1,4 @@
-set(smtkCGMBridgePythonTests
+set(smtkCGMSessionPythonTests
   cgmBooleans
   cgmSolidModeling
   cgmBuildUp
@@ -6,11 +6,11 @@ set(smtkCGMBridgePythonTests
 )
 
 # Additional tests that require SMTK_DATA_DIR
-set(smtkCGMBridgePythonDataTests
+set(smtkCGMSessionPythonDataTests
   cgmLoadFile
 )
 
-foreach (test ${smtkCGMBridgePythonTests})
+foreach (test ${smtkCGMSessionPythonTests})
   add_test(${test}Py ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py)
   set_tests_properties(${test}Py
     PROPERTIES
@@ -19,7 +19,7 @@ foreach (test ${smtkCGMBridgePythonTests})
 endforeach()
 
 if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
-  foreach (test ${smtkCGMBridgePythonDataTests})
+  foreach (test ${smtkCGMSessionPythonDataTests})
     add_test(${test}Py
              ${PYTHON_EXECUTABLE}
              ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py

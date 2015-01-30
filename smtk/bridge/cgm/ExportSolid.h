@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_bridge_cgm_ExportSolid_h
-#define __smtk_bridge_cgm_ExportSolid_h
+#ifndef __smtk_session_cgm_ExportSolid_h
+#define __smtk_session_cgm_ExportSolid_h
 
 #include "smtk/bridge/cgm/cgmSMTKExports.h" // for CGMSMTK_EXPORT
 #include "smtk/PublicPointerDefs.h" // For ManagerPtr
@@ -32,7 +32,7 @@ class CGMSMTK_EXPORT ExportSolid
 {
 public:
   static int entitiesToFileOfNameAndType(
-    const std::vector<smtk::model::Cursor>& entities,
+    const std::vector<smtk::model::EntityRef>& entities,
     const std::string& filename,
     const std::string& filetype);
 };
@@ -41,4 +41,4 @@ public:
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_cgm_ExportSolid_h
+#endif // __smtk_session_cgm_ExportSolid_h

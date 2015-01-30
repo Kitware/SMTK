@@ -42,8 +42,8 @@ public:
   static int ofManagerFloatProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
   static int ofManagerStringProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
   static int ofManagerIntegerProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
-  static int ofRemoteBridgeSession(cJSON*, smtk::model::DefaultBridgePtr destBridge, smtk::model::ManagerPtr context);
-  static int ofLocalBridgeSession(cJSON*, smtk::model::ManagerPtr context);
+  static int ofRemoteSession(cJSON*, smtk::model::DefaultSessionPtr destSession, smtk::model::ManagerPtr context);
+  static int ofLocalSession(cJSON*, smtk::model::ManagerPtr context);
   static int ofOperator(cJSON* node, smtk::model::OperatorPtr& op, smtk::model::ManagerPtr context);
   static int ofOperatorResult(cJSON* node, smtk::model::OperatorResult& resOut, smtk::model::RemoteOperatorPtr op);
   static int ofDanglingEntities(cJSON* node, smtk::model::ManagerPtr context);
@@ -51,8 +51,8 @@ public:
   static int ofLog(cJSON* logrecordarray, smtk::io::Logger& log);
 
   // Mid-level helpers:
-  static std::string bridgeNameFromTagData(cJSON* tagData);
-  static smtk::model::StringList bridgeFileTypesFromTagData(cJSON* tagData);
+  static std::string sessionNameFromTagData(cJSON* tagData);
+  static smtk::model::StringList sessionFileTypesFromTagData(cJSON* tagData);
 
   // Low-level helpers:
   static int getUUIDArrayFromJSON(cJSON* uidRec, std::vector<smtk::common::UUID>& uids);

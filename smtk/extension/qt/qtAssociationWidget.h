@@ -19,8 +19,8 @@
 #include "smtk/extension/qt/QtSMTKExports.h"
 #include "smtk/PublicPointerDefs.h"
 
-#include "smtk/model/Cursor.h"
-#include "smtk/model/GroupEntity.h"
+#include "smtk/model/EntityRef.h"
+#include "smtk/model/Group.h"
 
 #include <set>
 
@@ -43,10 +43,10 @@ namespace smtk
 
     public slots:
       virtual void showEntityAssociation(smtk::attribute::AttributePtr theAtt);
-      virtual void showAttributeAssociation(smtk::model::Cursor theEntiy,
+      virtual void showAttributeAssociation(smtk::model::EntityRef theEntiy,
                                             std::vector<smtk::attribute::DefinitionPtr>& attDefs);
       virtual void showDomainsAssociation(
-        std::vector<smtk::model::GroupEntity>& theDomains,
+        std::vector<smtk::model::Group>& theDomains,
         std::vector<smtk::attribute::DefinitionPtr>& attDefs);
       void onCurrentListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
       void onAvailableListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
@@ -68,13 +68,13 @@ namespace smtk
       smtk::attribute::AttributePtr getAttribute(QListWidgetItem * item);
       smtk::attribute::AttributePtr getSelectedAttribute(QListWidget* theLis);
 
-      smtk::model::Cursor getModelItem(QListWidgetItem * item);
-      smtk::model::Cursor getSelectedModelItem(QListWidget* theLis);
+      smtk::model::EntityRef getModelEntityItem(QListWidgetItem * item);
+      smtk::model::EntityRef getSelectedModelEntityItem(QListWidget* theLis);
 
       //returns the Item it has added to the widget
       //ownership of the item is handled by the widget so no need to delete
       virtual QListWidgetItem* addModelAssociationListItem(
-           QListWidget* theList, smtk::model::Cursor modelItem);
+           QListWidget* theList, smtk::model::EntityRef modelItem);
 
       //returns the Item it has added to the widget
       //ownership of the item is handled by the widget so no need to delete
@@ -82,13 +82,13 @@ namespace smtk
         QListWidget* theList, smtk::attribute::AttributePtr att);
 
 
-      virtual void addDomainListItem( const smtk::model::GroupEntity& domainItem,
+      virtual void addDomainListItem( const smtk::model::Group& domainItem,
                                       QList<smtk::attribute::AttributePtr>& allAtts);
 
-      std::set<smtk::model::Cursor> processAttUniqueness(smtk::attribute::DefinitionPtr attDef,
-                                                  const smtk::model::Cursors &assignedIds);
+      std::set<smtk::model::EntityRef> processAttUniqueness(smtk::attribute::DefinitionPtr attDef,
+                                                  const smtk::model::EntityRefs &assignedIds);
 
-      QList<smtk::attribute::DefinitionPtr> processDefUniqueness(const smtk::model::Cursor& theEntity,
+      QList<smtk::attribute::DefinitionPtr> processDefUniqueness(const smtk::model::EntityRef& theEntity,
                                                                  smtk::attribute::System* attSystem);
 
     private:

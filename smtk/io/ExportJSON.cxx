@@ -12,11 +12,11 @@
 
 #include "smtk/common/Version.h"
 
-#include "smtk/model/BridgeRegistrar.h"
-#include "smtk/model/BridgeIOJSON.h"
+#include "smtk/model/SessionRegistrar.h"
+#include "smtk/model/SessionIOJSON.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Entity.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Arrangement.h"
@@ -214,7 +214,7 @@ int ExportJSON::forManager(
 
   for (it = modelMgr->topology().begin(); it != modelMgr->topology().end(); ++it)
     {
-    if ((it->second.entityFlags() & BRIDGE_SESSION) && !(sections & JSON_BRIDGES))
+    if ((it->second.entityFlags() & SESSION_SESSION) && !(sections & JSON_SESSIONS))
       continue;
 
     cJSON* curChild = cJSON_CreateObject();
@@ -238,12 +238,12 @@ int ExportJSON::forManager(
       }
     }
 
-  if (sections & JSON_BRIDGES)
+  if (sections & JSON_SESSIONS)
     {
-    smtk::common::UUIDs bridgeSessions = modelMgr->bridgeSessions();
-    for (smtk::common::UUIDs::iterator bit = bridgeSessions.begin(); bit != bridgeSessions.end(); ++bit)
+    smtk::common::UUIDs sessionSessions = modelMgr->sessionSessions();
+    for (smtk::common::UUIDs::iterator bit = sessionSessions.begin(); bit != sessionSessions.end(); ++bit)
       {
-      status &= ExportJSON::forManagerBridgeSession(*bit, sess, modelMgr);
+      status &= ExportJSON::forManagerSession(*bit, sess, modelMgr);
       }
     }
   return status;
@@ -409,30 +409,30 @@ int ExportJSON::forManagerIntegerProperties(const smtk::common::UUID& uid, cJSON
   return status;
 }
 
-int ExportJSON::forManagerBridgeSession(const smtk::common::UUID& uid, cJSON* node, ManagerPtr modelMgr)
+int ExportJSON::forManagerSession(const smtk::common::UUID& uid, cJSON* node, ManagerPtr modelMgr)
 {
   int status = 1;
-  BridgePtr bridge = modelMgr->findBridgeSession(uid);
-  if (!bridge)
+  SessionPtr session = modelMgr->findSession(uid);
+  if (!session)
     return status;
 
   cJSON* sess = cJSON_CreateObject();
   cJSON_AddItemToObject(node, uid.toString().c_str(), sess);
-  cJSON_AddStringToObject(sess, "type", "bridge-session");
-  cJSON_AddStringToObject(sess, "name", bridge->name().c_str());
-  BridgeIOJSONPtr delegate =
-    smtk::dynamic_pointer_cast<BridgeIOJSON>(
-      bridge->createIODelegate("json"));
+  cJSON_AddStringToObject(sess, "type", "session-session");
+  cJSON_AddStringToObject(sess, "name", session->name().c_str());
+  SessionIOJSONPtr delegate =
+    smtk::dynamic_pointer_cast<SessionIOJSON>(
+      session->createIODelegate("json"));
   if (delegate)
     status &= delegate->exportJSON(modelMgr, sess);
-  status &= ExportJSON::forOperatorDefinitions(bridge->operatorSystem(), sess);
+  status &= ExportJSON::forOperatorDefinitions(session->operatorSystem(), sess);
   return status;
 }
 
 /*
 int ExportJSON::forModelOperators(const smtk::common::UUID& uid, cJSON* entRec, ManagerPtr modelMgr)
 {
-  smtk::model::ModelEntity mod(modelMgr, uid);
+  smtk::model::Model mod(modelMgr, uid);
   smtk::model::Operators ops(mod.operators());
   cJSON_AddItemToObject(entRec, "ops",
     cJSON_CreateOperatorArray(ops));`
@@ -484,7 +484,7 @@ int ExportJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
 {
   cJSON_AddItemToObject(entRec, "name", cJSON_CreateString(res->type().c_str()));
   cJSON_AddAttributeSpec(entRec, "result", "resultXML", res);
-  Cursors ents = res->modelEntitiesAs<Cursors>("entities");
+  EntityRefs ents = res->modelEntitiesAs<EntityRefs>("entities");
   if (!ents.empty())
     {
     // If the operator reports new/modified entities, transcribe the affected models.
@@ -498,22 +498,22 @@ int ExportJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
   return 1;
 }
 
-/// Serialize a bridge's list of dangling entities held in the given \a modelMgr.
-int ExportJSON::forDanglingEntities(const smtk::common::UUID& bridgeSessionId, cJSON* node, ManagerPtr modelMgr)
+/// Serialize a session's list of dangling entities held in the given \a modelMgr.
+int ExportJSON::forDanglingEntities(const smtk::common::UUID& sessionSessionId, cJSON* node, ManagerPtr modelMgr)
 {
   if (!modelMgr || !node || node->type != cJSON_Object)
     return 0;
-  BridgePtr bridge = modelMgr->findBridgeSession(bridgeSessionId);
-  if (!bridge)
+  SessionPtr session = modelMgr->findSession(sessionSessionId);
+  if (!session)
     return 0;
 
   cJSON* danglers = cJSON_CreateObject();
   cJSON* darray = cJSON_CreateObject();
   cJSON_AddItemToObject(node, "danglingEntities", danglers);
-  cJSON_AddItemToObject(danglers, "sessionId", cJSON_CreateString(bridgeSessionId.toString().c_str()));
+  cJSON_AddItemToObject(danglers, "sessionId", cJSON_CreateString(sessionSessionId.toString().c_str()));
   cJSON_AddItemToObject(danglers, "entities", darray);
   DanglingEntities::const_iterator it;
-  for (it = bridge->danglingEntities().begin(); it != bridge->danglingEntities().end(); ++it)
+  for (it = session->danglingEntities().begin(); it != session->danglingEntities().end(); ++it)
     {
     if (it->first.manager() == modelMgr)
       cJSON_AddItemToObject(darray, it->first.entity().toString().c_str(), cJSON_CreateNumber(it->second));
@@ -525,12 +525,12 @@ int ExportJSON::forDanglingEntities(const smtk::common::UUID& bridgeSessionId, c
   *
   * This populates an empty JSON Object (\a wdesc) with
   * data required for a Remus server to start an smtk-model-worker
-  * process for use by a RemusRemoteBridge instance.
+  * process for use by a RemusRemoteSession instance.
   */
 int ExportJSON::forModelWorker(
     cJSON* wdesc,
     const std::string& meshTypeIn, const std::string& meshTypeOut,
-    smtk::model::BridgePtr bridge, const std::string& engine,
+    smtk::model::SessionPtr session, const std::string& engine,
     const std::string& site, const std::string& root,
     const std::string& workerPath, const std::string& requirementsFileName)
 {
@@ -549,7 +549,7 @@ int ExportJSON::forModelWorker(
   // Additional requirements for SMTK model worker
   cJSON* argArray = cJSON_CreateArray();
   cJSON_AddItemToArray(argArray, cJSON_CreateString("-rwfile=@SELF@"));
-  cJSON_AddItemToArray(argArray, cJSON_CreateString(("-kernel=" + bridge->name()).c_str()));
+  cJSON_AddItemToArray(argArray, cJSON_CreateString(("-kernel=" + session->name()).c_str()));
   if (!engine.empty())
     cJSON_AddItemToArray(argArray, cJSON_CreateString(("-engine=" + engine).c_str()));
   if (!site.empty())
@@ -560,12 +560,12 @@ int ExportJSON::forModelWorker(
 
   // TODO: Handle workers that can support multiple kernels as well as
   //       multiple engines.
-  cJSON* tag = cJSON_Parse(BridgeRegistrar::bridgeTags(bridge->name()).c_str());
+  cJSON* tag = cJSON_Parse(SessionRegistrar::sessionTags(session->name()).c_str());
   if (!tag)
     return 0;
 
   cJSON_AddItemToObject(wdesc, "Tag", tag);
-  cJSON_AddItemToObject(tag, "default_kernel", cJSON_CreateString(bridge->name().c_str()));
+  cJSON_AddItemToObject(tag, "default_kernel", cJSON_CreateString(session->name().c_str()));
   cJSON_AddItemToObject(tag, "default_engine", cJSON_CreateString(engine.c_str()));
   cJSON_AddItemToObject(tag, "site", cJSON_CreateString(site.c_str()));
   cJSON_AddItemToObject(tag, "smtk_version",

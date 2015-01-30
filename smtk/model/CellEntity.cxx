@@ -10,8 +10,8 @@
 #include "smtk/model/CellEntity.h"
 
 #include "smtk/model/Arrangement.h"
-#include "smtk/model/CursorArrangementOps.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/EntityRefArrangementOps.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/ShellEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/UseEntity.h"
@@ -22,13 +22,13 @@ namespace smtk {
   namespace model {
 
 
-/**\brief Return the model owning this cell (or an invalid cursor if the cell is free).
+/**\brief Return the model owning this cell (or an invalid entityref if the cell is free).
   *
   */
-ModelEntity CellEntity::model() const
+Model CellEntity::model() const
 {
   ManagerPtr mgr = this->manager();
-  return ModelEntity(
+  return Model(
     mgr,
     mgr->modelOwningEntity(this->entity()));
 }
@@ -68,11 +68,11 @@ CellEntities CellEntity::boundingCells() const
       }
     }
   // FIXME: This should be: "else if (this->dimension() > 0)" once
-  //        the CGM bridge properly transcribes use entities.
+  //        the CGM session properly transcribes use entities.
   if (cells.empty() && this->dimension() > 0)
     { // Try harder... see if bordantEntities reveals anything
-    Cursors bdys = this->boundaryEntities(this->dimension() - 1);
-    Cursors::const_iterator it;
+    EntityRefs bdys = this->boundaryEntities(this->dimension() - 1);
+    EntityRefs::const_iterator it;
     for (it = bdys.begin(); it != bdys.end(); ++it)
       { // Only add valid cells
       if (it->as<CellEntity>().isValid())
@@ -88,7 +88,7 @@ CellEntities CellEntity::boundingCells() const
  * \brief Return the list of all entities embedded in this cell.
  *
  * Note that the inverse of this relation is provided by
- * Cursor::embeddedIn().
+ * EntityRef::embeddedIn().
  */
 
 /*! \fn CellEntity::uses() const

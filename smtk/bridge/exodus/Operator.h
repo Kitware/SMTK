@@ -7,10 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_bridge_exodus_Operator_h
-#define __smtk_bridge_exodus_Operator_h
+#ifndef __smtk_session_exodus_Operator_h
+#define __smtk_session_exodus_Operator_h
 
-#include "smtk/bridge/exodus/SMTKBridgeExodusExports.h"
+#include "smtk/bridge/exodus/SMTKSessionExodusExports.h"
 #include "smtk/model/Operator.h"
 
 class vtkDataObject;
@@ -19,7 +19,7 @@ namespace smtk {
   namespace bridge {
     namespace exodus {
 
-class Bridge;
+class Session;
 struct EntityHandle;
 
 /**\brief An operator using the Exodus "kernel."
@@ -28,16 +28,16 @@ struct EntityHandle;
   * It provides convenience methods for accessing Exodus-specific data
   * for its subclasses to use internally.
   */
-class SMTKBRIDGEEXODUS_EXPORT Operator : public smtk::model::Operator
+class SMTKSESSIONEXODUS_EXPORT Operator : public smtk::model::Operator
 {
 protected:
-  Bridge* exodusBridge();
-  vtkDataObject* exodusData(const smtk::model::Cursor& smtkEntity);
-  EntityHandle exodusHandle(const smtk::model::Cursor& smtkEntity);
+  Session* exodusSession();
+  vtkDataObject* exodusData(const smtk::model::EntityRef& smtkEntity);
+  EntityHandle exodusHandle(const smtk::model::EntityRef& smtkEntity);
 };
 
     } // namespace exodus
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_exodus_Operator_h
+#endif // __smtk_session_exodus_Operator_h

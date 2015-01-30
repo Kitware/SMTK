@@ -39,7 +39,7 @@
 #include "smtk/attribute/VoidItem.h"
 #include "smtk/attribute/VoidItemDefinition.h"
 
-#include "smtk/model/Cursor.h"
+#include "smtk/model/EntityRef.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityTypeBits.h"
 #include "smtk/model/Manager.h"

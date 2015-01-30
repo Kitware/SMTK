@@ -47,8 +47,8 @@ smtk::model::EdgeUses Edge::edgeUses() const
 smtk::model::Vertices Edge::vertices() const
 {
   Vertices result;
-  Cursors all = this->boundaryEntities(/*dim = */ 0);
-  for (Cursors::iterator it = all.begin(); it != all.end(); ++it)
+  EntityRefs all = this->boundaryEntities(/*dim = */ 0);
+  for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
     {
     if (it->isVertex())
       result.push_back(*it);

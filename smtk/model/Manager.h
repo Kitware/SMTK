@@ -63,13 +63,13 @@ public:
 
   smtk::attribute::System* attributeSystem() const;
 
-  CursorArray findEntitiesByProperty(const std::string& pname, Integer pval);
-  CursorArray findEntitiesByProperty(const std::string& pname, Float pval);
-  CursorArray findEntitiesByProperty(const std::string& pname, const std::string& pval);
-  CursorArray findEntitiesByProperty(const std::string& pname, const IntegerList& pval);
-  CursorArray findEntitiesByProperty(const std::string& pname, const FloatList& pval);
-  CursorArray findEntitiesByProperty(const std::string& pname, const StringList& pval);
-  CursorArray findEntitiesOfType(BitFlags flags, bool exactMatch = true);
+  EntityRefArray findEntitiesByProperty(const std::string& pname, Integer pval);
+  EntityRefArray findEntitiesByProperty(const std::string& pname, Float pval);
+  EntityRefArray findEntitiesByProperty(const std::string& pname, const std::string& pval);
+  EntityRefArray findEntitiesByProperty(const std::string& pname, const IntegerList& pval);
+  EntityRefArray findEntitiesByProperty(const std::string& pname, const FloatList& pval);
+  EntityRefArray findEntitiesByProperty(const std::string& pname, const StringList& pval);
+  EntityRefArray findEntitiesOfType(BitFlags flags, bool exactMatch = true);
 
   template<typename Collection>
   Collection findEntitiesByPropertyAs(const std::string& pname, Integer pval);
@@ -87,8 +87,8 @@ public:
   Collection entitiesMatchingFlagsAs(BitFlags flags, bool exactMatch = true);
 
   using BRepModel::erase;
-  virtual bool erase(const Cursor& cursor);
-  virtual bool eraseModel(const ModelEntity& cursor);
+  virtual bool erase(const EntityRef& entityref);
+  virtual bool eraseModel(const Model& entityref);
 
   tess_iter_type setTessellation(const smtk::common::UUID& cellId, const Tessellation& geom);
 
@@ -185,26 +185,26 @@ public:
   Shell addShell(const Volume& src);
   Shell addShell(const VolumeUse& src);
 
-  GroupEntity insertGroup(
+  Group insertGroup(
     const smtk::common::UUID& uid,
     int extraFlags = 0,
     const std::string& name = std::string());
-  GroupEntity addGroup(int extraFlags = 0, const std::string& name = std::string());
+  Group addGroup(int extraFlags = 0, const std::string& name = std::string());
 
-  ModelEntity insertModel(
+  Model insertModel(
     const smtk::common::UUID& uid,
     int parametricDim = 3,
     int embeddingDim = 3,
     const std::string& name = std::string());
-  ModelEntity addModel(
+  Model addModel(
     int parametricDim = 3, int embeddingDim = 3, const std::string& name = std::string());
 
-  InstanceEntity addInstance();
-  InstanceEntity addInstance(const Cursor& instanceOf);
+  Instance addInstance();
+  Instance addInstance(const EntityRef& instanceOf);
 
-  BridgeSession createSession(const std::string& bridgeName);
-  void closeSession(const BridgeSession& sess);
-  BridgeSessions allSessions() const;
+  SessionRef createSession(const std::string& sessionName);
+  void closeSession(const SessionRef& sess);
+  SessionRefs allSessions() const;
 
   void observe(ManagerEventType event, ConditionCallback functionHandle, void* callData);
   void observe(ManagerEventType event, OneToOneCallback functionHandle, void* callData);
@@ -212,9 +212,9 @@ public:
   void unobserve(ManagerEventType event, ConditionCallback functionHandle, void* callData);
   void unobserve(ManagerEventType event, OneToOneCallback functionHandle, void* callData);
   void unobserve(ManagerEventType event, OneToManyCallback functionHandle, void* callData);
-  void trigger(ManagerEventType event, const smtk::model::Cursor& src);
-  void trigger(ManagerEventType event, const smtk::model::Cursor& src, const smtk::model::Cursor& related);
-  void trigger(ManagerEventType event, const smtk::model::Cursor& src, const smtk::model::CursorArray& related);
+  void trigger(ManagerEventType event, const smtk::model::EntityRef& src);
+  void trigger(ManagerEventType event, const smtk::model::EntityRef& src, const smtk::model::EntityRef& related);
+  void trigger(ManagerEventType event, const smtk::model::EntityRef& src, const smtk::model::EntityRefArray& related);
 
   smtk::io::Logger& log() { return this->m_log; }
 protected:

@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/bridge/cgm/operators/Read.h"
 
-#include "smtk/bridge/cgm/Bridge.h"
+#include "smtk/bridge/cgm/Session.h"
 #include "smtk/bridge/cgm/CAUUID.h"
 #include "smtk/bridge/cgm/Engines.h"
 #include "smtk/bridge/cgm/TDUUID.h"
@@ -66,7 +66,7 @@ smtk::model::OperatorResult Read::operateInternal()
   if (filetype.empty())
     { // Try to infer file type
     if (hasEnding(filename, "facet")) filetype = "FACET"; // We just want something not in an #if-clause
-    // Be sure these match Bridge_json.h:
+    // Be sure these match Session_json.h:
 #if defined(HAVE_ACIS)
     else if (hasEnding(filename,".sat")) filetype = "ACIS_SAT";
     else if (hasEnding(filename,".sab")) filetype = "ACIS_SAB";
@@ -116,7 +116,7 @@ smtk::model::OperatorResult Read::operateInternal()
   smtk::attribute::ModelEntityItem::Ptr resultModels =
     result->findModelEntity("entities");
 
-  Bridge* bridge = this->cgmBridge();
+  Session* session = this->cgmSession();
   std::string modelName = filename.substr(0, filename.find_last_of("."));
   int ne = static_cast<int>(imported.size());
   resultModels->setNumberOfValues(ne);
@@ -125,11 +125,11 @@ smtk::model::OperatorResult Read::operateInternal()
     RefEntity* entry = imported.get_and_step();
     smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(entry, true);
     smtk::common::UUID entId = refId->entityId();
-    smtk::model::Cursor smtkEntry(this->manager(), entId);
-    if (bridge->transcribe(smtkEntry, smtk::model::BRIDGE_EVERYTHING, false))
+    smtk::model::EntityRef smtkEntry(this->manager(), entId);
+    if (session->transcribe(smtkEntry, smtk::model::SESSION_EVERYTHING, false))
       {
       resultModels->setValue(i, smtkEntry);
-      this->manager()->setBridgeForModel(bridge->shared_from_this(), entId);
+      this->manager()->setSessionForModel(session->shared_from_this(), entId);
       }
     }
   imported.reset();
@@ -147,4 +147,4 @@ smtkImplementsModelOperator(
   cgm_read,
   "read",
   Read_xml,
-  smtk::bridge::cgm::Bridge);
+  smtk::bridge::cgm::Session);

@@ -10,27 +10,27 @@
 #ifndef __smtk_model_CellEntity_h
 #define __smtk_model_CellEntity_h
 
-#include "smtk/model/Cursor.h"
+#include "smtk/model/EntityRef.h"
 #include "smtk/model/UseEntity.h" // For UseEntities
 #include "smtk/model/ShellEntity.h" // For ShellEntities
-#include "smtk/model/CursorArrangementOps.h" // For appendAllRelations
+#include "smtk/model/EntityRefArrangementOps.h" // For appendAllRelations
 
 namespace smtk {
   namespace model {
 
 class CellEntity;
-class ModelEntity;
+class Model;
 typedef std::vector<CellEntity> CellEntities;
 
-/**\brief A cursor subclass with methods specific to cell entities.
+/**\brief A entityref subclass with methods specific to cell entities.
   *
   */
-class SMTKCORE_EXPORT CellEntity : public Cursor
+class SMTKCORE_EXPORT CellEntity : public EntityRef
 {
 public:
-  SMTK_CURSOR_CLASS(CellEntity,Cursor,isCellEntity);
+  SMTK_ENTITYREF_CLASS(CellEntity,EntityRef,isCellEntity);
 
-  ModelEntity model() const;
+  Model model() const;
   CellEntities boundingCells() const;
 
   template<typename T> T inclusions() const;
@@ -41,7 +41,7 @@ template<typename T>
 T CellEntity::inclusions() const
 {
   T result;
-  CursorArrangementOps::appendAllRelations(*this, INCLUDES, result);
+  EntityRefArrangementOps::appendAllRelations(*this, INCLUDES, result);
   return result;
 }
 
@@ -49,7 +49,7 @@ template<typename T>
 T CellEntity::uses() const
 {
   T result;
-  CursorArrangementOps::appendAllRelations(*this, HAS_USE, result);
+  EntityRefArrangementOps::appendAllRelations(*this, HAS_USE, result);
   return result;
 }
 

@@ -274,7 +274,7 @@
           font-size="12"
           font-weight="bold"
           font-style="normal">
-         <tspan x="432.558381946" y="647.779977067">InstanceEntity</tspan>
+         <tspan x="432.558381946" y="647.779977067">Instance</tspan>
       </text>
       <text
           id="A5783D03"
@@ -826,7 +826,7 @@
           font-size="12"
           font-weight="bold"
           font-style="normal">
-         <tspan x="436.409466583" y="512.992014786">GroupEntity</tspan>
+         <tspan x="436.409466583" y="512.992014786">Group</tspan>
       </text>
       <text
           id="4DD9ED3F"
@@ -909,7 +909,7 @@
           font-size="12"
           font-weight="bold"
           font-style="normal">
-         <tspan x="436.409466583" y="580.385995926">ModelEntity</tspan>
+         <tspan x="436.409466583" y="580.385995926">Model</tspan>
       </text>
       <line
           style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"

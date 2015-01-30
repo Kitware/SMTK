@@ -10,8 +10,8 @@
 #ifndef __smtk_model_ShellEntity_h
 #define __smtk_model_ShellEntity_h
 
-#include "smtk/model/Cursor.h"
-#include "smtk/model/CursorArrangementOps.h"
+#include "smtk/model/EntityRef.h"
+#include "smtk/model/EntityRefArrangementOps.h"
 
 namespace smtk {
   namespace model {
@@ -22,16 +22,16 @@ typedef std::vector<ShellEntity> ShellEntities;
 class UseEntity;
 typedef std::vector<UseEntity> UseEntities;
 
-/**\brief A cursor subclass with methods specific to shell entities.
+/**\brief A entityref subclass with methods specific to shell entities.
   *
   * A shell is a collection of oriented cell-uses that form a
   * subset of the boundary of a higher-dimensional parent cell.
   * A shell may contain other shells.
   */
-class SMTKCORE_EXPORT ShellEntity : public Cursor
+class SMTKCORE_EXPORT ShellEntity : public EntityRef
 {
 public:
-  SMTK_CURSOR_CLASS(ShellEntity,Cursor,isShellEntity);
+  SMTK_ENTITYREF_CLASS(ShellEntity,EntityRef,isShellEntity);
 
   CellEntity boundingCell() const;
   UseEntity boundingUseEntity() const;
@@ -58,7 +58,7 @@ template<typename T>
 T ShellEntity::uses() const
 {
   T result;
-  CursorArrangementOps::appendAllRelations(*this, HAS_USE, result);
+  EntityRefArrangementOps::appendAllRelations(*this, HAS_USE, result);
   return result;
 }
 
@@ -69,7 +69,7 @@ template<typename T>
 T ShellEntity::containedShellEntities() const
 {
   T result;
-  CursorArrangementOps::appendAllRelations(*this, INCLUDES, result);
+  EntityRefArrangementOps::appendAllRelations(*this, INCLUDES, result);
   return result;
 }
 

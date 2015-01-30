@@ -336,7 +336,7 @@ std::string Entity::flagSummaryHelper(BitFlags flags, int form)
       result += "s"; // plural is easy in this case.
       }
     break;
-  case BRIDGE_SESSION:
+  case SESSION_SESSION:
     result = "session";
     if (form)
       {
@@ -398,7 +398,7 @@ std::string Entity::flagSummary(BitFlags flags, int form)
         case GROUP_ENTITY: result += "groups"; break;
         case MODEL_ENTITY: result += "models"; break;
         case INSTANCE_ENTITY: result += "instances"; break;
-        case BRIDGE_SESSION: result += "bridge sessions"; break;
+        case SESSION_SESSION: result += "session sessions"; break;
         default: break;
           }
         }
@@ -504,7 +504,7 @@ std::string Entity::defaultNameFromCounters(BitFlags flags, IntegerList& counter
     name << counters[0]++;
     break;
   case INSTANCE_ENTITY:
-  case BRIDGE_SESSION:
+  case SESSION_SESSION:
   default:
     name << counters[0]++;
     break;
@@ -562,10 +562,10 @@ std::string Entity::flagToSpecifierString(BitFlags val, bool textual)
       if (isCellEntity(val))     {                                 haveType = true; spec << "cell"; }
       if (isUseEntity(val))      { if (haveType) spec << "|"; else haveType = true; spec << "use"; }
       if (isShellEntity(val))    { if (haveType) spec << "|"; else haveType = true; spec << "shell"; }
-      if (isGroupEntity(val))    { if (haveType) spec << "|"; else haveType = true; spec << "group"; }
-      if (isModelEntity(val))    { if (haveType) spec << "|"; else haveType = true; spec << "model"; }
-      if (isInstanceEntity(val)) { if (haveType) spec << "|"; else haveType = true; spec << "instance"; }
-      if (isBridgeSession(val))  { if (haveType) spec << "|"; else haveType = true; spec << "bridge"; }
+      if (isGroup(val))    { if (haveType) spec << "|"; else haveType = true; spec << "group"; }
+      if (isModel(val))    { if (haveType) spec << "|"; else haveType = true; spec << "model"; }
+      if (isInstance(val)) { if (haveType) spec << "|"; else haveType = true; spec << "instance"; }
+      if (isSessionRef(val))  { if (haveType) spec << "|"; else haveType = true; spec << "session"; }
 
       if (!haveType)             { spec << "none"; }
 
@@ -614,9 +614,8 @@ static struct {
   { "4",          smtk::model::DIMENSION_4 },
   { "any",        smtk::model::ANY_ENTITY },
   { "anydim",     smtk::model::ANY_DIMENSION },
-  { "b",          smtk::model::BRIDGE_SESSION },
+  { "b",          smtk::model::SESSION_SESSION },
   { "bdy",        smtk::model::MODEL_BOUNDARY },
-  { "bridge",     smtk::model::BRIDGE_SESSION },
   { "cell",       smtk::model::CELL_ENTITY },
   { "chain",      smtk::model::CHAIN },
   { "closed",     smtk::model::CLOSED },
@@ -659,6 +658,7 @@ static struct {
   { "rfev",       smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 | smtk::model::DIMENSION_1 | smtk::model::DIMENSION_0 }, // Backwards compatibility
   { "rfv",        smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 | smtk::model::DIMENSION_0 }, // Backwards compatibility
   { "rv",         smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_0 }, // Backwards compatibility
+  { "session",    smtk::model::SESSION_SESSION },
   { "shell",      smtk::model::SHELL_ENTITY },
   { "shell2",     smtk::model::SHELL },
   { "use",        smtk::model::USE_ENTITY },

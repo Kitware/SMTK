@@ -26,13 +26,13 @@ typedef std::vector<Edge> Edges;
 typedef std::vector<FaceUse> FaceUses;
 typedef std::vector<Volume> Volumes;
 
-/**\brief A cursor subclass that provides methods specific to 2-d face cells.
+/**\brief A entityref subclass that provides methods specific to 2-d face cells.
   *
   */
 class SMTKCORE_EXPORT Face : public CellEntity
 {
 public:
-  SMTK_CURSOR_CLASS(Face,CellEntity,isFace);
+  SMTK_ENTITYREF_CLASS(Face,CellEntity,isFace);
 
   Edges edges() const;
   Volumes volumes() const;

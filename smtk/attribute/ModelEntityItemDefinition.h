@@ -37,7 +37,7 @@ public:
   smtk::model::BitFlags membershipMask() const;
   void setMembershipMask(smtk::model::BitFlags entMask);
 
-  bool isValueValid(const smtk::model::Cursor& entity) const;
+  bool isValueValid(const smtk::model::EntityRef& entity) const;
 
   virtual smtk::attribute::ItemPtr buildItem(
     Attribute* owningAttribute, int itemPosition) const;

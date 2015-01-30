@@ -11,7 +11,7 @@
 #define __smtk_model_Events_h
 
 
-#include "smtk/PublicPointerDefs.h" // For Cursor and CursorArray
+#include "smtk/PublicPointerDefs.h" // For EntityRef and EntityRefArray
 #include <utility> // For std::pair
 
 namespace smtk {
@@ -114,7 +114,7 @@ typedef std::pair<ManagerEventChangeType, ManagerEventRelationType> ManagerEvent
 
 /// Callbacks for changes in the condition of an entity. WARNING: Likely to change in future releases.
 typedef int (*ConditionCallback)(
-  ManagerEventType, const smtk::model::Cursor&, void*);
+  ManagerEventType, const smtk::model::EntityRef&, void*);
 /// An observer of an entity-condition-change (i.e., addition, update or removal) event.
 typedef std::pair<ConditionCallback,void*> ConditionObserver;
 /// A trigger entry for an event-observer pair.
@@ -122,7 +122,7 @@ typedef std::pair<ManagerEventType,ConditionObserver> ConditionTrigger;
 
 /// Callbacks for one-to-one relationships between entities. WARNING: Likely to change in future releases.
 typedef int (*OneToOneCallback)(
-  ManagerEventType, const smtk::model::Cursor&, const smtk::model::Cursor&, void*);
+  ManagerEventType, const smtk::model::EntityRef&, const smtk::model::EntityRef&, void*);
 /// An observer of a one-to-one relationship-event.
 typedef std::pair<OneToOneCallback,void*> OneToOneObserver;
 /// A trigger entry for an event-observer pair.
@@ -130,7 +130,7 @@ typedef std::pair<ManagerEventType,OneToOneObserver> OneToOneTrigger;
 
 /// Callbacks for one-to-many relationships between entities. WARNING: Likely to change in future releases.
 typedef int (*OneToManyCallback)(
-  ManagerEventType, const smtk::model::Cursor&, const smtk::model::CursorArray&, void*);
+  ManagerEventType, const smtk::model::EntityRef&, const smtk::model::EntityRefArray&, void*);
 /// An observer of a one-to-many relationship-event.
 typedef std::pair<OneToManyCallback,void*> OneToManyObserver;
 /// A trigger entry for an event-observer pair.

@@ -14,8 +14,8 @@
 
 #include "smtk/extension/qt/testing/cxx/ui_ModelBrowser.h"
 
-#include "smtk/model/GroupEntity.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Group.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/Manager.h"
@@ -83,9 +83,9 @@ void ModelBrowser::setup(
 
 void ModelBrowser::addGroup()
 {
-  GroupEntity newGroup = this->m_manager->addGroup(0, "New Group");
+  Group newGroup = this->m_manager->addGroup(0, "New Group");
   ModelEntities models;
-  smtk::model::Cursor::CursorsFromUUIDs(
+  smtk::model::EntityRef::EntityRefsFromUUIDs(
     models,
     this->m_manager,
     this->m_manager->entitiesMatchingFlags(smtk::model::MODEL_ENTITY));
@@ -96,14 +96,14 @@ void ModelBrowser::addGroup()
     }
 }
 
-// Add the entity under the cursor to the first group (ordered by UUID)
+// Add the entity under the entityref to the first group (ordered by UUID)
 void ModelBrowser::addToGroup()
 {
   QModelIndex qidx = this->m_p->modelTree->currentIndex();
-  GroupEntity group;
-  Cursor item;
+  Group group;
+  EntityRef item;
   GroupEntities groups;
-  Cursor::CursorsFromUUIDs(
+  EntityRef::EntityRefsFromUUIDs(
     groups, this->m_manager, this->m_manager->entitiesMatchingFlags(smtk::model::GROUP_ENTITY));
   if (groups.empty())
     return;
@@ -134,10 +134,10 @@ void ModelBrowser::addToGroup()
 void ModelBrowser::removeFromGroup()
 {
   QModelIndex qidx = this->m_p->modelTree->currentIndex();
-  GroupEntity group;
+  Group group;
   if ((group = this->groupParentOfIndex(qidx)).isValid())
     {
-    Cursor relEnt;
+    EntityRef relEnt;
       {
       DescriptivePhrasePtr phrase = this->m_p->qmodel->getItem(qidx);
       if (phrase)
@@ -187,14 +187,14 @@ void ModelBrowser::updateButtonStates(const QModelIndex& curr, const QModelIndex
 
 /**\brief Does \a qidx refer to an entity that is displayed as the child of a group?
   *
-  * Note that a group (EntityPhrase with a Cursor whose isGroup() is true)
+  * Note that a group (EntityPhrase with a EntityRef whose isGroup() is true)
   * may contain an EntityListPhrase, each entry of which is in the group.
   * We must test for this 1 level of indirection as well as for direct
   * children.
   */
-smtk::model::GroupEntity ModelBrowser::groupParentOfIndex(const QModelIndex& qidx)
+smtk::model::Group ModelBrowser::groupParentOfIndex(const QModelIndex& qidx)
 {
-  smtk::model::GroupEntity group;
+  smtk::model::Group group;
   DescriptivePhrasePtr phrase = this->m_p->qmodel->getItem(qidx);
   if (phrase)
     {
@@ -205,14 +205,14 @@ smtk::model::GroupEntity ModelBrowser::groupParentOfIndex(const QModelIndex& qid
       if (phrase)
         {
         ephrase = smtk::dynamic_pointer_cast<EntityPhrase>(phrase);
-        if (ephrase && (group = ephrase->relatedEntity().as<smtk::model::GroupEntity>()).isValid())
-          return group; // direct child of a GroupEntity's summary phrase.
+        if (ephrase && (group = ephrase->relatedEntity().as<smtk::model::Group>()).isValid())
+          return group; // direct child of a Group's summary phrase.
         EntityListPhrasePtr lphrase = smtk::dynamic_pointer_cast<EntityListPhrase>(phrase);
         if (lphrase)
           {
           ephrase = smtk::dynamic_pointer_cast<EntityPhrase>(lphrase->parent());
-          if (ephrase && (group = ephrase->relatedEntity().as<smtk::model::GroupEntity>()).isValid())
-            return group; // member of a list inside a GroupEntity's summary.
+          if (ephrase && (group = ephrase->relatedEntity().as<smtk::model::Group>()).isValid())
+            return group; // member of a list inside a Group's summary.
           }
         }
       }

@@ -5,15 +5,15 @@ set(modelSrcs
   AttributeAssignments.cxx
   AttributeListPhrase.cxx
   BRepModel.cxx
-  Bridge.cxx
-  BridgeSession.cxx
-  BridgeIOJSON.cxx
-  BridgeRegistrar.cxx
+  Session.cxx
+  SessionRef.cxx
+  SessionIOJSON.cxx
+  SessionRegistrar.cxx
   CellEntity.cxx
   Chain.cxx
-  Cursor.cxx
-  CursorArrangementOps.cxx
-  DefaultBridge.cxx
+  EntityRef.cxx
+  EntityRefArrangementOps.cxx
+  DefaultSession.cxx
   DescriptivePhrase.cxx
   Edge.cxx
   EdgeUse.cxx
@@ -22,11 +22,11 @@ set(modelSrcs
   EntityPhrase.cxx
   Face.cxx
   FaceUse.cxx
-  GroupEntity.cxx
+  Group.cxx
   GridInfo.cxx
-  InstanceEntity.cxx
+  Instance.cxx
   Loop.cxx
-  ModelEntity.cxx
+  Model.cxx
   Operator.cxx
   PropertyListPhrase.cxx
   PropertyValuePhrase.cxx
@@ -51,16 +51,16 @@ set(modelHeaders
   AttributeAssignments.h
   AttributeListPhrase.h
   BRepModel.h
-  Bridge.h
-  BridgeSession.h
-  BridgeIO.h
-  BridgeIOJSON.h
-  BridgeRegistrar.h
+  Session.h
+  SessionRef.h
+  SessionIO.h
+  SessionIOJSON.h
+  SessionRegistrar.h
   CellEntity.h
   Chain.h
-  Cursor.h
-  CursorArrangementOps.h
-  DefaultBridge.h
+  EntityRef.h
+  EntityRefArrangementOps.h
+  DefaultSession.h
   DescriptivePhrase.h
   Edge.h
   EdgeUse.h
@@ -73,11 +73,11 @@ set(modelHeaders
   FaceUse.h
   FloatData.h
   GridInfo.h
-  GroupEntity.h
-  InstanceEntity.h
+  Group.h
+  Instance.h
   IntegerData.h
   Loop.h
-  ModelEntity.h
+  Model.h
   Operator.h
   PropertyType.h
   PropertyListPhrase.h
@@ -98,7 +98,7 @@ set(modelHeaders
   operators/SetProperty.h
   )
 
-smtk_bridge_json("${CMAKE_CURRENT_SOURCE_DIR}/DefaultBridge.json" defBridgeJSON)
+smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/DefaultSession.json" defSessionJSON)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetProperty.sbt" defOpXML)
 
 #install the headers

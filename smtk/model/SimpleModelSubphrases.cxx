@@ -9,13 +9,13 @@
 //=========================================================================
 #include "smtk/model/SimpleModelSubphrases.h"
 
-#include "smtk/model/BridgeSession.h"
+#include "smtk/model/SessionRef.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/EntityPhrase.h"
-#include "smtk/model/GroupEntity.h"
-#include "smtk/model/InstanceEntity.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Group.h"
+#include "smtk/model/Instance.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/PropertyListPhrase.h"
 #include "smtk/model/ShellEntity.h"
 #include "smtk/model/UseEntity.h"
@@ -127,7 +127,7 @@ static bool SpecialEntityNameSort(const DescriptivePhrasePtr& a, const Descripti
 }
 
 SimpleModelSubphrases::SimpleModelSubphrases()
-  : m_abridgeUses(true)
+  : m_asessionUses(true)
 {
 }
 
@@ -180,7 +180,7 @@ bool SimpleModelSubphrases::shouldOmitProperty(
 
   if (
     ptype == INTEGER_PROPERTY &&
-    parent && parent->relatedEntity().isModelEntity())
+    parent && parent->relatedEntity().isModel())
     {
     if (pname.find("_counters") != std::string::npos)
       return true;
@@ -188,14 +188,14 @@ bool SimpleModelSubphrases::shouldOmitProperty(
   return false;
 }
 
-void SimpleModelSubphrases::setAbridgeUses(bool doAbridge)
+void SimpleModelSubphrases::setAsessionUses(bool doAsession)
 {
-  this->m_abridgeUses = doAbridge;
+  this->m_asessionUses = doAsession;
 }
 
-bool SimpleModelSubphrases::abridgeUses() const
+bool SimpleModelSubphrases::asessionUses() const
 {
-  return this->m_abridgeUses;
+  return this->m_asessionUses;
 }
 
 void SimpleModelSubphrases::childrenOfEntity(
@@ -204,12 +204,12 @@ void SimpleModelSubphrases::childrenOfEntity(
   // I. Determine dimension of parent.
   //    We will avoid reporting sub-entities if this entity has a
   //    dimension higher than its parent.
-  if (!this->m_abridgeUses)
+  if (!this->m_asessionUses)
     {
     int dimBits = 0;
     for (DescriptivePhrasePtr pphr = phr->parent(); pphr; pphr = pphr->parent())
       {
-      Cursor c(pphr->relatedEntity());
+      EntityRef c(pphr->relatedEntity());
       if (c.isValid() && c.dimensionBits() > 0)
         {
         dimBits = c.dimensionBits();
@@ -219,24 +219,24 @@ void SimpleModelSubphrases::childrenOfEntity(
     if (
       dimBits > 0 && phr->relatedEntity().dimensionBits() > 0 && (
         (dimBits > phr->relatedEntity().dimensionBits() && !(dimBits & phr->relatedEntity().dimensionBits())) ||
-        phr->relatedEntity().isModelEntity()))
+        phr->relatedEntity().isModel()))
       { // Do not report higher-dimensional relation
       return;
       }
     }
   // II. Add arrangement information
   // This is dependent on both the entity type and the ArrangementKind
-  // so we cast to different cursor types and use their accessors to
+  // so we cast to different entityref types and use their accessors to
   // obtain lists of related entities.
-  Cursor ent(phr->relatedEntity());
+  EntityRef ent(phr->relatedEntity());
     {
     UseEntity uent = ent.as<UseEntity>();
     CellEntity cent = ent.as<CellEntity>();
     ShellEntity sent = ent.as<ShellEntity>();
-    GroupEntity gent = ent.as<GroupEntity>();
-    ModelEntity ment = ent.as<ModelEntity>();
-    InstanceEntity ient = ent.as<InstanceEntity>();
-    BridgeSession sess = ent.as<BridgeSession>();
+    Group gent = ent.as<Group>();
+    Model ment = ent.as<Model>();
+    Instance ient = ent.as<Instance>();
+    SessionRef sess = ent.as<SessionRef>();
     if (uent.isValid())
       {
       this->cellOfUse(phr, uent, result);
@@ -245,7 +245,7 @@ void SimpleModelSubphrases::childrenOfEntity(
       }
     else if (cent.isValid())
       {
-      if (!this->m_abridgeUses)
+      if (!this->m_asessionUses)
         this->usesOfCell(phr, cent, result);
       else
         this->boundingCellsOfCell(phr, cent, result);
@@ -271,7 +271,7 @@ void SimpleModelSubphrases::childrenOfEntity(
       }
     else if (sess.isValid())
       {
-      this->modelsOfBridgeSession(phr, sess, result);
+      this->modelsOfSession(phr, sess, result);
       }
     }
   // Things common to all entities

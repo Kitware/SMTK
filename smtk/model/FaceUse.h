@@ -29,13 +29,13 @@ typedef std::vector<Edge> Edges;
 typedef std::vector<EdgeUse> EdgeUses;
 typedef std::vector<FaceUse> FaceUses;
 
-/**\brief A cursor subclass that provides methods specific to 0-d vertex cells.
+/**\brief A entityref subclass that provides methods specific to 0-d vertex cells.
   *
   */
 class SMTKCORE_EXPORT FaceUse : public UseEntity
 {
 public:
-  SMTK_CURSOR_CLASS(FaceUse,UseEntity,isFaceUse);
+  SMTK_ENTITYREF_CLASS(FaceUse,UseEntity,isFaceUse);
 
   Volume volume() const;
   Shell boundingShell() const;

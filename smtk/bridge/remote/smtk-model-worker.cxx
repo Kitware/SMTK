@@ -10,7 +10,7 @@
 // Implement an SMTK remote model worker.
 // Steal code from CMB's vtkModelManagerWrapper.
 #ifndef SHIBOKEN_SKIP
-#include "smtk/bridge/remote/RemusRemoteBridge.h"
+#include "smtk/bridge/remote/Session.h"
 #include "smtk/bridge/remote/RemusRPCWorker.h"
 
 #include "smtk/common/Environment.h"
@@ -58,13 +58,13 @@ int smtkChDir(const std::string& path) { return _chdir(path.c_str()); }
 #include "smtk/AutoInit.h"
 
 #ifdef SMTK_BUILD_CGM
-smtkComponentInitMacro(smtk_cgm_bridge);
+smtkComponentInitMacro(smtk_cgm_session);
 #include "smtk/bridge/cgm/Engines.h"
 #endif // SMTK_BUILD_CGM
 
-#ifdef SMTK_BUILD_DISCRETE_BRIDGE
-smtkComponentInitMacro(smtk_discrete_bridge);
-#endif // SMTK_BUILD_DISCRETE_BRIDGE
+#ifdef SMTK_BUILD_DISCRETE_SESSION
+smtkComponentInitMacro(smtk_discrete_session);
+#endif // SMTK_BUILD_DISCRETE_SESSION
 // -- UserGuide/Model/1 --
 
 int usage(
@@ -113,7 +113,7 @@ int usage(
 
   // II. List available modeling kernels.
   std::cout << "Valid <kern> values are:\n";
-  StringList allKernels = smtk::model::BridgeRegistrar::bridgeNames();
+  StringList allKernels = smtk::model::SessionRegistrar::sessionNames();
   for (StringList::iterator kit = allKernels.begin(); kit != allKernels.end(); ++kit)
     if (*kit != "native") // Do not allow "native" unbacked models, for now.
       std::cout << "  " << *kit << "\n";
@@ -260,11 +260,11 @@ int main(int argc, char* argv[])
       {
       return usage(logr, 1, "Remus worker filename not specifed or invalid.");
       }
-    // Create bridge session and serialize operators.
-    smtk::model::Bridge::Ptr bridge = mgr->createAndRegisterBridge(wkOpts.kernel());
-    if (!bridge)
-      return usage(logr, 1, "Could not create bridge \"" + wkOpts.kernel() + "\"");
-    smtk::attribute::System* opsys = bridge->operatorSystem();
+    // Create session session and serialize operators.
+    smtk::model::Session::Ptr session = mgr->createAndRegisterSession(wkOpts.kernel());
+    if (!session)
+      return usage(logr, 1, "Could not create session \"" + wkOpts.kernel() + "\"");
+    smtk::attribute::System* opsys = session->operatorSystem();
     cJSON* spec = cJSON_CreateObject();
     std::string opspec;
     if (smtk::io::ExportJSON::forOperatorDefinitions(opsys, spec))
@@ -284,7 +284,7 @@ int main(int argc, char* argv[])
     // FIXME: workerPath() should return path of worker RELATIVE TO RWFile!
     if (smtk::io::ExportJSON::forModelWorker(
         desc, io_type.inputType(), io_type.outputType(),
-        bridge, wkOpts.engine(),
+        session, wkOpts.engine(),
         wkOpts.site(), wkOpts.root(),
         wkOpts.workerPath(), reqFileName))
       {
@@ -418,14 +418,14 @@ int main(int argc, char* argv[])
     }
   smtkInfoMacro(logr, "Requirements tag is \"" << requirements.tag() << "\"");
 
-  // Register the requirements mesh type as the special bridge name advertised via Remus.
-  BridgeStaticSetup bsetup = BridgeRegistrar::bridgeStaticSetup(wkOpts.kernel());
-  BridgeConstructor bctor = BridgeRegistrar::bridgeConstructor(wkOpts.kernel());
+  // Register the requirements mesh type as the special session name advertised via Remus.
+  SessionStaticSetup bsetup = SessionRegistrar::sessionStaticSetup(wkOpts.kernel());
+  SessionConstructor bctor = SessionRegistrar::sessionConstructor(wkOpts.kernel());
   if (!bctor)
     {
     return usage(logr, 1, "Unable to obtain constructor for kernel \"" + wkOpts.kernel() + "\"");
     }
-  smtk::model::BridgeRegistrar::registerBridge(
+  smtk::model::SessionRegistrar::registerSession(
     wkOpts.workerName(), requirements.tag(), bsetup, bctor);
 
   remus::Worker* w = new remus::Worker(requirements,connection);

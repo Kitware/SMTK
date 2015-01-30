@@ -12,7 +12,7 @@
 import os, sys
 import smtk
 
-if 'cgm' not in smtk.model.Manager.bridgeNames():
+if 'cgm' not in smtk.model.Manager.sessionNames():
   print 'ERROR: cgm not available.'
 
   # Print a subset of environment variables to help debugging
@@ -26,8 +26,8 @@ if 'cgm' not in smtk.model.Manager.bridgeNames():
 ddir = sys.argv[-1]
 
 mgr = smtk.model.Manager.create()
-brg = smtk.model.Manager.createBridge('cgm')
-mgr.registerBridgeSession(brg)
+brg = smtk.model.Manager.createSessionOfType('cgm')
+mgr.registerSession(brg)
 
 readop = brg.op('read')
 readop.findAsFile('filename').setValue(os.path.join(ddir,'cgm','62_shaver1.brep'))

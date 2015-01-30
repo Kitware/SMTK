@@ -15,7 +15,7 @@
 // that may defined in separate libraries but which need to be
 // exposed to SMTK's core components.
 //
-// See smtk/model/Bridge.h and its subclasses for an example of how
+// See smtk/model/Session.h and its subclasses for an example of how
 // these macros are used to register components with BRepModel.
 
 #define smtkAutoInitComponentMacro(C) \
@@ -37,13 +37,13 @@
   *
   * @code{.cpp}
   * #include "vtkAutoInit.h"
-  * smtkComponentInitMacro(smtk_cgm_bridge);
+  * smtkComponentInitMacro(smtk_cgm_session);
   * @endcode
   *
   * If included in the global scope, the above snippet will ensure the
-  * global function smtk_cgm_bridge_AutoInit_Construct is called during
+  * global function smtk_cgm_session_AutoInit_Construct is called during
   * dynamic C++ initialization and and the global function
-  * smtk_cgm_bridge_AutoInit_Destruct is called during finalization.
+  * smtk_cgm_session_AutoInit_Destruct is called during finalization.
   */
 #define smtkComponentInitMacro(C) \
   smtkAutoInitComponentMacro(C) \

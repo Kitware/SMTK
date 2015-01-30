@@ -149,7 +149,7 @@ public:
   // std::Container<vtkSmartPointer<vtkSubclass> > sub;
   // std::vector<vtkSmartPointer<vtkObject> >  vec;
   // ser->Serialize("Vector", vec);
-  //  vtkSerializer::FromBase<vtkConceptualModelItem,Container>(vec, sub);
+  //  vtkSerializer::FromBase<vtkConceptualModelEntityItem,Container>(vec, sub);
   // \endcode
   // The container must support forward iteration, begin(), end(), and
   // push_back.
@@ -196,7 +196,7 @@ public:
   // \code
   // std::map<int, std::vector<vtkSmartPointer<vtkObject> > > map;
   // ser->Serialize("Associations", map);
-  // vtkSerializer::FromBase<vtkConceptualModelItem,Container>(map, this->Internal->Associations);
+  // vtkSerializer::FromBase<vtkConceptualModelEntityItem,Container>(map, this->Internal->Associations);
   // \endcode
   // The container must support forward iteration, begin(), end(), and
   // push_back.

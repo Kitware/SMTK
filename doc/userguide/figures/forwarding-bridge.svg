@@ -327,7 +327,7 @@
          sodipodi:role="line"
          x="195.5544"
          y="211.87923"
-         id="tspan10579">Bridge</tspan></text>
+         id="tspan10579">Session</tspan></text>
     <g
        id="g3816"
        transform="translate(90.31478,-103.47217)">
@@ -402,7 +402,7 @@
          sodipodi:role="line"
          id="tspan3843"
          x="433.24982"
-         y="246.06992">Capstone Bridge</tspan></text>
+         y="246.06992">Capstone Session</tspan></text>
     <text
        sodipodi:linespacing="125%"
        id="text3845"
@@ -413,7 +413,7 @@
          y="205.56483"
          x="510.21936"
          id="tspan3847"
-         sodipodi:role="line">CGM/other Bridge</tspan></text>
+         sodipodi:role="line">CGM/other Session</tspan></text>
     <text
        sodipodi:linespacing="125%"
        id="text3849"
@@ -480,7 +480,7 @@
          id="tspan10585"
          y="251.87923"
          x="275.55438"
-         sodipodi:role="line">Bridge</tspan></text>
+         sodipodi:role="line">Session</tspan></text>
     <path
        transform="translate(-164,98)"
        sodipodi:type="arc"

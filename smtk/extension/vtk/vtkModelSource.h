@@ -12,7 +12,7 @@
 
 #include "smtk/extension/vtk/vtkSMTKExports.h"
 
-#include "smtk/model/Cursor.h"
+#include "smtk/model/EntityRef.h"
 
 #include "smtk/PublicPointerDefs.h"
 
@@ -30,8 +30,8 @@ public:
 
   vtkGetObjectMacro(CachedOutput,vtkPolyData);
 
-  smtk::model::Cursors GetEntities();
-  void SetEntities(const smtk::model::Cursors&);
+  smtk::model::EntityRefs GetEntities();
+  void SetEntities(const smtk::model::EntityRefs&);
 
   void Dirty();
 
@@ -40,7 +40,7 @@ protected:
   virtual ~vtkModelSource();
 
   struct SortByDim {
-    bool operator () (const smtk::model::Cursor& a, const smtk::model::Cursor& b)
+    bool operator () (const smtk::model::EntityRef& a, const smtk::model::EntityRef& b)
       {
       return
         (a.dimension() < b.dimension()) ||
@@ -48,12 +48,12 @@ protected:
         true : false;
       }
   };
-  typedef std::set<smtk::model::Cursor,SortByDim> CursorsByDim;
+  typedef std::set<smtk::model::EntityRef,SortByDim> EntityRefsByDim;
 
   void AccumulateSortedEntities(
-    CursorsByDim& accum, vtkIdType& npts, smtk::model::Cursors& toplevel);
+    EntityRefsByDim& accum, vtkIdType& npts, smtk::model::EntityRefs& toplevel);
   void GenerateRepresentationFromModel(
-    vtkPolyData* poly, const CursorsByDim& model, vtkIdType npts);
+    vtkPolyData* poly, const EntityRefsByDim& model, vtkIdType npts);
 
   //virtual int FillInputPortInformation(int port, vtkInformation* request);
   //virtual int FillOutputPortInformation(int port, vtkInformation* request);
@@ -66,7 +66,7 @@ protected:
   void SetCachedOutput(vtkPolyData*);
 
   // Instance storage:
-  smtk::model::Cursors Entities;
+  smtk::model::EntityRefs Entities;
   vtkPolyData* CachedOutput;
 
 private:

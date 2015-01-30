@@ -29,7 +29,7 @@ def setVector(ax,v):
 
 mgr = smtk.model.Manager.create()
 sess = mgr.createSession('cgm')
-brg = sess.bridge()
+brg = sess.session()
 sess.assignDefaultName()
 
 opnames = sess.operatorNames()

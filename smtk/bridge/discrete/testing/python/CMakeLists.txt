@@ -1,13 +1,13 @@
-set(smtkDiscreteBridgePythonTests
+set(smtkDiscreteSessionPythonTests
 #  discreteModeling
 )
 
 # Additional tests that require SMTK_DATA_DIR
-set(smtkDiscreteBridgePythonDataTests
+set(smtkDiscreteSessionPythonDataTests
 #  discreteLoadFile
 )
 
-foreach (test ${smtkDiscreteBridgePythonTests})
+foreach (test ${smtkDiscreteSessionPythonTests})
   add_test(${test}Py ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py)
   set_tests_properties(${test}Py
     PROPERTIES
@@ -16,7 +16,7 @@ foreach (test ${smtkDiscreteBridgePythonTests})
 endforeach()
 
 if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
-  foreach (test ${smtkDiscreteBridgePythonDataTests})
+  foreach (test ${smtkDiscreteSessionPythonDataTests})
     add_test(${test}Py
              ${PYTHON_EXECUTABLE}
              ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py

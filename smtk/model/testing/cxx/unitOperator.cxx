@@ -16,9 +16,9 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/IntItem.h"
 
-#include "smtk/model/Bridge.h"
-#include "smtk/model/DefaultBridge.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Session.h"
+#include "smtk/model/DefaultSession.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
 #include "smtk/model/Manager.h"
 
@@ -72,15 +72,15 @@ int DidOperateWatcher(OperatorEventType event, const Operator& op, OperatorResul
   return 0;
 }
 
-void testBridgeList(Manager::Ptr manager)
+void testSessionList(Manager::Ptr manager)
 {
   std::cout
-    << "Default bridge is \""
-    << manager->bridgeForModel(smtk::common::UUID::null())->name()
+    << "Default session is \""
+    << manager->sessionForModel(smtk::common::UUID::null())->name()
     << "\"\n";
-  std::cout << "Available bridges\n";
-  StringList bridges = manager->bridgeNames();
-  for (StringList::iterator it = bridges.begin(); it != bridges.end(); ++it)
+  std::cout << "Available sessions\n";
+  StringList sessions = manager->sessionNames();
+  for (StringList::iterator it = sessions.begin(); it != sessions.end(); ++it)
     std::cout << "  " << *it << "\n";
   std::cout << "\n";
 }
@@ -120,7 +120,7 @@ protected:
 // Implementation corresponding to smtkDeclareModelOperator() above.
 
 /* Do not invoke smtkImplementsModelOperator so that we can test
- * post-bridge-construction registration of operators.
+ * post-session-construction registration of operators.
  */
 /*
 smtkImplementsModelOperator(
@@ -128,7 +128,7 @@ smtkImplementsModelOperator(
   OutcomeOp,
   "outcome test",
   unitOutcomeOperator_xml,
-  smtk::model::DefaultBridge);
+  smtk::model::DefaultSession);
  */
 
 smtk::model::OperatorPtr TestOutcomeOperator::baseCreate()
@@ -140,23 +140,23 @@ std::string TestOutcomeOperator::className() const { return "TestOutcomeOperator
 void testExPostFactoOperatorRegistration(Manager::Ptr manager)
 {
   typedef std::vector<smtk::attribute::DefinitionPtr> OpListType;
-  // Add operator descriptions to the default bridge of our manager.
-  smtk::model::BridgePtr bridge =
-    manager->bridgeForModel(smtk::common::UUID::null());
+  // Add operator descriptions to the default session of our manager.
+  smtk::model::SessionPtr session =
+    manager->sessionForModel(smtk::common::UUID::null());
   smtk::attribute::DefinitionPtr opBase =
-    bridge->operatorSystem()->findDefinition("operator");
+    session->operatorSystem()->findDefinition("operator");
   OpListType origOpList;
-  bridge->operatorSystem()->derivedDefinitions(opBase, origOpList);
+  session->operatorSystem()->derivedDefinitions(opBase, origOpList);
 
   // Register the operator
-  bridge->registerOperator(
+  session->registerOperator(
     TestOutcomeOperator::operatorName,
     unitOutcomeOperator_xml,
     &TestOutcomeOperator::baseCreate);
 
   // Now enumerate attribute definitions that inherit "operator".
   OpListType opList;
-  bridge->operatorSystem()->derivedDefinitions(opBase, opList);
+  session->operatorSystem()->derivedDefinitions(opBase, opList);
   std::cout << "Imported XML for operators:\n";
   for (OpListType::iterator it = opList.begin(); it != opList.end(); ++it)
     {
@@ -176,7 +176,7 @@ void testExPostFactoOperatorRegistration(Manager::Ptr manager)
 void testOperatorOutcomes(Manager::Ptr manager)
 {
   TestOutcomeOperator::Ptr op = smtk::dynamic_pointer_cast<TestOutcomeOperator>(
-    manager->bridgeForModel(smtk::common::UUID::null())->op("outcome test"));
+    manager->sessionForModel(smtk::common::UUID::null())->op("outcome test"));
 
   int shouldCancel = 1;
   int numberOfFailedOperations = 0;
@@ -217,10 +217,10 @@ void testOperatorOutcomes(Manager::Ptr manager)
   op->unobserve(DID_OPERATE, DidOperateWatcher, &numberOfFailedOperations);
 }
 
-void testBridgeAssociation(Manager::Ptr manager)
+void testSessionAssociation(Manager::Ptr manager)
 {
   // Test that operators added by previous tests still exist
-  ModelEntity model = manager->addModel(3, 3, "Model Airplane");
+  Model model = manager->addModel(3, 3, "Model Airplane");
   StringList modelOpNames = model.operatorNames();
   test(
     std::find(modelOpNames.begin(), modelOpNames.end(), "outcome test") !=
@@ -229,17 +229,17 @@ void testBridgeAssociation(Manager::Ptr manager)
 
   // Test op(name) method
   Operator::Ptr op = model.op("outcome test");
-  test(op ? 1 : 0, "ModelEntity::op(\"outcome test\") returned a \"null\" shared pointer.");
+  test(op ? 1 : 0, "Model::op(\"outcome test\") returned a \"null\" shared pointer.");
 
-  // Test Operator->Bridge association
-  test(op->bridge() == manager->bridgeForModel(smtk::common::UUID::null()).get(),
-    "Bad bridge reported by operator.");
+  // Test Operator->Session association
+  test(op->session() == manager->sessionForModel(smtk::common::UUID::null()).get(),
+    "Bad session reported by operator.");
 
   // Test Operator->Manager association
   test(op->manager() == manager, "Bad manager reported by operator.");
 
   // Test operatorNames()
-  StringList opNames = model.bridge()->operatorNames();
+  StringList opNames = model.session()->operatorNames();
   std::cout << "Printing";
   printVec(opNames, "operator names", ',');
   std::cout << "\n";
@@ -253,10 +253,10 @@ int main()
 
   try {
 
-    testBridgeList(manager);
+    testSessionList(manager);
     testExPostFactoOperatorRegistration(manager);
     testOperatorOutcomes(manager);
-    testBridgeAssociation(manager);
+    testSessionAssociation(manager);
 
   } catch (const std::string& msg) {
     (void) msg; // Ignore the message; it's already been printed.

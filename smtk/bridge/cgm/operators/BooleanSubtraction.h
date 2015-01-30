@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_bridge_cgm_BooleanSubtraction_h
-#define __smtk_bridge_cgm_BooleanSubtraction_h
+#ifndef __smtk_session_cgm_BooleanSubtraction_h
+#define __smtk_session_cgm_BooleanSubtraction_h
 
 #include "smtk/bridge/cgm/Operator.h"
 
@@ -32,4 +32,4 @@ protected:
   } //namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_cgm_BooleanSubtraction_h
+#endif // __smtk_session_cgm_BooleanSubtraction_h

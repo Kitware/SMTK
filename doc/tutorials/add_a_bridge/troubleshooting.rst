@@ -1,16 +1,16 @@
 Troubleshooting
 ---------------
 
-If you have implemented a bridge but are having problems getting it
+If you have implemented a session but are having problems getting it
 to run properly,
 
-* Make sure that your Bridge constructor calls :smtk:`Bridge::initializeOperatorSystem`.
+* Make sure that your Session constructor calls :smtk:`Session::initializeOperatorSystem`.
   Failure to do this will result in crashes when trying to
   create an operator, register an operator, or obtain a list of operator names.
 
 * If you would like to run a model worker process in the debugger instead of
   having it started automatically by the process-local server created in
-  :smtk:`RemusBridgeConnection::connectToServer`, you can set the
+  :smtk:`RemusConnection::connectToServer`, you can set the
   :cxx:`SMTK_REMUS_MAX_WORKERS` environment variable to "0"
   — so that the maximum number of workers the server will start is 0.
   Started this way, the server will accept jobs but not have any available
@@ -33,6 +33,6 @@ to run properly,
        -root=/path/to/root -site=ctest
 
   will start a worker that can respond to requests
-  made by the unitRemusBridgeConnection test.
+  made by the integrationRemoteSession test.
 
 *

@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/bridge/cgm/operators/BooleanUnion.h"
 
-#include "smtk/bridge/cgm/Bridge.h"
+#include "smtk/bridge/cgm/Session.h"
 #include "smtk/bridge/cgm/CAUUID.h"
 #include "smtk/bridge/cgm/Engines.h"
 #include "smtk/bridge/cgm/TDUUID.h"
@@ -18,7 +18,7 @@
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Model.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
@@ -91,7 +91,7 @@ smtk::model::OperatorResult BooleanUnion::operateInternal()
   smtk::attribute::ModelEntityItem::Ptr resultBodies =
     result->findModelEntity("entities");
 
-  Bridge* bridge = this->cgmBridge();
+  Session* session = this->cgmSession();
   int numBodiesOut = cgmBodiesOut.size();
   resultBodies->setNumberOfValues(numBodiesOut);
 
@@ -103,8 +103,8 @@ smtk::model::OperatorResult BooleanUnion::operateInternal()
 
     smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(cgmBody, true);
     smtk::common::UUID entId = refId->entityId();
-    smtk::model::Cursor smtkEntry(this->manager(), entId);
-    if (bridge->transcribe(smtkEntry, smtk::model::BRIDGE_EVERYTHING, false))
+    smtk::model::EntityRef smtkEntry(this->manager(), entId);
+    if (session->transcribe(smtkEntry, smtk::model::SESSION_EVERYTHING, false))
       resultBodies->setValue(i, smtkEntry);
     }
 
@@ -120,4 +120,4 @@ smtkImplementsModelOperator(
   cgm_boolean_union,
   "union",
   BooleanUnion_xml,
-  smtk::bridge::cgm::Bridge);
+  smtk::bridge::cgm::Session);

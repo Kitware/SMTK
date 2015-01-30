@@ -17,7 +17,7 @@ import smtk
 
 mgr = smtk.model.Manager.create()
 sess = mgr.createSession('discrete')
-brg = sess.bridge() # smtk.model.Manager.createBridge('cgm')
+brg = sess.session() # smtk.model.Manager.createSession('cgm')
 sess.assignDefaultName()
 print '\n\n%s: type "%s" %s %s' % \
   (sess.name(), brg.name(), sess.flagSummary(0), brg.sessionId())
@@ -32,7 +32,7 @@ print '\n'
 rdr = sess.op('read')
 rdr.findAsFile('filename').setValue(os.path.join(sys.argv[1], 'cmb', 'test2D.cmb'))
 res = rdr.operate()
-mod = smtk.model.ModelEntity(res.findModelEntity('entities').value(0))
+mod = smtk.model.Model(res.findModelEntity('entities').value(0))
 
 print '\nFree cells:\n  %s' % '\n  '.join([x.name() for x in mod.cells()])
 print '\nGroups:\n  %s\n' % '\n  '.join([x.name() for x in mod.groups()])

@@ -182,19 +182,19 @@ bool Definition::associatesWithVolume() const
 /// Returns whether this attribute can be associated with models.
 bool Definition::associatesWithModel() const
 {
-  return smtk::model::isModelEntity(this->associationMask());
+  return smtk::model::isModel(this->associationMask());
 }
 
 /// Returns whether this attribute can be associated with groups.
 bool Definition::associatesWithGroup() const
 {
-  return smtk::model::isGroupEntity(this->associationMask());
+  return smtk::model::isGroup(this->associationMask());
 }
 
 /// Return whether this attribute can be associated with entities that have the given \a flag value.
 bool Definition::canBeAssociated(smtk::model::BitFlags flag) const
 {
-  // This is a simpler version of GroupEntity::meetsMembershipConstraintsInternal().
+  // This is a simpler version of Group::meetsMembershipConstraintsInternal().
   smtk::model::BitFlags mask = this->associationMask();
   smtk::model::BitFlags memberTest = flag & mask;
   if (!(memberTest & smtk::model::ANY_DIMENSION) && (mask & smtk::model::ANY_DIMENSION)) return false;
@@ -212,7 +212,7 @@ bool Definition::canBeAssociated(smtk::model::BitFlags flag) const
   *   of this type from being associated
   */
 bool
-Definition::canBeAssociated(smtk::model::Cursor /*entity*/,
+Definition::canBeAssociated(smtk::model::EntityRef /*entity*/,
                             std::vector<Attribute *>* /*inConflicts*/) const
 {
   // TO DO - Need to pull in Model Entity class to do this

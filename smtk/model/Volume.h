@@ -23,13 +23,13 @@ class Shell;
 typedef std::vector<Face> Faces;
 typedef std::vector<Shell> Shells;
 
-/**\brief A cursor subclass that provides methods specific to 3-d volume cells.
+/**\brief A entityref subclass that provides methods specific to 3-d volume cells.
   *
   */
 class SMTKCORE_EXPORT Volume : public CellEntity
 {
 public:
-  SMTK_CURSOR_CLASS(Volume,CellEntity,isVolume);
+  SMTK_ENTITYREF_CLASS(Volume,CellEntity,isVolume);
 
   VolumeUse use() const;
   Shells shells() const;

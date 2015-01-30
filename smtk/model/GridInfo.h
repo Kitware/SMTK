@@ -95,11 +95,11 @@ namespace smtk
       //  If the specified model entity is on the boundary of multiple model
       //  entities (for example, a model face can be on the boundary of two model
       //  regions), the grid items are returned for only one bounded model
-      //  entity. The boundedModelEntity argument is used to disambiguate
+      //  entity. The boundedModel argument is used to disambiguate
       //  these cases. A value of -1 can be passed in for that entity, in which
       //  case the bounded model entity will be selected internally.
       virtual std::vector<std::pair<int, int> >
-      asBoundaryItems(int modelEntityId, int boundedModelEntityId,
+      asBoundaryItems(int modelEntityId, int boundedModelId,
                       ApiStatus& status) = 0;
 
 

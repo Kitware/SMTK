@@ -296,8 +296,8 @@ int main(int argc, char* argv[])
       {
       view->GetRenderWindow()->SetMultiSamples(0);
       }
-    Cursors thingsToDraw =
-      sm->entitiesMatchingFlagsAs<Cursors>(
+    EntityRefs thingsToDraw =
+      sm->entitiesMatchingFlagsAs<EntityRefs>(
         smtk::model::MODEL_ENTITY);
     src->SetEntities(thingsToDraw);
     rep->SetModel(sm);

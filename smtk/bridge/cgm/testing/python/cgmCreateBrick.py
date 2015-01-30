@@ -13,7 +13,7 @@
 import smtk
 mgr = smtk.model.Manager.create()
 sess = mgr.createSession('cgm')
-brg = sess.bridge()
+brg = sess.session()
 
 cb = sess.op('create brick')
 ov = cb.findAsInt('construction method')

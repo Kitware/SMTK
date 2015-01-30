@@ -10,7 +10,7 @@
 #include "smtk/io/ExportJSON.h"
 #include "smtk/io/ImportJSON.h"
 
-#include "smtk/model/Cursor.h"
+#include "smtk/model/EntityRef.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/UseEntity.h"

@@ -10,12 +10,12 @@ if (SMTK_BUILD_CGM)
   # not be found.
   list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
-  add_paraview_plugin(smtkCGMBridge_Plugin "1.0"
+  add_paraview_plugin(smtkCGMSession_Plugin "1.0"
       SERVER_SOURCES
-        bridgeInit.cxx
+        sessionInit.cxx
     )
 
-  target_link_libraries(smtkCGMBridge_Plugin
+  target_link_libraries(smtkCGMSession_Plugin
     LINK_PUBLIC
       SMTKCore
       cgmSMTK
@@ -23,5 +23,5 @@ if (SMTK_BUILD_CGM)
     LINK_PRIVATE
       vtkPVServerManagerApplicationCS
   )
-  smtk_install_library(smtkCGMBridge_Plugin DEPENDS SMTKCore cgmSMTK)
+  smtk_install_library(smtkCGMSession_Plugin DEPENDS SMTKCore cgmSMTK)
 endif()

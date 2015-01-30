@@ -69,18 +69,18 @@ namespace smtk
     class AttributeListPhrase;
     typedef std::vector<smtk::model::Arrangement> Arrangements;
     class BRepModel;
-    class Bridge;
-    class BridgeSession;
-    typedef std::vector<smtk::model::BridgeSession> BridgeSessions;
-    class BridgeIO;
-    class BridgeIOJSON;
+    class Session;
+    class SessionRef;
+    typedef std::vector<smtk::model::SessionRef> SessionRefs;
+    class SessionIO;
+    class SessionIOJSON;
     class CellEntity;
     class Chain;
     typedef std::vector<smtk::model::Chain> Chains;
-    class Cursor;
-    typedef std::set<smtk::model::Cursor> Cursors;
-    typedef std::vector<smtk::model::Cursor> CursorArray;
-    class DefaultBridge;
+    class EntityRef;
+    typedef std::set<smtk::model::EntityRef> EntityRefs;
+    typedef std::vector<smtk::model::EntityRef> EntityRefArray;
+    class DefaultSession;
     class DescriptivePhrase;
     class Edge;
     typedef std::vector<smtk::model::Edge> Edges;
@@ -95,12 +95,12 @@ namespace smtk
     class GridInfo;
     class GridInfo2D;
     class GridInfo3D;
-    class GroupEntity;
-    class InstanceEntity;
+    class Group;
+    class Instance;
     class Loop;
     typedef std::vector<smtk::model::Loop> Loops;
     class Entity;
-    class ModelEntity;
+    class Model;
     class Operator;
     class PropertyValuePhrase;
     class PropertyListPhrase;
@@ -134,9 +134,9 @@ namespace smtk
     // could cause frequent recompilation.
     namespace remote
     {
-      class RemusRemoteBridge;
-      class RemusBridgeConnection;
-      class RemusBridgeConnections;
+      class Session;
+      class RemusConnection;
+      class RemusConnections;
       class RemusRPCWorker;
     }
   }
@@ -174,11 +174,11 @@ namespace smtk
   namespace model
   {
     // Model Related Pointer Classes
-    typedef smtk::shared_ptr< smtk::model::Bridge >                BridgePtr;
-    typedef std::map<smtk::common::UUID, smtk::shared_ptr< smtk::model::Bridge > > UUIDsToBridges;
-    typedef smtk::shared_ptr< smtk::model::DefaultBridge >         DefaultBridgePtr;
-    typedef smtk::shared_ptr< smtk::model::BridgeIO >              BridgeIOPtr;
-    typedef smtk::shared_ptr< smtk::model::BridgeIOJSON >          BridgeIOJSONPtr;
+    typedef smtk::shared_ptr< smtk::model::Session >                SessionPtr;
+    typedef std::map<smtk::common::UUID, smtk::shared_ptr< smtk::model::Session > > UUIDsToSessions;
+    typedef smtk::shared_ptr< smtk::model::DefaultSession >         DefaultSessionPtr;
+    typedef smtk::shared_ptr< smtk::model::SessionIO >              SessionIOPtr;
+    typedef smtk::shared_ptr< smtk::model::SessionIOJSON >          SessionIOJSONPtr;
     typedef smtk::shared_ptr< smtk::model::DescriptivePhrase >     DescriptivePhrasePtr;
     typedef smtk::weak_ptr< smtk::model::DescriptivePhrase >       WeakDescriptivePhrasePtr;
     typedef smtk::shared_ptr< smtk::model::EntityPhrase >          EntityPhrasePtr;
@@ -278,10 +278,10 @@ namespace smtk
   {
     namespace remote
     {
-      typedef smtk::shared_ptr< RemusRemoteBridge >          RemusRemoteBridgePtr;
-      typedef smtk::shared_ptr< RemusBridgeConnection >      RemusBridgeConnectionPtr;
-      typedef smtk::shared_ptr< RemusBridgeConnections >     RemusBridgeConnectionsPtr;
-      typedef smtk::shared_ptr< RemusRPCWorker >             RemusRPCWorkerPtr;
+      typedef smtk::shared_ptr< Session >              SessionPtr;
+      typedef smtk::shared_ptr< RemusConnection >      RemusConnectionPtr;
+      typedef smtk::shared_ptr< RemusConnections >     RemusConnectionsPtr;
+      typedef smtk::shared_ptr< RemusRPCWorker >       RemusRPCWorkerPtr;
     }
   }
   namespace simulation

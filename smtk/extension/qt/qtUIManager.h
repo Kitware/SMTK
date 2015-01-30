@@ -37,7 +37,7 @@ namespace smtk
     class qtAttributeView;
     class qtBaseView;
     class qtInstancedView;
-    //class qtModelEntityView;
+    //class qtModelView;
     class qtSimpleExpressionView;
     class qtGroupView;
 
@@ -159,7 +159,7 @@ namespace smtk
     protected:
       void processAttributeView(qtAttributeView* v);
       void processInstancedView(qtInstancedView* v);
-      //void processModelEntityView(qtModelEntityView* v);
+      //void processModelView(qtModelView* v);
       void processSimpleExpressionView(qtSimpleExpressionView* v);
       void processGroupView(qtGroupView* v);
       void processBasicView(qtBaseView* v);

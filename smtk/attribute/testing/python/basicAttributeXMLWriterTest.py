@@ -58,7 +58,7 @@ if __name__ == '__main__':
     eitemdef = expDef.addItemDefinitionStr( smtk.attribute.StringItemDefinition, 'Expression String')
     eitemdef2 = expDef.addItemDefinitionStr( smtk.attribute.StringItemDefinition, 'Aux String')
     eitemdef.setDefaultValue('sample')
-    eitemdef3 = expDef.addItemDefinitionStr( smtk.attribute.ModelEntityItemDefinition, 'ModelEntity Expression')
+    eitemdef3 = expDef.addItemDefinitionStr( smtk.attribute.ModelEntityItemDefinition, 'Model Expression')
     eitemdef4 = expDef.addItemDefinitionStr( smtk.attribute.ModelEntityItemDefinition, 'Aux String')
 
     base = system.createDefinition('BaseDef')

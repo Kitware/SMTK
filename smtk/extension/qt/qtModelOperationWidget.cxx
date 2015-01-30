@@ -20,7 +20,7 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 
-#include "smtk/model/Bridge.h"
+#include "smtk/model/Session.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
 #include "smtk/model/StringData.h"
@@ -55,7 +55,7 @@ public:
   };
 
   smtk::model::WeakOperatorPtr CurrentOp;
-  smtk::model::Bridge::WeakPtr CurrentBridge;
+  smtk::model::Session::WeakPtr CurrentSession;
   QVBoxLayout* WidgetLayout;
   QPointer<QComboBox> OperationCombo;
   QStackedLayout* OperationsLayout;
@@ -74,7 +74,7 @@ qtModelOperationWidget::qtModelOperationWidget(QWidget* _p): QWidget(_p)
 //----------------------------------------------------------------------------
 qtModelOperationWidget::~qtModelOperationWidget()
 {
-  this->setBridge(smtk::model::BridgePtr());
+  this->setSession(smtk::model::SessionPtr());
   delete this->Internals;
 }
 
@@ -113,9 +113,9 @@ void qtModelOperationWidget::initWidget( )
 }
 
 //----------------------------------------------------------------------------
-void qtModelOperationWidget::setBridge(smtk::model::BridgePtr bridge)
+void qtModelOperationWidget::setSession(smtk::model::SessionPtr session)
 {
-  if(this->Internals->CurrentBridge.lock() == bridge)
+  if(this->Internals->CurrentSession.lock() == session)
     return;
 
   // clean up current UI
@@ -126,13 +126,13 @@ void qtModelOperationWidget::setBridge(smtk::model::BridgePtr bridge)
       delete opLayout->widget(i);
     }
 
-  this->Internals->CurrentBridge = bridge;
+  this->Internals->CurrentSession = session;
   this->Internals->OperationCombo->blockSignals(true);
   this->Internals->OperationCombo->clear();
-  if(bridge)
+  if(session)
     {
-    StringList opNames = bridge->operatorNames();
-    std::sort(opNames.begin(), opNames.end()); 
+    StringList opNames = session->operatorNames();
+    std::sort(opNames.begin(), opNames.end());
     for(StringList::const_iterator it = opNames.begin();
         it != opNames.end(); ++it)
       {
@@ -145,14 +145,14 @@ void qtModelOperationWidget::setBridge(smtk::model::BridgePtr bridge)
 
 //----------------------------------------------------------------------------
 bool qtModelOperationWidget::setCurrentOperation(
-  const std::string& opName, smtk::model::BridgePtr bridge)
+  const std::string& opName, smtk::model::SessionPtr session)
 {
-  this->setBridge(bridge);
-  if(!bridge)
+  this->setSession(session);
+  if(!session)
     return false;
 
-  StringList opNames = bridge->operatorNames();
-  std::sort(opNames.begin(), opNames.end()); 
+  StringList opNames = session->operatorNames();
+  std::sort(opNames.begin(), opNames.end());
   int idx = std::find(opNames.begin(), opNames.end(), opName) - opNames.begin();
   if(this->Internals->OperationCombo->currentIndex() != idx)
     {
@@ -168,13 +168,13 @@ bool qtModelOperationWidget::setCurrentOperation(
     }
 
   // not yet existed
-  OperatorPtr brOp = bridge->op(opName);
+  OperatorPtr brOp = session->op(opName);
   if (!brOp)
     {
     std::cerr
-      << "Could not create operator: \"" << opName << "\" for bridge"
-      << " \"" << bridge->name() << "\""
-      << " (" << bridge->sessionId() << ")\n";
+      << "Could not create operator: \"" << opName << "\" for session"
+      << " \"" << session->name() << "\""
+      << " (" << session->sessionId() << ")\n";
     return false;
     }
 
@@ -187,7 +187,7 @@ bool qtModelOperationWidget::setCurrentOperation(
   opLayout->setMargin(0);
 
   smtk::attribute::AttributePtr att = brOp->specification();
-  att->system()->setRefModelManager(bridge->manager());
+  att->system()->setRefModelManager(session->manager());
   smtk::attribute::qtUIManager* uiManager = new smtk::attribute::qtUIManager(
     *(att->system()));
   smtk::view::RootPtr rootView = uiManager->attSystem()->rootView();
@@ -215,7 +215,7 @@ void qtModelOperationWidget::onOperationSelected()
 {
   this->setCurrentOperation(
     this->Internals->OperationCombo->currentText().toStdString(),
-    this->Internals->CurrentBridge.lock());
+    this->Internals->CurrentSession.lock());
 }
 //----------------------------------------------------------------------------
 void qtModelOperationWidget::onOperate()

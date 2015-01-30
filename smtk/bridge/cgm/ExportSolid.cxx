@@ -10,7 +10,7 @@
 #include "smtk/bridge/cgm/ExportSolid.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
-#include "smtk/model/Cursor.h"
+#include "smtk/model/EntityRef.h"
 #include "smtk/model/Manager.h"
 
 #include "CGMApp.hpp"
@@ -28,12 +28,12 @@ namespace smtk {
   * should match the type used to load the model.
   */
 int ExportSolid::entitiesToFileOfNameAndType(
-  const smtk::model::CursorArray& entities,
+  const smtk::model::EntityRefArray& entities,
   const std::string& filename,
   const std::string& filetype)
 {
   DLIList<RefEntity*> refsOut;
-  smtk::model::CursorArray::const_iterator it;
+  smtk::model::EntityRefArray::const_iterator it;
   for (it = entities.begin(); it != entities.end(); ++it)
     {
     RefEntity* matchingCGMEnt = dynamic_cast<RefEntity*>(

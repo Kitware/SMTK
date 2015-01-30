@@ -57,7 +57,7 @@
 #endif
 
 #include "smtk/model/Manager.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Model.h"
 #include "smtk/common/UUID.h"
 #include "smtk/io/ExportJSON.h"
 #include "cJSON.h"
@@ -534,7 +534,7 @@ CubitStatus ConvertModel(
       }
     // Add an entity corresponding to the Body:
     int cgmBodyId = TDUniqueId::get_unique_id(ent);
-    smtk::model::ModelEntity smtkBody = (*bodies.rbegin())->addModel();
+    smtk::model::Model smtkBody = (*bodies.rbegin())->addModel();
     translation[cgmBodyId] = smtkBody.entity();
     //cout << "  Body " << ent << "\n";
     ImportBody(dynamic_cast<Body*>(ent), *bodies.rbegin(), translation);

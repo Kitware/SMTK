@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_bridge_cgm_CAUUID_h
-#define __smtk_bridge_cgm_CAUUID_h
+#ifndef __smtk_session_cgm_CAUUID_h
+#define __smtk_session_cgm_CAUUID_h
 
 #include "smtk/Options.h" // for CGM_HAVE_VERSION_H
 #include "smtk/bridge/cgm/cgmSMTKExports.h" // for CGMSMTK_EXPORT
@@ -75,4 +75,4 @@ protected:
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_cgm_CAUUID_h
+#endif // __smtk_session_cgm_CAUUID_h

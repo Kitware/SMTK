@@ -13,17 +13,17 @@
 #include "smtk/attribute/Attribute.h"
 
 #include "smtk/model/AttributeAssignments.h"
-#include "smtk/model/BridgeSession.h"
+#include "smtk/model/SessionRef.h"
 #include "smtk/model/Chain.h"
-#include "smtk/model/CursorArrangementOps.h"
+#include "smtk/model/EntityRefArrangementOps.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
-#include "smtk/model/GroupEntity.h"
-#include "smtk/model/InstanceEntity.h"
+#include "smtk/model/Group.h"
+#include "smtk/model/Instance.h"
 #include "smtk/model/Loop.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/Shell.h"
 #include "smtk/model/Vertex.h"
 #include "smtk/model/VertexUse.h"
@@ -119,9 +119,9 @@ const UUIDsToAttributeAssignments& Manager::attributeAssignments() const
 /**\brief A convenience method for erasing an entity from storage.
   *
   */
-bool Manager::erase(const Cursor& cursor)
+bool Manager::erase(const EntityRef& entityref)
 {
-  return this->BRepModel::erase(cursor.entity());
+  return this->BRepModel::erase(entityref.entity());
 }
 
 /**\brief A convenience method for erasing a model and its children.
@@ -130,7 +130,7 @@ bool Manager::erase(const Cursor& cursor)
   * submodels from storage.
   * This method will have no effect given an invalid model entity.
   */
-bool Manager::eraseModel(const ModelEntity& model)
+bool Manager::eraseModel(const Model& model)
 {
   if (!model.isValid())
     return false;
@@ -138,8 +138,8 @@ bool Manager::eraseModel(const ModelEntity& model)
   CellEntities free = model.cells();
   for (CellEntities::iterator fit = free.begin(); fit != free.end(); ++fit)
     {
-    Cursors bdys = fit->lowerDimensionalBoundaries(-1);
-    for (Cursors::iterator bit = bdys.begin(); bit != bdys.end(); ++bit)
+    EntityRefs bdys = fit->lowerDimensionalBoundaries(-1);
+    for (EntityRefs::iterator bit = bdys.begin(); bit != bdys.end(); ++bit)
       {
       //std::cout << "Erasing " << bit->flagSummary(0) << " " << bit->entity() << "\n";
       this->erase(bit->entity());
@@ -151,8 +151,8 @@ bool Manager::eraseModel(const ModelEntity& model)
   GroupEntities grps = model.groups();
   for (GroupEntities::iterator git = grps.begin(); git != grps.end(); ++git)
     {
-    Cursors members = git->members<Cursors>();
-    for (Cursors::iterator mit = members.begin(); mit != members.end(); ++mit)
+    EntityRefs members = git->members<EntityRefs>();
+    for (EntityRefs::iterator mit = members.begin(); mit != members.end(); ++mit)
       {
       //std::cout << "Erasing " << mit->flagSummary(0) << " " << mit->entity() << "\n";
       this->erase(mit->entity());
@@ -222,44 +222,44 @@ smtk::attribute::System* Manager::attributeSystem() const
 /**@name Find entities by their property values.
   *\brief Look for entities that have a given property defined and whose value matches one provided.
   *
-  * The non-templated variants returning CursorArray can be wrapped and used in Python
+  * The non-templated variants returning EntityRefArray can be wrapped and used in Python
   * while the templated variants are more useful in C++.
   */
 //@{
 /// Find entities with an integer property named \a pname whose value is the single value \a pval.
-CursorArray Manager::findEntitiesByProperty(const std::string& pname, Integer pval)
+EntityRefArray Manager::findEntitiesByProperty(const std::string& pname, Integer pval)
 {
-  return this->findEntitiesByPropertyAs<CursorArray>(pname, pval);
+  return this->findEntitiesByPropertyAs<EntityRefArray>(pname, pval);
 }
 
 /// Find entities with a floating-point property named \a pname whose value is the single value \a pval.
-CursorArray Manager::findEntitiesByProperty(const std::string& pname, Float pval)
+EntityRefArray Manager::findEntitiesByProperty(const std::string& pname, Float pval)
 {
-  return this->findEntitiesByPropertyAs<CursorArray>(pname, pval);
+  return this->findEntitiesByPropertyAs<EntityRefArray>(pname, pval);
 }
 
 /// Find entities with a string property named \a pname whose value is the single value \a pval.
-CursorArray Manager::findEntitiesByProperty(const std::string& pname, const std::string& pval)
+EntityRefArray Manager::findEntitiesByProperty(const std::string& pname, const std::string& pval)
 {
-  return this->findEntitiesByPropertyAs<CursorArray>(pname, pval);
+  return this->findEntitiesByPropertyAs<EntityRefArray>(pname, pval);
 }
 
 /// Find entities with an integer property named \a pname whose every value matches the array \a pval.
-CursorArray Manager::findEntitiesByProperty(const std::string& pname, const IntegerList& pval)
+EntityRefArray Manager::findEntitiesByProperty(const std::string& pname, const IntegerList& pval)
 {
-  return this->findEntitiesByPropertyAs<CursorArray>(pname, pval);
+  return this->findEntitiesByPropertyAs<EntityRefArray>(pname, pval);
 }
 
 /// Find entities with a floating-point property named \a pname whose every value matches the array \a pval.
-CursorArray Manager::findEntitiesByProperty(const std::string& pname, const FloatList& pval)
+EntityRefArray Manager::findEntitiesByProperty(const std::string& pname, const FloatList& pval)
 {
-  return this->findEntitiesByPropertyAs<CursorArray>(pname, pval);
+  return this->findEntitiesByPropertyAs<EntityRefArray>(pname, pval);
 }
 
 /// Find entities with a string property named \a pname whose every value matches the array \a pval.
-CursorArray Manager::findEntitiesByProperty(const std::string& pname, const StringList& pval)
+EntityRefArray Manager::findEntitiesByProperty(const std::string& pname, const StringList& pval)
 {
-  return this->findEntitiesByPropertyAs<CursorArray>(pname, pval);
+  return this->findEntitiesByPropertyAs<EntityRefArray>(pname, pval);
 }
 
 /*! \fn template<typename Collection> Collection Manager::findEntitiesByPropertyAs(const std::string& pname, Integer pval)
@@ -293,11 +293,11 @@ CursorArray Manager::findEntitiesByProperty(const std::string& pname, const Stri
   * It is not named entitiesMatchingFlags (to mirror the
   * templated entitiesMatchingFlagsAs<T>) because our base
   * class, BRepModel, provides another method of the same
-  * name that returns UUIDs rather than CursorArray.
+  * name that returns UUIDs rather than EntityRefArray.
   */
-CursorArray Manager::findEntitiesOfType(BitFlags flags, bool exactMatch)
+EntityRefArray Manager::findEntitiesOfType(BitFlags flags, bool exactMatch)
 {
-  return this->entitiesMatchingFlagsAs<CursorArray>(flags, exactMatch);
+  return this->entitiesMatchingFlagsAs<EntityRefArray>(flags, exactMatch);
 }
 
 /// Set the tessellation information for a given \a cellId.
@@ -1136,16 +1136,16 @@ bool Manager::findOrAddInclusionToCellOrModel(
   */
 bool Manager::findOrAddEntityToGroup(const UUID& grp, const UUID& ent)
 {
-  GroupEntity group(shared_from_this(), grp);
-  Cursor member(shared_from_this(), ent);
+  Group group(shared_from_this(), grp);
+  EntityRef member(shared_from_this(), ent);
   int count = 0;
   if (group.isValid() && member.isValid())
     {
-    count = static_cast<int>(group.members<Cursors>().count(member));
+    count = static_cast<int>(group.members<EntityRefs>().count(member));
     if (count == 0)
       {
-      CursorArrangementOps::findOrAddSimpleRelationship(group, SUPERSET_OF, member);
-      CursorArrangementOps::findOrAddSimpleRelationship(member, SUBSET_OF, group);
+      EntityRefArrangementOps::findOrAddSimpleRelationship(group, SUPERSET_OF, member);
+      EntityRefArrangementOps::findOrAddSimpleRelationship(member, SUBSET_OF, group);
       ++count;
       }
     }
@@ -1232,14 +1232,14 @@ bool Manager::disassociateAttribute(const UUID&  attribId, const UUID& fromEntit
 //@}
 
 /**@name Unbacked entity insertion methods
-  *\brief Methods to insert entities into the local storage independent of a bridge.
+  *\brief Methods to insert entities into the local storage independent of a session.
   *
   * The methods that start with "add" will generate a UUID for you and return
-  * a cursor to the new entity.
-  * Methods that start with "insert" accept a UUID and will return a cursor to
+  * a entityref to the new entity.
+  * Methods that start with "insert" accept a UUID and will return a entityref to
   * the new entity (or the existing entity if it matches the entity type being
   * created). If you specify a UUID in use by an entity of a different type, an
-  * invalid cursor will be returned.
+  * invalid entityref will be returned.
   * Finally, methods that start with "set" will either modify an existing entity
   * or create a new one as required. The "set" methods are used to modify arrangements
   * that may have been created as part of constructing other entities (e.g., calling
@@ -1648,22 +1648,22 @@ Shell Manager::addShell(const VolumeUse& v)
   * You may also specify a \a name for the group. If \a name is empty, then no
   * name is assigned.
   */
-GroupEntity Manager::insertGroup(
+Group Manager::insertGroup(
   const UUID& uid, int extraFlags, const std::string& groupName)
 {
   UUIDWithEntity result =
     this->setEntityOfTypeAndDimension(uid, GROUP_ENTITY | extraFlags, -1);
   if (result == this->m_topology->end())
-    return GroupEntity();
+    return Group();
 
   if (!groupName.empty())
     this->setStringProperty(uid, "name", groupName);
 
-  return GroupEntity(shared_from_this(), uid);
+  return Group(shared_from_this(), uid);
 }
 
 /// Add a group, creating a new UUID in the process. \sa insertGroup().
-GroupEntity Manager::addGroup(int extraFlags, const std::string& groupName)
+Group Manager::addGroup(int extraFlags, const std::string& groupName)
 {
   UUID uid = this->unusedUUID();
   return this->insertGroup(uid, extraFlags, groupName);
@@ -1687,14 +1687,14 @@ GroupEntity Manager::addGroup(int extraFlags, const std::string& groupName)
   * model). Any entities related to the model (directly or indirectly via topological
   * relationships) may have these numbers assigned as names by calling assignDefaultNames().
   */
-ModelEntity Manager::insertModel(
+Model Manager::insertModel(
   const UUID& uid,
   int parametricDim, int embeddingDim, const std::string& modelName)
 {
   UUIDWithEntity result =
     this->setEntityOfTypeAndDimension(uid, MODEL_ENTITY, parametricDim);
   if (result == this->m_topology->end())
-    return ModelEntity();
+    return Model();
 
   if (embeddingDim > 0)
     {
@@ -1706,11 +1706,11 @@ ModelEntity Manager::insertModel(
   else
     this->assignDefaultName(uid, this->type(uid));
 
-  return ModelEntity(shared_from_this(), uid);
+  return Model(shared_from_this(), uid);
 }
 
 /// Add a model, creating a new UUID at the time. \sa insertModel().
-ModelEntity Manager::addModel(
+Model Manager::addModel(
   int parametricDim, int embeddingDim, const std::string& modelName)
 {
   UUID uid = this->unusedUUID();
@@ -1723,10 +1723,10 @@ ModelEntity Manager::addModel(
   * Any entity may be instanced, but generally models are instanced
   * as part of a scene graph.
   */
-InstanceEntity Manager::addInstance()
+Instance Manager::addInstance()
 {
   UUID uid = this->addEntityOfTypeAndDimension(INSTANCE_ENTITY, -1);
-  return InstanceEntity(shared_from_this(), uid);
+  return Instance(shared_from_this(), uid);
 }
 
 /**\brief Add an instance with the given prototype to the manager.
@@ -1736,7 +1736,7 @@ InstanceEntity Manager::addInstance()
   * Any entity may be instanced, but generally models are instanced
   * as part of a scene graph.
   */
-InstanceEntity Manager::addInstance(const Cursor& object)
+Instance Manager::addInstance(const EntityRef& object)
 {
   if (object.isValid())
     {
@@ -1745,45 +1745,45 @@ InstanceEntity Manager::addInstance(const Cursor& object)
     int oidx = this->findEntity(uid)->findOrAppendRelation(object.entity());
     this->arrangeEntity(uid, INSTANCE_OF, Arrangement::InstanceInstanceOfWithIndex(oidx));
     this->arrangeEntity(object.entity(), INSTANCED_BY, Arrangement::InstanceInstanceOfWithIndex(iidx));
-    return InstanceEntity(shared_from_this(), uid);
+    return Instance(shared_from_this(), uid);
     }
-  return InstanceEntity();
+  return Instance();
 }
 //@}
 
-/**\brief Create a bridge session given a "type" name.
+/**\brief Create a session session given a "type" name.
   *
   */
-BridgeSession Manager::createSession(const std::string& bridgeName)
+SessionRef Manager::createSession(const std::string& sessionName)
 {
-  // NB: The BridgeSession constructor calls registerBridgeSession for us:
-  return BridgeSession(
+  // NB: The SessionRef constructor calls registerSessionRef for us:
+  return SessionRef(
     shared_from_this(),
-    BRepModel::createBridge(bridgeName));
+    BRepModel::createSessionOfType(sessionName));
 }
 
-/**\brief Unregister a bridge session from the model manager.
+/**\brief Unregister a session session from the model manager.
   *
   */
-void Manager::closeSession(const BridgeSession& sess)
+void Manager::closeSession(const SessionRef& sess)
 {
   if (sess.manager().get() == this)
     {
     this->erase(sess);
-    this->unregisterBridgeSession(sess.bridge());
+    this->unregisterSession(sess.session());
     }
 }
 
-/**\brief Return an array of all the bridge sessions this manager owns.
+/**\brief Return an array of all the session sessions this manager owns.
   *
   */
-BridgeSessions Manager::allSessions() const
+SessionRefs Manager::allSessions() const
 {
-  BridgeSessions result;
-  UUIDsToBridges::const_iterator it;
+  SessionRefs result;
+  UUIDsToSessions::const_iterator it;
   for (it = this->m_sessions.begin(); it != this->m_sessions.end(); ++it)
     result.push_back(
-      BridgeSession(
+      SessionRef(
         smtk::const_pointer_cast<Manager>(shared_from_this()),
         it->first));
   return result;
@@ -1929,8 +1929,8 @@ void Manager::unobserve(ManagerEventType event, OneToManyCallback functionHandle
       OneToManyObserver(functionHandle, callData)));
 }
 
-/// Called by this Manager instance or Cursor instances referencing it when \a event occurs.
-void Manager::trigger(ManagerEventType event, const smtk::model::Cursor& src)
+/// Called by this Manager instance or EntityRef instances referencing it when \a event occurs.
+void Manager::trigger(ManagerEventType event, const smtk::model::EntityRef& src)
 {
   std::set<ConditionTrigger>::const_iterator begin =
     this->m_conditionTriggers.lower_bound(
@@ -1944,8 +1944,8 @@ void Manager::trigger(ManagerEventType event, const smtk::model::Cursor& src)
     (*it->second.first)(it->first, src, it->second.second);
 }
 
-/// Called by this Manager instance or Cursor instances referencing it when \a event occurs.
-void Manager::trigger(ManagerEventType event, const smtk::model::Cursor& src, const smtk::model::Cursor& related)
+/// Called by this Manager instance or EntityRef instances referencing it when \a event occurs.
+void Manager::trigger(ManagerEventType event, const smtk::model::EntityRef& src, const smtk::model::EntityRef& related)
 {
   std::set<OneToOneTrigger>::const_iterator begin =
     this->m_oneToOneTriggers.lower_bound(
@@ -1959,8 +1959,8 @@ void Manager::trigger(ManagerEventType event, const smtk::model::Cursor& src, co
     (*it->second.first)(it->first, src, related, it->second.second);
 }
 
-/// Called by this Manager instance or Cursor instances referencing it when \a event occurs.
-void Manager::trigger(ManagerEventType event, const smtk::model::Cursor& src, const smtk::model::CursorArray& related)
+/// Called by this Manager instance or EntityRef instances referencing it when \a event occurs.
+void Manager::trigger(ManagerEventType event, const smtk::model::EntityRef& src, const smtk::model::EntityRefArray& related)
 {
   std::set<OneToManyTrigger>::const_iterator begin =
     this->m_oneToManyTriggers.lower_bound(
