@@ -336,7 +336,7 @@ std::string Entity::flagSummaryHelper(BitFlags flags, int form)
       result += "s"; // plural is easy in this case.
       }
     break;
-  case SESSION_SESSION:
+  case SESSION:
     result = "session";
     if (form)
       {
@@ -398,7 +398,7 @@ std::string Entity::flagSummary(BitFlags flags, int form)
         case GROUP_ENTITY: result += "groups"; break;
         case MODEL_ENTITY: result += "models"; break;
         case INSTANCE_ENTITY: result += "instances"; break;
-        case SESSION_SESSION: result += "session sessions"; break;
+        case SESSION: result += "session sessions"; break;
         default: break;
           }
         }
@@ -504,7 +504,7 @@ std::string Entity::defaultNameFromCounters(BitFlags flags, IntegerList& counter
     name << counters[0]++;
     break;
   case INSTANCE_ENTITY:
-  case SESSION_SESSION:
+  case SESSION:
   default:
     name << counters[0]++;
     break;
@@ -614,7 +614,7 @@ static struct {
   { "4",          smtk::model::DIMENSION_4 },
   { "any",        smtk::model::ANY_ENTITY },
   { "anydim",     smtk::model::ANY_DIMENSION },
-  { "b",          smtk::model::SESSION_SESSION },
+  { "b",          smtk::model::SESSION },
   { "bdy",        smtk::model::MODEL_BOUNDARY },
   { "cell",       smtk::model::CELL_ENTITY },
   { "chain",      smtk::model::CHAIN },
@@ -658,7 +658,7 @@ static struct {
   { "rfev",       smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 | smtk::model::DIMENSION_1 | smtk::model::DIMENSION_0 }, // Backwards compatibility
   { "rfv",        smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 | smtk::model::DIMENSION_0 }, // Backwards compatibility
   { "rv",         smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_0 }, // Backwards compatibility
-  { "session",    smtk::model::SESSION_SESSION },
+  { "session",    smtk::model::SESSION },
   { "shell",      smtk::model::SHELL_ENTITY },
   { "shell2",     smtk::model::SHELL },
   { "use",        smtk::model::USE_ENTITY },

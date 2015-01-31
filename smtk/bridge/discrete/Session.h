@@ -90,10 +90,10 @@ public:
   smtkSharedFromThisMacro(smtk::model::Session);
   smtkDeclareModelingKernel();
 
-  typedef smtk::model::SessiondInfoBits SessiondInfoBits;
+  typedef smtk::model::SessionInfoBits SessionInfoBits;
   virtual ~Session();
 
-  virtual SessiondInfoBits allSupportedInformation() const;
+  virtual SessionInfoBits allSupportedInformation() const;
 
   smtk::model::EntityRef addCMBEntityToManager(
     const smtk::common::UUID& entity, smtk::model::ManagerPtr storage, int relDepth = 1);
@@ -125,8 +125,8 @@ protected:
 
   Session();
 
-  virtual SessiondInfoBits transcribeInternal(
-        const smtk::model::EntityRef& entity, SessiondInfoBits requestedInfo);
+  virtual SessionInfoBits transcribeInternal(
+        const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo);
 
   smtk::common::UUID trackModel(
     vtkDiscreteModelWrapper* mod, const std::string& url,

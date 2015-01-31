@@ -27,14 +27,14 @@
 namespace smtk {
   namespace model {
 
-/// Bit-vector combinations of SessiondInformation values for requesting information to transcribe.
-typedef unsigned long SessiondInfoBits;
+/// Bit-vector combinations of SessionInformation values for requesting information to transcribe.
+typedef unsigned long SessionInfoBits;
 
 class Session;
 class EntityRef;
 class Operator;
 typedef std::map<smtk::common::UUID,smtk::shared_ptr<Session> > UUIDsToSessions;
-typedef std::map<smtk::model::EntityRef,SessiondInfoBits> DanglingEntities;
+typedef std::map<smtk::model::EntityRef,SessionInfoBits> DanglingEntities;
 
 /**\brief Bit flags describing types of information sessiond to Manager.
   *
@@ -47,7 +47,7 @@ typedef std::map<smtk::model::EntityRef,SessiondInfoBits> DanglingEntities;
   * its type. Thus, requesting SESSION_ENTITY_RELATIONS usually
   * also results in SESSION_ENTITY_TYPE being transcribed.
   */
-enum SessiondInformation
+enum SessionInformation
 {
   // Basic types of information in smtk::model::Manager
   SESSION_ENTITY_TYPE            = 0x00000001, //!< Transcribe the Entity type.
@@ -286,7 +286,7 @@ public: \
   * by subclasses in order to track UUIDs for which there
   * is only partial information in Manager.
   *
-  * \sa smtk::model::SessiondInformation smtk::model::Operator
+  * \sa smtk::model::SessionInformation smtk::model::Operator
   * \sa smtkDeclareModelingKernel smtkImplementsModelingKernel
   */
 class SMTKCORE_EXPORT Session : smtkEnableSharedPtr(Session)
@@ -303,15 +303,15 @@ public:
   virtual std::string className() const { return Session::staticClassName(); }
   smtk::common::UUID sessionId() const;
 
-  int transcribe(const EntityRef& entity, SessiondInfoBits flags, bool onlyDangling = true);
+  int transcribe(const EntityRef& entity, SessionInfoBits flags, bool onlyDangling = true);
 
-  virtual SessiondInfoBits allSupportedInformation() const;
+  virtual SessionInfoBits allSupportedInformation() const;
 
   StringList operatorNames() const;
   virtual OperatorPtr op(const std::string& opName) const;
 
   const DanglingEntities& danglingEntities() const;
-  void declareDanglingEntity(const EntityRef& ent, SessiondInfoBits present = 0);
+  void declareDanglingEntity(const EntityRef& ent, SessionInfoBits present = 0);
 
   smtk::attribute::System* operatorSystem();
   const smtk::attribute::System* operatorSystem() const;
@@ -328,7 +328,7 @@ protected:
   Session();
   virtual ~Session();
 
-  virtual SessiondInfoBits transcribeInternal(const EntityRef& entity, SessiondInfoBits flags);
+  virtual SessionInfoBits transcribeInternal(const EntityRef& entity, SessionInfoBits flags);
 
   void setSessionId(const smtk::common::UUID& sessId);
   void setManager(Manager* mgr);

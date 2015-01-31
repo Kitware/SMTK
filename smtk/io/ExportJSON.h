@@ -90,7 +90,7 @@ public:
   static int forOperator(smtk::model::OperatorSpecification op, cJSON*);
   static int forOperator(smtk::model::OperatorPtr op, cJSON*);
   static int forOperatorResult(smtk::model::OperatorResult res, cJSON*);
-  static int forDanglingEntities(const smtk::common::UUID& sessionSessionId, cJSON* node, smtk::model::ManagerPtr modelMgr);
+  static int forDanglingEntities(const smtk::common::UUID& sessionId, cJSON* node, smtk::model::ManagerPtr modelMgr);
 
   static int forModelWorker(
     cJSON* workerDescription,

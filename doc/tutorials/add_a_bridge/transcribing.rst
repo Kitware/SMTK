@@ -57,7 +57,7 @@ we transcribe the entire model recursively.
    :start-after: // ++ 11 ++
    :end-before: // -- 11 --
 
-Now you should check other bits in :smtk:`SessiondInformation` that
+Now you should check other bits in :smtk:`SessionInformation` that
 are present in your :smtk:`Session::allSupportedInformation` method
 and ensure that information is transcribed properly before returning
 the bits which were actually transcribed for the given entity.

@@ -80,7 +80,7 @@ Session::~Session()
 }
 
 /// The CGM session supports smtk::model::SESSION_EVERYTHING.
-smtk::model::SessiondInfoBits Session::allSupportedInformation() const
+smtk::model::SessionInfoBits Session::allSupportedInformation() const
 {
   return smtk::model::SESSION_EVERYTHING;
 }
@@ -153,9 +153,9 @@ int Session::setup(const std::string& optName, const smtk::model::StringList& op
 /**\brief Populate records for \a entityref that reflect the CGM \a entity.
   *
   */
-smtk::model::SessiondInfoBits Session::transcribeInternal(
+smtk::model::SessionInfoBits Session::transcribeInternal(
   const smtk::model::EntityRef& entityref,
-  SessiondInfoBits requestedInfo)
+  SessionInfoBits requestedInfo)
 {
   ToolDataUser* tdu = TDUUID::findEntityById(entityref.entity());
   RefEntity* ent = dynamic_cast<RefEntity*>(tdu);
@@ -172,8 +172,8 @@ smtk::model::SessiondInfoBits Session::transcribeInternal(
   return 0;
 }
 
-smtk::model::SessiondInfoBits Session::addCGMEntityToManager(
-  const smtk::model::EntityRef& entityref, RefEntity* ent, SessiondInfoBits requestedInfo)
+smtk::model::SessionInfoBits Session::addCGMEntityToManager(
+  const smtk::model::EntityRef& entityref, RefEntity* ent, SessionInfoBits requestedInfo)
 {
   DagType dagType = ent->dag_type();
   if (dagType.is_valid())
@@ -221,8 +221,8 @@ smtk::model::SessiondInfoBits Session::addCGMEntityToManager(
   return 0;
 }
 
-smtk::model::SessiondInfoBits Session::addCGMEntityToManager(
-  const smtk::model::EntityRef& entityref, GroupingEntity* grp, SessiondInfoBits requestedInfo)
+smtk::model::SessionInfoBits Session::addCGMEntityToManager(
+  const smtk::model::EntityRef& entityref, GroupingEntity* grp, SessionInfoBits requestedInfo)
 {
   DagType dagType = grp->dag_type();
   if (dagType.is_valid())
@@ -270,8 +270,8 @@ smtk::model::SessiondInfoBits Session::addCGMEntityToManager(
   return 0;
 }
 
-smtk::model::SessiondInfoBits Session::addCGMEntityToManager(
-  const smtk::model::EntityRef& entityref, SenseEntity* sns, SessiondInfoBits requestedInfo)
+smtk::model::SessionInfoBits Session::addCGMEntityToManager(
+  const smtk::model::EntityRef& entityref, SenseEntity* sns, SessionInfoBits requestedInfo)
 {
   DagType dagType = sns->dag_type();
   if (dagType.is_valid())
@@ -320,12 +320,12 @@ smtk::model::SessiondInfoBits Session::addCGMEntityToManager(
 }
 
 /// Given a CGM \a body tagged with \a uid, create a record in \a modelManager for it.
-smtk::model::SessiondInfoBits Session::addBodyToManager(
+smtk::model::SessionInfoBits Session::addBodyToManager(
   const smtk::model::Model& entityref,
   Body* body,
-  SessiondInfoBits requestedInfo)
+  SessionInfoBits requestedInfo)
 {
-  SessiondInfoBits actual = 0;
+  SessionInfoBits actual = 0;
   if (body)
     {
     EntityRef mutableEntityRef(entityref);
@@ -381,12 +381,12 @@ smtk::model::SessiondInfoBits Session::addBodyToManager(
 }
 
 /// Given a CGM \a coVolume tagged with \a entityref's UUID, create a record in \a entityref's manager for it.
-smtk::model::SessiondInfoBits Session::addVolumeUseToManager(
+smtk::model::SessionInfoBits Session::addVolumeUseToManager(
   const smtk::model::VolumeUse& entityref,
   CoVolume* coVolume,
-  SessiondInfoBits requestedInfo)
+  SessionInfoBits requestedInfo)
 {
-  SessiondInfoBits actual = 0;
+  SessionInfoBits actual = 0;
   if (coVolume)
     {
     smtk::model::VolumeUse mutableEntityRef(entityref);
@@ -418,13 +418,13 @@ smtk::model::SessiondInfoBits Session::addVolumeUseToManager(
 }
 
 /// Given a CGM \a coFace tagged with \a uid, create a record in \a manager for it.
-smtk::model::SessiondInfoBits Session::addFaceUseToManager(
+smtk::model::SessionInfoBits Session::addFaceUseToManager(
   const smtk::model::FaceUse& entityref,
   CoFace* coFace,
-  SessiondInfoBits requestedInfo)
+  SessionInfoBits requestedInfo)
 {
   (void)entityref;
-  SessiondInfoBits actual = 0;
+  SessionInfoBits actual = 0;
   if (coFace)
     {
     if (requestedInfo)
@@ -436,13 +436,13 @@ smtk::model::SessiondInfoBits Session::addFaceUseToManager(
 }
 
 /// Given a CGM \a coEdge tagged with \a uid, create a record in \a manager for it.
-smtk::model::SessiondInfoBits Session::addEdgeUseToManager(
+smtk::model::SessionInfoBits Session::addEdgeUseToManager(
   const smtk::model::EdgeUse& entityref,
   CoEdge* coEdge,
-  SessiondInfoBits requestedInfo)
+  SessionInfoBits requestedInfo)
 {
   (void)entityref;
-  SessiondInfoBits actual = 0;
+  SessionInfoBits actual = 0;
   if (coEdge)
     {
     if (requestedInfo)
@@ -454,13 +454,13 @@ smtk::model::SessiondInfoBits Session::addEdgeUseToManager(
 }
 
 /// Given a CGM \a coVertex tagged with \a uid, create a record in \a manager for it.
-smtk::model::SessiondInfoBits Session::addVertexUseToManager(
+smtk::model::SessionInfoBits Session::addVertexUseToManager(
   const smtk::model::VertexUse& entityref,
   CoVertex* coVertex,
-  SessiondInfoBits requestedInfo)
+  SessionInfoBits requestedInfo)
 {
   (void)entityref;
-  SessiondInfoBits actual = 0;
+  SessionInfoBits actual = 0;
   if (coVertex)
     {
     if (requestedInfo)
@@ -472,13 +472,13 @@ smtk::model::SessiondInfoBits Session::addVertexUseToManager(
 }
 
 /// Given a CGM \a shell tagged with \a uid, create a record in \a manager for it.
-smtk::model::SessiondInfoBits Session::addShellToManager(
+smtk::model::SessionInfoBits Session::addShellToManager(
   const smtk::model::Shell& entityref,
   Shell* shell,
-  SessiondInfoBits requestedInfo)
+  SessionInfoBits requestedInfo)
 {
   (void)entityref;
-  SessiondInfoBits actual = 0;
+  SessionInfoBits actual = 0;
   if (shell)
     {
     if (requestedInfo)
@@ -490,13 +490,13 @@ smtk::model::SessiondInfoBits Session::addShellToManager(
 }
 
 /// Given a CGM \a loop tagged with \a uid, create a record in \a manager for it.
-smtk::model::SessiondInfoBits Session::addLoopToManager(
+smtk::model::SessionInfoBits Session::addLoopToManager(
   const smtk::model::Loop& entityref,
   Loop* loop,
-  SessiondInfoBits requestedInfo)
+  SessionInfoBits requestedInfo)
 {
   (void)entityref;
-  SessiondInfoBits actual = 0;
+  SessionInfoBits actual = 0;
   if (loop)
     {
     if (requestedInfo)
@@ -508,13 +508,13 @@ smtk::model::SessiondInfoBits Session::addLoopToManager(
 }
 
 /// Given a CGM \a chain tagged with \a uid, create a record in \a manager for it.
-smtk::model::SessiondInfoBits Session::addChainToManager(
+smtk::model::SessionInfoBits Session::addChainToManager(
   const smtk::model::Chain& entityref,
   Chain* chain,
-  SessiondInfoBits requestedInfo)
+  SessionInfoBits requestedInfo)
 {
   (void)entityref;
-  SessiondInfoBits actual = 0;
+  SessionInfoBits actual = 0;
   if (chain)
     {
     if (requestedInfo)
@@ -526,13 +526,13 @@ smtk::model::SessiondInfoBits Session::addChainToManager(
 }
 
 /// Given a CGM \a refVolume tagged with \a uid, create a record in \a manager for it.
-smtk::model::SessiondInfoBits Session::addVolumeToManager(
+smtk::model::SessionInfoBits Session::addVolumeToManager(
   const smtk::model::Volume& entityref,
   RefVolume* refVolume,
-  SessiondInfoBits requestedInfo)
+  SessionInfoBits requestedInfo)
 {
   (void)entityref;
-  SessiondInfoBits actual = 0;
+  SessionInfoBits actual = 0;
   if (refVolume)
     {
     smtk::model::Volume mutableEntityRef(entityref);
@@ -574,12 +574,12 @@ smtk::model::SessiondInfoBits Session::addVolumeToManager(
 }
 
 /// Given a CGM \a refFace tagged with \a uid, create a record in \a manager for it.
-smtk::model::SessiondInfoBits Session::addFaceToManager(
+smtk::model::SessionInfoBits Session::addFaceToManager(
   const smtk::model::Face& entityref,
   RefFace* refFace,
-  SessiondInfoBits requestedInfo)
+  SessionInfoBits requestedInfo)
 {
-  SessiondInfoBits actual = 0;
+  SessionInfoBits actual = 0;
   if (refFace)
     {
     smtk::model::Face mutableEntityRef(entityref);
@@ -622,12 +622,12 @@ smtk::model::SessiondInfoBits Session::addFaceToManager(
 }
 
 /// Given a CGM \a refEdge tagged with \a uid, create a record in \a manager for it.
-smtk::model::SessiondInfoBits Session::addEdgeToManager(
+smtk::model::SessionInfoBits Session::addEdgeToManager(
   const smtk::model::Edge& entityref,
   RefEdge* refEdge,
-  SessiondInfoBits requestedInfo)
+  SessionInfoBits requestedInfo)
 {
-  SessiondInfoBits actual = 0;
+  SessionInfoBits actual = 0;
   if (refEdge)
     {
     smtk::model::Edge mutableEntityRef(entityref);
@@ -671,12 +671,12 @@ smtk::model::SessiondInfoBits Session::addEdgeToManager(
 }
 
 /// Given a CGM \a refVertex tagged with \a uid, create a record in \a manager for it.
-smtk::model::SessiondInfoBits Session::addVertexToManager(
+smtk::model::SessionInfoBits Session::addVertexToManager(
   const smtk::model::Vertex& entityref,
   RefVertex* refVertex,
-  SessiondInfoBits requestedInfo)
+  SessionInfoBits requestedInfo)
 {
-  SessiondInfoBits actual = 0;
+  SessionInfoBits actual = 0;
   if (refVertex)
     {
     smtk::model::Vertex mutableEntityRef(entityref);
@@ -717,13 +717,13 @@ smtk::model::SessiondInfoBits Session::addVertexToManager(
 }
 
 /// Given a CGM \a refGroup tagged with \a uid, create a record in \a manager for it.
-smtk::model::SessiondInfoBits Session::addGroupToManager(
+smtk::model::SessionInfoBits Session::addGroupToManager(
   const smtk::model::Group& entityref,
   RefGroup* refGroup,
-  SessiondInfoBits requestedInfo)
+  SessionInfoBits requestedInfo)
 {
   (void)entityref;
-  SessiondInfoBits actual = 0;
+  SessionInfoBits actual = 0;
   if (refGroup)
     {
     smtk::model::Group mutableEntityRef(entityref);
@@ -767,7 +767,7 @@ smtk::model::SessiondInfoBits Session::addGroupToManager(
 void Session::addRelations(
   smtk::model::EntityRef& entityref,
   DLIList<RefEntity*>& rels,
-  SessiondInfoBits requestedInfo,
+  SessionInfoBits requestedInfo,
   int depth)
 {
   int nc = rels.size();

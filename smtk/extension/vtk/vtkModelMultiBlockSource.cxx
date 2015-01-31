@@ -51,14 +51,14 @@ vtkModelMultiBlockSource::vtkModelMultiBlockSource()
     {
     this->DefaultColor[i] = 1.;
     }
-  this->ModelID = NULL;
+  this->ModelEntityID = NULL;
   this->AllowNormalGeneration = 0;
 }
 
 vtkModelMultiBlockSource::~vtkModelMultiBlockSource()
 {
   this->SetCachedOutput(NULL);
-  this->SetModelID(NULL);
+  this->SetModelEntityID(NULL);
 }
 
 void vtkModelMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
@@ -67,7 +67,7 @@ void vtkModelMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
 
   os << indent << "Model: " << this->ModelMgr.get() << "\n";
   os << indent << "CachedOutput: " << this->CachedOutput << "\n";
-  os << indent << "ModelID: " << this->ModelID << "\n";
+  os << indent << "ModelEntityID: " << this->ModelEntityID << "\n";
   os << indent << "AllowNormalGeneration: " << this->AllowNormalGeneration << "\n";
 }
 
@@ -285,7 +285,7 @@ static void internal_AddBlockInfo(smtk::model::ManagerPtr manager,
     groupArray->SetNumberOfTuples(na);
     for (int i = 0; i < na; ++i)
       {
-      groupArray->SetValue(i, 
+      groupArray->SetValue(i,
         entityref.relationFromArrangement(SUBSET_OF, i, 0).entity().toString());
       }
     groupArray->SetName(vtkModelMultiBlockSource::GetGroupTagName());
@@ -370,9 +370,9 @@ void vtkModelMultiBlockSource::FindEntitiesWithTessellation(
 void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
   vtkMultiBlockDataSet* mbds, smtk::model::ManagerPtr manager)
 {
-  if(this->ModelID && this->ModelID[0])
+  if(this->ModelEntityID && this->ModelEntityID[0])
     {
-    smtk::common::UUID uid(this->ModelID);
+    smtk::common::UUID uid(this->ModelEntityID);
     smtk::model::EntityRef entity(manager, uid);
     Model modelEntity = entity.isModel() ?
       entity.as<smtk::model::Model>() : entity.owningModel();
@@ -435,7 +435,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
       }
     else
       {
-      vtkGenericWarningMacro(<< "Can not find the model entity with UUID: " << this->ModelID);
+      vtkGenericWarningMacro(<< "Can not find the model entity with UUID: " << this->ModelEntityID);
       }
     }
   else

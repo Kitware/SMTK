@@ -464,7 +464,7 @@ void qtModelView::operatorInvoked()
     qmodel->manager()->findSession(sessId);
   if (!session)
     {
-    std::cout << "No session available from sessionSession: \"" << sessId.toString() << "\"\n";
+    std::cout << "No session available from session: \"" << sessId.toString() << "\"\n";
     return;
     }
   std::string opName = action->text().toStdString();
@@ -597,7 +597,7 @@ void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
   smtk::model::EntityRefs selentityrefs;
   this->recursiveSelect(this->getModel()->getItem(idx), selentityrefs,
     CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY |
-    MODEL_ENTITY | INSTANCE_ENTITY | SESSION_SESSION);
+    MODEL_ENTITY | INSTANCE_ENTITY | SESSION);
   DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
   int vis = dp->relatedEntity().visible() ? 0 : 1;
   if(this->setEntityVisibility(selentityrefs, vis, brOp))
@@ -650,7 +650,7 @@ void qtModelView::changeEntityColor( const QModelIndex& idx)
   smtk::model::EntityRefs selentityrefs;
   this->recursiveSelect(this->getModel()->getItem(idx), selentityrefs,
     CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY |
-    MODEL_ENTITY | INSTANCE_ENTITY | SESSION_SESSION);
+    MODEL_ENTITY | INSTANCE_ENTITY | SESSION);
   DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
   smtk::model::FloatList rgba(4);
   rgba = dp->relatedColor();

@@ -164,12 +164,12 @@ public:
   static SessionPtr createSessionOfType(const std::string& bname);
   SessionPtr createAndRegisterSession(
     const std::string& bname,
-    const smtk::common::UUID& sessionSessionId = smtk::common::UUID::null());
+    const smtk::common::UUID& sessionId = smtk::common::UUID::null());
 
   bool registerSession(SessionPtr session);
   bool unregisterSession(SessionPtr session);
   SessionPtr findSession(const smtk::common::UUID& sessionId) const;
-  smtk::common::UUIDs sessionSessions() const;
+  smtk::common::UUIDs sessions() const;
   smtk::common::UUIDs modelsOfSession(const smtk::common::UUID& sessionId) const;
 
 protected:

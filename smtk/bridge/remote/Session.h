@@ -76,8 +76,8 @@ protected:
 
   Session();
 
-  virtual smtk::model::SessiondInfoBits transcribeInternal(
-    const smtk::model::EntityRef& entity, smtk::model::SessiondInfoBits flags);
+  virtual smtk::model::SessionInfoBits transcribeInternal(
+    const smtk::model::EntityRef& entity, smtk::model::SessionInfoBits flags);
 
   virtual bool ableToOperateDelegate(smtk::model::RemoteOperatorPtr op);
   virtual smtk::model::OperatorResult operateDelegate(
@@ -87,7 +87,7 @@ protected:
     RemusConnectionPtr remusConn,
     const remus::proto::JobRequirements& jobReq,
     const std::string& meshType);
-  static bool registerSessiondOperator(
+  static bool registerSessionOperator(
     const std::string& sessionName, const std::string& opName,
     const char* opDescrXML, smtk::model::OperatorConstructor opCtor);
 

@@ -50,7 +50,7 @@ created and introspected by SMTK.
   It is also useful for referencing shared pointers to the session
   internally.
 
-* The :cxx:`typedef smtk::model::SessiondInfoBits SessiondInfoBits`
+* The :cxx:`typedef smtk::model::SessionInfoBits SessionInfoBits`
   is not required but will make implementing methods dealing with
   transcription of entities easier to type.
 
@@ -68,7 +68,7 @@ created and introspected by SMTK.
 * Finally, the :cxx:`allSupportedInformation` method exists so that SMTK
   can discover what types of information the session can provide to SMTK.
   The returned integer should be a bitwise OR of entries from
-  the :smtk:`SessiondInformation` enum.
+  the :smtk:`SessionInformation` enum.
   For now, it is fine to return :smtk:`SESSION_EVERYTHING`.
 
 The next step is to provide methods to access the maps between SMTK

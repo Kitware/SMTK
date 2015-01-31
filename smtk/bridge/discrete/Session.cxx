@@ -184,7 +184,7 @@ Session::~Session()
 }
 
 /// The CGM session supports smtk::model::SESSION_EVERYTHING.
-smtk::model::SessiondInfoBits Session::allSupportedInformation() const
+smtk::model::SessionInfoBits Session::allSupportedInformation() const
 {
   return smtk::model::SESSION_EVERYTHING;
 }
@@ -354,8 +354,8 @@ vtkDiscreteModelWrapper* Session::findModelEntity(const smtk::common::UUID& uid)
 /**\brief Populate records for \a entityref that reflect the CGM \a entity.
   *
   */
-smtk::model::SessiondInfoBits Session::transcribeInternal(
-  const smtk::model::EntityRef& entity, SessiondInfoBits requestedInfo)
+smtk::model::SessionInfoBits Session::transcribeInternal(
+  const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo)
 {
   (void)entity;
   (void)requestedInfo;
@@ -726,7 +726,7 @@ smtk::model::Model Session::addBodyToManager(
   if (body)
     {
     smtk::model::Model model;
-    smtk::model::SessiondInfoBits translated;
+    smtk::model::SessionInfoBits translated;
     bool already;
     if ((already = mgr->findEntity(uid, false) ? true : false) || relDepth < 0)
       {
@@ -791,7 +791,7 @@ smtk::model::Group Session::addGroupToManager(
   if (group)
     {
     smtk::model::Group result;
-    smtk::model::SessiondInfoBits translated;
+    smtk::model::SessionInfoBits translated;
     bool already;
     if ((already = mgr->findEntity(uid, false) ? true : false) || relDepth < 0)
       {
@@ -826,7 +826,7 @@ smtk::model::Group Session::addMaterialToManager(
 {
   if (material)
     {
-    smtk::model::SessiondInfoBits translated;
+    smtk::model::SessionInfoBits translated;
     smtk::model::Group result;
     bool already;
     if ((already = mgr->findEntity(uid, false) ? true : false) || relDepth < 0)
@@ -865,7 +865,7 @@ smtk::model::FaceUse Session::addFaceUseToManager(
   if (coFace)
     {
     smtk::model::FaceUse result;
-    smtk::model::SessiondInfoBits translated;
+    smtk::model::SessionInfoBits translated;
     bool already;
     smtk::model::Face matchingFace(
       mgr, this->findOrSetEntityUUID(coFace->GetModelFace()));
@@ -931,7 +931,7 @@ smtk::model::EdgeUse Session::addEdgeUseToManager(
 {
   if (coEdge)
     {
-    smtk::model::SessiondInfoBits translated = smtk::model::SESSION_NOTHING;
+    smtk::model::SessionInfoBits translated = smtk::model::SESSION_NOTHING;
     bool already;
     smtk::model::EdgeUse result(mgr, uid);
     if ((already = mgr->findEntity(uid, false) ? true : false) || relDepth < 0)
@@ -983,7 +983,7 @@ smtk::model::VertexUse Session::addVertexUseToManager(
   if (coVertex && !mgr->findEntity(uid, false))
     {
     smtk::model::VertexUse result(mgr, uid);
-    smtk::model::SessiondInfoBits translated = smtk::model::SESSION_NOTHING;
+    smtk::model::SessionInfoBits translated = smtk::model::SESSION_NOTHING;
     if (relDepth >= 0)
       {
       // Add coVertex relations and arrangements
@@ -1007,7 +1007,7 @@ smtk::model::Shell Session::addShellToManager(
   if (shell && !mgr->findEntity(uid, false))
     {
     smtk::model::Shell result(mgr, uid);
-    smtk::model::SessiondInfoBits translated = smtk::model::SESSION_NOTHING;
+    smtk::model::SessionInfoBits translated = smtk::model::SESSION_NOTHING;
     if (relDepth >= 0)
       {
       // Add shell relations and arrangements
@@ -1061,7 +1061,7 @@ smtk::model::Loop Session::addLoopToManager(
   vtkModelFace* refFace;
   if (refLoop && (refFace = refLoop->GetModelFace()) && !mgr->findEntity(uid, false))
     {
-    smtk::model::SessiondInfoBits translated = smtk::model::SESSION_NOTHING;
+    smtk::model::SessionInfoBits translated = smtk::model::SESSION_NOTHING;
     // Insert the loop, which means inserting the face use and face regardless of relDepth,
     // because the loop's orientation and nesting must be arranged relative to them.
     smtk::common::UUID fid = this->findOrSetEntityUUID(refFace);
@@ -1116,7 +1116,7 @@ smtk::model::Volume Session::addVolumeToManager(
   if (refVolume && !mgr->findEntity(uid, false))
     {
     smtk::model::Volume result(mgr->insertVolume(uid));
-    smtk::model::SessiondInfoBits translated = smtk::model::SESSION_NOTHING;
+    smtk::model::SessionInfoBits translated = smtk::model::SESSION_NOTHING;
     if (relDepth >= 0)
       {
       // Add refVolume relations and arrangements
@@ -1142,7 +1142,7 @@ smtk::model::Face Session::addFaceToManager(
   if (refFace && !mgr->findEntity(uid, false))
     {
     smtk::model::Face result(mgr->insertFace(uid));
-    smtk::model::SessiondInfoBits translated = smtk::model::SESSION_NOTHING;
+    smtk::model::SessionInfoBits translated = smtk::model::SESSION_NOTHING;
     if (relDepth >= 0)
       { // Add refFace relations and arrangements
       // If face uses exist, add them to the session.
@@ -1200,7 +1200,7 @@ smtk::model::Edge Session::addEdgeToManager(
   if (refEdge && !mgr->findEntity(uid, false))
     {
     smtk::model::Edge result(mgr->insertEdge(uid));
-    smtk::model::SessiondInfoBits translated = smtk::model::SESSION_NOTHING;
+    smtk::model::SessionInfoBits translated = smtk::model::SESSION_NOTHING;
     if (relDepth >= 0)
       {
       // Add refEdge relations and arrangements
@@ -1244,7 +1244,7 @@ smtk::model::Vertex Session::addVertexToManager(
   if (refVertex && !mgr->findEntity(uid, false))
     {
     smtk::model::Vertex result(mgr->insertVertex(uid));
-    smtk::model::SessiondInfoBits translated = smtk::model::SESSION_NOTHING;
+    smtk::model::SessionInfoBits translated = smtk::model::SESSION_NOTHING;
     if (relDepth >= 0)
       {
       // Add refVertex relations and arrangements

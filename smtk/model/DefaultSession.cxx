@@ -28,7 +28,7 @@ DefaultSession::DefaultSession()
 }
 
 /// Indicate that, since we have no "backing store" model, the entire model is already present.
-SessiondInfoBits DefaultSession::transcribeInternal(const EntityRef& entity, SessiondInfoBits flags)
+SessionInfoBits DefaultSession::transcribeInternal(const EntityRef& entity, SessionInfoBits flags)
 {
   (void)entity;
   (void)flags;
@@ -50,10 +50,10 @@ SessiondInfoBits DefaultSession::transcribeInternal(const EntityRef& entity, Ses
   */
 void DefaultSession::backsRemoteSession(
   const std::string& remoteSessionName,
-  const smtk::common::UUID& sessionSessionId)
+  const smtk::common::UUID& sessionId)
 {
   this->m_remoteSessionName = remoteSessionName;
-  this->m_sessionId = sessionSessionId;
+  this->m_sessionId = sessionId;
 }
 
 /**\brief Returns an empty string or, when backsRemoteSession

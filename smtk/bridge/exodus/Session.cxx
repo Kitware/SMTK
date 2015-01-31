@@ -141,11 +141,11 @@ smtk::model::Model Session::addModel(
 // -- 6 --
 
 // ++ 7 ++
-SessiondInfoBits Session::transcribeInternal(
+SessionInfoBits Session::transcribeInternal(
   const smtk::model::EntityRef& entity,
-  SessiondInfoBits requestedInfo)
+  SessionInfoBits requestedInfo)
 {
-  SessiondInfoBits actual = SESSION_NOTHING;
+  SessionInfoBits actual = SESSION_NOTHING;
   EntityHandle handle = this->toEntity(entity);
   if (!handle.isValid())
     return actual;
