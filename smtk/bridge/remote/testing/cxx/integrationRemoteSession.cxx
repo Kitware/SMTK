@@ -104,13 +104,13 @@ int main(int argc, char* argv[])
       std::cout << "    " << *strit << "\n";
     }
 
-  smtk::common::UUID sessionSessionId = bconn->beginSession(sessionName);
-  if (sessionSessionId.isNull())
+  smtk::common::UUID sessionId = bconn->beginSession(sessionName);
+  if (sessionId.isNull())
     {
     std::cerr << "Null session session ID.\n";
     return 8;
     }
-  std::cout << "Started session " << sessionSessionId.toString() << "\n";
+  std::cout << "Started session " << sessionId.toString() << "\n";
 
   smtk::model::OperatorResult readResult = bconn->readFile(fileName, "", sessionName);
   std::string strout;
@@ -127,13 +127,13 @@ int main(int argc, char* argv[])
   std::cout << "Read file? " << strout << " (" << readResult->findInt("outcome")->value() << ")\n";
   std::cout << "Output model is " << readResult->findModelEntity("entities")->value() << "\n";
 
-  opnames = bconn->operatorNames(sessionSessionId);
-  std::cout << "Operators for session \"" << sessionSessionId << "\":\n";
+  opnames = bconn->operatorNames(sessionId);
+  std::cout << "Operators for session \"" << sessionId << "\":\n";
   for (strit = opnames.begin(); strit != opnames.end(); ++strit)
     std::cout << "  " << *strit << "\n";
 
-  bool didEnd = bconn->endSession(sessionSessionId);
-  std::cout << "Ended session " << sessionSessionId.toString() << ": " << (didEnd ? "Y" : "N") << "\n";
+  bool didEnd = bconn->endSession(sessionId);
+  std::cout << "Ended session " << sessionId.toString() << ": " << (didEnd ? "Y" : "N") << "\n";
 
   return 0;
 }

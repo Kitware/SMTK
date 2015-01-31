@@ -211,7 +211,7 @@ std::string EntityRef::flagSummary(int form) const
       std::ostringstream summary;
       // We can embellish the entity BitFlag summary with
       // additional information for some objects.
-      if (ent->entityFlags() & SESSION_SESSION)
+      if (ent->entityFlags() & SESSION)
         {
         Session::Ptr brdg = mgr->findSession(this->m_entity);
         if (brdg)

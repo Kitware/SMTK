@@ -57,7 +57,7 @@ int ExportJSON::forEntities(
     UUIDWithEntity it = modelMgr->topology().find(ent.entity());
     if (
       (it == ent.manager()->topology().end()) ||
-      ((it->second.entityFlags() & SESSION_SESSION) && !(sections & JSON_SESSIONS)))
+      ((it->second.entityFlags() & SESSION) && !(sections & JSON_SESSIONS)))
       continue;
 
     cJSON* curChild = cJSON_CreateObject();

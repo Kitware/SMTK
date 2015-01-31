@@ -898,10 +898,10 @@ int ImportJSON::ofDanglingEntities(cJSON* node, ManagerPtr context)
   if (!sessId || sessId->type != cJSON_String || !sessId->valuestring || !sessId->valuestring[0])
     return 0;
 
-  smtk::common::UUID sessionSessionId(sessId->valuestring);
-  if (sessionSessionId.isNull())
+  smtk::common::UUID sessionId(sessId->valuestring);
+  if (sessionId.isNull())
     return 0;
-  SessionPtr session = context->findSession(sessionSessionId);
+  SessionPtr session = context->findSession(sessionId);
   if (!session)
     return 0;
 
@@ -918,7 +918,7 @@ int ImportJSON::ofDanglingEntities(cJSON* node, ManagerPtr context)
     if (entityId.isNull())
       continue;
     smtk::model::EntityRef c(context, entityId);
-    session->declareDanglingEntity(c, static_cast<SessiondInfoBits>(entry->valueint));
+    session->declareDanglingEntity(c, static_cast<SessionInfoBits>(entry->valueint));
     }
 
   return 1;

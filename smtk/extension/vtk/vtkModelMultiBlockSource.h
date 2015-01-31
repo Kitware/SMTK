@@ -43,8 +43,8 @@ public:
 
   // Description:
   // Model entity ID that this source will be built upon.
-  vtkSetStringMacro(ModelID);
-  vtkGetStringMacro(ModelID);
+  vtkSetStringMacro(ModelEntityID);
+  vtkGetStringMacro(ModelEntityID);
 
   void GetUUID2BlockIdMap(std::map<smtk::common::UUID, unsigned int>& uuid2mid);
   void Dirty();
@@ -92,7 +92,7 @@ protected:
   double DefaultColor[4];
 
   std::map<smtk::common::UUID, unsigned int> UUID2BlockIdMap; // UUIDs to block index map
-  char* ModelID; // Model Entity UUID
+  char* ModelEntityID; // Model Entity UUID
 
   int AllowNormalGeneration;
   vtkNew<vtkPolyDataNormals> NormalGenerator;

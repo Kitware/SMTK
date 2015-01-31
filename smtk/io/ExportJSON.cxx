@@ -214,7 +214,7 @@ int ExportJSON::forManager(
 
   for (it = modelMgr->topology().begin(); it != modelMgr->topology().end(); ++it)
     {
-    if ((it->second.entityFlags() & SESSION_SESSION) && !(sections & JSON_SESSIONS))
+    if ((it->second.entityFlags() & SESSION) && !(sections & JSON_SESSIONS))
       continue;
 
     cJSON* curChild = cJSON_CreateObject();
@@ -240,8 +240,8 @@ int ExportJSON::forManager(
 
   if (sections & JSON_SESSIONS)
     {
-    smtk::common::UUIDs sessionSessions = modelMgr->sessionSessions();
-    for (smtk::common::UUIDs::iterator bit = sessionSessions.begin(); bit != sessionSessions.end(); ++bit)
+    smtk::common::UUIDs sessions = modelMgr->sessions();
+    for (smtk::common::UUIDs::iterator bit = sessions.begin(); bit != sessions.end(); ++bit)
       {
       status &= ExportJSON::forManagerSession(*bit, sess, modelMgr);
       }
@@ -499,18 +499,18 @@ int ExportJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
 }
 
 /// Serialize a session's list of dangling entities held in the given \a modelMgr.
-int ExportJSON::forDanglingEntities(const smtk::common::UUID& sessionSessionId, cJSON* node, ManagerPtr modelMgr)
+int ExportJSON::forDanglingEntities(const smtk::common::UUID& sessionId, cJSON* node, ManagerPtr modelMgr)
 {
   if (!modelMgr || !node || node->type != cJSON_Object)
     return 0;
-  SessionPtr session = modelMgr->findSession(sessionSessionId);
+  SessionPtr session = modelMgr->findSession(sessionId);
   if (!session)
     return 0;
 
   cJSON* danglers = cJSON_CreateObject();
   cJSON* darray = cJSON_CreateObject();
   cJSON_AddItemToObject(node, "danglingEntities", danglers);
-  cJSON_AddItemToObject(danglers, "sessionId", cJSON_CreateString(sessionSessionId.toString().c_str()));
+  cJSON_AddItemToObject(danglers, "sessionId", cJSON_CreateString(sessionId.toString().c_str()));
   cJSON_AddItemToObject(danglers, "entities", darray);
   DanglingEntities::const_iterator it;
   for (it = session->danglingEntities().begin(); it != session->danglingEntities().end(); ++it)

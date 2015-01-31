@@ -69,8 +69,8 @@ remus::proto::JobRequirements Session::remusRequirements() const
   return this->m_remusWorkerReqs;
 }
 
-smtk::model::SessiondInfoBits Session::transcribeInternal(
-  const smtk::model::EntityRef& entity, smtk::model::SessiondInfoBits flags)
+smtk::model::SessionInfoBits Session::transcribeInternal(
+  const smtk::model::EntityRef& entity, smtk::model::SessionInfoBits flags)
 {
   cJSON* par;
   cJSON* req = ExportJSON::createRPCRequest("fetch-entity", par, /*id*/ "1", cJSON_Object);

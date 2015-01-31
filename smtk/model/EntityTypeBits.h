@@ -106,7 +106,7 @@ enum EntityTypeBits
   GROUP_ENTITY         = 0x00000800, //!< A bit indicating a group; UUIDs may only occur 0 or 1 times. A separate flag describes constraints on group members.
   MODEL_ENTITY         = 0x00001000, //!< A bit indicating a (sub)model.
   INSTANCE_ENTITY      = 0x00002000, //!< A bit indicating an instance of model.
-  SESSION_SESSION       = 0x00004000, //!< A bit indicating a session session.
+  SESSION              = 0x00004000, //!< A bit indicating a session session.
   // Inherent property bits (arguably inappropriate as they could be hard to maintain):
   COVER                = 0x00100000, //!< The entity must have a relation indicating which cover(s) it participates in
   PARTITION            = 0x00200000, //!< The entity must have a relation indicating which partition(s) it participates in
@@ -179,7 +179,7 @@ inline bool isGroup(BitFlags entityFlags)    { return (entityFlags & ENTITY_MASK
 inline bool isModel(BitFlags entityFlags)    { return (entityFlags & ENTITY_MASK) == MODEL_ENTITY; }
 inline bool isInstance(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == INSTANCE_ENTITY; }
 
-inline bool isSessionRef(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == SESSION_SESSION; }
+inline bool isSessionRef(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == SESSION; }
 
   } // namespace model
 } // namespace smtk

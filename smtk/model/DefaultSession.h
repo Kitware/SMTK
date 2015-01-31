@@ -60,7 +60,7 @@ public:
 
   void backsRemoteSession(
     const std::string& remoteSessionName,
-    const smtk::common::UUID& sessionSessionId);
+    const smtk::common::UUID& sessionId);
   virtual std::string remoteName() const;
   virtual OperatorPtr op(const std::string& opName) const;
 
@@ -70,7 +70,7 @@ protected:
 
   DefaultSession();
 
-  virtual SessiondInfoBits transcribeInternal(const EntityRef& entity, SessiondInfoBits flags);
+  virtual SessionInfoBits transcribeInternal(const EntityRef& entity, SessionInfoBits flags);
 
   virtual bool ableToOperateDelegate(RemoteOperatorPtr op);
   virtual OperatorResult operateDelegate(RemoteOperatorPtr op);

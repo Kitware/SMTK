@@ -51,10 +51,10 @@ public:
   // This is required of every session:
   smtkDeclareModelingKernel();
   typedef smtk::shared_ptr<Session> Ptr;
-  typedef smtk::model::SessiondInfoBits SessiondInfoBits;
+  typedef smtk::model::SessionInfoBits SessionInfoBits;
   static SessionPtr create();
   virtual ~Session();
-  virtual SessiondInfoBits allSupportedInformation() const;
+  virtual SessionInfoBits allSupportedInformation() const;
 
   // These are specific to each session but required in some form:
   EntityHandle toEntity(const smtk::model::EntityRef& eid);
@@ -72,9 +72,9 @@ protected:
   Session();
 
   // This is required of every session:
-  virtual SessiondInfoBits transcribeInternal(
+  virtual SessionInfoBits transcribeInternal(
     const smtk::model::EntityRef& entity,
-    SessiondInfoBits requestedInfo);
+    SessionInfoBits requestedInfo);
 
   vtkSmartPointer<vtkUnstructuredGrid> Model;
   // ... };
@@ -83,7 +83,7 @@ protected:
   void addRelations(
     smtk::model::EntityRef& entityref,
     std::vector<EntityHandle>& rels,
-    SessiondInfoBits requestedInfo,
+    SessionInfoBits requestedInfo,
     int depth);
   bool addTessellation(
     const smtk::model::EntityRef&,

@@ -1332,7 +1332,7 @@ std::string BRepModel::assignDefaultName(const UUID& uid, BitFlags entityFlags)
       }
     return tmpName;
     }
-  else if (entityFlags & SESSION_SESSION)
+  else if (entityFlags & SESSION)
     {
     std::string tmpName;
     if (!this->hasStringProperty(uid,"name"))
@@ -1412,7 +1412,7 @@ SessionPtr BRepModel::createSessionOfType(const std::string& bname)
   */
 SessionPtr BRepModel::createAndRegisterSession(
   const std::string& bname,
-  const UUID& sessionSessionId)
+  const UUID& sessionId)
 {
   SessionPtr result = BRepModel::createSessionOfType(bname);
   if (result)
@@ -1420,8 +1420,8 @@ SessionPtr BRepModel::createAndRegisterSession(
     Manager* mgr = dynamic_cast<Manager*>(this);
     if (mgr)
       result->setManager(mgr);
-    if (sessionSessionId)
-      result->setSessionId(sessionSessionId);
+    if (sessionId)
+      result->setSessionId(sessionId);
     this->registerSession(result);
     }
   return result;
@@ -1439,7 +1439,7 @@ bool BRepModel::registerSession(SessionPtr session)
 
   this->m_sessions[sessId] = session;
   BRepModel::iter_type brec =
-    this->setEntityOfTypeAndDimension(sessId, SESSION_SESSION, -1);
+    this->setEntityOfTypeAndDimension(sessId, SESSION, -1);
   (void)brec;
 
   Manager* mgr = dynamic_cast<Manager*>(this);
@@ -1473,14 +1473,14 @@ SessionPtr BRepModel::findSession(const UUID& sessId) const
   return it->second;
 }
 
-/**\brief Return a list of session session IDs.
+/**\brief Return a list of session IDs.
   *
   * The identifiers are used by remote SMTK sessions to link models and operators
   * to specific modeling sessions on the process where the data has been loaded.
   *
   * These can be passed to BRepModel::findSession() to retrieve the Session.
   */
-UUIDs BRepModel::sessionSessions() const
+UUIDs BRepModel::sessions() const
 {
   UUIDs result;
   UUIDsToSessions::const_iterator it;

@@ -88,9 +88,9 @@ public:
   smtkSharedFromThisMacro(smtk::model::Session);
   smtkCreateMacro(smtk::model::Session);
   smtkDeclareModelingKernel();
-  typedef smtk::model::SessiondInfoBits SessiondInfoBits;
+  typedef smtk::model::SessionInfoBits SessionInfoBits;
   virtual ~Session();
-  virtual SessiondInfoBits allSupportedInformation() const
+  virtual SessionInfoBits allSupportedInformation() const
     { return smtk::model::SESSION_EVERYTHING; }
 
   EntityHandle toEntity(const smtk::model::EntityRef& eid);
@@ -107,9 +107,9 @@ protected:
 
   Session();
 
-  virtual SessiondInfoBits transcribeInternal(
+  virtual SessionInfoBits transcribeInternal(
     const smtk::model::EntityRef& entity,
-    SessiondInfoBits requestedInfo);
+    SessionInfoBits requestedInfo);
 
   template<typename T>
   T* toBlock(const EntityHandle& handle);

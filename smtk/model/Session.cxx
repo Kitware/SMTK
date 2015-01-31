@@ -85,7 +85,7 @@ smtk::common::UUID Session::sessionId() const
   * or when \a requested is 0.
   */
 int Session::transcribe(
-  const EntityRef& entity, SessiondInfoBits requested, bool onlyDangling)
+  const EntityRef& entity, SessionInfoBits requested, bool onlyDangling)
 {
   int retval = 0;
   if (requested)
@@ -97,9 +97,9 @@ int Session::transcribe(
       return retval;
       }
     // Ask the subclass to transcribe information.
-    SessiondInfoBits actual = this->transcribeInternal(entity, requested);
+    SessionInfoBits actual = this->transcribeInternal(entity, requested);
     // Decide which bits of the request can possibly be honored...
-    SessiondInfoBits honorable = requested & this->allSupportedInformation();
+    SessionInfoBits honorable = requested & this->allSupportedInformation();
     // ... and verify that all of those have been satisfied.
     retval = (honorable & actual) == honorable;
     // If transcription is complete, then remove the UUID from the dangling
@@ -118,7 +118,7 @@ int Session::transcribe(
   * This is used to determine when an entity has been fully transcribed into storage
   * and is no longer "dangling."
   */
-SessiondInfoBits Session::allSupportedInformation() const
+SessionInfoBits Session::allSupportedInformation() const
 {
   return SESSION_EVERYTHING;
 }
@@ -180,7 +180,7 @@ const DanglingEntities& Session::danglingEntities() const
   * removed from the list when a call to \a transcribeInternal indicates
   * that Session::allSupportedInformation() is now present in manager.
   */
-void Session::declareDanglingEntity(const EntityRef& ent, SessiondInfoBits present)
+void Session::declareDanglingEntity(const EntityRef& ent, SessionInfoBits present)
 {
   if ((present & this->allSupportedInformation()) < this->allSupportedInformation())
     this->m_dangling[ent] = present;
@@ -236,7 +236,7 @@ Manager::Ptr Session::manager() const
   * This should always be at least the information requested but may
   * include more information.
   */
-SessiondInfoBits Session::transcribeInternal(const EntityRef& entity, SessiondInfoBits flags)
+SessionInfoBits Session::transcribeInternal(const EntityRef& entity, SessionInfoBits flags)
 {
   (void)entity;
   (void)flags;

@@ -1025,7 +1025,7 @@
         <include file-name="smtk/model/Session.h" location="local"/>
       </object-type>
 
-      <enum-type name="SessiondInformation">
+      <enum-type name="SessionInformation">
         <include file-name="smtk/model/Session.h" location="local"/>
       </enum-type>
 
