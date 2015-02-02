@@ -88,7 +88,7 @@ inline int SessionHasNoStaticSetup(
   * This class is not wrapped for use in Python because shiboken
   * cannot parse headers for boost::bind and boost::function.
   * Use the model manager to identify available sessions and create sessions
-  * as BRepModel (a subclass of Manager) exposes methods that can be wrapped.
+  * as Manager (a subclass of Manager) exposes methods that can be wrapped.
   */
 class SMTKCORE_EXPORT SessionRegistrar
 {

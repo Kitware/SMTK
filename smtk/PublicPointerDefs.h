@@ -68,7 +68,7 @@ namespace smtk
     typedef std::vector<smtk::model::ArrangementReference> ArrangementReferences;
     class AttributeListPhrase;
     typedef std::vector<smtk::model::Arrangement> Arrangements;
-    class BRepModel;
+    class Manager;
     class Session;
     class SessionRef;
     typedef std::vector<smtk::model::SessionRef> SessionRefs;

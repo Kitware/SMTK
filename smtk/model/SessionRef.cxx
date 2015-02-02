@@ -155,7 +155,7 @@ StringData SessionRef::fileTypes(
 /*! \fn template<typename T> T SessionRef::models() const;
   * \brief Return the list of models associated with this session.
   *
-  * This returns all of the models for which BRepModel::setSessionForModel()
+  * This returns all of the models for which Manager::setSessionForModel()
   * has been called with this entityref's session.
   */
 

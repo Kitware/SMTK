@@ -398,18 +398,18 @@ void QEntityItemModel::sort(int column, Qt::SortOrder order)
   case 2:
       {
       smtk::model::SortByEntityProperty<
-        smtk::model::BRepModel,
+        smtk::model::Manager,
         smtk::model::StringList,
-        &smtk::model::BRepModel::stringProperty,
-        &smtk::model::BRepModel::hasStringProperty> comparator(
+        &smtk::model::Manager::stringProperty,
+        &smtk::model::Manager::hasStringProperty> comparator(
           this->m_manager, "name");
       std::multiset<
         smtk::common::UUID,
         smtk::model::SortByEntityProperty<
-          smtk::model::BRepModel,
+          smtk::model::Manager,
           smtk::model::StringList,
-          &smtk::model::BRepModel::stringProperty,
-          &smtk::model::BRepModel::hasStringProperty> >
+          &smtk::model::Manager::stringProperty,
+          &smtk::model::Manager::hasStringProperty> >
         sorter(comparator);
       this->sortDataWithContainer(sorter, order);
       }

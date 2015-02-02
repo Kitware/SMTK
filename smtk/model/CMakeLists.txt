@@ -4,7 +4,6 @@ set(modelSrcs
   ArrangementKind.cxx
   AttributeAssignments.cxx
   AttributeListPhrase.cxx
-  BRepModel.cxx
   Session.cxx
   SessionRef.cxx
   SessionIOJSON.cxx
@@ -50,7 +49,6 @@ set(modelHeaders
   ArrangementKind.h
   AttributeAssignments.h
   AttributeListPhrase.h
-  BRepModel.h
   Session.h
   SessionRef.h
   SessionIO.h

@@ -70,7 +70,7 @@ typedef std::vector<smtk::model::EntityRef> EntityRefArray;
   *
   * This class exposes methods from multiple members of the model
   * manager that are all associated with a given entity.
-  * See BRepModel, Manager, Entity, EntityTypeBits, and other
+  * See Manager, Manager, Entity, EntityTypeBits, and other
   * headers for documentation on the methods in this class.
   *
   * It is a convenience class only and new functionality added to

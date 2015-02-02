@@ -55,16 +55,16 @@
   <suppress-warning text="skipping function 'smtk::model::Item::endAssociatedAttributes', unmatched return type 'smtk::model::Item::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::associatedEntities', unmatched return type 'std::set&lt;smtk::model::ItemPtr&gt;::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::setTessellation', unmatched return type 'smtk::model::Manager::tess_iter_type'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntity', unmatched return type 'smtk::model::BRepModel::iter_type'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntityOfTypeAndDimension', unmatched return type 'smtk::model::BRepModel::iter_type'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::setEntity', unmatched return type 'smtk::model::BRepModel::iter_type'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::setEntityOfTypeAndDimension', unmatched return type 'smtk::model::BRepModel::iter_type'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::setCellOfDimension', unmatched return type 'smtk::model::BRepModel::iter_type'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::insertCellOfDimension', unmatched return type 'smtk::model::BRepModel::iter_type'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntity', unmatched return type 'BRepModel::iter_type'"/>
-	<suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntityOfTypeAndDimension', unmatched return type 'BRepModel::iter_type'"/>
-	<suppress-warning text="skipping function 'smtk::model::BRepModel::setEntity', unmatched return type 'BRepModel::iter_type'"/>
-	<suppress-warning text="skipping function 'smtk::model::BRepModel::setEntityOfTypeAndDimension', unmatched return type 'BRepModel::iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::insertEntity', unmatched return type 'smtk::model::Manager::iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::insertEntityOfTypeAndDimension', unmatched return type 'smtk::model::Manager::iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::setEntity', unmatched return type 'smtk::model::Manager::iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::setEntityOfTypeAndDimension', unmatched return type 'smtk::model::Manager::iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::setCellOfDimension', unmatched return type 'smtk::model::Manager::iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::insertCellOfDimension', unmatched return type 'smtk::model::Manager::iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::insertEntity', unmatched return type 'Manager::iter_type'"/>
+	<suppress-warning text="skipping function 'smtk::model::Manager::insertEntityOfTypeAndDimension', unmatched return type 'Manager::iter_type'"/>
+	<suppress-warning text="skipping function 'smtk::model::Manager::setEntity', unmatched return type 'Manager::iter_type'"/>
+	<suppress-warning text="skipping function 'smtk::model::Manager::setEntityOfTypeAndDimension', unmatched return type 'Manager::iter_type'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::begin', unmatched return type 'smtk::model::EntityRefArray::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::end', unmatched return type 'smtk::model::EntityRefArray::const_iterator'"/>
 
@@ -114,17 +114,17 @@
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forEntities', unmatched parameter type 'cJSON*'"/>
 
   <!-- Ignore warnings from protected functions and members -->
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::removeEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::elideEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
-  <suppress-warning text="skipping field 'BRepModel::m_topology' with unmatched type 'shared_ptr&lt;UUIDsToEntities&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::insertEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::removeEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::elideEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
+  <suppress-warning text="skipping field 'Manager::m_topology' with unmatched type 'shared_ptr&lt;UUIDsToEntities&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::Manager', unmatched parameter type 'shared_ptr&lt;UUIDsToEntities&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_tessellations' with unmatched type 'shared_ptr&lt;UUIDsToTessellations&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::BRepModel', unmatched parameter type 'shared_ptr&lt;smtk::model::BRepModel::storage_type&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::Manager', unmatched parameter type 'shared_ptr&lt;smtk::model::Manager::storage_type&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_arrangements' with unmatched type 'shared_ptr&lt;UUIDsToArrangements&gt;'"/>
   <suppress-warning text="skipping field 'UUIDGenerator::P' with unmatched type 'Internal'"/>
-  <suppress-warning text="skipping field 'BRepModel::m_modelSessions' with unmatched type 'std::map&lt;smtk::common::UUID,SessionPtr&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::assignDefaultNamesWithOwner', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
+  <suppress-warning text="skipping field 'Manager::m_modelSessions' with unmatched type 'std::map&lt;smtk::common::UUID,SessionPtr&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::assignDefaultNamesWithOwner', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
 
   <!-- do not support input or output streams-->
   <suppress-warning text="skipping function 'smtk::common::operator&lt;&lt;', unmatched return type 'std::ostream&amp;'"/>
@@ -133,15 +133,15 @@
   <suppress-warning text="skipping field 'Logger::m_stream' with unmatched type 'std::ostream'"/>
 
   <!-- do not support model property data (yet)-->
-  <suppress-warning text="skipping field 'BRepModel::m_stringData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToStringData&gt;'"/>
-  <suppress-warning text="skipping field 'BRepModel::m_floatData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToFloatData&gt;'"/>
-  <suppress-warning text="skipping field 'BRepModel::m_integerData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToIntegerData&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::floatPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithFloatProperties const'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::floatPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithFloatProperties'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::stringPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithStringProperties const'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::stringPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithStringProperties'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::integerPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithIntegerProperties const'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::integerPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithIntegerProperties'"/>
+  <suppress-warning text="skipping field 'Manager::m_stringData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToStringData&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_floatData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToFloatData&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_integerData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToIntegerData&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::floatPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithFloatProperties const'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::floatPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithFloatProperties'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::stringPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithStringProperties const'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::stringPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithStringProperties'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::integerPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithIntegerProperties const'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::integerPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithIntegerProperties'"/>
 
   <suppress-warning text="skipping field 'Manager::m_attributeAssignments' with unmatched type 'shared_ptr&lt;UUIDsToAttributeAssignments&gt;'"/>
 
@@ -265,11 +265,11 @@
 
 
   <!-- ignore shared_from_this base class-->
-  <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'BRepModel' is not known"/>
+  <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'Manager' is not known"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'Session' is not known"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'DescriptivePhrase' is not known"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'Operator' is not known"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::BRepModel::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::Manager::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::Manager::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::Manager::SelfType&gt;'"/>
 
@@ -329,12 +329,12 @@
   <suppress-warning text="skipping function 'smtk::io::AttributeReader::readContents', unmatched parameter type 'pugi::xml_node&amp;'" />
   <suppress-warning text="skipping function 'smtk::model::Session::createIODelegate', unmatched return type 'smtk::model::SessionIOPtr'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::findEntitiesByPropertyAs', unmatched return type 'Collection'"/>
-  <suppress-warning text="skipping field 'BRepModel::m_modelSessions' with unmatched type 'std::map&lt;smtk::common::UUID,smtk::shared_ptr&lt;Session&gt;&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_modelSessions' with unmatched type 'std::map&lt;smtk::common::UUID,smtk::shared_ptr&lt;Session&gt;&gt;'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::associations', unmatched return type 'smtk::attribute::ConstModelEntityItemPtr'"/>
 
   <!-- Ignore until we have time to support Operators -->
-  <suppress-warning text="skipping field 'BRepModel::m_modelSessions' with unmatched type 'std::map&lt;smtk::io::UUID,smtk::shared_ptr&lt;Session&gt;&gt;'"/>
-  <suppress-warning text="skipping field 'BRepModel::m_defaultSession' with unmatched type 'smtk::shared_ptr&lt;Session&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_modelSessions' with unmatched type 'std::map&lt;smtk::io::UUID,smtk::shared_ptr&lt;Session&gt;&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_defaultSession' with unmatched type 'smtk::shared_ptr&lt;Session&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::Manager::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Session::findOperatorXMLInternal', unmatched parameter type 'smtk::model::OperatorConstructors const*'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::operators', unmatched return type 'smtk::model::Operators'"/>
@@ -346,10 +346,10 @@
   <suppress-warning text="skipping function 'smtk::model::Operator::associatedEntitiesAs', unmatched return type 'T'"/>
 
 
-  <suppress-warning text="skipping field 'BRepModel::s_sessions' with unmatched type 'std::map&lt;std::string,smtk::model::StaticSessionInfo&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::registerSession', unmatched parameter type 'smtk::model::SessionConstructor'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::sessionConstructor', unmatched return type 'smtk::model::SessionConstructor'"/>
-  <suppress-warning text="skipping field 'BRepModel::m_sessions' with unmatched type 'std::map&lt;smtk::common::UUID,smtk::shared_ptr&lt;Session&gt;&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::s_sessions' with unmatched type 'std::map&lt;std::string,smtk::model::StaticSessionInfo&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::registerSession', unmatched parameter type 'smtk::model::SessionConstructor'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::sessionConstructor', unmatched return type 'smtk::model::SessionConstructor'"/>
+  <suppress-warning text="skipping field 'Manager::m_sessions' with unmatched type 'std::map&lt;smtk::common::UUID,smtk::shared_ptr&lt;Session&gt;&gt;'"/>
 
 
   <suppress-warning text="template argument 'smtk::attribute::UUIDItemDefinition' of 'shared_ptr&lt; smtk::attribute::UUIDItemDefinition &gt;' is not known; not adding redirections"/>
@@ -689,7 +689,6 @@
   <value-type template="smtk::shared_ptr" args="smtk::model::DescriptivePhrase"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::EntityPhrase"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::EntityListPhrase"/>
-  <value-type template="smtk::shared_ptr" args="smtk::model::BRepModel"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::SimpleModelSubphrases"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::Operator">
     <add-function
@@ -985,18 +984,6 @@
 
     <namespace-type name="model">
       <!-- setup the model classes -->
-      <object-type name="BRepModel">
-        <include file-name="smtk/model/BRepModel.h" location="local"/>
-        <add-function signature="create()"
-          static="yes"
-          return-type="smtk::shared_ptr&lt;smtk::model::BRepModel&gt;">
-          <inject-code>
-            %RETURN_TYPE %0 = smtk::model::BRepModel::create();
-            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
-          </inject-code>
-        </add-function>
-      </object-type>
-
       <value-type name="ArrangementReference">
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>
       </value-type>
@@ -1185,7 +1172,7 @@
       </value-type>
 
       <enum-type name="PropertyType">
-        <include file-name="smtk/model/BRepModel.h" location="local"/>
+        <include file-name="smtk/model/Manager.h" location="local"/>
       </enum-type>
 
       <enum-type name="EntityTypeBits">
