@@ -19,6 +19,7 @@
 #include "smtk/common/UUIDGenerator.h"
 
 #include "vtkSmartPointer.h"
+#include "vtkWeakPointer.h"
 
 #include <map>
 
@@ -135,6 +136,7 @@ protected:
     const smtk::common::UUID& itemId, vtkModelItem* item);
   smtk::common::UUID findOrSetEntityUUID(vtkModelItem* item);
   smtk::common::UUID findOrSetEntityUUID(vtkInformation* itemProperties);
+  void untrackEntity(const smtk::common::UUID& itemId);
 
   //static vtkDiscreteModel* owningModel(vtkModelItem* e);
   vtkModelItem* entityForUUID(const smtk::common::UUID& uid);
@@ -166,7 +168,7 @@ protected:
 
   vtkItemWatcherCommand* m_itemWatcher;
   smtk::common::UUIDGenerator m_idGenerator;
-  std::map<smtk::common::UUID,vtkModelItem*> m_itemsToRefs;
+  std::map<smtk::common::UUID, vtkWeakPointer<vtkModelItem> > m_itemsToRefs;
 
   static std::map<vtkDiscreteModel*,WeakPtr> s_modelsToSessions;
   static std::map<smtk::common::UUID,vtkSmartPointer<vtkDiscreteModelWrapper> > s_modelIdsToRefs;

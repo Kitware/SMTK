@@ -137,6 +137,7 @@ public:
     smtk::common::UUID uid = session->findOrSetEntityUUID(vtkInformation::SafeDownCast(caller));
     vtkModelItem* item = session->entityForUUID(uid);
     std::cout << "Item " << item << " deleted. Was " << uid << "\n";
+    session->untrackEntity(uid);
     }
 
   Session* session;
@@ -156,9 +157,11 @@ Session::Session()
 Session::~Session()
 {
   // Remove any observers on model items that this session added:
-  std::map<smtk::common::UUID,vtkModelItem*>::iterator mit;
+  std::map<smtk::common::UUID, vtkWeakPointer<vtkModelItem> >::iterator mit;
   for (mit = this->m_itemsToRefs.begin(); mit != this->m_itemsToRefs.end(); ++mit)
     {
+    if(!mit->second)
+      continue;
     vtkInformation* mp = mit->second->GetProperties();
     mp->RemoveObserver(this->m_itemWatcher);
     }
@@ -438,12 +441,18 @@ vtkModelItem* Session::entityForUUID(const smtk::common::UUID& uid)
   if (uid.isNull())
     return NULL;
 
-  std::map<smtk::common::UUID,vtkModelItem*>::const_iterator iref =
+  std::map<smtk::common::UUID,vtkWeakPointer<vtkModelItem> >::const_iterator iref =
     this->m_itemsToRefs.find(uid);
   if (iref == this->m_itemsToRefs.end())
     return NULL;
 
   return iref->second;
+}
+
+/// Erase the mapping from a UUID to a model entity.
+void Session::untrackEntity(const smtk::common::UUID& uid)
+{
+  this->m_itemsToRefs.erase(uid);
 }
 
 smtk::model::EntityRef Session::addCMBEntityToManager(
