@@ -1,120 +1,53 @@
 
 ##General##
 
-0. We need the concept of an entity, which is the superset of
-   cell types, points, mesh sets, dimensionality, etc. The entity concept
-   is how people query. While stuff like CellTraits are used by internal
-   containers ( or ripped out if required )
+1. Ability to get and set the names for meshCollections and specific meshes
 
-1. Organize the concept of cell types and querying by cell types. Something
-  like the following should be possible:
-```
-  collection.cells( smtk::mesh::Hexahedron );
-  meshset.cells( smtk::mesh::Hexahedron );
-```
-which means that we need the ability of cell types be derived from a common
-parent so that this is possible ( or use templates? ). I think using enums /
-flags is the best way for this, and than a Traits and CellTypes to convert
-from enum to concrete type
-
-2. We need to also expand the concepts to dimensionality. We should
-be able to do the following:
-```
-  collection.cells( smtk::mesh::Dims2 );
-  meshset.cells( smtk::mesh::Dims3 );
-```
-
-3. Ability to walk the mesh in some manner.
-
-
-4. Ability to get and set the names for meshCollections and specific meshes
-
-
-5. Ability to query Collection based on a UUID
+2. Ability to query for the connectivity of a meshset from a given dimension
+   to another dimension. This would return all the connectivity of
+   all elements of the given dimension to the requested dimension.
 
 ```
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  ...
-  smtk::mesh::CollectionPtr manager.collection( uuid_of_collection );
+  smtk::mesh::MeshSet ms;
+  smtk::mesh::MeshSet ms2d = ms.connectivity( smtk::mesh::Dims3,
+                                              smtk::mesh::Dims2);
 
 ```
 
-6. Ability to extract the shells for each region.
-   Most likely done by using the code written for the moab reader as options
-   on the collection.
+  We will also need to support the ability to create the connectivity
+  if it doesn't exist.
 
-7. Ability to do a union, intersect, and difference of meshsets.
 ```
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  ...
-  smtk::mesh::CollectionPtr collection = manager.collection( uuid_of_collection );
-  ...
-  smtk::mesh::MeshSet m2 = collection->meshes( smtk::mesh::Dims2 );
-  smtk::mesh::MeshSet m3 = collection->meshes( smtk::mesh::Dims3 );
+  smtk::mesh::MeshSet ms;
+  smtk::mesh::MeshSet ms2d = ms.createConnectivity( smtk::mesh::Dims3,
+                                                    smtk::mesh::Dims2);
 
-  smtk::mesh::MeshSet overlapping = smtk::mesh::set_intersect(m2,m3);
-  smtk::mesh::MeshSet not_overlapping = smtk::mesh::set_difference(m2,m3);
 ```
 
-8. Ability to do a union, intersect, and difference of cellsets.
-```
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  ...
-  smtk::mesh::CollectionPtr collection = manager.collection( uuid_of_collection );
-  ...
-  smtk::mesh::CellSet c2 = collection->cells( smtk::mesh::Dims2 );
-  smtk::mesh::CellSet c3 = collection->cells( smtk::mesh::Dims3 );
-
-  smtk::mesh::CellSet overlapping = smtk::mesh::set_intersect(c2,c3);
-  smtk::mesh::MeshSet not_overlapping = smtk::mesh::set_difference(c2,c3);
-```
-
-9. Ability to do intersection and difference of two distinct mesh or cell sets
- that share nothing in common but point coordinates ( aka topology ids ).
-
- The query will need to take in three input parameters. 1 and 2 are the sets
- to query against and the third is how we determine if a cell from set 2 is
- contained in set 1. Currently the two options are Partial Contained and
- Fully Contained, with the former meaning at least 1 point per cell needs to be
- in set 1 to be contained in the result, while the latter requires all points
- per cell.
-
- The reason for this functionality is the ability to find usages between
- two distinct sets. Say for example trying to find the lines from set b whose
- points are used by any triangle in set a. So in code it would look like:
-
- ```
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  ...
-  smtk::mesh::CollectionPtr collection = manager.collection( uuid_of_collection );
-  ...
-  smtk::mesh::CellSet c1 = collection->cells( smtk::mesh::Lines );
-  smtk::mesh::CellSet c2 = collection->cells( smtk::mesh::Triangles );
+3. Create easy to use Tags for Boundary, Dirichlet and Neumann sets with
+   a given value.
 
 
-  //overlapping now contains all cells from c1 that share any point with
-  //a cell from C2
-  smtk::mesh::CellSet overlapping = smtk::mesh::point_intersect(
-                            c2,c1, PartiallyContained );
+4. Add and Remove meshsets from a collection.
+
+5. Mark meshset(s) as being Boundary, Dirichlet or Neumann. Plus they can
+   have a value for that tag!.
+
+6. A MeshSet should be able to reports all the tags, and tag values that
+   mesh's inside of it have. You can have a meshset where some are Boundary
+   and some are Neumann. Should be able to extract all Boundary tagged meshes.
 
 
- ```
+##VTK DataSet to Mesh##
 
+1. We need to be able to convert a vtkPolyData to a smtk::mesh::MeshSet.
+
+2. We need to be able to convert a vtkUnstructuredGrid to a smtk::mesh::MeshSet.
 
 
 ##IO##
 
-1. We need the ability to read a moab dataset and construct a smtk::mesh
-from it. The code should roughly look like:
-
-```
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::common::UUID entity = smtk::io::ImportMesh::intoManager(file_path, manager);
-  smtk::mesh::CollectionPtr c = manager->collection( entity );
-
-```
-
-2. Like wise we will have to be save a dataset from the manager back
+1. Like wise we will have to be save a dataset from the manager back
 into moab.
 
 ```
@@ -130,7 +63,15 @@ into moab.
 ```
 
 
+##Extract Shell##
+
+1. Look at wrapping the ExtractSkin code in moab as an easy way to extract
+   the shell of volumetric mesh sets. This should easily work with the API
+   to add the new meshsets back to the Collection.
+
+
 ##Meshing to Mesh##
+
 
 Current goals of the system are:
 
@@ -186,18 +127,82 @@ Current goals of the system are:
                                                             smtk::mesh::Dim2 );
 ```
 
-##General Manager API examples##
+# Finished Tasks #
+
+1. Organize the concept of cell types and querying by cell types.
+```
+  collection.cells( smtk::mesh::Hexahedron );
+  meshset.cells( smtk::mesh::Hexahedron );
+```
+
+2. We need to be albe query based on dimensionality.
+```
+  collection.cells( smtk::mesh::Dims2 );
+  meshset.cells( smtk::mesh::Dims3 );
+```
+
+3. Ability to query Collection based on a UUID
 
 ```
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::common::uuid meshSetUUID = smtk::io::load_mesh(file_path, manager);
+  ...
+  smtk::mesh::CollectionPtr manager.collection( uuid_of_collection );
 
-  manager.numberOfCollections();
+```
 
-  smtk::mesh::CollectionPtr collection = manager.collection( meshSetUUID );
-
-  collection->numberOfMeshes();
-
+4. Ability to do a union, intersect, and difference of meshsets.
+```
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  ...
+  smtk::mesh::CollectionPtr collection = manager.collection( uuid_of_collection );
+  ...
   smtk::mesh::MeshSet m2 = collection->meshes( smtk::mesh::Dims2 );
   smtk::mesh::MeshSet m3 = collection->meshes( smtk::mesh::Dims3 );
+
+  smtk::mesh::MeshSet overlapping = smtk::mesh::set_intersect(m2,m3);
+  smtk::mesh::MeshSet not_overlapping = smtk::mesh::set_difference(m2,m3);
 ```
+
+5. Ability to do a union, intersect, and difference of cellsets.
+```
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  ...
+  smtk::mesh::CollectionPtr collection = manager.collection( uuid_of_collection );
+  ...
+  smtk::mesh::CellSet c2 = collection->cells( smtk::mesh::Dims2 );
+  smtk::mesh::CellSet c3 = collection->cells( smtk::mesh::Dims3 );
+
+  smtk::mesh::CellSet overlapping = smtk::mesh::set_intersect(c2,c3);
+  smtk::mesh::MeshSet not_overlapping = smtk::mesh::set_difference(c2,c3);
+```
+
+6. Ability to do intersection and difference of two distinct mesh or cell sets
+ that share nothing in common but point coordinates ( aka topology ids ).
+
+ The query will need to take in three input parameters. 1 and 2 are the sets
+ to query against and the third is how we determine if a cell from set 2 is
+ contained in set 1. Currently the two options are Partial Contained and
+ Fully Contained, with the former meaning at least 1 point per cell needs to be
+ in set 1 to be contained in the result, while the latter requires all points
+ per cell.
+
+ The reason for this functionality is the ability to find usages between
+ two distinct sets. Say for example trying to find the lines from set b whose
+ points are used by any triangle in set a. So in code it would look like:
+
+ ```
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  ...
+  smtk::mesh::CollectionPtr collection = manager.collection( uuid_of_collection );
+  ...
+  smtk::mesh::CellSet c1 = collection->cells( smtk::mesh::Lines );
+  smtk::mesh::CellSet c2 = collection->cells( smtk::mesh::Triangles );
+
+
+  //overlapping now contains all cells from c1 that share any point with
+  //a cell from C2
+  smtk::mesh::CellSet overlapping = smtk::mesh::point_intersect(
+                            c2,c1, PartiallyContained );
+
+
+ ```

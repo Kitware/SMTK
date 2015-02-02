@@ -77,6 +77,11 @@ public:
   smtk::mesh::MeshSet   meshes( ); //all meshes
   smtk::mesh::CellSet   cells( ); //all cells
   smtk::mesh::Points    points( ); //all points
+
+  //todo:
+  //find all cells of a given dimension that are attached to ?
+  //smtk::mesh::CellSet   connectivity( smtk::mesh::DimensionType dim );
+
   smtk::mesh::PointConnectivity pointConnectivity( ); //all point connectivity info for all cells
 
   //For any mesh set that has a name we return that name. It is possible
