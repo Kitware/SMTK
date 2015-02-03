@@ -1549,9 +1549,9 @@ std::string Manager::shortUUIDName(const UUID& uid, BitFlags entityFlags)
 }
 
 /// Return a list of the names of each session subclass whose constructor has been registered with SMTK.
-StringList Manager::sessionNames()
+StringList Manager::sessionTypeNames()
 {
-  return SessionRegistrar::sessionNames();
+  return SessionRegistrar::sessionTypeNames();
 }
 
 /// Return the list of file types this session can read (currently: a list of file extensions).
@@ -1569,6 +1569,14 @@ StringData Manager::sessionFileTypes(const std::string& bname, const std::string
 SessionPtr Manager::createSessionOfType(const std::string& bname)
 {
   return SessionRegistrar::createSession(bname);
+}
+
+/**\brief Convenience method to create a session without specifying a session ID.
+  *
+  */
+SessionRef Manager::createSession(const std::string& bname)
+{
+  return this->createSession(bname, SessionRef());
 }
 
 /**\brief Create a session, optionally forcing a session ID and/or

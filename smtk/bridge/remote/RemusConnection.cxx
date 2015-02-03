@@ -132,7 +132,7 @@ bool RemusConnection::connectToServer(const std::string& hostname, int port)
 }
 
 /// Return the list of sessions available on the server (not the local modelManager()'s list).
-std::vector<std::string> RemusConnection::sessionNames()
+std::vector<std::string> RemusConnection::sessionTypeNames()
 {
   std::vector<std::string> resultVec;
   if (this->m_remoteSessionNameToType.empty())
@@ -183,7 +183,7 @@ int RemusConnection::staticSetup(
   const std::string& optName,
   const smtk::model::StringList& optVal)
 {
-  (void) this->sessionNames(); // ensure that we've fetched the session names from the server.
+  (void) this->sessionTypeNames(); // ensure that we've fetched the session names from the server.
   if (this->m_remoteSessionNameToType.find(sessionName) == this->m_remoteSessionNameToType.end())
     return 0;
 
@@ -222,7 +222,7 @@ int RemusConnection::staticSetup(
   */
 UUID RemusConnection::beginSession(const std::string& sessionName)
 {
-  (void) this->sessionNames(); // ensure that we've fetched the session names from the server.
+  (void) this->sessionTypeNames(); // ensure that we've fetched the session names from the server.
   if (this->m_remoteSessionNameToType.find(sessionName) == this->m_remoteSessionNameToType.end())
     return UUID::null();
 
@@ -410,7 +410,7 @@ smtk::model::OperatorResult RemusConnection::readFile(
   std::string actualSessionName;
   if (sessionName.empty())
     {
-    (void) this->sessionNames(); // ensure that we've fetched the session names from the server.
+    (void) this->sessionTypeNames(); // ensure that we've fetched the session names from the server.
     std::map<std::string,std::string>::const_iterator bnit;
     for (
       bnit = this->m_remoteSessionNameToType.begin();

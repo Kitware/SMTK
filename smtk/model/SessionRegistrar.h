@@ -98,7 +98,7 @@ public:
     const std::string& tags,
     SessionStaticSetup bsetup,
     SessionConstructor bctor);
-  static StringList sessionNames();
+  static StringList sessionTypeNames();
   static std::string sessionTags(const std::string& bname);
   static std::string sessionSite(const std::string& bname);
   static StringList sessionEngines(const std::string& bname);

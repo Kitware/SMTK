@@ -206,7 +206,7 @@ bool SessionRegistrar::registerSession(
 }
 
 /// Return a list of the names of each session subclass whose constructor has been registered with SMTK.
-StringList SessionRegistrar::sessionNames()
+StringList SessionRegistrar::sessionTypeNames()
 {
   StringList result;
   for (SessionConstructors::const_iterator it = s_sessions()->begin(); it != s_sessions()->end(); ++it)

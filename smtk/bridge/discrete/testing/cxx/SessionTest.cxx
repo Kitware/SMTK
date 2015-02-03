@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
   smtk::model::ManagerPtr manager = smtk::model::Manager::create();
 
   std::cout << "Available sessions\n";
-  StringList sessions = manager->sessionNames();
+  StringList sessions = manager->sessionTypeNames();
   for (StringList::iterator it = sessions.begin(); it != sessions.end(); ++it)
     std::cout << "  " << *it << "\n";
   std::cout << "\n";

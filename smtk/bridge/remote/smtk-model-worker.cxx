@@ -113,7 +113,7 @@ int usage(
 
   // II. List available modeling kernels.
   std::cout << "Valid <kern> values are:\n";
-  StringList allKernels = smtk::model::SessionRegistrar::sessionNames();
+  StringList allKernels = smtk::model::SessionRegistrar::sessionTypeNames();
   for (StringList::iterator kit = allKernels.begin(); kit != allKernels.end(); ++kit)
     if (*kit != "native") // Do not allow "native" unbacked models, for now.
       std::cout << "  " << *kit << "\n";

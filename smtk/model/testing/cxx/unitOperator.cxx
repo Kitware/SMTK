@@ -79,7 +79,7 @@ void testSessionList(Manager::Ptr manager)
     << manager->sessionForModel(smtk::common::UUID::null())->name()
     << "\"\n";
   std::cout << "Available sessions\n";
-  StringList sessions = manager->sessionNames();
+  StringList sessions = manager->sessionTypeNames();
   for (StringList::iterator it = sessions.begin(); it != sessions.end(); ++it)
     std::cout << "  " << *it << "\n";
   std::cout << "\n";

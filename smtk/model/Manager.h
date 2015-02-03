@@ -188,12 +188,13 @@ public:
   std::string assignDefaultName(const smtk::common::UUID& uid);
   static std::string shortUUIDName(const smtk::common::UUID& uid, BitFlags entityFlags);
 
-  static StringList sessionNames();
-  static StringData sessionFileTypes(const std::string& bname, const std::string& engine = std::string());
-  static SessionPtr createSessionOfType(const std::string& bname);
+  static StringList sessionTypeNames();
+  static StringData sessionFileTypes(const std::string& sname, const std::string& engine = std::string());
+  static SessionPtr createSessionOfType(const std::string& sname);
+  SessionRef createSession(const std::string& sname);
   SessionRef createSession(
-    const std::string& bname,
-    const smtk::model::SessionRef& sessionId = smtk::model::SessionRef());
+    const std::string& sname,
+    const smtk::model::SessionRef& sessionIdSpecifier);
   void closeSession(const SessionRef& sess);
 
   SessionRef registerSession(SessionPtr session);

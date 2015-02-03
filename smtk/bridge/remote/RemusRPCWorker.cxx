@@ -177,9 +177,9 @@ void RemusRPCWorker::processJob(
       //smtkDebugMacro(this->manager()->log(), "  " << methStr);
       if (methStr == "search-sessions")
         {
-        smtk::model::StringList sessionNames = this->m_modelMgr->sessionNames();
+        smtk::model::StringList sessionTypeNames = this->m_modelMgr->sessionTypeNames();
         cJSON_AddItemToObject(result, "result",
-          smtk::io::ExportJSON::createStringArray(sessionNames));
+          smtk::io::ExportJSON::createStringArray(sessionTypeNames));
         }
       else if (methStr == "session-filetypes")
         {
@@ -210,8 +210,8 @@ void RemusRPCWorker::processJob(
         }
       else if (methStr == "create-session")
         {
-        smtk::model::StringList sessionNames = this->m_modelMgr->sessionNames();
-        std::set<std::string> sessionSet(sessionNames.begin(), sessionNames.end());
+        smtk::model::StringList sessionTypeNames = this->m_modelMgr->sessionTypeNames();
+        std::set<std::string> sessionSet(sessionTypeNames.begin(), sessionTypeNames.end());
         cJSON* bname;
         if (
           !param ||

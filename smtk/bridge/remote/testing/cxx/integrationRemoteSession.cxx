@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
     }
 
   std::vector<std::string> opnames;
-  std::vector<std::string> bnames = bconn->sessionNames();
+  std::vector<std::string> bnames = bconn->sessionTypeNames();
   std::vector<std::string>::const_iterator strit;
   std::cout << "Session names available:\n";
   for (strit = bnames.begin(); strit != bnames.end(); ++strit)

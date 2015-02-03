@@ -83,7 +83,7 @@ public:
   bool connectToServer(const std::string& hostname, int port);
 #endif
 
-  std::vector<std::string> sessionNames();
+  std::vector<std::string> sessionTypeNames();
 
   int staticSetup(
     const std::string& sessionName,
