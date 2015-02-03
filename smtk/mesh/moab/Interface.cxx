@@ -109,7 +109,7 @@ smtk::mesh::Handle Interface::get_root()
 smtk::mesh::HandleRange Interface::get_meshsets(smtk::mesh::Handle handle)
 
 {
-  ::moab::Range range;
+  smtk::mesh::HandleRange range;
   m_iface->get_entities_by_type(handle, ::moab::MBENTITYSET, range);
   return range;
 }
@@ -119,8 +119,8 @@ smtk::mesh::HandleRange Interface::get_meshsets(smtk::mesh::Handle handle,
                                                 int dimension)
 
 {
-  ::moab::Range all_meshes_with_dim_tag;
-  ::moab::Range meshes_of_proper_dim;
+  smtk::mesh::HandleRange all_meshes_with_dim_tag;
+  smtk::mesh::HandleRange meshes_of_proper_dim;
 
   //construct a dim tag that matches the dimension coming in
   tag::QueryDimTag dimTag(dimension, this->moabInterface());
@@ -133,7 +133,7 @@ smtk::mesh::HandleRange Interface::get_meshsets(smtk::mesh::Handle handle,
                                       1,
                                       all_meshes_with_dim_tag);
 
-  typedef ::moab::Range::const_iterator iterator;
+  typedef smtk::mesh::HandleRange::const_iterator iterator;
   for(iterator i=all_meshes_with_dim_tag.begin();
       i != all_meshes_with_dim_tag.end(); ++i)
     {
@@ -191,8 +191,8 @@ smtk::mesh::HandleRange Interface::get_cells(smtk::mesh::HandleRange meshsets)
 
 {
   // get all non-meshset entities in meshset, including in contained meshsets
-  typedef ::moab::Range::const_iterator iterator;
-  ::moab::Range entitiesCells;
+  typedef smtk::mesh::HandleRange::const_iterator iterator;
+  smtk::mesh::HandleRange entitiesCells;
   for(iterator i = meshsets.begin(); i != meshsets.end(); ++i)
     {
     //get_entities_by_handle appends to the range given
@@ -209,10 +209,10 @@ smtk::mesh::HandleRange Interface::get_cells(smtk::mesh::HandleRange meshsets,
 {
   int moabCellType = smtk::mesh::moab::smtkToMOABCell(cellType);
 
-  ::moab::Range entitiesCells;
+  smtk::mesh::HandleRange entitiesCells;
 
   // get all non-meshset entities in meshset of a given cell type
-  typedef ::moab::Range::const_iterator iterator;
+  typedef smtk::mesh::HandleRange::const_iterator iterator;
   for(iterator i = meshsets.begin(); i != meshsets.end(); ++i)
     {
     //get_entities_by_type appends to the range given
@@ -244,7 +244,7 @@ smtk::mesh::HandleRange Interface::get_cells(smtk::mesh::HandleRange meshsets,
   //we now search from highest cell type to lowest cell type adding everything
   //to the range. The reason for this is that ranges perform best when inserting
   //from high to low values
-  ::moab::Range entitiesCells;
+  smtk::mesh::HandleRange entitiesCells;
   for(int i = (cellTypes.size() -1); i >= 0; --i )
     {
     //skip all cell types we don't have
@@ -253,7 +253,7 @@ smtk::mesh::HandleRange Interface::get_cells(smtk::mesh::HandleRange meshsets,
 
     smtk::mesh::CellType currentCellType = static_cast<smtk::mesh::CellType>(i);
 
-    ::moab::Range cellEnts = this->get_cells(meshsets, currentCellType);
+    smtk::mesh::HandleRange cellEnts = this->get_cells(meshsets, currentCellType);
 
     entitiesCells.insert(cellEnts.begin(), cellEnts.end());
     }
@@ -270,8 +270,8 @@ smtk::mesh::HandleRange Interface::get_cells(smtk::mesh::HandleRange meshsets,
   const int dimension = static_cast<int>(dim);
 
   //get all non-meshset entities of a given dimension
-  typedef ::moab::Range::const_iterator iterator;
-  ::moab::Range entitiesCells;
+  typedef smtk::mesh::HandleRange::const_iterator iterator;
+  smtk::mesh::HandleRange entitiesCells;
   for(iterator i = meshsets.begin(); i != meshsets.end(); ++i)
     {
     //get_entities_by_dimension appends to the range given
@@ -287,7 +287,7 @@ std::vector< std::string > Interface::compute_names(const smtk::mesh::HandleRang
   //construct a name tag query helper class
   tag::QueryNameTag query_name(this->moabInterface());
 
-  typedef ::moab::Range::const_iterator it;
+  typedef smtk::mesh::HandleRange::const_iterator it;
   std::set< std::string > unique_names;
   for(it i = r.begin(); i != r.end(); ++i)
     {
@@ -367,7 +367,7 @@ smtk::mesh::HandleRange Interface::point_intersect(const smtk::mesh::HandleRange
     }
 
   //first get all the points of a
-  ::moab::Range a_points; m_iface->get_connectivity(a, a_points);
+  smtk::mesh::HandleRange a_points; m_iface->get_connectivity(a, a_points);
 
   //result storage for creating the range. This is used since inserting
   //into a range is horribly slow
@@ -379,7 +379,7 @@ smtk::mesh::HandleRange Interface::point_intersect(const smtk::mesh::HandleRange
   //an explicit connectivity list for us.
   std::vector< ::moab::EntityHandle > storage;
 
-  typedef ::moab::Range::const_iterator c_it;
+  typedef smtk::mesh::HandleRange::const_iterator c_it;
   for(c_it i = b.begin(); i != b.end(); ++i)
     {
     const ::moab::EntityHandle* connectivity; //handle back to node list
@@ -397,8 +397,8 @@ smtk::mesh::HandleRange Interface::point_intersect(const smtk::mesh::HandleRange
     }
 
   //now that we have all the cells that are the partial intersection
-  ::moab::Range resulting_range;
-  ::moab::Range::iterator hint = resulting_range.begin();
+  smtk::mesh::HandleRange resulting_range;
+  smtk::mesh::HandleRange::iterator hint = resulting_range.begin();
 
   const std::size_t size = vresult.size();
   for(std::size_t i = 0; i < size;)
@@ -429,7 +429,7 @@ smtk::mesh::HandleRange Interface::point_difference(const smtk::mesh::HandleRang
     }
 
   //first get all the points of a
-  ::moab::Range a_points; m_iface->get_connectivity(a, a_points);
+  smtk::mesh::HandleRange a_points; m_iface->get_connectivity(a, a_points);
 
   //result storage for creating the range. This is used since inserting
   //into a range is horribly slow
@@ -441,7 +441,7 @@ smtk::mesh::HandleRange Interface::point_difference(const smtk::mesh::HandleRang
   //an explicit connectivity list for us.
   std::vector< ::moab::EntityHandle > storage;
 
-  typedef ::moab::Range::const_iterator c_it;
+  typedef smtk::mesh::HandleRange::const_iterator c_it;
   for(c_it i = b.begin(); i != b.end(); ++i)
     {
     const ::moab::EntityHandle* connectivity; //handle back to node list
@@ -460,8 +460,8 @@ smtk::mesh::HandleRange Interface::point_difference(const smtk::mesh::HandleRang
     }
 
   //now that we have all the cells that are the partial intersection
-  ::moab::Range resulting_range;
-  ::moab::Range::iterator hint = resulting_range.begin();
+  smtk::mesh::HandleRange resulting_range;
+  smtk::mesh::HandleRange::iterator hint = resulting_range.begin();
 
   const std::size_t size = vresult.size();
   for(std::size_t i = 0; i < size;)
