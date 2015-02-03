@@ -57,11 +57,12 @@ Manager::Manager() :
   m_floatData(new UUIDsToFloatData),
   m_stringData(new UUIDsToStringData),
   m_integerData(new UUIDsToIntegerData),
-  m_globalCounters(2,1), // first entry is session counter, second is model counter
   m_arrangements(new UUIDsToArrangements),
   m_tessellations(new UUIDsToTessellations),
   m_attributeAssignments(new UUIDsToAttributeAssignments),
-  m_attributeSystem(NULL)
+  m_sessions(new UUIDsToSessions),
+  m_attributeSystem(NULL),
+  m_globalCounters(2,1) // first entry is session counter, second is model counter
 {
   // TODO: throw() when topology == NULL?
 }
@@ -77,10 +78,12 @@ Manager::Manager(
     m_floatData(new UUIDsToFloatData),
     m_stringData(new UUIDsToStringData),
     m_integerData(new UUIDsToIntegerData),
-    m_globalCounters(2,1), // first entry is session counter, second is model counter
     m_arrangements(inArrangements),
-    m_tessellations(tess), m_attributeAssignments(attribs),
-    m_attributeSystem(NULL)
+    m_tessellations(tess),
+    m_attributeAssignments(attribs),
+    m_sessions(new UUIDsToSessions),
+    m_attributeSystem(NULL),
+    m_globalCounters(2,1) // first entry is session counter, second is model counter
 {
 }
 
@@ -1559,6 +1562,9 @@ StringData Manager::sessionFileTypes(const std::string& bname, const std::string
 
 /**\brief Create a session given the type of session to construct.
   *
+  * \warning This creates a Session instance without a matching Entity record!
+  *          use this method with care; you most probably want createSession
+  *          instead.
   */
 SessionPtr Manager::createSessionOfType(const std::string& bname)
 {
@@ -1569,38 +1575,41 @@ SessionPtr Manager::createSessionOfType(const std::string& bname)
   *       registering it with this manager instance.
   *
   */
-SessionPtr Manager::createAndRegisterSession(
+SessionRef Manager::createSession(
   const std::string& bname,
-  const UUID& sessionId)
+  const smtk::model::SessionRef& sessionIdSpec)
 {
+  if (sessionIdSpec.isValid() && this->sessionData(sessionIdSpec))
+    return sessionIdSpec; // Hrm, the specified session already exists...
+
   SessionPtr result = Manager::createSessionOfType(bname);
   if (result)
     {
-    result->setManager(this);
-    if (sessionId)
-      result->setSessionId(sessionId);
-    this->registerSession(result);
+    if (!sessionIdSpec.entity().isNull())
+      result->setSessionId(sessionIdSpec.entity());
+    return this->registerSession(result); // will call result->setManager(this);
     }
-  return result;
+
+  smtkInfoMacro(this->m_log, "Could not create \"" << bname << "\" session.");
+  return SessionRef();
 }
 
 /// Mark the start of a modeling session by registering the \a session with SMTK backing storage.
-bool Manager::registerSession(SessionPtr session)
+SessionRef Manager::registerSession(SessionPtr session)
 {
   if (!session)
-    return false;
+    return SessionRef();
 
   UUID sessId = session->sessionId();
   if (sessId.isNull())
-    return false;
+    return SessionRef();
 
-  this->m_sessions[sessId] = session;
+  (*this->m_sessions)[sessId] = session;
   Manager::iter_type brec =
     this->setEntityOfTypeAndDimension(sessId, SESSION, -1);
-  (void)brec;
 
   session->setManager(this);
-  return true;
+  return SessionRef(shared_from_this(), brec->first);
 }
 
 /**\brief Mark the end of a modeling session by removing its \a session.
@@ -1621,57 +1630,30 @@ bool Manager::unregisterSession(SessionPtr session, bool expungeSession)
     this->erase(sessId);
     }
   else
-    { // Only remove the session's entity record.
+    {
+    // Remove the session's entity record, properties, and such, but not
+    // records, properties, etc. for entities the session owns.
     this->m_topology->erase(sessId);
+    this->m_floatData->erase(sessId);
+    this->m_stringData->erase(sessId);
+    this->m_integerData->erase(sessId);
+    this->m_arrangements->erase(sessId);
+    this->m_tessellations->erase(sessId);
+    this->m_attributeAssignments->erase(sessId);
     }
-  return this->m_sessions.erase(sessId) ? true : false;
+  return this->m_sessions->erase(sessId) ? true : false;
 }
 
 /// Find a session given its session UUID (or NULL).
-SessionPtr Manager::findSession(const UUID& sessId) const
+SessionPtr Manager::sessionData(const smtk::model::SessionRef& sessId) const
 {
-  UUIDsToSessions::const_iterator it = this->m_sessions.find(sessId);
-  if (it == this->m_sessions.end())
+  if (sessId.entity().isNull())
+    return this->m_defaultSession;
+
+  UUIDsToSessions::const_iterator it = this->m_sessions->find(sessId.entity());
+  if (it == this->m_sessions->end())
     return SessionPtr();
   return it->second;
-}
-
-/**\brief Return a list of session IDs.
-  *
-  * The identifiers are used by remote SMTK sessions to link models and operators
-  * to specific modeling sessions on the process where the data has been loaded.
-  *
-  * These can be passed to Manager::findSession() to retrieve the Session.
-  */
-UUIDs Manager::sessions() const
-{
-  UUIDs result;
-  UUIDsToSessions::const_iterator it;
-  for (it = this->m_sessions.begin(); it != this->m_sessions.end(); ++it)
-    {
-    result.insert(it->first);
-    }
-  return result;
-}
-
-/**\brief Return the set of models attached to the given session \a sessionId.
-  *
-  * Currently this is not an efficient query when the number of models is large.
-  * It could be accelerated by storing the inverse map of m_modelSessions.
-  */
-smtk::common::UUIDs Manager::modelsOfSession(const smtk::common::UUID& sessionId) const
-{
-  smtk::common::UUIDs modelSet;
-  SessionPtr session = this->findSession(sessionId);
-  if (!session)
-    return modelSet;
-  UUIDsToSessions::const_iterator it;
-  for (it = this->m_modelSessions.begin(); it != this->m_modelSessions.end(); ++it)
-    {
-    if (it->second == session)
-      modelSet.insert(it->first);
-    }
-  return modelSet;
 }
 
 /// Return a reference to the \a modelId's counter array associated with the given \a entityFlags.
@@ -3278,17 +3260,6 @@ Instance Manager::addInstance(const EntityRef& object)
 }
 //@}
 
-/**\brief Create a session session given a "type" name.
-  *
-  */
-SessionRef Manager::createSession(const std::string& sessionName)
-{
-  // NB: The SessionRef constructor calls registerSessionRef for us:
-  return SessionRef(
-    shared_from_this(),
-    Manager::createSessionOfType(sessionName));
-}
-
 /**\brief Unregister a session session from the model manager.
   *
   */
@@ -3304,11 +3275,11 @@ void Manager::closeSession(const SessionRef& sess)
 /**\brief Return an array of all the session sessions this manager owns.
   *
   */
-SessionRefs Manager::allSessions() const
+SessionRefs Manager::sessions() const
 {
   SessionRefs result;
   UUIDsToSessions::const_iterator it;
-  for (it = this->m_sessions.begin(); it != this->m_sessions.end(); ++it)
+  for (it = this->m_sessions->begin(); it != this->m_sessions->end(); ++it)
     result.push_back(
       SessionRef(
         smtk::const_pointer_cast<Manager>(shared_from_this()),

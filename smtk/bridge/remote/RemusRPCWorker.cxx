@@ -359,8 +359,10 @@ void RemusRPCWorker::processJob(
         else
           {
           smtk::model::SessionPtr session =
-            this->m_modelMgr->findSession(
-              smtk::common::UUID(bsess->valuestring));
+            SessionRef(
+              this->m_modelMgr,
+              smtk::common::UUID(bsess->valuestring)
+            ).session();
           if (!session)
             {
             this->generateError(result, "No session with given session ID.", reqIdStr);

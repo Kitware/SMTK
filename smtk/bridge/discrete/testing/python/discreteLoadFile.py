@@ -16,20 +16,20 @@ import sys
 import smtk
 
 mgr = smtk.model.Manager.create()
-sess = mgr.createSession('discrete')
-brg = sess.session() # smtk.model.Manager.createSession('cgm')
-sess.assignDefaultName()
+sref = mgr.createSession('discrete', smtk.model.SessionRef())
+sess = sref.session() # smtk.model.Manager.createSession('cgm', smtk.model.SessionRef())
+sref.assignDefaultName()
 print '\n\n%s: type "%s" %s %s' % \
-  (sess.name(), brg.name(), sess.flagSummary(0), brg.sessionId())
-print '  Site: %s' % (sess.site() or 'local')
-for eng in sess.engines():
+  (sref.name(), sess.name(), sref.flagSummary(0), sess.sessionId())
+print '  Site: %s' % (sref.site() or 'local')
+for eng in sref.engines():
   print '  Engine %s filetypes:\n    %s' % \
-    (eng, '\n    '.join(sess.fileTypes(eng)))
+    (eng, '\n    '.join(sref.fileTypes(eng)))
 print 'Operators:\n  '
-print '\n  '.join(sess.operatorNames())
+print '\n  '.join(sref.operatorNames())
 print '\n'
 
-rdr = sess.op('read')
+rdr = sref.op('read')
 rdr.findAsFile('filename').setValue(os.path.join(sys.argv[1], 'cmb', 'test2D.cmb'))
 res = rdr.operate()
 mod = smtk.model.Model(res.findModelEntity('entities').value(0))

@@ -289,8 +289,8 @@ int main()
     smtk::model::Manager::Ptr localMgr = smtk::model::Manager::create();
 
     // The default session of the "remote" manager:
-    Session::Ptr remoteSession = remoteMgr->createAndRegisterSession("native");
-    SessionRef remoteSess(remoteMgr, remoteSession->sessionId());
+    SessionRef remoteSess = remoteMgr->createSession("native");
+    Session::Ptr remoteSession = remoteSess.session();
     remoteSess.setName("remote session");
     printSessionOperatorNames(remoteSess, "remote");
 

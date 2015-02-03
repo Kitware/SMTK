@@ -10,7 +10,7 @@
 #ifndef __smtk_model_SessionRef_h
 #define __smtk_model_SessionRef_h
 
-#include "smtk/model/Manager.h"
+#include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/EntityRefArrangementOps.h" // for templated methods
 
@@ -52,20 +52,7 @@ public:
 template<typename T>
 T SessionRef::models() const
 {
-  T container;
-  ManagerPtr mgr = this->m_manager.lock();
-  if (!mgr || !this->m_entity)
-    return container;
-
-  smtk::common::UUIDs mids = mgr->modelsOfSession(this->m_entity);
-  smtk::common::UUIDs::iterator it;
-  for (it = mids.begin(); it != mids.end(); ++it)
-    {
-    typename T::value_type entry(mgr, *it);
-    if (entry.isValid())
-      container.insert(container.end(), entry);
-    }
-  return container;
+  return this->relationsAs<T>();
 }
 
 template<typename T>

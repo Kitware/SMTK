@@ -461,7 +461,7 @@ void qtModelView::operatorInvoked()
 
   smtk::model::QEntityItemModel* qmodel = this->getModel();
   smtk::model::SessionPtr session =
-    qmodel->manager()->findSession(sessId);
+    smtk::model::SessionRef(qmodel->manager(), sessId).session();
   if (!session)
     {
     std::cout << "No session available from session: \"" << sessId.toString() << "\"\n";
@@ -550,15 +550,15 @@ QDockWidget* qtModelView::operatorsDock(
 //----------------------------------------------------------------------------
 OperatorPtr qtModelView::getSetPropertyOp(const QModelIndex& idx)
 {
-  smtk::model::SessionRef brsession = this->getSessionRef(idx);
-  if(!brsession.isValid())
+  smtk::model::SessionRef sref = this->getSessionRef(idx);
+  if(!sref.isValid())
     {
     std::cerr
       << "Could not find session session!\n";
     return OperatorPtr();
     }
   // create SetProperty op
-  smtk::model::SessionPtr session = brsession.session();
+  smtk::model::SessionPtr session = sref.session();
   return this->getSetPropertyOp(session);
 }
 

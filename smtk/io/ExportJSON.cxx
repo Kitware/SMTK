@@ -240,10 +240,10 @@ int ExportJSON::forManager(
 
   if (sections & JSON_SESSIONS)
     {
-    smtk::common::UUIDs sessions = modelMgr->sessions();
-    for (smtk::common::UUIDs::iterator bit = sessions.begin(); bit != sessions.end(); ++bit)
+    smtk::model::SessionRefs sessions = modelMgr->sessions();
+    for (smtk::model::SessionRefs::iterator bit = sessions.begin(); bit != sessions.end(); ++bit)
       {
-      status &= ExportJSON::forManagerSession(*bit, sess, modelMgr);
+      status &= ExportJSON::forManagerSession(bit->entity(), sess, modelMgr);
       }
     }
   return status;
@@ -412,13 +412,13 @@ int ExportJSON::forManagerIntegerProperties(const smtk::common::UUID& uid, cJSON
 int ExportJSON::forManagerSession(const smtk::common::UUID& uid, cJSON* node, ManagerPtr modelMgr)
 {
   int status = 1;
-  SessionPtr session = modelMgr->findSession(uid);
+  SessionPtr session = SessionRef(modelMgr, uid).session();
   if (!session)
     return status;
 
   cJSON* sess = cJSON_CreateObject();
   cJSON_AddItemToObject(node, uid.toString().c_str(), sess);
-  cJSON_AddStringToObject(sess, "type", "session-session");
+  cJSON_AddStringToObject(sess, "type", "session");
   cJSON_AddStringToObject(sess, "name", session->name().c_str());
   SessionIOJSONPtr delegate =
     smtk::dynamic_pointer_cast<SessionIOJSON>(
@@ -503,7 +503,7 @@ int ExportJSON::forDanglingEntities(const smtk::common::UUID& sessionId, cJSON* 
 {
   if (!modelMgr || !node || node->type != cJSON_Object)
     return 0;
-  SessionPtr session = modelMgr->findSession(sessionId);
+  SessionPtr session = SessionRef(modelMgr, sessionId).session();
   if (!session)
     return 0;
 

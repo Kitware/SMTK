@@ -23,7 +23,7 @@ print 'Loading %s' % model_path
 
 status = 0
 mgr = smtk.model.Manager.create()
-session = mgr.createAndRegisterSession('native', uuid4())
+session = mgr.createSession('native', smtk.model.SessionRef())
 json = None
 with open(model_path, 'r') as f:
   json = f.read()

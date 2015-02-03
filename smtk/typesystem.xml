@@ -117,11 +117,12 @@
   <suppress-warning text="skipping function 'smtk::model::Manager::insertEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::removeEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::elideEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
-  <suppress-warning text="skipping field 'Manager::m_topology' with unmatched type 'shared_ptr&lt;UUIDsToEntities&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_topology' with unmatched type 'smtk::shared_ptr&lt;UUIDsToEntities&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::Manager', unmatched parameter type 'shared_ptr&lt;UUIDsToEntities&gt;'"/>
-  <suppress-warning text="skipping field 'Manager::m_tessellations' with unmatched type 'shared_ptr&lt;UUIDsToTessellations&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_tessellations' with unmatched type 'smtk::shared_ptr&lt;UUIDsToTessellations&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_sessions' with unmatched type 'smtk::shared_ptr&lt;UUIDsToSessions&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::Manager', unmatched parameter type 'shared_ptr&lt;smtk::model::Manager::storage_type&gt;'"/>
-  <suppress-warning text="skipping field 'Manager::m_arrangements' with unmatched type 'shared_ptr&lt;UUIDsToArrangements&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_arrangements' with unmatched type 'smtk::shared_ptr&lt;UUIDsToArrangements&gt;'"/>
   <suppress-warning text="skipping field 'UUIDGenerator::P' with unmatched type 'Internal'"/>
   <suppress-warning text="skipping field 'Manager::m_modelSessions' with unmatched type 'std::map&lt;smtk::common::UUID,SessionPtr&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::assignDefaultNamesWithOwner', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
@@ -143,7 +144,7 @@
   <suppress-warning text="skipping function 'smtk::model::Manager::integerPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithIntegerProperties const'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::integerPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithIntegerProperties'"/>
 
-  <suppress-warning text="skipping field 'Manager::m_attributeAssignments' with unmatched type 'shared_ptr&lt;UUIDsToAttributeAssignments&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_attributeAssignments' with unmatched type 'smtk::shared_ptr&lt;UUIDsToAttributeAssignments&gt;'"/>
 
   <!-- ignore shadowing/hiding of EntityRef::isValid() as it is intentional -->
   <suppress-warning text="hiding of function 'isValid' in class 'SessionRef'"/>

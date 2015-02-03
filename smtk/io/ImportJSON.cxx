@@ -763,11 +763,11 @@ int ImportJSON::ofLocalSession(cJSON* node, ManagerPtr context)
     !opsObj->valuestring[0])
     return status;
 
-  Session::Ptr session =
-    context->createAndRegisterSession(
-      nameObj->valuestring,
-      smtk::common::UUID(node->string));
-  if (!session)
+  SessionRef sref(context, smtk::common::UUID(node->string));
+  sref =
+    context->createSession(
+      nameObj->valuestring, sref);
+  if (!sref.isValid())
     return status;
 
   // Ignore the XML definitions of the serialized session session;
@@ -780,7 +780,7 @@ int ImportJSON::ofLocalSession(cJSON* node, ManagerPtr context)
   // and load the corresponding native-kernel model files.
   SessionIOJSONPtr delegate =
     smtk::dynamic_pointer_cast<SessionIOJSON>(
-      session->createIODelegate("json"));
+      sref.session()->createIODelegate("json"));
   if (delegate)
     {
     status = delegate->importJSON(context, node);
@@ -826,7 +826,7 @@ int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
   DefaultSession::Ptr defSession;
   if (context)
     {
-    session = context->findSession(sessionId);
+    session = SessionRef(context, sessionId).session();
     defSession = smtk::dynamic_pointer_cast<DefaultSession>(session);
     }
 
@@ -901,7 +901,7 @@ int ImportJSON::ofDanglingEntities(cJSON* node, ManagerPtr context)
   smtk::common::UUID sessionId(sessId->valuestring);
   if (sessionId.isNull())
     return 0;
-  SessionPtr session = context->findSession(sessionId);
+  SessionPtr session = SessionRef(context, sessionId).session();
   if (!session)
     return 0;
 

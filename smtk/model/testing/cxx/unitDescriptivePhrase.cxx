@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
   sm->assignDefaultNames();
 
   sm->sessionForModel(UUID::null());
-  SessionRefs ents = sm->allSessions();
+  SessionRefs ents = sm->sessions();
   std::cout << ents.size() << " session sessions.\n";
   test(ents.size() == 1, "Expected a single session session.");
 

@@ -213,7 +213,7 @@ std::string EntityRef::flagSummary(int form) const
       // additional information for some objects.
       if (ent->entityFlags() & SESSION)
         {
-        Session::Ptr brdg = mgr->findSession(this->m_entity);
+        Session::Ptr brdg = mgr->sessionData(*this);
         if (brdg)
           {
           // if this is a DefaultSession and there is a remote session name, display that;

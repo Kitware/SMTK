@@ -307,7 +307,7 @@ bool RemusConnection::endSession(const UUID& sessionId)
     return false;
 
   // Unhook our local cmbForwardingSession representing the remote.
-  smtk::model::Session::Ptr sessionBase = this->m_modelMgr->findSession(sessionId);
+  smtk::model::Session::Ptr sessionBase = SessionRef(this->m_modelMgr, sessionId).session();
   Session::Ptr session = smtk::dynamic_pointer_cast<Session>(sessionBase);
   if (session)
     {
@@ -333,7 +333,7 @@ bool RemusConnection::endSession(const UUID& sessionId)
 Session::Ptr RemusConnection::findSession(
   const smtk::common::UUID& sessionId)
 {
-  smtk::model::Session::Ptr sess = this->m_modelMgr->findSession(sessionId);
+  smtk::model::Session::Ptr sess = SessionRef(this->m_modelMgr, sessionId).session();
   return smtk::dynamic_pointer_cast<Session>(sess);
 }
 
@@ -450,9 +450,10 @@ smtk::model::OperatorResult RemusConnection::readFile(
   if (!session)
     { // No existing session of that type. Create a new remote session.
     UUID sessionId = this->beginSession(actualSessionName);
+
     session =
       smtk::dynamic_pointer_cast<Session>(
-        this->m_modelMgr->findSession(sessionId));
+        SessionRef(this->m_modelMgr, sessionId).session());
     }
   if (!session)
     {
@@ -669,7 +670,7 @@ Session::Ptr RemusConnection::findSessionForRemusType(
     {
     if (bit->second == rtype)
       {
-      smtk::model::Session::Ptr sessionBase = this->m_modelMgr->findSession(bit->first);
+      smtk::model::Session::Ptr sessionBase = SessionRef(this->m_modelMgr, bit->first).session();
       session = smtk::dynamic_pointer_cast<Session>(sessionBase);
       if (session)
         {

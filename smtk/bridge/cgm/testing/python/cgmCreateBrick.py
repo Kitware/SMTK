@@ -12,10 +12,9 @@
 #=============================================================================
 import smtk
 mgr = smtk.model.Manager.create()
-sess = mgr.createSession('cgm')
-brg = sess.session()
+sref = mgr.createSession('cgm', smtk.model.SessionRef())
 
-cb = sess.op('create brick')
+cb = sref.op('create brick')
 ov = cb.findAsInt('construction method')
 ov.setDiscreteIndex(0)
 ctr = cb.findAsDouble('center')
@@ -48,13 +47,13 @@ sumCond(ov,1)
 r2 = cb.operate()
 b2 = r2.findModelEntity('entities').value(0)
 
-uop = sess.op('union')
+uop = sref.op('union')
 uop.associateEntity(brick)
 uop.associateEntity(b2)
 r3 = uop.operate()
 ubod = r3.findModelEntity('entities').value(0)
 
-top = sess.op('translate')
+top = sref.op('translate')
 top.associateEntity(ubod)
 off = top.findAsDouble('offset')
 setAxis(off, [8., 3., 7.])

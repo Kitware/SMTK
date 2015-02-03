@@ -10,8 +10,6 @@
 #ifndef __smtk_model_Manager_h
 #define __smtk_model_Manager_h
 
-#include "smtk/model/Manager.h"
-
 #include "smtk/Options.h" // for SMTK_HASH_STORAGE
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
@@ -26,6 +24,7 @@
 #include "smtk/model/IntegerData.h"
 #include "smtk/model/PropertyType.h"
 #include "smtk/model/Session.h"
+#include "smtk/model/SessionRef.h"
 #include "smtk/model/StringData.h"
 #include "smtk/model/Tessellation.h"
 
@@ -192,15 +191,16 @@ public:
   static StringList sessionNames();
   static StringData sessionFileTypes(const std::string& bname, const std::string& engine = std::string());
   static SessionPtr createSessionOfType(const std::string& bname);
-  SessionPtr createAndRegisterSession(
+  SessionRef createSession(
     const std::string& bname,
-    const smtk::common::UUID& sessionId = smtk::common::UUID::null());
+    const smtk::model::SessionRef& sessionId = smtk::model::SessionRef());
+  void closeSession(const SessionRef& sess);
 
-  bool registerSession(SessionPtr session);
+  SessionRef registerSession(SessionPtr session);
   bool unregisterSession(SessionPtr session, bool expungeSession = true);
-  SessionPtr findSession(const smtk::common::UUID& sessionId) const;
-  smtk::common::UUIDs sessions() const;
-  smtk::common::UUIDs modelsOfSession(const smtk::common::UUID& sessionId) const;
+  SessionPtr sessionData(const smtk::model::SessionRef& sessRef) const;
+  SessionRefs sessions() const;
+
   EntityRefArray findEntitiesByProperty(const std::string& pname, Integer pval);
   EntityRefArray findEntitiesByProperty(const std::string& pname, Float pval);
   EntityRefArray findEntitiesByProperty(const std::string& pname, const std::string& pval);
@@ -336,10 +336,6 @@ public:
   Instance addInstance();
   Instance addInstance(const EntityRef& instanceOf);
 
-  SessionRef createSession(const std::string& sessionName);
-  void closeSession(const SessionRef& sess);
-  SessionRefs allSessions() const;
-
   void observe(ManagerEventType event, ConditionCallback functionHandle, void* callData);
   void observe(ManagerEventType event, OneToOneCallback functionHandle, void* callData);
   void observe(ManagerEventType event, OneToManyCallback functionHandle, void* callData);
@@ -366,22 +362,28 @@ protected:
   void prepareForEntity(std::pair<smtk::common::UUID,Entity>& entry);
   bool setAttributeSystem(smtk::attribute::System* sys, bool reverse = true);
 
-  shared_ptr<UUIDsToEntities> m_topology;
+  // Below are all the different things that can be mapped to a UUID:
+  smtk::shared_ptr<UUIDsToEntities> m_topology;
   smtk::shared_ptr<UUIDsToFloatData> m_floatData;
   smtk::shared_ptr<UUIDsToStringData> m_stringData;
   smtk::shared_ptr<UUIDsToIntegerData> m_integerData;
-  UUIDsToSessions m_modelSessions;
+  smtk::shared_ptr<UUIDsToArrangements> m_arrangements;
+  smtk::shared_ptr<UUIDsToTessellations> m_tessellations;
+  smtk::shared_ptr<UUIDsToAttributeAssignments> m_attributeAssignments;
+  smtk::shared_ptr<UUIDsToSessions> m_sessions;
+
+  smtk::attribute::System* m_attributeSystem; // Attribute systems may own a model
+
+  UUIDsToSessions m_modelSessions; // model UUIDs->Session instances. Kill me when sessions have Entity records.
   smtk::shared_ptr<Session> m_defaultSession;
-  UUIDsToSessions m_sessions;
   smtk::common::UUIDGenerator m_uuidGenerator;
+
   IntegerList m_globalCounters; // first entry is session counter, second is model counter
+
   std::set<ConditionTrigger> m_conditionTriggers;
   std::set<OneToOneTrigger> m_oneToOneTriggers;
   std::set<OneToManyTrigger> m_oneToManyTriggers;
-  shared_ptr<UUIDsToArrangements> m_arrangements;
-  shared_ptr<UUIDsToTessellations> m_tessellations;
-  shared_ptr<UUIDsToAttributeAssignments> m_attributeAssignments;
-  smtk::attribute::System* m_attributeSystem;
+
   smtk::io::Logger m_log;
 };
 

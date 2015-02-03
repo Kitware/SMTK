@@ -12,8 +12,7 @@
 #=============================================================================
 import smtk
 mgr = smtk.model.Manager.create()
-sess = mgr.createSession('cgm')
-brg = sess.session()
+sref = mgr.createSession('cgm', smtk.model.SessionRef())
 
 def setCoord(x,v):
   for i in range(len(v)):
@@ -33,7 +32,7 @@ pcoords = [
     (1,0,0),
     (0,1,0),
     (0,0,1)]
-crv = sess.op('create vertex')
+crv = sref.op('create vertex')
 x = crv.findAsDouble('point')
 c = crv.findAsInt('color')
 c.setValue(0, 1)
@@ -49,7 +48,7 @@ epts = [
     (1,3),
     (2,3)]
 
-cre = sess.op('create edge')
+cre = sref.op('create edge')
 t = cre.findAsInt('curve type')
 t.setValue(0,6) # 6 == line segment
 v = cre.findAsModel('vertices')
@@ -71,7 +70,7 @@ fedg = [
     (16, 1, 5, 2)
     ]
 #   (16, 3, 5, 4) # <-- OpenCascade cannot infer that this face should be cylindrical
-crf = sess.op('create face')
+crf = sref.op('create face')
 t = crf.findAsInt('surface type')
 t.setValue(0, 12)
 e = crf.findAsModel('edges')

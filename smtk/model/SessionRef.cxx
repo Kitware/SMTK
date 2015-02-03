@@ -32,7 +32,7 @@ namespace smtk {
 SessionRef::SessionRef(ManagerPtr mgr, SessionPtr brdg)
   : EntityRef(mgr, brdg->sessionId())
 {
-  if (!!mgr && !mgr->findSession(brdg->sessionId()))
+  if (!!mgr && !mgr->sessionData(*this))
     mgr->registerSession(brdg);
 }
 
@@ -44,7 +44,7 @@ Session::Ptr SessionRef::session() const
   ManagerPtr mgr = this->m_manager.lock();
   if (!mgr || !this->m_entity)
     return Session::Ptr();
-  return mgr->findSession(this->m_entity);
+  return mgr->sessionData(*this);
 }
 
 /**\brief Return the list of operations this session supports.

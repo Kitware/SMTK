@@ -28,12 +28,11 @@ def setVector(ax,v):
 
 
 mgr = smtk.model.Manager.create()
-sess = mgr.createSession('cgm')
-brg = sess.session()
-sess.assignDefaultName()
+sref = mgr.createSession('cgm', smtk.model.SessionRef())
+sref.assignDefaultName()
 
-opnames = sess.operatorNames()
-cb = sess.op('create brick')
+opnames = sref.operatorNames()
+cb = sref.op('create brick')
 ov = cb.findAsInt('construction method')
 ov.setDiscreteIndex(0)
 cb.findAsDouble('width').setValue(0.5)
@@ -48,7 +47,7 @@ brick2 = r2.findModelEntity('entities').value(0)
 #print >> jsonFile, json
 #jsonFile.close()
 
-tr = sess.op('translate')
+tr = sref.op('translate')
 tr.associateEntity(brick2)
 off = tr.findAsDouble('offset')
 setVector(off, [.5, 0., 0.])
@@ -60,7 +59,7 @@ if not brick3 or brick3.entity() != brick2.entity():
   print "Expecting entities to match: %s != %s" % (brick2.entity(), brick3.entity())
   sys.exit(1)
 
-ro = sess.op('rotate')
+ro = sref.op('rotate')
 ro.associateEntity(brick3)
 ctr = ro.findAsDouble('center')
 axs = ro.findAsDouble('axis')
@@ -76,13 +75,13 @@ if not brick4 or brick4.entity() != brick3.entity():
   print "Expecting entities to match: %s != %s" % (brick3.entity(), brick4.entity())
   sys.exit(1)
 
-un = sess.op('union')
+un = sref.op('union')
 un.associateEntity(brick1)
 un.associateEntity(brick4)
 r5 = un.operate()
 brick5 = r5.findModelEntity('entities').value(0)
 
-sc = sess.op('scale')
+sc = sref.op('scale')
 sc.associateEntity(brick5)
 sc.findAsInt('scale factor type').setDiscreteIndex(0)
 sc.findAsDouble('scale factor').setValue(3.0)
@@ -96,5 +95,5 @@ brick6 = r6.findModelEntity('entities').value(0)
 
 #
 # Now verify that mgr.closeSession removes the entity record for the session.
-mgr.closeSession(sess)
-sys.exit(0 if sess.name() == ('invalid id ' + str(sess.entity())) else 1)
+mgr.closeSession(sref)
+sys.exit(0 if sref.name() == ('invalid id ' + str(sref.entity())) else 1)
