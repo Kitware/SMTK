@@ -42,8 +42,8 @@ target_include_directories(smtkCore
     $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>
 )
 target_link_libraries(smtkCore
-  LINK_PUBLIC cJSON
-  LINK_PRIVATE ${Boost_LIBRARIES} MOAB)
+  LINK_PUBLIC cJSON MOAB
+  LINK_PRIVATE ${Boost_LIBRARIES})
 
 target_include_directories(SMTKCore
   PRIVATE ${MOAB_INCLUDE_DIRS})
