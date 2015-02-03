@@ -17,6 +17,7 @@
 #include "smtk/mesh/ContainsFunctors.h"
 
 #include "smtk/mesh/moab/CellTypeToType.h"
+#include "smtk/mesh/moab/Allocator.h"
 
 #include "moab/Core.hpp"
 #include "moab/FileOptions.hpp"
@@ -59,7 +60,8 @@ smtk::mesh::moab::InterfacePtr extract_interface( const smtk::mesh::CollectionPt
 
 //----------------------------------------------------------------------------
 Interface::Interface():
-  m_iface( new ::moab::Core() )
+  m_iface( new ::moab::Core() ),
+  m_alloc( new smtk::mesh::moab::Allocator( this->m_iface.get() ) )
 {
 
 }
@@ -68,6 +70,11 @@ Interface::Interface():
 Interface::~Interface()
 {
 
+}
+//----------------------------------------------------------------------------
+smtk::mesh::AllocatorPtr Interface::allocator()
+{
+  return this->m_alloc;
 }
 
 //----------------------------------------------------------------------------
@@ -79,8 +86,8 @@ std::size_t Interface::numMeshes(smtk::mesh::Handle handle)
 }
 
 //----------------------------------------------------------------------------
-bool Interface::create_meshset(smtk::mesh::HandleRange cells,
-                               smtk::mesh::Handle& meshHandle)
+bool Interface::create_mesh(smtk::mesh::HandleRange cells,
+                            smtk::mesh::Handle& meshHandle)
 {
   const unsigned int options = 0;
   ::moab::ErrorCode rval = m_iface->create_meshset( options , meshHandle );

@@ -10,6 +10,7 @@ set(meshSrcs
   # Points.cxx
   # PointSet.cxx
   TypeSet.cxx
+  moab/Allocator.cxx
   moab/CellTypeToType.cxx
   moab/Interface.cxx
   moab/PointConnectivityStorage.cxx
@@ -36,6 +37,7 @@ set(meshHeaders
 
   #The only exposed backend headers are Interface currently
   moab/Interface.h
+  moab/Allocator.h
   )
 
 #install the headers

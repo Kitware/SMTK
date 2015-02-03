@@ -29,6 +29,28 @@ namespace mesh {
 struct ContainsFunctor;
 
 //----------------------------------------------------------------------------
+class SMTKCORE_EXPORT Allocator
+{
+public:
+  virtual  ~Allocator() {};
+
+  virtual bool allocatePoints( std::size_t numPointsToAlloc,
+                               smtk::mesh::Handle& firstVertexHandle,
+                               std::vector<double* >& coordinateMemory) = 0;
+
+  virtual bool allocateCells( smtk::mesh::CellType cellType,
+                              std::size_t numCellsToAlloc,
+                              int numVertsPerCell,
+                              smtk::mesh::HandleRange& createdCellIds,
+                              smtk::mesh::Handle* connectivityArray) = 0;
+
+  virtual bool connectivityModified( const smtk::mesh::HandleRange& cellsToUpdate,
+                                     int numVertsPerCell,
+                                     smtk::mesh::Handle* connectivityArray) = 0;
+
+};
+
+//----------------------------------------------------------------------------
 class SMTKCORE_EXPORT Interface
 {
 public:
@@ -36,20 +58,26 @@ public:
 
   virtual ~Interface() {};
 
-  virtual
-
   //----------------------------------------------------------------------------
-  virtual std::size_t numMeshes(smtk::mesh::Handle handle) = 0;
-
-  //----------------------------------------------------------------------------
-  //creates a meshset with no parent that contains the input cells.
-  //this function needs to be expanded to support parenting
-  //this function needs to be expanded to support adding tags to the meshset
-  virtual  bool create_meshset(smtk::mesh::HandleRange cells,
-                               smtk::mesh::Handle& meshHandle) = 0;
+  //get back a lightweight interface around allocating memory into the given
+  //interface. This is generally used to create new coordinates or cells that
+  //are than assigned to an existing mesh or new mesh
+  virtual smtk::mesh::AllocatorPtr allocator() = 0;
 
   //----------------------------------------------------------------------------
   virtual smtk::mesh::Handle get_root() = 0;
+
+  //----------------------------------------------------------------------------
+  //creates a mesh with that contains the input cells.
+  //the mesh will have the root as its parent.
+  //this function needs to be expanded to support parenting to other handles
+  //this function needs to be expanded to support adding tags to the mesh
+  virtual bool create_mesh(smtk::mesh::HandleRange cells,
+                           smtk::mesh::Handle& meshHandle) = 0;
+
+  //----------------------------------------------------------------------------
+  //the number of meshes that are children of this mesh.
+  virtual std::size_t numMeshes(smtk::mesh::Handle handle) = 0;
 
   //----------------------------------------------------------------------------
   virtual smtk::mesh::HandleRange get_meshsets(smtk::mesh::Handle handle) = 0;

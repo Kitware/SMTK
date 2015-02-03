@@ -59,17 +59,24 @@ public:
   virtual ~Interface();
 
   //----------------------------------------------------------------------------
-  std::size_t numMeshes(smtk::mesh::Handle handle);
-
-  //----------------------------------------------------------------------------
-  //creates a meshset with no parent that contains the input cells.
-  //this function needs to be expanded to support parenting
-  //this function needs to be expanded to support adding tags to the meshset
-  bool create_meshset(smtk::mesh::HandleRange cells,
-                      smtk::mesh::Handle& meshHandle);
+  //get back a lightweight interface around allocating memory into the given
+  //interface. This is generally used to create new coordinates or cells that
+  //are than assigned to an existing mesh or new mesh
+  smtk::mesh::AllocatorPtr allocator();
 
   //----------------------------------------------------------------------------
   smtk::mesh::Handle get_root();
+
+  //----------------------------------------------------------------------------
+  //creates a mesh with that contains the input cells.
+  //the mesh will have the root as its parent.
+  //this function needs to be expanded to support parenting to other handles
+  //this function needs to be expanded to support adding tags to the mesh
+  bool create_mesh(smtk::mesh::HandleRange cells,
+                   smtk::mesh::Handle& meshHandle);
+
+  //----------------------------------------------------------------------------
+  std::size_t numMeshes(smtk::mesh::Handle handle);
 
   //----------------------------------------------------------------------------
   smtk::mesh::HandleRange get_meshsets(smtk::mesh::Handle handle);
@@ -134,7 +141,7 @@ public:
 private:
   //holds a reference to the real moab interface
   smtk::shared_ptr< ::moab::Interface > m_iface;
-
+  smtk::mesh::AllocatorPtr m_alloc;
 };
 
 }
