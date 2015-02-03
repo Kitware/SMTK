@@ -53,9 +53,9 @@ smtk::model::OperatorResult Rotate::operateInternal()
   smtk::attribute::DoubleItemPtr axisItem = this->findDouble("axis");
   smtk::attribute::DoubleItemPtr angleItem = this->findDouble("angle");
 
-  ModelEntities bodiesIn = this->associatedEntitiesAs<ModelEntities>();
+  Models bodiesIn = this->associatedEntitiesAs<Models>();
 
-  ModelEntities::iterator it;
+  Models::iterator it;
   DLIList<RefEntity*> cgmEntitiesIn;
   DLIList<RefEntity*> cgmEntitiesOut;
   RefEntity* refEntity;

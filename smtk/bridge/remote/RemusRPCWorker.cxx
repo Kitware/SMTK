@@ -270,7 +270,7 @@ void RemusRPCWorker::processJob(
               cJSON_AddItemToObject(result, "result", sess);
 #if 0
               // Now redefine our worker to be a new one whose
-              // requirements include a tag for this session session.
+              // requirements include a tag for this session.
               // That way it can be singled out by the client that
               // initiated the session.
               r = make_JobRequirements(
@@ -295,7 +295,7 @@ void RemusRPCWorker::processJob(
       else if (methStr == "fetch-model")
         {
         cJSON* model = cJSON_CreateObject();
-        // Never include session session list or tessellation data
+        // Never include session list or tessellation data
         // Until someone makes us.
         smtk::io::ExportJSON::fromModelManager(model, this->m_modelMgr,
           static_cast<smtk::io::JSONFlags>(

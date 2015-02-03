@@ -198,7 +198,7 @@ bool SessionRegistrar::registerSession(
     { // unregister the session of the given name.
     s_sessions()->erase(bname);
     //std::cout << "Removing session " << bname << "\n";
-    // FIXME: We should ensure that no registered Session sessions are of type bname.
+    // FIXME: We should ensure that no registered sessions are of type bname.
     //        Presumably, by deleting all such sessions and removing their entities
     //        from storage.
     }

@@ -181,7 +181,7 @@ int main (int argc, char* argv[])
     }
   Model prism = result->findModelEntity("entities")->value();
 
-  ModelEntities operands;
+  Models operands;
   operands.push_back(sphere);
   operands.push_back(prism);
   SessionRef bs(mgr, brg->sessionId());

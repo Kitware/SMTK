@@ -278,32 +278,6 @@ vtkUnsignedIntArray* Session::retrieveUUIDs(
   return vuid;
 }
 
-smtk::common::UUID Session::ImportEntitiesFromFileNameIntoManager(
-  const std::string& filename,
-  const std::string& filetype,
-  smtk::model::ManagerPtr mgr)
-{
-  // Make sure that the session has a list of operators it can provide.
-
-  // TODO: Register an attribute type for UUID on CMB's models?
-  if (filetype != "cmb")
-    {
-    std::cerr << "Unsupported file type \"" << filetype << "\" (not \"cmb\").\n";
-    return smtk::common::UUID::null();
-    }
-
-  vtkNew<vtkDiscreteModelWrapper> mod;
-  vtkNew<vtkCMBModelReadOperator> rdr;
-  rdr->SetFileName(filename.c_str());
-  rdr->Operate(mod.GetPointer());
-  if (!rdr->GetOperateSucceeded())
-    {
-    std::cerr << "Could not read file \"" << filename << "\".\n";
-    return smtk::common::UUID::null();
-    }
-  return this->trackModel(mod.GetPointer(), filename, mgr);
-}
-
 int Session::ExportEntitiesToFileOfNameAndType(
   const std::vector<smtk::model::EntityRef>& entities,
   const std::string& filename,
@@ -381,7 +355,10 @@ smtk::common::UUID Session::trackModel(
   Session::s_modelRefsToIds[mod] = mid;
   this->m_itemsToRefs[mid] = dmod;
   Session::s_modelsToSessions[dmod] = shared_from_this();
-  mgr->setSessionForModel(shared_from_this(), mid);
+  smtk::model::Model smtkModel(mgr, mid);
+  smtkModel.setSession(
+    smtk::model::SessionRef(
+      mgr, this->sessionId()));
 
   // Now add the record to manager and assign the URL to
   // the model as a string property.

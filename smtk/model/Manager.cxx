@@ -196,9 +196,8 @@ bool Manager::erase(const UUID& uid)
   this->tessellations().erase(uid);
   this->attributeAssignments().erase(uid);
 
-  // TODO: If this entity is a model and has an entry in m_modelSessions,
-  //       we should verify that any submodels retain a reference to the
-  //       Session in m_modelSessions.
+  // TODO: If this entity is a model and has parents, we should make
+  //       the parent own the child models?
 
   // Before removing the entity, loop through its relations and
   // make sure none of them retain any references back to \a uid.
@@ -213,11 +212,11 @@ bool Manager::erase(const UUID& uid)
   this->m_integerData->erase(uid);
 
   // TODO: Notify model of entity removal?
+  //       Note this can be complicated because removal
+  //       of entities in the class destructor prevent us
+  //       from obtaining a shared pointer to the manager
+  //       to pass to any observers...
   this->m_topology->erase(uid);
-
-  // If the entity was a model, remove any session entry for it.
-  if (isModelEnt)
-    this->m_modelSessions.erase(uid);
 
   return true;
 }
@@ -254,8 +253,8 @@ bool Manager::eraseModel(const Model& model)
     this->erase(fit->entity());
     }
 
-  GroupEntities grps = model.groups();
-  for (GroupEntities::iterator git = grps.begin(); git != grps.end(); ++git)
+  Groups grps = model.groups();
+  for (Groups::iterator git = grps.begin(); git != grps.end(); ++git)
     {
     EntityRefs members = git->members<EntityRefs>();
     for (EntityRefs::iterator mit = members.begin(); mit != members.end(); ++mit)
@@ -772,7 +771,7 @@ const Entity* Manager::findEntity(const UUID& uid, bool trySessions) const
     if (trySessions)
       {
       UUIDsToSessions::iterator bit;
-      for (bit = self->m_modelSessions.begin(); bit != self->m_modelSessions.end(); ++bit)
+      for (bit = self->m_sessions->begin(); bit != self->m_sessions->end(); ++bit)
         {
         if (bit->second->transcribe(EntityRef(self, uid), SESSION_ENTITY_ARRANGED, true))
           {
@@ -796,7 +795,7 @@ Entity* Manager::findEntity(const UUID& uid, bool trySessions)
     if (trySessions && self)
       {
       UUIDsToSessions::iterator bit;
-      for (bit = self->m_modelSessions.begin(); bit != self->m_modelSessions.end(); ++bit)
+      for (bit = self->m_sessions->begin(); bit != self->m_sessions->end(); ++bit)
         {
         if (bit->second->transcribe(EntityRef(self, uid), SESSION_ENTITY_ARRANGED, true))
           {
@@ -1256,7 +1255,7 @@ UUID Manager::modelOwningEntity(const UUID& ent) const
         // Although const_pointer_cast is evil, changing the entityref classes
         // to accept any type of shared_ptr<X/X const> is more evil.
         ManagerPtr self = smtk::const_pointer_cast<Manager>(shared_from_this());
-        ModelEntities parents;
+        Models parents;
         EntityRefArrangementOps::appendAllRelations(Model(self,ent), EMBEDDED_IN, parents);
         if (!parents.empty())
           return parents[0].entity();
@@ -1294,57 +1293,6 @@ UUID Manager::modelOwningEntity(const UUID& ent) const
       }
     }
   return UUID::null();
-}
-
-/**\brief Return a session associated with the given model.
-  *
-  * Because modeling operations require access to the un-transcribed model
-  * and the original modeling kernel, operations are associated with the
-  * session that performs the transcription.
-  *
-  * \sa Session
-  */
-SessionPtr Manager::sessionForModel(const UUID& uid) const
-{
-  // See if the passed entity has a session.
-  UUIDsToSessions::const_iterator it = this->m_modelSessions.find(uid);
-  if (it != this->m_modelSessions.end())
-    return it->second;
-
-  // Nope? OK, see if we can go up a tree of models to find a
-  // parent that does have a session.
-  UUID entry(uid);
-  while (
-    (entry = this->modelOwningEntity(entry)) &&
-    ((it = this->m_modelSessions.find(entry)) == this->m_modelSessions.end()))
-    /* keep trying */
-    ;
-  if (it != this->m_modelSessions.end())
-    return it->second;
-
-  // Nope? Return the default session.
-  if (!this->m_defaultSession)
-    {
-    Manager* self = const_cast<Manager*>(this);
-    self->m_defaultSession = smtk::model::DefaultSession::create();
-    self->registerSession(self->m_defaultSession);
-    }
-  return this->m_defaultSession;
-}
-
-/**\brief Associate a session with the given model.
-  *
-  * The \a uid and all its children (excepting those which have their
-  * own session set) will be associated with the given \a session.
-  * If \a uid already had a session entry, it will be changed to the
-  * specified \a session.
-  *
-  * \sa Session
-  */
-void Manager::setSessionForModel(
-  SessionPtr session, const UUID& uid)
-{
-  this->m_modelSessions[uid] = session;
 }
 
 /**\brief Assign a string property named "name" to every entity without one.
@@ -3268,7 +3216,7 @@ Instance Manager::addInstance(const EntityRef& object)
 }
 //@}
 
-/**\brief Unregister a session session from the model manager.
+/**\brief Unregister a session from the model manager.
   *
   */
 void Manager::closeSession(const SessionRef& sess)
@@ -3280,7 +3228,7 @@ void Manager::closeSession(const SessionRef& sess)
     }
 }
 
-/**\brief Return an array of all the session sessions this manager owns.
+/**\brief Return an array of all the sessions this manager owns.
   *
   */
 SessionRefs Manager::sessions() const

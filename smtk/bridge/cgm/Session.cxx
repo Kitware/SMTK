@@ -12,8 +12,9 @@
 #include "smtk/bridge/cgm/TDUUID.h"
 
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Group.h"
+#include "smtk/model/SessionRef.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Group.h"
 #include "smtk/model/VolumeUse.h"
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/EdgeUse.h"
@@ -334,6 +335,9 @@ smtk::model::SessionInfoBits Session::addBodyToManager(
 
     if (requestedInfo & (smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS))
       {
+      // Tell the model its owning session is this instance:
+      mutableEntityRef.as<smtk::model::Model>().setSession(
+        smtk::model::SessionRef(this->manager(), this->sessionId()));
       // Add free cells, submodels, and groups.
       // Since CGM does not allow submodels, there's nothing to do for that.
       // However, we can see what groups *contain* this body.

@@ -260,7 +260,7 @@ int main(int argc, char* argv[])
       {
       return usage(logr, 1, "Remus worker filename not specifed or invalid.");
       }
-    // Create session session and serialize operators.
+    // Create session and serialize operators.
     smtk::model::Session::Ptr session = mgr->createSession(wkOpts.kernel()).session();
     if (!session)
       return usage(logr, 1, "Could not create session \"" + wkOpts.kernel() + "\"");

@@ -33,7 +33,7 @@ enum JSONFlags
 {
   JSON_NOTHING       = 0x00, //!< Export nothing.
   JSON_ENTITIES      = 0x01, //!< Export model-entity entries in Manager (not including tessellations or properties).
-  JSON_SESSIONS       = 0x02, //!< Export session sessions (i.e., session session IDs, the session type, and operators).
+  JSON_SESSIONS      = 0x02, //!< Export sessions (i.e., session IDs, the session type, and operators).
   JSON_TESSELLATIONS = 0x04, //!< Export tessellations of model-entity entries in the Manager.
   JSON_PROPERTIES    = 0x08, //!< Export string/float/integer properties of model-entity entries in the Manager.
   JSON_DEFAULT       = 0xff  //!< By default, export everything.

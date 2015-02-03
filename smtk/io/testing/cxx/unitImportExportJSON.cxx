@@ -135,7 +135,7 @@ int main(int argc, char* argv[])
   int status = 0;
   status |= ImportJSON::intoModelManager(data.c_str(), sm);
   status |= ExportJSON::fromModelManager(json, sm,
-    // Do not export session sessions; they will have different UUIDs
+    // Do not export sessions; they will have different UUIDs
     static_cast<JSONFlags>(JSON_ENTITIES | JSON_TESSELLATIONS | JSON_PROPERTIES));
 
   char* exported = cJSON_Print(json);
@@ -145,7 +145,7 @@ int main(int argc, char* argv[])
 
   status |= ImportJSON::intoModelManager(exported, sm2);
   status |= ExportJSON::fromModelManager(json, sm2,
-    // Do not export session sessions; they will have different UUIDs
+    // Do not export sessions; they will have different UUIDs
     static_cast<JSONFlags>(JSON_ENTITIES | JSON_TESSELLATIONS | JSON_PROPERTIES));
   char* exported2 = cJSON_Print(json);
 

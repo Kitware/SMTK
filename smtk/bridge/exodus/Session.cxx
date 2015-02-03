@@ -135,7 +135,9 @@ smtk::model::Model Session::addModel(
   smtk::model::Model result = this->toEntityRef(handle);
   this->m_revIdMap[result] = handle;
   this->transcribe(result, smtk::model::SESSION_EVERYTHING, false);
-  this->manager()->setSessionForModel(shared_from_this(), result.entity());
+  result.setSession(
+    smtk::model::SessionRef(
+      this->manager(), this->sessionId()));
   return result;
 }
 // -- 6 --

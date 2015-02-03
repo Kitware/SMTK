@@ -181,8 +181,6 @@ public:
   UUIDsToIntegerData const& integerProperties() const { return *this->m_integerData; }
 
   smtk::common::UUID modelOwningEntity(const smtk::common::UUID& uid) const;
-  SessionPtr sessionForModel(const smtk::common::UUID& uid) const;
-  void setSessionForModel(SessionPtr session, const smtk::common::UUID& uid);
 
   void assignDefaultNames();
   std::string assignDefaultName(const smtk::common::UUID& uid);
@@ -375,7 +373,6 @@ protected:
 
   smtk::attribute::System* m_attributeSystem; // Attribute systems may own a model
 
-  UUIDsToSessions m_modelSessions; // model UUIDs->Session instances. Kill me when sessions have Entity records.
   smtk::shared_ptr<Session> m_defaultSession;
   smtk::common::UUIDGenerator m_uuidGenerator;
 

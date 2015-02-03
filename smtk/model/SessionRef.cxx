@@ -23,7 +23,7 @@ namespace smtk {
 
 /**\brief Alternative constructor using session pointer instead of ID.
   *
-  * This constructor obtains the session session ID from the
+  * This constructor obtains the session ID from the
   * \a brdg object.
   *
   * This variant also ensures that the session is registered

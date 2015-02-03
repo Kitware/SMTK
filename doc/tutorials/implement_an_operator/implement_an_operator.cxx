@@ -84,8 +84,7 @@ smtkImplementsModelOperator(
 void testOperator(Model model)
 {
   // Get the default session for our model manager:
-  smtk::model::SessionPtr session =
-    model.manager()->sessionForModel(UUID::null());
+  smtk::model::SessionPtr session = model.session().session();
 
   // Ask the session to create an operator:
   ex::CounterOperator::Ptr op =
@@ -113,10 +112,12 @@ int main()
   int status = 0;
 
   Manager::Ptr manager = Manager::create();
+  SessionRef session = manager->createSession("native");
   UUIDArray uids = smtk::model::testing::createTet(manager);
 
   Model model = manager->addModel(3, 3, "TestModel");
   Volume tet = Volume(manager, uids[21]);
+  model.setSession(session);
   model.addCell(tet);
 
   try {

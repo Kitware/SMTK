@@ -52,9 +52,9 @@ smtk::model::OperatorResult Reflect::operateInternal()
   smtk::attribute::DoubleItemPtr basepointItem = this->findDouble("base point");
   smtk::attribute::DoubleItemPtr directionItem = this->findDouble("direction");
 
-  ModelEntities bodiesIn = this->associatedEntitiesAs<ModelEntities>();
+  Models bodiesIn = this->associatedEntitiesAs<Models>();
 
-  ModelEntities::iterator it;
+  Models::iterator it;
   DLIList<RefEntity*> cgmEntitiesIn;
   DLIList<RefEntity*> cgmEntitiesOut;
   RefEntity* refEntity;

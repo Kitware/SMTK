@@ -87,6 +87,8 @@ enum ManagerEventRelationType
   ENTITY_HAS_ATTRIBUTE,         //!< The entity is being associated/disassociated to/from an attribute.
 
   // Events affecting both Arrangement and Entity records (additions, removals, modifications of arrangements)
+  SESSION_INCLUDES_MODEL,       //!< The entity is a session with a child model
+
   MODEL_INCLUDES_FREE_CELL,     //!< The entity is a model with a free cell.
   MODEL_INCLUDES_FREE_USE,      //!< The entity is a model with a free use (not really sensical?).
   MODEL_INCLUDES_FREE_SHELL,    //!< The entity is a model with a free shell (not really sensical?).

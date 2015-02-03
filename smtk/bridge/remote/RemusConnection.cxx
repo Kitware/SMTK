@@ -253,7 +253,7 @@ UUID RemusConnection::beginSession(const std::string& sessionName)
     sessionObj->type != cJSON_Object ||
     !(sessionIdObj = sessionObj->child) ||
     sessionIdObj->type != cJSON_Object ||
-    // Does the first child have a valid name? (This is the session session ID)
+    // Does the first child have a valid name? (This is the session ID)
     !sessionIdObj->string ||
     !sessionIdObj->string[0] ||
     // Does the first child have fields "name" and "ops" of type String and Array?
@@ -396,7 +396,7 @@ StringData RemusConnection::supportedFileTypes(
   return resultMap;
 }
 
-/**\brief Read a file without requiring a pre-existing session session.
+/**\brief Read a file without requiring a pre-existing session.
   *
   * Some sessions (such as CGM) need a fileType to be specified.
   * You may leave it empty and hope the kernel will do its best
@@ -545,7 +545,8 @@ smtk::model::OperatorPtr RemusConnection::createOperator(
 void RemusConnection::fetchWholeModel(const UUID& modelId)
 {
   // Find session from modelId, then job requirements from session.
-  smtk::model::Session::Ptr sessionBase = this->m_modelMgr->sessionForModel(modelId);
+  smtk::model::SessionRef sref = smtk::model::Model(this->m_modelMgr, modelId).session();
+  smtk::model::Session::Ptr sessionBase = sref.session();
   Session::Ptr session = smtk::dynamic_pointer_cast<Session>(sessionBase);
   if (!session)
     return;

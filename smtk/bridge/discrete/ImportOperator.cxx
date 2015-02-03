@@ -17,9 +17,10 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
-#include "smtk/model/Operator.h"
-#include "smtk/model/Model.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/Model.h"
+#include "smtk/model/Operator.h"
+#include "smtk/model/SessionRef.h"
 
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkModelItem.h"
@@ -174,9 +175,10 @@ std::string json = smtk::io::ExportJSON::fromModelManager(this->manager());
     file.close();
 */
 
-  this->manager()->setSessionForModel(
-    this->session()->shared_from_this(),
-    modelId);
+  modelEntity.as<smtk::model::Model>().setSession(
+    smtk::model::SessionRef(
+      modelEntity.manager(),
+      this->session()->sessionId()));
 
   return result;
 }

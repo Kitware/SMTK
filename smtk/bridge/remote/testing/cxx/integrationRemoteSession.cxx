@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
   smtk::common::UUID sessionId = bconn->beginSession(sessionName);
   if (sessionId.isNull())
     {
-    std::cerr << "Null session session ID.\n";
+    std::cerr << "Null session ID.\n";
     return 8;
     }
   std::cout << "Started session " << sessionId.toString() << "\n";

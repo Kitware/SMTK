@@ -294,7 +294,7 @@ void qtModelView::addGroup(BitFlags flag, const std::string& name)
 {
   QEntityItemModel* qmodel = this->getModel();
   smtk::model::ManagerPtr pstore = qmodel->manager();
-  ModelEntities models;
+  Models models;
   smtk::model::EntityRef::EntityRefsFromUUIDs(
     models,
     pstore,
@@ -313,7 +313,7 @@ void qtModelView::removeSelected()
 {
   QEntityItemModel* qmodel = this->getModel();
   smtk::model::ManagerPtr pstore = qmodel->manager();
-  ModelEntities models;
+  Models models;
   smtk::model::EntityRef::EntityRefsFromUUIDs(
     models,
     pstore,
@@ -554,7 +554,7 @@ OperatorPtr qtModelView::getSetPropertyOp(const QModelIndex& idx)
   if(!sref.isValid())
     {
     std::cerr
-      << "Could not find session session!\n";
+      << "Could not find session!\n";
     return OperatorPtr();
     }
   // create SetProperty op

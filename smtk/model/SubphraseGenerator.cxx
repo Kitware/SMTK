@@ -202,14 +202,14 @@ void SubphraseGenerator::membersOfGroup(
 void SubphraseGenerator::freeSubmodelsOfModel(
   DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result)
 {
-  ModelEntities freeSubmodelsInModel = mod.submodels();
+  Models freeSubmodelsInModel = mod.submodels();
   addEntityPhrases(freeSubmodelsInModel, src, this->directLimit(), result);
 }
 
 void SubphraseGenerator::freeGroupsInModel(
   DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result)
 {
-  GroupEntities freeGroups = mod.groups();
+  Groups freeGroups = mod.groups();
   addEntityPhrases(freeGroups, src, this->directLimit(), result);
 }
 
@@ -237,7 +237,7 @@ void SubphraseGenerator::prototypeOfInstance(
 void SubphraseGenerator::modelsOfSession(
   DescriptivePhrase::Ptr src, const SessionRef& sess, DescriptivePhrases& result)
 {
-  ModelEntities modelsOf = sess.models<ModelEntities>();
+  Models modelsOf = sess.models<Models>();
   addEntityPhrases(modelsOf, src, this->directLimit(), result);
 }
 

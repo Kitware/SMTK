@@ -82,8 +82,8 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
   // The side and node sets now exist; go through
   // and use the Exodus reader's private information
   // to correct the property information.
-  GroupEntities groups = smtkModelOut.groups();
-  for (GroupEntities::iterator git = groups.begin(); git != groups.end(); ++git)
+  Groups groups = smtkModelOut.groups();
+  for (Groups::iterator git = groups.begin(); git != groups.end(); ++git)
     {
     int oid;
     EntityHandle handle = this->exodusHandle(*git);

@@ -17,7 +17,7 @@ namespace smtk {
   namespace model {
 
 class Group;
-typedef std::vector<Group> GroupEntities;
+typedef std::vector<Group> Groups;
 
 /**\brief A entityref subclass that provides methods specific to entity use records.
   *

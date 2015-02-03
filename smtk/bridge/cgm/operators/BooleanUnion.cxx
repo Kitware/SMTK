@@ -51,9 +51,9 @@ namespace smtk {
 smtk::model::OperatorResult BooleanUnion::operateInternal()
 {
   int keepInputs = this->findInt("keep inputs")->value();
-  ModelEntities bodiesIn = this->associatedEntitiesAs<ModelEntities>();
+  Models bodiesIn = this->associatedEntitiesAs<Models>();
 
-  ModelEntities::iterator it;
+  Models::iterator it;
   DLIList<Body*> cgmBodiesIn;
   DLIList<Body*> cgmBodiesOut;
   Body* cgmBody;

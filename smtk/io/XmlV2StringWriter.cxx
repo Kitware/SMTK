@@ -1502,11 +1502,11 @@ void XmlV2StringWriter::processModelInfo()
   smtk::model::ManagerPtr refManager = this->m_system.refModelManager();
   if(refManager)
   {
-    smtk::model::GroupEntities ge =
-        refManager->entitiesMatchingFlagsAs<smtk::model::GroupEntities>(
+    smtk::model::Groups ge =
+        refManager->entitiesMatchingFlagsAs<smtk::model::Groups>(
                                                     smtk::model::GROUP_ENTITY);
 
-    typedef smtk::model::GroupEntities::const_iterator group_iter;
+    typedef smtk::model::Groups::const_iterator group_iter;
     for(group_iter itemIt = ge.begin(); itemIt != ge.end(); ++itemIt)
       {
         xml_node gnode = modelInfo.append_child("GroupItem");

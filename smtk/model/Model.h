@@ -19,8 +19,8 @@ class CellEntity;
 class Group;
 class Model;
 typedef std::vector<CellEntity> CellEntities;
-typedef std::vector<Group> GroupEntities;
-typedef std::vector<Model> ModelEntities;
+typedef std::vector<Group> Groups;
+typedef std::vector<Model> Models;
 
 /**\brief A entityref subclass that provides methods specific to models.
   *
@@ -33,10 +33,12 @@ public:
   void setEmbeddingDimension(int dim);
 
   EntityRef parent() const;
+  SessionRef session() const;
+  void setSession(const SessionRef& sess);
 
   CellEntities cells() const;
-  GroupEntities groups() const;
-  ModelEntities submodels() const;
+  Groups groups() const;
+  Models submodels() const;
 
   Model& addCell(const CellEntity& c);
   Model& removeCell(const CellEntity& c);
@@ -54,10 +56,7 @@ public:
   template<typename T> Model& removeSubmodels(const T& container);
 
   OperatorPtr op(const std::string& operatorName) const;
-  //Operators operators() const;
   StringList operatorNames() const;
-
-  SessionPtr session() const;
 };
 
 /// Add all the free cells in \a container to this model.

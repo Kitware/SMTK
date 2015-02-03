@@ -84,7 +84,7 @@ void ModelBrowser::setup(
 void ModelBrowser::addGroup()
 {
   Group newGroup = this->m_manager->addGroup(0, "New Group");
-  ModelEntities models;
+  Models models;
   smtk::model::EntityRef::EntityRefsFromUUIDs(
     models,
     this->m_manager,
@@ -102,7 +102,7 @@ void ModelBrowser::addToGroup()
   QModelIndex qidx = this->m_p->modelTree->currentIndex();
   Group group;
   EntityRef item;
-  GroupEntities groups;
+  Groups groups;
   EntityRef::EntityRefsFromUUIDs(
     groups, this->m_manager, this->m_manager->entitiesMatchingFlags(smtk::model::GROUP_ENTITY));
   if (groups.empty())

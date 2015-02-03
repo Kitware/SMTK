@@ -17,6 +17,7 @@
 #include "smtk/attribute/IntItem.h"
 
 #include "smtk/model/Session.h"
+#include "smtk/model/SessionRef.h"
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
@@ -74,10 +75,6 @@ int DidOperateWatcher(OperatorEventType event, const Operator& op, OperatorResul
 
 void testSessionList(Manager::Ptr manager)
 {
-  std::cout
-    << "Default session is \""
-    << manager->sessionForModel(smtk::common::UUID::null())->name()
-    << "\"\n";
   std::cout << "Available sessions\n";
   StringList sessions = manager->sessionTypeNames();
   for (StringList::iterator it = sessions.begin(); it != sessions.end(); ++it)
@@ -139,10 +136,12 @@ std::string TestOutcomeOperator::className() const { return "TestOutcomeOperator
 
 void testExPostFactoOperatorRegistration(Manager::Ptr manager)
 {
+  // Add a default session.
+  smtk::model::SessionRef defSess = manager->createSession("native");
+
   typedef std::vector<smtk::attribute::DefinitionPtr> OpListType;
   // Add operator descriptions to the default session of our manager.
-  smtk::model::SessionPtr session =
-    manager->sessionForModel(smtk::common::UUID::null());
+  smtk::model::SessionPtr session = defSess.session();
   smtk::attribute::DefinitionPtr opBase =
     session->operatorSystem()->findDefinition("operator");
   OpListType origOpList;
@@ -176,7 +175,7 @@ void testExPostFactoOperatorRegistration(Manager::Ptr manager)
 void testOperatorOutcomes(Manager::Ptr manager)
 {
   TestOutcomeOperator::Ptr op = smtk::dynamic_pointer_cast<TestOutcomeOperator>(
-    manager->sessionForModel(smtk::common::UUID::null())->op("outcome test"));
+    manager->sessions().begin()->op("outcome test"));
 
   int shouldCancel = 1;
   int numberOfFailedOperations = 0;
@@ -221,6 +220,7 @@ void testSessionAssociation(Manager::Ptr manager)
 {
   // Test that operators added by previous tests still exist
   Model model = manager->addModel(3, 3, "Model Airplane");
+  model.setSession(*manager->sessions().begin());
   StringList modelOpNames = model.operatorNames();
   test(
     std::find(modelOpNames.begin(), modelOpNames.end(), "outcome test") !=
@@ -232,14 +232,14 @@ void testSessionAssociation(Manager::Ptr manager)
   test(op ? 1 : 0, "Model::op(\"outcome test\") returned a \"null\" shared pointer.");
 
   // Test Operator->Session association
-  test(op->session() == manager->sessionForModel(smtk::common::UUID::null()).get(),
+  test(op->session() == manager->sessions().begin()->session().get(),
     "Bad session reported by operator.");
 
   // Test Operator->Manager association
   test(op->manager() == manager, "Bad manager reported by operator.");
 
   // Test operatorNames()
-  StringList opNames = model.session()->operatorNames();
+  StringList opNames = model.session().operatorNames();
   std::cout << "Printing";
   printVec(opNames, "operator names", ',');
   std::cout << "\n";

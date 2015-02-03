@@ -139,7 +139,7 @@ void EntityRef::setDimensionBits(BitFlags dimBits)
   *
   * Unlike EntityRef::dimension(), this will always return a non-negative number
   * for valid cell, use, shell and model entities.
-  * It returns -1 for unpopulated groups with no members, instance entities, session sessions,
+  * It returns -1 for unpopulated groups with no members, instance entities, sessions,
   * and other entities with no dimension bits set.
   */
 int EntityRef::maxParametricDimension() const
@@ -1050,38 +1050,6 @@ std::size_t EntityRef::hash() const
   return result;
 }
 
-ManagerEventRelationType EntityRef::embeddingRelationType(const EntityRef& embedded) const
-{
-  ManagerEventRelationType reln = INVALID_RELATIONSHIP;
-
-  switch (this->entityFlags() & ENTITY_MASK)
-    {
-  case MODEL_ENTITY:
-    switch (embedded.entityFlags() & ENTITY_MASK)
-      {
-    case SHELL_ENTITY: reln = MODEL_INCLUDES_FREE_SHELL; break;
-    case CELL_ENTITY: reln = MODEL_INCLUDES_FREE_CELL; break;
-    case USE_ENTITY: reln = MODEL_INCLUDES_FREE_USE; break;
-      }
-    break;
-  case CELL_ENTITY:
-    switch (embedded.entityFlags() & ENTITY_MASK)
-      {
-    case CELL_ENTITY: reln = CELL_INCLUDES_CELL; break;
-      }
-    break;
-  case SHELL_ENTITY:
-    switch (embedded.entityFlags() & ENTITY_MASK)
-      {
-    case SHELL_ENTITY: reln = SHELL_INCLUDES_SHELL; break;
-    case USE_ENTITY: reln = SHELL_HAS_USE; break;
-      }
-    break;
-    }
-
-  return reln;
-}
-
 std::ostream& operator << (std::ostream& os, const EntityRef& c)
 {
   os << c.name();
@@ -1246,6 +1214,170 @@ bool EntityRef::removeProperty<FloatData>(const std::string& pname)
 template<>
 bool EntityRef::removeProperty<IntegerData>(const std::string& pname)
 { return this->removeIntegerProperty(pname); }
+
+/**\defgroup SetMembershipMethods Methods for managing superset/subset membership.
+  *\brief Primitive operations for subset/superset arrangements.
+  *
+  * These methods are intended to be used by subclasses such as Group and Model.
+  */
+///@{
+/**\brief Add an entity as a member of this entity without any membership constraint checks.
+  *
+  */
+EntityRef& EntityRef::addMemberEntity(const EntityRef& memberToAdd)
+{
+  ManagerPtr mgr = this->m_manager.lock();
+  ManagerEventType event = std::make_pair(ADD_EVENT, this->subsetRelationType(memberToAdd));
+  if (event.second != INVALID_RELATIONSHIP)
+    {
+    EntityRefArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, memberToAdd);
+    EntityRefArrangementOps::findOrAddSimpleRelationship(memberToAdd, SUBSET_OF, *this);
+    mgr->trigger(event, *this, memberToAdd);
+    }
+  return *this;
+}
+
+/**\brief Return true when this EntityRef has a SUPERSET_OF relationship with \a ent.
+  */
+bool EntityRef::isMember(EntityRef& ent) const
+{
+  return EntityRefArrangementOps::findSimpleRelationship(*this, SUPERSET_OF, ent) >= 0;
+}
+
+/**\brief Return the first entity that this EntityRef has a SUBSET_OF relationship with.
+  */
+EntityRef EntityRef::memberOf() const
+{
+  return EntityRefArrangementOps::firstRelation<EntityRef>(*this, SUBSET_OF);
+}
+
+/**\brief Remove the \a memberToRemove from this EntityRef.
+  *
+  * No membership constraint checks are performed.
+  */
+EntityRef& EntityRef::removeMemberEntity(const EntityRef& memberToRemove)
+{
+  int aidx = EntityRefArrangementOps::findSimpleRelationship(*this, SUPERSET_OF, memberToRemove);
+  return this->removeMemberEntity(aidx);
+}
+
+/**\brief Remove a member from this EntityRef given the index of its arrangement.
+  *
+  * No membership constraint checks are performed.
+  *
+  * Note that the \a indexOfArrangementToRemove is not an index into the Entity's
+  * relations, but an index into the Arrangement vector for the SUPERSET_OF relationship.
+  */
+EntityRef& EntityRef::removeMemberEntity(int indexOfArrangementToRemove)
+{
+  if (indexOfArrangementToRemove < 0)
+    return *this;
+
+  ManagerPtr mgr = this->m_manager.lock();
+  EntityRef memberToRemove = this->relationFromArrangement(SUPERSET_OF, indexOfArrangementToRemove, 0);
+  ManagerEventType event = std::make_pair(DEL_EVENT, this->embeddingRelationType(memberToRemove));
+  if (event.second != INVALID_RELATIONSHIP)
+    {
+    mgr->unarrangeEntity(this->m_entity, SUPERSET_OF, indexOfArrangementToRemove);
+    mgr->trigger(event, *this, memberToRemove);
+    }
+  return *this;
+}
+
+/**\brief Determine the nature of a SUPERSET_OF relationship.
+  *
+  * Given a SUPERSET_OF arrangement, use the types of the involved
+  * entities to determine the exact nature of the relationship.
+  * This is used by the event framework so that observers can watch
+  * for particular types of events.
+  */
+ManagerEventRelationType EntityRef::subsetRelationType(const EntityRef& member) const
+{
+  ManagerEventRelationType reln = INVALID_RELATIONSHIP;
+
+  switch (this->entityFlags() & ENTITY_MASK)
+    {
+  case SESSION:
+    switch (member.entityFlags() & ENTITY_MASK)
+      {
+    case MODEL_ENTITY: reln = SESSION_INCLUDES_MODEL; break;
+      }
+    break;
+  case MODEL_ENTITY:
+    switch (member.entityFlags() & ENTITY_MASK)
+      {
+    case MODEL_ENTITY: reln = MODEL_INCLUDES_MODEL; break;
+    case SHELL_ENTITY: reln = MODEL_INCLUDES_FREE_SHELL; break;
+    case CELL_ENTITY: reln = MODEL_INCLUDES_FREE_CELL; break;
+    case USE_ENTITY: reln = MODEL_INCLUDES_FREE_USE; break;
+      }
+    break;
+  case CELL_ENTITY:
+    switch (member.entityFlags() & ENTITY_MASK)
+      {
+    case CELL_ENTITY: reln = CELL_INCLUDES_CELL; break;
+      }
+    break;
+  case SHELL_ENTITY:
+    switch (member.entityFlags() & ENTITY_MASK)
+      {
+    case SHELL_ENTITY: reln = SHELL_INCLUDES_SHELL; break;
+    case USE_ENTITY: reln = SHELL_HAS_USE; break;
+      }
+    break;
+    }
+
+  return reln;
+}
+
+///@}
+
+/**\brief Determine the nature of an EMBEDDED_IN relationship.
+  *\ingroup embeddingMethods
+  *
+  * Given an EMBEDDED_IN arrangement, use the types of the involved
+  * entities to determine the exact nature of the relationship.
+  * This is used by the event framework so that observers can watch
+  * for particular types of events.
+  */
+ManagerEventRelationType EntityRef::embeddingRelationType(const EntityRef& embedded) const
+{
+  ManagerEventRelationType reln = INVALID_RELATIONSHIP;
+
+  switch (this->entityFlags() & ENTITY_MASK)
+    {
+  case SESSION:
+    switch (embedded.entityFlags() & ENTITY_MASK)
+      {
+    case MODEL_ENTITY: reln = SESSION_INCLUDES_MODEL; break;
+      }
+    break;
+  case MODEL_ENTITY:
+    switch (embedded.entityFlags() & ENTITY_MASK)
+      {
+    case MODEL_ENTITY: reln = MODEL_INCLUDES_MODEL; break;
+    case SHELL_ENTITY: reln = MODEL_INCLUDES_FREE_SHELL; break;
+    case CELL_ENTITY: reln = MODEL_INCLUDES_FREE_CELL; break;
+    case USE_ENTITY: reln = MODEL_INCLUDES_FREE_USE; break;
+      }
+    break;
+  case CELL_ENTITY:
+    switch (embedded.entityFlags() & ENTITY_MASK)
+      {
+    case CELL_ENTITY: reln = CELL_INCLUDES_CELL; break;
+      }
+    break;
+  case SHELL_ENTITY:
+    switch (embedded.entityFlags() & ENTITY_MASK)
+      {
+    case SHELL_ENTITY: reln = SHELL_INCLUDES_SHELL; break;
+    case USE_ENTITY: reln = SHELL_HAS_USE; break;
+      }
+    break;
+    }
+
+  return reln;
+}
 
   } // namespace model
 } // namespace smtk

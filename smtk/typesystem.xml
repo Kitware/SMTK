@@ -39,6 +39,8 @@
   <suppress-warning text="skipping function 'smtk::model::Group::members', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityRef::embedEntities', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityRef::instances', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::EntityRef::removeMemberEntities', unmatched parameter type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::EntityRef::addMemberEntities', unmatched parameter type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::Group::addEntities', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::addSubmodels', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityRef::relationsAs', unmatched return type 'T'"/>
@@ -124,7 +126,6 @@
   <suppress-warning text="skipping function 'smtk::model::Manager::Manager', unmatched parameter type 'shared_ptr&lt;smtk::model::Manager::storage_type&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_arrangements' with unmatched type 'smtk::shared_ptr&lt;UUIDsToArrangements&gt;'"/>
   <suppress-warning text="skipping field 'UUIDGenerator::P' with unmatched type 'Internal'"/>
-  <suppress-warning text="skipping field 'Manager::m_modelSessions' with unmatched type 'std::map&lt;smtk::common::UUID,SessionPtr&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::assignDefaultNamesWithOwner', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
 
   <!-- do not support input or output streams-->
@@ -330,11 +331,9 @@
   <suppress-warning text="skipping function 'smtk::io::AttributeReader::readContents', unmatched parameter type 'pugi::xml_node&amp;'" />
   <suppress-warning text="skipping function 'smtk::model::Session::createIODelegate', unmatched return type 'smtk::model::SessionIOPtr'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::findEntitiesByPropertyAs', unmatched return type 'Collection'"/>
-  <suppress-warning text="skipping field 'Manager::m_modelSessions' with unmatched type 'std::map&lt;smtk::common::UUID,smtk::shared_ptr&lt;Session&gt;&gt;'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::associations', unmatched return type 'smtk::attribute::ConstModelEntityItemPtr'"/>
 
   <!-- Ignore until we have time to support Operators -->
-  <suppress-warning text="skipping field 'Manager::m_modelSessions' with unmatched type 'std::map&lt;smtk::io::UUID,smtk::shared_ptr&lt;Session&gt;&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_defaultSession' with unmatched type 'smtk::shared_ptr&lt;Session&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::Manager::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Session::findOperatorXMLInternal', unmatched parameter type 'smtk::model::OperatorConstructors const*'"/>
@@ -1026,10 +1025,10 @@
         <add-function signature="models()" static="no"
           return-type="std::vector&lt;smtk::model::Model*&gt;">
           <inject-code>
-            smtk::model::ModelEntities tmp =
-              %CPPSELF-&gt;models&lt;smtk::model::ModelEntities&gt;();
+            smtk::model::Models tmp =
+              %CPPSELF-&gt;models&lt;smtk::model::Models&gt;();
             %RETURN_TYPE %0;
-            for (smtk::model::ModelEntities::iterator it = tmp.begin(); it != tmp.end(); ++it)
+            for (smtk::model::Models::iterator it = tmp.begin(); it != tmp.end(); ++it)
               %0.push_back(new smtk::model::Model(*it));
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
@@ -1153,9 +1152,9 @@
         <add-function signature="groups()" static="no"
           return-type="std::vector&lt;smtk::model::Group*&gt;">
           <inject-code>
-            smtk::model::GroupEntities tmp = %CPPSELF-&gt;groups();
+            smtk::model::Groups tmp = %CPPSELF-&gt;groups();
             %RETURN_TYPE %0;
-            for (smtk::model::GroupEntities::iterator it = tmp.begin(); it != tmp.end(); ++it)
+            for (smtk::model::Groups::iterator it = tmp.begin(); it != tmp.end(); ++it)
               %0.push_back(new smtk::model::Group(*it));
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
@@ -1163,9 +1162,9 @@
         <add-function signature="submodels()" static="no"
           return-type="std::vector&lt;smtk::model::Model*&gt;">
           <inject-code>
-            smtk::model::ModelEntities tmp = %CPPSELF-&gt;submodels();
+            smtk::model::Models tmp = %CPPSELF-&gt;submodels();
             %RETURN_TYPE %0;
-            for (smtk::model::ModelEntities::iterator it = tmp.begin(); it != tmp.end(); ++it)
+            for (smtk::model::Models::iterator it = tmp.begin(); it != tmp.end(); ++it)
               %0.push_back(new smtk::model::Model(*it));
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>

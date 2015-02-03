@@ -105,7 +105,7 @@ UUIDs and assigning it to the vtkInformation object on the dataset
 or filter.
 
 Although not required by this technique, you should be aware that you
-may store information about a particular session session instance in
+may store information about a particular session instance in
 an SMTK JSON file by subclassing the :smtk:`SessionIOJSON` class.
 
 .. _session-by-sequence:

@@ -1,1132 +1,1473 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with EazyDraw for Mac ( http://www.eazydraw.com/ ) -->
 
 <svg
-    version="1.1"
-    xmlns:dc="http://purl.org/dc/elements/1.1/"
-    xmlns:cc="http://creativecommons.org/ns#"
-    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    xmlns:svg="http://www.w3.org/2000/svg"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
-    xmlns="http://www.w3.org/2000/svg"
-    width="720"
-    height="945"
-    viewBox="0, 0, 576, 756"
-    preserveAspectRatio="none"
-    id="svg2">
-   <defs
-       id="defs_90929ACF">
-      <marker
-          orient="auto"
-          refX="0.0"
-          refY="0.0"
-          id="31A26F1F_end_arrow"
-          style="overflow:visible"
-          markerUnits="userSpaceOnUse">
-         <path
-             id="31A26F1F_end_arrow_path"
-             style="fill:#C0C0C0;fill-opacity:1;stroke:#C0C0C0;stroke-opacity:1;fill-rule:nonzero;stroke-linecap:square;stroke-linejoin:miter;stroke-width:0.25;stroke-miterlimit:10"
-             d="M0,0 L-7.517540966287,2.736161146605 L-7.517540966287,-2.736161146605 z"/>
-      </marker>
-      <filter
-          id="filter_0969281E"
-          width="1.405227661126"
-          height="1.268248453966"
-          x="-0.1"
-          y="-0.1">
-         <feGaussianBlur
-             id="filter_0969281E_blur"
-             in="SourceAlpha"
-             stdDeviation="3"
-             result="blur"/>
-         <feColorMatrix
-             id="filter_0969281E_ColorMatrix"
-             result="bluralpha"
-             type="matrix"
-             values="0 0 0 0.890644929847 0      0 0 0 0.890644929847 0      0 0 0 0.890644929847 0      0 0 0 1 0"/>
-         <feOffset
-             id="filter_0969281E_Offset"
-             in="bluralpha"
-             dx="1.348572206041"
-             dy="1.348572206041"
-             result="offsetBlur"/>
-         <feMerge
-             id="filter_0969281E_Merge">
-            <feMergeNode id="filter_0969281E_MergeNode_a" in="offsetBlur"/>
-            <feMergeNode id="filter_0969281E_MergeNode_b" in="SourceGraphic"/>
-         </feMerge>
-      </filter>
-      <marker
-          orient="auto"
-          refX="0.0"
-          refY="0.0"
-          id="562B6BFF_start_arrow"
-          style="overflow:visible"
-          markerUnits="userSpaceOnUse">
-         <path
-             id="562B6BFF_start_arrow_path"
-             style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1;fill-rule:nonzero;stroke-linecap:square;stroke-linejoin:miter;stroke-width:0.25;stroke-miterlimit:10"
-             d="M0.300961538462,3.715384615388 L-1.68065759926,3.715384615388 L-1.68065759926,-4.284615384612 L0.300961538462,-4.284615384612 z"/>
-      </marker>
-      <marker
-          orient="auto"
-          refX="0.0"
-          refY="0.0"
-          id="562B6BFF_end_arrow"
-          style="overflow:visible"
-          markerUnits="userSpaceOnUse">
-         <path
-             id="562B6BFF_end_arrow_path"
-             style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1;fill-rule:nonzero;stroke-linecap:square;stroke-linejoin:miter;stroke-width:0.25;stroke-miterlimit:10"
-             d="M0,0 L-7.517540966287,2.736161146605 L-7.517540966287,-2.736161146605 z"/>
-      </marker>
-      <marker
-          orient="auto"
-          refX="0.0"
-          refY="0.0"
-          id="DE6D2000_start_arrow"
-          style="overflow:visible"
-          markerUnits="userSpaceOnUse">
-         <path
-             id="DE6D2000_start_arrow_path"
-             style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1;fill-rule:nonzero;stroke-linecap:square;stroke-linejoin:miter;stroke-width:0.25;stroke-miterlimit:10"
-             d="M1.978365384613,3.560576923074 L-0.003253753108,3.560576923074 L-0.003253753108,-4.439423076926 L1.978365384613,-4.439423076926 z"/>
-      </marker>
-      <marker
-          orient="auto"
-          refX="0.0"
-          refY="0.0"
-          id="294AC513_start_arrow"
-          style="overflow:visible"
-          markerUnits="userSpaceOnUse">
-         <path
-             id="294AC513_start_arrow_path"
-             style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1;fill-rule:nonzero;stroke-linecap:square;stroke-linejoin:miter;stroke-width:0.25;stroke-miterlimit:10"
-             d="M1.876923076925,3.888942307691 L-0.104696060796,3.888942307691 L-0.104696060796,-4.111057692309 L1.876923076925,-4.111057692309 z"/>
-      </marker>
-      <marker
-          orient="auto"
-          refX="0.0"
-          refY="0.0"
-          id="2856A1A3_start_arrow"
-          style="overflow:visible"
-          markerUnits="userSpaceOnUse">
-         <path
-             id="2856A1A3_start_arrow_path"
-             style="fill:#B0B0B0;fill-opacity:1;stroke:#B0B0B0;stroke-opacity:1;fill-rule:nonzero;stroke-linecap:square;stroke-linejoin:miter;stroke-width:0.25;stroke-miterlimit:10"
-             d="M1.978365384613,3.560576923074 L-0.003253753108,3.560576923074 L-0.003253753108,-4.439423076926 L1.978365384613,-4.439423076926 z"/>
-      </marker>
-      <marker
-          orient="auto"
-          refX="0.0"
-          refY="0.0"
-          id="2856A1A3_end_arrow"
-          style="overflow:visible"
-          markerUnits="userSpaceOnUse">
-         <path
-             id="2856A1A3_end_arrow_path"
-             style="fill:#B0B0B0;fill-opacity:1;stroke:#B0B0B0;stroke-opacity:1;fill-rule:nonzero;stroke-linecap:square;stroke-linejoin:miter;stroke-width:0.25;stroke-miterlimit:10"
-             d="M0,0 L-7.517540966287,2.736161146605 L-7.517540966287,-2.736161146605 z"/>
-      </marker>
-   </defs>
-   <metadata
-       id="metadata7">
-      <rdf:RDF>
-         <cc:Work
-             rdf:about="">
-            <dc:format>image/svg+xml</dc:format>
-            <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-            <dc:title></dc:title>
-         </cc:Work>
-      </rdf:RDF>
-   </metadata>
-   <g
-       id="layer_Paper"
-       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1;fill-rule:nonzero;stroke-linecap:square;stroke-linejoin:miter;stroke-width:1;stroke-miterlimit:10">
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   width="720"
+   height="945"
+   viewBox="0, 0, 576, 756"
+   preserveAspectRatio="none"
+   id="svg2"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="entityref-classes-with-inheritance.svg">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1125"
+     inkscape:window-height="1112"
+     id="namedview4048"
+     showgrid="false"
+     inkscape:zoom="1.5005291"
+     inkscape:cx="470.90252"
+     inkscape:cy="452.62807"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer_Paper" />
+  <defs
+     id="defs_90929ACF">
+    <marker
+       orient="auto"
+       refX="0.0"
+       refY="0.0"
+       id="31A26F1F_end_arrow"
+       style="overflow:visible"
+       markerUnits="userSpaceOnUse">
       <path
-          style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
-          id="31A26F1F"
-          d="M311.46679215,175.149054324 C314.852702236,205.263513114 289.688736996,228.942679784 277.657020715,247.758538961 C240.0260657,318.271328467 246.121966955,435.33440471 247.165477273,577.147277256"/>
-      <text
-          id="0969281E"
-          style="fill:#D0D0D0;stroke:none"
-          font-family="Helvetica"
-          font-size="96"
-          font-weight="normal"
-          font-style="normal"
-          filter="url(#filter_0969281E)">
-         <tspan x="178.372599506" y="504.122721884">0</tspan>
-      </text>
-      <text
-          id="40761A1E"
-          style="fill:#D0D0D0;stroke:none"
-          font-family="Helvetica"
-          font-size="96"
-          font-weight="normal"
-          font-style="normal"
-          filter="url(#filter_0969281E)">
-         <tspan x="178.372599506" y="398.217894463">1</tspan>
-      </text>
-      <text
-          id="A2EE6A1E"
-          style="fill:#D0D0D0;stroke:none"
-          font-family="Helvetica"
-          font-size="96"
-          font-weight="normal"
-          font-style="normal"
-          filter="url(#filter_0969281E)">
-         <tspan x="178.372599506" y="292.313067042">2</tspan>
-      </text>
-      <text
-          id="EE92EA1E"
-          style="fill:#D0D0D0;stroke:none"
-          font-family="Helvetica"
-          font-size="96"
-          font-weight="normal"
-          font-style="normal"
-          filter="url(#filter_0969281E)">
-         <tspan x="178.372599506" y="196.035951205">3</tspan>
-      </text>
+         id="31A26F1F_end_arrow_path"
+         style="fill:#C0C0C0;fill-opacity:1;stroke:#C0C0C0;stroke-opacity:1;fill-rule:nonzero;stroke-linecap:square;stroke-linejoin:miter;stroke-width:0.25;stroke-miterlimit:10"
+         d="M0,0 L-7.517540966287,2.736161146605 L-7.517540966287,-2.736161146605 z" />
+    </marker>
+    <filter
+       id="filter_0969281E"
+       width="1.405227661126"
+       height="1.268248453966"
+       x="-0.1"
+       y="-0.1">
+      <feGaussianBlur
+         id="filter_0969281E_blur"
+         in="SourceAlpha"
+         stdDeviation="3"
+         result="blur" />
+      <feColorMatrix
+         id="filter_0969281E_ColorMatrix"
+         result="bluralpha"
+         type="matrix"
+         values="0 0 0 0.890644929847 0      0 0 0 0.890644929847 0      0 0 0 0.890644929847 0      0 0 0 1 0" />
+      <feOffset
+         id="filter_0969281E_Offset"
+         in="bluralpha"
+         dx="1.348572206041"
+         dy="1.348572206041"
+         result="offsetBlur" />
+      <feMerge
+         id="filter_0969281E_Merge">
+        <feMergeNode
+           id="filter_0969281E_MergeNode_a"
+           in="offsetBlur" />
+        <feMergeNode
+           id="filter_0969281E_MergeNode_b"
+           in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <marker
+       orient="auto"
+       refX="0.0"
+       refY="0.0"
+       id="562B6BFF_start_arrow"
+       style="overflow:visible"
+       markerUnits="userSpaceOnUse">
       <path
-          style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
-          id="EDBBE741"
-          d="M308.064037612,480.257895878 C312.694602304,510.869476379 289.753910089,505.08394445 270.785927361,511.74033192 C253.920186163,515.818785897 246.069541364,517.480862293 246.61963063,576.843011009"/>
+         id="562B6BFF_start_arrow_path"
+         style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1;fill-rule:nonzero;stroke-linecap:square;stroke-linejoin:miter;stroke-width:0.25;stroke-miterlimit:10"
+         d="M0.300961538462,3.715384615388 L-1.68065759926,3.715384615388 L-1.68065759926,-4.284615384612 L0.300961538462,-4.284615384612 z" />
+    </marker>
+    <marker
+       orient="auto"
+       refX="0.0"
+       refY="0.0"
+       id="562B6BFF_end_arrow"
+       style="overflow:visible"
+       markerUnits="userSpaceOnUse">
       <path
-          style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
-          id="A463DD41"
-          d="M309.872219079,380.141530747 C312.392175218,400.878522431 277.198604714,399.692908265 261.853566065,416.153572052 C243.994814998,427.62964116 246.471472831,517.480862293 247.021562097,576.843011009"/>
-      <text
-          id="E0F88803"
-          style="fill:#D66F25;stroke:none"
-          font-family="Helvetica"
-          font-size="12"
-          font-weight="bold"
-          font-style="normal">
-         <tspan x="155.012674477" y="163.149404787">Volume</tspan>
-      </text>
-      <text
-          id="6BAEBE5F"
-          style="fill:#D66F25;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="223.071834829" y="353.143042307">has_use*</tspan>
-      </text>
-      <text
-          id="7BAEBE5F"
-          style="fill:#759E3D;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="223.071834829" y="360.954429188">has_cell</tspan>
-      </text>
-      <text
-          id="C5DB3F5F"
-          style="fill:#D66F25;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="253.880511897" y="457.981080426">has_use*</tspan>
-      </text>
-      <text
-          id="D5DB3F5F"
-          style="fill:#759E3D;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="253.880511897" y="465.792467307">has_cell</tspan>
-      </text>
-      <text
-          id="18BBD443"
-          style="fill:#554292;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="343.861458946" y="232.871095239">has_use*</tspan>
-      </text>
-      <text
-          id="0657E411"
-          style="fill:#423280;stroke:none"
-          font-family="Helvetica"
-          font-size="12"
-          font-weight="bold"
-          font-style="normal">
-         <tspan x="496.101945696" y="305.059045152">ShellEntity</tspan>
-      </text>
-      <text
-          id="7104AC03"
-          style="fill:#759E3D;stroke:none"
-          font-family="Helvetica"
-          font-size="12"
-          font-weight="bold"
-          font-style="normal">
-         <tspan x="284.187463433" y="472.841782561">VertexUse</tspan>
-      </text>
-      <text
-          id="639AA96F"
-          style="fill:#B40426;stroke:none"
-          font-family="Helvetica"
-          font-size="12"
-          font-weight="bold"
-          font-style="normal">
-         <tspan x="432.558381946" y="647.779977067">Instance</tspan>
-      </text>
-      <text
-          id="A5783D03"
-          style="fill:#759E3D;stroke:none"
-          font-family="Helvetica"
-          font-size="12"
-          font-weight="bold"
-          font-style="normal">
-         <tspan x="284.187463433" y="369.512954666">EdgeUse</tspan>
-      </text>
-      <text
-          id="24270AEF"
-          style="fill:#759E3D;stroke:none"
-          font-family="Helvetica"
-          font-size="12"
-          font-weight="bold"
-          font-style="normal">
-         <tspan x="218.240522495" y="589.727626084">UseEntity</tspan>
-      </text>
-      <text
-          id="EFB17643"
-          style="fill:#759E3D;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="343.861458946" y="225.53540625">has_shell</tspan>
-      </text>
-      <text
-          id="E9DCDE4F"
-          style="fill:#554292;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="343.861458946" y="336.304012991">has_use*</tspan>
-      </text>
-      <text
-          id="F9DCDE4F"
-          style="fill:#759E3D;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="343.861458946" y="328.968324001">has_shell</tspan>
-      </text>
-      <text
-          id="9CD41F4F"
-          style="fill:#554292;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="343.861458946" y="439.086403304">has_use*</tspan>
-      </text>
-      <text
-          id="ACD41F4F"
-          style="fill:#759E3D;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="343.861458946" y="431.750714314">has_shell*</tspan>
-      </text>
+         id="562B6BFF_end_arrow_path"
+         style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1;fill-rule:nonzero;stroke-linecap:square;stroke-linejoin:miter;stroke-width:0.25;stroke-miterlimit:10"
+         d="M0,0 L-7.517540966287,2.736161146605 L-7.517540966287,-2.736161146605 z" />
+    </marker>
+    <marker
+       orient="auto"
+       refX="0.0"
+       refY="0.0"
+       id="DE6D2000_start_arrow"
+       style="overflow:visible"
+       markerUnits="userSpaceOnUse">
       <path
-          style="fill:none;stroke:#B0B0B0"
-          id="435209B1"
-          d="M374.638389466,429.7814351 C389.16789311,429.674986686 386.299847389,437.977906298 400.07048906,438.150666055"/>
-      <rect
-          style="fill:#B0B0B0;stroke:none"
-          id="B039A4C1"
-          x="399.898487567"
-          y="421.702169352"
-          width="156.799072976"
-          height="32.2182692308"
-          rx="6.074900129372"
-          ry="6.074900129372"/>
+         id="DE6D2000_start_arrow_path"
+         style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1;fill-rule:nonzero;stroke-linecap:square;stroke-linejoin:miter;stroke-width:0.25;stroke-miterlimit:10"
+         d="M1.978365384613,3.560576923074 L-0.003253753108,3.560576923074 L-0.003253753108,-4.439423076926 L1.978365384613,-4.439423076926 z" />
+    </marker>
+    <marker
+       orient="auto"
+       refX="0.0"
+       refY="0.0"
+       id="294AC513_start_arrow"
+       style="overflow:visible"
+       markerUnits="userSpaceOnUse">
+      <path
+         id="294AC513_start_arrow_path"
+         style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1;fill-rule:nonzero;stroke-linecap:square;stroke-linejoin:miter;stroke-width:0.25;stroke-miterlimit:10"
+         d="M1.876923076925,3.888942307691 L-0.104696060796,3.888942307691 L-0.104696060796,-4.111057692309 L1.876923076925,-4.111057692309 z" />
+    </marker>
+    <marker
+       orient="auto"
+       refX="0.0"
+       refY="0.0"
+       id="2856A1A3_start_arrow"
+       style="overflow:visible"
+       markerUnits="userSpaceOnUse">
+      <path
+         id="2856A1A3_start_arrow_path"
+         style="fill:#B0B0B0;fill-opacity:1;stroke:#B0B0B0;stroke-opacity:1;fill-rule:nonzero;stroke-linecap:square;stroke-linejoin:miter;stroke-width:0.25;stroke-miterlimit:10"
+         d="M1.978365384613,3.560576923074 L-0.003253753108,3.560576923074 L-0.003253753108,-4.439423076926 L1.978365384613,-4.439423076926 z" />
+    </marker>
+    <marker
+       orient="auto"
+       refX="0.0"
+       refY="0.0"
+       id="2856A1A3_end_arrow"
+       style="overflow:visible"
+       markerUnits="userSpaceOnUse">
+      <path
+         id="2856A1A3_end_arrow_path"
+         style="fill:#B0B0B0;fill-opacity:1;stroke:#B0B0B0;stroke-opacity:1;fill-rule:nonzero;stroke-linecap:square;stroke-linejoin:miter;stroke-width:0.25;stroke-miterlimit:10"
+         d="M0,0 L-7.517540966287,2.736161146605 L-7.517540966287,-2.736161146605 z" />
+    </marker>
+  </defs>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer_Paper"
+     style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1;fill-rule:nonzero;stroke-linecap:square;stroke-linejoin:miter;stroke-width:1;stroke-miterlimit:10">
+    <path
+       style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
+       id="31A26F1F"
+       d="M311.46679215,175.149054324 C314.852702236,205.263513114 289.688736996,228.942679784 277.657020715,247.758538961 C240.0260657,318.271328467 246.121966955,435.33440471 247.165477273,577.147277256" />
+    <text
+       id="0969281E"
+       style="fill:#D0D0D0;stroke:none"
+       font-family="Helvetica"
+       font-size="96"
+       font-weight="normal"
+       font-style="normal"
+       filter="url(#filter_0969281E)">
+      <tspan
+         x="178.372599506"
+         y="504.122721884"
+         id="tspan3752">0</tspan>
+    </text>
+    <text
+       id="40761A1E"
+       style="fill:#D0D0D0;stroke:none"
+       font-family="Helvetica"
+       font-size="96"
+       font-weight="normal"
+       font-style="normal"
+       filter="url(#filter_0969281E)">
+      <tspan
+         x="178.372599506"
+         y="398.217894463"
+         id="tspan3755">1</tspan>
+    </text>
+    <text
+       id="A2EE6A1E"
+       style="fill:#D0D0D0;stroke:none"
+       font-family="Helvetica"
+       font-size="96"
+       font-weight="normal"
+       font-style="normal"
+       filter="url(#filter_0969281E)">
+      <tspan
+         x="178.372599506"
+         y="292.313067042"
+         id="tspan3758">2</tspan>
+    </text>
+    <text
+       id="EE92EA1E"
+       style="fill:#D0D0D0;stroke:none"
+       font-family="Helvetica"
+       font-size="96"
+       font-weight="normal"
+       font-style="normal"
+       filter="url(#filter_0969281E)">
+      <tspan
+         x="178.372599506"
+         y="196.035951205"
+         id="tspan3761">3</tspan>
+    </text>
+    <path
+       style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
+       id="EDBBE741"
+       d="M308.064037612,480.257895878 C312.694602304,510.869476379 289.753910089,505.08394445 270.785927361,511.74033192 C253.920186163,515.818785897 246.069541364,517.480862293 246.61963063,576.843011009" />
+    <path
+       style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
+       id="A463DD41"
+       d="M309.872219079,380.141530747 C312.392175218,400.878522431 277.198604714,399.692908265 261.853566065,416.153572052 C243.994814998,427.62964116 246.471472831,517.480862293 247.021562097,576.843011009" />
+    <text
+       id="E0F88803"
+       style="fill:#D66F25;stroke:none"
+       font-family="Helvetica"
+       font-size="12"
+       font-weight="bold"
+       font-style="normal">
+      <tspan
+         x="155.012674477"
+         y="163.149404787"
+         id="tspan3766">Volume</tspan>
+    </text>
+    <text
+       id="6BAEBE5F"
+       style="fill:#D66F25;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="223.071834829"
+         y="353.143042307"
+         id="tspan3769">has_use*</tspan>
+    </text>
+    <text
+       id="7BAEBE5F"
+       style="fill:#759E3D;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="223.071834829"
+         y="360.954429188"
+         id="tspan3772">has_cell</tspan>
+    </text>
+    <text
+       id="C5DB3F5F"
+       style="fill:#D66F25;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="253.880511897"
+         y="457.981080426"
+         id="tspan3775">has_use*</tspan>
+    </text>
+    <text
+       id="D5DB3F5F"
+       style="fill:#759E3D;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="253.880511897"
+         y="465.792467307"
+         id="tspan3778">has_cell</tspan>
+    </text>
+    <text
+       id="18BBD443"
+       style="fill:#554292;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="343.861458946"
+         y="232.871095239"
+         id="tspan3781">has_use*</tspan>
+    </text>
+    <text
+       id="0657E411"
+       style="fill:#423280;stroke:none"
+       font-family="Helvetica"
+       font-size="12"
+       font-weight="bold"
+       font-style="normal">
+      <tspan
+         x="496.101945696"
+         y="305.059045152"
+         id="tspan3784">ShellEntity</tspan>
+    </text>
+    <text
+       id="7104AC03"
+       style="fill:#759E3D;stroke:none"
+       font-family="Helvetica"
+       font-size="12"
+       font-weight="bold"
+       font-style="normal">
+      <tspan
+         x="284.187463433"
+         y="472.841782561"
+         id="tspan3787">VertexUse</tspan>
+    </text>
+    <text
+       id="639AA96F"
+       style="font-style:normal;font-weight:bold;font-size:12px;font-family:Helvetica;fill:#b40426;stroke:none"
+       font-size="12"
+       font-weight="bold"
+       font-style="normal"
+       x="16">
+      <tspan
+         x="448.55838"
+         y="647.77997"
+         id="tspan3790">Instance</tspan>
+    </text>
+    <text
+       id="A5783D03"
+       style="fill:#759E3D;stroke:none"
+       font-family="Helvetica"
+       font-size="12"
+       font-weight="bold"
+       font-style="normal">
+      <tspan
+         x="284.187463433"
+         y="369.512954666"
+         id="tspan3793">EdgeUse</tspan>
+    </text>
+    <text
+       id="24270AEF"
+       style="fill:#759E3D;stroke:none"
+       font-family="Helvetica"
+       font-size="12"
+       font-weight="bold"
+       font-style="normal">
+      <tspan
+         x="218.240522495"
+         y="589.727626084"
+         id="tspan3796">UseEntity</tspan>
+    </text>
+    <text
+       id="EFB17643"
+       style="fill:#759E3D;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="343.861458946"
+         y="225.53540625"
+         id="tspan3799">has_shell</tspan>
+    </text>
+    <text
+       id="E9DCDE4F"
+       style="fill:#554292;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="343.861458946"
+         y="336.304012991"
+         id="tspan3802">has_use*</tspan>
+    </text>
+    <text
+       id="F9DCDE4F"
+       style="fill:#759E3D;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="343.861458946"
+         y="328.968324001"
+         id="tspan3805">has_shell</tspan>
+    </text>
+    <text
+       id="9CD41F4F"
+       style="fill:#554292;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="343.861458946"
+         y="439.086403304"
+         id="tspan3808">has_use*</tspan>
+    </text>
+    <text
+       id="ACD41F4F"
+       style="fill:#759E3D;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="343.861458946"
+         y="431.750714314"
+         id="tspan3811">has_shell*</tspan>
+    </text>
+    <path
+       style="fill:none;stroke:#B0B0B0"
+       id="435209B1"
+       d="M374.638389466,429.7814351 C389.16789311,429.674986686 386.299847389,437.977906298 400.07048906,438.150666055" />
+    <rect
+       style="fill:#B0B0B0;stroke:none"
+       id="B039A4C1"
+       x="399.898487567"
+       y="421.702169352"
+       width="156.799072976"
+       height="32.2182692308"
+       rx="6.074900129372"
+       ry="6.074900129372" />
+    <text
+       id="6C8EDA71"
+       style="stroke:none"
+       font-family="Helvetica"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="402.713436686"
+         y="429.048747525"
+         id="tspan3816">Unlike other UseEntity subclasses, VertexUse instances </tspan>
+      <tspan
+         x="402.713436686"
+         y="436.048747525"
+         id="tspan3818">may have multiple has_shell arrangements; there should </tspan>
+      <tspan
+         x="402.713436686"
+         y="443.048747525"
+         id="tspan3820">be exactly one such arrangement for each disjoint point-</tspan>
+      <tspan
+         x="402.713436686"
+         y="450.048747525"
+         id="tspan3822">set bounded by the Vertex.</tspan>
+    </text>
+    <text
+       id="5F372A4F"
+       style="fill:#554292;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="343.861458946"
+         y="295.191056866"
+         id="tspan3825">embedded_in</tspan>
+    </text>
+    <text
+       id="6F372A4F"
+       style="fill:#759E3D;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="343.861458946"
+         y="287.855367876"
+         id="tspan3828">includes*</tspan>
+    </text>
+    <text
+       id="AE1F112F"
+       style="fill:#554292;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="343.861458946"
+         y="193.137313996"
+         id="tspan3831">embedded_in</tspan>
+    </text>
+    <text
+       id="BE1F112F"
+       style="fill:#759E3D;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="343.861458946"
+         y="185.801625006"
+         id="tspan3834">includes*</tspan>
+    </text>
+    <text
+       id="4C49CD4F"
+       style="fill:#554292;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="343.861458946"
+         y="397.973447179"
+         id="tspan3837">embedded_in</tspan>
+    </text>
+    <text
+       id="6C49CD4F"
+       style="fill:#759E3D;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="343.861458946"
+         y="390.637758189"
+         id="tspan3840">includes*</tspan>
+    </text>
+    <text
+       id="191C4903"
+       style="fill:#D66F25;stroke:none"
+       font-family="Helvetica"
+       font-size="12"
+       font-weight="bold"
+       font-style="normal">
+      <tspan
+         x="162.71484375"
+         y="266.478232681"
+         id="tspan3843">Face</tspan>
+    </text>
+    <text
+       id="EBEEA903"
+       style="fill:#D66F25;stroke:none"
+       font-family="Helvetica"
+       font-size="12"
+       font-weight="bold"
+       font-style="normal">
+      <tspan
+         x="162.71484375"
+         y="369.807060576"
+         id="tspan3846">Edge</tspan>
+    </text>
+    <text
+       id="8AC7D903"
+       style="fill:#D66F25;stroke:none"
+       font-family="Helvetica"
+       font-size="12"
+       font-weight="bold"
+       font-style="normal">
+      <tspan
+         x="162.71484375"
+         y="473.13588847"
+         id="tspan3849">Vertex</tspan>
+    </text>
+    <text
+       id="9EAB9311"
+       style="fill:#D66F25;stroke:none"
+       font-family="Helvetica"
+       font-size="12"
+       font-weight="bold"
+       font-style="normal">
+      <tspan
+         x="103.789248893"
+         y="316.9830621"
+         id="tspan3852">CellEntity</tspan>
+    </text>
+    <line
+       style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       id="562B6BFF"
+       x1="344.330484225"
+       y1="464.301646048"
+       x2="409.34656038"
+       y2="413.51583305" />
+    <line
+       style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       id="7AC72D6F"
+       x1="441.787936956"
+       y1="633.061835002"
+       x2="428.465197322"
+       y2="615.579247923" />
+    <line
+       style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       id="745D5DFF"
+       x1="344.330484225"
+       y1="358.604821227"
+       x2="409.34656038"
+       y2="307.81900823" />
+    <line
+       style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       id="9F81ADFF"
+       x1="344.330484225"
+       y1="256.016726549"
+       x2="409.34656038"
+       y2="205.230913551" />
+    <path
+       style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       id="A0A14B40"
+       d="M197.46105926,170.143041011 C198.748145705,224.593833129 177.160632366,204.993215187 177.564047521,253.633793891" />
+    <path
+       style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       id="66F95B50"
+       d="M181.158764703,272.395422546 C191.736406111,296.714736006 178.577387969,312.527608918 177.564047521,357.967768414" />
+    <path
+       style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       id="9C5A7E50"
+       d="M181.158764703,376.729397069 C195.941357144,400.724144688 180.700011927,417.431684437 177.480832727,462.798909212" />
+    <path
+       style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       id="F7536450"
+       d="M197.46105926,170.143041011 C196.399693197,276.119862092 178.466929057,309.137689273 177.326320733,358.306469195" />
+    <path
+       style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       id="1D729060"
+       d="M180.62087783,272.580292973 C211.719863955,338.29377564 181.907964276,413.906229345 177.326320733,462.640443718" />
+    <path
+       style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       id="90144950"
+       d="M197.46105926,170.143041011 C203.041635567,403.337125812 182.36738768,402.072292931 177.674506432,463.272056085" />
+    <g
+       id="3D4E7E1F">
+      <path
+         style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
+         id="39497B31"
+         d="M311.46679215,277.202797194 C314.852702236,307.317255984 272.075250154,295.775967476 258.696494399,314.348473368 C243.623105174,323.294526028 246.659795902,517.480862293 247.209885168,576.843011009" />
       <text
-          id="6C8EDA71"
-          style="stroke:none"
-          font-family="Helvetica"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="402.713436686" y="429.048747525">Unlike other UseEntity subclasses, VertexUse instances </tspan>
-         <tspan x="402.713436686" y="436.048747525">may have multiple has_shell arrangements; there should </tspan>
-         <tspan x="402.713436686" y="443.048747525">be exactly one such arrangement for each disjoint point-</tspan>
-         <tspan x="402.713436686" y="450.048747525">set bounded by the Vertex.</tspan>
+         id="B043E65F"
+         style="fill:#D66F25;stroke:none"
+         font-family="American Typewriter"
+         font-size="6"
+         font-weight="normal"
+         font-style="normal">
+        <tspan
+           x="244.252800313"
+           y="250.360651995"
+           id="tspan3867">has_use*</tspan>
       </text>
       <text
-          id="5F372A4F"
-          style="fill:#554292;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="343.861458946" y="295.191056866">embedded_in</tspan>
+         id="C043E65F"
+         style="fill:#759E3D;stroke:none"
+         font-family="American Typewriter"
+         font-size="6"
+         font-weight="normal"
+         font-style="normal">
+        <tspan
+           x="244.252800313"
+           y="258.172038876"
+           id="tspan3870">has_cell</tspan>
       </text>
       <text
-          id="6F372A4F"
-          style="fill:#759E3D;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="343.861458946" y="287.855367876">includes*</tspan>
-      </text>
-      <text
-          id="AE1F112F"
-          style="fill:#554292;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="343.861458946" y="193.137313996">embedded_in</tspan>
-      </text>
-      <text
-          id="BE1F112F"
-          style="fill:#759E3D;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="343.861458946" y="185.801625006">includes*</tspan>
-      </text>
-      <text
-          id="4C49CD4F"
-          style="fill:#554292;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="343.861458946" y="397.973447179">embedded_in</tspan>
-      </text>
-      <text
-          id="6C49CD4F"
-          style="fill:#759E3D;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="343.861458946" y="390.637758189">includes*</tspan>
-      </text>
-      <text
-          id="191C4903"
-          style="fill:#D66F25;stroke:none"
-          font-family="Helvetica"
-          font-size="12"
-          font-weight="bold"
-          font-style="normal">
-         <tspan x="162.71484375" y="266.478232681">Face</tspan>
-      </text>
-      <text
-          id="EBEEA903"
-          style="fill:#D66F25;stroke:none"
-          font-family="Helvetica"
-          font-size="12"
-          font-weight="bold"
-          font-style="normal">
-         <tspan x="162.71484375" y="369.807060576">Edge</tspan>
-      </text>
-      <text
-          id="8AC7D903"
-          style="fill:#D66F25;stroke:none"
-          font-family="Helvetica"
-          font-size="12"
-          font-weight="bold"
-          font-style="normal">
-         <tspan x="162.71484375" y="473.13588847">Vertex</tspan>
-      </text>
-      <text
-          id="9EAB9311"
-          style="fill:#D66F25;stroke:none"
-          font-family="Helvetica"
-          font-size="12"
-          font-weight="bold"
-          font-style="normal">
-         <tspan x="103.789248893" y="316.9830621">CellEntity</tspan>
+         id="E57C4D03"
+         style="fill:#759E3D;stroke:none"
+         font-family="Helvetica"
+         font-size="12"
+         font-weight="bold"
+         font-style="normal">
+        <tspan
+           x="284.187463433"
+           y="266.184126772"
+           id="tspan3873">FaceUse</tspan>
       </text>
       <line
-          style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-          id="562B6BFF"
-          x1="344.330484225"
-          y1="464.301646048"
-          x2="409.34656038"
-          y2="413.51583305"/>
+         style="fill:none;marker-start:url(#DE6D2000_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+         id="DE6D2000"
+         x1="204.474578819"
+         y1="261.807092906"
+         x2="279.95703125"
+         y2="261.807092906" />
       <line
-          style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-          id="7AC72D6F"
-          x1="441.787936956"
-          y1="633.061835002"
-          x2="428.465197322"
-          y2="615.579247923"/>
+         style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+         id="E1A6274F"
+         x1="344.897918436"
+         y1="268.054631564"
+         x2="410.667284065"
+         y2="296.261205976" />
+    </g>
+    <text
+       id="41A26F1F"
+       style="fill:#D66F25;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="244.252800313"
+         y="148.306909125"
+         id="tspan3878">has_use</tspan>
+    </text>
+    <text
+       id="B1EF3E40"
+       style="fill:#D66F25;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="201.315034932"
+         y="216.123992565"
+         id="tspan3881">embedded_in</tspan>
+    </text>
+    <text
+       id="4BEB4F40"
+       style="fill:#D66F25;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="201.315034932"
+         y="208.298944476"
+         id="tspan3884">includes*</tspan>
+    </text>
+    <text
+       id="FE10C570"
+       style="fill:#D66F25;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="201.315034932"
+         y="314.416157935"
+         id="tspan3887">embedded_in</tspan>
+    </text>
+    <text
+       id="1F10C570"
+       style="fill:#D66F25;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="201.315034932"
+         y="306.591109846"
+         id="tspan3890">includes*</tspan>
+    </text>
+    <text
+       id="23031670"
+       style="fill:#D66F25;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="188.677470813"
+         y="426.750061215"
+         id="tspan3893">embedded_in</tspan>
+    </text>
+    <text
+       id="43031670"
+       style="fill:#D66F25;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="188.677470813"
+         y="418.925013125"
+         id="tspan3896">includes*</tspan>
+    </text>
+    <text
+       id="51A26F1F"
+       style="fill:#759E3D;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="244.252800313"
+         y="156.118296006"
+         id="tspan3899">has_cell</tspan>
+    </text>
+    <text
+       id="61A26F1F"
+       style="fill:#759E3D;stroke:none"
+       font-family="Helvetica"
+       font-size="12"
+       font-weight="bold"
+       font-style="normal">
+      <tspan
+         x="282.261921115"
+         y="166.05592622"
+         id="tspan3902">VolumeUse</tspan>
+    </text>
+    <line
+       style="fill:none;marker-start:url(#DE6D2000_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       id="71A26F1F"
+       x1="204.474578819"
+       y1="161.678892354"
+       x2="279.95703125"
+       y2="161.678892354" />
+    <line
+       style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       id="531A982F"
+       x1="348.866668436"
+       y1="169.475341786"
+       x2="410.667284065"
+       y2="196.133005424" />
+    <line
+       style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       id="2B00394F"
+       x1="344.897918436"
+       y1="370.837021876"
+       x2="410.667284065"
+       y2="399.043596288" />
+    <path
+       style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
+       id="927D8D11"
+       d="M173.357813301,172.976599823 C172.341509079,220.829511264 115.781098241,233.516736741 134.908185141,295.157315283" />
+    <path
+       style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
+       id="50B24621"
+       d="M175.469095668,250.179724823 C172.341509079,220.829511264 115.781098241,233.516736741 134.908185141,295.157315283" />
+    <path
+       style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
+       id="8C42AE21"
+       d="M452.477445766,404.420117593 C500.513243806,389.043897547 522.72086626,366.744928182 522.699371162,310.422195034" />
+    <path
+       style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
+       id="2EB1911E"
+       d="M451.214287871,201.350211362 C500.513243806,214.116960709 522.72086626,236.415930074 522.699371162,292.738663222" />
+    <line
+       style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
+       id="57F3A031"
+       x1="463.760898212"
+       y1="300.208620694"
+       x2="491.609975355"
+       y2="301.033661813" />
+    <path
+       style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
+       id="959DE621"
+       d="M173.357813301,451.310141654 C172.341509079,403.457230212 115.781098241,390.770004735 134.908185141,329.129426193" />
+    <path
+       style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
+       id="A59DE621"
+       d="M175.469095668,374.351435793 C172.341509079,403.701649351 115.781098241,391.014423875 134.908185141,329.373845333" />
+    <g
+       id="D50E67EF">
+      <text
+         id="809D8B03"
+         style="fill:#423280;stroke:none"
+         font-family="Helvetica"
+         font-size="12"
+         font-weight="bold"
+         font-style="normal">
+        <tspan
+           x="416.134372616"
+           y="204.378769858"
+           id="tspan3916">Shell</tspan>
+      </text>
+      <text
+         id="D9673243"
+         style="fill:#423280;stroke:none"
+         font-family="American Typewriter"
+         font-size="6"
+         font-weight="normal"
+         font-style="normal">
+        <tspan
+           x="422.859670524"
+           y="153.03160095"
+           id="tspan3919">includes*</tspan>
+      </text>
+      <text
+         id="B3FE6243"
+         style="fill:#423280;stroke:none"
+         font-family="American Typewriter"
+         font-size="6"
+         font-weight="normal"
+         font-style="normal">
+        <tspan
+           x="422.771707561"
+           y="160.778194115"
+           id="tspan3922">embedded_in</tspan>
+      </text>
+      <text
+         id="57583C03"
+         style="fill:#423280;stroke:none"
+         font-family="Helvetica"
+         font-size="12"
+         font-weight="bold"
+         font-style="normal">
+        <tspan
+           x="416.134372616"
+           y="307.707597752"
+           id="tspan3925">Loop</tspan>
+      </text>
+      <text
+         id="A1125C03"
+         style="fill:#423280;stroke:none"
+         font-family="Helvetica"
+         font-size="12"
+         font-weight="bold"
+         font-style="normal">
+        <tspan
+           x="413.860874776"
+           y="411.036425647"
+           id="tspan3928">Chain</tspan>
+      </text>
+      <path
+         style="fill:none;marker-start:url(#294AC513_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+         id="294AC513"
+         d="M429.222593526,189.262363608 C432.606412609,145.993050543 475.004386481,169.249354967 443.527281026,194.672519858" />
+      <text
+         id="B3222983"
+         style="fill:#423280;stroke:none"
+         font-family="American Typewriter"
+         font-size="6"
+         font-weight="normal"
+         font-style="normal">
+        <tspan
+           x="422.859670524"
+           y="256.140560896"
+           id="tspan3932">includes*</tspan>
+      </text>
+      <text
+         id="C3222983"
+         style="fill:#423280;stroke:none"
+         font-family="American Typewriter"
+         font-size="6"
+         font-weight="normal"
+         font-style="normal">
+        <tspan
+           x="422.771707561"
+           y="263.887154061"
+           id="tspan3935">embedded_in</tspan>
+      </text>
+      <path
+         style="fill:none;marker-start:url(#294AC513_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+         id="24222983"
+         d="M429.222593526,292.371323554 C432.606412609,249.102010489 475.004386481,272.358314913 443.527281026,297.781479804" />
+      <text
+         id="3136B983"
+         style="fill:#423280;stroke:none"
+         font-family="American Typewriter"
+         font-size="6"
+         font-weight="normal"
+         font-style="normal">
+        <tspan
+           x="422.859670524"
+           y="361.647403631"
+           id="tspan3939">includes*</tspan>
+      </text>
+      <text
+         id="4136B983"
+         style="fill:#423280;stroke:none"
+         font-family="American Typewriter"
+         font-size="6"
+         font-weight="normal"
+         font-style="normal">
+        <tspan
+           x="422.771707561"
+           y="369.393996796"
+           id="tspan3942">embedded_in</tspan>
+      </text>
+      <path
+         style="fill:none;marker-start:url(#294AC513_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+         id="A136B983"
+         d="M429.222593526,397.878166289 C432.606412609,354.608853224 475.004386481,377.865157648 443.527281026,403.288322539" />
+    </g>
+    <text
+       id="D9EA127F"
+       style="fill:#B40426;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="384.285589328"
+         y="602.551093043"
+         id="tspan3946">instance_of</tspan>
+    </text>
+    <text
+       id="E9EA127F"
+       style="fill:#759E3D;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="384.197626365"
+         y="610.297686208"
+         id="tspan3949">prototype_of/</tspan>
+    </text>
+    <text
+       id="2A52777F"
+       style="fill:#E07424;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="422.734512732"
+         y="610.297686208"
+         id="tspan3952">prototype_of/</tspan>
+    </text>
+    <text
+       id="CC7C387F"
+       style="font-style:normal;font-weight:normal;font-size:6px;font-family:'American Typewriter';fill:#423280;stroke:none"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="461.27139"
+         y="610.29767"
+         id="tspan3955">prototype_of/</tspan>
+    </text>
+    <text
+       id="667A681F"
+       style="font-style:normal;font-weight:bold;font-size:12px;font-family:Helvetica;fill:#b40426;stroke:none"
+       font-size="12"
+       font-weight="bold"
+       font-style="normal"
+       x="16">
+      <tspan
+         x="452.40945"
+         y="512.992"
+         id="tspan3958">Group</tspan>
+    </text>
+    <text
+       id="4DD9ED3F"
+       style="fill:#D66F25;stroke:none"
+       font-family="Helvetica"
+       font-size="8"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="121.884638135"
+         y="620.89184139"
+         id="tspan3961">Cellular topology-geometry link</tspan>
+    </text>
+    <line
+       style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       id="767A681F"
+       x1="441.787936956"
+       y1="498.273872721"
+       x2="428.465197322"
+       y2="480.791285642" />
+    <text
+       id="867A681F"
+       style="fill:#B40426;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="384.285589328"
+         y="467.763130762"
+         id="tspan3965">superset_of*</tspan>
+    </text>
+    <text
+       id="967A681F"
+       style="fill:#759E3D;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="384.197626365"
+         y="475.509723927"
+         id="tspan3968">subset_of/</tspan>
+    </text>
+    <text
+       id="A67A681F"
+       style="fill:#E07424;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="415.032343459"
+         y="475.509723927"
+         id="tspan3971">subset_of/</tspan>
+    </text>
+    <text
+       id="B67A681F"
+       style="fill:#423280;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="445.867060553"
+         y="475.509723927"
+         id="tspan3974">subset_of</tspan>
+    </text>
+    <text
+       id="C67A681F"
+       style="fill:#B40426;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="506.973930264"
+         y="461.596187344"
+         id="tspan3977">superset_of*</tspan>
+    </text>
+    <text
+       id="D67A681F"
+       style="fill:#B40426;stroke:none"
+       font-family="American Typewriter"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="506.885967301"
+         y="469.342780509"
+         id="tspan3980">subset_of</tspan>
+    </text>
+    <path
+       style="fill:none;marker-start:url(#294AC513_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       id="E67A681F"
+       d="M496.63145984,497.826950002 C500.015278923,454.557636937 542.413252795,477.813941361 510.93614734,503.237106252" />
+    <text
+       id="B3B52D2F"
+       style="font-style:normal;font-weight:bold;font-size:12px;font-family:Helvetica;fill:#b40426;stroke:none"
+       font-size="12"
+       font-weight="bold"
+       font-style="normal"
+       x="16">
+      <tspan
+         x="452.40945"
+         y="580.38599"
+         id="tspan3984">Model</tspan>
+    </text>
+    <line
+       style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       id="C3B52D2F"
+       x1="441.787936956"
+       y1="565.667853861"
+       x2="428.465197322"
+       y2="548.185266782" />
+    <text
+       id="D3B52D2F"
+       style="font-style:normal;font-weight:normal;font-size:6px;font-family:'American Typewriter';fill:#b40426;stroke:none"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal"
+       x="64"
+       y="1.6">
+      <tspan
+         x="448.28558"
+         y="536.75708"
+         id="tspan3988">superset_of*</tspan>
+    </text>
+    <text
+       id="E3B52D2F"
+       style="font-style:normal;font-weight:normal;font-size:6px;font-family:'American Typewriter';fill:#b40426;fill-opacity:1;stroke:none"
+       font-size="6"
+       font-weight="normal"
+       font-style="normal"
+       x="64"
+       y="1.6">
+      <tspan
+         x="448.19763"
+         y="544.50366"
+         id="tspan3991"
+         style="fill:#b40426;fill-opacity:1">subset_of</tspan>
+    </text>
+    <path
+       style="fill:none;marker-start:url(#294AC513_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       id="34B52D2F"
+       d="M496.63145984,565.220931142 C500.015278923,521.951618077 542.413252795,545.207922501 510.93614734,570.631087392" />
+    <g
+       id="929BBD2E">
+      <text
+         id="A07DE880"
+         style="fill:#B0B0B0;stroke:none"
+         font-family="Helvetica"
+         font-size="12"
+         font-weight="bold"
+         font-style="normal">
+        <tspan
+           x="316.442809713"
+           y="106.010428543"
+           id="tspan4008">Entity</tspan>
+      </text>
+      <text
+         id="7B8B9B80"
+         style="fill:#B0B0B0;stroke:none"
+         font-family="Helvetica"
+         font-size="12"
+         font-weight="bold"
+         font-style="normal">
+        <tspan
+           x="428.298240211"
+           y="106.010428543"
+           id="tspan4011">Related Entity</tspan>
+      </text>
+      <text
+         id="0856A1A3"
+         style="fill:#B0B0B0;stroke:none"
+         font-family="American Typewriter"
+         font-size="6"
+         font-weight="normal"
+         font-style="normal">
+        <tspan
+           x="354.554658393"
+           y="85.793789526"
+           id="tspan4014">forward ArrangementKind*</tspan>
+        <tspan
+           x="354.554658393"
+           y="92.793789526"
+           id="tspan4016">inverse ArrangementKind</tspan>
+      </text>
       <line
-          style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-          id="745D5DFF"
-          x1="344.330484225"
-          y1="358.604821227"
-          x2="409.34656038"
-          y2="307.81900823"/>
+         style="fill:none;stroke:#B0B0B0;marker-start:url(#2856A1A3_start_arrow);marker-end:url(#2856A1A3_end_arrow)"
+         id="2856A1A3"
+         x1="354.621235003"
+         y1="102.740405271"
+         x2="422.03449523"
+         y2="102.740405271" />
+      <text
+         id="33933221"
+         style="fill:#B0B0B0;stroke:none"
+         font-family="Helvetica"
+         font-size="12"
+         font-weight="bold"
+         font-style="normal">
+        <tspan
+           x="285.733825338"
+           y="123.688107"
+           id="tspan4020">Base Class</tspan>
+      </text>
+      <text
+         id="43933221"
+         style="fill:#B0B0B0;stroke:none"
+         font-family="Helvetica"
+         font-size="12"
+         font-weight="bold"
+         font-style="normal">
+        <tspan
+           x="428.298240211"
+           y="123.688107"
+           id="tspan4023">Derived Class</tspan>
+      </text>
       <line
-          style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-          id="9F81ADFF"
-          x1="344.330484225"
-          y1="256.016726549"
-          x2="409.34656038"
-          y2="205.230913551"/>
-      <path
-          style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-          id="A0A14B40"
-          d="M197.46105926,170.143041011 C198.748145705,224.593833129 177.160632366,204.993215187 177.564047521,253.633793891"/>
-      <path
-          style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-          id="66F95B50"
-          d="M181.158764703,272.395422546 C191.736406111,296.714736006 178.577387969,312.527608918 177.564047521,357.967768414"/>
-      <path
-          style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-          id="9C5A7E50"
-          d="M181.158764703,376.729397069 C195.941357144,400.724144688 180.700011927,417.431684437 177.480832727,462.798909212"/>
-      <path
-          style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-          id="F7536450"
-          d="M197.46105926,170.143041011 C196.399693197,276.119862092 178.466929057,309.137689273 177.326320733,358.306469195"/>
-      <path
-          style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-          id="1D729060"
-          d="M180.62087783,272.580292973 C211.719863955,338.29377564 181.907964276,413.906229345 177.326320733,462.640443718"/>
-      <path
-          style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-          id="90144950"
-          d="M197.46105926,170.143041011 C203.041635567,403.337125812 182.36738768,402.072292931 177.674506432,463.272056085"/>
+         style="fill:none;stroke:#B0B0B0;marker-end:url(#2856A1A3_end_arrow)"
+         id="63933221"
+         x1="354.621235003"
+         y1="120.418083728"
+         x2="422.03449523"
+         y2="120.418083728" />
       <g
-          id="3D4E7E1F">
-         <path
-             style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
-             id="39497B31"
-             d="M311.46679215,277.202797194 C314.852702236,307.317255984 272.075250154,295.775967476 258.696494399,314.348473368 C243.623105174,323.294526028 246.659795902,517.480862293 247.209885168,576.843011009"/>
-         <text
-             id="B043E65F"
-             style="fill:#D66F25;stroke:none"
-             font-family="American Typewriter"
-             font-size="6"
-             font-weight="normal"
-             font-style="normal">
-            <tspan x="244.252800313" y="250.360651995">has_use*</tspan>
-         </text>
-         <text
-             id="C043E65F"
-             style="fill:#759E3D;stroke:none"
-             font-family="American Typewriter"
-             font-size="6"
-             font-weight="normal"
-             font-style="normal">
-            <tspan x="244.252800313" y="258.172038876">has_cell</tspan>
-         </text>
-         <text
-             id="E57C4D03"
-             style="fill:#759E3D;stroke:none"
-             font-family="Helvetica"
-             font-size="12"
-             font-weight="bold"
-             font-style="normal">
-            <tspan x="284.187463433" y="266.184126772">FaceUse</tspan>
-         </text>
-         <line
-             style="fill:none;marker-start:url(#DE6D2000_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-             id="DE6D2000"
-             x1="204.474578819"
-             y1="261.807092906"
-             x2="279.95703125"
-             y2="261.807092906"/>
-         <line
-             style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-             id="E1A6274F"
-             x1="344.897918436"
-             y1="268.054631564"
-             x2="410.667284065"
-             y2="296.261205976"/>
+         id="A4E72D80">
+        <text
+           id="C13FF8A3"
+           style="fill:#646465;stroke:none"
+           font-family="Helvetica"
+           font-size="6"
+           font-weight="normal"
+           font-style="normal">
+          <tspan
+             x="438.020365205"
+             y="75.0571744263"
+             id="tspan4028">Asterisk indicates </tspan>
+          <tspan
+             x="438.020365205"
+             y="82.0571744263"
+             id="tspan4030">one-to-many</tspan>
+        </text>
+        <rect
+           style="fill:none;stroke:#707070;stroke-width:0.5"
+           id="27AEEDA3"
+           x="431.714207572"
+           y="68.6720603223"
+           width="54.4875107051"
+           height="16.1458480589" />
       </g>
+    </g>
+    <line
+       style="fill:none;marker-start:url(#DE6D2000_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       id="EFE6D000"
+       x1="204.474578819"
+       y1="470.092012406"
+       x2="279.95703125"
+       y2="470.092012406" />
+    <line
+       style="fill:none;marker-start:url(#DE6D2000_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       id="18E19000"
+       x1="204.474578819"
+       y1="365.949552656"
+       x2="279.95703125"
+       y2="365.949552656" />
+    <rect
+       style="fill:#D66F25;stroke:none"
+       id="A28F8C3F"
+       x="102.583637273"
+       y="614.10859201"
+       width="16.9769736842"
+       height="7.716601127506" />
+    <text
+       id="E6BC114F"
+       style="fill:#759E3D;stroke:none"
+       font-family="Helvetica"
+       font-size="8"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="121.884638135"
+         y="632.189398492"
+         id="tspan4037">Uses of cells by boundaries</tspan>
+    </text>
+    <rect
+       style="fill:#759E3D;stroke:none"
+       id="F6BC114F"
+       x="102.583637273"
+       y="625.406149112"
+       width="16.9769736842"
+       height="7.716601127506" />
+    <text
+       id="D80E414F"
+       style="fill:#423280;stroke:none"
+       font-family="Helvetica"
+       font-size="8"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="121.884638135"
+         y="643.486955594"
+         id="tspan4041">Cell-boundary groups of uses</tspan>
+    </text>
+    <rect
+       style="fill:#423280;stroke:none"
+       id="E80E414F"
+       x="102.583637273"
+       y="636.703706214"
+       width="16.9769736842"
+       height="7.716601127506" />
+    <text
+       id="701B614F"
+       style="fill:#B40426;stroke:none"
+       font-family="Helvetica"
+       font-size="8"
+       font-weight="normal"
+       font-style="normal">
+      <tspan
+         x="121.884638135"
+         y="610.139365535"
+         id="tspan4045">Topological modeling</tspan>
+    </text>
+    <rect
+       style="fill:#B40426;stroke:none"
+       id="801B614F"
+       x="102.583637273"
+       y="603.356116155"
+       width="16.9769736842"
+       height="7.716601127506" />
+    <g
+       id="g4920"
+       transform="translate(80,0)">
       <text
-          id="41A26F1F"
-          style="fill:#D66F25;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="244.252800313" y="148.306909125">has_use</tspan>
+         x="-80"
+         id="text4050"
+         style="font-style:normal;font-weight:normal;font-size:6px;font-family:'American Typewriter';fill:#b40426;stroke:none"
+         font-size="6"
+         font-weight="normal"
+         font-style="normal">
+        <tspan
+           x="304.28558"
+           y="535.1571"
+           id="tspan4052">includes*</tspan>
       </text>
       <text
-          id="B1EF3E40"
-          style="fill:#D66F25;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="201.315034932" y="216.123992565">embedded_in</tspan>
+         x="-80"
+         id="text4054"
+         style="font-style:normal;font-weight:normal;font-size:6px;font-family:'American Typewriter';fill:#759e3d;stroke:none"
+         font-size="6"
+         font-weight="normal"
+         font-style="normal">
+        <tspan
+           x="304.19763"
+           y="542.90369"
+           id="tspan4056">embedded_in/</tspan>
       </text>
       <text
-          id="4BEB4F40"
-          style="fill:#D66F25;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="201.315034932" y="208.298944476">includes*</tspan>
+         y="6.4000001"
+         x="-120.39986"
+         id="text4058"
+         style="font-style:normal;font-weight:normal;font-size:6px;font-family:'American Typewriter';fill:#e07424;stroke:none"
+         font-size="6"
+         font-weight="normal"
+         font-style="normal">
+        <tspan
+           x="304.26016"
+           y="549.30359"
+           id="tspan4060">embedded_in/</tspan>
       </text>
       <text
-          id="FE10C570"
-          style="fill:#D66F25;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="201.315034932" y="314.416157935">embedded_in</tspan>
+         y="12.800001"
+         x="-160.93303"
+         id="text4062"
+         style="font-style:normal;font-weight:normal;font-size:6px;font-family:'American Typewriter';fill:#423280;stroke:none"
+         font-size="6"
+         font-weight="normal"
+         font-style="normal">
+        <tspan
+           x="304.18942"
+           y="555.70349"
+           id="tspan4064">embedded_in</tspan>
       </text>
-      <text
-          id="1F10C570"
-          style="fill:#D66F25;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="201.315034932" y="306.591109846">includes*</tspan>
-      </text>
-      <text
-          id="23031670"
-          style="fill:#D66F25;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="188.677470813" y="426.750061215">embedded_in</tspan>
-      </text>
-      <text
-          id="43031670"
-          style="fill:#D66F25;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="188.677470813" y="418.925013125">includes*</tspan>
-      </text>
-      <text
-          id="51A26F1F"
-          style="fill:#759E3D;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="244.252800313" y="156.118296006">has_cell</tspan>
-      </text>
-      <text
-          id="61A26F1F"
-          style="fill:#759E3D;stroke:none"
-          font-family="Helvetica"
-          font-size="12"
-          font-weight="bold"
-          font-style="normal">
-         <tspan x="282.261921115" y="166.05592622">VolumeUse</tspan>
-      </text>
-      <line
-          style="fill:none;marker-start:url(#DE6D2000_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-          id="71A26F1F"
-          x1="204.474578819"
-          y1="161.678892354"
-          x2="279.95703125"
-          y2="161.678892354"/>
-      <line
-          style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-          id="531A982F"
-          x1="348.866668436"
-          y1="169.475341786"
-          x2="410.667284065"
-          y2="196.133005424"/>
-      <line
-          style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-          id="2B00394F"
-          x1="344.897918436"
-          y1="370.837021876"
-          x2="410.667284065"
-          y2="399.043596288"/>
-      <path
-          style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
-          id="927D8D11"
-          d="M173.357813301,172.976599823 C172.341509079,220.829511264 115.781098241,233.516736741 134.908185141,295.157315283"/>
-      <path
-          style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
-          id="50B24621"
-          d="M175.469095668,250.179724823 C172.341509079,220.829511264 115.781098241,233.516736741 134.908185141,295.157315283"/>
-      <path
-          style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
-          id="8C42AE21"
-          d="M452.477445766,404.420117593 C500.513243806,389.043897547 522.72086626,366.744928182 522.699371162,310.422195034"/>
-      <path
-          style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
-          id="2EB1911E"
-          d="M451.214287871,201.350211362 C500.513243806,214.116960709 522.72086626,236.415930074 522.699371162,292.738663222"/>
-      <line
-          style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
-          id="57F3A031"
-          x1="463.760898212"
-          y1="300.208620694"
-          x2="491.609975355"
-          y2="301.033661813"/>
-      <path
-          style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
-          id="959DE621"
-          d="M173.357813301,451.310141654 C172.341509079,403.457230212 115.781098241,390.770004735 134.908185141,329.129426193"/>
-      <path
-          style="fill:none;stroke:#C0C0C0;marker-end:url(#31A26F1F_end_arrow)"
-          id="A59DE621"
-          d="M175.469095668,374.351435793 C172.341509079,403.701649351 115.781098241,391.014423875 134.908185141,329.373845333"/>
-      <g
-          id="D50E67EF">
-         <text
-             id="809D8B03"
-             style="fill:#423280;stroke:none"
-             font-family="Helvetica"
-             font-size="12"
-             font-weight="bold"
-             font-style="normal">
-            <tspan x="416.134372616" y="204.378769858">Shell</tspan>
-         </text>
-         <text
-             id="D9673243"
-             style="fill:#423280;stroke:none"
-             font-family="American Typewriter"
-             font-size="6"
-             font-weight="normal"
-             font-style="normal">
-            <tspan x="422.859670524" y="153.03160095">includes*</tspan>
-         </text>
-         <text
-             id="B3FE6243"
-             style="fill:#423280;stroke:none"
-             font-family="American Typewriter"
-             font-size="6"
-             font-weight="normal"
-             font-style="normal">
-            <tspan x="422.771707561" y="160.778194115">embedded_in</tspan>
-         </text>
-         <text
-             id="57583C03"
-             style="fill:#423280;stroke:none"
-             font-family="Helvetica"
-             font-size="12"
-             font-weight="bold"
-             font-style="normal">
-            <tspan x="416.134372616" y="307.707597752">Loop</tspan>
-         </text>
-         <text
-             id="A1125C03"
-             style="fill:#423280;stroke:none"
-             font-family="Helvetica"
-             font-size="12"
-             font-weight="bold"
-             font-style="normal">
-            <tspan x="413.860874776" y="411.036425647">Chain</tspan>
-         </text>
-         <path
-             style="fill:none;marker-start:url(#294AC513_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-             id="294AC513"
-             d="M429.222593526,189.262363608 C432.606412609,145.993050543 475.004386481,169.249354967 443.527281026,194.672519858"/>
-         <text
-             id="B3222983"
-             style="fill:#423280;stroke:none"
-             font-family="American Typewriter"
-             font-size="6"
-             font-weight="normal"
-             font-style="normal">
-            <tspan x="422.859670524" y="256.140560896">includes*</tspan>
-         </text>
-         <text
-             id="C3222983"
-             style="fill:#423280;stroke:none"
-             font-family="American Typewriter"
-             font-size="6"
-             font-weight="normal"
-             font-style="normal">
-            <tspan x="422.771707561" y="263.887154061">embedded_in</tspan>
-         </text>
-         <path
-             style="fill:none;marker-start:url(#294AC513_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-             id="24222983"
-             d="M429.222593526,292.371323554 C432.606412609,249.102010489 475.004386481,272.358314913 443.527281026,297.781479804"/>
-         <text
-             id="3136B983"
-             style="fill:#423280;stroke:none"
-             font-family="American Typewriter"
-             font-size="6"
-             font-weight="normal"
-             font-style="normal">
-            <tspan x="422.859670524" y="361.647403631">includes*</tspan>
-         </text>
-         <text
-             id="4136B983"
-             style="fill:#423280;stroke:none"
-             font-family="American Typewriter"
-             font-size="6"
-             font-weight="normal"
-             font-style="normal">
-            <tspan x="422.771707561" y="369.393996796">embedded_in</tspan>
-         </text>
-         <path
-             style="fill:none;marker-start:url(#294AC513_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-             id="A136B983"
-             d="M429.222593526,397.878166289 C432.606412609,354.608853224 475.004386481,377.865157648 443.527281026,403.288322539"/>
-      </g>
-      <text
-          id="D9EA127F"
-          style="fill:#B40426;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="384.285589328" y="602.551093043">instance_of</tspan>
-      </text>
-      <text
-          id="E9EA127F"
-          style="fill:#759E3D;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="384.197626365" y="610.297686208">prototype_of/</tspan>
-      </text>
-      <text
-          id="2A52777F"
-          style="fill:#E07424;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="422.734512732" y="610.297686208">prototype_of/</tspan>
-      </text>
-      <text
-          id="CC7C387F"
-          style="fill:#423280;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="461.271399099" y="610.297686208">prototype_of</tspan>
-      </text>
-      <text
-          id="667A681F"
-          style="fill:#B40426;stroke:none"
-          font-family="Helvetica"
-          font-size="12"
-          font-weight="bold"
-          font-style="normal">
-         <tspan x="436.409466583" y="512.992014786">Group</tspan>
-      </text>
-      <text
-          id="4DD9ED3F"
-          style="fill:#D66F25;stroke:none"
-          font-family="Helvetica"
-          font-size="8"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="121.884638135" y="620.89184139">Cellular topology-geometry link</tspan>
-      </text>
-      <line
-          style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-          id="767A681F"
-          x1="441.787936956"
-          y1="498.273872721"
-          x2="428.465197322"
-          y2="480.791285642"/>
-      <text
-          id="867A681F"
-          style="fill:#B40426;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="384.285589328" y="467.763130762">superset_of*</tspan>
-      </text>
-      <text
-          id="967A681F"
-          style="fill:#759E3D;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="384.197626365" y="475.509723927">subset_of/</tspan>
-      </text>
-      <text
-          id="A67A681F"
-          style="fill:#E07424;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="415.032343459" y="475.509723927">subset_of/</tspan>
-      </text>
-      <text
-          id="B67A681F"
-          style="fill:#423280;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="445.867060553" y="475.509723927">subset_of</tspan>
-      </text>
-      <text
-          id="C67A681F"
-          style="fill:#B40426;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="506.973930264" y="461.596187344">superset_of*</tspan>
-      </text>
-      <text
-          id="D67A681F"
-          style="fill:#B40426;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="506.885967301" y="469.342780509">subset_of</tspan>
-      </text>
-      <path
-          style="fill:none;marker-start:url(#294AC513_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-          id="E67A681F"
-          d="M496.63145984,497.826950002 C500.015278923,454.557636937 542.413252795,477.813941361 510.93614734,503.237106252"/>
-      <text
-          id="B3B52D2F"
-          style="fill:#B40426;stroke:none"
-          font-family="Helvetica"
-          font-size="12"
-          font-weight="bold"
-          font-style="normal">
-         <tspan x="436.409466583" y="580.385995926">Model</tspan>
-      </text>
-      <line
-          style="fill:none;marker-start:url(#562B6BFF_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-          id="C3B52D2F"
-          x1="441.787936956"
-          y1="565.667853861"
-          x2="428.465197322"
-          y2="548.185266782"/>
-      <text
-          id="D3B52D2F"
-          style="fill:#B40426;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="384.285589328" y="535.157111902">includes*</tspan>
-      </text>
-      <text
-          id="E3B52D2F"
-          style="fill:#759E3D;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="384.197626365" y="542.903705067">embedded_in/</tspan>
-      </text>
-      <text
-          id="F3B52D2F"
-          style="fill:#E07424;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="424.660055051" y="542.903705067">embedded_in/</tspan>
-      </text>
-      <text
-          id="04B52D2F"
-          style="fill:#423280;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="465.122483736" y="542.903705067">embedded_in</tspan>
-      </text>
-      <text
-          id="14B52D2F"
-          style="fill:#B40426;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="506.973930264" y="528.990168484">includes*</tspan>
-      </text>
-      <text
-          id="24B52D2F"
-          style="fill:#B40426;stroke:none"
-          font-family="American Typewriter"
-          font-size="6"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="506.885967301" y="536.736761649">embedded_in</tspan>
-      </text>
-      <path
-          style="fill:none;marker-start:url(#294AC513_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-          id="34B52D2F"
-          d="M496.63145984,565.220931142 C500.015278923,521.951618077 542.413252795,545.207922501 510.93614734,570.631087392"/>
-      <g
-          id="929BBD2E">
-         <text
-             id="A07DE880"
-             style="fill:#B0B0B0;stroke:none"
-             font-family="Helvetica"
-             font-size="12"
-             font-weight="bold"
-             font-style="normal">
-            <tspan x="316.442809713" y="106.010428543">Entity</tspan>
-         </text>
-         <text
-             id="7B8B9B80"
-             style="fill:#B0B0B0;stroke:none"
-             font-family="Helvetica"
-             font-size="12"
-             font-weight="bold"
-             font-style="normal">
-            <tspan x="428.298240211" y="106.010428543">Related Entity</tspan>
-         </text>
-         <text
-             id="0856A1A3"
-             style="fill:#B0B0B0;stroke:none"
-             font-family="American Typewriter"
-             font-size="6"
-             font-weight="normal"
-             font-style="normal">
-            <tspan x="354.554658393" y="85.793789526">forward ArrangementKind*</tspan>
-            <tspan x="354.554658393" y="92.793789526">inverse ArrangementKind</tspan>
-         </text>
-         <line
-             style="fill:none;stroke:#B0B0B0;marker-start:url(#2856A1A3_start_arrow);marker-end:url(#2856A1A3_end_arrow)"
-             id="2856A1A3"
-             x1="354.621235003"
-             y1="102.740405271"
-             x2="422.03449523"
-             y2="102.740405271"/>
-         <text
-             id="33933221"
-             style="fill:#B0B0B0;stroke:none"
-             font-family="Helvetica"
-             font-size="12"
-             font-weight="bold"
-             font-style="normal">
-            <tspan x="285.733825338" y="123.688107">Base Class</tspan>
-         </text>
-         <text
-             id="43933221"
-             style="fill:#B0B0B0;stroke:none"
-             font-family="Helvetica"
-             font-size="12"
-             font-weight="bold"
-             font-style="normal">
-            <tspan x="428.298240211" y="123.688107">Derived Class</tspan>
-         </text>
-         <line
-             style="fill:none;stroke:#B0B0B0;marker-end:url(#2856A1A3_end_arrow)"
-             id="63933221"
-             x1="354.621235003"
-             y1="120.418083728"
-             x2="422.03449523"
-             y2="120.418083728"/>
-         <g
-             id="A4E72D80">
-            <text
-                id="C13FF8A3"
-                style="fill:#646465;stroke:none"
-                font-family="Helvetica"
-                font-size="6"
-                font-weight="normal"
-                font-style="normal">
-               <tspan x="438.020365205" y="75.0571744263">Asterisk indicates </tspan>
-               <tspan x="438.020365205" y="82.0571744263">one-to-many</tspan>
-            </text>
-            <rect
-                style="fill:none;stroke:#707070;stroke-width:0.5"
-                id="27AEEDA3"
-                x="431.714207572"
-                y="68.6720603223"
-                width="54.4875107051"
-                height="16.1458480589"/>
-         </g>
-      </g>
-      <line
-          style="fill:none;marker-start:url(#DE6D2000_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-          id="EFE6D000"
-          x1="204.474578819"
-          y1="470.092012406"
-          x2="279.95703125"
-          y2="470.092012406"/>
-      <line
-          style="fill:none;marker-start:url(#DE6D2000_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
-          id="18E19000"
-          x1="204.474578819"
-          y1="365.949552656"
-          x2="279.95703125"
-          y2="365.949552656"/>
-      <rect
-          style="fill:#D66F25;stroke:none"
-          id="A28F8C3F"
-          x="102.583637273"
-          y="614.10859201"
-          width="16.9769736842"
-          height="7.716601127506"/>
-      <text
-          id="E6BC114F"
-          style="fill:#759E3D;stroke:none"
-          font-family="Helvetica"
-          font-size="8"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="121.884638135" y="632.189398492">Uses of cells by boundaries</tspan>
-      </text>
-      <rect
-          style="fill:#759E3D;stroke:none"
-          id="F6BC114F"
-          x="102.583637273"
-          y="625.406149112"
-          width="16.9769736842"
-          height="7.716601127506"/>
-      <text
-          id="D80E414F"
-          style="fill:#423280;stroke:none"
-          font-family="Helvetica"
-          font-size="8"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="121.884638135" y="643.486955594">Cell-boundary groups of uses</tspan>
-      </text>
-      <rect
-          style="fill:#423280;stroke:none"
-          id="E80E414F"
-          x="102.583637273"
-          y="636.703706214"
-          width="16.9769736842"
-          height="7.716601127506"/>
-      <text
-          id="701B614F"
-          style="fill:#B40426;stroke:none"
-          font-family="Helvetica"
-          font-size="8"
-          font-weight="normal"
-          font-style="normal">
-         <tspan x="121.884638135" y="610.139365535">Topological modeling</tspan>
-      </text>
-      <rect
-          style="fill:#B40426;stroke:none"
-          id="801B614F"
-          x="102.583637273"
-          y="603.356116155"
-          width="16.9769736842"
-          height="7.716601127506"/>
-   </g>
+    </g>
+    <text
+       x="137.60001"
+       font-style="normal"
+       font-weight="normal"
+       font-size="6"
+       style="font-style:normal;font-weight:normal;font-size:6px;font-family:'American Typewriter';fill:#b40426;stroke:none"
+       id="text4908">
+      <tspan
+         id="tspan4910"
+         y="535.1571"
+         x="521.88556">superset_of*</tspan>
+    </text>
+    <text
+       x="137.60001"
+       font-style="normal"
+       font-weight="normal"
+       font-size="6"
+       style="font-style:normal;font-weight:normal;font-size:6px;font-family:'American Typewriter';fill:#b40426;fill-opacity:1;stroke:none"
+       id="text4912">
+      <tspan
+         style="fill:#b40426;fill-opacity:1"
+         id="tspan4914"
+         y="542.90369"
+         x="521.79761">subset_of</tspan>
+    </text>
+    <path
+       d="m 455.56799,566.02065 c -21.00757,-27.09436 -20.5948,-28.01019 0.17634,-51.36981"
+       id="path4918"
+       style="fill:none;marker-start:url(#294AC513_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       style="fill:none;marker-start:url(#294AC513_start_arrow);marker-end:url(#562B6BFF_end_arrow)"
+       id="path4930"
+       d="m 484.93269,517.78557 c 15.40954,19.76361 3.53415,28.41005 0.75667,49.5038" />
+    <text
+       font-style="normal"
+       font-weight="normal"
+       font-size="6"
+       style="font-style:normal;font-weight:normal;font-size:6px;font-family:'American Typewriter';fill:#b40426;stroke:none;fill-opacity:1;"
+       id="text4932"
+       x="38.399994">
+      <tspan
+         id="tspan4934"
+         y="610.29767"
+         x="499.67142"
+         style="fill:#b40426;fill-opacity:1;">prototype_of</tspan>
+    </text>
+  </g>
 </svg>

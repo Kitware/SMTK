@@ -51,9 +51,9 @@ smtk::model::OperatorResult Translate::operateInternal()
 {
   smtk::attribute::DoubleItemPtr offset = this->findDouble("offset");
 
-  ModelEntities bodiesIn = this->associatedEntitiesAs<ModelEntities>();
+  Models bodiesIn = this->associatedEntitiesAs<Models>();
 
-  ModelEntities::iterator it;
+  Models::iterator it;
   DLIList<RefEntity*> cgmEntitiesIn;
   DLIList<RefEntity*> cgmEntitiesOut;
   RefEntity* refEntity;

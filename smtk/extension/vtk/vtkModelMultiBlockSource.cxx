@@ -395,7 +395,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
 
       this->FindEntitiesWithTessellation(modelEntity, entityrefMap);
 
-      GroupEntities groups = modelEntity.groups();
+      Groups groups = modelEntity.groups();
       mbds->SetNumberOfBlocks(entityrefMap.size() + groups.size());
       vtkIdType i;
       std::map<smtk::model::EntityRef, smtk::model::EntityRef>::iterator cit;
@@ -416,7 +416,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
 
       // Now look at groups of the model to see if those have any tessellation data
       i = 0;
-      for (GroupEntities::iterator git = groups.begin(); git != groups.end(); ++git, ++i)
+      for (Groups::iterator git = groups.begin(); git != groups.end(); ++git, ++i)
         {
         if (git->hasTessellation())
           {

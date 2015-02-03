@@ -28,7 +28,7 @@ typedef smtk::shared_ptr<RemoteOperator> RemoteOperatorPtr;
   * which mirror the other process' list of operators.
   * The ImportJSON class aids in this respect by creating
   * RemoteOperator instances from JSON descriptions of operators
-  * when a session session inherits DefaultSession.
+  * when a session inherits DefaultSession.
   *
   * The ableToOperate() and operateInternal() methods of this class
   * will call delegate methods on their session (provided it inherits

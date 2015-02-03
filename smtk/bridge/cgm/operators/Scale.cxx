@@ -54,9 +54,9 @@ smtk::model::OperatorResult Scale::operateInternal()
   smtk::attribute::DoubleItemPtr factorItem = this->findDouble("scale factor");
   smtk::attribute::DoubleItemPtr factorsItem = this->findDouble("scale factors");
 
-  ModelEntities bodiesIn = this->associatedEntitiesAs<ModelEntities>();
+  Models bodiesIn = this->associatedEntitiesAs<Models>();
 
-  ModelEntities::iterator it;
+  Models::iterator it;
   DLIList<RefEntity*> cgmEntitiesIn;
   DLIList<RefEntity*> cgmEntitiesOut;
   RefEntity* refEntity;

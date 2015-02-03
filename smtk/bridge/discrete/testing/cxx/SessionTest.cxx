@@ -135,7 +135,7 @@ int main(int argc, char* argv[])
       smtk::model::OperatorPtr splitFace = model.op("split face");
       splitFace->specification()->findModelEntity("face to split")->setValue(f);
       splitFace->specification()->findModelEntity("model")->setValue(
-          *manager->entitiesMatchingFlagsAs<ModelEntities>(smtk::model::MODEL_ENTITY).begin());
+          *manager->entitiesMatchingFlagsAs<Models>(smtk::model::MODEL_ENTITY).begin());
       splitFace->specification()->findDouble("feature angle")->setValue(15.0);
       OperatorResult result = splitFace->operate();
       std::cout << "  Face is " << f.name() << " (" << f.entity() << ")\n";

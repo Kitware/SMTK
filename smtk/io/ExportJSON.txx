@@ -110,10 +110,10 @@ int ExportJSON::forEntities(
           CellEntities mcells = ent.as<smtk::model::Model>().cells();
           children.insert(mcells.begin(), mcells.end());
 
-          GroupEntities mgroups = ent.as<smtk::model::Model>().groups();
+          Groups mgroups = ent.as<smtk::model::Model>().groups();
           children.insert(mgroups.begin(), mgroups.end());
 
-          ModelEntities msubmodels = ent.as<smtk::model::Model>().submodels();
+          Models msubmodels = ent.as<smtk::model::Model>().submodels();
           children.insert(msubmodels.begin(), msubmodels.end());
           }
         for (EntityRefs::const_iterator cit = children.begin(); cit != children.end(); ++cit)

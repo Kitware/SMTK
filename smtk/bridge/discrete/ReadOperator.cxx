@@ -91,14 +91,14 @@ OperatorResult ReadOperator::operateInternal()
 
 #if defined(SMTK_DISCRETE_SESSION_DEBUG)
   std::string json = smtk::io::ExportJSON::fromModelManager(this->manager());
-    std::ofstream file("/tmp/read_op_out.json");
-    file << json;
-    file.close();
+  std::ofstream file("/tmp/read_op_out.json");
+  file << json;
+  file.close();
 #endif
 
-  this->manager()->setSessionForModel(
-    this->session()->shared_from_this(),
-    modelId);
+  modelEntity.as<smtk::model::Model>().setSession(
+    smtk::model::SessionRef(
+      this->manager(), this->session()->sessionId()));
 
   return result;
 }

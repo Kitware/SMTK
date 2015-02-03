@@ -17,7 +17,7 @@ also accessible in Python, whose instances perform the following functions:
   You can think of the entities in a model Manager as being "backed" by
   a solid modeling kernel; the session provides a way to synchronize
   the representations in the Manager and the modeling kernel.
-  A manager may contain entity records from multiple Session sessions
+  A manager may contain entity records from multiple sessions
   (e.g., a single Manager may contain some models back by an ACIS
   modeling kernel session and some backed by an OpenCascade session).
 
