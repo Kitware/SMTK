@@ -57,13 +57,17 @@ smtk::model::OperatorResult BooleanUnion::operateInternal()
   DLIList<Body*> cgmBodiesIn;
   DLIList<Body*> cgmBodiesOut;
   Body* cgmBody;
+  EntityRefArray expunged;
   for (it = bodiesIn.begin(); it != bodiesIn.end(); ++it)
     {
     cgmBody = dynamic_cast<Body*>(this->cgmEntity(*it));
     if (cgmBody)
       cgmBodiesIn.append(cgmBody);
     if (!keepInputs)
+      {
       this->manager()->eraseModel(*it);
+      expunged.push_back(*it);
+      }
     }
 
   if (cgmBodiesIn.size() < 2)
@@ -106,6 +110,16 @@ smtk::model::OperatorResult BooleanUnion::operateInternal()
     smtk::model::EntityRef smtkEntry(this->manager(), entId);
     if (session->transcribe(smtkEntry, smtk::model::SESSION_EVERYTHING, false))
       resultBodies->setValue(i, smtkEntry);
+    }
+
+  int numExpunged = expunged.size();
+  if (numExpunged)
+    {
+    smtk::attribute::ModelEntityItem::Ptr expungedOut =
+      result->findModelEntity("expunged");
+    expungedOut->setNumberOfValues(numExpunged);
+    for (int i = 0; i < numExpunged; ++i)
+      expungedOut->setValue(i, expunged[i]);
     }
 
   return result;
