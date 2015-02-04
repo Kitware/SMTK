@@ -152,6 +152,13 @@ StringData SessionRef::fileTypes(
   return SessionRegistrar::sessionFileTypes(this->session()->name(), engine);
 }
 
+void SessionRef::close()
+{
+  ManagerPtr mgr = this->manager();
+  if (mgr)
+    mgr->closeSession(*this);
+}
+
 /*! \fn template<typename T> T SessionRef::models() const;
   * \brief Return the list of models associated with this session.
   *

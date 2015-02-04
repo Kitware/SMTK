@@ -47,6 +47,8 @@ public:
   StringList engines() const;
   StringData fileTypes(
     const std::string& engine = std::string()) const;
+
+  void close();
 };
 
 template<typename T>
