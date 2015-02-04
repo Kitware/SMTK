@@ -170,8 +170,6 @@ bool Manager::erase(const UUID& uid)
   if (ent == this->m_topology->end())
     return false;
 
-  bool isModelEnt = isModel(ent->second.entityFlags());
-
   // Trigger an event before the erasure so the observers
   // have a chance to see what's about to disappear.
   this->trigger(std::make_pair(DEL_EVENT, ENTITY_ENTRY),

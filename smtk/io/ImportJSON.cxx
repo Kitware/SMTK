@@ -860,12 +860,8 @@ int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::mode
   // Remove entities that the operator result reports as expunged:
   smtk::attribute::ModelEntityItemPtr expunged = resOut->findModelEntity("expunged");
   std::size_t num = expunged->numberOfValues();
-  //std::cout << "Should expunge " << num << " entries\n";
   for (std::size_t i = 0; i < num; ++i)
-    {
-    //std::cout << "  " << expunged->value(i).entity() << "\n";
     expunged->value(i).manager()->erase(expunged->value(i));
-    }
 
   // Deserialize the relevant transcribed entities into the
   // remote operator's model manager:
@@ -873,14 +869,8 @@ int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::mode
   cJSON* records = cJSON_GetObjectItem(node, "records");
   if (mgr && records)
     {
-    int num = 0;
     for (cJSON* c = records->child; c; c = c->next)
-      {
-      //std::cout << "  x " << c->string << " " << Entity::flagSummary(cJSON_GetObjectItem(c, "e")->valueint,0) << "\n";
       mgr->erase(smtk::common::UUID(c->string));
-      ++num;
-      }
-    //std::cout << "*** Result included " << num << " records\n";
     ImportJSON::ofManager(records, mgr);
     }
   return status;

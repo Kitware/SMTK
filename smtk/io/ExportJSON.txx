@@ -30,7 +30,6 @@ int ExportJSON::forEntities(
   if (!json || sections == JSON_NOTHING)
     return 1;
 
-  typename T::const_iterator eit = entities.begin();
   std::set<EntityRef> queue;
   // If we are asked to return all the entities of the related model(s),
   // find the owning model
