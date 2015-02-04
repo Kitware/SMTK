@@ -491,7 +491,7 @@ int ExportJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
     // TODO: In the future, this may be more conservative (i.e., fewer records
     //       would be included to save time and memory) than JSON_MODELS.
     cJSON* records = cJSON_CreateObject();
-    ExportJSON::forEntities(records, ents, JSON_MODELS, JSON_DEFAULT);
+    ExportJSON::forEntities(records, ents, JSON_MODELS, JSON_CLIENT_DATA);
     cJSON_AddItemToObject(entRec, "records", records);
     }
 

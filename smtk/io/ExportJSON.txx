@@ -36,13 +36,34 @@ int ExportJSON::forEntities(
   // find the owning model
   smtk::model::Model parent;
   if (relatedEntities == JSON_MODELS)
+    {
     for (typename T::const_iterator rit = entities.begin(); rit != entities.end(); ++rit)
+      {
       if ((parent = rit->owningModel()).isValid())
+        {
         queue.insert(parent);
+        smtk::model::SessionRef sref = parent.session();
+        if (sref.isValid())
+          queue.insert(sref);
+        }
+      else if (rit->isModel())
+        {
+        smtk::model::Model model(*rit);
+        smtk::model::SessionRef sref = model.session();
+        queue.insert(model);
+        if (sref.isValid())
+          queue.insert(sref);
+        }
       else
+        {
         queue.insert(*rit); // Well, if it doesn't have a parent, at least make sure it's included.
+        }
+      }
+    }
   else
+    {
     queue.insert(entities.begin(), entities.end());
+    }
 
   EntityRefs visited;
   int status = 1;
