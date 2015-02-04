@@ -50,10 +50,10 @@ SessionInfoBits DefaultSession::transcribeInternal(const EntityRef& entity, Sess
   */
 void DefaultSession::backsRemoteSession(
   const std::string& remoteSessionName,
-  const smtk::common::UUID& sessionId)
+  const smtk::common::UUID& sessId)
 {
   this->m_remoteSessionName = remoteSessionName;
-  this->m_sessionId = sessionId;
+  this->m_sessionId = sessId;
 }
 
 /**\brief Returns an empty string or, when backsRemoteSession
