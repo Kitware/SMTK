@@ -177,9 +177,9 @@ void RemusRPCWorker::processJob(
       //smtkDebugMacro(this->manager()->log(), "  " << methStr);
       if (methStr == "search-sessions")
         {
-        smtk::model::StringList sessionNames = this->m_modelMgr->sessionNames();
+        smtk::model::StringList sessionTypeNames = this->m_modelMgr->sessionTypeNames();
         cJSON_AddItemToObject(result, "result",
-          smtk::io::ExportJSON::createStringArray(sessionNames));
+          smtk::io::ExportJSON::createStringArray(sessionTypeNames));
         }
       else if (methStr == "session-filetypes")
         {
@@ -210,8 +210,8 @@ void RemusRPCWorker::processJob(
         }
       else if (methStr == "create-session")
         {
-        smtk::model::StringList sessionNames = this->m_modelMgr->sessionNames();
-        std::set<std::string> sessionSet(sessionNames.begin(), sessionNames.end());
+        smtk::model::StringList sessionTypeNames = this->m_modelMgr->sessionTypeNames();
+        std::set<std::string> sessionSet(sessionTypeNames.begin(), sessionTypeNames.end());
         cJSON* bname;
         if (
           !param ||
@@ -270,7 +270,7 @@ void RemusRPCWorker::processJob(
               cJSON_AddItemToObject(result, "result", sess);
 #if 0
               // Now redefine our worker to be a new one whose
-              // requirements include a tag for this session session.
+              // requirements include a tag for this session.
               // That way it can be singled out by the client that
               // initiated the session.
               r = make_JobRequirements(
@@ -295,7 +295,7 @@ void RemusRPCWorker::processJob(
       else if (methStr == "fetch-model")
         {
         cJSON* model = cJSON_CreateObject();
-        // Never include session session list or tessellation data
+        // Never include session list or tessellation data
         // Until someone makes us.
         smtk::io::ExportJSON::fromModelManager(model, this->m_modelMgr,
           static_cast<smtk::io::JSONFlags>(
@@ -359,8 +359,10 @@ void RemusRPCWorker::processJob(
         else
           {
           smtk::model::SessionPtr session =
-            this->m_modelMgr->findSession(
-              smtk::common::UUID(bsess->valuestring));
+            SessionRef(
+              this->m_modelMgr,
+              smtk::common::UUID(bsess->valuestring)
+            ).session();
           if (!session)
             {
             this->generateError(result, "No session with given session ID.", reqIdStr);

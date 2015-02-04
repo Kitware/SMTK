@@ -23,7 +23,7 @@
   <suppress-warning text="skipping field 'Session::s_modelIdsToRefs' with unmatched type 'std::map&lt;smtk::common::UUID,vtkSmartPointer&lt;vtkDiscreteModelWrapper&gt;&gt;'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addEntities', unmatched parameter type 'P&amp;'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addFaceToManager', unmatched parameter type 'vtkModelFace*'"/>
-  <suppress-warning text="skipping field 'Session::m_itemsToRefs' with unmatched type 'std::map&lt;smtk::common::UUID,vtkModelItem*&gt;'"/>
+  <suppress-warning text="skipping field 'Session::m_itemsToRefs' with unmatched type 'std::map&lt;smtk::common::UUID,vtkWeakPointer&lt;vtkModelItem&gt;&gt;'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addMaterialToManager', unmatched parameter type 'vtkModelMaterial*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addBodyToManager', unmatched parameter type 'vtkModel*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addCMBEntityToManager', unmatched parameter type 'vtkModelItem*'"/>

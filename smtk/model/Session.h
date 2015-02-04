@@ -36,7 +36,7 @@ class Operator;
 typedef std::map<smtk::common::UUID,smtk::shared_ptr<Session> > UUIDsToSessions;
 typedef std::map<smtk::model::EntityRef,SessionInfoBits> DanglingEntities;
 
-/**\brief Bit flags describing types of information sessiond to Manager.
+/**\brief Bit flags describing types of information bridged to Manager.
   *
   * Session classes should provide individual translation for
   * each piece of information, but are allowed to transcribe
@@ -323,7 +323,7 @@ public:
 protected:
   friend class io::ExportJSON;
   friend class io::ImportJSON;
-  friend class BRepModel;
+  friend class Manager;
 
   Session();
   virtual ~Session();

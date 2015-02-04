@@ -23,7 +23,7 @@ print 'Loading %s' % model_path
 
 status = 0
 mgr = smtk.model.Manager.create()
-session = mgr.createAndRegisterSession('native', uuid4())
+session = mgr.createSession('native', smtk.model.SessionRef())
 json = None
 with open(model_path, 'r') as f:
   json = f.read()
@@ -35,6 +35,8 @@ if not smtk.io.ImportJSON.intoModelManager(json, mgr):
   sys.exit(4)
 mgr.assignDefaultNames()
 models = mgr.findEntitiesOfType(smtk.model.MODEL_ENTITY, True)
+# Assign imported models to current session so they have operators
+[smtk.model.Model(x).setSession(session) for x in models]
 print 'Applying operator to %d model(s)' % len(models)
 
 op = smtk.model.Model(models[0]).op('set property')

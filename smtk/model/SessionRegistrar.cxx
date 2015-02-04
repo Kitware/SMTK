@@ -198,7 +198,7 @@ bool SessionRegistrar::registerSession(
     { // unregister the session of the given name.
     s_sessions()->erase(bname);
     //std::cout << "Removing session " << bname << "\n";
-    // FIXME: We should ensure that no registered Session sessions are of type bname.
+    // FIXME: We should ensure that no registered sessions are of type bname.
     //        Presumably, by deleting all such sessions and removing their entities
     //        from storage.
     }
@@ -206,7 +206,7 @@ bool SessionRegistrar::registerSession(
 }
 
 /// Return a list of the names of each session subclass whose constructor has been registered with SMTK.
-StringList SessionRegistrar::sessionNames()
+StringList SessionRegistrar::sessionTypeNames()
 {
   StringList result;
   for (SessionConstructors::const_iterator it = s_sessions()->begin(); it != s_sessions()->end(); ++it)

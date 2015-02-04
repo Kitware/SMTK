@@ -65,22 +65,22 @@ class vtkItemWatcherCommand;
 /**\brief A class that handles translation between CMB and SMTK instances.
   *
   * How it works:
-  * (1) A session entity is created and ImportEntitiesFromFileNameIntoManager
-  *     is called to load a CMB model. A CMBModelReadOperator is used to load
+  * (1) A Session entity and ReadOperator are created. The read operator is called
+  *     to load a CMB model. Internally, a CMBModelReadOperator is used to load
   *     a vtkDiscreteModel (placed inside a vtkDiscreteModelWrapper by the
-  *     CMB operator). The session instance is associated to the model wrapper
+  *     CMB operator). The Session instance is associated to the model wrapper
   *     in the s_modelsToSessions variable.
-  * (2) ImportEntitiesFromFileNameIntoManager calls trackModel with the
-  *     vtkDiscreteModelWrapper obtained using CMB's "read" model
-  *     operator. Since vtkDiscreteModelWrapper is a subclass of vtkObject,
+  * (2) The ReadOperator calls trackModel with the vtkDiscreteModelWrapper
+  *     obtained using CMB's (not SMTK's) "read" operator. Since
+  *     vtkDiscreteModelWrapper is a subclass of vtkObject,
   *     we can keep it from being destroyed by holding a smart-pointer to
   *     it (in s_modelIdsToRefs and s_modelRefsToIds).
   * (2) The model and, upon demand, entities contained in the model
   *     are assigned UUIDs if not present already. The UUIDs are kept
   *     in the vtkInformation object every vtkModelItem owns (Properties).
-  * (3) ExportSolid accepts a list of UUIDs for vtkModel instances.
-  *     For each top-level vtkDiscreteModelWrapper in the list, it calls
-  *     CMB's "write" operator on the model.
+  * (3) An SMTK WriteOperator will accept a list of UUIDs for vtkModel
+  *     instances. For each top-level vtkDiscreteModelWrapper in the list,
+  *     it calls CMB's "write" operator on the model.
   */
 class SMTKDISCRETESESSION_EXPORT Session : public smtk::model::Session
 {
@@ -103,11 +103,6 @@ public:
 
   static vtkUnsignedIntArray* retrieveUUIDs(
     vtkDiscreteModel* model, const std::vector<vtkModelItem*>& ents);
-
-  smtk::common::UUID ImportEntitiesFromFileNameIntoManager(
-    const std::string& filename,
-    const std::string& filetype,
-    smtk::model::ManagerPtr storage);
 
   int ExportEntitiesToFileOfNameAndType(
     const std::vector<smtk::model::EntityRef>& entities,

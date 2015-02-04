@@ -11,7 +11,7 @@
 #define __smtk_model_PropertyListPhrase_h
 
 #include "smtk/model/DescriptivePhrase.h"
-#include "smtk/model/BRepModel.h" // For PropertyType enum.
+#include "smtk/model/Manager.h" // For PropertyType enum.
 
 #include <string>
 #include <vector>

@@ -182,6 +182,23 @@ void testVolumeEntityRef()
   test(shells.size() == 1, "Expected a single shell (use) in the test model.");
 }
 
+void testModelMethods()
+{
+  // Test methods specific to the Model subclass of EntityRef
+  ManagerPtr sm = Manager::create();
+  SessionRef sess = sm->createSession("native");
+  Model m0 = sm->addModel();
+  test(!m0.session().isValid(), "Expected invalid session for new, \"blank\" model.");
+  m0.setSession(sess);
+  test(m0.session() == sess, "Expected valid session when assigned to model.");
+
+  Model m1 = sm->addModel();
+  m0.addSubmodel(m1);
+  std::cout << "m1 " << m1.name() << " m0 " << m0.name() << " m1p " << m1.parent().name() << "\n";
+  std::cout << "m1 " << m1.session().name() << " m0 " << m0.session().name() << "\n";
+  test(m1.session() == m0.session(), "Expected sessions to match for model and its submodel.");
+}
+
 int main(int argc, char* argv[])
 {
   (void) argc;
@@ -548,6 +565,7 @@ int main(int argc, char* argv[])
     testMiscConstructionMethods();
     testTemplatedPropertyMethods();
     testVolumeEntityRef();
+    testModelMethods();
     }
   catch (const std::string& msg)
     {

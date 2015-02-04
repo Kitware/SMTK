@@ -12,7 +12,7 @@
 import os, sys
 import smtk
 
-if 'cgm' not in smtk.model.Manager.sessionNames():
+if 'cgm' not in smtk.model.Manager.sessionTypeNames():
   print 'ERROR: cgm not available.'
 
   # Print a subset of environment variables to help debugging

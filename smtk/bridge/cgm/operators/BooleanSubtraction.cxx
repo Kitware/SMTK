@@ -54,9 +54,9 @@ smtk::model::OperatorResult BooleanSubtraction::operateInternal()
   int keepInputs = this->findInt("keep inputs")->value();
   int imprint = this->findInt("imprint workpieces")->value();
   ModelEntityItemPtr toolsIn = this->findModelEntity("tools");
-  ModelEntities bodiesIn = this->associatedEntitiesAs<ModelEntities>();
+  Models bodiesIn = this->associatedEntitiesAs<Models>();
 
-  ModelEntities::iterator it;
+  Models::iterator it;
   DLIList<Body*> cgmBodiesIn;
   DLIList<Body*> cgmBodiesOut;
   DLIList<Body*> cgmToolsIn;

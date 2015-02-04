@@ -54,7 +54,7 @@ bool BooleanIntersection::ableToOperate()
 {
   this->ensureSpecification();
   bool result = true;
-  std::size_t numWorkpieces = this->associatedEntitiesAs<ModelEntities>().size();
+  std::size_t numWorkpieces = this->associatedEntitiesAs<Models>().size();
   std::size_t numTools = this->findModelEntity("tool")->numberOfValues();
   if (numWorkpieces + numTools < 2)
     {
@@ -71,11 +71,11 @@ bool BooleanIntersection::ableToOperate()
 smtk::model::OperatorResult BooleanIntersection::operateInternal()
 {
   int keepInputs = this->findInt("keep inputs")->value();
-  ModelEntities bodiesIn = this->associatedEntitiesAs<ModelEntities>();
+  Models bodiesIn = this->associatedEntitiesAs<Models>();
   ModelEntityItemPtr toolIn = this->findModelEntity("tool");
   Body* cgmToolBody = NULL;
 
-  ModelEntities::iterator it;
+  Models::iterator it;
   DLIList<Body*> cgmBodiesIn;
   DLIList<Body*> cgmBodiesOut;
   Body* cgmBody;

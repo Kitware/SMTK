@@ -127,10 +127,7 @@ smtk::model::OperatorResult Read::operateInternal()
     smtk::common::UUID entId = refId->entityId();
     smtk::model::EntityRef smtkEntry(this->manager(), entId);
     if (session->transcribe(smtkEntry, smtk::model::SESSION_EVERYTHING, false))
-      {
       resultModels->setValue(i, smtkEntry);
-      this->manager()->setSessionForModel(session->shared_from_this(), entId);
-      }
     }
   imported.reset();
 

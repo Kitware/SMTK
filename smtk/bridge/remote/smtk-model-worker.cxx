@@ -113,7 +113,7 @@ int usage(
 
   // II. List available modeling kernels.
   std::cout << "Valid <kern> values are:\n";
-  StringList allKernels = smtk::model::SessionRegistrar::sessionNames();
+  StringList allKernels = smtk::model::SessionRegistrar::sessionTypeNames();
   for (StringList::iterator kit = allKernels.begin(); kit != allKernels.end(); ++kit)
     if (*kit != "native") // Do not allow "native" unbacked models, for now.
       std::cout << "  " << *kit << "\n";
@@ -260,8 +260,8 @@ int main(int argc, char* argv[])
       {
       return usage(logr, 1, "Remus worker filename not specifed or invalid.");
       }
-    // Create session session and serialize operators.
-    smtk::model::Session::Ptr session = mgr->createAndRegisterSession(wkOpts.kernel());
+    // Create session and serialize operators.
+    smtk::model::Session::Ptr session = mgr->createSession(wkOpts.kernel()).session();
     if (!session)
       return usage(logr, 1, "Could not create session \"" + wkOpts.kernel() + "\"");
     smtk::attribute::System* opsys = session->operatorSystem();

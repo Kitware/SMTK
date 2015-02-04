@@ -14,20 +14,20 @@ import sys
 import smtk
 
 mgr = smtk.model.Manager.create()
-sess = mgr.createSession('cgm')
-brg = sess.session()
-sess.assignDefaultName()
+sref = mgr.createSession('cgm', smtk.model.SessionRef())
+sess = sref.session()
+sref.assignDefaultName()
 print '\n\n%s: type "%s" %s %s' % \
-  (sess.name(), brg.name(), sess.flagSummary(0), brg.sessionId())
-print '  Site: %s' % (sess.site() or 'local')
+  (sref.name(), sess.name(), sref.flagSummary(0), sess.sessionId())
+print '  Site: %s' % (sref.site() or 'local')
 
 # We could evaluate the session tag as JSON, but most of
 # the information is available through methods above that
 # we needed to test:
-sessiontag = sess.tag()
+sessiontag = sref.tag()
 print '\n'
 
-opnames = sess.operatorNames()
+opnames = sref.operatorNames()
 
 def SetVectorValue(item,v):
   item.setNumberOfValues(len(v))
@@ -39,11 +39,11 @@ def GetVectorValue(item):
   return [item.value(i) for i in range(N)]
 
 def GetActiveSession():
-  return sess
+  return sref
 
 def CreateSphere(**args):
-  sess = GetActiveSession()
-  cs = sess.op('create sphere')
+  sref = GetActiveSession()
+  cs = sref.op('create sphere')
   if 'radius' in args:
     cs.findAsDouble('radius').setValue(args['radius'])
   if 'inner_radius' in args:
@@ -56,8 +56,8 @@ def CreateSphere(**args):
   return sph
 
 def CreateBrick(**args):
-  sess = GetActiveSession()
-  cb = sess.op('create brick')
+  sref = GetActiveSession()
+  cb = sref.op('create brick')
   meth = 1 if 'ext' in args else 0
   ov = cb.findAsInt('construction method')
   ov.setDiscreteIndex(meth)
@@ -81,8 +81,8 @@ def CreateBrick(**args):
   return brick
 
 def Intersect(bodies, **args):
-  sess = GetActiveSession()
-  op = sess.op('intersection')
+  sref = GetActiveSession()
+  op = sref.op('intersection')
   try:
     [op.associateEntity(x) for x in bodies]
   except:
@@ -91,8 +91,8 @@ def Intersect(bodies, **args):
   return res.findModelEntity('entities').value(0)
 
 def Union(bodies, **args):
-  sess = GetActiveSession()
-  op = sess.op('union')
+  sref = GetActiveSession()
+  op = sref.op('union')
   try:
     [op.associateEntity(x) for x in bodies]
   except:
@@ -105,8 +105,8 @@ def Subtract(workpiece, tool, **args):
 
   Tool and workpiece may each be either an SMTK model or a list of models.
   """
-  sess = GetActiveSession()
-  op = sess.op('subtraction')
+  sref = GetActiveSession()
+  op = sref.op('subtraction')
   if type(workpiece) == type([]):
     [op.associateEntity(x) for x in workpiece]
   else:
@@ -122,7 +122,8 @@ def Subtract(workpiece, tool, **args):
 
 def Translate(bodies, vec):
   """Translate the body (or list of bodies) along the given vector."""
-  top = sess.op('translate')
+  sref = GetActiveSession()
+  top = sref.op('translate')
   if type(bodies) == type([]):
     [top.associateEntity(bod) for bod in bodies]
   else:

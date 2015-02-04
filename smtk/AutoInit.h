@@ -16,7 +16,7 @@
 // exposed to SMTK's core components.
 //
 // See smtk/model/Session.h and its subclasses for an example of how
-// these macros are used to register components with BRepModel.
+// these macros are used to register components with the model Manager.
 
 #define smtkAutoInitComponentMacro(C) \
   void C##_AutoInit_Construct(); \

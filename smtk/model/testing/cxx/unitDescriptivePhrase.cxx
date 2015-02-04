@@ -33,6 +33,7 @@ using namespace smtk::io;
 int main(int argc, char* argv[])
 {
   ManagerPtr sm = Manager::create();
+  SessionRef sess = sm->createSession("native");
 
   // Block to ensure timely destruction of JSON data.
     {
@@ -50,17 +51,16 @@ int main(int argc, char* argv[])
     }
   sm->assignDefaultNames();
 
-  sm->sessionForModel(UUID::null());
-  SessionRefs ents = sm->allSessions();
-  std::cout << ents.size() << " session sessions.\n";
-  test(ents.size() == 1, "Expected a single session session.");
+  SessionRefs ents = sm->sessions();
+  std::cout << ents.size() << " sessions.\n";
+  test(ents.size() == 1, "Expected a single session.");
 
-  // Assign all the models to the lone (default, native) session.
-  ModelEntities models =
-    sm->entitiesMatchingFlagsAs<ModelEntities>(
+  // Assign all the models to the default, native session.
+  Models models =
+    sm->entitiesMatchingFlagsAs<Models>(
       MODEL_ENTITY, false);
-  for (ModelEntities::iterator mit = models.begin(); mit != models.end(); ++mit)
-    sm->setSessionForModel(ents[0].session(), mit->entity());
+  for (Models::iterator mit = models.begin(); mit != models.end(); ++mit)
+    mit->setSession(ents[0]);
 
   EntityRefArray faces;
   EntityRef::EntityRefsFromUUIDs(

@@ -14,24 +14,23 @@ import sys
 import smtk
 
 mgr = smtk.model.Manager.create()
-sess = mgr.createSession('cgm')
-brg = sess.session() # smtk.model.Manager.createSession('cgm')
-#sess = smtk.model.SessionRef(mgr, brg)
-sess.assignDefaultName()
+sref = mgr.createSession('cgm', smtk.model.SessionRef())
+sess = sref.session()
+sref.assignDefaultName()
 print '\n\n%s: type "%s" %s %s' % \
-  (sess.name(), brg.name(), sess.flagSummary(0), brg.sessionId())
-print '  Site: %s' % (sess.site() or 'local')
-for eng in sess.engines():
+  (sref.name(), sess.name(), sref.flagSummary(0), sess.sessionId())
+print '  Site: %s' % (sref.site() or 'local')
+for eng in sref.engines():
   print '  Engine %s filetypes:\n    %s' % \
-    (eng, '\n    '.join(sess.fileTypes(eng)))
+    (eng, '\n    '.join(sref.fileTypes(eng)))
 # We could evaluate the session tag as JSON, but most of
 # the information is available through methods above that
 # we needed to test:
-sessiontag = sess.tag()
+sessiontag = sref.tag()
 print '\n'
 
-opnames = sess.operatorNames()
-cs1 = sess.op('create sphere')
+opnames = sref.operatorNames()
+cs1 = sref.op('create sphere')
 cs1.findAsDouble('radius').setValue(1.)
 #cs1.findAsDouble('inner radius').setValue(0.1) # Crashes
 #cs1.findAsDouble('inner radius').setValue(-0.1) # Complains bitterly
@@ -46,16 +45,16 @@ cs1.findAsDouble('center').setValue(2, 0.2)
 res = cs1.operate()
 sph = res.findModelEntity('entities').value(0)
 
-cs2 = sess.op('create sphere')
+cs2 = sref.op('create sphere')
 cs2.findAsDouble('radius').setValue(0.5)
 cs2.findAsDouble('center').setValue(0, 0.9)
 res2 = cs2.operate()
 sph2 = res2.findModelEntity('entities').value(0)
 
 print 'Operators that can associate with ' + sph2.flagSummary(1) + ' include\n  %s' % \
-  '\n  '.join(sess.operatorsForAssociation(sph2.entityFlags()))
+  '\n  '.join(sref.operatorsForAssociation(sph2.entityFlags()))
 
-u1 = sess.op('union')
+u1 = sref.op('union')
 u1.associateEntity(sph)
 u1.associateEntity(sph2)
 res = u1.operate()
@@ -72,5 +71,5 @@ su = res.findModelEntity('entities').value(0)
 
 #
 # Now verify that mgr.closeSession removes the entity record for the session.
-mgr.closeSession(sess)
-sys.exit(0 if sess.name() == ('invalid id ' + str(sess.entity())) else 1)
+mgr.closeSession(sref)
+sys.exit(0 if sref.name() == ('invalid id ' + str(sref.entity())) else 1)

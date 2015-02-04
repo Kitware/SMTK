@@ -614,7 +614,7 @@ int ImportJSON::ofManagerIntegerProperties(const smtk::common::UUID& uid, cJSON*
   return status ? 0 : 1;
 }
 
-/**\brief Import JSON holding a session session into a local session.
+/**\brief Import JSON holding a session into a local session.
   *
   * The session described by \a node will be mirrored by the
   * \a destSession you specify.
@@ -635,7 +635,7 @@ int ImportJSON::ofRemoteSession(cJSON* node, DefaultSessionPtr destSession, Mana
   if (
     !node ||
     node->type != cJSON_Object ||
-    // Does the node have a valid session session ID?
+    // Does the node have a valid session ID?
     !node->string ||
     !node->string[0] ||
     // Does the node have fields "name" and "ops" (for "operators") of type String?
@@ -652,7 +652,7 @@ int ImportJSON::ofRemoteSession(cJSON* node, DefaultSessionPtr destSession, Mana
   destSession->backsRemoteSession(
     nameObj->valuestring, smtk::common::UUID(node->string));
 
-  // Import the XML definitions of the serialized session session
+  // Import the XML definitions of the serialized session
   // into the destination session's operatorSystem():
   smtk::io::Logger log;
   smtk::io::AttributeReader rdr;
@@ -674,11 +674,11 @@ int ImportJSON::ofRemoteSession(cJSON* node, DefaultSessionPtr destSession, Mana
     std::cout << "  " << log.convertToString() << "\n";
     }
 
-  // Register the session session with the model manager:
+  // Register the session with the model manager:
   context->registerSession(destSession);
 
   // Now register the RemoteOperator constructor with each
-  // operator in the session session.
+  // operator in the session.
   // NB: This registers the constructor with the entire
   //     session class, not just the destSession instance.
   //     If destSession is a DefaultSession (and not a subclass
@@ -708,7 +708,7 @@ int ImportJSON::ofRemoteSession(cJSON* node, DefaultSessionPtr destSession, Mana
   return status;
 }
 
-/**\brief Create a local session and import JSON from a session session.
+/**\brief Create a local session and import JSON from a session.
   *
   * The session described by \a node will be mirrored by a newly-created
   * session (whose type is specified by \a node) and attached to the
@@ -717,7 +717,7 @@ int ImportJSON::ofRemoteSession(cJSON* node, DefaultSessionPtr destSession, Mana
   * You must provide a valid model manager, \a context, to which the
   * restored session will be registered.
   * Note that \a context must *already* contain the SMTK entity records
-  * for the session session!
+  * for the session!
   * In particular, Model entries in \a context will be used to
   * determine the URLs for the modeling kernel's native representations.
   *
@@ -733,13 +733,13 @@ int ImportJSON::ofRemoteSession(cJSON* node, DefaultSessionPtr destSession, Mana
   * provide mechanisms for loading kernel-native models while
   * preserving UUIDs. The expected design pattern is for each session
   * to provide a SessionIOJSON delegate class that reads kernel-specific
-  * keys in the session session. These keys will specify the list
-  * of models associated with the session session. The delegate can
+  * keys in the session. These keys will specify the list
+  * of models associated with the session. The delegate can
   * then query the \a context for URLs and either directly load
   * the URL or use the "read" operator for the session to load the URL.
   * Since "read" operators usually insert new entries into \a context,
   * special care must be taken to avoid that behavior when importing
-  * a session session.
+  * a session.
   */
 int ImportJSON::ofLocalSession(cJSON* node, ManagerPtr context)
 {
@@ -749,7 +749,7 @@ int ImportJSON::ofLocalSession(cJSON* node, ManagerPtr context)
   if (
     !node ||
     node->type != cJSON_Object ||
-    // Does the node have a valid session session ID?
+    // Does the node have a valid session ID?
     !node->string ||
     !node->string[0] ||
     // Does the node have fields "name" and "ops" (for "operators") of type String?
@@ -763,14 +763,14 @@ int ImportJSON::ofLocalSession(cJSON* node, ManagerPtr context)
     !opsObj->valuestring[0])
     return status;
 
-  Session::Ptr session =
-    context->createAndRegisterSession(
-      nameObj->valuestring,
-      smtk::common::UUID(node->string));
-  if (!session)
+  SessionRef sref(context, smtk::common::UUID(node->string));
+  sref =
+    context->createSession(
+      nameObj->valuestring, sref);
+  if (!sref.isValid())
     return status;
 
-  // Ignore the XML definitions of the serialized session session;
+  // Ignore the XML definitions of the serialized session;
   // recreating the session will recreate the attribute definitions.
   (void)opsObj;
 
@@ -780,7 +780,7 @@ int ImportJSON::ofLocalSession(cJSON* node, ManagerPtr context)
   // and load the corresponding native-kernel model files.
   SessionIOJSONPtr delegate =
     smtk::dynamic_pointer_cast<SessionIOJSON>(
-      session->createIODelegate("json"));
+      sref.session()->createIODelegate("json"));
   if (delegate)
     {
     status = delegate->importJSON(context, node);
@@ -826,7 +826,7 @@ int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
   DefaultSession::Ptr defSession;
   if (context)
     {
-    session = context->findSession(sessionId);
+    session = SessionRef(context, sessionId).session();
     defSession = smtk::dynamic_pointer_cast<DefaultSession>(session);
     }
 
@@ -901,7 +901,7 @@ int ImportJSON::ofDanglingEntities(cJSON* node, ManagerPtr context)
   smtk::common::UUID sessionId(sessId->valuestring);
   if (sessionId.isNull())
     return 0;
-  SessionPtr session = context->findSession(sessionId);
+  SessionPtr session = SessionRef(context, sessionId).session();
   if (!session)
     return 0;
 

@@ -23,7 +23,7 @@ namespace smtk {
 
 /**\brief Alternative constructor using session pointer instead of ID.
   *
-  * This constructor obtains the session session ID from the
+  * This constructor obtains the session ID from the
   * \a brdg object.
   *
   * This variant also ensures that the session is registered
@@ -32,7 +32,7 @@ namespace smtk {
 SessionRef::SessionRef(ManagerPtr mgr, SessionPtr brdg)
   : EntityRef(mgr, brdg->sessionId())
 {
-  if (!!mgr && !mgr->findSession(brdg->sessionId()))
+  if (!!mgr && !mgr->sessionData(*this))
     mgr->registerSession(brdg);
 }
 
@@ -44,7 +44,7 @@ Session::Ptr SessionRef::session() const
   ManagerPtr mgr = this->m_manager.lock();
   if (!mgr || !this->m_entity)
     return Session::Ptr();
-  return mgr->findSession(this->m_entity);
+  return mgr->sessionData(*this);
 }
 
 /**\brief Return the list of operations this session supports.
@@ -152,10 +152,17 @@ StringData SessionRef::fileTypes(
   return SessionRegistrar::sessionFileTypes(this->session()->name(), engine);
 }
 
+void SessionRef::close()
+{
+  ManagerPtr mgr = this->manager();
+  if (mgr)
+    mgr->closeSession(*this);
+}
+
 /*! \fn template<typename T> T SessionRef::models() const;
   * \brief Return the list of models associated with this session.
   *
-  * This returns all of the models for which BRepModel::setSessionForModel()
+  * This returns all of the models for which Manager::setSessionForModel()
   * has been called with this entityref's session.
   */
 

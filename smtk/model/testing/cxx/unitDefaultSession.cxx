@@ -272,7 +272,7 @@ void printSessionOperatorNames(const SessionRef& br, const std::string& msg)
 
 // Test remote bridging: create 2 model::Manager instances,
 // add a native operator to manager A's "native" session,
-// serialize the session session into a DefaultSession instance
+// serialize the session into a DefaultSession instance
 // that backs it into manager B, and invoke the remote version
 // of the operator attached to the DefaultSession on manager B.
 // Check that the operation was invoked on manager A and that
@@ -289,13 +289,13 @@ int main()
     smtk::model::Manager::Ptr localMgr = smtk::model::Manager::create();
 
     // The default session of the "remote" manager:
-    Session::Ptr remoteSession = remoteMgr->createAndRegisterSession("native");
-    SessionRef remoteSess(remoteMgr, remoteSession->sessionId());
+    SessionRef remoteSess = remoteMgr->createSession("native");
+    Session::Ptr remoteSession = remoteSess.session();
     remoteSess.setName("remote session");
     printSessionOperatorNames(remoteSess, "remote");
 
     // Now we want to mirror the remote manager locally.
-    // Serialize the "remote" session session:
+    // Serialize the "remote" session:
     cJSON* sessJSON = cJSON_CreateObject();
     ExportJSON::forManagerSession(remoteSession->sessionId(), sessJSON, remoteMgr);
     // ... and import the session locally to a new session object.

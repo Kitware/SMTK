@@ -398,7 +398,7 @@ std::string Entity::flagSummary(BitFlags flags, int form)
         case GROUP_ENTITY: result += "groups"; break;
         case MODEL_ENTITY: result += "models"; break;
         case INSTANCE_ENTITY: result += "instances"; break;
-        case SESSION: result += "session sessions"; break;
+        case SESSION: result += "sessions"; break;
         default: break;
           }
         }

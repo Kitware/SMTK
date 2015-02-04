@@ -70,7 +70,7 @@ typedef std::vector<smtk::model::EntityRef> EntityRefArray;
   *
   * This class exposes methods from multiple members of the model
   * manager that are all associated with a given entity.
-  * See BRepModel, Manager, Entity, EntityTypeBits, and other
+  * See Manager, Manager, Entity, EntityTypeBits, and other
   * headers for documentation on the methods in this class.
   *
   * It is a convenience class only and new functionality added to
@@ -117,12 +117,13 @@ public:
   virtual bool isValid(Entity** entityRecord) const;
   virtual bool checkForArrangements(ArrangementKind k, Entity*& entry, Arrangements*& arr) const;
 
-  bool isCellEntity()     const { return smtk::model::isCellEntity(this->entityFlags()); }
-  bool isUseEntity()      const { return smtk::model::isUseEntity(this->entityFlags()); }
-  bool isShellEntity()    const { return smtk::model::isShellEntity(this->entityFlags()); }
-  bool isGroup()    const { return smtk::model::isGroup(this->entityFlags()); }
-  bool isModel()    const { return smtk::model::isModel(this->entityFlags()); }
-  bool isInstance() const { return smtk::model::isInstance(this->entityFlags()); }
+  bool isCellEntity()  const { return smtk::model::isCellEntity(this->entityFlags()); }
+  bool isUseEntity()   const { return smtk::model::isUseEntity(this->entityFlags()); }
+  bool isShellEntity() const { return smtk::model::isShellEntity(this->entityFlags()); }
+  bool isGroup()       const { return smtk::model::isGroup(this->entityFlags()); }
+  bool isModel()       const { return smtk::model::isModel(this->entityFlags()); }
+  bool isInstance()    const { return smtk::model::isInstance(this->entityFlags()); }
+  bool isSessionRef()  const { return smtk::model::isSessionRef(this->entityFlags()); }
 
   bool isVertex()    const { return smtk::model::isVertex(this->entityFlags()); }
   bool isEdge()      const { return smtk::model::isEdge(this->entityFlags()); }
@@ -219,11 +220,11 @@ public:
 
   EntityRef relationFromArrangement(ArrangementKind k, int arrangementIndex, int offset) const;
 
+  // Manage embedded_in/includes relationships
   EntityRef& embedEntity(const EntityRef& thingToEmbed);
   template<typename T> EntityRef& embedEntities(const T& container);
   bool isEmbedded(EntityRef& entity) const;
   EntityRef embeddedIn() const;
-
   EntityRef& unembedEntity(const EntityRef& thingToUnembed);
   template<typename T> EntityRef& unembedEntities(const T& container);
 
@@ -237,11 +238,23 @@ public:
   std::size_t hash() const;
 
 protected:
+  friend class Group;
+  friend class Model;
+  friend class SessionRef;
+
   WeakManagerPtr m_manager;
   smtk::common::UUID m_entity;
 
-  // When embedding/unembedding, this method determines the relationship type
-  // based on the entities involved.
+  // Manage subset_of/superset_of relationships
+  EntityRef& addMemberEntity(const EntityRef& memberToAdd);
+  template<typename T> EntityRef& addMemberEntities(T begin, T end);
+  bool isMember(EntityRef& entity) const;
+  EntityRef memberOf() const;
+  EntityRef& removeMemberEntity(const EntityRef& memberToRemove);
+  EntityRef& removeMemberEntity(int indexOfMemberToRemove);
+  template<typename T> EntityRef& removeMemberEntities(T begin, T end);
+
+  ManagerEventRelationType subsetRelationType(const EntityRef& member) const;
   ManagerEventRelationType embeddingRelationType(const EntityRef& embedded) const;
 };
 
@@ -300,6 +313,20 @@ template<typename T> EntityRef& EntityRef::unembedEntities(const T& container)
     {
     this->unembedEntity(*it);
     }
+  return *this;
+}
+
+template<typename T> EntityRef& EntityRef::addMemberEntities(T begin, T end)
+{
+  for (T it = begin; it != end; ++it)
+    this->addMemberEntity(*it);
+  return *this;
+}
+
+template<typename T> EntityRef& EntityRef::removeMemberEntities(T begin, T end)
+{
+  for (T it = begin; it != end; ++it)
+    this->removeMemberEntity(*it);
   return *this;
 }
 

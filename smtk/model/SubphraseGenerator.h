@@ -15,7 +15,7 @@
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/PropertyListPhrase.h"
 
-#include "smtk/model/BRepModel.h" // For PropertyType enum.
+#include "smtk/model/Manager.h" // For PropertyType enum.
 
 namespace smtk {
   namespace model {

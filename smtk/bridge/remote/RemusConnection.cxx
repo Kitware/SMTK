@@ -132,7 +132,7 @@ bool RemusConnection::connectToServer(const std::string& hostname, int port)
 }
 
 /// Return the list of sessions available on the server (not the local modelManager()'s list).
-std::vector<std::string> RemusConnection::sessionNames()
+std::vector<std::string> RemusConnection::sessionTypeNames()
 {
   std::vector<std::string> resultVec;
   if (this->m_remoteSessionNameToType.empty())
@@ -183,7 +183,7 @@ int RemusConnection::staticSetup(
   const std::string& optName,
   const smtk::model::StringList& optVal)
 {
-  (void) this->sessionNames(); // ensure that we've fetched the session names from the server.
+  (void) this->sessionTypeNames(); // ensure that we've fetched the session names from the server.
   if (this->m_remoteSessionNameToType.find(sessionName) == this->m_remoteSessionNameToType.end())
     return 0;
 
@@ -222,7 +222,7 @@ int RemusConnection::staticSetup(
   */
 UUID RemusConnection::beginSession(const std::string& sessionName)
 {
-  (void) this->sessionNames(); // ensure that we've fetched the session names from the server.
+  (void) this->sessionTypeNames(); // ensure that we've fetched the session names from the server.
   if (this->m_remoteSessionNameToType.find(sessionName) == this->m_remoteSessionNameToType.end())
     return UUID::null();
 
@@ -253,7 +253,7 @@ UUID RemusConnection::beginSession(const std::string& sessionName)
     sessionObj->type != cJSON_Object ||
     !(sessionIdObj = sessionObj->child) ||
     sessionIdObj->type != cJSON_Object ||
-    // Does the first child have a valid name? (This is the session session ID)
+    // Does the first child have a valid name? (This is the session ID)
     !sessionIdObj->string ||
     !sessionIdObj->string[0] ||
     // Does the first child have fields "name" and "ops" of type String and Array?
@@ -307,7 +307,7 @@ bool RemusConnection::endSession(const UUID& sessionId)
     return false;
 
   // Unhook our local cmbForwardingSession representing the remote.
-  smtk::model::Session::Ptr sessionBase = this->m_modelMgr->findSession(sessionId);
+  smtk::model::Session::Ptr sessionBase = SessionRef(this->m_modelMgr, sessionId).session();
   Session::Ptr session = smtk::dynamic_pointer_cast<Session>(sessionBase);
   if (session)
     {
@@ -333,7 +333,7 @@ bool RemusConnection::endSession(const UUID& sessionId)
 Session::Ptr RemusConnection::findSession(
   const smtk::common::UUID& sessionId)
 {
-  smtk::model::Session::Ptr sess = this->m_modelMgr->findSession(sessionId);
+  smtk::model::Session::Ptr sess = SessionRef(this->m_modelMgr, sessionId).session();
   return smtk::dynamic_pointer_cast<Session>(sess);
 }
 
@@ -396,7 +396,7 @@ StringData RemusConnection::supportedFileTypes(
   return resultMap;
 }
 
-/**\brief Read a file without requiring a pre-existing session session.
+/**\brief Read a file without requiring a pre-existing session.
   *
   * Some sessions (such as CGM) need a fileType to be specified.
   * You may leave it empty and hope the kernel will do its best
@@ -410,7 +410,7 @@ smtk::model::OperatorResult RemusConnection::readFile(
   std::string actualSessionName;
   if (sessionName.empty())
     {
-    (void) this->sessionNames(); // ensure that we've fetched the session names from the server.
+    (void) this->sessionTypeNames(); // ensure that we've fetched the session names from the server.
     std::map<std::string,std::string>::const_iterator bnit;
     for (
       bnit = this->m_remoteSessionNameToType.begin();
@@ -450,9 +450,10 @@ smtk::model::OperatorResult RemusConnection::readFile(
   if (!session)
     { // No existing session of that type. Create a new remote session.
     UUID sessionId = this->beginSession(actualSessionName);
+
     session =
       smtk::dynamic_pointer_cast<Session>(
-        this->m_modelMgr->findSession(sessionId));
+        SessionRef(this->m_modelMgr, sessionId).session());
     }
   if (!session)
     {
@@ -544,7 +545,8 @@ smtk::model::OperatorPtr RemusConnection::createOperator(
 void RemusConnection::fetchWholeModel(const UUID& modelId)
 {
   // Find session from modelId, then job requirements from session.
-  smtk::model::Session::Ptr sessionBase = this->m_modelMgr->sessionForModel(modelId);
+  smtk::model::SessionRef sref = smtk::model::Model(this->m_modelMgr, modelId).session();
+  smtk::model::Session::Ptr sessionBase = sref.session();
   Session::Ptr session = smtk::dynamic_pointer_cast<Session>(sessionBase);
   if (!session)
     return;
@@ -669,7 +671,7 @@ Session::Ptr RemusConnection::findSessionForRemusType(
     {
     if (bit->second == rtype)
       {
-      smtk::model::Session::Ptr sessionBase = this->m_modelMgr->findSession(bit->first);
+      smtk::model::Session::Ptr sessionBase = SessionRef(this->m_modelMgr, bit->first).session();
       session = smtk::dynamic_pointer_cast<Session>(sessionBase);
       if (session)
         {

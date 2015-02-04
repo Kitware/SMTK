@@ -30,10 +30,44 @@ void Model::setEmbeddingDimension(int dim)
   this->setIntegerProperty("embedding dimension", dim);
 }
 
-/// Return the parent of this entity, which should be invalid or another Model.
+/// Return the parent of this entity, which should be a SessionRef or another Model.
 EntityRef Model::parent() const
 {
-  return EntityRefArrangementOps::firstRelation<EntityRef>(*this, EMBEDDED_IN);
+  return EntityRefArrangementOps::firstRelation<EntityRef>(*this, SUBSET_OF);
+}
+
+/**\brief Return a reference to the session that owns this model.
+  *
+  * Note that a model may be owned by other models, so
+  * this differs from Model::parent() in that it continues up
+  * the tree of parent models until it finds an owning Session.
+  *
+  * If a model is ill-defined (invalid or with an invalid session)
+  * the returned SessionRef will be invalid.
+  *
+  * \sa SessionRef
+  */
+SessionRef Model::session() const
+{
+  std::set<EntityRef> parents; // prevent infinite loops
+  EntityRef pp = this->parent();
+  while (pp.isValid() && !pp.isSessionRef() && parents.find(pp) == parents.end())
+    pp = pp.as<Model>().parent();
+
+  return pp.as<SessionRef>();
+}
+
+/// Update this model so that it refers to \a sess as its owner.
+void Model::setSession(const SessionRef& sess)
+{
+  SessionRef curSess = this->session();
+  if (curSess == sess)
+    return;
+  if (curSess.isValid())
+    curSess.removeMemberEntity(*this);
+
+  SessionRef mutableSess(sess);
+  mutableSess.addMemberEntity(*this);
 }
 
 /// Return the cells directly owned by this model.
@@ -55,17 +89,17 @@ CellEntities Model::cells() const
 }
 
 /// Return the groups directly owned by this model.
-GroupEntities Model::groups() const
+Groups Model::groups() const
 {
-  GroupEntities result;
+  Groups result;
   EntityRefArrangementOps::appendAllRelations(*this, SUPERSET_OF, result);
   return result;
 }
 
 /// Return the models directly owned by this model.
-ModelEntities Model::submodels() const
+Models Model::submodels() const
 {
-  ModelEntities result;
+  Models result;
   EntityRefArrangementOps::appendAllRelations(*this, SUPERSET_OF, result);
   return result;
 }
@@ -110,6 +144,9 @@ Model& Model::removeGroup(const Group& g)
 
 Model& Model::addSubmodel(const Model& m)
 {
+  this->addMemberEntity(m);
+  return *this;
+  /*
   ManagerPtr mgr = this->manager();
   if (this->isValid() && m.isValid() && m.manager() == this->manager() && m.entity() != this->entity())
     {
@@ -118,10 +155,14 @@ Model& Model::addSubmodel(const Model& m)
     mgr->trigger(std::make_pair(ADD_EVENT, MODEL_INCLUDES_MODEL), *this, m);
     }
   return *this;
+  */
 }
 
 Model& Model::removeSubmodel(const Model& m)
 {
+  this->removeMemberEntity(m);
+  return *this;
+  /*
   ManagerPtr mgr = this->manager();
   if (this->isValid() && m.isValid() && m.manager() == this->manager() && m.entity() != this->entity())
     {
@@ -132,12 +173,13 @@ Model& Model::removeSubmodel(const Model& m)
       }
     }
   return *this;
+  */
 }
 
 /// Return an operator of the given \a opname with its Manager set to this model's.
 OperatorPtr Model::op(const std::string& opname) const
 {
-  return this->session()->op(opname);
+  return this->session().op(opname);
 }
 
 /*
@@ -162,13 +204,7 @@ Operators Model::operators() const
 /// Return the names of all the operators which can be applied to this model.
 StringList Model::operatorNames() const
 {
-  return this->session()->operatorNames();
-}
-
-SessionPtr Model::session() const
-{
-  ManagerPtr mgr = this->manager();
-  return mgr->sessionForModel(this->m_entity);
+  return this->session().operatorNames();
 }
 
   } // namespace model
