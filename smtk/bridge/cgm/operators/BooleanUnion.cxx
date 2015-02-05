@@ -112,15 +112,7 @@ smtk::model::OperatorResult BooleanUnion::operateInternal()
       resultBodies->setValue(i, smtkEntry);
     }
 
-  int numExpunged = expunged.size();
-  if (numExpunged)
-    {
-    smtk::attribute::ModelEntityItem::Ptr expungedOut =
-      result->findModelEntity("expunged");
-    expungedOut->setNumberOfValues(numExpunged);
-    for (int i = 0; i < numExpunged; ++i)
-      expungedOut->setValue(i, expunged[i]);
-    }
+  result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
 
   return result;
 }

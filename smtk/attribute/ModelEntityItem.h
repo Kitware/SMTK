@@ -53,6 +53,24 @@ public:
   smtk::model::EntityRef value(std::size_t element = 0) const;
   bool setValue(const smtk::model::EntityRef& val);
   bool setValue(std::size_t element, const smtk::model::EntityRef& val);
+  template<typename I>
+  bool setValues(I begin, I end)
+    {
+    bool ok = false;
+    std::size_t num = end - begin;
+    if (this->setNumberOfValues(num))
+      {
+      ok = true;
+      std::size_t i = 0;
+      for (I it = begin; it != end; ++it, ++i)
+        if (!this->setValue(i, *it))
+          {
+          ok = false;
+          break;
+          }
+      }
+    return ok;
+    }
   bool appendValue(const smtk::model::EntityRef& val);
   bool removeValue(std::size_t element);
   virtual void reset();

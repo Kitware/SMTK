@@ -61,13 +61,17 @@ smtk::model::OperatorResult BooleanSubtraction::operateInternal()
   DLIList<Body*> cgmBodiesOut;
   DLIList<Body*> cgmToolsIn;
   Body* cgmBody;
+  EntityRefArray expunged;
   for (it = bodiesIn.begin(); it != bodiesIn.end(); ++it)
     {
     cgmBody = dynamic_cast<Body*>(this->cgmEntity(*it));
     if (cgmBody)
       cgmBodiesIn.append(cgmBody);
     if (!keepInputs)
+      {
       this->manager()->eraseModel(*it);
+      expunged.push_back(*it);
+      }
     }
 
   if (cgmBodiesIn.size() < 1)
@@ -83,7 +87,10 @@ smtk::model::OperatorResult BooleanSubtraction::operateInternal()
     if (cgmBody)
       cgmToolsIn.append(cgmBody);
     if (!keepInputs)
+      {
       this->manager()->eraseModel(*toolIt);
+      expunged.push_back(*it);
+      }
     }
 
   DLIList<RefEntity*> imported;
@@ -116,6 +123,8 @@ smtk::model::OperatorResult BooleanSubtraction::operateInternal()
     if (session->transcribe(smtkEntry, smtk::model::SESSION_EVERYTHING, false))
       resultBodies->setValue(i, smtkEntry);
     }
+
+  result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
 
   return result;
 }
