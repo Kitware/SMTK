@@ -210,5 +210,11 @@ StringList Model::operatorNames() const
   return this->session().operatorNames();
 }
 
+/// An efficient method for assigning default names to all of the model's entities.
+void Model::assignDefaultNames()
+{
+  this->manager()->assignDefaultNamesToModelChildren(this->entity());
+}
+
   } // namespace model
 } // namespace smtk

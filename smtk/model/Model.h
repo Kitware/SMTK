@@ -57,6 +57,8 @@ public:
 
   OperatorPtr op(const std::string& operatorName) const;
   StringList operatorNames() const;
+
+  void assignDefaultNames();
 };
 
 /// Add all the free cells in \a container to this model.

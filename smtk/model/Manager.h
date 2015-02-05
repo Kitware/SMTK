@@ -183,6 +183,7 @@ public:
   smtk::common::UUID modelOwningEntity(const smtk::common::UUID& uid) const;
 
   void assignDefaultNames();
+  void assignDefaultNamesToModelChildren(const smtk::common::UUID& modelId);
   std::string assignDefaultName(const smtk::common::UUID& uid);
   static std::string shortUUIDName(const smtk::common::UUID& uid, BitFlags entityFlags);
 

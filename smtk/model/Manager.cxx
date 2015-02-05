@@ -16,6 +16,7 @@
 #include "smtk/model/SessionRef.h"
 #include "smtk/model/Chain.h"
 #include "smtk/model/DefaultSession.h"
+#include "smtk/model/EntityIterator.h"
 #include "smtk/model/EntityRefArrangementOps.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
@@ -1338,6 +1339,46 @@ void Manager::assignDefaultNames()
   for (uit = orphans.begin(); uit != orphans.end(); ++uit)
     {
     this->assignDefaultName(*uit);
+    }
+}
+
+/**\brief Assign a string property named "name" to every entity of a model without one.
+  *
+  * This descends models rather than blindly iterating over UUIDs;
+  * it is thus much faster than calling assignDefaultName() on each entity UUID.
+  */
+void Manager::assignDefaultNamesToModelChildren(const smtk::common::UUID& modelId)
+{
+  bool oops = true;
+  UUIDWithEntity it = this->m_topology->find(modelId);
+  if (it != this->m_topology->end())
+    {
+    Model model(shared_from_this(), modelId);
+    if (model.isValid())
+      {
+      oops = false;
+      EntityIterator it;
+      it.traverse(model, ITERATE_MODELS);
+      model.assignDefaultName();
+      std::string modelName = model.name();
+      UUIDs dummy;
+      for (it.begin(); !it.isAtEnd(); ++it)
+        {
+        if (it->isSessionRef())
+          (*it).assignDefaultName();
+        else
+          this->assignDefaultNamesWithOwner(
+            this->m_topology->find(it->entity()),
+            model.entity(),
+            modelName, dummy, true);
+        }
+      }
+    }
+  if (oops)
+    {
+    smtkWarningMacro(this->m_log,
+      "Tried to assign default names to a non-model entity: "
+      << EntityRef(shared_from_this(), modelId).name() << ".");
     }
 }
 
