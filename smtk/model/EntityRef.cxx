@@ -1300,30 +1300,20 @@ ManagerEventRelationType EntityRef::subsetRelationType(const EntityRef& member) 
   case SESSION:
     switch (member.entityFlags() & ENTITY_MASK)
       {
-    case MODEL_ENTITY: reln = SESSION_INCLUDES_MODEL; break;
+    case MODEL_ENTITY: reln = SESSION_SUPERSET_OF_MODEL; break;
       }
     break;
   case MODEL_ENTITY:
     switch (member.entityFlags() & ENTITY_MASK)
       {
-    case MODEL_ENTITY: reln = MODEL_INCLUDES_MODEL; break;
-    case SHELL_ENTITY: reln = MODEL_INCLUDES_FREE_SHELL; break;
-    case CELL_ENTITY: reln = MODEL_INCLUDES_FREE_CELL; break;
-    case USE_ENTITY: reln = MODEL_INCLUDES_FREE_USE; break;
+    case MODEL_ENTITY: reln = MODEL_SUPERSET_OF_MODEL; break;
+    case GROUP_ENTITY: reln = MODEL_SUPERSET_OF_GROUP; break;
       }
     break;
-  case CELL_ENTITY:
-    switch (member.entityFlags() & ENTITY_MASK)
-      {
-    case CELL_ENTITY: reln = CELL_INCLUDES_CELL; break;
-      }
+  case GROUP_ENTITY:
+    reln = GROUP_SUPERSET_OF_ENTITY;
     break;
-  case SHELL_ENTITY:
-    switch (member.entityFlags() & ENTITY_MASK)
-      {
-    case SHELL_ENTITY: reln = SHELL_INCLUDES_SHELL; break;
-    case USE_ENTITY: reln = SHELL_HAS_USE; break;
-      }
+  default:
     break;
     }
 

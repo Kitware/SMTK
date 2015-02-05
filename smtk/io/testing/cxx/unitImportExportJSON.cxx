@@ -76,7 +76,7 @@ void testLoggerSerialization2()
 }
 
 void testExportEntityRef(
-  const EntityRefs& entities, JSONRecords relations, int correctCount)
+  const EntityRefs& entities, IteratorStyle relations, int correctCount)
 {
   cJSON* json = cJSON_CreateObject();
   ExportJSON::forEntities(json, entities, relations, JSON_ENTITIES);
@@ -109,11 +109,11 @@ void testModelExport()
   EntityRefs entities;
   entities.insert(EntityRef(sm, uids[8])); // An edge
 
-  testExportEntityRef(entities, JSON_BARE, 1);
-  testExportEntityRef(entities, JSON_CHILDREN, 9);
-  testExportEntityRef(entities, JSON_MODELS, 78);
+  testExportEntityRef(entities, smtk::model::ITERATE_BARE, 1);
+  testExportEntityRef(entities, smtk::model::ITERATE_CHILDREN, 9);
+  testExportEntityRef(entities, smtk::model::ITERATE_MODELS, 78);
 
-  std::string json = ExportJSON::forEntities(entities, JSON_BARE, JSON_DEFAULT);
+  std::string json = ExportJSON::forEntities(entities, smtk::model::ITERATE_BARE, JSON_DEFAULT);
   std::cout << "json for vertex is \n" << json << "\n";
 }
 

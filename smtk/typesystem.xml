@@ -992,6 +992,10 @@
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>
       </enum-type>
 
+      <enum-type name="IteratorStyle">
+        <include file-name="smtk/model/EntityIterator.h" location="local"/>
+      </enum-type>
+
       <enum-type name="OperatorEventType">
         <include file-name="smtk/model/Events.h" location="local"/>
       </enum-type>
@@ -1834,10 +1838,6 @@
       </object-type>
 
       <enum-type name="JSONFlags">
-        <include file-name="smtk/io/ExportJSON.h" location="local"/>
-      </enum-type>
-
-      <enum-type name="JSONRecords">
         <include file-name="smtk/io/ExportJSON.h" location="local"/>
       </enum-type>
 
