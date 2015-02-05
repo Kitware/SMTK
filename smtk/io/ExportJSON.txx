@@ -22,7 +22,7 @@ template<typename T>
 int ExportJSON::forEntities(
   cJSON* json,
   const T& entities,
-  JSONRecords relatedEntities,
+  smtk::model::IteratorStyle relatedEntities,
   JSONFlags sections)
 {
   using namespace smtk::model;
@@ -34,7 +34,7 @@ int ExportJSON::forEntities(
   // If we are asked to return all the entities of the related model(s),
   // find the owning model
   smtk::model::Model parent;
-  if (relatedEntities == JSON_MODELS)
+  if (relatedEntities == smtk::model::ITERATE_MODELS)
     {
     for (typename T::const_iterator rit = entities.begin(); rit != entities.end(); ++rit)
       {
@@ -105,8 +105,8 @@ int ExportJSON::forEntities(
       {
       // Both children and models fetch the same related entities...
       // but JSON_MODEL starts with a different initial queue:
-    case JSON_MODELS:
-    case JSON_CHILDREN:
+    case smtk::model::ITERATE_MODELS:
+    case smtk::model::ITERATE_CHILDREN:
         {
         EntityRefs children;
         if (ent.isCellEntity())
@@ -141,7 +141,7 @@ int ExportJSON::forEntities(
             queue.insert(*cit);
         }
       break;
-    case JSON_BARE: // Add nothing to the list of requested entities
+    case smtk::model::ITERATE_BARE: // Add nothing to the list of requested entities
     default:
       break; // do nothing.
       }
@@ -156,7 +156,7 @@ int ExportJSON::forEntities(
 template<typename T>
 std::string ExportJSON::forEntities(
   const T& entities,
-  JSONRecords relatedEntities,
+  smtk::model::IteratorStyle relatedEntities,
   JSONFlags sections)
 {
   using namespace smtk::model;

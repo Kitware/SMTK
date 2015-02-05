@@ -16,6 +16,7 @@
 #include "smtk/common/UUID.h"
 
 #include "smtk/model/Manager.h" // For UUIDWithEntity
+#include "smtk/model/EntityIterator.h" // For IteratorStyle
 
 #ifndef SHIBOKEN_SKIP
 #  include "cJSON.h"
@@ -41,16 +42,6 @@ enum JSONFlags
   JSON_DEFAULT       = 0xff  //!< By default, export everything.
 };
 
-/**\brief Indicate what records should be exported to JSON.
-  *
-  */
-enum JSONRecords
-{
-  JSON_BARE          = 0, //!< Export only the specified entities and no more
-  JSON_CHILDREN      = 1, //!< (Reserved but unimplemented.) Export the specified entities and their children.
-  JSON_MODELS        = 2  //!< Export all entities with an owning model that also owns any of the specified entities.
-};
-
 /**\brief Export an SMTK model into a JSON-formatted string.
   *
   * Methods are also provided for creating cJSON nodes representing
@@ -71,12 +62,12 @@ public:
   static int forEntities(
     cJSON* json,
     const T& entities,
-    JSONRecords relatedEntities = JSON_MODELS,
+    smtk::model::IteratorStyle relatedEntities = smtk::model::ITERATE_MODELS,
     JSONFlags sections = JSON_DEFAULT);
   template<typename T>
   static std::string forEntities(
     const T& entities,
-    JSONRecords relatedEntities = JSON_MODELS,
+    smtk::model::IteratorStyle relatedEntities = smtk::model::ITERATE_MODELS,
     JSONFlags sections = JSON_DEFAULT);
 
   static int forManager(cJSON* body, cJSON* sess, smtk::model::ManagerPtr modelMgr, JSONFlags sections = JSON_DEFAULT);

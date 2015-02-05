@@ -19,14 +19,14 @@ namespace smtk {
 
 void EntityIterator::traverse(const EntityRef& x)
 {
-  this->traverse(x, smtk::io::JSON_CHILDREN);
+  this->traverse(x, ITERATE_CHILDREN);
 }
 
-void EntityIterator::traverse(const EntityRef& x, smtk::io::JSONRecords style)
+void EntityIterator::traverse(const EntityRef& x, IteratorStyle style)
 {
   this->m_related = style;
   this->m_visited.clear();
-  if (this->m_related == smtk::io::JSON_MODELS)
+  if (this->m_related == ITERATE_MODELS)
     {
     Model parent;
     if ((parent = x.owningModel()).isValid())
@@ -141,8 +141,8 @@ void EntityIterator::updateQueue(const EntityRef& ent)
 {
   switch (this->m_related)
     {
-  case smtk::io::JSON_CHILDREN:
-  case smtk::io::JSON_MODELS:
+  case ITERATE_CHILDREN:
+  case ITERATE_MODELS:
       {
       EntityRefs children;
       if (ent.isCellEntity())
@@ -181,8 +181,8 @@ void EntityIterator::updateQueue(const EntityRef& ent)
     // Do nothing.
     break;
     }
-  if (this->m_queue.empty() && this->m_related != smtk::io::JSON_BARE)
-    this->m_related = smtk::io::JSON_BARE; // No need to recompute things to visit next time around.
+  if (this->m_queue.empty() && this->m_related != ITERATE_BARE)
+    this->m_related = ITERATE_BARE; // No need to recompute things to visit next time around.
 }
 
   } // namespace model

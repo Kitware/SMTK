@@ -12,19 +12,27 @@
 
 #include "smtk/model/Manager.h"
 
-#include "smtk/io/ExportJSON.h" // for JSONRecords
-
 namespace smtk {
   namespace model {
+
+/**\brief Indicate what records should be visited.
+  *
+  */
+enum IteratorStyle
+{
+  ITERATE_BARE     = 0, //!< Visit only the specified entities and no others
+  ITERATE_CHILDREN = 1, //!< Visit the specified entities and their children.
+  ITERATE_MODELS   = 2  //!< Visit all entities with an owning model that also owns any of the specified entities. Also visits the owning session, but not all of the owning session's models.
+};
 
 class SMTKCORE_EXPORT EntityIterator
 {
 public:
   template<typename C> void traverse(C begin, C end);
-  template<typename C> void traverse(C begin, C end, smtk::io::JSONRecords style);
+  template<typename C> void traverse(C begin, C end, IteratorStyle style);
 
   void traverse(const EntityRef& x);
-  void traverse(const EntityRef& x, smtk::io::JSONRecords style);
+  void traverse(const EntityRef& x, IteratorStyle style);
 
   void begin();
   bool advance();
@@ -42,7 +50,7 @@ protected:
 
   EntityRefs m_queue;
   EntityRefs m_visited;
-  smtk::io::JSONRecords m_related;
+  IteratorStyle m_related;
 };
 
 /**\brief Iterate over the given entities and **only** those entities.
@@ -50,17 +58,17 @@ protected:
 template<typename C>
 void EntityIterator::traverse(C begin, C end)
 {
-  this->traverse(begin, end, smtk::io::JSON_BARE);
+  this->traverse(begin, end, ITERATE_BARE);
 }
 
 /**\brief Iterate over the given entities and the specified \a related records.
   */
 template<typename C>
-void EntityIterator::traverse(C begin, C end, smtk::io::JSONRecords related)
+void EntityIterator::traverse(C begin, C end, IteratorStyle related)
 {
   this->m_related = related;
   this->m_visited.clear();
-  if (this->m_related == smtk::io::JSON_MODELS)
+  if (this->m_related == ITERATE_MODELS)
     {
     Model parent;
     for (C rit = begin; rit != end; ++rit)

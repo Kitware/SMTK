@@ -489,9 +489,9 @@ int ExportJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
     {
     // If the operator reports new/modified entities, transcribe the affected models.
     // TODO: In the future, this may be more conservative (i.e., fewer records
-    //       would be included to save time and memory) than JSON_MODELS.
+    //       would be included to save time and memory) than ITERATE_MODELS.
     cJSON* records = cJSON_CreateObject();
-    ExportJSON::forEntities(records, ents, JSON_MODELS, JSON_CLIENT_DATA);
+    ExportJSON::forEntities(records, ents, smtk::model::ITERATE_MODELS, JSON_CLIENT_DATA);
     cJSON_AddItemToObject(entRec, "records", records);
     }
 

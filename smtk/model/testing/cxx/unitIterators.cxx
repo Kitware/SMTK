@@ -21,7 +21,7 @@ using namespace smtk::model;
 using namespace smtk::common;
 using namespace smtk::model::testing;
 
-void testExplicitTraversal(smtk::io::JSONRecords style, int correctCount)
+void testExplicitTraversal(IteratorStyle style, int correctCount)
 {
   Manager::Ptr mgr = Manager::create();
   SessionRef sess = mgr->createSession("native");
@@ -88,9 +88,9 @@ void testModelTraversal()
 int main()
 {
   testModelTraversal();
-  testExplicitTraversal(smtk::io::JSON_BARE, 7);
-  testExplicitTraversal(smtk::io::JSON_CHILDREN, 14); // Vertex uses are children of vertices
-  testExplicitTraversal(smtk::io::JSON_MODELS, 79);
+  testExplicitTraversal(ITERATE_BARE, 7);
+  testExplicitTraversal(ITERATE_CHILDREN, 14); // Vertex uses are children of vertices
+  testExplicitTraversal(ITERATE_MODELS, 79);
   // TODO: Test iteration while model is being modified.
   return 0;
 }
