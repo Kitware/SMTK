@@ -94,6 +94,22 @@ OperatorResult Operator::operate()
       result = this->operateInternal();
     else
       result = this->createResult(OPERATION_CANCELED);
+    smtk::attribute::IntItem::Ptr assignNamesItem;
+    if (
+      result->findInt("outcome")->value() == OPERATION_SUCCEEDED &&
+      (assignNamesItem = this->specification()->findInt("assign names")) &&
+      assignNamesItem->isEnabled() &&
+      assignNamesItem->value() != 0)
+      {
+      ModelEntityItem::Ptr thingsToName = result->findModelEntity("entities");
+      EntityRefArray::const_iterator it;
+      for (it = thingsToName->begin(); it != thingsToName->end(); ++it)
+        {
+        Model model(*it);
+        if (model.isValid())
+          model.assignDefaultNames();
+        }
+      }
     std::size_t logEnd = this->log().numberOfRecords();
     if (logEnd > logStart)
       { // Serialize relevant log records to JSON.

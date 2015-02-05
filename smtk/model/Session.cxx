@@ -284,9 +284,17 @@ void Session::initializeOperatorSystem(const OperatorConstructors* opList)
 
   this->m_operatorSys = new smtk::attribute::System;
   // Create the "base" definitions that all operators and results will inherit.
-  this->m_operatorSys->createDefinition("operator");
+  Definition::Ptr opdefn = this->m_operatorSys->createDefinition("operator");
 
-  Definition::Ptr defn = this->m_operatorSys->createDefinition("result");
+  IntItemDefinition::Ptr assignNamesDefn = IntItemDefinition::New("assign names");
+  // Do not assign names to entities after the operation by default:
+  assignNamesDefn->setDefaultValue(0);
+  assignNamesDefn->setIsOptional(true);
+  assignNamesDefn->setAdvanceLevel(11);
+
+  opdefn->addItemDefinition(assignNamesDefn);
+
+  Definition::Ptr resultdefn = this->m_operatorSys->createDefinition("result");
   IntItemDefinition::Ptr outcomeDefn = IntItemDefinition::New("outcome");
   ModelEntityItemDefinition::Ptr entoutDefn = ModelEntityItemDefinition::New("entities");
   ModelEntityItemDefinition::Ptr entremDefn = ModelEntityItemDefinition::New("expunged");
@@ -305,10 +313,10 @@ void Session::initializeOperatorSystem(const OperatorConstructors* opList)
   logDefn->setIsExtensible(1);
   logDefn->setIsOptional(true);
 
-  defn->addItemDefinition(outcomeDefn);
-  defn->addItemDefinition(entoutDefn);
-  defn->addItemDefinition(entremDefn);
-  defn->addItemDefinition(logDefn);
+  resultdefn->addItemDefinition(outcomeDefn);
+  resultdefn->addItemDefinition(entoutDefn);
+  resultdefn->addItemDefinition(entremDefn);
+  resultdefn->addItemDefinition(logDefn);
 
   if (!opList && this->inheritsOperators())
     {
