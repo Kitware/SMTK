@@ -123,7 +123,7 @@ CellSet set_intersect( const CellSet& a, const CellSet& b)
     }
 
   const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
-  smtk::mesh::HandleRange result = iface->set_intersect(a.m_range, b.m_range);
+  smtk::mesh::HandleRange result = iface->setIntersect(a.m_range, b.m_range);
   return smtk::mesh::CellSet(a.m_parent, result);
 }
 
@@ -138,7 +138,7 @@ CellSet set_difference( const CellSet& a, const CellSet& b)
     }
 
   const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
-  smtk::mesh::HandleRange result = iface->set_difference(a.m_range, b.m_range);
+  smtk::mesh::HandleRange result = iface->setDifference(a.m_range, b.m_range);
   return smtk::mesh::CellSet(a.m_parent, result);
 }
 
@@ -153,7 +153,7 @@ CellSet set_union( const CellSet& a, const CellSet& b )
     }
 
   const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
-  smtk::mesh::HandleRange result = iface->set_union(a.m_range, b.m_range);
+  smtk::mesh::HandleRange result = iface->setUnion(a.m_range, b.m_range);
   return smtk::mesh::CellSet(a.m_parent, result);
 }
 
@@ -174,12 +174,12 @@ CellSet point_intersect( const CellSet& a, const CellSet& b, ContainmentType t)
   if(t == smtk::mesh::PartiallyContained)
     {
     smtk::mesh::PartiallyContainedFunctor f;
-    result = iface->point_intersect(a.m_range, b.m_range, f);
+    result = iface->pointIntersect(a.m_range, b.m_range, f);
     }
   else
     {
     smtk::mesh::FullyContainedFunctor f;
-    result = iface->point_intersect(a.m_range, b.m_range, f);
+    result = iface->pointIntersect(a.m_range, b.m_range, f);
     }
   return smtk::mesh::CellSet(a.m_parent, result);
 }
@@ -201,12 +201,12 @@ CellSet point_difference( const CellSet& a, const CellSet& b, ContainmentType t)
   if(t == smtk::mesh::PartiallyContained)
     {
     smtk::mesh::PartiallyContainedFunctor f;
-    result = iface->point_difference(a.m_range, b.m_range, f);
+    result = iface->pointDifference(a.m_range, b.m_range, f);
     }
   else
     {
     smtk::mesh::FullyContainedFunctor f;
-    result = iface->point_difference(a.m_range, b.m_range, f);
+    result = iface->pointDifference(a.m_range, b.m_range, f);
     }
 
   return smtk::mesh::CellSet(a.m_parent, result);

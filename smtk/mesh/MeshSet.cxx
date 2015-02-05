@@ -25,7 +25,7 @@ MeshSet::MeshSet(const smtk::mesh::CollectionPtr& parent,
 
   const smtk::mesh::InterfacePtr& iface = parent->interface();
   //range of moab entity sets
-  this->m_range = iface->get_meshsets( handle );
+  this->m_range = iface->getMeshsets( handle );
 }
 
 //----------------------------------------------------------------------------
@@ -107,7 +107,7 @@ std::size_t MeshSet::size( ) const
 smtk::mesh::CellSet MeshSet::cells( )
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
-  smtk::mesh::HandleRange range = iface->get_cells( this->m_range );
+  smtk::mesh::HandleRange range = iface->getCells( this->m_range );
   return smtk::mesh::CellSet(this->m_parent, range);
 }
 
@@ -121,7 +121,7 @@ smtk::mesh::Points MeshSet::points( )
 smtk::mesh::PointConnectivity MeshSet::pointConnectivity( )
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
-  smtk::mesh::HandleRange range = iface->get_cells( this->m_range );
+  smtk::mesh::HandleRange range = iface->getCells( this->m_range );
   return smtk::mesh::PointConnectivity(this->m_parent, range);
 }
 
@@ -129,7 +129,7 @@ smtk::mesh::PointConnectivity MeshSet::pointConnectivity( )
 smtk::mesh::CellSet MeshSet::cells( smtk::mesh::CellType cellType )
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
-  smtk::mesh::HandleRange range = iface->get_cells( this->m_range, cellType );
+  smtk::mesh::HandleRange range = iface->getCells( this->m_range, cellType );
   return smtk::mesh::CellSet(this->m_parent, range);
 }
 
@@ -137,7 +137,7 @@ smtk::mesh::CellSet MeshSet::cells( smtk::mesh::CellType cellType )
 smtk::mesh::CellSet MeshSet::cells( smtk::mesh::CellTypes cellTypes )
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
-  smtk::mesh::HandleRange range = iface->get_cells( this->m_range, cellTypes );
+  smtk::mesh::HandleRange range = iface->getCells( this->m_range, cellTypes );
   return smtk::mesh::CellSet(this->m_parent, range);
 }
 
@@ -145,7 +145,7 @@ smtk::mesh::CellSet MeshSet::cells( smtk::mesh::CellTypes cellTypes )
 smtk::mesh::CellSet MeshSet::cells( smtk::mesh::DimensionType dim )
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
-  smtk::mesh::HandleRange range = iface->get_cells( this->m_range, dim );
+  smtk::mesh::HandleRange range = iface->getCells( this->m_range, dim );
   return smtk::mesh::CellSet(this->m_parent, range);
 }
 
@@ -161,7 +161,7 @@ MeshSet set_intersect( const MeshSet& a, const MeshSet& b)
     }
 
   const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
-  smtk::mesh::HandleRange result = iface->set_intersect(a.m_range, b.m_range);
+  smtk::mesh::HandleRange result = iface->setIntersect(a.m_range, b.m_range);
   return smtk::mesh::MeshSet(a.m_parent, a.m_handle, result);
 }
 
@@ -177,7 +177,7 @@ MeshSet set_difference( const MeshSet& a, const MeshSet& b)
     }
 
   const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
-  smtk::mesh::HandleRange result = iface->set_difference(a.m_range, b.m_range);
+  smtk::mesh::HandleRange result = iface->setDifference(a.m_range, b.m_range);
   return smtk::mesh::MeshSet(a.m_parent, a.m_handle, result);
 }
 
@@ -193,7 +193,7 @@ MeshSet set_union( const MeshSet& a, const MeshSet& b )
     }
 
   const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
-  smtk::mesh::HandleRange result = iface->set_union(a.m_range, b.m_range);
+  smtk::mesh::HandleRange result = iface->setUnion(a.m_range, b.m_range);
   return smtk::mesh::MeshSet(a.m_parent, a.m_handle, result);
 }
 

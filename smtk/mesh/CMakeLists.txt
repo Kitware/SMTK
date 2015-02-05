@@ -26,6 +26,7 @@ set(meshHeaders
   Collection.h
   DimensionTypes.h
   Handle.h
+  Interface.h
   Manager.h
   # Mesh.h
   MeshSet.h

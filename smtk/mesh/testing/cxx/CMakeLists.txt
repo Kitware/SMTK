@@ -14,7 +14,6 @@ set(unit_tests
   UnitTestCellTypes.cxx
   UnitTestCollection.cxx
   UnitTestManager.cxx
-  UnitTestPointConnectivity.cxx
   UnitTestQueryTypes.cxx
   UnitTestTypeSet.cxx
   )
@@ -23,6 +22,7 @@ set(unit_tests_which_require_data
   UnitTestAddFileToCollection.cxx
   UnitTestCellSet.cxx
   UnitTestLoadMesh.cxx
+  UnitTestPointConnectivity.cxx
   UnitTestMeshSet.cxx
   UnitTestTypeSetFromData.cxx
   UnitTestWriteMesh.cxx

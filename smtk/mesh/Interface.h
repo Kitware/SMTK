@@ -32,7 +32,7 @@ struct ContainsFunctor;
 class SMTKCORE_EXPORT Allocator
 {
 public:
-  virtual  ~Allocator() {};
+  virtual ~Allocator() {}
 
   virtual bool allocatePoints( std::size_t numPointsToAlloc,
                                smtk::mesh::Handle& firstVertexHandle,
@@ -42,11 +42,11 @@ public:
                               std::size_t numCellsToAlloc,
                               int numVertsPerCell,
                               smtk::mesh::HandleRange& createdCellIds,
-                              smtk::mesh::Handle* connectivityArray) = 0;
+                              smtk::mesh::Handle*& connectivityArray) = 0;
 
   virtual bool connectivityModified( const smtk::mesh::HandleRange& cellsToUpdate,
                                      int numVertsPerCell,
-                                     smtk::mesh::Handle* connectivityArray) = 0;
+                                     const smtk::mesh::Handle* connectivityArray) = 0;
 
 };
 
@@ -54,9 +54,9 @@ public:
 class SMTKCORE_EXPORT Interface
 {
 public:
-  Interface() {};
+  Interface() {}
 
-  virtual ~Interface() {};
+  virtual ~Interface() {}
 
   //----------------------------------------------------------------------------
   //get back a lightweight interface around allocating memory into the given
@@ -65,77 +65,77 @@ public:
   virtual smtk::mesh::AllocatorPtr allocator() = 0;
 
   //----------------------------------------------------------------------------
-  virtual smtk::mesh::Handle get_root() = 0;
+  virtual smtk::mesh::Handle getRoot() const = 0;
 
   //----------------------------------------------------------------------------
   //creates a mesh with that contains the input cells.
   //the mesh will have the root as its parent.
   //this function needs to be expanded to support parenting to other handles
   //this function needs to be expanded to support adding tags to the mesh
-  virtual bool create_mesh(smtk::mesh::HandleRange cells,
+  virtual bool createMesh(smtk::mesh::HandleRange cells,
                            smtk::mesh::Handle& meshHandle) = 0;
 
   //----------------------------------------------------------------------------
   //the number of meshes that are children of this mesh.
-  virtual std::size_t numMeshes(smtk::mesh::Handle handle) = 0;
+  virtual std::size_t numMeshes(smtk::mesh::Handle handle) const = 0;
 
   //----------------------------------------------------------------------------
-  virtual smtk::mesh::HandleRange get_meshsets(smtk::mesh::Handle handle) = 0;
+  virtual smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle) const = 0;
 
   //----------------------------------------------------------------------------
-  virtual smtk::mesh::HandleRange get_meshsets(smtk::mesh::Handle handle,
-                                               int dimension) = 0;
+  virtual smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle,
+                                               int dimension) const = 0;
 
   //----------------------------------------------------------------------------
   //find all entity sets that have this exact name tag
-  virtual smtk::mesh::HandleRange get_meshsets(smtk::mesh::Handle handle,
-                                               const std::string& name) = 0;
+  virtual smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle,
+                                               const std::string& name) const = 0;
 
   //----------------------------------------------------------------------------
   //get all cells held by this range
-  virtual smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets) = 0;
+  virtual smtk::mesh::HandleRange getCells(smtk::mesh::HandleRange meshsets) const = 0;
 
   //----------------------------------------------------------------------------
   //get all cells held by this range handle of a given cell type
-  virtual smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
-                                            smtk::mesh::CellType cellType) = 0;
+  virtual smtk::mesh::HandleRange getCells(smtk::mesh::HandleRange meshsets,
+                                            smtk::mesh::CellType cellType) const = 0;
 
   //----------------------------------------------------------------------------
   //get all cells held by this range handle of a given cell type(s)
-  virtual smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
-                                            const smtk::mesh::CellTypes& cellTypes) = 0;
+  virtual smtk::mesh::HandleRange getCells(smtk::mesh::HandleRange meshsets,
+                                            const smtk::mesh::CellTypes& cellTypes) const = 0;
 
   //----------------------------------------------------------------------------
   //get all cells held by this range handle of a given dimension
-  virtual smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
-                                            smtk::mesh::DimensionType dim) = 0;
+  virtual smtk::mesh::HandleRange getCells(smtk::mesh::HandleRange meshsets,
+                                            smtk::mesh::DimensionType dim) const = 0;
 
   //----------------------------------------------------------------------------
-  virtual std::vector< std::string > compute_names(const smtk::mesh::HandleRange& r) = 0;
+  virtual std::vector< std::string > computeNames(const smtk::mesh::HandleRange& r) const = 0;
 
   //----------------------------------------------------------------------------
-  virtual smtk::mesh::TypeSet compute_types(smtk::mesh::Handle handle) = 0;
+  virtual smtk::mesh::TypeSet computeTypes(smtk::mesh::Handle handle) const = 0;
 
   //----------------------------------------------------------------------------
-  virtual smtk::mesh::HandleRange set_intersect(const smtk::mesh::HandleRange& a,
+  virtual smtk::mesh::HandleRange setIntersect(const smtk::mesh::HandleRange& a,
                                                 const smtk::mesh::HandleRange& b) const = 0;
 
   //----------------------------------------------------------------------------
-  virtual smtk::mesh::HandleRange set_difference(const smtk::mesh::HandleRange& a,
+  virtual smtk::mesh::HandleRange setDifference(const smtk::mesh::HandleRange& a,
                                                  const smtk::mesh::HandleRange& b) const = 0;
 
   //----------------------------------------------------------------------------
-  virtual smtk::mesh::HandleRange set_union(const smtk::mesh::HandleRange& a,
+  virtual smtk::mesh::HandleRange setUnion(const smtk::mesh::HandleRange& a,
                                             const smtk::mesh::HandleRange& b) const = 0;
 
   //----------------------------------------------------------------------------
-  virtual smtk::mesh::HandleRange point_intersect(const smtk::mesh::HandleRange& a,
+  virtual smtk::mesh::HandleRange pointIntersect(const smtk::mesh::HandleRange& a,
                                                   const smtk::mesh::HandleRange& b,
-                                                  const smtk::mesh::ContainsFunctor& containsFunctor) = 0;
+                                                  const smtk::mesh::ContainsFunctor& containsFunctor) const = 0;
   //----------------------------------------------------------------------------
-  virtual smtk::mesh::HandleRange point_difference(const smtk::mesh::HandleRange& a,
+  virtual smtk::mesh::HandleRange pointDifference(const smtk::mesh::HandleRange& a,
                                                    const smtk::mesh::HandleRange& b,
-                                                   const smtk::mesh::ContainsFunctor& containsFunctor) = 0;
+                                                   const smtk::mesh::ContainsFunctor& containsFunctor) const = 0;
 };
 
 }

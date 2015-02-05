@@ -65,76 +65,76 @@ public:
   smtk::mesh::AllocatorPtr allocator();
 
   //----------------------------------------------------------------------------
-  smtk::mesh::Handle get_root();
+  smtk::mesh::Handle getRoot() const;
 
   //----------------------------------------------------------------------------
   //creates a mesh with that contains the input cells.
   //the mesh will have the root as its parent.
   //this function needs to be expanded to support parenting to other handles
   //this function needs to be expanded to support adding tags to the mesh
-  bool create_mesh(smtk::mesh::HandleRange cells,
+  bool createMesh(smtk::mesh::HandleRange cells,
                    smtk::mesh::Handle& meshHandle);
 
   //----------------------------------------------------------------------------
-  std::size_t numMeshes(smtk::mesh::Handle handle);
+  std::size_t numMeshes(smtk::mesh::Handle handle) const;
 
   //----------------------------------------------------------------------------
-  smtk::mesh::HandleRange get_meshsets(smtk::mesh::Handle handle);
+  smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle) const;
 
   //----------------------------------------------------------------------------
-  smtk::mesh::HandleRange get_meshsets(smtk::mesh::Handle handle,
-                                       int dimension);
+  smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle,
+                                       int dimension) const;
 
   //----------------------------------------------------------------------------
   //find all entity sets that have this exact name tag
-  smtk::mesh::HandleRange get_meshsets(smtk::mesh::Handle handle,
-                                       const std::string& name);
+  smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle,
+                                       const std::string& name) const;
 
   //----------------------------------------------------------------------------
   //get all cells held by this range
-  smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets);
+  smtk::mesh::HandleRange getCells(smtk::mesh::HandleRange meshsets) const;
 
   //----------------------------------------------------------------------------
   //get all cells held by this range handle of a given cell type
-  smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
-                                    smtk::mesh::CellType cellType);
+  smtk::mesh::HandleRange getCells(smtk::mesh::HandleRange meshsets,
+                                    smtk::mesh::CellType cellType) const;
 
   //----------------------------------------------------------------------------
   //get all cells held by this range handle of a given cell type(s)
-  smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
-                                    const smtk::mesh::CellTypes& cellTypes);
+  smtk::mesh::HandleRange getCells(smtk::mesh::HandleRange meshsets,
+                                    const smtk::mesh::CellTypes& cellTypes) const;
 
   //----------------------------------------------------------------------------
   //get all cells held by this range handle of a given dimension
-  smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
-                                    smtk::mesh::DimensionType dim);
+  smtk::mesh::HandleRange getCells(smtk::mesh::HandleRange meshsets,
+                                    smtk::mesh::DimensionType dim) const;
 
   //----------------------------------------------------------------------------
-  std::vector< std::string > compute_names(const smtk::mesh::HandleRange& r);
+  std::vector< std::string > computeNames(const smtk::mesh::HandleRange& r) const;
 
   //----------------------------------------------------------------------------
-  smtk::mesh::TypeSet compute_types(smtk::mesh::Handle handle);
+  smtk::mesh::TypeSet computeTypes(smtk::mesh::Handle handle) const;
 
   //----------------------------------------------------------------------------
-  smtk::mesh::HandleRange set_intersect(const smtk::mesh::HandleRange& a,
+  smtk::mesh::HandleRange setIntersect(const smtk::mesh::HandleRange& a,
                                         const smtk::mesh::HandleRange& b) const;
 
   //----------------------------------------------------------------------------
-  smtk::mesh::HandleRange set_difference(const smtk::mesh::HandleRange& a,
+  smtk::mesh::HandleRange setDifference(const smtk::mesh::HandleRange& a,
                                          const smtk::mesh::HandleRange& b) const;
 
   //----------------------------------------------------------------------------
-  smtk::mesh::HandleRange set_union(const smtk::mesh::HandleRange& a,
+  smtk::mesh::HandleRange setUnion(const smtk::mesh::HandleRange& a,
                                     const smtk::mesh::HandleRange& b) const;
 
   //----------------------------------------------------------------------------
-  smtk::mesh::HandleRange point_intersect(const smtk::mesh::HandleRange& a,
+  smtk::mesh::HandleRange pointIntersect(const smtk::mesh::HandleRange& a,
                                           const smtk::mesh::HandleRange& b,
-                                          const smtk::mesh::ContainsFunctor& containsFunctor);
+                                          const smtk::mesh::ContainsFunctor& containsFunctor) const;
   //----------------------------------------------------------------------------
-  smtk::mesh::HandleRange point_difference(const smtk::mesh::HandleRange& a,
+  smtk::mesh::HandleRange pointDifference(const smtk::mesh::HandleRange& a,
                                            const smtk::mesh::HandleRange& b,
-                                           const smtk::mesh::ContainsFunctor& containsFunctor);
+                                           const smtk::mesh::ContainsFunctor& containsFunctor) const;
 
   ::moab::Interface * const moabInterface() const;
 
