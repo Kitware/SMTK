@@ -87,7 +87,7 @@ enum ManagerEventRelationType
   ENTITY_HAS_ATTRIBUTE,         //!< The entity is being associated/disassociated to/from an attribute.
 
   // Events affecting both Arrangement and Entity records (additions, removals, modifications of arrangements)
-  SESSION_INCLUDES_MODEL,       //!< The entity is a session with a child model
+  SESSION_INCLUDES_MODEL,       //!< The entity is a session with a child model being added or removed.
 
   MODEL_INCLUDES_FREE_CELL,     //!< The entity is a model with a free cell.
   MODEL_INCLUDES_FREE_USE,      //!< The entity is a model with a free use (not really sensical?).
@@ -102,6 +102,9 @@ enum ManagerEventRelationType
   SHELL_INCLUDES_SHELL,         //!< The entity is a shell that includes another shell (e.g., a void)
 
   GROUP_SUPERSET_OF_ENTITY,     //!< The entity is a group whose membership is being modified.
+  MODEL_SUPERSET_OF_MODEL,      //!< The entity is a model whose set of child models is being modified.
+  MODEL_SUPERSET_OF_GROUP,      //!< The entity is a model whose set of child groups is being modified.
+  SESSION_SUPERSET_OF_MODEL,    //!< The entity is a session whose set of child models is being modified.
 
   INSTANCE_OF_ENTITY,           //!< The entity is an instance being inserted, removed, or modified (retargeting what it instances).
 

@@ -66,8 +66,11 @@ void Model::setSession(const SessionRef& sess)
   if (curSess.isValid())
     curSess.removeMemberEntity(*this);
 
-  SessionRef mutableSess(sess);
-  mutableSess.addMemberEntity(*this);
+  if (sess.isValid())
+    {
+    SessionRef mutableSess(sess);
+    mutableSess.addMemberEntity(*this);
+    }
 }
 
 /// Return the cells directly owned by this model.

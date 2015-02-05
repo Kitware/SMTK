@@ -17,6 +17,7 @@ set(modelSrcs
   Edge.cxx
   EdgeUse.cxx
   Entity.cxx
+  EntityIterator.cxx
   EntityListPhrase.cxx
   EntityPhrase.cxx
   Face.cxx
@@ -63,6 +64,7 @@ set(modelHeaders
   Edge.h
   EdgeUse.h
   Entity.h
+  EntityIterator.h
   EntityListPhrase.h
   EntityPhrase.h
   EntityTypeBits.h

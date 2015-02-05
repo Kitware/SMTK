@@ -20,6 +20,10 @@ add_executable(unitManager unitManager.cxx)
 target_link_libraries(unitManager SMTKCore SMTKCoreModelTesting)
 add_test(unitManager ${EXECUTABLE_OUTPUT_PATH}/unitManager)
 
+add_executable(unitIterators unitIterators.cxx)
+target_link_libraries(unitIterators SMTKCore SMTKCoreModelTesting)
+add_test(unitIterators ${EXECUTABLE_OUTPUT_PATH}/unitIterators)
+
 add_executable(unitTessellation unitTessellation.cxx)
 target_link_libraries(unitTessellation SMTKCore SMTKCoreModelTesting)
 add_test(unitTessellation ${EXECUTABLE_OUTPUT_PATH}/unitTessellation)
