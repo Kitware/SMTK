@@ -29,6 +29,9 @@ namespace mesh {
 //intersected, etc to generate the subset of cells the caller is interested in.
 //To get the actual Cell / Geometric information you need to use the
 //points() calls on a CellSet
+//Note CellSets aren't stored in the actual database, they are just local
+//views of the data. If you need to save a CellSet you will need to create
+//a new MeshSet using Collection::createMesh.
 class SMTKCORE_EXPORT CellSet
 {
   friend CellSet set_intersect( const CellSet& a, const CellSet& b);
@@ -36,6 +39,7 @@ class SMTKCORE_EXPORT CellSet
   friend CellSet set_union( const CellSet& a, const CellSet& b );
   friend CellSet point_intersect( const CellSet& a, const CellSet& b, ContainmentType t);
   friend CellSet point_difference( const CellSet& a, const CellSet& b, ContainmentType t);
+  friend class Collection; //required for creation of new meshes
 public:
 
   //construct a CellSet that represents an arbitrary unknown subset of cells that

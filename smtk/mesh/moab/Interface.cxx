@@ -85,14 +85,16 @@ smtk::mesh::Handle Interface::getRoot() const
 }
 
 //----------------------------------------------------------------------------
-bool Interface::createMesh(smtk::mesh::HandleRange cells,
-                            smtk::mesh::Handle& meshHandle)
+bool Interface::createMesh(const smtk::mesh::HandleRange& cells,
+                           smtk::mesh::Handle& meshHandle)
 {
   const unsigned int options = 0;
   ::moab::ErrorCode rval = m_iface->create_meshset( options , meshHandle );
   if(rval == ::moab::MB_SUCCESS)
     {
     m_iface->add_entities( meshHandle, cells );
+    m_iface->add_parent_child( m_iface->get_root_set(),
+                               meshHandle );
     }
    return (rval == ::moab::MB_SUCCESS);
 }
@@ -188,7 +190,7 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
 
 //----------------------------------------------------------------------------
 //get all cells held by this range
-smtk::mesh::HandleRange Interface::getCells(smtk::mesh::HandleRange meshsets) const
+smtk::mesh::HandleRange Interface::getCells(const HandleRange &meshsets) const
 
 {
   // get all non-meshset entities in meshset, including in contained meshsets
@@ -205,7 +207,7 @@ smtk::mesh::HandleRange Interface::getCells(smtk::mesh::HandleRange meshsets) co
 
 //----------------------------------------------------------------------------
 //get all cells held by this range handle of a given cell type
-smtk::mesh::HandleRange Interface::getCells(smtk::mesh::HandleRange meshsets,
+smtk::mesh::HandleRange Interface::getCells(const HandleRange &meshsets,
                                              smtk::mesh::CellType cellType) const
 {
   int moabCellType = smtk::mesh::moab::smtkToMOABCell(cellType);
@@ -227,7 +229,7 @@ smtk::mesh::HandleRange Interface::getCells(smtk::mesh::HandleRange meshsets,
 
 //----------------------------------------------------------------------------
 //get all cells held by this range handle of a given cell type(s)
-smtk::mesh::HandleRange Interface::getCells(smtk::mesh::HandleRange meshsets,
+smtk::mesh::HandleRange Interface::getCells(const smtk::mesh::HandleRange& meshsets,
                                              const smtk::mesh::CellTypes& cellTypes) const
 
 {
@@ -264,8 +266,8 @@ smtk::mesh::HandleRange Interface::getCells(smtk::mesh::HandleRange meshsets,
 
 //----------------------------------------------------------------------------
 //get all cells held by this range handle of a given dimension
-smtk::mesh::HandleRange Interface::getCells(smtk::mesh::HandleRange meshsets,
-                                             smtk::mesh::DimensionType dim) const
+smtk::mesh::HandleRange Interface::getCells(const smtk::mesh::HandleRange& meshsets,
+                                            smtk::mesh::DimensionType dim) const
 
 {
   const int dimension = static_cast<int>(dim);
@@ -283,14 +285,14 @@ smtk::mesh::HandleRange Interface::getCells(smtk::mesh::HandleRange meshsets,
 
 
 //----------------------------------------------------------------------------
-std::vector< std::string > Interface::computeNames(const smtk::mesh::HandleRange& r) const
+std::vector< std::string > Interface::computeNames(const smtk::mesh::HandleRange& meshsets) const
 {
   //construct a name tag query helper class
   tag::QueryNameTag query_name(this->moabInterface());
 
   typedef smtk::mesh::HandleRange::const_iterator it;
   std::set< std::string > unique_names;
-  for(it i = r.begin(); i != r.end(); ++i)
+  for(it i = meshsets.begin(); i != meshsets.end(); ++i)
     {
     const bool has_name = query_name.fetch_name(*i);
     if(has_name)

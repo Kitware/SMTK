@@ -70,10 +70,8 @@ public:
   //----------------------------------------------------------------------------
   //creates a mesh with that contains the input cells.
   //the mesh will have the root as its parent.
-  //this function needs to be expanded to support parenting to other handles
-  //this function needs to be expanded to support adding tags to the mesh
-  virtual bool createMesh(smtk::mesh::HandleRange cells,
-                           smtk::mesh::Handle& meshHandle) = 0;
+  virtual bool createMesh(const smtk::mesh::HandleRange& cells,
+                          smtk::mesh::Handle& meshHandle) = 0;
 
   //----------------------------------------------------------------------------
   //the number of meshes that are children of this mesh.
@@ -93,25 +91,25 @@ public:
 
   //----------------------------------------------------------------------------
   //get all cells held by this range
-  virtual smtk::mesh::HandleRange getCells(smtk::mesh::HandleRange meshsets) const = 0;
+  virtual smtk::mesh::HandleRange getCells(const smtk::mesh::HandleRange& meshsets) const = 0;
 
   //----------------------------------------------------------------------------
   //get all cells held by this range handle of a given cell type
-  virtual smtk::mesh::HandleRange getCells(smtk::mesh::HandleRange meshsets,
-                                            smtk::mesh::CellType cellType) const = 0;
+  virtual smtk::mesh::HandleRange getCells(const smtk::mesh::HandleRange& meshsets,
+                                           smtk::mesh::CellType cellType) const = 0;
 
   //----------------------------------------------------------------------------
   //get all cells held by this range handle of a given cell type(s)
-  virtual smtk::mesh::HandleRange getCells(smtk::mesh::HandleRange meshsets,
-                                            const smtk::mesh::CellTypes& cellTypes) const = 0;
+  virtual smtk::mesh::HandleRange getCells(const smtk::mesh::HandleRange& meshsets,
+                                           const smtk::mesh::CellTypes& cellTypes) const = 0;
 
   //----------------------------------------------------------------------------
   //get all cells held by this range handle of a given dimension
-  virtual smtk::mesh::HandleRange getCells(smtk::mesh::HandleRange meshsets,
-                                            smtk::mesh::DimensionType dim) const = 0;
+  virtual smtk::mesh::HandleRange getCells(const smtk::mesh::HandleRange& meshsets,
+                                           smtk::mesh::DimensionType dim) const = 0;
 
   //----------------------------------------------------------------------------
-  virtual std::vector< std::string > computeNames(const smtk::mesh::HandleRange& r) const = 0;
+  virtual std::vector< std::string > computeNames(const smtk::mesh::HandleRange& meshsets) const = 0;
 
   //----------------------------------------------------------------------------
   virtual smtk::mesh::TypeSet computeTypes(smtk::mesh::Handle handle) const = 0;

@@ -119,6 +119,17 @@ public:
   //todo: need to be able to extract the entire surface of the mesh
   //smtk::mesh::MeshSet generateBoundarMeshes();
 
+
+  //----------------------------------------------------------------------------
+  // Consturction of new meshes
+  //----------------------------------------------------------------------------
+  //given a collection of existing cells make a new Mesh inside the underlying interface
+  //Return that Mesh as a MeshSet with a size of 1. The CellSet could
+  //be the result of appending/intersecting,difference of other CellSets.
+  //Adding a CellSet that is part of a different collection will fail, and
+  //we will return an empty MeshSet
+  smtk::mesh::MeshSet createMesh( const smtk::mesh::CellSet& cells );
+
   const smtk::mesh::InterfacePtr& interface() const;
 
 private:

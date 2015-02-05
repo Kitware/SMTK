@@ -70,10 +70,10 @@ public:
   //----------------------------------------------------------------------------
   //creates a mesh with that contains the input cells.
   //the mesh will have the root as its parent.
-  //this function needs to be expanded to support parenting to other handles
-  //this function needs to be expanded to support adding tags to the mesh
-  bool createMesh(smtk::mesh::HandleRange cells,
-                   smtk::mesh::Handle& meshHandle);
+  //The mesh will be tagged with the GEOM_DIMENSION tag with a value that is
+  //equal to highest dimension of cell inside
+  virtual bool createMesh(const smtk::mesh::HandleRange& cells,
+                          smtk::mesh::Handle& meshHandle);
 
   //----------------------------------------------------------------------------
   std::size_t numMeshes(smtk::mesh::Handle handle) const;
@@ -92,25 +92,25 @@ public:
 
   //----------------------------------------------------------------------------
   //get all cells held by this range
-  smtk::mesh::HandleRange getCells(smtk::mesh::HandleRange meshsets) const;
+  smtk::mesh::HandleRange getCells(const smtk::mesh::HandleRange& meshsets) const;
 
   //----------------------------------------------------------------------------
   //get all cells held by this range handle of a given cell type
-  smtk::mesh::HandleRange getCells(smtk::mesh::HandleRange meshsets,
+  smtk::mesh::HandleRange getCells(const smtk::mesh::HandleRange& meshsets,
                                     smtk::mesh::CellType cellType) const;
 
   //----------------------------------------------------------------------------
   //get all cells held by this range handle of a given cell type(s)
-  smtk::mesh::HandleRange getCells(smtk::mesh::HandleRange meshsets,
+  smtk::mesh::HandleRange getCells(const smtk::mesh::HandleRange& meshsets,
                                     const smtk::mesh::CellTypes& cellTypes) const;
 
   //----------------------------------------------------------------------------
   //get all cells held by this range handle of a given dimension
-  smtk::mesh::HandleRange getCells(smtk::mesh::HandleRange meshsets,
+  smtk::mesh::HandleRange getCells(const smtk::mesh::HandleRange& meshsets,
                                     smtk::mesh::DimensionType dim) const;
 
   //----------------------------------------------------------------------------
-  std::vector< std::string > computeNames(const smtk::mesh::HandleRange& r) const;
+  std::vector< std::string > computeNames(const smtk::mesh::HandleRange& meshsets) const;
 
   //----------------------------------------------------------------------------
   smtk::mesh::TypeSet computeTypes(smtk::mesh::Handle handle) const;
