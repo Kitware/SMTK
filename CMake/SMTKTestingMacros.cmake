@@ -26,6 +26,12 @@ function(smtk_unit_tests)
     list(APPEND SMTK_ut_SOURCES ${SMTK_ut_SOURCES_REQUIRE_DATA})
   endif()
 
+  list(LENGTH SMTK_ut_SOURCES num_sources)
+  if(NOT ${num_sources})
+    #no sources don't make a target
+    return()
+  endif()
+
   if (SMTK_ENABLE_TESTING)
     smtk_get_kit_name(kit)
     #we use UnitTests_ so that it is an unique key to exclude from coverage
