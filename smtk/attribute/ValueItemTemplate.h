@@ -43,6 +43,24 @@ namespace smtk
       bool setValue(const DataT &val)
       {return this->setValue(0, val);}
       bool setValue(std::size_t element, const DataT &val);
+      template<typename I>
+      bool setValues(I begin, I end)
+        {
+        bool ok = false;
+        std::size_t num = end - begin;
+        if (this->setNumberOfValues(num))
+          {
+          ok = true;
+          std::size_t i = 0;
+          for (I it = begin; it != end; ++it, ++i)
+            if (!this->setValue(i, *it))
+              {
+              ok = false;
+              break;
+              }
+          }
+        return ok;
+        }
       bool appendValue(const DataT &val);
       virtual bool appendExpression(smtk::attribute::AttributePtr exp);
       bool removeValue(std::size_t element);
