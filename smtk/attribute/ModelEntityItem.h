@@ -42,6 +42,8 @@ class SMTKCORE_EXPORT ModelEntityItem : public Item
 {
 friend class ModelEntityItemDefinition;
 public:
+  typedef smtk::model::EntityRefArray::const_iterator const_iterator;
+
   smtkTypeMacro(ModelEntityItem);
   virtual ~ModelEntityItem();
   virtual Item::Type type() const;
@@ -84,8 +86,8 @@ public:
   bool has(const smtk::common::UUID& entity) const;
   bool has(const smtk::model::EntityRef& entity) const;
 
-  smtk::model::EntityRefArray::const_iterator begin() const;
-  smtk::model::EntityRefArray::const_iterator end() const;
+  const_iterator begin() const;
+  const_iterator end() const;
 
   std::ptrdiff_t find(const smtk::common::UUID& entity) const;
   std::ptrdiff_t find(const smtk::model::EntityRef& entity) const;
