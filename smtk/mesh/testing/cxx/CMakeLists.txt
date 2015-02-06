@@ -14,6 +14,7 @@ set(unit_tests
   UnitTestCellTypes.cxx
   UnitTestCollection.cxx
   UnitTestManager.cxx
+  UnitTestModelToMesh.cxx
   UnitTestQueryTypes.cxx
   UnitTestTypeSet.cxx
   )
@@ -33,4 +34,4 @@ set(unit_tests_which_require_data
 smtk_unit_tests(LABEL "Mesh"
                 SOURCES ${unit_tests}
                 SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
-                LIBRARIES SMTKCore ${Boost_LIBRARIES})
+                LIBRARIES SMTKCore SMTKCoreModelTesting ${Boost_LIBRARIES})
