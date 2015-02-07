@@ -61,7 +61,7 @@ smtk::model::OperatorResult BooleanUnion::operateInternal()
   Body* cgmBody;
   EntityRefArray expunged;
   bool ok = true;
-  ok |= this->cgmEntities(*this->specification()->associations().get(), cgmBodiesIn, keepInputs, expunged);
+  ok &= this->cgmEntities(*this->specification()->associations().get(), cgmBodiesIn, keepInputs, expunged);
 
   if (cgmBodiesIn.size() < 2)
     {

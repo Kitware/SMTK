@@ -62,15 +62,15 @@ smtk::model::OperatorResult BooleanSubtraction::operateInternal()
   DLIList<Body*> cgmToolsIn;
   Body* cgmBody;
   EntityRefArray expunged;
-  bool ok;
-  ok |= this->cgmEntities(*this->specification()->associations().get(), cgmBodiesIn, keepInputs, expunged);
+  bool ok = true;
+  ok &= this->cgmEntities(*this->specification()->associations().get(), cgmBodiesIn, keepInputs, expunged);
   if (!ok)
     {
     smtkInfoMacro(log(), "Need at least 1 workpiece, none of the associated entities were valid.");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
-  ok |= this->cgmEntities(*this->findModelEntity("tools").get(), cgmToolsIn, keepInputs, expunged);
+  ok &= this->cgmEntities(*this->findModelEntity("tools").get(), cgmToolsIn, keepInputs, expunged);
   if (!ok)
     {
     smtkInfoMacro(log(), "Need at least 1 tool; none of the specified entities were valid.");

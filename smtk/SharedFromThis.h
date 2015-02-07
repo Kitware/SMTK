@@ -43,7 +43,7 @@
   typedef smtk::shared_ptr< __VA_ARGS__ > Ptr; \
   typedef smtk::shared_ptr< const __VA_ARGS__ > ConstPtr; \
   typedef smtk::weak_ptr< __VA_ARGS__ > WeakPtr; \
-  typedef smtk::weak_ptr< const __VA_ARGS__ > WeakConstPtr;
+  typedef smtk::weak_ptr< const __VA_ARGS__ > WeakConstPtr
 
 /**\brief Add a typedef to the superclass of this class.
   *
@@ -58,7 +58,7 @@
   */
 #define smtkSuperclassMacro(...) \
   typedef __VA_ARGS__ Superclass; \
-  typedef smtk::shared_ptr< __VA_ARGS__ > SuperclassPtr;
+  typedef smtk::shared_ptr< __VA_ARGS__ > SuperclassPtr
 
 /**\brief Add static create() methods to a class.
   *
@@ -169,7 +169,7 @@
 /// A convenience macro for declaring shared_from_this and create methods.
 #define smtkSharedPtrCreateMacro(...) \
   smtkSharedFromThisMacro( __VA_ARGS__ ); \
-  smtkCreateMacro( __VA_ARGS__ );
+  smtkCreateMacro( __VA_ARGS__ )
 
 /**\brief A convenience macro to use in the body of create methods that take arguments.
   *
@@ -207,6 +207,6 @@
     SharedPtrBaseType::Ptr( \
     __VA_ARGS__ \
     ) \
-  );
+  )
 
 #endif // __smtk_SharedFromThis_h

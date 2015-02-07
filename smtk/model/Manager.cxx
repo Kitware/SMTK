@@ -1357,18 +1357,18 @@ void Manager::assignDefaultNamesToModelChildren(const smtk::common::UUID& modelI
     if (model.isValid())
       {
       oops = false;
-      EntityIterator it;
-      it.traverse(model, ITERATE_MODELS);
+      EntityIterator eit;
+      eit.traverse(model, ITERATE_MODELS);
       model.assignDefaultName();
       std::string modelName = model.name();
       UUIDs dummy;
-      for (it.begin(); !it.isAtEnd(); ++it)
+      for (eit.begin(); !eit.isAtEnd(); ++eit)
         {
-        if (it->isSessionRef())
-          (*it).assignDefaultName();
+        if (eit->isSessionRef())
+          (*eit).assignDefaultName();
         else
           this->assignDefaultNamesWithOwner(
-            this->m_topology->find(it->entity()),
+            this->m_topology->find(eit->entity()),
             model.entity(),
             modelName, dummy, true);
         }
