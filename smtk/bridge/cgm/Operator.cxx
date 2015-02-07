@@ -11,6 +11,8 @@
 #include "smtk/bridge/cgm/Session.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
+#include "smtk/model/EntityRef.h"
+
 #include "RefEntity.hpp"
 
 namespace smtk {

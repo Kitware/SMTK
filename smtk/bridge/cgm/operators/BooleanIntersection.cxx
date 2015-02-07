@@ -78,35 +78,51 @@ smtk::model::OperatorResult BooleanIntersection::operateInternal()
   Models::iterator it;
   DLIList<Body*> cgmBodiesIn;
   DLIList<Body*> cgmBodiesOut;
-  Body* cgmBody;
   EntityRefArray expunged;
-  for (it = bodiesIn.begin(); it != bodiesIn.end(); ++it)
+
+  bool ok = true;
+  ok |= this->cgmEntities(
+    *this->specification()->associations().get(),
+    cgmBodiesIn,
+    /* keep_inputs */ 1,
+    expunged);
+
+  // Stop if any of the workpieces don't exist as CGM entities:
+  if (!ok)
     {
-    cgmBody = dynamic_cast<Body*>(this->cgmEntity(*it));
-    if (cgmBody)
-      cgmBodiesIn.append(cgmBody);
-    if (!keepInputs)
-      {
-      this->manager()->eraseModel(*it);
-      expunged.push_back(*it);
-      }
+    smtkInfoMacro(log(),
+      "One or more workpiece inputs had no matching CGM entity.");
+    return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
   if (toolIn->numberOfValues() > 0)
     {
-    cgmToolBody = dynamic_cast<Body*>(this->cgmEntity(toolIn->value()));
-    if (!keepInputs)
-      {
-      this->manager()->eraseModel(toolIn->value());
-      expunged.push_back(toolIn->value());
-      }
-    if (!cgmToolBody)
+    DLIList<Body*> cgmToolBodies;
+    ok |= this->cgmEntities(
+      *this->findModelEntity("tool").get(),
+      cgmToolBodies, keepInputs, expunged);
+    if (!ok)
       {
       smtkInfoMacro(
         log(),
-        "Tool body specified as " << toolIn->value().name() << " (" << toolIn->value().flagSummary() << ")"
+        "Tool body specified as "
+        << toolIn->value().name() << " ("
+        << toolIn->value().flagSummary() << ")"
         << " but no matching CGM entity exists.");
       return this->createResult(smtk::model::OPERATION_FAILED);
+      }
+    cgmToolBody = cgmToolBodies[0];
+    }
+  else if (!keepInputs)
+    { // All but the first input will be expunged.
+    EntityRefArray::const_iterator wit;
+    smtk::attribute::ModelEntityItemPtr assoc =
+      this->specification()->associations();
+    wit = assoc->begin();
+    for (++wit; wit != assoc->end(); ++wit)
+      {
+      this->manager()->erase(*wit);
+      expunged.push_back(*wit);
       }
     }
 
@@ -133,7 +149,7 @@ smtk::model::OperatorResult BooleanIntersection::operateInternal()
 
   for (int i = 0; i < numBodiesOut; ++i)
     {
-    cgmBody = cgmBodiesOut.get_and_step();
+    Body* cgmBody = cgmBodiesOut.get_and_step();
     if (!cgmBody)
       continue;
 

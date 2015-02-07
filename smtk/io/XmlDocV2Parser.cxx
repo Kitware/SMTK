@@ -141,7 +141,7 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node &node,
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   std::string attName;
   AttRefInfo info;
-  if (!numRequiredVals)
+  if (!numRequiredVals || item->isExtensible())
     {
     // The node should have an attribute indicating how many values are
     // associated with the item

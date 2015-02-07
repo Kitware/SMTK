@@ -12,125 +12,24 @@ import sys
 #
 #=============================================================================
 import smtk
+from smtk.simple import *
 
 mgr = smtk.model.Manager.create()
-sref = mgr.createSession('cgm', smtk.model.SessionRef())
-sess = sref.session()
-sref.assignDefaultName()
+sess = mgr.createSession('cgm')
+brg = sess.session()
+sess.assignDefaultName()
+SetActiveSession(sess)
 print '\n\n%s: type "%s" %s %s' % \
-  (sref.name(), sess.name(), sref.flagSummary(0), sess.sessionId())
-print '  Site: %s' % (sref.site() or 'local')
+  (sess.name(), brg.name(), sess.flagSummary(0), brg.sessionId())
+print '  Site: %s' % (sess.site() or 'local')
 
 # We could evaluate the session tag as JSON, but most of
 # the information is available through methods above that
 # we needed to test:
-sessiontag = sref.tag()
+sessiontag = sess.tag()
 print '\n'
 
-opnames = sref.operatorNames()
-
-def SetVectorValue(item,v):
-  item.setNumberOfValues(len(v))
-  for i in range(len(v)):
-    item.setValue(i,v[i])
-
-def GetVectorValue(item):
-  N = item.numberOfValues()
-  return [item.value(i) for i in range(N)]
-
-def GetActiveSession():
-  return sref
-
-def CreateSphere(**args):
-  sref = GetActiveSession()
-  cs = sref.op('create sphere')
-  if 'radius' in args:
-    cs.findAsDouble('radius').setValue(args['radius'])
-  if 'inner_radius' in args:
-    cs.findAsDouble('inner radius').setValue(args['inner_radius'])
-  if 'center' in args:
-    cc = cs.findAsDouble('center')
-    SetVectorValue(cc, args['center'])
-  res = cs.operate()
-  sph = res.findModelEntity('entities').value(0)
-  return sph
-
-def CreateBrick(**args):
-  sref = GetActiveSession()
-  cb = sref.op('create brick')
-  meth = 1 if 'ext' in args else 0
-  ov = cb.findAsInt('construction method')
-  ov.setDiscreteIndex(meth)
-  if meth == 0:
-    for prop in ['width', 'depth', 'height']:
-      if prop in args:
-        cb.findAsDouble(prop).setValue(args[prop])
-  else:
-    extVal = args['ext']
-    SetVectorValue(cb.findAsDouble('extension'), extVal)
-    for prop in ['axis 0', 'axis 1', 'axis 2']:
-      if prop in args:
-        propVal = args[prop]
-        SetVectorValue(cb.findAsDouble(prop), propVal)
-  # Either construction method can specify 'center':
-  if 'center' in args:
-    ctrVal = args['center']
-    SetVectorValue(cb.findAsDouble('center'), ctrVal)
-  res = cb.operate()
-  brick = res.findModelEntity('entities').value(0)
-  return brick
-
-def Intersect(bodies, **args):
-  sref = GetActiveSession()
-  op = sref.op('intersection')
-  try:
-    [op.associateEntity(x) for x in bodies]
-  except:
-    op.associateEntity(bodies)
-  res = op.operate()
-  return res.findModelEntity('entities').value(0)
-
-def Union(bodies, **args):
-  sref = GetActiveSession()
-  op = sref.op('union')
-  try:
-    [op.associateEntity(x) for x in bodies]
-  except:
-    op.associateEntity(bodies)
-  res = op.operate()
-  return res.findModelEntity('entities').value(0)
-
-def Subtract(workpiece, tool, **args):
-  """Perform a boolean subtraction of the tool from the workpiece.
-
-  Tool and workpiece may each be either an SMTK model or a list of models.
-  """
-  sref = GetActiveSession()
-  op = sref.op('subtraction')
-  if type(workpiece) == type([]):
-    [op.associateEntity(x) for x in workpiece]
-  else:
-    op.associateEntity(workpiece)
-
-  # Convert tool to a list
-  if type(tool) != type([]):
-    tool = [tool,]
-  SetVectorValue(op.findAsModel('tools'), tool)
-
-  res = op.operate()
-  return res.findModelEntity('entities').value(0)
-
-def Translate(bodies, vec):
-  """Translate the body (or list of bodies) along the given vector."""
-  sref = GetActiveSession()
-  top = sref.op('translate')
-  if type(bodies) == type([]):
-    [top.associateEntity(bod) for bod in bodies]
-  else:
-    top.associateEntity(bodies)
-  SetVectorValue(top.findAsDouble('offset'),vec)
-  res = top.operate()
-  return GetVectorValue(res.findModelEntity('entities'))
+opnames = sess.operatorNames()
 
 b0 = CreateBrick(center=[0,0,0])
 Translate(b0, [0, 1.5, 0])

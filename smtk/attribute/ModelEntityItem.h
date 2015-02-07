@@ -83,6 +83,8 @@ public:
   virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
                         smtk::attribute::Item::CopyInfo& info);
 
+  bool isExtensible() const;
+
   bool has(const smtk::common::UUID& entity) const;
   bool has(const smtk::model::EntityRef& entity) const;
 
