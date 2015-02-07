@@ -51,6 +51,8 @@
   <suppress-warning text="skipping function 'smtk::model::ShellEntity::addUses', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::entitiesMatchingFlagsAs', unmatched return type 'Collection'"/>
   <suppress-warning text="skipping function 'smtk::model::Operator::findAs', unmatched return type 'T::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::ValueItemTemplate::setValues', unmatched parameter type 'I'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::setValues', unmatched parameter type 'I'"/>
 
   <!-- Return a list.  For now we will ignore the iterators-->
   <suppress-warning text="skipping function 'smtk::model::Item::beginAssociatedAttributes', unmatched return type 'smtk::model::Item::const_iterator'"/>
