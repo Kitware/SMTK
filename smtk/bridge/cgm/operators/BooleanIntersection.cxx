@@ -81,7 +81,7 @@ smtk::model::OperatorResult BooleanIntersection::operateInternal()
   EntityRefArray expunged;
 
   bool ok = true;
-  ok |= this->cgmEntities(
+  ok &= this->cgmEntities(
     *this->specification()->associations().get(),
     cgmBodiesIn,
     /* keep_inputs */ 1,
@@ -98,7 +98,7 @@ smtk::model::OperatorResult BooleanIntersection::operateInternal()
   if (toolIn->numberOfValues() > 0)
     {
     DLIList<Body*> cgmToolBodies;
-    ok |= this->cgmEntities(
+    ok &= this->cgmEntities(
       *this->findModelEntity("tool").get(),
       cgmToolBodies, keepInputs, expunged);
     if (!ok)

@@ -28,8 +28,8 @@ enum IteratorStyle
 class SMTKCORE_EXPORT EntityIterator
 {
 public:
-  template<typename C> void traverse(C begin, C end);
-  template<typename C> void traverse(C begin, C end, IteratorStyle style);
+  template<typename C> void traverse(C ebegin, C eend);
+  template<typename C> void traverse(C ebegin, C eend, IteratorStyle style);
 
   void traverse(const EntityRef& x);
   void traverse(const EntityRef& x, IteratorStyle style);
@@ -56,22 +56,22 @@ protected:
 /**\brief Iterate over the given entities and **only** those entities.
   */
 template<typename C>
-void EntityIterator::traverse(C begin, C end)
+void EntityIterator::traverse(C ebegin, C eend)
 {
-  this->traverse(begin, end, ITERATE_BARE);
+  this->traverse(ebegin, eend, ITERATE_BARE);
 }
 
 /**\brief Iterate over the given entities and the specified \a related records.
   */
 template<typename C>
-void EntityIterator::traverse(C begin, C end, IteratorStyle related)
+void EntityIterator::traverse(C ebegin, C eend, IteratorStyle related)
 {
   this->m_related = related;
   this->m_visited.clear();
   if (this->m_related == ITERATE_MODELS)
     {
     Model parent;
-    for (C rit = begin; rit != end; ++rit)
+    for (C rit = ebegin; rit != eend; ++rit)
       {
       if ((parent = rit->owningModel()).isValid())
         {
@@ -96,7 +96,7 @@ void EntityIterator::traverse(C begin, C end, IteratorStyle related)
     }
   else
     {
-    this->m_visited.insert(begin, end);
+    this->m_visited.insert(ebegin, eend);
     }
 }
 

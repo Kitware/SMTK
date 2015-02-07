@@ -60,9 +60,9 @@ smtk::model::OperatorResult Sweep::operateInternal()
   DLIList<RefEntity*> cgmThingsToSweep;
   DLIList<RefEdge*> cgmSweepPath;
   bool ok = true;
-  ok |= this->cgmEntities(*this->specification()->associations().get(), cgmThingsToSweep, keepInputs, expunged);
+  ok &= this->cgmEntities(*this->specification()->associations().get(), cgmThingsToSweep, keepInputs, expunged);
   if (sweepOp == 2) // sweep along curve
-    ok |= this->cgmEntities(*this->findModelEntity("sweep path").get(), cgmSweepPath, keepInputs, expunged);
+    ok &= this->cgmEntities(*this->findModelEntity("sweep path").get(), cgmSweepPath, keepInputs, expunged);
 
   if (!ok)
     return this->createResult(smtk::model::OPERATION_FAILED);

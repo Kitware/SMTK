@@ -56,15 +56,15 @@ public:
   bool setValue(const smtk::model::EntityRef& val);
   bool setValue(std::size_t element, const smtk::model::EntityRef& val);
   template<typename I>
-  bool setValues(I begin, I end)
+  bool setValues(I vbegin, I vend)
     {
     bool ok = false;
-    std::size_t num = end - begin;
+    std::size_t num = vend - vbegin;
     if (this->setNumberOfValues(num))
       {
       ok = true;
       std::size_t i = 0;
-      for (I it = begin; it != end; ++it, ++i)
+      for (I it = vbegin; it != vend; ++it, ++i)
         if (!this->setValue(i, *it))
           {
           ok = false;

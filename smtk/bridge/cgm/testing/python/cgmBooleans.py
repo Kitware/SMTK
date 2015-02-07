@@ -17,6 +17,8 @@ from smtk.simple import *
 mgr = smtk.model.Manager.create()
 sess = mgr.createSession('cgm')
 brg = sess.session()
+print sess
+print brg
 sess.assignDefaultName()
 SetActiveSession(sess)
 print '\n\n%s: type "%s" %s %s' % \

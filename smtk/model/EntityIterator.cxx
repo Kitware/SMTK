@@ -98,7 +98,7 @@ EntityRef EntityIterator::operator ++ ()
   * This advances the iterator but returns the item that
   * was current before advancing the iterator.
   */
-EntityRef EntityIterator::operator ++ (int i)
+EntityRef EntityIterator::operator ++ (int)
 {
   if (this->isAtEnd())
     return EntityRef();

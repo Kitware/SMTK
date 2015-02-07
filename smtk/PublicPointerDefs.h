@@ -167,7 +167,7 @@ namespace smtk
   namespace common
   {
     typedef smtk::shared_ptr< smtk::common::Resource > ResourcePtr;
-  };
+  }
 
   //Shiboken requires that we use fully qualified namespaces for all
   //types that these shared_ptr and weak_ptr are holding
@@ -209,7 +209,7 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::attribute::Definition >    OperatorDefinition;
     typedef smtk::shared_ptr< smtk::attribute::Attribute >     OperatorSpecification;
     typedef smtk::shared_ptr< smtk::attribute::Attribute >     OperatorResult;
-  };
+  }
 
   namespace attribute
   {
@@ -272,7 +272,7 @@ namespace smtk
 
     // Note used by SMTK but added for completeness
     typedef smtk::shared_ptr< smtk::attribute::System >   SystemPtr;
-  };
+  }
 
   namespace bridge
   {
@@ -289,7 +289,7 @@ namespace smtk
     //custom user data classes
     typedef smtk::shared_ptr< smtk::simulation::ExportSpec > ExportSpecPtr;
     typedef smtk::shared_ptr< smtk::simulation::UserData > UserDataPtr;
-  };
+  }
 
   namespace view
   {
@@ -302,7 +302,7 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::view::ModelEntity>       ModelEntityPtr;
     typedef smtk::shared_ptr< smtk::view::Root>              RootPtr;
     typedef smtk::shared_ptr< smtk::view::SimpleExpression>  SimpleExpressionPtr;
-  };
+  }
 
 #ifdef smtk_has_owner_less
   //special map and set typedefs for better safety with sets of weak pointers
@@ -317,13 +317,13 @@ namespace smtk
       smtk::owner_less< attribute::WeakItemDefinitionPtr > >  WeakItemDefinitionPtrSet;
     typedef std::set< attribute::WeakItemPtr,
       smtk::owner_less< attribute::WeakItemPtr > >   WeakItemPtrSet;
-  };
+  }
 
   namespace view
   {
     typedef std::set< view::WeakBasePtr,
       smtk::owner_less<view::WeakBasePtr > >            WeakViewPtrSet;
-  };
+  }
 
 #else
   //we can use less than operator
@@ -333,12 +333,12 @@ namespace smtk
     typedef std::set< attribute::WeakDefinitionPtr  >     WeakDefinitionPtrSet;
     typedef std::set< attribute::WeakItemDefinitionPtr >  WeakItemDefinitionPtrSet;
     typedef std::set< attribute::WeakItemPtr  >           WeakItemPtrSet;
-  };
+  }
 
   namespace view
   {
     typedef std::set< view::WeakBasePtr  >              WeakBasePtrSet;
-  };
+  }
 #endif
 
   // These are used internally by SMTK
