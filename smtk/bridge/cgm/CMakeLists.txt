@@ -23,6 +23,7 @@ set(cgmSrcs
   operators/Reflect.cxx
   operators/Rotate.cxx
   operators/Scale.cxx
+  operators/Sweep.cxx
   operators/Translate.cxx
   operators/Write.cxx
   TDUUID.cxx
@@ -50,6 +51,7 @@ set(cgmHeaders
   operators/Reflect.h
   operators/Rotate.h
   operators/Scale.h
+  operators/Sweep.h
   operators/Translate.h
   operators/Write.h
   TDUUID.h
@@ -111,6 +113,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" cgmOperatorXM
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Reflect.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Rotate.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Scale.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Sweep.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Translate.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" cgmOperatorXML)
 

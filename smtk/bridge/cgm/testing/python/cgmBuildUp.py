@@ -11,34 +11,21 @@
 #
 #=============================================================================
 import smtk
-mgr = smtk.model.Manager.create()
-sref = mgr.createSession('cgm', smtk.model.SessionRef())
+from smtk.simple import *
 
-def setCoord(x,v):
-  for i in range(len(v)):
-    x.setValue(i,v[i])
+#def SetVectorValue(x,v):
+#  x.setNumberOfValues(len(v))
+#  for i in range(len(v)):
+#    x.setValue(i,v[i])
 
-def setEntitiesByIndex(p,ep,v):
-  for i in range(len(ep)):
-    p.setValue(i, v[ep[i]])
-
-verts = []
-edges = []
-faces = []
-volus = []
+def MapOffsets(vals, idxs):
+  return [vals[i] for i in idxs];
 
 pcoords = [
     (0,0,0),
     (1,0,0),
     (0,1,0),
     (0,0,1)]
-crv = sref.op('create vertex')
-x = crv.findAsDouble('point')
-c = crv.findAsInt('color')
-c.setValue(0, 1)
-for pt in pcoords:
-  setCoord(x,pt);
-  verts.append(crv.operate().findModelEntity('vertex').value(0))
 
 epts = [
     (0,1),
@@ -48,41 +35,35 @@ epts = [
     (1,3),
     (2,3)]
 
-cre = sref.op('create edge')
-t = cre.findAsInt('curve type')
-t.setValue(0,6) # 6 == line segment
-v = cre.findAsModel('vertices')
-x = cre.findAsDouble('point')
-c = cre.findAsInt('color')
-c.setValue(0, 2)
-for epair in epts:
-  setEntitiesByIndex(v,epair,verts)
-  if epair == (2,3):
-    # Make the last edge an arc:
-    t.setValue(0,1) # 1 == arc
-    setCoord(x,[0,0.6,0.6]) # third point on arc
-  edges.append(cre.operate().findModelEntity('edge').value(0))
-
-
 fedg = [
-    (12, 0, 3, 1),
-    (12, 0, 4, 2),
-    (16, 1, 5, 2)
+    (SurfaceType.PLANAR, 0, 3, 1),
+    (SurfaceType.PLANAR, 0, 4, 2),
+    (SurfaceType.PLANAR, 1, 5, 2)
     ]
-#   (16, 3, 5, 4) # <-- OpenCascade cannot infer that this face should be cylindrical
-crf = sref.op('create face')
-t = crf.findAsInt('surface type')
-t.setValue(0, 12)
-e = crf.findAsModel('edges')
-c = crf.findAsInt('color')
-c.setValue(0, 3)
-for face in fedg:
-  e.setNumberOfValues(len(face)-1)
-  setEntitiesByIndex(e,face[1:],edges)
-  t.setValue(face[0])
-  faces.append(crf.operate().findModelEntity('face').value(0))
+#   (SurfaceType.CYLINDRICAL, 3, 5, 4) # <-- OpenCascade cannot infer that this face should be cylindrical
 
-json = smtk.io.ExportJSON.fromModelManager(mgr)
-sphFile = open('buildup.json', 'w')
-print >> sphFile, json
-sphFile.close()
+mgr = smtk.model.Manager.create()
+sref = mgr.createSession('cgm', smtk.model.SessionRef())
+SetActiveSession(sref)
+
+verts = []
+edges = []
+faces = []
+bodies = []
+
+for pt in pcoords:
+  verts.append(CreateVertex(pt, color=1))
+
+for epair in epts:
+  if epair == (2,3):
+    edges.append(CreateEdge([verts[i] for i in epair], CurveType.ARC, midpoint=[0, 0.6, 0.6]))
+  else:
+    edges.append(CreateEdge([verts[i] for i in epair]))
+
+for face in fedg:
+  faces.append(CreateFace([edges[i] for i in face[1:]], surface_type=face[0]))
+
+for face in faces:
+  bodies.append(Sweep([face,], SweepType.EXTRUDE, distance=0.1))
+
+Write('buildup.brep', bodies)

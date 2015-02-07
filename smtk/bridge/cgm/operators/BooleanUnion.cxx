@@ -50,25 +50,18 @@ namespace smtk {
 
 smtk::model::OperatorResult BooleanUnion::operateInternal()
 {
+  // The union operator preserves the first input body even when
+  // keepInputs is false, so be careful not to expunge it (by
+  // setting keepInputs to -1 when it would otherwise be 0).
   int keepInputs = this->findInt("keep inputs")->value();
-  Models bodiesIn = this->associatedEntitiesAs<Models>();
 
   Models::iterator it;
   DLIList<Body*> cgmBodiesIn;
   DLIList<Body*> cgmBodiesOut;
   Body* cgmBody;
   EntityRefArray expunged;
-  for (it = bodiesIn.begin(); it != bodiesIn.end(); ++it)
-    {
-    cgmBody = dynamic_cast<Body*>(this->cgmEntity(*it));
-    if (cgmBody)
-      cgmBodiesIn.append(cgmBody);
-    if (!keepInputs)
-      {
-      this->manager()->eraseModel(*it);
-      expunged.push_back(*it);
-      }
-    }
+  bool ok = true;
+  ok |= this->cgmEntities(*this->specification()->associations().get(), cgmBodiesIn, keepInputs, expunged);
 
   if (cgmBodiesIn.size() < 2)
     {
@@ -76,14 +69,8 @@ smtk::model::OperatorResult BooleanUnion::operateInternal()
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
-  //smtk::bridge::cgm::CAUUID::registerWithAttributeManager();
-  //std::cout << "Default modeler \"" << GeometryQueryTool::instance()->get_gqe()->modeler_type() << "\"\n";
-  //CubitStatus s;
   DLIList<RefEntity*> imported;
-  //int prevAutoFlag = CGMApp::instance()->attrib_manager()->auto_flag();
-  //CGMApp::instance()->attrib_manager()->auto_flag(CUBIT_TRUE);
   CubitStatus s = GeometryModifyTool::instance()->unite(cgmBodiesIn, cgmBodiesOut, keepInputs);
-  //CGMApp::instance()->attrib_manager()->auto_flag(prevAutoFlag);
   if (s != CUBIT_SUCCESS)
     {
     smtkInfoMacro(log(), "Failed to perform union (status " << s << ").");

@@ -245,6 +245,17 @@ void ModelEntityItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
     }
 }
 
+/// A convenience method returning whether the item's definition is extensible.
+bool ModelEntityItem::isExtensible() const
+{
+  smtk::attribute::ConstModelEntityItemDefinitionPtr def =
+    smtk::dynamic_pointer_cast<const ModelEntityItemDefinition>(
+      this->definition());
+  if (!def)
+    return false;
+  return def->isExtensible();
+}
+
 /**\brief Return true if the entity is associated with this item; false otherwise.
   *
   */

@@ -7,7 +7,7 @@
       <BriefDescription>Subtract tool(s) from the workpiece(s).</BriefDescription>
       <DetailedDescription>
         Subtract the tool body (or bodies) from the workpiece body (or bodies).
-        The original workpieces may be modified (the default) or copies made and
+        The original workpieces may be consumed (the default) or copies made and
         the tool subtracted from these.
         Also, the tool may optionally be imprinted on the workpieces (but is
         not by default).
@@ -17,6 +17,10 @@
         <BriefDescription>The set of workpieces the tool should be removed from.</BriefDescription>
         <DetailedDescription>
           Models from which the tool bodies should be subtracted.
+          Note that the CGM subtraction operator creates a new output body
+          to hold the result of the difference rather than modifying the
+          workpiece.
+          This means that properties assigned to the workpiece will not be preserved.
         </DetailedDescription>
       </AssociationsDef>
       <ItemDefinitions>

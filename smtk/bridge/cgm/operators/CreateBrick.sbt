@@ -56,7 +56,7 @@
               <BriefDescription>Distance between center point and face along the respective principal axis.</BriefDescription>
             </Double>
           </ChildrenDefinitions>
-          <DiscreteInfo DefaultIndex="1">
+          <DiscreteInfo DefaultIndex="0">
             <Structure>
               <Value Enum="axis-aligned">0</Value>
               <Items>

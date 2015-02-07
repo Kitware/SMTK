@@ -62,35 +62,19 @@ smtk::model::OperatorResult BooleanSubtraction::operateInternal()
   DLIList<Body*> cgmToolsIn;
   Body* cgmBody;
   EntityRefArray expunged;
-  for (it = bodiesIn.begin(); it != bodiesIn.end(); ++it)
-    {
-    cgmBody = dynamic_cast<Body*>(this->cgmEntity(*it));
-    if (cgmBody)
-      cgmBodiesIn.append(cgmBody);
-    if (!keepInputs)
-      {
-      this->manager()->eraseModel(*it);
-      expunged.push_back(*it);
-      }
-    }
-
-  if (cgmBodiesIn.size() < 1)
+  bool ok;
+  ok |= this->cgmEntities(*this->specification()->associations().get(), cgmBodiesIn, keepInputs, expunged);
+  if (!ok)
     {
     smtkInfoMacro(log(), "Need at least 1 workpiece, none of the associated entities were valid.");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
-  smtk::model::EntityRefArray::const_iterator toolIt;
-  for (toolIt = toolsIn->begin(); toolIt != toolsIn->end(); ++toolIt)
+  ok |= this->cgmEntities(*this->findModelEntity("tools").get(), cgmToolsIn, keepInputs, expunged);
+  if (!ok)
     {
-    cgmBody = dynamic_cast<Body*>(this->cgmEntity(*toolIt));
-    if (cgmBody)
-      cgmToolsIn.append(cgmBody);
-    if (!keepInputs)
-      {
-      this->manager()->eraseModel(*toolIt);
-      expunged.push_back(*it);
-      }
+    smtkInfoMacro(log(), "Need at least 1 tool; none of the specified entities were valid.");
+    return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
   DLIList<RefEntity*> imported;

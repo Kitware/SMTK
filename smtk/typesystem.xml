@@ -52,7 +52,11 @@
   <suppress-warning text="skipping function 'smtk::model::Manager::entitiesMatchingFlagsAs', unmatched return type 'Collection'"/>
   <suppress-warning text="skipping function 'smtk::model::Operator::findAs', unmatched return type 'T::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ValueItemTemplate::setValues', unmatched parameter type 'I'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::ValueItemTemplate::end', unmatched return type 'std::vector&lt;DataT&gt;::const_iterator'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::ValueItemTemplate::begin', unmatched return type 'std::vector&lt;DataT&gt;::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::setValues', unmatched parameter type 'I'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::end', unmatched return type 'smtk::attribute::ModelEntityItem::const_iterator'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::begin', unmatched return type 'smtk::attribute::ModelEntityItem::const_iterator'"/>
 
   <!-- Return a list.  For now we will ignore the iterators-->
   <suppress-warning text="skipping function 'smtk::model::Item::beginAssociatedAttributes', unmatched return type 'smtk::model::Item::const_iterator'"/>

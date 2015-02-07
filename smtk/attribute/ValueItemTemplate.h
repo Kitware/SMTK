@@ -31,9 +31,15 @@ namespace smtk
       //template<DataT> friend class ValueItemDefinitionTemplate;
     public:
       typedef DataT DataType;
+      typedef typename std::vector<DataT> value_type;
+      typedef value_type const_iterator;
       typedef ValueItemDefinitionTemplate<DataType> DefType;
 
       virtual ~ValueItemTemplate() {}
+      typename std::vector<DataT>::const_iterator begin() const
+        { return this->m_values.begin(); }
+      typename std::vector<DataT>::const_iterator end() const
+        { return this->m_values.end(); }
       virtual bool setNumberOfValues(std::size_t newSize);
       DataT value(std::size_t element=0) const
       {return this->m_values[element];}
