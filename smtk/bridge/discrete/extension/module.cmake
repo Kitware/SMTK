@@ -1,0 +1,19 @@
+vtk_module(vtkSMTKDiscreteExt
+  DEPENDS
+    vtkIOXML
+  PRIVATE_DEPENDS
+    vtkFiltersGeometry
+    vtkGeovisCore
+    vtkIOGeometry
+    vtkIOParallelExodus
+    vtkFiltersGeneral
+    vtkRenderingCore
+    vtkRenderingFreeType${VTK_RENDERING_BACKEND}
+    vtkRendering${VTK_RENDERING_BACKEND}
+    vtkRenderingMatplotlib
+    vtkRenderingVolume
+    vtkRenderingVolume${VTK_RENDERING_BACKEND}
+    vtkRenderingContext${VTK_RENDERING_BACKEND}
+    vtksys
+  EXCLUDE_FROM_WRAP_HIERARCHY
+)
