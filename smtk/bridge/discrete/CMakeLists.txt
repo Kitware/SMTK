@@ -31,6 +31,7 @@ if(SMTK_BUILD_MOAB_READER)
 endif()
 
 SET(DiscreteModelFiles
+  operation/vtkCMBMapToCMBModel.cxx
   operation/vtkCMBModelBuilder.cxx
   operation/vtkCMBModelWriterV2.cxx
   operation/vtkCMBModelWriterV4.cxx
@@ -51,7 +52,6 @@ SET(DiscreteOperationFiles
   operation/vtkCreateModelEdgesOperatorBase.cxx
   operation/vtkSplitOperator.cxx
   operation/vtkSplitOperatorBase.cxx
-  operation/vtkDataSetRegionSurfaceFilter.cxx
   operation/vtkMasterPolyDataNormals.cxx
   operation/vtkMergeDuplicateCells.cxx
   operation/vtkModelEntityGroupOperator.cxx
@@ -60,6 +60,7 @@ SET(DiscreteOperationFiles
 )
 
 SET(DiscreteModelHeaders
+  operation/vtkCMBMapToCMBModel.h
   operation/vtkCMBModelBuilder.h
   operation/vtkCMBModelWriterV2.h
   operation/vtkCMBModelWriterV4.h
@@ -78,7 +79,6 @@ SET(DiscreteModelHeaders
   operation/vtkCreateModelEdgesOperatorBase.h
   operation/vtkSplitOperator.h
   operation/vtkSplitOperatorBase.h
-  operation/vtkDataSetRegionSurfaceFilter.h
   operation/vtkMasterPolyDataNormals.h
   operation/vtkMergeDuplicateCells.h
   operation/vtkModelEntityGroupOperator.h
@@ -163,6 +163,7 @@ target_link_libraries(smtkDiscreteSession
     vtkGeovisCore
     vtksys
     ${__private_dependencies}
+    vtkSMTKDiscreteExt
   )
 
 if(SMTK_BUILD_MOAB_READER)
@@ -171,7 +172,6 @@ if(SMTK_BUILD_MOAB_READER)
       vtkDiscreteMoabReader
   )
 endif()
-
 
 smtk_export_header(smtkDiscreteSession discreteSessionExports.h)
 
@@ -184,7 +184,7 @@ endif()
 smtk_public_headers(${discreteSessionHeaders} ${DiscreteModelHeaders})
 
 #install the library and exports the library when used from a build tree
-smtk_install_library(smtkDiscreteSession DEPENDS SMTKCore vtkSMTKDiscreteModel)
+smtk_install_library(smtkDiscreteSession DEPENDS SMTKCore vtkSMTKDiscreteModel vtkSMTKDiscreteExt)
 
 if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
   #extract the headers from discrete library we built to give them to shiboken

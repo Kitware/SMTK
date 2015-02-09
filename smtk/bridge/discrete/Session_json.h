@@ -24,10 +24,18 @@ static const char Session_json[] =
 "    {"
 "      \"name\": \"native\","
 "      \"filetypes\": ["
-"        \".cmb (Conceptual Model Builder)\""
-"        ,\".vtk (Legacy vtk files)\""
+"        \".cmb (CMB Models)\""
+"        ,\".vtk (Legacy VTK Files)\""
+"        ,\".2dm (CMB Mesh Files)\""
+"        ,\".3dm (CMB Mesh Files)\""
+"        ,\".stl (STL Files)\""
 #ifdef SMTK_BUILD_MOAB_READER
-"        ,\".exo (Moab files)\""
+"        ,\".exo (Moab Files)\""
+#endif
+#ifdef SMTK_ENABLE_REMUS
+"        ,\".poly (Poly Files)\""
+"        ,\".smesh (Surface Meshes)\""
+"        ,\".map (Map Files)\""
 #endif
 "      ]"
 "    }"

@@ -4,7 +4,14 @@
     {
       "name": "native",
       "filetypes": [
-        ".cmb (Conceptual Model Builder)"
+        ".cmb (Conceptual Model Builder)",
+        ".vtk (Legacy VTK files)",
+        ".2dm (CMB Mesh Files)",
+        ".3dm (CMB Mesh Files)",
+        ".map (Map files)",
+        ".poly (Poly Files)",
+        ".smesh (Surface Meshes)",
+        ".stl (STL Files)"
       ]
     }
   ]
