@@ -14,6 +14,13 @@
 #include "smtk/bridge/discrete/discreteSessionExports.h"
 #include "smtk/model/Operator.h"
 #include "vtkCMBModelBuilder.h"
+
+#include "smtk/Options.h" // for SMTK_ENABLE_REMUS
+// for .map file
+#ifdef SMTK_ENABLE_REMUS
+#include "vtkCMBMapToCMBModel.h"
+#endif
+
 #include "vtkNew.h"
 
 namespace smtk {
@@ -51,6 +58,10 @@ protected:
   Session* discreteSession() const;
 
   vtkNew<vtkCMBModelBuilder> m_op;
+#ifdef SMTK_ENABLE_REMUS
+  vtkNew<vtkCMBMapToCMBModel> m_mapOp;
+#endif
+
 };
 
     } // namespace discrete

@@ -19,12 +19,16 @@
 #ifndef __smtkdiscrete_vtkDataSetRegionSurfaceFilter_h
 #define __smtkdiscrete_vtkDataSetRegionSurfaceFilter_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
+#include "vtkSMTKDiscreteExtModule.h" // For export macro
 #include "vtkDataSetSurfaceFilter.h"
 
 class vtkCharArray;
 
-class SMTKDISCRETEBRIDGE_EXPORT vtkDataSetRegionSurfaceFilter : public vtkDataSetSurfaceFilter
+namespace smtk {
+  namespace bridge {
+    namespace discrete {
+
+class VTKSMTKDISCRETEEXT_EXPORT vtkDataSetRegionSurfaceFilter : public vtkDataSetSurfaceFilter
 {
 public:
   static vtkDataSetRegionSurfaceFilter* New();
@@ -51,10 +55,7 @@ protected:
                           vtkInformationVector *);
 
   virtual void InsertQuadInHash(vtkIdType a, vtkIdType b, vtkIdType c,
-                                vtkIdType d, vtkIdType sourceId)
-    { this->InsertQuadInHash(a, b, c, d, sourceId, -1); }
-  virtual void InsertQuadInHash(vtkIdType a, vtkIdType b, vtkIdType c,
-                                vtkIdType d, vtkIdType sourceId, vtkIdType faceId);
+                                vtkIdType d, vtkIdType sourceId, vtkIdType faceId = -1);
   virtual void InsertTriInHash(vtkIdType a, vtkIdType b, vtkIdType c,
                        vtkIdType sourceId, vtkIdType faceId = -1);
 
@@ -75,6 +76,9 @@ private:
   vtkCharArray   *CellFaceIds;
 };
 
+
+    } // namespace discrete
+  } // namespace bridge
+} // namespace smtk
+
 #endif
-
-

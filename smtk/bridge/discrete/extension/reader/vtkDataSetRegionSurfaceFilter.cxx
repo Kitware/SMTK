@@ -27,6 +27,9 @@
 #include "vtkUnstructuredGrid.h"
 #include "vtkUnstructuredGridGeometryFilter.h"
 
+namespace smtk {
+  namespace bridge {
+    namespace discrete {
 
 vtkStandardNewMacro(vtkDataSetRegionSurfaceFilter);
 
@@ -928,3 +931,6 @@ void vtkDataSetRegionSurfaceFilter::PrintSelf(ostream& os, vtkIndent indent)
   this->Superclass::PrintSelf(os, indent);
 }
 
+    } // namespace discrete
+  } // namespace bridge
+} // namespace smtk

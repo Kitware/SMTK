@@ -26,16 +26,21 @@
 #include "vtkModelItem.h"
 #include "vtkModel.h"
 #include "vtkPDataSetReader.h"
-#include "vtkDataSetRegionSurfaceFilter.h"
 #include "vtkMasterPolyDataNormals.h"
 #include "vtkMergeDuplicateCells.h"
+#include "smtk/bridge/discrete/extension/reader/vtkDataSetRegionSurfaceFilter.h"
+#include "smtk/bridge/discrete/extension/reader/vtkCMBGeometryReader.h"
 
-#include <vtksys/SystemTools.hxx>
+#ifdef SMTK_ENABLE_REMUS
+  #include "smtk/bridge/discrete/extension/reader/vtkCMBMapReader.h"
+  #include "smtk/bridge/discrete/extension/meshing/vtkCMBTriangleMesher.h"
+#endif
 
 #ifdef SMTK_BUILD_MOAB_READER
 #include "smtk/bridge/discrete/moabreader/vtkCmbMoabReader.h"
 #endif
 
+#include <vtksys/SystemTools.hxx>
 #include "ModelParserHelper.h"
 #include "ImportOperator_xml.h"
 
@@ -63,10 +68,20 @@ bool ImportOperator::ableToOperate()
     return false;
   std::string ext = vtksys::SystemTools::GetFilenameLastExtension(filename);
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-  bool able = (ext == ".vtk");
+  bool able = (ext == ".vtk" || ext == ".2dm" ||
+               ext == ".3dm" ||
 #ifdef SMTK_BUILD_MOAB_READER
-    able = able || ext == ".exo";
+               ext == ".exo" ||
 #endif
+#ifdef SMTK_ENABLE_REMUS
+               ext == ".poly" || ext == ".smesh" || ext == ".map" ||
+#endif
+  /*  ext == ".tin" || 
+      ext == ".fac" || 
+      ext == ".obj" ||
+      ext == ".sol" ||*/
+      ext == ".stl");
+
   return able;
 }
 
@@ -116,6 +131,59 @@ OperatorResult ImportOperator::operateInternal()
     this->m_op->Operate(mod.GetPointer(), reader.GetPointer());
 #endif
     }
+  else if (ext == ".2dm" ||
+      ext == ".3dm" ||
+#ifdef SMTK_ENABLE_REMUS
+      ext == ".poly" || ext == ".smesh" ||
+#endif
+  /*  ext == ".tin" ||
+      ext == ".fac" || 
+      ext == ".obj" ||
+      ext == ".sol" || */
+      ext == ".stl")
+    {
+    vtkNew<vtkCMBGeometryReader> reader;
+    reader->SetFileName(filename.c_str());
+    reader->SetPrepNonClosedSurfaceForModelCreation(true);
+    reader->Update();
+
+    bool hasBoundaryEdges = reader->GetHasBoundaryEdges();
+    bool regionIdentifiersModified = reader->GetRegionIdentifiersModified();
+
+    if(ext == ".poly" || ext == ".smesh" || hasBoundaryEdges)
+      {
+      this->m_op->Operate(mod.GetPointer(), reader.GetPointer());
+      }
+    else
+      {
+      vtkNew<vtkMasterPolyDataNormals> normals;
+      normals->SetInputData(0, reader->GetOutputDataObject(0));
+      normals->Update();
+
+      vtkNew<vtkMergeDuplicateCells> merge;
+      merge->SetModelRegionArrayName(ModelParserHelper::GetShellTagName());
+      merge->SetModelFaceArrayName(ModelParserHelper::GetModelFaceTagName());
+      merge->SetInputData(0, normals->GetOutputDataObject(0));
+      merge->Update();
+
+      this->m_op->Operate(mod.GetPointer(), merge.GetPointer());
+      }
+    }
+#ifdef SMTK_ENABLE_REMUS
+  else if(ext == ".map")
+    {
+    vtkNew<vtkCMBMapReader> reader;
+    reader->SetFileName(filename.c_str());
+    reader->Update();
+
+    vtkNew<vtkCMBTriangleMesher> trimesher;
+    trimesher->SetPreserveEdgesAndNodes(true);
+    trimesher->SetInputData(0, reader->GetOutputDataObject(0));
+    trimesher->Update();
+
+    this->m_mapOp->Operate(mod.GetPointer(), trimesher.GetPointer());
+    }
+#endif
   else if(ext == ".vtk")
     {
     vtkNew<vtkPDataSetReader> reader;
@@ -142,7 +210,7 @@ OperatorResult ImportOperator::operateInternal()
 
   // Now assign a UUID to the model and associate its filename with
   // a URL property (if things went OK).
-  if (!this->m_op->GetOperateSucceeded())
+  if (!this->m_op->GetOperateSucceeded() && !this->m_mapOp->GetOperateSucceeded())
     {
     std::cerr << "Failed to import file \"" << filename << "\".\n";
     return this->createResult(OPERATION_FAILED);

@@ -10,21 +10,20 @@
 
 // .NAME vtkCMBMapToCMBModel
 
-#ifndef __vtkCMBMapToCMBModel_h
-#define __vtkCMBMapToCMBModel_h
+#ifndef __smtkdiscrete_vtkCMBMapToCMBModel_h
+#define __smtkdiscrete_vtkCMBMapToCMBModel_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
 #include "vtkObject.h"
 #include <vector>
 #include <map>
-#include "cmbSystemConfig.h"
 
 class vtkDiscreteModelWrapper;
 class vtkAlgorithm;
 class vtkModelEdge;
 class vtkModelVertex;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkCMBMapToCMBModel : public vtkObject
+class SMTKDISCRETEBRIDGE_EXPORT vtkCMBMapToCMBModel : public vtkObject
 {
   public:
     static vtkCMBMapToCMBModel *New();

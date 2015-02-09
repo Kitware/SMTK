@@ -7,7 +7,7 @@
       <ItemDefinitions>
         <File Name="filename" NumberOfRequiredValues="1"
           ShouldExist="true"
-          FileFilters="Legacy VTK files (*.vtk);;All files (*.*)">
+          FileFilters="Legacy VTK files (*.vtk);;Solids (*.2dm *.3dm *.stl *.sol *.tin *.obj);;Map files (*.map);;Poly files (*.poly *.smesh);;All files (*.*)">
         </File>
       </ItemDefinitions>
     </AttDef>
