@@ -64,10 +64,17 @@ res = u1.operate()
 su = res.findModelEntity('entities').value(0)
 # Note that su has same UUID as sph2
 
+
+# Test cylinder creation.
+from smtk.simple import *
+SetActiveSession(sref)
+cyl = CreateCylinder(top_radius=1.0)
+
 #json = smtk.io.ExportJSON.fromModelManager(mgr)
-#sphFile = open('/tmp/s3.json', 'w')
-#print >> sphFile, json
-#sphFile.close()
+#cylFile = open('cyl.json', 'w')
+#print >> cylFile, json
+#cylFile.close()
+
 
 #
 # Now verify that mgr.closeSession removes the entity record for the session.

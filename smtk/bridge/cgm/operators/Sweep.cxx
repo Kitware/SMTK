@@ -53,7 +53,7 @@ namespace smtk {
 
 smtk::model::OperatorResult Sweep::operateInternal()
 {
-  // 0 = extrude, 1 = revolve, 2 = sweep along curve:
+  // 0 = extrude, 1 = revolve, 2 = helix, 3 = sweep along curve:
   int sweepOp = this->findInt("construction method")->value();
   int keepInputs = this->findInt("keep inputs")->value();
   smtk::model::EntityRefArray expunged;
@@ -61,7 +61,7 @@ smtk::model::OperatorResult Sweep::operateInternal()
   DLIList<RefEdge*> cgmSweepPath;
   bool ok = true;
   ok &= this->cgmEntities(*this->specification()->associations().get(), cgmThingsToSweep, keepInputs, expunged);
-  if (sweepOp == 2) // sweep along curve
+  if (sweepOp == 3) // sweep along curve
     ok &= this->cgmEntities(*this->findModelEntity("sweep path").get(), cgmSweepPath, keepInputs, expunged);
 
   if (!ok)
@@ -152,7 +152,31 @@ smtk::model::OperatorResult Sweep::operateInternal()
       );
       }
     break;
-  case 2: // sweep along path
+  case 2: // helix
+      {
+      double helixAngle = this->findDouble("helix angle")->value();
+      double pitch = this->findDouble("pitch")->value();
+      bool righthanded = this->findInt("handedness")->value() ? true : false;
+      smtk::attribute::DoubleItemPtr sweepBaseItem = this->findDouble("axis base point");
+      smtk::attribute::DoubleItemPtr sweepAxisItem = this->findDouble("axis of revolution");
+      std::vector<double> sweepBase(sweepBaseItem->begin(), sweepBaseItem->end());
+      std::vector<double> sweepAxis(sweepAxisItem->begin(), sweepAxisItem->end());
+      CubitVector cbtSweepBase(&sweepBase[0]);
+      CubitVector cbtSweepAxis(&sweepAxis[0]);
+      s = GeometryModifyTool::instance()->sweep_helical(
+        cgmThingsToSweep,
+        cbtSweepBase,
+        cbtSweepAxis,
+        pitch,
+        helixAngle,
+        righthanded,
+        /* anchor_entity, unused */ CUBIT_FALSE,
+        keepInputs,
+        cgmResults
+      );
+      }
+    break;
+  case 3: // sweep along path
       {
       s = GeometryModifyTool::instance()->sweep_along_curve(
         cgmThingsToSweep,

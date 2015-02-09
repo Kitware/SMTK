@@ -77,7 +77,6 @@ endif()
 
 #turn on ctest if we want testing
 if (SMTK_ENABLE_TESTING)
-  message(STATUS "SMTK_ENABLE_TESTING")
   enable_testing()
   include(CTest)
 

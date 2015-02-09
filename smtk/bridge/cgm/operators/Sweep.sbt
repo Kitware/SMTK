@@ -89,10 +89,44 @@
               </DetailedDescription>
             </Double>
             <Double Name="sweep angle" NumberOfRequiredValues="1">
+              <Min Inclusive="true">-360.0</Min>
+              <Max Inclusive="true">360.</Max>
               <DefaultValue>360.</DefaultValue>
               <BriefDescription>The angle (in degrees) through which the associated entities should be revolved.</BriefDescription>
             </Double>
-            <!-- Option 3: curves (sweep path) -->
+            <!-- Option 3: axis base point, axis of revolution, pitch, helix angle, and handedness -->
+            <Double Name="helix angle" NumberOfRequiredValues="1">
+              <DefaultValue>360.</DefaultValue>
+              <BriefDescription>The angle (in degrees) through which the associated entities should be revolved.</BriefDescription>
+            </Double>
+            <Double Name="pitch" NumberOfRequiredValues="1">
+              <DefaultValue>1.</DefaultValue>
+              <BriefDescription>The distance between corresponding points measured along the axis of the sweep.</BriefDescription>
+            </Double>
+            <Int Name="handedness" NumberOfRequiredValues="1">
+              <BriefDescription>Should the helix be right- or left-handed?</BriefDescription>
+              <DetailedDescription>
+                A helix translates geometry along the direction of the axis of revolution while
+                at the same time rotating it tangent to this axis.
+                A right-handed helix performs a positive translation (i.e., codirectional with the axis)
+                while rotating in a direction given by aligning a right thumb with the axis and curling
+                the fingers toward the thumb.
+                A left-handed helix rotates the opposite direction for the same positive translation.
+              </DetailedDescription>
+              <ChildrenDefinitions/>
+              <DiscreteInfo DefaultIndex="1">
+                <!-- Values from CGM's GeometryType enum in util/GeometryDefines.h -->
+                <Structure>
+                  <Value Enum="left-handed">0</Value>
+                  <Items/>
+                </Structure>
+                <Structure>
+                  <Value Enum="right-handed">1</Value>
+                  <Items/>
+                </Structure>
+              </DiscreteInfo>
+            </Int>
+            <!-- Option 4: curves (sweep path) -->
             <ModelEntity Name="sweep path" NumberOfRequiredValues="1" Extensible="true">
               <MembershipMask>edge</MembershipMask>
               <BriefDescription>The curve along which to sweep the associated entities.</BriefDescription>
