@@ -66,6 +66,8 @@ public slots:
   void operatorInvoked();
   void toggleEntityVisibility( const QModelIndex& );
   void changeEntityColor( const QModelIndex&);
+  void onEntitiesExpunged(
+    const smtk::model::EntityRefs& expungedEnts);
 
 signals:
   void entitiesSelected(const smtk::model::EntityRefs& selEntityRefs);

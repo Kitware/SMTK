@@ -805,6 +805,14 @@ void qtModelView::syncEntityColor(
     }
 }
 
+//-----------------------------------------------------------------------------
+void qtModelView::onEntitiesExpunged(
+  const smtk::model::EntityRefs& expungedEnts)
+{
+  if(!this->m_OperatorsWidget)
+    return;
+  this->m_OperatorsWidget->expungeEntities(expungedEnts);
+}
 
   } // namespace model
 } // namespace smtk

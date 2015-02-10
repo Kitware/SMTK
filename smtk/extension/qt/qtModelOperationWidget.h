@@ -44,6 +44,8 @@ namespace smtk
     public slots:
       virtual bool setCurrentOperation(
         const std::string& opName, smtk::model::SessionPtr session);
+      virtual void expungeEntities(
+        const smtk::model::EntityRefs& expungedEnts);
 
     signals:
       void operationRequested(const smtk::model::OperatorPtr& brOp);
