@@ -18,7 +18,7 @@
 #ifndef __smtkdiscrete_vtkCMBModelWriterBase_h
 #define __smtkdiscrete_vtkCMBModelWriterBase_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
+#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
 #include "vtkObject.h"
 
 
@@ -26,7 +26,7 @@ class vtkDiscreteModelWrapper;
 class vtkPolyData;
 class vtkDiscreteModel;
 
-class SMTKDISCRETEBRIDGE_EXPORT vtkCMBModelWriterBase : public vtkObject
+class SMTKDISCRETESESSION_EXPORT vtkCMBModelWriterBase : public vtkObject
 {
 public:
   static vtkCMBModelWriterBase * New();

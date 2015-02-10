@@ -13,7 +13,7 @@
 #ifndef __smtkdiscrete_vtkCMBMapToCMBModel_h
 #define __smtkdiscrete_vtkCMBMapToCMBModel_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
+#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
 #include "vtkObject.h"
 #include <vector>
 #include <map>
@@ -23,7 +23,7 @@ class vtkAlgorithm;
 class vtkModelEdge;
 class vtkModelVertex;
 
-class SMTKDISCRETEBRIDGE_EXPORT vtkCMBMapToCMBModel : public vtkObject
+class SMTKDISCRETESESSION_EXPORT vtkCMBMapToCMBModel : public vtkObject
 {
   public:
     static vtkCMBMapToCMBModel *New();

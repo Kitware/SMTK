@@ -16,11 +16,11 @@
 #ifndef __smtkdiscrete_vtkCMBModelReader_h
 #define __smtkdiscrete_vtkCMBModelReader_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
+#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 
-class SMTKDISCRETEBRIDGE_EXPORT vtkCMBModelReader : public vtkPolyDataAlgorithm
+class SMTKDISCRETESESSION_EXPORT vtkCMBModelReader : public vtkPolyDataAlgorithm
 {
 public:
   static vtkCMBModelReader * New();

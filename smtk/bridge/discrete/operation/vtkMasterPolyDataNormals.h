@@ -21,12 +21,12 @@
 #ifndef __smtkdiscrete_vtkMasterPolyDataNormals_h
 #define __smtkdiscrete_vtkMasterPolyDataNormals_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
+#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 class vtkIdList;
 
-class SMTKDISCRETEBRIDGE_EXPORT vtkMasterPolyDataNormals : public vtkPolyDataAlgorithm
+class SMTKDISCRETESESSION_EXPORT vtkMasterPolyDataNormals : public vtkPolyDataAlgorithm
 {
 public:
   static vtkMasterPolyDataNormals* New();

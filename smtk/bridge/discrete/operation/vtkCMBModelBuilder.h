@@ -16,7 +16,7 @@
 #ifndef __smtkdiscrete_vtkCMBModelBuilder_h
 #define __smtkdiscrete_vtkCMBModelBuilder_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
+#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
 #include "vtkObject.h"
 
 class vtkCellLocator;
@@ -28,7 +28,7 @@ class vtkIdList;
 class vtkIntArray;
 class vtkPoints;
 
-class SMTKDISCRETEBRIDGE_EXPORT vtkCMBModelBuilder : public vtkObject
+class SMTKDISCRETESESSION_EXPORT vtkCMBModelBuilder : public vtkObject
 {
 public:
   static vtkCMBModelBuilder * New();

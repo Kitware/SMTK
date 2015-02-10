@@ -15,7 +15,7 @@
 #ifndef __smtkdiscrete_vtkSplitOperatorBase_h
 #define __smtkdiscrete_vtkSplitOperatorBase_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
+#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
 #include "vtkObject.h"
 #include "ModelEdgeHelper.h"
 
@@ -24,7 +24,7 @@ class vtkDiscreteModel;
 class vtkIdTypeArray;
 class vtkModelEntity;
 
-class SMTKDISCRETEBRIDGE_EXPORT vtkSplitOperatorBase : public vtkObject
+class SMTKDISCRETESESSION_EXPORT vtkSplitOperatorBase : public vtkObject
 {
 public:
   static vtkSplitOperatorBase * New();

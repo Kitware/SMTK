@@ -18,7 +18,7 @@
 #ifndef __smtkdiscrete_vtkMergeOperatorBase_h
 #define __smtkdiscrete_vtkMergeOperatorBase_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
+#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
 #include "vtkObject.h"
 
 
@@ -26,7 +26,7 @@ class vtkDiscreteModel;
 class vtkDiscreteModelGeometricEntity;
 class vtkIdTypeArray;
 
-class SMTKDISCRETEBRIDGE_EXPORT vtkMergeOperatorBase : public vtkObject
+class SMTKDISCRETESESSION_EXPORT vtkMergeOperatorBase : public vtkObject
 {
 public:
   static vtkMergeOperatorBase * New();
