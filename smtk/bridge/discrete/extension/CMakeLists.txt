@@ -30,8 +30,6 @@ set(Readers_Need_Meshing_SRC)
 set(Readers_Need_Meshing_HEADER)
 if(SMTK_ENABLE_REMUS)
 
-message( "Adding Meshing related files ..." )
-
   #Remus is needed
   find_package(Remus REQUIRED)
   list(APPEND Readers_Need_Meshing_SRC
