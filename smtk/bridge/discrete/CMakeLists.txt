@@ -15,6 +15,7 @@ include_directories(
     "${CMAKE_CURRENT_SOURCE_DIR}/kernel/Serialize"
     "${CMAKE_CURRENT_BINARY_DIR}/operation"
     "${CMAKE_CURRENT_BINARY_DIR}/kernel"
+    "${CMAKE_CURRENT_BINARY_DIR}/extension"
 )
 
 # Don't add the VTK or other subdirectories as they use the
