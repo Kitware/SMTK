@@ -20,14 +20,14 @@
 #ifndef __smtkdiscrete_vtkMergeDuplicateCells_h
 #define __smtkdiscrete_vtkMergeDuplicateCells_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
+#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 class vtkCell;
 class vtkIdTypeArray;
 class vtkPolyData;
 
-class SMTKDISCRETEBRIDGE_EXPORT vtkMergeDuplicateCells : public vtkPolyDataAlgorithm
+class SMTKDISCRETESESSION_EXPORT vtkMergeDuplicateCells : public vtkPolyDataAlgorithm
 {
 public:
   static vtkMergeDuplicateCells* New();

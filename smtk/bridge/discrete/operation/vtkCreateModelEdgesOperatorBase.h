@@ -15,13 +15,13 @@
 #ifndef __smtkdiscrete_vtkCreateModelEdgesOperatorBase_h
 #define __smtkdiscrete_vtkCreateModelEdgesOperatorBase_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
+#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
 #include "vtkObject.h"
 
 
 class vtkDiscreteModel;
 
-class SMTKDISCRETEBRIDGE_EXPORT vtkCreateModelEdgesOperatorBase : public vtkObject
+class SMTKDISCRETESESSION_EXPORT vtkCreateModelEdgesOperatorBase : public vtkObject
 {
 public:
   static vtkCreateModelEdgesOperatorBase * New();

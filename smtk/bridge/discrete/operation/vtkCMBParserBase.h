@@ -15,7 +15,7 @@
 #ifndef __smtkdiscrete_vtkCMBParserBase_h
 #define __smtkdiscrete_vtkCMBParserBase_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
+#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
 #include "vtkObject.h"
 #include "vtkSmartPointer.h" //needed for classification
 #include <map> //needed for classification
@@ -30,7 +30,7 @@ class vtkModel;
 class vtkModelEntity;
 class vtkPolyData;
 
-class SMTKDISCRETEBRIDGE_EXPORT vtkCMBParserBase : public vtkObject
+class SMTKDISCRETESESSION_EXPORT vtkCMBParserBase : public vtkObject
 {
 public:
   vtkTypeMacro(vtkCMBParserBase,vtkObject);

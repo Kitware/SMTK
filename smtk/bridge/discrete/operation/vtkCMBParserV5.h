@@ -33,7 +33,7 @@ namespace smtk {
   }
 }
 
-class SMTKDISCRETEBRIDGE_EXPORT vtkCMBParserV5 : public vtkCMBParserBase
+class SMTKDISCRETESESSION_EXPORT vtkCMBParserV5 : public vtkCMBParserBase
 {
 public:
   static vtkCMBParserV5* New();

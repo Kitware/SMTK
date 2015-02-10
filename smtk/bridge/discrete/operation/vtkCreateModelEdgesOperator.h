@@ -15,7 +15,7 @@
 #ifndef __smtkdiscrete_vtkCreateModelEdgesOperator_h
 #define __smtkdiscrete_vtkCreateModelEdgesOperator_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
+#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
 #include "vtkCreateModelEdgesOperatorBase.h"
 #include "ModelEdgeHelper.h" // for NewModelEdgeInfo and LoopInfo
 
@@ -26,7 +26,7 @@ class vtkDiscreteModel;
 class vtkDiscreteModelEdge;
 class vtkPolyData;
 
-class SMTKDISCRETEBRIDGE_EXPORT vtkCreateModelEdgesOperator :
+class SMTKDISCRETESESSION_EXPORT vtkCreateModelEdgesOperator :
   public vtkCreateModelEdgesOperatorBase
 {
 public:

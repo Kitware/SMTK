@@ -29,7 +29,7 @@
 #ifndef __smtkdiscrete_vtkCMBModelWriterV5_h
 #define __smtkdiscrete_vtkCMBModelWriterV5_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
+#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
 #include "vtkCMBModelWriterV4.h"
 #include <vector>
 
@@ -39,7 +39,7 @@ class vtkCMBModelWriterBase;
 class vtkModelEntity;
 class vtkPolyData;
 
-class SMTKDISCRETEBRIDGE_EXPORT vtkCMBModelWriterV5 : public vtkCMBModelWriterV4
+class SMTKDISCRETESESSION_EXPORT vtkCMBModelWriterV5 : public vtkCMBModelWriterV4
 {
 public:
   static vtkCMBModelWriterV5 * New();

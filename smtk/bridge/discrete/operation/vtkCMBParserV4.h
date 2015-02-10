@@ -15,7 +15,7 @@
 #ifndef __smtkdiscrete_vtkCMBParserV4_h
 #define __smtkdiscrete_vtkCMBParserV4_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
+#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
 #include "vtkCMBParserBase.h"
 #include <vector>
 
@@ -24,7 +24,7 @@ class vtkDiscreteModel;
 class vtkModelEntity;
 class vtkPolyData;
 
-class SMTKDISCRETEBRIDGE_EXPORT vtkCMBParserV4 : public vtkCMBParserBase
+class SMTKDISCRETESESSION_EXPORT vtkCMBParserV4 : public vtkCMBParserBase
 {
 public:
   static vtkCMBParserV4* New();

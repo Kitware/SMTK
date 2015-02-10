@@ -16,7 +16,7 @@
 #ifndef __smtkdiscrete_vtkCMBModelReadOperator_h
 #define __smtkdiscrete_vtkCMBModelReadOperator_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
+#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
 #include "vtkObject.h"
 
 
@@ -25,7 +25,7 @@ class vtkDiscreteModelWrapper;
 class vtkPolyData;
 class vtkDiscreteModel;
 
-class SMTKDISCRETEBRIDGE_EXPORT vtkCMBModelReadOperator : public vtkObject
+class SMTKDISCRETESESSION_EXPORT vtkCMBModelReadOperator : public vtkObject
 {
 public:
   static vtkCMBModelReadOperator * New();

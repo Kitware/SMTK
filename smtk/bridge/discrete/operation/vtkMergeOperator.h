@@ -18,13 +18,13 @@
 #ifndef __smtkdiscrete_vtkMergeOperator_h
 #define __smtkdiscrete_vtkMergeOperator_h
 
-#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
+#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
 #include "vtkMergeOperatorBase.h"
 
 
 class vtkDiscreteModelWrapper;
 
-class SMTKDISCRETEBRIDGE_EXPORT vtkMergeOperator : public vtkMergeOperatorBase
+class SMTKDISCRETESESSION_EXPORT vtkMergeOperator : public vtkMergeOperatorBase
 {
 public:
   static vtkMergeOperator * New();
