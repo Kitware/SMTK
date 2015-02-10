@@ -12,7 +12,8 @@
 
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/extension/qt/qtModelEntityItem.h"
+#include "smtk/extension/qt/qtBaseView.h"
+
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -52,6 +53,7 @@ public:
   smtk::model::OperatorPtr opPtr;
   QPointer<qtUIManager> opUiManager;
   QPointer<QFrame> opUiParent;
+  QPointer<qtBaseView> opUiView;
   };
 
   smtk::model::WeakOperatorPtr CurrentOp;
@@ -197,11 +199,12 @@ bool qtModelOperationWidget::setCurrentOperation(
   QObject::connect(uiManager, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),
     this, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)));
 
-  uiManager->initializeView(opParent, instanced, false);
+  qtBaseView* theView = uiManager->initializeView(opParent, instanced, false);
   qtModelOperationWidgetInternals::OperatorInfo opInfo;
   opInfo.opPtr = brOp;
   opInfo.opUiParent = opParent;
   opInfo.opUiManager = uiManager;
+  opInfo.opUiView = theView;
 
   this->Internals->OperatorMap[opName] = opInfo;
   this->Internals->OperationsLayout->addWidget(opParent);
@@ -228,6 +231,7 @@ void qtModelOperationWidget::expungeEntities(
         it.value().opPtr->specification()->disassociateEntity(*bit);
         }
       }
+    it.value().opUiView->updateUI();
     }
 }
 
