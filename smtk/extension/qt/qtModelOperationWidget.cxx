@@ -211,6 +211,27 @@ bool qtModelOperationWidget::setCurrentOperation(
 }
 
 //----------------------------------------------------------------------------
+void qtModelOperationWidget::expungeEntities(
+        const smtk::model::EntityRefs& expungedEnts)
+{
+  QMapIterator<std::string, qtModelOperationWidgetInternals::OperatorInfo > it(
+    this->Internals->OperatorMap);
+  while(it.hasNext())
+    {
+    it.next();
+    if(it.value().opPtr && it.value().opPtr->specification()->isValid())
+      {
+      for (EntityRefs::iterator bit = expungedEnts.begin();
+        bit != expungedEnts.end(); ++bit)
+        {
+        //std::cout << "expunge from op " << bit->flagSummary(0) << " " << bit->entity() << "\n";
+        it.value().opPtr->specification()->disassociateEntity(*bit);
+        }
+      }
+    }
+}
+
+//----------------------------------------------------------------------------
 void qtModelOperationWidget::onOperationSelected()
 {
   this->setCurrentOperation(
