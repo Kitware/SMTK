@@ -140,7 +140,17 @@ bool ModelEntityItem::setValue(std::size_t i, const smtk::model::EntityRef& val)
 
 bool ModelEntityItem::appendValue(const smtk::model::EntityRef& val)
 {
-  // First - are we allowed to change the number of values?
+  // First - are there unset values waiting to be set?
+  std::size_t n = this->numberOfValues();
+  for (std::size_t i = 0; i < n; ++i)
+    {
+    if (!this->isSet(i))
+      {
+      this->setValue(i, val);
+      return true;
+      }
+    }
+  // Second - are we allowed to change the number of values?
   const ModelEntityItemDefinition* def =
     static_cast<const ModelEntityItemDefinition *>(this->definition().get());
   if (

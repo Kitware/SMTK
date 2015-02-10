@@ -64,7 +64,8 @@ class SurfaceType:
 class SweepType:
   EXTRUDE = 0
   REVOLVE = 1
-  ALONG_PATH = 2
+  HELIX = 2
+  ALONG_PATH = 3
 
 class DraftType:
   RECTANGULAR = 1
@@ -86,6 +87,12 @@ def GetVectorValue(item):
   """Given an smtk.attribute.Item, return a list containing its values."""
   N = item.numberOfValues()
   return [item.value(i) for i in range(N)]
+
+def PrintResultLog(res, always = False):
+  """Given an operator result, print log messages if unsuccessful."""
+  if always or res.findInt('outcome').value(0) != smtk.model.OPERATION_SUCCEEDED:
+    slog = res.findString('log')
+    print '\n'.join([slog.value(i) for i in range(slog.numberOfValues())])
 
 def CreateSphere(**args):
   """Create a sphere.
@@ -113,8 +120,49 @@ def CreateSphere(**args):
     cc = cs.findAsDouble('center')
     SetVectorValue(cc, args['center'])
   res = cs.operate()
+  PrintResultLog(res)
   sph = res.findModelEntity('entities').value(0)
   return sph
+
+def CreateCylinder(**args):
+  """Create a generalized cylinder (a truncated elliptical cone).
+
+  This method accepts optional `height`, `radius`, `minor_radius`,
+  and `top_radius` arguments; it returns an EntityRef pointing to the
+  new cylinder.
+
+  The cylinder base is always at the origin and has its axis of
+  radial symmetry on the z axis. Use the Translate() and Rotate()
+  operators to place the cylinder as required.
+
+  Example
+  -------
+
+  .. code:: python
+
+      cylinder = CreateCylinder(radius=1.0, height=1.0)
+
+  When unspecified, arguments take on their default values:
+
+  * `height` defaults to 1.
+  * `radius` defaults to 1.
+  * `minor_radius` defaults to 1.
+  * `top_radius` defaults to 0.
+  """
+  sess = GetActiveSession()
+  cs = sess.op('create cylinder')
+  if 'radius' in args:
+    cs.findAsDouble('major base radius').setValue(args['radius'])
+  if 'minor_radius' in args:
+    cs.findAsDouble('minor base radius').setValue(args['minor_radius'])
+  if 'top_radius' in args:
+    cs.findAsDouble('major top radius').setValue(args['top_radius'])
+  if 'height' in args:
+    cs.findAsDouble('height').setValue(args['height'])
+  res = cs.operate()
+  PrintResultLog(res)
+  cyl = res.findModelEntity('entities').value(0)
+  return cyl
 
 def CreateBrick(**args):
   """Create a rectangular cuboid (6 rectangular faces).
@@ -161,6 +209,7 @@ def CreateBrick(**args):
     ctrVal = args['center']
     SetVectorValue(cb.findAsDouble('center'), ctrVal)
   res = cb.operate()
+  PrintResultLog(res)
   brick = res.findModelEntity('entities').value(0)
   return brick
 
@@ -183,6 +232,7 @@ def Intersect(bodies, **args):
   except:
     op.associateEntity(bodies)
   res = op.operate()
+  PrintResultLog(res)
   return res.findModelEntity('entities').value(0)
 
 def Union(bodies, **args):
@@ -204,6 +254,7 @@ def Union(bodies, **args):
   except:
     op.associateEntity(bodies)
   res = op.operate()
+  PrintResultLog(res)
   return res.findModelEntity('entities').value(0)
 
 def Subtract(workpiece, tool, **args):
@@ -236,6 +287,7 @@ def Subtract(workpiece, tool, **args):
   SetVectorValue(op.findModelEntity('tools',smtk.attribute.ALL_CHILDREN), tool)
 
   res = op.operate()
+  PrintResultLog(res)
   return res.findModelEntity('entities').value(0)
 
 def Translate(bodies, vec):
@@ -248,6 +300,7 @@ def Translate(bodies, vec):
     top.associateEntity(bodies)
   SetVectorValue(top.findAsDouble('offset'),vec)
   res = top.operate()
+  PrintResultLog(res)
   return GetVectorValue(res.findModelEntity('entities'))
 
 def CreateVertex(pt, **kwargs):
@@ -257,7 +310,7 @@ def CreateVertex(pt, **kwargs):
   crv = sref.op('create vertex')
   x = crv.findAsDouble('point')
   c = crv.findAsInt('color')
-  if c and kwargs['color']:
+  if c and 'color' in kwargs:
     c.setValue(0, kwargs['color'])
   SetVectorValue(x, pt)
   return crv.operate().findModelEntity('vertex').value(0)
@@ -322,7 +375,22 @@ def Sweep(stuffToSweep, method = SweepType.EXTRUDE, **kwargs):
       SetVectorValue(base, kwargs['base_point'])
     if 'sweep_angle' in kwargs:
       angl = swp.findAsDouble('sweep angle').setValue(0, kwargs['sweep_angle'])
-  return swp.operate().findModelEntity('entities').value(0)
+  elif method == SweepType.HELIX:
+    if 'axis' in kwargs:
+      axis = swp.findAsDouble('axis of revolution')
+      SetVectorValue(axis, kwargs['axis'])
+    if 'base_point' in kwargs:
+      base = swp.findAsDouble('axis base point')
+      SetVectorValue(base, kwargs['base_point'])
+    if 'helix_angle' in kwargs:
+      angl = swp.findAsDouble('helix angle').setValue(0, kwargs['helix_angle'])
+    if 'pitch' in kwargs:
+      pitch = swp.findAsDouble('pitch').setValue(0, kwargs['pitch'])
+    if 'handedness' in kwargs:
+      angl = swp.findAsInt('handedness').setValue(0, kwargs['handedness'])
+  res = swp.operate()
+  PrintResultLog(res)
+  return res.findModelEntity('entities').value(0)
 
 def Write(filename, entities = [], **kwargs):
   """Write a set of entities to an file (in the native modeling kernel format).
@@ -333,4 +401,6 @@ def Write(filename, entities = [], **kwargs):
   [wri.associateEntity(entity) for entity in entities]
   if 'filetype' in kwargs:
     wri.findAsString('filetype').setValue(0, kwargs['filetype'])
-  return wri.operate().findInt('outcome').value(0)
+  res = wri.operate()
+  PrintResultLog(res)
+  return res.findInt('outcome').value(0)
