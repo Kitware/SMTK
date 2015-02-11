@@ -322,7 +322,7 @@ def CreateEdge(verts, curve_type = CurveType.LINE, **kwargs):
   cre = sref.op('create edge')
   t = cre.findAsInt('curve type')
   t.setValue(0, curve_type)
-  v = cre.findAsModel('vertices')
+  v = cre.findAsModelEntity('vertices')
   SetVectorValue(v, verts)
   if 'midpoint' in kwargs:
     x = cre.findAsDouble('point')
@@ -339,7 +339,7 @@ def CreateFace(edges, surface_type = SurfaceType.PLANAR, **kwargs):
   crf = sref.op('create face')
   t = crf.findAsInt('surface type')
   t.setValue(0, surface_type)
-  e = crf.findAsModel('edges')
+  e = crf.findAsModelEntity('edges')
   SetVectorValue(e, edges)
   if 'color' in kwargs:
     c = crf.findAsInt('color')
