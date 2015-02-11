@@ -95,6 +95,26 @@ bool Interface::createMesh(const smtk::mesh::HandleRange& cells,
     m_iface->add_entities( meshHandle, cells );
     m_iface->add_parent_child( m_iface->get_root_set(),
                                meshHandle );
+
+    int dimension = 4;
+    bool hasDim = false;
+    while(hasDim == false && dimension >= 0)
+      {
+      //by starting at 4 and decrementing we don't need to branch
+      //on hasDim to see if we need to decrement at the end of
+      //the while loop
+      --dimension;
+
+      //iterate the entities and find the higest dimension of cell.
+      //once that is found add a geom sparse tag to the mesh
+      hasDim = cells.num_of_dimension(dimension);
+      }
+
+    //add the dim tag
+    tag::QueryDimTag dimTag(dimension, this->moabInterface());
+    m_iface->tag_set_data( dimTag.moabTagAsRef(),
+                           &meshHandle, 1,
+                           &dimension);
     }
    return (rval == ::moab::MB_SUCCESS);
 }
