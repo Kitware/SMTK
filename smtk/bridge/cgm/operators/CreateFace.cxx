@@ -46,12 +46,11 @@ namespace smtk {
 
 smtk::model::OperatorResult CreateFace::operateInternal()
 {
-  smtk::attribute::ModelEntityItem::Ptr edgesItem =
-    this->findModelEntity("edges");
   smtk::attribute::IntItem::Ptr surfTypeItem =
     this->findInt("surface type");
   smtk::attribute::IntItem::Ptr colorItem =
     this->findInt("color");
+  int keepInputs = this->findInt("keep inputs")->value(0);
 
   int color = colorItem->value();
   GeometryType surfType = static_cast<GeometryType>(
@@ -67,19 +66,10 @@ smtk::model::OperatorResult CreateFace::operateInternal()
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
   DLIList<RefEdge*> edgeList;
-  for (std::size_t i = 0; i < edgesItem->numberOfValues(); ++i)
+  smtk::model::EntityRefArray expunged;
+  if (!this->cgmEntities(*this->specification()->associations().get(), edgeList, keepInputs, expunged))
     {
-    RefEdge* edg = this->cgmEntityAs<RefEdge*>(edgesItem->value(i));
-    if (!edg)
-      {
-      smtkInfoMacro(log(), "One or more edges were invalid " << edgesItem->value(i).name() << ".");
-      return this->createResult(smtk::model::OPERATION_FAILED);
-      }
-    edgeList.push(edg);
-    }
-  if (edgeList.size() <= 0)
-    {
-    smtkInfoMacro(log(), "No edges provided.");
+    smtkInfoMacro(log(), "One or more edges were invalid.");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
@@ -101,7 +91,7 @@ smtk::model::OperatorResult CreateFace::operateInternal()
   DLIList<RefFace*> cgmFacesOut;
   cgmFacesOut.push(cgmFace);
   this->addEntitiesToResult(cgmFacesOut, result);
-  // Nothing to expunge.
+  result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
 
   return result;
 }

@@ -313,38 +313,42 @@ def CreateVertex(pt, **kwargs):
   if c and 'color' in kwargs:
     c.setValue(0, kwargs['color'])
   SetVectorValue(x, pt)
-  return crv.operate().findModelEntity('entities').value(0)
+  res = crv.operate()
+  PrintResultLog(res)
+  return res.findModelEntity('entities').value(0)
 
 def CreateEdge(verts, curve_type = CurveType.LINE, **kwargs):
   """Create an edge from a pair of vertices.
   """
   sref = GetActiveSession()
   cre = sref.op('create edge')
+  [cre.associateEntity(x) for x in verts]
   t = cre.findAsInt('curve type')
   t.setValue(0, curve_type)
-  v = cre.findAsModelEntity('vertices')
-  SetVectorValue(v, verts)
   if 'midpoint' in kwargs:
     x = cre.findAsDouble('point')
     SetVectorValue(x, kwargs['midpoint'])
   if 'color' in kwargs:
     c = cre.findAsInt('color')
     c.setValue(0, kwargs['color'])
-  return cre.operate().findModelEntity('entities').value(0)
+  res = cre.operate()
+  PrintResultLog(res)
+  return res.findModelEntity('entities').value(0)
 
 def CreateFace(edges, surface_type = SurfaceType.PLANAR, **kwargs):
   """Create a face from a set of edges.
   """
   sref = GetActiveSession()
   crf = sref.op('create face')
+  [crf.associateEntity(x) for x in edges]
   t = crf.findAsInt('surface type')
   t.setValue(0, surface_type)
-  e = crf.findAsModelEntity('edges')
-  SetVectorValue(e, edges)
   if 'color' in kwargs:
     c = crf.findAsInt('color')
     c.setValue(0, kwargs['color'])
-  return crf.operate().findModelEntity('entities').value(0)
+  res = crf.operate()
+  PrintResultLog(res)
+  return res.findModelEntity('entities').value(0)
 
 def CreateBody(ents, **kwargs):
   """Create a set of bodies from a set of cells.
@@ -364,7 +368,9 @@ def CreateBody(ents, **kwargs):
   if 'keep_inputs' in kwargs:
     c = crb.findAsInt('keep inputs')
     c.setValue(0, kwargs['keep_inputs'])
-  bodies = crb.operate().findModelEntity('entities')
+  res = crb.operate()
+  PrintResultLog(res)
+  bodies = res.findModelEntity('entities')
   return [bodies.value(i) for i in range(bodies.numberOfValues())]
 
 def Sweep(stuffToSweep, method = SweepType.EXTRUDE, **kwargs):

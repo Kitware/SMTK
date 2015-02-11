@@ -4,6 +4,10 @@
   <Definitions>
     <!-- Operator -->
     <AttDef Type="create face" BaseType="operator">
+      <AssociationsDef Name="edges" NumberOfRequiredValues="1" Extensible="true">
+        <BriefDescription>One or more pre-existing model edges.</BriefDescription>
+        <MembershipMask>edge</MembershipMask>
+      </AssociationsDef>
       <ItemDefinitions>
         <Int Name="surface type" NumberOfRequiredValues="1">
           <BriefDescription>The type of surface to create.</BriefDescription>
@@ -18,9 +22,9 @@
             </Structure>
           </DiscreteInfo>
         </Int>
-        <ModelEntity Name="edges" NumberOfRequiredValues="1" Extensible="true">
-          <BriefDescription>One or more pre-existing model edges.</BriefDescription>
-        </ModelEntity>
+        <Int Name="keep inputs" NumberOfRequiredValues="1">
+          <DefaultValue>0</DefaultValue>
+        </Int>
         <Int Name="color" NumberOfRequiredValues="1">
           <BriefDescription>The CGM color index assigned to the face.</BriefDescription>
           <Min Inclusive="true">0</Min>
