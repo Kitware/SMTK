@@ -17,3 +17,18 @@ set(unit_tests_which_require_data
 smtk_unit_tests(LABEL "Mesh"
                 SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
                 LIBRARIES vtkToSMTKMesh vtkFiltersSources)
+
+
+
+add_executable(MultiScaleConverter MultiScaleConverter.cxx)
+target_link_libraries(MultiScaleConverter
+                      LINK_PUBLIC vtkToSMTKMesh
+                                  vtkIOExodus vtkIOXML vtksys)
+target_include_directories(MultiScaleConverter PRIVATE ${MOAB_INCLUDE_DIRS})
+
+add_executable(SurfacePerMaterialExtraction SurfacePerMaterialExtraction.cxx)
+
+target_link_libraries(SurfacePerMaterialExtraction
+                      LINK_PUBLIC vtkToSMTKMesh
+                                  vtkIOExodus vtkIOXML vtksys)
+target_include_directories(SurfacePerMaterialExtraction PRIVATE ${MOAB_INCLUDE_DIRS})
