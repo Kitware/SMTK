@@ -82,17 +82,11 @@ smtk::model::OperatorResult CreateSphere::operateInternal()
 
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
-  smtk::attribute::ModelEntityItem::Ptr resultBodies =
-    result->findModelEntity("entities");
 
-  Session* session = this->cgmSession();
-  resultBodies->setNumberOfValues(1);
-
-  smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(cgmBody, true);
-  smtk::common::UUID entId = refId->entityId();
-  smtk::model::EntityRef smtkEntry(this->manager(), entId);
-  if (session->transcribe(smtkEntry, smtk::model::SESSION_EVERYTHING, false))
-    resultBodies->setValue(0, smtkEntry);
+  DLIList<Body*> cgmEntitiesOut;
+  cgmEntitiesOut.push(cgmBody);
+  this->addEntitiesToResult(cgmEntitiesOut, result);
+  // Nothing to expunge.
 
   return result;
 }

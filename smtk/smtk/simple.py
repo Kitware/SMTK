@@ -313,7 +313,7 @@ def CreateVertex(pt, **kwargs):
   if c and 'color' in kwargs:
     c.setValue(0, kwargs['color'])
   SetVectorValue(x, pt)
-  return crv.operate().findModelEntity('vertex').value(0)
+  return crv.operate().findModelEntity('entities').value(0)
 
 def CreateEdge(verts, curve_type = CurveType.LINE, **kwargs):
   """Create an edge from a pair of vertices.
@@ -330,7 +330,7 @@ def CreateEdge(verts, curve_type = CurveType.LINE, **kwargs):
   if 'color' in kwargs:
     c = cre.findAsInt('color')
     c.setValue(0, kwargs['color'])
-  return cre.operate().findModelEntity('edge').value(0)
+  return cre.operate().findModelEntity('entities').value(0)
 
 def CreateFace(edges, surface_type = SurfaceType.PLANAR, **kwargs):
   """Create a face from a set of edges.
@@ -344,7 +344,28 @@ def CreateFace(edges, surface_type = SurfaceType.PLANAR, **kwargs):
   if 'color' in kwargs:
     c = crf.findAsInt('color')
     c.setValue(0, kwargs['color'])
-  return crf.operate().findModelEntity('face').value(0)
+  return crf.operate().findModelEntity('entities').value(0)
+
+def CreateBody(ents, **kwargs):
+  """Create a set of bodies from a set of cells.
+
+  This is used to create sheet bodies (one per face) when given faces
+  or a single solid body when given volumes.
+  If given edges, it will attempt to create a planar face and then a sheet body.
+  Any combination of edges, faces, and volumes may be given;
+  they are processed independently.
+  """
+  sref = GetActiveSession()
+  crb = sref.op('create body')
+  [crb.associateEntity(x) for x in ents]
+  if 'color' in kwargs:
+    c = crb.findAsInt('color')
+    c.setValue(0, kwargs['color'])
+  if 'keep_inputs' in kwargs:
+    c = crb.findAsInt('keep inputs')
+    c.setValue(0, kwargs['keep_inputs'])
+  bodies = crb.operate().findModelEntity('entities')
+  return [bodies.value(i) for i in range(bodies.numberOfValues())]
 
 def Sweep(stuffToSweep, method = SweepType.EXTRUDE, **kwargs):
   """Sweep curves or surfaces to create a model.

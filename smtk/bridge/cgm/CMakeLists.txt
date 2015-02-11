@@ -12,6 +12,7 @@ set(cgmSrcs
   operators/BooleanSubtraction.cxx
   operators/BooleanUnion.cxx
   operators/Copy.cxx
+  operators/CreateBody.cxx
   operators/CreateBrick.cxx
   operators/CreateCylinder.cxx
   operators/CreateEdge.cxx
@@ -40,6 +41,7 @@ set(cgmHeaders
   operators/BooleanSubtraction.h
   operators/BooleanUnion.h
   operators/Copy.h
+  operators/CreateBody.h
   operators/CreateBrick.h
   operators/CreateCylinder.h
   operators/CreateEdge.h
@@ -102,6 +104,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/BooleanIntersection.sbt
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/BooleanSubtraction.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/BooleanUnion.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Copy.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateBody.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateBrick.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateCylinder.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdge.sbt" cgmOperatorXML)

@@ -113,24 +113,27 @@ smtk::model::OperatorResult Read::operateInternal()
 
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
+
+  this->addEntitiesToResult(imported, result);
+
+  // Set name and url property on each top-level output
   smtk::attribute::ModelEntityItem::Ptr resultModels =
     result->findModelEntity("entities");
-
-  Session* session = this->cgmSession();
   std::string modelName = filename.substr(0, filename.find_last_of("."));
-  int ne = static_cast<int>(imported.size());
-  resultModels->setNumberOfValues(ne);
-  for (int i = 0; i < ne; ++i)
+  std::size_t prefix = modelName.find_last_of("/");
+  if (prefix != std::string::npos)
+    modelName = modelName.substr(prefix + 1);
+  std::size_t ne = resultModels->numberOfValues();
+  for (std::size_t i = 0; i < ne; ++i)
     {
-    RefEntity* entry = imported.get_and_step();
-    smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(entry, true);
-    smtk::common::UUID entId = refId->entityId();
-    smtk::model::EntityRef smtkEntry(this->manager(), entId);
-    if (session->transcribe(smtkEntry, smtk::model::SESSION_EVERYTHING, false))
-      resultModels->setValue(i, smtkEntry);
+    std::ostringstream curModelName;
+    curModelName << (modelName.empty() ? "Model" : modelName);
+    if (i > 0)
+      curModelName << " " << (i+1);
+    smtk::model::EntityRef ent = resultModels->value(i);
+    ent.setName(curModelName.str());
+    ent.setStringProperty("url", filename);
     }
-  imported.reset();
-
 
   return result;
 }

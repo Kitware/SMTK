@@ -98,15 +98,11 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
 
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
-  smtk::attribute::ModelEntityItem::Ptr resultVert =
-    result->findModelEntity("edge");
 
-  Session* session = this->cgmSession();
-  smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(cgmEdge, true);
-  smtk::common::UUID entId = refId->entityId();
-  smtk::model::EntityRef smtkEntry(this->manager(), entId);
-  if (session->transcribe(smtkEntry, smtk::model::SESSION_EVERYTHING, false))
-    resultVert->setValue(0, smtkEntry);
+  DLIList<RefEdge*> cgmEdgesOut;
+  cgmEdgesOut.push(cgmEdge);
+  this->addEntitiesToResult(cgmEdgesOut, result);
+  // Nothing to expunge.
 
   return result;
 }
