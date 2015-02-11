@@ -132,8 +132,8 @@ void verify_write_valid_collection_exodus()
     test( result == true, "failed to properly write out a valid exodus collection");
     }
 
-  //reload the written file and verify the number of meshes are the same as the
-  //input mesh
+  //When exporting as an exodus file we only write out the volume elements
+  //so that is what we should verify are the same
   smtk::mesh::CollectionPtr c2 = smtk::io::ImportMesh::entireFile(write_path, manager);
 
   //remove the file from disk
@@ -142,8 +142,9 @@ void verify_write_valid_collection_exodus()
   //verify the meshes
   test( c2->isValid(), "collection should be valid");
   test( c2->name() == c->name() );
-  test( c2->numberOfMeshes() == c->numberOfMeshes() );
-  test( c2->associatedTypes() == c->associatedTypes() );
+
+  test( c2->meshes( smtk::mesh::Dims3 ).size() == c->meshes( smtk::mesh::Dims3 ).size() );
+  test( c2->cells( smtk::mesh::Dims3 ).size() == c->cells( smtk::mesh::Dims3 ).size() );
 }
 
 //----------------------------------------------------------------------------

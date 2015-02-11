@@ -88,10 +88,9 @@ public:
   //that the we have un-named mesh sets.
   std::vector< std::string > meshNames();
 
-  //all meshes are labeled with a given dimension, which is the
-  //higesth dimension of cell inside that mesh. This means that a mesh
-  //that has 1D and 2D elements will only come back when asking for 2D
-  //elements.
+  //Find all meshes that have at least one cell of the given type.
+  //This means that you can get back meshes of mixed dimension
+  //type.
   smtk::mesh::MeshSet   meshes( smtk::mesh::DimensionType dim );
   smtk::mesh::MeshSet   meshes( const std::string& name );
 

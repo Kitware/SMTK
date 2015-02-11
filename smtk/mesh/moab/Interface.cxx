@@ -142,31 +142,30 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
                                                 int dimension) const
 
 {
-  smtk::mesh::HandleRange all_meshes_with_dim_tag;
-  smtk::mesh::HandleRange meshes_of_proper_dim;
+  typedef std::vector< ::moab::EntityHandle >::const_iterator it;
 
-  //construct a dim tag that matches the dimension coming in
-  tag::QueryDimTag dimTag(dimension, this->moabInterface());
+  //use a vector since we are going to do single element iteration, and
+  //removal.
+  std::vector< ::moab::EntityHandle > all_ents;
+  std::vector< ::moab::EntityHandle > matching_ents;
+  m_iface->get_entities_by_type(handle, ::moab::MBENTITYSET, all_ents);
 
-  // get all the entities of that type in the mesh
-  m_iface->get_entities_by_type_and_tag(handle,
-                                      ::moab::MBENTITYSET,
-                                      dimTag.moabTag(),
-                                      NULL,
-                                      1,
-                                      all_meshes_with_dim_tag);
-
-  typedef smtk::mesh::HandleRange::const_iterator iterator;
-  for(iterator i=all_meshes_with_dim_tag.begin();
-      i != all_meshes_with_dim_tag.end(); ++i)
+  //add all meshsets that have at least a single cell of the given dimension
+  for( it i = all_ents.begin(); i != all_ents.end(); ++i )
     {
-    int value = 0;
-    m_iface->tag_get_data(dimTag.moabTagAsRef(), &(*i), 1, &value);
-    if(value == dimTag.value())
+    smtk::mesh::HandleRange cells_of_given_dim;
+    m_iface->get_entities_by_dimension(*i,dimension,cells_of_given_dim);
+    if(!cells_of_given_dim.empty())
       {
-      meshes_of_proper_dim.insert(*i);
+      matching_ents.push_back(*i);
       }
     }
+
+  all_ents.clear();
+
+  smtk::mesh::HandleRange meshes_of_proper_dim;
+  std::copy( matching_ents.rbegin(), matching_ents.rend(),
+             ::moab::range_inserter(meshes_of_proper_dim) );
   return meshes_of_proper_dim;
 }
 
@@ -178,14 +177,10 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
 {
   typedef std::vector< ::moab::EntityHandle >::const_iterator it;
 
-  //I can't get get_entities_by_type_and_tag to work properly for this
-  //query so I am going to do it the slow way by doing the checking manually
-
   //use a vector since we are going to do single element iteration, and
   //removal.
   std::vector< ::moab::EntityHandle > all_ents;
   std::vector< ::moab::EntityHandle > matching_ents;
-  //get all ents
   m_iface->get_entities_by_type(handle, ::moab::MBENTITYSET, all_ents);
 
   //see which ones have a a matching name, and if so add it

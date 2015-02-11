@@ -132,19 +132,43 @@ void verify_meshset_by_dim(const smtk::mesh::CollectionPtr& c)
   test( size == collec_numMeshes );
 
   //query for all meshsets of dimension 0, 1, 2, and 3
+  smtk::mesh::MeshSet all_dims = c->meshes( "bad name string" );
   std::size_t numMeshesFoundByDimCalls = 0;
   for(int i=0; i<4; ++i)
     {
-
     smtk::mesh::DimensionType d( static_cast<smtk::mesh::DimensionType>(i) );
     smtk::mesh::MeshSet meshesWithDim = c->meshes( d );
     numMeshesFoundByDimCalls += meshesWithDim.size();
+    all_dims.append( meshesWithDim );
     }
 
-  //generally we will have material and boundary condition meshes which
-  //won't be labeled with a dimension, so we expect numMeshesFoundByDimCalls
-  //to be less than the total number of meshes
-  test( all_meshes.size() >= numMeshesFoundByDimCalls );
+  //since a mesh can have multiple dimensions numMeshesFoundByDimCalls
+  //is larger than all_meshes.size
+  test( all_meshes.size() <= numMeshesFoundByDimCalls );
+
+  //all_dims and all_meshes should be the same
+  test( all_dims == all_meshes);
+}
+
+//----------------------------------------------------------------------------
+void verify_meshset_of_only_a_dim(const smtk::mesh::CollectionPtr& c)
+{
+  //verify that we can extract a meshset whose cells are all of the same
+  //dimension. without any complications
+
+  smtk::mesh::MeshSet meshesWithDim3 = c->meshes( smtk::mesh::Dims3 );
+  smtk::mesh::MeshSet otherMeshes =  c->meshes( smtk::mesh::Dims2 );
+  otherMeshes.append(  c->meshes( smtk::mesh::Dims1 ) );
+
+  //meshesWithOnlyDim3 will contain meshsets that are pure 3d cells
+  smtk::mesh::MeshSet meshesWithOnlyDim3 =
+    smtk::mesh::set_difference( meshesWithDim3, otherMeshes );
+
+  //verify that we have zero cells of 1 or 2 dim
+  test( meshesWithOnlyDim3.cells( smtk::mesh::Dims0 ).is_empty() == true) ;
+  test( meshesWithOnlyDim3.cells( smtk::mesh::Dims1 ).is_empty() == true) ;
+  test( meshesWithOnlyDim3.cells( smtk::mesh::Dims2 ).is_empty() == true ) ;
+  test( meshesWithOnlyDim3.cells( smtk::mesh::Dims3 ).is_empty() == false) ;
 }
 
 //----------------------------------------------------------------------------
@@ -163,28 +187,16 @@ void verify_meshset_intersect(const smtk::mesh::CollectionPtr& c)
     test( result == no_meshes, "Intersection with nothing should produce nothing" );
   }
 
-  //construct empty meshset
-  smtk::mesh::MeshSet all_dims = c->meshes( "bad name string" );
-  for(int i=0; i<4; ++i)
-    {
-    smtk::mesh::DimensionType d( static_cast<smtk::mesh::DimensionType>(i) );
-    smtk::mesh::MeshSet meshesWithDim = c->meshes(d);
-
-    //all_dims shouldn't already hold anything from meshesWithDim
-    smtk::mesh::MeshSet intersect_result =
-                      smtk::mesh::set_intersect(all_dims,meshesWithDim);
-    test( intersect_result.size() == 0 );
-
-    all_dims.append( meshesWithDim );
-    }
+  //find meshes that have volume elements
+  smtk::mesh::MeshSet volumeMeshes = c->meshes( smtk::mesh::Dims3 );
 
   //verify that the size of the intersection + size of difference
   //equal size
   smtk::mesh::MeshSet intersect_result =
-                      smtk::mesh::set_intersect( all_meshes, all_dims );
+                      smtk::mesh::set_intersect( all_meshes, volumeMeshes );
 
   smtk::mesh::MeshSet difference_result =
-                      smtk::mesh::set_difference( all_meshes, all_dims );
+                      smtk::mesh::set_difference( all_meshes, volumeMeshes );
 
   const std::size_t summed_size =
                       intersect_result.size() + difference_result.size();
@@ -256,16 +268,11 @@ void verify_meshset_subtract(const smtk::mesh::CollectionPtr& c)
     test( result == no_meshes, "Subtraction of something from nothing should nothing" );
   }
 
-  //construct empty meshset
-  smtk::mesh::MeshSet all_dims = c->meshes( "bad name string" );
-  for(int i=0; i<4; ++i)
-    {
-    smtk::mesh::DimensionType d( static_cast<smtk::mesh::DimensionType>(i) );
-    all_dims.append( c->meshes(d) );
-    }
+  //find meshes that have volume elements
+  smtk::mesh::MeshSet volumeMeshes = c->meshes( smtk::mesh::Dims3 );
 
-  std::size_t size_difference = all_meshes.size() - all_dims.size();
-  smtk::mesh::MeshSet non_dim_meshes = smtk::mesh::set_difference(all_meshes, all_dims);
+  std::size_t size_difference = all_meshes.size() - volumeMeshes.size();
+  smtk::mesh::MeshSet non_dim_meshes = smtk::mesh::set_difference(all_meshes, volumeMeshes);
   test( non_dim_meshes.size() == size_difference,
         "subtract of two meshes produced wrong size" );
 }
@@ -283,6 +290,7 @@ int UnitTestMeshSet(int argc, char** argv)
   verify_comparisons(c);
   verify_mesh_by_name(c);
   verify_meshset_by_dim(c);
+  verify_meshset_of_only_a_dim(c);
   verify_meshset_intersect(c);
   verify_meshset_union(c);
   verify_meshset_subtract(c);
