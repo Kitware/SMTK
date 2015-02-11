@@ -4,6 +4,10 @@
   <Definitions>
     <!-- Operator -->
     <AttDef Type="create edge" BaseType="operator">
+      <AssociationsDef Name="vertices" NumberOfRequiredValues="2">
+        <BriefDescription>Two pre-existing model vertices.</BriefDescription>
+        <MembershipMask>vertex</MembershipMask>
+      </AssociationsDef>
       <ItemDefinitions>
         <Int Name="curve type" NumberOfRequiredValues="1">
           <BriefDescription>The type of curve to create.</BriefDescription>
@@ -45,9 +49,6 @@
             </Structure>
           </DiscreteInfo>
         </Int>
-        <ModelEntity Name="vertices" NumberOfRequiredValues="2">
-          <BriefDescription>Two pre-existing model vertices.</BriefDescription>
-        </ModelEntity>
         <Int Name="color" NumberOfRequiredValues="1">
           <BriefDescription>The CGM color index assigned to the edge.</BriefDescription>
           <Min Inclusive="true">0</Min>

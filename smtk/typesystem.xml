@@ -761,7 +761,7 @@
       </inject-code>
     </add-function>
     <add-function
-      signature="findAsModel(const std::string &amp;)" static="no"
+      signature="findAsModelEntity(const std::string &amp;)" static="no"
       return-type="smtk::shared_ptr&lt; smtk::attribute::ModelEntityItem &gt;">
       <inject-code>
         smtk::shared_ptr&lt; smtk::attribute::ModelEntityItem &gt; result =

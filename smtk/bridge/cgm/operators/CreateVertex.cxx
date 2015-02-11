@@ -65,15 +65,11 @@ smtk::model::OperatorResult CreateVertex::operateInternal()
 
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
-  smtk::attribute::ModelEntityItem::Ptr resultVert =
-    result->findModelEntity("vertex");
 
-  Session* session = this->cgmSession();
-  smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(cgmVert, true);
-  smtk::common::UUID entId = refId->entityId();
-  smtk::model::EntityRef smtkEntry(this->manager(), entId);
-  if (session->transcribe(smtkEntry, smtk::model::SESSION_EVERYTHING, false))
-    resultVert->setValue(0, smtkEntry);
+  DLIList<RefVertex*> cgmEntitiesOut;
+  cgmEntitiesOut.push(cgmVert);
+  this->addEntitiesToResult(cgmEntitiesOut, result);
+  // Nothing to expunge.
 
   return result;
 }

@@ -16,6 +16,8 @@
 
 #include "smtk/io/Logger.h"
 
+#include "smtk/model/Vertex.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
@@ -46,8 +48,14 @@ namespace smtk {
 
 smtk::model::OperatorResult CreateEdge::operateInternal()
 {
-  smtk::attribute::ModelEntityItem::Ptr verticesItem =
-    this->findModelEntity("vertices");
+  smtk::model::Vertices vertices =
+    this->associatedEntitiesAs<smtk::model::Vertices>();
+  if (vertices.size() != 2)
+    {
+    smtkInfoMacro(log(), "Expected 2 vertices, got " << vertices.size() << ".");
+    return this->createResult(smtk::model::OPERATION_FAILED);
+    }
+
   smtk::attribute::DoubleItem::Ptr pointItem =
     this->findDouble("point");
   smtk::attribute::IntItem::Ptr curveTypeItem =
@@ -78,8 +86,8 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
     smtkInfoMacro(log(), "Bad curve type " << curveType << ".");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
-  RefVertex* v0 = this->cgmEntityAs<RefVertex*>(verticesItem->value(0));
-  RefVertex* v1 = this->cgmEntityAs<RefVertex*>(verticesItem->value(1));
+  RefVertex* v0 = this->cgmEntityAs<RefVertex*>(vertices[0]);
+  RefVertex* v1 = this->cgmEntityAs<RefVertex*>(vertices[1]);
   if (!v0 || !v1)
     {
     smtkInfoMacro(log(), "One or more vertices were invalid " << v0 << ", " << v1 << ".");
@@ -98,15 +106,11 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
 
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
-  smtk::attribute::ModelEntityItem::Ptr resultVert =
-    result->findModelEntity("edge");
 
-  Session* session = this->cgmSession();
-  smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(cgmEdge, true);
-  smtk::common::UUID entId = refId->entityId();
-  smtk::model::EntityRef smtkEntry(this->manager(), entId);
-  if (session->transcribe(smtkEntry, smtk::model::SESSION_EVERYTHING, false))
-    resultVert->setValue(0, smtkEntry);
+  DLIList<RefEdge*> cgmEdgesOut;
+  cgmEdgesOut.push(cgmEdge);
+  this->addEntitiesToResult(cgmEdgesOut, result);
+  // Nothing to expunge.
 
   return result;
 }

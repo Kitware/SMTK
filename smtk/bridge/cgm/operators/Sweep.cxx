@@ -205,26 +205,8 @@ smtk::model::OperatorResult Sweep::operateInternal()
 
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
-  smtk::attribute::ModelEntityItem::Ptr resultBodies =
-    result->findModelEntity("entities");
 
-  Session* session = this->cgmSession();
-  int numBodiesOut = cgmResults.size();
-  resultBodies->setNumberOfValues(numBodiesOut);
-
-  for (int i = 0; i < numBodiesOut; ++i)
-    {
-    Body* cgmBody = cgmResults.get_and_step();
-    if (!cgmBody)
-      continue;
-
-    smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(cgmBody, true);
-    smtk::common::UUID entId = refId->entityId();
-    smtk::model::EntityRef smtkEntry(this->manager(), entId);
-    if (session->transcribe(smtkEntry, smtk::model::SESSION_EVERYTHING, false))
-      resultBodies->setValue(i, smtkEntry);
-    }
-
+  this->addEntitiesToResult(cgmResults, result);
   result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
 
   return result;

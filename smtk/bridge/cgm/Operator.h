@@ -11,8 +11,14 @@
 #define __smtk_session_cgm_Operator_h
 
 #include "smtk/bridge/cgm/cgmSMTKExports.h"
+#include "smtk/bridge/cgm/TDUUID.h"
+#include "smtk/bridge/cgm/Session.h"
+
 #include "smtk/model/Operator.h"
 #include "smtk/model/Manager.h"
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ModelEntityItem.h"
 
 #include "DLIList.hpp"
 
@@ -44,6 +50,9 @@ protected:
   template<typename T, typename U>
   bool cgmEntities(
     const T& smtkContainer, DLIList<U>& cgmContainer, int keepInputs, smtk::model::EntityRefArray& expunged);
+
+  template<typename T>
+  void addEntitiesToResult(DLIList<T>& cgmContainer, smtk::model::OperatorResult result);
 };
 
 /// A convenience method for returning the CGM counterpart of an SMTK entity already cast to a subtype.
@@ -92,6 +101,30 @@ bool Operator::cgmEntities(const T& smtkContainer, DLIList<U>& cgmContainer, int
       }
     }
   return ok;
+}
+
+template<typename T>
+void Operator::addEntitiesToResult(DLIList<T>& cgmContainer, smtk::model::OperatorResult result)
+{
+  smtk::attribute::ModelEntityItem::Ptr entitiesOut =
+    result->findModelEntity("entities");
+
+  Session* session = this->cgmSession();
+  int numBodiesOut = cgmContainer.size();
+  entitiesOut->setNumberOfValues(numBodiesOut);
+
+  for (int i = 0; i < numBodiesOut; ++i)
+    {
+    T cgmEnt = cgmContainer.get_and_step();
+    if (!cgmEnt)
+      continue;
+
+    smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(cgmEnt, true);
+    smtk::common::UUID entId = refId->entityId();
+    smtk::model::EntityRef smtkEntry(this->manager(), entId);
+    if (session->transcribe(smtkEntry, smtk::model::SESSION_EVERYTHING, false))
+      entitiesOut->setValue(i, smtkEntry);
+    }
 }
 
     } // namespace cgm

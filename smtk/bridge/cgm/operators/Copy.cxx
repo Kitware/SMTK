@@ -101,17 +101,11 @@ smtk::model::OperatorResult Copy::operateInternal()
 
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
-  smtk::attribute::ModelEntityItem::Ptr resultEntities =
-    result->findModelEntity("entities");
 
-  Session* session = this->cgmSession();
-  resultEntities->setNumberOfValues(1);
-
-  smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(cgmOut, true);
-  smtk::common::UUID entId = refId->entityId();
-  smtk::model::EntityRef smtkEntry(this->manager(), entId);
-  if (session->transcribe(smtkEntry, smtk::model::SESSION_EVERYTHING, false))
-    resultEntities->setValue(0, smtkEntry);
+  DLIList<RefEntity*> cgmEntitiesOut;
+  cgmEntitiesOut.push(cgmOut);
+  this->addEntitiesToResult(cgmEntitiesOut, result);
+  // Nothing to expunge.
 
   return result;
 }
