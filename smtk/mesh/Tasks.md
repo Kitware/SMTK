@@ -27,8 +27,17 @@
 3. Create easy to use Tags for Boundary, Dirichlet and Neumann sets with
    a given value.
 
-
 4. Add and Remove meshsets from a collection.
+```
+  smtk::mesh::CollectionPtr c = manager.collection( uuid_of_collection );
+  smtk::mesh::HandleRange cells;
+
+
+  smtk::mesh::Handle meshId;
+  ///this adds a mesh to the collection
+  c->interface()->createMesh(cells, meshId);
+
+```
 
 5. Mark meshset(s) as being Boundary, Dirichlet or Neumann. Plus they can
    have a value for that tag!.
@@ -36,32 +45,6 @@
 6. A MeshSet should be able to reports all the tags, and tag values that
    mesh's inside of it have. You can have a meshset where some are Boundary
    and some are Neumann. Should be able to extract all Boundary tagged meshes.
-
-
-##VTK DataSet to Mesh##
-
-1. We need to be able to convert a vtkPolyData to a smtk::mesh::MeshSet.
-
-2. We need to be able to convert a vtkUnstructuredGrid to a smtk::mesh::MeshSet.
-
-
-##IO##
-
-1. Like wise we will have to be save a dataset from the manager back
-into moab.
-
-```
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  ...
-  //save the last mesh in the collection
-  const std::size_t size = manager.numberOfCollections();
-  smtk::mesh::Manager::const_iterator collection = manager.collectionBegin();
-
-  //now
-  smtk::io::SaveMesh::intoFile(*collection, file_path);
-
-```
-
 
 ##Extract Shell##
 
@@ -71,7 +54,6 @@ into moab.
 
 
 ##Meshing to Mesh##
-
 
 Current goals of the system are:
 
@@ -206,3 +188,18 @@ Current goals of the system are:
 
 
  ```
+
+
+##IO##
+
+1. Able to write a mesh out
+
+```
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::CollectionPtr c = manager.collection( uuid );
+  ...
+  //save the entire collection
+  bool result = smtk::io::WriteMesh::entireCollection(write_path, c);
+
+
+```
