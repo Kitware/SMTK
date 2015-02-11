@@ -496,6 +496,13 @@ smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange
 }
 
 //----------------------------------------------------------------------------
+bool Interface::deleteHandles(const smtk::mesh::HandleRange& toDel)
+{
+  const::moab::ErrorCode rval = m_iface->delete_entities(toDel);
+  return (rval == ::moab::MB_SUCCESS);
+}
+
+//----------------------------------------------------------------------------
 ::moab::Interface *const Interface::moabInterface() const
 {
   return this->m_iface.get();

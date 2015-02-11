@@ -332,6 +332,7 @@ smtk::mesh::MeshSet Collection::createMesh( const smtk::mesh::CellSet& cells )
 {
   const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
 
+
   if(cells.m_parent == this->shared_from_this())
     {
     smtk::mesh::Handle meshSetHandle;
@@ -350,6 +351,40 @@ smtk::mesh::MeshSet Collection::createMesh( const smtk::mesh::CellSet& cells )
                                 this->m_internals->mesh_root_handle(),
                                 smtk::mesh::HandleRange());
     }
+}
+
+//----------------------------------------------------------------------------
+bool Collection::removeMeshes(smtk::mesh::MeshSet& meshesToDelete )
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
+  if(meshesToDelete.m_parent == this->shared_from_this())
+    {
+    //When deleting a MeshSet we need to find all cells that
+    //are not used by any other mesh.
+
+    //find all other meshes
+    smtk::mesh::MeshSet all_OtherMeshes =
+                      smtk::mesh::set_difference(this->meshes(),
+                                                 meshesToDelete);
+
+    //find all non vertex cells that we use
+    smtk::mesh::CellSet cellsUsedByDeletedMeshes = smtk::mesh::set_difference(
+                                                     meshesToDelete.cells( ),
+                                                     meshesToDelete.cells( smtk::mesh::Dims0 ));
+    //now find the cells that used only by the mesh we are about to delete.
+    //we can't delete vertex cells since they might be used as connectivity
+    //for a different cell that we aren't deleting.
+    cellsUsedByDeletedMeshes =
+        smtk::mesh::set_difference(cellsUsedByDeletedMeshes,
+                                    all_OtherMeshes.cells( ));
+
+
+    //delete our mesh and cells that aren't used by any one else
+    bool deletedMeshes = iface->deleteHandles(meshesToDelete.m_range);
+    bool deletedCells = iface->deleteHandles(cellsUsedByDeletedMeshes.m_range);
+    return deletedMeshes && deletedCells;
+    }
+  return false;
 }
 
 

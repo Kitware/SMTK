@@ -122,7 +122,7 @@ public:
 
 
   //----------------------------------------------------------------------------
-  // Consturction of new meshes
+  // Construction of new meshes
   //----------------------------------------------------------------------------
   //given a collection of existing cells make a new Mesh inside the underlying interface
   //Return that Mesh as a MeshSet with a size of 1. The CellSet could
@@ -130,6 +130,15 @@ public:
   //Adding a CellSet that is part of a different collection will fail, and
   //we will return an empty MeshSet
   smtk::mesh::MeshSet createMesh( const smtk::mesh::CellSet& cells );
+
+  //----------------------------------------------------------------------------
+  // Deletion of Items
+  //----------------------------------------------------------------------------
+  //given a collection of meshes this will delete all meshes and any cell or vert
+  //that is not referenced by any other mesh
+  //This will invalidate any smtk::mesh::MeshSet that contains a reference to
+  //one of the meshes that has been deleted.
+  bool removeMeshes( smtk::mesh::MeshSet& meshesToDelete );
 
   const smtk::mesh::InterfacePtr& interface() const;
 

@@ -30,6 +30,7 @@ class SMTKCORE_EXPORT MeshSet
   friend MeshSet set_intersect( const MeshSet& a, const MeshSet& b);
   friend MeshSet set_difference( const MeshSet& a, const MeshSet& b);
   friend MeshSet set_union( const MeshSet& a, const MeshSet& b );
+  friend class Collection; //required for deletion of meshes
 public:
   //construct a MeshSet that represents all meshes that are children
   //of the handle

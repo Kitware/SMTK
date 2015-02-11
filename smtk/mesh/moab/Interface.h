@@ -137,6 +137,10 @@ public:
                                            const smtk::mesh::HandleRange& b,
                                            const smtk::mesh::ContainsFunctor& containsFunctor) const;
 
+  //----------------------------------------------------------------------------
+  bool deleteHandles(const smtk::mesh::HandleRange& toDel);
+
+  //----------------------------------------------------------------------------
   ::moab::Interface * const moabInterface() const;
 
 private:

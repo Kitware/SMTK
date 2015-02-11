@@ -134,6 +134,9 @@ public:
   virtual smtk::mesh::HandleRange pointDifference(const smtk::mesh::HandleRange& a,
                                                    const smtk::mesh::HandleRange& b,
                                                    const smtk::mesh::ContainsFunctor& containsFunctor) const = 0;
+
+  //----------------------------------------------------------------------------
+  virtual bool deleteHandles(const smtk::mesh::HandleRange& toDel) = 0;
 };
 
 }
