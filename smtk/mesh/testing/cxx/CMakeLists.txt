@@ -21,9 +21,11 @@ set(unit_tests
 set(unit_tests_which_require_data
   UnitTestAddFileToCollection.cxx
   UnitTestCellSet.cxx
+  UnitTestCreateMesh.cxx
   UnitTestLoadMesh.cxx
   UnitTestPointConnectivity.cxx
   UnitTestMeshSet.cxx
+  UnitTestRemoveMeshes.cxx
   UnitTestTypeSetFromData.cxx
   UnitTestWriteMesh.cxx
   )

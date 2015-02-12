@@ -128,7 +128,9 @@ public:
   //Return that Mesh as a MeshSet with a size of 1. The CellSet could
   //be the result of appending/intersecting,difference of other CellSets.
   //Adding a CellSet that is part of a different collection will fail, and
-  //we will return an empty MeshSet
+  //we will return an empty MeshSet.
+  //Asking to create a MeshSet from a CellSet that is empty will fail, and
+  //we will return an empty MeshSet.
   smtk::mesh::MeshSet createMesh( const smtk::mesh::CellSet& cells );
 
   //----------------------------------------------------------------------------

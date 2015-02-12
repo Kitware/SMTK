@@ -332,25 +332,19 @@ smtk::mesh::MeshSet Collection::createMesh( const smtk::mesh::CellSet& cells )
 {
   const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
 
-
+  smtk::mesh::HandleRange entities;
   if(cells.m_parent == this->shared_from_this())
     {
     smtk::mesh::Handle meshSetHandle;
-    iface->createMesh(cells.m_range, meshSetHandle);
-
-    smtk::mesh::HandleRange entities;
-    entities.insert(meshSetHandle);
-
-    return smtk::mesh::MeshSet( this->shared_from_this(),
-                                this->m_internals->mesh_root_handle(),
-                                entities );
+    const bool meshCreated = iface->createMesh(cells.m_range, meshSetHandle);
+    if(meshCreated)
+      {
+      entities.insert(meshSetHandle);
+      }
     }
-  else
-    {
-    return smtk::mesh::MeshSet( this->shared_from_this(),
-                                this->m_internals->mesh_root_handle(),
-                                smtk::mesh::HandleRange());
-    }
+  return smtk::mesh::MeshSet( this->shared_from_this(),
+                              this->m_internals->mesh_root_handle(),
+                              entities );
 }
 
 //----------------------------------------------------------------------------
@@ -377,7 +371,6 @@ bool Collection::removeMeshes(smtk::mesh::MeshSet& meshesToDelete )
     cellsUsedByDeletedMeshes =
         smtk::mesh::set_difference(cellsUsedByDeletedMeshes,
                                     all_OtherMeshes.cells( ));
-
 
     //delete our mesh and cells that aren't used by any one else
     bool deletedMeshes = iface->deleteHandles(meshesToDelete.m_range);

@@ -88,6 +88,18 @@ smtk::mesh::Handle Interface::getRoot() const
 bool Interface::createMesh(const smtk::mesh::HandleRange& cells,
                            smtk::mesh::Handle& meshHandle)
 {
+  if(cells.empty())
+    {
+    return false;
+    }
+
+  //make sure the cells are actually cells instead of meshsets.
+  //we currently don't want this allow adding sub meshsets
+  if(cells.num_of_type(::moab::MBENTITYSET) != 0)
+    {
+    return false;
+    }
+
   const unsigned int options = 0;
   ::moab::ErrorCode rval = m_iface->create_meshset( options , meshHandle );
   if(rval == ::moab::MB_SUCCESS)
@@ -498,8 +510,37 @@ smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange
 //----------------------------------------------------------------------------
 bool Interface::deleteHandles(const smtk::mesh::HandleRange& toDel)
 {
-  const::moab::ErrorCode rval = m_iface->delete_entities(toDel);
-  return (rval == ::moab::MB_SUCCESS);
+  //step 1. verify HandleRange isnt empty
+  if(toDel.empty())
+    {
+    return true;
+    }
+
+  //step 2. verify HandleRange doesn't contain root Handle
+  if(toDel.front() == this->getRoot())
+    {
+    //Ranges are always sorted, and the root is always id 0
+    return false;
+    }
+
+  //step 3. verify HandleRange is either all entity sets or cells/verts
+  //this could be a performance bottleneck since we are using size
+  if(toDel.all_of_type(::moab::MBENTITYSET))
+    {
+    //we are all moab entity sets, fine to delete
+    const::moab::ErrorCode rval = m_iface->delete_entities(toDel);
+    return (rval == ::moab::MB_SUCCESS);
+    }
+  else if(toDel.num_of_type(::moab::MBENTITYSET) == 0)
+    {
+    //we have zero entity sets so we must be all cells/coords
+    const::moab::ErrorCode rval = m_iface->delete_entities(toDel);
+    return (rval == ::moab::MB_SUCCESS);
+    }
+
+  //we are mixed cells and entity sets and must fail
+  return false;
+
 }
 
 //----------------------------------------------------------------------------

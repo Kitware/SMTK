@@ -72,6 +72,8 @@ public:
   //the mesh will have the root as its parent.
   //The mesh will be tagged with the GEOM_DIMENSION tag with a value that is
   //equal to highest dimension of cell inside
+  //Will fail if the HandleRange is empty or doesn't contain valid
+  //cell handles.
   virtual bool createMesh(const smtk::mesh::HandleRange& cells,
                           smtk::mesh::Handle& meshHandle);
 

@@ -70,6 +70,8 @@ public:
   //----------------------------------------------------------------------------
   //creates a mesh with that contains the input cells.
   //the mesh will have the root as its parent.
+  //Will fail if the HandleRange is empty or doesn't contain valid
+  //cell handles.
   virtual bool createMesh(const smtk::mesh::HandleRange& cells,
                           smtk::mesh::Handle& meshHandle) = 0;
 
@@ -136,6 +138,11 @@ public:
                                                    const smtk::mesh::ContainsFunctor& containsFunctor) const = 0;
 
   //----------------------------------------------------------------------------
+  //The handles must be all mesh or cell elements. Mixed ranges wil
+  //not be deleted and will return false. Empty ranges will be ignored
+  //and return true.
+  //When deleting meshes if the range contains the root handle (getRoot()) the
+  //request will fail, nothing will be deleted, and we will return false.
   virtual bool deleteHandles(const smtk::mesh::HandleRange& toDel) = 0;
 };
 
