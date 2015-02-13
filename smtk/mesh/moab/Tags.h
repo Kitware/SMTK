@@ -53,29 +53,63 @@ public:
   const char* current_name( ) const { return this->m_tagData; }
 };
 
-class QueryDimTag
+
+class QueryIntTag
 {
   ::moab::Interface* m_iface;
-  ::moab::Tag m_tag;
-  int m_dim;
+  ::moab::TagInfo* m_tag;
+  std::string m_tag_name;
+  int m_value;
+  void const* tag_v_ptr;
 public:
-  QueryDimTag(int dimension, ::moab::Interface* iface):
-  m_iface(iface),
-  m_tag(),
-  m_dim( dimension )
+  QueryIntTag(const char* name,
+              int value,
+              ::moab::Interface* iface)
   {
+  this->m_iface = iface;
+  this->m_tag_name = std::string(name);
+  this->m_value = value;
+
   //populate our tag
-  this->m_iface->tag_get_handle("GEOM_DIMENSION",
+  ::moab::Tag moab_tag;
+  this->m_iface->tag_get_handle(this->m_tag_name.c_str(),
                                 1,
                                 ::moab::MB_TYPE_INTEGER,
-                                this->m_tag);
+                                moab_tag);
+
+  this->m_tag = moab_tag;
+  //get the memory location of m_value
+  this->tag_v_ptr = &this->m_value;
   }
 
-  const ::moab::Tag* moabTag() const { return &this->m_tag; }
-  const ::moab::Tag& moabTagAsRef() const { return this->m_tag; }
+  ::moab::TagInfo* moabTag() { return this->m_tag; }
+
+  ::moab::TagInfo* const* moabTagPtr() { return &this->m_tag; }
+  const void* const* moabTagValuePtr() const { return &this->tag_v_ptr; }
 
   int size() const { return 1; }
-  int value() const { return this->m_dim; }
+  int value() const { return this->m_value; }
+};
+
+
+class QueryMaterialTag : public QueryIntTag
+{
+public: QueryMaterialTag(int v, ::moab::Interface* iface):QueryIntTag("MATERIAL_SET",v,iface){}
+};
+
+class QueryDirichletTag : public QueryIntTag
+{
+public: QueryDirichletTag(int v, ::moab::Interface* iface):QueryIntTag("DIRICHLET_SET",v,iface){}
+};
+
+class QueryNeumannTag: public QueryIntTag
+{
+public: QueryNeumannTag(int v, ::moab::Interface* iface):QueryIntTag("NEUMANN_SET",v,iface){}
+};
+
+class QueryDimTag: public QueryIntTag
+{
+public: QueryDimTag(int v, ::moab::Interface* iface):QueryIntTag("GEOM_DIMENSION",v,iface){}
 };
 
 }

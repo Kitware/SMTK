@@ -92,6 +92,11 @@ public:
                                                const std::string& name) const = 0;
 
   //----------------------------------------------------------------------------
+  //find all entity sets that have this exact material tag
+  virtual smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle,
+                                              const smtk::mesh::Material& material) const = 0;
+
+  //----------------------------------------------------------------------------
   //get all cells held by this range
   virtual smtk::mesh::HandleRange getCells(const smtk::mesh::HandleRange& meshsets) const = 0;
 
@@ -114,11 +119,18 @@ public:
   virtual std::vector< std::string > computeNames(const smtk::mesh::HandleRange& meshsets) const = 0;
 
   //----------------------------------------------------------------------------
+  virtual std::vector< smtk::mesh::Material > computeMaterialValues( const smtk::mesh::HandleRange& meshsets) const = 0;
+
+  //----------------------------------------------------------------------------
   virtual smtk::mesh::TypeSet computeTypes(smtk::mesh::Handle handle) const = 0;
 
   //----------------------------------------------------------------------------
+  virtual bool setMaterial(const smtk::mesh::HandleRange& meshsets,
+                           const smtk::mesh::Material& material) const = 0;
+
+  //----------------------------------------------------------------------------
   virtual smtk::mesh::HandleRange rangeIntersect(const smtk::mesh::HandleRange& a,
-                                                 const smtk::mesh::HandleRange& b) const = 0;
+                                                const smtk::mesh::HandleRange& b) const = 0;
 
   //----------------------------------------------------------------------------
   virtual smtk::mesh::HandleRange rangeDifference(const smtk::mesh::HandleRange& a,

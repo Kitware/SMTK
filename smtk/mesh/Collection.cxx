@@ -380,6 +380,39 @@ bool Collection::removeMeshes(smtk::mesh::MeshSet& meshesToDelete )
   return false;
 }
 
+//----------------------------------------------------------------------------
+std::vector< smtk::mesh::Material > Collection::materials()
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
+  smtk::mesh::moab::Handle handle = this->m_internals->mesh_root_handle();
+
+  smtk::mesh::HandleRange entities = iface->getMeshsets( handle );
+  return iface->computeMaterialValues( entities );
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet Collection::materialMeshes( const smtk::mesh::Material& m )
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
+  smtk::mesh::moab::Handle handle = this->m_internals->mesh_root_handle();
+
+  smtk::mesh::HandleRange entities = iface->getMeshsets( handle, m);
+  return smtk::mesh::MeshSet( this->shared_from_this(),
+                              this->m_internals->mesh_root_handle(),
+                              entities );
+}
+
+//----------------------------------------------------------------------------
+bool Collection::setMaterialOnMeshes(const smtk::mesh::MeshSet& meshes,
+                                     const Material &m)
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
+  if(meshes.m_parent == this->shared_from_this())
+    {
+    return iface->setMaterial(meshes.m_range,m);
+    }
+  return false;
+}
 
 
 }

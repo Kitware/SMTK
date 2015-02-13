@@ -124,9 +124,9 @@ bool Interface::createMesh(const smtk::mesh::HandleRange& cells,
 
     //add the dim tag
     tag::QueryDimTag dimTag(dimension, this->moabInterface());
-    m_iface->tag_set_data( dimTag.moabTagAsRef(),
+    m_iface->tag_set_data( dimTag.moabTag(),
                            &meshHandle, 1,
-                           &dimension);
+                           dimTag.moabTagValuePtr());
     }
    return (rval == ::moab::MB_SUCCESS);
 }
@@ -196,6 +196,8 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
   m_iface->get_entities_by_type(handle, ::moab::MBENTITYSET, all_ents);
 
   //see which ones have a a matching name, and if so add it
+  //we don't use get_entities_by_type_and_tag as it doesn't
+  //seem to work with name tags
   tag::QueryNameTag query_name(this->moabInterface());
   for( it i = all_ents.begin(); i != all_ents.end(); ++i )
     {
@@ -212,6 +214,30 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
   smtk::mesh::HandleRange result;
   std::copy( matching_ents.rbegin(), matching_ents.rend(),
              ::moab::range_inserter(result) );
+  return result;
+}
+
+
+//----------------------------------------------------------------------------
+//find all entity sets that have this exact name tag
+smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
+                                               const smtk::mesh::Material &material) const
+
+{
+  tag::QueryMaterialTag mtag(material.value(),this->moabInterface());
+
+  smtk::mesh::HandleRange result;
+  ::moab::ErrorCode rval;
+  rval = m_iface->get_entities_by_type_and_tag(handle,
+                                               ::moab::MBENTITYSET,
+                                               mtag.moabTagPtr(),
+                                               mtag.moabTagValuePtr(),
+                                               1,
+                                               result);
+  if(rval != ::moab::MB_SUCCESS)
+    {
+    result.clear();
+    }
   return result;
 }
 
@@ -251,6 +277,7 @@ smtk::mesh::HandleRange Interface::getCells(const HandleRange &meshsets,
                                 entitiesCells,
                                 true);
     }
+
   return entitiesCells;
 }
 
@@ -310,7 +337,6 @@ smtk::mesh::HandleRange Interface::getCells(const smtk::mesh::HandleRange& meshs
   return entitiesCells;
 }
 
-
 //----------------------------------------------------------------------------
 std::vector< std::string > Interface::computeNames(const smtk::mesh::HandleRange& meshsets) const
 {
@@ -329,6 +355,58 @@ std::vector< std::string > Interface::computeNames(const smtk::mesh::HandleRange
     }
   //return a vector of the unique names
   return std::vector< std::string >(unique_names.begin(), unique_names.end());
+}
+
+//----------------------------------------------------------------------------
+std::vector< smtk::mesh::Material > Interface::computeMaterialValues(const smtk::mesh::HandleRange& meshsets) const
+{
+  std::vector< smtk::mesh::Material > materials;
+
+  tag::QueryMaterialTag mtag(0,this->moabInterface());
+
+  smtk::mesh::HandleRange entitiesWithTag;
+  m_iface->get_entities_by_type_and_tag( m_iface->get_root_set(),
+                                        ::moab::MBENTITYSET,
+                                        mtag.moabTagPtr(),
+                                        NULL,
+                                        1,
+                                        entitiesWithTag);
+
+  //we have all entity sets that have the material tag
+  //now we need to find the subset that is part of our
+  //HandleRange
+  entitiesWithTag = ::moab::intersect(entitiesWithTag, meshsets);
+
+  //return early if nothing has materials.
+  //this also makes it safer to derefence the std vector below
+  if( entitiesWithTag.empty() )
+    {
+    return materials;
+    }
+
+  //allocate a vector large enough to hold the tag values for every element
+  std::vector< int > tag_values;
+  tag_values.resize( entitiesWithTag.size() );
+  void *tag_v_ptr = &tag_values[0];
+
+  //fetch the material tag for each item in the range in bulk
+  m_iface->tag_get_data(mtag.moabTag(),
+                        entitiesWithTag,
+                        tag_v_ptr);
+
+  //find and remove duplicates
+  std::sort( tag_values.begin(), tag_values.end() );
+  tag_values.erase( std::unique( tag_values.begin(), tag_values.end() ),
+                        tag_values.end() );
+
+  //for each material value convert it to a material
+  materials.reserve( tag_values.size() );
+  typedef std::vector< int >::const_iterator cit;
+  for(cit i=tag_values.begin(); i != tag_values.end(); ++i)
+    {
+    materials.push_back( smtk::mesh::Material(*i) );
+    }
+  return materials;
 }
 
 //----------------------------------------------------------------------------
@@ -366,8 +444,30 @@ smtk::mesh::TypeSet Interface::computeTypes(smtk::mesh::Handle handle) const
 }
 
 //----------------------------------------------------------------------------
+bool Interface::setMaterial(const smtk::mesh::HandleRange& meshsets,
+                            const smtk::mesh::Material& material) const
+{
+  if(meshsets.empty())
+    {
+    return true;
+    }
+
+  tag::QueryMaterialTag mtag(material.value(),this->moabInterface());
+
+  //create a vector the same value so we can assign a material
+  std::vector< int > values;
+  values.resize(meshsets.size(), material.value());
+  const void *tag_v_ptr = &values[0];
+
+  ::moab::ErrorCode rval = m_iface->tag_set_data(mtag.moabTag(),
+                                                 meshsets,
+                                                 tag_v_ptr);
+  return (rval == ::moab::MB_SUCCESS);
+}
+
+//----------------------------------------------------------------------------
 smtk::mesh::HandleRange Interface::rangeIntersect(const smtk::mesh::HandleRange& a,
-                                                  const smtk::mesh::HandleRange& b) const
+                                                 const smtk::mesh::HandleRange& b) const
 {
   return ::moab::intersect(a,b);
 }

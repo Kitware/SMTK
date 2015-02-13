@@ -93,6 +93,8 @@ public:
   //type.
   smtk::mesh::MeshSet   meshes( smtk::mesh::DimensionType dim );
   smtk::mesh::MeshSet   meshes( const std::string& name );
+  smtk::mesh::MeshSet   meshes( const smtk::mesh::Material& m )
+                              { return materialMeshes(m); }
 
   //find a cells of a given type or a collection of types
   smtk::mesh::CellSet   cells( smtk::mesh::CellType cellType );
@@ -109,17 +111,6 @@ public:
   smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref );
   smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType );
   smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim );
-
-  //todo: query based on boundary and other attributes of the mesh db
-  //Tag("BOUNDARY_SET"){};
-  //smtk::mesh:::MeshSet bodunaryMeshes();
-  //Tag("DIRICHLET_SET"){};
-  //smtk::mesh:::MeshSet dirichletMeshes();
-  //Tag("NEUMANN_SET"){};
-  //smtk::mesh:::MeshSet neumannMeshes();
-  //todo: need to be able to extract the entire surface of the mesh
-  //smtk::mesh::MeshSet generateBoundarMeshes();
-
 
   //----------------------------------------------------------------------------
   // Construction of new meshes
@@ -141,6 +132,33 @@ public:
   //This will invalidate any smtk::mesh::MeshSet that contains a reference to
   //one of the meshes that has been deleted.
   bool removeMeshes( smtk::mesh::MeshSet& meshesToDelete );
+
+
+  //----------------------------------------------------------------------------
+  // Material Queries
+  //----------------------------------------------------------------------------
+  //get all the current materials
+  std::vector< smtk::mesh::Material > materials();
+
+  //get the meshes with a given material value. If no meshes have
+  //this material value the result will be empty
+  smtk::mesh::MeshSet materialMeshes( const smtk::mesh::Material& m );
+
+  //Assign a given material to a collection of meshes. Overwrites
+  //any existing material value
+  bool setMaterialOnMeshes(const smtk::mesh::MeshSet& meshes,
+                           const smtk::mesh::Material& m);
+
+  //todo: query based on boundary and other attributes of the mesh db
+  //Tag("BOUNDARY_SET"){};
+  //smtk::mesh:::MeshSet materialMeshes();
+  //Tag("DIRICHLET_SET"){};
+  //smtk::mesh:::MeshSet dirichletMeshes();
+  //Tag("NEUMANN_SET"){};
+  //smtk::mesh:::MeshSet neumannMeshes();
+  //todo: need to be able to extract the entire surface of the mesh
+  //smtk::mesh::MeshSet generateBoundarMeshes();
+
 
   const smtk::mesh::InterfacePtr& interface() const;
 
