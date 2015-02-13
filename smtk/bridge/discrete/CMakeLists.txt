@@ -58,6 +58,7 @@ SET(DiscreteOperationFiles
   operation/vtkModelEntityGroupOperator.cxx
   operation/vtkModelEntityGroupOperatorBase.cxx
   operation/vtkModelEntityOperatorBase.cxx
+  operation/vtkGenerateSimpleModelOperator.cxx
 )
 
 SET(DiscreteModelHeaders
@@ -85,6 +86,7 @@ SET(DiscreteModelHeaders
   operation/vtkModelEntityGroupOperator.h
   operation/vtkModelEntityGroupOperatorBase.h
   operation/vtkModelEntityOperatorBase.h
+  operation/vtkGenerateSimpleModelOperator.h
 )
 
 

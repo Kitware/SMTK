@@ -16,17 +16,16 @@
 // and clean polydata filter to "fix" it. The user can set CleanInput
 // to 0 to avoid this overhead if the incoming polydata is "good".
 
-#ifndef __vtkGenerateSimpleModelOperator_h
-#define __vtkGenerateSimpleModelOperator_h
+#ifndef __smtkdiscrete_vtkGenerateSimpleModelOperator_h
+#define __smtkdiscrete_vtkGenerateSimpleModelOperator_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
 #include "vtkObject.h"
-#include "cmbSystemConfig.h"
 
 class vtkAlgorithm;
 class vtkDiscreteModelWrapper;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkGenerateSimpleModelOperator : public vtkObject
+class SMTKDISCRETESESSION_EXPORT vtkGenerateSimpleModelOperator : public vtkObject
 {
 public:
   static vtkGenerateSimpleModelOperator * New();
