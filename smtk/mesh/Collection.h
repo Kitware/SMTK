@@ -95,6 +95,8 @@ public:
   smtk::mesh::MeshSet   meshes( const std::string& name );
   smtk::mesh::MeshSet   meshes( const smtk::mesh::Material& m )
                               { return materialMeshes(m); }
+  smtk::mesh::MeshSet   meshes( const smtk::mesh::Dirichlet& d )
+                              { return dirichletMeshes(d); }
 
   //find a cells of a given type or a collection of types
   smtk::mesh::CellSet   cells( smtk::mesh::CellType cellType );
@@ -133,7 +135,6 @@ public:
   //one of the meshes that has been deleted.
   bool removeMeshes( smtk::mesh::MeshSet& meshesToDelete );
 
-
   //----------------------------------------------------------------------------
   // Material Queries
   //----------------------------------------------------------------------------
@@ -149,13 +150,28 @@ public:
   bool setMaterialOnMeshes(const smtk::mesh::MeshSet& meshes,
                            const smtk::mesh::Material& m);
 
-  //todo: query based on boundary and other attributes of the mesh db
-  //Tag("BOUNDARY_SET"){};
-  //smtk::mesh:::MeshSet materialMeshes();
-  //Tag("DIRICHLET_SET"){};
-  //smtk::mesh:::MeshSet dirichletMeshes();
-  //Tag("NEUMANN_SET"){};
+  //----------------------------------------------------------------------------
+  // Dirichlet Queries
+  //----------------------------------------------------------------------------
+  //get all the current dirichlet on the points of the mesh
+  std::vector< smtk::mesh::Dirichlet > dirichlets();
+
+  //get the meshes with a given dirichlet value. If no meshes have
+  //this material value the result will be empty.
+  //Generally Dirichlet meshes only contain vertices
+  smtk::mesh::MeshSet dirichletMeshes( const smtk::mesh::Dirichlet& d );
+
+  //Assign a given dirichlet to a collection of meshes. Overwrites
+  //any existing dirichlet value
+  //Generally Dirichlet meshes only contain vertices
+  bool setDirichletOnMeshes(const smtk::mesh::MeshSet& meshes,
+                            const smtk::mesh::Dirichlet& d);
+
+  //todo: query based on Neumann info
+  //std::vector< smtk::mesh::Neumann > neumanns();
   //smtk::mesh:::MeshSet neumannMeshes();
+  //setNeumannOnMeshes
+
   //todo: need to be able to extract the entire surface of the mesh
   //smtk::mesh::MeshSet generateBoundarMeshes();
 

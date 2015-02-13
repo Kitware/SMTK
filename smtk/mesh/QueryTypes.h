@@ -54,6 +54,13 @@ public:
 };
 
 //----------------------------------------------------------------------------
+class SMTKCORE_EXPORT Dirichlet : public IntegerTag
+{
+public:
+  explicit Dirichlet(int value) : IntegerTag(value) {}
+};
+
+//----------------------------------------------------------------------------
 enum ContainmentType
 {
   PartiallyContained=1,

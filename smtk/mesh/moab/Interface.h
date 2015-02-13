@@ -98,6 +98,11 @@ public:
                                        const smtk::mesh::Material& material) const;
 
   //----------------------------------------------------------------------------
+  //find all entity sets that have this exact dirichlet tag
+  smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle,
+                                      const smtk::mesh::Dirichlet& dirichlet) const;
+
+  //----------------------------------------------------------------------------
   //get all cells held by this range
   smtk::mesh::HandleRange getCells(const smtk::mesh::HandleRange& meshsets) const;
 
@@ -123,12 +128,18 @@ public:
   std::vector< smtk::mesh::Material > computeMaterialValues(const smtk::mesh::HandleRange& meshsets) const;
 
   //----------------------------------------------------------------------------
+  std::vector< smtk::mesh::Dirichlet > computeDirichletValues(const smtk::mesh::HandleRange& meshsets) const;
+
+  //----------------------------------------------------------------------------
   smtk::mesh::TypeSet computeTypes(smtk::mesh::Handle handle) const;
 
   //----------------------------------------------------------------------------
   bool setMaterial(const smtk::mesh::HandleRange& meshsets,
                    const smtk::mesh::Material& material) const;
 
+  //----------------------------------------------------------------------------
+  bool setDirichlet(const smtk::mesh::HandleRange& meshsets,
+                    const smtk::mesh::Dirichlet& dirichlet) const;
 
   //----------------------------------------------------------------------------
   smtk::mesh::HandleRange rangeIntersect(const smtk::mesh::HandleRange& a,

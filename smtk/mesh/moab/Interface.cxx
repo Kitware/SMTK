@@ -37,6 +37,83 @@ namespace smtk {
 namespace mesh {
 namespace moab {
 
+namespace detail
+{
+
+//----------------------------------------------------------------------------
+template<typename T, typename U>
+std::vector< T > computeDenseTagValues(U tag,
+                                       const smtk::mesh::HandleRange& meshsets,
+                                       ::moab::Interface* iface)
+{
+  std::vector< T > result;
+
+  //fetch all entities with the given tag
+  smtk::mesh::HandleRange entitiesWithTag;
+  iface->get_entities_by_type_and_tag( iface->get_root_set(),
+                                       ::moab::MBENTITYSET,
+                                       tag.moabTagPtr(),
+                                       NULL,
+                                       1,
+                                       entitiesWithTag);
+
+  //we have all entity sets that have the this tag
+  //now we need to find the subset that is part of our
+  //HandleRange
+  entitiesWithTag = ::moab::intersect(entitiesWithTag, meshsets);
+
+  //return early if nothing has the tag.
+  //this also makes it safer to derefence the std vector below
+  if( entitiesWithTag.empty() )
+    {
+    return result;
+    }
+
+  //allocate a vector large enough to hold the tag values for every element
+  std::vector< int > tag_values;
+  tag_values.resize( entitiesWithTag.size() );
+  void *tag_v_ptr = &tag_values[0];
+
+  //fetch the tag for each item in the range in bulk
+  iface->tag_get_data(tag.moabTag(),
+                      entitiesWithTag,
+                      tag_v_ptr);
+
+  //find and remove duplicates
+  std::sort( tag_values.begin(), tag_values.end() );
+  tag_values.erase( std::unique( tag_values.begin(), tag_values.end() ),
+                        tag_values.end() );
+
+  //for each tag value convert it to a type T, where T is an
+  //IntTag from smtk::mesh
+  result.reserve( tag_values.size() );
+  typedef std::vector< int >::const_iterator cit;
+  for(cit i=tag_values.begin(); i != tag_values.end(); ++i)
+    {
+    result.push_back( T(*i) );
+    }
+  return result;
+}
+
+//----------------------------------------------------------------------------
+template<typename T>
+bool setDenseTagValues(T tag, const smtk::mesh::HandleRange& handles,
+                       ::moab::Interface* iface)
+{
+  //create a vector the same value so we can assign a material
+  std::vector< int > values;
+  values.resize(handles.size(), tag.value());
+  const void *tag_v_ptr = &values[0];
+
+  ::moab::ErrorCode rval = iface->tag_set_data(tag.moabTag(),
+                                               handles,
+                                               tag_v_ptr);
+  return (rval == ::moab::MB_SUCCESS);
+}
+
+} //detail
+
+
 //construct an empty interface instance
 smtk::mesh::moab::InterfacePtr make_interface()
 {
@@ -217,7 +294,6 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
   return result;
 }
 
-
 //----------------------------------------------------------------------------
 //find all entity sets that have this exact name tag
 smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
@@ -232,6 +308,29 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
                                                ::moab::MBENTITYSET,
                                                mtag.moabTagPtr(),
                                                mtag.moabTagValuePtr(),
+                                               1,
+                                               result);
+  if(rval != ::moab::MB_SUCCESS)
+    {
+    result.clear();
+    }
+  return result;
+}
+
+//----------------------------------------------------------------------------
+//find all entity sets that have this exact name tag
+smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
+                                               const smtk::mesh::Dirichlet &dirichlet) const
+
+{
+  tag::QueryDirichletTag dtag(dirichlet.value(),this->moabInterface());
+
+  smtk::mesh::HandleRange result;
+  ::moab::ErrorCode rval;
+  rval = m_iface->get_entities_by_type_and_tag(handle,
+                                               ::moab::MBENTITYSET,
+                                               dtag.moabTagPtr(),
+                                               dtag.moabTagValuePtr(),
                                                1,
                                                result);
   if(rval != ::moab::MB_SUCCESS)
@@ -360,53 +459,20 @@ std::vector< std::string > Interface::computeNames(const smtk::mesh::HandleRange
 //----------------------------------------------------------------------------
 std::vector< smtk::mesh::Material > Interface::computeMaterialValues(const smtk::mesh::HandleRange& meshsets) const
 {
-  std::vector< smtk::mesh::Material > materials;
-
   tag::QueryMaterialTag mtag(0,this->moabInterface());
+  return detail::computeDenseTagValues<smtk::mesh::Material>(mtag,
+                                                             meshsets,
+                                                             this->moabInterface());
+}
 
-  smtk::mesh::HandleRange entitiesWithTag;
-  m_iface->get_entities_by_type_and_tag( m_iface->get_root_set(),
-                                        ::moab::MBENTITYSET,
-                                        mtag.moabTagPtr(),
-                                        NULL,
-                                        1,
-                                        entitiesWithTag);
 
-  //we have all entity sets that have the material tag
-  //now we need to find the subset that is part of our
-  //HandleRange
-  entitiesWithTag = ::moab::intersect(entitiesWithTag, meshsets);
-
-  //return early if nothing has materials.
-  //this also makes it safer to derefence the std vector below
-  if( entitiesWithTag.empty() )
-    {
-    return materials;
-    }
-
-  //allocate a vector large enough to hold the tag values for every element
-  std::vector< int > tag_values;
-  tag_values.resize( entitiesWithTag.size() );
-  void *tag_v_ptr = &tag_values[0];
-
-  //fetch the material tag for each item in the range in bulk
-  m_iface->tag_get_data(mtag.moabTag(),
-                        entitiesWithTag,
-                        tag_v_ptr);
-
-  //find and remove duplicates
-  std::sort( tag_values.begin(), tag_values.end() );
-  tag_values.erase( std::unique( tag_values.begin(), tag_values.end() ),
-                        tag_values.end() );
-
-  //for each material value convert it to a material
-  materials.reserve( tag_values.size() );
-  typedef std::vector< int >::const_iterator cit;
-  for(cit i=tag_values.begin(); i != tag_values.end(); ++i)
-    {
-    materials.push_back( smtk::mesh::Material(*i) );
-    }
-  return materials;
+//----------------------------------------------------------------------------
+std::vector< smtk::mesh::Dirichlet > Interface::computeDirichletValues(const smtk::mesh::HandleRange& meshsets) const
+{
+  tag::QueryDirichletTag dtag(0,this->moabInterface());
+  return detail::computeDenseTagValues<smtk::mesh::Dirichlet>(dtag,
+                                                              meshsets,
+                                                              this->moabInterface());
 }
 
 //----------------------------------------------------------------------------
@@ -453,16 +519,24 @@ bool Interface::setMaterial(const smtk::mesh::HandleRange& meshsets,
     }
 
   tag::QueryMaterialTag mtag(material.value(),this->moabInterface());
+  return detail::setDenseTagValues(mtag,meshsets,this->moabInterface());
+}
 
-  //create a vector the same value so we can assign a material
-  std::vector< int > values;
-  values.resize(meshsets.size(), material.value());
-  const void *tag_v_ptr = &values[0];
+//----------------------------------------------------------------------------
+bool Interface::setDirichlet(const smtk::mesh::HandleRange& meshsets,
+                             const smtk::mesh::Dirichlet& dirichlet) const
+{
+  if(meshsets.empty())
+    {
+    return true;
+    }
 
-  ::moab::ErrorCode rval = m_iface->tag_set_data(mtag.moabTag(),
-                                                 meshsets,
-                                                 tag_v_ptr);
-  return (rval == ::moab::MB_SUCCESS);
+  tag::QueryDirichletTag dtag(dirichlet.value(),this->moabInterface());
+
+  smtk::mesh::HandleRange cells = this->getCells(meshsets, smtk::mesh::Dims0);
+  bool cellsTagged = detail::setDenseTagValues(dtag,cells,this->moabInterface());
+  bool meshesTagged =detail::setDenseTagValues(dtag,meshsets,this->moabInterface());
+  return cellsTagged && meshesTagged;
 }
 
 //----------------------------------------------------------------------------

@@ -404,12 +404,46 @@ smtk::mesh::MeshSet Collection::materialMeshes( const smtk::mesh::Material& m )
 
 //----------------------------------------------------------------------------
 bool Collection::setMaterialOnMeshes(const smtk::mesh::MeshSet& meshes,
-                                     const Material &m)
+                                     const smtk::mesh::Material &m)
 {
   const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
   if(meshes.m_parent == this->shared_from_this())
     {
     return iface->setMaterial(meshes.m_range,m);
+    }
+  return false;
+}
+
+//----------------------------------------------------------------------------
+std::vector< smtk::mesh::Dirichlet > Collection::dirichlets()
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
+  smtk::mesh::moab::Handle handle = this->m_internals->mesh_root_handle();
+
+  smtk::mesh::HandleRange entities = iface->getMeshsets( handle );
+  return iface->computeDirichletValues( entities );
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet Collection::dirichletMeshes( const smtk::mesh::Dirichlet& d )
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
+  smtk::mesh::moab::Handle handle = this->m_internals->mesh_root_handle();
+
+  smtk::mesh::HandleRange entities = iface->getMeshsets( handle, d);
+  return smtk::mesh::MeshSet( this->shared_from_this(),
+                              this->m_internals->mesh_root_handle(),
+                              entities);
+}
+
+//----------------------------------------------------------------------------
+bool Collection::setDirichletOnMeshes(const smtk::mesh::MeshSet& meshes,
+                                      const smtk::mesh::Dirichlet &d)
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
+  if(meshes.m_parent == this->shared_from_this())
+    {
+    return iface->setDirichlet(meshes.m_range,d);
     }
   return false;
 }
