@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-// .NAME qtTableWidget - a Attribute expression Tree widget.
+// .NAME qtTableWidget - a customized table widget.
 // .SECTION Description
 //  A convenience QTableWidget with extra features:
 //  1.  Automatic size hints based on contents

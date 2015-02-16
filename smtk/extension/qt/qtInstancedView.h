@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME qtInstancedView - the Attribute Instanced View
+// .NAME qtInstancedView - UI components for attribute Instanced View
 // .SECTION Description
 // .SECTION See Also
 // qtSection

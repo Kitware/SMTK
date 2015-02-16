@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME qtRootView - a Root View
+// .NAME qtRootView - UI components for the attribute Root View
 // .SECTION Description
 // .SECTION See Also
 // qtBaseView

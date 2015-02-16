@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME qtModelView - the Model View
+// .NAME qtModelView - UI components for the attribute Model View
 // .SECTION Description
 // .SECTION See Also
 // qtBaseView

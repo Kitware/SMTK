@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME qtModelView - a tree view of smtk model.
+// .NAME qtModelView - a widget for creating new attribute.
 // .SECTION Description
 // .SECTION Caveats
 
