@@ -40,10 +40,12 @@ namespace smtk
       qtModelOperationWidget(QWidget* p = NULL);
       virtual ~qtModelOperationWidget();
       virtual void setSession(smtk::model::SessionPtr session);
+      virtual QSize sizeHint() const;
 
     public slots:
       virtual bool setCurrentOperation(
         const std::string& opName, smtk::model::SessionPtr session);
+      virtual bool setCurrentOperation(const smtk::model::OperatorPtr& brOp);
       virtual void expungeEntities(
         const smtk::model::EntityRefs& expungedEnts);
 

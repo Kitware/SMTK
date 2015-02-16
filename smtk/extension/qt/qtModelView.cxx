@@ -468,16 +468,7 @@ void qtModelView::operatorInvoked()
     return;
     }
   std::string opName = action->text().toStdString();
-  QDockWidget* opDock = this->operatorsDock(opName, session);
-  if (!opDock)
-    {
-    std::cerr
-      << "Could not create UI for operator: \"" << opName << "\" for session"
-      << " \"" << session->name() << "\""
-      << " (" << session->sessionId() << ")\n";
-    return;
-    }
-  opDock->show();
+  this->initOperatorsDock(opName, session);
 
 //  cJSON* json = cJSON_CreateObject();
 //  ExportJSON::forOperator(brOp, json);
@@ -492,27 +483,14 @@ void qtModelView::operatorInvoked()
 }
 
 //----------------------------------------------------------------------------
-QDockWidget* qtModelView::operatorsDock(
-  const std::string& opName, smtk::model::SessionPtr session)
+QDockWidget* qtModelView::operatorsDock()
 {
-  QEntityItemModel* qmodel = this->getModel();
-  smtk::model::ManagerPtr pstore = qmodel->manager();
-
-  SessionRef bs(pstore, session->sessionId());
-
   if(this->m_OperatorsDock && this->m_OperatorsWidget)
     {
-    this->m_OperatorsWidget->setCurrentOperation(opName, session);
-    this->m_OperatorsDock->setWindowTitle(bs.flagSummary().c_str());
     return this->m_OperatorsDock;
     }
 
   qtModelOperationWidget* opWidget = new qtModelOperationWidget();
-  if(!opWidget->setCurrentOperation(opName, session))
-    {
-    delete opWidget;
-    return NULL;
-    }
   QObject::connect(opWidget, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)),
     this, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)));
   QObject::connect(opWidget, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),
@@ -537,14 +515,60 @@ QDockWidget* qtModelView::operatorsDock(
   opWidget->setSizePolicy(QSizePolicy::Preferred,
     QSizePolicy::Expanding);
   s->setWidget(opWidget);
-  dw->setWindowTitle(bs.flagSummary().c_str());
   dw->setObjectName("operatorsDockWidget");
   dw->setWidget(s);
   dw->setFloating(true);
 
   this->m_OperatorsWidget = opWidget;
   this->m_OperatorsDock = dw;
+//  this->m_OperatorsDock->hide();
   return dw;
+}
+
+//----------------------------------------------------------------------------
+void qtModelView::initOperatorsDock(
+  const std::string& opName, smtk::model::SessionPtr session)
+{
+  // make sure the operator widget is created.
+  this->operatorsDock()->show();
+  SessionRef bs(session->manager(), session->sessionId());
+
+  this->m_OperatorsWidget->setCurrentOperation(opName, session);
+  this->m_OperatorsDock->setWindowTitle(bs.flagSummary().c_str());
+}
+
+//-----------------------------------------------------------------------------
+bool qtModelView::requestOperation(
+  const smtk::model::OperatorPtr& brOp, bool launchUI)
+{
+  if(!brOp)
+    {
+    return false;
+    }
+
+  if(!launchUI)
+    {
+    emit this->operationRequested(brOp);
+    }
+  else // launch the m_OperatorsDock
+    {
+    this->operatorsDock()->show();
+    SessionRef bs(brOp->manager(), brOp->session()->sessionId());
+
+    this->m_OperatorsWidget->setCurrentOperation(brOp);
+    this->m_OperatorsDock->setWindowTitle(bs.flagSummary().c_str());
+    }
+  return true;
+//  cJSON* json = cJSON_CreateObject();
+//  ExportJSON::forOperator(brOp, json);
+//  std::cout << "Found operator " << cJSON_Print(json) << ")\n";
+//  OperatorResult result = brOp->operate();
+//  json = cJSON_CreateObject();
+//  ExportJSON::forOperatorResult(result, json);
+//  std::cout << "Result " << cJSON_Print(json) << "\n";
+
+//  emit this->operationRequested(uid, action->text());
+//  emit this->operationFinished(result);
 }
 
 //----------------------------------------------------------------------------
