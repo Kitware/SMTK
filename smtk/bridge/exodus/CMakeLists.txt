@@ -96,5 +96,5 @@ if (SMTK_ENABLE_TESTING)
       vtkCommonDataModel
       vtksys
   )
-  #add_subdirectory(testing)
+  add_subdirectory(testing)
 endif()

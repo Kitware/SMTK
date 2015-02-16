@@ -419,6 +419,18 @@ def Sweep(stuffToSweep, method = SweepType.EXTRUDE, **kwargs):
   PrintResultLog(res)
   return res.findModelEntity('entities').value(0)
 
+def Read(filename, **kwargs):
+  """Read entities from an file (in the native modeling kernel format).
+  """
+  sref = GetActiveSession()
+  rdr = sref.op('read')
+  rdr.findAsFile('filename').setValue(0, filename)
+  if 'filetype' in kwargs:
+    rdr.findAsString('filetype').setValue(0, kwargs['filetype'])
+  res = rdr.operate()
+  PrintResultLog(res)
+  return GetVectorValue(res.findModelEntity('entities'))
+
 def Write(filename, entities = [], **kwargs):
   """Write a set of entities to an file (in the native modeling kernel format).
   """
