@@ -14,8 +14,10 @@
           <BriefDescription>This is required for shape file </BriefDescription>
           <ChildrenDefinitions>
             <String Name="relative margin" Label="As fraction of data diameter" NumberOfRequiredValues="1">
+              <DefaultValue>5</DefaultValue>
             </String>
             <String Name="absolute margin" Label="Absolute margin" NumberOfRequiredValues="1">
+              <DefaultValue>1</DefaultValue>
               <BriefDescription>all or left+right, bottom+top or left, right, bottom, top</BriefDescription>
             </String>
             <String Name="absolute bounds" Label="Bounding box coordinates" NumberOfRequiredValues="1" >
