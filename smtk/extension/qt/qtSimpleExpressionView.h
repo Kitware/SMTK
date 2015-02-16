@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME qtSimpleExpressionView - an Expression View
+// .NAME qtSimpleExpressionView - UI components for the attribute Expression View
 // .SECTION Description
 // .SECTION See Also
 // qtBaseView

@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME qtGroupItem - an Expression item
+// .NAME qtGroupItem - UI components for attribute GroupItem
 // .SECTION Description
 // .SECTION See Also
 // qtItem

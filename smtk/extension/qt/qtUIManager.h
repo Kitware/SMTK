@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-// .NAME qtUIManager - a user interface manager.
+// .NAME qtUIManager - The user interface manager for smtk
 // .SECTION Description
 // .SECTION See Also
 

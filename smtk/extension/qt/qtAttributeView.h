@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME qtAttributeView - the Attribute Section
+// .NAME qtAttributeView - the UI components for Attribute Section
 // .SECTION Description
 // .SECTION See Also
 // qtSection

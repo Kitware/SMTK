@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME qtBaseView - a class that encapsulates the UI of an Attribute
+// .NAME qtBaseView - a base class for all view types
 // .SECTION Description
 
 #ifndef __smtk_attribute_qtBaseView_h

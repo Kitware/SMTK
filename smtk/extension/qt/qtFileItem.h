@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME qtFileItem - an Expression item
+// .NAME qtFileItem - UI components for attribute FileItem
 // .SECTION Description
 //
 // This is widget is designed to let applications connect a file

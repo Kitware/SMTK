@@ -7,6 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+
 #ifndef __smtk_qt_QEntityItemDelegate_h
 #define __smtk_qt_QEntityItemDelegate_h
 

@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME qtItem - an abstract class that encapsulates a single piece of data
+// .NAME qtItem - an abstract UI class for attribute item
 // .SECTION Description
 
 #ifndef __smtk_attribute_qtItem_h

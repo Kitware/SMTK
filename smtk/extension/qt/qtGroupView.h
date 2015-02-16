@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME qtGroupView - a Group View
+// .NAME qtGroupView - UI components for Group View
 // .SECTION Description
 // .SECTION See Also
 // qtBaseView

@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME qtInputsItem - an analysis type item
+// .NAME qtInputsItem - UI components for attribute ValueItem
 // .SECTION Description
 // .SECTION See Also
 // qtItem
