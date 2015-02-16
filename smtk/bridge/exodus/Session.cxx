@@ -247,7 +247,7 @@ SessionInfoBits Session::transcribeInternal(
         {
         this->m_revIdMap[childEntityRef] = *cit;
         this->declareDanglingEntity(childEntityRef, 0);
-        this->transcribe(childEntityRef, requestedInfo, true);
+        this->transcribeInternal(childEntityRef, requestedInfo);
         }
       mutableEntityRef.as<smtk::model::Model>().addGroup(childEntityRef);
       }
