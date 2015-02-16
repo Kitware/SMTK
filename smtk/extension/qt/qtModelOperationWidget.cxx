@@ -114,6 +114,19 @@ void qtModelOperationWidget::initWidget( )
 
 }
 
+//-----------------------------------------------------------------------------
+QSize qtModelOperationWidget::sizeHint() const
+{
+  if(QWidget* opW = this->Internals->OperationsLayout->currentWidget())
+    {
+//    std::cout << "Use current op widget for size hint \n"
+//    << "width: " << opW->width() << "height: " << opW->height() << "\n";
+    return QSize(opW->width(),
+                 opW->height() + this->Internals->OperationCombo->height() + 20);
+    }
+  return QSize(450, 250);
+}
+
 //----------------------------------------------------------------------------
 void qtModelOperationWidget::setSession(smtk::model::SessionPtr session)
 {
@@ -143,6 +156,54 @@ void qtModelOperationWidget::setSession(smtk::model::SessionPtr session)
     }
   this->Internals->OperationCombo->blockSignals(false);
   this->Internals->OperatorMap.clear();
+}
+
+//----------------------------------------------------------------------------
+bool qtModelOperationWidget::setCurrentOperation(
+  const smtk::model::OperatorPtr& brOp)
+{
+  if(!brOp->specification()->isValid())
+    {
+    return false;
+    }
+  SessionRef bs(brOp->manager(), brOp->session()->sessionId());
+  this->setSession(bs.session());
+  QFrame* opParent = new QFrame(this);
+  QVBoxLayout* opLayout = new QVBoxLayout(opParent);
+  opLayout->setMargin(0);
+
+  smtk::attribute::AttributePtr att = brOp->specification();
+  att->system()->setRefModelManager(brOp->manager());
+  smtk::attribute::qtUIManager* uiManager = new smtk::attribute::qtUIManager(
+    *(att->system()));
+  smtk::view::RootPtr rootView = uiManager->attSystem()->rootView();
+  smtk::view::InstancedPtr instanced = smtk::view::Instanced::New(brOp->name());
+  instanced->addInstance(att);
+  rootView->addSubView(instanced);
+  QObject::connect(uiManager, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),
+    this, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)));
+
+  qtBaseView* theView = uiManager->initializeView(opParent, instanced, false);
+  qtModelOperationWidgetInternals::OperatorInfo opInfo;
+  opInfo.opPtr = brOp;
+  opInfo.opUiParent = opParent;
+  opInfo.opUiManager = uiManager;
+  opInfo.opUiView = theView;
+
+  this->Internals->OperatorMap[brOp->name()] = opInfo;
+  this->Internals->OperationsLayout->addWidget(opParent);
+  this->Internals->OperationsLayout->setCurrentWidget(opParent);
+
+  if(brOp->name() != this->Internals->OperationCombo->currentText().toStdString())
+    {
+    StringList opNames = brOp->session()->operatorNames();
+    std::sort(opNames.begin(), opNames.end());
+    int idx = std::find(opNames.begin(), opNames.end(), brOp->name()) - opNames.begin();
+    this->Internals->OperationCombo->blockSignals(true);
+    this->Internals->OperationCombo->setCurrentIndex(idx);
+    this->Internals->OperationCombo->blockSignals(false);
+    }
+  return true;
 }
 
 //----------------------------------------------------------------------------
@@ -179,38 +240,7 @@ bool qtModelOperationWidget::setCurrentOperation(
       << " (" << session->sessionId() << ")\n";
     return false;
     }
-
-  if(!brOp->specification()->isValid())
-    {
-    return false;
-    }
-  QFrame* opParent = new QFrame(this);
-  QVBoxLayout* opLayout = new QVBoxLayout(opParent);
-  opLayout->setMargin(0);
-
-  smtk::attribute::AttributePtr att = brOp->specification();
-  att->system()->setRefModelManager(session->manager());
-  smtk::attribute::qtUIManager* uiManager = new smtk::attribute::qtUIManager(
-    *(att->system()));
-  smtk::view::RootPtr rootView = uiManager->attSystem()->rootView();
-  smtk::view::InstancedPtr instanced = smtk::view::Instanced::New(brOp->name());
-  instanced->addInstance(att);
-  rootView->addSubView(instanced);
-  QObject::connect(uiManager, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),
-    this, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)));
-
-  qtBaseView* theView = uiManager->initializeView(opParent, instanced, false);
-  qtModelOperationWidgetInternals::OperatorInfo opInfo;
-  opInfo.opPtr = brOp;
-  opInfo.opUiParent = opParent;
-  opInfo.opUiManager = uiManager;
-  opInfo.opUiView = theView;
-
-  this->Internals->OperatorMap[opName] = opInfo;
-  this->Internals->OperationsLayout->addWidget(opParent);
-  this->Internals->OperationsLayout->setCurrentWidget(opParent);
-
-  return true;
+  return this->setCurrentOperation(brOp);
 }
 
 //----------------------------------------------------------------------------

@@ -2,11 +2,12 @@ vtk_module(vtkSMTKDiscreteExt
   DEPENDS
     vtkIOXML
   PRIVATE_DEPENDS
+    vtkFiltersGeneral
     vtkFiltersGeometry
     vtkGeovisCore
+    vtkIOGDAL
     vtkIOGeometry
     vtkIOParallelExodus
-    vtkFiltersGeneral
     vtkRenderingCore
     vtkRenderingFreeType${VTK_RENDERING_BACKEND}
     vtkRendering${VTK_RENDERING_BACKEND}

@@ -14,6 +14,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
@@ -32,6 +33,7 @@
 #include "smtk/bridge/discrete/extension/reader/vtkCMBGeometryReader.h"
 
 #ifdef SMTK_ENABLE_REMUS
+  #include "smtk/bridge/discrete/extension/reader/vtkCMBGeometry2DReader.h"
   #include "smtk/bridge/discrete/extension/reader/vtkCMBMapReader.h"
   #include "smtk/bridge/discrete/extension/meshing/vtkCMBTriangleMesher.h"
 #endif
@@ -81,6 +83,17 @@ bool ImportOperator::ableToOperate()
       ext == ".obj" ||
       ext == ".sol" ||*/
       ext == ".stl");
+
+// for shape files, the reader needs user inputs, so
+// "ShapeBoundaryStyle" item needs to be checked first.
+#ifdef SMTK_ENABLE_REMUS
+  if(ext == ".shp")
+    {
+    smtk::attribute::StringItem::Ptr boundaryItem =
+      this->specification()->findString("ShapeBoundaryStyle");
+    able = boundaryItem->isEnabled();
+    }
+#endif
 
   return able;
 }
@@ -183,6 +196,59 @@ OperatorResult ImportOperator::operateInternal()
 
     this->m_mapOp->Operate(mod.GetPointer(), trimesher.GetPointer());
     }
+  else if(ext == ".shp")
+    {
+    smtk::attribute::StringItem::Ptr boundaryItem =
+      this->specification()->findString("ShapeBoundaryStyle");
+    if(boundaryItem->isEnabled())
+      {
+      vtkNew<vtkCMBGeometry2DReader> reader;
+      reader->SetFileName(filename.c_str());
+      std::string boundaryStyle = boundaryItem->value();
+      if (boundaryStyle == "None") // default
+        {
+        reader->SetBoundaryStyle(vtkCMBGeometry2DReader::NONE);
+        }
+      else if (boundaryStyle == "Relative Margin")
+        {
+        reader->SetBoundaryStyle(vtkCMBGeometry2DReader::RELATIVE_MARGIN);
+        smtk::attribute::StringItem::Ptr relMarginItem =
+          this->specification()->findString("relative margin");
+        reader->SetRelativeMarginString(relMarginItem->value().c_str());
+        }
+      else if (boundaryStyle == "Absolute Margin")
+        {
+        reader->SetBoundaryStyle(vtkCMBGeometry2DReader::ABSOLUTE_MARGIN);
+        smtk::attribute::StringItem::Ptr absMarginItem =
+          this->specification()->findString("absolute margin");
+        reader->SetAbsoluteMarginString(absMarginItem->value().c_str());
+        }
+      else if (boundaryStyle == "Bounding Box")
+        {
+        reader->SetBoundaryStyle(vtkCMBGeometry2DReader::ABSOLUTE_BOUNDS);
+        smtk::attribute::StringItem::Ptr absBoundsItem =
+          this->specification()->findString("absolute bounds");
+        reader->SetAbsoluteBoundsString(absBoundsItem->value().c_str());
+        }
+      else if (boundaryStyle == "Bounding File")
+        {
+        reader->SetBoundaryStyle(vtkCMBGeometry2DReader::IMPORTED_POLYGON);
+        smtk::attribute::StringItem::Ptr boundsFileItem =
+          this->specification()->findString("imported polygon");
+        reader->SetBoundaryFile(boundsFileItem->value().c_str());
+        }
+      else
+        {
+        std::cerr << "Invalid Shape file boundary. No boundary will be set.\n";
+        reader->SetBoundaryStyle(vtkCMBGeometry2DReader::NONE);
+        }
+      reader->Update();
+      this->m_shpOp->Operate(mod.GetPointer(), reader.GetPointer(),
+                             /*cleanVerts:*/ 0);
+      }
+    else
+      std::cerr << "Shape file boundary has to be set.\n";
+    }
 #endif
   else if(ext == ".vtk")
     {
@@ -210,7 +276,12 @@ OperatorResult ImportOperator::operateInternal()
 
   // Now assign a UUID to the model and associate its filename with
   // a URL property (if things went OK).
-  if (!this->m_op->GetOperateSucceeded() && !this->m_mapOp->GetOperateSucceeded())
+  if (!this->m_op->GetOperateSucceeded()
+#ifdef SMTK_ENABLE_REMUS
+   && !this->m_mapOp->GetOperateSucceeded()
+   && !this->m_shpOp->GetOperateSucceeded()
+#endif
+   )
     {
     std::cerr << "Failed to import file \"" << filename << "\".\n";
     return this->createResult(OPERATION_FAILED);

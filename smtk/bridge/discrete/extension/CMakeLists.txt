@@ -11,6 +11,7 @@ set(EXT_READER_SRC
     reader/vtkGMSTINReader.cxx
     reader/vtkLIDARReader.cxx
     reader/vtkCMBReaderHelperFunctions.cxx
+    reader/vtkCMBGeometry2DReader.cxx
 )
 set(EXT_READER_HEADER
     reader/vtkCMBSTLReader.h
@@ -23,6 +24,7 @@ set(EXT_READER_HEADER
     reader/vtkGMSTINReader.h
     reader/vtkLIDARReader.h
     reader/vtkCMBReaderHelperFunctions.h
+    reader/vtkCMBGeometry2DReader.h
 )
 
 # if there is Remus, add map file reader and support files.
@@ -42,6 +44,9 @@ if(SMTK_ENABLE_REMUS)
     meshing/vtkDiscoverRegions.cxx
     meshing/vtkPolylineTriangulator.cxx
     meshing/vtkCMBTriangleMesher.cxx
+    meshing/vtkRegionsToLoops.cxx
+    meshing/vtkSplitPlanarLines.cxx
+    meshing/vtkRayIntersectionLocator.cxx
     )
   list(APPEND Readers_Need_Meshing_HEADER
     reader/vtkCMBMapReader.h
@@ -56,6 +61,9 @@ if(SMTK_ENABLE_REMUS)
     meshing/vtkPolylineTriangulator.h
     meshing/vtkCMBUniquePointSet.h
     meshing/vtkCMBTriangleMesher.h
+    meshing/vtkRegionsToLoops.h
+    meshing/vtkSplitPlanarLines.h
+    meshing/vtkRayIntersectionLocator.h
     )
 endif()
 

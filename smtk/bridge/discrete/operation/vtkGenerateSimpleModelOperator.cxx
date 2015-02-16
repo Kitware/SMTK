@@ -12,7 +12,7 @@
 #include "vtkGenerateSimpleModelOperator.h"
 
 #include "DiscreteMesh.h"
-#include "vtkCMBParserBase.h"
+#include "ModelParserHelper.h"
 #include "vtkCellData.h"
 #include "vtkCleanPolyData.h"
 #include "vtkCreateModelEdgesOperator.h"
@@ -82,7 +82,7 @@ void vtkGenerateSimpleModelOperator::Operate(vtkDiscreteModelWrapper* modelWrapp
   vtkIdTypeArray* modelFaceIds =
     vtkIdTypeArray::SafeDownCast(
       poly->GetCellData()->GetArray(
-        vtkCMBParserBase::GetModelFaceTagName()));
+        ModelParserHelper::GetModelFaceTagName()));
 
   // Now see if the input polydata had id-type pedigree IDs.
   // If so, create a new model entity group for each unique ID;

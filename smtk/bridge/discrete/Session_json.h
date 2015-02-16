@@ -36,6 +36,7 @@ static const char Session_json[] =
 "        ,\".poly (Poly Files)\""
 "        ,\".smesh (Surface Meshes)\""
 "        ,\".map (Map Files)\""
+"        ,\".shp (Shape Files)\""
 #endif
 "      ]"
 "    }"

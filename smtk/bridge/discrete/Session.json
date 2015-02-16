@@ -11,7 +11,8 @@
         ".map (Map files)",
         ".poly (Poly Files)",
         ".smesh (Surface Meshes)",
-        ".stl (STL Files)"
+        ".stl (STL Files)",
+        ".shp (Shape files)"
       ]
     }
   ]

@@ -19,6 +19,7 @@
 // for .map file
 #ifdef SMTK_ENABLE_REMUS
 #include "vtkCMBMapToCMBModel.h"
+#include "vtkGenerateSimpleModelOperator.h"
 #endif
 
 #include "vtkNew.h"
@@ -60,6 +61,7 @@ protected:
   vtkNew<vtkCMBModelBuilder> m_op;
 #ifdef SMTK_ENABLE_REMUS
   vtkNew<vtkCMBMapToCMBModel> m_mapOp;
+  vtkNew<vtkGenerateSimpleModelOperator> m_shpOp;
 #endif
 
 };

@@ -68,6 +68,8 @@ public slots:
   void changeEntityColor( const QModelIndex&);
   void onEntitiesExpunged(
     const smtk::model::EntityRefs& expungedEnts);
+  bool requestOperation(
+    const smtk::model::OperatorPtr& brOp, bool launchUI);
 
 signals:
   void entitiesSelected(const smtk::model::EntityRefs& selEntityRefs);
@@ -106,8 +108,10 @@ protected:
 
   smtk::model::Group groupParentOfIndex(const QModelIndex& qidx);
   bool initOperator(smtk::model::OperatorPtr op);
-  QDockWidget* operatorsDock(
+  void initOperatorsDock(
     const std::string& opName, smtk::model::SessionPtr session);
+  QDockWidget* operatorsDock();
+
 /*
   void findIndexes(
     QEntityItemModel* qmodel,
