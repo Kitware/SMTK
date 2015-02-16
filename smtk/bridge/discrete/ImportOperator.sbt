@@ -5,13 +5,13 @@
     <!-- Operator -->
     <AttDef Type="import" BaseType="operator">
       <ItemDefinitions>
-        <File Name="filename" NumberOfRequiredValues="1"
+        <File Name="filename" Label="File Name" NumberOfRequiredValues="1"
           ShouldExist="true"
           FileFilters="Legacy VTK files (*.vtk);;Solids (*.2dm *.3dm *.stl *.sol *.tin *.obj);;Map files (*.map);;Poly files (*.poly *.smesh);;Shape files (*.shp);;All files (*.*)">
         </File>
 
         <String Name="ShapeBoundaryStyle" Label="Specify Shape File Boundary" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1" Optional="true">
-          <BriefDescription>Specify boundary style for shape file</BriefDescription>
+          <BriefDescription>This is required for shape file </BriefDescription>
           <ChildrenDefinitions>
             <String Name="relative margin" Label="As fraction of data diameter" NumberOfRequiredValues="1">
             </String>

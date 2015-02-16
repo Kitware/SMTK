@@ -198,53 +198,56 @@ OperatorResult ImportOperator::operateInternal()
     }
   else if(ext == ".shp")
     {
-    vtkNew<vtkCMBGeometry2DReader> reader;
-    reader->SetFileName(filename.c_str());
-    reader->Update();
-/*
-  if (fInfo.suffix().toLower() == "shp")
-    {
-    pqCMBImportShapefile shapefileBdyDialog(this->getActiveServer());
-    if (shapefileBdyDialog.exec() == QDialog::Accepted)
+    smtk::attribute::StringItem::Ptr boundaryItem =
+      this->specification()->findString("ShapeBoundaryStyle");
+    if(boundaryItem->isEnabled())
       {
-      int bstyle = shapefileBdyDialog.boundaryStyle();
-      int mstyle = shapefileBdyDialog.marginStyle();
-      QString boundaryFile = shapefileBdyDialog.customBoundaryFilename();
-      QString marginSpec = shapefileBdyDialog.marginSpecification();
-      switch (bstyle)
+      vtkNew<vtkCMBGeometry2DReader> reader;
+      reader->SetFileName(filename.c_str());
+      std::string boundaryStyle = boundaryItem->value();
+      if (boundaryStyle == "None") // default
         {
-      case vtkCMBGeometry2DReader::NONE:
-        vtkSMPropertyHelper(reader->getProxy(), "BoundaryStyle").Set(bstyle);
-        break;
-      case vtkCMBGeometry2DReader::ABSOLUTE_MARGIN:
-        vtkSMPropertyHelper(reader->getProxy(), "BoundaryStyle").Set(mstyle);
-        if (mstyle == vtkCMBGeometry2DReader::ABSOLUTE_MARGIN)
-          {
-          vtkSMPropertyHelper(reader->getProxy(), "AbsoluteMarginString").Set(marginSpec.toStdString().c_str());
-          }
-        else // (mstyle == vtkCMBGeometry2DReader::RELATIVE_MARGIN)
-          {
-          vtkSMPropertyHelper(reader->getProxy(), "RelativeMarginString").Set(marginSpec.toStdString().c_str());
-          }
-        break;
-      case vtkCMBGeometry2DReader::ABSOLUTE_BOUNDS:
-        vtkSMPropertyHelper(reader->getProxy(), "BoundaryStyle").Set(bstyle);
-        vtkSMPropertyHelper(reader->getProxy(), "AbsoluteBoundsString").Set(marginSpec.toStdString().c_str());
-        break;
-      case vtkCMBGeometry2DReader::IMPORTED_POLYGON:
-        vtkSMPropertyHelper(reader->getProxy(), "BoundaryStyle").Set(bstyle);
-        vtkSMPropertyHelper(reader->getProxy(), "BoundaryFile").Set(boundaryFile.toStdString().c_str());
-        break;
-      default:
-        cerr << "ERROR: Unknown boundary type \"" << bstyle << "\"\n";
-        break;
+        reader->SetBoundaryStyle(vtkCMBGeometry2DReader::NONE);
         }
-      reader->getProxy()->UpdateVTKObjects();
+      else if (boundaryStyle == "Relative Margin")
+        {
+        reader->SetBoundaryStyle(vtkCMBGeometry2DReader::RELATIVE_MARGIN);
+        smtk::attribute::StringItem::Ptr relMarginItem =
+          this->specification()->findString("relative margin");
+        reader->SetRelativeMarginString(relMarginItem->value().c_str());
+        }
+      else if (boundaryStyle == "Absolute Margin")
+        {
+        reader->SetBoundaryStyle(vtkCMBGeometry2DReader::ABSOLUTE_MARGIN);
+        smtk::attribute::StringItem::Ptr absMarginItem =
+          this->specification()->findString("absolute margin");
+        reader->SetAbsoluteMarginString(absMarginItem->value().c_str());
+        }
+      else if (boundaryStyle == "Bounding Box")
+        {
+        reader->SetBoundaryStyle(vtkCMBGeometry2DReader::ABSOLUTE_BOUNDS);
+        smtk::attribute::StringItem::Ptr absBoundsItem =
+          this->specification()->findString("absolute bounds");
+        reader->SetAbsoluteBoundsString(absBoundsItem->value().c_str());
+        }
+      else if (boundaryStyle == "Bounding File")
+        {
+        reader->SetBoundaryStyle(vtkCMBGeometry2DReader::IMPORTED_POLYGON);
+        smtk::attribute::StringItem::Ptr boundsFileItem =
+          this->specification()->findString("imported polygon");
+        reader->SetBoundaryFile(boundsFileItem->value().c_str());
+        }
+      else
+        {
+        std::cerr << "Invalid Shape file boundary. No boundary will be set.\n";
+        reader->SetBoundaryStyle(vtkCMBGeometry2DReader::NONE);
+        }
+      reader->Update();
+      this->m_shpOp->Operate(mod.GetPointer(), reader.GetPointer(),
+                             /*cleanVerts:*/ 0);
       }
-    }
-*/
-    this->m_shpOp->Operate(mod.GetPointer(), reader.GetPointer(),
-                           /*cleanVerts:*/ 0);
+    else
+      std::cerr << "Shape file boundary has to be set.\n";
     }
 #endif
   else if(ext == ".vtk")
