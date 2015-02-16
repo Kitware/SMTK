@@ -134,6 +134,10 @@ public:
   smtk::mesh::TypeSet computeTypes(smtk::mesh::Handle handle) const;
 
   //----------------------------------------------------------------------------
+  //compute the cells that make the shell/skin of the set of meshes
+  bool computeShell(const smtk::mesh::HandleRange& meshes, smtk::mesh::HandleRange& shell) const;
+
+  //----------------------------------------------------------------------------
   bool setMaterial(const smtk::mesh::HandleRange& meshsets,
                    const smtk::mesh::Material& material) const;
 

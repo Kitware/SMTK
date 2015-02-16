@@ -448,6 +448,32 @@ bool Collection::setDirichletOnMeshes(const smtk::mesh::MeshSet& meshes,
   return false;
 }
 
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet Collection::extractShell( const smtk::mesh::MeshSet& meshes )
+{
+   smtk::mesh::HandleRange entities;
+  if(meshes.m_parent == this->shared_from_this())
+    {
+    //compute the cells that are the shell for these meshsets
+    smtk::mesh::HandleRange cells;
+    const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
+    const bool shellExtracted = iface->computeShell( meshes.m_range, cells );
+
+    if(shellExtracted)
+      {
+      smtk::mesh::Handle meshSetHandle;
+      //create a mesh for these cells since they don't have a meshset currently
+      const bool meshCreated = iface->createMesh(cells, meshSetHandle);
+      if(meshCreated)
+        {
+        entities.insert(meshSetHandle);
+        }
+      }
+    }
+  return smtk::mesh::MeshSet( this->shared_from_this(),
+                              this->m_internals->mesh_root_handle(),
+                              entities );
+}
 
 }
 }
