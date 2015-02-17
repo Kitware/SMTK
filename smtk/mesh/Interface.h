@@ -27,6 +27,7 @@ namespace mesh {
 
 //forward declare classes we use
 struct ContainsFunctor;
+class PointConnectivity;
 
 class PointConnectivity;
 
@@ -169,6 +170,11 @@ public:
                                                   const smtk::mesh::HandleRange& b,
                                                   smtk::mesh::PointConnectivity& bpc,
                                                   const smtk::mesh::ContainsFunctor& containsFunctor) const = 0;
+
+  //----------------------------------------------------------------------------
+  virtual void cellForEach( const HandleRange &cells,
+                            smtk::mesh::PointConnectivity& a,
+                            smtk::mesh::CellForEach& filter) const = 0;
 
   //----------------------------------------------------------------------------
   //The handles must be all mesh or cell elements. Mixed ranges wil

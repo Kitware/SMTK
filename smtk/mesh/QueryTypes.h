@@ -14,14 +14,19 @@
 //Query Types is a convenience header, whose goal is to make it easier
 //for users to query a manager
 #include "smtk/SMTKCoreExports.h"
+#include "smtk/PublicPointerDefs.h"
+
 #include "smtk/mesh/CellTypes.h"
 #include "smtk/mesh/DimensionTypes.h"
-
+#include "smtk/mesh/Handle.h"
 
 namespace smtk {
 namespace mesh {
 
 typedef int Points;
+
+//forward declare of CellSet
+class CellSet;
 
 //----------------------------------------------------------------------------
 class SMTKCORE_EXPORT IntegerTag
@@ -59,6 +64,18 @@ class SMTKCORE_EXPORT Dirichlet : public IntegerTag
 public:
   explicit Dirichlet(int value) : IntegerTag(value) {}
 };
+
+//----------------------------------------------------------------------------
+class SMTKCORE_EXPORT CellForEach
+{
+public:
+  virtual void operator()(int numPts,
+                          const smtk::mesh::Handle* const pointIds,
+                          const double* const coords)=0;
+
+  smtk::mesh::CollectionPtr m_collection;
+};
+
 
 //----------------------------------------------------------------------------
 enum ContainmentType

@@ -18,6 +18,7 @@
 
 #include "smtk/mesh/moab/CellTypeToType.h"
 #include "smtk/mesh/moab/Allocator.h"
+#include "smtk/mesh/moab/PointConnectivityStorage.h"
 
 #include "moab/Core.hpp"
 #include "moab/FileOptions.hpp"
@@ -671,6 +672,40 @@ smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange
   return detail::vectorToRange(vresult);
 }
 
+//----------------------------------------------------------------------------
+void Interface::cellForEach(const smtk::mesh::HandleRange &cells,
+                            smtk::mesh::PointConnectivity& pc,
+                            smtk::mesh::CellForEach& filter) const
+{
+  if(!pc.is_empty())
+    {
+    int size=0;
+    const smtk::mesh::Handle* points;
+    std::vector<double> coords;
+
+    typedef smtk::mesh::HandleRange::const_iterator cit;
+    pc.initCellTraversal();
+    for(cit i = cells.begin(); i!= cells.end(); ++i)
+      {
+      bool validCell = pc.fetchNextCell(size, points);
+      if(!validCell)
+        {
+        continue;
+        }
+
+      coords.reserve(size*3);
+
+      //query to grab the coordinates for these points
+      m_iface->get_coords(points,
+                          size,
+                          &coords[0]);
+
+      //call the custom filter
+      filter(size,points,&coords[0]);
+      }
+    }
+  return;
+}
 //----------------------------------------------------------------------------
 bool Interface::deleteHandles(const smtk::mesh::HandleRange& toDel)
 {

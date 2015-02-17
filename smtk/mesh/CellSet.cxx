@@ -214,7 +214,15 @@ CellSet point_difference( const CellSet& a, const CellSet& b, ContainmentType t)
   return smtk::mesh::CellSet(a.m_parent, result);
 }
 
+//----------------------------------------------------------------------------
+SMTKCORE_EXPORT void for_each(const CellSet& a, CellForEach &filter)
+{
+  smtk::mesh::PointConnectivity pc(a.m_parent, a.m_range);
+  const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
 
+  filter.m_collection=a.m_parent;
+  iface->cellForEach(a.m_range, pc, filter);
+}
 
 }
 }

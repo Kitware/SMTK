@@ -39,6 +39,7 @@ class SMTKCORE_EXPORT CellSet
   friend CellSet set_union( const CellSet& a, const CellSet& b );
   friend CellSet point_intersect( const CellSet& a, const CellSet& b, ContainmentType t);
   friend CellSet point_difference( const CellSet& a, const CellSet& b, ContainmentType t);
+  friend void for_each( const CellSet& a, CellForEach& filter);
   friend class Collection; //required for creation of new meshes, deletion of cells
 public:
 
@@ -121,6 +122,9 @@ SMTKCORE_EXPORT CellSet point_intersect( const CellSet& a, const CellSet& b,
 //always be empty
 SMTKCORE_EXPORT CellSet point_difference( const CellSet& a, const CellSet& b,
                                           ContainmentType t);
+
+//apply a for_each cell operator on all cells of a given set.
+SMTKCORE_EXPORT void for_each( const CellSet& a, CellForEach& filter);
 
 }
 }
