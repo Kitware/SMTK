@@ -600,7 +600,13 @@ smtk::mesh::HandleRange Interface::pointIntersect(const smtk::mesh::HandleRange&
     }
 
   //first get all the points of a
-  smtk::mesh::HandleRange a_points; m_iface->get_connectivity(a, a_points);
+  smtk::mesh::HandleRange a_points = a.subset_by_type( ::moab::MBVERTEX );
+  m_iface->get_connectivity(a, a_points);
+
+  if(a_points.empty())
+    {
+    return  smtk::mesh::HandleRange();
+    }
 
   //result storage for creating the range. This is used since inserting
   //into a range is horribly slow
@@ -611,22 +617,34 @@ smtk::mesh::HandleRange Interface::pointIntersect(const smtk::mesh::HandleRange&
   //we pass storage to the interface so that it can use that memory to construct
   //an explicit connectivity list for us.
   std::vector< ::moab::EntityHandle > storage;
+  storage.reserve(32); //allocate once
 
   typedef smtk::mesh::HandleRange::const_iterator c_it;
   for(c_it i = b.begin(); i != b.end(); ++i)
     {
-    const ::moab::EntityHandle* connectivity; //handle back to node list
-    int num_nodes; //tells us the number of nodes
+    const ::moab::EntityHandle* connectivity = NULL; //handle back to node list
+    int num_nodes = 0; //tells us the number of nodes
     const bool corners_only = false; //explicitly state we want all nodes of the cell
 
-    //grab the raw connectivity array so we don't waste any memory
-    m_iface->get_connectivity(*i, connectivity, num_nodes, corners_only, &storage);
+    ::moab::ErrorCode rval = m_iface->get_connectivity(*i, connectivity, num_nodes, corners_only, &storage);
+    if(rval != ::moab::MB_SUCCESS && m_iface->type_from_handle(*i) == ::moab::MBVERTEX)
+      {
+      //setup connecivity for the vertex cell
+      num_nodes=1;
+      storage[0] = *i;
+      connectivity = &storage[0];
+      rval = ::moab::MB_SUCCESS;
+      }
 
-    //call the contains functor to determine if this cell is considered
-    //to be contained by a_points.
-    bool contains = containsFunctor(a_points, connectivity, num_nodes);
-    if(contains)
-      { vresult.push_back( *i ); }
+    //now that we have the connectivity
+    if(rval == ::moab::MB_SUCCESS)
+      {
+      //call the contains functor to determine if this cell is considered
+      //to be contained by a_points.
+      bool contains = containsFunctor(a_points, connectivity, num_nodes);
+      if(contains)
+        { vresult.push_back( *i ); }
+      }
     }
 
   //now that we have all the cells that are the partial intersection
@@ -652,17 +670,19 @@ smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange
                                                     const smtk::mesh::HandleRange& b,
                                                     const smtk::mesh::ContainsFunctor& containsFunctor) const
 {
-  if(b.empty())
-    { //taking the difference from nothing results in nothing
+  if(a.empty() || b.empty())
+    { //the intersection with nothing is nothing
     return smtk::mesh::HandleRange();
-    }
-  else if(a.empty())
-    { //if a is empty that means all b of is the difference
-    return b;
     }
 
   //first get all the points of a
-  smtk::mesh::HandleRange a_points; m_iface->get_connectivity(a, a_points);
+  smtk::mesh::HandleRange a_points = a.subset_by_type( ::moab::MBVERTEX );
+  m_iface->get_connectivity(a, a_points);
+
+  if(a_points.empty())
+    {
+    return  smtk::mesh::HandleRange();
+    }
 
   //result storage for creating the range. This is used since inserting
   //into a range is horribly slow
@@ -673,23 +693,34 @@ smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange
   //we pass storage to the interface so that it can use that memory to construct
   //an explicit connectivity list for us.
   std::vector< ::moab::EntityHandle > storage;
+  storage.reserve(32); //allocate once
 
   typedef smtk::mesh::HandleRange::const_iterator c_it;
   for(c_it i = b.begin(); i != b.end(); ++i)
     {
-    const ::moab::EntityHandle* connectivity; //handle back to node list
-    int num_nodes; //tells us the number of nodes
+    const ::moab::EntityHandle* connectivity = NULL; //handle back to node list
+    int num_nodes = 0; //tells us the number of nodes
     const bool corners_only = false; //explicitly state we want all nodes of the cell
 
-    //grab the raw connectivity array so we don't waste any memory
-    m_iface->get_connectivity(*i, connectivity, num_nodes, corners_only, &storage);
+    ::moab::ErrorCode rval = m_iface->get_connectivity(*i, connectivity, num_nodes, corners_only, &storage);
+    if(rval != ::moab::MB_SUCCESS && m_iface->type_from_handle(*i) == ::moab::MBVERTEX)
+      {
+      //setup connecivity for the vertex cell
+      num_nodes=1;
+      storage[0] = *i;
+      connectivity = &storage[0];
+      rval = ::moab::MB_SUCCESS;
+      }
 
-    //call the contains functor to determine if this cell is considered
-    //to be contained by a_points. If we aren't contained than we go into
-    //the difference result
-    bool contains = containsFunctor(a_points, connectivity, num_nodes);
-    if(!contains)
-      { vresult.push_back( *i ); }
+    //now that we have the connectivity
+    if(rval == ::moab::MB_SUCCESS)
+      {
+      //call the contains functor to determine if this cell is considered
+      //to be contained by a_points.
+      bool contains = containsFunctor(a_points, connectivity, num_nodes);
+      if(!contains)
+        { vresult.push_back( *i ); }
+      }
     }
 
   //now that we have all the cells that are the partial intersection
