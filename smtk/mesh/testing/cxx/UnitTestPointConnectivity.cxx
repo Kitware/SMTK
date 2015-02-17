@@ -45,22 +45,24 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
   test( all_cells_from_ms.size() != 0 );
   test( all_cells_from_ms.size() == copy_of_all_cells.size());
 
-  //The connectivity of the zeroth dimension is nothing
+  //The connectivity of the zeroth dimension is itself
   smtk::mesh::PointConnectivity zeroDim =  c->cells( smtk::mesh::Dims0 ).pointConnectivity();
   smtk::mesh::PointConnectivity equalToZeroDim = copy_of_all_cells;
   equalToZeroDim = zeroDim; //test assignment operator
   test( equalToZeroDim.size() == zeroDim.size());
   test( equalToZeroDim.numberOfCells() == zeroDim.numberOfCells());
-  test( equalToZeroDim.is_empty() == true );
+  test( equalToZeroDim.size() == zeroDim.size());
+  test( equalToZeroDim.size() == c->cells( smtk::mesh::Dims0 ).size());
 
 
-  //The connectivity of the zeroth dimension is nothing
+  //The connectivity of the first dimension
   smtk::mesh::PointConnectivity oneDim =  c->cells( smtk::mesh::Dims1 ).pointConnectivity();
   smtk::mesh::PointConnectivity equalToOneDim = copy_of_all_cells;
   equalToOneDim = oneDim; //test assignment operator
   test( equalToOneDim.numberOfCells() == oneDim.numberOfCells());
   test( equalToOneDim.size() != oneDim.numberOfCells());
   test( equalToOneDim.is_empty() == false );
+
 }
 
 //----------------------------------------------------------------------------

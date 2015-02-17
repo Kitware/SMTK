@@ -30,7 +30,8 @@ PointConnectivityStorage::PointConnectivityStorage(
   ConnectivityArraysLengths(),
   ConnectivityVertsPerCell(),
   NumberOfCells(0),
-  NumberOfVerts(0)
+  NumberOfVerts(0),
+  VertConnectivityStorage()
 {
   std::size_t cellCount = 0;
   std::size_t vertCount = 0;
@@ -39,6 +40,45 @@ PointConnectivityStorage::PointConnectivityStorage(
   smtk::mesh::HandleRange::const_iterator cells_end = cells.end();
 
   ::moab::Interface* m_iface = smtk::mesh::moab::extract_moab_interface(interface);
+
+  //We allocate VertConnectivityStorage once before we insert any vertices
+  //this gaurentees that all of the ConnectivityStartPositions pointers
+  //into our storage are valid. Otherwise the realloc's will cause
+  //pointer invalidation
+  const std::size_t numVerts = cells.num_of_type( ::moab::MBVERTEX );
+  this->VertConnectivityStorage.reserve( numVerts );
+
+  //first find all vertices. Vertices are a special case
+  //where they are their own connectivity. Moab orders
+  //the vertices first so, if cells_current isnt a vertice
+  //we have none
+  while(cells_current != cells_end &&
+        m_iface->type_from_handle(*cells_current) == ::moab::MBVERTEX)
+    {
+    smtk::mesh::HandleRange::iterator verts_start = cells_current.start_of_block();
+    smtk::mesh::HandleRange::iterator verts_end = cells_current.end_of_block();
+
+    const int numVertsPerCell=1;
+    const int numCellsInSubRange = std::distance(verts_start,verts_end+1);
+
+    //add to the VertConnectivityStorage the ids of the vertices in this
+    //range
+    std::copy(verts_start,
+              verts_end+1,
+              std::back_inserter(this->VertConnectivityStorage));
+
+    smtk::mesh::Handle* connectivity = &(this->VertConnectivityStorage[vertCount]);
+    this->ConnectivityStartPositions.push_back(connectivity);
+    this->ConnectivityArraysLengths.push_back(numCellsInSubRange);
+    this->ConnectivityVertsPerCell.push_back(numVertsPerCell);
+
+    //increment our iterator
+    cells_current += static_cast<std::size_t>(numCellsInSubRange);
+
+    //increment our num cells and verts counters
+    cellCount += static_cast<std::size_t>(numCellsInSubRange);
+    vertCount += static_cast<std::size_t>(numCellsInSubRange * numVertsPerCell);
+    }
 
   while(cells_current != cells_end)
     {
@@ -97,23 +137,36 @@ PointConnectivityStorage::PointConnectivityStorage(
   ConnectivityArraysLengths(),
   ConnectivityVertsPerCell(),
   NumberOfCells(0),
-  NumberOfVerts(0)
+  NumberOfVerts(0),
+  VertConnectivityStorage()
 {
   ::moab::Interface* m_iface = smtk::mesh::moab::extract_moab_interface(interface);
+
   const ::moab::EntityHandle* connectivity;
   int numVertsPerCell=0;
   const int numCellsInSubRange=1; //we are only passed a single cell
 
-  m_iface->get_connectivity(cell,
-                            connectivity,
-                            numVertsPerCell);
+  //we have none
+  if(m_iface->type_from_handle(cell) == ::moab::MBVERTEX)
+    {
+    //add to the VertConnectivityStorage the ids of the vertices in this
+    //range
+    this->VertConnectivityStorage.resize(1, cell);
+
+    connectivity = &(this->VertConnectivityStorage[0]);
+    numVertsPerCell = 1;
+    }
+  else
+    {
+    m_iface->get_connectivity(cell, connectivity, numVertsPerCell);
+    }
 
   this->ConnectivityStartPositions.push_back(connectivity);
   this->ConnectivityArraysLengths.push_back(numCellsInSubRange);
   this->ConnectivityVertsPerCell.push_back(numVertsPerCell);
 
   this->NumberOfCells = numCellsInSubRange;
-this->NumberOfVerts = numVertsPerCell;
+  this->NumberOfVerts = numVertsPerCell;
 }
 
 //----------------------------------------------------------------------------
@@ -137,7 +190,6 @@ bool PointConnectivityStorage::fetchNextCell(
 
   const std::size_t index = state.whichConnectivityVector;
   const std::size_t ptr = state.ptrOffsetInVector;
-
 
   numPts = this->ConnectivityVertsPerCell[ index ];
   points = &this->ConnectivityStartPositions[ index ][ptr];
