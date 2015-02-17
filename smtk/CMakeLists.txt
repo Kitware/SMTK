@@ -95,19 +95,27 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
   get_filename_component(shiboken_path "${SHIBOKEN_LIBRARY}" REALPATH)
   file(COPY "${shiboken_path}" DESTINATION "${SMTK_BINARY_DIR}")
 
-  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/smtk/__init__.py"
-                 "${SMTK_BINARY_DIR}/smtk/__init__.py" @ONLY)
-  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/smtk/simple.py"
-                 "${SMTK_BINARY_DIR}/smtk/simple.py" @ONLY)
+  set(SMTK_PYTHON_MODULE_SRCS
+    __init__
+    simple
+    testing
+  )
+  foreach(pyfile ${SMTK_PYTHON_MODULE_SRCS})
+    configure_file(
+      "${CMAKE_CURRENT_SOURCE_DIR}/smtk/${pyfile}.py"
+      "${SMTK_BINARY_DIR}/smtk/${pyfile}.py" @ONLY
+    )
+  endforeach()
 
   #todo we need to install this file in such a way that it can resolve
   #the location of shiboken, which is going to mean running fixup bundle
-  #on the mac, and than fixing up the smtk.py package script
+  #on the mac, and then fixing up the smtk.py package script
 
   get_filename_component(SHIBOKEN_LIBRARY_NAME ${SHIBOKEN_LIBRARY} NAME)
   install(CODE "set(LIBRARY_OUTPUT_PATH \"${CMAKE_INSTALL_PREFIX}/lib\")
                 set(SHIBOKEN_LIBRARY \"${CMAKE_INSTALL_PREFIX}/lib/${SHIBOKEN_LIBRARY_NAME}\")
                 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/smtk/__init__.py ${CMAKE_INSTALL_PREFIX}/python/smtk/__init__.py )
+                configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/smtk/testing.py ${CMAKE_INSTALL_PREFIX}/python/smtk/testing.py )
                 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/smtk/simple.py ${CMAKE_INSTALL_PREFIX}/python/smtk/simple.py )" )
 endif()
 

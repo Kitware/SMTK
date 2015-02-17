@@ -386,7 +386,7 @@ bool EntityRef::isValid(Entity** entityRecord) const
   bool status = mgr && !this->m_entity.isNull();
   if (status)
     {
-    Entity* rec = mgr->findEntity(this->m_entity);
+    Entity* rec = mgr->findEntity(this->m_entity, false);
     status = rec ? true : false;
     if (status && entityRecord)
       {
