@@ -162,7 +162,7 @@ int Entity::appendRelation(const UUID& b, bool useHoles)
   int idx;
   if (useHoles)
     {
-    if ((idx = this->consumeInvalidIndex(b)) < 0)
+    if ((idx = this->consumeInvalidIndex(b)) >= 0)
       return idx;
     }
   idx = static_cast<int>(this->m_relations.size());
