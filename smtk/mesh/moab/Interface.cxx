@@ -40,6 +40,22 @@ namespace moab {
 
 namespace detail
 {
+//----------------------------------------------------------------------------
+smtk::mesh::HandleRange vectorToRange(std::vector< ::moab::EntityHandle >& vresult)
+{
+  smtk::mesh::HandleRange resulting_range;
+  smtk::mesh::HandleRange::iterator hint = resulting_range.begin();
+  const std::size_t size = vresult.size();
+  for(std::size_t i = 0; i < size;)
+    {
+    std::size_t j;
+    for(j = i + 1; j < size && vresult[j] == 1 + vresult[j-1]; j++);
+      //empty for loop
+    hint = resulting_range.insert( hint, vresult[i], vresult[i] + (j-i-1) );
+    i = j;
+    }
+  return resulting_range;
+}
 
 //----------------------------------------------------------------------------
 template<typename T, typename U>
@@ -250,13 +266,7 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
       matching_ents.push_back(*i);
       }
     }
-
-  all_ents.clear();
-
-  smtk::mesh::HandleRange meshes_of_proper_dim;
-  std::copy( matching_ents.rbegin(), matching_ents.rend(),
-             ::moab::range_inserter(meshes_of_proper_dim) );
-  return meshes_of_proper_dim;
+  return detail::vectorToRange(matching_ents);
 }
 
 //----------------------------------------------------------------------------
@@ -286,13 +296,7 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
       matching_ents.push_back(*i);
       }
     }
-
-  all_ents.clear();
-
-  smtk::mesh::HandleRange result;
-  std::copy( matching_ents.rbegin(), matching_ents.rend(),
-             ::moab::range_inserter(result) );
-  return result;
+  return detail::vectorToRange(matching_ents);
 }
 
 //----------------------------------------------------------------------------
