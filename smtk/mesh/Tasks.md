@@ -1,7 +1,7 @@
 
 ##General##
 
-1. Ability to get and set the names for meshCollections and specific meshes
+1. Ability to set the names for meshCollections and specific meshes
 
 2. Ability to query for the connectivity of a meshset from a given dimension
    to another dimension. This would return all the connectivity of
@@ -24,33 +24,13 @@
 
 ```
 
-3. Create easy to use Tags for Boundary, Dirichlet and Neumann sets with
-   a given value.
-
-4. Add and Remove meshsets from a collection.
-```
-  smtk::mesh::CollectionPtr c = manager.collection( uuid_of_collection );
-  smtk::mesh::HandleRange cells;
+3. Create easy to use Tags for Neumann sets with a given value.
 
 
-  smtk::mesh::Handle meshId;
-  ///this adds a mesh to the collection
-  c->interface()->createMesh(cells, meshId);
+4. Ability to extract all the point locations for a given collection
+   of cells or meshes.
 
-```
-
-5. Mark meshset(s) as being Boundary, Dirichlet or Neumann. Plus they can
-   have a value for that tag!.
-
-6. A MeshSet should be able to reports all the tags, and tag values that
-   mesh's inside of it have. You can have a meshset where some are Boundary
-   and some are Neumann. Should be able to extract all Boundary tagged meshes.
-
-##Extract Shell##
-
-1. Look at wrapping the ExtractSkin code in moab as an easy way to extract
-   the shell of volumetric mesh sets. This should easily work with the API
-   to add the new meshsets back to the Collection.
+5. Add in smtk::mesh::for_each that works on PointSets.
 
 
 ##Meshing to Mesh##
@@ -117,7 +97,7 @@ Current goals of the system are:
   meshset.cells( smtk::mesh::Hexahedron );
 ```
 
-2. We need to be albe query based on dimensionality.
+2. We need to be able query based on dimensionality.
 ```
   collection.cells( smtk::mesh::Dims2 );
   meshset.cells( smtk::mesh::Dims3 );
@@ -188,6 +168,48 @@ Current goals of the system are:
 
 
  ```
+
+7. Add and Remove meshsets from a collection.
+  ```
+    smtk::mesh::CollectionPtr c = manager.collection( uuid_of_collection );
+    smtk::mesh::CellSet cells = c->cells( smtk::mesh::Dims2 );
+    cells.append(c->cells( smtk::mesh::Dims3 ) );
+
+    //this adds a mesh to the collection
+    smtk::mesh::MeshSet mesh = c->createMesh(cells);
+
+    //this removes a mesh from the collection, and any
+    //cells that no other mesh uses
+    const bool removed = c->removeMeshes(mesh);
+
+  ```
+
+8. Mark meshset(s) as being Boundary, Dirichlet or Neumann. Plus they can
+   have a value for that tag!
+  ```
+  smtk::mesh::CollectionPtr c = manager.collection( uuid_of_collection );
+  smtk::mesh::Meshset ms = c->meshes( smtk::mesh::Dims2 );
+  ms.append(c->meshes( smtk::mesh::Dims3 ) );
+
+  c->setDomainOnMeshes( ms, smtk::mesh::Domain(4) );
+  ```
+
+9. Get all the meshes with a given domain value
+
+  ```
+  typedef std::vector< smtk::mesh::Domain > DomainVecType;
+  DomainVecType domains = c->domains();
+
+  smtk::mesh::MeshSet domainMeshes = c->meshes( domains[0] );
+  ```
+
+9. Extract the shell of any given collection of meshesets.
+
+  ```
+  smtk::mesh::CollectionPtr c = manager.collection( uuid_of_collection );
+  smtk::mesh::MeshSet shell = c->extractShell( c->meshes( smtk::mesh::Dims3 ) );
+
+  ```
 
 
 ##IO##
