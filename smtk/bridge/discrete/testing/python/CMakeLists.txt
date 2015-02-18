@@ -4,7 +4,7 @@ set(smtkDiscreteSessionPythonTests
 
 # Additional tests that require SMTK_DATA_DIR
 set(smtkDiscreteSessionPythonDataTests
-#  discreteLoadFile
+  discreteReadFile
 )
 
 foreach (test ${smtkDiscreteSessionPythonTests})

@@ -2134,7 +2134,7 @@ bool Manager::findDualArrangements(
     case CELL_ENTITY:
       if ((*arr)[index].IndexSenseAndOrientationFromCellHasUse(relationIdx, sense, orient))
         { // OK, find use's reference to this cell.
-        if (relationIdx < 0)
+        if (relationIdx < 0 || src->relations().size() <= relationIdx)
           return false;
         dualEntityId = src->relations()[relationIdx];
         dualKind = HAS_CELL;
@@ -2304,8 +2304,9 @@ UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
   // See if any of this cell's uses match our sense...
   int arrIdx = -1;
   smtk::model::Arrangements::const_iterator ait;
-  int relIdx = 0;
-  for (ait = arr.begin(); ait != arr.end(); ++ait, ++relIdx)
+  int relIdx = -1;
+  int arrCtr = 0;
+  for (ait = arr.begin(); ait != arr.end(); ++ait, ++arrCtr)
     {
     int itIdx;
     int itSense;
@@ -2313,19 +2314,21 @@ UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
     ait->IndexSenseAndOrientationFromCellHasUse(itIdx, itSense, itOrient);
     if (itSense == sense && itOrient == orient)
       {
+      relIdx = itIdx;
       if (itIdx >= 0)
         { // Found a valid use. If we have a replacement, use it.
         if (!replacement.isNull())
           {
-          this->unarrangeEntity(cell, HAS_USE, relIdx, true);
-          arrIdx = relIdx;
+          this->unarrangeEntity(cell, HAS_USE, arrCtr, false);
+          arrIdx = arrCtr;
           break;
           }
+        // TODO... emit signals for unarrangement/rearrangement
         return entity->relations()[itIdx];
         }
       else
         { // We found an existing but invalid use... replace it below.
-        arrIdx = relIdx;
+        arrIdx = arrCtr;
         std::cout << "  Found cellHasUse(" << sense << "," << (orient > 0? "+" : "-") << ") at " << arrIdx << "\n";
         break;
         }
@@ -2344,10 +2347,18 @@ UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
     // We must re-fetch entity since inserting the use
     // may have invalidated our reference to it.
     entity = this->findEntity(cell);
+    if (relIdx >= 0)
+      entity->relations()[relIdx] = use->first;
+    else
+      relIdx = entity->findOrAppendRelation(use->first);
     }
   else
     {
     use = this->m_topology->find(replacement);
+    if (relIdx >= 0)
+      entity->relations()[relIdx] = use->first;
+    else
+      relIdx = entity->findOrAppendRelation(use->first);
     }
 
   if (arrIdx >= 0)
@@ -2355,7 +2366,7 @@ UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
     this->arrangeEntity(
       cell, HAS_USE,
       Arrangement::CellHasUseWithIndexSenseAndOrientation(
-        arrIdx, sense, orient),
+        relIdx, sense, orient),
       arrIdx);
     // Does the use already have a reference back to the cell?
     this->arrangeEntity(
