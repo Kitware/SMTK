@@ -117,16 +117,16 @@ public:
   virtual smtk::mesh::TypeSet computeTypes(smtk::mesh::Handle handle) const = 0;
 
   //----------------------------------------------------------------------------
-  virtual smtk::mesh::HandleRange setIntersect(const smtk::mesh::HandleRange& a,
-                                                const smtk::mesh::HandleRange& b) const = 0;
-
-  //----------------------------------------------------------------------------
-  virtual smtk::mesh::HandleRange setDifference(const smtk::mesh::HandleRange& a,
+  virtual smtk::mesh::HandleRange rangeIntersect(const smtk::mesh::HandleRange& a,
                                                  const smtk::mesh::HandleRange& b) const = 0;
 
   //----------------------------------------------------------------------------
-  virtual smtk::mesh::HandleRange setUnion(const smtk::mesh::HandleRange& a,
-                                            const smtk::mesh::HandleRange& b) const = 0;
+  virtual smtk::mesh::HandleRange rangeDifference(const smtk::mesh::HandleRange& a,
+                                                  const smtk::mesh::HandleRange& b) const = 0;
+
+  //----------------------------------------------------------------------------
+  virtual smtk::mesh::HandleRange rangeUnion(const smtk::mesh::HandleRange& a,
+                                             const smtk::mesh::HandleRange& b) const = 0;
 
   //----------------------------------------------------------------------------
   virtual smtk::mesh::HandleRange pointIntersect(const smtk::mesh::HandleRange& a,

@@ -161,7 +161,7 @@ MeshSet set_intersect( const MeshSet& a, const MeshSet& b)
     }
 
   const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
-  smtk::mesh::HandleRange result = iface->setIntersect(a.m_range, b.m_range);
+  smtk::mesh::HandleRange result = iface->rangeIntersect(a.m_range, b.m_range);
   return smtk::mesh::MeshSet(a.m_parent, a.m_handle, result);
 }
 
@@ -177,7 +177,7 @@ MeshSet set_difference( const MeshSet& a, const MeshSet& b)
     }
 
   const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
-  smtk::mesh::HandleRange result = iface->setDifference(a.m_range, b.m_range);
+  smtk::mesh::HandleRange result = iface->rangeDifference(a.m_range, b.m_range);
   return smtk::mesh::MeshSet(a.m_parent, a.m_handle, result);
 }
 
@@ -193,7 +193,7 @@ MeshSet set_union( const MeshSet& a, const MeshSet& b )
     }
 
   const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
-  smtk::mesh::HandleRange result = iface->setUnion(a.m_range, b.m_range);
+  smtk::mesh::HandleRange result = iface->rangeUnion(a.m_range, b.m_range);
   return smtk::mesh::MeshSet(a.m_parent, a.m_handle, result);
 }
 

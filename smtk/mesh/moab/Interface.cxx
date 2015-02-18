@@ -337,22 +337,22 @@ smtk::mesh::TypeSet Interface::computeTypes(smtk::mesh::Handle handle) const
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::HandleRange Interface::setIntersect(const smtk::mesh::HandleRange& a,
-                                                 const smtk::mesh::HandleRange& b) const
+smtk::mesh::HandleRange Interface::rangeIntersect(const smtk::mesh::HandleRange& a,
+                                                  const smtk::mesh::HandleRange& b) const
 {
   return ::moab::intersect(a,b);
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::HandleRange Interface::setDifference(const smtk::mesh::HandleRange& a,
-                                                  const smtk::mesh::HandleRange& b) const
+smtk::mesh::HandleRange Interface::rangeDifference(const smtk::mesh::HandleRange& a,
+                                                   const smtk::mesh::HandleRange& b) const
 {
   return ::moab::subtract(a,b);
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::HandleRange Interface::setUnion(const smtk::mesh::HandleRange& a,
-                                             const smtk::mesh::HandleRange& b) const
+smtk::mesh::HandleRange Interface::rangeUnion(const smtk::mesh::HandleRange& a,
+                                              const smtk::mesh::HandleRange& b) const
 {
   return ::moab::unite(a,b);
 }
