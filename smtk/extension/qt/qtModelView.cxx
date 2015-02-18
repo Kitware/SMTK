@@ -196,7 +196,7 @@ void qtModelView::selectionChanged (
   foreach(QModelIndex sel, this->selectedIndexes())
     {
     this->recursiveSelect(qmodel->getItem(sel), selentityrefs,
-      CELL_ENTITY /*| SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY */);
+      CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY | INSTANCE_ENTITY);
     }
 
   emit this->entitiesSelected(selentityrefs);
