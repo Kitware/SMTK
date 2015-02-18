@@ -646,23 +646,7 @@ smtk::mesh::HandleRange Interface::pointIntersect(const smtk::mesh::HandleRange&
         { vresult.push_back( *i ); }
       }
     }
-
-  //now that we have all the cells that are the partial intersection
-  smtk::mesh::HandleRange resulting_range;
-  smtk::mesh::HandleRange::iterator hint = resulting_range.begin();
-
-  const std::size_t size = vresult.size();
-  for(std::size_t i = 0; i < size;)
-    {
-    std::size_t j;
-    for(j = i + 1; j < size && vresult[j] == 1 + vresult[j-1]; j++);
-      //empty for loop
-    hint = resulting_range.insert( hint, vresult[i], vresult[i] + (j-i-1) );
-    i = j;
-    }
-
-  return resulting_range;
-
+  return detail::vectorToRange(vresult);
 }
 
 //----------------------------------------------------------------------------
@@ -722,23 +706,7 @@ smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange
         { vresult.push_back( *i ); }
       }
     }
-
-  //now that we have all the cells that are the partial intersection
-  smtk::mesh::HandleRange resulting_range;
-  smtk::mesh::HandleRange::iterator hint = resulting_range.begin();
-
-  const std::size_t size = vresult.size();
-  for(std::size_t i = 0; i < size;)
-    {
-    std::size_t j;
-    for(j = i + 1; j < size && vresult[j] == 1 + vresult[j-1]; j++);
-      //empty for loop
-    hint = resulting_range.insert( hint, vresult[i], vresult[i] + (j-i-1) );
-    i = j;
-    }
-
-  return resulting_range;
-
+  return detail::vectorToRange(vresult);
 }
 
 //----------------------------------------------------------------------------
