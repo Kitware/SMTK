@@ -159,12 +159,14 @@ public:
 
   //----------------------------------------------------------------------------
   smtk::mesh::HandleRange pointIntersect(const smtk::mesh::HandleRange& a,
-                                          const smtk::mesh::HandleRange& b,
-                                          const smtk::mesh::ContainsFunctor& containsFunctor) const;
+                                         const smtk::mesh::HandleRange& b,
+                                         smtk::mesh::PointConnectivity& bpc,
+                                         const smtk::mesh::ContainsFunctor& containsFunctor) const;
   //----------------------------------------------------------------------------
   smtk::mesh::HandleRange pointDifference(const smtk::mesh::HandleRange& a,
-                                           const smtk::mesh::HandleRange& b,
-                                           const smtk::mesh::ContainsFunctor& containsFunctor) const;
+                                          const smtk::mesh::HandleRange& b,
+                                          smtk::mesh::PointConnectivity& bpc,
+                                          const smtk::mesh::ContainsFunctor& containsFunctor) const;
 
   //----------------------------------------------------------------------------
   bool deleteHandles(const smtk::mesh::HandleRange& toDel);

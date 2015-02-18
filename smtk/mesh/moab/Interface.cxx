@@ -591,7 +591,49 @@ smtk::mesh::HandleRange Interface::rangeUnion(const smtk::mesh::HandleRange& a,
 
 //----------------------------------------------------------------------------
 smtk::mesh::HandleRange Interface::pointIntersect(const smtk::mesh::HandleRange& a,
+                                                  const smtk::mesh::HandleRange& b,
+                                                  smtk::mesh::PointConnectivity& bpc,
+                                                  const smtk::mesh::ContainsFunctor& containsFunctor) const
+{
+  if(a.empty() || b.empty())
+    { //the intersection with nothing is nothing
+    return smtk::mesh::HandleRange();
+    }
+
+  //first get all the points of a
+  smtk::mesh::HandleRange a_points = a.subset_by_type( ::moab::MBVERTEX );
+  m_iface->get_connectivity(a, a_points);
+
+  if(a_points.empty())
+    {
+    return  smtk::mesh::HandleRange();
+    }
+
+  typedef smtk::mesh::HandleRange::const_iterator cit;
+  std::vector< ::moab::EntityHandle > vresult;
+  if(!bpc.is_empty())
+    {
+    int size=0;
+    const smtk::mesh::Handle* connectivity;
+    bpc.initCellTraversal();
+    for(cit i = b.begin(); i!= b.end(); ++i)
+      {
+      const bool validCell = bpc.fetchNextCell(size, connectivity);
+      if(validCell)
+        {
+        const bool contains = containsFunctor(a_points, connectivity, size);
+        if(contains)
+          { vresult.push_back( *i ); }
+        }
+      }
+    }
+  return detail::vectorToRange(vresult);
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange& a,
                                                    const smtk::mesh::HandleRange& b,
+                                                   smtk::mesh::PointConnectivity& bpc,
                                                    const smtk::mesh::ContainsFunctor& containsFunctor) const
 {
   if(a.empty() || b.empty())
@@ -608,102 +650,22 @@ smtk::mesh::HandleRange Interface::pointIntersect(const smtk::mesh::HandleRange&
     return  smtk::mesh::HandleRange();
     }
 
-  //result storage for creating the range. This is used since inserting
-  //into a range is horribly slow
+  typedef smtk::mesh::HandleRange::const_iterator cit;
   std::vector< ::moab::EntityHandle > vresult;
-  vresult.reserve( b.size() );
-
-  //Some elements (e.g. structured mesh) may not have an explicit connectivity list.
-  //we pass storage to the interface so that it can use that memory to construct
-  //an explicit connectivity list for us.
-  std::vector< ::moab::EntityHandle > storage;
-  storage.reserve(32); //allocate once
-
-  typedef smtk::mesh::HandleRange::const_iterator c_it;
-  for(c_it i = b.begin(); i != b.end(); ++i)
+  if(!bpc.is_empty())
     {
-    const ::moab::EntityHandle* connectivity = NULL; //handle back to node list
-    int num_nodes = 0; //tells us the number of nodes
-    const bool corners_only = false; //explicitly state we want all nodes of the cell
-
-    ::moab::ErrorCode rval = m_iface->get_connectivity(*i, connectivity, num_nodes, corners_only, &storage);
-    if(rval != ::moab::MB_SUCCESS && m_iface->type_from_handle(*i) == ::moab::MBVERTEX)
+    int size=0;
+    const smtk::mesh::Handle* connectivity;
+    bpc.initCellTraversal();
+    for(cit i = b.begin(); i!= b.end(); ++i)
       {
-      //setup connecivity for the vertex cell
-      num_nodes=1;
-      storage[0] = *i;
-      connectivity = &storage[0];
-      rval = ::moab::MB_SUCCESS;
-      }
-
-    //now that we have the connectivity
-    if(rval == ::moab::MB_SUCCESS)
-      {
-      //call the contains functor to determine if this cell is considered
-      //to be contained by a_points.
-      bool contains = containsFunctor(a_points, connectivity, num_nodes);
-      if(contains)
-        { vresult.push_back( *i ); }
-      }
-    }
-  return detail::vectorToRange(vresult);
-}
-
-//----------------------------------------------------------------------------
-smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange& a,
-                                                    const smtk::mesh::HandleRange& b,
-                                                    const smtk::mesh::ContainsFunctor& containsFunctor) const
-{
-  if(a.empty() || b.empty())
-    { //the intersection with nothing is nothing
-    return smtk::mesh::HandleRange();
-    }
-
-  //first get all the points of a
-  smtk::mesh::HandleRange a_points = a.subset_by_type( ::moab::MBVERTEX );
-  m_iface->get_connectivity(a, a_points);
-
-  if(a_points.empty())
-    {
-    return  smtk::mesh::HandleRange();
-    }
-
-  //result storage for creating the range. This is used since inserting
-  //into a range is horribly slow
-  std::vector< ::moab::EntityHandle > vresult;
-  vresult.reserve( b.size() );
-
-  //Some elements (e.g. structured mesh) may not have an explicit connectivity list.
-  //we pass storage to the interface so that it can use that memory to construct
-  //an explicit connectivity list for us.
-  std::vector< ::moab::EntityHandle > storage;
-  storage.reserve(32); //allocate once
-
-  typedef smtk::mesh::HandleRange::const_iterator c_it;
-  for(c_it i = b.begin(); i != b.end(); ++i)
-    {
-    const ::moab::EntityHandle* connectivity = NULL; //handle back to node list
-    int num_nodes = 0; //tells us the number of nodes
-    const bool corners_only = false; //explicitly state we want all nodes of the cell
-
-    ::moab::ErrorCode rval = m_iface->get_connectivity(*i, connectivity, num_nodes, corners_only, &storage);
-    if(rval != ::moab::MB_SUCCESS && m_iface->type_from_handle(*i) == ::moab::MBVERTEX)
-      {
-      //setup connecivity for the vertex cell
-      num_nodes=1;
-      storage[0] = *i;
-      connectivity = &storage[0];
-      rval = ::moab::MB_SUCCESS;
-      }
-
-    //now that we have the connectivity
-    if(rval == ::moab::MB_SUCCESS)
-      {
-      //call the contains functor to determine if this cell is considered
-      //to be contained by a_points.
-      bool contains = containsFunctor(a_points, connectivity, num_nodes);
-      if(!contains)
-        { vresult.push_back( *i ); }
+      const bool validCell = bpc.fetchNextCell(size, connectivity);
+      if(validCell)
+        {
+        const bool contains = containsFunctor(a_points, connectivity, size);
+        if(!contains)
+          { vresult.push_back( *i ); }
+        }
       }
     }
   return detail::vectorToRange(vresult);

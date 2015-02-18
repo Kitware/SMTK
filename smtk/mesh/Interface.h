@@ -28,6 +28,8 @@ namespace mesh {
 //forward declare classes we use
 struct ContainsFunctor;
 
+class PointConnectivity;
+
 //----------------------------------------------------------------------------
 class SMTKCORE_EXPORT Allocator
 {
@@ -158,12 +160,15 @@ public:
 
   //----------------------------------------------------------------------------
   virtual smtk::mesh::HandleRange pointIntersect(const smtk::mesh::HandleRange& a,
-                                                  const smtk::mesh::HandleRange& b,
-                                                  const smtk::mesh::ContainsFunctor& containsFunctor) const = 0;
+                                                 const smtk::mesh::HandleRange& b,
+                                                 smtk::mesh::PointConnectivity& bpc,
+                                                 const smtk::mesh::ContainsFunctor& containsFunctor) const = 0;
+
   //----------------------------------------------------------------------------
   virtual smtk::mesh::HandleRange pointDifference(const smtk::mesh::HandleRange& a,
-                                                   const smtk::mesh::HandleRange& b,
-                                                   const smtk::mesh::ContainsFunctor& containsFunctor) const = 0;
+                                                  const smtk::mesh::HandleRange& b,
+                                                  smtk::mesh::PointConnectivity& bpc,
+                                                  const smtk::mesh::ContainsFunctor& containsFunctor) const = 0;
 
   //----------------------------------------------------------------------------
   //The handles must be all mesh or cell elements. Mixed ranges wil

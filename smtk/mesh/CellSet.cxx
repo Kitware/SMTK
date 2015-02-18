@@ -168,18 +168,19 @@ CellSet point_intersect( const CellSet& a, const CellSet& b, ContainmentType t)
     }
 
   const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
+  smtk::mesh::PointConnectivity pc(b.m_parent, b.m_range);
 
   //switch the algorithm based on the containment type
   smtk::mesh::HandleRange result;
   if(t == smtk::mesh::PartiallyContained)
     {
     smtk::mesh::PartiallyContainedFunctor f;
-    result = iface->pointIntersect(a.m_range, b.m_range, f);
+    result = iface->pointIntersect(a.m_range, b.m_range, pc, f);
     }
   else
     {
     smtk::mesh::FullyContainedFunctor f;
-    result = iface->pointIntersect(a.m_range, b.m_range, f);
+    result = iface->pointIntersect(a.m_range, b.m_range, pc, f);
     }
   return smtk::mesh::CellSet(a.m_parent, result);
 }
@@ -195,18 +196,19 @@ CellSet point_difference( const CellSet& a, const CellSet& b, ContainmentType t)
     }
 
   const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
+  smtk::mesh::PointConnectivity pc(b.m_parent, b.m_range);
 
   //switch the algorithm based on the containment type
   smtk::mesh::HandleRange result;
   if(t == smtk::mesh::PartiallyContained)
     {
     smtk::mesh::PartiallyContainedFunctor f;
-    result = iface->pointDifference(a.m_range, b.m_range, f);
+    result = iface->pointDifference(a.m_range, b.m_range, pc, f);
     }
   else
     {
     smtk::mesh::FullyContainedFunctor f;
-    result = iface->pointDifference(a.m_range, b.m_range, f);
+    result = iface->pointDifference(a.m_range, b.m_range, pc, f);
     }
 
   return smtk::mesh::CellSet(a.m_parent, result);
