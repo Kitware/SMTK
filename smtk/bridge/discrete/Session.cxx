@@ -136,7 +136,7 @@ public:
     (void)callData;
     smtk::common::UUID uid = session->findOrSetEntityUUID(vtkInformation::SafeDownCast(caller));
     vtkModelItem* item = session->entityForUUID(uid);
-    std::cout << "Item " << item << " deleted. Was " << uid << "\n";
+    //std::cout << "Item " << item << " deleted. Was " << uid << "\n";
     session->untrackEntity(uid);
     }
 
@@ -362,7 +362,7 @@ smtk::common::UUID Session::trackModel(
 
   // Now add the record to manager and assign the URL to
   // the model as a string property.
-  smtk::model::EntityRef c = this->addCMBEntityToManager(mid, dmod, mgr, 4);
+  smtk::model::EntityRef c = this->addCMBEntityToManager(mid, dmod, mgr, 6);
   c.setStringProperty("url", url);
 
   return mid;
@@ -865,8 +865,6 @@ smtk::model::FaceUse Session::addFaceUseToManager(
       translated = smtk::model::SESSION_ENTITY_ARRANGED;
       // vtkModelFaceUse does not provide any orientation/sense info,
       // so we check the face to find its orientation. Blech.
-      std::cout << "Face Use " << uid << " face " << matchingFace << " sense 0 " << " orient "
-        << (coFace->GetModelFace()->GetModelFaceUse(1) == coFace ? "+" : "-") << "\n";
       result = mgr->setFaceUse(
         uid, matchingFace, 0,
         coFace->GetModelFace()->GetModelFaceUse(1) == coFace ?
@@ -940,7 +938,6 @@ smtk::model::EdgeUse Session::addEdgeUseToManager(
           coEdge->GetDirection() ? smtk::model::POSITIVE : smtk::model::NEGATIVE);
         // Finally, create its loop.
         vtkModelLoopUse* loopUse = coEdge->GetModelLoopUse();
-        std::cout << "Edge use " << uid << " loop use " << loopUse << "\n";
         if (loopUse)
           {
           smtk::common::UUID luid = this->findOrSetEntityUUID(loopUse);
@@ -1125,55 +1122,62 @@ smtk::model::Face Session::addFaceToManager(
   smtk::model::ManagerPtr mgr,
   int relDepth)
 {
-  if (refFace && !mgr->findEntity(uid, false))
-    {
-    smtk::model::Face result(mgr->insertFace(uid));
-    smtk::model::SessionInfoBits translated = smtk::model::SESSION_NOTHING;
-    if (relDepth >= 0)
-      { // Add refFace relations and arrangements
-      // If face uses exist, add them to the session.
-      vtkModelFaceUse* fu;
-      bool haveFaceUse = false;
-      for (int i = 0; i < 2; ++i)
-        {
-        fu = refFace->GetModelFaceUse(i); // 0 = negative, 1 = positive
-        if (fu)
-          {
-          haveFaceUse = true;
-          smtk::common::UUID fuid = this->findOrSetEntityUUID(fu);
-          this->addFaceUseToManager(fuid, fu, mgr, relDepth - 1);
-          // Now, since we are the "higher" end of the relationship,
-          // arrange the use wrt ourself:
-          mgr->findCreateOrReplaceCellUseOfSenseAndOrientation(
-            uid, 0, i ? smtk::model::POSITIVE : smtk::model::NEGATIVE, fuid);
-          }
-        }
+  if (!refFace)
+    return smtk::model::Face();
 
-      // Add a reference to the volume(s) directly (with no relationship)
-      int nvols = refFace->GetNumberOfModelRegions();
-      for (int i = 0; i < nvols; ++i)
-        {
-        vtkModelRegion* vol = refFace->GetModelRegion(i);
-        if (vol)
-          {
-          Volume v(mgr, this->findOrSetEntityUUID(vol));
-          result.addRawRelation(v);
-          }
-        }
+  smtk::model::SessionInfoBits actual = smtk::model::SESSION_NOTHING;
+  smtk::model::Face mutableEntityRef(mgr, uid);
+  if (!mutableEntityRef.isValid())
+    mutableEntityRef.manager()->insertFace(uid);
+  actual |= smtk::model::SESSION_ENTITY_TYPE;
 
-      std::vector<vtkModelEdge*> edges;
-      refFace->GetModelEdges(edges);
-      this->addEntityArray(result, edges, AddRawRelationHelper(), relDepth - 1);
-      // Add geometry, if any.
-      this->addTessellation(result, refFace);
+  if (relDepth >= 0)
+    { // Add refFace relations and arrangements
+    // If face uses exist, add them to the session.
+    vtkModelFaceUse* fu;
+    bool haveFaceUse = false;
+    for (int i = 0; i < 2; ++i)
+      {
+      fu = refFace->GetModelFaceUse(i); // 0 = negative, 1 = positive
+      if (fu)
+        {
+        haveFaceUse = true;
+        smtk::common::UUID fuid = this->findOrSetEntityUUID(fu);
+        this->addFaceUseToManager(fuid, fu, mgr, relDepth - 1);
+        // Now, since we are the "higher" end of the relationship,
+        // arrange the use wrt ourself:
+        mgr->findCreateOrReplaceCellUseOfSenseAndOrientation(
+          uid, 0, i ? smtk::model::POSITIVE : smtk::model::NEGATIVE, fuid);
+        }
       }
 
-    this->addProperties(result, refFace);
-    translated |= smtk::model::SESSION_PROPERTIES;
+    // Add a reference to the volume(s) directly (with no relationship)
+    int nvols = refFace->GetNumberOfModelRegions();
+    for (int i = 0; i < nvols; ++i)
+      {
+      vtkModelRegion* vol = refFace->GetModelRegion(i);
+      if (vol)
+        {
+        Volume v(mgr, this->findOrSetEntityUUID(vol));
+        mutableEntityRef.addRawRelation(v);
+        }
+      }
 
-    return result;
+    std::vector<vtkModelEdge*> edges;
+    refFace->GetModelEdges(edges);
+    this->addEntityArray(mutableEntityRef, edges, AddRawRelationHelper(), relDepth - 1);
+    actual |= smtk::model::SESSION_ENTITY_RELATIONS;
+    actual |= smtk::model::SESSION_ARRANGEMENTS;
+
+    // Add geometry, if any.
+    this->addTessellation(mutableEntityRef, refFace);
+    actual |= smtk::model::SESSION_TESSELLATION;
     }
-  return smtk::model::Face();
+
+  this->addProperties(mutableEntityRef, refFace);
+  actual |= smtk::model::SESSION_PROPERTIES;
+
+  return mutableEntityRef;
 }
 
 /// Given a CMB \a refEdge tagged with \a uid, create a record in \a mgr for it.

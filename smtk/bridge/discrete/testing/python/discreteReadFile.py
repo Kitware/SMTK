@@ -14,13 +14,15 @@ import sys
 import os
 import sys
 import smtk
+from smtk.simple import *
 
 mgr = smtk.model.Manager.create()
 sref = mgr.createSession('discrete', smtk.model.SessionRef())
-sess = sref.session() # smtk.model.Manager.createSession('cgm', smtk.model.SessionRef())
+SetActiveSession(sref)
 sref.assignDefaultName()
+
 print '\n\n%s: type "%s" %s %s' % \
-  (sref.name(), sess.name(), sref.flagSummary(0), sess.sessionId())
+  (sref.name(), sref.session().name(), sref.flagSummary(0), sref.session().sessionId())
 print '  Site: %s' % (sref.site() or 'local')
 for eng in sref.engines():
   print '  Engine %s filetypes:\n    %s' % \
@@ -29,13 +31,15 @@ print 'Operators:\n  '
 print '\n  '.join(sref.operatorNames())
 print '\n'
 
-rdr = sref.op('read')
-rdr.findAsFile('filename').setValue(os.path.join(sys.argv[1], 'cmb', 'test2D.cmb'))
-res = rdr.operate()
-mod = smtk.model.Model(res.findModelEntity('entities').value(0))
+mod = smtk.model.Model(
+    Read(os.path.join(sys.argv[1], 'cmb', 'test2D.cmb'))[0])
 
 print '\nFree cells:\n  %s' % '\n  '.join([x.name() for x in mod.cells()])
 print '\nGroups:\n  %s\n' % '\n  '.join([x.name() for x in mod.groups()])
 if len(mod.cells()) != 4:
   print smtk.io.ExportJSON.fromModelManager(mgr)
   raise Exception, 'Wrong number of free cells'
+
+out = file('test2d.json', 'w')
+print >>out, smtk.io.ExportJSON.fromModelManager(mgr)
+out.close()
