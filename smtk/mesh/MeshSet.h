@@ -64,14 +64,14 @@ public:
   //number of meshes
   std::size_t size() const;
 
-  smtk::mesh::CellSet cells(); //all cells of the meshset
-  smtk::mesh::Points points(); //all points of the meshset
-  smtk::mesh::PointConnectivity pointConnectivity( ); //all point connectivity info for all cells
+  smtk::mesh::CellSet cells() const; //all cells of the meshset
+  smtk::mesh::Points points() const; //all points of the meshset
+  smtk::mesh::PointConnectivity pointConnectivity( ) const; //all point connectivity info for all cells
 
   //we should be able to extract the points or cells of the meshes.
-  smtk::mesh::CellSet   cells( smtk::mesh::CellType cellType );
-  smtk::mesh::CellSet   cells( smtk::mesh::CellTypes cellTypes );
-  smtk::mesh::CellSet   cells( smtk::mesh::DimensionType dim );
+  smtk::mesh::CellSet   cells( smtk::mesh::CellType cellType ) const;
+  smtk::mesh::CellSet   cells( smtk::mesh::CellTypes  cTypes ) const;
+  smtk::mesh::CellSet   cells( smtk::mesh::DimensionType dim ) const;
 
   //in the future we want to be able to iterate the given meshes in a MeshSet
   //and generate the cells, points and connectivity for each one independently.

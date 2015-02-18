@@ -104,7 +104,7 @@ std::size_t MeshSet::size( ) const
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::CellSet MeshSet::cells( )
+smtk::mesh::CellSet MeshSet::cells( ) const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
   smtk::mesh::HandleRange range = iface->getCells( this->m_range );
@@ -112,13 +112,13 @@ smtk::mesh::CellSet MeshSet::cells( )
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::Points MeshSet::points( )
+smtk::mesh::Points MeshSet::points( ) const
 {
   return smtk::mesh::Points();
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::PointConnectivity MeshSet::pointConnectivity( )
+smtk::mesh::PointConnectivity MeshSet::pointConnectivity( ) const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
   smtk::mesh::HandleRange range = iface->getCells( this->m_range );
@@ -126,7 +126,7 @@ smtk::mesh::PointConnectivity MeshSet::pointConnectivity( )
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::CellSet MeshSet::cells( smtk::mesh::CellType cellType )
+smtk::mesh::CellSet MeshSet::cells( smtk::mesh::CellType cellType ) const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
   smtk::mesh::HandleRange range = iface->getCells( this->m_range, cellType );
@@ -134,7 +134,7 @@ smtk::mesh::CellSet MeshSet::cells( smtk::mesh::CellType cellType )
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::CellSet MeshSet::cells( smtk::mesh::CellTypes cellTypes )
+smtk::mesh::CellSet MeshSet::cells( smtk::mesh::CellTypes cellTypes ) const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
   smtk::mesh::HandleRange range = iface->getCells( this->m_range, cellTypes );
@@ -142,7 +142,7 @@ smtk::mesh::CellSet MeshSet::cells( smtk::mesh::CellTypes cellTypes )
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::CellSet MeshSet::cells( smtk::mesh::DimensionType dim )
+smtk::mesh::CellSet MeshSet::cells( smtk::mesh::DimensionType dim ) const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
   smtk::mesh::HandleRange range = iface->getCells( this->m_range, dim );
