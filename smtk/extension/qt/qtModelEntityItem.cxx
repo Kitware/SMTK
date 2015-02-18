@@ -10,6 +10,11 @@
 
 #include "smtk/extension/qt/qtModelEntityItem.h"
 
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/System.h"
+#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ModelEntityItemDefinition.h"
+#include "smtk/common/UUID.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtCheckItemComboBox.h"
@@ -29,11 +34,6 @@
 #include <QToolButton>
 #include <QStandardItemModel>
 
-#include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/System.h"
-#include "smtk/attribute/ModelEntityItem.h"
-#include "smtk/attribute/ModelEntityItemDefinition.h"
-
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
@@ -45,10 +45,8 @@ public:
   QPointer<QLabel> theLabel;
   Qt::Orientation VectorItemOrient;
 
-  // for extensible items
-  QMap<QToolButton*, QPair<QLayout*, QWidget*> > ExtensibleMap;
-  QList<QToolButton*> MinusButtonIndices;
-  QPointer<QToolButton> AddItemButton;
+  QPointer<QToolButton> LinkSelectionButton;
+  QPointer<qtModelEntityItemCombo> EntityItemCombo;
 
 };
 
@@ -85,7 +83,6 @@ void qtModelEntityItem::createWidget()
     return;
     }
 
-  this->clearChildWidgets();
   this->updateItemData();
 }
 
@@ -108,9 +105,8 @@ void qtModelEntityItem::addEntityAssociationWidget()
   // First - are we allowed to change the number of values?
   const ModelEntityItemDefinition* def =
     static_cast<const ModelEntityItemDefinition *>(item->definition().get());
-
   int n = static_cast<int>(item->numberOfValues());
-  if (!n && !def->isExtensible())
+  if (!n)
     {
     return;
     }
@@ -134,62 +130,23 @@ void qtModelEntityItem::addEntityAssociationWidget()
   QBoxLayout* editorLayout = new QHBoxLayout;
   editorLayout->setMargin(0);
   editorLayout->setSpacing(3);
-/*
-  const ModelEntityItemDefinition *itemDef =
-    dynamic_cast<const ModelEntityItemDefinition*>(item->definition().get());
-  if(item->isExtensible())
-    {
-    QToolButton* minusButton = new QToolButton(this->Widget);
-    QString iconName(":/icons/attribute/minus.png");
-    minusButton->setFixedSize(QSize(12, 12));
-    minusButton->setIcon(QIcon(iconName));
-    minusButton->setSizePolicy(sizeFixedPolicy);
-    minusButton->setToolTip("Remove value");
-    editorLayout->addWidget(minusButton);
-    connect(minusButton, SIGNAL(clicked()),
-      this, SLOT(onRemoveValue()));
-    QPair<QLayout*, QWidget*> pair;
-    pair.first = editorLayout;
-    pair.second = editBox;
-    this->Internals->ExtensibleMap[minusButton] = pair;
-    this->Internals->MinusButtonIndices.push_back(minusButton);
-    }
 
-  if(n!=1 && itemDef->hasValueLabels())
-    {
-    std::string componentLabel = itemDef->valueLabel(i);
-    if(!componentLabel.empty())
-      {
-      // acbauer -- this should probably be improved to look nicer
-      QString labelText = componentLabel.c_str();
-      QLabel* label = new QLabel(labelText, editBox);
-      label->setSizePolicy(sizeFixedPolicy);
-      editorLayout->addWidget(label);
-      }
-    }
-*/
+  this->Internals->LinkSelectionButton = new QToolButton(this->Widget);
+  QString iconName(":/icons/attribute/plus.png");
+  this->Internals->LinkSelectionButton->setToolTip("Set With Selection");
+  this->Internals->LinkSelectionButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
+  this->Internals->LinkSelectionButton->setFixedSize(QSize(12, 12));
+  this->Internals->LinkSelectionButton->setIcon(QIcon(iconName));
+  this->Internals->LinkSelectionButton->setSizePolicy(sizeFixedPolicy);
+  connect(this->Internals->LinkSelectionButton, SIGNAL(clicked()),
+    this, SLOT(requestSelectionLink()));
+  editorLayout->addWidget(this->Internals->LinkSelectionButton);
 
   editorLayout->addWidget(editBox);
   this->Internals->EntryLayout->addLayout(editorLayout, 0, 1);
   editBox->init();
 
-/*
-  // always going vertical for extensible items
-  if(this->Internals->VectorItemOrient == Qt::Vertical ||
-     item->isExtensible())
-    {
-    int row = i;
-    // The "Add New Value" button is in first row, so take that into account
-    row = item->isExtensible() ? row+1 : row;
-    this->Internals->EntryLayout->addLayout(editorLayout, row, 1);
-    }
-  else // going horizontal
-    {
-    this->Internals->EntryLayout->addLayout(editorLayout, 0, i+1);
-    }
-
-  //this->updateExtensibleState();
-*/
+  this->Internals->EntityItemCombo = editBox;
 }
 
 //----------------------------------------------------------------------------
@@ -201,39 +158,7 @@ void qtModelEntityItem::loadAssociatedEntities()
     {
     return;
     }
-/*
-  int n = static_cast<int>(item->numberOfValues());
-  if (!n && !item->isExtensible())
-    {
-    return;
-    }
-*/
   this->addEntityAssociationWidget();
-/*
-  if(item->isExtensible())
-    {
-    if(!this->Internals->AddItemButton)
-      {
-      QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-      this->Internals->AddItemButton = new QToolButton(this->Widget);
-      QString iconName(":/icons/attribute/plus.png");
-      this->Internals->AddItemButton->setText("Add New Value");
-      this->Internals->AddItemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-
-//      this->Internals->AddItemButton->setFixedSize(QSize(12, 12));
-      this->Internals->AddItemButton->setIcon(QIcon(iconName));
-      this->Internals->AddItemButton->setSizePolicy(sizeFixedPolicy);
-      connect(this->Internals->AddItemButton, SIGNAL(clicked()),
-        this, SLOT(onAddNewValue()));
-      this->Internals->EntryLayout->addWidget(this->Internals->AddItemButton, 0, 1);
-      }
-    }
-
-  for(int i = 0; i < n; i++)
-    {
-    this->addEntityAssociationWidget(i);
-    }
-*/
 }
 
 //----------------------------------------------------------------------------
@@ -344,19 +269,6 @@ void qtModelEntityItem::setOutputOptional(int state)
     return;
     }
   bool enable = state ? true : false;
-/*
-  if(item->isExtensible())
-    {
-    if(this->Internals->AddItemButton)
-      {
-      this->Internals->AddItemButton->setEnabled(enable);
-      }
-    foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
-      {
-      tButton->setEnabled(enable);
-      }
-   }
-*/
 //  this->Internals->EntryFrame->setEnabled(enable);
   if(enable != this->getObject()->isEnabled())
     {
@@ -367,116 +279,56 @@ void qtModelEntityItem::setOutputOptional(int state)
 }
 
 //----------------------------------------------------------------------------
-void qtModelEntityItem::onAddNewValue()
+void qtModelEntityItem::associateSelectedEntities(
+  const smtk::common::UUIDs& selEntityRefs, bool resetExisting)
 {
-  smtk::attribute::ModelEntityItemPtr item =
+  smtk::attribute::ModelEntityItemPtr modEntityItem =
     dynamic_pointer_cast<ModelEntityItem>(this->getObject());
-  if(!item)
+  if(!modEntityItem)
     {
     return;
     }
-  if(item->setNumberOfValues(item->numberOfValues() + 1))
+  if(resetExisting)
+    modEntityItem->reset();
+
+  const ModelEntityItemDefinition *itemDef =
+    static_cast<const ModelEntityItemDefinition *>(
+    modEntityItem->definition().get());
+  smtk::model::ManagerPtr mgr = modEntityItem->attribute()->system()->refModelManager();
+  std::size_t idx=0;
+  for (smtk::common::UUIDs::const_iterator it = selEntityRefs.begin();
+       it != selEntityRefs.end(); ++it)
     {
-//    QBoxLayout* entryLayout = qobject_cast<QBoxLayout*>(
-//      this->Internals->EntryFrame->layout());
-//    this->addEntityAssociationWidget(static_cast<int>(item->numberOfValues()) - 1);
+    smtk::model::EntityRef selentityref(mgr, *it);
+    bool success = false;
+    if(idx < modEntityItem->numberOfValues())
+      success = modEntityItem->setValue(idx, selentityref);
+
+    if(!success)
+      success = modEntityItem->appendValue(selentityref);
+
+    if(!success)
+      std::cerr << "ERROR: Unable to set entity to ModelEntityItem: "
+                << it->toString() << std::endl;
+
+    ++idx;
     }
+  if(this->Internals->EntityItemCombo)
+    this->Internals->EntityItemCombo->init();
 }
 
 //----------------------------------------------------------------------------
-void qtModelEntityItem::onRemoveValue()
+void qtModelEntityItem::requestSelectionLink()
 {
-  QToolButton* const minusButton = qobject_cast<QToolButton*>(
-    QObject::sender());
-  if(!minusButton || !this->Internals->ExtensibleMap.contains(minusButton))
-    {
-    return;
-    }
-
-  int gIdx = this->Internals->MinusButtonIndices.indexOf(minusButton);
-  smtk::attribute::ModelEntityItemPtr item =
+  smtk::attribute::ModelEntityItemPtr modEntityItem =
     dynamic_pointer_cast<ModelEntityItem>(this->getObject());
-  if(!item || gIdx < 0 || gIdx >= static_cast<int>(item->numberOfValues()))
+  if(!modEntityItem)
     {
     return;
     }
 
-  QWidget* childwidget = this->Internals->ExtensibleMap.value(minusButton).second;
-  delete childwidget;
-  delete this->Internals->ExtensibleMap.value(minusButton).first;
-  this->Internals->ExtensibleMap.remove(minusButton);
-  this->Internals->MinusButtonIndices.removeOne(minusButton);
-  delete minusButton;
-/*
-  switch (item->type())
-    {
-    case smtk::attribute::Item::DOUBLE:
-      {
-      dynamic_pointer_cast<DoubleItem>(item)->removeValue(gIdx);
-      break;
-      }
-    case smtk::attribute::Item::INT:
-      {
-      dynamic_pointer_cast<IntItem>(item)->removeValue(gIdx);
-      break;
-      }
-    case smtk::attribute::Item::STRING:
-      {
-      dynamic_pointer_cast<StringItem>(item)->removeValue(gIdx);
-     break;
-      }
-    default:
-      //this->m_errorStatus << "Error: Unsupported Item Type: " <<
-      // smtk::attribute::Item::type2String(item->type()) << "\n";
-      break;
-    }
-  this->updateExtensibleState();
-*/
-}
-
-//----------------------------------------------------------------------------
-void qtModelEntityItem::updateExtensibleState()
-{
-/*
-  smtk::attribute::ModelEntityItemPtr item =
-    dynamic_pointer_cast<ModelEntityItem>(this->getObject());
-  if(!item || !item->isExtensible())
-    {
-    return;
-    }
-  bool maxReached = (item->maxNumberOfValues() > 0) &&
-    (item->maxNumberOfValues() == item->numberOfValues());
-  this->Internals->AddItemButton->setEnabled(!maxReached);
-
-  bool minReached = (item->numberOfRequiredValues() > 0) &&
-    (item->numberOfRequiredValues() == item->numberOfValues());
-  foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
-    {
-    tButton->setEnabled(!minReached);
-    }
-*/
-}
-
-//----------------------------------------------------------------------------
-void qtModelEntityItem::clearChildWidgets()
-{
-  smtk::attribute::ModelEntityItemPtr item =
-    dynamic_pointer_cast<ModelEntityItem>(this->getObject());
-  if(!item)
-    {
-    return;
-    }
-/*
-  if(item->isExtensible())
-    {
-    //clear mapping
-    foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
-      {
-      delete this->Internals->ExtensibleMap.value(tButton).first;
-      delete tButton;
-      }
-    this->Internals->ExtensibleMap.clear();
-    this->Internals->MinusButtonIndices.clear();
-    }
-*/
+  const ModelEntityItemDefinition *itemDef =
+    static_cast<const ModelEntityItemDefinition *>(
+    modEntityItem->definition().get());
+  emit this->entitySelectionRequested(itemDef->membershipMask());
 }

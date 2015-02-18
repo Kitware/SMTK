@@ -33,11 +33,11 @@ namespace smtk
   {
     class qtItem;
     class qtFileItem;
+    class qtModelEntityItem;
     class qtRootView;
     class qtAttributeView;
     class qtBaseView;
     class qtInstancedView;
-    //class qtModelView;
     class qtSimpleExpressionView;
     class qtGroupView;
 
@@ -141,7 +141,7 @@ namespace smtk
 
     public slots:
       void onFileItemCreated(smtk::attribute::qtFileItem*);
-//      void onComboIndexChanged();
+      void onModelEntityItemCreated(smtk::attribute::qtModelEntityItem*);
       void onExpressionReferenceChanged();
       void updateModelViews();
       void updateModelViews(qtGroupView*);
@@ -154,6 +154,7 @@ namespace smtk
 
     signals:
       void fileItemCreated(smtk::attribute::qtFileItem* fileItem);
+      void modelEntityItemCreated(smtk::attribute::qtModelEntityItem* entItem);
       void uiChanged(smtk::attribute::qtBaseView*, smtk::attribute::ItemPtr);
 
     protected:

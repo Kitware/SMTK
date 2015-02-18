@@ -13,12 +13,12 @@
 
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/qtFileItem.h"
+#include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtGroupView.h"
 #include "smtk/extension/qt/qtRootView.h"
 #include "smtk/extension/qt/qtInputsItem.h"
 #include "smtk/extension/qt/qtAttributeView.h"
 #include "smtk/extension/qt/qtInstancedView.h"
-//#include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtSimpleExpressionView.h"
 #include "smtk/extension/qt/qtDiscreteValueEditor.h"
 
@@ -669,6 +669,12 @@ void qtUIManager::onFileItemCreated(qtFileItem* fileItem)
     {
     emit this->fileItemCreated(fileItem);
     }
+}
+//----------------------------------------------------------------------------
+void qtUIManager::onModelEntityItemCreated(
+  smtk::attribute::qtModelEntityItem* entItem)
+{
+  emit this->modelEntityItemCreated(entItem);
 }
 
 //----------------------------------------------------------------------------

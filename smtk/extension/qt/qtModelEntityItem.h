@@ -16,6 +16,7 @@
 #define __smtk_attribute_qtModelEntityItem_h
 
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/model/EntityTypeBits.h" // for smtk::model::BitFlags
 
 class qtModelEntityItemInternals;
 class QBoxLayout;
@@ -33,22 +34,26 @@ namespace smtk
         qtBaseView* bview, Qt::Orientation enumOrient = Qt::Horizontal);
       virtual ~qtModelEntityItem();
       virtual void setLabelVisible(bool);
+      virtual void associateSelectedEntities(
+          const smtk::common::UUIDs& selEntityRefs,
+          bool resetExisting = true);
 
     public slots:
       void setOutputOptional(int);
 
+    signals:
+      void entitySelectionRequested(
+        smtk::model::BitFlags entMask);
+
     protected slots:
       virtual void updateItemData();
-      virtual void onAddNewValue();
-      virtual void onRemoveValue();
+      virtual void requestSelectionLink();
 
     protected:
       virtual void createWidget();
       virtual void loadAssociatedEntities();
       virtual void updateUI();
       virtual void addEntityAssociationWidget();
-      virtual void updateExtensibleState();
-      virtual void clearChildWidgets();
 
     private:
 
