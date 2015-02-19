@@ -197,6 +197,15 @@ MeshSet set_union( const MeshSet& a, const MeshSet& b )
   return smtk::mesh::MeshSet(a.m_parent, a.m_handle, result);
 }
 
+//----------------------------------------------------------------------------
+SMTKCORE_EXPORT void for_each(const MeshSet& a, MeshForEach &filter)
+{
+  const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
+
+  filter.m_collection=a.m_parent;
+  iface->meshForEach(a.m_range, filter);
+}
+
 
 }
 }

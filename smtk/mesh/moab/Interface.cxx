@@ -706,6 +706,27 @@ void Interface::cellForEach(const smtk::mesh::HandleRange &cells,
     }
   return;
 }
+
+//----------------------------------------------------------------------------
+void Interface::meshForEach(const smtk::mesh::HandleRange &meshes,
+                            smtk::mesh::MeshForEach& filter) const
+{
+  if(!meshes.empty())
+    {
+    typedef smtk::mesh::HandleRange::const_iterator cit;
+    for(cit i = meshes.begin(); i!= meshes.end(); ++i)
+      {
+
+      smtk::mesh::HandleRange singlHandle(*i,*i);
+      smtk::mesh::MeshSet singleMesh(filter.m_collection,*i,singlHandle);
+
+      //call the custom filter
+      filter(singleMesh);
+      }
+    }
+  return;
+}
+
 //----------------------------------------------------------------------------
 bool Interface::deleteHandles(const smtk::mesh::HandleRange& toDel)
 {

@@ -25,8 +25,9 @@ namespace mesh {
 
 typedef int Points;
 
-//forward declare of CellSet
+//forward declare of CellSet and MeshSet
 class CellSet;
+class MeshSet;
 
 //----------------------------------------------------------------------------
 class SMTKCORE_EXPORT IntegerTag
@@ -63,6 +64,15 @@ class SMTKCORE_EXPORT Dirichlet : public IntegerTag
 {
 public:
   explicit Dirichlet(int value) : IntegerTag(value) {}
+};
+
+//----------------------------------------------------------------------------
+class SMTKCORE_EXPORT MeshForEach
+{
+public:
+  virtual void operator()(const smtk::mesh::MeshSet& singleMesh)=0;
+
+  smtk::mesh::CollectionPtr m_collection;
 };
 
 //----------------------------------------------------------------------------

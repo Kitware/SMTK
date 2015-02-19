@@ -174,6 +174,10 @@ public:
                     smtk::mesh::CellForEach& filter) const;
 
   //----------------------------------------------------------------------------
+  void meshForEach( const HandleRange &meshes,
+                    smtk::mesh::MeshForEach& filter) const;
+
+  //----------------------------------------------------------------------------
   bool deleteHandles(const smtk::mesh::HandleRange& toDel);
 
   //----------------------------------------------------------------------------

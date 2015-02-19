@@ -177,6 +177,10 @@ public:
                             smtk::mesh::CellForEach& filter) const = 0;
 
   //----------------------------------------------------------------------------
+  virtual void meshForEach( const HandleRange &meshes,
+                            smtk::mesh::MeshForEach& filter) const = 0;
+
+  //----------------------------------------------------------------------------
   //The handles must be all mesh or cell elements. Mixed ranges wil
   //not be deleted and will return false. Empty ranges will be ignored
   //and return true.

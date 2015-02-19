@@ -30,6 +30,7 @@ class SMTKCORE_EXPORT MeshSet
   friend MeshSet set_intersect( const MeshSet& a, const MeshSet& b);
   friend MeshSet set_difference( const MeshSet& a, const MeshSet& b);
   friend MeshSet set_union( const MeshSet& a, const MeshSet& b );
+  friend void for_each( const MeshSet& a, MeshForEach& filter);
   friend class Collection; //required for deletion of meshes
 public:
   //construct a MeshSet that represents all meshes that are children
@@ -85,7 +86,6 @@ private:
 
 //Function that provide set operations on MeshSets
 
-
 //intersect two mesh sets, placing the results in the return mesh set. The
 //intersection is done at the mesh id level, not at the cell id, or at
 //the point usage level. If you need to find the result of a cell id intersection
@@ -110,6 +110,9 @@ SMTKCORE_EXPORT MeshSet set_difference( const MeshSet& a, const MeshSet& b);
 //Note: If the meshsets come from different collections the result will
 //always be empty
 SMTKCORE_EXPORT MeshSet set_union( const MeshSet& a, const MeshSet& b );
+
+//apply a for_each mesh operator on all meshes of a given set.
+SMTKCORE_EXPORT void for_each( const MeshSet& a, MeshForEach& filter);
 
 
 }
