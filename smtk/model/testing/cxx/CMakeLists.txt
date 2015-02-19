@@ -66,7 +66,4 @@ target_link_libraries(benchmarkModel SMTKCore SMTKCoreModelTesting)
 if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
   add_test(unitDescriptivePhrase ${EXECUTABLE_OUTPUT_PATH}/unitDescriptivePhrase
     "${SMTK_DATA_DIR}/smtk/simple.json")
-
-  add_test(unitImportExportJSON ${EXECUTABLE_OUTPUT_PATH}/unitImportExportJSON
-    "${SMTK_DATA_DIR}/smtk/simple.json")
 endif()
