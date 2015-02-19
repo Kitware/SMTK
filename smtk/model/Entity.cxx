@@ -52,13 +52,13 @@ static const char* cellNamesByDimensionPlural[] = {
 
 /// The default constructor creates an invalid link.
 Entity::Entity()
-  : m_entityFlags(INVALID)
+  : m_entityFlags(INVALID), m_firstInvalid(-1)
 {
 }
 
 /// Construct a link with the given \a dimension with a type specified by \a entityFlags.
 Entity::Entity(BitFlags entFlags, int dim)
-  : m_entityFlags(entFlags)
+  : m_entityFlags(entFlags), m_firstInvalid(-1)
 {
   // Override the dimension bits if the dimension is specified
   if (dim >= 0 && dim <= 4)
@@ -145,11 +145,29 @@ const UUIDArray& Entity::relations() const
   return this->m_relations;
 }
 
-int Entity::appendRelation(const UUID& b)
+/**\brief Append a relation \a b to this entity's list of relations.
+  *
+  * This returns the index of \a b in the entity's list of relations.
+  *
+  * If \a useHoles is true, then a slower algorithm is used that
+  * replaces the first invalid relation with \a b (or appends \a b if
+  * there are no invalid relations). Once the hole is used, a linear-time
+  * search is used to find the next hole. If you will be performing
+  * many intermixed insertions and invalidations, you may wish to
+  * set \a useHoles to false. Also, if you are restoring an Entity
+  * from an archive, you should pass false.
+  */
+int Entity::appendRelation(const UUID& b, bool useHoles)
 {
-  int reln = static_cast<int>(this->m_relations.size());
+  int idx;
+  if (useHoles)
+    {
+    if ((idx = this->consumeInvalidIndex(b)) >= 0)
+      return idx;
+    }
+  idx = static_cast<int>(this->m_relations.size());
   this->m_relations.push_back(b);
-  return reln;
+  return idx;
 }
 
 Entity& Entity::pushRelation(const UUID& b)
@@ -158,6 +176,17 @@ Entity& Entity::pushRelation(const UUID& b)
   return *this;
 }
 
+/**\brief Remove the relation from the entity. Do not use this unless you know what you are doing.
+  *
+  * Instead of this method, you should probably use invalidateRelation().
+  *
+  * This removes the first array entry holding \a b.
+  * When the relation \a b is not at the end of the entity's array of relations,
+  * the index of all following relations is reduced by one (because the array is
+  * compacted).
+  * Since arrangements store indices into this list of relations, you should only
+  * call removeRelation when you also update all of the Entity's arrangements.
+  */
 Entity& Entity::removeRelation(const UUID& b)
 {
   UUIDArray& arr(this->m_relations);
@@ -189,6 +218,40 @@ int Entity::findOrAppendRelation(const UUID& r)
   int idx = static_cast<int>(this->m_relations.size());
   this->m_relations.push_back(r);
   return idx;
+}
+
+/**\brief Find the given relation \a r and invalidate its index.
+  *
+  * This returns the invalidated index if the relation was found
+  * and -1 if \a r was not present.
+  */
+int Entity::invalidateRelation(const UUID& r)
+{
+  for (UUIDArray::size_type i = 0; i < this->m_relations.size(); ++i)
+    {
+    if (this->m_relations[i] == r)
+      {
+      return this->invalidateRelationByIndex(static_cast<int>(i));
+      }
+    }
+  return -1;
+}
+
+/**\brief Given a valid index, invalidate the UUID at that index.
+  *
+  * This returns the index upon success or -1 upon failure.
+  */
+int Entity::invalidateRelationByIndex(int relIdx)
+{
+  if (relIdx < 0 || relIdx >= static_cast<int>(this->m_relations.size()))
+    return -1;
+
+  this->m_relations[relIdx] = smtk::common::UUID::null();
+  if (
+    this->m_firstInvalid < 0 ||
+    (this->m_firstInvalid >= 0 && relIdx < this->m_firstInvalid))
+    this->m_firstInvalid = relIdx;
+  return relIdx;
 }
 
 /**\brief Return a list the dimension bits set in \a entityFlags.
@@ -750,6 +813,24 @@ BitFlags Entity::dimensionToDimensionBits(int dim)
   default: break;
     }
   return 0;
+}
+
+int Entity::consumeInvalidIndex(const smtk::common::UUID& uid)
+{
+  int result = this->m_firstInvalid;
+  if (result < 0)
+    return result; // no hole to consume
+  this->m_relations[result] = uid;
+  // Now update m_firstInvalid:
+  ++this->m_firstInvalid;
+  UUIDArray::iterator it = this->m_relations.begin() + this->m_firstInvalid;
+  for (; it != this->m_relations.end(); ++it, ++this->m_firstInvalid)
+    if (! *it)
+      {
+      return result;
+      }
+  this->m_firstInvalid = -1;
+  return result;
 }
 
   } // namespace model

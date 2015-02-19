@@ -54,11 +54,13 @@ public:
   smtk::common::UUIDArray& relations();
   const smtk::common::UUIDArray& relations() const;
 
-  int appendRelation(const smtk::common::UUID& b);
+  int appendRelation(const smtk::common::UUID& b, bool useHoles = true);
   Entity& pushRelation(const smtk::common::UUID& b);
   Entity& removeRelation(const smtk::common::UUID& b);
 
   int findOrAppendRelation(const smtk::common::UUID& r);
+  int invalidateRelation(const smtk::common::UUID& r);
+  int invalidateRelationByIndex(int relIdx);
 
   std::string flagSummary(int form = 0) const
     { return Entity::flagSummary(this->entityFlags(), form); }
@@ -75,9 +77,11 @@ public:
   static BitFlags dimensionToDimensionBits(int dim);
 
 protected:
+  int consumeInvalidIndex(const smtk::common::UUID& uid);
+
   BitFlags m_entityFlags;
   smtk::common::UUIDArray m_relations;
-private:
+  int m_firstInvalid;
 };
 
 /// An abbreviation for the record type used by maps of Entity records.

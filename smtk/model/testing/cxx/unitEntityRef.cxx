@@ -9,7 +9,6 @@
 //=========================================================================
 #include "smtk/io/ExportJSON.h"
 
-
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Chain.h"
 #include "smtk/model/EntityRef.h"
@@ -290,7 +289,7 @@ int main(int argc, char* argv[])
     InstanceEntities ies = model.instances<InstanceEntities>();
     test(ies.size() == 1 && ies[0] == ie, "Prototype should list its instances.");
 
-    std::string json = ExportJSON::fromModelManager(sm);
+    std::string json = smtk::io::ExportJSON::fromModelManager(sm);
     std::ofstream jsonFile("/tmp/entityref.json");
     jsonFile << json;
     jsonFile.close();
@@ -410,8 +409,9 @@ int main(int argc, char* argv[])
     // Test that face entity was created with invalid (but present) face uses.
     Face f(sm, uids[20]);
     test(f.volumes().size() == 1 && f.volumes()[0].isVolume());
-    test(!f.positiveUse().isValid());
-    test( f.negativeUse().isValid());
+
+    test(!f.positiveUse().isValid(), "Positive use");
+    test( f.negativeUse().isValid(), "Negative use" + f.entity().toString());
 
     Vertex v = sm->addVertex();
     sm->addVertexUse(v, 0);
