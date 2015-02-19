@@ -27,9 +27,9 @@ smtk::mesh::CollectionPtr read(const std::string& path,
                                const smtk::mesh::ManagerPtr& manager);
 
 //construct an interface to a given file. will load only meshes which are in
-//the boundary set.
+//the material set.
 //file. If the file given fails to load we will return a invalid Collection
-smtk::mesh::CollectionPtr read_boundary(const std::string& path,
+smtk::mesh::CollectionPtr read_material(const std::string& path,
                                         const smtk::mesh::ManagerPtr& manager);
 
 //construct an interface to a given file. will load only meshes which are in
@@ -47,8 +47,8 @@ smtk::mesh::CollectionPtr read_dirichlet(const std::string& path,
 //Import everything in a file into an existing collection.
 bool import(const std::string& path, const smtk::mesh::CollectionPtr& c);
 
-//Import all the boundary sets in a file into an existing collection
-bool import_boundary(const std::string& path, const smtk::mesh::CollectionPtr& c);
+//Import all the material sets in a file into an existing collection
+bool import_material(const std::string& path, const smtk::mesh::CollectionPtr& c);
 
 //Import all the neumann sets in a file into an existing collection
 bool import_neumann(const std::string& path, const smtk::mesh::CollectionPtr& c);

@@ -33,9 +33,9 @@ public:
   static bool entireCollection(const std::string& filePath,
                                smtk::mesh::CollectionPtr collection);
 
-  //Saves the only the boundary elements of a collection to File.
+  //Saves the only the material elements of a collection to File.
   //Overwrites any existing content in the file
-  static bool onlyBoundary(const std::string& filePath,
+  static bool onlyMaterial(const std::string& filePath,
                            smtk::mesh::CollectionPtr collection);
 
   //Saves the only the neumann elements of a collection to File.

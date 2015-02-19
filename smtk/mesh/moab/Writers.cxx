@@ -120,10 +120,10 @@ bool write(const std::string& path, const smtk::mesh::CollectionPtr& c)
   return is_valid(c) && write_file( smtk::mesh::moab::extract_interface(c), path );
 }
 
-//Write all the boundary sets in a file into an existing collection
-bool write_boundary(const std::string& path, const smtk::mesh::CollectionPtr& c)
+//Write all the material sets in a file into an existing collection
+bool write_material(const std::string& path, const smtk::mesh::CollectionPtr& c)
 {
-  const std::string tag("BOUNDARY_SET");
+  const std::string tag("MATERIAL_SET");
   return is_valid(c) &&  write_file( smtk::mesh::moab::extract_interface(c), path, tag.c_str() );
 }
 

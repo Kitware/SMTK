@@ -132,15 +132,31 @@ void verify_load_onlyDirichlet()
 }
 
 //----------------------------------------------------------------------------
-void verify_load_bad_onlyBoundary()
+void verify_load_onlyMaterial()
 {
   std::string file_path(data_root);
   file_path += "/mesh/64bricks_12ktet.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyBoundary(file_path, manager);
-  //this dataset has no boundaries
+  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyMaterial(file_path, manager);
+  test( c->isValid(), "collection should be valid");
+
+  std::size_t numMeshes = c->numberOfMeshes();
+  std::cout << "number of material meshes in 64bricks_12ktet is: " << numMeshes << std::endl;
+  test( numMeshes == 800, "dataset once loaded should have 800 meshes");
+}
+
+//----------------------------------------------------------------------------
+void verify_load_bad_onlyMaterial()
+{
+  std::string file_path(data_root);
+  file_path += "/mesh/sixth_hexflatcore.h5m";
+
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyMaterial(file_path, manager);
+  //this dataset has no material sets
   test( !c->isValid(), "collection should be invalid");
+
 }
 
 //----------------------------------------------------------------------------
@@ -183,7 +199,7 @@ int UnitTestLoadMesh(int argc, char** argv)
   verify_load_onlyNeumann();
   verify_load_onlyDirichlet();
 
-  verify_load_bad_onlyBoundary();
+  verify_load_bad_onlyMaterial();
   verify_load_bad_onlyNeumann();
   verify_load_bad_onlyDirichlet();
 

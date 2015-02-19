@@ -147,6 +147,45 @@ void verify_write_valid_collection_exodus()
 }
 
 //----------------------------------------------------------------------------
+void verify_write_onlyMaterial()
+{
+  std::string file_path(data_root);
+  file_path += "/mesh/64bricks_12ktet.h5m";
+
+  std::string write_path(write_root);
+  write_path += "/64bricks_12ktet.h5m";
+
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
+  test( c->isValid(), "collection should be valid");
+
+  //write out the mesh.
+  bool result = smtk::io::WriteMesh::onlyMaterial(write_path, c);
+  if(!result)
+    {
+    cleanup( write_path );
+    test( result == true, "failed to properly write out only Material");
+    }
+
+  //reload the written file and verify the number of meshes are the same as the
+  //input mesh
+  smtk::mesh::CollectionPtr c2 = smtk::io::ImportMesh::entireFile(write_path, manager);
+  smtk::mesh::CollectionPtr c3 = smtk::io::ImportMesh::onlyMaterial(file_path, manager);
+
+  // remove the file from disk
+  cleanup( write_path );
+
+  // //verify the meshes
+  test( c2->isValid(), "collection should be valid");
+  test( c2->name() == c3->name() );
+  //need to dig into why we are getting a meshset on extraction that is not
+  //part of the set
+  test( c2->cells().size() == c3->cells().size() );
+  test( c2->pointConnectivity().size() == c3->pointConnectivity().size() );
+  test( c2->associatedTypes() == c3->associatedTypes() );
+}
+
+//----------------------------------------------------------------------------
 void verify_write_onlyNeumann()
 {
   std::string file_path(data_root);
@@ -240,6 +279,7 @@ int UnitTestWriteMesh(int argc, char** argv)
   verify_write_valid_collection_hdf5();
   verify_write_valid_collection_exodus();
 
+  verify_write_onlyMaterial();
   verify_write_onlyNeumann();
   verify_write_onlyDirichlet();
 
