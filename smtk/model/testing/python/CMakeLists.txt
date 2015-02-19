@@ -8,6 +8,7 @@ set(smtkModelPythonTests
 set(smtkModelPythonDataTests
   modelAttributes
   modelSetPropertyOp
+  integrationMultiSessionDescriptivePhrase
 )
 
 foreach (test ${smtkModelPythonTests})
@@ -23,7 +24,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
     add_test(${test}Py
              ${PYTHON_EXECUTABLE}
              ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py
-             ${SMTK_DATA_DIR})
+             --data-dir=${SMTK_DATA_DIR})
     set_tests_properties(${test}Py
       PROPERTIES
         ENVIRONMENT "PYTHONPATH=${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}"
