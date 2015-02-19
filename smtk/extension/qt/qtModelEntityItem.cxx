@@ -33,6 +33,7 @@
 #include <QComboBox>
 #include <QToolButton>
 #include <QStandardItemModel>
+#include <QAbstractItemView>
 
 using namespace smtk::attribute;
 
@@ -131,20 +132,36 @@ void qtModelEntityItem::addEntityAssociationWidget()
   editorLayout->setMargin(0);
   editorLayout->setSpacing(3);
 
+  // associate button
   this->Internals->LinkSelectionButton = new QToolButton(this->Widget);
-  QString iconName(":/icons/attribute/plus.png");
-  this->Internals->LinkSelectionButton->setToolTip("Set With Selection");
+  QString iconName(":/icons/attribute/selLinkIn.png");
+  this->Internals->LinkSelectionButton->setToolTip("Assoicate With Selected Entities");
   this->Internals->LinkSelectionButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
-  this->Internals->LinkSelectionButton->setFixedSize(QSize(12, 12));
+  this->Internals->LinkSelectionButton->setFixedSize(QSize(16, 16));
   this->Internals->LinkSelectionButton->setIcon(QIcon(iconName));
   this->Internals->LinkSelectionButton->setSizePolicy(sizeFixedPolicy);
   connect(this->Internals->LinkSelectionButton, SIGNAL(clicked()),
-    this, SLOT(requestSelectionLink()));
+    this, SLOT(onRequestEntityAssociation()));
+  // clear button
+  QToolButton* clearButton = new QToolButton(this->Widget);
+  iconName = ":/icons/attribute/clearLinkIn.png";
+  clearButton->setToolTip("Clear Entity Associations");
+  clearButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
+  clearButton->setFixedSize(QSize(16, 16));
+  clearButton->setIcon(QIcon(iconName));
+  clearButton->setSizePolicy(sizeFixedPolicy);
+  connect(clearButton, SIGNAL(clicked()),
+    this, SLOT(clearEntityAssociations()));
+
+  editorLayout->addWidget(clearButton);
   editorLayout->addWidget(this->Internals->LinkSelectionButton);
 
   editorLayout->addWidget(editBox);
   this->Internals->EntryLayout->addLayout(editorLayout, 0, 1);
   editBox->init();
+  connect(editBox->view()->selectionModel(),
+    SIGNAL(selectionChanged ( const QItemSelection&, const QItemSelection&)),
+    this, SLOT(popupViewItemSelected()));
 
   this->Internals->EntityItemCombo = editBox;
 }
@@ -279,8 +296,8 @@ void qtModelEntityItem::setOutputOptional(int state)
 }
 
 //----------------------------------------------------------------------------
-void qtModelEntityItem::associateSelectedEntities(
-  const smtk::common::UUIDs& selEntityRefs, bool resetExisting)
+void qtModelEntityItem::associateEntities(
+  const smtk::model::EntityRefs& selEntityRefs, bool resetExisting)
 {
   smtk::attribute::ModelEntityItemPtr modEntityItem =
     dynamic_pointer_cast<ModelEntityItem>(this->getObject());
@@ -294,22 +311,20 @@ void qtModelEntityItem::associateSelectedEntities(
   const ModelEntityItemDefinition *itemDef =
     static_cast<const ModelEntityItemDefinition *>(
     modEntityItem->definition().get());
-  smtk::model::ManagerPtr mgr = modEntityItem->attribute()->system()->refModelManager();
   std::size_t idx=0;
-  for (smtk::common::UUIDs::const_iterator it = selEntityRefs.begin();
+  for (smtk::model::EntityRefs::const_iterator it = selEntityRefs.begin();
        it != selEntityRefs.end(); ++it)
     {
-    smtk::model::EntityRef selentityref(mgr, *it);
     bool success = false;
     if(idx < modEntityItem->numberOfValues())
-      success = modEntityItem->setValue(idx, selentityref);
+      success = modEntityItem->setValue(idx, *it);
 
     if(!success)
-      success = modEntityItem->appendValue(selentityref);
+      success = modEntityItem->appendValue(*it);
 
     if(!success)
       std::cerr << "ERROR: Unable to set entity to ModelEntityItem: "
-                << it->toString() << std::endl;
+                << it->entity().toString() << std::endl;
 
     ++idx;
     }
@@ -318,7 +333,22 @@ void qtModelEntityItem::associateSelectedEntities(
 }
 
 //----------------------------------------------------------------------------
-void qtModelEntityItem::requestSelectionLink()
+void qtModelEntityItem::clearEntityAssociations()
+{
+  smtk::attribute::ModelEntityItemPtr modEntityItem =
+    dynamic_pointer_cast<ModelEntityItem>(this->getObject());
+  if(!modEntityItem)
+    {
+    return;
+    }
+  modEntityItem->reset();
+
+  if(this->Internals->EntityItemCombo)
+    this->Internals->EntityItemCombo->init();
+}
+
+//----------------------------------------------------------------------------
+void qtModelEntityItem::onRequestEntityAssociation()
 {
   smtk::attribute::ModelEntityItemPtr modEntityItem =
     dynamic_pointer_cast<ModelEntityItem>(this->getObject());
@@ -330,5 +360,29 @@ void qtModelEntityItem::requestSelectionLink()
   const ModelEntityItemDefinition *itemDef =
     static_cast<const ModelEntityItemDefinition *>(
     modEntityItem->definition().get());
-  emit this->entitySelectionRequested(itemDef->membershipMask());
+  emit this->requestEntityAssociation();
+}
+
+//----------------------------------------------------------------------------
+void qtModelEntityItem::popupViewItemSelected()
+{
+  QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(
+    this->Internals->EntityItemCombo->model());
+  smtk::common::UUIDs uuids;
+  foreach(QModelIndex idx,
+          this->Internals->EntityItemCombo->view()->
+          selectionModel()->selectedIndexes())
+    {
+    QStandardItem* item = itemModel->item(idx.row());
+    if(!item)
+      {
+      return;
+      }
+    QString entid = item->data(Qt::UserRole).toString();
+    if(!entid.isEmpty())
+      {
+      uuids.insert(entid.toStdString());
+      }
+    }
+  emit this->entityListHighlighted(uuids);
 }

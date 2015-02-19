@@ -34,20 +34,23 @@ namespace smtk
         qtBaseView* bview, Qt::Orientation enumOrient = Qt::Horizontal);
       virtual ~qtModelEntityItem();
       virtual void setLabelVisible(bool);
-      virtual void associateSelectedEntities(
-          const smtk::common::UUIDs& selEntityRefs,
+      virtual void associateEntities(
+          const smtk::model::EntityRefs& selEntityRefs,
           bool resetExisting = true);
 
     public slots:
       void setOutputOptional(int);
 
     signals:
-      void entitySelectionRequested(
-        smtk::model::BitFlags entMask);
+      void requestEntityAssociation();
+      void entityListHighlighted(
+        const smtk::common::UUIDs& uuids);
 
     protected slots:
       virtual void updateItemData();
-      virtual void requestSelectionLink();
+      virtual void onRequestEntityAssociation();
+      virtual void popupViewItemSelected();
+      virtual void clearEntityAssociations();
 
     protected:
       virtual void createWidget();

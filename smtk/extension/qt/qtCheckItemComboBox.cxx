@@ -17,8 +17,10 @@
 
 #include <QAbstractItemView>
 #include <QStandardItemModel>
+#include <QStyleOptionButton>
 #include <QStyleOptionViewItem>
 #include <QStandardItem>
+#include <QMouseEvent>
 
 using namespace smtk::attribute;
 
@@ -31,7 +33,7 @@ void qtCheckableComboItemDelegate::paint(QPainter * painter_, const QStyleOption
 {
     QStyleOptionViewItem & refToNonConstOption = const_cast<QStyleOptionViewItem &>(option_);
     refToNonConstOption.showDecorationSelected = false;
-    //refToNonConstOption.state &= ~QStyle::State_HasFocus & ~QStyle::State_MouseOver;
+//    refToNonConstOption.state &= QStyle::SH_ItemView_MovementWithoutUpdatingSelection;
 
     QStyledItemDelegate::paint(painter_, refToNonConstOption, index_);
 }
@@ -78,6 +80,7 @@ void qtCheckItemComboBox::updateText()
 
 void qtCheckItemComboBox::hidePopup()
 {
+  this->view()->clearSelection();
   this->QComboBox::hidePopup();
   this->setCurrentIndex(0);
 }
@@ -124,7 +127,7 @@ void qtModelEntityItemCombo::init()
     QStandardItem* item = new QStandardItem;
     std::string entName = (*it).name();
     item->setText(entName.c_str());
-    item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+    item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
     //item->setData(this->Internals->AttSelections[keyName], Qt::CheckStateRole);
     item->setData(Qt::Unchecked, Qt::CheckStateRole);
     item->setCheckable(true);
@@ -142,6 +145,8 @@ void qtModelEntityItemCombo::init()
   //connect(this->Internals->checkableAttComboModel, SIGNAL(itemChanged ( QStandardItem*)),
   //  this, SLOT(attributeFilterChanged(QStandardItem*)));
   this->blockSignals(false);
+  this->view()->viewport()->installEventFilter(this);
+  // this->view()->setSelectionMode(QAbstractItemView::ExtendedSelection);
   this->updateText();
   this->hidePopup();
 }
@@ -151,6 +156,32 @@ void qtModelEntityItemCombo::showPopup()
 {
   this->init();
   this->qtCheckItemComboBox::showPopup();
+}
+
+//-----------------------------------------------------------------------------
+bool qtModelEntityItemCombo::eventFilter(QObject* editor, QEvent* evt)
+{
+  if(evt->type()==QEvent::MouseButtonRelease)
+    {
+    int index = view()->currentIndex().row();
+/*
+    // with the help of styles, check if checkbox rect contains 'pos'
+    QMouseEvent* e = dynamic_cast<QMouseEvent*>(evt);
+    QStyleOptionButton opt;
+    opt.rect = view()->visualRect(view()->currentIndex());
+    QRect r = style()->subElementRect(QStyle::SE_ViewItemCheckIndicator, &opt);
+    if(r.contains(e->pos()))
+      {
+*/
+      if (itemData(index, Qt::CheckStateRole) == Qt::Checked)
+        setItemData(index, Qt::Unchecked, Qt::CheckStateRole);
+      else
+        setItemData(index, Qt::Checked, Qt::CheckStateRole);
+//      }
+    return true;
+    }
+
+  return QObject::eventFilter(editor, evt);
 }
 
 //----------------------------------------------------------------------------

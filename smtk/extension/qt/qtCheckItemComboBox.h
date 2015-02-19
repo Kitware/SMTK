@@ -33,6 +33,7 @@ class QTSMTK_EXPORT qtCheckableComboItemDelegate : public QStyledItemDelegate
       QPainter* painter,
       const QStyleOptionViewItem& option,
       const QModelIndex& index) const;
+
   };
 
 //A sublcass of QComboBox to set text when hidePopup
@@ -61,8 +62,11 @@ class QTSMTK_EXPORT qtCheckItemComboBox : public QComboBox
       virtual void init();
 
     protected slots:
-      void itemCheckChanged(
+      virtual void itemCheckChanged(
         const QModelIndex& topLeft, const QModelIndex& bottomRight);
+
+    protected:
+      virtual bool eventFilter(QObject* editor, QEvent* event);
 
     private:
       smtk::attribute::WeakItemPtr m_ModelEntityItem;
