@@ -97,6 +97,8 @@ public:
                               { return domainMeshes(d); }
   smtk::mesh::MeshSet   meshes( const smtk::mesh::Dirichlet& d )
                               { return dirichletMeshes(d); }
+  smtk::mesh::MeshSet   meshes( const smtk::mesh::Neumann& d )
+                              { return neumannMeshes(d); }
 
   //find a cells of a given type or a collection of types
   smtk::mesh::CellSet   cells( smtk::mesh::CellType cellType );
@@ -167,10 +169,21 @@ public:
   bool setDirichletOnMeshes(const smtk::mesh::MeshSet& meshes,
                             const smtk::mesh::Dirichlet& d);
 
-  //todo: query based on Neumann info
-  //std::vector< smtk::mesh::Neumann > neumanns();
-  //smtk::mesh:::MeshSet neumannMeshes();
-  //setNeumannOnMeshes
+  //----------------------------------------------------------------------------
+  // Neumann Queries
+  //----------------------------------------------------------------------------
+  //get all the current dirichlet on the points of the mesh
+  std::vector< smtk::mesh::Neumann > neumanns();
+
+  //get the meshes with a given neumann value. If no meshes have
+  //this material value the result will be empty.
+  smtk::mesh::MeshSet neumannMeshes( const smtk::mesh::Neumann& n );
+
+  //Assign a given neumann to a collection of meshes. Overwrites
+  //any existing neumann value
+  //Generally Neumann meshes only contain vertices
+  bool setNeumannOnMeshes(const smtk::mesh::MeshSet& meshes,
+                          const smtk::mesh::Neumann& n);
 
   //Extract the shell ( exterior face elements ) of a given set of meshes
   //If you want the shell of the entire collection, pass all meshes.

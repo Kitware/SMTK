@@ -347,6 +347,29 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
 }
 
 //----------------------------------------------------------------------------
+//find all entity sets that have this exact name tag
+smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
+                                               const smtk::mesh::Neumann &neumann) const
+
+{
+  tag::QueryNeumannTag ntag(neumann.value(),this->moabInterface());
+
+  smtk::mesh::HandleRange result;
+  ::moab::ErrorCode rval;
+  rval = m_iface->get_entities_by_type_and_tag(handle,
+                                               ::moab::MBENTITYSET,
+                                               ntag.moabTagPtr(),
+                                               ntag.moabTagValuePtr(),
+                                               1,
+                                               result);
+  if(rval != ::moab::MB_SUCCESS)
+    {
+    result.clear();
+    }
+  return result;
+}
+
+//----------------------------------------------------------------------------
 //get all cells held by this range
 smtk::mesh::HandleRange Interface::getCells(const HandleRange &meshsets) const
 
@@ -482,6 +505,16 @@ std::vector< smtk::mesh::Dirichlet > Interface::computeDirichletValues(const smt
 }
 
 //----------------------------------------------------------------------------
+std::vector< smtk::mesh::Neumann > Interface::computeNeumannValues(const smtk::mesh::HandleRange& meshsets) const
+{
+  tag::QueryNeumannTag ntag(0,this->moabInterface());
+  return detail::computeDenseTagValues<smtk::mesh::Neumann>(ntag,
+                                                            meshsets,
+                                                            this->moabInterface());
+}
+
+
+//----------------------------------------------------------------------------
 smtk::mesh::TypeSet Interface::computeTypes(smtk::mesh::Handle handle) const
 {
   int numMeshes = 0;
@@ -567,6 +600,42 @@ bool Interface::setDirichlet(const smtk::mesh::HandleRange& meshsets,
   bool cellsTagged = detail::setDenseTagValues(dtag,cells,this->moabInterface());
   bool meshesTagged =detail::setDenseTagValues(dtag,meshsets,this->moabInterface());
   return cellsTagged && meshesTagged;
+}
+
+//----------------------------------------------------------------------------
+bool Interface::setNeumann(const smtk::mesh::HandleRange& meshsets,
+                           const smtk::mesh::Neumann& neumann) const
+{
+  if(meshsets.empty())
+    {
+    return true;
+    }
+
+  tag::QueryNeumannTag ntag(neumann.value(),this->moabInterface());
+
+  //step 0 tag the meshsets
+  bool tagged = detail::setDenseTagValues(ntag,meshsets,this->moabInterface());
+
+  //step 1 find the highest dimension cells for the meshes.
+  smtk::mesh::HandleRange cells;
+  int dimension = 4;
+  bool hasCells = false;
+  while(hasCells == false && dimension >= 0)
+    {
+    --dimension;
+    cells = this->getCells(meshsets, static_cast<smtk::mesh::DimensionType>(dimension));
+    hasCells = !cells.empty();
+    }
+
+  //step 2 apply the neumann property to all cells for dimension that is 1 lower
+  //since that would be the boundary dimension
+  if(hasCells && dimension > 0)
+    {
+    --dimension;
+    cells = this->getCells(meshsets, static_cast<smtk::mesh::DimensionType>(dimension));
+    tagged = tagged && detail::setDenseTagValues(ntag,cells,this->moabInterface());
+    }
+  return tagged;
 }
 
 //----------------------------------------------------------------------------

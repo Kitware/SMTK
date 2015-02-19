@@ -449,6 +449,39 @@ bool Collection::setDirichletOnMeshes(const smtk::mesh::MeshSet& meshes,
 }
 
 //----------------------------------------------------------------------------
+std::vector< smtk::mesh::Neumann > Collection::neumanns()
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
+  smtk::mesh::moab::Handle handle = this->m_internals->mesh_root_handle();
+
+  smtk::mesh::HandleRange entities = iface->getMeshsets( handle );
+  return iface->computeNeumannValues( entities );
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet Collection::neumannMeshes( const smtk::mesh::Neumann& n )
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
+  smtk::mesh::moab::Handle handle = this->m_internals->mesh_root_handle();
+
+  smtk::mesh::HandleRange entities = iface->getMeshsets( handle, n);
+  return smtk::mesh::MeshSet( this->shared_from_this(),
+                              this->m_internals->mesh_root_handle(),
+                              entities);
+}
+
+//----------------------------------------------------------------------------
+bool Collection::setNeumannOnMeshes(const smtk::mesh::MeshSet& meshes,
+                                    const smtk::mesh::Neumann &n)
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
+  if(meshes.m_parent == this->shared_from_this())
+    {
+    return iface->setNeumann(meshes.m_range,n);
+    }
+  return false;
+}
+//----------------------------------------------------------------------------
 smtk::mesh::MeshSet Collection::extractShell( const smtk::mesh::MeshSet& meshes )
 {
    smtk::mesh::HandleRange entities;

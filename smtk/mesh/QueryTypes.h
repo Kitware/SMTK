@@ -67,6 +67,13 @@ public:
 };
 
 //----------------------------------------------------------------------------
+class SMTKCORE_EXPORT Neumann : public IntegerTag
+{
+public:
+  explicit Neumann(int value) : IntegerTag(value) {}
+};
+
+//----------------------------------------------------------------------------
 class SMTKCORE_EXPORT MeshForEach
 {
 public:

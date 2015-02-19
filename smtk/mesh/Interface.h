@@ -105,6 +105,11 @@ public:
                                               const smtk::mesh::Dirichlet& dirichlet) const = 0;
 
   //----------------------------------------------------------------------------
+  //find all entity sets that have this exact neumann tag
+  virtual smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle,
+                                              const smtk::mesh::Neumann& neumann) const = 0;
+
+  //----------------------------------------------------------------------------
   //get all cells held by this range
   virtual smtk::mesh::HandleRange getCells(const smtk::mesh::HandleRange& meshsets) const = 0;
 
@@ -133,6 +138,9 @@ public:
   virtual std::vector< smtk::mesh::Dirichlet > computeDirichletValues(const smtk::mesh::HandleRange& meshsets) const = 0;
 
   //----------------------------------------------------------------------------
+  virtual std::vector< smtk::mesh::Neumann > computeNeumannValues(const smtk::mesh::HandleRange& meshsets) const = 0;
+
+  //----------------------------------------------------------------------------
   virtual smtk::mesh::TypeSet computeTypes(smtk::mesh::Handle handle) const = 0;
 
   //----------------------------------------------------------------------------
@@ -146,6 +154,10 @@ public:
   //----------------------------------------------------------------------------
   virtual bool setDirichlet(const smtk::mesh::HandleRange& meshsets,
                             const smtk::mesh::Dirichlet& dirichlet) const = 0;
+
+  //----------------------------------------------------------------------------
+  virtual bool setNeumann(const smtk::mesh::HandleRange& meshsets,
+                          const smtk::mesh::Neumann& neumann) const = 0;
 
   //----------------------------------------------------------------------------
   virtual smtk::mesh::HandleRange rangeIntersect(const smtk::mesh::HandleRange& a,
