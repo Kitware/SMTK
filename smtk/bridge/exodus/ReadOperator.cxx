@@ -71,6 +71,7 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
   Session* brdg = this->exodusSession();
   smtk::model::Model smtkModelOut =
     brdg->addModel(modelOut);
+  smtkModelOut.setStringProperty("url", filename);
 
   // Now set model for session and transcribe everything.
   smtk::model::OperatorResult result = this->createResult(
