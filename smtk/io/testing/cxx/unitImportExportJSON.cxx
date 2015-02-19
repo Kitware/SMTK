@@ -106,6 +106,7 @@ void testModelExport()
   UUIDArray::size_type modelStart = uids.size();
   uids.push_back(sm->addModel().entity());
   sm->findEntity(uids[21])->relations().push_back(uids[modelStart]);
+  sm->findEntity(uids[modelStart])->relations().push_back(uids[21]);
   EntityRefs entities;
   entities.insert(EntityRef(sm, uids[8])); // An edge
 
