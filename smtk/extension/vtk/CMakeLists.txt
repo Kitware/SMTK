@@ -15,10 +15,12 @@ set(VTKLibHeaders
 # Add compile definitions to force linking to implementation modules
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS ${VTK_DEFINITIONS})
 
+SET(_VTK_INSTALL_NO_DEVELOPMENT ${VTK_INSTALL_NO_DEVELOPMENT})
+SET(VTK_INSTALL_NO_DEVELOPMENT ON)
 # Don't do VTK header test. It is broken at the moment.
 set(vtkSMTK_NO_HeaderTest 1)
-
 vtk_module_library(vtkSMTK ${VTKLibSrcs})
+SET(VTK_INSTALL_NO_DEVELOPMENT ${_VTK_INSTALL_NO_DEVELOPMENT})
 
 target_link_libraries(vtkSMTK
   LINK_PUBLIC
