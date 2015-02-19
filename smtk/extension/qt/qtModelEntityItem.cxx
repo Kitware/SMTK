@@ -308,9 +308,6 @@ void qtModelEntityItem::associateEntities(
   if(resetExisting)
     modEntityItem->reset();
 
-  const ModelEntityItemDefinition *itemDef =
-    static_cast<const ModelEntityItemDefinition *>(
-    modEntityItem->definition().get());
   std::size_t idx=0;
   for (smtk::model::EntityRefs::const_iterator it = selEntityRefs.begin();
        it != selEntityRefs.end(); ++it)
@@ -357,9 +354,6 @@ void qtModelEntityItem::onRequestEntityAssociation()
     return;
     }
 
-  const ModelEntityItemDefinition *itemDef =
-    static_cast<const ModelEntityItemDefinition *>(
-    modEntityItem->definition().get());
   emit this->requestEntityAssociation();
 }
 
