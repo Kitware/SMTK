@@ -250,7 +250,7 @@ qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW,
       aItem = new qtVoidItem(smtk::dynamic_pointer_cast<VoidItem>(item), pW, bview);
       break;
     case smtk::attribute::Item::MODEL_ENTITY:
-      aItem = new qtModelEntityItem(smtk::dynamic_pointer_cast<ModelEntityItem>(item), pW, bview);
+      aItem = qtAttribute::createModelEntityItem(smtk::dynamic_pointer_cast<ModelEntityItem>(item), pW, bview, enVectorItemOrient);
       break;
     default:
       //this->m_errorStatus << "Error: Unsupported Item Type: " <<
@@ -285,6 +285,15 @@ qtItem* qtAttribute::createFileItem(
   qtFileItem* returnItem = new qtFileItem(
     dynamic_pointer_cast<Item>(item), pW, view, false, enVectorItemOrient);
   view->uiManager()->onFileItemCreated(returnItem);
+  return returnItem;
+}
+//----------------------------------------------------------------------------
+qtItem* qtAttribute::createModelEntityItem(
+  smtk::attribute::ModelEntityItemPtr item, QWidget* pW, qtBaseView* view,
+  Qt::Orientation enVectorItemOrient)
+{
+  qtModelEntityItem* returnItem = new qtModelEntityItem(item, pW, view, enVectorItemOrient);
+  view->uiManager()->onModelEntityItemCreated(returnItem);
   return returnItem;
 }
 //----------------------------------------------------------------------------

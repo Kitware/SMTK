@@ -93,11 +93,14 @@ if(SMTK_ENABLE_REMUS)
   )
 endif()
 
+SET(_VTK_INSTALL_NO_DEVELOPMENT ${VTK_INSTALL_NO_DEVELOPMENT})
+SET(VTK_INSTALL_NO_DEVELOPMENT ON)
 set(vtkSMTKDiscreteExt_NO_HeaderTest 1)
 vtk_module_library(vtkSMTKDiscreteExt
   ${Readers_Need_Meshing_SRC}
   ${EXT_READER_SRC}
 )
+SET(VTK_INSTALL_NO_DEVELOPMENT ${_VTK_INSTALL_NO_DEVELOPMENT})
 
 target_link_libraries(vtkSMTKDiscreteExt LINK_PRIVATE ${meshing_Depend_LIBS})
 
@@ -105,9 +108,6 @@ target_link_libraries(vtkSMTKDiscreteExt LINK_PRIVATE ${meshing_Depend_LIBS})
 if (BUILD_SHARED_LIBS)
   set_target_properties(vtkSMTKDiscreteExt PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
-
-# install the headers
-smtk_public_headers(${EXT_READER_HEADER} ${Readers_Need_Meshing_HEADER})
 
 # ... and make header compilation tests link properly:
 smtk_install_library(vtkSMTKDiscreteExt)

@@ -25,6 +25,7 @@ class QAbstractButton;
 namespace smtk {
  namespace attribute {
   class qtFileItem;
+  class qtModelEntityItem;
  }
 }
 
@@ -52,6 +53,7 @@ namespace smtk
     signals:
       void operationRequested(const smtk::model::OperatorPtr& brOp);
       void fileItemCreated(smtk::attribute::qtFileItem* fileItem);
+      void modelEntityItemCreated(smtk::attribute::qtModelEntityItem* entItem);
 
     protected slots:
       virtual void onOperationSelected();

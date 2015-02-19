@@ -13,7 +13,7 @@
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtBaseView.h"
-
+#include "smtk/extension/qt/qtModelEntityItem.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -182,6 +182,8 @@ bool qtModelOperationWidget::setCurrentOperation(
   rootView->addSubView(instanced);
   QObject::connect(uiManager, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),
     this, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)));
+  QObject::connect(uiManager, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)),
+    this, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)));
 
   qtBaseView* theView = uiManager->initializeView(opParent, instanced, false);
   qtModelOperationWidgetInternals::OperatorInfo opInfo;

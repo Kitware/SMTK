@@ -28,6 +28,7 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/extension/qt/qtAttribute.h"
+#include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
@@ -186,18 +187,10 @@ void qtModelView::dragMoveEvent( QDragMoveEvent * mevent )
 void qtModelView::selectionChanged (
     const QItemSelection & selected, const QItemSelection & deselected )
 {
-  smtk::model::QEntityItemModel* qmodel = this->getModel();
-  if(!qmodel)
-    {
-    return;
-    }
   QTreeView::selectionChanged(selected, deselected);
   smtk::model::EntityRefs selentityrefs;
-  foreach(QModelIndex sel, this->selectedIndexes())
-    {
-    this->recursiveSelect(qmodel->getItem(sel), selentityrefs,
-      CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY | INSTANCE_ENTITY);
-    }
+  this->currentSelectionByMask(selentityrefs,
+    CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY | INSTANCE_ENTITY);
 
   emit this->entitiesSelected(selentityrefs);
 }
@@ -222,7 +215,23 @@ void qtModelView::recursiveSelect (smtk::model::DescriptivePhrasePtr dPhrase,
 }
 
 //----------------------------------------------------------------------------
-void qtModelView::selectEntities(const smtk::common::UUIDs& selEntities)
+void qtModelView::currentSelectionByMask (
+    smtk::model::EntityRefs& selentityrefs, const BitFlags& entityFlags)
+{
+  smtk::model::QEntityItemModel* qmodel = this->getModel();
+  if(!qmodel)
+    {
+    return;
+    }
+  foreach(QModelIndex sel, this->selectedIndexes())
+    {
+    this->recursiveSelect(qmodel->getItem(sel), selentityrefs, entityFlags);
+    }
+}
+
+//----------------------------------------------------------------------------
+void qtModelView::selectEntityItems(const smtk::common::UUIDs& selEntities,
+                                 bool blocksignal)
 {
   smtk::model::QEntityItemModel* qmodel =
     dynamic_cast<smtk::model::QEntityItemModel*>(this->model());
@@ -230,14 +239,16 @@ void qtModelView::selectEntities(const smtk::common::UUIDs& selEntities)
   // Now recursively check which model indices should be selected:
   QItemSelection selItems;
   this->selectionHelper(qmodel, this->rootIndex(), selEntities, selItems);
+  this->blockSignals(blocksignal);
   // If we have any items selected, show them
   if(selItems.count())
     {
-    this->blockSignals(true);
     this->selectionModel()->select(selItems, QItemSelectionModel::ClearAndSelect);
-    this->blockSignals(false);
     this->scrollTo(selItems.value(0).topLeft());
     }
+  else 
+    this->clearSelection();
+  this->blockSignals(false);
 }
 
 void qtModelView::expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx)
@@ -493,8 +504,8 @@ QDockWidget* qtModelView::operatorsDock()
   qtModelOperationWidget* opWidget = new qtModelOperationWidget();
   QObject::connect(opWidget, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)),
     this, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)));
-  QObject::connect(opWidget, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),
-    this, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)));
+  QObject::connect(opWidget, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)),
+    this, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)));
 
   QWidget* dockP = NULL;
   foreach(QWidget *widget, QApplication::topLevelWidgets())

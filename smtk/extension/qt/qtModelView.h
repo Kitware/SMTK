@@ -31,6 +31,7 @@ class QDockWidget;
 namespace smtk {
  namespace attribute {
   class qtFileItem;
+  class qtModelEntityItem;
  }
 }
 
@@ -57,9 +58,12 @@ public:
   void syncEntityColor(
     const QMap<smtk::model::SessionPtr, smtk::common::UUIDs>& brEntities,
     const QColor& clr);
+  void currentSelectionByMask(
+    smtk::model::EntityRefs& selentityrefs, const BitFlags& entityFlags);
 
 public slots:
-  void selectEntities(const smtk::common::UUIDs& selEntityRefs);
+  void selectEntityItems(const smtk::common::UUIDs& selEntityRefs,
+    bool blocksignal = false);
   virtual void removeFromGroup(const QModelIndex& qidx);
   virtual void removeSelected();
   void showContextMenu(const QPoint &p);
@@ -76,6 +80,7 @@ signals:
   void operationRequested(const smtk::model::OperatorPtr& brOp);
   void operationFinished(const smtk::model::OperatorResult&);
   void fileItemCreated(smtk::attribute::qtFileItem* fileItem);
+  void modelEntityItemCreated(smtk::attribute::qtModelEntityItem* entItem);
   void visibilityChangeRequested(const QModelIndex&);
   void colorChangeRequested(const QModelIndex&);
 

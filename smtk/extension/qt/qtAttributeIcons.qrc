@@ -6,5 +6,7 @@
     <file>lock.png</file>
     <file>minus.png</file>
     <file>plus.png</file>
+    <file>selLinkIn.png</file>
+    <file>clearLinkIn.png</file>
   </qresource>
 </RCC>
