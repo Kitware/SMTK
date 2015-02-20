@@ -81,11 +81,16 @@ CellEntities Model::cells() const
   EntityRefArrangementOps::appendAllRelations(*this, INCLUDES, result);
   if (result.empty())
     { // We may have a "simple" model that has no arrangements but does have relations.
-    for (UUIDWithEntity it = mgr->topology().begin(); it != mgr->topology().end(); ++it)
+    const Entity* erec = mgr->findEntity(this->m_entity);
+    if (erec)
       {
-      CellEntity cell(mgr, it->first);
-      if (cell.isValid())
-        result.push_back(cell);
+      smtk::common::UUIDArray::const_iterator rit;
+      for (rit = erec->relations().begin(); rit != erec->relations().end(); ++rit)
+        {
+        CellEntity cell(mgr, *rit);
+        if (cell.isValid())
+          result.push_back(cell);
+        }
       }
     }
   return result;

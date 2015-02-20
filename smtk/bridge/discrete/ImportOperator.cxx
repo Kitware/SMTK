@@ -161,7 +161,6 @@ OperatorResult ImportOperator::operateInternal()
     reader->Update();
 
     bool hasBoundaryEdges = reader->GetHasBoundaryEdges();
-    bool regionIdentifiersModified = reader->GetRegionIdentifiersModified();
 
     if(ext == ".poly" || ext == ".smesh" || hasBoundaryEdges)
       {

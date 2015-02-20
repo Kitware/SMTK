@@ -2134,7 +2134,7 @@ bool Manager::findDualArrangements(
     case CELL_ENTITY:
       if ((*arr)[index].IndexSenseAndOrientationFromCellHasUse(relationIdx, sense, orient))
         { // OK, find use's reference to this cell.
-        if (relationIdx < 0 || src->relations().size() <= relationIdx)
+        if (relationIdx < 0 || static_cast<int>(src->relations().size()) <= relationIdx)
           return false;
         dualEntityId = src->relations()[relationIdx];
         dualKind = HAS_CELL;

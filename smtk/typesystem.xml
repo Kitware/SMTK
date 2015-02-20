@@ -695,6 +695,7 @@
   <value-type template="smtk::shared_ptr" args="smtk::model::DescriptivePhrase"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::EntityPhrase"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::EntityListPhrase"/>
+  <value-type template="smtk::shared_ptr" args="smtk::model::SubphraseGenerator"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::SimpleModelSubphrases"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::Operator">
     <add-function
@@ -863,7 +864,6 @@
          -->
 
   </value-type>
-  <value-type template="smtk::shared_ptr" args="smtk::model::SubphraseGenerator"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::GridInfo"/>
 
   <value-type template="smtk::shared_ptr" args="smtk::attribute::Attribute">
@@ -1072,6 +1072,13 @@
       <object-type name="DescriptivePhrase">
         <include file-name="smtk/model/DescriptivePhrase.h" location="local"/>
         <modify-function signature="subphrases()" remove="all"/>
+        <add-function signature="setDelegate(smtk::shared_ptr&lt;smtk::model::SubphraseGenerator&gt;)"
+          return-type="smtk::shared_ptr&lt;smtk::model::DescriptivePhrase&gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = %CPPSELF-&gt;setDelegate(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <value-type name="Edge" hash-function="smtk::model::entityrefHash">
@@ -1103,6 +1110,14 @@
           return-type="smtk::shared_ptr&lt;smtk::model::EntityListPhrase&gt;">
           <inject-code>
             %RETURN_TYPE %0 = smtk::model::EntityListPhrase::create();
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="setup(const std::vector&lt;smtk::model::EntityRef&gt;&amp;)"
+          return-type="smtk::shared_ptr&lt;smtk::model::EntityListPhrase&gt;">
+          <inject-code>
+            smtk::model::DescriptivePhrasePtr invalid;
+            %RETURN_TYPE %0 = %CPPSELF-&gt;setup(%1, invalid);
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>

@@ -58,7 +58,6 @@ smtk::model::OperatorResult BooleanUnion::operateInternal()
   Models::iterator it;
   DLIList<Body*> cgmBodiesIn;
   DLIList<Body*> cgmBodiesOut;
-  Body* cgmBody;
   EntityRefArray expunged;
   bool ok = true;
   ok &= this->cgmEntities(*this->specification()->associations().get(), cgmBodiesIn, keepInputs, expunged);

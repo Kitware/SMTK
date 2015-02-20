@@ -10,6 +10,14 @@ set(smtkModelPythonDataTests
   modelSetPropertyOp
 )
 
+# Additional tests that require specific bridges
+if (SMTK_ENABLE_EXODUS_SESSION AND SMTK_BUILD_DISCRETE_SESSION AND SMTK_BUILD_CGM)
+  set(smtkModelPythonDataTests
+    ${smtkModelPythonDataTests}
+    integrationMultiSessionDescriptivePhrase
+  )
+endif()
+
 foreach (test ${smtkModelPythonTests})
   add_test(${test}Py ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py)
   set_tests_properties(${test}Py
@@ -23,7 +31,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
     add_test(${test}Py
              ${PYTHON_EXECUTABLE}
              ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py
-             ${SMTK_DATA_DIR})
+             --data-dir=${SMTK_DATA_DIR})
     set_tests_properties(${test}Py
       PROPERTIES
         ENVIRONMENT "PYTHONPATH=${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}"
