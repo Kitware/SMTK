@@ -855,7 +855,7 @@ smtk::model::FaceUse Session::addFaceUseToManager(
     bool already;
     smtk::model::Face matchingFace(
       mgr, this->findOrSetEntityUUID(coFace->GetModelFace()));
-    if ((already = mgr->findEntity(uid, false) ? true : false) || relDepth < 0)
+    if ((already = mgr->findEntity(uid, false) ? true : false))
       {
       translated = already ? smtk::model::SESSION_ENTITY_ARRANGED : smtk::model::SESSION_NOTHING;
       result = smtk::model::FaceUse(mgr, uid);
