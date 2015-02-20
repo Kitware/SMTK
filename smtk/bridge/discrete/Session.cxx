@@ -136,6 +136,7 @@ public:
     (void)callData;
     smtk::common::UUID uid = session->findOrSetEntityUUID(vtkInformation::SafeDownCast(caller));
     vtkModelItem* item = session->entityForUUID(uid);
+    (void)item;
     //std::cout << "Item " << item << " deleted. Was " << uid << "\n";
     session->untrackEntity(uid);
     }
@@ -172,7 +173,6 @@ Session::~Session()
     if (mbit->second.lock().get() == this)
       {
       smtk::common::UUID modelId = this->findOrSetEntityUUID(mbit->first);
-      std::map<vtkDiscreteModel*,Session::WeakPtr>::iterator tmp = mbit;
       Session::s_modelsToSessions.erase(mbit++);
       vtkSmartPointer<vtkDiscreteModelWrapper> modelPtr = Session::s_modelIdsToRefs[modelId];
       Session::s_modelIdsToRefs.erase(modelId);
