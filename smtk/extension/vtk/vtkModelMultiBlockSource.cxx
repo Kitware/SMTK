@@ -359,7 +359,7 @@ void vtkModelMultiBlockSource::FindEntitiesWithTessellation(
       {
       entityrefMap[*it] = cellent;
       }
-    else if((*it).boundingCells().size() > 0)
+    if((*it).boundingCells().size() > 0)
       {
       this->FindEntitiesWithTessellation(*it, entityrefMap);
       }
