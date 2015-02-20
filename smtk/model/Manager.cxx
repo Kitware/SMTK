@@ -2329,7 +2329,6 @@ UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
       else
         { // We found an existing but invalid use... replace it below.
         arrIdx = arrCtr;
-        std::cout << "  Found cellHasUse(" << sense << "," << (orient > 0? "+" : "-") << ") at " << arrIdx << "\n";
         break;
         }
       }
@@ -2339,26 +2338,26 @@ UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
   // the specified sense relative to the cell.
   // Note that there may still be an entry in arr
   // which we should overwrite (with itIdx == -1).
-  UUIDWithEntity use;
+  UUID use;
   if (replacement.isNull())
     {
     use = this->insertEntityOfTypeAndDimension(
-      USE_ENTITY | entity->dimensionBits(), entity->dimension());
+      USE_ENTITY | entity->dimensionBits(), entity->dimension())->first;
     // We must re-fetch entity since inserting the use
     // may have invalidated our reference to it.
     entity = this->findEntity(cell);
     if (relIdx >= 0)
-      entity->relations()[relIdx] = use->first;
+      entity->relations()[relIdx] = use;
     else
-      relIdx = entity->findOrAppendRelation(use->first);
+      relIdx = entity->findOrAppendRelation(use);
     }
   else
     {
-    use = this->m_topology->find(replacement);
+    use = replacement;
     if (relIdx >= 0)
-      entity->relations()[relIdx] = use->first;
+      entity->relations()[relIdx] = use;
     else
-      relIdx = entity->findOrAppendRelation(use->first);
+      relIdx = entity->findOrAppendRelation(use);
     }
 
   if (arrIdx >= 0)
@@ -2370,9 +2369,9 @@ UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
       arrIdx);
     // Does the use already have a reference back to the cell?
     this->arrangeEntity(
-      use->first, HAS_CELL,
+      use, HAS_CELL,
       Arrangement::UseHasCellWithIndexAndSense(
-        use->second.findOrAppendRelation(cell), sense));
+        this->findEntity(use)->findOrAppendRelation(cell), sense));
     }
   else
     {
@@ -2382,15 +2381,16 @@ UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
     this->arrangeEntity(
       cell, HAS_USE,
       Arrangement::CellHasUseWithIndexSenseAndOrientation(
-        entity->appendRelation(use->first), sense, orient),
+        entity->appendRelation(use), sense, orient),
       arrIdx);
+    Entity* useEnt = this->findEntity(use);
     this->arrangeEntity(
-      use->first, HAS_CELL,
+      use, HAS_CELL,
       Arrangement::UseHasCellWithIndexAndSense(
-        use->second.appendRelation(cell), sense));
+        useEnt->appendRelation(cell), sense));
     }
 
-  return use->first;
+  return use;
 }
 
 /**\brief Return the UUIDs of all shells included by the given cell-use or shell.
