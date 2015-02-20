@@ -8,8 +8,15 @@ set(smtkModelPythonTests
 set(smtkModelPythonDataTests
   modelAttributes
   modelSetPropertyOp
-  integrationMultiSessionDescriptivePhrase
 )
+
+# Additional tests that require specific bridges
+if (SMTK_ENABLE_EXODUS_SESSION AND SMTK_BUILD_DISCRETE_SESSION AND SMTK_BUILD_CGM)
+  set(smtkModelPythonDataTests
+    ${smtkModelPythonDataTests}
+    integrationMultiSessionDescriptivePhrase
+  )
+endif()
 
 foreach (test ${smtkModelPythonTests})
   add_test(${test}Py ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py)
