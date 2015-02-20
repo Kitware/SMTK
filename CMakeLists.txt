@@ -214,7 +214,12 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS)
     if(APPLE AND UNIX)
       set(LIB_ENV_VAR "DYLD_FALLBACK_LIBRARY_PATH=${SHIBOKEN_LIBRARY_PATH}:${LIBRARY_OUTPUT_PATH}")
     elseif(UNIX)
-      set(LIB_ENV_VAR "LD_LIBRARY_PATH=${SHIBOKEN_LIBRARY_PATH}:${LIBRARY_OUTPUT_PATH}")
+      if (ParaView_DIR)
+        # Note that ending with a colon should only be done if followed by
+        # another path... be careful when changing LIB_ENV_VAR!
+        set(PV_LIB_DIR "${ParaView_DIR}/lib:")
+      endif()
+      set(LIB_ENV_VAR "LD_LIBRARY_PATH=${PV_LIB_DIR}${SHIBOKEN_LIBRARY_PATH}:${LIBRARY_OUTPUT_PATH}")
     endif()
     set(SHIBOKEN_SMTK_PYTHON "")
     if(UNIX)
