@@ -81,7 +81,7 @@ static void internal_addRawRelationship(
 
 OperatorResult SplitFaceOperator::operateInternal()
 {
-  Session* session = this->discreteSession();
+  Session* opsession = this->discreteSession();
 
   // Translate SMTK inputs into CMB inputs
   this->m_op->SetFeatureAngle(
@@ -90,7 +90,7 @@ OperatorResult SplitFaceOperator::operateInternal()
   this->m_op->SetId(this->fetchCMBFaceId()); // "face to split"
 
   vtkDiscreteModelWrapper* modelWrapper =
-    session->findModelEntity(
+    opsession->findModelEntity(
       this->specification()->findModelEntity("model")->value().entity());
 
   this->m_op->Operate(modelWrapper);
@@ -110,12 +110,12 @@ OperatorResult SplitFaceOperator::operateInternal()
       this->specification()->findModelEntity("face to split")->value();
     smtk::common::UUID faceUUID =inFace.entity();
     vtkModelFace* origFace = vtkModelFace::SafeDownCast(
-      session->entityForUUID(faceUUID));
+      opsession->entityForUUID(faceUUID));
 
     vtkModelRegion* v1 = origFace->GetModelRegion(0);
     vtkModelRegion* v2 = origFace->GetModelRegion(1);
-    Volume vol1 = v1 ? Volume(store, session->findOrSetEntityUUID(v1)) : Volume();
-    Volume vol2 = v2 ? Volume(store, session->findOrSetEntityUUID(v2)) : Volume();
+    Volume vol1 = v1 ? Volume(store, opsession->findOrSetEntityUUID(v1)) : Volume();
+    Volume vol2 = v2 ? Volume(store, opsession->findOrSetEntityUUID(v2)) : Volume();
 
     // First, get rid of the old face that we split.
     // Get rid of the old entity.
@@ -130,8 +130,8 @@ OperatorResult SplitFaceOperator::operateInternal()
     store->erase(faceUUID);
 
     // Now re-add it (it will have new edges)
-    faceUUID = session->findOrSetEntityUUID(origFace);
-    smtk::model::Face c = session->addFaceToManager(faceUUID,
+    faceUUID = opsession->findOrSetEntityUUID(origFace);
+    smtk::model::Face c = opsession->addFaceToManager(faceUUID,
       origFace, store, true);
 
     internal_addRawRelationship(c, vol1, vol2);
@@ -162,8 +162,8 @@ OperatorResult SplitFaceOperator::operateInternal()
       vtkIdType faceId = newFaceIds->GetValue(i);
       vtkModelFace* face = dynamic_cast<vtkModelFace*>(
         modelWrapper->GetModelEntity(vtkModelFaceType, faceId));
-      faceUUID = session->findOrSetEntityUUID(face);
-      smtk::model::Face cFace = session->addFaceToManager(faceUUID, face, store, true);
+      faceUUID = opsession->findOrSetEntityUUID(face);
+      smtk::model::Face cFace = opsession->addFaceToManager(faceUUID, face, store, true);
       newEntities->setValue(i, cFace);
       internal_addRawRelationship(cFace, vol1, vol2);
       resultEntities->setValue(i+1, cFace);

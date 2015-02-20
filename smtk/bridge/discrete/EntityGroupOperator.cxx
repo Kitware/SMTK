@@ -76,12 +76,12 @@ bool EntityGroupOperator::ableToOperate()
 OperatorResult EntityGroupOperator::operateInternal()
 {
   smtk::model::ManagerPtr pstore = this->manager();
-  Session* session = this->discreteSession();
+  Session* opsession = this->discreteSession();
   // ableToOperate should have verified that model is valid
   smtk::model::Model model = this->specification()->
     findModelEntity("model")->value().as<smtk::model::Model>();
   vtkDiscreteModelWrapper* modelWrapper =
-    session->findModelEntity(model.entity());
+    opsession->findModelEntity(model.entity());
   bool ok = false;
   smtk::model::Group bgroup;
   smtk::model::EntityRef grpRem;
@@ -104,8 +104,8 @@ OperatorResult EntityGroupOperator::operateInternal()
         (entType==vtkModelEdgeType ? smtk::model::EDGE : smtk::model::VERTEX);
       vtkDiscreteModelEntityGroup* grp = dynamic_cast<vtkDiscreteModelEntityGroup*>(
         modelWrapper->GetModelEntity(vtkDiscreteModelEntityGroupType, grpId));
-      smtk::common::UUID grpUUID = session->findOrSetEntityUUID(grp);
-      bgroup = session->addGroupToManager(grpUUID, grp, pstore, 0);
+      smtk::common::UUID grpUUID = opsession->findOrSetEntityUUID(grp);
+      bgroup = opsession->addGroupToManager(grpUUID, grp, pstore, 0);
       bgroup.setMembershipMask(mask);
       // Add group to model's relationship
       model.addGroup(bgroup);
@@ -153,7 +153,7 @@ OperatorResult EntityGroupOperator::operateInternal()
       smtk::model::EntityRef grpC =
         this->specification()->findModelEntity("cell group")->value();
       pstore->erase(grpC);
-      bgroup = session->addGroupToManager(grpC.entity(), grp, pstore, true);
+      bgroup = opsession->addGroupToManager(grpC.entity(), grp, pstore, true);
       std::cout << "Modified " << grpC.name() << " in " << model.name() << "\n";
       }
     }

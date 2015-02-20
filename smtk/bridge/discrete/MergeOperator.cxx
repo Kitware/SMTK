@@ -56,14 +56,14 @@ bool MergeOperator::ableToOperate()
 
 OperatorResult MergeOperator::operateInternal()
 {
-  Session* session = this->discreteSession();
+  Session* opsession = this->discreteSession();
 
   // Translate SMTK inputs into CMB inputs
   this->m_op->SetSourceId(this->fetchCMBCellId("source cell"));
   this->m_op->SetTargetId(this->fetchCMBCellId("target cell"));
 
   vtkDiscreteModelWrapper* modelWrapper =
-    session->findModelEntity(
+    opsession->findModelEntity(
       this->specification()->findModelEntity("model")->value().entity());
 
   this->m_op->Operate(modelWrapper);
@@ -95,20 +95,20 @@ OperatorResult MergeOperator::operateInternal()
     // re-add target
     smtk::common::UUID eid = tgtEnt.entity();
     vtkModelItem* origItem =
-      session->entityForUUID(eid);
+      opsession->entityForUUID(eid);
 
     store->erase(eid);
 
     // Now re-add it (it will have new edges)
-    eid = session->findOrSetEntityUUID(origItem);
-    smtk::model::EntityRef c = session->addCMBEntityToManager(
+    eid = opsession->findOrSetEntityUUID(origItem);
+    smtk::model::EntityRef c = opsession->addCMBEntityToManager(
       eid, origItem, store, true);
     if(vtkModelFace* origFace = vtkModelFace::SafeDownCast(origItem))
       {
       vtkModelRegion* v1 = origFace->GetModelRegion(0);
       vtkModelRegion* v2 = origFace->GetModelRegion(1);
-      Volume vol1 = v1 ? Volume(store, session->findOrSetEntityUUID(v1)) : Volume();
-      Volume vol2 = v2 ? Volume(store, session->findOrSetEntityUUID(v2)) : Volume();
+      Volume vol1 = v1 ? Volume(store, opsession->findOrSetEntityUUID(v1)) : Volume();
+      Volume vol2 = v2 ? Volume(store, opsession->findOrSetEntityUUID(v2)) : Volume();
       if(vol1.isValid())
         {
         c.addRawRelation(vol1);

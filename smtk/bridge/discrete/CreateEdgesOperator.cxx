@@ -47,10 +47,10 @@ bool CreateEdgesOperator::ableToOperate()
 
 OperatorResult CreateEdgesOperator::operateInternal()
 {
-  Session* session = this->discreteSession();
+  Session* opsession = this->discreteSession();
 
   vtkDiscreteModelWrapper* modelWrapper =
-    session->findModelEntity(
+    opsession->findModelEntity(
       this->specification()->findModelEntity("model")->value().entity());
   if (!modelWrapper)
     {
