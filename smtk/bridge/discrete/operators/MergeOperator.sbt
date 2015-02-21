@@ -20,7 +20,6 @@
     <!-- Result -->
     <AttDef Type="result(merge)" BaseType="result">
       <ItemDefinitions>
-        <Int Name="event type" NumberOfRequiredValues="1" />
       </ItemDefinitions>
     </AttDef>
 

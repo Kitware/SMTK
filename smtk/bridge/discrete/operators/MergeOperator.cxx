@@ -135,10 +135,10 @@ OperatorResult MergeOperator::operateInternal()
     removedEntities->setIsEnabled(true);
     removedEntities->setValue(0, srcEnt);
 
-    smtk::attribute::IntItem::Ptr eventEntity =
-      result->findInt("event type");
-    eventEntity->setNumberOfValues(1);
-    eventEntity->setValue(0, TESSELLATION_ENTRY);
+//    smtk::attribute::IntItem::Ptr eventEntity =
+//      result->findInt("event type");
+//    eventEntity->setNumberOfValues(1);
+//    eventEntity->setValue(0, TESSELLATION_ENTRY);
 
     }
 

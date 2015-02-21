@@ -26,7 +26,6 @@
         <ModelEntity Name="new entities" NumberOfRequiredValues="0" Extensible="1">
           <MembershipMask>face</MembershipMask>
         </ModelEntity>
-        <Int Name="event type" NumberOfRequiredValues="1" />
       </ItemDefinitions>
     </AttDef>
   </Definitions>

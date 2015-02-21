@@ -144,12 +144,12 @@ OperatorResult SplitFaceOperator::operateInternal()
       result->findModelEntity("entities");
     resultEntities->setNumberOfValues(newFaceIds->GetMaxId() + 2);
     resultEntities->setValue(0, c);
-
+/*
     smtk::attribute::IntItem::Ptr eventEntity =
       result->findInt("event type");
     eventEntity->setNumberOfValues(1);
     eventEntity->setValue(0, TESSELLATION_ENTRY);
-
+*/
     // Adding "new faces" to the "new entities" item, as a convenient method
     // to get newly created faces from result. This list is also in the
     // "entities" item.
