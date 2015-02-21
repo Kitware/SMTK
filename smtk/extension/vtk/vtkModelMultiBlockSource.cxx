@@ -270,7 +270,6 @@ static void internal_AddBlockInfo(smtk::model::ManagerPtr manager,
          it != vols.end(); ++it, ++ai)
       {
       volArray->SetValue(ai, (*it).entity().toString());
-      std::cout << "vol " << (*it).entity().toString() << std::endl;
       }
     volArray->SetName(vtkModelMultiBlockSource::GetVolumeTagName());
     poly->GetFieldData()->AddArray(volArray.GetPointer());
