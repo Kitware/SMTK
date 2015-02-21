@@ -821,7 +821,16 @@ int Entity::consumeInvalidIndex(const smtk::common::UUID& uid)
   if (result < 0)
     return result; // no hole to consume
   this->m_relations[result] = uid;
+
   // Now update m_firstInvalid:
+  // I. Are we already at the end of the relations? If so, we're done.
+  if (this->m_firstInvalid == static_cast<int>(this->m_relations.size()) - 1)
+    {
+    this->m_firstInvalid = -1;
+    return result;
+    }
+
+  // II. Keep looking past the entry we just consumed for the next invalid one.
   ++this->m_firstInvalid;
   UUIDArray::iterator it = this->m_relations.begin() + this->m_firstInvalid;
   for (; it != this->m_relations.end(); ++it, ++this->m_firstInvalid)

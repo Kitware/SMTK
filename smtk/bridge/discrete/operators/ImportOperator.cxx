@@ -78,8 +78,8 @@ bool ImportOperator::ableToOperate()
 #ifdef SMTK_ENABLE_REMUS
                ext == ".poly" || ext == ".smesh" || ext == ".map" ||
 #endif
-  /*  ext == ".tin" || 
-      ext == ".fac" || 
+  /*  ext == ".tin" ||
+      ext == ".fac" ||
       ext == ".obj" ||
       ext == ".sol" ||*/
       ext == ".stl");
@@ -150,7 +150,7 @@ OperatorResult ImportOperator::operateInternal()
       ext == ".poly" || ext == ".smesh" ||
 #endif
   /*  ext == ".tin" ||
-      ext == ".fac" || 
+      ext == ".fac" ||
       ext == ".obj" ||
       ext == ".sol" || */
       ext == ".stl")

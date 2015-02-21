@@ -9,6 +9,7 @@ list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 include_directories(
     "${CMAKE_CURRENT_BINARY_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/operators"
     "${CMAKE_CURRENT_SOURCE_DIR}/operation"
     "${CMAKE_CURRENT_SOURCE_DIR}/kernel"
     "${CMAKE_CURRENT_SOURCE_DIR}/kernel/Model"
@@ -107,22 +108,22 @@ set(_module_src
 
 set(discreteSessionSrcs
   Session.cxx
-  CreateEdgesOperator.cxx
-  EntityGroupOperator.cxx
-  ImportOperator.cxx
-  MergeOperator.cxx
-  ReadOperator.cxx
-  SplitFaceOperator.cxx
+  operators/CreateEdgesOperator.cxx
+  operators/EntityGroupOperator.cxx
+  operators/ImportOperator.cxx
+  operators/MergeOperator.cxx
+  operators/ReadOperator.cxx
+  operators/SplitFaceOperator.cxx
 )
 
 set(discreteSessionHeaders
   Session.h
-  CreateEdgesOperator.h
-  EntityGroupOperator.h
-  ImportOperator.h
-  MergeOperator.h
-  ReadOperator.h
-  SplitFaceOperator.h
+  operators/CreateEdgesOperator.h
+  operators/EntityGroupOperator.h
+  operators/ImportOperator.h
+  operators/MergeOperator.h
+  operators/ReadOperator.h
+  operators/SplitFaceOperator.h
 )
 
 # Normally this would be machine-generated from Session.json
@@ -134,12 +135,12 @@ set(discreteSessionHeaders
 # smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" discreteSessionJSON)
 
 include(SMTKOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateEdgesOperator.sbt" unitOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/MergeOperator.sbt" unitOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ReadOperator.sbt" unitOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/SplitFaceOperator.sbt" unitOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ImportOperator.sbt" unitOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/EntityGroupOperator.sbt" unitOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdgesOperator.sbt" unitOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/MergeOperator.sbt" unitOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadOperator.sbt" unitOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitFaceOperator.sbt" unitOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ImportOperator.sbt" unitOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EntityGroupOperator.sbt" unitOperatorXML)
 
 add_library(smtkDiscreteSession ${_module_src} ${discreteSessionSrcs})
 

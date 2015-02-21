@@ -362,7 +362,7 @@ smtk::common::UUID Session::trackModel(
 
   // Now add the record to manager and assign the URL to
   // the model as a string property.
-  smtk::model::EntityRef c = this->addCMBEntityToManager(mid, dmod, mgr, 6);
+  smtk::model::EntityRef c = this->addCMBEntityToManager(mid, dmod, mgr, 8);
   c.setStringProperty("url", url);
 
   return mid;
@@ -855,7 +855,7 @@ smtk::model::FaceUse Session::addFaceUseToManager(
     bool already;
     smtk::model::Face matchingFace(
       mgr, this->findOrSetEntityUUID(coFace->GetModelFace()));
-    if ((already = mgr->findEntity(uid, false) ? true : false) || relDepth < 0)
+    if ((already = mgr->findEntity(uid, false) ? true : false))
       {
       translated = already ? smtk::model::SESSION_ENTITY_ARRANGED : smtk::model::SESSION_NOTHING;
       result = smtk::model::FaceUse(mgr, uid);
@@ -913,47 +913,44 @@ smtk::model::EdgeUse Session::addEdgeUseToManager(
   smtk::model::ManagerPtr mgr,
   int relDepth)
 {
-  if (coEdge)
+  if (!coEdge)
+    return smtk::model::EdgeUse();
+
+  smtk::model::SessionInfoBits translated = smtk::model::SESSION_NOTHING;
+  bool already;
+  smtk::model::EdgeUse result(mgr, uid);
+  if ((already = mgr->findEntity(uid, false) ? true : false))
     {
-    smtk::model::SessionInfoBits translated = smtk::model::SESSION_NOTHING;
-    bool already;
-    smtk::model::EdgeUse result(mgr, uid);
-    if ((already = mgr->findEntity(uid, false) ? true : false) || relDepth < 0)
-      {
-      translated = already ? smtk::model::SESSION_ENTITY_ARRANGED : smtk::model::SESSION_NOTHING;
-      }
-    else
-      {
-      smtk::model::Edge matchingEdge(
-        mgr, this->findOrSetEntityUUID(coEdge->GetModelEdge()));
-      if (mgr->findEntity(matchingEdge.entity(), false) != NULL)
-        { // Force the addition of the parent edge to the model.
-        this->addEdgeToManager(matchingEdge.entity(), coEdge->GetModelEdge(), mgr, 0);
-        }
-      if (relDepth >= 0)
-        {
-        // Now create the edge use with the proper relation:
-        mgr->setEdgeUse(
-          uid, matchingEdge, senseOfEdgeUse(coEdge),
-          coEdge->GetDirection() ? smtk::model::POSITIVE : smtk::model::NEGATIVE);
-        // Finally, create its loop.
-        vtkModelLoopUse* loopUse = coEdge->GetModelLoopUse();
-        if (loopUse)
-          {
-          smtk::common::UUID luid = this->findOrSetEntityUUID(loopUse);
-          smtk::model::Loop lpu = this->addLoopToManager(luid, loopUse, mgr, relDepth - 1);
-          }
-
-        translated |= smtk::model::SESSION_ENTITY_ARRANGED;
-        }
-
-      this->addProperties(result, coEdge);
-      translated |= smtk::model::SESSION_PROPERTIES;
-
-      }
-    return result;
+    translated = already ? smtk::model::SESSION_ENTITY_TYPE : smtk::model::SESSION_NOTHING;
     }
-  return smtk::model::EdgeUse();
+
+  if (relDepth >= 0)
+    {
+    smtk::model::Edge matchingEdge(
+      mgr, this->findOrSetEntityUUID(coEdge->GetModelEdge()));
+    if (mgr->findEntity(matchingEdge.entity(), false) == NULL)
+      { // Force the addition of the parent edge to the model.
+      this->addEdgeToManager(matchingEdge.entity(), coEdge->GetModelEdge(), mgr, 0);
+      }
+    // Now create the edge use with the proper relation:
+    mgr->setEdgeUse(
+      uid, matchingEdge, senseOfEdgeUse(coEdge),
+      coEdge->GetDirection() ? smtk::model::POSITIVE : smtk::model::NEGATIVE);
+    // Finally, create its loop.
+    vtkModelLoopUse* loopUse = coEdge->GetModelLoopUse();
+    if (loopUse)
+      {
+      smtk::common::UUID luid = this->findOrSetEntityUUID(loopUse);
+      smtk::model::Loop lpu = this->addLoopToManager(luid, loopUse, mgr, relDepth - 1);
+      }
+
+    translated |= smtk::model::SESSION_ENTITY_RELATIONS;
+    translated |= smtk::model::SESSION_ENTITY_ARRANGED;
+
+    this->addProperties(result, coEdge);
+    translated |= smtk::model::SESSION_PROPERTIES;
+    }
+  return result;
 }
 
 /// Given a CMB \a coVertex tagged with \a uid, create a record in \a mgr for it.
@@ -1187,41 +1184,72 @@ smtk::model::Edge Session::addEdgeToManager(
   smtk::model::ManagerPtr mgr,
   int relDepth)
 {
-  if (refEdge && !mgr->findEntity(uid, false))
-    {
-    smtk::model::Edge result(mgr->insertEdge(uid));
-    smtk::model::SessionInfoBits translated = smtk::model::SESSION_NOTHING;
-    if (relDepth >= 0)
+  if (!refEdge)
+    return smtk::model::Edge();
+
+  smtk::model::SessionInfoBits actual = smtk::model::SESSION_NOTHING;
+  smtk::model::Edge mutableEntityRef(mgr, uid);
+  if (!mutableEntityRef.isValid())
+    mutableEntityRef.manager()->insertEdge(uid);
+  actual |= smtk::model::SESSION_ENTITY_TYPE;
+
+  if (relDepth >= 0)
+    { // Add refEdge relations and arrangements
+    // If edge uses exist, add them to the session.
+    vtkModelEdgeUse* eu;
+    bool haveEdgeUse = false;
+    for (int i = 0; i < refEdge->GetNumberOfModelEdgeUses(); ++i)
       {
-      // Add refEdge relations and arrangements
-      int neu = refEdge->GetNumberOfModelEdgeUses();
-      for (int i = 0; i < neu; ++i)
+      eu = refEdge->GetModelEdgeUse(i); // 0 = negative, 1 = positive
+      if (eu)
         {
-        vtkModelEdgeUse* eu = refEdge->GetModelEdgeUse(i);
+        haveEdgeUse = true;
         smtk::common::UUID euid = this->findOrSetEntityUUID(eu);
         this->addEdgeUseToManager(euid, eu, mgr, relDepth - 1);
+        // Now, since we are the "higher" end of the relationship,
+        // arrange the use wrt ourself:
+        mgr->findCreateOrReplaceCellUseOfSenseAndOrientation(
+          uid, 0, i ? smtk::model::POSITIVE : smtk::model::NEGATIVE, euid);
         }
-
-      // Add reference to face(s) directly (with no relationship)
-      vtkModelItemIterator* fit = refEdge->NewAdjacentModelFaceIterator();
-      for (fit->Begin(); !fit->IsAtEnd(); fit->Next())
-        {
-        vtkModelItem* ff = fit->GetCurrentItem();
-        smtk::common::UUID fid = this->findOrSetEntityUUID(ff);
-        result.addRawRelation(smtk::model::Face(mgr, fid));
-        }
-      fit->Delete();
-
-      // Add geometry, if any.
-      this->addTessellation(result, refEdge);
       }
 
-    this->addProperties(result, refEdge);
-    translated |= smtk::model::SESSION_PROPERTIES;
+    // Add a reference to the face(s) directly (with no relationship)
+    vtkModelItemIterator* faceIt = refEdge->NewAdjacentModelFaceIterator();
+    for (faceIt->Begin(); !faceIt->IsAtEnd(); faceIt->Next())
+      {
+      vtkModelFace* refFace = vtkModelFace::SafeDownCast(faceIt->GetCurrentItem());
+      if (!refFace)
+        continue;
 
-    return result;
+      smtk::model::Face f(mgr, this->findOrSetEntityUUID(refFace));
+      mutableEntityRef.addRawRelation(f);
+      }
+
+    // Add a reference to the vertices directly (with no relationship)
+    int numVerts = refEdge->GetNumberOfModelVertexUses();
+    for (int i = 0; i < numVerts; ++i)
+      {
+      vtkModelVertex* refVert = refEdge->GetAdjacentModelVertex(i);
+      if (!refVert)
+        continue;
+
+      smtk::model::Vertex v(mgr, this->findOrSetEntityUUID(refVert));
+      this->addVertexToManager(v.entity(), refVert, mgr, relDepth - 1);
+      mutableEntityRef.addRawRelation(v);
+      }
+
+    actual |= smtk::model::SESSION_ENTITY_RELATIONS;
+    actual |= smtk::model::SESSION_ARRANGEMENTS;
+
+    // Add geometry, if any.
+    this->addTessellation(mutableEntityRef, refEdge);
+    actual |= smtk::model::SESSION_TESSELLATION;
     }
-  return smtk::model::Edge(mgr, uid);
+
+  this->addProperties(mutableEntityRef, refEdge);
+  actual |= smtk::model::SESSION_PROPERTIES;
+
+  return mutableEntityRef;
 }
 
 /// Given a CMB \a refVertex tagged with \a uid, create a record in \a mgr for it.
