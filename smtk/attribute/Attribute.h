@@ -149,6 +149,9 @@ namespace smtk
       void disassociateEntity(const smtk::model::EntityRef& entity, bool reverse = true);
       void removeAllAssociations();
 
+      MeshEntityItemPtr findMeshEntity(const std::string &name);
+      ConstMeshEntityItemPtr findMeshEntity(const std::string &name) const;
+
       // These methods only applies to Attributes whose
       // definition returns true for isNodal()
       bool appliesToBoundaryNodes() const

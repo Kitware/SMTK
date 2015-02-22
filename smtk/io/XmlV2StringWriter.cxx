@@ -32,6 +32,8 @@
 #include "smtk/attribute/System.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
+#include "smtk/attribute/MeshEntityItem.h"
+#include "smtk/attribute/MeshEntityItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
@@ -633,6 +635,9 @@ XmlV2StringWriter::processItemDefinition(xml_node &node,
     case Item::VOID:
       // Nothing to do!
       break;
+    case Item::MESH_ENTITY:
+      // Nothing to do yet!
+      break;
     default:
       smtkErrorMacro(this->m_logger,
                      "Unsupported Type: " << Item::type2String(idef->type())
@@ -1030,6 +1035,9 @@ void XmlV2StringWriter::processItem(xml_node &node,
     case Item::VOID:
       // Nothing to do!
       break;
+    case Item::MESH_ENTITY:
+      this->processMeshEntityItem(node, smtk::dynamic_pointer_cast<MeshEntityItem>(item));
+      break;
     default:
       smtkErrorMacro(this->m_logger,
                      "Unsupported Type: " << Item::type2String(item->type())
@@ -1165,6 +1173,26 @@ void XmlV2StringWriter::processModelEntityItem(pugi::xml_node &node,
       }
     }
 }
+
+//----------------------------------------------------------------------------
+void XmlV2StringWriter::processMeshEntityItem(pugi::xml_node &node,
+                          smtk::attribute::MeshEntityItemPtr item)
+{
+  size_t n = item->numberOfValues();
+  if (!n)
+    {
+    return;
+    }
+  node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
+  xml_node val, values = node.append_child("Values");
+  std::set<int>::const_iterator it;
+  for(it = item->begin(); it != item->end(); ++it)
+    {
+    val = values.append_child("Val");
+    val.text().set(*it);
+    }
+}
+
 //----------------------------------------------------------------------------
 void XmlV2StringWriter::processRefItem(pugi::xml_node &node,
                                        attribute::RefItemPtr item)

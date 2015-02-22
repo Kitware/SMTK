@@ -37,6 +37,8 @@ namespace smtk
       virtual void processModelInfo(pugi::xml_node &root);
       virtual void processModelEntityItem(pugi::xml_node &node,
                                           smtk::attribute::ModelEntityItemPtr item);
+      virtual void processMeshEntityItem(pugi::xml_node &node,
+                          attribute::MeshEntityItemPtr idef);
       virtual smtk::common::UUID getAttributeID(pugi::xml_node &attNode);
     private:
 

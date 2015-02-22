@@ -13,6 +13,7 @@
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/MeshEntityItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
@@ -254,6 +255,26 @@ void XmlDocV2Parser::processModelInfo(xml_node &root)
             }
           }
         }
+      }
+    }
+}
+
+//----------------------------------------------------------------------------
+void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node &node,
+  attribute::MeshEntityItemPtr item)
+{
+  std::size_t i, n = item->numberOfValues();
+  if (!n)
+    {
+    return;
+    }
+
+  xml_node valsNode = node.child("Values");
+  if (valsNode)
+    {
+    for (xml_node val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
+      {
+      item->insertValue(val.text().as_int());
       }
     }
 }

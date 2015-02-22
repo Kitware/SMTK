@@ -16,6 +16,8 @@ set(attributeHeaders
   Item.h
   ItemDefinition.h
   System.h
+  MeshEntityItem.h
+  MeshEntityItemDefinition.h
   ModelEntityItem.h
   ModelEntityItemDefinition.h
   RefItem.h
@@ -47,6 +49,8 @@ set(attributeSrcs
   Item.cxx
   ItemDefinition.cxx
   System.cxx
+  MeshEntityItem.cxx
+  MeshEntityItemDefinition.cxx
   ModelEntityItem.cxx
   ModelEntityItemDefinition.cxx
   RefItem.cxx

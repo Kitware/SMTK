@@ -52,6 +52,7 @@ namespace smtk
         DIRECTORY,
         COLOR,
         MODEL_ENTITY,
+        MESH_ENTITY,
         NUMBER_OF_TYPES
       };
 

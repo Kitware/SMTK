@@ -10,6 +10,7 @@
 
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/MeshEntityItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/RefItem.h"
@@ -211,6 +212,8 @@ bool Attribute::isValid()
         if (isInvalid(mei))
           return false;
         }
+      break;
+    case Item::MESH_ENTITY:
       break;
     case Item::GROUP:
       break;
@@ -496,3 +499,8 @@ smtk::attribute::ModelEntityItemPtr Attribute::findModelEntity(const std::string
 { return smtk::dynamic_pointer_cast<ModelEntityItem>(this->find(nameStr)); }
 smtk::attribute::ConstModelEntityItemPtr Attribute::findModelEntity(const std::string &nameStr) const
 { return smtk::dynamic_pointer_cast<const ModelEntityItem>(this->find(nameStr)); }
+
+smtk::attribute::MeshEntityItemPtr Attribute::findMeshEntity(const std::string &nameStr)
+{ return smtk::dynamic_pointer_cast<MeshEntityItem>(this->find(nameStr)); }
+smtk::attribute::ConstMeshEntityItemPtr Attribute::findMeshEntity(const std::string &nameStr) const
+{ return smtk::dynamic_pointer_cast<const MeshEntityItem>(this->find(nameStr)); }
