@@ -36,7 +36,7 @@ namespace smtk
       void setValues(const std::set<int>&);
       void insertValues(const std::set<int>&);
       void removeValues(const std::set<int>&);
-
+  
       std::size_t numberOfValues() const
       {return this->m_values.size();}
       int value(std::size_t element=0) const;
@@ -57,6 +57,7 @@ namespace smtk
       MeshEntityItem(Item *owningItem, int position, int subGroupPosition);
       virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
       std::set<int>m_values;
+
     private:
     };
   }

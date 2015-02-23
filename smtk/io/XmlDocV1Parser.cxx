@@ -851,7 +851,7 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
       break;
       case smtk::attribute::Item::MESH_ENTITY:
         idef = def->addItemDefinition<smtk::attribute::MeshEntityItemDefinition>(itemName);
-        this->processItemDef(node, idef);
+        this->processMeshEntityDef(node, smtk::dynamic_pointer_cast<smtk::attribute::MeshEntityItemDefinition>(idef));
         break;
     default:
       smtkErrorMacro(this->m_logger, "Unsupported Item definition Type: "
@@ -1027,6 +1027,17 @@ void XmlDocV1Parser::processModelEntityDef(pugi::xml_node &node,
       }
     }
 }
+//----------------------------------------------------------------------------
+void XmlDocV1Parser::processMeshEntityDef(pugi::xml_node &node,
+                                         attribute::MeshEntityItemDefinitionPtr idef)
+{
+  (void)node;
+  smtkWarningMacro(this->m_logger,
+                 "The Mesh Entity defs should only be availabe starting Attribute Version 2 Format"
+                 << idef->name());
+  return;
+}
+
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
                                         attribute::ValueItemDefinitionPtr idef)

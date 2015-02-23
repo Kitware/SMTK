@@ -39,6 +39,8 @@ namespace smtk
                                           smtk::attribute::ModelEntityItemPtr item);
       virtual void processMeshEntityItem(pugi::xml_node &node,
                           attribute::MeshEntityItemPtr idef);
+      virtual void processMeshEntityDef(pugi::xml_node &node,
+                            smtk::attribute::MeshEntityItemDefinitionPtr idef);
       virtual smtk::common::UUID getAttributeID(pugi::xml_node &attNode);
     private:
 

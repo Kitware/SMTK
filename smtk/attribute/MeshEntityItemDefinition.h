@@ -36,6 +36,10 @@ namespace smtk
 
       virtual Item::Type type() const;
       bool isValueValid(const int &val) const;
+      std::string refModelEntityName() const
+      { return m_RefModelEntityDefName; }
+      void setRefModelEntityName(const std::string& defName)
+      { m_RefModelEntityDefName = defName; }
 
       virtual smtk::attribute::ItemPtr buildItem(Attribute *owningAttribute,
                                                 int itemPosition) const;
@@ -48,6 +52,7 @@ namespace smtk
     protected:
       MeshEntityItemDefinition(const std::string &myName);
 
+      std::string m_RefModelEntityDefName;
     };
   }
 }

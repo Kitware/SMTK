@@ -14,6 +14,7 @@
 #include "pugixml/src/pugixml.cpp"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/MeshEntityItem.h"
+#include "smtk/attribute/MeshEntityItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
@@ -278,3 +279,24 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node &node,
       }
     }
 }
+
+//----------------------------------------------------------------------------
+void XmlDocV2Parser::processMeshEntityDef(pugi::xml_node &node,
+                                         attribute::MeshEntityItemDefinitionPtr idef)
+{
+  this->processItemDef(node, idef);
+
+  xml_attribute xatt;
+  xatt = node.attribute("ModelEntityRef");
+  if (xatt)
+    {
+    idef->setRefModelEntityName(xatt.value());
+    }
+  else
+    {
+    smtkErrorMacro(this->m_logger,
+                   "Missing XML Attribute ModelEntityRef for Item Definition : "
+                   << idef->name());
+    }
+}
+
