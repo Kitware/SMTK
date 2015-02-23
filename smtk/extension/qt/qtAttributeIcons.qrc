@@ -8,5 +8,9 @@
     <file>plus.png</file>
     <file>selLinkIn.png</file>
     <file>clearLinkIn.png</file>
+    <file>growcell32.png</file>
+    <file>growplus32.png</file>
+    <file>growminus32.png</file>
+    <file>cancel32.png</file>
   </qresource>
 </RCC>

@@ -35,7 +35,8 @@ namespace smtk
   enum MeshListUpdateType {
     RESET           = 0, //!< Reset the existing list)
     APPEND             , //!< Append to the existing list
-    SUBTRACT             //!< Subtract from existing list
+    SUBTRACT           , //!< Subtract from existing list
+    CANCEL               //!< Cancel current operation mode
   };
 
       qtMeshEntityItem(smtk::attribute::ItemPtr, QWidget* p,
