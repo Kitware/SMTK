@@ -184,6 +184,8 @@ bool qtModelOperationWidget::setCurrentOperation(
     this, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)));
   QObject::connect(uiManager, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)),
     this, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)));
+  QObject::connect(uiManager, SIGNAL(meshEntityItemCreated(smtk::attribute::qtMeshEntityItem*)),
+    this, SIGNAL(meshEntityItemCreated(smtk::attribute::qtMeshEntityItem*)));
 
   qtBaseView* theView = uiManager->initializeView(opParent, instanced, false);
   qtModelOperationWidgetInternals::OperatorInfo opInfo;

@@ -506,6 +506,8 @@ QDockWidget* qtModelView::operatorsDock()
     this, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)));
   QObject::connect(opWidget, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)),
     this, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)));
+  QObject::connect(opWidget, SIGNAL(meshEntityItemCreated(smtk::attribute::qtMeshEntityItem*)),
+    this, SIGNAL(meshEntityItemCreated(smtk::attribute::qtMeshEntityItem*)));
 
   QWidget* dockP = NULL;
   foreach(QWidget *widget, QApplication::topLevelWidgets())
