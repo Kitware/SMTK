@@ -185,7 +185,7 @@ bool qtModelOperationWidget::setCurrentOperation(
   QObject::connect(uiManager, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)),
     this, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)));
   QObject::connect(uiManager, SIGNAL(meshEntityItemCreated(smtk::attribute::qtMeshEntityItem*)),
-    this, SIGNAL(meshEntityItemCreated(smtk::attribute::qtMeshEntityItem*)));
+    this, SLOT(onMeshEntityItemCreated(smtk::attribute::qtMeshEntityItem*)));
 
   qtBaseView* theView = uiManager->initializeView(opParent, instanced, false);
   qtModelOperationWidgetInternals::OperatorInfo opInfo;
@@ -285,4 +285,17 @@ void qtModelOperationWidget::onOperate()
     OperatorPtr brOp = this->Internals->OperatorMap[opName].opPtr;
     emit this->operationRequested(brOp);
     }
+}
+
+//----------------------------------------------------------------------------
+void qtModelOperationWidget::onMeshEntityItemCreated(
+  smtk::attribute::qtMeshEntityItem* meshItem)
+{
+  Operator::Ptr op;
+  std::string opName = this->Internals->OperationCombo->currentText().toStdString();
+  if(this->Internals->OperatorMap.contains(opName))
+    {
+    op = this->Internals->OperatorMap[opName].opPtr;
+    }
+  emit this->meshEntityItemCreated(meshItem, op);
 }

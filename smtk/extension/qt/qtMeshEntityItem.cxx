@@ -36,6 +36,7 @@
 #include <QToolButton>
 #include <QStandardItemModel>
 #include <QAbstractItemView>
+#include <QButtonGroup>
 
 using namespace smtk::attribute;
 
@@ -54,6 +55,14 @@ public:
   QPointer<QToolButton> GrowPlusButton;
   QPointer<QToolButton> GrowMinusButton;
   QPointer<QToolButton> CancelButton;
+  QPointer<QToolButton> AcceptButton;
+
+  void uncheckGrowButtons()
+  {
+    this->GrowButton->setChecked(false);
+    this->GrowPlusButton->setChecked(false);
+    this->GrowMinusButton->setChecked(false);
+  }
 
 };
 
@@ -101,7 +110,8 @@ void qtMeshEntityItem::updateItemData()
 }
 
 QToolButton* internal_createToolButton(
-  const QString& strIconName, const QString& strToolTip, QWidget* pw)
+  const QString& strIconName, const QString& strToolTip, QWidget* pw,
+  QBoxLayout* buttonLayout, QButtonGroup* bgroup, qtMeshEntityItem* meshItem)
 {
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QToolButton* retButton = new QToolButton(pw);
@@ -110,8 +120,15 @@ QToolButton* internal_createToolButton(
   retButton->setFixedSize(QSize(16, 16));
   retButton->setIcon(QIcon(strIconName));
   retButton->setSizePolicy(sizeFixedPolicy);
+
+  QObject::connect(retButton, SIGNAL(clicked()),
+    meshItem, SLOT(onRequestMeshSelection()));
+  buttonLayout->addWidget(retButton);
+  bgroup->addButton(retButton);
+
   return retButton;
 }
+
 
 //----------------------------------------------------------------------------
 void qtMeshEntityItem::addMeshOpButtons()
@@ -127,39 +144,35 @@ void qtMeshEntityItem::addMeshOpButtons()
   QBoxLayout* buttonLayout = new QHBoxLayout;
   buttonLayout->setMargin(0);
   buttonLayout->setSpacing(3);
-
+  QButtonGroup* bgroup = new QButtonGroup(this->Widget);
   // grow button
   this->Internals->GrowButton = internal_createToolButton(
     ":/icons/attribute/growcell32.png",
-    "Grow Selection on Associated Entities", this->Widget);
-  connect(this->Internals->GrowButton, SIGNAL(clicked()),
-    this, SLOT(onRequestValuesUpdate()));
+    "Grow Selection on Associated Entities", this->Widget,
+    buttonLayout, bgroup, this);
 
   // grow plus button
   this->Internals->GrowPlusButton = internal_createToolButton(
     ":/icons/attribute/growplus32.png",
-    "Grow and Append Selection on Selected Entities", this->Widget);
-  connect(this->Internals->GrowPlusButton, SIGNAL(clicked()),
-    this, SLOT(onRequestValuesUpdate()));
+    "Grow and Append Selection on Selected Entities", this->Widget,
+    buttonLayout, bgroup, this);
 
   // grow minus button
   this->Internals->GrowMinusButton = internal_createToolButton(
     ":/icons/attribute/growminus32.png",
-    "Grow and Remove Selection on Selected Entities", this->Widget);
-  connect(this->Internals->GrowMinusButton, SIGNAL(clicked()),
-    this, SLOT(onRequestValuesUpdate()));
+    "Grow and Remove Selection on Selected Entities", this->Widget,
+    buttonLayout, bgroup, this);
 
-  // grow minus button
+  // cancel button
   this->Internals->CancelButton = internal_createToolButton(
     ":/icons/attribute/cancel32.png",
-    "Candel Grow Selection Mode", this->Widget);
-  connect(this->Internals->CancelButton, SIGNAL(clicked()),
-    this, SLOT(onRequestValuesUpdate()));
+    "Candel Grow Selection Mode", this->Widget,
+    buttonLayout, bgroup, this);
 
-  buttonLayout->addWidget(this->Internals->GrowButton);
-  buttonLayout->addWidget(this->Internals->GrowPlusButton);
-  buttonLayout->addWidget(this->Internals->GrowMinusButton);
-  buttonLayout->addWidget(this->Internals->CancelButton);
+  this->Internals->AcceptButton = internal_createToolButton(
+    ":/icons/attribute/growaccept24.png",
+    "Create Face Group With Current Grow Selection", this->Widget,
+    buttonLayout, bgroup, this);
 
   this->Internals->EntryLayout->addLayout(buttonLayout, 0, 1);
 }
@@ -275,8 +288,7 @@ void qtMeshEntityItem::setOutputOptional(int state)
 }
 
 //----------------------------------------------------------------------------
-void qtMeshEntityItem::updateValues(const std::set<int> vals,
-        MeshListUpdateType opType)
+void qtMeshEntityItem::updateValues(const std::set<int> vals)
 {
   smtk::attribute::MeshEntityItemPtr meshEntityItem =
     dynamic_pointer_cast<MeshEntityItem>(this->getObject());
@@ -284,29 +296,34 @@ void qtMeshEntityItem::updateValues(const std::set<int> vals,
     {
     return;
     }
+  MeshEntityItem::MeshSelectionMode opType = meshEntityItem->meshSelectMode();
   switch(opType)
   {
-    case RESET:
+    case MeshEntityItem::ACCEPT:
+      this->Internals->uncheckGrowButtons();
+      break;
+    case MeshEntityItem::RESET:
       meshEntityItem->setValues(vals);
       break;
-    case APPEND:
+    case MeshEntityItem::MERGE:
       meshEntityItem->insertValues(vals);
       break;
-    case SUBTRACT:
+    case MeshEntityItem::SUBTRACT:
       meshEntityItem->removeValues(vals);
       break;
-    case CANCEL:
+    case MeshEntityItem::NONE:
+      this->Internals->uncheckGrowButtons();
       meshEntityItem->reset();
       break;
     default:
-      std::cerr << "ERROR: Unrecognized MeshListUpdateType: "
+      std::cerr << "ERROR: Unrecognized MeshUpdateMode: "
                 << opType << std::endl;
       break;
   }
 }
 
 //----------------------------------------------------------------------------
-void qtMeshEntityItem::onRequestValuesUpdate()
+void qtMeshEntityItem::onRequestMeshSelection()
 {
   QToolButton* const cButton = qobject_cast<QToolButton*>(
     QObject::sender());
@@ -314,15 +331,24 @@ void qtMeshEntityItem::onRequestValuesUpdate()
     {
     return;
     }
-  MeshListUpdateType upType;
-  if(cButton == this->Internals->GrowButton)
-    upType = RESET;
+  smtk::attribute::MeshEntityItemPtr meshEntityItem =
+    dynamic_pointer_cast<MeshEntityItem>(this->getObject());
+  if(!meshEntityItem)
+    {
+    return;
+    }
+
+  MeshEntityItem::MeshSelectionMode selType;
+  if(cButton == this->Internals->AcceptButton)
+    selType = MeshEntityItem::ACCEPT;
+  else if(cButton == this->Internals->GrowButton)
+    selType = MeshEntityItem::RESET;
   else if(cButton == this->Internals->GrowPlusButton)
-    upType = APPEND;
+    selType = MeshEntityItem::MERGE;
   else if(cButton == this->Internals->GrowMinusButton)
-    upType = SUBTRACT;
+    selType = MeshEntityItem::SUBTRACT;
   else if(cButton == this->Internals->CancelButton)
-    upType = CANCEL;
+    selType = MeshEntityItem::NONE;
   else
     {
     std::cerr << "ERROR: Unrecognized button click "
@@ -330,12 +356,10 @@ void qtMeshEntityItem::onRequestValuesUpdate()
     return;
     }
 
-  smtk::attribute::MeshEntityItemPtr meshEntityItem =
-    dynamic_pointer_cast<MeshEntityItem>(this->getObject());
-  if(!meshEntityItem)
-    {
-    return;
-    }
+  if(selType == MeshEntityItem::ACCEPT || selType == MeshEntityItem::NONE)
+    this->Internals->uncheckGrowButtons();
+
+  meshEntityItem->setMeshSelectMode(selType);
   const MeshEntityItemDefinition *itemDef =
     dynamic_cast<const MeshEntityItemDefinition*>(meshEntityItem->definition().get());
 
@@ -343,5 +367,5 @@ void qtMeshEntityItem::onRequestValuesUpdate()
   smtk::attribute::ModelEntityItem::Ptr modelEntities =
     att->findModelEntity(itemDef->refModelEntityName());
   if(modelEntities)
-    emit this->requestValuesUpdate(modelEntities, upType);
+    emit this->requestMeshSelection(modelEntities);
 }

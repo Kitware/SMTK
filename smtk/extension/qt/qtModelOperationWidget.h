@@ -55,11 +55,14 @@ namespace smtk
       void operationRequested(const smtk::model::OperatorPtr& brOp);
       void fileItemCreated(smtk::attribute::qtFileItem* fileItem);
       void modelEntityItemCreated(smtk::attribute::qtModelEntityItem* entItem);
-      void meshEntityItemCreated(smtk::attribute::qtMeshEntityItem*);
+      void meshEntityItemCreated(
+          smtk::attribute::qtMeshEntityItem* meshItem,
+          const smtk::model::OperatorPtr&);
 
     protected slots:
       virtual void onOperationSelected();
       virtual void onOperate();
+      virtual void onMeshEntityItemCreated(smtk::attribute::qtMeshEntityItem*);
 
     protected:
       virtual void initWidget( );

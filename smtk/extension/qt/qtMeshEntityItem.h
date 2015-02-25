@@ -30,32 +30,21 @@ namespace smtk
       Q_OBJECT
 
     public:
-
-  /// Enumeration of mesh values modification type.
-  enum MeshListUpdateType {
-    RESET           = 0, //!< Reset the existing list)
-    APPEND             , //!< Append to the existing list
-    SUBTRACT           , //!< Subtract from existing list
-    CANCEL               //!< Cancel current operation mode
-  };
-
       qtMeshEntityItem(smtk::attribute::ItemPtr, QWidget* p,
         qtBaseView* bview, Qt::Orientation enumOrient = Qt::Horizontal);
       virtual ~qtMeshEntityItem();
       virtual void setLabelVisible(bool);
-      virtual void updateValues(const std::set<int> vals,
-        MeshListUpdateType opType);
+      virtual void updateValues(const std::set<int> vals);
 
     public slots:
       void setOutputOptional(int);
 
     signals:
-      void requestValuesUpdate(smtk::attribute::ModelEntityItemPtr pEntItem,
-                               MeshListUpdateType opType);
+      void requestMeshSelection(smtk::attribute::ModelEntityItemPtr pEntItem);
 
     protected slots:
       virtual void updateItemData();
-      virtual void onRequestValuesUpdate();
+      virtual void onRequestMeshSelection();
 
     protected:
       virtual void createWidget();

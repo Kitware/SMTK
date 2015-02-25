@@ -12,5 +12,6 @@
     <file>growplus32.png</file>
     <file>growminus32.png</file>
     <file>cancel32.png</file>
+    <file>growaccept24.png</file>
   </qresource>
 </RCC>

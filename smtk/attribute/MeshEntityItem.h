@@ -33,9 +33,22 @@ namespace smtk
       virtual ~MeshEntityItem();
       virtual Item::Type type() const;
 
+  /// Enumeration of mesh values modification type.
+  enum MeshSelectionMode {
+    NONE            ,//!< Cancel current operation mode
+    RESET           , //!< Reset the existing list)
+    MERGE           , //!< Append to the existing list
+    SUBTRACT        , //!< Subtract from existing list
+    ACCEPT            //!< Accept the existing list)
+  };
+
       void setValues(const std::set<int>&);
       void insertValues(const std::set<int>&);
       void removeValues(const std::set<int>&);
+      void setMeshSelectMode(MeshSelectionMode mode)
+      { this->m_selectMode = mode; }
+      MeshSelectionMode meshSelectMode() const
+      {return this->m_selectMode;}
   
       std::size_t numberOfValues() const
       {return this->m_values.size();}
@@ -57,7 +70,7 @@ namespace smtk
       MeshEntityItem(Item *owningItem, int position, int subGroupPosition);
       virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
       std::set<int>m_values;
-
+      MeshSelectionMode m_selectMode;
     private:
     };
   }

@@ -22,6 +22,7 @@ MeshEntityItem::MeshEntityItem(Attribute *owningAttribute,
                    int itemPosition):
   Item(owningAttribute, itemPosition)
 {
+  m_selectMode = NONE;
 }
 
 //----------------------------------------------------------------------------
