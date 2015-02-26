@@ -23,6 +23,7 @@ MeshEntityItem::MeshEntityItem(Attribute *owningAttribute,
   Item(owningAttribute, itemPosition)
 {
   m_selectMode = NONE;
+  m_isCtrlKeyDown = false;
 }
 
 //----------------------------------------------------------------------------
@@ -69,51 +70,51 @@ Item::Type MeshEntityItem::type() const
 }
 
 //----------------------------------------------------------------------------
-void MeshEntityItem::setValues(const std::set<int>& vals)
+void MeshEntityItem::setValues(const std::vector<int>& vals)
 {
   this->reset();
-  this->m_values.insert(vals.begin(), vals.end());
+  this->m_values = vals;
 }
 
 //----------------------------------------------------------------------------
-void MeshEntityItem::insertValues(const std::set<int>& vals)
+void MeshEntityItem::appendValues(const std::vector<int>& vals)
 {
-  this->m_values.insert(vals.begin(), vals.end());
+  this->m_values.insert(this->m_values.end(), vals.begin(), vals.end());
 }
 
 //----------------------------------------------------------------------------
-void MeshEntityItem::removeValues(const std::set<int>& vals)
+void MeshEntityItem::removeValues(const std::vector<int>& vals)
 {
-  for(std::set<int>::const_iterator it=vals.begin(); it!= vals.end(); ++it)
-    this->m_values.erase(*it);
+  for(std::vector<int>::const_iterator it=vals.begin(); it!= vals.end(); ++it)
+    this->m_values.erase(std::remove(this->m_values.begin(),
+      this->m_values.end(), *it), this->m_values.end());
+
 }
 
 //----------------------------------------------------------------------------
 int MeshEntityItem::value(std::size_t element) const
 {
-  std::set<int>::iterator it = this->m_values.begin();
-  std::advance(it,element);
-  return *it;
+  //std::advance(it,element);
+  return *(this->begin()+element);
 }
 
 //----------------------------------------------------------------------------
 std::string MeshEntityItem::valueAsString(std::size_t element) const
 {
-  std::set<int>::iterator it = this->m_values.begin();
-  std::advance(it,element);
+  //std::advance(it,element);
   std::stringstream buffer;
-  buffer << *it;
+  buffer << *(this->begin()+element);
   return buffer.str();
 }
 //----------------------------------------------------------------------------
-bool MeshEntityItem::insertValue(const int &val)
+bool MeshEntityItem::appendValue(const int &val)
 {
   //First - are we allowed to change the number of values?
   const MeshEntityItemDefinition *def =
     static_cast<const MeshEntityItemDefinition *>(this->definition().get());
   if (def->isValueValid(val))
     {
-    this->m_values.insert(val);
+    this->m_values.push_back(val);
     return true;
     }
   return false;
@@ -121,7 +122,8 @@ bool MeshEntityItem::insertValue(const int &val)
 //----------------------------------------------------------------------------
 bool MeshEntityItem::removeValue(const int &val)
 {
-  this->m_values.erase(val);
+  this->m_values.erase(std::remove(this->m_values.begin(),
+    this->m_values.end(), val), this->m_values.end());
   return true;
 }
 
@@ -138,17 +140,19 @@ void MeshEntityItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
 
   MeshEntityItemPtr sourceMeshEntityItem =
     smtk::dynamic_pointer_cast<MeshEntityItem>(sourceItem);
-
+  this->m_selectMode = sourceMeshEntityItem->meshSelectMode();
+  this->m_isCtrlKeyDown = sourceMeshEntityItem->isCtrlKeyDown();
   this->m_values.clear();
-  this->m_values.insert(sourceMeshEntityItem->begin(), sourceMeshEntityItem->end());
+  this->m_values.insert(this->m_values.end(),
+    sourceMeshEntityItem->begin(), sourceMeshEntityItem->end());
 }
 //----------------------------------------------------------------------------
-std::set<int>::const_iterator MeshEntityItem::begin() const
+std::vector<int>::const_iterator MeshEntityItem::begin() const
 {
   return this->m_values.begin();
 }
 
-std::set<int>::const_iterator MeshEntityItem::end() const
+std::vector<int>::const_iterator MeshEntityItem::end() const
 {
   return this->m_values.end();
 }

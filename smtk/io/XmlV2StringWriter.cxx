@@ -1185,12 +1185,14 @@ void XmlV2StringWriter::processMeshEntityItem(pugi::xml_node &node,
     }
   node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
   xml_node val, values = node.append_child("Values");
-  std::set<int>::const_iterator it;
+  std::vector<int>::const_iterator it;
   for(it = item->begin(); it != item->end(); ++it)
     {
     val = values.append_child("Val");
     val.text().set(*it);
     }
+  val = node.append_child("CtrlKey");
+  val.text().set(item->isCtrlKeyDown() ? 1 : 0);
 }
 
 //----------------------------------------------------------------------------

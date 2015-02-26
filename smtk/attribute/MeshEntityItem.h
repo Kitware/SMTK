@@ -18,7 +18,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Item.h"
 #include <string>
-#include <set>
+#include <vector>
 
 namespace smtk
 {
@@ -42,18 +42,22 @@ namespace smtk
     ACCEPT            //!< Accept the existing list)
   };
 
-      void setValues(const std::set<int>&);
-      void insertValues(const std::set<int>&);
-      void removeValues(const std::set<int>&);
+      void setValues(const std::vector<int>&);
+      void appendValues(const std::vector<int>&);
+      void removeValues(const std::vector<int>&);
       void setMeshSelectMode(MeshSelectionMode mode)
       { this->m_selectMode = mode; }
       MeshSelectionMode meshSelectMode() const
       {return this->m_selectMode;}
+      void setCtrlKeyDown(bool val)
+      { this->m_isCtrlKeyDown = val; }
+      bool isCtrlKeyDown() const
+      {return this->m_isCtrlKeyDown;}
   
       std::size_t numberOfValues() const
       {return this->m_values.size();}
       int value(std::size_t element=0) const;
-      bool insertValue(const int &val);
+      bool appendValue(const int &val);
       bool removeValue(const int &val);
       virtual void reset();
       virtual std::string valueAsString() const
@@ -62,15 +66,16 @@ namespace smtk
       virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
                             smtk::attribute::Item::CopyInfo& info);
 
-      std::set<int>::const_iterator begin() const;
-      std::set<int>::const_iterator end() const;
+      std::vector<int>::const_iterator begin() const;
+      std::vector<int>::const_iterator end() const;
 
     protected:
       MeshEntityItem(Attribute *owningAttribute, int itemPosition);
       MeshEntityItem(Item *owningItem, int position, int subGroupPosition);
       virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
-      std::set<int>m_values;
+      std::vector<int>m_values;
       MeshSelectionMode m_selectMode;
+      bool m_isCtrlKeyDown;
     private:
     };
   }

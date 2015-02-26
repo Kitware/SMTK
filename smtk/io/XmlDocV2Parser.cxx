@@ -275,9 +275,12 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node &node,
     {
     for (xml_node val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
       {
-      item->insertValue(val.text().as_int());
+      item->appendValue(val.text().as_int());
       }
     }
+
+  xml_node keyNode = node.child("CtrlKey");
+    item->setCtrlKeyDown(keyNode && keyNode.text().as_int() ? true : false);
 }
 
 //----------------------------------------------------------------------------

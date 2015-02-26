@@ -49,7 +49,7 @@ public:
   QPointer<QLabel> theLabel;
   Qt::Orientation VectorItemOrient;
 
-//  QPointer<qtModelEntityItem> EntityAssociationItem;
+  bool isCtrlKeyDown;
 
   QPointer<QToolButton> GrowButton;
   QPointer<QToolButton> GrowPlusButton;
@@ -74,6 +74,7 @@ qtMeshEntityItem::qtMeshEntityItem(
   this->Internals = new qtMeshEntityItemInternals;
   this->IsLeafItem = true;
   this->Internals->VectorItemOrient = enVectorItemOrient;
+  this->Internals->isCtrlKeyDown = false;
   this->createWidget();
 }
 
@@ -128,7 +129,6 @@ QToolButton* internal_createToolButton(
 
   return retButton;
 }
-
 
 //----------------------------------------------------------------------------
 void qtMeshEntityItem::addMeshOpButtons()
@@ -288,7 +288,7 @@ void qtMeshEntityItem::setOutputOptional(int state)
 }
 
 //----------------------------------------------------------------------------
-void qtMeshEntityItem::updateValues(const std::set<int> vals)
+void qtMeshEntityItem::updateValues(const std::vector<int> vals)
 {
   smtk::attribute::MeshEntityItemPtr meshEntityItem =
     dynamic_pointer_cast<MeshEntityItem>(this->getObject());
@@ -303,13 +303,12 @@ void qtMeshEntityItem::updateValues(const std::set<int> vals)
       this->Internals->uncheckGrowButtons();
       break;
     case MeshEntityItem::RESET:
-      meshEntityItem->setValues(vals);
-      break;
     case MeshEntityItem::MERGE:
-      meshEntityItem->insertValues(vals);
-      break;
     case MeshEntityItem::SUBTRACT:
-      meshEntityItem->removeValues(vals);
+    // The MeshEntityItem is really just a place holder for
+    // what's being selected. The operations will handle
+    // different operation types given current selection.
+      meshEntityItem->setValues(vals);
       break;
     case MeshEntityItem::NONE:
       this->Internals->uncheckGrowButtons();
@@ -320,6 +319,43 @@ void qtMeshEntityItem::updateValues(const std::set<int> vals)
                 << opType << std::endl;
       break;
   }
+}
+
+//----------------------------------------------------------------------------
+smtk::attribute::ModelEntityItemPtr qtMeshEntityItem::refModelEntityItem()
+{
+  smtk::attribute::MeshEntityItemPtr meshEntityItem =
+    dynamic_pointer_cast<MeshEntityItem>(this->getObject());
+  if(!meshEntityItem)
+    {
+    return smtk::attribute::ModelEntityItemPtr();
+    }
+  const MeshEntityItemDefinition *itemDef =
+    dynamic_cast<const MeshEntityItemDefinition*>(meshEntityItem->definition().get());
+  smtk::attribute::AttributePtr att = meshEntityItem->attribute();
+  return att->findModelEntity(itemDef->refModelEntityName());
+}
+//----------------------------------------------------------------------------
+void qtMeshEntityItem::setUsingCtrlKey(bool val)
+{
+  smtk::attribute::MeshEntityItemPtr meshEntityItem =
+    dynamic_pointer_cast<MeshEntityItem>(this->getObject());
+  if(!meshEntityItem)
+    {
+    return;
+    }
+  meshEntityItem->setCtrlKeyDown(val);
+}
+//----------------------------------------------------------------------------
+bool qtMeshEntityItem::usingCtrlKey()
+{
+  smtk::attribute::MeshEntityItemPtr meshEntityItem =
+    dynamic_pointer_cast<MeshEntityItem>(this->getObject());
+  if(!meshEntityItem)
+    {
+    return false;
+    }
+  return meshEntityItem->isCtrlKeyDown();
 }
 
 //----------------------------------------------------------------------------
@@ -337,6 +373,8 @@ void qtMeshEntityItem::onRequestMeshSelection()
     {
     return;
     }
+
+  this->setUsingCtrlKey(false);
 
   MeshEntityItem::MeshSelectionMode selType;
   if(cButton == this->Internals->AcceptButton)
@@ -359,13 +397,8 @@ void qtMeshEntityItem::onRequestMeshSelection()
   if(selType == MeshEntityItem::ACCEPT || selType == MeshEntityItem::NONE)
     this->Internals->uncheckGrowButtons();
 
-  meshEntityItem->setMeshSelectMode(selType);
-  const MeshEntityItemDefinition *itemDef =
-    dynamic_cast<const MeshEntityItemDefinition*>(meshEntityItem->definition().get());
-
-  smtk::attribute::AttributePtr att = meshEntityItem->attribute();
   smtk::attribute::ModelEntityItem::Ptr modelEntities =
-    att->findModelEntity(itemDef->refModelEntityName());
+    this->refModelEntityItem();
   if(modelEntities)
     emit this->requestMeshSelection(modelEntities);
 }
