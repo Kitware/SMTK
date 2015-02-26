@@ -156,18 +156,19 @@ target_link_libraries(smtkDiscreteSession
   LINK_PUBLIC
     SMTKCore
   LINK_PRIVATE
+    vtkCommonExecutionModel
+    vtkFiltersCore
+    vtkFiltersGeometry
+    vtkFiltersSources
+    vtkGeovisCore
+    vtkIOParallel
     vtkRenderingCore
     vtkRenderingFreeType${VTK_RENDERING_BACKEND}
     vtkRendering${VTK_RENDERING_BACKEND}
-    vtkSMTKDiscreteModel
-    vtkFiltersCore
-    vtkFiltersGeometry
-    vtkIOParallel
-    vtkRenderingCore
-    vtkGeovisCore
     vtksys
     ${__private_dependencies}
     vtkSMTKDiscreteExt
+    vtkSMTKDiscreteModel
   )
 
 if(SMTK_BUILD_MOAB_READER)
