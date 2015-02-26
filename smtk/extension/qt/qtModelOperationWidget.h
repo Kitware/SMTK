@@ -26,7 +26,7 @@ namespace smtk {
  namespace attribute {
   class qtFileItem;
   class qtModelEntityItem;
-  class qtMeshEntityItem;
+  class qtMeshSelectionItem;
  }
 }
 
@@ -55,14 +55,14 @@ namespace smtk
       void operationRequested(const smtk::model::OperatorPtr& brOp);
       void fileItemCreated(smtk::attribute::qtFileItem* fileItem);
       void modelEntityItemCreated(smtk::attribute::qtModelEntityItem* entItem);
-      void meshEntityItemCreated(
-          smtk::attribute::qtMeshEntityItem* meshItem,
+      void meshSelectionItemCreated(
+          smtk::attribute::qtMeshSelectionItem* meshItem,
           const smtk::model::OperatorPtr&);
 
     protected slots:
       virtual void onOperationSelected();
       virtual void onOperate();
-      virtual void onMeshEntityItemCreated(smtk::attribute::qtMeshEntityItem*);
+      virtual void onMeshSelectionItemCreated(smtk::attribute::qtMeshSelectionItem*);
 
     protected:
       virtual void initWidget( );

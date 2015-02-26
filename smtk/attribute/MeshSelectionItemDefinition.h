@@ -7,12 +7,12 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME MeshEntityItemDefinition.h -
+// .NAME MeshSelectionItemDefinition.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_MeshEntityItemDefinition_h
-#define __smtk_attribute_MeshEntityItemDefinition_h
+#ifndef __smtk_attribute_MeshSelectionItemDefinition_h
+#define __smtk_attribute_MeshSelectionItemDefinition_h
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -24,15 +24,15 @@ namespace smtk
   namespace attribute
   {
     class Attribute;
-    class SMTKCORE_EXPORT MeshEntityItemDefinition:
+    class SMTKCORE_EXPORT MeshSelectionItemDefinition:
       public ItemDefinition
     {
     public:
-      smtkTypeMacro(MeshEntityItemDefinition);
-      static smtk::attribute::MeshEntityItemDefinitionPtr New(const std::string &myName)
-      { return smtk::attribute::MeshEntityItemDefinitionPtr(new MeshEntityItemDefinition(myName));}
+      smtkTypeMacro(MeshSelectionItemDefinition);
+      static smtk::attribute::MeshSelectionItemDefinitionPtr New(const std::string &myName)
+      { return smtk::attribute::MeshSelectionItemDefinitionPtr(new MeshSelectionItemDefinition(myName));}
 
-      virtual ~MeshEntityItemDefinition();
+      virtual ~MeshSelectionItemDefinition();
 
       virtual Item::Type type() const;
       bool isValueValid(const int &val) const;
@@ -50,11 +50,11 @@ namespace smtk
       virtual smtk::attribute::ItemDefinitionPtr
         createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const;
     protected:
-      MeshEntityItemDefinition(const std::string &myName);
+      MeshSelectionItemDefinition(const std::string &myName);
 
       std::string m_RefModelEntityDefName;
     };
   }
 }
 
-#endif /* __smtk_attribute_MeshEntityItemDefinition_h */
+#endif /* __smtk_attribute_MeshSelectionItemDefinition_h */

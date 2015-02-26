@@ -184,8 +184,8 @@ bool qtModelOperationWidget::setCurrentOperation(
     this, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)));
   QObject::connect(uiManager, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)),
     this, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)));
-  QObject::connect(uiManager, SIGNAL(meshEntityItemCreated(smtk::attribute::qtMeshEntityItem*)),
-    this, SLOT(onMeshEntityItemCreated(smtk::attribute::qtMeshEntityItem*)));
+  QObject::connect(uiManager, SIGNAL(meshSelectionItemCreated(smtk::attribute::qtMeshSelectionItem*)),
+    this, SLOT(onMeshSelectionItemCreated(smtk::attribute::qtMeshSelectionItem*)));
 
   qtBaseView* theView = uiManager->initializeView(opParent, instanced, false);
   qtModelOperationWidgetInternals::OperatorInfo opInfo;
@@ -288,8 +288,8 @@ void qtModelOperationWidget::onOperate()
 }
 
 //----------------------------------------------------------------------------
-void qtModelOperationWidget::onMeshEntityItemCreated(
-  smtk::attribute::qtMeshEntityItem* meshItem)
+void qtModelOperationWidget::onMeshSelectionItemCreated(
+  smtk::attribute::qtMeshSelectionItem* meshItem)
 {
   Operator::Ptr op;
   std::string opName = this->Internals->OperationCombo->currentText().toStdString();
@@ -297,5 +297,5 @@ void qtModelOperationWidget::onMeshEntityItemCreated(
     {
     op = this->Internals->OperatorMap[opName].opPtr;
     }
-  emit this->meshEntityItemCreated(meshItem, op);
+  emit this->meshSelectionItemCreated(meshItem, op);
 }

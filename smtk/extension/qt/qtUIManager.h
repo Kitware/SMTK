@@ -33,7 +33,7 @@ namespace smtk
   {
     class qtItem;
     class qtFileItem;
-    class qtMeshEntityItem;
+    class qtMeshSelectionItem;
     class qtModelEntityItem;
     class qtRootView;
     class qtAttributeView;
@@ -143,7 +143,7 @@ namespace smtk
     public slots:
       void onFileItemCreated(smtk::attribute::qtFileItem*);
       void onModelEntityItemCreated(smtk::attribute::qtModelEntityItem*);
-      void onMeshEntityItemCreated(smtk::attribute::qtMeshEntityItem*);
+      void onMeshSelectionItemCreated(smtk::attribute::qtMeshSelectionItem*);
       void onExpressionReferenceChanged();
       void updateModelViews();
       void updateModelViews(qtGroupView*);
@@ -157,7 +157,7 @@ namespace smtk
     signals:
       void fileItemCreated(smtk::attribute::qtFileItem* fileItem);
       void modelEntityItemCreated(smtk::attribute::qtModelEntityItem* entItem);
-      void meshEntityItemCreated(smtk::attribute::qtMeshEntityItem*);
+      void meshSelectionItemCreated(smtk::attribute::qtMeshSelectionItem*);
       void uiChanged(smtk::attribute::qtBaseView*, smtk::attribute::ItemPtr);
 
     protected:

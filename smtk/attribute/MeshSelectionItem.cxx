@@ -9,8 +9,8 @@
 //=========================================================================
 
 
-#include "smtk/attribute/MeshEntityItem.h"
-#include "smtk/attribute/MeshEntityItemDefinition.h"
+#include "smtk/attribute/MeshSelectionItem.h"
+#include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
 #include <iostream>
 #include <stdio.h>
@@ -18,7 +18,7 @@
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-MeshEntityItem::MeshEntityItem(Attribute *owningAttribute,
+MeshSelectionItem::MeshSelectionItem(Attribute *owningAttribute,
                    int itemPosition):
   Item(owningAttribute, itemPosition)
 {
@@ -27,7 +27,7 @@ MeshEntityItem::MeshEntityItem(Attribute *owningAttribute,
 }
 
 //----------------------------------------------------------------------------
-MeshEntityItem::MeshEntityItem(Item *inOwningItem,
+MeshSelectionItem::MeshSelectionItem(Item *inOwningItem,
                    int itemPosition,
                    int inSubGroupPosition):
   Item(inOwningItem, itemPosition, inSubGroupPosition)
@@ -35,13 +35,13 @@ MeshEntityItem::MeshEntityItem(Item *inOwningItem,
 }
 
 //----------------------------------------------------------------------------
-bool MeshEntityItem::
+bool MeshSelectionItem::
 setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 {
   // Note that we do a dynamic cast here since we don't
   // know if the proper definition is being passed
-  const MeshEntityItemDefinition *def =
-    dynamic_cast<const MeshEntityItemDefinition *>(adef.get());
+  const MeshSelectionItemDefinition *def =
+    dynamic_cast<const MeshSelectionItemDefinition *>(adef.get());
 
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
@@ -54,14 +54,14 @@ setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 }
 
 //----------------------------------------------------------------------------
-MeshEntityItem::~MeshEntityItem()
+MeshSelectionItem::~MeshSelectionItem()
 {
 }
 //----------------------------------------------------------------------------
-Item::Type MeshEntityItem::type() const
+Item::Type MeshSelectionItem::type() const
 {
-  const MeshEntityItemDefinition *def =
-    static_cast<const MeshEntityItemDefinition *>(this->definition().get());
+  const MeshSelectionItemDefinition *def =
+    static_cast<const MeshSelectionItemDefinition *>(this->definition().get());
   if (def != NULL)
     {
     return def->type();
@@ -70,20 +70,20 @@ Item::Type MeshEntityItem::type() const
 }
 
 //----------------------------------------------------------------------------
-void MeshEntityItem::setValues(const std::vector<int>& vals)
+void MeshSelectionItem::setValues(const std::vector<int>& vals)
 {
   this->reset();
   this->m_values = vals;
 }
 
 //----------------------------------------------------------------------------
-void MeshEntityItem::appendValues(const std::vector<int>& vals)
+void MeshSelectionItem::appendValues(const std::vector<int>& vals)
 {
   this->m_values.insert(this->m_values.end(), vals.begin(), vals.end());
 }
 
 //----------------------------------------------------------------------------
-void MeshEntityItem::removeValues(const std::vector<int>& vals)
+void MeshSelectionItem::removeValues(const std::vector<int>& vals)
 {
   for(std::vector<int>::const_iterator it=vals.begin(); it!= vals.end(); ++it)
     this->m_values.erase(std::remove(this->m_values.begin(),
@@ -92,14 +92,14 @@ void MeshEntityItem::removeValues(const std::vector<int>& vals)
 }
 
 //----------------------------------------------------------------------------
-int MeshEntityItem::value(std::size_t element) const
+int MeshSelectionItem::value(std::size_t element) const
 {
   //std::advance(it,element);
   return *(this->begin()+element);
 }
 
 //----------------------------------------------------------------------------
-std::string MeshEntityItem::valueAsString(std::size_t element) const
+std::string MeshSelectionItem::valueAsString(std::size_t element) const
 {
   //std::advance(it,element);
   std::stringstream buffer;
@@ -107,11 +107,11 @@ std::string MeshEntityItem::valueAsString(std::size_t element) const
   return buffer.str();
 }
 //----------------------------------------------------------------------------
-bool MeshEntityItem::appendValue(const int &val)
+bool MeshSelectionItem::appendValue(const int &val)
 {
   //First - are we allowed to change the number of values?
-  const MeshEntityItemDefinition *def =
-    static_cast<const MeshEntityItemDefinition *>(this->definition().get());
+  const MeshSelectionItemDefinition *def =
+    static_cast<const MeshSelectionItemDefinition *>(this->definition().get());
   if (def->isValueValid(val))
     {
     this->m_values.push_back(val);
@@ -120,7 +120,7 @@ bool MeshEntityItem::appendValue(const int &val)
   return false;
 }
 //----------------------------------------------------------------------------
-bool MeshEntityItem::removeValue(const int &val)
+bool MeshSelectionItem::removeValue(const int &val)
 {
   this->m_values.erase(std::remove(this->m_values.begin(),
     this->m_values.end(), val), this->m_values.end());
@@ -128,31 +128,31 @@ bool MeshEntityItem::removeValue(const int &val)
 }
 
 //----------------------------------------------------------------------------
-void MeshEntityItem::reset()
+void MeshSelectionItem::reset()
 {
   this->m_values.clear();
 }
 //----------------------------------------------------------------------------
-void MeshEntityItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+void MeshSelectionItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
 {
   // Assigns my contents to be same as sourceItem
   Item::copyFrom(sourceItem, info);
 
-  MeshEntityItemPtr sourceMeshEntityItem =
-    smtk::dynamic_pointer_cast<MeshEntityItem>(sourceItem);
-  this->m_selectMode = sourceMeshEntityItem->meshSelectMode();
-  this->m_isCtrlKeyDown = sourceMeshEntityItem->isCtrlKeyDown();
+  MeshSelectionItemPtr sourceMeshSelectionItem =
+    smtk::dynamic_pointer_cast<MeshSelectionItem>(sourceItem);
+  this->m_selectMode = sourceMeshSelectionItem->meshSelectMode();
+  this->m_isCtrlKeyDown = sourceMeshSelectionItem->isCtrlKeyDown();
   this->m_values.clear();
   this->m_values.insert(this->m_values.end(),
-    sourceMeshEntityItem->begin(), sourceMeshEntityItem->end());
+    sourceMeshSelectionItem->begin(), sourceMeshSelectionItem->end());
 }
 //----------------------------------------------------------------------------
-std::vector<int>::const_iterator MeshEntityItem::begin() const
+std::vector<int>::const_iterator MeshSelectionItem::begin() const
 {
   return this->m_values.begin();
 }
 
-std::vector<int>::const_iterator MeshEntityItem::end() const
+std::vector<int>::const_iterator MeshSelectionItem::end() const
 {
   return this->m_values.end();
 }

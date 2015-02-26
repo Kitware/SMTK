@@ -8,61 +8,61 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/attribute/MeshEntityItemDefinition.h"
+#include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/MeshEntityItem.h"
+#include "smtk/attribute/MeshSelectionItem.h"
 
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-MeshEntityItemDefinition::
-MeshEntityItemDefinition(const std::string &myName):
+MeshSelectionItemDefinition::
+MeshSelectionItemDefinition(const std::string &myName):
   ItemDefinition(myName)
 {
 }
 
 //----------------------------------------------------------------------------
-MeshEntityItemDefinition::~MeshEntityItemDefinition()
+MeshSelectionItemDefinition::~MeshSelectionItemDefinition()
 {
 }
 //----------------------------------------------------------------------------
-Item::Type MeshEntityItemDefinition::type() const
+Item::Type MeshSelectionItemDefinition::type() const
 {
   return Item::MESH_ENTITY;
 }
 
 //----------------------------------------------------------------------------
-bool MeshEntityItemDefinition::isValueValid(const int &val) const
+bool MeshSelectionItemDefinition::isValueValid(const int &val) const
 {
   return val >= 0;
 }
 //----------------------------------------------------------------------------
-smtk::attribute::ItemPtr MeshEntityItemDefinition::buildItem(
+smtk::attribute::ItemPtr MeshSelectionItemDefinition::buildItem(
   Attribute *owningAttribute, int itemPosition) const
 {
-  return smtk::attribute::ItemPtr(new MeshEntityItem(owningAttribute,
+  return smtk::attribute::ItemPtr(new MeshSelectionItem(owningAttribute,
                                               itemPosition));
 }
 //----------------------------------------------------------------------------
-smtk::attribute::ItemPtr MeshEntityItemDefinition::buildItem(
+smtk::attribute::ItemPtr MeshSelectionItemDefinition::buildItem(
 Item *owningItem, int itemPosition, int subGroupPosition) const
 {
-  return smtk::attribute::ItemPtr(new MeshEntityItem(owningItem,
+  return smtk::attribute::ItemPtr(new MeshSelectionItem(owningItem,
                                               itemPosition,
                                               subGroupPosition));
 }
 
 //----------------------------------------------------------------------------
 smtk::attribute::ItemDefinitionPtr
-smtk::attribute::MeshEntityItemDefinition::
+smtk::attribute::MeshSelectionItemDefinition::
 createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   (void)info;
 
   std::size_t i;
 
-  smtk::attribute::MeshEntityItemDefinitionPtr instance =
-    smtk::attribute::MeshEntityItemDefinition::New(this->name());
+  smtk::attribute::MeshSelectionItemDefinitionPtr instance =
+    smtk::attribute::MeshSelectionItemDefinition::New(this->name());
   ItemDefinition::copyTo(instance);
 
   return instance;

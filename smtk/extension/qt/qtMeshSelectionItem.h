@@ -7,32 +7,32 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME qtMeshEntityItem - UI components for attribute MeshEntityItem
+// .NAME qtMeshSelectionItem - UI components for attribute MeshSelectionItem
 // .SECTION Description
 // .SECTION See Also
 // qtItem
 
-#ifndef __smtk_attribute_qtMeshEntityItem_h
-#define __smtk_attribute_qtMeshEntityItem_h
+#ifndef __smtk_attribute_qtMeshSelectionItem_h
+#define __smtk_attribute_qtMeshSelectionItem_h
 
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/model/EntityTypeBits.h" // for smtk::model::BitFlags
 
-class qtMeshEntityItemInternals;
+class qtMeshSelectionItemInternals;
 class QBoxLayout;
 
 namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtMeshEntityItem : public qtItem
+    class QTSMTK_EXPORT qtMeshSelectionItem : public qtItem
     {
       Q_OBJECT
 
     public:
-      qtMeshEntityItem(smtk::attribute::ItemPtr, QWidget* p,
+      qtMeshSelectionItem(smtk::attribute::ItemPtr, QWidget* p,
         qtBaseView* bview, Qt::Orientation enumOrient = Qt::Horizontal);
-      virtual ~qtMeshEntityItem();
+      virtual ~qtMeshSelectionItem();
       virtual void setLabelVisible(bool);
       virtual void updateValues(const std::vector<int> vals);
 
@@ -57,7 +57,7 @@ namespace smtk
 
     private:
 
-      qtMeshEntityItemInternals *Internals;
+      qtMeshSelectionItemInternals *Internals;
 
     }; // class
   }; // namespace attribute

@@ -8,12 +8,12 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/extension/qt/qtMeshEntityItem.h"
+#include "smtk/extension/qt/qtMeshSelectionItem.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/System.h"
-#include "smtk/attribute/MeshEntityItem.h"
-#include "smtk/attribute/MeshEntityItemDefinition.h"
+#include "smtk/attribute/MeshSelectionItem.h"
+#include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/common/UUID.h"
@@ -41,7 +41,7 @@
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-class qtMeshEntityItemInternals
+class qtMeshSelectionItemInternals
 {
 public:
 
@@ -67,11 +67,11 @@ public:
 };
 
 //----------------------------------------------------------------------------
-qtMeshEntityItem::qtMeshEntityItem(
+qtMeshSelectionItem::qtMeshSelectionItem(
   smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview,
    Qt::Orientation enVectorItemOrient) : qtItem(dataObj, p, bview)
 {
-  this->Internals = new qtMeshEntityItemInternals;
+  this->Internals = new qtMeshSelectionItemInternals;
   this->IsLeafItem = true;
   this->Internals->VectorItemOrient = enVectorItemOrient;
   this->Internals->isCtrlKeyDown = false;
@@ -79,18 +79,18 @@ qtMeshEntityItem::qtMeshEntityItem(
 }
 
 //----------------------------------------------------------------------------
-qtMeshEntityItem::~qtMeshEntityItem()
+qtMeshSelectionItem::~qtMeshSelectionItem()
 {
   delete this->Internals;
 }
 //----------------------------------------------------------------------------
-void qtMeshEntityItem::setLabelVisible(bool visible)
+void qtMeshSelectionItem::setLabelVisible(bool visible)
 {
   this->Internals->theLabel->setVisible(visible);
 }
 
 //----------------------------------------------------------------------------
-void qtMeshEntityItem::createWidget()
+void qtMeshSelectionItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
   if(!dataObj || !this->passAdvancedCheck() || (this->baseView() &&
@@ -104,7 +104,7 @@ void qtMeshEntityItem::createWidget()
 }
 
 //----------------------------------------------------------------------------
-void qtMeshEntityItem::updateItemData()
+void qtMeshSelectionItem::updateItemData()
 {
   this->updateUI();
   this->qtItem::updateItemData();
@@ -112,7 +112,7 @@ void qtMeshEntityItem::updateItemData()
 
 QToolButton* internal_createToolButton(
   const QString& strIconName, const QString& strToolTip, QWidget* pw,
-  QBoxLayout* buttonLayout, QButtonGroup* bgroup, qtMeshEntityItem* meshItem)
+  QBoxLayout* buttonLayout, QButtonGroup* bgroup, qtMeshSelectionItem* meshItem)
 {
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QToolButton* retButton = new QToolButton(pw);
@@ -131,7 +131,7 @@ QToolButton* internal_createToolButton(
 }
 
 //----------------------------------------------------------------------------
-void qtMeshEntityItem::addMeshOpButtons()
+void qtMeshSelectionItem::addMeshOpButtons()
 {
 /*
   this->Internals->EntityAssociationItem =
@@ -178,11 +178,11 @@ void qtMeshEntityItem::addMeshOpButtons()
 }
 
 //----------------------------------------------------------------------------
-void qtMeshEntityItem::updateUI()
+void qtMeshSelectionItem::updateUI()
 {
   //smtk::attribute::ItemPtr dataObj = this->getObject();
-  smtk::attribute::MeshEntityItemPtr dataObj =
-    dynamic_pointer_cast<MeshEntityItem>(this->getObject());
+  smtk::attribute::MeshSelectionItemPtr dataObj =
+    dynamic_pointer_cast<MeshSelectionItem>(this->getObject());
   if(!dataObj || !this->passAdvancedCheck() || (this->baseView() &&
     !this->baseView()->uiManager()->passItemCategoryCheck(
       dataObj->definition())))
@@ -214,10 +214,10 @@ void qtMeshEntityItem::updateUI()
       this, SLOT(setOutputOptional(int)));
     labelLayout->addWidget(optionalCheck);
     }
-  smtk::attribute::MeshEntityItemPtr item =
-    dynamic_pointer_cast<MeshEntityItem>(dataObj);
-  const MeshEntityItemDefinition *itemDef =
-    dynamic_cast<const MeshEntityItemDefinition*>(dataObj->definition().get());
+  smtk::attribute::MeshSelectionItemPtr item =
+    dynamic_pointer_cast<MeshSelectionItem>(dataObj);
+  const MeshSelectionItemDefinition *itemDef =
+    dynamic_cast<const MeshSelectionItemDefinition*>(dataObj->definition().get());
 
   QString labelText;
   if(!item->label().empty())
@@ -269,10 +269,10 @@ void qtMeshEntityItem::updateUI()
 }
 
 //----------------------------------------------------------------------------
-void qtMeshEntityItem::setOutputOptional(int state)
+void qtMeshSelectionItem::setOutputOptional(int state)
 {
-  smtk::attribute::MeshEntityItemPtr item =
-    dynamic_pointer_cast<MeshEntityItem>(this->getObject());
+  smtk::attribute::MeshSelectionItemPtr item =
+    dynamic_pointer_cast<MeshSelectionItem>(this->getObject());
   if(!item)
     {
     return;
@@ -288,31 +288,31 @@ void qtMeshEntityItem::setOutputOptional(int state)
 }
 
 //----------------------------------------------------------------------------
-void qtMeshEntityItem::updateValues(const std::vector<int> vals)
+void qtMeshSelectionItem::updateValues(const std::vector<int> vals)
 {
-  smtk::attribute::MeshEntityItemPtr meshEntityItem =
-    dynamic_pointer_cast<MeshEntityItem>(this->getObject());
-  if(!meshEntityItem)
+  smtk::attribute::MeshSelectionItemPtr meshSelectionItem =
+    dynamic_pointer_cast<MeshSelectionItem>(this->getObject());
+  if(!meshSelectionItem)
     {
     return;
     }
-  MeshEntityItem::MeshSelectionMode opType = meshEntityItem->meshSelectMode();
+  MeshSelectionItem::MeshSelectionMode opType = meshSelectionItem->meshSelectMode();
   switch(opType)
   {
-    case MeshEntityItem::ACCEPT:
+    case MeshSelectionItem::ACCEPT:
       this->Internals->uncheckGrowButtons();
       break;
-    case MeshEntityItem::RESET:
-    case MeshEntityItem::MERGE:
-    case MeshEntityItem::SUBTRACT:
-    // The MeshEntityItem is really just a place holder for
+    case MeshSelectionItem::RESET:
+    case MeshSelectionItem::MERGE:
+    case MeshSelectionItem::SUBTRACT:
+    // The MeshSelectionItem is really just a place holder for
     // what's being selected. The operations will handle
     // different operation types given current selection.
-      meshEntityItem->setValues(vals);
+      meshSelectionItem->setValues(vals);
       break;
-    case MeshEntityItem::NONE:
+    case MeshSelectionItem::NONE:
       this->Internals->uncheckGrowButtons();
-      meshEntityItem->reset();
+      meshSelectionItem->reset();
       break;
     default:
       std::cerr << "ERROR: Unrecognized MeshUpdateMode: "
@@ -322,44 +322,44 @@ void qtMeshEntityItem::updateValues(const std::vector<int> vals)
 }
 
 //----------------------------------------------------------------------------
-smtk::attribute::ModelEntityItemPtr qtMeshEntityItem::refModelEntityItem()
+smtk::attribute::ModelEntityItemPtr qtMeshSelectionItem::refModelEntityItem()
 {
-  smtk::attribute::MeshEntityItemPtr meshEntityItem =
-    dynamic_pointer_cast<MeshEntityItem>(this->getObject());
-  if(!meshEntityItem)
+  smtk::attribute::MeshSelectionItemPtr meshSelectionItem =
+    dynamic_pointer_cast<MeshSelectionItem>(this->getObject());
+  if(!meshSelectionItem)
     {
     return smtk::attribute::ModelEntityItemPtr();
     }
-  const MeshEntityItemDefinition *itemDef =
-    dynamic_cast<const MeshEntityItemDefinition*>(meshEntityItem->definition().get());
-  smtk::attribute::AttributePtr att = meshEntityItem->attribute();
+  const MeshSelectionItemDefinition *itemDef =
+    dynamic_cast<const MeshSelectionItemDefinition*>(meshSelectionItem->definition().get());
+  smtk::attribute::AttributePtr att = meshSelectionItem->attribute();
   return att->findModelEntity(itemDef->refModelEntityName());
 }
 //----------------------------------------------------------------------------
-void qtMeshEntityItem::setUsingCtrlKey(bool val)
+void qtMeshSelectionItem::setUsingCtrlKey(bool val)
 {
-  smtk::attribute::MeshEntityItemPtr meshEntityItem =
-    dynamic_pointer_cast<MeshEntityItem>(this->getObject());
-  if(!meshEntityItem)
+  smtk::attribute::MeshSelectionItemPtr meshSelectionItem =
+    dynamic_pointer_cast<MeshSelectionItem>(this->getObject());
+  if(!meshSelectionItem)
     {
     return;
     }
-  meshEntityItem->setCtrlKeyDown(val);
+  meshSelectionItem->setCtrlKeyDown(val);
 }
 //----------------------------------------------------------------------------
-bool qtMeshEntityItem::usingCtrlKey()
+bool qtMeshSelectionItem::usingCtrlKey()
 {
-  smtk::attribute::MeshEntityItemPtr meshEntityItem =
-    dynamic_pointer_cast<MeshEntityItem>(this->getObject());
-  if(!meshEntityItem)
+  smtk::attribute::MeshSelectionItemPtr meshSelectionItem =
+    dynamic_pointer_cast<MeshSelectionItem>(this->getObject());
+  if(!meshSelectionItem)
     {
     return false;
     }
-  return meshEntityItem->isCtrlKeyDown();
+  return meshSelectionItem->isCtrlKeyDown();
 }
 
 //----------------------------------------------------------------------------
-void qtMeshEntityItem::onRequestMeshSelection()
+void qtMeshSelectionItem::onRequestMeshSelection()
 {
   QToolButton* const cButton = qobject_cast<QToolButton*>(
     QObject::sender());
@@ -367,26 +367,26 @@ void qtMeshEntityItem::onRequestMeshSelection()
     {
     return;
     }
-  smtk::attribute::MeshEntityItemPtr meshEntityItem =
-    dynamic_pointer_cast<MeshEntityItem>(this->getObject());
-  if(!meshEntityItem)
+  smtk::attribute::MeshSelectionItemPtr meshSelectionItem =
+    dynamic_pointer_cast<MeshSelectionItem>(this->getObject());
+  if(!meshSelectionItem)
     {
     return;
     }
 
   this->setUsingCtrlKey(false);
 
-  MeshEntityItem::MeshSelectionMode selType;
+  MeshSelectionItem::MeshSelectionMode selType;
   if(cButton == this->Internals->AcceptButton)
-    selType = MeshEntityItem::ACCEPT;
+    selType = MeshSelectionItem::ACCEPT;
   else if(cButton == this->Internals->GrowButton)
-    selType = MeshEntityItem::RESET;
+    selType = MeshSelectionItem::RESET;
   else if(cButton == this->Internals->GrowPlusButton)
-    selType = MeshEntityItem::MERGE;
+    selType = MeshSelectionItem::MERGE;
   else if(cButton == this->Internals->GrowMinusButton)
-    selType = MeshEntityItem::SUBTRACT;
+    selType = MeshSelectionItem::SUBTRACT;
   else if(cButton == this->Internals->CancelButton)
-    selType = MeshEntityItem::NONE;
+    selType = MeshSelectionItem::NONE;
   else
     {
     std::cerr << "ERROR: Unrecognized button click "
@@ -394,7 +394,7 @@ void qtMeshEntityItem::onRequestMeshSelection()
     return;
     }
 
-  if(selType == MeshEntityItem::ACCEPT || selType == MeshEntityItem::NONE)
+  if(selType == MeshSelectionItem::ACCEPT || selType == MeshSelectionItem::NONE)
     this->Internals->uncheckGrowButtons();
 
   smtk::attribute::ModelEntityItem::Ptr modelEntities =

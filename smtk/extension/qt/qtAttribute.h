@@ -61,7 +61,7 @@ namespace smtk
         Qt::Orientation enVectorItemOrient = Qt::Horizontal);
       static qtItem* createModelEntityItem(smtk::attribute::ModelEntityItemPtr item, QWidget* pW, qtBaseView* view,
         Qt::Orientation enVectorItemOrient = Qt::Horizontal);
-      static qtItem* createMeshEntityItem(smtk::attribute::MeshEntityItemPtr item, QWidget* pW, qtBaseView* view,
+      static qtItem* createMeshSelectionItem(smtk::attribute::MeshSelectionItemPtr item, QWidget* pW, qtBaseView* view,
         Qt::Orientation enVectorItemOrient = Qt::Horizontal);
 
     protected slots:

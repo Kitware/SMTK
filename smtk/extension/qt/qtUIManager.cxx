@@ -13,7 +13,7 @@
 
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/qtFileItem.h"
-#include "smtk/extension/qt/qtMeshEntityItem.h"
+#include "smtk/extension/qt/qtMeshSelectionItem.h"
 #include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtGroupView.h"
 #include "smtk/extension/qt/qtRootView.h"
@@ -678,10 +678,10 @@ void qtUIManager::onModelEntityItemCreated(
   emit this->modelEntityItemCreated(entItem);
 }
 //----------------------------------------------------------------------------
-void qtUIManager::onMeshEntityItemCreated(
-  smtk::attribute::qtMeshEntityItem* entItem)
+void qtUIManager::onMeshSelectionItemCreated(
+  smtk::attribute::qtMeshSelectionItem* entItem)
 {
-  emit this->meshEntityItemCreated(entItem);
+  emit this->meshSelectionItemCreated(entItem);
 }
 
 //----------------------------------------------------------------------------

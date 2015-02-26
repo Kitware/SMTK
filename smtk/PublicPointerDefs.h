@@ -51,8 +51,8 @@ namespace smtk
     class Item;
     class ItemDefinition;
     class System;
-    class MeshEntityItem;
-    class MeshEntityItemDefinition;
+    class MeshSelectionItem;
+    class MeshSelectionItemDefinition;
     class ModelEntityItem;
     class ModelEntityItemDefinition;
     class StringItem;
@@ -248,8 +248,8 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::attribute::IntItemDefinition >        IntItemDefinitionPtr;
     typedef smtk::shared_ptr< smtk::attribute::StringItem >               StringItemPtr;
     typedef smtk::shared_ptr< smtk::attribute::StringItemDefinition >     StringItemDefinitionPtr;
-    typedef smtk::shared_ptr< smtk::attribute::MeshEntityItem >           MeshEntityItemPtr;
-    typedef smtk::shared_ptr< smtk::attribute::MeshEntityItemDefinition > MeshEntityItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::MeshSelectionItem >           MeshSelectionItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::MeshSelectionItemDefinition > MeshSelectionItemDefinitionPtr;
     typedef smtk::shared_ptr< smtk::attribute::ModelEntityItem >          ModelEntityItemPtr;
     typedef smtk::shared_ptr< smtk::attribute::ModelEntityItemDefinition > ModelEntityItemDefinitionPtr;
     typedef smtk::shared_ptr< smtk::attribute::VoidItem >                 VoidItemPtr;
@@ -267,8 +267,8 @@ namespace smtk
     typedef smtk::shared_ptr< const smtk::attribute::IntItemDefinition >         ConstIntItemDefinitionPtr;
     typedef smtk::shared_ptr< const smtk::attribute::StringItem >                ConstStringItemPtr;
     typedef smtk::shared_ptr< const smtk::attribute::StringItemDefinition >      ConstStringItemDefinitionPtr;
-    typedef smtk::shared_ptr< const smtk::attribute::MeshEntityItem >            ConstMeshEntityItemPtr;
-    typedef smtk::shared_ptr< const smtk::attribute::MeshEntityItemDefinition >  ConstMeshEntityItemDefinitionPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::MeshSelectionItem >            ConstMeshSelectionItemPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::MeshSelectionItemDefinition >  ConstMeshSelectionItemDefinitionPtr;
     typedef smtk::shared_ptr< const smtk::attribute::ModelEntityItem >           ConstModelEntityItemPtr;
     typedef smtk::shared_ptr< const smtk::attribute::ModelEntityItemDefinition > ConstModelEntityItemDefinitionPtr;
     typedef smtk::shared_ptr< const smtk::attribute::VoidItem >                  ConstVoidItemPtr;

@@ -7,12 +7,12 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME MeshEntityItem.h -
+// .NAME MeshSelectionItem.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_MeshEntityItem_h
-#define __smtk_attribute_MeshEntityItem_h
+#ifndef __smtk_attribute_MeshSelectionItem_h
+#define __smtk_attribute_MeshSelectionItem_h
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -24,13 +24,13 @@ namespace smtk
 {
   namespace attribute
   {
-    class MeshEntityItemDefinition;
-    class SMTKCORE_EXPORT MeshEntityItem : public Item
+    class MeshSelectionItemDefinition;
+    class SMTKCORE_EXPORT MeshSelectionItem : public Item
     {
-    friend class MeshEntityItemDefinition;
+    friend class MeshSelectionItemDefinition;
     public:
-      smtkTypeMacro(MeshEntityItem);
-      virtual ~MeshEntityItem();
+      smtkTypeMacro(MeshSelectionItem);
+      virtual ~MeshSelectionItem();
       virtual Item::Type type() const;
 
   /// Enumeration of mesh values modification type.
@@ -70,8 +70,8 @@ namespace smtk
       std::vector<int>::const_iterator end() const;
 
     protected:
-      MeshEntityItem(Attribute *owningAttribute, int itemPosition);
-      MeshEntityItem(Item *owningItem, int position, int subGroupPosition);
+      MeshSelectionItem(Attribute *owningAttribute, int itemPosition);
+      MeshSelectionItem(Item *owningItem, int position, int subGroupPosition);
       virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
       std::vector<int>m_values;
       MeshSelectionMode m_selectMode;
@@ -82,4 +82,4 @@ namespace smtk
 }
 
 
-#endif /* __smtk_attribute_MeshEntityItem_h */
+#endif /* __smtk_attribute_MeshSelectionItem_h */

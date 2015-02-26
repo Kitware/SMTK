@@ -32,8 +32,8 @@
 #include "smtk/attribute/System.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/attribute/MeshEntityItem.h"
-#include "smtk/attribute/MeshEntityItemDefinition.h"
+#include "smtk/attribute/MeshSelectionItem.h"
+#include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
@@ -1036,7 +1036,7 @@ void XmlV2StringWriter::processItem(xml_node &node,
       // Nothing to do!
       break;
     case Item::MESH_ENTITY:
-      this->processMeshEntityItem(node, smtk::dynamic_pointer_cast<MeshEntityItem>(item));
+      this->processMeshSelectionItem(node, smtk::dynamic_pointer_cast<MeshSelectionItem>(item));
       break;
     default:
       smtkErrorMacro(this->m_logger,
@@ -1175,8 +1175,8 @@ void XmlV2StringWriter::processModelEntityItem(pugi::xml_node &node,
 }
 
 //----------------------------------------------------------------------------
-void XmlV2StringWriter::processMeshEntityItem(pugi::xml_node &node,
-                          smtk::attribute::MeshEntityItemPtr item)
+void XmlV2StringWriter::processMeshSelectionItem(pugi::xml_node &node,
+                          smtk::attribute::MeshSelectionItemPtr item)
 {
   size_t n = item->numberOfValues();
   if (!n)

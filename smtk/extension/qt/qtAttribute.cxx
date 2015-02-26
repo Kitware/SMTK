@@ -14,7 +14,7 @@
 #include "smtk/extension/qt/qtInputsItem.h"
 #include "smtk/extension/qt/qtFileItem.h"
 #include "smtk/extension/qt/qtAttributeRefItem.h"
-#include "smtk/extension/qt/qtMeshEntityItem.h"
+#include "smtk/extension/qt/qtMeshSelectionItem.h"
 #include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtVoidItem.h"
 #include "smtk/extension/qt/qtBaseView.h"
@@ -30,8 +30,8 @@
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
-#include "smtk/attribute/MeshEntityItem.h"
-#include "smtk/attribute/MeshEntityItemDefinition.h"
+#include "smtk/attribute/MeshSelectionItem.h"
+#include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
@@ -256,7 +256,7 @@ qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW,
       aItem = qtAttribute::createModelEntityItem(smtk::dynamic_pointer_cast<ModelEntityItem>(item), pW, bview, enVectorItemOrient);
       break;
     case smtk::attribute::Item::MESH_ENTITY:
-      aItem = qtAttribute::createMeshEntityItem(smtk::dynamic_pointer_cast<MeshEntityItem>(item), pW, bview, enVectorItemOrient);
+      aItem = qtAttribute::createMeshSelectionItem(smtk::dynamic_pointer_cast<MeshSelectionItem>(item), pW, bview, enVectorItemOrient);
       break;
     default:
       //this->m_errorStatus << "Error: Unsupported Item Type: " <<
@@ -303,12 +303,12 @@ qtItem* qtAttribute::createModelEntityItem(
   return returnItem;
 }
 //----------------------------------------------------------------------------
-qtItem* qtAttribute::createMeshEntityItem(
-  smtk::attribute::MeshEntityItemPtr item, QWidget* pW, qtBaseView* view,
+qtItem* qtAttribute::createMeshSelectionItem(
+  smtk::attribute::MeshSelectionItemPtr item, QWidget* pW, qtBaseView* view,
   Qt::Orientation enVectorItemOrient)
 {
-  qtMeshEntityItem* returnItem = new qtMeshEntityItem(item, pW, view, enVectorItemOrient);
-  view->uiManager()->onMeshEntityItemCreated(returnItem);
+  qtMeshSelectionItem* returnItem = new qtMeshSelectionItem(item, pW, view, enVectorItemOrient);
+  view->uiManager()->onMeshSelectionItemCreated(returnItem);
   return returnItem;
 }
 

@@ -32,8 +32,8 @@
 #include "smtk/attribute/System.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/attribute/MeshEntityItem.h"
-#include "smtk/attribute/MeshEntityItemDefinition.h"
+#include "smtk/attribute/MeshSelectionItem.h"
+#include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
@@ -850,8 +850,8 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
         this->processItemDef(node, idef);
       break;
       case smtk::attribute::Item::MESH_ENTITY:
-        idef = def->addItemDefinition<smtk::attribute::MeshEntityItemDefinition>(itemName);
-        this->processMeshEntityDef(node, smtk::dynamic_pointer_cast<smtk::attribute::MeshEntityItemDefinition>(idef));
+        idef = def->addItemDefinition<smtk::attribute::MeshSelectionItemDefinition>(itemName);
+        this->processMeshEntityDef(node, smtk::dynamic_pointer_cast<smtk::attribute::MeshSelectionItemDefinition>(idef));
         break;
     default:
       smtkErrorMacro(this->m_logger, "Unsupported Item definition Type: "
@@ -1029,7 +1029,7 @@ void XmlDocV1Parser::processModelEntityDef(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processMeshEntityDef(pugi::xml_node &node,
-                                         attribute::MeshEntityItemDefinitionPtr idef)
+                                         attribute::MeshSelectionItemDefinitionPtr idef)
 {
   (void)node;
   smtkWarningMacro(this->m_logger,
@@ -1236,7 +1236,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
           }
       break;
       case smtk::attribute::Item::MESH_ENTITY:
-        if( (cidef = idef->addItemDefinition<smtk::attribute::MeshEntityItemDefinition>(citemName)) )
+        if( (cidef = idef->addItemDefinition<smtk::attribute::MeshSelectionItemDefinition>(citemName)) )
           {
           this->processItemDef(cinode, cidef);
           }
@@ -1601,7 +1601,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
         this->processItemDef(child, idef);
         break;
       case smtk::attribute::Item::MESH_ENTITY:
-        idef = def->addItemDefinition<smtk::attribute::MeshEntityItemDefinition>(itemName);
+        idef = def->addItemDefinition<smtk::attribute::MeshSelectionItemDefinition>(itemName);
         if (!idef)
           {
           smtkErrorMacro(this->m_logger,
@@ -1843,7 +1843,7 @@ void XmlDocV1Parser::processItem(xml_node &node,
       this->processModelEntityItem(node, smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItem>(item));
       break;
     case smtk::attribute::Item::MESH_ENTITY:
-      this->processMeshEntityItem(node, smtk::dynamic_pointer_cast<smtk::attribute::MeshEntityItem>(item));
+      this->processMeshSelectionItem(node, smtk::dynamic_pointer_cast<smtk::attribute::MeshSelectionItem>(item));
       break;
     case smtk::attribute::Item::VOID:
       // Nothing to do!
@@ -2172,8 +2172,8 @@ void XmlDocV1Parser::processModelEntityItem(pugi::xml_node &node,
   return;
 }
 //----------------------------------------------------------------------------
-void XmlDocV1Parser::processMeshEntityItem(pugi::xml_node &node,
-  attribute::MeshEntityItemPtr item)
+void XmlDocV1Parser::processMeshSelectionItem(pugi::xml_node &node,
+  attribute::MeshSelectionItemPtr item)
 {
   (void)node;
   smtkWarningMacro(this->m_logger,
