@@ -269,13 +269,22 @@ void XmlDocV2Parser::processMeshSelectionItem(pugi::xml_node &node,
     {
     return;
     }
-
-  xml_node valsNode = node.child("Values");
-  if (valsNode)
+  xml_node selValsNode = node.child("SelectionValues");
+  if(selValsNode)
     {
-    for (xml_node val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
+    xml_node valsNode = selValsNode.child("Values");
+    if (valsNode)
       {
-      item->appendValue(val.text().as_int());
+      xml_attribute xatt = valsNode.attribute("EntityUUID");
+      if(xatt)
+        {
+        std::vector<int> vals;
+        for (xml_node val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
+          {
+          vals.push_back(val.text().as_int());
+          }
+        item->setValues(smtk::common::UUID(xatt.value()), vals);
+        }
       }
     }
 

@@ -19,6 +19,7 @@
 #include "smtk/attribute/Item.h"
 #include <string>
 #include <vector>
+#include <map>
 
 namespace smtk
 {
@@ -29,6 +30,9 @@ namespace smtk
     {
     friend class MeshSelectionItemDefinition;
     public:
+
+typedef std::map<smtk::common::UUID, std::vector<int> >::const_iterator const_sel_map_it;
+
       smtkTypeMacro(MeshSelectionItem);
       virtual ~MeshSelectionItem();
       virtual Item::Type type() const;
@@ -42,9 +46,9 @@ namespace smtk
     ACCEPT            //!< Accept the existing list)
   };
 
-      void setValues(const std::vector<int>&);
-      void appendValues(const std::vector<int>&);
-      void removeValues(const std::vector<int>&);
+      void setValues(const smtk::common::UUID&, const std::vector<int>&);
+      void appendValues(const smtk::common::UUID&, const std::vector<int>&);
+      void removeValues(const smtk::common::UUID&, const std::vector<int>&);
       void setMeshSelectMode(MeshSelectionMode mode)
       { this->m_selectMode = mode; }
       MeshSelectionMode meshSelectMode() const
@@ -55,25 +59,20 @@ namespace smtk
       {return this->m_isCtrlKeyDown;}
   
       std::size_t numberOfValues() const
-      {return this->m_values.size();}
-      int value(std::size_t element=0) const;
-      bool appendValue(const int &val);
-      bool removeValue(const int &val);
+      {return this->m_selectionValues.size();}
+      const std::vector<int>& values(const smtk::common::UUID&);
       virtual void reset();
-      virtual std::string valueAsString() const
-      {return this->valueAsString(0);}
-      virtual std::string valueAsString(std::size_t element) const;
       virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
                             smtk::attribute::Item::CopyInfo& info);
 
-      std::vector<int>::const_iterator begin() const;
-      std::vector<int>::const_iterator end() const;
+      const_sel_map_it begin() const;
+      const_sel_map_it end() const;
 
     protected:
       MeshSelectionItem(Attribute *owningAttribute, int itemPosition);
       MeshSelectionItem(Item *owningItem, int position, int subGroupPosition);
       virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
-      std::vector<int>m_values;
+      std::map<smtk::common::UUID, std::vector<int> >m_selectionValues;
       MeshSelectionMode m_selectMode;
       bool m_isCtrlKeyDown;
     private:

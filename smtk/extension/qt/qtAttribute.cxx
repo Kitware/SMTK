@@ -255,7 +255,7 @@ qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW,
     case smtk::attribute::Item::MODEL_ENTITY:
       aItem = qtAttribute::createModelEntityItem(smtk::dynamic_pointer_cast<ModelEntityItem>(item), pW, bview, enVectorItemOrient);
       break;
-    case smtk::attribute::Item::MESH_ENTITY:
+    case smtk::attribute::Item::MESH_SELECTION:
       aItem = qtAttribute::createMeshSelectionItem(smtk::dynamic_pointer_cast<MeshSelectionItem>(item), pW, bview, enVectorItemOrient);
       break;
     default:

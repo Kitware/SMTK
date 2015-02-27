@@ -145,7 +145,7 @@ attribute.type_dict = { attribute.Item.ATTRIBUTE_REF: (attribute.RefItem, attrib
                         attribute.Item.DIRECTORY: (attribute.DirectoryItem, attribute.DirectoryItemDefinition),
                         attribute.Item.COLOR: (None, None),
                         attribute.Item.MODEL_ENTITY: (attribute.ModelEntityItem, attribute.ModelEntityItemDefinition)
-                        attribute.Item.MESH_ENTITY: (attribute.MeshSelectionItem, attribute.MeshSelectionItemDefinition)
+                        attribute.Item.MESH_SELECTION: (attribute.MeshSelectionItem, attribute.MeshSelectionItemDefinition)
                       }
 
 @staticmethod

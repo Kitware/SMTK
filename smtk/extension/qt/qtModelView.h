@@ -32,6 +32,7 @@ namespace smtk {
  namespace attribute {
   class qtFileItem;
   class qtModelEntityItem;
+  class qtMeshSelectionItem;
  }
 }
 
@@ -83,7 +84,9 @@ signals:
   void modelEntityItemCreated(smtk::attribute::qtModelEntityItem* entItem);
   void visibilityChangeRequested(const QModelIndex&);
   void colorChangeRequested(const QModelIndex&);
-
+  void meshSelectionItemCreated(
+                 smtk::attribute::qtMeshSelectionItem*,
+                 const smtk::model::OperatorPtr&);
 protected:
 
   SessionRef getSessionRef(

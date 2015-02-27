@@ -34,7 +34,8 @@ namespace smtk
         qtBaseView* bview, Qt::Orientation enumOrient = Qt::Horizontal);
       virtual ~qtMeshSelectionItem();
       virtual void setLabelVisible(bool);
-      virtual void updateValues(const std::vector<int> vals);
+      virtual void setSelection(const smtk::common::UUID& entid,
+                                const std::vector<int> vals);
 
       smtk::attribute::ModelEntityItemPtr refModelEntityItem();
       void setUsingCtrlKey(bool);

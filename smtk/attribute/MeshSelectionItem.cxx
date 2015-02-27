@@ -49,7 +49,7 @@ setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
     {
     return false;
     }
-  this->m_values.clear();
+  this->m_selectionValues.clear();
   return true;
 }
 
@@ -66,71 +66,48 @@ Item::Type MeshSelectionItem::type() const
     {
     return def->type();
     }
-  return Item::MESH_ENTITY;
+  return Item::MESH_SELECTION;
 }
 
 //----------------------------------------------------------------------------
-void MeshSelectionItem::setValues(const std::vector<int>& vals)
+void MeshSelectionItem::setValues(const smtk::common::UUID& uuid,
+                                  const std::vector<int>& vals)
 {
-  this->reset();
-  this->m_values = vals;
+  this->m_selectionValues[uuid] = vals;
 }
 
 //----------------------------------------------------------------------------
-void MeshSelectionItem::appendValues(const std::vector<int>& vals)
+void MeshSelectionItem::appendValues(const smtk::common::UUID& uuid,
+                                     const std::vector<int>& vals)
 {
-  this->m_values.insert(this->m_values.end(), vals.begin(), vals.end());
+  this->m_selectionValues[uuid].insert(
+    this->m_selectionValues[uuid].end(), vals.begin(), vals.end());
 }
 
 //----------------------------------------------------------------------------
-void MeshSelectionItem::removeValues(const std::vector<int>& vals)
+void MeshSelectionItem::removeValues(const smtk::common::UUID& uuid,
+                                     const std::vector<int>& vals)
 {
   for(std::vector<int>::const_iterator it=vals.begin(); it!= vals.end(); ++it)
-    this->m_values.erase(std::remove(this->m_values.begin(),
-      this->m_values.end(), *it), this->m_values.end());
+    this->m_selectionValues[uuid].erase(std::remove(
+      this->m_selectionValues[uuid].begin(),
+      this->m_selectionValues[uuid].end(), *it),
+      this->m_selectionValues[uuid].end());
 
 }
 
 //----------------------------------------------------------------------------
-int MeshSelectionItem::value(std::size_t element) const
+const std::vector<int>& MeshSelectionItem::values(
+  const smtk::common::UUID& uuid)
 {
   //std::advance(it,element);
-  return *(this->begin()+element);
-}
-
-//----------------------------------------------------------------------------
-std::string MeshSelectionItem::valueAsString(std::size_t element) const
-{
-  //std::advance(it,element);
-  std::stringstream buffer;
-  buffer << *(this->begin()+element);
-  return buffer.str();
-}
-//----------------------------------------------------------------------------
-bool MeshSelectionItem::appendValue(const int &val)
-{
-  //First - are we allowed to change the number of values?
-  const MeshSelectionItemDefinition *def =
-    static_cast<const MeshSelectionItemDefinition *>(this->definition().get());
-  if (def->isValueValid(val))
-    {
-    this->m_values.push_back(val);
-    return true;
-    }
-  return false;
-}
-//----------------------------------------------------------------------------
-bool MeshSelectionItem::removeValue(const int &val)
-{
-  this->m_values.erase(std::remove(this->m_values.begin(),
-    this->m_values.end(), val), this->m_values.end());
-  return true;
+  return this->m_selectionValues[uuid];
 }
 
 //----------------------------------------------------------------------------
 void MeshSelectionItem::reset()
 {
-  this->m_values.clear();
+  this->m_selectionValues.clear();
 }
 //----------------------------------------------------------------------------
 void MeshSelectionItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
@@ -142,17 +119,15 @@ void MeshSelectionItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
     smtk::dynamic_pointer_cast<MeshSelectionItem>(sourceItem);
   this->m_selectMode = sourceMeshSelectionItem->meshSelectMode();
   this->m_isCtrlKeyDown = sourceMeshSelectionItem->isCtrlKeyDown();
-  this->m_values.clear();
-  this->m_values.insert(this->m_values.end(),
-    sourceMeshSelectionItem->begin(), sourceMeshSelectionItem->end());
+  this->m_selectionValues = sourceMeshSelectionItem->m_selectionValues;
 }
 //----------------------------------------------------------------------------
-std::vector<int>::const_iterator MeshSelectionItem::begin() const
+smtk::attribute::MeshSelectionItem::const_sel_map_it MeshSelectionItem::begin() const
 {
-  return this->m_values.begin();
+  return this->m_selectionValues.begin();
 }
 
-std::vector<int>::const_iterator MeshSelectionItem::end() const
+smtk::attribute::MeshSelectionItem::const_sel_map_it MeshSelectionItem::end() const
 {
-  return this->m_values.end();
+  return this->m_selectionValues.end();
 }

@@ -288,7 +288,8 @@ void qtMeshSelectionItem::setOutputOptional(int state)
 }
 
 //----------------------------------------------------------------------------
-void qtMeshSelectionItem::updateValues(const std::vector<int> vals)
+void qtMeshSelectionItem::setSelection(const smtk::common::UUID& entid,
+                                       const std::vector<int> vals)
 {
   smtk::attribute::MeshSelectionItemPtr meshSelectionItem =
     dynamic_pointer_cast<MeshSelectionItem>(this->getObject());
@@ -306,9 +307,9 @@ void qtMeshSelectionItem::updateValues(const std::vector<int> vals)
     case MeshSelectionItem::MERGE:
     case MeshSelectionItem::SUBTRACT:
     // The MeshSelectionItem is really just a place holder for
-    // what's being selected. The operations will handle
-    // different operation types given current selection.
-      meshSelectionItem->setValues(vals);
+    // what's being selected. The operator itself will handle
+    // different selection types given current selection.
+      meshSelectionItem->setValues(entid, vals);
       break;
     case MeshSelectionItem::NONE:
       this->Internals->uncheckGrowButtons();

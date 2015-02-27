@@ -28,7 +28,7 @@ MeshSelectionItemDefinition::~MeshSelectionItemDefinition()
 //----------------------------------------------------------------------------
 Item::Type MeshSelectionItemDefinition::type() const
 {
-  return Item::MESH_ENTITY;
+  return Item::MESH_SELECTION;
 }
 
 //----------------------------------------------------------------------------

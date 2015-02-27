@@ -510,7 +510,7 @@ QDockWidget* qtModelView::operatorsDock()
                    smtk::attribute::qtMeshSelectionItem*,
                    const smtk::model::OperatorPtr&)),
     this, SIGNAL(meshSelectionItemCreated(
-                 smtk::attribute::qtMeshSelectionItem*.
+                 smtk::attribute::qtMeshSelectionItem*,
                  const smtk::model::OperatorPtr&)));
 
   QWidget* dockP = NULL;

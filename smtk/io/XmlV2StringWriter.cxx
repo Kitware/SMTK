@@ -635,7 +635,7 @@ XmlV2StringWriter::processItemDefinition(xml_node &node,
     case Item::VOID:
       // Nothing to do!
       break;
-    case Item::MESH_ENTITY:
+    case Item::MESH_SELECTION:
       // Nothing to do yet!
       break;
     default:
@@ -1035,7 +1035,7 @@ void XmlV2StringWriter::processItem(xml_node &node,
     case Item::VOID:
       // Nothing to do!
       break;
-    case Item::MESH_ENTITY:
+    case Item::MESH_SELECTION:
       this->processMeshSelectionItem(node, smtk::dynamic_pointer_cast<MeshSelectionItem>(item));
       break;
     default:
@@ -1184,12 +1184,19 @@ void XmlV2StringWriter::processMeshSelectionItem(pugi::xml_node &node,
     return;
     }
   node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
-  xml_node val, values = node.append_child("Values");
-  std::vector<int>::const_iterator it;
+
+  xml_node uuid, val, values, selValues = node.append_child("SelectionValues");
+  smtk::attribute::MeshSelectionItem::const_sel_map_it it;
   for(it = item->begin(); it != item->end(); ++it)
     {
-    val = values.append_child("Val");
-    val.text().set(*it);
+    values = selValues.append_child("Values");
+    values.append_attribute("EntityUUID").set_value(it->first.toString().c_str());
+    std::vector<int>::const_iterator vit;
+    for(vit = it->second.begin(); vit !=  it->second.end(); ++vit)
+      {
+      val = values.append_child("Val");
+      val.text().set(*vit);
+      }
     }
   val = node.append_child("CtrlKey");
   val.text().set(item->isCtrlKeyDown() ? 1 : 0);
