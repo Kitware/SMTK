@@ -60,6 +60,9 @@ SET(DiscreteOperationFiles
   operation/vtkModelEntityGroupOperatorBase.cxx
   operation/vtkModelEntityOperatorBase.cxx
   operation/vtkGenerateSimpleModelOperator.cxx
+  operation/vtkSeedGrowSelectionFilter.cxx
+  operation/vtkSelectionSplitOperator.cxx
+  operation/vtkSelectionSplitOperatorBase.cxx
 )
 
 SET(DiscreteModelHeaders
@@ -88,6 +91,9 @@ SET(DiscreteModelHeaders
   operation/vtkModelEntityGroupOperatorBase.h
   operation/vtkModelEntityOperatorBase.h
   operation/vtkGenerateSimpleModelOperator.h
+  operation/vtkSeedGrowSelectionFilter.h
+  operation/vtkSelectionSplitOperator.h
+  operation/vtkSelectionSplitOperatorBase.h
 )
 
 
@@ -114,6 +120,7 @@ set(discreteSessionSrcs
   operators/MergeOperator.cxx
   operators/ReadOperator.cxx
   operators/SplitFaceOperator.cxx
+  operators/GrowOperator.cxx
 )
 
 set(discreteSessionHeaders
@@ -124,6 +131,7 @@ set(discreteSessionHeaders
   operators/MergeOperator.h
   operators/ReadOperator.h
   operators/SplitFaceOperator.h
+  operators/GrowOperator.h
 )
 
 # Normally this would be machine-generated from Session.json
@@ -141,6 +149,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadOperator.sbt" unitO
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitFaceOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ImportOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EntityGroupOperator.sbt" unitOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GrowOperator.sbt" unitOperatorXML)
 
 add_library(smtkDiscreteSession ${_module_src} ${discreteSessionSrcs})
 

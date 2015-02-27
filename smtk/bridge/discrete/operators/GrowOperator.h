@@ -1,0 +1,87 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+
+#ifndef __smtk_session_discrete_GrowOperator_h
+#define __smtk_session_discrete_GrowOperator_h
+
+#include "smtk/bridge/discrete/discreteSessionExports.h"
+#include "smtk/model/Operator.h"
+#include "vtkSelectionSplitOperator.h"
+#include "vtkSeedGrowSelectionFilter.h"
+#include "vtkSelection.h"
+#include "vtkNew.h"
+#include <set>
+#include <map>
+
+class vtkDiscreteModelWrapper;
+
+namespace smtk {
+  namespace bridge {
+    namespace discrete {
+
+class Session;
+
+class SMTKDISCRETESESSION_EXPORT GrowOperator : public smtk::model::Operator
+{
+public:
+  smtkTypeMacro(GrowOperator);
+  smtkCreateMacro(GrowOperator);
+  smtkSharedFromThisMacro(Operator);
+  smtkDeclareModelOperator();
+
+  virtual bool ableToOperate();
+
+protected:
+  GrowOperator();
+  virtual smtk::model::OperatorResult operateInternal();
+  Session* discreteSession() const;
+  void findVisibleModelFaces(
+    const smtk::model::CellEntity &cellent,
+    std::set<vtkIdType>& ModelFaceIds, Session* opsession);
+
+  bool writeSelectionResult(
+    const std::map<smtk::common::UUID, std::set<int> >& cachedSelection,
+    smtk::model::OperatorResult& result);
+  /// The current discrete session translation from vtkDiscreteModel to smtk model
+  /// does not have all the relationship set up properly, mostly the shell/face use related.
+  /// Therefore we have to add the raw relationship here.
+  void addRawRelationship(
+    smtk::model::Face& face,
+    smtk::model::Volume& vol1,
+    smtk::model::Volume& vol2);
+  void writeSplitResult(vtkSelectionSplitOperator* splitOp,
+    vtkDiscreteModelWrapper* modelWrapper,
+    Session* opsession, smtk::model::OperatorResult& result);
+  // This grow_selection is a list of cell ids from master polydata,
+  // so we need to convert that to the format of
+  // <FaceUUID, 'set' of cellIds on that face>
+  bool convertAndResetOutSelection(
+    vtkSelection* inSelection,
+    vtkDiscreteModelWrapper* modelWrapper,
+    Session* opsession);
+  bool modifyOutSelection(
+    const smtk::attribute::MeshSelectionItemPtr& inSelectionItem);
+  void convertToGrowSelection(
+    const std::map<smtk::common::UUID, std::set<int> >& cachedSelection,
+    vtkSelection* outSelection, Session* opsession);
+
+  vtkNew<vtkSelectionSplitOperator> m_splitOp;
+  vtkNew<vtkSeedGrowSelectionFilter> m_growOp;
+  vtkNew<vtkSelection> m_growSelection;
+  std::map<smtk::common::UUID, std::set<int> > m_outSelection;
+
+  bool m_growCacheModified;
+};
+
+    } // namespace discrete
+  } // namespace bridge
+} // namespace smtk
+
+#endif // __smtk_session_discrete_GrowOperator_h
