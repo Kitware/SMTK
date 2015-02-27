@@ -289,7 +289,7 @@ void qtMeshSelectionItem::setOutputOptional(int state)
 
 //----------------------------------------------------------------------------
 void qtMeshSelectionItem::setSelection(const smtk::common::UUID& entid,
-                                       const std::vector<int> vals)
+                                       const std::set<int> vals)
 {
   smtk::attribute::MeshSelectionItemPtr meshSelectionItem =
     dynamic_pointer_cast<MeshSelectionItem>(this->getObject());

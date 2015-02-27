@@ -1191,7 +1191,7 @@ void XmlV2StringWriter::processMeshSelectionItem(pugi::xml_node &node,
     {
     values = selValues.append_child("Values");
     values.append_attribute("EntityUUID").set_value(it->first.toString().c_str());
-    std::vector<int>::const_iterator vit;
+    std::set<int>::const_iterator vit;
     for(vit = it->second.begin(); vit !=  it->second.end(); ++vit)
       {
       val = values.append_child("Val");

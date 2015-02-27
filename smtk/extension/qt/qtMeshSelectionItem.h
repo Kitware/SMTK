@@ -17,6 +17,7 @@
 
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/model/EntityTypeBits.h" // for smtk::model::BitFlags
+#include <set>
 
 class qtMeshSelectionItemInternals;
 class QBoxLayout;
@@ -35,7 +36,7 @@ namespace smtk
       virtual ~qtMeshSelectionItem();
       virtual void setLabelVisible(bool);
       virtual void setSelection(const smtk::common::UUID& entid,
-                                const std::vector<int> vals);
+                                const std::set<int> vals);
 
       smtk::attribute::ModelEntityItemPtr refModelEntityItem();
       void setUsingCtrlKey(bool);

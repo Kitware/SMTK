@@ -278,10 +278,10 @@ void XmlDocV2Parser::processMeshSelectionItem(pugi::xml_node &node,
       xml_attribute xatt = valsNode.attribute("EntityUUID");
       if(xatt)
         {
-        std::vector<int> vals;
+        std::set<int> vals;
         for (xml_node val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
           {
-          vals.push_back(val.text().as_int());
+          vals.insert(val.text().as_int());
           }
         item->setValues(smtk::common::UUID(xatt.value()), vals);
         }

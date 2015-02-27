@@ -18,6 +18,7 @@
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/StringItem.h"
@@ -38,6 +39,7 @@ using smtk::attribute::DirectoryItem;
 using smtk::attribute::GroupItem;
 using smtk::attribute::RefItem;
 using smtk::attribute::ModelEntityItem;
+using smtk::attribute::MeshSelectionItem;
 
 namespace smtk {
   namespace model {
@@ -369,6 +371,12 @@ smtk::attribute::RefItemPtr Operator::findRef(const std::string& pname, smtk::at
 smtk::attribute::ModelEntityItemPtr Operator::findModelEntity(const std::string& pname, smtk::attribute::SearchStyle search)
 {
   return this->specification()->findAs<ModelEntityItem>(pname, search);
+}
+
+/// Return the mesh-entity-item parameter named \a name or NULL if it does not exist.
+smtk::attribute::MeshSelectionItemPtr Operator::findMeshEntity(const std::string& pname, smtk::attribute::SearchStyle search)
+{
+  return this->specification()->findAs<MeshSelectionItem>(pname, search);
 }
 
 /// Associate a model entity with the operator.
