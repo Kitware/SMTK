@@ -1,4 +1,3 @@
-
 set(RemoteLibSrcs
   RemusConnection.cxx
   RemusConnections.cxx
@@ -116,4 +115,8 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
     DEPENDS SMTKCore
   )
   #target_include_directories(SMTKRemotePython PRIVATE ${CGM_INCLUDE_DIRS})
+endif()
+
+if(SMTK_BUILD_SESSION_PLUGIN)
+  add_subdirectory(plugin)
 endif()

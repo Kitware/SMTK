@@ -11,4 +11,4 @@
 #include "smtk/Options.h"
 #include "smtk/AutoInit.h"
 
-smtkComponentInitMacro(smtk_cgm_session);
+smtkComponentInitMacro(smtk_remus_remote_session);
