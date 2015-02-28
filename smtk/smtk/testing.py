@@ -11,28 +11,52 @@
 #=============================================================================
 import sys
 
+BASELINES=[]
 DATA_DIR=''
+TEMP_DIR='.'
+WORKER_DIR=''
 
 def process_arguments():
-  """Process common options to python tests.
+    """Process common options to python tests.
 
-  This module parses command line arguments and sets module
-  variable values based on them. It then removes the options
-  from sys.argv so that the unittest framework will not treat
-  them as module names.
-  """
+    This module parses command line arguments and sets module
+    variable values based on them. It then removes the options
+    from sys.argv so that the unittest framework will not treat
+    them as module names.
+    """
 
-  global DATA_DIR
+    global BASELINES, DATA_DIR, TEMP_DIR, WORKER_DIR
 
-  from argparse import ArgumentParser
-  parser = ArgumentParser()
-  parser.add_argument("-D", "--data-dir",
-    action="store", dest="datadir", default='',
-    help="Top-level testing data directory.")
+    from argparse import ArgumentParser
+    parser = ArgumentParser()
+    parser.add_argument("-D", "--data-dir",
+        action="store", dest="datadir", default='',
+        help="Top-level testing data directory.")
 
-  args = parser.parse_args()
+    parser.add_argument("-W", "--worker-dir",
+        action="store", dest="workerdir", default='',
+        help="Directory containing SMTK's Remus worker files.")
 
-  if args.datadir:
-    DATA_DIR=args.datadir
+    parser.add_argument("-T", "--temp-dir",
+        action="store", dest="tempdir", default='',
+        help="Directory where test files may be written.")
 
-  sys.argv = sys.argv[:1]
+    parser.add_argument("-V", "--valid-result",
+        action="store", dest="validresult", default='',
+        help="Path to a valid result (baseline) for comparison.")
+
+    args = parser.parse_args()
+
+    if args.datadir:
+      DATA_DIR=args.datadir
+
+    if args.workerdir:
+      WORKER_DIR=args.workerdir
+
+    if args.tempdir:
+      TEMP_DIR=args.tempdir
+
+    if args.validresult:
+      BASELINES.append(args.validresult)
+
+    sys.argv = sys.argv[:1]
