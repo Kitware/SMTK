@@ -1,4 +1,3 @@
-
 include_directories(${CGM_INCLUDE_DIRS})
 
 set(cgmSrcs
@@ -168,7 +167,7 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
     PRIVATE ${CGM_INCLUDE_DIRS})
 endif()
 
-if(SMTK_BUILD_SESSION_PLUGIN AND SMTK_BUILD_CGM)
+if(SMTK_BUILD_SESSION_PLUGIN)
   add_subdirectory(plugin)
 endif()
 
