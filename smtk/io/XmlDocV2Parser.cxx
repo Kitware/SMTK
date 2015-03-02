@@ -280,7 +280,7 @@ void XmlDocV2Parser::processMeshSelectionItem(pugi::xml_node &node,
     {
     for (xml_node valsNode = selValsNode.child("Values"); valsNode; valsNode = valsNode.next_sibling("Values"))
       {
-      xml_attribute xatt = valsNode.attribute("EntityUUID");
+      xatt = valsNode.attribute("EntityUUID");
       if(xatt)
         {
         std::set<int> vals;
