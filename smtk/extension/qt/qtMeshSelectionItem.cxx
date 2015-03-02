@@ -56,12 +56,15 @@ public:
   QPointer<QToolButton> GrowMinusButton;
   QPointer<QToolButton> CancelButton;
   QPointer<QToolButton> AcceptButton;
+  QPointer<QButtonGroup> ButtonGroup;
 
   void uncheckGrowButtons()
   {
+    this->ButtonGroup->setExclusive(false);
     this->GrowButton->setChecked(false);
     this->GrowPlusButton->setChecked(false);
     this->GrowMinusButton->setChecked(false);
+    this->ButtonGroup->setExclusive(true);
   }
 
 };
@@ -177,6 +180,7 @@ void qtMeshSelectionItem::addMeshOpButtons()
     buttonLayout, bgroup, false, this);
 
   this->Internals->EntryLayout->addLayout(buttonLayout, 0, 1);
+  this->Internals->ButtonGroup = bgroup;
 }
 
 //----------------------------------------------------------------------------
@@ -288,6 +292,7 @@ void qtMeshSelectionItem::setOutputOptional(int state)
       this->baseView()->valueChanged(this->getObject());
     }
 }
+
 //----------------------------------------------------------------------------
 void qtMeshSelectionItem::clearSelection()
 {
@@ -318,12 +323,13 @@ void qtMeshSelectionItem::setSelection(const smtk::common::UUID& entid,
       this->Internals->uncheckGrowButtons();
       break;
     case MeshSelectionItem::RESET:
-    case MeshSelectionItem::MERGE:
-    case MeshSelectionItem::SUBTRACT:
-    // The MeshSelectionItem is really just a place holder for
-    // current selection. The operator itself will handle
-    // different selection types given current selection.
       meshSelectionItem->setValues(entid, vals);
+      break;
+    case MeshSelectionItem::MERGE:
+       meshSelectionItem->unionValues(entid, vals);
+       break;
+    case MeshSelectionItem::SUBTRACT:
+      meshSelectionItem->removeValues(entid, vals);
       break;
     case MeshSelectionItem::NONE:
       this->Internals->uncheckGrowButtons();

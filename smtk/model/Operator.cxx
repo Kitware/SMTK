@@ -374,7 +374,7 @@ smtk::attribute::ModelEntityItemPtr Operator::findModelEntity(const std::string&
 }
 
 /// Return the mesh-entity-item parameter named \a name or NULL if it does not exist.
-smtk::attribute::MeshSelectionItemPtr Operator::findMeshEntity(const std::string& pname, smtk::attribute::SearchStyle search)
+smtk::attribute::MeshSelectionItemPtr Operator::findMeshSelection(const std::string& pname, smtk::attribute::SearchStyle search)
 {
   return this->specification()->findAs<MeshSelectionItem>(pname, search);
 }
