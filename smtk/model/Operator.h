@@ -210,7 +210,7 @@ public:
   smtk::attribute::ModelEntityItemPtr findModelEntity(
     const std::string& name,
     smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
-  smtk::attribute::MeshSelectionItemPtr findMeshEntity(
+  smtk::attribute::MeshSelectionItemPtr findMeshSelection(
     const std::string& name,
     smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
 

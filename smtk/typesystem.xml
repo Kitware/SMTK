@@ -372,6 +372,9 @@
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findDouble', unmatched return type 'smtk::attribute::ConstDoubleItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findString', unmatched return type 'smtk::attribute::ConstStringItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findModelEntity', unmatched return type 'smtk::attribute::ConstModelEntityItemPtr'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::findMeshSelection', unmatched return type 'smtk::attribute::ConstMeshSelectionItemPtr'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::findMeshSelection', unmatched return type 'smtk::attribute::MeshSelectionItemPtr'"/>
+  <suppress-warning text="skipping function 'smtk::model::Operator::findMeshSelection', unmatched return type 'smtk::attribute::MeshSelectionItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findGroup', unmatched return type 'smtk::attribute::ConstGroupItemPtr'"/>
 
 
@@ -951,6 +954,8 @@
   <value-type template="smtk::shared_ptr" args="smtk::attribute::StringItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::ModelEntityItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::ModelEntityItemDefinition" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::MeshSelectionItem" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::MeshSelectionItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::VoidItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::VoidItemDefinition" />
 
@@ -1764,6 +1769,39 @@
                       return-type="smtk::shared_ptr&lt;smtk::attribute::ModelEntityItemDefinition &gt;">
           <inject-code>
             %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::ModelEntityItemDefinition &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
+      <object-type name="MeshSelectionItem">
+        <include file-name="smtk/attribute/MeshSelectionItem.h" location="local" />
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::Item &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::MeshSelectionItem &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::MeshSelectionItem &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
+      <object-type name="MeshSelectionItemDefinition">
+        <include file-name="smtk/attribute/MeshSelectionItemDefinition.h" location="local" />
+        <modify-function signature="MeshSelectionItemDefinition(const std::string &amp;)" access="private" />
+        <add-function signature="ToItemDefinition(const smtk::shared_ptr&lt;smtk::attribute::MeshSelectionItemDefinition &gt;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::ItemDefinition &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::MeshSelectionItemDefinition &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::MeshSelectionItemDefinition &gt;(%1);
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
