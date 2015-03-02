@@ -268,7 +268,7 @@ bool GrowOperator::convertAndResetOutSelection(
     vtkDiscreteModel::ClassificationType& classified =
                               model->GetMeshClassification();
     smtk::common::UUID faceUUID;
-    vtkIdType faceCellId;
+    vtkIdType masterId, faceCellId;
     // Gather up cells for each existing model face that are in the selection
     // the CellIds are with respect to the master grid.
     std::map<vtkModelEntity*, std::set<vtkIdType> > entityCellIds;
@@ -290,9 +290,11 @@ bool GrowOperator::convertAndResetOutSelection(
         {
         for(vtkIdType j=0;j<cellIds->GetNumberOfTuples();j++)
           {
-          faceCellId = cellIds->GetValue(j);
+          masterId = cellIds->GetValue(j);
           vtkDiscreteModelGeometricEntity* cmbEntity =
-              classified.GetEntity(faceCellId);
+              classified.GetEntity(masterId);
+          faceCellId = classified.GetEntityIndex(masterId);
+
           vtkModelEntity* entity = cmbEntity->GetThisModelEntity();
           faceUUID = opsession->findOrSetEntityUUID(entity);
           this->m_outSelection[faceUUID].insert(faceCellId);
