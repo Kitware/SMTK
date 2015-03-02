@@ -264,16 +264,21 @@ void XmlDocV2Parser::processModelInfo(xml_node &root)
 void XmlDocV2Parser::processMeshSelectionItem(pugi::xml_node &node,
   attribute::MeshSelectionItemPtr item)
 {
-  std::size_t i, n = item->numberOfValues();
-  if (!n)
-    {
+  xml_node extraNode = node.child("CtrlKey");
+  item->setCtrlKeyDown(extraNode && extraNode.text().as_int() ? true : false);
+  extraNode = node.child("MeshSelectionMode");
+  if(extraNode)
+    item->setMeshSelectMode(attribute::MeshSelectionItem::string2SelectMode(
+                            extraNode.text().get()));
+  xml_attribute xatt;
+  xatt = node.attribute("NumberOfValues");
+  if (!xatt || xatt.as_uint() == 0)
     return;
-    }
+
   xml_node selValsNode = node.child("SelectionValues");
   if(selValsNode)
     {
-    xml_node valsNode = selValsNode.child("Values");
-    if (valsNode)
+    for (xml_node valsNode = selValsNode.child("Values"); valsNode; valsNode = valsNode.next_sibling("Values"))
       {
       xml_attribute xatt = valsNode.attribute("EntityUUID");
       if(xatt)
@@ -287,13 +292,10 @@ void XmlDocV2Parser::processMeshSelectionItem(pugi::xml_node &node,
         }
       }
     }
-
-  xml_node keyNode = node.child("CtrlKey");
-    item->setCtrlKeyDown(keyNode && keyNode.text().as_int() ? true : false);
 }
 
 //----------------------------------------------------------------------------
-void XmlDocV2Parser::processMeshEntityDef(pugi::xml_node &node,
+void XmlDocV2Parser::processMeshSelectionDef(pugi::xml_node &node,
                                          attribute::MeshSelectionItemDefinitionPtr idef)
 {
   this->processItemDef(node, idef);
@@ -306,9 +308,11 @@ void XmlDocV2Parser::processMeshEntityDef(pugi::xml_node &node,
     }
   else
     {
+/*  // this should be optional
     smtkErrorMacro(this->m_logger,
                    "Missing XML Attribute ModelEntityRef for Item Definition : "
                    << idef->name());
+*/
     }
 }
 

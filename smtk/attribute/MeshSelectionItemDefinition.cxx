@@ -64,7 +64,7 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
   smtk::attribute::MeshSelectionItemDefinitionPtr instance =
     smtk::attribute::MeshSelectionItemDefinition::New(this->name());
   ItemDefinition::copyTo(instance);
-
+  instance->setRefModelEntityName(this->refModelEntityName());
   return instance;
 }
 //----------------------------------------------------------------------------

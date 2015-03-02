@@ -72,7 +72,7 @@ Item::Type MeshSelectionItem::type() const
 //----------------------------------------------------------------------------
 std::size_t MeshSelectionItem::numberOfValues() const
 {
-  std::size_t total;
+  std::size_t total = 0;
   smtk::attribute::MeshSelectionItem::const_sel_map_it it;
   for(it = this->begin(); it != this->end(); ++it)
     total += it->second.size();
@@ -139,4 +139,53 @@ smtk::attribute::MeshSelectionItem::const_sel_map_it MeshSelectionItem::begin() 
 smtk::attribute::MeshSelectionItem::const_sel_map_it MeshSelectionItem::end() const
 {
   return this->m_selectionValues.end();
+}
+
+//----------------------------------------------------------------------------
+std::string MeshSelectionItem::selectMode2String(
+  MeshSelectionItem::MeshSelectionMode m)
+{
+  switch (m)
+    {
+    case NONE:
+      return "NONE";
+    case RESET:
+      return "RESET";
+    case MERGE:
+      return "MERGE";
+    case SUBTRACT:
+      return "SUBTRACT";
+    case ACCEPT:
+      return "ACCEPT";
+    default:
+      return "";
+    }
+  return "Error!";
+}
+
+//----------------------------------------------------------------------------
+MeshSelectionItem::MeshSelectionMode MeshSelectionItem::string2SelectMode(
+  const std::string &s)
+{
+  if (s == "NONE")
+    {
+    return NONE;
+    }
+  if (s == "RESET")
+    {
+    return RESET;
+    }
+  if (s == "MERGE")
+    {
+    return MERGE;
+    }
+  if (s == "SUBTRACT")
+    {
+    return SUBTRACT;
+    }
+  if (s == "ACCEPT")
+    {
+    return ACCEPT;
+    }
+ return NUM_OF_MODES;
 }

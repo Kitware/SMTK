@@ -43,7 +43,8 @@ typedef std::map<smtk::common::UUID, std::set<int> >::const_iterator const_sel_m
     RESET           , //!< Reset the existing list)
     MERGE           , //!< Append to the existing list
     SUBTRACT        , //!< Subtract from existing list
-    ACCEPT            //!< Accept the existing list)
+    ACCEPT          , //!< Accept the existing list)
+    NUM_OF_MODES
   };
 
       void setValues(const smtk::common::UUID&, const std::set<int>&);
@@ -66,6 +67,11 @@ typedef std::map<smtk::common::UUID, std::set<int> >::const_iterator const_sel_m
 
       const_sel_map_it begin() const;
       const_sel_map_it end() const;
+
+     static std::string selectMode2String(
+            MeshSelectionItem::MeshSelectionMode m);
+     static MeshSelectionItem::MeshSelectionMode string2SelectMode(
+            const std::string &s);
 
     protected:
       MeshSelectionItem(Attribute *owningAttribute, int itemPosition);

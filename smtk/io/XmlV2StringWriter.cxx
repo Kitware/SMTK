@@ -632,11 +632,12 @@ XmlV2StringWriter::processItemDefinition(xml_node &node,
     case Item::MODEL_ENTITY:
       this->processModelEntityDef(node, smtk::dynamic_pointer_cast<ModelEntityItemDefinition>(idef));
       break;
+    case Item::MESH_SELECTION:
+      this->processMeshSelectionItemDef(node, smtk::dynamic_pointer_cast<MeshSelectionItemDefinition>(idef));
+      break;
     case Item::VOID:
       // Nothing to do!
       break;
-    case Item::MESH_SELECTION:
-      // Nothing to do yet!
       break;
     default:
       smtkErrorMacro(this->m_logger,
@@ -718,6 +719,16 @@ void XmlV2StringWriter::processModelEntityDef(pugi::xml_node& node,
       }
     }
 }
+
+//----------------------------------------------------------------------------
+void XmlV2StringWriter::processMeshSelectionItemDef(pugi::xml_node &node,
+                      smtk::attribute::MeshSelectionItemDefinitionPtr idef)
+{
+  // this->processItemDefinition(node, idef);
+  node.append_attribute("ModelEntityRef").set_value(
+    idef->refModelEntityName().c_str());
+}
+
 //----------------------------------------------------------------------------
 void XmlV2StringWriter::processValueDef(pugi::xml_node &node,
                                         attribute::ValueItemDefinitionPtr idef)
@@ -1179,13 +1190,20 @@ void XmlV2StringWriter::processMeshSelectionItem(pugi::xml_node &node,
                           smtk::attribute::MeshSelectionItemPtr item)
 {
   size_t n = item->numberOfValues();
+  node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
+  xml_node val;
+  val = node.append_child("CtrlKey");
+  val.text().set(item->isCtrlKeyDown() ? 1 : 0);
+
+  val = node.append_child("MeshSelectionMode");
+  val.text().set(MeshSelectionItem::selectMode2String(
+                 item->meshSelectMode()).c_str());
   if (!n)
     {
     return;
     }
-  node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
 
-  xml_node uuid, val, values, selValues = node.append_child("SelectionValues");
+  xml_node values, selValues = node.append_child("SelectionValues");
   smtk::attribute::MeshSelectionItem::const_sel_map_it it;
   for(it = item->begin(); it != item->end(); ++it)
     {
@@ -1198,8 +1216,6 @@ void XmlV2StringWriter::processMeshSelectionItem(pugi::xml_node &node,
       val.text().set(*vit);
       }
     }
-  val = node.append_child("CtrlKey");
-  val.text().set(item->isCtrlKeyDown() ? 1 : 0);
 }
 
 //----------------------------------------------------------------------------
