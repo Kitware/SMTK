@@ -112,7 +112,8 @@ void qtMeshSelectionItem::updateItemData()
 
 QToolButton* internal_createToolButton(
   const QString& strIconName, const QString& strToolTip, QWidget* pw,
-  QBoxLayout* buttonLayout, QButtonGroup* bgroup, qtMeshSelectionItem* meshItem)
+  QBoxLayout* buttonLayout, QButtonGroup* bgroup, bool checkable,
+  qtMeshSelectionItem* meshItem)
 {
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QToolButton* retButton = new QToolButton(pw);
@@ -121,6 +122,7 @@ QToolButton* internal_createToolButton(
   retButton->setFixedSize(QSize(16, 16));
   retButton->setIcon(QIcon(strIconName));
   retButton->setSizePolicy(sizeFixedPolicy);
+  retButton->setCheckable(checkable);
 
   QObject::connect(retButton, SIGNAL(clicked()),
     meshItem, SLOT(onRequestMeshSelection()));
@@ -149,30 +151,30 @@ void qtMeshSelectionItem::addMeshOpButtons()
   this->Internals->GrowButton = internal_createToolButton(
     ":/icons/attribute/growcell32.png",
     "Grow Selection on Associated Entities", this->Widget,
-    buttonLayout, bgroup, this);
+    buttonLayout, bgroup, true, this);
 
   // grow plus button
   this->Internals->GrowPlusButton = internal_createToolButton(
     ":/icons/attribute/growplus32.png",
     "Grow and Append Selection on Selected Entities", this->Widget,
-    buttonLayout, bgroup, this);
+    buttonLayout, bgroup, true, this);
 
   // grow minus button
   this->Internals->GrowMinusButton = internal_createToolButton(
     ":/icons/attribute/growminus32.png",
     "Grow and Remove Selection on Selected Entities", this->Widget,
-    buttonLayout, bgroup, this);
+    buttonLayout, bgroup, true, this);
 
   // cancel button
   this->Internals->CancelButton = internal_createToolButton(
     ":/icons/attribute/cancel32.png",
     "Candel Grow Selection Mode", this->Widget,
-    buttonLayout, bgroup, this);
+    buttonLayout, bgroup, false, this);
 
   this->Internals->AcceptButton = internal_createToolButton(
     ":/icons/attribute/growaccept24.png",
     "Create Face Group With Current Grow Selection", this->Widget,
-    buttonLayout, bgroup, this);
+    buttonLayout, bgroup, false, this);
 
   this->Internals->EntryLayout->addLayout(buttonLayout, 0, 1);
 }
@@ -286,6 +288,17 @@ void qtMeshSelectionItem::setOutputOptional(int state)
       this->baseView()->valueChanged(this->getObject());
     }
 }
+//----------------------------------------------------------------------------
+void qtMeshSelectionItem::clearSelection()
+{
+  smtk::attribute::MeshSelectionItemPtr meshSelectionItem =
+    dynamic_pointer_cast<MeshSelectionItem>(this->getObject());
+  if(!meshSelectionItem)
+    {
+    return;
+    }
+  meshSelectionItem->reset();
+}
 
 //----------------------------------------------------------------------------
 void qtMeshSelectionItem::setSelection(const smtk::common::UUID& entid,
@@ -301,13 +314,14 @@ void qtMeshSelectionItem::setSelection(const smtk::common::UUID& entid,
   switch(opType)
   {
     case MeshSelectionItem::ACCEPT:
+      meshSelectionItem->setValues(entid, vals);
       this->Internals->uncheckGrowButtons();
       break;
     case MeshSelectionItem::RESET:
     case MeshSelectionItem::MERGE:
     case MeshSelectionItem::SUBTRACT:
     // The MeshSelectionItem is really just a place holder for
-    // what's being selected. The operator itself will handle
+    // current selection. The operator itself will handle
     // different selection types given current selection.
       meshSelectionItem->setValues(entid, vals);
       break;
@@ -395,6 +409,7 @@ void qtMeshSelectionItem::onRequestMeshSelection()
     return;
     }
 
+  meshSelectionItem->setMeshSelectMode(selType);
   if(selType == MeshSelectionItem::ACCEPT || selType == MeshSelectionItem::NONE)
     this->Internals->uncheckGrowButtons();
 

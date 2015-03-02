@@ -56,7 +56,6 @@ public:
   QPointer<qtBaseView> opUiView;
   };
 
-  smtk::model::WeakOperatorPtr CurrentOp;
   smtk::model::Session::WeakPtr CurrentSession;
   QVBoxLayout* WidgetLayout;
   QPointer<QComboBox> OperationCombo;
@@ -180,6 +179,8 @@ bool qtModelOperationWidget::setCurrentOperation(
   smtk::view::InstancedPtr instanced = smtk::view::Instanced::New(brOp->name());
   instanced->addInstance(att);
   rootView->addSubView(instanced);
+
+
   QObject::connect(uiManager, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),
     this, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)));
   QObject::connect(uiManager, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)),
@@ -291,11 +292,11 @@ void qtModelOperationWidget::onOperate()
 void qtModelOperationWidget::onMeshSelectionItemCreated(
   smtk::attribute::qtMeshSelectionItem* meshItem)
 {
-  Operator::Ptr op;
   std::string opName = this->Internals->OperationCombo->currentText().toStdString();
-  if(this->Internals->OperatorMap.contains(opName))
+  if(this->Internals->CurrentSession.lock())
     {
-    op = this->Internals->OperatorMap[opName].opPtr;
+    smtk::common::UUID sessId =
+      this->Internals->CurrentSession.lock()->sessionId();
+    emit this->meshSelectionItemCreated(meshItem, opName, sessId);
     }
-  emit this->meshSelectionItemCreated(meshItem, op);
 }
