@@ -210,6 +210,9 @@ public:
   smtk::attribute::ModelEntityItemPtr findModelEntity(
     const std::string& name,
     smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+  smtk::attribute::MeshSelectionItemPtr findMeshEntity(
+    const std::string& name,
+    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
 
   bool associateEntity(const smtk::model::EntityRef& entity);
   void disassociateEntity(const smtk::model::EntityRef& entity);

@@ -13,6 +13,8 @@
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/MeshSelectionItem.h"
+#include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
@@ -257,3 +259,60 @@ void XmlDocV2Parser::processModelInfo(xml_node &root)
       }
     }
 }
+
+//----------------------------------------------------------------------------
+void XmlDocV2Parser::processMeshSelectionItem(pugi::xml_node &node,
+  attribute::MeshSelectionItemPtr item)
+{
+  xml_node extraNode = node.child("CtrlKey");
+  item->setCtrlKeyDown(extraNode && extraNode.text().as_int() ? true : false);
+  extraNode = node.child("MeshSelectionMode");
+  if(extraNode)
+    item->setMeshSelectMode(attribute::MeshSelectionItem::string2SelectMode(
+                            extraNode.text().get()));
+  xml_attribute xatt;
+  xatt = node.attribute("NumberOfValues");
+  if (!xatt || xatt.as_uint() == 0)
+    return;
+
+  xml_node selValsNode = node.child("SelectionValues");
+  if(selValsNode)
+    {
+    for (xml_node valsNode = selValsNode.child("Values"); valsNode; valsNode = valsNode.next_sibling("Values"))
+      {
+      xml_attribute xatt = valsNode.attribute("EntityUUID");
+      if(xatt)
+        {
+        std::set<int> vals;
+        for (xml_node val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
+          {
+          vals.insert(val.text().as_int());
+          }
+        item->setValues(smtk::common::UUID(xatt.value()), vals);
+        }
+      }
+    }
+}
+
+//----------------------------------------------------------------------------
+void XmlDocV2Parser::processMeshSelectionDef(pugi::xml_node &node,
+                                         attribute::MeshSelectionItemDefinitionPtr idef)
+{
+  this->processItemDef(node, idef);
+
+  xml_attribute xatt;
+  xatt = node.attribute("ModelEntityRef");
+  if (xatt)
+    {
+    idef->setRefModelEntityName(xatt.value());
+    }
+  else
+    {
+/*  // this should be optional
+    smtkErrorMacro(this->m_logger,
+                   "Missing XML Attribute ModelEntityRef for Item Definition : "
+                   << idef->name());
+*/
+    }
+}
+

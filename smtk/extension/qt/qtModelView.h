@@ -32,6 +32,7 @@ namespace smtk {
  namespace attribute {
   class qtFileItem;
   class qtModelEntityItem;
+  class qtMeshSelectionItem;
  }
 }
 
@@ -74,6 +75,9 @@ public slots:
     const smtk::model::EntityRefs& expungedEnts);
   bool requestOperation(
     const smtk::model::OperatorPtr& brOp, bool launchUI);
+  bool requestOperation(
+    const std::string& opName,
+    const smtk::common::UUID& sessionId, bool launchOp);
 
 signals:
   void entitiesSelected(const smtk::model::EntityRefs& selEntityRefs);
@@ -83,7 +87,9 @@ signals:
   void modelEntityItemCreated(smtk::attribute::qtModelEntityItem* entItem);
   void visibilityChangeRequested(const QModelIndex&);
   void colorChangeRequested(const QModelIndex&);
-
+  void meshSelectionItemCreated(
+                 smtk::attribute::qtMeshSelectionItem*,
+                 const std::string& opName, const smtk::common::UUID& uuid);
 protected:
 
   SessionRef getSessionRef(

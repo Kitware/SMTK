@@ -29,6 +29,7 @@ set(QAttrLibSrcs
     qtModelPanel.cxx
     qtNewAttributeWidget.cxx
     qtOverlay.cxx
+    qtMeshSelectionItem.cxx
     qtModelEntityItem.cxx
     qtModelOperationWidget.cxx
   )
@@ -70,6 +71,7 @@ set(QAttrLibHeaders
     qtModelPanel.h
     qtNewAttributeWidget.h
     qtOverlay.h
+    qtMeshSelectionItem.h
     qtModelEntityItem.h
     qtModelOperationWidget.h
   )

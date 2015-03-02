@@ -233,6 +233,8 @@ std::string Item::type2String(Item::Type t)
       return "Void";
     case MODEL_ENTITY:
       return "ModelEntity";
+    case MESH_SELECTION:
+      return "MeshSelection";
     default:
       return "";
     }
@@ -280,6 +282,10 @@ Item::Type Item::string2Type(const std::string &s)
   if (s == "ModelEntity")
     {
     return MODEL_ENTITY;
+    }
+  if (s == "MeshSelection")
+    {
+    return MESH_SELECTION;
     }
   return NUMBER_OF_TYPES;
 }

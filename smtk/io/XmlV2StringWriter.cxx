@@ -32,6 +32,8 @@
 #include "smtk/attribute/System.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
+#include "smtk/attribute/MeshSelectionItem.h"
+#include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
@@ -630,8 +632,12 @@ XmlV2StringWriter::processItemDefinition(xml_node &node,
     case Item::MODEL_ENTITY:
       this->processModelEntityDef(node, smtk::dynamic_pointer_cast<ModelEntityItemDefinition>(idef));
       break;
+    case Item::MESH_SELECTION:
+      this->processMeshSelectionItemDef(node, smtk::dynamic_pointer_cast<MeshSelectionItemDefinition>(idef));
+      break;
     case Item::VOID:
       // Nothing to do!
+      break;
       break;
     default:
       smtkErrorMacro(this->m_logger,
@@ -713,6 +719,16 @@ void XmlV2StringWriter::processModelEntityDef(pugi::xml_node& node,
       }
     }
 }
+
+//----------------------------------------------------------------------------
+void XmlV2StringWriter::processMeshSelectionItemDef(pugi::xml_node &node,
+                      smtk::attribute::MeshSelectionItemDefinitionPtr idef)
+{
+  // this->processItemDefinition(node, idef);
+  node.append_attribute("ModelEntityRef").set_value(
+    idef->refModelEntityName().c_str());
+}
+
 //----------------------------------------------------------------------------
 void XmlV2StringWriter::processValueDef(pugi::xml_node &node,
                                         attribute::ValueItemDefinitionPtr idef)
@@ -1030,6 +1046,9 @@ void XmlV2StringWriter::processItem(xml_node &node,
     case Item::VOID:
       // Nothing to do!
       break;
+    case Item::MESH_SELECTION:
+      this->processMeshSelectionItem(node, smtk::dynamic_pointer_cast<MeshSelectionItem>(item));
+      break;
     default:
       smtkErrorMacro(this->m_logger,
                      "Unsupported Type: " << Item::type2String(item->type())
@@ -1165,6 +1184,40 @@ void XmlV2StringWriter::processModelEntityItem(pugi::xml_node &node,
       }
     }
 }
+
+//----------------------------------------------------------------------------
+void XmlV2StringWriter::processMeshSelectionItem(pugi::xml_node &node,
+                          smtk::attribute::MeshSelectionItemPtr item)
+{
+  size_t n = item->numberOfValues();
+  node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
+  xml_node val;
+  val = node.append_child("CtrlKey");
+  val.text().set(item->isCtrlKeyDown() ? 1 : 0);
+
+  val = node.append_child("MeshSelectionMode");
+  val.text().set(MeshSelectionItem::selectMode2String(
+                 item->meshSelectMode()).c_str());
+  if (!n)
+    {
+    return;
+    }
+
+  xml_node values, selValues = node.append_child("SelectionValues");
+  smtk::attribute::MeshSelectionItem::const_sel_map_it it;
+  for(it = item->begin(); it != item->end(); ++it)
+    {
+    values = selValues.append_child("Values");
+    values.append_attribute("EntityUUID").set_value(it->first.toString().c_str());
+    std::set<int>::const_iterator vit;
+    for(vit = it->second.begin(); vit !=  it->second.end(); ++vit)
+      {
+      val = values.append_child("Val");
+      val.text().set(*vit);
+      }
+    }
+}
+
 //----------------------------------------------------------------------------
 void XmlV2StringWriter::processRefItem(pugi::xml_node &node,
                                        attribute::RefItemPtr item)

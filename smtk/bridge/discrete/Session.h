@@ -118,6 +118,7 @@ protected:
   friend class SplitFaceOperator;
   friend class ImportOperator;
   friend class EntityGroupOperator;
+  friend class GrowOperator;
 
   Session();
 

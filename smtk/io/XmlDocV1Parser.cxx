@@ -32,6 +32,8 @@
 #include "smtk/attribute/System.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
+#include "smtk/attribute/MeshSelectionItem.h"
+#include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
@@ -847,6 +849,10 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
         idef = def->addItemDefinition<smtk::attribute::VoidItemDefinition>(itemName);
         this->processItemDef(node, idef);
       break;
+      case smtk::attribute::Item::MESH_SELECTION:
+        idef = def->addItemDefinition<smtk::attribute::MeshSelectionItemDefinition>(itemName);
+        this->processMeshSelectionDef(node, smtk::dynamic_pointer_cast<smtk::attribute::MeshSelectionItemDefinition>(idef));
+        break;
     default:
       smtkErrorMacro(this->m_logger, "Unsupported Item definition Type: "
                      << node.name()
@@ -1021,6 +1027,17 @@ void XmlDocV1Parser::processModelEntityDef(pugi::xml_node &node,
       }
     }
 }
+//----------------------------------------------------------------------------
+void XmlDocV1Parser::processMeshSelectionDef(pugi::xml_node &node,
+                                         attribute::MeshSelectionItemDefinitionPtr idef)
+{
+  (void)node;
+  smtkWarningMacro(this->m_logger,
+                 "The Mesh Selection defs should only be availabe starting Attribute Version 2 Format"
+                 << idef->name());
+  return;
+}
+
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
                                         attribute::ValueItemDefinitionPtr idef)
@@ -1210,6 +1227,16 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
         break;
       case smtk::attribute::Item::VOID:
         if( (cidef = idef->addItemDefinition<smtk::attribute::VoidItemDefinition>(citemName)) )
+          {
+          this->processItemDef(cinode, cidef);
+          }
+        else
+          {
+          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          }
+      break;
+      case smtk::attribute::Item::MESH_SELECTION:
+        if( (cidef = idef->addItemDefinition<smtk::attribute::MeshSelectionItemDefinition>(citemName)) )
           {
           this->processItemDef(cinode, cidef);
           }
@@ -1573,6 +1600,17 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
           }
         this->processItemDef(child, idef);
         break;
+      case smtk::attribute::Item::MESH_SELECTION:
+        idef = def->addItemDefinition<smtk::attribute::MeshSelectionItemDefinition>(itemName);
+        if (!idef)
+          {
+          smtkErrorMacro(this->m_logger,
+                         "Failed to create String Item definition Type: " << child.name()
+                         << " needed to create Group Definition: " << def->name());
+          continue;
+          }
+        this->processItemDef(child, idef);
+        break;
       default:
         smtkErrorMacro(this->m_logger,
                        "Unsupported Item definition Type: " << child.name()
@@ -1803,6 +1841,9 @@ void XmlDocV1Parser::processItem(xml_node &node,
       break;
     case smtk::attribute::Item::MODEL_ENTITY:
       this->processModelEntityItem(node, smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItem>(item));
+      break;
+    case smtk::attribute::Item::MESH_SELECTION:
+      this->processMeshSelectionItem(node, smtk::dynamic_pointer_cast<smtk::attribute::MeshSelectionItem>(item));
       break;
     case smtk::attribute::Item::VOID:
       // Nothing to do!
@@ -2130,6 +2171,16 @@ void XmlDocV1Parser::processModelEntityItem(pugi::xml_node &node,
                  << item->name());
   return;
 }
+//----------------------------------------------------------------------------
+void XmlDocV1Parser::processMeshSelectionItem(pugi::xml_node &node,
+  attribute::MeshSelectionItemPtr item)
+{
+  (void)node;
+  smtkWarningMacro(this->m_logger,
+                 "All Mesh Entity Items will be ignored for Attribute Version 1 Format"
+                 << item->name());
+}
+
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processFileItem(pugi::xml_node &node,
                                         attribute::FileItemPtr item)

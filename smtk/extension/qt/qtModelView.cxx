@@ -506,6 +506,12 @@ QDockWidget* qtModelView::operatorsDock()
     this, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)));
   QObject::connect(opWidget, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)),
     this, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)));
+  QObject::connect(opWidget, SIGNAL(meshSelectionItemCreated(
+                   smtk::attribute::qtMeshSelectionItem*,
+                   const std::string&, const smtk::common::UUID&)),
+    this, SIGNAL(meshSelectionItemCreated(
+                 smtk::attribute::qtMeshSelectionItem*,
+                 const std::string&, const smtk::common::UUID&)));
 
   QWidget* dockP = NULL;
   foreach(QWidget *widget, QApplication::topLevelWidgets())
@@ -580,6 +586,21 @@ bool qtModelView::requestOperation(
 
 //  emit this->operationRequested(uid, action->text());
 //  emit this->operationFinished(result);
+}
+
+//-----------------------------------------------------------------------------
+bool qtModelView::requestOperation(
+    const std::string& opName, const smtk::common::UUID& sessionId, bool launchOp)
+{
+  smtk::model::QEntityItemModel* qmodel =
+    dynamic_cast<smtk::model::QEntityItemModel*>(this->model());
+  smtk::model::SessionPtr session =
+    smtk::model::SessionRef(qmodel->manager(), sessionId).session();
+
+  this->initOperatorsDock(opName, session);
+  if(launchOp)
+    this->m_OperatorsWidget->onOperate();
+  return true;
 }
 
 //----------------------------------------------------------------------------
