@@ -8,7 +8,7 @@
         <ModelEntity Name="model" NumberOfRequiredValues="1">
           <MembershipMask>model</MembershipMask>
         </ModelEntity>
-        <MeshSelection Name="input selection" ModelEntityRef="model">
+        <MeshSelection Name="selection" ModelEntityRef="model">
         </MeshSelection>
         <Double Name="feature angle" NumberOfRequiredValues="1">
           <DefaultValue>30.0</DefaultValue>
@@ -25,7 +25,7 @@
         <ModelEntity Name="new entities" NumberOfRequiredValues="0" Extensible="1">
           <MembershipMask>face</MembershipMask>
         </ModelEntity>
-        <MeshSelection Name="output selection">
+        <MeshSelection Name="selection">
         </MeshSelection>
       </ItemDefinitions>
     </AttDef>

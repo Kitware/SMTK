@@ -71,6 +71,9 @@ protected:
   void convertToGrowSelection(
     const std::map<smtk::common::UUID, std::set<int> >& cachedSelection,
     vtkSelection* outSelection, Session* opsession);
+  void convertToGrowSelection(
+  const smtk::attribute::MeshSelectionItemPtr& inSelectionItem,
+  vtkSelection* outSelection, Session* opsession);
 
   vtkNew<vtkSelectionSplitOperator> m_splitOp;
   vtkNew<vtkSeedGrowSelectionFilter> m_growOp;
