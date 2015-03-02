@@ -92,6 +92,13 @@ if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
 endif()
 
+#install both the server and worker
+install(TARGETS smtk-model-server smtk-model-worker
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+  )
+
 if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
   #extract the headers from the library we built to give them to shiboken
 
