@@ -144,7 +144,7 @@ attribute.type_dict = { attribute.Item.ATTRIBUTE_REF: (attribute.RefItem, attrib
                         attribute.Item.FILE: (attribute.FileItem, attribute.FileItemDefinition),
                         attribute.Item.DIRECTORY: (attribute.DirectoryItem, attribute.DirectoryItemDefinition),
                         attribute.Item.COLOR: (None, None),
-                        attribute.Item.MODEL_ENTITY: (attribute.ModelEntityItem, attribute.ModelEntityItemDefinition)
+                        attribute.Item.MODEL_ENTITY: (attribute.ModelEntityItem, attribute.ModelEntityItemDefinition),
                         attribute.Item.MESH_SELECTION: (attribute.MeshSelectionItem, attribute.MeshSelectionItemDefinition)
                       }
 

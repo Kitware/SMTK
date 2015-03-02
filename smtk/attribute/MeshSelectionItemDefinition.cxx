@@ -59,8 +59,6 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   (void)info;
 
-  std::size_t i;
-
   smtk::attribute::MeshSelectionItemDefinitionPtr instance =
     smtk::attribute::MeshSelectionItemDefinition::New(this->name());
   ItemDefinition::copyTo(instance);
