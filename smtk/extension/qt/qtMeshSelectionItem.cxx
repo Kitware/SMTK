@@ -315,23 +315,23 @@ void qtMeshSelectionItem::setSelection(const smtk::common::UUID& entid,
     {
     return;
     }
-  MeshSelectionItem::MeshSelectionMode opType = meshSelectionItem->meshSelectMode();
+  MeshSelectionMode opType = meshSelectionItem->meshSelectMode();
   switch(opType)
   {
-    case MeshSelectionItem::ACCEPT:
+    case ACCEPT:
       meshSelectionItem->setValues(entid, vals);
       this->Internals->uncheckGrowButtons();
       break;
-    case MeshSelectionItem::RESET:
+    case RESET:
       meshSelectionItem->setValues(entid, vals);
       break;
-    case MeshSelectionItem::MERGE:
+    case MERGE:
        meshSelectionItem->unionValues(entid, vals);
        break;
-    case MeshSelectionItem::SUBTRACT:
+    case SUBTRACT:
       meshSelectionItem->removeValues(entid, vals);
       break;
-    case MeshSelectionItem::NONE:
+    case NONE:
       this->Internals->uncheckGrowButtons();
       meshSelectionItem->reset();
       break;
@@ -397,17 +397,17 @@ void qtMeshSelectionItem::onRequestMeshSelection()
 
   this->setUsingCtrlKey(false);
 
-  MeshSelectionItem::MeshSelectionMode selType;
+  MeshSelectionMode selType;
   if(cButton == this->Internals->AcceptButton)
-    selType = MeshSelectionItem::ACCEPT;
+    selType = ACCEPT;
   else if(cButton == this->Internals->GrowButton)
-    selType = MeshSelectionItem::RESET;
+    selType = RESET;
   else if(cButton == this->Internals->GrowPlusButton)
-    selType = MeshSelectionItem::MERGE;
+    selType = MERGE;
   else if(cButton == this->Internals->GrowMinusButton)
-    selType = MeshSelectionItem::SUBTRACT;
+    selType = SUBTRACT;
   else if(cButton == this->Internals->CancelButton)
-    selType = MeshSelectionItem::NONE;
+    selType = NONE;
   else
     {
     std::cerr << "ERROR: Unrecognized button click "
@@ -416,7 +416,7 @@ void qtMeshSelectionItem::onRequestMeshSelection()
     }
 
   meshSelectionItem->setMeshSelectMode(selType);
-  if(selType == MeshSelectionItem::ACCEPT || selType == MeshSelectionItem::NONE)
+  if(selType == ACCEPT || selType == NONE)
     this->Internals->uncheckGrowButtons();
 
   smtk::attribute::ModelEntityItem::Ptr modelEntities =

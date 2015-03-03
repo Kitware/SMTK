@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
@@ -19,7 +18,7 @@
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-MeshSelectionItem::MeshSelectionItem(Attribute *owningAttribute,
+MeshSelectionItem::MeshSelectionItem(Attribute* owningAttribute,
                    int itemPosition):
   Item(owningAttribute, itemPosition)
 {
@@ -28,7 +27,7 @@ MeshSelectionItem::MeshSelectionItem(Attribute *owningAttribute,
 }
 
 //----------------------------------------------------------------------------
-MeshSelectionItem::MeshSelectionItem(Item *inOwningItem,
+MeshSelectionItem::MeshSelectionItem(Item* inOwningItem,
                    int itemPosition,
                    int inSubGroupPosition):
   Item(inOwningItem, itemPosition, inSubGroupPosition)
@@ -41,8 +40,8 @@ setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 {
   // Note that we do a dynamic cast here since we don't
   // know if the proper definition is being passed
-  const MeshSelectionItemDefinition *def =
-    dynamic_cast<const MeshSelectionItemDefinition *>(adef.get());
+  const MeshSelectionItemDefinition* def =
+    dynamic_cast<const MeshSelectionItemDefinition*>(adef.get());
 
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
@@ -61,8 +60,8 @@ MeshSelectionItem::~MeshSelectionItem()
 //----------------------------------------------------------------------------
 Item::Type MeshSelectionItem::type() const
 {
-  const MeshSelectionItemDefinition *def =
-    static_cast<const MeshSelectionItemDefinition *>(this->definition().get());
+  const MeshSelectionItemDefinition* def =
+    static_cast<const MeshSelectionItemDefinition*>(this->definition().get());
   if (def != NULL)
     {
     return def->type();
@@ -142,8 +141,7 @@ smtk::attribute::MeshSelectionItem::const_sel_map_it MeshSelectionItem::end() co
 }
 
 //----------------------------------------------------------------------------
-std::string MeshSelectionItem::selectMode2String(
-  MeshSelectionItem::MeshSelectionMode m)
+std::string MeshSelectionItem::selectMode2String(MeshSelectionMode m)
 {
   switch (m)
     {
@@ -164,8 +162,7 @@ std::string MeshSelectionItem::selectMode2String(
 }
 
 //----------------------------------------------------------------------------
-MeshSelectionItem::MeshSelectionMode MeshSelectionItem::string2SelectMode(
-  const std::string &s)
+MeshSelectionMode MeshSelectionItem::string2SelectMode(const std::string &s)
 {
   if (s == "NONE")
     {
