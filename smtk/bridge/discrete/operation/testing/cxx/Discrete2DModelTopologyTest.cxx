@@ -41,11 +41,9 @@ int main()
 
   model->Reset();
 
-  double x[3] = {0, 1, 2};
   // since we don't have a grid we put in junk for the point id for the model vertex
   // it should not matter since we are not testing any of the grid/model classification
   vtkModelVertex* Vertex0 = model->BuildModelVertex(-3);
-  x[0] = 5;
   vtkModelVertex* Vertex1 = model->BuildModelVertex(-4);
   Edges[0] = model->BuildModelEdge(Vertex0, Vertex1);
   Edges[1] = model->BuildModelEdge(Vertex0, Vertex1);
