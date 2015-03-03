@@ -433,12 +433,12 @@ bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
           }
         for(vtkIdType j=1;j<numEntities;j++)
           {
-          vtkModelEntity* Entity = Model->GetModelEntity(
+          vtkModelEntity* Entity2 = Model->GetModelEntity(
             itemType, GroupedEntityIds->GetValue(ArrayCounter));
           ArrayCounter++;
-          if(itemType == Entity->GetType())
+          if(itemType == Entity2->GetType())
             {
-            CMBEntity = vtkDiscreteModelEntity::GetThisDiscreteModelEntity(Entity);
+            CMBEntity = vtkDiscreteModelEntity::GetThisDiscreteModelEntity(Entity2);
             if(CMBEntity)
               {
               Entities.push_back(CMBEntity);
