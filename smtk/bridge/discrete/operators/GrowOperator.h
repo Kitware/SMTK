@@ -66,11 +66,8 @@ protected:
     vtkSelection* inSelection,
     vtkDiscreteModelWrapper* modelWrapper,
     Session* opsession);
-  bool modifyOutSelection(
+  bool copyToOutSelection(
     const smtk::attribute::MeshSelectionItemPtr& inSelectionItem);
-  void convertToGrowSelection(
-    const std::map<smtk::common::UUID, std::set<int> >& cachedSelection,
-    vtkSelection* outSelection, Session* opsession);
   void convertToGrowSelection(
   const smtk::attribute::MeshSelectionItemPtr& inSelectionItem,
   vtkSelection* outSelection, Session* opsession);
@@ -79,8 +76,6 @@ protected:
   vtkNew<vtkSeedGrowSelectionFilter> m_growOp;
   vtkNew<vtkSelection> m_growSelection;
   std::map<smtk::common::UUID, std::set<int> > m_outSelection;
-
-  bool m_growCacheModified;
 };
 
     } // namespace discrete

@@ -49,8 +49,6 @@ public:
   QPointer<QLabel> theLabel;
   Qt::Orientation VectorItemOrient;
 
-  bool isCtrlKeyDown;
-
   QPointer<QToolButton> GrowButton;
   QPointer<QToolButton> GrowPlusButton;
   QPointer<QToolButton> GrowMinusButton;
@@ -67,6 +65,30 @@ public:
     this->ButtonGroup->setExclusive(true);
   }
 
+  void modifyOutSelection(const smtk::common::UUID& entid,
+                          const std::set<int> vals,
+                          MeshSelectionItem::MeshSelectionMode opType)
+  {
+    if(opType == MeshSelectionItem::RESET)
+      {
+      m_outSelection[entid] = vals;
+      }
+    else if(opType == MeshSelectionItem::MERGE)
+      {
+      m_outSelection[entid].insert(vals.begin(), vals.end());
+      }
+    else if(opType == MeshSelectionItem::SUBTRACT)
+      {
+      std::set<int> diffSet;
+      std::set_difference(m_outSelection[entid].begin(),
+                        m_outSelection[entid].end(),
+                        vals.begin(), vals.end(),
+                        std::inserter(diffSet, diffSet.end()));
+      m_outSelection[entid] = diffSet;
+      }
+  }
+
+  std::map<smtk::common::UUID, std::set<int> > m_outSelection;
 };
 
 //----------------------------------------------------------------------------
@@ -77,7 +99,6 @@ qtMeshSelectionItem::qtMeshSelectionItem(
   this->Internals = new qtMeshSelectionItemInternals;
   this->IsLeafItem = true;
   this->Internals->VectorItemOrient = enVectorItemOrient;
-  this->Internals->isCtrlKeyDown = false;
   this->createWidget();
 }
 
@@ -306,8 +327,8 @@ void qtMeshSelectionItem::clearSelection()
 }
 
 //----------------------------------------------------------------------------
-void qtMeshSelectionItem::setSelection(const smtk::common::UUID& entid,
-                                       const std::set<int> vals)
+void qtMeshSelectionItem::updateInputSelection(
+  const std::map<smtk::common::UUID, std::set<int> >& selectionValues)
 {
   smtk::attribute::MeshSelectionItemPtr meshSelectionItem =
     dynamic_pointer_cast<MeshSelectionItem>(this->getObject());
@@ -315,31 +336,57 @@ void qtMeshSelectionItem::setSelection(const smtk::common::UUID& entid,
     {
     return;
     }
+
+  // clear cached mesh selection list
+  this->clearSelection();
+
+  int totalVals = 0;
+  smtk::attribute::MeshSelectionItem::const_sel_map_it mapIt;
+  for(mapIt = selectionValues.begin(); mapIt != selectionValues.end(); ++mapIt)
+    totalVals += mapIt->second.size();
+
   MeshSelectionItem::MeshSelectionMode opType = meshSelectionItem->meshSelectMode();
-  switch(opType)
-  {
-    case MeshSelectionItem::ACCEPT:
-      meshSelectionItem->setValues(entid, vals);
-      this->Internals->uncheckGrowButtons();
-      break;
-    case MeshSelectionItem::RESET:
-      meshSelectionItem->setValues(entid, vals);
-      break;
-    case MeshSelectionItem::MERGE:
-       meshSelectionItem->unionValues(entid, vals);
+  for(mapIt = selectionValues.begin(); mapIt != selectionValues.end(); ++mapIt)
+    {
+    switch(opType)
+      {
+      case MeshSelectionItem::ACCEPT:
+        meshSelectionItem->setValues(mapIt->first, mapIt->second);
+        break;
+      case MeshSelectionItem::RESET:
+      case MeshSelectionItem::MERGE:
+      case MeshSelectionItem::SUBTRACT:
+        if(meshSelectionItem->isCtrlKeyDown() || totalVals > 1)
+          {
+          this->Internals->modifyOutSelection(mapIt->first, mapIt->second, opType);
+          meshSelectionItem->setValues(
+            mapIt->first, this->Internals->m_outSelection[mapIt->first]);
+          }
+        else if(totalVals == 1)
+          meshSelectionItem->setValues(mapIt->first, mapIt->second);
+        break;
+      case MeshSelectionItem::NONE:
        break;
-    case MeshSelectionItem::SUBTRACT:
-      meshSelectionItem->removeValues(entid, vals);
-      break;
-    case MeshSelectionItem::NONE:
-      this->Internals->uncheckGrowButtons();
-      meshSelectionItem->reset();
-      break;
-    default:
-      std::cerr << "ERROR: Unrecognized MeshUpdateMode: "
-                << opType << std::endl;
-      break;
-  }
+      default:
+        std::cerr << "ERROR: Unrecognized MeshUpdateMode: "
+                  << opType << std::endl;
+        break;
+      }
+    }
+
+  if(opType == MeshSelectionItem::ACCEPT)
+    this->Internals->m_outSelection.clear();
+  else if(opType == MeshSelectionItem::ACCEPT)
+    {
+    this->Internals->uncheckGrowButtons();
+    this->Internals->m_outSelection.clear();
+    }
+  else if(opType == MeshSelectionItem::NONE)
+    {
+    this->Internals->uncheckGrowButtons();
+    this->Internals->m_outSelection.clear();
+    meshSelectionItem->reset();
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -423,4 +470,60 @@ void qtMeshSelectionItem::onRequestMeshSelection()
     this->refModelEntityItem();
   if(modelEntities)
     emit this->requestMeshSelection(modelEntities);
+}
+
+//----------------------------------------------------------------------------
+void qtMeshSelectionItem::syncWithCachedSelection(
+  const smtk::attribute::MeshSelectionItemPtr& resultSelectionItem,
+  std::map<smtk::common::UUID, std::set<int> > &outSelectionValues)
+{
+  smtk::attribute::MeshSelectionItemPtr meshSelectionItem =
+    dynamic_pointer_cast<MeshSelectionItem>(this->getObject());
+  if(!meshSelectionItem)
+    {
+    return;
+    }
+
+  smtk::attribute::MeshSelectionItem::const_sel_map_it mapIt;
+  MeshSelectionItem::MeshSelectionMode opType = meshSelectionItem->meshSelectMode();
+  if(opType == MeshSelectionItem::RESET ||
+    opType == MeshSelectionItem::ACCEPT ||
+    opType == MeshSelectionItem::NONE)
+    this->Internals->m_outSelection.clear();
+
+  for(mapIt = resultSelectionItem->begin(); mapIt != resultSelectionItem->end(); ++mapIt)
+    {
+    switch(opType)
+      {
+      case MeshSelectionItem::ACCEPT:
+      case MeshSelectionItem::NONE:
+        break;
+      case MeshSelectionItem::RESET:
+        this->Internals->modifyOutSelection(mapIt->first, mapIt->second, opType);
+        break;
+      case MeshSelectionItem::MERGE:
+      case MeshSelectionItem::SUBTRACT:
+        if(meshSelectionItem->numberOfValues() == 1)
+        // this result is from grow, so we need to update the cached selection with it
+          {
+          this->Internals->modifyOutSelection(mapIt->first, mapIt->second, opType);
+          }
+        // else, // the cached selection should already be updated
+        break;
+      default:
+        std::cerr << "ERROR: Unrecognized MeshUpdateMode: "
+                  << opType << std::endl;
+        break;
+      }
+    }
+  // copy cached selection out
+  if(opType == MeshSelectionItem::RESET ||
+     opType == MeshSelectionItem::MERGE ||
+     opType == MeshSelectionItem::SUBTRACT )
+    {
+    for(mapIt = this->Internals->m_outSelection.begin();
+      mapIt != this->Internals->m_outSelection.end(); ++mapIt)
+        outSelectionValues[mapIt->first] =
+          this->Internals->m_outSelection[mapIt->first];
+    }
 }

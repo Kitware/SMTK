@@ -17,6 +17,8 @@
 
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/model/EntityTypeBits.h" // for smtk::model::BitFlags
+
+#include <map>
 #include <set>
 
 class qtMeshSelectionItemInternals;
@@ -35,12 +37,17 @@ namespace smtk
         qtBaseView* bview, Qt::Orientation enumOrient = Qt::Horizontal);
       virtual ~qtMeshSelectionItem();
       virtual void setLabelVisible(bool);
-      virtual void setSelection(const smtk::common::UUID& entid,
-                                const std::set<int> vals);
+      // update the selection input to the operation
+      virtual void updateInputSelection(
+        const std::map<smtk::common::UUID, std::set<int> >& selectionValues);
 
       smtk::attribute::ModelEntityItemPtr refModelEntityItem();
       void setUsingCtrlKey(bool);
       bool usingCtrlKey();
+      // update the cached selection, and return the result in outSelectionValues
+      void syncWithCachedSelection(
+        const smtk::attribute::MeshSelectionItemPtr& meshSelectionItem,
+        std::map<smtk::common::UUID, std::set<int> > &outSelectionValues);
 
     public slots:
       void setOutputOptional(int);

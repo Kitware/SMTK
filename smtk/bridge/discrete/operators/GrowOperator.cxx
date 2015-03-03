@@ -50,7 +50,6 @@ namespace smtk {
 
 GrowOperator::GrowOperator()
 {
-  m_growCacheModified = false;
 }
 
 bool GrowOperator::ableToOperate()
@@ -121,16 +120,17 @@ void GrowOperator::writeSplitResult(vtkSelectionSplitOperator* splitOp,
   for(vtkIdType i=0; i < splitPairArray->GetNumberOfTuples(); ++i)
     {
     vtkIdType origId = splitPairArray->GetValue(2*i);
-    splitFaces[origId].insert(splitPairArray->GetValue(2*i));
+    splitFaces[origId].insert(splitPairArray->GetValue(2*i+1));
     }
 
   smtk::model::ManagerPtr store = this->manager();
   // Adding "new entities" to the "new entities" item, as a convenient method
-  // to get newly created faces from result.
+  // to get newly created faces from result. These new entities are also
+  // in the "entities" item
   // The faces have been split will be in the "entities" item.
   smtk::attribute::ModelEntityItem::Ptr entities =
     result->findModelEntity("entities");
-  entities->setNumberOfValues(splitFaces.size());
+  entities->setNumberOfValues(splitFaces.size() + splitPairArray->GetNumberOfTuples());
   smtk::attribute::ModelEntityItem::Ptr newEntities =
     result->findModelEntity("new entities");
   newEntities->setNumberOfValues(splitPairArray->GetNumberOfTuples());
@@ -152,9 +152,10 @@ void GrowOperator::writeSplitResult(vtkSelectionSplitOperator* splitOp,
     store->erase(faceUUID);
 
     // Now re-add it (it will have new edges)
+    faceUUID = opsession->findOrSetEntityUUID(origFace);
     smtk::model::Face c = opsession->addFaceToManager(faceUUID,
       origFace, store, true);
-    entities->setValue(idx++, c);
+    entities->setValue(idx++, c); // original face
 
     this->addRawRelationship(c, vol1, vol2);
 
@@ -165,51 +166,12 @@ void GrowOperator::writeSplitResult(vtkSelectionSplitOperator* splitOp,
         modelWrapper->GetModelEntity(vtkModelFaceType, *fit));
       faceUUID = opsession->findOrSetEntityUUID(face);
       smtk::model::Face cFace = opsession->addFaceToManager(faceUUID, face, store, true);
-      newEntities->setValue(newidx++, cFace);
+      newEntities->setValue(newidx++, cFace); // new face
+      entities->setValue(idx++, cFace); // new face
       this->addRawRelationship(cFace, vol1, vol2);
       }
     }
 
-}
-
-void GrowOperator::convertToGrowSelection(
-  const std::map<smtk::common::UUID, std::set<int> >& cachedSelection,
-  vtkSelection* outSelection, Session* opsession)
-{
-  outSelection->Initialize();
-  vtkNew<vtkSelectionNode> selNode;
-  vtkInformation* oProperties = selNode->GetProperties();
-  oProperties->Set(vtkSelectionNode::CONTENT_TYPE(),
-                   vtkSelectionNode::INDICES);
-  oProperties->Set(vtkSelectionNode::FIELD_TYPE(), vtkSelectionNode::CELL);
-  outSelection->AddNode(selNode.GetPointer());
-
-  vtkNew<vtkIdTypeArray> outSelectionList;
-  smtk::attribute::MeshSelectionItem::const_sel_map_it mapIt;
-  for(mapIt = cachedSelection.begin(); mapIt != cachedSelection.end(); ++mapIt)
-    {
-    vtkDiscreteModelFace* face = vtkDiscreteModelFace::SafeDownCast(
-      opsession->entityForUUID(mapIt->first));
-    if(!face)
-      {
-      std::cout << "Could not get model face with Id: " << mapIt->first << std::endl;
-      //vtkErrorMacro("Could not get model face with Id " << faceId);
-      continue;
-      }
-    vtkPolyData* geometry = vtkPolyData::SafeDownCast(
-      face->GetGeometry());
-    vtkIdTypeArray* masterCellIds = vtkIdTypeArray::SafeDownCast(
-      geometry->GetCellData()->GetArray(
-      vtkDiscreteModelGeometricEntity::GetReverseClassificationArrayName()));
-    if(masterCellIds)
-      {
-      std::set<int>::const_iterator it;
-      for(it = mapIt->second.begin(); it != mapIt->second.end(); ++it)
-        outSelectionList->InsertNextValue(face->GetMasterCellId(*it));
-      }    
-    }
-  selNode->SetSelectionList(outSelectionList.GetPointer());
-  m_growCacheModified = false;
 }
 
 void GrowOperator::convertToGrowSelection(
@@ -249,7 +211,6 @@ void GrowOperator::convertToGrowSelection(
       }
     }
   selNode->SetSelectionList(outSelectionList.GetPointer());
-  m_growCacheModified = false;
 }
 
 // This grow_selection is a list of cell ids from master polydata,
@@ -312,37 +273,13 @@ bool GrowOperator::convertAndResetOutSelection(
   return true;
 }
 
-bool GrowOperator::modifyOutSelection(
+bool GrowOperator::copyToOutSelection(
   const smtk::attribute::MeshSelectionItemPtr& inSelectionItem)
 {
-  MeshSelectionItem::MeshSelectionMode opType = inSelectionItem->meshSelectMode();
-  bool ok = false;
-
   smtk::attribute::MeshSelectionItem::const_sel_map_it mapIt;
   for(mapIt = inSelectionItem->begin(); mapIt != inSelectionItem->end(); ++mapIt)
-    {
-    if(opType == MeshSelectionItem::RESET)
-      {
-      m_outSelection[mapIt->first] = mapIt->second;
-      ok = true;
-      }
-    else if(opType == MeshSelectionItem::MERGE)
-      {
-      m_outSelection[mapIt->first].insert(mapIt->second.begin(), mapIt->second.end());
-      ok = true;
-      }
-    else if(opType == MeshSelectionItem::SUBTRACT)
-      {
-      std::set<int> diffSet;
-      std::set_difference(m_outSelection[mapIt->first].begin(),
-                        m_outSelection[mapIt->first].end(),
-                        mapIt->second.begin(), mapIt->second.end(),
-                        std::inserter(diffSet, diffSet.end()));
-      m_outSelection[mapIt->first] = diffSet;
-      ok = true;
-      }
-    }
-  return ok;
+    m_outSelection[mapIt->first] = mapIt->second;
+  return true;
 }
 
 /// Recursively find all the visible faces
@@ -386,13 +323,6 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
   {
     case MeshSelectionItem::ACCEPT:
       // convert current outSelection to grow Selection
-/* //TODO: the cached selection seems to be lost during serialization.
-      if(m_growCacheModified)
-        {
-        this->convertToGrowSelection(
-          m_outSelection, m_growSelection.GetPointer(), opsession);
-        }
-*/
       this->convertToGrowSelection(
           inSelectionItem, m_growSelection.GetPointer(), opsession);
       // Use current selection to split faces if necessary
@@ -407,27 +337,34 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
       // only do modification of current grow selection using the input selection.
       if(inSelectionItem->isCtrlKeyDown() || numSelValues > 1)
         {
-        ok = this->modifyOutSelection(inSelectionItem);
-        m_growCacheModified = ok;
+        ok = this->copyToOutSelection(inSelectionItem);
         }
       else if(numSelValues == 1 ) // one cell is clicked.
       // do grow
         {
-        // convert current outSelection to grow Selection
-/*       if(m_growCacheModified)
-          {
-          this->convertToGrowSelection(
-            m_outSelection, m_growSelection.GetPointer(), opsession);
-          }
-*/
-        this->convertToGrowSelection(
-          inSelectionItem, m_growSelection.GetPointer(), opsession);
-
         std::set<vtkIdType> visModelFaceIds;
         this->findVisibleModelFaces(model, visModelFaceIds, opsession);
         this->m_growOp->SetModelWrapper(modelWrapper);
+        // NOTE:
+        // The fact that operators are state-less, we can NOT cache
+        // things inside the operator itself. In this case, the m_growSelection
+        // really is empty because a new grow operator is recontructed
+        // on the server every time the operator is triggered, so for now, we only
+        // do grow, and return the result form grow,
+        // then grow+/grow- has to be handled fromm applicaiton with the new grow result,
+        // meaing the application has to cache the exiting selection, and based
+        // on grow+/grow-, update selection properly
+/*
+        // convert current outSelection to grow Selection
+        this->convertToGrowSelection(
+          inSelectionItem, m_growSelection.GetPointer(), opsession);
         int mode = opType == MeshSelectionItem::RESET ? 0 :
           (opType == MeshSelectionItem::MERGE ? 1 : 2);
+*/
+
+m_growSelection->Initialize();
+int mode = 0;
+
         this->m_growOp->SetGrowMode(mode);
         this->m_growOp->SetFeatureAngle(
           this->specification()->findDouble("feature angle")->value());
@@ -443,16 +380,12 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
           this->m_growOp->Update();
           ok = this->convertAndResetOutSelection(
             m_growOp->GetOutput(), modelWrapper, opsession);
-          if(ok)
-            m_growSelection->DeepCopy(m_growOp->GetOutput());
-          m_growCacheModified = false;
           }
         }
 
       break;
     case MeshSelectionItem::NONE:
       this->m_outSelection.clear();
-      m_growCacheModified = false;
       ok = true; // stop grow
       break;
     default:
