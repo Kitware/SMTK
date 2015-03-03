@@ -315,23 +315,23 @@ bool GrowOperator::convertAndResetOutSelection(
 bool GrowOperator::modifyOutSelection(
   const smtk::attribute::MeshSelectionItemPtr& inSelectionItem)
 {
-  MeshSelectionItem::MeshSelectionMode opType = inSelectionItem->meshSelectMode();
+  MeshSelectionMode opType = inSelectionItem->meshSelectMode();
   bool ok = false;
 
   smtk::attribute::MeshSelectionItem::const_sel_map_it mapIt;
   for(mapIt = inSelectionItem->begin(); mapIt != inSelectionItem->end(); ++mapIt)
     {
-    if(opType == MeshSelectionItem::RESET)
+    if(opType == RESET)
       {
       m_outSelection[mapIt->first] = mapIt->second;
       ok = true;
       }
-    else if(opType == MeshSelectionItem::MERGE)
+    else if(opType == MERGE)
       {
       m_outSelection[mapIt->first].insert(mapIt->second.begin(), mapIt->second.end());
       ok = true;
       }
-    else if(opType == MeshSelectionItem::SUBTRACT)
+    else if(opType == SUBTRACT)
       {
       std::set<int> diffSet;
       std::set_difference(m_outSelection[mapIt->first].begin(),
@@ -379,12 +379,12 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
   bool ok = false;
   smtk::attribute::MeshSelectionItem::Ptr inSelectionItem =
      this->specification()->findMeshSelection("selection");
-  MeshSelectionItem::MeshSelectionMode opType = inSelectionItem->meshSelectMode();
+  MeshSelectionMode opType = inSelectionItem->meshSelectMode();
   int numSelValues = inSelectionItem->numberOfValues();
 
   switch(opType)
   {
-    case MeshSelectionItem::ACCEPT:
+    case ACCEPT:
       // convert current outSelection to grow Selection
 /* //TODO: the cached selection seems to be lost during serialization.
       if(m_growCacheModified)
@@ -399,9 +399,9 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
       this->m_splitOp->Operate(modelWrapper, this->m_growSelection.GetPointer());
       ok = this->m_splitOp->GetOperateSucceeded();
       break;
-    case MeshSelectionItem::RESET:
-    case MeshSelectionItem::MERGE:
-    case MeshSelectionItem::SUBTRACT:
+    case RESET:
+    case MERGE:
+    case SUBTRACT:
 
       // if the ctrl key is down or multiple cells are selected from rubber band,
       // only do modification of current grow selection using the input selection.
@@ -426,8 +426,8 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
         std::set<vtkIdType> visModelFaceIds;
         this->findVisibleModelFaces(model, visModelFaceIds, opsession);
         this->m_growOp->SetModelWrapper(modelWrapper);
-        int mode = opType == MeshSelectionItem::RESET ? 0 :
-          (opType == MeshSelectionItem::MERGE ? 1 : 2);
+        int mode = opType == RESET ? 0 :
+          (opType == MERGE ? 1 : 2);
         this->m_growOp->SetGrowMode(mode);
         this->m_growOp->SetFeatureAngle(
           this->specification()->findDouble("feature angle")->value());
@@ -450,7 +450,7 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
         }
 
       break;
-    case MeshSelectionItem::NONE:
+    case NONE:
       this->m_outSelection.clear();
       m_growCacheModified = false;
       ok = true; // stop grow
@@ -469,13 +469,13 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
     {
     switch(opType)
       {
-      case MeshSelectionItem::ACCEPT:
+      case ACCEPT:
         this->writeSplitResult(m_splitOp.GetPointer(),
           modelWrapper, opsession, result);
         break;
-      case MeshSelectionItem::RESET:
-      case MeshSelectionItem::MERGE:
-      case MeshSelectionItem::SUBTRACT:
+      case RESET:
+      case MERGE:
+      case SUBTRACT:
         {
         smtk::attribute::ModelEntityItem::Ptr resultEntities =
           result->findModelEntity("entities");
