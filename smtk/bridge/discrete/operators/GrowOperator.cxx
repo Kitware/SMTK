@@ -316,12 +316,12 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
   bool ok = false;
   smtk::attribute::MeshSelectionItem::Ptr inSelectionItem =
      this->specification()->findMeshSelection("selection");
-  MeshSelectionItem::MeshSelectionMode opType = inSelectionItem->meshSelectMode();
+  MeshSelectionMode opType = inSelectionItem->meshSelectMode();
   int numSelValues = inSelectionItem->numberOfValues();
 
   switch(opType)
   {
-    case MeshSelectionItem::ACCEPT:
+    case ACCEPT:
       // convert current outSelection to grow Selection
       this->convertToGrowSelection(
           inSelectionItem, m_growSelection.GetPointer(), opsession);
@@ -329,9 +329,9 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
       this->m_splitOp->Operate(modelWrapper, this->m_growSelection.GetPointer());
       ok = this->m_splitOp->GetOperateSucceeded();
       break;
-    case MeshSelectionItem::RESET:
-    case MeshSelectionItem::MERGE:
-    case MeshSelectionItem::SUBTRACT:
+    case RESET:
+    case MERGE:
+    case SUBTRACT:
 
       // if the ctrl key is down or multiple cells are selected from rubber band,
       // only do modification of current grow selection using the input selection.
@@ -362,8 +362,8 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
           (opType == MeshSelectionItem::MERGE ? 1 : 2);
 */
 
-m_growSelection->Initialize();
-int mode = 0;
+        m_growSelection->Initialize();
+        int mode = 0;
 
         this->m_growOp->SetGrowMode(mode);
         this->m_growOp->SetFeatureAngle(
@@ -384,7 +384,7 @@ int mode = 0;
         }
 
       break;
-    case MeshSelectionItem::NONE:
+    case NONE:
       this->m_outSelection.clear();
       ok = true; // stop grow
       break;
@@ -402,13 +402,13 @@ int mode = 0;
     {
     switch(opType)
       {
-      case MeshSelectionItem::ACCEPT:
+      case ACCEPT:
         this->writeSplitResult(m_splitOp.GetPointer(),
           modelWrapper, opsession, result);
         break;
-      case MeshSelectionItem::RESET:
-      case MeshSelectionItem::MERGE:
-      case MeshSelectionItem::SUBTRACT:
+      case RESET:
+      case MERGE:
+      case SUBTRACT:
         {
         smtk::attribute::ModelEntityItem::Ptr resultEntities =
           result->findModelEntity("entities");

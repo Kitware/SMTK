@@ -376,7 +376,9 @@
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findMeshSelection', unmatched return type 'smtk::attribute::MeshSelectionItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::model::Operator::findMeshSelection', unmatched return type 'smtk::attribute::MeshSelectionItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findGroup', unmatched return type 'smtk::attribute::ConstGroupItemPtr'"/>
-
+  <suppress-warning text="skipping function 'smtk::attribute::MeshSelectionItem::end', unmatched return type 'smtk::attribute::MeshSelectionItem::const_sel_map_it'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::MeshSelectionItem::copyFrom', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::MeshSelectionItem::begin', unmatched return type 'smtk::attribute::MeshSelectionItem::const_sel_map_it'"/>
 
   @EXTRA_TYPESYSTEMS@
 
@@ -1806,6 +1808,10 @@
           </inject-code>
         </add-function>
       </object-type>
+
+      <enum-type name="MeshSelectionMode">
+        <include file-name="smtk/attribute/MeshSelectionItem.h" location="local"/>
+      </enum-type>
 
       <object-type name="ValueItem">
         <include file-name="smtk/attribute/ValueItem.h" location="local" />
