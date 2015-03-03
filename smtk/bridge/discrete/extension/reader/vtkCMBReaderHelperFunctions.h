@@ -16,7 +16,6 @@
 #ifndef __smtkdiscrete_vtkCMBReaderHelperFunctions_h
 #define __smtkdiscrete_vtkCMBReaderHelperFunctions_h
 
-//#include <vtksys/SystemTools.hxx>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -26,18 +25,15 @@ namespace smtk {
   namespace bridge {
     namespace discrete {
 
-//BTX
 namespace ReaderHelperFunctions
 {
   bool readNextLine(std::ifstream& file, std::stringstream& line);
   bool readNextLine(std::ifstream& file, std::stringstream& line, std::string& card);
 
-  static const char* GetModelFaceTagName() {return "modelfaceids";};
-  static const char* GetShellTagName() {return "Region";};
-  static const char* GetMaterialTagName() {return "cell materials";};
-
+  inline const char* GetModelFaceTagName() {return "modelfaceids";}
+  inline const char* GetShellTagName() {return "Region";}
+  inline const char* GetMaterialTagName() {return "cell materials";}
 }
-//ETX
 
     } // namespace discrete
   } // namespace bridge
