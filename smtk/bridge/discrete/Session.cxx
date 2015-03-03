@@ -646,8 +646,6 @@ bool Session::addTessellation(const smtk::model::EntityRef& cellOut, vtkModelGeo
     smtk::model::Tessellation tess;
     std::map<vtkIdType,int> vertMap;
     vtkPoints* pts = poly->GetPoints();
-    vtkCellArray* cells;
-    cells = poly->GetVerts();
     AddCellsToTessellation(pts, poly->GetVerts(), SMTK_ROLE_VERTS, vertMap, tess);
     AddCellsToTessellation(pts, poly->GetLines(), SMTK_ROLE_LINES, vertMap, tess);
     AddCellsToTessellation(pts, poly->GetPolys(), SMTK_ROLE_POLYS, vertMap, tess);
@@ -1132,13 +1130,11 @@ smtk::model::Face Session::addFaceToManager(
     { // Add refFace relations and arrangements
     // If face uses exist, add them to the session.
     vtkModelFaceUse* fu;
-    bool haveFaceUse = false;
     for (int i = 0; i < 2; ++i)
       {
       fu = refFace->GetModelFaceUse(i); // 0 = negative, 1 = positive
       if (fu)
         {
-        haveFaceUse = true;
         smtk::common::UUID fuid = this->findOrSetEntityUUID(fu);
         this->addFaceUseToManager(fuid, fu, mgr, relDepth - 1);
         // Now, since we are the "higher" end of the relationship,
@@ -1197,13 +1193,11 @@ smtk::model::Edge Session::addEdgeToManager(
     { // Add refEdge relations and arrangements
     // If edge uses exist, add them to the session.
     vtkModelEdgeUse* eu;
-    bool haveEdgeUse = false;
     for (int i = 0; i < refEdge->GetNumberOfModelEdgeUses(); ++i)
       {
       eu = refEdge->GetModelEdgeUse(i); // 0 = negative, 1 = positive
       if (eu)
         {
-        haveEdgeUse = true;
         smtk::common::UUID euid = this->findOrSetEntityUUID(eu);
         this->addEdgeUseToManager(euid, eu, mgr, relDepth - 1);
         // Now, since we are the "higher" end of the relationship,

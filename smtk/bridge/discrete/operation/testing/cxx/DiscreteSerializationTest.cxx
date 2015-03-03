@@ -163,11 +163,9 @@ int Test2DModelSerialization()
 {
   vtkDiscreteModel* Model = vtkDiscreteModel::New();
   vtkModelMaterial* Material = Model->BuildMaterial();
-  double x[3] = {0, 1, 2};
   // the point id (-2 value) is not set to anything realistic
   // because we currently do not have a grid to set it with respect to
   vtkModelVertex* Vertex0 = Model->BuildModelVertex(-2);
-  x[0] = 5;
   vtkModelVertex* Vertex1 = Model->BuildModelVertex(-3);
   vtkModelEdge* Edges[2];
   Edges[0] = Model->BuildModelEdge(Vertex0, Vertex1);

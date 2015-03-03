@@ -680,7 +680,7 @@ int vtkLIDARReader::ReadPiece(ifstream &fin, int pieceIndex, int onRatio,
       }
     else
       {
-      fin.read((char *)pt,sizeof(double)*3);
+      fin.read(reinterpret_cast<char*>(pt),sizeof(double)*3);
       }
     if (i % onRatio == 0)
       {

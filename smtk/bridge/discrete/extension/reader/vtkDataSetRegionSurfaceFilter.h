@@ -54,8 +54,14 @@ protected:
                           vtkInformationVector **,
                           vtkInformationVector *);
 
-  virtual void InsertQuadInHash(vtkIdType a, vtkIdType b, vtkIdType c,
-                                vtkIdType d, vtkIdType sourceId, vtkIdType faceId = -1);
+  // Override base class to call our version taking an extra parameter:
+  virtual void InsertQuadInHash(
+    vtkIdType a, vtkIdType b, vtkIdType c, vtkIdType d, vtkIdType sourceId)
+    { this->InsertQuadInHash(a, b, c, d, sourceId, -1); }
+  virtual void InsertQuadInHash(
+    vtkIdType a, vtkIdType b, vtkIdType c,
+    vtkIdType d, vtkIdType sourceId, vtkIdType faceId);
+
   virtual void InsertTriInHash(vtkIdType a, vtkIdType b, vtkIdType c,
                        vtkIdType sourceId, vtkIdType faceId = -1);
 
