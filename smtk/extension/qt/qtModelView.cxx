@@ -508,6 +508,8 @@ QDockWidget* qtModelView::operatorsDock()
   qtModelOperationWidget* opWidget = new qtModelOperationWidget();
   QObject::connect(opWidget, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)),
     this, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)));
+  QObject::connect(opWidget, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),
+    this, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)));
   QObject::connect(opWidget, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)),
     this, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)));
   QObject::connect(opWidget, SIGNAL(meshSelectionItemCreated(
