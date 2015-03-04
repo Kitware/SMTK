@@ -64,6 +64,16 @@ public:
   //number of meshes
   std::size_t size() const;
 
+  //get all the current domains, dirichlet, neumanns for all meshes in this meshset
+  std::vector< smtk::mesh::Domain > domains() const;
+  std::vector< smtk::mesh::Dirichlet > dirichlets() const;
+  std::vector< smtk::mesh::Neumann > neumanns() const;
+
+  //set the domainl, dirichlet, or neumanns for all meshes in this meshset
+  bool setDomain(const smtk::mesh::Domain& d);
+  bool setDirichlet(const smtk::mesh::Dirichlet& d);
+  bool setNeumann(const smtk::mesh::Neumann& n);
+
   smtk::mesh::CellSet cells() const; //all cells of the meshset
   smtk::mesh::Points points() const; //all points of the meshset
   smtk::mesh::PointConnectivity pointConnectivity( ) const; //all point connectivity info for all cells

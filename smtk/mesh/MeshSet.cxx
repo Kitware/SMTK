@@ -104,6 +104,48 @@ std::size_t MeshSet::size( ) const
 }
 
 //----------------------------------------------------------------------------
+std::vector< smtk::mesh::Domain > MeshSet::domains( ) const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  return iface->computeDomainValues( this->m_range );
+}
+
+//----------------------------------------------------------------------------
+std::vector< smtk::mesh::Dirichlet > MeshSet::dirichlets( ) const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  return iface->computeDirichletValues( this->m_range );
+}
+
+//----------------------------------------------------------------------------
+std::vector< smtk::mesh::Neumann > MeshSet::neumanns( ) const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  return iface->computeNeumannValues( this->m_range );
+}
+
+//----------------------------------------------------------------------------
+bool MeshSet::setDomain(const smtk::mesh::Domain& d)
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  return iface->setDomain( this->m_range, d);
+}
+
+//----------------------------------------------------------------------------
+bool MeshSet::setDirichlet(const smtk::mesh::Dirichlet& d)
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  return iface->setDirichlet( this->m_range, d );
+}
+
+//----------------------------------------------------------------------------
+bool MeshSet::setNeumann(const smtk::mesh::Neumann& n)
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  return iface->setNeumann( this->m_range, n );
+}
+
+//----------------------------------------------------------------------------
 smtk::mesh::CellSet MeshSet::cells( ) const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
