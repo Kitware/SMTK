@@ -83,10 +83,12 @@ public:
   smtk::mesh::CellSet   cells( smtk::mesh::CellTypes  cTypes ) const;
   smtk::mesh::CellSet   cells( smtk::mesh::DimensionType dim ) const;
 
-  //in the future we want to be able to iterate the given meshes in a MeshSet
-  //and generate the cells, points and connectivity for each one independently.
-  //This will also allow us to generate associations back to the model based
-  //on single meshes
+  //Extract the shell ( exterior face elements ) of this set of meshes
+  //This operation might create new cells if no shell already exists
+  //for the given meshset. The resulting meshset will be added to the
+  //database so that the shell is saved.
+  //Will return an empty set when no shell can be found
+  smtk::mesh::MeshSet extractShell() const;
 
 private:
   smtk::mesh::CollectionPtr m_parent;

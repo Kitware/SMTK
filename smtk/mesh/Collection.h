@@ -185,14 +185,6 @@ public:
   bool setNeumannOnMeshes(const smtk::mesh::MeshSet& meshes,
                           const smtk::mesh::Neumann& n);
 
-  //Extract the shell ( exterior face elements ) of a given set of meshes
-  //If you want the shell of the entire collection, pass all meshes.
-  //This operation might create new cells if no shell already exists
-  //for the given meshset. The resulting meshset will be added to the
-  //database so that the shell is saved
-  //Will return an empty set when no shell can be found
-  smtk::mesh::MeshSet extractShell( const smtk::mesh::MeshSet& meshes );
-
   const smtk::mesh::InterfacePtr& interface() const;
 
 private:

@@ -192,6 +192,29 @@ smtk::mesh::CellSet MeshSet::cells( smtk::mesh::DimensionType dim ) const
 }
 
 //----------------------------------------------------------------------------
+smtk::mesh::MeshSet MeshSet::extractShell() const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+
+  smtk::mesh::HandleRange entities;
+  smtk::mesh::HandleRange cells;
+  const bool shellExtracted = iface->computeShell( this->m_range, cells );
+  if(shellExtracted)
+    {
+    smtk::mesh::Handle meshSetHandle;
+    //create a mesh for these cells since they don't have a meshset currently
+    const bool meshCreated = iface->createMesh(cells, meshSetHandle);
+    if(meshCreated)
+      {
+      entities.insert(meshSetHandle);
+      }
+    }
+  return smtk::mesh::MeshSet( this->m_parent,
+                              this->m_handle,
+                              entities );
+}
+
+//----------------------------------------------------------------------------
 //intersect two mesh sets, placing the results in the return mesh set
 MeshSet set_intersect( const MeshSet& a, const MeshSet& b)
 {
