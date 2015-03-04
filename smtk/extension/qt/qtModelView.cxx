@@ -93,6 +93,10 @@ qtModelView::qtModelView(QWidget* p)
   QObject::connect(qdelegate,
                    SIGNAL(requestColorChange(const QModelIndex&)),
                    this, SLOT(changeEntityColor(const QModelIndex&)), Qt::QueuedConnection);
+  QObject::connect(qmodel,
+                   SIGNAL(phraseTitleChanged(const QModelIndex&)),
+                   this, SLOT(changeEntityName(const QModelIndex&)), Qt::QueuedConnection);
+
 }
 
 //-----------------------------------------------------------------------------
@@ -859,6 +863,34 @@ void qtModelView::syncEntityColor(
     {
     this->dataChanged(idx, idx);
     }
+}
+
+//----------------------------------------------------------------------------
+void qtModelView::changeEntityName( const QModelIndex& idx)
+{
+  OperatorPtr brOp = this->getSetPropertyOp(idx);
+  if(!brOp || !brOp->specification()->isValid())
+    return;
+  DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
+  smtk::attribute::AttributePtr attrib = brOp->specification();
+  smtk::attribute::StringItemPtr nameItem =
+    attrib->findString("name");
+  smtk::attribute::StringItemPtr titleItem =
+    attrib->findString("string value");
+  if(!nameItem || !titleItem)
+    {
+    std::cerr
+      << "The set-property op is missing item(s): name or string value\n";
+    return;
+    }
+  // change the entity "name" property to its descriptive phrase's new title
+  nameItem->setNumberOfValues(1);
+  nameItem->setValue("name");
+  titleItem->setNumberOfValues(1);
+  titleItem->setValue(dp->title());
+
+  attrib->associateEntity(dp->relatedEntity());
+  emit this->operationRequested(brOp);
 }
 
 //-----------------------------------------------------------------------------

@@ -97,6 +97,9 @@ public:
 
   void subphrasesUpdated(const QModelIndex& qidx);
 
+signals:
+  void phraseTitleChanged(const QModelIndex&);
+
 protected:
   smtk::model::DescriptivePhrasePtr m_root;
   bool m_deleteOnRemoval; // remove UUIDs from mesh when they are removed from the list?
