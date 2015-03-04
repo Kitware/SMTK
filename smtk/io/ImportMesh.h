@@ -33,12 +33,12 @@ public:
   static smtk::mesh::CollectionPtr entireFile(const std::string& filePath,
                                               const smtk::mesh::ManagerPtr& manager);
 
-  //Load the material sets from a moab data file as a new collection into the
+  //Load the domain sets from a moab data file as a new collection into the
   //given manager.
   //Returns an invalid collection that is NOT part of the manager if the
-  //file can't be loaded, or no material meshes exist in the file
-  static smtk::mesh::CollectionPtr onlyMaterial(const std::string& filePath,
-                                                const smtk::mesh::ManagerPtr& manager);
+  //file can't be loaded, or no domain meshes exist in the file
+  static smtk::mesh::CollectionPtr onlyDomain(const std::string& filePath,
+                                              const smtk::mesh::ManagerPtr& manager);
 
   //Load the neumann sets from a moab data file as a new collection into the
   //given manager.
@@ -58,9 +58,9 @@ public:
   static bool entireFileToCollection(const std::string& filePath,
                                      const smtk::mesh::CollectionPtr& collection);
 
-  //Merge the material sets from a moab data file into an existing valid collection.
-  static bool addMaterialToCollection(const std::string& filePath,
-                                       const smtk::mesh::CollectionPtr& collection);
+  //Merge the domain sets from a moab data file into an existing valid collection.
+  static bool addDomainToCollection(const std::string& filePath,
+                                    const smtk::mesh::CollectionPtr& collection);
 
   //Merge the neumann sets from a moab data file into an existing valid collection.
   static bool addNeumannToCollection(const std::string& filePath,

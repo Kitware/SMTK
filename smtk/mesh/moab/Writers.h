@@ -24,8 +24,8 @@ namespace moab
 //Write everything in a file into an existing collection.
 bool write(const std::string& path, const smtk::mesh::CollectionPtr& c);
 
-//Write all the material sets in a file into an existing collection
-bool write_material(const std::string& path, const smtk::mesh::CollectionPtr& c);
+//Write all the domain sets in a file into an existing collection
+bool write_domain(const std::string& path, const smtk::mesh::CollectionPtr& c);
 
 //Write all the neumann sets in a file into an existing collection
 bool write_neumann(const std::string& path, const smtk::mesh::CollectionPtr& c);

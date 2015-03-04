@@ -192,7 +192,7 @@ void verify_append_neumann_to_dirichlet()
 }
 
 //----------------------------------------------------------------------------
-void verify_append_material_to_dirichlet()
+void verify_append_domain_to_dirichlet()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyDirichlet(first_mesh_path(), manager);
@@ -204,14 +204,14 @@ void verify_append_material_to_dirichlet()
   //this can be used to verify that the append collection has the proper size
   std::size_t secondNumMesh = 0;
   {
-  smtk::mesh::CollectionPtr c2 = smtk::io::ImportMesh::onlyMaterial(first_mesh_path(),manager);
-  test( c2->isValid(), "expected materials in this file");
+  smtk::mesh::CollectionPtr c2 = smtk::io::ImportMesh::onlyDomain(first_mesh_path(),manager);
+  test( c2->isValid(), "expected domains in this file");
   secondNumMesh = c2->numberOfMeshes();
   test( secondNumMesh != 0);
   }
 
   //now append a second file and verify the number of meshes is correct
-  bool result = smtk::io::ImportMesh::addMaterialToCollection(first_mesh_path(), c);
+  bool result = smtk::io::ImportMesh::addDomainToCollection(first_mesh_path(), c);
   test( result, "import into a valid collection should work");
   test( c->isValid(), "collection after import should still be valid");
 
@@ -249,8 +249,8 @@ int UnitTestAddFileToCollection(int argc, char** argv)
   //attempt to append Neumman set to a collection that only has Dirichlet
   verify_append_neumann_to_dirichlet();
 
-  //attempt to append Material set to a collection that only has Dirichlet
-  verify_append_material_to_dirichlet();
+  //attempt to append domain set to a collection that only has Dirichlet
+  verify_append_domain_to_dirichlet();
 
   return 0;
 }

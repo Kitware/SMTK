@@ -93,9 +93,9 @@ public:
                                        const std::string& name) const;
 
   //----------------------------------------------------------------------------
-  //find all entity sets that have this exact material tag
+  //find all entity sets that have this exact domain tag
   smtk::mesh::HandleRange getMeshsets(smtk::mesh::Handle handle,
-                                       const smtk::mesh::Material& material) const;
+                                       const smtk::mesh::Domain& domain) const;
 
   //----------------------------------------------------------------------------
   //find all entity sets that have this exact dirichlet tag
@@ -125,7 +125,7 @@ public:
   std::vector< std::string > computeNames(const smtk::mesh::HandleRange& meshsets) const;
 
   //----------------------------------------------------------------------------
-  std::vector< smtk::mesh::Material > computeMaterialValues(const smtk::mesh::HandleRange& meshsets) const;
+  std::vector< smtk::mesh::Domain > computeDomainValues(const smtk::mesh::HandleRange& meshsets) const;
 
   //----------------------------------------------------------------------------
   std::vector< smtk::mesh::Dirichlet > computeDirichletValues(const smtk::mesh::HandleRange& meshsets) const;
@@ -138,8 +138,8 @@ public:
   bool computeShell(const smtk::mesh::HandleRange& meshes, smtk::mesh::HandleRange& shell) const;
 
   //----------------------------------------------------------------------------
-  bool setMaterial(const smtk::mesh::HandleRange& meshsets,
-                   const smtk::mesh::Material& material) const;
+  bool setDomain(const smtk::mesh::HandleRange& meshsets,
+                   const smtk::mesh::Domain& domain) const;
 
   //----------------------------------------------------------------------------
   bool setDirichlet(const smtk::mesh::HandleRange& meshsets,

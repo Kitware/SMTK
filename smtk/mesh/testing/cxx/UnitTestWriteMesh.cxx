@@ -148,7 +148,7 @@ void verify_write_valid_collection_exodus()
 }
 
 //----------------------------------------------------------------------------
-void verify_write_onlyMaterial()
+void verify_write_onlyDomain()
 {
   std::string file_path(data_root);
   file_path += "/mesh/64bricks_12ktet.h5m";
@@ -161,7 +161,7 @@ void verify_write_onlyMaterial()
   test( c->isValid(), "collection should be valid");
 
   //write out the mesh.
-  bool result = smtk::io::WriteMesh::onlyMaterial(write_path, c);
+  bool result = smtk::io::WriteMesh::onlyDomain(write_path, c);
   if(!result)
     {
     cleanup( write_path );
@@ -171,7 +171,7 @@ void verify_write_onlyMaterial()
   //reload the written file and verify the number of meshes are the same as the
   //input mesh
   smtk::mesh::CollectionPtr c2 = smtk::io::ImportMesh::entireFile(write_path, manager);
-  smtk::mesh::CollectionPtr c3 = smtk::io::ImportMesh::onlyMaterial(file_path, manager);
+  smtk::mesh::CollectionPtr c3 = smtk::io::ImportMesh::onlyDomain(file_path, manager);
 
   // remove the file from disk
   cleanup( write_path );
@@ -280,7 +280,7 @@ int UnitTestWriteMesh(int argc, char** argv)
   verify_write_valid_collection_hdf5();
   verify_write_valid_collection_exodus();
 
-  verify_write_onlyMaterial();
+  verify_write_onlyDomain();
   verify_write_onlyNeumann();
   verify_write_onlyDirichlet();
 

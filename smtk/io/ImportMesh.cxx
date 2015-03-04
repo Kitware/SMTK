@@ -20,10 +20,10 @@ smtk::mesh::CollectionPtr ImportMesh::entireFile(const std::string& filePath,
   return smtk::mesh::moab::read(filePath, manager);
 }
 
-smtk::mesh::CollectionPtr ImportMesh::onlyMaterial(const std::string& filePath,
+smtk::mesh::CollectionPtr ImportMesh::onlyDomain(const std::string& filePath,
                                                    const smtk::mesh::ManagerPtr& manager)
 {
- return smtk::mesh::moab::read_material(filePath, manager);
+ return smtk::mesh::moab::read_domain(filePath, manager);
 }
 
 
@@ -47,11 +47,11 @@ bool ImportMesh::entireFileToCollection(const std::string& filePath,
   return smtk::mesh::moab::import(filePath, collection);
 }
 
-//Merge the material sets from a moab data file into an existing valid collection.
-bool ImportMesh::addMaterialToCollection(const std::string& filePath,
+//Merge the domain sets from a moab data file into an existing valid collection.
+bool ImportMesh::addDomainToCollection(const std::string& filePath,
                                          const smtk::mesh::CollectionPtr& collection)
 {
-  return smtk::mesh::moab::import_material(filePath, collection);
+  return smtk::mesh::moab::import_domain(filePath, collection);
 }
 
 //Merge the neumann sets from a moab data file into an existing valid collection.

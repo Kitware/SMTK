@@ -93,8 +93,8 @@ public:
   //type.
   smtk::mesh::MeshSet   meshes( smtk::mesh::DimensionType dim );
   smtk::mesh::MeshSet   meshes( const std::string& name );
-  smtk::mesh::MeshSet   meshes( const smtk::mesh::Material& m )
-                              { return materialMeshes(m); }
+  smtk::mesh::MeshSet   meshes( const smtk::mesh::Domain& d )
+                              { return domainMeshes(d); }
   smtk::mesh::MeshSet   meshes( const smtk::mesh::Dirichlet& d )
                               { return dirichletMeshes(d); }
 
@@ -136,19 +136,19 @@ public:
   bool removeMeshes( smtk::mesh::MeshSet& meshesToDelete );
 
   //----------------------------------------------------------------------------
-  // Material Queries
+  // Domain Queries
   //----------------------------------------------------------------------------
-  //get all the current materials
-  std::vector< smtk::mesh::Material > materials();
+  //get all the current domains
+  std::vector< smtk::mesh::Domain > domains();
 
-  //get the meshes with a given material value. If no meshes have
-  //this material value the result will be empty
-  smtk::mesh::MeshSet materialMeshes( const smtk::mesh::Material& m );
+  //get the meshes with a given domain value. If no meshes have
+  //this domain value the result will be empty
+  smtk::mesh::MeshSet domainMeshes( const smtk::mesh::Domain& m );
 
-  //Assign a given material to a collection of meshes. Overwrites
-  //any existing material value
-  bool setMaterialOnMeshes(const smtk::mesh::MeshSet& meshes,
-                           const smtk::mesh::Material& m);
+  //Assign a given domain to a collection of meshes. Overwrites
+  //any existing domain value
+  bool setDomainOnMeshes(const smtk::mesh::MeshSet& meshes,
+                         const smtk::mesh::Domain& m);
 
   //----------------------------------------------------------------------------
   // Dirichlet Queries
@@ -157,7 +157,7 @@ public:
   std::vector< smtk::mesh::Dirichlet > dirichlets();
 
   //get the meshes with a given dirichlet value. If no meshes have
-  //this material value the result will be empty.
+  //this dirichlet value the result will be empty.
   //Generally Dirichlet meshes only contain vertices
   smtk::mesh::MeshSet dirichletMeshes( const smtk::mesh::Dirichlet& d );
 

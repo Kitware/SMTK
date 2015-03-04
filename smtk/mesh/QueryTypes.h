@@ -40,7 +40,7 @@ public:
 
   int value() const { return m_value; }
 
-  //custom operators to make comparing materials easy
+  //custom operators to make comparing tags easy
   bool operator<(const IntegerTag& other) const
     { return this->m_value < other.m_value; }
   bool operator==(const IntegerTag& other) const
@@ -53,10 +53,10 @@ private:
 };
 
 //----------------------------------------------------------------------------
-class SMTKCORE_EXPORT Material : public IntegerTag
+class SMTKCORE_EXPORT Domain : public IntegerTag
 {
 public:
-  explicit Material(int value) : IntegerTag(value) {}
+  explicit Domain(int value) : IntegerTag(value) {}
 };
 
 //----------------------------------------------------------------------------

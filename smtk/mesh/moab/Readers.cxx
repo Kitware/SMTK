@@ -141,7 +141,7 @@ smtk::mesh::CollectionPtr read(const std::string& path,
 
 //construct an interface to a given file. will load all meshes inside the
 //file
-smtk::mesh::CollectionPtr read_material(const std::string& path,
+smtk::mesh::CollectionPtr read_domain(const std::string& path,
                                         const smtk::mesh::ManagerPtr& manager)
 {
   const std::string tag("MATERIAL_SET");
@@ -176,8 +176,8 @@ bool import(const std::string& path, const smtk::mesh::CollectionPtr& c)
   return is_valid(c) && append_file( smtk::mesh::moab::extract_interface(c), path );
 }
 
-//Import all the material sets in a file into an existing collection
-bool import_material(const std::string& path, const smtk::mesh::CollectionPtr& c)
+//Import all the domain sets in a file into an existing collection
+bool import_domain(const std::string& path, const smtk::mesh::CollectionPtr& c)
 {
   const std::string tag("MATERIAL_SET");
   return is_valid(c) && append_file( smtk::mesh::moab::extract_interface(c), path, tag.c_str() );

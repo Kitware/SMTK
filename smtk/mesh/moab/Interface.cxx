@@ -118,7 +118,7 @@ template<typename T>
 bool setDenseTagValues(T tag, const smtk::mesh::HandleRange& handles,
                        ::moab::Interface* iface)
 {
-  //create a vector the same value so we can assign a material
+  //create a vector the same value so we can assign a tag
   std::vector< int > values;
   values.resize(handles.size(), tag.value());
   const void *tag_v_ptr = &values[0];
@@ -303,10 +303,10 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
 //----------------------------------------------------------------------------
 //find all entity sets that have this exact name tag
 smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
-                                               const smtk::mesh::Material &material) const
+                                               const smtk::mesh::Domain &domain) const
 
 {
-  tag::QueryMaterialTag mtag(material.value(),this->moabInterface());
+  tag::QueryMaterialTag mtag(domain.value(),this->moabInterface());
 
   smtk::mesh::HandleRange result;
   ::moab::ErrorCode rval;
@@ -463,10 +463,10 @@ std::vector< std::string > Interface::computeNames(const smtk::mesh::HandleRange
 }
 
 //----------------------------------------------------------------------------
-std::vector< smtk::mesh::Material > Interface::computeMaterialValues(const smtk::mesh::HandleRange& meshsets) const
+std::vector< smtk::mesh::Domain > Interface::computeDomainValues(const smtk::mesh::HandleRange& meshsets) const
 {
   tag::QueryMaterialTag mtag(0,this->moabInterface());
-  return detail::computeDenseTagValues<smtk::mesh::Material>(mtag,
+  return detail::computeDenseTagValues<smtk::mesh::Domain>(mtag,
                                                              meshsets,
                                                              this->moabInterface());
 }
@@ -540,15 +540,15 @@ bool Interface::computeShell(const smtk::mesh::HandleRange& meshes,
 }
 
 //----------------------------------------------------------------------------
-bool Interface::setMaterial(const smtk::mesh::HandleRange& meshsets,
-                            const smtk::mesh::Material& material) const
+bool Interface::setDomain(const smtk::mesh::HandleRange& meshsets,
+                            const smtk::mesh::Domain& domain) const
 {
   if(meshsets.empty())
     {
     return true;
     }
 
-  tag::QueryMaterialTag mtag(material.value(),this->moabInterface());
+  tag::QueryMaterialTag mtag(domain.value(),this->moabInterface());
   return detail::setDenseTagValues(mtag,meshsets,this->moabInterface());
 }
 

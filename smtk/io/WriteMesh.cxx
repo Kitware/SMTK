@@ -23,10 +23,10 @@ bool WriteMesh::entireCollection(const std::string& filePath,
   return smtk::mesh::moab::write(filePath, collection);
 }
 
-bool WriteMesh::onlyMaterial(const std::string& filePath,
+bool WriteMesh::onlyDomain(const std::string& filePath,
                          smtk::mesh::CollectionPtr collection)
 {
-  return smtk::mesh::moab::write_material(filePath, collection);
+  return smtk::mesh::moab::write_domain(filePath, collection);
 }
 
 bool WriteMesh::onlyNeumann(const std::string& filePath,
