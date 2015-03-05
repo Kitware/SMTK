@@ -62,10 +62,10 @@ bool EntityGroupOperator::ableToOperate()
     this->specification()->findString("Operation");
 
   std::string optype = optypeItem->value();
-  // if(optype == "Create Group") //only need model;
-  if(optype == "Remove Group")
+  // if(optype == "Create") //only need model;
+  if(optype == "Remove")
     able2Op = this->fetchCMBCellId("cell group") >= 0;
-  else if(optype == "Modify Group")
+  else if(optype == "Modify")
     able2Op = this->fetchCMBCellId("cell group") >= 0 && (
     this->fetchCMBCellId("cell to add") >= 0 ||
     this->fetchCMBCellId("cell to remove") >= 0 );
@@ -92,6 +92,7 @@ OperatorResult EntityGroupOperator::operateInternal()
   if(optype == "Create") //only need model
     {
     int gType = this->specification()->findInt("entity type")->value();
+    std::string gName = this->specification()->findString("group name")->value();
     int entType = gType==0 ? vtkModelFaceType :
       (gType==1 ? vtkModelEdgeType : vtkModelVertexType);
     this->m_op->SetBuildEnityType(entType);
@@ -105,8 +106,13 @@ OperatorResult EntityGroupOperator::operateInternal()
       vtkDiscreteModelEntityGroup* grp = dynamic_cast<vtkDiscreteModelEntityGroup*>(
         modelWrapper->GetModelEntity(vtkDiscreteModelEntityGroupType, grpId));
       smtk::common::UUID grpUUID = opsession->findOrSetEntityUUID(grp);
-      bgroup = opsession->addGroupToManager(grpUUID, grp, pstore, 0);
+      //bgroup = opsession->addGroupToManager(grpUUID, grp, pstore, 0);
+      // The group itself should be added too
+      smtk::model::EntityRef grpRef = opsession->addCMBEntityToManager(
+                                      grpUUID, grp, pstore, 0);
+      bgroup = grpRef.as<smtk::model::Group>();
       bgroup.setMembershipMask(mask);
+      bgroup.setName(gName);
       // Add group to model's relationship
       model.addGroup(bgroup);
       std::cout << "new group: " << bgroup.name() << " id: " << grpUUID.toString() << "\n";
@@ -122,7 +128,7 @@ OperatorResult EntityGroupOperator::operateInternal()
       // get rid of the group from manager
       grpRem =
         this->specification()->findModelEntity("cell group")->value();
-      model.removeGroup(grpRem);
+      model.removeGroup(grpRem.as<smtk::model::Group>());
       pstore->erase(grpRem);
       std::cout << "Removed " << grpRem.name() << " to " << model.name() << "\n";
       }
@@ -135,13 +141,17 @@ OperatorResult EntityGroupOperator::operateInternal()
       this->specification()->findModelEntity("cell to add");
     for(std::size_t idx=0; idx<entItem->numberOfValues(); idx++)
       {
-      this->m_op->AddModelEntity(this->fetchCMBCellId(entItem, idx));
+      int cmbid = this->fetchCMBCellId(entItem, idx);
+      if(cmbid >= 0)
+        this->m_op->AddModelEntity(cmbid);
       }
 
     entItem = this->specification()->findModelEntity("cell to remove");
     for(std::size_t idx=0; idx<entItem->numberOfValues(); idx++)
       {
-      this->m_op->RemoveModelEntity(this->fetchCMBCellId(entItem, idx));
+      int cmbid = this->fetchCMBCellId(entItem, idx);
+      if(cmbid >= 0)
+        this->m_op->RemoveModelEntity(cmbid);
       }
     this->m_op->Operate(modelWrapper);
     ok = this->m_op->GetOperateSucceeded();
@@ -152,8 +162,24 @@ OperatorResult EntityGroupOperator::operateInternal()
       // get rid of the group from manager
       smtk::model::EntityRef grpC =
         this->specification()->findModelEntity("cell group")->value();
+      smtk::model::Group tmpGrp = grpC.as<smtk::model::Group>();
+      BitFlags mask = tmpGrp.membershipMask();
+      std::string gName = tmpGrp.name();
+      model.removeGroup(tmpGrp);
       pstore->erase(grpC);
-      bgroup = opsession->addGroupToManager(grpC.entity(), grp, pstore, true);
+
+//      bgroup = opsession->addGroupToManager(grpC.entity(), grp, pstore, true);
+      smtk::common::UUID grpUUID = opsession->findOrSetEntityUUID(grp);
+      // The group itself should be added too
+      grpC = opsession->addCMBEntityToManager(
+                                      grpUUID, grp, pstore, 1);
+      bgroup = grpC.as<smtk::model::Group>();
+      bgroup.setMembershipMask(mask);
+      bgroup.setName(gName);
+
+      // Add group to model's relationship
+      model.addGroup(bgroup);
+
       std::cout << "Modified " << grpC.name() << " in " << model.name() << "\n";
       }
     }
@@ -180,12 +206,13 @@ OperatorResult EntityGroupOperator::operateInternal()
       newEntities->setNumberOfValues(1);
       newEntities->setValue(0, bgroup);
       }
-    if(grpRem.isValid())
+    if(optype == "Remove")
       {
       // Return the created or modified group.
       smtk::attribute::ModelEntityItem::Ptr remEntities =
         result->findModelEntity("expunged");
       remEntities->setNumberOfValues(1);
+      remEntities->setIsEnabled(true);
       remEntities->setValue(0, grpRem);
       }
 

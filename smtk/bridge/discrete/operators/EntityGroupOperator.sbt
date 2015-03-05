@@ -12,7 +12,9 @@
           <BriefDescription>operation for the operator</BriefDescription>
           <ChildrenDefinitions>
             <ModelEntity Name="cell group" NumberOfRequiredValues="1">
-              <MembershipMask>group</MembershipMask>
+              <!-- There seems to be a bug in checking the validity of the entity being set 
+              when the membership is group. Skip for now 
+              <MembershipMask>group</MembershipMask>  -->
             </ModelEntity>
             <ModelEntity Name="cell to add" NumberOfRequiredValues="1" Extensible="1">
               <MembershipMask>face|edge|vertex</MembershipMask>
@@ -28,13 +30,16 @@
                 <Value Enum="Vertex">2</Value>
               </DiscreteInfo>
             </Int>
-
+            <String Name="group name" Label="group name" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
+              <DefaultValue>new group</DefaultValue>
+            </String>
           </ChildrenDefinitions>
 
           <DiscreteInfo DefaultIndex="0">
             <Structure>
               <Value Enum="Create Group">Create</Value>
               <Items>
+                <Item>group name</Item>
                 <Item>entity type</Item>
               </Items>
             </Structure>

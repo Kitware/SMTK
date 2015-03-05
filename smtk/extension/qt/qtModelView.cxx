@@ -27,6 +27,9 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ModelEntityItemDefinition.h"
+
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
@@ -121,30 +124,79 @@ smtk::model::QEntityItemModel* qtModelView::getModel() const
 //-----------------------------------------------------------------------------
 void qtModelView::dropEvent(QDropEvent* dEvent)
 {
-  smtk::model::QEntityItemModel* qmodel = this->getModel();
-  smtk::model::EntityRefs selentityrefs;
+  // The related session has to have a "entity group" operator to process the
+  // entities dropped.
+  // Currenly, only "discrete" session has this operator, so only
+  // drags between entities within the same "discrete" session
+  // will be processed.
 
-  // depends on the QModelIndex we dropped on, the selected
+  // Depends on the QModelIndex we dropped on, the selected
   // entities will be filtered accordingly based on what type of entities
-  // the recieving group can take
-
+  // the recieving group can take.
   QModelIndex dropIdx = this->indexAt(dEvent->pos());
-  DescriptivePhrasePtr dp = this->getModel()->getItem(dropIdx);
+  OperatorPtr brOp = this->getOp(dropIdx, "entity group");
+  if(!brOp || !brOp->specification()->isValid())
+    {
+    std::cout << "No entity group operator to handel the drop!\n";
+    return;  
+    }
+
+  smtk::model::QEntityItemModel* qmodel = this->getModel();
+  DescriptivePhrasePtr dp = qmodel->getItem(dropIdx);
   smtk::model::Group group;
   if (dp && (group = dp->relatedEntity().as<smtk::model::Group>()).isValid())
-//  if(dp && dp->relatedEntity().isGroup() )
     {
+    smtk::model::Model model =
+      this->owningEntityAs<smtk::model::Model>(dropIdx);
+    if(!model.isValid())
+      {
+      std::cerr << "No owning model found for the entity group!\n";
+      return;
+      }
+
+/*
     BitFlags ef = (dp->relatedEntity().entityFlags() & DIMENSION_2) ?
       CELL_2D : CELL_3D;
+*/
+    smtk::model::EntityRefs selentityrefs;
+    BitFlags ef = group.membershipMask();
     foreach(QModelIndex sel, this->selectedIndexes())
       {
-  //    DescriptivePhrasePtr childp = this->getModel()->getItem(sel);
-  //    group.addEntity(childp->relatedEntity());
-      this->recursiveSelect(qmodel->getItem(sel), selentityrefs, ef);
+      // skip entities that are not part of the same model (not supported in discrete session)
+      // In the future, when other type sessions also have group ops, we will revisit here.
+      smtk::model::Model selmodel =
+        this->owningEntityAs<smtk::model::Model>(sel);
+      if(selmodel == model)
+        this->recursiveSelect(qmodel->getItem(sel), selentityrefs, ef, true);
       }
-//    EntityRefs entities;
-//    EntityRef::EntityRefsFromUUIDs(entities, qmodel->manager(), ids);
     std::cout << selentityrefs.size() << " selentityrefs, " << selentityrefs.size() << " entities\n";
+    if(selentityrefs.size() == 0)
+      return;
+
+    // prepare the 'entity group' operation
+    smtk::attribute::AttributePtr attrib = brOp->specification();
+    smtk::attribute::ModelEntityItemPtr modelItem =
+      attrib->findModelEntity("model");
+    smtk::attribute::StringItem::Ptr optypeItem =
+      attrib->findString("Operation");
+    smtk::attribute::ModelEntityItemPtr grpItem =
+      attrib->findAs<smtk::attribute::ModelEntityItem>(
+        "cell group", attribute::ALL_CHILDREN);
+    smtk::attribute::ModelEntityItemPtr addItem =
+      attrib->findAs<smtk::attribute::ModelEntityItem>(
+        "cell to add", attribute::ALL_CHILDREN);
+    if(!modelItem || !optypeItem || !grpItem || !addItem)
+      {
+      std::cerr << "The entity group operator's specification is missing items!\n";
+      return;  
+      }
+
+    modelItem->setValue(model);
+    grpItem->setValue(group);
+    optypeItem->setValue("Modify");
+    smtk::model::EntityRefs::const_iterator it;
+    for(it=selentityrefs.begin(); it!=selentityrefs.end(); ++it)
+      addItem->appendValue(*it);
 
     group.addEntities(selentityrefs);
     this->getModel()->subphrasesUpdated(dropIdx);
@@ -155,6 +207,8 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
       dEvent->setDropAction( Qt::CopyAction );
       }
     dEvent->accept();
+
+    emit this->operationRequested(brOp);
     }
 }
 
@@ -201,20 +255,25 @@ void qtModelView::selectionChanged (
 
 //----------------------------------------------------------------------------
 void qtModelView::recursiveSelect (smtk::model::DescriptivePhrasePtr dPhrase,
-    smtk::model::EntityRefs& selentityrefs, BitFlags entityFlags)
+    smtk::model::EntityRefs& selentityrefs, BitFlags entityFlags,
+    bool exactMatch)
 {
-  if(dPhrase &&
-    (dPhrase->relatedEntity().entityFlags() & entityFlags)/* &&
-    selentityrefs.find(dPhrase->relatedEntity()) == selentityrefs.end() */)
+  if(dPhrase)
     {
-    selentityrefs.insert(dPhrase->relatedEntity());
-    }
+    BitFlags masked = dPhrase->relatedEntity().entityFlags() & entityFlags;
+    if ((masked && entityFlags == ANY_ENTITY) ||
+      (!exactMatch && masked) ||
+      (exactMatch && masked == entityFlags))
+      {
+      selentityrefs.insert(dPhrase->relatedEntity());
+      }
 
-  smtk::model::DescriptivePhrases sub = dPhrase->subphrases();
-  for (smtk::model::DescriptivePhrases::iterator it = sub.begin();
-    it != sub.end(); ++it)
-    {
-    this->recursiveSelect(*it, selentityrefs, entityFlags);
+    smtk::model::DescriptivePhrases sub = dPhrase->subphrases();
+    for (smtk::model::DescriptivePhrases::iterator it = sub.begin();
+      it != sub.end(); ++it)
+      {
+      this->recursiveSelect(*it, selentityrefs, entityFlags, exactMatch);
+      }
     }
 }
 
@@ -447,19 +506,19 @@ void qtModelView::showContextMenu(const QPoint &p)
 }
 
 //-----------------------------------------------------------------------------
-smtk::model::SessionRef qtModelView::getSessionRef(
-  const QModelIndex &idx) const
+template<typename T>
+T qtModelView::owningEntityAs(const QModelIndex &idx) const
 {
   DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
-  smtk::model::SessionRef brSession;
+  T entRef;
   while (dp)
     {
-    brSession = dp->relatedEntity().as<smtk::model::SessionRef>();
-    if(brSession.isValid())
+    entRef = dp->relatedEntity().as<T>();
+    if(entRef.isValid())
       break;
     dp = dp->parent();
     }
-  return brSession;
+  return entRef;
 }
 
 //-----------------------------------------------------------------------------
@@ -508,6 +567,8 @@ QDockWidget* qtModelView::operatorsDock()
   qtModelOperationWidget* opWidget = new qtModelOperationWidget();
   QObject::connect(opWidget, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)),
     this, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)));
+  QObject::connect(opWidget, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),
+    this, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)));
   QObject::connect(opWidget, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)),
     this, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)));
   QObject::connect(opWidget, SIGNAL(meshSelectionItemCreated(
@@ -608,9 +669,11 @@ bool qtModelView::requestOperation(
 }
 
 //----------------------------------------------------------------------------
-OperatorPtr qtModelView::getSetPropertyOp(const QModelIndex& idx)
+OperatorPtr qtModelView::getOp(const QModelIndex& idx,
+  const std::string& opname)
 {
-  smtk::model::SessionRef sref = this->getSessionRef(idx);
+  smtk::model::SessionRef sref =
+    this->owningEntityAs<smtk::model::SessionRef>(idx);
   if(!sref.isValid())
     {
     std::cerr
@@ -619,17 +682,18 @@ OperatorPtr qtModelView::getSetPropertyOp(const QModelIndex& idx)
     }
   // create SetProperty op
   smtk::model::SessionPtr session = sref.session();
-  return this->getSetPropertyOp(session);
+  return this->getOp(session, opname);
 }
 
 //----------------------------------------------------------------------------
-OperatorPtr qtModelView::getSetPropertyOp(smtk::model::SessionPtr session)
+OperatorPtr qtModelView::getOp(smtk::model::SessionPtr session,
+  const std::string& opname)
 {
-  OperatorPtr brOp = session->op("set property");
+  OperatorPtr brOp = session->op(opname);
   if (!brOp)
     {
     std::cerr
-      << "Could not create operator: \"" << "set property" << "\" for session"
+      << "Could not create operator: \"" << opname << "\" for session"
       << " \"" << session->name() << "\""
       << " (" << session->sessionId() << ")\n";
     return OperatorPtr();
@@ -651,7 +715,7 @@ OperatorPtr qtModelView::getSetPropertyOp(smtk::model::SessionPtr session)
 //----------------------------------------------------------------------------
 void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
 {
-  OperatorPtr brOp = this->getSetPropertyOp(idx);
+  OperatorPtr brOp = this->getOp(idx, "set property");
   if(!brOp || !brOp->specification()->isValid())
     return;
   smtk::model::EntityRefs selentityrefs;
@@ -704,7 +768,7 @@ bool qtModelView::setEntityVisibility(
 //----------------------------------------------------------------------------
 void qtModelView::changeEntityColor( const QModelIndex& idx)
 {
-  OperatorPtr brOp = this->getSetPropertyOp(idx);
+  OperatorPtr brOp = this->getOp(idx, "set property");
   if(!brOp || !brOp->specification()->isValid())
     return;
   smtk::model::EntityRefs selentityrefs;
@@ -827,7 +891,7 @@ void qtModelView::syncEntityVisibility(
     dynamic_cast<smtk::model::QEntityItemModel*>(this->model());
   foreach(smtk::model::SessionPtr session, brEntities.keys())
     {
-    OperatorPtr brOp = this->getSetPropertyOp(session);
+    OperatorPtr brOp = this->getOp(session, "set property");
     if(!brOp || !brOp->specification()->isValid())
       continue;
     EntityRefs entities;
@@ -851,7 +915,7 @@ void qtModelView::syncEntityColor(
     dynamic_cast<smtk::model::QEntityItemModel*>(this->model());
   foreach(smtk::model::SessionPtr session, brEntities.keys())
     {
-    OperatorPtr brOp = this->getSetPropertyOp(session);
+    OperatorPtr brOp = this->getOp(session, "set property");
     if(!brOp || !brOp->specification()->isValid())
       continue;
     EntityRefs entities;
@@ -868,7 +932,7 @@ void qtModelView::syncEntityColor(
 //----------------------------------------------------------------------------
 void qtModelView::changeEntityName( const QModelIndex& idx)
 {
-  OperatorPtr brOp = this->getSetPropertyOp(idx);
+  OperatorPtr brOp = this->getOp(idx, "set property");
   if(!brOp || !brOp->specification()->isValid())
     return;
   DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
