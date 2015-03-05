@@ -119,6 +119,7 @@ protected:
   friend class ImportOperator;
   friend class EntityGroupOperator;
   friend class GrowOperator;
+  friend class CreateEdgesOperator;
 
   Session();
 
