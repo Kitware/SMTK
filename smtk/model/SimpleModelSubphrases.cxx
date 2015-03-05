@@ -177,6 +177,8 @@ bool SimpleModelSubphrases::shouldOmitProperty(
     return true;
   if (ptype == INTEGER_PROPERTY && pname == "cmb id")
     return true;
+  if (ptype == INTEGER_PROPERTY && pname == "membership mask")
+    return true;
 
   if (
     ptype == INTEGER_PROPERTY &&

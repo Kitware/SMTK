@@ -93,10 +93,11 @@ signals:
                  const std::string& opName, const smtk::common::UUID& uuid);
 protected:
 
-  SessionRef getSessionRef(
-    const QModelIndex &idx) const;
-  OperatorPtr getSetPropertyOp(const QModelIndex& idx);
-  OperatorPtr getSetPropertyOp(smtk::model::SessionPtr session);
+  template<typename T>
+  T owningEntityAs(const QModelIndex &idx) const;
+
+  OperatorPtr getOp(const QModelIndex& idx, const std::string& opname);
+  OperatorPtr getOp(smtk::model::SessionPtr session, const std::string& opname);
   // Description:
   // Support for customized drag-n-drop events
   virtual Qt::DropActions supportedDropActions() const;
@@ -116,7 +117,8 @@ protected:
     QItemSelection& selItems);
   void expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx);
   void recursiveSelect (smtk::model::DescriptivePhrasePtr dPhrase,
-    smtk::model::EntityRefs& selentityrefs, BitFlags entityFlags);
+    smtk::model::EntityRefs& selentityrefs, BitFlags entityFlags,
+    bool exactMatch = false);
 
   smtk::model::Group groupParentOfIndex(const QModelIndex& qidx);
   bool initOperator(smtk::model::OperatorPtr op);

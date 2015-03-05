@@ -1316,3 +1316,4 @@ smtkComponentInitMacro(smtk_discrete_split_face_operator);
 smtkComponentInitMacro(smtk_discrete_create_edges_operator);
 smtkComponentInitMacro(smtk_discrete_import_operator);
 smtkComponentInitMacro(smtk_discrete_entity_group_operator);
+smtkComponentInitMacro(smtk_discrete_grow_operator);

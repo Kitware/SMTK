@@ -6,6 +6,7 @@
     <AttDef Type="create edges" BaseType="operator">
       <ItemDefinitions>
         <ModelEntity Name="model" NumberOfRequiredValues="1">
+          <MembershipMask>model</MembershipMask>
         </ModelEntity>
       </ItemDefinitions>
     </AttDef>

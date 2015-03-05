@@ -15,11 +15,14 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
+#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
 
 #include "vtkModelItem.h"
 #include "vtkModel.h"
+#include "vtkDiscreteModel.h"
+#include "vtkDiscreteModelWrapper.h"
 
 #include "CreateEdgesOperator_xml.h"
 
@@ -49,16 +52,38 @@ OperatorResult CreateEdgesOperator::operateInternal()
 {
   Session* opsession = this->discreteSession();
 
+  smtk::model::EntityRef inModel =
+    this->specification()->findModelEntity("model")->value();
+
   vtkDiscreteModelWrapper* modelWrapper =
-    opsession->findModelEntity(
-      this->specification()->findModelEntity("model")->value().entity());
+    opsession->findModelEntity(inModel.entity());
   if (!modelWrapper)
     {
     return this->createResult(OPERATION_FAILED);
     }
 
+  this->m_op->SetShowEdges(1);
   this->m_op->Operate(modelWrapper);
   bool ok = this->m_op->GetOperateSucceeded();
+
+  if(ok)
+    {
+// TODO:
+  // There seems to be a bug that will cause a crash during Sessions'
+  // transcribing of the full 3D model with newly created edges and vertexes.
+  // This needs to be investigated further.
+/*
+    smtk::model::ManagerPtr store = this->manager();
+    vtkDiscreteModel* dmod = modelWrapper->GetModel();
+    // Add or obtain the model's UUID
+    // smtk::common::UUID mid = opsession->findOrSetEntityUUID(dmod);
+    store->eraseModel(inModel.as<smtk::model::Model>());
+    smtk::common::UUID mid = opsession->findOrSetEntityUUID(dmod);
+    smtk::model::EntityRef c = opsession->addCMBEntityToManager(mid, dmod, store, 8);
+//    store->insertModel(c.entity());
+*/
+    }
+
   OperatorResult result =
     this->createResult(
       ok ?  OPERATION_SUCCEEDED : OPERATION_FAILED);
