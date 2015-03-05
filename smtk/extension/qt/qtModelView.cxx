@@ -146,9 +146,9 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
   smtk::model::Group group;
   if (dp && (group = dp->relatedEntity().as<smtk::model::Group>()).isValid())
     {
-    smtk::model::Model model =
+    smtk::model::Model modelEnt =
       this->owningEntityAs<smtk::model::Model>(dropIdx);
-    if(!model.isValid())
+    if(!modelEnt.isValid())
       {
       std::cerr << "No owning model found for the entity group!\n";
       return;
@@ -166,7 +166,7 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
       // In the future, when other type sessions also have group ops, we will revisit here.
       smtk::model::Model selmodel =
         this->owningEntityAs<smtk::model::Model>(sel);
-      if(selmodel == model)
+      if(selmodel == modelEnt)
         this->recursiveSelect(qmodel->getItem(sel), selentityrefs, ef, true);
       }
     std::cout << selentityrefs.size() << " selentityrefs, " << selentityrefs.size() << " entities\n";
@@ -191,7 +191,7 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
       return;  
       }
 
-    modelItem->setValue(model);
+    modelItem->setValue(modelEnt);
     grpItem->setValue(group);
     optypeItem->setValue("Modify");
     smtk::model::EntityRefs::const_iterator it;
