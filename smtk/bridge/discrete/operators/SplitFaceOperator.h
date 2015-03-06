@@ -37,6 +37,8 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
   Session* discreteSession() const;
   int fetchCMBFaceId() const;
+  int fetchCMBCellId(
+    const smtk::attribute::ModelEntityItemPtr& entItem, int idx ) const;
 
   vtkNew<vtkSplitOperator> m_op;
 };
