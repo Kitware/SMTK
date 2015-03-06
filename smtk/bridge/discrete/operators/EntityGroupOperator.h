@@ -45,7 +45,7 @@ protected:
   Session* discreteSession() const;
   int fetchCMBCellId(const std::string& parameterName) const;
   int fetchCMBCellId(
-    smtk::attribute::ModelEntityItemPtr entItem, int idx ) const;
+    const smtk::attribute::ModelEntityItemPtr&, int idx ) const;
 
   vtkNew<vtkModelEntityGroupOperator> m_op;
 };

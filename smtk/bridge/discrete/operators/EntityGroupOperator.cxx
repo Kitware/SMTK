@@ -64,9 +64,9 @@ bool EntityGroupOperator::ableToOperate()
   std::string optype = optypeItem->value();
   // if(optype == "Create") //only need model;
   if(optype == "Remove")
-    able2Op = this->fetchCMBCellId("cell group") >= 0;
+    able2Op = this->fetchCMBCellId("remove cell group") >= 0;
   else if(optype == "Modify")
-    able2Op = this->fetchCMBCellId("cell group") >= 0 && (
+    able2Op = this->fetchCMBCellId("modify cell group") >= 0 && (
     this->fetchCMBCellId("cell to add") >= 0 ||
     this->fetchCMBCellId("cell to remove") >= 0 );
 
@@ -84,7 +84,7 @@ OperatorResult EntityGroupOperator::operateInternal()
     opsession->findModelEntity(model.entity());
   bool ok = false;
   smtk::model::Group bgroup;
-  smtk::model::EntityRef grpRem;
+  smtk::model::EntityRefs grpsRemoved;
   // Translate SMTK inputs into CMB inputs
   smtk::attribute::StringItem::Ptr optypeItem =
     this->specification()->findString("Operation");
@@ -120,22 +120,32 @@ OperatorResult EntityGroupOperator::operateInternal()
     }
   else if(optype == "Remove")
     {
-    this->m_op->SetId(this->fetchCMBCellId("cell group"));
-    this->m_op->Destroy(modelWrapper);
-    ok = this->m_op->GetDestroySucceeded();
-    if(ok)
+    smtk::attribute::ModelEntityItemPtr remgrpItem =
+      this->specification()->findModelEntity("remove cell group");
+    for(std::size_t idx=0; idx<remgrpItem->numberOfValues(); idx++)
       {
-      // get rid of the group from manager
-      grpRem =
-        this->specification()->findModelEntity("cell group")->value();
-      model.removeGroup(grpRem.as<smtk::model::Group>());
-      pstore->erase(grpRem);
-      std::cout << "Removed " << grpRem.name() << " to " << model.name() << "\n";
+      int grpid = this->fetchCMBCellId(remgrpItem, idx);
+      if(grpid >= 0)
+        {
+        this->m_op->SetId(grpid);
+        this->m_op->Destroy(modelWrapper);
+        ok = this->m_op->GetDestroySucceeded();
+        if(ok)
+          {
+          // get rid of the group from manager
+          smtk::model::EntityRef grpRem = remgrpItem->value(idx);
+          model.removeGroup(grpRem.as<smtk::model::Group>());
+          pstore->erase(grpRem);
+          std::cout << "Removed " << grpRem.name() << " to " << model.name() << "\n";
+          grpsRemoved.insert(grpRem);
+          }
+        }
       }
+
     }
   else if(optype == "Modify")
     {
-    int grpId = this->fetchCMBCellId("cell group");
+    int grpId = this->fetchCMBCellId("modify cell group");
     this->m_op->SetId(grpId);
     smtk::attribute::ModelEntityItemPtr entItem =
       this->specification()->findModelEntity("cell to add");
@@ -161,7 +171,7 @@ OperatorResult EntityGroupOperator::operateInternal()
         modelWrapper->GetModelEntity(vtkDiscreteModelEntityGroupType, grpId));
       // get rid of the group from manager
       smtk::model::EntityRef grpC =
-        this->specification()->findModelEntity("cell group")->value();
+        this->specification()->findModelEntity("modify cell group")->value();
       smtk::model::Group tmpGrp = grpC.as<smtk::model::Group>();
       BitFlags mask = tmpGrp.membershipMask();
       std::string gName = tmpGrp.name();
@@ -206,14 +216,17 @@ OperatorResult EntityGroupOperator::operateInternal()
       newEntities->setNumberOfValues(1);
       newEntities->setValue(0, bgroup);
       }
-    if(optype == "Remove")
+    if(optype == "Remove" && grpsRemoved.size() > 0)
       {
       // Return the created or modified group.
       smtk::attribute::ModelEntityItem::Ptr remEntities =
         result->findModelEntity("expunged");
-      remEntities->setNumberOfValues(1);
+      remEntities->setNumberOfValues(grpsRemoved.size());
       remEntities->setIsEnabled(true);
-      remEntities->setValue(0, grpRem);
+      smtk::model::EntityRefs::const_iterator it;
+      int rid = 0;
+      for (it=grpsRemoved.begin(); it != grpsRemoved.end(); it++)
+        remEntities->setValue(rid++, *it);
       }
 
     }
@@ -240,7 +253,7 @@ int EntityGroupOperator::fetchCMBCellId(const std::string& pname) const
 }
 
 int EntityGroupOperator::fetchCMBCellId(
-  smtk::attribute::ModelEntityItemPtr entItem, int idx ) const
+  const smtk::attribute::ModelEntityItemPtr& entItem, int idx ) const
 {
   vtkModelItem* item =
     this->discreteSession()->entityForUUID(entItem->value(idx).entity());
