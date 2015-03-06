@@ -107,7 +107,7 @@ void qtModelEntityItem::addEntityAssociationWidget()
   const ModelEntityItemDefinition* def =
     static_cast<const ModelEntityItemDefinition *>(item->definition().get());
   int n = static_cast<int>(item->numberOfValues());
-  if (!n)
+  if (!n && !def->isExtensible())
     {
     return;
     }
