@@ -8,7 +8,7 @@
         <ModelEntity Name="model" NumberOfRequiredValues="1">
           <MembershipMask>model</MembershipMask>
         </ModelEntity>
-        <ModelEntity Name="face to split" NumberOfRequiredValues="1" Extensible="1">
+        <ModelEntity Name="face to split" Extensible="1">
         <MembershipMask>face</MembershipMask>
         </ModelEntity>
         <Double Name="feature angle" NumberOfRequiredValues="1">

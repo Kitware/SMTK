@@ -11,15 +11,20 @@
         <String Name="Operation" Label="Operation" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <BriefDescription>operation for the operator</BriefDescription>
           <ChildrenDefinitions>
-            <ModelEntity Name="cell group" NumberOfRequiredValues="1">
+            <ModelEntity Name="modify cell group" NumberOfRequiredValues="1">
               <!-- There seems to be a bug in checking the validity of the entity being set 
               when the membership is group. Skip for now 
               <MembershipMask>group</MembershipMask>  -->
             </ModelEntity>
-            <ModelEntity Name="cell to add" NumberOfRequiredValues="1" Extensible="1">
+            <ModelEntity Name="remove cell group" Extensible="1">
+              <!-- There seems to be a bug in checking the validity of the entity being set 
+              when the membership is group. Skip for now 
+              <MembershipMask>group</MembershipMask>  -->
+            </ModelEntity>
+            <ModelEntity Name="cell to add" Extensible="1">
               <MembershipMask>face|edge|vertex</MembershipMask>
             </ModelEntity>
-            <ModelEntity Name="cell to remove" NumberOfRequiredValues="1" Extensible="1">
+            <ModelEntity Name="cell to remove" Extensible="1">
               <MembershipMask>face|edge|vertex</MembershipMask>
             </ModelEntity>
             <Int Name="entity type" Label="Entity Type:" Version="0" NumberOfRequiredValues="1">
@@ -46,13 +51,13 @@
             <Structure>
               <Value Enum="Remove Group">Remove</Value>
               <Items>
-                <Item>cell group</Item>
+                <Item>remove cell group</Item>
               </Items>
             </Structure>
             <Structure>
               <Value Enum="Modify Group">Modify</Value>
               <Items>
-                <Item>cell group</Item>
+                <Item>modify cell group</Item>
                 <Item>cell to add</Item>
                 <Item>cell to remove</Item>
               </Items>

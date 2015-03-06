@@ -60,6 +60,7 @@
 namespace smtk {
   namespace model {
 
+static const std::string pEntityGroupOpName("entity group");
 
 //-----------------------------------------------------------------------------
 qtModelView::qtModelView(QWidget* p)
@@ -122,6 +123,97 @@ smtk::model::QEntityItemModel* qtModelView::getModel() const
 }
 
 //-----------------------------------------------------------------------------
+void qtModelView::keyPressEvent(QKeyEvent* keyEvent)
+{
+  this->QTreeView::keyPressEvent(keyEvent);
+
+  // Try to handle Delete key for Entity Group modification
+  if (keyEvent && (keyEvent->key() == Qt::Key_Backspace ||
+      keyEvent->key() == Qt::Key_Delete))
+    {
+    smtk::model::QEntityItemModel* qmodel = this->getModel();
+    // Fow now, keep indices that are either groups themselves, or
+    // their direct parent is a group
+    QMap<smtk::model::Model, QList<smtk::model::Group> >  grpModels;
+    QMap<smtk::model::Model, smtk::model::SessionRef >  modelSessions;
+    QList<smtk::model::Group> remGroups;
+    QMap<smtk::model::Group, smtk::model::EntityRefs> mapGroup2Ents;
+
+    smtk::model::Group grp;
+    smtk::model::SessionRef sref;
+    smtk::model::Model grpModel;
+    foreach(QModelIndex idx, this->selectedIndexes())
+      {
+      DescriptivePhrasePtr dPhrase = qmodel->getItem(idx);
+      if(!dPhrase)
+        continue;
+
+      // If the group is already in remGroups, it should be not be in mapGroup2Ents,
+      // because the whole group will be removed.
+      if((grp = dPhrase->relatedEntity().as<smtk::model::Group>()).isValid())
+        {
+        // this call will change dPhrase
+        sref = this->owningEntityAs<smtk::model::SessionRef>(dPhrase);
+        if(this->hasSessionOp(sref, pEntityGroupOpName))
+          {
+          grpModel = this->owningEntityAs<smtk::model::Model>(idx);
+          if(grpModel.isValid())
+            {
+            mapGroup2Ents.remove(grp);
+            remGroups.push_back(grp);
+            grpModels[grpModel].push_back(grp);
+            modelSessions[grpModel] = sref;    
+            }
+          }
+        }
+      else if((grp = this->groupParent(dPhrase)).isValid()
+              && !remGroups.contains(grp))
+        {
+        // this call will change dPhrase
+        sref = this->owningEntityAs<smtk::model::SessionRef>(dPhrase);
+        if(this->hasSessionOp(sref, pEntityGroupOpName))
+          {
+          grpModel = this->owningEntityAs<smtk::model::Model>(idx);
+          if(grpModel.isValid())
+            {
+            mapGroup2Ents[grp].insert(dPhrase->relatedEntity());
+            grpModels[grpModel].push_back(grp);
+            modelSessions[grpModel] = sref;    
+            }
+          }
+        }
+      }
+
+    QMapIterator<smtk::model::Model, QList<smtk::model::Group> > mit(
+        grpModels);
+    while(mit.hasNext())
+      {
+      mit.next();
+      QListIterator<smtk::model::Group> lit(mit.value());
+      QList<smtk::model::Group> remSessGroups;
+      while(lit.hasNext())
+        {
+        smtk::model::Group agrp = lit.next();
+        if(remGroups.contains(agrp))
+          {
+          // we can remove all the groups together with one remove call
+          remSessGroups.push_back(agrp);
+          remGroups.removeAll(agrp);
+          }
+        else if(mapGroup2Ents.contains(agrp))
+          {
+          // we have to do the operation one group at a time.
+          this->removeFromEntityGroup(mit.key(), modelSessions[mit.key()],
+                                      agrp, mapGroup2Ents[agrp]);
+          }
+        }
+      this->removeEntityGroup(mit.key(), modelSessions[mit.key()],
+                              remSessGroups);
+      }
+    }
+}
+
+//-----------------------------------------------------------------------------
 void qtModelView::dropEvent(QDropEvent* dEvent)
 {
   // The related session has to have a "entity group" operator to process the
@@ -133,8 +225,12 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
   // Depends on the QModelIndex we dropped on, the selected
   // entities will be filtered accordingly based on what type of entities
   // the recieving group can take.
+
   QModelIndex dropIdx = this->indexAt(dEvent->pos());
-  OperatorPtr brOp = this->getOp(dropIdx, "entity group");
+  if(!this->hasSessionOp(dropIdx, pEntityGroupOpName))
+    return;
+
+  OperatorPtr brOp = this->getOp(dropIdx, pEntityGroupOpName);
   if(!brOp || !brOp->specification()->isValid())
     {
     std::cout << "No entity group operator to handel the drop!\n";
@@ -181,7 +277,7 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
       attrib->findString("Operation");
     smtk::attribute::ModelEntityItemPtr grpItem =
       attrib->findAs<smtk::attribute::ModelEntityItem>(
-        "cell group", attribute::ALL_CHILDREN);
+        "modify cell group", attribute::ALL_CHILDREN);
     smtk::attribute::ModelEntityItemPtr addItem =
       attrib->findAs<smtk::attribute::ModelEntityItem>(
         "cell to add", attribute::ALL_CHILDREN);
@@ -194,13 +290,19 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
     modelItem->setValue(modelEnt);
     grpItem->setValue(group);
     optypeItem->setValue("Modify");
+    if(!addItem->setNumberOfValues(selentityrefs.size()))
+      {
+      std::cerr << "setNumberOfValues failed for \"cell to add\" item!\n";
+      return;
+      }
+    int i = 0;
     smtk::model::EntityRefs::const_iterator it;
     for(it=selentityrefs.begin(); it!=selentityrefs.end(); ++it)
-      addItem->appendValue(*it);
+      addItem->setValue(i++, *it);
 
-    group.addEntities(selentityrefs);
-    this->getModel()->subphrasesUpdated(dropIdx);
-    this->setExpanded(dropIdx, true);
+//    group.addEntities(selentityrefs);
+//    this->getModel()->subphrasesUpdated(dropIdx);
+//    this->setExpanded(dropIdx, true);
     if ( dEvent->proposedAction() == Qt::MoveAction )
       {
       //move events break the way we handle drops, convert it to a copy
@@ -383,58 +485,101 @@ void qtModelView::addGroup(BitFlags flag, const std::string& name)
     }
 }
 
-void qtModelView::removeSelected()
+void qtModelView::removeEntityGroup(
+  const smtk::model::Model& modelEnt,
+  const smtk::model::SessionRef& sessionRef,
+  const QList<smtk::model::Group>& groups)
 {
-  QEntityItemModel* qmodel = this->getModel();
-  smtk::model::ManagerPtr pstore = qmodel->manager();
-  Models models;
-  smtk::model::EntityRef::EntityRefsFromUUIDs(
-    models,
-    pstore,
-    pstore->entitiesMatchingFlags(smtk::model::MODEL_ENTITY));
-  if(models.empty())
+  if(groups.count() == 0)
+    return;
+
+  OperatorPtr brOp = this->getOp(sessionRef.session(), pEntityGroupOpName);
+  if(!brOp || !brOp->specification()->isValid())
     {
+    std::cout << "No entity group operator to handle the key press!\n";
+    return;  
+    }
+
+  // prepare the 'entity group' operation
+  smtk::attribute::AttributePtr attrib = brOp->specification();
+  smtk::attribute::ModelEntityItemPtr modelItem =
+    attrib->findModelEntity("model");
+  smtk::attribute::StringItem::Ptr optypeItem =
+    attrib->findString("Operation");
+  smtk::attribute::ModelEntityItemPtr grpItem =
+    attrib->findAs<smtk::attribute::ModelEntityItem>(
+      "remove cell group", attribute::ALL_CHILDREN);
+  if(!modelItem || !optypeItem || !grpItem)
+    {
+    std::cerr << "The entity group operator's specification is missing items!\n";
+    return;  
+    }
+
+  modelItem->setValue(modelEnt);
+  optypeItem->setValue("Remove");
+  grpItem->setNumberOfValues(groups.count());
+  for (int i = 0; i < groups.count(); ++i)
+    {
+    grpItem->setValue(i, groups[i]);
+    }
+
+  emit this->operationRequested(brOp);
+}
+
+void qtModelView::removeFromEntityGroup(
+  const smtk::model::Model& modelEnt,
+  const smtk::model::SessionRef& sessionRef,
+  const smtk::model::Group& grp,
+  const smtk::model::EntityRefs& rementities)
+{
+  if(rementities.size() == 0)
+    return;
+
+  OperatorPtr brOp = this->getOp(sessionRef.session(), pEntityGroupOpName);
+  if(!brOp || !brOp->specification()->isValid())
+    {
+    std::cout << "No entity group operator to handle the key press!\n";
+    return;  
+    }
+
+  // prepare the 'entity group' operation
+  smtk::attribute::AttributePtr attrib = brOp->specification();
+  smtk::attribute::ModelEntityItemPtr modelItem =
+    attrib->findModelEntity("model");
+  smtk::attribute::StringItem::Ptr optypeItem =
+    attrib->findString("Operation");
+  smtk::attribute::ModelEntityItemPtr grpItem =
+    attrib->findAs<smtk::attribute::ModelEntityItem>(
+      "modify cell group", attribute::ALL_CHILDREN);
+  smtk::attribute::ModelEntityItemPtr remItem =
+    attrib->findAs<smtk::attribute::ModelEntityItem>(
+      "cell to remove", attribute::ALL_CHILDREN);
+  if(!modelItem || !optypeItem || !grpItem || !remItem)
+    {
+    std::cerr << "The entity group operator's specification is missing items!\n";
+    return;  
+    }
+
+  modelItem->setValue(modelEnt);
+  grpItem->setValue(grp);
+  optypeItem->setValue("Modify");
+
+  if(!remItem->setNumberOfValues(rementities.size()))
+    {
+    std::cerr << "setNumberOfValues failed for \"cell to remove\" item!\n";
     return;
     }
+  int i = 0;
+  smtk::model::EntityRefs::const_iterator it;
+  for(it=rementities.begin(); it!=rementities.end(); ++it)
+    remItem->setValue(i++, *it);
 
-  // remove the groups later, in case some of the group's
-  // children may also be selected.
-  QList<smtk::model::Group> groups;
-  foreach(QModelIndex sel, this->selectedIndexes())
-    {
-    DescriptivePhrasePtr dp = this->getModel()->getItem(sel);
-    smtk::model::Group group;
-    if(dp && (group = dp->relatedEntity().as<smtk::model::Group>()).isValid())
-      {
-      groups.append(group);
-      }
-    else
-      {
-      this->removeFromGroup(sel);
-      }
-    }
+//  grp.removeEntities(rementities);
 
-  foreach(smtk::model::Group group, groups)
-    {
-    models.begin()->removeGroup(group);
-    pstore->erase(group.entity());
-    }
+  emit this->operationRequested(brOp);
+
 }
 
-void qtModelView::removeFromGroup(const QModelIndex& qidx)
-{
-  smtk::model::Group group;
-  if ((group = this->groupParentOfIndex(qidx)).isValid())
-    {
-    DescriptivePhrasePtr phrase = this->getModel()->getItem(qidx);
-    if (phrase)
-      {
-      // Removing from the group emits a signal that
-      // m_p->qmodel listens for, causing m_p->modelTree redraw.
-      group.removeEntity(phrase->relatedEntity());
-      }
-    }
-}
 
 /**\brief Does \a qidx refer to an entity that is displayed as the child of a group?
   *
@@ -447,18 +592,24 @@ smtk::model::Group qtModelView::groupParentOfIndex(const QModelIndex& qidx)
 {
   smtk::model::Group group;
   DescriptivePhrasePtr phrase = this->getModel()->getItem(qidx);
+  return this->groupParent(phrase);
+}
+
+smtk::model::Group qtModelView::groupParent(const DescriptivePhrasePtr& phrase)
+{
+  smtk::model::Group group;
   if (phrase)
     {
     EntityPhrasePtr ephrase = smtk::dynamic_pointer_cast<EntityPhrase>(phrase);
     if (ephrase && ephrase->relatedEntity().isValid())
       {
-      phrase = ephrase->parent();
-      if (phrase)
+      DescriptivePhrasePtr pPhrase = ephrase->parent();
+      if (pPhrase)
         {
-        ephrase = smtk::dynamic_pointer_cast<EntityPhrase>(phrase);
+        ephrase = smtk::dynamic_pointer_cast<EntityPhrase>(pPhrase);
         if (ephrase && (group = ephrase->relatedEntity().as<smtk::model::Group>()).isValid())
           return group; // direct child of a Group's summary phrase.
-        EntityListPhrasePtr lphrase = smtk::dynamic_pointer_cast<EntityListPhrase>(phrase);
+        EntityListPhrasePtr lphrase = smtk::dynamic_pointer_cast<EntityListPhrase>(pPhrase);
         if (lphrase)
           {
           ephrase = smtk::dynamic_pointer_cast<EntityPhrase>(lphrase->parent());
@@ -485,11 +636,11 @@ void qtModelView::showContextMenu(const QPoint &p)
     this->m_ContextMenu->setTitle("Operators Menu");
     }
 
-  QModelIndex dropIdx = this->indexAt(p);
-  DescriptivePhrasePtr dp = this->getModel()->getItem(dropIdx);
+  QModelIndex idx = this->indexAt(p);
   smtk::model::SessionRef brSession;
 
-  if (dp && (brSession = dp->relatedEntity().as<smtk::model::SessionRef>()).isValid())
+  if ((brSession =
+    this->owningEntityAs<smtk::model::SessionRef>(idx)).isValid())
     {
     StringList opNames = brSession.operatorNames();
     std::sort(opNames.begin(), opNames.end()); 
@@ -510,13 +661,37 @@ template<typename T>
 T qtModelView::owningEntityAs(const QModelIndex &idx) const
 {
   DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
+  return this->owningEntityAs<T>(dp);
+}
+
+/**\brief Get entity <T> who owns \a dp
+  *
+  * Like the groupParent() method, a group may contain an EntityListPhrase.
+  * We must test for this 1 level of indirection as well as for direct
+  * children.
+  */
+//-----------------------------------------------------------------------------
+template<typename T>
+T qtModelView::owningEntityAs(const DescriptivePhrasePtr &inDp) const
+{
+  DescriptivePhrasePtr dp = inDp;
   T entRef;
   while (dp)
     {
-    entRef = dp->relatedEntity().as<T>();
+    EntityPhrasePtr ephrase = smtk::dynamic_pointer_cast<EntityPhrase>(dp);
+    if (ephrase && ephrase->relatedEntity().isValid())
+      entRef = ephrase->relatedEntity().as<T>();
     if(entRef.isValid())
       break;
-    dp = dp->parent();
+
+    if(!dp->parent()) // could be an EntityListPhrase
+      {
+      EntityListPhrasePtr lphrase = smtk::dynamic_pointer_cast<EntityListPhrase>(dp);
+      if (lphrase)
+        dp = lphrase->parent();
+      }
+    else
+      dp = dp->parent();
     }
   return entRef;
 }
@@ -669,6 +844,27 @@ bool qtModelView::requestOperation(
 }
 
 //----------------------------------------------------------------------------
+bool qtModelView::hasSessionOp(const QModelIndex& idx,
+  const std::string& opname)
+{
+  smtk::model::SessionRef sref =
+    this->owningEntityAs<smtk::model::SessionRef>(idx);
+  return this->hasSessionOp(sref, opname);
+}
+
+//----------------------------------------------------------------------------
+bool qtModelView::hasSessionOp(const smtk::model::SessionRef& brSession,
+  const std::string& opname)
+{
+  if(brSession.isValid())
+    {
+    StringList opNames = brSession.operatorNames();
+    return std::find(opNames.begin(), opNames.end(), opname) != opNames.end();
+    }
+  return false;
+}
+
+//----------------------------------------------------------------------------
 OperatorPtr qtModelView::getOp(const QModelIndex& idx,
   const std::string& opname)
 {
@@ -680,22 +876,31 @@ OperatorPtr qtModelView::getOp(const QModelIndex& idx,
       << "Could not find session!\n";
     return OperatorPtr();
     }
-  // create SetProperty op
+
+  if(!this->hasSessionOp(sref, opname))
+    {
+    std::cout
+      << "The requested operator: \"" << opname << "\" for session"
+      << " \"" << (sref.session() ? sref.session()->name() : "(invalid)") << "\""
+      << " is not part of session operators.\n";
+    return OperatorPtr();
+    }
+
   smtk::model::SessionPtr session = sref.session();
   return this->getOp(session, opname);
 }
 
 //----------------------------------------------------------------------------
-OperatorPtr qtModelView::getOp(smtk::model::SessionPtr session,
+OperatorPtr qtModelView::getOp(const smtk::model::SessionPtr& brSession,
   const std::string& opname)
 {
-  OperatorPtr brOp = session->op(opname);
+  OperatorPtr brOp = brSession->op(opname);
   if (!brOp)
     {
     std::cerr
       << "Could not create operator: \"" << opname << "\" for session"
-      << " \"" << session->name() << "\""
-      << " (" << session->sessionId() << ")\n";
+      << " \"" << brSession->name() << "\""
+      << " (" << brSession->sessionId() << ")\n";
     return OperatorPtr();
     }
 
@@ -707,7 +912,7 @@ OperatorPtr qtModelView::getOp(smtk::model::SessionPtr session,
     return OperatorPtr();
     }
 
-  attrib->system()->setRefModelManager(session->manager());
+  attrib->system()->setRefModelManager(brSession->manager());
 
   return brOp;
 }

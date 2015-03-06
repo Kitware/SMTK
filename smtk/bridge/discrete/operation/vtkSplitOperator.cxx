@@ -67,6 +67,7 @@ void vtkSplitOperator::Operate(vtkDiscreteModelWrapper* ModelWrapper)
   newFaces->Reset();
   newFaces->SetNumberOfComponents(1);
   newFaces->SetNumberOfTuples(0);
+  this->FaceSplitInfo.clear();
 
   this->OperateSucceeded =
     Face->Split(this->GetFeatureAngle(), this->FaceSplitInfo);

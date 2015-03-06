@@ -65,8 +65,6 @@ public:
 public slots:
   void selectEntityItems(const smtk::common::UUIDs& selEntityRefs,
     bool blocksignal = false);
-  virtual void removeFromGroup(const QModelIndex& qidx);
-  virtual void removeSelected();
   void showContextMenu(const QPoint &p);
   void operatorInvoked();
   void toggleEntityVisibility( const QModelIndex& );
@@ -91,13 +89,34 @@ signals:
   void meshSelectionItemCreated(
                  smtk::attribute::qtMeshSelectionItem*,
                  const std::string& opName, const smtk::common::UUID& uuid);
+
+protected slots:
+  virtual void removeEntityGroup(const smtk::model::Model& modelEnt,
+                                 const smtk::model::SessionRef& session,
+                               const QList<smtk::model::Group>& groups);
+  virtual void removeFromEntityGroup(const smtk::model::Model& modelEnt,
+                               const smtk::model::SessionRef& session,
+                               const smtk::model::Group& grp,
+                               const smtk::model::EntityRefs& entities);
+
 protected:
+  // If 'Delete' button is pressed, invoke proper operation if possible.
+  // For example, in discrete session, user can delete a group,
+  // or remove members from a group by selecting them then press delete key.
+  virtual void keyPressEvent(QKeyEvent*);
 
   template<typename T>
   T owningEntityAs(const QModelIndex &idx) const;
+  template<typename T>
+  T owningEntityAs(const DescriptivePhrasePtr &dp) const;
 
+  bool hasSessionOp(const smtk::model::SessionRef& brSession,
+    const std::string& opname);
+  bool hasSessionOp(const QModelIndex& idx,
+    const std::string& opname);
   OperatorPtr getOp(const QModelIndex& idx, const std::string& opname);
-  OperatorPtr getOp(smtk::model::SessionPtr session, const std::string& opname);
+  OperatorPtr getOp(const smtk::model::SessionPtr& brSession, const std::string& opname);
+
   // Description:
   // Support for customized drag-n-drop events
   virtual Qt::DropActions supportedDropActions() const;
@@ -121,6 +140,7 @@ protected:
     bool exactMatch = false);
 
   smtk::model::Group groupParentOfIndex(const QModelIndex& qidx);
+  smtk::model::Group groupParent(const DescriptivePhrasePtr& phrase);
   bool initOperator(smtk::model::OperatorPtr op);
   void initOperatorsDock(
     const std::string& opName, smtk::model::SessionPtr session);

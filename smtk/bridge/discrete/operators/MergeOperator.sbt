@@ -8,7 +8,7 @@
         <ModelEntity Name="model" NumberOfRequiredValues="1">
            <MembershipMask>model</MembershipMask>
         </ModelEntity>
-        <ModelEntity Name="source cell" NumberOfRequiredValues="1" Extensible="1">
+        <ModelEntity Name="source cell" Extensible="1">
           <MembershipMask>face|edge</MembershipMask>
         </ModelEntity>
 

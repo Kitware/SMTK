@@ -46,6 +46,8 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
   Session* discreteSession() const;
   int fetchCMBCellId(const std::string& parameterName) const;
+  int fetchCMBCellId(
+    const smtk::attribute::ModelEntityItemPtr& entItem, int idx ) const;
 
   vtkNew<vtkMergeOperator> m_op;
 };

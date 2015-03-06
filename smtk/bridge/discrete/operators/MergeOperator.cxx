@@ -58,39 +58,42 @@ OperatorResult MergeOperator::operateInternal()
 {
   Session* opsession = this->discreteSession();
 
-  // Translate SMTK inputs into CMB inputs
-  this->m_op->SetSourceId(this->fetchCMBCellId("source cell"));
-  this->m_op->SetTargetId(this->fetchCMBCellId("target cell"));
-
   vtkDiscreteModelWrapper* modelWrapper =
     opsession->findModelEntity(
       this->specification()->findModelEntity("model")->value().entity());
+  this->m_op->SetTargetId(this->fetchCMBCellId("target cell"));
+  smtk::model::ManagerPtr store = this->manager();
+  smtk::model::EntityRefs srcsRemoved;
 
-  this->m_op->Operate(modelWrapper);
-  bool ok = this->m_op->GetOperateSucceeded();
+  bool ok = false;
+  // Translate SMTK inputs into CMB inputs
+  smtk::attribute::ModelEntityItemPtr sourceItem =
+    this->specification()->findModelEntity("source cell");
+  for(std::size_t idx=0; idx<sourceItem->numberOfValues(); idx++)
+    {
+    int srcid = this->fetchCMBCellId(sourceItem, idx);
+    if(srcid >= 0)
+      {
+      this->m_op->SetSourceId(srcid);
+      this->m_op->Operate(modelWrapper);
+      ok = this->m_op->GetOperateSucceeded();
+      if(ok)
+        {
+        smtk::model::EntityRef srcEnt = sourceItem->value(idx);
+        store->erase(srcEnt.entity());
+        srcsRemoved.insert(srcEnt);
+        }
+      }
+    }
+
   OperatorResult result =
     this->createResult(
       ok ?  OPERATION_SUCCEEDED : OPERATION_FAILED);
 
   if (ok)
     {
-    smtk::model::ManagerPtr store = this->manager();
-
-    smtk::model::EntityRef srcEnt =
-      this->specification()->findModelEntity("source cell")->value();
     smtk::model::EntityRef tgtEnt =
       this->specification()->findModelEntity("target cell")->value();
-
-    // Get rid of the old entity.
-/*
-    EntityRefs bdys = srcEnt.as<CellEntity>().lowerDimensionalBoundaries(-1);
-    for (EntityRefs::iterator bit = bdys.begin(); bit != bdys.end(); ++bit)
-      {
-      //std::cout << "Erasing " << bit->flagSummary(0) << " " << bit->entity() << "\n";
-      store->erase(bit->entity());
-      }
- */
-    store->erase(srcEnt.entity());
 
     // re-add target
     smtk::common::UUID eid = tgtEnt.entity();
@@ -120,7 +123,6 @@ OperatorResult MergeOperator::operateInternal()
         vol2.addRawRelation(c);
         }
       }
-
     // Return the list of entities that were created
     // so that remote sessions can track what records
     // need to be re-fetched.
@@ -131,14 +133,14 @@ OperatorResult MergeOperator::operateInternal()
 
     smtk::attribute::ModelEntityItem::Ptr removedEntities =
       result->findModelEntity("expunged");
-    removedEntities->setNumberOfValues(1);
     removedEntities->setIsEnabled(true);
-    removedEntities->setValue(0, srcEnt);
+    removedEntities->setNumberOfValues(srcsRemoved.size());
+    removedEntities->setIsEnabled(true);
 
-//    smtk::attribute::IntItem::Ptr eventEntity =
-//      result->findInt("event type");
-//    eventEntity->setNumberOfValues(1);
-//    eventEntity->setValue(0, TESSELLATION_ENTRY);
+    smtk::model::EntityRefs::const_iterator it;
+    int rid = 0;
+    for (it=srcsRemoved.begin(); it != srcsRemoved.end(); it++)
+      removedEntities->setValue(rid++, *it);
 
     }
 
@@ -155,6 +157,19 @@ int MergeOperator::fetchCMBCellId(const std::string& pname) const
   vtkModelItem* item =
     this->discreteSession()->entityForUUID(
       this->specification()->findModelEntity(pname)->value().entity());
+
+  vtkModelEntity* cell = dynamic_cast<vtkModelEntity*>(item);
+  if (cell)
+    return cell->GetUniquePersistentId();
+
+  return -1;
+}
+
+int MergeOperator::fetchCMBCellId(
+  const smtk::attribute::ModelEntityItemPtr& entItem, int idx ) const
+{
+  vtkModelItem* item =
+    this->discreteSession()->entityForUUID(entItem->value(idx).entity());
 
   vtkModelEntity* cell = dynamic_cast<vtkModelEntity*>(item);
   if (cell)
