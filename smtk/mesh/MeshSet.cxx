@@ -192,6 +192,50 @@ smtk::mesh::CellSet MeshSet::cells( smtk::mesh::DimensionType dim ) const
 }
 
 //----------------------------------------------------------------------------
+smtk::mesh::MeshSet MeshSet::subset( smtk::mesh::DimensionType dim ) const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  smtk::mesh::HandleRange dimMeshes = iface->getMeshsets(this->m_handle, dim);
+  //intersect our mesh id with those of a given dimension to find the subset
+  return smtk::mesh::MeshSet(this->m_parent,
+                             this->m_handle,
+                             iface->rangeIntersect(dimMeshes,this->m_range));
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet MeshSet::subset( const smtk::mesh::Domain& d ) const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  smtk::mesh::HandleRange dMeshes = iface->getMeshsets(this->m_handle, d);
+  //intersect our mesh id with those of a given dimension to find the subset
+  return smtk::mesh::MeshSet(this->m_parent,
+                             this->m_handle,
+                             iface->rangeIntersect(dMeshes,this->m_range));
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet MeshSet::subset( const smtk::mesh::Dirichlet& d ) const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  smtk::mesh::HandleRange dMeshes = iface->getMeshsets(this->m_handle, d);
+  //intersect our mesh id with those of a given dimension to find the subset
+  return smtk::mesh::MeshSet(this->m_parent,
+                             this->m_handle,
+                             iface->rangeIntersect(dMeshes,this->m_range));
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet MeshSet::subset( const smtk::mesh::Neumann& n ) const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  smtk::mesh::HandleRange nMeshes = iface->getMeshsets(this->m_handle, n);
+  //intersect our mesh id with those of a given dimension to find the subset
+  return smtk::mesh::MeshSet(this->m_parent,
+                             this->m_handle,
+                             iface->rangeIntersect(nMeshes,this->m_range));
+}
+
+//----------------------------------------------------------------------------
 smtk::mesh::MeshSet MeshSet::extractShell() const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();

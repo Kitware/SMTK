@@ -83,6 +83,13 @@ public:
   smtk::mesh::CellSet   cells( smtk::mesh::CellTypes  cTypes ) const;
   smtk::mesh::CellSet   cells( smtk::mesh::DimensionType dim ) const;
 
+  //subset this MeshSet by a dimension, or a property such as
+  //Domain, Dirichlet, or Neumann
+  smtk::mesh::MeshSet   subset( smtk::mesh::DimensionType dim ) const;
+  smtk::mesh::MeshSet   subset( const smtk::mesh::Domain& d ) const;
+  smtk::mesh::MeshSet   subset( const smtk::mesh::Dirichlet& d ) const;
+  smtk::mesh::MeshSet   subset( const smtk::mesh::Neumann& n ) const;
+
   //Extract the shell ( exterior face elements ) of this set of meshes
   //This operation might create new cells if no shell already exists
   //for the given meshset. The resulting meshset will be added to the

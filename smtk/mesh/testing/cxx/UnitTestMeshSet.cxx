@@ -172,6 +172,70 @@ void verify_meshset_of_only_a_dim(const smtk::mesh::CollectionPtr& c)
 }
 
 //----------------------------------------------------------------------------
+void verify_meshset_subset_dim(const smtk::mesh::CollectionPtr& c)
+{
+  //verify that we can subset by dimension
+  smtk::mesh::MeshSet allMeshes = c->meshes();
+
+  test ( allMeshes.subset( smtk::mesh::Dims3 ) == c->meshes( smtk::mesh::Dims3 ) );
+  test ( allMeshes.subset( smtk::mesh::Dims2 ) == c->meshes( smtk::mesh::Dims2 ) );
+  test ( allMeshes.subset( smtk::mesh::Dims1 ) == c->meshes( smtk::mesh::Dims1 ) );
+  test ( allMeshes.subset( smtk::mesh::Dims0 ) == c->meshes( smtk::mesh::Dims0 ) );
+}
+
+template<typename T>
+void verify_subset_tag(const smtk::mesh::CollectionPtr& c,
+                       smtk::mesh::MeshSet allMeshes,
+                       std::vector< T > tag_values)
+{
+  for(std::size_t i=0; i < tag_values.size(); ++i)
+    {
+    test( allMeshes.subset( tag_values[i] ) == c->meshes( tag_values[i] ) );
+    }
+}
+
+//----------------------------------------------------------------------------
+void verify_meshset_subset_tag(const smtk::mesh::CollectionPtr& c)
+{
+  //verify that we can extract a sub meshset based on the tags
+  //inside a meshet.
+  smtk::mesh::MeshSet allMeshes = c->meshes();
+
+  //verify the lengths before we check the size of each
+  //tag
+  test( allMeshes.domains().size() == c->domains().size() );
+  test( allMeshes.dirichlets().size() == c->dirichlets().size() );
+  test( allMeshes.neumanns().size() == c->neumanns().size() );
+
+  //domains
+  verify_subset_tag(c, allMeshes, c->domains());
+
+  //dirichlets
+  verify_subset_tag(c, allMeshes, c->dirichlets());
+
+  //neumann
+  verify_subset_tag(c, allMeshes, c->neumanns());
+
+}
+
+//----------------------------------------------------------------------------
+void verify_meshset_add_tags(const smtk::mesh::CollectionPtr& c)
+{
+  //verify that we can add tags to a meshset
+  smtk::mesh::MeshSet allMeshes = c->meshes();
+
+
+  smtk::mesh::MeshSet verts = allMeshes.subset( smtk::mesh::Dims0 );
+  const bool applied = verts.setDirichlet( smtk::mesh::Dirichlet(42) );
+  const std::size_t numDirValues = c->dirichlets().size();
+
+  test( applied == true, "didn't apply the dirichlet property");
+  test( numDirValues == 1, "should only have a single dirichlet set currently");
+
+}
+
+
+//----------------------------------------------------------------------------
 void verify_meshset_intersect(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::MeshSet all_meshes = c->meshes();
@@ -291,6 +355,9 @@ int UnitTestMeshSet(int argc, char** argv)
   verify_mesh_by_name(c);
   verify_meshset_by_dim(c);
   verify_meshset_of_only_a_dim(c);
+  verify_meshset_subset_dim(c);
+  verify_meshset_subset_tag(c);
+  verify_meshset_add_tags(c);
   verify_meshset_intersect(c);
   verify_meshset_union(c);
   verify_meshset_subtract(c);
