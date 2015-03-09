@@ -112,7 +112,7 @@ OperatorResult SplitFaceOperator::operateInternal()
       if(ok)
         {
         smtk::model::EntityRef inFace = sourceItem->value(idx);
-        smtk::common::UUID faceUUID =inFace.entity();
+        faceUUID =inFace.entity();
         vtkModelFace* origFace = vtkModelFace::SafeDownCast(
           opsession->entityForUUID(faceUUID));
 
