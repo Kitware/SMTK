@@ -120,6 +120,7 @@ protected:
   friend class EntityGroupOperator;
   friend class GrowOperator;
   friend class CreateEdgesOperator;
+  friend class WriteOperator;
 
   Session();
 
