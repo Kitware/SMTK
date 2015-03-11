@@ -109,7 +109,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
 
   DLIList<RefEdge*> cgmEdgesOut;
   cgmEdgesOut.push(cgmEdge);
-  this->addEntitiesToResult(cgmEdgesOut, result);
+  this->addEntitiesToResult(cgmEdgesOut, result, CREATED);
   // Nothing to expunge.
 
   return result;

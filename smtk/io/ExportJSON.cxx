@@ -484,7 +484,9 @@ int ExportJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
 {
   cJSON_AddItemToObject(entRec, "name", cJSON_CreateString(res->type().c_str()));
   cJSON_AddAttributeSpec(entRec, "result", "resultXML", res);
-  EntityRefs ents = res->modelEntitiesAs<EntityRefs>("entities");
+  EntityRefs ents = res->modelEntitiesAs<EntityRefs>("created");
+  EntityRefs mdfs = res->modelEntitiesAs<EntityRefs>("modified");
+  ents.insert(mdfs.begin(), mdfs.end());
   if (!ents.empty())
     {
     // If the operator reports new/modified entities, transcribe the affected models.

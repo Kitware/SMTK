@@ -133,7 +133,7 @@ smtk::model::OperatorResult CreateBody::operateInternal()
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
 
-  this->addEntitiesToResult(cgmBodies, result);
+  this->addEntitiesToResult(cgmBodies, result, CREATED);
   result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
 
   return result;

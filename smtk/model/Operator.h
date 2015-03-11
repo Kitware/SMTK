@@ -17,6 +17,7 @@
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/AutoInit.h"
 
+#include "smtk/model/Manager.h"
 #include "smtk/model/Events.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -29,13 +30,6 @@ namespace smtk {
     class Logger;
   }
   namespace model {
-
-#ifndef SHIBOKEN_SKIP
-//typedef smtk::function<smtk::model::OperatorPtr()> OperatorConstructor;
-typedef smtk::model::OperatorPtr (*OperatorConstructor)();
-typedef std::pair<std::string,OperatorConstructor> StaticOperatorInfo;
-typedef std::map<std::string,StaticOperatorInfo> OperatorConstructors;
-#endif
 
 /**\brief An enumeration of operation outcomes (or lacks thereof).
   *
@@ -226,6 +220,13 @@ public:
   bool operator < (const Operator& other) const;
 #endif // SHIBOKEN_SKIP
 
+  enum ResultEntityOrigin
+    {
+    CREATED,  //!< This operation is the origin of the entities in question.
+    MODIFIED, //!< This operation modified pre-existing entities.
+    UNKNOWN   //!< The entities in question may be pre-existing or newly-created. Infer as possible.
+    };
+
 protected:
   friend class DefaultSession;
 
@@ -233,6 +234,10 @@ protected:
   virtual ~Operator();
 
   virtual OperatorResult operateInternal() = 0;
+
+  void addEntityToResult(OperatorResult res, const EntityRef& ent, ResultEntityOrigin gen = UNKNOWN);
+  template<typename T>
+  void addEntitiesToResult(OperatorResult res, const T& container, ResultEntityOrigin gen = UNKNOWN);
 
 #ifndef SHIBOKEN_SKIP
   ManagerPtr m_manager; // Model manager, not the attribute manager for the operator.
@@ -262,6 +267,60 @@ T Operator::associatedEntitiesAs() const
   if (resetMgr)
     this->m_specification->system()->setRefModelManager(smtk::model::ManagerPtr());
   return result;
+}
+
+/**\brief Add a set or array of entities to an operator's result attribute.
+  *
+  * This method is a convenience for subclasses of the Operator class
+  * to call from within their operateInternal() method.
+  *
+  * The entities in \a container are added to \a res.
+  * If \a origin is UNKNOWN (the default), then each entry in \a container
+  * is examined to see if it already exists in the model manager.
+  * If so, it is stored in the result's "modified" item.
+  * Otherwise, it is stored in the result's "created" item.
+  *
+  * If \a origin is MODIFIED or CREATED, all the entities are forced
+  * into either "modified" or "created", respectively.
+  *
+  * Be aware that passing UNKNOWN assumes that the entries in \a container
+  * have **not** already been transcribed.
+  * If they are already transcribed, all of the entities will end up
+  * in the "modified" item since the model manager will already have a
+  * record of them.
+  */
+template<typename T>
+void Operator::addEntitiesToResult(OperatorResult res, const T& container, ResultEntityOrigin origin)
+{
+  T created;
+  T modified;
+  switch (origin)
+    {
+  case CREATED:
+    created = container;
+    break;
+  case MODIFIED:
+    modified = container;
+    break;
+  default:
+  case UNKNOWN:
+    for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)
+      if (this->manager()->findEntity(it->entity()))
+        modified.insert(modified.end(), *it);
+      else
+        created.insert(created.end(), *it);
+    break;
+    }
+  if (!created.empty())
+    {
+    attribute::ModelEntityItemPtr creItem = res->findModelEntity("created");
+    creItem->setValues(created.begin(), created.end());
+    }
+  if (!modified.empty())
+    {
+    attribute::ModelEntityItemPtr modItem = res->findModelEntity("modified");
+    modItem->setValues(modified.begin(), modified.end());
+    }
 }
 
   } // model namespace

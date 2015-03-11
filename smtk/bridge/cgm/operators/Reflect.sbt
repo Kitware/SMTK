@@ -35,7 +35,7 @@
     </AttDef>
     <!-- Result -->
     <AttDef Type="result(reflect)" BaseType="result">
-      <!-- The translated body (or bodies) are stored in the base result's "entities" item. -->
+      <!-- The reflected body (or bodies) are stored in the base result's "modified" item. -->
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>

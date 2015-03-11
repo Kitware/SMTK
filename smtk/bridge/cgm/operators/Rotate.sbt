@@ -23,7 +23,7 @@
     </AttDef>
     <!-- Result -->
     <AttDef Type="result(rotate)" BaseType="result">
-      <!-- The rotated body (or bodies) are stored in the base result's "entities" item. -->
+      <!-- The rotated body (or bodies) are stored in the base result's "modified" item. -->
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>

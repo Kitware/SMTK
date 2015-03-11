@@ -115,7 +115,7 @@ smtk::model::OperatorResult CreateBrick::operateInternal()
 
   DLIList<Body*> cgmBodiesOut;
   cgmBodiesOut.push(cgmBody);
-  this->addEntitiesToResult(cgmBodiesOut, result);
+  this->addEntitiesToResult(cgmBodiesOut, result, CREATED);
   // Nothing to expunge.
 
   return result;

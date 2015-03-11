@@ -11,6 +11,7 @@
 #define __smtk_model_Session_h
 /*! \file */
 
+#include "smtk/AutoInit.h"
 #include "smtk/SystemConfig.h"
 #include "smtk/SharedPtr.h"
 #include "smtk/SharedFromThis.h"
@@ -22,7 +23,6 @@
 
 #include "smtk/model/SessionRegistrar.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Operator.h"
 
 namespace smtk {
   namespace model {

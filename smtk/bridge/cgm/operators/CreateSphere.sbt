@@ -18,7 +18,7 @@
     </AttDef>
     <!-- Result -->
     <AttDef Type="result(create sphere)" BaseType="result">
-      <!-- The sphere created is stored in the base result's "entities" item. -->
+      <!-- The sphere created is stored in the base result's "created" item. -->
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>

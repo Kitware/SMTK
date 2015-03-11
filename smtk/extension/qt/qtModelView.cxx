@@ -19,9 +19,12 @@
 #include "smtk/model/StringData.h"
 
 #include "smtk/extension/qt/qtEntityItemDelegate.h"
+
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityListPhrase.h"
+#include "smtk/model/Operator.h"
 #include "smtk/model/SessionRef.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"

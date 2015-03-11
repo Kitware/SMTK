@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
     return 1;
     }
 
-  smtk::model::Model model = opresult->findModelEntity("entities")->value();
+  smtk::model::Model model = opresult->findModelEntity("created")->value();
   manager->assignDefaultNames(); // should force transcription of every entity, but doesn't yet.
 
   smtk::model::DescriptivePhrase::Ptr dit;

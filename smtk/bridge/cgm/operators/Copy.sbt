@@ -21,7 +21,7 @@
     </AttDef>
     <!-- Result -->
     <AttDef Type="result(copy)" BaseType="result">
-      <!-- The translated entities are stored in the base result's "entities" item. -->
+      <!-- The translated entities are stored in the base result's "created" item. -->
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>

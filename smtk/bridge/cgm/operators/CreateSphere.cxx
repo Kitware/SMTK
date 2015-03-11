@@ -85,7 +85,7 @@ smtk::model::OperatorResult CreateSphere::operateInternal()
 
   DLIList<Body*> cgmEntitiesOut;
   cgmEntitiesOut.push(cgmBody);
-  this->addEntitiesToResult(cgmEntitiesOut, result);
+  this->addEntitiesToResult(cgmEntitiesOut, result, CREATED);
   // Nothing to expunge.
 
   return result;

@@ -79,11 +79,11 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
   smtk::attribute::ModelEntityItem::Ptr resultModels =
     result->findModelEntity("model");
   resultModels->setValue(smtkModelOut);
-  smtk::attribute::ModelEntityItem::Ptr entities =
-    result->findModelEntity("entities");
-  entities->setNumberOfValues(1);
-  entities->setValue(smtkModelOut);
-  entities->setIsEnabled(true);
+  smtk::attribute::ModelEntityItem::Ptr created =
+    result->findModelEntity("created");
+  created->setNumberOfValues(1);
+  created->setValue(smtkModelOut);
+  created->setIsEnabled(true);
 
   // The side and node sets now exist; go through
   // and use the Exodus reader's private information

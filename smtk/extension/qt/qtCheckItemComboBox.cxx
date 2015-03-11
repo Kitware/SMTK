@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/extension/qt/qtCheckItemComboBox.h"
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/System.h"
