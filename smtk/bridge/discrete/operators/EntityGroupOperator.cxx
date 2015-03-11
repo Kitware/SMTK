@@ -202,11 +202,7 @@ OperatorResult EntityGroupOperator::operateInternal()
     {
     if(bgroup.isValid())
       {
-      // Return the created or modified group.
-      smtk::attribute::ModelEntityItem::Ptr entities =
-        result->findModelEntity("entities");
-      entities->setNumberOfValues(1);
-      entities->setValue(0, bgroup);
+      this->addEntityToResult(result, bgroup, CREATED);
 
     // Adding the new group to the "new entities" item, as a convenient method
     // to get newly created group from result. This group is also listed in the
