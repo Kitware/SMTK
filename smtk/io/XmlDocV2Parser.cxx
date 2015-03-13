@@ -202,7 +202,7 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node &node,
 }
 
 //----------------------------------------------------------------------------
-void XmlDocV2Parser::processModelInfo(xml_node &root)
+void XmlDocV2Parser::processModelInfo(xml_node &)
 {
   /** This seems to be outdated with ModelEntityItem already being processed
    **/
