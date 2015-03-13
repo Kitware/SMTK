@@ -414,7 +414,6 @@ void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node,
     {
     this->processModelInfo();
     }
-
   logger = this->m_logger;
 }
 //----------------------------------------------------------------------------
@@ -1551,81 +1550,8 @@ void XmlV2StringWriter::processBasicView(xml_node &node,
 //----------------------------------------------------------------------------
 void XmlV2StringWriter::processModelInfo()
 {
-  xml_node modelInfo = this->m_pugi->root.append_child("ModelInfo");
-  smtk::model::ManagerPtr refManager = this->m_system.refModelManager();
-  if(refManager)
-  {
-    smtk::model::Groups ge =
-        refManager->entitiesMatchingFlagsAs<smtk::model::Groups>(
-                                                    smtk::model::GROUP_ENTITY);
-
-    typedef smtk::model::Groups::const_iterator group_iter;
-    for(group_iter itemIt = ge.begin(); itemIt != ge.end(); ++itemIt)
-      {
-        xml_node gnode = modelInfo.append_child("GroupItem");
-        //create some local string, as Id as string is a temp object
-        const std::string group_uuid = itemIt->entity().toString();
-        const std::string group_name = itemIt->name();
-        const smtk::model::BitFlags group_flags = itemIt->entityFlags();
-
-        gnode.append_attribute("Id").set_value( group_uuid.c_str() );
-        gnode.append_attribute("Name").set_value( group_name.c_str() );
-        gnode.append_attribute("Mask").set_value( group_flags );
-
-        // associated attributes
-        smtk::model::AttributeSet atts = itemIt->attributes();
-        typedef smtk::model::AttributeSet::const_iterator a_iter;
-        for(a_iter i = atts.begin(); i != atts.end(); ++i)
-          {
-          xml_node anode = gnode.append_child("Attribute");
-
-          //we need to look up the attribute as the entityref only holds a reference
-          //to the attributes id
-          smtk::attribute::AttributePtr att =
-                                        this->m_system.findAttribute( (*i) );
-          if(att)
-            {
-            anode.append_attribute("Name").set_value( att->name().c_str());
-            }
-          }
-      }
-  }
-//Old code below used to create new method, remove once new version is verified
-/*
-  if ( refModel && refModel->numberOfItems())
-    {
-    typedef smtk::model::Model::const_iterator c_iter;
-    for(c_iter itemIt = refModel->beginItemIterator();
-        itemIt != refModel->endItemIterator();
-        ++itemIt)
-      {
-      if(itemIt->second->type() == smtk::model::Item::GROUP)
-        {
-        smtk::model::GroupItemPtr itemGroup =
-          smtk::dynamic_pointer_cast<smtk::model::GroupItem>(itemIt->second);
-        if(itemGroup)
-          {
-          xml_node gnode = modelInfo.append_child("GroupItem");
-          gnode.append_attribute("Id").set_value(static_cast<unsigned int>(itemGroup->id()));
-          gnode.append_attribute("Name").set_value(itemGroup->name().c_str());
-          gnode.append_attribute("Mask").set_value(static_cast<unsigned int>(itemGroup->entityMask()));
-
-          // associated attributes
-          typedef smtk::model::Item::const_iterator a_iter;
-          for(a_iter i = itemGroup->beginAssociatedAttributes();
-              i != itemGroup->endAssociatedAttributes();
-              ++i)
-            {
-            xml_node anode = gnode.append_child("Attribute");
-            anode.append_attribute("Name").set_value((*i)->name().c_str());
-            }
-
-          }
-        }
-      }
-    }
-*/
-
+  /** This seems to be outdated with ModelEntityItem already being processed
+  **/
 }
 //----------------------------------------------------------------------------
 std::string XmlV2StringWriter::encodeColor(const double *c)

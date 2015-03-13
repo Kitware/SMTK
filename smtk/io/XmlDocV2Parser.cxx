@@ -204,60 +204,8 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node &node,
 //----------------------------------------------------------------------------
 void XmlDocV2Parser::processModelInfo(xml_node &root)
 {
-  xml_node modelInfo = root.child("ModelInfo");
-  smtk::model::ManagerPtr manager = this->m_system.refModelManager();
-  if ( modelInfo && manager)
-    {
-    std::string name;
-    smtk::model::BitFlags mask;
-    xml_node gnode;
-    for (gnode = modelInfo.child("GroupItem"); gnode; gnode = gnode.next_sibling("GroupItem"))
-      {
-      xml_attribute xatt;
-      xatt = gnode.attribute("Id");
-      if(!xatt)
-        {
-        smtkErrorMacro(this->m_logger, "Model Group is missing XML Attribute Id");
-        continue;
-        }
-      smtk::common::UUID gid( std::string(xatt.as_string()) );
-      xatt = gnode.attribute("Mask");
-      if(!xatt)
-        {
-        smtkErrorMacro(this->m_logger, "Model Group is missing XML Attribute Mask");
-        continue;
-        }
-      mask = xatt.as_int();
-      xatt = gnode.attribute("Name");
-      name = xatt ? xatt.value() : "noname-group";
-
-      smtk::model::Group group = manager->insertGroup(gid,mask,name);
-      if(group.isValid())
-        {
-        xml_node anode;
-        for (anode = gnode.child("Attribute"); anode; anode = anode.next_sibling("Attribute"))
-          {
-          xatt = anode.attribute("Name");
-          if(!xatt)
-            {
-            smtkErrorMacro(this->m_logger,
-                           "Model Group associated Attribute is missing XML Attribute Name");
-            continue;
-            }
-          name = xatt.value();
-          if(smtk::attribute::AttributePtr att = this->m_system.findAttribute(name))
-            {
-            group.associateAttribute(att->id());
-            }
-          else
-            {
-            smtkErrorMacro(this->m_logger,
-                           "Can find Model Group associated Attribute with Name: " << name);
-            }
-          }
-        }
-      }
-    }
+  /** This seems to be outdated with ModelEntityItem already being processed
+   **/
 }
 
 //----------------------------------------------------------------------------
