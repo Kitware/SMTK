@@ -576,9 +576,9 @@ void qtAssociationWidget::onRemoveAssigned()
     {
     smtk::model::EntityRef currentItem = this->getSelectedModelEntityItem(
       this->Internals->CurrentList);
-    if(!currentItem.entity().isNull())
+    if(currentItem.isValid())
       {
-      this->Internals->CurrentAtt.lock()->disassociateEntity(currentItem.entity());
+      this->Internals->CurrentAtt.lock()->disassociateEntity(currentItem);
       this->removeSelectedItem(this->Internals->CurrentList);
       this->addModelAssociationListItem(
         this->Internals->AvailableList, currentItem);
@@ -612,9 +612,9 @@ void qtAssociationWidget::onAddAvailable()
     {
     smtk::model::EntityRef currentItem = this->getSelectedModelEntityItem(
       this->Internals->AvailableList);
-    if(!currentItem.entity().isNull())
+    if(currentItem.isValid())
       {
-      this->Internals->CurrentAtt.lock()->associateEntity(currentItem.entity());
+      this->Internals->CurrentAtt.lock()->associateEntity(currentItem);
       this->removeSelectedItem(this->Internals->AvailableList);
       this->addModelAssociationListItem(
         this->Internals->CurrentList, currentItem);
@@ -656,10 +656,10 @@ void qtAssociationWidget::onExchange()
       this->Internals->CurrentList);
     smtk::model::EntityRef availableItem = this->getSelectedModelEntityItem(
       this->Internals->AvailableList);
-    if(!currentItem.entity().isNull() && availableItem.isValid())
+    if(currentItem.isValid() && availableItem.isValid())
       {
-      this->Internals->CurrentAtt.lock()->disassociateEntity(currentItem.entity());
-      this->Internals->CurrentAtt.lock()->associateEntity(availableItem.entity());
+      this->Internals->CurrentAtt.lock()->disassociateEntity(currentItem);
+      this->Internals->CurrentAtt.lock()->associateEntity(availableItem);
       this->removeSelectedItem(this->Internals->CurrentList);
       this->addModelAssociationListItem(
         this->Internals->CurrentList, availableItem);
