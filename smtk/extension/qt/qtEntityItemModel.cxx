@@ -17,6 +17,8 @@
 #include "smtk/model/StringData.h"
 #include "smtk/model/SubphraseGenerator.h"
 
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ModelEntityItem.h"
 #include <QtCore/QDir>
 #include <QtCore/QDirIterator>
 #include <QtCore/QFile>
