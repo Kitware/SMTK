@@ -207,14 +207,16 @@ OperatorResult EntityGroupOperator::operateInternal()
         result->findModelEntity("entities");
       entities->setNumberOfValues(1);
       entities->setValue(0, bgroup);
-
-    // Adding the new group to the "new entities" item, as a convenient method
-    // to get newly created group from result. This group is also listed in the
-    // "entities" item.
-      smtk::attribute::ModelEntityItem::Ptr newEntities =
-        result->findModelEntity("new entities");
-      newEntities->setNumberOfValues(1);
-      newEntities->setValue(0, bgroup);
+     if(optype == "Create")
+       {
+       // Adding the new group to the "new entities" item, as a convenient method
+       // to get newly created group from result. This group is also listed in the
+       // "entities" item.
+       smtk::attribute::ModelEntityItem::Ptr newEntities =
+          result->findModelEntity("new entities");
+       newEntities->setNumberOfValues(1);
+       newEntities->setValue(0, bgroup);
+       }
       }
     if(optype == "Remove" && grpsRemoved.size() > 0)
       {
