@@ -12,11 +12,12 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/System.h"
 
-#include "smtk/model/SessionRegistrar.h"
+#include "smtk/model/Arrangement.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/Arrangement.h"
+#include "smtk/model/Operator.h"
+#include "smtk/model/SessionRegistrar.h"
 
 namespace smtk {
   namespace model {

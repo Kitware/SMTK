@@ -141,7 +141,7 @@ smtk::model::OperatorResult BooleanIntersection::operateInternal()
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
 
-  this->addEntitiesToResult(cgmBodiesOut, result);
+  this->addEntitiesToResult(cgmBodiesOut, result, MODIFIED);
   result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
 
   return result;

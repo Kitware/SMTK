@@ -22,7 +22,7 @@
     </AttDef>
     <!-- Result -->
     <AttDef Type="result(create prism)" BaseType="result">
-      <!-- The prism created is stored in the base result's "entities" item. -->
+      <!-- The prism created is stored in the base result's "created" item. -->
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>

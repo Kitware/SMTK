@@ -114,11 +114,11 @@ smtk::model::OperatorResult Read::operateInternal()
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
 
-  this->addEntitiesToResult(imported, result);
+  this->addEntitiesToResult(imported, result, CREATED);
 
   // Set name and url property on each top-level output
   smtk::attribute::ModelEntityItem::Ptr resultModels =
-    result->findModelEntity("entities");
+    result->findModelEntity("created");
   std::string modelName = filename.substr(0, filename.find_last_of("."));
   std::size_t prefix = modelName.find_last_of("/");
   if (prefix != std::string::npos)

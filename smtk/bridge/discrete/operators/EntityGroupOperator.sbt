@@ -16,7 +16,7 @@
               when the membership is group. Skip for now 
               <MembershipMask>group</MembershipMask>  -->
             </ModelEntity>
-            <ModelEntity Name="remove cell group" Extensible="1">
+            <ModelEntity Name="remove cell group" Extensible="1" NumberOfRequiredValues="1">
               <!-- There seems to be a bug in checking the validity of the entity being set 
               when the membership is group. Skip for now 
               <MembershipMask>group</MembershipMask>  -->

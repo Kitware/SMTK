@@ -78,7 +78,7 @@ smtk::model::OperatorResult CreateCylinder::operateInternal()
 
   DLIList<Body*> cgmBodiesOut;
   cgmBodiesOut.push(cgmBody);
-  this->addEntitiesToResult(cgmBodiesOut, result);
+  this->addEntitiesToResult(cgmBodiesOut, result, CREATED);
   // Nothing to expunge.
 
   return result;

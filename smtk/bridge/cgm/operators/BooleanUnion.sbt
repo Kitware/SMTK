@@ -16,7 +16,7 @@
     <!-- Result -->
     <AttDef Type="result(union)" BaseType="result">
       <ItemDefinitions>
-        <!-- The united body (or bodies) is return in the base result's "entities" item. -->
+        <!-- The united body (or bodies) is return in the base result's "modified" item. -->
       </ItemDefinitions>
     </AttDef>
   </Definitions>

@@ -85,7 +85,7 @@ OperatorResult ReadOperator::operateInternal()
 
   OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
   smtk::attribute::ModelEntityItemPtr models =
-    result->findModelEntity("entities");
+    result->findModelEntity("created");
   models->setNumberOfValues(1);
   models->setValue(0, modelEntity);
 

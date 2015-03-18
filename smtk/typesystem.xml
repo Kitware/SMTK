@@ -57,6 +57,7 @@
   <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::setValues', unmatched parameter type 'I'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::end', unmatched return type 'smtk::attribute::ModelEntityItem::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::begin', unmatched return type 'smtk::attribute::ModelEntityItem::const_iterator'"/>
+  <suppress-warning text="skipping function 'smtk::model::Operator::addEntitiesToResult', unmatched parameter type 'T const&amp;'"/>
 
   <!-- Return a list.  For now we will ignore the iterators-->
   <suppress-warning text="skipping function 'smtk::model::Item::beginAssociatedAttributes', unmatched return type 'smtk::model::Item::const_iterator'"/>
@@ -1019,6 +1020,7 @@
 
       <object-type name="Operator">
         <include file-name="smtk/model/Operator.h" location="local"/>
+        <enum-type name="ResultEntityOrigin" />
       </object-type>
 
       <object-type name="AttributeAssignments">

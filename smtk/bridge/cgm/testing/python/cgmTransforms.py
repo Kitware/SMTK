@@ -37,10 +37,10 @@ ov = cb.findAsInt('construction method')
 ov.setDiscreteIndex(0)
 cb.findAsDouble('width').setValue(0.5)
 r1 = cb.operate()
-brick1 = r1.findModelEntity('entities').value(0)
+brick1 = r1.findModelEntity('created').value(0)
 
 r2 = cb.operate()
-brick2 = r2.findModelEntity('entities').value(0)
+brick2 = r2.findModelEntity('created').value(0)
 
 #json = smtk.io.ExportJSON.fromModelManager(mgr)
 #jsonFile = open('/tmp/skirb1.json', 'w')
@@ -52,7 +52,7 @@ tr.associateEntity(brick2)
 off = tr.findAsDouble('offset')
 setVector(off, [.5, 0., 0.])
 r3 = tr.operate()
-brick3 = r3.findModelEntity('entities').value(0)
+brick3 = r3.findModelEntity('modified').value(0)
 
 
 if not brick3 or brick3.entity() != brick2.entity():
@@ -68,7 +68,7 @@ setVector(ctr, [.5, 0., 0.])
 setVector(axs, [.3333, .6667, 0.6667])
 ang.setValue(0, 60.0)
 r4 = ro.operate()
-brick4 = r4.findModelEntity('entities').value(0)
+brick4 = r4.findModelEntity('modified').value(0)
 
 
 if not brick4 or brick4.entity() != brick3.entity():
@@ -79,14 +79,14 @@ un = sref.op('union')
 un.associateEntity(brick1)
 un.associateEntity(brick4)
 r5 = un.operate()
-brick5 = r5.findModelEntity('entities').value(0)
+brick5 = r5.findModelEntity('modified').value(0)
 
 sc = sref.op('scale')
 sc.associateEntity(brick5)
 sc.findAsInt('scale factor type').setDiscreteIndex(0)
 sc.findAsDouble('scale factor').setValue(3.0)
 r6 = sc.operate()
-brick6 = r6.findModelEntity('entities').value(0)
+brick6 = r6.findModelEntity('modified').value(0)
 
 #json = smtk.io.ExportJSON.fromModelManager(mgr)
 #jsonFile = open('/tmp/skirb4.json', 'w')

@@ -22,7 +22,7 @@
     </AttDef>
     <!-- Result -->
     <AttDef Type="result(create cylinder)" BaseType="result">
-      <!-- The cylinder created is stored in the base result's "entities" item. -->
+      <!-- The cylinder created is stored in the base result's "created" item. -->
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>

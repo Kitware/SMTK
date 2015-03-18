@@ -96,7 +96,7 @@ smtk::model::OperatorResult Rotate::operateInternal()
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
 
-  this->addEntitiesToResult(cgmEntitiesOut, result);
+  this->addEntitiesToResult(cgmEntitiesOut, result, MODIFIED);
   // Nothing expunged.
 
   return result;

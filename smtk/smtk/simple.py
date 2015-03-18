@@ -121,7 +121,7 @@ def CreateSphere(**args):
     SetVectorValue(cc, args['center'])
   res = cs.operate()
   PrintResultLog(res)
-  sph = res.findModelEntity('entities').value(0)
+  sph = res.findModelEntity('created').value(0)
   return sph
 
 def CreateCylinder(**args):
@@ -161,7 +161,7 @@ def CreateCylinder(**args):
     cs.findAsDouble('height').setValue(args['height'])
   res = cs.operate()
   PrintResultLog(res)
-  cyl = res.findModelEntity('entities').value(0)
+  cyl = res.findModelEntity('created').value(0)
   return cyl
 
 def CreateBrick(**args):
@@ -210,7 +210,7 @@ def CreateBrick(**args):
     SetVectorValue(cb.findAsDouble('center'), ctrVal)
   res = cb.operate()
   PrintResultLog(res)
-  brick = res.findModelEntity('entities').value(0)
+  brick = res.findModelEntity('created').value(0)
   return brick
 
 def Intersect(bodies, **args):
@@ -233,7 +233,7 @@ def Intersect(bodies, **args):
     op.associateEntity(bodies)
   res = op.operate()
   PrintResultLog(res)
-  return res.findModelEntity('entities').value(0)
+  return res.findModelEntity('modified').value(0)
 
 def Union(bodies, **args):
   """Compute the boolean union of a set of bodies.
@@ -255,7 +255,7 @@ def Union(bodies, **args):
     op.associateEntity(bodies)
   res = op.operate()
   PrintResultLog(res)
-  return res.findModelEntity('entities').value(0)
+  return res.findModelEntity('modified').value(0)
 
 def Subtract(workpiece, tool, **args):
   """Perform a boolean subtraction of the tool from the workpiece.
@@ -288,7 +288,7 @@ def Subtract(workpiece, tool, **args):
 
   res = op.operate()
   PrintResultLog(res)
-  return res.findModelEntity('entities').value(0)
+  return res.findModelEntity('modified').value(0)
 
 def Translate(bodies, vec):
   """Translate the body (or list of bodies) along the given vector."""
@@ -301,7 +301,7 @@ def Translate(bodies, vec):
   SetVectorValue(top.findAsDouble('offset'),vec)
   res = top.operate()
   PrintResultLog(res)
-  return GetVectorValue(res.findModelEntity('entities'))
+  return GetVectorValue(res.findModelEntity('modified'))
 
 def CreateVertex(pt, **kwargs):
   """Create a vertex given point coordinates.
@@ -315,7 +315,7 @@ def CreateVertex(pt, **kwargs):
   SetVectorValue(x, pt)
   res = crv.operate()
   PrintResultLog(res)
-  return res.findModelEntity('entities').value(0)
+  return res.findModelEntity('created').value(0)
 
 def CreateEdge(verts, curve_type = CurveType.LINE, **kwargs):
   """Create an edge from a pair of vertices.
@@ -333,7 +333,7 @@ def CreateEdge(verts, curve_type = CurveType.LINE, **kwargs):
     c.setValue(0, kwargs['color'])
   res = cre.operate()
   PrintResultLog(res)
-  return res.findModelEntity('entities').value(0)
+  return res.findModelEntity('created').value(0)
 
 def CreateFace(edges, surface_type = SurfaceType.PLANAR, **kwargs):
   """Create a face from a set of edges.
@@ -348,7 +348,7 @@ def CreateFace(edges, surface_type = SurfaceType.PLANAR, **kwargs):
     c.setValue(0, kwargs['color'])
   res = crf.operate()
   PrintResultLog(res)
-  return res.findModelEntity('entities').value(0)
+  return res.findModelEntity('created').value(0)
 
 def CreateBody(ents, **kwargs):
   """Create a set of bodies from a set of cells.
@@ -370,7 +370,7 @@ def CreateBody(ents, **kwargs):
     c.setValue(0, kwargs['keep_inputs'])
   res = crb.operate()
   PrintResultLog(res)
-  bodies = res.findModelEntity('entities')
+  bodies = res.findModelEntity('created')
   return [bodies.value(i) for i in range(bodies.numberOfValues())]
 
 def Sweep(stuffToSweep, method = SweepType.EXTRUDE, **kwargs):
@@ -417,7 +417,7 @@ def Sweep(stuffToSweep, method = SweepType.EXTRUDE, **kwargs):
       angl = swp.findAsInt('handedness').setValue(0, kwargs['handedness'])
   res = swp.operate()
   PrintResultLog(res)
-  return res.findModelEntity('entities').value(0)
+  return res.findModelEntity('created').value(0)
 
 def Read(filename, **kwargs):
   """Read entities from an file (in the native modeling kernel format).
@@ -429,7 +429,7 @@ def Read(filename, **kwargs):
     rdr.findAsString('filetype').setValue(0, kwargs['filetype'])
   res = rdr.operate()
   PrintResultLog(res)
-  return GetVectorValue(res.findModelEntity('entities'))
+  return GetVectorValue(res.findModelEntity('created'))
 
 def Write(filename, entities = [], **kwargs):
   """Write a set of entities to an file (in the native modeling kernel format).

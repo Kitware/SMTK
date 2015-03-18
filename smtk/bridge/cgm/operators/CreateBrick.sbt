@@ -82,7 +82,7 @@
     </AttDef>
     <!-- Result -->
     <AttDef Type="result(create brick)" BaseType="result">
-      <!-- The brick created is stored in the base result's "entities" item. -->
+      <!-- The brick created is stored in the base result's "created" item. -->
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>

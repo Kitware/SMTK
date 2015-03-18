@@ -68,7 +68,7 @@ smtk::model::OperatorResult CreateVertex::operateInternal()
 
   DLIList<RefVertex*> cgmEntitiesOut;
   cgmEntitiesOut.push(cgmVert);
-  this->addEntitiesToResult(cgmEntitiesOut, result);
+  this->addEntitiesToResult(cgmEntitiesOut, result, CREATED);
   // Nothing to expunge.
 
   return result;
