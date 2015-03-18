@@ -100,6 +100,9 @@ qtModelView::qtModelView(QWidget* p)
   QObject::connect(qmodel,
                    SIGNAL(phraseTitleChanged(const QModelIndex&)),
                    this, SLOT(changeEntityName(const QModelIndex&)), Qt::QueuedConnection);
+  QObject::connect(qmodel,
+                   SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
+                   this, SLOT(dataChanged(const QModelIndex&, const QModelIndex&)), Qt::QueuedConnection);
 
 }
 
@@ -1160,6 +1163,26 @@ void qtModelView::changeEntityName( const QModelIndex& idx)
 
   attrib->associateEntity(dp->relatedEntity());
   emit this->operationRequested(brOp);
+}
+//-----------------------------------------------------------------------------
+void qtModelView::updateWithOperatorResult(
+    const smtk::model::SessionRef& sref, const OperatorResult& result)
+{
+  smtk::model::QEntityItemModel* qmodel =
+    dynamic_cast<smtk::model::QEntityItemModel*>(this->model());
+  QModelIndex top = this->rootIndex();
+  for (int row = 0; row < qmodel->rowCount(top); ++row)
+    {
+    QModelIndex cIdx = qmodel->index(row, 0, top);
+    DescriptivePhrasePtr dp = qmodel->getItem(cIdx);
+    if(dp && (dp->relatedEntity() == sref))
+      {
+      qmodel->updateWithOperatorResult(dp, result);
+      return;
+      }
+    }
+  std::cerr
+      << "No session phrase found for session: " << sref.name() << std::endl;
 }
 
 //-----------------------------------------------------------------------------

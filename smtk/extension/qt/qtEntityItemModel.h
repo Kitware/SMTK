@@ -17,6 +17,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/QtSMTKExports.h" // For EXPORT macro.
 #include "smtk/model/DescriptivePhrase.h"
+#include <map>
 
 namespace smtk {
   namespace model {
@@ -95,8 +96,19 @@ public:
   template<typename T, typename C>
   bool foreach_phrase(T& visitor, C& collector, const QModelIndex& top = QModelIndex(), bool onlyBuilt = true) const;
 
-  void subphrasesUpdated(const QModelIndex& qidx);
+  void rebuildSubphrases(const QModelIndex& qidx);
 
+/**\brief Update the descriptive phrase \a startPhr, given an op result \a result.
+  *
+  * From David Thompson: The method would find the owning model and session of each
+  * entity listed in the result and (being careful to call areSubphrasesBuilt()
+  * before calling subphrases() on each descriptive phrase) descend the root
+  * until it finds the item's proper place in the tree. At that point,
+  * updateWithOperatorResult() would trigger callbacks before and after inserting
+  * new DescriptivePhrase(s) into the tree.
+  */
+  virtual void updateWithOperatorResult(
+    const DescriptivePhrasePtr& startPhr, const OperatorResult& result);
 signals:
   void phraseTitleChanged(const QModelIndex&);
 
@@ -107,8 +119,22 @@ protected:
   Internal* P;
 
   void updateObserver();
-  //template<typename T>
-  //void sortDataWithContainer(T& sorter, Qt::SortOrder order);
+
+  // create child indices for new subphrases \a cDphrs under parent phrase \a pDphr index
+  virtual void addChildPhrases(
+    const DescriptivePhrasePtr& pDphr, const std::vector< std::pair<DescriptivePhrasePtr, int> >& cDphrs,
+    const QModelIndex& topIndex);
+  // remove child indices for subphrases \a cDphrs from parent phrase \a pDphr index
+  virtual void removeChildPhrases(
+    const DescriptivePhrasePtr& pDphr, const std::vector< std::pair<DescriptivePhrasePtr, int> >& cDphrs,
+    const QModelIndex& topIndex);
+  virtual void addToDirectParentPhrases(
+    const DescriptivePhrasePtr& parntDp, const EntityRef& ent,
+    std::map<DescriptivePhrasePtr,  EntityRefs>& changedPhrases);
+  virtual void findDirectParentPhrases(
+    const DescriptivePhrasePtr& parntDp, const EntityRef& ent,
+    std::map<DescriptivePhrasePtr,  std::vector< std::pair<DescriptivePhrasePtr, int> > >& changedPhrases,
+    bool onlyBuilt);
 };
 
 /**\brief Iterate over all expanded entries in the tree.
