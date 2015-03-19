@@ -90,10 +90,8 @@ OperatorResult WriteOperator::operateInternal()
     }
 
   OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
-  smtk::attribute::ModelEntityItemPtr models =
-    result->findModelEntity("entities");
-  models->setNumberOfValues(1);
-  models->setValue(0, model);
+  // The model was not modified while writing cmb file.
+  // this->addEntityToResult(result, model, MODIFIED);
 
   return result;
 }

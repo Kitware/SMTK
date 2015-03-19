@@ -291,11 +291,7 @@ OperatorResult ImportOperator::operateInternal()
   smtk::model::EntityRef modelEntity(this->manager(), modelId);
 
   OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
-
-  smtk::attribute::ModelEntityItemPtr models =
-    result->findModelEntity("entities");
-  models->setNumberOfValues(1);
-  models->setValue(0, modelEntity);
+  this->addEntityToResult(result, modelEntity, CREATED);
 
 /*
 //#include "smtk/io/ExportJSON.h"

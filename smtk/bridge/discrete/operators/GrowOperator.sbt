@@ -22,9 +22,6 @@
     <!-- Result -->
     <AttDef Type="result(grow)" BaseType="result">
       <ItemDefinitions>
-        <ModelEntity Name="new entities" NumberOfRequiredValues="0" Extensible="1">
-          <MembershipMask>face</MembershipMask>
-        </ModelEntity>
         <MeshSelection Name="selection">
         </MeshSelection>
       </ItemDefinitions>

@@ -92,10 +92,7 @@ OperatorResult CreateEdgesOperator::operateInternal()
   //       use the session to translate them and store
   //       them in the OperatorResult (well, a subclass).
 
-  smtk::attribute::ModelEntityItemPtr models =
-    result->findModelEntity("entities");
-  models->setNumberOfValues(1);
-  models->setValue(0, this->specification()->findModelEntity("model")->value());
+  this->addEntityToResult(result, inModel, MODIFIED);
 
   return result;
 }

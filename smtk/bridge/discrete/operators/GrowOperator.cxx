@@ -124,18 +124,13 @@ void GrowOperator::writeSplitResult(vtkSelectionSplitOperator* splitOp,
     }
 
   smtk::model::ManagerPtr store = this->manager();
-  // Adding "new entities" to the "new entities" item, as a convenient method
-  // to get newly created faces from result. These new entities are also
-  // in the "entities" item
-  // The faces have been split will be in the "entities" item.
-  smtk::attribute::ModelEntityItem::Ptr entities =
-    result->findModelEntity("entities");
-  entities->setNumberOfValues(splitFaces.size() + splitPairArray->GetNumberOfTuples());
-  smtk::attribute::ModelEntityItem::Ptr newEntities =
-    result->findModelEntity("new entities");
-  newEntities->setNumberOfValues(splitPairArray->GetNumberOfTuples());
+  // Adding "created" to the "created" item, as a convenient method
+  // to get newly created faces from result.
+  // The faces have been split will be in the "modified" item.
+  smtk::model::EntityRefArray modEnts;
+  smtk::model::EntityRefArray newEnts;
+
   std::map<vtkIdType, std::set<vtkIdType> >::const_iterator it;
-  int idx = 0, newidx = 0;
   for(it = splitFaces.begin(); it != splitFaces.end(); ++it)
     {
     vtkModelFace* origFace = vtkModelFace::SafeDownCast(
@@ -155,7 +150,7 @@ void GrowOperator::writeSplitResult(vtkSelectionSplitOperator* splitOp,
     faceUUID = opsession->findOrSetEntityUUID(origFace);
     smtk::model::Face c = opsession->addFaceToManager(faceUUID,
       origFace, store, true);
-    entities->setValue(idx++, c); // original face
+    modEnts.push_back(c); // original face
 
     this->addRawRelationship(c, vol1, vol2);
 
@@ -166,11 +161,17 @@ void GrowOperator::writeSplitResult(vtkSelectionSplitOperator* splitOp,
         modelWrapper->GetModelEntity(vtkModelFaceType, *fit));
       faceUUID = opsession->findOrSetEntityUUID(face);
       smtk::model::Face cFace = opsession->addFaceToManager(faceUUID, face, store, true);
-      newEntities->setValue(newidx++, cFace); // new face
-      entities->setValue(idx++, cFace); // new face
+      newEnts.push_back(cFace); // new face
       this->addRawRelationship(cFace, vol1, vol2);
       }
+
     }
+
+  // Return the created and/or modified faces.
+  if(newEnts.size() > 0)
+    this->addEntitiesToResult(result, newEnts, CREATED);
+  if(modEnts.size() > 0)
+    this->addEntitiesToResult(result, modEnts, MODIFIED);
 
 }
 
@@ -410,10 +411,7 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
       case MERGE:
       case SUBTRACT:
         {
-        smtk::attribute::ModelEntityItem::Ptr resultEntities =
-          result->findModelEntity("entities");
-        resultEntities->setNumberOfValues(1);
-        resultEntities->setValue(model);
+        this->addEntityToResult(result, model, MODIFIED);
 
         this->writeSelectionResult(m_outSelection, result);
         break;

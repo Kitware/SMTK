@@ -23,9 +23,6 @@
     <!-- Result -->
     <AttDef Type="result(split face)" BaseType="result">
       <ItemDefinitions>
-        <ModelEntity Name="new entities" NumberOfRequiredValues="0" Extensible="1">
-          <MembershipMask>face</MembershipMask>
-        </ModelEntity>
       </ItemDefinitions>
     </AttDef>
   </Definitions>
