@@ -155,9 +155,6 @@ QModelIndex QEntityItemModel::index(int row, int column, const QModelIndex& owne
     //std::cout << "index(_"  << ownerPhrase->phraseId() << "_, " << row << ") = " << subphrases[row]->phraseId() << ", " << subphrases[row]->title() << "\n";
 
     DescriptivePhrasePtr entry = subphrases[row];
-    entName = entry->relatedEntity().name();
-    std::cout << "Draw index for: " << entName << std::endl;
-
     this->P->ptrs[entry->phraseId()] = entry;
     return this->createIndex(row, column, entry->phraseId());
     }
@@ -637,6 +634,7 @@ void QEntityItemModel::rebuildSubphrases(const QModelIndex& qidx)
   emit dataChanged(qidx, qidx);
 }
 
+/*
 inline QModelIndex _internal_getPhraseIndex(
   smtk::model::QEntityItemModel* qmodel,
   const smtk::model::EntityRef& entRef,
@@ -644,18 +642,62 @@ inline QModelIndex _internal_getPhraseIndex(
 {
   for (int row = 0; row < qmodel->rowCount(top); ++row)
     {
-    QModelIndex cIdx = qmodel->index(row, 0, top);
+    QModelIndex cIdx(qmodel->index(row, 0, top));
     DescriptivePhrasePtr dp = qmodel->getItem(cIdx);
     if(dp && (dp->relatedEntity() == entRef))
       return cIdx;
     if(recursive)
       {
-      QModelIndex recurIdx(_internal_getPhraseIndex(qmodel, entRef, cIdx));
+      QModelIndex recurIdx(_internal_getPhraseIndex(qmodel, entRef, cIdx, recursive));
       if(recurIdx.isValid())
         return recurIdx;
       }
     }
   return QModelIndex();
+}
+*/
+
+inline QModelIndex _internal_getPhraseIndex(
+  smtk::model::QEntityItemModel* qmodel,
+  const DescriptivePhrasePtr& phrase,
+  const QModelIndex& top, bool recursive = false)
+{
+  for (int row = 0; row < qmodel->rowCount(top); ++row)
+    {
+    QModelIndex cIdx(qmodel->index(row, 0, top));
+    DescriptivePhrasePtr dp = qmodel->getItem(cIdx);
+    if(dp == phrase)
+      return cIdx;
+    if(recursive)
+      {
+      QModelIndex recurIdx(_internal_getPhraseIndex(qmodel, phrase, cIdx, recursive));
+      if(recurIdx.isValid())
+        return recurIdx;
+      }
+    }
+  return QModelIndex();
+}
+
+inline void _internal_findAllExistingPhrases(
+  const DescriptivePhrasePtr& parntDp, const EntityRef& ent,
+  DescriptivePhrases& modifiedPhrases)
+{
+  if(!parntDp || !parntDp->areSubphrasesBuilt() || !ent.isValid() )
+    return;
+
+  smtk::model::DescriptivePhrases& subs(parntDp->subphrases());
+  for (smtk::model::DescriptivePhrases::iterator it = subs.begin();
+    it != subs.end(); ++it)
+    {
+    if ((*it)->relatedEntity() == ent)
+      {
+      modifiedPhrases.push_back(*it);
+      return; // stop searching siblings
+      }
+
+    // Descend 
+    _internal_findAllExistingPhrases(*it, ent, modifiedPhrases);
+    }
 }
 
 void QEntityItemModel::addChildPhrases(
@@ -664,7 +706,7 @@ void QEntityItemModel::addChildPhrases(
     const QModelIndex& topIndex)
 {
   QModelIndex qidx(_internal_getPhraseIndex(
-    this, parntDp->relatedEntity(), topIndex, true));
+    this, parntDp, topIndex, true));
   if(!qidx.isValid())
     {
     std::cerr << "Can't find valid QModelIndex for phrase: " << parntDp->title() << "\n";
@@ -696,7 +738,7 @@ void QEntityItemModel::removeChildPhrases(
     const QModelIndex& topIndex)
 {
   QModelIndex qidx(_internal_getPhraseIndex(
-    this, parntDp->relatedEntity(), topIndex, true));
+    this, parntDp, topIndex, true));
   if(!qidx.isValid())
     {
     std::cerr << "Can't find valid QModelIndex for phrase: " << parntDp->title() << "\n";
@@ -720,39 +762,86 @@ void QEntityItemModel::removeChildPhrases(
   emit dataChanged(qidx, qidx);
 }
 
-void QEntityItemModel::addToDirectParentPhrases(
-  const DescriptivePhrasePtr& parntDp, const EntityRef& ent,
-  std::map<DescriptivePhrasePtr,  EntityRefs>& changedPhrases)
+void QEntityItemModel::updateChildPhrases(
+  const DescriptivePhrasePtr& phrase, const QModelIndex& topIndex)
 {
-  if(!parntDp || /*!parntDp->areSubphrasesBuilt() || */ !ent.isValid())
-    return;
+  if(!phrase)
+    {
+    std::cerr << "The input phrase is null!\n";
+    return;  
+    }
 
   // we need to rebuild a temporary subphrases using the same subphrase generator
-  // to figure out whether the new ents belong to any descriptive phrases.
+  // to figure out whether new entities are added or entities are removed
+  // from the \a ent (such as add to or remove from a group)
   // This will NOT update subphrases of parntDp, and should not.
-  // we need insertRows to update parntDp's subphrases
-  smtk::model::DescriptivePhrases subs =
-    this->m_root->findDelegate()->subphrases(parntDp);
-  for (smtk::model::DescriptivePhrases::iterator it = subs.begin();
-    it != subs.end(); ++it)
+
+  smtk::model::DescriptivePhrases newSubs =
+    this->m_root->findDelegate()->subphrases(phrase);
+  smtk::model::DescriptivePhrases& origSubs(phrase->subphrases());
+  if(newSubs.size() > origSubs.size())
+  // new group members, we need insertRows to update ent's subphrases
     {
-    EntityRef related = (*it)->relatedEntity();
-    if (related == ent)
+    std::vector< std::pair<DescriptivePhrasePtr, int> > newDphrs;
+    int newIdx = 0;
+    for (smtk::model::DescriptivePhrases::iterator it = newSubs.begin();
+      it != newSubs.end(); ++it, ++newIdx)
       {
-      // this parent has the subphrase for \a ent
-      // so it is changed
-      changedPhrases[parntDp].insert(ent);
-      return; // stop searching siblings
+      EntityRef related = (*it)->relatedEntity();
+      int origId = phrase->argFindChild(related);
+      if( origId < 0 )
+        newDphrs.push_back(std::make_pair(*it, newIdx));
+      }
+    if(newDphrs.size() > 0)
+      this->addChildPhrases(phrase, newDphrs, topIndex);
+
+    }
+  else if(newSubs.size() < origSubs.size())
+  // group members were removed, we need removeRows to update \a ent's subphrases
+    {
+    std::vector< std::pair<DescriptivePhrasePtr, int> > remDphrs;
+    int newIdx = 0;
+    bool found = false;
+    for (smtk::model::DescriptivePhrases::iterator it = origSubs.begin();
+      it != origSubs.end(); ++it, ++newIdx)
+      {
+      EntityRef related = (*it)->relatedEntity();
+      found = false;
+      for (smtk::model::DescriptivePhrases::iterator nit = newSubs.begin();
+        nit != newSubs.end(); ++nit)
+        {
+        if(related == (*it)->relatedEntity())
+          {
+          found = true;
+          break;
+          }
+        }
+
+      if( !found )
+        remDphrs.push_back(std::make_pair(*it, newIdx));
+      }
+    if(remDphrs.size() > 0)
+      this->removeChildPhrases(phrase, remDphrs, topIndex);
+    }
+  else // number of members did not change, just emit dataChanged signal
+    {
+    QModelIndex qidx(_internal_getPhraseIndex(
+      this, phrase, topIndex, true));
+    if(!qidx.isValid())
+      {
+      std::cerr << "Can't find valid QModelIndex for phrase: " << phrase->title() << "\n";
+      return;  
       }
 
-    // Descend 
-    this->addToDirectParentPhrases(*it, ent, changedPhrases);
+    emit dataChanged(qidx, qidx);
     }
 }
 
 void QEntityItemModel::findDirectParentPhrases(
-  const DescriptivePhrasePtr& parntDp, const EntityRef& ent,
-  std::map<DescriptivePhrasePtr,  std::vector< std::pair<DescriptivePhrasePtr, int> > >& changedPhrases,
+  const DescriptivePhrasePtr& parntDp,
+  const EntityRef& ent,
+  std::map<DescriptivePhrasePtr,
+    std::vector< std::pair<DescriptivePhrasePtr, int> > >& changedPhrases,
   bool onlyBuilt)
 {
   // We only searching those that already have subphrases built.
@@ -800,8 +889,6 @@ void QEntityItemModel::findDirectParentPhrases(
         return; // stop searching siblings
         }
       int origId = parntDp->argFindChild(related);
-//      smtk::model::DescriptivePhrases::iterator origIt =
-//        std::find(origSubs.begin(), origSubs.end(), *it);
 
       // we only want to descend with the subphrases that
       // are already inside its parents.
@@ -815,30 +902,17 @@ void QEntityItemModel::updateWithOperatorResult(
     const DescriptivePhrasePtr& startPhr, const OperatorResult& result)
 {
   QModelIndex sessIndex = _internal_getPhraseIndex(
-    this, startPhr->relatedEntity(), QModelIndex());
+    this, startPhr, QModelIndex());
   if(!sessIndex.isValid())
     {
     std::cerr << "Can't find valid QModelIndex for phrase: " << startPhr->title() << "\n";
     return;  
     }
   // looking for the parent of the new entities
-  // process "new entities" in result to figure out if there are new cell entities
+  // process "created" in result to figure out if there are new cell entities
   std::map<DescriptivePhrasePtr,  std::vector< std::pair<DescriptivePhrasePtr, int> > > changedPhrases;
   std::map<DescriptivePhrasePtr,  std::vector< std::pair<DescriptivePhrasePtr, int> > >::const_iterator pit;
   smtk::model::EntityRefArray::const_iterator it;
-  smtk::attribute::ModelEntityItem::Ptr newEnts =
-    result->findModelEntity("new entities");
-  if(newEnts)
-    {
-    for(it = newEnts->begin(); it != newEnts->end(); ++it)
-      {
-      this->findDirectParentPhrases(startPhr, *it, changedPhrases, false);
-      }
-    for(pit = changedPhrases.begin(); pit != changedPhrases.end(); ++pit)
-      this->addChildPhrases(pit->first, pit->second, sessIndex);
-    }
-
-  changedPhrases.clear();
   smtk::attribute::ModelEntityItem::Ptr remEnts =
     result->findModelEntity("expunged");
   if(remEnts)
@@ -850,6 +924,34 @@ void QEntityItemModel::updateWithOperatorResult(
     for(pit = changedPhrases.begin(); pit != changedPhrases.end(); ++pit)
       this->removeChildPhrases(pit->first, pit->second, sessIndex);
     }
+
+  changedPhrases.clear();
+  smtk::attribute::ModelEntityItem::Ptr newEnts =
+    result->findModelEntity("created");
+  if(newEnts)
+    {
+    for(it = newEnts->begin(); it != newEnts->end(); ++it)
+      {
+      this->findDirectParentPhrases(startPhr, *it, changedPhrases, false);
+      }
+    for(pit = changedPhrases.begin(); pit != changedPhrases.end(); ++pit)
+      this->addChildPhrases(pit->first, pit->second, sessIndex);
+    }
+
+  DescriptivePhrases modifiedPhrases;
+  smtk::attribute::ModelEntityItem::Ptr modEnts =
+    result->findModelEntity("modified");
+  if(modEnts)
+    {
+    for(it = modEnts->begin(); it != modEnts->end(); ++it)
+      {
+      _internal_findAllExistingPhrases(startPhr, *it, modifiedPhrases);
+      }
+    smtk::model::DescriptivePhrases::iterator mit;
+    for(mit = modifiedPhrases.begin(); mit != modifiedPhrases.end(); ++mit)
+      this->updateChildPhrases(*mit, sessIndex);
+    }
+
 }
 
 void QEntityItemModel::updateObserver()

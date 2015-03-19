@@ -128,9 +128,8 @@ protected:
   virtual void removeChildPhrases(
     const DescriptivePhrasePtr& pDphr, const std::vector< std::pair<DescriptivePhrasePtr, int> >& cDphrs,
     const QModelIndex& topIndex);
-  virtual void addToDirectParentPhrases(
-    const DescriptivePhrasePtr& parntDp, const EntityRef& ent,
-    std::map<DescriptivePhrasePtr,  EntityRefs>& changedPhrases);
+  virtual void updateChildPhrases(
+    const DescriptivePhrasePtr& phrase, const QModelIndex& topIndex);
   virtual void findDirectParentPhrases(
     const DescriptivePhrasePtr& parntDp, const EntityRef& ent,
     std::map<DescriptivePhrasePtr,  std::vector< std::pair<DescriptivePhrasePtr, int> > >& changedPhrases,
