@@ -17,6 +17,7 @@ set(commonHeaders
   StringUtil.h
   UUID.h
   UUIDGenerator.h
+  ${CMAKE_CURRENT_BINARY_DIR}/Version.h
 )
 
 if (APPLE)
@@ -41,12 +42,6 @@ configure_file(
 
 #install the headers
 smtk_public_headers(${commonHeaders})
-
-install(
-  FILES ${CMAKE_CURRENT_BINARY_DIR}/Version.h
-  DESTINATION include/smtk/common
-  COMPONENT Development
-)
 
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
