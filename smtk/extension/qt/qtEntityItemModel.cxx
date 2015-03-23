@@ -739,7 +739,7 @@ void QEntityItemModel::addChildPhrases(
     // this sub is new, insert the QModelIndex for it
     row = it->second;
     this->beginInsertRows(qidx, row, row);
-    if(row >= subrefs.size())
+    if(row >= static_cast<int>(subrefs.size()))
         subrefs.push_back(it->first);
     else
       subrefs.insert(subrefs.begin() + row, it->first);
