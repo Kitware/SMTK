@@ -98,17 +98,18 @@ public:
 
   void rebuildSubphrases(const QModelIndex& qidx);
 
-/**\brief Update the descriptive phrase \a startPhr, given an op result \a result.
+/**\brief Update the subphrases of \a sessIdx, given an op result \a result.
   *
-  * From David Thompson: The method would find the owning model and session of each
-  * entity listed in the result and (being careful to call areSubphrasesBuilt()
-  * before calling subphrases() on each descriptive phrase) descend the root
-  * until it finds the item's proper place in the tree. At that point,
-  * updateWithOperatorResult() would trigger callbacks before and after inserting
-  * new DescriptivePhrase(s) into the tree.
+  * The method with update the children and grandchildren of the given top level
+  * index (sessIdx). It will change only those indices that are affected by
+  * the operation. For example, split a model face will only add the new
+  * faces to the parent of input/source face that was split. Other indices under
+  * the top level index will not be affected.
   */
   virtual void updateWithOperatorResult(
-    const DescriptivePhrasePtr& startPhr, const OperatorResult& result);
+    const QModelIndex& sessIdx,
+    const OperatorResult& result);
+
 signals:
   void phraseTitleChanged(const QModelIndex&);
 
@@ -130,10 +131,16 @@ protected:
     const QModelIndex& topIndex);
   virtual void updateChildPhrases(
     const DescriptivePhrasePtr& phrase, const QModelIndex& topIndex);
-  virtual void findDirectParentPhrases(
-    const DescriptivePhrasePtr& parntDp, const EntityRef& ent,
-    std::map<DescriptivePhrasePtr,  std::vector< std::pair<DescriptivePhrasePtr, int> > >& changedPhrases,
-    bool onlyBuilt);
+  virtual void findDirectParentPhrasesForAdd(
+          const DescriptivePhrasePtr& parntDp,
+          const smtk::attribute::ModelEntityItemPtr& newEnts,
+          std::map<DescriptivePhrasePtr,
+            std::vector< std::pair<DescriptivePhrasePtr, int> > >& changedPhrases);
+  virtual void findDirectParentPhrasesForRemove(
+          const DescriptivePhrasePtr& parntDp,
+          const smtk::attribute::ModelEntityItemPtr& remEnts,
+          std::map<DescriptivePhrasePtr,
+            std::vector< std::pair<DescriptivePhrasePtr, int> > >& changedPhrases);
 };
 
 /**\brief Iterate over all expanded entries in the tree.

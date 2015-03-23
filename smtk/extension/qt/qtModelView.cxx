@@ -1176,11 +1176,11 @@ void qtModelView::updateWithOperatorResult(
   QModelIndex top = this->rootIndex();
   for (int row = 0; row < qmodel->rowCount(top); ++row)
     {
-    QModelIndex cIdx = qmodel->index(row, 0, top);
-    DescriptivePhrasePtr dp = qmodel->getItem(cIdx);
+    QModelIndex sessIdx = qmodel->index(row, 0, top);
+    DescriptivePhrasePtr dp = qmodel->getItem(sessIdx);
     if(dp && (dp->relatedEntity() == sref))
       {
-      qmodel->updateWithOperatorResult(dp, result);
+      qmodel->updateWithOperatorResult(sessIdx, result);
       return;
       }
     }

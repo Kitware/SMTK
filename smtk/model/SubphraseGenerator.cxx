@@ -33,6 +33,10 @@
 
 namespace smtk {
   namespace model {
+SubphraseGenerator::SubphraseGenerator()
+{
+  m_directlimit = 4;
+}
 
 /**\brief Return a list of descriptive phrases that elaborate upon \a src.
   *
@@ -57,7 +61,17 @@ DescriptivePhrases SubphraseGenerator::subphrases(DescriptivePhrase::Ptr src)
   */
 int SubphraseGenerator::directLimit() const
 {
-  return 4;
+  return m_directlimit;
+}
+
+bool SubphraseGenerator::setDirectLimit(int val)
+{
+  if(val > 0)
+    {
+    this->m_directlimit = val;
+    return true;
+    }
+  return false;
 }
 
 /**\brief Should the property of the given type and name be omitted from presentation?

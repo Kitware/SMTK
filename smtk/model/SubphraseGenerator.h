@@ -43,11 +43,12 @@ public:
 
   virtual DescriptivePhrases subphrases(DescriptivePhrase::Ptr src);
   virtual int directLimit() const;
+  virtual bool setDirectLimit(int val);
   virtual bool shouldOmitProperty(
     DescriptivePhrase::Ptr parent, PropertyType ptype, const std::string& pname) const;
 
 protected:
-  SubphraseGenerator() { }
+  SubphraseGenerator();
 
   void instancesOfEntity(DescriptivePhrase::Ptr src, const EntityRef& ent, DescriptivePhrases& result);
   void attributesOfEntity(DescriptivePhrase::Ptr src, const EntityRef& ent, DescriptivePhrases& result);
@@ -85,6 +86,8 @@ protected:
 
   template<typename T>
   void addEntityPhrases(const T& ents, DescriptivePhrase::Ptr parent, int limit, DescriptivePhrases& result);
+
+  int m_directlimit;
 };
 
 template<typename T>
