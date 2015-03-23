@@ -977,6 +977,10 @@
 
   <namespace-type name="smtk">
     <namespace-type name="common">
+      <value-type name="Version">
+        <include file-name="smtk/common/Version.h" location="local" />
+      </value-type>
+
       <object-type name="Resource">
         <include file-name="smtk/common/Resource.h" location="local" />
         <enum-type name="Type" />
