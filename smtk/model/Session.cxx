@@ -296,15 +296,19 @@ void Session::initializeOperatorSystem(const OperatorConstructors* opList)
 
   Definition::Ptr resultdefn = this->m_operatorSys->createDefinition("result");
   IntItemDefinition::Ptr outcomeDefn = IntItemDefinition::New("outcome");
-  ModelEntityItemDefinition::Ptr entoutDefn = ModelEntityItemDefinition::New("entities");
+  ModelEntityItemDefinition::Ptr entcreDefn = ModelEntityItemDefinition::New("created");
+  ModelEntityItemDefinition::Ptr entmodDefn = ModelEntityItemDefinition::New("modified");
   ModelEntityItemDefinition::Ptr entremDefn = ModelEntityItemDefinition::New("expunged");
 
   StringItemDefinition::Ptr logDefn = StringItemDefinition::New("log");
   outcomeDefn->setNumberOfRequiredValues(1);
   outcomeDefn->setIsOptional(false);
-  entoutDefn->setNumberOfRequiredValues(0);
-  entoutDefn->setIsOptional(true);
-  entoutDefn->setIsExtensible(true);
+  entcreDefn->setNumberOfRequiredValues(0);
+  entcreDefn->setIsOptional(true);
+  entcreDefn->setIsExtensible(true);
+  entmodDefn->setNumberOfRequiredValues(0);
+  entmodDefn->setIsOptional(true);
+  entmodDefn->setIsExtensible(true);
   entremDefn->setNumberOfRequiredValues(0);
   entremDefn->setIsOptional(true);
   entremDefn->setIsExtensible(true);
@@ -314,7 +318,8 @@ void Session::initializeOperatorSystem(const OperatorConstructors* opList)
   logDefn->setIsOptional(true);
 
   resultdefn->addItemDefinition(outcomeDefn);
-  resultdefn->addItemDefinition(entoutDefn);
+  resultdefn->addItemDefinition(entcreDefn);
+  resultdefn->addItemDefinition(entmodDefn);
   resultdefn->addItemDefinition(entremDefn);
   resultdefn->addItemDefinition(logDefn);
 

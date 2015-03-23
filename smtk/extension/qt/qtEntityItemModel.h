@@ -17,6 +17,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/QtSMTKExports.h" // For EXPORT macro.
 #include "smtk/model/DescriptivePhrase.h"
+#include <map>
 
 namespace smtk {
   namespace model {
@@ -95,7 +96,19 @@ public:
   template<typename T, typename C>
   bool foreach_phrase(T& visitor, C& collector, const QModelIndex& top = QModelIndex(), bool onlyBuilt = true) const;
 
-  void subphrasesUpdated(const QModelIndex& qidx);
+  void rebuildSubphrases(const QModelIndex& qidx);
+
+/**\brief Update the subphrases of \a sessIdx, given an op result \a result.
+  *
+  * The method with update the children and grandchildren of the given top level
+  * index (sessIdx). It will change only those indices that are affected by
+  * the operation. For example, split a model face will only add the new
+  * faces to the parent of input/source face that was split. Other indices under
+  * the top level index will not be affected.
+  */
+  virtual void updateWithOperatorResult(
+    const QModelIndex& sessIdx,
+    const OperatorResult& result);
 
 signals:
   void phraseTitleChanged(const QModelIndex&);
@@ -107,8 +120,27 @@ protected:
   Internal* P;
 
   void updateObserver();
-  //template<typename T>
-  //void sortDataWithContainer(T& sorter, Qt::SortOrder order);
+
+  // create child indices for new subphrases \a cDphrs under parent phrase \a pDphr index
+  virtual void addChildPhrases(
+    const DescriptivePhrasePtr& pDphr, const std::vector< std::pair<DescriptivePhrasePtr, int> >& cDphrs,
+    const QModelIndex& topIndex);
+  // remove child indices for subphrases \a cDphrs from parent phrase \a pDphr index
+  virtual void removeChildPhrases(
+    const DescriptivePhrasePtr& pDphr, const std::vector< std::pair<DescriptivePhrasePtr, int> >& cDphrs,
+    const QModelIndex& topIndex);
+  virtual void updateChildPhrases(
+    const DescriptivePhrasePtr& phrase, const QModelIndex& topIndex);
+  virtual void findDirectParentPhrasesForAdd(
+          const DescriptivePhrasePtr& parntDp,
+          const smtk::attribute::ModelEntityItemPtr& newEnts,
+          std::map<DescriptivePhrasePtr,
+            std::vector< std::pair<DescriptivePhrasePtr, int> > >& changedPhrases);
+  virtual void findDirectParentPhrasesForRemove(
+          const DescriptivePhrasePtr& parntDp,
+          const smtk::attribute::ModelEntityItemPtr& remEnts,
+          std::map<DescriptivePhrasePtr,
+            std::vector< std::pair<DescriptivePhrasePtr, int> > >& changedPhrases);
 };
 
 /**\brief Iterate over all expanded entries in the tree.

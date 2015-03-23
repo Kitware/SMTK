@@ -52,7 +52,7 @@ protected:
     const T& smtkContainer, DLIList<U>& cgmContainer, int keepInputs, smtk::model::EntityRefArray& expunged);
 
   template<typename T>
-  void addEntitiesToResult(DLIList<T>& cgmContainer, smtk::model::OperatorResult result);
+  void addEntitiesToResult(DLIList<T>& cgmContainer, smtk::model::OperatorResult result, ResultEntityOrigin origin = UNKNOWN);
 };
 
 /// A convenience method for returning the CGM counterpart of an SMTK entity already cast to a subtype.
@@ -104,14 +104,13 @@ bool Operator::cgmEntities(const T& smtkContainer, DLIList<U>& cgmContainer, int
 }
 
 template<typename T>
-void Operator::addEntitiesToResult(DLIList<T>& cgmContainer, smtk::model::OperatorResult result)
+void Operator::addEntitiesToResult(DLIList<T>& cgmContainer, smtk::model::OperatorResult result, ResultEntityOrigin origin)
 {
-  smtk::attribute::ModelEntityItem::Ptr entitiesOut =
-    result->findModelEntity("entities");
-
   Session* session = this->cgmSession();
   int numBodiesOut = cgmContainer.size();
-  entitiesOut->setNumberOfValues(numBodiesOut);
+
+  smtk::model::EntityRefArray creArr;
+  smtk::model::EntityRefArray modArr;
 
   for (int i = 0; i < numBodiesOut; ++i)
     {
@@ -121,10 +120,26 @@ void Operator::addEntitiesToResult(DLIList<T>& cgmContainer, smtk::model::Operat
 
     smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(cgmEnt, true);
     smtk::common::UUID entId = refId->entityId();
+    bool isNew =
+      (origin == CREATED ? true :
+       (origin == MODIFIED ? false :
+        (this->manager()->findEntity(entId, false) ? false : true)));
     smtk::model::EntityRef smtkEntry(this->manager(), entId);
     if (session->transcribe(smtkEntry, smtk::model::SESSION_EVERYTHING, false))
-      entitiesOut->setValue(i, smtkEntry);
+      {
+      if (isNew)
+        creArr.push_back(smtkEntry);
+      else
+        modArr.push_back(smtkEntry);
+      }
     }
+  smtk::attribute::ModelEntityItem::Ptr entCreOut =
+    result->findModelEntity("created");
+  smtk::attribute::ModelEntityItem::Ptr entModOut =
+    result->findModelEntity("modified");
+
+  entModOut->setValues(modArr.begin(), modArr.end());
+  entCreOut->setValues(creArr.begin(), creArr.end());
 }
 
     } // namespace cgm

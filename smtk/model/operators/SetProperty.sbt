@@ -38,7 +38,7 @@
     </AttDef>
     <!-- Result -->
     <AttDef Type="result(set property)" BaseType="result">
-      <!-- The modified entities are stored in the base result's "entities" item. -->
+      <!-- The modified entities are stored in the base result's "modified" item. -->
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>

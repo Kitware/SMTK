@@ -179,7 +179,7 @@
     <!-- Result -->
     <AttDef Type="result(sweep)" BaseType="result">
       <ItemDefinitions>
-        <!-- The swept body (or bodies) is returned in the base result's "entities" item. -->
+        <!-- The swept body (or bodies) is returned in the base result's "created" item. -->
       </ItemDefinitions>
     </AttDef>
   </Definitions>

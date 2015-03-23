@@ -166,7 +166,7 @@ int main (int argc, char* argv[])
     std::cerr << "Sphere Fail\n";
     return 1;
     }
-  Model sphere = result->findModelEntity("entities")->value();
+  Model sphere = result->findModelEntity("created")->value();
 
   op = brg->op("create prism");
   op->findDouble("height")->setValue(opts.prismHeight());
@@ -179,7 +179,7 @@ int main (int argc, char* argv[])
     std::cerr << "Prism Fail\n";
     return 1;
     }
-  Model prism = result->findModelEntity("entities")->value();
+  Model prism = result->findModelEntity("created")->value();
 
   Models operands;
   operands.push_back(sphere);
@@ -202,7 +202,7 @@ int main (int argc, char* argv[])
     return 1;
     }
 
-  smtk::attribute::ModelEntityItem::Ptr bodies = result->findModelEntity("entities");
+  smtk::attribute::ModelEntityItem::Ptr bodies = result->findModelEntity("modified");
   std::cout << "Created " << bodies->value().flagSummary() << "\n";
   std::cout << "   with " << bodies->value().as<Model>().cells().size() << " cells\n";
   //std::ofstream json("/tmp/sphere.json");

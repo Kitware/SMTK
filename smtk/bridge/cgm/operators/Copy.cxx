@@ -104,7 +104,7 @@ smtk::model::OperatorResult Copy::operateInternal()
 
   DLIList<RefEntity*> cgmEntitiesOut;
   cgmEntitiesOut.push(cgmOut);
-  this->addEntitiesToResult(cgmEntitiesOut, result);
+  this->addEntitiesToResult(cgmEntitiesOut, result, MODIFIED);
   // Nothing to expunge.
 
   return result;

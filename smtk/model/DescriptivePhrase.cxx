@@ -62,6 +62,20 @@ int DescriptivePhrase::argFindChild(const DescriptivePhrase* child) const
   return -1;
 }
 
+/// Return the index of the given EntityRef in this instance's subphrases (or -1).
+int DescriptivePhrase::argFindChild(const EntityRef& child) const
+{
+  int i = 0;
+  DescriptivePhrases::const_iterator it;
+  for (it = this->m_subphrases.begin(); it != this->m_subphrases.end(); ++it, ++i)
+    {
+    if (it->get()->relatedEntity() == child)
+      return i;
+    }
+  return -1;
+}
+
+
 /// Return the index of this phrase in its parent instance's subphrases (or -1).
 int DescriptivePhrase::indexInParent() const
 {

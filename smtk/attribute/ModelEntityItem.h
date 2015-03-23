@@ -71,6 +71,9 @@ public:
           break;
           }
       }
+    // Enable or disable the item if it is optional.
+    if (ok)
+      this->setIsEnabled(num > 0 ? true : false);
     return ok;
     }
   bool appendValue(const smtk::model::EntityRef& val);

@@ -90,7 +90,7 @@ smtk::model::OperatorResult CreateFace::operateInternal()
 
   DLIList<RefFace*> cgmFacesOut;
   cgmFacesOut.push(cgmFace);
-  this->addEntitiesToResult(cgmFacesOut, result);
+  this->addEntitiesToResult(cgmFacesOut, result, CREATED);
   result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
 
   return result;

@@ -78,7 +78,7 @@ smtk::model::OperatorResult CreatePrism::operateInternal()
 
   DLIList<Body*> cgmEntitiesOut;
   cgmEntitiesOut.push(cgmBody);
-  this->addEntitiesToResult(cgmEntitiesOut, result);
+  this->addEntitiesToResult(cgmEntitiesOut, result, CREATED);
   // Nothing to expunge.
 
   return result;

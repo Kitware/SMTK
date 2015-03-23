@@ -155,33 +155,31 @@ OperatorResult SplitFaceOperator::operateInternal()
   if (ok)
     {
 
-    // Return the list of entities that were created
+    // Return the list of entities that were split, "modified" item in result,
     // so that remote sessions can track what records
     // need to be re-fetched.
-    smtk::attribute::ModelEntityItem::Ptr resultEntities =
-      result->findModelEntity("entities");
-    resultEntities->setNumberOfValues(
-      totNewFaces + sourceItem->numberOfValues());
-    // Adding "new faces" to the "new entities" item, as a convenient method
-    // to get newly created faces from result. This list is also in the
-    // "entities" item.
-    smtk::attribute::ModelEntityItem::Ptr newEntities =
-      result->findModelEntity("new entities");
-    newEntities->setNumberOfValues(totNewFaces);
+    // Adding new faces to the "created" item, as a convenient method
+    // to get newly created faces from result. 
 
-    int totIdx = 0;
-    int newIdx = 0;
+    smtk::model::EntityRefArray modEnts;
+    smtk::model::EntityRefArray newEnts;
     std::map<smtk::model::Face, std::set<smtk::model::Face> >::const_iterator it;
     std::set<smtk::model::Face>::const_iterator nit;
     for(it=splitfacemaps.begin(); it!=splitfacemaps.end(); ++it)
       {
-      resultEntities->setValue(totIdx++, it->first);
+      modEnts.push_back(it->first);
       for (nit = it->second.begin(); nit != it->second.end(); ++nit)
         {
-        newEntities->setValue(newIdx++, *nit);
-        resultEntities->setValue(totIdx++, *nit);
+        newEnts.push_back(*nit);
         }
       }
+
+    // Return the created and/or modified faces.
+    if(newEnts.size() > 0)
+      this->addEntitiesToResult(result, newEnts, CREATED);
+    if(modEnts.size() > 0)
+      this->addEntitiesToResult(result, modEnts, MODIFIED);
+
     }
 
   return result;

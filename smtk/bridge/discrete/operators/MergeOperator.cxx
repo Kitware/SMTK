@@ -126,10 +126,7 @@ OperatorResult MergeOperator::operateInternal()
     // Return the list of entities that were created
     // so that remote sessions can track what records
     // need to be re-fetched.
-    smtk::attribute::ModelEntityItem::Ptr resultEntities =
-      result->findModelEntity("entities");
-    resultEntities->setNumberOfValues(1);
-    resultEntities->setValue(0, c);
+    this->addEntityToResult(result, c, MODIFIED);
 
     smtk::attribute::ModelEntityItem::Ptr removedEntities =
       result->findModelEntity("expunged");

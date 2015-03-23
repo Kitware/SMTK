@@ -15,7 +15,7 @@
     </AttDef>
     <!-- Result -->
     <AttDef Type="result(translate)" BaseType="result">
-      <!-- The translated body (or bodies) are stored in the base result's "entities" item. -->
+      <!-- The translated body (or bodies) are stored in the base result's "modified" item. -->
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>

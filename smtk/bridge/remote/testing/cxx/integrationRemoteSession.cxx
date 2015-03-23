@@ -14,6 +14,7 @@
 #include "smtk/AutoInit.h"
 
 #include "smtk/model/Manager.h"
+#include "smtk/model/Operator.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
@@ -125,7 +126,7 @@ int main(int argc, char* argv[])
     strout = "unknown"; break;
     }
   std::cout << "Read file? " << strout << " (" << readResult->findInt("outcome")->value() << ")\n";
-  std::cout << "Output model is " << readResult->findModelEntity("entities")->value() << "\n";
+  std::cout << "Output model is " << readResult->findModelEntity("created")->value() << "\n";
 
   opnames = bconn->operatorNames(sessionId);
   std::cout << "Operators for session \"" << sessionId << "\":\n";

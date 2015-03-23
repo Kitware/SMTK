@@ -80,7 +80,7 @@ smtk::model::OperatorResult SetProperty::operateInternal()
   // modified so that remote sessions can track what records
   // need to be re-fetched.
   smtk::attribute::ModelEntityItem::Ptr resultEntities =
-    result->findModelEntity("entities");
+    result->findModelEntity("modified");
 
   int numEntitiesOut = static_cast<int>(entities.size());
   resultEntities->setNumberOfValues(numEntitiesOut);

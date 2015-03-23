@@ -61,6 +61,8 @@ public:
     const QColor& clr);
   void currentSelectionByMask(
     smtk::model::EntityRefs& selentityrefs, const BitFlags& entityFlags);
+  virtual void updateWithOperatorResult(
+    const smtk::model::SessionRef& sref, const OperatorResult& result);
 
 public slots:
   void selectEntityItems(const smtk::common::UUIDs& selEntityRefs,

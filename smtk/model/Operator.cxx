@@ -103,7 +103,7 @@ OperatorResult Operator::operate()
       assignNamesItem->isEnabled() &&
       assignNamesItem->value() != 0)
       {
-      ModelEntityItem::Ptr thingsToName = result->findModelEntity("entities");
+      ModelEntityItem::Ptr thingsToName = result->findModelEntity("created");
       EntityRefArray::const_iterator it;
       for (it = thingsToName->begin(); it != thingsToName->end(); ++it)
         {
@@ -473,6 +473,16 @@ OperatorOutcome stringToOutcome(const std::string& oc)
  *
  * Subclasses must implement this method.
  */
+
+/**\brief Add an entity to an operator's result attribute.
+  *
+  * See Operator::addEntitiesToResult() for details.
+  */
+void Operator::addEntityToResult(OperatorResult res, const EntityRef& ent, ResultEntityOrigin gen)
+{
+  EntityRefArray tmp(1,ent);
+  this->addEntitiesToResult(res, tmp, gen);
+}
 
   } // model namespace
 } // smtk namespace

@@ -8,7 +8,7 @@
         <ModelEntity Name="model" NumberOfRequiredValues="1">
           <MembershipMask>model</MembershipMask>
         </ModelEntity>
-        <ModelEntity Name="face to split" Extensible="1">
+        <ModelEntity Name="face to split" NumberOfRequiredValues="0" Extensible="1">
         <MembershipMask>face</MembershipMask>
         </ModelEntity>
         <Double Name="feature angle" NumberOfRequiredValues="1">
@@ -23,9 +23,6 @@
     <!-- Result -->
     <AttDef Type="result(split face)" BaseType="result">
       <ItemDefinitions>
-        <ModelEntity Name="new entities" NumberOfRequiredValues="0" Extensible="1">
-          <MembershipMask>face</MembershipMask>
-        </ModelEntity>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

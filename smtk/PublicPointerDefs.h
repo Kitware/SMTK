@@ -195,6 +195,11 @@ namespace smtk
     typedef smtk::weak_ptr< smtk::model::Operator >                WeakOperatorPtr;
     typedef std::set< smtk::model::OperatorPtr >                   Operators;
     typedef smtk::shared_ptr< smtk::model::RemoteOperator >        RemoteOperatorPtr;
+#ifndef SHIBOKEN_SKIP
+    typedef smtk::model::OperatorPtr                             (*OperatorConstructor)();
+    typedef std::pair<std::string,OperatorConstructor>             StaticOperatorInfo;
+    typedef std::map<std::string,StaticOperatorInfo>               OperatorConstructors;
+#endif
     typedef smtk::shared_ptr< smtk::model::Entity >                EntityPtr;
     typedef smtk::weak_ptr< smtk::model::Entity >                  WeakEntityPtr;
     typedef smtk::shared_ptr< smtk::model::Arrangement >           ArrangementPtr;

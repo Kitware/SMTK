@@ -19,9 +19,12 @@
 #include "smtk/model/StringData.h"
 
 #include "smtk/extension/qt/qtEntityItemDelegate.h"
+
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityListPhrase.h"
+#include "smtk/model/Operator.h"
 #include "smtk/model/SessionRef.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
@@ -100,6 +103,9 @@ qtModelView::qtModelView(QWidget* p)
   QObject::connect(qmodel,
                    SIGNAL(phraseTitleChanged(const QModelIndex&)),
                    this, SLOT(changeEntityName(const QModelIndex&)), Qt::QueuedConnection);
+  QObject::connect(qmodel,
+                   SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
+                   this, SLOT(dataChanged(const QModelIndex&, const QModelIndex&)), Qt::QueuedConnection);
 
 }
 
@@ -1160,6 +1166,26 @@ void qtModelView::changeEntityName( const QModelIndex& idx)
 
   attrib->associateEntity(dp->relatedEntity());
   emit this->operationRequested(brOp);
+}
+//-----------------------------------------------------------------------------
+void qtModelView::updateWithOperatorResult(
+    const smtk::model::SessionRef& sref, const OperatorResult& result)
+{
+  smtk::model::QEntityItemModel* qmodel =
+    dynamic_cast<smtk::model::QEntityItemModel*>(this->model());
+  QModelIndex top = this->rootIndex();
+  for (int row = 0; row < qmodel->rowCount(top); ++row)
+    {
+    QModelIndex sessIdx = qmodel->index(row, 0, top);
+    DescriptivePhrasePtr dp = qmodel->getItem(sessIdx);
+    if(dp && (dp->relatedEntity() == sref))
+      {
+      qmodel->updateWithOperatorResult(sessIdx, result);
+      return;
+      }
+    }
+  std::cerr
+      << "No session phrase found for session: " << sref.name() << std::endl;
 }
 
 //-----------------------------------------------------------------------------

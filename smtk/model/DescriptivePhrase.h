@@ -92,6 +92,7 @@ public:
   virtual bool areSubphrasesBuilt() const                      { return this->m_subphrasesBuilt; }
   virtual void markDirty(bool dirty = true)                    { this->m_subphrasesBuilt = !dirty; }
   virtual int argFindChild(const DescriptivePhrase* child) const;
+  virtual int argFindChild(const EntityRef& child) const;
   int indexInParent() const;
 
   virtual EntityRef relatedEntity() const                         { return EntityRef(); }
@@ -107,10 +108,11 @@ public:
 
   unsigned int phraseId() const                                { return this->m_phraseId; }
 
+  SubphraseGeneratorPtr findDelegate();
+
 protected:
   DescriptivePhrase();
 
-  SubphraseGeneratorPtr findDelegate();
   void buildSubphrases();
 
   WeakDescriptivePhrasePtr m_parent;
