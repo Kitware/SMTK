@@ -14,6 +14,7 @@ import sys
 BASELINES=[]
 DATA_DIR=''
 TEMP_DIR='.'
+SOURCE_DIR=''
 WORKER_DIR=''
 
 def process_arguments():
@@ -25,7 +26,7 @@ def process_arguments():
     them as module names.
     """
 
-    global BASELINES, DATA_DIR, TEMP_DIR, WORKER_DIR
+    global BASELINES, DATA_DIR, TEMP_DIR, WORKER_DIR, SOURCE_DIR
 
     from argparse import ArgumentParser
     parser = ArgumentParser()
@@ -36,6 +37,10 @@ def process_arguments():
     parser.add_argument("-W", "--worker-dir",
         action="store", dest="workerdir", default='',
         help="Directory containing SMTK's Remus worker files.")
+
+    parser.add_argument("-S", "--src-dir",
+        action="store", dest="srcdir", default='',
+        help="Directory containing the SMTK source code.")
 
     parser.add_argument("-T", "--temp-dir",
         action="store", dest="tempdir", default='',
@@ -52,6 +57,9 @@ def process_arguments():
 
     if args.workerdir:
       WORKER_DIR=args.workerdir
+
+    if args.srcdir:
+      SOURCE_DIR=args.srcdir
 
     if args.tempdir:
       TEMP_DIR=args.tempdir
