@@ -537,7 +537,7 @@ QIcon QEntityItemModel::lookupIconForEntityFlags(smtk::model::BitFlags flags)
   QFile rsrc(resourceName.str().c_str());
   if (!rsrc.exists())
     { // FIXME: Replace with the path of a "generic entity" or "invalid" icon.
-    return QIcon(":/icons/entityTypes/cell_08.svg");
+    return QIcon(":/icons/entityTypes/cell_08.png");
     }
   return QIcon(resourceName.str().c_str());
 }
