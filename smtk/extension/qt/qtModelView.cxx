@@ -982,20 +982,25 @@ void qtModelView::changeEntityColor( const QModelIndex& idx)
   OperatorPtr brOp = this->getOp(idx, "set property");
   if(!brOp || !brOp->specification()->isValid())
     return;
-  smtk::model::EntityRefs selentityrefs;
-  this->recursiveSelect(this->getModel()->getItem(idx), selentityrefs,
-    CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY |
-    MODEL_ENTITY | INSTANCE_ENTITY | SESSION);
+//  this->recursiveSelect(this->getModel()->getItem(idx), selentityrefs,
+//    CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY |
+//    MODEL_ENTITY | INSTANCE_ENTITY | SESSION);
   DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
-  smtk::model::FloatList rgba(4);
-  rgba = dp->relatedColor();
-  QColor currentColor = QColor::fromRgbF(rgba[0], rgba[1], rgba[2]);
-  QColor newColor = QColorDialog::getColor(currentColor, this,
-    "Choose Entity Color", QColorDialog::DontUseNativeDialog);
-  if(newColor.isValid() && newColor != currentColor)
+  if(dp && dp->relatedEntity().isValid())
     {
-    if(this->setEntityColor(selentityrefs, newColor, brOp))
-      this->dataChanged(idx, idx);
+    smtk::model::EntityRefs selentityrefs;
+    selentityrefs.insert(dp->relatedEntity());
+
+    smtk::model::FloatList rgba(4);
+    rgba = dp->relatedColor();
+    QColor currentColor = QColor::fromRgbF(rgba[0], rgba[1], rgba[2]);
+    QColor newColor = QColorDialog::getColor(currentColor, this,
+      "Choose Entity Color", QColorDialog::DontUseNativeDialog);
+    if(newColor.isValid() && newColor != currentColor)
+      {
+      if(this->setEntityColor(selentityrefs, newColor, brOp))
+        this->dataChanged(idx, idx);
+      }
     }
 }
 
