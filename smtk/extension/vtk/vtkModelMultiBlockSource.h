@@ -58,7 +58,7 @@ public:
 
   // Description:
   // Functions get string names used to store cell/field data.
-  static const char* GetEntityTagName() { return "Entity UUID"; }
+  static const char* GetEntityTagName() { return "Entity"; }
   static const char* GetGroupTagName() { return "Group"; }
   static const char* GetVolumeTagName() { return "Volume"; }
 

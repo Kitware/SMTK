@@ -533,7 +533,7 @@ QIcon QEntityItemModel::lookupIconForEntityFlags(smtk::model::BitFlags flags)
       << (flags & ANY_DIMENSION)
       ;
     }
-  resourceName << ".svg";
+  resourceName << ".png";
   QFile rsrc(resourceName.str().c_str());
   if (!rsrc.exists())
     { // FIXME: Replace with the path of a "generic entity" or "invalid" icon.
