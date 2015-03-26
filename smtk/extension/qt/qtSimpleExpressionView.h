@@ -42,12 +42,14 @@ namespace smtk
       QListWidgetItem* getSelectedItem();
       void displayExpressionError(std::string& errorMsg, int errorPos);
       smtk::attribute::AttributePtr getFunctionFromItem(QListWidgetItem * item);
+      int getNumberOfComponents();
 
     public slots:
       void onFuncSelectionChanged(QListWidgetItem * , QListWidgetItem * );
       void onFuncValueChanged(QTableWidgetItem*);
       void onFuncNameChanged(QListWidgetItem*);
       void onCreateNew();
+      void onCSVLoad();
       void onCopySelected();
       void onDeleteSelected();
       void onFuncTableKeyPress(QKeyEvent* );
