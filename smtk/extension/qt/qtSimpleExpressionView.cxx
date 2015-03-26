@@ -27,9 +27,13 @@
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/view/SimpleExpression.h"
 
+#include <QFileDialog>
 #include <QGridLayout>
 #include <QListWidget>
 #include <QListWidgetItem>
+#include <QString>
+#include <QStringList>
+#include <QTextStream>
 #include <QVariant>
 #include <QPushButton>
 #include <QHBoxLayout>
@@ -99,6 +103,7 @@ public:
   QPushButton* AddButton;
   QPushButton* DeleteButton;
   QPushButton* CopyButton;
+  QPushButton* LoadCSVButton;
 
   QSpinBox*    NumberBox;
   QLineEdit*   ExpressionInput;
@@ -210,7 +215,10 @@ void qtSimpleExpressionView::createWidget()
   this->Internals->AddValueButton->setSizePolicy(sizeFixedPolicy);
   this->Internals->RemoveValueButton = new QPushButton("Remove", frame);
   this->Internals->RemoveValueButton->setSizePolicy(sizeFixedPolicy);
+  this->Internals->LoadCSVButton = new QPushButton("Load CSV", frame);
+  this->Internals->LoadCSVButton->setSizePolicy(sizeFixedPolicy);
 
+  rowButtonLayout->addWidget(this->Internals->LoadCSVButton);
   rowButtonLayout->addWidget(this->Internals->AddValueButton);
   rowButtonLayout->addWidget(this->Internals->RemoveValueButton);
 
@@ -241,6 +249,8 @@ void qtSimpleExpressionView::createWidget()
     SIGNAL(clicked()), this, SLOT(onAddValue()));
   QObject::connect(this->Internals->RemoveValueButton,
     SIGNAL(clicked()), this, SLOT(onRemoveSelectedValues()));
+  QObject::connect(this->Internals->LoadCSVButton,
+    SIGNAL(clicked()), this, SLOT(onCSVLoad()));
 
   QObject::connect(this->Internals->FuncTable,
     SIGNAL(itemChanged (QTableWidgetItem *)),
@@ -414,52 +424,54 @@ void qtSimpleExpressionView::onFuncValueChanged(QTableWidgetItem* item)
   this->clearFuncExpression();
 }
 //----------------------------------------------------------------------------
+int qtSimpleExpressionView::getNumberOfComponents()
+{
+  smtk::view::SimpleExpressionPtr sview =
+    smtk::dynamic_pointer_cast<smtk::view::SimpleExpression>(this->getObject());
+  if(!sview || !sview->definition())
+    {
+    return -1;
+    }
+  attribute::DefinitionPtr attDef = sview->definition();
+  if(!attDef->numberOfItemDefinitions())
+    {
+    return -1;
+    }
+  const GroupItemDefinition *itemDefinition =
+    dynamic_cast<const GroupItemDefinition *>(attDef->itemDefinition(0).get());
+  if(!itemDefinition)
+    {
+    return -1;
+    }
+  return static_cast<int>(itemDefinition->numberOfItemDefinitions());
+}
+//----------------------------------------------------------------------------
 void qtSimpleExpressionView::onCreateNew()
 {
-  if(this->Internals->EditorGroup->isChecked())
+  QStringList strVals;
+  int numRows = this->Internals->NumberBox->value();
+  int numberOfComponents = this->getNumberOfComponents();
+  if (numberOfComponents == -1)
     {
-    this->createFunctionWithExpression();
+    return;  //This does not support expressions!
     }
-  else
+  for(int i=0; i < numRows; i++)
     {
-    smtk::view::SimpleExpressionPtr sview =
-      smtk::dynamic_pointer_cast<smtk::view::SimpleExpression>(this->getObject());
-    if(!sview || !sview->definition())
+    for(int c=0; c<numberOfComponents-1; c++)
       {
-      return;
+      strVals << "0.0" << "\t";
       }
-    attribute::DefinitionPtr attDef = sview->definition();
-    if(!attDef->numberOfItemDefinitions())
-      {
-      return;
+    strVals << "0.0" << LINE_BREAKER_STRING
       }
-    const GroupItemDefinition *itemDefinition =
-      dynamic_cast<const GroupItemDefinition *>(attDef->itemDefinition(0).get());
-    if(!itemDefinition)
-      {
-      return;
-      }
+  QString valuesText = strVals.join(" ");
+  smtk::attribute::ValueItemPtr expressionItem =
+    this->getStringDataFromItem(this->Internals->FuncList->currentItem());
+  QString funcExp = expressionItem ?
+    expressionItem->valueAsString().c_str() : "";
 
-    QStringList strVals;
-    int numRows = this->Internals->NumberBox->value();
-    int numberOfComponents = static_cast<int>(itemDefinition->numberOfItemDefinitions());
-    for(int i=0; i < numRows; i++)
-      {
-      for(int c=0; c<numberOfComponents-1; c++)
-        {
-        strVals << "0.0" << "\t";
-        }
-      strVals << "0.0" << LINE_BREAKER_STRING
-      }
-    QString valuesText = strVals.join(" ");
-    smtk::attribute::ValueItemPtr expressionItem = this->getStringDataFromItem(
-      this->Internals->FuncList->currentItem());
-    QString funcExp = expressionItem ?
-      expressionItem->valueAsString().c_str() : "";
-
-    this->buildSimpleExpression(funcExp, valuesText,numberOfComponents);
-    }
+  this->buildSimpleExpression(funcExp, valuesText,numberOfComponents);
 }
+
 
 //----------------------------------------------------------------------------
 void qtSimpleExpressionView::displayExpressionError(
@@ -549,8 +561,75 @@ void qtSimpleExpressionView::updateTableHeader()
     this->Internals->FuncTable->setHorizontalHeaderLabels(
       QStringList() << tr("x") << tr("f(x)") );
     }
+
 }
 
+//----------------------------------------------------------------------------
+void qtSimpleExpressionView::onCSVLoad()
+{
+  int numberOfComponents = this->getNumberOfComponents();
+  if (numberOfComponents == -1)
+    {
+      return;  //This does not support expressions!
+    }
+  
+  QString fname = QFileDialog::getOpenFileName(this->Widget, tr("Open CSV File"),
+                                               QString(),
+                                               tr("CSV Files (*.csv);; All Files(*.*)"));
+  if (fname == "")
+    {
+    return;
+    }
+  std::cout << "Got File\n";
+  QFile f(fname);
+  QString line;
+  if (!f.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+    // Should add error message!
+    return;
+    }
+  QTextStream in(&f);
+  int i;
+  QStringList tableVals, rowVals;
+  while (!in.atEnd())
+    {
+    line = in.readLine();
+    QStringList vals = line.split(',');
+    if (vals.size() != numberOfComponents)
+      {
+      continue;
+      }
+    // Clear the row of vals
+    rowVals.clear();
+    for (i = 0; i < numberOfComponents; i++)
+      {   
+      // Is this a number - if not skip the row!
+      bool ok;
+      vals.at(i).toDouble(&ok);
+      if (!ok)
+        {
+        rowVals.clear();
+        break;
+        }
+      rowVals << vals.at(i);
+      if (i < (numberOfComponents -1))
+        {
+        rowVals << "\t";
+        }
+      else
+        {
+        rowVals <<  LINE_BREAKER_STRING;
+        }
+      }
+    tableVals.append(rowVals);
+    }
+  if (tableVals.size())
+    {
+    QString tableString = tableVals.join(" ");
+    QString dummy;
+    this->buildSimpleExpression(dummy, tableString, numberOfComponents);
+    }
+}
 //----------------------------------------------------------------------------
 void qtSimpleExpressionView::onCopySelected()
 {
