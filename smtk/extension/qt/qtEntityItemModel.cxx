@@ -707,15 +707,20 @@ inline void _internal_findAllExistingPhrases(
 void QEntityItemModel::addChildPhrases(
     const DescriptivePhrasePtr& parntDp,
     const std::vector< std::pair<DescriptivePhrasePtr, int> > & newDphrs,
-    const QModelIndex& topIndex)
+    const QModelIndex& topIndex, bool descend)
 {
-  QModelIndex qidx(_internal_getPhraseIndex(
-    this, parntDp, topIndex, true));
-  if(!qidx.isValid())
+  QModelIndex qidx;
+  if(parntDp != this->m_root)
     {
-    std::cerr << "Can't find valid QModelIndex for phrase: " << parntDp->title() << "\n";
-    return;  
+    qidx = (_internal_getPhraseIndex(
+      this, parntDp, topIndex, descend));
+    if(!qidx.isValid())
+      {
+      std::cerr << "Can't find valid QModelIndex for phrase: " << parntDp->title() << "\n";
+      return;  
+      }
     }
+
   if(!parntDp->areSubphrasesBuilt())
     {
     this->rebuildSubphrases(qidx);
@@ -986,7 +991,6 @@ void QEntityItemModel::updateWithOperatorResult(
     return;  
     }
   DescriptivePhrasePtr startPhr = this->getItem(sessIndex);
-
   // We only searching those that already have subphrases built.
   // because
   if(!startPhr)
@@ -1061,6 +1065,50 @@ void QEntityItemModel::updateWithOperatorResult(
       this->updateChildPhrases(*mit, sessIndex);
     }
 
+}
+
+void QEntityItemModel::newSessionOperatorResult(
+    const smtk::model::SessionRef& sref, const OperatorResult& result)
+{
+  if(!sref.isValid())
+    {
+    std::cerr << "The input SessionRef is not valid!\n";
+    return;  
+    }
+
+  EntityListPhrasePtr lphrase = smtk::dynamic_pointer_cast<EntityListPhrase>(this->m_root);
+  if (lphrase)
+    lphrase->relatedEntities().push_back(sref);
+
+  smtk::model::DescriptivePhrases newSubs =
+    this->m_root->findDelegate()->subphrases(this->m_root);
+  std::vector< std::pair<DescriptivePhrasePtr, int> > newDphrs;
+  int newIdx = 0;
+  for (smtk::model::DescriptivePhrases::iterator it = newSubs.begin();
+    it != newSubs.end(); ++it, ++newIdx)
+    {
+    if(sref == (*it)->relatedEntity())
+      {
+      newDphrs.push_back(std::make_pair(*it, newIdx));
+      break;
+      }
+    }
+  if(newDphrs.size() > 0)
+    {
+    this->addChildPhrases(this->m_root, newDphrs, QModelIndex(), false);
+    // hopefully, we have the proper index for the new session
+    QModelIndex top;
+    for (int row = 0; row < this->rowCount(top); ++row)
+      {
+      QModelIndex sessIdx = this->index(row, 0, top);
+      DescriptivePhrasePtr dp = this->getItem(sessIdx);
+      if(dp && (dp->relatedEntity() == sref))
+        {
+        this->updateWithOperatorResult(sessIdx, result);
+        return;
+        }
+      }
+    }
 }
 
 void QEntityItemModel::updateObserver()

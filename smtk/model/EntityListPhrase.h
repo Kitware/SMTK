@@ -31,6 +31,7 @@ public:
   virtual std::string subtitle();
 
   EntityRefArray relatedEntities() const;
+  EntityRefArray& relatedEntities();
   virtual void setFlags(BitFlags commonFlags, BitFlags unionFlags);
 
 protected:
