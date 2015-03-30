@@ -109,6 +109,8 @@ public:
   virtual void updateWithOperatorResult(
     const QModelIndex& sessIdx,
     const OperatorResult& result);
+  virtual void newSessionOperatorResult(
+    const smtk::model::SessionRef& sref, const OperatorResult& result);
 
 signals:
   void phraseTitleChanged(const QModelIndex&);
@@ -124,7 +126,7 @@ protected:
   // create child indices for new subphrases \a cDphrs under parent phrase \a pDphr index
   virtual void addChildPhrases(
     const DescriptivePhrasePtr& pDphr, const std::vector< std::pair<DescriptivePhrasePtr, int> >& cDphrs,
-    const QModelIndex& topIndex);
+    const QModelIndex& topIndex, bool descend = true);
   // remove child indices for subphrases \a cDphrs from parent phrase \a pDphr index
   virtual void removeChildPhrases(
     const DescriptivePhrasePtr& pDphr, const std::vector< std::pair<DescriptivePhrasePtr, int> >& cDphrs,

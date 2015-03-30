@@ -1190,8 +1190,8 @@ void qtModelView::updateWithOperatorResult(
       return;
       }
     }
-  std::cerr
-      << "No session phrase found for session: " << sref.name() << std::endl;
+  // this is a new session, mostly from a read operator of a new session
+  qmodel->newSessionOperatorResult(sref, result);
 }
 
 //-----------------------------------------------------------------------------

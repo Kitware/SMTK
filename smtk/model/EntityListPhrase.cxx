@@ -66,6 +66,10 @@ EntityRefArray EntityListPhrase::relatedEntities() const
 {
   return this->m_entities;
 }
+EntityRefArray& EntityListPhrase::relatedEntities()
+{
+  return this->m_entities;
+}
 
 /**\brief Inform the descriptor what bits in entityFlags() are set across the list.
   *
