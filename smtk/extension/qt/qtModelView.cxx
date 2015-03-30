@@ -937,6 +937,7 @@ void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
   int vis = dp->relatedEntity().visible() ? 0 : 1;
   if(this->setEntityVisibility(selentityrefs, vis, brOp))
     this->dataChanged(idx, idx);
+  this->update();
 }
 
 //----------------------------------------------------------------------------
