@@ -12,6 +12,7 @@
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/io/ExportJSON.h"
+#include "smtk/io/ExportJSON.txx"
 #include "smtk/io/ImportJSON.h"
 
 //todo: remove this once remus Issue #183 has been resolved.
@@ -32,12 +33,20 @@ MeshOperator::MeshOperator()
 {
 }
 
+bool MeshOperator::ableToOperate()
+{
+  return
+    this->Superclass::ableToOperate() &&
+    this->specification()->findModelEntity("model")->value().isValid();
+  // TODO: Add tests to verify that model dimension matches job requirements.
+}
+
 //-----------------------------------------------------------------------------
 OperatorResult MeshOperator::operateInternal()
 {
-
-  smtk::model::Model model = this->specification()->findModelEntity(
-    "model")->value().as<smtk::model::Model>();
+  smtk::attribute::ModelEntityItemPtr mspec =
+    this->specification()->findModelEntity("model");
+  smtk::model::Models models(mspec->begin(), mspec->end());
   smtk::attribute::StringItemPtr endpointItem = this->findString("endpoint");
   smtk::attribute::StringItemPtr requirementsItem = this->findString("remusRequirements");
   smtk::attribute::StringItemPtr attributeItem = this->findString("meshingControlAttributes");
@@ -55,7 +64,11 @@ OperatorResult MeshOperator::operateInternal()
   submission["meshing_attributes"] = meshingControls;
 
   //lastly all we have to do is serialize the model
-  submission["model"] = remus::proto::make_JobContent( smtk::io::ExportJSON::fromModelManager( this->manager()) );
+  std::string modelSerialized =
+    smtk::io::ExportJSON::forEntities(
+      models, smtk::model::ITERATE_MODELS, smtk::io::JSON_DEFAULT);
+
+  submission["model"] = remus::proto::make_JobContent(modelSerialized);
 
   //now that we have the submission, construct a remus client to submit it
   const remus::client::ServerConnection conn =
@@ -91,7 +104,7 @@ OperatorResult MeshOperator::operateInternal()
 
     //current question is how do we know how to mark the tessellations
     //of the model as modified?
-    this->addEntityToResult(result, model, MODIFIED);
+    this->addEntitiesToResult(result, models, MODIFIED);
     }
   return result;
 }

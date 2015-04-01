@@ -49,13 +49,16 @@ class Session;
   *
   *
   */
-class SMTKREMUSEXT_EXPORT MeshOperator : public smtk::model::Operator
+class SMTKREMUSEXT_EXPORT MeshOperator : public Operator
 {
 public:
   smtkTypeMacro(MeshOperator);
+  smtkSuperclassMacro(Operator);
   smtkCreateMacro(MeshOperator);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
+
+  virtual bool ableToOperate();
 
 protected:
   MeshOperator();
