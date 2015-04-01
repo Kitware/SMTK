@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CMB Discrete Model "Mesh" Operator -->
-<SMTK_AttributeManager Version="2">
+<!-- Description of the model "Mesh" Operator -->
+<SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
     <AttDef Type="mesh" BaseType="operator">
@@ -17,4 +17,4 @@
       </ItemDefinitions>
     </AttDef>
   </Definitions>
-</SMTK_AttributeManager>
+</SMTK_AttributeSystem>

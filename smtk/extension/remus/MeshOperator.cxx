@@ -1,7 +1,4 @@
-
-#include "smtk/bridge/discrete/operators/MeshOperator.h"
-
-#include "smtk/bridge/discrete/Session.h"
+#include "smtk/extension/remus/MeshOperator.h"
 
 #include <remus/client/Client.h>
 
@@ -22,50 +19,17 @@
 // #include <boost/thread/thread.hpp>
 
 
-#include "MeshOperator_xml.h"
+#include "smtk/extension/remus/MeshOperator_xml.h"
 
 
 using namespace smtk::model;
 
-namespace
-{
-
-//------------------------------------------------------------------------------
-remus::proto::JobContent make_FilePath(const std::string& filePath)
-{
-  //encode the file path as a fileHandle, with user encoding
-  return remus::proto::make_JobContent( remus::common::FileHandle(filePath) );
-}
-}
-
 namespace smtk {
-  namespace bridge {
-
-  namespace discrete {
+  namespace model {
 
 //-----------------------------------------------------------------------------
 MeshOperator::MeshOperator()
 {
-}
-
-
-//-----------------------------------------------------------------------------
-bool MeshOperator::ableToOperate()
-{
-  smtk::model::Model model;
-
-  return
-    // The SMTK model must be valid
-    (model = this->specification()->findModelEntity("model")->value().as<smtk::model::Model>()).isValid() &&
-    // The CMB model must exist:
-    this->discreteSession()->findModelEntity(model.entity()) &&
-    // The endpoint must be filled in:
-    this->findString("endpoint") != smtk::attribute::StringItemPtr() &&
-    // The requirements must be filled in:
-    this->findString("remusRequirements") != smtk::attribute::StringItemPtr() &&
-    // The attributes to control the meshing must be filled in:
-    this->findString("meshingControlAttributes") != smtk::attribute::StringItemPtr()
-    ;
 }
 
 //-----------------------------------------------------------------------------
@@ -132,18 +96,12 @@ OperatorResult MeshOperator::operateInternal()
   return result;
 }
 
-smtk::bridge::discrete::Session* MeshOperator::discreteSession() const
-{
-  return dynamic_cast<smtk::bridge::discrete::Session*>(this->session());
-}
-
-    } // namespace discrete
-  } // namespace bridge
+  } // namespace model
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  smtk::bridge::discrete::MeshOperator,
-  discrete_mesh,
+  smtk::model::MeshOperator,
+  remus_mesh,
   "mesh",
   MeshOperator_xml,
   smtk::model::Session);

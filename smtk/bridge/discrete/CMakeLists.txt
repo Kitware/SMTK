@@ -154,14 +154,6 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EntityGroupOperator.sbt
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GrowOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteOperator.sbt" unitOperatorXML)
 
-if(SMTK_ENABLE_REMUS)
-  #Remus is needed
-  find_package(Remus REQUIRED)
-  list(APPEND discreteSessionSrcs operators/MeshOperator.cxx)
-  list(APPEND discreteSessionHeaders operators/MeshOperator.h)
-  smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/MeshOperator.sbt" unitOperatorXML)
-endif()
-
 add_library(smtkDiscreteSession ${_module_src} ${discreteSessionSrcs})
 
 set (__private_dependencies)
@@ -169,11 +161,6 @@ set (__private_dependencies)
 if (VTK_WRAP_PYTHON)
   list(APPEND __private_dependencies vtkPythonInterpreter)
 endif (VTK_WRAP_PYTHON)
-
-if(SMTK_ENABLE_REMUS)
-  list(APPEND __private_dependencies RemusClient)
-  target_include_directories(smtkDiscreteSession PRIVATE ${REMUS_INCLUDE_DIRS})
-endif()
 
 if(SMTK_BUILD_MOAB_READER)
   list(APPEND __private_dependencies vtkDiscreteMoabReader)

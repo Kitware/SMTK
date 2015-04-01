@@ -56,7 +56,7 @@ if (SMTK_BUILD_VTK)
   option(SMTK_ENABLE_EXODUS_SESSION "Build a session to Exodus-II side sets" ON)
 endif()
 
-option(SMTK_ENABLE_REMUS "Build Remus component" OFF)
+option(SMTK_ENABLE_REMUS "Build Remus components" OFF)
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
 option(SMTK_BUILD_PYTHON_WRAPPINGS "Build Python Wrappings using Shiboken" OFF)
 option(SMTK_USE_SYSTEM_SPARSEHASH "Use the system-installed sparsehash?" OFF)
