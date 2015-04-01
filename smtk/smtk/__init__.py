@@ -80,6 +80,13 @@ simulation = _temp.smtk.simulation
 io = _temp.smtk.io
 view = _temp.smtk.view
 
+# Try loading optional extensions.
+# Do not complain if they are not present.
+try:
+  import smtkRemusExtPy
+except:
+  pass
+
 # Try importing bridge session modules. They may not be built, so don't complain on failure.
 try:
   from collections import namedtuple

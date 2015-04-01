@@ -39,12 +39,6 @@ will use its operators. ::
   Translate(b1, [5,0,0])
   b2 = CreateBrick(depth=2)
 """
-# Try loading optional extensions.
-# Do not complain if they are not present.
-try:
-  import smtkRemusExtPy
-except:
-  pass
 import smtk
 
 activeSession = None
