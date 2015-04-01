@@ -159,9 +159,12 @@ add_library(smtkDiscreteSession ${_module_src} ${discreteSessionSrcs})
 set (__private_dependencies)
 
 if (VTK_WRAP_PYTHON)
-  list(APPEND __private_dependencies
-      vtkPythonInterpreter)
+  list(APPEND __private_dependencies vtkPythonInterpreter)
 endif (VTK_WRAP_PYTHON)
+
+if(SMTK_BUILD_MOAB_READER)
+  list(APPEND __private_dependencies vtkDiscreteMoabReader)
+endif()
 
 #set smtkDiscreteSession to publicly link to SMTKCore and privately to vtkSMTKDiscreteModel
 target_link_libraries(smtkDiscreteSession
@@ -183,12 +186,6 @@ target_link_libraries(smtkDiscreteSession
     vtkSMTKDiscreteModel
   )
 
-if(SMTK_BUILD_MOAB_READER)
-  target_link_libraries(smtkDiscreteSession
-    LINK_PRIVATE
-      vtkDiscreteMoabReader
-  )
-endif()
 
 smtk_export_header(smtkDiscreteSession discreteSessionExports.h)
 

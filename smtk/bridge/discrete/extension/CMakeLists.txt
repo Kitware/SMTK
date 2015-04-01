@@ -83,16 +83,6 @@ set_source_files_properties(
   WRAP_EXCLUDE
 )
 
-set(meshing_Depend_LIBS)
-if(SMTK_ENABLE_REMUS)
-  #Remus is needed
-  find_package(Remus REQUIRED)
-  list(APPEND meshing_Depend_LIBS
-    RemusClient
-    RemusServer
-  )
-endif()
-
 SET(_VTK_INSTALL_NO_DEVELOPMENT ${VTK_INSTALL_NO_DEVELOPMENT})
 SET(VTK_INSTALL_NO_DEVELOPMENT ON)
 set(vtkSMTKDiscreteExt_NO_HeaderTest 1)
@@ -102,7 +92,12 @@ vtk_module_library(vtkSMTKDiscreteExt
 )
 SET(VTK_INSTALL_NO_DEVELOPMENT ${_VTK_INSTALL_NO_DEVELOPMENT})
 
-target_link_libraries(vtkSMTKDiscreteExt LINK_PRIVATE ${meshing_Depend_LIBS})
+if(SMTK_ENABLE_REMUS)
+  #Remus is needed
+  target_link_libraries(vtkSMTKDiscreteExt LINK_PRIVATE RemusClient RemusServer)
+  target_include_directories(vtkSMTKDiscreteExt PRIVATE ${REMUS_INCLUDE_DIRS})
+endif()
+
 
 # On Mac OS X, set the directory included as part of the installed library's path:
 if (BUILD_SHARED_LIBS)
