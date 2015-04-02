@@ -22,6 +22,9 @@ if (SMTK_BUILD_PYTHON_WRAPPINGS)
   set_target_properties(smtkRemusExtPy PROPERTIES PREFIX "")
 endif()
 
+
+add_subdirectory(plugin)
+
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
 endif()
