@@ -341,6 +341,49 @@ void verify_meshset_subtract(const smtk::mesh::CollectionPtr& c)
         "subtract of two meshes produced wrong size" );
 }
 
+//----------------------------------------------------------------------------
+class CountMeshesAndCells : public smtk::mesh::MeshForEach
+{
+  //keep the range of cells we have seen so we can verify that we
+  //seen all the cells that we expect to be given
+  smtk::mesh::CellSet cellsSeen;
+  //keep a physical count of number of meshes so that we can verify we
+  //don't iterate over a mesh more than once
+  int numMeshesIteratedOver;
+public:
+  //--------------------------------------------------------------------------
+  CountMeshesAndCells( smtk::mesh::CollectionPtr collection ):
+    smtk::mesh::MeshForEach(),
+    cellsSeen( collection->meshes("InvalidName").cells() ),
+    numMeshesIteratedOver(0)
+
+    {
+    }
+
+  //--------------------------------------------------------------------------
+  void operator()(const smtk::mesh::MeshSet& mesh)
+  {
+  this->numMeshesIteratedOver++;
+  this->cellsSeen.append( mesh.cells( ) );
+  }
+
+  int numberOfMeshesVisited() const { return numMeshesIteratedOver; }
+
+  smtk::mesh::CellSet cells() const { return cellsSeen; }
+};
+
+//----------------------------------------------------------------------------
+void verify_meshset_for_each(const smtk::mesh::CollectionPtr& c)
+{
+  CountMeshesAndCells functor(c);
+  smtk::mesh::MeshSet volMeshes = c->meshes( smtk::mesh::Dims3 );
+  smtk::mesh::for_each( volMeshes, functor );
+
+  test( functor.numberOfMeshesVisited() == volMeshes.size() );
+  test( functor.cells() == volMeshes.cells() );
+}
+
+
 }
 
 //----------------------------------------------------------------------------
@@ -361,6 +404,8 @@ int UnitTestMeshSet(int argc, char** argv)
   verify_meshset_intersect(c);
   verify_meshset_union(c);
   verify_meshset_subtract(c);
+
+  verify_meshset_for_each(c);
 
   return 0;
 }

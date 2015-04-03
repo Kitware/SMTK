@@ -477,6 +477,78 @@ void verify_cellset_point_difference(const smtk::mesh::CollectionPtr& c)
   }
 }
 
+
+//----------------------------------------------------------------------------
+class CountCells : public smtk::mesh::CellForEach
+{
+  //keep the range of points we have seen so we can verify that we
+  //seen all the cells that we expect to be given
+  smtk::mesh::HandleRange pointsSeen;
+
+  //keep a physical count of number of cells so that we can verify we
+  //don't iterate over a cell more than once
+  int numCellsVisited;
+
+  //total number of points seen, relates to the total size of the connectivity
+  //array for this cellset
+  int numPointsSeen;
+public:
+  //--------------------------------------------------------------------------
+  CountCells( ):
+    smtk::mesh::CellForEach(),
+    pointsSeen( ),
+    numCellsVisited(0),
+    numPointsSeen(0)
+    {
+    }
+
+  //--------------------------------------------------------------------------
+  void operator()(int numPts,
+                  const smtk::mesh::Handle* const pointIds,
+                  const double* const coords)
+  {
+  this->numCellsVisited++;
+  this->numPointsSeen += numPts;
+  this->pointsSeen.insert( pointIds, pointIds+numPts);
+  }
+
+  int numberOCellsVisited() const { return numCellsVisited; }
+  int numberOPointsSeen() const { return numPointsSeen; }
+
+  smtk::mesh::HandleRange points() const { return pointsSeen; }
+};
+
+//----------------------------------------------------------------------------
+void verify_cellset_for_each(const smtk::mesh::CollectionPtr& c)
+{
+  CountCells functor;
+  smtk::mesh::MeshSet volMeshes = c->meshes( smtk::mesh::Dims3 );
+  smtk::mesh::for_each( volMeshes.cells(), functor );
+
+  test( functor.numberOCellsVisited() == volMeshes.cells().size() );
+  test( functor.numberOPointsSeen() == volMeshes.pointConnectivity().size() );
+
+
+  smtk::mesh::PointConnectivity pc = volMeshes.pointConnectivity();
+  pc.initCellTraversal();
+
+  int numPts;
+  int numPointsSeen = 0;
+  smtk::mesh::HandleRange pointsFromConnectivity;
+  const smtk::mesh::Handle* points;
+  while( pc.fetchNextCell(numPts, points) )
+    {
+    numPointsSeen += numPts;
+    pointsFromConnectivity.insert(points, points+numPts);
+    }
+
+  //verify that point connectivity iteration and cell for_each visit
+  //the exact same number of cells
+  test( pointsFromConnectivity == functor.points() );
+  test( numPointsSeen == functor.numberOPointsSeen() );
+}
+
+
 }
 
 //----------------------------------------------------------------------------
@@ -498,6 +570,8 @@ int UnitTestCellSet(int argc, char** argv)
 
   verify_cellset_point_intersect(c);
   verify_cellset_point_difference(c);
+
+  verify_cellset_for_each(c);
 
   return 0;
 }
