@@ -3,6 +3,14 @@ if(SMTK_BUILD_QT)
   add_subdirectory(qt)
 endif()
 
+# Add mesh operator if Remus is enabled.
+#this needs to be above vtk_smtk_setup_module_environment as that
+#pollutes the link libraries, and causes the remus plugin to depend
+#on libraries it doesn't require
+if (SMTK_ENABLE_REMUS)
+  add_subdirectory(remus)
+endif()
+
 # Add VTK library to render SMTK geometry and interact with ParaView-based apps if enabled.
 if(SMTK_BUILD_VTK)
   if(SMTK_BUILD_SESSION_PLUGIN)
@@ -54,9 +62,4 @@ if(SMTK_BUILD_VTK)
     vtk_smtk_setup_module_environment("VTKSMTK")
     vtk_smtk_process_modules()
   endif()
-endif()
-
-# Add mesh operator if Remus is enabled.
-if (SMTK_ENABLE_REMUS)
-  add_subdirectory(remus)
 endif()
