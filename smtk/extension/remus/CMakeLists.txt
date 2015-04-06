@@ -21,6 +21,7 @@ endif()
 
 if (SMTK_BUILD_PYTHON_WRAPPINGS)
   add_library(smtkRemusExtPy MODULE smtkRemusExtPy.cxx)
+  target_include_directories(smtkRemusExtPy PRIVATE ${PYTHON_INCLUDE_DIRS})
   target_link_libraries(smtkRemusExtPy
     smtkRemusExt
     ${PYTHON_LIBRARIES}
