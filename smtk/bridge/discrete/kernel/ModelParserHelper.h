@@ -15,9 +15,7 @@
 #ifndef __smtkdiscrete_ModelParserHelper_h
 #define __smtkdiscrete_ModelParserHelper_h
 
-#include "vtkSMTKDiscreteModelModule.h" // For export macro
-
-class VTKSMTKDISCRETEMODEL_EXPORT ModelParserHelper
+class ModelParserHelper
 {
 public:
 
