@@ -126,6 +126,7 @@ smtk::model::OperatorResult CreateBrick::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
+  CGMSMTK_EXPORT,
   smtk::bridge::cgm::CreateBrick,
   cgm_create_brick,
   "create brick",

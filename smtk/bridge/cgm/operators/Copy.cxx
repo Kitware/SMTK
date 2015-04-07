@@ -115,6 +115,7 @@ smtk::model::OperatorResult Copy::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
+  CGMSMTK_EXPORT,
   smtk::bridge::cgm::Copy,
   cgm_copy,
   "copy",

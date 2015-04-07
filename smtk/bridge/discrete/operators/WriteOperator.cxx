@@ -107,6 +107,7 @@ Session* WriteOperator::discreteSession() const
 } // namespace smtk
 
 smtkImplementsModelOperator(
+  SMTKDISCRETESESSION_EXPORT,
   smtk::bridge::discrete::WriteOperator,
   discrete_write,
   "write",

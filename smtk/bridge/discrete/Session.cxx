@@ -1302,6 +1302,7 @@ smtk::model::Vertex Session::addVertexToManager(
 
 #include "smtk/bridge/discrete/Session_json.h"
 smtkImplementsModelingKernel(
+  SMTKDISCRETESESSION_EXPORT,
   discrete,
   Session_json,
   SessionHasNoStaticSetup,

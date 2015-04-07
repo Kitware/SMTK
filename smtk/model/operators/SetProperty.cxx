@@ -97,6 +97,7 @@ smtk::model::OperatorResult SetProperty::operateInternal()
 #include "smtk/model/SetProperty_xml.h"
 
 smtkImplementsModelOperator(
+  SMTKCORE_EXPORT,
   smtk::model::SetProperty,
   set_property,
   "set property",

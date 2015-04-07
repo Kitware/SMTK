@@ -89,6 +89,7 @@ smtk::model::OperatorResult CreateCylinder::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
+  CGMSMTK_EXPORT,
   smtk::bridge::cgm::CreateCylinder,
   cgm_create_cylinder,
   "create cylinder",

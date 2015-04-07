@@ -65,8 +65,9 @@ enum OperatorOutcome
   *
   * You must also use the smtkDeclareModelOperator macro in your session's header.
   *
-  * This macro takes 4 arguments:
+  * This macro takes 6 arguments:
   *
+  * \a ExportSym - The symbol used to export the AutoInit functions.
   * \a Cls       - The classname of your operator. This should be fully specified (i.e.,
   *                include namespaces).
   * \a Comp      - A "compilable" name for the operator. This is used as part of several function
@@ -83,19 +84,19 @@ enum OperatorOutcome
   *                (i.e., whenever the program or dynamic library containing this macro are
   *                loaded).
   */
-#define smtkImplementsModelOperator(Cls, Comp, Nick, ParamSpec, Brdg) \
+#define smtkImplementsModelOperator(ExportSym, Cls, Comp, Nick, ParamSpec, Brdg) \
   /***\brief Adapt create() to return a base-class pointer (for register[Static]Operator). */ \
   smtk::model::OperatorPtr Cls ::baseCreate() { \
     return Cls ::create(); \
   } \
   /* Implement autoinit methods */ \
-  void smtk_##Comp##_operator_AutoInit_Construct() { \
+  void ExportSym smtk_##Comp##_operator_AutoInit_Construct() { \
     Brdg ::registerStaticOperator( \
       Nick , /* Can't rely on operatorName to be initialized yet */ \
       ParamSpec, \
       Cls ::baseCreate); \
   } \
-  void smtk_##Comp##_operator_AutoInit_Destruct() { \
+  void ExportSym smtk_##Comp##_operator_AutoInit_Destruct() { \
     Brdg ::registerStaticOperator( \
       Cls ::operatorName, \
       NULL, \

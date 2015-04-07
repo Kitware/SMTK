@@ -79,6 +79,7 @@ smtk::model::OperatorResult CreateVertex::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
+  CGMSMTK_EXPORT,
   smtk::bridge::cgm::CreateVertex,
   cgm_create_vertex,
   "create vertex",

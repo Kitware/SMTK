@@ -108,6 +108,7 @@ Session* CreateEdgesOperator::discreteSession() const
 } // namespace smtk
 
 smtkImplementsModelOperator(
+  SMTKDISCRETESESSION_EXPORT,
   smtk::bridge::discrete::CreateEdgesOperator,
   discrete_create_edges,
   "create edges",

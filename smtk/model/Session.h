@@ -190,8 +190,9 @@ public: \
   *
   * You must also use the smtkDeclareModelingKernel macro in your session's header.
   *
-  * This macro takes 3 arguments:
+  * This macro takes 6 arguments:
   *
+  * \a ExportSym - The symbol used to export the AutoInit functions.
   * \a Comp      - A "short" name for the session. This is used as part of several function
   *                names, so it must be a valid variable name and should *not* be in quotes.
   * \a Tags      - A pointer to a NULL-terminated string containing a JSON description of
@@ -205,20 +206,20 @@ public: \
   *                operators from its superclass. This is used to keep forwarding sessions
   *                like the Remus remote session from inheriting local operators.
   */
-#define smtkImplementsModelingKernel(Comp, Tags, Setup, Cls, Inherits) \
+#define smtkImplementsModelingKernel(ExportSym, Comp, Tags, Setup, Cls, Inherits) \
   /* Adapt create() to return a base-class pointer */ \
   static smtk::model::SessionPtr baseCreate() { \
     return Cls ::create(); \
   } \
   /* Implement autoinit methods */ \
-  void smtk_##Comp##_session_AutoInit_Construct() { \
+  void ExportSym smtk_##Comp##_session_AutoInit_Construct() { \
     smtk::model::SessionRegistrar::registerSession( \
       #Comp, /* Can't rely on sessionName to be initialized yet */ \
       Tags, \
       Setup, \
       baseCreate); \
   } \
-  void smtk_##Comp##_session_AutoInit_Destruct() { \
+  void ExportSym smtk_##Comp##_session_AutoInit_Destruct() { \
     smtk::model::SessionRegistrar::registerSession( \
       Cls ::sessionName, \
       std::string(), \

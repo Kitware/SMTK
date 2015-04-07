@@ -59,6 +59,7 @@ OperatorResult RemoteOperator::operateInternal()
 } // smtk namespace
 
 smtkImplementsModelOperator(
+  SMTKCORE_EXPORT,
   smtk::model::RemoteOperator,
   RemoteOperator,
   "remote op",

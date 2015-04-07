@@ -74,6 +74,7 @@ OperatorResult CounterOperator::operateInternal()
 // and provide an auto-init object for registering the
 // operator with the session.
 smtkImplementsModelOperator(
+  /* no export symbol */, // Export symbol (none here)
   ex::CounterOperator, // The class name (include all namespaces)
   ex_counter,          // The "component" name (for auto-init)
   "counter",           // The user-printable operator name.

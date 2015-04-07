@@ -143,6 +143,7 @@ smtk::model::OperatorResult Read::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
+  CGMSMTK_EXPORT,
   smtk::bridge::cgm::Read,
   cgm_read,
   "read",

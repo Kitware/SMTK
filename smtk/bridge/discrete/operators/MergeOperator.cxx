@@ -181,6 +181,7 @@ int MergeOperator::fetchCMBCellId(
 } // namespace smtk
 
 smtkImplementsModelOperator(
+  SMTKDISCRETESESSION_EXPORT,
   smtk::bridge::discrete::MergeOperator,
   discrete_merge,
   "merge",

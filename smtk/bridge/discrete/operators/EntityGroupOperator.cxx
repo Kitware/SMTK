@@ -263,6 +263,7 @@ int EntityGroupOperator::fetchCMBCellId(
 } // namespace smtk
 
 smtkImplementsModelOperator(
+  SMTKDISCRETESESSION_EXPORT,
   smtk::bridge::discrete::EntityGroupOperator,
   discrete_entity_group,
   "entity group",

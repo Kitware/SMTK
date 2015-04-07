@@ -134,6 +134,7 @@ smtk::model::OperatorResult Write::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
+  CGMSMTK_EXPORT,
   smtk::bridge::cgm::Write,
   cgm_write,
   "write",

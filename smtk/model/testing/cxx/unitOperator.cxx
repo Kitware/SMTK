@@ -121,6 +121,7 @@ protected:
  */
 /*
 smtkImplementsModelOperator(
+  ,
   TestOutcomeOperator,
   OutcomeOp,
   "outcome test",
