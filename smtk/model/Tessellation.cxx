@@ -40,12 +40,7 @@ Tessellation& Tessellation::addCoords(double x, double y, double z)
 Tessellation& Tessellation::addPoint(double* a)
 {
   int ai = this->addCoords(a);
-  (void)ai;
-  std::vector<int> pconn;
-  pconn.push_back(512); // Extension of three.js file format for "Vertex" glyph
-  pconn.push_back(ai);
-  this->m_conn.push_back(ai);
-  return *this;
+  return this->addPoint(ai);
 }
 
 /// Add two 3-D point coordinates to the tessellation plus a line-segment record.
@@ -53,38 +48,28 @@ Tessellation& Tessellation::addLine(double* a, double* b)
 {
   int ai = this->addCoords(a);
   int bi = this->addCoords(b);
-  this->m_conn.push_back(TESS_POLYLINE);
-  this->m_conn.push_back(2);
-  this->m_conn.push_back(ai);
-  this->m_conn.push_back(bi);
-  return *this;
+  return this->addLine(ai, bi);
 }
 
 /// Add three 3-D point coordinates to the tessellation plus a triangle record.
 Tessellation& Tessellation::addTriangle(double* a, double* b, double* c)
 {
-  std::vector<int> tconn;
-  tconn.reserve(4);
-  tconn.push_back(TESS_TRIANGLE);
-  tconn.push_back(this->addCoords(a));
-  tconn.push_back(this->addCoords(b));
-  tconn.push_back(this->addCoords(c));
-  this->insertNextCell(tconn);
-  return *this;
+  return
+    this->addTriangle(
+      this->addCoords(a),
+      this->addCoords(b),
+      this->addCoords(c));
 }
 
 /// Add four 3-D point coordinates to the tessellation plus a quadrilateral record.
 Tessellation& Tessellation::addQuad(double* a, double* b, double* c, double* d)
 {
-  std::vector<int> qconn;
-  qconn.reserve(5);
-  qconn.push_back(TESS_QUAD);
-  qconn.push_back(this->addCoords(a));
-  qconn.push_back(this->addCoords(b));
-  qconn.push_back(this->addCoords(c));
-  qconn.push_back(this->addCoords(d));
-  this->insertNextCell(qconn);
-  return *this;
+  return
+    this->addQuad(
+      this->addCoords(a),
+      this->addCoords(b),
+      this->addCoords(c),
+      this->addCoords(d));
 }
 
 /// Add a vertex record using a pre-existing point coordinate (referenced by ID).
