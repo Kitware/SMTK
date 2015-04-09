@@ -34,6 +34,7 @@ namespace smtk
 
     public slots:
       virtual void showAdvanceLevelOverlay(bool show);
+      virtual void requestModelEntityAssociation();
 
     protected:
       virtual void updateAttributeData();

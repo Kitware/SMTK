@@ -40,6 +40,7 @@ namespace smtk
 
     public slots:
       void setOutputOptional(int);
+      virtual void onRequestEntityAssociation();
 
     signals:
       void requestEntityAssociation();
@@ -48,7 +49,6 @@ namespace smtk
 
     protected slots:
       virtual void updateItemData();
-      virtual void onRequestEntityAssociation();
       virtual void popupViewItemSelected();
       virtual void clearEntityAssociations();
 

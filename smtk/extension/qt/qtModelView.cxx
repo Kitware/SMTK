@@ -386,8 +386,40 @@ void qtModelView::recursiveSelect (smtk::model::DescriptivePhrasePtr dPhrase,
 }
 
 //----------------------------------------------------------------------------
+void qtModelView::owningEntitiesByMask (
+    smtk::model::DescriptivePhrasePtr inDp,
+    smtk::model::EntityRefs& selentityrefs, BitFlags entityFlags)
+{
+  DescriptivePhrasePtr dp = inDp;
+  while (dp)
+    {
+    EntityPhrasePtr ephrase = smtk::dynamic_pointer_cast<EntityPhrase>(dp);
+    if (ephrase && ephrase->relatedEntity().isValid())
+      {
+      BitFlags masked = ephrase->relatedEntity().entityFlags() & entityFlags;
+      if (entityFlags == ANY_ENTITY || masked)
+        {
+        selentityrefs.insert(ephrase->relatedEntity());
+        break;// stop
+        }
+      }
+
+
+    if(!dp->parent()) // could be an EntityListPhrase
+      {
+      EntityListPhrasePtr lphrase = smtk::dynamic_pointer_cast<EntityListPhrase>(dp);
+      if (lphrase)
+        dp = lphrase->parent();
+      }
+    else
+      dp = dp->parent();
+    }
+}
+
+//----------------------------------------------------------------------------
 void qtModelView::currentSelectionByMask (
-    smtk::model::EntityRefs& selentityrefs, const BitFlags& entityFlags)
+    smtk::model::EntityRefs& selentityrefs, const BitFlags& entityFlags,
+    bool searchUp)
 {
   smtk::model::QEntityItemModel* qmodel = this->getModel();
   if(!qmodel)
@@ -396,7 +428,10 @@ void qtModelView::currentSelectionByMask (
     }
   foreach(QModelIndex sel, this->selectedIndexes())
     {
-    this->recursiveSelect(qmodel->getItem(sel), selentityrefs, entityFlags);
+    if(searchUp)
+      this->owningEntitiesByMask(qmodel->getItem(sel), selentityrefs, entityFlags);      
+    else
+      this->recursiveSelect(qmodel->getItem(sel), selentityrefs, entityFlags);
     }
 }
 

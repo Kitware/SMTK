@@ -64,6 +64,9 @@ namespace smtk
       static qtItem* createMeshSelectionItem(smtk::attribute::MeshSelectionItemPtr item, QWidget* pW, qtBaseView* view,
         Qt::Orientation enVectorItemOrient = Qt::Horizontal);
 
+    public slots:
+      virtual void onRequestEntityAssociation();
+
     protected slots:
       virtual void updateItemsData();
 

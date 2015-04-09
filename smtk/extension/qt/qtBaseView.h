@@ -63,6 +63,8 @@ namespace smtk
       virtual void showAdvanceLevelOverlay(bool val)
       { m_advOverlayVisible = val;}
 
+      virtual void requestModelEntityAssociation() {;}
+
     protected slots:
       virtual void updateAttributeData() {;}
 

@@ -60,7 +60,8 @@ public:
     const QMap<smtk::model::SessionPtr, smtk::common::UUIDs>& brEntities,
     const QColor& clr);
   void currentSelectionByMask(
-    smtk::model::EntityRefs& selentityrefs, const BitFlags& entityFlags);
+    smtk::model::EntityRefs& selentityrefs, const BitFlags& entityFlags,
+    bool searchUp = false);
   virtual void updateWithOperatorResult(
     const smtk::model::SessionRef& sref, const OperatorResult& result);
 
@@ -111,6 +112,9 @@ protected:
   T owningEntityAs(const QModelIndex &idx) const;
   template<typename T>
   T owningEntityAs(const DescriptivePhrasePtr &dp) const;
+  void owningEntitiesByMask (
+    smtk::model::DescriptivePhrasePtr inDp,
+    smtk::model::EntityRefs& selentityrefs, BitFlags entityFlags);
 
   bool hasSessionOp(const smtk::model::SessionRef& brSession,
     const std::string& opname);

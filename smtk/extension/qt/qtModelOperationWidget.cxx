@@ -12,7 +12,7 @@
 
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtInstancedView.h"
 #include "smtk/extension/qt/qtModelEntityItem.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -53,7 +53,7 @@ public:
   smtk::model::OperatorPtr opPtr;
   QPointer<qtUIManager> opUiManager;
   QPointer<QFrame> opUiParent;
-  QPointer<qtBaseView> opUiView;
+  QPointer<qtInstancedView> opUiView;
   };
 
   smtk::model::Session::WeakPtr CurrentSession;
@@ -188,7 +188,9 @@ bool qtModelOperationWidget::setCurrentOperation(
   QObject::connect(uiManager, SIGNAL(meshSelectionItemCreated(smtk::attribute::qtMeshSelectionItem*)),
     this, SLOT(onMeshSelectionItemCreated(smtk::attribute::qtMeshSelectionItem*)));
 
-  qtBaseView* theView = uiManager->initializeView(opParent, instanced, false);
+  qtInstancedView* theView = qobject_cast<qtInstancedView*>(
+    uiManager->initializeView(opParent, instanced, false));
+  theView->requestModelEntityAssociation();
   qtModelOperationWidgetInternals::OperatorInfo opInfo;
   opInfo.opPtr = brOp;
   opInfo.opUiParent = opParent;
@@ -230,6 +232,7 @@ bool qtModelOperationWidget::setCurrentOperation(
 
   if(this->Internals->OperatorMap.contains(opName))
     {
+    this->Internals->OperatorMap[opName].opUiView->requestModelEntityAssociation();
     this->Internals->OperationsLayout->setCurrentWidget(
       this->Internals->OperatorMap[opName].opUiParent);
     return true;

@@ -204,6 +204,15 @@ void qtAttribute::updateItemsData()
       }
     }
 }
+//----------------------------------------------------------------------------
+void qtAttribute::onRequestEntityAssociation()
+{
+  foreach(qtItem* item, this->Internals->Items)
+    {
+    if(qtModelEntityItem* mitem = qobject_cast<qtModelEntityItem*>(item))
+      mitem->onRequestEntityAssociation();
+    }
+}
 
 //----------------------------------------------------------------------------
 smtk::attribute::AttributePtr qtAttribute::getObject()
