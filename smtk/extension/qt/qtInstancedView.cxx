@@ -161,3 +161,12 @@ void qtInstancedView::showAdvanceLevelOverlay(bool show)
     }
   this->qtBaseView::showAdvanceLevelOverlay(show);
 }
+
+//----------------------------------------------------------------------------
+void qtInstancedView::requestModelEntityAssociation()
+{
+  foreach(qtAttribute* att, this->Internals->AttInstances)
+    {
+    att->onRequestEntityAssociation();
+    }
+}
