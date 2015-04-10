@@ -14,3 +14,4 @@ requiring much theory.
    python_first_steps/index.rst
    add_a_bridge/index.rst
    implement_an_operator/index.rst
+   debugging_python_tests/index.rst
