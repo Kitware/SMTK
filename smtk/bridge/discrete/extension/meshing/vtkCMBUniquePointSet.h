@@ -21,6 +21,7 @@
 #include <map>
 #include <vector>
 #include <utility>
+#include <cstddef> // for size_t
 #include "vtkType.h"
 #include "vtkABI.h"
 
