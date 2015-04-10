@@ -1,6 +1,6 @@
 PROJECT(SMTKDiscreteExtension)
 
-set(EXT_READER_SRC
+set(srcs
     reader/vtkCMBSTLReader.cxx
     reader/vtkCUBITReader.cxx
     reader/vtkDataSetRegionSurfaceFilter.cxx
@@ -12,27 +12,12 @@ set(EXT_READER_SRC
     reader/vtkLIDARReader.cxx
     reader/vtkCMBReaderHelperFunctions.cxx
 )
-set(EXT_READER_HEADER
-    reader/vtkCMBSTLReader.h
-    reader/vtkCUBITReader.h
-    reader/vtkDataSetRegionSurfaceFilter.h
-    reader/vtkCMBGeometryReader.h
-    reader/vtkCMBMeshReader.h
-    reader/vtkExtractRegionEdges.h
-    reader/vtkGMSSolidReader.h
-    reader/vtkGMSTINReader.h
-    reader/vtkLIDARReader.h
-    reader/vtkCMBReaderHelperFunctions.h
-)
 
 # if there is Remus, add map file reader and support files.
-set(Readers_Need_Meshing_SRC)
-set(Readers_Need_Meshing_HEADER)
 if(SMTK_ENABLE_REMUS)
-
   #Remus is needed
   find_package(Remus REQUIRED)
-  list(APPEND Readers_Need_Meshing_SRC
+  list(APPEND srcs
     reader/vtkCMBGeometry2DReader.cxx
     reader/vtkCMBMapReader.cxx
     reader/vtkPolyFileReader.cxx
@@ -47,24 +32,6 @@ if(SMTK_ENABLE_REMUS)
     meshing/vtkSplitPlanarLines.cxx
     meshing/vtkRayIntersectionLocator.cxx
     )
-  list(APPEND Readers_Need_Meshing_HEADER
-    reader/vtkCMBGeometry2DReader.h
-    reader/vtkCMBMapReader.h
-    reader/vtkPolyFileReader.h
-    reader/vtkPolyFileErrorReporter.h
-    reader/vtkPolyFileTokenConverters.h
-    meshing/cmbFaceMesherInterface.h
-    meshing/cmbFaceMeshHelper.h
-    meshing/vtkCMBPrepareForTriangleMesher.h
-    meshing/vtkCMBMeshServerLauncher.h
-    meshing/vtkDiscoverRegions.h
-    meshing/vtkPolylineTriangulator.h
-    meshing/vtkCMBUniquePointSet.h
-    meshing/vtkCMBTriangleMesher.h
-    meshing/vtkRegionsToLoops.h
-    meshing/vtkSplitPlanarLines.h
-    meshing/vtkRayIntersectionLocator.h
-    )
 endif()
 
 # set(Meshing_Libs)
@@ -77,19 +44,13 @@ endif()
 # endif()
 
 # no wrapping for sources
-set_source_files_properties(
-  ${Readers_Need_Meshing_SRC}
-  ${EXT_READER_SRC}
-  WRAP_EXCLUDE
-)
+set_source_files_properties(${srcs} WRAP_EXCLUDE)
 
-SET(_VTK_INSTALL_NO_DEVELOPMENT ${VTK_INSTALL_NO_DEVELOPMENT})
-SET(VTK_INSTALL_NO_DEVELOPMENT ON)
+set(_VTK_INSTALL_NO_DEVELOPMENT ${VTK_INSTALL_NO_DEVELOPMENT})
+set(VTK_INSTALL_NO_DEVELOPMENT ON)
 set(vtkSMTKDiscreteExt_NO_HeaderTest 1)
-vtk_module_library(vtkSMTKDiscreteExt
-  ${Readers_Need_Meshing_SRC}
-  ${EXT_READER_SRC}
-)
+
+vtk_module_library(vtkSMTKDiscreteExt ${srcs})
 SET(VTK_INSTALL_NO_DEVELOPMENT ${_VTK_INSTALL_NO_DEVELOPMENT})
 
 if(SMTK_ENABLE_REMUS)
@@ -107,3 +68,12 @@ endif()
 # ... and make header compilation tests link properly:
 smtk_install_library(vtkSMTKDiscreteExt)
 
+# ... and install the export header
+smtk_get_kit_name(name dir_prefix)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/vtkSMTKDiscreteExtModule.h  DESTINATION include/${dir_prefix})
+
+#include the subdirectories so that the headers are installed. We don't invoke
+#smtk_public_headers from this directory as that would cause the headers to
+#be installed in the wrong location
+add_subdirectory(reader)
+add_subdirectory(meshing)
