@@ -1,2 +1,3 @@
 *.swp
 doc/findfigure.pyc
+smtk/bridge/discrete/testing/python/discreteReadFile.pyc
