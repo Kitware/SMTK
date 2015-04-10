@@ -16,7 +16,7 @@
 #ifndef __smtkdiscrete_vtkGMSTINReader_h
 #define __smtkdiscrete_vtkGMSTINReader_h
 
-#include "vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
 #include "vtkMultiBlockDataSetAlgorithm.h"
 
 class vtkCellArray;

@@ -11,7 +11,7 @@
 #ifndef __smtkdiscrete_vtkPolyFileReader_h
 #define __smtkdiscrete_vtkPolyFileReader_h
 
-#include "vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 

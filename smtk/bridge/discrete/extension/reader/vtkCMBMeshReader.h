@@ -56,7 +56,7 @@
 #ifndef __smtkdiscrete_vtkCMBMeshReader_h
 #define __smtkdiscrete_vtkCMBMeshReader_h
 
-#include "vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
 #include "vtkUnstructuredGridAlgorithm.h"
 
 class vtkDoubleArray;

@@ -11,7 +11,7 @@
 #ifndef __smtkdiscrete_vtkDiscoverRegions_h
 #define __smtkdiscrete_vtkDiscoverRegions_h
 
-#include "vtkSMTKDiscreteExtModule.h" // for EXPORT macro
+#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 //#define VTK_CELL_REGION_IDS "CellRegionIds"
