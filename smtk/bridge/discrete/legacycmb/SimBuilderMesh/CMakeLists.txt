@@ -1,10 +1,6 @@
 project(SimBuilderMesh)
 
 include_directories(
-#   ${CMBModel_SOURCE_DIR}
-#   ${vtkDiscreteModel_SOURCE_DIR}/Model
-#   ${vtkCmbDiscreteModel_INCLUDE_DIRS}
-#   ${vtkDiscreteModel_INCLUDE_DIRS}
   ${vtkCMBFiltering_INCLUDE_DIRS}
   ${vtkCMBGraphics_INCLUDE_DIRS}
   ${vtkCMBIO_INCLUDE_DIRS}

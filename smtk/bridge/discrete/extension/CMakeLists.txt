@@ -67,15 +67,6 @@ if(SMTK_ENABLE_REMUS)
     )
 endif()
 
-# set(Meshing_Libs)
-# if(BUILD_MESH_WORKERS)
-#  list(APPEND Meshing_Libs
-#       omicron
-#       triangle_omicron
-#       tl_alloc
-#       )
-# endif()
-
 # no wrapping for sources
 set_source_files_properties(
   ${Readers_Need_Meshing_SRC}
