@@ -156,8 +156,10 @@ int Session::setup(const std::string& optName, const smtk::model::StringList& op
   */
 smtk::model::SessionInfoBits Session::transcribeInternal(
   const smtk::model::EntityRef& entityref,
-  SessionInfoBits requestedInfo)
+  SessionInfoBits requestedInfo,
+  int depth)
 {
+  (void) depth;
   ToolDataUser* tdu = TDUUID::findEntityById(entityref.entity());
   RefEntity* ent = dynamic_cast<RefEntity*>(tdu);
   if (ent)

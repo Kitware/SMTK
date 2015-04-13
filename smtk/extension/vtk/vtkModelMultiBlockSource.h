@@ -40,6 +40,7 @@ public:
 
   smtk::model::ManagerPtr GetModelManager();
   void SetModelManager(smtk::model::ManagerPtr);
+  void SetModelManager(const char* pointerAsString);
 
   // Description:
   // Model entity ID that this source will be built upon.

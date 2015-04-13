@@ -77,7 +77,7 @@ protected:
   Session();
 
   virtual smtk::model::SessionInfoBits transcribeInternal(
-    const smtk::model::EntityRef& entity, smtk::model::SessionInfoBits flags);
+    const smtk::model::EntityRef& entity, smtk::model::SessionInfoBits flags, int depth = -1);
 
   virtual bool ableToOperateDelegate(smtk::model::RemoteOperatorPtr op);
   virtual smtk::model::OperatorResult operateDelegate(

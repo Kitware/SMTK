@@ -56,6 +56,10 @@ public:
     { return this->m_details; }
   ///@}
 
+  static Arrangement Construct(EntityTypeBits t, ArrangementKind k, int relationIdx, int sense, Orientation o);
+  //static Arrangement ConstructParent(EntityTypeBits t, ArrangementKind k, int childIdx, int sense, Orientation o);
+  //static Arrangement ConstructChild(EntityTypeBits t, ArrangementKind k, int parentIdx, int sense, Orientation o);
+
   static Arrangement CellHasUseWithIndexSenseAndOrientation(int relationIdx, int sense, Orientation o);
   static Arrangement CellEmbeddedInEntityWithIndex(int relationIdx);
   static Arrangement CellIncludesEntityWithIndex(int relationIdx);

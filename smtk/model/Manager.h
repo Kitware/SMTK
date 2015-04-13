@@ -229,9 +229,11 @@ public:
   Collection entitiesMatchingFlagsAs(BitFlags flags, bool exactMatch = true);
 
   tess_iter_type setTessellation(const smtk::common::UUID& cellId, const Tessellation& geom);
+  bool removeTessellation(const smtk::common::UUID& cellId, bool removeGen = false);
 
   int arrangeEntity(const smtk::common::UUID& entityId, ArrangementKind, const Arrangement& arr, int index = -1);
   int unarrangeEntity(const smtk::common::UUID& entityId, ArrangementKind, int index, bool removeIfLast = false);
+  bool clearArrangements(const smtk::common::UUID& entityId);
 
   const Arrangements* hasArrangementsOfKindForEntity(
     const smtk::common::UUID& cellId,
@@ -250,8 +252,11 @@ public:
   bool findDualArrangements(
     const smtk::common::UUID& entityId, ArrangementKind kind, int index,
     ArrangementReferences& duals) const;
+  bool addDualArrangement(
+    const smtk::common::UUID& parent, const smtk::common::UUID& child,
+    ArrangementKind kind, int sense, Orientation orientation);
 
-  int findCellHasUseWithSense(const smtk::common::UUID& cellId, int sense) const;
+  int findCellHasUseWithSense(const smtk::common::UUID& cellId, const smtk::common::UUID& use, int sense) const;
   std::set<int> findCellHasUsesWithOrientation(const smtk::common::UUID& cellId, Orientation orient) const;
 
   smtk::common::UUID cellHasUseOfSenseAndOrientation(const smtk::common::UUID& cell, int sense, Orientation o) const;

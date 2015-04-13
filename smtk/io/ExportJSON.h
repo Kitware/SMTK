@@ -58,6 +58,7 @@ public:
 
   static int fromModelManager(cJSON* json, smtk::model::ManagerPtr modelMgr, JSONFlags sections = JSON_DEFAULT);
   static std::string fromModelManager(smtk::model::ManagerPtr modelMgr, JSONFlags sections = JSON_DEFAULT);
+  static bool fromModelManagerToFile(smtk::model::ManagerPtr modelMgr, const char* filename);
 
   template<typename T>
   static int forEntities(

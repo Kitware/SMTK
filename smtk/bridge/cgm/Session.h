@@ -78,7 +78,7 @@ protected:
   Session();
 
   virtual SessionInfoBits transcribeInternal(
-    const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo);
+    const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1);
 
   SessionInfoBits addCGMEntityToManager(const smtk::model::EntityRef& entity, RefEntity* refEnt, SessionInfoBits requestedInfo);
   SessionInfoBits addCGMEntityToManager(const smtk::model::EntityRef& entity, GroupingEntity* refEnt, SessionInfoBits requestedInfo);

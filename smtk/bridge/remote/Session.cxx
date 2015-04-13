@@ -70,12 +70,13 @@ remus::proto::JobRequirements Session::remusRequirements() const
 }
 
 smtk::model::SessionInfoBits Session::transcribeInternal(
-  const smtk::model::EntityRef& entity, smtk::model::SessionInfoBits flags)
+  const smtk::model::EntityRef& entity, smtk::model::SessionInfoBits flags, int depth)
 {
   cJSON* par;
   cJSON* req = ExportJSON::createRPCRequest("fetch-entity", par, /*id*/ "1", cJSON_Object);
   cJSON_AddItemToObject(par, "entity", cJSON_CreateString(entity.entity().toString().c_str()));
   cJSON_AddItemToObject(par, "flags", cJSON_CreateNumber(flags));
+  cJSON_AddItemToObject(par, "depth", cJSON_CreateNumber(depth));
 
   cJSON* resp = this->m_remusConn->jsonRPCRequest(req, this->m_remusWorkerReqs);
   cJSON* err = NULL;

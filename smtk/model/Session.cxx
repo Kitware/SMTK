@@ -12,6 +12,14 @@
 #include "smtk/model/SessionIO.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/RemoteOperator.h"
+#include "smtk/model/ArrangementHelper.h"
+
+#include "smtk/model/Model.h"
+#include "smtk/model/CellEntity.h"
+#include "smtk/model/ShellEntity.h"
+#include "smtk/model/UseEntity.h"
+#include "smtk/model/Instance.h"
+#include "smtk/model/Group.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -85,19 +93,19 @@ smtk::common::UUID Session::sessionId() const
   * or when \a requested is 0.
   */
 int Session::transcribe(
-  const EntityRef& entity, SessionInfoBits requested, bool onlyDangling)
+  const EntityRef& entity, SessionInfoBits requested, bool onlyDangling, int depth)
 {
   int retval = 0;
   if (requested)
     {
-    // Check that the entity IDs is dangling or we are forced to continue.
+    // Check that the entity ID is dangling or we are forced to continue.
     DanglingEntities::iterator it = this->m_dangling.find(entity);
     if (onlyDangling && it == this->m_dangling.end())
       { // The session has not been told that this UUID exists.
       return retval;
       }
     // Ask the subclass to transcribe information.
-    SessionInfoBits actual = this->transcribeInternal(entity, requested);
+    SessionInfoBits actual = this->transcribeInternal(entity, requested, depth);
     // Decide which bits of the request can possibly be honored...
     SessionInfoBits honorable = requested & this->allSupportedInformation();
     // ... and verify that all of those have been satisfied.
@@ -135,10 +143,10 @@ StringList Session::operatorNames(bool includeAdvanced) const
   for (it = ops.begin(); it != ops.end(); ++it)
     {
     // only show operators that are not advanced
-    if(!includeAdvanced && (*it)->advanceLevel() > 0)
+    if (!includeAdvanced && (*it)->advanceLevel() > 0)
       continue;
     nameList.push_back((*it)->type());
-    }    
+    }
   return nameList;
 }
 
@@ -232,21 +240,58 @@ Manager::Ptr Session::manager() const
     Manager::Ptr();
 }
 
+/// Return the log (obtained from the model manager).
+smtk::io::Logger& Session::log()
+{
+  return this->manager()->log();
+}
+
 /**\brief Transcribe information requested by \a flags into \a entity from foreign modeler.
   *
-  * Subclasses must override this method.
   * This method should return a non-zero value upon success.
   * Upon success, \a flags should be modified to represent the
   * actual information transcribed (as opposed to what was requested).
   * This should always be at least the information requested but may
   * include more information.
+  *
+  * Currently, it really only makes sense to call this method on a
+  * Model (i.e., not an edge, face, etc.); entire models at a time
+  * are retranscribed.
+  *
+  * Subclasses may override this method.
+  * If they do not, they should implement the virtual relationship helper methods.
   */
-SessionInfoBits Session::transcribeInternal(const EntityRef& entity, SessionInfoBits flags)
+SessionInfoBits Session::transcribeInternal(const EntityRef& entRef, SessionInfoBits flags, int depth)
 {
-  (void)entity;
-  (void)flags;
-  // Fail to transcribe anything:
-  return 0;
+  SessionInfoBits actual = SESSION_NOTHING;
+  Entity* entRec = this->m_manager->findEntity(entRef.entity(), false);
+  if (!entRec)
+    entRec = this->addEntityRecord(entRef);
+
+  // Get a subclass-specific helper for validating/repairing/creating arrangements
+  ArrangementHelper* helper = this->createArrangementHelper();
+
+  // Now recursively find all related entities.
+  // This marks entRef, resets it (removing all relations), and stores state in the helper
+  // as required to re-transcribe the state in a manner as consistent with the previous state
+  // as possible. (For example the helper might store the sense number of an edge or vertex
+  // with respect to its parent face or edge so that retranscription results in the same
+  // senses if possible.)
+  this->findOrAddRelatedEntities(entRef, flags, helper);
+  helper->doneAddingEntities(this->shared_from_this());
+
+  // We must re-find entRec because the addition of other entities may
+  // have caused a reallocation (in hash-based storage):
+  entRec = this->m_manager->findEntity(entRef.entity(), false);
+
+  actual |= this->findOrAddArrangements(entRef, entRec, flags, helper);
+  actual |= this->updateProperties(entRef, entRec, flags, helper);
+  actual |= this->updateTessellation(entRef, flags, helper);
+  delete helper;
+
+  // Return what we actually transcribed so that parent can update
+  // the dangling entity map.
+  return actual;
 }
 
 /**\brief Set the session ID.
@@ -266,6 +311,252 @@ void Session::setManager(Manager* mgr)
   this->m_manager = mgr;
   this->m_operatorSys->setRefModelManager(
     mgr->shared_from_this());
+}
+
+/// Subclasses implement this; it should add a record for \a entRef to the manager.
+Entity* Session::addEntityRecord(const EntityRef& entRef)
+{
+  return NULL;
+}
+
+/**\brief Subclasses implement this; it should return a new ArrangementHelper subclass instance.
+  *
+  * The caller is responsible for deleting it.
+  */
+ArrangementHelper* Session::createArrangementHelper()
+{
+  return new ArrangementHelper;
+}
+
+/**\brief Recursively called by transcribeInternal until no new entities are encountered.
+  *
+  */
+int Session::findOrAddRelatedEntities(const EntityRef& entRef, SessionInfoBits flags, ArrangementHelper* helper)
+{
+  if (helper->isMarked(entRef))
+    return 0;
+  helper->mark(entRef, true);
+
+  EntityTypeBits entType = static_cast<EntityTypeBits>(entRef.entityFlags() & ENTITY_MASK);
+  // Ignore bits restricting group membership:
+  if (entType & GROUP_ENTITY)
+    entType = GROUP_ENTITY;
+
+  int numAdded = 0;
+  switch (entType)
+    {
+  case CELL_ENTITY:
+    numAdded += this->findOrAddCellAdjacencies(entRef.as<CellEntity>(), flags, helper);
+    numAdded += this->findOrAddCellUses(entRef.as<CellEntity>(), flags, helper);
+    numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
+    numAdded += this->findOrAddRelatedInstances(entRef, flags, helper);
+    break;
+  case USE_ENTITY:
+    numAdded += this->findOrAddOwningCell(entRef.as<UseEntity>(), flags, helper);
+    numAdded += this->findOrAddShellAdjacencies(entRef.as<UseEntity>(), flags, helper);
+    numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
+    numAdded += this->findOrAddRelatedInstances(entRef, flags, helper);
+    break;
+  case SHELL_ENTITY:
+    numAdded += this->findOrAddUseAdjacencies(entRef.as<ShellEntity>(), flags, helper);
+    numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
+    numAdded += this->findOrAddRelatedInstances(entRef, flags, helper);
+    break;
+  case GROUP_ENTITY:
+    numAdded += this->findOrAddGroupOwner(entRef.as<Group>(), flags, helper);
+    numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
+    numAdded += this->findOrAddRelatedInstances(entRef, flags, helper);
+    break;
+  case MODEL_ENTITY:
+    numAdded += this->findOrAddFreeCells(entRef.as<Model>(), flags, helper);
+    numAdded += this->findOrAddRelatedModels(entRef.as<Model>(), flags, helper);
+    numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
+    numAdded += this->findOrAddRelatedInstances(entRef, flags, helper);
+    break;
+  case INSTANCE_ENTITY:
+    numAdded += this->findOrAddPrototype(entRef.as<Instance>(), flags, helper);
+    numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
+    break;
+  case SESSION:
+    numAdded += this->findOrAddRelatedModels(entRef.as<SessionRef>(), flags, helper);
+    numAdded += this->findOrAddRelatedGroups(entRef, flags, helper);
+    numAdded += this->findOrAddRelatedInstances(entRef, flags, helper);
+    break;
+  default:
+    smtkInfoMacro(this->log(), "Unknown entity type " << entRef.entityFlags() << " being transcribed.");
+    break;
+    }
+
+  helper->reset(entRef); // Remove all *generated* (not user-specified) arrangements, properties, etc.
+  return numAdded;
+}
+
+/**\brief Subclasses implement this; it should add boundary, bounding, embedded, and embeddor cells of the current cell.
+  *
+  */
+int Session::findOrAddCellAdjacencies(const CellEntity& entRef, SessionInfoBits request, ArrangementHelper* helper)
+{
+  (void)entRef;
+  (void)request;
+  (void)helper;
+  return 0;
+}
+
+/**\brief Subclasses implement this; it should add use records of the current cell.
+  *
+  */
+int Session::findOrAddCellUses(const CellEntity& entRef, SessionInfoBits request, ArrangementHelper* helper)
+{
+  (void)entRef;
+  (void)request;
+  (void)helper;
+  return 0;
+}
+
+/**\brief Subclasses implement this; it should add the current use's owning cell.
+  *
+  */
+int Session::findOrAddOwningCell(const UseEntity& entRef, SessionInfoBits request, ArrangementHelper* helper)
+{
+  (void)entRef;
+  (void)request;
+  (void)helper;
+  return 0;
+}
+
+/**\brief Subclasses implement this; it should add shells bounded by or bounding the given use.
+  *
+  */
+int Session::findOrAddShellAdjacencies(const UseEntity& entRef, SessionInfoBits request, ArrangementHelper* helper)
+{
+  (void)entRef;
+  (void)request;
+  (void)helper;
+  return 0;
+}
+
+/**\brief
+  *
+  */
+int Session::findOrAddUseAdjacencies(const ShellEntity& entRef, SessionInfoBits request, ArrangementHelper* helper)
+{
+  (void)entRef;
+  (void)request;
+  (void)helper;
+  return 0;
+}
+
+/**\brief
+  *
+  */
+int Session::findOrAddGroupOwner(const Group& entRef, SessionInfoBits request, ArrangementHelper* helper)
+{
+  (void)entRef;
+  (void)request;
+  (void)helper;
+  return 0;
+}
+
+/**\brief
+  *
+  */
+int Session::findOrAddFreeCells(const Model& entRef, SessionInfoBits request, ArrangementHelper* helper)
+{
+  (void)entRef;
+  (void)request;
+  (void)helper;
+  return 0;
+}
+
+/**\brief
+  *
+  */
+int Session::findOrAddRelatedModels(const Model& entRef, SessionInfoBits request, ArrangementHelper* helper)
+{
+  (void)entRef;
+  (void)request;
+  (void)helper;
+  return 0;
+}
+
+/**\brief
+  *
+  */
+int Session::findOrAddPrototype(const Instance& entRef, SessionInfoBits request, ArrangementHelper* helper)
+{
+  (void)entRef;
+  (void)request;
+  (void)helper;
+  return 0;
+}
+
+/**\brief
+  *
+  */
+int Session::findOrAddRelatedModels(const SessionRef& entRef, SessionInfoBits request, ArrangementHelper* helper)
+{
+  (void)entRef;
+  (void)request;
+  (void)helper;
+  return 0;
+}
+
+/**\brief
+  *
+  */
+int Session::findOrAddRelatedGroups(const EntityRef& entRef, SessionInfoBits request, ArrangementHelper* helper)
+{
+  (void)entRef;
+  (void)request;
+  (void)helper;
+  return 0;
+}
+
+/**\brief
+  *
+  */
+int Session::findOrAddRelatedInstances(const EntityRef& entRef, SessionInfoBits request, ArrangementHelper* helper)
+{
+  (void)entRef;
+  (void)request;
+  (void)helper;
+  return 0;
+}
+
+/**\brief Subclasses implement this to finalize arrangement information for \a entRef using the \a helper.
+  *
+  */
+SessionInfoBits Session::findOrAddArrangements(const EntityRef& entRef, Entity* entRec, SessionInfoBits flags, ArrangementHelper* helper)
+{
+  (void)entRef;
+  (void)entRec;
+  (void)flags;
+  (void)helper;
+  return SESSION_ARRANGEMENTS;
+}
+
+/**\brief Subclasses implement this to update transcribed (not user-specified) properties of \a entRef.
+  *
+  */
+SessionInfoBits Session::updateProperties(const EntityRef& entRef, Entity* entRec, SessionInfoBits flags, ArrangementHelper* helper)
+{
+  (void)entRef;
+  (void)entRec;
+  (void)flags;
+  (void)helper;
+  return SESSION_FLOAT_PROPERTIES | SESSION_STRING_PROPERTIES | SESSION_INTEGER_PROPERTIES;
+}
+
+/**\brief Sublasses implement this to update the tessellation of the given \a entRef.
+  *
+  * This method will only be called when transcribe() is asked to include the tessellation.
+  */
+SessionInfoBits Session::updateTessellation(const EntityRef& entRef, SessionInfoBits flags, ArrangementHelper* helper)
+{
+  (void)entRef;
+  (void)flags;
+  (void)helper;
+  return SESSION_TESSELLATION;
 }
 
 /**\brief Subclasses must call this method from within their constructors.

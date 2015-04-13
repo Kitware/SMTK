@@ -10,7 +10,7 @@
 #ifndef __smtk_model_ArrangementKind_h
 #define __smtk_model_ArrangementKind_h
 
-#include "smtk/CoreExports.h"
+#include "smtk/model/EntityTypeBits.h"
 
 #include <string>
 
@@ -68,6 +68,8 @@ SMTKCORE_EXPORT std::string NameForArrangementKind(ArrangementKind k);
 
 SMTKCORE_EXPORT ArrangementKind ArrangementKindFromAbbreviation(const std::string& abbr);
 SMTKCORE_EXPORT std::string AbbreviationForArrangementKind(ArrangementKind k);
+
+SMTKCORE_EXPORT ArrangementKind Dual(EntityTypeBits entType, ArrangementKind k);
 
   } // model namespace
 } // smtk namespace

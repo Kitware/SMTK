@@ -111,7 +111,8 @@ protected:
 
   virtual SessionInfoBits transcribeInternal(
     const smtk::model::EntityRef& entity,
-    SessionInfoBits requestedInfo);
+    SessionInfoBits requestedInfo,
+    int depth = -1);
 
   template<typename T>
   T* toBlock(const EntityHandle& handle);
