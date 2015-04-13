@@ -15,7 +15,7 @@
 #ifndef __smtkdiscrete_cmbFaceMeshHelper_h
 #define __smtkdiscrete_cmbFaceMeshHelper_h
 
-#include "vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
 #include <map> // Needed for STL map.
 #include <set> // Needed for STL set.
 #include <list> // Needed for STL list.

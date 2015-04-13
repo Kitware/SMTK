@@ -16,7 +16,7 @@
 #ifndef __smtkdiscrete_vtkCMBGeometry2DReader_h
 #define __smtkdiscrete_vtkCMBGeometry2DReader_h
 
-#include "vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 namespace smtk {

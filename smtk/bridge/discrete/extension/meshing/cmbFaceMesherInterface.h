@@ -17,7 +17,7 @@
 #ifndef __smtkdiscrete_cmbFaceMesherInterface_h
 #define __smtkdiscrete_cmbFaceMesherInterface_h
 
-#include "vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
 #include <string> //for std string
 #include "vtkABI.h"
 

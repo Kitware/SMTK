@@ -23,7 +23,7 @@
 #ifndef __smtkdiscrete_vtkRayIntersectionLocator_h
 #define __smtkdiscrete_vtkRayIntersectionLocator_h
 
-#include "vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
 #include "vtkCellTreeLocator.h"
 #include "vtkVector.h"
 #include <vector> // Needed for public interface.

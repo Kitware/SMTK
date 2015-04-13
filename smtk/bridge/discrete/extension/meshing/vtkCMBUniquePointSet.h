@@ -16,7 +16,7 @@
 #ifndef __smtkdiscrete_vtkCMBUniquePointSet_
 #define __smtkdiscrete_vtkCMBUniquePointSet_
 
-#include "vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
 
 #include <map>
 #include <vector>

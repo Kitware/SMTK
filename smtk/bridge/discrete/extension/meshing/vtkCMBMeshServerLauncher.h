@@ -16,7 +16,7 @@
 #ifndef __smtkdiscrete_vtkCMBMeshServerLauncher_h
 #define __smtkdiscrete_vtkCMBMeshServerLauncher_h
 
-#include "vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
 #include "vtkObject.h"
 #include "vtkStdString.h" //needed for the HostName
 

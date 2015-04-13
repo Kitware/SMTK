@@ -11,7 +11,7 @@
 #ifndef __smtkdiscrete_vtkPolylineTriangulator_h
 #define __smtkdiscrete_vtkPolylineTriangulator_h
 
-#include "vtkSMTKDiscreteExtModule.h" // for EXPORT macro
+#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 namespace smtk {
