@@ -74,12 +74,51 @@ OperatorResult MeshOperator::operateInternal()
   //of the mesher
   submission["meshing_attributes"] = meshingControls;
 
-  //lastly all we have to do is serialize the model
-  std::string modelSerialized =
-    smtk::io::ExportJSON::forEntities(
-      models, smtk::model::ITERATE_MODELS, smtk::io::JSON_DEFAULT);
+  if(models.size() > 0)
+    {
+    //lastly all we have to do is serialize the model, and the session information
+    //for that model. This way workers that can reconstruct specific sessions
+    //are possible.
+    cJSON* modelAndSession = cJSON_CreateObject();
+    cJSON* topo = cJSON_CreateObject();
+    cJSON* sess = cJSON_CreateObject();
 
-  submission["model"] = remus::proto::make_JobContent(modelSerialized);
+    cJSON_AddItemToObject(modelAndSession, "topo", topo);
+    cJSON_AddItemToObject(modelAndSession, "sessions", sess);
+
+    //first thing we do is export the session for each model. We do this
+    //by asking each session to export the relevant models
+    typedef smtk::model::Models::const_iterator model_const_it;
+    smtk::common::UUIDs modelIds;
+    for(model_const_it i=models.begin(); i!=models.end(); ++i)
+      {
+      modelIds.insert(i->entity());
+      }
+
+    smtk::model::SessionRefs sessions = this->manager()->sessions();
+    for (smtk::model::SessionRefs::iterator bit = sessions.begin(); bit != sessions.end(); ++bit)
+      {
+      smtk::io::ExportJSON::forManagerSessionPartial(bit->entity(),
+                                                     modelIds,
+                                                     sess,
+                                                     this->manager());
+      }
+
+    //next we export all the models and place them in the topo section
+    smtk::io::ExportJSON::forEntities(topo,
+                                      models,
+                                      smtk::model::ITERATE_MODELS,
+                                      smtk::io::JSON_DEFAULT);
+
+    char* json = cJSON_Print(modelAndSession);
+    std::string modelSerialized(json);
+    free(json);
+    cJSON_Delete(modelAndSession);
+
+    //if we don't have any model's don't specify this key.
+    //Omitting this key should make the worker fail.
+    submission["model"] = remus::proto::make_JobContent(modelSerialized);
+    }
 
   //now that we have the submission, construct a remus client to submit it
   const remus::client::ServerConnection conn =
@@ -126,6 +165,7 @@ OperatorResult MeshOperator::operateInternal()
 smtkImplementsModelOperator(
   smtk::model::MeshOperator,
   remus_mesh,
+
   "mesh",
   MeshOperator_xml,
   smtk::model::Session);
