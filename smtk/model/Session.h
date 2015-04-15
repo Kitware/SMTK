@@ -223,8 +223,8 @@ public: \
     smtk::model::SessionRegistrar::registerSession( \
       Cls ::sessionName, \
       std::string(), \
-      NULL, \
-      NULL); \
+      SMTK_FUNCTION_INIT, \
+      SMTK_FUNCTION_INIT); \
   } \
   /**\brief Declare the component name */ \
   std::string Cls ::sessionName(#Comp); \

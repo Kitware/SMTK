@@ -47,6 +47,12 @@ typedef smtk::function<
 /// A (generic) function-pointer to construct a session instance.
 typedef smtk::function<SessionPtr()> SessionConstructor;
 
+#if defined(_MSC_VER) && _MSC_VER >= 1800
+#define SMTK_FUNCTION_INIT nullptr
+#else
+#define SMTK_FUNCTION_INIT NULL
+#endif
+
 /// A record associating session information with a constructor method.
 struct StaticSessionInfo {
   std::string Name;
