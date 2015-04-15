@@ -78,6 +78,7 @@ public:
   static int forManagerStringProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forManagerIntegerProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forManagerSession(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
+  static int forManagerSessionPartial(const smtk::common::UUID& sessionId, const common::UUIDs &modelIds, cJSON*, smtk::model::ManagerPtr modelMgrId);
   //static int forModelOperators(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forOperatorDefinitions(smtk::attribute::System* opSys, cJSON*);
   static int forOperator(smtk::model::OperatorSpecification op, cJSON*);
