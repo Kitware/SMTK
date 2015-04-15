@@ -102,32 +102,6 @@ public:
     explicit parameter( const std::string&   short_name
                         , const std::string& full_name
                         , ObjectType* obj
-                        , void ( ObjectType::*fn )( const ArgType& ) ) :
-            for_arg( boost::make_shared< argument_holder<ArgType> >( obj, fn ) ) {
-        init( short_name, full_name );
-    }
-
-    template
-    <
-      typename ObjectType
-      , typename ArgType
-    >
-    explicit parameter( const std::string&   short_name
-                        , const std::string& full_name
-                        , ObjectType* obj
-                        , void ( ObjectType::*fn )( const ArgType& ) const ) :
-            for_arg( boost::make_shared< argument_holder<ArgType> >( obj, fn ) ) {
-        init( short_name, full_name );
-    }
-
-    template
-    <
-      typename ObjectType
-      , typename ArgType
-    >
-    explicit parameter( const std::string&   short_name
-                        , const std::string& full_name
-                        , ObjectType* obj
                         , void ( ObjectType::*fn )( ArgType ) ) :
             for_arg( boost::make_shared< argument_holder<ArgType> >( obj, fn ) ) {
         init( short_name, full_name );

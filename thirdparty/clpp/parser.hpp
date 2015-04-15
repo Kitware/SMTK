@@ -778,28 +778,6 @@ public:
     >
   parameter& add_parameter( const std::string& single_name
                            , ObjectType* obj
-                           , void ( ObjectType::*fn )( const ArgType& ) ) {
-        return create_parameter( single_name, "", obj, fn );
-    }
-
-    template
-    <
-      typename ObjectType
-      , typename ArgType
-    >
-  parameter& add_parameter( const std::string& single_name
-                           , ObjectType* obj
-                           , void ( ObjectType::*fn )( const ArgType& ) const ) {
-        return create_parameter( single_name, "", obj, fn );
-    }
-
-    template
-    <
-      typename ObjectType
-      , typename ArgType
-    >
-  parameter& add_parameter( const std::string& single_name
-                           , ObjectType* obj
                            , void ( ObjectType::*fn )( ArgType ) ) {
         return create_parameter( single_name, "", obj, fn );
     }
