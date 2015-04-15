@@ -233,16 +233,29 @@ function(sbk_wrap_library NAME)
   if(_GENERATOR_ARGS)
     list(APPEND _shiboken_options ${_GENERATOR_ARGS})
   endif()
+  list(APPEND _shiboken_options
+    "--output-directory=${CMAKE_CURRENT_BINARY_DIR}"
+  )
+
+  set(arg_file "${CMAKE_CURRENT_BINARY_DIR}/shiboken-${NAME}.args")
+  file(WRITE "${arg_file}.tmp" "")
+  foreach (arg IN LISTS _shiboken_options)
+    file(APPEND "${arg_file}.tmp" "${arg}\n")
+  endforeach ()
+  file(APPEND "${arg_file}.tmp" "--include-paths=${_includes}\n")
+  file(APPEND "${arg_file}.tmp" "--typesystem-paths=${_typesystem_paths}\n")
+
+  configure_file(
+    "${arg_file}.tmp"
+    "${arg_file}"
+    COPYONLY)
 
   add_custom_command(
     OUTPUT ${_sources}
-    DEPENDS ${_typesystem} ${_global_header} ${_depends} ${_typesystem_depends}
+    DEPENDS ${_typesystem} ${_global_header} ${_depends} ${_typesystem_depends} ${arg_file}
     COMMAND "${SHIBOKEN_BINARY}"
-            ${_shiboken_options}
+            "@${arg_file}"
             "${_global_header}"
-            "--include-paths=${_includes}"
-            "--typesystem-paths=${_typesystem_paths}"
-            "--output-directory=${CMAKE_CURRENT_BINARY_DIR}"
             "${_typesystem}"
     WORKING_DIRECTORY ${_WORKING_DIRECTORY}
     COMMENT "Generating Python bindings for ${NAME}"
