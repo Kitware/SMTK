@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "SetProperty" Operator -->
+<!-- Description of the model "CloseModel" Operator -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
@@ -13,7 +13,7 @@
 
     <!-- Result -->
     <AttDef Type="result(close model)" BaseType="result">
-      <!-- The expunged entities are stored in the base result's "modified" item. -->
+      <!-- The close models are stored in the base result's "expunged" item. -->
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>
