@@ -111,21 +111,24 @@ bool convert_vertices(const smtk::model::EntityRefs& ents,
 
 //----------------------------------------------------------------------------
 template<typename MappingType>
-std::vector<smtk::mesh::HandleRange> convert_cells(const smtk::model::EntityRefs& ents,
-                                                   MappingType& mapping,
-                                                   const smtk::mesh::AllocatorPtr& ialloc)
+std::map<smtk::model::EntityRef, smtk::mesh::HandleRange>
+convert_cells(const smtk::model::EntityRefs& ents,
+              MappingType& mapping,
+              const smtk::mesh::AllocatorPtr& ialloc)
 {
 
   typedef smtk::model::Tessellation Tess;
   typedef typename MappingType::value_type value_type;
 
-  std::vector<smtk::mesh::HandleRange> newlyCreatedCells;
+  std::map<smtk::model::EntityRef, smtk::mesh::HandleRange> newlyCreatedCells;
 
   smtk::model::EntityIterator it;
   it.traverse(ents.begin(), ents.end(), smtk::model::ITERATE_BARE);
   for (it.begin(); !it.isAtEnd(); ++it)
     {
-    smtk::mesh::HandleRange cellsForThisVolume;
+    smtk::mesh::HandleRange cellsForThisEntity;
+    const smtk::model::EntityRef& refForThisEntity = it.current();
+
     //we filtered out all ents without tess already, so this can't be null
     const Tess* tess = it->hasTessellation();
 
@@ -193,13 +196,13 @@ std::vector<smtk::mesh::HandleRange> convert_cells(const smtk::model::EntityRefs
 
         //we need to add these cells to the range that represents all
         //cells for this volume
-        cellsForThisVolume.insert(cellsCreatedForThisType.begin(),
+        cellsForThisEntity.insert(cellsCreatedForThisType.begin(),
                                   cellsCreatedForThisType.end());
         }
       } //for all cells of a given type in a run
 
     //save all the cells of this volume
-    newlyCreatedCells.push_back( cellsForThisVolume );
+    newlyCreatedCells.insert( std::make_pair(refForThisEntity,cellsForThisEntity) );
     }
   return newlyCreatedCells;
 }
@@ -248,6 +251,7 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& 
   }
 
 
+  //We need to iterate over each model i think here
   //next we convert all volumes, faces, edges, and vertices that have tessellation
   EntityTypeBits entitiesToConvert[4] = { smtk::model::VERTEX,
                                           smtk::model::EDGE,
@@ -256,23 +260,22 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& 
   for( int entAsInt =0; entAsInt != 4; ++entAsInt)
   {
   EntityTypeBits entType = static_cast<EntityTypeBits>(entAsInt);
-  EntityRefs cells = modelManager->entitiesMatchingFlagsAs<EntityRefs>(entType);
-  detail::removeOnesWithoutTess( cells );
-  if( !cells.empty() )
+  EntityRefs currentEnts = modelManager->entitiesMatchingFlagsAs<EntityRefs>(entType);
+  detail::removeOnesWithoutTess( currentEnts );
+  if( !currentEnts.empty() )
     {
     //for each volume entity we need to create a range of handles
     //that represent the cell ids for that volume.
-    std::vector<smtk::mesh::HandleRange> per_ent_cells =
-        detail::convert_cells(cells, cellMapping, ialloc);
+    std::map<smtk::model::EntityRef, smtk::mesh::HandleRange> per_ent_cells =
+        detail::convert_cells(currentEnts, cellMapping, ialloc);
 
-    typedef std::vector<smtk::mesh::HandleRange>::const_iterator c_it;
+    typedef std::map<smtk::model::EntityRef, smtk::mesh::HandleRange>::const_iterator c_it;
     for(c_it i= per_ent_cells.begin(); i != per_ent_cells.end(); ++i)
       {
       //now create a mesh from those cells
-      smtk::mesh::CellSet cellsForMesh(collection, *i);
+      smtk::mesh::CellSet cellsForMesh(collection, i->second);
       smtk::mesh::MeshSet ms = collection->createMesh(cellsForMesh);
-      // collection->addAssociation(cells[index], ms);
-      // append ms to all_ms
+      collection->addAssociation(i->first, ms);
       }
     // collection->addAssociation(ModelEntityRef, all_ms);
     }
