@@ -66,6 +66,7 @@ smtk::model::OperatorResult CloseModel::operateInternal()
 #include "smtk/model/CloseModel_xml.h"
 
 smtkImplementsModelOperator(
+  SMTKCORE_EXPORT,
   smtk::model::CloseModel,
   close_model,
   "close model",
