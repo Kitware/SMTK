@@ -429,6 +429,29 @@ int ExportJSON::forManagerSession(const smtk::common::UUID& uid, cJSON* node, Ma
   return status;
 }
 
+int ExportJSON::forManagerSessionPartial(const smtk::common::UUID& uid,
+                                         const smtk::common::UUIDs& modelIds,
+                                         cJSON* node,
+                                         ManagerPtr modelMgr)
+{
+  int status = 1;
+  SessionPtr session = SessionRef(modelMgr, uid).session();
+  if (!session)
+    return status;
+
+  cJSON* sess = cJSON_CreateObject();
+  cJSON_AddItemToObject(node, uid.toString().c_str(), sess);
+  cJSON_AddStringToObject(sess, "type", "session");
+  cJSON_AddStringToObject(sess, "name", session->name().c_str());
+  SessionIOJSONPtr delegate =
+    smtk::dynamic_pointer_cast<SessionIOJSON>(
+      session->createIODelegate("json"));
+  if (delegate)
+    status &= delegate->exportJSON(modelMgr, modelIds, sess);
+  status &= ExportJSON::forOperatorDefinitions(session->operatorSystem(), sess);
+  return status;
+}
+
 /*
 int ExportJSON::forModelOperators(const smtk::common::UUID& uid, cJSON* entRec, ManagerPtr modelMgr)
 {

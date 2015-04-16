@@ -38,5 +38,16 @@ int SessionIOJSON::exportJSON(ManagerPtr modelMgr, cJSON* sessionRec)
   return 1;
 }
 
+/**\brief Encode information into \a sessionRec for the given \a modelId of the \a modelMgr.
+  *
+  * Subclasses should return 1 on success and 0 on failure.
+  */
+int SessionIOJSON::exportJSON(ManagerPtr modelMgr, const smtk::common::UUIDs& modelIds, cJSON* sessionRec)
+{
+  (void)modelMgr;
+  (void)sessionRec;
+  return 1;
+}
+
   } // namespace model
 } // namespace smtk

@@ -29,6 +29,7 @@ public:
 
   virtual int importJSON(ManagerPtr modelMgr, cJSON* sessionRec);
   virtual int exportJSON(ManagerPtr modelMgr, cJSON* sessionRec);
+  virtual int exportJSON(ManagerPtr modelMgr, const common::UUIDs &modelIds, cJSON* sessionRec);
 };
 
   } // namespace model
