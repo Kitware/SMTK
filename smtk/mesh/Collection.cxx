@@ -327,6 +327,17 @@ smtk::mesh::CellSet Collection::findAssociatedCells( const smtk::model::EntityRe
   return ms.cells( );
 }
 
+
+//----------------------------------------------------------------------------
+bool Collection::addAssociation( const smtk::model::EntityRef& eref ,
+                                 const smtk::mesh::MeshSet& meshset )
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
+  //this causes the eref to become a meshset with the tag MODEL
+  //than all meshsets in m_range become child meshesets of eref
+  return iface->addAssociation( eref.entity(), meshset.m_range );
+}
+
 //----------------------------------------------------------------------------
 smtk::mesh::MeshSet Collection::createMesh( const smtk::mesh::CellSet& cells )
 {

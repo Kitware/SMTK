@@ -639,6 +639,39 @@ bool Interface::setNeumann(const smtk::mesh::HandleRange& meshsets,
 }
 
 //----------------------------------------------------------------------------
+bool Interface::addAssociation(const smtk::common::UUID& modelUUID,
+                               const smtk::mesh::HandleRange& range)
+{
+  if(range.empty() || !modelUUID)
+    { //if empty range or invalid uuid
+    return false;
+    }
+
+  //set the MODEL tag on every item in the range to being the modeulUUID
+  //question how many bytes is the modelUUID?
+  ::moab::Tag model_tag;
+  m_iface->tag_get_handle("MODEL",
+                          smtk::common::UUID::size(), //this should be 128 bits
+                          ::moab::MB_TYPE_OPAQUE,
+                          model_tag,
+                          ::moab::MB_TAG_BYTES| ::moab::MB_TAG_CREAT| ::moab::MB_TAG_SPARSE);
+
+  const void *tag_v_ptr = &modelUUID;
+  bool valid = true;
+  typedef smtk::mesh::HandleRange::const_iterator cit;
+  for(cit i=range.begin(); i!=range.end() && valid;++i)
+    {
+    const ::moab::EntityHandle& currentHandle = *i;
+    ::moab::ErrorCode rval = m_iface->tag_set_data(model_tag,
+                                                   &currentHandle,
+                                                   1,
+                                                   tag_v_ptr);
+    valid = (rval == ::moab::MB_SUCCESS);
+    }
+  return valid;
+}
+
+//----------------------------------------------------------------------------
 smtk::mesh::HandleRange Interface::rangeIntersect(const smtk::mesh::HandleRange& a,
                                                  const smtk::mesh::HandleRange& b) const
 {

@@ -158,6 +158,10 @@ public:
                   const smtk::mesh::Neumann& neumann) const;
 
   //----------------------------------------------------------------------------
+  bool addAssociation(const smtk::common::UUID& modelUUID,
+                      const smtk::mesh::HandleRange& range);
+
+  //----------------------------------------------------------------------------
   smtk::mesh::HandleRange rangeIntersect(const smtk::mesh::HandleRange& a,
                                         const smtk::mesh::HandleRange& b) const;
 

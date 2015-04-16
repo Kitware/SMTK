@@ -160,6 +160,10 @@ public:
                           const smtk::mesh::Neumann& neumann) const = 0;
 
   //----------------------------------------------------------------------------
+  virtual bool addAssociation(const smtk::common::UUID& modelUUID,
+                              const smtk::mesh::HandleRange& range) = 0;
+
+  //----------------------------------------------------------------------------
   virtual smtk::mesh::HandleRange rangeIntersect(const smtk::mesh::HandleRange& a,
                                                  const smtk::mesh::HandleRange& b) const = 0;
 

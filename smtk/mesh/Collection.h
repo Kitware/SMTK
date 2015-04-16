@@ -116,6 +116,8 @@ public:
   smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType );
   smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim );
 
+  bool addAssociation( const smtk::model::EntityRef& eref, const smtk::mesh::MeshSet& meshset );
+
   //----------------------------------------------------------------------------
   // Construction of new meshes
   //----------------------------------------------------------------------------
