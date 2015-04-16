@@ -12,6 +12,7 @@
 #define __smtkdiscrete_vtkPolyFileTokenConverters_h
 
 #include "vtkObjectBase.h"
+#include <limits>
 #include <iostream>
 #include <sstream>
 #include <string>
