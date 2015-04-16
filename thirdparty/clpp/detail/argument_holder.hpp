@@ -27,6 +27,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
+#include <boost/type_traits/remove_reference.hpp>
 #ifndef _MSC_VER
   #pragma GCC diagnostic pop
 #endif
@@ -51,19 +52,8 @@ struct argument_holder {
     typedef boost::function< void ( const ArgType& /* value */ ) >
             user_function_with_arg;
 public:
-  explicit argument_holder( void (*fn)( const ArgType& ) ) :
-            func_with_arg( fn ) {}
-
   explicit argument_holder( void (*fn)( ArgType ) ) :
             func_with_arg( fn ) {}
-
-  template< typename Object >
-  explicit argument_holder( Object* obj, void ( Object::*fn )( const ArgType& ) ) :
-            func_with_arg( boost::bind( fn, obj, _1 ) ) {}
-
-  template< typename Object >
-  explicit argument_holder( Object* obj, void ( Object::*fn )( const ArgType& ) const ) :
-            func_with_arg( boost::bind( fn, obj, _1 ) ) {}
 
   template< typename Object >
   explicit argument_holder( Object* obj, void ( Object::*fn )( ArgType ) ) :
@@ -74,7 +64,7 @@ public:
         func_with_arg( boost::bind( fn, obj, _1 ) ) {}
 public:
     user_function_with_arg  func_with_arg;
-    ArgType           default_value;
+    typename boost::remove_reference<ArgType>::type default_value;
 };
 
 typedef boost::shared_ptr< argument_holder< bool > >                b_arg_p;

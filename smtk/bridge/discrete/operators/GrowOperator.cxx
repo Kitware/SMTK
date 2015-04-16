@@ -435,6 +435,7 @@ Session* GrowOperator::discreteSession() const
 } // namespace smtk
 
 smtkImplementsModelOperator(
+  SMTKDISCRETESESSION_EXPORT,
   smtk::bridge::discrete::GrowOperator,
   discrete_grow,
   "grow",

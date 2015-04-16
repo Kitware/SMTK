@@ -131,6 +131,7 @@ OperatorResult DefaultSession::operateDelegate(RemoteOperatorPtr oper)
 
 #include "smtk/model/DefaultSession_json.h" // For DefaultSession_json
 smtkImplementsModelingKernel(
+  SMTKCORE_EXPORT,
   native,
   DefaultSession_json,
   smtk::model::SessionHasNoStaticSetup,

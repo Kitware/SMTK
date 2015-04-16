@@ -417,6 +417,7 @@ bool Session::addTessellation(
 #include "Session_json.h"
 
 smtkImplementsModelingKernel(
+  SMTKSESSIONEXODUS_EXPORT,
   exodus,
   Session_json,
   SessionHasNoStaticSetup,

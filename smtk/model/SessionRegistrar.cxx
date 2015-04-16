@@ -313,7 +313,7 @@ StringList SessionRegistrar::sessionEngines(const std::string& bname)
   */
 SessionStaticSetup SessionRegistrar::sessionStaticSetup(const std::string& bname)
 {
-  SessionStaticSetup result = NULL;
+  SessionStaticSetup result = SMTK_FUNCTION_INIT;
   SessionConstructors::const_iterator it = s_sessions()->find(bname);
   if (it != s_sessions()->end())
     result = it->second.Setup;
@@ -327,7 +327,7 @@ SessionStaticSetup SessionRegistrar::sessionStaticSetup(const std::string& bname
   */
 SessionConstructor SessionRegistrar::sessionConstructor(const std::string& bname)
 {
-  SessionConstructor result = NULL;
+  SessionConstructor result = SMTK_FUNCTION_INIT;
   SessionConstructors::const_iterator it = s_sessions()->find(bname);
   if (it != s_sessions()->end())
     result = it->second.Constructor;
@@ -339,7 +339,7 @@ SessionConstructor SessionRegistrar::sessionConstructor(const std::string& bname
   */
 SessionPtr SessionRegistrar::createSession(const std::string& bname)
 {
-  SessionConstructor ctor = NULL;
+  SessionConstructor ctor = SMTK_FUNCTION_INIT;
   SessionConstructors::const_iterator it = s_sessions()->find(bname);
   if (it != s_sessions()->end())
     ctor = it->second.Constructor;

@@ -152,6 +152,7 @@ smtk::model::OperatorResult BooleanIntersection::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
+  CGMSMTK_EXPORT,
   smtk::bridge::cgm::BooleanIntersection,
   cgm_boolean_intersection,
   "intersection",

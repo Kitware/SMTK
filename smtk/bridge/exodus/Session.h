@@ -10,6 +10,8 @@
 #ifndef __smtk_session_exodus_Session_h
 #define __smtk_session_exodus_Session_h
 
+#include "smtk/bridge/exodus/SMTKSessionExodusExports.h"
+
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Session.h"
 
@@ -40,7 +42,7 @@ enum EntityType
 };
 
 /// A "handle" for an Exodus entity (file, block, side set, or node set)
-struct EntityHandle
+struct SMTKSESSIONEXODUS_EXPORT EntityHandle
 {
   EntityType entityType;   //!< Describes the type of entity.
   int modelNumber;         //!< An offset in the vector of models (m_models).
@@ -77,7 +79,7 @@ struct EntityHandle
   * information from Exodus files, with each element block,
   * side set, and node set represented as a vtkUnstructuredGrid.
   */
-class Session : public smtk::model::Session
+class SMTKSESSIONEXODUS_EXPORT Session : public smtk::model::Session
 {
 public:
   typedef std::vector<vtkSmartPointer<vtkMultiBlockDataSet> > ModelVector_t;

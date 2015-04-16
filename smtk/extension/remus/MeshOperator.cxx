@@ -163,6 +163,7 @@ OperatorResult MeshOperator::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
+  SMTKREMUSEXT_EXPORT,
   smtk::model::MeshOperator,
   remus_mesh,
 

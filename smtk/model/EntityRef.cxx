@@ -1096,6 +1096,7 @@ std::size_t entityrefHash(const EntityRef& c)
  * property type is a template parameter.
  */
 template<>
+SMTKCORE_EXPORT
 StringData* EntityRef::properties<StringData>()
 {
   if (!this->hasStringProperties())
@@ -1110,6 +1111,7 @@ StringData* EntityRef::properties<StringData>()
 }
 
 template<>
+SMTKCORE_EXPORT
 FloatData* EntityRef::properties<FloatData>()
 {
   if (!this->hasFloatProperties())
@@ -1124,6 +1126,7 @@ FloatData* EntityRef::properties<FloatData>()
 }
 
 template<>
+SMTKCORE_EXPORT
 IntegerData* EntityRef::properties<IntegerData>()
 {
   if (!this->hasIntegerProperties())
@@ -1148,6 +1151,7 @@ IntegerData* EntityRef::properties<IntegerData>()
  * property type is a template parameter.
  */
 template<>
+SMTKCORE_EXPORT
 StringData* EntityRef::hasProperties<StringData>()
 {
   if (this->hasStringProperties())
@@ -1156,6 +1160,7 @@ StringData* EntityRef::hasProperties<StringData>()
 }
 
 template<>
+SMTKCORE_EXPORT
 const StringData* EntityRef::hasProperties<StringData>() const
 {
   if (this->hasStringProperties())
@@ -1164,6 +1169,7 @@ const StringData* EntityRef::hasProperties<StringData>() const
 }
 
 template<>
+SMTKCORE_EXPORT
 FloatData* EntityRef::hasProperties<FloatData>()
 {
   if (this->hasFloatProperties())
@@ -1172,6 +1178,7 @@ FloatData* EntityRef::hasProperties<FloatData>()
 }
 
 template<>
+SMTKCORE_EXPORT
 const FloatData* EntityRef::hasProperties<FloatData>() const
 {
   if (this->hasFloatProperties())
@@ -1180,6 +1187,7 @@ const FloatData* EntityRef::hasProperties<FloatData>() const
 }
 
 template<>
+SMTKCORE_EXPORT
 IntegerData* EntityRef::hasProperties<IntegerData>()
 {
   if (this->hasIntegerProperties())
@@ -1188,6 +1196,7 @@ IntegerData* EntityRef::hasProperties<IntegerData>()
 }
 
 template<>
+SMTKCORE_EXPORT
 const IntegerData* EntityRef::hasProperties<IntegerData>() const
 {
   if (this->hasIntegerProperties())
@@ -1204,14 +1213,17 @@ const IntegerData* EntityRef::hasProperties<IntegerData>() const
  * property type is a template parameter.
  */
 template<>
+SMTKCORE_EXPORT
 bool EntityRef::removeProperty<StringData>(const std::string& pname)
 { return this->removeStringProperty(pname); }
 
 template<>
+SMTKCORE_EXPORT
 bool EntityRef::removeProperty<FloatData>(const std::string& pname)
 { return this->removeFloatProperty(pname); }
 
 template<>
+SMTKCORE_EXPORT
 bool EntityRef::removeProperty<IntegerData>(const std::string& pname)
 { return this->removeIntegerProperty(pname); }
 

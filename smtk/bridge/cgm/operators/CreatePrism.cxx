@@ -89,6 +89,7 @@ smtk::model::OperatorResult CreatePrism::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
+  CGMSMTK_EXPORT,
   smtk::bridge::cgm::CreatePrism,
   cgm_create_prism,
   "create prism",

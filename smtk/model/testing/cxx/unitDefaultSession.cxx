@@ -196,6 +196,7 @@ protected:
     }
 };
 smtkImplementsModelingKernel(
+  /* no export symbol */,
   forwarding,
   "{\"kernel\":\"test-forwarding\", \"engines\":[]}",
   SessionHasNoStaticSetup,
@@ -248,6 +249,7 @@ protected:
   static Integer s_state;
 };
 smtkImplementsModelOperator(
+  /* no export symbol */,
   TestForwardingOperator, forwarding,
   "forwarding operator", unitForwardingOperator_xml,
   smtk::model::DefaultSession); //TestForwardingSession);

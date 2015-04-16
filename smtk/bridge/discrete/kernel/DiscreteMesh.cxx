@@ -15,6 +15,7 @@
 
 #include "DiscreteMesh.h"
 
+#include <algorithm> //Needed for std::max and std::min
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkCellLocator.h"

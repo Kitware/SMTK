@@ -222,6 +222,7 @@ int SplitFaceOperator::fetchCMBCellId(
 } // namespace smtk
 
 smtkImplementsModelOperator(
+  SMTKDISCRETESESSION_EXPORT,
   smtk::bridge::discrete::SplitFaceOperator,
   discrete_split_face,
   "split face",

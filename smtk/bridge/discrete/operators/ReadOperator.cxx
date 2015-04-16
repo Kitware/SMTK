@@ -114,6 +114,7 @@ Session* ReadOperator::discreteSession() const
 } // namespace smtk
 
 smtkImplementsModelOperator(
+  SMTKDISCRETESESSION_EXPORT,
   smtk::bridge::discrete::ReadOperator,
   discrete_read,
   "read",

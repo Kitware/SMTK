@@ -328,6 +328,7 @@ Session* ImportOperator::discreteSession() const
 } // namespace smtk
 
 smtkImplementsModelOperator(
+  SMTKDISCRETESESSION_EXPORT,
   smtk::bridge::discrete::ImportOperator,
   discrete_import,
   "import",

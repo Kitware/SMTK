@@ -97,6 +97,7 @@ smtk::model::OperatorResult Reflect::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
+  CGMSMTK_EXPORT,
   smtk::bridge::cgm::Reflect,
   cgm_reflect,
   "reflect",
