@@ -14,6 +14,7 @@
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Volume.h"
+#include "smtk/model/EntityIterator.h"
 
 #include "smtk/model/testing/cxx/helpers.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
@@ -143,6 +144,21 @@ void verify_cell_conversion()
 
   smtk::mesh::CellSet vert_cells = c->cells( smtk::mesh::Dims0 );
   test( vert_cells.size() == 0);
+
+  // verify that we get a non-empty mesh set association back for some cells
+  smtk::model::EntityIterator it;
+  smtk::model::EntityRefs models =
+    modelManager->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::MODEL_ENTITY);
+  it.traverse(models.begin(), models.end(), smtk::model::ITERATE_MODELS);
+  for (it.begin(); !it.isAtEnd(); ++it)
+    {
+    smtk::mesh::MeshSet entMesh = c->findAssociatedMeshes(*it);
+    std::cout
+      << "  " << it->entity().toString()
+      << "  " << entMesh.size() << " sets " << entMesh.cells().size() << " cells"
+      << "  " << it->flagSummary(0)
+      << "\n";
+    }
 }
 
 //----------------------------------------------------------------------------

@@ -160,6 +160,9 @@ public:
                           const smtk::mesh::Neumann& neumann) const = 0;
 
   //----------------------------------------------------------------------------
+  virtual smtk::mesh::HandleRange findAssociations(const smtk::common::UUID& modelUUID) = 0;
+
+  //----------------------------------------------------------------------------
   virtual bool addAssociation(const smtk::common::UUID& modelUUID,
                               const smtk::mesh::HandleRange& range) = 0;
 

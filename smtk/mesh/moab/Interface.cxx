@@ -638,6 +638,28 @@ bool Interface::setNeumann(const smtk::mesh::HandleRange& meshsets,
   return tagged;
 }
 
+/**\brief Find mesh entities associated with the given model entity.
+  *
+  */
+smtk::mesh::HandleRange Interface::findAssociations(const smtk::common::UUID& modelUUID)
+{
+  smtk::mesh::HandleRange result;
+  if (!modelUUID)
+    return result;
+
+  ::moab::Tag model_tag;
+  m_iface->tag_get_handle(
+    "MODEL", smtk::common::UUID::size(),
+    ::moab::MB_TYPE_OPAQUE, model_tag,
+    ::moab::MB_TAG_BYTES| ::moab::MB_TAG_CREAT| ::moab::MB_TAG_SPARSE);
+
+  const void* tag_v_ptr = &modelUUID;
+
+  ::moab::ErrorCode rval = m_iface->get_entities_by_type_and_tag(
+    0, ::moab::MBENTITYSET, &model_tag, &tag_v_ptr, 1, result);
+  return result;
+}
+
 //----------------------------------------------------------------------------
 bool Interface::addAssociation(const smtk::common::UUID& modelUUID,
                                const smtk::mesh::HandleRange& range)

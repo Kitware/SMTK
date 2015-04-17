@@ -276,11 +276,14 @@ smtk::mesh::TypeSet Collection::findAssociatedTypes( const smtk::model::EntityRe
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::MeshSet Collection::findAssociatedMeshes( const smtk::model::EntityRef& eref  )
+smtk::mesh::MeshSet Collection::findAssociatedMeshes(const smtk::model::EntityRef& eref)
 {
-  return smtk::mesh::MeshSet( this->shared_from_this(),
-                              this->m_internals->mesh_root_handle(),
-                              smtk::mesh::HandleRange() );
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
+  smtk::mesh::moab::Handle handle = this->m_internals->mesh_root_handle();
+
+  return smtk::mesh::MeshSet(
+    this->shared_from_this(), handle,
+    iface->findAssociations(eref.entity()));
 }
 
 //----------------------------------------------------------------------------
@@ -333,8 +336,8 @@ bool Collection::addAssociation( const smtk::model::EntityRef& eref ,
                                  const smtk::mesh::MeshSet& meshset )
 {
   const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
-  //this causes the eref to become a meshset with the tag MODEL
-  //than all meshsets in m_range become child meshesets of eref
+  // This causes the eref to become a meshset with the tag MODEL;
+  // then all meshsets in m_range become child meshsets of eref:
   return iface->addAssociation( eref.entity(), meshset.m_range );
 }
 
