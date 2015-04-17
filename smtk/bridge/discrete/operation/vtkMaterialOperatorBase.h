@@ -18,13 +18,11 @@
 // We may eventually need to add in the ability to set a
 // warehouseid of a material here as well.
 
+#ifndef __smtkdiscrete_vtkMaterialOperatorBase_h
+#define __smtkdiscrete_vtkMaterialOperatorBase_h
 
-#ifndef __vtkMaterialOperatorBase_h
-#define __vtkMaterialOperatorBase_h
-
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
 #include "vtkModelEntityOperatorBase.h"
-#include "cmbSystemConfig.h"
 
 class vtkModelMaterial;
 class vtkDiscreteModel;
@@ -32,7 +30,7 @@ class vtkIdList;
 class vtkModelEntity;
 class vtkModelGeometricEntity;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkMaterialOperatorBase : public vtkModelEntityOperatorBase
+class SMTKDISCRETESESSION_EXPORT vtkMaterialOperatorBase : public vtkModelEntityOperatorBase
 {
 public:
   static vtkMaterialOperatorBase * New();
