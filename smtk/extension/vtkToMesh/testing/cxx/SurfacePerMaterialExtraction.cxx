@@ -224,14 +224,11 @@ int main(int argc, char* argv[])
    c = smtk::io::ImportMesh::entireFile(inputFileName, manager);
    }
 
-  if(c != NULL)
-    {
-    extractSurfaces(c, outputFileName);
-    return 0;
-    }
-  else
+  if(!c)
     {
     std::cerr << "failed to load the requested data" << std::endl;
     return 1;
     }
+  extractSurfaces(c, outputFileName);
+  return 0;
 }

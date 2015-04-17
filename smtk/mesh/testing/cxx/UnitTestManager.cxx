@@ -21,17 +21,17 @@ namespace
 void verify_constructors()
 {
   smtk::mesh::ManagerPtr mgrPtr;
-  test( mgrPtr == NULL, "empty shared_ptr to Manager test failed");
+  test( !mgrPtr, "empty shared_ptr to Manager test failed");
 
   smtk::mesh::ManagerPtr mgrPtr2 = smtk::mesh::Manager::create();
-  test( mgrPtr2 != NULL, "failed create method on Manager");
+  test( !!mgrPtr2, "failed create method on Manager");
 
   mgrPtr = mgrPtr2;
-  test( mgrPtr != NULL, "failed copy assignment of manager shared_ptr");
-  test( mgrPtr2 != NULL, "failed copy assignment of manager shared_ptr");
+  test( !!mgrPtr, "failed copy assignment of manager shared_ptr");
+  test( !!mgrPtr2, "failed copy assignment of manager shared_ptr");
 
   smtk::mesh::ManagerPtr mgrPtr3(mgrPtr);
-  test( mgrPtr3 != NULL, "failed copy assignment of manager shared_ptr");
+  test( !!mgrPtr3, "failed copy assignment of manager shared_ptr");
 }
 
 //----------------------------------------------------------------------------
@@ -117,7 +117,7 @@ void verify_add_remove_collection()
     {
     smtk::mesh::CollectionPtr badCollection = mgr->collection( *i );
     smtk::mesh::Manager::const_iterator badIterator = mgr->findCollection( *i );
-    test( badCollection == false, "remove failed to actually remove a collection item");
+    test( !badCollection, "remove failed to actually remove a collection item");
     test( badIterator == end, "remove failed to actually remove a collection item");
     }
 

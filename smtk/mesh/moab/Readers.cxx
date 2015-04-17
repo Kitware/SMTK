@@ -40,7 +40,7 @@ namespace
   template< typename T>
   bool is_valid( const T& t)
   {
-    return (t != NULL && t->isValid());
+    return (!!t && t->isValid());
   }
 
   //--------------------------------------------------------------------------

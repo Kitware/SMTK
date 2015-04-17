@@ -263,14 +263,11 @@ int main(int argc, char* argv[])
    c = smtk::io::ImportMesh::entireFile(inputFileName, manager);
    }
 
-  if(c != NULL)
-    {
-    extractMaterials(c, outputFileName, bounds);
-    return 0;
-    }
-  else
+  if(!c)
     {
     std::cerr << "failed to load the requested data" << std::endl;
     return 1;
     }
+  extractMaterials(c, outputFileName, bounds);
+  return 0;
 }

@@ -20,7 +20,7 @@ namespace
 void verify_invlaid_constructor()
 {
   smtk::mesh::CollectionPtr null_collec;
-  test( null_collec == false , "collection  pointer should be invalid");
+  test( !null_collec, "collection  pointer should be invalid");
 
   smtk::mesh::CollectionPtr invalid_collection = smtk::mesh::Collection::create();
   test( !invalid_collection->isValid() , "collection should be invalid");
