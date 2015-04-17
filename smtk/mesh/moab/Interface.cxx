@@ -206,7 +206,7 @@ smtk::mesh::moab::InterfacePtr extract_interface( const smtk::mesh::CollectionPt
 
 //Given a smtk::mesh Interface convert it to a smtk::mesh::moab interface, and than
 //extract the raw moab interface pointer from that
-::moab::Interface *const extract_moab_interface( const smtk::mesh::InterfacePtr &iface)
+::moab::Interface* extract_moab_interface( const smtk::mesh::InterfacePtr &iface)
 {
   smtk::mesh::moab::Interface* mi = dynamic_cast< smtk::mesh::moab::Interface*>(iface.get());
   return (mi == NULL) ? NULL : mi->moabInterface();
@@ -774,8 +774,7 @@ bool Interface::addAssociation(const smtk::common::UUID& modelUUID,
     return false;
     }
 
-  //set the MODEL tag on every item in the range to being the modeulUUID
-  //question how many bytes is the modelUUID?
+  // Set the value of the MODEL tag to the modelUUID for every item in the range
   ::moab::Tag model_tag;
   m_iface->tag_get_handle("MODEL",
                           smtk::common::UUID::size(), //this should be 128 bits
@@ -783,7 +782,7 @@ bool Interface::addAssociation(const smtk::common::UUID& modelUUID,
                           model_tag,
                           ::moab::MB_TAG_BYTES| ::moab::MB_TAG_CREAT| ::moab::MB_TAG_SPARSE);
 
-  const void *tag_v_ptr = &modelUUID;
+  const void* tag_v_ptr = &modelUUID;
   bool valid = true;
   typedef smtk::mesh::HandleRange::const_iterator cit;
   for(cit i=range.begin(); i!=range.end() && valid;++i)
@@ -993,7 +992,7 @@ bool Interface::deleteHandles(const smtk::mesh::HandleRange& toDel)
 }
 
 //----------------------------------------------------------------------------
-::moab::Interface *const Interface::moabInterface() const
+::moab::Interface* Interface::moabInterface() const
 {
   return this->m_iface.get();
 }

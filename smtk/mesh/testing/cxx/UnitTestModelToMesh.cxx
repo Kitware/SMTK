@@ -56,6 +56,7 @@ public:
                   const smtk::mesh::Handle* const pointIds,
                   const double* const coords)
   {
+  (void)coords;
   this->numCellsVisited++;
   this->numPointsSeen += numPts;
   this->pointsSeen.insert( pointIds, pointIds+numPts);
@@ -258,9 +259,9 @@ void verify_cell_conversion()
   std::cout << "Entity lookup via reverse classification\n";
   smtk::model::EntityRefArray ents = c->meshes().modelEntities();
   test(ents.size() == numTetsInModel, "Expected 1 tetrahedron per model.");
-  for (smtk::model::EntityRefArray::iterator it = ents.begin(); it != ents.end(); ++it)
+  for (smtk::model::EntityRefArray::iterator eit = ents.begin(); eit != ents.end(); ++eit)
     {
-    std::cout << "  " << it->name() << " (" << it->flagSummary(0) << ")\n";
+    std::cout << "  " << eit->name() << " (" << eit->flagSummary(0) << ")\n";
     }
 }
 
@@ -298,28 +299,27 @@ void verify_cell_have_points()
   CountCells functor;
   smtk::mesh::for_each( triMeshes.cells(), functor );
 
-  test( functor.numberOCellsVisited() == triMeshes.cells().size() );
-  test( functor.numberOPointsSeen() == triMeshes.pointConnectivity().size() );
+  test(functor.numberOCellsVisited() == static_cast<int>(triMeshes.cells().size()), "Mismatch in number of cells visited.");
+  test(functor.numberOPointsSeen() == static_cast<int>(triMeshes.pointConnectivity().size()), "Mismatch in number of points seen.");
 
   //currently no two cells are sharing vertices.
-  test( functor.numberOCellsVisited() == (numTetsInModel * 10)  );
-  test( functor.numberOPointsSeen() == (numTetsInModel * 10 * 3) );
+  test(
+    functor.numberOCellsVisited() == static_cast<int>(numTetsInModel * 10),
+    "Number of cells not proportional to number of tets.");
+  test(
+    functor.numberOPointsSeen() == static_cast<int>(numTetsInModel * 10 * 3),
+    "Number of points not proportional to number of tets." );
 }
 
 }
 
 //----------------------------------------------------------------------------
-int UnitTestModelToMesh(int argc, char** argv)
+int UnitTestModelToMesh(int, char**)
 {
-
   verify_null_managers();
-
   verify_empty_model();
-
   verify_cell_conversion();
-
   verify_vertex_conversion();
-
   verify_cell_have_points();
 
   return 0;

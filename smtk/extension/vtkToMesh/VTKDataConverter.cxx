@@ -226,7 +226,7 @@ bool convertDomain(vtkCellData* cellData,
     return false;
     }
 
-  if(materialData->GetNumberOfTuples() != cells.size())
+  if(materialData->GetNumberOfTuples() != static_cast<int>(cells.size()))
     { //we currently don't support applying material when
       //we only loaded in some of the cells
     return false;
@@ -251,10 +251,10 @@ bool convertDomain(vtkCellData* cellData,
     const bool created = iface->createMesh(i->second, meshId);
     if(created)
       {
-      smtk::mesh::HandleRange meshes;
-      meshes.insert(meshId);
+      smtk::mesh::HandleRange meshHandles;
+      meshHandles.insert(meshId);
       //assign a material id to the mesh
-      iface->setDomain(meshes, smtk::mesh::Domain(i->first));
+      iface->setDomain(meshHandles, smtk::mesh::Domain(i->first));
       }
     }
 

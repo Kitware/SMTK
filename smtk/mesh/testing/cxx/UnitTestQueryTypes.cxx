@@ -132,17 +132,11 @@ void verify_DimsType_usage()
   }
 }
 
-int UnitTestQueryTypes(int argc, char** argv)
+int UnitTestQueryTypes(int, char**)
 {
-  (void)argc;
-  (void)argv;
-
-
   verify_dims_value();
   verify_CellTypes_usage();
   verify_DimsType_usage();
-
-
 
   return 0;
 }

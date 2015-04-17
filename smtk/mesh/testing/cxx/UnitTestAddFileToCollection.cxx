@@ -223,7 +223,7 @@ void verify_append_domain_to_dirichlet()
 }
 
 //----------------------------------------------------------------------------
-int UnitTestAddFileToCollection(int argc, char** argv)
+int UnitTestAddFileToCollection(int, char**)
 {
   //append into a collection that had failed to load previously
   verify_cant_append_to_bad_collection();

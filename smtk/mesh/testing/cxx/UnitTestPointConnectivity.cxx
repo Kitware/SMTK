@@ -244,7 +244,7 @@ void verify_shared_iteration(const smtk::mesh::CollectionPtr& c)
 
 
 //----------------------------------------------------------------------------
-int UnitTestPointConnectivity(int argc, char** argv)
+int UnitTestPointConnectivity(int, char**)
 {
   smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = load_mesh(mngr);

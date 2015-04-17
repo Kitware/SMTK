@@ -552,7 +552,7 @@ void verify_cellset_for_each(const smtk::mesh::CollectionPtr& c)
 }
 
 //----------------------------------------------------------------------------
-int UnitTestCellSet(int argc, char** argv)
+int UnitTestCellSet(int, char**)
 {
   smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = load_mesh(mngr);

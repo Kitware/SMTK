@@ -112,15 +112,13 @@ void verify_typeset_with_cells_and_dims()
 }
 
 //----------------------------------------------------------------------------
-int UnitTestTypeSet(int argc, char** argv)
+int UnitTestTypeSet(int, char**)
 {
   //first lets test the very basic interactions.
   verify_basic_typeset();
 
   verify_typeset_constructors();
-
   verify_typeset_cellTypes();
-
   verify_typeset_with_cells_and_dims();
 
   return 0;

@@ -387,7 +387,7 @@ void verify_meshset_for_each(const smtk::mesh::CollectionPtr& c)
 }
 
 //----------------------------------------------------------------------------
-int UnitTestMeshSet(int argc, char** argv)
+int UnitTestMeshSet(int, char**)
 {
   smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = load_mesh(mngr);

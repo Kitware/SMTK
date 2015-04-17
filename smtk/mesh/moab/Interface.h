@@ -48,7 +48,7 @@ smtk::mesh::moab::InterfacePtr extract_interface( const smtk::mesh::CollectionPt
 //extract the raw moab interface pointer from that
 //----------------------------------------------------------------------------
 SMTKCORE_EXPORT
-::moab::Interface* const extract_moab_interface( const smtk::mesh::InterfacePtr &iface);
+::moab::Interface* extract_moab_interface( const smtk::mesh::InterfacePtr &iface);
 
 //----------------------------------------------------------------------------
 class SMTKCORE_EXPORT Interface : public smtk::mesh::Interface
@@ -211,7 +211,7 @@ public:
   bool deleteHandles(const smtk::mesh::HandleRange& toDel);
 
   //----------------------------------------------------------------------------
-  ::moab::Interface * const moabInterface() const;
+  ::moab::Interface * moabInterface() const;
 
 private:
   //holds a reference to the real moab interface

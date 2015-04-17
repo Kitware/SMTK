@@ -17,7 +17,7 @@ namespace
 {
 
 //----------------------------------------------------------------------------
-void verify_invlaid_constructor()
+void verify_invalid_constructor()
 {
   smtk::mesh::CollectionPtr null_collec;
   test( !null_collec, "collection  pointer should be invalid");
@@ -52,6 +52,7 @@ void verify_removal_from_collection()
 
   //remove the collection
   const bool result = mgr->removeCollection( collection );
+  (void)result;
 
   //verify the collection states that it is now invalid
   test( collection->isValid() == false, "removal from a manager should cause the collection to be invalid");
@@ -132,9 +133,9 @@ void verify_reparenting_after_manager_deletion()
 }
 
 //----------------------------------------------------------------------------
-int UnitTestCollection(int argc, char** argv)
+int UnitTestCollection(int, char**)
 {
-  verify_invlaid_constructor();
+  verify_invalid_constructor();
   verify_valid_constructor();
 
   verify_removal_from_collection();

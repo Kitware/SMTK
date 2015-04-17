@@ -272,7 +272,7 @@ void verify_write_onlyDirichlet()
 }
 
 //----------------------------------------------------------------------------
-int UnitTestWriteMesh(int argc, char** argv)
+int UnitTestWriteMesh(int, char**)
 {
   verify_write_empty_collection();
   verify_write_null_collection();

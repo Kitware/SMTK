@@ -187,7 +187,7 @@ void verify_load_bad_onlyDirichlet()
 }
 
 //----------------------------------------------------------------------------
-int UnitTestLoadMesh(int argc, char** argv)
+int UnitTestLoadMesh(int, char**)
 {
   verify_load_bad_mesh();
   verify_load_valid_mesh();

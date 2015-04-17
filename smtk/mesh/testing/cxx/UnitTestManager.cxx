@@ -15,8 +15,8 @@
 
 #include <algorithm>
 
-namespace
-{
+namespace {
+
 //----------------------------------------------------------------------------
 void verify_constructors()
 {
@@ -99,7 +99,6 @@ void verify_add_remove_collection()
 
 
   std::vector< smtk::common::UUID > uids_to_remove;
-  smtk::mesh::Manager::const_iterator begin = mgr->collectionBegin();
   for (int i=0; i < 10; ++i)
     { //remove the first item in the collection each time through
     smtk::mesh::Manager::const_iterator begin = mgr->collectionBegin();
@@ -137,10 +136,10 @@ void verify_add_remove_association()
 
 }
 
-}
+} // anonymous namespace
 
 //----------------------------------------------------------------------------
-int UnitTestManager(int argc, char** argv)
+int UnitTestManager(int, char**)
 {
   verify_constructors();
 

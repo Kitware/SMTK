@@ -26,6 +26,7 @@ struct verify_cell_attributes
   template<class CellType>
   void operator()(CellType type)
   {
+    (void)type;
     smtk::mesh::CellTraits< CellType > traits;
     this->verify( traits );
   }
@@ -160,10 +161,8 @@ struct verify_cell_attributes
 
 }
 
-int UnitTestCellTypes(int argc, char** argv)
+int UnitTestCellTypes(int, char**)
 {
-  (void)argc;
-  (void)argv;
   std::cout << "verify_cell_attributes" << std::endl;
   smtk::mesh::testing::TryAllCells( verify_cell_attributes() );
   smtk::mesh::testing::TryAllCellEnums( verify_cell_attributes() );
