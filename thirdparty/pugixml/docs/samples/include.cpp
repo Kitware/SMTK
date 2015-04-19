@@ -3,7 +3,7 @@
 #include <string.h>
 #include <iostream>
 
-//[code_include
+// tag::code[]
 bool load_preprocess(pugi::xml_document& doc, const char* path);
 
 bool preprocess(pugi::xml_node node)
@@ -48,10 +48,10 @@ bool preprocess(pugi::xml_node node)
 bool load_preprocess(pugi::xml_document& doc, const char* path)
 {
     pugi::xml_parse_result result = doc.load_file(path, pugi::parse_default | pugi::parse_pi); // for <?include?>
-
+    
     return result ? preprocess(doc) : false;
 }
-//]
+// end::code[]
 
 int main()
 {
