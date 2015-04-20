@@ -827,6 +827,14 @@ smtk::model::Group Session::addMaterialToManager(
       {
       // Add material relations and arrangements
       translated |= smtk::model::SESSION_ENTITY_ARRANGED;
+      if (material->GetNumberOfAssociations(vtkModelRegionType))
+        { // Add regions to material
+        this->addEntities(result, material->NewIterator(vtkModelRegionType), AddEntityToGroupHelper(), relDepth - 1);
+        }
+      else if(material->GetNumberOfAssociations(vtkModelFaceType))
+        { // Add faces to material group
+        this->addEntities(result, material->NewIterator(vtkModelFaceType), AddEntityToGroupHelper(), relDepth - 1);
+        }
       }
 
     // Add material properties:
@@ -1091,19 +1099,23 @@ smtk::model::Volume Session::addVolumeToManager(
   smtk::model::ManagerPtr mgr,
   int relDepth)
 {
-  if (refVolume && !mgr->findEntity(uid, false))
+  if (refVolume)
     {
-    smtk::model::Volume result(mgr->insertVolume(uid));
-    smtk::model::SessionInfoBits translated = smtk::model::SESSION_NOTHING;
-    if (relDepth >= 0)
+    smtk::model::Volume result;
+    // if there is a Volume already for refVolume, return it; otherwise, create one
+    if(mgr->findEntity(uid, false))
+      result = smtk::model::Volume(mgr, uid);
+    else
       {
-      // Add refVolume relations and arrangements
-      this->addEntities(result, refVolume->NewAdjacentModelFaceIterator(), AddRawRelationHelper(), relDepth - 1);
-      this->addEntities(result, refVolume->NewIterator(vtkModelShellUseType), AddVolumeUseToVolumeHelper(), relDepth - 1);
+      result = mgr->insertVolume(uid);
+      if (relDepth >= 0)
+        {
+        // Add refVolume relations and arrangements
+        this->addEntities(result, refVolume->NewAdjacentModelFaceIterator(), AddRawRelationHelper(), relDepth - 1);
+        this->addEntities(result, refVolume->NewIterator(vtkModelShellUseType), AddVolumeUseToVolumeHelper(), relDepth - 1);
+        }
+      this->addProperties(result, refVolume);
       }
-
-    this->addProperties(result, refVolume);
-    translated |= smtk::model::SESSION_PROPERTIES;
 
     return result;
     }
