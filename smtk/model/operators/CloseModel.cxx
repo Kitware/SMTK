@@ -38,6 +38,16 @@ smtk::model::OperatorResult CloseModel::operateInternal()
   // ableToOperate should have verified that model(s) are set
   smtk::attribute::ModelEntityItem::Ptr modelItem =
     this->specification()->findModelEntity("model");
+
+  smtk::model::OperatorPtr removeModel = this->session()->op("remove model");
+  if(removeModel)
+    {
+    for (EntityRefArray::const_iterator mit = modelItem->begin();
+      mit != modelItem->end(); ++mit)
+      removeModel->specification()->associateEntity(*mit);
+    return removeModel->operate();
+    }
+
   EntityRefArray expunged;
   bool success = true;
   for (EntityRefArray::const_iterator mit = modelItem->begin();
