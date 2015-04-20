@@ -14,7 +14,7 @@
 #include <bitset>
 
 namespace smtk {
-namespace mesh {
+  namespace mesh {
 
 //Enum types used for querying the interface
 enum CellType
@@ -30,6 +30,8 @@ enum CellType
   Hexahedron    = 8,
   CellType_MAX  = 9
 };
+
+int verticesPerCell(CellType ctype);
 
 //Need a basic blitter for cell queries, mainly used by
 //TypeSet
@@ -47,7 +49,7 @@ struct CellPyramid {      static const CellType CellEnum = Pyramid; };
 struct CellWedge {        static const CellType CellEnum = Wedge; };
 struct CellHexahedron {   static const CellType CellEnum = Hexahedron; };
 
-}
-}
+  } // namespace mesh
+} // namespace smtk
 
 #endif //__smtk_mesh_CellTypes_h

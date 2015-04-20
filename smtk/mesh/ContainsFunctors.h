@@ -36,7 +36,7 @@ struct PartiallyContainedFunctor : public ContainsFunctor
                   const std::size_t num_nodes) const
   {
   bool contains = false;
-  for(int j=0; j < num_nodes && contains == false; ++j)
+  for (std::size_t j = 0; j < num_nodes && contains == false; ++j)
     {
     contains = (points.find(connectivity[j]) != points.end());
     }
@@ -51,7 +51,7 @@ struct FullyContainedFunctor : public ContainsFunctor
                   const std::size_t num_nodes) const
   {
   bool contains = true;
-  for(int j=0; j < num_nodes && contains == true; ++j)
+  for (std::size_t j = 0; j < num_nodes && contains == true; ++j)
     {
     contains = (points.find(connectivity[j]) != points.end());
     }

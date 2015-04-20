@@ -46,6 +46,8 @@ public:
 
   const smtk::mesh::CellTypes& cellTypes() const { return this->m_cellTypes; }
 
+  TypeSet& operator += (const TypeSet& other);
+
 private:
   smtk::mesh::CellTypes m_cellTypes;
   smtk::mesh::DimensionTypes m_dimTypes;

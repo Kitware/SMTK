@@ -19,8 +19,12 @@
 #include "smtk/mesh/QueryTypes.h"
 #include "smtk/mesh/TypeSet.h"
 
+#include "smtk/model/EntityRef.h"
+
+#include "smtk/common/UUID.h"
+
 namespace smtk {
-namespace mesh {
+  namespace mesh {
 
 //Represents a collection of meshes that have been constructed by a Collection
 //We represent the collection of meshes by holding onto the parent entity
@@ -73,6 +77,9 @@ public:
   bool setDomain(const smtk::mesh::Domain& d);
   bool setDirichlet(const smtk::mesh::Dirichlet& d);
   bool setNeumann(const smtk::mesh::Neumann& n);
+
+  smtk::common::UUIDArray modelEntities() const;
+  bool setModelEntities(const smtk::model::EntityRef&);
 
   smtk::mesh::CellSet cells() const; //all cells of the meshset
   smtk::mesh::Points points() const; //all points of the meshset
@@ -133,8 +140,7 @@ SMTKCORE_EXPORT MeshSet set_union( const MeshSet& a, const MeshSet& b );
 //apply a for_each mesh operator on all meshes of a given set.
 SMTKCORE_EXPORT void for_each( const MeshSet& a, MeshForEach& filter);
 
-
-}
-}
+  } // namespace mesh
+} // namespace smtk
 
 #endif

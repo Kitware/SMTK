@@ -2,6 +2,7 @@
 set(meshSrcs
   # Cells.cxx
   CellSet.cxx
+  CellTypes.cxx
   Collection.cxx
   Manager.cxx
   # Mesh.cxx

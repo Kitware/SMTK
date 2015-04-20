@@ -145,6 +145,24 @@ bool MeshSet::setNeumann(const smtk::mesh::Neumann& n)
   return iface->setNeumann( this->m_range, n );
 }
 
+/**\brief Return the model entity UUIDArray associated with meshset members.
+  *
+  */
+smtk::common::UUIDArray MeshSet::modelEntities() const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  return iface->computeModelEntities(this->m_range);
+}
+
+/**\brief Set the model entity for each meshset member to \a ent.
+  *
+  */
+bool MeshSet::setModelEntities(const smtk::model::EntityRef& ent)
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  return iface->setModelEntity(this->m_range, ent.entity());
+}
+
 //----------------------------------------------------------------------------
 smtk::mesh::CellSet MeshSet::cells( ) const
 {

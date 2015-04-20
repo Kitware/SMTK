@@ -207,6 +207,7 @@ std::size_t Manager::numberOfAssociations() const
 //----------------------------------------------------------------------------
 bool Manager::isAssociatedCollection( const smtk::mesh::CollectionPtr& collection )
 {
+  (void)collection;
   //this is complex as it is the inverse of searching by cursor
   return false;
 }

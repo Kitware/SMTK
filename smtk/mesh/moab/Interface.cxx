@@ -60,7 +60,7 @@ smtk::mesh::HandleRange vectorToRange(std::vector< ::moab::EntityHandle >& vresu
 
 //----------------------------------------------------------------------------
 template<typename T, typename U>
-std::vector< T > computeDenseTagValues(U tag,
+std::vector< T > computeDenseIntTagValues(U tag,
                                        const smtk::mesh::HandleRange& meshsets,
                                        ::moab::Interface* iface)
 {
@@ -114,6 +114,48 @@ std::vector< T > computeDenseTagValues(U tag,
 }
 
 //----------------------------------------------------------------------------
+template<typename T, typename U>
+T computeDenseOpaqueTagValues(
+  U tag,
+  const smtk::mesh::HandleRange& meshsets,
+  ::moab::Interface* iface)
+{
+  T result;
+
+  // Fetch all entities with the given tag
+  smtk::mesh::HandleRange entitiesWithTag;
+  iface->get_entities_by_type_and_tag(
+    iface->get_root_set(), ::moab::MBENTITYSET,
+    tag.moabTagPtr(), NULL, 1,
+    entitiesWithTag);
+
+  // We have all entity sets that have the this tag; now we need
+  // to find the subset that is part of our HandleRange.
+  entitiesWithTag = ::moab::intersect(entitiesWithTag, meshsets);
+
+  // Return early if nothing has the tag.
+  // This also makes it safer to derefence the std vector below
+  if( entitiesWithTag.empty() )
+    return result;
+
+  std::vector<unsigned char> tag_values;
+  tag_values.resize(entitiesWithTag.size() * tag.size());
+  void* tag_v_ptr = &tag_values[0];
+
+  // Fetch the tag for each item in the range in bulk
+  iface->tag_get_data(tag.moabTag(), entitiesWithTag, tag_v_ptr);
+
+  // For each tag value convert it to a value type for the
+  // output container T.
+  typedef std::vector<unsigned char>::const_iterator cit;
+  for(cit i = tag_values.begin(); i != tag_values.end(); i += tag.size())
+    {
+    result.push_back(typename T::value_type(&(*i), &(*i) + tag.size()));
+    }
+  return result;
+}
+
+//----------------------------------------------------------------------------
 template<typename T>
 bool setDenseTagValues(T tag, const smtk::mesh::HandleRange& handles,
                        ::moab::Interface* iface)
@@ -126,6 +168,23 @@ bool setDenseTagValues(T tag, const smtk::mesh::HandleRange& handles,
   ::moab::ErrorCode rval = iface->tag_set_data(tag.moabTag(),
                                                handles,
                                                tag_v_ptr);
+  return (rval == ::moab::MB_SUCCESS);
+}
+
+template<typename T>
+bool setDenseOpaqueTagValues(T tag, const smtk::mesh::HandleRange& handles,
+                       ::moab::Interface* iface)
+{
+  //create a vector the same value so we can assign a tag
+  std::vector<unsigned char> values;
+  values.resize(handles.size() * tag.size());
+  for (std::size_t i = 0; i < handles.size(); ++i)
+    memcpy(&values[i * tag.size()], tag.value(), tag.size());
+  const void* tag_v_ptr = &values[0];
+
+  ::moab::ErrorCode rval =
+    iface->tag_set_data(
+      tag.moabTag(), handles, tag_v_ptr);
   return (rval == ::moab::MB_SUCCESS);
 }
 
@@ -489,7 +548,7 @@ std::vector< std::string > Interface::computeNames(const smtk::mesh::HandleRange
 std::vector< smtk::mesh::Domain > Interface::computeDomainValues(const smtk::mesh::HandleRange& meshsets) const
 {
   tag::QueryMaterialTag mtag(0,this->moabInterface());
-  return detail::computeDenseTagValues<smtk::mesh::Domain>(mtag,
+  return detail::computeDenseIntTagValues<smtk::mesh::Domain>(mtag,
                                                              meshsets,
                                                              this->moabInterface());
 }
@@ -499,7 +558,7 @@ std::vector< smtk::mesh::Domain > Interface::computeDomainValues(const smtk::mes
 std::vector< smtk::mesh::Dirichlet > Interface::computeDirichletValues(const smtk::mesh::HandleRange& meshsets) const
 {
   tag::QueryDirichletTag dtag(0,this->moabInterface());
-  return detail::computeDenseTagValues<smtk::mesh::Dirichlet>(dtag,
+  return detail::computeDenseIntTagValues<smtk::mesh::Dirichlet>(dtag,
                                                               meshsets,
                                                               this->moabInterface());
 }
@@ -508,11 +567,33 @@ std::vector< smtk::mesh::Dirichlet > Interface::computeDirichletValues(const smt
 std::vector< smtk::mesh::Neumann > Interface::computeNeumannValues(const smtk::mesh::HandleRange& meshsets) const
 {
   tag::QueryNeumannTag ntag(0,this->moabInterface());
-  return detail::computeDenseTagValues<smtk::mesh::Neumann>(ntag,
+  return detail::computeDenseIntTagValues<smtk::mesh::Neumann>(ntag,
                                                             meshsets,
                                                             this->moabInterface());
 }
 
+/**\brief Return the set of all UUIDs set on all entities in the meshsets.
+  *
+  */
+smtk::common::UUIDArray Interface::computeModelEntities(const smtk::mesh::HandleRange& meshsets) const
+{
+  tag::QueryModelTag mtag(this->moabInterface());
+  return detail::computeDenseOpaqueTagValues<smtk::common::UUIDArray>(
+    mtag, meshsets, this->moabInterface());
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::TypeSet Interface::computeTypes(smtk::mesh::HandleRange range) const
+{
+  smtk::mesh::TypeSet result;
+  typedef smtk::mesh::HandleRange::const_iterator cit;
+  for (cit i = range.begin(); i != range.end(); ++i)
+    {
+    const ::moab::EntityHandle& currentHandle = *i;
+    result += this->computeTypes(currentHandle);
+    }
+  return result;
+}
 
 //----------------------------------------------------------------------------
 smtk::mesh::TypeSet Interface::computeTypes(smtk::mesh::Handle handle) const
@@ -526,7 +607,7 @@ smtk::mesh::TypeSet Interface::computeTypes(smtk::mesh::Handle handle) const
   smtk::mesh::CellTypes ctypes;
   if(numMeshes > 0)
     {
-    for(int i=0; i < ctypes.size(); ++i )
+    for (std::size_t i = 0; i < ctypes.size(); ++i )
       {
       CellEnum ce = static_cast<CellEnum>(i);
       //now we need to convert from CellEnum to MoabType
@@ -638,10 +719,33 @@ bool Interface::setNeumann(const smtk::mesh::HandleRange& meshsets,
   return tagged;
 }
 
+/**\brief Set the model entity assigned to each meshset member to \a ent.
+  */
+bool Interface::setModelEntity(
+  const smtk::mesh::HandleRange& meshsets,
+  const smtk::common::UUID& uuid) const
+{
+  if (meshsets.empty())
+    return true;
+
+  tag::QueryModelTag mtag(uuid, this->moabInterface());
+
+  // I. Tag the meshsets
+  bool tagged = detail::setDenseOpaqueTagValues(
+    mtag, meshsets, this->moabInterface());
+
+  // II. Tag the cells
+  tagged &= detail::setDenseOpaqueTagValues(
+    mtag, this->getCells(meshsets), this->moabInterface());
+  return tagged;
+}
+
 /**\brief Find mesh entities associated with the given model entity.
   *
   */
-smtk::mesh::HandleRange Interface::findAssociations(const smtk::common::UUID& modelUUID)
+smtk::mesh::HandleRange Interface::findAssociations(
+  const smtk::mesh::Handle& root,
+  const smtk::common::UUID& modelUUID)
 {
   smtk::mesh::HandleRange result;
   if (!modelUUID)
@@ -656,7 +760,8 @@ smtk::mesh::HandleRange Interface::findAssociations(const smtk::common::UUID& mo
   const void* tag_v_ptr = &modelUUID;
 
   ::moab::ErrorCode rval = m_iface->get_entities_by_type_and_tag(
-    0, ::moab::MBENTITYSET, &model_tag, &tag_v_ptr, 1, result);
+    root, ::moab::MBENTITYSET, &model_tag, &tag_v_ptr, 1, result);
+  (void)rval;
   return result;
 }
 

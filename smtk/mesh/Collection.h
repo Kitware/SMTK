@@ -25,11 +25,12 @@
 #include "smtk/mesh/TypeSet.h"
 
 #include "smtk/model/EntityRef.h"
+#include "smtk/model/Manager.h"
 
 #include <vector>
 
 namespace smtk {
-namespace mesh {
+  namespace mesh {
 
 //Flyweight interface around a moab database of meshes. When constructed
 //becomes registered with a manager with a weak relationship.
@@ -110,7 +111,6 @@ public:
   //----------------------------------------------------------------------------
   smtk::mesh::TypeSet   findAssociatedTypes( const smtk::model::EntityRef& eref );
   smtk::mesh::MeshSet   findAssociatedMeshes( const smtk::model::EntityRef& eref );
-  smtk::mesh::MeshSet   findAssociatedMeshes( const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType );
   smtk::mesh::MeshSet   findAssociatedMeshes( const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim );
   smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref );
   smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType );
@@ -189,6 +189,9 @@ public:
 
   const smtk::mesh::InterfacePtr& interface() const;
 
+  void setModelManager(smtk::model::ManagerPtr mgr) { this->m_modelManager = mgr; }
+  smtk::model::ManagerPtr modelManager() const { return this->m_modelManager.lock(); }
+
 private:
   Collection( const Collection& other ); //blank since we are used by shared_ptr
   Collection& operator=( const Collection& other ); //blank since we are used by shared_ptr
@@ -201,13 +204,14 @@ private:
 
   smtk::common::UUID m_entity;
   std::string m_name;
+  smtk::model::WeakManagerPtr m_modelManager;
 
   //holds a reference to both the manager and the specific backend interface
   class InternalImpl;
   smtk::mesh::Collection::InternalImpl* m_internals;
 };
 
-}
-}
+  } // namespace mesh
+} // namespace smtk
 
 #endif  //__smtk_mesh_Collection_h

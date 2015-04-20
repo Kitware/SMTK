@@ -146,6 +146,7 @@ bool Collection::reparent(smtk::mesh::ManagerPtr newParent)
     }
 
   const bool reparenting = this->m_internals->reparent(newParent);
+  (void)reparenting;
   currentManager = this->m_internals->manager();
 
   //we need to get a uuid if we don't have one already
@@ -272,7 +273,8 @@ smtk::mesh::CellSet Collection::cells( smtk::mesh::DimensionType dim )
 //----------------------------------------------------------------------------
 smtk::mesh::TypeSet Collection::findAssociatedTypes( const smtk::model::EntityRef& eref )
 {
-  return smtk::mesh::TypeSet();
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
+  return iface->computeTypes(this->findAssociatedMeshes(eref).m_handle);
 }
 
 //----------------------------------------------------------------------------
@@ -283,41 +285,29 @@ smtk::mesh::MeshSet Collection::findAssociatedMeshes(const smtk::model::EntityRe
 
   return smtk::mesh::MeshSet(
     this->shared_from_this(), handle,
-    iface->findAssociations(eref.entity()));
-}
-
-//----------------------------------------------------------------------------
-smtk::mesh::MeshSet Collection::findAssociatedMeshes( const smtk::model::EntityRef& eref ,
-                                                      smtk::mesh::CellType cellType )
-{
-  return smtk::mesh::MeshSet( this->shared_from_this(),
-                              this->m_internals->mesh_root_handle(),
-                              smtk::mesh::HandleRange() );
+    iface->findAssociations(handle, eref.entity()));
 }
 
 //----------------------------------------------------------------------------
 smtk::mesh::MeshSet Collection::findAssociatedMeshes( const smtk::model::EntityRef& eref ,
                                                       smtk::mesh::DimensionType dim )
 {
-  return smtk::mesh::MeshSet( this->shared_from_this(),
-                              this->m_internals->mesh_root_handle(),
-                              smtk::mesh::HandleRange() );
+  smtk::mesh::MeshSet unfiltered = this->findAssociatedMeshes(eref);
+  return unfiltered.subset(dim);
 }
 
 //----------------------------------------------------------------------------
 smtk::mesh::CellSet Collection::findAssociatedCells( const smtk::model::EntityRef& eref  )
 {
-  smtk::mesh::MeshSet ms(this->shared_from_this(),
-                         this->m_internals->mesh_root_handle());
-  return ms.cells( );
+  smtk::mesh::MeshSet ms = this->findAssociatedMeshes(eref);
+  return ms.cells();
 }
 
 //----------------------------------------------------------------------------
 smtk::mesh::CellSet Collection::findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType )
 {
-  smtk::mesh::MeshSet ms(this->shared_from_this(),
-                         this->m_internals->mesh_root_handle());
-  return ms.cells( );
+  smtk::mesh::MeshSet ms = this->findAssociatedMeshes(eref);
+  return ms.cells(cellType);
 }
 
 
@@ -325,9 +315,8 @@ smtk::mesh::CellSet Collection::findAssociatedCells( const smtk::model::EntityRe
 smtk::mesh::CellSet Collection::findAssociatedCells( const smtk::model::EntityRef& eref ,
                                                       smtk::mesh::DimensionType dim )
 {
-  smtk::mesh::MeshSet ms(this->shared_from_this(),
-                         this->m_internals->mesh_root_handle());
-  return ms.cells( );
+  smtk::mesh::MeshSet ms = this->findAssociatedMeshes(eref, dim);
+  return ms.cells();
 }
 
 

@@ -139,6 +139,10 @@ public:
   std::vector< smtk::mesh::Neumann > computeNeumannValues(const smtk::mesh::HandleRange& meshsets) const;
 
   //----------------------------------------------------------------------------
+  smtk::common::UUIDArray computeModelEntities(const smtk::mesh::HandleRange& meshsets) const;
+
+  //----------------------------------------------------------------------------
+  smtk::mesh::TypeSet computeTypes(smtk::mesh::HandleRange range) const;
   smtk::mesh::TypeSet computeTypes(smtk::mesh::Handle handle) const;
 
   //----------------------------------------------------------------------------
@@ -158,7 +162,14 @@ public:
                   const smtk::mesh::Neumann& neumann) const;
 
   //----------------------------------------------------------------------------
-  virtual smtk::mesh::HandleRange findAssociations(const smtk::common::UUID& modelUUID);
+  bool setModelEntity(
+    const smtk::mesh::HandleRange& meshsets,
+    const smtk::common::UUID& uuid) const;
+
+  //----------------------------------------------------------------------------
+  virtual smtk::mesh::HandleRange findAssociations(
+    const smtk::mesh::Handle& root,
+    const smtk::common::UUID& modelUUID);
 
   //----------------------------------------------------------------------------
   bool addAssociation(const smtk::common::UUID& modelUUID,

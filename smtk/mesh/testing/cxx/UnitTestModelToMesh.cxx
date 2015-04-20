@@ -19,6 +19,8 @@
 #include "smtk/model/testing/cxx/helpers.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
 
+#include <sstream>
+
 namespace
 {
 
@@ -64,7 +66,7 @@ public:
 };
 
 
-std::size_t numTetsInModel = 32;
+std::size_t numTetsInModel = 4;
 
 //----------------------------------------------------------------------------
 void create_simple_model( smtk::model::ManagerPtr mgr )
@@ -123,6 +125,65 @@ void verify_empty_model()
 }
 
 //----------------------------------------------------------------------------
+template<int Dim>
+void testFindAssociations(smtk::mesh::CollectionPtr c, smtk::model::EntityIterator& it, std::size_t correct)
+{
+  std::size_t numNonEmpty = 0;
+  numNonEmpty = 0;
+  for (it.begin(); !it.isAtEnd(); ++it)
+    {
+    smtk::mesh::MeshSet entMesh = c->findAssociatedMeshes(*it, static_cast<smtk::mesh::DimensionType>(Dim));
+    if (entMesh.size())
+      {
+      ++numNonEmpty;
+      std::cout
+        << "  " << it->entity().toString()
+        << "  " << entMesh.size() << " sets " << entMesh.cells().size() << " cells"
+        << "  " << it->flagSummary(0)
+        << "\n";
+      }
+    /*
+    test(
+      (tess && tess->begin() != tess->end() && entMesh.size()) ||
+      ((!tess || tess->begin() == tess->end()) && !entMesh.size()),
+      "Model and mesh do not agree.");
+      */
+    }
+  std::ostringstream msg;
+  msg
+    << "Expected " << (correct ? 1 : 0)
+    << " non-empty meshset of dimension " << Dim
+    << " per test tetrahedron.";
+  test(numNonEmpty == correct, msg.str());
+}
+
+template<>
+void testFindAssociations<-1>(smtk::mesh::CollectionPtr c, smtk::model::EntityIterator& it, std::size_t correct)
+{
+  std::size_t numNonEmpty = 0;
+  for (it.begin(); !it.isAtEnd(); ++it)
+    {
+    smtk::mesh::MeshSet entMesh = c->findAssociatedMeshes(*it);
+    const smtk::model::Tessellation* tess = it->hasTessellation();
+    if (entMesh.size())
+      std::cout
+        << "  " << it->entity().toString()
+        << "  " << entMesh.size() << " sets " << entMesh.cells().size() << " cells"
+        << "  " << it->flagSummary(0)
+        << "\n";
+    /*
+      */
+    test(
+      (tess && tess->begin() != tess->end() && entMesh.size()) ||
+      ((!tess || tess->begin() == tess->end()) && !entMesh.size()),
+      "Model and mesh do not agree.");
+    if (entMesh.size())
+      ++numNonEmpty;
+    }
+  test(numNonEmpty == correct, "Expected a non-empty meshset per test tetrahedron.");
+}
+
+//----------------------------------------------------------------------------
 void verify_cell_conversion()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
@@ -137,7 +198,7 @@ void verify_cell_conversion()
 
   //confirm that we have the proper number of volume cells
   smtk::mesh::CellSet tri_cells = c->cells( smtk::mesh::Dims2 );
-  test( tri_cells.size() == (numTetsInModel * 11) );
+  test( tri_cells.size() == (numTetsInModel * 10) );
 
   smtk::mesh::CellSet edge_cells = c->cells( smtk::mesh::Dims1 );
   test( edge_cells.size() == 0);
@@ -150,14 +211,24 @@ void verify_cell_conversion()
   smtk::model::EntityRefs models =
     modelManager->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::MODEL_ENTITY);
   it.traverse(models.begin(), models.end(), smtk::model::ITERATE_MODELS);
-  for (it.begin(); !it.isAtEnd(); ++it)
+  testFindAssociations<-1>(c, it, numTetsInModel);
+  testFindAssociations<0>(c, it, 0);
+  testFindAssociations<1>(c, it, 0);
+  testFindAssociations<2>(c, it, numTetsInModel);
+  testFindAssociations<3>(c, it, 0);
+
+  if (!models.empty())
     {
-    smtk::mesh::MeshSet entMesh = c->findAssociatedMeshes(*it);
-    std::cout
-      << "  " << it->entity().toString()
-      << "  " << entMesh.size() << " sets " << entMesh.cells().size() << " cells"
-      << "  " << it->flagSummary(0)
-      << "\n";
+    smtk::model::CellEntities cells = models.begin()->as<smtk::model::Model>().cells();
+    if (!cells.empty())
+      {
+      smtk::mesh::TypeSet meshedTypes = c->findAssociatedTypes(cells[0]);
+      smtk::mesh::CellTypes cellTypes = meshedTypes.cellTypes();
+      std::cout << "Cell is " << cells[0].name() << "\n";
+      // These can change when the tessellation stores tetrahedra for volume cells like it should:
+      test(cellTypes[smtk::mesh::Triangle], "Expected this volume to have mesh triangles.");
+      test(!cellTypes[smtk::mesh::Tetrahedron], "Did not expect this volume to have mesh tetrahedra.");
+      }
     }
 }
 
@@ -199,8 +270,8 @@ void verify_cell_have_points()
   test( functor.numberOPointsSeen() == triMeshes.pointConnectivity().size() );
 
   //currently no two cells are sharing vertices.
-  test( functor.numberOCellsVisited() == (numTetsInModel * 11)  );
-  test( functor.numberOPointsSeen() == (numTetsInModel * 11 * 3) );
+  test( functor.numberOCellsVisited() == (numTetsInModel * 10)  );
+  test( functor.numberOPointsSeen() == (numTetsInModel * 10 * 3) );
 }
 
 }

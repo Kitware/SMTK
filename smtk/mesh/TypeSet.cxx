@@ -96,5 +96,19 @@ bool TypeSet::hasCell( smtk::mesh::CellType ct ) const
   return this->m_cellTypes[ ct ];
 }
 
+//----------------------------------------------------------------------------
+TypeSet& TypeSet::operator += (const TypeSet& other)
+{
+  // Bitwise-OR of types.
+  for (std::size_t i = 0; i < CellType_MAX; ++i)
+    this->m_cellTypes[i] =  this->m_cellTypes[i] || other.cellTypes()[i];
+
+  // Update bulk information about meshset contents
+  this->m_hasMesh |= other.hasMeshes();
+  this->m_hasCell |= other.hasCells();
+
+  return *this;
+}
+
 }
 }

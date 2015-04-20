@@ -20,6 +20,8 @@
 #include "smtk/mesh/DimensionTypes.h"
 #include "smtk/mesh/Handle.h"
 
+#include "smtk/common/UUID.h"
+
 namespace smtk {
 namespace mesh {
 
@@ -71,6 +73,72 @@ class SMTKCORE_EXPORT Neumann : public IntegerTag
 {
 public:
   explicit Neumann(int value) : IntegerTag(value) {}
+};
+
+//----------------------------------------------------------------------------
+template<int S>
+class SMTKCORE_EXPORT OpaqueTag
+{
+public:
+  explicit OpaqueTag(const unsigned char* value):
+    m_value(value, value + S)
+    {
+    }
+
+  static int size() { return S; }
+
+  const unsigned char* value() const { return &m_value[0]; }
+
+  //custom operators to make comparing tags easy
+  bool operator < (const OpaqueTag& other) const
+    {
+    for (int i = 0; i < S; ++i)
+      if (this->m_value < other.m_value)
+        return true;
+      else if (this->m_value > other.m_value)
+        return false;
+    return false;
+    }
+  bool operator == (const OpaqueTag& other) const
+    {
+    for (int i = 0; i < S; ++i)
+      if (this->m_value != other.m_value)
+        return false;
+    return true;
+    }
+  bool operator != (const OpaqueTag& other) const
+    {
+    for (int i = 0; i < S; ++i)
+      if (this->m_value != other.m_value)
+        return true;
+    return false;
+    }
+
+private:
+  std::vector<unsigned char> m_value;
+};
+
+//----------------------------------------------------------------------------
+class SMTKCORE_EXPORT UUIDTag : public OpaqueTag<smtk::common::UUID::SIZE>
+{
+public:
+  explicit UUIDTag(const smtk::common::UUID& value):
+    OpaqueTag(value.begin())
+    {
+    }
+
+  smtk::common::UUID uuid() const
+    {
+    return smtk::common::UUID(
+      this->value(), this->value() + smtk::common::UUID::SIZE);
+    }
+};
+
+//----------------------------------------------------------------------------
+class SMTKCORE_EXPORT Model : public UUIDTag
+{
+public:
+  explicit Model(const smtk::common::UUID& value) : UUIDTag(value) {}
 };
 
 //----------------------------------------------------------------------------

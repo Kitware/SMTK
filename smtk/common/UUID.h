@@ -66,7 +66,10 @@ public:
   static UUID random();
   static UUID null();
 
-  static size_type size() { return 16; }
+  enum {
+    SIZE = 16
+  };
+  static size_type size() { return SIZE; }
   bool isNull() const;
 
   iterator begin();

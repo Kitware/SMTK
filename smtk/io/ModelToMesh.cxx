@@ -116,6 +116,7 @@ convert_cells(const smtk::model::EntityRefs& ents,
               MappingType& mapping,
               const smtk::mesh::AllocatorPtr& ialloc)
 {
+  (void)mapping;
 
   typedef smtk::model::Tessellation Tess;
   typedef typename MappingType::value_type value_type;
@@ -132,16 +133,59 @@ convert_cells(const smtk::model::EntityRefs& ents,
     //we filtered out all ents without tess already, so this can't be null
     const Tess* tess = it->hasTessellation();
 
-    //convert the connectivity of this volume tesselation to a meshset
+    // Convert the connectivity of this volume tesselation to a meshset.
+    // We make 2 passes through the tessellation: one to determine the
+    // allocation and another to create the cells. Note that each cell
+    // type must be put in a separate handle range.
+    //
+    // TODO: This does not handle triangle strips/fans or other cell types
+    //       with a varying number of vertices per cell.
     Tess::size_type start_off;
-    Tess::size_type end_off;
+    std::vector<std::size_t> numCellsOfType(smtk::mesh::CellType_MAX, 0);
     for (start_off = tess->begin();
          start_off != tess->end();
-         start_off = tess->nextCellOffset(end_off)) //yes from end_off
+         start_off = tess->nextCellOffset(start_off))
          //from end means that we properly handle runs of the same cell type
       {
-      std::size_t numCellsToAlloc = 1; //count the start cell
+      Tess::size_type cell_type;
+      tess->numberOfCellVertices(start_off, &cell_type);
+      Tess::size_type cell_shape = tess->cellShapeFromType(cell_type);
+      if(cell_shape == smtk::model::TESS_VERTEX   ||
+         cell_shape == smtk::model::TESS_TRIANGLE ||
+         cell_shape == smtk::model::TESS_QUAD)
+        numCellsOfType[tessToSMTKCell(cell_shape)]++;
+      }
 
+    // Allocate handles.
+    typedef std::pair<smtk::mesh::HandleRange, smtk::mesh::Handle*> HandleData;
+    HandleData blank;
+    blank.second = NULL;
+    std::vector<HandleData> cellMBConn(smtk::mesh::CellType_MAX, blank);
+    std::vector<HandleData>::iterator allocIt = cellMBConn.begin();
+    std::vector<std::size_t>::iterator cellsOfTypeIt = numCellsOfType.begin();
+    for (std::size_t ctype = 0; ctype != smtk::mesh::CellType_MAX; ++ctype, ++cellsOfTypeIt, ++allocIt)
+      {
+      if (*cellsOfTypeIt <= 0)
+        continue;
+
+      smtk::mesh::CellType cellType = static_cast<smtk::mesh::CellType>(ctype);
+      int numVertsPerCell = smtk::mesh::verticesPerCell(cellType);
+
+      if (
+        !ialloc->allocateCells(
+          cellType, *cellsOfTypeIt, numVertsPerCell,
+          allocIt->first, allocIt->second))
+        { // error
+        std::cerr << "Could not allocate cells\n";
+        }
+      }
+
+    std::vector<int> cell_conn;
+    numCellsOfType = std::vector<std::size_t>(smtk::mesh::CellType_MAX, 0);
+    for (start_off = tess->begin();
+         start_off != tess->end();
+         start_off = tess->nextCellOffset(start_off))
+      {
       //fetch the number of cell vertices, and the cell type in a single query
       Tess::size_type cell_type;
       Tess::size_type numVertsPerCell = tess->numberOfCellVertices(start_off, &cell_type);
@@ -153,53 +197,40 @@ convert_cells(const smtk::model::EntityRefs& ents,
       //the most efficient way to allocate is to do batch allocation, so lets
       //iterate all cells of the same shape. This can only be done for
       //points, triangles and quads, as everything else has variable cell length
-      if(cell_shape == smtk::model::TESS_VERTEX   ||
-         cell_shape == smtk::model::TESS_TRIANGLE ||
-         cell_shape == smtk::model::TESS_QUAD)
+      if(cell_shape != smtk::model::TESS_VERTEX   &&
+         cell_shape != smtk::model::TESS_TRIANGLE &&
+         cell_shape != smtk::model::TESS_QUAD)
+        continue;
+
+      int idx = numCellsOfType[cellType]++;
+
+      smtk::mesh::Handle* currentConnLoc = cellMBConn[cellType].second + numVertsPerCell * idx;
+      cell_conn.reserve(numVertsPerCell);
+      tess->vertexIdsOfCell(start_off, cell_conn);
+      for (int j=0; j < numVertsPerCell; ++j)
         {
-        for(end_off = start_off; end_off != tess->end(); end_off = tess->nextCellOffset(end_off))
-          { numCellsToAlloc++; }
+        currentConnLoc[j] = cell_conn[j];
         }
+      }
 
-      //need to convert from tess cell type to moab cell type
-      bool allocated = false;
-      smtk::mesh::Handle *startOfConnectivityArray = NULL;
+    allocIt = cellMBConn.begin();
+    cellsOfTypeIt = numCellsOfType.begin();
+    for (std::size_t ctype = 0; ctype != smtk::mesh::CellType_MAX; ++ctype, ++cellsOfTypeIt, ++allocIt)
+      {
+      if (*cellsOfTypeIt <= 0)
+        continue;
 
-      //only convert cells smtk mesh supports
-      smtk::mesh::HandleRange cellsCreatedForThisType;
-      allocated = ialloc->allocateCells( cellType,
-                                         numCellsToAlloc,
-                                         static_cast<int>(numVertsPerCell),
-                                         cellsCreatedForThisType,
-                                         startOfConnectivityArray);
+      smtk::mesh::CellType cellType = static_cast<smtk::mesh::CellType>(ctype);
+      int numVertsPerCell = smtk::mesh::verticesPerCell(cellType);
 
-      if(allocated)
-        {
-        //now that we have the chunk allocated, we have re-iterate and get
-        //the connectivity for each cell
-        smtk::mesh::Handle *currentConnLoc = startOfConnectivityArray;
-        std::vector<int> cell_conn(numVertsPerCell);
-        for(Tess::size_type i = start_off; i != end_off; i = tess->nextCellOffset(i))
-          {
-          tess->vertexIdsOfCell(i, cell_conn);
-          for(std::size_t j=0; j < numVertsPerCell; ++j)
-            {
-            currentConnLoc[j] = cell_conn[j];
-            }
-          }
+      // notify database that we have written to connectivity, that way
+      // it can properly update adjacencies and other database info
+      ialloc->connectivityModified(allocIt->first, numVertsPerCell, allocIt->second);
 
-        // notify database that we have written to connectivity, that way
-        // it can properly update adjacencies and other database info
-        ialloc->connectivityModified(cellsCreatedForThisType,
-                                     static_cast<int>(numVertsPerCell),
-                                     startOfConnectivityArray);
-
-        //we need to add these cells to the range that represents all
-        //cells for this volume
-        cellsForThisEntity.insert(cellsCreatedForThisType.begin(),
-                                  cellsCreatedForThisType.end());
-        }
-      } //for all cells of a given type in a run
+      //we need to add these cells to the range that represents all
+      //cells for this volume
+      cellsForThisEntity.insert(allocIt->first.begin(), allocIt->first.end());
+      }
 
     //save all the cells of this volume
     newlyCreatedCells.insert( std::make_pair(refForThisEntity,cellsForThisEntity) );
@@ -235,6 +266,7 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& 
   smtk::mesh::CollectionPtr collection = meshManager->makeCollection();
   smtk::mesh::InterfacePtr iface = collection->interface();
   smtk::mesh::AllocatorPtr ialloc = iface->allocator();
+  collection->setModelManager(modelManager);
 
   //We create a new mesh each for the Edge(s), Face(s) and Volume(s).
   //the MODEL_ENTITY will be associated with the meshset that contains all
@@ -253,10 +285,6 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& 
 
   //We need to iterate over each model i think here
   //next we convert all volumes, faces, edges, and vertices that have tessellation
-  EntityTypeBits entitiesToConvert[4] = { smtk::model::VERTEX,
-                                          smtk::model::EDGE,
-                                          smtk::model::FACE,
-                                          smtk::model::VOLUME };
   for( int entAsInt =0; entAsInt != 4; ++entAsInt)
   {
   EntityTypeBits entType = static_cast<EntityTypeBits>(entAsInt);
