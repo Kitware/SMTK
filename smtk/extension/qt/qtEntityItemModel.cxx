@@ -146,7 +146,7 @@ QModelIndex QEntityItemModel::index(int row, int column, const QModelIndex& owne
 
   DescriptivePhrasePtr ownerPhrase = this->getItem(owner);
   std::string entName = ownerPhrase->relatedEntity().name();
-  std::cout << "Owner index for: " << entName << std::endl;
+//  std::cout << "Owner index for: " << entName << std::endl;
   DescriptivePhrases& subphrases(ownerPhrase->subphrases());
   if (row >= 0 && row < static_cast<int>(subphrases.size()))
     {
@@ -696,7 +696,7 @@ inline void _internal_findAllExistingPhrases(
     if (modEnts->has((*it)->relatedEntity()))
       {
       modifiedPhrases.push_back(*it);
-      return; // stop searching siblings
+      continue; // skip Descending
       }
 
     // Descend 
@@ -779,7 +779,13 @@ void QEntityItemModel::addChildPhrases(
     }
   else
 */
-    emit dataChanged(qidx, qidx);
+  emit dataChanged(qidx, qidx);
+  if(newDphrs.size() > 0)
+    {
+    QModelIndex lastnewChild = qidx.child(row, 0);
+    // give view an opportunity to scroll to the new child
+    emit newIndexAdded(lastnewChild);
+    }
 }
 
 void QEntityItemModel::removeChildPhrases(

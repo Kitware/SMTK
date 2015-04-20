@@ -101,6 +101,7 @@ protected slots:
                                const smtk::model::SessionRef& session,
                                const smtk::model::Group& grp,
                                const smtk::model::EntityRefs& entities);
+  virtual void newIndexAdded(const QModelIndex & newidx);
 
 protected:
   // If 'Delete' button is pressed, invoke proper operation if possible.

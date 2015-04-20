@@ -106,6 +106,9 @@ qtModelView::qtModelView(QWidget* p)
   QObject::connect(qmodel,
                    SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
                    this, SLOT(dataChanged(const QModelIndex&, const QModelIndex&)), Qt::QueuedConnection);
+  QObject::connect(qmodel,
+                   SIGNAL(newIndexAdded(const QModelIndex&)),
+                   this, SLOT(newIndexAdded(const QModelIndex&)), Qt::QueuedConnection);
 
 }
 
@@ -359,6 +362,14 @@ void qtModelView::selectionChanged (
     CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY | INSTANCE_ENTITY);
 
   emit this->entitiesSelected(selentityrefs);
+}
+
+//-----------------------------------------------------------------------------
+// when the dataChanged is emitted from the model, we want to scroll to
+// that index so that the changes are visible in the tree view.
+void qtModelView::newIndexAdded(const QModelIndex & newidx)
+{
+  this->scrollTo(newidx);
 }
 
 //----------------------------------------------------------------------------
