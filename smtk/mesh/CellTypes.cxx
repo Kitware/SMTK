@@ -21,5 +21,40 @@ int verticesPerCell(CellType ctype)
   return ctype >= 0 && ctype <= CellType_MAX ? verticesByType[ctype] : -1;
 }
 
+/**\brief Return the name of the mesh cell type.
+  *
+  * If the \a flag value is non-zero, return the plural form of the name.
+  */
+std::string cellTypeSummary(CellType ctype, int flag)
+{
+  static const char* cellTypeNamesSingular[CellType_MAX + 1] = {
+    "vertex",
+    "line",
+    "triangle",
+    "quad",
+    "polygon",
+    "tetrahedron",
+    "pyramid",
+    "wedge",
+    "hexahedron",
+    "invalid" // CellType_MAX
+  };
+  static const char* cellTypeNamesPlural[CellType_MAX + 1] = {
+    "vertices",
+    "lines",
+    "triangles",
+    "quads",
+    "polygons",
+    "tetrahedra",
+    "pyramids",
+    "wedges",
+    "hexahedra",
+    "invalid" // CellType_MAX
+  };
+  return ctype >= 0 && ctype <= CellType_MAX ?
+    (flag ? cellTypeNamesPlural[ctype] : cellTypeNamesSingular[ctype]) :
+    cellTypeNamesSingular[CellType_MAX];
+}
+
   } // namespace mesh
 } // namespace smtk

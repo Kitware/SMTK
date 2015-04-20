@@ -12,11 +12,16 @@
 #define __smtk_mesh_CellTypes_h
 
 #include <bitset>
+#include <string>
 
 namespace smtk {
   namespace mesh {
 
-//Enum types used for querying the interface
+/**\brief Enum types used for querying the interface.
+  *
+  * When changing this enum, be sure to update verticesPerCell()
+  * and cellTypeName()!
+  */
 enum CellType
 {
   Vertex        = 0,
@@ -32,6 +37,7 @@ enum CellType
 };
 
 int verticesPerCell(CellType ctype);
+std::string cellTypeSummary(CellType ctype, int flag = 0);
 
 //Need a basic blitter for cell queries, mainly used by
 //TypeSet

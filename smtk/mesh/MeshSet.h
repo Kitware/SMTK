@@ -78,7 +78,8 @@ public:
   bool setDirichlet(const smtk::mesh::Dirichlet& d);
   bool setNeumann(const smtk::mesh::Neumann& n);
 
-  smtk::common::UUIDArray modelEntities() const;
+  smtk::common::UUIDArray modelEntityIds() const;
+  smtk::model::EntityRefArray modelEntities() const;
   bool setModelEntities(const smtk::model::EntityRef&);
 
   smtk::mesh::CellSet cells() const; //all cells of the meshset

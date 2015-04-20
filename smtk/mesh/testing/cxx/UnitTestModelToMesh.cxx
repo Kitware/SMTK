@@ -9,6 +9,8 @@
 //=========================================================================
 
 #include "smtk/io/ModelToMesh.h"
+#include "smtk/io/WriteMesh.h"
+
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 
@@ -211,12 +213,18 @@ void verify_cell_conversion()
   smtk::model::EntityRefs models =
     modelManager->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::MODEL_ENTITY);
   it.traverse(models.begin(), models.end(), smtk::model::ITERATE_MODELS);
+  std::cout << "All associations:\n";
   testFindAssociations<-1>(c, it, numTetsInModel);
+  std::cout << "Dim 0 associations:\n";
   testFindAssociations<0>(c, it, 0);
+  std::cout << "Dim 1 associations:\n";
   testFindAssociations<1>(c, it, 0);
+  std::cout << "Dim 2 associations:\n";
   testFindAssociations<2>(c, it, numTetsInModel);
+  std::cout << "Dim 3 associations:\n";
   testFindAssociations<3>(c, it, 0);
 
+  std::cout << "Find type info of first cell:\n";
   if (!models.empty())
     {
     smtk::model::CellEntities cells = models.begin()->as<smtk::model::Model>().cells();
@@ -224,11 +232,35 @@ void verify_cell_conversion()
       {
       smtk::mesh::TypeSet meshedTypes = c->findAssociatedTypes(cells[0]);
       smtk::mesh::CellTypes cellTypes = meshedTypes.cellTypes();
-      std::cout << "Cell is " << cells[0].name() << "\n";
-      // These can change when the tessellation stores tetrahedra for volume cells like it should:
-      test(cellTypes[smtk::mesh::Triangle], "Expected this volume to have mesh triangles.");
-      test(!cellTypes[smtk::mesh::Tetrahedron], "Did not expect this volume to have mesh tetrahedra.");
+      std::cout << "  Cell " << cells[0].name() << "\n";
+      static bool expected[smtk::mesh::CellType_MAX] =
+        {true, false, true, false, false, false, false, false, false};
+      for (int i = 0; i < smtk::mesh::CellType_MAX; ++i)
+        {
+        smtk::mesh::CellType ct = static_cast<smtk::mesh::CellType>(i);
+        std::cout
+          << "    Has mesh items of type " << cellTypeSummary(ct) << "? "
+          << (cellTypes[ct] ? "Y" : "N") << "\n";
+        if (cellTypes[ct] != expected[ct])
+          {
+          std::ostringstream msg;
+          msg
+            << (expected[i] ? "Expected" : "Did not expect")
+            << " this cell to have mesh " << cellTypeSummary(ct,1);
+          std::cout << "    " << msg.str() << "\n";
+          test(cellTypes[ct] == expected[ct], msg.str());
+          //smtk::io::WriteMesh::entireCollection("/tmp/mesh.vtk", c);
+          }
+        }
       }
+    }
+
+  std::cout << "Entity lookup via reverse classification\n";
+  smtk::model::EntityRefArray ents = c->meshes().modelEntities();
+  test(ents.size() == numTetsInModel, "Expected 1 tetrahedron per model.");
+  for (smtk::model::EntityRefArray::iterator it = ents.begin(); it != ents.end(); ++it)
+    {
+    std::cout << "  " << it->name() << " (" << it->flagSummary(0) << ")\n";
     }
 }
 

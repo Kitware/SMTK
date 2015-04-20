@@ -145,13 +145,29 @@ bool MeshSet::setNeumann(const smtk::mesh::Neumann& n)
   return iface->setNeumann( this->m_range, n );
 }
 
-/**\brief Return the model entity UUIDArray associated with meshset members.
+/**\brief Return an array of model entity UUIDs associated with meshset members.
   *
   */
-smtk::common::UUIDArray MeshSet::modelEntities() const
+smtk::common::UUIDArray MeshSet::modelEntityIds() const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
   return iface->computeModelEntities(this->m_range);
+}
+
+/**\brief Return the model entities associated with meshset members.
+  *
+  * warning Note that the parent collection of this meshset must have
+  *         its model manager set to a valid value or the result will
+  *         be an array of invalid entries.
+  */
+smtk::model::EntityRefArray MeshSet::modelEntities() const
+{
+  smtk::common::UUIDArray uids = this->modelEntityIds();
+  smtk::model::EntityRefArray result;
+  smtk::model::ManagerPtr mgr = this->m_parent->modelManager();
+  for (smtk::common::UUIDArray::const_iterator it = uids.begin(); it != uids.end(); ++it)
+    result.push_back(smtk::model::EntityRef(mgr, *it));
+  return result;
 }
 
 /**\brief Set the model entity for each meshset member to \a ent.
