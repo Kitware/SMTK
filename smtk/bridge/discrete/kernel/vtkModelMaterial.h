@@ -56,6 +56,7 @@ protected:
   virtual ~vtkModelMaterial();
   static vtkModelMaterial* New();
 
+  friend class vtkMaterialOperatorBase;
   // Description:
   // Remove GeometricEntity from this material.  It is assumed that it
   // will be added to another material.

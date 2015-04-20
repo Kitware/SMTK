@@ -22,17 +22,19 @@
               <MembershipMask>group</MembershipMask>  -->
             </ModelEntity>
             <ModelEntity Name="cell to add" NumberOfRequiredValues="0" Extensible="1">
-              <MembershipMask>face|edge|vertex</MembershipMask>
+              <MembershipMask>volume|face|edge</MembershipMask>
             </ModelEntity>
             <ModelEntity Name="cell to remove" NumberOfRequiredValues="0" Extensible="1">
-              <MembershipMask>face|edge|vertex</MembershipMask>
+              <MembershipMask>volume|face|edge</MembershipMask>
             </ModelEntity>
-            <Int Name="entity type" Label="Entity Type:" Version="0" NumberOfRequiredValues="1">
-              <BriefDescription>EnityType that new built group will contain</BriefDescription>
+            <Int Name="group type" Label="Group Type:" Version="0" NumberOfRequiredValues="1">
+              <BriefDescription>Group type for the discrete model kernel:
+          Boundary group (face or edge) is not partitioned, meaning each entity can belong to multiple boundary groups;
+          Domain group (volume or face) is partitioned, meaning each entity will only belong to one domain group.
+              </BriefDescription>
               <DiscreteInfo DefaultIndex="0">
-                <Value Enum="Face">0</Value>
-                <Value Enum="Edge">1</Value>
-                <Value Enum="Vertex">2</Value>
+                <Value Enum="Boundary">0</Value>
+                <Value Enum="Domain">1</Value>
               </DiscreteInfo>
             </Int>
             <String Name="group name" Label="group name" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
@@ -44,8 +46,8 @@
             <Structure>
               <Value Enum="Create Group">Create</Value>
               <Items>
+                <Item>group type</Item>
                 <Item>group name</Item>
-                <Item>entity type</Item>
               </Items>
             </Structure>
             <Structure>

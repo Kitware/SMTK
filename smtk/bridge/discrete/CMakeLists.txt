@@ -55,6 +55,8 @@ SET(DiscreteOperationFiles
   operation/vtkSplitOperator.cxx
   operation/vtkSplitOperatorBase.cxx
   operation/vtkMasterPolyDataNormals.cxx
+  operation/vtkMaterialOperator.cxx
+  operation/vtkMaterialOperatorBase.cxx
   operation/vtkMergeDuplicateCells.cxx
   operation/vtkModelEntityGroupOperator.cxx
   operation/vtkModelEntityGroupOperatorBase.cxx
@@ -86,6 +88,8 @@ SET(DiscreteModelHeaders
   operation/vtkSplitOperator.h
   operation/vtkSplitOperatorBase.h
   operation/vtkMasterPolyDataNormals.h
+  operation/vtkMaterialOperator.h
+  operation/vtkMaterialOperatorBase.h
   operation/vtkMergeDuplicateCells.h
   operation/vtkModelEntityGroupOperator.h
   operation/vtkModelEntityGroupOperatorBase.h

@@ -114,6 +114,7 @@ public:
 
 signals:
   void phraseTitleChanged(const QModelIndex&);
+  void newIndexAdded(const QModelIndex & newidx);
 
 protected:
   smtk::model::DescriptivePhrasePtr m_root;
