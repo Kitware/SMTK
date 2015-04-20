@@ -69,6 +69,13 @@ public:
   vtkGetObjectMacro(GeometricEntitiesToAdd, vtkIdList);
 
   // Description:
+  // Remove Entities. This is not present in V3
+  void ClearGeometricEntitiesToRemove();
+  void RemoveModelGeometricEntity(vtkIdType GeometricEntityId);
+  void RemoveModelGeometricEntity(vtkModelGeometricEntity* GeometricEntity);
+  vtkGetObjectMacro(GeometricEntitiesToRemove, vtkIdList);
+
+  // Description:
   // Get the list of PreviousMaterialsOfGeometricEntities.
   vtkGetObjectMacro(PreviousMaterialsOfGeometricEntities, vtkIdList);
 
@@ -101,8 +108,9 @@ private:
   void operator=(const vtkMaterialOperatorBase&);  // Not implemented.
 
   // Description:
-  // A list of vtkModelGeometricEntitys to add.
+  // A list of vtkModelGeometricEntitys to add/remove.
   vtkIdList* GeometricEntitiesToAdd;
+  vtkIdList* GeometricEntitiesToRemove;
 
   // Description:
   // A list of the old materials that each vtkModelGeometricEntity
