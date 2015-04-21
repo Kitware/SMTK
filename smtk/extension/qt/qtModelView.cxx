@@ -694,7 +694,7 @@ void qtModelView::showContextMenu(const QPoint &p)
   if ((brSession =
     this->owningEntityAs<smtk::model::SessionRef>(idx)).isValid())
     {
-    StringList opNames = brSession.operatorNames();
+    StringList opNames = brSession.operatorNames(false);
     std::sort(opNames.begin(), opNames.end()); 
     for(StringList::const_iterator it = opNames.begin();
         it != opNames.end(); ++it)
