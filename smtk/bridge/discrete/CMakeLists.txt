@@ -126,6 +126,7 @@ set(discreteSessionSrcs
   operators/SplitFaceOperator.cxx
   operators/GrowOperator.cxx
   operators/WriteOperator.cxx
+  operators/RemoveModel.cxx
 )
 
 set(discreteSessionHeaders
@@ -138,6 +139,7 @@ set(discreteSessionHeaders
   operators/SplitFaceOperator.h
   operators/GrowOperator.h
   operators/WriteOperator.h
+  operators/RemoveModel.h
 )
 
 # Normally this would be machine-generated from Session.json
@@ -157,6 +159,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ImportOperator.sbt" uni
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EntityGroupOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GrowOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteOperator.sbt" unitOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/RemoveModel.sbt" unitOperatorXML)
 
 add_library(smtkDiscreteSession ${_module_src} ${discreteSessionSrcs})
 

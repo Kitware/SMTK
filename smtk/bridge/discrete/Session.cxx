@@ -1308,6 +1308,45 @@ smtk::model::Vertex Session::addVertexToManager(
   return smtk::model::Vertex();
 }
 
+// This will remove Model from smtk manager and vtkDiscreteModelWrapper form kernel
+bool Session::removeModelEntity(const smtk::model::EntityRef& modRef)
+{
+  vtkDiscreteModelWrapper* modelWrap = this->findModelEntity(modRef.entity());
+  if(!modelWrap)
+    return false;
+  vtkDiscreteModel* dmod = modelWrap->GetModel();
+
+  // Remove any observers on model items that this session added:
+  std::map<smtk::common::UUID, vtkWeakPointer<vtkModelItem> >::iterator mit;
+  for (mit = this->m_itemsToRefs.begin(); mit != this->m_itemsToRefs.end(); ++mit)
+    {
+    if(!mit->second || mit->second.Get() != dmod)
+      continue;
+    vtkInformation* mp = mit->second->GetProperties();
+    mp->RemoveObserver(this->m_itemWatcher);
+    }
+
+  // Remove any models that this session owned from s_modelsToSessions.
+  std::map<vtkDiscreteModel*,Session::WeakPtr>::iterator mbit;
+  for (mbit = Session::s_modelsToSessions.begin(); mbit != Session::s_modelsToSessions.end(); )
+    {
+    if (mbit->first == dmod)
+      {
+      smtk::common::UUID modelId = modRef.entity();
+      Session::s_modelsToSessions.erase(mbit++);
+      vtkSmartPointer<vtkDiscreteModelWrapper> modelPtr = Session::s_modelIdsToRefs[modelId];
+      Session::s_modelIdsToRefs.erase(modelId);
+      Session::s_modelRefsToIds.erase(modelPtr);
+      }
+    else
+      {
+      ++mbit;
+      }
+    }
+
+  return this->manager()->eraseModel(modRef);
+}
+
     } // namespace discrete
   } // namespace bridge
 } // namespace smtk
