@@ -330,7 +330,11 @@ smtk::model::SessionInfoBits Session::addBodyToManager(
   if (body)
     {
     EntityRef mutableEntityRef(entityref);
-    mutableEntityRef.manager()->insertModel(entityref.entity(), 3, 3, body->entity_name().c_str());
+    mutableEntityRef.manager()->insertModel(
+      entityref.entity(),
+      body->is_sheet_body() ? 2 : 3,
+      /* embedding dim */ 3,
+      body->entity_name().c_str());
     actual |= smtk::model::SESSION_ENTITY_TYPE;
 
     if (requestedInfo & (smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS))
