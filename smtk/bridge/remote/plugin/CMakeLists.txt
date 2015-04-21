@@ -14,10 +14,10 @@ add_paraview_plugin(
 
 target_link_libraries(smtkRemoteSessionPlugin
     LINK_PUBLIC
-      SMTKCore
-      SMTKRemote
+      smtkCore
+      smtkRemoteSession
       vtkPVServerManagerApplication
     LINK_PRIVATE
       vtkPVServerManagerApplicationCS
 )
-smtk_install_library(smtkRemoteSessionPlugin DEPENDS SMTKCore SMTKRemote)
+smtk_install_library(smtkRemoteSessionPlugin DEPENDS smtkCore smtkRemoteSession)

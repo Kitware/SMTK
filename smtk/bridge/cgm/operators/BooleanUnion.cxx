@@ -90,7 +90,7 @@ smtk::model::OperatorResult BooleanUnion::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  CGMSMTK_EXPORT,
+  SMTKCGMSESSION_EXPORT,
   smtk::bridge::cgm::BooleanUnion,
   cgm_boolean_union,
   "union",

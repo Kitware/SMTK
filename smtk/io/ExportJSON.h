@@ -10,7 +10,7 @@
 #ifndef __smtk_io_ExportJSON_h
 #define __smtk_io_ExportJSON_h
 
-#include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
+#include "smtk/CoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/SystemConfig.h"
 
 #include "smtk/common/UUID.h"

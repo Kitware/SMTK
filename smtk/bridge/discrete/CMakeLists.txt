@@ -23,12 +23,12 @@ include_directories(
 # vtk_module_library() macro and vtk/module.cmake file.
 # The pv_process_modules() macro finds all subdirectories
 # containing a module.cmake file automatically.
-include (vtkSMTKModules)
+include (smtkVTKModules)
 vtk_smtk_setup_module_environment("SMTKDiscrete")
 vtk_smtk_process_modules()
 
 # Build vtk moab reader before session
-if(SMTK_BUILD_MOAB_READER)
+if(SMTK_ENABLE_MOAB_SUPPORT)
   add_subdirectory(moabreader)
 endif()
 
@@ -166,14 +166,14 @@ if (VTK_WRAP_PYTHON)
   list(APPEND __private_dependencies vtkPythonInterpreter)
 endif (VTK_WRAP_PYTHON)
 
-if(SMTK_BUILD_MOAB_READER)
+if(SMTK_ENABLE_MOAB_SUPPORT)
   list(APPEND __private_dependencies vtkDiscreteMoabReader)
 endif()
 
-#set smtkDiscreteSession to publicly link to SMTKCore and privately to vtkSMTKDiscreteModel
+#set smtkDiscreteSession to publicly link to smtkCore and privately to vtkSMTKDiscreteModel
 target_link_libraries(smtkDiscreteSession
   LINK_PUBLIC
-    SMTKCore
+    smtkCore
   LINK_PRIVATE
     vtkCommonExecutionModel
     vtkFiltersCore
@@ -191,7 +191,7 @@ target_link_libraries(smtkDiscreteSession
   )
 
 
-smtk_export_header(smtkDiscreteSession discreteSessionExports.h)
+smtk_export_header(smtkDiscreteSession Exports.h)
 
 # On Mac OS X, set the directory included as part of the installed library's path:
 if (BUILD_SHARED_LIBS)
@@ -202,9 +202,9 @@ endif()
 smtk_public_headers(${discreteSessionHeaders} ${DiscreteModelHeaders})
 
 #install the library and exports the library when used from a build tree
-smtk_install_library(smtkDiscreteSession DEPENDS SMTKCore vtkSMTKDiscreteModel vtkSMTKDiscreteExt)
+smtk_install_library(smtkDiscreteSession DEPENDS smtkCore vtkSMTKDiscreteModel vtkSMTKDiscreteExt)
 
-if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
+if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
   #extract the headers from discrete library we built to give them to shiboken
 
   sbk_wrap_library(smtkDiscreteSession
@@ -225,7 +225,7 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
     TYPESYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/typesystem.xml
     HEADERS ${discreteSessionHeaders}
     DEPENDS
-      SMTKCore
+      smtkCore
   )
   target_include_directories(smtkDiscreteSessionPython
     PRIVATE
@@ -240,7 +240,7 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
   )
 endif()
 
-if(SMTK_BUILD_SESSION_PLUGIN AND SMTK_BUILD_DISCRETE_SESSION)
+if(SMTK_ENABLE_PARAVIEW_SUPPORT AND SMTK_ENABLE_DISCRETE_SESSION)
   add_subdirectory(plugin)
 endif()
 

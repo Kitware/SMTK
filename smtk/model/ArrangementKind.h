@@ -10,7 +10,7 @@
 #ifndef __smtk_model_ArrangementKind_h
 #define __smtk_model_ArrangementKind_h
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 
 #include <string>
 

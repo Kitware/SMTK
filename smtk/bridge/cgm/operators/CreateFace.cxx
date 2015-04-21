@@ -101,7 +101,7 @@ smtk::model::OperatorResult CreateFace::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  CGMSMTK_EXPORT,
+  SMTKCGMSESSION_EXPORT,
   smtk::bridge::cgm::CreateFace,
   cgm_create_face,
   "create face",

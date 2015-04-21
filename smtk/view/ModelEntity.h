@@ -15,7 +15,7 @@
 #define __smtk_view_ModelEntity_h
 
 #include "smtk/view/Base.h"
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/EntityTypeBits.h"
 

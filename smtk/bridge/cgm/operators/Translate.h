@@ -16,7 +16,7 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-class CGMSMTK_EXPORT Translate : public Operator
+class SMTKCGMSESSION_EXPORT Translate : public Operator
 {
 public:
   smtkTypeMacro(Translate);

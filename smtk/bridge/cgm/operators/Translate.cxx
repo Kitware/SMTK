@@ -96,7 +96,7 @@ smtk::model::OperatorResult Translate::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  CGMSMTK_EXPORT,
+  SMTKCGMSESSION_EXPORT,
   smtk::bridge::cgm::Translate,
   cgm_translate,
   "translate",

@@ -28,12 +28,12 @@ With that in mind:
 
 * smtk — this directory contains all of the source code for SMTK libraries and tests
 
-  * common — source for classes used throughout the SMTKCore library
-  * attribute — source for :ref:`smtk-attribute-sys` in the SMTKCore library
-  * model — source for :ref:`smtk-model-sys` in the SMTKCore library
-  * simulation — aids to exporting simulation input decks in the SMTKCore library
-  * io — file and string I/O in the SMTKCore library, a mix of XML and JSON
-  * view — source for providing views of attributes and models in the SMTKCore library
+  * common — source for classes used throughout the smtkCore library
+  * attribute — source for :ref:`smtk-attribute-sys` in the smtkCore library
+  * model — source for :ref:`smtk-model-sys` in the smtkCore library
+  * simulation — aids to exporting simulation input decks in the smtkCore library
+  * io — file and string I/O in the smtkCore library, a mix of XML and JSON
+  * view — source for providing views of attributes and models in the smtkCore library
   * session — source for additional libraries that session solid modeling kernels into SMTK
   * extensions — source for additional libraries that expose SMTK to other software
 

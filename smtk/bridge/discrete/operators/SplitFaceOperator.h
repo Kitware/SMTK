@@ -11,7 +11,7 @@
 #ifndef __smtk_session_discrete_SplitFaceOperator_h
 #define __smtk_session_discrete_SplitFaceOperator_h
 
-#include "smtk/bridge/discrete/discreteSessionExports.h"
+#include "smtk/bridge/discrete/Exports.h"
 #include "smtk/model/Operator.h"
 #include "vtkSplitOperator.h"
 #include "vtkNew.h"

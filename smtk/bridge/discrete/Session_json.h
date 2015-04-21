@@ -29,10 +29,10 @@ static const char Session_json[] =
 "        ,\".2dm (CMB Mesh Files)\""
 "        ,\".3dm (CMB Mesh Files)\""
 "        ,\".stl (STL Files)\""
-#ifdef SMTK_BUILD_MOAB_READER
+#ifdef SMTK_ENABLE_MOAB_SUPPORT
 "        ,\".exo (Moab Files)\""
 #endif
-#ifdef SMTK_ENABLE_REMUS
+#ifdef SMTK_ENABLE_REMUS_SUPPORT
 "        ,\".poly (Poly Files)\""
 "        ,\".smesh (Surface Meshes)\""
 "        ,\".map (Map Files)\""

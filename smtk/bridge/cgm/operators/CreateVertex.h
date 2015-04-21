@@ -20,7 +20,7 @@ namespace smtk {
   *
   * The number of sides must be 3 or greater.
   */
-class CGMSMTK_EXPORT CreateVertex : public Operator
+class SMTKCGMSESSION_EXPORT CreateVertex : public Operator
 {
 public:
   smtkTypeMacro(CreateVertex);

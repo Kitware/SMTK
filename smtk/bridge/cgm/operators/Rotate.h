@@ -16,7 +16,7 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-class CGMSMTK_EXPORT Rotate : public Operator
+class SMTKCGMSESSION_EXPORT Rotate : public Operator
 {
 public:
   smtkTypeMacro(Rotate);

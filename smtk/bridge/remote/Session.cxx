@@ -190,7 +190,7 @@ RemusStaticSessionInfo Session::createFunctor(
 } // namespace smtk
 
 smtkImplementsModelingKernel(
-  SMTKREMOTE_EXPORT,
+  SMTKREMOTESESSION_EXPORT,
   remus_remote,
   "",
   smtk::model::SessionHasNoStaticSetup,

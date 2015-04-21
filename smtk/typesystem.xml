@@ -100,6 +100,7 @@
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManager', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerArrangement', unmatched parameter type 'smtk::model::UUIDWithArrangementDictionary const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerSession', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerSessionPartial', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerEntity', unmatched parameter type 'smtk::model::UUIDWithEntity&amp;'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerFloatProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerIntegerProperties', unmatched parameter type 'cJSON*'"/>

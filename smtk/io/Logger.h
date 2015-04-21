@@ -11,7 +11,7 @@
 #define __smtk_io_Logger_h
 /*! \file */
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h"
 #include <iostream>
 #include <sstream>

@@ -21,7 +21,7 @@
 #ifndef __smtkdiscrete_vtkMaterialOperatorBase_h
 #define __smtkdiscrete_vtkMaterialOperatorBase_h
 
-#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
+#include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkModelEntityOperatorBase.h"
 
 class vtkModelMaterial;

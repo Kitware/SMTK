@@ -99,7 +99,7 @@ smtk::model::OperatorResult BooleanSubtraction::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  CGMSMTK_EXPORT,
+  SMTKCGMSESSION_EXPORT,
   smtk::bridge::cgm::BooleanSubtraction,
   cgm_boolean_subtraction,
   "subtraction",

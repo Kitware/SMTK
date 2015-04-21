@@ -17,7 +17,7 @@ namespace smtk {
     namespace cgm {
 
 /// Make a copy of a CGM entity.
-class CGMSMTK_EXPORT Copy : public Operator
+class SMTKCGMSESSION_EXPORT Copy : public Operator
 {
 public:
   smtkTypeMacro(Copy);

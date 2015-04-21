@@ -16,7 +16,7 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-class CGMSMTK_EXPORT Sweep : public Operator
+class SMTKCGMSESSION_EXPORT Sweep : public Operator
 {
 public:
   smtkTypeMacro(Sweep);

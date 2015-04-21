@@ -3,6 +3,9 @@ cmake_policy(SET CMP0020 NEW)
 if (POLICY CMP0042)
   cmake_policy(SET CMP0042 NEW)
 endif()
+if (POLICY CMP0046)
+  cmake_policy(SET CMP0046 NEW)
+endif()
 if (POLICY CMP0054)
   cmake_policy(SET CMP0054 OLD)
 endif()
@@ -46,19 +49,22 @@ include(CMake/FindHashFunctor.cmake)
 option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" OFF)
 option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" ON)
 # Option to build Qt ui compoments for attributes
-option(SMTK_BUILD_QT "Build Qt GUI" OFF)
-option(SMTK_BUILD_VTK "Build VTK component" OFF)
-option(SMTK_BUILD_CGM "Build CGM component" OFF)
-option(SMTK_BUILD_DISCRETE_SESSION "Build discrete model session components" OFF)
-option(SMTK_BUILD_SESSION_PLUGIN "Build paraview plugin for model sessions" OFF)
+option(SMTK_ENABLE_TESTING "Enable Testing" ON)
+option(SMTK_ENABLE_PYTHON_WRAPPING "Build Python Wrappings using Shiboken" OFF)
+option(SMTK_ENABLE_QT_SUPPORT "Build Qt GUI" OFF)
+option(SMTK_ENABLE_VTK_SUPPORT "Build VTK component" OFF)
+option(SMTK_ENABLE_REMUS_SUPPORT "Build Remus components" OFF)
+option(SMTK_ENABLE_PARAVIEW_SUPPORT "Build paraview plugins for model sessions" OFF)
 
-if (SMTK_BUILD_VTK)
+option(SMTK_ENABLE_CGM_SESSION "Build CGM component" OFF)
+option(SMTK_ENABLE_DISCRETE_SESSION "Build discrete model session components" OFF)
+if (SMTK_ENABLE_VTK_SUPPORT)
   option(SMTK_ENABLE_EXODUS_SESSION "Build a session to Exodus-II side sets" ON)
 endif()
+if (SMTK_ENABLE_REMUS_SUPPORT)
+  option(SMTK_ENABLE_REMOTE_SESSION "Build a session that allows modeling in a remote process." ON)
+endif()
 
-option(SMTK_ENABLE_REMUS "Build Remus components" OFF)
-option(SMTK_ENABLE_TESTING "Enable Testing" ON)
-option(SMTK_BUILD_PYTHON_WRAPPINGS "Build Python Wrappings using Shiboken" OFF)
 option(SMTK_USE_SYSTEM_SPARSEHASH "Use the system-installed sparsehash?" OFF)
 option(SMTK_HASH_STORAGE "Use sparsehash library for primary storage?" OFF)
 set(SMTK_DATA_DIR "" CACHE PATH "Path to a directory of SMTK test data.")
@@ -130,7 +136,7 @@ endif()
 ################################################################################
 
 #make find qt4 bring in import targets which are far nicer to use
-if(SMTK_BUILD_QT)
+if(SMTK_ENABLE_QT_SUPPORT)
   set(QT_USE_IMPORTED_TARGETS TRUE)
   find_package(Qt4 REQUIRED)
   include(${QT_USE_FILE})
@@ -144,7 +150,7 @@ endif()
 # Look for Discrete session discrete model modules
 ################################################################################
 
-if(SMTK_BUILD_SESSION_PLUGIN)
+if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   find_package(ParaView REQUIRED)
 endif()
 
@@ -152,8 +158,8 @@ endif()
 # VTK Related Settings
 ################################################################################
 
-if(SMTK_BUILD_VTK)
-  if(SMTK_BUILD_SESSION_PLUGIN)
+if(SMTK_ENABLE_VTK_SUPPORT)
+  if(SMTK_ENABLE_PARAVIEW_SUPPORT)
     find_package(ParaView REQUIRED)
   else()
     # Find the package here so environment variables are set, but
@@ -174,15 +180,15 @@ endif()
 # CGM Related Settings
 ################################################################################
 
-if(SMTK_BUILD_CGM)
+if(SMTK_ENABLE_CGM_SESSION)
   find_package(CGM REQUIRED)
-endif(SMTK_BUILD_CGM)
+endif(SMTK_ENABLE_CGM_SESSION)
 
 ################################################################################
 # Remus related settings
 ################################################################################
 
-if (SMTK_ENABLE_REMUS)
+if (SMTK_ENABLE_REMUS_SUPPORT)
   find_package(Remus REQUIRED)
 endif()
 
@@ -204,7 +210,7 @@ endif()
 ################################################################################
 # Wrapping Related Settings
 ################################################################################
-if(SMTK_BUILD_PYTHON_WRAPPINGS)
+if(SMTK_ENABLE_PYTHON_WRAPPING)
   include(UseShiboken)
   find_package(PythonInterp 2.7 REQUIRED)
   # Set up environment variables needed to import the python modules for tests.
@@ -352,15 +358,15 @@ include_directories(
 # Look for Discrete session discrete model modules
 ################################################################################
 
-if(SMTK_BUILD_DISCRETE_SESSION)
-  if(SMTK_BUILD_SESSION_PLUGIN)
+if(SMTK_ENABLE_DISCRETE_SESSION)
+  if(SMTK_ENABLE_PARAVIEW_SUPPORT)
     find_package(ParaView REQUIRED)
   else()
     find_package(VTK REQUIRED)
   endif()
 
-  # This option is only available when SMTK_BUILD_DISCRETE_SESSION is ON
-  option(SMTK_BUILD_MOAB_READER "Build moab reader for discrete model" OFF)
+  # This option is only available when SMTK_ENABLE_DISCRETE_SESSION is ON
+  option(SMTK_ENABLE_MOAB_SUPPORT "Build moab reader for discrete model" OFF)
 endif()
 
 ################################################################################

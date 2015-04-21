@@ -14,7 +14,7 @@
 #ifndef SHIBOKEN_SKIP
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/bridge/remote/SMTKRemoteExports.h"
+#include "smtk/bridge/remote/Exports.h"
 
 #include "smtk/model/StringData.h"
 
@@ -39,7 +39,7 @@ namespace smtk {
   * and can invoke methods to prepare the session for use with
   * a specific Remus worker that has been registered.
   */
-class SMTKREMOTE_EXPORT RemusStaticSessionInfo
+class SMTKREMOTESESSION_EXPORT RemusStaticSessionInfo
 {
 public:
   RemusStaticSessionInfo();

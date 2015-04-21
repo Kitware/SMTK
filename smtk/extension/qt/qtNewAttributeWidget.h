@@ -16,14 +16,14 @@
 
 #include <QDialog>
 
-#include "smtk/extension/qt/QtSMTKExports.h"
+#include "smtk/extension/qt/Exports.h"
 #include "smtk/PublicPointerDefs.h"
 
 namespace smtk
 {
   namespace attribute
   {
-  class QTSMTK_EXPORT qtNewAttributeWidget : public QDialog
+  class SMTKQTEXT_EXPORT qtNewAttributeWidget : public QDialog
   {
     Q_OBJECT
     typedef QDialog Superclass;

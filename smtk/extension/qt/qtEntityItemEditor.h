@@ -11,7 +11,7 @@
 #ifndef __smtk_qt_QEntityItemEditor_h
 #define __smtk_qt_QEntityItemEditor_h
 
-#include "smtk/extension/qt/QtSMTKExports.h"
+#include "smtk/extension/qt/Exports.h"
 #include <QtGui/QWidget>
 
 class QLineEdit;
@@ -22,7 +22,7 @@ namespace smtk {
 /**\brief Allow user edits to an smtk::model::Manager instance via QEntityItemModel.
   *
   */
-class QTSMTK_EXPORT QEntityItemEditor : public QWidget
+class SMTKQTEXT_EXPORT QEntityItemEditor : public QWidget
 {
   Q_OBJECT
 public:

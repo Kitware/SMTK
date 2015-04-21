@@ -20,7 +20,7 @@ namespace smtk {
   *
   * The number of sides must be 3 or greater.
   */
-class CGMSMTK_EXPORT CreatePrism : public Operator
+class SMTKCGMSESSION_EXPORT CreatePrism : public Operator
 {
 public:
   smtkTypeMacro(CreatePrism);

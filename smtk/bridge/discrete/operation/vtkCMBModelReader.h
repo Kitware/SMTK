@@ -16,7 +16,7 @@
 #ifndef __smtkdiscrete_vtkCMBModelReader_h
 #define __smtkdiscrete_vtkCMBModelReader_h
 
-#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
+#include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 

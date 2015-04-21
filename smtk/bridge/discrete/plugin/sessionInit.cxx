@@ -11,8 +11,8 @@
 #include "smtk/Options.h"
 #include "smtk/AutoInit.h"
 
-#ifdef SMTK_BUILD_DISCRETE_SESSION
+#ifdef SMTK_ENABLE_DISCRETE_SESSION
 // If CMB-session is included in the build, ensure that it is loaded
 // (and thus registered with the model manager).
 smtkComponentInitMacro(smtk_discrete_session);
-#endif // SMTK_BUILD_DISCRETE_SESSION
+#endif // SMTK_ENABLE_DISCRETE_SESSION

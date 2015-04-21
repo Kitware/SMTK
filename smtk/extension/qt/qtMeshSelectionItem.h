@@ -28,7 +28,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtMeshSelectionItem : public qtItem
+    class SMTKQTEXT_EXPORT qtMeshSelectionItem : public qtItem
     {
       Q_OBJECT
 

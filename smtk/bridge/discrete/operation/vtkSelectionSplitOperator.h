@@ -17,7 +17,7 @@
 #ifndef __smtkdiscrete_vtkSelectionSplitOperator_h
 #define __smtkdiscrete_vtkSelectionSplitOperator_h
 
-#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
+#include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkSelectionSplitOperatorBase.h"
 
 class vtkDiscreteModel;

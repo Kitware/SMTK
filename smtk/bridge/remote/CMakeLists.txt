@@ -12,39 +12,39 @@ set(RemoteLibHeaders
   RemusStaticSessionInfo.h
 )
 
-add_library(SMTKRemote ${RemoteLibSrcs})
+add_library(smtkRemoteSession ${RemoteLibSrcs})
 
 # Install the headers
 smtk_public_headers(${RemoteLibHeaders})
 
-#set SMTKRemote to publicly link to SMTKCore and privately to Remus
-target_link_libraries(SMTKRemote
+#set smtkRemoteSession to publicly link to smtkCore and privately to Remus
+target_link_libraries(smtkRemoteSession
   LINK_PUBLIC
-    SMTKCore
+    smtkCore
   LINK_PRIVATE
     RemusCommon
     RemusClient
     RemusServer
   )
 
-target_include_directories(SMTKRemote
+target_include_directories(smtkRemoteSession
   PUBLIC
   ${REMUS_INCLUDE_DIRS}
   )
 
-if (SMTK_BUILD_CGM)
-  target_include_directories(SMTKRemote PRIVATE ${CGM_INCLUDE_DIRS})
+if (SMTK_ENABLE_CGM_SESSION)
+  target_include_directories(smtkRemoteSession PRIVATE ${CGM_INCLUDE_DIRS})
 endif()
 
-smtk_export_header(SMTKRemote SMTKRemoteExports.h)
+smtk_export_header(smtkRemoteSession Exports.h)
 
 # On Mac OS X, set the directory included as part of the installed library's path:
 if (BUILD_SHARED_LIBS)
-  set_target_properties(SMTKRemote PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+  set_target_properties(smtkRemoteSession PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
 
 #install the library and exports the library when used from a build tree
-smtk_install_library(SMTKRemote DEPENDS SMTKCore)
+smtk_install_library(smtkRemoteSession DEPENDS smtkCore)
 
 # Add a server that accepts arguments for locations to find workers.
 add_executable(smtk-model-server
@@ -52,7 +52,7 @@ add_executable(smtk-model-server
 )
 
 target_link_libraries(smtk-model-server
-  SMTKCore
+  smtkCore
   RemusCommon
   RemusServer
   ${Boost_LIBRARIES}
@@ -66,8 +66,8 @@ add_executable(smtk-model-worker
 )
 
 target_link_libraries(smtk-model-worker
-  SMTKCore
-  SMTKRemote
+  smtkCore
+  smtkRemoteSession
   RemusCommon
   RemusProto
   RemusClient
@@ -75,12 +75,12 @@ target_link_libraries(smtk-model-worker
   ${Boost_LIBRARIES}
 )
 target_include_directories(smtk-model-worker PRIVATE ${REMUS_INCLUDE_DIRS})
-if (SMTK_BUILD_CGM)
-  target_link_libraries(smtk-model-worker cgmSMTK)
+if (SMTK_ENABLE_CGM_SESSION)
+  target_link_libraries(smtk-model-worker smtkCGMSession)
   target_include_directories(smtk-model-worker PRIVATE ${CGM_INCLUDE_DIRS})
 endif()
 
-if (SMTK_BUILD_DISCRETE_SESSION)
+if (SMTK_ENABLE_DISCRETE_SESSION)
   target_link_libraries(smtk-model-worker smtkDiscreteSession)
 endif()
 
@@ -99,10 +99,10 @@ install(TARGETS smtk-model-server smtk-model-worker
     ARCHIVE DESTINATION lib
   )
 
-if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
+if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
   #extract the headers from the library we built to give them to shiboken
 
-  sbk_wrap_library(SMTKRemote
+  sbk_wrap_library(smtkRemoteSession
     GENERATOR_ARGS --avoid-protected-hack
     WORKING_DIRECTORY ${SMTK_SOURCE_DIR}/smtk
     LOCAL_INCLUDE_DIRECTORIES
@@ -119,11 +119,11 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
       ${CMAKE_CURRENT_BINARY_DIR}
     TYPESYSTEM ${SMTK_SOURCE_DIR}/smtk/bridge/remote/typesystem.xml
     HEADERS ${RemoteLibHeaders}
-    DEPENDS SMTKCore
+    DEPENDS smtkCore
   )
-  #target_include_directories(SMTKRemotePython PRIVATE ${CGM_INCLUDE_DIRS})
+  #target_include_directories(smtkRemoteSessionPython PRIVATE ${CGM_INCLUDE_DIRS})
 endif()
 
-if(SMTK_BUILD_SESSION_PLUGIN)
+if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(plugin)
 endif()

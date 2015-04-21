@@ -23,11 +23,11 @@
 #define _qtTableWidget_h
 
 #include <QTableWidget>
-#include "smtk/extension/qt/QtSMTKExports.h"
+#include "smtk/extension/qt/Exports.h"
 
 class QKeyEvent;
 
-class QTSMTK_EXPORT qtTableWidget : public QTableWidget
+class SMTKQTEXT_EXPORT qtTableWidget : public QTableWidget
 {
   Q_OBJECT
 

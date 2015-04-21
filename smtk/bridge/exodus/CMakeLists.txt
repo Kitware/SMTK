@@ -2,7 +2,7 @@
 # that require VTK include paths. Otherwise, command
 # lines get too long on some platforms.
 include("${VTK_USE_FILE}")
-  list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
+list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
 set(exodusSrcs
   Session.cxx
@@ -18,12 +18,12 @@ set(exodusHeaders
 
 install(FILES PointerDefs.h DESTINATION include/smtk/bridge/exodus)
 
-add_library(SMTKSessionExodus ${exodusSrcs})
+add_library(smtkExodusSession ${exodusSrcs})
 
-#set SMTKSessionExodus to publicly link to SMTKCore and VTK
-target_link_libraries(SMTKSessionExodus
+#set smtkExodusSession to publicly link to smtkCore and VTK
+target_link_libraries(smtkExodusSession
   LINK_PUBLIC
-    SMTKCore
+    smtkCore
   LINK_PRIVATE
     vtkIOExodus
     vtkIOParallelExodus
@@ -31,19 +31,19 @@ target_link_libraries(SMTKSessionExodus
     vtkCommonDataModel
     vtksys
 )
-smtk_export_header(SMTKSessionExodus SMTKSessionExodusExports.h)
+smtk_export_header(smtkExodusSession Exports.h)
 
 # Add compile definitions and include directories
-#set_property(TARGET SMTKSessionExodus APPEND PROPERTY COMPILE_FLAGS ${EXODUS_DEFINES})
-#set_property(TARGET SMTKSessionExodus APPEND PROPERTY INCLUDE_DIRECTORIES ${EXODUS_INCLUDE_DIRS})
+#set_property(TARGET smtkExodusSession APPEND PROPERTY COMPILE_FLAGS ${EXODUS_DEFINES})
+#set_property(TARGET smtkExodusSession APPEND PROPERTY INCLUDE_DIRECTORIES ${EXODUS_INCLUDE_DIRS})
 
 # On Mac OS X, set the directory included as part of the installed library's path:
 if (BUILD_SHARED_LIBS)
-  set_target_properties(SMTKSessionExodus PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+  set_target_properties(smtkExodusSession PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
 
 #install the library and exports the library when used from a build tree
-smtk_install_library(SMTKSessionExodus DEPENDS SMTKCore)
+smtk_install_library(smtkExodusSession DEPENDS smtkCore)
 
 # Operators which have XML descriptions in separate files
 # need to have it encoded as a string in a header.
@@ -56,10 +56,10 @@ smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" exodusSessionJSON)
 # Install the headers
 smtk_public_headers(${exodusHeaders})
 
-if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
+if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
   #extract the headers from exodus library we built to give them to shiboken
 
-  sbk_wrap_library(SMTKSessionExodus
+  sbk_wrap_library(smtkExodusSession
     GENERATOR_ARGS --avoid-protected-hack
     WORKING_DIRECTORY ${SMTK_SOURCE_DIR}/smtk
     LOCAL_INCLUDE_DIRECTORIES
@@ -76,13 +76,13 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
       ${CMAKE_CURRENT_BINARY_DIR}
     TYPESYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/typesystem.xml
     HEADERS ${exodusHeaders}
-    DEPENDS SMTKCore
+    DEPENDS smtkCore
   )
-target_include_directories(SMTKSessionExodusPython
+target_include_directories(smtkExodusSessionPython
     PRIVATE ${EXODUS_INCLUDE_DIRS})
 endif()
 
-if(SMTK_BUILD_SESSION_PLUGIN)
+if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(plugin)
 endif()
 

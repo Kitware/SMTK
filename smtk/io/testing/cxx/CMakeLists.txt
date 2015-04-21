@@ -6,7 +6,7 @@ set(ioTests
 
 foreach (test ${ioTests})
   add_executable(${test}  ${test}.cxx)
-  target_link_libraries(${test} SMTKCore SMTKCoreModelTesting)
+  target_link_libraries(${test} smtkCore smtkCoreModelTesting)
   add_test(${test} ${EXECUTABLE_OUTPUT_PATH}/${test})
 endforeach()
 
@@ -15,7 +15,7 @@ endforeach()
 if (SMTK_DATA_DIR)
   set(writer_test ResourceSetWriterTest)
   add_executable(${writer_test}  ${writer_test}.cxx)
-  target_link_libraries(${writer_test} SMTKCore ${Boost_LIBRARIES})
+  target_link_libraries(${writer_test} smtkCore ${Boost_LIBRARIES})
   add_test(${writer_test}
     ${EXECUTABLE_OUTPUT_PATH}/${writer_test}
     ${SMTK_DATA_DIR}/smtk/attribute/Basic2DFluid.sbt
@@ -25,7 +25,7 @@ if (SMTK_DATA_DIR)
 
   set(reader_test ResourceSetReaderTest)
   add_executable(${reader_test}  ${reader_test}.cxx)
-  target_link_libraries(${reader_test} SMTKCore ${Boost_LIBRARIES})
+  target_link_libraries(${reader_test} smtkCore ${Boost_LIBRARIES})
   add_test(${reader_test}
     ${EXECUTABLE_OUTPUT_PATH}/${reader_test}
     ${SMTK_DATA_DIR}/smtk/attribute/resourceTest/resources.xml

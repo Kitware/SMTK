@@ -22,7 +22,7 @@
 #ifndef __vtkMaterialOperator_h
 #define __vtkMaterialOperator_h
 
-#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
+#include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkMaterialOperatorBase.h"
 
 #include <iostream>

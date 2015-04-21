@@ -25,7 +25,7 @@
 #include <map>
 #include <vector>
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/PublicPointerDefs.h"
 

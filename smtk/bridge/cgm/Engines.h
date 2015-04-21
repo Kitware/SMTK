@@ -11,7 +11,7 @@
 #define __smtk_session_cgm_Engines_h
 
 #include "smtk/Options.h" // for CGM_HAVE_VERSION_H
-#include "smtk/bridge/cgm/cgmSMTKExports.h"
+#include "smtk/bridge/cgm/Exports.h"
 #ifdef CGM_HAVE_VERSION_H
 #  include "cgm_version.h"
 #endif
@@ -29,7 +29,7 @@ namespace smtk {
   * GeometryQueryEngine to be the default.
   * You may change the default engine later.
   */
-class CGMSMTK_EXPORT Engines
+class SMTKCGMSESSION_EXPORT Engines
 {
 public:
   static bool areInitialized();

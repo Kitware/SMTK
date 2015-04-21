@@ -10,7 +10,7 @@
 #ifndef __smtk_vtk_ModelSource_h
 #define __smtk_vtk_ModelSource_h
 
-#include "smtk/extension/vtk/vtkSMTKExports.h"
+#include "smtk/extension/vtk/Exports.h"
 
 #include "smtk/model/EntityRef.h"
 
@@ -21,7 +21,7 @@
 /**\brief A VTK filter that provides polydata for an SMTK model manager instance.
   *
   */
-class VTKSMTK_EXPORT vtkModelSource : public vtkPolyDataAlgorithm
+class VTKSMTKEXT_EXPORT vtkModelSource : public vtkPolyDataAlgorithm
 {
 public:
   static vtkModelSource* New();

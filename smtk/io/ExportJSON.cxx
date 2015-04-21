@@ -686,32 +686,29 @@ cJSON* ExportJSON::createRPCRequest(const std::string& method, cJSON*& params, c
   cJSON_AddItemToObject(rpcReq, "jsonrpc", cJSON_CreateString("2.0"));
   cJSON_AddItemToObject(rpcReq, "method", cJSON_CreateString(method.c_str()));
   cJSON_AddItemToObject(rpcReq, "id", cJSON_CreateString(reqId.c_str()));
-  if (&params)
+  switch (paramsType)
     {
-    switch (paramsType)
-      {
-    case cJSON_Array:
-      params = cJSON_CreateArray();
-      break;
-    case cJSON_Object:
-      params = cJSON_CreateObject();
-      break;
-    case cJSON_True:
-      params = cJSON_CreateTrue();
-      break;
-    case cJSON_False:
-      params = cJSON_CreateFalse();
-      break;
-    case cJSON_NULL:
-      params = cJSON_CreateNull();
-      break;
-    default:
-      // TODO: Should we emit an error here?
-      return rpcReq;
-      break;
-      }
-    cJSON_AddItemToObject(rpcReq, "params", params);
+  case cJSON_Array:
+    params = cJSON_CreateArray();
+    break;
+  case cJSON_Object:
+    params = cJSON_CreateObject();
+    break;
+  case cJSON_True:
+    params = cJSON_CreateTrue();
+    break;
+  case cJSON_False:
+    params = cJSON_CreateFalse();
+    break;
+  case cJSON_NULL:
+    params = cJSON_CreateNull();
+    break;
+  default:
+    // TODO: Should we emit an error here?
+    return rpcReq;
+    break;
     }
+  cJSON_AddItemToObject(rpcReq, "params", params);
   return rpcReq;
 }
 

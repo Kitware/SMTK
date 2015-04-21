@@ -23,7 +23,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtGroupItem : public qtItem
+    class SMTKQTEXT_EXPORT qtGroupItem : public qtItem
     {
       Q_OBJECT
 

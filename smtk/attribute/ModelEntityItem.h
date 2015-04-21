@@ -28,7 +28,7 @@
 
 #include "smtk/attribute/Item.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 
 namespace smtk
 {

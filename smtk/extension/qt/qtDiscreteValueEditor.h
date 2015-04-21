@@ -23,7 +23,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtDiscreteValueEditor : public QWidget
+    class SMTKQTEXT_EXPORT qtDiscreteValueEditor : public QWidget
     {
       Q_OBJECT
 

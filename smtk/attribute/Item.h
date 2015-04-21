@@ -14,7 +14,7 @@
 #ifndef __smtk_attribute_Item_h
 #define __smtk_attribute_Item_h
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 #include <map>

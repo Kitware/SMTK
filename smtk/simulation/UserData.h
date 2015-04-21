@@ -14,7 +14,7 @@
 #ifndef __smtk_simulation_UserData_h
 #define __smtk_simulation_UserData_h
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
 

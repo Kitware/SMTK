@@ -10,7 +10,7 @@
 #ifndef __smtk_model_Entity_h
 #define __smtk_model_Entity_h
 
-#include "smtk/SMTKCoreExports.h" // for SMTKCORE_EXPORT macro
+#include "smtk/CoreExports.h" // for SMTKCORE_EXPORT macro
 #include "smtk/SystemConfig.h"
 
 #include "smtk/common/UUID.h"

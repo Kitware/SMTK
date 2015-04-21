@@ -21,15 +21,15 @@ smtk_source_group(view)
 set(smtk_headers ${commonHeaders} ${attributeHeaders} ${modelHeaders} ${simulationHeaders} ${ioHeaders} ${viewHeaders})
 set(smtk_srcs ${commonSrcs} ${attributeSrcs} ${modelSrcs} ${simulationSrcs} ${ioSrcs} ${viewSrcs})
 
-add_library(SMTKCore ${smtk_srcs})
-target_link_libraries(SMTKCore
+add_library(smtkCore ${smtk_srcs})
+target_link_libraries(smtkCore
   LINK_PUBLIC cJSON
   LINK_PRIVATE ${Boost_LIBRARIES})
 
-smtk_export_header(SMTKCore SMTKCoreExports.h)
-if (NOT BUILD_SHARED_LIBS AND SMTK_BUILD_PYTHON_WRAPPINGS)
+smtk_export_header(smtkCore CoreExports.h)
+if (NOT BUILD_SHARED_LIBS AND SMTK_ENABLE_PYTHON_WRAPPING)
   # Set position-independent flag when other project libs are shared.
-  set_target_properties(SMTKCore PROPERTIES POSITION_INDEPENDENT_CODE True)
+  set_target_properties(smtkCore PROPERTIES POSITION_INDEPENDENT_CODE True)
 endif()
 
 # On Mac OS X, link to the Foundation framework
@@ -40,18 +40,19 @@ if (APPLE)
     PATH_SUFFIXES Frameworks
     NO_DEFAULT_PATH)
   if (SMTK_MACOS_FOUNDATION_FMWK)
-    target_link_libraries(SMTKCore
+    target_link_libraries(smtkCore
       LINK_PRIVATE ${SMTK_MACOS_FOUNDATION_FMWK})
   endif()
+  mark_as_advanced(SMTK_MACOS_FOUNDATION_FMWK)
 endif()
 
 # On Mac OS X, set the directory included as part of the installed library's path:
 if (BUILD_SHARED_LIBS)
-  set_target_properties(SMTKCore PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+  set_target_properties(smtkCore PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
 
 #install the library and exports the library when used from a build tree
-smtk_install_library(SMTKCore DEPENDS cJSON)
+smtk_install_library(smtkCore DEPENDS cJSON)
 
 ################################################################################
 # setup install rules
@@ -70,8 +71,8 @@ install(
 install(EXPORT SMTK-targets DESTINATION lib)
 
 #wrap everything
-if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
-  sbk_wrap_library(SMTKCore
+if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
+  sbk_wrap_library(smtkCore
     GENERATOR_ARGS --avoid-protected-hack
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     LOCAL_INCLUDE_DIRECTORIES

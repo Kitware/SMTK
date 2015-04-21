@@ -12,31 +12,31 @@
 
 // Compile-time options chosen for this build of SMTK.
 
-// Was SMTK built with Qt? If true, QtSMTK library will exist.
-#cmakedefine SMTK_BUILD_QT
+// Was SMTK built with Qt? If true, smtkQtExt library will exist.
+#cmakedefine SMTK_ENABLE_QT_SUPPORT
 
-// Was SMTK built with VTK? If true, the vtkSMTK library will exist.
-#cmakedefine SMTK_BUILD_VTK
+// Was SMTK built with VTK? If true, the smtkVTKExt library will exist.
+#cmakedefine SMTK_ENABLE_VTK_SUPPORT
 
 // Was SMTK built with discrete model? If true, the smtkDiscreteSession library
 // and vtkSMTKDiscreteModel library will exist.
-#cmakedefine SMTK_BUILD_DISCRETE_SESSION
+#cmakedefine SMTK_ENABLE_DISCRETE_SESSION
 
 // Was SMTK built with exodus-II reader? If true,
-// the SMTKSessionExodus library will exist.
+// the SMTKExodusSession library will exist.
 #cmakedefine SMTK_ENABLE_EXODUS_SESSION
 
 // Was SMTK built with moab reader? If true, the vtkDiscreteMoabReader
 // library will exist and smtkDiscreteSession library will link against it.
-#cmakedefine SMTK_BUILD_MOAB_READER
+#cmakedefine SMTK_ENABLE_MOAB_SUPPORT
 
 // Was SMTK built with CGM? If true, cgm-convert will exist.
-#cmakedefine SMTK_BUILD_CGM
+#cmakedefine SMTK_ENABLE_CGM_SESSION
 // Does CGM provide cgm_version.h (true for v14+, false otherwise).
 #cmakedefine CGM_HAVE_VERSION_H
 
-// Was SMTK built with Remus? If true, SMTKRemote library will exist.
-#cmakedefine SMTK_ENABLE_REMUS
+// Was SMTK built with Remus? If true, smtkRemoteSession library will exist.
+#cmakedefine SMTK_ENABLE_REMUS_SUPPORT
 
 // Should sparse_hash_map be used (instead of std::map) for primary storage?
 #cmakedefine SMTK_HASH_STORAGE
