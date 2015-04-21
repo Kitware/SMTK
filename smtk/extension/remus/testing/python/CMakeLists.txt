@@ -1,6 +1,12 @@
-set(smtkRemusExtPythonDataTests
-  mesher
-)
+set(smtkRemusExtPythonDataTests)
+
+# THe mesher test relies on the discrete session to load a file.
+if (SMTK_ENABLE_DISCRETE_SESSION)
+  set(smtkRemusExtPythonDataTests
+    ${smtkRemusExtPythonDataTests}
+    mesher
+  )
+endif()
 
 if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
   foreach (test ${smtkRemusExtPythonDataTests})
