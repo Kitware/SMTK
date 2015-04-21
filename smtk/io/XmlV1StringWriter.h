@@ -11,7 +11,7 @@
 //=============================================================================
 #ifndef __smtk_io_XmlV1StringWriter_h
 #define __smtk_io_XmlV1StringWriter_h
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/io/Logger.h"

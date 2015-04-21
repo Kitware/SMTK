@@ -61,7 +61,7 @@ SET(CMBOperationFiles
   vtkGeoTransformOperator.cxx
   vtkCMBModelPointsOperator.cxx
 # This class should really be in ${Plugin_Src_Files},
-# but it is linked from SimBuilderMesh_Plugin
+# but it is linked from SimBuilderMeshPlugin
   vtkSMOperatorProxy.cxx
   vtkCMBModelRepresentation.cxx
   vtkCMBModelSource.cxx
@@ -113,7 +113,7 @@ vtk_module_library(vtkCmbDiscreteModel ${_module_src})
 
 target_link_libraries(vtkCmbDiscreteModel
                       LINK_PUBLIC
-                      SMTKCore
+                      smtkCore
                       vtkSMTK
                       RemusClient)
 

@@ -14,7 +14,7 @@
 #ifndef _qtModelPanel_h
 #define _qtModelPanel_h
 
-#include "smtk/extension/qt/QtSMTKExports.h"
+#include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtModelView.h"
 
 #include "smtk/common/UUID.h"
@@ -24,7 +24,7 @@
 namespace smtk {
   namespace model {
 
-class QTSMTK_EXPORT qtModelPanel : public QWidget
+class SMTKQTEXT_EXPORT qtModelPanel : public QWidget
 {
   Q_OBJECT
 

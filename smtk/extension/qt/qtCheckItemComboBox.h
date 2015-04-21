@@ -11,7 +11,7 @@
 #ifndef __smtk_qt_qtCheckItemComboBox_h
 #define __smtk_qt_qtCheckItemComboBox_h
 
-#include "smtk/extension/qt/QtSMTKExports.h"
+#include "smtk/extension/qt/Exports.h"
 #include "smtk/PublicPointerDefs.h"
 
 #include <QStyledItemDelegate>
@@ -24,7 +24,7 @@ namespace smtk {
   namespace attribute {
 
 //A sublcass of QTextEdit to give initial sizehint
-class QTSMTK_EXPORT qtCheckableComboItemDelegate : public QStyledItemDelegate
+class SMTKQTEXT_EXPORT qtCheckableComboItemDelegate : public QStyledItemDelegate
   {
   Q_OBJECT
   public:
@@ -37,7 +37,7 @@ class QTSMTK_EXPORT qtCheckableComboItemDelegate : public QStyledItemDelegate
   };
 
 //A sublcass of QComboBox to set text when hidePopup
-class QTSMTK_EXPORT qtCheckItemComboBox : public QComboBox
+class SMTKQTEXT_EXPORT qtCheckItemComboBox : public QComboBox
   {
   Q_OBJECT
   public:
@@ -52,7 +52,7 @@ class QTSMTK_EXPORT qtCheckItemComboBox : public QComboBox
   };
 
   //A sublcass of qtCheckItemComboBox to refresh the list on popup
-  class QTSMTK_EXPORT qtModelEntityItemCombo : public qtCheckItemComboBox
+  class SMTKQTEXT_EXPORT qtModelEntityItemCombo : public qtCheckItemComboBox
     {
     Q_OBJECT
     public:

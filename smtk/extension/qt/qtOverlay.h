@@ -13,13 +13,13 @@
 
 #include <QWidget>
 #include <QPointer>
-#include "smtk/extension/qt/QtSMTKExports.h"
+#include "smtk/extension/qt/Exports.h"
 
 namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT  qtOverlay : public QWidget
+    class SMTKQTEXT_EXPORT  qtOverlay : public QWidget
     {
       Q_OBJECT
 
@@ -37,7 +37,7 @@ namespace smtk
 
 
  //----------------------------------------------------------------------------
-    class QTSMTK_EXPORT  qtOverlayFilter : public QObject
+    class SMTKQTEXT_EXPORT  qtOverlayFilter : public QObject
     {
       Q_OBJECT
 

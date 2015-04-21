@@ -26,7 +26,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtModelView : public qtBaseView
+    class SMTKQTEXT_EXPORT qtModelView : public qtBaseView
     {
       Q_OBJECT
 

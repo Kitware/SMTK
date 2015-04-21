@@ -10,7 +10,7 @@
 #ifndef __smtk_session_cgm_Operator_h
 #define __smtk_session_cgm_Operator_h
 
-#include "smtk/bridge/cgm/cgmSMTKExports.h"
+#include "smtk/bridge/cgm/Exports.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 #include "smtk/bridge/cgm/Session.h"
 
@@ -37,7 +37,7 @@ class Session;
   * It provides convenience methods for accessing CGM-specific data
   * for its subclasses to use internally.
   */
-class CGMSMTK_EXPORT Operator : public smtk::model::Operator
+class SMTKCGMSESSION_EXPORT Operator : public smtk::model::Operator
 {
 protected:
   Session* cgmSession();

@@ -16,7 +16,7 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-class CGMSMTK_EXPORT BooleanSubtraction : public Operator
+class SMTKCGMSESSION_EXPORT BooleanSubtraction : public Operator
 {
 public:
   smtkTypeMacro(BooleanSubtraction);

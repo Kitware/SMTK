@@ -10,7 +10,7 @@
 #ifndef __smtk_vtk_ModelMultiBlockSource_h
 #define __smtk_vtk_ModelMultiBlockSource_h
 
-#include "smtk/extension/vtk/vtkSMTKExports.h"
+#include "smtk/extension/vtk/Exports.h"
 #include "smtk/model/CellEntity.h" // for CellEntities
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"
@@ -29,7 +29,7 @@ class vtkPolyDataNormals;
   * This filter generates a single block per UUID, for every UUID
   * in model manager with a tessellation entry.
   */
-class VTKSMTK_EXPORT vtkModelMultiBlockSource : public vtkMultiBlockDataSetAlgorithm
+class VTKSMTKEXT_EXPORT vtkModelMultiBlockSource : public vtkMultiBlockDataSetAlgorithm
 {
 public:
   static vtkModelMultiBlockSource* New();

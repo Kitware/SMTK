@@ -14,7 +14,7 @@
 #  include "smtk/model/SessionRegistrar.h"
 #  include "smtk/bridge/remote/RemusStaticSessionInfo.h"
 #endif // SHIBOKEN_SKIP
-#include "smtk/bridge/remote/SMTKRemoteExports.h" // for export macro
+#include "smtk/bridge/remote/Exports.h" // for export macro
 #include "smtk/SharedPtr.h" // for export macro
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/StringData.h"
@@ -53,7 +53,7 @@ class RemusConnection; // A Remus client-server connection specifically for smtk
   * instead it uses Remus for this.
   * For a protocol, it uses JSON-RPC v2.
   */
-class SMTKREMOTE_EXPORT Session : public smtk::model::DefaultSession
+class SMTKREMOTESESSION_EXPORT Session : public smtk::model::DefaultSession
 {
 public:
   smtkTypeMacro(Session);

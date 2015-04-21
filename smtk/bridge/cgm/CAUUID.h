@@ -11,7 +11,7 @@
 #define __smtk_session_cgm_CAUUID_h
 
 #include "smtk/Options.h" // for CGM_HAVE_VERSION_H
-#include "smtk/bridge/cgm/cgmSMTKExports.h" // for CGMSMTK_EXPORT
+#include "smtk/bridge/cgm/Exports.h" // for SMTKCGMSESSION_EXPORT
 #ifdef CGM_HAVE_VERSION_H
 #  include "cgm_version.h"
 #endif
@@ -34,7 +34,7 @@ enum CubitAttributeTypeExtensions
   * and saved as persistent data, just as TDUniqueId uses CAUniqueId
   * to preserve IDs.
   */
-class CGMSMTK_EXPORT CAUUID : public CubitAttrib
+class SMTKCGMSESSION_EXPORT CAUUID : public CubitAttrib
 {
 public:
   static void registerWithAttributeManager();

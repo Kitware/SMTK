@@ -18,7 +18,7 @@
 #ifndef __smtkdiscrete_vtkMergeOperatorBase_h
 #define __smtkdiscrete_vtkMergeOperatorBase_h
 
-#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
+#include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkObject.h"
 
 

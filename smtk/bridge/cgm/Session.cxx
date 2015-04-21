@@ -985,7 +985,7 @@ void Session::colorPropFromIndex(
 
 #include "smtk/bridge/cgm/Session_json.h" // For Session_json
 smtkImplementsModelingKernel(
-  CGMSMTK_EXPORT,
+  SMTKCGMSESSION_EXPORT,
   cgm,
   Session_json,
   smtk::bridge::cgm::Session::staticSetup,

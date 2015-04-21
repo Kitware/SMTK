@@ -204,7 +204,10 @@ int main(int argc, char* argv[])
   clpp::command_line_parameters_parser args;
   try
     {
-    args.add_parameter("-server",   &wkOpts, &WkOpts::setServer).default_value("tcp://localhost:50510").order(1);
+    args
+      .add_parameter("-server",     &wkOpts, &WkOpts::setServer)
+      .default_value(std::string("tcp://localhost:50510"))
+      .order(1);
     args.add_parameter("-rwfile",   &wkOpts, &WkOpts::setRWFile);
     args.add_parameter("-root",     &wkOpts, &WkOpts::setRoot);
     args.add_parameter("-site",     &wkOpts, &WkOpts::setSite);

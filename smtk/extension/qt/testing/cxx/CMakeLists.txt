@@ -13,11 +13,11 @@ set_target_properties(
 
 qt4_use_modules(browseModel Core Gui)
 
-target_link_libraries(browseModel SMTKCore SMTKCoreModelTesting QtSMTK)
+target_link_libraries(browseModel smtkCore smtkCoreModelTesting smtkQtExt)
 
 #add in the attribute preview executable
 add_executable(qtAttributePreview qtAttributePreview.cxx)
-target_link_libraries(qtAttributePreview LINK_PUBLIC QtSMTK)
+target_link_libraries(qtAttributePreview LINK_PUBLIC smtkQtExt)
 
 
 if (NOT WIN32 AND SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)

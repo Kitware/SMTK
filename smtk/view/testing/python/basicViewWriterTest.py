@@ -13,7 +13,7 @@
 Manual port of SMTK/smtk/attribute/Testing/basicViewWriterTest.cxx
 For verifying python-shiboken wrappers
 
-Requires SMTKCorePython.so to be in module path
+Requires smtkCorePython.so to be in module path
 """
 
 import smtk

@@ -58,7 +58,7 @@ if(SMTK_BUILD_VTK)
     # vtk_module_library() macro and vtk/module.cmake file.
     # The pv_process_modules() macro finds all subdirectories
     # containing a module.cmake file automatically.
-    include (vtkSMTKModules)
+    include (smtkVTKExtModules)
     vtk_smtk_setup_module_environment("VTKSMTK")
     vtk_smtk_process_modules()
   endif()

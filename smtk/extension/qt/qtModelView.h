@@ -14,7 +14,7 @@
 #ifndef _qtModelView_h
 #define _qtModelView_h
 
-#include "smtk/extension/qt/QtSMTKExports.h"
+#include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtEntityItemModel.h"
 
 #include "smtk/common/UUID.h"
@@ -42,7 +42,7 @@ namespace smtk {
 class DescriptivePhrase;
 class qtModelOperationWidget;
 
-class QTSMTK_EXPORT qtModelView : public QTreeView
+class SMTKQTEXT_EXPORT qtModelView : public QTreeView
 {
   Q_OBJECT
 

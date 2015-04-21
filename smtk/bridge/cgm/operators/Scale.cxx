@@ -109,7 +109,7 @@ smtk::model::OperatorResult Scale::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  CGMSMTK_EXPORT,
+  SMTKCGMSESSION_EXPORT,
   smtk::bridge::cgm::Scale,
   cgm_scale,
   "scale",

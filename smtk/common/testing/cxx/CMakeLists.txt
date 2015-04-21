@@ -7,7 +7,7 @@ set(commonTests
 
 foreach (test ${commonTests})
   add_executable(${test} MACOSX_BUNDLE  ${test}.cxx)
-  target_link_libraries(${test} SMTKCore)
+  target_link_libraries(${test} smtkCore)
   add_test(
     NAME ${test}
     COMMAND $<TARGET_FILE:${test}>)

@@ -23,7 +23,7 @@ if (VTK_RENDERING_BACKEND STREQUAL "OpenGL" OR NOT VTK_RENDERING_BACKEND)
   set(__groupdeps GROUPS Rendering)
 endif()
 
-vtk_module(vtkSMTK
+vtk_module(vtkSMTKExt
   ${__groupdeps}
   DEPENDS
     vtkCommonCore

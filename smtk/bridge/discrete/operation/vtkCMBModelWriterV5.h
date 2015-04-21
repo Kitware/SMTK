@@ -29,7 +29,7 @@
 #ifndef __smtkdiscrete_vtkCMBModelWriterV5_h
 #define __smtkdiscrete_vtkCMBModelWriterV5_h
 
-#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
+#include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkCMBModelWriterV4.h"
 #include <vector>
 

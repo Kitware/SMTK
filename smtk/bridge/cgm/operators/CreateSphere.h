@@ -16,7 +16,7 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-class CGMSMTK_EXPORT CreateSphere : public Operator
+class SMTKCGMSESSION_EXPORT CreateSphere : public Operator
 {
 public:
   smtkTypeMacro(CreateSphere);

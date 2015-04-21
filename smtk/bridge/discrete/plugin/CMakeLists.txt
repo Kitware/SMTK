@@ -10,18 +10,18 @@ if (SMTK_BUILD_DISCRETE_SESSION)
   # not be found.
   list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
-  add_paraview_plugin(smtkDiscreteSession_Plugin "1.0"
+  add_paraview_plugin(smtkDiscreteSessionPlugin "1.0"
       SERVER_SOURCES
         sessionInit.cxx
     )
 
-  target_link_libraries(smtkDiscreteSession_Plugin
+  target_link_libraries(smtkDiscreteSessionPlugin
     LINK_PUBLIC
-      SMTKCore
+      smtkCore
       smtkDiscreteSession
       vtkPVServerManagerApplication
     LINK_PRIVATE
       vtkPVServerManagerApplicationCS
   )
-  smtk_install_library(smtkDiscreteSession_Plugin DEPENDS SMTKCore smtkDiscreteSession)
+  smtk_install_library(smtkDiscreteSessionPlugin DEPENDS smtkCore smtkDiscreteSession)
 endif()

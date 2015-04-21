@@ -17,7 +17,7 @@
 #ifndef __smtk_attribute_ItemDefinition_h
 #define __smtk_attribute_ItemDefinition_h
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h" // For smtkTypeMacro.
 #include "smtk/attribute/Item.h" // For Item Types.

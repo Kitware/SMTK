@@ -35,7 +35,7 @@ namespace smtk {
   * their corresponding axis (i.e., how far the cuboid
   * extends along the axis from the center point).
   */
-class CGMSMTK_EXPORT CreateBrick : public Operator
+class SMTKCGMSESSION_EXPORT CreateBrick : public Operator
 {
 public:
   smtkTypeMacro(CreateBrick);

@@ -13,7 +13,7 @@
 
 #ifndef __smtk_view_Base_h
 #define __smtk_view_Base_h
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
 #include <map>

@@ -62,28 +62,28 @@ install(FILES PointerDefs.h DESTINATION include/smtk/bridge/cgm)
 
 add_definitions(${CGM_DEFINES})
 
-add_library(cgmSMTK ${cgmSrcs})
+add_library(smtkCGMSession ${cgmSrcs})
 
-#set cgmSMTK to publicly link to SMTKCore and CGM
-target_link_libraries(cgmSMTK
+#set smtkCGMSession to publicly link to smtkCore and CGM
+target_link_libraries(smtkCGMSession
   LINK_PUBLIC
-    SMTKCore
+    smtkCore
   LINK_PRIVATE
     ${CGM_LIBRARIES}
   )
-smtk_export_header(cgmSMTK cgmSMTKExports.h)
+smtk_export_header(smtkCGMSession Exports.h)
 
 # Add compile definitions and include directories
-set_property(TARGET cgmSMTK APPEND PROPERTY COMPILE_FLAGS ${CGM_DEFINES})
-set_property(TARGET cgmSMTK APPEND PROPERTY INCLUDE_DIRECTORIES ${CGM_INCLUDE_DIRS})
+set_property(TARGET smtkCGMSession APPEND PROPERTY COMPILE_FLAGS ${CGM_DEFINES})
+set_property(TARGET smtkCGMSession APPEND PROPERTY INCLUDE_DIRECTORIES ${CGM_INCLUDE_DIRS})
 
 # On Mac OS X, set the directory included as part of the installed library's path:
 if (BUILD_SHARED_LIBS)
-  set_target_properties(cgmSMTK PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+  set_target_properties(smtkCGMSession PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
 
 #install the library and exports the library when used from a build tree
-smtk_install_library(cgmSMTK DEPENDS SMTKCore)
+smtk_install_library(smtkCGMSession DEPENDS smtkCore)
 
 # Normally we would uncomment this line:
 #    smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" cgmSessionJSON)
@@ -124,16 +124,16 @@ smtk_public_headers(${cgmHeaders})
 
 # Utility programs using CGM:
 add_executable(cgm-convert cgm-convert.cxx)
-target_link_libraries(cgm-convert SMTKCore cgmSMTK ${CGM_LIBRARIES})
+target_link_libraries(cgm-convert smtkCore smtkCGMSession ${CGM_LIBRARIES})
 
 add_executable(facet-convert facet-convert.cxx)
-target_link_libraries(facet-convert SMTKCore ${CGM_LIBRARIES})
+target_link_libraries(facet-convert smtkCore ${CGM_LIBRARIES})
 
 if (SMTK_BUILD_VTK)
   include("${VTK_USE_FILE}")
   add_executable(vtk-to-cholla vtk-to-cholla.cxx)
   target_link_libraries(vtk-to-cholla
-    SMTKCore
+    smtkCore
     vtkCommonDataModel
     vtkIOXML
     ${CGM_LIBRARIES}
@@ -144,7 +144,7 @@ endif()
 if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
   #extract the headers from cgm library we built to give them to shiboken
 
-  sbk_wrap_library(cgmSMTK
+  sbk_wrap_library(smtkCGMSession
     GENERATOR_ARGS --avoid-protected-hack
     WORKING_DIRECTORY ${SMTK_SOURCE_DIR}/smtk
     LOCAL_INCLUDE_DIRECTORIES
@@ -161,9 +161,9 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
       ${CMAKE_CURRENT_BINARY_DIR}
     TYPESYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/typesystem.xml
     HEADERS ${cgmHeaders}
-    DEPENDS SMTKCore
+    DEPENDS smtkCore
   )
-  target_include_directories(cgmSMTKPython
+  target_include_directories(smtkCGMSessionPython
     PRIVATE ${CGM_INCLUDE_DIRS})
 endif()
 

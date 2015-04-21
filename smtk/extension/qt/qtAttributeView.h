@@ -30,7 +30,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtAttributeView : public qtBaseView
+    class SMTKQTEXT_EXPORT qtAttributeView : public qtBaseView
     {
       Q_OBJECT
 

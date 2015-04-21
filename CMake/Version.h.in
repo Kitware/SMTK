@@ -1,7 +1,7 @@
 #ifndef __smtk_common_Version_h
 #define __smtk_common_Version_h
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 
 #include <string>
 

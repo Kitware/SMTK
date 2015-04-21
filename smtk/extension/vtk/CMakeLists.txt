@@ -18,26 +18,26 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS ${VTK_DEFINITIONS})
 SET(_VTK_INSTALL_NO_DEVELOPMENT ${VTK_INSTALL_NO_DEVELOPMENT})
 SET(VTK_INSTALL_NO_DEVELOPMENT ON)
 # Don't do VTK header test. It is broken at the moment.
-set(vtkSMTK_NO_HeaderTest 1)
-vtk_module_library(vtkSMTK ${VTKLibSrcs})
+set(vtkSMTKExt_NO_HeaderTest 1)
+vtk_module_library(vtkSMTKExt ${VTKLibSrcs})
 SET(VTK_INSTALL_NO_DEVELOPMENT ${_VTK_INSTALL_NO_DEVELOPMENT})
 
-target_link_libraries(vtkSMTK
+target_link_libraries(vtkSMTKExt
   LINK_PUBLIC
-    SMTKCore
+    smtkCore
 )
 
 #has to be after the vtk_module_library
-smtk_export_header(vtkSMTK vtkSMTKExports.h)
+smtk_export_header(vtkSMTKExt Exports.h)
 
-target_include_directories(vtkSMTK
+target_include_directories(vtkSMTKExt
   PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 # On Mac OS X, set the directory included as part of the installed library's path:
 if (BUILD_SHARED_LIBS)
-  set_target_properties(vtkSMTK PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+  set_target_properties(vtkSMTKExt PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
 
 
@@ -49,25 +49,47 @@ endif()
 # backend became available.
 set(SMTK_VTK_TARGET_LIST)
 foreach(target
-        vtkInteractionStyle
-        vtkRenderingContext2D
-        vtkRenderingContext${VTK_RENDERING_BACKEND}
-        vtkRendering${VTK_RENDERING_BACKEND}
-        vtkRenderingMatplotlib
-        vtkRenderingVolume${VTK_RENDERING_BACKEND}
-        vtkRenderingFreeType${VTK_RENDERING_BACKEND}
-        )
+  vtkInteractionStyle
+  vtkRenderingContext2D
+  vtkRenderingContext${VTK_RENDERING_BACKEND}
+  vtkRendering${VTK_RENDERING_BACKEND}
+  vtkRenderingMatplotlib
+  vtkRenderingVolume${VTK_RENDERING_BACKEND}
+  vtkRenderingFreeType${VTK_RENDERING_BACKEND}
+)
   if (TARGET ${target})
     list(APPEND SMTK_VTK_TARGET_LIST ${target})
   endif()
 endforeach()
 
-target_link_libraries(vtkSMTK PUBLIC ${SMTK_VTK_TARGET_LIST})
+target_link_libraries(vtkSMTKExt PUBLIC ${SMTK_VTK_TARGET_LIST})
 
 #install the headers
 smtk_public_headers(${VTKLibHeaders})
 # ... and make header compilation tests link properly:
-smtk_install_library(vtkSMTK)
+smtk_install_library(vtkSMTKExt)
+
+# Potentially wrap in Python using VTK's wrapping methods, not shiboken.
+# This makes the filters available for use with other VTK-wrapped filters.
+if (SMTK_BUILD_PYTHON_WRAPPINGS AND VTK_WRAP_PYTHON)
+  vtk_wrap_python3(vtkSMTKExtPython SMTKVTKPY_SRCS "${VTKLibHeaders}")
+  add_library(vtkSMTKExtPythonD ${SMTKVTKPY_SRCS} ${SMTKVTKPY_EXTRA_SRCS})
+  python_add_module(vtkSMTKExtPython
+    vtkSMTKExtPythonInit.cxx
+    vtkSMTKExtPythonInitImpl.cxx)
+  target_link_libraries(vtkSMTKExtPythonD
+    PUBLIC
+      vtkSMTKExt
+      vtkWrappingPythonCore
+      vtkCommonExecutionModelPythonD
+      vtkViewsInfovisPythonD
+  )
+  target_link_libraries(vtkSMTKExtPython
+    PUBLIC
+      vtkSMTKExtPythonD
+      ${PYTHON_LIBRARY}
+  )
+endif()
 
 if (SMTK_ENABLE_TESTING)
   target_link_libraries(TestBuild_smtk_extension_vtk PUBLIC ${SMTK_VTK_TARGET_LIST})

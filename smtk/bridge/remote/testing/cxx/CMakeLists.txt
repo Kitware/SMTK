@@ -2,13 +2,13 @@ add_executable(integrationRemoteSession
   integrationRemoteSession.cxx
 )
 target_link_libraries(integrationRemoteSession
-  SMTKRemote
-  SMTKCore
+  smtkRemoteSession
+  smtkCore
   RemusCommon
   RemusClient
 )
 if (SMTK_BUILD_CGM)
-  target_link_libraries(integrationRemoteSession cgmSMTK)
+  target_link_libraries(integrationRemoteSession smtkCGMSession)
 endif()
 if (SMTK_ENABLE_TESTING AND SMTK_DATA_DIR AND SMTK_BUILD_CGM)
   add_test(

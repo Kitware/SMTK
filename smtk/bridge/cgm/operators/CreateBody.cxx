@@ -144,7 +144,7 @@ smtk::model::OperatorResult CreateBody::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  CGMSMTK_EXPORT,
+  SMTKCGMSESSION_EXPORT,
   smtk::bridge::cgm::CreateBody,
   cgm_create_body,
   "create body",

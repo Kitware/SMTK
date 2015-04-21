@@ -10,7 +10,7 @@
 #ifndef __smtk_session_exodus_Operator_h
 #define __smtk_session_exodus_Operator_h
 
-#include "smtk/bridge/exodus/SMTKSessionExodusExports.h"
+#include "smtk/bridge/exodus/Exports.h"
 #include "smtk/model/Operator.h"
 
 class vtkDataObject;
@@ -28,7 +28,7 @@ struct EntityHandle;
   * It provides convenience methods for accessing Exodus-specific data
   * for its subclasses to use internally.
   */
-class SMTKSESSIONEXODUS_EXPORT Operator : public smtk::model::Operator
+class SMTKEXODUSSESSION_EXPORT Operator : public smtk::model::Operator
 {
 protected:
   Session* exodusSession();

@@ -11,7 +11,7 @@
 #define __smtk_model_EntityRef_h
 /*! \file */
 
-#include "smtk/SMTKCoreExports.h" // For EXPORT macro.
+#include "smtk/CoreExports.h" // For EXPORT macro.
 #include "smtk/PublicPointerDefs.h" // For WeakManagerPtr
 #include "smtk/SystemConfig.h" // For type macros.
 

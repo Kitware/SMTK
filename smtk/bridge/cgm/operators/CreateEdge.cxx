@@ -120,7 +120,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  CGMSMTK_EXPORT,
+  SMTKCGMSESSION_EXPORT,
   smtk::bridge::cgm::CreateEdge,
   cgm_create_edge,
   "create edge",

@@ -17,7 +17,7 @@
 #ifndef __smtk_simulation_ExportSpec_h
 #define __smtk_simulation_ExportSpec_h
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/io/Logger.h"
 

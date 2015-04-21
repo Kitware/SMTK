@@ -54,14 +54,14 @@ endif(MSVC)
 # we unset the pv-plugin variable because that will bring in stuff
 # which we don't want brought in for client-server library initialization
 unset(pv-plugin)
-add_paraview_plugin(SimBuilderMesh_Plugin "1.0"
+add_paraview_plugin(SimBuilderMeshPlugin "1.0"
   SERVER_MANAGER_XML smconfigSimBuilderMesh.xml
   SERVER_MANAGER_SOURCES ${CMBProxyFiles}
   SERVER_SOURCES ${vtkMeshFiles}
 )
 
 # Linking against vtkCmbDiscreteModelCS is because vtkCMBMeshWrapper::SetModelWrapper()
-target_link_libraries(SimBuilderMesh_Plugin
+target_link_libraries(SimBuilderMeshPlugin
   LINK_PUBLIC
     vtkCMBFiltering
     vtkCMBGraphics
@@ -82,12 +82,12 @@ target_link_libraries(SimBuilderMesh_Plugin
     vtkFiltersCoreCS
 )
 
-target_include_directories(SimBuilderMesh_Plugin
+target_include_directories(SimBuilderMeshPlugin
   PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-cmb_install_plugin(SimBuilderMesh_Plugin)
+cmb_install_plugin(SimBuilderMeshPlugin)
 
 if(BUILD_TESTING)
   add_subdirectory(Testing)

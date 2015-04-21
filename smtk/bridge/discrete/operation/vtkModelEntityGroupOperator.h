@@ -20,7 +20,7 @@
 #ifndef __smtkdiscrete_vtkModelEntityGroupOperator_h
 #define __smtkdiscrete_vtkModelEntityGroupOperator_h
 
-#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
+#include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkModelEntityGroupOperatorBase.h"
 
 #include <iostream>

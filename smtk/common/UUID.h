@@ -10,7 +10,7 @@
 #ifndef __smtk_common_UUID_h
 #define __smtk_common_UUID_h
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h"
 #include "smtk/HashFunctor.h"
 

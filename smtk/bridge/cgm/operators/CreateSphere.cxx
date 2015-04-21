@@ -96,7 +96,7 @@ smtk::model::OperatorResult CreateSphere::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  CGMSMTK_EXPORT,
+  SMTKCGMSESSION_EXPORT,
   smtk::bridge::cgm::CreateSphere,
   cgm_create_sphere,
   "create sphere",

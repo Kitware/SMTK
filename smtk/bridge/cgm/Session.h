@@ -10,7 +10,7 @@
 #ifndef __smtk_session_cgm_Session_h
 #define __smtk_session_cgm_Session_h
 
-#include "smtk/bridge/cgm/cgmSMTKExports.h"
+#include "smtk/bridge/cgm/Exports.h"
 #include "smtk/bridge/cgm/PointerDefs.h"
 #include "smtk/model/Session.h"
 
@@ -50,7 +50,7 @@ namespace smtk {
   * entity, arrangement, and/or tessellation information for a UUID be
   * mapped into SMTK from CGM.
   */
-class CGMSMTK_EXPORT Session : public smtk::model::Session
+class SMTKCGMSESSION_EXPORT Session : public smtk::model::Session
 {
 public:
   smtkTypeMacro(Session);

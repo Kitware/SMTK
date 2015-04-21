@@ -11,7 +11,7 @@
 #ifndef __smtk_session_discrete_Session_h
 #define __smtk_session_discrete_Session_h
 
-#include "smtk/bridge/discrete/discreteSessionExports.h"
+#include "smtk/bridge/discrete/Exports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Session.h"
 

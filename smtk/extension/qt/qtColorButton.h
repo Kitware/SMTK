@@ -20,7 +20,7 @@ namespace smtk
 {
   namespace attribute
   {
-     class QTSMTK_EXPORT qtColorButton : public QToolButton
+     class SMTKQTEXT_EXPORT qtColorButton : public QToolButton
     {
       Q_OBJECT
       Q_PROPERTY(QColor chosenColor READ chosenColor WRITE setChosenColor)

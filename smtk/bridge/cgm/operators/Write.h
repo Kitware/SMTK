@@ -16,7 +16,7 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-class CGMSMTK_EXPORT Write : public Operator
+class SMTKCGMSESSION_EXPORT Write : public Operator
 {
 public:
   smtkTypeMacro(Write);

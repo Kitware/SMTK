@@ -16,7 +16,7 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-class CGMSMTK_EXPORT Read : public Operator
+class SMTKCGMSESSION_EXPORT Read : public Operator
 {
 public:
   smtkTypeMacro(Read);

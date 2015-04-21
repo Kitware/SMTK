@@ -12,7 +12,7 @@
 #ifndef __smtk_common_PathsHelperMacOSX_h
 #define __smtk_common_PathsHelperMacOSX_h
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 
 namespace smtk {
   namespace common {

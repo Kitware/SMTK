@@ -10,7 +10,7 @@
 #ifndef __smtk_session_remote_RemusConnection_h
 #define __smtk_session_remote_RemusConnection_h
 
-#include "smtk/bridge/remote/SMTKRemoteExports.h"
+#include "smtk/bridge/remote/Exports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
@@ -63,7 +63,7 @@ class Session;
   * In that case, you may also wish to call
   * addSearchDirectory().
   */
-class SMTKREMOTE_EXPORT RemusConnection : smtkEnableSharedPtr(RemusConnection)
+class SMTKREMOTESESSION_EXPORT RemusConnection : smtkEnableSharedPtr(RemusConnection)
 {
 public:
   smtkTypeMacro(RemusConnection);

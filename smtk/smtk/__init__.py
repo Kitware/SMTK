@@ -66,11 +66,11 @@ def __import_shared_ptrs__():
 
 #import the modules information we need.
 #We are using _import__ since shiboken doesn't create proper python modules
-#We can't just import SMTKCorePython.smtk.model as model, so instead
+#We can't just import smtkCorePython.smtk.model as model, so instead
 #we have to use _import__ so that we get a nice interface.
 
 import shiboken
-_temp = __import__('SMTKCorePython', globals(), locals(), [], -1)
+_temp = __import__('smtkCorePython', globals(), locals(), [], -1)
 __import_shared_ptrs__()
 
 common = _temp.smtk.common
@@ -94,7 +94,7 @@ try:
   failed = []
   _tempmain = _temp
   try:
-    _tempcgm = __import__('cgmSMTKPython', globals(), locals(), [], -1)
+    _tempcgm = __import__('smtkCGMSessionPython', globals(), locals(), [], -1)
     _temp = _tempcgm
     __import_shared_ptrs__()
     btuple.append(('cgm', _tempcgm.cgm))
@@ -104,7 +104,7 @@ try:
     _temp = _tempmain
 
   try:
-    _tempexo = __import__('SMTKSessionExodusPython', globals(), locals(), [], -1)
+    _tempexo = __import__('smtkExodusSessionPython', globals(), locals(), [], -1)
     _temp = _tempexo
     __import_shared_ptrs__()
     btuple.append(('exodus', _tempexo.exodus))
@@ -124,7 +124,7 @@ try:
     _temp = _tempmain
 
   try:
-    _tempremote = __import__('SMTKRemotePython', globals(), locals(), [], -1)
+    _tempremote = __import__('smtkRemoteSessionPython', globals(), locals(), [], -1)
     _temp = _tempremote
     __import_shared_ptrs__()
     btuple.append(('remote', _tempremote.remote))
