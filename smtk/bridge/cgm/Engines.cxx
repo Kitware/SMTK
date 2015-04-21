@@ -265,6 +265,15 @@ bool Engines::shutdown()
   return true;
 }
 
+bool Engines::removeBody(Body* body)
+{
+  if(!body)
+    return false;
+  if (GeometryQueryTool::instance())
+    return (GeometryQueryTool::instance()->delete_Body(body) == CUBIT_SUCCESS);
+  return false;
+}
+
 } // namespace cgm
   } //namespace bridge
 } // namespace smtk

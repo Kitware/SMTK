@@ -21,6 +21,7 @@ set(cgmSrcs
   operators/CreateVertex.cxx
   operators/Read.cxx
   operators/Reflect.cxx
+  operators/RemoveModel.cxx
   operators/Rotate.cxx
   operators/Scale.cxx
   operators/Sweep.cxx
@@ -50,6 +51,7 @@ set(cgmHeaders
   operators/CreateVertex.h
   operators/Read.h
   operators/Reflect.h
+  operators/RemoveModel.h
   operators/Rotate.h
   operators/Scale.h
   operators/Sweep.h
@@ -113,6 +115,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateSphere.sbt" cgmOp
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateVertex.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Reflect.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/RemoveModel.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Rotate.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Scale.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Sweep.sbt" cgmOperatorXML)
