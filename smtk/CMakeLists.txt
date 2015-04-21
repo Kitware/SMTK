@@ -27,7 +27,7 @@ target_link_libraries(smtkCore
   LINK_PRIVATE ${Boost_LIBRARIES})
 
 smtk_export_header(smtkCore CoreExports.h)
-if (NOT BUILD_SHARED_LIBS AND SMTK_BUILD_PYTHON_WRAPPINGS)
+if (NOT BUILD_SHARED_LIBS AND SMTK_ENABLE_PYTHON_WRAPPING)
   # Set position-independent flag when other project libs are shared.
   set_target_properties(smtkCore PROPERTIES POSITION_INDEPENDENT_CODE True)
 endif()
@@ -70,7 +70,7 @@ install(
 install(EXPORT SMTK-targets DESTINATION lib)
 
 #wrap everything
-if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
+if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
   sbk_wrap_library(smtkCore
     GENERATOR_ARGS --avoid-protected-hack
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}

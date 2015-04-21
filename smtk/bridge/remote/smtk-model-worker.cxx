@@ -57,14 +57,14 @@ int smtkChDir(const std::string& path) { return _chdir(path.c_str()); }
 // ++ UserGuide/Model/1 ++
 #include "smtk/AutoInit.h"
 
-#ifdef SMTK_BUILD_CGM
+#ifdef SMTK_ENABLE_CGM_SESSION
 smtkComponentInitMacro(smtk_cgm_session);
 #include "smtk/bridge/cgm/Engines.h"
-#endif // SMTK_BUILD_CGM
+#endif // SMTK_ENABLE_CGM_SESSION
 
-#ifdef SMTK_BUILD_DISCRETE_SESSION
+#ifdef SMTK_ENABLE_DISCRETE_SESSION
 smtkComponentInitMacro(smtk_discrete_session);
-#endif // SMTK_BUILD_DISCRETE_SESSION
+#endif // SMTK_ENABLE_DISCRETE_SESSION
 // -- UserGuide/Model/1 --
 
 int usage(

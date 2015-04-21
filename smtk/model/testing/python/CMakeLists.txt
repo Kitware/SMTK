@@ -11,7 +11,7 @@ set(smtkModelPythonDataTests
 )
 
 # Additional tests that require specific bridges
-if (SMTK_ENABLE_EXODUS_SESSION AND SMTK_BUILD_DISCRETE_SESSION AND SMTK_BUILD_CGM)
+if (SMTK_ENABLE_EXODUS_SESSION AND SMTK_ENABLE_DISCRETE_SESSION AND SMTK_ENABLE_CGM_SESSION)
   set(smtkModelPythonDataTests
     ${smtkModelPythonDataTests}
     integrationMultiSessionDescriptivePhrase

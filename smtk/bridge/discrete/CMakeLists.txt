@@ -28,7 +28,7 @@ vtk_smtk_setup_module_environment("SMTKDiscrete")
 vtk_smtk_process_modules()
 
 # Build vtk moab reader before session
-if(SMTK_BUILD_MOAB_READER)
+if(SMTK_ENABLE_MOAB_SUPPORT)
   add_subdirectory(moabreader)
 endif()
 
@@ -166,7 +166,7 @@ if (VTK_WRAP_PYTHON)
   list(APPEND __private_dependencies vtkPythonInterpreter)
 endif (VTK_WRAP_PYTHON)
 
-if(SMTK_BUILD_MOAB_READER)
+if(SMTK_ENABLE_MOAB_SUPPORT)
   list(APPEND __private_dependencies vtkDiscreteMoabReader)
 endif()
 
@@ -204,7 +204,7 @@ smtk_public_headers(${discreteSessionHeaders} ${DiscreteModelHeaders})
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkDiscreteSession DEPENDS smtkCore vtkSMTKDiscreteModel vtkSMTKDiscreteExt)
 
-if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
+if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
   #extract the headers from discrete library we built to give them to shiboken
 
   sbk_wrap_library(smtkDiscreteSession
@@ -240,7 +240,7 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
   )
 endif()
 
-if(SMTK_BUILD_SESSION_PLUGIN AND SMTK_BUILD_DISCRETE_SESSION)
+if(SMTK_ENABLE_PARAVIEW_SUPPORT AND SMTK_ENABLE_DISCRETE_SESSION)
   add_subdirectory(plugin)
 endif()
 

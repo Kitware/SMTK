@@ -1,5 +1,5 @@
 # Add the Qt GUI code if enabled
-if(SMTK_BUILD_QT)
+if(SMTK_ENABLE_QT_SUPPORT)
   add_subdirectory(qt)
 endif()
 
@@ -12,8 +12,8 @@ if (SMTK_ENABLE_REMUS)
 endif()
 
 # Add VTK library to render SMTK geometry and interact with ParaView-based apps if enabled.
-if(SMTK_BUILD_VTK)
-  if(SMTK_BUILD_SESSION_PLUGIN)
+if(SMTK_ENABLE_VTK_SUPPORT)
+  if(SMTK_ENABLE_PARAVIEW_SUPPORT)
     #Only include the ParaView use-file in subdirectories
     # that require ParaView include paths.
 
@@ -58,7 +58,7 @@ if(SMTK_BUILD_VTK)
     # vtk_module_library() macro and vtk/module.cmake file.
     # The pv_process_modules() macro finds all subdirectories
     # containing a module.cmake file automatically.
-    include (smtkVTKExtModules)
+    include (smtkVTKModules)
     vtk_smtk_setup_module_environment("VTKSMTK")
     vtk_smtk_process_modules()
   endif()

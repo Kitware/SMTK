@@ -129,7 +129,7 @@ target_link_libraries(cgm-convert smtkCore smtkCGMSession ${CGM_LIBRARIES})
 add_executable(facet-convert facet-convert.cxx)
 target_link_libraries(facet-convert smtkCore ${CGM_LIBRARIES})
 
-if (SMTK_BUILD_VTK)
+if (SMTK_ENABLE_VTK_SUPPORT)
   include("${VTK_USE_FILE}")
   add_executable(vtk-to-cholla vtk-to-cholla.cxx)
   target_link_libraries(vtk-to-cholla
@@ -141,7 +141,7 @@ if (SMTK_BUILD_VTK)
 endif()
 
 
-if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
+if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
   #extract the headers from cgm library we built to give them to shiboken
 
   sbk_wrap_library(smtkCGMSession
@@ -167,7 +167,7 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
     PRIVATE ${CGM_INCLUDE_DIRS})
 endif()
 
-if(SMTK_BUILD_SESSION_PLUGIN)
+if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(plugin)
 endif()
 

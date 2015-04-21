@@ -2,7 +2,7 @@
 # that require VTK include paths. Otherwise, command
 # lines get too long on some platforms.
 include("${VTK_USE_FILE}")
-  list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
+list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
 set(exodusSrcs
   Session.cxx
@@ -56,7 +56,7 @@ smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" exodusSessionJSON)
 # Install the headers
 smtk_public_headers(${exodusHeaders})
 
-if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
+if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
   #extract the headers from exodus library we built to give them to shiboken
 
   sbk_wrap_library(smtkExodusSession
@@ -82,7 +82,7 @@ target_include_directories(smtkExodusSessionPython
     PRIVATE ${EXODUS_INCLUDE_DIRS})
 endif()
 
-if(SMTK_BUILD_SESSION_PLUGIN)
+if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(plugin)
 endif()
 

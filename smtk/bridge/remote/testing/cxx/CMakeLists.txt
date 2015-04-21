@@ -7,10 +7,10 @@ target_link_libraries(integrationRemoteSession
   RemusCommon
   RemusClient
 )
-if (SMTK_BUILD_CGM)
+if (SMTK_ENABLE_CGM_SESSION)
   target_link_libraries(integrationRemoteSession smtkCGMSession)
 endif()
-if (SMTK_ENABLE_TESTING AND SMTK_DATA_DIR AND SMTK_BUILD_CGM)
+if (SMTK_ENABLE_TESTING AND SMTK_DATA_DIR AND SMTK_ENABLE_CGM_SESSION)
   add_test(
     NAME unitGenerateRemoteModelWorker
     COMMAND

@@ -2,14 +2,14 @@
 ################################################################################
 # Build cgm session
 ################################################################################
-if (SMTK_BUILD_CGM AND CGM_FOUND)
+if (SMTK_ENABLE_CGM_SESSION AND CGM_FOUND)
   add_subdirectory(cgm)
 endif()
 
 ################################################################################
 # Build Discrete session
 ################################################################################
-if(SMTK_BUILD_DISCRETE_SESSION)
+if(SMTK_ENABLE_DISCRETE_SESSION)
   add_subdirectory(discrete)
 endif()
 

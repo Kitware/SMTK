@@ -19,7 +19,7 @@ if (BUILD_SHARED_LIBS)
   set_target_properties(smtkRemusExt PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
 
-if (SMTK_BUILD_PYTHON_WRAPPINGS)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_library(smtkRemusExtPy MODULE smtkRemusExtPy.cxx)
   target_include_directories(smtkRemusExtPy PRIVATE ${PYTHON_INCLUDE_DIRS})
   target_link_libraries(smtkRemusExtPy

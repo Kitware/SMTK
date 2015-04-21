@@ -71,12 +71,13 @@ smtk_install_library(vtkSMTKExt)
 
 # Potentially wrap in Python using VTK's wrapping methods, not shiboken.
 # This makes the filters available for use with other VTK-wrapped filters.
-if (SMTK_BUILD_PYTHON_WRAPPINGS AND VTK_WRAP_PYTHON)
+if (SMTK_ENABLE_PYTHON_WRAPPING AND VTK_WRAP_PYTHON)
   vtk_wrap_python3(vtkSMTKExtPython SMTKVTKPY_SRCS "${VTKLibHeaders}")
   add_library(vtkSMTKExtPythonD ${SMTKVTKPY_SRCS} ${SMTKVTKPY_EXTRA_SRCS})
   python_add_module(vtkSMTKExtPython
     vtkSMTKExtPythonInit.cxx
-    vtkSMTKExtPythonInitImpl.cxx)
+    vtkSMTKExtPythonInitImpl.cxx
+  )
   target_link_libraries(vtkSMTKExtPythonD
     PUBLIC
       vtkSMTKExt

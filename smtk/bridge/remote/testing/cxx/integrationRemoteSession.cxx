@@ -27,7 +27,7 @@
 using namespace smtk::model;
 using namespace smtk::bridge::remote;
 
-#ifdef SMTK_BUILD_CGM
+#ifdef SMTK_ENABLE_CGM_SESSION
 smtkComponentInitMacro(smtk_cgm_session);
 #endif
 

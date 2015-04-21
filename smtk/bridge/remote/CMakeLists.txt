@@ -32,7 +32,7 @@ target_include_directories(smtkRemoteSession
   ${REMUS_INCLUDE_DIRS}
   )
 
-if (SMTK_BUILD_CGM)
+if (SMTK_ENABLE_CGM_SESSION)
   target_include_directories(smtkRemoteSession PRIVATE ${CGM_INCLUDE_DIRS})
 endif()
 
@@ -75,12 +75,12 @@ target_link_libraries(smtk-model-worker
   ${Boost_LIBRARIES}
 )
 target_include_directories(smtk-model-worker PRIVATE ${REMUS_INCLUDE_DIRS})
-if (SMTK_BUILD_CGM)
+if (SMTK_ENABLE_CGM_SESSION)
   target_link_libraries(smtk-model-worker smtkCGMSession)
   target_include_directories(smtk-model-worker PRIVATE ${CGM_INCLUDE_DIRS})
 endif()
 
-if (SMTK_BUILD_DISCRETE_SESSION)
+if (SMTK_ENABLE_DISCRETE_SESSION)
   target_link_libraries(smtk-model-worker smtkDiscreteSession)
 endif()
 
@@ -99,7 +99,7 @@ install(TARGETS smtk-model-server smtk-model-worker
     ARCHIVE DESTINATION lib
   )
 
-if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
+if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
   #extract the headers from the library we built to give them to shiboken
 
   sbk_wrap_library(smtkRemoteSession
@@ -124,6 +124,6 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
   #target_include_directories(smtkRemoteSessionPython PRIVATE ${CGM_INCLUDE_DIRS})
 endif()
 
-if(SMTK_BUILD_SESSION_PLUGIN)
+if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(plugin)
 endif()
