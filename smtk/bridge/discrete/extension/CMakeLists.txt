@@ -14,7 +14,7 @@ set(srcs
 )
 
 # if there is Remus, add map file reader and support files.
-if(SMTK_ENABLE_REMUS)
+if(SMTK_ENABLE_REMUS_SUPPORT)
   #Remus is needed
   find_package(Remus REQUIRED)
   list(APPEND srcs
@@ -44,7 +44,7 @@ set(vtkSMTKDiscreteExt_NO_HeaderTest 1)
 vtk_module_library(vtkSMTKDiscreteExt ${srcs})
 SET(VTK_INSTALL_NO_DEVELOPMENT ${_VTK_INSTALL_NO_DEVELOPMENT})
 
-if(SMTK_ENABLE_REMUS)
+if(SMTK_ENABLE_REMUS_SUPPORT)
   #Remus is needed
   target_link_libraries(vtkSMTKDiscreteExt LINK_PRIVATE RemusClient RemusServer)
   target_include_directories(vtkSMTKDiscreteExt PRIVATE ${REMUS_INCLUDE_DIRS})

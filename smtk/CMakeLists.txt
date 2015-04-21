@@ -43,6 +43,7 @@ if (APPLE)
     target_link_libraries(smtkCore
       LINK_PRIVATE ${SMTK_MACOS_FOUNDATION_FMWK})
   endif()
+  mark_as_advanced(SMTK_MACOS_FOUNDATION_FMWK)
 endif()
 
 # On Mac OS X, set the directory included as part of the installed library's path:

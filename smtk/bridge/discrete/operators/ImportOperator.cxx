@@ -32,7 +32,7 @@
 #include "smtk/bridge/discrete/extension/reader/vtkDataSetRegionSurfaceFilter.h"
 #include "smtk/bridge/discrete/extension/reader/vtkCMBGeometryReader.h"
 
-#ifdef SMTK_ENABLE_REMUS
+#ifdef SMTK_ENABLE_REMUS_SUPPORT
   #include "smtk/bridge/discrete/extension/reader/vtkCMBGeometry2DReader.h"
   #include "smtk/bridge/discrete/extension/reader/vtkCMBMapReader.h"
   #include "smtk/bridge/discrete/extension/meshing/vtkCMBTriangleMesher.h"
@@ -75,7 +75,7 @@ bool ImportOperator::ableToOperate()
 #ifdef SMTK_ENABLE_MOAB_SUPPORT
                ext == ".exo" ||
 #endif
-#ifdef SMTK_ENABLE_REMUS
+#ifdef SMTK_ENABLE_REMUS_SUPPORT
                ext == ".poly" || ext == ".smesh" || ext == ".map" ||
 #endif
   /*  ext == ".tin" ||
@@ -86,7 +86,7 @@ bool ImportOperator::ableToOperate()
 
 // for shape files, the reader needs user inputs, so
 // "ShapeBoundaryStyle" item needs to be checked first.
-#ifdef SMTK_ENABLE_REMUS
+#ifdef SMTK_ENABLE_REMUS_SUPPORT
   if(ext == ".shp")
     {
     smtk::attribute::StringItem::Ptr boundaryItem =
@@ -146,7 +146,7 @@ OperatorResult ImportOperator::operateInternal()
     }
   else if (ext == ".2dm" ||
       ext == ".3dm" ||
-#ifdef SMTK_ENABLE_REMUS
+#ifdef SMTK_ENABLE_REMUS_SUPPORT
       ext == ".poly" || ext == ".smesh" ||
 #endif
   /*  ext == ".tin" ||
@@ -181,7 +181,7 @@ OperatorResult ImportOperator::operateInternal()
       this->m_op->Operate(mod.GetPointer(), merge.GetPointer());
       }
     }
-#ifdef SMTK_ENABLE_REMUS
+#ifdef SMTK_ENABLE_REMUS_SUPPORT
   else if(ext == ".map")
     {
     vtkNew<vtkCMBMapReader> reader;
@@ -276,7 +276,7 @@ OperatorResult ImportOperator::operateInternal()
   // Now assign a UUID to the model and associate its filename with
   // a URL property (if things went OK).
   if (!this->m_op->GetOperateSucceeded()
-#ifdef SMTK_ENABLE_REMUS
+#ifdef SMTK_ENABLE_REMUS_SUPPORT
    && !this->m_mapOp->GetOperateSucceeded()
    && !this->m_shpOp->GetOperateSucceeded()
 #endif

@@ -15,9 +15,9 @@
 #include "smtk/model/Operator.h"
 #include "vtkCMBModelBuilder.h"
 
-#include "smtk/Options.h" // for SMTK_ENABLE_REMUS
+#include "smtk/Options.h" // for SMTK_ENABLE_REMUS_SUPPORT
 // for .map file
-#ifdef SMTK_ENABLE_REMUS
+#ifdef SMTK_ENABLE_REMUS_SUPPORT
 #include "vtkCMBMapToCMBModel.h"
 #include "vtkGenerateSimpleModelOperator.h"
 #endif
@@ -59,7 +59,7 @@ protected:
   Session* discreteSession() const;
 
   vtkNew<vtkCMBModelBuilder> m_op;
-#ifdef SMTK_ENABLE_REMUS
+#ifdef SMTK_ENABLE_REMUS_SUPPORT
   vtkNew<vtkCMBMapToCMBModel> m_mapOp;
   vtkNew<vtkGenerateSimpleModelOperator> m_shpOp;
 #endif

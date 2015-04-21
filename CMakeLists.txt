@@ -49,19 +49,22 @@ include(CMake/FindHashFunctor.cmake)
 option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" OFF)
 option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" ON)
 # Option to build Qt ui compoments for attributes
+option(SMTK_ENABLE_TESTING "Enable Testing" ON)
+option(SMTK_ENABLE_PYTHON_WRAPPING "Build Python Wrappings using Shiboken" OFF)
 option(SMTK_ENABLE_QT_SUPPORT "Build Qt GUI" OFF)
 option(SMTK_ENABLE_VTK_SUPPORT "Build VTK component" OFF)
+option(SMTK_ENABLE_REMUS_SUPPORT "Build Remus components" OFF)
+option(SMTK_ENABLE_PARAVIEW_SUPPORT "Build paraview plugins for model sessions" OFF)
+
 option(SMTK_ENABLE_CGM_SESSION "Build CGM component" OFF)
 option(SMTK_ENABLE_DISCRETE_SESSION "Build discrete model session components" OFF)
-option(SMTK_ENABLE_PARAVIEW_SUPPORT "Build paraview plugin for model sessions" OFF)
-
 if (SMTK_ENABLE_VTK_SUPPORT)
   option(SMTK_ENABLE_EXODUS_SESSION "Build a session to Exodus-II side sets" ON)
 endif()
+if (SMTK_ENABLE_REMUS_SUPPORT)
+  option(SMTK_ENABLE_REMOTE_SESSION "Build a session that allows modeling in a remote process." ON)
+endif()
 
-option(SMTK_ENABLE_REMUS "Build Remus components" OFF)
-option(SMTK_ENABLE_TESTING "Enable Testing" ON)
-option(SMTK_ENABLE_PYTHON_WRAPPING "Build Python Wrappings using Shiboken" OFF)
 option(SMTK_USE_SYSTEM_SPARSEHASH "Use the system-installed sparsehash?" OFF)
 option(SMTK_HASH_STORAGE "Use sparsehash library for primary storage?" OFF)
 set(SMTK_DATA_DIR "" CACHE PATH "Path to a directory of SMTK test data.")
@@ -185,7 +188,7 @@ endif(SMTK_ENABLE_CGM_SESSION)
 # Remus related settings
 ################################################################################
 
-if (SMTK_ENABLE_REMUS)
+if (SMTK_ENABLE_REMUS_SUPPORT)
   find_package(Remus REQUIRED)
 endif()
 

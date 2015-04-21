@@ -1,4 +1,3 @@
-
 ################################################################################
 # Build cgm session
 ################################################################################
@@ -23,7 +22,7 @@ endif()
 ################################################################################
 # Build remus remote session
 ################################################################################
-# This must come *after* all targets that implement sessions.
-if (SMTK_ENABLE_REMUS)
+# This must come *after* all other targets that implement sessions.
+if (SMTK_ENABLE_REMOTE_SESSION AND REMUS_FOUND)
   add_subdirectory(remote)
 endif()

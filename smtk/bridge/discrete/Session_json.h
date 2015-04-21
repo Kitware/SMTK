@@ -32,7 +32,7 @@ static const char Session_json[] =
 #ifdef SMTK_ENABLE_MOAB_SUPPORT
 "        ,\".exo (Moab Files)\""
 #endif
-#ifdef SMTK_ENABLE_REMUS
+#ifdef SMTK_ENABLE_REMUS_SUPPORT
 "        ,\".poly (Poly Files)\""
 "        ,\".smesh (Surface Meshes)\""
 "        ,\".map (Map Files)\""

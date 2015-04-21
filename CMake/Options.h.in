@@ -36,7 +36,7 @@
 #cmakedefine CGM_HAVE_VERSION_H
 
 // Was SMTK built with Remus? If true, smtkRemoteSession library will exist.
-#cmakedefine SMTK_ENABLE_REMUS
+#cmakedefine SMTK_ENABLE_REMUS_SUPPORT
 
 // Should sparse_hash_map be used (instead of std::map) for primary storage?
 #cmakedefine SMTK_HASH_STORAGE
