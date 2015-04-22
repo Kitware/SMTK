@@ -13,7 +13,7 @@
 
 //Query Types is a convenience header, whose goal is to make it easier
 //for users to query a manager
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/mesh/CellTypes.h"

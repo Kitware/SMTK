@@ -14,7 +14,7 @@
 //TypeSet is a helper class whose goal is to make it easier to determine
 //what kind of information you would extract from a collection given an
 //association
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/mesh/QueryTypes.h"
 
 namespace smtk {

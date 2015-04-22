@@ -11,7 +11,7 @@
 #ifndef __smtk_mesh_PointConnectivity_h
 #define __smtk_mesh_PointConnectivity_h
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/mesh/Handle.h"

@@ -9,7 +9,7 @@ set(vtkToMeshHeaders
 add_library(vtkToSMTKMesh ${vtkToMeshSources})
 
 target_link_libraries(vtkToSMTKMesh
-      LINK_PUBLIC SMTKCore vtkCommonDataModel )
+      LINK_PUBLIC smtkCore vtkCommonDataModel )
 
 smtk_export_header(vtkToSMTKMesh vtkToSMTKMeshExports.h)
 

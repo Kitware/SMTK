@@ -10,7 +10,7 @@
 #ifndef __smtk_io_ModelToMesh_h
 #define __smtk_io_ModelToMesh_h
 
-#include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
+#include "smtk/CoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/PublicPointerDefs.h"
 
 namespace smtk {

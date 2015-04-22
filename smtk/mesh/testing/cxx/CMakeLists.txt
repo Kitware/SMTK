@@ -17,7 +17,7 @@ set(unit_tests
   UnitTestModelToMesh.cxx
   UnitTestQueryTypes.cxx
   UnitTestTypeSet.cxx
-  )
+)
 
 set(unit_tests_which_require_data
   UnitTestAddFileToCollection.cxx
@@ -29,9 +29,11 @@ set(unit_tests_which_require_data
   UnitTestRemoveMeshes.cxx
   UnitTestTypeSetFromData.cxx
   UnitTestWriteMesh.cxx
-  )
+)
 
-smtk_unit_tests(LABEL "Mesh"
-                SOURCES ${unit_tests}
-                SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
-                LIBRARIES SMTKCore SMTKCoreModelTesting ${Boost_LIBRARIES})
+smtk_unit_tests(
+  LABEL "Mesh"
+  SOURCES ${unit_tests}
+  SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
+  LIBRARIES smtkCore smtkCoreModelTesting ${Boost_LIBRARIES}
+)

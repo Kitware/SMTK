@@ -11,7 +11,7 @@
 #ifndef __smtk_mesh_Manager_h
 #define __smtk_mesh_Manager_h
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/SharedFromThis.h"
 #include "smtk/PublicPointerDefs.h"
 

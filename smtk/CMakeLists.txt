@@ -50,7 +50,7 @@ target_link_libraries(smtkCore
   LINK_PUBLIC cJSON MOAB
   LINK_PRIVATE ${Boost_LIBRARIES})
 
-target_include_directories(SMTKCore
+target_include_directories(smtkCore
   PRIVATE ${MOAB_INCLUDE_DIRS})
 
 smtk_export_header(smtkCore CoreExports.h)
