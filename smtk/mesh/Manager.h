@@ -55,7 +55,7 @@ public:
 
   //----------------------------------------------------------------------------
   //Model Association commands
-  std::size_t numberOfAssociatedCollections() const;
+  std::vector<smtk::mesh::CollectionPtr> collectionsWithAssociations() const;
   bool isAssociatedToACollection( const smtk::model::EntityRef& eref ) const;
 
   //For a given model cursor return the associated Mesh Collection(s)
@@ -85,7 +85,6 @@ private:
 
   smtk::common::UUIDGenerator m_uuidGenerator;
 };
-
 
 }
 }

@@ -198,17 +198,20 @@ bool Manager::removeCollection( const smtk::mesh::CollectionPtr& collection )
 }
 
 //----------------------------------------------------------------------------
-std::size_t Manager::numberOfAssociatedCollections() const
+std::vector<smtk::mesh::CollectionPtr>
+Manager::collectionsWithAssociations() const
 {
-  std::size_t count = 0;
-  for(const_iterator i = this->m_collector->begin(); i != this->m_collector->end(); ++i)
+  std::vector<smtk::mesh::CollectionPtr> result;
+  for(const_iterator i = this->m_collector->begin();
+      i != this->m_collector->end();
+      ++i)
     {
     if( i->second->hasAssociations() )
       {
-      ++count;
+      result.insert(result.end(), i->second);
       }
     }
-  return count;
+  return result;
 }
 
 //----------------------------------------------------------------------------

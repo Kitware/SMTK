@@ -159,7 +159,7 @@ void verify_has_association()
   for( int i=0 ; i < size; ++i) { mgr->makeCollection(); }
 
   //verify that at this point no collections have associations
-  test(mgr->numberOfAssociatedCollections() == 0);
+  test(mgr->collectionsWithAssociations().size() == 0);
 
   //next we are going to create a simple smtk model
   smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
@@ -171,7 +171,7 @@ void verify_has_association()
   test( mgr->numberOfCollections() == (size+1) );
 
   //now verify that the manager can see the association
-  test(mgr->numberOfAssociatedCollections() == 1);
+  test(mgr->collectionsWithAssociations().size() == 1);
 
   //verify that the null uuid isn't part of a collection even after we
   //have an association
@@ -230,7 +230,9 @@ void verify_has_multiple_association()
     }
 
   //verify that at this point no collections have associations
-  test(mgr->numberOfAssociatedCollections() == size);
+  typedef std::vector< smtk::mesh::CollectionPtr > AssocCollections;
+  AssocCollections assocCollections = mgr->collectionsWithAssociations();
+  test(assocCollections.size() == size);
 
   //next verify that we get a multiple collections back when we request
   //an association
@@ -263,7 +265,10 @@ void verify_add_remove_association()
   create_simple_model(modelManager); //single model
   smtk::io::ModelToMesh convert;
   smtk::mesh::CollectionPtr collectionWithAssoc = convert(mgr,modelManager);
-  test(mgr->numberOfAssociatedCollections() == 1);
+
+  typedef std::vector< smtk::mesh::CollectionPtr > AssocCollections;
+  AssocCollections assocCollections = mgr->collectionsWithAssociations();
+  test(assocCollections.size() == 1);
 
   smtk::mesh::MeshSet meshes = collectionWithAssoc->meshes();
   smtk::common::UUIDArray knownAssociations = meshes.modelEntityIds();
@@ -278,13 +283,14 @@ void verify_add_remove_association()
 
   //now remove the collection.
   mgr->removeCollection( collectionWithAssoc );
-  test(mgr->numberOfAssociatedCollections() == 0);
-
   for(cit i=knownAssociations.begin(); i != knownAssociations.end(); ++i)
     {
     smtk::model::EntityRef eref(modelManager, *i);
     test( mgr->isAssociatedToACollection( eref ) == false);
     }
+
+  assocCollections = mgr->collectionsWithAssociations();
+  test(assocCollections.size() == 0);
 }
 
 //----------------------------------------------------------------------------
