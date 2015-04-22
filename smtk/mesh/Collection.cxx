@@ -331,6 +331,18 @@ bool Collection::addAssociation( const smtk::model::EntityRef& eref ,
 }
 
 //----------------------------------------------------------------------------
+bool Collection::hasAssociations( ) const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
+
+  smtk::mesh::moab::Handle handle = this->m_internals->mesh_root_handle();
+  smtk::mesh::HandleRange entities = iface->getMeshsets(handle);
+
+  smtk::common::UUIDArray associations = iface->computeModelEntities(entities);
+  return !associations.empty();
+}
+
+//----------------------------------------------------------------------------
 smtk::mesh::MeshSet Collection::createMesh( const smtk::mesh::CellSet& cells )
 {
   const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();

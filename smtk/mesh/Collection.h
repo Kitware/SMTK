@@ -118,6 +118,9 @@ public:
 
   bool addAssociation( const smtk::model::EntityRef& eref, const smtk::mesh::MeshSet& meshset );
 
+  //determine if this collection has any associations to a model
+  bool hasAssociations() const;
+
   //----------------------------------------------------------------------------
   // Construction of new meshes
   //----------------------------------------------------------------------------
