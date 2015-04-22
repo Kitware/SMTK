@@ -48,6 +48,7 @@ and installed SMTK according to these instructions.
 
    attribute/index.rst
    model/index.rst
+   mesh/index.rst
    administration.rst
    contributing.rst
 
