@@ -103,7 +103,6 @@ private:
 //----------------------------------------------------------------------------
 Manager::Manager():
   m_collector( new InternalStorageImpl() ),
-  m_associator( new InternalStorageImpl() ),
   m_uuidGenerator()
 {
 
@@ -199,70 +198,50 @@ bool Manager::removeCollection( const smtk::mesh::CollectionPtr& collection )
 }
 
 //----------------------------------------------------------------------------
-std::size_t Manager::numberOfAssociations() const
+std::size_t Manager::numberOfAssociatedCollections() const
 {
-  return this->m_associator->size();
-}
-
-//----------------------------------------------------------------------------
-bool Manager::isAssociatedCollection( const smtk::mesh::CollectionPtr& collection )
-{
-  (void)collection;
-  //this is complex as it is the inverse of searching by cursor
-  return false;
+  std::size_t count = 0;
+  for(const_iterator i = this->m_collector->begin(); i != this->m_collector->end(); ++i)
+    {
+    if( i->second->hasAssociations() )
+      {
+      ++count;
+      }
+    }
+  return count;
 }
 
 //----------------------------------------------------------------------------
 bool Manager::isAssociatedToACollection( const smtk::model::EntityRef& eref ) const
 {
-  return this->m_associator->has( eref.entity() );
-}
-
-//----------------------------------------------------------------------------
-Manager::const_iterator Manager::associatedCollectionBegin() const
-{
-  return this->m_associator->begin();
-}
-
-//----------------------------------------------------------------------------
-Manager::const_iterator Manager::associatedCollectionEnd() const
-{
-  return this->m_associator->end();
-}
-
-//----------------------------------------------------------------------------
-Manager::const_iterator Manager::findAssociatedCollection( const smtk::model::EntityRef& eref ) const
-{
-  return this->m_associator->find( eref.entity() );
-}
-
-//----------------------------------------------------------------------------
-smtk::mesh::CollectionPtr Manager::associatedCollection( const smtk::model::EntityRef& eref) const
-{
-  const_iterator result = this->m_associator->find( eref.entity() );
-  if(result == this->m_associator->end())
-    { //returning end() result causes undefined behavior and will generally
-      //cause a segfault when you query the item
-    return smtk::mesh::CollectionPtr();
+  bool isAssociated = false;
+  for(const_iterator i = this->m_collector->begin();
+      i != this->m_collector->end() && isAssociated == false;
+      ++i)
+    {
+    smtk::mesh::MeshSet ms = i->second->findAssociatedMeshes( eref );
+    isAssociated = !ms.is_empty();
     }
-  return result->second;
+  return isAssociated;
 }
 
 //----------------------------------------------------------------------------
-bool Manager::addAssociation( const smtk::model::EntityRef& eref,
-                               const smtk::mesh::CollectionPtr& collection)
+std::vector<smtk::mesh::CollectionPtr>
+Manager::associatedCollections( const smtk::model::EntityRef& eref) const
 {
-  //do we need to re-parent the collection?
-  this->m_collector->add(collection->entity(), collection);
-  return this->m_associator->add( eref.entity(), collection );
+  std::vector<smtk::mesh::CollectionPtr> result;
+  for(const_iterator i = this->m_collector->begin();
+      i != this->m_collector->end();
+      ++i)
+    {
+    smtk::mesh::MeshSet ms = i->second->findAssociatedMeshes( eref );
+    if(!ms.is_empty())
+      {
+      result.push_back(i->second);
+      }
+    }
+  return result;
 }
-
-//----------------------------------------------------------------------------
-bool Manager::removeAssociation( const smtk::model::EntityRef& erf )
-{
-  return this->m_associator->remove( erf.entity() );
-}
-
 
 }
 }

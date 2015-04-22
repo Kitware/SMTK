@@ -55,30 +55,16 @@ public:
 
   //----------------------------------------------------------------------------
   //Model Association commands
-  std::size_t numberOfAssociations() const;
-  bool isAssociatedCollection( const smtk::mesh::CollectionPtr& collection );
+  std::size_t numberOfAssociatedCollections() const;
   bool isAssociatedToACollection( const smtk::model::EntityRef& eref ) const;
 
-  const_iterator associatedCollectionBegin() const;
-  const_iterator associatedCollectionEnd() const;
-  const_iterator findAssociatedCollection( const smtk::model::EntityRef& eref ) const;
-
-  //For a given model cursor return the associated Mesh Collection
-  //from that mesh collection you will be able to query what sunset of
+  //For a given model cursor return the associated Mesh Collection(s)
+  //from that mesh collection you will be able to query what subset of
   //the collection is associated with the model cursor. If no association exists
   //this will return an invalid Collection that is not associated with any
   //Manager.
-  smtk::mesh::CollectionPtr associatedCollection( const smtk::model::EntityRef& c ) const;
-
-  //Note a model cursor can only be related to a single meshCollection, and
-  //a collection can only be associated with a single manager. So this will
-  //reparent the
-  bool addAssociation( const smtk::model::EntityRef& eref,
-                       const smtk::mesh::CollectionPtr& collection);
-
-  //remove the association of a cursor.
-  //Returns False if the cursor had no association to begin with.
-  bool removeAssociation( const smtk::model::EntityRef& eref );
+  std::vector<smtk::mesh::CollectionPtr> associatedCollections(
+                                       const smtk::model::EntityRef& c ) const;
 
 private:
   //needs to be created using shared_ptr
@@ -96,7 +82,6 @@ private:
 
   class InternalStorageImpl;
   smtk::shared_ptr< InternalStorageImpl > m_collector;
-  smtk::shared_ptr< InternalStorageImpl > m_associator;
 
   smtk::common::UUIDGenerator m_uuidGenerator;
 };

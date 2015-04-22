@@ -10,12 +10,36 @@
 
 #include "smtk/mesh/Manager.h"
 #include "smtk/mesh/Collection.h"
+#include "smtk/io/ModelToMesh.h"
 
+#include "smtk/model/Manager.h"
+#include "smtk/model/Volume.h"
+#include "smtk/model/EntityIterator.h"
+
+#include "smtk/model/testing/cxx/helpers.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
 
 #include <algorithm>
 
 namespace {
+
+const std::size_t num_volumes_in_model = 1;
+const std::size_t num_models = 1;
+
+//----------------------------------------------------------------------------
+void create_simple_model( smtk::model::ManagerPtr modelManager )
+{
+  using namespace smtk::model::testing;
+
+  smtk::model::SessionRef sess = modelManager->createSession("native");
+  smtk::model::Model model = modelManager->addModel();
+  smtk::common::UUIDArray uids = createTet(modelManager);
+  model.addCell( smtk::model::Volume(modelManager, uids[21]));
+
+  model.setSession(sess);
+  modelManager->assignDefaultNames();
+
+}
 
 //----------------------------------------------------------------------------
 void verify_constructors()
@@ -84,7 +108,6 @@ void verify_collection_iterators()
   test( distance == 1, "Incorrect iterators given from a manager with items");
 }
 
-
 //----------------------------------------------------------------------------
 void verify_add_remove_collection()
 {
@@ -125,15 +148,169 @@ void verify_add_remove_collection()
 //----------------------------------------------------------------------------
 void verify_has_association()
 {
-  //todo need to test all of this
+  smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
+  smtk::model::EntityRef invalidModelRef;
 
+  //verify that the null uuid isn't part of a collection
+  test( mgr->isAssociatedToACollection( invalidModelRef ) == false );
+
+  //add some empty collection to the manager
+  const int size=256;
+  for( int i=0 ; i < size; ++i) { mgr->makeCollection(); }
+
+  //verify that at this point no collections have associations
+  test(mgr->numberOfAssociatedCollections() == 0);
+
+  //next we are going to create a simple smtk model
+  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
+  create_simple_model(modelManager);
+
+  //now that we have a model, convert it to a mesh
+  smtk::io::ModelToMesh convert;
+  smtk::mesh::CollectionPtr collectionWithAssoc = convert(mgr,modelManager);
+  test( mgr->numberOfCollections() == (size+1) );
+
+  //now verify that the manager can see the association
+  test(mgr->numberOfAssociatedCollections() == 1);
+
+  //verify that the null uuid isn't part of a collection even after we
+  //have an association
+  test( mgr->isAssociatedToACollection( invalidModelRef ) == false );
+
+  //walk the model and verify that we can query the Manager to get the
+  //collection that is associated to it.
+  smtk::model::EntityIterator it;
+  smtk::model::EntityRefs models =
+    modelManager->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::MODEL_ENTITY);
+  it.traverse(models.begin(), models.end(), smtk::model::ITERATE_MODELS);
+
+  std::size_t count = 0;
+  for (it.begin(); !it.isAtEnd(); ++it)
+    {
+    const bool isAssociated = mgr->isAssociatedToACollection(*it);
+    count += isAssociated ? 1 : 0;
+
+    if( isAssociated )
+      {
+      std::vector< smtk::mesh::CollectionPtr > assocCollections =
+                                            mgr->associatedCollections(*it);
+      test( assocCollections.size() == 1);
+      test( assocCollections[0] == collectionWithAssoc);
+      }
+    }
+  test( num_models == count );
+
+  //walk all the collections and get the model uuids that is aware of
+  smtk::mesh::MeshSet meshes = collectionWithAssoc->meshes();
+  smtk::common::UUIDArray knownAssociations = meshes.modelEntityIds();
+  test( knownAssociations.size() == num_volumes_in_model);
+
+  typedef smtk::common::UUIDArray::const_iterator cit;
+  for(cit i=knownAssociations.begin(); i != knownAssociations.end(); ++i)
+    {
+    smtk::model::EntityRef eref(modelManager, *i);
+    test( mgr->isAssociatedToACollection( eref ) == true);
+    }
+}
+
+//----------------------------------------------------------------------------
+void verify_has_multiple_association()
+{
+
+  smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
+  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
+
+  //add some collections to the manager that are associated to the same model
+  create_simple_model(modelManager); //single model
+  smtk::io::ModelToMesh convert;
+  const int size=256;
+  for( int i=0 ; i < size; ++i)
+    { //convert the model into 256 different mesh collections
+    convert(mgr,modelManager);
+    }
+
+  //verify that at this point no collections have associations
+  test(mgr->numberOfAssociatedCollections() == size);
+
+  //next verify that we get a multiple collections back when we request
+  //an association
+  smtk::model::EntityIterator it;
+  smtk::model::EntityRefs models =
+    modelManager->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::MODEL_ENTITY);
+  it.traverse(models.begin(), models.end(), smtk::model::ITERATE_MODELS);
+
+  //nothing should be associated
+  for (it.begin(); !it.isAtEnd(); ++it)
+    {
+    if( mgr->isAssociatedToACollection(*it)  )
+      {
+      test(  (mgr->associatedCollections(*it).size() == size) );
+      }
+    }
 }
 
 //----------------------------------------------------------------------------
 void verify_add_remove_association()
 {
-  //todo need to test all of this
+  //first add a collection that is associated.
+  //collected the uuids that are associated
+  //remove the collection
+  //verify none of the uuids are associated
+  smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
+  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
 
+  //add some collections to the manager that are associated to the same model
+  create_simple_model(modelManager); //single model
+  smtk::io::ModelToMesh convert;
+  smtk::mesh::CollectionPtr collectionWithAssoc = convert(mgr,modelManager);
+  test(mgr->numberOfAssociatedCollections() == 1);
+
+  smtk::mesh::MeshSet meshes = collectionWithAssoc->meshes();
+  smtk::common::UUIDArray knownAssociations = meshes.modelEntityIds();
+
+  typedef smtk::common::UUIDArray::const_iterator cit;
+  for(cit i=knownAssociations.begin(); i != knownAssociations.end(); ++i)
+    {
+    smtk::model::EntityRef eref(modelManager, *i);
+    test( mgr->isAssociatedToACollection( eref ) == true);
+    }
+
+
+  //now remove the collection.
+  mgr->removeCollection( collectionWithAssoc );
+  test(mgr->numberOfAssociatedCollections() == 0);
+
+  for(cit i=knownAssociations.begin(); i != knownAssociations.end(); ++i)
+    {
+    smtk::model::EntityRef eref(modelManager, *i);
+    test( mgr->isAssociatedToACollection( eref ) == false);
+    }
+}
+
+//----------------------------------------------------------------------------
+void verify_no_association()
+{
+  smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
+  smtk::model::EntityRef invalidModelRef;
+
+  //verify that the null uuid isn't part of any collection
+  test( mgr->isAssociatedToACollection( invalidModelRef ) == false );
+
+  //next we are going to create a simple smtk model
+  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
+  create_simple_model(modelManager);
+
+  //now verify that none of the valid model uuids are part of the association
+  smtk::model::EntityIterator it;
+  smtk::model::EntityRefs models =
+    modelManager->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::MODEL_ENTITY);
+  it.traverse(models.begin(), models.end(), smtk::model::ITERATE_MODELS);
+
+  //nothing should be associated
+  for (it.begin(); !it.isAtEnd(); ++it)
+    {
+    test( mgr->isAssociatedToACollection(*it) == false );
+    }
 }
 
 } // anonymous namespace
@@ -149,7 +326,9 @@ int UnitTestManager(int, char**)
   verify_add_remove_collection();
 
   verify_has_association();
+  verify_has_multiple_association();
   verify_add_remove_association();
+  verify_no_association();
 
   return 0;
 }
