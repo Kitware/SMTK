@@ -38,13 +38,13 @@
             <Structure>
               <Value Enum="uniform">0</Value>
               <Items>
-                <Item>factor</Item>
+                <Item>scale factor</Item>
               </Items>
             </Structure>
             <Structure>
               <Value Enum="per axis">1</Value>
               <Items>
-                <Item>factors</Item>
+                <Item>scale factors</Item>
               </Items>
             </Structure>
           </DiscreteInfo>
