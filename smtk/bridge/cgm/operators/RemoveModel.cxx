@@ -18,6 +18,9 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
+#include "Body.hpp"
+#include "GeometryQueryTool.hpp"
+
 using namespace smtk::model;
 
 namespace smtk {
@@ -34,30 +37,30 @@ bool RemoveModel::ableToOperate()
 
 smtk::model::OperatorResult RemoveModel::operateInternal()
 {
+  GeometryQueryTool* gqt = GeometryQueryTool::instance();
+  if (!gqt)
+    return this->createResult(smtk::model::OPERATION_FAILED);
+
   // ableToOperate should have verified that model(s) are set
-  bool success = true;
+  DLIList<Body*> bodies;
   EntityRefArray expunged;
-  Models remModels = this->associatedEntitiesAs<Models>();
-  for(Models::iterator it = remModels.begin();
-      it != remModels.end(); ++it)
-    {
-    success = this->cgmSession()->removeModelEntity(*it);
-    if(!success)
-      break;
-    expunged.push_back(*it);
-    }
+  if (
+    !this->cgmEntities(
+      this->associatedEntitiesAs<Models>(), bodies, false, expunged))
+    return this->createResult(smtk::model::OPERATION_FAILED);
+
+  // This does not return an error code; assume success.
+  gqt->delete_Body(bodies);
 
   OperatorResult result =
-    this->createResult(
-      success ?  OPERATION_SUCCEEDED : OPERATION_FAILED);
+    this->createResult(smtk::model::OPERATION_SUCCEEDED);
 
-  if (success)
-    result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
+  result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
   return result;
 }
 
-    }
-  } //namespace model
+    } // namespace cgm
+  } //namespace bridge
 } // namespace smtk
 
 #include "RemoveModel_xml.h"
