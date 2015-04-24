@@ -29,6 +29,7 @@ class TestModelCloseModelOp(unittest.TestCase):
     SetActiveSession(actSession)
 
     models = None
+    print 'Reading {fname} into {sname}'.format(fname=filename, sname=sessionname)
     # The 'native' session does not have a "read" op
     if sessionname == 'native':
       json = None
@@ -55,15 +56,7 @@ class TestModelCloseModelOp(unittest.TestCase):
     remModels = GetVectorValue(result.findModelEntity('expunged'))
 
     print '%d models closed.' % len(remModels)
-
-    allclosed = True
-    for x in actMgr.findEntitiesOfType(smtk.model.MODEL_ENTITY, True):
-      for rModel in remModels:
-        if x.entity().toString() == rModel.entity().toString():
-          print 'Closing %s has failed ' % x.name()
-          allclosed = False
-
-    return allclosed
+    self.assertEqual(len(models), len(remModels), 'Not all models marked as removed')
 
   def testCloseModelOp(self):
 
