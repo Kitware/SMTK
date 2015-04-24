@@ -74,7 +74,7 @@ public:
   //----------------------------------------------------------------------------
   //Queries on the full Collection
   //----------------------------------------------------------------------------
-  smtk::mesh::TypeSet   associatedTypes( ) const;
+  smtk::mesh::TypeSet   types() const;
   smtk::mesh::MeshSet   meshes( ); //all meshes
   smtk::mesh::CellSet   cells( ); //all cells
   smtk::mesh::Points    points( ); //all points

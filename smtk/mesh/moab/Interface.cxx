@@ -583,50 +583,57 @@ smtk::common::UUIDArray Interface::computeModelEntities(const smtk::mesh::Handle
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::TypeSet Interface::computeTypes(smtk::mesh::HandleRange range) const
+smtk::mesh::TypeSet Interface::computeTypes(const smtk::mesh::HandleRange& range) const
 {
-  smtk::mesh::TypeSet result;
   typedef smtk::mesh::HandleRange::const_iterator cit;
-  for (cit i = range.begin(); i != range.end(); ++i)
+  typedef ::smtk::mesh::CellType CellEnum;
+
+
+  smtk::mesh::HandleRange meshes = range.subset_by_type( ::moab::MBENTITYSET );
+  smtk::mesh::HandleRange cells = ::moab::subtract(range,meshes);
+
+  smtk::mesh::CellTypes ctypes;
+
+  //compute the type of the meshes, I don't want to try and extract the range
+  //of cells for all the meshes, as that could be large
+  for (cit i = meshes.begin(); i != meshes.end(); ++i)
     {
     const ::moab::EntityHandle& currentHandle = *i;
-    result += this->computeTypes(currentHandle);
-    }
-  return result;
-}
-
-//----------------------------------------------------------------------------
-smtk::mesh::TypeSet Interface::computeTypes(smtk::mesh::Handle handle) const
-{
-  int numMeshes = 0;
-  m_iface->get_number_entities_by_type( handle, ::moab::MBENTITYSET, numMeshes);
-
-  //iterate over all the celltypes and get the number for each
-  //construct a smtk::mesh::CellTypes at the same time
-  typedef ::smtk::mesh::CellType CellEnum;
-  smtk::mesh::CellTypes ctypes;
-  if(numMeshes > 0)
-    {
     for (std::size_t i = 0; i < ctypes.size(); ++i )
       {
-      CellEnum ce = static_cast<CellEnum>(i);
-      //now we need to convert from CellEnum to MoabType
-      int moabEType = smtk::mesh::moab::smtkToMOABCell(ce);
+      const CellEnum ce = static_cast<CellEnum>(i);
+      const ::moab::EntityType moabEType =
+      static_cast< ::moab::EntityType >(smtk::mesh::moab::smtkToMOABCell(ce));
 
       //some of the cell types that smtk supports moab doesn't support
       //so we can't query on those.
       int num = 0;
-      m_iface->get_number_entities_by_type(handle,
-                                         static_cast< ::moab::EntityType >(moabEType),
-                                         num);
-      ctypes[ce] = (num > 0);
+      m_iface->get_number_entities_by_type(currentHandle,
+                                           static_cast< ::moab::EntityType >(moabEType),
+                                           num,
+                                           true);
+      if(num > 0) { ctypes[ce] = true; }
       }
     }
 
-  //determine the state of the typeset
-  const bool hasMeshes = numMeshes > 0;
-  const bool hasCells = ctypes.any();
-  return smtk::mesh::TypeSet(ctypes, hasMeshes, hasCells) ;
+  //compute the type of the cells if we have any
+  if(!cells.empty())
+    {
+    for (std::size_t i = 0; i < ctypes.size(); ++i )
+      {
+      //now we need to convert from CellEnum to MoabType
+      const CellEnum ce = static_cast<CellEnum>(i);
+      const ::moab::EntityType moabEType =
+        static_cast< ::moab::EntityType >(smtk::mesh::moab::smtkToMOABCell(ce));
+
+      //if num_of_type is greater than zero we have cells of that type
+      if( cells.num_of_type( moabEType ) > 0) { ctypes[ce] = true; }
+      }
+    }
+
+  const bool hasM = !(meshes.empty());
+  const bool hasC = ctypes.any();
+  return smtk::mesh::TypeSet( ctypes, hasM, hasC );
 }
 
 //----------------------------------------------------------------------------

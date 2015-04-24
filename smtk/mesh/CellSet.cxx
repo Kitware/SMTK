@@ -88,6 +88,14 @@ std::size_t CellSet::size( ) const
 }
 
 //----------------------------------------------------------------------------
+smtk::mesh::TypeSet CellSet::types() const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  return iface->computeTypes( this->m_range );
+}
+
+
+//----------------------------------------------------------------------------
 smtk::mesh::Points CellSet::points( ) const
 {
   //need to pass the range and parents I expect

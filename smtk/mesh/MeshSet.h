@@ -82,6 +82,7 @@ public:
   smtk::model::EntityRefArray modelEntities() const;
   bool setModelEntities(const smtk::model::EntityRef&);
 
+  smtk::mesh::TypeSet types() const;
   smtk::mesh::CellSet cells() const; //all cells of the meshset
   smtk::mesh::Points points() const; //all points of the meshset
   smtk::mesh::PointConnectivity pointConnectivity( ) const; //all point connectivity info for all cells

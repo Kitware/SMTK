@@ -233,9 +233,14 @@ void verify_cell_conversion()
       {
       smtk::mesh::TypeSet meshedTypes = c->findAssociatedTypes(cells[0]);
       smtk::mesh::CellTypes cellTypes = meshedTypes.cellTypes();
+
+      //the model we have been given only has triangles, and while those
+      //triangles has physical coordinates we don't model each of those coordinates
+      //as an explicit cell vertex. That is why we only expect to find triangle
+      //cells in the following check
       std::cout << "  Cell " << cells[0].name() << "\n";
       static bool expected[smtk::mesh::CellType_MAX] =
-        {true, false, true, false, false, false, false, false, false};
+        {false, false, true, false, false, false, false, false, false};
       for (int i = 0; i < smtk::mesh::CellType_MAX; ++i)
         {
         smtk::mesh::CellType ct = static_cast<smtk::mesh::CellType>(i);

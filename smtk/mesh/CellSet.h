@@ -66,6 +66,7 @@ public:
   bool is_empty() const;
   std::size_t size() const;
 
+  smtk::mesh::TypeSet types() const;
   smtk::mesh::Points points() const; //all points of the cellset
   smtk::mesh::PointConnectivity pointConnectivity( ) const; //all connectivity info for all cells
 

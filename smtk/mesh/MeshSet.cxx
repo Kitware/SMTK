@@ -180,6 +180,13 @@ bool MeshSet::setModelEntities(const smtk::model::EntityRef& ent)
 }
 
 //----------------------------------------------------------------------------
+smtk::mesh::TypeSet MeshSet::types() const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  return iface->computeTypes( this->m_range );
+}
+
+//----------------------------------------------------------------------------
 smtk::mesh::CellSet MeshSet::cells( ) const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();

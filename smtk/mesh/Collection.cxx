@@ -175,10 +175,11 @@ std::size_t Collection::numberOfMeshes() const
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::TypeSet Collection::associatedTypes( ) const
+smtk::mesh::TypeSet Collection::types() const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
-  return iface->computeTypes( this->m_internals->mesh_root_handle() );
+  smtk::mesh::moab::Handle handle = this->m_internals->mesh_root_handle();
+  return iface->computeTypes( iface->getMeshsets(handle) );
 }
 
 //----------------------------------------------------------------------------
@@ -274,7 +275,7 @@ smtk::mesh::CellSet Collection::cells( smtk::mesh::DimensionType dim )
 smtk::mesh::TypeSet Collection::findAssociatedTypes( const smtk::model::EntityRef& eref )
 {
   const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
-  return iface->computeTypes(this->findAssociatedMeshes(eref).m_handle);
+  return this->findAssociatedMeshes(eref).types();
 }
 
 //----------------------------------------------------------------------------

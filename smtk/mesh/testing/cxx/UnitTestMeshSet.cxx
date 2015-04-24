@@ -91,8 +91,36 @@ void verify_comparisons(const smtk::mesh::CollectionPtr& c)
   test(two_b == two);
 
   test(one_a != two_b);
-
 }
+
+//----------------------------------------------------------------------------
+void verify_typeset(const smtk::mesh::CollectionPtr& c)
+{
+  //verify that empty meshset set has empty type set
+  {
+  smtk::mesh::CellTypes no_cell_types;
+  smtk::mesh::MeshSet emptyMeshSet = c->meshes( "bad name string" );
+  smtk::mesh::TypeSet noTypes = emptyMeshSet.types();
+
+  test( noTypes.cellTypes() == no_cell_types);
+  test( noTypes.hasMeshes() == false);
+  test( noTypes.hasCells() == false);
+  }
+
+
+  //verify that if we get all cells from the collection the type set is correct
+  {
+  smtk::mesh::TypeSet all_types = c->types();
+  smtk::mesh::MeshSet allMeshes = c->meshes( );
+  smtk::mesh::TypeSet allMeshesTypes = allMeshes.types();
+
+  test( allMeshesTypes.hasMeshes() == true);
+  test( allMeshesTypes.hasCells() == true);
+  test( allMeshesTypes.cellTypes() == all_types.cellTypes());
+  test( allMeshesTypes == all_types);
+  }
+}
+
 //----------------------------------------------------------------------------
 void verify_mesh_by_name(const smtk::mesh::CollectionPtr& c)
 {
@@ -169,6 +197,26 @@ void verify_meshset_of_only_a_dim(const smtk::mesh::CollectionPtr& c)
   test( meshesWithOnlyDim3.cells( smtk::mesh::Dims1 ).is_empty() == true) ;
   test( meshesWithOnlyDim3.cells( smtk::mesh::Dims2 ).is_empty() == true ) ;
   test( meshesWithOnlyDim3.cells( smtk::mesh::Dims3 ).is_empty() == false) ;
+
+  //verify that the associated types comes back to properly
+  smtk::mesh::TypeSet types = meshesWithOnlyDim3.types();
+  test( types.hasMeshes( ) == true );
+  test( types.hasCells( ) == true );
+
+  test( types.hasDimension( smtk::mesh::Dims0 ) == false );
+  test( types.hasDimension( smtk::mesh::Dims1 ) == false );
+  test( types.hasDimension( smtk::mesh::Dims2 ) == false );
+  test( types.hasDimension( smtk::mesh::Dims3 ) == true );
+
+  test( types.hasCell(smtk::mesh::Vertex) == false );
+  test( types.hasCell(smtk::mesh::Line) == false );
+  test( types.hasCell(smtk::mesh::Triangle) == false );
+  test( types.hasCell(smtk::mesh::Quad) == false );
+  test( types.hasCell(smtk::mesh::Polygon) == false );
+  test( types.hasCell(smtk::mesh::Tetrahedron) == false );
+  test( types.hasCell(smtk::mesh::Pyramid) == false );
+  test( types.hasCell(smtk::mesh::Wedge) == false );
+  test( types.hasCell(smtk::mesh::Hexahedron) == true );
 }
 
 //----------------------------------------------------------------------------
@@ -395,6 +443,7 @@ int UnitTestMeshSet(int, char**)
   verify_num_meshes(c);
   verify_constructors(c);
   verify_comparisons(c);
+  verify_typeset(c);
   verify_mesh_by_name(c);
   verify_meshset_by_dim(c);
   verify_meshset_of_only_a_dim(c);

@@ -98,6 +98,37 @@ void verify_comparisons(const smtk::mesh::CollectionPtr& c)
 }
 
 //----------------------------------------------------------------------------
+void verify_typeset(const smtk::mesh::CollectionPtr& c)
+{
+  //verify that empty cell set has empty type set
+  {
+  smtk::mesh::CellTypes no_cell_types;
+  smtk::mesh::CellSet emptyCellSet = c->cells( no_cell_types );
+  smtk::mesh::TypeSet noTypes = emptyCellSet.types();
+
+  test( noTypes.cellTypes() == no_cell_types);
+  test( noTypes.hasMeshes() == false);
+  test( noTypes.hasCells() == false);
+  }
+
+
+  //verify that if we get all cells from the collection the type set is correct
+  {
+  smtk::mesh::TypeSet all_types = c->types();
+  smtk::mesh::CellSet allCells = c->cells( all_types.cellTypes() );
+  smtk::mesh::TypeSet allCellsTypes = allCells.types();
+
+  test( allCellsTypes.cellTypes() == all_types.cellTypes());
+  test( allCellsTypes.hasMeshes() == false);
+  test( allCellsTypes.hasCells() == true);
+  }
+
+  //verify typeset work on dimension cell queries and cell type queries
+  //is handled by the methods verify_cell_count_by_dim and
+  //verify_cell_count_by_type
+}
+
+//----------------------------------------------------------------------------
 void verify_all_cells(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::MeshSet all_meshes = c->meshes();
@@ -120,10 +151,23 @@ void verify_cell_count_by_type(smtk::mesh::MeshSet ms)
   //verify that all cells size is equal to the vector of cellsets where
   //each element is a cell type.
   std::vector< smtk::mesh::CellSet > all_cell_types;
+  smtk::mesh::TypeSet all_typeset;
+
   for(int i=0; i < smtk::mesh::CellType_MAX; ++i )
     {
     smtk::mesh::CellType cellType = static_cast<smtk::mesh::CellType>(i);
-    all_cell_types.push_back(  ms.cells( cellType ) );
+    smtk::mesh::CellSet cells = ms.cells( cellType );
+    all_cell_types.push_back( cells );
+
+    //verify that the cells typeset is correct
+    smtk::mesh::TypeSet types = cells.types();
+    test( types.hasMeshes() == false);
+    test( types.hasCells() == (!cells.is_empty()) );
+    if(!cells.is_empty())
+      { //only do these tests if we have anything in the cellset
+      test( types.hasCell( cellType ) == true );
+      }
+    all_typeset += types;
     }
 
   std::size_t sum = 0;
@@ -132,6 +176,7 @@ void verify_cell_count_by_type(smtk::mesh::MeshSet ms)
     sum += all_cell_types[i].size();
     }
   test( ms.cells().size() == sum);
+  test( ms.types().cellTypes() == all_typeset.cellTypes());
 }
 
 //----------------------------------------------------------------------------
@@ -140,10 +185,23 @@ void verify_cell_count_by_dim(smtk::mesh::MeshSet ms)
   //verify that all cells size is equal to the vector of cellsets where
   //each element is a cell type.
   std::vector< smtk::mesh::CellSet > all_cell_types;
+  smtk::mesh::TypeSet all_typeset;
+
   for(int i=0; i < smtk::mesh::DimensionType_MAX; ++i )
     {
     smtk::mesh::DimensionType dimType = static_cast<smtk::mesh::DimensionType>(i);
-    all_cell_types.push_back(  ms.cells( dimType ) );
+    smtk::mesh::CellSet cells = ms.cells( dimType );
+    all_cell_types.push_back( cells );
+
+    //verify that the cells typeset is correct
+    smtk::mesh::TypeSet types = cells.types();
+    test( types.hasMeshes() == false);
+    test( types.hasCells() == (!cells.is_empty()) );
+    if(!cells.is_empty())
+      { //only do these tests if we have anything in the cellset
+      test( types.hasDimension( dimType ) == true );
+      }
+    all_typeset += types;
     }
 
   std::size_t sum = 0;
@@ -152,6 +210,7 @@ void verify_cell_count_by_dim(smtk::mesh::MeshSet ms)
     sum += all_cell_types[i].size();
     }
   test( ms.cells().size() == sum);
+  test( ms.types().cellTypes() == all_typeset.cellTypes());
 }
 
 
@@ -188,7 +247,7 @@ void verify_cells_by_type(const smtk::mesh::CollectionPtr& c)
   //2. Verify that for each cell type in associated types the related index
   //in the array has cells
 
-  smtk::mesh::TypeSet types = c->associatedTypes();
+  smtk::mesh::TypeSet types = all_cells.types();
   for(int i=0; i < smtk::mesh::CellType_MAX; ++i )
     {
     //verify that if the collection has a cell, we also return
@@ -221,13 +280,13 @@ void verify_cells_by_types(const smtk::mesh::CollectionPtr& c)
 
   //1. verify that when we query based on types everything works properly
   //when from a Collection
-  smtk::mesh::TypeSet types = c->associatedTypes();
+  smtk::mesh::TypeSet types = c->types();
   smtk::mesh::CellSet associatedCells = c->cells( types.cellTypes() );
   test( associatedCells.is_empty() == false ); //can't be false
+
   //verify cellTypes returns the same number of cells as asking for all cells
   test( associatedCells.size() == c->cells().size() );
   test( associatedCells == c->cells() );
-
 }
 
 //----------------------------------------------------------------------------
@@ -560,6 +619,7 @@ int UnitTestCellSet(int, char**)
   verify_constructors(c);
   verify_empty(c);
   verify_comparisons(c);
+  verify_typeset(c);
   verify_all_cells(c);
   verify_cells_by_type(c);
   verify_cells_by_types(c);

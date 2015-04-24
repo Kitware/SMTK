@@ -144,7 +144,7 @@ public:
   virtual smtk::common::UUIDArray computeModelEntities(const smtk::mesh::HandleRange& meshsets) const = 0;
 
   //----------------------------------------------------------------------------
-  virtual smtk::mesh::TypeSet computeTypes(smtk::mesh::Handle handle) const = 0;
+  virtual smtk::mesh::TypeSet computeTypes(const smtk::mesh::HandleRange& range) const = 0;
 
   //----------------------------------------------------------------------------
   //compute the cells that make the shell/skin of the set of meshes

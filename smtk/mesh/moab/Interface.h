@@ -142,8 +142,7 @@ public:
   smtk::common::UUIDArray computeModelEntities(const smtk::mesh::HandleRange& meshsets) const;
 
   //----------------------------------------------------------------------------
-  smtk::mesh::TypeSet computeTypes(smtk::mesh::HandleRange range) const;
-  smtk::mesh::TypeSet computeTypes(smtk::mesh::Handle handle) const;
+  smtk::mesh::TypeSet computeTypes(const smtk::mesh::HandleRange& range) const;
 
   //----------------------------------------------------------------------------
   //compute the cells that make the shell/skin of the set of meshes

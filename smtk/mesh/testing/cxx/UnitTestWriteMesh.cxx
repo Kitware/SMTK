@@ -108,7 +108,7 @@ void verify_write_valid_collection_hdf5()
   test( c2->isValid(), "collection should be valid");
   test( c2->name() == c->name() );
   test( c2->numberOfMeshes() == c->numberOfMeshes() );
-  test( c2->associatedTypes() == c->associatedTypes() );
+  test( c2->types() == c->types() );
 }
 
 //----------------------------------------------------------------------------
@@ -183,7 +183,7 @@ void verify_write_onlyDomain()
   //part of the set
   test( c2->cells().size() == c3->cells().size() );
   test( c2->pointConnectivity().size() == c3->pointConnectivity().size() );
-  test( c2->associatedTypes() == c3->associatedTypes() );
+  test( c2->types() == c3->types() );
 }
 
 //----------------------------------------------------------------------------
@@ -223,7 +223,7 @@ void verify_write_onlyNeumann()
   test( c2->numberOfMeshes() + 1 == c3->numberOfMeshes() );
   test( c2->cells().size() == c3->cells().size() );
   test( c2->pointConnectivity().size() == c3->pointConnectivity().size() );
-  test( c2->associatedTypes() == c3->associatedTypes() );
+  test( c2->types() == c3->types() );
 
 
 }
@@ -265,7 +265,7 @@ void verify_write_onlyDirichlet()
   test( c2->numberOfMeshes() + 1 == c3->numberOfMeshes() );
   test( c2->cells().size() == c3->cells().size() );
   test( c2->pointConnectivity().size() == c3->pointConnectivity().size() );
-  test( c2->associatedTypes() == c3->associatedTypes() );
+  test( c2->types() == c3->types() );
 }
 
 
