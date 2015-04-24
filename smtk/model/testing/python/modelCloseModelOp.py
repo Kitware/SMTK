@@ -16,47 +16,69 @@ Try running a "universal" operator on an imported model.
 import os
 import sys
 import smtk
+from smtk.simple import *
 import smtk.testing
 from uuid import uuid4
 import unittest
 
 class TestModelCloseModelOp(unittest.TestCase):
 
-  def testCloseModelOp(self):
-    model_path = os.path.join(smtk.testing.DATA_DIR, 'smtk', 'pyramid.json')
-    print 'Loading %s' % model_path
+  def loadThenCloseSessionModel(self, sessionname, filename):
+    actMgr = smtk.model.Manager.create()
+    actSession = actMgr.createSession(sessionname, smtk.model.SessionRef())
+    SetActiveSession(actSession)
 
-    status = 0
-    mgr = smtk.model.Manager.create()
-    session = mgr.createSession('native', smtk.model.SessionRef())
-    json = None
-    with open(model_path, 'r') as f:
-      json = f.read()
+    # The 'native' session does not have a "read" op
+    if sessionname == 'native':
+      json = None
+      with open(filename, 'r') as f:
+        json = f.read()
 
-    self.assertTrue(not json == None, 'Unable to load input file')
-    self.assertTrue(smtk.io.ImportJSON.intoModelManager(json, mgr), 'Unable to parse JSON input file')
+      self.assertTrue(not json == None, 'Unable to load input file')
+      self.assertTrue(smtk.io.ImportJSON.intoModelManager(json, actMgr), 'Unable to parse JSON input file')
 
-    mgr.assignDefaultNames()
-    models = mgr.findEntitiesOfType(smtk.model.MODEL_ENTITY, True)
+      actMgr.assignDefaultNames()
+    else:
+      Read(filename)
+
+    models = actMgr.findEntitiesOfType(smtk.model.MODEL_ENTITY, True)
     # Assign imported models to current session so they have operators
-    [smtk.model.Model(x).setSession(session) for x in models]
-    print 'Applying operator to %d model(s)' % len(models)
+    [smtk.model.Model(x).setSession(actSession) for x in models]
 
-    op = smtk.model.Model(models[0]).op('close model')
-    op.findAsModelEntity('model').setNumberOfValues(1)
-    op.findAsModelEntity('model').setValue(models[0])
-
-    result = op.operate()
+    result = CloseModel(models)
     self.assertEqual(
         result.findInt('outcome').value(0),
         smtk.model.OPERATION_SUCCEEDED,
         'close model operator failed')
-    print 'Checking models'
-    for x in mgr.findEntitiesOfType(smtk.model.MODEL_ENTITY, True):
-      if x.entity().toString() == models[0].entity().toString():
-        print 'Closing %s has failed ' % x.name()
-        status = 1
-        break
+    remModels = GetVectorValue(result.findModelEntity('expunged'))
+
+    print 'Checking removed models'
+    allclosed = True
+    for x in actMgr.findEntitiesOfType(smtk.model.MODEL_ENTITY, True):
+      for rModel in remModels:
+        if x.entity().toString() == rModel.entity().toString():
+          print 'Closing %s has failed ' % x.name()
+          allclosed = False
+
+    return allclosed
+
+  def testCloseModelOp(self):
+
+    status = 0
+    if smtk.testing.DATA_DIR != '':
+      session_files = {
+          'native': ['smtk', 'pyramid.json'],
+          'discrete': ['cmb', 'test2D.cmb'],
+          'exodus': ['exodus', 'disk_out_ref.ex2'],
+          'cgm': ['cgm', 'pyramid.brep']
+      }
+
+      for (session_type,path) in session_files.items():
+        if session_type == 'native' or session_type in dir(smtk.bridge):
+          filename = os.path.join(*([smtk.testing.DATA_DIR,] + path))
+          print 'Testing load and close of %s' % filename
+          if self.loadThenCloseSessionModel(session_type, filename) == False:
+            status = 1
 
     print 'Done'
 
