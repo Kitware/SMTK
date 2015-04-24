@@ -443,3 +443,17 @@ def Write(filename, entities = [], **kwargs):
   res = wri.operate()
   PrintResultLog(res)
   return res.findInt('outcome').value(0)
+
+def CloseModel(models = [], **kwargs):
+  """Close a set of models using "close model" operator, which invokes "remove model"
+  in the session internally if the session has it.
+  """
+  sref = GetActiveSession()
+  closeop = sref.op('close model')
+  moditem = closeop.findAsModelEntity('model');
+  SetVectorValue(moditem, models)
+
+  res = closeop.operate()
+  PrintResultLog(res)
+
+  return res

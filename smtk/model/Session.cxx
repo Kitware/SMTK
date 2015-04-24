@@ -124,7 +124,7 @@ SessionInfoBits Session::allSupportedInformation() const
 }
 
 /// Return a list of names of solid-model operators available.
-StringList Session::operatorNames() const
+StringList Session::operatorNames(bool includeAdvanced) const
 {
   std::vector<smtk::attribute::DefinitionPtr> ops;
   this->m_operatorSys->derivedDefinitions(
@@ -133,7 +133,12 @@ StringList Session::operatorNames() const
   StringList nameList;
   std::vector<smtk::attribute::DefinitionPtr>::iterator it;
   for (it = ops.begin(); it != ops.end(); ++it)
+    {
+    // only show operators that are not advanced
+    if(!includeAdvanced && (*it)->advanceLevel() > 0)
+      continue;
     nameList.push_back((*it)->type());
+    }    
   return nameList;
 }
 

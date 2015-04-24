@@ -51,12 +51,12 @@ Session::Ptr SessionRef::session() const
 /**\brief Return the list of operations this session supports.
   *
   */
-StringList SessionRef::operatorNames() const
+StringList SessionRef::operatorNames(bool includeAdvanced) const
 {
   Session::Ptr brdg = this->session();
   if (!brdg)
     return StringList();
-  return brdg->operatorNames();
+  return brdg->operatorNames(includeAdvanced);
 }
 
 /**\brief Return the smtk::attribute::System holding all the operator definitions.

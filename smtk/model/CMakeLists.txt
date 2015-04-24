@@ -42,6 +42,7 @@ set(modelSrcs
   VertexUse.cxx
   Volume.cxx
   VolumeUse.cxx
+  operators/CloseModel.cxx
   operators/SetProperty.cxx
   )
 
@@ -95,10 +96,12 @@ set(modelHeaders
   VertexUse.h
   Volume.h
   VolumeUse.h
+  operators/CloseModel.h
   operators/SetProperty.h
   )
 
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/DefaultSession.json" defSessionJSON)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CloseModel.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetProperty.sbt" defOpXML)
 
 #install the headers
