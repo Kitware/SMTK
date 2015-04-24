@@ -10,7 +10,7 @@
 #
 #=============================================================================
 """
-Try running a "universal" operator on an imported model.
+Try running a "universal" operator (close model) on imported models.
 """
 
 import os
@@ -28,6 +28,7 @@ class TestModelCloseModelOp(unittest.TestCase):
     actSession = actMgr.createSession(sessionname, smtk.model.SessionRef())
     SetActiveSession(actSession)
 
+    models = None
     # The 'native' session does not have a "read" op
     if sessionname == 'native':
       json = None
@@ -38,12 +39,13 @@ class TestModelCloseModelOp(unittest.TestCase):
       self.assertTrue(smtk.io.ImportJSON.intoModelManager(json, actMgr), 'Unable to parse JSON input file')
 
       actMgr.assignDefaultNames()
+      models = actMgr.findEntitiesOfType(smtk.model.MODEL_ENTITY, True)
+      # Assign imported models to current session so they have operators
+      [smtk.model.Model(x).setSession(actSession) for x in models]
     else:
-      Read(filename)
+      models = Read(filename)
 
-    models = actMgr.findEntitiesOfType(smtk.model.MODEL_ENTITY, True)
-    # Assign imported models to current session so they have operators
-    [smtk.model.Model(x).setSession(actSession) for x in models]
+    print 'Closing %d models.' % len(models)
 
     result = CloseModel(models)
     self.assertEqual(
@@ -52,7 +54,8 @@ class TestModelCloseModelOp(unittest.TestCase):
         'close model operator failed')
     remModels = GetVectorValue(result.findModelEntity('expunged'))
 
-    print 'Checking removed models'
+    print '%d models closed.' % len(remModels)
+
     allclosed = True
     for x in actMgr.findEntitiesOfType(smtk.model.MODEL_ENTITY, True):
       for rModel in remModels:
