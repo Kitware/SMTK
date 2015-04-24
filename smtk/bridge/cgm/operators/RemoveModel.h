@@ -16,7 +16,7 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-class CGMSMTK_EXPORT RemoveModel : public Operator
+class SMTKCGMSESSION_EXPORT RemoveModel : public Operator
 {
 public:
   smtkTypeMacro(RemoveModel);

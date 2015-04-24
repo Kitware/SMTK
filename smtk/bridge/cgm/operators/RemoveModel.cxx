@@ -63,7 +63,7 @@ smtk::model::OperatorResult RemoveModel::operateInternal()
 #include "RemoveModel_xml.h"
 
 smtkImplementsModelOperator(
-  CGMSMTK_EXPORT,
+  SMTKCGMSESSION_EXPORT,
   smtk::bridge::cgm::RemoveModel,
   cgm_remove_model,
   "remove model",
