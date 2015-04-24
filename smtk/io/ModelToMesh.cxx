@@ -70,12 +70,28 @@ bool convert_vertices(const smtk::model::EntityRefs& ents,
                       MappingType& mapping,
                       const smtk::mesh::AllocatorPtr& ialloc)
 {
+  (void) mapping;
   typedef typename MappingType::value_type value_type;
+
+  //count the number of points in the tessellation so that we can properly
+  //allocate a single pool large enough for all the points
+  std::size_t numPointsToAlloc = 0;
+  smtk::model::EntityIterator it;
+  it.traverse(ents.begin(), ents.end(), smtk::model::ITERATE_BARE);
+  for (it.begin(); !it.isAtEnd(); ++it)
+    {
+    //we filtered out all ents without tess already, so this can't be null
+    const smtk::model::Tessellation* tess = it->hasTessellation();
+    std::vector<double> const& modelCoords = tess->coords();
+    numPointsToAlloc += modelCoords.size();
+    }
+
+  //we counted the number of doubles, and 3 doubles make a single coordinate
+  numPointsToAlloc /= 3;
 
   std::vector<double *> meshCoords;
   smtk::mesh::Handle firstVertHandle;
-
-  const bool pointsAllocated = ialloc->allocatePoints( ents.size(),
+  const bool pointsAllocated = ialloc->allocatePoints( numPointsToAlloc,
                                                        firstVertHandle,
                                                        meshCoords);
   if(!pointsAllocated)
@@ -83,29 +99,26 @@ bool convert_vertices(const smtk::model::EntityRefs& ents,
     return false;
     }
 
-  //1. Convert each vertex into a mesh cell
-
-  //track what cell we are creating
-  smtk::mesh::Handle currentVertHandle = firstVertHandle;
-
-  //iterate over the model verts
-  smtk::model::EntityIterator it;
+  //iterate over the tessellation populating the mesh coordinates
+  std::size_t pos = 0;
   it.traverse(ents.begin(), ents.end(), smtk::model::ITERATE_BARE);
-  for (it.begin(); !it.isAtEnd(); ++it, ++currentVertHandle)
+  for (it.begin(); !it.isAtEnd(); ++it)
     {
     //we filtered out all ents without tess already, so this can't be null
     const smtk::model::Tessellation* tess = it->hasTessellation();
-
-    //convert the 3d coords of the tesselation
     std::vector<double> const& modelCoords = tess->coords();
-    meshCoords[0][0] = modelCoords[0];
-    meshCoords[0][1] = modelCoords[1];
-    meshCoords[0][2] = modelCoords[2];
-
-    mapping.insert( value_type(it->entity(), currentVertHandle ) );
+    const std::size_t length = modelCoords.size();
+    for( std::size_t i=0; i < length; i+=3, pos++)
+      {
+      meshCoords[0][pos] = modelCoords[i];
+      meshCoords[0][pos] = modelCoords[i+1];
+      meshCoords[0][pos] = modelCoords[i+2];
+      }
     }
 
-  return true;
+  //return true if we have copied each coordinate from the tessellation
+  //into the mesh database.
+  return (pos == numPointsToAlloc);
 
 }
 
