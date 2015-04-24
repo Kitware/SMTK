@@ -79,7 +79,6 @@ protected:
 
   virtual SessionInfoBits transcribeInternal(
     const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo);
-  virtual bool removeModelEntity(const smtk::model::EntityRef& entity);
 
   SessionInfoBits addCGMEntityToManager(const smtk::model::EntityRef& entity, RefEntity* refEnt, SessionInfoBits requestedInfo);
   SessionInfoBits addCGMEntityToManager(const smtk::model::EntityRef& entity, GroupingEntity* refEnt, SessionInfoBits requestedInfo);

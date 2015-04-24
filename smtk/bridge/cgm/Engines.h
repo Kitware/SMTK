@@ -45,7 +45,6 @@ public:
   static std::vector<std::string> listEngines();
 
   static bool shutdown();
-  static bool removeBody(Body* body);
 };
 
     } // namespace cgm

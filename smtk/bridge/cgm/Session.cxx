@@ -320,20 +320,6 @@ smtk::model::SessionInfoBits Session::addCGMEntityToManager(
   return 0;
 }
 
-/**\brief remove a model entity \a entityref that reflect the CGM body.
-  *
-  */
-bool Session::removeModelEntity(
-  const smtk::model::EntityRef& entityref)
-{
-  ToolDataUser* tdu = TDUUID::findEntityById(entityref.entity());
-  Body* body = dynamic_cast<Body*>(tdu);
-  if (body && Engines::removeBody(body))
-    return this->manager()->eraseModel(entityref);
-
-  return false;
-}
-
 /// Given a CGM \a body tagged with \a uid, create a record in \a modelManager for it.
 smtk::model::SessionInfoBits Session::addBodyToManager(
   const smtk::model::Model& entityref,
