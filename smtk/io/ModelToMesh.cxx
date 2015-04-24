@@ -19,6 +19,8 @@
 #include "smtk/model/Volume.h"
 #include "smtk/model/Tessellation.h"
 
+#include <algorithm>
+
 namespace smtk{
 namespace io {
 
@@ -83,11 +85,13 @@ bool convert_vertices(const smtk::model::EntityRefs& ents,
     //we filtered out all ents without tess already, so this can't be null
     const smtk::model::Tessellation* tess = it->hasTessellation();
     std::vector<double> const& modelCoords = tess->coords();
-    numPointsToAlloc += modelCoords.size();
-    }
 
-  //we counted the number of doubles, and 3 doubles make a single coordinate
-  numPointsToAlloc /= 3;
+    //each model has an embedding dimension which dictates the number of
+    //coordinates per point. This allows us to convert 2d / 1d points
+    //safely into 3d space
+    const int dimension = it->embeddingDimension();
+    numPointsToAlloc += ( modelCoords.size() / dimension);
+    }
 
   std::vector<double *> meshCoords;
   smtk::mesh::Handle firstVertHandle;
@@ -107,12 +111,38 @@ bool convert_vertices(const smtk::model::EntityRefs& ents,
     //we filtered out all ents without tess already, so this can't be null
     const smtk::model::Tessellation* tess = it->hasTessellation();
     std::vector<double> const& modelCoords = tess->coords();
+
+    const int dimension = it->embeddingDimension();
     const std::size_t length = modelCoords.size();
-    for( std::size_t i=0; i < length; i+=3, pos++)
+
+    //while a little more complex, this way avoids branching or comparisons
+    //against dimension while filling the memory
+    if(dimension == 3)
       {
-      meshCoords[0][pos] = modelCoords[i];
-      meshCoords[0][pos] = modelCoords[i+1];
-      meshCoords[0][pos] = modelCoords[i+2];
+      for( std::size_t i=0; i < length; i+=3, pos++)
+        {
+        meshCoords[0][pos] = modelCoords[i];
+        meshCoords[1][pos] = modelCoords[i+1];
+        meshCoords[2][pos] = modelCoords[i+2];
+        }
+      }
+    else if(dimension == 2)
+      {
+      for( std::size_t i=0; i < length; i+=2, pos++)
+        {
+        meshCoords[0][pos] = modelCoords[i];
+        meshCoords[1][pos] = modelCoords[i+1];
+        }
+      std::fill( meshCoords[2], meshCoords[2] + numPointsToAlloc, double(0));
+      }
+    else if(dimension == 1)
+      {
+      for(std::size_t i=0; i < length; i++, pos++)
+        {
+        meshCoords[0][pos] = modelCoords[i];
+        }
+      std::fill( meshCoords[1], meshCoords[1] + numPointsToAlloc, double(0));
+      std::fill( meshCoords[2], meshCoords[2] + numPointsToAlloc, double(0));
       }
     }
 
