@@ -16,6 +16,7 @@
 #define __smtk_attribute_qtAttributeView_h
 
 #include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/Exports.h"
 
 #include <QMap>
 #include <QModelIndex>

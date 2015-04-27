@@ -16,6 +16,7 @@
 #define __smtk_attribute_qtInstancedView_h
 
 #include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/Exports.h"
 
 class qtInstancedViewInternals;
 class QScrollArea;
