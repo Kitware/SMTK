@@ -16,6 +16,7 @@
 #define __smtk_attribute_qtUIManager_h
 
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/Exports.h"
 #include "smtk/attribute/System.h"
 #include <QFont>
 #include <QColor>
