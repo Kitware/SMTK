@@ -125,7 +125,14 @@ OperatorResult MeshOperator::operateInternal()
     remus::client::make_ServerConnection( endpointItem->value() );
 
   remus::client::Client client(conn);
-  remus::proto::Job job = client.submitJob(submission);
+
+  //the worker could have gone away while this operator was invoked, or maybe somebody submitted
+  //the job using stale data from an older server
+  remus::proto::Job job = remus::proto::make_invalidJob();
+  if (client.canMesh(reqs))
+    {
+    remus::proto::Job job = client.submitJob(submission);
+    }
 
   //once the job is submitted, we wait for the results to come back
   bool haveResultFromWorker = false;
