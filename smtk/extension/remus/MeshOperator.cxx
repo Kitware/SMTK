@@ -114,23 +114,29 @@ OperatorResult MeshOperator::operateInternal()
 
   //the worker could have gone away while this operator was invoked, or maybe somebody submitted
   //the job using stale data from an older server
+  std::cout << "asking server if it can handle job reqs" << std::endl;
   remus::proto::Job job = remus::proto::make_invalidJob();
   if (client.canMesh(reqs))
     {
-    remus::proto::Job job = client.submitJob(submission);
+    std::cout << "Submitting job to server " << std::endl;
+    job = client.submitJob(submission);
     }
 
   //once the job is submitted, we wait for the results to come back
   bool haveResultFromWorker = false;
   if( job.valid() )
     {
+    std::cout << " job submitted and is valid, checking the status " << std::endl;
     remus::proto::JobStatus currentWorkerStatus = client.jobStatus(job);
+    std::cout << remus::to_string( currentWorkerStatus.status() ) << std::endl;
+
     while( currentWorkerStatus.good() )
       { //we need this to not be a busy wait
         //for now lets call sleep to make this less 'heavy'
       // boost::this_thread::sleep( boost::posix_time::milliseconds(250) );
       currentWorkerStatus = client.jobStatus(job);
       }
+    std::cout << remus::to_string( currentWorkerStatus.status() ) << std::endl;
     haveResultFromWorker = currentWorkerStatus.finished();
     }
 
