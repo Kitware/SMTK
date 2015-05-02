@@ -424,6 +424,7 @@ int ImportJSON::ofManager(
     status &= ImportJSON::ofManagerEntity(uid, curChild, manager);
     status &= ImportJSON::ofManagerArrangement(uid, curChild, manager);
     status &= ImportJSON::ofManagerTessellation(uid, curChild, manager);
+    status &= ImportJSON::ofManagerAnalysis(uid, curChild, manager);
     status &= ImportJSON::ofManagerFloatProperties(uid, curChild, manager);
     status &= ImportJSON::ofManagerStringProperties(uid, curChild, manager);
     status &= ImportJSON::ofManagerIntegerProperties(uid, curChild, manager);
@@ -532,6 +533,43 @@ int ImportJSON::ofManagerTessellation(
   (void)numVerts;
   (void)numPrims;
   //std::cout << uid << " has " << numVerts << " verts " << numPrims << " prims\n";
+  return 1;
+}
+
+/**\brief Create an entity analysis mesh record from a JSON \a dict.
+  *
+  * The \a uid is the UUID corresponding to \a dict and
+  * the resulting record will be inserted into \a manager.
+  */
+int ImportJSON::ofManagerAnalysis(
+  const UUID& uid, cJSON* dict, ManagerPtr manager)
+{
+  cJSON* meshNode = cJSON_GetObjectItem(dict, "m");
+  if (!meshNode)
+    { // Missing tessellation is not an error.
+    return 1;
+    }
+  if (meshNode->type != cJSON_Object)
+    { // An improper tessellation is an error.
+    return 0;
+    }
+  // Now extract graphics primitives from the JSON data.
+  // We should fetch the metadata->formatVersion and verify it,
+  // but I don't think it makes any difference to the fields
+  // we rely on... yet.
+  UUIDsToTessellations::iterator meshIt = manager->analysisMesh().find(uid);
+  if (meshIt == manager->analysisMesh().end())
+    {
+    Tessellation blank;
+    meshIt = manager->analysisMesh().insert(
+      std::pair<UUID,Tessellation>(uid, blank)).first;
+    }
+  int numVerts = cJSON_GetTessellationCoords(
+    cJSON_GetObjectItem(meshNode, "vertices"), meshIt->second);
+  int numPrims = cJSON_GetTessellationConn(
+    cJSON_GetObjectItem(meshNode, "faces"), meshIt->second);
+  (void)numVerts;
+  (void)numPrims;
   return 1;
 }
 

@@ -54,6 +54,8 @@ int ExportJSON::forEntities(
       }
     if (sections & JSON_TESSELLATIONS)
       status &= ExportJSON::forManagerTessellation(it->first, curChild, modelMgr);
+    if (sections & JSON_ANALYSISMESH)
+      status &= ExportJSON::forManagerAnalysis(it->first, curChild, modelMgr);
     if (sections & JSON_PROPERTIES)
       {
       status &= ExportJSON::forManagerFloatProperties(it->first, curChild, modelMgr);
