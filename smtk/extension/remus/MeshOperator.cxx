@@ -114,19 +114,20 @@ OperatorResult MeshOperator::operateInternal()
 
   //the worker could have gone away while this operator was invoked, or maybe somebody submitted
   //the job using stale data from an older server
-  std::cout << "asking server if it can handle job reqs" << std::endl;
+
+  smtkInfoMacro(this->log(), "[remus] Asking Server if it supports job reqs");
   remus::proto::Job job = remus::proto::make_invalidJob();
   if (client.canMesh(reqs))
     {
-    std::cout << "Submitting job to server " << std::endl;
     job = client.submitJob(submission);
+    smtkInfoMacro(this->log(), "[remus] Submitted Job to Server: " << remus::proto::to_string(job));
     }
 
   //once the job is submitted, we wait for the results to come back
   bool haveResultFromWorker = false;
   if( job.valid() )
     {
-    std::cout << " job submitted and is valid, checking the status " << std::endl;
+    smtkInfoMacro(this->log(), "[remus] Querying Status of: " << remus::proto::to_string(job));
     remus::proto::JobStatus currentWorkerStatus = client.jobStatus(job);
     std::cout << remus::to_string( currentWorkerStatus.status() ) << std::endl;
 
@@ -136,7 +137,10 @@ OperatorResult MeshOperator::operateInternal()
       // boost::this_thread::sleep( boost::posix_time::milliseconds(250) );
       currentWorkerStatus = client.jobStatus(job);
       }
-    std::cout << remus::to_string( currentWorkerStatus.status() ) << std::endl;
+    smtkInfoMacro(this->log(), "[remus] Final Status of: "
+                  << remus::proto::to_string(job)
+                  << "is: "
+                  << remus::to_string( currentWorkerStatus.status() ) );
     haveResultFromWorker = currentWorkerStatus.finished();
     }
 
