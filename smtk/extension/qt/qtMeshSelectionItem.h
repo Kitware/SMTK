@@ -53,6 +53,7 @@ namespace smtk
     public slots:
       void setOutputOptional(int);
       void clearSelection();
+      void resetSelectionState();
 
     signals:
       void requestMeshSelection(smtk::attribute::ModelEntityItemPtr pEntItem);
