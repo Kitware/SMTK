@@ -39,7 +39,7 @@ using namespace smtk::model;
 namespace
 {
 
-std::string extractModelUUIDSAsJson(smtk::model::Models const& models)
+std::string extractModelUUIDSAsJSON(smtk::model::Models const& models)
   {
   typedef smtk::model::Models::const_iterator model_const_it;
   smtk::common::UUIDArray modelIds;
@@ -103,7 +103,7 @@ OperatorResult MeshOperator::operateInternal()
   std::string modelSerialized = smtk::io::ExportJSON::fromModelManager(this->manager());
   submission["model"] = remus::proto::make_JobContent(modelSerialized);
 
-  std::string modelUUIDSSerialized = extractModelUUIDSAsJson(models);
+  std::string modelUUIDSSerialized = extractModelUUIDSAsJSON(models);
   submission["modelUUIDS"] = remus::proto::make_JobContent( modelUUIDSSerialized );
 
   //now that we have the submission, construct a remus client to submit it
