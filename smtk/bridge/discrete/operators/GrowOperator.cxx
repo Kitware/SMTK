@@ -317,7 +317,7 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
   bool ok = false;
   smtk::attribute::MeshSelectionItem::Ptr inSelectionItem =
      this->specification()->findMeshSelection("selection");
-  MeshSelectionMode opType = inSelectionItem->meshSelectMode();
+  MeshModifyMode opType = inSelectionItem->modifyMode();
   int numSelValues = inSelectionItem->numberOfValues();
 
   switch(opType)
@@ -390,8 +390,7 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
       ok = true; // stop grow
       break;
     default:
-      std::cerr << "ERROR: Unrecognized MeshSelectionMode: "
-                << opType << std::endl;
+      std::cerr << "ERROR: Unrecognized MeshModifyMode: " << std::endl;
       break;
   }
 

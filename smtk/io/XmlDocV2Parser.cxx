@@ -214,9 +214,9 @@ void XmlDocV2Parser::processMeshSelectionItem(pugi::xml_node &node,
 {
   xml_node extraNode = node.child("CtrlKey");
   item->setCtrlKeyDown(extraNode && extraNode.text().as_int() ? true : false);
-  extraNode = node.child("MeshSelectionMode");
+  extraNode = node.child("MeshModifyMode");
   if(extraNode)
-    item->setMeshSelectMode(attribute::MeshSelectionItem::string2SelectMode(
+    item->setModifyMode(attribute::MeshSelectionItem::string2ModifyMode(
                             extraNode.text().get()));
   xml_attribute xatt;
   xatt = node.attribute("NumberOfValues");
@@ -262,5 +262,14 @@ void XmlDocV2Parser::processMeshSelectionDef(pugi::xml_node &node,
                    << idef->name());
 */
     }
+
+  xml_node mmask = node.child("MembershipMask");
+  if (mmask)
+    {
+    idef->setMembershipMask(
+      this->decodeModelEntityMask(
+        mmask.text().as_string()));
+    }
+
 }
 

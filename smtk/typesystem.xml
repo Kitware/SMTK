@@ -1864,7 +1864,7 @@
         </add-function>
       </object-type>
 
-      <enum-type name="MeshSelectionMode">
+      <enum-type name="MeshModifyMode">
         <include file-name="smtk/attribute/MeshSelectionItem.h" location="local"/>
       </enum-type>
 
