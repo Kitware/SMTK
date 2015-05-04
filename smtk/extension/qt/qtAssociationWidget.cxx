@@ -292,6 +292,12 @@ void qtAssociationWidget::showEntityAssociation(
 
   // Add currently-associated items to the list displaying associations.
   smtk::model::ManagerPtr modelManager = attDef->system()->refModelManager();
+
+  if (!modelManager)
+    {
+    return;
+    }
+  
   smtk::model::EntityRefs modelEnts =
     theAtt->associatedModelEntities<smtk::model::EntityRefs>();
 

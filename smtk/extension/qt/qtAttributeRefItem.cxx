@@ -19,7 +19,7 @@
 #include "smtk/attribute/System.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
-#include "smtk/view/Attribute.h"
+#include "smtk/common/View.h"
 
 #include <QVBoxLayout>
 #include <QFrame>
@@ -211,13 +211,14 @@ void qtAttributeRefItem::onLaunchAttributeView()
     {
     return;
     }
-  smtk::view::AttributePtr newAttView(new smtk::view::Attribute("Attribute View"));
+  smtk::common::ViewPtr newAttView(new smtk::common::View("Attribute", "Attribute View"));
   smtk::attribute::RefItemPtr item =
     smtk::dynamic_pointer_cast<RefItem>(this->getObject());
   const RefItemDefinition *itemDef =
     dynamic_cast<const RefItemDefinition*>(item->definition().get());
   attribute::DefinitionPtr attDef = itemDef->attributeDefinition();
-  newAttView->addDefinition(attDef);
+  newAttView->details().addChild("AttributeTypes")
+    .addChild("Type").setContents(attDef->type());
 
   QDialog attViewDlg;
   attViewDlg.setWindowTitle(attDef->label().empty() ?

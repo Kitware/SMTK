@@ -17,6 +17,7 @@
 
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/attribute/System.h"
+#include <map>
 #include <QFont>
 #include <QColor>
 #include <QDoubleValidator>
@@ -35,12 +36,10 @@ namespace smtk
     class qtFileItem;
     class qtMeshSelectionItem;
     class qtModelEntityItem;
-    class qtRootView;
-    class qtAttributeView;
     class qtBaseView;
-    class qtInstancedView;
-    class qtSimpleExpressionView;
-    class qtGroupView;
+    class qtUIManager;
+    
+    typedef qtBaseView* (*widgetConstructor)(smtk::common::ViewPtr, QWidget* p, qtUIManager* uiman);
 
     class QTSMTK_EXPORT qtUIManager : public QObject
     {
@@ -50,11 +49,12 @@ namespace smtk
     friend class qtRootView;
 
     public:
-      qtUIManager(smtk::attribute::System &system);
+    qtUIManager(smtk::attribute::System &system,
+                const std::string &toplevelViewName);
       virtual ~qtUIManager();
 
       void initializeUI(QWidget* pWidget, bool useInternalFileBrowser=false);
-      qtBaseView* initializeView(QWidget* pWidget, smtk::view::BasePtr base,
+      qtBaseView* initializeView(QWidget* pWidget, smtk::common::ViewPtr view,
         bool useInternalFileBrowser=true);
       smtk::attribute::System* attSystem() const
         {return &this->m_AttSystem;}
@@ -70,6 +70,11 @@ namespace smtk
 
       // Description:
       // Set the advanced values font to be bold and/or italic
+      void setAdvanceFontStyleBold(bool val);
+      bool advanceFontStyleBold() const;
+      void setAdvanceFontStyleItalic(bool val);
+      bool advanceFontStyleItalic() const;
+
       void setAdvancedBold(bool b)
       {this->AdvancedBold = b;}
       bool advancedBold()
@@ -79,8 +84,23 @@ namespace smtk
       bool advancedItalic()
       {return this->AdvancedItalic;}
 
-      qtRootView* rootView()
-        {return this->RootView;}
+      //Description:
+      // Set and Get Value Label Lengths
+      int maxValueLabelLength() const
+      {return this->m_maxValueLabelLength;}
+      void setMaxValueLabelLength(int w)
+      {this->m_maxValueLabelLength = w;}
+      int minValueLabelLength() const
+      {return this->m_minValueLabelLength;}
+      void setMinValueLabelLength(int w)
+      {this->m_minValueLabelLength = w;}
+
+      //Description:
+      // Registers a view construction function with a view type string
+      void registerViewConstructor(const std::string &vtype, widgetConstructor f);
+      
+      qtBaseView* topView()
+        {return this->m_topView;}
       static QString clipBoardText();
       static void setClipBoardText(QString& text);
       std::string currentCategory();
@@ -133,6 +153,8 @@ namespace smtk
     virtual int getWidthOfItemsMaxLabel(
       const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs,
       const QFont &font);
+    
+    qtBaseView* createView(smtk::common::ViewPtr smtkView, QWidget *pWidget);
 
 #ifdef _WIN32
     #define LINE_BREAKER_STRING "\n";
@@ -146,7 +168,6 @@ namespace smtk
       void onMeshSelectionItemCreated(smtk::attribute::qtMeshSelectionItem*);
       void onExpressionReferenceChanged();
       void updateModelViews();
-      void updateModelViews(qtGroupView*);
       void onTextEditChanged();
       void onLineEditChanged();
       void onLineEditFinished();
@@ -161,18 +182,12 @@ namespace smtk
       void uiChanged(smtk::attribute::qtBaseView*, smtk::attribute::ItemPtr);
 
     protected:
-      void processAttributeView(qtAttributeView* v);
-      void processInstancedView(qtInstancedView* v);
-      //void processModelView(qtModelView* v);
-      void processSimpleExpressionView(qtSimpleExpressionView* v);
-      void processGroupView(qtGroupView* v);
-      void processBasicView(qtBaseView* v);
 
-      qtBaseView* createView(smtk::view::BasePtr smtkView, QWidget *pWidget);
       virtual void internalInitialize();
 
    private:
-      qtRootView* RootView;
+      qtBaseView* m_topView;
+      std::string m_topViewName;
       QFont advFont;
       QColor DefaultValueColor;
       QColor InvalidValueColor;
@@ -182,6 +197,9 @@ namespace smtk
       smtk::attribute::System &m_AttSystem;
       bool m_useInternalFileBrowser;
 
+      int m_maxValueLabelLength;
+      int m_minValueLabelLength;
+      
       // current advance level to show advanced attributes/items
       int m_currentAdvLevel;
 
@@ -193,6 +211,7 @@ namespace smtk
       void getItemsLongLabel(
         const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs,
         std::string &labelText);
+      std::map<std::string, widgetConstructor> m_constructors;
 
     }; // class
 

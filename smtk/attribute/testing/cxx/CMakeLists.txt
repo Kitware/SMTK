@@ -1,4 +1,5 @@
 add_executable(attributeReaderTest attributeReaderTest.cxx)
+add_executable(attributeReaderWriterTest attributeReaderWriterTest.cxx)
 add_executable(basicAttributeTest basicAttributeTest.cxx)
 add_executable(basicAttributeDefinitionTest basicAttributeDefinitionTest.cxx)
 add_executable(basicAttributeDerivationTest basicAttributeDerivationTest.cxx)
@@ -13,6 +14,7 @@ add_executable(categoryTest categoryTest.cxx)
 add_executable(extensibleAttributeTest extensibleAttributeTest.cxx)
 
 target_link_libraries(attributeReaderTest SMTKCore)
+target_link_libraries(attributeReaderWriterTest SMTKCore)
 target_link_libraries(basicAttributeTest SMTKCore)
 target_link_libraries(basicAttributeDefinitionTest SMTKCore)
 target_link_libraries(basicAttributeDerivationTest SMTKCore)

@@ -13,7 +13,7 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/System.h"
 
-#include "smtk/view/Base.h"
+#include "smtk/common/View.h"
 #include "smtk/view/Root.h"
 
 #include <QPointer>
@@ -26,19 +26,18 @@ using namespace smtk::attribute;
 class qtBaseViewInternals
 {
 public:
-  qtBaseViewInternals(smtk::view::BasePtr dataObject, QWidget* p,
+  qtBaseViewInternals(smtk::common::ViewPtr dataObject, QWidget* p,
     qtUIManager* uiman)
   {
   this->ParentWidget = p;
   this->DataObject = dataObject;
   this->UIManager = uiman;
-  smtk::view::RootPtr rs = uiman->attSystem()->rootView();
-  this->FixedLabelWidth = rs->maxValueLabelLength();
+  this->FixedLabelWidth = uiman->maxValueLabelLength();
   }
   ~qtBaseViewInternals()
   {
   }
- smtk::view::WeakBasePtr DataObject;
+ smtk::common::ViewPtr DataObject;
  QPointer<QWidget> ParentWidget;
  QPointer<qtUIManager> UIManager;
  int FixedLabelWidth;
@@ -46,7 +45,7 @@ public:
 
 
 //----------------------------------------------------------------------------
-qtBaseView::qtBaseView(smtk::view::BasePtr dataObject, QWidget* p,
+qtBaseView::qtBaseView(smtk::common::ViewPtr dataObject, QWidget* p,
   qtUIManager* uiman)
 {
   this->Internals  = new qtBaseViewInternals(dataObject, p, uiman);
@@ -69,9 +68,9 @@ qtBaseView::~qtBaseView()
 }
 
 //----------------------------------------------------------------------------
-smtk::view::BasePtr qtBaseView::getObject()
+smtk::common::ViewPtr qtBaseView::getObject()
 {
-  return this->Internals->DataObject.lock();
+  return this->Internals->DataObject;
 }
 
 //----------------------------------------------------------------------------
@@ -123,9 +122,8 @@ int qtBaseView::fixedLabelWidth()
 //----------------------------------------------------------------------------
 bool qtBaseView::setFixedLabelWidth(int w)
 {
-  smtk::view::RootPtr rs = this->uiManager()->attSystem()->rootView();
-  w = std::min(w, rs->maxValueLabelLength());
-  w = std::max(w, rs->minValueLabelLength());
+  w = std::min(w, this->uiManager()->maxValueLabelLength());
+  w = std::max(w, this->uiManager()->minValueLabelLength());
   this->Internals->FixedLabelWidth = w;
   return false;
 }

@@ -32,10 +32,10 @@ namespace smtk
       Q_OBJECT
 
     public:
-      qtBaseView(smtk::view::BasePtr, QWidget* parent, qtUIManager* uiman);
+      qtBaseView(smtk::common::ViewPtr, QWidget* parent, qtUIManager* uiman);
       virtual ~qtBaseView();
 
-      smtk::view::BasePtr getObject();
+      smtk::common::ViewPtr getObject();
       QWidget* widget()
       {return this->Widget;}
       QWidget* parentWidget();
@@ -46,6 +46,12 @@ namespace smtk
       bool setFixedLabelWidth(int w);
       bool advanceLevelVisible()
         { return m_advOverlayVisible; }
+      virtual int advanceLevel()
+      {return 0;}
+      virtual bool categoryEnabled()
+      {return false;}
+      virtual std::string currentCategory()
+      {return "";}
 
     signals:
       void modified(smtk::attribute::ItemPtr);
@@ -62,6 +68,11 @@ namespace smtk
       virtual void childrenResized(){;}
       virtual void showAdvanceLevelOverlay(bool val)
       { m_advOverlayVisible = val;}
+      virtual void showAdvanceLevel(int level){}
+      virtual void updateViewUI(int currentTab){}
+      virtual void enableShowBy(int enable){}
+      virtual void onShowCategory(){}
+
 
       virtual void requestModelEntityAssociation() {;}
 

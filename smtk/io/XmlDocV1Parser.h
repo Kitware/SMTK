@@ -76,7 +76,7 @@ namespace smtk
 
     protected:
       void processAttributeInformation(pugi::xml_node &root);
-      void processViews(pugi::xml_node &root);
+      virtual void processViews(pugi::xml_node &root);
       virtual void processModelInfo(pugi::xml_node &root);
 
       void processDefinition(pugi::xml_node &defNode);
@@ -125,7 +125,7 @@ namespace smtk
                              smtk::attribute::ValueItemPtr item);
       void processValueDef(pugi::xml_node &node,
                            smtk::attribute::ValueItemDefinitionPtr idef);
-
+/*
       void processAttributeView(pugi::xml_node &node,
                                 smtk::view::AttributePtr v);
 
@@ -143,7 +143,7 @@ namespace smtk
 
       void processBasicView(pugi::xml_node &node,
                             smtk::view::BasePtr v);
-
+*/
       bool getColor(pugi::xml_node &node, double color[3],
                     const std::string &colorName);
 

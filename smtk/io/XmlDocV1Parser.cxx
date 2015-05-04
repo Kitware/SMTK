@@ -46,13 +46,6 @@
 #include "smtk/model/EntityTypeBits.h"
 #include "smtk/model/Manager.h"
 
-#include "smtk/view/Attribute.h"
-#include "smtk/view/Instanced.h"
-#include "smtk/view/Group.h"
-#include "smtk/view/ModelEntity.h"
-#include "smtk/view/Root.h"
-#include "smtk/view/SimpleExpression.h"
-
 #include "smtk/common/StringUtil.h"
 
 #include <iostream>
@@ -2358,6 +2351,7 @@ bool XmlDocV1Parser::getColor(xml_node &node, double color[4],
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processViews(xml_node &root)
 {
+  /*
   xml_node views = root.child("RootView");
   if (!views)
     {
@@ -2402,9 +2396,10 @@ void XmlDocV1Parser::processViews(xml_node &root)
 
   this->processGroupView(views,
                          smtk::dynamic_pointer_cast<smtk::view::Group>(rs));
+  */
 }
 //----------------------------------------------------------------------------
-void XmlDocV1Parser::processAttributeView(xml_node &node,
+/*void XmlDocV1Parser::processAttributeView(xml_node &node,
                                           smtk::view::AttributePtr v)
 {
   this->processBasicView(node,
@@ -2641,7 +2636,7 @@ void XmlDocV1Parser::processBasicView(xml_node &node,
     v->setIconName(xatt.value());
     }
 }
-
+*/
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processModelInfo(xml_node &root)
 {

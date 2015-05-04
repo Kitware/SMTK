@@ -25,6 +25,7 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
 #include "smtk/model/StringData.h"
+#include "smtk/common/View.h"
 #include "smtk/view/Root.h"
 #include "smtk/view/Instanced.h"
 
@@ -173,12 +174,38 @@ bool qtModelOperationWidget::setCurrentOperation(
 
   smtk::attribute::AttributePtr att = brOp->specification();
   att->system()->setRefModelManager(brOp->manager());
-  smtk::attribute::qtUIManager* uiManager = new smtk::attribute::qtUIManager(
-    *(att->system()));
-  smtk::view::RootPtr rootView = uiManager->attSystem()->rootView();
-  smtk::view::InstancedPtr instanced = smtk::view::Instanced::New(brOp->name());
-  instanced->addInstance(att);
-  rootView->addSubView(instanced);
+
+  //Lets see if we have root view for the operations
+  smtk::common::ViewPtr rootView = att->system()->findView("Operators");
+  if (!rootView)
+    {
+    // Lets create one
+    rootView = smtk::common::View::New("Root", "Operators");
+    att->system()->addView(rootView);
+    rootView->details().addChild("Views");
+    }
+  
+  //Lets create a view for the operator itself
+  smtk::common::ViewPtr instanced = smtk::common::View::New(brOp->name(), "Instanced");
+  smtk::common::View::Component &comp =
+    instanced->details().addChild("InstancedAttributes").addChild("Att");
+  comp.setAttribute("Type", att->type());
+  comp.setContents(att->name());
+  int compIndex = rootView->details().findChild("Views");
+  if (compIndex < 0)
+    {
+    // There is no component called "Views" - better add one
+    rootView->details().addChild("Views");
+    compIndex = rootView->details().findChild("Views");
+    }
+  
+  rootView->details().child(compIndex).addChild("View")
+    .setAttribute("Title",instanced->title());
+  
+  att->system()->addView(instanced);
+
+  smtk::attribute::qtUIManager* uiManager =
+    new smtk::attribute::qtUIManager(*(att->system()), "Operators");
 
 
   QObject::connect(uiManager, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),

@@ -7,6 +7,7 @@ set(commonSrcs
   StringUtil.cxx
   UUID.cxx
   UUIDGenerator.cxx
+  View.cxx
 )
 
 set(commonHeaders
@@ -17,6 +18,7 @@ set(commonHeaders
   StringUtil.h
   UUID.h
   UUIDGenerator.h
+  View.h
   ${CMAKE_CURRENT_BINARY_DIR}/Version.h
 )
 

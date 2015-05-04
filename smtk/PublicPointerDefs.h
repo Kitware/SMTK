@@ -28,6 +28,7 @@ namespace smtk
     class ResourceSet;
     class UUID;
     class UUIDGenerator;
+    class View;
     typedef std::set<UUID> UUIDs;
     typedef std::vector<UUID> UUIDArray;
   }
@@ -169,6 +170,7 @@ namespace smtk
   namespace common
   {
     typedef smtk::shared_ptr< smtk::common::Resource > ResourcePtr;
+    typedef smtk::shared_ptr< smtk::common::View > ViewPtr;
   }
 
   //Shiboken requires that we use fully qualified namespaces for all

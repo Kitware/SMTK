@@ -19,7 +19,7 @@
 #include "smtk/model/Manager.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/UUIDGenerator.h"
-#include "smtk/view/Root.h"
+#include "smtk/common/View.h"
 #include <iostream>
 #include <sstream>
 #include <queue>
@@ -27,7 +27,7 @@
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-System::System(): m_rootView(new view::Root(""))
+System::System()
 {
 }
 
@@ -894,5 +894,23 @@ bool System::copyAttributeImpl(smtk::attribute::AttributePtr sourceAtt,
   // TODO what about m_userData?
 
   return ok;
+}
+//----------------------------------------------------------------------------
+void System::addView(smtk::common::ViewPtr v)
+{
+  this->m_views[v->title()] = v;
+}
+//----------------------------------------------------------------------------
+smtk::common::ViewPtr System::findViewByType(const std::string &vtype) const
+{
+  std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
+  for (it = this->m_views.cbegin(); it != this->m_views.cend(); ++it)
+    {
+    if (it->second->type() == vtype)
+      {
+      return it->second;
+      }
+    }
+  return smtk::common::ViewPtr();
 }
 //----------------------------------------------------------------------------

@@ -16,6 +16,7 @@
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/common/View.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
@@ -264,3 +265,87 @@ void XmlDocV2Parser::processMeshSelectionDef(pugi::xml_node &node,
     }
 }
 
+//----------------------------------------------------------------------------
+void XmlDocV2Parser::processViews(xml_node &root)
+{
+  xml_node views = root.child("Views");
+  if (!views)
+    {
+    return;
+    }
+
+  xml_node child;
+  for (child = views.first_child(); child; child = child.next_sibling())
+    {
+    xml_attribute xatt;
+    std::string title, vtype, icon;
+    smtk::common::ViewPtr view;
+    xatt = child.attribute("Title");
+    if (xatt)
+      {
+      title = xatt.value();
+      }
+    else
+      {
+      smtkErrorMacro(this->m_logger,
+                   "Could not find View's Title - skipping it!");
+      continue;
+      }
+    
+    xatt = child.attribute("Type");
+    if (xatt)
+      {
+      vtype = xatt.value();
+      }
+    else
+      {
+      smtkErrorMacro(this->m_logger,
+                     "Could not find View " << title << "'s Type - skipping it!");
+      continue;
+      }
+
+    view = smtk::common::View::New(vtype, title);
+    xatt = child.attribute("Icon");
+    if (xatt)
+      {
+      icon = xatt.value();
+      view->setIconName(icon);
+      }
+    this->processViewComponent(view->details(), child, true);
+    this->m_system.addView(view);
+    }
+}
+
+//----------------------------------------------------------------------------
+void XmlDocV2Parser::processViewComponent(smtk::common::View::Component &comp,
+                                          xml_node &node, bool isTopComp)
+{
+  // Add the attributes of the node to the component
+  xml_attribute xatt;
+  std::string name;
+  
+  for (xatt = node.first_attribute(); xatt; xatt = xatt.next_attribute())
+    {
+    // If this is the top View comp then skip Title and Type Attributes
+    name = xatt.name();
+    if (isTopComp && ((name == "Title") || (name == "Type") || (name == "Icon")))
+      {
+      continue;
+      }
+    comp.setAttribute(name, xatt.value());
+    }
+  // if the node has text then save it in the component's contents
+  // else process the node's children
+  if (!node.text().empty())
+    {
+    comp.setContents(node.text().get());
+    }
+  else
+    {
+    xml_node child;
+    for (child = node.first_child(); child; child = child.next_sibling())
+      {
+      this->processViewComponent(comp.addChild(child.name()), child, false);
+      }
+    }
+}
