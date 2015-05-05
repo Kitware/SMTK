@@ -129,7 +129,6 @@ OperatorResult MeshOperator::operateInternal()
     {
     smtkInfoMacro(this->log(), "[remus] Querying Status of: " << remus::proto::to_string(job));
     remus::proto::JobStatus currentWorkerStatus = client.jobStatus(job);
-    std::cout << remus::to_string( currentWorkerStatus.status() ) << std::endl;
 
     while( currentWorkerStatus.good() )
       { //we need this to not be a busy wait
@@ -150,14 +149,15 @@ OperatorResult MeshOperator::operateInternal()
   if(haveResultFromWorker)
     {
     //now fetch the latest results from the server
-    remus::proto::JobResult newModel = client.retrieveResults(job);
+    remus::proto::JobResult updatedModel = client.retrieveResults(job);
 
     //parse the job result as a json string
-    smtk::io::ImportJSON::intoModelManager(newModel.data(), this->manager());
+    smtk::io::ImportJSON::intoModelManager(updatedModel.data(), this->manager());
 
     //current question is how do we know how to mark the tessellations
     //of the model as modified?
     this->addEntitiesToResult(result, models, MODIFIED);
+    result->findModelEntity("tess_changed")->setValues(models.begin(), models.end());
     }
   return result;
 }
