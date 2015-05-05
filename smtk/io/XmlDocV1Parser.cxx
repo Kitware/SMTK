@@ -47,6 +47,7 @@
 #include "smtk/model/Manager.h"
 
 #include "smtk/common/StringUtil.h"
+#include "smtk/common/View.h"
 
 #include <iostream>
 #include <algorithm>
@@ -2351,59 +2352,63 @@ bool XmlDocV1Parser::getColor(xml_node &node, double color[4],
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processViews(xml_node &root)
 {
-  /*
   xml_node views = root.child("RootView");
   if (!views)
     {
     return;
     }
-  smtk::view::RootPtr rs = this->m_system.rootView();
+  smtk::common::ViewPtr rootView = this->createView(views, "Root");
+  
+  if (!rootView)
+    {
+    smtkErrorMacro(this->m_logger, "Can't process Root View");
+    return;
+    }
+  
   xml_node node;
   xml_attribute xatt;
-  double c[4];
   node = views.child("DefaultColor");
-  if (node && this->getColor(node, c, "DefaultColor"))
+  if (node)
     {
-    rs->setDefaultColor(c);
+    rootView->details().addChild("DefaultColor").setContents(node.text().get());
     }
   node = views.child("InvalidColor");
-  if (node && this->getColor(node, c, "InvalidColor"))
+  if (node)
     {
-    rs->setInvalidColor(c);
+    rootView->details().addChild("InvalidColor").setContents(node.text().get());
     }
+  
   node = views.child("AdvancedFontEffects");
   if (node)
     {
+    smtk::common::View::Component comp = rootView->details().addChild("AdvancedFontEffects");
     if(xml_attribute txtatt = node.attribute("Bold"))
       {
-      rs->setAdvancedBold(strcmp(txtatt.value(), "1")==0);
+      comp.setAttribute("Bold", "t");
       }
     if(xml_attribute txtatt = node.attribute("Italic"))
       {
-      rs->setAdvancedItalic(strcmp(txtatt.value(), "1")==0);
+      comp.setAttribute("Italic", "t");
       }
     }
   node = views.child("MaxValueLabelLength");
   if (node)
      {
-     rs->setMaxValueLabelLength(node.text().as_int());
+     rootView->details().addChild("MaxValueLabelLength").setContents(node.text().get());
      }
   node = views.child("MinValueLabelLength");
   if (node)
      {
-     rs->setMinValueLabelLength(node.text().as_int());
+     rootView->details().addChild("MinValueLabelLength").setContents(node.text().get());
      }
 
-  this->processGroupView(views,
-                         smtk::dynamic_pointer_cast<smtk::view::Group>(rs));
-  */
+  this->processGroupView(views,rootView);
+
 }
 //----------------------------------------------------------------------------
-/*void XmlDocV1Parser::processAttributeView(xml_node &node,
-                                          smtk::view::AttributePtr v)
+void XmlDocV1Parser::processAttributeView(xml_node &node,
+                                          smtk::common::ViewPtr view)
 {
-  this->processBasicView(node,
-                            smtk::dynamic_pointer_cast<smtk::view::Base>(v));
   xml_attribute xatt;
   attribute::DefinitionPtr def;
   xml_node child, attTypes;
@@ -2411,13 +2416,12 @@ void XmlDocV1Parser::processViews(xml_node &root)
   xatt = node.attribute("ModelEntityFilter");
   if (xatt)
     {
-    smtk::model::BitFlags mask = this->decodeModelEntityMask(xatt.value());
-    v->setModelEntityMask(mask);
+    view->details().setAttribute("ModelEntityFilter", xatt.value());
 
     xatt = node.attribute("CreateEntities");
     if (xatt)
       {
-      v->setOkToCreateModelEntities(xatt.as_bool());
+      view->details().setAttribute("CreateEntities", xatt.value());
       }
     }
   attTypes = node.child("AttributeTypes");
@@ -2425,218 +2429,173 @@ void XmlDocV1Parser::processViews(xml_node &root)
     {
     return;
     }
+  smtk::common::View::Component &comp = view->details().addChild("AttributeTypes");
+  
   for (child = attTypes.child("Type"); child; child = child.next_sibling("Type"))
     {
-    defType = child.text().get();
-    def = this->m_system.findDefinition(defType);
-    if (def)
-      {
-      v->addDefinition(def);
-      }
-    else
-      {
-      smtkErrorMacro(this->m_logger,
-                     "Cannot find attribute definition: " << defType
-                     << " required for Attribute View: " << v->title());
-      }
+    comp.addChild("Type").setContents( child.text().get());
     }
 }
+
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processInstancedView(xml_node &node,
-                                          smtk::view::InstancedPtr v)
+                                          smtk::common::ViewPtr view)
 {
-  this->processBasicView(node,
-                         smtk::dynamic_pointer_cast<smtk::view::Base>(v));
   xml_attribute xatt;
   xml_node child, instances = node.child("InstancedAttributes");
-  std::string attName, defName;
-  attribute::AttributePtr att;
-  attribute::DefinitionPtr attDef;
 
   if (!instances)
     {
     return; // No instances are in the view
     }
-
+  smtk::common::View::Component &comp = view->details().addChild("InstancedAttributes");
   for (child = instances.child("Att"); child; child = child.next_sibling("Att"))
     {
-    attName = child.text().get();
-    // See if the attribute exists and if not then create it
-    att = this->m_system.findAttribute(attName);
-    if (!att)
+    xatt = child.attribute("Type");
+    if (!xatt)
       {
-      xatt = child.attribute("Type");
-      if (xatt)
-        {
-        defName = xatt.value();
-        attDef = this->m_system.findDefinition(defName);
-        if (!attDef)
-          {
-          smtkErrorMacro(this->m_logger,
-                         "Cannot find attribute definition: " << defName
-                         << " required to create attribute: " << attName
-                         << " for Instanced View: " << v->title());
-          continue;
-          }
-        else
-          {
-          att = this->m_system.createAttribute(attName, attDef);
-          }
-        }
-      else
-        {
-        smtkErrorMacro(this->m_logger,
-                       "XML Attribute Type is missing"
-                       << "and is required to create attribute: " << attName
-                       << " for Instanced View: " << v->title());
-        continue;
-        }
+      smtkErrorMacro(this->m_logger,
+                     "XML Attribute Type is missing"
+                     << "and is required to create attribute: " << child.text().get()
+                     << " for Instanced View: " << view->title());
+      continue;
       }
-    v->addInstance(att);
+   
+    comp.addChild("Att").setAttribute("Type", xatt.value()).setContents(child.text().get());
     }
 }
+
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processModelEntityView(xml_node &node,
-                                            smtk::view::ModelEntityPtr v)
+                                            smtk::common::ViewPtr view)
 {
-  this->processBasicView(node,
-                         smtk::dynamic_pointer_cast<smtk::view::Base>(v));
   xml_attribute xatt = node.attribute("ModelEntityFilter");
   xml_node child = node.child("Definition");
   if (xatt)
     {
-    smtk::model::BitFlags mask = this->decodeModelEntityMask(xatt.value());
-    v->setModelEntityMask(mask);
+    view->details().setAttribute("ModelEntityFilter", xatt.value());
     }
 
   if (child)
     {
-    std::string defType = child.text().get();
-    attribute::DefinitionPtr def = this->m_system.findDefinition(defType);
-    if (!def)
-      {
-      smtkErrorMacro(this->m_logger,
-                     "Cannot find attribute definition: " << defType
-                     << " for Model Entity View: " << v->title());
-      }
-    }
+    view->details().addChild("Type").setContents(child.text().get());
+    }    
 }
+
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processSimpleExpressionView(xml_node &node,
-                                                 smtk::view::SimpleExpressionPtr v)
+                                                 smtk::common::ViewPtr view)
 {
-  this->processBasicView(node,
-                            smtk::dynamic_pointer_cast<smtk::view::Base>(v));
   xml_node child = node.child("Definition");
   if (child)
     {
-    std::string defType = child.text().get();
-    attribute::DefinitionPtr def = this->m_system.findDefinition(defType);
-    if (!def)
-      {
-      smtkErrorMacro(this->m_logger,
-                     "Cannot find attribute definition: " << defType
-                     << " for Simple Expression View: " << v->title());
-      }
-    else
-      {
-      v->setDefinition(def);
-      }
+    view->details().addChild("Type").setContents(child.text().get());
     }
 }
+
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processGroupView(xml_node &node,
-                                      smtk::view::GroupPtr group)
+                                      smtk::common::ViewPtr group)
 {
-  this->processBasicView(node,
-                         smtk::dynamic_pointer_cast<smtk::view::Base>(group));
-
   // Group style (Optional), Tabbed (default) or Tiled
   xml_attribute xatt;
   xatt = node.attribute("Style");
   if (xatt)
     {
-    std::string style = xatt.value();
-    std::transform(style.begin(), style.end(), style.begin(), ::tolower);
-    group->setStyle(style == "tiled" ? smtk::view::Group::TILED :
-      smtk::view::Group::TABBED);
+    group->details().setAttribute("Style", xatt.value());
     }
 
+  // Add Views Component
+  smtk::common::View::Component &vcomp = group->details().addChild("Views");
   xml_node child;
+  smtk::common::ViewPtr childView;
   std::string childName;
   for (child = node.first_child(); child; child = child.next_sibling())
     {
     childName = child.name();
     if (childName == "AttributeView")
       {
-      this->processAttributeView(child,
-                                 group->addSubView<smtk::view::AttributePtr>(""));
+      childView = this->createView(child, "Attribute");
+      if (childView)
+        {
+        vcomp.addChild("View").setContents(childView->title());
+        this->processAttributeView(child, childView);
+        }
       continue;
       }
 
     if (childName == "GroupView")
       {
-      this->processGroupView(child,
-                             group->addSubView<smtk::view::GroupPtr>(""));
+      childView = this->createView(child, "Group");
+      if (childView)
+        {
+        vcomp.addChild("View").setContents(childView->title());
+        this->processGroupView(child, childView);
+        }
       continue;
       }
 
     if (childName == "InstancedView")
       {
-      this->processInstancedView(child,
-                                 group->addSubView<smtk::view::InstancedPtr>(""));
+      childView = this->createView(child, "Instanced");
+      if (childView)
+        {
+        vcomp.addChild("View").setContents(childView->title());
+        this->processInstancedView(child, childView);
+        }
       continue;
       }
 
     if (childName == "ModelEntityView")
       {
-      this->processModelEntityView(child,
-                                   group->addSubView<smtk::view::ModelEntityPtr>(""));
+      childView = this->createView(child, "ModelEntity");
+      if (childView)
+        {
+        vcomp.addChild("View").setContents(childView->title());
+        this->processModelEntityView(child, childView);
+        }
       continue;
       }
 
     if (childName == "SimpleExpressionView")
       {
-      this->processSimpleExpressionView(child,
-                                        group->addSubView<smtk::view::SimpleExpressionPtr>(""));
+      childView = this->createView(child, "SimpleExpression");
+      if (childView)
+        {
+        vcomp.addChild("View").setContents(childView->title());
+        this->processSimpleExpressionView(child, childView);
+        }
       continue;
       }
-
-    // In case this was root section
-    if ((group->type() == smtk::view::Base::ROOT) && ((childName == "DefaultColor") ||
-                                                      (childName == "InvalidColor") ||
-                                                      (childName == "AdvancedFontEffects") ||
-                                                      (childName == "MaxValueLabelLength") ||
-                                                      (childName == "MinValueLabelLength")))
-      {
-      continue;
-      }
-
-    smtkErrorMacro(this->m_logger, "Unsupported View Type: " << childName
-                   << " for Group View: " << group->title());
     }
 }
+
 //----------------------------------------------------------------------------
-void XmlDocV1Parser::processBasicView(xml_node &node,
-                                      smtk::view::BasePtr v)
+smtk::common::ViewPtr  XmlDocV1Parser::createView(xml_node &node,
+                                                  const std::string &viewType)
 {
   xml_attribute xatt;
+  std::string val;
   xatt = node.attribute("Title"); // Required
   if (!xatt)
     {
     smtkErrorMacro(this->m_logger, "View is missing XML Attribute Title");
+    smtk::common::ViewPtr dummy;
+    return dummy;
     }
-  else
-    {
-    v->setTitle(xatt.value());
-    }
+  val = xatt.value();
+  smtk::common::ViewPtr view = smtk::common::View::New(viewType, val);
+
   xatt = node.attribute("Icon"); // optional
   if (xatt)
     {
-    v->setIconName(xatt.value());
+    val = xatt.value();
+    view->details().setAttribute("Icon", val);
     }
+  this->m_system.addView(view);
+  return view;
 }
-*/
+
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processModelInfo(xml_node &root)
 {
