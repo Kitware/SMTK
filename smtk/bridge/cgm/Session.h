@@ -73,6 +73,7 @@ public:
 
 protected:
   friend class ImportSolid;
+  friend class RemoveModel;
 
   Session();
 

@@ -8,6 +8,7 @@ set(smtkModelPythonTests
 set(smtkModelPythonDataTests
   modelAttributes
   modelSetPropertyOp
+  modelCloseModelOp
 )
 
 # Additional tests that require specific bridges

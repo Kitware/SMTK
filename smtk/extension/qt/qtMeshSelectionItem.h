@@ -16,6 +16,7 @@
 #define __smtk_attribute_qtMeshSelectionItem_h
 
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/Exports.h"
 #include "smtk/model/EntityTypeBits.h" // for smtk::model::BitFlags
 
 #include <map>

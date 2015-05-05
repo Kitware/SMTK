@@ -148,7 +148,9 @@ void vtkModelMultiBlockSource::Dirty()
 static void AddEntityTessToPolyData(
   const smtk::model::EntityRef& entityref, vtkPoints* pts, vtkPolyData* pd)
 {
-  const smtk::model::Tessellation* tess = entityref.hasTessellation();
+  //gotMesh will get Analsyis mesh if it exists, and will fall back
+  //to model tessellation if not.
+  const smtk::model::Tessellation* tess = entityref.gotMesh();
   if (!tess)
     return;
 
@@ -200,7 +202,7 @@ static void AddEntityTessToPolyData(
 
 /// Add customized block info.
 /// Mapping from UUID to block id
-/// Field data arrays 
+/// Field data arrays
 static void internal_AddBlockInfo(smtk::model::ManagerPtr manager,
   const smtk::model::EntityRef& entityref, const smtk::model::EntityRef& bordantCell,
   const vtkIdType& blockId,

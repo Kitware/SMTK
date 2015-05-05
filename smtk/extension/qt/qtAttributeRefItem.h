@@ -16,6 +16,7 @@
 #define __smtk_attribute_qtAttributeRefItem_h
 
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/Exports.h"
 #include <QComboBox>
 
 class qtAttributeRefItemInternals;

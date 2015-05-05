@@ -308,7 +308,7 @@ public:
 
   virtual SessionInfoBits allSupportedInformation() const;
 
-  StringList operatorNames() const;
+  StringList operatorNames(bool includeAdvanced = true) const;
   virtual OperatorPtr op(const std::string& opName) const;
 
   const DanglingEntities& danglingEntities() const;

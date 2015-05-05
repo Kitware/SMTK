@@ -556,6 +556,42 @@ const Tessellation* EntityRef::hasTessellation() const
   return NULL;
 }
 
+/**\brief Return the entity's analysis mesh if one exists or NULL otherwise.
+  *
+  */
+const Tessellation* EntityRef::hasAnalysisMesh() const
+{
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
+    {
+    UUIDsToTessellations::const_iterator it = mgr->analysisMesh().find(this->m_entity);
+    if (it != mgr->analysisMesh().end())
+      return &it->second;
+    }
+  return NULL;
+}
+
+/**\brief Return the entity's analysis mesh if one exists,
+ *  otherwise return the entity's tessellation. If neither
+ *  exist return NULL.
+  *
+  */
+const Tessellation* EntityRef::gotMesh() const
+{
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
+    {
+    UUIDsToTessellations::const_iterator am = mgr->analysisMesh().find(this->m_entity);
+    if (am != mgr->analysisMesh().end())
+      return &am->second;
+    //don't even search for the tessellation if we have an analysis mesh
+    UUIDsToTessellations::const_iterator te = mgr->tessellations().find(this->m_entity);
+    if (te != mgr->tessellations().end())
+      return &te->second;
+    }
+  return NULL;
+}
+
 /** @name Attribute associations
   *
   */

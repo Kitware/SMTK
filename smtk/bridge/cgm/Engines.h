@@ -19,6 +19,8 @@
 #include <string>
 #include <vector>
 
+class Body;
+
 namespace smtk {
   namespace bridge {
     namespace cgm {

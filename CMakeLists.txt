@@ -227,12 +227,20 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
       endif()
       set(LIB_ENV_VAR "LD_LIBRARY_PATH=${PV_LIB_DIR}${SHIBOKEN_LIBRARY_PATH}:${LIBRARY_OUTPUT_PATH}")
     endif()
-    set(SHIBOKEN_SMTK_PYTHON "")
+    set(SHIBOKEN_SMTK_PYTHON "${CMAKE_BINARY_DIR}")
     if(UNIX)
-      set(SHIBOKEN_SMTK_PYTHON "${CMAKE_BINARY_DIR}:${SHIBOKEN_LIBRARY_PATH}")
+      set(sep ":")
     else() #windows
-      set(SHIBOKEN_SMTK_PYTHON "${CMAKE_BINARY_DIR};${SHIBOKEN_LIBRARY_PATH}")
+      set(sep ";")
     endif()
+    execute_process(
+      COMMAND "${PYTHON_EXECUTABLE}" -c "import shiboken"
+      OUTPUT_QUIET
+      ERROR_QUIET
+      RESULT_VARIABLE rc)
+    if (rc)
+      set(SHIBOKEN_SMTK_PYTHON "${SHIBOKEN_SMTK_PYTHON}${sep}${SHIBOKEN_PYTHONPATH}")
+    endif ()
   endif()
   #message("${LIB_ENV_VAR}   PYTHONPATH=${SIBOKEN_SMTK_PYTHON}")
   #message("${SHIBOKEN_LIBRARY_PATH}")

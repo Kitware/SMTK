@@ -121,6 +121,7 @@ protected:
   friend class GrowOperator;
   friend class CreateEdgesOperator;
   friend class WriteOperator;
+  friend class RemoveModel;
 
   Session();
 
@@ -163,6 +164,9 @@ protected:
 
   bool addTessellation(const smtk::model::EntityRef& cellOut, vtkModelGeometricEntity* cellIn);
   bool addProperties(smtk::model::EntityRef& cellOut, vtkModelItem* cellIn, smtk::model::BitFlags props = 0xff);
+
+  // This will remove Model from smtk manager and vtkDiscreteModelWrapper form kernel
+  bool removeModelEntity(const smtk::model::EntityRef& entity);
 
   vtkItemWatcherCommand* m_itemWatcher;
   smtk::common::UUIDGenerator m_idGenerator;

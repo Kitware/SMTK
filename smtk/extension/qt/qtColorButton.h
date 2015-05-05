@@ -12,6 +12,7 @@
 #define pq_ColorChooserButton_h
 
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/Exports.h"
 
 #include <QToolButton>
 #include <QColor>

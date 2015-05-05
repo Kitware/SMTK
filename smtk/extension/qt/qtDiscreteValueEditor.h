@@ -15,6 +15,7 @@
 #define __smtk_attribute_qtDiscreteValueEditor_h
 
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/Exports.h"
 #include <QtGui/QWidget>
 
 class qtDiscreteValueEditorInternals;
