@@ -198,7 +198,9 @@ void vtkModelSource::GenerateRepresentationFromModel(
   EntityRefsByDim::const_iterator it;
   for (it = accum.begin(); it != accum.end(); ++it)
     {
-    const Tessellation* tess = it->hasTessellation();
+    //gotMesh will get Analsyis mesh if it exists, and will fall back
+    //to model tessellation if not.
+    const smtk::model::Tessellation* tess = it->gotMesh();
     if (!tess) continue;
     AddEntityTessToPolyData(pd, pts.GetPointer(), pedigree.GetPointer(), it->entity(), tess);
     }
