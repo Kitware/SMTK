@@ -143,8 +143,12 @@ void qtInstancedView::updateAttributeData()
       {
       continue;
       }
+
+    if (!attComp.attribute("Name", attName))
+      {
+      return; // No name set
+      }
     
-    attName = attComp.contents();
     // See if the attribute exists and if not then create it
     att = sys->findAttribute(attName);
     if (!att)

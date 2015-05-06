@@ -847,12 +847,16 @@ void qtSimpleExpressionView::initFunctionList()
   smtk::attribute::System *sys = this->uiManager()->attSystem();
   // There should be only 1 child component called Type
   if ((view->details().numberOfChildren() != 1) ||
-      (view->details().child(0).name() != "Type"))
+      (view->details().child(0).name() != "Att"))
     {
     return;
     }
   
-  std::string defType = view->details().child(0).contents();
+  std::string defType;
+  if (!view->details().child(0).attribute("Type", defType))
+    {
+    return;
+    }
   this->Internals->m_attDefinition = sys->findDefinition(defType);
   std::vector<smtk::attribute::AttributePtr> result;
   sys->findAttributes(this->Internals->m_attDefinition, result);

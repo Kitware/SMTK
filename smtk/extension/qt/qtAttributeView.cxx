@@ -1316,11 +1316,15 @@ void qtAttributeView::getAllDefinitions()
   std::size_t i, n = attsComp.numberOfChildren();
   for (i = 0; i < n; i++)
     {
-    if (attsComp.child(i).name() != "Type")
+    if (attsComp.child(i).name() != "Att")
       {
       continue;
       }
-    defName = attsComp.child(i).contents();
+    if (!attsComp.child(i).attribute("Type", defName))
+      {
+      continue;
+      }
+    
     attDef = sys->findDefinition(defName);
     this->qtBaseView::getDefinitions(attDef, this->Internals->AllDefs);
     this->Internals->m_attDefinitions.push_back(attDef);

@@ -2433,7 +2433,7 @@ void XmlDocV1Parser::processAttributeView(xml_node &node,
   
   for (child = attTypes.child("Type"); child; child = child.next_sibling("Type"))
     {
-    comp.addChild("Type").setContents( child.text().get());
+    comp.addChild("Att").setAttribute("Type", child.text().get());
     }
 }
 
@@ -2461,7 +2461,8 @@ void XmlDocV1Parser::processInstancedView(xml_node &node,
       continue;
       }
    
-    comp.addChild("Att").setAttribute("Type", xatt.value()).setContents(child.text().get());
+    comp.addChild("Att").setAttribute("Type", xatt.value())
+      .setAttribute("Name",child.text().get());
     }
 }
 
@@ -2489,7 +2490,7 @@ void XmlDocV1Parser::processSimpleExpressionView(xml_node &node,
   xml_node child = node.child("Definition");
   if (child)
     {
-    view->details().addChild("Type").setContents(child.text().get());
+    view->details().addChild("Att").setAttribute("Type",child.text().get());
     }
 }
 
