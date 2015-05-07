@@ -744,7 +744,7 @@ int vtkDataSetRegionSurfaceFilter::UnstructuredGridExecute(vtkDataSet *dataSetIn
     }
   if (this->PieceInvariant)
     {
-    output->RemoveGhostCells(updateGhostLevel+1);
+    output->RemoveGhostCells();
     }
 
   this->DeleteQuadHash();
