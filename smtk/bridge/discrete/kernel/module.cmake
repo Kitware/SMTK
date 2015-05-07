@@ -4,7 +4,7 @@ set (__dependencies)
 # might not exist.
 foreach(target
     vtkInteractionStyle
-    vtkRenderingFreeType${VTK_RENDERING_BACKEND}
+    vtkRenderingFreeType
     vtkRendering${VTK_RENDERING_BACKEND}
 )
   if (TARGET ${target})

@@ -40,7 +40,6 @@ if (BUILD_SHARED_LIBS)
   set_target_properties(vtkSMTKExt PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
 
-
 # Link *everything* in this directory to VTK modules
 # This is required for the TestBuild targets.
 # We must test whether each of the targets below exist
@@ -51,12 +50,13 @@ set(SMTK_VTK_TARGET_LIST)
 foreach(target
   vtkInteractionStyle
   vtkRenderingContext2D
+  vtkRenderingMatplotlib
+  vtkRenderingFreeType
+  vtkRenderingVolume
   vtkRenderingContext${VTK_RENDERING_BACKEND}
   vtkRendering${VTK_RENDERING_BACKEND}
-  vtkRenderingMatplotlib
   vtkRenderingVolume${VTK_RENDERING_BACKEND}
-  vtkRenderingFreeType${VTK_RENDERING_BACKEND}
-)
+  )
   if (TARGET ${target})
     list(APPEND SMTK_VTK_TARGET_LIST ${target})
   endif()

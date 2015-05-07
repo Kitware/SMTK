@@ -185,7 +185,7 @@ target_link_libraries(smtkDiscreteSession
     vtkGeovisCore
     vtkIOParallel
     vtkRenderingCore
-    vtkRenderingFreeType${VTK_RENDERING_BACKEND}
+    vtkRenderingFreeType
     vtkRendering${VTK_RENDERING_BACKEND}
     vtksys
     ${__private_dependencies}

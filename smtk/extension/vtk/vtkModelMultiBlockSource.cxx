@@ -32,8 +32,6 @@
 #include "vtkPolyData.h"
 #include "vtkPoints.h"
 #include "vtkProperty.h"
-#include "vtkRenderer.h"
-#include "vtkRenderView.h"
 #include "vtkStringArray.h"
 #include "vtkPolyDataNormals.h"
 
