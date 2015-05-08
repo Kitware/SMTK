@@ -141,7 +141,7 @@ OperatorResult EntityGroupOperator::operateInternal()
       vtkModelEntity* grp =
         modelWrapper->GetModelEntity(groupType, grpId);
       smtk::common::UUID grpUUID = opsession->findOrSetEntityUUID(grp);
-      //bgroup = opsession->addGroupToManager(grpUUID, grp, pstore, 0);
+
       // The group itself should be added too
       smtk::model::EntityRef grpRef = opsession->addCMBEntityToManager(
                                       grpUUID, grp, pstore, 0);
