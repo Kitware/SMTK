@@ -23,6 +23,7 @@
 #include "smtk/model/Face.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/Tessellation.h"
 #include "smtk/model/Volume.h"
 #include "smtk/model/Vertex.h"
 
@@ -86,13 +87,48 @@ void EdgeOperator::getSelectedVertsAndEdges(
       }
     else if(mitem->GetType() == vtkModelEdgeType)
       {
+      // Since vtkHardwareSelector's point picking is pixel based, and if we have a coincidental point
+      // used by a vertex cell and a line cell, the pick result will depend on the rendering order of
+      // the vertex and the line. To make thing more tricky, the vertex and line belong to different
+      // block in the multiblock dataset, so the render order of the blocks also comes into play.
+      // So we are doing checking ourselves if the picked point on the edge is actually a vertex.
+      vtkDiscreteModelEdge* selEdge = vtkDiscreteModelEdge::SafeDownCast(mitem);
+      vtkDiscreteModelVertex* cmbModelVertex1 =
+        vtkDiscreteModelVertex::SafeDownCast(selEdge->GetAdjacentModelVertex(0));
+      vtkDiscreteModelVertex* cmbModelVertex2 =
+        vtkDiscreteModelVertex::SafeDownCast(selEdge->GetAdjacentModelVertex(1));
+
       std::set<int> seledgepts;
-      seledgepts.insert(mapIt->second.begin(), mapIt->second.end());
-      selArcs[mapIt->first] = std::make_pair(
-              vtkDiscreteModelEdge::SafeDownCast(mitem), seledgepts);
+
+      for(std::set<int>::const_iterator sit =mapIt->second.begin() ;
+          sit != mapIt->second.end(); ++sit)
+        {
+        vtkIdType pId = this->convertToGlobalPointId(*sit, selEdge);
+        if(pId < 0)
+          {
+          continue;
+          }
+        else if (cmbModelVertex1 && cmbModelVertex1->GetPointId() == pId)
+          {
+          smtk::common::UUID vid = opsession->findOrSetEntityUUID(cmbModelVertex1);
+          selVTXs.insert(std::make_pair(vid, cmbModelVertex1));
+          }
+        else if (cmbModelVertex2 && cmbModelVertex2->GetPointId() == pId)
+          {
+          smtk::common::UUID vid = opsession->findOrSetEntityUUID(cmbModelVertex2);
+          selVTXs.insert(std::make_pair(vid,cmbModelVertex2));
+          }
+        else
+          {
+          seledgepts.insert(pId);
+          }
+        }
+
+      if(seledgepts.size() > 0)
+        selArcs[mapIt->first] = std::make_pair(selEdge, seledgepts);
+
       }
-    }
-  
+    }  
 }
 
 bool  EdgeOperator::convertSelectedEndNodes(
@@ -145,6 +181,10 @@ bool  EdgeOperator::convertSelectedEndNodes(
       fromEdgeId = selEdges[0]->GetUniquePersistentId();
       targetSwitched = true;
       }
+    // this is before the operation so that we can get a valid uuid,
+    // becasue the opetion will delete the edge
+    smtk::common::UUID fromEid = opsession->findOrSetEntityUUID(
+        targetSwitched ? selEdges[0] : selEdges[1]);
 
     mergOp->SetTargetId(toEdgeId);
     mergOp->SetSourceId(fromEdgeId);
@@ -156,8 +196,6 @@ bool  EdgeOperator::convertSelectedEndNodes(
       // add the removed vertex to the list
       srcsRemoved.push_back(smtk::model::EntityRef(opsession->manager(),it->first));
 
-      smtk::common::UUID fromEid = opsession->findOrSetEntityUUID(
-          targetSwitched ? selEdges[0] : selEdges[1]);
       // update the removed and modified edge list
       srcsRemoved.push_back(smtk::model::EntityRef(opsession->manager(),fromEid));
 
@@ -169,14 +207,76 @@ bool  EdgeOperator::convertSelectedEndNodes(
       opsession->manager()->erase(toEid);
       // Now re-add it (it will have new edges)
       toEid = opsession->findOrSetEntityUUID(tgtEdge);
-      smtk::model::Edge ed = opsession->addEdgeToManager(toEid,
-        tgtEdge, opsession->manager(), true);
+      smtk::model::Edge ed = opsession->addCMBEntityToManager(toEid,
+        tgtEdge, opsession->manager(), true).as<smtk::model::Edge>();
+
+      vtkModelItemIterator* faces = tgtEdge->NewAdjacentModelFaceIterator();
+      for(faces->Begin();!faces->IsAtEnd();faces->Next())
+        {
+        vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
+        smtk::common::UUID faceuuid = opsession->findOrSetEntityUUID(face);
+//        opsession->manager()->erase(faceuuid);
+//        faceuuid = opsession->findOrSetEntityUUID(face);
+        // Now re-add it (it will have new edges)
+        smtk::model::Face faceErf(opsession->manager(), faceuuid);
+        // = opsession->addCMBEntityToManager(faceuuid,
+        //  face, opsession->manager(), true).as<smtk::model::Face>();
+
+//        faceErf.addRawRelation(model);
+//        model.addRawRelation(faceErf);
+
+        faceErf.addRawRelation(ed);
+        ed.addRawRelation(faceErf);
+
+        srcsModified.push_back(faceErf);
+        }
+      faces->Delete();
 
       srcsModified.push_back(ed);
       }      
     }
 
   return success;
+}
+
+int EdgeOperator::convertToGlobalPointId(int localPid, vtkDiscreteModelEdge* cmbModelEdge)
+{
+  int globalPid = -1;
+  Session* opsession = this->discreteSession();
+  smtk::common::UUID edgeid = opsession->findOrSetEntityUUID(cmbModelEdge);
+  smtk::model::Edge edge(opsession->manager(), edgeid);
+
+  vtkPolyData* edgePoly =  vtkPolyData::SafeDownCast(cmbModelEdge->GetGeometry());
+  const smtk::model::Tessellation* tess;
+  if (!edgePoly || !(tess = edge.hasTessellation()))
+    { // Oops.
+    return globalPid;
+    }
+
+  smtk::model::Tessellation::size_type off;
+  int cellIdx = -1, pointIdx = -1;
+  std::vector<int>::const_iterator it;
+  smtk::model::Tessellation::size_type num_verts;
+  for (off = tess->begin(); off != tess->end(); off = tess->nextCellOffset(off))
+    {
+    cellIdx++;
+    std::vector<int> cell_conn;
+    num_verts = tess->vertexIdsOfCell(off, cell_conn);
+    it = std::find(cell_conn.begin(), cell_conn.end(), localPid);
+    if( it != cell_conn.end())
+      {
+      pointIdx = it - cell_conn.begin();
+      break;
+      }
+    }
+  if(pointIdx >= 0 && cellIdx < edgePoly->GetNumberOfCells())
+    {
+    vtkIdType npts, *cellPnts;
+    edgePoly->GetCellPoints(cellIdx, npts, cellPnts);
+    if(pointIdx < npts)
+      globalPid = cellPnts[pointIdx];
+    }
+  return globalPid;
 }
 
 bool EdgeOperator::splitSelectedEdgeNodes(
@@ -209,27 +309,9 @@ bool EdgeOperator::splitSelectedEdgeNodes(
       continue;
       }
 
-    vtkDiscreteModelVertex* cmbModelVertex1 =
-      vtkDiscreteModelVertex::SafeDownCast(cmbModelEdge->GetAdjacentModelVertex(0));
-    vtkDiscreteModelVertex* cmbModelVertex2 =
-      vtkDiscreteModelVertex::SafeDownCast(cmbModelEdge->GetAdjacentModelVertex(1));
-
     // Find the first point Id that is not a model vertex, and only split at this point,
     // the rest of points will be ignored
-    int numSelPoints = arcIt->second.second.size();
-    vtkIdType pointId = -1;
-    for(std::set<int>::const_iterator sit =arcIt->second.second.begin() ;
-        sit != arcIt->second.second.end(); ++sit)
-      {
-      vtkIdType pId = *sit;
-      if((cmbModelVertex1 && cmbModelVertex1->GetPointId() == pId) ||
-         (cmbModelVertex2 && cmbModelVertex2->GetPointId() == pId))
-        {
-        continue;
-        }
-      pointId = pId;
-      break;
-      }
+    vtkIdType pointId = *(arcIt->second.second.begin());
     if(pointId < 0)
       {
       continue;
@@ -246,25 +328,49 @@ bool EdgeOperator::splitSelectedEdgeNodes(
         modelWrapper->GetModelEntity(vtkModelVertexType,
         splitOp->GetCreatedModelVertexId()));
       smtk::common::UUID newVid = opsession->findOrSetEntityUUID(newvtx);
-      smtk::model::Vertex vtx = opsession->addVertexToManager(newVid,
-        newvtx, opsession->manager(), true);
+      smtk::model::Vertex vtx = opsession->addCMBEntityToManager(newVid,
+        newvtx, opsession->manager(), true).as<smtk::model::Vertex>();
       srcsCreated.push_back(vtx);
 
       vtkModelEdge* newedge = vtkModelEdge::SafeDownCast(
         modelWrapper->GetModelEntity(vtkModelEdgeType,
         splitOp->GetCreatedModelEdgeId()));
       smtk::common::UUID newEid = opsession->findOrSetEntityUUID(newedge);
-      smtk::model::Edge ed = opsession->addEdgeToManager(newEid,
-        newedge, opsession->manager(), true);
+      smtk::model::Edge ed = opsession->addCMBEntityToManager(newEid,
+        newedge, opsession->manager(), true).as<smtk::model::Edge>();
       srcsCreated.push_back(ed);
 
       // for the modifed edge, erase it, then re-add again.
       //smtk::common::UUID srcEid = arcIt->first;
       smtk::common::UUID srcEid = opsession->findOrSetEntityUUID(cmbModelEdge);
+      smtk::model::Edge srced(opsession->manager(), srcEid);
+
+// cache properties
+//StringData strProp = srced.stringProperties()
+//IntegerData intProp = srced.integerProperties();
+//FloatData floProp = srced.floatProperties();
+
       opsession->manager()->erase(srcEid);
       srcEid = opsession->findOrSetEntityUUID(cmbModelEdge);
-      smtk::model::Edge srced = opsession->addEdgeToManager(srcEid,
-        cmbModelEdge, opsession->manager(), true);
+      srced = opsession->addCMBEntityToManager(srcEid,
+        cmbModelEdge, opsession->manager(), true).as<smtk::model::Edge>();
+/* readd properties, need a template function.
+  PropertyNameWithConstFloats m_currentFloatProperty;
+      PropertyNameWithStrings it;
+    for (it = pit->second.begin(); it != pit->second.end(); ++it)
+      {
+      if (it->first == pname && it->second.size() == 1 && it->second[0] == pval)
+        {
+        typename Collection::value_type entry(shared_from_this(), pit->first);
+        if (entry.isValid())
+          collection.insert(collection.end(), entry);
+        }
+      }
+
+  PropertyNameWithConstStrings m_currentStringProperty;
+  PropertyNameWithConstIntegers m_currentIntegerProperty;
+*/
+
       srcsModified.push_back(srced);
 
       vtkModelItemIterator* faces = cmbModelEdge->NewAdjacentModelFaceIterator();
@@ -276,11 +382,11 @@ bool EdgeOperator::splitSelectedEdgeNodes(
 //        faceuuid = opsession->findOrSetEntityUUID(face);
         // Now re-add it (it will have new edges)
         smtk::model::Face faceErf(opsession->manager(), faceuuid);
-        // = opsession->addFaceToManager(faceuuid,
-        //  face, opsession->manager(), true);
+        // = opsession->addCMBEntityToManager(faceuuid,
+        //  face, opsession->manager(), true).as<smtk::model::Face>();
 
-        faceErf.addRawRelation(model);
-        model.addRawRelation(faceErf);
+//        faceErf.addRawRelation(model);
+//        model.addRawRelation(faceErf);
 
         faceErf.addRawRelation(ed);
         ed.addRawRelation(faceErf);

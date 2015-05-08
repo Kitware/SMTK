@@ -9,7 +9,7 @@
           <MembershipMask>model</MembershipMask>
         </ModelEntity>
         <MeshSelection Name="selection" ModelEntityRef="model">
-          <MembershipMask>edge</MembershipMask>
+          <MembershipMask>edge|vertex</MembershipMask>
         </MeshSelection>
       </ItemDefinitions>
     </AttDef>

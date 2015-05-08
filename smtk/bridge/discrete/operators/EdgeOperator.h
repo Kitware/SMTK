@@ -65,6 +65,7 @@ protected:
     smtk::model::EntityRefArray& srcsCreated,
     smtk::model::EntityRefArray& srcsModified,
     vtkEdgeSplitOperator* splitOp);
+  int convertToGlobalPointId(int localPid, vtkDiscreteModelEdge* cmbModelEdge);
 
   vtkNew<vtkEdgeSplitOperator> m_splitOp;
   vtkNew<vtkMergeOperator> m_mergeOp;
