@@ -696,7 +696,6 @@ inline void _internal_findAllExistingPhrases(
     if (modEnts->has((*it)->relatedEntity()))
       {
       modifiedPhrases.push_back(*it);
-      continue; // skip Descending
       }
 
     // Descend 
