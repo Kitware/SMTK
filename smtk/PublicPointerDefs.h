@@ -66,6 +66,7 @@ namespace smtk
   namespace model
   {
     class Arrangement;
+    class ArrangementHelper;
     class ArrangementReference;
     typedef std::vector<smtk::model::ArrangementReference> ArrangementReferences;
     class AttributeListPhrase;

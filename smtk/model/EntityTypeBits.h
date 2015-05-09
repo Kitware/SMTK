@@ -175,7 +175,9 @@ inline bool isChain(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) ==
 inline bool isLoop(BitFlags entityFlags)  { return (entityFlags & ANY_ENTITY) == SHELL_1D; }
 inline bool isShell(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == SHELL_2D; }
 
-inline bool isGroup(BitFlags entityFlags)    { return (entityFlags & ENTITY_MASK) == GROUP_ENTITY; }
+// Note that unlike other tests, groups may have ENTITY_MASK bits other than GROUP_ENTITY set and still be considered groups.
+// That's because groups can also encode constraints on membership with these bits. For now.
+inline bool isGroup(BitFlags entityFlags)    { return (entityFlags & GROUP_ENTITY) == GROUP_ENTITY; }
 inline bool isModel(BitFlags entityFlags)    { return (entityFlags & ENTITY_MASK) == MODEL_ENTITY; }
 inline bool isInstance(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == INSTANCE_ENTITY; }
 

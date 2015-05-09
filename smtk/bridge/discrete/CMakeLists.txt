@@ -118,6 +118,7 @@ set(_module_src
 
 set(discreteSessionSrcs
   Session.cxx
+  ArrangementHelper.cxx
 #  operators/CreateEdgesOperator.cxx
   operators/EntityGroupOperator.cxx
   operators/ImportOperator.cxx
@@ -131,6 +132,7 @@ set(discreteSessionSrcs
 
 set(discreteSessionHeaders
   Session.h
+  ArrangementHelper.h
 #  operators/CreateEdgesOperator.h
   operators/EntityGroupOperator.h
   operators/ImportOperator.h

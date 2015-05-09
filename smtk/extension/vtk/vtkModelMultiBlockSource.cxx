@@ -37,6 +37,8 @@
 #include "vtkStringArray.h"
 #include "vtkPolyDataNormals.h"
 
+#include <inttypes.h>
+#include <stdlib.h>
 
 using namespace smtk::model;
 
@@ -59,6 +61,50 @@ vtkModelMultiBlockSource::~vtkModelMultiBlockSource()
 {
   this->SetCachedOutput(NULL);
   this->SetModelEntityID(NULL);
+}
+
+/**\brief For Python users, this method is the only way to bridge VTK and SMTK wrappings.
+  *
+  */
+void vtkModelMultiBlockSource::SetModelManager(const char* pointerAsString)
+{
+  bool valid = true;
+  vtkTypeUInt64 ptrInt;
+  if (!pointerAsString || !pointerAsString[0])
+    {
+    valid = false;
+    }
+  else
+    {
+    int base = 10;
+    if (pointerAsString[0] == '0' && pointerAsString[1] == 'x')
+      {
+      base = 16;
+      pointerAsString += 2;
+      }
+    char* endPtr;
+    ptrInt = strtoll(pointerAsString, &endPtr, base);
+    if (ptrInt == 0 && errno)
+      valid = false;
+    }
+  if (valid)
+    {
+    if (ptrInt)
+      {
+      Manager* direct =  *(reinterpret_cast<Manager**>(&ptrInt));
+      this->SetModelManager(direct->shared_from_this());
+      }
+    else
+      {
+      // Set to "NULL"
+      vtkWarningMacro("Setting model manager to NULL");
+      this->SetModelManager(ManagerPtr());
+      }
+    }
+  else
+    {
+    vtkWarningMacro("Not setting model manager, errno = " << errno);
+    }
 }
 
 void vtkModelMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)

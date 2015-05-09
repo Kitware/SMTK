@@ -23,9 +23,23 @@ except ImportError:
 
 class TestDiscreteSession(unittest.TestCase):
 
+  def resetTestFiles(self):
+    self.filesToTest = []
+
+  def addExternalFile(self, pathStr, numCells, numGroups):
+    self.filesToTest += [{'filename':pathStr, 'numCells':numCells, 'numGroups':numGroups}]
+
+  def addTestFile(self, pathList, numCells, numGroups):
+    self.addExternalFile(
+      os.path.join(*([smtk.testing.DATA_DIR,] + pathList)),
+      numCells, numGroups)
+
   def setUp(self):
     import os, sys
-    self.filename = os.path.join(smtk.testing.DATA_DIR, 'cmb', 'test2D.cmb')
+    self.resetTestFiles()
+    self.addTestFile(['cmb', 'test2D.cmb'], 4, 0)
+    self.addTestFile(['cmb', 'SimpleBox.cmb'], 1, 2)
+    self.addTestFile(['cmb', 'smooth_surface.cmb'], 6, 0)
 
     self.mgr = smtk.model.Manager.create()
     sess = self.mgr.createSession('discrete')
@@ -45,18 +59,28 @@ class TestDiscreteSession(unittest.TestCase):
     print '\n  '.join(sref.operatorNames())
     print '\n'
 
-  def testRead(self):
-    mod = smtk.model.Model(Read(self.filename)[0])
+  def verifyRead(self, filename, numCells, numGroups):
+    print '\n\nFile: {fname}'.format(fname=filename)
+
+    mod = smtk.model.Model(Read(filename)[0])
 
     print '\nFree cells:\n  %s' % '\n  '.join([x.name() for x in mod.cells()])
     print '\nGroups:\n  %s\n' % '\n  '.join([x.name() for x in mod.groups()])
-    if len(mod.cells()) != 4:
-      print smtk.io.ExportJSON.fromModelManager(mgr)
-    self.assertEqual(len(mod.cells()), 4, 'Expected 4 free cells')
+    if (numCells >= 0 and len(mod.cells()) != numCells) or (numGroups >= 0 and len(mod.groups()) != numGroups):
+      print smtk.io.ExportJSON.fromModelManager(self.mgr)
+
+    if numCells >= 0:
+      self.assertEqual(len(mod.cells()), numCells, 'Expected {nc} free cells'.format(nc=numCells))
+    if numGroups >= 0:
+      self.assertEqual(len(mod.groups()), numGroups, 'Expected {ng} groups'.format(ng=numGroups))
+
+  def testRead(self):
+    for test in self.filesToTest:
+      self.verifyRead(test['filename'], test['numCells'], test['numGroups'])
 
     if self.shouldSave:
-      out = file('test2d.json', 'w')
-      print >>out, smtk.io.ExportJSON.fromModelManager(mgr)
+      out = file('test.json', 'w')
+      print >>out, smtk.io.ExportJSON.fromModelManager(self.mgr)
       out.close()
 
 if __name__ == '__main__':

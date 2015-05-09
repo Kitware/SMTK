@@ -851,6 +851,16 @@
         %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
       </inject-code>
     </add-function>
+    <add-function signature="pointerAsString()"
+      static="NO"
+      return-type="std::string">
+      <inject-code class="target" position="beginning">
+        std::ostringstream result;
+        result &lt;&lt; %CPPSELF-&gt;get();
+        %RETURN_TYPE %0 = result.str();
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+      </inject-code>
+    </add-function>
 
     <!-- Fix improper dereferencing and/or Python conversion of entityref methods -->
     <!--
@@ -1003,6 +1013,10 @@
 
     <namespace-type name="model">
       <!-- setup the model classes -->
+      <object-type name="ArrangementHelper">
+        <include file-name="smtk/model/ArrangementHelper.h" location="local"/>
+      </object-type>
+
       <value-type name="ArrangementReference">
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>
       </value-type>
@@ -1067,6 +1081,15 @@
       <value-type name="CellEntity" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/CellEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+        <add-function
+          signature="uses()" static="no"
+          return-type="std::vector&lt; smtk::model::UseEntity &gt;">
+          <inject-code>
+            std::vector&lt; smtk::model::UseEntity &gt; result =
+              %CPPSELF->uses &lt; smtk::model::UseEntities &gt; ();
+            return %CONVERTTOPYTHON[ std::vector&lt; smtk::model::UseEntity &gt; ](result);
+          </inject-code>
+        </add-function>
       </value-type>
 
       <value-type name="Chain" hash-function="smtk::model::entityrefHash">
@@ -1351,6 +1374,24 @@
       <value-type name="UseEntity" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/UseEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+        <add-function
+          signature="boundingShellEntities()" static="no"
+          return-type="std::vector&lt; smtk::model::ShellEntity &gt;">
+          <inject-code>
+            std::vector&lt; smtk::model::ShellEntity &gt; result =
+              %CPPSELF->boundingShellEntities &lt; smtk::model::ShellEntities &gt; ();
+            return %CONVERTTOPYTHON[ std::vector&lt; smtk::model::ShellEntity &gt; ](result);
+          </inject-code>
+        </add-function>
+        <add-function
+          signature="shellEntities()" static="no"
+          return-type="std::vector&lt; smtk::model::ShellEntity &gt;">
+          <inject-code>
+            std::vector&lt; smtk::model::ShellEntity &gt; result =
+              %CPPSELF->shellEntities &lt; smtk::model::ShellEntities &gt; ();
+            return %CONVERTTOPYTHON[ std::vector&lt; smtk::model::ShellEntity &gt; ](result);
+          </inject-code>
+        </add-function>
       </value-type>
 
       <value-type name="Vertex" hash-function="smtk::model::entityrefHash">

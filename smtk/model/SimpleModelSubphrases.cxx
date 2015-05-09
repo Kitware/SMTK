@@ -187,6 +187,13 @@ bool SimpleModelSubphrases::shouldOmitProperty(
     if (pname.find("_counters") != std::string::npos)
       return true;
     }
+  if (
+    ptype == INTEGER_PROPERTY &&
+    parent && parent->relatedEntity().isCellEntity())
+    {
+    if (pname.find("_tessgen") != std::string::npos)
+      return true;
+    }
   return false;
 }
 
