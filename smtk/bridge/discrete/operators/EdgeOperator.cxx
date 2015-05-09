@@ -394,7 +394,7 @@ bool EdgeOperator::splitSelectedEdgeNodes(
         faceErf.addRawRelation(srced);
         srced.addRawRelation(faceErf);
 
-        srcsModified.push_back(faceErf);
+        //srcsModified.push_back(faceErf);
         }
       faces->Delete();
       }
