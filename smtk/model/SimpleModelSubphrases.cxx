@@ -191,7 +191,7 @@ bool SimpleModelSubphrases::shouldOmitProperty(
     ptype == INTEGER_PROPERTY &&
     parent && parent->relatedEntity().isCellEntity())
     {
-    if (pname.find("_tessgen") != std::string::npos)
+    if (pname.find(SMTK_TESS_GEN_PROP) != std::string::npos)
       return true;
     }
   return false;

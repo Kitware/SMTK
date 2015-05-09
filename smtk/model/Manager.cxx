@@ -41,11 +41,6 @@
 
 //#include <boost/variant.hpp>
 
-// The name of the integer property used to store Tessellation generation numbers.
-// Starting with "_" indicates internal-use-only.
-// Short (8 bytes or less) means single word comparison suffices on many platforms => fast.
-#define SMTK_TESS_GEN_PROP "_tessgen"
-
 using namespace std;
 using namespace smtk::common;
 
