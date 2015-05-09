@@ -11,7 +11,7 @@
 #define __smtk_model_ArrangementHelper_h
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/SMTKCoreExports.h" // for SMTKCORE_EXPORT
+#include "smtk/CoreExports.h" // for SMTKCORE_EXPORT
 #include "smtk/SharedFromThis.h" // for smtkTypeMacro
 
 namespace smtk {
