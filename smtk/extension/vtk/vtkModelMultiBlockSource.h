@@ -53,6 +53,10 @@ public:
   vtkGetVector4Macro(DefaultColor,double);
   vtkSetVector4Macro(DefaultColor,double);
 
+  vtkGetMacro(ShowAnalysisTessellation,int);
+  vtkSetMacro(ShowAnalysisTessellation,int);
+  vtkBooleanMacro(ShowAnalysisTessellation,int);
+
   vtkGetMacro(AllowNormalGeneration,int);
   vtkSetMacro(AllowNormalGeneration,int);
   vtkBooleanMacro(AllowNormalGeneration,int);
@@ -96,6 +100,7 @@ protected:
   char* ModelEntityID; // Model Entity UUID
 
   int AllowNormalGeneration;
+  int ShowAnalysisTessellation;
   vtkNew<vtkPolyDataNormals> NormalGenerator;
 
 private:
