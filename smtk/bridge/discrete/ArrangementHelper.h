@@ -11,7 +11,7 @@
 #define __smtk_bridge_discrete_ArrangementHelper_h
 
 #include "smtk/model/ArrangementHelper.h"
-#include "smtk/bridge/discrete/discreteSessionExports.h" // for SMTKDISCRETESESSION_EXPORT
+#include "smtk/bridge/discrete/Exports.h" // for SMTKDISCRETESESSION_EXPORT
 #include "smtk/SharedFromThis.h" // for smtkTypeMacro
 
 #include "smtk/model/ArrangementKind.h"
