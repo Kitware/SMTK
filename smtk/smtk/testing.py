@@ -128,6 +128,29 @@ class TestCaseMeta(type):
 class TestCase:
     __metaclass__ = TestCaseMeta
 
+    def haveVTK(self):
+        """Return True if VTK can be imported.
+
+        NB. This does not indicate whether VTK support has been enabled in SMTK.
+        """
+        try:
+            import vtk
+            import vtk.test
+            return True
+        except:
+            pass
+        return False
+
+    def haveVTKExtension(self):
+        """Return True if SMTK was built with the VTK extension enabled.
+        """
+        try:
+            import vtkSMTKExtPython
+            return True
+        except:
+            pass
+        return False
+
     def startRenderTest(self):
         try:
             import vtk
@@ -138,6 +161,31 @@ class TestCase:
             self.renderWindow.SetInteractor(self.interactor)
         except ImportError:
             self.skipTest('VTK is not available')
+
+    def addToScene(self, msource, **kwargs):
+      import vtk
+      vsource = msource
+      if 'translate' in kwargs:
+          tf = vtk.vtkTransformFilter()
+          tf.SetTransform(vtk.vtkTransform())
+          delta = kwargs['translate']
+          tf.GetTransform().Translate(delta[0], delta[1], delta[2])
+          tf.SetInputConnection(msource.GetOutputPort())
+          vsource = tf
+      ac = vtk.vtkActor()
+      mp = vtk.vtkCompositePolyDataMapper()
+      ac.SetMapper(mp)
+      mp.SetInputConnection(vsource.GetOutputPort())
+      self.renderer.AddActor(ac)
+
+    def addModelToScene(self, model):
+        import vtkSMTKExtPython
+        mbs = vtkSMTKExtPython.vtkModelMultiBlockSource()
+        mbs.SetModelManager(self.mgr.pointerAsString())
+        mbs.SetModelEntityID(str(model.entity()))
+        #mbs.ShowAnalysisTessellationOff()
+        self.addToScene(mbs)
+        return mbs
 
     def interactive(self):
         """Return false if the test should exit at completion."""
@@ -163,3 +211,13 @@ class TestCase:
             #return False
             raise AssertionError(*e.args)
         return True
+
+    def assertImageMatchIfFileExists(self, baseline_path, threshold=10):
+        full_baseline = find_data(baseline_path)
+        if not os.path.isfile(full_baseline):
+          return True
+        return self.assertImageMatch(baseline_path, threshold)
+
+def main():
+  import unittest
+  unittest.main()

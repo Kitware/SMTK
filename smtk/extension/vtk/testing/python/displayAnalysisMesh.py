@@ -50,19 +50,6 @@ class TestDisplayAnalysisMesh(smtk.testing.TestCase):
       self.assertEqual(dtessGen, dgen, 'Unexpected display tessellation generation {dg}'.format(dg=dtessGen))
       self.assertEqual(ameshGen, agen, 'Unexpected analyis mesh generation {ag}'.format(ag=ameshGen))
 
-    def placeInScene(self, msource, **kwargs):
-      tf = vtkTransformFilter()
-      tf.SetTransform(vtkTransform())
-      if 'translate' in kwargs:
-        delta = kwargs['translate']
-        tf.GetTransform().Translate(delta[0], delta[1], delta[2])
-      tf.SetInputConnection(msource.GetOutputPort())
-      ac = vtkActor()
-      mp = vtkCompositePolyDataMapper()
-      ac.SetMapper(mp)
-      mp.SetInputConnection(tf.GetOutputPort())
-      self.renderer.AddActor(ac)
-
     def testSetTessellations(self):
       """Verify that tessellation generation numbers are updated."""
       self.createTessellations(0,0)
@@ -83,8 +70,8 @@ class TestDisplayAnalysisMesh(smtk.testing.TestCase):
       mbs2.ShowAnalysisTessellationOn()
 
       self.startRenderTest()
-      self.placeInScene(mbs1, translate=(-1.5, 0, 0))
-      self.placeInScene(mbs2, translate=(+1.5, 0, 0))
+      self.addToScene(mbs1, translate=(-1.5, 0, 0))
+      self.addToScene(mbs2, translate=(+1.5, 0, 0))
 
       self.renderer.ResetCamera()
       self.renderWindow.Render()
@@ -101,7 +88,7 @@ class TestDisplayAnalysisMesh(smtk.testing.TestCase):
       mbs.ShowAnalysisTessellationOff()
 
       self.startRenderTest()
-      self.placeInScene(mbs)
+      self.addToScene(mbs)
 
       self.renderer.ResetCamera()
       self.renderWindow.Render()
