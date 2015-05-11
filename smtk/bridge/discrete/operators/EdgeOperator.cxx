@@ -182,7 +182,7 @@ bool  EdgeOperator::convertSelectedEndNodes(
       targetSwitched = true;
       }
     // this is before the operation so that we can get a valid uuid,
-    // becasue the opetion will delete the edge
+    // becasue the operation will delete the edge
     smtk::common::UUID fromEid = opsession->findOrSetEntityUUID(
         targetSwitched ? selEdges[0] : selEdges[1]);
 
@@ -204,11 +204,26 @@ bool  EdgeOperator::convertSelectedEndNodes(
 
       vtkModelEdge* tgtEdge = targetSwitched ? selEdges[1] : selEdges[0];
       smtk::common::UUID toEid = opsession->findOrSetEntityUUID(tgtEdge);
+      smtk::model::Edge toEd(opsession->manager(), toEid);
+
+      // cache properties
+      StringData strProp = toEd.stringProperties();
+      IntegerData intProp = toEd.integerProperties();
+      FloatData floProp = toEd.floatProperties();
+
       opsession->manager()->erase(toEid);
       // Now re-add it (it will have new edges)
       toEid = opsession->findOrSetEntityUUID(tgtEdge);
       smtk::model::Edge ed = opsession->addCMBEntityToManager(toEid,
         tgtEdge, opsession->manager(), true).as<smtk::model::Edge>();
+
+      // re-add original properties
+      opsession->manager()->stringProperties().insert(
+        std::pair<smtk::common::UUID,StringData>(toEid, strProp));
+      opsession->manager()->floatProperties().insert(
+        std::pair<smtk::common::UUID,FloatData>(toEid, floProp));
+      opsession->manager()->integerProperties().insert(
+        std::pair<smtk::common::UUID,IntegerData>(toEid, intProp));
 
       vtkModelItemIterator* faces = tgtEdge->NewAdjacentModelFaceIterator();
       for(faces->Begin();!faces->IsAtEnd();faces->Next())
@@ -228,7 +243,7 @@ bool  EdgeOperator::convertSelectedEndNodes(
         faceErf.addRawRelation(ed);
         ed.addRawRelation(faceErf);
 
-        srcsModified.push_back(faceErf);
+//        srcsModified.push_back(faceErf);
         }
       faces->Delete();
 
@@ -345,31 +360,23 @@ bool EdgeOperator::splitSelectedEdgeNodes(
       smtk::common::UUID srcEid = opsession->findOrSetEntityUUID(cmbModelEdge);
       smtk::model::Edge srced(opsession->manager(), srcEid);
 
-// cache properties
-//StringData strProp = srced.stringProperties()
-//IntegerData intProp = srced.integerProperties();
-//FloatData floProp = srced.floatProperties();
+      // cache properties
+      StringData strProp = srced.stringProperties();
+      IntegerData intProp = srced.integerProperties();
+      FloatData floProp = srced.floatProperties();
 
       opsession->manager()->erase(srcEid);
       srcEid = opsession->findOrSetEntityUUID(cmbModelEdge);
       srced = opsession->addCMBEntityToManager(srcEid,
         cmbModelEdge, opsession->manager(), true).as<smtk::model::Edge>();
-/* readd properties, need a template function.
-  PropertyNameWithConstFloats m_currentFloatProperty;
-      PropertyNameWithStrings it;
-    for (it = pit->second.begin(); it != pit->second.end(); ++it)
-      {
-      if (it->first == pname && it->second.size() == 1 && it->second[0] == pval)
-        {
-        typename Collection::value_type entry(shared_from_this(), pit->first);
-        if (entry.isValid())
-          collection.insert(collection.end(), entry);
-        }
-      }
 
-  PropertyNameWithConstStrings m_currentStringProperty;
-  PropertyNameWithConstIntegers m_currentIntegerProperty;
-*/
+      // re-add original properties
+      opsession->manager()->stringProperties().insert(
+        std::pair<smtk::common::UUID,StringData>(srcEid, strProp));
+      opsession->manager()->floatProperties().insert(
+        std::pair<smtk::common::UUID,FloatData>(srcEid, floProp));
+      opsession->manager()->integerProperties().insert(
+        std::pair<smtk::common::UUID,IntegerData>(srcEid, intProp));
 
       srcsModified.push_back(srced);
 
