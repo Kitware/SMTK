@@ -37,6 +37,7 @@
 
 #include <inttypes.h>
 #include <stdlib.h>
+#include <errno.h>
 
 using namespace smtk::model;
 
