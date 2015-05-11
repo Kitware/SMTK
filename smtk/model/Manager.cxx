@@ -1822,31 +1822,54 @@ EntityRefArray Manager::findEntitiesOfType(BitFlags flags, bool exactMatch)
 
 /**\brief Set the tessellation information for a given \a cellId.
   *
+  * If \a analysis is non-zero (zero is the default), then the
+  * Tessellation is treated as an analysis mesh, not a display
+  * tessellation.
+  *
   * Note that calling this method automatically sets or increments
   * the integer-valued "_tessgen" property on \a cellId.
   * This property enables fast display updates when only a few
   * entity tessellations have changed.
+  * If \a generation is a non-NULL pointer (NULL is the default),
+  * then the new generation number of the Tessellation is stored at
+  * the address provided.
   */
-Manager::tess_iter_type Manager::setTessellation(const UUID& cellId, const Tessellation& geom)
+Manager::tess_iter_type Manager::setTessellation(
+  const UUID& cellId, const Tessellation& geom, int analysis, int* generation)
 {
   if (cellId.isNull())
     throw std::string("Nil cell ID");
 
-  tess_iter_type result = this->m_tessellations->find(cellId);
-  if (result == this->m_tessellations->end())
+  smtk::shared_ptr<UUIDsToTessellations> storage;
+  const char* genProp;
+  if (!analysis)
+    { // store as display tessellation
+    storage = this->m_tessellations;
+    genProp = SMTK_TESS_GEN_PROP;
+    }
+  else
+    { // store as analysis mesh
+    storage = this->m_analysisMesh;
+    genProp = SMTK_MESH_GEN_PROP;
+    }
+
+  tess_iter_type result = storage->find(cellId);
+  if (result == storage->end())
     {
     std::pair<UUID,Tessellation> blank;
     blank.first = cellId;
-    result = this->m_tessellations->insert(blank).first;
+    result = storage->insert(blank).first;
     }
   result->second = geom;
 
   // Now set or increment the generation number.
-  IntegerList& gen(this->integerProperty(cellId, SMTK_TESS_GEN_PROP));
+  IntegerList& gen(this->integerProperty(cellId, genProp));
   if (gen.empty())
     gen.push_back(0);
   else
     ++gen[0];
+  if (generation)
+    *generation = gen[0];
 
   return result;
 }

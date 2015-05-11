@@ -592,6 +592,30 @@ const Tessellation* EntityRef::gotMesh() const
   return NULL;
 }
 
+/**\brief Set the tessellation of the entity, returning its
+  *       generation number (or -1 on failure).
+  *
+  * If \a analysisMesh is non-zero (zero is the default), then
+  * the tessellation is treated as an analysis mesh rather than
+  * a tessellation for display purposes.
+  */
+int EntityRef::setTessellation(const Tessellation* tess, int analysisMesh)
+{
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
+    {
+    int gen;
+    try {
+      mgr->setTessellation(this->m_entity, *tess, analysisMesh, &gen);
+    } catch (std::string& badIdMsg) {
+      return -1;
+    }
+
+    return gen;
+    }
+  return -1;
+}
+
 /**\brief Remove the tessellation of the entity, returning true
   *       if such a tessellation existed.
   *

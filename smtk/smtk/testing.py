@@ -9,6 +9,7 @@
 #  PURPOSE.  See the above copyright notice for more information.
 #
 #=============================================================================
+import os
 import sys
 
 BASELINES=[]
@@ -16,6 +17,27 @@ DATA_DIR=''
 TEMP_DIR='.'
 SOURCE_DIR=''
 WORKER_DIR=''
+INTERACTIVE=False
+
+def find_data(path):
+    """Find the full path to a test-data file.
+    """
+    global DATA_DIR
+
+    p = path
+    if type(p) != str:
+        p = os.path.join(*path)
+
+    fname = os.path.join(*[DATA_DIR, p])
+    if os.path.isfile(fname):
+        return fname
+
+    # Found no matches, return the joined string.
+    return p
+
+def run_interactive():
+    "Should the test run interactively or in batch mode?"
+    return INTERACTIVE
 
 def process_arguments():
     """Process common options to python tests.
@@ -26,7 +48,7 @@ def process_arguments():
     them as module names.
     """
 
-    global BASELINES, DATA_DIR, TEMP_DIR, WORKER_DIR, SOURCE_DIR
+    global BASELINES, DATA_DIR, TEMP_DIR, WORKER_DIR, SOURCE_DIR, INTERACTIVE
 
     from argparse import ArgumentParser
     parser = ArgumentParser()
@@ -50,6 +72,10 @@ def process_arguments():
         action="store", dest="validresult", default='',
         help="Path to a valid result (baseline) for comparison.")
 
+    parser.add_argument("-I", "--interactive",
+        action="store_true", dest="interactive",
+        help="Run interactively rather than exiting immediately.")
+
     args = parser.parse_args()
 
     if args.datadir:
@@ -65,6 +91,75 @@ def process_arguments():
       TEMP_DIR=args.tempdir
 
     if args.validresult:
-      BASELINES.append(args.validresult)
+      BASELINES.append(find_data(args.validresult))
+
+    if args.interactive:
+      INTERACTIVE = True
 
     sys.argv = sys.argv[:1]
+
+def compare_image(render_window, baseline_path):
+    try:
+        import vtk.test.Testing
+        vtk.test.Testing.compareImage(
+            render_window, find_data(baseline_path))
+    except RuntimeError as e:
+        raise AssertionError(*e.args)
+
+class TestCaseMeta(type):
+    """A metaclass for tests.
+
+    This is used to make TestCase inherit vtk.test.Testing.vtkTest
+    (which is derived from unittest.TestCase) when VTK is available
+    and unittest.TestCase when not.
+    """
+    def __new__(cls, name, bases, attrs):
+        try:
+            import vtk.test.Testing
+            bases += (vtk.test.Testing.vtkTest,)
+        except ImportError:
+            try:
+                import unittest
+                bases += (unittest.TestCase,)
+            except ImportError:
+                pass
+        return super(TestCaseMeta, cls).__new__(cls, name, bases, attrs)
+
+class TestCase:
+    __metaclass__ = TestCaseMeta
+
+    def startRenderTest(self):
+        try:
+            import vtk
+            self.renderWindow = vtk.vtkRenderWindow()
+            self.renderer = vtk.vtkRenderer()
+            self.interactor = vtk.vtkRenderWindowInteractor()
+            self.renderWindow.AddRenderer(self.renderer)
+            self.renderWindow.SetInteractor(self.interactor)
+        except ImportError:
+            self.skipTest('VTK is not available')
+
+    def interactive(self):
+        """Return false if the test should exit at completion."""
+        global INTERACTIVE
+        return INTERACTIVE
+
+    def interact(self):
+        """Run the interactor if the test is marked as interactive.
+
+        For VTK tests, the interactor is a vtkRenderWindowInteractor.
+        """
+        if self.interactive():
+            self.interactor.Start()
+
+    def assertImageMatch(self, baseline_path, threshold=10):
+        try:
+            import vtk.test.Testing
+            vtk.test.Testing.compareImage(
+                self.renderWindow, find_data(baseline_path), threshold)
+        except ImportError as err:
+            self.skipTest('VTK is unavailable')
+        except RuntimeError as e:
+            #return False
+            raise AssertionError(*e.args)
+        return True

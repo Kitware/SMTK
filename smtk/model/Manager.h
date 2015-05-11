@@ -53,12 +53,17 @@
 
 #include <sstream>
 
-/**\brief The name of an integer property used to store Tessellation generation numbers.
+/**\brief The name of an integer property used to store display Tessellation generation numbers.
   *
   * Starting with "_" indicates internal-use-only.
   * Short (8 bytes or less) means single word comparison suffices on many platforms => fast.
   */
 #define SMTK_TESS_GEN_PROP "_tessgen"
+/**\brief The name of an integer property used to store mesh Tessellation generation numbers.
+  *
+  * \sa SMTK_TESS_GEN_PROP
+  */
+#define SMTK_MESH_GEN_PROP "_meshgen"
 
 namespace smtk {
   namespace model {
@@ -235,7 +240,11 @@ public:
   template<typename Collection>
   Collection entitiesMatchingFlagsAs(BitFlags flags, bool exactMatch = true);
 
-  tess_iter_type setTessellation(const smtk::common::UUID& cellId, const Tessellation& geom);
+  tess_iter_type setTessellation(
+    const smtk::common::UUID& cellId,
+    const Tessellation& geom,
+    int analysis = 0,
+    int* gen = NULL);
   bool removeTessellation(const smtk::common::UUID& cellId, bool removeGen = false);
 
   int arrangeEntity(const smtk::common::UUID& entityId, ArrangementKind, const Arrangement& arr, int index = -1);
