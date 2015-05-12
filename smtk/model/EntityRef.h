@@ -169,6 +169,7 @@ public:
   const Tessellation* hasTessellation() const;
   const Tessellation* hasAnalysisMesh() const;
   const Tessellation* gotMesh() const; //prefers the analaysis over the display
+  int setTessellation(const Tessellation* tess, int analysisMesh = 0);
   bool removeTessellation(bool removeGen = false);
 
   bool hasAttributes() const;
