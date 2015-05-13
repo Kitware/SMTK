@@ -288,9 +288,11 @@ int main(int argc, char* argv[])
     vtkNew<vtkModelSource> src;
     vtkNew<vtkModelRepresentation> rep;
     vtkModelSelectionHelper* hlp = NULL;
+    view->SetDisplayHoverText(0);
     if (debug)
       {
       hlp = vtkModelSelectionHelper::New();
+      view->GetRenderWindow()->SetMultiSamples(16);
       }
     else
       {

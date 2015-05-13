@@ -77,8 +77,10 @@ int main(int argc, char* argv[])
     vtkNew<vtkRenderer> ren;
     vtkNew<vtkRenderWindow> win;
     src->SetModelManager(sm);
+    if (debug)
+      win->SetMultiSamples(16);
     if (debug && argv[2][0] != '0')
-    src->AllowNormalGenerationOn();
+      src->AllowNormalGenerationOn();
     map->SetInputConnection(src->GetOutputPort());
     act->SetMapper(map.GetPointer());
     act->GetProperty()->SetPointSize(5);
