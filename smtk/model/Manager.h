@@ -59,11 +59,18 @@
   * Short (8 bytes or less) means single word comparison suffices on many platforms => fast.
   */
 #define SMTK_TESS_GEN_PROP "_tessgen"
+
 /**\brief The name of an integer property used to store mesh Tessellation generation numbers.
   *
   * \sa SMTK_TESS_GEN_PROP
   */
 #define SMTK_MESH_GEN_PROP "_meshgen"
+
+/**\brief The name of an integer property used to store the geometric representation style of a model.
+  *
+  * \sa ModelGeometryStyle
+  */
+#define SMTK_GEOM_STYLE_PROP "_geomstyle"
 
 namespace smtk {
   namespace model {

@@ -189,6 +189,8 @@ SessionInfoBits Session::transcribeInternal(
     case EXO_MODEL:
       mutableEntityRef.manager()->insertModel(
         mutableEntityRef.entity(), dim, dim);
+      mutableEntityRef.setIntegerProperty(
+        SMTK_GEOM_STYLE_PROP, smtk::model::DISCRETE);
       break;
     case EXO_BLOCK:
       entityDimBits = Entity::dimensionToDimensionBits(dim);
