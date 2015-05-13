@@ -167,9 +167,9 @@ protected:
     this->initializeOperatorSystem(TestForwardingSession::s_operators);
     }
 
-  virtual SessionInfoBits transcribeInternal(const EntityRef& entity, SessionInfoBits flags)
+  virtual SessionInfoBits transcribeInternal(const EntityRef& entity, SessionInfoBits flags, int depth = -1)
     {
-    return remoteSession->transcribe(EntityRef(remoteModel, entity.entity()), flags);
+    return remoteSession->transcribe(EntityRef(remoteModel, entity.entity()), flags, depth);
     }
 
   virtual bool ableToOperateDelegate(RemoteOperatorPtr oper)

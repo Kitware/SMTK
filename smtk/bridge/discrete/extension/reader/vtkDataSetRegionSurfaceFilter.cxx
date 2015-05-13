@@ -117,9 +117,9 @@ int vtkDataSetRegionSurfaceFilter::RequestData(
 
 
 //----------------------------------------------------------------------------
-int vtkDataSetRegionSurfaceFilter::UnstructuredGridExecute(vtkDataSet *dataSetInput,
-                                                     vtkPolyData *output,
-                                                     int /*updateGhostLevel*/)
+int vtkDataSetRegionSurfaceFilter::UnstructuredGridExecute(
+  vtkDataSet* dataSetInput,
+  vtkPolyData* output)
 {
   vtkUnstructuredGrid *input = vtkUnstructuredGrid::SafeDownCast(dataSetInput);
 

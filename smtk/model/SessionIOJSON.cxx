@@ -45,6 +45,7 @@ int SessionIOJSON::exportJSON(ManagerPtr modelMgr, cJSON* sessionRec)
 int SessionIOJSON::exportJSON(ManagerPtr modelMgr, const smtk::common::UUIDs& modelIds, cJSON* sessionRec)
 {
   (void)modelMgr;
+  (void)modelIds;
   (void)sessionRec;
   return 1;
 }
