@@ -1523,6 +1523,10 @@ bool Session::addProperties(
         cellOut.setName(uname);
       }
     }
+  if (cellOut.isModel())
+    {
+    cellOut.setIntegerProperty(SMTK_GEOM_STYLE_PROP, smtk::model::DISCRETE);
+    }
   return hasProps;
 }
 

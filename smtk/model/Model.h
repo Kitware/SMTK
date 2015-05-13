@@ -30,6 +30,8 @@ class SMTKCORE_EXPORT Model : public EntityRef
 public:
   SMTK_ENTITYREF_CLASS(Model,EntityRef,isModel);
 
+  ModelGeometryStyle geometryStyle() const;
+
   void setEmbeddingDimension(int dim);
 
   EntityRef parent() const;

@@ -21,6 +21,25 @@ When a model operation is performed,
 — depending on how much information the modeling kernel provides about affected model entities —
 entities in SMTK’s storage are partially or totally marked as dirty and retranscribed on demand.
 
+Transcription involves mapping :smtk:`unique identifiers <UUID>` to
+:smtk:`Entity` records, to :smtk:`Tessellation` records, to :smtk:`Arrangement`
+records, and to property dictionaries.
+A property dictionary maps a name to a vector of string, floating-point, and/or integer values
+of arbitrary length per model entity.
+While property names are arbitrary, there are some special property names used by the
+modeling system:
+
+* :smtk:`SMTK_GEOM_STYLE_PROP` marks models with a :smtk:`ModelGeometryStyle` enum
+  indicating whether the model is discrete or parametric.
+* :smtk:`SMTK_TESS_GEN_PROP` marks cells that have tessellations with an integer
+  "generation" number indicating the age of the tessellation.
+* :smtk:`SMTK_MESH_GEN_PROP` marks cells that have an analysis mesh with an integer
+  "generation" number indicating the age of the mesh.
+
+When a property value can be reliably determined by a session's modeling kernel
+(independent of the model manager), the session should add that property name to the list
+reported to the model manager for erasure when a model entity is being deleted.
+(Other user-assigned properties are not deleted by default when an entity is erased.)
 
 Registration and initialization of Sessions and Operators
 ---------------------------------------------------------

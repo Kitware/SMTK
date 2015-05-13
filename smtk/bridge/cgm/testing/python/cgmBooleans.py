@@ -74,6 +74,10 @@ class TestCGMBooleans(smtk.testing.TestCase):
       self.assertImageMatchIfFileExists(['baselines', 'cgm', 'booleans.png'])
       self.interact()
 
+    mod = smtk.model.Model(bsuni)
+    self.assertEqual(
+        mod.geometryStyle(), smtk.model.PARAMETRIC,
+        'Expected a parametric solid model, got {gs}'.format(gs=mod.geometryStyle()))
     if self.writeJSON:
       json = smtk.io.ExportJSON.fromModelManager(self.mgr)
       sphFile = open('boolean.json', 'w')

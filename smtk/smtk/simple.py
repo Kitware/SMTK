@@ -419,11 +419,64 @@ def Sweep(stuffToSweep, method = SweepType.EXTRUDE, **kwargs):
   PrintResultLog(res)
   return res.findModelEntity('created').value(0)
 
+def SetEntityProperty(ents, propName, **kwargs):
+  """Set a property value (or vector of values) on an entity (or vector of entities).
+
+  You may pass any combination of "as_int", "as_float", or "as_string" as named
+  arguments specifying the property values. The values of these named arguments may
+  be a single value or a list of values. Values will be coerced to the named type.
+
+  Example:
+
+    SetEntityProperty(face, 'color', as_float=(1., 0., 0.))
+    SetEntityProperty(edge, 'name', as_string='edge 20')
+    SetEntityProperty(body, 'visited', as_int='edge 20')
+  """
+  sref = GetActiveSession()
+  spr = sref.op('set property')
+  if hasattr(ents, '__iter__'):
+    [spr.associateEntity(ent) for ent in ents]
+  else:
+    spr.associateEntity(ents)
+  spr.findAsString('name').setValue(propName)
+  if 'as_int' in kwargs:
+    vlist = kwargs['as_int']
+    if not hasattr(vlist, '__iter__'):
+      vlist = [vlist,]
+    SetVectorValue(spr.findAsInt('integer value'), vlist)
+  if 'as_float' in kwargs:
+    vlist = kwargs['as_float']
+    if not hasattr(vlist, '__iter__'):
+      vlist = [vlist,]
+    SetVectorValue(spr.findAsDouble('float value'), vlist)
+  if 'as_string' in kwargs:
+    vlist = kwargs['as_string']
+    if not hasattr(vlist, '__iter__'):
+      vlist = [vlist,]
+    SetVectorValue(spr.findAsString('string value'), vlist)
+  res = spr.operate()
+  return res.findInt('outcome').value(0)
+
 def Read(filename, **kwargs):
   """Read entities from an file (in the native modeling kernel format).
   """
   sref = GetActiveSession()
   rdr = sref.op('read')
+  rdr.findAsFile('filename').setValue(0, filename)
+  if 'filetype' in kwargs:
+    rdr.findAsString('filetype').setValue(0, kwargs['filetype'])
+  res = rdr.operate()
+  PrintResultLog(res)
+  return GetVectorValue(res.findModelEntity('created'))
+
+def Import(filename, **kwargs):
+  """Import entities from an file (in a non-native modeling kernel format).
+  """
+  sref = GetActiveSession()
+  rdr = sref.op('import')
+  # Not all modeling kernels have an import operator:
+  if rdr == None:
+    return []
   rdr.findAsFile('filename').setValue(0, filename)
   if 'filetype' in kwargs:
     rdr.findAsString('filetype').setValue(0, kwargs['filetype'])

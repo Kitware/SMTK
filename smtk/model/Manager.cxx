@@ -390,7 +390,11 @@ Manager::iter_type Manager::setEntityOfTypeAndDimension(const UUID& uid, BitFlag
     msg << "Nil UUID";
     throw msg.str();
     }
-  if ((it = this->m_topology->find(uid)) != this->m_topology->end() && it->second.dimension() != dim)
+  if (
+    ((it = this->m_topology->find(uid)) != this->m_topology->end()) &&
+    (entityFlags & GROUP_ENTITY) != 0 &&
+    dim >= 0 &&
+    it->second.dimension() != dim)
     {
     std::ostringstream msg;
     msg << "Duplicate UUID '" << uid << "' of different dimension " << it->second.dimension() << " != " << dim;

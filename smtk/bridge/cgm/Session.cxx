@@ -36,6 +36,7 @@
 #ifdef CGM_HAVE_VERSION_H
 #  include "cgm_version.h"
 #endif
+#include "GeometryQueryEngine.hpp"
 #include "RefEntity.hpp"
 #include "DagType.hpp"
 #include "Body.hpp"
@@ -53,6 +54,8 @@
 #include "RefGroup.hpp"
 
 #include "GMem.hpp"
+
+#include <string.h> // for strcmp
 
 typedef DLIList<RefEntity*> DLIRefList;
 
@@ -381,6 +384,10 @@ smtk::model::SessionInfoBits Session::addBodyToManager(
     if (requestedInfo & smtk::model::SESSION_PROPERTIES)
       {
       // Set properties.
+      smtk::model::ModelGeometryStyle gstyle =
+        !strcmp("facet", body->get_geometry_query_engine()->modeler_type()) ?
+        smtk::model::DISCRETE : smtk::model::PARAMETRIC;
+      mutableEntityRef.setIntegerProperty(SMTK_GEOM_STYLE_PROP, static_cast<int>(gstyle));
       this->addNamesIfAny(mutableEntityRef, body);
       // If the color is not the default color, add it as a property.
       this->colorPropFromIndex(mutableEntityRef, body->color());

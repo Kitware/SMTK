@@ -163,36 +163,45 @@ DescriptivePhrases SimpleModelSubphrases::subphrases(
 bool SimpleModelSubphrases::shouldOmitProperty(
   DescriptivePhrase::Ptr parent, PropertyType ptype, const std::string& pname) const
 {
-  if (ptype == STRING_PROPERTY && pname == "name")
-    return true;
-
-  if (ptype == FLOAT_PROPERTY && pname == "color")
-    return true;
-
-  if (ptype == INTEGER_PROPERTY && pname == "visible")
-    return true;
-  if (ptype == INTEGER_PROPERTY && pname == "block_index")
-    return true;
-  if (ptype == INTEGER_PROPERTY && pname == "visibility")
-    return true;
-  if (ptype == INTEGER_PROPERTY && pname == "cmb id")
-    return true;
-  if (ptype == INTEGER_PROPERTY && pname == "membership mask")
-    return true;
-
-  if (
-    ptype == INTEGER_PROPERTY &&
-    parent && parent->relatedEntity().isModel())
+  if (ptype == STRING_PROPERTY)
     {
-    if (pname.find("_counters") != std::string::npos)
+    if (pname == "name")
       return true;
     }
-  if (
-    ptype == INTEGER_PROPERTY &&
-    parent && parent->relatedEntity().isCellEntity())
+
+  if (ptype == FLOAT_PROPERTY)
     {
-    if (pname.find(SMTK_TESS_GEN_PROP) != std::string::npos)
+    if (pname == "color")
       return true;
+    }
+
+  if (ptype == INTEGER_PROPERTY)
+    {
+    if (pname == "visible")
+      return true;
+    else if (pname == "block_index")
+      return true;
+    else if (pname == "visibility")
+      return true;
+    else if (pname == "cmb id")
+      return true;
+    else if (pname == "membership mask")
+      return true;
+    else if (parent)
+      {
+      if (parent->relatedEntity().isModel())
+        {
+        if (pname.find("_counters") != std::string::npos)
+          return true;
+        else if (pname.find(SMTK_GEOM_STYLE_PROP) != std::string::npos)
+          return true;
+        }
+      else if (parent->relatedEntity().isCellEntity())
+        {
+        if (pname.find(SMTK_TESS_GEN_PROP) != std::string::npos)
+          return true;
+        }
+      }
     }
   return false;
 }
