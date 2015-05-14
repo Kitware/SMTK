@@ -314,6 +314,28 @@ void Session::setManager(Manager* mgr)
     mgr->shared_from_this());
 }
 
+/**\brief This is used by the manager when erasing a model entity.
+  *
+  * Subclasses should implement this and erase all of the string, integer,
+  * and floating-point properties (as specified by \a propFlags) that
+  * their modeling kernel allows them to reproduce when transcribe() is
+  * called.
+  * The properties should only be erased from \a ent's model manager, not
+  * from the underlying modeling kernel.
+  *
+  * Do *not* erase properties like name, color, and visibility unless
+  * they are stored by the underlying modeling kernel in addition to
+  * SMTK.
+  *
+  * Return true when at least one property was removed, false otherwise.
+  */
+bool Session::removeGeneratedProperties(const EntityRef& ent, SessionInfoBits propFlags)
+{
+  (void)ent;
+  (void)propFlags;
+  return false;
+}
+
 /// Subclasses implement this; it should add a record for \a entRef to the manager.
 Entity* Session::addEntityRecord(const EntityRef& entRef)
 {

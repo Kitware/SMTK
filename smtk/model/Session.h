@@ -68,12 +68,21 @@ enum SessionInformation
   SESSION_INTEGER_PROPERTIES     = 0x00000040, //!< Integer properties.
   SESSION_ATTRIBUTE_ASSOCIATIONS = 0x00000080, //!< Attribute associations.
 
+  // Extended options specific to Manager::erase():
+  SESSION_USER_DEFINED_PROPERTIES= 0x00000100, /**< Remove user-defined as well as machine-generated properties.
+                                                 *
+                                                 *  This bit is not used during transcription; it is only
+                                                 *  significant when erasing entities. Usually, it is not
+                                                 *  specified so that properties such as user-assigned
+                                                 *  names, colors, and visibility are preserved.
+                                                 */
   // Common combinations
   SESSION_NOTHING                = 0x00000000, //!< Transcribe nothing.
   SESSION_ENTITY_RECORD          = 0x00000003, //!< Transcribe both entity type and relations.
   SESSION_ENTITY_ARRANGED        = 0x00000007, //!< Transcribe the entity record and all arrangement information.
   SESSION_PROPERTIES             = 0x00000070, //!< Transcribe all properties.
-  SESSION_EVERYTHING             = 0x000000ff  //!< Transcribe all information about the entity.
+  SESSION_EVERYTHING             = 0x000000ff, //!< Transcribe all information about the entity.
+  SESSION_EXHAUSTIVE             = 0x000001ff  //!< Erase **all** information about the entity, including user-specified.
 };
 
 #ifndef SHIBOKEN_SKIP
@@ -343,6 +352,7 @@ protected:
 
   void setSessionId(const smtk::common::UUID& sessId);
   void setManager(Manager* mgr);
+  virtual bool removeGeneratedProperties(const EntityRef& ent, SessionInfoBits propFlags);
 
   virtual Entity* addEntityRecord(const EntityRef& entRef);
   virtual ArrangementHelper* createArrangementHelper();
