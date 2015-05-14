@@ -130,6 +130,35 @@ void EdgeOperator::getSelectedVertsAndEdges(
       }
     }  
 }
+void internal_retranscribeModel(smtk::bridge::discrete::Session* opsession,
+                                const smtk::model::Model& inModel)
+{
+    // TODO: better ways to cache all properties bedore erase ?
+/*
+    // cache properties
+    UUIDsToStringData strProps;
+    strProps.insert(opsession->manager()->stringProperties().begin(),
+                    opsession->manager()->stringProperties().end());
+    UUIDsToIntegerData intProps;
+    intProps.insert(opsession->manager()->integerProperties().begin(),
+                    opsession->manager()->integerProperties().end());
+    UUIDsToFloatData floProps;
+    floProps.insert(opsession->manager()->floatProperties().begin(),
+                    opsession->manager()->floatProperties().end());
+*/
+    opsession->manager()->eraseModel(inModel);
+    opsession->transcribe(inModel, smtk::model::SESSION_EVERYTHING, false);
+
+/*
+    // re-add original properties
+    opsession->manager()->stringProperties().clear();
+    opsession->manager()->stringProperties().insert(strProps.begin(), strProps.end());
+    opsession->manager()->floatProperties().clear();
+    opsession->manager()->floatProperties().insert(floProps.begin(), floProps.end());
+    opsession->manager()->integerProperties().clear();
+    opsession->manager()->integerProperties().insert(intProps.begin(), intProps.end());
+*/
+}
 
 bool  EdgeOperator::convertSelectedEndNodes(
   const std::map<smtk::common::UUID, vtkDiscreteModelVertex*>& selVTXs,
@@ -193,38 +222,23 @@ bool  EdgeOperator::convertSelectedEndNodes(
     success = mergOp->GetOperateSucceeded();
     if(success)
       {      
+      smtk::common::UUID modelid = opsession->findOrSetEntityUUID(modelWrapper->GetModel());
+      smtk::model::Model inModel(this->manager(), modelid);
+
+      internal_retranscribeModel(opsession, inModel);
+
       // add the removed vertex to the list
-      srcsRemoved.push_back(smtk::model::EntityRef(opsession->manager(),it->first));
+      srcsRemoved.push_back(smtk::model::EntityRef(this->manager(),it->first));
 
       // update the removed and modified edge list
-      srcsRemoved.push_back(smtk::model::EntityRef(opsession->manager(),fromEid));
+      srcsRemoved.push_back(smtk::model::EntityRef(this->manager(),fromEid));
 
-      opsession->manager()->erase(it->first);
-      opsession->manager()->erase(fromEid);
+//      opsession->manager()->erase(it->first);
+//      opsession->manager()->erase(fromEid);
 
       vtkModelEdge* tgtEdge = targetSwitched ? selEdges[1] : selEdges[0];
       smtk::common::UUID toEid = opsession->findOrSetEntityUUID(tgtEdge);
-      smtk::model::Edge toEd(opsession->manager(), toEid);
-
-      // cache properties
-      StringData strProp = toEd.stringProperties();
-      IntegerData intProp = toEd.integerProperties();
-      FloatData floProp = toEd.floatProperties();
-
-      opsession->manager()->erase(toEid);
-      // Now re-add it (it will have new edges)
-      toEid = opsession->findOrSetEntityUUID(tgtEdge);
-      smtk::model::Edge ed = opsession->addCMBEntityToManager(toEid,
-        tgtEdge, opsession->manager(), true).as<smtk::model::Edge>();
-
-      // re-add original properties
-      opsession->manager()->stringProperties().insert(
-        std::pair<smtk::common::UUID,StringData>(toEid, strProp));
-      opsession->manager()->floatProperties().insert(
-        std::pair<smtk::common::UUID,FloatData>(toEid, floProp));
-      opsession->manager()->integerProperties().insert(
-        std::pair<smtk::common::UUID,IntegerData>(toEid, intProp));
-
+      srcsModified.push_back(smtk::model::EntityRef(this->manager(),toEid));
       vtkModelItemIterator* faces = tgtEdge->NewAdjacentModelFaceIterator();
       for(faces->Begin();!faces->IsAtEnd();faces->Next())
         {
@@ -234,20 +248,12 @@ bool  EdgeOperator::convertSelectedEndNodes(
 //        faceuuid = opsession->findOrSetEntityUUID(face);
         // Now re-add it (it will have new edges)
         smtk::model::Face faceErf(opsession->manager(), faceuuid);
-        // = opsession->addCMBEntityToManager(faceuuid,
-        //  face, opsession->manager(), true).as<smtk::model::Face>();
+//        opsession->transcribe(faceErf, smtk::model::SESSION_EVERYTHING, false);
 
-//        faceErf.addRawRelation(model);
-//        model.addRawRelation(faceErf);
-
-        faceErf.addRawRelation(ed);
-        ed.addRawRelation(faceErf);
-
-//        srcsModified.push_back(faceErf);
+        srcsModified.push_back(faceErf);
         }
       faces->Delete();
 
-      srcsModified.push_back(ed);
       }      
     }
 
@@ -339,45 +345,26 @@ bool EdgeOperator::splitSelectedEdgeNodes(
     success = splitOp->GetOperateSucceeded();
     if(success)
       {
+      smtk::common::UUID modelid = opsession->findOrSetEntityUUID(modelWrapper->GetModel());
+      smtk::model::Model inModel(this->manager(), modelid);
+ 
+      internal_retranscribeModel(opsession, inModel);
+ 
       vtkModelVertex* newvtx = vtkModelVertex::SafeDownCast(
         modelWrapper->GetModelEntity(vtkModelVertexType,
         splitOp->GetCreatedModelVertexId()));
       smtk::common::UUID newVid = opsession->findOrSetEntityUUID(newvtx);
-      smtk::model::Vertex vtx = opsession->addCMBEntityToManager(newVid,
-        newvtx, opsession->manager(), true).as<smtk::model::Vertex>();
-      srcsCreated.push_back(vtx);
+      srcsCreated.push_back(smtk::model::Vertex(this->manager(), newVid));
 
       vtkModelEdge* newedge = vtkModelEdge::SafeDownCast(
         modelWrapper->GetModelEntity(vtkModelEdgeType,
         splitOp->GetCreatedModelEdgeId()));
       smtk::common::UUID newEid = opsession->findOrSetEntityUUID(newedge);
-      smtk::model::Edge ed = opsession->addCMBEntityToManager(newEid,
-        newedge, opsession->manager(), true).as<smtk::model::Edge>();
-      srcsCreated.push_back(ed);
+      srcsCreated.push_back(smtk::model::Edge(this->manager(), newEid));
 
-      // for the modifed edge, erase it, then re-add again.
-      //smtk::common::UUID srcEid = arcIt->first;
+      // for the modifed edge, add it to "modified" item in op result;
       smtk::common::UUID srcEid = opsession->findOrSetEntityUUID(cmbModelEdge);
       smtk::model::Edge srced(opsession->manager(), srcEid);
-
-      // cache properties
-      StringData strProp = srced.stringProperties();
-      IntegerData intProp = srced.integerProperties();
-      FloatData floProp = srced.floatProperties();
-
-      opsession->manager()->erase(srcEid);
-      srcEid = opsession->findOrSetEntityUUID(cmbModelEdge);
-      srced = opsession->addCMBEntityToManager(srcEid,
-        cmbModelEdge, opsession->manager(), true).as<smtk::model::Edge>();
-
-      // re-add original properties
-      opsession->manager()->stringProperties().insert(
-        std::pair<smtk::common::UUID,StringData>(srcEid, strProp));
-      opsession->manager()->floatProperties().insert(
-        std::pair<smtk::common::UUID,FloatData>(srcEid, floProp));
-      opsession->manager()->integerProperties().insert(
-        std::pair<smtk::common::UUID,IntegerData>(srcEid, intProp));
-
       srcsModified.push_back(srced);
 
       vtkModelItemIterator* faces = cmbModelEdge->NewAdjacentModelFaceIterator();
@@ -385,23 +372,8 @@ bool EdgeOperator::splitSelectedEdgeNodes(
         {
         vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
         smtk::common::UUID faceuuid = opsession->findOrSetEntityUUID(face);
-//        opsession->manager()->erase(faceuuid);
-//        faceuuid = opsession->findOrSetEntityUUID(face);
-        // Now re-add it (it will have new edges)
         smtk::model::Face faceErf(opsession->manager(), faceuuid);
-        // = opsession->addCMBEntityToManager(faceuuid,
-        //  face, opsession->manager(), true).as<smtk::model::Face>();
-
-//        faceErf.addRawRelation(model);
-//        model.addRawRelation(faceErf);
-
-        faceErf.addRawRelation(ed);
-        ed.addRawRelation(faceErf);
-
-        faceErf.addRawRelation(srced);
-        srced.addRawRelation(faceErf);
-
-        //srcsModified.push_back(faceErf);
+        srcsModified.push_back(faceErf);
         }
       faces->Delete();
       }
