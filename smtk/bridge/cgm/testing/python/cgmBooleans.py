@@ -74,6 +74,11 @@ class TestCGMBooleans(smtk.testing.TestCase):
       self.assertImageMatchIfFileExists(['baselines', 'cgm', 'booleans.png'])
       self.interact()
 
+    else:
+      self.assertFalse(
+        self.haveVTKExtension(),
+        'Could not import vtk. Python path is {pp}'.format(pp=sys.path))
+
     mod = smtk.model.Model(bsuni)
     self.assertEqual(
         mod.geometryStyle(), smtk.model.PARAMETRIC,

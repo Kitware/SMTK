@@ -12,88 +12,88 @@ import sys
 #
 #=============================================================================
 import smtk
+import smtk.testing
+from smtk.simple import *
 
-def sumCond(itm, idx):
-  """Set a conditional item."""
-  print itm.name(), '=', idx
-  itm.setDiscreteIndex(idx)
-  for i in range(itm.numberOfActiveChildrenItems()):
-    citm = smtk.attribute.to_concrete(itm.activeChildItem(i)) #
-    print '  ', citm.name(), '=', ' '.join([str(citm.value(j)) for j in range(citm.numberOfValues())])
+class CGMTransforms(smtk.testing.TestCase):
 
-def setVector(ax,v):
-  """Set a vector-valued attribute given a Python list or tuple."""
-  for i in range(len(v)):
-    ax.setValue(i,v[i])
+    def setUp(self):
+        self.mgr = smtk.model.Manager.create()
+        sref = self.mgr.createSession('cgm', smtk.model.SessionRef())
+        sref.assignDefaultName()
+        SetActiveSession(sref)
 
+    def testTransforms(self):
+        brick1 = CreateBrick(width=0.5)
+        brick2 = CreateBrick(width=0.5)
 
-mgr = smtk.model.Manager.create()
-sref = mgr.createSession('cgm', smtk.model.SessionRef())
-sref.assignDefaultName()
+        #json = smtk.io.ExportJSON.fromModelManager(self.mgr)
+        #jsonFile = open('/tmp/skirb1.json', 'w')
+        #print >> jsonFile, json
+        #jsonFile.close()
 
-opnames = sref.operatorNames()
-cb = sref.op('create brick')
-ov = cb.findAsInt('construction method')
-ov.setDiscreteIndex(0)
-cb.findAsDouble('width').setValue(0.5)
-r1 = cb.operate()
-brick1 = r1.findModelEntity('created').value(0)
+        brick3 = Translate(brick2, [0.5, 0.0, 0.0])[0]
+        if not brick3 or brick3.entity() != brick2.entity():
+          print "Expecting entities to match: %s != %s" % (brick2.entity(), brick3.entity())
+          sys.exit(1)
 
-r2 = cb.operate()
-brick2 = r2.findModelEntity('created').value(0)
+        brick4 = Rotate(brick3, angle=60.0, center=[0.5, 0.0, 0.0], axis=[0.3333, 0.6667, 0.6667])[0]
+        if not brick4 or brick4.entity() != brick3.entity():
+          print "Expecting entities to match: %s != %s" % (brick3.entity(), brick4.entity())
+          sys.exit(1)
 
-#json = smtk.io.ExportJSON.fromModelManager(mgr)
-#jsonFile = open('/tmp/skirb1.json', 'w')
-#print >> jsonFile, json
-#jsonFile.close()
+        brick5 = Union([brick1, brick4])
+        print brick5, brick5.name(), brick5.flagSummary(0)
+        #brick6 = Scale([brick5], [3.0, 2.0, 1.0])[0]
 
-tr = sref.op('translate')
-tr.associateEntity(brick2)
-off = tr.findAsDouble('offset')
-setVector(off, [.5, 0., 0.])
-r3 = tr.operate()
-brick3 = r3.findModelEntity('modified').value(0)
+        #json = smtk.io.ExportJSON.fromModelManager(self.mgr)
+        #jsonFile = open('/tmp/skirb4.json', 'w')
+        #print >> jsonFile, json
+        #jsonFile.close()
 
+        print self.haveVTK(), self.haveVTKExtension()
+        if self.haveVTK() and self.haveVTKExtension():
 
-if not brick3 or brick3.entity() != brick2.entity():
-  print "Expecting entities to match: %s != %s" % (brick2.entity(), brick3.entity())
-  sys.exit(1)
+            colormap = {
+                #brick3: '#5a5255',
+                #brick4: '#ae5a41',
+                brick5: '#559e83'
+                #brick6: '#c3cb71'
+                #'#1b85b8',
+                #'#cb2c31',
+                #'#8b1ec4',
+                #'#ff6700'
+            }
 
-ro = sref.op('rotate')
-ro.associateEntity(brick3)
-ctr = ro.findAsDouble('center')
-axs = ro.findAsDouble('axis')
-ang = ro.findAsDouble('angle')
-setVector(ctr, [.5, 0., 0.])
-setVector(axs, [.3333, .6667, 0.6667])
-ang.setValue(0, 60.0)
-r4 = ro.operate()
-brick4 = r4.findModelEntity('modified').value(0)
+            self.startRenderTest()
 
+            # Render groups with colors:
+            for body, color in colormap.iteritems():
+              color = self.hex2rgb(color)
+              SetEntityProperty(body, 'color', as_float=color)
+              self.addModelToScene(body)
 
-if not brick4 or brick4.entity() != brick3.entity():
-  print "Expecting entities to match: %s != %s" % (brick3.entity(), brick4.entity())
-  sys.exit(1)
+            self.renderer.SetBackground(1,1,1)
+            cam = self.renderer.GetActiveCamera()
+            cam.SetFocalPoint(0., 0., 0.)
+            cam.SetPosition(19,17,-43)
+            cam.SetViewUp(-0.891963, -0.122107, -0.435306)
+            self.renderer.ResetCamera()
+            self.renderWindow.Render()
+            self.assertImageMatchIfFileExists(['baselines', 'cgm', 'transforms.png'])
+            self.interact()
 
-un = sref.op('union')
-un.associateEntity(brick1)
-un.associateEntity(brick4)
-r5 = un.operate()
-brick5 = r5.findModelEntity('modified').value(0)
+        else:
+            self.assertFalse(
+                self.haveVTKExtension(),
+                'Could not import vtk. Python path is {pp}'.format(pp=sys.path))
 
-sc = sref.op('scale')
-sc.associateEntity(brick5)
-sc.findAsInt('scale factor type').setDiscreteIndex(0)
-sc.findAsDouble('scale factor').setValue(3.0)
-r6 = sc.operate()
-brick6 = r6.findModelEntity('modified').value(0)
+        # Now verify that self.mgr.closeSession removes the entity record for the session.
+        sref = GetActiveSession()
+        SetActiveSession(smtk.model.SessionRef())
+        #self.mgr.closeSession(sref)
+        #sys.exit(0 if sref.name() == ('invalid id ' + str(sref.entity())) else 1)
 
-#json = smtk.io.ExportJSON.fromModelManager(mgr)
-#jsonFile = open('/tmp/skirb4.json', 'w')
-#print >> jsonFile, json
-#jsonFile.close()
-
-#
-# Now verify that mgr.closeSession removes the entity record for the session.
-mgr.closeSession(sref)
-sys.exit(0 if sref.name() == ('invalid id ' + str(sref.entity())) else 1)
+if __name__ == '__main__':
+  smtk.testing.process_arguments()
+  smtk.testing.main()

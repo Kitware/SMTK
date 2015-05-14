@@ -61,6 +61,10 @@ class SurfaceType:
   PLANAR = 12
   CYLINDRICAL = 16
 
+class ScaleType:
+  UNIFORM = 0
+  PER_AXIS = 1
+
 class SweepType:
   EXTRUDE = 0
   REVOLVE = 1
@@ -289,6 +293,67 @@ def Subtract(workpiece, tool, **args):
   res = op.operate()
   PrintResultLog(res)
   return res.findModelEntity('modified').value(0)
+
+def Rotate(bodies, **args):
+  """Rotate the body (or list of bodies) through an angle about an axis passing through the center point.
+
+  The angle must be specified in degrees, not radians.
+  There are no defaults for the axis and center; you must
+  specify them.
+
+  Example
+  -------
+
+  .. code:: python
+
+      brick = CreateBrick(width=2, height=3, depth=1)
+      result = Rotate(brick, angle=60., axis=[0.333, 0.667, 0.667], center=[0.5, 0, 0])
+      # Note that result is a list, but you should expect 1 output for each input:
+      rotated = result[0]
+  """
+  sess = GetActiveSession()
+  rop = sess.op('rotate')
+  if type(bodies) == type([]):
+    [rop.associateEntity(bod) for bod in bodies]
+  else:
+    rop.associateEntity(bodies)
+  SetVectorValue(rop.findAsDouble('center'), args['center'])
+  SetVectorValue(rop.findAsDouble('axis'), args['axis'])
+  if 'angle' in args:
+    rop.findAsDouble('angle').setValue(args['angle'])
+  res = rop.operate()
+  PrintResultLog(res)
+  return GetVectorValue(res.findModelEntity('modified'))
+
+def Scale(bodies, factor, **kwargs):
+  """Scale a model.
+
+  For uniform scaling along every direction, simply pass a
+  'factor' argument specifying the scale factor as a single
+  number.
+  Otherwise, specify 'factor' as a list of 3 numbers.
+  An origin may also be specified as a list of 3 numbers.
+  """
+  sref = GetActiveSession()
+  sca = sref.op('scale')
+  if isinstance(bodies,list):
+    [sca.associateEntity(x) for x in bodies]
+  else:
+    sca.associateEntity(bodies)
+  from numbers import Number
+  method = ScaleType.UNIFORM if isinstance(factor, Number) else ScaleType.PER_AXIS
+  meth = sca.findAsInt('scale factor type').setDiscreteIndex(method)
+  if method == ScaleType.UNIFORM:
+    # FIXME: We should allow the origin to be specified for this case.
+    sca.findAsDouble('scale factor').setValue(factor)
+  elif method == ScaleType.PER_AXIS:
+    SetVectorValue(sca.findAsDouble('scale factors'), factor)
+  if 'origin' in kwargs:
+    origin = sca.findAsDouble('origin')
+    SetVectorValue(origin, kwargs['origin'])
+  res = sca.operate()
+  PrintResultLog(res)
+  return GetVectorValue(res.findModelEntity('modified'))
 
 def Translate(bodies, vec):
   """Translate the body (or list of bodies) along the given vector."""
