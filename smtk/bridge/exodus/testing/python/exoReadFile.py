@@ -12,11 +12,12 @@
 import smtk
 import smtk.testing
 from smtk.simple import *
+import sys
 
 class TestExodusSession(smtk.testing.TestCase):
 
   def setUp(self):
-    import os, sys
+    import os
     self.filename = os.path.join(smtk.testing.DATA_DIR, 'exodus', 'disk_out_ref.ex2')
 
     self.mgr = smtk.model.Manager.create()
@@ -70,23 +71,28 @@ class TestExodusSession(smtk.testing.TestCase):
 
     if self.haveVTK() and self.haveVTKExtension():
 
-      # Render groups with colors:
-      for grp in self.model.groups():
-        color = self.hex2rgb(nameset[grp.name()])
-        SetEntityProperty(grp, 'color', as_float=color)
+        # Render groups with colors:
+        for grp in self.model.groups():
+            color = self.hex2rgb(nameset[grp.name()])
+            SetEntityProperty(grp, 'color', as_float=color)
 
-      self.startRenderTest()
-      mbs = self.addModelToScene(self.model)
+        self.startRenderTest()
+        mbs = self.addModelToScene(self.model)
 
-      self.renderer.SetBackground(1,1,1)
-      cam = self.renderer.GetActiveCamera()
-      cam.SetFocalPoint(0., 0., 0.)
-      cam.SetPosition(19,17,-43)
-      cam.SetViewUp(-0.891963, -0.122107, -0.435306)
-      self.renderer.ResetCamera()
-      self.renderWindow.Render()
-      self.assertImageMatch(['baselines', 'exodus', 'disk_out_ref.png'])
-      self.interact()
+        self.renderer.SetBackground(1,1,1)
+        cam = self.renderer.GetActiveCamera()
+        cam.SetFocalPoint(0., 0., 0.)
+        cam.SetPosition(19,17,-43)
+        cam.SetViewUp(-0.891963, -0.122107, -0.435306)
+        self.renderer.ResetCamera()
+        self.renderWindow.Render()
+        self.assertImageMatch(['baselines', 'exodus', 'disk_out_ref.png'])
+        self.interact()
+
+    else:
+        self.assertFalse(
+            self.haveVTKExtension(),
+            'Could not import vtk. Python path is {pp}'.format(pp=sys.path))
 
 if __name__ == '__main__':
   smtk.testing.process_arguments()

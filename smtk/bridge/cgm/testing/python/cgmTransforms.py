@@ -80,8 +80,13 @@ class CGMTransforms(smtk.testing.TestCase):
             cam.SetViewUp(-0.891963, -0.122107, -0.435306)
             self.renderer.ResetCamera()
             self.renderWindow.Render()
-            self.assertImageMatch(['baselines', 'cgm', 'transforms.png'])
+            self.assertImageMatchIfFileExists(['baselines', 'cgm', 'transforms.png'])
             self.interact()
+
+        else:
+            self.assertFalse(
+                self.haveVTKExtension(),
+                'Could not import vtk. Python path is {pp}'.format(pp=sys.path))
 
         # Now verify that self.mgr.closeSession removes the entity record for the session.
         sref = GetActiveSession()

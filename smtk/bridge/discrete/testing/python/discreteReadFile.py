@@ -90,8 +90,13 @@ class TestDiscreteSession(smtk.testing.TestCase):
       self.assertImageMatch(['baselines', 'discrete', 'pmdc.png'])
       self.interact()
 
+    else:
+      self.assertFalse(
+        self.haveVTKExtension(),
+        'Could not import vtk. Python path is {pp}'.format(pp=sys.path))
+
   def setUp(self):
-    import os, sys
+    import os
     self.resetTestFiles()
     self.addTestFile(['cmb', 'test2D.cmb'], 4, 0, self.validateTest2D)
     self.addTestFile(['cmb', 'SimpleBox.cmb'], 1, 2)
