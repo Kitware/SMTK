@@ -13,13 +13,6 @@ import smtk
 import smtk.testing
 from smtk.simple import *
 
-def hex2rgb(hexstr):
-  hh = hexstr[1:] if hexstr[0] == '#' else hexstr
-  rr = int(hh[0:2],16) / 255.
-  gg = int(hh[2:4],16) / 255.
-  bb = int(hh[4:6],16) / 255.
-  return (rr, gg, bb)
-
 class TestExodusSession(smtk.testing.TestCase):
 
   def setUp(self):
@@ -79,7 +72,7 @@ class TestExodusSession(smtk.testing.TestCase):
 
       # Render groups with colors:
       for grp in self.model.groups():
-        color = hex2rgb(nameset[grp.name()])
+        color = self.hex2rgb(nameset[grp.name()])
         SetEntityProperty(grp, 'color', as_float=color)
 
       self.startRenderTest()

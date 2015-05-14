@@ -16,13 +16,6 @@ import smtk
 import smtk.testing
 from smtk.simple import *
 
-def hex2rgb(hexstr):
-  hh = hexstr[1:] if hexstr[0] == '#' else hexstr
-  rr = int(hh[0:2],16) / 255.
-  gg = int(hh[2:4],16) / 255.
-  bb = int(hh[4:6],16) / 255.
-  return (rr, gg, bb)
-
 class TestDiscreteSession(smtk.testing.TestCase):
 
   def resetTestFiles(self):
@@ -76,7 +69,7 @@ class TestDiscreteSession(smtk.testing.TestCase):
     for grp in model.groups():
       if grp.name() in groupColors:
         color = groupColors[grp.name()]
-        SetEntityProperty(grp.members(), 'color', as_float=hex2rgb(color))
+        SetEntityProperty(grp.members(), 'color', as_float=self.hex2rgb(color))
 
     # TODO: Should run grow operator on some of the faces here.
     #       Especially if we test group membership afterwards.

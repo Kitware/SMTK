@@ -218,6 +218,14 @@ class TestCase:
           return True
         return self.assertImageMatch(baseline_path, threshold)
 
+    @staticmethod
+    def hex2rgb(hexstr):
+        hh = hexstr[1:] if hexstr[0] == '#' else hexstr
+        rr = int(hh[0:2],16) / 255.
+        gg = int(hh[2:4],16) / 255.
+        bb = int(hh[4:6],16) / 255.
+        return (rr, gg, bb)
+
 def main():
   import unittest
   unittest.main()
