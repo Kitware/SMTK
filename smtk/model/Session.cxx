@@ -263,6 +263,7 @@ smtk::io::Logger& Session::log()
   */
 SessionInfoBits Session::transcribeInternal(const EntityRef& entRef, SessionInfoBits flags, int depth)
 {
+  (void)depth;
   SessionInfoBits actual = SESSION_NOTHING;
   Entity* entRec = this->m_manager->findEntity(entRef.entity(), false);
   if (!entRec)
@@ -316,6 +317,7 @@ void Session::setManager(Manager* mgr)
 /// Subclasses implement this; it should add a record for \a entRef to the manager.
 Entity* Session::addEntityRecord(const EntityRef& entRef)
 {
+  (void)entRef;
   return NULL;
 }
 

@@ -401,6 +401,7 @@ bool vtkPolyFileReader::ReadSegments(
   for (int i = 0; i < numSegments; ++ i)
     {
     int segmentId = readValue<Int32Converter>(in, ok, err);
+    (void)segmentId;
     vtkIdType endpt0 = readValue<Int32Converter>(in, ok, err);
     if (!ok)
       {
@@ -595,6 +596,7 @@ bool vtkPolyFileReader::ReadFacets(
     for (int h = 0; h < numHoles; ++h)
       {
       int holeId = readValue<Int32Converter>(in, ok, err);
+      (void)holeId;
       for (int c = 0; c < dimension; ++c)
         {
         x[c] = readValue<DoubleConverter>(in, ok, err);
