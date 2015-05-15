@@ -307,10 +307,10 @@ SessionInfoBits Manager::eraseModel(const Model& model, SessionInfoBits flags)
     for (EntityRefs::iterator bit = bdys.begin(); bit != bdys.end(); ++bit)
       {
       //std::cout << "Erasing " << bit->flagSummary(0) << " " << bit->entity() << "\n";
-      this->erase(bit->entity());
+      this->erase(bit->entity(), flags);
       }
     //std::cout << "Erasing " << fit->flagSummary(0) << " " << fit->entity() << "\n";
-    this->erase(fit->entity());
+    this->erase(fit->entity(), flags);
     }
 
   Groups grps = model.groups();
@@ -320,14 +320,14 @@ SessionInfoBits Manager::eraseModel(const Model& model, SessionInfoBits flags)
     for (EntityRefs::iterator mit = members.begin(); mit != members.end(); ++mit)
       {
       //std::cout << "Erasing " << mit->flagSummary(0) << " " << mit->entity() << "\n";
-      this->erase(mit->entity());
+      this->erase(mit->entity(), flags);
       }
     //std::cout << "Erasing " << git->flagSummary(0) << " " << git->entity() << "\n";
-    this->erase(git->entity());
+    this->erase(git->entity(), flags);
     }
 
   //std::cout << "Erasing " << model.flagSummary(0) << " " << model.entity() << "\n";
-  this->erase(model.entity());
+  this->erase(model.entity(), flags);
 
   return true;
 }

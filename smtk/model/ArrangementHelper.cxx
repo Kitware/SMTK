@@ -25,9 +25,10 @@ ArrangementHelper::~ArrangementHelper()
 }
 
 /// This method is called after all related entities have been added and before arrangement updates are made.
-void ArrangementHelper::doneAddingEntities(SessionPtr sess)
+void ArrangementHelper::doneAddingEntities(SessionPtr sess, SessionInfoBits flags)
 {
   (void)sess;
+  (void)flags;
 }
 
 /// Mark an entity (as having been visited).

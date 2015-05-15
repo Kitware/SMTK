@@ -279,7 +279,7 @@ SessionInfoBits Session::transcribeInternal(const EntityRef& entRef, SessionInfo
   // with respect to its parent face or edge so that retranscription results in the same
   // senses if possible.)
   this->findOrAddRelatedEntities(entRef, flags, helper);
-  helper->doneAddingEntities(this->shared_from_this());
+  helper->doneAddingEntities(this->shared_from_this(), flags);
 
   // We must re-find entRec because the addition of other entities may
   // have caused a reallocation (in hash-based storage):

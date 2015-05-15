@@ -13,6 +13,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/CoreExports.h" // for SMTKCORE_EXPORT
 #include "smtk/SharedFromThis.h" // for smtkTypeMacro
+#include "smtk/model/Session.h"
 
 namespace smtk {
   namespace model {
@@ -29,7 +30,7 @@ public:
   smtkTypeMacro(ArrangementHelper);
   virtual ~ArrangementHelper();
 
-  virtual void doneAddingEntities(SessionPtr sess);
+  virtual void doneAddingEntities(SessionPtr sess, SessionInfoBits flags);
 
   void mark(const EntityRef& ent, bool m);
   bool isMarked(const EntityRef& ent) const;
