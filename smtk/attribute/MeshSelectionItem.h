@@ -23,13 +23,13 @@ namespace smtk {
 class MeshSelectionItemDefinition;
 
 /// Enumeration of mesh values modification type.
-enum MeshSelectionMode {
-  NONE,             //!< Cancel current operation mode
-  RESET,            //!< Reset the existing list)
-  MERGE,            //!< Append to the existing list
-  SUBTRACT,         //!< Subtract from existing list
-  ACCEPT,           //!< Accept the existing list)
-  NUM_OF_MODES      //!< The number of mesh selection modes.
+enum MeshModifyMode {
+  NONE,               //!< Cancel current operation mode
+  RESET,              //!< Reset the existing list)
+  MERGE,              //!< Append to the existing list
+  SUBTRACT,           //!< Subtract from existing list
+  ACCEPT,             //!< Accept the existing list)
+  NUM_OF_MODIFYMODES  //!< The number of mesh modify modes.
 };
 
 /**\brief Provide a way for an attribute to refer to mesh entities.
@@ -47,10 +47,10 @@ public:
   void setValues(const smtk::common::UUID&, const std::set<int>&);
   void unionValues(const smtk::common::UUID&, const std::set<int>&);
   void removeValues(const smtk::common::UUID&, const std::set<int>&);
-  void setMeshSelectMode(MeshSelectionMode mode)
-    { this->m_selectMode = mode; }
-  MeshSelectionMode meshSelectMode() const
-    {return this->m_selectMode;}
+  void setModifyMode(MeshModifyMode mode)
+    { this->m_modifyMode = mode; }
+  MeshModifyMode modifyMode() const
+    {return this->m_modifyMode;}
   void setCtrlKeyDown(bool val)
     { this->m_isCtrlKeyDown = val; }
   bool isCtrlKeyDown() const
@@ -66,9 +66,9 @@ public:
   const_sel_map_it begin() const;
   const_sel_map_it end() const;
 
-  static std::string selectMode2String(
-    MeshSelectionMode m);
-  static MeshSelectionMode string2SelectMode(
+  static std::string modifyMode2String(
+    MeshModifyMode m);
+  static MeshModifyMode string2ModifyMode(
     const std::string &s);
 
 protected:
@@ -78,7 +78,7 @@ protected:
   MeshSelectionItem(Item *owningItem, int position, int subGroupPosition);
   virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
   std::map<smtk::common::UUID, std::set<int> >m_selectionValues;
-  MeshSelectionMode m_selectMode;
+  MeshModifyMode m_modifyMode;
   bool m_isCtrlKeyDown;
 };
 

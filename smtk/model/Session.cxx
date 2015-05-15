@@ -279,7 +279,7 @@ SessionInfoBits Session::transcribeInternal(const EntityRef& entRef, SessionInfo
   // with respect to its parent face or edge so that retranscription results in the same
   // senses if possible.)
   this->findOrAddRelatedEntities(entRef, flags, helper);
-  helper->doneAddingEntities(this->shared_from_this());
+  helper->doneAddingEntities(this->shared_from_this(), flags);
 
   // We must re-find entRec because the addition of other entities may
   // have caused a reallocation (in hash-based storage):
@@ -312,6 +312,28 @@ void Session::setManager(Manager* mgr)
   this->m_manager = mgr;
   this->m_operatorSys->setRefModelManager(
     mgr->shared_from_this());
+}
+
+/**\brief This is used by the manager when erasing a model entity.
+  *
+  * Subclasses should implement this and erase all of the string, integer,
+  * and floating-point properties (as specified by \a propFlags) that
+  * their modeling kernel allows them to reproduce when transcribe() is
+  * called.
+  * The properties should only be erased from \a ent's model manager, not
+  * from the underlying modeling kernel.
+  *
+  * Do *not* erase properties like name, color, and visibility unless
+  * they are stored by the underlying modeling kernel in addition to
+  * SMTK.
+  *
+  * Return true when at least one property was removed, false otherwise.
+  */
+bool Session::removeGeneratedProperties(const EntityRef& ent, SessionInfoBits propFlags)
+{
+  (void)ent;
+  (void)propFlags;
+  return false;
 }
 
 /// Subclasses implement this; it should add a record for \a entRef to the manager.

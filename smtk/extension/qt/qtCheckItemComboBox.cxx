@@ -212,7 +212,7 @@ void qtModelEntityItemCombo::itemCheckChanged(
       for(std::size_t idx=0;
         idx < ModelEntityItem->numberOfValues(); ++idx)
         {
-        if(!ModelEntityItem->isSet(idx))
+        if(!ModelEntityItem->value(idx).isValid())
           {
           success = ModelEntityItem->setValue(idx, selentityref);
           break;

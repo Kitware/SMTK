@@ -18,6 +18,7 @@
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/attribute/ItemDefinition.h"
+#include "smtk/model/EntityTypeBits.h"
 
 namespace smtk
 {
@@ -35,11 +36,18 @@ namespace smtk
       virtual ~MeshSelectionItemDefinition();
 
       virtual Item::Type type() const;
-      bool isValueValid(const int &val) const;
+      smtk::model::BitFlags membershipMask() const;
+      void setMembershipMask(smtk::model::BitFlags entMask);
       std::string refModelEntityName() const
-      { return m_RefModelEntityDefName; }
+        { return m_RefModelEntityDefName; }
       void setRefModelEntityName(const std::string& defName)
-      { m_RefModelEntityDefName = defName; }
+        { m_RefModelEntityDefName = defName; }
+      void setModifyMode(const std::string& mode)
+        { this->m_modifyMode = mode; }
+      std::string modifyMode() const
+        {return this->m_modifyMode;}
+
+      bool isValueValid(const int &val) const;
 
       virtual smtk::attribute::ItemPtr buildItem(Attribute *owningAttribute,
                                                 int itemPosition) const;
@@ -52,7 +60,9 @@ namespace smtk
     protected:
       MeshSelectionItemDefinition(const std::string &myName);
 
+      smtk::model::BitFlags m_membershipMask;
       std::string m_RefModelEntityDefName;
+      std::string m_modifyMode;
     };
   }
 }

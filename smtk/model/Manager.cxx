@@ -178,70 +178,115 @@ const UUIDsToAttributeAssignments& Manager::attributeAssignments() const
   * boundary). The application is expected to perform further
   * operations to keep the model valid.
   */
-bool Manager::erase(const UUID& uid)
+SessionInfoBits Manager::erase(const UUID& uid, SessionInfoBits flags)
 {
-  UUIDWithEntity ent = this->m_topology->find(uid);
-  if (ent == this->m_topology->end())
-    return false;
+  SessionInfoBits actual = flags;
+  if (flags & SESSION_ENTITY_RELATIONS)
+    actual |= SESSION_ARRANGEMENTS;
 
-  // Trigger an event before the erasure so the observers
-  // have a chance to see what's about to disappear.
-  this->trigger(std::make_pair(DEL_EVENT, ENTITY_ENTRY),
-    EntityRef(this->shared_from_this(), uid));
-
-  UUIDWithArrangementDictionary ad = this->arrangements().find(uid);
-  if (ad != this->arrangements().end())
+  UUIDWithEntity ent;
+  bool haveEnt = false;
+  if (actual & (SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS))
     {
-    ArrangementKindWithArrangements ak;
-    do
+    ent = this->m_topology->find(uid);
+    if (ent != this->m_topology->end())
       {
-      ak = ad->second.begin();
-      if (ak == ad->second.end())
-        break;
-      Arrangements::size_type aidx = ak->second.size();
-      if (aidx == 0)
-        ad->second.erase(ak);
-      else
-        for (; aidx > 0; --aidx)
-          this->unarrangeEntity(uid, ak->first, static_cast<int>(aidx - 1), false);
-      ad = this->arrangements().find(uid); // iterator may be invalidated by unarrangeEntity.
+      haveEnt = true;
+      if (flags & SESSION_ENTITY_TYPE)
+        {
+        // Trigger an event before the erasure so the observers
+        // have a chance to see what's about to disappear.
+        this->trigger(std::make_pair(DEL_EVENT, ENTITY_ENTRY),
+          EntityRef(this->shared_from_this(), uid));
+        }
       }
-    while (ad != this->arrangements().end());
+    else
+      { // without an Entity record, we cannot erase these things:
+      actual &= ~(SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS);
+      }
     }
-  this->tessellations().erase(uid);
-  this->attributeAssignments().erase(uid);
+
+  if (flags & SESSION_ARRANGEMENTS)
+    {
+    UUIDWithArrangementDictionary ad = this->arrangements().find(uid);
+    if (ad != this->arrangements().end())
+      {
+      ArrangementKindWithArrangements ak;
+      do
+        {
+        ak = ad->second.begin();
+        if (ak == ad->second.end())
+          break;
+        Arrangements::size_type aidx = ak->second.size();
+        if (aidx == 0)
+          ad->second.erase(ak);
+        else
+          for (; aidx > 0; --aidx)
+            this->unarrangeEntity(uid, ak->first, static_cast<int>(aidx - 1), false);
+        ad = this->arrangements().find(uid); // iterator may be invalidated by unarrangeEntity.
+        }
+      while (ad != this->arrangements().end());
+      }
+    }
+
+  if (actual & SESSION_TESSELLATION)
+    this->tessellations().erase(uid);
+
+  if (actual & SESSION_ATTRIBUTE_ASSOCIATIONS)
+    this->attributeAssignments().erase(uid);
 
   // TODO: If this entity is a model and has parents, we should make
-  //       the parent own the child models?
+  //       the parent own the child models? Erase the children? Leave
+  //       the children as orphans?
 
-  // Before removing the entity, loop through its relations and
-  // make sure none of them retain any references back to \a uid.
-  // However, we cannot erase entries in relatedEntity->relations()
-  // because relatedEntity's arrangements reference them by integer
-  // index. Thus, we call elideEntityReferences rather than removeEntityReferences.
-  this->elideEntityReferences(ent);
+  if (haveEnt)
+    {
+    // Before removing the entity, loop through its relations and
+    // make sure none of them retain any references back to \a uid.
+    // However, we cannot erase entries in relatedEntity->relations()
+    // because relatedEntity's arrangements reference them by integer
+    // index. Thus, we call elideEntityReferences rather than removeEntityReferences.
+    this->elideEntityReferences(ent);
+    }
 
   // TODO: Notify observers of property removal?
-  this->m_floatData->erase(uid);
-  this->m_stringData->erase(uid);
-  this->m_integerData->erase(uid);
+  if (actual & SESSION_USER_DEFINED_PROPERTIES)
+    {
+    if (actual & SESSION_FLOAT_PROPERTIES)
+      this->m_floatData->erase(uid);
+    if (actual & SESSION_STRING_PROPERTIES)
+      this->m_stringData->erase(uid);
+    if (actual & SESSION_INTEGER_PROPERTIES)
+      this->m_integerData->erase(uid);
+    }
+  else if (actual & SESSION_PROPERTIES)
+    {
+    Model owningModel(shared_from_this(), this->modelOwningEntity(uid));
+    SessionRef sref = owningModel.session();
+    if (sref.session())
+      sref.session()->removeGeneratedProperties(
+        EntityRef(shared_from_this(), uid), actual);
+    }
 
-  // TODO: Notify model of entity removal?
-  //       Note this can be complicated because removal
-  //       of entities in the class destructor prevent us
-  //       from obtaining a shared pointer to the manager
-  //       to pass to any observers...
-  this->m_topology->erase(uid);
+  if (haveEnt)
+    {
+    // TODO: Notify model of entity removal?
+    //       Note this can be complicated because removal
+    //       of entities in the class destructor prevent us
+    //       from obtaining a shared pointer to the manager
+    //       to pass to any observers...
+    this->m_topology->erase(uid);
+    }
 
-  return true;
+  return actual;
 }
 
 /**\brief A convenience method for erasing an entity from storage.
   *
   */
-bool Manager::erase(const EntityRef& entityref)
+SessionInfoBits Manager::erase(const EntityRef& entityref, SessionInfoBits flags)
 {
-  return this->Manager::erase(entityref.entity());
+  return this->Manager::erase(entityref.entity(), flags);
 }
 
 /**\brief A convenience method for erasing a model and its children.
@@ -250,10 +295,10 @@ bool Manager::erase(const EntityRef& entityref)
   * submodels from storage.
   * This method will have no effect given an invalid model entity.
   */
-bool Manager::eraseModel(const Model& model)
+SessionInfoBits Manager::eraseModel(const Model& model, SessionInfoBits flags)
 {
   if (!model.isValid())
-    return false;
+    return SESSION_NOTHING;
 
   CellEntities free = model.cells();
   for (CellEntities::iterator fit = free.begin(); fit != free.end(); ++fit)
@@ -262,10 +307,10 @@ bool Manager::eraseModel(const Model& model)
     for (EntityRefs::iterator bit = bdys.begin(); bit != bdys.end(); ++bit)
       {
       //std::cout << "Erasing " << bit->flagSummary(0) << " " << bit->entity() << "\n";
-      this->erase(bit->entity());
+      this->erase(bit->entity(), flags);
       }
     //std::cout << "Erasing " << fit->flagSummary(0) << " " << fit->entity() << "\n";
-    this->erase(fit->entity());
+    this->erase(fit->entity(), flags);
     }
 
   Groups grps = model.groups();
@@ -275,14 +320,14 @@ bool Manager::eraseModel(const Model& model)
     for (EntityRefs::iterator mit = members.begin(); mit != members.end(); ++mit)
       {
       //std::cout << "Erasing " << mit->flagSummary(0) << " " << mit->entity() << "\n";
-      this->erase(mit->entity());
+      this->erase(mit->entity(), flags);
       }
     //std::cout << "Erasing " << git->flagSummary(0) << " " << git->entity() << "\n";
-    this->erase(git->entity());
+    this->erase(git->entity(), flags);
     }
 
   //std::cout << "Erasing " << model.flagSummary(0) << " " << model.entity() << "\n";
-  this->erase(model.entity());
+  this->erase(model.entity(), flags);
 
   return true;
 }

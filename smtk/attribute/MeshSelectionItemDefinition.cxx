@@ -19,6 +19,7 @@ MeshSelectionItemDefinition::
 MeshSelectionItemDefinition(const std::string &myName):
   ItemDefinition(myName)
 {
+  this->m_membershipMask = smtk::model::ANY_ENTITY;
 }
 
 //----------------------------------------------------------------------------
@@ -29,6 +30,18 @@ MeshSelectionItemDefinition::~MeshSelectionItemDefinition()
 Item::Type MeshSelectionItemDefinition::type() const
 {
   return Item::MESH_SELECTION;
+}
+
+//----------------------------------------------------------------------------
+smtk::model::BitFlags MeshSelectionItemDefinition::membershipMask() const
+{
+  return this->m_membershipMask;
+}
+
+//----------------------------------------------------------------------------
+void MeshSelectionItemDefinition::setMembershipMask(smtk::model::BitFlags entMask)
+{
+  this->m_membershipMask = entMask;
 }
 
 //----------------------------------------------------------------------------

@@ -124,6 +124,8 @@ protected:
   friend class WriteOperator;
   friend class RemoveModel;
   friend class ArrangementHelper;
+  friend class EdgeOperator;
+  friend class Operator;
 
   Session();
 

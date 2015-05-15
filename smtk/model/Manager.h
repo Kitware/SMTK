@@ -132,9 +132,9 @@ public:
   const Entity* findEntity(const smtk::common::UUID& uid, bool trySessions = true) const;
   Entity* findEntity(const smtk::common::UUID& uid, bool trySessions = true);
 
-  virtual bool erase(const smtk::common::UUID& uid);
-  virtual bool erase(const EntityRef& entityref);
-  virtual bool eraseModel(const Model& entityref);
+  virtual SessionInfoBits erase(const smtk::common::UUID& uid, SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
+  virtual SessionInfoBits erase(const EntityRef& entityref, SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
+  virtual SessionInfoBits eraseModel(const Model& entityref, SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
 
   smtk::common::UUIDs bordantEntities(const smtk::common::UUID& ofEntity, int ofDimension = -2) const;
   smtk::common::UUIDs bordantEntities(const smtk::common::UUIDs& ofEntities, int ofDimension = -2) const;

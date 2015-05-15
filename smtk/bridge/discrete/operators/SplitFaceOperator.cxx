@@ -124,8 +124,8 @@ OperatorResult SplitFaceOperator::operateInternal()
 
         // Now re-add it (it will have new edges)
         faceUUID = opsession->findOrSetEntityUUID(origFace);
-        smtk::model::Face c = opsession->addFaceToManager(faceUUID,
-          origFace, store, true);
+        smtk::model::Face c = opsession->addCMBEntityToManager(faceUUID,
+          origFace, store, true).as<smtk::model::Face>();
 
         internal_addRawRelationship(c, vol1, vol2);
         vtkIdTypeArray* newFaceIds = this->m_op->GetCreatedModelFaceIDs();
@@ -139,7 +139,7 @@ OperatorResult SplitFaceOperator::operateInternal()
           vtkModelFace* face = dynamic_cast<vtkModelFace*>(
             modelWrapper->GetModelEntity(vtkModelFaceType, faceId));
           faceUUID = opsession->findOrSetEntityUUID(face);
-          smtk::model::Face cFace = opsession->addFaceToManager(faceUUID, face, store, true);
+          smtk::model::Face cFace = opsession->addCMBEntityToManager(faceUUID, face, store, true);
           internal_addRawRelationship(cFace, vol1, vol2);
 
           splitfacemaps[c].insert(cFace);
