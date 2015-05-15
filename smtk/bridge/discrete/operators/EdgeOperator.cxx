@@ -128,16 +128,14 @@ void EdgeOperator::getSelectedVertsAndEdges(
         selArcs[mapIt->first] = std::make_pair(selEdge, seledgepts);
 
       }
-    }  
+    }
 }
 
 void internal_retranscribeModel(smtk::bridge::discrete::Session* opsession,
                                 const smtk::model::Model& inModel)
 {
-    opsession->manager()->eraseModel(inModel,
-      SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS  | SESSION_ARRANGEMENTS | SESSION_TESSELLATION);
-    opsession->transcribe(inModel, 
-      SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS  | SESSION_ARRANGEMENTS | SESSION_TESSELLATION, false);
+    opsession->manager()->eraseModel(inModel);
+    opsession->transcribe(inModel, SESSION_EVERYTHING, false);
 }
 
 bool  EdgeOperator::convertSelectedEndNodes(
@@ -325,9 +323,9 @@ bool EdgeOperator::splitSelectedEdgeNodes(
       {
       smtk::common::UUID modelid = opsession->findOrSetEntityUUID(modelWrapper->GetModel());
       smtk::model::Model inModel(this->manager(), modelid);
- 
+
       internal_retranscribeModel(opsession, inModel);
- 
+
       vtkModelVertex* newvtx = vtkModelVertex::SafeDownCast(
         modelWrapper->GetModelEntity(vtkModelVertexType,
         splitOp->GetCreatedModelVertexId()));

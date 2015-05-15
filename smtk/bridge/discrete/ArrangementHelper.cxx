@@ -72,8 +72,9 @@ void ArrangementHelper::resetArrangements()
 }
 
 /// This method is called after all related entities have been added and before arrangement updates are made.
-void ArrangementHelper::doneAddingEntities(smtk::model::SessionPtr baseSession,
-                                           smtk::model::SessionInfoBits flags)
+void ArrangementHelper::doneAddingEntities(
+  smtk::model::SessionPtr baseSession,
+  smtk::model::SessionInfoBits flags)
 {
   // I. Finish processing visited entities
   Session::Ptr sess = smtk::dynamic_pointer_cast<Session>(baseSession);
@@ -87,7 +88,7 @@ void ArrangementHelper::doneAddingEntities(smtk::model::SessionPtr baseSession,
     if (flags & smtk::model::SESSION_PROPERTIES)
       sess->addProperties(mutableRef, dscEntity);
     if (dscGeom && (flags & smtk::model::SESSION_TESSELLATION))
-        sess->addTessellation(mutableRef, dscGeom);
+      sess->addTessellation(mutableRef, dscGeom);
     }
   // II. Add relations between visited entities
   std::set<Spec>::iterator it;

@@ -122,6 +122,7 @@ set(_module_src
 
 set(discreteSessionSrcs
   Session.cxx
+  Operator.cxx
   ArrangementHelper.cxx
 #  operators/CreateEdgesOperator.cxx
   operators/EntityGroupOperator.cxx
@@ -133,10 +134,12 @@ set(discreteSessionSrcs
   operators/WriteOperator.cxx
   operators/RemoveModel.cxx
   operators/EdgeOperator.cxx
+  operators/SetProperty.cxx
 )
 
 set(discreteSessionHeaders
   Session.h
+  Operator.h
   ArrangementHelper.h
 #  operators/CreateEdgesOperator.h
   operators/EntityGroupOperator.h
@@ -148,6 +151,7 @@ set(discreteSessionHeaders
   operators/WriteOperator.h
   operators/RemoveModel.h
   operators/EdgeOperator.h
+  operators/SetProperty.h
 )
 
 # Normally this would be machine-generated from Session.json
@@ -169,6 +173,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GrowOperator.sbt" unitO
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/RemoveModel.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EdgeOperator.sbt" unitOperatorXML)
+# NB: SetProperty operator reuses smtk::model::SetProperty's XML
 
 add_library(smtkDiscreteSession ${_module_src} ${discreteSessionSrcs})
 
