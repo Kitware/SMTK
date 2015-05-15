@@ -9,7 +9,7 @@ vtk_module(vtkSMTKDiscreteExt
     vtkIOGeometry
     vtkIOParallelExodus
     vtkRenderingCore
-    vtkRenderingFreeType${VTK_RENDERING_BACKEND}
+    vtkRenderingFreeType
     vtkRendering${VTK_RENDERING_BACKEND}
     vtkRenderingMatplotlib
     vtkRenderingVolume

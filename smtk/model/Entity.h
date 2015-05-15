@@ -57,6 +57,7 @@ public:
   int appendRelation(const smtk::common::UUID& b, bool useHoles = true);
   Entity& pushRelation(const smtk::common::UUID& b);
   Entity& removeRelation(const smtk::common::UUID& b);
+  void resetRelations();
 
   int findOrAppendRelation(const smtk::common::UUID& r);
   int invalidateRelation(const smtk::common::UUID& r);

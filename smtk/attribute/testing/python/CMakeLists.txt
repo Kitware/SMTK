@@ -23,7 +23,7 @@ set_tests_properties(
   attributeAutoNamingTestPy attributeAutoNamingTestPy
   attributeReferencingTestPy categoryTestPy attributeFindItemTestPy
   PROPERTIES
-    ENVIRONMENT "PYTHONPATH=${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}"
+    ENVIRONMENT "PYTHONPATH=${VTKPY_DIR}${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}"
 )
 
 if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
@@ -35,7 +35,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
       ${SMTK_DATA_DIR})
     set_tests_properties(${test}Py
       PROPERTIES
-        ENVIRONMENT "PYTHONPATH=${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}"
+        ENVIRONMENT "PYTHONPATH=${VTKPY_DIR}${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}"
     )
   endforeach()
 endif()

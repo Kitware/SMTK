@@ -9,6 +9,7 @@
 //=========================================================================
 
 #include "smtk/bridge/discrete/Session.h"
+#include "smtk/bridge/discrete/ArrangementHelper.h"
 
 #include "smtk/common/UUID.h"
 #include "smtk/AutoInit.h"
@@ -328,19 +329,735 @@ vtkDiscreteModelWrapper* Session::findModelEntity(const smtk::common::UUID& uid)
   return NULL;
 }
 
-/**\brief Populate records for \a entityref that reflect the CGM \a entity.
+/**\brief Find the kernel entity corresponding to \a entRef and add a record for it to \a entRef's manager.
   *
+  * No bidirectional relationships or arrangements should be added
+  * at this point since there is no guarantee that their records
+  * exist in the manager.
   */
-smtk::model::SessionInfoBits Session::transcribeInternal(
-  const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo)
+Entity* Session::addEntityRecord(const smtk::model::EntityRef& entRef)
 {
-  (void)entity;
-  (void)requestedInfo;
+  vtkModelItem* ent = this->entityForUUID(entRef.entity());
+  if (!ent)
+    {
+    smtkErrorMacro(this->log(), "Entity " << entRef.entity() << " has no matching CMB model item");
+    return NULL;
+    }
+
+  vtkModel* modelEntity = dynamic_cast<vtkModel*>(ent);
+  vtkModelGeometricEntity* cellEntity = dynamic_cast<vtkModelGeometricEntity*>(ent);
+  vtkModelEntity* otherEntity = dynamic_cast<vtkModelEntity*>(ent);
+  if (modelEntity)
+    {
+    double bds[6];
+    modelEntity->GetBounds(bds);
+    int embeddingDim = 0;
+    for (int i = 0; i < 3; ++i)
+      if (bds[2*i] < bds[2*i + 1])
+        ++embeddingDim;
+    if (embeddingDim < 1)
+      embeddingDim = 3; // Default to 3D model if currently empty.
+    entRef.manager()->insertModel(entRef.entity(), modelEntity->GetModelDimension(), embeddingDim); // , name
+    }
+  else if (cellEntity)
+    {
+    vtkModelRegion* region = dynamic_cast<vtkModelRegion*>(otherEntity);
+    vtkModelFace* face = dynamic_cast<vtkModelFace*>(otherEntity);
+    vtkModelEdge* edge = dynamic_cast<vtkModelEdge*>(otherEntity);
+    vtkModelVertex* vert = dynamic_cast<vtkModelVertex*>(otherEntity);
+    if (region)
+      entRef.manager()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), CELL_3D, 3);
+    else if (face)
+      {
+      entRef.manager()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), CELL_2D, 2);
+      // Now get rid of mandatory positive/negative uses since we overwrite those
+      entRef.manager()->clearArrangements(entRef.entity());
+      }
+    else if (edge)
+      entRef.manager()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), CELL_1D, 1);
+    else if (vert)
+      entRef.manager()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), CELL_0D, 0);
+    else
+      {
+      smtkErrorMacro(this->log(),
+        "Unknown vtkModelGeometricEntity subclass \""
+        << cellEntity->GetClassName() << "\" encountered. Ignoring.");
+      }
+    }
+  else if (otherEntity)
+    {
+    vtkModelFaceUse* faceUse = dynamic_cast<vtkModelFaceUse*>(otherEntity);
+    vtkModelEdgeUse* edgeUse = dynamic_cast<vtkModelEdgeUse*>(otherEntity);
+    vtkModelVertexUse* vertUse = dynamic_cast<vtkModelVertexUse*>(otherEntity);
+    vtkDiscreteModelEntityGroup* group = dynamic_cast<vtkDiscreteModelEntityGroup*>(otherEntity);
+    vtkModelMaterial* material = dynamic_cast<vtkModelMaterial*>(otherEntity);
+    vtkModelShellUse* shell = dynamic_cast<vtkModelShellUse*>(otherEntity);
+    vtkModelLoopUse* loop = dynamic_cast<vtkModelLoopUse*>(otherEntity);
+    bool isUse = false;
+    if (faceUse) { entRef.manager()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), FACE_USE, 2); isUse = true; }
+    else if (edgeUse) { entRef.manager()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), EDGE_USE, 1); isUse = true; }
+    else if (vertUse) { entRef.manager()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), VERTEX_USE, 0); isUse = true; }
+    else if (group)
+      {
+      int groupFlags;
+      switch (group->GetEntityType())
+        {
+      case vtkModelType: groupFlags = smtk::model::MODEL_ENTITY; break;
+      case vtkModelVertexType: groupFlags = smtk::model::VERTEX; break;
+      case vtkModelVertexUseType: groupFlags = smtk::model::VERTEX_USE; break;
+      case vtkModelEdgeType: groupFlags = smtk::model::EDGE; break;
+      case vtkModelEdgeUseType: groupFlags = smtk::model::EDGE_USE; break;
+      case vtkModelLoopUseType: groupFlags = smtk::model::LOOP; break;
+      case vtkModelFaceType: groupFlags = smtk::model::FACE; break;
+      case vtkModelFaceUseType: groupFlags = smtk::model::FACE_USE; break;
+      case vtkModelShellUseType: groupFlags = smtk::model::SHELL; break;
+      case vtkModelRegionType: groupFlags = smtk::model::VOLUME; break;
+      default:
+      case -1:
+        groupFlags = 0;
+        break;
+        }
+      entRef.manager()->insertGroup(entRef.entity(), groupFlags);
+      }
+    else if (material) entRef.manager()->insertGroup(entRef.entity(), smtk::model::MODEL_DOMAIN);
+    else if (shell) entRef.manager()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), SHELL, -1);
+    else if (loop) entRef.manager()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), LOOP, -1);
+    else
+      {
+      smtkErrorMacro(this->log(),
+        "Unknown vtkModel subclass \""
+        << otherEntity->GetClassName() << "\" encountered. Ignoring.");
+      }
+    }
+  return entRef.manager()->findEntity(entRef.entity());
+}
+
+/// Create a helper specific to the SMTK discrete kernel.
+smtk::model::ArrangementHelper* Session::createArrangementHelper()
+{
+  return new ArrangementHelper;
+}
+
+/**\brief Add cells related to the given \a cell.
+  *
+  * The cells may be related as bounding \a cell, being bounded by \a cell,
+  * embedded in \a cell, or embedded by \a cell.
+  */
+int Session::findOrAddCellAdjacencies(
+  const smtk::model::CellEntity& cell,
+  SessionInfoBits request,
+  smtk::model::ArrangementHelper* hlp)
+{
+  (void)request;
+  ArrangementHelper* helper = dynamic_cast<ArrangementHelper*>(hlp);
+  int numEnts = 0;
+  vtkModelItem* modelCell = this->entityForUUID(cell.entity());
+
+  vtkModelRegion* modelRegion = dynamic_cast<vtkModelRegion*>(modelCell);
+  vtkModelFace* modelFace = dynamic_cast<vtkModelFace*>(modelCell);
+  vtkModelEdge* modelEdge = dynamic_cast<vtkModelEdge*>(modelCell);
+  vtkModelVertex* modelVertex = dynamic_cast<vtkModelVertex*>(modelCell);
+  if (modelRegion)
+    {
+    numEnts += this->addEntities(cell, modelRegion->NewAdjacentModelFaceIterator(), smtk::model::SUPERSET_OF, helper);
+    }
+  if (modelFace)
+    {
+    for (int r = 0; r < modelFace->GetNumberOfModelRegions(); ++r, ++numEnts)
+      this->addEntity(modelFace->GetModelRegion(r), cell, smtk::model::SUPERSET_OF, helper);
+    numEnts += this->addEntities(cell, modelFace->NewAdjacentModelEdgeIterator(), smtk::model::SUPERSET_OF, helper);
+    }
+  if (modelEdge)
+    {
+    numEnts += this->addEntities(modelEdge->NewAdjacentModelFaceIterator(), cell, smtk::model::SUPERSET_OF, helper);
+    int nv = modelEdge->GetNumberOfModelVertexUses();
+    for (int v = 0; v < nv; ++v, ++numEnts)
+      this->addEntity(cell, modelEdge->GetAdjacentModelVertex(v), smtk::model::SUPERSET_OF, helper);
+    }
+  if (modelVertex)
+    {
+    numEnts += this->addEntities(modelVertex->NewAdjacentModelEdgeIterator(), cell, smtk::model::SUPERSET_OF, helper);
+    }
+
+  // Also consider included cells (i.e., not on the boundary but interior to the cell's point locus)
+  if (modelCell->GetNumberOfAssociations(vtkModelRegionType))
+    { // Add regions to model
+    numEnts = this->addEntities(cell, modelCell->NewIterator(vtkModelRegionType), smtk::model::INCLUDES, helper);
+    }
+  else if(modelCell->GetNumberOfAssociations(vtkModelFaceType))
+    { // Add faces to model
+    numEnts = this->addEntities(cell, modelCell->NewIterator(vtkModelFaceType), smtk::model::INCLUDES, helper);
+    }
+  else if(modelCell->GetNumberOfAssociations(vtkModelEdgeType))
+    { // Add edges to model
+    numEnts = this->addEntities(cell, modelCell->NewIterator(vtkModelEdgeType), smtk::model::INCLUDES, helper);
+    }
+  else if(modelCell->GetNumberOfAssociations(vtkModelVertexType))
+    { // Add vertices to model
+    numEnts = this->addEntities(cell, modelCell->NewIterator(vtkModelVertexType), smtk::model::INCLUDES, helper);
+    }
+
+  return numEnts;
+}
+
+template<typename T>
+struct LookupSenseOfUse
+{
+  LookupSenseOfUse(ArrangementHelper* helper)
+    : m_helper(helper)
+    {
+    }
+
+  bool operator () (vtkModelItem* dscEntity, int& sense, Orientation& orientation)
+    {
+    T* ent = dynamic_cast<T*>(dscEntity);
+    if (!ent)
+      return false;
+    orientation = ent->GetDirection() ? smtk::model::POSITIVE : smtk::model::NEGATIVE;
+    sense = this->m_helper->findOrAssignSense(ent);
+    return true;
+    }
+
+  ArrangementHelper* m_helper;
+};
+
+template<>
+struct LookupSenseOfUse<vtkModelVertexUse>
+{
+  LookupSenseOfUse(ArrangementHelper*)
+    {
+    }
+
+  bool operator () (vtkModelItem* dscEntity, int& sense, Orientation& orientation)
+    {
+    vtkModelVertexUse* ent = dynamic_cast<vtkModelVertexUse*>(dscEntity);
+    if (!ent)
+      return false;
+    orientation = smtk::model::UNDEFINED;
+    sense = 0; // FIXME
+    return true;
+    }
+};
+
+struct LookupSenseForShellEnt
+{
+  LookupSenseForShellEnt(ArrangementHelper* helper)
+    : m_helper(helper)
+    {
+    }
+
+  bool operator () (vtkModelItem* dscEntity, int& sense, Orientation& orientation)
+    {
+    vtkModelShellUse* ent = dynamic_cast<vtkModelShellUse*>(dscEntity);
+    if (!ent)
+      return false;
+    // FIXME: In the future, this should detect whether a shell is an
+    //        inner or outer shell of a volume and use that to decide on
+    //        the sense relative to the volume use.
+    //vtkModelRegion* parent = ent->GetModelRegion();
+    orientation = smtk::model::POSITIVE;
+    sense = 0; //this->m_helper->findOrAssignSense(ent);
+    return true;
+    }
+
+  ArrangementHelper* m_helper;
+};
+
+int Session::findOrAddCellUses(
+  const smtk::model::CellEntity& cell,
+  SessionInfoBits request,
+  smtk::model::ArrangementHelper* hlp)
+{
+  (void)request;
+  ArrangementHelper* helper = dynamic_cast<ArrangementHelper*>(hlp);
+  int numEnts = 0;
+  vtkModelItem* modelCell = this->entityForUUID(cell.entity());
+  vtkModelRegion* modelRegion = dynamic_cast<vtkModelRegion*>(modelCell);
+  vtkModelFace* modelFace = dynamic_cast<vtkModelFace*>(modelCell);
+  vtkModelEdge* modelEdge = dynamic_cast<vtkModelEdge*>(modelCell);
+  vtkModelVertex* modelVertex = dynamic_cast<vtkModelVertex*>(modelCell);
+  if (modelRegion)
+    {
+    // NB: The discrete session does not have volume uses... we use the helper to
+    //     store an extra UUID.
+    smtk::model::EntityRef volumeUse(cell.manager(), helper->useForRegion(modelRegion));
+    /*
+    if (!helper->isMarked(childRef))
+      this->transcribe(childRef, smtk::model::SESSION_EVERYTHING, false, -1);
+     */
+    this->addEntityRecord(volumeUse);
+    this->findOrAddRelatedEntities(volumeUse, smtk::model::SESSION_EVERYTHING, helper);
+    helper->addArrangement(
+      cell, smtk::model::HAS_USE, volumeUse, /* sense */ 0, smtk::model::POSITIVE);
+    }
+  else if (modelFace)
+    {
+    this->addEntity(cell, modelFace->GetModelFaceUse(0), smtk::model::HAS_USE, helper, 0, smtk::model::NEGATIVE);
+    this->addEntity(cell, modelFace->GetModelFaceUse(1), smtk::model::HAS_USE, helper, 0, smtk::model::POSITIVE);
+    numEnts = 2;
+    }
+  else if (modelEdge)
+    {
+    LookupSenseOfUse<vtkModelEdgeUse> senseLookup(helper);
+    numEnts = this->addEntities(cell, modelEdge->NewModelEdgeUseIterator(), smtk::model::HAS_USE, helper, senseLookup);
+    }
+  else if (modelVertex)
+    {
+    LookupSenseOfUse<vtkModelVertexUse> senseLookup(helper);
+    numEnts = this->addEntities(cell, modelVertex->NewModelVertexUseIterator(), smtk::model::HAS_USE, helper, senseLookup);
+    }
+  return numEnts;
+}
+
+int Session::findOrAddOwningCell(
+  const smtk::model::UseEntity& entRef,
+  SessionInfoBits request,
+  smtk::model::ArrangementHelper* hlp)
+{
+  (void)request;
+  ArrangementHelper* helper = dynamic_cast<ArrangementHelper*>(hlp);
+  smtk::model::EntityRef cell;
+  if (entRef.isVolumeUse())
+    {
+    cell = smtk::model::Volume(
+      entRef.manager(),
+      this->findOrSetEntityUUID(
+        helper->regionFromUseId(entRef.entity())));
+    this->addEntityRecord(cell);
+    this->findOrAddRelatedEntities(cell, smtk::model::SESSION_EVERYTHING, helper);
+    helper->addArrangement(cell, smtk::model::HAS_CELL, entRef, 0, smtk::model::POSITIVE);
+    }
+  else
+    {
+    int sense;
+    smtk::model::Orientation orientation;
+    vtkModelItem* dscUse = this->entityForUUID(entRef.entity());
+    vtkModelVertexUse* dscVertexUse = dynamic_cast<vtkModelVertexUse*>(dscUse);
+    vtkModelEdgeUse* dscEdgeUse = dynamic_cast<vtkModelEdgeUse*>(dscUse);
+    vtkModelFaceUse* dscFaceUse = dynamic_cast<vtkModelFaceUse*>(dscUse);
+    if (dscFaceUse)
+      {
+      cell = smtk::model::EntityRef(entRef.manager(), this->findOrSetEntityUUID(dscFaceUse->GetModelFace()));
+      sense = 0;
+      orientation =
+        (dscFaceUse->GetModelFace()->GetModelFaceUse(1) == dscFaceUse ?
+          smtk::model::POSITIVE :
+          smtk::model::NEGATIVE);
+      }
+    else if (dscEdgeUse)
+      {
+      cell = smtk::model::EntityRef(entRef.manager(), this->findOrSetEntityUUID(dscEdgeUse->GetModelEdge()));
+      sense = helper->findOrAssignSense(dscEdgeUse);
+      orientation = dscEdgeUse->GetDirection() ? smtk::model::POSITIVE : smtk::model::NEGATIVE;
+      }
+    else if (dscVertexUse)
+      {
+      cell = smtk::model::EntityRef(entRef.manager(), this->findOrSetEntityUUID(dscVertexUse->GetModelVertex()));
+      sense = 0; // FIXME (see also LookupSenseOfUse)
+      orientation = smtk::model::UNDEFINED;
+      }
+    else
+      {
+      sense = -1;
+      }
+    if (sense < 0)
+      return 0;
+
+    this->addEntity(cell, dscUse, smtk::model::HAS_USE, helper, sense, orientation);
+    // addEntity searches for relationships of dscUse, but we need to add the cell, not the use:
+    //this->addEntityRecord(cell, smtk::model::SESSION_EVERYTHING, helper);
+    this->findOrAddRelatedEntities(cell, smtk::model::SESSION_EVERYTHING, helper);
+    }
+  return 1;
+}
+
+int Session::findOrAddShellAdjacencies(
+  const smtk::model::UseEntity& entRef,
+  SessionInfoBits request,
+  smtk::model::ArrangementHelper* hlp)
+{
+  (void)request;
+  int numEnts = 0;
+  ArrangementHelper* helper = dynamic_cast<ArrangementHelper*>(hlp);
+  smtk::model::EntityRef cell;
+  if (entRef.isVolumeUse())
+    {
+    vtkModelRegion* region = helper->regionFromUseId(entRef.entity());
+    LookupSenseForShellEnt senseLookup(helper);
+    cell = smtk::model::Volume(
+      entRef.manager(),
+      this->findOrSetEntityUUID(region));
+    numEnts += this->addEntities(entRef, region->NewModelShellUseIterator(), smtk::model::INCLUDES, helper, senseLookup);
+    }
+  else
+    {
+    vtkModelItem* dscUse = this->entityForUUID(entRef.entity());
+    vtkModelFaceUse* dscFaceUse = dynamic_cast<vtkModelFaceUse*>(dscUse);
+    vtkModelEdgeUse* dscEdgeUse = dynamic_cast<vtkModelEdgeUse*>(dscUse);
+    vtkModelVertexUse* dscVertexUse = dynamic_cast<vtkModelVertexUse*>(dscUse);
+    if (dscFaceUse)
+      {
+      // Add relationship to parent shell
+      vtkModelShellUse* dscShell = dscFaceUse->GetModelShellUse();
+      if (dscShell)
+        {
+        smtk::model::Shell parent(entRef.manager(), this->findOrSetEntityUUID(dscShell));
+        this->addEntity(parent, dscFaceUse, smtk::model::HAS_USE, helper);
+        ++numEnts;
+        }
+
+      // Add relationship to child loop
+      vtkModelLoopUse* dscLoop = dscFaceUse->GetOuterLoopUse();
+      if (dscLoop)
+        {
+        this->addEntity(entRef, dscLoop, smtk::model::INCLUDES, helper);
+        ++numEnts;
+        }
+      }
+    else if (dscEdgeUse)
+      {
+      // Add relationship to parent shell
+      vtkModelLoopUse* dscLoop = dscEdgeUse->GetModelLoopUse();
+      if (dscLoop)
+        {
+        smtk::model::Loop parent(entRef.manager(), this->findOrSetEntityUUID(dscLoop));
+        this->addEntity(parent, dscEdgeUse, smtk::model::HAS_USE, helper);
+        ++numEnts;
+        }
+
+      // Have the helper create a "virtual" Chain of vertex uses and add relations to those.
+      // Would call this->addEntityRecord(childRef); but there is no matching discrete item...
+      // ... so manually insert the chain.
+      smtk::model::Chain childRef =
+        entRef.manager()->insertChain(helper->chainForEdgeUse(dscEdgeUse));
+      this->findOrAddRelatedEntities(childRef, smtk::model::SESSION_EVERYTHING, helper);
+      helper->addArrangement(entRef, smtk::model::INCLUDES, childRef);
+      numEnts += 2; // loop + outer chain
+      }
+    else if (dscVertexUse)
+      {
+      // Add the relationship to the parent edge uses.
+      // Unlike other use records, a single vertex use can have multiple parent chains.
+      // Because the discrete kernel does not have the concept of a chain (an oriented sequence of vertices
+      // that bound an edge use), we look up the edge uses and obtain chains from them.
+      vtkModelItemIterator* euit = dscVertexUse->NewModelEdgeUseIterator();
+      for (euit->Begin(); !euit->IsAtEnd(); euit->Next(), ++numEnts)
+        {
+        smtk::model::Chain chain =
+          entRef.manager()->insertChain(
+            helper->chainForEdgeUse(
+              dynamic_cast<vtkModelEdgeUse*>(euit->GetCurrentItem())));
+        this->addEntity(chain, dscVertexUse, smtk::model::HAS_USE, helper);
+        }
+      euit->Delete();
+
+      // VertexUses have no child loops.
+      }
+    }
+  return numEnts;
+}
+
+static int FindParentFaceUse(
+  vtkModelLoopUse* dscLoop,
+  vtkModelFace* face,
+  vtkModelFaceUse*& faceUse,
+  int& useIndex,
+  int& loopIndex)
+{
+  if (!dscLoop || !face)
+    return 0;
+  for (useIndex = 0; useIndex < 2; ++useIndex)
+    {
+    faceUse = face->GetModelFaceUse(useIndex);
+    if (!faceUse)
+      continue;
+    vtkModelItemIterator* loopIt = faceUse->NewLoopUseIterator();
+    loopIndex = 0;
+    for (loopIt->Begin(); !loopIt->IsAtEnd(); loopIt->Next(), ++loopIndex)
+      {
+      vtkModelLoopUse* loop = dynamic_cast<vtkModelLoopUse*>(loopIt->GetCurrentItem());
+      if (dscLoop == loop)
+        {
+        loopIt->Delete();
+        return 1;
+        }
+      }
+    loopIt->Delete();
+    }
+  return 0;
+}
+
+int Session::findOrAddUseAdjacencies(
+  const smtk::model::ShellEntity& entRef,
+  SessionInfoBits request,
+  smtk::model::ArrangementHelper* hlp)
+{
+  (void)request;
+  int numEnts = 0;
+  ArrangementHelper* helper = dynamic_cast<ArrangementHelper*>(hlp);
+  smtk::model::EntityRef parentUseOrShell;
+  vtkModelItem* dscEnt = this->entityForUUID(entRef.entity());
+  vtkModelShellUse* dscShell;
+  vtkModelLoopUse* dscLoop;
+  vtkModelEdgeUse* dscEdgeUse;
+  if (entRef.isShell() && (dscShell = dynamic_cast<vtkModelShellUse*>(dscEnt)))
+    {
+    vtkModelRegion* region = dscShell->GetModelRegion();
+    if (region)
+      {
+      // Add parent and children of shell.
+      // Note that the first shell is the only shell considered an outer shell.
+      // All others are considered internal (i.e., a single connected component per volume).
+      // Internal shells may not contain other shells (i.e., no islands within voids).
+      vtkModelItemIterator* shellIt = region->NewModelShellUseIterator();
+      shellIt->Begin();
+      if (dscShell == shellIt->GetCurrentItem())
+        { // Only add other shells if we are the outer shell
+        // Add parent volume-use of shell
+        smtk::model::VolumeUse parent(
+          entRef.manager(), helper->useForRegion(region));
+        this->addEntity(parent, dscShell, smtk::model::INCLUDES, helper);
+        ++numEnts;
+
+        for (/*nothing*/; !shellIt->IsAtEnd(); shellIt->Next(), ++numEnts)
+          {
+          vtkModelShellUse* subshell =
+            dynamic_cast<vtkModelShellUse*>(
+              shellIt->GetCurrentItem());
+          this->addEntity(entRef, subshell, smtk::model::INCLUDES, helper);
+          }
+        }
+      else
+        {
+        // This shell is the child of another shell; it has no child shells of its own.
+        smtk::model::Shell parent(
+          entRef.manager(), this->findOrSetEntityUUID(shellIt->GetCurrentItem()));
+        this->addEntity(parent, dscShell, smtk::model::INCLUDES, helper);
+        ++numEnts;
+        }
+      }
+    // Add child face-uses of shell
+    numEnts += this->addEntities(entRef, dscShell->NewModelFaceUseIterator(), smtk::model::HAS_USE, helper);
+    }
+  else if (entRef.isLoop() && (dscLoop = dynamic_cast<vtkModelLoopUse*>(dscEnt)))
+    {
+    vtkModelFace* face = dscLoop->GetModelFace();
+    if (face)
+      {
+      // Ugly. Loop only provides parent face, not face use. So we must search all loops of all uses of the face to find our parent.
+      vtkModelFaceUse* faceUse;
+      int useIndex; // 0 for negative face use, 1 for positive face use
+      int loopIndex;
+      if (FindParentFaceUse(dscLoop, face, faceUse, useIndex, loopIndex))
+        {
+        // Add parent and children of loop.
+        // Note that the first loop is the only loop considered an outer loop.
+        // All others are considered internal (i.e., a single connected component per volume).
+        // Internal loops may not contain other loops (i.e., no islands within voids).
+        if (dscLoop == faceUse->GetOuterLoopUse())
+          {
+          // Only add other loops if we are the outer loop
+          // Add parent volume-use of loop
+          smtk::model::FaceUse parent(
+            entRef.manager(), this->findOrSetEntityUUID(faceUse));
+          this->addEntity(parent, dscLoop, smtk::model::INCLUDES, helper);
+          ++numEnts;
+
+          vtkModelItemIterator* loopIt = faceUse->NewLoopUseIterator();
+          for (loopIt->Begin(); !loopIt->IsAtEnd(); loopIt->Next())
+            {
+            vtkModelLoopUse* subloop =
+              dynamic_cast<vtkModelLoopUse*>(
+                loopIt->GetCurrentItem());
+            if (subloop == dscLoop)
+              continue;
+
+            this->addEntity(entRef, subloop, smtk::model::INCLUDES, helper);
+            ++numEnts;
+            }
+          }
+        else
+          { // we are an inner loop use.
+          // This loop is the child of another loop; it has no child loops of its own.
+          smtk::model::Loop parent(
+            entRef.manager(), this->findOrSetEntityUUID(faceUse->GetOuterLoopUse()));
+          this->addEntity(parent, dscLoop, smtk::model::INCLUDES, helper);
+          ++numEnts;
+          }
+        }
+      }
+    // Add child edge-uses of loop
+    numEnts += this->addEntities(entRef, dscLoop->NewModelEdgeUseIterator(), smtk::model::HAS_USE, helper);
+    }
+  else if (entRef.isChain() && (dscEdgeUse = helper->edgeUseFromChainId(entRef.entity())))
+    {
+    // Add parent edge use to chain
+    this->addEntity(dscEdgeUse, entRef, smtk::model::INCLUDES, helper);
+
+    // Add child vertex uses
+    numEnts += this->addEntities(entRef, dscEdgeUse->NewIterator(vtkModelVertexUseType), smtk::model::HAS_USE, helper);
+    }
+  return numEnts;
+}
+
+int Session::findOrAddGroupOwner(
+  const smtk::model::Group& entRef,
+  SessionInfoBits request,
+  smtk::model::ArrangementHelper* helper)
+{
+  (void)request;
+  (void)entRef;
+  (void)helper;
+  return 0;
+}
+
+int Session::findOrAddFreeCells(
+  const smtk::model::Model& entRef,
+  SessionInfoBits request,
+  smtk::model::ArrangementHelper* hlp)
+{
+  (void)request;
+  ArrangementHelper* helper = dynamic_cast<ArrangementHelper*>(hlp);
+  int numEnts = 0;
+  vtkModelItem* body = this->entityForUUID(entRef.entity());
+  if (body->GetNumberOfAssociations(vtkModelRegionType))
+    { // Add regions to model
+    numEnts += this->addEntities(entRef, body->NewIterator(vtkModelRegionType), smtk::model::INCLUDES, helper);
+    }
+  else if (body->GetNumberOfAssociations(vtkModelFaceType))
+    { // Add faces to model
+    numEnts += this->addEntities(entRef, body->NewIterator(vtkModelFaceType), smtk::model::INCLUDES, helper);
+    }
+  else if (body->GetNumberOfAssociations(vtkModelEdgeType))
+    { // Add edges to model
+    numEnts += this->addEntities(entRef, body->NewIterator(vtkModelEdgeType), smtk::model::INCLUDES, helper);
+    }
+  else if (body->GetNumberOfAssociations(vtkModelVertexType))
+    { // Add vertices to model
+    numEnts += this->addEntities(entRef, body->NewIterator(vtkModelVertexType), smtk::model::INCLUDES, helper);
+    }
+
+  return numEnts;
+}
+
+int Session::findOrAddRelatedModels(
+  const smtk::model::Model& entRef,
+  SessionInfoBits request,
+  smtk::model::ArrangementHelper* helper)
+{
+  (void)request;
+  (void)entRef;
+  (void)helper;
+  // Discrete kernel does not allow models to contain models.
+  return 0;
+}
+
+int Session::findOrAddPrototype(
+  const smtk::model::Instance& entRef,
+  SessionInfoBits request,
+  smtk::model::ArrangementHelper* helper)
+{
+  (void)request;
+  (void)entRef;
+  (void)helper;
+  return 0;
+}
+
+int Session::findOrAddRelatedModels(
+  const smtk::model::SessionRef& entRef,
+  SessionInfoBits request,
+  smtk::model::ArrangementHelper* helper)
+{
+  (void)request;
+  (void)entRef;
+  (void)helper;
+  return 0;
+}
+
+int Session::findOrAddRelatedGroups(
+  const smtk::model::EntityRef& entRef,
+  SessionInfoBits request,
+  smtk::model::ArrangementHelper* hlp)
+{
+  (void)request;
+  ArrangementHelper* helper = dynamic_cast<ArrangementHelper*>(hlp);
+  vtkDiscreteModelEntity* ent =
+    dynamic_cast<vtkDiscreteModelEntity*>(
+      this->entityForUUID(entRef.entity()));
+  if (!ent)
+    return 0;
+
+  int numGroups = this->addEntities(
+    ent->NewModelEntityGroupIterator(), entRef,
+    smtk::model::SUPERSET_OF, helper);
+  return numGroups;
+}
+
+int Session::findOrAddRelatedInstances(
+  const smtk::model::EntityRef& entRef,
+  SessionInfoBits request,
+  smtk::model::ArrangementHelper* helper)
+{
+  (void)request;
+  (void)entRef;
+  (void)helper;
+  return 0;
+}
+
+smtk::model::SessionInfoBits Session::findOrAddArrangements(
+  const smtk::model::EntityRef& entRef,
+  Entity* entRec,
+  SessionInfoBits flags,
+  smtk::model::ArrangementHelper* helper)
+{
+  (void)entRef;
+  (void)entRec;
+  (void)flags;
+  (void)helper;
+  return 0;
+}
+
+SessionInfoBits Session::updateProperties(
+  const smtk::model::EntityRef& entRef,
+  Entity* entRec,
+  SessionInfoBits flags,
+  smtk::model::ArrangementHelper* helper)
+{
+  (void)entRec;
+  smtk::model::EntityRef mutableRef(entRef);
+  this->addProperties(mutableRef, this->entityForUUID(entRef.entity()));
+  if (flags & smtk::model::SESSION_PROPERTIES)
+    {
+    smtk::model::EntityRef mutableRef(entRef);
+    if (this->addProperties(mutableRef, this->entityForUUID(entRef.entity())))
+      return smtk::model::SESSION_PROPERTIES;
+    }
+  return 0;
+}
+
+SessionInfoBits Session::updateTessellation(
+  const smtk::model::EntityRef& entRef,
+  SessionInfoBits flags,
+  smtk::model::ArrangementHelper* helper)
+{
+  (void)flags;
+  (void)helper;
+  // TODO: Test and/or Add generation number property to indicate last time
+  //       tessellation was generated relative to vtkModelItem...
+  if (flags & smtk::model::SESSION_TESSELLATION)
+    {
+    vtkModelGeometricEntity* item =
+      dynamic_cast<vtkModelGeometricEntity*>(
+        this->entityForUUID(entRef.entity()));
+    if (item && this->addTessellation(entRef, item))
+      return smtk::model::SESSION_TESSELLATION;
+    }
   return 0;
 }
 
 smtk::common::UUID Session::trackModel(
-  vtkDiscreteModelWrapper* mod, const std::string& url,
+  vtkDiscreteModelWrapper* mod,
+  const std::string& url,
   smtk::model::ManagerPtr mgr)
 {
   vtkDiscreteModel* dmod = mod->GetModel();
@@ -362,7 +1079,10 @@ smtk::common::UUID Session::trackModel(
 
   // Now add the record to manager and assign the URL to
   // the model as a string property.
-  smtk::model::EntityRef c = this->addCMBEntityToManager(mid, dmod, mgr, 8);
+  //smtk::model::EntityRef c = this->addCMBEntityToManager(mid, dmod, mgr, 8);
+  smtk::model::EntityRef c(mgr, mid);
+  this->declareDanglingEntity(c);
+  this->transcribe(c, smtk::model::SESSION_EVERYTHING);
   c.setStringProperty("url", url);
 
   return mid;
@@ -385,7 +1105,10 @@ bool Session::assignUUIDToEntity(
 smtk::common::UUID Session::findOrSetEntityUUID(vtkModelItem* item)
 {
   vtkInformation* mp = item->GetProperties();
-  return this->findOrSetEntityUUID(mp);
+  smtk::common::UUID result = this->findOrSetEntityUUID(mp);
+  if (result && item)
+    this->m_itemsToRefs[result] = item;
+  return result;
 }
 
 smtk::common::UUID Session::findOrSetEntityUUID(vtkInformation* mp)
@@ -569,6 +1292,136 @@ void Session::addEntityArray(P& parent, C& childContainer, const H& helper, int 
     }
 }
 
+/// Add a child to \a parent's manager and a parent-child relationship to \a helper.
+void Session::addEntity(
+  const smtk::model::EntityRef& parent,
+  vtkModelItem* child,
+  smtk::model::ArrangementKind k,
+  ArrangementHelper* helper,
+  int sense,
+  smtk::model::Orientation orientation)
+{
+  smtk::model::EntityRef childRef(
+    parent.manager(),
+    this->findOrSetEntityUUID(child));
+  this->addEntityRecord(parent);
+  if (parent.isUseEntity()) helper->reset(parent);
+  this->addEntityRecord(childRef);
+  if (childRef.isUseEntity()) helper->reset(childRef);
+  this->findOrAddRelatedEntities(childRef, smtk::model::SESSION_EVERYTHING, helper);
+  helper->addArrangement(parent, k, childRef, sense, orientation);
+}
+
+/// Add a parent to the manager and a parent-child relationship to the helper.
+void Session::addEntity(
+  vtkModelItem* parent,
+  const smtk::model::EntityRef& child,
+  smtk::model::ArrangementKind k,
+  ArrangementHelper* helper,
+  int sense,
+  smtk::model::Orientation orientation)
+{
+  smtk::model::EntityRef parentRef(
+    child.manager(),
+    this->findOrSetEntityUUID(parent));
+  this->addEntityRecord(parentRef);
+  if (parentRef.isUseEntity()) helper->reset(parentRef);
+  this->addEntityRecord(child);
+  if (child.isUseEntity()) helper->reset(child);
+  this->findOrAddRelatedEntities(parentRef, smtk::model::SESSION_EVERYTHING, helper);
+  helper->addArrangement(parentRef, k, child, sense, orientation);
+}
+
+/**\brief Add children to \a parent's manager and parent-child relationships to \a helper.
+  *
+  * The parent-child relationships map \a parent to each entry of \a it with the given type \a k.
+  */
+int Session::addEntities(
+  const EntityRef& parent,
+  vtkModelItemIterator* it,
+  ArrangementKind k,
+  ArrangementHelper* helper)
+{
+  int numEnts = 0;
+  for (it->Begin(); !it->IsAtEnd(); it->Next(), ++numEnts)
+    {
+    this->addEntity(parent, it->GetCurrentItem(), k, helper, -1, smtk::model::UNDEFINED);
+    }
+  it->Delete();
+  return numEnts;
+}
+
+/**\brief Add children to \a parent's manager and parent-child relationships to \a helper.
+  *
+  * The parent-child relationships map \a parent to each entry of \a it with the given type \a k.
+  * This variant accepts a functor (\a senseLookup) which is invoked to determine the sense
+  * and orientation of each item so that the arrangement is configured properly.
+  */
+template<typename T>
+int Session::addEntities(
+  const smtk::model::EntityRef& parent,
+  vtkModelItemIterator* it,
+  smtk::model::ArrangementKind k,
+  ArrangementHelper* helper,
+  T& senseLookup)
+{
+  int numEnts = 0;
+  for (it->Begin(); !it->IsAtEnd(); it->Next(), ++numEnts)
+    {
+    int sense;
+    Orientation orientation;
+    senseLookup(it->GetCurrentItem(), sense, orientation);
+    this->addEntity(parent, it->GetCurrentItem(), k, helper, sense, orientation);
+    }
+  it->Delete();
+  return numEnts;
+}
+
+/**\brief Add multiple parents to \a child's manager and parent-child relationships to \a helper.
+  *
+  * The parent-child relationships map \a parent to each entry of \a it with the given type \a k.
+  */
+int Session::addEntities(
+  vtkModelItemIterator* it,
+  const smtk::model::EntityRef& child,
+  smtk::model::ArrangementKind k,
+  ArrangementHelper* helper)
+{
+  int numEnts = 0;
+  for (it->Begin(); !it->IsAtEnd(); it->Next(), ++numEnts)
+    {
+    this->addEntity(it->GetCurrentItem(), child, k, helper, -1, smtk::model::UNDEFINED);
+    }
+  it->Delete();
+  return numEnts;
+}
+
+/**\brief Add multiple parents to \a child's manager and parent-child relationships to \a helper.
+  *
+  * The parent-child relationships map \a parent to each entry of \a it with the given type \a k.
+  * This variant accepts a functor (\a senseLookup) which is invoked to determine the sense
+  * and orientation of each item so that the arrangement is configured properly.
+  */
+template<typename T>
+int Session::addEntities(
+  vtkModelItemIterator* it,
+  const smtk::model::EntityRef& child,
+  smtk::model::ArrangementKind k,
+  ArrangementHelper* helper,
+  T& senseLookup)
+{
+  int numEnts = 0;
+  for (it->Begin(); !it->IsAtEnd(); it->Next(), ++numEnts)
+    {
+    int sense;
+    Orientation orientation;
+    senseLookup(it->GetCurrentItem(), sense, orientation);
+    this->addEntity(it->GetCurrentItem(), child, k, helper, sense, orientation);
+    }
+  it->Delete();
+  return numEnts;
+}
+
 // A method that helps convert vtkPolyData into an SMTK Tessellation.
 static void AddCellsToTessellation(
   vtkPoints* pts,
@@ -696,6 +1549,10 @@ bool Session::addProperties(
       if (uname)
         cellOut.setName(uname);
       }
+    }
+  if (cellOut.isModel())
+    {
+    cellOut.setIntegerProperty(SMTK_GEOM_STYLE_PROP, smtk::model::DISCRETE);
     }
   return hasProps;
 }

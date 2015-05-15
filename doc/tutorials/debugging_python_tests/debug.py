@@ -2,9 +2,8 @@
 Verify that our documentation on running unit tests in the interpreter is correct.
 """
 import smtk.testing
-import unittest
 
-class DebugAPythonTest(unittest.TestCase):
+class DebugAPythonTest(smtk.testing.TestCase):
 
     def testDebugReadFile(self):
         import smtk.testing
@@ -37,4 +36,4 @@ class DebugAPythonTest(unittest.TestCase):
 
 if __name__ == '__main__':
   smtk.testing.process_arguments()
-  unittest.main()
+  smtk.testing.main()

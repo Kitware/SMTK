@@ -12,16 +12,12 @@
 import smtk
 import smtk.testing
 from smtk.simple import *
+import sys
 
-try:
-  import unittest2 as unittest
-except ImportError:
-  import unittest
-
-class TestExodusSession(unittest.TestCase):
+class TestExodusSession(smtk.testing.TestCase):
 
   def setUp(self):
-    import os, sys
+    import os
     self.filename = os.path.join(smtk.testing.DATA_DIR, 'exodus', 'disk_out_ref.ex2')
 
     self.mgr = smtk.model.Manager.create()
@@ -32,20 +28,26 @@ class TestExodusSession(unittest.TestCase):
     ents = Read(self.filename)
     self.model = smtk.model.Model(ents[0])
 
+    #Verify that the model is marked as discrete
+    self.assertEqual(
+        self.model.geometryStyle(), smtk.model.DISCRETE,
+        'Expected discrete model, got {gs}'.format(gs=self.model.geometryStyle()))
+
     #Verify that the file contains the proper number of groups.
     numGroups = len(self.model.groups())
     self.assertEqual(numGroups, 11, 'Expected 11 groups, found %d' % numGroups)
 
     #Verify that the group names match those from the Exodus file.
-    nameset = set([
-      'Unnamed block ID: 1 Type: HEX8',
-      'Unnamed set ID: 1',
-      'Unnamed set ID: 2',
-      'Unnamed set ID: 3',
-      'Unnamed set ID: 4',
-      'Unnamed set ID: 5',
-      'Unnamed set ID: 6',
-      'Unnamed set ID: 7'])
+    nameset = {
+        'Unnamed block ID: 1 Type: HEX8': '#5a5255',
+        'Unnamed set ID: 1':              '#ae5a41',
+        'Unnamed set ID: 2':              '#559e83',
+        'Unnamed set ID: 3':              '#c3cb71',
+        'Unnamed set ID: 4':              '#1b85b8',
+        'Unnamed set ID: 5':              '#cb2c31',
+        'Unnamed set ID: 6':              '#8b1ec4',
+        'Unnamed set ID: 7':              '#ff6700'
+    }
     self.assertTrue(all([x.name() in nameset for x in self.model.groups()]),
         'Not all group names recognized.')
 
@@ -67,6 +69,31 @@ class TestExodusSession(unittest.TestCase):
     self.assertEqual(gtc, expectedgrouptypecounts,
         'At least one group was of the wrong type.')
 
+    if self.haveVTK() and self.haveVTKExtension():
+
+        # Render groups with colors:
+        for grp in self.model.groups():
+            color = self.hex2rgb(nameset[grp.name()])
+            SetEntityProperty(grp, 'color', as_float=color)
+
+        self.startRenderTest()
+        mbs = self.addModelToScene(self.model)
+
+        self.renderer.SetBackground(1,1,1)
+        cam = self.renderer.GetActiveCamera()
+        cam.SetFocalPoint(0., 0., 0.)
+        cam.SetPosition(19,17,-43)
+        cam.SetViewUp(-0.891963, -0.122107, -0.435306)
+        self.renderer.ResetCamera()
+        self.renderWindow.Render()
+        self.assertImageMatch(['baselines', 'exodus', 'disk_out_ref.png'])
+        self.interact()
+
+    else:
+        self.assertFalse(
+            self.haveVTKExtension(),
+            'Could not import vtk. Python path is {pp}'.format(pp=sys.path))
+
 if __name__ == '__main__':
   smtk.testing.process_arguments()
-  unittest.main()
+  smtk.testing.main()

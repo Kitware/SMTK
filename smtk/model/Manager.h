@@ -53,6 +53,25 @@
 
 #include <sstream>
 
+/**\brief The name of an integer property used to store display Tessellation generation numbers.
+  *
+  * Starting with "_" indicates internal-use-only.
+  * Short (8 bytes or less) means single word comparison suffices on many platforms => fast.
+  */
+#define SMTK_TESS_GEN_PROP "_tessgen"
+
+/**\brief The name of an integer property used to store mesh Tessellation generation numbers.
+  *
+  * \sa SMTK_TESS_GEN_PROP
+  */
+#define SMTK_MESH_GEN_PROP "_meshgen"
+
+/**\brief The name of an integer property used to store the geometric representation style of a model.
+  *
+  * \sa ModelGeometryStyle
+  */
+#define SMTK_GEOM_STYLE_PROP "_geomstyle"
+
 namespace smtk {
   namespace model {
 
@@ -113,9 +132,9 @@ public:
   const Entity* findEntity(const smtk::common::UUID& uid, bool trySessions = true) const;
   Entity* findEntity(const smtk::common::UUID& uid, bool trySessions = true);
 
-  virtual bool erase(const smtk::common::UUID& uid);
-  virtual bool erase(const EntityRef& entityref);
-  virtual bool eraseModel(const Model& entityref);
+  virtual SessionInfoBits erase(const smtk::common::UUID& uid, SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
+  virtual SessionInfoBits erase(const EntityRef& entityref, SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
+  virtual SessionInfoBits eraseModel(const Model& entityref, SessionInfoBits flags = smtk::model::SESSION_EVERYTHING);
 
   smtk::common::UUIDs bordantEntities(const smtk::common::UUID& ofEntity, int ofDimension = -2) const;
   smtk::common::UUIDs bordantEntities(const smtk::common::UUIDs& ofEntities, int ofDimension = -2) const;
@@ -228,10 +247,16 @@ public:
   template<typename Collection>
   Collection entitiesMatchingFlagsAs(BitFlags flags, bool exactMatch = true);
 
-  tess_iter_type setTessellation(const smtk::common::UUID& cellId, const Tessellation& geom);
+  tess_iter_type setTessellation(
+    const smtk::common::UUID& cellId,
+    const Tessellation& geom,
+    int analysis = 0,
+    int* gen = NULL);
+  bool removeTessellation(const smtk::common::UUID& cellId, bool removeGen = false);
 
   int arrangeEntity(const smtk::common::UUID& entityId, ArrangementKind, const Arrangement& arr, int index = -1);
   int unarrangeEntity(const smtk::common::UUID& entityId, ArrangementKind, int index, bool removeIfLast = false);
+  bool clearArrangements(const smtk::common::UUID& entityId);
 
   const Arrangements* hasArrangementsOfKindForEntity(
     const smtk::common::UUID& cellId,
@@ -250,8 +275,11 @@ public:
   bool findDualArrangements(
     const smtk::common::UUID& entityId, ArrangementKind kind, int index,
     ArrangementReferences& duals) const;
+  bool addDualArrangement(
+    const smtk::common::UUID& parent, const smtk::common::UUID& child,
+    ArrangementKind kind, int sense, Orientation orientation);
 
-  int findCellHasUseWithSense(const smtk::common::UUID& cellId, int sense) const;
+  int findCellHasUseWithSense(const smtk::common::UUID& cellId, const smtk::common::UUID& use, int sense) const;
   std::set<int> findCellHasUsesWithOrientation(const smtk::common::UUID& cellId, Orientation orient) const;
 
   smtk::common::UUID cellHasUseOfSenseAndOrientation(const smtk::common::UUID& cell, int sense, Orientation o) const;

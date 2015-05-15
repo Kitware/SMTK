@@ -84,6 +84,49 @@ CellEntities CellEntity::boundingCells() const
   return cells; // or CellEntities(cells.begin(), cells.end()); if cells is a set.
 }
 
+/**\brief Return oriented uses of boundary cells.
+  *
+  * This method takes a cell-use of this cell with the given
+  * \a orientation, fetches all of that use's shell entities and appends all
+  * of those shells' cell-uses to the output.
+  *
+  * For example, calling boundingCellUses(POSITIVE) on a face will return
+  * a set of edge uses that define the boundary of the face.
+  *
+  * Note that a Volume may only have a POSITIVE orientation and vertices
+  * have no boundary.
+  */
+UseEntities CellEntity::boundingCellUses(Orientation orientation) const
+{
+  UseEntity cellUse;
+  UseEntities result = this->uses<UseEntities>();
+  for (UseEntities::iterator it = result.begin(); it != result.end(); ++it)
+    if (it->isValid() && it->orientation() == orientation)
+      cellUse = *it;
+  result.clear();
+  if (!cellUse.isValid())
+    return result;
+  // We have a properly-oriented use; ask for all of its loops, appending
+  // each loop's HAS_USE relations to result as we go.
+  std::deque<ShellEntity> tmp =
+    cellUse.shellEntities<std::deque<ShellEntity> >();
+  ShellEntity shell;
+  for (; !tmp.empty(); tmp.pop_front())
+    {
+    shell = tmp.front();
+    // Add the shell's use's cells to the output
+    UseEntities su = shell.uses<UseEntities>();
+    result.insert(result.end(), su.begin(), su.end());
+    // Add the shell's inner shells to tmp
+    ShellEntities innerShells =
+      shell.containedShellEntities<ShellEntities>();
+    ShellEntities::iterator iit;
+    for (iit = innerShells.begin(); iit != innerShells.end(); ++iit)
+      tmp.push_back(*iit);
+    }
+  return result;
+}
+
 /*! \fn CellEntity::inclusions() const
  * \brief Return the list of all entities embedded in this cell.
  *

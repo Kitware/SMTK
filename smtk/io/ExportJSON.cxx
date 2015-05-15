@@ -30,6 +30,8 @@
 
 #include "cJSON.h"
 
+#include <fstream>
+
 #include <stdlib.h> // for free()
 
 using namespace smtk::io;
@@ -197,6 +199,16 @@ std::string ExportJSON::fromModelManager(ManagerPtr modelMgr, JSONFlags sections
   free(json);
   cJSON_Delete(top);
   return result;
+}
+
+bool ExportJSON::fromModelManagerToFile(smtk::model::ManagerPtr modelMgr, const char* filename)
+{
+  if (!filename || !modelMgr)
+    return false;
+
+  std::ofstream file(filename);
+  file << ExportJSON::fromModelManager(modelMgr, JSON_DEFAULT);
+  return true;
 }
 
 int ExportJSON::forManager(

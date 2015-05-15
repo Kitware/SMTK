@@ -15,17 +15,16 @@
 // same point set so there is no concern about getting the point Ids
 // confused.
 
-#ifndef __vtkEdgeSplitOperatorBase_h
-#define __vtkEdgeSplitOperatorBase_h
+#ifndef __smtkdiscrete_vtkEdgeSplitOperatorBase_h
+#define __smtkdiscrete_vtkEdgeSplitOperatorBase_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkObject.h"
-#include "cmbSystemConfig.h"
 
 class vtkDiscreteModel;
 class vtkModelEntity;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkEdgeSplitOperatorBase : public vtkObject
+class SMTKDISCRETESESSION_EXPORT vtkEdgeSplitOperatorBase : public vtkObject
 {
 public:
   static vtkEdgeSplitOperatorBase * New();

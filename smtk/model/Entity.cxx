@@ -204,6 +204,17 @@ Entity& Entity::removeRelation(const UUID& b)
   return *this;
 }
 
+/**\brief Completely clear the entire list of related entities.
+  *
+  * \warning This invalidates all Arrangement information for the entity.
+  *          Do not invoke this unless you know there are no Arrangements.
+  */
+void Entity::resetRelations()
+{
+  this->m_relations.clear();
+  this->m_firstInvalid = -1;
+}
+
 /**\brief Find the given relation \a r and return its index, inserting it if not present.
   */
 int Entity::findOrAppendRelation(const UUID& r)

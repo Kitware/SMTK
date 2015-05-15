@@ -13,6 +13,8 @@
 #include "smtk/CoreExports.h" // for SMTKCORE_EXPORT macro
 #include "smtk/SystemConfig.h"
 
+#include <string>
+
 namespace smtk {
   namespace model {
 
@@ -175,11 +177,72 @@ inline bool isChain(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) ==
 inline bool isLoop(BitFlags entityFlags)  { return (entityFlags & ANY_ENTITY) == SHELL_1D; }
 inline bool isShell(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == SHELL_2D; }
 
-inline bool isGroup(BitFlags entityFlags)    { return (entityFlags & ENTITY_MASK) == GROUP_ENTITY; }
+// Note that unlike other tests, groups may have ENTITY_MASK bits other than GROUP_ENTITY set and still be considered groups.
+// That's because groups can also encode constraints on membership with these bits. For now.
+inline bool isGroup(BitFlags entityFlags)    { return (entityFlags & GROUP_ENTITY) == GROUP_ENTITY; }
 inline bool isModel(BitFlags entityFlags)    { return (entityFlags & ENTITY_MASK) == MODEL_ENTITY; }
 inline bool isInstance(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == INSTANCE_ENTITY; }
 
 inline bool isSessionRef(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == SESSION; }
+
+/**\brief Enumerate how model domains are represented.
+  *
+  * Currently a model may be listed as PARAMETRIC or DISCRETE.
+  *
+  * PARAMETRIC models have cells that are assumed to have a
+  * parameter-space domain mapped to world coordinates by a
+  * smooth curve or surface, usually described with a single
+  * piecewise-continuous spline per entity.
+  * Their display tessellations are not required to be
+  * conformal (water-tight) and generally aren't.
+  *
+  * DISCRETE models are piecewise linear cell complexes
+  * with no explicit parameter-space (although these are
+  * easy to generate) whose geometry is exactly represented
+  * by the display tessellation, which is required to be
+  * conformal. Each entity has 1 or more geometric primitives
+  * that, taken together, specify the point locus of the
+  * entity is world coordinates.
+  *
+  * Other (non-solid) model types such as point clouds may
+  * be supported eventually; do not treat this enumeration
+  * as a boolean value.
+  */
+enum ModelGeometryStyle
+{
+  DISCRETE,     /**< Cells are discretized as a polygonal/polyhedral piecewise
+                     linear complex (PLC) with a supporting tessellation that
+                     are usually composed of multiple primitive geometric
+                     shapes like triangles or tetrahedra. */
+  PARAMETRIC    /**< Cells are defined by a map from parametric coordinates to
+                     world coordinates, usually as analytic splines. */
+};
+
+/**\brief Given a ModelGeometryStyle, return a short string description.
+  *
+  */
+inline std::string ModelGeometryStyleName(ModelGeometryStyle s)
+{
+  switch (s)
+    {
+  case DISCRETE:   return "discrete";
+  case PARAMETRIC: return "parametric";
+  default:
+    // fall through
+    break;
+    }
+  return "undefined";
+}
+
+/**\brief Given a string name, return the matching ModelGeometryStyle.
+  *
+  */
+inline ModelGeometryStyle NamedModelGeometryStyle(const std::string& s)
+{
+  if (s == "discrete")
+    return DISCRETE;
+  return PARAMETRIC;
+}
 
   } // namespace model
 } // namespace smtk

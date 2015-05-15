@@ -32,11 +32,12 @@
 #include "vtkPolyData.h"
 #include "vtkPoints.h"
 #include "vtkProperty.h"
-#include "vtkRenderer.h"
-#include "vtkRenderView.h"
 #include "vtkStringArray.h"
 #include "vtkPolyDataNormals.h"
 
+#include <inttypes.h>
+#include <stdlib.h>
+#include <errno.h>
 
 using namespace smtk::model;
 
@@ -53,6 +54,7 @@ vtkModelMultiBlockSource::vtkModelMultiBlockSource()
     }
   this->ModelEntityID = NULL;
   this->AllowNormalGeneration = 0;
+  this->ShowAnalysisTessellation = 0;
 }
 
 vtkModelMultiBlockSource::~vtkModelMultiBlockSource()
@@ -68,7 +70,52 @@ void vtkModelMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "Model: " << this->ModelMgr.get() << "\n";
   os << indent << "CachedOutput: " << this->CachedOutput << "\n";
   os << indent << "ModelEntityID: " << this->ModelEntityID << "\n";
-  os << indent << "AllowNormalGeneration: " << this->AllowNormalGeneration << "\n";
+  os << indent << "AllowNormalGeneration: " << (this->AllowNormalGeneration ? "ON" : "OFF") << "\n";
+  os << indent << "ShowAnalysisTessellation: " << this->ShowAnalysisTessellation << "\n";
+}
+
+/**\brief For Python users, this method is the only way to bridge VTK and SMTK wrappings.
+  *
+  */
+void vtkModelMultiBlockSource::SetModelManager(const char* pointerAsString)
+{
+  bool valid = true;
+  vtkTypeUInt64 ptrInt;
+  if (!pointerAsString || !pointerAsString[0])
+    {
+    valid = false;
+    }
+  else
+    {
+    int base = 10;
+    if (pointerAsString[0] == '0' && pointerAsString[1] == 'x')
+      {
+      base = 16;
+      pointerAsString += 2;
+      }
+    char* endPtr;
+    ptrInt = strtoll(pointerAsString, &endPtr, base);
+    if (ptrInt == 0 && errno)
+      valid = false;
+    }
+  if (valid)
+    {
+    if (ptrInt)
+      {
+      Manager* direct =  *(reinterpret_cast<Manager**>(&ptrInt));
+      this->SetModelManager(direct->shared_from_this());
+      }
+    else
+      {
+      // Set to "NULL"
+      vtkWarningMacro("Setting model manager to NULL");
+      this->SetModelManager(ManagerPtr());
+      }
+    }
+  else
+    {
+    vtkWarningMacro("Not setting model manager, errno = " << errno);
+    }
 }
 
 /// Set the SMTK model to be displayed.
@@ -126,7 +173,7 @@ void vtkModelMultiBlockSource::Dirty()
  * This color will be assigned to each cell of each block for entities
  * that do not provide a color float-property.
  *
- * Setting the alhpa component of the default color to a
+ * Setting the alpha component of the default color to a
  * negative number will turn off per-cell color array generation
  * to save space.
  *
@@ -138,19 +185,46 @@ void vtkModelMultiBlockSource::Dirty()
  * This color will be assigned to each cell of each block for entities
  * that do not provide a color float-property.
  *
- * Setting the alhpa component of the default color to a
+ * Setting the alpha component of the default color to a
  * negative number will turn off per-cell color array generation
  * to save space.
  *
  * \sa vtkModelMultiBlockSource::GetDefaultColor
  */
 
+/*! \fn vtkModelMultiBlockSource::GetShowAnalysisTessellation()
+ *  \brief Get which tessellation to output.
+ *
+ * The default value is 0 (output the "display" tessellation, which
+ * is not suitable for analysis but generally fast to compute).
+ * A non-zero value indicates the analysis tessellation will be
+ * output if present. If not present, then the display tessellation
+ * will be output.
+ */
+
+/*! \fn vtkModelMultiBlockSource::SetShowAnalysisTessellation(int tess)
+ *  \brief Set which tessellation to output.
+ *
+ * Setting this to a non-zero value will cause the
+ * analysis tessellation (if present) to be output.
+ * Otherwise, the display tessellation is output.
+ *
+ *  \fn vtkModelMultiBlockSource::ShowAnalysisTessellationOn()
+ *  \brief Request the analysis tessellation be shown.
+ *
+ *  \fn vtkModelMultiBlockSource::ShowAnalysisTessellationOff()
+ *  \brief Request the display tessellation be shown.
+ */
+
 static void AddEntityTessToPolyData(
-  const smtk::model::EntityRef& entityref, vtkPoints* pts, vtkPolyData* pd)
+  const smtk::model::EntityRef& entityref, vtkPoints* pts, vtkPolyData* pd,
+  int showAnalysisTessellation)
 {
-  //gotMesh will get Analsyis mesh if it exists, and will fall back
-  //to model tessellation if not.
-  const smtk::model::Tessellation* tess = entityref.gotMesh();
+  // gotMesh fetches Analysis mesh if it exists, falling back
+  // to model tessellation if not.
+  const smtk::model::Tessellation* tess = showAnalysisTessellation ?
+    entityref.gotMesh() :
+    entityref.hasTessellation();
   if (!tess)
     return;
 
@@ -310,7 +384,8 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
   smtk::model::Entity* entity;
   if (entityref.isValid(&entity))
     {
-    AddEntityTessToPolyData(entityref, pts.GetPointer(), pd);
+    AddEntityTessToPolyData(
+      entityref, pts.GetPointer(), pd, this->ShowAnalysisTessellation);
     // Only create the color array if there is a valid default:
     if (this->DefaultColor[3] >= 0.)
       {
@@ -480,6 +555,10 @@ int vtkModelMultiBlockSource::RequestData(
     vtkErrorMacro("No input model");
     return 0;
     }
+
+  // Destroy the cache if the parameters have changed since it was generated.
+  if (this->CachedOutput && this->GetMTime() > this->CachedOutput->GetMTime())
+    this->SetCachedOutput(NULL);
 
   if (!this->CachedOutput)
     { // Populate a polydata with tessellation information from the model.

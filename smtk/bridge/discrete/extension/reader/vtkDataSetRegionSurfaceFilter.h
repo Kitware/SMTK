@@ -38,9 +38,7 @@ public:
   vtkSetStringMacro(RegionArrayName);
   vtkGetStringMacro(RegionArrayName);
 
-  virtual int UnstructuredGridExecute(vtkDataSet *input,
-                                      vtkPolyData *output,
-                                      int updateghostlevel);
+  virtual int UnstructuredGridExecute(vtkDataSet* input, vtkPolyData* output);
 
 //BTX
 protected:

@@ -60,6 +60,7 @@ namespace smtk {
   namespace bridge {
     namespace discrete {
 
+class ArrangementHelper;
 class vtkItemWatcherCommand;
 
 /**\brief A class that handles translation between CMB and SMTK instances.
@@ -122,11 +123,29 @@ protected:
   friend class CreateEdgesOperator;
   friend class WriteOperator;
   friend class RemoveModel;
+  friend class ArrangementHelper;
+  friend class EdgeOperator;
+  friend class Operator;
 
   Session();
 
-  virtual SessionInfoBits transcribeInternal(
-        const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo);
+  virtual smtk::model::Entity* addEntityRecord(const smtk::model::EntityRef& entRef);
+  virtual smtk::model::ArrangementHelper* createArrangementHelper();
+  virtual int findOrAddCellAdjacencies(const smtk::model::CellEntity& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddCellUses(const smtk::model::CellEntity& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddOwningCell(const smtk::model::UseEntity& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddShellAdjacencies(const smtk::model::UseEntity& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddUseAdjacencies(const smtk::model::ShellEntity& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddGroupOwner(const smtk::model::Group& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddFreeCells(const smtk::model::Model& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddRelatedModels(const smtk::model::Model& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddPrototype(const smtk::model::Instance& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddRelatedModels(const smtk::model::SessionRef& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddRelatedGroups(const smtk::model::EntityRef& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddRelatedInstances(const smtk::model::EntityRef& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
+  virtual SessionInfoBits findOrAddArrangements(const smtk::model::EntityRef& entRef, smtk::model::Entity* entRec, SessionInfoBits flags, smtk::model::ArrangementHelper* helper);
+  virtual SessionInfoBits updateProperties(const smtk::model::EntityRef& entRef, smtk::model::Entity* entRec, SessionInfoBits flags, smtk::model::ArrangementHelper* helper);
+  virtual SessionInfoBits updateTessellation(const smtk::model::EntityRef& entRef, SessionInfoBits flags, smtk::model::ArrangementHelper* helper);
 
   smtk::common::UUID trackModel(
     vtkDiscreteModelWrapper* mod, const std::string& url,
@@ -161,6 +180,48 @@ protected:
 
   template<class P, typename C, typename H>
   void addEntityArray(P& parent, C& childContainer, const H& method, int relDepth);
+
+  void addEntity(
+    const smtk::model::EntityRef& parent,
+    vtkModelItem* child,
+    smtk::model::ArrangementKind k,
+    ArrangementHelper* helper,
+    int sense = -1,
+    smtk::model::Orientation orientation = smtk::model::UNDEFINED);
+
+  void addEntity(
+    vtkModelItem* parent,
+    const smtk::model::EntityRef& child,
+    smtk::model::ArrangementKind k,
+    ArrangementHelper* helper,
+    int sense = -1,
+    smtk::model::Orientation orientation = smtk::model::UNDEFINED);
+
+  int addEntities(
+    const smtk::model::EntityRef& parent,
+    vtkModelItemIterator* it,
+    smtk::model::ArrangementKind k,
+    ArrangementHelper* helper);
+  template<typename T>
+  int addEntities(
+    const smtk::model::EntityRef& parent,
+    vtkModelItemIterator* it,
+    smtk::model::ArrangementKind k,
+    ArrangementHelper* helper,
+    T& senseLookup);
+
+  int addEntities(
+    vtkModelItemIterator* it,
+    const smtk::model::EntityRef& parent,
+    smtk::model::ArrangementKind k,
+    ArrangementHelper* helper);
+  template<typename T>
+  int addEntities(
+    vtkModelItemIterator* it,
+    const smtk::model::EntityRef& parent,
+    smtk::model::ArrangementKind k,
+    ArrangementHelper* helper,
+    T& senseLookup);
 
   bool addTessellation(const smtk::model::EntityRef& cellOut, vtkModelGeometricEntity* cellIn);
   bool addProperties(smtk::model::EntityRef& cellOut, vtkModelItem* cellIn, smtk::model::BitFlags props = 0xff);

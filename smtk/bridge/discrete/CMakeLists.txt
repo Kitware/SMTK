@@ -47,6 +47,8 @@ SET(DiscreteModelFiles
 )
 
 SET(DiscreteOperationFiles
+  operation/vtkEdgeSplitOperator.cxx
+  operation/vtkEdgeSplitOperatorBase.cxx
   operation/vtkMergeOperator.cxx
   operation/vtkMergeOperatorBase.cxx
   operation/vtkCMBModelReadOperator.cxx
@@ -80,6 +82,8 @@ SET(DiscreteModelHeaders
   operation/vtkCMBParserV5.h
   operation/vtkCMBModelReader.h
 
+  operation/vtkEdgeSplitOperator.h
+  operation/vtkEdgeSplitOperatorBase.h
   operation/vtkMergeOperator.h
   operation/vtkMergeOperatorBase.h
   operation/vtkCMBModelReadOperator.h
@@ -118,6 +122,8 @@ set(_module_src
 
 set(discreteSessionSrcs
   Session.cxx
+  Operator.cxx
+  ArrangementHelper.cxx
 #  operators/CreateEdgesOperator.cxx
   operators/EntityGroupOperator.cxx
   operators/ImportOperator.cxx
@@ -127,10 +133,14 @@ set(discreteSessionSrcs
   operators/GrowOperator.cxx
   operators/WriteOperator.cxx
   operators/RemoveModel.cxx
+  operators/EdgeOperator.cxx
+  operators/SetProperty.cxx
 )
 
 set(discreteSessionHeaders
   Session.h
+  Operator.h
+  ArrangementHelper.h
 #  operators/CreateEdgesOperator.h
   operators/EntityGroupOperator.h
   operators/ImportOperator.h
@@ -140,6 +150,8 @@ set(discreteSessionHeaders
   operators/GrowOperator.h
   operators/WriteOperator.h
   operators/RemoveModel.h
+  operators/EdgeOperator.h
+  operators/SetProperty.h
 )
 
 # Normally this would be machine-generated from Session.json
@@ -160,6 +172,8 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EntityGroupOperator.sbt
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GrowOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/RemoveModel.sbt" unitOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EdgeOperator.sbt" unitOperatorXML)
+# NB: SetProperty operator reuses smtk::model::SetProperty's XML
 
 add_library(smtkDiscreteSession ${_module_src} ${discreteSessionSrcs})
 
@@ -185,7 +199,7 @@ target_link_libraries(smtkDiscreteSession
     vtkGeovisCore
     vtkIOParallel
     vtkRenderingCore
-    vtkRenderingFreeType${VTK_RENDERING_BACKEND}
+    vtkRenderingFreeType
     vtkRendering${VTK_RENDERING_BACKEND}
     vtksys
     ${__private_dependencies}

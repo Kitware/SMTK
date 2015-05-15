@@ -34,8 +34,6 @@ EntityPhrase::Ptr EntityPhrase::setup(const EntityRef& entity, DescriptivePhrase
   this->DescriptivePhrase::setup(ENTITY_SUMMARY, parnt);
   this->m_entity = entity;
   this->m_mutability = 3; // both color and title are mutable by default.
-  if(!this->m_entity.hasVisibility())
-    this->m_entity.setVisible(true); // set "visible" property to true
   return this->shared_from_this();
 }
 

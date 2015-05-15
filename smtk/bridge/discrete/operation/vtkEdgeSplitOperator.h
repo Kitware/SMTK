@@ -12,18 +12,17 @@
 // .SECTION Description
 // Operator to split a model edge given a point id on the server.
 
-#ifndef __vtkEdgeSplitOperator_h
-#define __vtkEdgeSplitOperator_h
+#ifndef __smtkdiscrete_vtkEdgeSplitOperator_h
+#define __smtkdiscrete_vtkEdgeSplitOperator_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkEdgeSplitOperatorBase.h"
-#include "cmbSystemConfig.h"
 
 class vtkDiscreteModelWrapper;
 class vtkIdTypeArray;
 class vtkModelEntity;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkEdgeSplitOperator : public vtkEdgeSplitOperatorBase
+class SMTKDISCRETESESSION_EXPORT vtkEdgeSplitOperator : public vtkEdgeSplitOperatorBase
 {
 public:
   static vtkEdgeSplitOperator * New();

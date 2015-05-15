@@ -22,6 +22,7 @@
   <suppress-warning text="skipping field 'RefItem::m_values' with unmatched type 'std::vector&lt;attribute::WeakAttributePtr&gt;'"/>
   <suppress-warning text="skipping field 'RefItemDefinition::m_definition' with unmatched type 'smtk::weak_ptr&lt;smtk::attribute::Definition&gt;'"/>
   <suppress-warning text="skipping field 'EntityRef::m_manager' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Manager&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_analysisMesh' with unmatched type 'smtk::shared_ptr&lt;UUIDsToTessellations&gt;'"/>
 
   <!-- Suppressed because they are templated methods -->
   <suppress-warning text="skipping function 'smtk::view::Group::addSubView', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
@@ -80,6 +81,7 @@
   <!-- Use cJSON objects. For now we will ignore these-->
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofDanglingEntities', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManager', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManager', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerArrangement', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerEntity', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerFloatProperties', unmatched parameter type 'cJSON*'"/>
@@ -95,9 +97,10 @@
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::getUUIDArrayFromJSON', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::getRealArrayFromJSON', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::getIntegerArrayFromJSON', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerAnalysis', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forDanglingEntities', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forLog', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManager', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerAnalysis', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerArrangement', unmatched parameter type 'smtk::model::UUIDWithArrangementDictionary const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerSession', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerSessionPartial', unmatched parameter type 'cJSON*'"/>
@@ -851,6 +854,16 @@
         %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
       </inject-code>
     </add-function>
+    <add-function signature="pointerAsString()"
+      static="NO"
+      return-type="std::string">
+      <inject-code class="target" position="beginning">
+        std::ostringstream result;
+        result &lt;&lt; %CPPSELF-&gt;get();
+        %RETURN_TYPE %0 = result.str();
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+      </inject-code>
+    </add-function>
 
     <!-- Fix improper dereferencing and/or Python conversion of entityref methods -->
     <!--
@@ -1003,12 +1016,20 @@
 
     <namespace-type name="model">
       <!-- setup the model classes -->
+      <object-type name="ArrangementHelper">
+        <include file-name="smtk/model/ArrangementHelper.h" location="local"/>
+      </object-type>
+
       <value-type name="ArrangementReference">
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>
       </value-type>
 
       <enum-type name="ArrangementKind">
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>
+      </enum-type>
+
+      <enum-type name="ModelGeometryStyle">
+        <include file-name="smtk/model/Manager.h" location="local"/>
       </enum-type>
 
       <enum-type name="IteratorStyle">
@@ -1067,6 +1088,15 @@
       <value-type name="CellEntity" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/CellEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+        <add-function
+          signature="uses()" static="no"
+          return-type="std::vector&lt; smtk::model::UseEntity &gt;">
+          <inject-code>
+            std::vector&lt; smtk::model::UseEntity &gt; result =
+              %CPPSELF->uses &lt; smtk::model::UseEntities &gt; ();
+            return %CONVERTTOPYTHON[ std::vector&lt; smtk::model::UseEntity &gt; ](result);
+          </inject-code>
+        </add-function>
       </value-type>
 
       <value-type name="Chain" hash-function="smtk::model::entityrefHash">
@@ -1351,6 +1381,24 @@
       <value-type name="UseEntity" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/UseEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+        <add-function
+          signature="boundingShellEntities()" static="no"
+          return-type="std::vector&lt; smtk::model::ShellEntity &gt;">
+          <inject-code>
+            std::vector&lt; smtk::model::ShellEntity &gt; result =
+              %CPPSELF->boundingShellEntities &lt; smtk::model::ShellEntities &gt; ();
+            return %CONVERTTOPYTHON[ std::vector&lt; smtk::model::ShellEntity &gt; ](result);
+          </inject-code>
+        </add-function>
+        <add-function
+          signature="shellEntities()" static="no"
+          return-type="std::vector&lt; smtk::model::ShellEntity &gt;">
+          <inject-code>
+            std::vector&lt; smtk::model::ShellEntity &gt; result =
+              %CPPSELF->shellEntities &lt; smtk::model::ShellEntities &gt; ();
+            return %CONVERTTOPYTHON[ std::vector&lt; smtk::model::ShellEntity &gt; ](result);
+          </inject-code>
+        </add-function>
       </value-type>
 
       <value-type name="Vertex" hash-function="smtk::model::entityrefHash">
@@ -1816,7 +1864,7 @@
         </add-function>
       </object-type>
 
-      <enum-type name="MeshSelectionMode">
+      <enum-type name="MeshModifyMode">
         <include file-name="smtk/attribute/MeshSelectionItem.h" location="local"/>
       </enum-type>
 

@@ -81,7 +81,7 @@ void testModelTraversal()
     }
 
   std::cout << "\n---\n\n" << "  " << count1 << "  " << count2 << "\n";
-  test(count1 == 78, "Expected to iterate over 78 entities");
+  test(count1 == 79, "Expected to iterate over 79 entities");
   test(count1 == count2, "Expected iterating twice to count the same number of items.");
 }
 
@@ -90,7 +90,7 @@ int main()
   testModelTraversal();
   testExplicitTraversal(ITERATE_BARE, 7);
   testExplicitTraversal(ITERATE_CHILDREN, 14); // Vertex uses are children of vertices
-  testExplicitTraversal(ITERATE_MODELS, 79);
+  testExplicitTraversal(ITERATE_MODELS, 80);
   // TODO: Test iteration while model is being modified.
   return 0;
 }

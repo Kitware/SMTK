@@ -43,6 +43,9 @@
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::entityForUUID', unmatched return type 'vtkModelItem*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addVertexUseToManager', unmatched parameter type 'vtkModelVertexUse*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::findOrSetEntityUUID', unmatched parameter type 'vtkModelItem*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addEntity', unmatched parameter type 'vtkModelItem*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addEntities', unmatched parameter type 'vtkModelItemIterator*'"/>
+
 
   <suppress-warning text="Duplicate type entry: 'smtk'"/>
 

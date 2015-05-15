@@ -56,18 +56,28 @@ public:
   QPointer<QToolButton> AcceptButton;
   QPointer<QButtonGroup> ButtonGroup;
 
-  void uncheckGrowButtons()
+  QPointer<QToolButton> EdgeButton;
+
+  void uncheckOpButtons()
   {
+    if(!this->ButtonGroup)
+      return;
+    bool exlusive = this->ButtonGroup->exclusive();
     this->ButtonGroup->setExclusive(false);
-    this->GrowButton->setChecked(false);
-    this->GrowPlusButton->setChecked(false);
-    this->GrowMinusButton->setChecked(false);
-    this->ButtonGroup->setExclusive(true);
+    if(this->GrowButton)
+      this->GrowButton->setChecked(false);
+    if(this->GrowPlusButton)
+      this->GrowPlusButton->setChecked(false);
+    if(this->GrowMinusButton)
+      this->GrowMinusButton->setChecked(false);
+    if(this->EdgeButton)
+      this->EdgeButton->setChecked(false);
+    this->ButtonGroup->setExclusive(exlusive);
   }
 
   void modifyOutSelection(const smtk::common::UUID& entid,
                           const std::set<int> vals,
-                          MeshSelectionMode opType)
+                          MeshModifyMode opType)
   {
     if(opType == RESET)
       {
@@ -167,38 +177,55 @@ void qtMeshSelectionItem::addMeshOpButtons()
   this->Internals->EntityAssociationItem->setLabelVisible(false);
 */
 
+  QButtonGroup* bgroup = new QButtonGroup(this->Widget);
   QBoxLayout* buttonLayout = new QHBoxLayout;
   buttonLayout->setMargin(0);
   buttonLayout->setSpacing(3);
-  QButtonGroup* bgroup = new QButtonGroup(this->Widget);
-  // grow button
-  this->Internals->GrowButton = internal_createToolButton(
-    ":/icons/attribute/growcell32.png",
-    "Grow Selection on Associated Entities", this->Widget,
-    buttonLayout, bgroup, true, this);
+  const MeshSelectionItemDefinition *itemDef =
+    dynamic_cast<const MeshSelectionItemDefinition*>(
+    this->getObject()->definition().get());
+  smtk::model::BitFlags masked = itemDef->membershipMask();
+  if (masked == smtk::model::FACE)
+    {
+    bgroup->setExclusive(true);
+    // grow button
+    this->Internals->GrowButton = internal_createToolButton(
+      ":/icons/attribute/growcell32.png",
+      "Grow Selection on Associated Entities", this->Widget,
+      buttonLayout, bgroup, true, this);
 
-  // grow plus button
-  this->Internals->GrowPlusButton = internal_createToolButton(
-    ":/icons/attribute/growplus32.png",
-    "Grow and Append Selection on Selected Entities", this->Widget,
-    buttonLayout, bgroup, true, this);
+    // grow plus button
+    this->Internals->GrowPlusButton = internal_createToolButton(
+      ":/icons/attribute/growplus32.png",
+      "Grow and Append Selection on Selected Entities", this->Widget,
+      buttonLayout, bgroup, true, this);
 
-  // grow minus button
-  this->Internals->GrowMinusButton = internal_createToolButton(
-    ":/icons/attribute/growminus32.png",
-    "Grow and Remove Selection on Selected Entities", this->Widget,
-    buttonLayout, bgroup, true, this);
+    // grow minus button
+    this->Internals->GrowMinusButton = internal_createToolButton(
+      ":/icons/attribute/growminus32.png",
+      "Grow and Remove Selection on Selected Entities", this->Widget,
+      buttonLayout, bgroup, true, this);
 
-  // cancel button
-  this->Internals->CancelButton = internal_createToolButton(
-    ":/icons/attribute/cancel32.png",
-    "Candel Grow Selection Mode", this->Widget,
-    buttonLayout, bgroup, false, this);
+    // cancel button
+    this->Internals->CancelButton = internal_createToolButton(
+      ":/icons/attribute/cancel32.png",
+      "Candel Grow Selection Mode", this->Widget,
+      buttonLayout, bgroup, false, this);
 
-  this->Internals->AcceptButton = internal_createToolButton(
-    ":/icons/attribute/growaccept24.png",
-    "Create Face Group With Current Grow Selection", this->Widget,
-    buttonLayout, bgroup, false, this);
+    this->Internals->AcceptButton = internal_createToolButton(
+      ":/icons/attribute/growaccept24.png",
+      "Create Face Group With Current Grow Selection", this->Widget,
+      buttonLayout, bgroup, false, this);
+    }
+  else if(masked == (smtk::model::EDGE | smtk::model::VERTEX) ||
+    masked == smtk::model::EDGE || masked == smtk::model::VERTEX)
+    {
+    bgroup->setExclusive(false);
+    this->Internals->EdgeButton = internal_createToolButton(
+      ":/icons/attribute/edgesplit.png",
+      "Split or merge edge", this->Widget,
+      buttonLayout, bgroup, true, this);    
+    }
 
   this->Internals->EntryLayout->addLayout(buttonLayout, 0, 1);
   this->Internals->ButtonGroup = bgroup;
@@ -325,6 +352,13 @@ void qtMeshSelectionItem::clearSelection()
     }
   meshSelectionItem->reset();
 }
+//----------------------------------------------------------------------------
+void qtMeshSelectionItem::resetSelectionState()
+{
+  this->Internals->uncheckOpButtons();
+  this->Internals->m_outSelection.clear();
+  this->clearSelection();
+}
 
 //----------------------------------------------------------------------------
 void qtMeshSelectionItem::updateInputSelection(
@@ -345,7 +379,7 @@ void qtMeshSelectionItem::updateInputSelection(
   for(mapIt = selectionValues.begin(); mapIt != selectionValues.end(); ++mapIt)
     totalVals += mapIt->second.size();
 
-  MeshSelectionMode opType = meshSelectionItem->meshSelectMode();
+  MeshModifyMode opType = meshSelectionItem->modifyMode();
   for(mapIt = selectionValues.begin(); mapIt != selectionValues.end(); ++mapIt)
     {
     switch(opType)
@@ -374,16 +408,14 @@ void qtMeshSelectionItem::updateInputSelection(
       }
     }
 
-  if(opType == ACCEPT)
-    this->Internals->m_outSelection.clear();
-  else if(opType == ACCEPT)
+  if(opType == ACCEPT && !this->Internals->EdgeButton->isChecked())
     {
-    this->Internals->uncheckGrowButtons();
+    this->Internals->uncheckOpButtons();
     this->Internals->m_outSelection.clear();
     }
   else if(opType == NONE)
     {
-    this->Internals->uncheckGrowButtons();
+    this->Internals->uncheckOpButtons();
     this->Internals->m_outSelection.clear();
     meshSelectionItem->reset();
     }
@@ -444,17 +476,24 @@ void qtMeshSelectionItem::onRequestMeshSelection()
 
   this->setUsingCtrlKey(false);
 
-  MeshSelectionMode selType;
+  MeshModifyMode opType;
   if(cButton == this->Internals->AcceptButton)
-    selType = ACCEPT;
+    opType = ACCEPT;
   else if(cButton == this->Internals->GrowButton)
-    selType = RESET;
+    opType = RESET;
   else if(cButton == this->Internals->GrowPlusButton)
-    selType = MERGE;
+    opType = MERGE;
   else if(cButton == this->Internals->GrowMinusButton)
-    selType = SUBTRACT;
+    opType = SUBTRACT;
   else if(cButton == this->Internals->CancelButton)
-    selType = NONE;
+    opType = NONE;
+  else if(cButton == this->Internals->EdgeButton)
+    {
+    if(cButton->isChecked())
+      opType = ACCEPT;
+    else
+      opType = NONE;
+    }
   else
     {
     std::cerr << "ERROR: Unrecognized button click "
@@ -462,9 +501,10 @@ void qtMeshSelectionItem::onRequestMeshSelection()
     return;
     }
 
-  meshSelectionItem->setMeshSelectMode(selType);
-  if(selType == ACCEPT || selType == NONE)
-    this->Internals->uncheckGrowButtons();
+  meshSelectionItem->setModifyMode(opType);
+  if(cButton != this->Internals->EdgeButton &&
+     (opType == ACCEPT || opType == NONE))
+    this->Internals->uncheckOpButtons();
 
   smtk::attribute::ModelEntityItem::Ptr modelEntities =
     this->refModelEntityItem();
@@ -485,7 +525,7 @@ void qtMeshSelectionItem::syncWithCachedSelection(
     }
 
   smtk::attribute::MeshSelectionItem::const_sel_map_it mapIt;
-  MeshSelectionMode opType = meshSelectionItem->meshSelectMode();
+  MeshModifyMode opType = meshSelectionItem->modifyMode();
   if(opType == RESET ||
     opType == ACCEPT ||
     opType == NONE)

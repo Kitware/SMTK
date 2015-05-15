@@ -1,6 +1,7 @@
 # set up sources to build
 set(modelSrcs
   Arrangement.cxx
+  ArrangementHelper.cxx
   ArrangementKind.cxx
   AttributeAssignments.cxx
   AttributeListPhrase.cxx
@@ -48,6 +49,7 @@ set(modelSrcs
 
 set(modelHeaders
   Arrangement.h
+  ArrangementHelper.h
   ArrangementKind.h
   AttributeAssignments.h
   AttributeListPhrase.h
