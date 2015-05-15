@@ -12,8 +12,6 @@
 
 #include "smtk/model/EntityRef.h"
 
-#include "RefEntity.hpp"
-
 namespace smtk {
   namespace bridge {
     namespace discrete {
