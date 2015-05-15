@@ -130,34 +130,14 @@ void EdgeOperator::getSelectedVertsAndEdges(
       }
     }  
 }
+
 void internal_retranscribeModel(smtk::bridge::discrete::Session* opsession,
                                 const smtk::model::Model& inModel)
 {
-    // TODO: better ways to cache all properties bedore erase ?
-/*
-    // cache properties
-    UUIDsToStringData strProps;
-    strProps.insert(opsession->manager()->stringProperties().begin(),
-                    opsession->manager()->stringProperties().end());
-    UUIDsToIntegerData intProps;
-    intProps.insert(opsession->manager()->integerProperties().begin(),
-                    opsession->manager()->integerProperties().end());
-    UUIDsToFloatData floProps;
-    floProps.insert(opsession->manager()->floatProperties().begin(),
-                    opsession->manager()->floatProperties().end());
-*/
-    opsession->manager()->eraseModel(inModel);
-    opsession->transcribe(inModel, smtk::model::SESSION_EVERYTHING, false);
-
-/*
-    // re-add original properties
-    opsession->manager()->stringProperties().clear();
-    opsession->manager()->stringProperties().insert(strProps.begin(), strProps.end());
-    opsession->manager()->floatProperties().clear();
-    opsession->manager()->floatProperties().insert(floProps.begin(), floProps.end());
-    opsession->manager()->integerProperties().clear();
-    opsession->manager()->integerProperties().insert(intProps.begin(), intProps.end());
-*/
+    opsession->manager()->eraseModel(inModel,
+      SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS  | SESSION_ARRANGEMENTS | SESSION_TESSELLATION);
+    opsession->transcribe(inModel, 
+      SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS  | SESSION_ARRANGEMENTS | SESSION_TESSELLATION, false);
 }
 
 bool  EdgeOperator::convertSelectedEndNodes(
@@ -221,20 +201,18 @@ bool  EdgeOperator::convertSelectedEndNodes(
     mergOp->Operate(modelWrapper);
     success = mergOp->GetOperateSucceeded();
     if(success)
-      {      
+      {
+      // add the removed vertex to the list
+      srcsRemoved.push_back(smtk::model::EntityRef(this->manager(),it->first));
+      // update the removed and modified edge list
+      srcsRemoved.push_back(smtk::model::EntityRef(this->manager(),fromEid));
+      opsession->manager()->erase(it->first);
+      opsession->manager()->erase(fromEid);
+
       smtk::common::UUID modelid = opsession->findOrSetEntityUUID(modelWrapper->GetModel());
       smtk::model::Model inModel(this->manager(), modelid);
 
       internal_retranscribeModel(opsession, inModel);
-
-      // add the removed vertex to the list
-      srcsRemoved.push_back(smtk::model::EntityRef(this->manager(),it->first));
-
-      // update the removed and modified edge list
-      srcsRemoved.push_back(smtk::model::EntityRef(this->manager(),fromEid));
-
-//      opsession->manager()->erase(it->first);
-//      opsession->manager()->erase(fromEid);
 
       vtkModelEdge* tgtEdge = targetSwitched ? selEdges[1] : selEdges[0];
       smtk::common::UUID toEid = opsession->findOrSetEntityUUID(tgtEdge);
