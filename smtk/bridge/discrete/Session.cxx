@@ -29,6 +29,7 @@
 #include "smtk/model/Shell.h"
 #include "smtk/model/Chain.h"
 #include "smtk/model/Loop.h"
+#include "smtk/model/Instance.h"
 
 #include "vtkCMBModelReadOperator.h"
 #include "vtkCMBModelWriterV5.h"
