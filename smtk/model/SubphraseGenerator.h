@@ -94,7 +94,7 @@ template<typename T>
 void SubphraseGenerator::addEntityPhrases(
   const T& ents, DescriptivePhrase::Ptr parent, int limit, DescriptivePhrases& result)
 {
-  if (static_cast<int>(ents.size()) < limit)
+  if (limit < 0 || static_cast<int>(ents.size()) < limit)
     {
     for (typename T::const_iterator it = ents.begin(); it != ents.end(); ++it)
       {
