@@ -14,13 +14,13 @@
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkCellLocator.h"
-#include "vtkCMBParserBase.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkMath.h"
 #include "vtkObjectFactory.h"
 #include "vtkPlane.h"
 #include "vtkSmartPointer.h"
+#include "ModelParserHelper.h"
 
 #include <map>
 #include <set>
@@ -75,7 +75,7 @@ int vtkCompleteShells::RequestData(
 
   vtkIntArray* regionArray = vtkIntArray::SafeDownCast(
     input->GetCellData()->GetArray(this->ModelRegionArrayName ?
-    this->ModelRegionArrayName : vtkCMBParserBase::GetShellTagName()) );
+    this->ModelRegionArrayName : ModelParserHelper::GetShellTagName()) );
   if(regionArray == 0)
     {
     vtkErrorMacro("Could not find region array.");
@@ -94,7 +94,7 @@ int vtkCompleteShells::RequestData(
 
   vtkDataArray *genericModelFaceArray =
     input->GetCellData()->GetArray(this->ModelFaceArrayName ?
-    this->ModelFaceArrayName : vtkCMBParserBase::GetModelFaceTagName());
+    this->ModelFaceArrayName : ModelParserHelper::GetModelFaceTagName());
   vtkSmartPointer<vtkIdTypeArray> modelFaceArray;
   if (genericModelFaceArray)
     {
@@ -102,7 +102,7 @@ int vtkCompleteShells::RequestData(
     if (!modelFaceArray)
       {
       modelFaceArray = vtkSmartPointer<vtkIdTypeArray>::New();
-      modelFaceArray->SetName(vtkCMBParserBase::GetModelFaceTagName());
+      modelFaceArray->SetName(ModelParserHelper::GetModelFaceTagName());
       modelFaceArray->DeepCopy( genericModelFaceArray );
       output->GetCellData()->AddArray( modelFaceArray );
       }
@@ -111,7 +111,7 @@ int vtkCompleteShells::RequestData(
     {
     modelFaceArray = vtkSmartPointer<vtkIdTypeArray>::New();
     modelFaceArray->Allocate(input->GetNumberOfCells());
-    modelFaceArray->SetName(vtkCMBParserBase::GetModelFaceTagName());
+    modelFaceArray->SetName(ModelParserHelper::GetModelFaceTagName());
     for (int i = 0; i < input->GetNumberOfCells(); i++)
       {
       modelFaceArray->SetValue(i, -1);
@@ -124,11 +124,11 @@ int vtkCompleteShells::RequestData(
   // if our modelFaceArray has different name than expected by the builder,
   // need to copy to array that has expected name (array must have come
   // from the input and been specfied via this->ModelFaceArrayName)
-  if (strcmp(modelFaceArray->GetName(),vtkCMBParserBase::GetModelFaceTagName()))
+  if (strcmp(modelFaceArray->GetName(),ModelParserHelper::GetModelFaceTagName()))
     {
     vtkSmartPointer<vtkIdTypeArray> tmpModelFaceArray =
       vtkSmartPointer<vtkIdTypeArray>::New();
-    tmpModelFaceArray->SetName(vtkCMBParserBase::GetModelFaceTagName());
+    tmpModelFaceArray->SetName(ModelParserHelper::GetModelFaceTagName());
     tmpModelFaceArray->DeepCopy(modelFaceArray);
     modelFaceArray = tmpModelFaceArray;
     }
@@ -250,7 +250,7 @@ int vtkCompleteShells::RequestData(
     }
 
   modelFaceRegionsArray->SetName(
-    vtkCMBParserBase::GetModelFaceRegionsMapString());
+    ModelParserHelper::GetModelFaceRegionsMapString());
   output->GetFieldData()->AddArray(modelFaceRegionsArray);
   modelFaceRegionsArray->Delete();
 

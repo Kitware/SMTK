@@ -15,16 +15,15 @@
 #ifndef __vtkEnclosingModelEntityOperator_h
 #define __vtkEnclosingModelEntityOperator_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkObject.h"
-#include "cmbSystemConfig.h"
 
 class vtkDiscreteModelWrapper;
 //class vtkIdTypeArray;
 class vtkModelEntity;
 class vtkCellLocator;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkEnclosingModelEntityOperator : public vtkObject
+class SMTKDISCRETESESSION_EXPORT vtkEnclosingModelEntityOperator : public vtkObject
 {
 public:
   static vtkEnclosingModelEntityOperator * New();
