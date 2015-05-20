@@ -130,6 +130,7 @@ set(discreteSessionSrcs
   Session.cxx
   Operator.cxx
   ArrangementHelper.cxx
+  BathymetryHelper.cxx
 #  operators/CreateEdgesOperator.cxx
   operators/EntityGroupOperator.cxx
   operators/ImportOperator.cxx
@@ -147,6 +148,7 @@ set(discreteSessionHeaders
   Session.h
   Operator.h
   ArrangementHelper.h
+  BathymetryHelper.h
 #  operators/CreateEdgesOperator.h
   operators/EntityGroupOperator.h
   operators/ImportOperator.h
