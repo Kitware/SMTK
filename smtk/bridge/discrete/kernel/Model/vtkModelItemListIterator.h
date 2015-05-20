@@ -26,7 +26,7 @@
 #ifndef __smtkdiscrete_vtkModelItemListIterator_h
 #define __smtkdiscrete_vtkModelItemListIterator_h
 
-#include "vtkSMTKDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelItemIterator.h"
 
 

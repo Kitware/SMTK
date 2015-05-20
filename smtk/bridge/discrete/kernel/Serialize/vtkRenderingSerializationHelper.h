@@ -19,7 +19,7 @@
 #ifndef __smtkdiscrete_vtkRenderingSerializationHelper_h
 #define __smtkdiscrete_vtkRenderingSerializationHelper_h
 
-#include "vtkSMTKDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkSerializationHelper.h"
 
 
