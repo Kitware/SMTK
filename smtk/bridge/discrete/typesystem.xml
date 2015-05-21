@@ -45,7 +45,8 @@
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::findOrSetEntityUUID', unmatched parameter type 'vtkModelItem*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addEntity', unmatched parameter type 'vtkModelItem*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addEntities', unmatched parameter type 'vtkModelItemIterator*'"/>
-
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::bathymetryHelper', unmatched return type 'smtk::bridge::discrete::BathymetryHelper*'"/>
+  <suppress-warning text="skipping field 'Session::m_bathymetryHelper' with unmatched type 'smtk::bridge::discrete::BathymetryHelper'"/>
 
   <suppress-warning text="Duplicate type entry: 'smtk'"/>
 

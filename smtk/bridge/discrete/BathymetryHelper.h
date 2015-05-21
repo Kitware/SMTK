@@ -34,14 +34,16 @@ public:
 
   virtual bool loadBathymetryFile(const std::string& filename);
 
-//  vtkPointSet* bathymetryData(const std::string& filename);
-//  std::vector<std::string> loadedBathymetryFiles() const;
+  vtkPointSet* bathymetryData(const std::string& filename);
+  void loadedBathymetryFiles(
+    std::vector<std::string> &result) const;
+  void clear();
 
 protected:
   friend class Session;
   BathymetryHelper();
 
-  std::map<std::string, vtkSmartPointer<vtkPointSet> > s_fileNamesToSources;
+  std::map<std::string, vtkSmartPointer<vtkPointSet> > m_filesToSources;
 
 private:
   BathymetryHelper(const BathymetryHelper& other); // Not implemented.

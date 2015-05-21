@@ -47,6 +47,8 @@ SET(DiscreteModelFiles
 )
 
 SET(DiscreteOperationFiles
+  operation/vtkCMBApplyBathymetryFilter.cxx
+  operation/vtkCMBModelPointsOperator.cxx
   operation/vtkEdgeSplitOperator.cxx
   operation/vtkEdgeSplitOperatorBase.cxx
   operation/vtkMergeOperator.cxx
@@ -73,6 +75,8 @@ SET(DiscreteOperationFiles
 )
 
 SET(DiscreteModelHeaders
+  operation/vtkCMBApplyBathymetryFilter.h
+  operation/vtkCMBModelPointsOperator.h
   operation/vtkCMBMapToCMBModel.h
   operation/vtkCMBModelBuilder.h
   operation/vtkCMBModelWriterV2.h
@@ -142,6 +146,7 @@ set(discreteSessionSrcs
   operators/RemoveModel.cxx
   operators/EdgeOperator.cxx
   operators/SetProperty.cxx
+  operators/BathymetryOperator.cxx
 )
 
 set(discreteSessionHeaders
@@ -160,6 +165,7 @@ set(discreteSessionHeaders
   operators/RemoveModel.h
   operators/EdgeOperator.h
   operators/SetProperty.h
+  operators/BathymetryOperator.h
 )
 
 # Normally this would be machine-generated from Session.json
@@ -181,6 +187,8 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GrowOperator.sbt" unitO
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/RemoveModel.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EdgeOperator.sbt" unitOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/BathymetryOperator.sbt" unitOperatorXML)
+
 # NB: SetProperty operator reuses smtk::model::SetProperty's XML
 
 add_library(smtkDiscreteSession ${_module_src} ${discreteSessionSrcs})

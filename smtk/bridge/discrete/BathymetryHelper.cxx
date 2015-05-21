@@ -34,7 +34,7 @@ BathymetryHelper::BathymetryHelper()
 
 BathymetryHelper::~BathymetryHelper()
 {
-  this->s_fileNamesToSources.clear();
+  this->m_filesToSources.clear();
 }
 
 bool BathymetryHelper::loadBathymetryFile(const std::string& filename)
@@ -44,7 +44,9 @@ bool BathymetryHelper::loadBathymetryFile(const std::string& filename)
     std::cerr << "File name is empty!\n";
     return false;
     }
-
+  // if the data is already loaded, return true;
+  if(this->bathymetryData(filename) != NULL)
+    return true;
   // get the ouptut
   vtkNew<vtkPolyData> output;
 
@@ -93,9 +95,30 @@ bool BathymetryHelper::loadBathymetryFile(const std::string& filename)
     return false;
     }
 
-  this->s_fileNamesToSources[filename] = output.GetPointer();
+  this->m_filesToSources[filename] = output.GetPointer();
 
   return true;
+}
+
+vtkPointSet* BathymetryHelper::bathymetryData(const std::string& filename)
+{
+  if(this->m_filesToSources.find(filename) !=
+    this->m_filesToSources.end())
+    return this->m_filesToSources[filename];
+  return NULL;
+}
+
+void BathymetryHelper::loadedBathymetryFiles(
+  std::vector<std::string> &result) const
+{
+  result.clear();
+  std::map<std::string, vtkSmartPointer<vtkPointSet> >::const_iterator it;
+  for(it=this->m_filesToSources.begin(); it!=this->m_filesToSources.end(); ++it)
+    result.push_back(it->first);
+}
+void BathymetryHelper::clear()
+{
+  this->m_filesToSources.clear();
 }
 
     } // namespace discrete
