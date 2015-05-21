@@ -20,6 +20,7 @@
 #include "smtk/attribute/System.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
+#include "smtk/attribute/VoidItem.h"
 
 #include "smtk/model/Session.h"
 #include "smtk/model/Manager.h"
@@ -257,13 +258,23 @@ bool qtModelOperationWidget::setCurrentOperation(
 
   if(this->Internals->OperatorMap.contains(opName))
     {
-    this->Internals->OperatorMap[opName].opUiView->requestModelEntityAssociation();
-    this->Internals->OperationsLayout->setCurrentWidget(
-      this->Internals->OperatorMap[opName].opUiParent);
-    return true;
+    // check if the operation has an item "refetchfromserver", if yes
+    // we have to recreate the UI since the spec may have been changed.
+    smtk::attribute::VoidItemPtr refetchItem =
+      smtk::dynamic_pointer_cast<smtk::attribute::VoidItem>(
+      this->Internals->OperatorMap[opName].opPtr->specification()->find("refetchfromserver"));
+    if(!refetchItem || !refetchItem->isEnabled())
+      {
+      this->Internals->OperatorMap[opName].opUiView->requestModelEntityAssociation();
+      this->Internals->OperationsLayout->setCurrentWidget(
+        this->Internals->OperatorMap[opName].opUiParent);
+      return true;
+      }
+    else
+      this->Internals->OperatorMap.erase(this->Internals->OperatorMap.find(opName));
     }
 
-  // not yet existed
+  // create the operator
   OperatorPtr brOp = session->op(opName);
   if (!brOp)
     {
