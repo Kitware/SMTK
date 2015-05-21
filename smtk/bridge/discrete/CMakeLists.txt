@@ -67,6 +67,9 @@ SET(DiscreteOperationFiles
   operation/vtkSeedGrowSelectionFilter.cxx
   operation/vtkSelectionSplitOperator.cxx
   operation/vtkSelectionSplitOperatorBase.cxx
+  operation/vtkCompleteShells.cxx
+  operation/vtkCMBIncorporateMeshOperator.cxx
+  operation/vtkEnclosingModelEntityOperator.cxx
 )
 
 SET(DiscreteModelHeaders
@@ -102,6 +105,9 @@ SET(DiscreteModelHeaders
   operation/vtkSeedGrowSelectionFilter.h
   operation/vtkSelectionSplitOperator.h
   operation/vtkSelectionSplitOperatorBase.h
+  operation/vtkCompleteShells.h
+  operation/vtkCMBIncorporateMeshOperator.h
+  operation/vtkEnclosingModelEntityOperator.h
 )
 
 

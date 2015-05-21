@@ -14,7 +14,7 @@
 #ifndef __smtkdiscrete_vtkModelXMLParser_h
 #define __smtkdiscrete_vtkModelXMLParser_h
 
-#include "vtkSMTKDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkXMLParser.h"
 
 

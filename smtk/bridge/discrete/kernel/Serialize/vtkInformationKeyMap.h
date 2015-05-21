@@ -21,7 +21,7 @@
 #ifndef __smtkdiscrete_vtkInformationKeyMap_h
 #define __smtkdiscrete_vtkInformationKeyMap_h
 
-#include "vtkSMTKDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 
 

@@ -14,7 +14,7 @@
 #ifndef __smtkdiscrete_vtkModelLoopUse_h
 #define __smtkdiscrete_vtkModelLoopUse_h
 
-#include "vtkSMTKDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"
 
 
