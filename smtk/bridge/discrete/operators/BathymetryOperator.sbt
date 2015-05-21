@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CMB Discrete Model "Create Edges" Operator -->
+<!-- Description of the CMB Discrete Model "edit bathymetry" Operator -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="create edges" BaseType="operator">
+    <AttDef Type="edit bathymetry" BaseType="operator">
       <ItemDefinitions>
         <Void Name="refetchfromserver" Label="Refetch from server" Version="0" AdvanceLevel="11"
               NumberOfRequiredValues="1"
@@ -69,6 +69,6 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
-    <AttDef Type="result(apply bathymetry)" BaseType="result"/>
+    <AttDef Type="result(edit bathymetry)" BaseType="result"/>
   </Definitions>
 </SMTK_AttributeSystem>

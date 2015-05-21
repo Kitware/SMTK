@@ -131,7 +131,7 @@ Session* BathymetryOperator::discreteSession() const
 smtkImplementsModelOperator(
   SMTKDISCRETESESSION_EXPORT,
   smtk::bridge::discrete::BathymetryOperator,
-  discrete_create_edges,
+  discrete_edit_bathymetry,
   "edit bathymetry",
   BathymetryOperator_xml,
   smtk::bridge::discrete::Session);
