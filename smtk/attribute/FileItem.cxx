@@ -62,6 +62,7 @@ setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
       this->m_isSet.resize(n, false);
       this->m_values.resize(n);
       }
+    this->m_recentValues.clear();
     }
   return true;
 }
@@ -118,6 +119,9 @@ bool FileItem::setValue(std::size_t element, const std::string &val)
     {
     this->m_values[element] = val;
     this->m_isSet[element] = true;
+    if(std::find(this->m_recentValues.begin(), this->m_recentValues.end(), val)
+       == this->m_recentValues.end())
+      this->m_recentValues.push_back(val);
     return true;
     }
   return false;
@@ -222,6 +226,11 @@ void FileItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
 
   FileItemPtr sourceFileItem =
     smtk::dynamic_pointer_cast<FileItem>(sourceItem);
+  // copy all recentValues list
+  this->m_recentValues.clear();
+  this->m_recentValues.insert(m_recentValues.end(),
+                              sourceFileItem->recentValues().begin(),
+                              sourceFileItem->recentValues().end());
 
   for (std::size_t i=0; i<sourceFileItem->numberOfValues(); ++i)
     {

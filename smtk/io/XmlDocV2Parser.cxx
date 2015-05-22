@@ -13,6 +13,7 @@
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
@@ -129,6 +130,25 @@ smtk::common::UUID XmlDocV2Parser::getAttributeID(xml_node &attNode)
     }
 
   return id;
+}
+
+//----------------------------------------------------------------------------
+void XmlDocV2Parser::processFileItem(pugi::xml_node &node,
+                                        attribute::FileItemPtr item)
+{
+  // still process FileItem as V1Parser, but add the recentValues after
+  this->XmlDocV1Parser::processFileItem(node, item);
+
+  xml_node valsNode = node.child("RecentValues");
+
+  if (valsNode)
+    {
+    xml_node val;
+    for (val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
+      {
+      item->addRecentValue(val.text().get());
+      }
+    }
 }
 
 //----------------------------------------------------------------------------

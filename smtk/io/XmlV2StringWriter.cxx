@@ -1308,6 +1308,18 @@ void XmlV2StringWriter::processDirectoryItem(pugi::xml_node &node,
 void XmlV2StringWriter::processFileItem(pugi::xml_node &node,
                                         attribute::FileItemPtr item)
 {
+  // always write out all recentValues
+  if (item->recentValues().size() > 0)
+    {
+    xml_node recval, recvalues = node.append_child("RecentValues");
+    std::vector<std::string>::const_iterator it;
+    for(it = item->recentValues().begin(); it!= item->recentValues().end(); ++it)
+      {
+      recval = recvalues.append_child("Val");
+      recval.text().set((*it).c_str());
+      }
+    }
+
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   size_t i, n = item->numberOfValues();
   if (!n)

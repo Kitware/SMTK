@@ -55,6 +55,14 @@ namespace smtk
       {this->m_isSet[element] = false;}
       virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
                             smtk::attribute::Item::CopyInfo& info);
+      const std::vector<std::string>& recentValues() const
+      { return this->m_recentValues; }
+      void addRecentValue(const std::string& val)
+      { 
+        if(std::find(this->m_recentValues.begin(), this->m_recentValues.end(), val)
+           == this->m_recentValues.end())
+          this->m_recentValues.push_back(val);
+      }
 
     protected:
       FileItem(Attribute *owningAttribute, int itemPosition);
@@ -62,6 +70,8 @@ namespace smtk
       virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
       std::vector<std::string>m_values;
       std::vector<bool> m_isSet;
+      std::vector<std::string> m_recentValues;
+
     private:
     };
   }

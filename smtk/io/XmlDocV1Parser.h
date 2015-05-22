@@ -97,7 +97,7 @@ namespace smtk
                                 smtk::attribute::DirectoryItemPtr item);
       void processDirectoryDef(pugi::xml_node &node,
                                smtk::attribute::DirectoryItemDefinitionPtr idef);
-      void processFileItem(pugi::xml_node &node,
+      virtual void processFileItem(pugi::xml_node &node,
                            smtk::attribute::FileItemPtr item);
       void processFileDef(pugi::xml_node &node,
                           smtk::attribute::FileItemDefinitionPtr idef);
