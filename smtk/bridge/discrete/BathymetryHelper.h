@@ -14,12 +14,16 @@
 #include "smtk/bridge/discrete/Exports.h" // for SMTKDISCRETESESSION_EXPORT
 #include "smtk/SharedFromThis.h" // for smtkTypeMacro
 #include "vtkSmartPointer.h"
+#include <map>
 
 class vtkPointSet;
+class vtkPolyData;
 
 namespace smtk {
   namespace bridge {
     namespace discrete {
+
+class Session;
 
 /**\brief Helper class for loading and caching bathymetry files for session.
   *
@@ -37,13 +41,28 @@ public:
   vtkPointSet* bathymetryData(const std::string& filename);
   void loadedBathymetryFiles(
     std::vector<std::string> &result) const;
+
+  void addModelBathymetry(const smtk::common::UUID& modelId,
+                          const std::string& bathyfile);
+  void removeModelBathymetry(const smtk::common::UUID& modelId);
+  bool hasModelBathymetry(const smtk::common::UUID& modelId);
+  vtkPolyData* findOrShallowCopyModelPoly(
+    const smtk::common::UUID& modelId,
+    Session* session);
+
   void clear();
 
 protected:
   friend class Session;
+  friend class BathymetryOperator;
   BathymetryHelper();
 
+  typedef std::map<smtk::common::UUID,vtkSmartPointer<vtkPolyData> > ModelIdToMasterPolyMap;
+  typedef std::map<smtk::common::UUID,std::string> ModelIdToBathymetryMap;
+
   std::map<std::string, vtkSmartPointer<vtkPointSet> > m_filesToSources;
+  ModelIdToMasterPolyMap m_modelIdsToMasterPolys;
+  ModelIdToBathymetryMap m_modelIdsToBathymetrys;
 
 private:
   BathymetryHelper(const BathymetryHelper& other); // Not implemented.

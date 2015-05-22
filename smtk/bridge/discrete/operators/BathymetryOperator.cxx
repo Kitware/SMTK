@@ -15,9 +15,12 @@
 #include "smtk/bridge/discrete/operation/vtkCMBApplyBathymetryFilter.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ModelEntityItem.h"
-#include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/DoubleItem.h"
+#include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/StringItemDefinition.h"
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
@@ -28,6 +31,7 @@
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkPolyData.h"
+#include <vtksys/SystemTools.hxx>
 
 #include "BathymetryOperator_xml.h"
 
@@ -35,7 +39,6 @@ using namespace smtk::model;
 
 namespace smtk {
   namespace bridge {
-
   namespace discrete {
 
 BathymetryOperator::BathymetryOperator()
@@ -44,17 +47,33 @@ BathymetryOperator::BathymetryOperator()
 
 bool BathymetryOperator::ableToOperate()
 {
-  std::string filename = this->specification()->findString("bathymetrysource")->value();
-  if (filename.empty())
-    return false;
-
   smtk::model::Model model;
-  return
+  bool isModelValid =
     // The SMTK model must be valid
     (model = this->specification()->findModelEntity("model")->value().as<smtk::model::Model>()).isValid() &&
-    // The CMB model must exist:
-    this->discreteSession()->findModelEntity(model.entity())
-    ;
+    // The CMB discrete model must exist:
+    this->discreteSession()->findModelEntity(model.entity());
+
+  smtk::attribute::StringItem::Ptr optypeItem =
+    this->specification()->findString("operation");
+  std::string optype = optypeItem->value();
+  if(optype == "Apply Bathymetry")
+    {
+    smtk::attribute::StringItemPtr sourceItem =
+      this->specification()->findString("bathymetrysource");
+    if(!sourceItem || !sourceItem->isDiscrete())
+      return false;
+
+    std::string filename;
+    // "New ...", look for the new file just selected
+    if(sourceItem->discreteIndex() == 0)
+      filename = this->specification()->findFile("bathymetryfile")->value();
+    else
+      filename = sourceItem->concreteDefinition()->discreteEnum(sourceItem->discreteIndex());
+
+    isModelValid = !filename.empty();
+    }
+  return isModelValid;
 }
 
 OperatorResult BathymetryOperator::operateInternal()
@@ -63,7 +82,7 @@ OperatorResult BathymetryOperator::operateInternal()
 
   smtk::model::EntityRef inModel =
     this->specification()->findModelEntity("model")->value();
-  std::string filename = this->specification()->findString("bathymetrysource")->value();
+
   vtkDiscreteModelWrapper* modelWrapper =
     opsession->findModelEntity(inModel.entity());
   if (!modelWrapper)
@@ -71,48 +90,104 @@ OperatorResult BathymetryOperator::operateInternal()
     return this->createResult(OPERATION_FAILED);
     }
 
-  bool ok = false;
-  vtkPointSet* bathyPoints = NULL;
   BathymetryHelper* bathyHelper = opsession->bathymetryHelper();
-  if(bathyHelper->loadBathymetryFile(filename) &&
-     (bathyPoints = bathyHelper->bathymetryData(filename)))
+  vtkPolyData* masterModelPoly = bathyHelper->findOrShallowCopyModelPoly(
+    inModel.entity(), opsession);
+  if (!masterModelPoly)
     {
-    vtkNew<vtkCMBApplyBathymetryFilter> filter;
-    smtk::attribute::DoubleItemPtr aveRItem =
-      this->specification()->findDouble("averaging elevation radius");
-    smtk::attribute::DoubleItemPtr highZItem =
-      this->specification()->findDouble("set highest elevation");
-    smtk::attribute::DoubleItemPtr lowZItem =
-      this->specification()->findDouble("set lowest elevation");
-    double aveEleRadius = aveRItem->value();
-    double highElevation = highZItem->value();
-    double lowElevation = lowZItem->value();
-
-    filter->SetElevationRadius(aveEleRadius);
-    filter->SetHighestZValue(highElevation);
-    filter->SetLowestZValue(lowElevation);
-    filter->SetUseHighestZValue(highZItem->isEnabled());
-    filter->SetUseLowestZValue(lowZItem->isEnabled());
-    vtkNew<vtkPolyData> tmpModelPoly;
-    tmpModelPoly->Initialize();
-    tmpModelPoly->SetPoints(modelWrapper->GetModel()->GetMesh().SharePointsPtr());
-    filter->SetInputData(0, tmpModelPoly.GetPointer());
-    filter->SetInputData(1, bathyPoints);
-    filter->SetNoOP(false);
-    filter->Update();
-
-    this->m_op->SetModelPoints(vtkPointSet::SafeDownCast(
-                               filter->GetOutputDataObject(0)));
-    this->m_op->Operate(modelWrapper);
-    ok = this->m_op->GetOperateSucceeded();
+    return this->createResult(OPERATION_FAILED);
     }
 
+  bool ok = false;
+  std::string filename;
+  vtkNew<vtkPolyData> newModelPoints;
+  smtk::attribute::StringItem::Ptr optypeItem =
+    this->specification()->findString("operation");
+  std::string optype = optypeItem->value();
+  if(optype == "Remove Bathymetry")
+    {
+    if(!bathyHelper->hasModelBathymetry(inModel.entity()))
+      // nothing to do, return success
+      return this->createResult(OPERATION_SUCCEEDED);
+
+    newModelPoints->ShallowCopy(masterModelPoly);
+    }
+  else if(optype == "Apply Bathymetry")
+    {
+    smtk::attribute::StringItemPtr sourceItem =
+      this->specification()->findString("bathymetrysource");
+    filename = sourceItem->discreteIndex() == 0 ?
+      this->specification()->findFile("bathymetryfile")->value() :
+      sourceItem->concreteDefinition()->discreteEnum(sourceItem->discreteIndex());
+
+    vtkPointSet* bathyPoints = NULL;
+    bool newBathy = !bathyHelper->bathymetryData(filename);
+
+    if(bathyHelper->loadBathymetryFile(filename) &&
+       (bathyPoints = bathyHelper->bathymetryData(filename)))
+      {
+      // update the sourceItem to include the new bathymetry file
+      if(newBathy)
+        {
+        int itemIdx = this->specification()->definition()->findItemPosition("operation");
+        if ( itemIdx >= 0)
+          {
+          smtk::attribute::StringItemDefinitionPtr opdef =
+            dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(
+              this->specification()->definition()->itemDefinition(itemIdx));
+          smtk::attribute::StringItemDefinitionPtr sdef =
+            dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(
+            opdef->childItemDefinition("bathymetrysource"));
+          std::string filenameName = vtksys::SystemTools::GetFilenameName(filename);
+          sdef->addDiscreteValue(filename, filenameName);
+          }
+        }
+
+      vtkNew<vtkCMBApplyBathymetryFilter> filter;
+      smtk::attribute::DoubleItemPtr aveRItem =
+        this->specification()->findDouble("averaging elevation radius");
+      smtk::attribute::DoubleItemPtr highZItem =
+        this->specification()->findDouble("set highest elevation");
+      smtk::attribute::DoubleItemPtr lowZItem =
+        this->specification()->findDouble("set lowest elevation");
+      double aveEleRadius = aveRItem->value();
+      double highElevation = highZItem->value();
+      double lowElevation = lowZItem->value();
+
+      filter->SetElevationRadius(aveEleRadius);
+      filter->SetHighestZValue(highElevation);
+      filter->SetLowestZValue(lowElevation);
+      filter->SetUseHighestZValue(highZItem->isEnabled());
+      filter->SetUseLowestZValue(lowZItem->isEnabled());
+
+      filter->SetInputData(0, masterModelPoly);
+      filter->SetInputData(1, bathyPoints);
+      filter->SetNoOP(false);
+      filter->Update();
+      newModelPoints->ShallowCopy(filter->GetOutputDataObject(0));
+      }
+    else 
+      return this->createResult(OPERATION_FAILED);
+    }
+
+  this->m_op->SetModelPoints(newModelPoints.GetPointer());
+  this->m_op->Operate(modelWrapper);
+  ok = this->m_op->GetOperateSucceeded();
   OperatorResult result =
     this->createResult(
       ok ?  OPERATION_SUCCEEDED : OPERATION_FAILED);
   if(ok)
     {
+    if(optype == "Remove Bathymetry")
+      bathyHelper->removeModelBathymetry(inModel.entity());
+    else if(optype == "Apply Bathymetry")
+      bathyHelper->addModelBathymetry(inModel.entity(), filename);
+
+    opsession->manager()->eraseModel(inModel);
+    opsession->transcribe(inModel, SESSION_EVERYTHING, false);
+
     this->addEntityToResult(result, inModel, MODIFIED);
+    result->findModelEntity("tess_changed")->setValue(inModel);
     }
 
   return result;

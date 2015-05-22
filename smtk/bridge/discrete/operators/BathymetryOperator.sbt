@@ -21,12 +21,12 @@
               <ChildrenDefinitions>
                 <File Name="bathymetryfile" Label="Load New File:" Version="0"  NumberOfRequiredValues="1"
                        ShouldExist="true"
-                       FileFilters="LIDAR (*.pts *.bin *.bin.pts);;LAS (*.las);;DEM (*.dem);;VTK files (*.vtk *.vtp)">
+                       FileFilters="LIDAR (*.pts *.bin *.bin.pts);;LAS (*.las);;DEM (*.dem);;VTK files (*.vtk *.vtp);;All (*.*)">
                 </File>
               </ChildrenDefinitions>
-              <DiscreteInfo>
+              <DiscreteInfo DefaultIndex="0">
                 <Structure>
-                  <Value Enum="NEW">New ...</Value>
+                  <Value Enum="New ...">NEW</Value>
                   <Items>
                     <Item>bathymetryfile</Item>
                   </Items>
@@ -69,6 +69,10 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
-    <AttDef Type="result(edit bathymetry)" BaseType="result"/>
+    <AttDef Type="result(edit bathymetry)" BaseType="result">
+      <ItemDefinitions>
+        <ModelEntity Name="tess_changed" NumberOfRequiredValues="1"/>
+      </ItemDefinitions>
+    </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>

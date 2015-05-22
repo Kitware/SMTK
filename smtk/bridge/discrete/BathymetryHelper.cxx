@@ -16,12 +16,17 @@
 
 #include "smtk/bridge/discrete/extension/reader/vtkLASReader.h"
 #include "smtk/bridge/discrete/extension/reader/vtkLIDARReader.h"
+#include "smtk/bridge/discrete/Session.h"
+
 #include "vtkDataSetSurfaceFilter.h"
+#include "vtkDiscreteModel.h"
+#include "vtkDiscreteModelWrapper.h"
 #include "vtkNew.h"
 #include "vtkPDataSetReader.h"
 #include "vtkPolyData.h"
 #include "vtkXMLPolyDataReader.h"
 #include <vtksys/SystemTools.hxx>
+#include "DiscreteMesh.h"
 
 namespace smtk {
   namespace bridge {
@@ -116,10 +121,48 @@ void BathymetryHelper::loadedBathymetryFiles(
   for(it=this->m_filesToSources.begin(); it!=this->m_filesToSources.end(); ++it)
     result.push_back(it->first);
 }
+
+void BathymetryHelper::addModelBathymetry(const smtk::common::UUID& modelId,
+                          const std::string& bathyfile)
+{
+  this->m_modelIdsToBathymetrys[modelId] = bathyfile;
+}
+
+void BathymetryHelper::removeModelBathymetry(const smtk::common::UUID& modelId)
+{
+  this->m_modelIdsToBathymetrys.erase(modelId);
+}
+
+bool BathymetryHelper::hasModelBathymetry(const smtk::common::UUID& modelId)
+{
+  return this->m_modelIdsToBathymetrys.find(modelId) != this->m_modelIdsToBathymetrys.end();
+}
+
+vtkPolyData* BathymetryHelper::findOrShallowCopyModelPoly(
+  const smtk::common::UUID& modelId, smtk::bridge::discrete::Session* session)
+{
+  if(this->m_modelIdsToMasterPolys.find(modelId) != this->m_modelIdsToMasterPolys.end())
+    return this->m_modelIdsToMasterPolys[modelId].GetPointer();
+
+  vtkDiscreteModelWrapper* modelWrap = session->findModelEntity(modelId);
+  if(!modelWrap)
+    return NULL;
+
+  vtkNew<vtkPolyData> tmpModelPoly;
+  tmpModelPoly->Initialize();
+  tmpModelPoly->SetPoints(modelWrap->GetModel()->GetMesh().SharePointsPtr());
+
+  this->m_modelIdsToMasterPolys[modelId] = tmpModelPoly.GetPointer();
+  return tmpModelPoly.GetPointer();
+}
+
 void BathymetryHelper::clear()
 {
   this->m_filesToSources.clear();
+  this->m_modelIdsToMasterPolys.clear();
+  this->m_modelIdsToBathymetrys.clear();
 }
+
 
     } // namespace discrete
   } // namespace bridge
