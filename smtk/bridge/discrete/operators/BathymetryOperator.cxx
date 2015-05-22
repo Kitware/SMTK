@@ -59,18 +59,7 @@ bool BathymetryOperator::ableToOperate()
   std::string optype = optypeItem->value();
   if(optype == "Apply Bathymetry")
     {
-    smtk::attribute::StringItemPtr sourceItem =
-      this->specification()->findString("bathymetrysource");
-    if(!sourceItem || !sourceItem->isDiscrete())
-      return false;
-
-    std::string filename;
-    // "New ...", look for the new file just selected
-    if(sourceItem->discreteIndex() == 0)
-      filename = this->specification()->findFile("bathymetryfile")->value();
-    else
-      filename = sourceItem->concreteDefinition()->discreteEnum(sourceItem->discreteIndex());
-
+    std::string filename = this->specification()->findFile("bathymetryfile")->value();
     isModelValid = !filename.empty();
     }
   return isModelValid;
@@ -114,11 +103,7 @@ OperatorResult BathymetryOperator::operateInternal()
     }
   else if(optype == "Apply Bathymetry")
     {
-    smtk::attribute::StringItemPtr sourceItem =
-      this->specification()->findString("bathymetrysource");
-    filename = sourceItem->discreteIndex() == 0 ?
-      this->specification()->findFile("bathymetryfile")->value() :
-      sourceItem->concreteDefinition()->discreteEnum(sourceItem->discreteIndex());
+    filename = this->specification()->findFile("bathymetryfile")->value();
 
     vtkPointSet* bathyPoints = NULL;
     bool newBathy = !bathyHelper->bathymetryData(filename);
@@ -126,23 +111,6 @@ OperatorResult BathymetryOperator::operateInternal()
     if(bathyHelper->loadBathymetryFile(filename) &&
        (bathyPoints = bathyHelper->bathymetryData(filename)))
       {
-      // update the sourceItem to include the new bathymetry file
-      if(newBathy)
-        {
-        int itemIdx = this->specification()->definition()->findItemPosition("operation");
-        if ( itemIdx >= 0)
-          {
-          smtk::attribute::StringItemDefinitionPtr opdef =
-            dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(
-              this->specification()->definition()->itemDefinition(itemIdx));
-          smtk::attribute::StringItemDefinitionPtr sdef =
-            dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(
-            opdef->childItemDefinition("bathymetrysource"));
-          std::string filenameName = vtksys::SystemTools::GetFilenameName(filename);
-          sdef->addDiscreteValue(filename, filenameName);
-          }
-        }
-
       vtkNew<vtkCMBApplyBathymetryFilter> filter;
       smtk::attribute::DoubleItemPtr aveRItem =
         this->specification()->findDouble("averaging elevation radius");
