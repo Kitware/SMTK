@@ -170,7 +170,7 @@ SET(DiscreteModelHeaders
   Model/vtkModelItemGenericIterator.h
   Model/vtkModelItemListIterator.h
   Model/vtkModel.h
-  Model/vtkModel.h
+  Model/vtkModelEntity.h
   Model/vtkModelGeometricEntity.h
   Model/vtkModelVertex.h
   Model/vtkModelVertexUse.h
@@ -197,6 +197,7 @@ SET(DiscreteModelHeaders
   vtkModelMaterial.h
   vtkDiscreteModelEdge.h
   vtkDiscreteModel.h
+  vtkDiscreteModelEntity.h
   vtkDiscreteModelEntityGroup.h
   vtkDiscreteModelFace.h
   vtkDiscreteModelGeometricEntity.h
@@ -208,6 +209,8 @@ SET(DiscreteModelHeaders
   vtkXMLModelWriter.h
   vtkMergeEventData.h
   vtkSplitEventData.h
+
+  "${CMAKE_CURRENT_BINARY_DIR}/vtkSMTKDiscreteModelModule.h"
 )
 
 # Disable manifests for plugins on Windows so that they do not need to resolve their dependencies.

@@ -17,7 +17,6 @@
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelRegion.h"
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkCMBParserBase.h"
 #include "vtkModelUserName.h"
 #include "vtkCellArray.h"
 #include "vtkDataSet.h"
@@ -35,6 +34,7 @@
 #include <vtkNew.h>
 #include <set>
 #include "ModelEdgeHelper.h"
+#include "ModelParserHelper.h"
 
 vtkStandardNewMacro(vtkCMBIncorporateMeshOperator);
 
@@ -142,9 +142,9 @@ bool vtkCMBIncorporateMeshOperator::IncorporateSolidMesh(
   vtkNew<vtkMergeDuplicateCells> mergeDuplicateCells;
   mergeDuplicateCells->SetInputData(masterPolyDataNormals->GetOutput());
   mergeDuplicateCells->SetModelRegionArrayName(
-    vtkCMBParserBase::GetShellTagName());
+    ModelParserHelper::GetShellTagName());
   mergeDuplicateCells->SetModelFaceArrayName(
-    vtkCMBParserBase::GetModelFaceTagName());
+    ModelParserHelper::GetModelFaceTagName());
   mergeDuplicateCells->Update();
 
   vtkNew<vtkCMBModelBuilder> builderOperator;
