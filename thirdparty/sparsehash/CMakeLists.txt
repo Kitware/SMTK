@@ -113,7 +113,7 @@ install(
     template_util.h
     type_traits.h
   DESTINATION
-    include/sparsehash
+    include/smtk/${SMTK_VERSION}/sparsehash
 )
 
 install(
@@ -124,5 +124,5 @@ install(
     ${CMAKE_CURRENT_SOURCE_DIR}/internal/hashtable-common.h
     ${CMAKE_CURRENT_BINARY_DIR}/internal/sparseconfig.h
   DESTINATION
-    include/sparsehash/internal
+    include/smtk/${SMTK_VERSION}/sparsehash/internal
 )

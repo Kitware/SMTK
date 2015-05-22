@@ -261,8 +261,12 @@ SessionInfoBits Manager::erase(const UUID& uid, SessionInfoBits flags)
     }
   else if (actual & SESSION_PROPERTIES)
     {
-    Model owningModel(shared_from_this(), this->modelOwningEntity(uid));
-    SessionRef sref = owningModel.session();
+    SessionRef sref(shared_from_this(), uid);
+    if (!sref.isValid())
+      {
+      Model owningModel(shared_from_this(), this->modelOwningEntity(uid));
+      sref = owningModel.session();
+      }
     if (sref.session())
       sref.session()->removeGeneratedProperties(
         EntityRef(shared_from_this(), uid), actual);
@@ -3485,7 +3489,8 @@ void Manager::closeSession(const SessionRef& sess)
 {
   if (sess.manager().get() == this)
     {
-    this->erase(sess);
+    // Exhaustive flag forces session name (and other properties) to be erased:
+    this->erase(sess, SESSION_EXHAUSTIVE);
     this->unregisterSession(sess.session());
     }
 }

@@ -652,7 +652,7 @@ void Session::initializeOperatorSystem(const OperatorConstructors* opList)
 
   if (opList)
     {
-    smtk::io::Logger log;
+    smtk::io::Logger tmpLog;
     smtk::io::AttributeReader rdr;
     OperatorConstructors::const_iterator it;
     bool ok = true;
@@ -664,13 +664,13 @@ void Session::initializeOperatorSystem(const OperatorConstructors* opList)
       ok &= !rdr.readContents(
         *this->m_operatorSys,
         it->second.first.c_str(), it->second.first.size(),
-        log);
+        tmpLog);
       }
     if (!ok)
       {
       std::cerr
         << "Error. Log follows:\n---\n"
-        << log.convertToString()
+        << tmpLog.convertToString()
         << "\n---\n";
       }
     }
@@ -711,20 +711,19 @@ void Session::importOperatorXML(const std::string& opXML)
 {
   if (this->m_operatorSys && !opXML.empty())
     {
-    smtk::io::Logger log;
     smtk::io::AttributeReader rdr;
     bool ok = true;
 
     ok &= !rdr.readContents(
       *this->m_operatorSys,
       opXML.c_str(), opXML.size(),
-      log);
+      this->log());
 
     if (!ok)
       {
       std::cerr
         << "Error. Log follows:\n---\n"
-        << log.convertToString()
+        << this->log().convertToString()
         << "\n---\n";
       }
     }

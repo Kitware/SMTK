@@ -102,7 +102,14 @@ void vtkModelMultiBlockSource::SetModelManager(const char* pointerAsString)
     {
     if (ptrInt)
       {
+#ifndef _MSC_VER
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored"-Wstrict-aliasing"
+#endif
       Manager* direct =  *(reinterpret_cast<Manager**>(&ptrInt));
+#ifndef _MSC_VER
+#  pragma GCC diagnostic pop
+#endif
       this->SetModelManager(direct->shared_from_this());
       }
     else

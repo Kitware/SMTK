@@ -60,7 +60,7 @@ set(cgmHeaders
   TDUUID.h
 )
 
-install(FILES PointerDefs.h DESTINATION include/smtk/bridge/cgm)
+install(FILES PointerDefs.h DESTINATION include/smtk/${SMTK_VERSION}/smtk/bridge/cgm)
 
 add_definitions(${CGM_DEFINES})
 
