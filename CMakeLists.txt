@@ -14,8 +14,8 @@ project(SMTK)
 ################################################################################
 # SMTK version number
 
-set(SMTK_VERSION_MAJOR 0)
-set(SMTK_VERSION_MINOR 9)
+set(SMTK_VERSION_MAJOR 1)
+set(SMTK_VERSION_MINOR 0)
 set(SMTK_VERSION_PATCH 0)
 set(SMTK_VERSION
   "${SMTK_VERSION_MAJOR}.${SMTK_VERSION_MINOR}.${SMTK_VERSION_PATCH}")
@@ -278,7 +278,7 @@ configure_file(
   @ONLY)
 
 install (FILES ${PROJECT_BINARY_DIR}/smtk/Function.h
-  DESTINATION include/smtk)
+  DESTINATION include/smtk/${SMTK_VERSION}/smtk)
 
 ################################################################################
 # Determine shared_ptr
@@ -291,7 +291,7 @@ configure_file(
   @ONLY)
 
 install (FILES ${PROJECT_BINARY_DIR}/smtk/SharedPtr.h
-  DESTINATION include/smtk)
+  DESTINATION include/smtk/${SMTK_VERSION}/smtk)
 
 ################################################################################
 # Determine hash<X> specialization
@@ -303,7 +303,7 @@ configure_file(
   @ONLY)
 
 install (FILES ${PROJECT_BINARY_DIR}/smtk/HashFunctor.h
-  DESTINATION include/smtk)
+  DESTINATION include/smtk/${SMTK_VERSION}/smtk)
 
 
 ################################################################################
@@ -315,7 +315,7 @@ configure_file(
   @ONLY)
 
 install (FILES ${PROJECT_BINARY_DIR}/smtk/Options.h
-  DESTINATION include/smtk)
+  DESTINATION include/smtk/${SMTK_VERSION}/smtk)
 
 
 ################################################################################

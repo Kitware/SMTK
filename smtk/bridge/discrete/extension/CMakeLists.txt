@@ -61,7 +61,7 @@ smtk_install_library(vtkSMTKDiscreteExt)
 
 # ... and install the export header
 smtk_get_kit_name(name dir_prefix)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/vtkSMTKDiscreteExtModule.h  DESTINATION include/${dir_prefix})
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/vtkSMTKDiscreteExtModule.h  DESTINATION include/smtk/${SMTK_VERSION}/${dir_prefix})
 
 #include the subdirectories so that the headers are installed. We don't invoke
 #smtk_public_headers from this directory as that would cause the headers to

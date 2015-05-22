@@ -64,7 +64,7 @@ install(
     SharedFromThis.h
     SystemConfig.h
   DESTINATION
-    include/smtk
+    include/smtk/${SMTK_VERSION}/smtk
 )
 
 #setup the exports for the library when used from an installed location

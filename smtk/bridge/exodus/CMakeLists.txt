@@ -16,7 +16,7 @@ set(exodusHeaders
   ReadOperator.h
 )
 
-install(FILES PointerDefs.h DESTINATION include/smtk/bridge/exodus)
+install(FILES PointerDefs.h DESTINATION include/smtk/${SMTK_VERSION}/smtk/bridge/exodus)
 
 add_library(smtkExodusSession ${exodusSrcs})
 
