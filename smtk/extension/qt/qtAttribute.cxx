@@ -107,10 +107,7 @@ void qtAttribute::createWidget()
     {
     for (i = 0; i < n; i++)
       {
-      if(this->Internals->View->uiManager()->passAdvancedCheck(
-          att->item(static_cast<int>(i))->advanceLevel()) &&
-        this->Internals->View->uiManager()->passItemCategoryCheck(
-          att->item(static_cast<int>(i))->definition()))
+      if(this->Internals->View->displayItem(att->item(static_cast<int>(i))))
         {
         numShowItems++;
         }
@@ -230,10 +227,7 @@ QWidget* qtAttribute::parentWidget()
 qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW,
   qtBaseView* bview, Qt::Orientation enVectorItemOrient)
 {
-  if(bview && (!bview->uiManager()->passAdvancedCheck(
-      item->advanceLevel()) ||
-    !bview->uiManager()->passItemCategoryCheck(
-      item->definition())))
+  if(bview && (!bview->displayItem(item)))
     {
     return NULL;
     }

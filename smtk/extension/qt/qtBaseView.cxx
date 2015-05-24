@@ -99,6 +99,16 @@ void qtBaseView::getDefinitions(
       }
     }
 }
+//----------------------------------------------------------------------------
+bool qtBaseView::displayItem(smtk::attribute::ItemPtr item)
+{
+  if (!item)
+    {
+    return false;
+    }
+  return this->uiManager()->passAdvancedCheck(item->advanceLevel()) &&
+    this->uiManager()->passItemCategoryCheck(item->definition());
+}
 
 //----------------------------------------------------------------------------
 qtUIManager* qtBaseView::uiManager()

@@ -40,6 +40,9 @@ namespace smtk
       {return this->Widget;}
       QWidget* parentWidget();
       qtUIManager* uiManager();
+      // Description:
+      // Determines if an item should be displayed
+      virtual bool displayItem(smtk::attribute::ItemPtr);
       virtual void getDefinitions(smtk::attribute::DefinitionPtr attDef,
         QList<smtk::attribute::DefinitionPtr>& defs);
       int fixedLabelWidth();
