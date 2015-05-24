@@ -43,7 +43,7 @@ if (BUILD_SHARED_LIBS)
 endif()
 
 #install the library and exports the library when used from a build tree
-smtk_install_library(smtkExodusSession DEPENDS smtkCore)
+smtk_install_library(smtkExodusSession)
 
 # Operators which have XML descriptions in separate files
 # need to have it encoded as a string in a header.

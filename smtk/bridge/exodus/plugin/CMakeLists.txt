@@ -23,5 +23,5 @@ if (SMTK_ENABLE_EXODUS_SESSION)
     LINK_PRIVATE
       vtkPVServerManagerApplicationCS
   )
-  smtk_install_library(smtkExodusSessionPlugin DEPENDS smtkCore smtkExodusSession)
+  smtk_install_library(smtkExodusSessionPlugin)
 endif()

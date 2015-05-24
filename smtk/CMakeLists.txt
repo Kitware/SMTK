@@ -22,6 +22,10 @@ set(smtk_headers ${commonHeaders} ${attributeHeaders} ${modelHeaders} ${simulati
 set(smtk_srcs ${commonSrcs} ${attributeSrcs} ${modelSrcs} ${simulationSrcs} ${ioSrcs} ${viewSrcs})
 
 add_library(smtkCore ${smtk_srcs})
+target_include_directories(smtkCore
+  PUBLIC
+    $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>
+)
 target_link_libraries(smtkCore
   LINK_PUBLIC cJSON
   LINK_PRIVATE ${Boost_LIBRARIES})
@@ -52,7 +56,7 @@ if (BUILD_SHARED_LIBS)
 endif()
 
 #install the library and exports the library when used from a build tree
-smtk_install_library(smtkCore DEPENDS cJSON)
+smtk_install_library(smtkCore)
 
 ################################################################################
 # setup install rules
@@ -66,9 +70,6 @@ install(
   DESTINATION
     include/smtk/${SMTK_VERSION}/smtk
 )
-
-#setup the exports for the library when used from an installed location
-install(EXPORT SMTK-targets DESTINATION lib)
 
 #wrap everything
 if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
@@ -101,23 +102,42 @@ if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
     simple
     testing
   )
+  set(SMTK_PYTHON_MODULEFILES)
   foreach(pyfile ${SMTK_PYTHON_MODULE_SRCS})
     configure_file(
       "${CMAKE_CURRENT_SOURCE_DIR}/smtk/${pyfile}.py"
       "${SMTK_BINARY_DIR}/smtk/${pyfile}.py" @ONLY
     )
+    list(APPEND SMTK_PYTHON_MODULEFILES "smtk/${pyfile}.py")
   endforeach()
 
-  #todo we need to install this file in such a way that it can resolve
-  #the location of shiboken, which is going to mean running fixup bundle
-  #on the mac, and then fixing up the smtk.py package script
+  # TODO: We need to install this file in such a way that it can resolve
+  #       the location of shiboken, which is going to mean running fixup
+  #       bundle on the mac, and then fixing up the smtk/__init__.py
+  #       package script
 
   get_filename_component(SHIBOKEN_LIBRARY_NAME ${SHIBOKEN_LIBRARY} NAME)
-  install(CODE "set(LIBRARY_OUTPUT_PATH \"${CMAKE_INSTALL_PREFIX}/lib\")
-                set(SHIBOKEN_LIBRARY \"${CMAKE_INSTALL_PREFIX}/lib/${SHIBOKEN_LIBRARY_NAME}\")
-                configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/smtk/__init__.py ${CMAKE_INSTALL_PREFIX}/python/smtk/__init__.py )
-                configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/smtk/testing.py ${CMAKE_INSTALL_PREFIX}/python/smtk/testing.py )
-                configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/smtk/simple.py ${CMAKE_INSTALL_PREFIX}/python/smtk/simple.py )" )
+  if (SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES)
+    execute_process(
+      COMMAND ${PYTHON_EXECUTABLE} -c "import site; print(site.getsitepackages())[-1]"
+      RESULT_VARIABLE SMTK_PYTHON_MODULEDIR
+    )
+  else()
+    # NB. LIBEXECDIR is used because SMTK is a "non-pure" package (it depends
+    # on compiled code rather than being implemented purely as python).
+    # See https://docs.python.org/2/install/index.html for more.
+    set(SMTK_PYTHON_MODULEDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBEXECDIR}/python/site-packages")
+  endif()
+  install(
+    FILES ${SMTK_PYTHON_MODULEFILES}
+    DESTINATION "${SMTK_PYTHON_MODULEDIR}/smtk"
+  )
+  install(CODE
+    "
+      set(LIBRARY_OUTPUT_PATH \"${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}\")
+      set(SHIBOKEN_LIBRARY \"${LIBRARY_OUTPUT_PATH}/${SHIBOKEN_LIBRARY_NAME}\")
+    "
+  )
 endif()
 
 ################################################################################

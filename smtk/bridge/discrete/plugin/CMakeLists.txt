@@ -23,5 +23,5 @@ if (SMTK_ENABLE_DISCRETE_SESSION)
     LINK_PRIVATE
       vtkPVServerManagerApplicationCS
   )
-  smtk_install_library(smtkDiscreteSessionPlugin DEPENDS smtkCore smtkDiscreteSession)
+  smtk_install_library(smtkDiscreteSessionPlugin)
 endif()

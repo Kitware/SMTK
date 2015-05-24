@@ -225,7 +225,7 @@ endif()
 smtk_public_headers(${discreteSessionHeaders} ${DiscreteModelHeaders})
 
 #install the library and exports the library when used from a build tree
-smtk_install_library(smtkDiscreteSession DEPENDS smtkCore vtkSMTKDiscreteModel vtkSMTKDiscreteExt)
+smtk_install_library(smtkDiscreteSession)
 
 if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
   #extract the headers from discrete library we built to give them to shiboken
