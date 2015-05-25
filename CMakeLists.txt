@@ -9,6 +9,12 @@ endif()
 if (POLICY CMP0054)
   cmake_policy(SET CMP0054 OLD)
 endif()
+
+# Remove SMTKConfig.cmake at the beginning of each CMake run; each time
+# a library is declared below, the file is appended and we do not want
+# to keep appending over multiple runs.
+file(REMOVE SMTKConfig.cmake)
+
 project(SMTK)
 
 ################################################################################
@@ -25,23 +31,27 @@ set(SMTK_VERSION
 #Add our Cmake directory to the module search path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${SMTK_SOURCE_DIR}/CMake)
 
-# include export header so that we can easily expose symbols
+# Include GNU install directory module to detect where to install
+# files on Linux/Unix systems (e.g., lib vs lib64)
+include(GNUInstallDirs)
+
+# Include export header so that we can easily expose symbols
 # in dynamic libraries
 include(GenerateExportHeader)
 
-# include cmake code that builds automatic header tests,
+# Include cmake code that builds automatic header tests,
 # makes targets for unit tests, and makes it easier to generate
 # export install targets
-include(CMake/SMTKMacros.cmake)
+include(SMTKMacros)
 
 # Include mechanism for determining shared and weak pointer support
-include(CMake/SharedPtr.cmake)
+include(SharedPtr)
 
 # Include mechanism for determining function and bind support
-include(CMake/Function.cmake)
+include(Function)
 
 # Include mechanism for determining how to specialize hash<X>()
-include(CMake/FindHashFunctor.cmake)
+include(FindHashFunctor)
 
 ################################################################################
 # Options that the user controls
@@ -51,6 +61,18 @@ option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" O
 # Option to build Qt ui compoments for attributes
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
 option(SMTK_ENABLE_PYTHON_WRAPPING "Build Python Wrappings using Shiboken" OFF)
+if (SMTK_ENABLE_PYTHON_WRAPPING)
+  # Provide system packagers with the ability to install SMTK
+  # to the system's Python site package directory. The default
+  # is off so that people building relocatable bundles (such as
+  # CMB) can distribute their own Python interpreter with
+  # internal packages (e.g., as part of a Mac ".app" bundle).
+  option(
+    SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES
+    "Install Python modules to the interpreter's site-packages directory or into CMAKE_INSTALL_PREFIX?"
+    OFF)
+  mark_as_advanced(SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES)
+endif()
 option(SMTK_ENABLE_QT_SUPPORT "Build Qt GUI" OFF)
 option(SMTK_ENABLE_VTK_SUPPORT "Build VTK component" OFF)
 option(SMTK_ENABLE_REMUS_SUPPORT "Build Remus components" OFF)
@@ -402,3 +424,14 @@ add_subdirectory(smtk)
 if (SMTK_ENABLE_DOCUMENTATION)
   add_subdirectory(doc)
 endif()
+
+################################################################################
+# Install a package configuration file
+#
+# Setup the exports for the library when used from an installed location
+install(
+  EXPORT SMTK
+  DESTINATION lib/cmake/SMTK
+  FILE SMTKConfig.cmake
+)
+export(PACKAGE SMTK)

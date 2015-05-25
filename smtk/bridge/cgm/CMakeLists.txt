@@ -85,7 +85,7 @@ if (BUILD_SHARED_LIBS)
 endif()
 
 #install the library and exports the library when used from a build tree
-smtk_install_library(smtkCGMSession DEPENDS smtkCore)
+smtk_install_library(smtkCGMSession)
 
 # Normally we would uncomment this line:
 #    smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" cgmSessionJSON)

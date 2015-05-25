@@ -20,4 +20,4 @@ target_link_libraries(smtkCGMSessionPlugin
   LINK_PRIVATE
     vtkPVServerManagerApplicationCS
 )
-smtk_install_library(smtkCGMSessionPlugin DEPENDS smtkCore smtkCGMSession)
+smtk_install_library(smtkCGMSessionPlugin)
