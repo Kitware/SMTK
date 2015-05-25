@@ -511,17 +511,17 @@ bool vtkCMBPrepareForTriangleMesher::GetPolyId2ModelFaceRepMap(
 bool vtkCMBPrepareForTriangleMesher::BuildLoopId2ArcIndexMap(
     std::map<vtkIdType, std::vector<vtkIdType> >& loopId2ArcIndex)
 {
-  vtkFieldData* fieldData = this->PolyData->GetFieldData();
-  vtkIdTypeArray* fieldLoop1 = vtkIdTypeArray::SafeDownCast(fieldData->GetArray("Loop1"));
-  vtkIdTypeArray* fieldLoop2 = vtkIdTypeArray::SafeDownCast(fieldData->GetArray("Loop2"));
+  vtkFieldData* fData = this->PolyData->GetFieldData();
+  vtkIdTypeArray* fLoop1 = vtkIdTypeArray::SafeDownCast(fData->GetArray("Loop1"));
+  vtkIdTypeArray* fLoop2 = vtkIdTypeArray::SafeDownCast(fData->GetArray("Loop2"));
 
   typedef std::map<vtkIdType, std::vector<vtkIdType> >::iterator LoopIterator;
   typedef std::pair<LoopIterator,bool> LoopIteratorResult;
 
-  for(int i = 0; i < fieldLoop1->GetNumberOfTuples(); i++)
+  for(int i = 0; i < fLoop1->GetNumberOfTuples(); i++)
     {
-    vtkIdType loop1 = fieldLoop1->GetTuple1(i);
-    vtkIdType loop2 = fieldLoop2->GetTuple1(i);
+    vtkIdType loop1 = fLoop1->GetTuple1(i);
+    vtkIdType loop2 = fLoop2->GetTuple1(i);
     //If there is a loop this arc is a part of
     if(loop1 != -1)
       {
@@ -532,7 +532,7 @@ bool vtkCMBPrepareForTriangleMesher::BuildLoopId2ArcIndexMap(
         std::pair<std::map<vtkIdType, std::vector<vtkIdType> >::iterator,bool> pr = loopId2ArcIndex.insert(
           std::pair<vtkIdType, std::vector<vtkIdType> >(loop1,std::vector<vtkIdType>()));
         it = pr.first;
-        (*it).second.reserve(fieldLoop1->GetNumberOfTuples());
+        (*it).second.reserve(fLoop1->GetNumberOfTuples());
         }
       //Add an arc to this loop that has already been seen
       (*it).second.push_back(i);
@@ -547,7 +547,7 @@ bool vtkCMBPrepareForTriangleMesher::BuildLoopId2ArcIndexMap(
         std::pair<std::map<vtkIdType, std::vector<vtkIdType> >::iterator,bool> pr = loopId2ArcIndex.insert(
           std::pair<vtkIdType, std::vector<vtkIdType> >(loop2,std::vector<vtkIdType>()));
         it = pr.first;
-        (*it).second.reserve(fieldLoop1->GetNumberOfTuples());
+        (*it).second.reserve(fLoop1->GetNumberOfTuples());
         }
       //Add an arc to this loop that has already been seen
       (*it).second.push_back(i);
@@ -596,30 +596,30 @@ bool vtkCMBPrepareForTriangleMesher::BuildPolygonId2ModelFaceMap(
     }
 
   vtkFieldData* fieldData = this->PolyData->GetFieldData();
-  vtkIdTypeArray* fieldLoopInfo  = vtkIdTypeArray::SafeDownCast(
+  vtkIdTypeArray* fLoopInfo  = vtkIdTypeArray::SafeDownCast(
                                         fieldData->GetArray("LoopInfo"));
-  vtkIdTypeArray* fieldEndpoint1 = vtkIdTypeArray::SafeDownCast(
+  vtkIdTypeArray* fEndpoint1 = vtkIdTypeArray::SafeDownCast(
                                         fieldData->GetArray("ArcEndpoint1"));
-  vtkIdTypeArray* fieldEndpoint2 = vtkIdTypeArray::SafeDownCast(
+  vtkIdTypeArray* fEndpoint2 = vtkIdTypeArray::SafeDownCast(
                                         fieldData->GetArray("ArcEndpoint2"));
-  vtkIdTypeArray* fieldArcId     = vtkIdTypeArray::SafeDownCast(
+  vtkIdTypeArray* fArcId     = vtkIdTypeArray::SafeDownCast(
                                         fieldData->GetArray("ArcId"));
-  vtkIdTypeArray* fieldCellOffset= vtkIdTypeArray::SafeDownCast(
+  vtkIdTypeArray* fCellOffset= vtkIdTypeArray::SafeDownCast(
                                         fieldData->GetArray("CellArrayOffset"));
-  vtkIdTypeArray* fieldArraySize = vtkIdTypeArray::SafeDownCast(
+  vtkIdTypeArray* fArraySize = vtkIdTypeArray::SafeDownCast(
                                         fieldData->GetArray("CellArraySize"));
 
-  if(!fieldEndpoint1 || !fieldEndpoint2 || !fieldArcId || !fieldCellOffset ||
-     !fieldArraySize || !fieldLoopInfo)
+  if(!fEndpoint1 || !fEndpoint2 || !fArcId || !fCellOffset ||
+     !fArraySize || !fLoopInfo)
     {
     //no point going any fargher no loop info
     return false;
     }
 
   //Populate the ModelFaceRep's in pid2Face
-  for(int loopId = 0; loopId < fieldLoopInfo->GetNumberOfTuples(); loopId++)
+  for(int loopId = 0; loopId < fLoopInfo->GetNumberOfTuples(); loopId++)
     {
-    double *polyId = fieldLoopInfo->GetTuple2(loopId);
+    double *polyId = fLoopInfo->GetTuple2(loopId);
     //iterate twice: loopType = 0 is the outer loop
     //               loopType = 1 is the inner loop
     for(int loopType = 0; loopType < 2; loopType++)
@@ -649,19 +649,19 @@ bool vtkCMBPrepareForTriangleMesher::BuildPolygonId2ModelFaceMap(
         {
         vtkIdType arcIndex = (*loopIter);
 
-        vtkIdType arcId = fieldArcId->GetTuple1(arcIndex);
+        vtkIdType arcId = fArcId->GetTuple1(arcIndex);
         ModelEdgeRep edge(arcId);
         //Add the points for this arc by specifying the range in the
         //cell data where this arc exists
-        vtkIdType cellOffset = fieldCellOffset->GetTuple1(arcIndex);
-        vtkIdType cellSize = fieldArraySize->GetTuple1(arcIndex);
+        vtkIdType cellOffset = fCellOffset->GetTuple1(arcIndex);
+        vtkIdType cellSize = fArraySize->GetTuple1(arcIndex);
         edge.setMeshPoints(this->PolyData,cellOffset,cellSize);
 
         //If there is node information add it
         if(nodeId2point.size() > 0)
           {
-          vtkIdType nodeId1 = fieldEndpoint1->GetTuple1(arcIndex);
-          vtkIdType nodeId2 = fieldEndpoint2->GetTuple1(arcIndex);
+          vtkIdType nodeId1 = fEndpoint1->GetTuple1(arcIndex);
+          vtkIdType nodeId2 = fEndpoint2->GetTuple1(arcIndex);
           std::pair<double,double> nodePt1_pair = nodeId2point[nodeId1];
           std::pair<double,double> nodePt2_pair = nodeId2point[nodeId2];
           double nodePt1[2] = {nodePt1_pair.first, nodePt1_pair.second};
