@@ -74,7 +74,7 @@ void SetProperty::setName(const std::string& name, smtk::model::EntityRefArray& 
 void SetProperty::setColor(smtk::attribute::DoubleItemPtr color, smtk::model::EntityRefArray& entities)
 {
   double rgba[] = {-1, -1, -1, 1};
-  int nc = color->numberOfValues();
+  std::size_t nc = static_cast<std::size_t>(color->numberOfValues());
   if (nc > 4)
     nc = 4;
 

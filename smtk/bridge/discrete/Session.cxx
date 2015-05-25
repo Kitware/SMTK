@@ -1025,11 +1025,11 @@ SessionInfoBits Session::updateProperties(
   smtk::model::ArrangementHelper* helper)
 {
   (void)entRec;
+  (void)helper;
   smtk::model::EntityRef mutableRef(entRef);
   this->addProperties(mutableRef, this->entityForUUID(entRef.entity()));
   if (flags & smtk::model::SESSION_PROPERTIES)
     {
-    smtk::model::EntityRef mutableRef(entRef);
     if (this->addProperties(mutableRef, this->entityForUUID(entRef.entity())))
       return smtk::model::SESSION_PROPERTIES;
     }
