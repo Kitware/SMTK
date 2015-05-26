@@ -34,7 +34,7 @@ namespace smtk {
     namespace discrete {
 
 template<typename V, typename VL, typename VD, typename VI>
-void SetProperty::setPropertyValue(const std::string& name, typename VI::Ptr item, smtk::model::EntityRefArray& entities)
+void SetProperty::setPropertyValue(const std::string& pname, typename VI::Ptr item, smtk::model::EntityRefArray& entities)
 {
   smtk::model::EntityRefArray::iterator it;
   if (!item || item->numberOfValues() == 0)
@@ -43,7 +43,7 @@ void SetProperty::setPropertyValue(const std::string& name, typename VI::Ptr ite
     // if they had the property in the first place.
     for (it = entities.begin(); it != entities.end(); ++it)
       {
-      it->removeProperty<VD>(name);
+      it->removeProperty<VD>(pname);
       }
     }
   else
@@ -56,18 +56,18 @@ void SetProperty::setPropertyValue(const std::string& name, typename VI::Ptr ite
 
     // Add or overwrite the property with the values.
     for (it = entities.begin(); it != entities.end(); ++it)
-      (*it->properties<VD>())[name] = values;
+      (*it->properties<VD>())[pname] = values;
     }
 }
 
-void SetProperty::setName(const std::string& name, smtk::model::EntityRefArray& entities)
+void SetProperty::setName(const std::string& pname, smtk::model::EntityRefArray& entities)
 {
   smtk::model::EntityRefArray::iterator it;
   for (it = entities.begin(); it != entities.end(); ++it)
     {
     vtkModelEntity* discEnt = this->discreteEntityAs<vtkModelEntity*>(*it);
     if (discEnt)
-      vtkModelUserName::SetUserName(discEnt, name.empty() ? NULL : name.c_str());
+      vtkModelUserName::SetUserName(discEnt, pname.empty() ? NULL : pname.c_str());
     }
 }
 

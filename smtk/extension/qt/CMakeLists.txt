@@ -1,3 +1,5 @@
+include(${QT_USE_FILE})
+
 # set up sources to build
 set(QAttrLibSrcs
   qtUIManager.cxx

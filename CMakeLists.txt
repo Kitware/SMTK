@@ -161,7 +161,6 @@ endif()
 if(SMTK_ENABLE_QT_SUPPORT)
   set(QT_USE_IMPORTED_TARGETS TRUE)
   find_package(Qt4 REQUIRED)
-  include(${QT_USE_FILE})
 endif()
 
 ################################################################################
