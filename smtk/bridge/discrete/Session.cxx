@@ -429,6 +429,7 @@ Entity* Session::addEntityRecord(const smtk::model::EntityRef& entRef)
         "Unknown vtkModel subclass \""
         << otherEntity->GetClassName() << "\" encountered. Ignoring.");
       }
+    (void)isUse;
     }
   return entRef.manager()->findEntity(entRef.entity());
 }
@@ -1369,8 +1370,8 @@ int Session::addEntities(
   int numEnts = 0;
   for (it->Begin(); !it->IsAtEnd(); it->Next(), ++numEnts)
     {
-    int sense;
-    Orientation orientation;
+    int sense = -1;
+    Orientation orientation = smtk::model::UNDEFINED;
     senseLookup(it->GetCurrentItem(), sense, orientation);
     this->addEntity(parent, it->GetCurrentItem(), k, helper, sense, orientation);
     }
