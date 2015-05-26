@@ -16,7 +16,7 @@
 #define __smtk_attribute_qtModelOperationWidget_h
 
 #include <QWidget>
-#include "smtk/extension/qt/QtSMTKExports.h"
+#include "smtk/extension/qt/Exports.h"
 #include "smtk/PublicPointerDefs.h"
 
 class qtModelOperationWidgetInternals;
@@ -34,7 +34,7 @@ namespace smtk
 {
   namespace model
   {
-    class QTSMTK_EXPORT qtModelOperationWidget : public QWidget
+    class SMTKQTEXT_EXPORT qtModelOperationWidget : public QWidget
     {
       Q_OBJECT
 

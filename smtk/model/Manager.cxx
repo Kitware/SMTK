@@ -60,6 +60,7 @@ Manager::Manager() :
   m_integerData(new UUIDsToIntegerData),
   m_arrangements(new UUIDsToArrangements),
   m_tessellations(new UUIDsToTessellations),
+  m_analysisMesh(new UUIDsToTessellations),
   m_attributeAssignments(new UUIDsToAttributeAssignments),
   m_sessions(new UUIDsToSessions),
   m_attributeSystem(NULL),
@@ -73,6 +74,7 @@ Manager::Manager(
   shared_ptr<UUIDsToEntities> inTopology,
   shared_ptr<UUIDsToArrangements> inArrangements,
   shared_ptr<UUIDsToTessellations> tess,
+  shared_ptr<UUIDsToTessellations> mesh,
   shared_ptr<UUIDsToAttributeAssignments> attribs)
   :
     m_topology(inTopology),
@@ -81,6 +83,7 @@ Manager::Manager(
     m_integerData(new UUIDsToIntegerData),
     m_arrangements(inArrangements),
     m_tessellations(tess),
+    m_analysisMesh(mesh),
     m_attributeAssignments(attribs),
     m_sessions(new UUIDsToSessions),
     m_attributeSystem(NULL),
@@ -138,6 +141,16 @@ const UUIDsToTessellations& Manager::tessellations() const
   return *this->m_tessellations.get();
 }
 
+UUIDsToTessellations& Manager::analysisMesh()
+{
+  return *this->m_analysisMesh.get();
+}
+
+const UUIDsToTessellations& Manager::analysisMesh() const
+{
+  return *this->m_analysisMesh.get();
+}
+
 UUIDsToAttributeAssignments& Manager::attributeAssignments()
 {
   return *this->m_attributeAssignments;
@@ -165,67 +178,119 @@ const UUIDsToAttributeAssignments& Manager::attributeAssignments() const
   * boundary). The application is expected to perform further
   * operations to keep the model valid.
   */
-bool Manager::erase(const UUID& uid)
+SessionInfoBits Manager::erase(const UUID& uid, SessionInfoBits flags)
 {
-  UUIDWithEntity ent = this->m_topology->find(uid);
-  if (ent == this->m_topology->end())
-    return false;
+  SessionInfoBits actual = flags;
+  if (flags & SESSION_ENTITY_RELATIONS)
+    actual |= SESSION_ARRANGEMENTS;
 
-  // Trigger an event before the erasure so the observers
-  // have a chance to see what's about to disappear.
-  this->trigger(std::make_pair(DEL_EVENT, ENTITY_ENTRY),
-    EntityRef(this->shared_from_this(), uid));
-
-  UUIDWithArrangementDictionary ad = this->arrangements().find(uid);
-  if (ad != this->arrangements().end())
+  UUIDWithEntity ent;
+  bool haveEnt = false;
+  if (actual & (SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS))
     {
-    ArrangementKindWithArrangements ak;
-    do
+    ent = this->m_topology->find(uid);
+    if (ent != this->m_topology->end())
       {
-      ak = ad->second.begin();
-      if (ak == ad->second.end())
-        break;
-      Arrangements::size_type aidx = ak->second.size();
-      for (; aidx > 0; --aidx)
-        this->unarrangeEntity(uid, ak->first, static_cast<int>(aidx - 1), false);
-      ad = this->arrangements().find(uid); // iterator may be invalidated by unarrangeEntity.
+      haveEnt = true;
+      if (flags & SESSION_ENTITY_TYPE)
+        {
+        // Trigger an event before the erasure so the observers
+        // have a chance to see what's about to disappear.
+        this->trigger(std::make_pair(DEL_EVENT, ENTITY_ENTRY),
+          EntityRef(this->shared_from_this(), uid));
+        }
       }
-    while (ad != this->arrangements().end());
+    else
+      { // without an Entity record, we cannot erase these things:
+      actual &= ~(SESSION_ENTITY_TYPE | SESSION_ENTITY_RELATIONS);
+      }
     }
-  this->tessellations().erase(uid);
-  this->attributeAssignments().erase(uid);
+
+  if (flags & SESSION_ARRANGEMENTS)
+    {
+    UUIDWithArrangementDictionary ad = this->arrangements().find(uid);
+    if (ad != this->arrangements().end())
+      {
+      ArrangementKindWithArrangements ak;
+      do
+        {
+        ak = ad->second.begin();
+        if (ak == ad->second.end())
+          break;
+        Arrangements::size_type aidx = ak->second.size();
+        if (aidx == 0)
+          ad->second.erase(ak);
+        else
+          for (; aidx > 0; --aidx)
+            this->unarrangeEntity(uid, ak->first, static_cast<int>(aidx - 1), false);
+        ad = this->arrangements().find(uid); // iterator may be invalidated by unarrangeEntity.
+        }
+      while (ad != this->arrangements().end());
+      }
+    }
+
+  if (actual & SESSION_TESSELLATION)
+    this->tessellations().erase(uid);
+
+  if (actual & SESSION_ATTRIBUTE_ASSOCIATIONS)
+    this->attributeAssignments().erase(uid);
 
   // TODO: If this entity is a model and has parents, we should make
-  //       the parent own the child models?
+  //       the parent own the child models? Erase the children? Leave
+  //       the children as orphans?
 
-  // Before removing the entity, loop through its relations and
-  // make sure none of them retain any references back to \a uid.
-  // However, we cannot erase entries in relatedEntity->relations()
-  // because relatedEntity's arrangements reference them by integer
-  // index. Thus, we call elideEntityReferences rather than removeEntityReferences.
-  this->elideEntityReferences(ent);
+  if (haveEnt)
+    {
+    // Before removing the entity, loop through its relations and
+    // make sure none of them retain any references back to \a uid.
+    // However, we cannot erase entries in relatedEntity->relations()
+    // because relatedEntity's arrangements reference them by integer
+    // index. Thus, we call elideEntityReferences rather than removeEntityReferences.
+    this->elideEntityReferences(ent);
+    }
 
   // TODO: Notify observers of property removal?
-  this->m_floatData->erase(uid);
-  this->m_stringData->erase(uid);
-  this->m_integerData->erase(uid);
+  if (actual & SESSION_USER_DEFINED_PROPERTIES)
+    {
+    if (actual & SESSION_FLOAT_PROPERTIES)
+      this->m_floatData->erase(uid);
+    if (actual & SESSION_STRING_PROPERTIES)
+      this->m_stringData->erase(uid);
+    if (actual & SESSION_INTEGER_PROPERTIES)
+      this->m_integerData->erase(uid);
+    }
+  else if (actual & SESSION_PROPERTIES)
+    {
+    SessionRef sref(shared_from_this(), uid);
+    if (!sref.isValid())
+      {
+      Model owningModel(shared_from_this(), this->modelOwningEntity(uid));
+      sref = owningModel.session();
+      }
+    if (sref.session())
+      sref.session()->removeGeneratedProperties(
+        EntityRef(shared_from_this(), uid), actual);
+    }
 
-  // TODO: Notify model of entity removal?
-  //       Note this can be complicated because removal
-  //       of entities in the class destructor prevent us
-  //       from obtaining a shared pointer to the manager
-  //       to pass to any observers...
-  this->m_topology->erase(uid);
+  if (haveEnt)
+    {
+    // TODO: Notify model of entity removal?
+    //       Note this can be complicated because removal
+    //       of entities in the class destructor prevent us
+    //       from obtaining a shared pointer to the manager
+    //       to pass to any observers...
+    this->m_topology->erase(uid);
+    }
 
-  return true;
+  return actual;
 }
 
 /**\brief A convenience method for erasing an entity from storage.
   *
   */
-bool Manager::erase(const EntityRef& entityref)
+SessionInfoBits Manager::erase(const EntityRef& entityref, SessionInfoBits flags)
 {
-  return this->Manager::erase(entityref.entity());
+  return this->Manager::erase(entityref.entity(), flags);
 }
 
 /**\brief A convenience method for erasing a model and its children.
@@ -234,10 +299,10 @@ bool Manager::erase(const EntityRef& entityref)
   * submodels from storage.
   * This method will have no effect given an invalid model entity.
   */
-bool Manager::eraseModel(const Model& model)
+SessionInfoBits Manager::eraseModel(const Model& model, SessionInfoBits flags)
 {
   if (!model.isValid())
-    return false;
+    return SESSION_NOTHING;
 
   CellEntities free = model.cells();
   for (CellEntities::iterator fit = free.begin(); fit != free.end(); ++fit)
@@ -246,10 +311,10 @@ bool Manager::eraseModel(const Model& model)
     for (EntityRefs::iterator bit = bdys.begin(); bit != bdys.end(); ++bit)
       {
       //std::cout << "Erasing " << bit->flagSummary(0) << " " << bit->entity() << "\n";
-      this->erase(bit->entity());
+      this->erase(bit->entity(), flags);
       }
     //std::cout << "Erasing " << fit->flagSummary(0) << " " << fit->entity() << "\n";
-    this->erase(fit->entity());
+    this->erase(fit->entity(), flags);
     }
 
   Groups grps = model.groups();
@@ -259,14 +324,14 @@ bool Manager::eraseModel(const Model& model)
     for (EntityRefs::iterator mit = members.begin(); mit != members.end(); ++mit)
       {
       //std::cout << "Erasing " << mit->flagSummary(0) << " " << mit->entity() << "\n";
-      this->erase(mit->entity());
+      this->erase(mit->entity(), flags);
       }
     //std::cout << "Erasing " << git->flagSummary(0) << " " << git->entity() << "\n";
-    this->erase(git->entity());
+    this->erase(git->entity(), flags);
     }
 
   //std::cout << "Erasing " << model.flagSummary(0) << " " << model.entity() << "\n";
-  this->erase(model.entity());
+  this->erase(model.entity(), flags);
 
   return true;
 }
@@ -374,7 +439,11 @@ Manager::iter_type Manager::setEntityOfTypeAndDimension(const UUID& uid, BitFlag
     msg << "Nil UUID";
     throw msg.str();
     }
-  if ((it = this->m_topology->find(uid)) != this->m_topology->end() && it->second.dimension() != dim)
+  if (
+    ((it = this->m_topology->find(uid)) != this->m_topology->end()) &&
+    (entityFlags & GROUP_ENTITY) != 0 &&
+    dim >= 0 &&
+    it->second.dimension() != dim)
     {
     std::ostringstream msg;
     msg << "Duplicate UUID '" << uid << "' of different dimension " << it->second.dimension() << " != " << dim;
@@ -1804,22 +1873,78 @@ EntityRefArray Manager::findEntitiesOfType(BitFlags flags, bool exactMatch)
   return this->entitiesMatchingFlagsAs<EntityRefArray>(flags, exactMatch);
 }
 
-/// Set the tessellation information for a given \a cellId.
-Manager::tess_iter_type Manager::setTessellation(const UUID& cellId, const Tessellation& geom)
+/**\brief Set the tessellation information for a given \a cellId.
+  *
+  * If \a analysis is non-zero (zero is the default), then the
+  * Tessellation is treated as an analysis mesh, not a display
+  * tessellation.
+  *
+  * Note that calling this method automatically sets or increments
+  * the integer-valued "_tessgen" property on \a cellId.
+  * This property enables fast display updates when only a few
+  * entity tessellations have changed.
+  * If \a generation is a non-NULL pointer (NULL is the default),
+  * then the new generation number of the Tessellation is stored at
+  * the address provided.
+  */
+Manager::tess_iter_type Manager::setTessellation(
+  const UUID& cellId, const Tessellation& geom, int analysis, int* generation)
 {
   if (cellId.isNull())
-    {
     throw std::string("Nil cell ID");
+
+  smtk::shared_ptr<UUIDsToTessellations> storage;
+  const char* genProp;
+  if (!analysis)
+    { // store as display tessellation
+    storage = this->m_tessellations;
+    genProp = SMTK_TESS_GEN_PROP;
     }
-  tess_iter_type result = this->m_tessellations->find(cellId);
-  if (result == this->m_tessellations->end())
+  else
+    { // store as analysis mesh
+    storage = this->m_analysisMesh;
+    genProp = SMTK_MESH_GEN_PROP;
+    }
+
+  tess_iter_type result = storage->find(cellId);
+  if (result == storage->end())
     {
     std::pair<UUID,Tessellation> blank;
     blank.first = cellId;
-    result = this->m_tessellations->insert(blank).first;
+    result = storage->insert(blank).first;
     }
   result->second = geom;
+
+  // Now set or increment the generation number.
+  IntegerList& gen(this->integerProperty(cellId, genProp));
+  if (gen.empty())
+    gen.push_back(0);
+  else
+    ++gen[0];
+  if (generation)
+    *generation = gen[0];
+
   return result;
+}
+
+/**\brief Remove the tessellation of the given \a entityId.
+  *
+  * If the second argument is true, also remove the integer "generation number"
+  * property from the entity.
+  *
+  * Returns true when a tessellation was actually removed and false otherwise.
+  */
+bool Manager::removeTessellation(const smtk::common::UUID& entityId, bool removeGen)
+{
+  bool didRemove;
+  UUIDWithTessellation tref = this->m_tessellations->find(entityId);
+  didRemove = (tref == this->m_tessellations->end());
+  if (didRemove)
+    this->m_tessellations->erase(tref);
+
+  if (removeGen)
+    this->removeIntegerProperty(entityId, SMTK_TESS_GEN_PROP);
+  return didRemove;
 }
 
 /**\brief Add or replace information about the arrangement of an entity.
@@ -1936,6 +2061,32 @@ int Manager::unarrangeEntity(const UUID& entityId, ArrangementKind k, int index,
     ++result;
     }
   return result;
+}
+
+/**\brief Erase all arrangements for the given \a entityId.
+  *
+  * \warning
+  * Unlike unarrangeEntity(), this method does not alter arrangements
+  * for any other entity and thus can leave previously-bidirectional
+  * arrangements as unidirectional.
+  *
+  * Returns true when \a entity had a non-empty dictionary of
+  * arrangements and false otherwise.
+  *
+  * Note that this does not erase the entry in the map from UUIDs
+  * to arrangements, but rather clears the arrangement dictionary
+  * for the given UUID.
+  */
+bool Manager::clearArrangements(const smtk::common::UUID& entityId)
+{
+  UUIDWithArrangementDictionary iter =
+    this->m_arrangements->find(entityId);
+  bool didRemove =
+    (iter != this->m_arrangements->end()) &&
+    (!iter->second.empty());
+  if (didRemove)
+    iter->second.clear();
+  return didRemove;
 }
 
 /**\brief Returns true when the given \a entity has any arrangements of the given \a kind (otherwise false).
@@ -2195,6 +2346,35 @@ bool Manager::findDualArrangements(
   return false;
 }
 
+/**\brief A method to add bidirectional arrangements between a parent and child.
+  *
+  */
+bool Manager::addDualArrangement(
+  const smtk::common::UUID& parent, const smtk::common::UUID& child,
+  ArrangementKind kind, int sense, Orientation orientation)
+{
+  Entity* erec;
+  erec = this->findEntity(parent, false);
+  if (!erec)
+    return false;
+  EntityTypeBits parentType = static_cast<EntityTypeBits>(erec->entityFlags() & ENTITY_MASK);
+  int childIndex = erec->findOrAppendRelation(child);
+
+  erec = this->findEntity(child, false);
+  if (!erec)
+    return false;
+  EntityTypeBits childType = static_cast<EntityTypeBits>(erec->entityFlags() & ENTITY_MASK);
+  int parentIndex = erec->findOrAppendRelation(parent);
+
+  ArrangementKind dualKind = Dual(parentType, kind);
+  if (dualKind == KINDS_OF_ARRANGEMENTS)
+    return false;
+
+  this->arrangeEntity(parent, kind, Arrangement::Construct(parentType, kind, childIndex, sense, orientation));
+  this->arrangeEntity(child, dualKind, Arrangement::Construct(childType, dualKind, parentIndex, sense, orientation));
+  return true;
+}
+
 /**\brief Find a particular arrangement: a cell's HAS_USE with a given sense.
   *
   * The index of the matching arrangement is returned (or -1 if no such sense
@@ -2210,13 +2390,27 @@ bool Manager::findDualArrangements(
   *
   * You may find all the HAS_USE arrangements of the cell and iterator over
   * them to discover all the sense numbers.
-  * There should be no duplicate senses for any given cell.
+  *
+  * There should be no duplicate senses for any given cell with the same orientation
+  * except in the case of vertex uses.
+  * Vertex uses have no orientation and each sense of a vertex corresponds to
+  * a unique connected point-set locus in the neighborhood of the domain with
+  * the vertex removed.
+  * So, a torus pinched to a conical point at one location on its boundary
+  * might have a periodic circular edge terminated by the same vertex at each end.
+  * However, the sense of the vertex uses for each endpoint would be different
+  * since subtracting the vertex from the bi-conic neighborhood yields distinct
+  * connected components. (The components are distinct inside small neighborhoods
+  * of the vertex even though the components are connected by an edge; this
+  * convention should be followed so that it is possible to compute deflection vectors
+  * that will remove the degeneracy of the vertex.)
   */
 int Manager::findCellHasUseWithSense(
-  const UUID& cellId, int sense) const
+  const UUID& cellId, const UUID& use, int sense) const
 {
+  const Entity* erec = this->findEntity(cellId);
   const Arrangements* arrs = this->hasArrangementsOfKindForEntity(cellId, HAS_USE);
-  if (arrs)
+  if (arrs && erec)
     {
     int i = 0;
     for (Arrangements::const_iterator it = arrs->begin(); it != arrs->end(); ++it, ++i)
@@ -2225,6 +2419,7 @@ int Manager::findCellHasUseWithSense(
       Orientation itOrient;
       if (
         it->IndexSenseAndOrientationFromCellHasUse(itIdx, itSense, itOrient) &&
+        itIdx >= 0 && erec->relations()[itIdx] == use &&
         itSense == sense)
         {
         return i;
@@ -3294,7 +3489,8 @@ void Manager::closeSession(const SessionRef& sess)
 {
   if (sess.manager().get() == this)
     {
-    this->erase(sess);
+    // Exhaustive flag forces session name (and other properties) to be erased:
+    this->erase(sess, SESSION_EXHAUSTIVE);
     this->unregisterSession(sess.session());
     }
 }

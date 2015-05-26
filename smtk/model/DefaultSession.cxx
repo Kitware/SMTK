@@ -28,10 +28,11 @@ DefaultSession::DefaultSession()
 }
 
 /// Indicate that, since we have no "backing store" model, the entire model is already present.
-SessionInfoBits DefaultSession::transcribeInternal(const EntityRef& entity, SessionInfoBits flags)
+SessionInfoBits DefaultSession::transcribeInternal(const EntityRef& entity, SessionInfoBits flags, int depth)
 {
   (void)entity;
   (void)flags;
+  (void)depth;
   return SESSION_EVERYTHING;
 }
 

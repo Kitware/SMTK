@@ -36,8 +36,8 @@
 #include <sys/stat.h>
 #include <vtksys/SystemTools.hxx>
 
-#include "smtk/Options.h" // for SMTK_ENABLE_REMUS
-#ifdef SMTK_ENABLE_REMUS
+#include "smtk/Options.h" // for SMTK_ENABLE_REMUS_SUPPORT
+#ifdef SMTK_ENABLE_REMUS_SUPPORT
   #include "smtk/bridge/discrete/extension/meshing/vtkDiscoverRegions.h"
   #include "smtk/bridge/discrete/extension/meshing/vtkPolylineTriangulator.h"
   #include "smtk/bridge/discrete/extension/reader/vtkPolyFileReader.h"
@@ -223,7 +223,7 @@ int vtkCMBGeometryReader::RequestData(
     reader->Update();
     output->ShallowCopy( reader->GetOutput()->GetBlock(0));
     }
-#ifdef SMTK_ENABLE_REMUS
+#ifdef SMTK_ENABLE_REMUS_SUPPORT
   else if (
     (fileNameStr.find(".poly") != std::string::npos) ||
     (fileNameStr.find(".smesh") != std::string::npos)

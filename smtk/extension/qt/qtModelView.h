@@ -14,7 +14,7 @@
 #ifndef _qtModelView_h
 #define _qtModelView_h
 
-#include "smtk/extension/qt/QtSMTKExports.h"
+#include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtEntityItemModel.h"
 
 #include "smtk/common/UUID.h"
@@ -42,7 +42,7 @@ namespace smtk {
 class DescriptivePhrase;
 class qtModelOperationWidget;
 
-class QTSMTK_EXPORT qtModelView : public QTreeView
+class SMTKQTEXT_EXPORT qtModelView : public QTreeView
 {
   Q_OBJECT
 
@@ -101,6 +101,7 @@ protected slots:
                                const smtk::model::SessionRef& session,
                                const smtk::model::Group& grp,
                                const smtk::model::EntityRefs& entities);
+  virtual void newIndexAdded(const QModelIndex & newidx);
 
 protected:
   // If 'Delete' button is pressed, invoke proper operation if possible.

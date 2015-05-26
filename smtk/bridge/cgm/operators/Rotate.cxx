@@ -107,7 +107,7 @@ smtk::model::OperatorResult Rotate::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  CGMSMTK_EXPORT,
+  SMTKCGMSESSION_EXPORT,
   smtk::bridge::cgm::Rotate,
   cgm_rotate,
   "rotate",

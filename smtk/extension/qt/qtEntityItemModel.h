@@ -15,7 +15,7 @@
 #include "QIcon"
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/extension/qt/QtSMTKExports.h" // For EXPORT macro.
+#include "smtk/extension/qt/Exports.h" // For EXPORT macro.
 #include "smtk/model/DescriptivePhrase.h"
 #include <map>
 
@@ -38,7 +38,7 @@ namespace smtk {
   * descriptive phrase for presentation. For instance, you may write a
   * filter that omits descriptions of attributes on model items.
   */
-class QTSMTK_EXPORT QEntityItemModel : public QAbstractItemModel
+class SMTKQTEXT_EXPORT QEntityItemModel : public QAbstractItemModel
 {
   Q_OBJECT
 public:
@@ -114,6 +114,7 @@ public:
 
 signals:
   void phraseTitleChanged(const QModelIndex&);
+  void newIndexAdded(const QModelIndex & newidx);
 
 protected:
   smtk::model::DescriptivePhrasePtr m_root;

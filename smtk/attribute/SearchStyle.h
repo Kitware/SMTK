@@ -10,7 +10,7 @@
 #ifndef __smtk_attribute_SearchStyle_h
 #define __smtk_attribute_SearchStyle_h
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 
 namespace smtk {
   namespace attribute {

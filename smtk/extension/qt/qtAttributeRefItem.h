@@ -16,6 +16,7 @@
 #define __smtk_attribute_qtAttributeRefItem_h
 
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/Exports.h"
 #include <QComboBox>
 
 class qtAttributeRefItemInternals;
@@ -27,7 +28,7 @@ namespace smtk
     class qtBaseView;
     class qtAttribute;
 
-    class QTSMTK_EXPORT qtAttributeRefItem : public qtItem
+    class SMTKQTEXT_EXPORT qtAttributeRefItem : public qtItem
     {
       Q_OBJECT
 
@@ -65,7 +66,7 @@ namespace smtk
     }; // class
 
     //A sublcass of QComboBox to refresh the list on popup
-    class QTSMTK_EXPORT qtAttRefCombo : public QComboBox
+    class SMTKQTEXT_EXPORT qtAttRefCombo : public QComboBox
       {
       Q_OBJECT
       public:

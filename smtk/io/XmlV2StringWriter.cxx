@@ -720,6 +720,13 @@ void XmlV2StringWriter::processMeshSelectionItemDef(pugi::xml_node &node,
   // this->processItemDefinition(node, idef);
   node.append_attribute("ModelEntityRef").set_value(
     idef->refModelEntityName().c_str());
+
+  smtk::model::BitFlags membershipMask = idef->membershipMask();
+  std::string membershipMaskStr = this->encodeModelEntityMask(membershipMask);
+  xml_node menode;
+  menode = node.append_child("MembershipMask");
+  menode.text().set(membershipMaskStr.c_str());
+
 }
 
 //----------------------------------------------------------------------------
@@ -1188,9 +1195,9 @@ void XmlV2StringWriter::processMeshSelectionItem(pugi::xml_node &node,
   val = node.append_child("CtrlKey");
   val.text().set(item->isCtrlKeyDown() ? 1 : 0);
 
-  val = node.append_child("MeshSelectionMode");
-  val.text().set(MeshSelectionItem::selectMode2String(
-                 item->meshSelectMode()).c_str());
+  val = node.append_child("MeshModifyMode");
+  val.text().set(MeshSelectionItem::modifyMode2String(
+                 item->modifyMode()).c_str());
   if (!n)
     {
     return;

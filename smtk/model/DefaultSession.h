@@ -70,7 +70,7 @@ protected:
 
   DefaultSession();
 
-  virtual SessionInfoBits transcribeInternal(const EntityRef& entity, SessionInfoBits flags);
+  virtual SessionInfoBits transcribeInternal(const EntityRef& entity, SessionInfoBits flags, int depth = -1);
 
   virtual bool ableToOperateDelegate(RemoteOperatorPtr op);
   virtual OperatorResult operateDelegate(RemoteOperatorPtr op);

@@ -28,13 +28,13 @@ With that in mind:
 
 * smtk — this directory contains all of the source code for SMTK libraries and tests
 
-  * common — source for classes used throughout the SMTKCore library
-  * attribute — source for :ref:`smtk-attribute-sys` in the SMTKCore library
-  * model — source for :ref:`smtk-model-sys` in the SMTKCore library
-  * simulation — aids to exporting simulation input decks in the SMTKCore library
-  * io — file and string I/O in the SMTKCore library, a mix of XML and JSON
-  * view — source for providing views of attributes and models in the SMTKCore library
-  * session — source for additional libraries that session solid modeling kernels into SMTK
+  * common — source for classes used throughout the smtkCore library
+  * attribute — source for :ref:`smtk-attribute-sys` in the smtkCore library
+  * model — source for :ref:`smtk-model-sys` in the smtkCore library
+  * simulation — aids to exporting simulation input decks in the smtkCore library
+  * io — file and string I/O in the smtkCore library, a mix of XML and JSON
+  * view — source for providing views of attributes and models in the smtkCore library
+  * bridge — source for additional libraries that bridge solid modeling kernels into SMTK
   * extensions — source for additional libraries that expose SMTK to other software
 
     * qt — widgets that allow presentation and editing of SMTK models and attributes
@@ -49,8 +49,8 @@ With that in mind:
 * utilities — scripts to aid in the development of SMTK
 
 
-Inside :file:`smtk/`, subdirectories, there are :file:`testing/` and :file:`pythonTesting` directories
-to hold C++ and Python tests, respectively.
+Inside :file:`smtk/`, subdirectories, there are :file:`testing/` directories that
+hold :file:`python/` and :file:`cxx/` directories for Python and C++ tests, respectively.
 
 Code style
 ==========

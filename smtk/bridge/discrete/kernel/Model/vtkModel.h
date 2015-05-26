@@ -31,7 +31,7 @@
 #ifndef __smtkdiscrete_vtkModel_h
 #define __smtkdiscrete_vtkModel_h
 
-#include "vtkSMTKDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelItem.h"
 
 #include <vector>

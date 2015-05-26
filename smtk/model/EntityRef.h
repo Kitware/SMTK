@@ -11,7 +11,7 @@
 #define __smtk_model_EntityRef_h
 /*! \file */
 
-#include "smtk/SMTKCoreExports.h" // For EXPORT macro.
+#include "smtk/CoreExports.h" // For EXPORT macro.
 #include "smtk/PublicPointerDefs.h" // For WeakManagerPtr
 #include "smtk/SystemConfig.h" // For type macros.
 
@@ -135,6 +135,7 @@ public:
   bool isVertexUse() const { return smtk::model::isVertexUse(this->entityFlags()); }
   bool isEdgeUse()   const { return smtk::model::isEdgeUse(this->entityFlags()); }
   bool isFaceUse()   const { return smtk::model::isFaceUse(this->entityFlags()); }
+  bool isVolumeUse() const { return smtk::model::isVolumeUse(this->entityFlags()); }
 
   /**\brief Reinterpret a entityref as a subclass.
     *
@@ -164,7 +165,12 @@ public:
   EntityRef& addRawRelation(const EntityRef& ent);
   EntityRef& findOrAddRawRelation(const EntityRef& ent);
 
+
   const Tessellation* hasTessellation() const;
+  const Tessellation* hasAnalysisMesh() const;
+  const Tessellation* gotMesh() const; //prefers the analaysis over the display
+  int setTessellation(const Tessellation* tess, int analysisMesh = 0);
+  bool removeTessellation(bool removeGen = false);
 
   bool hasAttributes() const;
   bool hasAttribute(const smtk::common::UUID &attribId) const;
@@ -217,6 +223,7 @@ public:
   int numberOfArrangementsOfKind(ArrangementKind k) const;
   Arrangement* findArrangement(ArrangementKind k, int index);
   const Arrangement* findArrangement(ArrangementKind k, int index) const;
+  bool clearArrangements();
 
   EntityRef relationFromArrangement(ArrangementKind k, int arrangementIndex, int offset) const;
 

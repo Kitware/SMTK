@@ -16,6 +16,7 @@
 #define __smtk_attribute_qtGroupItem_h
 
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/Exports.h"
 
 class qtGroupItemInternals;
 
@@ -23,7 +24,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtGroupItem : public qtItem
+    class SMTKQTEXT_EXPORT qtGroupItem : public qtItem
     {
       Q_OBJECT
 

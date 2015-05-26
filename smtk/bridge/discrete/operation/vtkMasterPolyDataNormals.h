@@ -21,7 +21,7 @@
 #ifndef __smtkdiscrete_vtkMasterPolyDataNormals_h
 #define __smtkdiscrete_vtkMasterPolyDataNormals_h
 
-#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
+#include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 class vtkIdList;

@@ -19,7 +19,7 @@
 #ifndef __smtkdiscrete_vtkGenerateSimpleModelOperator_h
 #define __smtkdiscrete_vtkGenerateSimpleModelOperator_h
 
-#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
+#include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkObject.h"
 
 class vtkAlgorithm;

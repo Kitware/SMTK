@@ -112,7 +112,7 @@ void testModelExport()
 
   testExportEntityRef(entities, smtk::model::ITERATE_BARE, 1);
   testExportEntityRef(entities, smtk::model::ITERATE_CHILDREN, 9);
-  testExportEntityRef(entities, smtk::model::ITERATE_MODELS, 78);
+  testExportEntityRef(entities, smtk::model::ITERATE_MODELS, 79);
 
   std::string json = ExportJSON::forEntities(entities, smtk::model::ITERATE_BARE, JSON_DEFAULT);
   std::cout << "json for vertex is \n" << json << "\n";

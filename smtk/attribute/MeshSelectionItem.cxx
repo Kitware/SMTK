@@ -22,7 +22,7 @@ MeshSelectionItem::MeshSelectionItem(Attribute* owningAttribute,
                    int itemPosition):
   Item(owningAttribute, itemPosition)
 {
-  m_selectMode = NONE;
+  m_modifyMode = NONE;
   m_isCtrlKeyDown = false;
 }
 
@@ -125,7 +125,7 @@ void MeshSelectionItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
 
   MeshSelectionItemPtr sourceMeshSelectionItem =
     smtk::dynamic_pointer_cast<MeshSelectionItem>(sourceItem);
-  this->m_selectMode = sourceMeshSelectionItem->meshSelectMode();
+  this->m_modifyMode = sourceMeshSelectionItem->modifyMode();
   this->m_isCtrlKeyDown = sourceMeshSelectionItem->isCtrlKeyDown();
   this->m_selectionValues = sourceMeshSelectionItem->m_selectionValues;
 }
@@ -141,7 +141,7 @@ smtk::attribute::MeshSelectionItem::const_sel_map_it MeshSelectionItem::end() co
 }
 
 //----------------------------------------------------------------------------
-std::string MeshSelectionItem::selectMode2String(MeshSelectionMode m)
+std::string MeshSelectionItem::modifyMode2String(MeshModifyMode m)
 {
   switch (m)
     {
@@ -162,7 +162,7 @@ std::string MeshSelectionItem::selectMode2String(MeshSelectionMode m)
 }
 
 //----------------------------------------------------------------------------
-MeshSelectionMode MeshSelectionItem::string2SelectMode(const std::string &s)
+MeshModifyMode MeshSelectionItem::string2ModifyMode(const std::string &s)
 {
   if (s == "NONE")
     {
@@ -184,5 +184,5 @@ MeshSelectionMode MeshSelectionItem::string2SelectMode(const std::string &s)
     {
     return ACCEPT;
     }
- return NUM_OF_MODES;
+ return NUM_OF_MODIFYMODES;
 }

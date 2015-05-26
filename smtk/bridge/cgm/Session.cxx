@@ -36,6 +36,7 @@
 #ifdef CGM_HAVE_VERSION_H
 #  include "cgm_version.h"
 #endif
+#include "GeometryQueryEngine.hpp"
 #include "RefEntity.hpp"
 #include "DagType.hpp"
 #include "Body.hpp"
@@ -53,6 +54,8 @@
 #include "RefGroup.hpp"
 
 #include "GMem.hpp"
+
+#include <string.h> // for strcmp
 
 typedef DLIList<RefEntity*> DLIRefList;
 
@@ -156,8 +159,10 @@ int Session::setup(const std::string& optName, const smtk::model::StringList& op
   */
 smtk::model::SessionInfoBits Session::transcribeInternal(
   const smtk::model::EntityRef& entityref,
-  SessionInfoBits requestedInfo)
+  SessionInfoBits requestedInfo,
+  int depth)
 {
+  (void) depth;
   ToolDataUser* tdu = TDUUID::findEntityById(entityref.entity());
   RefEntity* ent = dynamic_cast<RefEntity*>(tdu);
   if (ent)
@@ -330,7 +335,11 @@ smtk::model::SessionInfoBits Session::addBodyToManager(
   if (body)
     {
     EntityRef mutableEntityRef(entityref);
-    mutableEntityRef.manager()->insertModel(entityref.entity(), 3, 3, body->entity_name().c_str());
+    mutableEntityRef.manager()->insertModel(
+      entityref.entity(),
+      body->is_sheet_body() ? 2 : 3,
+      /* embedding dim */ 3,
+      body->entity_name().c_str());
     actual |= smtk::model::SESSION_ENTITY_TYPE;
 
     if (requestedInfo & (smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS))
@@ -375,6 +384,10 @@ smtk::model::SessionInfoBits Session::addBodyToManager(
     if (requestedInfo & smtk::model::SESSION_PROPERTIES)
       {
       // Set properties.
+      smtk::model::ModelGeometryStyle gstyle =
+        !strcmp("facet", body->get_geometry_query_engine()->modeler_type()) ?
+        smtk::model::DISCRETE : smtk::model::PARAMETRIC;
+      mutableEntityRef.setIntegerProperty(SMTK_GEOM_STYLE_PROP, static_cast<int>(gstyle));
       this->addNamesIfAny(mutableEntityRef, body);
       // If the color is not the default color, add it as a property.
       this->colorPropFromIndex(mutableEntityRef, body->color());
@@ -985,7 +998,7 @@ void Session::colorPropFromIndex(
 
 #include "smtk/bridge/cgm/Session_json.h" // For Session_json
 smtkImplementsModelingKernel(
-  CGMSMTK_EXPORT,
+  SMTKCGMSESSION_EXPORT,
   cgm,
   Session_json,
   smtk::bridge::cgm::Session::staticSetup,

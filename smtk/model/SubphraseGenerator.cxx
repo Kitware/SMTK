@@ -64,9 +64,19 @@ int SubphraseGenerator::directLimit() const
   return m_directlimit;
 }
 
+/**\brief Set the maximum number of direct children before a summary phrase is inserted.
+  *
+  * This is used to add a layer of indirection to the hierarchy so that
+  * long lists are not inadvertently opened and so that a parent which would
+  * otherwise have many children of many different kinds can group its
+  * children to allow easier browsing.
+  *
+  * A negative value indicates that no limit should be imposed (no summary
+  * phrases will ever be generated).
+  */
 bool SubphraseGenerator::setDirectLimit(int val)
 {
-  if(val > 0)
+  if(val != 0)
     {
     this->m_directlimit = val;
     return true;
@@ -319,7 +329,7 @@ void SubphraseGenerator::addEntityProperties(
     }
   // First, use the generator to prune entries we do not wish to display.
   // Now, add either the properties directly or as a list.
-  if (static_cast<int>(props.size()) < this->directLimit())
+  if (this->directLimit() < 0 || static_cast<int>(props.size()) < this->directLimit())
     {
     for (it = props.begin(); it != props.end(); ++it)
       {

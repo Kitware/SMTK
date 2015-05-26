@@ -23,12 +23,12 @@ include_directories(
 # vtk_module_library() macro and vtk/module.cmake file.
 # The pv_process_modules() macro finds all subdirectories
 # containing a module.cmake file automatically.
-include (vtkSMTKModules)
+include (smtkVTKModules)
 vtk_smtk_setup_module_environment("SMTKDiscrete")
 vtk_smtk_process_modules()
 
 # Build vtk moab reader before session
-if(SMTK_BUILD_MOAB_READER)
+if(SMTK_ENABLE_MOAB_SUPPORT)
   add_subdirectory(moabreader)
 endif()
 
@@ -47,6 +47,8 @@ SET(DiscreteModelFiles
 )
 
 SET(DiscreteOperationFiles
+  operation/vtkEdgeSplitOperator.cxx
+  operation/vtkEdgeSplitOperatorBase.cxx
   operation/vtkMergeOperator.cxx
   operation/vtkMergeOperatorBase.cxx
   operation/vtkCMBModelReadOperator.cxx
@@ -55,6 +57,8 @@ SET(DiscreteOperationFiles
   operation/vtkSplitOperator.cxx
   operation/vtkSplitOperatorBase.cxx
   operation/vtkMasterPolyDataNormals.cxx
+  operation/vtkMaterialOperator.cxx
+  operation/vtkMaterialOperatorBase.cxx
   operation/vtkMergeDuplicateCells.cxx
   operation/vtkModelEntityGroupOperator.cxx
   operation/vtkModelEntityGroupOperatorBase.cxx
@@ -63,6 +67,9 @@ SET(DiscreteOperationFiles
   operation/vtkSeedGrowSelectionFilter.cxx
   operation/vtkSelectionSplitOperator.cxx
   operation/vtkSelectionSplitOperatorBase.cxx
+  operation/vtkCompleteShells.cxx
+  operation/vtkCMBIncorporateMeshOperator.cxx
+  operation/vtkEnclosingModelEntityOperator.cxx
 )
 
 SET(DiscreteModelHeaders
@@ -78,6 +85,8 @@ SET(DiscreteModelHeaders
   operation/vtkCMBParserV5.h
   operation/vtkCMBModelReader.h
 
+  operation/vtkEdgeSplitOperator.h
+  operation/vtkEdgeSplitOperatorBase.h
   operation/vtkMergeOperator.h
   operation/vtkMergeOperatorBase.h
   operation/vtkCMBModelReadOperator.h
@@ -86,6 +95,8 @@ SET(DiscreteModelHeaders
   operation/vtkSplitOperator.h
   operation/vtkSplitOperatorBase.h
   operation/vtkMasterPolyDataNormals.h
+  operation/vtkMaterialOperator.h
+  operation/vtkMaterialOperatorBase.h
   operation/vtkMergeDuplicateCells.h
   operation/vtkModelEntityGroupOperator.h
   operation/vtkModelEntityGroupOperatorBase.h
@@ -94,6 +105,9 @@ SET(DiscreteModelHeaders
   operation/vtkSeedGrowSelectionFilter.h
   operation/vtkSelectionSplitOperator.h
   operation/vtkSelectionSplitOperatorBase.h
+  operation/vtkCompleteShells.h
+  operation/vtkCMBIncorporateMeshOperator.h
+  operation/vtkEnclosingModelEntityOperator.h
 )
 
 
@@ -114,6 +128,8 @@ set(_module_src
 
 set(discreteSessionSrcs
   Session.cxx
+  Operator.cxx
+  ArrangementHelper.cxx
 #  operators/CreateEdgesOperator.cxx
   operators/EntityGroupOperator.cxx
   operators/ImportOperator.cxx
@@ -122,10 +138,15 @@ set(discreteSessionSrcs
   operators/SplitFaceOperator.cxx
   operators/GrowOperator.cxx
   operators/WriteOperator.cxx
+  operators/RemoveModel.cxx
+  operators/EdgeOperator.cxx
+  operators/SetProperty.cxx
 )
 
 set(discreteSessionHeaders
   Session.h
+  Operator.h
+  ArrangementHelper.h
 #  operators/CreateEdgesOperator.h
   operators/EntityGroupOperator.h
   operators/ImportOperator.h
@@ -134,6 +155,9 @@ set(discreteSessionHeaders
   operators/SplitFaceOperator.h
   operators/GrowOperator.h
   operators/WriteOperator.h
+  operators/RemoveModel.h
+  operators/EdgeOperator.h
+  operators/SetProperty.h
 )
 
 # Normally this would be machine-generated from Session.json
@@ -153,6 +177,9 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ImportOperator.sbt" uni
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EntityGroupOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GrowOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteOperator.sbt" unitOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/RemoveModel.sbt" unitOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EdgeOperator.sbt" unitOperatorXML)
+# NB: SetProperty operator reuses smtk::model::SetProperty's XML
 
 add_library(smtkDiscreteSession ${_module_src} ${discreteSessionSrcs})
 
@@ -162,14 +189,14 @@ if (VTK_WRAP_PYTHON)
   list(APPEND __private_dependencies vtkPythonInterpreter)
 endif (VTK_WRAP_PYTHON)
 
-if(SMTK_BUILD_MOAB_READER)
+if(SMTK_ENABLE_MOAB_SUPPORT)
   list(APPEND __private_dependencies vtkDiscreteMoabReader)
 endif()
 
-#set smtkDiscreteSession to publicly link to SMTKCore and privately to vtkSMTKDiscreteModel
+#set smtkDiscreteSession to publicly link to smtkCore and privately to vtkSMTKDiscreteModel
 target_link_libraries(smtkDiscreteSession
   LINK_PUBLIC
-    SMTKCore
+    smtkCore
   LINK_PRIVATE
     vtkCommonExecutionModel
     vtkFiltersCore
@@ -178,7 +205,7 @@ target_link_libraries(smtkDiscreteSession
     vtkGeovisCore
     vtkIOParallel
     vtkRenderingCore
-    vtkRenderingFreeType${VTK_RENDERING_BACKEND}
+    vtkRenderingFreeType
     vtkRendering${VTK_RENDERING_BACKEND}
     vtksys
     ${__private_dependencies}
@@ -187,7 +214,7 @@ target_link_libraries(smtkDiscreteSession
   )
 
 
-smtk_export_header(smtkDiscreteSession discreteSessionExports.h)
+smtk_export_header(smtkDiscreteSession Exports.h)
 
 # On Mac OS X, set the directory included as part of the installed library's path:
 if (BUILD_SHARED_LIBS)
@@ -198,9 +225,9 @@ endif()
 smtk_public_headers(${discreteSessionHeaders} ${DiscreteModelHeaders})
 
 #install the library and exports the library when used from a build tree
-smtk_install_library(smtkDiscreteSession DEPENDS SMTKCore vtkSMTKDiscreteModel vtkSMTKDiscreteExt)
+smtk_install_library(smtkDiscreteSession DEPENDS smtkCore vtkSMTKDiscreteModel vtkSMTKDiscreteExt)
 
-if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
+if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
   #extract the headers from discrete library we built to give them to shiboken
 
   sbk_wrap_library(smtkDiscreteSession
@@ -221,7 +248,7 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
     TYPESYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/typesystem.xml
     HEADERS ${discreteSessionHeaders}
     DEPENDS
-      SMTKCore
+      smtkCore
   )
   target_include_directories(smtkDiscreteSessionPython
     PRIVATE
@@ -236,7 +263,7 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
   )
 endif()
 
-if(SMTK_BUILD_SESSION_PLUGIN AND SMTK_BUILD_DISCRETE_SESSION)
+if(SMTK_ENABLE_PARAVIEW_SUPPORT AND SMTK_ENABLE_DISCRETE_SESSION)
   add_subdirectory(plugin)
 endif()
 

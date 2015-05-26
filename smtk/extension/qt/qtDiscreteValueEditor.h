@@ -15,6 +15,7 @@
 #define __smtk_attribute_qtDiscreteValueEditor_h
 
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/Exports.h"
 #include <QtGui/QWidget>
 
 class qtDiscreteValueEditorInternals;
@@ -23,7 +24,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtDiscreteValueEditor : public QWidget
+    class SMTKQTEXT_EXPORT qtDiscreteValueEditor : public QWidget
     {
       Q_OBJECT
 

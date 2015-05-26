@@ -18,7 +18,7 @@
 #include "smtk/common/UUID.h"
 
 #include "smtk/attribute/ItemDefinition.h"
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
 #include <map>

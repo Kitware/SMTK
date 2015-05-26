@@ -22,9 +22,8 @@
 #ifndef __vtkMaterialOperator_h
 #define __vtkMaterialOperator_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkMaterialOperatorBase.h"
-#include "cmbSystemConfig.h"
 
 #include <iostream>
 
@@ -34,7 +33,7 @@ class vtkDiscreteModelWrapper;
 class vtkIdList;
 class vtkModelEntity;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkMaterialOperator : public vtkMaterialOperatorBase
+class SMTKDISCRETESESSION_EXPORT vtkMaterialOperator : public vtkMaterialOperatorBase
 {
 public:
   static vtkMaterialOperator * New();

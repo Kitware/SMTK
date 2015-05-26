@@ -14,7 +14,7 @@ set(srcs
 )
 
 # if there is Remus, add map file reader and support files.
-if(SMTK_ENABLE_REMUS)
+if(SMTK_ENABLE_REMUS_SUPPORT)
   #Remus is needed
   find_package(Remus REQUIRED)
   list(APPEND srcs
@@ -44,7 +44,7 @@ set(vtkSMTKDiscreteExt_NO_HeaderTest 1)
 vtk_module_library(vtkSMTKDiscreteExt ${srcs})
 SET(VTK_INSTALL_NO_DEVELOPMENT ${_VTK_INSTALL_NO_DEVELOPMENT})
 
-if(SMTK_ENABLE_REMUS)
+if(SMTK_ENABLE_REMUS_SUPPORT)
   #Remus is needed
   target_link_libraries(vtkSMTKDiscreteExt LINK_PRIVATE RemusClient RemusServer)
   target_include_directories(vtkSMTKDiscreteExt PRIVATE ${REMUS_INCLUDE_DIRS})
@@ -61,7 +61,7 @@ smtk_install_library(vtkSMTKDiscreteExt)
 
 # ... and install the export header
 smtk_get_kit_name(name dir_prefix)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/vtkSMTKDiscreteExtModule.h  DESTINATION include/${dir_prefix})
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/vtkSMTKDiscreteExtModule.h  DESTINATION include/smtk/${SMTK_VERSION}/${dir_prefix})
 
 #include the subdirectories so that the headers are installed. We don't invoke
 #smtk_public_headers from this directory as that would cause the headers to

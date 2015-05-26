@@ -16,6 +16,7 @@
 #define __smtk_attribute_qtUIManager_h
 
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/Exports.h"
 #include "smtk/attribute/System.h"
 #include <map>
 #include <QFont>
@@ -41,7 +42,7 @@ namespace smtk
     
     typedef qtBaseView* (*widgetConstructor)(smtk::common::ViewPtr, QWidget* p, qtUIManager* uiman);
 
-    class QTSMTK_EXPORT qtUIManager : public QObject
+    class SMTKQTEXT_EXPORT qtUIManager : public QObject
     {
 
     Q_OBJECT
@@ -216,7 +217,7 @@ namespace smtk
     }; // class
 
     //A sublcass of QDoubleValidator to fixup input outside of range
-    class QTSMTK_EXPORT qtDoubleValidator : public QDoubleValidator
+    class SMTKQTEXT_EXPORT qtDoubleValidator : public QDoubleValidator
     {
       Q_OBJECT
     public:
@@ -229,7 +230,7 @@ namespace smtk
     };
 
     //A sublcass of QIntValidator to fixup input outside of range
-    class QTSMTK_EXPORT qtIntValidator : public QIntValidator
+    class SMTKQTEXT_EXPORT qtIntValidator : public QIntValidator
       {
       Q_OBJECT
       public:
@@ -242,7 +243,7 @@ namespace smtk
       };
 
     //A sublcass of QTextEdit to give initial sizehint
-    class QTSMTK_EXPORT qtTextEdit : public QTextEdit
+    class SMTKQTEXT_EXPORT qtTextEdit : public QTextEdit
       {
       Q_OBJECT
       public:

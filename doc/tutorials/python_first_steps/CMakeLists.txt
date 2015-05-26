@@ -1,7 +1,7 @@
 project(tut_python_first_steps)
 cmake_minimum_required(VERSION 2.8.11)
 
-if (SMTK_ENABLE_TESTING AND SMTK_BUILD_PYTHON_WRAPPINGS AND SMTK_DATA_DIR)
+if (SMTK_ENABLE_TESTING AND SMTK_ENABLE_PYTHON_WRAPPING AND SMTK_DATA_DIR)
 
   add_test(
     NAME tut-python_first_steps
@@ -13,6 +13,6 @@ if (SMTK_ENABLE_TESTING AND SMTK_BUILD_PYTHON_WRAPPINGS AND SMTK_DATA_DIR)
   # Assign environment variables to the test(s)
   set_tests_properties(tut-python_first_steps
     PROPERTIES
-      ENVIRONMENT "PYTHONPATH=${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}"
+      ENVIRONMENT "PYTHONPATH=${VTKPY_DIR}${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}"
   )
 endif()

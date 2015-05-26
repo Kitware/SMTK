@@ -10,7 +10,7 @@
 #ifndef __smtk_session_cgm_ImportSolid_h
 #define __smtk_session_cgm_ImportSolid_h
 
-#include "smtk/bridge/cgm/cgmSMTKExports.h" // for CGMSMTK_EXPORT
+#include "smtk/bridge/cgm/Exports.h" // for SMTKCGMSESSION_EXPORT
 #include "smtk/PublicPointerDefs.h" // For ManagerPtr
 
 #include "smtk/common/UUID.h"
@@ -28,7 +28,7 @@ namespace smtk {
 /**\brief Load a solid model using CGM.
   *
   */
-class CGMSMTK_EXPORT ImportSolid
+class SMTKCGMSESSION_EXPORT ImportSolid
 {
 public:
   static smtk::common::UUIDArray fromFilenameIntoManager(

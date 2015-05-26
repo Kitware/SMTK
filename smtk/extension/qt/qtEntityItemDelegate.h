@@ -11,7 +11,7 @@
 #ifndef __smtk_qt_QEntityItemDelegate_h
 #define __smtk_qt_QEntityItemDelegate_h
 
-#include "smtk/extension/qt/QtSMTKExports.h"
+#include "smtk/extension/qt/Exports.h"
 
 #include <QStyledItemDelegate>
 
@@ -21,7 +21,7 @@ namespace smtk {
 /**\brief Present the contents of an smtk::model::Manager instance via QEntityItemModel.
   *
   */
-class QTSMTK_EXPORT QEntityItemDelegate : public QStyledItemDelegate
+class SMTKQTEXT_EXPORT QEntityItemDelegate : public QStyledItemDelegate
 {
   Q_OBJECT
   Q_PROPERTY(int swatchSize READ swatchSize WRITE setSwatchSize)

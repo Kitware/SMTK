@@ -8,16 +8,16 @@ include(ParaViewPlugins)
 list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
 add_paraview_plugin(
-  smtkCGMSession_Plugin "1.0"
+  smtkCGMSessionPlugin "1.0"
   SERVER_SOURCES sessionInit.cxx
 )
 
-target_link_libraries(smtkCGMSession_Plugin
+target_link_libraries(smtkCGMSessionPlugin
   LINK_PUBLIC
-    SMTKCore
-    cgmSMTK
+    smtkCore
+    smtkCGMSession
     vtkPVServerManagerApplication
   LINK_PRIVATE
     vtkPVServerManagerApplicationCS
 )
-smtk_install_library(smtkCGMSession_Plugin DEPENDS SMTKCore cgmSMTK)
+smtk_install_library(smtkCGMSessionPlugin DEPENDS smtkCore smtkCGMSession)

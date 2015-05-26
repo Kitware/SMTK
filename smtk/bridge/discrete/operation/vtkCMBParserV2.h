@@ -15,7 +15,7 @@
 #ifndef __smtkdiscrete_vtkCMBParserV2_h
 #define __smtkdiscrete_vtkCMBParserV2_h
 
-#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
+#include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkCMBParserBase.h"
 #include <vector>
 

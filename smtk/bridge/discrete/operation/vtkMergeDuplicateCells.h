@@ -20,7 +20,7 @@
 #ifndef __smtkdiscrete_vtkMergeDuplicateCells_h
 #define __smtkdiscrete_vtkMergeDuplicateCells_h
 
-#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
+#include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 class vtkCell;

@@ -13,7 +13,7 @@
 #ifndef __smtkdiscrete_vtkCMBMapToCMBModel_h
 #define __smtkdiscrete_vtkCMBMapToCMBModel_h
 
-#include "smtk/bridge/discrete/discreteSessionExports.h" // For export macro
+#include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkObject.h"
 #include <vector>
 #include <map>

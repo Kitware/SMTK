@@ -10,7 +10,7 @@
 #ifndef __smtk_io_ImportJSON_h
 #define __smtk_io_ImportJSON_h
 
-#include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
+#include "smtk/CoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/PublicPointerDefs.h" // For ManagerPtr
 
 #include "smtk/common/UUID.h"
@@ -39,6 +39,7 @@ public:
   static int ofManagerEntity(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
   static int ofManagerArrangement(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
   static int ofManagerTessellation(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
+  static int ofManagerAnalysis(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
   static int ofManagerFloatProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
   static int ofManagerStringProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
   static int ofManagerIntegerProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);

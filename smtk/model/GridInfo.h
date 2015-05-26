@@ -18,7 +18,7 @@
 #ifndef __smtk_model_GridInfo_h
 #define __smtk_model_GridInfo_h
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h"
 
 #include <string>

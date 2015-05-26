@@ -16,6 +16,7 @@
 #define __smtk_attribute_qtSimpleExpressionView_h
 
 #include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/Exports.h"
 
 #include <vector>
 
@@ -28,7 +29,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtSimpleExpressionView : public qtBaseView
+    class SMTKQTEXT_EXPORT qtSimpleExpressionView : public qtBaseView
     {
       Q_OBJECT
 

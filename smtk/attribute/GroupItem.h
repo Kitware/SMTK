@@ -14,7 +14,7 @@
 #ifndef __smtk_attribute_GroupItem_h
 #define __smtk_attribute_GroupItem_h
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/attribute/Item.h"
 #include <vector>
 namespace smtk

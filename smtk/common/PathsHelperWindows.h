@@ -12,7 +12,7 @@
 #ifndef __smtk_common_PathsHelperWindows_h
 #define __smtk_common_PathsHelperWindows_h
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 
 #include <set>
 #include <string>

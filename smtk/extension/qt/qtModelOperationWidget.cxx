@@ -146,7 +146,7 @@ void qtModelOperationWidget::setSession(smtk::model::SessionPtr session)
   this->Internals->OperationCombo->clear();
   if(session)
     {
-    StringList opNames = session->operatorNames();
+    StringList opNames = session->operatorNames(false);
     std::sort(opNames.begin(), opNames.end());
     for(StringList::const_iterator it = opNames.begin();
         it != opNames.end(); ++it)
@@ -230,7 +230,7 @@ bool qtModelOperationWidget::setCurrentOperation(
 
   if(brOp->name() != this->Internals->OperationCombo->currentText().toStdString())
     {
-    StringList opNames = brOp->session()->operatorNames();
+    StringList opNames = brOp->session()->operatorNames(false);
     std::sort(opNames.begin(), opNames.end());
     int idx = std::find(opNames.begin(), opNames.end(), brOp->name()) - opNames.begin();
     this->Internals->OperationCombo->blockSignals(true);
@@ -248,7 +248,7 @@ bool qtModelOperationWidget::setCurrentOperation(
   if(!session)
     return false;
 
-  StringList opNames = session->operatorNames();
+  StringList opNames = session->operatorNames(false);
   std::sort(opNames.begin(), opNames.end());
   int idx = std::find(opNames.begin(), opNames.end(), opName) - opNames.begin();
   if(this->Internals->OperationCombo->currentIndex() != idx)

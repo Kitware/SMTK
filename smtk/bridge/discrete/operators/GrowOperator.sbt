@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CMB Discrete Model "Split Face" Operator -->
+<!-- Description of the CMB Discrete Model "grow" Operator -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
@@ -9,6 +9,7 @@
           <MembershipMask>model</MembershipMask>
         </ModelEntity>
         <MeshSelection Name="selection" ModelEntityRef="model">
+          <MembershipMask>face</MembershipMask>
         </MeshSelection>
         <Double Name="feature angle" NumberOfRequiredValues="1">
           <DefaultValue>30.0</DefaultValue>

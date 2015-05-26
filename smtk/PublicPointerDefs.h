@@ -67,6 +67,7 @@ namespace smtk
   namespace model
   {
     class Arrangement;
+    class ArrangementHelper;
     class ArrangementReference;
     typedef std::vector<smtk::model::ArrangementReference> ArrangementReferences;
     class AttributeListPhrase;
@@ -131,10 +132,10 @@ namespace smtk
   namespace bridge
   {
     // These classes are in the SMTKRemote library, which
-    // is only built when SMTK_ENABLE_REMUS is ON. However,
-    // we do not #ifdef these declarations since that would
-    // introduce a dependency on a generated header that
-    // could cause frequent recompilation.
+    // is only built when SMTK_ENABLE_REMUS_SUPPORT is ON.
+    // However, we do not #ifdef these declarations since
+    // that would introduce a dependency on a generated
+    // header that could cause frequent recompilation.
     namespace remote
     {
       class Session;

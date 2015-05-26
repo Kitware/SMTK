@@ -10,7 +10,7 @@
 #ifndef __smtk_io_ExportJSON_h
 #define __smtk_io_ExportJSON_h
 
-#include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
+#include "smtk/CoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/SystemConfig.h"
 
 #include "smtk/common/UUID.h"
@@ -36,7 +36,8 @@ enum JSONFlags
   JSON_ENTITIES      = 0x01, //!< Export model-entity entries in Manager (not including tessellations or properties).
   JSON_SESSIONS      = 0x02, //!< Export sessions (i.e., session IDs, the session type, and operators).
   JSON_TESSELLATIONS = 0x04, //!< Export tessellations of model-entity entries in the Manager.
-  JSON_PROPERTIES    = 0x08, //!< Export string/float/integer properties of model-entity entries in the Manager.
+  JSON_ANALYSISMESH  = 0x08, //!< Export tessellations of model-entity entries in the Manager.
+  JSON_PROPERTIES    = 0x16, //!< Export string/float/integer properties of model-entity entries in the Manager.
 
   JSON_CLIENT_DATA   = 0x0b, //!< Export everything but tessellation data to clients.
   JSON_DEFAULT       = 0xff  //!< By default, export everything.
@@ -57,6 +58,7 @@ public:
 
   static int fromModelManager(cJSON* json, smtk::model::ManagerPtr modelMgr, JSONFlags sections = JSON_DEFAULT);
   static std::string fromModelManager(smtk::model::ManagerPtr modelMgr, JSONFlags sections = JSON_DEFAULT);
+  static bool fromModelManagerToFile(smtk::model::ManagerPtr modelMgr, const char* filename);
 
   template<typename T>
   static int forEntities(
@@ -74,6 +76,7 @@ public:
   static int forManagerEntity(smtk::model::UUIDWithEntity& entry, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forManagerArrangement(const smtk::model::UUIDWithArrangementDictionary& entry, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forManagerTessellation(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
+  static int forManagerAnalysis(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forManagerFloatProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forManagerStringProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forManagerIntegerProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);

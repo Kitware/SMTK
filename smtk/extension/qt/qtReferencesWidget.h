@@ -16,7 +16,7 @@
 #define __smtk_attribute_qtReferencesWidget_h
 
 #include <QWidget>
-#include "smtk/extension/qt/QtSMTKExports.h"
+#include "smtk/extension/qt/Exports.h"
 #include "smtk/PublicPointerDefs.h"
 
 class qtReferencesWidgetInternals;
@@ -28,7 +28,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtReferencesWidget : public QWidget
+    class SMTKQTEXT_EXPORT qtReferencesWidget : public QWidget
     {
       Q_OBJECT
 

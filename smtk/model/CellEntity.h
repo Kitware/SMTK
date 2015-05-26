@@ -32,6 +32,7 @@ public:
 
   Model model() const;
   CellEntities boundingCells() const;
+  UseEntities boundingCellUses(Orientation orientation) const;
 
   template<typename T> T inclusions() const;
   template<typename T> T uses() const;

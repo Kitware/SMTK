@@ -15,11 +15,10 @@
 #ifndef __vtkCMBIncorporateMeshOperator_h
 #define __vtkCMBIncorporateMeshOperator_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkObject.h"
 #include <set>
 #include <map>
-#include "cmbSystemConfig.h"
 
 class DiscreteMesh;
 class vtkDiscreteModelWrapper;
@@ -30,7 +29,7 @@ class vtkDiscreteModelRegion;
 class vtkIdList;
 class vtkDiscreteModelFace;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkCMBIncorporateMeshOperator : public vtkObject
+class SMTKDISCRETESESSION_EXPORT vtkCMBIncorporateMeshOperator : public vtkObject
 {
 public:
   static vtkCMBIncorporateMeshOperator * New();

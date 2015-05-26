@@ -11,9 +11,10 @@
 #ifndef __smtk_session_discrete_EntityGroupOperator_h
 #define __smtk_session_discrete_EntityGroupOperator_h
 
-#include "smtk/bridge/discrete/discreteSessionExports.h"
+#include "smtk/bridge/discrete/Exports.h"
 #include "smtk/model/Operator.h"
 #include "vtkModelEntityGroupOperator.h"
+#include "vtkMaterialOperator.h"
 #include "vtkNew.h"
 
 namespace smtk {
@@ -43,11 +44,14 @@ protected:
   EntityGroupOperator();
   virtual smtk::model::OperatorResult operateInternal();
   Session* discreteSession() const;
-  int fetchCMBCellId(const std::string& parameterName) const;
-  int fetchCMBCellId(
+  vtkModelEntity* fetchCMBCell(const std::string& parameterName) const;
+  vtkModelEntity* fetchCMBCell(
     const smtk::attribute::ModelEntityItemPtr&, int idx ) const;
+  int createBoundaryGroup(vtkDiscreteModelWrapper* modelWrapper);
+  int createDomainSet(vtkDiscreteModelWrapper* modelWrapper);
 
-  vtkNew<vtkModelEntityGroupOperator> m_op;
+  vtkNew<vtkModelEntityGroupOperator> m_opBoundary;
+  vtkNew<vtkMaterialOperator> m_opDomain;
 };
 
     } // namespace discrete

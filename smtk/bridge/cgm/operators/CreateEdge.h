@@ -20,7 +20,7 @@ namespace smtk {
   *
   * The number of sides must be 3 or greater.
   */
-class CGMSMTK_EXPORT CreateEdge : public Operator
+class SMTKCGMSESSION_EXPORT CreateEdge : public Operator
 {
 public:
   smtkTypeMacro(CreateEdge);

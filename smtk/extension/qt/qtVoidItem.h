@@ -16,6 +16,7 @@
 #define __smtk_attribute_qtVoidItem_h
 
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/Exports.h"
 
 class qtVoidItemInternals;
 
@@ -23,7 +24,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtVoidItem : public qtItem
+    class SMTKQTEXT_EXPORT qtVoidItem : public qtItem
     {
       Q_OBJECT
 

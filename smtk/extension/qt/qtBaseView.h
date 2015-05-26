@@ -14,7 +14,7 @@
 #define __smtk_attribute_qtBaseView_h
 
 #include <QObject>
-#include "smtk/extension/qt/QtSMTKExports.h"
+#include "smtk/extension/qt/Exports.h"
 #include "smtk/PublicPointerDefs.h"
 #include <QList>
 
@@ -27,7 +27,7 @@ namespace smtk
     class qtUIManager;
     class qtItem;
 
-    class QTSMTK_EXPORT qtBaseView : public QObject
+    class SMTKQTEXT_EXPORT qtBaseView : public QObject
     {
       Q_OBJECT
 

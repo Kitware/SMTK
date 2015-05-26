@@ -556,6 +556,82 @@ const Tessellation* EntityRef::hasTessellation() const
   return NULL;
 }
 
+/**\brief Return the entity's analysis mesh if one exists or NULL otherwise.
+  *
+  */
+const Tessellation* EntityRef::hasAnalysisMesh() const
+{
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
+    {
+    UUIDsToTessellations::const_iterator it = mgr->analysisMesh().find(this->m_entity);
+    if (it != mgr->analysisMesh().end())
+      return &it->second;
+    }
+  return NULL;
+}
+
+/**\brief Return the entity's analysis mesh if one exists,
+  * otherwise return the entity's tessellation. If neither
+  * exist return NULL.
+  *
+  */
+const Tessellation* EntityRef::gotMesh() const
+{
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
+    {
+    UUIDsToTessellations::const_iterator am = mgr->analysisMesh().find(this->m_entity);
+    if (am != mgr->analysisMesh().end())
+      return &am->second;
+    //don't even search for the tessellation if we have an analysis mesh
+    UUIDsToTessellations::const_iterator te = mgr->tessellations().find(this->m_entity);
+    if (te != mgr->tessellations().end())
+      return &te->second;
+    }
+  return NULL;
+}
+
+/**\brief Set the tessellation of the entity, returning its
+  *       generation number (or -1 on failure).
+  *
+  * If \a analysisMesh is non-zero (zero is the default), then
+  * the tessellation is treated as an analysis mesh rather than
+  * a tessellation for display purposes.
+  */
+int EntityRef::setTessellation(const Tessellation* tess, int analysisMesh)
+{
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
+    {
+    int gen;
+    try {
+      mgr->setTessellation(this->m_entity, *tess, analysisMesh, &gen);
+    } catch (std::string& badIdMsg) {
+      return -1;
+    }
+
+    return gen;
+    }
+  return -1;
+}
+
+/**\brief Remove the tessellation of the entity, returning true
+  *       if such a tessellation existed.
+  *
+  * If \a removeGen is true (false is the default), then
+  * also remove the generation-number property (a monotonically
+  * increasing integer property used to signal that the
+  * tessellation has changed).
+  */
+bool EntityRef::removeTessellation(bool removeGen)
+{
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
+    return mgr->removeTessellation(this->m_entity, removeGen);
+  return false;
+}
+
 /** @name Attribute associations
   *
   */
@@ -911,6 +987,13 @@ const Arrangement* EntityRef::findArrangement(ArrangementKind k, int i) const
 {
   ManagerPtr mgr = this->m_manager.lock();
   return mgr->findArrangement(this->m_entity, k, i);
+}
+
+/// Delete all arrangements of this entity with prejudice.
+bool EntityRef::clearArrangements()
+{
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr->clearArrangements(this->m_entity);
 }
 
 /**\brief Return the relation specified by the \a offset into the specified arrangement.

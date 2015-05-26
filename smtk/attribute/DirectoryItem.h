@@ -14,7 +14,7 @@
 #ifndef __smtk_attribute_DirectoryItem_h
 #define __smtk_attribute_DirectoryItem_h
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Item.h"
 #include <string>

@@ -16,7 +16,7 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-class CGMSMTK_EXPORT Scale : public Operator
+class SMTKCGMSESSION_EXPORT Scale : public Operator
 {
 public:
   smtkTypeMacro(Scale);

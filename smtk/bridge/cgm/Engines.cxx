@@ -265,6 +265,6 @@ bool Engines::shutdown()
   return true;
 }
 
-} // namespace cgm
+    } // namespace cgm
   } //namespace bridge
 } // namespace smtk

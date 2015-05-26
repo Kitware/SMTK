@@ -10,18 +10,18 @@ if (SMTK_ENABLE_EXODUS_SESSION)
   # not be found.
   list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
-  add_paraview_plugin(smtkExodusSession_Plugin "1.0"
+  add_paraview_plugin(smtkExodusSessionPlugin "1.0"
       SERVER_SOURCES
         sessionInit.cxx
     )
 
-  target_link_libraries(smtkExodusSession_Plugin
+  target_link_libraries(smtkExodusSessionPlugin
     LINK_PUBLIC
-      SMTKCore
-      SMTKSessionExodus
+      smtkCore
+      smtkExodusSession
       vtkPVServerManagerApplication
     LINK_PRIVATE
       vtkPVServerManagerApplicationCS
   )
-  smtk_install_library(smtkExodusSession_Plugin DEPENDS SMTKCore SMTKSessionExodus)
+  smtk_install_library(smtkExodusSessionPlugin DEPENDS smtkCore smtkExodusSession)
 endif()

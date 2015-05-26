@@ -14,7 +14,7 @@
 #ifndef __smtk_io_ResourceSetWriter_h
 #define __smtk_io_ResourceSetWriter_h
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SystemConfig.h"
 

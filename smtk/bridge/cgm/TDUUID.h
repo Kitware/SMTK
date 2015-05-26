@@ -16,7 +16,7 @@
 #include "CubitGeomConfigure.h"
 
 #include "smtk/Options.h"
-#include "smtk/bridge/cgm/cgmSMTKExports.h"
+#include "smtk/bridge/cgm/Exports.h"
 #include "smtk/common/UUIDGenerator.h"
 
 #ifdef SMTK_HASH_STORAGE
@@ -44,7 +44,7 @@ typedef google::sparse_hash_map<smtk::common::UUID,ToolDataUser*> UUIDToCGMRef;
 typedef std::map<smtk::common::UUID,ToolDataUser*> UUIDToCGMRef;
 #endif // SMTK_HASH_STORAGE
 
-class CGMSMTK_EXPORT TDUUID : public ToolData
+class SMTKCGMSESSION_EXPORT TDUUID : public ToolData
 {
 public:
   TDUUID(ToolDataUser* entity, const smtk::common::UUID& uid = smtk::common::UUID());

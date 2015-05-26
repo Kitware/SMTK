@@ -145,7 +145,8 @@ smtk::model::Model Session::addModel(
 // ++ 7 ++
 SessionInfoBits Session::transcribeInternal(
   const smtk::model::EntityRef& entity,
-  SessionInfoBits requestedInfo)
+  SessionInfoBits requestedInfo,
+  int depth)
 {
   SessionInfoBits actual = SESSION_NOTHING;
   EntityHandle handle = this->toEntity(entity);
@@ -171,7 +172,7 @@ SessionInfoBits Session::transcribeInternal(
       // The handle is valid, so perhaps we were asked to
       // transcribe a group before its parent model?
       this->declareDanglingEntity(parentEntityRef, 0);
-      this->transcribe(parentEntityRef, requestedInfo, true);
+      this->transcribe(parentEntityRef, requestedInfo, true, depth < 0 ? depth : depth - 1);
       }
     dim = parentEntityRef.embeddingDimension();
     }
@@ -188,6 +189,8 @@ SessionInfoBits Session::transcribeInternal(
     case EXO_MODEL:
       mutableEntityRef.manager()->insertModel(
         mutableEntityRef.entity(), dim, dim);
+      mutableEntityRef.setIntegerProperty(
+        SMTK_GEOM_STYLE_PROP, smtk::model::DISCRETE);
       break;
     case EXO_BLOCK:
       entityDimBits = Entity::dimensionToDimensionBits(dim);
@@ -247,7 +250,7 @@ SessionInfoBits Session::transcribeInternal(
         {
         this->m_revIdMap[childEntityRef] = *cit;
         this->declareDanglingEntity(childEntityRef, 0);
-        this->transcribeInternal(childEntityRef, requestedInfo);
+        this->transcribeInternal(childEntityRef, requestedInfo, depth < 0 ? depth : depth - 1);
         }
       mutableEntityRef.as<smtk::model::Model>().addGroup(childEntityRef);
       }
@@ -417,7 +420,7 @@ bool Session::addTessellation(
 #include "Session_json.h"
 
 smtkImplementsModelingKernel(
-  SMTKSESSIONEXODUS_EXPORT,
+  SMTKEXODUSSESSION_EXPORT,
   exodus,
   Session_json,
   SessionHasNoStaticSetup,

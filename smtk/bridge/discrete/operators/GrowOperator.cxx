@@ -148,8 +148,8 @@ void GrowOperator::writeSplitResult(vtkSelectionSplitOperator* splitOp,
 
     // Now re-add it (it will have new edges)
     faceUUID = opsession->findOrSetEntityUUID(origFace);
-    smtk::model::Face c = opsession->addFaceToManager(faceUUID,
-      origFace, store, true);
+    smtk::model::Face c = opsession->addCMBEntityToManager(faceUUID,
+      origFace, store, true).as<smtk::model::Face>();
     modEnts.push_back(c); // original face
 
     this->addRawRelationship(c, vol1, vol2);
@@ -160,7 +160,8 @@ void GrowOperator::writeSplitResult(vtkSelectionSplitOperator* splitOp,
       vtkModelFace* face = dynamic_cast<vtkModelFace*>(
         modelWrapper->GetModelEntity(vtkModelFaceType, *fit));
       faceUUID = opsession->findOrSetEntityUUID(face);
-      smtk::model::Face cFace = opsession->addFaceToManager(faceUUID, face, store, true);
+      smtk::model::Face cFace = opsession->addCMBEntityToManager(
+        faceUUID, face, store, true).as<smtk::model::Face>();
       newEnts.push_back(cFace); // new face
       this->addRawRelationship(cFace, vol1, vol2);
       }
@@ -317,7 +318,7 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
   bool ok = false;
   smtk::attribute::MeshSelectionItem::Ptr inSelectionItem =
      this->specification()->findMeshSelection("selection");
-  MeshSelectionMode opType = inSelectionItem->meshSelectMode();
+  MeshModifyMode opType = inSelectionItem->modifyMode();
   int numSelValues = inSelectionItem->numberOfValues();
 
   switch(opType)
@@ -390,8 +391,7 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
       ok = true; // stop grow
       break;
     default:
-      std::cerr << "ERROR: Unrecognized MeshSelectionMode: "
-                << opType << std::endl;
+      std::cerr << "ERROR: Unrecognized MeshModifyMode: " << std::endl;
       break;
   }
 

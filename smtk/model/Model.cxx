@@ -18,6 +18,21 @@
 namespace smtk {
   namespace model {
 
+/**\brief Return information about how the modeling kernel represents this model.
+  *
+  * \sa ModelGeometryStyle
+  */
+ModelGeometryStyle Model::geometryStyle() const
+{
+  if (this->hasIntegerProperty(SMTK_GEOM_STYLE_PROP))
+    {
+    const smtk::model::IntegerList& plist(this->integerProperty(SMTK_GEOM_STYLE_PROP));
+    if (!plist.empty())
+      return static_cast<ModelGeometryStyle>(plist[0]);
+    }
+  return PARAMETRIC;
+}
+
 /**\brief Set the number coordinate values used to specify each point in the locus of this model.
   *
   * This should meet or exceed the maxParametricDimension() of every entity in the model.

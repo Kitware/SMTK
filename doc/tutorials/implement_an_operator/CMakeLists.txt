@@ -20,12 +20,12 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 # -- 1 --
 
 # Testing must be enabled to build this tutorial
-# because it depends on SMTKCoreModelTesting.
+# because it depends on smtkCoreModelTesting.
 if (SMTK_ENABLE_TESTING)
   add_executable(implement_an_operator implement_an_operator.cxx)
-  target_link_libraries(implement_an_operator SMTKCore SMTKCoreModelTesting)
-  if (SMTK_BUILD_CGM)
-    target_link_libraries(implement_an_operator cgmSMTK)
-  endif (SMTK_BUILD_CGM)
+  target_link_libraries(implement_an_operator smtkCore smtkCoreModelTesting)
+  if (SMTK_ENABLE_CGM_SESSION)
+    target_link_libraries(implement_an_operator smtkCGMSession)
+  endif (SMTK_ENABLE_CGM_SESSION)
   add_test(tut-implement_an_operator ${EXECUTABLE_OUTPUT_PATH}/implement_an_operator)
 endif()

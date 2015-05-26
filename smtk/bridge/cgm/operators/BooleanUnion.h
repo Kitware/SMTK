@@ -16,7 +16,7 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-class CGMSMTK_EXPORT BooleanUnion : public Operator
+class SMTKCGMSESSION_EXPORT BooleanUnion : public Operator
 {
 public:
   smtkTypeMacro(BooleanUnion);

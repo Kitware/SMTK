@@ -1,21 +1,20 @@
-
 set(headers
-    vtkCMBUniquePointSet.h
-    vtkDiscoverRegions.h
-    vtkRayIntersectionLocator.h
-    vtkSplitPlanarLines.h
-    )
+  vtkCMBUniquePointSet.h
+  vtkDiscoverRegions.h
+  vtkRayIntersectionLocator.h
+  vtkSplitPlanarLines.h
+)
 
-if(SMTK_ENABLE_REMUS)
+if(SMTK_ENABLE_REMUS_SUPPORT)
   list(APPEND headers
-       cmbFaceMesherInterface.h
-       cmbFaceMeshHelper.h
-       vtkCMBMeshServerLauncher.h
-       vtkCMBPrepareForTriangleMesher.h
-       vtkCMBTriangleMesher.h
-       vtkPolylineTriangulator.h
-       vtkRegionsToLoops.h
-       )
+    cmbFaceMesherInterface.h
+    cmbFaceMeshHelper.h
+    vtkCMBMeshServerLauncher.h
+    vtkCMBPrepareForTriangleMesher.h
+    vtkCMBTriangleMesher.h
+    vtkPolylineTriangulator.h
+    vtkRegionsToLoops.h
+  )
 endif()
 
 smtk_public_headers(${headers})

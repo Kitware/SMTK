@@ -17,6 +17,7 @@
 
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/common/View.h"
+#include "smtk/extension/qt/Exports.h"
 
 class qtRootViewInternals;
 class QScrollArea;
@@ -27,7 +28,7 @@ namespace smtk
   {
     class qtGroupView;
 
-    class QTSMTK_EXPORT qtRootView : public qtBaseView
+    class SMTKQTEXT_EXPORT qtRootView : public qtBaseView
     {
       Q_OBJECT
 

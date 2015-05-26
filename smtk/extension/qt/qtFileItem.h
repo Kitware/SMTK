@@ -30,6 +30,7 @@
 #define __smtk_attribute_qtFileItem_h
 
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/Exports.h"
 
 class qtFileItemInternals;
 
@@ -37,7 +38,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtFileItem : public qtItem
+    class SMTKQTEXT_EXPORT qtFileItem : public qtItem
     {
       Q_OBJECT
 

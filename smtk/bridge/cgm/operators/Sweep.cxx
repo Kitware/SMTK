@@ -217,7 +217,7 @@ smtk::model::OperatorResult Sweep::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  CGMSMTK_EXPORT,
+  SMTKCGMSESSION_EXPORT,
   smtk::bridge::cgm::Sweep,
   cgm_sweep,
   "sweep",

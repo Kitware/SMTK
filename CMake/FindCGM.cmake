@@ -138,6 +138,10 @@ if(CGM_CFG)
   else()
     unset(CGM_HAVE_VERSION_H)
   endif()
+  mark_as_advanced(
+    CGM_VERSION_H
+    _CGM_LIB_LOC
+  )
 
   ##
   ## Kill temporary variables

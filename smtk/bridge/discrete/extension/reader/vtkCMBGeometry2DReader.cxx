@@ -234,19 +234,18 @@ int vtkCMBGeometry2DReader::RequestData(
 
         cpd->SetInputConnection(rbd->GetOutputPort());
         cpd->Update();
-        vtkMultiBlockDataSet* mbds =
-          vtkMultiBlockDataSet::SafeDownCast(
+        mbds = vtkMultiBlockDataSet::SafeDownCast(
             cpd->GetOutputDataObject(0));
         // Now we do some manual processing:
         // (a) create a polydata for a bounding box
         // (b) add a pedigree ID indicating the original ID of the geometry.
-        vtkPolyData* rdp = mbds ?
+        vtkPolyData* rdp2 = mbds ?
           vtkPolyData::SafeDownCast(mbds->GetBlock(0)) : NULL;
 
         // Remove the "label" attribute if it exists... string arrays
         // can cause problems.
         vtkNew<vtkPassArrays> ps2;
-        ps2->SetInputDataObject(rdp);
+        ps2->SetInputDataObject(rdp2);
         ps2->RemoveArraysOn();
         ps2->UseFieldTypesOn();
         ps2->AddFieldType(vtkDataObject::CELL);

@@ -25,14 +25,23 @@
 #include "smtk/model/EntityRef.h"
 
 namespace smtk {
+  namespace io { class Logger; }
   namespace model {
 
 /// Bit-vector combinations of SessionInformation values for requesting information to transcribe.
 typedef unsigned long SessionInfoBits;
 
-class Session;
+class ArrangementHelper;
 class EntityRef;
+class Group;
+class CellEntity;
+class UseEntity;
+class Instance;
+class ShellEntity;
+class Model;
 class Operator;
+class Session;
+class SessionRef;
 typedef std::map<smtk::common::UUID,smtk::shared_ptr<Session> > UUIDsToSessions;
 typedef std::map<smtk::model::EntityRef,SessionInfoBits> DanglingEntities;
 
@@ -59,12 +68,21 @@ enum SessionInformation
   SESSION_INTEGER_PROPERTIES     = 0x00000040, //!< Integer properties.
   SESSION_ATTRIBUTE_ASSOCIATIONS = 0x00000080, //!< Attribute associations.
 
+  // Extended options specific to Manager::erase():
+  SESSION_USER_DEFINED_PROPERTIES= 0x00000100, /**< Remove user-defined as well as machine-generated properties.
+                                                 *
+                                                 *  This bit is not used during transcription; it is only
+                                                 *  significant when erasing entities. Usually, it is not
+                                                 *  specified so that properties such as user-assigned
+                                                 *  names, colors, and visibility are preserved.
+                                                 */
   // Common combinations
   SESSION_NOTHING                = 0x00000000, //!< Transcribe nothing.
   SESSION_ENTITY_RECORD          = 0x00000003, //!< Transcribe both entity type and relations.
   SESSION_ENTITY_ARRANGED        = 0x00000007, //!< Transcribe the entity record and all arrangement information.
   SESSION_PROPERTIES             = 0x00000070, //!< Transcribe all properties.
-  SESSION_EVERYTHING             = 0x000000ff  //!< Transcribe all information about the entity.
+  SESSION_EVERYTHING             = 0x000000ff, //!< Transcribe all information about the entity.
+  SESSION_EXHAUSTIVE             = 0x000001ff  //!< Erase **all** information about the entity, including user-specified.
 };
 
 #ifndef SHIBOKEN_SKIP
@@ -304,11 +322,11 @@ public:
   virtual std::string className() const { return Session::staticClassName(); }
   smtk::common::UUID sessionId() const;
 
-  int transcribe(const EntityRef& entity, SessionInfoBits flags, bool onlyDangling = true);
+  int transcribe(const EntityRef& entity, SessionInfoBits flags, bool onlyDangling = true, int depth = -1);
 
   virtual SessionInfoBits allSupportedInformation() const;
 
-  StringList operatorNames() const;
+  StringList operatorNames(bool includeAdvanced = true) const;
   virtual OperatorPtr op(const std::string& opName) const;
 
   const DanglingEntities& danglingEntities() const;
@@ -320,6 +338,7 @@ public:
   virtual int setup(const std::string& optName, const StringList& optVal);
 
   ManagerPtr manager() const;
+  smtk::io::Logger& log();
 
 protected:
   friend class io::ExportJSON;
@@ -329,10 +348,30 @@ protected:
   Session();
   virtual ~Session();
 
-  virtual SessionInfoBits transcribeInternal(const EntityRef& entity, SessionInfoBits flags);
+  virtual SessionInfoBits transcribeInternal(const EntityRef& entity, SessionInfoBits flags, int depth = -1);
 
   void setSessionId(const smtk::common::UUID& sessId);
   void setManager(Manager* mgr);
+  virtual bool removeGeneratedProperties(const EntityRef& ent, SessionInfoBits propFlags);
+
+  virtual Entity* addEntityRecord(const EntityRef& entRef);
+  virtual ArrangementHelper* createArrangementHelper();
+  int findOrAddRelatedEntities(const EntityRef& entRef, SessionInfoBits flags, ArrangementHelper* helper);
+  virtual int findOrAddCellAdjacencies(const CellEntity& entRef, SessionInfoBits request, ArrangementHelper* helper);
+  virtual int findOrAddCellUses(const CellEntity& entRef, SessionInfoBits request, ArrangementHelper* helper);
+  virtual int findOrAddOwningCell(const UseEntity& entRef, SessionInfoBits request, ArrangementHelper* helper);
+  virtual int findOrAddShellAdjacencies(const UseEntity& entRef, SessionInfoBits request, ArrangementHelper* helper);
+  virtual int findOrAddUseAdjacencies(const ShellEntity& entRef, SessionInfoBits request, ArrangementHelper* helper);
+  virtual int findOrAddGroupOwner(const Group& entRef, SessionInfoBits request, ArrangementHelper* helper);
+  virtual int findOrAddFreeCells(const Model& entRef, SessionInfoBits request, ArrangementHelper* helper);
+  virtual int findOrAddRelatedModels(const Model& entRef, SessionInfoBits request, ArrangementHelper* helper);
+  virtual int findOrAddPrototype(const Instance& entRef, SessionInfoBits request, ArrangementHelper* helper);
+  virtual int findOrAddRelatedModels(const SessionRef& entRef, SessionInfoBits request, ArrangementHelper* helper);
+  virtual int findOrAddRelatedGroups(const EntityRef& entRef, SessionInfoBits request, ArrangementHelper* helper);
+  virtual int findOrAddRelatedInstances(const EntityRef& entRef, SessionInfoBits request, ArrangementHelper* helper);
+  virtual SessionInfoBits findOrAddArrangements(const EntityRef& entRef, Entity* entRec, SessionInfoBits flags, ArrangementHelper* helper);
+  virtual SessionInfoBits updateProperties(const EntityRef& entRef, Entity* entRec, SessionInfoBits flags, ArrangementHelper* helper);
+  virtual SessionInfoBits updateTessellation(const EntityRef& entRef, SessionInfoBits flags, ArrangementHelper* helper);
 
 #ifndef SHIBOKEN_SKIP
   void initializeOperatorSystem(const OperatorConstructors* opList);

@@ -57,14 +57,14 @@ int smtkChDir(const std::string& path) { return _chdir(path.c_str()); }
 // ++ UserGuide/Model/1 ++
 #include "smtk/AutoInit.h"
 
-#ifdef SMTK_BUILD_CGM
+#ifdef SMTK_ENABLE_CGM_SESSION
 smtkComponentInitMacro(smtk_cgm_session);
 #include "smtk/bridge/cgm/Engines.h"
-#endif // SMTK_BUILD_CGM
+#endif // SMTK_ENABLE_CGM_SESSION
 
-#ifdef SMTK_BUILD_DISCRETE_SESSION
+#ifdef SMTK_ENABLE_DISCRETE_SESSION
 smtkComponentInitMacro(smtk_discrete_session);
-#endif // SMTK_BUILD_DISCRETE_SESSION
+#endif // SMTK_ENABLE_DISCRETE_SESSION
 // -- UserGuide/Model/1 --
 
 int usage(
@@ -204,7 +204,10 @@ int main(int argc, char* argv[])
   clpp::command_line_parameters_parser args;
   try
     {
-    args.add_parameter("-server",   &wkOpts, &WkOpts::setServer).default_value("tcp://localhost:50510").order(1);
+    args
+      .add_parameter("-server",     &wkOpts, &WkOpts::setServer)
+      .default_value(std::string("tcp://localhost:50510"))
+      .order(1);
     args.add_parameter("-rwfile",   &wkOpts, &WkOpts::setRWFile);
     args.add_parameter("-root",     &wkOpts, &WkOpts::setRoot);
     args.add_parameter("-site",     &wkOpts, &WkOpts::setSite);

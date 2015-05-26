@@ -25,9 +25,8 @@
 #ifndef __vtkCompleteShells_h
 #define __vtkCompleteShells_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
-#include "cmbSystemConfig.h"
 
 class vtkCell;
 class vtkCellLocator;
@@ -38,7 +37,7 @@ class vtkPolyData;
 struct vtkCompleteShellsInternals;
 //ETX
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkCompleteShells : public vtkPolyDataAlgorithm
+class SMTKDISCRETESESSION_EXPORT vtkCompleteShells : public vtkPolyDataAlgorithm
 {
 public:
   static vtkCompleteShells* New();
@@ -124,5 +123,3 @@ private:
 };
 
 #endif
-
-

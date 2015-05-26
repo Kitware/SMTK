@@ -3,6 +3,9 @@ cmake_policy(SET CMP0020 NEW)
 if (POLICY CMP0042)
   cmake_policy(SET CMP0042 NEW)
 endif()
+if (POLICY CMP0046)
+  cmake_policy(SET CMP0046 NEW)
+endif()
 if (POLICY CMP0054)
   cmake_policy(SET CMP0054 OLD)
 endif()
@@ -11,8 +14,8 @@ project(SMTK)
 ################################################################################
 # SMTK version number
 
-set(SMTK_VERSION_MAJOR 0)
-set(SMTK_VERSION_MINOR 9)
+set(SMTK_VERSION_MAJOR 1)
+set(SMTK_VERSION_MINOR 0)
 set(SMTK_VERSION_PATCH 0)
 set(SMTK_VERSION
   "${SMTK_VERSION_MAJOR}.${SMTK_VERSION_MINOR}.${SMTK_VERSION_PATCH}")
@@ -46,19 +49,22 @@ include(CMake/FindHashFunctor.cmake)
 option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" OFF)
 option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" ON)
 # Option to build Qt ui compoments for attributes
-option(SMTK_BUILD_QT "Build Qt GUI" OFF)
-option(SMTK_BUILD_VTK "Build VTK component" OFF)
-option(SMTK_BUILD_CGM "Build CGM component" OFF)
-option(SMTK_BUILD_DISCRETE_SESSION "Build discrete model session components" OFF)
-option(SMTK_BUILD_SESSION_PLUGIN "Build paraview plugin for model sessions" OFF)
+option(SMTK_ENABLE_TESTING "Enable Testing" ON)
+option(SMTK_ENABLE_PYTHON_WRAPPING "Build Python Wrappings using Shiboken" OFF)
+option(SMTK_ENABLE_QT_SUPPORT "Build Qt GUI" OFF)
+option(SMTK_ENABLE_VTK_SUPPORT "Build VTK component" OFF)
+option(SMTK_ENABLE_REMUS_SUPPORT "Build Remus components" OFF)
+option(SMTK_ENABLE_PARAVIEW_SUPPORT "Build paraview plugins for model sessions" OFF)
 
-if (SMTK_BUILD_VTK)
+option(SMTK_ENABLE_CGM_SESSION "Build CGM component" OFF)
+option(SMTK_ENABLE_DISCRETE_SESSION "Build discrete model session components" OFF)
+if (SMTK_ENABLE_VTK_SUPPORT)
   option(SMTK_ENABLE_EXODUS_SESSION "Build a session to Exodus-II side sets" ON)
 endif()
+if (SMTK_ENABLE_REMUS_SUPPORT)
+  option(SMTK_ENABLE_REMOTE_SESSION "Build a session that allows modeling in a remote process." ON)
+endif()
 
-option(SMTK_ENABLE_REMUS "Build Remus components" OFF)
-option(SMTK_ENABLE_TESTING "Enable Testing" ON)
-option(SMTK_BUILD_PYTHON_WRAPPINGS "Build Python Wrappings using Shiboken" OFF)
 option(SMTK_USE_SYSTEM_SPARSEHASH "Use the system-installed sparsehash?" OFF)
 option(SMTK_HASH_STORAGE "Use sparsehash library for primary storage?" OFF)
 set(SMTK_DATA_DIR "" CACHE PATH "Path to a directory of SMTK test data.")
@@ -130,7 +136,7 @@ endif()
 ################################################################################
 
 #make find qt4 bring in import targets which are far nicer to use
-if(SMTK_BUILD_QT)
+if(SMTK_ENABLE_QT_SUPPORT)
   set(QT_USE_IMPORTED_TARGETS TRUE)
   find_package(Qt4 REQUIRED)
   include(${QT_USE_FILE})
@@ -144,7 +150,7 @@ endif()
 # Look for Discrete session discrete model modules
 ################################################################################
 
-if(SMTK_BUILD_SESSION_PLUGIN)
+if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   find_package(ParaView REQUIRED)
 endif()
 
@@ -152,8 +158,8 @@ endif()
 # VTK Related Settings
 ################################################################################
 
-if(SMTK_BUILD_VTK)
-  if(SMTK_BUILD_SESSION_PLUGIN)
+if(SMTK_ENABLE_VTK_SUPPORT)
+  if(SMTK_ENABLE_PARAVIEW_SUPPORT)
     find_package(ParaView REQUIRED)
   else()
     # Find the package here so environment variables are set, but
@@ -174,15 +180,15 @@ endif()
 # CGM Related Settings
 ################################################################################
 
-if(SMTK_BUILD_CGM)
+if(SMTK_ENABLE_CGM_SESSION)
   find_package(CGM REQUIRED)
-endif(SMTK_BUILD_CGM)
+endif(SMTK_ENABLE_CGM_SESSION)
 
 ################################################################################
 # Remus related settings
 ################################################################################
 
-if (SMTK_ENABLE_REMUS)
+if (SMTK_ENABLE_REMUS_SUPPORT)
   find_package(Remus REQUIRED)
 endif()
 
@@ -204,7 +210,7 @@ endif()
 ################################################################################
 # Wrapping Related Settings
 ################################################################################
-if(SMTK_BUILD_PYTHON_WRAPPINGS)
+if(SMTK_ENABLE_PYTHON_WRAPPING)
   include(UseShiboken)
   find_package(PythonInterp 2.7 REQUIRED)
   # Set up environment variables needed to import the python modules for tests.
@@ -213,22 +219,39 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS)
     set(LIB_ENV_VAR "")
     if(APPLE AND UNIX)
       set(LIB_ENV_VAR "DYLD_FALLBACK_LIBRARY_PATH=${SHIBOKEN_LIBRARY_PATH}:${LIBRARY_OUTPUT_PATH}")
+      if (ParaView_DIR)
+        set(VTKPY_DIR "${ParaView_DIR}/lib/site-packages:${ParaView_DIR}/lib:")
+      elseif (VTK_DIR)
+        set(VTKPY_DIR "${VTK_DIR}/lib/site-packages:${VTK_DIR}/lib:")
+      endif()
     elseif(UNIX)
       if (ParaView_DIR)
         # Note that ending with a colon should only be done if followed by
         # another path... be careful when changing LIB_ENV_VAR!
         set(PV_LIB_DIR "${ParaView_DIR}/lib:")
+        set(VTKPY_DIR "${ParaView_DIR}/lib/site-packages:${PV_LIB_DIR}")
+      elseif (VTK_DIR)
+        set(PV_LIB_DIR "${VTK_DIR}/lib:")
+        set(VTKPY_DIR "${VTK_DIR}/lib/site-packages:${PV_LIB_DIR}")
       endif()
       set(LIB_ENV_VAR "LD_LIBRARY_PATH=${PV_LIB_DIR}${SHIBOKEN_LIBRARY_PATH}:${LIBRARY_OUTPUT_PATH}")
     endif()
-    set(SHIBOKEN_SMTK_PYTHON "")
+    set(SHIBOKEN_SMTK_PYTHON "${CMAKE_BINARY_DIR}")
     if(UNIX)
-      set(SHIBOKEN_SMTK_PYTHON "${CMAKE_BINARY_DIR}:${SHIBOKEN_LIBRARY_PATH}")
+      set(sep ":")
     else() #windows
-      set(SHIBOKEN_SMTK_PYTHON "${CMAKE_BINARY_DIR};${SHIBOKEN_LIBRARY_PATH}")
+      set(sep ";")
     endif()
+    execute_process(
+      COMMAND "${PYTHON_EXECUTABLE}" -c "import shiboken"
+      OUTPUT_QUIET
+      ERROR_QUIET
+      RESULT_VARIABLE rc)
+    if (rc)
+      set(SHIBOKEN_SMTK_PYTHON "${SHIBOKEN_SMTK_PYTHON}${sep}${SHIBOKEN_PYTHONPATH}")
+    endif ()
   endif()
-  #message("${LIB_ENV_VAR}   PYTHONPATH=${SIBOKEN_SMTK_PYTHON}")
+  #message("${LIB_ENV_VAR}   PYTHONPATH=${SHIBOKEN_SMTK_PYTHON}")
   #message("${SHIBOKEN_LIBRARY_PATH}")
 endif()
 
@@ -255,7 +278,7 @@ configure_file(
   @ONLY)
 
 install (FILES ${PROJECT_BINARY_DIR}/smtk/Function.h
-  DESTINATION include/smtk)
+  DESTINATION include/smtk/${SMTK_VERSION}/smtk)
 
 ################################################################################
 # Determine shared_ptr
@@ -268,7 +291,7 @@ configure_file(
   @ONLY)
 
 install (FILES ${PROJECT_BINARY_DIR}/smtk/SharedPtr.h
-  DESTINATION include/smtk)
+  DESTINATION include/smtk/${SMTK_VERSION}/smtk)
 
 ################################################################################
 # Determine hash<X> specialization
@@ -280,7 +303,7 @@ configure_file(
   @ONLY)
 
 install (FILES ${PROJECT_BINARY_DIR}/smtk/HashFunctor.h
-  DESTINATION include/smtk)
+  DESTINATION include/smtk/${SMTK_VERSION}/smtk)
 
 
 ################################################################################
@@ -292,7 +315,7 @@ configure_file(
   @ONLY)
 
 install (FILES ${PROJECT_BINARY_DIR}/smtk/Options.h
-  DESTINATION include/smtk)
+  DESTINATION include/smtk/${SMTK_VERSION}/smtk)
 
 
 ################################################################################
@@ -352,15 +375,15 @@ include_directories(
 # Look for Discrete session discrete model modules
 ################################################################################
 
-if(SMTK_BUILD_DISCRETE_SESSION)
-  if(SMTK_BUILD_SESSION_PLUGIN)
+if(SMTK_ENABLE_DISCRETE_SESSION)
+  if(SMTK_ENABLE_PARAVIEW_SUPPORT)
     find_package(ParaView REQUIRED)
   else()
     find_package(VTK REQUIRED)
   endif()
 
-  # This option is only available when SMTK_BUILD_DISCRETE_SESSION is ON
-  option(SMTK_BUILD_MOAB_READER "Build moab reader for discrete model" OFF)
+  # This option is only available when SMTK_ENABLE_DISCRETE_SESSION is ON
+  option(SMTK_ENABLE_MOAB_SUPPORT "Build moab reader for discrete model" OFF)
 endif()
 
 ################################################################################

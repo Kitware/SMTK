@@ -16,6 +16,7 @@
 #define __smtk_attribute_qtModelEntityItem_h
 
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/Exports.h"
 #include "smtk/model/EntityTypeBits.h" // for smtk::model::BitFlags
 
 class qtModelEntityItemInternals;
@@ -25,7 +26,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtModelEntityItem : public qtItem
+    class SMTKQTEXT_EXPORT qtModelEntityItem : public qtItem
     {
       Q_OBJECT
 

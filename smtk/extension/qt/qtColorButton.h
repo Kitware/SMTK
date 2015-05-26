@@ -12,6 +12,7 @@
 #define pq_ColorChooserButton_h
 
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/Exports.h"
 
 #include <QToolButton>
 #include <QColor>
@@ -20,7 +21,7 @@ namespace smtk
 {
   namespace attribute
   {
-     class QTSMTK_EXPORT qtColorButton : public QToolButton
+     class SMTKQTEXT_EXPORT qtColorButton : public QToolButton
     {
       Q_OBJECT
       Q_PROPERTY(QColor chosenColor READ chosenColor WRITE setChosenColor)

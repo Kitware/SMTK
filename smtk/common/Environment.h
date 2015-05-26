@@ -12,7 +12,7 @@
 #ifndef __smtk_common_Environment_h
 #define __smtk_common_Environment_h
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 
 #include <string>
 

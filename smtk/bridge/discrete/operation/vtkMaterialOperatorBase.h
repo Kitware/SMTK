@@ -18,13 +18,11 @@
 // We may eventually need to add in the ability to set a
 // warehouseid of a material here as well.
 
+#ifndef __smtkdiscrete_vtkMaterialOperatorBase_h
+#define __smtkdiscrete_vtkMaterialOperatorBase_h
 
-#ifndef __vtkMaterialOperatorBase_h
-#define __vtkMaterialOperatorBase_h
-
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkModelEntityOperatorBase.h"
-#include "cmbSystemConfig.h"
 
 class vtkModelMaterial;
 class vtkDiscreteModel;
@@ -32,7 +30,7 @@ class vtkIdList;
 class vtkModelEntity;
 class vtkModelGeometricEntity;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkMaterialOperatorBase : public vtkModelEntityOperatorBase
+class SMTKDISCRETESESSION_EXPORT vtkMaterialOperatorBase : public vtkModelEntityOperatorBase
 {
 public:
   static vtkMaterialOperatorBase * New();
@@ -71,6 +69,13 @@ public:
   vtkGetObjectMacro(GeometricEntitiesToAdd, vtkIdList);
 
   // Description:
+  // Remove Entities. This is not present in V3
+  void ClearGeometricEntitiesToRemove();
+  void RemoveModelGeometricEntity(vtkIdType GeometricEntityId);
+  void RemoveModelGeometricEntity(vtkModelGeometricEntity* GeometricEntity);
+  vtkGetObjectMacro(GeometricEntitiesToRemove, vtkIdList);
+
+  // Description:
   // Get the list of PreviousMaterialsOfGeometricEntities.
   vtkGetObjectMacro(PreviousMaterialsOfGeometricEntities, vtkIdList);
 
@@ -103,8 +108,9 @@ private:
   void operator=(const vtkMaterialOperatorBase&);  // Not implemented.
 
   // Description:
-  // A list of vtkModelGeometricEntitys to add.
+  // A list of vtkModelGeometricEntitys to add/remove.
   vtkIdList* GeometricEntitiesToAdd;
+  vtkIdList* GeometricEntitiesToRemove;
 
   // Description:
   // A list of the old materials that each vtkModelGeometricEntity

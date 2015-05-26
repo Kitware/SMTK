@@ -30,6 +30,8 @@
 
 #include "cJSON.h"
 
+#include <fstream>
+
 #include <stdlib.h> // for free()
 
 using namespace smtk::io;
@@ -199,6 +201,16 @@ std::string ExportJSON::fromModelManager(ManagerPtr modelMgr, JSONFlags sections
   return result;
 }
 
+bool ExportJSON::fromModelManagerToFile(smtk::model::ManagerPtr modelMgr, const char* filename)
+{
+  if (!filename || !modelMgr)
+    return false;
+
+  std::ofstream file(filename);
+  file << ExportJSON::fromModelManager(modelMgr, JSON_DEFAULT);
+  return true;
+}
+
 int ExportJSON::forManager(
   cJSON* dict, cJSON* sess, ManagerPtr modelMgr, JSONFlags sections)
 {
@@ -230,6 +242,8 @@ int ExportJSON::forManager(
       }
     if (sections & JSON_TESSELLATIONS)
       status &= ExportJSON::forManagerTessellation(it->first, curChild, modelMgr);
+    if (sections & JSON_ANALYSISMESH)
+      status &= ExportJSON::forManagerAnalysis(it->first, curChild, modelMgr);
     if (sections & JSON_PROPERTIES)
       {
       status &= ExportJSON::forManagerFloatProperties(it->first, curChild, modelMgr);
@@ -334,6 +348,41 @@ int ExportJSON::forManagerTessellation(
       tessIt->second.conn().empty() ? NULL : &tessIt->second.conn()[0],
       static_cast<int>(tessIt->second.conn().size())));
   cJSON_AddItemToObject(dict, "t", tess);
+  return 1;
+}
+
+int ExportJSON::forManagerAnalysis(
+  const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
+{
+  UUIDWithTessellation meshIt = model->analysisMesh().find(uid);
+  if (
+    meshIt == model->analysisMesh().end() ||
+    meshIt->second.coords().empty()
+    )
+    { // No tessellation? Not a problem.
+    return 1;
+    }
+  //  "metadata": { "formatVersion" : 3 },
+  //  "vertices": [ 0,0,0, 0,0,1, 1,0,1, 1,0,0, ... ],
+  //  "normals":  [ 0,1,0, ... ],
+  //  "faces": [
+  //    0, 0,1,2, // tri
+  //    1, 0,1,2,3, // quad
+  //    32, 0,1,2, // tri w/ per-vert norm
+  cJSON* mesh = cJSON_CreateObject();
+  //cJSON* meta = cJSON_CreateObject();
+  cJSON* fmt = cJSON_CreateObject();
+  cJSON_AddItemToObject(fmt,"formatVersion", cJSON_CreateNumber(3));
+  //cJSON_AddItemToObject(meta, "metadata", fmt);
+  //cJSON_AddItemToObject(tess, "3js", meta);
+  cJSON_AddItemToObject(mesh, "metadata", fmt);
+  cJSON_AddItemToObject(mesh, "vertices", cJSON_CreateDoubleArray(
+      &meshIt->second.coords()[0],
+      static_cast<int>(meshIt->second.coords().size())));
+  cJSON_AddItemToObject(mesh, "faces", cJSON_CreateIntArray(
+      meshIt->second.conn().empty() ? NULL : &meshIt->second.conn()[0],
+      static_cast<int>(meshIt->second.conn().size())));
+  cJSON_AddItemToObject(dict, "m", mesh);
   return 1;
 }
 
@@ -686,32 +735,29 @@ cJSON* ExportJSON::createRPCRequest(const std::string& method, cJSON*& params, c
   cJSON_AddItemToObject(rpcReq, "jsonrpc", cJSON_CreateString("2.0"));
   cJSON_AddItemToObject(rpcReq, "method", cJSON_CreateString(method.c_str()));
   cJSON_AddItemToObject(rpcReq, "id", cJSON_CreateString(reqId.c_str()));
-  if (&params)
+  switch (paramsType)
     {
-    switch (paramsType)
-      {
-    case cJSON_Array:
-      params = cJSON_CreateArray();
-      break;
-    case cJSON_Object:
-      params = cJSON_CreateObject();
-      break;
-    case cJSON_True:
-      params = cJSON_CreateTrue();
-      break;
-    case cJSON_False:
-      params = cJSON_CreateFalse();
-      break;
-    case cJSON_NULL:
-      params = cJSON_CreateNull();
-      break;
-    default:
-      // TODO: Should we emit an error here?
-      return rpcReq;
-      break;
-      }
-    cJSON_AddItemToObject(rpcReq, "params", params);
+  case cJSON_Array:
+    params = cJSON_CreateArray();
+    break;
+  case cJSON_Object:
+    params = cJSON_CreateObject();
+    break;
+  case cJSON_True:
+    params = cJSON_CreateTrue();
+    break;
+  case cJSON_False:
+    params = cJSON_CreateFalse();
+    break;
+  case cJSON_NULL:
+    params = cJSON_CreateNull();
+    break;
+  default:
+    // TODO: Should we emit an error here?
+    return rpcReq;
+    break;
     }
+  cJSON_AddItemToObject(rpcReq, "params", params);
   return rpcReq;
 }
 

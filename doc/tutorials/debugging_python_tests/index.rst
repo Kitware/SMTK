@@ -31,7 +31,8 @@ For this tutorial, we'll assume the SMTK source is in :file:`/src`.
 Instantiate the test
 ====================
 
-Normally a test is derived from Python's `unittest.TestCase` class,
+Normally a test is derived from `smtk.testing.TestCase` (in turn
+derived from Python's `unittest.TestCase` class),
 whose constructor requires a string argument specifying the name of
 a single test to run.
 Since we want to run the `readTest` method in the interpreter, we'll

@@ -16,7 +16,7 @@ namespace smtk {
   namespace bridge {
     namespace exodus {
 
-class SMTKSESSIONEXODUS_EXPORT ReadOperator : public Operator
+class SMTKEXODUSSESSION_EXPORT ReadOperator : public Operator
 {
 public:
   smtkTypeMacro(ReadOperator);

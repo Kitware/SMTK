@@ -14,7 +14,7 @@
 #ifndef __smtk_io_AttributeWriter_h
 #define __smtk_io_AttributeWriter_h
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h"
 #include <string>
 

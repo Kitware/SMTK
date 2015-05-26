@@ -10,7 +10,7 @@
 #ifndef __smtk_model_Entity_h
 #define __smtk_model_Entity_h
 
-#include "smtk/SMTKCoreExports.h" // for SMTKCORE_EXPORT macro
+#include "smtk/CoreExports.h" // for SMTKCORE_EXPORT macro
 #include "smtk/SystemConfig.h"
 
 #include "smtk/common/UUID.h"
@@ -57,6 +57,7 @@ public:
   int appendRelation(const smtk::common::UUID& b, bool useHoles = true);
   Entity& pushRelation(const smtk::common::UUID& b);
   Entity& removeRelation(const smtk::common::UUID& b);
+  void resetRelations();
 
   int findOrAppendRelation(const smtk::common::UUID& r);
   int invalidateRelation(const smtk::common::UUID& r);

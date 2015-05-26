@@ -125,9 +125,10 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
 } // namespace smtk
 
 #include "smtk/bridge/exodus/ReadOperator_xml.h"
+#include "smtk/bridge/exodus/Exports.h"
 
 smtkImplementsModelOperator(
-  SMTKSESSIONEXODUS_EXPORT,
+  SMTKEXODUSSESSION_EXPORT,
   smtk::bridge::exodus::ReadOperator,
   exodus_read,
   "read",

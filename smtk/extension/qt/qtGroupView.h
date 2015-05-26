@@ -16,6 +16,7 @@
 #define __smtk_attribute_qtGroupView_h
 
 #include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/Exports.h"
 #include "smtk/view/Base.h"
 
 class qtGroupViewInternals;
@@ -24,7 +25,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtGroupView : public qtBaseView
+    class SMTKQTEXT_EXPORT qtGroupView : public qtBaseView
     {
       Q_OBJECT
 

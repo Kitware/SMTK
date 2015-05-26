@@ -16,6 +16,7 @@
 #define __smtk_attribute_qtMeshSelectionItem_h
 
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/Exports.h"
 #include "smtk/model/EntityTypeBits.h" // for smtk::model::BitFlags
 
 #include <map>
@@ -28,7 +29,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtMeshSelectionItem : public qtItem
+    class SMTKQTEXT_EXPORT qtMeshSelectionItem : public qtItem
     {
       Q_OBJECT
 
@@ -52,6 +53,7 @@ namespace smtk
     public slots:
       void setOutputOptional(int);
       void clearSelection();
+      void resetSelectionState();
 
     signals:
       void requestMeshSelection(smtk::attribute::ModelEntityItemPtr pEntItem);

@@ -16,7 +16,7 @@
 #define __smtk_attribute_qtAssociationWidget_h
 
 #include <QWidget>
-#include "smtk/extension/qt/QtSMTKExports.h"
+#include "smtk/extension/qt/Exports.h"
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/model/EntityRef.h"
@@ -33,7 +33,7 @@ namespace smtk
   namespace attribute
   {
     class qtBaseView;
-    class QTSMTK_EXPORT qtAssociationWidget : public QWidget
+    class SMTKQTEXT_EXPORT qtAssociationWidget : public QWidget
     {
       Q_OBJECT
 

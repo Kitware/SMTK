@@ -10,7 +10,7 @@
 #ifndef __smtk_session_remote_RemusConnections_h
 #define __smtk_session_remote_RemusConnections_h
 
-#include "smtk/bridge/remote/SMTKRemoteExports.h"
+#include "smtk/bridge/remote/Exports.h"
 #include "smtk/SharedFromThis.h"
 
 #include <string>
@@ -34,7 +34,7 @@ class RemusConnection;
   * of the given name will transparently start a worker using
   * the appropriate server.
   */
-class SMTKREMOTE_EXPORT RemusConnections
+class SMTKREMOTESESSION_EXPORT RemusConnections
 {
 public:
   smtkTypeMacro(RemusConnections);

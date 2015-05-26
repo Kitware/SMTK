@@ -36,6 +36,32 @@
 
 using namespace smtk::model;
 
+namespace
+{
+
+std::string extractModelUUIDSAsJSON(smtk::model::Models const& models)
+  {
+  typedef smtk::model::Models::const_iterator model_const_it;
+  smtk::common::UUIDArray modelIds;
+  for(model_const_it i=models.begin(); i!=models.end(); ++i)
+    {
+    modelIds.push_back(i->entity());
+    //do we need to export submodels?
+    }
+
+  cJSON* top = cJSON_CreateObject();
+  cJSON_AddItemToObject(top,
+                        "ids",
+                        smtk::io::ExportJSON::createUUIDArray(modelIds) );
+  char* json = cJSON_Print(top);
+  std::string uuidsSerialized(json);
+  free(json);
+  cJSON_Delete(top);
+  return uuidsSerialized;
+}
+
+}
+
 namespace smtk {
   namespace model {
 
@@ -74,70 +100,46 @@ OperatorResult MeshOperator::operateInternal()
   //of the mesher
   submission["meshing_attributes"] = meshingControls;
 
-  if(models.size() > 0)
-    {
-    //lastly all we have to do is serialize the model, and the session information
-    //for that model. This way workers that can reconstruct specific sessions
-    //are possible.
-    cJSON* modelAndSession = cJSON_CreateObject();
-    cJSON* topo = cJSON_CreateObject();
-    cJSON* sess = cJSON_CreateObject();
+  std::string modelSerialized = smtk::io::ExportJSON::fromModelManager(this->manager());
+  submission["model"] = remus::proto::make_JobContent(modelSerialized);
 
-    cJSON_AddItemToObject(modelAndSession, "topo", topo);
-    cJSON_AddItemToObject(modelAndSession, "sessions", sess);
-
-    //first thing we do is export the session for each model. We do this
-    //by asking each session to export the relevant models
-    typedef smtk::model::Models::const_iterator model_const_it;
-    smtk::common::UUIDs modelIds;
-    for(model_const_it i=models.begin(); i!=models.end(); ++i)
-      {
-      modelIds.insert(i->entity());
-      }
-
-    smtk::model::SessionRefs sessions = this->manager()->sessions();
-    for (smtk::model::SessionRefs::iterator bit = sessions.begin(); bit != sessions.end(); ++bit)
-      {
-      smtk::io::ExportJSON::forManagerSessionPartial(bit->entity(),
-                                                     modelIds,
-                                                     sess,
-                                                     this->manager());
-      }
-
-    //next we export all the models and place them in the topo section
-    smtk::io::ExportJSON::forEntities(topo,
-                                      models,
-                                      smtk::model::ITERATE_MODELS,
-                                      smtk::io::JSON_DEFAULT);
-
-    char* json = cJSON_Print(modelAndSession);
-    std::string modelSerialized(json);
-    free(json);
-    cJSON_Delete(modelAndSession);
-
-    //if we don't have any model's don't specify this key.
-    //Omitting this key should make the worker fail.
-    submission["model"] = remus::proto::make_JobContent(modelSerialized);
-    }
+  std::string modelUUIDSSerialized = extractModelUUIDSAsJSON(models);
+  submission["modelUUIDS"] = remus::proto::make_JobContent( modelUUIDSSerialized );
 
   //now that we have the submission, construct a remus client to submit it
   const remus::client::ServerConnection conn =
     remus::client::make_ServerConnection( endpointItem->value() );
 
   remus::client::Client client(conn);
-  remus::proto::Job job = client.submitJob(submission);
+
+  //the worker could have gone away while this operator was invoked, or maybe somebody submitted
+  //the job using stale data from an older server
+
+  smtkInfoMacro(this->log(), "[remus] Asking Server if it supports job reqs");
+  remus::proto::Job job = remus::proto::make_invalidJob();
+  if (client.canMesh(reqs))
+    {
+    job = client.submitJob(submission);
+    smtkInfoMacro(this->log(), "[remus] Submitted Job to Server: " << remus::proto::to_string(job));
+    }
 
   //once the job is submitted, we wait for the results to come back
   bool haveResultFromWorker = false;
   if( job.valid() )
     {
+    smtkInfoMacro(this->log(), "[remus] Querying Status of: " << remus::proto::to_string(job));
     remus::proto::JobStatus currentWorkerStatus = client.jobStatus(job);
+
     while( currentWorkerStatus.good() )
       { //we need this to not be a busy wait
         //for now lets call sleep to make this less 'heavy'
       // boost::this_thread::sleep( boost::posix_time::milliseconds(250) );
       currentWorkerStatus = client.jobStatus(job);
       }
+    smtkInfoMacro(this->log(), "[remus] Final Status of: "
+                  << remus::proto::to_string(job)
+                  << "is: "
+                  << remus::to_string( currentWorkerStatus.status() ) );
     haveResultFromWorker = currentWorkerStatus.finished();
     }
 
@@ -147,14 +149,15 @@ OperatorResult MeshOperator::operateInternal()
   if(haveResultFromWorker)
     {
     //now fetch the latest results from the server
-    remus::proto::JobResult newModel = client.retrieveResults(job);
+    remus::proto::JobResult updatedModel = client.retrieveResults(job);
 
     //parse the job result as a json string
-    smtk::io::ImportJSON::intoModelManager(newModel.data(), this->manager());
+    smtk::io::ImportJSON::intoModelManager(updatedModel.data(), this->manager());
 
     //current question is how do we know how to mark the tessellations
     //of the model as modified?
     this->addEntitiesToResult(result, models, MODIFIED);
+    result->findModelEntity("tess_changed")->setValues(models.begin(), models.end());
     }
   return result;
 }

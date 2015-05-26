@@ -156,6 +156,8 @@ void EntityIterator::updateQueue(const EntityRef& ent)
       else if (ent.isShellEntity())
         {
         children = ent.as<ShellEntity>().uses<EntityRefs>();
+        EntityRefs subshells = ent.as<ShellEntity>().containedShellEntities<EntityRefs>();
+        children.insert(subshells.begin(), subshells.end());
         }
       else if (ent.isGroup())
         {

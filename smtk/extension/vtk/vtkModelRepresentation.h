@@ -10,7 +10,7 @@
 #ifndef __smtk_vtk_ModelRepresentation_h
 #define __smtk_vtk_ModelRepresentation_h
 
-#include "smtk/extension/vtk/vtkSMTKExports.h"
+#include "smtk/extension/vtk/Exports.h"
 #include "smtk/PublicPointerDefs.h"
 
 #include "vtkRenderedRepresentation.h"
@@ -26,7 +26,7 @@ class vtkTransformFilter;
   * This representation only works with vtkModelSource, not vtkModelMultiBlockSource.
   * It requires the model to have per-body or per-face tessellation information.
   */
-class VTKSMTK_EXPORT vtkModelRepresentation : public vtkRenderedRepresentation
+class VTKSMTKEXT_EXPORT vtkModelRepresentation : public vtkRenderedRepresentation
 {
 public:
   static vtkModelRepresentation* New();

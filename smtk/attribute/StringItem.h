@@ -15,7 +15,7 @@
 #define __smtk_attribute_StringItem_h
 
 #include "smtk/attribute/ValueItemTemplate.h"
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 
 namespace smtk
 {
