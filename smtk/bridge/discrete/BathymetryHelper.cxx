@@ -166,7 +166,10 @@ vtkPolyData* BathymetryHelper::findOrShallowCopyModelPoly(
 
   vtkNew<vtkPolyData> tmpModelPoly;
   tmpModelPoly->Initialize();
-  tmpModelPoly->SetPoints(modelWrap->GetModel()->GetMesh().SharePointsPtr());
+  vtkNew<vtkPoints> points;
+  points->ShallowCopy(modelWrap->GetModel()->GetMesh().SharePointsPtr());
+//  tmmModelPoly->ShallowCopy(modelWrap->GetModel()->GetMesh().ShallowCopyFaceData);
+  tmpModelPoly->SetPoints(points.GetPointer());
 
   this->m_modelIdsToMasterPolys[modelId] = tmpModelPoly.GetPointer();
   return tmpModelPoly.GetPointer();
