@@ -14,10 +14,8 @@ endif()
 # Add VTK library to render SMTK geometry and interact with ParaView-based apps if enabled.
 if(SMTK_ENABLE_VTK_SUPPORT)
   if(SMTK_ENABLE_PARAVIEW_SUPPORT)
-    #Only include the ParaView use-file in subdirectories
+    # Only include the ParaView use-file in subdirectories
     # that require ParaView include paths.
-
-    find_package(ParaView REQUIRED)
     include("${PARAVIEW_USE_FILE}")
     pv_setup_module_environment("VTKSMTK")
     pv_process_modules()
