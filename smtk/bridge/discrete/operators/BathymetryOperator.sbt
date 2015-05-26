@@ -14,7 +14,7 @@
           <ChildrenDefinitions>
            <File Name="bathymetryfile" Label="Load File:" Version="0"  NumberOfRequiredValues="1"
                    ShouldExist="true"
-                   FileFilters="LIDAR (*.pts *.bin *.bin.pts);;LAS (*.las);;DEM (*.dem);;VTK files (*.vtk *.vtp);;All (*.*)">
+                   FileFilters="LIDAR (*.pts *.bin *.bin.pts);;LAS (*.las);;DEM (*.dem);;VTK files (*.vtk *.vtp);;CMB Geometry files(*.2dm *.3dm *.obj *.tin *.poly *.smesh *.fac);;All (*.*)">
             </File>
 
             <Double Name="averaging elevation radius" Label="Radius for Averaging Elevation:" Version="0" NumberOfRequiredValues="1">

@@ -14,17 +14,17 @@
 #include "smtk/bridge/discrete/extension/reader/vtkGDALRasterPolydataWrapper.h"
 #endif
 
+#include "smtk/bridge/discrete/extension/reader/vtkCMBGeometryReader.h"
 #include "smtk/bridge/discrete/extension/reader/vtkLASReader.h"
-#include "smtk/bridge/discrete/extension/reader/vtkLIDARReader.h"
 #include "smtk/bridge/discrete/Session.h"
 
-#include "vtkDataSetSurfaceFilter.h"
+#include "vtkAppendPoints.h"
+#include "vtkCompositeDataIterator.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelWrapper.h"
+#include "vtkMultiBlockDataset.h"
 #include "vtkNew.h"
-#include "vtkPDataSetReader.h"
 #include "vtkPolyData.h"
-#include "vtkXMLPolyDataReader.h"
 #include <vtksys/SystemTools.hxx>
 #include "DiscreteMesh.h"
 
@@ -58,11 +58,22 @@ bool BathymetryHelper::loadBathymetryFile(const std::string& filename)
   std::string ext = vtksys::SystemTools::GetFilenameLastExtension(filename);
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
-  if(ext == ".pts" || ext == ".bin")
+  if(ext == ".pts" || ext == ".bin"
+     || ext == ".vtk"
+     || ext == ".vtp"
+     || ext == ".2dm" || ext == ".3dm"
+     || ext == ".tin"
+     || ext == ".poly" || ext == ".smesh"
+     || ext == ".obj"
+     || ext == ".fac"
+     || ext == ".sol"
+     || ext == ".stl"
+     )
     {
-    // binary or ASCII automatically determined
-    vtkNew<vtkLIDARReader> reader;
+    vtkNew<vtkCMBGeometryReader> reader;
     reader->SetFileName( filename.c_str() );
+    reader->SetPrepNonClosedSurfaceForModelCreation(false);
+    reader->SetEnablePostProcessMesh(false);
     reader->Update();
     output->ShallowCopy( reader->GetOutput() );
     }
@@ -75,24 +86,29 @@ bool BathymetryHelper::loadBathymetryFile(const std::string& filename)
     output->ShallowCopy( reader->GetOutput() );
     }
 #endif
-  else if(ext == ".vtk")
+  else if(ext == ".las")
     {
-    vtkNew<vtkPDataSetReader> reader;
+    vtkNew<vtkLASReader> reader;
     reader->SetFileName(filename.c_str());
     reader->Update();
+    vtkMultiBlockDataSet* readout = reader->GetOutput();
+    vtkNew<vtkAppendPoints> appendPoints;
 
-    vtkNew<vtkDataSetSurfaceFilter> surface;
-    surface->SetInputData(0, reader->GetOutputDataObject(0));
-    surface->Update();
+    vtkCompositeDataIterator* iter = readout->NewIterator();
+    for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem())
+      {
+      vtkPolyData* blockPoly = vtkPolyData::SafeDownCast(iter->GetCurrentDataObject());
+      if(!blockPoly)
+        {
+        std::cerr << "This block from LAS reader is not a polydata!\n";
+        continue;
+        }
+      appendPoints->AddInputData(blockPoly);
+      }
+    iter->Delete();
+    appendPoints->Update();
 
-    output->ShallowCopy( surface->GetOutput() );
-    }
-  else if(ext == ".vtp")
-    {
-    vtkNew<vtkXMLPolyDataReader> reader;
-    reader->SetFileName(filename.c_str());
-    reader->Update();
-    output->ShallowCopy( reader->GetOutput() );
+    output->ShallowCopy( appendPoints->GetOutput() );
     }
   else
     {
