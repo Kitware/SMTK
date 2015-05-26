@@ -106,8 +106,6 @@ OperatorResult BathymetryOperator::operateInternal()
     filename = this->specification()->findFile("bathymetryfile")->value();
 
     vtkPointSet* bathyPoints = NULL;
-    bool newBathy = !bathyHelper->bathymetryData(filename);
-
     if(bathyHelper->loadBathymetryFile(filename) &&
        (bathyPoints = bathyHelper->bathymetryData(filename)))
       {
