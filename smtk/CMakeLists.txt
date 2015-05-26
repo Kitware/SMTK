@@ -1,5 +1,8 @@
+################################################################################
+# Each subdirectory exports variables naming header and source files
+# to its parent scope (this CMakeLists.txt) which we combine into
+# the smtkCore library.
 
-#Build the actual code
 add_subdirectory(common)
 smtk_source_group(common)
 
@@ -18,8 +21,22 @@ smtk_source_group(io)
 add_subdirectory(view)
 smtk_source_group(view)
 
-set(smtk_headers ${commonHeaders} ${attributeHeaders} ${modelHeaders} ${simulationHeaders} ${ioHeaders} ${viewHeaders})
-set(smtk_srcs ${commonSrcs} ${attributeSrcs} ${modelSrcs} ${simulationSrcs} ${ioSrcs} ${viewSrcs})
+set(smtk_headers
+  ${commonHeaders}
+  ${attributeHeaders}
+  ${modelHeaders}
+  ${simulationHeaders}
+  ${ioHeaders}
+  ${viewHeaders}
+)
+set(smtk_srcs
+  ${commonSrcs}
+  ${attributeSrcs}
+  ${modelSrcs}
+  ${simulationSrcs}
+  ${ioSrcs}
+  ${viewSrcs}
+)
 
 add_library(smtkCore ${smtk_srcs})
 target_include_directories(smtkCore
@@ -50,9 +67,10 @@ if (APPLE)
   mark_as_advanced(SMTK_MACOS_FOUNDATION_FMWK)
 endif()
 
-# On Mac OS X, set the directory included as part of the installed library's path:
+# On Mac OS X, set the dir. included as part of the installed library's path:
 if (BUILD_SHARED_LIBS)
-  set_target_properties(smtkCore PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+  set_target_properties(smtkCore
+    PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
 
 #install the library and exports the library when used from a build tree
@@ -71,7 +89,9 @@ install(
     include/smtk/${SMTK_VERSION}/smtk
 )
 
-#wrap everything
+################################################################################
+# Generate Python wrapping of the smtkCore library
+
 if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
   sbk_wrap_library(smtkCore
     GENERATOR_ARGS --avoid-protected-hack
@@ -89,11 +109,11 @@ if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
     HEADERS ${smtk_headers}
   )
 
-  #get the location to copy the shiboken library so developers have an
-  #easier time testing the python wrapping
+  # Copy the shiboken library so developers have an
+  # easier time testing the python wrapping.
 
-  #first we have to resolve the path since shiboken library most likely
-  #uses symlinks and we have to copy that version
+  # First we have to resolve the path since shiboken library most
+  # likely uses symlinks and we have to copy that version
   get_filename_component(shiboken_path "${SHIBOKEN_LIBRARY}" REALPATH)
   file(COPY "${shiboken_path}" DESTINATION "${SMTK_BINARY_DIR}")
 
@@ -117,39 +137,43 @@ if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
   #       package script
 
   get_filename_component(SHIBOKEN_LIBRARY_NAME ${SHIBOKEN_LIBRARY} NAME)
-  if (SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES)
-    execute_process(
-      COMMAND ${PYTHON_EXECUTABLE} -c "import site; print(site.getsitepackages())[-1]"
-      RESULT_VARIABLE SMTK_PYTHON_MODULEDIR
-    )
-  else()
-    # NB. LIBEXECDIR is used because SMTK is a "non-pure" package (it depends
-    # on compiled code rather than being implemented purely as python).
-    # See https://docs.python.org/2/install/index.html for more.
-    set(SMTK_PYTHON_MODULEDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBEXECDIR}/python/site-packages")
+
+  # Store the location where we'll install SMTK's Python source
+  # in the SMTK_PYTHON_MODULEFILES variable and add an install rule.
+  # Note that SMTK_PYTHON_MODULEDIR may be provided if SMTK is being
+  # built as a submodule or as part of a superbuild.
+  if (NOT DEFINED SMTK_PYTHON_MODULEDIR)
+    if (SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES)
+      execute_process(
+        COMMAND
+          ${PYTHON_EXECUTABLE}
+          -c "import site; print(site.getsitepackages())[-1]"
+        RESULT_VARIABLE SMTK_PYTHON_MODULEDIR
+      )
+    else()
+      # NB. LIBEXECDIR is used because SMTK is a "non-pure" package (it depends
+      # on compiled code rather than being implemented purely as python).
+      # See https://docs.python.org/2/install/index.html for more.
+      set(SMTK_PYTHON_MODULEDIR
+        "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBEXECDIR}/python/site-packages")
+    endif()
   endif()
   install(
     FILES ${SMTK_PYTHON_MODULEFILES}
     DESTINATION "${SMTK_PYTHON_MODULEDIR}/smtk"
   )
-  install(CODE
-    "
-      set(LIBRARY_OUTPUT_PATH \"${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}\")
-      set(SHIBOKEN_LIBRARY \"${LIBRARY_OUTPUT_PATH}/${SHIBOKEN_LIBRARY_NAME}\")
-    "
-  )
 endif()
 
 ################################################################################
 # Build smtk extensions
-#add libraries that extend other projects to have support for SMTK
-#for example extension/vtk allows you to show smtk models in vtk
+# Add libraries that extend other projects to have support for SMTK.
+# For example extension/vtk allows you to show smtk models in VTK.
 ################################################################################
 add_subdirectory(extension)
 
 ################################################################################
 # Build model bridges
-# Now that the main components of smtk have been built we can build the custom
-# model bridge sessions that the user has enabled
+# Now that the main components of smtk have been built we can build
+# any custom model bridge sessions that the user has enabled.
 ################################################################################
 add_subdirectory(bridge)
