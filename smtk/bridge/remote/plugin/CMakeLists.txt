@@ -20,4 +20,4 @@ target_link_libraries(smtkRemoteSessionPlugin
     LINK_PRIVATE
       vtkPVServerManagerApplicationCS
 )
-smtk_install_library(smtkRemoteSessionPlugin DEPENDS smtkCore smtkRemoteSession)
+smtk_install_library(smtkRemoteSessionPlugin)
