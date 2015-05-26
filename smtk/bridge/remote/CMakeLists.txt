@@ -44,7 +44,7 @@ if (BUILD_SHARED_LIBS)
 endif()
 
 #install the library and exports the library when used from a build tree
-smtk_install_library(smtkRemoteSession DEPENDS smtkCore)
+smtk_install_library(smtkRemoteSession)
 
 # Add a server that accepts arguments for locations to find workers.
 add_executable(smtk-model-server
