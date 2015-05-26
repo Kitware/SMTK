@@ -85,18 +85,13 @@ endfunction(smtk_private_headers)
 #  smtk_install_library(target [DEPENDS <targets>])
 # which allows you to export a target that has dependencies
 function(smtk_install_library target)
-  set(options)
-  set(oneValueArgs)
-  set(multiValueArgs DEPENDS)
-  cmake_parse_arguments(target "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
   install(TARGETS ${target}
-    EXPORT SMTK-targets
+    EXPORT SMTK
     RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )
-  export(PACKAGE ${target})
-  export(TARGETS ${target} ${target_DEPENDS} APPEND FILE ${target}-exports.cmake)
+  export(TARGETS ${target} APPEND FILE ${SMTK_BINARY_DIR}/SMTKConfig.cmake)
 endfunction(smtk_install_library)
 
 #generate an export header and create an install target for it
