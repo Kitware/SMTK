@@ -12,7 +12,7 @@
         <String Name="operation" Label="Operation" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
 
           <ChildrenDefinitions>
-           <File Name="bathymetryfile" Label="Load New File:" Version="0"  NumberOfRequiredValues="1"
+           <File Name="bathymetryfile" Label="Load File:" Version="0"  NumberOfRequiredValues="1"
                    ShouldExist="true"
                    FileFilters="LIDAR (*.pts *.bin *.bin.pts);;LAS (*.las);;DEM (*.dem);;VTK files (*.vtk *.vtp);;All (*.*)">
             </File>
