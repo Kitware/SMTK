@@ -608,6 +608,7 @@ int EntityRef::setTessellation(const Tessellation* tess, int analysisMesh)
     try {
       mgr->setTessellation(this->m_entity, *tess, analysisMesh, &gen);
     } catch (std::string& badIdMsg) {
+      (void)badIdMsg;
       return -1;
     }
 
