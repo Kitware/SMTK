@@ -91,7 +91,8 @@ For example, a widget for selecting a model might subclass the subphrase generat
 to only enumerate sub-model and sub-group children of a DescriptivePhrase;
 while a model-detail widget might include volumes, faces,
 edges, and vertices as children.
-Another example is shown in the descriptive-phrase-example_ figure at the top of this subsection.
+Another example is shown in the
+:ref:`figure at the top of this subsection <descriptive-phrase-example>`.
 
 Here, additional summary phrases are inserted in the lower figure to reduce clutter
 when a phrase has many children.
