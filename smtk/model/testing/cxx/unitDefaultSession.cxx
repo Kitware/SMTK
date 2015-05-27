@@ -169,7 +169,7 @@ protected:
 
   virtual SessionInfoBits transcribeInternal(const EntityRef& entity, SessionInfoBits flags, int depth = -1)
     {
-    return remoteSession->transcribe(EntityRef(remoteModel, entity.entity()), flags, depth);
+    return remoteSession->transcribe(EntityRef(remoteModel, entity.entity()), false, flags, depth);
     }
 
   virtual bool ableToOperateDelegate(RemoteOperatorPtr oper)
