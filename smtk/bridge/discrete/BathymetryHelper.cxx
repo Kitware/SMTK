@@ -22,9 +22,13 @@
 #include "vtkCompositeDataIterator.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelWrapper.h"
+#include "vtkImageData.h"
+#include "vtkImageToStructuredGrid.h"
 #include "vtkMultiBlockDataset.h"
 #include "vtkNew.h"
 #include "vtkPolyData.h"
+#include "vtkStructuredGrid.h"
+#include "vtkXMLImageDataReader.h"
 #include <vtksys/SystemTools.hxx>
 #include "DiscreteMesh.h"
 
@@ -109,6 +113,20 @@ bool BathymetryHelper::loadBathymetryFile(const std::string& filename)
     appendPoints->Update();
 
     output->ShallowCopy( appendPoints->GetOutput() );
+    }
+  else if(ext == ".vti")
+    {
+    vtkNew<vtkXMLImageDataReader> reader;
+    reader->SetFileName(filename.c_str());
+    reader->Update();
+    vtkImageData* readout = reader->GetOutput();
+
+    vtkNew<vtkImageToStructuredGrid> image2struct;
+    image2struct->SetInputData(readout);
+    image2struct->Update();
+    vtkNew<vtkPolyData> imagepoly;
+    imagepoly->SetPoints(image2struct->GetOutput()->GetPoints());
+    output->ShallowCopy( imagepoly.GetPointer() );
     }
   else
     {
