@@ -54,6 +54,28 @@ include(Function)
 include(FindHashFunctor)
 
 ################################################################################
+## Paths for output
+
+# Set the directory where the binaries will be stored
+set(EXECUTABLE_OUTPUT_PATH
+  ${PROJECT_BINARY_DIR}/bin
+  CACHE PATH
+  "Directory where all executable will be stored"
+)
+
+# Set the directory where the libraries will be stored
+set(LIBRARY_OUTPUT_PATH
+  ${PROJECT_BINARY_DIR}/lib
+  CACHE PATH
+  "Directory where all the libraries will be stored"
+)
+
+mark_as_advanced(
+  EXECUTABLE_OUTPUT_PATH
+  LIBRARY_OUTPUT_PATH
+)
+
+################################################################################
 # Options that the user controls
 ################################################################################
 option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" OFF)
@@ -342,23 +364,6 @@ install (FILES ${PROJECT_BINARY_DIR}/smtk/Options.h
 ################################################################################
 # Install Related Settings
 ################################################################################
-
-## Set the directory where the binaries will be stored
-set( EXECUTABLE_OUTPUT_PATH
-  ${PROJECT_BINARY_DIR}/bin
-  CACHE PATH
-  "Directory where all executable will be stored"
-)
-
-## Set the directory where the libraries will be stored
-set( LIBRARY_OUTPUT_PATH
-  ${PROJECT_BINARY_DIR}/lib
-  CACHE PATH
-  "Directory where all the libraries will be stored"
-)
-mark_as_advanced(
-  EXECUTABLE_OUTPUT_PATH
-  LIBRARY_OUTPUT_PATH)
 
 # Install rules for SMTK macros usable by external packages:
 install(
