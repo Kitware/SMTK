@@ -56,12 +56,10 @@ bool BathymetryHelper::loadBathymetryFile(const std::string& filename)
   // if the data is already loaded, return true;
   if(this->bathymetryData(filename) != NULL)
     return true;
-  // get the ouptut
-  vtkNew<vtkPolyData> output;
 
+  vtkDataSet* dataOutput = NULL;
   std::string ext = vtksys::SystemTools::GetFilenameLastExtension(filename);
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-
   if(ext == ".pts" || ext == ".bin"
      || ext == ".vtk"
      || ext == ".vtp"
@@ -79,15 +77,19 @@ bool BathymetryHelper::loadBathymetryFile(const std::string& filename)
     reader->SetPrepNonClosedSurfaceForModelCreation(false);
     reader->SetEnablePostProcessMesh(false);
     reader->Update();
-    output->ShallowCopy( reader->GetOutput() );
+    vtkPolyData* polyOutput = vtkPolyData::New();
+    polyOutput->ShallowCopy( reader->GetOutput() );
+    dataOutput = polyOutput;
     }
 #ifdef HAS_GDAL_RASTER_READER
   else if (ext == ".dem")
     {
-    vtkNew<vtkGDALRasterPolydataWrapper> reader;
+    vtkNew<vtkGDALRasterReader> reader;
     reader->SetFileName(filename.c_str());
     reader->Update();
-    output->ShallowCopy( reader->GetOutput() );
+    vtkUniformGrid* ugOutput = vtkUniformGrid::New();
+    ugOutput->ShallowCopy( reader->GetOutput() );
+    dataOutput = ugOutput;
     }
 #endif
   else if(ext == ".las")
@@ -112,21 +114,23 @@ bool BathymetryHelper::loadBathymetryFile(const std::string& filename)
     iter->Delete();
     appendPoints->Update();
 
-    output->ShallowCopy( appendPoints->GetOutput() );
+    vtkPolyData* polyOutput = vtkPolyData::New();
+    polyOutput->ShallowCopy( appendPoints->GetOutput() );
+    dataOutput = polyOutput;
     }
   else if(ext == ".vti")
     {
     vtkNew<vtkXMLImageDataReader> reader;
     reader->SetFileName(filename.c_str());
     reader->Update();
-    vtkImageData* readout = reader->GetOutput();
 
-    vtkNew<vtkImageToStructuredGrid> image2struct;
-    image2struct->SetInputData(readout);
-    image2struct->Update();
-    vtkNew<vtkPolyData> imagepoly;
-    imagepoly->SetPoints(image2struct->GetOutput()->GetPoints());
-    output->ShallowCopy( imagepoly.GetPointer() );
+//    vtkNew<vtkImageToStructuredGrid> image2struct;
+//    image2struct->SetInputData(readout);
+//    image2struct->Update();
+//    imagepoly->SetPoints(image2struct->GetOutput()->GetPoints());
+    vtkImageData* imgOutput = vtkImageData::New();
+    imgOutput->ShallowCopy( reader->GetOutput() );
+    dataOutput = imgOutput;
     }
   else
     {
@@ -134,12 +138,11 @@ bool BathymetryHelper::loadBathymetryFile(const std::string& filename)
     return false;
     }
 
-  this->m_filesToSources[filename] = output.GetPointer();
-
+  this->m_filesToSources[filename].TakeReference(dataOutput);
   return true;
 }
 
-vtkPointSet* BathymetryHelper::bathymetryData(const std::string& filename)
+vtkDataSet* BathymetryHelper::bathymetryData(const std::string& filename)
 {
   if(this->m_filesToSources.find(filename) !=
     this->m_filesToSources.end())
@@ -151,7 +154,7 @@ void BathymetryHelper::loadedBathymetryFiles(
   std::vector<std::string> &result) const
 {
   result.clear();
-  std::map<std::string, vtkSmartPointer<vtkPointSet> >::const_iterator it;
+  std::map<std::string, vtkSmartPointer<vtkDataSet> >::const_iterator it;
   for(it=this->m_filesToSources.begin(); it!=this->m_filesToSources.end(); ++it)
     result.push_back(it->first);
 }

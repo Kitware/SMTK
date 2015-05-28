@@ -16,7 +16,7 @@
 #include "vtkSmartPointer.h"
 #include <map>
 
-class vtkPointSet;
+class vtkDataSet;
 class vtkPolyData;
 
 namespace smtk {
@@ -38,7 +38,7 @@ public:
 
   virtual bool loadBathymetryFile(const std::string& filename);
 
-  vtkPointSet* bathymetryData(const std::string& filename);
+  vtkDataSet* bathymetryData(const std::string& filename);
   void loadedBathymetryFiles(
     std::vector<std::string> &result) const;
 
@@ -60,7 +60,7 @@ protected:
   typedef std::map<smtk::common::UUID,vtkSmartPointer<vtkPolyData> > ModelIdToMasterPolyMap;
   typedef std::map<smtk::common::UUID,std::string> ModelIdToBathymetryMap;
 
-  std::map<std::string, vtkSmartPointer<vtkPointSet> > m_filesToSources;
+  std::map<std::string, vtkSmartPointer<vtkDataSet> > m_filesToSources;
   ModelIdToMasterPolyMap m_modelIdsToMasterPolys;
   ModelIdToBathymetryMap m_modelIdsToBathymetrys;
 
