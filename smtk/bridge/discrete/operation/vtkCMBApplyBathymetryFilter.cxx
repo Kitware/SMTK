@@ -24,6 +24,7 @@
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
 #include "vtkImageData.h"
+#include "vtkUniformGrid.h"
 #include "vtkSmartPointer.h"
 #include "vtkWeakPointer.h"
 
@@ -97,6 +98,8 @@ vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::vtkCmbInternalTerrainInf
   vtkIdType numPoints = 0;
   vtkPolyData* pd = vtkPolyData::SafeDownCast(
     inInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkUniformGrid* gridInput = vtkUniformGrid::SafeDownCast(
+    inInfo->Get(vtkDataObject::DATA_OBJECT()));
   vtkImageData* imageInput = vtkImageData::SafeDownCast(
     inInfo->Get(vtkDataObject::DATA_OBJECT()));
   if (pd)
@@ -115,58 +118,87 @@ vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::vtkCmbInternalTerrainInf
   //second iteration is building the point set and elevation mapping
   vtkPoints *inputPoints = NULL;
   vtkPoints *points = vtkPoints::New();
-  points->SetNumberOfPoints(numPoints);
-  vtkIdType size, i;
+  vtkIdType size, i, j;
   double p[3];
   double dtmp;
-  if (pd)
+   // Uniform Grids may not have the max number of points
+  if (gridInput)
     {
-    inputPoints = pd->GetPoints();
-    size = inputPoints->GetNumberOfPoints();
-    for (i=0; i < size; ++i)
-      {
-      //get the point
-      inputPoints->GetPoint(i,p);
-      // check elevation limit
-      dtmp = (useHighLimit && p[2]>eleHigh) ? eleHigh : p[2];
-      dtmp = (useLowLimit && dtmp<eleLow) ? eleLow : dtmp;
-      //store the z value & flatten
-      this->IdToElevation[i]=dtmp;
-      p[2] = 0.0;
-      points->InsertPoint(i,p);
-      }
-    }
-  else if(imageInput)
-    {
-    size = imageInput->GetNumberOfPoints();
-    vtkDataArray *dataArray = imageInput->GetPointData()->GetScalars("Elevation");
-    if(!dataArray || dataArray->GetNumberOfTuples() != size)
+    vtkDataArray *dataArray = gridInput->GetPointData()->GetScalars("Elevation");
+    if(!dataArray || dataArray->GetNumberOfTuples() != numPoints)
       {
       return;
       }
-
-    //store the z value
-    if (dataArray->GetDataType() == VTK_FLOAT)
+    points->Allocate(numPoints);
+    for (i = 0; numPoints; i++)
       {
-      vtkFloatArray *floatArray = static_cast<vtkFloatArray *>(dataArray);
-      copyArrayZValues(floatArray->GetPointer(0),
-        size,this->IdToElevation, useHighLimit, eleHigh, useLowLimit, eleLow);
-      }
-    else if (dataArray->GetDataType() == VTK_DOUBLE)
-      {
-      vtkDoubleArray *doubleArray = static_cast<vtkDoubleArray *>(dataArray);
-      copyArrayZValues(doubleArray->GetPointer(0),
-        size,this->IdToElevation, useHighLimit, eleHigh, useLowLimit, eleLow);
-      }
-
-    for (i=0; i < size; ++i)
-      {
-      //get the point
+      if (!gridInput->IsPointVisible(i))
+        {
+        continue;
+        }
+      dtmp = dataArray->GetTuple1(i);
+      dtmp = (useHighLimit && dtmp>eleHigh) ? eleHigh : dtmp;
+      dtmp = (useLowLimit && dtmp<eleLow) ? eleLow : dtmp;
       imageInput->GetPoint(i,p);
 
       //flatten z
       p[2] = 0.0;
-      points->InsertPoint(i,p);
+      j =  points->InsertNextPoint(p);
+      this->IdToElevation[j]=dtmp;
+      }
+    }
+  else
+    {
+    points->SetNumberOfPoints(numPoints);
+    if (pd)
+      {
+      inputPoints = pd->GetPoints();
+      size = inputPoints->GetNumberOfPoints();
+      for (i=0; i < size; ++i)
+        {
+        //get the point
+        inputPoints->GetPoint(i,p);
+        // check elevation limit
+        dtmp = (useHighLimit && p[2]>eleHigh) ? eleHigh : p[2];
+        dtmp = (useLowLimit && dtmp<eleLow) ? eleLow : dtmp;
+        //store the z value & flatten
+        this->IdToElevation[i]=dtmp;
+        p[2] = 0.0;
+        points->InsertPoint(i,p);
+        }
+      }
+    else if(imageInput)
+      {
+      size = imageInput->GetNumberOfPoints();
+      vtkDataArray *dataArray = imageInput->GetPointData()->GetScalars("Elevation");
+      if(!dataArray || dataArray->GetNumberOfTuples() != size)
+        {
+        return;
+        }
+
+      //store the z value
+      if (dataArray->GetDataType() == VTK_FLOAT)
+        {
+        vtkFloatArray *floatArray = static_cast<vtkFloatArray *>(dataArray);
+        copyArrayZValues(floatArray->GetPointer(0),
+                         size,this->IdToElevation, useHighLimit, eleHigh, useLowLimit, eleLow);
+        }
+      else if (dataArray->GetDataType() == VTK_DOUBLE)
+        {
+        vtkDoubleArray *doubleArray = static_cast<vtkDoubleArray *>(dataArray);
+        copyArrayZValues(doubleArray->GetPointer(0),
+                         size,this->IdToElevation, useHighLimit, eleHigh, useLowLimit, eleLow);
+        }
+
+      for (i=0; i < size; ++i)
+        {
+        //get the point
+        imageInput->GetPoint(i,p);
+
+        //flatten z
+        p[2] = 0.0;
+        points->InsertPoint(i,p);
+        }
       }
     }
   vtkPolyData *pointSet = vtkPolyData::New();
