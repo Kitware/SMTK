@@ -14,7 +14,6 @@
 #include "smtk/attribute/System.h"
 
 #include "smtk/common/View.h"
-#include "smtk/view/Root.h"
 
 #include <QPointer>
 #include <QLayout>

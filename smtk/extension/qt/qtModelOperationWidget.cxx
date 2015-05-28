@@ -26,8 +26,6 @@
 #include "smtk/model/Operator.h"
 #include "smtk/model/StringData.h"
 #include "smtk/common/View.h"
-#include "smtk/view/Root.h"
-#include "smtk/view/Instanced.h"
 
 #include <QStackedLayout>
 #include <QPushButton>

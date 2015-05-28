@@ -12,7 +12,6 @@
 
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtGroupView.h"
-#include "smtk/view/Root.h"
 
 #include <QFrame>
 #include <QHBoxLayout>

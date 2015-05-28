@@ -72,7 +72,6 @@ qtGroupView::~qtGroupView()
 void qtGroupView::createWidget( )
 {
   smtk::common::ViewPtr view = this->getObject();
-  std::cerr << "Processing Group View: " << view->title() << "\n";
   if (!view)
     {
     return;
@@ -130,7 +129,6 @@ void qtGroupView::createWidget( )
     // Get the title
     std::string t;
     viewsComp.child(i).attribute("Title", t);
-    std:: cerr << "Processing Child View " << t << "\n";
     v = sys->findView(t);
     if (!v)
       {

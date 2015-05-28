@@ -18,8 +18,8 @@ smtk_source_group(simulation)
 add_subdirectory(io)
 smtk_source_group(io)
 
-add_subdirectory(view)
-smtk_source_group(view)
+#add_subdirectory(view)
+#smtk_source_group(view)
 
 set(smtk_headers
   ${commonHeaders}

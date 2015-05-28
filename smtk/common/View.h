@@ -16,7 +16,7 @@
 #define __smtk_common_View_h
 
 
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include <string>
 
@@ -33,7 +33,9 @@ namespace smtk
       public:
         Component(const std::string &myName) : m_name(myName)
         {}
-        
+
+        Component() : m_name("Default")
+        {}
         ~Component()
         {}
     

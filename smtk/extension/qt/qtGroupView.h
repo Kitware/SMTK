@@ -17,7 +17,6 @@
 
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/Exports.h"
-#include "smtk/view/Base.h"
 
 class qtGroupViewInternals;
 

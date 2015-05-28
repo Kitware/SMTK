@@ -2519,7 +2519,7 @@ void XmlDocV1Parser::processGroupView(xml_node &node,
       childView = this->createView(child, "Attribute");
       if (childView)
         {
-        vcomp.addChild("View").setContents(childView->title());
+        vcomp.addChild("View").setAttribute("Title", childView->title());
         this->processAttributeView(child, childView);
         }
       continue;
@@ -2530,7 +2530,7 @@ void XmlDocV1Parser::processGroupView(xml_node &node,
       childView = this->createView(child, "Group");
       if (childView)
         {
-        vcomp.addChild("View").setContents(childView->title());
+        vcomp.addChild("View").setAttribute("Title", childView->title());
         this->processGroupView(child, childView);
         }
       continue;
@@ -2541,7 +2541,7 @@ void XmlDocV1Parser::processGroupView(xml_node &node,
       childView = this->createView(child, "Instanced");
       if (childView)
         {
-        vcomp.addChild("View").setContents(childView->title());
+        vcomp.addChild("View").setAttribute("Title", childView->title());
         this->processInstancedView(child, childView);
         }
       continue;
@@ -2552,7 +2552,7 @@ void XmlDocV1Parser::processGroupView(xml_node &node,
       childView = this->createView(child, "ModelEntity");
       if (childView)
         {
-        vcomp.addChild("View").setContents(childView->title());
+        vcomp.addChild("View").setAttribute("Title", childView->title());
         this->processModelEntityView(child, childView);
         }
       continue;
@@ -2563,7 +2563,7 @@ void XmlDocV1Parser::processGroupView(xml_node &node,
       childView = this->createView(child, "SimpleExpression");
       if (childView)
         {
-        vcomp.addChild("View").setContents(childView->title());
+        vcomp.addChild("View").setAttribute("Title", childView->title());
         this->processSimpleExpressionView(child, childView);
         }
       continue;

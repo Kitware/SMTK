@@ -38,9 +38,6 @@
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
-#include "smtk/view/Root.h"
-#include "smtk/view/Instanced.h"
-
 #include <QPointer>
 #include <QDockWidget>
 #include <QDropEvent>
