@@ -54,11 +54,7 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 
-#include "smtk/view/Root.h"
-#include "smtk/view/Attribute.h"
-#include "smtk/view/Instanced.h"
-#include "smtk/view/ModelEntity.h"
-#include "smtk/view/SimpleExpression.h"
+#include "smtk/common/View.h"
 
 #include <math.h>
 
@@ -188,66 +184,62 @@ QSize qtTextEdit::sizeHint() const
 }
 
 //----------------------------------------------------------------------------
-qtUIManager::qtUIManager(smtk::attribute::System &system) :
-  m_AttSystem(system), m_useInternalFileBrowser(false)
+qtUIManager::qtUIManager(smtk::attribute::System &system, const std::string &toplevelViewName) :
+  m_AttSystem(system), m_useInternalFileBrowser(false), m_topViewName(toplevelViewName)
 {
-  this->RootView = NULL;
+  this->m_topView = NULL;
+  this->m_maxValueLabelLength = 200;
+  this->m_minValueLabelLength = 50;
 
-  if(system.rootView())
-    {
-    this->advFont.setBold(system.rootView()->advancedBold());
-    this->advFont.setItalic(system.rootView()->advancedItalic());
-    const double* rgba = system.rootView()->defaultColor();
-    this->DefaultValueColor.setRgbF(rgba[0], rgba[1], rgba[2]);
-    rgba = system.rootView()->invalidColor();
-    this->InvalidValueColor.setRgbF(rgba[0], rgba[1], rgba[2]);
-    }
-  else
-    { // default settings
-    this->advFont.setBold(true);
-    this->advFont.setItalic(false);
-    this->DefaultValueColor.setRgbF(1.0, 1.0, 0.5);
-    this->InvalidValueColor.setRgbF(1.0, 0.5, 0.5);
-    }
+  // default settings
+  this->advFont.setBold(true);
+  this->advFont.setItalic(false);
+  this->DefaultValueColor.setRgbF(1.0, 1.0, 0.5);
+  this->InvalidValueColor.setRgbF(1.0, 0.5, 0.5);
+ 
   this->m_currentAdvLevel = 0;
+
+  // Lets register some basic view constructors
+  this->registerViewConstructor("Attribute", qtAttributeView::createViewWidget);
+  this->registerViewConstructor("Group", qtGroupView::createViewWidget);
+  this->registerViewConstructor("Instanced", qtInstancedView::createViewWidget);
+  this->registerViewConstructor("Root", qtRootView::createViewWidget);
+  this->registerViewConstructor("SimpleExpression", qtSimpleExpressionView::createViewWidget);
 }
 
 //----------------------------------------------------------------------------
 qtUIManager::~qtUIManager()
 {
-  if(this->RootView)
+  if(this->m_topView)
     {
-    delete this->RootView;
+    delete this->m_topView;
     }
 }
-
 //----------------------------------------------------------------------------
 void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
 {
   m_useInternalFileBrowser = useInternalFileBrowser;
-  if(!this->m_AttSystem.rootView())
+  smtk::common::ViewPtr v = this->m_AttSystem.findView(this->m_topViewName);
+  if(!v)
     {
     return;
     }
-  if(this->RootView)
+  if(this->m_topView)
     {
-    delete this->RootView;
+    delete this->m_topView;
     }
   this->internalInitialize();
 
-  this->RootView = new qtRootView(
-    this->m_AttSystem.rootView(), pWidget, this);
-  this->RootView->showAdvanceLevel(this->m_currentAdvLevel);
+  this->m_topView = this->createView(v, pWidget);
+  if (this->m_topView)
+    {
+    this->m_topView->showAdvanceLevel(this->m_currentAdvLevel);
+    }
 }
 
 //----------------------------------------------------------------------------
 void qtUIManager::internalInitialize()
 {
-  smtk::view::RootPtr rs = this->m_AttSystem.rootView();
-  const double *dcolor = rs->defaultColor();
-  this->DefaultValueColor.setRgbF(dcolor[0], dcolor[1], dcolor[2], dcolor[3]);
-  dcolor = rs->invalidColor();
-  this->InvalidValueColor.setRgbF(dcolor[0], dcolor[1], dcolor[2], dcolor[3]);
   this->findDefinitionsLongLabels();
 
   // initialize initial advance level
@@ -276,9 +268,9 @@ void qtUIManager::setAdvanceLevel(int b)
     }
 
   this->m_currentAdvLevel = b;
-  if(this->RootView)
+  if(this->m_topView)
     {
-    this->RootView->showAdvanceLevel(b);
+    this->m_topView->showAdvanceLevel(b);
     }
 }
 //----------------------------------------------------------------------------
@@ -306,17 +298,13 @@ void qtUIManager::initAdvanceLevels(QComboBox* combo)
 // Generates widget for a single input view
 // bypassing the RootView tab widget
 qtBaseView* qtUIManager::initializeView(QWidget* pWidget,
-                                 smtk::view::BasePtr smtkView,
-                                 bool useInternalFileBrowser)
+                                        smtk::common::ViewPtr smtkView,
+                                        bool useInternalFileBrowser)
 {
   m_useInternalFileBrowser = useInternalFileBrowser;
-  if(!this->m_AttSystem.rootView())
+  if(this->m_topView)
     {
-    return NULL;
-    }
-  if(this->RootView)
-    {
-    delete this->RootView;
+    delete this->m_topView;
     }
   this->internalInitialize();
 
@@ -326,43 +314,22 @@ qtBaseView* qtUIManager::initializeView(QWidget* pWidget,
 //----------------------------------------------------------------------------
 void qtUIManager::updateModelViews()
 {
-  if(!this->RootView)
+  if(!this->m_topView)
     {
     return;
     }
-  this->updateModelViews(this->RootView->getRootGroup());
-}
-
-//----------------------------------------------------------------------------
-void qtUIManager::updateModelViews(qtGroupView* groupView)
-{
-  if(!groupView)
-    {
-    return;
-    }
-  foreach(qtBaseView* childView, groupView->childViews())
-    {
-    if(childView->getObject()->type() == smtk::view::Base::GROUP)
-      {
-      this->updateModelViews(qobject_cast<qtGroupView*>(childView));
-      }
-    else if(childView->getObject()->type() == smtk::view::Base::ATTRIBUTE ||
-       childView->getObject()->type() == smtk::view::Base::MODEL_ENTITY)
-      {
-      childView->updateModelAssociation();
-      }
-    }
+  m_topView->updateModelAssociation();
 }
 
 //----------------------------------------------------------------------------
 std::string qtUIManager::currentCategory()
 {
-  return this->RootView ? this->RootView->currentCategory() : "";
+  return this->m_topView ? this->m_topView->currentCategory() : "";
 }
 //----------------------------------------------------------------------------
 bool qtUIManager::categoryEnabled()
 {
-  return this->RootView ? this->RootView->categoryEnabled() : false;
+  return this->m_topView ? this->m_topView->categoryEnabled() : false;
 }
 //----------------------------------------------------------------------------
 bool qtUIManager::passAdvancedCheck(int level)
@@ -388,67 +355,6 @@ bool qtUIManager::passCategoryCheck(const std::set<std::string> & categories)
   return !this->categoryEnabled() ||
     categories.find(this->currentCategory()) != categories.end();
 }
-//----------------------------------------------------------------------------
-void qtUIManager::processAttributeView(qtAttributeView* qtView)
-{
-  smtk::view::AttributePtr v = smtk::dynamic_pointer_cast<smtk::view::Attribute>(
-    qtView->getObject());
-
-  this->processBasicView(qtView);
-}
-//----------------------------------------------------------------------------
-void qtUIManager::processInstancedView(qtInstancedView* qtView)
-{
-  smtk::view::InstancedPtr v = smtk::dynamic_pointer_cast<smtk::view::Instanced>(
-    qtView->getObject());
-
-  this->processBasicView(qtView);
-}
-////----------------------------------------------------------------------------
-//void qtUIManager::processModelView(qtModelView* qtView)
-//{
-//  smtk::view::ModelPtr v = smtk::dynamic_pointer_cast<smtk::view::Model>(
-//    qtView->getObject());
-
-//  this->processBasicView(qtView);
-//}
-//----------------------------------------------------------------------------
-void qtUIManager::processSimpleExpressionView(qtSimpleExpressionView* qtView)
-{
-  smtk::view::SimpleExpressionPtr v = smtk::dynamic_pointer_cast<smtk::view::SimpleExpression>(
-    qtView->getObject());
-
-  this->processBasicView(qtView);
-}
-//----------------------------------------------------------------------------
-void qtUIManager::processGroupView(qtGroupView* pQtGroup)
-{
-  smtk::view::GroupPtr group = smtk::dynamic_pointer_cast<smtk::view::Group>(
-    pQtGroup->getObject());
-  this->processBasicView( pQtGroup);
-  std::size_t i, n = group->numberOfSubViews();
-  smtk::view::BasePtr v;
-  qtBaseView* qtView = NULL;
-  for (i = 0; i < n; i++)
-    {
-    v = group->subView(static_cast<int>(i));
-    qtView = qtUIManager::createView(v, pQtGroup->widget());
-    if(qtView)
-      {
-      pQtGroup->addChildView(qtView);
-      }
-    }
-}
-
-//----------------------------------------------------------------------------
-void qtUIManager::processBasicView(qtBaseView* /*v*/)
-{
-  //node.append_attribute("Title").set_value(v->title().c_str());
-  //if (v->iconName() != "")
-  //  {
-  //  node.append_attribute("Icon").set_value(v->title().c_str());
-  //  }
-}
 
 //----------------------------------------------------------------------------
 QString qtUIManager::clipBoardText()
@@ -466,13 +372,42 @@ void qtUIManager::setClipBoardText(QString& text)
 //----------------------------------------------------------------------------
 void qtUIManager::clearRoot()
 {
-  if(this->RootView)
+  if(this->m_topView)
     {
-    delete this->RootView;
-    this->RootView = NULL;
+    delete this->m_topView;
+    this->m_topView = NULL;
     }
 }
 
+//----------------------------------------------------------------------------
+void qtUIManager::setAdvanceFontStyleBold(bool val)
+{
+  this->advFont.setBold(val);
+}
+
+//----------------------------------------------------------------------------
+bool qtUIManager::advanceFontStyleBold() const
+{
+  return this->advFont.bold();
+}
+
+//----------------------------------------------------------------------------
+void qtUIManager::setAdvanceFontStyleItalic(bool val)
+{
+  this->advFont.setItalic(val);
+}
+
+//----------------------------------------------------------------------------
+bool qtUIManager::advanceFontStyleItalic() const
+{
+  return this->advFont.italic();
+}
+
+//----------------------------------------------------------------------------
+void qtUIManager::setDefaultValueColor(const QColor &color)
+{
+  this->DefaultValueColor = color;
+}
 //----------------------------------------------------------------------------
 void qtUIManager::setInvalidValueColor(const QColor &color)
 {
@@ -1285,37 +1220,24 @@ bool qtUIManager::updateTableItemCheckState(
 }
 
 //----------------------------------------------------------------------------
-qtBaseView *qtUIManager::createView(smtk::view::BasePtr smtkView,
+void qtUIManager::registerViewConstructor(const std::string &vtype,
+                                          widgetConstructor f)
+{
+  this->m_constructors[vtype] = f;
+}
+//----------------------------------------------------------------------------
+qtBaseView *qtUIManager::createView(smtk::common::ViewPtr smtkView,
   QWidget *pWidget)
 {
-  qtBaseView *qtView = NULL;  // return value
-  switch(smtkView->type())
+  std::map<std::string, widgetConstructor>::const_iterator it;
+  it = this->m_constructors.find(smtkView->type());
+  if (it == this->m_constructors.end())
     {
-    case smtk::view::Base::ATTRIBUTE:
-      qtView = new qtAttributeView(smtkView, pWidget, this);
-      qtUIManager::processAttributeView(qobject_cast<qtAttributeView*>(qtView));
-      break;
-    case smtk::view::Base::GROUP:
-      qtView = new qtGroupView(smtkView, pWidget, this);
-      qtUIManager::processGroupView(qobject_cast<qtGroupView*>(qtView));
-      break;
-    case smtk::view::Base::INSTANCED:
-      qtView = new qtInstancedView(smtkView, pWidget, this);
-      qtUIManager::processInstancedView(qobject_cast<qtInstancedView*>(qtView));
-      break;
-    case smtk::view::Base::MODEL_ENTITY:
-//      qtView = new qtModelView(smtkView, pWidget, this);
-//      qtUIManager::processModelView(qobject_cast<qtModelView*>(qtView));
-      break;
-    case smtk::view::Base::SIMPLE_EXPRESSION:
-      qtView = new qtSimpleExpressionView(smtkView, pWidget, this);
-      qtUIManager::processSimpleExpressionView(qobject_cast<qtSimpleExpressionView*>(qtView));
-      break;
-    default:
-      break;
-      //this->m_errorStatus << "Unsupport View Type "
-      //                    << View::type2String(sec->type()) << "\n";
+    // Constructor for that type could not be found)
+    return NULL;
     }
+  
+  qtBaseView *qtView = (it->second)(smtkView, pWidget, this);
   return qtView;
 }
 

@@ -12,7 +12,6 @@
 
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtGroupView.h"
-#include "smtk/view/Root.h"
 
 #include <QFrame>
 #include <QHBoxLayout>
@@ -57,9 +56,17 @@ public:
 };
 
 //----------------------------------------------------------------------------
+qtBaseView *
+qtRootView::createViewWidget(smtk::common::ViewPtr dataObj,
+                             QWidget* p, qtUIManager* uiman)
+{
+  return new qtRootView(dataObj, p, uiman);
+}
+
+//----------------------------------------------------------------------------
 qtRootView::qtRootView(
-  smtk::view::RootPtr dataObj, QWidget* p, qtUIManager* uiman) :
-  qtBaseView(smtk::dynamic_pointer_cast<smtk::view::Base>(dataObj), p, uiman)
+  smtk::common::ViewPtr dataObj, QWidget* p, qtUIManager* uiman) :
+  qtBaseView(dataObj, p, uiman)
 {
   this->Internals = new qtRootViewInternals;
   this->ScrollArea = NULL;
@@ -83,11 +90,72 @@ qtRootView::~qtRootView()
 //----------------------------------------------------------------------------
 void qtRootView::createWidget( )
 {
-  if(!this->getObject())
+  smtk::common::ViewPtr view = this->getObject();
+  if(!view)
     {
     return;
     }
+  int pos;
+  std::vector<double> vals;
+  pos = view->details().findChild("DefaultColor");
+  QColor color;
+  if (pos != -1)
+    {
+    view->details().child(pos).contentsAsVector(vals);
+    if (vals.size() == 3)
+      {
+      color.setRgbF(vals[0], vals[1], vals[2]);
+      this->uiManager()->setDefaultValueColor(color);
+      }
+    }
+  pos = view->details().findChild("InvalidColor");
+  if (pos != -1)
+    {
+    view->details().child(pos).contentsAsVector(vals);
+    if (vals.size() == 3)
+      {
+      color.setRgbF(vals[0], vals[1], vals[2]);
+      this->uiManager()->setInvalidValueColor(color);
+      }
+    }
+  
+  pos = view->details().findChild("AdvancedFontEffects");
+  if (pos != -1)
+    {
+    bool val;
+    if (!view->details().child(pos).attributeAsBool("Bold", val))
+      {
+      this->uiManager()->setAdvanceFontStyleBold(val);
+      }
+    if (!view->details().child(pos).attributeAsBool("Italic", val))
+      {
+      this->uiManager()->setAdvanceFontStyleItalic(val);
+      }
+    }
 
+  pos = view->details().findChild("MaxValueLabelLength");
+  if (pos != -1)
+    {
+    bool val;
+    int l;
+    if (view->details().child(pos).contentsAsInt(l))
+      {
+      this->uiManager()->setMaxValueLabelLength(l);
+      }
+    }
+  
+  pos = view->details().findChild("MinValueLabelLength");
+  if (pos != -1)
+    {
+    bool val;
+    int l;
+    if (view->details().child(pos).contentsAsInt(l))
+      {
+      this->uiManager()->setMinValueLabelLength(l);
+      }
+    }
+  // Set up some properties to the uiManager
+  
   this->Internals->clearWidgets();
   const System* attSys = this->uiManager()->attSystem();
 
@@ -157,9 +225,8 @@ void qtRootView::onAdvanceLevelChanged(int levelIdx)
 void qtRootView::showAdvanceLevel(int level)
 {
   // update Root for smtk::view
-  smtk::view::RootPtr rview =
-    smtk::dynamic_pointer_cast<smtk::view::Root>(this->getObject());
-
+  smtk::common::ViewPtr view = this->getObject();
+  
   int currentTab = 0;
   if(this->Internals->TabGroup)
     {
@@ -202,9 +269,8 @@ void qtRootView::showAdvanceLevel(int level)
   layout->setMargin(0);
   this->Widget->setLayout( layout );
 
-  this->Internals->TabGroup = new qtGroupView(this->getObject(), this->Widget,
+  this->Internals->TabGroup = new qtGroupView(view, this->Widget,
     this->uiManager());
-  this->uiManager()->processGroupView(this->Internals->TabGroup);
   this->initRootTabGroup();
 
   if(this->Internals->TabGroup->childViews().count())
@@ -261,8 +327,8 @@ void qtRootView::updateViewUI(int currentTab)
     }
 }
 //----------------------------------------------------------------------------
-void qtRootView::getChildView(
-  smtk::view::Base::Type secType, QList<qtBaseView*>& views)
+void qtRootView::getChildView(const std::string &secType,
+                              QList<qtBaseView*>& views)
 {
   return this->Internals->TabGroup->getChildView(secType, views);
 }
@@ -340,4 +406,9 @@ void qtRootView::showAdvanceLevelOverlay(bool show)
     this->Internals->TabGroup->showAdvanceLevelOverlay(show);
     }
   this->qtBaseView::showAdvanceLevelOverlay(show);
+}
+//----------------------------------------------------------------------------
+void qtRootView::updateModelAssociation()
+{
+  this->Internals->TabGroup->updateModelAssociation();
 }

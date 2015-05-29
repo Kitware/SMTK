@@ -78,7 +78,6 @@ attribute = _temp.smtk.attribute
 model = _temp.smtk.model
 simulation = _temp.smtk.simulation
 io = _temp.smtk.io
-view = _temp.smtk.view
 
 # Try loading optional extensions.
 # Do not complain if they are not present.
@@ -245,16 +244,6 @@ del _Warn
 del _Error
 
 
-# Type dictionary for smtk.view.Base subclasses
-view_type_dict = {
-  view.Base.ATTRIBUTE:         view.Attribute,
-  view.Base.GROUP:             view.Group,
-  view.Base.INSTANCED:         view.Instanced,
-  view.Base.MODEL_ENTITY:      view.ModelEntity,
-  view.Base.ROOT:              view.Root,
-  view.Base.SIMPLE_EXPRESSION: view.SimpleExpression
-}
-
 def to_concrete(instance):
   '''General type converter for smtk objects
   '''
@@ -262,28 +251,6 @@ def to_concrete(instance):
   if instance.__class__.__module__.endswith('smtk.attribute') or \
     str(instance.__class__).find('smtk::attribute::') > 0:
       return attribute.to_concrete(instance)
-
-  # New logic for smtk.view types
-  elif instance.__class__.__module__.endswith('smtk.view') or \
-    str(instance.__class__).find('smtk::view::') > 0:
-
-    if not hasattr(instance, 'type'):
-      print 'class %s has no type() method, cannot convert' % \
-          str(instance.__class__)
-      return None
-
-    klass = view_type_dict.get(instance.type())
-    if klass is None:
-      print 'no converter available for class %s, cannot convert' % \
-          str(instance.__class__)
-      return None
-
-    if not hasattr(klass, 'CastTo'):
-      print 'class %s has no CastTo() method, cannot convert' % str(klass)
-      return None
-
-    return klass.CastTo(instance)
-
   # (else)
   print 'no converter available for class %s, cannot convert' % \
       str(instance.__class__)

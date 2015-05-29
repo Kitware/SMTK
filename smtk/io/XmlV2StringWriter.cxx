@@ -14,6 +14,7 @@
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
 
+#include "smtk/common/View.h"
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -44,13 +45,6 @@
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/StringData.h"
-
-#include "smtk/view/Attribute.h"
-#include "smtk/view/Instanced.h"
-#include "smtk/view/Group.h"
-#include "smtk/view/ModelEntity.h"
-#include "smtk/view/Root.h"
-#include "smtk/view/SimpleExpression.h"
 
 #include <sstream>
 
@@ -1314,6 +1308,18 @@ void XmlV2StringWriter::processDirectoryItem(pugi::xml_node &node,
 void XmlV2StringWriter::processFileItem(pugi::xml_node &node,
                                         attribute::FileItemPtr item)
 {
+  // always write out all recentValues
+  if (item->recentValues().size() > 0)
+    {
+    xml_node recval, recvalues = node.append_child("RecentValues");
+    std::vector<std::string>::const_iterator it;
+    for(it = item->recentValues().begin(); it!= item->recentValues().end(); ++it)
+      {
+      recval = recvalues.append_child("Val");
+      recval.text().set((*it).c_str());
+      }
+    }
+
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   size_t i, n = item->numberOfValues();
   if (!n)
@@ -1401,159 +1407,51 @@ void XmlV2StringWriter::processGroupItem(pugi::xml_node &node,
 void XmlV2StringWriter::processViews()
 {
   this->m_pugi->root.append_child(node_comment).set_value("********** Workflow Views ***********");
-  xml_node views = this->m_pugi->root.append_child("RootView");
-  smtk::view::RootPtr rs = this->m_system.rootView();
-  std::string s;
-  s = this->encodeColor(rs->defaultColor());
-  views.append_child("DefaultColor").text().set(s.c_str());
-  s = this->encodeColor(rs->invalidColor());
-  views.append_child("InvalidColor").text().set(s.c_str());
-  // advanced font settings
-  std::string boldValue = rs->advancedBold() ? "1" : "0";
-  std::string italicValue = rs->advancedItalic() ? "1" : "0";
-  s = "Bold=\"" + boldValue + "\" Italic=\"" + italicValue + "\"";
-  views.append_child("AdvancedFontEffects").text().set(s.c_str());
-  // max/min value label length
-  views.append_child("MaxValueLabelLength").text().set(
-    getValueForXMLElement(rs->maxValueLabelLength()));
-  views.append_child("MinValueLabelLength").text().set(
-    getValueForXMLElement(rs->minValueLabelLength()));
-
-  this->processGroupView(views,
-                         smtk::dynamic_pointer_cast<smtk::view::Group>(rs));
+  xml_node views = this->m_pugi->root.append_child("Views");
+  std::map<std::string, smtk::common::ViewPtr>::const_iterator iter;
+  for (iter = this->m_system.views().begin(); iter != this->m_system.views().end(); iter++)
+    {
+    xml_node node;
+    node = views.append_child("View");
+            
+    node.append_attribute("Type").set_value(iter->second->type().c_str());
+    node.append_attribute("Title").set_value(iter->second->title().c_str());
+    if (iter->second->iconName() != "")
+      {
+      node.append_attribute("Icon").set_value(iter->second->iconName().c_str());
+      }
+    this->processViewComponent(iter->second->details(), node);
+    }
 }
 //----------------------------------------------------------------------------
-void XmlV2StringWriter::processAttributeView(xml_node &node,
-                                             smtk::view::AttributePtr v)
+void XmlV2StringWriter::processViewComponent(smtk::common::View::Component &comp,
+                                             xml_node &node)
 {
-  this->processBasicView(node,
-                         smtk::dynamic_pointer_cast<smtk::view::Base>(v));
-  if (v->modelEntityMask())
+  // Add the attributes of the component to the node
+  std::map<std::string, std::string>::const_iterator iter;
+  for (iter = comp.attributes().begin(); iter != comp.attributes().end(); iter++)
     {
-    std::string s = this->encodeModelEntityMask(v->modelEntityMask());
-    node.append_attribute("ModelEntityFilter").set_value(s.c_str());
-    if (v->okToCreateModelEntities())
-      {
-      node.append_attribute("CreateEntities").set_value(true);
-      }
+    node.append_attribute(iter->first.c_str()).
+      set_value(iter->second.c_str());
     }
-  int i, n = static_cast<int>(v->numberOfDefinitions());
-  if (n)
+  // if the comp has contents then save it in the node's text
+  // else process the comp's children
+  if (comp.contents() != "")
     {
-    xml_node atypes = node.append_child("AttributeTypes");
+    node.text().set(comp.contents().c_str());
+    }
+  else
+    {
+    xml_node child;
+    std::size_t i, n = comp.numberOfChildren();
     for (i = 0; i < n; i++)
       {
-      atypes.append_child("Type").text().set(v->definition(i)->type().c_str());
+      child = node.append_child(comp.child(i).name().c_str());
+      this->processViewComponent(comp.child(i), child);
       }
     }
 }
-//----------------------------------------------------------------------------
-void XmlV2StringWriter::processInstancedView(xml_node &node,
-                                             smtk::view::InstancedPtr v)
-{
-  this->processBasicView(node,
-                         smtk::dynamic_pointer_cast<smtk::view::Base>(v));
-  int i, n = static_cast<int>(v->numberOfInstances());
-  xml_node child;
-  if (n)
-    {
-    xml_node instances = node.append_child("InstancedAttributes");
-    for (i = 0; i < n; i++)
-      {
-      child = instances.append_child("Att");
-      child.append_attribute("Type").set_value(v->instance(i)->type().c_str());
-      child.text().set(v->instance(i)->name().c_str());
-      }
-    }
 
-}
-//----------------------------------------------------------------------------
-void XmlV2StringWriter::processModelEntityView(xml_node &node,
-                                               smtk::view::ModelEntityPtr v)
-{
-  this->processBasicView(node,
-                         smtk::dynamic_pointer_cast<smtk::view::Base>(v));
-  if (v->modelEntityMask())
-    {
-    std::string s = this->encodeModelEntityMask(v->modelEntityMask());
-    node.append_attribute("ModelEntityFilter").set_value(s.c_str());
-    }
-  if (v->definition())
-    {
-    node.append_child("Definition").text().set(v->definition()->type().c_str());
-    }
-}
-//----------------------------------------------------------------------------
-void XmlV2StringWriter::processSimpleExpressionView(xml_node &node,
-                                                    smtk::view::SimpleExpressionPtr v)
-{
-  this->processBasicView(node,
-                         smtk::dynamic_pointer_cast<smtk::view::Base>(v));
-  if (v->definition())
-    {
-    node.append_child("Definition").text().set(v->definition()->type().c_str());
-    }
-}
-//----------------------------------------------------------------------------
-void XmlV2StringWriter::processGroupView(xml_node &node,
-                                         view::GroupPtr group)
-{
-  this->processBasicView(node,
-                         smtk::dynamic_pointer_cast<smtk::view::Base>(group));
-  if(group->style() == smtk::view::Group::TILED)
-    {
-    node.append_attribute("Style").set_value("Tiled");
-    }
-
-  size_t i, n = group->numberOfSubViews();
-  xml_node child;
-  view::BasePtr bview;
-  for (i = 0; i < n; i++)
-    {
-    bview = group->subView(i);
-    switch(bview->type())
-      {
-      case view::Base::ATTRIBUTE:
-        child = node.append_child("AttributeView");
-        this->processAttributeView(child,
-                                   smtk::dynamic_pointer_cast<view::Attribute>(bview));
-        break;
-      case view::Base::GROUP:
-        child = node.append_child("GroupView");
-        this->processGroupView(child,
-                               smtk::dynamic_pointer_cast<view::Group>(bview));
-        break;
-      case view::Base::INSTANCED:
-        child = node.append_child("InstancedView");
-        this->processInstancedView(child,
-                                   smtk::dynamic_pointer_cast<view::Instanced>(bview));
-        break;
-      case view::Base::MODEL_ENTITY:
-        child = node.append_child("ModelEntityView");
-        this->processModelEntityView(child,
-                                     smtk::dynamic_pointer_cast<view::ModelEntity>(bview));
-        break;
-      case view::Base::SIMPLE_EXPRESSION:
-        child = node.append_child("SimpleExpressionView");
-        this->processSimpleExpressionView(child,
-                                          smtk::dynamic_pointer_cast<view::SimpleExpression>(bview));
-        break;
-      default:
-        smtkErrorMacro(this->m_logger, "Unsupport View Type "
-                       << view::Base::type2String(bview->type()));
-      }
-    }
-}
-//----------------------------------------------------------------------------
-void XmlV2StringWriter::processBasicView(xml_node &node,
-                                         smtk::view::BasePtr bview)
-{
-  node.append_attribute("Title").set_value(bview->title().c_str());
-  if (bview->iconName() != "")
-    {
-    node.append_attribute("Icon").set_value(bview->title().c_str());
-    }
-}
 //----------------------------------------------------------------------------
 void XmlV2StringWriter::processModelInfo()
 {

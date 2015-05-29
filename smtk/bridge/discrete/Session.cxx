@@ -10,6 +10,7 @@
 
 #include "smtk/bridge/discrete/Session.h"
 #include "smtk/bridge/discrete/ArrangementHelper.h"
+#include "smtk/bridge/discrete/BathymetryHelper.h"
 
 #include "smtk/common/UUID.h"
 #include "smtk/AutoInit.h"
@@ -154,6 +155,7 @@ Session::Session()
   this->initializeOperatorSystem(Session::s_operators);
   this->m_itemWatcher = vtkItemWatcherCommand::New();
   this->m_itemWatcher->session = this;
+  this->m_bathymetryHelper = new smtk::bridge::discrete::BathymetryHelper();
 }
 
 /// Public virtual destructor required by base class.
@@ -186,6 +188,11 @@ Session::~Session()
       }
     }
   this->m_itemWatcher->Delete();
+  if(this->m_bathymetryHelper)
+    {
+    this->m_bathymetryHelper->clear();
+    delete this->m_bathymetryHelper;
+    }
 }
 
 /// The CGM session supports smtk::model::SESSION_EVERYTHING.
@@ -2204,6 +2211,11 @@ bool Session::removeModelEntity(const smtk::model::EntityRef& modRef)
     }
 
   return this->manager()->eraseModel(modRef);
+}
+
+smtk::bridge::discrete::BathymetryHelper* Session::bathymetryHelper()
+{
+  return this->m_bathymetryHelper;
 }
 
     } // namespace discrete

@@ -15,6 +15,7 @@
 #define __smtk_io_XmlDocV2Parser_h
 
 #include "smtk/io/XmlDocV1Parser.h"
+#include "smtk/common/View.h"
 
 namespace smtk
 {
@@ -34,6 +35,8 @@ namespace smtk
       static pugi::xml_node getRootNode(pugi::xml_document &doc);
 
     protected:
+      virtual void processFileItem(pugi::xml_node &node,
+                           smtk::attribute::FileItemPtr item);
       virtual void processModelInfo(pugi::xml_node &root);
       virtual void processModelEntityItem(pugi::xml_node &node,
                                           smtk::attribute::ModelEntityItemPtr item);
@@ -41,6 +44,10 @@ namespace smtk
                           attribute::MeshSelectionItemPtr idef);
       virtual void processMeshSelectionDef(pugi::xml_node &node,
                             smtk::attribute::MeshSelectionItemDefinitionPtr idef);
+      virtual void processViews(pugi::xml_node &root);
+      virtual void processViewComponent(smtk::common::View::Component &comp,
+                                        pugi::xml_node &node, bool isTopComp);
+      
       virtual smtk::common::UUID getAttributeID(pugi::xml_node &attNode);
     private:
 

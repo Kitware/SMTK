@@ -30,11 +30,6 @@
 
 namespace smtk
 {
-  namespace view
-  {
-    class Root;
-  }
-
   namespace attribute
   {
     class Attribute;
@@ -116,8 +111,11 @@ namespace smtk
       const std::set<std::string> & categories() const
       {return this->m_categories;}
 
-      smtk::view::RootPtr rootView() const
-      {return this->m_rootView;}
+      void addView(smtk::common::ViewPtr);
+      smtk::common::ViewPtr findView(const std::string &title) const;
+      smtk::common::ViewPtr findViewByType(const std::string &vtype) const;
+      const std::map<std::string, smtk::common::ViewPtr> &views() const
+      {return this->m_views;}
 
       smtk::model::ManagerPtr refModelManager() const
         {return this->m_refModelMgr.lock();}
@@ -165,7 +163,7 @@ namespace smtk
         smtk::attribute::WeakDefinitionPtrSet > m_derivedDefInfo;
       std::set<std::string> m_categories;
       std::map<std::string, std::set<std::string> > m_analyses;
-      smtk::view::RootPtr m_rootView;
+      std::map<std::string, smtk::common::ViewPtr> m_views;
 
       smtk::model::WeakManagerPtr m_refModelMgr;
       // Advance levels, <int-level, <string-label, color[4]>
@@ -175,6 +173,13 @@ namespace smtk
 
     private:
     };
+//----------------------------------------------------------------------------
+    inline smtk::common::ViewPtr System::findView(const std::string &name) const
+    {
+      std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
+      it = this->m_views.find(name);
+      return (it == this->m_views.end()) ? smtk::common::ViewPtr() : it->second;
+    }
 //----------------------------------------------------------------------------
     inline smtk::attribute::AttributePtr System::findAttribute(const std::string &name) const
     {

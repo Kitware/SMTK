@@ -18,8 +18,8 @@ smtk_source_group(simulation)
 add_subdirectory(io)
 smtk_source_group(io)
 
-add_subdirectory(view)
-smtk_source_group(view)
+#add_subdirectory(view)
+#smtk_source_group(view)
 
 set(smtk_headers
   ${commonHeaders}
@@ -27,7 +27,6 @@ set(smtk_headers
   ${modelHeaders}
   ${simulationHeaders}
   ${ioHeaders}
-  ${viewHeaders}
 )
 set(smtk_srcs
   ${commonSrcs}
@@ -35,7 +34,6 @@ set(smtk_srcs
   ${modelSrcs}
   ${simulationSrcs}
   ${ioSrcs}
-  ${viewSrcs}
 )
 
 add_library(smtkCore ${smtk_srcs})
@@ -102,7 +100,6 @@ if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
       ${CMAKE_CURRENT_SOURCE_DIR}/model
       ${CMAKE_CURRENT_SOURCE_DIR}/simulation
       ${CMAKE_CURRENT_SOURCE_DIR}/io
-      ${CMAKE_CURRENT_SOURCE_DIR}/view
       ${CMAKE_CURRENT_SOURCE_DIR}
       ${CMAKE_CURRENT_BINARY_DIR}
     TYPESYSTEM typesystem.xml

@@ -49,11 +49,13 @@ namespace smtk
       void enableFileBrowser(bool state=true);
       bool isDirectory();
       virtual void setLabelVisible(bool);
+      virtual void setInputValue(const QString&);
 
     public slots:
       virtual void onInputValueChanged();
       virtual void onLaunchFileBrowser();
       virtual void setOutputOptional(int);
+      virtual void updateFileComboList();
 
     signals:
       void launchFileBrowser();

@@ -1,3 +1,6 @@
+add_executable(attributeReaderWriterTest attributeReaderWriterTest.cxx)
+target_link_libraries(attributeReaderWriterTest smtkCore)
+
 set(attributeTests
   basicAttributeTest
   basicAttributeDefinitionTest

@@ -11,6 +11,7 @@ set(srcs
     reader/vtkGMSTINReader.cxx
     reader/vtkLIDARReader.cxx
     reader/vtkCMBReaderHelperFunctions.cxx
+    reader/vtkLASReader.cxx
 )
 
 # if there is Remus, add map file reader and support files.
@@ -34,6 +35,14 @@ if(SMTK_ENABLE_REMUS_SUPPORT)
     )
 endif()
 
+find_package(GDAL)
+if(GDAL_FOUND)
+  list(APPEND srcs
+    reader/vtkGDALRasterReader.cxx
+    reader/vtkGDALRasterPolydataWrapper.cxx
+  )
+endif()
+
 # no wrapping for sources
 set_source_files_properties(${srcs} WRAP_EXCLUDE)
 
@@ -54,6 +63,12 @@ endif()
 # On Mac OS X, set the directory included as part of the installed library's path:
 if (BUILD_SHARED_LIBS)
   set_target_properties(vtkSMTKDiscreteExt PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+endif()
+
+# Link GDAL and Add a compiler definition to the target
+if(GDAL_FOUND)
+  target_link_libraries(vtkSMTKDiscreteExt LINK_PRIVATE ${GDAL_LIBRARY} )
+  set_property(TARGET vtkSMTKDiscreteExt APPEND PROPERTY COMPILE_DEFINITIONS HAS_GDAL_RASTER_READER)
 endif()
 
 # ... and make header compilation tests link properly:
