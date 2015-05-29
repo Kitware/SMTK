@@ -20,6 +20,7 @@
 #include "smtk/attribute/System.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
+#include "smtk/attribute/VoidItem.h"
 
 #include "smtk/model/Session.h"
 #include "smtk/model/Manager.h"
@@ -263,7 +264,7 @@ bool qtModelOperationWidget::setCurrentOperation(
     return true;
     }
 
-  // not yet existed
+  // create the operator
   OperatorPtr brOp = session->op(opName);
   if (!brOp)
     {

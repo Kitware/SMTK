@@ -28,6 +28,7 @@
 #include <QVBoxLayout>
 #include <QCheckBox>
 #include <QGridLayout>
+#include <QComboBox>
 
 using namespace smtk::attribute;
 
@@ -39,6 +40,7 @@ public:
   QFileDialog *FileBrowser;
   QPointer<QFrame> EntryFrame;
   QPointer<QLabel> theLabel;
+  QPointer<QComboBox> fileCombo;
   Qt::Orientation VectorItemOrient;
 };
 
@@ -223,33 +225,51 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   smtk::attribute::FileItemPtr fItem =dynamic_pointer_cast<FileItem>(this->getObject());
   smtk::attribute::DirectoryItemPtr dItem =dynamic_pointer_cast<DirectoryItem>(this->getObject());
 
+  QWidget* fileTextWidget = NULL;
+  QComboBox* fileCombo = NULL;
+  QLineEdit* lineEdit = NULL;
   QFrame *frame = new QFrame(this->parentWidget());
   //frame->setStyleSheet("QFrame { background-color: yellow; }");
-  QLineEdit* lineEdit = new QLineEdit(frame);
-  // As a file input, if the name is too long lets favor
-  // the file name over the path
-  lineEdit->setAlignment(Qt::AlignRight);
-  frame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-  lineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-  QPushButton* fileBrowserButton = new QPushButton("Browse", frame);
-  fileBrowserButton->setMinimumHeight(lineEdit->height());
-  fileBrowserButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  QHBoxLayout* layout = new QHBoxLayout(frame);
-  layout->setContentsMargins(0, 0, 0, 0);
-  layout->addWidget(lineEdit);
-  layout->addWidget(fileBrowserButton);
-  layout->setAlignment(Qt::AlignCenter);
-
   QString defaultText;
   if (fItem)
     {
     const smtk::attribute::FileItemDefinition *fDef =
-    dynamic_cast<const FileItemDefinition*>(fItem->definition().get());
-    if (fDef && fDef->hasDefault())
-      {
+      dynamic_cast<const FileItemDefinition*>(fItem->definition().get());
+    if (fDef->hasDefault())
       defaultText = fDef->defaultValue().c_str();
+    // For open Files, we use a combobox to show the recent file list
+    if(fDef->shouldExist())
+      {
+      QComboBox* fileCombo = new QComboBox(frame);
+      fileCombo->setEditable(true);
+      fileTextWidget = fileCombo;
+      this->Internals->fileCombo = fileCombo;
       }
     }
+
+  if(fileTextWidget == NULL)
+    {
+    lineEdit = new QLineEdit(frame);
+    fileTextWidget = lineEdit;
+    }
+
+  // As a file input, if the name is too long lets favor
+  // the file name over the path
+  if(lineEdit)
+    lineEdit->setAlignment(Qt::AlignRight);
+  else if(fileCombo)
+    fileCombo->lineEdit()->setAlignment(Qt::AlignRight);
+
+  frame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+  fileTextWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+  QPushButton* fileBrowserButton = new QPushButton("Browse", frame);
+  fileBrowserButton->setMinimumHeight(fileTextWidget->height());
+  fileBrowserButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  QHBoxLayout* layout = new QHBoxLayout(frame);
+  layout->setContentsMargins(0, 0, 0, 0);
+  layout->addWidget(fileTextWidget);
+  layout->addWidget(fileBrowserButton);
+  layout->setAlignment(Qt::AlignCenter);
 
   QString valText;
   if(fItem && fItem->isSet(elementIdx))
@@ -264,28 +284,63 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
     {
     valText = defaultText;
     }
-  lineEdit->setText(valText);
 
   QVariant vdata;
-  vdata.setValue(static_cast<void*>(lineEdit));
+  vdata.setValue(static_cast<void*>(fileTextWidget));
   this->setProperty("DataItem", vdata);
 
   QVariant vdata1(elementIdx);
-  lineEdit->setProperty("ElementIndex", vdata1);
-  QObject::connect(lineEdit, SIGNAL(textChanged(const QString &)),
-    this, SLOT(onInputValueChanged()));
+  fileTextWidget->setProperty("ElementIndex", vdata1);
+  this->updateFileComboList();
+ 
+  if(fileCombo)
+    fileCombo->setCurrentIndex(fileCombo->findText(valText));
+  else if(lineEdit)
+    lineEdit->setText(valText);
 
+  if(lineEdit)
+    QObject::connect(lineEdit, SIGNAL(textChanged(const QString &)),
+      this, SLOT(onInputValueChanged()));
+  else if(fileCombo)
+    {
+    QObject::connect(fileCombo, SIGNAL(editTextChanged(const QString &)),
+      this, SLOT(onInputValueChanged()));
+    QObject::connect(fileCombo, SIGNAL(currentIndexChanged(int)),
+      this, SLOT(onInputValueChanged()));    
+    }
   QObject::connect(fileBrowserButton, SIGNAL(clicked()),
     this, SLOT(onLaunchFileBrowser()));
 
   return frame;
 }
+//----------------------------------------------------------------------------
+void qtFileItem::setInputValue(const QString& val)
+{
+  QLineEdit* lineEdit =  NULL;
+  if(this->Internals->fileCombo)
+    lineEdit = this->Internals->fileCombo->lineEdit();
+  else
+    lineEdit = static_cast<QLineEdit*>(
+      this->property("DataItem").value<void *>());
+  if(!lineEdit)
+    {
+    return;
+    }
+  // this itself will not trigger onInputValueChanged
+  lineEdit->setText(val);
+  this->onInputValueChanged();
+}
 
 //----------------------------------------------------------------------------
 void qtFileItem::onInputValueChanged()
 {
-  QLineEdit* const editBox = qobject_cast<QLineEdit*>(
-    QObject::sender());
+  QLineEdit* editBox = NULL;
+  if(this->Internals->fileCombo)
+    editBox = this->Internals->fileCombo->lineEdit();
+  if(!editBox)
+    editBox = static_cast<QLineEdit*>(
+      this->property("DataItem").value<void *>());
+
   if(!editBox)
     {
     return;
@@ -305,6 +360,7 @@ void qtFileItem::onInputValueChanged()
     if(fItem)
       {
       fItem->setValue(elementIdx, editBox->text().toStdString());
+      this->updateFileComboList();
       }
     else if(dItem)
       {
@@ -361,18 +417,11 @@ void qtFileItem::onLaunchFileBrowser()
   this->Internals->FileBrowser->setFileMode(mode);
   this->Internals->FileBrowser->setFilter(filters);
 
- this->Internals->FileBrowser->setWindowModality(Qt::WindowModal);
+  this->Internals->FileBrowser->setWindowModality(Qt::WindowModal);
   if (this->Internals->FileBrowser->exec() == QDialog::Accepted)
     {
     QStringList files = this->Internals->FileBrowser->selectedFiles();
-
-    QLineEdit* lineEdit =  static_cast<QLineEdit*>(
-      this->property("DataItem").value<void *>());
-    if(!lineEdit)
-      {
-      return;
-      }
-    lineEdit->setText(files[0]);
+    this->setInputValue(files[0]);
     }
 }
 
@@ -385,5 +434,26 @@ void qtFileItem::setOutputOptional(int state)
     {
     this->getObject()->setIsEnabled(enable);
     this->baseView()->valueChanged(this->getObject());
+    }
+}
+
+//----------------------------------------------------------------------------
+void qtFileItem::updateFileComboList()
+{
+  if (this->Internals->fileCombo)
+    {
+    this->Internals->fileCombo->blockSignals(true);
+    QString currentFile = this->Internals->fileCombo->currentText();
+    this->Internals->fileCombo->clear();
+    smtk::attribute::FileItemPtr fItem =dynamic_pointer_cast<FileItem>(this->getObject());
+    std::vector<std::string>::const_iterator it;
+    for(it = fItem->recentValues().begin();
+        it != fItem->recentValues().end(); ++it)
+      {
+      this->Internals->fileCombo->addItem((*it).c_str());
+      }
+    this->Internals->fileCombo->setCurrentIndex(
+      this->Internals->fileCombo->findText(currentFile));
+    this->Internals->fileCombo->blockSignals(false);
     }
 }
