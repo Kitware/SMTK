@@ -57,12 +57,7 @@ namespace smtk
                             smtk::attribute::Item::CopyInfo& info);
       const std::vector<std::string>& recentValues() const
       { return this->m_recentValues; }
-      void addRecentValue(const std::string& val)
-      { 
-        if(std::find(this->m_recentValues.begin(), this->m_recentValues.end(), val)
-           == this->m_recentValues.end())
-          this->m_recentValues.push_back(val);
-      }
+      void addRecentValue(const std::string& val);
 
     protected:
       FileItem(Attribute *owningAttribute, int itemPosition);
