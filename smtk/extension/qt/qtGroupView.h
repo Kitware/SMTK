@@ -17,7 +17,6 @@
 
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/Exports.h"
-#include "smtk/view/Base.h"
 
 class qtGroupViewInternals;
 
@@ -30,20 +29,22 @@ namespace smtk
       Q_OBJECT
 
     public:
-      qtGroupView(smtk::view::BasePtr, QWidget* p, qtUIManager* uiman);
+      static qtBaseView *createViewWidget(smtk::common::ViewPtr, QWidget* p, qtUIManager* uiman);
+      qtGroupView(smtk::common::ViewPtr, QWidget* p, qtUIManager* uiman);
       virtual ~qtGroupView();
 
-      void getChildView(smtk::view::Base::Type viewType,
-        QList<qtBaseView*>& views);
+      void getChildView(const std::string &viewType,
+                        QList<qtBaseView*>& views);
       qtBaseView* getChildView(int pageIndex);
 
       virtual void addChildView(qtBaseView*);
       virtual void clearChildViews();
-      QList<qtBaseView*>& childViews() const;
+      const QList<qtBaseView*>& childViews() const;
 
     public slots:
       virtual void updateUI();
       virtual void showAdvanceLevelOverlay(bool show);
+      virtual void updateModelAssociation();
 
     protected:
       virtual void createWidget( );

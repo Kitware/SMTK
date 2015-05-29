@@ -19,9 +19,7 @@
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
 
-#include "smtk/view/Base.h"
-#include "smtk/view/Instanced.h"
-#include "smtk/view/Root.h"
+#include "smtk/common/View.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -72,14 +70,32 @@ int main(int argc, char *argv[])
     }
 
   // If system contains no views, create InstancedView by default
-  if (system.rootView()->numberOfSubViews() == 0)
+  // assume there is at most one root type view
+  smtk::common::ViewPtr root = system.findViewByType("Root");
+  
+  if (!root)
     {
-    // Generate list of all concrete definitions in the system
+    root = smtk::common::View::New("Root", "RootView");
+    system.addView(root);
+    }
+  // If the top view is empty then
+  int viewsIndex = root->details().findChild("Views");
+  if (viewsIndex < 0)
+    {
+    smtk::common::View::Component temp = root->details().addChild("Views");
+    viewsIndex = root->details().findChild("Views");
+    }
+
+  // If there the number of child views  is 0 then  lets add instances of all
+  // non-abstract attributE definitions
+  smtk::common::View::Component viewsComp = root->details().child(viewsIndex);
+  if (!viewsComp.numberOfChildren())
+    {
     std::vector<smtk::attribute::DefinitionPtr> defs;
     std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
     system.findBaseDefinitions(baseDefinitions);
     std::vector<smtk::attribute::DefinitionPtr>::const_iterator baseIter;
-
+    
     for (baseIter = baseDefinitions.begin();
          baseIter != baseDefinitions.end();
          baseIter++)
@@ -89,22 +105,26 @@ int main(int argc, char *argv[])
         {
         //defs.push_back(*baseIter);
         }
-
+      
       std::vector<smtk::attribute::DefinitionPtr> derivedDefs;
       system.findAllDerivedDefinitions(*baseIter, true, derivedDefs);
       defs.insert(defs.end(), derivedDefs.begin(), derivedDefs.end());
       }
-
+    
     // Instantiate attribute for each concrete definition
     std::vector<smtk::attribute::DefinitionPtr>::const_iterator defIter;
     for (defIter = defs.begin(); defIter != defs.end(); defIter++)
       {
-      smtk::view::InstancedPtr view =
-          smtk::view::Instanced::New((*defIter)->type());
-      system.rootView()->addSubView(view);
+      smtk::common::ViewPtr instanced = smtk::common::View::New((*defIter)->type(),
+                                                                "Instanced");
+      smtk::common::View::Component &comp =
+        instanced->details().addChild("InstancedAttributes").addChild("Att");
+      comp.setAttribute("Type", (*defIter)->type());
+      system.addView(instanced);
       smtk::attribute::AttributePtr instance =
         system.createAttribute((*defIter)->type());
-      view->addInstance(instance);
+      comp.setContents(instance->name());
+      viewsComp.addChild("View").setAttribute("Title", (*defIter)->type());
       }
     }
 
@@ -115,7 +135,7 @@ int main(int argc, char *argv[])
 
   // Instantiate smtk's qtUIManager
   smtk::attribute::qtUIManager *uiManager =
-    new smtk::attribute::qtUIManager(system);
+    new smtk::attribute::qtUIManager(system, root->title());
 
   // Instantiate empty widget as containter for qtUIManager
   QWidget *widget = new QWidget();
@@ -124,77 +144,20 @@ int main(int argc, char *argv[])
 
   bool useInternalFileBrowser = true;
 
-  smtk::view::RootPtr rootView = system.rootView();
-  smtk::view::BasePtr view;
+  smtk::common::ViewPtr view;
 
   // Check for input "view" argument
   if (argc <= 3)
     {
-    if (rootView->numberOfSubViews() > 0)
-      {
-      // Generate tab group with all views (standard)
-      uiManager->initializeUI(widget, useInternalFileBrowser);
-      }
-    else
-      {
-      // If rootView is empty, generate 1 instanced view w/all attdefs
-      std::cout << "Creating default view" << std::endl;
-      smtk::view::InstancedPtr instanced = smtk::view::Instanced::New("Default");
-
-      std::vector<smtk::attribute::DefinitionPtr> defList;
-      system.findBaseDefinitions(defList);
-      for (size_t i=0; i<defList.size(); ++i)
-        {
-        smtk::attribute::DefinitionPtr defn = defList[i];
-        if (defn->isAbstract())
-          {
-          // For abstract definitions, retrieve all derived & concrete defs
-          std::vector<smtk::attribute::DefinitionPtr> derivedList;
-          system.findAllDerivedDefinitions(defn, true, derivedList);
-          for (size_t j=0; j<derivedList.size(); ++j)
-            {
-            std::string attType = derivedList[j]->type();
-            smtk::attribute::AttributePtr att = system.createAttribute(attType);
-            instanced->addInstance(att);
-            }
-          }
-        else
-          {
-          std::string attType = defn->type();
-          smtk::attribute::AttributePtr att = system.createAttribute(attType);
-          instanced->addInstance(att);
-          }
-        }
-      std::cout << "Number of atts added to default view: "
-                << instanced->numberOfInstances() << std::endl;
-
-      view = instanced;
-      rootView->addSubView(view);
-      }
+    // Generate tab group with all views (standard)
+    uiManager->initializeUI(widget, useInternalFileBrowser);
     }
   else
     {
     // Render one view (experimental)
-    // First check if argv[3] is index or name
+    // First check if argv[3] isa name
     std::string input = argv[3];
-    try
-      {
-      int index = boost::lexical_cast<int>(input);
-      view = rootView->subView(index);
-      }
-    catch (const boost::bad_lexical_cast &)
-      {
-      // If input not an int, check for view with matching title
-      for (std::size_t i=0; i<rootView->numberOfSubViews(); ++i)
-        {
-        if (rootView->subView(i)->title() == input)
-          {
-          view = rootView->subView(i);
-          break;
-          }
-        }
-      }
-
+    view = system.findView(input);
     if (!view)
       {
       std::cout << "ERROR: View \"" << input << "\" not found" << std::endl;

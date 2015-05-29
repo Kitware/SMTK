@@ -28,6 +28,7 @@ namespace smtk
     class ResourceSet;
     class UUID;
     class UUIDGenerator;
+    class View;
     typedef std::set<UUID> UUIDs;
     typedef std::vector<UUID> UUIDArray;
   }
@@ -156,20 +157,10 @@ namespace smtk
     class ImportJSON;
   }
 
-  namespace view
-  {
-    class Attribute;
-    class Base;
-    class Group;
-    class Instanced;
-    class ModelEntity;
-    class Root;
-    class SimpleExpression;
-  }
-
   namespace common
   {
     typedef smtk::shared_ptr< smtk::common::Resource > ResourcePtr;
+    typedef smtk::shared_ptr< smtk::common::View > ViewPtr;
   }
 
   //Shiboken requires that we use fully qualified namespaces for all
@@ -303,19 +294,6 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::simulation::UserData > UserDataPtr;
   }
 
-  namespace view
-  {
-  // View Related Pointer Classes
-    typedef smtk::shared_ptr< smtk::view::Base >             BasePtr;
-    typedef smtk::weak_ptr< smtk::view::Base >               WeakBasePtr;
-    typedef smtk::shared_ptr< smtk::view::Attribute>         AttributePtr;
-    typedef smtk::shared_ptr< smtk::view::Group>             GroupPtr;
-    typedef smtk::shared_ptr< smtk::view::Instanced>         InstancedPtr;
-    typedef smtk::shared_ptr< smtk::view::ModelEntity>       ModelEntityPtr;
-    typedef smtk::shared_ptr< smtk::view::Root>              RootPtr;
-    typedef smtk::shared_ptr< smtk::view::SimpleExpression>  SimpleExpressionPtr;
-  }
-
 #ifdef smtk_has_owner_less
   //special map and set typedefs for better safety with sets of weak pointers
   //since sets of weak pointers can be dangerous.
@@ -331,12 +309,6 @@ namespace smtk
       smtk::owner_less< attribute::WeakItemPtr > >   WeakItemPtrSet;
   }
 
-  namespace view
-  {
-    typedef std::set< view::WeakBasePtr,
-      smtk::owner_less<view::WeakBasePtr > >            WeakViewPtrSet;
-  }
-
 #else
   //we can use less than operator
   namespace attribute
@@ -347,10 +319,6 @@ namespace smtk
     typedef std::set< attribute::WeakItemPtr  >           WeakItemPtrSet;
   }
 
-  namespace view
-  {
-    typedef std::set< view::WeakBasePtr  >              WeakBasePtrSet;
-  }
 #endif
 
   // These are used internally by SMTK

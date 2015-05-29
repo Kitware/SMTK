@@ -19,7 +19,7 @@
 #include "smtk/io/Logger.h"
 
 #include "smtk/attribute/System.h"
-
+#include "smtk/common/View.h"
 #include "smtk/model/EntityTypeBits.h"
 
 #include <string>
@@ -121,24 +121,8 @@ namespace smtk
       void processValueDef(pugi::xml_node &node,
                            smtk::attribute::ValueItemDefinitionPtr idef);
 
-      void processAttributeView(pugi::xml_node &node,
-                                smtk::view::AttributePtr v);
-
-      void processInstancedView(pugi::xml_node &node,
-                                smtk::view::InstancedPtr v);
-
-      void processModelEntityView(pugi::xml_node &node,
-                                  smtk::view::ModelEntityPtr v);
-
-      void processSimpleExpressionView(pugi::xml_node &node,
-                                       smtk::view::SimpleExpressionPtr v);
-
-      void processGroupView(pugi::xml_node &node,
-                            smtk::view::GroupPtr v);
-
-      void processBasicView(pugi::xml_node &node,
-                            smtk::view::BasePtr v);
-
+      virtual void processViewComponent(smtk::common::View::Component &comp,
+                                        pugi::xml_node &node);
       static std::string encodeModelEntityMask(smtk::model::BitFlags m);
       static std::string encodeColor(const double *color);
 
