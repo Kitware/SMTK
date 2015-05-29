@@ -92,6 +92,7 @@ OperatorResult BathymetryOperator::operateInternal()
   vtkNew<vtkPolyData> newModelPoints;
   smtk::attribute::StringItem::Ptr optypeItem =
     this->specification()->findString("operation");
+
   std::string optype = optypeItem->value();
   if(optype == "Remove Bathymetry")
     {
@@ -101,14 +102,15 @@ OperatorResult BathymetryOperator::operateInternal()
 
     newModelPoints->ShallowCopy(masterModelPoly);
     }
-  else if(optype == "Apply Bathymetry")
+  else// if(optype == "Apply Bathymetry")
     {
-    filename = this->specification()->findFile("bathymetryfile")->value();
 
+    filename = this->specification()->findFile("bathymetryfile")->value();
     vtkDataSet* bathyPoints = NULL;
-    if(bathyHelper->loadBathymetryFile(filename) &&
+    if(!filename.empty() && bathyHelper->loadBathymetryFile(filename) &&
        (bathyPoints = bathyHelper->bathymetryData(filename)))
       {
+
       vtkNew<vtkCMBApplyBathymetryFilter> filter;
       smtk::attribute::DoubleItemPtr aveRItem =
         this->specification()->findDouble("averaging elevation radius");
@@ -127,7 +129,7 @@ OperatorResult BathymetryOperator::operateInternal()
       filter->SetUseLowestZValue(lowZItem->isEnabled());
 
       filter->SetInputData(0, masterModelPoly);
-      filter->SetInputData(1, bathyPoints);
+      filter->SetInputData(1, bathyPoints );
       filter->SetNoOP(false);
       filter->Update();
       newModelPoints->ShallowCopy(filter->GetOutputDataObject(0));
