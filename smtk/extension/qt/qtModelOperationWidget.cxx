@@ -185,11 +185,10 @@ bool qtModelOperationWidget::setCurrentOperation(
     }
   
   //Lets create a view for the operator itself
-  smtk::common::ViewPtr instanced = smtk::common::View::New(brOp->name(), "Instanced");
+  smtk::common::ViewPtr instanced = smtk::common::View::New("Instanced", brOp->name());
   smtk::common::View::Component &comp =
     instanced->details().addChild("InstancedAttributes").addChild("Att");
-  comp.setAttribute("Type", att->type());
-  comp.setContents(att->name());
+  comp.setAttribute("Type", att->type()).setAttribute("Name", att->name());
   int compIndex = rootView->details().findChild("Views");
   if (compIndex < 0)
     {
