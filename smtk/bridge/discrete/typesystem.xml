@@ -47,7 +47,11 @@
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addEntities', unmatched parameter type 'vtkModelItemIterator*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::bathymetryHelper', unmatched return type 'smtk::bridge::discrete::BathymetryHelper*'"/>
   <suppress-warning text="skipping field 'Session::m_bathymetryHelper' with unmatched type 'smtk::bridge::discrete::BathymetryHelper'"/>
-
+  <suppress-warning text="skipping field 'BathymetryHelper::m_modelIdsToMasterPolys' with unmatched type 'std::map&lt;smtk::common::UUID,vtkSmartPointer&lt;vtkPolyData&gt;&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::BathymetryHelper::bathymetryData', unmatched return type 'vtkDataSet*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::BathymetryHelper::findOrShallowCopyModelPoly', unmatched return type 'vtkPolyData*'"/>
+  <suppress-warning text="skipping field 'BathymetryHelper::m_filesToSources' with unmatched type 'std::map&lt;std::string,vtkSmartPointer&lt;vtkDataSet&gt;&gt;'"/>
+  
   <suppress-warning text="Duplicate type entry: 'smtk'"/>
 
   <!-- Additional objects to be wrapped when building with CGM -->
@@ -57,6 +61,9 @@
 
         <object-type name="Session">
           <include file-name="smtk/bridge/discrete/Session.h" location="local"/>
+        </object-type>
+        <object-type name="BathymetryHelper">
+          <include file-name="smtk/bridge/discrete/BathymetryHelper.h" location="local"/>
         </object-type>
 
       </namespace-type>
