@@ -1397,7 +1397,7 @@ void XmlV2StringWriter::processViews()
   this->m_pugi->root.append_child(node_comment).set_value("********** Workflow Views ***********");
   xml_node views = this->m_pugi->root.append_child("Views");
   std::map<std::string, smtk::common::ViewPtr>::const_iterator iter;
-  for (iter = this->m_system.views().cbegin(); iter != this->m_system.views().cend(); iter++)
+  for (iter = this->m_system.views().begin(); iter != this->m_system.views().end(); iter++)
     {
     xml_node node;
     node = views.append_child("View");
@@ -1417,7 +1417,7 @@ void XmlV2StringWriter::processViewComponent(smtk::common::View::Component &comp
 {
   // Add the attributes of the component to the node
   std::map<std::string, std::string>::const_iterator iter;
-  for (iter = comp.attributes().cbegin(); iter != comp.attributes().cend(); iter++)
+  for (iter = comp.attributes().begin(); iter != comp.attributes().end(); iter++)
     {
     node.append_attribute(iter->first.c_str()).
       set_value(iter->second.c_str());

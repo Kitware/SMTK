@@ -904,7 +904,7 @@ void System::addView(smtk::common::ViewPtr v)
 smtk::common::ViewPtr System::findViewByType(const std::string &vtype) const
 {
   std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
-  for (it = this->m_views.cbegin(); it != this->m_views.cend(); ++it)
+  for (it = this->m_views.begin(); it != this->m_views.end(); ++it)
     {
     if (it->second->type() == vtype)
       {
