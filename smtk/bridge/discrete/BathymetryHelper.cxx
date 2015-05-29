@@ -32,6 +32,8 @@
 #include <vtksys/SystemTools.hxx>
 #include "DiscreteMesh.h"
 
+#include <algorithm> // for std::transform
+
 namespace smtk {
   namespace bridge {
     namespace discrete {
