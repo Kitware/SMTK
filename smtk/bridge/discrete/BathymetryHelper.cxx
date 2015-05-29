@@ -24,7 +24,7 @@
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkImageData.h"
 #include "vtkImageToStructuredGrid.h"
-#include "vtkMultiBlockDataset.h"
+#include "vtkMultiBlockDataSet.h"
 #include "vtkNew.h"
 #include "vtkPolyData.h"
 #include "vtkStructuredGrid.h"
