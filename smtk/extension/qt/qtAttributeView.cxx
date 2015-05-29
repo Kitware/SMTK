@@ -31,7 +31,7 @@
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/view/Attribute.h"
+#include "smtk/common/View.h"
 
 #include <QGridLayout>
 #include <QTableWidgetItem>
@@ -111,12 +111,23 @@ public:
   QPointer<QStandardItemModel> checkablePropComboModel;
   qtCheckItemComboBox* SelectPropCombo;
   QMap<std::string, Qt::CheckState> AttProperties;
+  std::vector<smtk::attribute::DefinitionPtr> m_attDefinitions;
+  bool m_okToCreateModelEntities;
+  smtk::model::BitFlags m_modelEntityMask;
 
 };
 
 //----------------------------------------------------------------------------
+qtBaseView *
+qtAttributeView::createViewWidget(smtk::common::ViewPtr dataObj,
+                                  QWidget* p, qtUIManager* uiman)
+{
+  return new qtAttributeView(dataObj, p, uiman);
+}
+
+//----------------------------------------------------------------------------
 qtAttributeView::
-qtAttributeView(smtk::view::BasePtr dataObj, QWidget* p, qtUIManager* uiman) :
+qtAttributeView(smtk::common::ViewPtr dataObj, QWidget* p, qtUIManager* uiman) :
   qtBaseView(dataObj, p, uiman)
 {
   this->Internals = new qtAttributeViewInternals;
@@ -613,13 +624,11 @@ void qtAttributeView::updateItemWidgetsEnableState(
 //----------------------------------------------------------------------------
 void qtAttributeView::onCreateNew()
 {
-  smtk::view::AttributePtr aview =
-    smtk::dynamic_pointer_cast<smtk::view::Attribute>(this->getObject());
-  if(!aview || !aview->numberOfDefinitions())
+  if(!this->Internals->m_attDefinitions.size())
     {
     return;
     }
-  attribute::DefinitionPtr newAttDef = aview->definition(0);
+  attribute::DefinitionPtr newAttDef = this->Internals->m_attDefinitions[0];
 
   QString strDef = this->Internals->DefsCombo->currentText();
   foreach (attribute::DefinitionPtr attDef,
@@ -726,9 +735,7 @@ QTableWidgetItem* qtAttributeView::addAttributeListItem(
 //----------------------------------------------------------------------------
 void qtAttributeView::onViewBy(int viewBy)
 {
-  smtk::view::AttributePtr aview =
-    smtk::dynamic_pointer_cast<smtk::view::Attribute>(this->getObject());
-  if(!aview || !aview->numberOfDefinitions())
+  if(!this->Internals->m_attDefinitions.size())
     {
     return;
     }
@@ -1177,9 +1184,7 @@ void qtAttributeView::onPropertyDefSelected()
 //----------------------------------------------------------------------------
 void qtAttributeView::removeComparativeProperty(const QString& propertyName)
 {
-  smtk::view::AttributePtr aview =
-    smtk::dynamic_pointer_cast<smtk::view::Attribute>(this->getObject());
-  if(!aview || !aview->numberOfDefinitions())
+  if(!this->Internals->m_attDefinitions.size())
     {
     return;
     }
@@ -1199,9 +1204,7 @@ void qtAttributeView::removeComparativeProperty(const QString& propertyName)
 void qtAttributeView::addComparativeProperty(
   QStandardItem* current, smtk::attribute::DefinitionPtr attDef)
 {
-  smtk::view::AttributePtr aview =
-    smtk::dynamic_pointer_cast<smtk::view::Attribute>(this->getObject());
-  if(!aview || !aview->numberOfDefinitions())
+  if(!this->Internals->m_attDefinitions.size())
     {
     return;
     }
@@ -1267,17 +1270,64 @@ int qtAttributeView::currentViewBy()
 //----------------------------------------------------------------------------
 void qtAttributeView::getAllDefinitions()
 {
-  smtk::view::AttributePtr aview =
-    smtk::dynamic_pointer_cast<smtk::view::Attribute>(this->getObject());
-  if(!aview || !aview->numberOfDefinitions())
+  smtk::common::ViewPtr view = this->getObject();
+  if (!view)
     {
     return;
     }
-  std::size_t i, n = aview->numberOfDefinitions();
+
+  smtk::attribute::System *sys = this->uiManager()->attSystem();
+
+  std::string attName, defName, val;
+  smtk::attribute::AttributePtr att;
+  smtk::attribute::DefinitionPtr attDef;
+  bool flag;
+
+  // The view should have a single internal component called InstancedAttributes
+  if ((view->details().numberOfChildren() != 1) ||
+      (view->details().child(0).name() != "AttributeTypes"))
+    {
+    // Should present error message
+    return;
+    }
+
+  if (view->details().attributeAsBool("CreateEntities", flag))
+    {
+    this->Internals->m_okToCreateModelEntities = flag;
+    }
+  else
+    {
+    this->Internals->m_okToCreateModelEntities = false;
+    }
+  
+  if (view->details().attribute("ModelEntityFilter", val))
+    {
+    smtk::model::BitFlags flags = smtk::model::Entity::specifierStringToFlag(val);
+    this->Internals->m_modelEntityMask = flags;
+    }
+  else
+    {
+     this->Internals->m_modelEntityMask = 0;
+    }
+
+  std::vector<smtk::attribute::AttributePtr> atts;
+  int longLabelWidth = 0;
+  smtk::common::View::Component &attsComp = view->details().child(0);
+  std::size_t i, n = attsComp.numberOfChildren();
   for (i = 0; i < n; i++)
     {
-    attribute::DefinitionPtr attDef = aview->definition(static_cast<int>(i));
+    if (attsComp.child(i).name() != "Att")
+      {
+      continue;
+      }
+    if (!attsComp.child(i).attribute("Type", defName))
+      {
+      continue;
+      }
+    
+    attDef = sys->findDefinition(defName);
     this->qtBaseView::getDefinitions(attDef, this->Internals->AllDefs);
+    this->Internals->m_attDefinitions.push_back(attDef);
     }
 
 #ifndef _MSC_VER

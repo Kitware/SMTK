@@ -11,9 +11,10 @@
 #include "smtk/extension/qt/qtGroupView.h"
 
 #include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/io/AttributeWriter.h"
+#include "smtk/io/Logger.h"
 
-#include "smtk/view/Base.h"
-#include "smtk/view/Group.h"
+#include "smtk/common/View.h"
 
 #include <QScrollArea>
 #include <QHBoxLayout>
@@ -33,12 +34,28 @@ using namespace smtk::attribute;
 class qtGroupViewInternals
 {
 public:
+  enum Style
+  {
+    TABBED,
+    TILED
+  };
+  qtGroupViewInternals() : m_style(TABBED) {}
   QList<smtk::attribute::qtBaseView*> ChildViews;
+  qtGroupViewInternals::Style m_style;
+  std::vector<smtk::common::ViewPtr> m_views;
 };
 
 //----------------------------------------------------------------------------
+qtBaseView *
+qtGroupView::createViewWidget(smtk::common::ViewPtr dataObj,
+                                  QWidget* p, qtUIManager* uiman)
+{
+  return new qtGroupView(dataObj, p, uiman);
+}
+
+//----------------------------------------------------------------------------
 qtGroupView::
-qtGroupView(smtk::view::BasePtr dataObj, QWidget* p,
+qtGroupView(smtk::common::ViewPtr dataObj, QWidget* p,
   qtUIManager* uiman) : qtBaseView(dataObj, p, uiman)
 {
   this->Internals = new qtGroupViewInternals;
@@ -54,19 +71,21 @@ qtGroupView::~qtGroupView()
 //----------------------------------------------------------------------------
 void qtGroupView::createWidget( )
 {
-  if(!this->getObject())
+  smtk::common::ViewPtr view = this->getObject();
+  if (!view)
     {
     return;
     }
-  smtk::view::GroupPtr gview =
-    smtk::dynamic_pointer_cast<smtk::view::Group>(this->getObject());
-  if(!gview)
+  std::string val;
+  if (view->details().attribute("Style", val))
     {
-    return;
+    std::transform(val.begin(), val.end(), val.begin(), ::tolower);
+    this->Internals->m_style = (val == "tiled" ? qtGroupViewInternals::TILED :
+      qtGroupViewInternals::TABBED);
     }
-
+  
   this->clearChildViews();
-  if(gview->style() == smtk::view::Group::TILED)
+  if(this->Internals->m_style == qtGroupViewInternals::TILED)
     {
     this->Widget = new QFrame(this->parentWidget());
     }
@@ -84,10 +103,49 @@ void qtGroupView::createWidget( )
   this->Widget->setLayout( layout );
 
   this->parentWidget()->layout()->addWidget(this->Widget);
+
+  // Now process all of this view's children
+  int viewsIndex;
+  viewsIndex = view->details().findChild("Views");
+  if (viewsIndex == -1)
+    {
+    // there are no children views
+    return;
+    }
+  smtk::common::View::Component &viewsComp = view->details().child(viewsIndex);
+  std::size_t i, n = viewsComp.numberOfChildren();
+  smtk::common::ViewPtr v;
+  smtk::attribute::System *sys = this->uiManager()->attSystem();
+  qtBaseView* qtView;
+
+  for (i = 0; i < n; i++)
+    {
+    if (viewsComp.child(i).name() != "View")
+      {
+      // not a view component - skip it
+      std::cerr << "Skipping Child: " << viewsComp.child(i).name() << " should be View\n";
+      continue;
+      }
+    // Get the title
+    std::string t;
+    viewsComp.child(i).attribute("Title", t);
+    v = sys->findView(t);
+    if (!v)
+      {
+      // No such View by that name in attribute system
+      
+      continue;
+      }
+    qtView = this->uiManager()->createView(v, this->Widget);
+    if (qtView)
+      {
+      this->addChildView(qtView);
+      }
+    }
+  
 }
 //----------------------------------------------------------------------------
-void qtGroupView::getChildView(
-  smtk::view::Base::Type viewType, QList<qtBaseView*>& views)
+void qtGroupView::getChildView(const std::string &viewType, QList<qtBaseView*>& views)
 {
   foreach(qtBaseView* childView, this->Internals->ChildViews)
     {
@@ -95,7 +153,7 @@ void qtGroupView::getChildView(
       {
       views.append(childView);
       }
-    else if(childView->getObject()->type() == smtk::view::Base::GROUP)
+    else if(childView->getObject()->type() == "Group")
       {
       qobject_cast<qtGroupView*>(childView)->getChildView(
         viewType, views);
@@ -117,9 +175,7 @@ void qtGroupView::addChildView(qtBaseView* child)
   if(!this->Internals->ChildViews.contains(child))
     {
     this->Internals->ChildViews.append(child);
-    smtk::view::GroupPtr gview =
-      smtk::dynamic_pointer_cast<smtk::view::Group>(this->getObject());
-    if(gview->style() == smtk::view::Group::TILED)
+    if(this->Internals->m_style == qtGroupViewInternals::TILED)
       {
       this->addTileEntry(child);
       }
@@ -130,7 +186,7 @@ void qtGroupView::addChildView(qtBaseView* child)
     }
 }
 //----------------------------------------------------------------------------
-QList<qtBaseView*>& qtGroupView::childViews() const
+const QList<qtBaseView*>& qtGroupView::childViews() const
 {
   return this->Internals->ChildViews;
 }
@@ -244,4 +300,12 @@ void qtGroupView::addTileEntry(qtBaseView* child)
   vLayout->addWidget(label);
   vLayout->addWidget(child->widget());
   vLayout->setAlignment(Qt::AlignTop);
+}
+//----------------------------------------------------------------------------
+void qtGroupView::updateModelAssociation()
+{
+  foreach(qtBaseView* childView, this->Internals->ChildViews)
+    {
+    childView->updateModelAssociation();
+    }
 }

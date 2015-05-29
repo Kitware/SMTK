@@ -16,8 +16,8 @@
 #define __smtk_attribute_qtRootView_h
 
 #include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/common/View.h"
 #include "smtk/extension/qt/Exports.h"
-#include "smtk/view/Base.h"
 
 class qtRootViewInternals;
 class QScrollArea;
@@ -33,14 +33,17 @@ namespace smtk
       Q_OBJECT
 
     public:
-      qtRootView(smtk::view::RootPtr, QWidget* p, qtUIManager* uiman);
+      static qtBaseView *createViewWidget(smtk::common::ViewPtr view, QWidget* p,
+                                          qtUIManager* uiman);
+      
+      qtRootView(smtk::common::ViewPtr v, QWidget* p, qtUIManager* uiman);
       virtual ~qtRootView();
-      void getChildView(smtk::view::Base::Type viewType,
-        QList<qtBaseView*>& views);
+      void getChildView(const std::string &viewType,
+                        QList<qtBaseView*>& views);
       qtGroupView* getRootGroup();
-      int advanceLevel();
-      bool categoryEnabled();
-      std::string currentCategory();
+      virtual int advanceLevel();
+      virtual bool categoryEnabled();
+      virtual std::string currentCategory();
 
     public slots:
       virtual void showAdvanceLevel(int level);
@@ -48,6 +51,7 @@ namespace smtk
       virtual void enableShowBy(int enable);
       virtual void onShowCategory();
       virtual void showAdvanceLevelOverlay(bool);
+      virtual void updateModelAssociation();
 
     protected slots:
       virtual void onAdvanceLevelChanged(int levelIdx);

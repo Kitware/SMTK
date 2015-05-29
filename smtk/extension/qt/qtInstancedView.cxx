@@ -13,8 +13,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/view/Instanced.h"
-#include "smtk/view/Root.h"
+#include "smtk/common/View.h"
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -39,8 +38,16 @@ public:
 };
 
 //----------------------------------------------------------------------------
+qtBaseView *
+qtInstancedView::createViewWidget(smtk::common::ViewPtr dataObj,
+                                  QWidget* p, qtUIManager* uiman)
+{
+  return new qtInstancedView(dataObj, p, uiman);
+}
+
+//----------------------------------------------------------------------------
 qtInstancedView::
-qtInstancedView(smtk::view::BasePtr dataObj, QWidget* p, qtUIManager* uiman) :
+qtInstancedView(smtk::common::ViewPtr dataObj, QWidget* p, qtUIManager* uiman) :
   qtBaseView(dataObj, p, uiman)
 {
   this->Internals = new qtInstancedViewInternals;
@@ -100,44 +107,85 @@ void qtInstancedView::createWidget( )
 //----------------------------------------------------------------------------
 void qtInstancedView::updateAttributeData()
 {
-  smtk::view::InstancedPtr iview =
-    smtk::dynamic_pointer_cast<smtk::view::Instanced>(this->getObject());
-  if(!iview || !iview->numberOfInstances())
+  smtk::common::ViewPtr view = this->getObject();
+  if (!view)
     {
     return;
     }
-  foreach(qtAttribute* att, this->Internals->AttInstances)
+
+  smtk::attribute::System *sys = this->uiManager()->attSystem();
+  std::string attName, defName;
+  smtk::attribute::AttributePtr att;
+  smtk::attribute::DefinitionPtr attDef;
+  foreach(qtAttribute* qatt, this->Internals->AttInstances)
     {
-    this->Widget->layout()->removeWidget(att->widget());
-    delete att->widget();
+    this->Widget->layout()->removeWidget(qatt->widget());
+    delete qatt->widget();
     }
   this->Internals->AttInstances.clear();
 
+  std::vector<smtk::attribute::AttributePtr> atts;
   int longLabelWidth = 0;
-  std::size_t i, n = iview->numberOfInstances();
+  // The view should have a single internal component called InstancedAttributes
+  if ((view->details().numberOfChildren() != 1) ||
+      (view->details().child(0).name() != "InstancedAttributes"))
+    {
+    // Should present error message
+    return;
+    }
+  
+  smtk::common::View::Component &comp = view->details().child(0);
+  std::size_t i, n = comp.numberOfChildren();
   for (i = 0; i < n; i++)
     {
-    smtk::attribute::AttributePtr attobj = iview->instance(static_cast<int>(i));
-    if(attobj && attobj->numberOfItems()>0)
+    smtk::common::View::Component &attComp = comp.child(i);
+    if (attComp.name() != "Att")
       {
-      int labelWidth = this->uiManager()->getWidthOfAttributeMaxLabel(
-        attobj->definition(), this->uiManager()->advancedFont());
-      longLabelWidth = std::max(labelWidth, longLabelWidth);
+      continue;
       }
+
+    if (!attComp.attribute("Name", attName))
+      {
+      return; // No name set
+      }
+    
+    // See if the attribute exists and if not then create it
+    att = sys->findAttribute(attName);
+    if (!att)
+      {
+      if (!attComp.attribute("Type", defName))
+        {
+        // No attribute definition name
+        continue;
+        }
+      attDef = sys->findDefinition(defName);
+      if (!attDef)
+        {
+        continue;
+        }
+      else
+        {
+        att = sys->createAttribute(attName, attDef);
+        }
+      }
+    else
+      {
+      attDef = att->definition();
+      }
+    
+    atts.push_back(att);
+    int labelWidth =
+      this->uiManager()->getWidthOfAttributeMaxLabel(attDef, this->uiManager()->advancedFont());
+    longLabelWidth = std::max(labelWidth, longLabelWidth);
     }
   this->setFixedLabelWidth(longLabelWidth);
-
+  n = atts.size();
+  
   for (i = 0; i < n; i++)
     {
-    smtk::attribute::AttributePtr attobj = iview->instance(static_cast<int>(i));
-    if(!attobj)
+    if(atts[i]->numberOfItems()>0)
       {
-      QMessageBox::warning(this->parentWidget(), tr("Instanced Attribute View"),
-      tr("The requested attribute instance does not exist!"));
-      }
-    else if(attobj->numberOfItems()>0)
-      {
-      qtAttribute* attInstance = new qtAttribute(attobj, this->widget(), this);
+      qtAttribute* attInstance = new qtAttribute(atts[i], this->widget(), this);
       if(attInstance)
         {
         this->Internals->AttInstances.push_back(attInstance);

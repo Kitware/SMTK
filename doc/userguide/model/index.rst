@@ -14,3 +14,4 @@ that may each interact with different solid modeling kernels.
    concepts.rst
    sessions.rst
    property-names.rst
+   user-interface.rst

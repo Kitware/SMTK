@@ -13,19 +13,18 @@
 // An operator to only SetPoints for model geometry, and the cell structure
 // is unchanged.
 
-#ifndef __vtkCMBModelPointsOperator_h
-#define __vtkCMBModelPointsOperator_h
+#ifndef __smtkdiscrete_vtkCMBModelPointsOperator_h
+#define __smtkdiscrete_vtkCMBModelPointsOperator_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkObject.h"
-#include "cmbSystemConfig.h"
 
 class vtkDiscreteModelWrapper;
 class vtkPointSet;
 class vtkPointData;
 class vtkAlgorithm;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelPointsOperator : public vtkObject
+class SMTKDISCRETESESSION_EXPORT vtkCMBModelPointsOperator : public vtkObject
 {
 public:
   static vtkCMBModelPointsOperator * New();

@@ -9,6 +9,7 @@ set(headers
   vtkGMSTINReader.h
   vtkLIDARReader.h
   vtkCMBReaderHelperFunctions.h
+  vtkLASReader.h
 )
 
 if (SMTK_ENABLE_REMUS_SUPPORT)
@@ -18,6 +19,14 @@ if (SMTK_ENABLE_REMUS_SUPPORT)
     vtkPolyFileReader.h
     vtkPolyFileErrorReporter.h
     vtkPolyFileTokenConverters.h
+  )
+endif()
+
+find_package(GDAL)
+if(GDAL_FOUND)
+  list(APPEND headers
+    vtkGDALRasterReader.h
+    vtkGDALRasterPolydataWrapper.h
   )
 endif()
 

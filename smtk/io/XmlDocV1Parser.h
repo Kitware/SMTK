@@ -76,7 +76,7 @@ namespace smtk
 
     protected:
       void processAttributeInformation(pugi::xml_node &root);
-      void processViews(pugi::xml_node &root);
+      virtual void processViews(pugi::xml_node &root);
       virtual void processModelInfo(pugi::xml_node &root);
 
       void processDefinition(pugi::xml_node &defNode);
@@ -97,7 +97,7 @@ namespace smtk
                                 smtk::attribute::DirectoryItemPtr item);
       void processDirectoryDef(pugi::xml_node &node,
                                smtk::attribute::DirectoryItemDefinitionPtr idef);
-      void processFileItem(pugi::xml_node &node,
+      virtual void processFileItem(pugi::xml_node &node,
                            smtk::attribute::FileItemPtr item);
       void processFileDef(pugi::xml_node &node,
                           smtk::attribute::FileItemDefinitionPtr idef);
@@ -127,22 +127,22 @@ namespace smtk
                            smtk::attribute::ValueItemDefinitionPtr idef);
 
       void processAttributeView(pugi::xml_node &node,
-                                smtk::view::AttributePtr v);
+                                smtk::common::ViewPtr v);
 
       void processInstancedView(pugi::xml_node &node,
-                                smtk::view::InstancedPtr v);
+                                smtk::common::ViewPtr v);
 
       void processModelEntityView(pugi::xml_node &node,
-                                  smtk::view::ModelEntityPtr v);
+                                  smtk::common::ViewPtr v);
 
       void processSimpleExpressionView(pugi::xml_node &node,
-                                       smtk::view::SimpleExpressionPtr v);
+                                       smtk::common::ViewPtr v);
 
       void processGroupView(pugi::xml_node &node,
-                            smtk::view::GroupPtr v);
+                            smtk::common::ViewPtr v);
 
-      void processBasicView(pugi::xml_node &node,
-                            smtk::view::BasePtr v);
+      smtk::common::ViewPtr createView(pugi::xml_node &node,
+                                       const std::string &viewType);
 
       bool getColor(pugi::xml_node &node, double color[3],
                     const std::string &colorName);
