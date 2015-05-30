@@ -68,6 +68,8 @@ endif()
 # Link GDAL and Add a compiler definition to the target
 if(GDAL_FOUND)
   target_link_libraries(vtkSMTKDiscreteExt LINK_PRIVATE ${GDAL_LIBRARY} )
+  target_include_directories(vtkSMTKDiscreteExt PRIVATE ${GDAL_INCLUDE_DIR})
+
   set_property(TARGET vtkSMTKDiscreteExt APPEND PROPERTY COMPILE_DEFINITIONS HAS_GDAL_RASTER_READER)
 endif()
 
