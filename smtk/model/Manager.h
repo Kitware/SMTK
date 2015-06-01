@@ -371,12 +371,15 @@ public:
   void observe(ManagerEventType event, ConditionCallback functionHandle, void* callData);
   void observe(ManagerEventType event, OneToOneCallback functionHandle, void* callData);
   void observe(ManagerEventType event, OneToManyCallback functionHandle, void* callData);
+  void observe(OperatorEventType event, BareOperatorCallback functionHandle, void* callData);
   void unobserve(ManagerEventType event, ConditionCallback functionHandle, void* callData);
   void unobserve(ManagerEventType event, OneToOneCallback functionHandle, void* callData);
   void unobserve(ManagerEventType event, OneToManyCallback functionHandle, void* callData);
+  void unobserve(OperatorEventType event, BareOperatorCallback functionHandle, void* callData);
   void trigger(ManagerEventType event, const smtk::model::EntityRef& src);
   void trigger(ManagerEventType event, const smtk::model::EntityRef& src, const smtk::model::EntityRef& related);
   void trigger(ManagerEventType event, const smtk::model::EntityRef& src, const smtk::model::EntityRefArray& related);
+  void trigger(OperatorEventType event, const smtk::model::Operator& src);
 
   smtk::io::Logger& log() { return this->m_log; }
 
@@ -415,6 +418,7 @@ protected:
   std::set<ConditionTrigger> m_conditionTriggers;
   std::set<OneToOneTrigger> m_oneToOneTriggers;
   std::set<OneToManyTrigger> m_oneToManyTriggers;
+  std::set<BareOperatorTrigger> m_operatorTriggers;
 
   smtk::io::Logger m_log;
 };

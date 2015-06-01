@@ -130,7 +130,7 @@ OperatorResult Operator::operate()
 }
 
 /// Add an observer of WILL_OPERATE events on this operator.
-void Operator::observe(OperatorEventType event, WillOperateCallback functionHandle, void* callData)
+void Operator::observe(OperatorEventType event, BareOperatorCallback functionHandle, void* callData)
 {
   (void)event;
   this->m_willOperateTriggers.insert(
@@ -138,7 +138,7 @@ void Operator::observe(OperatorEventType event, WillOperateCallback functionHand
 }
 
 /// Add an observer of DID_OPERATE events on this operator.
-void Operator::observe(OperatorEventType event, DidOperateCallback functionHandle, void* callData)
+void Operator::observe(OperatorEventType event, OperatorWithResultCallback functionHandle, void* callData)
 {
   (void)event;
   this->m_didOperateTriggers.insert(
@@ -146,7 +146,7 @@ void Operator::observe(OperatorEventType event, DidOperateCallback functionHandl
 }
 
 /// Remove an existing WILL_OPERATE observer. The \a callData must match the value passed to Operator::observe().
-void Operator::unobserve(OperatorEventType event, WillOperateCallback functionHandle, void* callData)
+void Operator::unobserve(OperatorEventType event, BareOperatorCallback functionHandle, void* callData)
 {
   (void)event;
   this->m_willOperateTriggers.erase(
@@ -154,7 +154,7 @@ void Operator::unobserve(OperatorEventType event, WillOperateCallback functionHa
 }
 
 /// Remove an existing DID_OPERATE observer. The \a callData must match the value passed to Operator::observe().
-void Operator::unobserve(OperatorEventType event, DidOperateCallback functionHandle, void* callData)
+void Operator::unobserve(OperatorEventType event, OperatorWithResultCallback functionHandle, void* callData)
 {
   (void)event;
   this->m_didOperateTriggers.erase(
@@ -172,7 +172,7 @@ void Operator::unobserve(OperatorEventType event, DidOperateCallback functionHan
 int Operator::trigger(OperatorEventType event)
 {
   int status = 0;
-  std::set<WillOperateObserver>::const_iterator it;
+  std::set<BareOperatorObserver>::const_iterator it;
   for (it = this->m_willOperateTriggers.begin(); it != this->m_willOperateTriggers.end(); ++it)
     status |= (*it->first)(event, *this, it->second);
   return status;
@@ -181,7 +181,7 @@ int Operator::trigger(OperatorEventType event)
 /// Invoke all DID_OPERATE observer callbacks. The return value is always 0 (this may change in future releases).
 int Operator::trigger(OperatorEventType event, const OperatorResult& result)
 {
-  std::set<DidOperateObserver>::const_iterator it;
+  std::set<OperatorWithResultObserver>::const_iterator it;
   for (it = this->m_didOperateTriggers.begin(); it != this->m_didOperateTriggers.end(); ++it)
     (*it->first)(event, *this, result, it->second);
   return 0;
