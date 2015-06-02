@@ -1311,7 +1311,6 @@ void qtAttributeView::getAllDefinitions()
     }
 
   std::vector<smtk::attribute::AttributePtr> atts;
-  int longLabelWidth = 0;
   smtk::common::View::Component &attsComp = view->details().child(0);
   std::size_t i, n = attsComp.numberOfChildren();
   for (i = 0; i < n; i++)

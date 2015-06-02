@@ -136,7 +136,6 @@ void qtRootView::createWidget( )
   pos = view->details().findChild("MaxValueLabelLength");
   if (pos != -1)
     {
-    bool val;
     int l;
     if (view->details().child(pos).contentsAsInt(l))
       {
@@ -147,7 +146,6 @@ void qtRootView::createWidget( )
   pos = view->details().findChild("MinValueLabelLength");
   if (pos != -1)
     {
-    bool val;
     int l;
     if (view->details().child(pos).contentsAsInt(l))
       {

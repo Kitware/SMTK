@@ -240,7 +240,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
     // For open Files, we use a combobox to show the recent file list
     if(fDef->shouldExist())
       {
-      QComboBox* fileCombo = new QComboBox(frame);
+      fileCombo = new QComboBox(frame);
       fileCombo->setEditable(true);
       fileTextWidget = fileCombo;
       this->Internals->fileCombo = fileCombo;
