@@ -16,8 +16,6 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Events.h"
 
-#include <memory> // for owner_less
-
 namespace smtk {
   namespace io {
 
@@ -72,11 +70,11 @@ protected:
     smtk::model::OperatorResult r,
     void* user);
 
-  typedef std::set<smtk::model::WeakOperatorPtr, std::owner_less<smtk::model::WeakOperatorPtr> > WeakOpSet;
+  typedef std::vector<smtk::model::WeakOperatorPtr> WeakOpArray;
 
   bool m_hasFailures;
   smtk::model::WeakManagerPtr m_manager;
-  WeakOpSet m_watching;
+  WeakOpArray m_watching;
 };
 
   } // namespace io

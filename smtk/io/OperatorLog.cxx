@@ -30,7 +30,7 @@ OperatorLog::~OperatorLog()
     mgr->unobserve(smtk::model::CREATED_OPERATOR, OperatorLog::operatorCreated, this);
 
   smtk::model::OperatorPtr watched;
-  WeakOpSet::iterator it;
+  WeakOpArray::iterator it;
   for (it = this->m_watching.begin(); it != this->m_watching.end(); ++it)
     {
     if ((watched = it->lock()))
@@ -61,7 +61,7 @@ int OperatorLog::operatorCreated(
     return 0; // Don't stop an operation just because the recorder is unhappy.
 
   OperatorPtr oper = smtk::const_pointer_cast<Operator>(op.shared_from_this());
-  self->m_watching.insert(oper);
+  self->m_watching.push_back(oper);
   oper->observe(smtk::model::WILL_OPERATE, OperatorLog::operatorInvoked, self);
   oper->observe(smtk::model::DID_OPERATE, OperatorLog::operatorReturned, self);
   return 0;

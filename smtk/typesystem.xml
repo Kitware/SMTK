@@ -137,7 +137,7 @@
   <suppress-warning text="skipping field 'Manager::m_arrangements' with unmatched type 'smtk::shared_ptr&lt;UUIDsToArrangements&gt;'"/>
   <suppress-warning text="skipping field 'UUIDGenerator::P' with unmatched type 'Internal'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::assignDefaultNamesWithOwner', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
-  <suppress-warning text="skipping field 'OperatorLog::m_watching' with unmatched type 'std::set&lt;smtk::model::WeakOperatorPtr,std::owner_less&lt;smtk::model::WeakOperatorPtr&gt;&gt;'"/>
+  <suppress-warning text="skipping field 'OperatorLog::m_watching' with unmatched type 'std::vector&lt;smtk::model::WeakOperatorPtr&gt;'"/>
   <suppress-warning text="skipping field 'OperatorLog::m_manager' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Manager&gt;'"/>
 
 
