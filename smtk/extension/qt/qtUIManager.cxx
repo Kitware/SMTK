@@ -185,7 +185,7 @@ QSize qtTextEdit::sizeHint() const
 
 //----------------------------------------------------------------------------
 qtUIManager::qtUIManager(smtk::attribute::System &system, const std::string &toplevelViewName) :
-  m_AttSystem(system), m_useInternalFileBrowser(false), m_topViewName(toplevelViewName)
+  m_AttSystem(system), m_topViewName(toplevelViewName), m_useInternalFileBrowser(false)
 {
   this->m_topView = NULL;
   this->m_maxValueLabelLength = 200;
