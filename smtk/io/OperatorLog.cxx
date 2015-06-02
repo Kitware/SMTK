@@ -57,7 +57,7 @@ int OperatorLog::operatorCreated(
   void* data)
 {
   OperatorLog* self = reinterpret_cast<OperatorLog*>(data);
-  if (!self)
+  if (!self || event != CREATED_OPERATOR)
     return 0; // Don't stop an operation just because the recorder is unhappy.
 
   OperatorPtr oper = smtk::const_pointer_cast<Operator>(op.shared_from_this());

@@ -16,6 +16,8 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Events.h"
 
+#include <memory> // for owner_less
+
 namespace smtk {
   namespace io {
 
