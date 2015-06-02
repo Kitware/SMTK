@@ -3587,6 +3587,20 @@ void Manager::observe(ManagerEventType event, OneToManyCallback functionHandle, 
       OneToManyObserver(functionHandle, callData)));
 }
 
+/// Request notification from this manager instance when \a event occurs.
+void Manager::observe(OperatorEventType event, BareOperatorCallback functionHandle, void* callData)
+{
+  if (event != CREATED_OPERATOR)
+    {
+    smtkWarningMacro(this->m_log,
+      "The model manager only allows observation of CREATED_OPERATOR, not " << event << ".");
+    return;
+    }
+
+  this->m_operatorTriggers.insert(
+    BareOperatorTrigger(event, BareOperatorObserver(functionHandle, callData)));
+}
+
 /// Decline further notification from this manager instance when \a event occurs.
 void Manager::unobserve(ManagerEventType event, ConditionCallback functionHandle, void* callData)
 {
@@ -3650,6 +3664,14 @@ void Manager::unobserve(ManagerEventType event, OneToManyCallback functionHandle
       OneToManyObserver(functionHandle, callData)));
 }
 
+/// Decline further notification from this manager instance when \a event occurs.
+void Manager::unobserve(OperatorEventType event, BareOperatorCallback functionHandle, void* callData)
+{
+  this->m_operatorTriggers.erase(
+    BareOperatorTrigger(event,
+      BareOperatorObserver(functionHandle, callData)));
+}
+
 /// Called by this Manager instance or EntityRef instances referencing it when \a event occurs.
 void Manager::trigger(ManagerEventType event, const smtk::model::EntityRef& src)
 {
@@ -3693,6 +3715,17 @@ void Manager::trigger(ManagerEventType event, const smtk::model::EntityRef& src,
         OneToManyObserver(OneToManyCallback(), static_cast<void*>(NULL))));
   for (std::set<OneToManyTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, related, it->second.second);
+}
+
+/// Called by this Manager instance or Session instances referencing it when \a event occurs.
+void Manager::trigger(OperatorEventType event, const smtk::model::Operator& src)
+{
+  std::set<BareOperatorTrigger>::const_iterator begin =
+    this->m_operatorTriggers.lower_bound(
+      BareOperatorTrigger(event,
+        BareOperatorObserver(BareOperatorCallback(), static_cast<void*>(NULL))));
+  for (std::set<BareOperatorTrigger>::const_iterator it = begin; it != this->m_operatorTriggers.end() && it->first == event; ++it)
+    (*it->second.first)(it->first, src, it->second.second);
 }
 //@}
 
