@@ -45,18 +45,38 @@ public:
 };
 
 //----------------------------------------------------------------------------
-qtFileItem::qtFileItem(
-  smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview,
-   bool dirOnly, Qt::Orientation enVectorItemOrient)
+qtFileItem::qtFileItem(smtk::attribute::FileItemPtr dataObj, QWidget* p,
+                       qtBaseView* bview, Qt::Orientation enVectorItemOrient)
    : qtItem(dataObj, p, bview)
 {
   this->Internals = new qtFileItemInternals;
-  this->Internals->IsDirectory = dirOnly;
+  this->Internals->IsDirectory = false;
   this->Internals->FileBrowser = NULL;
   this->Internals->VectorItemOrient = enVectorItemOrient;
 
   this->IsLeafItem = true;
   this->createWidget();
+  if (bview)
+    {
+    bview->uiManager()->onFileItemCreated(this);
+    }
+}
+//----------------------------------------------------------------------------
+qtFileItem::qtFileItem(smtk::attribute::DirectoryItemPtr dataObj, QWidget* p,
+                       qtBaseView* bview, Qt::Orientation enVectorItemOrient)
+   : qtItem(dataObj, p, bview)
+{
+  this->Internals = new qtFileItemInternals;
+  this->Internals->IsDirectory = true;
+  this->Internals->FileBrowser = NULL;
+  this->Internals->VectorItemOrient = enVectorItemOrient;
+
+  this->IsLeafItem = true;
+  this->createWidget();
+  if (bview)
+    {
+    bview->uiManager()->onFileItemCreated(this);
+    }
 }
 
 //----------------------------------------------------------------------------

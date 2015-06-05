@@ -34,49 +34,35 @@ namespace smtk
       qtAttribute(smtk::attribute::AttributePtr, QWidget* parent, qtBaseView* view);
       virtual ~qtAttribute();
 
-      smtk::attribute::AttributePtr getObject();
+      smtk::attribute::AttributePtr attribute();
       QWidget* widget()
-      {return this->Widget;}
+      {return this->m_widget;}
       QWidget* parentWidget();
 
       virtual void addItem(qtItem*);
-      virtual void clearItems();
       QList<qtItem*>& items() const;
       virtual void showAdvanceLevelOverlay(bool show);
 
+      // A basic layout for an attribute
+      void createBasicLayout();
+      
       // create all the items
       static qtItem* createItem(smtk::attribute::ItemPtr item, QWidget* p, qtBaseView* view,
-        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
-      static qtItem* createValueItem(smtk::attribute::ValueItemPtr item, QWidget* p, qtBaseView* view,
-        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
-      static qtItem* createDirectoryItem(smtk::attribute::DirectoryItemPtr item, QWidget* p, qtBaseView* view,
-        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
-      static qtItem* createAttributeRefItem(smtk::attribute::RefItemPtr item, QWidget* p, qtBaseView* view,
-        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
-      static qtItem* createFileItem(smtk::attribute::FileItemPtr item, QWidget* p, qtBaseView* view,
-        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
-      static qtItem* createGroupItem(smtk::attribute::GroupItemPtr item, QWidget* p, qtBaseView* view,
-        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
-      static qtItem* createDiscreteValueItem(smtk::attribute::ValueItemPtr item, QWidget* p, qtBaseView* view,
-        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
-      static qtItem* createModelEntityItem(smtk::attribute::ModelEntityItemPtr item, QWidget* pW, qtBaseView* view,
-        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
-      static qtItem* createMeshSelectionItem(smtk::attribute::MeshSelectionItemPtr item, QWidget* pW, qtBaseView* view,
         Qt::Orientation enVectorItemOrient = Qt::Horizontal);
 
     public slots:
       virtual void onRequestEntityAssociation();
 
     protected slots:
-      virtual void updateItemsData();
-
+      void widgetBeingDeleted();
+      
     protected:
       virtual void createWidget();
 
-      QWidget* Widget;
+      QWidget* m_widget;
     private:
 
-      qtAttributeInternals *Internals;
+      qtAttributeInternals *m_internals;
 
     }; // class
   }; // namespace attribute

@@ -861,9 +861,6 @@ void qtAttributeView::updateTableWithAttribute(
 
   if(this->Internals->CurrentAtt && this->Internals->CurrentAtt->widget())
     {
-    this->Internals->AttFrame->layout()->removeWidget(
-      this->Internals->CurrentAtt->widget());
-    delete this->Internals->CurrentAtt->widget();
     delete this->Internals->CurrentAtt;
     }
 
@@ -873,6 +870,7 @@ void qtAttributeView::updateTableWithAttribute(
   this->setFixedLabelWidth(tmpLen);
 
   this->Internals->CurrentAtt = new qtAttribute(att, this->Internals->AttFrame, this);
+  this->Internals->CurrentAtt->createBasicLayout();
   this->setFixedLabelWidth(currentLen);
   if(this->Internals->CurrentAtt && this->Internals->CurrentAtt->widget())
     {
