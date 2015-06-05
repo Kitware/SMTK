@@ -129,8 +129,12 @@ endif()
 if (SMTK_ENABLE_TESTING)
   enable_testing()
   include(CTest)
+  # Do not report some warnings from generated code to the dashboard:
+  configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/CMake/CTestCustom.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/CTestCustom.cmake" COPYONLY)
 
-  #add the first test which is for checking the copyright
+  # Add a test to check for the copyright statment in all source:
   add_test(NAME CopyrightStatement
     COMMAND ${CMAKE_COMMAND}
         "-DSMTK_SOURCE_DIR=${SMTK_SOURCE_DIR}"
