@@ -1,7 +1,10 @@
 # Additional tests that require SMTK_DATA_DIR
-set(smtkModelPythonDataTests
+set(smtkAttributePythonDataTests
   copyDefinitionTest
   copyAttributeTest
+)
+set(smtkAttributePythonNewDataTests
+  attributeItemByPath
 )
 
 add_test(associationTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/associationTest.py)
@@ -27,12 +30,23 @@ set_tests_properties(
 )
 
 if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
-  foreach (test ${smtkModelPythonDataTests})
+  foreach (test ${smtkAttributePythonDataTests})
     add_test(
       ${test}Py
       ${PYTHON_EXECUTABLE}
       ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py
       ${SMTK_DATA_DIR})
+    set_tests_properties(${test}Py
+      PROPERTIES
+        ENVIRONMENT "PYTHONPATH=${VTKPY_DIR}${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}"
+    )
+  endforeach()
+  # New-style tests that use smtk.testing.TestCase
+  foreach (test ${smtkAttributePythonNewDataTests})
+    add_test(${test}Py
+             ${PYTHON_EXECUTABLE}
+             ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py
+             -D ${SMTK_DATA_DIR})
     set_tests_properties(${test}Py
       PROPERTIES
         ENVIRONMENT "PYTHONPATH=${VTKPY_DIR}${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}"

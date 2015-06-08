@@ -29,6 +29,8 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/common/UUIDGenerator.h"
 
+#include "boost/algorithm/string.hpp"
+
 #include <iostream>
 
 using namespace smtk::attribute;
@@ -137,6 +139,79 @@ bool Attribute::isMemberOf(const std::string &category) const
 bool Attribute::isMemberOf(const std::vector<std::string> &categories) const
 {
   return this->m_definition->isMemberOf(categories);
+}
+
+/**\brief Return an item given a string specifying a path to it.
+  *
+  */
+smtk::attribute::ConstItemPtr Attribute::itemAtPath(
+  const std::string& path, const std::string& seps) const
+{
+  smtk::attribute::ConstItemPtr result;
+  std::vector<std::string> tree;
+  std::vector<std::string>::iterator it;
+  boost::split(tree, path, boost::is_any_of(seps));
+  if (tree.empty())
+    return result;
+
+  it = tree.begin();
+  smtk::attribute::ConstItemPtr current = this->find(*it, NO_CHILDREN);
+  if (current)
+    {
+    bool ok = true;
+    for (++it; it != tree.end(); ++it)
+      {
+      ConstValueItemPtr vitm = smtk::dynamic_pointer_cast<const ValueItem>(current);
+      ConstGroupItemPtr gitm = smtk::dynamic_pointer_cast<const GroupItem>(current);
+      if (vitm && (current = vitm->findChild(*it, NO_CHILDREN)))
+        continue; // OK, keep descending
+      else if (gitm && (current = gitm->find(*it)))
+        continue; // OK, keep descending
+      else
+        {
+        ok = false;
+        break;
+        }
+      }
+    if (ok)
+      result = current;
+    }
+  return result;
+}
+
+smtk::attribute::ItemPtr Attribute::itemAtPath(
+  const std::string& path, const std::string& seps)
+{
+  smtk::attribute::ItemPtr result;
+  std::vector<std::string> tree;
+  std::vector<std::string>::iterator it;
+  boost::split(tree, path, boost::is_any_of(seps));
+  if (tree.empty())
+    return result;
+
+  it = tree.begin();
+  smtk::attribute::ItemPtr current = this->find(*it, NO_CHILDREN);
+  if (current)
+    {
+    bool ok = true;
+    for (++it; it != tree.end(); ++it)
+      {
+      ValueItemPtr vitm = smtk::dynamic_pointer_cast<ValueItem>(current);
+      GroupItemPtr gitm = smtk::dynamic_pointer_cast<GroupItem>(current);
+      if (vitm && (current = vitm->findChild(*it, NO_CHILDREN)))
+        continue; // OK, keep descending
+      else if (gitm && (current = gitm->find(*it)))
+        continue; // OK, keep descending
+      else
+        {
+        ok = false;
+        break;
+        }
+      }
+    if (ok)
+      result = current;
+    }
+  return result;
 }
 
 namespace {

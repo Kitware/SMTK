@@ -92,6 +92,18 @@ namespace smtk
            smtk::attribute::ItemPtr() : this->m_items[static_cast<std::size_t>(ith)]);
       }
 
+      smtk::attribute::ConstItemPtr itemAtPath(
+        const std::string& path, const std::string& seps = "/") const;
+      smtk::attribute::ItemPtr itemAtPath(
+        const std::string& path, const std::string& seps = "/");
+
+      template<typename T>
+      typename T::ConstPtr itemAtPathAs(
+        const std::string& path, const std::string& seps = "/") const;
+      template<typename T>
+      typename T::Ptr itemAtPathAs(
+        const std::string& path, const std::string& seps = "/");
+
       smtk::attribute::ItemPtr find(
         const std::string& name,
         SearchStyle style = ACTIVE_CHILDREN);
@@ -267,6 +279,19 @@ namespace smtk
         }
       }
       return result;
+    }
+//----------------------------------------------------------------------------
+    /**\brief Return an item given its path, converted to a given pointer type.
+      */
+    template<typename T>
+    typename T::ConstPtr Attribute::itemAtPathAs(
+      const std::string& path, const std::string& seps) const
+    {
+    typename T::ConstPtr result;
+    smtk::attribute::ConstItemPtr itm = this->itemAtPath(path, seps);
+    if (!!itm)
+      result = smtk::dynamic_pointer_cast<const T>(itm);
+    return result;
     }
 //----------------------------------------------------------------------------
     template<typename T>

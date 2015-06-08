@@ -76,6 +76,8 @@
 	<suppress-warning text="skipping function 'smtk::model::Manager::setEntityOfTypeAndDimension', unmatched return type 'Manager::iter_type'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::begin', unmatched return type 'smtk::model::EntityRefArray::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::end', unmatched return type 'smtk::model::EntityRefArray::const_iterator'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::itemAtPathAs', unmatched return type 'T::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::itemAtPathAs', unmatched return type 'T::ConstPtr'"/>
 
   <!-- Use cJSON objects. For now we will ignore these-->
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofDanglingEntities', unmatched parameter type 'cJSON*'"/>
