@@ -14,6 +14,8 @@
 #define __smtk_attribute_qtAttribute_h
 
 #include <QObject>
+#include <QPointer>
+#include <QWidget>
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/PublicPointerDefs.h"
 
@@ -54,12 +56,11 @@ namespace smtk
       virtual void onRequestEntityAssociation();
 
     protected slots:
-      void widgetBeingDeleted();
       
     protected:
       virtual void createWidget();
 
-      QWidget* m_widget;
+      QPointer<QWidget> m_widget;
     private:
 
       qtAttributeInternals *m_internals;

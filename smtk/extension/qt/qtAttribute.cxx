@@ -78,7 +78,6 @@ qtAttribute::qtAttribute(smtk::attribute::AttributePtr myAttribute, QWidget* p,
 //----------------------------------------------------------------------------
 qtAttribute::~qtAttribute()
 {
-  std::cerr << "Deleting QT Attribute!!!\n";
   // First Clear all the items
   for(int i=0; i < this->m_internals->m_items.count(); i++)
     {
@@ -88,9 +87,6 @@ qtAttribute::~qtAttribute()
   this->m_internals->m_items.clear();
   if (this->m_widget)
     {
-    // Lets make sure we don't get notified for deleting the widget
-    this->m_widget->disconnect(this);
-    std::cerr << "Deleting Widget via Destructor\n";
     delete this->m_widget;
     }
 
@@ -129,7 +125,6 @@ void qtAttribute::createWidget()
   QFrame* attFrame = new QFrame(this->parentWidget());
   attFrame->setFrameShape(QFrame::Box);
   this->m_widget = attFrame;
-  connect(this->m_widget, SIGNAL(destroyed()), this, SLOT(widgetBeingDeleted()));
 
   QVBoxLayout* layout = new QVBoxLayout(this->m_widget);
   layout->setMargin(3);
@@ -217,14 +212,6 @@ smtk::attribute::AttributePtr qtAttribute::attribute()
 QWidget* qtAttribute::parentWidget()
 {
   return this->m_internals->m_parentWidget;
-}
-
-//----------------------------------------------------------------------------
-void qtAttribute::widgetBeingDeleted()
-{
-  // Severe the connection between this object and its widget
-  this->m_widget = NULL;
-  std::cerr << "Widget being deleted\n";
 }
 
 //----------------------------------------------------------------------------
