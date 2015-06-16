@@ -66,6 +66,7 @@ public:
   static const char* GetEntityTagName() { return "Entity"; }
   static const char* GetGroupTagName() { return "Group"; }
   static const char* GetVolumeTagName() { return "Volume"; }
+  static const char* GetAttributeTagName() { return "Attribute"; }
 
 protected:
   vtkModelMultiBlockSource();
