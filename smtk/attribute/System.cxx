@@ -464,16 +464,7 @@ smtk::attribute::ConstDefinitionPtr System::findIsUniqueBaseClass(
 //----------------------------------------------------------------------------
 void System::setRefModelManager(smtk::model::ManagerPtr refModelMgr)
 {
-  smtk::model::ManagerPtr curManager = this->m_refModelMgr.lock();
-  if (curManager && curManager != refModelMgr)
-    {
-    curManager->setAttributeSystem(NULL, false);
-    }
   this->m_refModelMgr = refModelMgr;
-  if (refModelMgr && this->m_refModelMgr.lock()->attributeSystem() != this)
-    {
-    refModelMgr->setAttributeSystem(this, false);
-    }
 }
 //----------------------------------------------------------------------------
 void

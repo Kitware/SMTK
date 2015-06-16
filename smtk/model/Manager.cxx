@@ -63,7 +63,6 @@ Manager::Manager() :
   m_analysisMesh(new UUIDsToTessellations),
   m_attributeAssignments(new UUIDsToAttributeAssignments),
   m_sessions(new UUIDsToSessions),
-  m_attributeSystem(NULL),
   m_globalCounters(2,1) // first entry is session counter, second is model counter
 {
   // TODO: throw() when topology == NULL?
@@ -86,7 +85,6 @@ Manager::Manager(
     m_analysisMesh(mesh),
     m_attributeAssignments(attribs),
     m_sessions(new UUIDsToSessions),
-    m_attributeSystem(NULL),
     m_globalCounters(2,1) // first entry is session counter, second is model counter
 {
 }
@@ -102,7 +100,7 @@ Manager::~Manager()
     // listeners that deletions are occurring.
     this->unregisterSession(this->m_defaultSession, false);
     }
-  this->setAttributeSystem(NULL, false);
+  this->m_attributeAssignments->clear();
 }
 //@}
 
@@ -334,58 +332,6 @@ SessionInfoBits Manager::eraseModel(const Model& model, SessionInfoBits flags)
   this->erase(model.entity(), flags);
 
   return true;
-}
-
-/**\brief Set the attribute manager.
-  *
-  * This is an error if the manager already has a non-null
-  * reference to a different model manager instance.
-  *
-  * If this manager is associated with a different attribute system,
-  * that attribute system is detached (its model manager reference
-  * set to null) and all attribute associations in the model manager
-  * are erased.
-  * This is not an error, but a warning message will be generated.
-  *
-  * On error, false is returned, an error message is generated,
-  * and no change is made to the attribute system.
-  */
-bool Manager::setAttributeSystem(smtk::attribute::System* attSys, bool reverse)
-{
-  if (attSys)
-    {
-    smtk::model::Manager* attSysModelMgr = attSys->refModelManager().get();
-    if (attSysModelMgr && attSysModelMgr != this)
-      {
-      return false;
-      }
-    }
-  if (this->m_attributeSystem && this->m_attributeSystem != attSys)
-    {
-    // Only warn when (a) the new manager is non-NULL and (b) we
-    // have at least 1 attribute association.
-    if (!this->m_attributeAssignments->empty() && attSys)
-      {
-      smtkInfoMacro(this->m_log,
-        "WARNING: Changing attribute managers.\n"
-        "         Current attribute associations cleared.\n");
-      this->m_attributeAssignments->clear();
-      }
-    if (reverse)
-      this->m_attributeSystem->setRefModelManager(ManagerPtr());
-    }
-  this->m_attributeSystem = attSys;
-  if (this->m_attributeSystem && reverse)
-    this->m_attributeSystem->setRefModelManager(shared_from_this());
-  return true;
-}
-
-/**\brief Return the attribute manager associated with this model manager.
-  *
-  */
-smtk::attribute::System* Manager::attributeSystem() const
-{
-  return this->m_attributeSystem;
 }
 
 /// Entity construction
@@ -2906,12 +2852,15 @@ bool Manager::hasAttribute(const UUID&  attribId, const UUID& toEntity)
   * valid (whether it was previously associated or not)
   * and false otherwise.
   */
-bool Manager::associateAttribute(const UUID&  attribId, const UUID& toEntity)
+bool Manager::associateAttribute(
+  smtk::attribute::System* sys,
+  const UUID&  attribId,
+  const UUID& toEntity)
 {
   bool allowed = true;
-  if (this->m_attributeSystem)
+  if (sys)
     {
-    attribute::AttributePtr att = this->m_attributeSystem->findAttribute(attribId);
+    attribute::AttributePtr att = sys->findAttribute(attribId);
     if (!att || !att->associateEntity(toEntity))
       allowed = false;
     }
@@ -2923,7 +2872,11 @@ bool Manager::associateAttribute(const UUID&  attribId, const UUID& toEntity)
 /**\brief Unassign an attribute from an entity.
   *
   */
-bool Manager::disassociateAttribute(const UUID&  attribId, const UUID& fromEntity, bool reverse)
+bool Manager::disassociateAttribute(
+  smtk::attribute::System* sys,
+  const UUID&  attribId,
+  const UUID& fromEntity,
+  bool reverse)
 {
   bool didRemove = false;
   UUIDWithAttributeAssignments ref = this->m_attributeAssignments->find(fromEntity);
@@ -2943,18 +2896,15 @@ bool Manager::disassociateAttribute(const UUID&  attribId, const UUID& fromEntit
       }
 #endif
     // Notify the Attribute of the removal
-    if (reverse)
+    if (reverse && sys)
       {
-      if (this->m_attributeSystem)
+      smtk::attribute::AttributePtr attrib =
+        sys->findAttribute(attribId);
+      // FIXME: Should we check that the manager's refManager
+      //        is this Manager instance?
+      if (attrib)
         {
-        smtk::attribute::AttributePtr attrib =
-          this->m_attributeSystem->findAttribute(attribId);
-        // FIXME: Should we check that the manager's refManager
-        //        is this Manager instance?
-        if (attrib)
-          {
-          attrib->disassociateEntity(fromEntity, false);
-          }
+        attrib->disassociateEntity(fromEntity, false);
         }
       }
     }

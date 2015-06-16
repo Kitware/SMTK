@@ -65,6 +65,7 @@ class Tessellation;
 // Use full names including namespace to make Shiboken less unhappy:
 typedef std::set<smtk::model::EntityRef> EntityRefs;
 typedef std::vector<smtk::model::EntityRef> EntityRefArray;
+typedef std::vector<Group> Groups;
 
 /**\brief A lightweight entityref pointing to a model entity's manager.
   *
@@ -174,8 +175,9 @@ public:
 
   bool hasAttributes() const;
   bool hasAttribute(const smtk::common::UUID &attribId) const;
-  bool associateAttribute(const smtk::common::UUID &attribId);
-  bool disassociateAttribute(const smtk::common::UUID &attribId, bool reverse = true);
+  bool associateAttribute(smtk::attribute::System* sys, const smtk::common::UUID &attribId);
+  bool disassociateAttribute(smtk::attribute::System* sys,
+                             const smtk::common::UUID &attribId, bool reverse = true);
   AttributeAssignments& attributes();
   AttributeSet attributes() const;
 
@@ -238,6 +240,7 @@ public:
   template<typename T> T instances() const;
 
   Model owningModel() const;
+  Groups containingGroups() const;
 
   bool operator == (const EntityRef& other) const;
   bool operator < (const EntityRef& other) const;
