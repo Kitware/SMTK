@@ -4,6 +4,7 @@ include(${QT_USE_FILE})
 set(QAttrLibSrcs
   qtUIManager.cxx
   qtAttribute.cxx
+  qtAttributeDisplay.cxx
   qtBaseView.cxx
   qtCheckItemComboBox.cxx
   qtEntityItemDelegate.cxx
@@ -46,6 +47,7 @@ set(QAttrLibUIs
 set(QAttrLibHeaders
   qtUIManager.h
   qtAttribute.h
+  qtAttributeDisplay.h
   qtBaseView.h
   qtCheckItemComboBox.h
   qtEntityItemDelegate.h
