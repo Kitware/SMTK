@@ -46,7 +46,7 @@ namespace smtk
       virtual void showAdvanceLevelOverlay(bool show);
 
       // A basic layout for an attribute
-      void createBasicLayout();
+      void createBasicLayout(bool includeAssociations);
       
       // create all the items
       static qtItem* createItem(smtk::attribute::ItemPtr item, QWidget* p, qtBaseView* view,

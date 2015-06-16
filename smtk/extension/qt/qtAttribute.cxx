@@ -156,7 +156,7 @@ void qtAttribute::showAdvanceLevelOverlay(bool show)
 }
 
 //----------------------------------------------------------------------------
-void qtAttribute::createBasicLayout()
+void qtAttribute::createBasicLayout(bool includeAssociations)
 {
   //If there is no main widget there is nothing to show
   if (!this->m_widget)
@@ -167,9 +167,9 @@ void qtAttribute::createBasicLayout()
   QLayout* layout = this->m_widget->layout();
   qtItem* qItem = NULL;
   smtk::attribute::AttributePtr att = this->attribute();
-  // If there are model assocication for the attribute, create UI for it.
+  // If there are model assocications for the attribute, create UI for them if requested.
   // This will be the same widget used for ModelEntityItem.
-  if(att->associations())
+  if(includeAssociations && att->associations())
     {
     qItem = this->createItem(att->associations(), this->m_widget,
       this->m_internals->m_view);

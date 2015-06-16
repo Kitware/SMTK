@@ -260,8 +260,8 @@ void qtAttributeView::createWidget( )
   this->Internals->ValuesTable->setSizePolicy(tableSizePolicy);
 
   TopLayout->addWidget(this->Internals->FiltersFrame);
-  TopLayout->addWidget(this->Internals->ListTable);
   TopLayout->addWidget(this->Internals->ButtonsFrame);
+  TopLayout->addWidget(this->Internals->ListTable);
 
   BottomLayout->addWidget(this->Internals->ValuesTable);
   this->Internals->ValuesTable->setVisible(0);
@@ -870,7 +870,9 @@ void qtAttributeView::updateTableWithAttribute(
   this->setFixedLabelWidth(tmpLen);
 
   this->Internals->CurrentAtt = new qtAttribute(att, this->Internals->AttFrame, this);
-  this->Internals->CurrentAtt->createBasicLayout();
+  // By default use the basic layout with no model associations since this class
+  // takes care of it
+  this->Internals->CurrentAtt->createBasicLayout(false);
   this->setFixedLabelWidth(currentLen);
   if(this->Internals->CurrentAtt && this->Internals->CurrentAtt->widget())
     {

@@ -187,8 +187,9 @@ void qtInstancedView::updateAttributeData()
       qtAttribute* attInstance = new qtAttribute(atts[i], this->widget(), this);
       if(attInstance)
         {
-        //Without any additional info lets use a basic layout
-        attInstance->createBasicLayout();
+        //Without any additional info lets use a basic layout with model associations
+        // if any exists
+        attInstance->createBasicLayout(true);
         this->Internals->AttInstances.push_back(attInstance);
         if(attInstance->widget())
           {
