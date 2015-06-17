@@ -454,6 +454,6 @@ smtkImplementsModelOperator(
   SMTKDISCRETESESSION_EXPORT,
   smtk::bridge::discrete::EdgeOperator,
   discrete_split_edge,
-  "split edge",
+  "modify edge",
   EdgeOperator_xml,
   smtk::bridge::discrete::Session);

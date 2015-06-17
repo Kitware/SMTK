@@ -69,7 +69,7 @@ int main()
 
   smtk::model::Vertex v0 = modelMgr->addVertex();
   smtk::model::Vertex v1 = modelMgr->addVertex();
-  v0.associateAttribute(att->id());
+  v0.associateAttribute(att->system(), att->id());
   test(
     att->associatedModelEntityIds().count(v0.entity()) == 1,
     "Could not associate a vertex to an attribute.");
@@ -84,23 +84,23 @@ int main()
     !v1.hasAttributes(),
     "Disassociating a non-existent attribute appears to associate it.");
 
-  v1.associateAttribute(att->id());
+  v1.associateAttribute(att->system(), att->id());
   att->removeAllAssociations();
   test(
     att->associatedModelEntityIds().empty(),
     "Removing all attribute associations did not empty association list.");
 
   smtk::model::Vertex v2 = modelMgr->addVertex();
-  v0.associateAttribute(att->id());
-  v1.associateAttribute(att->id());
+  v0.associateAttribute(att->system(), att->id());
+  v1.associateAttribute(att->system(), att->id());
   test(
-    v2.associateAttribute(att->id()) == false,
+    v2.associateAttribute(att->system(), att->id()) == false,
     "Should not have been able to associate more than 2 entities.");
 
   att->removeAllAssociations();
   smtk::model::Edge e0 = modelMgr->addEdge();
   test(
-    e0.associateAttribute(att->id()) == false,
+    e0.associateAttribute(att->system(), att->id()) == false,
     "Should not have been able to associate entity of wrong type.");
 
   // ----
@@ -110,12 +110,6 @@ int main()
   test(
     sys.refModelManager() == auxModelManager,
     "Attribute system's modelMgr not changed.");
-  test(
-    auxModelManager->attributeSystem() == &sys,
-    "Second model manager's attribute system not changed.");
-  test(
-    modelMgr->attributeSystem() == NULL,
-    "Original model manager's attribute system not reset.");
 
   return 0;
 }

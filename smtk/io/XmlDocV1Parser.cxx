@@ -2382,11 +2382,11 @@ void XmlDocV1Parser::processViews(xml_node &root)
   if (node)
     {
     smtk::common::View::Component comp = rootView->details().addChild("AdvancedFontEffects");
-    if(xml_attribute txtatt = node.attribute("Bold"))
+    if(node.attribute("Bold"))
       {
       comp.setAttribute("Bold", "t");
       }
-    if(xml_attribute txtatt = node.attribute("Italic"))
+    if(node.attribute("Italic"))
       {
       comp.setAttribute("Italic", "t");
       }

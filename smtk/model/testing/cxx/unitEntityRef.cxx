@@ -401,10 +401,10 @@ int main(int argc, char* argv[])
     aid1 = smtk::common::UUID::random();
     aid2 = smtk::common::UUID::random();
     test(!entity.hasAttributes(), "Detecting an un-associated attribute");
-    test( entity.associateAttribute(aid1), "Associating an attribute");
-    test( entity.associateAttribute(aid1), "Re-associating a repeated attribute");
-    test( entity.disassociateAttribute(aid1), "Disassociating an associated attribute");
-    test(!entity.disassociateAttribute(aid2), "Disassociating an un-associated attribute");
+    test( entity.associateAttribute(NULL, aid1), "Associating an attribute");
+    test( entity.associateAttribute(NULL, aid1), "Re-associating a repeated attribute");
+    test( entity.disassociateAttribute(NULL, aid1), "Disassociating an associated attribute");
+    test(!entity.disassociateAttribute(NULL, aid2), "Disassociating an un-associated attribute");
 
     // Test that face entity was created with invalid (but present) face uses.
     Face f(sm, uids[20]);

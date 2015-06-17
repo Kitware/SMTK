@@ -749,20 +749,18 @@ void qtAssociationWidget::onDomainAssociationChanged()
     return;
     }
 
-  smtk::model::AttributeAssignments atts = domainItem.attributes();
-  atts.attributes().clear(); //detach all attributes
+  domainItem.disassociateAllAttributes(attSystem, uid); //detach all attributes
 
   if(combo->currentText().isEmpty())
     {
     return;
     }
 
-
   QString attName = combo->currentText();
   AttributePtr attPtr = attSystem->findAttribute(attName.toStdString());
   if(attPtr)
     {
-    domainItem.associateAttribute(attPtr->id());
+    domainItem.associateAttribute(attSystem, attPtr->id());
     emit this->attAssociationChanged();
     }
   else

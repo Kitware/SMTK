@@ -13,6 +13,7 @@
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Events.h"
+#include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Tessellation.h"
@@ -661,33 +662,44 @@ bool EntityRef::hasAttributes() const
 
 /**\brief Does the entityref have any attributes associated with it?
   */
-bool EntityRef::associateAttribute(const smtk::common::UUID &attribId)
+bool EntityRef::associateAttribute(smtk::attribute::System* sys,
+                                   const smtk::common::UUID &attribId)
 {
   ManagerPtr mgr = this->m_manager.lock();
-  return mgr->associateAttribute(attribId, this->m_entity);
+  return mgr->associateAttribute(sys, attribId, this->m_entity);
 }
 
 /**\brief Does the entityref have any attributes associated with it?
   */
-bool EntityRef::disassociateAttribute(const smtk::common::UUID &attribId, bool reverse)
+bool EntityRef::disassociateAttribute(smtk::attribute::System* sys,
+                                      const smtk::common::UUID &attribId, bool reverse)
 {
   ManagerPtr mgr = this->m_manager.lock();
-  return mgr->disassociateAttribute(attribId, this->m_entity, reverse);
+  return mgr->disassociateAttribute(sys, attribId, this->m_entity, reverse);
 }
 
-/**\brief Does the entityref have any attributes associated with it?
+/**\brief Remove all attribute association form this entityref
   */
-AttributeAssignments& EntityRef::attributes()
+bool EntityRef::disassociateAllAttributes(smtk::attribute::System* sys,
+   const smtk::common::UUID& fromEntity, bool reverse)
 {
-  ManagerPtr mgr = this->m_manager.lock();
-  return mgr->attributeAssignments()[this->m_entity];
+  AttributeSet atts = this->attributes();
+  AttributeSet::const_iterator it;
+  bool res = true;
+  for(it = atts.begin(); it != atts.end(); ++it)
+    {
+    if(!this->disassociateAttribute(sys, *it, reverse))
+      res = false;
+    }
+  return res;
 }
+
 /**\brief Does the entityref have any attributes associated with it?
   */
 AttributeSet EntityRef::attributes() const
 {
   ManagerPtr mgr = this->m_manager.lock();
-  return mgr->attributeAssignments()[this->m_entity].attributes();
+  return mgr->attributeAssignments().find(this->m_entity)->second.attributes();
 }
 ///@}
 
@@ -1093,6 +1105,16 @@ Model EntityRef::owningModel() const
   return Model(
     mgr,
     mgr->modelOwningEntity(this->m_entity));
+}
+
+/**\brief Return the Groups which contains this entity.
+  *
+  */
+Groups EntityRef::containingGroups() const
+{
+  Groups result;
+  EntityRefArrangementOps::appendAllRelations(*this, SUBSET_OF, result);
+  return result;
 }
 
 /// A comparator provided so that entityrefs may be included in ordered sets.

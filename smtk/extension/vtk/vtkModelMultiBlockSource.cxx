@@ -283,7 +283,7 @@ static void AddEntityTessToPolyData(
 
 /// Add customized block info.
 /// Mapping from UUID to block id
-/// Field data arrays
+/// 'Volume' field array to color by volume
 static void internal_AddBlockInfo(smtk::model::ManagerPtr manager,
   const smtk::model::EntityRef& entityref, const smtk::model::EntityRef& bordantCell,
   const vtkIdType& blockId,
@@ -303,46 +303,7 @@ static void internal_AddBlockInfo(smtk::model::ManagerPtr manager,
   smtk::model::EntityRefs vols;
   if(bordantCell.isValid() && bordantCell.isVolume())
     vols.insert(bordantCell);
-/*
-  EntityRef embIn = entityref.embeddedIn();
-  if(embIn.isValid() && embIn.isVolume())
-      vols.insert(embIn);
-  else
-    {
-    while(embIn.isValid())
-      {
-      embIn = embIn.embeddedIn();
-      if(embIn.isValid() && embIn.isVolume())
-        {
-        vols.insert(embIn);
-        break;
-        }
-      }
-    }
-*/
-/*
-  if(entityref.isEdge())
-    {
-    smtk::model::Edge eg = entityref.as<smtk::model::Edge>();
-    for(smtk::model::EdgeUses::iterator it = eg.edgeUses().begin();
-        it != eg.edgeUses().end(); ++it)
-      {
-      if((*it).faceUse().isValid())
-        vols.push_back((*it).faceUse().volume());
-      }
-    }
-  else if(entityref.isFace())
-    {
-    //vols = entityref.as<smtk::model::Face>().volumes(); // not working yet
-    smtk::model::FaceUse fUse = entityref.as<smtk::model::Face>().negativeUse();
-    if(fUse.isValid())
-      vols.push_back(fUse.volume());
-    fUse = entityref.as<smtk::model::Face>().positiveUse();
-    if(fUse.isValid())
-      vols.push_back(fUse.volume());
-    }
-*/
-  if(vols.size())
+ if(vols.size())
     {
     // Add volume UUID to fieldData
     vtkNew<vtkStringArray> volArray;
@@ -356,22 +317,6 @@ static void internal_AddBlockInfo(smtk::model::ManagerPtr manager,
       }
     volArray->SetName(vtkModelMultiBlockSource::GetVolumeTagName());
     poly->GetFieldData()->AddArray(volArray.GetPointer());
-    }
-
-  // Add group UUID to fieldData
-  vtkNew<vtkStringArray> groupArray;
-  groupArray->SetNumberOfComponents(1);
-  int na = entityref.numberOfArrangementsOfKind(SUBSET_OF);
-  if(na > 0)
-    {
-    groupArray->SetNumberOfTuples(na);
-    for (int i = 0; i < na; ++i)
-      {
-      groupArray->SetValue(i,
-        entityref.relationFromArrangement(SUBSET_OF, i, 0).entity().toString());
-      }
-    groupArray->SetName(vtkModelMultiBlockSource::GetGroupTagName());
-    poly->GetFieldData()->AddArray(groupArray.GetPointer());
     }
 }
 

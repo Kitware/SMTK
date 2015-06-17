@@ -280,6 +280,16 @@ smtk::attribute::AttributePtr Attribute::pointer() const
   */
 void Attribute::removeAllAssociations()
 {
+  smtk::model::ManagerPtr modelMgr = this->modelManager();
+  if (modelMgr && this->m_associations)
+    {
+    smtk::model::EntityRefArray::const_iterator it;
+    for (it = this->m_associations->begin(); it != this->m_associations->end(); ++it)
+      {
+      modelMgr->disassociateAttribute(this->system(), this->m_id, it->entity(), false);
+      }
+    }
+
   if (this->m_associations)
     this->m_associations->reset();
 }
@@ -342,11 +352,9 @@ smtk::common::UUIDs Attribute::associatedModelEntityIds() const
   */
 bool Attribute::associateEntity(const smtk::common::UUID& entity)
 {
-  return this->m_associations ?
-    this->m_associations->appendValue(
-      smtk::model::EntityRef(
-        this->modelManager(), entity)) :
-    false;
+  smtk::model::ManagerPtr modelMgr = this->modelManager();
+  return this->associateEntity(
+        smtk::model::EntityRef(modelMgr, entity));
 }
 
 /**\brief Associate a new-style model ID (a EntityRef) with this attribute.
@@ -355,9 +363,21 @@ bool Attribute::associateEntity(const smtk::common::UUID& entity)
   * successful. It may return false if the association is prohibited.
   * (This is not currently implemented.)
   */
-bool Attribute::associateEntity(const smtk::model::EntityRef& entity)
+bool Attribute::associateEntity(const smtk::model::EntityRef& entityRef)
 {
-  return this->m_associations ? this->m_associations->appendValue(entity) : false;
+  bool res = this->isEntityAssociated(entityRef);
+  if(res)
+    return res;
+
+  res = (this->m_associations) ?
+      this->m_associations->appendValue(entityRef) : false;
+  if(!res)
+    return res;
+
+  smtk::model::ManagerPtr modelMgr = this->modelManager();
+  if (modelMgr)
+    res = modelMgr->associateAttribute(this->system(), this->id(), entityRef.entity());
+  return res;
 }
 
 /**\brief Disassociate a new-style model ID (a UUID) from this attribute.
@@ -380,7 +400,7 @@ void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool revers
       smtk::model::ManagerPtr modelMgr = this->modelManager();
       if (modelMgr)
         {
-        modelMgr->disassociateAttribute(this->id(), entity, false);
+        modelMgr->disassociateAttribute(this->system(), this->id(), entity, false);
         }
       }
     }
@@ -401,7 +421,7 @@ void Attribute::disassociateEntity(const smtk::model::EntityRef& entity, bool re
     if (reverse)
       {
       smtk::model::EntityRef mutableEntity(entity);
-      mutableEntity.disassociateAttribute(this->id(), false);
+      mutableEntity.disassociateAttribute(this->system(), this->id(), false);
       }
     }
 }
