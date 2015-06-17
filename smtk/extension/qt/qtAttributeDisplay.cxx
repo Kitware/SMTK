@@ -481,44 +481,29 @@ void qtAttributeDisplay::getDefinitionsWithAssociations()
   if(atts.size() == 0)
     return;
 
-#ifndef _MSC_VER
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored "-Wshadow"
-#endif
-
-  smtk::model::ManagerPtr modelManager = attsys->refModelManager();
-  if(!modelManager)
+  if(!attsys->refModelManager())
     return;
-  smtk::model::UUIDsToAttributeAssignments::const_iterator it;
-  for(it = modelManager->attributeAssignments().begin();
-      it != modelManager->attributeAssignments().end() ; ++it)
-    {
-    smtk::model::AttributeSet associatedAtts = it->second.attributes();
-    typedef smtk::model::AttributeSet::const_iterator cit;
-    for (cit i = associatedAtts.begin(); i != associatedAtts.end(); ++i)
-      {
-      smtk::attribute::AttributePtr attPtr = attsys->findAttribute( (*i) );
-      if(attPtr)
-        {
-        smtk::attribute::DefinitionPtr attDef = attPtr->definition();
-        if(!this->Internals->AllAssignedDefs.contains(attDef))
-          this->Internals->AllAssignedDefs.push_back(attDef);
 
-        const std::set<std::string> &cats = attsys->categories();
-        std::set<std::string>::const_iterator catit;
-        for(catit = cats.begin(); catit != cats.end(); ++catit)
-          {
-          if(attDef->isMemberOf(*catit) &&
-            !this->Internals->AttDefMap[*catit].contains(attDef))
-            {
-            this->Internals->AttDefMap[*catit].push_back(attDef);
-            }
-          }
+  std::vector<smtk::attribute::AttributePtr>::const_iterator it;
+  for(it = atts.begin(); it != atts.end(); ++it)
+    {
+    if((*it)->associatedModelEntityIds().size() == 0)
+      {
+      continue;
+      }
+    smtk::attribute::DefinitionPtr attDef = (*it)->definition();
+    if(!this->Internals->AllAssignedDefs.contains(attDef))
+      this->Internals->AllAssignedDefs.push_back(attDef);
+
+    const std::set<std::string> &cats = attsys->categories();
+    std::set<std::string>::const_iterator catit;
+    for(catit = cats.begin(); catit != cats.end(); ++catit)
+      {
+      if(attDef->isMemberOf(*catit) &&
+        !this->Internals->AttDefMap[*catit].contains(attDef))
+        {
+        this->Internals->AttDefMap[*catit].push_back(attDef);
         }
       }
     }
-
-#ifndef _MSC_VER
-#  pragma GCC diagnostic pop
-#endif
 }
