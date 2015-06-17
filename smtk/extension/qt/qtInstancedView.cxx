@@ -119,8 +119,7 @@ void qtInstancedView::updateAttributeData()
   smtk::attribute::DefinitionPtr attDef;
   foreach(qtAttribute* qatt, this->Internals->AttInstances)
     {
-    this->Widget->layout()->removeWidget(qatt->widget());
-    delete qatt->widget();
+    delete qatt;
     }
   this->Internals->AttInstances.clear();
 
@@ -188,6 +187,9 @@ void qtInstancedView::updateAttributeData()
       qtAttribute* attInstance = new qtAttribute(atts[i], this->widget(), this);
       if(attInstance)
         {
+        //Without any additional info lets use a basic layout with model associations
+        // if any exists
+        attInstance->createBasicLayout(true);
         this->Internals->AttInstances.push_back(attInstance);
         if(attInstance->widget())
           {

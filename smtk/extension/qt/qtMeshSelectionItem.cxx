@@ -110,6 +110,10 @@ qtMeshSelectionItem::qtMeshSelectionItem(
   this->IsLeafItem = true;
   this->Internals->VectorItemOrient = enVectorItemOrient;
   this->createWidget();
+  if (bview)
+    {
+    bview->uiManager()->onMeshSelectionItemCreated(this);
+    }
 }
 
 //----------------------------------------------------------------------------
