@@ -134,8 +134,8 @@ class TestDiscreteSplitEdge(smtk.testing.TestCase):
     # Find the edges to split for this given model
     splits = findSplits(mod)
 
-    spl = GetActiveSession().op('split edge')
-    self.assertIsNotNone(spl, 'Missing split edge operator.')
+    spl = GetActiveSession().op('modify edge')
+    self.assertIsNotNone(spl, 'Missing modify edge operator.')
     SetVectorValue(spl.findAsModelEntity('model'), [mod,])
     sel = spl.specification().findMeshSelection('selection')
     sel.setModifyMode(smtk.attribute.ACCEPT)

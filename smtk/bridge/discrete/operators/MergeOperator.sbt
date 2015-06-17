@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="merge" BaseType="operator">
+    <AttDef Type="merge face" BaseType="operator">
       <ItemDefinitions>
         <ModelEntity Name="model" NumberOfRequiredValues="1">
            <MembershipMask>model</MembershipMask>
@@ -18,7 +18,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
-    <AttDef Type="result(merge)" BaseType="result">
+    <AttDef Type="result(merge face)" BaseType="result">
       <ItemDefinitions>
       </ItemDefinitions>
     </AttDef>
