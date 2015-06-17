@@ -178,8 +178,7 @@ public:
   bool associateAttribute(smtk::attribute::System* sys, const smtk::common::UUID &attribId);
   bool disassociateAttribute(smtk::attribute::System* sys,
                              const smtk::common::UUID &attribId, bool reverse = true);
-  bool disassociateAllAttributes(smtk::attribute::System* sys,
-   const smtk::common::UUID& fromEntity, bool reverse = true);
+  bool disassociateAllAttributes(smtk::attribute::System* sys, bool reverse = true);
 
   AttributeSet attributes() const;
 
@@ -234,7 +233,7 @@ public:
   // Manage embedded_in/includes relationships
   EntityRef& embedEntity(const EntityRef& thingToEmbed);
   template<typename T> EntityRef& embedEntities(const T& container);
-  bool isEmbedded(EntityRef& entity) const;
+  bool isEmbedded(EntityRef& ent) const;
   EntityRef embeddedIn() const;
   EntityRef& unembedEntity(const EntityRef& thingToUnembed);
   template<typename T> EntityRef& unembedEntities(const T& container);
