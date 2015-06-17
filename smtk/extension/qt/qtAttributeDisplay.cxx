@@ -280,9 +280,9 @@ void qtAttributeDisplay::initSelectPropCombo(
 //  this->Internals->PropComboModel->disconnect();
   // Adding an entry "Attribute" for the case that we just
   // want the fact that the attribute existence, not an item value
-  QStandardItem* item = new QStandardItem;
-  item->setText("Attribute");
-  this->Internals->PropComboModel->insertRow(0, item);
+  QStandardItem* pitem = new QStandardItem;
+  pitem->setText("Attribute");
+  this->Internals->PropComboModel->insertRow(0, pitem);
  
   if(!attDef)
     {
@@ -315,16 +315,16 @@ void qtAttributeDisplay::initSelectPropCombo(
       // No User data, not editable
       std::string strItemLabel = attItem->label().empty() ? attItem->name() : attItem->label();
       std::string keyName = childData->definition()->type() + strItemLabel;
-      QStandardItem* item = new QStandardItem;
-      item->setText(strItemLabel.c_str());
+      pitem = new QStandardItem;
+      pitem->setText(strItemLabel.c_str());
 
       QVariant vdata;
       vdata.setValue(static_cast<void*>(attItem.get()));
-      item->setData(vdata, Qt::UserRole);
-      this->Internals->PropComboModel->insertRow(row++, item);
+      pitem->setData(vdata, Qt::UserRole);
+      this->Internals->PropComboModel->insertRow(row++, pitem);
       if(attItem->advanceLevel())
         {
-        item->setFont(this->Internals->UIManager->advancedFont());
+        pitem->setFont(this->Internals->UIManager->advancedFont());
         }
       }
     }

@@ -749,7 +749,7 @@ void qtAssociationWidget::onDomainAssociationChanged()
     return;
     }
 
-  domainItem.disassociateAllAttributes(attSystem, uid); //detach all attributes
+  domainItem.disassociateAllAttributes(attSystem); //detach all attributes
 
   if(combo->currentText().isEmpty())
     {

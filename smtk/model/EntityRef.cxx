@@ -681,7 +681,7 @@ bool EntityRef::disassociateAttribute(smtk::attribute::System* sys,
 /**\brief Remove all attribute association form this entityref
   */
 bool EntityRef::disassociateAllAttributes(smtk::attribute::System* sys,
-   const smtk::common::UUID& fromEntity, bool reverse)
+   bool reverse)
 {
   AttributeSet atts = this->attributes();
   AttributeSet::const_iterator it;
