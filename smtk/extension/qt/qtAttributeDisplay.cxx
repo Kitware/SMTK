@@ -328,7 +328,7 @@ void qtAttributeDisplay::initSelectPropCombo(
         }
       }
     }
-  int prevIdx = this->Internals->PropDefsCombo->findText(currentItemName);
+  int prevIdx = this->Internals->SelectPropCombo->findText(currentItemName);
   this->Internals->SelectPropCombo->setCurrentIndex(prevIdx >= 0 ? prevIdx : 0);
   this->Internals->SelectPropCombo->blockSignals(false);
 }
