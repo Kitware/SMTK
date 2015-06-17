@@ -58,8 +58,9 @@ namespace smtk
       virtual void createWidget( );
       smtk::attribute::ItemPtr getAttributeItemFromItem(QTableWidgetItem * item);
 
-      void initSelectionFilters();
-      void initSelectPropCombo(smtk::attribute::DefinitionPtr attDef);
+      void initSelectionFilters(const QString& currentItemName="");
+      void initSelectPropCombo(smtk::attribute::DefinitionPtr attDef,
+                               const QString& currentItemName="");
 
     private:
 

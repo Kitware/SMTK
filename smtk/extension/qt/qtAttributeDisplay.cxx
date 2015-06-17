@@ -167,25 +167,6 @@ void qtAttributeDisplay::createWidget( )
 
   this->Internals->AttDefMap.clear();
 
-/*
-  QSizePolicy tableSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-  // Attribute table
-  this->Internals->ValuesTable = new qtTableWidget(this);
-  this->Internals->ValuesTable->setVisible(false);
-  this->Internals->ValuesTable->setSizePolicy(tableSizePolicy);
-  BottomLayout->addWidget(this->Internals->ValuesTable);
-  this->Internals->ValuesTable->horizontalHeader()->setResizeMode(
-    QHeaderView::ResizeToContents);
-  this->Internals->ValuesTable->verticalHeader()->setResizeMode(
-    QHeaderView::ResizeToContents);
-  this->Internals->ValuesTable->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
-  QObject::connect(this->Internals->ValuesTable,
-    SIGNAL(itemChanged (QTableWidgetItem *)),
-    this, SLOT(onAttributeValueChanged(QTableWidgetItem * )));
-  this->Internals->ValuesTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-  this->Internals->ValuesTable->setSelectionMode(QAbstractItemView::SingleSelection);
-*/
-
   thislayout->addWidget(this->Internals->FiltersFrame);
 //  this->addWidget(BottomFrame);
 
@@ -215,74 +196,7 @@ smtk::attribute::ItemPtr qtAttributeDisplay::getAttributeItemFromItem(
     static_cast<Item*>(item->data(Qt::UserRole).value<void *>()) : NULL;
   return rawPtr ? rawPtr->pointer() : smtk::attribute::ItemPtr();
 }
-/*
-//----------------------------------------------------------------------------
-void qtAttributeDisplay::updateTableWithProperties()
-{
-  this->Internals->ValuesTable->blockSignals(true);
-  this->Internals->ValuesTable->clear();
-  this->Internals->ValuesTable->setRowCount(0);
-  this->Internals->ValuesTable->setColumnCount(0);
 
-  Definition* rawPtr = static_cast<Definition*>(
-    this->Internals->PropDefsCombo->itemData(
-    this->Internals->PropDefsCombo->currentIndex(), Qt::UserRole).value<void *>());
-  if(!rawPtr)
-    {
-    this->Internals->ValuesTable->blockSignals(false);
-    return;
-    }
-
-  std::vector<smtk::attribute::AttributePtr> result;
-  System *attSystem = rawPtr->pointer()->system();
-  attSystem->findAttributes(rawPtr->pointer(), result);
-  if(result.size() == 0)
-    {
-    this->Internals->ValuesTable->blockSignals(false);
-    return;
-    }
-
-  // create column headers
-  QTableWidget* vtWidget = this->Internals->ValuesTable;
-  vtWidget->setColumnCount(1);
-  vtWidget->setHorizontalHeaderItem(0, new QTableWidgetItem("Property"));
-
-  std::vector<smtk::attribute::AttributePtr>::iterator it;
-  int j = 1;
-  for (it=result.begin(); it!=result.end(); ++it)
-    {
-    if(!this->Internals->AttSelections.contains((*it)->name()) ||
-       this->Internals->AttSelections[(*it)->name()] == Qt::Unchecked)
-      {
-      continue;
-      }
-    this->insertTableColumn(vtWidget, j, (*it)->name().c_str(),
-      rawPtr->pointer()->advanceLevel());
-    j++;
-    }
-
-  for(int r=1; r<this->Internals->SelectPropCombo->count(); r++)
-    {
-    QStandardItem* current = this->Internals->checkablePropComboModel->item(r);
-    if(current && current->checkState() == Qt::Checked)
-      {
-      Item* irawPtr =
-        static_cast<Item*>(current->data(Qt::UserRole).value<void *>());
-      if(irawPtr)
-        {
-        smtk::attribute::ItemPtr attItem =
-          irawPtr ? irawPtr->pointer() : smtk::attribute::ItemPtr();
-        smtk::attribute::AttributePtr att = attItem->attribute();
-        this->addComparativeProperty(current, att->definition());
-        }
-      }
-    }
-
-  this->Internals->ValuesTable->blockSignals(false);
-  this->Internals->ValuesTable->resizeColumnsToContents();
-  this->Internals->ValuesTable->resizeRowsToContents();
-}
-*/
 //----------------------------------------------------------------------------
 void qtAttributeDisplay::onShowCategory()
 {
@@ -296,6 +210,8 @@ void qtAttributeDisplay::onShowCategory(const std::string& strCategory)
 {
   this->Internals->SelectPropCombo->blockSignals(true);
   this->Internals->PropDefsCombo->blockSignals(true);
+  QString currentDef = this->Internals->PropDefsCombo->currentText();
+  QString currentItem = this->Internals->SelectPropCombo->currentText();
   this->Internals->SelectPropCombo->clear();
   this->Internals->PropDefsCombo->clear();
   this->Internals->SelectPropCombo->blockSignals(false);
@@ -329,8 +245,9 @@ void qtAttributeDisplay::onShowCategory(const std::string& strCategory)
 //  this->Internals->PropDefsCombo->setVisible(!viewAtt);
   if(this->Internals->PropDefsCombo->count() > 0)
     {
-    this->Internals->PropDefsCombo->setCurrentIndex(0);
-    this->initSelectionFilters();
+    int prevIdx = this->Internals->PropDefsCombo->findText(currentDef);
+    this->Internals->PropDefsCombo->setCurrentIndex(prevIdx >= 0 ? prevIdx : 0);
+    this->initSelectionFilters(currentItem);
     }
 
   this->Internals->PropDefsCombo->blockSignals(false);
@@ -338,7 +255,7 @@ void qtAttributeDisplay::onShowCategory(const std::string& strCategory)
 }
 
 //----------------------------------------------------------------------------
-void qtAttributeDisplay::initSelectionFilters()
+void qtAttributeDisplay::initSelectionFilters(const QString& currentItemName)
 {
 //  this->Internals->ValuesTable->setVisible(1);
 
@@ -348,14 +265,14 @@ void qtAttributeDisplay::initSelectionFilters()
   if(!rawPtr)
     return;
 
-  this->initSelectPropCombo(rawPtr->pointer());
+  this->initSelectPropCombo(rawPtr->pointer(), currentItemName);
   this->onFieldSelected();
   //  this->updateTableWithProperties();
 }
 
 //----------------------------------------------------------------------------
 void qtAttributeDisplay::initSelectPropCombo(
-  smtk::attribute::DefinitionPtr attDef)
+  smtk::attribute::DefinitionPtr attDef, const QString& currentItemName)
 {
   this->Internals->SelectPropCombo->blockSignals(true);
   this->Internals->SelectPropCombo->clear();
@@ -411,8 +328,8 @@ void qtAttributeDisplay::initSelectPropCombo(
         }
       }
     }
-
-  this->Internals->SelectPropCombo->setCurrentIndex(0);
+  int prevIdx = this->Internals->PropDefsCombo->findText(currentItemName);
+  this->Internals->SelectPropCombo->setCurrentIndex(prevIdx >= 0 ? prevIdx : 0);
   this->Internals->SelectPropCombo->blockSignals(false);
 }
 
@@ -436,33 +353,12 @@ void qtAttributeDisplay::onFieldSelected()
 
   emit this->attributeFieldSelected(rawPtr->pointer()->type().c_str(),
     irawPtr ? irawPtr->pointer()->name().c_str() : "");
-
-/*
-  if(rawPtr)
-    {
-    this->Internals->ValuesTable->blockSignals(true);
-    smtk::attribute::ItemPtr attItem = rawPtr->pointer();
-    smtk::attribute::AttributePtr att = attItem->attribute();
-    if(item->checkState() == Qt::Checked)
-      {
-      this->addComparativeProperty(item, att->definition());
-      }
-    else
-      {
-      this->removeComparativeProperty(item->text());
-      }
-
-    this->Internals->ValuesTable->blockSignals(false);
-    this->Internals->ValuesTable->resizeColumnsToContents();
-    this->Internals->ValuesTable->resizeRowsToContents();
-    }
-*/
 }
 
 //----------------------------------------------------------------------------
 void qtAttributeDisplay::onAttributeDefSelected()
 {
-  this->initSelectionFilters();
+  this->initSelectionFilters(this->Internals->SelectPropCombo->currentText());
   //this->updateTableWithProperties();
 }
 
