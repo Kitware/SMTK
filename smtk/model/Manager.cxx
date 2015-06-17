@@ -149,11 +149,6 @@ const UUIDsToTessellations& Manager::analysisMesh() const
   return *this->m_analysisMesh.get();
 }
 
-UUIDsToAttributeAssignments& Manager::attributeAssignments()
-{
-  return *this->m_attributeAssignments;
-}
-
 const UUIDsToAttributeAssignments& Manager::attributeAssignments() const
 {
   return *this->m_attributeAssignments;
@@ -231,7 +226,7 @@ SessionInfoBits Manager::erase(const UUID& uid, SessionInfoBits flags)
     this->tessellations().erase(uid);
 
   if (actual & SESSION_ATTRIBUTE_ASSOCIATIONS)
-    this->attributeAssignments().erase(uid);
+    this->m_attributeAssignments->erase(uid);
 
   // TODO: If this entity is a model and has parents, we should make
   //       the parent own the child models? Erase the children? Leave
@@ -2865,7 +2860,7 @@ bool Manager::associateAttribute(
       allowed = false;
     }
   if (allowed)
-    this->attributeAssignments()[toEntity].associateAttribute(attribId);
+    (*this->m_attributeAssignments)[toEntity].associateAttribute(attribId);
   return allowed;
 }
 

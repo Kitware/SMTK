@@ -120,7 +120,6 @@ public:
   UUIDsToTessellations& analysisMesh();
   const UUIDsToTessellations& analysisMesh() const;
 
-  UUIDsToAttributeAssignments& attributeAssignments();
   const UUIDsToAttributeAssignments& attributeAssignments() const;
 
   BitFlags type(const smtk::common::UUID& ofEntity) const;

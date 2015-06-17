@@ -178,7 +178,9 @@ public:
   bool associateAttribute(smtk::attribute::System* sys, const smtk::common::UUID &attribId);
   bool disassociateAttribute(smtk::attribute::System* sys,
                              const smtk::common::UUID &attribId, bool reverse = true);
-  AttributeAssignments& attributes();
+  bool disassociateAllAttributes(smtk::attribute::System* sys,
+   const smtk::common::UUID& fromEntity, bool reverse = true);
+
   AttributeSet attributes() const;
 
 #ifndef SHIBOKEN_SKIP

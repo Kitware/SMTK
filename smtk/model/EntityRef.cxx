@@ -678,19 +678,28 @@ bool EntityRef::disassociateAttribute(smtk::attribute::System* sys,
   return mgr->disassociateAttribute(sys, attribId, this->m_entity, reverse);
 }
 
-/**\brief Does the entityref have any attributes associated with it?
+/**\brief Remove all attribute association form this entityref
   */
-AttributeAssignments& EntityRef::attributes()
+bool EntityRef::disassociateAllAttributes(smtk::attribute::System* sys,
+   const smtk::common::UUID& fromEntity, bool reverse)
 {
-  ManagerPtr mgr = this->m_manager.lock();
-  return mgr->attributeAssignments()[this->m_entity];
+  AttributeSet atts = this->attributes();
+  AttributeSet::const_iterator it;
+  bool res = true;
+  for(it = atts.begin(); it != atts.end(); ++it)
+    {
+    if(!this->disassociateAttribute(sys, *it, reverse))
+      res = false;
+    }
+  return res;
 }
+
 /**\brief Does the entityref have any attributes associated with it?
   */
 AttributeSet EntityRef::attributes() const
 {
   ManagerPtr mgr = this->m_manager.lock();
-  return mgr->attributeAssignments()[this->m_entity].attributes();
+  return mgr->attributeAssignments().find(this->m_entity)->second.attributes();
 }
 ///@}
 

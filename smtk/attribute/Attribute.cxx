@@ -280,18 +280,18 @@ smtk::attribute::AttributePtr Attribute::pointer() const
   */
 void Attribute::removeAllAssociations()
 {
+  smtk::model::ManagerPtr modelMgr = this->modelManager();
+  if (modelMgr)
+    {
+    smtk::model::EntityRefArray::const_iterator it;
+    for (it = this->m_associations->begin(); it != this->m_associations->end(); ++it)
+      {
+      modelMgr->disassociateAttribute(this->system(), this->m_id, it->entity(), false);
+      }
+    }
+
   if (this->m_associations)
     this->m_associations->reset();
-
-  smtk::model::ManagerPtr modelMgr = this->modelManager();
-  if (!modelMgr)
-    return;
-  smtk::model::UUIDsToAttributeAssignments::iterator it;
-  for(it = modelMgr->attributeAssignments().begin();
-      it != modelMgr->attributeAssignments().end() ; ++it)
-    {
-    it->second.disassociateAttribute(this->id());
-    }
 }
 
 /**\brief Is the model \a entity associated with this attribute?
