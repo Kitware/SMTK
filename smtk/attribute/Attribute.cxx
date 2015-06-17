@@ -281,7 +281,7 @@ smtk::attribute::AttributePtr Attribute::pointer() const
 void Attribute::removeAllAssociations()
 {
   smtk::model::ManagerPtr modelMgr = this->modelManager();
-  if (modelMgr)
+  if (modelMgr && this->m_associations)
     {
     smtk::model::EntityRefArray::const_iterator it;
     for (it = this->m_associations->begin(); it != this->m_associations->end(); ++it)
