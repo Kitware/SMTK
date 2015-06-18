@@ -801,6 +801,8 @@ QDockWidget* qtModelView::operatorsDock()
     this, SIGNAL(meshSelectionItemCreated(
                  smtk::attribute::qtMeshSelectionItem*,
                  const std::string&, const smtk::common::UUID&)));
+  QObject::connect(opWidget, SIGNAL(entitiesSelected(const smtk::common::UUIDs&)),
+    this, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)));
 
   QWidget* dockP = NULL;
   foreach(QWidget *widget, QApplication::topLevelWidgets())
