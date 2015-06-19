@@ -158,6 +158,18 @@ void vtkModelMultiBlockSource::Dirty()
   this->SetCachedOutput(NULL);
 }
 
+/// Get whether the model has an analysis mesh.
+bool vtkModelMultiBlockSource::GetHasAnalysisMesh() const
+{
+  if(this->ModelEntityID && this->ModelEntityID[0])
+    {
+    smtk::common::UUID uid(this->ModelEntityID);
+    smtk::model::EntityRef modelRef(this->ModelMgr, uid);
+    return modelRef.hasAnalysisMesh() != NULL;
+    }
+  return false;
+}
+
 /*! \fn vtkModelMultiBlockSource::GetDefaultColor()
  *  \brief Get the RGBA color for model entities that do not have a color property set.
  *
@@ -230,7 +242,7 @@ static void AddEntityTessToPolyData(
   // gotMesh fetches Analysis mesh if it exists, falling back
   // to model tessellation if not.
   const smtk::model::Tessellation* tess = showAnalysisTessellation ?
-    entityref.gotMesh() :
+    entityref.hasAnalysisMesh() :
     entityref.hasTessellation();
   if (!tess)
     return;
