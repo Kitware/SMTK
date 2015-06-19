@@ -6,9 +6,10 @@ set( CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 1000 )
 set (CTEST_CUSTOM_WARNING_EXCEPTION
   ${CTEST_CUSTOM_WARNING_EXCEPTION}
   "smtk/SMTKCorePython"
-  ".*ClientServer.cxx:[0-9]*:[0-9]*: warning: use of old-style cast"
-  ".*Python/.* warning: declaration of .* shadows a member of 'this' [-Wshadow]"
-  ".*VTK/Wrapping/PythonCore/vtkPythonArgs.h.* warning: use of old-style cast [-Wold-style-cast]"
+  "ClientServer.cxx:[0-9]*:[0-9]*: warning: use of old-style cast"
+  "Python/.* warning: declaration of .* shadows a member of 'this' \\[-Wshadow\\]"
+  "vtkPythonArgs.h.* warning: use of old-style cast \\[-Wold-style-cast\\]"
+  "Done, 0 warnings"
 )
 
 ##------------------------------------------------------------------------------
