@@ -212,7 +212,7 @@ bool qtModelOperationWidget::setCurrentOperation(
   QObject::connect(uiManager, SIGNAL(meshSelectionItemCreated(smtk::attribute::qtMeshSelectionItem*)),
     this, SLOT(onMeshSelectionItemCreated(smtk::attribute::qtMeshSelectionItem*)));
   QObject::connect(uiManager, SIGNAL(entitiesSelected(const smtk::common::UUIDs&)),
-    this, SLOT(selectEntityItems(const smtk::common::UUIDs&, bool)));
+    this, SIGNAL(entitiesSelected(const smtk::common::UUIDs&)));
 
   qtInstancedView* theView = qobject_cast<qtInstancedView*>(
     uiManager->initializeView(opParent, instanced, false));
