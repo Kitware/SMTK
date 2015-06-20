@@ -802,7 +802,7 @@ QDockWidget* qtModelView::operatorsDock()
                  smtk::attribute::qtMeshSelectionItem*,
                  const std::string&, const smtk::common::UUID&)));
   QObject::connect(opWidget, SIGNAL(entitiesSelected(const smtk::common::UUIDs&)),
-    this, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)));
+    this, SLOT(selectEntities(const smtk::common::UUIDs&)));
 
   QWidget* dockP = NULL;
   foreach(QWidget *widget, QApplication::topLevelWidgets())

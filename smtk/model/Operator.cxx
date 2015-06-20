@@ -53,11 +53,12 @@ Operator::Operator()
 /// Destructor. Removes its specification() from the session's operator system.
 Operator::~Operator()
 {
-  if (this->m_session)
+  if (this->m_session  &&
+      this->m_session->operatorSystem() &&
+      this->m_specification)
     {
-    if (this->m_specification)
-      this->session()->operatorSystem()->removeAttribute(
-        this->m_specification);
+    this->m_session->operatorSystem()->removeAttribute(
+      this->m_specification);
     }
 }
 
