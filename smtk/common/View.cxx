@@ -27,10 +27,10 @@ namespace smtk {
           return *this;
         }
 //----------------------------------------------------------------------------
-    bool View::Component::attributeAsBool(const std::string &name, bool &val) const
+    bool View::Component::attributeAsBool(const std::string &attname, bool &val) const
     {
       std::string s;
-      if (!this->attribute(name, s))
+      if (!this->attribute(attname, s))
         {
         return false; // name doesn't exist
         }
@@ -53,9 +53,7 @@ namespace smtk {
     bool View::Component::contentsAsInt(int &val) const
     {
       std::istringstream iss(this->m_contents);
-      char c;
-      int i;
-      iss >> i;
+      iss >> val;
       if (!iss.good())
           {
           return false;
@@ -90,10 +88,10 @@ namespace smtk {
 
 
 //----------------------------------------------------------------------------
-    bool View::Component::attribute(const std::string &name, std::string &value) const
+    bool View::Component::attribute(const std::string &attname, std::string &value) const
     {
       std::map<std::string, std::string>::const_iterator it;
-      it = this->m_attributes.find(name);
+      it = this->m_attributes.find(attname);
       if (it == this->m_attributes.end())
         {
         return false;
@@ -104,9 +102,9 @@ namespace smtk {
 
 //----------------------------------------------------------------------------
     View::Component &
-    View::Component::setAttribute(const std::string &name, const std::string &value)
+    View::Component::setAttribute(const std::string &attname, const std::string &value)
         {
-          this->m_attributes[name] = value;
+          this->m_attributes[attname] = value;
           return *this;
         }
 //----------------------------------------------------------------------------

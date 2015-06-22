@@ -1,0 +1,19 @@
+set( CTEST_CUSTOM_MAXIMUM_NUMBER_OF_ERRORS 1000 )
+set( CTEST_CUSTOM_MAXIMUM_NUMBER_OF_WARNINGS 1000 )
+
+##------------------------------------------------------------------------------
+## Ignore warnings in generated code during the build process
+set (CTEST_CUSTOM_WARNING_EXCEPTION
+  ${CTEST_CUSTOM_WARNING_EXCEPTION}
+  "smtk/SMTKCorePython"
+  "ClientServer.cxx:[0-9]*:[0-9]*: warning: use of old-style cast"
+  "Python/.* warning: declaration of .* shadows a member of 'this' \\[-Wshadow\\]"
+  "vtkPythonArgs.h.* warning: use of old-style cast \\[-Wold-style-cast\\]"
+  "Done, 0 warnings"
+)
+
+##------------------------------------------------------------------------------
+## Regular expression for error exceptions during build process
+#set (CTEST_CUSTOM_ERROR_EXCEPTION
+#  ${CTEST_CUSTOM_ERROR_EXCEPTION}
+#)

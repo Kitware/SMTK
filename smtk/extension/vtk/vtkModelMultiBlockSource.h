@@ -57,6 +57,8 @@ public:
   vtkSetMacro(ShowAnalysisTessellation,int);
   vtkBooleanMacro(ShowAnalysisTessellation,int);
 
+  bool GetHasAnalysisMesh() const;
+
   vtkGetMacro(AllowNormalGeneration,int);
   vtkSetMacro(AllowNormalGeneration,int);
   vtkBooleanMacro(AllowNormalGeneration,int);
@@ -66,6 +68,7 @@ public:
   static const char* GetEntityTagName() { return "Entity"; }
   static const char* GetGroupTagName() { return "Group"; }
   static const char* GetVolumeTagName() { return "Volume"; }
+  static const char* GetAttributeTagName() { return "Attribute"; }
 
 protected:
   vtkModelMultiBlockSource();

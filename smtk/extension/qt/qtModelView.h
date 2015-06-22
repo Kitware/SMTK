@@ -67,7 +67,9 @@ public:
 
 public slots:
   void selectEntityItems(const smtk::common::UUIDs& selEntityRefs,
-    bool blocksignal = false);
+    bool blocksignal);
+  void selectEntities(const smtk::common::UUIDs& selEntIds)
+  { this->selectEntityItems(selEntIds, false); }
   void showContextMenu(const QPoint &p);
   void operatorInvoked();
   void toggleEntityVisibility( const QModelIndex& );

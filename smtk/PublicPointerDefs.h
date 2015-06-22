@@ -155,6 +155,7 @@ namespace smtk
   {
     class ExportJSON;
     class ImportJSON;
+    class OperatorLog;
   }
 
   namespace common

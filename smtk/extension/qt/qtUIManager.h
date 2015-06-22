@@ -47,8 +47,6 @@ namespace smtk
 
     Q_OBJECT
 
-    friend class qtRootView;
-
     public:
     qtUIManager(smtk::attribute::System &system,
                 const std::string &toplevelViewName);
@@ -181,9 +179,16 @@ namespace smtk
       void modelEntityItemCreated(smtk::attribute::qtModelEntityItem* entItem);
       void meshSelectionItemCreated(smtk::attribute::qtMeshSelectionItem*);
       void uiChanged(smtk::attribute::qtBaseView*, smtk::attribute::ItemPtr);
+      void entitiesSelected(const smtk::common::UUIDs&);
+
+    friend class qtRootView;
+    friend class qtAssociationWidget;
+
+    protected slots:
+      void invokeEntitiesSelected(const smtk::common::UUIDs& uuids)
+        { emit this->entitiesSelected(uuids); }
 
     protected:
-
       virtual void internalInitialize();
 
    private:

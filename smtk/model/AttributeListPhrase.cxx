@@ -42,7 +42,7 @@ std::string AttributeListPhrase::title()
 {
   std::ostringstream message;
   DescriptivePhrases::size_type sz =
-    this->m_attributes.empty() ? this->m_entity.attributes().attributes().size() : this->m_attributes.size();
+    this->m_attributes.empty() ? this->m_entity.attributes().size() : this->m_attributes.size();
   message << sz << " " << (sz == 1 ? "attribute" : "attributes");
   return message.str();
 }

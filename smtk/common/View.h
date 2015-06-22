@@ -49,13 +49,13 @@ namespace smtk
         
         Component &setContents(const std::string &c);
 
-        Component &setAttribute(const std::string &name, const std::string &value);
+        Component &setAttribute(const std::string &attname, const std::string &value);
 
         //Description:
         // Returns true if the component has an attribute called name and will
         // set value to the attribute's values.  Else it returns false
-        bool attribute(const std::string &name, std::string &value) const;
-        bool attributeAsBool(const std::string &name, bool &value) const;
+        bool attribute(const std::string &attname, std::string &value) const;
+        bool attributeAsBool(const std::string &attname, bool &value) const;
         const std::map<std::string, std::string> &attributes() const
         {return this->m_attributes;}
       

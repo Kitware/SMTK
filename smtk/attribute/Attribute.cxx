@@ -29,6 +29,8 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/common/UUIDGenerator.h"
 
+#include "boost/algorithm/string.hpp"
+
 #include <iostream>
 
 using namespace smtk::attribute;
@@ -137,6 +139,79 @@ bool Attribute::isMemberOf(const std::string &category) const
 bool Attribute::isMemberOf(const std::vector<std::string> &categories) const
 {
   return this->m_definition->isMemberOf(categories);
+}
+
+/**\brief Return an item given a string specifying a path to it.
+  *
+  */
+smtk::attribute::ConstItemPtr Attribute::itemAtPath(
+  const std::string& path, const std::string& seps) const
+{
+  smtk::attribute::ConstItemPtr result;
+  std::vector<std::string> tree;
+  std::vector<std::string>::iterator it;
+  boost::split(tree, path, boost::is_any_of(seps));
+  if (tree.empty())
+    return result;
+
+  it = tree.begin();
+  smtk::attribute::ConstItemPtr current = this->find(*it, NO_CHILDREN);
+  if (current)
+    {
+    bool ok = true;
+    for (++it; it != tree.end(); ++it)
+      {
+      ConstValueItemPtr vitm = smtk::dynamic_pointer_cast<const ValueItem>(current);
+      ConstGroupItemPtr gitm = smtk::dynamic_pointer_cast<const GroupItem>(current);
+      if (vitm && (current = vitm->findChild(*it, NO_CHILDREN)))
+        continue; // OK, keep descending
+      else if (gitm && (current = gitm->find(*it)))
+        continue; // OK, keep descending
+      else
+        {
+        ok = false;
+        break;
+        }
+      }
+    if (ok)
+      result = current;
+    }
+  return result;
+}
+
+smtk::attribute::ItemPtr Attribute::itemAtPath(
+  const std::string& path, const std::string& seps)
+{
+  smtk::attribute::ItemPtr result;
+  std::vector<std::string> tree;
+  std::vector<std::string>::iterator it;
+  boost::split(tree, path, boost::is_any_of(seps));
+  if (tree.empty())
+    return result;
+
+  it = tree.begin();
+  smtk::attribute::ItemPtr current = this->find(*it, NO_CHILDREN);
+  if (current)
+    {
+    bool ok = true;
+    for (++it; it != tree.end(); ++it)
+      {
+      ValueItemPtr vitm = smtk::dynamic_pointer_cast<ValueItem>(current);
+      GroupItemPtr gitm = smtk::dynamic_pointer_cast<GroupItem>(current);
+      if (vitm && (current = vitm->findChild(*it, NO_CHILDREN)))
+        continue; // OK, keep descending
+      else if (gitm && (current = gitm->find(*it)))
+        continue; // OK, keep descending
+      else
+        {
+        ok = false;
+        break;
+        }
+      }
+    if (ok)
+      result = current;
+    }
+  return result;
 }
 
 namespace {
@@ -280,6 +355,16 @@ smtk::attribute::AttributePtr Attribute::pointer() const
   */
 void Attribute::removeAllAssociations()
 {
+  smtk::model::ManagerPtr modelMgr = this->modelManager();
+  if (modelMgr && this->m_associations)
+    {
+    smtk::model::EntityRefArray::const_iterator it;
+    for (it = this->m_associations->begin(); it != this->m_associations->end(); ++it)
+      {
+      modelMgr->disassociateAttribute(this->system(), this->m_id, it->entity(), false);
+      }
+    }
+
   if (this->m_associations)
     this->m_associations->reset();
 }
@@ -342,11 +427,9 @@ smtk::common::UUIDs Attribute::associatedModelEntityIds() const
   */
 bool Attribute::associateEntity(const smtk::common::UUID& entity)
 {
-  return this->m_associations ?
-    this->m_associations->appendValue(
-      smtk::model::EntityRef(
-        this->modelManager(), entity)) :
-    false;
+  smtk::model::ManagerPtr modelMgr = this->modelManager();
+  return this->associateEntity(
+        smtk::model::EntityRef(modelMgr, entity));
 }
 
 /**\brief Associate a new-style model ID (a EntityRef) with this attribute.
@@ -355,9 +438,21 @@ bool Attribute::associateEntity(const smtk::common::UUID& entity)
   * successful. It may return false if the association is prohibited.
   * (This is not currently implemented.)
   */
-bool Attribute::associateEntity(const smtk::model::EntityRef& entity)
+bool Attribute::associateEntity(const smtk::model::EntityRef& entityRef)
 {
-  return this->m_associations ? this->m_associations->appendValue(entity) : false;
+  bool res = this->isEntityAssociated(entityRef);
+  if(res)
+    return res;
+
+  res = (this->m_associations) ?
+      this->m_associations->appendValue(entityRef) : false;
+  if(!res)
+    return res;
+
+  smtk::model::ManagerPtr modelMgr = this->modelManager();
+  if (modelMgr)
+    res = modelMgr->associateAttribute(this->system(), this->id(), entityRef.entity());
+  return res;
 }
 
 /**\brief Disassociate a new-style model ID (a UUID) from this attribute.
@@ -380,7 +475,7 @@ void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool revers
       smtk::model::ManagerPtr modelMgr = this->modelManager();
       if (modelMgr)
         {
-        modelMgr->disassociateAttribute(this->id(), entity, false);
+        modelMgr->disassociateAttribute(this->system(), this->id(), entity, false);
         }
       }
     }
@@ -401,7 +496,7 @@ void Attribute::disassociateEntity(const smtk::model::EntityRef& entity, bool re
     if (reverse)
       {
       smtk::model::EntityRef mutableEntity(entity);
-      mutableEntity.disassociateAttribute(this->id(), false);
+      mutableEntity.disassociateAttribute(this->system(), this->id(), false);
       }
     }
 }

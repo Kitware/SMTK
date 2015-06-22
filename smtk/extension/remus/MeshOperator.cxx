@@ -154,10 +154,23 @@ OperatorResult MeshOperator::operateInternal()
     //parse the job result as a json string
     smtk::io::ImportJSON::intoModelManager(updatedModel.data(), this->manager());
 
+    // Now set or increment the SMTK_MESH_GEN_PROP property for the models
+    // The client can use this property to check if there is an analysis mesh created
+    // for the model
+    smtk::model::Models::iterator it;
+    for (it = models.begin(); it != models.end(); ++it)
+      {
+      IntegerList& gen(this->manager()->integerProperty(it->entity(), SMTK_MESH_GEN_PROP));
+      if (gen.empty())
+        gen.push_back(0);
+      else
+        ++gen[0];
+      }
+
     //current question is how do we know how to mark the tessellations
     //of the model as modified?
     this->addEntitiesToResult(result, models, MODIFIED);
-    result->findModelEntity("tess_changed")->setValues(models.begin(), models.end());
+    result->findModelEntity("mesh_created")->setValues(models.begin(), models.end());
     }
   return result;
 }

@@ -113,10 +113,10 @@ void qtAssociationWidget::initWidget( )
   // signals/slots
   QObject::connect(this->Internals->CurrentList,
     SIGNAL(currentItemChanged (QListWidgetItem * , QListWidgetItem * )),
-    this, SLOT(onCurrentListSelectionChanged(QListWidgetItem * , QListWidgetItem * )));
+    this, SLOT(onEntitySelected(QListWidgetItem * , QListWidgetItem * )));
   QObject::connect(this->Internals->AvailableList,
     SIGNAL(currentItemChanged (QListWidgetItem * , QListWidgetItem * )),
-    this, SLOT(onAvailableListSelectionChanged(QListWidgetItem * , QListWidgetItem * )));
+    this, SLOT(onEntitySelected(QListWidgetItem * , QListWidgetItem * )));
 
   QObject::connect(this->Internals->MoveToRight,
     SIGNAL(clicked()), this, SLOT(onRemoveAssigned()));
@@ -233,18 +233,20 @@ void qtAssociationWidget::showAttributeAssociation(
       if( theEntiy.hasAttribute( (*itAtt)->id() ) )
         {
         this->addAttributeAssociationItem(
-          this->Internals->CurrentList, *itAtt);
+          this->Internals->CurrentList, *itAtt, false);
         }
       else if(!uniqueDefs.contains(*itAttDef))
         {
         // we need to make sure this att is not associated with other
         // same type model entities.
         this->addAttributeAssociationItem(
-          this->Internals->AvailableList, *itAtt);
+          this->Internals->AvailableList, *itAtt, false);
         }
       }
     }
 
+  this->Internals->CurrentList->sortItems();
+  this->Internals->AvailableList->sortItems();
   this->Internals->CurrentList->blockSignals(false);
   this->Internals->AvailableList->blockSignals(false);
 }
@@ -304,8 +306,9 @@ void qtAssociationWidget::showEntityAssociation(
   typedef smtk::model::EntityRefs::const_iterator cit;
   for (cit i =modelEnts.begin(); i != modelEnts.end(); ++i)
     {
-    this->addModelAssociationListItem(this->Internals->CurrentList, *i);
+    this->addModelAssociationListItem(this->Internals->CurrentList, *i, false);
     }
+  this->Internals->CurrentList->sortItems();
   std::set<smtk::model::EntityRef> usedModelEnts = this->processAttUniqueness(attDef, modelEnts);
 
   // Now that we have add all the used model entities, we need to move on to all model
@@ -331,9 +334,9 @@ void qtAssociationWidget::showEntityAssociation(
   for(EntityRefs::iterator i = avail.begin(); i != avail.end(); ++i)
     {
     if (tmpGrp.meetsMembershipConstraints(*i))
-      this->addModelAssociationListItem(this->Internals->AvailableList, *i);
+      this->addModelAssociationListItem(this->Internals->AvailableList, *i, false);
     }
-
+  this->Internals->AvailableList->sortItems();
   this->Internals->CurrentList->blockSignals(false);
   this->Internals->AvailableList->blockSignals(false);
 }
@@ -422,17 +425,20 @@ qtAssociationWidget::processDefUniqueness(const smtk::model::EntityRef& theEntit
   return uniqueDefs;
 }
 
-
 //----------------------------------------------------------------------------
-void qtAssociationWidget::onCurrentListSelectionChanged(
-  QListWidgetItem * /*current*/, QListWidgetItem * /*previous*/)
+void qtAssociationWidget::onEntitySelected(
+  QListWidgetItem * currentItem, QListWidgetItem * /*previous*/)
 {
-}
-
-//----------------------------------------------------------------------------
-void qtAssociationWidget::onAvailableListSelectionChanged(
-  QListWidgetItem * /*current*/, QListWidgetItem * /*previous*/)
-{
+  if(currentItem)
+    {
+    smtk::model::EntityRef entref = this->getModelEntityItem(currentItem);
+    if(entref.isValid())
+      {
+      smtk::common::UUIDs selents;
+      selents.insert(entref.entity());
+      this->Internals->View->uiManager()->invokeEntitiesSelected(selents);
+      }
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -498,7 +504,7 @@ void qtAssociationWidget::removeSelectedItem(QListWidget* theList)
 
 //----------------------------------------------------------------------------
 QListWidgetItem* qtAssociationWidget::addModelAssociationListItem(
-  QListWidget* theList, smtk::model::EntityRef modelItem)
+  QListWidget* theList, smtk::model::EntityRef modelItem, bool sort)
 {
   QListWidgetItem* item = new QListWidgetItem(
                             QString::fromStdString(modelItem.name()),
@@ -508,12 +514,16 @@ QListWidgetItem* qtAssociationWidget::addModelAssociationListItem(
   QVariant vdata( QString::fromStdString(modelItem.entity().toString()) );
   item->setData(Qt::UserRole, vdata);
   theList->addItem(item);
+  if(sort)
+    {
+    theList->sortItems();
+    }
   return item;
 }
 
 //----------------------------------------------------------------------------
 QListWidgetItem* qtAssociationWidget::addAttributeAssociationItem(
-  QListWidget* theList, smtk::attribute::AttributePtr att)
+  QListWidget* theList, smtk::attribute::AttributePtr att, bool sort)
 {
   QString txtLabel(att->name().c_str());
 
@@ -523,6 +533,10 @@ QListWidgetItem* qtAssociationWidget::addAttributeAssociationItem(
   vdata.setValue(static_cast<void*>(att.get()));
   item->setData(Qt::UserRole, vdata);
   theList->addItem(item);
+  if(sort)
+    {
+    theList->sortItems();
+    }
   return item;
 }
 
@@ -578,6 +592,7 @@ void qtAssociationWidget::onRemoveAssigned()
 {
   this->Internals->CurrentList->blockSignals(true);
   this->Internals->AvailableList->blockSignals(true);
+  QListWidgetItem* selItem = NULL;
   if(this->Internals->CurrentAtt.lock())
     {
     smtk::model::EntityRef currentItem = this->getSelectedModelEntityItem(
@@ -586,7 +601,7 @@ void qtAssociationWidget::onRemoveAssigned()
       {
       this->Internals->CurrentAtt.lock()->disassociateEntity(currentItem);
       this->removeSelectedItem(this->Internals->CurrentList);
-      this->addModelAssociationListItem(
+      selItem = this->addModelAssociationListItem(
         this->Internals->AvailableList, currentItem);
       emit this->attAssociationChanged();
       }
@@ -599,7 +614,7 @@ void qtAssociationWidget::onRemoveAssigned()
       {
       currentAtt->disassociateEntity(this->Internals->CurrentModelGroup);
       this->removeSelectedItem(this->Internals->CurrentList);
-      this->addAttributeAssociationItem(
+      selItem = this->addAttributeAssociationItem(
         this->Internals->AvailableList, currentAtt);
       emit this->attAssociationChanged();
       }
@@ -607,6 +622,12 @@ void qtAssociationWidget::onRemoveAssigned()
 
   this->Internals->CurrentList->blockSignals(false);
   this->Internals->AvailableList->blockSignals(false);
+  if(selItem)
+    {
+    this->Internals->AvailableList->setCurrentItem(selItem);
+    this->Internals->CurrentList->setCurrentItem(NULL);
+    this->Internals->CurrentList->clearSelection();
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -614,6 +635,7 @@ void qtAssociationWidget::onAddAvailable()
 {
   this->Internals->CurrentList->blockSignals(true);
   this->Internals->AvailableList->blockSignals(true);
+  QListWidgetItem* selItem = NULL;
   if(this->Internals->CurrentAtt.lock())
     {
     smtk::model::EntityRef currentItem = this->getSelectedModelEntityItem(
@@ -622,7 +644,7 @@ void qtAssociationWidget::onAddAvailable()
       {
       this->Internals->CurrentAtt.lock()->associateEntity(currentItem);
       this->removeSelectedItem(this->Internals->AvailableList);
-      this->addModelAssociationListItem(
+      selItem = this->addModelAssociationListItem(
         this->Internals->CurrentList, currentItem);
       emit this->attAssociationChanged();
       }
@@ -641,7 +663,7 @@ void qtAssociationWidget::onAddAvailable()
         }
       currentAtt->associateEntity(this->Internals->CurrentModelGroup);
       this->removeSelectedItem(this->Internals->AvailableList);
-      this->addAttributeAssociationItem(
+      selItem = this->addAttributeAssociationItem(
         this->Internals->CurrentList, currentAtt);
       emit this->attAssociationChanged();
       }
@@ -649,6 +671,12 @@ void qtAssociationWidget::onAddAvailable()
 
   this->Internals->CurrentList->blockSignals(false);
   this->Internals->AvailableList->blockSignals(false);
+  if(selItem)
+    {
+    this->Internals->CurrentList->setCurrentItem(selItem);
+    this->Internals->AvailableList->setCurrentItem(NULL);
+    this->Internals->AvailableList->clearSelection();
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -656,6 +684,8 @@ void qtAssociationWidget::onExchange()
 {
   this->Internals->CurrentList->blockSignals(true);
   this->Internals->AvailableList->blockSignals(true);
+  QListWidgetItem* selCurrentItem = NULL;
+  QListWidgetItem* selAvailItem = NULL;
   if(this->Internals->CurrentAtt.lock())
     {
     smtk::model::EntityRef currentItem = this->getSelectedModelEntityItem(
@@ -667,11 +697,11 @@ void qtAssociationWidget::onExchange()
       this->Internals->CurrentAtt.lock()->disassociateEntity(currentItem);
       this->Internals->CurrentAtt.lock()->associateEntity(availableItem);
       this->removeSelectedItem(this->Internals->CurrentList);
-      this->addModelAssociationListItem(
+      selCurrentItem = this->addModelAssociationListItem(
         this->Internals->CurrentList, availableItem);
 
       this->removeSelectedItem(this->Internals->AvailableList);
-      this->addModelAssociationListItem(
+      selAvailItem = this->addModelAssociationListItem(
         this->Internals->AvailableList, currentItem);
       emit this->attAssociationChanged();
       }
@@ -685,13 +715,13 @@ void qtAssociationWidget::onExchange()
     if(availAtt &&currentAtt)
       {
       currentAtt->disassociateEntity(this->Internals->CurrentModelGroup);
-      this->addAttributeAssociationItem(
+      selCurrentItem = this->addAttributeAssociationItem(
         this->Internals->AvailableList, currentAtt);
       this->removeSelectedItem(this->Internals->CurrentList);
 
       availAtt->associateEntity(this->Internals->CurrentModelGroup);
       this->removeSelectedItem(this->Internals->AvailableList);
-      this->addAttributeAssociationItem(
+      selAvailItem = this->addAttributeAssociationItem(
         this->Internals->CurrentList, availAtt);
 
       emit this->attAssociationChanged();
@@ -700,6 +730,15 @@ void qtAssociationWidget::onExchange()
 
   this->Internals->CurrentList->blockSignals(false);
   this->Internals->AvailableList->blockSignals(false);
+  if(selCurrentItem)
+    {
+    this->Internals->CurrentList->setCurrentItem(selCurrentItem);
+    }
+  if(selAvailItem)
+    {
+    this->Internals->AvailableList->setCurrentItem(selAvailItem);
+    }
+
 }
 
 //----------------------------------------------------------------------------
@@ -749,20 +788,18 @@ void qtAssociationWidget::onDomainAssociationChanged()
     return;
     }
 
-  smtk::model::AttributeAssignments atts = domainItem.attributes();
-  atts.attributes().clear(); //detach all attributes
+  domainItem.disassociateAllAttributes(attSystem); //detach all attributes
 
   if(combo->currentText().isEmpty())
     {
     return;
     }
 
-
   QString attName = combo->currentText();
   AttributePtr attPtr = attSystem->findAttribute(attName.toStdString());
   if(attPtr)
     {
-    domainItem.associateAttribute(attPtr->id());
+    domainItem.associateAttribute(attSystem, attPtr->id());
     emit this->attAssociationChanged();
     }
   else

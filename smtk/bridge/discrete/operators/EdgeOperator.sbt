@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="split edge" BaseType="operator">
+    <AttDef Type="modify edge" BaseType="operator">
       <ItemDefinitions>
         <ModelEntity Name="model" NumberOfRequiredValues="1">
           <MembershipMask>model</MembershipMask>
@@ -14,7 +14,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
-    <AttDef Type="result(split edge)" BaseType="result">
+    <AttDef Type="result(modify edge)" BaseType="result">
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>

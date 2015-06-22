@@ -76,6 +76,8 @@
 	<suppress-warning text="skipping function 'smtk::model::Manager::setEntityOfTypeAndDimension', unmatched return type 'Manager::iter_type'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::begin', unmatched return type 'smtk::model::EntityRefArray::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::end', unmatched return type 'smtk::model::EntityRefArray::const_iterator'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::itemAtPathAs', unmatched return type 'T::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::itemAtPathAs', unmatched return type 'T::ConstPtr'"/>
 
   <!-- Use cJSON objects. For now we will ignore these-->
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofDanglingEntities', unmatched parameter type 'cJSON*'"/>
@@ -137,6 +139,10 @@
   <suppress-warning text="skipping field 'Manager::m_arrangements' with unmatched type 'smtk::shared_ptr&lt;UUIDsToArrangements&gt;'"/>
   <suppress-warning text="skipping field 'UUIDGenerator::P' with unmatched type 'Internal'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::assignDefaultNamesWithOwner', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
+  <suppress-warning text="skipping field 'OperatorLog::m_watching' with unmatched type 'std::vector&lt;smtk::model::WeakOperatorPtr&gt;'"/>
+  <suppress-warning text="skipping field 'OperatorLog::m_manager' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Manager&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::io::OperatorLog::hintSystem', unmatched return type 'smtk::attribute::SystemPtr'"/>
+  <suppress-warning text="skipping field 'OperatorLog::m_hintSys' with unmatched type 'smtk::shared_ptr&lt;smtk::attribute::System&gt;'"/>
 
   <!-- do not support input or output streams-->
   <suppress-warning text="skipping function 'smtk::common::operator&lt;&lt;', unmatched return type 'std::ostream&amp;'"/>
@@ -336,6 +342,7 @@
   <suppress-warning text="skipping field 'Manager::m_conditionTriggers' with unmatched type 'std::set&lt;ConditionTrigger&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_oneToOneTriggers' with unmatched type 'std::set&lt;OneToOneTrigger&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_oneToManyTriggers' with unmatched type 'std::set&lt;OneToManyTrigger&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_operatorTriggers' with unmatched type 'std::set&lt;BareOperatorTrigger&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::unobserve', unmatched parameter type 'smtk::model::OneToOneCallback'"/>
   <suppress-warning text="skipping field 'DescriptivePhrase::m_parent' with unmatched type 'smtk::weak_ptr&lt;smtk::model::DescriptivePhrase&gt;'"/>
   <suppress-warning text="skipping function 'smtk::io::AttributeReader::readContents', unmatched parameter type 'pugi::xml_node&amp;'" />
@@ -1960,6 +1967,10 @@
         <include file-name="smtk/io/Logger.h" location="local"/>
         <enum-type name="Severity"/>
         <object-type name="Record" />
+      </object-type>
+
+      <object-type name="OperatorLog">
+        <include file-name="smtk/io/OperatorLog.h" location="local"/>
       </object-type>
     </namespace-type>
 

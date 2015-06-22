@@ -597,7 +597,7 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
     qtAttribute* currentAtt =
       this->Internals->RefAtts.contains(elementIdx) ?
       this->Internals->RefAtts[elementIdx] : NULL;
-    if(currentAtt && currentAtt->getObject() != attPtr)
+    if(currentAtt && currentAtt->attribute() != attPtr)
       {
       delete currentAtt->widget();
       delete currentAtt;

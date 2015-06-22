@@ -54,12 +54,17 @@ public:
 //----------------------------------------------------------------------------
 qtModelEntityItem::qtModelEntityItem(
   smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview,
-   Qt::Orientation enVectorItemOrient) : qtItem(dataObj, p, bview)
+   Qt::Orientation enVectorItemOrient)
+  :qtItem(dataObj, p, bview)
 {
   this->Internals = new qtModelEntityItemInternals;
   this->IsLeafItem = true;
   this->Internals->VectorItemOrient = enVectorItemOrient;
   this->createWidget();
+  if (bview)
+    {
+    bview->uiManager()->onModelEntityItemCreated(this);
+    }
 }
 
 //----------------------------------------------------------------------------
