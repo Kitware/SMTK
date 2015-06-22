@@ -164,8 +164,12 @@ bool vtkModelMultiBlockSource::GetHasAnalysisMesh() const
   if(this->ModelEntityID && this->ModelEntityID[0])
     {
     smtk::common::UUID uid(this->ModelEntityID);
-    smtk::model::EntityRef modelRef(this->ModelMgr, uid);
-    return modelRef.hasAnalysisMesh() != NULL;
+    if(this->ModelMgr->hasIntegerProperty(uid, SMTK_MESH_GEN_PROP))
+      {
+      const smtk::model::IntegerList& gen(
+        this->ModelMgr->integerProperty(uid, SMTK_MESH_GEN_PROP));
+      return !gen.empty();
+      }
     }
   return false;
 }
