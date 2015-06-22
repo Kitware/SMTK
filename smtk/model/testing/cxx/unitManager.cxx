@@ -190,11 +190,11 @@ int main(int argc, char* argv[])
   smtk::common::UUID aid1, aid2;
   aid1 = smtk::common::UUID::random();
   aid2 = smtk::common::UUID::random();
-  test( sm->associateAttribute(/*attribId*/aid1, uids[0]), "Inserting a new attribute should succeed");
-  test( sm->associateAttribute(/*attribId*/aid2, uids[0]), "Inserting a new attribute should succeed");
-  test( sm->associateAttribute(/*attribId*/aid1, uids[0]), "Inserting an attribute twice should succeed");
-  test( sm->disassociateAttribute(/*attribId*/aid1, uids[0]), "Removing a non-existent attribute should fail");
-  test(!sm->disassociateAttribute(/*attribId*/aid1, uids[1]), "Removing a non-existent attribute should fail");
+  test( sm->associateAttribute(NULL, /*attribId*/aid1, uids[0]), "Inserting a new attribute should succeed");
+  test( sm->associateAttribute(NULL, /*attribId*/aid2, uids[0]), "Inserting a new attribute should succeed");
+  test( sm->associateAttribute(NULL, /*attribId*/aid1, uids[0]), "Inserting an attribute twice should succeed");
+  test( sm->disassociateAttribute(NULL, /*attribId*/aid1, uids[0]), "Removing a non-existent attribute should fail");
+  test(!sm->disassociateAttribute(NULL, /*attribId*/aid1, uids[1]), "Removing a non-existent attribute should fail");
 
   // Test removal of arrangement information and entities.
   // Remove a volume from its volume use and the model containing it.

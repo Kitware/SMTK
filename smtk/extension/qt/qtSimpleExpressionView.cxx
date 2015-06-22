@@ -231,13 +231,13 @@ void qtSimpleExpressionView::createWidget()
   rowButtonLayout->addWidget(this->Internals->AddValueButton);
   rowButtonLayout->addWidget(this->Internals->RemoveValueButton);
 
+  leftLayout->addLayout(copyLayout);//, 2, 0,1,1);
   leftLayout->addWidget(this->Internals->FuncList);//, 0, 0,1,1);
   //leftLayout->addWidget(this->Internals->AddButton);
   leftLayout->addWidget(this->Internals->EditorGroup);//, 1, 0,1,1);
   //leftLayout->addLayout(editorLayout);
-  leftLayout->addLayout(copyLayout);//, 2, 0,1,1);
-  rightLayout->addWidget(this->Internals->FuncTable);//, 0, 1, 2, 1);
   rightLayout->addLayout(rowButtonLayout);//, 2, 1,1,1);
+  rightLayout->addWidget(this->Internals->FuncTable);//, 0, 1, 2, 1);
 
   frame->addWidget(leftFrame);
   frame->addWidget(rightFrame);

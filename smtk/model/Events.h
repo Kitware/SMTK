@@ -143,24 +143,33 @@ typedef std::pair<ManagerEventType,OneToManyObserver> OneToManyTrigger;
 
 /**\brief Enumerate events that an operator may encounter.
   *
+  * No event is provided for operator deletion because
+  * (1) operator deletion is not managed by the model Manager class and
+  * (2) "this" is not complete in class destructors (subclass data is
+  * already freed).
+  * So, there is no easy way to observe when an operator is about to be
+  * deleted but is still valid.
   */
 enum OperatorEventType
 {
+  CREATED_OPERATOR,   //!< An instance of the Operator class has been created by a model Manager.
   WILL_OPERATE,       //!< The operation will commence if no observers cancel it.
   DID_OPERATE         //!< The operation has completed or been canceled.
 };
 
-/// Callbacks for WILL_OPERATE events provide access to the operator. Returning non-zero values cancel the operation.
-typedef int (*WillOperateCallback)(
+/// Callbacks for CREATED_OPERATOR and WILL_OPERATE events provide access to the operator. Returning non-zero values cancel the operation.
+typedef int (*BareOperatorCallback)(
   OperatorEventType event, const Operator& op, void* user);
-/// An observer of WILL_OPERATE events binds a callback and opaque, user-provided data.
-typedef std::pair<WillOperateCallback,void*> WillOperateObserver;
+/// An observer of CREATED_OPERATOR or WILL_OPERATE events binds a callback and opaque, user-provided data.
+typedef std::pair<BareOperatorCallback,void*> BareOperatorObserver;
+/// A trigger for CREATED_OPERATOR or WILL_OPERATE events holds the event type and its observer.
+typedef std::pair<OperatorEventType,BareOperatorObserver> BareOperatorTrigger;
 
 /// Callbacks for DID_OPERATE events provide access to the operator and the results of the operation. Return values are ignored.
-typedef int (*DidOperateCallback)(
+typedef int (*OperatorWithResultCallback)(
   OperatorEventType event, const Operator& op, OperatorResult r, void* user);
 /// An observer of DID_OPERATE events binds a callback and opaque, user-provided data.
-typedef std::pair<DidOperateCallback,void*> DidOperateObserver;
+typedef std::pair<OperatorWithResultCallback,void*> OperatorWithResultObserver;
 
   } // namespace model
 } // namespace smtk

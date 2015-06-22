@@ -59,6 +59,7 @@ namespace smtk
       void meshSelectionItemCreated(
           smtk::attribute::qtMeshSelectionItem* meshItem,
           const std::string& opName, const smtk::common::UUID& uuid);
+      void entitiesSelected(const smtk::common::UUIDs&);
 
     protected slots:
       virtual void onOperationSelected();

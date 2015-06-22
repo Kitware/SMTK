@@ -14,7 +14,7 @@
     <!-- Result -->
     <AttDef Type="result(mesh)" BaseType="result">
       <ItemDefinitions>
-        <ModelEntity Name="tess_changed" NumberOfRequiredValues="1"/>
+        <ModelEntity Name="mesh_created" NumberOfRequiredValues="1"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

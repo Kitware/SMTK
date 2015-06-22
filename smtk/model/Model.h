@@ -19,7 +19,6 @@ class CellEntity;
 class Group;
 class Model;
 typedef std::vector<CellEntity> CellEntities;
-typedef std::vector<Group> Groups;
 typedef std::vector<Model> Models;
 
 /**\brief A entityref subclass that provides methods specific to models.

@@ -404,7 +404,7 @@ int vtkLASReader::ReadPoints(vtkMultiBlockDataSet *output)
   char pointDataRecord[34];
   unsigned char classification, classificationField;
   unsigned char classificationMask = 0x1F;
-  char scanAngle;
+//  char scanAngle;
   vtkTypeUInt32 progressInterval = this->NumberOfPointRecords / 1000;
   // If the progressInterval is 0 then lets set it to a sane value
   if (!progressInterval)
@@ -443,7 +443,7 @@ int vtkLASReader::ReadPoints(vtkMultiBlockDataSet *output)
       continue; // withheld
       }
     classification =  classificationField & classificationMask;
-    scanAngle = pointDataRecord[16];
+//    scanAngle = pointDataRecord[16];
 
     if (pieceInfo[classification].ReadRatio == 0)
       {

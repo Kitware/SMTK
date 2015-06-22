@@ -48,8 +48,6 @@ namespace smtk
       virtual void showDomainsAssociation(
         std::vector<smtk::model::Group>& theDomains,
         std::vector<smtk::attribute::DefinitionPtr>& attDefs);
-      void onCurrentListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
-      void onAvailableListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
 
     signals:
       void attAssociationChanged();
@@ -60,6 +58,7 @@ namespace smtk
       virtual void onExchange();
       virtual void onNodalOptionChanged(int);
       virtual void onDomainAssociationChanged();
+      virtual void onEntitySelected(QListWidgetItem * , QListWidgetItem * );
 
     protected:
       virtual void initWidget( );
@@ -74,12 +73,12 @@ namespace smtk
       //returns the Item it has added to the widget
       //ownership of the item is handled by the widget so no need to delete
       virtual QListWidgetItem* addModelAssociationListItem(
-           QListWidget* theList, smtk::model::EntityRef modelItem);
+           QListWidget* theList, smtk::model::EntityRef modelItem, bool sort=true);
 
       //returns the Item it has added to the widget
       //ownership of the item is handled by the widget so no need to delete
       virtual QListWidgetItem* addAttributeAssociationItem(
-        QListWidget* theList, smtk::attribute::AttributePtr att);
+        QListWidget* theList, smtk::attribute::AttributePtr att, bool sort=true);
 
 
       virtual void addDomainListItem( const smtk::model::Group& domainItem,

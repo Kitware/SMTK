@@ -45,18 +45,38 @@ public:
 };
 
 //----------------------------------------------------------------------------
-qtFileItem::qtFileItem(
-  smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview,
-   bool dirOnly, Qt::Orientation enVectorItemOrient)
+qtFileItem::qtFileItem(smtk::attribute::FileItemPtr dataObj, QWidget* p,
+                       qtBaseView* bview, Qt::Orientation enVectorItemOrient)
    : qtItem(dataObj, p, bview)
 {
   this->Internals = new qtFileItemInternals;
-  this->Internals->IsDirectory = dirOnly;
+  this->Internals->IsDirectory = false;
   this->Internals->FileBrowser = NULL;
   this->Internals->VectorItemOrient = enVectorItemOrient;
 
   this->IsLeafItem = true;
   this->createWidget();
+  if (bview)
+    {
+    bview->uiManager()->onFileItemCreated(this);
+    }
+}
+//----------------------------------------------------------------------------
+qtFileItem::qtFileItem(smtk::attribute::DirectoryItemPtr dataObj, QWidget* p,
+                       qtBaseView* bview, Qt::Orientation enVectorItemOrient)
+   : qtItem(dataObj, p, bview)
+{
+  this->Internals = new qtFileItemInternals;
+  this->Internals->IsDirectory = true;
+  this->Internals->FileBrowser = NULL;
+  this->Internals->VectorItemOrient = enVectorItemOrient;
+
+  this->IsLeafItem = true;
+  this->createWidget();
+  if (bview)
+    {
+    bview->uiManager()->onFileItemCreated(this);
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -240,7 +260,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
     // For open Files, we use a combobox to show the recent file list
     if(fDef->shouldExist())
       {
-      QComboBox* fileCombo = new QComboBox(frame);
+      fileCombo = new QComboBox(frame);
       fileCombo->setEditable(true);
       fileTextWidget = fileCombo;
       this->Internals->fileCombo = fileCombo;

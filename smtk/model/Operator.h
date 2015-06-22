@@ -151,11 +151,11 @@ public:
   virtual OperatorResult operate();
 
 #ifndef SHIBOKEN_SKIP
-  void observe(OperatorEventType event, WillOperateCallback functionHandle, void* callData);
-  void observe(OperatorEventType event, DidOperateCallback functionHandle, void* callData);
+  void observe(OperatorEventType event, BareOperatorCallback functionHandle, void* callData);
+  void observe(OperatorEventType event, OperatorWithResultCallback functionHandle, void* callData);
 
-  void unobserve(OperatorEventType event, WillOperateCallback functionHandle, void* callData);
-  void unobserve(OperatorEventType event, DidOperateCallback functionHandle, void* callData);
+  void unobserve(OperatorEventType event, BareOperatorCallback functionHandle, void* callData);
+  void unobserve(OperatorEventType event, OperatorWithResultCallback functionHandle, void* callData);
 
   int trigger(OperatorEventType event);
   int trigger(OperatorEventType event, const OperatorResult& result);
@@ -244,8 +244,8 @@ protected:
   ManagerPtr m_manager; // Model manager, not the attribute manager for the operator.
   Session* m_session;
   OperatorSpecification m_specification;
-  std::set<WillOperateObserver> m_willOperateTriggers;
-  std::set<DidOperateObserver> m_didOperateTriggers;
+  std::set<BareOperatorObserver> m_willOperateTriggers;
+  std::set<OperatorWithResultObserver> m_didOperateTriggers;
 #endif // SHIBOKEN_SKIP
 };
 

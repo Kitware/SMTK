@@ -260,8 +260,8 @@ void qtAttributeView::createWidget( )
   this->Internals->ValuesTable->setSizePolicy(tableSizePolicy);
 
   TopLayout->addWidget(this->Internals->FiltersFrame);
-  TopLayout->addWidget(this->Internals->ListTable);
   TopLayout->addWidget(this->Internals->ButtonsFrame);
+  TopLayout->addWidget(this->Internals->ListTable);
 
   BottomLayout->addWidget(this->Internals->ValuesTable);
   this->Internals->ValuesTable->setVisible(0);
@@ -861,9 +861,6 @@ void qtAttributeView::updateTableWithAttribute(
 
   if(this->Internals->CurrentAtt && this->Internals->CurrentAtt->widget())
     {
-    this->Internals->AttFrame->layout()->removeWidget(
-      this->Internals->CurrentAtt->widget());
-    delete this->Internals->CurrentAtt->widget();
     delete this->Internals->CurrentAtt;
     }
 
@@ -873,6 +870,9 @@ void qtAttributeView::updateTableWithAttribute(
   this->setFixedLabelWidth(tmpLen);
 
   this->Internals->CurrentAtt = new qtAttribute(att, this->Internals->AttFrame, this);
+  // By default use the basic layout with no model associations since this class
+  // takes care of it
+  this->Internals->CurrentAtt->createBasicLayout(false);
   this->setFixedLabelWidth(currentLen);
   if(this->Internals->CurrentAtt && this->Internals->CurrentAtt->widget())
     {
@@ -1311,7 +1311,6 @@ void qtAttributeView::getAllDefinitions()
     }
 
   std::vector<smtk::attribute::AttributePtr> atts;
-  int longLabelWidth = 0;
   smtk::common::View::Component &attsComp = view->details().child(0);
   std::size_t i, n = attsComp.numberOfChildren();
   for (i = 0; i < n; i++)

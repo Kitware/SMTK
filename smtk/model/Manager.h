@@ -120,10 +120,7 @@ public:
   UUIDsToTessellations& analysisMesh();
   const UUIDsToTessellations& analysisMesh() const;
 
-  UUIDsToAttributeAssignments& attributeAssignments();
   const UUIDsToAttributeAssignments& attributeAssignments() const;
-
-  smtk::attribute::System* attributeSystem() const;
 
   BitFlags type(const smtk::common::UUID& ofEntity) const;
   int dimension(const smtk::common::UUID& ofEntity) const;
@@ -300,8 +297,10 @@ public:
   bool findOrAddEntityToGroup(const smtk::common::UUID& grp, const smtk::common::UUID& ent);
 
   bool hasAttribute(const smtk::common::UUID&  attribId, const smtk::common::UUID& toEntity);
-  bool associateAttribute(const smtk::common::UUID&  attribId, const smtk::common::UUID& toEntity);
-  bool disassociateAttribute(const smtk::common::UUID&  attribId, const smtk::common::UUID& fromEntity, bool reverse = true);
+  bool associateAttribute(smtk::attribute::System* sys,
+                          const smtk::common::UUID&  attribId, const smtk::common::UUID& toEntity);
+  bool disassociateAttribute(smtk::attribute::System* sys,
+                             const smtk::common::UUID&  attribId, const smtk::common::UUID& fromEntity, bool reverse = true);
 
   Vertex insertVertex(const smtk::common::UUID& uid);
   Edge insertEdge(const smtk::common::UUID& uid);
@@ -371,12 +370,15 @@ public:
   void observe(ManagerEventType event, ConditionCallback functionHandle, void* callData);
   void observe(ManagerEventType event, OneToOneCallback functionHandle, void* callData);
   void observe(ManagerEventType event, OneToManyCallback functionHandle, void* callData);
+  void observe(OperatorEventType event, BareOperatorCallback functionHandle, void* callData);
   void unobserve(ManagerEventType event, ConditionCallback functionHandle, void* callData);
   void unobserve(ManagerEventType event, OneToOneCallback functionHandle, void* callData);
   void unobserve(ManagerEventType event, OneToManyCallback functionHandle, void* callData);
+  void unobserve(OperatorEventType event, BareOperatorCallback functionHandle, void* callData);
   void trigger(ManagerEventType event, const smtk::model::EntityRef& src);
   void trigger(ManagerEventType event, const smtk::model::EntityRef& src, const smtk::model::EntityRef& related);
   void trigger(ManagerEventType event, const smtk::model::EntityRef& src, const smtk::model::EntityRefArray& related);
+  void trigger(OperatorEventType event, const smtk::model::Operator& src);
 
   smtk::io::Logger& log() { return this->m_log; }
 
@@ -392,7 +394,6 @@ protected:
   std::string assignDefaultName(const smtk::common::UUID& uid, BitFlags entityFlags);
   IntegerList& entityCounts(const smtk::common::UUID& modelId, BitFlags entityFlags);
   void prepareForEntity(std::pair<smtk::common::UUID,Entity>& entry);
-  bool setAttributeSystem(smtk::attribute::System* sys, bool reverse = true);
 
   // Below are all the different things that can be mapped to a UUID:
   smtk::shared_ptr<UUIDsToEntities> m_topology;
@@ -405,8 +406,6 @@ protected:
   smtk::shared_ptr<UUIDsToAttributeAssignments> m_attributeAssignments;
   smtk::shared_ptr<UUIDsToSessions> m_sessions;
 
-  smtk::attribute::System* m_attributeSystem; // Attribute systems may own a model
-
   smtk::shared_ptr<Session> m_defaultSession;
   smtk::common::UUIDGenerator m_uuidGenerator;
 
@@ -415,6 +414,7 @@ protected:
   std::set<ConditionTrigger> m_conditionTriggers;
   std::set<OneToOneTrigger> m_oneToOneTriggers;
   std::set<OneToManyTrigger> m_oneToManyTriggers;
+  std::set<BareOperatorTrigger> m_operatorTriggers;
 
   smtk::io::Logger m_log;
 };

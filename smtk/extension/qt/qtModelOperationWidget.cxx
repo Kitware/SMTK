@@ -205,13 +205,14 @@ bool qtModelOperationWidget::setCurrentOperation(
   smtk::attribute::qtUIManager* uiManager =
     new smtk::attribute::qtUIManager(*(att->system()), "Operators");
 
-
   QObject::connect(uiManager, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),
     this, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)));
   QObject::connect(uiManager, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)),
     this, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)));
   QObject::connect(uiManager, SIGNAL(meshSelectionItemCreated(smtk::attribute::qtMeshSelectionItem*)),
     this, SLOT(onMeshSelectionItemCreated(smtk::attribute::qtMeshSelectionItem*)));
+  QObject::connect(uiManager, SIGNAL(entitiesSelected(const smtk::common::UUIDs&)),
+    this, SIGNAL(entitiesSelected(const smtk::common::UUIDs&)));
 
   qtInstancedView* theView = qobject_cast<qtInstancedView*>(
     uiManager->initializeView(opParent, instanced, false));

@@ -184,6 +184,6 @@ smtkImplementsModelOperator(
   SMTKDISCRETESESSION_EXPORT,
   smtk::bridge::discrete::MergeOperator,
   discrete_merge,
-  "merge",
+  "merge face",
   MergeOperator_xml,
   smtk::bridge::discrete::Session);

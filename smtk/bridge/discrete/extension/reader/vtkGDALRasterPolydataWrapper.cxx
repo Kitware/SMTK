@@ -152,9 +152,6 @@ int vtkGDALRasterPolydataWrapper::RequestData(vtkInformation* vtkNotUsed(request
     return 0;
     }
 
-  int zone = this->Reader->zone();
-  bool isNorth = this->Reader->isNorth();
-
   if (this->LimitReadToBounds)
     {
     this->ReadBBox.Reset();
@@ -249,7 +246,7 @@ int vtkGDALRasterPolydataWrapper::RequestData(vtkInformation* vtkNotUsed(request
 //-----------------------------------------------------------------------------
 int vtkGDALRasterPolydataWrapper::RequestInformation(vtkInformation * vtkNotUsed(request),
                                             vtkInformationVector **vtkNotUsed(inputVector),
-                                            vtkInformationVector *outputVector)
+                                            vtkInformationVector * vtkNotUsed(outputVector))
 {
   if(FileName.empty()) return 0;
   this->Reader->UpdateInformation();

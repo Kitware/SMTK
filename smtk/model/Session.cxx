@@ -171,6 +171,10 @@ OperatorPtr Session::op(const std::string& opName) const
   if (remoteOp)
     remoteOp->setName(opName);
 
+  // Notify observers that an operator was created.
+  if (this->m_manager)
+    this->m_manager->trigger(CREATED_OPERATOR, *oper.get());
+
   return oper;
 }
 
