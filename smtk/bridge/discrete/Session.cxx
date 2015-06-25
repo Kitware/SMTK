@@ -2213,6 +2213,30 @@ bool Session::removeModelEntity(const smtk::model::EntityRef& modRef)
   return this->manager()->eraseModel(modRef);
 }
 
+void Session::retranscribeModel(const smtk::model::Model& inModel)
+{
+  smtk::common::UUID mid = inModel.entity();
+  smtk::model::StringList const& urlprop(inModel.stringProperty("url"));
+  std::string url;
+  if (!urlprop.empty())
+    {
+    url = urlprop[0];
+    }
+
+  this->manager()->eraseModel(inModel);
+  this->transcribe(inModel, smtk::model::SESSION_EVERYTHING, false);
+
+  smtk::model::Model smtkModel(this->manager(), mid);
+  smtk::model::SessionRef sess(
+      this->manager(), this->sessionId());
+  smtkModel.setSession(sess);
+
+  if (!url.empty())
+    {
+    smtkModel.setStringProperty("url", url);
+    }
+}
+
 smtk::bridge::discrete::BathymetryHelper* Session::bathymetryHelper()
 {
   return this->m_bathymetryHelper;

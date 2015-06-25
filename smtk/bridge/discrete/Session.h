@@ -127,6 +127,7 @@ protected:
   friend class RemoveModel;
   friend class ArrangementHelper;
   friend class EdgeOperator;
+  friend class BathymetryOperator;
   friend class Operator;
 
   Session();
@@ -230,6 +231,8 @@ protected:
 
   // This will remove Model from smtk manager and vtkDiscreteModelWrapper form kernel
   bool removeModelEntity(const smtk::model::EntityRef& entity);
+
+  void retranscribeModel(const smtk::model::Model& inModel);
 
   vtkItemWatcherCommand* m_itemWatcher;
   smtk::common::UUIDGenerator m_idGenerator;
