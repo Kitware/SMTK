@@ -1173,7 +1173,7 @@ void qtUIManager::onInputValueChanged(QObject* obj)
      rawitem->type()==smtk::attribute::Item::STRING)
     {
     std::string val = smtk::dynamic_pointer_cast<StringItem>(rawitem->pointer())->value(elementIdx);
-    if(!(rawitem->isSet(elementIdx)) || val != editBox->text().toStdString())
+    if(!(rawitem->isSet(elementIdx)) || val != textBox->toPlainText().toStdString())
       {
       smtk::dynamic_pointer_cast<StringItem>(rawitem->pointer())
         ->setValue(elementIdx, textBox->toPlainText().toStdString());
