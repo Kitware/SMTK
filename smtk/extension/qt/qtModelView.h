@@ -52,7 +52,6 @@ public:
 
   smtk::model::QEntityItemModel* getModel() const;
   DescriptivePhrasePtr currentItem() const;
-  void addGroup(BitFlags flag, const std::string& name);
   void syncEntityVisibility(
     const QMap<smtk::model::SessionPtr, smtk::common::UUIDs>& brEntities,
     int vis);

@@ -1615,7 +1615,7 @@ smtk::model::Model Session::addBodyToManager(
 
       // FIXME: How does CMB indicate groups are part of a model?
       if (body->GetNumberOfAssociations(vtkDiscreteModelEntityGroupType))
-        { // Add regions to model
+        { // Add boundary groups to model
         this->addEntities(model, body->NewIterator(vtkDiscreteModelEntityGroupType), AddGroupToModelHelper(), relDepth - 1);
         }
 
@@ -2211,6 +2211,50 @@ bool Session::removeModelEntity(const smtk::model::EntityRef& modRef)
     }
 
   return this->manager()->eraseModel(modRef);
+}
+
+void Session::retranscribeModel(const smtk::model::Model& inModel)
+{
+  smtk::common::UUID mid = inModel.entity();
+  smtk::model::StringList const& urlprop(inModel.stringProperty("url"));
+  std::string url;
+  if (!urlprop.empty())
+    {
+    url = urlprop[0];
+    }
+
+  //FIXME. The group info seems to get lost somehow. The transcribe did not
+  // bring back the groups defined in the model.
+  // Need some special handling of groups
+  Groups groups = inModel.groups();
+  smtk::common::UUIDs grpids;
+  for(Groups::const_iterator it=groups.begin(); it!=groups.end(); ++it)
+      grpids.insert(it->entity());
+
+  this->manager()->eraseModel(inModel);
+  this->transcribe(inModel, smtk::model::SESSION_EVERYTHING, false);
+
+  smtk::model::Model smtkModel(this->manager(), mid);
+  smtk::model::SessionRef sess(
+      this->manager(), this->sessionId());
+  smtkModel.setSession(sess);
+
+  // See above FIXME comments
+  for(smtk::common::UUIDs::const_iterator it=grpids.begin(); it!=grpids.end(); ++it)
+    {
+    vtkModelItem* cmbgroup = this->entityForUUID(*it);
+    if(cmbgroup)
+      {
+      smtk::model::Group smtkgroup = this->addCMBEntityToManager(*it, cmbgroup, this->manager());
+      if(smtkgroup.isValid())
+        smtkModel.addGroup(smtkgroup);
+      }
+    }
+
+  if (!url.empty())
+    {
+    smtkModel.setStringProperty("url", url);
+    }
 }
 
 smtk::bridge::discrete::BathymetryHelper* Session::bathymetryHelper()

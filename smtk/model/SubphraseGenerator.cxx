@@ -36,6 +36,8 @@ namespace smtk {
 SubphraseGenerator::SubphraseGenerator()
 {
   m_directlimit = 4;
+  m_skipAttributes = false;
+  m_skipProperties = false;
 }
 
 /**\brief Return a list of descriptive phrases that elaborate upon \a src.
@@ -97,6 +99,44 @@ bool SubphraseGenerator::shouldOmitProperty(
   return false;
 }
 
+/**\brief Get/Set whether entity properties will be skiped for subphrases.
+  *
+  * For some cases, only model entities are desired in a hierarchy view.
+  */
+bool SubphraseGenerator::skipProperties() const
+{
+  return m_skipProperties;
+}
+void SubphraseGenerator::setSkipProperties(bool val)
+{
+  m_skipProperties = val;
+}
+
+
+/**\brief Get/Set whether entity attributes will be skiped for subphrases.
+  *
+  * For some cases, only model entities are desired in a hierarchy view.
+  */
+bool SubphraseGenerator::skipAttributes() const
+{
+  return m_skipAttributes;
+}
+void SubphraseGenerator::setSkipAttributes(bool val)
+{
+  m_skipAttributes = val;
+}
+
+/**\brief Set the maximum number of direct children before a summary phrase is inserted.
+  *
+  * This is used to add a layer of indirection to the hierarchy so that
+  * long lists are not inadvertently opened and so that a parent which would
+  * otherwise have many children of many different kinds can group its
+  * children to allow easier browsing.
+  *
+  * A negative value indicates that no limit should be imposed (no summary
+  * phrases will ever be generated).
+  */
+
 void SubphraseGenerator::instancesOfEntity(
   DescriptivePhrase::Ptr src, const EntityRef& ent, DescriptivePhrases& result)
 {
@@ -107,7 +147,7 @@ void SubphraseGenerator::instancesOfEntity(
 void SubphraseGenerator::attributesOfEntity(
   DescriptivePhrase::Ptr src, const EntityRef& ent, DescriptivePhrases& result)
 {
-  if (ent.hasAttributes())
+  if (!m_skipAttributes && ent.hasAttributes())
     {
     result.push_back(
       AttributeListPhrase::create()->setup(
@@ -118,9 +158,12 @@ void SubphraseGenerator::attributesOfEntity(
 void SubphraseGenerator::propertiesOfEntity(
   DescriptivePhrase::Ptr src, const EntityRef& ent, DescriptivePhrases& result)
 {
-  this->stringPropertiesOfEntity(src, ent, result);
-  this->integerPropertiesOfEntity(src, ent, result);
-  this->floatPropertiesOfEntity(src, ent, result);
+  if(!this->m_skipProperties)
+    {
+    this->stringPropertiesOfEntity(src, ent, result);
+    this->integerPropertiesOfEntity(src, ent, result);
+    this->floatPropertiesOfEntity(src, ent, result);
+    }
 }
 
 void SubphraseGenerator::floatPropertiesOfEntity(
