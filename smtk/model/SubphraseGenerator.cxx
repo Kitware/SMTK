@@ -304,7 +304,9 @@ void SubphraseGenerator::prototypeOfInstance(
 void SubphraseGenerator::modelsOfSession(
   DescriptivePhrase::Ptr src, const SessionRef& sess, DescriptivePhrases& result)
 {
-  Models modelsOf = sess.models<Models>();
+  // We need the models to be unique, no duplicated entries.
+  std::set<smtk::model::Model> modelsOf = 
+    sess.models< std::set<smtk::model::Model> >();
   addEntityPhrases(modelsOf, src, this->directLimit(), result);
 }
 
