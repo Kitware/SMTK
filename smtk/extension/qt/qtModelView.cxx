@@ -515,25 +515,6 @@ DescriptivePhrasePtr qtModelView::currentItem() const
   return DescriptivePhrasePtr();
 }
 
-void qtModelView::addGroup(BitFlags flag, const std::string& name)
-{
-  QEntityItemModel* qmodel = this->getModel();
-  smtk::model::ManagerPtr pstore = qmodel->manager();
-  Models models;
-  smtk::model::EntityRef::EntityRefsFromUUIDs(
-    models,
-    pstore,
-    pstore->entitiesMatchingFlags(smtk::model::MODEL_ENTITY));
-
-  if(!models.empty())
-    {
-    Group bgroup = pstore->addGroup(
-      flag, name);
-    models.begin()->addGroup(bgroup);
-    std::cout << "Added " << bgroup.name() << " to " << models.begin()->name() << "\n";
-    }
-}
-
 void qtModelView::removeEntityGroup(
   const smtk::model::Model& modelEnt,
   const smtk::model::SessionRef& sessionRef,
@@ -1004,8 +985,6 @@ bool qtModelView::setEntityVisibility(
   nameItem->setValue("visible");
   visItem->setNumberOfValues(1);
   visItem->setValue(vis);
-
-  std::cout << "set visibility to " << selentityrefs.size() << " entities\n";
 
   EntityRefs::const_iterator it;
   int numChangingEnts = 0;

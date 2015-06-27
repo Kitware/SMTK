@@ -151,8 +151,7 @@ OperatorResult BathymetryOperator::operateInternal()
     else if(optype == "Apply Bathymetry")
       bathyHelper->addModelBathymetry(inModel.entity(), filename);
 
-    opsession->manager()->eraseModel(inModel);
-    opsession->transcribe(inModel, SESSION_EVERYTHING, false);
+    opsession->retranscribeModel(inModel);
 
     this->addEntityToResult(result, inModel, MODIFIED);
     result->findModelEntity("tess_changed")->setValue(inModel);

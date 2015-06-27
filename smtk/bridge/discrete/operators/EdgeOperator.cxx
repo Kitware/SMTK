@@ -131,13 +131,6 @@ void EdgeOperator::getSelectedVertsAndEdges(
     }
 }
 
-void internal_retranscribeModel(smtk::bridge::discrete::Session* opsession,
-                                const smtk::model::Model& inModel)
-{
-    opsession->manager()->eraseModel(inModel);
-    opsession->transcribe(inModel, SESSION_EVERYTHING, false);
-}
-
 bool  EdgeOperator::convertSelectedEndNodes(
   const std::map<smtk::common::UUID, vtkDiscreteModelVertex*>& selVTXs,
   vtkDiscreteModelWrapper* modelWrapper,
@@ -210,7 +203,7 @@ bool  EdgeOperator::convertSelectedEndNodes(
       smtk::common::UUID modelid = opsession->findOrSetEntityUUID(modelWrapper->GetModel());
       smtk::model::Model inModel(this->manager(), modelid);
 
-      internal_retranscribeModel(opsession, inModel);
+      opsession->retranscribeModel(inModel);
 
       vtkModelEdge* tgtEdge = targetSwitched ? selEdges[1] : selEdges[0];
       smtk::common::UUID toEid = opsession->findOrSetEntityUUID(tgtEdge);
@@ -324,7 +317,7 @@ bool EdgeOperator::splitSelectedEdgeNodes(
       smtk::common::UUID modelid = opsession->findOrSetEntityUUID(modelWrapper->GetModel());
       smtk::model::Model inModel(this->manager(), modelid);
 
-      internal_retranscribeModel(opsession, inModel);
+      opsession->retranscribeModel(inModel);
 
       vtkModelVertex* newvtx = vtkModelVertex::SafeDownCast(
         modelWrapper->GetModelEntity(vtkModelVertexType,
