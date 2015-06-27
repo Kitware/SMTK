@@ -29,6 +29,7 @@
 #include <iostream>
 #include <set>
 #include <vector>
+#include <algorithm> // for std::find
 
 /// A macro to implement mandatory EntityRef-subclass constructors.
 #define SMTK_ENTITYREF_CLASS(thisclass,superclass,typecheck) \
@@ -286,7 +287,9 @@ T EntityRef::relationsAs() const
   for (it = entRec->relations().begin(); it != entRec->relations().end(); ++it)
     {
     typename T::value_type entry(mgr, *it);
-    if (entry.isValid())
+    if (entry.isValid() &&
+        // make sure we don't return duplicated relations
+        std::find(result.begin(), result.end(), entry) == result.end())
       {
       result.insert(result.end(), entry);
       }
