@@ -47,6 +47,11 @@ public:
   virtual bool shouldOmitProperty(
     DescriptivePhrase::Ptr parent, PropertyType ptype, const std::string& pname) const;
 
+  virtual void setSkipProperties(bool val);
+  virtual bool skipProperties() const;
+  virtual void setSkipAttributes(bool val);
+  virtual bool skipAttributes() const;
+
 protected:
   SubphraseGenerator();
 
@@ -88,6 +93,8 @@ protected:
   void addEntityPhrases(const T& ents, DescriptivePhrase::Ptr parent, int limit, DescriptivePhrases& result);
 
   int m_directlimit;
+  bool m_skipAttributes;
+  bool m_skipProperties;
 };
 
 template<typename T>

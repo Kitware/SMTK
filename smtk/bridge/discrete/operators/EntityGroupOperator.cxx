@@ -26,6 +26,7 @@
 #include "vtkIdList.h"
 #include "vtkModel.h"
 #include "vtkModelMaterial.h"
+#include "vtkModelUserName.h"
 
 #include "EntityGroupOperator_xml.h"
 
@@ -140,6 +141,8 @@ OperatorResult EntityGroupOperator::operateInternal()
         vtkDiscreteModelEntityGroupType : vtkModelMaterialType;
       vtkModelEntity* grp =
         modelWrapper->GetModelEntity(groupType, grpId);
+      if(!gName.empty())
+        vtkModelUserName::SetUserName(grp, gName.c_str());
       smtk::common::UUID grpUUID = opsession->findOrSetEntityUUID(grp);
 
       // The group itself should be added too
