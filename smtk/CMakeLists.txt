@@ -152,12 +152,19 @@ if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
       # on compiled code rather than being implemented purely as python).
       # See https://docs.python.org/2/install/index.html for more.
       set(SMTK_PYTHON_MODULEDIR
-        "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBEXECDIR}/python/site-packages")
+        "${CMAKE_INSTALL_LIBEXECDIR}/python/site-packages")
     endif()
   endif()
+
   install(
     FILES ${SMTK_PYTHON_MODULEFILES}
     DESTINATION "${SMTK_PYTHON_MODULEDIR}/smtk"
+  )
+  install(CODE
+    "set(LIBRARY_OUTPUT_PATH \"${CMAKE_INSTALL_PREFIX}/lib\")
+     set(SHIBOKEN_LIBRARY \"${CMAKE_INSTALL_PREFIX}/lib/${SHIBOKEN_LIBRARY_NAME}\")
+     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/smtk/__init__.py
+       ${CMAKE_INSTALL_PREFIX}/${SMTK_PYTHON_MODULEDIR}/smtk/__init__.py )"
   )
 endif()
 
