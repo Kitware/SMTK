@@ -1,5 +1,6 @@
 set(smtkIOPythonTests
   unitOperatorLog
+  ResourceSetTest
 )
 
 # Additional tests that require SMTK_DATA_DIR
@@ -25,4 +26,17 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
         ENVIRONMENT "PYTHONPATH=${VTKPY_DIR}${VTKPY_DIR}${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}"
     )
   endforeach()
+
+  set(reader_test ResourceSetReaderTest)
+  add_test(${reader_test}Py
+    ${PYTHON_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/${reader_test}.py
+    ${SMTK_DATA_DIR}/smtk/attribute/resourceTest/resources.xml
+    2
+  )
+  set_tests_properties(${reader_test}Py
+    PROPERTIES
+      ENVIRONMENT "PYTHONPATH=${VTKPY_DIR}${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}"
+  )
+
 endif()
