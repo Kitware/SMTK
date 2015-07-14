@@ -139,6 +139,7 @@
   <suppress-warning text="skipping field 'Manager::m_arrangements' with unmatched type 'smtk::shared_ptr&lt;UUIDsToArrangements&gt;'"/>
   <suppress-warning text="skipping field 'UUIDGenerator::P' with unmatched type 'Internal'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::assignDefaultNamesWithOwner', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
+  <suppress-warning text="skipping field 'ResourceSet::m_resourceMap' with unmatched type 'std::map&lt;std::string,ResourceWrapper*&gt;'"/>
   <suppress-warning text="skipping field 'OperatorLog::m_watching' with unmatched type 'std::vector&lt;smtk::model::WeakOperatorPtr&gt;'"/>
   <suppress-warning text="skipping field 'OperatorLog::m_manager' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Manager&gt;'"/>
   <suppress-warning text="skipping function 'smtk::io::OperatorLog::hintSystem', unmatched return type 'smtk::attribute::SystemPtr'"/>
@@ -346,9 +347,12 @@
   <suppress-warning text="skipping function 'smtk::model::Manager::unobserve', unmatched parameter type 'smtk::model::OneToOneCallback'"/>
   <suppress-warning text="skipping field 'DescriptivePhrase::m_parent' with unmatched type 'smtk::weak_ptr&lt;smtk::model::DescriptivePhrase&gt;'"/>
   <suppress-warning text="skipping function 'smtk::io::AttributeReader::readContents', unmatched parameter type 'pugi::xml_node&amp;'" />
+  <suppress-warning text="skipping function 'smtk::io::ResourceSetReader::readIncludedManager', unmatched parameter type 'pugi::xml_node const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::io::ResourceSetReader::readEmbeddedAttSystem', unmatched parameter type 'pugi::xml_node&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Session::createIODelegate', unmatched return type 'smtk::model::SessionIOPtr'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::findEntitiesByPropertyAs', unmatched return type 'Collection'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::associations', unmatched return type 'smtk::attribute::ConstModelEntityItemPtr'"/>
+  <suppress-warning text="skipping function 'smtk::common::ResourceSet::getWrapper', unmatched return type 'smtk::common::ResourceWrapper*'"/>
 
   <!-- Ignore until we have time to support Operators -->
   <suppress-warning text="skipping field 'Manager::m_defaultSession' with unmatched type 'smtk::shared_ptr&lt;Session&gt;'"/>
@@ -979,6 +983,34 @@
   <value-type template="smtk::shared_ptr" args="smtk::attribute::ModelEntityItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::MeshSelectionItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::MeshSelectionItemDefinition" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::System">
+    <modify-function signature="findAttributes(const std::string &amp;, std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Attribute&gt; &gt; &amp;)">
+      <modify-argument index="2">
+        <remove-argument />
+      </modify-argument>
+      <modify-argument index="return">
+        <replace-type modified-type="std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Attribute&gt; &gt;" />
+      </modify-argument>
+      <inject-code class="target" position="beginning">
+        std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Attribute&gt; &gt; _out;
+        %CPPSELF->get()->findAttributes(%1, _out);
+        %PYARG_0 = %CONVERTTOPYTHON[std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Attribute&gt; &gt;](_out);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="definitions(std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Definition&gt;&gt; &amp;)">
+      <modify-argument index="1">
+        <remove-argument />
+      </modify-argument>
+      <modify-argument index="return">
+        <replace-type modified-type="std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Definition &gt; &gt;" />
+      </modify-argument>
+      <inject-code class="target" position="beginning">
+        std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Definition &gt; &gt; _out;
+        %CPPSELF->get()->definitions(_out);
+        %PYARG_0 = %CONVERTTOPYTHON[std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Definition &gt; &gt;](_out);
+      </inject-code>
+    </modify-function>
+  </value-type>
   <value-type template="smtk::shared_ptr" args="smtk::attribute::VoidItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::VoidItemDefinition" />
 
@@ -1002,14 +1034,33 @@
         <enum-type name="Type" />
       </object-type>
 
-      <!-- TODO Get ResourceSet wrappers to compile (Shiboken bug?) -->
-      <!--
       <object-type name="ResourceSet">
         <include file-name="smtk/common/ResourceSet.h" location="local" />
         <enum-type name="ResourceState" />
         <enum-type name="ResourceRole" />
+        <modify-function signature="resourceInfo(std::string,smtk::common::Resource::Type&amp;,smtk::common::ResourceSet::ResourceRole&amp;,smtk::common::ResourceSet::ResourceState&amp;,std::string&amp;) const" remove="all" >
+        </modify-function>       
+        <modify-function signature="get(std::string,smtk::shared_ptr&lt;smtk::common::Resource&gt;&amp;) const">
+          <modify-argument index="2">
+            <remove-argument />
+          </modify-argument>
+          <modify-argument index="return">
+            <replace-type modified-type="smtk::common::Resource&amp;" />
+          </modify-argument>
+          <inject-code class="target" position="beginning">
+            smtk::shared_ptr&lt; smtk::common::Resource &gt; _out;
+            bool result = %CPPSELF->get(%1, _out);
+            if (result)
+              %PYARG_0 = %CONVERTTOPYTHON[smtk::shared_ptr&lt; smtk::common::Resource &gt;](_out);
+            else
+            {
+              smtk::shared_ptr&lt; smtk::common::Resource &gt; _ret;
+              %PYARG_0 = %CONVERTTOPYTHON[smtk::shared_ptr&lt; smtk::common::Resource &gt;](_ret);
+            }
+          </inject-code>
+        </modify-function>
       </object-type>
-      -->
+      
 
       <object-type name="UUIDGenerator">
         <include file-name="smtk/common/UUIDGenerator.h" location="local"/>
@@ -1765,6 +1816,24 @@
           </inject-code>
         </modify-function>
 
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::common::Resource &gt; &amp;)"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::attribute::System &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::System &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+
+        <add-function signature="New()"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::attribute::System &gt;">
+          <inject-code>
+            %RETURN_TYPE %0(new smtk::attribute::System());
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+
      </object-type>
 
       <object-type name="StringItem">
@@ -1972,6 +2041,11 @@
       <object-type name="OperatorLog">
         <include file-name="smtk/io/OperatorLog.h" location="local"/>
       </object-type>
+
+      <object-type name="ResourceSetReader">
+        <include file-name="smtk/io/ResourceSetReader.h" location="local"/>
+      </object-type>
+
     </namespace-type>
 
     <namespace-type name="simulation">

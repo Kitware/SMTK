@@ -66,7 +66,7 @@ class SMTKCORE_EXPORT ResourceSet
                        ResourceState state,
                        std::string link="");
 
-  unsigned numberOfResources() const;
+  unsigned int numberOfResources() const;
 
   const std::vector<std::string> resourceIds() const;
 
