@@ -83,9 +83,9 @@ qtModelView::qtModelView(QWidget* p)
   this->setDragEnabled(true);
   this->setAcceptDrops(true);
   this->setContextMenuPolicy(Qt::CustomContextMenu);
-  QObject::connect(this,
-                   SIGNAL(customContextMenuRequested(const QPoint &)),
-                   this, SLOT(showContextMenu(const QPoint &)));
+//  QObject::connect(this,
+//                   SIGNAL(customContextMenuRequested(const QPoint &)),
+//                   this, SLOT(showContextMenu(const QPoint &)));
   this->m_ContextMenu = NULL;
   this->m_OperatorsDock = NULL;
   this->m_OperatorsWidget = NULL;
@@ -217,6 +217,18 @@ void qtModelView::keyPressEvent(QKeyEvent* keyEvent)
                               remSessGroups);
       }
     }
+}
+
+//-----------------------------------------------------------------------------
+void qtModelView::mouseReleaseEvent( QMouseEvent * mouseEvent)
+{
+  QPoint pos = mouseEvent->pos();
+  if ( mouseEvent->button() & Qt::RightButton )
+    {
+    this->showContextMenu(pos);
+    }
+
+  QTreeView::mouseReleaseEvent( mouseEvent );
 }
 
 //-----------------------------------------------------------------------------
