@@ -157,7 +157,8 @@ QToolButton* internal_createToolButton(
   QToolButton* retButton = new QToolButton(pw);
   retButton->setToolTip(strToolTip);
   retButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
-  retButton->setFixedSize(QSize(16, 16));
+  retButton->setFixedSize(QSize(32, 32));
+  retButton->setIconSize(QSize(32, 32));
   retButton->setIcon(QIcon(strIconName));
   retButton->setSizePolicy(sizeFixedPolicy);
   retButton->setCheckable(checkable);
