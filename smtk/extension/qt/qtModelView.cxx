@@ -222,10 +222,10 @@ void qtModelView::keyPressEvent(QKeyEvent* keyEvent)
 //-----------------------------------------------------------------------------
 void qtModelView::mouseReleaseEvent( QMouseEvent * mouseEvent)
 {
-  QPoint pos = mouseEvent->pos();
+  QPoint evtpos = mouseEvent->pos();
   if ( mouseEvent->button() & Qt::RightButton )
     {
-    this->showContextMenu(pos);
+    this->showContextMenu(evtpos);
     }
 
   QTreeView::mouseReleaseEvent( mouseEvent );
