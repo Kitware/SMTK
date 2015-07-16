@@ -62,17 +62,20 @@ void qtCheckItemComboBox::updateText()
 {
   int numSel = 0;
   QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
+  QStandardItem* lastSelItem = NULL;
   if(itemModel)
     {
     for(int row=1; row<this->count(); row++)
       {
       if(itemModel->item(row)->checkState() == Qt::Checked)
         {
+        lastSelItem = itemModel->item(row);
         numSel++;
         }
       }
     }
-  QString displayText = QString::number(numSel) + " " + m_displayTextExt;
+  QString displayText = (numSel == 1 && lastSelItem) ?
+    lastSelItem->text() : QString::number(numSel) + " " + m_displayTextExt;
   this->m_displayItem->setText(displayText);
   this->view()->model()->setData(this->view()->model()->index(0,0),
     displayText, Qt::DisplayRole);
