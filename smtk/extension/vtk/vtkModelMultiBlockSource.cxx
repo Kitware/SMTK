@@ -158,22 +158,6 @@ void vtkModelMultiBlockSource::Dirty()
   this->SetCachedOutput(NULL);
 }
 
-/// Get whether the model has an analysis mesh.
-bool vtkModelMultiBlockSource::GetHasAnalysisMesh() const
-{
-  if(this->ModelEntityID && this->ModelEntityID[0])
-    {
-    smtk::common::UUID uid(this->ModelEntityID);
-    if(this->ModelMgr->hasIntegerProperty(uid, SMTK_MESH_GEN_PROP))
-      {
-      const smtk::model::IntegerList& gen(
-        this->ModelMgr->integerProperty(uid, SMTK_MESH_GEN_PROP));
-      return !gen.empty();
-      }
-    }
-  return false;
-}
-
 /*! \fn vtkModelMultiBlockSource::GetDefaultColor()
  *  \brief Get the RGBA color for model entities that do not have a color property set.
  *

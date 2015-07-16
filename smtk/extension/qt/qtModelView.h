@@ -110,6 +110,8 @@ protected:
   // or remove members from a group by selecting them then press delete key.
   virtual void keyPressEvent(QKeyEvent*);
 
+  virtual void mouseReleaseEvent( QMouseEvent * );
+
   template<typename T>
   T owningEntityAs(const QModelIndex &idx) const;
   template<typename T>

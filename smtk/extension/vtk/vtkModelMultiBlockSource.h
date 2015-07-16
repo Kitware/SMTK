@@ -57,8 +57,6 @@ public:
   vtkSetMacro(ShowAnalysisTessellation,int);
   vtkBooleanMacro(ShowAnalysisTessellation,int);
 
-  bool GetHasAnalysisMesh() const;
-
   vtkGetMacro(AllowNormalGeneration,int);
   vtkSetMacro(AllowNormalGeneration,int);
   vtkBooleanMacro(AllowNormalGeneration,int);

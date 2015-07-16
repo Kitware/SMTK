@@ -78,7 +78,7 @@ class TestModelPhrases(unittest.TestCase):
     # Works but unsure why:
     #self.assertEqual([s1[0].argFindChild(x.relatedEntity()) for x in s2], [0, 1],
     #    'Expected to find children where they were reported.')
-    self.assertEqual([x.title() for x in s2], ['Model A, volume 0', 'embedding dimension'],
+    self.assertEqual([x.title() for x in s2], ['Model A, volume 0'],
         'Unexpected grandchild titles.')
 
     self.spg.setDirectLimit(2)
