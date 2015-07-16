@@ -187,6 +187,10 @@ bool SimpleModelSubphrases::shouldOmitProperty(
       return true;
     else if (pname == "membership mask")
       return true;
+    else if (pname == "embedding dimension")
+      return true;
+    else if (pname == SMTK_MESH_GEN_PROP)
+      return true;
     else if (parent)
       {
       if (parent->relatedEntity().isModel())
