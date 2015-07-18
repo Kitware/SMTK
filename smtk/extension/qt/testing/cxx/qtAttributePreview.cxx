@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     std::cout << "\n"
               << "Simple program to load attribute system and display corresponding editor panel" << "\n"
               << "Usage: qtAttributePreview attribute_filename  [output_filename]"
-              << "  [view_name | view_number]" << "\n"
+              << "  [view_title]" << "\n"
               << std::endl;
     return -1;
     }
@@ -69,64 +69,83 @@ int main(int argc, char *argv[])
     return -2;
     }
 
-  // If system contains no views, create InstancedView by default
-  // assume there is at most one root type view
-  smtk::common::ViewPtr root = system.findViewByType("Root");
-  
-  if (!root)
+  // Check for view to display
+  const std::map<std::string, smtk::common::ViewPtr>& views = system.views();
+  smtk::common::ViewPtr root;
+  // Check for input "view" argument
+  if (argc > 3)
     {
-    root = smtk::common::View::New("Root", "RootView");
-    system.addView(root);
-    }
-  // If the top view is empty then
-  int viewsIndex = root->details().findChild("Views");
-  if (viewsIndex < 0)
-    {
-    smtk::common::View::Component temp = root->details().addChild("Views");
-    viewsIndex = root->details().findChild("Views");
+    std::string input = argv[3];
+    root = system.findView(input);
+    if (!root)
+      {
+      std::cout << "ERROR: View \"" << input << "\" not found" << std::endl;
+      return -4;
+      }
     }
 
-  // If there the number of child views  is 0 then  lets add instances of all
-  // non-abstract attributE definitions
-  smtk::common::View::Component viewsComp = root->details().child(viewsIndex);
-  if (!viewsComp.numberOfChildren())
+  // If there is a single view, display that
+  else if (views.size() == 1)
     {
+    std::map<std::string, smtk::common::ViewPtr>::const_iterator iter = views.begin();
+    root = iter->second;
+    }
+
+  // Else look for a RootView
+  else
+    {
+    root = system.findViewByType("Root");
+    }
+
+  if (!root && views.size() > 1)
+    {
+    std::cout << "ERROR: Cannot figure out which view to display."
+              << "\n" << "Use 3rd argument to specify 1 view by its title."
+              << std::endl;
+    return -5;
+    }
+
+  if (!root && views.size() == 0)
+    {
+    if (system.hasAttributes())
+      {
+      std::cout
+        << "ERROR: Input file has attributes but no View elements"
+        << " - cannot display." << std::endl;
+      return -3;
+      }
+
+    // (else) create default instanced view
+    std::cout << "No views, so creating instanced view" << std::endl;
+    root = smtk::common::View::New("Instanced", "Default");
+    smtk::common::View::Component &instancedComp =
+      root->details().addChild("InstancedAttributes");
+
     std::vector<smtk::attribute::DefinitionPtr> defs;
     std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
     system.findBaseDefinitions(baseDefinitions);
     std::vector<smtk::attribute::DefinitionPtr>::const_iterator baseIter;
-    
     for (baseIter = baseDefinitions.begin();
          baseIter != baseDefinitions.end();
          baseIter++)
       {
-      // Add def if not abstract
-      if (!(*baseIter)->isAbstract())
-        {
-        //defs.push_back(*baseIter);
-        }
-      
       std::vector<smtk::attribute::DefinitionPtr> derivedDefs;
       system.findAllDerivedDefinitions(*baseIter, true, derivedDefs);
       defs.insert(defs.end(), derivedDefs.begin(), derivedDefs.end());
       }
-    
-    // Instantiate attribute for each concrete definition
+
+    // Add view component for each concrete definition
     std::vector<smtk::attribute::DefinitionPtr>::const_iterator defIter;
     for (defIter = defs.begin(); defIter != defs.end(); defIter++)
       {
-      smtk::common::ViewPtr instanced = smtk::common::View::New((*defIter)->type(),
-                                                                "Instanced");
-      smtk::common::View::Component &comp =
-        instanced->details().addChild("InstancedAttributes").addChild("Att");
-      comp.setAttribute("Type", (*defIter)->type());
-      system.addView(instanced);
-      smtk::attribute::AttributePtr instance =
-        system.createAttribute((*defIter)->type());
-      comp.setContents(instance->name());
-      viewsComp.addChild("View").setAttribute("Title", (*defIter)->type());
-      }
-    }
+      smtk::attribute::DefinitionPtr def = *defIter;
+      smtk::common::View::Component& attComp =instancedComp.addChild("Att");
+      attComp.setAttribute("Name", def->type());
+      attComp.setAttribute("Type", def->type());
+      }  // for (defIter)
+
+    system.addView(root);
+    }  // if
 
   smtk::model::ManagerPtr modelManager = system.refModelManager();
 
