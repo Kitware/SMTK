@@ -1548,7 +1548,7 @@ bool Session::addProperties(
       }
     if (props & smtk::model::INTEGER_PROPERTY)
       {
-      cellOut.setIntegerProperty("visibility", erec->GetVisibility());
+      cellOut.setIntegerProperty("visible", erec->GetVisibility());
       // TODO: Should probably remove "cmb id" before merging branch:
       cellOut.setIntegerProperty("cmb id", erec->GetUniquePersistentId());
       }
