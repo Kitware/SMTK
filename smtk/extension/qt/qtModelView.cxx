@@ -985,8 +985,16 @@ void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
     CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY |
     MODEL_ENTITY | INSTANCE_ENTITY | SESSION);
   DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
-  int vis = dp->relatedEntity().visible() ? 0 : 1;
-  if(this->setEntityVisibility(selentityrefs, vis, brOp))
+  bool visible = true;
+  if(dp->relatedEntity().hasVisibility())
+    {
+    const IntegerList& prop(dp->relatedEntity().integerProperty("visible"));
+    if(!prop.empty())
+      visible = (prop[0] != 0);
+    }
+
+  int newVis = visible ? 0 : 1;
+  if(this->setEntityVisibility(selentityrefs, newVis, brOp))
     this->dataChanged(idx, idx);
   this->update();
 }
