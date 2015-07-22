@@ -125,7 +125,7 @@ smtk::model::OperatorResult SetProperty::operateInternal()
     this->setName(stringItem->value(0), entities);
   else if (propName == "color")
     this->setColor(floatItem, entities);
-  else if (propName == "visibility" && integerItem->numberOfValues() > 0)
+  else if (propName == "visible" && integerItem->numberOfValues() > 0)
     this->setVisibility(integerItem->value(0), entities);
 
   smtk::model::OperatorResult result = this->createResult(
