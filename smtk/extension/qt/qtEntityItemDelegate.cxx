@@ -240,6 +240,48 @@ bool QEntityItemDelegate::eventFilter(QObject* editor, QEvent* evt)
   return QStyledItemDelegate::eventFilter(editor, evt);
 }
 
+std::string QEntityItemDelegate::determineAction (
+  const QPoint& pPos, const QModelIndex& idx,
+  const QStyleOptionViewItem & option) const
+{
+  std::string res;
+  // with the help of styles, return where the pPos is on:
+  // the eye-ball, or the color swatch
+  // visible icon
+  QIcon visicon = qvariant_cast<QIcon>(
+    idx.data(QEntityItemModel::EntityVisibilityRole));
+  QSize visiconsize = visicon.actualSize(option.decorationSize);
+  QColor swatchColor = qvariant_cast<QColor>(idx.data(QEntityItemModel::EntityColorRole));
+  int px = pPos.x();
+  int py = pPos.y();
+  bool bvis = false, bcolor = false;
+  if(!visicon.isNull())
+    {
+    bvis = px > option.rect.left()
+      && px < (option.rect.left() + visiconsize.width())
+      && py > option.rect.top()
+      && py < (option.rect.top() + option.rect.height());
+    }
+  if(!bvis && swatchColor.isValid())
+    {
+    bcolor = px > (option.rect.left() + visiconsize.width() + 2)
+      && px < (option.rect.left() + visiconsize.width() + 2 + this->m_swatchSize)
+      && py > option.rect.top()
+      && py < (option.rect.top() + option.rect.height());
+    }
+
+  if(bvis)
+    {
+    res = "visible";
+    }
+  else if(bcolor)
+    {
+    res = "color";
+    }
+  return res;
+}
+
+
 bool QEntityItemDelegate::editorEvent (
   QEvent * evt, QAbstractItemModel * mod,
   const QStyleOptionViewItem & option, const QModelIndex & idx)
@@ -247,38 +289,25 @@ bool QEntityItemDelegate::editorEvent (
   bool res = this->QStyledItemDelegate::editorEvent(
       evt, mod, option, idx);
   if(evt->type() != QEvent::MouseButtonPress)
+    {
     return res;
+    }
   QMouseEvent* e = dynamic_cast<QMouseEvent*>(evt);
-  if(!e)
+  if(!e || e->button() != Qt::LeftButton)
+    {
     return res;
+    }
 
-  if(e->button() != Qt::LeftButton)
-    return res;
+  std::string whichIcon = this->determineAction(e->pos(), idx, option);
 
-  // visible icon
-  QIcon visicon = qvariant_cast<QIcon>(
-    idx.data(QEntityItemModel::EntityVisibilityRole));
-  QSize visiconsize = visicon.actualSize(option.decorationSize);
-  QColor swatchColor = qvariant_cast<QColor>(idx.data(QEntityItemModel::EntityColorRole));
-
-  int px = e->pos().x();
-  int py = e->pos().y();
-  bool bvis = false, bcolor = false;
-  if(!visicon.isNull())
-    bvis = px > option.rect.left()
-      && px < (option.rect.left() + visiconsize.width())
-      && py > option.rect.top()
-      && py < (option.rect.top() + option.rect.height());
-  if(!bvis && swatchColor.isValid())
-    bcolor = px > (option.rect.left() + visiconsize.width() + 2)
-      && px < (option.rect.left() + visiconsize.width() + 2 + this->m_swatchSize)
-      && py > option.rect.top()
-      && py < (option.rect.top() + option.rect.height());
-
-  if(bvis)
+  if(whichIcon == "visible")
+    {
     emit this->requestVisibilityChange(idx);
-  else if(bcolor)
+    }
+  else if(whichIcon == "color")
+    {
     emit this->requestColorChange(idx);
+    }
 
   return res;
 }

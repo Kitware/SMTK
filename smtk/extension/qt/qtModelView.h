@@ -63,6 +63,7 @@ public:
     bool searchUp = false);
   virtual void updateWithOperatorResult(
     const smtk::model::SessionRef& sref, const OperatorResult& result);
+  std::string determineAction(const QPoint& pPos) const;
 
 public slots:
   void selectEntityItems(const smtk::common::UUIDs& selEntityRefs,
@@ -70,6 +71,7 @@ public slots:
   void selectEntities(const smtk::common::UUIDs& selEntIds)
   { this->selectEntityItems(selEntIds, false); }
   void showContextMenu(const QPoint &p);
+  void showContextMenu(const QModelIndex &idx, const QPoint &p = QPoint());
   void operatorInvoked();
   void toggleEntityVisibility( const QModelIndex& );
   void changeEntityColor( const QModelIndex&);

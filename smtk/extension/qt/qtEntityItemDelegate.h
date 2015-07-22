@@ -71,6 +71,11 @@ public:
     QAbstractItemModel* model,
     const QModelIndex &index) const;
 
+  // return which icon the Point position is on
+  // 'visible', 'color', or empty string;
+  std::string determineAction(const QPoint& pPos, const QModelIndex& idx,
+                            const QStyleOptionViewItem & option) const;
+
 protected slots:
   virtual void commitAndCloseEditor();
 

@@ -665,7 +665,7 @@ smtk::model::Group qtModelView::groupParent(const DescriptivePhrasePtr& phrase)
 }
 
 //-----------------------------------------------------------------------------
-void qtModelView::showContextMenu(const QPoint &p)
+void qtModelView::showContextMenu(const QModelIndex &idx, const QPoint& p)
 {
   // Set up Context Menu Structure
   if(this->m_ContextMenu)
@@ -678,7 +678,6 @@ void qtModelView::showContextMenu(const QPoint &p)
     this->m_ContextMenu->setTitle("Operators Menu");
     }
 
-  QModelIndex idx = this->indexAt(p);
   smtk::model::SessionRef brSession;
 
   if ((brSession =
@@ -694,8 +693,22 @@ void qtModelView::showContextMenu(const QPoint &p)
       act->setData(vdata);
       QObject::connect(act, SIGNAL(triggered()), this, SLOT(operatorInvoked()));
       }
-    this->m_ContextMenu->popup(this->mapToGlobal(p));
+    QPoint popP = p;
+    if(popP.isNull())
+      {
+      QRect idxRec = this->visualRect(idx);
+      popP.setX(idxRec.right()/2);
+      popP.setY(idxRec.top());
+      }
+    this->m_ContextMenu->popup(this->mapToGlobal(popP));
     }
+}
+
+//-----------------------------------------------------------------------------
+void qtModelView::showContextMenu(const QPoint &p)
+{
+  QModelIndex idx = this->indexAt(p);
+  this->showContextMenu(idx, p);
 }
 
 //-----------------------------------------------------------------------------
@@ -1237,6 +1250,21 @@ void qtModelView::onEntitiesExpunged(
   if(!this->m_OperatorsWidget)
     return;
   this->m_OperatorsWidget->expungeEntities(expungedEnts);
+}
+
+//-----------------------------------------------------------------------------
+std::string qtModelView::determineAction (const QPoint& evtpos) const
+{
+  QModelIndex idx = this->indexAt(evtpos);
+  QEntityItemDelegate* thedelegate = qobject_cast<QEntityItemDelegate*>(this->itemDelegate());
+  if(idx.isValid() && thedelegate)
+    {
+    QStyleOptionViewItem opt = this->viewOptions();
+    opt.rect = this->visualRect(idx);
+
+    return thedelegate->determineAction(evtpos, idx, opt);
+    }
+  return "";
 }
 
   } // namespace model
