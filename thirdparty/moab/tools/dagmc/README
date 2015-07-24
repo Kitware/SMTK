@@ -1,0 +1,12 @@
+How to use DagMC for ray casting:
+
+The ray_fire_test is a good example of how to use DagMC for ray casting.
+1) DagMC::load_file
+  If using a solid model, ReadCGM will facet the model using CGM. If using a mesh 
+  model, DagMC expects the same geometric topology and senses as created by ReadCGM.
+2) DagMC::init_obb_tree
+  The implicit complement is created, which adds an implicit volume to all surfaces 
+  adjacent to only one volume. An oriented bounding box tree is built to accelerate 
+  intersection searches. 
+3) DagMC::ray_fire
+  Given a ray origin and direction, perform the ray cast. 
