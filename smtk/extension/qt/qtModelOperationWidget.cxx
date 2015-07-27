@@ -174,36 +174,17 @@ bool qtModelOperationWidget::setCurrentOperation(
   smtk::attribute::AttributePtr att = brOp->specification();
   att->system()->setRefModelManager(brOp->manager());
 
-  //Lets see if we have root view for the operations
-  smtk::common::ViewPtr rootView = att->system()->findView("Operators");
-  if (!rootView)
-    {
-    // Lets create one
-    rootView = smtk::common::View::New("Root", "Operators");
-    att->system()->addView(rootView);
-    rootView->details().addChild("Views");
-    }
-  
   //Lets create a view for the operator itself
   smtk::common::ViewPtr instanced = smtk::common::View::New("Instanced", brOp->name());
+  instanced->details().setAttribute("TopLevel", "true");
+  
   smtk::common::View::Component &comp =
     instanced->details().addChild("InstancedAttributes").addChild("Att");
-  comp.setAttribute("Type", att->type()).setAttribute("Name", att->name());
-  int compIndex = rootView->details().findChild("Views");
-  if (compIndex < 0)
-    {
-    // There is no component called "Views" - better add one
-    rootView->details().addChild("Views");
-    compIndex = rootView->details().findChild("Views");
-    }
-  
-  rootView->details().child(compIndex).addChild("View")
-    .setAttribute("Title",instanced->title());
-  
+  comp.setAttribute("Type", att->type()).setAttribute("Name", att->name());  
   att->system()->addView(instanced);
 
   smtk::attribute::qtUIManager* uiManager =
-    new smtk::attribute::qtUIManager(*(att->system()), "Operators");
+    new smtk::attribute::qtUIManager(*(att->system()));
 
   QObject::connect(uiManager, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),
     this, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)));
@@ -214,8 +195,8 @@ bool qtModelOperationWidget::setCurrentOperation(
   QObject::connect(uiManager, SIGNAL(entitiesSelected(const smtk::common::UUIDs&)),
     this, SIGNAL(entitiesSelected(const smtk::common::UUIDs&)));
 
-  qtInstancedView* theView = qobject_cast<qtInstancedView*>(
-    uiManager->initializeView(opParent, instanced, false));
+  qtInstancedView* theView =
+    qobject_cast<qtInstancedView*>(uiManager->setSMTKView(instanced, opParent, false));
   theView->requestModelEntityAssociation();
   qtModelOperationWidgetInternals::OperatorInfo opInfo;
   opInfo.opPtr = brOp;
