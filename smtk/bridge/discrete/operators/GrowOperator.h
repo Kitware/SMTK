@@ -49,13 +49,6 @@ protected:
   bool writeSelectionResult(
     const std::map<smtk::common::UUID, std::set<int> >& cachedSelection,
     smtk::model::OperatorResult& result);
-  /// The current discrete session translation from vtkDiscreteModel to smtk model
-  /// does not have all the relationship set up properly, mostly the shell/face use related.
-  /// Therefore we have to add the raw relationship here.
-  void addRawRelationship(
-    smtk::model::Face& face,
-    smtk::model::Volume& vol1,
-    smtk::model::Volume& vol2);
   void writeSplitResult(vtkSelectionSplitOperator* splitOp,
     vtkDiscreteModelWrapper* modelWrapper,
     Session* opsession, smtk::model::OperatorResult& result);
