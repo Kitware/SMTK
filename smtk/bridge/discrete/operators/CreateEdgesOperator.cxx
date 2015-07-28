@@ -19,8 +19,10 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
 
-#include "vtkModelItem.h"
 #include "vtkModel.h"
+#include "vtkModelFace.h"
+#include "vtkModelItem.h"
+#include "vtkModelItemIterator.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelWrapper.h"
 
@@ -74,8 +76,23 @@ OperatorResult CreateEdgesOperator::operateInternal()
     // this will remove and re-add the model so that the model topology and all
     // relationships will be reset properly.
     opsession->retranscribeModel(inModel);
-    this->addEntityToResult(result, inModel, MODIFIED);
+    smtk::model::EntityRefArray modEnts;
+    modEnts.push_back(inModel);
+
+    // also mark all model faces are modified since there are likely new edges created
+    smtk::common::UUID faceUID;
+    vtkModelItemIterator* iter = modelWrapper->GetModel()->NewIterator(vtkModelFaceType);
+    for(iter->Begin();!iter->IsAtEnd();iter->Next())
+      {
+      vtkModelFace* face =
+        vtkModelFace::SafeDownCast(iter->GetCurrentItem());
+      faceUID = opsession->findOrSetEntityUUID(face);
+      modEnts.push_back(smtk::model::EntityRef(opsession->manager(), faceUID));
+      }
+    iter->Delete();
+
     result->findModelEntity("tess_changed")->setValue(inModel);
+    this->addEntitiesToResult(result, modEnts, MODIFIED);
     }
 
   return result;
