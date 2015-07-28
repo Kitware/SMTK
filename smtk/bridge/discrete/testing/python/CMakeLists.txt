@@ -5,6 +5,7 @@ set(smtkDiscreteSessionPythonTests
 # Additional tests that require SMTK_DATA_DIR
 set(smtkDiscreteSessionPythonDataTests
   discreteBathymetry
+  discreteCreateEdges
   discreteReadFile
   discreteSplitEdge
 )
