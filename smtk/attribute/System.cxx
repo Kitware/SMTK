@@ -905,3 +905,32 @@ smtk::common::ViewPtr System::findViewByType(const std::string &vtype) const
   return smtk::common::ViewPtr();
 }
 //----------------------------------------------------------------------------
+smtk::common::ViewPtr System::findTopLevelView() const
+{
+  std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
+  bool isTopLevel;
+  for (it = this->m_views.begin(); it != this->m_views.end(); ++it)
+    {
+    if (it->second->details().attributeAsBool("TopLevel", isTopLevel) && isTopLevel)
+      {
+      return it->second;
+      }
+    }
+  return smtk::common::ViewPtr();
+}
+//----------------------------------------------------------------------------
+std::vector<smtk::common::ViewPtr> System::findTopLevelViews() const
+{
+  std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
+  bool isTopLevel;
+  std::vector<smtk::common::ViewPtr> topViews;
+  for (it = this->m_views.begin(); it != this->m_views.end(); ++it)
+    {
+    if (it->second->details().attributeAsBool("TopLevel", isTopLevel) && isTopLevel)
+      {
+      topViews.push_back(it->second);
+      }
+    }
+  return topViews;
+}
+//----------------------------------------------------------------------------

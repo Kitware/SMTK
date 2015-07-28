@@ -11,6 +11,10 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
-    <AttDef Type="result(create edges)" BaseType="result"/>
+    <AttDef Type="result(create edges)" BaseType="result">
+      <ItemDefinitions>
+        <ModelEntity Name="tess_changed" NumberOfRequiredValues="1"/>
+      </ItemDefinitions>
+    </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>

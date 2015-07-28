@@ -19,8 +19,10 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
 
-#include "vtkModelItem.h"
 #include "vtkModel.h"
+#include "vtkModelFace.h"
+#include "vtkModelItem.h"
+#include "vtkModelItemIterator.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelWrapper.h"
 
@@ -65,34 +67,33 @@ OperatorResult CreateEdgesOperator::operateInternal()
   this->m_op->SetShowEdges(1);
   this->m_op->Operate(modelWrapper);
   bool ok = this->m_op->GetOperateSucceeded();
-
-  if(ok)
-    {
-// TODO:
-  // There seems to be a bug that will cause a crash during Sessions'
-  // transcribing of the full 3D model with newly created edges and vertexes.
-  // This needs to be investigated further.
-/*
-    smtk::model::ManagerPtr store = this->manager();
-    vtkDiscreteModel* dmod = modelWrapper->GetModel();
-    // Add or obtain the model's UUID
-    // smtk::common::UUID mid = opsession->findOrSetEntityUUID(dmod);
-    store->eraseModel(inModel.as<smtk::model::Model>());
-    smtk::common::UUID mid = opsession->findOrSetEntityUUID(dmod);
-    smtk::model::EntityRef c = opsession->addCMBEntityToManager(mid, dmod, store, 8);
-//    store->insertModel(c.entity());
-*/
-    }
-
   OperatorResult result =
     this->createResult(
       ok ?  OPERATION_SUCCEEDED : OPERATION_FAILED);
 
-  // TODO: Read list of new Edges created and
-  //       use the session to translate them and store
-  //       them in the OperatorResult (well, a subclass).
+  if(ok)
+    {
+    // this will remove and re-add the model so that the model topology and all
+    // relationships will be reset properly.
+    opsession->retranscribeModel(inModel);
+    smtk::model::EntityRefArray modEnts;
+    modEnts.push_back(inModel);
 
-  this->addEntityToResult(result, inModel, MODIFIED);
+    // also mark all model faces are modified since there are likely new edges created
+    smtk::common::UUID faceUID;
+    vtkModelItemIterator* iter = modelWrapper->GetModel()->NewIterator(vtkModelFaceType);
+    for(iter->Begin();!iter->IsAtEnd();iter->Next())
+      {
+      vtkModelFace* face =
+        vtkModelFace::SafeDownCast(iter->GetCurrentItem());
+      faceUID = opsession->findOrSetEntityUUID(face);
+      modEnts.push_back(smtk::model::EntityRef(opsession->manager(), faceUID));
+      }
+    iter->Delete();
+
+    result->findModelEntity("tess_changed")->setValue(inModel);
+    this->addEntitiesToResult(result, modEnts, MODIFIED);
+    }
 
   return result;
 }

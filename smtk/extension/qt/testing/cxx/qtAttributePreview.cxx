@@ -76,6 +76,7 @@ int main(int argc, char *argv[])
   if (!root)
     {
     root = smtk::common::View::New("Root", "RootView");
+    root->details().setAttribute("TopLevel", "true");
     system.addView(root);
     }
   // If the top view is empty then
@@ -135,7 +136,7 @@ int main(int argc, char *argv[])
 
   // Instantiate smtk's qtUIManager
   smtk::attribute::qtUIManager *uiManager =
-    new smtk::attribute::qtUIManager(system, root->title());
+    new smtk::attribute::qtUIManager(system);
 
   // Instantiate empty widget as containter for qtUIManager
   QWidget *widget = new QWidget();
@@ -150,7 +151,7 @@ int main(int argc, char *argv[])
   if (argc <= 3)
     {
     // Generate tab group with all views (standard)
-    uiManager->initializeUI(widget, useInternalFileBrowser);
+    uiManager->setSMTKView(root, widget, useInternalFileBrowser);
     }
   else
     {
@@ -175,7 +176,7 @@ int main(int argc, char *argv[])
 
     QVBoxLayout *frameLayout = new QVBoxLayout();
     frame->setLayout(frameLayout);
-    uiManager->initializeView(frame, view, useInternalFileBrowser);
+    uiManager->setSMTKView(view, frame, useInternalFileBrowser);
     widget->layout()->addWidget(frame);
     }
 

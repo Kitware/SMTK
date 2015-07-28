@@ -25,7 +25,7 @@
 #include "smtk/model/Volume.h"
 
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkModel.h"
+#include "vtkDiscreteModel.h"
 #include "vtkModelFace.h"
 #include "vtkModelRegion.h"
 #include "vtkModel.h"
@@ -58,29 +58,6 @@ bool SplitFaceOperator::ableToOperate()
     ;
 }
 
-/// The current discrete session translation from vtkDiscreteModel to smtk model
-/// does not have all the relationship set up properly, mostly the shell/face use related.
-/// Therefore we have to add the raw relationship here.
-static void internal_addRawRelationship(
-  smtk::model::Face& face,
-  smtk::model::Volume& vol1,
-  smtk::model::Volume& vol2)
-{
-  if(!face.isValid())
-    return;
-
-  if(vol1.isValid())
-    {
-    face.addRawRelation(vol1);
-    vol1.addRawRelation(face);
-    }
-  if(vol2.isValid())
-    {
-    face.addRawRelation(vol2);
-    vol2.addRawRelation(face);
-    }
-}
-
 OperatorResult SplitFaceOperator::operateInternal()
 {
   Session* opsession = this->discreteSession();
@@ -94,9 +71,9 @@ OperatorResult SplitFaceOperator::operateInternal()
   smtk::model::ManagerPtr store = this->manager();
 
   bool ok = false;
-  std::map<smtk::model::Face, std::set<smtk::model::Face> > splitfacemaps;
+  std::map<smtk::common::UUID, smtk::common::UUIDs > splitfacemaps;
   int totNewFaces = 0;
-  smtk::common::UUID faceUUID;
+  smtk::common::UUID inFaceUID, faceUUID;
 
   // Translate SMTK inputs into CMB inputs
   smtk::attribute::ModelEntityItemPtr sourceItem =
@@ -112,22 +89,8 @@ OperatorResult SplitFaceOperator::operateInternal()
       if(ok)
         {
         smtk::model::EntityRef inFace = sourceItem->value(idx);
-        faceUUID =inFace.entity();
-        vtkModelFace* origFace = vtkModelFace::SafeDownCast(
-          opsession->entityForUUID(faceUUID));
+        inFaceUID = inFace.entity();
 
-        vtkModelRegion* v1 = origFace->GetModelRegion(0);
-        vtkModelRegion* v2 = origFace->GetModelRegion(1);
-        Volume vol1 = v1 ? Volume(store, opsession->findOrSetEntityUUID(v1)) : Volume();
-        Volume vol2 = v2 ? Volume(store, opsession->findOrSetEntityUUID(v2)) : Volume();
-        store->erase(faceUUID);
-
-        // Now re-add it (it will have new edges)
-        faceUUID = opsession->findOrSetEntityUUID(origFace);
-        smtk::model::Face c = opsession->addCMBEntityToManager(faceUUID,
-          origFace, store, true).as<smtk::model::Face>();
-
-        internal_addRawRelationship(c, vol1, vol2);
         vtkIdTypeArray* newFaceIds = this->m_op->GetCreatedModelFaceIDs();
         vtkIdType *idBuffer = reinterpret_cast<vtkIdType *>(
           newFaceIds->GetVoidPointer(0));
@@ -139,10 +102,7 @@ OperatorResult SplitFaceOperator::operateInternal()
           vtkModelFace* face = dynamic_cast<vtkModelFace*>(
             modelWrapper->GetModelEntity(vtkModelFaceType, faceId));
           faceUUID = opsession->findOrSetEntityUUID(face);
-          smtk::model::Face cFace = opsession->addCMBEntityToManager(faceUUID, face, store, true);
-          internal_addRawRelationship(cFace, vol1, vol2);
-
-          splitfacemaps[c].insert(cFace);
+          splitfacemaps[inFaceUID].insert(faceUUID);
           }
         }
       }
@@ -160,17 +120,29 @@ OperatorResult SplitFaceOperator::operateInternal()
     // need to be re-fetched.
     // Adding new faces to the "created" item, as a convenient method
     // to get newly created faces from result. 
+    smtk::common::UUID modelid = opsession->findOrSetEntityUUID(modelWrapper->GetModel());
+    smtk::model::Model inModel(store, modelid);
+    // this will remove and re-add the model so that the model topology and all
+    // relationships will be reset properly.
+    opsession->retranscribeModel(inModel);
 
     smtk::model::EntityRefArray modEnts;
     smtk::model::EntityRefArray newEnts;
-    std::map<smtk::model::Face, std::set<smtk::model::Face> >::const_iterator it;
-    std::set<smtk::model::Face>::const_iterator nit;
+    std::map<smtk::common::UUID, smtk::common::UUIDs >::const_iterator it;
+    smtk::common::UUIDs::const_iterator nit;
     for(it=splitfacemaps.begin(); it!=splitfacemaps.end(); ++it)
       {
-      modEnts.push_back(it->first);
+      vtkModelFace* origFace = vtkModelFace::SafeDownCast(
+        opsession->entityForUUID(it->first));
+      inFaceUID = opsession->findOrSetEntityUUID(origFace);
+
+      modEnts.push_back(smtk::model::EntityRef(store, inFaceUID));
       for (nit = it->second.begin(); nit != it->second.end(); ++nit)
         {
-        newEnts.push_back(*nit);
+        vtkModelFace* newFace = vtkModelFace::SafeDownCast(
+          opsession->entityForUUID(*nit));
+        faceUUID = opsession->findOrSetEntityUUID(newFace);
+        newEnts.push_back(smtk::model::EntityRef(store, faceUUID));
         }
       }
 

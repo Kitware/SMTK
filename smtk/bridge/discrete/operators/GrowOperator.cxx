@@ -85,29 +85,6 @@ bool GrowOperator::writeSelectionResult(
   return true;
 }
 
-/// The current discrete session translation from vtkDiscreteModel to smtk model
-/// does not have all the relationship set up properly, mostly the shell/face use related.
-/// Therefore we have to add the raw relationship here.
-void GrowOperator::addRawRelationship(
-  smtk::model::Face& face,
-  smtk::model::Volume& vol1,
-  smtk::model::Volume& vol2)
-{
-  if(!face.isValid())
-    return;
-
-  if(vol1.isValid())
-    {
-    face.addRawRelation(vol1);
-    vol1.addRawRelation(face);
-    }
-  if(vol2.isValid())
-    {
-    face.addRawRelation(vol2);
-    vol2.addRawRelation(face);
-    }
-}
-
 void GrowOperator::writeSplitResult(vtkSelectionSplitOperator* splitOp,
   vtkDiscreteModelWrapper* modelWrapper,
   Session* opsession, OperatorResult& result)
@@ -140,19 +117,14 @@ void GrowOperator::writeSplitResult(vtkSelectionSplitOperator* splitOp,
       continue;
 
     faceUUID = opsession->findOrSetEntityUUID(origFace);
-    vtkModelRegion* v1 = origFace->GetModelRegion(0);
-    vtkModelRegion* v2 = origFace->GetModelRegion(1);
-    Volume vol1 = v1 ? Volume(store, opsession->findOrSetEntityUUID(v1)) : Volume();
-    Volume vol2 = v2 ? Volume(store, opsession->findOrSetEntityUUID(v2)) : Volume();
-    store->erase(faceUUID);
+    smtk::common::UUID modelid = opsession->findOrSetEntityUUID(modelWrapper->GetModel());
+    smtk::model::Model inModel(store, modelid);
+    // this will remove and re-add the model so that the model topology and all
+    // relationships will be reset properly.
+    opsession->retranscribeModel(inModel);
 
-    // Now re-add it (it will have new edges)
     faceUUID = opsession->findOrSetEntityUUID(origFace);
-    smtk::model::Face c = opsession->addCMBEntityToManager(faceUUID,
-      origFace, store, true).as<smtk::model::Face>();
-    modEnts.push_back(c); // original face
-
-    this->addRawRelationship(c, vol1, vol2);
+    modEnts.push_back(smtk::model::EntityRef(store, faceUUID)); // original face
 
     for(std::set<vtkIdType>::const_iterator fit = it->second.begin();
         fit != it->second.end(); ++fit)
@@ -160,10 +132,7 @@ void GrowOperator::writeSplitResult(vtkSelectionSplitOperator* splitOp,
       vtkModelFace* face = dynamic_cast<vtkModelFace*>(
         modelWrapper->GetModelEntity(vtkModelFaceType, *fit));
       faceUUID = opsession->findOrSetEntityUUID(face);
-      smtk::model::Face cFace = opsession->addCMBEntityToManager(
-        faceUUID, face, store, true).as<smtk::model::Face>();
-      newEnts.push_back(cFace); // new face
-      this->addRawRelationship(cFace, vol1, vol2);
+      newEnts.push_back(smtk::model::EntityRef(store, faceUUID)); // new face
       }
 
     }

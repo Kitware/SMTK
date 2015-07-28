@@ -118,6 +118,11 @@ namespace smtk
         const std::string& name,
         SearchStyle style = ACTIVE_CHILDREN);
 
+      template<typename T>
+      typename T::ConstPtr findAs(
+        const std::string& name,
+        SearchStyle style = ACTIVE_CHILDREN) const;
+
       IntItemPtr findInt(const std::string &name);
       ConstIntItemPtr findInt(const std::string &name) const;
 
@@ -298,6 +303,12 @@ namespace smtk
     typename T::Ptr Attribute::findAs(const std::string& iname, SearchStyle style)
     {
     return smtk::dynamic_pointer_cast<T>(this->find(iname, style));
+    }
+//----------------------------------------------------------------------------
+    template<typename T>
+    typename T::ConstPtr Attribute::findAs(const std::string& iname, SearchStyle style) const
+    {
+    return smtk::dynamic_pointer_cast<const T>(this->find(iname, style));
     }
 //----------------------------------------------------------------------------
   } // attribute namespace

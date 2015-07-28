@@ -184,8 +184,9 @@ QSize qtTextEdit::sizeHint() const
 }
 
 //----------------------------------------------------------------------------
-qtUIManager::qtUIManager(smtk::attribute::System &system, const std::string &toplevelViewName) :
-  m_topViewName(toplevelViewName), m_AttSystem(system), m_useInternalFileBrowser(false)
+qtUIManager::qtUIManager(smtk::attribute::System &system) :
+ m_AttSystem(system), m_useInternalFileBrowser(false),
+  m_parentWidget(NULL)
 {
   this->m_topView = NULL;
   this->m_maxValueLabelLength = 200;
@@ -219,24 +220,48 @@ qtUIManager::~qtUIManager()
 void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
 {
   m_useInternalFileBrowser = useInternalFileBrowser;
-  smtk::common::ViewPtr v = this->m_AttSystem.findView(this->m_topViewName);
-  if(!v)
-    {
-    return;
-    }
+  this->m_parentWidget = pWidget;
   if(this->m_topView)
     {
     delete this->m_topView;
+    this->m_topView = NULL;
+    }
+  
+  if(!this->m_smtkView)
+    {
+    return;
     }
   this->internalInitialize();
 
-  this->m_topView = this->createView(v, pWidget);
+  this->m_topView = this->createView(this->m_smtkView, pWidget);
   if (this->m_topView)
     {
     this->m_topView->showAdvanceLevel(this->m_currentAdvLevel);
     }
 }
 
+//----------------------------------------------------------------------------
+qtBaseView *qtUIManager::setSMTKView(smtk::common::ViewPtr v)
+{
+  if (this->m_smtkView != v)
+    {
+    this->m_smtkView = v;
+    this->initializeUI(this->m_parentWidget, this->m_useInternalFileBrowser);
+    }
+  return this->m_topView;
+}
+//----------------------------------------------------------------------------
+qtBaseView *qtUIManager::setSMTKView(smtk::common::ViewPtr v, QWidget* pWidget,
+                                     bool useInternalFileBrowser)
+{
+  if ((this->m_smtkView != v) || (this->m_parentWidget != pWidget)
+      || (this->m_useInternalFileBrowser != useInternalFileBrowser))
+    {
+    this->m_smtkView = v;
+    this->initializeUI(pWidget,useInternalFileBrowser);
+    }
+  return this->m_topView;
+}
 //----------------------------------------------------------------------------
 void qtUIManager::internalInitialize()
 {
@@ -294,22 +319,6 @@ void qtUIManager::initAdvanceLevels(QComboBox* combo)
     }
 }
 
-//----------------------------------------------------------------------------
-// Generates widget for a single input view
-// bypassing the RootView tab widget
-qtBaseView* qtUIManager::initializeView(QWidget* pWidget,
-                                        smtk::common::ViewPtr smtkView,
-                                        bool useInternalFileBrowser)
-{
-  m_useInternalFileBrowser = useInternalFileBrowser;
-  if(this->m_topView)
-    {
-    delete this->m_topView;
-    }
-  this->internalInitialize();
-
-  return this->createView(smtkView, pWidget);
-}
 
 //----------------------------------------------------------------------------
 void qtUIManager::updateModelViews()
