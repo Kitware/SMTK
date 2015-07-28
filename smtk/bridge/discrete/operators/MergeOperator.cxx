@@ -18,9 +18,12 @@
 
 #include "smtk/model/Model.h"
 #include "smtk/model/CellEntity.h"
+#include "smtk/model/Face.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Volume.h"
 
+#include "vtkDiscreteModel.h"
+#include "vtkDiscreteModelWrapper.h"
 #include "vtkModelItem.h"
 #include "vtkModel.h"
 #include "vtkModelFace.h"
@@ -57,10 +60,10 @@ bool MergeOperator::ableToOperate()
 OperatorResult MergeOperator::operateInternal()
 {
   Session* opsession = this->discreteSession();
-
+  smtk::model::Model model = this->specification()->findModelEntity("model")->
+    value().as<smtk::model::Model>();
   vtkDiscreteModelWrapper* modelWrapper =
-    opsession->findModelEntity(
-      this->specification()->findModelEntity("model")->value().entity());
+    opsession->findModelEntity(model.entity());
   this->m_op->SetTargetId(this->fetchCMBCellId("target cell"));
   smtk::model::ManagerPtr store = this->manager();
   smtk::model::EntityRefs srcsRemoved;
@@ -93,46 +96,28 @@ OperatorResult MergeOperator::operateInternal()
   if (ok)
     {
     smtk::model::EntityRef tgtEnt =
-      this->specification()->findModelEntity("target cell")->value();
-
-    // re-add target
+        this->specification()->findModelEntity("target cell")->value();
     smtk::common::UUID eid = tgtEnt.entity();
     vtkModelItem* origItem =
-      opsession->entityForUUID(eid);
+        opsession->entityForUUID(eid);
 
-    store->erase(eid);
+    smtk::common::UUID modelid = opsession->findOrSetEntityUUID(modelWrapper->GetModel());
+    smtk::model::Model inModel(store, modelid);
+    // this will remove and re-add the model so that the model topology and all
+    // relationships will be reset properly.
+    opsession->retranscribeModel(inModel);
 
-    // Now re-add it (it will have new edges)
     eid = opsession->findOrSetEntityUUID(origItem);
-    smtk::model::EntityRef c = opsession->addCMBEntityToManager(
-      eid, origItem, store, true);
-    if(vtkModelFace* origFace = vtkModelFace::SafeDownCast(origItem))
-      {
-      vtkModelRegion* v1 = origFace->GetModelRegion(0);
-      vtkModelRegion* v2 = origFace->GetModelRegion(1);
-      Volume vol1 = v1 ? Volume(store, opsession->findOrSetEntityUUID(v1)) : Volume();
-      Volume vol2 = v2 ? Volume(store, opsession->findOrSetEntityUUID(v2)) : Volume();
-      if(vol1.isValid())
-        {
-        c.addRawRelation(vol1);
-        vol1.addRawRelation(c);
-        }
-      if(vol2.isValid())
-        {
-        c.addRawRelation(vol2);
-        vol2.addRawRelation(c);
-        }
-      }
+
     // Return the list of entities that were created
     // so that remote sessions can track what records
     // need to be re-fetched.
-    this->addEntityToResult(result, c, MODIFIED);
+    this->addEntityToResult(result, smtk::model::EntityRef(store, eid), MODIFIED);
 
     smtk::attribute::ModelEntityItem::Ptr removedEntities =
       result->findModelEntity("expunged");
     removedEntities->setIsEnabled(true);
     removedEntities->setNumberOfValues(srcsRemoved.size());
-    removedEntities->setIsEnabled(true);
 
     smtk::model::EntityRefs::const_iterator it;
     int rid = 0;

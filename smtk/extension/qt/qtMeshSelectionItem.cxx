@@ -413,7 +413,9 @@ void qtMeshSelectionItem::updateInputSelection(
       }
     }
 
-  if(opType == ACCEPT && !this->Internals->EdgeButton->isChecked())
+  if(opType == ACCEPT &&
+     this->Internals->EdgeButton &&
+     !this->Internals->EdgeButton->isChecked())
     {
     this->Internals->uncheckOpButtons();
     this->Internals->m_outSelection.clear();
