@@ -65,34 +65,18 @@ OperatorResult CreateEdgesOperator::operateInternal()
   this->m_op->SetShowEdges(1);
   this->m_op->Operate(modelWrapper);
   bool ok = this->m_op->GetOperateSucceeded();
-
-  if(ok)
-    {
-// TODO:
-  // There seems to be a bug that will cause a crash during Sessions'
-  // transcribing of the full 3D model with newly created edges and vertexes.
-  // This needs to be investigated further.
-/*
-    smtk::model::ManagerPtr store = this->manager();
-    vtkDiscreteModel* dmod = modelWrapper->GetModel();
-    // Add or obtain the model's UUID
-    // smtk::common::UUID mid = opsession->findOrSetEntityUUID(dmod);
-    store->eraseModel(inModel.as<smtk::model::Model>());
-    smtk::common::UUID mid = opsession->findOrSetEntityUUID(dmod);
-    smtk::model::EntityRef c = opsession->addCMBEntityToManager(mid, dmod, store, 8);
-//    store->insertModel(c.entity());
-*/
-    }
-
   OperatorResult result =
     this->createResult(
       ok ?  OPERATION_SUCCEEDED : OPERATION_FAILED);
 
-  // TODO: Read list of new Edges created and
-  //       use the session to translate them and store
-  //       them in the OperatorResult (well, a subclass).
-
-  this->addEntityToResult(result, inModel, MODIFIED);
+  if(ok)
+    {
+    // this will remove and re-add the model so that the model topology and all
+    // relationships will be reset properly.
+    opsession->retranscribeModel(inModel);
+    this->addEntityToResult(result, inModel, MODIFIED);
+    result->findModelEntity("tess_changed")->setValue(inModel);
+    }
 
   return result;
 }
