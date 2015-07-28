@@ -48,15 +48,18 @@ namespace smtk
     Q_OBJECT
 
     public:
-    qtUIManager(smtk::attribute::System &system,
-                const std::string &toplevelViewName);
+    qtUIManager(smtk::attribute::System &system);
       virtual ~qtUIManager();
 
       void initializeUI(QWidget* pWidget, bool useInternalFileBrowser=false);
-      qtBaseView* initializeView(QWidget* pWidget, smtk::common::ViewPtr view,
-        bool useInternalFileBrowser=true);
+      qtBaseView *setSMTKView(smtk::common::ViewPtr v);
+      qtBaseView *setSMTKView(smtk::common::ViewPtr v, QWidget* pWidget,
+                              bool useInternalFileBrowser=false);
+      smtk::common::ViewPtr smtkView() const
+      {return this->m_smtkView;}
+      
       smtk::attribute::System* attSystem() const
-        {return &this->m_AttSystem;}
+      {return &this->m_AttSystem;}
 
       // Description:
       // Set/Get the color used for indicating items with default values
@@ -193,7 +196,8 @@ namespace smtk
 
    private:
       qtBaseView* m_topView;
-      std::string m_topViewName;
+      smtk::common::ViewPtr m_smtkView;
+      QWidget *m_parentWidget;
       QFont advFont;
       QColor DefaultValueColor;
       QColor InvalidValueColor;

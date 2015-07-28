@@ -114,6 +114,8 @@ namespace smtk
       void addView(smtk::common::ViewPtr);
       smtk::common::ViewPtr findView(const std::string &title) const;
       smtk::common::ViewPtr findViewByType(const std::string &vtype) const;
+      smtk::common::ViewPtr findTopLevelView() const;
+      std::vector<smtk::common::ViewPtr> findTopLevelViews() const;
       const std::map<std::string, smtk::common::ViewPtr> &views() const
       {return this->m_views;}
 

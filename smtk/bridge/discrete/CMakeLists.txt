@@ -135,7 +135,7 @@ set(discreteSessionSrcs
   Operator.cxx
   ArrangementHelper.cxx
   BathymetryHelper.cxx
-#  operators/CreateEdgesOperator.cxx
+  operators/CreateEdgesOperator.cxx
   operators/EntityGroupOperator.cxx
   operators/ImportOperator.cxx
   operators/MergeOperator.cxx
@@ -154,7 +154,7 @@ set(discreteSessionHeaders
   Operator.h
   ArrangementHelper.h
   BathymetryHelper.h
-#  operators/CreateEdgesOperator.h
+  operators/CreateEdgesOperator.h
   operators/EntityGroupOperator.h
   operators/ImportOperator.h
   operators/MergeOperator.h
@@ -177,7 +177,7 @@ set(discreteSessionHeaders
 # smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" discreteSessionJSON)
 
 include(SMTKOperatorXML)
-# smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdgesOperator.sbt" unitOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdgesOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/MergeOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitFaceOperator.sbt" unitOperatorXML)

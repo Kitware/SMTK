@@ -1407,10 +1407,37 @@ void XmlV2StringWriter::processGroupItem(pugi::xml_node &node,
 void XmlV2StringWriter::processViews()
 {
   this->m_pugi->root.append_child(node_comment).set_value("********** Workflow Views ***********");
+
+  // First write toplevel views and then write out the non-toplevel - note that the
+  // attribute or view system do care about this - the assumption is that the designer would
+  // probably like all the toplevel views clustered together
+  
   xml_node views = this->m_pugi->root.append_child("Views");
   std::map<std::string, smtk::common::ViewPtr>::const_iterator iter;
+  bool isTop;
   for (iter = this->m_system.views().begin(); iter != this->m_system.views().end(); iter++)
     {
+    if (!(iter->second->details().attributeAsBool("TopLevel", isTop) && isTop))
+      {
+      continue;
+      }
+    xml_node node;
+    node = views.append_child("View");
+            
+    node.append_attribute("Type").set_value(iter->second->type().c_str());
+    node.append_attribute("Title").set_value(iter->second->title().c_str());
+    if (iter->second->iconName() != "")
+      {
+      node.append_attribute("Icon").set_value(iter->second->iconName().c_str());
+      }
+    this->processViewComponent(iter->second->details(), node);
+    }
+  for (iter = this->m_system.views().begin(); iter != this->m_system.views().end(); iter++)
+    {
+    if (iter->second->details().attributeAsBool("TopLevel", isTop) && isTop)
+      {
+      continue;
+      }
     xml_node node;
     node = views.append_child("View");
             

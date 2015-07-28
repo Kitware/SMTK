@@ -53,6 +53,12 @@ namespace smtk
         {return this->find(0, inName);}
       smtk::attribute::ConstItemPtr find(std::size_t element, const std::string &name) const;
 
+      template<typename T>
+      typename T::Ptr findAs(const std::string& name);
+
+      template<typename T>
+      typename T::ConstPtr findAs(const std::string& name) const;
+
       virtual void reset();
       virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
                             smtk::attribute::Item::CopyInfo& info);
@@ -67,6 +73,20 @@ namespace smtk
 
     private:
     };
+//----------------------------------------------------------------------------
+    template<typename T>
+    typename T::Ptr GroupItem::findAs(const std::string& iname)
+    {
+    return smtk::dynamic_pointer_cast<T>(this->find(iname));
+    }
+//----------------------------------------------------------------------------
+    template<typename T>
+    typename T::ConstPtr GroupItem::findAs(const std::string& iname) const
+    {
+    return smtk::dynamic_pointer_cast<const T>(this->find(iname));
+    }
+//----------------------------------------------------------------------------
+
   }
 }
 

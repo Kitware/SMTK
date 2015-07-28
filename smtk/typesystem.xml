@@ -28,6 +28,9 @@
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::modelEntitiesAs', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::associatedModelEntities', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findAs', unmatched return type 'T::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::findAs', unmatched return type 'T::ConstPtr'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::GroupItem::findAs', unmatched return type 'T::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::GroupItem::findAs', unmatched return type 'T::ConstPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::GroupItemDefinition::addItemDefinition', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
   <suppress-warning text="skipping function 'smtk::dynamicCastPointer', unmatched return type 'smtk::shared_ptr&lt;T&gt;'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Definition::addItemDefinition', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
