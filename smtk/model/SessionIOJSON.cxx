@@ -35,7 +35,6 @@ int SessionIOJSON::exportJSON(ManagerPtr modelMgr, cJSON* sessionRec)
 {
   (void)modelMgr;
   (void)sessionRec;
-  (void)modelIds;
   return 1;
 }
 
