@@ -170,23 +170,32 @@ Session::~Session()
     vtkInformation* mp = mit->second->GetProperties();
     mp->RemoveObserver(this->m_itemWatcher);
     }
-  // Remove any models that this session owned from s_modelsToSessions.
+
+  // Find all the models owned by this session
+  std::vector<vtkDiscreteModel*> remModels;
   std::map<vtkDiscreteModel*,Session::WeakPtr>::iterator mbit;
-  for (mbit = Session::s_modelsToSessions.begin(); mbit != Session::s_modelsToSessions.end(); )
+  for (mbit = Session::s_modelsToSessions.begin(); mbit != Session::s_modelsToSessions.end(); ++mbit)
     {
     if (mbit->second.lock().get() == this)
       {
-      smtk::common::UUID modelId = this->findOrSetEntityUUID(mbit->first);
-      Session::s_modelsToSessions.erase(mbit++);
+      remModels.push_back(mbit->first);
+      }
+    }
+
+  // Remove any models that this session owned from s_modelsToSessions.
+  std::vector<vtkDiscreteModel*>::iterator rmit;
+  for (rmit = remModels.begin(); rmit != remModels.end(); ++rmit)
+    {
+    if (mbit->second.lock().get() == this)
+      {
+      Session::s_modelsToSessions.erase(*rmit);
+      smtk::common::UUID modelId = this->findOrSetEntityUUID(*rmit);
       vtkSmartPointer<vtkDiscreteModelWrapper> modelPtr = Session::s_modelIdsToRefs[modelId];
       Session::s_modelIdsToRefs.erase(modelId);
       Session::s_modelRefsToIds.erase(modelPtr);
       }
-    else
-      {
-      ++mbit;
-      }
     }
+
   this->m_itemWatcher->Delete();
   if(this->m_bathymetryHelper)
     {
@@ -2194,19 +2203,16 @@ bool Session::removeModelEntity(const smtk::model::EntityRef& modRef)
 
   // Remove any models that this session owned from s_modelsToSessions.
   std::map<vtkDiscreteModel*,Session::WeakPtr>::iterator mbit;
-  for (mbit = Session::s_modelsToSessions.begin(); mbit != Session::s_modelsToSessions.end(); )
+  for (mbit = Session::s_modelsToSessions.begin(); mbit != Session::s_modelsToSessions.end(); ++mbit)
     {
     if (mbit->first == dmod)
       {
       smtk::common::UUID modelId = modRef.entity();
-      Session::s_modelsToSessions.erase(mbit++);
+      Session::s_modelsToSessions.erase(mbit);
       vtkSmartPointer<vtkDiscreteModelWrapper> modelPtr = Session::s_modelIdsToRefs[modelId];
       Session::s_modelIdsToRefs.erase(modelId);
       Session::s_modelRefsToIds.erase(modelPtr);
-      }
-    else
-      {
-      ++mbit;
+      break;
       }
     }
 
