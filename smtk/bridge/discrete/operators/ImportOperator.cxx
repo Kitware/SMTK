@@ -73,7 +73,9 @@ bool ImportOperator::ableToOperate()
   bool able = (ext == ".vtk" || ext == ".2dm" ||
                ext == ".3dm" ||
 #ifdef SMTK_ENABLE_MOAB_SUPPORT
-               ext == ".exo" ||
+               ext == ".h5m" || ext == ".sat" ||
+               ext == ".brep" || ext == ".stp" ||
+               ext == ".cub" || ext == ".exo" ||
 #endif
 #ifdef SMTK_ENABLE_REMUS_SUPPORT
                ext == ".poly" || ext == ".smesh" || ext == ".map" ||
@@ -133,7 +135,9 @@ OperatorResult ImportOperator::operateInternal()
 // This is where we should have the logic to import files other than .cmb formats
 // ******************************************************************************
   std::string ext = vtksys::SystemTools::GetFilenameLastExtension(filename);
-  if(ext == ".exo")
+  if(ext == ".h5m" || ext == ".sat" ||
+     ext == ".brep" || ext == ".stp" ||
+     ext == ".cub" || ext == ".exo" )
     {
 #ifdef SMTK_ENABLE_MOAB_SUPPORT
 

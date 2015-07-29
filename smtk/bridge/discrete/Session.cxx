@@ -1319,6 +1319,10 @@ void Session::addEntity(
   int sense,
   smtk::model::Orientation orientation)
 {
+  if(!child)
+    {
+    return;
+    }
   smtk::model::EntityRef childRef(
     parent.manager(),
     this->findOrSetEntityUUID(child));
@@ -1339,6 +1343,10 @@ void Session::addEntity(
   int sense,
   smtk::model::Orientation orientation)
 {
+  if(!parent)
+    {
+    return;
+    }
   smtk::model::EntityRef parentRef(
     child.manager(),
     this->findOrSetEntityUUID(parent));
