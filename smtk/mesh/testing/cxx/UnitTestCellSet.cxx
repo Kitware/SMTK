@@ -544,6 +544,9 @@ class CountCells : public smtk::mesh::CellForEach
   //seen all the cells that we expect to be given
   smtk::mesh::HandleRange pointsSeen;
 
+  //keep track of all the cell types we have been passed
+  smtk::mesh::CellTypes cellTypesSeen;
+
   //keep a physical count of number of cells so that we can verify we
   //don't iterate over a cell more than once
   int numCellsVisited;
@@ -562,19 +565,23 @@ public:
     }
 
   //--------------------------------------------------------------------------
-  void operator()(int numPts,
+  void operator()(smtk::mesh::CellType& cellType,
+                  int numPts,
                   const smtk::mesh::Handle* const pointIds,
                   const double* const coords)
   {
   this->numCellsVisited++;
   this->numPointsSeen += numPts;
   this->pointsSeen.insert( pointIds, pointIds+numPts);
+  this->cellTypesSeen[static_cast<int>(cellType)] = true;
   }
 
   int numberOCellsVisited() const { return numCellsVisited; }
   int numberOPointsSeen() const { return numPointsSeen; }
 
   smtk::mesh::HandleRange points() const { return pointsSeen; }
+
+  smtk::mesh::CellTypes cellTypes() const { return cellTypesSeen; }
 };
 
 //----------------------------------------------------------------------------
@@ -605,6 +612,13 @@ void verify_cellset_for_each(const smtk::mesh::CollectionPtr& c)
   //the exact same number of cells
   test( pointsFromConnectivity == functor.points() );
   test( numPointsSeen == functor.numberOPointsSeen() );
+
+
+  //verify that the cell types that are reported are only 3D cells.
+  smtk::mesh::TypeSet typeSet( functor.cellTypes(), false, true );
+  test( typeSet.hasDimension( smtk::mesh::Dims1 ) == false );
+  test( typeSet.hasDimension( smtk::mesh::Dims2 ) == false );
+  test( typeSet.hasDimension( smtk::mesh::Dims3 ) == true );
 }
 
 

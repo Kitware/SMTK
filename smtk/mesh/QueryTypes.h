@@ -154,7 +154,8 @@ public:
 class SMTKCORE_EXPORT CellForEach
 {
 public:
-  virtual void operator()(int numPts,
+  virtual void operator()(smtk::mesh::CellType& cellType,
+                          int numPts,
                           const smtk::mesh::Handle* const pointIds,
                           const double* const coords)=0;
 

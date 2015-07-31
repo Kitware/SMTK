@@ -56,10 +56,12 @@ public:
     }
 
   //--------------------------------------------------------------------------
-  void operator()(int numPts,
+  void operator()(smtk::mesh::CellType& cellType,
+                  int numPts,
                   const smtk::mesh::Handle* const pointIds,
                   const double* const coords)
   {
+    (void) cellType;
     for( int i=0; i < numPts; ++i)
       {
       const double currValue = coords[(i*3)+1];

@@ -908,26 +908,22 @@ smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange
 }
 
 //----------------------------------------------------------------------------
-void Interface::cellForEach(const smtk::mesh::HandleRange &cells,
-                            smtk::mesh::PointConnectivity& pc,
+void Interface::cellForEach(smtk::mesh::PointConnectivity& pc,
                             smtk::mesh::CellForEach& filter) const
 {
   if(!pc.is_empty())
     {
+    smtk::mesh::CellType cellType;
     int size=0;
     const smtk::mesh::Handle* points;
     std::vector<double> coords;
 
     typedef smtk::mesh::HandleRange::const_iterator cit;
-    pc.initCellTraversal();
-    for(cit i = cells.begin(); i!= cells.end(); ++i)
-      {
-      bool validCell = pc.fetchNextCell(size, points);
-      if(!validCell)
-        {
-        continue;
-        }
 
+    for(pc.initCellTraversal();
+        pc.fetchNextCell(cellType, size, points) == true;
+        )
+      {
       coords.reserve(size*3);
 
       //query to grab the coordinates for these points
@@ -936,7 +932,7 @@ void Interface::cellForEach(const smtk::mesh::HandleRange &cells,
                           &coords[0]);
 
       //call the custom filter
-      filter(size,points,&coords[0]);
+      filter(cellType,size,points,&coords[0]);
       }
     }
   return;

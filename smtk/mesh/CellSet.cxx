@@ -229,7 +229,7 @@ SMTKCORE_EXPORT void for_each(const CellSet& a, CellForEach &filter)
   const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
 
   filter.m_collection=a.m_parent;
-  iface->cellForEach(a.m_range, pc, filter);
+  iface->cellForEach(pc, filter);
 }
 
 }

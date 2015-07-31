@@ -52,10 +52,12 @@ public:
     }
 
   //--------------------------------------------------------------------------
-  void operator()(int numPts,
+  void operator()(smtk::mesh::CellType& cellType,
+                  int numPts,
                   const smtk::mesh::Handle* const pointIds,
                   const double* const coords)
   {
+  (void)cellType;
   (void)coords;
   this->numCellsVisited++;
   this->numPointsSeen += numPts;
