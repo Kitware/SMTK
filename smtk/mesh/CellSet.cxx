@@ -118,7 +118,9 @@ smtk::mesh::PointConnectivity CellSet::pointConnectivity( ) const
 //----------------------------------------------------------------------------
 smtk::mesh::PointConnectivity CellSet::pointConnectivity( std::size_t position ) const
 {
-  return smtk::mesh::PointConnectivity(this->m_parent, this->m_range[position]);
+  smtk::mesh::HandleRange singleIndex;
+  singleIndex.insert(this->m_range[position]);
+  return smtk::mesh::PointConnectivity(this->m_parent, singleIndex);
 }
 
 //----------------------------------------------------------------------------

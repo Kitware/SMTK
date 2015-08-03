@@ -70,6 +70,7 @@ namespace smtk
     class Collection;
     class Interface;
     class Allocator;
+    class ConnectivityStorage;
 
     namespace moab
     {
@@ -184,6 +185,8 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::mesh::Collection >            CollectionPtr;
     typedef smtk::shared_ptr< smtk::mesh::Interface >             InterfacePtr;
     typedef smtk::shared_ptr< smtk::mesh::Allocator >             AllocatorPtr;
+    typedef smtk::shared_ptr< smtk::mesh::ConnectivityStorage >
+                                                        ConnectivityStoragePtr;
 
     namespace moab
     {

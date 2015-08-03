@@ -18,7 +18,7 @@
 
 #include "smtk/mesh/moab/CellTypeToType.h"
 #include "smtk/mesh/moab/Allocator.h"
-#include "smtk/mesh/moab/PointConnectivityStorage.h"
+#include "smtk/mesh/moab/ConnectivityStorage.h"
 
 #include "moab/Core.hpp"
 #include "moab/FileOptions.hpp"
@@ -225,11 +225,24 @@ Interface::~Interface()
 {
 
 }
+
 //----------------------------------------------------------------------------
 smtk::mesh::AllocatorPtr Interface::allocator()
 {
   return this->m_alloc;
 }
+
+//----------------------------------------------------------------------------
+smtk::mesh::ConnectivityStoragePtr Interface::connectivityStorage(
+                                      const smtk::mesh::HandleRange& cells)
+{
+  //make boost shared_ptr
+  smtk::mesh::ConnectivityStoragePtr cs(
+                    new smtk::mesh::moab::ConnectivityStorage(this->m_iface.get(),
+                                                              cells) );
+  return cs;
+}
+
 
 //----------------------------------------------------------------------------
 smtk::mesh::Handle Interface::getRoot() const

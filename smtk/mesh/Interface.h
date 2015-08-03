@@ -29,8 +29,6 @@ namespace mesh {
 struct ContainsFunctor;
 class PointConnectivity;
 
-class PointConnectivity;
-
 //----------------------------------------------------------------------------
 class SMTKCORE_EXPORT Allocator
 {
@@ -54,6 +52,37 @@ public:
 };
 
 //----------------------------------------------------------------------------
+class SMTKCORE_EXPORT ConnectivityStorage
+{
+public:
+  //struct that holds the required information to compute what is the
+  //current cell when we are iterating.
+  struct IterationState
+    {
+    IterationState():
+      whichConnectivityVector(0),
+      ptrOffsetInVector(0)
+      {
+      }
+    std::size_t whichConnectivityVector;
+    std::size_t ptrOffsetInVector;
+    };
+
+  virtual void initTraversal( IterationState& state ) = 0;
+
+  virtual bool fetchNextCell( IterationState& state,
+                      smtk::mesh::CellType& cellType,
+                      int& numPts,
+                      const smtk::mesh::Handle* &points) = 0;
+
+  virtual bool equal( ConnectivityStorage* other ) const = 0;
+
+  virtual std::size_t cellSize() const = 0;
+
+  virtual std::size_t vertSize() const = 0;
+};
+
+//----------------------------------------------------------------------------
 class SMTKCORE_EXPORT Interface
 {
 public:
@@ -66,6 +95,12 @@ public:
   //interface. This is generally used to create new coordinates or cells that
   //are than assigned to an existing mesh or new mesh
   virtual smtk::mesh::AllocatorPtr allocator() = 0;
+
+  //----------------------------------------------------------------------------
+  //get back an efficient storage mechanism for a range of cells point
+  //connectivity. This allows for efficient iteration of cell connectivity, and
+  //conversion to other formats
+  virtual smtk::mesh::ConnectivityStoragePtr connectivityStorage(const smtk::mesh::HandleRange& cells) = 0;
 
   //----------------------------------------------------------------------------
   virtual smtk::mesh::Handle getRoot() const = 0;

@@ -65,6 +65,12 @@ public:
   smtk::mesh::AllocatorPtr allocator();
 
   //----------------------------------------------------------------------------
+  //get back an efficient storage mechanism for a range of cells point
+  //connectivity. This allows for efficient iteration of cell connectivity, and
+  //conversion to other formats
+  virtual smtk::mesh::ConnectivityStoragePtr connectivityStorage(const smtk::mesh::HandleRange& cells);
+
+  //----------------------------------------------------------------------------
   smtk::mesh::Handle getRoot() const;
 
   //----------------------------------------------------------------------------

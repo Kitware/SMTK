@@ -14,7 +14,7 @@ set(meshSrcs
   moab/Allocator.cxx
   moab/CellTypeToType.cxx
   moab/Interface.cxx
-  moab/PointConnectivityStorage.cxx
+  moab/ConnectivityStorage.cxx
   moab/Readers.cxx
   moab/Writers.cxx
   )

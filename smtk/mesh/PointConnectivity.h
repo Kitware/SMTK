@@ -16,6 +16,7 @@
 
 #include "smtk/mesh/CellTypes.h"
 #include "smtk/mesh/Handle.h"
+#include "smtk/mesh/Interface.h"
 
 namespace smtk {
 namespace mesh {
@@ -37,9 +38,6 @@ public:
 
   PointConnectivity(const smtk::mesh::CollectionPtr& parent,
                     const smtk::mesh::HandleRange& range);
-
-  PointConnectivity(const smtk::mesh::CollectionPtr& parent,
-                    const smtk::mesh::Handle& cell);
 
   //Copy Constructor required for rule of 3
   PointConnectivity(const PointConnectivity& other);
@@ -78,29 +76,12 @@ public:
                       int& numPts,
                       const smtk::mesh::Handle* &points);
 
-  //struct that holds the required information to compute what is the
-  //current cell when we are iterating.
-  struct IterationState
-    {
-    IterationState():
-      whichConnectivityVector(0),
-      ptrOffsetInVector(0)
-      {
-      }
-
-    std::size_t whichConnectivityVector;
-    std::size_t ptrOffsetInVector;
-    };
 private:
 
   smtk::mesh::CollectionPtr m_parent;
 
-  class InternalStorageImpl;
-  smtk::shared_ptr< InternalStorageImpl > m_connectivity;
-
-
-
-  IterationState m_iteratorLocation;
+  smtk::mesh::ConnectivityStoragePtr m_connectivity;
+  smtk::mesh::ConnectivityStorage::IterationState m_iteratorLocation;
 };
 
 }

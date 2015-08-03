@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/mesh/moab/PointConnectivityStorage.h"
+#include "smtk/mesh/moab/ConnectivityStorage.h"
 #include "smtk/mesh/moab/CellTypeToType.h"
 #include "smtk/mesh/moab/Interface.h"
 
@@ -20,8 +20,8 @@ namespace moab {
 
 
 //----------------------------------------------------------------------------
-PointConnectivityStorage::PointConnectivityStorage(
-                         const smtk::mesh::InterfacePtr& interface,
+ConnectivityStorage::ConnectivityStorage(
+                         ::moab::Interface* iface,
                          const smtk::mesh::HandleRange& cells):
   ConnectivityStartPositions(),
   ConnectivityArraysLengths(),
@@ -37,8 +37,6 @@ PointConnectivityStorage::PointConnectivityStorage(
   smtk::mesh::HandleRange::const_iterator cells_current = cells.begin();
   smtk::mesh::HandleRange::const_iterator cells_end = cells.end();
 
-  ::moab::Interface* m_iface = smtk::mesh::moab::extract_moab_interface(interface);
-
   //We allocate VertConnectivityStorage once before we insert any vertices
   //this gaurentees that all of the ConnectivityStartPositions pointers
   //into our storage are valid. Otherwise the realloc's will cause
@@ -51,7 +49,7 @@ PointConnectivityStorage::PointConnectivityStorage(
   //the vertices first so, if cells_current isnt a vertice
   //we have none
   while(cells_current != cells_end &&
-        m_iface->type_from_handle(*cells_current) == ::moab::MBVERTEX)
+        iface->type_from_handle(*cells_current) == ::moab::MBVERTEX)
     {
 
     smtk::mesh::HandleRange::iterator verts_start = cells_current.start_of_block();
@@ -85,11 +83,11 @@ PointConnectivityStorage::PointConnectivityStorage(
     int numVertsPerCell=0, numCellsInSubRange=0;
 
     ::moab::ErrorCode result =
-    m_iface->connect_iterate(cells_current,
-                             cells.end(),
-                             connectivity,
-                             numVertsPerCell,
-                             numCellsInSubRange);
+    iface->connect_iterate(cells_current,
+                           cells.end(),
+                           connectivity,
+                           numVertsPerCell,
+                           numCellsInSubRange);
 
     if(result == ::moab::MB_SUCCESS)
       {
@@ -98,7 +96,7 @@ PointConnectivityStorage::PointConnectivityStorage(
       this->ConnectivityVertsPerCell.push_back(numVertsPerCell);
 
       //fetch the current cell type for this block
-      ::moab::EntityType moabCellType = m_iface->type_from_handle(*cells_current);
+      ::moab::EntityType moabCellType = iface->type_from_handle(*cells_current);
       this->ConnectivityTypePerCell.push_back(
         smtk::mesh::moab::moabToSMTKCell( static_cast< int >(moabCellType) ) );
 
@@ -133,61 +131,21 @@ PointConnectivityStorage::PointConnectivityStorage(
 }
 
 //----------------------------------------------------------------------------
-PointConnectivityStorage::PointConnectivityStorage(
-                         const smtk::mesh::InterfacePtr& interface,
-                         const smtk::mesh::Handle& cell):
-  ConnectivityStartPositions(),
-  ConnectivityArraysLengths(),
-  ConnectivityVertsPerCell(),
-  ConnectivityTypePerCell(),
-  NumberOfCells(0),
-  NumberOfVerts(0),
-  VertConnectivityStorage()
+ConnectivityStorage::~ConnectivityStorage( )
 {
-  ::moab::Interface* m_iface = smtk::mesh::moab::extract_moab_interface(interface);
-
-  const ::moab::EntityHandle* connectivity;
-  int numVertsPerCell=0;
-  const int numCellsInSubRange=1; //we are only passed a single cell
-
-  //we have none
-  ::moab::EntityType moabCellType = m_iface->type_from_handle(cell);
-  if(moabCellType == ::moab::MBVERTEX)
-    {
-    //add to the VertConnectivityStorage the ids of the vertices in this
-    //range
-    this->VertConnectivityStorage.resize(1, cell);
-
-    connectivity = &(this->VertConnectivityStorage[0]);
-    numVertsPerCell = 1;
-    }
-  else
-    {
-    m_iface->get_connectivity(cell, connectivity, numVertsPerCell);
-    }
-
-  this->ConnectivityStartPositions.push_back(connectivity);
-  this->ConnectivityArraysLengths.push_back(numCellsInSubRange);
-  this->ConnectivityVertsPerCell.push_back(numVertsPerCell);
-
-  this->ConnectivityTypePerCell.push_back(
-    smtk::mesh::moab::moabToSMTKCell( static_cast< int >(moabCellType) ) );
-
-  this->NumberOfCells = numCellsInSubRange;
-  this->NumberOfVerts = numVertsPerCell;
 }
 
 //----------------------------------------------------------------------------
-void PointConnectivityStorage::initTraversal(
-                       smtk::mesh::PointConnectivity::IterationState& state )
+void ConnectivityStorage::initTraversal(
+                       smtk::mesh::ConnectivityStorage::IterationState& state )
 {
   state.whichConnectivityVector = 0;
   state.ptrOffsetInVector = 0;
 }
 
 //----------------------------------------------------------------------------
-bool PointConnectivityStorage::fetchNextCell(
-                       smtk::mesh::PointConnectivity::IterationState& state,
+bool ConnectivityStorage::fetchNextCell(
+                       smtk::mesh::ConnectivityStorage::IterationState& state,
                        smtk::mesh::CellType& cellType,
                        int& numPts,
                        const smtk::mesh::Handle* &points)
@@ -224,9 +182,14 @@ bool PointConnectivityStorage::fetchNextCell(
 }
 
 //----------------------------------------------------------------------------
-bool PointConnectivityStorage::equal( PointConnectivityStorage* other ) const
+bool ConnectivityStorage::equal( smtk::mesh::ConnectivityStorage* base_other ) const
 {
-  if( this == other ) { return true;}
+  if( this == base_other ) { return true;}
+  if( !base_other ) { return false; }
+
+  smtk::mesh::moab::ConnectivityStorage* other =
+       dynamic_cast< smtk::mesh::moab::ConnectivityStorage* >(base_other);
+  if( !other ) { return false; }
 
   //two quick checks that can confirm two items aren't equal
   if( this->NumberOfCells != other->NumberOfCells )

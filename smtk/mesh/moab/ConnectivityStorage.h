@@ -8,42 +8,46 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_mesh_moab_PointConnectivityStorage_h
-#define __smtk_mesh_moab_PointConnectivityStorage_h
+#ifndef __smtk_mesh_moab_ConnectivityStorage_h
+#define __smtk_mesh_moab_ConnectivityStorage_h
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/mesh/Handle.h"
-#include "smtk/mesh/PointConnectivity.h"
+
+#include "smtk/mesh/moab/Interface.h"
 
 namespace smtk {
 namespace mesh {
 namespace moab {
 
-class PointConnectivityStorage
+class SMTKCORE_EXPORT ConnectivityStorage : public smtk::mesh::ConnectivityStorage
 {
 public:
 
-  PointConnectivityStorage(const smtk::mesh::InterfacePtr& iface,
-                           const smtk::mesh::HandleRange& cells);
+  ConnectivityStorage(::moab::Interface* interface,
+                      const smtk::mesh::HandleRange& cells);
 
-  PointConnectivityStorage(const smtk::mesh::InterfacePtr& iface,
-                           const smtk::mesh::Handle& cell);
+  virtual ~ConnectivityStorage();
 
+  void initTraversal( smtk::mesh::ConnectivityStorage::IterationState& state );
 
-  void initTraversal( smtk::mesh::PointConnectivity::IterationState& state );
-
-  bool fetchNextCell( smtk::mesh::PointConnectivity::IterationState& state,
+  bool fetchNextCell( smtk::mesh::ConnectivityStorage::IterationState& state,
                       smtk::mesh::CellType& cellType,
                       int& numPts,
                       const smtk::mesh::Handle* &points);
 
-  bool equal( PointConnectivityStorage* other ) const;
+  bool equal( smtk::mesh::ConnectivityStorage* other ) const;
 
   std::size_t cellSize() const { return NumberOfCells; }
 
   std::size_t vertSize() const { return NumberOfVerts; }
 
 private:
+  //blank since we are used by shared_ptr
+  ConnectivityStorage( const ConnectivityStorage& other );
+  //blank since we are used by shared_ptr
+  ConnectivityStorage& operator=( const ConnectivityStorage& other );
+
   std::vector< const smtk::mesh::Handle* > ConnectivityStartPositions;
   std::vector<int> ConnectivityArraysLengths;
   std::vector<int> ConnectivityVertsPerCell;
