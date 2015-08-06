@@ -14,6 +14,7 @@
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/System.h"
 #include "smtk/model/EntityRef.h"
+#include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 
 #include <QAbstractItemView>
@@ -121,24 +122,32 @@ void qtModelEntityItemCombo::init()
 
   QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
   // need to update the list, since it may be changed
-  int row=1;
-  smtk::model::EntityRefs modelEnts = modelManager->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(
-    itemDef->membershipMask(), false);
-  for(smtk::model::EntityRefs::iterator it = modelEnts.begin(); it != modelEnts.end(); ++it)
-    {
-    if((*it).isUseEntity())
-      continue;
-    QStandardItem* item = new QStandardItem;
-    std::string entName = (*it).name();
-    item->setText(entName.c_str());
-    item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-    //item->setData(this->Internals->AttSelections[keyName], Qt::CheckStateRole);
-    item->setData(Qt::Unchecked, Qt::CheckStateRole);
-    item->setCheckable(true);
-    item->setCheckState(ModelEntityItem->has(*it) ? Qt::Checked : Qt::Unchecked);
+  // We create a temporary group and use Group::meetsMembershipConstraints()
+  // to test whether the mask allows association.
+  smtk::model::Manager::Ptr tmpMgr = smtk::model::Manager::create();
+  smtk::model::Group tmpGrp = tmpMgr->addGroup();
+  tmpGrp.setMembershipMask(itemDef->membershipMask());
 
-    item->setData((*it).entity().toString().c_str(), Qt::UserRole);
-    itemModel->insertRow(row, item);
+  int row=1;
+  for (smtk::model::UUIDWithEntity it = modelManager->topology().begin();
+      it != modelManager->topology().end(); ++it)
+    {
+    smtk::model::EntityRef entref(modelManager, it->first);
+    if (entref.isValid() && !entref.isUseEntity() &&
+        tmpGrp.meetsMembershipConstraints(entref))
+      {
+      QStandardItem* item = new QStandardItem;
+      std::string entName = entref.name();
+      item->setText(entName.c_str());
+      item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+      //item->setData(this->Internals->AttSelections[keyName], Qt::CheckStateRole);
+      item->setData(Qt::Unchecked, Qt::CheckStateRole);
+      item->setCheckable(true);
+      item->setCheckState(ModelEntityItem->has(entref) ? Qt::Checked : Qt::Unchecked);
+
+      item->setData(entref.entity().toString().c_str(), Qt::UserRole);
+      itemModel->insertRow(row, item);
+      }
     }
   itemModel->sort(0);
 
