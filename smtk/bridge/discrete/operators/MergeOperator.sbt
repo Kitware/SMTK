@@ -9,11 +9,11 @@
            <MembershipMask>model</MembershipMask>
         </ModelEntity>
         <ModelEntity Name="source cell" NumberOfRequiredValues="0" Extensible="1">
-          <MembershipMask>face|edge</MembershipMask>
+          <MembershipMask>face</MembershipMask>
         </ModelEntity>
 
         <ModelEntity Name="target cell" NumberOfRequiredValues="1">
-          <MembershipMask>face|edge</MembershipMask>
+          <MembershipMask>face</MembershipMask>
         </ModelEntity>
       </ItemDefinitions>
     </AttDef>

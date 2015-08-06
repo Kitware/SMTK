@@ -16,10 +16,11 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
-#include "smtk/model/Model.h"
 #include "smtk/model/CellEntity.h"
+#include "smtk/model/Edge.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/Volume.h"
 
 #include "vtkDiscreteModel.h"
@@ -45,15 +46,26 @@ MergeOperator::MergeOperator()
 bool MergeOperator::ableToOperate()
 {
   smtk::model::Model model;
+  int tgtid = this->fetchCMBCellId("target cell");
+  int srcid = this->fetchCMBCellId("source cell");
+  smtk::attribute::ModelEntityItemPtr sourceItem =
+    this->specification()->findModelEntity("source cell");
+  smtk::model::Face tgtFace =
+      this->specification()->findModelEntity("target cell")->
+      value().as<smtk::model::Face>();
 
   return
     // The SMTK model must be valid
     (model = this->specification()->findModelEntity("model")->value().as<smtk::model::Model>()).isValid() &&
     // The CMB model must exist:
     this->discreteSession()->findModelEntity(model.entity()) &&
-    // The source and target cells must be valid:
-    this->fetchCMBCellId("source cell") >= 0 &&
-    this->fetchCMBCellId("target cell") >= 0
+    // The source and target cells must be valid,
+    srcid >= 0 && tgtid >= 0 &&
+    // The source and target cells should not be the same
+    (sourceItem->numberOfValues() > 1 || srcid != tgtid ) &&
+    // Currently the discrete kernel can't merge face with edges becasue the
+    // operation does not update edge relationships after face-merge
+    (tgtFace.isValid() && tgtFace.edges().size() ==0)
     ;
 }
 
@@ -64,7 +76,8 @@ OperatorResult MergeOperator::operateInternal()
     value().as<smtk::model::Model>();
   vtkDiscreteModelWrapper* modelWrapper =
     opsession->findModelEntity(model.entity());
-  this->m_op->SetTargetId(this->fetchCMBCellId("target cell"));
+  int tgtid = this->fetchCMBCellId("target cell");
+  this->m_op->SetTargetId(tgtid);
   smtk::model::ManagerPtr store = this->manager();
   smtk::model::EntityRefs srcsRemoved;
 
@@ -75,7 +88,7 @@ OperatorResult MergeOperator::operateInternal()
   for(std::size_t idx=0; idx<sourceItem->numberOfValues(); idx++)
     {
     int srcid = this->fetchCMBCellId(sourceItem, idx);
-    if(srcid >= 0)
+    if(srcid >= 0 && srcid != tgtid)
       {
       this->m_op->SetSourceId(srcid);
       this->m_op->Operate(modelWrapper);
