@@ -186,14 +186,11 @@ Session::~Session()
   std::vector<vtkDiscreteModel*>::iterator rmit;
   for (rmit = remModels.begin(); rmit != remModels.end(); ++rmit)
     {
-    if (mbit->second.lock().get() == this)
-      {
-      Session::s_modelsToSessions.erase(*rmit);
-      smtk::common::UUID modelId = this->findOrSetEntityUUID(*rmit);
-      vtkSmartPointer<vtkDiscreteModelWrapper> modelPtr = Session::s_modelIdsToRefs[modelId];
-      Session::s_modelIdsToRefs.erase(modelId);
-      Session::s_modelRefsToIds.erase(modelPtr);
-      }
+    Session::s_modelsToSessions.erase(*rmit);
+    smtk::common::UUID modelId = this->findOrSetEntityUUID(*rmit);
+    vtkSmartPointer<vtkDiscreteModelWrapper> modelPtr = Session::s_modelIdsToRefs[modelId];
+    Session::s_modelIdsToRefs.erase(modelId);
+    Session::s_modelRefsToIds.erase(modelPtr);
     }
 
   this->m_itemWatcher->Delete();
