@@ -921,6 +921,30 @@ smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange
 }
 
 //----------------------------------------------------------------------------
+void Interface::pointForEach(const smtk::mesh::HandleRange &points,
+                            smtk::mesh::MeshForEach& filter) const
+{
+  if(!points.empty())
+    {
+
+    std::vector<double> coords;
+    coords.reserve(3);
+
+    typedef smtk::mesh::HandleRange::const_iterator cit;
+    for(cit i = points.begin(); i!= points.end(); ++i)
+      {
+      //grab the coordinates for a single point
+      smtk::mesh::HandleRange singlHandle(*i,*i);
+      m_iface->get_coords(singlHandle, &coords[0]);
+
+      //call the custom filter
+      filter(*i,&coords[0]);
+      }
+    }
+  return;
+}
+
+//----------------------------------------------------------------------------
 void Interface::cellForEach(smtk::mesh::PointConnectivity& pc,
                             smtk::mesh::CellForEach& filter) const
 {

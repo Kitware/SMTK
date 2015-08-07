@@ -236,6 +236,10 @@ public:
                                                   const smtk::mesh::ContainsFunctor& containsFunctor) const = 0;
 
   //----------------------------------------------------------------------------
+  virtual void pointForEach( const HandleRange &points,
+                             smtk::mesh::PointForEach& filter) const = 0;
+
+  //----------------------------------------------------------------------------
   virtual void cellForEach( smtk::mesh::PointConnectivity& a,
                             smtk::mesh::CellForEach& filter) const = 0;
 

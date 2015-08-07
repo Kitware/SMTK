@@ -162,6 +162,15 @@ public:
   smtk::mesh::CollectionPtr m_collection;
 };
 
+//----------------------------------------------------------------------------
+class SMTKCORE_EXPORT PointForEach
+{
+public:
+  virtual void operator()(const smtk::mesh::Handle& pointId,
+                          const double* const coords)=0;
+
+  smtk::mesh::CollectionPtr m_collection;
+};
 
 //----------------------------------------------------------------------------
 enum ContainmentType
