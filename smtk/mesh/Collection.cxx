@@ -191,9 +191,11 @@ smtk::mesh::CellSet Collection::cells( )
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::Points Collection::points( )
+smtk::mesh::PointSet Collection::points( )
 {
-  return smtk::mesh::Points( );
+  smtk::mesh::MeshSet ms(this->shared_from_this(),
+                         this->m_internals->mesh_root_handle());
+  return ms.points( );
 }
 
 //----------------------------------------------------------------------------

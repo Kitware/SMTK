@@ -25,6 +25,7 @@ set(unit_tests_which_require_data
   UnitTestCreateMesh.cxx
   UnitTestLoadMesh.cxx
   UnitTestPointConnectivity.cxx
+  UnitTestPointSet.cxx
   UnitTestMeshSet.cxx
   UnitTestRemoveMeshes.cxx
   UnitTestTypeSetFromData.cxx

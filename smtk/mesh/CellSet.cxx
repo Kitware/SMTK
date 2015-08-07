@@ -96,17 +96,22 @@ smtk::mesh::TypeSet CellSet::types() const
 
 
 //----------------------------------------------------------------------------
-smtk::mesh::Points CellSet::points( ) const
+smtk::mesh::PointSet CellSet::points( ) const
 {
-  //need to pass the range and parents I expect
-  return smtk::mesh::Points();
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  smtk::mesh::HandleRange range = iface->getPoints( this->m_range );
+  return smtk::mesh::PointSet(this->m_parent, range );
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::Points CellSet::points( std::size_t ) const
+smtk::mesh::PointSet CellSet::points( std::size_t position ) const
 {
-  //need to pass the range and parents I expect
-  return smtk::mesh::Points();
+  smtk::mesh::HandleRange singleIndex;
+  singleIndex.insert(this->m_range[position]);
+
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  smtk::mesh::HandleRange range = iface->getPoints( singleIndex );
+  return smtk::mesh::PointSet(this->m_parent, range );
 }
 
 //----------------------------------------------------------------------------

@@ -538,6 +538,16 @@ smtk::mesh::HandleRange Interface::getCells(const smtk::mesh::HandleRange& meshs
 }
 
 //----------------------------------------------------------------------------
+//get all cells held by this range handle of a given dimension
+smtk::mesh::HandleRange Interface::getPoints(const smtk::mesh::HandleRange& cells) const
+
+{
+  smtk::mesh::HandleRange pointIds;
+  m_iface->get_connectivity(cells, pointIds);
+  return pointIds;
+}
+
+//----------------------------------------------------------------------------
 std::vector< std::string > Interface::computeNames(const smtk::mesh::HandleRange& meshsets) const
 {
   //construct a name tag query helper class
@@ -921,24 +931,60 @@ smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange
 }
 
 //----------------------------------------------------------------------------
-void Interface::pointForEach(const smtk::mesh::HandleRange &points,
-                            smtk::mesh::MeshForEach& filter) const
+void Interface::pointForEach(const HandleRange &points,
+                             smtk::mesh::PointForEach& filter) const
 {
   if(!points.empty())
     {
-
+    //fetch a collection of points
     std::vector<double> coords;
-    coords.reserve(3);
 
-    typedef smtk::mesh::HandleRange::const_iterator cit;
-    for(cit i = points.begin(); i!= points.end(); ++i)
+    //determine the number of points. Break that into manageable chunks, we dont
+    //want to allocate an array for hundreds of millions of points, instead
+    //we would want to fetch a subset of points at a time.
+    const std::size_t numPoints = points.size();
+
+    const std::size_t numPointsPerLoop =524288;
+    const std::size_t numLoops = numPoints / 524288;
+
+    coords.reserve(numPointsPerLoop*3);
+    smtk::mesh::HandleRange::const_iterator start = points.begin();
+
+
+    for(std::size_t i=0; i < numLoops; ++i)
       {
-      //grab the coordinates for a single point
-      smtk::mesh::HandleRange singlHandle(*i,*i);
-      m_iface->get_coords(singlHandle, &coords[0]);
+      //determine where the end iterator should be
+      smtk::mesh::HandleRange::const_iterator end = start + numPointsPerLoop;
 
-      //call the custom filter
-      filter(*i,&coords[0]);
+      //needs to be insert so we use iterator insert, since we don't want
+      //all points between start and end values, but only those that are
+      //in the range. Think not 0 to N, but 0 - 10, 14 - N.
+      ::moab::Range subset;
+      subset.insert(start,end);
+
+      //fetch all the coordinates for the start, end range
+      m_iface->get_coords( subset,  &coords[0] );
+
+      //call the filter for each point
+      for(std::size_t offset = 0; start != end; offset+=3, ++start)
+        {
+        filter( *start, &coords[offset] );
+        }
+
+      }
+
+    std::size_t difference = numPoints - (numPointsPerLoop * numLoops);
+    smtk::mesh::HandleRange::const_iterator end = start + difference;
+    ::moab::Range subset;
+    subset.insert(start,end);
+
+    //fetch all the coordinates for the start, end range
+    m_iface->get_coords( subset,  &coords[0] );
+
+    //call the filter for each point
+    for(std::size_t offset = 0; start != end; offset+=3, ++start)
+      {
+      filter( *start, &coords[offset] );
       }
     }
   return;

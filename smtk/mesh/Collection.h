@@ -77,7 +77,7 @@ public:
   smtk::mesh::TypeSet   types() const;
   smtk::mesh::MeshSet   meshes( ); //all meshes
   smtk::mesh::CellSet   cells( ); //all cells
-  smtk::mesh::Points    points( ); //all points
+  smtk::mesh::PointSet    points( ); //all points
 
   //todo:
   //find all cells of a given dimension that are attached to ?

@@ -164,6 +164,10 @@ public:
                                            smtk::mesh::DimensionType dim) const = 0;
 
   //----------------------------------------------------------------------------
+  //get all points held by this range of handle of a given dimension
+  virtual smtk::mesh::HandleRange getPoints(const smtk::mesh::HandleRange& cells) const = 0;
+
+  //----------------------------------------------------------------------------
   virtual std::vector< std::string > computeNames(const smtk::mesh::HandleRange& meshsets) const = 0;
 
   //----------------------------------------------------------------------------

@@ -16,6 +16,7 @@
 
 #include "smtk/mesh/CellSet.h"
 #include "smtk/mesh/Handle.h"
+#include "smtk/mesh/PointSet.h"
 #include "smtk/mesh/QueryTypes.h"
 #include "smtk/mesh/TypeSet.h"
 
@@ -84,7 +85,7 @@ public:
 
   smtk::mesh::TypeSet types() const;
   smtk::mesh::CellSet cells() const; //all cells of the meshset
-  smtk::mesh::Points points() const; //all points of the meshset
+  smtk::mesh::PointSet points() const; //all points of the meshset
   smtk::mesh::PointConnectivity pointConnectivity( ) const; //all point connectivity info for all cells
 
   //we should be able to extract the points or cells of the meshes.

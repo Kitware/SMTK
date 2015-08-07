@@ -195,9 +195,12 @@ smtk::mesh::CellSet MeshSet::cells( ) const
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::Points MeshSet::points( ) const
+smtk::mesh::PointSet MeshSet::points( ) const
 {
-  return smtk::mesh::Points();
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  smtk::mesh::HandleRange cells = iface->getCells( this->m_range );
+  smtk::mesh::HandleRange range = iface->getPoints( cells );
+  return smtk::mesh::PointSet(this->m_parent, range);
 }
 
 //----------------------------------------------------------------------------

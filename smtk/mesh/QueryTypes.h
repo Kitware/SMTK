@@ -25,8 +25,6 @@
 namespace smtk {
 namespace mesh {
 
-typedef int Points;
-
 //forward declare of CellSet and MeshSet
 class CellSet;
 class MeshSet;

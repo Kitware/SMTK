@@ -14,10 +14,11 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
-#include "smtk/mesh/PointConnectivity.h"
-#include "smtk/mesh/Handle.h"
-#include "smtk/mesh/QueryTypes.h"
 #include "smtk/mesh/DimensionTypes.h"
+#include "smtk/mesh/Handle.h"
+#include "smtk/mesh/PointConnectivity.h"
+#include "smtk/mesh/PointSet.h"
+#include "smtk/mesh/QueryTypes.h"
 #include "smtk/mesh/TypeSet.h"
 
 namespace smtk {
@@ -67,11 +68,11 @@ public:
   std::size_t size() const;
 
   smtk::mesh::TypeSet types() const;
-  smtk::mesh::Points points() const; //all points of the cellset
+  smtk::mesh::PointSet points() const; //all points of the cellset
   smtk::mesh::PointConnectivity pointConnectivity( ) const; //all connectivity info for all cells
 
   //get the points for a single cell
-  smtk::mesh::Points points( std::size_t ) const;
+  smtk::mesh::PointSet points( std::size_t ) const;
   //get the connectivity for a single cell
   smtk::mesh::PointConnectivity pointConnectivity( std::size_t ) const;
 

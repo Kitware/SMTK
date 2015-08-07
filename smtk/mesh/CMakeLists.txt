@@ -1,15 +1,12 @@
 # set up sources to build
 set(meshSrcs
-  # Cells.cxx
   CellSet.cxx
   CellTypes.cxx
   Collection.cxx
   Manager.cxx
-  # Mesh.cxx
   MeshSet.cxx
   PointConnectivity.cxx
-  # Points.cxx
-  # PointSet.cxx
+  PointSet.cxx
   TypeSet.cxx
   moab/Allocator.cxx
   moab/CellTypeToType.cxx
@@ -20,7 +17,6 @@ set(meshSrcs
   )
 
 set(meshHeaders
-  # Cells.h
   CellSet.h
   CellTraits.h
   CellTypes.h
@@ -29,11 +25,9 @@ set(meshHeaders
   Handle.h
   Interface.h
   Manager.h
-  # Mesh.h
   MeshSet.h
   PointConnectivity.h
-  # Points.h
-  # PointSet.h
+  PointSet.h
   QueryTypes.h
   TypeSet.h
 
