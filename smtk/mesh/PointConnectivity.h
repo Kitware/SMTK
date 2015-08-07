@@ -14,6 +14,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
+#include "smtk/mesh/CellTypes.h"
 #include "smtk/mesh/Handle.h"
 
 namespace smtk {
@@ -35,10 +36,10 @@ public:
   typedef const value_type& const_reference;
 
   PointConnectivity(const smtk::mesh::CollectionPtr& parent,
-               const smtk::mesh::HandleRange& range);
+                    const smtk::mesh::HandleRange& range);
 
   PointConnectivity(const smtk::mesh::CollectionPtr& parent,
-               const smtk::mesh::Handle& cell);
+                    const smtk::mesh::Handle& cell);
 
   //Copy Constructor required for rule of 3
   PointConnectivity(const PointConnectivity& other);
@@ -62,10 +63,20 @@ public:
   //start cell traversal of the vertices
   void initCellTraversal();
 
-  //fetch the handles to the points of the cell.
+  //fetch the number of points and the handle to the points
+  //of the cell.
   //The pointer that is returned must not be deleted.
   //The pointer returned should be treated as a read only pointer
-  bool fetchNextCell(int& numPts, const smtk::mesh::Handle* &points);
+  bool fetchNextCell( int& numPts,
+                      const smtk::mesh::Handle* &points);
+
+  //fetch the cell type, the number of points and the handle to the points
+  //of the cell.
+  //The pointer that is returned must not be deleted.
+  //The pointer returned should be treated as a read only pointer
+  bool fetchNextCell( smtk::mesh::CellType& cellType,
+                      int& numPts,
+                      const smtk::mesh::Handle* &points);
 
   //struct that holds the required information to compute what is the
   //current cell when we are iterating.

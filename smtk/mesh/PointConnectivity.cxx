@@ -124,9 +124,22 @@ void PointConnectivity::initCellTraversal()
 //----------------------------------------------------------------------------
 bool PointConnectivity::fetchNextCell(int& numPts, const smtk::mesh::Handle* &points)
 {
+  smtk::mesh::CellType cellType;
   return this->m_connectivity->fetchNextCell(this->m_iteratorLocation,
+                                             cellType,
                                              numPts,
                                              points);
+}
+
+//----------------------------------------------------------------------------
+bool PointConnectivity::fetchNextCell( smtk::mesh::CellType& cellType,
+                                       int& numPts,
+                                       const smtk::mesh::Handle* &points)
+{
+ return this->m_connectivity->fetchNextCell(this->m_iteratorLocation,
+                                            cellType,
+                                            numPts,
+                                            points);
 }
 
 }

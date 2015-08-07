@@ -33,6 +33,7 @@ public:
   void initTraversal( smtk::mesh::PointConnectivity::IterationState& state );
 
   bool fetchNextCell( smtk::mesh::PointConnectivity::IterationState& state,
+                      smtk::mesh::CellType& cellType,
                       int& numPts,
                       const smtk::mesh::Handle* &points);
 
@@ -46,6 +47,7 @@ private:
   std::vector< const smtk::mesh::Handle* > ConnectivityStartPositions;
   std::vector<int> ConnectivityArraysLengths;
   std::vector<int> ConnectivityVertsPerCell;
+  std::vector< smtk::mesh::CellType > ConnectivityTypePerCell;
   std::size_t NumberOfCells;
   std::size_t NumberOfVerts;
 

@@ -10,6 +10,7 @@
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
+#include "smtk/mesh/TypeSet.h"
 #include "smtk/io/ImportMesh.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
@@ -177,15 +178,25 @@ void verify_iteration(const smtk::mesh::CollectionPtr& c)
   std::size_t actualNumCells = 0;
   std::size_t actualNumVerts = 0;
 
+  smtk::mesh::CellType cellType;
+  smtk::mesh::CellTypes allCellTypesSeen;
+
   int size=0;
   const smtk::mesh::Handle* points;
-  for(twoDim.initCellTraversal(); twoDim.fetchNextCell(size, points);)
+  for(twoDim.initCellTraversal(); twoDim.fetchNextCell(cellType, size, points);)
     {
     ++actualNumCells;
     actualNumVerts += static_cast<std::size_t>(size);
 
+    allCellTypesSeen[cellType] = true;
     // c->debugDump( points );
     }
+  smtk::mesh::TypeSet typeSet( allCellTypesSeen, false, true );
+
+  //verify that the cell types that are reported are only 2D cells.
+  test( typeSet.hasDimension( smtk::mesh::Dims1 ) == false );
+  test( typeSet.hasDimension( smtk::mesh::Dims2 ) == true );
+  test( typeSet.hasDimension( smtk::mesh::Dims3 ) == false );
 
   test( reportedNumCells == actualNumCells);
   test( reportedNumVerts == actualNumVerts);
