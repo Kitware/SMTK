@@ -3,6 +3,7 @@ set(meshSrcs
   CellSet.cxx
   CellTypes.cxx
   Collection.cxx
+  ExtractTessellation.cxx
   Manager.cxx
   MeshSet.cxx
   PointConnectivity.cxx
@@ -22,6 +23,7 @@ set(meshHeaders
   CellTypes.h
   Collection.h
   DimensionTypes.h
+  ExtractTessellation.h
   Handle.h
   Interface.h
   Manager.h

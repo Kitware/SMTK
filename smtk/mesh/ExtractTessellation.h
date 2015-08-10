@@ -8,38 +8,62 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#ifndef __smtk_mesh_ExtractTessellation_h
+#define __smtk_mesh_ExtractTessellation_h
+
+#include <boost/cstdint.hpp>
+
+#include "smtk/mesh/CellSet.h"
+#include "smtk/mesh/MeshSet.h"
+
+namespace smtk {
+namespace mesh {
+
 class SMTKCORE_EXPORT PreAllocatedTessellation
 {
 
 public:
-  static void determineAllocationLengths(smtk::mesh::MeshSet,
-                                         boost::int64& connectivityLength,
-                                         boost::int64& numberOfCells,
-                                         boost::int64& numberOfPoints);
+  // Todo: Document that connectivityLength is just pure lenght of connectivity
+  // if you are enabling vtk length you need to allocate for connectivityLength
+  // + numberOfCells
+  static void determineAllocationLengths(const smtk::mesh::MeshSet& ms,
+                                         boost::int64_t& connectivityLength,
+                                         boost::int64_t& numberOfCells,
+                                         boost::int64_t& numberOfPoints);
 
-  static void determineAllocationLengths(smtk::mesh::CellSet,
-                                         boost::int64& connectivityLength,
-                                         boost::int64& numberOfCells,
-                                         boost::int64& numberOfPoints);
+  static void determineAllocationLengths(const smtk::mesh::CellSet& cs,
+                                         boost::int64_t& connectivityLength,
+                                         boost::int64_t& numberOfCells,
+                                         boost::int64_t& numberOfPoints);
 
   //Only converts connectivity. The following properties will not be
   //converted: cellLocations, cellTypes, and Points
-  PreAllocatedTessellation(  boost::int64* connectivity );
+  PreAllocatedTessellation(  boost::int64_t* connectivity );
+
+  //Converts connectivity and store the points as floats. The following properties will not be
+  //converted: cellLocations, and cellTypes.
+  PreAllocatedTessellation(  boost::int64_t* connectivity,
+                             float* points);
+
+  //Converts connectivityand store the points as doubles. The following properties will not be
+  //converted: cellLocations, and cellTypes.
+  PreAllocatedTessellation(  boost::int64_t* connectivity,
+                             double* points);
 
   //Converts everything but Points.
-  PreAllocatedTessellation(  boost::int64* connectivity,
-                             boost::int64* cellLocations,
+  PreAllocatedTessellation(  boost::int64_t* connectivity,
+                             boost::int64_t* cellLocations,
                              unsigned char* cellTypes);
 
   //Converts everything and stores the points as floats
-  PreAllocatedTessellation(  boost::int64* connectivity,
-                             boost::int64* cellLocations,
+  PreAllocatedTessellation(  boost::int64_t* connectivity,
+                             boost::int64_t* cellLocations,
                              unsigned char* cellTypes,
                              float* points);
 
   //Converts everything and stores the points as doubles
-  PreAllocatedTessellation(  boost::int64* connectivity,
-                             boost::int64* cellLocations,
+  PreAllocatedTessellation(  boost::int64_t* connectivity,
+                             boost::int64_t* cellLocations,
                              unsigned char* cellTypes,
                              double* points);
 
@@ -47,23 +71,33 @@ public:
   //is preceded with an entry that states the length of the cell. Passing
   //in True will disable this behavior. The default behavior of the
   //class is to use VTK style connectivity.
-  void disableVTKStyleConnectivity(bool);
+  void disableVTKStyleConnectivity(bool disable) { m_useVTKConnectivity  = !disable; }
 
-  boost::int64* m_connectivity;
-  boost::int64* m_cellLocations;
+  //determine if you want VTK cell enum values for the cell types array.
+  //If this is disabled we use the smtk/mesh cell enum values.
+  void disableVTKCellTypes(bool disable) { m_useVTKCellTypes  = !disable; }
+
+  boost::int64_t* m_connectivity;
+  boost::int64_t* m_cellLocations;
   unsigned char* m_cellTypes;
 
   double* m_dpoints;
   float* m_fpoints;
 
-  bool m_useVTKStyle;
+  bool m_useVTKConnectivity;
+  bool m_useVTKCellTypes;
 };
 
-void extractTessellation( smtk::mesh::MeshSet, PreAllocatedTessellation );
-void extractTessellation( smtk::mesh::CellSet, PreAllocatedTessellation );
+SMTKCORE_EXPORT void extractTessellation( const smtk::mesh::MeshSet&, PreAllocatedTessellation& );
+SMTKCORE_EXPORT void extractTessellation( const smtk::mesh::CellSet&, PreAllocatedTessellation& );
 
 //Extract Tessellation in respect to another PointSet instead of the PointSet
 //contained by the meshset. This is useful if you are sharing a single
 //PointSet among multiple Tessellations.
-void extractTessellation( smtk::mesh::MeshSet, smtk::mesh::PointSet, PreAllocatedTessellation );
-void extractTessellation( smtk::mesh::CellSet, smtk::mesh::PointSet , PreAllocatedTessellation );
+SMTKCORE_EXPORT void extractTessellation( const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedTessellation& );
+SMTKCORE_EXPORT void extractTessellation( const smtk::mesh::CellSet&, const smtk::mesh::PointSet& , PreAllocatedTessellation& );
+
+}
+}
+
+#endif
