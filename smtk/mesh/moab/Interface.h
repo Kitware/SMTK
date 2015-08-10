@@ -137,6 +137,21 @@ public:
   smtk::mesh::HandleRange getPoints(const smtk::mesh::HandleRange& cells) const;
 
   //----------------------------------------------------------------------------
+  //get all the coordinates for the points in this range
+  //xyz needs to be allocated to 3*points.size()
+  //Floats are not how we store the coordinates internally, so asking for
+  //the coordinates in such a manner could cause data inaccuracies to appear
+  //so generally this is only used if you fully understand the input domain
+  bool getCoordinates(const smtk::mesh::HandleRange& points,
+                      double* xyz) const;
+
+  //----------------------------------------------------------------------------
+  //get all the coordinates for the points in this range
+  //xyz needs to be allocated to 3*points.size()
+  bool getCoordinates(const smtk::mesh::HandleRange& points,
+                      float* xyz) const;
+
+  //----------------------------------------------------------------------------
   std::vector< std::string > computeNames(const smtk::mesh::HandleRange& meshsets) const;
 
   //----------------------------------------------------------------------------

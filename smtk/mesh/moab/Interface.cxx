@@ -548,6 +548,79 @@ smtk::mesh::HandleRange Interface::getPoints(const smtk::mesh::HandleRange& cell
 }
 
 //----------------------------------------------------------------------------
+bool Interface::getCoordinates(const smtk::mesh::HandleRange& points,
+                               double* xyz) const
+
+{
+  if(points.empty() )
+    {
+    return false;
+    }
+
+  m_iface->get_coords(points,xyz);
+  return true;
+}
+
+//----------------------------------------------------------------------------
+bool Interface::getCoordinates(const smtk::mesh::HandleRange& points,
+                               float* xyz) const
+
+{
+  if(points.empty())
+    {
+    return false;
+    }
+  //Efficiently re-use memory when fetching a significant number of points
+  //this way we don't allocate a massive array of doubles, when that is most
+  //likely going to trash the system memory, and defeat the users goal of keeping
+  //memory usage low
+  std::vector<double> coords;
+  const std::size_t numPoints = points.size();
+  const std::size_t numPointsPerLoop =524288;
+  const std::size_t numLoops = numPoints / 524288;
+
+  coords.reserve(numPointsPerLoop*3);
+  smtk::mesh::HandleRange::const_iterator start = points.begin();
+
+
+  std::size_t xyz_index = 0;
+  for(std::size_t i=0; i < numLoops; ++i)
+    {
+    //determine where the end iterator should be
+    smtk::mesh::HandleRange::const_iterator end = start + numPointsPerLoop;
+
+    //needs to be insert so we use iterator insert, since we don't want
+    //all points between start and end values, but only those that are
+    //in the range. Think not 0 to N, but 0 - 10, 14 - N.
+    ::moab::Range subset;
+    subset.insert(start,end);
+
+    //fetch all the coordinates for the start, end range
+    m_iface->get_coords( subset,  &coords[0] );
+    for(std::size_t i=0; i < (numPointsPerLoop*3); ++i)
+      {
+      xyz[xyz_index++] = static_cast<float>(coords[i]);
+      }
+    }
+
+  std::size_t difference = numPoints - (numPointsPerLoop * numLoops);
+  smtk::mesh::HandleRange::const_iterator end = start + difference;
+  ::moab::Range subset;
+  subset.insert(start,end);
+
+  //fetch all the coordinates for the start, end range
+  m_iface->get_coords( subset,  &coords[0] );
+
+  for(std::size_t i=0; i < (difference*3); ++i)
+    {
+    xyz[xyz_index++] = static_cast<float>(coords[i]);
+    }
+
+  return true;
+}
+
+
+//----------------------------------------------------------------------------
 std::vector< std::string > Interface::computeNames(const smtk::mesh::HandleRange& meshsets) const
 {
   //construct a name tag query helper class

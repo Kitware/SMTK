@@ -53,23 +53,14 @@ public:
   //returns the index in this point set for the given point id
   std::size_t find( const smtk::mesh::Handle& pointId ) const;
 
-  // //Get/Set a point coordinate. This interface is offered for when
-  // //you need
-  // void get(std::size_t index, double& x, double& y, double& z) const;
-  // void get(std::size_t startIndex, std::size_t endIndex, std::vector<double>& xyz) const;
-  // void get(std::size_t startIndex, std::size_t endIndex, const double* xyz) const;
+  //Get all the point coordinates and store them in a pre-allocated buffer
+  bool get(double* xyz) const;
 
-  // void set(std::size_t index, double& x, double& y, double& z);
-  // void set(std::size_t startIndex, std::size_t endIndex, const std::vector<double>& xyz);
-  // void set(std::size_t startIndex, std::size_t endIndex, const double* const xyz);
-
-  // //Floats are not how we store the coordinates internally, so asking for
-  // //the coordinates in such a manner could cause data inaccuracies to appear
-  // //so generally this is only used if you fully understand the input domain
-  // void getAsFloats(std::size_t startIndex, std::size_t endIndex, std::vector<float>& xyz);
-  // void getAsFloats(std::size_t startIndex, std::size_t endIndex, const float* xyz);
-  // void setFromFloats(std::size_t startIndex, std::size_t endIndex, const std::vector<float>& xyz);
-  // void setFromFloats(std::size_t startIndex, std::size_t endIndex, const float* const xyz);
+  //Get all the point coordinates and store them in a pre-allocated buffer
+  //Floats are not how we store the coordinates internally, so asking for
+  //the coordinates in such a manner could cause data inaccuracies to appear
+  //so generally this is only used if you fully understand the input domain
+  bool get(float* xyz) const;
 
 private:
 

@@ -131,6 +131,49 @@ void verify_find(const smtk::mesh::CollectionPtr& c)
 }
 
 //----------------------------------------------------------------------------
+void verify_get(const smtk::mesh::CollectionPtr& c)
+{
+  //this is really hard to test currently as we only have bulk gets() on
+  //points. So for now we are just going to make sure the function doesn't
+  //crash
+  smtk::mesh::PointSet all_points = c->points();
+  const std::size_t numCoords = 3 * all_points.size();
+
+  std::vector<double> coords(numCoords);
+  all_points.get(&coords[0]);
+
+  for(int i=0; i < smtk::mesh::CellType_MAX; ++i )
+    {
+    smtk::mesh::CellType cellType = static_cast<smtk::mesh::CellType>(i);
+    smtk::mesh::CellSet cells = c->cells( cellType );
+
+    test( cells.points().get(&coords[0]) != cells.is_empty() );
+    }
+}
+
+//----------------------------------------------------------------------------
+void verify_float_get(const smtk::mesh::CollectionPtr& c)
+{
+
+  //this is really hard to test currently as we only have bulk gets() on
+  //points. So for now we are just going to make sure the function doesn't
+  //crash
+  smtk::mesh::PointSet all_points = c->points();
+  const std::size_t numCoords = 3 * all_points.size();
+
+  std::vector<float> coords(numCoords);
+  all_points.get(&coords[0]);
+
+  for(int i=0; i < smtk::mesh::CellType_MAX; ++i )
+    {
+    smtk::mesh::CellType cellType = static_cast<smtk::mesh::CellType>(i);
+    smtk::mesh::CellSet cells = c->cells( cellType );
+
+    test( cells.points().get(&coords[0]) != cells.is_empty() );
+    }
+}
+
+//----------------------------------------------------------------------------
 void verify_pointset_intersect(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::PointSet all_points = c->points();
@@ -272,6 +315,9 @@ int UnitTestPointSet(int, char**)
 
   verify_contains(c);
   verify_find(c);
+
+  verify_get(c);
+  verify_float_get(c);
 
   verify_pointset_intersect(c);
   verify_pointset_union(c);

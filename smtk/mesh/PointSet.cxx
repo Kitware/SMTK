@@ -96,53 +96,19 @@ std::size_t PointSet::find( const smtk::mesh::Handle& pointId ) const
   return this->m_points.size();
 }
 
-// //----------------------------------------------------------------------------
-// void PointSet::get(std::size_t index, double& x, double& y, double& z) const
-// {
-// }
+//----------------------------------------------------------------------------
+bool PointSet::get(double* xyz) const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  return iface->getCoordinates(this->m_points, xyz);
+}
 
-// //----------------------------------------------------------------------------
-// void PointSet::get(std::size_t startIndex, std::size_t endIndex, std::vector<double>& xyz) const
-// {
-// }
-// //----------------------------------------------------------------------------
-// void PointSet::get(std::size_t startIndex, std::size_t endIndex, const double* xyz) const
-// {
-// }
-
-// //----------------------------------------------------------------------------
-// void PointSet::set(std::size_t index, double& x, double& y, double& z)
-// {
-// }
-
-// //----------------------------------------------------------------------------
-// void PointSet::set(std::size_t startIndex, std::size_t endIndex, const std::vector<double>& xyz)
-// {
-// }
-// //----------------------------------------------------------------------------
-// void PointSet::set(std::size_t startIndex, std::size_t endIndex, const double* const xyz)
-// {
-// }
-
-// //Floats are not how we store the coordinates internally, so asking for
-// //the coordinates in such a manner could cause data inaccuracies to appear
-// //so generally this is only used if you fully understand the input domain
-// //----------------------------------------------------------------------------
-// void PointSet::getAsFloats(std::size_t startIndex, std::size_t endIndex, std::vector<float>& xyz) const
-// {
-// }
-// //----------------------------------------------------------------------------
-// void PointSet::getAsFloats(std::size_t startIndex, std::size_t endIndex, const float* xyz) const
-// {
-// }
-// //----------------------------------------------------------------------------
-// void PointSet::setFromFloats(std::size_t startIndex, std::size_t endIndex, const std::vector<float>& xyz)
-// {
-// }
-// //----------------------------------------------------------------------------
-// void PointSet::setFromFloats(std::size_t startIndex, std::size_t endIndex, const float* const xyz)
-// {
-// }
+//----------------------------------------------------------------------------
+bool PointSet::get(float* xyz) const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  return iface->getCoordinates(this->m_points, xyz);
+}
 
 //----------------------------------------------------------------------------
 PointSet set_intersect( const PointSet& a, const PointSet& b )
