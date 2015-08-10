@@ -68,7 +68,7 @@ public:
   //get back an efficient storage mechanism for a range of cells point
   //connectivity. This allows for efficient iteration of cell connectivity, and
   //conversion to other formats
-  virtual smtk::mesh::ConnectivityStoragePtr connectivityStorage(const smtk::mesh::HandleRange& cells);
+  smtk::mesh::ConnectivityStoragePtr connectivityStorage(const smtk::mesh::HandleRange& cells);
 
   //----------------------------------------------------------------------------
   smtk::mesh::Handle getRoot() const;
@@ -80,8 +80,8 @@ public:
   //equal to highest dimension of cell inside
   //Will fail if the HandleRange is empty or doesn't contain valid
   //cell handles.
-  virtual bool createMesh(const smtk::mesh::HandleRange& cells,
-                          smtk::mesh::Handle& meshHandle);
+  bool createMesh(const smtk::mesh::HandleRange& cells,
+                  smtk::mesh::Handle& meshHandle);
 
   //----------------------------------------------------------------------------
   std::size_t numMeshes(smtk::mesh::Handle handle) const;
@@ -134,7 +134,7 @@ public:
 
   //----------------------------------------------------------------------------
   //get all points held by this range of handle of a given dimension
-  virtual smtk::mesh::HandleRange getPoints(const smtk::mesh::HandleRange& cells) const;
+  smtk::mesh::HandleRange getPoints(const smtk::mesh::HandleRange& cells) const;
 
   //----------------------------------------------------------------------------
   std::vector< std::string > computeNames(const smtk::mesh::HandleRange& meshsets) const;
@@ -176,7 +176,7 @@ public:
     const smtk::common::UUID& uuid) const;
 
   //----------------------------------------------------------------------------
-  virtual smtk::mesh::HandleRange findAssociations(
+  smtk::mesh::HandleRange findAssociations(
     const smtk::mesh::Handle& root,
     const smtk::common::UUID& modelUUID);
 
