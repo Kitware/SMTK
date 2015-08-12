@@ -20,6 +20,14 @@
 #include "vtkSmartPointer.h" //needed for classification
 #include <map> //needed for classification
 
+namespace smtk {
+  namespace bridge {
+    namespace discrete {
+      class Session;
+    }
+  }
+}
+
 class vtkCharArray;
 class vtkDiscreteModel;
 class vtkDiscreteModelGeometricEntity;
@@ -36,7 +44,16 @@ public:
   vtkTypeMacro(vtkCMBParserBase,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  virtual bool Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model) = 0;
+  // Description:
+  // Parse the input \a MasterPoly into the discrete \a Model.
+  // The \a session will be used to assign UUIDs to entities if there are field arrays
+  // for entity UUIDs; if there is no UUID array for certain entities, the session will create
+  // and assign new UUIDs for them. This way cmb models will have consistent UUIDs across
+  // different runs so that entity-attribute associations, which is recorded with UUIDs, will
+  // be consistent, so is color-by entity UUIDs.
+  // NOTE: Currently only vtkCMBParserV5 is using the discrete \a session
+  virtual bool Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
+                     smtk::bridge::discrete::Session* session) = 0;
 
   // Description:
   // Function to set the geometry of the model so that every parser
@@ -91,6 +108,7 @@ protected:
   void SeparateCellClassification(vtkDiscreteModel* model,
                                   vtkIdTypeArray* cellClassification,
                                    vtkCMBParserBase::CellToModelType& cellToModelMap) const;
+
 private:
   vtkCMBParserBase(const vtkCMBParserBase&);  // Not implemented.
   void operator=(const vtkCMBParserBase&);  // Not implemented.

@@ -19,11 +19,17 @@
 #include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkObject.h"
 
-
 class vtkCMBParserBase;
 class vtkDiscreteModelWrapper;
 class vtkPolyData;
 class vtkDiscreteModel;
+namespace smtk {
+  namespace bridge {
+    namespace discrete {
+      class Session;
+    }
+  }
+}
 
 class SMTKDISCRETESESSION_EXPORT vtkCMBModelReadOperator : public vtkObject
 {
@@ -34,12 +40,20 @@ public:
 
   // Description:
   // Load the file into Model.
-  void Operate(vtkDiscreteModelWrapper* ModelWrapper);
+  // The \a session will be used to assign UUIDs to entities if there are field arrays
+  // for entity UUIDs; if there is no UUID array for certain entities, the session will create
+  // and assign new UUIDs for them. This way cmb models will have consistent UUIDs across
+  // different runs so that entity-attribute associations, which is recorded with UUIDs, will
+  // be consistent, so is color-by entity UUIDs.
+  // If the session is NULL, the UUIDs will be different everytime we load a cmb model.
+  void Operate(vtkDiscreteModelWrapper* ModelWrapper,
+               smtk::bridge::discrete::Session* session);
 
 //BTX
   // Description:
   // Load the file into Model.
-  void Read(vtkDiscreteModel* model);
+  void Read(vtkDiscreteModel* model,
+            smtk::bridge::discrete::Session* session);
 //ETX
 
   // Description:

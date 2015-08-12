@@ -51,7 +51,8 @@ vtkCMBParserV2:: ~vtkCMBParserV2()
 {
 }
 
-bool vtkCMBParserV2::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
+bool vtkCMBParserV2::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
+                           smtk::bridge::discrete::Session* vtkNotUsed(session))
 {
   Model->Reset();
 

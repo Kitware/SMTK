@@ -71,12 +71,12 @@ class BathymetryHelper;
   *     to load a CMB model. Internally, a CMBModelReadOperator is used to load
   *     a vtkDiscreteModel (placed inside a vtkDiscreteModelWrapper by the
   *     CMB operator). The Session instance is associated to the model wrapper
-  *     in the s_modelsToSessions variable.
+  *     in the m_modelsToSessions variable.
   * (2) The ReadOperator calls trackModel with the vtkDiscreteModelWrapper
   *     obtained using CMB's (not SMTK's) "read" operator. Since
   *     vtkDiscreteModelWrapper is a subclass of vtkObject,
   *     we can keep it from being destroyed by holding a smart-pointer to
-  *     it (in s_modelIdsToRefs and s_modelRefsToIds).
+  *     it (in m_modelIdsToRefs and m_modelRefsToIds).
   * (2) The model and, upon demand, entities contained in the model
   *     are assigned UUIDs if not present already. The UUIDs are kept
   *     in the vtkInformation object every vtkModelItem owns (Properties).
@@ -103,7 +103,7 @@ public:
 
   void assignUUIDs(const std::vector<vtkModelItem*>& ents, vtkAbstractArray* uuidArray);
 
-  static vtkUnsignedIntArray* retrieveUUIDs(
+  vtkUnsignedIntArray* retrieveUUIDs(
     vtkDiscreteModel* model, const std::vector<vtkModelItem*>& ents);
 
   int ExportEntitiesToFileOfNameAndType(
@@ -240,9 +240,12 @@ protected:
 
   smtk::bridge::discrete::BathymetryHelper* m_bathymetryHelper;
 
-  static std::map<vtkDiscreteModel*,WeakPtr> s_modelsToSessions;
-  static std::map<smtk::common::UUID,vtkSmartPointer<vtkDiscreteModelWrapper> > s_modelIdsToRefs;
-  static std::map<vtkSmartPointer<vtkDiscreteModelWrapper>, smtk::common::UUID> s_modelRefsToIds;
+  /// Track which models are tracked by which sessions.
+  std::map<vtkDiscreteModel*,WeakPtr> m_modelsToSessions;
+  /// Associate UUIDs to vtkDiscreteModelWrapper instances.
+  std::map<smtk::common::UUID,vtkSmartPointer<vtkDiscreteModelWrapper> > m_modelIdsToRefs;
+  /// Associate vtkDiscreteModelWrapper instances to UUIDs.
+  std::map<vtkSmartPointer<vtkDiscreteModelWrapper>, smtk::common::UUID> m_modelRefsToIds;
 };
 
     } // namespace discrete
