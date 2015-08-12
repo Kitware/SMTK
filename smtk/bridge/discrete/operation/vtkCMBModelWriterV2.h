@@ -33,6 +33,13 @@
 #include "vtkObject.h"
 #include <vector>
 
+namespace smtk {
+  namespace bridge {
+    namespace discrete {
+      class Session;
+    }
+  }
+}
 
 class vtkDiscreteModel;
 class vtkCMBModelWriterBase;
@@ -49,7 +56,7 @@ public:
 
   // Description:
   // Write the CMB file out.
-  virtual bool Write(vtkDiscreteModel* Model);
+  virtual bool Write(vtkDiscreteModel* Model, smtk::bridge::discrete::Session* session);
 
   // Description:
   // Get/Set the data mode used for the file's data.  The options are
@@ -112,7 +119,8 @@ protected:
 
   // Description:
   // Add arrays to the master \a Poly data containing UUIDs for model entities.
-  virtual void SetUUIDData(vtkDiscreteModel* Model, vtkPolyData* Poly);
+  virtual void SetUUIDData(vtkDiscreteModel* Model, vtkPolyData* Poly,
+                           smtk::bridge::discrete::Session* session);
 
   // Description:
   // Set the vtkCMBModelFaceData in Poly.
@@ -128,7 +136,8 @@ protected:
   virtual void SetModelItemUUIDs(
     vtkDiscreteModel* model, vtkPolyData* poly,
     std::vector<vtkModelItem*>& items,
-    const char* arrayName);
+    const char* arrayName,
+    smtk::bridge::discrete::Session* session);
 
   // Description:
   // Add the file version to the field data of the poly data

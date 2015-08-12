@@ -21,6 +21,13 @@
 #include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkObject.h"
 
+namespace smtk {
+  namespace bridge {
+    namespace discrete {
+      class Session;
+    }
+  }
+}
 
 class vtkDiscreteModelWrapper;
 class vtkPolyData;
@@ -35,12 +42,17 @@ public:
 
   // Description:
   // Write the CMB file out.  This is the operator version of writing.
-  void Operate(vtkDiscreteModelWrapper* ModelWrapper);
+  // The \a session will be used to retrieve UUIDs data array for entities and
+  // add it to field data of output.
+  // NOTE: vtkCMBModelWriterV2 has implementation using the discrete \a session
+  void Operate(vtkDiscreteModelWrapper* ModelWrapper,
+               smtk::bridge::discrete::Session* session);
 
 //BTX
   // Description:
   // Write the CMB file out.
-  void Write(vtkDiscreteModel* model);
+  void Write(vtkDiscreteModel* model,
+             smtk::bridge::discrete::Session* session);
 //ETX
   // Description:
   // Get/Set the name of the output file.

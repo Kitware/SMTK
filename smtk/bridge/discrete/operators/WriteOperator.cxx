@@ -81,7 +81,7 @@ OperatorResult WriteOperator::operateInternal()
 
   // write the file out.
   this->m_op->SetVersion(this->m_currentversion);
-  this->m_op->Operate(modelWrapper);
+  this->m_op->Operate(modelWrapper, this->discreteSession());
 
   if (!this->m_op->GetOperateSucceeded())
     {
