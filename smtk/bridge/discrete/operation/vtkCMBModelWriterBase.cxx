@@ -11,6 +11,8 @@
 
 #include "vtkCMBModelWriterBase.h"
 
+#include "smtk/bridge/discrete/Session.h"
+
 #include "vtkDiscreteModel.h"
 #include "vtkCMBParserBase.h"
 #include "vtkDiscreteModelWrapper.h"
@@ -36,17 +38,19 @@ vtkCMBModelWriterBase:: ~vtkCMBModelWriterBase()
   this->SetFileName(0);
 }
 
-void vtkCMBModelWriterBase::Operate(vtkDiscreteModelWrapper* ModelWrapper)
+void vtkCMBModelWriterBase::Operate(vtkDiscreteModelWrapper* ModelWrapper,
+                                    smtk::bridge::discrete::Session* session)
 {
   if(!ModelWrapper)
     {
     vtkErrorMacro("Passed in a null model wrapper.");
     return;
     }
-  this->Write(ModelWrapper->GetModel());
+  this->Write(ModelWrapper->GetModel(), session);
 }
 
-void vtkCMBModelWriterBase::Write(vtkDiscreteModel* model)
+void vtkCMBModelWriterBase::Write(vtkDiscreteModel* model,
+                                  smtk::bridge::discrete::Session* session)
 {
   vtkDebugMacro("Writing a CMB file.");
   this->OperateSucceeded = 0;
@@ -85,7 +89,7 @@ void vtkCMBModelWriterBase::Write(vtkDiscreteModel* model)
   if (writer)
     {
     writer->SetFileName(this->GetFileName());
-    this->OperateSucceeded = writer->Write(model);
+    this->OperateSucceeded = writer->Write(model, session);
     writer->Delete();
     }
   vtkDebugMacro("Finished writing a CMB file.");

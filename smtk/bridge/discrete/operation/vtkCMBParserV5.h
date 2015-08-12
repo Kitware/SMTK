@@ -19,19 +19,9 @@
 #include "vtkCMBParserBase.h"
 #include <vector>
 
-#include "smtk/SharedPtr.h"
-
 class vtkDiscreteModel;
 class vtkModelEntity;
 class vtkPolyData;
-
-namespace smtk {
-  namespace bridge {
-    namespace discrete {
-      class Session;
-    }
-  }
-}
 
 class SMTKDISCRETESESSION_EXPORT vtkCMBParserV5 : public vtkCMBParserBase
 {
@@ -40,7 +30,8 @@ public:
   vtkTypeMacro(vtkCMBParserV5,vtkCMBParserBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  virtual bool Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model);
+  virtual bool Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
+                     smtk::bridge::discrete::Session* session);
 
 protected:
   vtkCMBParserV5();
@@ -58,8 +49,6 @@ protected:
   // BC file exists, use the information from the 3dm file since it
   // is "more" complete.
   void SetAnalysisGridData(vtkPolyData* masterPoly, vtkDiscreteModel* model);
-
-  static smtk::shared_ptr<smtk::bridge::discrete::Session> s_session;
 
 private:
   vtkCMBParserV5(const vtkCMBParserV5&);  // Not implemented.

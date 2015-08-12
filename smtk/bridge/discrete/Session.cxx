@@ -81,13 +81,6 @@ enum smtkCellTessRole {
   SMTK_ROLE_POLYS
 };
 
-/// Track which models are tracked by which sessions.
-std::map<vtkDiscreteModel*,Session::WeakPtr> Session::s_modelsToSessions;
-/// Associate UUIDs to vtkDiscreteModelWrapper instances.
-std::map<smtk::common::UUID,vtkSmartPointer<vtkDiscreteModelWrapper> > Session::s_modelIdsToRefs;
-/// Associate vtkDiscreteModelWrapper instances to UUIDs.
-std::map<vtkSmartPointer<vtkDiscreteModelWrapper>, smtk::common::UUID> Session::s_modelRefsToIds;
-
 // Local helper to uniquely determine an integer "sense" for pairs of edge uses of an edge.
 // FIXME: This really should assign the integer so that the pairs form a single cycle.
 //        For example, consider edge uses a, b, c, d, e, f, g, h that are paired
@@ -170,29 +163,23 @@ Session::~Session()
     vtkInformation* mp = mit->second->GetProperties();
     mp->RemoveObserver(this->m_itemWatcher);
     }
-
-  // Find all the models owned by this session
-  std::vector<vtkDiscreteModel*> remModels;
+  // Remove any models that this session owned from s_modelsToSessions.
   std::map<vtkDiscreteModel*,Session::WeakPtr>::iterator mbit;
-  for (mbit = Session::s_modelsToSessions.begin(); mbit != Session::s_modelsToSessions.end(); ++mbit)
+  for (mbit = this->m_modelsToSessions.begin(); mbit != this->m_modelsToSessions.end(); )
     {
     if (mbit->second.lock().get() == this)
       {
-      remModels.push_back(mbit->first);
+      smtk::common::UUID modelId = this->findOrSetEntityUUID(mbit->first);
+      this->m_modelsToSessions.erase(mbit++);
+      vtkSmartPointer<vtkDiscreteModelWrapper> modelPtr = this->m_modelIdsToRefs[modelId];
+      this->m_modelIdsToRefs.erase(modelId);
+      this->m_modelRefsToIds.erase(modelPtr);
+      }
+    else
+      {
+      ++mbit;
       }
     }
-
-  // Remove any models that this session owned from s_modelsToSessions.
-  std::vector<vtkDiscreteModel*>::iterator rmit;
-  for (rmit = remModels.begin(); rmit != remModels.end(); ++rmit)
-    {
-    Session::s_modelsToSessions.erase(*rmit);
-    smtk::common::UUID modelId = this->findOrSetEntityUUID(*rmit);
-    vtkSmartPointer<vtkDiscreteModelWrapper> modelPtr = Session::s_modelIdsToRefs[modelId];
-    Session::s_modelIdsToRefs.erase(modelId);
-    Session::s_modelRefsToIds.erase(modelPtr);
-    }
-
   this->m_itemWatcher->Delete();
   if(this->m_bathymetryHelper)
     {
@@ -269,8 +256,8 @@ vtkUnsignedIntArray* Session::retrieveUUIDs(
     vtkDiscreteModel* model, const std::vector<vtkModelItem*>& ents)
 {
   std::map<vtkDiscreteModel*,WeakPtr>::iterator sessionIt =
-    Session::s_modelsToSessions.find(model);
-  if (sessionIt == Session::s_modelsToSessions.end())
+    this->m_modelsToSessions.find(model);
+  if (sessionIt == this->m_modelsToSessions.end())
     return NULL;
   Ptr session = sessionIt->second.lock();
   if (!session)
@@ -328,7 +315,7 @@ int Session::ExportEntitiesToFileOfNameAndType(
     if (nfiles > 1)
       fname << "_" << i;
     wri->SetFileName(fname.str().c_str());
-    wri->Write(*mit);
+    wri->Write(*mit, this);
     std::cout << "Wrote " << fname.str() << "\n";
     }
 
@@ -338,7 +325,7 @@ int Session::ExportEntitiesToFileOfNameAndType(
 vtkDiscreteModelWrapper* Session::findModelEntity(const smtk::common::UUID& uid) const
 {
   std::map<smtk::common::UUID,vtkSmartPointer<vtkDiscreteModelWrapper> >::const_iterator it;
-  if ((it = Session::s_modelIdsToRefs.find(uid)) != Session::s_modelIdsToRefs.end())
+  if ((it = this->m_modelIdsToRefs.find(uid)) != this->m_modelIdsToRefs.end())
     return it->second.GetPointer();
   return NULL;
 }
@@ -1083,10 +1070,10 @@ smtk::common::UUID Session::trackModel(
   smtk::common::UUID mid = this->findOrSetEntityUUID(dmod);
   // Track the model (keep a strong reference to it)
   // by UUID as well as the inverse map for quick reference:
-  Session::s_modelIdsToRefs[mid] = mod;
-  Session::s_modelRefsToIds[mod] = mid;
+  this->m_modelIdsToRefs[mid] = mod;
+  this->m_modelRefsToIds[mod] = mid;
   this->m_itemsToRefs[mid] = dmod;
-  Session::s_modelsToSessions[dmod] = shared_from_this();
+  this->m_modelsToSessions[dmod] = shared_from_this();
   smtk::model::Model smtkModel(mgr, mid);
   smtkModel.setSession(
     smtk::model::SessionRef(
@@ -2208,15 +2195,15 @@ bool Session::removeModelEntity(const smtk::model::EntityRef& modRef)
 
   // Remove any models that this session owned from s_modelsToSessions.
   std::map<vtkDiscreteModel*,Session::WeakPtr>::iterator mbit;
-  for (mbit = Session::s_modelsToSessions.begin(); mbit != Session::s_modelsToSessions.end(); ++mbit)
+  for (mbit = this->m_modelsToSessions.begin(); mbit != this->m_modelsToSessions.end(); ++mbit)
     {
     if (mbit->first == dmod)
       {
       smtk::common::UUID modelId = modRef.entity();
-      Session::s_modelsToSessions.erase(mbit);
-      vtkSmartPointer<vtkDiscreteModelWrapper> modelPtr = Session::s_modelIdsToRefs[modelId];
-      Session::s_modelIdsToRefs.erase(modelId);
-      Session::s_modelRefsToIds.erase(modelPtr);
+      this->m_modelsToSessions.erase(mbit);
+      vtkSmartPointer<vtkDiscreteModelWrapper> modelPtr = this->m_modelIdsToRefs[modelId];
+      this->m_modelIdsToRefs.erase(modelId);
+      this->m_modelRefsToIds.erase(modelPtr);
       break;
       }
     }

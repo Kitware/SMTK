@@ -20,7 +20,7 @@
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::assignUUIDs', unmatched parameter type 'std::vector&lt;vtkModelItem*&gt; const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addVolumeToManager', unmatched parameter type 'vtkModelRegion*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::findOrSetEntityUUID', unmatched parameter type 'vtkInformation*'"/>
-  <suppress-warning text="skipping field 'Session::s_modelIdsToRefs' with unmatched type 'std::map&lt;smtk::common::UUID,vtkSmartPointer&lt;vtkDiscreteModelWrapper&gt;&gt;'"/>
+  <suppress-warning text="skipping field 'Session::m_modelIdsToRefs' with unmatched type 'std::map&lt;smtk::common::UUID,vtkSmartPointer&lt;vtkDiscreteModelWrapper&gt;&gt;'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addEntities', unmatched parameter type 'P&amp;'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addFaceToManager', unmatched parameter type 'vtkModelFace*'"/>
   <suppress-warning text="skipping field 'Session::m_itemsToRefs' with unmatched type 'std::map&lt;smtk::common::UUID,vtkWeakPointer&lt;vtkModelItem&gt;&gt;'"/>
@@ -28,7 +28,7 @@
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addBodyToManager', unmatched parameter type 'vtkModel*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addCMBEntityToManager', unmatched parameter type 'vtkModelItem*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addEdgeUseToManager', unmatched parameter type 'vtkModelEdgeUse*'"/>
-  <suppress-warning text="skipping field 'Session::s_modelRefsToIds' with unmatched type 'std::map&lt;vtkSmartPointer&lt;vtkDiscreteModelWrapper&gt;,smtk::common::UUID&gt;'"/>
+  <suppress-warning text="skipping field 'Session::m_modelRefsToIds' with unmatched type 'std::map&lt;vtkSmartPointer&lt;vtkDiscreteModelWrapper&gt;,smtk::common::UUID&gt;'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addVertexToManager', unmatched parameter type 'vtkModelVertex*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addEntityArray', unmatched parameter type 'P&amp;'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::trackModel', unmatched parameter type 'vtkDiscreteModelWrapper*'"/>
@@ -37,7 +37,7 @@
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::bridge::discrete::Session::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::findModelEntity', unmatched return type 'vtkDiscreteModelWrapper*'"/>
   <suppress-warning text="skipping field 'Session::m_itemWatcher' with unmatched type 'smtk::bridge::discrete::vtkItemWatcherCommand'"/>
-  <suppress-warning text="skipping field 'Session::s_modelsToSessions' with unmatched type 'std::map&lt;vtkDiscreteModel*,smtk::bridge::discrete::Session::WeakPtr&gt;'"/>
+  <suppress-warning text="skipping field 'Session::m_modelsToSessions' with unmatched type 'std::map&lt;vtkDiscreteModel*,smtk::bridge::discrete::Session::WeakPtr&gt;'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addLoopToManager', unmatched parameter type 'vtkModelLoopUse*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addFaceUseToManager', unmatched parameter type 'vtkModelFaceUse*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::entityForUUID', unmatched return type 'vtkModelItem*'"/>

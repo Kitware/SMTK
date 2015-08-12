@@ -21,6 +21,7 @@
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
 #include "vtkCMBModelReader.h"
+#include "smtk/bridge/discrete/Session.h"
 
 namespace
 {
@@ -45,7 +46,8 @@ const char* vtkCMBModelReadOperator::GetCMBFileVersionString()
   return CMBFileVersionString;
 }
 
-void vtkCMBModelReadOperator::Operate(vtkDiscreteModelWrapper* ModelWrapper)
+void vtkCMBModelReadOperator::Operate(vtkDiscreteModelWrapper* ModelWrapper,
+                                      smtk::bridge::discrete::Session* session)
 {
   if(!ModelWrapper)
     {
@@ -53,14 +55,15 @@ void vtkCMBModelReadOperator::Operate(vtkDiscreteModelWrapper* ModelWrapper)
     return;
     }
   vtkDiscreteModel* Model = ModelWrapper->GetModel();
-  this->Read(Model);
+  this->Read(Model, session);
   if(this->OperateSucceeded)
     {
     ModelWrapper->InitializeWithModelGeometry();
     }
 }
 
-void vtkCMBModelReadOperator::Read(vtkDiscreteModel* Model)
+void vtkCMBModelReadOperator::Read(vtkDiscreteModel* Model,
+                                   smtk::bridge::discrete::Session* session)
 {
   vtkDebugMacro("Reading a CMB file into a CMB model.");
   this->OperateSucceeded = 0;
@@ -69,7 +72,6 @@ void vtkCMBModelReadOperator::Read(vtkDiscreteModel* Model)
     vtkWarningMacro("Must set file name.");
     return;
     }
-
 
   vtkNew<vtkCMBModelReader> reader;
   reader->SetFileName(this->GetFileName());
@@ -83,7 +85,7 @@ void vtkCMBModelReadOperator::Read(vtkDiscreteModel* Model)
     return;
     }
 
-  this->OperateSucceeded = parser->Parse(MasterPoly, Model);
+  this->OperateSucceeded = parser->Parse(MasterPoly, Model, session);
   Model->SetFileName(this->GetFileName());
   parser->Delete();
 

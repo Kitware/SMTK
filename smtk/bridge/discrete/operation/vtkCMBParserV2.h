@@ -31,7 +31,8 @@ public:
   vtkTypeMacro(vtkCMBParserV2,vtkCMBParserBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  virtual bool Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model);
+  virtual bool Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
+                     smtk::bridge::discrete::Session* session);
 
 protected:
   vtkCMBParserV2();
