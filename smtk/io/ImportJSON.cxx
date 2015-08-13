@@ -899,7 +899,17 @@ int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::mode
   smtk::attribute::ModelEntityItemPtr expunged = resOut->findModelEntity("expunged");
   std::size_t num = expunged->numberOfValues();
   for (std::size_t i = 0; i < num; ++i)
-    expunged->value(i).manager()->erase(expunged->value(i));
+    {
+    // if this is a removed model, the children of the model should also be removed.
+    if(expunged->value(i).isModel())
+      {
+      expunged->value(i).manager()->eraseModel(expunged->value(i).as<smtk::model::Model>());
+      }
+    else
+      {
+      expunged->value(i).manager()->erase(expunged->value(i));
+      }
+    }
 
   // Deserialize the relevant transcribed entities into the
   // remote operator's model manager:

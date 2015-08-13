@@ -12,14 +12,10 @@
           <BriefDescription>operation for the operator</BriefDescription>
           <ChildrenDefinitions>
             <ModelEntity Name="modify cell group" NumberOfRequiredValues="1">
-              <!-- There seems to be a bug in checking the validity of the entity being set 
-              when the membership is group. Skip for now 
-              <MembershipMask>group</MembershipMask>  -->
+              <MembershipMask>group</MembershipMask>
             </ModelEntity>
             <ModelEntity Name="remove cell group" Extensible="1" NumberOfRequiredValues="0">
-              <!-- There seems to be a bug in checking the validity of the entity being set 
-              when the membership is group. Skip for now 
-              <MembershipMask>group</MembershipMask>  -->
+              <MembershipMask>group</MembershipMask>
             </ModelEntity>
             <ModelEntity Name="cell to add" NumberOfRequiredValues="0" Extensible="1">
               <MembershipMask>volume|face|edge</MembershipMask>
