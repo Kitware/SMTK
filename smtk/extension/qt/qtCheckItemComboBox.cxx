@@ -125,6 +125,9 @@ void qtModelEntityItemCombo::init()
   // We create a temporary group and use Group::meetsMembershipConstraints()
   // to test whether the mask allows association.
   smtk::model::Manager::Ptr tmpMgr = smtk::model::Manager::create();
+
+  bool onlyGroups = (itemDef->membershipMask() & smtk::model::ENTITY_MASK)
+                    == smtk::model::GROUP_ENTITY;
   smtk::model::Group tmpGrp = tmpMgr->addGroup();
   tmpGrp.setMembershipMask(itemDef->membershipMask());
 
@@ -132,9 +135,13 @@ void qtModelEntityItemCombo::init()
   for (smtk::model::UUIDWithEntity it = modelManager->topology().begin();
       it != modelManager->topology().end(); ++it)
     {
+
     smtk::model::EntityRef entref(modelManager, it->first);
     if (entref.isValid() && !entref.isUseEntity() &&
-        tmpGrp.meetsMembershipConstraints(entref))
+        // if the mask is only groups, get all groups from manager
+        ((onlyGroups && entref.isGroup()) ||
+        // else, check the membership constraints
+         (!onlyGroups && tmpGrp.meetsMembershipConstraints(entref))))
       {
       QStandardItem* item = new QStandardItem;
       std::string entName = entref.name();
