@@ -174,6 +174,11 @@ public:
   bool computeShell(const smtk::mesh::HandleRange& meshes, smtk::mesh::HandleRange& shell) const;
 
   //----------------------------------------------------------------------------
+  //merge any duplicate points used by the cells that have been passed
+  bool mergeCoincidentContactPoints(const smtk::mesh::HandleRange& meshes,
+                                   double tolerance) const;
+
+  //----------------------------------------------------------------------------
   bool setDomain(const smtk::mesh::HandleRange& meshsets,
                    const smtk::mesh::Domain& domain) const;
 

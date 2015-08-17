@@ -107,6 +107,12 @@ public:
   //Will return an empty set when no shell can be found
   smtk::mesh::MeshSet extractShell() const;
 
+  //Merge all duplicate points contained within this meshset.
+  //Will return true when any points have been merged
+  //Will cause any existing PointConnectivity and PointSet's to become
+  //invalid, and using them will cause any undefined behavior
+  bool mergeCoincidentContactPoints(double tolerance=0.0) const;
+
 private:
   smtk::mesh::CollectionPtr m_parent;
   smtk::mesh::Handle m_handle;

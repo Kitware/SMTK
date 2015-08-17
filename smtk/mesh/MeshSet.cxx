@@ -303,6 +303,13 @@ smtk::mesh::MeshSet MeshSet::extractShell() const
 }
 
 //----------------------------------------------------------------------------
+bool MeshSet::mergeCoincidentContactPoints( double tolerance ) const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  return iface->mergeCoincidentContactPoints(this->m_range, tolerance);
+}
+
+//----------------------------------------------------------------------------
 //intersect two mesh sets, placing the results in the return mesh set
 MeshSet set_intersect( const MeshSet& a, const MeshSet& b)
 {

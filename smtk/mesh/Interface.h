@@ -205,6 +205,11 @@ public:
   virtual bool computeShell(const smtk::mesh::HandleRange& meshes, smtk::mesh::HandleRange& shell) const = 0;
 
   //----------------------------------------------------------------------------
+  //merge any duplicate points used by the cells that have been passed
+  virtual bool mergeCoincidentContactPoints(const smtk::mesh::HandleRange& meshes,
+                                           double tolerance) const = 0;
+
+  //----------------------------------------------------------------------------
   virtual bool setDomain(const smtk::mesh::HandleRange& meshsets,
                          const smtk::mesh::Domain& domain) const = 0;
 

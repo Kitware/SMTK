@@ -23,6 +23,7 @@
 #include "moab/Core.hpp"
 #include "moab/FileOptions.hpp"
 #include "moab/Interface.hpp"
+#include "moab/MergeMesh.hpp"
 #include "moab/ReaderIface.hpp"
 #include "moab/Skinner.hpp"
 
@@ -748,11 +749,22 @@ bool Interface::computeShell(const smtk::mesh::HandleRange& meshes,
     }
 
   ::moab::Skinner skinner(this->moabInterface());
-  ::moab::ErrorCode rval;
-  rval = skinner.find_skin(this->getRoot(),
-                           cells,
-                           false, //return cells not verts
-                           shell);
+  ::moab::ErrorCode rval= skinner.find_skin(this->getRoot(),
+                                            cells,
+                                            false, //return cells not verts
+                                            shell);
+  return (rval == ::moab::MB_SUCCESS);
+ }
+
+//----------------------------------------------------------------------------
+bool Interface::mergeCoincidentContactPoints(const smtk::mesh::HandleRange& meshes,
+                                            double tolerance) const
+{
+  //we want to merge the contact points for all dimensions
+  //of the meshes, not just the highest dimension i expect
+  ::moab::MergeMesh meshmerger(this->moabInterface());
+  smtk::mesh::HandleRange temp = meshes; //merge_entities takes by non const ref
+  ::moab::ErrorCode rval = meshmerger.merge_entities(temp, tolerance);
   return (rval == ::moab::MB_SUCCESS);
 }
 
