@@ -939,6 +939,57 @@ int Session::findOrAddFreeCells(
     numEnts += this->addEntities(entRef, body->NewIterator(vtkModelVertexType), smtk::model::INCLUDES, helper);
     }
 
+  // In case the model contains floating faces, edges, or vertexes,
+  // floating face   : no region associated // only for 3D
+  // floating edge   : no face associated   // only for 3D
+  // floating vertex : no edge associated   // not defined/handled in discrete model kernel
+  if (body->GetNumberOfAssociations(vtkModelRegionType) && // This is only for 3D
+          body->GetNumberOfAssociations(vtkModelFaceType))
+    {// Add floating faces to model
+    vtkModelItemIterator* iter = body->NewIterator(vtkModelFaceType);
+    for(iter->Begin();!iter->IsAtEnd();iter->Next())
+      {
+      vtkModelFace* face =
+        vtkModelFace::SafeDownCast(iter->GetCurrentItem());
+      if(face && face->GetNumberOfModelRegions() == 0)
+        {
+        this->addEntity(entRef, face, smtk::model::INCLUDES, helper,
+             -1, smtk::model::UNDEFINED);
+        ++numEnts;
+        }
+      }
+    iter->Delete();
+    }
+  if (body->GetNumberOfAssociations(vtkModelRegionType) && // This is only for 3D
+          body->GetNumberOfAssociations(vtkModelEdgeType))
+    { // Add floating edges to model
+    vtkModelItemIterator* iter = body->NewIterator(vtkModelEdgeType);
+    for(iter->Begin();!iter->IsAtEnd();iter->Next())
+      {
+      vtkDiscreteModelEdge* edge =
+        vtkDiscreteModelEdge::SafeDownCast(iter->GetCurrentItem());
+      if(edge && edge->GetNumberOfAdjacentModelFaces() == 0)
+        {
+        if(vtkModelRegion* region = edge->GetModelRegion())
+          {
+          smtk::common::UUID rid = this->findOrSetEntityUUID(region);
+          // make the associated region to be the parent of floating edge
+          this->addEntity(smtk::model::EntityRef(entRef.manager(), rid),
+               edge, smtk::model::INCLUDES, helper,
+               -1, smtk::model::UNDEFINED);
+          ++numEnts;
+          }
+        else
+          {
+          this->addEntity(entRef, edge, smtk::model::INCLUDES, helper,
+               -1, smtk::model::UNDEFINED);
+          ++numEnts;
+          }
+        }
+      }
+    iter->Delete();
+    }
+
   return numEnts;
 }
 
