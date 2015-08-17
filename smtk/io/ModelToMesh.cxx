@@ -243,7 +243,9 @@ convert_cells(const smtk::model::EntityRefs& ents,
       if(cell_shape != smtk::model::TESS_VERTEX   &&
          cell_shape != smtk::model::TESS_TRIANGLE &&
          cell_shape != smtk::model::TESS_QUAD)
+        {
         continue;
+        }
 
       int idx = numCellsOfType[cellType]++;
 
@@ -254,6 +256,13 @@ convert_cells(const smtk::model::EntityRefs& ents,
         {
         currentConnLoc[j] = cell_conn[j];
         }
+
+      //this is horribly important. vertexIdsOfCell is implemented by using
+      //insert() and end() which means that it appends, and if we don't clear
+      //the vector we will append onto the end and have an vector that
+      //holds 2 triangles of connectivity ( than 3,4,5, etc).
+      //We also use clear, to reduce the number of memory allocation we require
+      cell_conn.clear();
       }
 
     allocIt = cellMBConn.begin();
