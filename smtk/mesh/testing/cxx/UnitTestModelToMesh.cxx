@@ -285,10 +285,13 @@ void verify_vertex_conversion()
   test( c->isValid(), "collection should be valid");
   test( c->numberOfMeshes() == numTetsInModel, "collection should have a mesh per tet");
 
-  //make sure we have the proper number of meshsets
-  smtk::mesh::CellSet vert_cells = c->cells( smtk::mesh::Dims0 );
-  // test( vert_cells.size() == 224, "Should only have 224 vertices");
+  //make sure we have the proper number of meshsets.
 
+  //Some bug in our point logic as 1 / 10 times the results are incorrect
+  //need to figure out why
+  smtk::mesh::PointSet points = c->points( );
+  std::cout << "num points: " << points.size() << std::endl;
+  std::cout << "num points 2: " << c->cells().points().size() << std::endl;
 }
 
 //----------------------------------------------------------------------------

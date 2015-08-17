@@ -72,7 +72,6 @@ bool convert_vertices(const smtk::model::EntityRefs& ents,
                       MappingType& mapping,
                       const smtk::mesh::AllocatorPtr& ialloc)
 {
-  (void) mapping;
   typedef typename MappingType::value_type value_type;
 
   //count the number of points in the tessellation so that we can properly
@@ -114,6 +113,12 @@ bool convert_vertices(const smtk::model::EntityRefs& ents,
 
     const int dimension = it->embeddingDimension();
     const std::size_t length = modelCoords.size();
+
+    //mark for this entity where in the global pool of points we can
+    //find the start of its coordinates, this will allow us to properly
+    //create the new connectivity for the mesh referencing the global
+    //point coordinate array
+    mapping[*it]=pos;
 
     //while a little more complex, this way avoids branching or comparisons
     //against dimension while filling the memory
@@ -159,8 +164,6 @@ convert_cells(const smtk::model::EntityRefs& ents,
               MappingType& mapping,
               const smtk::mesh::AllocatorPtr& ialloc)
 {
-  (void)mapping;
-
   typedef smtk::model::Tessellation Tess;
   typedef typename MappingType::value_type value_type;
 
@@ -248,13 +251,19 @@ convert_cells(const smtk::model::EntityRefs& ents,
         }
 
       int idx = numCellsOfType[cellType]++;
+      std::size_t global_coordinate_offset = mapping[*it];
 
       smtk::mesh::Handle* currentConnLoc = cellMBConn[cellType].second + numVertsPerCell * idx;
       cell_conn.reserve(numVertsPerCell);
       tess->vertexIdsOfCell(start_off, cell_conn);
       for (int j=0; j < numVertsPerCell; ++j)
         {
-        currentConnLoc[j] = cell_conn[j];
+        //we need to fix the cell_conn to account for the fact that the
+        //values contained within are all relative to the tessellation and
+        //we need location based on the total sum of all tessellations.
+        //local position + ( total connectivity added before the tess ) should
+        //be correct.
+        currentConnLoc[j] = global_coordinate_offset + cell_conn[j];
         }
 
       //this is horribly important. vertexIdsOfCell is implemented by using
@@ -277,7 +286,9 @@ convert_cells(const smtk::model::EntityRefs& ents,
 
       // notify database that we have written to connectivity, that way
       // it can properly update adjacencies and other database info
-      ialloc->connectivityModified(allocIt->first, numVertsPerCell, allocIt->second);
+      ialloc->connectivityModified(allocIt->first,
+                                   numVertsPerCell,
+                                   allocIt->second);
 
       //we need to add these cells to the range that represents all
       //cells for this volume
@@ -299,8 +310,7 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& 
 {
   typedef smtk::model::EntityRefs EntityRefs;
   typedef smtk::model::EntityTypeBits EntityTypeBits;
-  typedef std::map< smtk::common::UUID, smtk::mesh::Handle > UUIDToMeshHandle;
-  typedef UUIDToMeshHandle::const_iterator uuid_mesh_c_it;
+  typedef std::map< smtk::model::EntityRef, std::size_t > CoordinateOffsetMap;
 
   smtk::mesh::CollectionPtr nullCollectionPtr;
   if(!meshManager || !modelManager )
@@ -323,16 +333,18 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& 
   //We create a new mesh each for the Edge(s), Face(s) and Volume(s).
   //the MODEL_ENTITY will be associated with the meshset that contains all
   // meshes.
-
-  //first thing we do is create a point mapping table so that we can
-  //merge duplicate vertices
-  UUIDToMeshHandle cellMapping;
-  {
-  EntityRefs justVerts = modelManager->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::VERTEX);
-  //extract the verts that have tesselation
-  detail::removeOnesWithoutTess(justVerts);
-  detail::convert_vertices(justVerts, cellMapping, ialloc);
-  }
+   CoordinateOffsetMap coordinateLocationMapping;
+  for( int entAsInt =0; entAsInt != 4; ++entAsInt)
+    {
+    //extract all the coordinates from every tessellation and make a single
+    //big pool
+    EntityTypeBits entType = static_cast<EntityTypeBits>(entAsInt);
+    EntityRefs currentEnts = modelManager->entitiesMatchingFlagsAs<EntityRefs>(entType);
+    detail::removeOnesWithoutTess(currentEnts);
+    detail::convert_vertices(currentEnts,
+                             coordinateLocationMapping,
+                             ialloc);
+    }
 
 
   //We need to iterate over each model i think here
@@ -347,7 +359,9 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& 
     //for each volume entity we need to create a range of handles
     //that represent the cell ids for that volume.
     std::map<smtk::model::EntityRef, smtk::mesh::HandleRange> per_ent_cells =
-        detail::convert_cells(currentEnts, cellMapping, ialloc);
+        detail::convert_cells(currentEnts,
+                              coordinateLocationMapping,
+                              ialloc);
 
     typedef std::map<smtk::model::EntityRef, smtk::mesh::HandleRange>::const_iterator c_it;
     for(c_it i= per_ent_cells.begin(); i != per_ent_cells.end(); ++i)
