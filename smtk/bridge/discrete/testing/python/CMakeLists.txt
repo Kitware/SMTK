@@ -6,6 +6,7 @@ set(smtkDiscreteSessionPythonTests
 set(smtkDiscreteSessionPythonDataTests
   discreteBathymetry
   discreteCreateEdges
+  discreteCreateAndSaveEdges
   discreteReadFile
   discreteSplitEdge
 )

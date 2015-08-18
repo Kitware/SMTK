@@ -100,11 +100,14 @@ class TestDiscreteSplitEdge(smtk.testing.TestCase):
       ac = self.renderer.GetActors()
       ac.InitTraversal()
       act = ac.GetNextActor()
-      act.GetProperty().SetLineWidth(5)
+      act.GetProperty().SetLineWidth(2)
+      act.GetProperty().SetPointSize(8)
+      act.GetMapper().SetResolveCoincidentTopologyToPolygonOffset()
+
       cam = self.renderer.GetActiveCamera()
       self.renderer.ResetCamera()
       self.renderWindow.Render()
-      self.assertImageMatchIfFileExists(['baselines', 'discrete', 'edge-split-test2D.png'])
+      self.assertImageMatch(['baselines', 'discrete', 'edge-split-test2D.png'])
       self.interact()
 
   def setUp(self):

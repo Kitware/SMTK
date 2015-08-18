@@ -224,34 +224,11 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
     // Create the face
     vtkDiscreteModelFace* face;
     if(FaceMaterials && FaceMaterials->GetValue(i) >= 0)
-      { // a model face in a 2D model
-      // First get the number of loops
-      int nLoops = EdgesOfModelFace->GetValue(ArrayCounter++);
-      int loop;
+      {
       vtkModelMaterial* Material = vtkModelMaterial::SafeDownCast(
         Model->GetModelEntity(vtkModelMaterialType, FaceMaterials->GetValue(i)));
       face = vtkDiscreteModelFace::SafeDownCast(
         Model->BuildModelFace(0, NULL, NULL, Material) );
-      // Process each face loop (assume that the first loop is the outer one
-      for (loop = 0; loop < nLoops; ++loop)
-        {
-        int EdgeCounter = 0;
-        while(ArrayCounter < EdgesOfModelFace->GetNumberOfTuples() &&
-              EdgesOfModelFace->GetValue(ArrayCounter) >= 0)
-          {
-          vtkIdType EdgeId = EdgesOfModelFace->GetValue(ArrayCounter);
-          Edges[EdgeCounter] =
-            vtkModelEdge::SafeDownCast(Model->GetModelEntity(vtkModelEdgeType, EdgeId));
-          EdgeDirs[EdgeCounter] = EdgeDirections->GetValue(ArrayCounter);
-          ArrayCounter++;
-          EdgeCounter++;
-          }
-        ArrayCounter++; // incremented because we want to skip the -1 value
-        bool blockEvent = Model->GetBlockModelGeometricEntityEvent();
-        Model->SetBlockModelGeometricEntityEvent(true);
-        face->AddLoop(EdgeCounter, &Edges[0], &EdgeDirs[0]);
-        Model->SetBlockModelGeometricEntityEvent(blockEvent);
-        }
       }
     else
       { // a model face in a 3D model
@@ -277,8 +254,36 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
           }
         }
       }
+
+    if(EdgesOfModelFace && EdgesOfModelFace->GetNumberOfTuples() > 0)
+      { // a model face in a 2D model
+      // First get the number of loops
+      int nLoops = EdgesOfModelFace->GetValue(ArrayCounter++);
+      int loop;
+      // Process each face loop (assume that the first loop is the outer one
+      for (loop = 0; loop < nLoops; ++loop)
+        {
+        int EdgeCounter = 0;
+        while(ArrayCounter < EdgesOfModelFace->GetNumberOfTuples() &&
+              EdgesOfModelFace->GetValue(ArrayCounter) >= 0)
+          {
+          vtkIdType EdgeId = EdgesOfModelFace->GetValue(ArrayCounter);
+          Edges[EdgeCounter] =
+            vtkModelEdge::SafeDownCast(Model->GetModelEntity(vtkModelEdgeType, EdgeId));
+          EdgeDirs[EdgeCounter] = EdgeDirections->GetValue(ArrayCounter);
+          ArrayCounter++;
+          EdgeCounter++;
+          }
+        ArrayCounter++; // incremented because we want to skip the -1 value
+        bool blockEvent = Model->GetBlockModelGeometricEntityEvent();
+        Model->SetBlockModelGeometricEntityEvent(true);
+        face->AddLoop(EdgeCounter, &Edges[0], &EdgeDirs[0]);
+        Model->SetBlockModelGeometricEntityEvent(blockEvent);
+        }
+      }
     ModelEntities[i] = face;
     }
+
   if(EdgesOfModelFace)
     {
     EdgesOfModelFace->Delete();
