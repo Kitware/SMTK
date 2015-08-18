@@ -125,7 +125,9 @@ void vtkCMBModelWriterV2::SetAnalysisGridData(vtkDiscreteModel* model, vtkPolyDa
     vtkIdTypeArray* pointMap = analysisGridInfo->GetModelPointToAnalysisPoint();
     vtkIdTypeArray* cellMap = analysisGridInfo->GetModelCellToAnalysisCells();
     vtkCharArray* cellSides = analysisGridInfo->GetModelCellToAnalysisCellSides();
-    if(pointMap != NULL && cellMap != NULL && cellSides != NULL)
+    if((pointMap != NULL && pointMap->GetNumberOfTuples() == poly->GetNumberOfPoints()) &&
+       (cellMap != NULL && cellMap->GetNumberOfTuples() == poly->GetNumberOfCells()) &&
+       (cellSides != NULL && cellSides->GetNumberOfTuples() == poly->GetNumberOfCells()))
       {
       pointMap->SetName(vtkDiscreteModel::GetPointMapArrayName());
       poly->GetPointData()->AddArray(pointMap);
