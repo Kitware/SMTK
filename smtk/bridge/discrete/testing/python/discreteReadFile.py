@@ -43,6 +43,36 @@ class TestDiscreteSession(smtk.testing.TestCase):
     innerEdge = inner[0].edgeUses()[0].edge()
     self.assertEqual(innerEdge.name(), 'Edge10', 'Face4\'s inner loop should one edge named "Edge10"')
 
+  def validateHybrid(self, model):
+    "Verify that the hybridModelOneCube model is imported correctly."
+    faces = [smtk.model.Face(x) for x in model.cells()]
+    f7l = [f for f in faces if f.name() == 'Face7']
+    self.assertEqual(len(f7l), 1, 'Could not find floating "Face7" in hybridModelOneCube')
+    face7 = f7l[0]
+    outer = face7.positiveUse().loops()
+    self.assertEqual(len(outer), 0, 'Face7 should have 0 outer loop')
+
+    if self.haveVTK() and self.haveVTKExtension():
+
+      self.startRenderTest()
+
+      mbs = self.addModelToScene(model)
+
+      self.renderer.SetBackground(0.5,0.5,1)
+      cam = self.renderer.GetActiveCamera()
+      cam.SetFocalPoint(0., 0., 0.)
+      cam.SetPosition(15,-10,-20)
+      cam.SetViewUp(0,1,0)
+      self.renderer.ResetCamera()
+      self.renderWindow.Render()
+      self.assertImageMatch(['baselines', 'discrete', 'hybridModelOneCube.png'])
+      self.interact()
+
+    else:
+      self.assertFalse(
+        self.haveVTKExtension(),
+        'Could not import vtk. Python path is {pp}'.format(pp=sys.path))
+
   def validatePMDC(self, model):
     "Verify that the PMDC model is imported correctly."
     # Assign a color to each face in the groups.
@@ -102,6 +132,7 @@ class TestDiscreteSession(smtk.testing.TestCase):
     self.addTestFile(['cmb', 'SimpleBox.cmb'], 1, 2)
     self.addTestFile(['cmb', 'smooth_surface.cmb'], 6, 0)
     self.addTestFile(['cmb', 'pmdc.cmb'], 7, 13, self.validatePMDC)
+    self.addTestFile(['cmb', 'hybridModelOneCube.cmb'], 2, 1, self.validateHybrid)
 
     self.mgr = smtk.model.Manager.create()
     sess = self.mgr.createSession('discrete')
