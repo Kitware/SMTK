@@ -59,7 +59,7 @@ void vtkCMBModelWriterV5::SetModelEdgeData(vtkDiscreteModel* model, vtkPolyData*
   for(edges->Begin();!edges->IsAtEnd();edges->Next())
     {
     vtkDiscreteModelEdge* edge = vtkDiscreteModelEdge::SafeDownCast(edges->GetCurrentItem());
-    if(edge->GetModelRegion() != NULL || model->GetModelDimension() == 2)
+//    if(edge->GetModelRegion() != NULL || model->GetModelDimension() == 2)
       {
       entities.push_back(edge);
       }
@@ -116,7 +116,7 @@ void vtkCMBModelWriterV5::SetModelEdgeData(vtkDiscreteModel* model, vtkPolyData*
 void vtkCMBModelWriterV5::SetModelFaceData(vtkDiscreteModel* Model, vtkPolyData* Poly)
 {
   std::vector<vtkModelEntity*> Entities;
-  if(Model->GetModelDimension() == 2)
+//  if(Model->GetModelDimension() == 2)
     {
     // the adjacent edge ids for each model face is separated by a -1
     vtkIdTypeArray* ModelFaceAdjacentEdgesId = vtkIdTypeArray::New();
@@ -130,7 +130,10 @@ void vtkCMBModelWriterV5::SetModelFaceData(vtkDiscreteModel* Model, vtkPolyData*
       vtkDiscreteModelFace* Face = vtkDiscreteModelFace::SafeDownCast(Faces->GetCurrentItem());
       Entities.push_back(Face);
       vtkModelMaterial* Material = Face->GetMaterial();
-      ModelFaceMaterialIds->InsertNextValue(Material->GetUniquePersistentId());
+      if(Material)
+        {
+        ModelFaceMaterialIds->InsertNextValue(Material->GetUniquePersistentId());
+        }
       // Loop Information is encoded as follows: nL l0e0 l0e1 ... -1 l1e0 ...
       // Where nL is the number of loops in the face followed by the edges in
       // loop (for example l0e0 is edge 0 of loop 0) - with each loop separated by -1
@@ -173,12 +176,14 @@ void vtkCMBModelWriterV5::SetModelFaceData(vtkDiscreteModel* Model, vtkPolyData*
     ModelEdgeDirections->SetName(ModelParserHelper::GetModelEdgeDirectionsString());
     Poly->GetFieldData()->AddArray(ModelEdgeDirections);
     ModelEdgeDirections->Delete();
-
-    ModelFaceMaterialIds->SetName(ModelParserHelper::GetFaceMaterialIdString());
-    Poly->GetFieldData()->AddArray(ModelFaceMaterialIds);
+    if(ModelFaceMaterialIds->GetNumberOfTuples())
+      {
+      ModelFaceMaterialIds->SetName(ModelParserHelper::GetFaceMaterialIdString());
+      Poly->GetFieldData()->AddArray(ModelFaceMaterialIds);
+      }
     ModelFaceMaterialIds->Delete();
     }
-  else if(Model->GetModelDimension() == 3)
+  if(Model->GetModelDimension() == 3)
     {
     vtkIdTypeArray* ModelFaceAdjacentRegionsId = vtkIdTypeArray::New();
     ModelFaceAdjacentRegionsId->SetNumberOfComponents(2);
@@ -187,7 +192,7 @@ void vtkCMBModelWriterV5::SetModelFaceData(vtkDiscreteModel* Model, vtkPolyData*
     for(Faces->Begin();!Faces->IsAtEnd();Faces->Next())
       {
       vtkDiscreteModelFace* Face = vtkDiscreteModelFace::SafeDownCast(Faces->GetCurrentItem());
-      Entities.push_back(Face);
+ //     Entities.push_back(Face);
       vtkIdType ids[2] = {-1, -1};
       for(int j=0;j<2;j++)
         {
