@@ -39,10 +39,11 @@ public:
     TABBED,
     TILED
   };
-  qtGroupViewInternals() : m_style(TABBED) {}
+  qtGroupViewInternals() : m_style(TABBED), m_currentTabSelected(0) {}
   QList<smtk::attribute::qtBaseView*> ChildViews;
   qtGroupViewInternals::Style m_style;
   std::vector<smtk::common::ViewPtr> m_views;
+  int m_currentTabSelected;
 };
 
 //----------------------------------------------------------------------------
@@ -50,7 +51,9 @@ qtBaseView *
 qtGroupView::createViewWidget(smtk::common::ViewPtr dataObj,
                                   QWidget* p, qtUIManager* uiman)
 {
-  return new qtGroupView(dataObj, p, uiman);
+  qtGroupView *view = new qtGroupView(dataObj, p, uiman);
+  view->buildUI();
+  return view;
 }
 
 //----------------------------------------------------------------------------
@@ -59,7 +62,6 @@ qtGroupView(smtk::common::ViewPtr dataObj, QWidget* p,
   qtUIManager* uiman) : qtBaseView(dataObj, p, uiman)
 {
   this->Internals = new qtGroupViewInternals;
-  this->createWidget( );
 }
 
 //----------------------------------------------------------------------------
@@ -68,6 +70,12 @@ qtGroupView::~qtGroupView()
   this->clearChildViews();
   delete this->Internals;
 }
+//----------------------------------------------------------------------------
+void qtGroupView::updateCurrentTab(int ithTab)
+{
+  this->Internals->m_currentTabSelected = ithTab;
+}
+
 //----------------------------------------------------------------------------
 void qtGroupView::createWidget( )
 {
@@ -83,7 +91,7 @@ void qtGroupView::createWidget( )
     this->Internals->m_style = (val == "tiled" ? qtGroupViewInternals::TILED :
       qtGroupViewInternals::TABBED);
     }
-  
+
   this->clearChildViews();
   if(this->Internals->m_style == qtGroupViewInternals::TILED)
     {
@@ -92,7 +100,6 @@ void qtGroupView::createWidget( )
   else
     {
     QTabWidget *tab = new QTabWidget(this->parentWidget());
-//    connect(tab, SIGNAL(currentChanged(int)), this, SLOT(refreshAdvanceLevelOverlay(int)));
     tab->setUsesScrollButtons( true );
     this->Widget = tab;
     }
@@ -101,8 +108,6 @@ void qtGroupView::createWidget( )
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);
   this->Widget->setLayout( layout );
-
-  this->parentWidget()->layout()->addWidget(this->Widget);
 
   // Now process all of this view's children
   int viewsIndex;
@@ -133,7 +138,7 @@ void qtGroupView::createWidget( )
     if (!v)
       {
       // No such View by that name in attribute system
-      
+
       continue;
       }
     qtView = this->uiManager()->createView(v, this->Widget);
@@ -142,7 +147,17 @@ void qtGroupView::createWidget( )
       this->addChildView(qtView);
       }
     }
-  
+    if(QTabWidget* tabWidget = qobject_cast<QTabWidget*>(this->Widget))
+      {
+      tabWidget->setCurrentIndex(this->Internals->m_currentTabSelected);
+      tabWidget->setIconSize( QSize(24,24) );
+      tabWidget->setTabPosition(QTabWidget::East);
+      }
+    if(this->Internals->m_style == qtGroupViewInternals::TABBED)
+    {
+    QObject::connect(this->Widget, SIGNAL(currentChanged(int)),
+                     this, SLOT(updateCurrentTab(int)));
+    }
 }
 //----------------------------------------------------------------------------
 void qtGroupView::getChildView(const std::string &viewType, QList<qtBaseView*>& views)
