@@ -24,6 +24,7 @@ In order to build SMTK you must have
 + [CMake](http://cmake.org) 2.8.11 or newer (3.2 is advised), and
 + [Boost](http://boost.org) 1.50.0 or newer.
 
+
 We recommend using [Ninja](http://martine.github.io/ninja/) for fast builds.
 
 You may optionally provide
@@ -44,6 +45,10 @@ You may optionally provide
 + [ParaView](http://paraview.org) version 4.3 or newer,
   or [VTK](http://VTK.org) version 6.2 or newer,
   for graphical presentation and selection of geometric models.
++ [MOAB](https://bitbucket.org/fathomteam/moab),
+  built with
+  [Netcdf](http://www.unidata.ucar.edu/software/netcdf/),
+  for importing and exporting mesh files.
 
 If you want to build the documentation you will need
 

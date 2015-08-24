@@ -44,6 +44,10 @@ include(GenerateExportHeader)
 # export install targets
 include(SMTKMacros)
 
+# include cmake code that allows for easier testing of SMTK classes
+# and also provides helpers around create_test_sourcelist
+include(CMake/SMTKTestingMacros.cmake)
+
 # Include mechanism for determining shared and weak pointer support
 include(SharedPtr)
 
@@ -178,6 +182,13 @@ find_package(Boost 1.50.0
 if(WIN32 AND MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 endif()
+
+################################################################################
+# Moab Related Settings
+################################################################################
+# Moab is required for building smtk::mesh, as it is the default storage
+# format for meshes.
+find_package(MOAB REQUIRED)
 
 ################################################################################
 # Qt Related Settings

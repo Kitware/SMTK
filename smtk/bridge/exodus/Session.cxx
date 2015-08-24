@@ -417,7 +417,7 @@ bool Session::addTessellation(
 } // namespace smtk
 
 // ++ 1 ++
-#include "Session_json.h"
+#include "smtk/bridge/exodus/Session_json.h"
 
 smtkImplementsModelingKernel(
   SMTKEXODUSSESSION_EXPORT,
