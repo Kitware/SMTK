@@ -25,6 +25,10 @@ add_definitions("-DSRCDIR=${CMAKE_CURRENT_SOURCE_DIR}")
 add_library(moabverdict OBJECT
   ${moabverdict_srcs}
   ${moabverdict_headers})
+
+# Set position-independent flag so that the object files are embedded properly.
+set_target_properties(moabverdict PROPERTIES POSITION_INDEPENDENT_CODE True)
+
 if (BUILD_SHARED_LIBS)
   set( shared_define "-DIS_BUILDING_MB_SHARED" )
 endif ()

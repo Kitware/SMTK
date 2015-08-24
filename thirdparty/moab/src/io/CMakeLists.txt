@@ -69,7 +69,7 @@ endif( MOAB_HAVE_NETCDF )
 if( MOAB_HAVE_ZOLTAN )
   include_directories(${ZOLTAN_INCLUDES})
 endif (MOAB_HAVE_ZOLTAN)
- 
+
 if ( MOAB_HAVE_CGNS )
   set( MOAB_CGNS_SRCS ReadCGNS.hpp ReadCGNS.cpp
                       WriteCGNS.hpp WriteCGNS.cpp)
@@ -90,13 +90,13 @@ if( MOAB_HAVE_HDF5 )
 endif()
 
 if( MOAB_HAVE_CCMIO )
-  set( MOAB_CCMIO_SRCS WriteCCMIO.hpp WriteCCMIO.cpp 
+  set( MOAB_CCMIO_SRCS WriteCCMIO.hpp WriteCCMIO.cpp
                        ReadCCMIO.hpp ReadCCMIO.cpp )
 endif()
 
 if( MOAD_HAVE_DAMSEL )
   set( MOAB_DAMSEL_SRCS
-          WriteDamsel.hpp WriteDamsel.cpp 
+          WriteDamsel.hpp WriteDamsel.cpp
           ReadDamsel.hpp  ReadDamsel.cpp
           DamselUtil.hpp  DamselUtil.cpp )
 endif()
@@ -111,6 +111,9 @@ add_library( moabio OBJECT ${MOABIO_LIB_SRCS} ${MOAB_NETCDF_SRCS}
                            ${MOAB_CGNS_SRCS}  ${MOAB_HDF5_SRCS}
                            ${MOAB_CCMIO_SRCS} ${MOAB_DAMSEL_SRCS}
                            ${MOAB_CGM_SRCS}   ${MOABIO_INSTALL_HEADERS} )
+# Set position-independent flag so that the object files are embedded properly.
+set_target_properties(moabio PROPERTIES POSITION_INDEPENDENT_CODE True)
+
 set(MOABIO_LIBS "${MOABIO_LIBS}" PARENT_SCOPE)
 if (BUILD_SHARED_LIBS)
   set( shared_define "-DIS_BUILDING_MB_SHARED" )
