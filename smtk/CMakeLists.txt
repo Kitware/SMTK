@@ -50,13 +50,6 @@ target_link_libraries(smtkCore
   LINK_PUBLIC cJSON MOAB
   LINK_PRIVATE ${Boost_LIBRARIES})
 
-#when we are building moab itself the target has the proper include directory
-#but when we import moab it
-if(SMTK_USE_SYSTEM_MOAB)
-  target_include_directories(smtkCore
-    PRIVATE ${MOAB_INCLUDE_DIRS})
-endif()
-
 smtk_export_header(smtkCore CoreExports.h)
 if (NOT BUILD_SHARED_LIBS AND SMTK_ENABLE_PYTHON_WRAPPING)
   # Set position-independent flag when other project libs are shared.

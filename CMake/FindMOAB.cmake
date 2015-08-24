@@ -37,10 +37,16 @@ find_package_handle_standard_args(MOAB DEFAULT_MSG
 
 if(MOAB_FOUND)
   if(EXISTS ${MOAB_ROOT_DIR}/lib/MOABConfig.cmake)
+
+    #Because we have a built-in moab the config.cmake
+    #will fail to include targets.cmake so we must do it
+    #manually
     include(${MOAB_ROOT_DIR}/lib/MOABConfig.cmake)
-  else()
-    #now we create fake targets to be used
     include(${MOAB_ROOT_DIR}/lib/MOABTargets.cmake)
+
+    set_target_properties(MOAB PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${MOAB_INCLUDE_DIR}"
+        )
   endif()
 endif()
 

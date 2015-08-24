@@ -40,9 +40,7 @@ function(smtk_add_header_test name dir_prefix)
 
   #include the build directory for the export header
   target_include_directories(TestBuild_${name}
-    PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
-            ${MOAB_INCLUDE_DIRS}
-    )
+    PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
   #also link against moab so we build properly
   target_link_libraries(TestBuild_${name}
     PRIVATE MOAB)
