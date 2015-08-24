@@ -113,6 +113,7 @@ if (SMTK_ENABLE_REMUS_SUPPORT)
   option(SMTK_ENABLE_REMOTE_SESSION "Build a session that allows modeling in a remote process." ON)
 endif()
 
+option(SMTK_USE_SYSTEM_MOAB "Use the system-installed moab?" OFF)
 option(SMTK_USE_SYSTEM_SPARSEHASH "Use the system-installed sparsehash?" OFF)
 option(SMTK_HASH_STORAGE "Use sparsehash library for primary storage?" OFF)
 set(SMTK_DATA_DIR "" CACHE PATH "Path to a directory of SMTK test data.")
@@ -186,9 +187,15 @@ endif()
 ################################################################################
 # Moab Related Settings
 ################################################################################
-# Moab is required for building smtk::mesh, as it is the default storage
-# format for meshes.
-find_package(MOAB REQUIRED)
+
+#if we are not using system moab we will build our own version through
+#the thirdparty folder
+if (SMTK_USE_SYSTEM_MOAB)
+  # Moab is required for building smtk::mesh, as it is the default storage
+  # format for meshes.
+  find_package(MOAB REQUIRED)
+endif()
+
 
 ################################################################################
 # Qt Related Settings
