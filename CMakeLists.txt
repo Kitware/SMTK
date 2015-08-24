@@ -431,7 +431,7 @@ if(SMTK_ENABLE_DISCRETE_SESSION)
   endif()
 
   # This option is only available when SMTK_ENABLE_DISCRETE_SESSION is ON
-  option(SMTK_ENABLE_MOAB_SUPPORT "Build moab reader for discrete model" OFF)
+  option(SMTK_ENABLE_MOAB_DISCRETE_READER "Build moab reader for discrete model" ${SMTK_USE_SYSTEM_MOAB} )
 endif()
 
 ################################################################################

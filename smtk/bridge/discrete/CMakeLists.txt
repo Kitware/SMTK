@@ -28,7 +28,7 @@ vtk_smtk_setup_module_environment("SMTKDiscrete")
 vtk_smtk_process_modules()
 
 # Build vtk moab reader before session
-if(SMTK_ENABLE_MOAB_SUPPORT)
+if(SMTK_ENABLE_MOAB_DISCRETE_READER)
   add_subdirectory(moabreader)
 endif()
 
@@ -199,7 +199,7 @@ if (VTK_WRAP_PYTHON)
   list(APPEND __private_dependencies vtkPythonInterpreter)
 endif (VTK_WRAP_PYTHON)
 
-if(SMTK_ENABLE_MOAB_SUPPORT)
+if(SMTK_ENABLE_MOAB_DISCRETE_READER)
   list(APPEND __private_dependencies vtkDiscreteMoabReader)
 endif()
 
