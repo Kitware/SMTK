@@ -358,11 +358,25 @@ void qtMeshSelectionItem::clearSelection()
   meshSelectionItem->reset();
 }
 //----------------------------------------------------------------------------
-void qtMeshSelectionItem::resetSelectionState()
+void qtMeshSelectionItem::resetSelectionState(bool emitSignal)
 {
   this->Internals->uncheckOpButtons();
   this->Internals->m_outSelection.clear();
   this->clearSelection();
+
+  smtk::attribute::MeshSelectionItemPtr meshSelectionItem =
+    dynamic_pointer_cast<MeshSelectionItem>(this->getObject());
+  if(meshSelectionItem)
+    {
+    meshSelectionItem->setModifyMode(NONE);
+    }
+
+  if(emitSignal)
+    {
+    smtk::attribute::ModelEntityItem::Ptr modelEntities =
+      this->refModelEntityItem();
+    emit this->requestMeshSelection(modelEntities);
+    }
 }
 
 //----------------------------------------------------------------------------

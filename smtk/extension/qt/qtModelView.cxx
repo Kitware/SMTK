@@ -797,6 +797,8 @@ QDockWidget* qtModelView::operatorsDock()
   qtModelOperationWidget* opWidget = new qtModelOperationWidget();
   QObject::connect(opWidget, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)),
     this, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)));
+  QObject::connect(opWidget, SIGNAL(operationCancelled(const smtk::model::OperatorPtr&)),
+    this, SIGNAL(operationCancelled(const smtk::model::OperatorPtr&)));
   QObject::connect(opWidget, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),
     this, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)));
   QObject::connect(opWidget, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)),
@@ -847,7 +849,7 @@ void qtModelView::initOperatorsDock(
   this->operatorsDock()->show();
   SessionRef bs(session->manager(), session->sessionId());
 
-  this->m_OperatorsWidget->setCurrentOperation(opName, session);
+  this->m_OperatorsWidget->setCurrentOperator(opName, session);
   this->m_OperatorsDock->setWindowTitle(bs.flagSummary().c_str());
 }
 
@@ -869,7 +871,7 @@ bool qtModelView::requestOperation(
     this->operatorsDock()->show();
     SessionRef bs(brOp->manager(), brOp->session()->sessionId());
 
-    this->m_OperatorsWidget->setCurrentOperation(brOp);
+    this->m_OperatorsWidget->initOperatorUI(brOp);
     this->m_OperatorsDock->setWindowTitle(bs.flagSummary().c_str());
     }
   return true;
