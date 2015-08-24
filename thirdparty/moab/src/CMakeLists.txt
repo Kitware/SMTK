@@ -42,7 +42,7 @@ ADD_CUSTOM_COMMAND(
           -Dinput_file:STRING=${CMAKE_CURRENT_SOURCE_DIR}/MBCN.h
           -Doutput_file:STRING=${CMAKE_CURRENT_BINARY_DIR}/MBCN_protos.h
           -Dprefix:STRING=MBCN
-          -P ${CMAKE_SOURCE_DIR}/config/ITAPSFortranMangling.cmake
+          -P ${MOAB_SOURCE_DIR}/config/ITAPSFortranMangling.cmake
   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/MBCN.h )
 
 if( MOAB_HAVE_HDF5 )
@@ -133,7 +133,7 @@ set(MOAB_LIB_SOURCES
         Util.cpp
         VarLenDenseTag.hpp        VarLenDenseTag.cpp
         VarLenSparseTag.hpp       VarLenSparseTag.cpp
-        VarLenTag.hpp      
+        VarLenTag.hpp
         VertexSequence.hpp        VertexSequence.cpp
         WriteUtil.hpp             WriteUtil.cpp
         moab_mpe.h )
@@ -165,11 +165,11 @@ set( MOAB_INSTALL_HEADERS
         moab/point_locater/tree/common_tree.hpp
         moab/point_locater/tree/element_tree.hpp
         moab/point_locater/tree/bvh_tree.hpp
-        moab/point_locater/io.hpp 
-        moab/point_locater/element_maps/linear_hex_map.hpp 
-        moab/point_locater/element_maps/linear_tet_map.hpp 
-        moab/point_locater/element_maps/spectral_hex_map.hpp 
-        moab/point_locater/element_maps/quadratic_hex_map.hpp 
+        moab/point_locater/io.hpp
+        moab/point_locater/element_maps/linear_hex_map.hpp
+        moab/point_locater/element_maps/linear_tet_map.hpp
+        moab/point_locater/element_maps/spectral_hex_map.hpp
+        moab/point_locater/element_maps/quadratic_hex_map.hpp
         moab/point_locater/point_locater.hpp
         moab/point_locater/parametrizer.hpp
         moab/Matrix3.hpp

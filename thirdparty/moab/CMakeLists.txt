@@ -2,41 +2,42 @@ cmake_minimum_required( VERSION 2.8.12 )
 SET(PACKAGE_NAME "MOAB")
 SET(PACKAGE_VERSION "4.8.3pre")
 
-if (NOT WIN32)
-  #This all breaks on windows.
-  if ( MPI_DIR )
-    message ("Checking for MPI compilers in ${MPI_DIR}/bin")
-    SET(CMAKE_USER_CXX_COMPILER_PATH ${MPI_DIR}/bin ${MPI_DIR})
-    SET(CMAKE_GENERATOR_CC ${CC} mpicc mpixlc_r mpixlc hcc mpxlc_r mpxlc sxmpicc mpifcc mpgcc mpcc cmpicc)
-    SET(CMAKE_GENERATOR_CXX ${CXX} mpicxx mpic++ mpiCC sxmpic++ hcp mpxlC_r mpxlC mpixlcxx_r mpixlcxx mpg++ mpc++ mpCC cmpic++ mpiFCC)
-    SET(CMAKE_GENERATOR_FC ${FC} ${F90} mpif95 mpxlf95_r mpxlf95 ftn mpif90 mpxlf90_r mpxlf90 mpf90 cmpif90c sxmpif90)
-  else ( MPI_DIR )
-    message ("Checking for non-MPI native compilers")
-    SET(CMAKE_GENERATOR_CC ${CC} gcc icc pgcc cc)
-    SET(CMAKE_GENERATOR_CXX ${CXX} CCicpc pgCC pathCC sxc++ xlC_r xlC bgxlC_r bgxlC openCC sunCC crayCC icpc g++ c++ gpp aCC CC cxx cc++ cl.exe FCC KCC RCC)
-    SET(CMAKE_GENERATOR_FC ${FC} ${F90} pathf95 ifort gfortran g95 f95 fort ifc efc openf95 sunf95 crayftn lf95 ftn xlf90 f90 pgf90 pghpf pathf90 epcf90 sxf90 openf90 sunf90)
-  endif ( MPI_DIR )
-  SET(CMAKE_Fortran_COMPILER_INIT ${CMAKE_GENERATOR_FC})
-  SET(CMAKE_CXX_FLAGS_INIT "-fPIC -DPIC")
-  SET(CMAKE_CXX_FLAGS_DEBUG_INIT "-O0 -g")
-  SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT "-O2 -g")
-  SET(CMAKE_CXX_FLAGS_RELEASE_INIT "-O2 -DNDEBUG")
-  SET(CMAKE_C_FLAGS_INIT "-fPIC -DPIC")
-  SET(CMAKE_C_FLAGS_DEBUG_INIT "-O0 -g")
-  SET(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT "-O2 -g")
-  SET(CMAKE_C_FLAGS_RELEASE_INIT "-O2 -DNDEBUG")
-  SET(CMAKE_Fortran_FLAGS_INIT "-fPIC")
-  SET(CMAKE_Fortran_FLAGS_DEBUG_INIT "-O0 -g")
-  SET(CMAKE_Fortran_FLAGS_RELWITHDEBINFO_INIT "-O2 -g")
-  SET(CMAKE_Fortran_FLAGS_RELEASE_INIT "-O2")
-  SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_INIT "")
-  SET(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS_INIT "")
-endif()
+# if (NOT WIN32)
+#   #This all breaks on windows.
+#   if ( MPI_DIR )
+#     message ("Checking for MPI compilers in ${MPI_DIR}/bin")
+#     SET(CMAKE_USER_CXX_COMPILER_PATH ${MPI_DIR}/bin ${MPI_DIR})
+#     SET(CMAKE_GENERATOR_CC ${CC} mpicc mpixlc_r mpixlc hcc mpxlc_r mpxlc sxmpicc mpifcc mpgcc mpcc cmpicc)
+#     SET(CMAKE_GENERATOR_CXX ${CXX} mpicxx mpic++ mpiCC sxmpic++ hcp mpxlC_r mpxlC mpixlcxx_r mpixlcxx mpg++ mpc++ mpCC cmpic++ mpiFCC)
+#     SET(CMAKE_GENERATOR_FC ${FC} ${F90} mpif95 mpxlf95_r mpxlf95 ftn mpif90 mpxlf90_r mpxlf90 mpf90 cmpif90c sxmpif90)
+#   else ( MPI_DIR )
+#     message ("Checking for non-MPI native compilers")
+#     SET(CMAKE_GENERATOR_CC ${CC} gcc icc pgcc cc)
+#     SET(CMAKE_GENERATOR_CXX ${CXX} CCicpc pgCC pathCC sxc++ xlC_r xlC bgxlC_r bgxlC openCC sunCC crayCC icpc g++ c++ gpp aCC CC cxx cc++ cl.exe FCC KCC RCC)
+#     SET(CMAKE_GENERATOR_FC ${FC} ${F90} pathf95 ifort gfortran g95 f95 fort ifc efc openf95 sunf95 crayftn lf95 ftn xlf90 f90 pgf90 pghpf pathf90 epcf90 sxf90 openf90 sunf90)
+#   endif ( MPI_DIR )
+#   SET(CMAKE_Fortran_COMPILER_INIT ${CMAKE_GENERATOR_FC})
+#   SET(CMAKE_CXX_FLAGS_INIT "-fPIC -DPIC")
+#   SET(CMAKE_CXX_FLAGS_DEBUG_INIT "-O0 -g")
+#   SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT "-O2 -g")
+#   SET(CMAKE_CXX_FLAGS_RELEASE_INIT "-O2 -DNDEBUG")
+#   SET(CMAKE_C_FLAGS_INIT "-fPIC -DPIC")
+#   SET(CMAKE_C_FLAGS_DEBUG_INIT "-O0 -g")
+#   SET(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT "-O2 -g")
+#   SET(CMAKE_C_FLAGS_RELEASE_INIT "-O2 -DNDEBUG")
+#   SET(CMAKE_Fortran_FLAGS_INIT "-fPIC")
+#   SET(CMAKE_Fortran_FLAGS_DEBUG_INIT "-O0 -g")
+#   SET(CMAKE_Fortran_FLAGS_RELWITHDEBINFO_INIT "-O2 -g")
+#   SET(CMAKE_Fortran_FLAGS_RELEASE_INIT "-O2")
+#   SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_INIT "")
+#   SET(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS_INIT "")
+# endif()
 
 project( MOAB )
 
 #Add our Cmake directory to the module search path
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/config ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${MOAB_SOURCE_DIR}/config ${CMAKE_MODULE_PATH})
+
 ################################################################################
 # Set up version info
 ################################################################################
@@ -122,7 +123,7 @@ option ( ENABLE_NETCDF     "Include NetCDF support (ExodusII) interfaces in the 
 option ( ENABLE_PNETCDF    "Include parallel NetCDF support (ExodusII) interfaces in the build?" OFF )
 option ( ENABLE_ZOLTAN     "Include Zoltan support for partitioning algorithms?" OFF )
 option ( ENABLE_VTK        "Include VTK I/O interfaces in the build?" OFF )
-option ( ENABLE_TESTING "Enable Testing"                                  ON  )
+option ( ENABLE_TESTING "Enable Testing"                                  OFF  )
 option ( MOAB_FORCE_64_BIT_HANDLES "Force MBEntityHandle to be 64 bits (uint64_t)" OFF )
 option ( MOAB_FORCE_32_BIT_HANDLES "Force MBEntityHandle to be 32 bits (uint32_t)" OFF )
 
@@ -238,7 +239,7 @@ if ( ENABLE_NETCDF )
   set (MOAB_HAVE_NETCDF 1)
   include_directories( ${NETCDF_INCLUDES} )
   set( MOAB_LIBS ${MOAB_LIBS} ${NETCDF_LIBRARIES} )
-  # 
+  #
   if ( PNETCDF_FOUND )
     # find_package( PNetCDF REQUIRED )
     # set( MOAB_DEFINES "-DNETCDF_FILE ${MOAB_DEFINES}" )
@@ -278,10 +279,10 @@ add_subdirectory( tools )
 # Testing Related Settings
 ################################################################################
 #turn on ctest if we want testing
-if ( ENABLE_TESTING )
-  enable_testing()
-  add_subdirectory( test )
-endif()
+# if ( ENABLE_TESTING )
+#   enable_testing()
+#   add_subdirectory( test )
+# endif()
 
 ###############################################################################
 #
@@ -319,10 +320,10 @@ ENDIF (CMAKE_BUILD_TYPE MATCHES "Debug")
 
 # CMake does not define uninstall target. Look at install manifest and remove
 # all the files recursively.
-CONFIGURE_FILE(
-    "${CMAKE_CURRENT_SOURCE_DIR}/config/cmake_uninstall.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-    IMMEDIATE @ONLY)
+# CONFIGURE_FILE(
+#     "${CMAKE_CURRENT_SOURCE_DIR}/config/cmake_uninstall.cmake.in"
+#     "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+#     IMMEDIATE @ONLY)
 
 # Generate the CMake input header file and then pass it through configuration
 #execute_process( COMMAND cat MOABConfig.h.in COMMAND sed -e "s/#undef /#cmakedefine MOAB_/g"
@@ -331,15 +332,15 @@ CONFIGURE_FILE(
 #  OUTPUT_STRIP_TRAILING_WHITESPACE
 #  )
 CONFIGURE_FILE(config/MOABConfig.cmake.h.in "${PROJECT_BINARY_DIR}/src/moab/MOABConfig.h" @ONLY)
-#INSTALL( FILES "${PROJECT_BINARY_DIR}/src/moab/MOABConfig.h" DESTINATION include ) 
+#INSTALL( FILES "${PROJECT_BINARY_DIR}/src/moab/MOABConfig.h" DESTINATION include )
 
 CONFIGURE_FILE(MOABConfig.new.cmake.in "${PROJECT_BINARY_DIR}/MOABConfig.cmake" @ONLY)
-CONFIGURE_FILE(moab.make.in "${PROJECT_BINARY_DIR}/lib/moab.make" @ONLY)
+# CONFIGURE_FILE(moab.make.in "${PROJECT_BINARY_DIR}/lib/moab.make" @ONLY)
 
-INSTALL( FILES "${PROJECT_BINARY_DIR}/lib/moab.make" DESTINATION lib )
+# INSTALL( FILES "${PROJECT_BINARY_DIR}/lib/moab.make" DESTINATION lib )
 INSTALL( FILES "${PROJECT_BINARY_DIR}/MOABConfig.cmake" DESTINATION lib/cmake/MOAB )
 
-ADD_CUSTOM_TARGET(uninstall
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+# ADD_CUSTOM_TARGET(uninstall
+#     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 
 # All done.
