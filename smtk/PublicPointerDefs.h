@@ -64,6 +64,21 @@ namespace smtk
     class VoidItemDefinition;
   }
 
+  namespace mesh
+  {
+    class Manager;
+    class Collection;
+    class Interface;
+    class Allocator;
+    class ConnectivityStorage;
+
+    namespace moab
+    {
+      class Interface;
+    }
+  }
+
+
   namespace model
   {
     class Arrangement;
@@ -162,6 +177,21 @@ namespace smtk
   {
     typedef smtk::shared_ptr< smtk::common::Resource > ResourcePtr;
     typedef smtk::shared_ptr< smtk::common::View > ViewPtr;
+  }
+
+  namespace mesh
+  {
+    typedef smtk::shared_ptr< smtk::mesh::Manager >               ManagerPtr;
+    typedef smtk::shared_ptr< smtk::mesh::Collection >            CollectionPtr;
+    typedef smtk::shared_ptr< smtk::mesh::Interface >             InterfacePtr;
+    typedef smtk::shared_ptr< smtk::mesh::Allocator >             AllocatorPtr;
+    typedef smtk::shared_ptr< smtk::mesh::ConnectivityStorage >
+                                                        ConnectivityStoragePtr;
+
+    namespace moab
+    {
+      typedef smtk::shared_ptr< smtk::mesh::moab::Interface >     InterfacePtr;
+    }
   }
 
   //Shiboken requires that we use fully qualified namespaces for all

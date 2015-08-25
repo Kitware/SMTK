@@ -32,16 +32,20 @@ function(smtk_add_header_test name dir_prefix)
     set(cxxfiles ${cxxfiles} ${src})
   endforeach (header)
 
-  # message(STATUS "sysTools_BINARY_DIR='${sysTools_BINARY_DIR}'")
-  # include_directories(${sysTools_BINARY_DIR})
-
-  #include the build directory for the export header
-  include_directories(${CMAKE_CURRENT_BINARY_DIR})
   add_library(TestBuild_${name} ${cxxfiles} ${hfiles})
   # target_link_libraries(TestBuild_${name} sysTools)
   set_source_files_properties(${hfiles}
     PROPERTIES HEADER_FILE_ONLY TRUE
     )
+
+  #include the build directory for the export header
+  target_include_directories(TestBuild_${name}
+    PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+  #also link against moab so we build properly
+  target_link_libraries(TestBuild_${name}
+    PRIVATE MOAB)
+
+
 endfunction(smtk_add_header_test)
 
 # Declare a list of header files.  Will make sure the header files get
