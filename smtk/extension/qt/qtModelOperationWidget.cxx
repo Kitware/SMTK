@@ -97,10 +97,11 @@ void qtModelOperationWidget::initWidget( )
   this->Internals->OperateButton->setDefault(true);
 
   QHBoxLayout* operatorLayout = new QHBoxLayout();
-//  QLabel* opLabel = new QLabel("Operator:");
-//  opLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  operatorLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  this->Internals->OperationCombo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+  this->Internals->OperateButton->setMinimumHeight(32);
   this->Internals->OperateButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-//  operatorLayout->addWidget(opLabel);
+
   operatorLayout->addWidget(this->Internals->OperateButton);
   operatorLayout->addWidget(this->Internals->OperationCombo);
   this->Internals->WidgetLayout->addLayout(operatorLayout);
