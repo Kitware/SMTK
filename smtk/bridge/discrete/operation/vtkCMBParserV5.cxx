@@ -255,7 +255,7 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
         }
       }
 
-    if(EdgesOfModelFace && EdgesOfModelFace->GetNumberOfTuples() > 0)
+    if(EdgesOfModelFace && ArrayCounter < EdgesOfModelFace->GetNumberOfTuples())
       { // a model face in a 2D model
       // First get the number of loops
       int nLoops = EdgesOfModelFace->GetValue(ArrayCounter++);

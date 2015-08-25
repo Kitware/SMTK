@@ -41,13 +41,35 @@ CreateEdgesOperator::CreateEdgesOperator()
 
 bool CreateEdgesOperator::ableToOperate()
 {
-  smtk::model::Model model;
-  return
-    // The SMTK model must be valid
-    (model = this->specification()->findModelEntity("model")->value().as<smtk::model::Model>()).isValid() &&
-    // The CMB model must exist:
-    this->discreteSession()->findModelEntity(model.entity())
-    ;
+  smtk::model::Model model = this->specification()->findModelEntity(
+                            "model")->value().as<smtk::model::Model>();
+  if(!model.isValid())
+    {
+    return false;
+    }
+  vtkDiscreteModelWrapper* modelWrapper =
+    this->discreteSession()->findModelEntity(model.entity());
+  if(!modelWrapper)
+    {
+    return false;
+    }
+
+  bool operable = true;
+  // verify that faces in the model do not have edges already.
+  vtkModelItemIterator* iter = modelWrapper->GetModel()->NewIterator(vtkModelFaceType);
+  for(iter->Begin();!iter->IsAtEnd();iter->Next())
+    {
+    vtkModelFace* face =
+      vtkModelFace::SafeDownCast(iter->GetCurrentItem());
+    if(face && face->GetNumberOfModelEdges() > 0)
+      {
+      operable = false;
+      break;
+      }
+    }
+  iter->Delete();
+
+  return operable;
 }
 
 OperatorResult CreateEdgesOperator::operateInternal()

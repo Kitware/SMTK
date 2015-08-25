@@ -26,7 +26,6 @@
 
 class QDropEvent;
 class QMenu;
-class QDockWidget;
 
 namespace smtk {
  namespace attribute {
@@ -41,6 +40,7 @@ namespace smtk {
 
 class DescriptivePhrase;
 class qtModelOperationWidget;
+class qtOperatorDockWidget;
 
 class SMTKQTEXT_EXPORT qtModelView : public QTreeView
 {
@@ -87,6 +87,7 @@ public slots:
 signals:
   void entitiesSelected(const smtk::model::EntityRefs& selEntityRefs);
   void operationRequested(const smtk::model::OperatorPtr& brOp);
+  void operationCancelled(const smtk::model::OperatorPtr& brOp);
   void operationFinished(const smtk::model::OperatorResult&);
   void fileItemCreated(smtk::attribute::qtFileItem* fileItem);
   void modelEntityItemCreated(smtk::attribute::qtModelEntityItem* entItem);
@@ -105,6 +106,7 @@ protected slots:
                                const smtk::model::Group& grp,
                                const smtk::model::EntityRefs& entities);
   virtual void newIndexAdded(const QModelIndex & newidx);
+  virtual void onOperationPanelClosing();
 
 protected:
   // If 'Delete' button is pressed, invoke proper operation if possible.
@@ -156,7 +158,7 @@ protected:
   bool initOperator(smtk::model::OperatorPtr op);
   void initOperatorsDock(
     const std::string& opName, smtk::model::SessionPtr session);
-  QDockWidget* operatorsDock();
+  qtOperatorDockWidget* operatorsDock();
 
 /*
   void findIndexes(
@@ -173,7 +175,7 @@ protected:
   const QColor& newcolor, OperatorPtr brOp);
 
   QMenu* m_ContextMenu;
-  QDockWidget* m_OperatorsDock;
+  qtOperatorDockWidget* m_OperatorsDock;
   qtModelOperationWidget* m_OperatorsWidget;
 };
 
