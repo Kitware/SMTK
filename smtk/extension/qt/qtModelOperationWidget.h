@@ -62,8 +62,11 @@ namespace smtk
           const std::string& opName, const smtk::common::UUID& uuid);
       void entitiesSelected(const smtk::common::UUIDs&);
 
+    friend class qtModelView;
+
     protected slots:
       virtual void onOperationSelected();
+      virtual void cancelCurrentOperator();
       virtual void cancelOperator(const std::string& opName);
       virtual void onMeshSelectionItemCreated(smtk::attribute::qtMeshSelectionItem*);
       virtual bool checkExistingOperator(const std::string& opName);

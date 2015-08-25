@@ -59,6 +59,8 @@ qtModelPanel::qtModelPanel(QWidget* p)
 //-----------------------------------------------------------------------------
 qtModelPanel::~qtModelPanel()
 {
+  delete this->Internal->ModelView;
+  delete this->Internal;
 }
 
 //-----------------------------------------------------------------------------

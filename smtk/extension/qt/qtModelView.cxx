@@ -36,10 +36,10 @@
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
+#include "smtk/extension/qt/qtOperatorDockWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include <QPointer>
-#include <QDockWidget>
 #include <QDropEvent>
 #include <QDragEnterEvent>
 #include <QDragMoveEvent>
@@ -787,7 +787,7 @@ void qtModelView::operatorInvoked()
 }
 
 //----------------------------------------------------------------------------
-QDockWidget* qtModelView::operatorsDock()
+qtOperatorDockWidget* qtModelView::operatorsDock()
 {
   if(this->m_OperatorsDock && this->m_OperatorsWidget)
     {
@@ -822,7 +822,7 @@ QDockWidget* qtModelView::operatorsDock()
       }
     }
 
-  QDockWidget* dw = new QDockWidget(dockP);
+  qtOperatorDockWidget* dw = new qtOperatorDockWidget(dockP);
   QScrollArea* s = new QScrollArea(dw);
   s->setWidgetResizable(true);
   s->setFrameShape(QFrame::NoFrame);
@@ -831,9 +831,10 @@ QDockWidget* qtModelView::operatorsDock()
   opWidget->setSizePolicy(QSizePolicy::Preferred,
     QSizePolicy::Expanding);
   s->setWidget(opWidget);
-  dw->setObjectName("operatorsDockWidget");
   dw->setWidget(s);
-  dw->setFloating(true);
+
+  QObject::connect(dw, SIGNAL(closing()),
+    this, SLOT(onOperationPanelClosing()));
 
   this->m_OperatorsWidget = opWidget;
   this->m_OperatorsDock = dw;
@@ -1275,6 +1276,16 @@ std::string qtModelView::determineAction (const QPoint& evtpos) const
     return thedelegate->determineAction(evtpos, idx, opt);
     }
   return "";
+}
+
+//-----------------------------------------------------------------------------
+void qtModelView::onOperationPanelClosing()
+{
+  // If the operation panel is closing, cancel current operation
+  if(this->m_OperatorsWidget)
+    {
+    this->m_OperatorsWidget->cancelCurrentOperator();
+    }
 }
 
   } // namespace model

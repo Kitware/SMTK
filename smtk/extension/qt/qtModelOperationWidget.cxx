@@ -159,6 +159,12 @@ void qtModelOperationWidget::setSession(smtk::model::SessionPtr session)
 }
 
 //----------------------------------------------------------------------------
+void qtModelOperationWidget::cancelCurrentOperator()
+{
+  this->cancelOperator(this->Internals->CurrrentOpName);
+}
+
+//----------------------------------------------------------------------------
 void qtModelOperationWidget::cancelOperator(const std::string& opName)
 {
   if(this->Internals->OperatorMap.contains(opName))
