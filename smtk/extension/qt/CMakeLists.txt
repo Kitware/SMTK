@@ -35,6 +35,7 @@ set(QAttrLibSrcs
   qtMeshSelectionItem.cxx
   qtModelEntityItem.cxx
   qtModelOperationWidget.cxx
+  qtOperatorDockWidget.cxx
   )
 
 set(QAttrLibUIs
@@ -78,6 +79,7 @@ set(QAttrLibHeaders
   qtMeshSelectionItem.h
   qtModelEntityItem.h
   qtModelOperationWidget.h
+  qtOperatorDockWidget.h
 )
 
 #install the headers

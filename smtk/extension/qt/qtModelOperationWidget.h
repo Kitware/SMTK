@@ -45,15 +45,16 @@ namespace smtk
       virtual QSize sizeHint() const;
 
     public slots:
-      virtual bool setCurrentOperation(
+      virtual bool setCurrentOperator(
         const std::string& opName, smtk::model::SessionPtr session);
-      virtual bool setCurrentOperation(const smtk::model::OperatorPtr& brOp);
+      virtual bool initOperatorUI(const smtk::model::OperatorPtr& brOp);
       virtual void expungeEntities(
         const smtk::model::EntityRefs& expungedEnts);
       virtual void onOperate();
 
     signals:
       void operationRequested(const smtk::model::OperatorPtr& brOp);
+      void operationCancelled(const smtk::model::OperatorPtr& brOp);
       void fileItemCreated(smtk::attribute::qtFileItem* fileItem);
       void modelEntityItemCreated(smtk::attribute::qtModelEntityItem* entItem);
       void meshSelectionItemCreated(
@@ -61,9 +62,14 @@ namespace smtk
           const std::string& opName, const smtk::common::UUID& uuid);
       void entitiesSelected(const smtk::common::UUIDs&);
 
+    friend class qtModelView;
+
     protected slots:
       virtual void onOperationSelected();
+      virtual void cancelCurrentOperator();
+      virtual void cancelOperator(const std::string& opName);
       virtual void onMeshSelectionItemCreated(smtk::attribute::qtMeshSelectionItem*);
+      virtual bool checkExistingOperator(const std::string& opName);
 
     protected:
       virtual void initWidget( );
