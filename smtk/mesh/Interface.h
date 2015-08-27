@@ -15,6 +15,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
+#include "smtk/mesh/CellTraits.h"
 #include "smtk/mesh/CellTypes.h"
 #include "smtk/mesh/DimensionTypes.h"
 #include "smtk/mesh/Handle.h"
@@ -44,6 +45,21 @@ public:
                               int numVertsPerCell,
                               smtk::mesh::HandleRange& createdCellIds,
                               smtk::mesh::Handle*& connectivityArray) = 0;
+
+  template<int CellType>
+  bool allocateCells( std::size_t numCellsToAlloc,
+                      smtk::mesh::HandleRange& createdCellIds,
+                      smtk::mesh::Handle*& connectivityArray)
+  {
+  typedef typename smtk::mesh::CellEnumToType<CellType>::Traits Traits;
+  smtk::mesh::CellType cellType = static_cast<smtk::mesh::CellType>(CellType);
+
+  return this->allocateCells( cellType,
+                              numCellsToAlloc,
+                              Traits::NUM_VERTICES,
+                              createdCellIds,
+                              connectivityArray);
+  }
 
   virtual bool connectivityModified( const smtk::mesh::HandleRange& cellsToUpdate,
                                      int numVertsPerCell,
