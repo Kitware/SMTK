@@ -33,9 +33,10 @@ set(meshHeaders
   QueryTypes.h
   TypeSet.h
 
-  #The only exposed backend headers are Interface currently
+  #The only exposed backend headers are Interface,Allocator,and Range.
   moab/Interface.h
   moab/Allocator.h
+  moab/HandleRange.h
   )
 
 
