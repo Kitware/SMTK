@@ -27,6 +27,7 @@ set(ioHeaders
   OperatorLog.h
   ResourceSetReader.h
   ResourceSetWriter.h
+  WriteMesh.h
   #XmlDocV1Parser.h
   XmlDocV2Parser.h
   #XmlV1StringWriter.h
