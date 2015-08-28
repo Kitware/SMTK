@@ -123,7 +123,9 @@ qtBaseView *
 qtSimpleExpressionView::createViewWidget(smtk::common::ViewPtr dataObj,
                                   QWidget* p, qtUIManager* uiman)
 {
-  return new qtSimpleExpressionView(dataObj, p, uiman);
+  qtSimpleExpressionView *view = new qtSimpleExpressionView(dataObj, p, uiman);
+  view->buildUI();
+  return view;
 }
 
 //----------------------------------------------------------------------------
@@ -132,7 +134,6 @@ qtSimpleExpressionView(smtk::common::ViewPtr dataObj, QWidget* p, qtUIManager* u
   qtBaseView(dataObj, p, uiman)
 {
   this->Internals = new qtSimpleExpressionViewInternals;
-  this->createWidget();
 }
 
 //----------------------------------------------------------------------------
@@ -271,13 +272,6 @@ void qtSimpleExpressionView::createWidget()
   this->Internals->FuncList->setSelectionMode(QAbstractItemView::SingleSelection);
 
   this->Widget = frame;
-  QVBoxLayout* parentlayout = static_cast<QVBoxLayout*> (
-    this->parentWidget()->layout());
-  if(parentlayout)
-    {
-    parentlayout->setAlignment(Qt::AlignJustify);
-    parentlayout->addWidget(frame);
-    }
 
   this->initFunctionList();
 }
@@ -439,16 +433,16 @@ int qtSimpleExpressionView::getNumberOfComponents()
     {
     return -1;
     }
-  
+
   if(!this->Internals->m_attDefinition->numberOfItemDefinitions())
     {
     return -1;
     }
-  
+
   const GroupItemDefinition *itemDefinition =
     dynamic_cast<const GroupItemDefinition *>
     (this->Internals->m_attDefinition->itemDefinition(0).get());
-  
+
   if(!itemDefinition)
     {
     return -1;
@@ -580,7 +574,7 @@ void qtSimpleExpressionView::onCSVLoad()
     {
       return;  //This does not support expressions!
     }
-  
+
   QString fname = QFileDialog::getOpenFileName(this->Widget, tr("Open CSV File"),
                                                QString(),
                                                tr("CSV Files (*.csv);; All Files(*.*)"));
@@ -610,7 +604,7 @@ void qtSimpleExpressionView::onCSVLoad()
     // Clear the row of vals
     rowVals.clear();
     for (i = 0; i < numberOfComponents; i++)
-      {   
+      {
       // Is this a number - if not skip the row!
       bool ok;
       vals.at(i).toDouble(&ok);
@@ -851,7 +845,7 @@ void qtSimpleExpressionView::initFunctionList()
     {
     return;
     }
-  
+
   std::string defType;
   if (!view->details().child(0).attribute("Type", defType))
     {

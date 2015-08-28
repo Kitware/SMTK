@@ -11,7 +11,6 @@ set(QAttrLibSrcs
   qtEntityItemEditor.cxx
   qtEntityItemModel.cxx
   qtGroupView.cxx
-  qtRootView.cxx
   qtAttributeView.cxx
   qtInstancedView.cxx
   #qtModelView.cxx
@@ -55,7 +54,6 @@ set(QAttrLibHeaders
   qtEntityItemEditor.h
   qtEntityItemModel.h
   qtGroupView.h
-  qtRootView.h
   qtAttributeView.h
   qtInstancedView.h
   #qtModelView.h

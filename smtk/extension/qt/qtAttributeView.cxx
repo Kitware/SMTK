@@ -122,7 +122,9 @@ qtBaseView *
 qtAttributeView::createViewWidget(smtk::common::ViewPtr dataObj,
                                   QWidget* p, qtUIManager* uiman)
 {
-  return new qtAttributeView(dataObj, p, uiman);
+  qtAttributeView *view = new qtAttributeView(dataObj, p, uiman);
+  view->buildUI();
+  return view;
 }
 
 //----------------------------------------------------------------------------
@@ -131,7 +133,6 @@ qtAttributeView(smtk::common::ViewPtr dataObj, QWidget* p, qtUIManager* uiman) :
   qtBaseView(dataObj, p, uiman)
 {
   this->Internals = new qtAttributeViewInternals;
-  this->createWidget( );
 }
 
 //----------------------------------------------------------------------------
@@ -333,11 +334,6 @@ void qtAttributeView::createWidget( )
   this->Internals->ValuesTable->setVisible(0);
 
   this->Widget = frame;
-  if(this->parentWidget()->layout())
-    {
-    this->parentWidget()->layout()->addWidget(frame);
-    }
-
   this->getAllDefinitions();
 
   this->updateModelAssociation();
@@ -1299,7 +1295,7 @@ void qtAttributeView::getAllDefinitions()
     {
     this->Internals->m_okToCreateModelEntities = false;
     }
-  
+
   if (view->details().attribute("ModelEntityFilter", val))
     {
     smtk::model::BitFlags flags = smtk::model::Entity::specifierStringToFlag(val);
@@ -1323,7 +1319,7 @@ void qtAttributeView::getAllDefinitions()
       {
       continue;
       }
-    
+
     attDef = sys->findDefinition(defName);
     this->qtBaseView::getDefinitions(attDef, this->Internals->AllDefs);
     this->Internals->m_attDefinitions.push_back(attDef);

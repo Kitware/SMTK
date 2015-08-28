@@ -32,7 +32,7 @@ namespace smtk
     public:
       static qtBaseView *createViewWidget(smtk::common::ViewPtr view, QWidget* p,
                                           qtUIManager* uiman);
-      
+
       qtInstancedView(smtk::common::ViewPtr view , QWidget* p, qtUIManager* uiman);
       virtual ~qtInstancedView();
 

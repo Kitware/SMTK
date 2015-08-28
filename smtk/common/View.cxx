@@ -34,18 +34,28 @@ namespace smtk {
         {
         return false; // name doesn't exist
         }
-      
+
       std::transform(s.begin(), s.end(), s.begin(), ::tolower);
       if ((s == "true") || (s == "t"))
         {
         val = true;
         return true;
         }
-      
+
       if ((s == "false") || (s == "f"))
         {
         val = false;
         return true;
+        }
+      return false;
+    }
+//----------------------------------------------------------------------------
+    bool View::Component::attributeAsBool(const std::string &attname) const
+    {
+      bool v;
+      if (this->attributeAsBool(attname, v))
+        {
+        return v;
         }
       return false;
     }
@@ -60,7 +70,7 @@ namespace smtk {
           }
       return true;
     }
-     
+
 //----------------------------------------------------------------------------
     bool View::Component::contentsAsVector(std::vector<double> &vec) const
     {
@@ -126,7 +136,7 @@ namespace smtk {
         }
       return -1;
     }
-    
+
 //----------------------------------------------------------------------------
     View::View(const std::string &myType, const std::string &myTitle):
       m_title(myTitle), m_type(myType), m_details("Details")
