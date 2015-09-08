@@ -10,12 +10,12 @@ if (POLICY CMP0054)
   cmake_policy(SET CMP0054 OLD)
 endif()
 
-# Remove SMTKConfig.cmake at the beginning of each CMake run; each time
+project(SMTK)
+
+# Remove SMTKTargets.cmake at the beginning of each CMake run; each time
 # a library is declared below, the file is appended and we do not want
 # to keep appending over multiple runs.
-file(REMOVE SMTKConfig.cmake)
-
-project(SMTK)
+file(REMOVE ${PROJECT_BINARY_DIR}/SMTKTargets.cmake)
 
 ################################################################################
 # SMTK version number
@@ -397,6 +397,17 @@ install(
     lib/cmake/SMTK
 )
 
+# Install find modules for SMTK needs to find external packages:
+install(
+  FILES
+    ${PROJECT_SOURCE_DIR}/CMake/FindCGM.cmake
+    ${PROJECT_SOURCE_DIR}/CMake/FindMoab.cmake
+    ${PROJECT_SOURCE_DIR}/CMake/FindRemus.cmake
+    ${PROJECT_SOURCE_DIR}/CMake/FindZeroMQ.cmake
+  DESTINATION
+    lib/cmake/SMTK
+)
+
 ################################################################################
 # Build third party libraries
 ################################################################################
@@ -458,6 +469,32 @@ endif()
 install(
   EXPORT SMTK
   DESTINATION lib/cmake/SMTK
-  FILE SMTKConfig.cmake
+  FILE SMTKTargets.cmake
 )
+
 export(PACKAGE SMTK)
+
+# Setup the config file for exports that stores what other thirdparty
+# packages we need to search for ( MOAB, Remus, etc ) for when using the
+# build version of smtk
+set(SMTK_IN_BUILD_DIR "TRUE")
+set(SMTK_MODULE_DIR "${SMTK_SOURCE_DIR}/CMake")
+set(SMTK_CONFIG_DIR "${PROJECT_BINARY_DIR}")
+configure_file(
+  ${PROJECT_SOURCE_DIR}/CMake/SMTKConfig.cmake.in
+  ${PROJECT_BINARY_DIR}/SMTKConfig.cmake
+  @ONLY)
+
+# Setup the config file for exports that stores what other thirdparty
+# packages we need to search for ( MOAB, Remus, etc ) for when using the
+# install version of smtk
+set(SMTK_IN_BUILD_DIR "FALSE")
+set(SMTK_MODULE_DIR "\${CMAKE_CURRENT_LIST_DIR};\${CMAKE_CURRENT_LIST_DIR}/../MOAB")
+set(SMTK_CONFIG_DIR "\${CMAKE_CURRENT_LIST_DIR}")
+configure_file(
+  ${PROJECT_SOURCE_DIR}/CMake/SMTKConfig.cmake.in
+  ${PROJECT_BINARY_DIR}/CMakeFiles/SMTKConfig.cmake
+  @ONLY)
+
+install (FILES ${PROJECT_BINARY_DIR}/CMakeFiles/SMTKConfig.cmake
+         DESTINATION lib/cmake/SMTK)

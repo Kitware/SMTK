@@ -1,0 +1,26 @@
+
+#setup if we are being included from the build directory of SMTK
+set(SMTK_IN_BUILD_DIR @SMTK_IN_BUILD_DIR@)
+
+#Setup the CMake module paths
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "@SMTK_MODULE_DIR@")
+
+#First thing to find is MOAB. Even when moab is built-in we install the
+#MOAB package.
+set(SMTK_USE_SYSTEM_MOAB @SMTK_USE_SYSTEM_MOAB@)
+
+#Only dont find SMTK when in BUILD_DIR and not using system
+if(SMTK_IN_BUILD_DIR)
+  if(SMTK_USE_SYSTEM_MOAB)
+    find_package(MOAB REQUIRED)
+  endif()
+else()
+  find_package(MOAB REQUIRED)
+endif()
+
+set(SMTK_ENABLE_REMUS_SUPPORT @SMTK_ENABLE_REMUS_SUPPORT@)
+if(SMTK_ENABLE_REMUS_SUPPORT)
+  find_package(Remus REQUIRED)
+endif()
+
+include("@SMTK_CONFIG_DIR@/SMTKTargets.cmake")

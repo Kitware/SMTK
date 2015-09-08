@@ -41,8 +41,15 @@ if(MOAB_FOUND)
     #Because we have a built-in moab the config.cmake
     #will fail to include targets.cmake so we must do it
     #manually
-    include(${MOAB_ROOT_DIR}/lib/MOABConfig.cmake)
-    include(${MOAB_ROOT_DIR}/lib/MOABTargets.cmake)
+    if(SMTK_USE_SYSTEM_MOAB)
+        include(${MOAB_ROOT_DIR}/lib/MOABConfig.cmake)
+        include(${MOAB_ROOT_DIR}/lib/MOABTargets.cmake)
+    else()
+        #otherwise we are use the third-party bundled version
+        #and nothing else needs to be done
+        include(MOABConfig.cmake)
+        include(MOABTargets.cmake)
+    endif()
 
     set_target_properties(MOAB PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES "${MOAB_INCLUDE_DIR}"
