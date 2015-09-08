@@ -452,18 +452,7 @@ endif()
 add_subdirectory(smtk)
 
 ################################################################################
-# Build documentation
-# This also includes tutorials and other documentation that has its
-# source checked against SMTK libraries, so it must come after those
-# targets have been declared.
-################################################################################
-
-if (SMTK_ENABLE_DOCUMENTATION)
-  add_subdirectory(doc)
-endif()
-
-################################################################################
-# Install a package configuration file
+# Install a package targets file
 #
 # Setup the exports for the library when used from an installed location
 install(
@@ -474,9 +463,14 @@ install(
 
 export(PACKAGE SMTK)
 
+################################################################################
+# Create a build directory package configuration file
+#
 # Setup the config file for exports that stores what other thirdparty
 # packages we need to search for ( MOAB, Remus, etc ) for when using the
 # build version of smtk
+#
+# Required to happen before we include the docs directory
 set(SMTK_IN_BUILD_DIR "TRUE")
 set(SMTK_MODULE_DIR "${SMTK_SOURCE_DIR}/CMake")
 set(SMTK_CONFIG_DIR "${PROJECT_BINARY_DIR}")
@@ -485,6 +479,9 @@ configure_file(
   ${PROJECT_BINARY_DIR}/SMTKConfig.cmake
   @ONLY)
 
+################################################################################
+# Create an install package configuration file
+#
 # Setup the config file for exports that stores what other thirdparty
 # packages we need to search for ( MOAB, Remus, etc ) for when using the
 # install version of smtk
@@ -498,3 +495,14 @@ configure_file(
 
 install (FILES ${PROJECT_BINARY_DIR}/CMakeFiles/SMTKConfig.cmake
          DESTINATION lib/cmake/SMTK)
+
+################################################################################
+# Build documentation
+# This also includes tutorials and other documentation that has its
+# source checked against SMTK libraries, so it must come after those
+# targets have been declared.
+################################################################################
+
+if (SMTK_ENABLE_DOCUMENTATION)
+  add_subdirectory(doc)
+endif()
