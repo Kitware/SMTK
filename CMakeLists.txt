@@ -401,7 +401,7 @@ install(
 install(
   FILES
     ${PROJECT_SOURCE_DIR}/CMake/FindCGM.cmake
-    ${PROJECT_SOURCE_DIR}/CMake/FindMoab.cmake
+    ${PROJECT_SOURCE_DIR}/CMake/FindMOAB.cmake
     ${PROJECT_SOURCE_DIR}/CMake/FindRemus.cmake
     ${PROJECT_SOURCE_DIR}/CMake/FindZeroMQ.cmake
   DESTINATION
