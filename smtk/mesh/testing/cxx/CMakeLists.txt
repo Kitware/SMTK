@@ -25,9 +25,10 @@ set(unit_tests_which_require_data
   UnitTestCreateMesh.cxx
   UnitTestExtractTessellation.cxx
   UnitTestLoadMesh.cxx
+  UnitTestMeshSet.cxx
   UnitTestPointConnectivity.cxx
   UnitTestPointSet.cxx
-  UnitTestMeshSet.cxx
+  UnitTestReadWriteMeshJSON.cxx
   UnitTestRemoveMeshes.cxx
   UnitTestTypeSetFromData.cxx
   UnitTestWriteMesh.cxx
