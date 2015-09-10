@@ -51,6 +51,11 @@ public:
 
   static int ofLog(cJSON* logrecordarray, smtk::io::Logger& log);
 
+  //write all mesh collections that have associations to a model
+  static int ofMeshesOfModel(cJSON* collections,
+                             smtk::model::ManagerPtr modelMgr,
+                             smtk::mesh::ManagerPtr meshMgr);
+
   // Mid-level helpers:
   static std::string sessionNameFromTagData(cJSON* tagData);
   static smtk::model::StringList sessionFileTypesFromTagData(cJSON* tagData);
