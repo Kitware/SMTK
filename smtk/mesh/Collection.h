@@ -41,12 +41,14 @@ class SMTKCORE_EXPORT Collection : public smtk::enable_shared_from_this<Collecti
 
   //Construct a valid collection that is associated with a manager
   //but has an empty interface that can be populated
-  Collection( smtk::mesh::ManagerPtr mngr );
+  Collection(const smtk::common::UUID& collectionID,
+             smtk::mesh::ManagerPtr mngr );
 
   //Construct a valid collection that has an associated interface
   //in the future we need a better way to make collections refer
   //to different mesh interfaces
-  Collection( smtk::mesh::InterfacePtr interface,
+  Collection( const smtk::common::UUID& collectionID,
+              smtk::mesh::InterfacePtr interface,
               smtk::mesh::ManagerPtr mngr);
 
 public:
@@ -77,7 +79,7 @@ public:
   smtk::mesh::TypeSet   types() const;
   smtk::mesh::MeshSet   meshes( ); //all meshes
   smtk::mesh::CellSet   cells( ); //all cells
-  smtk::mesh::PointSet    points( ); //all points
+  smtk::mesh::PointSet  points( ); //all points
 
   //todo:
   //find all cells of a given dimension that are attached to ?

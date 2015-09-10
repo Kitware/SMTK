@@ -124,6 +124,18 @@ smtk::common::UUID Manager::nextEntityId()
 smtk::mesh::CollectionPtr Manager::makeCollection()
 {
   smtk::mesh::CollectionPtr collection( new smtk::mesh::Collection(
+                                                this->nextEntityId(),
+                                                this->shared_from_this() ) );
+
+  this->addCollection( collection );
+  return collection;
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::CollectionPtr Manager::makeCollection(const smtk::common::UUID& collectionID)
+{
+  smtk::mesh::CollectionPtr collection( new smtk::mesh::Collection(
+                                                collectionID,
                                                 this->shared_from_this() ) );
 
   this->addCollection( collection );
@@ -134,6 +146,20 @@ smtk::mesh::CollectionPtr Manager::makeCollection()
 smtk::mesh::CollectionPtr Manager::makeCollection(smtk::mesh::InterfacePtr interface)
 {
   smtk::mesh::CollectionPtr collection( new smtk::mesh::Collection(
+                                                this->nextEntityId(),
+                                                interface,
+                                                this->shared_from_this() ) );
+
+  this->addCollection( collection );
+  return collection;
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::CollectionPtr Manager::makeCollection(const smtk::common::UUID& collectionID,
+                                                  smtk::mesh::InterfacePtr interface)
+{
+  smtk::mesh::CollectionPtr collection( new smtk::mesh::Collection(
+                                                collectionID,
                                                 interface,
                                                 this->shared_from_this() ) );
 
