@@ -307,6 +307,13 @@ int TestEntityIOSpecs()
     { "vertex_use", smtk::model::VERTEX_USE },
     { "volume",     smtk::model::VOLUME },
     { "volume_use", smtk::model::VOLUME_USE },
+    // Test all the values of Entity.cxx's entityTypeNames array:
+    { "model|cell", smtk::model::MODEL_ENTITY | smtk::model::CELL_ENTITY },
+    { "use|shell",  smtk::model::SHELL_ENTITY | smtk::model::USE_ENTITY },
+    { "group|instance", smtk::model::GROUP_ENTITY | smtk::model::INSTANCE_ENTITY },
+    { "session|model", smtk::model::SESSION | smtk::model::MODEL_ENTITY },
+    { "instance|session", smtk::model::SESSION | smtk::model::INSTANCE_ENTITY },
+    { "model|shell",  smtk::model::MODEL_ENTITY | smtk::model::SHELL_ENTITY },
   };
   static int numTestToValValues = sizeof(testToValValues) / sizeof(testToValValues[0]);
   std::cout << "\nTesting Entity::specifierStringToFlag()\n\n";
@@ -362,6 +369,7 @@ int TestEntityIOSpecs()
     { "none|4",                smtk::model::DIMENSION_4 },
     { "none|014",              smtk::model::DIMENSION_0 | smtk::model::DIMENSION_1 | smtk::model::DIMENSION_4 },
     { "cell|open|0",           smtk::model::VERTEX | smtk::model::OPEN },
+    { "cell|model|nodim",      smtk::model::MODEL_ENTITY | smtk::model::CELL_ENTITY }, // > 1 entity type (e.g., membership mask)
   };
   static int numTestToSpecValues = sizeof(testToSpecValues) / sizeof(testToSpecValues[0]);
   std::cout << "\nTesting Entity::flagToSpecifierString()\n\n";
