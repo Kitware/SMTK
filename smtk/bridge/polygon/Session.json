@@ -1,0 +1,12 @@
+{
+  "kernel": "polygon",
+  "engines": [
+    {
+      "name": "native",
+      "filetypes": [
+        ".poly (Triangle polygon file)",
+        ".smesh (Surface mesh)"
+      ]
+    }
+  ]
+}
