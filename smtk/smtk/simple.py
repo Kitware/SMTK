@@ -83,9 +83,13 @@ def SetVectorValue(item,v):
   if the values in v cannot be converted to the proper
   type.
   """
-  item.setNumberOfValues(len(v))
-  for i in range(len(v)):
-    item.setValue(i,v[i])
+  try:
+    item.setNumberOfValues(len(v))
+    for i in range(len(v)):
+      item.setValue(i,v[i])
+  except: # Maybe v is a scalar
+    item.setNumberOfValues(1)
+    item.setValue(0, v)
 
 def GetVectorValue(item):
   """Given an smtk.attribute.Item, return a list containing its values."""
@@ -97,6 +101,50 @@ def PrintResultLog(res, always = False):
   if always or res.findInt('outcome').value(0) != smtk.model.OPERATION_SUCCEEDED:
     slog = res.findString('log')
     print '\n'.join([slog.value(i) for i in range(slog.numberOfValues())])
+
+def CreateModel(**args):
+  """Create an empty geometric model.
+  """
+  sess = GetActiveSession()
+  cm = sess.op('create model')
+  if cm is None:
+    return
+  xAxis = args['x_axis'] if 'x_axis' in args else None
+  yAxis = args['y_axis'] if 'y_axis' in args else None
+  normal = args['normal'] if 'normal' in args else (args['z_axis'] if 'z_axis' in args else None)
+  origin = args['origin'] if 'origin' in args else None
+  modelScale = args['model_scale'] if 'model_scale' in args else None
+  featureSize = args['feature_size'] if 'feature_size' in args else None
+  if modelScale is not None and featureSize is not None:
+    print 'Specify either model_scale or feature_size but not both'
+    return
+  method = -1
+  if modelScale is not None:
+    if normal is not None:
+      print 'When specifying model_scale, you must specify x and y axes. Normal is ignored.'
+    method = 2
+  if featureSize is not None:
+    if normal is not None:
+      method = 1
+    else:
+      method = 0
+  cm.findAsInt('construction method').setDiscreteIndex(method)
+  if origin is not None:
+    SetVectorValue(cm.findAsDouble('origin'), origin)
+  if xAxis is not None:
+    SetVectorValue(cm.findAsDouble('x axis'), xAxis)
+  if yAxis is not None:
+    SetVectorValue(cm.findAsDouble('y axis'), yAxis)
+  if normal is not None:
+    SetVectorValue(cm.findAsDouble('z axis'), normal)
+  if modelScale is not None:
+    SetVectorValue(cm.findAsInt('model scale'), modelScale)
+  if featureSize is not None:
+    SetVectorValue(cm.findAsDouble('feature size'), featureSize)
+  res = cm.operate()
+  PrintResultLog(res)
+  mod = res.findModelEntity('created').value(0)
+  return mod
 
 def CreateSphere(**args):
   """Create a sphere.

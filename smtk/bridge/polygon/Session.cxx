@@ -9,6 +9,8 @@
 //=========================================================================
 #include "smtk/bridge/polygon/Session.h"
 
+#include "smtk/AutoInit.h"
+
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/SessionRef.h"
 #include "smtk/model/Model.h"
@@ -57,6 +59,17 @@ smtk::model::SessionInfoBits Session::allSupportedInformation() const
   return smtk::model::SESSION_EVERYTHING;
 }
 
+smtk::model::SessionInfoBits Session::transcribeInternal(
+  const smtk::model::EntityRef& entity,
+  smtk::model::SessionInfoBits requestedInfo,
+  int depth)
+{
+  (void)entity;
+  (void)requestedInfo;
+  (void)depth;
+  return smtk::model::SESSION_EVERYTHING;
+}
+
     } // namespace polygon
   } //namespace bridge
 } // namespace smtk
@@ -66,7 +79,8 @@ smtkImplementsModelingKernel(
   SMTKPOLYGONSESSION_EXPORT,
   polygon,
   Session_json,
-  SessionHasNoStaticSetup,
+  smtk::model::SessionHasNoStaticSetup,
   smtk::bridge::polygon::Session,
   true /* inherit "universal" operators */
 );
+smtkComponentInitMacro(smtk_polygon_create_model_operator);

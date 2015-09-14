@@ -124,6 +124,16 @@ try:
     _temp = _tempmain
 
   try:
+    _tempdis = __import__('smtkPolygonSessionPython', globals(), locals(), [], -1)
+    _temp = _tempdis
+    __import_shared_ptrs__()
+    btuple.append(('polygon', _tempdis.polygon))
+  except:
+    failed += ['polygon']
+  finally:
+    _temp = _tempmain
+
+  try:
     _tempremote = __import__('smtkRemoteSessionPython', globals(), locals(), [], -1)
     _temp = _tempremote
     __import_shared_ptrs__()

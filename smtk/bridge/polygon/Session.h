@@ -48,7 +48,7 @@ public:
 protected:
   Session();
 
-  virtual SessionInfoBits transcribeInternal(
+  virtual smtk::model::SessionInfoBits transcribeInternal(
     const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1);
 
 private:

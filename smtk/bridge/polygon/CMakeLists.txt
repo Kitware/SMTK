@@ -1,11 +1,13 @@
 set(polygonSrcs
   Session.cxx
+  Operator.cxx
   internal/Model.cxx
   operators/CreateModel.cxx
 )
 
 set(polygonHeaders
   Session.h
+  Operator.h
   internal/Model.h
   operators/CreateModel.h
 )
@@ -63,4 +65,8 @@ endif()
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(plugin)
+endif()
+
+if (SMTK_ENABLE_TESTING)
+  add_subdirectory(testing)
 endif()
