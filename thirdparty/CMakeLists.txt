@@ -1,6 +1,12 @@
 add_subdirectory(cJSON)
 if (NOT SMTK_USE_SYSTEM_MOAB)
+  set(save_CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+  set(save_CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  set(save_CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}")
   add_subdirectory(moab)
+  set(CMAKE_C_FLAGS "${save_CMAKE_C_FLAGS}" CACHE STRING "" FORCE)
+  set(CMAKE_CXX_FLAGS "${save_CMAKE_CXX_FLAGS}" CACHE STRING "" FORCE)
+  set(CMAKE_Fortran_FLAGS "${save_CMAKE_Fortran_FLAGS}" CACHE STRING "" FORCE)
 endif()
 # Only use the local sparsehash when the system version is not requested.
 if (NOT SMTK_USE_SYSTEM_SPARSEHASH)
