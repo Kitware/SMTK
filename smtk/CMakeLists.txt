@@ -152,6 +152,9 @@ if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
           -c "import site; print(site.getsitepackages())[-1]"
         RESULT_VARIABLE SMTK_PYTHON_MODULEDIR
       )
+    elseif(WIN32)
+      set(SMTK_PYTHON_MODULEDIR
+        "bin/Lib/site-packages")
     else()
       # NB. LIBEXECDIR is used because SMTK is a "non-pure" package (it depends
       # on compiled code rather than being implemented purely as python).
