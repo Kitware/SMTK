@@ -23,7 +23,7 @@ namespace smtk
   namespace attribute
   {
     class System;
-  };
+  }
 
   namespace io
   {
