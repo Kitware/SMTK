@@ -156,11 +156,8 @@ if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
       set(SMTK_PYTHON_MODULEDIR
         "bin/Lib/site-packages")
     else()
-      # NB. LIBEXECDIR is used because SMTK is a "non-pure" package (it depends
-      # on compiled code rather than being implemented purely as python).
-      # See https://docs.python.org/2/install/index.html for more.
       set(SMTK_PYTHON_MODULEDIR
-        "${CMAKE_INSTALL_LIBEXECDIR}/python/site-packages")
+        "${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION}/site-packages")
     endif()
   endif()
 
