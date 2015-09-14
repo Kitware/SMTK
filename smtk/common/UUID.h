@@ -17,6 +17,7 @@
 #ifndef _MSC_VER
 #  pragma GCC diagnostic push
 #  pragma GCC diagnostic ignored"-Wshadow"
+#  pragma GCC diagnostic ignored"-Wdeprecated-register"
 #endif
 #ifndef SHIBOKEN_SKIP
 #include <boost/uuid/uuid.hpp>
