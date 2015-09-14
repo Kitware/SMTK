@@ -97,6 +97,7 @@ install(
 
 if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
   sbk_wrap_library(smtkCore
+    PACKAGE smtk
     GENERATOR_ARGS --avoid-protected-hack
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     LOCAL_INCLUDE_DIRECTORIES

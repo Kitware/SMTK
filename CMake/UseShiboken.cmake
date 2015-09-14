@@ -85,6 +85,7 @@ function(sbk_wrap_library NAME)
     EXTRA_INCLUDES
     LOCAL_INCLUDE_DIRECTORIES
     GENERATOR_ARGS
+    PACKAGE
   )
   cmake_parse_arguments(""
     ""
@@ -95,6 +96,12 @@ function(sbk_wrap_library NAME)
 
   if(NOT _WORKING_DIRECTORY)
     set(_WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  endif()
+
+  if(NOT _PACKAGE)
+    set(package "")
+  else()
+    set(package "/${_PACKAGE}")
   endif()
 
   # Get base include directories
@@ -307,7 +314,7 @@ function(sbk_wrap_library NAME)
     set(python_install_dir ${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION}/site-packages)
   endif ()
 
-  INSTALL(TARGETS ${_pyname} RUNTIME DESTINATION ${python_install_dir} LIBRARY DESTINATION ${python_install_dir} ARCHIVE DESTINATION lib)
+  INSTALL(TARGETS ${_pyname} RUNTIME DESTINATION ${python_install_dir}${package} LIBRARY DESTINATION ${python_install_dir}${package} ARCHIVE DESTINATION lib)
 
   foreach(_dep ${_DEPENDS})
     add_dependencies(${_pyname} ${_dep}Python)
