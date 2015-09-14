@@ -13,7 +13,7 @@
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
-#ifndef _MSC_VER
+#if defined(__GNUC__) || defined(__clang__)
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wtautological-compare"
 #endif
