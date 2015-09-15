@@ -107,7 +107,7 @@ set( MOAB_INSTALL_TARGETS )
 ################################################################################
 # Options that the user controls
 ################################################################################
-option ( BUILD_SHARED_LIBS   "Should shared or static libraries be created?"   ON  )
+#option ( BUILD_SHARED_LIBS   "Should shared or static libraries be created?"   ON  )
 option ( ENABLE_SZIP       "Should build with szip support?"                 OFF )
 option ( ENABLE_CGM        "Should build with CGM support?"                  OFF )
 option ( ENABLE_CGNS       "Should build with CGNS support?"                 OFF )
