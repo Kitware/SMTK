@@ -400,9 +400,7 @@ install(
 # Install find modules for SMTK needs to find external packages:
 install(
   FILES
-    ${PROJECT_SOURCE_DIR}/CMake/FindCGM.cmake
-    ${PROJECT_SOURCE_DIR}/CMake/FindMOAB.cmake
-    ${PROJECT_SOURCE_DIR}/CMake/FindRemus.cmake
+    ${PROJECT_SOURCE_DIR}/CMake/FindCGM.cmake    ${PROJECT_SOURCE_DIR}/CMake/FindRemus.cmake
     ${PROJECT_SOURCE_DIR}/CMake/FindZeroMQ.cmake
   DESTINATION
     lib/cmake/SMTK
@@ -455,6 +453,7 @@ add_subdirectory(smtk)
 # Install a package targets file
 #
 # Setup the exports for the library when used from an installed location
+message(STATUS "MOAB_INSTALL_TARGETS: ${MOAB_INSTALL_TARGETS}")
 install(
   EXPORT SMTK
   DESTINATION lib/cmake/SMTK
@@ -471,7 +470,6 @@ export(PACKAGE SMTK)
 # build version of smtk
 #
 # Required to happen before we include the docs directory
-set(SMTK_IN_BUILD_DIR "TRUE")
 set(SMTK_MODULE_DIR "${SMTK_SOURCE_DIR}/CMake")
 set(SMTK_CONFIG_DIR "${PROJECT_BINARY_DIR}")
 configure_file(
@@ -485,8 +483,7 @@ configure_file(
 # Setup the config file for exports that stores what other thirdparty
 # packages we need to search for ( MOAB, Remus, etc ) for when using the
 # install version of smtk
-set(SMTK_IN_BUILD_DIR "FALSE")
-set(SMTK_MODULE_DIR "\${CMAKE_CURRENT_LIST_DIR};\${CMAKE_CURRENT_LIST_DIR}/../MOAB")
+set(SMTK_MODULE_DIR "\${CMAKE_CURRENT_LIST_DIR}")
 set(SMTK_CONFIG_DIR "\${CMAKE_CURRENT_LIST_DIR}")
 configure_file(
   ${PROJECT_SOURCE_DIR}/CMake/SMTKConfig.cmake.in

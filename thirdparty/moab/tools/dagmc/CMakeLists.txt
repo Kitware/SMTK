@@ -9,7 +9,7 @@ add_library( dagmc DagMC.hpp DagMC.cpp )
 include(GenerateExportHeader)
 generate_export_header(dagmc)
 target_link_libraries( dagmc  MOAB)
-install(TARGETS dagmc EXPORT MOABTargets
+install(TARGETS dagmc EXPORT SMTK
                       RUNTIME DESTINATION bin
                       LIBRARY DESTINATION lib
                       ARCHIVE DESTINATION lib )
@@ -18,8 +18,8 @@ install( FILES DagMC.hpp ${CMAKE_CURRENT_BINARY_DIR}/dagmc_export.h DESTINATION 
 
 
 
-add_executable( dagmc_preproc dagmc_preproc.cpp 
-                              obb_analysis.cpp 
+add_executable( dagmc_preproc dagmc_preproc.cpp
+                              obb_analysis.cpp
                               dagmc_preproc.hpp )
 target_link_libraries( dagmc_preproc MOAB dagmc )
 set( MOAB_HAVE_DAGMC 1 )

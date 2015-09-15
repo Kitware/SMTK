@@ -1,25 +1,14 @@
-
-#setup if we are being included from the build directory of SMTK
-set(SMTK_IN_BUILD_DIR @SMTK_IN_BUILD_DIR@)
-
 #Setup the CMake module paths
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "@SMTK_MODULE_DIR@")
-
-#First thing to find is MOAB. Even when moab is built-in we install the
-#MOAB package.
-set(SMTK_USE_SYSTEM_MOAB @SMTK_USE_SYSTEM_MOAB@)
 
 #When building documentation internally we re-import ourselves, which
 #doesnt work and generates CMake warnings. So we will only look for SMTK
 #if the smtkCore target doesn't already exist
 if(TARGET smtkCore)
 else()
-  #Only dont find SMTK when in BUILD_DIR and not using system
-  if(SMTK_IN_BUILD_DIR)
-    if(SMTK_USE_SYSTEM_MOAB)
-      find_package(MOAB REQUIRED)
-    endif()
-  else()
+
+  set(SMTK_USE_SYSTEM_MOAB @SMTK_USE_SYSTEM_MOAB@)
+  if(SMTK_USE_SYSTEM_MOAB)
     find_package(MOAB REQUIRED)
   endif()
 
