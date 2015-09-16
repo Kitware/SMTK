@@ -22,8 +22,11 @@ model::model()
     this->m_xAxis[i] = 0.; // Vector whose length should be equal to one "unit" (e.g., m_scale integers long)
     this->m_yAxis[i] = 0.; // In-plane vector orthogonal to m_xAxis with the same length.
     this->m_zAxis[i] = 0.; // Normal vector orthogonal to m_xAxis and m_yAxis with the same length.
+    this->m_iAxis[i] = 0.; // Vector whose length should be equal to one "unit" (e.g., 1 integer delta long)
+    this->m_jAxis[i] = 0.; // In-plane vector orthogonal to m_iAxis with the same length.
     }
   this->m_xAxis[0] = this->m_yAxis[1] = this->m_zAxis[2] = 1.;
+  this->m_iAxis[0] = this->m_jAxis[1] = 1.;
 }
 
 model::~model()
@@ -76,18 +79,20 @@ bool model::computeModelScaleAndNormal(
       << " z (" << zl2 << ") axes.");
     return false;
     }
-  xl2 = sqrt(xl2) * featureSize;
-  yl2 = sqrt(yl2) * featureSize;
-  zl2 = sqrt(zl2) * featureSize;
-  // Make the axes one feature-size in length:
+  xl2 = sqrt(xl2);
+  yl2 = sqrt(yl2);
+  zl2 = sqrt(zl2);
+  // Scale each feature size to be 231000 integer quanta.
+  this->m_scale = 231000 / featureSize;
+  // Make the world (x,y) axes unit length and the (i,j) axes one quantum in length:
   for (int i = 0; i < 3; ++i)
     {
     this->m_xAxis[i] /= xl2;
     this->m_yAxis[i] /= yl2;
     this->m_zAxis[i] /= zl2;
+    this->m_iAxis[i] = this->m_xAxis[i] / this->m_scale;
+    this->m_jAxis[i] = this->m_yAxis[i] / this->m_scale;
     }
-  // Scale each feature size to be 231000 integer quanta.
-  this->m_scale = 231000;
   return true;
 }
 
@@ -137,18 +142,20 @@ bool model::computeModelScaleAndYAxis(
       << " z (" << zl2 << ") axes.");
     return false;
     }
-  xl2 = sqrt(xl2) * featureSize;
-  yl2 = sqrt(yl2) * featureSize;
-  zl2 = sqrt(zl2) * featureSize;
+  xl2 = sqrt(xl2);
+  yl2 = sqrt(yl2);
+  zl2 = sqrt(zl2);
   // Make the axes one feature-size in length:
+  this->m_scale = 231000 / featureSize;
+  // Make the world (x,y) axes unit length and the (i,j) axes one quantum in length:
   for (int i = 0; i < 3; ++i)
     {
     this->m_xAxis[i] /= xl2;
     this->m_yAxis[i] /= yl2;
     this->m_zAxis[i] /= zl2;
+    this->m_iAxis[i] = this->m_xAxis[i] / this->m_scale;
+    this->m_jAxis[i] = this->m_yAxis[i] / this->m_scale;
     }
-  // Scale each feature size to be 231000 integer quanta.
-  this->m_scale = 231000;
   return true;
 }
 
@@ -193,14 +200,16 @@ bool model::computeFeatureSizeAndNormal(
   xl2 = sqrt(xl2);
   yl2 = sqrt(yl2);
   zl2 = sqrt(zl2);
+  this->m_scale = modelScale;
+  this->m_featureSize = 1.0;
   for (int i = 0; i < 3; ++i)
     {
     this->m_xAxis[i] /= xl2;
     this->m_yAxis[i] /= yl2;
     this->m_zAxis[i] /= zl2;
+    this->m_iAxis[i] = this->m_xAxis[i] / this->m_scale;
+    this->m_jAxis[i] = this->m_yAxis[i] / this->m_scale;
     }
-  this->m_scale = modelScale;
-  this->m_featureSize = 1.0;
   return true;
 }
 
@@ -275,8 +284,8 @@ void model::liftPoint(const Point& ix, T coordBegin)
     {
     *coord =
       this->m_origin[i] +
-      ix.x() * this->m_xAxis[i] / this->m_scale +
-      ix.y() * this->m_yAxis[i] / this->m_scale;
+      ix.x() * this->m_iAxis[i] +
+      ix.y() * this->m_jAxis[i];
     }
 }
 

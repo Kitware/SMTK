@@ -77,10 +77,16 @@ protected:
   Id m_id;
   long long m_scale; // Recommend this be a large composite number w/ factors 2, 3, 5 (e.g., 15360, 231000, or 1182720)
   double m_featureSize;
+
   double m_origin[3]; // Base point of plane for model
-  double m_xAxis[3]; // Vector whose length should be equal to one "unit" (e.g., m_scale integers long)
-  double m_yAxis[3]; // In-plane vector orthogonal to m_xAxis with the same length.
+
+  double m_xAxis[3]; // Unit length vector in world space (m_scale model-integers long)
+  double m_yAxis[3]; // In-plane vector orthogonal to m_xAxis (also with unit length).
   double m_zAxis[3]; // Normal vector orthogonal to m_xAxis and m_yAxis with the same length.
+
+  double m_iAxis[3]; // Vector whose length should be equal to one integer "unit" (e.g., 1 integer long)
+  double m_jAxis[3]; // In-plane vector orthogonal to m_xAxis with the same length.
+
   PointToVertexId m_vertices;
   //pointsToEdgeIdT m_edges;
 };

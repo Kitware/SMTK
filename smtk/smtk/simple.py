@@ -458,7 +458,6 @@ def CreateVertices(pt, model, **kwargs):
     ptflat = list(itertools.chain(*ptflat))
   else:
     ptflat = list(itertools.chain(*pt))
-  print 'ptflat ', ptflat
   SetVectorValue(x, ptflat)
   res = crv.operate()
   PrintResultLog(res)
