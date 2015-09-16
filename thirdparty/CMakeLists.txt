@@ -4,7 +4,15 @@ if (NOT SMTK_USE_SYSTEM_MOAB)
   set(save_CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
   set(save_CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
   set(save_CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS}")
+
   add_subdirectory(moab)
+
+  # On Mac OS X, we specify the install name dir for MOAB so that
+  # it can be found when being linked to from external projects
+  if (BUILD_SHARED_LIBS)
+    set_target_properties(MOAB
+      PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+  endif()
 
   set(CMAKE_C_FLAGS "${save_CMAKE_C_FLAGS}" CACHE STRING "" FORCE)
   set(CMAKE_CXX_FLAGS "${save_CMAKE_CXX_FLAGS}" CACHE STRING "" FORCE)
