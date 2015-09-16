@@ -2,6 +2,8 @@
 
 #include "smtk/model/Session.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/Model.h"
+#include "smtk/model/Vertex.h"
 #include "smtk/io/Logger.h"
 
 using namespace smtk::model;
@@ -12,7 +14,7 @@ namespace smtk {
       namespace internal {
 
 model::model()
-  : m_parent(NULL), m_featureSize(1e-8)
+  : m_featureSize(1e-8)
 {
   for (int i = 0; i < 3; ++i)
     {
@@ -26,7 +28,6 @@ model::model()
 
 model::~model()
 {
-  this->m_parent = NULL; // better to crash sooner than later.
 }
 
 bool model::computeModelScaleAndNormal(
@@ -201,6 +202,82 @@ bool model::computeFeatureSizeAndNormal(
   this->m_scale = modelScale;
   this->m_featureSize = 1.0;
   return true;
+}
+
+smtk::model::Vertices model::findOrAddModelVertices(
+  smtk::model::ManagerPtr mgr,
+  const std::vector<double>& points,
+  int numCoordsPerPt)
+{
+  smtk::model::Vertices vertices;
+  std::vector<double>::const_iterator it = points.begin();
+  long long i = 0;
+  for (i = 0; it != points.end(); it += numCoordsPerPt, i += numCoordsPerPt)
+    {
+    Point projected = this->projectPoint(it, it + numCoordsPerPt);
+    PointToVertexId::const_iterator pit = this->m_vertices.find(projected);
+    if (pit != this->m_vertices.end())
+      {
+      vertices.push_back(smtk::model::Vertex(mgr, pit->second));
+      }
+    else
+      {
+      // Add a model vertex to the manager
+      smtk::model::Vertex v = mgr->addVertex();
+      vertices.push_back(v);
+      // Add a coordinate-map lookup to local storage:
+      this->m_vertices[projected] = v.entity();
+      // Figure out the floating-point approximation for our discretized coordinate
+      // and add it to the tessellation for the new model vertex:
+      double snappedPt[3];
+      this->liftPoint(projected, snappedPt);
+      smtk::model::Tessellation tess;
+      tess.addPoint(snappedPt);
+      v.setTessellation(&tess);
+      // TODO: Add the vertex to the model as a free cell?
+      }
+    }
+  return vertices;
+}
+
+template<typename T>
+Point model::projectPoint(T coordBegin, T coordEnd)
+{
+  double xyz[3] = {0, 0, 0};
+  int i = 0;
+  // Translate to origin
+  for (T c = coordBegin; c != coordEnd && i < 3; ++i, ++c)
+    {
+    xyz[i] = *c - this->m_origin[i];
+    }
+  // Assume any unspecified coordinates are 0 and finish translating to origin
+  for (; i < 3; ++i)
+    {
+    xyz[i] = - this->m_origin[i];
+    }
+  // Project translated point to x and y axes
+  double px = 0, py = 0;
+  for (i = 0; i < 3; ++i)
+    {
+    px += xyz[i] * this->m_xAxis[i];
+    py += xyz[i] * this->m_yAxis[i];
+    }
+  // Scale point and round to integer
+  Point result(px * this->m_scale, py * this->m_scale);
+  return result;
+}
+
+template<typename T>
+void model::liftPoint(const Point& ix, T coordBegin)
+{
+  T coord = coordBegin;
+  for (int i = 0; i < 3; ++i, ++coord)
+    {
+    *coord =
+      this->m_origin[i] +
+      ix.x() * this->m_xAxis[i] / this->m_scale +
+      ix.y() * this->m_yAxis[i] / this->m_scale;
+    }
 }
 
       } // namespace internal

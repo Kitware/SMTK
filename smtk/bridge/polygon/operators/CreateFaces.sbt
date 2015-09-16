@@ -94,7 +94,7 @@
             </Structure>
             <!-- Option 1: edges and offsets -->
             <Structure>
-              <Value Enum="edge ids">0</Value>
+              <Value Enum="edge ids">1</Value>
               <Items>
                 <Item>edges</Item>
                 <Item>offsets</Item>
@@ -102,7 +102,7 @@
             </Structure>
             <!-- Option 2: all possible faces -->
             <Structure>
-              <Value Enum="all non-overlapping faces">0</Value>
+              <Value Enum="all non-overlapping faces">2</Value>
               <Items/>
             </Structure>
           </DiscreteInfo>

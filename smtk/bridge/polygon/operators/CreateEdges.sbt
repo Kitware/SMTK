@@ -6,7 +6,7 @@
     <AttDef Type="create edges" BaseType="operator">
       <BriefDescription>Create model edges.</BriefDescription>
       <DetailedDescription>
-        Create one or more edges in the given model.
+        Create one or more edges in the associated model.
 
         Self-intersecting edges are not allowed.
         If any edge self-intersects, then new vertices are created intersection points

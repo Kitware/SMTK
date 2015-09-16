@@ -4,6 +4,20 @@
   <Definitions>
     <!-- Operator -->
     <AttDef Type="create vertices" BaseType="operator">
+      <BriefDescription>Create model vertices.</BriefDescription>
+      <DetailedDescription>
+        Create one or more vertices in the associated model.
+      </DetailedDescription>
+      <AssociationsDef Name="model" NumberOfRequiredValues="1">
+        <MembershipMask>model</MembershipMask>
+        <BriefDescription>The model to which edges should be added.</BriefDescription>
+        <DetailedDescription>
+          The model to which vertices should be added.
+
+          This is required in order to project point coordinates into
+          the model plane.
+        </DetailedDescription>
+      </AssociationsDef>
       <ItemDefinitions>
         <Double Name="points" NumberOfRequiredValues="2" Extensible="yes">
           <BriefDescription>The (x,y,z) coordinates of the vertices.</BriefDescription>

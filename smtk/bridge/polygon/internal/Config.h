@@ -14,25 +14,28 @@
 namespace smtk {
   namespace bridge {
     namespace polygon {
+      namespace internal {
 
-      class Entity;
-      class Vertex;
-      class Edge;
-      class Face;
+        class entity;
+        class vertex;
+        class edge;
+        class face;
+        class model;
 
-      typedef smtk::shared_ptr<Entity> EntityPtr;
-      typedef smtk::shared_ptr<Vertex> VertexPtr;
-      typedef smtk::shared_ptr<Edge> EdgePtr;
-      typedef smtk::shared_ptr<Face> FacePtr;
+        typedef smtk::shared_ptr<entity> EntityPtr;
+        typedef smtk::shared_ptr<vertex> VertexPtr;
+        typedef smtk::shared_ptr<edge> EdgePtr;
+        typedef smtk::shared_ptr<face> FacePtr;
 
-      typedef long long Coord;
-      typedef smtk::common::UUID Id;
-      typedef std::pair<Coord,Coord> Point;
-      typedef std::map<Point,Id> PointToVertexId;
-      typedef std::map<Id,EntityPtr> EntityIdToPtr;
-      typedef std::list<Point> PointSeq;
-      typedef std::map<Point,VertexPtr> VertexById;
+        typedef long long Coord;
+        typedef smtk::common::UUID Id;
+        typedef boost::polygon::point_data<Coord> Point;
+        typedef std::map<Point,Id> PointToVertexId;
+        typedef std::map<Id,EntityPtr> EntityIdToPtr;
+        typedef std::list<Point> PointSeq;
+        typedef std::map<Point,VertexPtr> VertexById;
 
+      } // namespace internal
     } // namespace polygon
   } // namespace bridge
 } // namespace smtk

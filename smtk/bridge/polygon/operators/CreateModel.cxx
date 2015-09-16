@@ -78,6 +78,7 @@ smtk::model::OperatorResult CreateModel::operateInternal()
       mgr = sess->manager();
       smtk::model::Model model = mgr->addModel(/* par. dim. */ 2, /* emb. dim. */ 3, "model");
       storage->setId(model.entity());
+      sess->addStorage(model.entity(), storage);
       result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
       this->addEntityToResult(result, model, CREATED);
       model.setFloatProperty("x axis", smtk::model::FloatList(storage->xAxis(), storage->xAxis() + 3));

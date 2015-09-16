@@ -125,6 +125,7 @@ public: \
     const std::string& opName, const char* opDescrXML, \
     smtk::model::OperatorConstructor opCtor) \
   { \
+    std::cerr << "Register " << opName << " w/ " << #Cls << "\n"; \
     bool result = Cls ::registerStaticOperator(opName, opDescrXML, opCtor); \
     if (opDescrXML) \
       this->importOperatorXML(opDescrXML); \

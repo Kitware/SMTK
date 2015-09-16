@@ -430,6 +430,41 @@ def CreateVertex(pt, **kwargs):
   PrintResultLog(res)
   return res.findModelEntity('created').value(0)
 
+def CreateVertices(pt, model, **kwargs):
+  """Create one or more vertices given point coordinates.
+  Point coordinates should be specified as a list of 3-tuples.
+  The vertices are inserted into the given model
+  """
+  import itertools
+  sref = GetActiveSession()
+  # Not all sessions define "create vertices"
+  # Fall back to "create vertex" if needed:
+  crv = sref.op('create vertices')
+  if not crv:
+    return [CreateVertex(pt[i]) for i in range(len(pt))]
+  # OK, we have create vertices.
+  # Determine the maximum number of coordinates per point
+  numCoordsPerPoint = max([len(pt[i]) for i in range(len(pt))])
+  tmp = min([len(pt[i]) for i in range(len(pt))])
+  x = crv.findAsDouble('points')
+  c = crv.findAsInt('coordinates')
+  crv.associateEntity(model)
+  if c:
+    c.setValue(0, numCoordsPerPoint)
+  if tmp != numCoordsPerPoint:
+    ptflat = []
+    for p in pt:
+      ptflat.append(p + [0,]*(numCoordsPerPoint - len(p)))
+    ptflat = list(itertools.chain(*ptflat))
+  else:
+    ptflat = list(itertools.chain(*pt))
+  print 'ptflat ', ptflat
+  SetVectorValue(x, ptflat)
+  res = crv.operate()
+  PrintResultLog(res)
+  created = res.findModelEntity('created')
+  return [created.value(i) for i in range(created.numberOfValues())]
+
 def CreateEdge(verts, curve_type = CurveType.LINE, **kwargs):
   """Create an edge from a pair of vertices.
   """

@@ -33,6 +33,8 @@
 #include "smtk/Options.h"
 #include "smtk/AutoInit.h"
 
+#include "smtk/bridge/polygon/internal/Model.h"
+
 #include <string.h> // for strcmp
 
 using smtk::model::EntityRef;
@@ -68,6 +70,13 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
   (void)requestedInfo;
   (void)depth;
   return smtk::model::SESSION_EVERYTHING;
+}
+
+void Session::addStorage(
+  const smtk::common::UUID& uid,
+  smtk::bridge::polygon::internal::entity::Ptr s)
+{
+  this->m_storage[uid] = s;
 }
 
     } // namespace polygon

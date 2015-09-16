@@ -12,6 +12,8 @@
 
 #include "smtk/bridge/polygon/Exports.h"
 #include "smtk/bridge/polygon/PointerDefs.h"
+#include "smtk/bridge/polygon/internal/Entity.h"
+
 #include "smtk/model/Session.h"
 
 namespace smtk {
@@ -46,10 +48,42 @@ public:
   virtual SessionInfoBits allSupportedInformation() const;
 
 protected:
+  friend class Operator;
+  friend class CreateModel;
+  friend class CreateVertices;
+
   Session();
 
   virtual smtk::model::SessionInfoBits transcribeInternal(
     const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1);
+
+  void addStorage(const smtk::common::UUID& uid, smtk::bridge::polygon::internal::entity::Ptr storage);
+
+  template<typename T>
+  typename T::Ptr findStorage(const smtk::common::UUID& uid)
+    {
+    internal::EntityIdToPtr::iterator it = this->m_storage.find(uid);
+    if (it != this->m_storage.end())
+      return smtk::dynamic_pointer_cast<T>(it->second);
+    static typename T::Ptr blank;
+    return blank;
+    }
+
+  template<typename T>
+  T findOrAddStorage(const smtk::common::UUID& uid)
+    {
+    internal::EntityIdToPtr::iterator it = this->m_storage.find(uid);
+    if (it != this->m_storage.end())
+      return smtk::dynamic_pointer_cast<T>(it->second);
+
+    T blank = T::create();
+    it = this->m_storage.insert(
+      internal::EntityIdToPtr::value_type(
+        uid,smtk::dynamic_pointer_cast<internal::entity>(blank))).first;
+    return smtk::dynamic_pointer_cast<T>(it->second);
+    }
+
+  internal::EntityIdToPtr m_storage;
 
 private:
   Session(const Session&); // Not implemented.

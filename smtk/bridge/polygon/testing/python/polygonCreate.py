@@ -37,6 +37,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
     print '\n'
 
     opnames = sess.operatorNames()
+    print opnames
 
   def checkModel(self, mod, origin, x_axis, y_axis, normal, feature_size, model_scale):
 
@@ -62,6 +63,14 @@ class TestPolygonCreation(smtk.testing.TestCase):
 
     mod = CreateModel(x_axis=[1,0,0], normal=[0,0,1], model_scale=1182720)
     self.checkModel(mod, [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], 1, 1182720)
+
+    # NB: 2.0000005 is chosen below since it is within 1/1182720 of 2.0 and thus
+    #     should result in two identical points.
+    vlist = CreateVertices([[1,1], [2,1], [2,2,0], [1,2], [2.0000005, 2, 0]], mod)
+    #print smtk.io.ExportJSON.fromModelManager(self.mgr, smtk.io.JSON_DEFAULT)
+    print [x.name() for x in vlist]
+    self.assertEqual(len(vlist), 5, 'Expected 5 model vertices reported')
+    self.assertEqual(vlist[2], vlist[4], 'Expected vertices with nearly-identical coordinates to be equivalent')
 
 if __name__ == '__main__':
   smtk.testing.process_arguments()

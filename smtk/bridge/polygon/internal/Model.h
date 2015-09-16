@@ -1,7 +1,8 @@
 #ifndef __smtk_bridge_polygon_internal_model_h
 #define __smtk_bridge_polygon_internal_model_h
 
-#include "smtk/bridge/polygon/internal/Config.h"
+#include "smtk/bridge/polygon/internal/Entity.h"
+#include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
 namespace smtk {
@@ -10,13 +11,12 @@ namespace smtk {
     namespace polygon {
       namespace internal {
 
-class session;
-
-class model : smtkEnableSharedPtr(model)
+class model : public entity
 {
 public:
   smtkTypeMacro(model);
   smtkCreateMacro(model);
+  smtkSharedFromThisMacro(entity);
   model();
   ~model();
 
@@ -41,6 +41,11 @@ public:
     long long modelScale,
     smtk::io::Logger& log);
 
+  smtk::model::Vertices findOrAddModelVertices(
+    smtk::model::ManagerPtr mgr,
+    const std::vector<double>& points,
+    int numCoordsPerPt);
+
   template<typename T>
   std::set<Id> createModelEdgesFromPoints(T begin, T end);
 
@@ -62,10 +67,13 @@ public:
   Id id() const { return this->m_id; }
   void setId(const Id& id) { this->m_id = id; }
 
-protected:
-  friend class session;
+  template<typename T>
+  Point projectPoint(T coordBegin, T coordEnd);
 
-  session* m_parent;
+  template<typename T>
+  void liftPoint(const Point& ix, T coordBegin);
+
+protected:
   Id m_id;
   long long m_scale; // Recommend this be a large composite number w/ factors 2, 3, 5 (e.g., 15360, 231000, or 1182720)
   double m_featureSize;
@@ -73,7 +81,7 @@ protected:
   double m_xAxis[3]; // Vector whose length should be equal to one "unit" (e.g., m_scale integers long)
   double m_yAxis[3]; // In-plane vector orthogonal to m_xAxis with the same length.
   double m_zAxis[3]; // Normal vector orthogonal to m_xAxis and m_yAxis with the same length.
-  //PointToVertexId m_vertices;
+  PointToVertexId m_vertices;
   //pointsToEdgeIdT m_edges;
 };
 
