@@ -88,7 +88,7 @@ target_include_directories(iMesh PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>"
   "$<INSTALL_INTERFACE:include>")
 
-install(TARGETS iMesh EXPORT MOABTargets
+install(TARGETS iMesh EXPORT SMTK
                       RUNTIME DESTINATION bin
                       LIBRARY DESTINATION lib
                       ARCHIVE DESTINATION lib )

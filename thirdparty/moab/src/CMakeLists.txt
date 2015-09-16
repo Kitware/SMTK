@@ -241,7 +241,7 @@ target_include_directories(MOAB PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>"
   "$<INSTALL_INTERFACE:include>")
 
-install(TARGETS MOAB EXPORT MOABTargets
+install(TARGETS MOAB EXPORT SMTK
                      RUNTIME DESTINATION bin
                      LIBRARY DESTINATION lib
                      ARCHIVE DESTINATION lib )

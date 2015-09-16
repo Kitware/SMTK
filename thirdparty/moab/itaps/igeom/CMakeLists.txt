@@ -20,7 +20,7 @@ add_library( FBiGeomMOAB
 target_link_libraries( FBiGeomMOAB MOAB iMesh )
 
 moab_install_headers(${FBiGEOM_INCLUDE_HEADERS})
-install(TARGETS FBiGeomMOAB EXPORT MOABTargets
+install(TARGETS FBiGeomMOAB EXPORT SMTK
                             RUNTIME DESTINATION bin
                             LIBRARY DESTINATION lib
                             ARCHIVE DESTINATION lib )

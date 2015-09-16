@@ -287,9 +287,11 @@ add_subdirectory( tools )
 ###############################################################################
 #
 ###############################################################################
-export(TARGETS ${MOAB_INSTALL_TARGETS}
-              FILE "${PROJECT_BINARY_DIR}/MOABTargets.cmake")
-install(EXPORT MOABTargets DESTINATION lib/cmake/MOAB)
+# Not needed to install/export as the targets are now part of the SMTK
+# export set.
+# export(TARGETS ${MOAB_INSTALL_TARGETS}
+#               FILE "$SMTK_BINARY_DIR}/SMTKTargets.cmake")
+# install(EXPORT SMTK DESTINATION lib/cmake/MOAB)
 
 # Create some custom command
 
@@ -337,8 +339,9 @@ CONFIGURE_FILE(config/MOABConfig.cmake.h.in "${PROJECT_BINARY_DIR}/src/moab/MOAB
 CONFIGURE_FILE(MOABConfig.new.cmake.in "${PROJECT_BINARY_DIR}/MOABConfig.cmake" @ONLY)
 # CONFIGURE_FILE(moab.make.in "${PROJECT_BINARY_DIR}/lib/moab.make" @ONLY)
 
+# Not needed to install as we bundle this as part of SMTK
 # INSTALL( FILES "${PROJECT_BINARY_DIR}/lib/moab.make" DESTINATION lib )
-INSTALL( FILES "${PROJECT_BINARY_DIR}/MOABConfig.cmake" DESTINATION lib/cmake/MOAB )
+# INSTALL( FILES "${PROJECT_BINARY_DIR}/MOABConfig.cmake" DESTINATION lib/cmake/MOAB )
 
 # ADD_CUSTOM_TARGET(uninstall
 #     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
