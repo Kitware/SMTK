@@ -9,6 +9,7 @@ else()
 
   set(SMTK_USE_SYSTEM_MOAB @SMTK_USE_SYSTEM_MOAB@)
   if(SMTK_USE_SYSTEM_MOAB)
+    set(MOAB_ROOT_DIR "@MOAB_ROOT_DIR@")
     find_package(MOAB REQUIRED)
   endif()
 
