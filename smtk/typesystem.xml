@@ -1498,6 +1498,15 @@
       <value-type name="Vertex" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/Vertex.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+        <add-function
+          signature="coordinates()" static="no"
+          return-type="std::vector&lt; double &gt;">
+          <inject-code>
+            const double* x = %CPPSELF->coordinates();
+            std::vector&lt; double &gt; result(x, x + 3);
+            return %CONVERTTOPYTHON[ std::vector&lt; double &gt; ](result);
+          </inject-code>
+        </add-function>
       </value-type>
 
       <value-type name="VertexUse" hash-function="smtk::model::entityrefHash">
