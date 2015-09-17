@@ -335,6 +335,21 @@ smtk::mesh::MeshSet MeshSet::subset( const smtk::mesh::Neumann& n ) const
 }
 
 //----------------------------------------------------------------------------
+smtk::mesh::MeshSet MeshSet::subset( std::size_t ith ) const
+{
+  smtk::mesh::HandleRange singlHandleRange;
+  if(!this->m_range.empty() && ith < this->m_range.size())
+    {
+    smtk::mesh::HandleRange::const_iterator cit = this->m_range.begin();
+    cit += ith;
+
+    singlHandleRange.insert(*cit);
+    }
+  smtk::mesh::MeshSet singleMesh(this->m_parent,this->m_handle,singlHandleRange);
+  return singleMesh;
+}
+
+//----------------------------------------------------------------------------
 smtk::mesh::MeshSet MeshSet::extractShell() const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
