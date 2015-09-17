@@ -100,6 +100,9 @@ public:
   smtk::mesh::MeshSet   subset( const smtk::mesh::Dirichlet& d ) const;
   smtk::mesh::MeshSet   subset( const smtk::mesh::Neumann& n ) const;
 
+  //subset this MeshSet given an index into moab entity sets (m_range)
+  smtk::mesh::MeshSet   subset( std::size_t ith ) const;
+
   //Extract the shell ( exterior face elements ) of this set of meshes
   //This operation might create new cells if no shell already exists
   //for the given meshset. The resulting meshset will be added to the
