@@ -748,11 +748,37 @@ bool Interface::computeShell(const smtk::mesh::HandleRange& meshes,
     hasCells = !cells.empty();
     }
 
+  if(hasCells == false)
+    {
+    return false;
+    }
+
+  int skinDim = dimension - 1;
+
+  //We need to first create the adjacencies from the requested dimension to the
+  //dimension of the skin. The first step is create all the adjacencies from
+  //the desired dimension to the skin dimension
+  smtk::mesh::HandleRange allAdj;
+  this->moabInterface()->get_adjacencies(cells, skinDim, true, allAdj);
+
   ::moab::Skinner skinner(this->moabInterface());
   ::moab::ErrorCode rval= skinner.find_skin(this->getRoot(),
                                             cells,
-                                            false, //return cells not verts
+                                            skinDim,
                                             shell);
+
+
+  if(rval != ::moab::MB_SUCCESS)
+    { //if the skin extraction failed remove all cells we created
+    this->moabInterface()->delete_entities(allAdj);
+    }
+  else
+    { //remove any cell created by computing the adjacencies that isn't part
+      //of the skin. This is done to keep the memory utilization low
+    smtk::mesh::HandleRange unusedCells = ::moab::intersect(allAdj,shell);
+    this->moabInterface()->delete_entities(unusedCells);
+    }
+
   return (rval == ::moab::MB_SUCCESS);
  }
 
