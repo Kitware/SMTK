@@ -2357,7 +2357,7 @@ void XmlDocV1Parser::processViews(xml_node &root)
     {
     return;
     }
-  smtk::common::ViewPtr rootView = this->createView(views, "Root");
+  smtk::common::ViewPtr rootView = this->createView(views, "Group");
   rootView->details().setAttribute("TopLevel", "true");
   
   if (!rootView)

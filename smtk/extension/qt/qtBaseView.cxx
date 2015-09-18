@@ -292,9 +292,10 @@ void qtBaseView::makeTopLevel()
 
   this->Internals->clearWidgets();
   const System* attSys = this->uiManager()->attSystem();
-
-  // Do we need to provide advance level filtering?
-  if (view->details().attributeAsBool("FilterByAdvanceLevel"))
+  
+  bool flag;
+  // Do we need to provide advance level filtering? - this is on by default
+  if ((!view->details().attributeAsBool("FilterByAdvanceLevel", flag)) || flag)
     {
     this->Internals->AdvLevelCombo = new QComboBox(this->parentWidget());
     this->uiManager()->initAdvanceLevels(this->Internals->AdvLevelCombo);
@@ -318,8 +319,8 @@ void qtBaseView::makeTopLevel()
     this->Internals->AdvLevelEditButton = editButton;
     }
 
-  // Do we need to provide category filtering
-  if (view->details().attributeAsBool("FilterByCategory"))
+  // Do we need to provide category filtering - this is on by default
+  if ((!view->details().attributeAsBool("FilterByCategory", flag)) || flag)
     {
     this->Internals->FilterByCheck = new QCheckBox(this->parentWidget());
     this->Internals->FilterByCheck->setText("Show by Category: ");
