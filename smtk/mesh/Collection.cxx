@@ -78,17 +78,19 @@ Collection::Collection():
 }
 
 //----------------------------------------------------------------------------
-Collection::Collection( smtk::mesh::ManagerPtr mngr ):
-  m_entity( mngr->nextEntityId() ),
+Collection::Collection(const smtk::common::UUID& collectionID,
+                       smtk::mesh::ManagerPtr mngr ):
+  m_entity( collectionID ),
   m_name(),
   m_internals( new InternalImpl(mngr) )
 {
 }
 
 //----------------------------------------------------------------------------
-Collection::Collection( smtk::mesh::InterfacePtr interface,
+Collection::Collection( const smtk::common::UUID& collectionID,
+                        smtk::mesh::InterfacePtr interface,
                         smtk::mesh::ManagerPtr mngr):
-  m_entity( mngr->nextEntityId() ),
+  m_entity( collectionID ),
   m_name(),
   m_internals( new InternalImpl(mngr, interface) )
 {

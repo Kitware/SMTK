@@ -32,8 +32,25 @@ public:
   smtkCreateMacro(Manager);
   virtual ~Manager();
 
+  //Construct a collection. Manager will generate the UUID, and choose
+  //the Interface the collection should have
   smtk::mesh::CollectionPtr makeCollection();
+
+  //Construct a collection using a provided UUID, and all the Manager to choose
+  //the Interface the collection should have
+  //Note: Caller must verify the UUID is valid, and not already in use by
+  //this manager
+  smtk::mesh::CollectionPtr makeCollection(const smtk::common::UUID& collectionID);
+
+  //Construct a collection. Manager will generate the UUID, and use
+  //the Interface provided by the caller
   smtk::mesh::CollectionPtr makeCollection(smtk::mesh::InterfacePtr interface);
+
+  //Construct a collection using the users provided UUID and Interface.
+  //Note: Caller must verify the UUID is valid, and not already in use by
+  //this manager
+  smtk::mesh::CollectionPtr makeCollection(const smtk::common::UUID& collectionID,
+                                           smtk::mesh::InterfacePtr interface);
 
   std::size_t numberOfCollections() const;
   bool hasCollection( const smtk::mesh::CollectionPtr& collection ) const;

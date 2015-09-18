@@ -333,7 +333,7 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& 
   //We create a new mesh each for the Edge(s), Face(s) and Volume(s).
   //the MODEL_ENTITY will be associated with the meshset that contains all
   // meshes.
-   CoordinateOffsetMap coordinateLocationMapping;
+  CoordinateOffsetMap coordinateLocationMapping;
   for( int entAsInt =0; entAsInt != 4; ++entAsInt)
     {
     //extract all the coordinates from every tessellation and make a single

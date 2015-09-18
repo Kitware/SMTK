@@ -21,7 +21,7 @@ smtk::mesh::CollectionPtr ImportMesh::entireFile(const std::string& filePath,
 }
 
 smtk::mesh::CollectionPtr ImportMesh::onlyDomain(const std::string& filePath,
-                                                   const smtk::mesh::ManagerPtr& manager)
+                                                 const smtk::mesh::ManagerPtr& manager)
 {
  return smtk::mesh::moab::read_domain(filePath, manager);
 }
@@ -49,7 +49,7 @@ bool ImportMesh::entireFileToCollection(const std::string& filePath,
 
 //Merge the domain sets from a moab data file into an existing valid collection.
 bool ImportMesh::addDomainToCollection(const std::string& filePath,
-                                         const smtk::mesh::CollectionPtr& collection)
+                                       const smtk::mesh::CollectionPtr& collection)
 {
   return smtk::mesh::moab::import_domain(filePath, collection);
 }
