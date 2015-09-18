@@ -78,6 +78,11 @@ class TestPolygonCreation(smtk.testing.TestCase):
     self.assertEqual(vlist[2], vlist[4],
         'Expected vertices with nearly-identical coordinates to be equivalent')
 
+    edgeTestVerts = [[0,0], [1,1], [0,1], [1,0],   [3,0], [3,3], [4,3], [2,0], [3,0]]
+    edgeTestOffsets = [0, 4];
+    elist = CreateEdge(edgeTestVerts, offsets=edgeTestOffsets, model=mod)
+    print elist
+
   def testCreation(self):
     mod = CreateModel()
     self.checkModel(mod, [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], 1e-8, 231000)

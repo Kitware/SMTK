@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the polygon "CreateEdges" operator -->
+<!-- Description of the polygon "CreateEdge" operator -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="create edges" BaseType="operator">
-      <BriefDescription>Create model edges.</BriefDescription>
+    <AttDef Type="create edge" BaseType="operator">
+      <BriefDescription>Create model edge(s).</BriefDescription>
       <DetailedDescription>
         Create one or more edges in the associated model.
 
@@ -19,14 +19,15 @@
         pre-existing edges in the model).
         Any intersections between different edges are handled when faces are created.
       </DetailedDescription>
-      <AssociationsDef Name="model" NumberOfRequiredValues="1">
-        <MembershipMask>model</MembershipMask>
-        <BriefDescription>The model to which edges should be added.</BriefDescription>
+      <AssociationsDef Name="model" NumberOfRequiredValues="1" Extensible="yes">
+        <MembershipMask>model|cell</MembershipMask>
+        <BriefDescription>Vertices to join into an edge or the model to which edges should be added.</BriefDescription>
         <DetailedDescription>
-          The model to which edges should be added.
+          You must either (a) associate 2 or more model vertices to this
+          operator or (b) associate a model into which edges should be
+          inserted and specify points to connect into edges.
 
-          This is required in order to project point coordinates into
-          the model plane properly and perform intersection tests.
+          You must not specify both a model and a list of vertices.
         </DetailedDescription>
       </AssociationsDef>
       <ItemDefinitions>
@@ -53,13 +54,6 @@
                 <Max Inclusive="true">3</Max>
               </RangeInfo>
             </Int>
-            <ModelEntity Name="vertices" NumberOfRequiredValues="2" Extensible="true">
-              <BriefDescription>The vertices defining the paths of model edges.</BriefDescription>
-              <DetailedDescription>
-                By default, all vertices create a single edge.
-                However, if offsets are specified, then multiple edges will be created.
-              </DetailedDescription>
-            </ModelEntity>
             <Int Name="offsets" NumberOfRequiredValues="1" Extensible="true">
               <DefaultValue>0</DefaultValue>
               <BriefDescription>Offsets into the list of points or vertices where each edge starts.</BriefDescription>
@@ -86,7 +80,7 @@
             <Structure>
               <Value Enum="vertex ids">0</Value>
               <Items>
-                <Item>vertices</Item>
+                <!-- vertices are associated with the operator in this case -->
                 <Item>offsets</Item>
               </Items>
             </Structure>
@@ -95,7 +89,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
-    <AttDef Type="result(create edges)" BaseType="result">
+    <AttDef Type="result(create edge)" BaseType="result">
       <ItemDefinitions>
         <!-- The edges created are reported in the base result's "created" item. -->
       </ItemDefinitions>

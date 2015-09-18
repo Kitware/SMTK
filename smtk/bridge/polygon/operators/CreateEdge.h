@@ -1,5 +1,5 @@
-#ifndef __smtk_session_polygon_CreateEdges_h
-#define __smtk_session_polygon_CreateEdges_h
+#ifndef __smtk_session_polygon_CreateEdge_h
+#define __smtk_session_polygon_CreateEdge_h
 
 #include "smtk/bridge/polygon/Operator.h"
 
@@ -11,11 +11,11 @@ namespace smtk {
   *
   * Self-intersecting edges are broken into multiple non-self-intersecting edges.
   */
-class SMTKPOLYGONSESSION_EXPORT CreateEdges : public Operator
+class SMTKPOLYGONSESSION_EXPORT CreateEdge : public Operator
 {
 public:
-  smtkTypeMacro(CreateEdges);
-  smtkCreateMacro(CreateEdges);
+  smtkTypeMacro(CreateEdge);
+  smtkCreateMacro(CreateEdge);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
@@ -27,4 +27,4 @@ protected:
   } //namespace bridge
 } // namespace smtk
 
-#endif // __smtk_session_polygon_CreateEdges_h
+#endif // __smtk_session_polygon_CreateEdge_h

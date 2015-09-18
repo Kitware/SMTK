@@ -30,6 +30,7 @@ namespace smtk {
         typedef long long Coord;
         typedef smtk::common::UUID Id;
         typedef boost::polygon::point_data<Coord> Point;
+        typedef boost::polygon::segment_data<Coord> Segment;
         typedef std::map<Point,Id> PointToVertexId;
         typedef std::map<Id,EntityPtr> EntityIdToPtr;
         typedef std::list<Point> PointSeq;

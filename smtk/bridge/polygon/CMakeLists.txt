@@ -4,7 +4,7 @@ set(polygonSrcs
   internal/Model.cxx
   operators/CreateModel.cxx
   operators/CreateVertices.cxx
-  operators/CreateEdges.cxx
+  operators/CreateEdge.cxx
   operators/CreateFaces.cxx
 )
 
@@ -14,14 +14,14 @@ set(polygonHeaders
   internal/Model.h
   operators/CreateModel.h
   operators/CreateVertices.h
-  operators/CreateEdges.h
+  operators/CreateEdge.h
   operators/CreateFaces.h
 )
 
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" polygonSessionJSON)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateModel.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateVertices.sbt" polygonOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdges.sbt" polygonOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdge.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateFaces.sbt" polygonOperatorXML)
 
 add_library(smtkPolygonSession ${polygonSrcs})

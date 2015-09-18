@@ -467,20 +467,60 @@ def CreateVertices(pt, model, **kwargs):
 def CreateEdge(verts, curve_type = CurveType.LINE, **kwargs):
   """Create an edge from a pair of vertices.
   """
+  import itertools
   sref = GetActiveSession()
   cre = sref.op('create edge')
-  [cre.associateEntity(x) for x in verts]
+  # Some kernels accept points (not model-verts) in which case
+  # the model should be associated with the operator. Otherwise,
+  # the model vertices should be associated with the operator.
+  if len(verts) < 1:
+    print 'Error: No vertices specified.'
+    return None
+  if hasattr(verts[0], '__iter__'):
+    # Verts is actually a list of tuples specifying point coordinates.
+    # Look for a model to associate with the operator.
+    if 'model' not in kwargs:
+      print 'Error: No model specified.'
+      return None
+    cre.associateEntity(kwargs['model'])
+    # Pad and flatten point data
+    numCoordsPerPoint = max([len(verts[i]) for i in range(len(verts))])
+    tmp = min([len(verts[i]) for i in range(len(verts))])
+    x = cre.findAsDouble('points')
+    c = cre.findAsInt('coordinates')
+    if c:
+      c.setValue(0, numCoordsPerPoint)
+    if tmp != numCoordsPerPoint:
+      ptflat = []
+      for p in verts:
+        ptflat.append(p + [0,]*(numCoordsPerPoint - len(p)))
+      ptflat = list(itertools.chain(*ptflat))
+    else:
+      ptflat = list(itertools.chain(*verts))
+    if x:
+      SetVectorValue(x, ptflat)
+  else:
+    [cre.associateEntity(x) for x in verts]
   t = cre.findAsInt('curve type')
-  t.setValue(0, curve_type)
+  if t:
+    t.setValue(0, curve_type)
+  if 'offsets' in kwargs:
+    o = cre.findAsInt('offsets')
+    if o:
+      SetVectorValue(o, kwargs['offsets'])
   if 'midpoint' in kwargs:
     x = cre.findAsDouble('point')
-    SetVectorValue(x, kwargs['midpoint'])
+    if x:
+      SetVectorValue(x, kwargs['midpoint'])
   if 'color' in kwargs:
     c = cre.findAsInt('color')
-    c.setValue(0, kwargs['color'])
+    if c:
+      c.setValue(0, kwargs['color'])
   res = cre.operate()
   PrintResultLog(res)
-  return res.findModelEntity('created').value(0)
+  edgeList = res.findModelEntity('created')
+  numEdges = edgeList.numberOfValues()
+  return edgeList.value(0) if numEdges == 1 else [edgeList.value(i) for i in range(numEdges)]
 
 def CreateFace(edges, surface_type = SurfaceType.PLANAR, **kwargs):
   """Create a face from a set of edges.
