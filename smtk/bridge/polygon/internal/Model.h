@@ -46,6 +46,10 @@ public:
     const std::vector<double>& points,
     int numCoordsPerPt);
 
+  smtk::model::Vertex findOrAddModelVertex(
+    smtk::model::ManagerPtr mgr,
+    const Point& pt);
+
   template<typename T>
   std::set<Id> createModelEdgesFromPoints(T begin, T end);
 
@@ -66,6 +70,8 @@ public:
 
   Id id() const { return this->m_id; }
   void setId(const Id& id) { this->m_id = id; }
+
+  Id pointId(const Point& p) const;
 
   template<typename T>
   Point projectPoint(T coordBegin, T coordEnd);

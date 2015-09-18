@@ -6,6 +6,8 @@
 
 #include "smtk/io/Logger.h"
 
+#include "smtk/model/Vertex.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
@@ -79,8 +81,13 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
     long long edgeOffset = offsetsItem->value(ei);
     long long edgeEnd = (ei < numEdges - 1 ? offsetsItem->value(ei + 1) : numPts);
     long long numSegments = edgeEnd - edgeOffset - 1;
-    if (numSegments < 1)
+    if (numSegments < 1 || edgeEnd >= numPts)
+      {
+      smtkWarningMacro(this->log(),
+        "Ignoring input " << ei << " (offset " << edgeOffset << " to " << edgeEnd << ")" <<
+        " with not enough points or offset past end of points.");
       continue; // skip "edges" with only 0 or 1 vertices for their entire path.
+      }
 
     // Fill in a list of segments for the edge so we can
     // check for self-intersections.
@@ -163,8 +170,16 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
     //   If the segment's end vertex is an intersection point,
     //   add it as a model vertex, terminate edge, do ... as above.
     //   At the end, terminate the edge. If the end vertex is not
-    //   equal to vertex 0 of the edge, make both of them model vertices.
-    for (SegmentSplitsT::const_iterator sit = result.begin(); sit != result.end(); ++sit)
+    //   equal to vertex 0 of the edge ** OR ** if the model edge
+    //   was split, make both of them model vertices.
+    if (result.empty())
+      {
+      smtkErrorMacro(this->log(), "Self-intersection of edge segments was empty set.");
+      return this->createResult(smtk::model::OPERATION_FAILED);
+      }
+    internal::Point modelEdgeStart = result.begin()->second.low();
+    size_t lastSeg = -1;
+    for (SegmentSplitsT::const_iterator sit = result.begin(); sit != result.end(); lastSeg = (sit++)->first)
       {
       std::vector<double> lo(3);
       std::vector<double> hi(3);
@@ -174,10 +189,25 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
         << "  " << sit->first
         << ": (" << lo[0] << ", " << lo[1] << ", " << lo[2]
         << ") -> (" << hi[0] << ", " << hi[1] << ", " << hi[2]
-        << ")\n";
+        << ")";
+      bool generateModelEdge = false;
+      if (lastSeg == sit->first)
+        { // repeated source segment means high() point must be a model vertex.
+        std::cout << " *";
+        smtk::model::Vertex v = storage->findOrAddModelVertex(mgr, sit->second.high());
+        generateModelEdge = true;
+        }
+      else if (!!storage->pointId(sit->second.high()))
+        {
+        std::cout << " +";
+        generateModelEdge = true;
+        }
+      if (generateModelEdge)
+        {
+        }
+      std::cout << "\n";
       }
     }
-
 
   smtk::model::OperatorResult result;
   /*

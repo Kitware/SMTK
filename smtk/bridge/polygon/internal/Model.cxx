@@ -225,29 +225,40 @@ smtk::model::Vertices model::findOrAddModelVertices(
   for (i = 0; it != points.end(); it += numCoordsPerPt, i += numCoordsPerPt)
     {
     Point projected = this->projectPoint(it, it + numCoordsPerPt);
-    PointToVertexId::const_iterator pit = this->m_vertices.find(projected);
-    if (pit != this->m_vertices.end())
-      {
-      vertices.push_back(smtk::model::Vertex(mgr, pit->second));
-      }
-    else
-      {
-      // Add a model vertex to the manager
-      smtk::model::Vertex v = mgr->addVertex();
-      vertices.push_back(v);
-      // Add a coordinate-map lookup to local storage:
-      this->m_vertices[projected] = v.entity();
-      // Figure out the floating-point approximation for our discretized coordinate
-      // and add it to the tessellation for the new model vertex:
-      double snappedPt[3];
-      this->liftPoint(projected, snappedPt);
-      smtk::model::Tessellation tess;
-      tess.addPoint(snappedPt);
-      v.setTessellation(&tess);
-      // TODO: Add the vertex to the model as a free cell?
-      }
+    vertices.push_back(this->findOrAddModelVertex(mgr, projected));
     }
   return vertices;
+}
+
+smtk::model::Vertex model::findOrAddModelVertex(
+  smtk::model::ManagerPtr mgr,
+  const Point& pt)
+{
+  PointToVertexId::const_iterator pit = this->m_vertices.find(pt);
+  if (pit != this->m_vertices.end())
+    return smtk::model::Vertex(mgr, pit->second);
+
+  // Add a model vertex to the manager
+  smtk::model::Vertex v = mgr->addVertex();
+  // Add a coordinate-map lookup to local storage:
+  this->m_vertices[pt] = v.entity();
+  // Figure out the floating-point approximation for our discretized coordinate
+  // and add it to the tessellation for the new model vertex:
+  double snappedPt[3];
+  this->liftPoint(pt, snappedPt);
+  smtk::model::Tessellation tess;
+  tess.addPoint(snappedPt);
+  v.setTessellation(&tess);
+  // TODO: Add the vertex to the model as a free cell?
+  return v;
+}
+
+Id model::pointId(const Point& p) const
+{
+  PointToVertexId::const_iterator it = this->m_vertices.find(p);
+  if (it == this->m_vertices.end())
+    return Id();
+  return it->second;
 }
 
       } // namespace internal
