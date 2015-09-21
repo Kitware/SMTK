@@ -1,0 +1,853 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>CropToolPopup</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>CropToolPopup</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>511</width>
+            <height>220</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Crop</string>
+    </property>
+    <property name="focusPolicy">
+        <enum>StrongFocus</enum>
+    </property>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>textLabel1_2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>260</x>
+                <y>10</y>
+                <width>20</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Y</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>textLabel1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>190</x>
+                <y>10</y>
+                <width>20</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>X</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>textLabel1_3_2_2_2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>10</y>
+                <width>37</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Type</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>textLabel1_3</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>330</x>
+                <y>10</y>
+                <width>20</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Z</string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <item>
+            <property name="text">
+                <string>None</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Plane</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Cylinder</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Sphere</string>
+            </property>
+        </item>
+        <property name="name">
+            <cstring>CropToolType2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>100</y>
+                <width>90</width>
+                <height>21</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <item>
+            <property name="text">
+                <string>None</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Plane</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Cylinder</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Sphere</string>
+            </property>
+        </item>
+        <property name="name">
+            <cstring>CropToolType3</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>160</y>
+                <width>90</width>
+                <height>21</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>Yval1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>240</x>
+                <y>40</y>
+                <width>59</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>10000</number>
+        </property>
+        <property name="minValue">
+            <number>-10000</number>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>Zval1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>310</x>
+                <y>40</y>
+                <width>59</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>10000</number>
+        </property>
+        <property name="minValue">
+            <number>-10000</number>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>Xval2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>170</x>
+                <y>100</y>
+                <width>59</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>10000</number>
+        </property>
+        <property name="minValue">
+            <number>-10000</number>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>Yval2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>240</x>
+                <y>100</y>
+                <width>59</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>10000</number>
+        </property>
+        <property name="minValue">
+            <number>-10000</number>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>Zval2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>310</x>
+                <y>100</y>
+                <width>59</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>10000</number>
+        </property>
+        <property name="minValue">
+            <number>-10000</number>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>Xval3</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>170</x>
+                <y>160</y>
+                <width>59</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>10000</number>
+        </property>
+        <property name="minValue">
+            <number>-10000</number>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>Yval3</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>240</x>
+                <y>160</y>
+                <width>59</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>10000</number>
+        </property>
+        <property name="minValue">
+            <number>-10000</number>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>Zval3</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>310</x>
+                <y>160</y>
+                <width>59</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>10000</number>
+        </property>
+        <property name="minValue">
+            <number>-10000</number>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>textLabel1_3_2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>400</x>
+                <y>10</y>
+                <width>37</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Rot</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>textLabel1_3_2_3</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>460</x>
+                <y>10</y>
+                <width>37</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Rev</string>
+        </property>
+    </widget>
+    <widget class="QCheckBox">
+        <property name="name">
+            <cstring>Rev1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>470</x>
+                <y>40</y>
+                <width>20</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>checkBox1</string>
+        </property>
+    </widget>
+    <widget class="QCheckBox">
+        <property name="name">
+            <cstring>Rev2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>470</x>
+                <y>100</y>
+                <width>20</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>checkBox1</string>
+        </property>
+    </widget>
+    <widget class="QCheckBox">
+        <property name="name">
+            <cstring>Rev3</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>470</x>
+                <y>160</y>
+                <width>20</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>checkBox1</string>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>radius3</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>100</x>
+                <y>160</y>
+                <width>59</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>10000</number>
+        </property>
+        <property name="minValue">
+            <number>0</number>
+        </property>
+        <property name="value">
+            <number>1</number>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>radius2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>100</x>
+                <y>100</y>
+                <width>59</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>10000</number>
+        </property>
+        <property name="minValue">
+            <number>0</number>
+        </property>
+        <property name="value">
+            <number>1</number>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>radius1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>100</x>
+                <y>40</y>
+                <width>59</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>10000</number>
+        </property>
+        <property name="minValue">
+            <number>0</number>
+        </property>
+        <property name="value">
+            <number>1</number>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>textLabel1_3_2_2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>110</x>
+                <y>10</y>
+                <width>30</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Rad</string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <item>
+            <property name="text">
+                <string>None</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>PlaneX</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>PlaneY</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>PlaneZ</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Cylinder</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Sphere</string>
+            </property>
+        </item>
+        <property name="name">
+            <cstring>CropToolType1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>40</y>
+                <width>90</width>
+                <height>21</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>Xval1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>170</x>
+                <y>40</y>
+                <width>59</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>10000</number>
+        </property>
+        <property name="minValue">
+            <number>-10000</number>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>Rot1a</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>390</x>
+                <y>40</y>
+                <width>59</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>180</number>
+        </property>
+        <property name="minValue">
+            <number>-180</number>
+        </property>
+        <property name="lineStep">
+            <number>5</number>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>Rot1b</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>390</x>
+                <y>60</y>
+                <width>59</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>180</number>
+        </property>
+        <property name="minValue">
+            <number>-180</number>
+        </property>
+        <property name="lineStep">
+            <number>5</number>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>Rot2a</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>390</x>
+                <y>100</y>
+                <width>59</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>180</number>
+        </property>
+        <property name="minValue">
+            <number>-180</number>
+        </property>
+        <property name="lineStep">
+            <number>5</number>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>Rot2b</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>390</x>
+                <y>120</y>
+                <width>59</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>180</number>
+        </property>
+        <property name="minValue">
+            <number>-180</number>
+        </property>
+        <property name="lineStep">
+            <number>5</number>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>Rot3a</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>390</x>
+                <y>160</y>
+                <width>59</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>180</number>
+        </property>
+        <property name="minValue">
+            <number>-180</number>
+        </property>
+        <property name="lineStep">
+            <number>5</number>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>Rot3b</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>390</x>
+                <y>180</y>
+                <width>59</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>180</number>
+        </property>
+        <property name="minValue">
+            <number>-180</number>
+        </property>
+        <property name="lineStep">
+            <number>5</number>
+        </property>
+    </widget>
+</widget>
+<connections>
+    <connection>
+        <sender>radius1</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>radius1_valueChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>Xval1</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>Xval1_valueChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>Yval1</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>Yval1_valueChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>Zval1</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>Zval1_valueChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>Rot1a</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>Rot1a_valueChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>Rot1b</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>Rot1b_valueChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>radius2</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>radius2_valueChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>Xval2</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>Xval2_valueChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>Yval2</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>Yval2_valueChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>Zval2</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>Zval2_valueChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>Rot2a</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>Rot2a_valueChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>Rot2b</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>Rot2b_valueChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>radius3</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>radius3_valueChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>Xval3</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>Xval3_valueChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>Yval3</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>Yval3_valueChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>Zval3</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>Zval3_valueChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>Rot3a</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>Rot3a_valueChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>Rot3b</sender>
+        <signal>valueChanged(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>Rot3b_valueChanged(int)</slot>
+    </connection>
+    <connection>
+        <sender>Rev1</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>Rev1_toggled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>Rev2</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>Rev2_toggled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>Rev3</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>Rev3_toggled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>CropToolType1</sender>
+        <signal>highlighted(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>CropToolType1_highlighted(int)</slot>
+    </connection>
+    <connection>
+        <sender>CropToolType2</sender>
+        <signal>highlighted(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>CropToolType2_highlighted(int)</slot>
+    </connection>
+    <connection>
+        <sender>CropToolType3</sender>
+        <signal>highlighted(int)</signal>
+        <receiver>CropToolPopup</receiver>
+        <slot>CropToolType3_highlighted(int)</slot>
+    </connection>
+</connections>
+<includes>
+    <include location="local" impldecl="in implementation">CropTool.hpp</include>
+    <include location="local" impldecl="in implementation">QVTKWidget.h</include>
+    <include location="local" impldecl="in implementation">vtkRenderWindow.h</include>
+    <include location="local" impldecl="in implementation">CropToolpopup.ui.h</include>
+</includes>
+<forwards>
+    <forward>class CropTool</forward>
+    <forward>class QVTKWidget</forward>
+</forwards>
+<variables>
+    <variable>QVTKWidget *vtkWidget;</variable>
+    <variable access="private">CropTool *cropTool;</variable>
+</variables>
+<slots>
+    <slot>radius1_valueChanged( int num )</slot>
+    <slot>Xval1_valueChanged( int num )</slot>
+    <slot>Yval1_valueChanged( int num )</slot>
+    <slot>Zval1_valueChanged( int num )</slot>
+    <slot>Rot1a_valueChanged( int num )</slot>
+    <slot>Rot1b_valueChanged( int num )</slot>
+    <slot>radius2_valueChanged( int num )</slot>
+    <slot>Xval2_valueChanged( int num )</slot>
+    <slot>Yval2_valueChanged( int num )</slot>
+    <slot>Zval2_valueChanged( int num )</slot>
+    <slot>Rot2a_valueChanged( int num )</slot>
+    <slot>Rot2b_valueChanged( int num )</slot>
+    <slot>radius3_valueChanged( int num )</slot>
+    <slot>Xval3_valueChanged( int num )</slot>
+    <slot>Yval3_valueChanged( int num )</slot>
+    <slot>Zval3_valueChanged( int num )</slot>
+    <slot>Rot3a_valueChanged( int num )</slot>
+    <slot>Rot3b_valueChanged( int num )</slot>
+    <slot>Rev1_toggled( bool togg )</slot>
+    <slot>Rev2_toggled( bool togg )</slot>
+    <slot>Rev3_toggled( bool togg )</slot>
+    <slot>CropToolType1_highlighted( int num )</slot>
+    <slot>CropToolType2_highlighted( int num )</slot>
+    <slot>CropToolType3_highlighted( int num )</slot>
+    <slot>vtk_widget( QVTKWidget * vtkw )</slot>
+</slots>
+<functions>
+    <function>init()</function>
+    <function>destroy()</function>
+</functions>
+<pixmapinproject/>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

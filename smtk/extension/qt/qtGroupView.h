@@ -51,6 +51,9 @@ namespace smtk
       virtual void addTabEntry(qtBaseView*);
       virtual void addTileEntry(qtBaseView*);
 
+    protected slots:
+      void updateCurrentTab(int);
+
     private:
 
       qtGroupViewInternals *Internals;

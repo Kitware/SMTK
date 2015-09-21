@@ -4,10 +4,13 @@ set(ioSrcs
   AttributeWriter.cxx
   ExportJSON.cxx
   ImportJSON.cxx
+  ImportMesh.cxx
   Logger.cxx
+  ModelToMesh.cxx
   OperatorLog.cxx
   ResourceSetReader.cxx
   ResourceSetWriter.cxx
+  WriteMesh.cxx
   XmlDocV1Parser.cxx
   XmlDocV2Parser.cxx
   XmlV2StringWriter.cxx
@@ -18,10 +21,13 @@ set(ioHeaders
   AttributeWriter.h
   ExportJSON.h
   ImportJSON.h
+  ImportMesh.h
   Logger.h
+  ModelToMesh.h
   OperatorLog.h
   ResourceSetReader.h
   ResourceSetWriter.h
+  WriteMesh.h
   #XmlDocV1Parser.h
   XmlDocV2Parser.h
   #XmlV1StringWriter.h

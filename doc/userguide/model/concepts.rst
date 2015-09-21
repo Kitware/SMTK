@@ -5,7 +5,7 @@ Like the attribute system, the model system is composed of C++ classes,
 also accessible in Python, whose instances perform the following functions:
 
 :smtk:`Manager <smtk::model::Manager>`
-  instances that contain model topology and geometry.
+  instances contain model topology and geometry.
   All of the model entities such as faces, edges, and vertices are
   assigned a UUID by SMTK.
   You can think of the manager as a key-value store from UUID values to

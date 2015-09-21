@@ -44,6 +44,6 @@ namespace smtk
     // fixed number. SMTK itself only uses 2 bound arguments.
     ///@}
     }
-};
+}
 
 #endif /* __smtk_Function_h */

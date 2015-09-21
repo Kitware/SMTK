@@ -19,6 +19,7 @@
 #include <QList>
 
 class qtBaseViewInternals;
+class QScrollArea;
 
 namespace smtk
 {
@@ -49,12 +50,13 @@ namespace smtk
       bool setFixedLabelWidth(int w);
       bool advanceLevelVisible()
         { return m_advOverlayVisible; }
-      virtual int advanceLevel()
-      {return 0;}
+      virtual int advanceLevel();
       virtual bool categoryEnabled()
       {return false;}
       virtual std::string currentCategory()
       {return "";}
+      bool isTopLevel() const
+      {return this->m_isTopLevel;}
 
     signals:
       void modified(smtk::attribute::ItemPtr);
@@ -71,7 +73,7 @@ namespace smtk
       virtual void childrenResized(){;}
       virtual void showAdvanceLevelOverlay(bool val)
       { m_advOverlayVisible = val;}
-      virtual void showAdvanceLevel(int/* level */){}
+      virtual void showAdvanceLevel(int i);
       virtual void updateViewUI(int /* currentTab */){}
       virtual void enableShowBy(int /* enable */){}
       virtual void onShowCategory(){}
@@ -81,11 +83,28 @@ namespace smtk
 
     protected slots:
       virtual void updateAttributeData() {;}
+      virtual void onAdvanceLevelChanged(int levelIdx);
 
     protected:
-      virtual void createWidget(){;}
+      // Description:
+      // Creates the UI related to the view and properly assigns it
+      // to the parent widget.
+      virtual void buildUI();
+    protected:
+      // Description:
+      // Creates the main QT Widget that is associated with a View.  Typically this
+      // is the only method a derived View needs to override.
+      virtual void createWidget();
+
+      // Description:
+      // Adds properties associated with respects to a top level view
+      virtual void makeTopLevel();
 
       QWidget* Widget;
+      QScrollArea *m_ScrollArea;
+      bool m_isTopLevel;
+      bool m_topLevelInitialized;
+
     private:
 
       qtBaseViewInternals *Internals;

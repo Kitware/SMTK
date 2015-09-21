@@ -28,7 +28,7 @@
 
 // Was SMTK built with moab reader? If true, the vtkDiscreteMoabReader
 // library will exist and smtkDiscreteSession library will link against it.
-#cmakedefine SMTK_ENABLE_MOAB_SUPPORT
+#cmakedefine SMTK_ENABLE_MOAB_DISCRETE_READER
 
 // Was SMTK built with CGM? If true, cgm-convert will exist.
 #cmakedefine SMTK_ENABLE_CGM_SESSION

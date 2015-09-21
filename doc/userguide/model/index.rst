@@ -5,7 +5,7 @@ SMTK's Geometric Model System
 *****************************
 
 SMTK's second major component is its geometric modeling system,
-which allows you to interact with multiple modelsing sessions
+which allows you to interact with multiple modeling sessions
 that may each interact with different solid modeling kernels.
 
 .. toctree::
