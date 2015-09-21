@@ -95,6 +95,7 @@ public:
   smtk::model::EntityRefArray modelEntities() const;
   bool setModelEntities(const smtk::model::EntityRef&);
 
+  std::vector< std::string > names() const;
   smtk::mesh::TypeSet types() const;
   smtk::mesh::CellSet cells() const; //all cells of the meshset
   smtk::mesh::PointSet points() const; //all points of the meshset
