@@ -176,6 +176,7 @@ namespace smtk
     class ExportJSON;
     class ImportJSON;
     class OperatorLog;
+    class Logger;
   }
 
   namespace common
