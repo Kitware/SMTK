@@ -2,6 +2,7 @@ set(polygonSrcs
   Session.cxx
   Operator.cxx
   internal/Model.cxx
+  internal/Vertex.cxx
   operators/CreateModel.cxx
   operators/CreateVertices.cxx
   operators/CreateEdge.cxx

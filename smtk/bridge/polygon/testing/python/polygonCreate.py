@@ -81,6 +81,13 @@ class TestPolygonCreation(smtk.testing.TestCase):
     edgeTestVerts = [[0,0], [1,1], [0,1], [1,0],   [3,0], [3,3], [4,3], [2,0], [3,0], [10,10]]
     edgeTestOffsets = [0, 4, 9, 9, 12]; # Only first 2 edges are valid
     elist = CreateEdge(edgeTestVerts, offsets=edgeTestOffsets, model=mod)
+    res = GetLastResult()
+    logStr = res.findString('log').value(0)
+    log = smtk.io.Logger()
+    smtk.io.ImportJSON.ofLog(logStr, log)
+    self.assertEqual(
+        log.numberOfRecords(), 3,
+        'Expected 3 warnings due to invalid offsets')
     print elist
 
   def testCreation(self):

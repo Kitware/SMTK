@@ -31,7 +31,7 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
 
   smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
 
-  internal::model::Ptr storage; // Look up from session = internal::model::create();
+  internal::pmodel::Ptr storage; // Look up from session = internal::pmodel::create();
   bool ok = true;
   // These case values match CreateFaces.sbt indices (and enum values):
   switch (method)

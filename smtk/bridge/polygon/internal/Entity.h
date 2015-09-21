@@ -2,6 +2,7 @@
 #define __smtk_bridge_polygon_internal_Entity_h
 
 #include "smtk/SharedFromThis.h"
+#include "smtk/bridge/polygon/PointerDefs.h"
 #include "smtk/bridge/polygon/internal/Config.h"
 
 namespace smtk {
@@ -27,7 +28,7 @@ public:
   void setParent(entity* p) { this->m_parent = p; }
 
   template<typename T>
-  T parentAs() const { return dynamic_cast<T>(this->m_parent); }
+  T* parentAs() const { return dynamic_cast<T*>(this->m_parent); }
 
 protected:
   entity()
@@ -49,5 +50,6 @@ protected:
     } // namespace polygon
   }  // namespace bridge
 } // namespace smtk
+
 #endif // __smtk_bridge_polygon_internal_Entity_h
 

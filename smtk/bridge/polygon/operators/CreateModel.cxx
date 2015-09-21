@@ -30,7 +30,7 @@ smtk::model::OperatorResult CreateModel::operateInternal()
   smtk::attribute::DoubleItem::Ptr featureSizeItem = this->findDouble("feature size");
   smtk::attribute::IntItem::Ptr modelScaleItem = this->findInt("model scale");
 
-  internal::model::Ptr storage = internal::model::create();
+  internal::pmodel::Ptr storage = internal::pmodel::create();
   bool ok = true;
   // These case values match CreateModel.sbt indices (and enum values):
   switch (method)
@@ -78,6 +78,7 @@ smtk::model::OperatorResult CreateModel::operateInternal()
       mgr = sess->manager();
       smtk::model::Model model = mgr->addModel(/* par. dim. */ 2, /* emb. dim. */ 3, "model");
       storage->setId(model.entity());
+      storage->setSession(sess);
       sess->addStorage(model.entity(), storage);
       result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
       this->addEntityToResult(result, model, CREATED);

@@ -19,6 +19,10 @@
 namespace smtk {
   namespace bridge {
     namespace polygon {
+      namespace internal {
+        class pmodel;
+        class vertex;
+      }
 
 /**\brief Methods that handle translation between polygon and SMTK instances.
   *
@@ -52,6 +56,7 @@ protected:
   friend class CreateModel;
   friend class CreateVertices;
   friend class CreateEdge;
+  friend class internal::pmodel;
 
   Session();
 

@@ -1,11 +1,12 @@
 #include "smtk/bridge/polygon/internal/Model.h"
-#include "smtk/bridge/polygon/internal/Model.txx"
 
 #include "smtk/model/Session.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Vertex.h"
 #include "smtk/io/Logger.h"
+
+#include "smtk/bridge/polygon/internal/Model.txx"
 
 using namespace smtk::model;
 
@@ -14,8 +15,8 @@ namespace smtk {
     namespace polygon {
       namespace internal {
 
-model::model()
-  : m_featureSize(1e-8)
+pmodel::pmodel()
+  : m_session(NULL), m_featureSize(1e-8)
 {
   for (int i = 0; i < 3; ++i)
     {
@@ -30,11 +31,13 @@ model::model()
   this->m_iAxis[0] = this->m_jAxis[1] = 1.;
 }
 
-model::~model()
+pmodel::~pmodel()
 {
+  // Tis better to have dereferenced and crashed than never to have crashed at all:
+  this->m_session = NULL;
 }
 
-bool model::computeModelScaleAndNormal(
+bool pmodel::computeModelScaleAndNormal(
   std::vector<double>& origin,
   std::vector<double>& x_axis,
   std::vector<double>& y_axis,
@@ -97,7 +100,7 @@ bool model::computeModelScaleAndNormal(
   return true;
 }
 
-bool model::computeModelScaleAndYAxis(
+bool pmodel::computeModelScaleAndYAxis(
   std::vector<double>& origin,
   std::vector<double>& x_axis,
   std::vector<double>& z_axis,
@@ -160,7 +163,7 @@ bool model::computeModelScaleAndYAxis(
   return true;
 }
 
-bool model::computeFeatureSizeAndNormal(
+bool pmodel::computeFeatureSizeAndNormal(
   std::vector<double>& origin,
   std::vector<double>& x_axis,
   std::vector<double>& y_axis,
@@ -214,7 +217,7 @@ bool model::computeFeatureSizeAndNormal(
   return true;
 }
 
-smtk::model::Vertices model::findOrAddModelVertices(
+smtk::model::Vertices pmodel::findOrAddModelVertices(
   smtk::model::ManagerPtr mgr,
   const std::vector<double>& points,
   int numCoordsPerPt)
@@ -230,7 +233,7 @@ smtk::model::Vertices model::findOrAddModelVertices(
   return vertices;
 }
 
-smtk::model::Vertex model::findOrAddModelVertex(
+smtk::model::Vertex pmodel::findOrAddModelVertex(
   smtk::model::ManagerPtr mgr,
   const Point& pt)
 {
@@ -242,6 +245,10 @@ smtk::model::Vertex model::findOrAddModelVertex(
   smtk::model::Vertex v = mgr->addVertex();
   // Add a coordinate-map lookup to local storage:
   this->m_vertices[pt] = v.entity();
+  vertex::Ptr vi = vertex::create();
+  vi->m_coords = pt;
+  vi->setParent(this);
+  this->m_session->addStorage(v.entity(), vi);
   // Figure out the floating-point approximation for our discretized coordinate
   // and add it to the tessellation for the new model vertex:
   double snappedPt[3];
@@ -253,7 +260,28 @@ smtk::model::Vertex model::findOrAddModelVertex(
   return v;
 }
 
-Id model::pointId(const Point& p) const
+Point pmodel::edgeTestPoint(const Id& edgeId, bool edgeEndPt) const
+{
+  edge::Ptr e = this->m_session->findStorage<edge>(edgeId);
+  if (e)
+    {
+    if (edgeEndPt == true)
+      { // Return test point near *last* vertex of forwards edge.
+      PointSeq::const_reverse_iterator it = e->pointsRBegin();
+      ++it; // Advance from endpoint by 1 so we are not coincident to the endpoint.
+      return *it;
+      }
+    else
+      { // Return test point near *first* vertex of forwards edge.
+      PointSeq::const_iterator it = e->pointsBegin();
+      ++it;
+      return *it;
+      }
+    }
+  return Point(); // FIXME: Do something better? detectable?
+}
+
+Id pmodel::pointId(const Point& p) const
 {
   PointToVertexId::const_iterator it = this->m_vertices.find(p);
   if (it == this->m_vertices.end())

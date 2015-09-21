@@ -31,8 +31,8 @@ smtk::model::OperatorResult CreateVertices::operateInternal()
   if (sess)
     {
     smtk::model::Manager::Ptr mgr = sess->manager();
-    internal::model::Ptr storage =
-      sess->findStorage<internal::model>(
+    internal::pmodel::Ptr storage =
+      sess->findStorage<internal::pmodel>(
         modelItem->value(0).entity());
     std::vector<double> pcoords(pointsItem->begin(), pointsItem->end());
     smtk::model::Vertices verts =

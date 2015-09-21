@@ -20,7 +20,7 @@ namespace smtk {
         class vertex;
         class edge;
         class face;
-        class model;
+        class pmodel;
 
         typedef smtk::shared_ptr<entity> EntityPtr;
         typedef smtk::shared_ptr<vertex> VertexPtr;

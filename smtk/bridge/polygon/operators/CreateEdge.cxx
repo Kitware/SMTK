@@ -63,8 +63,8 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
-  internal::model::Ptr storage =
-    sess->findStorage<internal::model>(
+  internal::pmodel::Ptr storage =
+    sess->findStorage<internal::pmodel>(
       parentModel.entity());
   bool ok = true;
   int numEdges = offsetsItem->numberOfValues();
@@ -178,8 +178,9 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
       return this->createResult(smtk::model::OPERATION_FAILED);
       }
     internal::Point modelEdgeStart = result.begin()->second.low();
-    size_t lastSeg = -1;
-    for (SegmentSplitsT::const_iterator sit = result.begin(); sit != result.end(); lastSeg = (sit++)->first)
+    size_t lastOriginalSegment = -1;
+    SegmentSplitsT::const_iterator segStart = result.begin();
+    for (SegmentSplitsT::const_iterator sit = result.begin(); sit != result.end(); lastOriginalSegment = (sit++)->first)
       {
       std::vector<double> lo(3);
       std::vector<double> hi(3);
@@ -191,7 +192,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
         << ") -> (" << hi[0] << ", " << hi[1] << ", " << hi[2]
         << ")";
       bool generateModelEdge = false;
-      if (lastSeg == sit->first)
+      if (lastOriginalSegment == sit->first)
         { // repeated source segment means high() point must be a model vertex.
         std::cout << " *";
         smtk::model::Vertex v = storage->findOrAddModelVertex(mgr, sit->second.high());
@@ -204,6 +205,10 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
         }
       if (generateModelEdge)
         {
+        SegmentSplitsT::const_iterator segEnd = sit;
+        ++segEnd; // go one past the current segment so it is included in the model edge.
+        smtk::model::Edge edge = storage->createModelEdgeFromSegments(mgr, segStart, segEnd);
+        segStart = segEnd;
         }
       std::cout << "\n";
       }
