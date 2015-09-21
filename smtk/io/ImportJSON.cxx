@@ -1059,7 +1059,7 @@ int ImportJSON::ofMeshesOfModel(cJSON* collections,
       }
 
     //first verify the collection doesn't already exist
-    if (meshMgr->collection(uid) != NULL)
+    if (meshMgr->collection(uid))
       {
       std::cerr << "Importing a mesh collection that already exists: " << child->string << "\n";
       continue;
