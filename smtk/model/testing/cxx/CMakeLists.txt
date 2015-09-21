@@ -1,4 +1,4 @@
-################################################################################
+ ################################################################################
 # Make a library of some utility functions for tests to use:
 ################################################################################
 add_library(smtkCoreModelTesting STATIC helpers.cxx)
@@ -30,6 +30,7 @@ add_test(unitTessellation ${EXECUTABLE_OUTPUT_PATH}/unitTessellation)
 
 add_executable(unitOperator unitOperator.cxx)
 smtk_operator_xml( "${CMAKE_CURRENT_SOURCE_DIR}/unitOutcomeOperator.sbt" unitOperatorXML)
+target_include_directories(unitOperator PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(unitOperator smtkCore smtkCoreModelTesting)
 if (SMTK_ENABLE_CGM_SESSION)
   target_link_libraries(unitOperator smtkCGMSession)
@@ -42,6 +43,7 @@ add_test(unitEntityRef ${EXECUTABLE_OUTPUT_PATH}/unitEntityRef)
 
 add_executable(unitDefaultSession unitDefaultSession.cxx)
 smtk_operator_xml( "${CMAKE_CURRENT_SOURCE_DIR}/unitForwardingOperator.sbt" unitOperatorXML)
+target_include_directories(unitDefaultSession PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(unitDefaultSession smtkCore smtkCoreModelTesting)
 add_test(unitDefaultSession ${EXECUTABLE_OUTPUT_PATH}/unitDefaultSession)
 

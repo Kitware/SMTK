@@ -10,12 +10,12 @@ if (POLICY CMP0054)
   cmake_policy(SET CMP0054 OLD)
 endif()
 
-# Remove SMTKConfig.cmake at the beginning of each CMake run; each time
+project(SMTK)
+
+# Remove SMTKTargets.cmake at the beginning of each CMake run; each time
 # a library is declared below, the file is appended and we do not want
 # to keep appending over multiple runs.
-file(REMOVE SMTKConfig.cmake)
-
-project(SMTK)
+file(REMOVE ${PROJECT_BINARY_DIR}/SMTKTargets.cmake)
 
 ################################################################################
 # SMTK version number
@@ -43,6 +43,10 @@ include(GenerateExportHeader)
 # makes targets for unit tests, and makes it easier to generate
 # export install targets
 include(SMTKMacros)
+
+# include cmake code that allows for easier testing of SMTK classes
+# and also provides helpers around create_test_sourcelist
+include(CMake/SMTKTestingMacros.cmake)
 
 # Include mechanism for determining shared and weak pointer support
 include(SharedPtr)
@@ -109,6 +113,7 @@ if (SMTK_ENABLE_REMUS_SUPPORT)
   option(SMTK_ENABLE_REMOTE_SESSION "Build a session that allows modeling in a remote process." ON)
 endif()
 
+option(SMTK_USE_SYSTEM_MOAB "Use the system-installed moab?" OFF)
 option(SMTK_USE_SYSTEM_SPARSEHASH "Use the system-installed sparsehash?" OFF)
 option(SMTK_HASH_STORAGE "Use sparsehash library for primary storage?" OFF)
 set(SMTK_DATA_DIR "" CACHE PATH "Path to a directory of SMTK test data.")
@@ -178,6 +183,19 @@ find_package(Boost 1.50.0
 if(WIN32 AND MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 endif()
+
+################################################################################
+# Moab Related Settings
+################################################################################
+
+#if we are not using system moab we will build our own version through
+#the thirdparty folder
+if (SMTK_USE_SYSTEM_MOAB)
+  # Moab is required for building smtk::mesh, as it is the default storage
+  # format for meshes.
+  find_package(MOAB REQUIRED)
+endif()
+
 
 ################################################################################
 # Qt Related Settings
@@ -376,7 +394,17 @@ install(
     ${PROJECT_SOURCE_DIR}/CMake/SMTKOperatorXML.cmake
     ${PROJECT_SOURCE_DIR}/CMake/SMTKSessionJSON.cmake
   DESTINATION
-    lib/cmake/SMTK
+    ${CMAKE_INSTALL_LIBDIR}/cmake/SMTK
+)
+
+# Install find modules for SMTK needs to find external packages:
+install(
+  FILES
+    ${PROJECT_SOURCE_DIR}/CMake/FindCGM.cmake
+    ${PROJECT_SOURCE_DIR}/CMake/FindRemus.cmake
+    ${PROJECT_SOURCE_DIR}/CMake/FindZeroMQ.cmake
+  DESTINATION
+    ${CMAKE_INSTALL_LIBDIR}/cmake/SMTK
 )
 
 ################################################################################
@@ -413,7 +441,7 @@ if(SMTK_ENABLE_DISCRETE_SESSION)
   endif()
 
   # This option is only available when SMTK_ENABLE_DISCRETE_SESSION is ON
-  option(SMTK_ENABLE_MOAB_SUPPORT "Build moab reader for discrete model" OFF)
+  option(SMTK_ENABLE_MOAB_DISCRETE_READER "Build moab reader for discrete model" ${SMTK_USE_SYSTEM_MOAB} )
 endif()
 
 ################################################################################
@@ -421,6 +449,50 @@ endif()
 ################################################################################
 
 add_subdirectory(smtk)
+
+################################################################################
+# Install a package targets file
+#
+# Setup the exports for the library when used from an installed location
+install(
+  EXPORT SMTK
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SMTK
+  FILE SMTKTargets.cmake
+)
+
+export(PACKAGE SMTK)
+
+################################################################################
+# Create a build directory package configuration file
+#
+# Setup the config file for exports that stores what other thirdparty
+# packages we need to search for ( MOAB, Remus, etc ) for when using the
+# build version of smtk
+#
+# Required to happen before we include the docs directory
+set(MOAB_ROOT_DIR "${MOAB_ROOT_DIR}")
+set(SMTK_MODULE_DIR "${SMTK_SOURCE_DIR}/CMake")
+set(SMTK_CONFIG_DIR "${PROJECT_BINARY_DIR}")
+configure_file(
+  ${PROJECT_SOURCE_DIR}/CMake/SMTKConfig.cmake.in
+  ${PROJECT_BINARY_DIR}/SMTKConfig.cmake
+  @ONLY)
+
+################################################################################
+# Create an install package configuration file
+#
+# Setup the config file for exports that stores what other thirdparty
+# packages we need to search for ( MOAB, Remus, etc ) for when using the
+# install version of smtk
+set(SMTK_MODULE_DIR "\${CMAKE_CURRENT_LIST_DIR}")
+set(SMTK_CONFIG_DIR "\${CMAKE_CURRENT_LIST_DIR}")
+configure_file(
+  ${PROJECT_SOURCE_DIR}/CMake/SMTKConfig.cmake.in
+  ${PROJECT_BINARY_DIR}/CMakeFiles/SMTKConfig.cmake
+  @ONLY)
+
+install (FILES ${PROJECT_BINARY_DIR}/CMakeFiles/SMTKConfig.cmake
+         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SMTK)
 
 ################################################################################
 # Build documentation
@@ -432,14 +504,3 @@ add_subdirectory(smtk)
 if (SMTK_ENABLE_DOCUMENTATION)
   add_subdirectory(doc)
 endif()
-
-################################################################################
-# Install a package configuration file
-#
-# Setup the exports for the library when used from an installed location
-install(
-  EXPORT SMTK
-  DESTINATION lib/cmake/SMTK
-  FILE SMTKConfig.cmake
-)
-export(PACKAGE SMTK)

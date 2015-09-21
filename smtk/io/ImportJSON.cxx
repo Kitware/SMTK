@@ -23,8 +23,12 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/System.h"
 
+#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/Collection.h"
+
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
+#include "smtk/io/ImportMesh.h"
 
 #include "cJSON.h"
 
@@ -1014,6 +1018,97 @@ int ImportJSON::ofLog(cJSON* logrecordarray, smtk::io::Logger& log)
       }
     }
   return numberOfRecords;
+}
+
+/**\brief Import all the smtk::mesh::Collections associated with a given smtk::model.
+  *
+  * All collections listed in \a collections are imported in, and ownership
+  * is assigned to \a meshMgr.
+  *
+  */
+int ImportJSON::ofMeshesOfModel(cJSON* collections,
+                                smtk::model::ManagerPtr modelMgr,
+                                smtk::mesh::ManagerPtr meshMgr)
+
+{
+  if (!collections || !modelMgr || !meshMgr)
+    {
+    return 1;
+    }
+  cJSON* body = cJSON_GetObjectItem(collections, "mesh_collections");
+  if(!body)
+    {
+    return 1;
+   }
+
+  int status = 1;
+  for (cJSON* child = body->child; child && status; child = child->next)
+    {
+    if (!child->string || !child->string[0])
+      {
+      std::cerr << "Empty dictionary key.\n";
+      continue;
+      }
+
+    //get the uuid to use for this collection
+    UUID uid(child->string);
+    if (uid.isNull())
+      {
+      std::cerr << "Skipping malformed UUID: " << child->string << "\n";
+      continue;
+      }
+
+    //first verify the collection doesn't already exist
+    if (meshMgr->collection(uid))
+      {
+      std::cerr << "Importing a mesh collection that already exists: " << child->string << "\n";
+      continue;
+      }
+
+    //Now read all the information about this collection
+    long formatVersion;
+    status |= cJSON_GetObjectIntegerValue(child, "formatVersion", formatVersion);
+    if(formatVersion == 1  && status == 1)
+      {
+      //should we verify the model ids listed in the json, are part
+      //of the model? If we want to check this, we need to do so
+      //before we load the collection
+
+      //make the collection, using the uuid from the json.
+      smtk::mesh::CollectionPtr collection = meshMgr->makeCollection(uid);
+      collection->setModelManager( modelMgr );
+
+      cJSON* fLocationNode = cJSON_GetObjectItem(child, "location");
+      std::string meshLocation;
+      status |= cJSON_GetStringValue(fLocationNode, meshLocation);
+      if (status == 0)
+        {
+        std::cerr << "Unable to parse collection file location: "
+                  << meshLocation
+                  << "\n";
+        continue;
+        }
+
+      const bool import_good =
+            smtk::io::ImportMesh::entireFileToCollection(meshLocation, collection);
+      if(!import_good)
+        {
+        std::cerr << "Unable to read collection: " << child->string
+                  << "from file: " << meshLocation
+                  << "stopping the import process \n";
+        status = 1;
+        continue;
+        }
+      }
+    else
+      {
+      std::cerr << "Unable to parse collection format version: "
+                << formatVersion
+                << "This importer only supports version: 1\n";
+      continue;
+      }
+    }
+  return status ? 0 : 1;
 }
 
 std::string ImportJSON::sessionNameFromTagData(cJSON* tagData)

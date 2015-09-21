@@ -42,7 +42,9 @@ qtBaseView *
 qtInstancedView::createViewWidget(smtk::common::ViewPtr dataObj,
                                   QWidget* p, qtUIManager* uiman)
 {
-  return new qtInstancedView(dataObj, p, uiman);
+  qtInstancedView *view = new qtInstancedView(dataObj, p, uiman);
+  view->buildUI();
+  return view;
 }
 
 //----------------------------------------------------------------------------
@@ -51,7 +53,6 @@ qtInstancedView(smtk::common::ViewPtr dataObj, QWidget* p, qtUIManager* uiman) :
   qtBaseView(dataObj, p, uiman)
 {
   this->Internals = new qtInstancedViewInternals;
-  this->createWidget( );
 
 }
 
@@ -79,27 +80,10 @@ void qtInstancedView::createWidget( )
     }
 
   this->Widget = new QFrame(this->parentWidget());
-/*
-  //create the scroll area on the tabs, so we don't make the
-  //3d window super small
-  this->Internals->ScrollArea = new QScrollArea();
-  this->Internals->ScrollArea->setWidgetResizable(true);
-  this->Internals->ScrollArea->setFrameShape(QFrame::NoFrame);
-  this->Internals->ScrollArea->setObjectName("instancedViewScrollArea");
-  this->Internals->ScrollArea->setWidget( this->Widget );
-*/
   //create the layout for the tabs area
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);
   this->Widget->setLayout( layout );
-
-  //add the advanced layout, and the scroll area onto the
-  //widgets to the frame
-  if(parentlayout)
-    {
-    parentlayout->setAlignment(Qt::AlignTop);
-    parentlayout->addWidget(this->Widget);
-    }
 
   this->updateAttributeData();
 }
@@ -125,15 +109,15 @@ void qtInstancedView::updateAttributeData()
 
   std::vector<smtk::attribute::AttributePtr> atts;
   int longLabelWidth = 0;
-  // The view should have a single internal component called InstancedAttributes
-  if ((view->details().numberOfChildren() != 1) ||
-      (view->details().child(0).name() != "InstancedAttributes"))
+  // Lets find the InstancedAttributes Infomation
+  int index = view->details().findChild("InstancedAttributes");
+  if (index < 0)
     {
     // Should present error message
     return;
     }
-  
-  smtk::common::View::Component &comp = view->details().child(0);
+
+  smtk::common::View::Component &comp = view->details().child(index);
   std::size_t i, n = comp.numberOfChildren();
   for (i = 0; i < n; i++)
     {
@@ -147,7 +131,7 @@ void qtInstancedView::updateAttributeData()
       {
       return; // No name set
       }
-    
+
     // See if the attribute exists and if not then create it
     att = sys->findAttribute(attName);
     if (!att)
@@ -171,7 +155,7 @@ void qtInstancedView::updateAttributeData()
       {
       attDef = att->definition();
       }
-    
+
     atts.push_back(att);
     int labelWidth =
       this->uiManager()->getWidthOfAttributeMaxLabel(attDef, this->uiManager()->advancedFont());
@@ -179,7 +163,7 @@ void qtInstancedView::updateAttributeData()
     }
   this->setFixedLabelWidth(longLabelWidth);
   n = atts.size();
-  
+
   for (i = 0; i < n; i++)
     {
     if(atts[i]->numberOfItems()>0)

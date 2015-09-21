@@ -25,7 +25,11 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/System.h"
 
+#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/Collection.h"
+
 #include "smtk/io/AttributeWriter.h"
+#include "smtk/io/WriteMesh.h"
 #include "smtk/io/Logger.h"
 
 #include "cJSON.h"
@@ -645,6 +649,92 @@ int ExportJSON::forModelWorker(
   cJSON_AddItemToObject(tag, "smtk_version",
     cJSON_CreateString(smtk::common::Version::number().c_str()));
   return 1;
+}
+
+/**\brief Serialize all the smtk::mesh associated with a given smtk::model.
+  *
+  * This populates an empty JSON Object (\a mdesc) with
+  * data required to recreate the smtk::mesh Collections
+  * associated with the given smtk::model.
+  */
+int ExportJSON::forMeshesOfModel(cJSON* mdesc,
+                     smtk::model::ManagerPtr modelMgr,
+                     smtk::mesh::ManagerPtr meshMgr,
+                     const std::string &fileWriteLocation)
+{
+  typedef smtk::model::EntityRefs EntityRefs;
+  typedef smtk::model::EntityTypeBits EntityTypeBits;
+
+  if (!mdesc || mdesc->type != cJSON_Object)
+    {
+    return 1;
+    }
+
+  cJSON* mesh = cJSON_CreateObject();
+  cJSON_AddItemToObject(mdesc, "mesh_collections", mesh);
+
+  //step 0.  walk the model and find all collections that are associated with it.
+  std::set< smtk::mesh::CollectionPtr > assocCollections;
+
+  smtk::model::EntityIterator it;
+  smtk::model::EntityRefs models =
+    modelMgr->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::MODEL_ENTITY);
+  it.traverse(models.begin(), models.end(), smtk::model::ITERATE_MODELS);
+
+  for (it.begin(); !it.isAtEnd(); ++it)
+    {
+    std::vector< smtk::mesh::CollectionPtr > result = meshMgr->associatedCollections(*it);
+    assocCollections.insert(result.begin(), result.end());
+    }
+
+  const std::size_t numberOfAssociations = assocCollections.size();
+  if(numberOfAssociations == 0)
+    {
+    return 1;
+    }
+
+  //step 1. Generate names for all the files to save
+
+  //split the filename into a name+path and extension
+  std::string extension = ".h5m";
+  std::string filePathNoExt;
+  const std::string::size_type dot_end_pos = fileWriteLocation.rfind(".");
+  if(dot_end_pos != std::string::npos)
+    { //need to remove the extension
+      filePathNoExt = fileWriteLocation.substr(0,dot_end_pos);
+    }
+  else
+    { //nothing to remove
+      filePathNoExt = fileWriteLocation;
+    }
+
+  //generate the names for each collection file
+  std::vector< std::string > collectionFileNames;
+  for(std::size_t i=0; i < numberOfAssociations; ++i)
+    {
+    std::stringstream buffer;
+    buffer << filePathNoExt << "." << i << extension;
+    collectionFileNames.push_back( buffer.str() );
+    }
+
+  //step 2. Save the mesh collection to the given filelocation
+  typedef std::set< smtk::mesh::CollectionPtr >::const_iterator cit;
+  std::size_t fileIndex = 0;
+  for(cit i= assocCollections.begin(); i != assocCollections.end(); ++i, ++fileIndex)
+    {
+    cJSON* collection = cJSON_CreateObject();
+
+    std::string collectionUUID = (*i)->entity().toString();
+    cJSON_AddItemToObject(mesh, collectionUUID.c_str(), collection);
+
+    cJSON_AddItemToObject(collection,"formatVersion", cJSON_CreateNumber(1));
+    cJSON_AddStringToObject(collection,"name", (*i)->name().c_str());
+    cJSON_AddStringToObject(collection, "fileType", "moab");
+    cJSON_AddStringToObject(collection, "location", collectionFileNames[fileIndex].c_str() );
+
+    smtk::io::WriteMesh::entireCollection(collectionFileNames[fileIndex], *i);
+    }
+  return 0;
 }
 
 /**\brief Export log records into a cJSON array.

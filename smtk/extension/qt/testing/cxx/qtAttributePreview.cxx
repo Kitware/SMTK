@@ -12,7 +12,6 @@
 // .SECTION Description
 // .SECTION See Also
 
-#include "smtk/extension/qt/qtRootView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/io/AttributeReader.h"
@@ -71,32 +70,24 @@ int main(int argc, char *argv[])
 
   // If system contains no views, create InstancedView by default
   // assume there is at most one root type view
-  smtk::common::ViewPtr root = system.findViewByType("Root");
-  
+  smtk::common::ViewPtr root = system.findTopLevelView();
+
   if (!root)
     {
-    root = smtk::common::View::New("Root", "RootView");
+    root = smtk::common::View::New("Group", "RootView");
     root->details().setAttribute("TopLevel", "true");
     system.addView(root);
-    }
-  // If the top view is empty then
-  int viewsIndex = root->details().findChild("Views");
-  if (viewsIndex < 0)
-    {
-    smtk::common::View::Component temp = root->details().addChild("Views");
-    viewsIndex = root->details().findChild("Views");
-    }
+    smtk::common::View::Component &temp = root->details().addChild("Views");
+    int viewsIndex = root->details().findChild("Views");
 
-  // If there the number of child views  is 0 then  lets add instances of all
-  // non-abstract attributE definitions
-  smtk::common::View::Component viewsComp = root->details().child(viewsIndex);
-  if (!viewsComp.numberOfChildren())
-    {
+    //  Lets add instances of all
+    // non-abstract attributE definitions
+    smtk::common::View::Component &viewsComp = root->details().child(viewsIndex);
     std::vector<smtk::attribute::DefinitionPtr> defs;
     std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
     system.findBaseDefinitions(baseDefinitions);
     std::vector<smtk::attribute::DefinitionPtr>::const_iterator baseIter;
-    
+
     for (baseIter = baseDefinitions.begin();
          baseIter != baseDefinitions.end();
          baseIter++)
@@ -106,21 +97,23 @@ int main(int argc, char *argv[])
         {
         //defs.push_back(*baseIter);
         }
-      
+
       std::vector<smtk::attribute::DefinitionPtr> derivedDefs;
       system.findAllDerivedDefinitions(*baseIter, true, derivedDefs);
       defs.insert(defs.end(), derivedDefs.begin(), derivedDefs.end());
       }
-    
+
     // Instantiate attribute for each concrete definition
     std::vector<smtk::attribute::DefinitionPtr>::const_iterator defIter;
     for (defIter = defs.begin(); defIter != defs.end(); defIter++)
       {
-      smtk::common::ViewPtr instanced = smtk::common::View::New((*defIter)->type(),
-                                                                "Instanced");
+      smtk::common::ViewPtr instanced =
+        smtk::common::View::New("Instanced", (*defIter)->type());
+      
       smtk::common::View::Component &comp =
         instanced->details().addChild("InstancedAttributes").addChild("Att");
       comp.setAttribute("Type", (*defIter)->type());
+      comp.setAttribute("Name", (*defIter)->type());
       system.addView(instanced);
       smtk::attribute::AttributePtr instance =
         system.createAttribute((*defIter)->type());

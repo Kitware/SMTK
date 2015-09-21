@@ -96,6 +96,13 @@ public:
     const std::string& site, const std::string& root,
     const std::string& workerPath, const std::string& requirementsFileName);
 
+
+  //write all mesh collections that have associations to a model
+  static int forMeshesOfModel(cJSON* meshDescription,
+                              smtk::model::ManagerPtr modelMgr,
+                              smtk::mesh::ManagerPtr meshMgr,
+                              const std::string& fileWriteLocation);
+
   static int forLog(
     cJSON* logrecordarray,
     const smtk::io::Logger& log,

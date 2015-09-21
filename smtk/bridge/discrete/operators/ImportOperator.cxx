@@ -38,7 +38,7 @@
   #include "smtk/bridge/discrete/extension/meshing/vtkCMBTriangleMesher.h"
 #endif
 
-#ifdef SMTK_ENABLE_MOAB_SUPPORT
+#ifdef SMTK_ENABLE_MOAB_DISCRETE_READER
 #include "smtk/bridge/discrete/moabreader/vtkCmbMoabReader.h"
 #endif
 
@@ -72,7 +72,7 @@ bool ImportOperator::ableToOperate()
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
   bool able = (ext == ".vtk" || ext == ".2dm" ||
                ext == ".3dm" ||
-#ifdef SMTK_ENABLE_MOAB_SUPPORT
+#ifdef SMTK_ENABLE_MOAB_DISCRETE_READER
                ext == ".h5m" || ext == ".sat" ||
                ext == ".brep" || ext == ".stp" ||
                ext == ".cub" || ext == ".exo" ||
@@ -139,7 +139,7 @@ OperatorResult ImportOperator::operateInternal()
      ext == ".brep" || ext == ".stp" ||
      ext == ".cub" || ext == ".exo" )
     {
-#ifdef SMTK_ENABLE_MOAB_SUPPORT
+#ifdef SMTK_ENABLE_MOAB_DISCRETE_READER
 
     vtkNew<vtkCmbMoabReader> reader;
     reader->SetFileName(filename.c_str());

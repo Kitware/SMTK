@@ -16,7 +16,6 @@
 #include "smtk/extension/qt/qtMeshSelectionItem.h"
 #include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtGroupView.h"
-#include "smtk/extension/qt/qtRootView.h"
 #include "smtk/extension/qt/qtInputsItem.h"
 #include "smtk/extension/qt/qtAttributeView.h"
 #include "smtk/extension/qt/qtInstancedView.h"
@@ -197,14 +196,13 @@ qtUIManager::qtUIManager(smtk::attribute::System &system) :
   this->advFont.setItalic(false);
   this->DefaultValueColor.setRgbF(1.0, 1.0, 0.5);
   this->InvalidValueColor.setRgbF(1.0, 0.5, 0.5);
- 
+
   this->m_currentAdvLevel = 0;
 
   // Lets register some basic view constructors
   this->registerViewConstructor("Attribute", qtAttributeView::createViewWidget);
   this->registerViewConstructor("Group", qtGroupView::createViewWidget);
   this->registerViewConstructor("Instanced", qtInstancedView::createViewWidget);
-  this->registerViewConstructor("Root", qtRootView::createViewWidget);
   this->registerViewConstructor("SimpleExpression", qtSimpleExpressionView::createViewWidget);
 }
 
@@ -226,7 +224,7 @@ void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
     delete this->m_topView;
     this->m_topView = NULL;
     }
-  
+
   if(!this->m_smtkView)
     {
     return;
@@ -301,6 +299,7 @@ void qtUIManager::setAdvanceLevel(int b)
 //----------------------------------------------------------------------------
 void qtUIManager::initAdvanceLevels(QComboBox* combo)
 {
+  combo->blockSignals(true);
   const std::map<int, std::string> &levels = this->m_AttSystem.advanceLevels();
   if(levels.size() == 0)
     {
@@ -308,6 +307,8 @@ void qtUIManager::initAdvanceLevels(QComboBox* combo)
     // two levels which is implicitly supported in previous version
     combo->addItem("General", 0);
     combo->addItem("Advanced", 1);
+
+    combo->setCurrentIndex(this->m_currentAdvLevel);
     }
   else
     {
@@ -315,8 +316,13 @@ void qtUIManager::initAdvanceLevels(QComboBox* combo)
     for (ait = levels.begin(); ait != levels.end(); ++ait)
       {
       combo->addItem(ait->second.c_str(), ait->first);
+      if (this->m_currentAdvLevel == ait->first)
+        {
+        combo->setCurrentIndex(combo->count() - 1);
+        }
       }
     }
+  combo->blockSignals(false);
 }
 
 
@@ -1245,7 +1251,7 @@ qtBaseView *qtUIManager::createView(smtk::common::ViewPtr smtkView,
     // Constructor for that type could not be found)
     return NULL;
     }
-  
+
   qtBaseView *qtView = (it->second)(smtkView, pWidget, this);
   return qtView;
 }

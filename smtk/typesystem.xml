@@ -7,12 +7,14 @@
   <suppress-warning text="namespace 'boost' does not have a type entry"/>
   <suppress-warning text="namespace 'cgm' does not have a type entry"/>
   <suppress-warning text="namespace 'google' does not have a type entry"/>
+  <suppress-warning text="namespace 'moab' does not have a type entry"/>
   <suppress-warning text="namespace 'mpl_' does not have a type entry"/>
   <suppress-warning text="namespace 'pugi' does not have a type entry"/>
   <suppress-warning text="namespace 'remote' does not have a type entry"/>
 	<suppress-warning text="namespace 'smtk::bridge' does not have a type entry"/>
 	<suppress-warning text="namespace 'smtk::bridge::remote' does not have a type entry"/>
 	<suppress-warning text="namespace 'smtk::internal' does not have a type entry"/>
+	<suppress-warning text="namespace 'smtk::mesh' does not have a type entry"/>
   <suppress-warning text="namespace 'std' does not have a type entry"/>
 
   <!-- Suppressed because they are memory variables-->
@@ -102,6 +104,7 @@
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::getRealArrayFromJSON', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::getIntegerArrayFromJSON', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerAnalysis', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofMeshesOfModel', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forDanglingEntities', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forLog', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerAnalysis', unmatched parameter type 'cJSON*'"/>
@@ -115,6 +118,7 @@
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerTessellation', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forModelOperators', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forModelWorker', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forMeshesOfModel', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperatorResult', unmatched parameter type 'smtk::model::OperatorResult const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::fromUUIDs', unmatched return type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::fromModelManager', unmatched parameter type 'cJSON*'"/>

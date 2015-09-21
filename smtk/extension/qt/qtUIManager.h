@@ -39,7 +39,7 @@ namespace smtk
     class qtModelEntityItem;
     class qtBaseView;
     class qtUIManager;
-    
+
     typedef qtBaseView* (*widgetConstructor)(smtk::common::ViewPtr, QWidget* p, qtUIManager* uiman);
 
     class SMTKQTEXT_EXPORT qtUIManager : public QObject
@@ -57,7 +57,7 @@ namespace smtk
                               bool useInternalFileBrowser=false);
       smtk::common::ViewPtr smtkView() const
       {return this->m_smtkView;}
-      
+
       smtk::attribute::System* attSystem() const
       {return &this->m_AttSystem;}
 
@@ -100,7 +100,7 @@ namespace smtk
       //Description:
       // Registers a view construction function with a view type string
       void registerViewConstructor(const std::string &vtype, widgetConstructor f);
-      
+
       qtBaseView* topView()
         {return this->m_topView;}
       static QString clipBoardText();
@@ -155,7 +155,7 @@ namespace smtk
     virtual int getWidthOfItemsMaxLabel(
       const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs,
       const QFont &font);
-    
+
     qtBaseView* createView(smtk::common::ViewPtr smtkView, QWidget *pWidget);
 
 #ifdef _WIN32
@@ -209,7 +209,7 @@ namespace smtk
 
       int m_maxValueLabelLength;
       int m_minValueLabelLength;
-      
+
       // current advance level to show advanced attributes/items
       int m_currentAdvLevel;
 
