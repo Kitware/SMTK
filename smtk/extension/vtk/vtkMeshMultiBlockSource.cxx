@@ -45,6 +45,7 @@
 #include <inttypes.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <iostream>
 
 using namespace smtk::model;
 
@@ -300,6 +301,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationForSingleMesh(
 
   if (!meshes.is_empty())
     {
+/*
     std::cout << "single mesh, size=" << meshes.size() << ", cells=" << meshes.cells().size() << std::endl;
     smtk::mesh::CellTypes ctypes = meshes.cells().types().cellTypes();
     std::cout << "TypeSet hasCells=" << meshes.cells().types().hasCells() << ", cellTypes=" << ctypes.size() << std::endl;
@@ -313,7 +315,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationForSingleMesh(
     std::cout << "CellType pyramid=" << ctypes[smtk::mesh::Pyramid] << std::endl;
     std::cout << "CellType wedge=" << ctypes[smtk::mesh::Wedge] << std::endl;
     std::cout << "CellType hex=" << ctypes[smtk::mesh::Hexahedron] << std::endl;
-    
+*/
     //we want all 0d, 1d, 2d, and shells of 3d elments
     smtk::mesh::MeshSet shell = meshes.subset(smtk::mesh::Dims3).extractShell();
     smtk::mesh::MeshSet twoD = meshes.subset(smtk::mesh::Dims2);
@@ -449,11 +451,18 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(
         vtkNew<vtkPolyData> poly;
         mbds->SetBlock(i, poly.GetPointer());
 
-        //TODO: Set the block name to a mesh name if it has one.
+        std::ostringstream defaultName;
+        defaultName << "mesh " << i;
+        smtk::mesh::MeshSet singleMesh = allMeshes.subset(i);
+        std::vector< std::string > meshNames = singleMesh.names();
+        std::string meshName = meshNames.size() > 0 ?
+                               meshNames[0] :
+                               defaultName.str();
+        // Set the block name to a mesh name if it has one.
         // for now, use "mesh (<cell type>) <index>" for name
-        // mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), cit->first.name().c_str());
+        mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), meshName.c_str());
         this->GenerateRepresentationForSingleMesh(
-          allMeshes.subset(i), poly.GetPointer(), smtk::model::EntityRef(), modelRequiresNormals);
+          singleMesh, poly.GetPointer(), smtk::model::EntityRef(), modelRequiresNormals);
         }
       }
     }

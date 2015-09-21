@@ -180,6 +180,13 @@ bool MeshSet::setModelEntities(const smtk::model::EntityRef& ent)
 }
 
 //----------------------------------------------------------------------------
+std::vector< std::string > MeshSet::names( ) const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  return iface->computeNames( this->m_range );
+}
+
+//----------------------------------------------------------------------------
 smtk::mesh::TypeSet MeshSet::types() const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
