@@ -131,13 +131,12 @@ void vtkMeshMultiBlockSource::Dirty()
 
 /// Add customized block info.
 /// Mapping from UUID to block id
-/// 'Volume' field array to color by volume
-static void internal_AddBlockInfo(smtk::model::ManagerPtr manager,
-  const smtk::model::EntityRef& entityref, const smtk::model::EntityRef& bordantCell,
+static void internal_AddBlockEntityInfo(
+  const smtk::model::EntityRef& entityref,
   const vtkIdType& blockId,
-  vtkPolyData* poly, std::map<smtk::common::UUID, unsigned int>& uuid2BlockId)
+  vtkPolyData* poly,
+  std::map<smtk::common::UUID, unsigned int>& uuid2BlockId )
 {
-  manager->setIntegerProperty(entityref.entity(), "block_index", blockId);
   uuid2BlockId[entityref.entity()] = static_cast<unsigned int>(blockId);
 
   // Add Entity UUID to fieldData
@@ -147,6 +146,21 @@ static void internal_AddBlockInfo(smtk::model::ManagerPtr manager,
   uuidArray->SetName(vtkModelMultiBlockSource::GetEntityTagName());
   uuidArray->SetValue(0, entityref.entity().toString());
   poly->GetFieldData()->AddArray(uuidArray.GetPointer());
+}
+
+/// Add customized block info.
+/// Mapping from UUID to block id
+/// 'Volume' field array to color by volume
+static void internal_AddBlockInfo(smtk::model::ManagerPtr manager,
+  const smtk::model::EntityRef& entityref,
+  const smtk::model::EntityRef& bordantCell,
+  const vtkIdType& blockId,
+  vtkPolyData* poly,
+  std::map<smtk::common::UUID, unsigned int>& uuid2BlockId)
+{
+  manager->setIntegerProperty(entityref.entity(), "block_index", blockId);
+
+  internal_AddBlockEntityInfo(entityref, blockId, poly, uuid2BlockId);
 
   smtk::model::EntityRefs vols;
   if(bordantCell.isValid() && bordantCell.isVolume())
@@ -463,6 +477,11 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(
         mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), meshName.c_str());
         this->GenerateRepresentationForSingleMesh(
           singleMesh, poly.GetPointer(), smtk::model::EntityRef(), modelRequiresNormals);
+        smtk::model::EntityRefArray ents = singleMesh.modelEntities();
+        if( ents.size() > 0 )
+          {
+          internal_AddBlockEntityInfo(ents[0], i, poly.GetPointer(), this->m_UUID2BlockIdMap);
+          }
         }
       }
     }
