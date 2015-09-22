@@ -334,11 +334,14 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& 
   //the MODEL_ENTITY will be associated with the meshset that contains all
   // meshes.
   CoordinateOffsetMap coordinateLocationMapping;
-  for( int entAsInt =0; entAsInt != 4; ++entAsInt)
+
+  EntityTypeBits etypes[4] = { smtk::model::VERTEX, smtk::model::EDGE,
+                               smtk::model::FACE, smtk::model::VOLUME };
+  for(int i=0; i != 4; ++i)
     {
     //extract all the coordinates from every tessellation and make a single
     //big pool
-    EntityTypeBits entType = static_cast<EntityTypeBits>(entAsInt);
+    EntityTypeBits entType = etypes[i];
     EntityRefs currentEnts = modelManager->entitiesMatchingFlagsAs<EntityRefs>(entType);
     detail::removeOnesWithoutTess(currentEnts);
     detail::convert_vertices(currentEnts,
@@ -349,9 +352,9 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& 
 
   //We need to iterate over each model i think here
   //next we convert all volumes, faces, edges, and vertices that have tessellation
-  for( int entAsInt =0; entAsInt != 4; ++entAsInt)
+  for(int i=0; i != 4; ++i)
   {
-  EntityTypeBits entType = static_cast<EntityTypeBits>(entAsInt);
+  EntityTypeBits entType = etypes[i];
   EntityRefs currentEnts = modelManager->entitiesMatchingFlagsAs<EntityRefs>(entType);
   detail::removeOnesWithoutTess( currentEnts );
   if( !currentEnts.empty() )
