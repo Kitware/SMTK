@@ -111,7 +111,13 @@ def PrintResultLog(res, always = False):
   """Given an operator result, print log messages if unsuccessful."""
   if always or res.findInt('outcome').value(0) != smtk.model.OPERATION_SUCCEEDED:
     slog = res.findString('log')
-    print '\n'.join([slog.value(i) for i in range(slog.numberOfValues())])
+    tmplog = smtk.io.Logger()
+    smtk.io.ImportJSON.ofLog(slog.value(0), tmplog)
+    print '\n'.join(
+        [
+          tmplog.severityAsString(tmplog.record(i).severity) + ': ' +
+          tmplog.record(i).message for i in range(tmplog.numberOfRecords())])
+    #print '\n'.join([slog.value(i) for i in range(slog.numberOfValues())])
 
 def CreateModel(**args):
   """Create an empty geometric model.
