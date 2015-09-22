@@ -118,10 +118,11 @@ bool convert_vertices(const smtk::model::EntityRefs& ents,
     //find the start of its coordinates, this will allow us to properly
     //create the new connectivity for the mesh referencing the global
     //point coordinate array
-    mapping[*it]=pos;
+    mapping[*it]=firstVertHandle + pos;
 
     //while a little more complex, this way avoids branching or comparisons
     //against dimension while filling the memory
+
     if(dimension == 3)
       {
       for( std::size_t i=0; i < length; i+=3, pos++)
