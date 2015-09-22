@@ -13,6 +13,7 @@ set(meshSrcs
   moab/CellTypeToType.cxx
   moab/Interface.cxx
   moab/ConnectivityStorage.cxx
+  moab/MergeMeshVertices.cxx
   moab/Readers.cxx
   moab/Writers.cxx
   )
