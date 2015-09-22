@@ -83,6 +83,7 @@ public:
   smtk::model::EntityRefArray modelEntities() const;
   bool setModelEntities(const smtk::model::EntityRef&);
 
+  std::vector< std::string > names() const;
   smtk::mesh::TypeSet types() const;
   smtk::mesh::CellSet cells() const; //all cells of the meshset
   smtk::mesh::PointSet points() const; //all points of the meshset
@@ -99,6 +100,9 @@ public:
   smtk::mesh::MeshSet   subset( const smtk::mesh::Domain& d ) const;
   smtk::mesh::MeshSet   subset( const smtk::mesh::Dirichlet& d ) const;
   smtk::mesh::MeshSet   subset( const smtk::mesh::Neumann& n ) const;
+
+  //subset this MeshSet given an index into moab entity sets (m_range)
+  smtk::mesh::MeshSet   subset( std::size_t ith ) const;
 
   //Extract the shell ( exterior face elements ) of this set of meshes
   //This operation might create new cells if no shell already exists

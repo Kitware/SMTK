@@ -63,7 +63,7 @@ smtk::model::OperatorResult RemoveModel::operateInternal()
   } //namespace bridge
 } // namespace smtk
 
-#include "RemoveModel_xml.h"
+#include "smtk/bridge/cgm/RemoveModel_xml.h"
 
 smtkImplementsModelOperator(
   SMTKCGMSESSION_EXPORT,

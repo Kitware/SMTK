@@ -1,4 +1,5 @@
 set(VTKLibSrcs
+  vtkMeshMultiBlockSource.cxx
   vtkModelMultiBlockSource.cxx
   vtkModelRepresentation.cxx
   vtkModelSource.cxx
@@ -6,6 +7,7 @@ set(VTKLibSrcs
 )
 
 set(VTKLibHeaders
+  vtkMeshMultiBlockSource.h
   vtkModelMultiBlockSource.h
   vtkModelRepresentation.h
   vtkModelSource.h
@@ -48,6 +50,7 @@ endif()
 # backend became available.
 set(SMTK_VTK_TARGET_LIST)
 foreach(target
+  vtkFiltersGeometry
   vtkInteractionStyle
   vtkRenderingContext2D
   vtkRenderingMatplotlib

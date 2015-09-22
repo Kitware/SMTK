@@ -50,6 +50,10 @@ public:
 
   bool fetch_name(const smtk::mesh::Handle& entity)
   {
+  if(!m_tag)
+    {
+    return false;
+    }
   ::moab::ErrorCode rval= m_iface->tag_get_data(m_tag,&entity,1,&m_tagData);
   return (rval == ::moab::MB_SUCCESS);
   }
