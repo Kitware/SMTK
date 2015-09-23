@@ -19,6 +19,8 @@ public:
   smtkSharedFromThisMacro(entity);
   virtual ~edge() { }
 
+  std::size_t pointsSize() const { return this->m_points.size(); }
+
   PointSeq::const_iterator pointsBegin() const { return this->m_points.begin(); }
   PointSeq::iterator pointsBegin() { return this->m_points.begin(); }
 

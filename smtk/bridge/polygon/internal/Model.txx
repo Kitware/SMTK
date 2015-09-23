@@ -18,7 +18,7 @@ namespace smtk {
   * + Only the initial and final points may have model vertices associated
   *   with their locations.
   * + If the initial and final points are not identical, then model vertices
-  *   must be associated with their locations and those vertices must not
+  *   *must* be associated with their locations and those vertices must not
   *   have faces that overlap the edge. (This is verified before creation
   *   but only the immediate neighborhood of the endpoints is checked by
   *   examining face adjacencies at the location where the new edge would
@@ -81,9 +81,15 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
 
   // Insert edge at proper place in model vertex edge-lists
   if (vInitStorage)
+    {
     vInitStorage->insertEdgeAt(whereBegin, created.entity(), /* edge is outwards: */ true);
+    }
   if (vFiniStorage)
+    {
     vFiniStorage->insertEdgeAt(whereEnd, created.entity(), /* edge is outwards: */ false);
+    }
+  // Add tesselation to created edge using storage to lift point coordinates:
+  this->addEdgeTessellation(created, storage);
 
   return created;
 }

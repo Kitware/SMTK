@@ -31,6 +31,9 @@ public:
     };
   typedef std::list<incident_edge_data> incident_edges;
 
+  const Point& point() const { return this->m_coords; }
+  Point point() { return this->m_coords; }
+
   bool canInsertEdge(const Point& neighborhood, incident_edges::iterator* where);
   void insertEdgeAt(incident_edges::iterator where, const Id& edgeId, bool edgeOutwards);
 

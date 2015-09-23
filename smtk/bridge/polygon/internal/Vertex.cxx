@@ -15,8 +15,16 @@ namespace smtk {
   */
 bool vertex::canInsertEdge(const Point& neighborhood, incident_edges::iterator* where)
 {
-  if (this->m_edges.empty())
+  // Early termination... 0 or 1 existing vertices are always in CCW order no
+  // matter where we insert
+  if (this->m_edges.size() < 2)
     {
+    // A vertex with 1 incident edge that is part of a face has face completely
+    // surrounding the vertex; it will never be valid to insert another edge
+    // there without removing the face first.
+    if (!this->m_edges.empty() && this->m_edges.front().m_adjacentFace)
+      return false;
+    // Otherwise, it is always valid to insert a new edge anywhere.
     if (where)
       *where = this->m_edges.begin();
     return true;
@@ -24,15 +32,19 @@ bool vertex::canInsertEdge(const Point& neighborhood, incident_edges::iterator* 
 
   pmodel* model = this->parentAs<pmodel>();
   Segment testRay(this->m_coords, neighborhood);
+  std::cout
+    << "  Vert test v (" << this->m_coords.x() << " " << this->m_coords.y() << ")"
+    << " n (" << neighborhood.x() << " " << neighborhood.y() << ")\n";
   Point lastRadialPoint(
     model->edgeTestPoint(
-      this->m_edges.back().m_edgeId, this->m_edges.back().m_edgeOut));
+      this->m_edges.back().m_edgeId, !this->m_edges.back().m_edgeOut));
   int lastRadialOrientation = boost::polygon::orientation(testRay, lastRadialPoint);
   incident_edges::iterator it;
   for (it = this->m_edges.begin(); it != this->m_edges.end(); ++it)
     {
-    Point x = model->edgeTestPoint(it->m_edgeId, it->m_edgeOut);
+    Point x = model->edgeTestPoint(it->m_edgeId, !it->m_edgeOut);
     int sense = boost::polygon::orientation(testRay, x);
+    std::cout << "    s " << sense << " " << lastRadialOrientation << " (" << x.x() << " " << x.y() << ")\n";
     switch (sense)
       {
     case 1: // See if the previous edge brackets it.
@@ -78,6 +90,7 @@ bool vertex::canInsertEdge(const Point& neighborhood, incident_edges::iterator* 
     lastRadialPoint = x;
     lastRadialOrientation = sense;
     }
+  std::cout << "--\n";
   smtkErrorMacro(model->session()->log(),
     "Could not find enclosing edge pair.");
   return false;

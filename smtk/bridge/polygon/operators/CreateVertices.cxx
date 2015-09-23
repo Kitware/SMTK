@@ -41,27 +41,6 @@ smtk::model::OperatorResult CreateVertices::operateInternal()
     result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
     this->addEntitiesToResult(result, verts, CREATED);
     }
-  /*
-  if (ok)
-    {
-    smtk::bridge::polygon::Session* sess = this->polygonSession();
-    smtk::model::Manager::Ptr mgr;
-    if (sess)
-      {
-      mgr = sess->manager();
-      smtk::model::Model model = mgr->addModel(/ * par. dim. * / 2, / * emb. dim. * / 3, "model");
-      storage->setId(model.entity());
-      result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
-      this->addEntityToResult(result, model, CREATED);
-      model.setFloatProperty("x axis", smtk::model::FloatList(storage->xAxis(), storage->xAxis() + 3));
-      model.setFloatProperty("y axis", smtk::model::FloatList(storage->yAxis(), storage->yAxis() + 3));
-      model.setFloatProperty("normal", smtk::model::FloatList(storage->zAxis(), storage->zAxis() + 3));
-      model.setFloatProperty("origin", smtk::model::FloatList(storage->origin(), storage->origin() + 3));
-      model.setFloatProperty("feature size", storage->featureSize());
-      model.setIntegerProperty("model scale", storage->modelScale());
-      }
-    }
-  */
   if (!result)
     {
     result = this->createResult(smtk::model::OPERATION_FAILED);

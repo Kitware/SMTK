@@ -1,9 +1,11 @@
 #include "smtk/bridge/polygon/internal/Model.h"
+#include "smtk/bridge/polygon/internal/Edge.h"
 
 #include "smtk/model/Session.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Vertex.h"
+#include "smtk/model/Tessellation.h"
 #include "smtk/io/Logger.h"
 
 #include "smtk/bridge/polygon/internal/Model.txx"
@@ -279,6 +281,32 @@ Point pmodel::edgeTestPoint(const Id& edgeId, bool edgeEndPt) const
       }
     }
   return Point(); // FIXME: Do something better? detectable?
+}
+
+void pmodel::addEdgeTessellation(smtk::model::Edge& edgeRec, internal::edge::Ptr edgeData)
+{
+  if (!edgeRec.isValid() || !edgeData)
+    return;
+
+  smtk::model::Manager::Ptr mgr = edgeRec.manager();
+  smtk::model::Tessellation empty;
+  UUIDsToTessellations::iterator tessIt =
+    mgr->setTessellation(edgeRec.entity(), empty);
+
+  // Now populate the tessellation in place.
+  PointSeq::const_iterator ptIt;
+  std::vector<double> coords(3);
+  std::size_t numPts = edgeData->pointsSize();
+  std::vector<int> conn;
+  conn.reserve(numPts + 2);
+  conn.push_back(smtk::model::TESS_POLYLINE);
+  conn.push_back(numPts);
+  for (ptIt = edgeData->pointsBegin(); ptIt != edgeData->pointsEnd(); ++ptIt)
+    {
+    this->liftPoint(*ptIt, coords.begin());
+    conn.push_back(tessIt->second.addCoords(&coords[0]));
+    }
+  tessIt->second.insertCell(0, conn);
 }
 
 Id pmodel::pointId(const Point& p) const

@@ -60,6 +60,8 @@ public:
 
   Point edgeTestPoint(const Id& edgeId, bool edgeEndPt) const;
 
+  void addEdgeTessellation(smtk::model::Edge& edgeRec, internal::EdgePtr edgeData);
+
   double* origin() { return this->m_origin; }
   const double* origin() const { return this->m_origin; }
 
