@@ -12,6 +12,10 @@ namespace smtk {
       namespace internal {
 
 /**\brief Return true if the edge can be inserted.
+  *
+  * FIXME: This will have precision issues with small angles because
+  *        sqrt() is not calculated with intervals and overflow may
+  *        occur when edge neighbor-points are far from each other.
   */
 bool vertex::canInsertEdge(const Point& neighborhood, incident_edges::iterator* where)
 {
@@ -31,68 +35,71 @@ bool vertex::canInsertEdge(const Point& neighborhood, incident_edges::iterator* 
     }
 
   pmodel* model = this->parentAs<pmodel>();
-  Segment testRay(this->m_coords, neighborhood);
-  std::cout
-    << "  Vert test v (" << this->m_coords.x() << " " << this->m_coords.y() << ")"
-    << " n (" << neighborhood.x() << " " << neighborhood.y() << ")\n";
-  Point lastRadialPoint(
+  Point pt(
+    neighborhood.x() - this->m_coords.x(),
+    neighborhood.y() - this->m_coords.y()
+  );
+
+  Point prevPt(
     model->edgeTestPoint(
       this->m_edges.back().m_edgeId, !this->m_edges.back().m_edgeOut));
-  int lastRadialOrientation = boost::polygon::orientation(testRay, lastRadialPoint);
+  Point pa(
+    prevPt.x() - this->m_coords.x(),
+    prevPt.y() - this->m_coords.y()
+  );
   incident_edges::iterator it;
   for (it = this->m_edges.begin(); it != this->m_edges.end(); ++it)
     {
-    Point x = model->edgeTestPoint(it->m_edgeId, !it->m_edgeOut);
-    int sense = boost::polygon::orientation(testRay, x);
-    std::cout << "    s " << sense << " " << lastRadialOrientation << " (" << x.x() << " " << x.y() << ")\n";
-    switch (sense)
-      {
-    case 1: // See if the previous edge brackets it.
-      switch (lastRadialOrientation)
+    Point currPt = model->edgeTestPoint(it->m_edgeId, !it->m_edgeOut);
+    Point pb(
+      currPt.x() - this->m_coords.x(),
+      currPt.y() - this->m_coords.y()
+    );
+
+    bool inside;
+    Coord axb = pa.x() * pb.y() - pb.x() * pa.y();
+    if (axb < 0)
+      { // CCW angle between pa and pb is < 180 degrees
+      Coord axt = pa.x() * pt.y() - pt.x() * pa.y();
+      if (axt < 0)
+        inside = false; // vectors pa->pb don't bracket pt CCW
+      long double mb = sqrt(pb.x() * pb.x() + pb.y() * pb.y());
+      long double mt = sqrt(pt.x() * pt.x() + pt.y() * pt.y());
+      if (axt * mb < axb * mt)
+        { // pa->pb brackets pt CCW.
+        inside = true;
+        }
+      }
+    else
+      { // CCW angle between pa and pb is >= 180 degrees
+      Coord bxt = pb.x() * pt.y() - pt.x() * pb.y();
+      inside = (bxt < 0);
+      if (!inside)
         {
-      case 1: // Both edges to same side. Keep searching.
-        break;
-      case -1: // Found enclosing edge pair.
-        if (!it->m_adjacentFace)
-          { // There is no face; it's OK to add the edge here.
-          if (where)
-            *where = it;
-          return true;
-          }
-        else
-          {
-          smtkErrorMacro(model->session()->log(),
-            "Edge would split face " << it->m_adjacentFace);
-          return false;
-          }
-        break;
-      case 0:
-      default:
-          {
-          smtkErrorMacro(model->session()->log(),
-            "Insertion would lead to coincident edges.");
-          return false;
-          }
-        break;
-        };
-      break;
-    case -1: // Keep moving CCW around edges.
-      break;
-    default:
-    case 0: // Oops, this edge is coincident with another model edge. Fail.
+        Coord bxa = -axb;
+        long double ma = sqrt(pa.x() * pa.x() + pa.y() * pa.y());
+        long double mt = sqrt(pt.x() * pt.x() + pt.y() * pt.y());
+        inside = (bxt * ma > bxa * mt);
+        }
+      }
+    if (inside)
+      {
+      if (!it->m_adjacentFace)
+        { // There is no face; it's OK to add the edge here.
+        if (where)
+          *where = it;
+        return true;
+        }
+      else
         {
         smtkErrorMacro(model->session()->log(),
-          "Insertion would lead to coincident edges.");
+          "Edge would split face " << it->m_adjacentFace);
         return false;
         }
-      break;
       }
-    lastRadialPoint = x;
-    lastRadialOrientation = sense;
+    pa = pb;
     }
-  std::cout << "--\n";
-  smtkErrorMacro(model->session()->log(),
-    "Could not find enclosing edge pair.");
+  smtkErrorMacro(model->session()->log(), "Collinear edges");
   return false;
 }
 

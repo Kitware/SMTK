@@ -86,9 +86,9 @@ class TestPolygonCreation(smtk.testing.TestCase):
     logStr = res.findString('log').value(0)
     log = smtk.io.Logger()
     smtk.io.ImportJSON.ofLog(logStr, log)
-    #self.assertEqual(
-    #    log.numberOfRecords(), 3,
-    #    'Expected 3 warnings due to invalid offsets')
+    self.assertEqual(
+        log.numberOfRecords(), 3,
+        'Expected 3 warnings due to invalid offsets')
     #print elist
 
     # Now test creation of periodic edge with no model vertices.
@@ -112,6 +112,30 @@ class TestPolygonCreation(smtk.testing.TestCase):
 
     mod = CreateModel(x_axis=[1,0,0], normal=[0,0,1], model_scale=1182720)
     self.checkModel(mod, [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], 1, 1182720)
+
+    if self.haveVTK() and self.haveVTKExtension():
+
+      self.startRenderTest()
+
+      self.addModelToScene(mod)
+
+      cam = self.renderer.GetActiveCamera()
+      #cam.SetFocalPoint(0.125, 0.7, -0.1)
+      #cam.SetPosition(2,-1,1)
+      #cam.SetViewUp(-1,1,1)
+      self.renderer.ResetCamera()
+      self.renderWindow.Render()
+      # Skip the image match if we don't have a baseline.
+      # This allows the test to succeed even on systems without the test
+      # data but requires a match on systems with the test data.
+      self.assertImageMatchIfFileExists(['baselines', 'polygon', 'creation.png'])
+      self.interact()
+
+    else:
+      self.assertFalse(
+        self.haveVTKExtension(),
+        'Could not import vtk. Python path is {pp}'.format(pp=sys.path))
+
 
 if __name__ == '__main__':
   smtk.testing.process_arguments()
