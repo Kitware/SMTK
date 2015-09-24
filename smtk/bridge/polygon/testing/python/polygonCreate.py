@@ -95,7 +95,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
     # Verify that no model vertices are created.
     periodicEdgeVerts = [[0, 4], [1, 4], [1, 5], [0, 5], [0, 4]]
     elist = CreateEdge(periodicEdgeVerts, model=mod)
-    smtk.io.ExportJSON.fromModelManagerToFile(self.mgr, '/tmp/poly.json')
+    #smtk.io.ExportJSON.fromModelManagerToFile(self.mgr, '/tmp/poly.json')
 
   def testCreation(self):
     mod = CreateModel()
