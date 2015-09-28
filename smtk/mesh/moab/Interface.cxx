@@ -19,11 +19,12 @@
 #include "smtk/mesh/moab/CellTypeToType.h"
 #include "smtk/mesh/moab/Allocator.h"
 #include "smtk/mesh/moab/ConnectivityStorage.h"
+#include "smtk/mesh/moab/MergeMeshVertices.h"
 
 #include "moab/Core.hpp"
 #include "moab/FileOptions.hpp"
 #include "moab/Interface.hpp"
-#include "moab/MergeMesh.hpp"
+
 #include "moab/ReaderIface.hpp"
 #include "moab/Skinner.hpp"
 
@@ -788,9 +789,8 @@ bool Interface::mergeCoincidentContactPoints(const smtk::mesh::HandleRange& mesh
 {
   //we want to merge the contact points for all dimensions
   //of the meshes, not just the highest dimension i expect
-  ::moab::MergeMesh meshmerger(this->moabInterface());
-  smtk::mesh::HandleRange temp = meshes; //merge_entities takes by non const ref
-  ::moab::ErrorCode rval = meshmerger.merge_entities(temp, tolerance);
+  smtk::mesh::moab::MergeMeshVertices meshmerger(this->moabInterface());
+  ::moab::ErrorCode rval = meshmerger.merge_entities(meshes, tolerance);
   return (rval == ::moab::MB_SUCCESS);
 }
 

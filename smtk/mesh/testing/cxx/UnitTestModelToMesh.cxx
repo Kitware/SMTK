@@ -290,8 +290,12 @@ void verify_vertex_conversion()
   //Some bug in our point logic as 1 / 10 times the results are incorrect
   //need to figure out why
   smtk::mesh::PointSet points = c->points( );
-  std::cout << "num points: " << points.size() << std::endl;
-  std::cout << "num points 2: " << c->cells().points().size() << std::endl;
+  test( points.size() == 28, "Should be exactly 28 points in the original mesh");
+
+  c->meshes().mergeCoincidentContactPoints();
+
+  points = c->points( );
+  test( points.size() == 7, "After merging of identical points we should have 7");
 }
 
 //----------------------------------------------------------------------------
