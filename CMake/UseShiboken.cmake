@@ -85,6 +85,7 @@ function(sbk_wrap_library NAME)
     EXTRA_INCLUDES
     LOCAL_INCLUDE_DIRECTORIES
     GENERATOR_ARGS
+    PACKAGE
   )
   cmake_parse_arguments(""
     ""
@@ -95,6 +96,12 @@ function(sbk_wrap_library NAME)
 
   if(NOT _WORKING_DIRECTORY)
     set(_WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  endif()
+
+  if(NOT _PACKAGE)
+    set(package "")
+  else()
+    set(package "/${_PACKAGE}")
   endif()
 
   # Get base include directories
@@ -299,8 +306,15 @@ function(sbk_wrap_library NAME)
     set_target_properties(${_pyname} PROPERTIES COMPILE_FLAGS " -Wno-cast-qual -Wno-missing-field-initializers -Wno-unused-function -Wno-unused-parameter -Wno-overloaded-virtual")
   endif()
 
+  if (PYTHON_INSTALL_DIR)
+    set(python_install_dir ${PYTHON_INSTALL_DIR})
+  elseif (WIN32)
+    set(python_install_dir bin/Lib/site-packages)
+  else ()
+    set(python_install_dir ${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION}/site-packages)
+  endif ()
 
-  INSTALL(TARGETS ${_pyname} RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
+  INSTALL(TARGETS ${_pyname} RUNTIME DESTINATION ${python_install_dir}${package} LIBRARY DESTINATION ${python_install_dir}${package} ARCHIVE DESTINATION lib)
 
   foreach(_dep ${_DEPENDS})
     add_dependencies(${_pyname} ${_dep}Python)

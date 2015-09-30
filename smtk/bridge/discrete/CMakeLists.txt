@@ -241,6 +241,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
   #extract the headers from discrete library we built to give them to shiboken
 
   sbk_wrap_library(smtkDiscreteSession
+    PACKAGE smtk
     GENERATOR_ARGS --avoid-protected-hack
     WORKING_DIRECTORY ${SMTK_SOURCE_DIR}/smtk
     LOCAL_INCLUDE_DIRECTORIES
