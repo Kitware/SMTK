@@ -118,10 +118,11 @@ bool convert_vertices(const smtk::model::EntityRefs& ents,
     //find the start of its coordinates, this will allow us to properly
     //create the new connectivity for the mesh referencing the global
     //point coordinate array
-    mapping[*it]=pos;
+    mapping[*it]=firstVertHandle + pos;
 
     //while a little more complex, this way avoids branching or comparisons
     //against dimension while filling the memory
+
     if(dimension == 3)
       {
       for( std::size_t i=0; i < length; i+=3, pos++)
@@ -334,11 +335,14 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& 
   //the MODEL_ENTITY will be associated with the meshset that contains all
   // meshes.
   CoordinateOffsetMap coordinateLocationMapping;
-  for( int entAsInt =0; entAsInt != 4; ++entAsInt)
+
+  EntityTypeBits etypes[4] = { smtk::model::VERTEX, smtk::model::EDGE,
+                               smtk::model::FACE, smtk::model::VOLUME };
+  for(int i=0; i != 4; ++i)
     {
     //extract all the coordinates from every tessellation and make a single
     //big pool
-    EntityTypeBits entType = static_cast<EntityTypeBits>(entAsInt);
+    EntityTypeBits entType = etypes[i];
     EntityRefs currentEnts = modelManager->entitiesMatchingFlagsAs<EntityRefs>(entType);
     detail::removeOnesWithoutTess(currentEnts);
     detail::convert_vertices(currentEnts,
@@ -349,9 +353,9 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& 
 
   //We need to iterate over each model i think here
   //next we convert all volumes, faces, edges, and vertices that have tessellation
-  for( int entAsInt =0; entAsInt != 4; ++entAsInt)
+  for(int i=0; i != 4; ++i)
   {
-  EntityTypeBits entType = static_cast<EntityTypeBits>(entAsInt);
+  EntityTypeBits entType = etypes[i];
   EntityRefs currentEnts = modelManager->entitiesMatchingFlagsAs<EntityRefs>(entType);
   detail::removeOnesWithoutTess( currentEnts );
   if( !currentEnts.empty() )

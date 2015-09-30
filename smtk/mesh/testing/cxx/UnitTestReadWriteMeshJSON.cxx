@@ -194,6 +194,38 @@ void verify_writing_collection_with_no_association_fails()
 }
 
 //----------------------------------------------------------------------------
+void verify_writing_of_single_collection()
+{
+  std::string file_path(data_root);
+  file_path += "/mesh/twoassm_out.h5m";
+
+  std::string write_path(write_root);
+  write_path += "/output.h5m";
+
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
+  test( c->isValid(), "collection should be valid");
+
+  std::size_t numMeshes = c->numberOfMeshes();
+  test( numMeshes!=0, "dataset once loaded should have more than zero meshes");
+  test( numMeshes == 53, "dataset once loaded should have 53 meshes");
+
+  //add some fake boundary conditions
+  c->meshes( smtk::mesh::Domain(444) ).setDirichlet( smtk::mesh::Dirichlet(2) );
+  c->meshes( smtk::mesh::Domain(444) ).setNeumann( smtk::mesh::Neumann(3) );
+  c->meshes( smtk::mesh::Domain(446) ).setNeumann( smtk::mesh::Neumann(2) );
+
+  //verify that we can write this out even when we have no model associations
+  //by using forSingleCollection
+  cJSON* top = cJSON_CreateObject();
+  const bool exportGood = smtk::io::ExportJSON::forSingleCollection(top,
+                                                                    c,
+                                                                    write_path);
+
+  test(exportGood == 0, "Expected the Export of forSingleCollection to pass");
+}
+
+//----------------------------------------------------------------------------
 void verify_loading_existing_collection_fails()
 {
   std::string write_path(write_root);
@@ -240,6 +272,8 @@ int UnitTestReadWriteMeshJSON(int, char**)
   verify_writing_and_loading_multiple_collections();
 
   verify_writing_collection_with_no_association_fails();
+
+  verify_writing_of_single_collection();
 
   verify_loading_existing_collection_fails();
 

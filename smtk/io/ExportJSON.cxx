@@ -722,18 +722,167 @@ int ExportJSON::forMeshesOfModel(cJSON* mdesc,
   std::size_t fileIndex = 0;
   for(cit i= assocCollections.begin(); i != assocCollections.end(); ++i, ++fileIndex)
     {
-    cJSON* collection = cJSON_CreateObject();
-
-    std::string collectionUUID = (*i)->entity().toString();
-    cJSON_AddItemToObject(mesh, collectionUUID.c_str(), collection);
-
-    cJSON_AddItemToObject(collection,"formatVersion", cJSON_CreateNumber(1));
-    cJSON_AddStringToObject(collection,"name", (*i)->name().c_str());
-    cJSON_AddStringToObject(collection, "fileType", "moab");
-    cJSON_AddStringToObject(collection, "location", collectionFileNames[fileIndex].c_str() );
-
-    smtk::io::WriteMesh::entireCollection(collectionFileNames[fileIndex], *i);
+    forSingleCollection(mesh,*i,collectionFileNames[fileIndex]);
     }
+  return 0;
+}
+
+namespace {
+
+
+//--------------------------------------------------------------------------
+template< typename T>
+void writeIntegerValues( cJSON* parent,
+                       std::vector<T> const& values,
+                       std::string name )
+{
+  cJSON* a = cJSON_CreateArray();
+  for (std::size_t i = 0; i < values.size(); ++i)
+    {
+    cJSON_AddItemToArray(a, cJSON_CreateNumber(values[i].value()));
+    }
+  cJSON_AddItemToObject(parent, name.c_str(), a);
+}
+
+//--------------------------------------------------------------------------
+void writeBoundaryConditions( cJSON* parent, const smtk::mesh::MeshSet& mesh)
+{
+  cJSON* boundaryJson = cJSON_CreateObject();
+  cJSON_AddItemToObject(parent, "boundary_conditions", boundaryJson);
+
+  std::size_t index = 0;
+  std::stringstream buffer;
+
+  //list out the dirichlets that this mesheset contains
+  std::vector< smtk::mesh::Dirichlet > dirichlets = mesh.dirichlets();
+  for(std::size_t i=0; i < dirichlets.size(); ++i)
+    {
+    cJSON* conditionJson = cJSON_CreateObject();
+    cJSON_AddItemToObject(conditionJson,"value", cJSON_CreateNumber(dirichlets[i].value()));
+    cJSON_AddItemToObject(conditionJson,"type", cJSON_CreateString("dirichlet"));
+
+    //convert the index to a string.
+    buffer << index++;
+    std::string sindex = buffer.str();
+    cJSON_AddItemToObject(boundaryJson, sindex.c_str(), conditionJson);
+
+    buffer.str("");
+    }
+
+  //list out the neumanns that this mesheset contains
+  std::vector< smtk::mesh::Neumann > neumanns = mesh.neumanns();
+  for(std::size_t i=0; i < neumanns.size(); ++i)
+    {
+    cJSON* conditionJson = cJSON_CreateObject();
+    cJSON_AddItemToObject(conditionJson,"value", cJSON_CreateNumber(neumanns[i].value()));
+    cJSON_AddItemToObject(conditionJson,"type", cJSON_CreateString("neumann"));
+
+    //convert the index to a string.
+    buffer << index++;
+    std::string sindex = buffer.str();
+    cJSON_AddItemToObject(boundaryJson, sindex.c_str(), conditionJson);
+    }
+}
+
+//--------------------------------------------------------------------------
+void writeUUIDValues( cJSON* parent,
+                smtk::common::UUIDArray const& values,
+                std::string name )
+{
+  cJSON_AddItemToObject(parent, name.c_str(),
+                        cJSON_CreateUUIDArray(&values[0], values.size()) );
+}
+
+class ForMeshset : public smtk::mesh::MeshForEach
+{
+public:
+  ForMeshset(cJSON* json):
+    smtk::mesh::MeshForEach(),
+    m_json(json),
+    m_index(0)
+  {
+  }
+
+  //--------------------------------------------------------------------------
+  void write(const smtk::mesh::MeshSet& mesh, cJSON* parent)
+  {
+    std::size_t numCells = mesh.cells().size();
+    std::size_t numPoints = mesh.points().size();
+    std::string cell_bit_types = mesh.types().cellTypes().to_string();
+
+    cJSON_AddItemToObject(parent,"nc", cJSON_CreateNumber(numCells));
+    cJSON_AddItemToObject(parent,"np", cJSON_CreateNumber(numPoints));
+    cJSON_AddStringToObject(parent,"cell_types", cell_bit_types.c_str());
+
+    //list out the domains that this mesheset contains
+    std::vector< smtk::mesh::Domain > domains = mesh.domains();
+    writeIntegerValues(parent, domains, std::string("domains") );
+
+    //write out the boundary conditions of this meshset
+    writeBoundaryConditions(parent, mesh);
+
+    //list out the model associations that this mesheset contains
+    smtk::common::UUIDArray modelEntityIds = mesh.modelEntityIds();
+    writeUUIDValues(parent, modelEntityIds, std::string("modelEntityIds") );
+  }
+
+
+  //--------------------------------------------------------------------------
+  void operator()(const smtk::mesh::MeshSet& mesh)
+  {
+    cJSON* meshJson = cJSON_CreateObject();
+
+    this->write(mesh, meshJson);
+
+    //convert the index to a string. assign it as the name of the meshset
+    std::stringstream buffer;
+    buffer << this->m_index++;
+    std::string sindex = buffer.str();
+
+    cJSON_AddItemToObject(this->m_json,
+                          sindex.c_str(),
+                          meshJson);
+  }
+
+private:
+  cJSON* m_json;
+  int m_index;
+};
+
+}
+/**\brief Serialize a single mesh colelction
+  *
+  */
+int ExportJSON::forSingleCollection(cJSON* mdesc,
+                                    smtk::mesh::CollectionPtr collection,
+                                    const std::string &fileWriteLocation)
+{
+  cJSON* jsonCollection = cJSON_CreateObject();
+
+  std::string collectionUUID = collection->entity().toString();
+  cJSON_AddItemToObject(mdesc, collectionUUID.c_str(), jsonCollection);
+
+  cJSON_AddItemToObject(jsonCollection,"formatVersion", cJSON_CreateNumber(1));
+  cJSON_AddStringToObject(jsonCollection,"name", collection->name().c_str());
+  cJSON_AddStringToObject(jsonCollection, "fileType", "moab");
+  cJSON_AddStringToObject(jsonCollection, "location", fileWriteLocation.c_str() );
+
+  ///now to dump everything inside the collection by reusing the class
+  //that writes out a single meshset, but instead pass it all meshsets
+  ForMeshset addInfoAboutCollection(jsonCollection);
+  addInfoAboutCollection.write(collection->meshes(), jsonCollection);
+
+  //now walk through each meshset and dump  all the info related to it.
+  cJSON* jsonMeshes = cJSON_CreateObject();
+  cJSON_AddItemToObject(jsonCollection, "meshes", jsonMeshes);
+
+  smtk::mesh::MeshSet meshes = collection->meshes();
+  ForMeshset perMeshExportToJson(jsonMeshes);
+  smtk::mesh::for_each(meshes, perMeshExportToJson);
+
+  //now actually write out the collection to disk
+  smtk::io::WriteMesh::entireCollection(fileWriteLocation, collection);
+
   return 0;
 }
 

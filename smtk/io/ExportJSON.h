@@ -103,6 +103,11 @@ public:
                               smtk::mesh::ManagerPtr meshMgr,
                               const std::string& fileWriteLocation);
 
+  //write out a
+  static int forSingleCollection(cJSON* mdesc,
+                                 smtk::mesh::CollectionPtr collection,
+                                 const std::string &fileWriteLocation);
+
   static int forLog(
     cJSON* logrecordarray,
     const smtk::io::Logger& log,
