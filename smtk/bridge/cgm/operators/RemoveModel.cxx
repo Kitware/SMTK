@@ -17,6 +17,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/bridge/cgm/RemoveModel_xml.h"
 
 #include "Body.hpp"
 #include "GeometryQueryTool.hpp"
@@ -62,8 +63,6 @@ smtk::model::OperatorResult RemoveModel::operateInternal()
     } // namespace cgm
   } //namespace bridge
 } // namespace smtk
-
-#include "RemoveModel_xml.h"
 
 smtkImplementsModelOperator(
   SMTKCGMSESSION_EXPORT,

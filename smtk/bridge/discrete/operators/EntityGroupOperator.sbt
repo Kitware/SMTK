@@ -44,6 +44,7 @@
               <Items>
                 <Item>group type</Item>
                 <Item>group name</Item>
+                <Item>cell to add</Item>
               </Items>
             </Structure>
             <Structure>

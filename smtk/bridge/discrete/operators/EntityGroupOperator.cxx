@@ -129,6 +129,7 @@ OperatorResult EntityGroupOperator::operateInternal()
 
     if(ok)
       {
+
       BitFlags mask =
        // Boundary group, 3d => Face group; 2d => edge group.
         (gType == 0) ?
@@ -141,20 +142,28 @@ OperatorResult EntityGroupOperator::operateInternal()
         vtkDiscreteModelEntityGroupType : vtkModelMaterialType;
       vtkModelEntity* grp =
         modelWrapper->GetModelEntity(groupType, grpId);
-      if(!gName.empty())
-        vtkModelUserName::SetUserName(grp, gName.c_str());
-      smtk::common::UUID grpUUID = opsession->findOrSetEntityUUID(grp);
 
-      // The group itself should be added too
-      smtk::model::EntityRef grpRef = opsession->addCMBEntityToManager(
-                                      grpUUID, grp, pstore, 0);
-      bgroup = grpRef.as<smtk::model::Group>();
-      bgroup.setMembershipMask(mask);
-      bgroup.setName(gName);
-      // Add group to model's relationship
-      model.addGroup(bgroup);
-      modGrps.push_back(bgroup);
-      std::cout << "new group: " << bgroup.name() << " id: " << grpUUID.toString() << "\n";
+      // modify the new group directly with "cell to add" item, if it exists
+      // and has entries. This covers the usecase to create a group with entities
+      ok = this->modifyGroup(modelWrapper, grp, true, modGrps);
+      if(ok)
+        {
+        if(!gName.empty())
+          vtkModelUserName::SetUserName(grp, gName.c_str());
+        smtk::common::UUID grpUUID = opsession->findOrSetEntityUUID(grp);
+
+        // The group itself should be added too
+        smtk::model::EntityRef grpRef = opsession->addCMBEntityToManager(
+                                        grpUUID, grp, pstore, 0);
+        bgroup = grpRef.as<smtk::model::Group>();
+        bgroup.setMembershipMask(mask);
+        bgroup.setName(gName);
+        // Add group to model's relationship
+        model.addGroup(bgroup);
+        // do we really nee this? This new group is in "created" item in result
+        //modGrps.push_back(bgroup);
+        std::cout << "new group: " << bgroup.name() << " id: " << grpUUID.toString() << "\n";
+        }
       }
     }
   else if(optype == "Remove")
@@ -192,126 +201,34 @@ OperatorResult EntityGroupOperator::operateInternal()
   else if(optype == "Modify")
     {
     vtkModelEntity* grpEntity = this->fetchCMBCell("modify cell group");
-    if(grpEntity && (vtkModelMaterial::SafeDownCast(grpEntity) ||
-       vtkDiscreteModelEntityGroup::SafeDownCast(grpEntity)))
+    ok = this->modifyGroup(modelWrapper, grpEntity, false, modGrps);
+
+    if(ok)
       {
-      vtkModelMaterial* grpDS = vtkModelMaterial::SafeDownCast(grpEntity);
-      vtkDiscreteModelEntityGroup* grpBC = vtkDiscreteModelEntityGroup::SafeDownCast(grpEntity);
-      if(grpDS)
-        {
-        this->m_opDomain->ClearGeometricEntitiesToAdd();
-        this->m_opDomain->ClearGeometricEntitiesToRemove();
-        this->m_opDomain->SetId(grpEntity->GetUniquePersistentId());
-        }
-      else if(grpBC)
-        {
-        this->m_opBoundary->ClearEntitiesToAdd();
-        this->m_opBoundary->ClearEntitiesToRemove();
-        this->m_opBoundary->SetId(grpEntity->GetUniquePersistentId());
-        }
-      smtk::attribute::ModelEntityItemPtr entItem =
-        this->specification()->findModelEntity("cell to add");
-      for(std::size_t idx=0; idx<entItem->numberOfValues(); idx++)
-        {
-        vtkModelEntity* modEntity = this->fetchCMBCell(entItem, idx);
-        if(!modEntity)
-          continue;
-        if(grpDS)
-          this->m_opDomain->AddModelGeometricEntity(modEntity->GetUniquePersistentId());
-        else if(grpBC)
-           this->m_opBoundary->AddModelEntity(modEntity->GetUniquePersistentId());
-        }
+      // get rid of the group from manager
+      smtk::model::EntityRef grpC =
+        this->specification()->findModelEntity("modify cell group")->value();
+      smtk::model::Group tmpGrp = grpC.as<smtk::model::Group>();
 
-      entItem = this->specification()->findModelEntity("cell to remove");
-      for(std::size_t idx=0; idx<entItem->numberOfValues(); idx++)
-        {
-        vtkModelEntity* modEntity = this->fetchCMBCell(entItem, idx);
-        if(!modEntity)
-          continue;
-        if(grpDS)
-          this->m_opDomain->RemoveModelGeometricEntity(modEntity->GetUniquePersistentId());
-        else if(grpBC)
-           this->m_opBoundary->RemoveModelEntity(modEntity->GetUniquePersistentId());
-        }
+      BitFlags mask = tmpGrp.membershipMask();
+      std::string gName = tmpGrp.name();
+      model.removeGroup(tmpGrp);
+      pstore->erase(grpC);
 
-      if(grpDS)
-        {
-        this->m_opDomain->Operate(modelWrapper);
-        ok = this->m_opDomain->GetOperateSucceeded();
-        }
-      else if(grpBC)
-        {
-        this->m_opBoundary->Operate(modelWrapper);
-        ok = this->m_opBoundary->GetOperateSucceeded();
-        }
+      smtk::common::UUID grpUUID = opsession->findOrSetEntityUUID(grpEntity);
+      // The group itself should be added too
+      grpC = opsession->addCMBEntityToManager(
+                                      grpUUID, grpEntity, pstore, 1);
+      bgroup = grpC.as<smtk::model::Group>();
+      bgroup.setMembershipMask(mask);
+      bgroup.setName(gName);
 
-      if(ok)
-        {
-        // get rid of the group from manager
-        smtk::model::EntityRef grpC =
-          this->specification()->findModelEntity("modify cell group")->value();
-        smtk::model::Group tmpGrp = grpC.as<smtk::model::Group>();
+      // Add group to model's relationship
+      model.addGroup(bgroup);
+      modGrps.push_back(bgroup);
 
-        BitFlags mask = tmpGrp.membershipMask();
-        std::string gName = tmpGrp.name();
-        model.removeGroup(tmpGrp);
-        pstore->erase(grpC);
-
-        smtk::common::UUID grpUUID = opsession->findOrSetEntityUUID(grpEntity);
-        // The group itself should be added too
-        grpC = opsession->addCMBEntityToManager(
-                                        grpUUID, grpEntity, pstore, 1);
-        bgroup = grpC.as<smtk::model::Group>();
-        bgroup.setMembershipMask(mask);
-        bgroup.setName(gName);
-
-        // Add group to model's relationship
-        model.addGroup(bgroup);
-        modGrps.push_back(bgroup);
-
-        // if we are dealing with domain set, the entities can only belong
-        // to one vtkModelMaterial, and the vtkMaterialOperator will remove
-        // the relationship to previous materials from input entities.
-        // Therefore, we need to put the previous materials in "modified"
-        // item in result.
-        if(grpDS)
-          {
-          vtkIdList* prevMaterials = this->m_opDomain->
-              GetPreviousMaterialsOfGeometricEntities();
-          for(int i=0; i<prevMaterials->GetNumberOfIds();i++)
-            {
-            vtkModelEntity* matEntity = modelWrapper->GetModelEntity(
-              vtkModelMaterialType, prevMaterials->GetId(i));
-            smtk::common::UUID prevGrpId = opsession->findOrSetEntityUUID(matEntity);
-            smtk::model::EntityRef prevGrpRef(pstore, prevGrpId);
-            smtk::model::Group prevGrp = prevGrpRef.as<smtk::model::Group>();
-            if(!prevGrp.isValid())
-              continue;
-
-            BitFlags prevMask = prevGrp.membershipMask();
-            std::string prevName = prevGrp.name();
-            model.removeGroup(prevGrp);
-            pstore->erase(prevGrp);
-
-            prevGrpId = opsession->findOrSetEntityUUID(matEntity);
-            // The group itself should be added too
-            smtk::model::EntityRef grpPrev = opsession->addCMBEntityToManager(
-                                            prevGrpId, matEntity, pstore, 1);
-            smtk::model::Group tmpgroup = grpPrev.as<smtk::model::Group>();
-            tmpgroup.setMembershipMask(prevMask);
-            tmpgroup.setName(prevName);
-
-            // Add group to model's relationship
-            model.addGroup(tmpgroup);
-            modGrps.push_back(tmpgroup);
-
-            }
-          }
-
-        std::cout << "Modified " << grpC.name() << " in " << model.name() << "\n";
-        }
+      std::cout << "Modified " << grpC.name() << " in " << model.name() << "\n";
       }
-
     }
 
   OperatorResult result =
@@ -325,7 +242,7 @@ OperatorResult EntityGroupOperator::operateInternal()
       // Return the created or modified group.
       if(optype == "Create")
         this->addEntityToResult(result, bgroup, CREATED);
-      else if(optype == "Modify" && modGrps.size() > 0)
+      if(modGrps.size() > 0)
         this->addEntitiesToResult(result, modGrps, MODIFIED);
       }
     if(optype == "Remove" && grpsRemoved.size() > 0)
@@ -369,6 +286,122 @@ vtkModelEntity* EntityGroupOperator::fetchCMBCell(
 
   vtkModelEntity* cell = dynamic_cast<vtkModelEntity*>(item);
   return cell;
+}
+
+bool EntityGroupOperator::modifyGroup(vtkDiscreteModelWrapper* modelWrapper,
+                                      vtkModelEntity* grpEntity,
+                                      bool newGroup,
+                                      smtk::model::EntityRefArray& modGrps)
+{
+  // for a new group, it is ok to be empty (nothing happens here)
+  bool ok = newGroup;
+
+  smtk::model::ManagerPtr pstore = this->manager();
+  Session* opsession = this->discreteSession();
+
+  if(grpEntity && (vtkModelMaterial::SafeDownCast(grpEntity) ||
+     vtkDiscreteModelEntityGroup::SafeDownCast(grpEntity)))
+    {
+    smtk::model::Model model = this->specification()->
+      findModelEntity("model")->value().as<smtk::model::Model>();
+
+    vtkModelMaterial* grpDS = vtkModelMaterial::SafeDownCast(grpEntity);
+    vtkDiscreteModelEntityGroup* grpBC = vtkDiscreteModelEntityGroup::SafeDownCast(grpEntity);
+    if(grpDS)
+      {
+      this->m_opDomain->ClearGeometricEntitiesToAdd();
+      this->m_opDomain->ClearGeometricEntitiesToRemove();
+      this->m_opDomain->SetId(grpEntity->GetUniquePersistentId());
+      }
+    else if(grpBC)
+      {
+      this->m_opBoundary->ClearEntitiesToAdd();
+      this->m_opBoundary->ClearEntitiesToRemove();
+      this->m_opBoundary->SetId(grpEntity->GetUniquePersistentId());
+      }
+    smtk::attribute::ModelEntityItemPtr entItem =
+      this->specification()->findModelEntity("cell to add");
+    if(entItem)
+      {
+      for(std::size_t idx=0; idx<entItem->numberOfValues(); idx++)
+        {
+        vtkModelEntity* modEntity = this->fetchCMBCell(entItem, idx);
+        if(!modEntity)
+          continue;
+        if(grpDS)
+          this->m_opDomain->AddModelGeometricEntity(modEntity->GetUniquePersistentId());
+        else if(grpBC)
+           this->m_opBoundary->AddModelEntity(modEntity->GetUniquePersistentId());
+        }
+      }
+
+    entItem = this->specification()->findModelEntity("cell to remove");
+    if(entItem)
+      {      
+       for(std::size_t idx=0; idx<entItem->numberOfValues(); idx++)
+        {
+        vtkModelEntity* modEntity = this->fetchCMBCell(entItem, idx);
+        if(!modEntity)
+          continue;
+        if(grpDS)
+          this->m_opDomain->RemoveModelGeometricEntity(modEntity->GetUniquePersistentId());
+        else if(grpBC)
+           this->m_opBoundary->RemoveModelEntity(modEntity->GetUniquePersistentId());
+        }
+      }
+
+    if(grpDS)
+      {
+      this->m_opDomain->Operate(modelWrapper);
+      ok = this->m_opDomain->GetOperateSucceeded();
+
+      // if we are dealing with domain set, the entities can only belong
+      // to one vtkModelMaterial, and the vtkMaterialOperator will remove
+      // the relationship to previous materials from input entities.
+      // Therefore, we need to put the previous materials in "modified"
+      // item in result.
+      if(ok)
+        {
+        vtkIdList* prevMaterials = this->m_opDomain->
+            GetPreviousMaterialsOfGeometricEntities();
+        for(int i=0; i<prevMaterials->GetNumberOfIds();i++)
+          {
+          vtkModelEntity* matEntity = modelWrapper->GetModelEntity(
+            vtkModelMaterialType, prevMaterials->GetId(i));
+          smtk::common::UUID prevGrpId = opsession->findOrSetEntityUUID(matEntity);
+          smtk::model::EntityRef prevGrpRef(pstore, prevGrpId);
+          smtk::model::Group prevGrp = prevGrpRef.as<smtk::model::Group>();
+          if(!prevGrp.isValid())
+            continue;
+
+          BitFlags prevMask = prevGrp.membershipMask();
+          std::string prevName = prevGrp.name();
+          model.removeGroup(prevGrp);
+          pstore->erase(prevGrp);
+
+          prevGrpId = opsession->findOrSetEntityUUID(matEntity);
+          // The group itself should be added too
+          smtk::model::EntityRef grpPrev = opsession->addCMBEntityToManager(
+                                          prevGrpId, matEntity, pstore, 1);
+          smtk::model::Group tmpgroup = grpPrev.as<smtk::model::Group>();
+          tmpgroup.setMembershipMask(prevMask);
+          tmpgroup.setName(prevName);
+
+          // Add group to model's relationship
+          model.addGroup(tmpgroup);
+          modGrps.push_back(tmpgroup);
+
+          }
+        }
+      }
+    else if(grpBC)
+      {
+      this->m_opBoundary->Operate(modelWrapper);
+      ok = this->m_opBoundary->GetOperateSucceeded();
+      }
+    }
+
+  return ok;
 }
 
     } // namespace discrete

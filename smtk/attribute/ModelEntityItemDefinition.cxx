@@ -93,9 +93,11 @@ bool ModelEntityItemDefinition::isValueValid(const smtk::model::EntityRef& c) co
      !(itemType & this->m_membershipMask & smtk::model::GROUP_CONSTRAINT_MASK))
     )
     return false;
-  if (itemType & smtk::model::GROUP_ENTITY)
+  if (itemType != this->membershipMask() &&
+      itemType & smtk::model::GROUP_ENTITY)
     {
-    // The item is a group: recursively check that its members
+    // If the the membershipMask is the same as itemType, we don't need to check, else
+    // if the item is a group: recursively check that its members
     // all match the criteria. Also, if the HOMOGENOUS_GROUP bit is set,
     // require all entries to have the same entity type flag as the first.
     smtk::model::BitFlags typeMask = this->m_membershipMask;

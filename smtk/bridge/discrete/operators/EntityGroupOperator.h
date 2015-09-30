@@ -50,6 +50,10 @@ protected:
   int createBoundaryGroup(vtkDiscreteModelWrapper* modelWrapper);
   int createDomainSet(vtkDiscreteModelWrapper* modelWrapper);
 
+  bool modifyGroup(vtkDiscreteModelWrapper* modelWrapper,
+                   vtkModelEntity* cmbgroup, bool newGroup,
+                   smtk::model::EntityRefArray& modGrps);
+
   vtkNew<vtkModelEntityGroupOperator> m_opBoundary;
   vtkNew<vtkMaterialOperator> m_opDomain;
 };
