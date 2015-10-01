@@ -338,6 +338,7 @@ public:
   virtual int setup(const std::string& optName, const StringList& optVal);
 
   ManagerPtr manager() const;
+  smtk::mesh::ManagerPtr meshManager() const;
   smtk::io::Logger& log();
 
 protected:

@@ -32,6 +32,8 @@
 #include "smtk/model/Volume.h"
 #include "smtk/model/VolumeUse.h"
 
+#include "smtk/mesh/Manager.h"
+
 #include <algorithm>
 #include <set>
 #include <map>
@@ -61,6 +63,7 @@ Manager::Manager() :
   m_arrangements(new UUIDsToArrangements),
   m_tessellations(new UUIDsToTessellations),
   m_analysisMesh(new UUIDsToTessellations),
+  m_meshes( smtk::mesh::Manager::create() ),
   m_attributeAssignments(new UUIDsToAttributeAssignments),
   m_sessions(new UUIDsToSessions),
   m_globalCounters(2,1) // first entry is session counter, second is model counter
@@ -73,7 +76,8 @@ Manager::Manager(
   shared_ptr<UUIDsToEntities> inTopology,
   shared_ptr<UUIDsToArrangements> inArrangements,
   shared_ptr<UUIDsToTessellations> tess,
-  shared_ptr<UUIDsToTessellations> mesh,
+  shared_ptr<UUIDsToTessellations> analysismesh,
+  shared_ptr<smtk::mesh::Manager>  meshes,
   shared_ptr<UUIDsToAttributeAssignments> attribs)
   :
     m_topology(inTopology),
@@ -82,7 +86,8 @@ Manager::Manager(
     m_integerData(new UUIDsToIntegerData),
     m_arrangements(inArrangements),
     m_tessellations(tess),
-    m_analysisMesh(mesh),
+    m_analysisMesh(analysismesh),
+    m_meshes( meshes ),
     m_attributeAssignments(attribs),
     m_sessions(new UUIDsToSessions),
     m_globalCounters(2,1) // first entry is session counter, second is model counter
@@ -147,6 +152,11 @@ UUIDsToTessellations& Manager::analysisMesh()
 const UUIDsToTessellations& Manager::analysisMesh() const
 {
   return *this->m_analysisMesh.get();
+}
+
+smtk::mesh::ManagerPtr Manager::meshes() const
+{
+  return this->m_meshes;
 }
 
 const UUIDsToAttributeAssignments& Manager::attributeAssignments() const

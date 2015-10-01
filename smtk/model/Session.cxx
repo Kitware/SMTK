@@ -21,6 +21,8 @@
 #include "smtk/model/Instance.h"
 #include "smtk/model/Group.h"
 
+#include "smtk/mesh/Manager.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/IntItemDefinition.h"
@@ -42,7 +44,9 @@ namespace smtk {
 
 /// Default constructor. This assigns a random session ID to each Session instance.
 Session::Session()
-  : m_sessionId(smtk::common::UUID::random()), m_operatorSys(NULL)
+  : m_sessionId(smtk::common::UUID::random()),
+    m_operatorSys(NULL),
+    m_manager(NULL)
 {
   this->initializeOperatorSystem(Session::s_operators);
 }
@@ -166,6 +170,7 @@ OperatorPtr Session::op(const std::string& opName) const
 
   oper->setSession(const_cast<Session*>(this));
   oper->setManager(this->manager());
+  oper->setMeshManager(this->meshManager());
 
   RemoteOperator::Ptr remoteOp = smtk::dynamic_pointer_cast<RemoteOperator>(oper);
   if (remoteOp)
@@ -242,6 +247,19 @@ Manager::Ptr Session::manager() const
   return this->m_manager ?
     this->m_manager->shared_from_this() :
     Manager::Ptr();
+}
+
+/// Return a reference to the mesh manager for this Session.
+smtk::mesh::ManagerPtr Session::meshManager() const
+{
+  if(this->m_manager)
+    {
+    return this->m_manager->meshes();
+    }
+  else
+    {
+    return smtk::mesh::Manager::Ptr();
+    }
 }
 
 /// Return the log (obtained from the model manager).
