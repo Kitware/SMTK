@@ -15,7 +15,7 @@
 #include <vtkDiscreteModel.h>
 #include <vtkDiscreteModelWrapper.h>
 
-#include <vtksys/ios/sstream>
+#include <sstream>
 
 vtkStandardNewMacro(vtkCMBMeshWrapper);
 

@@ -22,7 +22,7 @@
 #include "vtkSMStringVectorProperty.h"
 #include "vtkSMPropertyHelper.h"
 
-#include <vtksys/ios/sstream>
+#include <sstream>
 
 vtkStandardNewMacro(vtkCMBMeshGridRepresentationClient);
 vtkCxxSetObjectMacro(vtkCMBMeshGridRepresentationClient, MeshRepresentationSource, vtkSMProxy);

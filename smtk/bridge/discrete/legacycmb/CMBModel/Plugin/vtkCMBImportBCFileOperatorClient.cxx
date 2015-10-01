@@ -20,7 +20,7 @@
 #include "vtkSMProxyManager.h"
 #include "vtkSMStringVectorProperty.h"
 
-#include <vtksys/ios/sstream>
+#include <sstream>
 
 vtkStandardNewMacro(vtkCMBImportBCFileOperatorClient);
 

@@ -22,7 +22,7 @@
 #include "vtkModelShellUse.h"
 
 #include <vector>
-#include <vtksys/ios/sstream>
+#include <sstream>
 #include <fstream>
 
 // This tests the serialization of the CMB model but doesn't
@@ -37,7 +37,7 @@ int TestSerialization(vtkDiscreteModel* model)
   // Write it to an archive (a string stream)
   vtkSmartPointer<vtkXMLModelWriter> writer =
     vtkSmartPointer<vtkXMLModelWriter>::New();
-  vtksys_ios::ostringstream ostr;
+  std::ostringstream ostr;
   // Set to version to 1 (default is 0)
   writer->SetArchiveVersion(1);
   // The archiver expects a vector of objects
@@ -48,7 +48,7 @@ int TestSerialization(vtkDiscreteModel* model)
   writer->Serialize(ostr, "ConceptualModel", objs);
 
   // Create an input stream to read the XML back
-  vtksys_ios::istringstream istr(ostr.str());
+  std::istringstream istr(ostr.str());
 
   // Read using a vtkXMLModelReader
   vtkSmartPointer<vtkXMLModelReader> reader =
@@ -62,7 +62,7 @@ int TestSerialization(vtkDiscreteModel* model)
   // we got it right.
   objs.clear();
   objs.push_back(reader->GetModel());
-  vtksys_ios::ostringstream ostr2;
+  std::ostringstream ostr2;
   writer->Serialize(ostr2, "ConceptualModel", objs);
 
   if(strcmp(ostr2.str().c_str(), ostr.str().c_str()))
