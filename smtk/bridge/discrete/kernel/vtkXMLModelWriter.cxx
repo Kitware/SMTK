@@ -27,7 +27,7 @@
 
 #include <list>
 #include <map>
-#include "vtksys/ios/sstream"
+#include <sstream>
 
 vtkStandardNewMacro(vtkXMLModelWriter);
 
@@ -303,7 +303,7 @@ void vtkXMLModelWriter::Serialize(const char* name,
   for(; iter != map.end(); iter++)
     {
     std::vector<vtkSmartPointer<vtkObject> >& objs = iter->second;
-    vtksys_ios::ostringstream str;
+    std::ostringstream str;
     str << "Key_" << iter->first;
     this->Serialize(str.str().c_str(), objs);
     }
@@ -340,7 +340,7 @@ vtkXMLElement* vtkXMLModelWriter::CreateDOM(const char* rootName,
   return this->RootElement;
 }
 
-void vtkXMLModelWriter::Serialize(vtksys_ios::ostringstream& ostr, const char* rootName,
+void vtkXMLModelWriter::Serialize(std::ostringstream& ostr, const char* rootName,
   std::vector<vtkSmartPointer<vtkObject> >& objs)
 {
   if(this->Internal)

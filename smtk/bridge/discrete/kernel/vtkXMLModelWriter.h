@@ -50,7 +50,7 @@
 
 
 #include <vector> // Vector of smart pointers
-#include <vtksys/ios/sstream>
+#include <sstream>
 #include "vtkSmartPointer.h" // Vector of smart pointers
 
 //BTX
@@ -90,13 +90,13 @@ public:
   //
   // vtkSmartPointer<vtkXMLModelWriter> writer =
   //   vtkSmartPointer<vtkXMLModelWriter>::New();
-  // vtksys_ios::ostringstream ostr;
+  // std::ostringstream ostr;
   // writer->SetArchiveVersion(1);
   // std::vector<vtkSmartPointer<vtkSerializableObject> > objs;
   // objs.push_back(shell);
   // writer->Serialize(ostr, "ConceptualModel", objs);
   // \endcode
-  virtual void Serialize(vtksys_ios::ostringstream& ostr, const char* rootName,
+  virtual void Serialize(std::ostringstream& ostr, const char* rootName,
     std::vector<vtkSmartPointer<vtkObject> >& objs);
 //ETX
 

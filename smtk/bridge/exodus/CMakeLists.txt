@@ -29,7 +29,6 @@ target_link_libraries(smtkExodusSession
     vtkIOParallelExodus
     vtkFiltersGeometry
     vtkCommonDataModel
-    vtksys
 )
 smtk_export_header(smtkExodusSession Exports.h)
 
@@ -95,7 +94,6 @@ if (SMTK_ENABLE_TESTING)
       vtkIOParallelExodus
       vtkFiltersGeometry
       vtkCommonDataModel
-      vtksys
   )
   add_subdirectory(testing)
 endif()
