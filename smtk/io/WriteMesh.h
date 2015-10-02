@@ -28,6 +28,26 @@ class SMTKCORE_EXPORT WriteMesh
 {
 public:
 
+  //Saves the entire collection to the file specified by the collections
+  //data member writeLocation(). Overwrites any existing content
+  //in the file
+  static bool entireCollection(smtk::mesh::CollectionPtr collection);
+
+  //Saves the only the domain elements of a collection to the file specified by
+  //the collections data member writeLocation(). Overwrites any existing content
+  //in the file
+  static bool onlyDomain(smtk::mesh::CollectionPtr collection);
+
+  //Saves the only the neumann elements of a collection to the file specified by
+  //the collections data member writeLocation(). Overwrites any existing content
+  //in the file
+  static bool onlyNeumann(smtk::mesh::CollectionPtr collection);
+
+  //Saves the only the dirichlet elements of a collection to the file specified by
+  //the collections data member writeLocation(). Overwrites any existing content
+  //in the file
+  static bool onlyDirichlet(smtk::mesh::CollectionPtr collection);
+
   //Saves the entire collection to File. Overwrites any existing content
   //in the file
   static bool entireCollection(const std::string& filePath,
