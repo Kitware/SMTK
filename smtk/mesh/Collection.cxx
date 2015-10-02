@@ -172,6 +172,12 @@ void Collection::writeLocation(const std::string& n)
 }
 
 //----------------------------------------------------------------------------
+std::string Collection::interfaceName() const
+{
+  return this->interface()->name();
+}
+
+//----------------------------------------------------------------------------
 const smtk::common::UUID Collection::entity() const
 {
   return this->m_entity;

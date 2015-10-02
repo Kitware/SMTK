@@ -78,6 +78,14 @@ public:
   void writeLocation(const std::string& path);
   const std::string& writeLocation() const;
 
+  //get a string the identifies the interface type of the collection
+  // valid types are:
+  // "moab"
+  // "json"
+  //Note: all names will be all lower-case
+  std::string interfaceName() const;
+
+
   //fetch the entity id for this uuid
   const smtk::common::UUID entity() const;
 

@@ -58,6 +58,11 @@ public:
 
   virtual ~Interface();
 
+  //---------------------------------------------------------------------------
+  //get back a string that contains the pretty name for the interface class.
+  //Requirements: The string must be all lower-case.
+  virtual std::string name() const { return std::string("moab"); }
+
   //----------------------------------------------------------------------------
   //get back a lightweight interface around allocating memory into the given
   //interface. This is generally used to create new coordinates or cells that
