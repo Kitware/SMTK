@@ -131,6 +131,12 @@ const std::string& Collection::name() const
 }
 
 //----------------------------------------------------------------------------
+void Collection::name(const std::string& n)
+{
+  this->m_name = n;
+}
+
+//----------------------------------------------------------------------------
 const smtk::common::UUID Collection::entity() const
 {
   return this->m_entity;

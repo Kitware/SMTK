@@ -64,6 +64,7 @@ public:
 
   //get the name of a mesh collection
   const std::string& name() const;
+  void name(const std::string& n);
 
   //fetch the entity id for this uuid
   const smtk::common::UUID entity() const;
