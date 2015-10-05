@@ -39,6 +39,18 @@ void verify_valid_constructor()
 
   smtk::common::UUID uid = collection->entity();
   test( (uid!=smtk::common::UUID::null()) , "collection uuid should be valid");
+
+  //verify the name
+  test( (collection->name() == std::string()) );
+  collection->name("example");
+  test( (collection->name() == std::string("example")) );
+
+  //verify the interface name
+  test( (collection->interfaceName() != std::string()) );
+
+  //verify the read and write location
+  test( (collection->readLocation() == std::string()) );
+  test( (collection->writeLocation() == std::string()) );
 }
 
 //----------------------------------------------------------------------------
@@ -130,6 +142,35 @@ void verify_reparenting_after_manager_deletion()
   test( mgr2->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
 }
 
+//----------------------------------------------------------------------------
+void verify_collection_info()
+{
+  smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
+  smtk::mesh::CollectionPtr collection = mgr->makeCollection();
+
+  test( collection->isValid() , "collection should be valid");
+
+  smtk::common::UUID uid = collection->entity();
+  test( (uid!=smtk::common::UUID::null()) , "collection uuid should be valid");
+
+  //verify the name
+  test( (collection->name() == std::string()) );
+  collection->name("example");
+  test( (collection->name() == std::string("example")) );
+
+  //verify the interface name
+  test( (collection->interfaceName() != std::string()) );
+
+  //verify the read and write location
+  test( (collection->readLocation() == std::string()) );
+  test( (collection->writeLocation() == std::string()) );
+
+  //set and check read/write location
+  collection->writeLocation("foo");
+  test( (collection->readLocation() == std::string()) );
+  test( (collection->writeLocation() == std::string("foo")) );
+}
+
 }
 
 //----------------------------------------------------------------------------
@@ -140,10 +181,11 @@ int UnitTestCollection(int, char**)
 
   verify_removal_from_collection();
 
-
   verify_reparenting();
   verify_reparenting_invalid_collection();
   verify_reparenting_twice();
   verify_reparenting_after_manager_deletion();
+
+  verify_collection_info();
   return 0;
 }
