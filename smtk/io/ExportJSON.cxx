@@ -168,11 +168,13 @@ int ExportJSON::fromModelManager(cJSON* json, ManagerPtr modelMgr, JSONFlags sec
 
   cJSON* body = cJSON_CreateObject();
   cJSON* sess = cJSON_CreateObject();
+  cJSON* mesh = cJSON_CreateObject();
   switch(json->type)
     {
   case cJSON_Object:
     cJSON_AddItemToObject(json, "topo", body);
     cJSON_AddItemToObject(json, "sessions", sess);
+    cJSON_AddItemToObject(json, "mesh_collections", mesh);
     break;
   case cJSON_Array:
     cJSON_AddItemToArray(json, body);
@@ -189,7 +191,7 @@ int ExportJSON::fromModelManager(cJSON* json, ManagerPtr modelMgr, JSONFlags sec
 
   cJSON* mtyp = cJSON_CreateString("Manager");
   cJSON_AddItemToObject(json, "type", mtyp);
-  status = ExportJSON::forManager(body, sess, modelMgr, sections);
+  status = ExportJSON::forManager(body, sess, mesh, modelMgr, sections);
 
   return status;
 }
@@ -216,7 +218,7 @@ bool ExportJSON::fromModelManagerToFile(smtk::model::ManagerPtr modelMgr, const 
 }
 
 int ExportJSON::forManager(
-  cJSON* dict, cJSON* sess, ManagerPtr modelMgr, JSONFlags sections)
+  cJSON* dict, cJSON* sess, cJSON* mesh, ManagerPtr modelMgr, JSONFlags sections)
 {
   if (!dict || !modelMgr)
     {
@@ -263,6 +265,12 @@ int ExportJSON::forManager(
       {
       status &= ExportJSON::forManagerSession(bit->entity(), sess, modelMgr);
       }
+    }
+
+  if (sections & JSON_MESHES)
+    {
+    smtk::mesh::ManagerPtr meshPtr = modelMgr->meshes();
+    status &= ExportJSON::forManagerMeshes(meshPtr, mesh, modelMgr);
     }
   return status;
 }
@@ -657,74 +665,32 @@ int ExportJSON::forModelWorker(
   * data required to recreate the smtk::mesh Collections
   * associated with the given smtk::model.
   */
-int ExportJSON::forMeshesOfModel(cJSON* mdesc,
-                     smtk::model::ManagerPtr modelMgr,
-                     smtk::mesh::ManagerPtr meshMgr,
-                     const std::string &fileWriteLocation)
+int ExportJSON::forManagerMeshes(
+                     smtk::mesh::ManagerPtr meshes,
+                     cJSON* mdesc,
+                     smtk::model::ManagerPtr modelMgr)
 {
+  //current issue is that a mesh Manager needs to know where to write
+  //these collections to disk.
   typedef smtk::model::EntityRefs EntityRefs;
   typedef smtk::model::EntityTypeBits EntityTypeBits;
 
   if (!mdesc || mdesc->type != cJSON_Object)
     {
-    return 1;
+    return 0;
     }
 
-  cJSON* mesh = cJSON_CreateObject();
-  cJSON_AddItemToObject(mdesc, "mesh_collections", mesh);
-
-  //step 0.  walk the model and find all collections that are associated with it.
-  std::set< smtk::mesh::CollectionPtr > assocCollections;
-
-  smtk::model::EntityIterator it;
-  smtk::model::EntityRefs models =
-    modelMgr->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::MODEL_ENTITY);
-  it.traverse(models.begin(), models.end(), smtk::model::ITERATE_MODELS);
-
-  for (it.begin(); !it.isAtEnd(); ++it)
+  //step 0. get all collections in the manager
+  int status = 1;
+  std::vector< smtk::mesh::CollectionPtr > collections;
+  typedef smtk::mesh::Manager::const_iterator cit;
+  for (cit it = meshes->collectionBegin();
+       it != meshes->collectionEnd(); ++it)
     {
-    std::vector< smtk::mesh::CollectionPtr > result = meshMgr->associatedCollections(*it);
-    assocCollections.insert(result.begin(), result.end());
+    status &= forSingleCollection(mdesc, it->second);
     }
 
-  const std::size_t numberOfAssociations = assocCollections.size();
-  if(numberOfAssociations == 0)
-    {
-    return 1;
-    }
-
-  //step 1. Generate names for all the files to save
-
-  //split the filename into a name+path and extension
-  std::string extension = ".h5m";
-  std::string filePathNoExt;
-  const std::string::size_type dot_end_pos = fileWriteLocation.rfind(".");
-  if(dot_end_pos != std::string::npos)
-    { //need to remove the extension
-      filePathNoExt = fileWriteLocation.substr(0,dot_end_pos);
-    }
-  else
-    { //nothing to remove
-      filePathNoExt = fileWriteLocation;
-    }
-
-  //generate the names for each collection file
-  std::vector< std::string > collectionFileNames;
-  for(std::size_t i=0; i < numberOfAssociations; ++i)
-    {
-    std::stringstream buffer;
-    buffer << filePathNoExt << "." << i << extension;
-    collectionFileNames.push_back( buffer.str() );
-    }
-
-  //step 2. Save the mesh collection to the given filelocation
-  typedef std::set< smtk::mesh::CollectionPtr >::const_iterator cit;
-  std::size_t fileIndex = 0;
-  for(cit i= assocCollections.begin(); i != assocCollections.end(); ++i, ++fileIndex)
-    {
-    forSingleCollection(mesh,*i,collectionFileNames[fileIndex]);
-    }
-  return 0;
+  return status;
 }
 
 namespace {
@@ -854,8 +820,7 @@ private:
   *
   */
 int ExportJSON::forSingleCollection(cJSON* mdesc,
-                                    smtk::mesh::CollectionPtr collection,
-                                    const std::string &fileWriteLocation)
+                                    smtk::mesh::CollectionPtr collection)
 {
   cJSON* jsonCollection = cJSON_CreateObject();
 
@@ -864,8 +829,21 @@ int ExportJSON::forSingleCollection(cJSON* mdesc,
 
   cJSON_AddItemToObject(jsonCollection,"formatVersion", cJSON_CreateNumber(1));
   cJSON_AddStringToObject(jsonCollection,"name", collection->name().c_str());
-  cJSON_AddStringToObject(jsonCollection, "fileType", "moab");
-  cJSON_AddStringToObject(jsonCollection, "location", fileWriteLocation.c_str() );
+
+  //because collection returns by value, not const ref
+  std::string interfaceName = collection->interfaceName();
+  cJSON_AddStringToObject(jsonCollection, "type", interfaceName.c_str());
+
+  //now actually write out the collection to disk, and add the location keyword
+  //if we have a file.
+  //This allows the importer to use the location keyword to figure out
+  //if it should use the type, or fall back to the json interface
+  if(!collection->writeLocation().empty())
+    {
+    const std::string& fileWriteLocation = collection->writeLocation();
+    cJSON_AddStringToObject(jsonCollection, "location", fileWriteLocation.c_str() );
+    smtk::io::WriteMesh::entireCollection(collection);
+    }
 
   ///now to dump everything inside the collection by reusing the class
   //that writes out a single meshset, but instead pass it all meshsets
@@ -880,10 +858,7 @@ int ExportJSON::forSingleCollection(cJSON* mdesc,
   ForMeshset perMeshExportToJson(jsonMeshes);
   smtk::mesh::for_each(meshes, perMeshExportToJson);
 
-  //now actually write out the collection to disk
-  smtk::io::WriteMesh::entireCollection(fileWriteLocation, collection);
-
-  return 0;
+  return 1;
 }
 
 /**\brief Export log records into a cJSON array.
