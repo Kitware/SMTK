@@ -24,7 +24,7 @@ include_directories(
 # The pv_process_modules() macro finds all subdirectories
 # containing a module.cmake file automatically.
 include (smtkVTKModules)
-vtk_smtk_setup_module_environment("SMTKDiscrete")
+vtk_smtk_setup_module_environment("SMTK")
 vtk_smtk_process_modules()
 
 # Build vtk moab reader before session

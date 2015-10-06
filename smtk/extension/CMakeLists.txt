@@ -17,7 +17,7 @@ if(SMTK_ENABLE_VTK_SUPPORT)
     # Only include the ParaView use-file in subdirectories
     # that require ParaView include paths.
     include("${PARAVIEW_USE_FILE}")
-    pv_setup_module_environment("VTKSMTK")
+    pv_setup_module_environment("SMTK")
     pv_process_modules()
   else()
     # Only include the VTK use-file in subdirectories
@@ -57,7 +57,7 @@ if(SMTK_ENABLE_VTK_SUPPORT)
     # The pv_process_modules() macro finds all subdirectories
     # containing a module.cmake file automatically.
     include (smtkVTKModules)
-    vtk_smtk_setup_module_environment("VTKSMTK")
+    vtk_smtk_setup_module_environment("SMTK")
     vtk_smtk_process_modules()
   endif()
 
