@@ -113,6 +113,9 @@ public:
   //invalid, and using them will cause any undefined behavior
   bool mergeCoincidentContactPoints(double tolerance=1.0e-6) const;
 
+  //get the underlying HandleRange that this MeshSet represents
+  const smtk::mesh::HandleRange& range() const { return this->m_range; }
+
 private:
   smtk::mesh::CollectionPtr m_parent;
   smtk::mesh::Handle m_handle;

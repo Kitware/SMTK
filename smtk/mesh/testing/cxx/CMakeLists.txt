@@ -16,6 +16,7 @@ set(unit_tests
   UnitTestManager.cxx
   UnitTestModelToMesh.cxx
   UnitTestQueryTypes.cxx
+  UnitTestReadWriteHandles.cxx
   UnitTestTypeSet.cxx
 )
 

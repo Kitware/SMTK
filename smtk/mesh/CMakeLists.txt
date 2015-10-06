@@ -4,6 +4,7 @@ set(meshSrcs
   CellTypes.cxx
   Collection.cxx
   ExtractTessellation.cxx
+  Handle.cxx
   Manager.cxx
   MeshSet.cxx
   PointConnectivity.cxx
