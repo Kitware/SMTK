@@ -699,8 +699,8 @@ namespace {
 //--------------------------------------------------------------------------
 template< typename T>
 void writeIntegerValues( cJSON* parent,
-                       std::vector<T> const& values,
-                       std::string name )
+                        std::vector<T> const& values,
+                        std::string name )
 {
   cJSON* a = cJSON_CreateArray();
   for (std::size_t i = 0; i < values.size(); ++i)
@@ -708,6 +708,18 @@ void writeIntegerValues( cJSON* parent,
     cJSON_AddItemToArray(a, cJSON_CreateNumber(values[i].value()));
     }
   cJSON_AddItemToObject(parent, name.c_str(), a);
+}
+
+//--------------------------------------------------------------------------
+void writeHandleValues( cJSON* parent,
+                        smtk::mesh::HandleRange const& values,
+                        std::string name )
+{
+  //need to implement a free method like:
+  cJSON* json = smtk::mesh::to_json(values);
+  cJSON_AddItemToObject(parent,
+                        name.c_str(),
+                        json);
 }
 
 //--------------------------------------------------------------------------
@@ -770,15 +782,32 @@ public:
   }
 
   //--------------------------------------------------------------------------
-  void write(const smtk::mesh::MeshSet& mesh, cJSON* parent)
+  void write(const smtk::mesh::MeshSet& mesh, cJSON* parent,
+             bool writeMeshes, bool writeCellAndPoints)
   {
     std::size_t numCells = mesh.cells().size();
     std::size_t numPoints = mesh.points().size();
     std::string cell_bit_types = mesh.types().cellTypes().to_string();
 
-    cJSON_AddItemToObject(parent,"nc", cJSON_CreateNumber(numCells));
-    cJSON_AddItemToObject(parent,"np", cJSON_CreateNumber(numPoints));
     cJSON_AddStringToObject(parent,"cell_types", cell_bit_types.c_str());
+
+    //needs to be by value since cells() will go out out of scope, and
+    //we don't want a reference to a stack object that has gone out of scope
+    if(writeMeshes)
+      {
+      smtk::mesh::HandleRange meshes = mesh.range();
+      //note we uses meshIds, since 'meshes' is used by the actual mesh dict
+      writeHandleValues(parent, meshes, std::string("meshIds") );
+      }
+
+    if(writeCellAndPoints)
+      {
+      smtk::mesh::HandleRange cells = mesh.cells().range();
+      writeHandleValues(parent, cells, std::string("cells") );
+
+      smtk::mesh::HandleRange points = mesh.points().range();
+      writeHandleValues(parent, points, std::string("points") );
+      }
 
     //list out the domains that this mesheset contains
     std::vector< smtk::mesh::Domain > domains = mesh.domains();
@@ -798,7 +827,9 @@ public:
   {
     cJSON* meshJson = cJSON_CreateObject();
 
-    this->write(mesh, meshJson);
+    const bool writeMeshes = false;
+    const bool writeCellAndPoints = true;
+    this->write(mesh, meshJson, writeMeshes, writeCellAndPoints);
 
     //convert the index to a string. assign it as the name of the meshset
     std::stringstream buffer;
@@ -848,7 +879,10 @@ int ExportJSON::forSingleCollection(cJSON* mdesc,
   ///now to dump everything inside the collection by reusing the class
   //that writes out a single meshset, but instead pass it all meshsets
   ForMeshset addInfoAboutCollection(jsonCollection);
-  addInfoAboutCollection.write(collection->meshes(), jsonCollection);
+  const bool writeMeshes = true;
+  const bool writeCellAndPoints = false;
+  addInfoAboutCollection.write(collection->meshes(), jsonCollection,
+                               writeMeshes, writeCellAndPoints);
 
   //now walk through each meshset and dump  all the info related to it.
   cJSON* jsonMeshes = cJSON_CreateObject();
