@@ -47,7 +47,7 @@ endif()
 set_source_files_properties(${srcs} WRAP_EXCLUDE)
 
 set(vtkSMTKDiscreteExt_NO_HeaderTest 1)
-
+set(VTK_INSTALL_NO_HEADERS 1)
 vtk_module_library(vtkSMTKDiscreteExt ${srcs})
 
 if(SMTK_ENABLE_REMUS_SUPPORT)
