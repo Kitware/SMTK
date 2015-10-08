@@ -46,12 +46,9 @@ endif()
 # no wrapping for sources
 set_source_files_properties(${srcs} WRAP_EXCLUDE)
 
-set(_VTK_INSTALL_NO_DEVELOPMENT ${VTK_INSTALL_NO_DEVELOPMENT})
-set(VTK_INSTALL_NO_DEVELOPMENT ON)
 set(vtkSMTKDiscreteExt_NO_HeaderTest 1)
 
 vtk_module_library(vtkSMTKDiscreteExt ${srcs})
-SET(VTK_INSTALL_NO_DEVELOPMENT ${_VTK_INSTALL_NO_DEVELOPMENT})
 
 if(SMTK_ENABLE_REMUS_SUPPORT)
   #Remus is needed

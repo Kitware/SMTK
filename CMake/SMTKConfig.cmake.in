@@ -1,5 +1,17 @@
 #Setup the CMake module paths
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "@SMTK_MODULE_DIR@")
+list(APPEND CMAKE_MODULE_PATH "@SMTK_MODULE_DIR@")
+set(smtk_module_dir "@SMTK_MODULE_DIR@/Modules")
+if(IS_DIRECTORY "${smtk_module_dir}")
+  list(APPEND CMAKE_MODULE_PATH "${smtk_module_dir}")
+  file(GLOB config_files RELATIVE "${smtk_module_dir}" "${smtk_module_dir}/*.cmake")
+  foreach (_file IN LISTS config_files)
+    if (NOT _file MATCHES "[^\\-]+-[a-zA-Z]+\\.cmake")
+      string(REGEX REPLACE "\\.cmake$" "" _module "${_file}")
+      list(APPEND VTK_MODULES_ENABLED "${_module}")
+    endif()
+  endforeach()
+endif()
+unset(smtk_module_dir)
 
 #When building documentation internally we re-import ourselves, which
 #doesnt work and generates CMake warnings. So we will only look for SMTK
