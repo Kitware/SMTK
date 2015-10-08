@@ -30,6 +30,9 @@
 #include <vector>
 
 namespace smtk {
+
+  //forward declare friends
+  namespace io { class ImportMesh; }
   namespace mesh {
 
 //Flyweight interface around a moab database of meshes. When constructed
@@ -64,6 +67,24 @@ public:
 
   //get the name of a mesh collection
   const std::string& name() const;
+  void name(const std::string& n);
+
+  //get the file that this collection was created from
+  //will return an empty string if this collection wasn't read from file
+  const std::string& readLocation() const;
+
+  //set the file that this collection should be saved to.
+  //By default this is set to be the same as the readLocation()
+  void writeLocation(const std::string& path);
+  const std::string& writeLocation() const;
+
+  //get a string the identifies the interface type of the collection
+  // valid types are:
+  // "moab"
+  // "json"
+  //Note: all names will be all lower-case
+  std::string interfaceName() const;
+
 
   //fetch the entity id for this uuid
   const smtk::common::UUID entity() const;
@@ -201,7 +222,10 @@ private:
   Collection( const Collection& other ); //blank since we are used by shared_ptr
   Collection& operator=( const Collection& other ); //blank since we are used by shared_ptr
 
+  void readLocation(const std::string& path);
+
   friend class smtk::mesh::Manager;
+  friend class smtk::io::ImportMesh;
 
   //called by the manager that manages this collection, means that somebody
   //has requested us to be removed from a collection
@@ -209,6 +233,9 @@ private:
 
   smtk::common::UUID m_entity;
   std::string m_name;
+  std::string m_readLocation;
+  std::string m_writeLocation;
+
   smtk::model::WeakManagerPtr m_modelManager;
 
   //holds a reference to both the manager and the specific backend interface
