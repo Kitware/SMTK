@@ -100,8 +100,10 @@ if (MSVC)
 endif(MSVC)
 
 SET_SOURCE_FILES_PROPERTIES(
-${CmbModelFiles}
-WRAP_EXCLUDE
+  ${CmbModelFiles}
+  PROPERTIES
+    WRAP_EXCLUDE
+    WRAP_EXCLUDE_PYTHON
 )
 
 set(_module_src

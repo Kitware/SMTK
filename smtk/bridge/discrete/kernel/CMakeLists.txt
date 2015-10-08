@@ -219,9 +219,11 @@ if (MSVC)
 endif(MSVC)
 
 SET_SOURCE_FILES_PROPERTIES(
-${ModelFiles}
-${DiscreteModelFiles}
-WRAP_EXCLUDE
+  ${ModelFiles}
+  ${DiscreteModelFiles}
+  PROPERTIES
+    WRAP_EXCLUDE
+    WRAP_EXCLUDE_PYTHON
 )
 
 set(_module_src
