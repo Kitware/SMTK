@@ -76,6 +76,8 @@ public:
   //get the connectivity for a single cell
   smtk::mesh::PointConnectivity pointConnectivity( std::size_t ) const;
 
+  //get the underlying HandleRange that this CellSet represents
+  const smtk::mesh::HandleRange& range() const { return this->m_range; }
 private:
   smtk::mesh::CollectionPtr m_parent;
   smtk::mesh::HandleRange m_range; //range of moab cell ids
