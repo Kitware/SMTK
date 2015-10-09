@@ -204,20 +204,26 @@ void verify_writing_and_loading_collections_without_file_path()
 
   test(importGood == 0, "Failed to import the mesh collections related to the model");
 
-  test(meshManager->numberOfCollections() == 1, "number of collections incorrect");
+  test(meshManager->numberOfCollections() == 2, "number of collections incorrect");
 
   std::vector<smtk::mesh::CollectionPtr> collections =
                             meshManager->collectionsWithAssociations();
-  test(collections.size() == 1, "number of collections with associations incorrect");
+  test(collections.size() == 2, "number of collections with associations incorrect");
 
-  std::string loadedCollectionName = collections[0]->name();
-  test( (loadedCollectionName==std::string("fileBased")), "Name doesn't match name during export");
+  //next verify that both collections have valid names
+  std::vector< std::string > names;
+  names.push_back( collections[0]->name() );
+  names.push_back( collections[1]->name() );
+  std::sort(names.begin(), names.end());
+
+  test( (names[0]==std::string("fileBased")), "Name doesn't match name during export");
+  test( (names[1]==std::string("jsonBased")), "Name doesn't match name during export");
 
 }
 
 
 //----------------------------------------------------------------------------
-void verify_writing_of_single_collection()
+void verify_writing_of_single_collection_to_disk()
 {
   std::string file_path(data_root);
   file_path += "/mesh/twoassm_out.h5m";
@@ -245,6 +251,90 @@ void verify_writing_of_single_collection()
   const bool exportGood = smtk::io::ExportJSON::forSingleCollection(top, c);
 
   test(exportGood == 1, "Expected the Export of forSingleCollection to pass");
+}
+
+//----------------------------------------------------------------------------
+void verify_writing_of_single_collection_to_json()
+{
+  std::string file_path(data_root);
+  file_path += "/mesh/twoassm_out.h5m";
+
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
+  test( c->isValid(), "collection should be valid");
+
+  std::size_t numMeshes = c->numberOfMeshes();
+  test( numMeshes!=0, "dataset once loaded should have more than zero meshes");
+  test( numMeshes == 53, "dataset once loaded should have 53 meshes");
+
+  //add some fake boundary conditions
+  c->meshes( smtk::mesh::Domain(444) ).setDirichlet( smtk::mesh::Dirichlet(2) );
+  c->meshes( smtk::mesh::Domain(444) ).setNeumann( smtk::mesh::Neumann(3) );
+  c->meshes( smtk::mesh::Domain(446) ).setNeumann( smtk::mesh::Neumann(2) );
+
+  cJSON* top = cJSON_CreateObject();
+  const bool exportGood = smtk::io::ExportJSON::forSingleCollection(top, c);
+
+  test(exportGood == 1, "Expected the Export of forSingleCollection to pass");
+}
+
+//----------------------------------------------------------------------------
+void verify_reading_of_single_collection_from_json()
+{
+  std::string file_path(data_root);
+  file_path += "/mesh/twoassm_out.h5m";
+
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  cJSON* top = cJSON_CreateObject();
+
+  {
+  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
+  test( c->isValid(), "collection should be valid");
+
+  std::size_t numMeshes = c->numberOfMeshes();
+  test( numMeshes != 0, "dataset once loaded should have more than zero meshes");
+  test( numMeshes == 53, "dataset once loaded should have 53 meshes");
+
+  //add some fake boundary conditions
+  c->meshes( smtk::mesh::Domain(444) ).setDirichlet( smtk::mesh::Dirichlet(2) );
+  c->meshes( smtk::mesh::Domain(444) ).setNeumann( smtk::mesh::Neumann(3) );
+  c->meshes( smtk::mesh::Domain(446) ).setNeumann( smtk::mesh::Neumann(2) );
+
+  const bool exportGood = smtk::io::ExportJSON::forSingleCollection(top, c);
+
+  test(exportGood == 1, "Expected the Export of forSingleCollection to pass");
+
+  manager->removeCollection(c);
+  }
+
+  //now import collection from json stream
+  {
+  //get the first child node which is a collection
+  cJSON* collection = top->child;
+  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireJSON(collection, manager);
+
+  std::size_t numMeshes = c->numberOfMeshes();
+  test( numMeshes != 0, "dataset once loaded should have more than zero meshes");
+  test( numMeshes == 53, "dataset once loaded should have 53 meshes");
+
+  //verify domains work
+  smtk::mesh::MeshSet domain = c->meshes( smtk::mesh::Domain(444) );
+  test( domain.size() == 1, "wrong number of domains loaded from json");
+
+  //verify boundary condtions
+  smtk::mesh::MeshSet dMeshes = c->meshes( smtk::mesh::Dirichlet(2) );
+  smtk::mesh::MeshSet nMeshes = c->meshes( smtk::mesh::Neumann(2) );
+  nMeshes.append( c->meshes( smtk::mesh::Neumann(3) ) );
+
+  //verify not empty
+  test( dMeshes.is_empty() == false, "wrong number of Dirichlet loaded from json");
+  test( nMeshes.is_empty() == false, "wrong number of Neumann loaded from json");
+
+  //verify correct size
+  test( dMeshes.size() == 1, "wrong number of dirichlet sets");
+  test( nMeshes.size() == 2, "wrong number of neumann sets");
+  }
+
 }
 
 //----------------------------------------------------------------------------
@@ -290,7 +380,10 @@ int UnitTestReadWriteMeshJSON(int, char**)
   verify_writing_and_loading_multiple_collections();
   verify_writing_and_loading_collections_without_file_path();
 
-  verify_writing_of_single_collection();
+  verify_writing_of_single_collection_to_disk();
+  verify_writing_of_single_collection_to_json();
+
+  verify_reading_of_single_collection_from_json();
 
   verify_loading_existing_collection_fails();
 

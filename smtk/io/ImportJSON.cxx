@@ -25,6 +25,8 @@
 
 #include "smtk/mesh/Manager.h"
 #include "smtk/mesh/Collection.h"
+#include "smtk/mesh/json/Interface.h"
+#include "smtk/mesh/moab/Interface.h"
 
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
@@ -1068,92 +1070,60 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
       continue;
       }
 
-    //Now read all the information about this collection
-    long formatVersion;
-    status |= cJSON_GetObjectIntegerValue(child, "formatVersion", formatVersion);
-    if(formatVersion == 1  && status == 1)
+    //get the location and type nodes from json
+    cJSON* fLocationNode = cJSON_GetObjectItem(child, "location");
+    cJSON* fTypeNode = cJSON_GetObjectItem(child, "type");
+    std::string collectionTypeName;
+    cJSON_GetStringValue(fTypeNode, collectionTypeName);
+
+    //todo codify "moab" and "json" string types as proper types
+    const bool isValidMoab = collectionTypeName == std::string("moab") &&
+                             fLocationNode;
+
+    smtk::mesh::CollectionPtr importedCollection;
+    if(isValidMoab)
       {
-      //make the collection, using the uuid from the json.
-      smtk::mesh::CollectionPtr collection = meshMgr->makeCollection(uid);
+      //get the file_path from json
+      std::string file_path;
+      cJSON_GetStringValue(fLocationNode, file_path);
+      importedCollection = smtk::io::ImportMesh::entireFile(file_path, meshMgr);
+      }
+
+    //wasnt moab, or failed to load as moab
+    if(!isValidMoab || !importedCollection)
+      {
+      importedCollection = smtk::io::ImportMesh::entireJSON(child, meshMgr);
+      }
+
+    if(importedCollection)
+      {
+      //Transfer ownership of the interface over to this new collection
+      //done so that we get the correct uuid for the collection
+      smtk::mesh::CollectionPtr collection =
+            meshMgr->makeCollection(uid, importedCollection->interface());
+
+      //remove the old collection, as its interface is now owned by the new
+      //collection
+      meshMgr->removeCollection(importedCollection);
+      importedCollection.reset();
+
+      //set the name back to the collection
+      cJSON* collecNameNode = cJSON_GetObjectItem(child, "name");
+      std::string collectionName;
+      cJSON_GetStringValue(collecNameNode, collectionName);
+      collection->name(collectionName);
+
+      //set the collections model manager so that we can do model based
+      //queries properly
       collection->setModelManager( modelMgr );
-
-      //first determine the location of the file to load
-      cJSON* fLocationNode = cJSON_GetObjectItem(child, "location");
-
-      int loaded = 0;
-      if(fLocationNode)
-        {
-        std::string meshLocation;
-        cJSON_GetStringValue(fLocationNode, meshLocation);
-
-        loaded = smtk::io::ImportJSON::ofFileBasedMesh(child,
-                                                       collection,
-                                                       meshLocation);
-        }
-      else
-        {
-        loaded = smtk::io::ImportJSON::ofJSONBasedMesh(child,
-                                                       collection);
-        }
-
-      if(loaded == 0)
-        {
-        meshMgr->removeCollection(collection);
-        collection.reset();
-        }
       }
     else
       {
-      std::cerr << "Unable to parse collection format version: "
-                << formatVersion
-                << "This importer only supports version: 1\n";
+      std::cerr << "Unable to import the collection. \n";
       continue;
       }
     }
   return status ? 0 : 1;
-}
-
-int ImportJSON::ofFileBasedMesh(cJSON* child,
-                                smtk::mesh::CollectionPtr collection,
-                                std::string const& file_path)
-{
-  int status = 1;
-
-  //set the name back to the collection
-  cJSON* collecNameNode = cJSON_GetObjectItem(child, "name");
-  std::string collectionName;
-  status |= cJSON_GetStringValue(collecNameNode, collectionName);
-  collection->name(collectionName);
-
-  const bool import_good =
-        smtk::io::ImportMesh::entireFileToCollection(file_path, collection);
-
-  if(!import_good)
-    {
-    std::cerr << "Unable to read collection: " << child->string
-              << "from file: " << file_path
-              << "falling back to JSON based mesh representation";
-
-    status = smtk::io::ImportJSON::ofJSONBasedMesh(child,collection);
-    }
-  return status;
-}
-
-
-int ImportJSON::ofJSONBasedMesh(cJSON* child,
-                                smtk::mesh::CollectionPtr collection)
-{
-  //for now the json loading will do nothing
-  int status = 1;
-
-  //set the name back to the collection
-  cJSON* collecNameNode = cJSON_GetObjectItem(child, "name");
-  std::string collectionName;
-  status |= cJSON_GetStringValue(collecNameNode, collectionName);
-  collection->name(collectionName);
-
-  //return as a failure always as this isn't implemented properly
-  return 0;
 }
 
 std::string ImportJSON::sessionNameFromTagData(cJSON* tagData)

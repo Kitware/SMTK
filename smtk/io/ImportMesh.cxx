@@ -12,6 +12,8 @@
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/moab/Readers.h"
 
+#include "smtk/mesh/json/Readers.h"
+
 namespace smtk {
 namespace io {
 
@@ -45,6 +47,15 @@ smtk::mesh::CollectionPtr ImportMesh::onlyDirichlet(const std::string& filePath,
 {
   smtk::mesh::CollectionPtr collection = smtk::mesh::moab::read_dirichlet(filePath, manager);
   collection->readLocation(filePath);
+  return collection;
+}
+
+//Load the entire json data stream as a new collection creating a lightweight
+//collection view, which uses the json backend interface
+smtk::mesh::CollectionPtr ImportMesh::entireJSON(cJSON* child,
+                                                 const smtk::mesh::ManagerPtr& manager)
+{
+  smtk::mesh::CollectionPtr collection = smtk::mesh::json::import(child,manager);
   return collection;
 }
 
@@ -96,6 +107,16 @@ bool ImportMesh::addDirichletToCollection(const std::string& filePath,
     }
   return result;
 }
+
+//Merge the entire json data stream to the collection creating a lightweight
+//collection view, which uses the json backend interface
+bool ImportMesh::entireJSONToCollection(cJSON* child,
+                                        const smtk::mesh::CollectionPtr& collection)
+{
+  const bool result = smtk::mesh::json::import(child, collection);
+  return result;
+}
+
 
 }
 }

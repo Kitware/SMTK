@@ -54,11 +54,6 @@ public:
 
   //write all mesh collections that have associations to a model
   static int ofMeshesOfModel(cJSON* node, smtk::model::ManagerPtr modelMgr);
-  static int ofFileBasedMesh(cJSON* node,
-                             smtk::mesh::CollectionPtr collection,
-                             std::string const& file_path);
-  static int ofJSONBasedMesh(cJSON* node,
-                             smtk::mesh::CollectionPtr collection);
 
   // Mid-level helpers:
   static std::string sessionNameFromTagData(cJSON* tagData);
