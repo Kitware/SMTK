@@ -95,7 +95,16 @@ class TestPolygonCreation(smtk.testing.TestCase):
     # Verify that no model vertices are created.
     periodicEdgeVerts = [[0, 4], [1, 4], [1, 5], [0, 5], [0, 4]]
     elist = CreateEdge(periodicEdgeVerts, model=mod)
-    #smtk.io.ExportJSON.fromModelManagerToFile(self.mgr, '/tmp/poly.json')
+
+    # Test creation of a second periodic edge with no model vertices
+    # but which shares a point with the previous edge.
+    # Verify that no model vertices are created.
+    # However, if the two edges are used as holes for a containing face
+    # or unioned, then the shared point should become a model vertex.
+    periodicEdgeVerts = [[1, 3], [2, 3], [2, 4], [1, 4], [1, 3]]
+    elist = CreateEdge(periodicEdgeVerts, model=mod)
+
+    smtk.io.ExportJSON.fromModelManagerToFile(self.mgr, '/tmp/poly.json')
 
   def testCreation(self):
     mod = CreateModel()
