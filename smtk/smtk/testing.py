@@ -177,6 +177,7 @@ class TestCase:
       ac.SetMapper(mp)
       mp.SetInputConnection(vsource.GetOutputPort())
       self.renderer.AddActor(ac)
+      return [msource, vsource, mp, ac]
 
     def addModelToScene(self, model):
         import vtkSMTKExtPython
@@ -184,8 +185,7 @@ class TestCase:
         mbs.SetModelManager(self.mgr.pointerAsString())
         mbs.SetModelEntityID(str(model.entity()))
         #mbs.ShowAnalysisTessellationOff()
-        self.addToScene(mbs)
-        return mbs
+        return self.addToScene(mbs)
 
     def interactive(self):
         """Return false if the test should exit at completion."""
