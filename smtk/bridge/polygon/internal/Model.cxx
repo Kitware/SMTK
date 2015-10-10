@@ -262,6 +262,135 @@ smtk::model::Vertex pmodel::findOrAddModelVertex(
   return v;
 }
 
+/**\brief Split the model edge with the given \a edgeId at the given \a coords.
+  *
+  * The point coordinates need not lie precisely on the edge, but are assumed not
+  * to cause the split edge to intersect (or miss) any faces or edges the original
+  * edge did not.
+  *
+  * If the point coordinates already specify a model vertex, this method returns false.
+  *
+  * FIXME: Return new edge Ids and new vertex Id.
+  */
+bool pmodel::splitModelEdgeAtPoint(smtk::model::ManagerPtr mgr, const Id& edgeId, const std::vector<double>& coords)
+{
+  Point pt = this->projectPoint(coords.begin(), coords.end());
+  if (this->pointId(pt))
+    return false; // Point is already a model vertex.
+  // TODO: Find point on edge closest to pt? Need to find where to insert model vertex?
+  smtk::model::Vertex v = this->findOrAddModelVertex(mgr, pt);
+  return this->splitModelEdgeAtModelVertex(mgr, edgeId, v.entity());
+}
+
+/** Split the model edge at one of its points that has been promoted to a model vertex.
+  *
+  * Since model edges are not allowed to have model vertices along their interior,
+  * this method should not be exposed as a public operator but may be used internally
+  * when performing other operations.
+  */
+bool pmodel::splitModelEdgeAtModelVertex(smtk::model::ManagerPtr mgr, const Id& edgeId, const Id& vertexId)
+{
+  // Look up edge
+  edge::Ptr edg = this->session()->findStorage<edge>(edgeId);
+  // Look up vertex
+  vertex::Ptr vrt = this->session()->findStorage<vertex>(vertexId);
+  if (!edg || !vrt)
+    return false;
+  PointSeq::const_iterator split;
+  for (split = edg->pointsBegin(); split != edg->pointsEnd(); ++split)
+    {
+    if (vrt->point() == *split)
+      { // Split the edge at this location by creating 2 new edges and deleting this edge.
+      return this->splitModelEdgeAtModelVertex(mgr, edg, vrt, split);
+      }
+    }
+  // Edge did not contain model vertex in its sequence.
+  return false;
+}
+
+typedef std::vector<std::pair<size_t, Segment> > SegmentSplitsT;
+
+bool pmodel::splitModelEdgeAtModelVertex(
+  smtk::model::ManagerPtr mgr, edge::Ptr edgeToSplit, vertex::Ptr splitPoint, PointSeq::const_iterator location)
+{
+  size_t npts;
+  if (
+    !edgeToSplit ||
+    !splitPoint ||
+    (npts = edgeToSplit->pointsSize()) < 3 ||
+    location == edgeToSplit->pointsBegin() ||
+    *location == *edgeToSplit->pointsRBegin())
+    return false;
+
+  SegmentSplitsT segs;
+  SegmentSplitsT::iterator segSplit;
+  segs.reserve(npts - 1); // Preallocation to prevent vector from reallocating and invalidating segSplit iterator.
+  PointSeq::const_iterator prev = edgeToSplit->pointsBegin();
+  size_t n = 0;
+  PointSeq::const_iterator it = prev;
+  for (++it; it != edgeToSplit->pointsEnd(); ++it, ++n, prev = it)
+    {
+    segs.push_back(std::pair<size_t,Segment>(n, Segment(*prev, *it)));
+    if (prev == location)
+      segSplit = segs.begin() + n;
+    }
+
+  // Remove edgeToSplit from its endpoint vertices so that creation
+  // of new edges can succeed (otherwise it will fail when trying
+  // to insert a coincident edge at the existing edge endpoints). 
+  std::pair<Id,Id> adjacentFaces = this->removeModelEdgeFromEndpoints(mgr, edgeToSplit);
+
+  // Now we can create the new model edges.
+  this->createModelEdgeFromSegments(mgr, segs.begin(), segSplit);
+  this->createModelEdgeFromSegments(mgr, segSplit, segs.end());
+
+  // TODO: Fix face adjacency information (face relations and at all 3 vertices)
+  //       Fix face loops by replacing old edge with new edges.
+  //       Create/fix vertex use at model vertex? No, this should be done wherever the vertex is created.
+  return true;
+}
+
+// TODO: Remove edgeToSplit so that creation can succeed (otherwise
+//       it will fail when trying to insert a coincident edge at the
+//       existing edge endpoints. 
+std::pair<Id,Id> pmodel::removeModelEdgeFromEndpoints(smtk::model::ManagerPtr mgr, EdgePtr edg)
+{
+  std::pair<Id,Id> result;
+  if (!edg || !mgr)
+    return result;
+
+  Id epids[2];
+  epids[0] = this->pointId(*edg->pointsBegin());
+  epids[1] = this->pointId(*edg->pointsRBegin());
+  if (!epids[0])
+    return result; // edge is periodic and has no model vertices
+
+  // Iterate over both endpoints (which may be the same, but in that
+  // case we still need to remove both edge-incidence records).
+  for (int i = 0; i < 2; ++i)
+    {
+    vertex::Ptr endpt = this->session()->findStorage<vertex>(epids[i]);
+    vertex::incident_edges::iterator where;
+    for (where = endpt->edgesBegin(); where != endpt->edgesEnd(); ++where)
+      {
+      if (where->edgeId() == edg->id())
+        { // found the incident edge.
+        if (!result.first)
+          {
+          vertex::incident_edges::iterator tmp = where;
+          result.first =
+            (where == endpt->edgesBegin() ?
+             endpt->edgesRBegin()->clockwiseFaceId() :
+             (--tmp)->clockwiseFaceId());
+          result.second = where->clockwiseFaceId();
+          }
+        endpt->removeEdgeAt(where);
+        }
+      }
+    }
+  return result;
+}
+
 Point pmodel::edgeTestPoint(const Id& edgeId, bool edgeEndPt) const
 {
   edge::Ptr e = this->m_session->findStorage<edge>(edgeId);

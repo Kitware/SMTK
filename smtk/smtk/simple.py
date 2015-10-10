@@ -552,6 +552,22 @@ def CreateEdge(verts, curve_type = CurveType.LINE, **kwargs):
   numEdges = edgeList.numberOfValues()
   return edgeList.value(0) if numEdges == 1 else [edgeList.value(i) for i in range(numEdges)]
 
+def SplitEdge(edge, point, **kwargs):
+  """Split an edge at a point along the edge.
+  """
+  import itertools
+  sref = GetActiveSession()
+  spl = sref.op('split edge')
+  spl.associateEntity(edge)
+  x = spl.findAsDouble('point')
+  SetVectorValue(x, point)
+  res = spl.operate()
+  SetLastResult(res)
+  PrintResultLog(res)
+  edgeList = res.findModelEntity('created')
+  numEdges = edgeList.numberOfValues()
+  return edgeList.value(0) if numEdges == 1 else [edgeList.value(i) for i in range(numEdges)]
+
 def CreateFace(edges, surface_type = SurfaceType.PLANAR, **kwargs):
   """Create a face from a set of edges.
   """

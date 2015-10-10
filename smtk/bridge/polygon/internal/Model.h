@@ -53,10 +53,16 @@ public:
     const Point& pt);
 
   template<typename T>
-  model::Edge createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, T end);
+  model::Edge createModelEdgeFromSegments(smtk::model::ManagerPtr mgr, T begin, T end);
 
   template<typename T>
   std::set<Id> createModelEdgesFromPoints(T begin, T end);
+
+  bool splitModelEdgeAtPoint(smtk::model::ManagerPtr mgr, const Id& edgeId, const std::vector<double>& point);
+  bool splitModelEdgeAtModelVertex(smtk::model::ManagerPtr mgr, const Id& edgeId, const Id& vertexId);
+  bool splitModelEdgeAtModelVertex(smtk::model::ManagerPtr mgr, EdgePtr edgeToSplit, VertexPtr splitPoint, PointSeq::const_iterator location);
+
+  std::pair<Id,Id> removeModelEdgeFromEndpoints(smtk::model::ManagerPtr mgr, EdgePtr edg);
 
   Point edgeTestPoint(const Id& edgeId, bool edgeEndPt) const;
 

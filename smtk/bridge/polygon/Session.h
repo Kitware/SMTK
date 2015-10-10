@@ -56,6 +56,7 @@ protected:
   friend class CreateModel;
   friend class CreateVertices;
   friend class CreateEdge;
+  friend class SplitEdge;
   friend class internal::pmodel;
 
   Session();
@@ -64,6 +65,7 @@ protected:
     const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1);
 
   void addStorage(const smtk::common::UUID& uid, smtk::bridge::polygon::internal::entity::Ptr storage);
+  bool removeStorage(const smtk::common::UUID& uid);
 
   template<typename T>
   typename T::Ptr findStorage(const smtk::common::UUID& uid)

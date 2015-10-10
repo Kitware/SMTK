@@ -117,6 +117,15 @@ void vertex::insertEdgeAt(incident_edges::iterator where, const Id& edgeId, bool
   this->m_edges.insert(where, edgeData);
 }
 
+/**\brief Remove the edge incidence record at the given position.
+  *
+  * This does not perform any updates to other incidence records.
+  */
+void vertex::removeEdgeAt(incident_edges::iterator where)
+{
+  this->m_edges.erase(where);
+}
+
       } // namespace internal
     } // namespace polygon
   } // namespace bridge

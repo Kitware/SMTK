@@ -79,6 +79,11 @@ void Session::addStorage(
   this->m_storage[uid] = s;
 }
 
+bool Session::removeStorage(const smtk::common::UUID& uid)
+{
+  return this->m_storage.erase(uid) > 0;
+}
+
     } // namespace polygon
   } //namespace bridge
 } // namespace smtk

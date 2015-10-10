@@ -28,6 +28,10 @@ public:
     Id m_edgeId; // Should never be NULL
     Id m_adjacentFace; // Face immediately CW of m_edgeId. May be NULL.
     bool m_edgeOut; // True when edge points outward from vertex (i.e., edge oriented so beginning vertex is this vertex)
+
+    Id edgeId() const { return this->m_edgeId; }
+    Id clockwiseFaceId() const { return this->m_adjacentFace; }
+    bool isEdgeOutgoing() const { return this->m_edgeOut; }
     };
   typedef std::list<incident_edge_data> incident_edges;
 
@@ -36,12 +40,19 @@ public:
 
   bool canInsertEdge(const Point& neighborhood, incident_edges::iterator* where);
   void insertEdgeAt(incident_edges::iterator where, const Id& edgeId, bool edgeOutwards);
+  void removeEdgeAt(incident_edges::iterator where);
 
-  incident_edges::const_iterator beginEdges() const { return this->m_edges.begin(); }
-  incident_edges::const_iterator endEdges() const { return this->m_edges.end(); }
+  incident_edges::const_iterator edgesBegin() const { return this->m_edges.begin(); }
+  incident_edges::const_iterator edgesEnd() const { return this->m_edges.end(); }
 
-  incident_edges::iterator beginEdges() { return this->m_edges.begin(); }
-  incident_edges::iterator endEdges() { return this->m_edges.end(); }
+  incident_edges::iterator edgesBegin() { return this->m_edges.begin(); }
+  incident_edges::iterator edgesEnd() { return this->m_edges.end(); }
+
+  incident_edges::const_reverse_iterator edgesRBegin() const { return this->m_edges.rbegin(); }
+  incident_edges::const_reverse_iterator edgesREnd() const { return this->m_edges.rend(); }
+
+  incident_edges::reverse_iterator edgesRBegin() { return this->m_edges.rbegin(); }
+  incident_edges::reverse_iterator edgesREnd() { return this->m_edges.rend(); }
 
 protected:
   friend class pmodel;

@@ -7,6 +7,7 @@ set(polygonSrcs
   operators/CreateVertices.cxx
   operators/CreateEdge.cxx
   operators/CreateFaces.cxx
+  operators/SplitEdge.cxx
 )
 
 set(polygonHeaders
@@ -17,6 +18,7 @@ set(polygonHeaders
   operators/CreateVertices.h
   operators/CreateEdge.h
   operators/CreateFaces.h
+  operators/SplitEdge.h
 )
 
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" polygonSessionJSON)
@@ -24,6 +26,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateModel.sbt" polygo
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateVertices.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdge.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateFaces.sbt" polygonOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitEdge.sbt" polygonOperatorXML)
 
 add_library(smtkPolygonSession ${polygonSrcs})
 target_link_libraries(smtkPolygonSession

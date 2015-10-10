@@ -104,6 +104,8 @@ class TestPolygonCreation(smtk.testing.TestCase):
     periodicEdgeVerts = [[1, 3], [2, 3], [2, 4], [1, 4], [1, 3]]
     elist = CreateEdge(periodicEdgeVerts, model=mod)
 
+    arf = SplitEdge(elist, [2, 4])
+
     smtk.io.ExportJSON.fromModelManagerToFile(self.mgr, '/tmp/poly.json')
 
   def testCreation(self):
@@ -126,12 +128,16 @@ class TestPolygonCreation(smtk.testing.TestCase):
 
       self.startRenderTest()
 
-      self.addModelToScene(mod)
+      mod = smtk.model.Model(mod)
+      [mod.addCell(x) for x in self.mgr.findEntitiesOfType(smtk.model.CELL_ENTITY, False)]
+      ms, vs, mp, ac = self.addModelToScene(mod)
+      ac.GetProperty().SetLineWidth(2)
+      ac.GetProperty().SetPointSize(6)
 
       cam = self.renderer.GetActiveCamera()
-      #cam.SetFocalPoint(0.125, 0.7, -0.1)
-      #cam.SetPosition(2,-1,1)
-      #cam.SetViewUp(-1,1,1)
+      cam.SetFocalPoint(5,5,0)
+      cam.SetPosition(5,5,5)
+      cam.SetViewUp(0,1,0)
       self.renderer.ResetCamera()
       self.renderWindow.Render()
       # Skip the image match if we don't have a baseline.
