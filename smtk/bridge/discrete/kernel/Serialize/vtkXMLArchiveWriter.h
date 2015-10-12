@@ -92,7 +92,7 @@ public:
   //
   // vtkSmartPointer<vtkXMLArchiveWriter> writer =
   //   vtkSmartPointer<vtkXMLArchiveWriter>::New();
-  // vtksys_ios::ostringstream ostr;
+  // std::ostringstream ostr;
   // writer->SetArchiveVersion(1);
   // std::vector<vtkSmartPointer<vtkObject> > objs;
   // objs.push_back(root);

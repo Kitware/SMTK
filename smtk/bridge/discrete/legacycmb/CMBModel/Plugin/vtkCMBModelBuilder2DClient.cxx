@@ -22,7 +22,7 @@
 #include "vtkSMSession.h"
 #include "vtkSMStringVectorProperty.h"
 
-#include <vtksys/ios/sstream>
+#include <sstream>
 
 vtkStandardNewMacro(vtkCMBModelBuilder2DClient);
 
@@ -116,7 +116,7 @@ bool vtkCMBModelBuilder2DClient::UpdateClientModel(vtkDiscreteModel* ClientModel
   const char* data = SerializedModel->GetElement(0);
 
   // Create an input stream to read the XML back
-  vtksys_ios::istringstream istr(data);
+  std::istringstream istr(data);
   vtkSmartPointer<vtkXMLModelReader> reader =
     vtkSmartPointer<vtkXMLModelReader>::New();
   ClientModel->Reset();
