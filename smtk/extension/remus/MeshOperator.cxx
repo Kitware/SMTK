@@ -30,7 +30,6 @@
 // #include <boost/date_time/posix_time/posix_time.hpp>
 // #include <boost/thread/thread.hpp>
 
-
 #include "smtk/extension/remus/MeshOperator_xml.h"
 
 
@@ -153,6 +152,10 @@ OperatorResult MeshOperator::operateInternal()
 
     //parse the job result as a json string
     smtk::io::ImportJSON::intoModelManager(updatedModel.data(), this->manager());
+
+    cJSON* root = cJSON_Parse(updatedModel.data());
+    smtk::io::ImportJSON::ofMeshesOfModel(root, this->manager());
+    cJSON_Delete(root);
 
     // Now set or increment the SMTK_MESH_GEN_PROP property for the models
     // The client can use this property to check if there is an analysis mesh created
