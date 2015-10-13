@@ -128,6 +128,10 @@ cJSON* to_json(const smtk::mesh::HandleRange& range)
 smtk::mesh::HandleRange from_json(cJSON* json)
 {
   smtk::mesh::HandleRange result;
+  if(!json)
+  {
+    return result;
+  }
 
   std::stringstream buffer;
   //iterate the children

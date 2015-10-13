@@ -10,6 +10,11 @@ set(meshSrcs
   PointConnectivity.cxx
   PointSet.cxx
   TypeSet.cxx
+
+  json/Interface.cxx
+  json/MeshInfo.cxx
+  json/Readers.cxx
+
   moab/Allocator.cxx
   moab/CellTypeToType.cxx
   moab/Interface.cxx
@@ -35,7 +40,10 @@ set(meshHeaders
   QueryTypes.h
   TypeSet.h
 
-  #The only exposed backend headers are Interface,Allocator,and Range.
+  #Limit the amount of headers for each backend we install. These should be
+  #implementation details users of smtk don't get access to ( outside the interface )
+  json/Interface.h
+  json/MeshInfo.h
   moab/Interface.h
   moab/Allocator.h
   moab/HandleRange.h

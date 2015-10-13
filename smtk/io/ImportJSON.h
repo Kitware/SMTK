@@ -43,6 +43,7 @@ public:
   static int ofManagerFloatProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
   static int ofManagerStringProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
   static int ofManagerIntegerProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
+  static int forManagerMeshes(smtk::mesh::ManagerPtr meshes, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int ofRemoteSession(cJSON*, smtk::model::DefaultSessionPtr destSession, smtk::model::ManagerPtr context);
   static int ofLocalSession(cJSON*, smtk::model::ManagerPtr context);
   static int ofOperator(cJSON* node, smtk::model::OperatorPtr& op, smtk::model::ManagerPtr context);
@@ -52,9 +53,7 @@ public:
   static int ofLog(cJSON* logrecordarray, smtk::io::Logger& log);
 
   //write all mesh collections that have associations to a model
-  static int ofMeshesOfModel(cJSON* collections,
-                             smtk::model::ManagerPtr modelMgr,
-                             smtk::mesh::ManagerPtr meshMgr);
+  static int ofMeshesOfModel(cJSON* node, smtk::model::ManagerPtr modelMgr);
 
   // Mid-level helpers:
   static std::string sessionNameFromTagData(cJSON* tagData);

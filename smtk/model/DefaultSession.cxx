@@ -83,6 +83,8 @@ OperatorPtr DefaultSession::op(const std::string& opName) const
     RemoteOperatorPtr rop = RemoteOperator::create();
     rop->setName(opName);
     rop->setManager(this->manager());
+    rop->setMeshManager(this->meshManager());
+
     // Naughty, but necessary so we can pretend that the
     // operator existed all along.
     DefaultSession* self = const_cast<DefaultSession*>(this);

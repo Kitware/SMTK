@@ -76,6 +76,11 @@ namespace smtk
     {
       class Interface;
     }
+
+    namespace json
+    {
+      class Interface;
+    }
   }
 
 
@@ -191,6 +196,11 @@ namespace smtk
     namespace moab
     {
       typedef smtk::shared_ptr< smtk::mesh::moab::Interface >     InterfacePtr;
+    }
+
+    namespace json
+    {
+      typedef smtk::shared_ptr< smtk::mesh::json::Interface >     InterfacePtr;
     }
   }
 

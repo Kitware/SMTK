@@ -25,6 +25,8 @@
 
 #include "smtk/mesh/Manager.h"
 #include "smtk/mesh/Collection.h"
+#include "smtk/mesh/json/Interface.h"
+#include "smtk/mesh/moab/Interface.h"
 
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
@@ -1022,27 +1024,30 @@ int ImportJSON::ofLog(cJSON* logrecordarray, smtk::io::Logger& log)
 
 /**\brief Import all the smtk::mesh::Collections associated with a given smtk::model.
   *
-  * All collections listed in \a collections are imported in, and ownership
-  * is assigned to \a meshMgr.
+  * All collections listed in \a node are imported in, and added to the mesh
+  * manager that is owned by the model \a meshMgr.
   *
   */
-int ImportJSON::ofMeshesOfModel(cJSON* collections,
-                                smtk::model::ManagerPtr modelMgr,
-                                smtk::mesh::ManagerPtr meshMgr)
+int ImportJSON::ofMeshesOfModel(cJSON* node,
+                                smtk::model::ManagerPtr modelMgr)
 
 {
-  if (!collections || !modelMgr || !meshMgr)
-    {
-    return 1;
-    }
-  cJSON* body = cJSON_GetObjectItem(collections, "mesh_collections");
-  if(!body)
-    {
-    return 1;
-   }
-
   int status = 1;
-  for (cJSON* child = body->child; child && status; child = child->next)
+  if (!node || !modelMgr)
+    {
+    return status;
+    }
+
+  cJSON* collections;
+  if (node->type != cJSON_Object ||
+      // Does the node have fields "mesh_collections"
+      !(collections = cJSON_GetObjectItem(node, "mesh_collections")) )
+    {
+    return status;
+    }
+
+  smtk::mesh::ManagerPtr meshMgr = modelMgr->meshes();
+  for (cJSON* child = collections->child; child && status; child = child->next)
     {
     if (!child->string || !child->string[0])
       {
@@ -1065,46 +1070,56 @@ int ImportJSON::ofMeshesOfModel(cJSON* collections,
       continue;
       }
 
-    //Now read all the information about this collection
-    long formatVersion;
-    status |= cJSON_GetObjectIntegerValue(child, "formatVersion", formatVersion);
-    if(formatVersion == 1  && status == 1)
+    //get the location and type nodes from json
+    cJSON* fLocationNode = cJSON_GetObjectItem(child, "location");
+    cJSON* fTypeNode = cJSON_GetObjectItem(child, "type");
+    std::string collectionTypeName;
+    cJSON_GetStringValue(fTypeNode, collectionTypeName);
+
+    //todo codify "moab" and "json" string types as proper types
+    const bool isValidMoab = collectionTypeName == std::string("moab") &&
+                             fLocationNode;
+
+    smtk::mesh::CollectionPtr importedCollection;
+    if(isValidMoab)
       {
-      //should we verify the model ids listed in the json, are part
-      //of the model? If we want to check this, we need to do so
-      //before we load the collection
+      //get the file_path from json
+      std::string file_path;
+      cJSON_GetStringValue(fLocationNode, file_path);
+      importedCollection = smtk::io::ImportMesh::entireFile(file_path, meshMgr);
+      }
 
-      //make the collection, using the uuid from the json.
-      smtk::mesh::CollectionPtr collection = meshMgr->makeCollection(uid);
+    //wasnt moab, or failed to load as moab
+    if(!isValidMoab || !importedCollection)
+      {
+      importedCollection = smtk::io::ImportMesh::entireJSON(child, meshMgr);
+      }
+
+    if(importedCollection)
+      {
+      //Transfer ownership of the interface over to this new collection
+      //done so that we get the correct uuid for the collection
+      smtk::mesh::CollectionPtr collection =
+            meshMgr->makeCollection(uid, importedCollection->interface());
+
+      //remove the old collection, as its interface is now owned by the new
+      //collection
+      meshMgr->removeCollection(importedCollection);
+      importedCollection.reset();
+
+      //set the name back to the collection
+      cJSON* collecNameNode = cJSON_GetObjectItem(child, "name");
+      std::string collectionName;
+      cJSON_GetStringValue(collecNameNode, collectionName);
+      collection->name(collectionName);
+
+      //set the collections model manager so that we can do model based
+      //queries properly
       collection->setModelManager( modelMgr );
-
-      cJSON* fLocationNode = cJSON_GetObjectItem(child, "location");
-      std::string meshLocation;
-      status |= cJSON_GetStringValue(fLocationNode, meshLocation);
-      if (status == 0)
-        {
-        std::cerr << "Unable to parse collection file location: "
-                  << meshLocation
-                  << "\n";
-        continue;
-        }
-
-      const bool import_good =
-            smtk::io::ImportMesh::entireFileToCollection(meshLocation, collection);
-      if(!import_good)
-        {
-        std::cerr << "Unable to read collection: " << child->string
-                  << "from file: " << meshLocation
-                  << "stopping the import process \n";
-        status = 1;
-        continue;
-        }
       }
     else
       {
-      std::cerr << "Unable to parse collection format version: "
-                << formatVersion
-                << "This importer only supports version: 1\n";
+      std::cerr << "Unable to import the collection. \n";
       continue;
       }
     }
