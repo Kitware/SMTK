@@ -29,7 +29,6 @@ target_link_libraries(smtkExodusSession
     vtkIOParallelExodus
     vtkFiltersGeometry
     vtkCommonDataModel
-    vtksys
 )
 smtk_export_header(smtkExodusSession Exports.h)
 
@@ -60,6 +59,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
   #extract the headers from exodus library we built to give them to shiboken
 
   sbk_wrap_library(smtkExodusSession
+    PACKAGE smtk
     GENERATOR_ARGS --avoid-protected-hack
     WORKING_DIRECTORY ${SMTK_SOURCE_DIR}/smtk
     LOCAL_INCLUDE_DIRECTORIES
@@ -94,7 +94,6 @@ if (SMTK_ENABLE_TESTING)
       vtkIOParallelExodus
       vtkFiltersGeometry
       vtkCommonDataModel
-      vtksys
   )
   add_subdirectory(testing)
 endif()

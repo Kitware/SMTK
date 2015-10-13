@@ -230,11 +230,8 @@ set(_module_src
   vtkDiscreteModelWrapper.cxx
 )
 
-SET(_VTK_INSTALL_NO_DEVELOPMENT ${VTK_INSTALL_NO_DEVELOPMENT})
-SET(VTK_INSTALL_NO_DEVELOPMENT ON)
 set(vtkSMTKDiscreteModel_NO_HeaderTest 1)
 vtk_module_library(vtkSMTKDiscreteModel ${_module_src})
-SET(VTK_INSTALL_NO_DEVELOPMENT ${_VTK_INSTALL_NO_DEVELOPMENT})
 
 target_link_libraries(vtkSMTKDiscreteModel LINK_PRIVATE ${UUID_LIBS})
 

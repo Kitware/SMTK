@@ -9,7 +9,10 @@
 //=========================================================================
 
 #include "smtk/io/ImportMesh.h"
+#include "smtk/mesh/Collection.h"
 #include "smtk/mesh/moab/Readers.h"
+
+#include "smtk/mesh/json/Readers.h"
 
 namespace smtk {
 namespace io {
@@ -17,26 +20,43 @@ namespace io {
 smtk::mesh::CollectionPtr ImportMesh::entireFile(const std::string& filePath,
                                                  const smtk::mesh::ManagerPtr& manager)
 {
-  return smtk::mesh::moab::read(filePath, manager);
+  smtk::mesh::CollectionPtr collection = smtk::mesh::moab::read(filePath, manager);
+  collection->readLocation(filePath);
+  return collection;
 }
 
 smtk::mesh::CollectionPtr ImportMesh::onlyDomain(const std::string& filePath,
                                                  const smtk::mesh::ManagerPtr& manager)
 {
- return smtk::mesh::moab::read_domain(filePath, manager);
+ smtk::mesh::CollectionPtr collection = smtk::mesh::moab::read_domain(filePath, manager);
+ collection->readLocation(filePath);
+ return collection;
 }
 
 
 smtk::mesh::CollectionPtr ImportMesh::onlyNeumann(const std::string& filePath,
                                                   const smtk::mesh::ManagerPtr& manager)
 {
-  return smtk::mesh::moab::read_neumann(filePath, manager);
+  smtk::mesh::CollectionPtr collection = smtk::mesh::moab::read_neumann(filePath, manager);
+  collection->readLocation(filePath);
+  return collection;
 }
 
 smtk::mesh::CollectionPtr ImportMesh::onlyDirichlet(const std::string& filePath,
                                                     const smtk::mesh::ManagerPtr& manager)
 {
-  return smtk::mesh::moab::read_dirichlet(filePath, manager);
+  smtk::mesh::CollectionPtr collection = smtk::mesh::moab::read_dirichlet(filePath, manager);
+  collection->readLocation(filePath);
+  return collection;
+}
+
+//Load the entire json data stream as a new collection creating a lightweight
+//collection view, which uses the json backend interface
+smtk::mesh::CollectionPtr ImportMesh::entireJSON(cJSON* child,
+                                                 const smtk::mesh::ManagerPtr& manager)
+{
+  smtk::mesh::CollectionPtr collection = smtk::mesh::json::import(child,manager);
+  return collection;
 }
 
 
@@ -44,29 +64,59 @@ smtk::mesh::CollectionPtr ImportMesh::onlyDirichlet(const std::string& filePath,
 bool ImportMesh::entireFileToCollection(const std::string& filePath,
                                         const smtk::mesh::CollectionPtr& collection)
 {
-  return smtk::mesh::moab::import(filePath, collection);
+  const bool result = smtk::mesh::moab::import(filePath, collection);
+  if (result && collection->readLocation().empty())
+    { //if no read location is associated with this file, specify one
+    collection->readLocation(filePath);
+    }
+  return result;
 }
 
 //Merge the domain sets from a moab data file into an existing valid collection.
 bool ImportMesh::addDomainToCollection(const std::string& filePath,
                                        const smtk::mesh::CollectionPtr& collection)
 {
-  return smtk::mesh::moab::import_domain(filePath, collection);
+  const bool result = smtk::mesh::moab::import_domain(filePath, collection);
+  if (result && collection->readLocation().empty())
+    { //if no read location is associated with this file, specify one
+    collection->readLocation(filePath);
+    }
+  return result;
 }
 
 //Merge the neumann sets from a moab data file into an existing valid collection.
 bool ImportMesh::addNeumannToCollection(const std::string& filePath,
                                         const smtk::mesh::CollectionPtr& collection)
 {
-  return smtk::mesh::moab::import_neumann(filePath, collection);
+  const bool result = smtk::mesh::moab::import_neumann(filePath, collection);
+  if (result && collection->readLocation().empty())
+    { //if no read location is associated with this file, specify one
+    collection->readLocation(filePath);
+    }
+  return result;
 }
 
 //Merge the dirichlet sets from a moab data file into an existing valid collection.
 bool ImportMesh::addDirichletToCollection(const std::string& filePath,
                                           const smtk::mesh::CollectionPtr& collection)
 {
-  return smtk::mesh::moab::import_dirichlet(filePath, collection);
+  const bool result = smtk::mesh::moab::import_dirichlet(filePath, collection);
+  if (result && collection->readLocation().empty())
+    { //if no read location is associated with this file, specify one
+    collection->readLocation(filePath);
+    }
+  return result;
 }
+
+//Merge the entire json data stream to the collection creating a lightweight
+//collection view, which uses the json backend interface
+bool ImportMesh::entireJSONToCollection(cJSON* child,
+                                        const smtk::mesh::CollectionPtr& collection)
+{
+  const bool result = smtk::mesh::json::import(child, collection);
+  return result;
+}
+
 
 }
 }

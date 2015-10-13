@@ -97,6 +97,7 @@ install(
 
 if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
   sbk_wrap_library(smtkCore
+    PACKAGE smtk
     GENERATOR_ARGS --avoid-protected-hack
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     LOCAL_INCLUDE_DIRECTORIES
@@ -152,12 +153,12 @@ if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
           -c "import site; print(site.getsitepackages())[-1]"
         RESULT_VARIABLE SMTK_PYTHON_MODULEDIR
       )
-    else()
-      # NB. LIBEXECDIR is used because SMTK is a "non-pure" package (it depends
-      # on compiled code rather than being implemented purely as python).
-      # See https://docs.python.org/2/install/index.html for more.
+    elseif(WIN32)
       set(SMTK_PYTHON_MODULEDIR
-        "${CMAKE_INSTALL_LIBEXECDIR}/python/site-packages")
+        "bin/Lib/site-packages")
+    else()
+      set(SMTK_PYTHON_MODULEDIR
+        "${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION}/site-packages")
     endif()
   endif()
 

@@ -30,6 +30,9 @@ void verify_load_bad_mesh()
   smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
   test( !c->isValid(), "collection should be invalid");
   test( c->entity().isNull(), "uuid should be invalid");
+
+  test( (c->readLocation() == file_path), "read location of collection shouldnt be empty");
+  test( (c->writeLocation() == file_path), "read location of collection shouldnt be empty");
 }
 
 //----------------------------------------------------------------------------
@@ -46,6 +49,20 @@ void verify_load_valid_mesh()
   std::cout << "number of meshes in twoassm_out is: " << numMeshes << std::endl;
   test( numMeshes!=0, "dataset once loaded should have more than zero meshes");
   test( numMeshes == 53, "dataset once loaded should have 53 meshes");
+}
+
+//----------------------------------------------------------------------------
+void verify_load_writeLocation()
+{
+  std::string file_path(data_root);
+  file_path += "/mesh/twoassm_out.h5m";
+
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
+  test( c->isValid(), "collection should be valid");
+
+  test( c->readLocation() == file_path, "collection readLocation is wrong");
+  test( c->writeLocation() == file_path, "collection default writeLocation is wrong");
 }
 
 //----------------------------------------------------------------------------
@@ -191,6 +208,7 @@ int UnitTestLoadMesh(int, char**)
 {
   verify_load_bad_mesh();
   verify_load_valid_mesh();
+  verify_load_writeLocation();
 
   verify_load_multiple_meshes();
 

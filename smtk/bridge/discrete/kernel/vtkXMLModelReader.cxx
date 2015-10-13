@@ -42,7 +42,7 @@
 #include "vtkType.h"
 #
 #include <map>
-#include "vtksys/ios/sstream"
+#include <sstream>
 #include <vtksys/SystemTools.hxx>
 
 
@@ -375,7 +375,7 @@ vtkModelLoopUse* vtkXMLModelReader::ConstructModelLoopUse(int /*id*/)
   for(size_t i=0;i<associatedModelEdgeUses.size();i++)
     {
     // get edge use adjacencies
-    vtksys_ios::ostringstream idstr;
+    std::ostringstream idstr;
     idstr << associatedModelEdgeUses[i] << ends;
     vtkXMLElement* edgeUseElement =
       this->RootElement->FindNestedElement(idstr.str().c_str());
@@ -479,7 +479,7 @@ vtkModelRegion* vtkXMLModelReader::ConstructModelRegion(int id)
     this->Model->GetModelEntity(vtkModelMaterialType, associations[vtkModelMaterialType][0]));
 
   // get shell use adjacencies
-  vtksys_ios::ostringstream idstr;
+  std::ostringstream idstr;
   idstr << associations[vtkModelShellUseType][0] << ends;
   vtkXMLElement* shellElement = this->RootElement->FindNestedElement(idstr.str().c_str());
   std::vector<vtkIdType> shellFaceUses;
@@ -619,7 +619,7 @@ vtkModelEdgeUse* vtkXMLModelReader::ConstructModelEdgeUse(int id)
   for(size_t i=0;i<associations[vtkModelVertexUseType].size();i++)
     {
     // get vertex use adjacencies
-    vtksys_ios::ostringstream idstr;
+    std::ostringstream idstr;
     idstr << associations[vtkModelVertexUseType][i] << ends;
     vtkXMLElement* vertexUseElement =
       this->RootElement->FindNestedElement(idstr.str().c_str());

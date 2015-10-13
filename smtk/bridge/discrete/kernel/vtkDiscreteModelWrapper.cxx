@@ -39,7 +39,7 @@
 #include "vtkStringArray.h"
 #include "vtkCompositeDataIterator.h"
 #include "vtkModelItemIterator.h"
-#include <vtksys/ios/sstream>
+#include <sstream>
 
 vtkStandardNewMacro(vtkDiscreteModelWrapper);
 //vtkCxxSetObjectMacro(vtkDiscreteModelWrapper, Model, vtkDiscreteModel);
@@ -252,7 +252,7 @@ vtkStringArray* vtkDiscreteModelWrapper::SerializeModel()
     }
   vtkSmartPointer<vtkXMLModelWriter> serializer =
     vtkSmartPointer<vtkXMLModelWriter>::New();
-  vtksys_ios::ostringstream ostr;
+  std::ostringstream ostr;
   // Set to version to 1 (default is 0)
   serializer->SetArchiveVersion(1);
   // The archiver expects a vector of objects
@@ -306,7 +306,7 @@ int vtkDiscreteModelWrapper::RebuildModel(const char* data,
   this->Model->Reset();
 
   // Create an input stream to read the XML back
-  vtksys_ios::istringstream istr(data);
+  std::istringstream istr(data);
   vtkSmartPointer<vtkXMLModelReader> reader =
     vtkSmartPointer<vtkXMLModelReader>::New();
 

@@ -72,6 +72,8 @@ private:
 Collection::Collection():
   m_entity( smtk::common::UUID::null() ),
   m_name(),
+  m_readLocation(),
+  m_writeLocation(),
   m_internals( new InternalImpl() )
 {
 
@@ -82,6 +84,8 @@ Collection::Collection(const smtk::common::UUID& collectionID,
                        smtk::mesh::ManagerPtr mngr ):
   m_entity( collectionID ),
   m_name(),
+  m_readLocation(),
+  m_writeLocation(),
   m_internals( new InternalImpl(mngr) )
 {
 }
@@ -92,6 +96,8 @@ Collection::Collection( const smtk::common::UUID& collectionID,
                         smtk::mesh::ManagerPtr mngr):
   m_entity( collectionID ),
   m_name(),
+  m_readLocation(),
+  m_writeLocation(),
   m_internals( new InternalImpl(mngr, interface) )
 {
 
@@ -128,6 +134,47 @@ bool Collection::isValid() const
 const std::string& Collection::name() const
 {
   return this->m_name;
+}
+
+//----------------------------------------------------------------------------
+void Collection::name(const std::string& n)
+{
+  this->m_name = n;
+}
+
+//----------------------------------------------------------------------------
+const std::string& Collection::readLocation() const
+{
+  return this->m_readLocation;
+}
+
+//----------------------------------------------------------------------------
+void Collection::readLocation(const std::string& n)
+{
+  this->m_readLocation = n;
+  //if the write location hasn't been set, update it to be the read location
+  if(this->m_writeLocation.empty())
+    {
+    this->m_writeLocation = n;
+    }
+}
+
+//----------------------------------------------------------------------------
+const std::string& Collection::writeLocation() const
+{
+  return this->m_writeLocation;
+}
+
+//----------------------------------------------------------------------------
+void Collection::writeLocation(const std::string& n)
+{
+  this->m_writeLocation = n;
+}
+
+//----------------------------------------------------------------------------
+std::string Collection::interfaceName() const
+{
+  return this->interface()->name();
 }
 
 //----------------------------------------------------------------------------

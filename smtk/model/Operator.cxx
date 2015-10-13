@@ -210,6 +210,23 @@ Operator::Ptr Operator::setManager(ManagerPtr s)
   return shared_from_this();
 }
 
+/// Return the meshManager associated with this operator (or a "null"/invalid shared-pointer).
+smtk::mesh::ManagerPtr Operator::meshManager() const
+{
+  return this->m_meshmanager;
+}
+
+/** Set the meshManager associated with session that initiated the operation.
+  *
+  *
+  * The return value is a shared pointer to this operator.
+  */
+Operator::Ptr Operator::setMeshManager(smtk::mesh::ManagerPtr s)
+{
+  this->m_meshmanager = s;
+  return shared_from_this();
+}
+
 /// Return the session associated with this operator (or a "null"/invalid shared-pointer).
 Session* Operator::session() const
 {

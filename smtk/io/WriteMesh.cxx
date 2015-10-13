@@ -17,6 +17,42 @@
 namespace smtk {
   namespace io {
 
+bool WriteMesh::entireCollection(smtk::mesh::CollectionPtr collection)
+{
+  if(collection->writeLocation().empty())
+  { //require a file location to write too
+    return false;
+  }
+  return smtk::mesh::moab::write(collection->writeLocation(), collection);
+}
+
+bool WriteMesh::onlyDomain(smtk::mesh::CollectionPtr collection)
+{
+  if(collection->writeLocation().empty())
+  { //require a file location to write too
+    return false;
+  }
+  return smtk::mesh::moab::write_domain(collection->writeLocation(), collection);
+}
+
+bool WriteMesh::onlyNeumann(smtk::mesh::CollectionPtr collection)
+{
+  if(collection->writeLocation().empty())
+  { //require a file location to write too
+    return false;
+  }
+  return smtk::mesh::moab::write_neumann(collection->writeLocation(), collection);
+}
+
+bool WriteMesh::onlyDirichlet(smtk::mesh::CollectionPtr collection)
+{
+  if(collection->writeLocation().empty())
+  { //require a file location to write too
+    return false;
+  }
+  return smtk::mesh::moab::write_dirichlet(collection->writeLocation(), collection);
+}
+
 bool WriteMesh::entireCollection(const std::string& filePath,
                              smtk::mesh::CollectionPtr collection)
 {

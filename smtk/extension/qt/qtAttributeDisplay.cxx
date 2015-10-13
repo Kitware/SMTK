@@ -158,7 +158,7 @@ void qtAttributeDisplay::createWidget( )
 
   this->Internals->SelectPropCombo = new QComboBox(this->Internals->FiltersFrame);
   this->Internals->SelectPropCombo->setToolTip("Select properties");
-  this->Internals->PropComboModel = new QStandardItemModel();
+  this->Internals->PropComboModel = new QStandardItemModel(this);
   this->Internals->SelectPropCombo->setModel(
     this->Internals->PropComboModel);
   QObject::connect(this->Internals->SelectPropCombo,  SIGNAL(currentIndexChanged(int)),

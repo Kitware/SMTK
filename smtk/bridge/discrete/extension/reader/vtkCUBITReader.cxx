@@ -19,7 +19,7 @@
 #include "vtkPolyData.h"
 #include "vtkPolyDataNormals.h"
 
-#include <vtksys/ios/sstream>
+#include <sstream>
 
 namespace smtk {
   namespace bridge {

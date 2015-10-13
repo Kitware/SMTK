@@ -16,6 +16,10 @@
 
 #include "smtk/common/UUID.h"
 
+#ifndef SHIBOKEN_SKIP
+#  include "cJSON.h"
+#endif // SHIBOKEN_SKIP
+
 #include <utility>
 /**\brief Import an entire SMTK mesh collection from a file, or just sub-sections
   *
@@ -54,6 +58,11 @@ public:
   static smtk::mesh::CollectionPtr onlyDirichlet(const std::string& filePath,
                                                  const smtk::mesh::ManagerPtr& manager);
 
+  //Load the entire json data stream as a new collection creating a lightweight
+  //collection view, which uses the json backend interface
+  static smtk::mesh::CollectionPtr entireJSON(cJSON* child,
+                                              const smtk::mesh::ManagerPtr& manager);
+
   //Merge the entire moab data file into an existing valid collection.
   static bool entireFileToCollection(const std::string& filePath,
                                      const smtk::mesh::CollectionPtr& collection);
@@ -70,7 +79,10 @@ public:
   static bool addDirichletToCollection(const std::string& filePath,
                                        const smtk::mesh::CollectionPtr& collection);
 
-
+  //Merge the entire json data stream to the collection creating a lightweight
+  //collection view, which uses the json backend interface
+  static bool entireJSONToCollection(cJSON* child,
+                                     const smtk::mesh::CollectionPtr& collection);
 };
 
   }

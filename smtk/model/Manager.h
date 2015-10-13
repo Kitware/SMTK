@@ -104,7 +104,8 @@ public:
     shared_ptr<UUIDsToEntities> topology,
     shared_ptr<UUIDsToArrangements> arrangements,
     shared_ptr<UUIDsToTessellations> tess,
-    shared_ptr<UUIDsToTessellations> mesh,
+    shared_ptr<UUIDsToTessellations> analysismesh,
+    shared_ptr<smtk::mesh::Manager>  meshes,
     shared_ptr<UUIDsToAttributeAssignments> attribs);
   virtual ~Manager();
 
@@ -119,6 +120,8 @@ public:
 
   UUIDsToTessellations& analysisMesh();
   const UUIDsToTessellations& analysisMesh() const;
+
+  smtk::mesh::ManagerPtr meshes() const;
 
   const UUIDsToAttributeAssignments& attributeAssignments() const;
 
@@ -403,6 +406,7 @@ protected:
   smtk::shared_ptr<UUIDsToArrangements> m_arrangements;
   smtk::shared_ptr<UUIDsToTessellations> m_tessellations;
   smtk::shared_ptr<UUIDsToTessellations> m_analysisMesh;
+  smtk::shared_ptr<smtk::mesh::Manager> m_meshes;
   smtk::shared_ptr<UUIDsToAttributeAssignments> m_attributeAssignments;
   smtk::shared_ptr<UUIDsToSessions> m_sessions;
 

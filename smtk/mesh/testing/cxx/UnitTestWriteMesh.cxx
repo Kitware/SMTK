@@ -148,6 +148,46 @@ void verify_write_valid_collection_exodus()
 }
 
 //----------------------------------------------------------------------------
+void verify_write_valid_collection_using_write_path()
+{
+  std::string file_path(data_root);
+  file_path += "/mesh/twoassm_out.h5m";
+
+  std::string write_path(write_root);
+  write_path += "/twoassm_output.h5m";
+
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
+  test( c->isValid(), "collection should be valid");
+
+  test( c->readLocation() == file_path, "readLocation should match file_path");
+
+  c->writeLocation(write_path);
+  test( c->writeLocation() == write_path, "writeLocation should match write_path");
+
+  //write out the mesh.
+  bool result = smtk::io::WriteMesh::entireCollection(c);
+  if(!result)
+    {
+    cleanup( write_path );
+    test( result == true, "failed to properly write out a valid hdf5 collection");
+    }
+
+  //reload the written file and verify the number of meshes are the same as the
+  //input mesh
+  smtk::mesh::CollectionPtr c2 = smtk::io::ImportMesh::entireFile(write_path, manager);
+
+  //remove the file from disk
+  cleanup( write_path );
+
+  //verify the meshes
+  test( c2->isValid(), "collection should be valid");
+  test( c2->name() == c->name() );
+  test( c2->numberOfMeshes() == c->numberOfMeshes() );
+  test( c2->types() == c->types() );
+}
+
+//----------------------------------------------------------------------------
 void verify_write_onlyDomain()
 {
   std::string file_path(data_root);
@@ -279,6 +319,7 @@ int UnitTestWriteMesh(int, char**)
 
   verify_write_valid_collection_hdf5();
   verify_write_valid_collection_exodus();
+  verify_write_valid_collection_using_write_path();
 
   verify_write_onlyDomain();
   verify_write_onlyNeumann();

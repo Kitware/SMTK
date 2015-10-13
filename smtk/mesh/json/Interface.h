@@ -9,8 +9,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#ifndef __smtk_mesh_moab_Interface_h
-#define __smtk_mesh_moab_Interface_h
+#ifndef __smtk_mesh_json_Interface_h
+#define __smtk_mesh_json_Interface_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -21,34 +21,20 @@
 #include "smtk/mesh/Handle.h"
 #include "smtk/mesh/TypeSet.h"
 
-#include <vector>
+#include "smtk/mesh/json/MeshInfo.h"
 
-namespace moab
-{
-  class Interface;
-}
+
+#include <vector>
 
 namespace smtk {
 namespace mesh {
-namespace moab
+namespace json
 {
-//construct an empty interface instance, this is properly connected
-//to a moab database
+//construct an empty interface instance
 //----------------------------------------------------------------------------
 SMTKCORE_EXPORT
-smtk::mesh::moab::InterfacePtr make_interface();
+smtk::mesh::json::InterfacePtr make_interface();
 
-//Given a smtk::mesh Collection extract the underlying smtk::mesh::moab interface
-//from it. This requires that the collection was created with the proper interface
-//to begin with.
-//----------------------------------------------------------------------------
-smtk::mesh::moab::InterfacePtr extract_interface( const smtk::mesh::CollectionPtr& c);
-
-//Given a smtk::mesh Interface convert it to a smtk::mesh::moab interface, and than
-//extract the raw moab interface pointer from that
-//----------------------------------------------------------------------------
-SMTKCORE_EXPORT
-::moab::Interface* extract_moab_interface( const smtk::mesh::InterfacePtr &iface);
 
 //----------------------------------------------------------------------------
 class SMTKCORE_EXPORT Interface : public smtk::mesh::Interface
@@ -56,12 +42,18 @@ class SMTKCORE_EXPORT Interface : public smtk::mesh::Interface
 public:
   Interface();
 
+  Interface( const std::vector<smtk::mesh::json::MeshInfo>& info );
+
   virtual ~Interface();
+
+  //---------------------------------------------------------------------------
+  //Add more meshes to the Interface
+  void addMeshes( const std::vector<smtk::mesh::json::MeshInfo>& info );
 
   //---------------------------------------------------------------------------
   //get back a string that contains the pretty name for the interface class.
   //Requirements: The string must be all lower-case.
-  virtual std::string name() const { return std::string("moab"); }
+  virtual std::string name() const { return std::string("json"); }
 
   //----------------------------------------------------------------------------
   //get back a lightweight interface around allocating memory into the given
@@ -247,13 +239,12 @@ public:
   //----------------------------------------------------------------------------
   bool deleteHandles(const smtk::mesh::HandleRange& toDel);
 
-  //----------------------------------------------------------------------------
-  ::moab::Interface * moabInterface() const;
-
 private:
-  //holds a reference to the real moab interface
-  smtk::shared_ptr< ::moab::Interface > m_iface;
-  smtk::mesh::AllocatorPtr m_alloc;
+  typedef std::vector<smtk::mesh::json::MeshInfo> MeshInfoVecType;
+
+  MeshInfoVecType::const_iterator find(smtk::mesh::Handle handle) const;
+
+  std::vector<smtk::mesh::json::MeshInfo> m_meshInfo;
 };
 
 }

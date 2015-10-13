@@ -62,6 +62,9 @@ public:
   //so generally this is only used if you fully understand the input domain
   bool get(float* xyz) const;
 
+  //get the underlying HandleRange that this PointSet represents
+  const smtk::mesh::HandleRange& range() const { return this->m_points; }
+
 private:
 
   smtk::mesh::CollectionPtr m_parent;
