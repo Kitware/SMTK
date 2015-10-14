@@ -77,6 +77,19 @@ public:
   //If this is disabled we use the smtk/mesh cell enum values.
   void disableVTKCellTypes(bool disable) { m_useVTKCellTypes  = !disable; }
 
+  bool hasConnectivity() const { return this->m_connectivity != NULL; }
+  bool hasCellLocations() const { return this->m_cellLocations != NULL; }
+  bool hasCellTypes() const { return this->m_cellTypes != NULL; }
+
+  bool hasDoublePoints() const { return this->m_dpoints != NULL; }
+  bool hasFloatPoints() const { return this->m_fpoints != NULL; }
+
+  bool useVTKConnectivity() const { return this->m_useVTKConnectivity; }
+  bool useVTKCellTypes() const { return this->m_useVTKCellTypes; }
+
+
+private:
+  friend void extractTessellation( const smtk::mesh::CellSet&, const smtk::mesh::PointSet& , PreAllocatedTessellation& );
   boost::int64_t* m_connectivity;
   boost::int64_t* m_cellLocations;
   unsigned char* m_cellTypes;
