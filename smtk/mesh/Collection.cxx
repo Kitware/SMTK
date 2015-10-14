@@ -299,6 +299,25 @@ smtk::mesh::MeshSet Collection::meshes( const std::string& name )
 }
 
 //----------------------------------------------------------------------------
+smtk::mesh::MeshSet Collection::meshes(const smtk::mesh::Domain& d )
+{
+  return this->domainMeshes(d);
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet Collection::meshes(const smtk::mesh::Dirichlet& d )
+{
+  return this->dirichletMeshes(d);
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet Collection::meshes(const smtk::mesh::Neumann& n)
+{
+  return this->neumannMeshes(n);
+}
+
+
+//----------------------------------------------------------------------------
 smtk::mesh::CellSet Collection::cells( smtk::mesh::CellType cellType )
 {
   smtk::mesh::MeshSet ms(this->shared_from_this(),
