@@ -42,6 +42,7 @@ class SMTKCORE_EXPORT Collection : public smtk::enable_shared_from_this<Collecti
   //default constructor generates an invalid collection
   Collection();
 
+#ifndef SHIBOKEN_SKIP
   //Construct a valid collection that is associated with a manager
   //but has an empty interface that can be populated
   Collection(const smtk::common::UUID& collectionID,
@@ -53,6 +54,7 @@ class SMTKCORE_EXPORT Collection : public smtk::enable_shared_from_this<Collecti
   Collection( const smtk::common::UUID& collectionID,
               smtk::mesh::InterfacePtr interface,
               smtk::mesh::ManagerPtr mngr);
+#endif
 
 public:
   smtkTypeMacro(Collection);
