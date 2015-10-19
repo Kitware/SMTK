@@ -4,6 +4,7 @@ set(meshSrcs
   CellTypes.cxx
   Collection.cxx
   ExtractTessellation.cxx
+  ForEachTypes.cxx
   Handle.cxx
   Manager.cxx
   MeshSet.cxx
@@ -31,6 +32,7 @@ set(meshHeaders
   Collection.h
   DimensionTypes.h
   ExtractTessellation.h
+  ForEachTypes.h
   Handle.h
   Interface.h
   Manager.h

@@ -18,16 +18,13 @@
 
 #include "smtk/mesh/CellTypes.h"
 #include "smtk/mesh/DimensionTypes.h"
+#include "smtk/mesh/ForEachTypes.h"
 #include "smtk/mesh/Handle.h"
 
 #include "smtk/common/UUID.h"
 
 namespace smtk {
 namespace mesh {
-
-//forward declare of CellSet and MeshSet
-class CellSet;
-class MeshSet;
 
 //----------------------------------------------------------------------------
 class SMTKCORE_EXPORT IntegerTag
@@ -140,43 +137,11 @@ public:
 };
 
 //----------------------------------------------------------------------------
-class SMTKCORE_EXPORT MeshForEach
-{
-public:
-  virtual void operator()(const smtk::mesh::MeshSet& singleMesh)=0;
-
-  smtk::mesh::CollectionPtr m_collection;
-};
-
-//----------------------------------------------------------------------------
-class SMTKCORE_EXPORT CellForEach
-{
-public:
-  virtual void operator()(smtk::mesh::CellType& cellType,
-                          int numPts,
-                          const smtk::mesh::Handle* const pointIds,
-                          const double* const coords)=0;
-
-  smtk::mesh::CollectionPtr m_collection;
-};
-
-//----------------------------------------------------------------------------
-class SMTKCORE_EXPORT PointForEach
-{
-public:
-  virtual void operator()(const smtk::mesh::Handle& pointId,
-                          const double* const coords)=0;
-
-  smtk::mesh::CollectionPtr m_collection;
-};
-
-//----------------------------------------------------------------------------
 enum ContainmentType
 {
   PartiallyContained=1,
   FullyContained=2
 };
-
 }
 }
 

@@ -50,10 +50,7 @@ VerifyCells( const smtk::mesh::PointSet& points,
   }
 
 //--------------------------------------------------------------------------
-void operator()(smtk::mesh::CellType& cellType,
-                int numPts,
-                const smtk::mesh::Handle* const pointIds,
-                const double* const coords)
+void forCell(smtk::mesh::CellType cellType, int numPts)
 {
 //verify the offset is in the correct location
 boost::int64_t offset = this->m_locations[this->m_currentIndex];
@@ -74,7 +71,7 @@ else
 //verify the points ids are mapped properly
 for(int i=0; i < numPts; ++i)
   {
-  test( this->m_conn[offset+ i] == this->m_points.find(pointIds[i]) );
+  test( this->m_conn[offset+ i] == this->m_points.find(this->pointIds()[i] ) );
   }
 
 this->m_currentIndex++;
@@ -96,7 +93,7 @@ VerifyPoints( const std::vector<T>& points ):
 {
 }
 //--------------------------------------------------------------------------
-void operator()(const smtk::mesh::Handle& pointId,
+void forPoint(const smtk::mesh::Handle& pointId,
                 const double* const coords)
 {
   test( this->m_points[m_currentIndex] == static_cast<T>(coords[0]) );

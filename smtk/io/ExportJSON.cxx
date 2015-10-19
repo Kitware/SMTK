@@ -823,7 +823,7 @@ public:
 
 
   //--------------------------------------------------------------------------
-  void operator()(const smtk::mesh::MeshSet& mesh)
+  void forMesh(const smtk::mesh::MeshSet& mesh)
   {
     cJSON* meshJson = cJSON_CreateObject();
 
