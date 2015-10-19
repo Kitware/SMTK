@@ -1081,8 +1081,8 @@ void Interface::pointForEach(const HandleRange &points,
         {
         filter.forPoint( *start,
                           coords[offset],
-                          coords[offset]+1,
-                          coords[offset]+2 );
+                          coords[offset+1],
+                          coords[offset+2] );
         }
 
       }
@@ -1100,8 +1100,8 @@ void Interface::pointForEach(const HandleRange &points,
       {
       filter.forPoint( *start,
                         coords[offset],
-                        coords[offset]+1,
-                        coords[offset]+2 );
+                        coords[offset+1],
+                        coords[offset+2] );
       }
     }
   return;
