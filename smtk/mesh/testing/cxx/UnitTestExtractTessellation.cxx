@@ -94,11 +94,11 @@ VerifyPoints( const std::vector<T>& points ):
 }
 //--------------------------------------------------------------------------
 void forPoint(const smtk::mesh::Handle& pointId,
-                const double* const coords)
+              double x, double y, double z)
 {
-  test( this->m_points[m_currentIndex] == static_cast<T>(coords[0]) );
-  test( this->m_points[m_currentIndex+1] == static_cast<T>(coords[1]) );
-  test( this->m_points[m_currentIndex+2] == static_cast<T>(coords[2]) );
+  test( this->m_points[m_currentIndex] == static_cast<T>(x) );
+  test( this->m_points[m_currentIndex+1] == static_cast<T>(y) );
+  test( this->m_points[m_currentIndex+2] == static_cast<T>(z) );
   this->m_currentIndex += 3;
 }
 

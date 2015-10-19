@@ -87,8 +87,7 @@ class SMTKCORE_EXPORT PointForEach
 public:
   virtual ~PointForEach();
 
-  virtual void forPoint(const smtk::mesh::Handle& pointId,
-                        const double* const coords)=0;
+  virtual void forPoint(const smtk::mesh::Handle& pointId, double x, double y, double z)=0;
 
   smtk::mesh::CollectionPtr m_collection;
 };

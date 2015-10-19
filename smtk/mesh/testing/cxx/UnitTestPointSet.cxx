@@ -283,8 +283,12 @@ public:
     }
 
   //--------------------------------------------------------------------------
-  void forPoint(const smtk::mesh::Handle& pointId, const double* const coords)
+  void forPoint(const smtk::mesh::Handle& pointId,
+                double x, double y, double z)
   {
+  (void) x;
+  (void) y;
+  (void) z;
   this->numPointsIteratedOver++;
   }
 

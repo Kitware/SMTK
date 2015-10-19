@@ -1079,7 +1079,10 @@ void Interface::pointForEach(const HandleRange &points,
       //call the filter for each point
       for(std::size_t offset = 0; start != end; offset+=3, ++start)
         {
-        filter.forPoint( *start, &coords[offset] );
+        filter.forPoint( *start,
+                          coords[offset],
+                          coords[offset]+1,
+                          coords[offset]+2 );
         }
 
       }
@@ -1095,7 +1098,10 @@ void Interface::pointForEach(const HandleRange &points,
     //call the filter for each point
     for(std::size_t offset = 0; start != end; offset+=3, ++start)
       {
-      filter.forPoint( *start, &coords[offset] );
+      filter.forPoint( *start,
+                        coords[offset],
+                        coords[offset]+1,
+                        coords[offset]+2 );
       }
     }
   return;
