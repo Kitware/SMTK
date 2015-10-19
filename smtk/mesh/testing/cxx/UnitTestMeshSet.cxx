@@ -409,7 +409,7 @@ public:
     }
 
   //--------------------------------------------------------------------------
-  void operator()(const smtk::mesh::MeshSet& mesh)
+  void forMesh(const smtk::mesh::MeshSet& mesh)
   {
   this->numMeshesIteratedOver++;
   this->cellsSeen.append( mesh.cells( ) );

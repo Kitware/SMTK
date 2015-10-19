@@ -22,15 +22,17 @@ namespace mesh {
 //these aren't exported as they are private class that only
 //smtk::mesh should call ( currently )
 
-struct ContainsFunctor
+class ContainsFunctor
 {
+public:
   virtual bool operator()(const smtk::mesh::HandleRange& points,
                           const smtk::mesh::Handle* connectivity,
                           const std::size_t num_nodes) const = 0;
 };
 
-struct PartiallyContainedFunctor : public ContainsFunctor
+class PartiallyContainedFunctor : public ContainsFunctor
 {
+public:
   bool operator()(const smtk::mesh::HandleRange& points,
                   const smtk::mesh::Handle* connectivity,
                   const std::size_t num_nodes) const
@@ -44,8 +46,9 @@ struct PartiallyContainedFunctor : public ContainsFunctor
   }
 };
 
-struct FullyContainedFunctor : public ContainsFunctor
+class FullyContainedFunctor : public ContainsFunctor
 {
+public:
   bool operator()(const smtk::mesh::HandleRange& points,
                   const smtk::mesh::Handle* connectivity,
                   const std::size_t num_nodes) const

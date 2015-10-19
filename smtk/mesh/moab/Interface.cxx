@@ -1079,7 +1079,10 @@ void Interface::pointForEach(const HandleRange &points,
       //call the filter for each point
       for(std::size_t offset = 0; start != end; offset+=3, ++start)
         {
-        filter( *start, &coords[offset] );
+        filter.forPoint( *start,
+                          coords[offset],
+                          coords[offset]+1,
+                          coords[offset]+2 );
         }
 
       }
@@ -1095,7 +1098,10 @@ void Interface::pointForEach(const HandleRange &points,
     //call the filter for each point
     for(std::size_t offset = 0; start != end; offset+=3, ++start)
       {
-      filter( *start, &coords[offset] );
+      filter.forPoint( *start,
+                        coords[offset],
+                        coords[offset]+1,
+                        coords[offset]+2 );
       }
     }
   return;
@@ -1110,23 +1116,39 @@ void Interface::cellForEach(smtk::mesh::PointConnectivity& pc,
     smtk::mesh::CellType cellType;
     int size=0;
     const smtk::mesh::Handle* points;
-    std::vector<double> coords;
+
 
     typedef smtk::mesh::HandleRange::const_iterator cit;
 
-    for(pc.initCellTraversal();
-        pc.fetchNextCell(cellType, size, points) == true;
-        )
+    if(filter.wantsCoordinates())
       {
-      coords.reserve(size*3);
+      std::vector<double> coords;
+      for(pc.initCellTraversal();
+          pc.fetchNextCell(cellType, size, points) == true;
+          )
+        {
+        coords.reserve(size*3);
 
-      //query to grab the coordinates for these points
-      m_iface->get_coords(points,
-                          size,
-                          &coords[0]);
-
-      //call the custom filter
-      filter(cellType,size,points,&coords[0]);
+        //query to grab the coordinates for these points
+        m_iface->get_coords(points,
+                            size,
+                            &coords[0]);
+        //call the custom filter
+        filter.pointIds(points);
+        filter.coordinates(&coords);
+        filter.forCell(cellType,size);
+        }
+      }
+    else
+      { //don't extract the coords
+      for(pc.initCellTraversal();
+          pc.fetchNextCell(cellType, size, points) == true;
+          )
+        {
+        filter.pointIds(points);
+        //call the custom filter
+        filter.forCell(cellType,size);
+        }
       }
     }
   return;
@@ -1146,7 +1168,7 @@ void Interface::meshForEach(const smtk::mesh::HandleRange &meshes,
       smtk::mesh::MeshSet singleMesh(filter.m_collection,*i,singlHandle);
 
       //call the custom filter
-      filter(singleMesh);
+      filter.forMesh(singleMesh);
       }
     }
   return;

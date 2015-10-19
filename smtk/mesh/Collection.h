@@ -42,6 +42,7 @@ class SMTKCORE_EXPORT Collection : public smtk::enable_shared_from_this<Collecti
   //default constructor generates an invalid collection
   Collection();
 
+#ifndef SHIBOKEN_SKIP
   //Construct a valid collection that is associated with a manager
   //but has an empty interface that can be populated
   Collection(const smtk::common::UUID& collectionID,
@@ -53,6 +54,7 @@ class SMTKCORE_EXPORT Collection : public smtk::enable_shared_from_this<Collecti
   Collection( const smtk::common::UUID& collectionID,
               smtk::mesh::InterfacePtr interface,
               smtk::mesh::ManagerPtr mngr);
+#endif
 
 public:
   smtkTypeMacro(Collection);
@@ -116,13 +118,10 @@ public:
   //This means that you can get back meshes of mixed dimension
   //type.
   smtk::mesh::MeshSet   meshes( smtk::mesh::DimensionType dim );
+  smtk::mesh::MeshSet   meshes( const smtk::mesh::Domain& d );
+  smtk::mesh::MeshSet   meshes( const smtk::mesh::Dirichlet& d );
+  smtk::mesh::MeshSet   meshes( const smtk::mesh::Neumann& n );
   smtk::mesh::MeshSet   meshes( const std::string& name );
-  smtk::mesh::MeshSet   meshes( const smtk::mesh::Domain& d )
-                              { return domainMeshes(d); }
-  smtk::mesh::MeshSet   meshes( const smtk::mesh::Dirichlet& d )
-                              { return dirichletMeshes(d); }
-  smtk::mesh::MeshSet   meshes( const smtk::mesh::Neumann& d )
-                              { return neumannMeshes(d); }
 
   //find a cells of a given type or a collection of types
   smtk::mesh::CellSet   cells( smtk::mesh::CellType cellType );
