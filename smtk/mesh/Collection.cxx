@@ -127,7 +127,8 @@ void Collection::removeManagerConnection()
 bool Collection::isValid() const
 {
   //make sure we have a valid uuid, and that our internals are valid
-  return this->m_entity.isNull() == false && this->m_internals->valid();
+  return (this->m_entity.isNull() != true) &&
+         (this->m_internals->valid());
 }
 
 //----------------------------------------------------------------------------

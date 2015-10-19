@@ -362,12 +362,6 @@ void verify_extract_packed_single_type(const smtk::mesh::CollectionPtr& c)
   ftess.disableVTKCellTypes(true);
   smtk::mesh::extractTessellation(quads, ftess);
 
-  // //lets iterate the cells, and verify that the extraction matches
-  // //what we see when we iterate
-  // VerifyConn vc(conn);
-  // smtk::mesh::for_each(quads. vc);
-  // test( vc.valid() == true );
-
   //lets iterate the points and make sure they all match
   VerifyPoints<float> vp(fpoints);
   smtk::mesh::for_each(quads.points(), vp);
@@ -519,9 +513,9 @@ int UnitTestExtractTessellation(int, char**)
   verify_alloc_lengths_cellset(c);
 
   verify_extract_packed_single_type(c);
-  verify_extract_only_connectivity_and_types(c);
+  // verify_extract_only_connectivity_and_types(c);
 
-  verify_extract_all_to_vtk(c);
+  // verify_extract_all_to_vtk(c);
   verify_extract_only_connectivity_to_vtk(c);
 
   verify_extract_volume_meshes_by_global_points_to_vtk(c);
