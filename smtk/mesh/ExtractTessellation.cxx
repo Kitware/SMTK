@@ -176,7 +176,6 @@ PreAllocatedTessellation::PreAllocatedTessellation(boost::int64_t* connectivity,
 
 }
 
-
 //----------------------------------------------------------------------------
 PreAllocatedTessellation::PreAllocatedTessellation(boost::int64_t* connectivity,
                                                    boost::int64_t* cellLocations,
@@ -208,6 +207,89 @@ PreAllocatedTessellation::PreAllocatedTessellation(boost::int64_t* connectivity,
 {
 
 }
+
+//----------------------------------------------------------------------------
+Tessellation::Tessellation( ):
+  m_connectivity(),
+  m_cellLocations(),
+  m_cellTypes(),
+  m_points(),
+  m_useVTKConnectivity(true),
+  m_useVTKCellTypes(true)
+{
+
+}
+
+//----------------------------------------------------------------------------
+Tessellation::Tessellation( bool useVTKConnectivity,
+                            bool useVTKCellTypes):
+  m_connectivity(),
+  m_cellLocations(),
+  m_cellTypes(),
+  m_points(),
+  m_useVTKConnectivity(useVTKConnectivity),
+  m_useVTKCellTypes(useVTKCellTypes)
+{
+
+}
+
+//----------------------------------------------------------------------------
+void Tessellation::extract( const smtk::mesh::MeshSet& ms )
+{
+  this->extract(ms.cells(), ms.points());
+}
+
+//----------------------------------------------------------------------------
+void Tessellation::extract( const smtk::mesh::CellSet& cs )
+{
+  this->extract(cs, cs.points());
+}
+
+//----------------------------------------------------------------------------
+void Tessellation::extract( const smtk::mesh::MeshSet& ms,
+                            const smtk::mesh::PointSet& ps )
+{
+  this->extract(ms.cells(), ps);
+}
+
+//----------------------------------------------------------------------------
+void Tessellation::extract( const smtk::mesh::CellSet& cs,
+                            const smtk::mesh::PointSet& ps )
+{
+  //determine the lengths
+  boost::int64_t connectivityLength= -1;
+  boost::int64_t numberOfCells = -1;
+  boost::int64_t numberOfPoints = -1;
+
+  PreAllocatedTessellation::determineAllocationLengths(cs,
+                                                       connectivityLength,
+                                                       numberOfCells,
+                                                       numberOfPoints);
+  //handle vtk style connectivity
+  if(this->useVTKConnectivity())
+    {
+    connectivityLength += numberOfCells;
+    }
+
+  this->m_connectivity.resize( connectivityLength );
+  this->m_cellLocations.resize( numberOfCells );
+  this->m_cellTypes.resize( numberOfPoints * 3 );
+  this->m_points.resize( numberOfPoints * 3 );
+
+  smtk::mesh::PreAllocatedTessellation tess(&this->m_connectivity[0],
+                                            &this->m_cellLocations[0],
+                                            &this->m_cellTypes[0],
+                                            &this->m_points[0]);
+
+  //set the vtk connectivity and cell types flags properly
+  const bool disableVTKConn = !this->useVTKConnectivity();
+  const bool disableVTKCellTypes = !this->useVTKCellTypes();
+  tess.disableVTKStyleConnectivity(disableVTKConn);
+  tess.disableVTKCellTypes(disableVTKCellTypes);
+
+  extractTessellation(cs,ps,tess);
+}
+
 
 //----------------------------------------------------------------------------
 void extractTessellation( const smtk::mesh::MeshSet& ms,
