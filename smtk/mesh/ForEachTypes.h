@@ -53,6 +53,9 @@ public:
   const smtk::mesh::Handle* const pointIds() const
     { return this->m_pointIds; }
 
+  smtk::mesh::Handle const pointId(int index) const
+    { return this->m_pointIds[index]; }
+
   const std::vector<double>& coordinates() const
     { return *this->m_coords; }
 
