@@ -76,6 +76,7 @@ __import_shared_ptrs__()
 common = _temp.smtk.common
 attribute = _temp.smtk.attribute
 model = _temp.smtk.model
+mesh = _temp.smtk.mesh
 simulation = _temp.smtk.simulation
 io = _temp.smtk.io
 

@@ -101,6 +101,48 @@ private:
   bool m_useVTKCellTypes;
 };
 
+class SMTKCORE_EXPORT Tessellation
+{
+public:
+  //Default construction of Tessellation, enables vtk connectivity and cell types
+  Tessellation();
+
+  Tessellation(bool useVTKConnectivity,
+               bool useVTKCellTypes);
+
+  bool useVTKConnectivity() const { return this->m_useVTKConnectivity; }
+  bool useVTKCellTypes() const { return this->m_useVTKCellTypes; }
+
+  //This class self allocates all the memory needed to extract tessellation
+  //and auto extract the tessellation based on the MeshSet or CellSet you
+  //pass in
+  void extract( const smtk::mesh::MeshSet& ms );
+  void extract( const smtk::mesh::CellSet& cs );
+
+  void extract( const smtk::mesh::MeshSet& cs, const smtk::mesh::PointSet& ps );
+  void extract( const smtk::mesh::CellSet& cs, const smtk::mesh::PointSet& ps );
+
+  //use these methods to gain access to the tessellation after
+  const std::vector<boost::int64_t>& connectivity() const {return this->m_connectivity;}
+  const std::vector<boost::int64_t>& cellLocations() const {return this->m_cellLocations;}
+  const std::vector<unsigned char>& cellTypes() const {return this->m_cellTypes;}
+  const std::vector<double>& points() const {return this->m_points;}
+
+private:
+  std::vector<boost::int64_t> m_connectivity;
+  std::vector<boost::int64_t> m_cellLocations;
+  std::vector<unsigned char> m_cellTypes;
+
+  std::vector<double> m_points;
+
+  bool m_useVTKConnectivity;
+  bool m_useVTKCellTypes;
+};
+
+//Don't wrap these for python, instead python should use the Tessellation class
+//and the extract method
+#ifndef SHIBOKEN_SKIP
+
 SMTKCORE_EXPORT void extractTessellation( const smtk::mesh::MeshSet&, PreAllocatedTessellation& );
 SMTKCORE_EXPORT void extractTessellation( const smtk::mesh::CellSet&, PreAllocatedTessellation& );
 
@@ -109,6 +151,8 @@ SMTKCORE_EXPORT void extractTessellation( const smtk::mesh::CellSet&, PreAllocat
 //PointSet among multiple Tessellations.
 SMTKCORE_EXPORT void extractTessellation( const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedTessellation& );
 SMTKCORE_EXPORT void extractTessellation( const smtk::mesh::CellSet&, const smtk::mesh::PointSet& , PreAllocatedTessellation& );
+
+#endif //SHIBOKEN_SKIP
 
 }
 }

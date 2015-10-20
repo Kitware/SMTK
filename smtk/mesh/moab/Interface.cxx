@@ -1127,7 +1127,7 @@ void Interface::cellForEach(smtk::mesh::PointConnectivity& pc,
           pc.fetchNextCell(cellType, size, points) == true;
           )
         {
-        coords.reserve(size*3);
+        coords.resize(size*3);
 
         //query to grab the coordinates for these points
         m_iface->get_coords(points,
