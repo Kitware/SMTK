@@ -197,6 +197,9 @@ public:
   void setModelManager(smtk::model::ManagerPtr mgr) { this->m_modelManager = mgr; }
   smtk::model::ManagerPtr modelManager() const { return this->m_modelManager.lock(); }
 
+  bool associateModel(const smtk::common::UUID& uuid);
+  smtk::common::UUID associatedModel() const { return this->m_modelEntity; }
+
 private:
   Collection( const Collection& other ); //blank since we are used by shared_ptr
   Collection& operator=( const Collection& other ); //blank since we are used by shared_ptr
@@ -210,6 +213,7 @@ private:
   smtk::common::UUID m_entity;
   std::string m_name;
   smtk::model::WeakManagerPtr m_modelManager;
+  smtk::common::UUID m_modelEntity;
 
   //holds a reference to both the manager and the specific backend interface
   class InternalImpl;
