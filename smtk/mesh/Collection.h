@@ -217,6 +217,9 @@ public:
   void setModelManager(smtk::model::ManagerPtr mgr) { this->m_modelManager = mgr; }
   smtk::model::ManagerPtr modelManager() const { return this->m_modelManager.lock(); }
 
+  bool associateModel(const smtk::common::UUID& uuid);
+  smtk::common::UUID associatedModel() const;
+
 private:
   Collection( const Collection& other ); //blank since we are used by shared_ptr
   Collection& operator=( const Collection& other ); //blank since we are used by shared_ptr
