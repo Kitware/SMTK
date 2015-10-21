@@ -569,5 +569,33 @@ bool Collection::setNeumannOnMeshes(const smtk::mesh::MeshSet& meshes,
   return false;
 }
 
+//----------------------------------------------------------------------------
+bool Collection::associateModel(const smtk::common::UUID& uuid)
+{
+  if(this->m_modelEntity == uuid)
+    {
+    return true;
+    }
+
+  if(!this->m_modelEntity.isNull() && uuid.isNull())
+    {
+    // TODO: should we clear everything and make this an invalid collection (how?)
+    return false;
+    }
+
+  smtk::model::Model inModel(this->m_modelManager.lock(), uuid);
+  // TODO: what if this->m_modelEntity is valid, should we clear everything (how?)
+  if(inModel.isValid() && this->m_modelEntity.isNull())
+    {
+    this->m_modelEntity = uuid;
+    this->m_internals->mesh_iface()->setModelEntity(
+        HandleRange(this->m_internals->mesh_root_handle(),
+                    this->m_internals->mesh_root_handle()),
+        uuid);
+    return true;
+    }
+  return false;
+}
+
 }
 }
