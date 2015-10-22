@@ -150,6 +150,14 @@ DescriptivePhrases SimpleModelSubphrases::subphrases(
   case INTEGER_PROPERTY_LIST:
     this->childrenOfPropertyList(
       dynamic_pointer_cast<PropertyListPhrase>(src), result);
+  case MESH_SUMMARY:
+    this->childrenOfMesh(
+      dynamic_pointer_cast<MeshPhrase>(src), result);
+    break;
+  case MESH_LIST:
+    this->childrenOfMeshList(
+      dynamic_pointer_cast<MeshListPhrase>(src), result);
+    break;
   default:
     break;
     }
@@ -286,6 +294,7 @@ void SimpleModelSubphrases::childrenOfEntity(
       this->freeSubmodelsOfModel(phr, ment, result);
       this->freeGroupsInModel(phr, ment, result);
       this->freeCellsOfModel(phr, ment, result);
+      this->meshesOfModel(phr, ment, result);
       }
     else if (ient.isValid())
       {
@@ -314,6 +323,18 @@ void SimpleModelSubphrases::childrenOfPropertyList(
   PropertyListPhrase::Ptr plist, DescriptivePhrases& result)
 {
   this->propertiesOfPropertyList(plist, plist->relatedPropertyType(), result);
+}
+
+void SimpleModelSubphrases::childrenOfMesh(
+  MeshPhrase::Ptr meshphr, DescriptivePhrases& result)
+{
+  this->meshsetsOfMesh(meshphr, result);
+}
+
+void SimpleModelSubphrases::childrenOfMeshList(
+  MeshListPhrase::Ptr meshlist, DescriptivePhrases& result)
+{
+  this->meshesOfMeshList(meshlist, result);
 }
 
   } // namespace model

@@ -124,6 +124,8 @@ namespace smtk
     class Loop;
     typedef std::vector<smtk::model::Loop> Loops;
     class Entity;
+    class MeshPhrase;
+    class MeshListPhrase;
     class Model;
     class Operator;
     class PropertyValuePhrase;
@@ -220,6 +222,8 @@ namespace smtk
     typedef smtk::weak_ptr< smtk::model::DescriptivePhrase >       WeakDescriptivePhrasePtr;
     typedef smtk::shared_ptr< smtk::model::EntityPhrase >          EntityPhrasePtr;
     typedef smtk::shared_ptr< smtk::model::EntityListPhrase >      EntityListPhrasePtr;
+    typedef smtk::shared_ptr< smtk::model::MeshPhrase >            MeshPhrasePtr;
+    typedef smtk::shared_ptr< smtk::model::MeshListPhrase >        MeshListPhrasePtr;
     typedef smtk::shared_ptr< smtk::model::PropertyValuePhrase >   PropertyValuePhrasePtr;
     typedef smtk::shared_ptr< smtk::model::PropertyListPhrase >    PropertyListPhrasePtr;
     typedef smtk::shared_ptr< smtk::model::SimpleModelSubphrases > SimpleModelSubphrasesPtr;
