@@ -5,6 +5,7 @@ set(smtkExodusSessionPythonTests
 # Additional tests that require SMTK_DATA_DIR
 set(smtkExodusSessionPythonDataTests
   exoReadFile
+  slacReadFile
 )
 
 foreach (test ${smtkExodusSessionPythonTests})

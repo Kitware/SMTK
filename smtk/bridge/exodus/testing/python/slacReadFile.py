@@ -14,21 +14,18 @@ import smtk.testing
 from smtk.simple import *
 import sys
 
-def floatColorToHex(fc):
-  return '#' + ''.join(['{:02x}'.format(int(x*255.0)) for x in fc])
-
 class TestExodusSession(smtk.testing.TestCase):
 
   def setUp(self):
     import os
-    self.filename = os.path.join(smtk.testing.DATA_DIR, 'exodus', 'disk_out_ref.ex2')
+    self.filename = os.path.join(smtk.testing.DATA_DIR, 'exodus', 'pillbox.ncdf')
 
     self.mgr = smtk.model.Manager.create()
     sess = self.mgr.createSession('exodus')
     SetActiveSession(sess)
 
   def testRead(self):
-    ents = Read(self.filename)
+    ents = Read(self.filename, filetype='slac')
     self.model = smtk.model.Model(ents[0])
 
     #Verify that the model is marked as discrete
@@ -39,9 +36,9 @@ class TestExodusSession(smtk.testing.TestCase):
     #Verify that the file contains the proper number of groups.
     subgroups = self.model.groups()
     numGroups = len(subgroups)
-    self.assertEqual(numGroups, 3, 'Expected 3 groups, found %d' % numGroups)
+    self.assertEqual(numGroups, 2, 'Expected 2 groups, found %d' % numGroups)
 
-    numSubGroupsExpected = [1, 7, 3]
+    numSubGroupsExpected = [5, 0]
     allgroups = []
     for i in range(len(numSubGroupsExpected)):
         numSubGroups = len(subgroups[i].members())
@@ -49,16 +46,15 @@ class TestExodusSession(smtk.testing.TestCase):
             'Expected {e} groups, found {a}'.format(e=numSubGroupsExpected[i], a=numSubGroups))
         allgroups += subgroups[i].members()
 
+    print '\n'.join([x.name() for x in allgroups])
     #Verify that the group names match those from the Exodus file.
     nameset = {
-        'Unnamed block ID: 1 Type: HEX8': '#5a5255',
-        'Unnamed set ID: 1':              '#ae5a41',
-        'Unnamed set ID: 2':              '#559e83',
-        'Unnamed set ID: 3':              '#c3cb71',
-        'Unnamed set ID: 4':              '#1b85b8',
-        'Unnamed set ID: 5':              '#cb2c31',
-        'Unnamed set ID: 6':              '#8b1ec4',
-        'Unnamed set ID: 7':              '#ff6700'
+        'side set 1':                     '#5a5255',
+        'side set 2':                     '#ae5a41',
+        'side set 3':                     '#559e83',
+        'side set 4':                     '#c3cb71',
+        'side set 6':                     '#1b85b8',
+        #'element block 1':                '#cb2c31'
     }
     self.assertTrue(all([x.name() in nameset for x in allgroups]),
         'Not all group names recognized.')
@@ -73,9 +69,8 @@ class TestExodusSession(smtk.testing.TestCase):
     grouptypes = [x.flagSummary() for x in allgroups]
     gtc = {x:grouptypes.count(x) for x in grouptypes}
     expectedgrouptypecounts = {
-      'boundary group (0-d entities)': 3,
-      'boundary group (0,1,2-d entities)': 7,
-      'domain group (3-d entities)': 1
+      'boundary group (0,1,2-d entities)': 5,
+      #'domain group (3-d entities)': 1
       }
     for entry in gtc.items():
       print '%40s: %d' % entry
@@ -88,11 +83,6 @@ class TestExodusSession(smtk.testing.TestCase):
         for grp in allgroups:
             color = self.hex2rgb(nameset[grp.name()])
             SetEntityProperty(grp, 'color', as_float=color)
-            print floatColorToHex(grp.color()), ' vs ', floatColorToHex(color)
-            # The element block should not be shown as it is coincident with some
-            # of the side sets and throws off baseline images. Remove its tessellation.
-            if grp.name() ==  'Unnamed block ID: 1 Type: HEX8':
-                grp.setTessellation(smtk.model.Tessellation())
 
         self.startRenderTest()
         mbs = self.addModelToScene(self.model)
@@ -100,25 +90,12 @@ class TestExodusSession(smtk.testing.TestCase):
         self.renderer.SetBackground(1,1,1)
         cam = self.renderer.GetActiveCamera()
         cam.SetFocalPoint(0., 0., 0.)
-        cam.SetPosition(19,17,-43)
-        cam.SetViewUp(-0.891963, -0.122107, -0.435306)
+        cam.SetPosition(1, 0, 1)
+        cam.SetViewUp(0,1,0)
         self.renderer.ResetCamera()
         self.renderWindow.Render()
-        import vtk
-        #wri = vtk.vtkCompositeDataWriter()
-        #wri.SetInputData(mbs.GetOutputDataObject(0))
-        #wri.SetFileName('/tmp/foofar.vtk')
-        #wri.Write()
-        ## wri = vtk.vtkXMLDataSetWriter()
-        wri = vtk.vtkXMLMultiBlockDataWriter()
-        wri.SetDataModeToAscii()
-        wri.SetInputData(mbs.GetOutputDataObject(0))
-        wri.SetFileName('/tmp/foofar.vtm')
-        wri.Write()
-        try:
-          self.assertImageMatch(['baselines', 'exodus', 'disk_out_ref.png'])
-        finally:
-          self.interact()
+        self.assertImageMatch(['baselines', 'exodus', 'pillbox.png'])
+        self.interact()
 
     else:
         self.assertFalse(

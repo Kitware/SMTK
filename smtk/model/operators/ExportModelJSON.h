@@ -7,31 +7,27 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_session_exodus_ReadOperator_h
-#define __smtk_session_exodus_ReadOperator_h
+#ifndef __smtk_model_ExportModelJSON_h
+#define __smtk_model_ExportModelJSON_h
 
-#include "smtk/bridge/exodus/Operator.h"
+#include "smtk/model/Operator.h"
 
 namespace smtk {
-  namespace bridge {
-    namespace exodus {
+  namespace model {
 
-class SMTKEXODUSSESSION_EXPORT ReadOperator : public Operator
+class SMTKCORE_EXPORT ExportModelJSON : public Operator
 {
 public:
-  smtkTypeMacro(ReadOperator);
-  smtkCreateMacro(ReadOperator);
+  smtkTypeMacro(ExportModelJSON);
+  smtkCreateMacro(ExportModelJSON);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
 protected:
   virtual smtk::model::OperatorResult operateInternal();
-  virtual smtk::model::OperatorResult readExodus();
-  virtual smtk::model::OperatorResult readSLAC();
 };
 
-    } // namespace exodus
-  } // namespace bridge
+  } //namespace model
 } // namespace smtk
 
-#endif // __smtk_session_exodus_ReadOperator_h
+#endif // __smtk_model_ExportModelJSON_h

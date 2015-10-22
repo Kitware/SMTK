@@ -7,9 +7,16 @@
       <ItemDefinitions>
         <File Name="filename" NumberOfRequiredValues="1"
           ShouldExist="true"
-          FileFilters="Exodus II Datasets (*.e *.exo *.ex2);;All files (*.*)">
+          FileFilters="Exodus II Datasets (*.e *.exo *.ex2);;NetCDF files (*.nc *.ncdf);;All files (*.*)">
         </File>
         <String Name="filetype" NumberOfRequiredValues="1"/>
+        <Int Name="readSLACVolumes" NumberOfRequiredValues="1">
+          <DefaultValue>0</DefaultValue>
+          <DiscreteInfo DefaultIndex="0">
+            <Structure><Value Enum="no">0</Value></Structure>
+            <Structure><Value Enum="yes">1</Value></Structure>
+          </DiscreteInfo>
+        </Int>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
