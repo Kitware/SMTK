@@ -15,6 +15,20 @@ qt4_use_modules(browseModel Core Gui)
 
 target_link_libraries(browseModel smtkCore smtkCoreModelTesting smtkQtExt)
 
+# browse model and mesh (created from the model)
+add_executable(browseMesh MACOSX_BUNDLE
+  browseMesh.cxx
+  ModelBrowser.cxx
+  ${browseModel_UI_BUILT_SOURCES})
+
+set_target_properties(
+  browseMesh PROPERTIES AUTOMOC TRUE
+  INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/bin")
+
+qt4_use_modules(browseMesh Core Gui)
+
+target_link_libraries(browseMesh smtkCore smtkCoreModelTesting smtkQtExt)
+
 #add in the attribute preview executable
 add_executable(qtAttributePreview MACOSX_BUNDLE qtAttributePreview.cxx)
 target_link_libraries(qtAttributePreview LINK_PUBLIC smtkQtExt)
