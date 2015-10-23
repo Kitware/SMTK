@@ -297,16 +297,37 @@ void verify_cell_have_points(
 int main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
-//  const char* filename = argc > 1 ? argv[1] : "smtkModel.json";
+  smtk::model::ManagerPtr model = smtk::model::Manager::create();
+  smtk::mesh::ManagerPtr meshManager = model->meshes();
+
   char* endMask;
   long mask = strtol(argc > 1 ? argv[1] : "0xffffffff", &endMask, 16);
   int debug = argc > 2 ? 1 : 0;
 
-  smtk::model::ManagerPtr model = smtk::model::Manager::create();
-  smtk::mesh::ManagerPtr meshManager = model->meshes();
-
   create_simple_model(model);
   model->assignDefaultNames();
+/*
+  const char* filename = argc > 1 ? argv[1] : "smtkModel.json";
+  std::ifstream file(filename);
+  if (!file.good())
+    {
+    cout
+      << "Could not open file \"" << filename << "\".\n\n"
+      << "Usage:\n  " << argv[0] << " [[[filename] mask] debug]\n"
+      << "where\n"
+      << "  filename is the path to a JSON model.\n"
+      << "  mask     is an integer entity mask selecting what to display.\n"
+      << "  debug    is any character, indicating a debug session.\n\n"
+      ;
+    return 1;
+    }
+  std::string json(
+    (std::istreambuf_iterator<char>(file)),
+    (std::istreambuf_iterator<char>()));
+
+  smtk::io::ImportJSON::intoModelManager(json.c_str(), model);
+  model->assignDefaultNames();
+*/
 
   smtk::io::ModelToMesh convert;
   smtk::mesh::CollectionPtr c = convert(meshManager, model);
@@ -329,9 +350,19 @@ int main(int argc, char* argv[])
   std::cout << std::setbase(10) << "Found " << plist.size() << " entries\n";
   qmodel->setPhrases(plist);
   */
+
+  smtk::model::SimpleModelSubphrases::Ptr spg =
+    smtk::model::SimpleModelSubphrases::create();
+  spg->setDirectLimit(-1);
+  spg->setSkipAttributes(true);
+  spg->setSkipProperties(false);
+
+  mask = smtk::model::SESSION;
+  debug = 1;
+
   smtk::model::EntityRefs entityrefs;
   smtk::model::EntityRef::EntityRefsFromUUIDs(
-    entityrefs, model, model->entitiesMatchingFlags(mask, false));
+    entityrefs, model, model->entitiesMatchingFlags(mask, true));
   std::cout << std::setbase(10) << "Found " << entityrefs.size() << " entries\n";
   view->setup(
     model,
@@ -339,8 +370,7 @@ int main(int argc, char* argv[])
     qdelegate,
     smtk::model::EntityListPhrase::create()
       ->setup(entityrefs)
-      ->setDelegate( // set the subphrase generator:
-        smtk::model::SimpleModelSubphrases::create()));
+      ->setDelegate( spg ));
   test(entityrefs.empty() || qmodel->manager() == model,
     "Failed to obtain Manager from QEntityItemModel.");
 
