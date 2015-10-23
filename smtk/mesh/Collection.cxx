@@ -572,6 +572,10 @@ bool Collection::setNeumannOnMeshes(const smtk::mesh::MeshSet& meshes,
 //----------------------------------------------------------------------------
 bool Collection::associateModel(const smtk::common::UUID& uuid)
 {
+  if(m_modelEntity == uuid)
+    return true;
+  this->m_modelEntity = uuid;
+
   return this->m_internals->mesh_iface()->setModelEntity(
             HandleRange(this->m_internals->mesh_root_handle(),
                         this->m_internals->mesh_root_handle()), uuid);
@@ -580,6 +584,8 @@ bool Collection::associateModel(const smtk::common::UUID& uuid)
 //----------------------------------------------------------------------------
 smtk::common::UUID Collection::associatedModel() const
 {
+  return m_modelEntity;
+/*
   smtk::common::UUIDArray associatedModels =
     this->m_internals->mesh_iface()->computeModelEntities(
       HandleRange(this->m_internals->mesh_root_handle(),
@@ -587,6 +593,7 @@ smtk::common::UUID Collection::associatedModel() const
 
   return associatedModels.size() > 0 ?
          associatedModels[0] : smtk::common::UUID();
+*/
 }
 
 }

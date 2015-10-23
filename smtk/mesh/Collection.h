@@ -239,6 +239,7 @@ private:
   std::string m_writeLocation;
 
   smtk::model::WeakManagerPtr m_modelManager;
+  smtk::common::UUID m_modelEntity;
 
   //holds a reference to both the manager and the specific backend interface
   class InternalImpl;
