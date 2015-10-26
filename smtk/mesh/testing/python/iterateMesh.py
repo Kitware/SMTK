@@ -64,6 +64,8 @@ def test_file_load():
     print 'data_dir', smtk.testing.DATA_DIR
     mesh_path = os.path.join(smtk.testing.DATA_DIR, 'mesh', 'sixth_hexflatcore.h5m')
     c = smtk.io.ImportMesh.entireFile(mesh_path,m)
+    if not c.isValid():
+        raise RuntimeError("Failed to read valid mesh")
 
     #1. iterate meshes
     meshVisitor = MeshVisitor()
