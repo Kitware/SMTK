@@ -6,12 +6,14 @@ list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
 set(exodusSrcs
   Session.cxx
+  SessionExodusIOJSON.cxx
   Operator.cxx
   ReadOperator.cxx
 )
 
 set(exodusHeaders
   Session.h
+  SessionExodusIOJSON.h
   Operator.h
   ReadOperator.h
 )

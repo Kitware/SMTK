@@ -158,6 +158,8 @@ protected:
   int parentIndex(vtkDataObject* obj) const;
   bool ensureChildParentMapEntry(vtkDataObject* child, vtkMultiBlockDataSet* parent, int idxInParent);
 
+  virtual smtk::model::SessionIOPtr createIODelegate(const std::string& format);
+
 private:
   Session(const Session&); // Not implemented.
   void operator = (const Session&); // Not implemented.
