@@ -78,12 +78,14 @@ static void MarkMeshInfo(
   info->Set(Session::SMTK_GROUP_TYPE(), etype);
   info->Set(vtkCompositeDataSet::NAME(), name);
 
+  // ++ 1 ++
   // If a UUID has been saved to field data, we should copy it to the info object here.
   vtkStringArray* uuidArr =
     vtkStringArray::SafeDownCast(
       data->GetFieldData()->GetAbstractArray("UUID"));
   if (uuidArr && uuidArr->GetNumberOfTuples() > 0)
     info->Set(Session::SMTK_UUID_KEY(), uuidArr->GetValue(0).c_str());
+  // -- 1 --
 
   info->Set(Session::SMTK_PEDIGREE(), pedigree);
 }
@@ -275,40 +277,6 @@ smtk::model::OperatorResult ReadOperator::readSLAC()
   created->setNumberOfValues(1);
   created->setValue(smtkModelOut);
   created->setIsEnabled(true);
-
-  /*
-  // The side and node sets now exist; go through
-  // and use the Exodus reader's private information
-  // to correct the property information.
-  Groups groups = smtkModelOut.groups();
-  for (Groups::iterator git = groups.begin(); git != groups.end(); ++git)
-    {
-    int oid;
-    EntityHandle handle = this->exodusHandle(*git);
-    switch (handle.entityType)
-      {
-    case EXO_BLOCK:
-      oid = rdr->GetObjectId(vtkExodusIIReader::ELEM_BLOCK, handle.entityId);
-      git->setStringProperty("exodus type", "element block");
-      git->setMembershipMask(DIMENSION_3 | MODEL_DOMAIN);
-      break;
-    case EXO_NODE_SET:
-      oid = rdr->GetObjectId(vtkExodusIIReader::NODE_SET, handle.entityId);
-      git->setStringProperty("exodus type", "node set");
-      git->setMembershipMask(DIMENSION_0 | MODEL_BOUNDARY);
-      break;
-    case EXO_SIDE_SET:
-      oid = rdr->GetObjectId(vtkExodusIIReader::SIDE_SET, handle.entityId);
-      git->setStringProperty("exodus type", "side set");
-      git->setMembershipMask(ANY_DIMENSION | MODEL_BOUNDARY);
-      break;
-    case EXO_MODEL:
-    default:
-      continue; // skip
-      }
-    git->setIntegerProperty("exodus id", oid);
-    }
-    */
 
   return result;
 }

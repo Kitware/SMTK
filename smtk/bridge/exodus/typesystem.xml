@@ -7,7 +7,24 @@
   <suppress-warning text="Duplicate type entry: 'smtk'"/>
   <suppress-warning text="namespace 'detail' does not have a type entry"/>
 
-  <!-- Ignore methods that refer directly to Exodus pointers -->
+  <!-- Ignore methods that refer directly to internal storage -->
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::SMTK_GROUP_TYPE', unmatched return type 'vtkInformationIntegerKey*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::SMTK_VISIBILITY', unmatched return type 'vtkInformationIntegerKey*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::parentIndex', unmatched parameter type 'vtkDataObject*'"/>
+  <suppress-warning text="skipping field 'Session::m_cpMap' with unmatched type 'std::map&lt;vtkDataObject*,smtk::bridge::exodus::Session::ParentAndIndex_t&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::EntityHandle::childrenAs', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::EntityHandle::EntityHandle', unmatched parameter type 'vtkDataObject*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::SMTK_PEDIGREE', unmatched return type 'vtkInformationIntegerKey*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::EntityHandle::object', unmatched return type 'T*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::createIODelegate', unmatched return type 'smtk::model::SessionIOPtr'"/>
+  <suppress-warning text="skipping field 'EntityHandle::m_object' with unmatched type 'vtkSmartPointer&lt;vtkDataObject&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::modelOfHandle', unmatched return type 'vtkMultiBlockDataSet*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::parent', unmatched return type 'vtkMultiBlockDataSet*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::EntityHandle::appendChildrenTo', unmatched parameter type 'T&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::SMTK_DIMENSION', unmatched return type 'vtkInformationIntegerKey*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::numberOfModels', unmatched return type 'size_t'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::ensureChildParentMapEntry', unmatched parameter type 'vtkDataObject*'"/>
+
 
   <!-- Ignore Exodus-specific enums -->
 

@@ -9,7 +9,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#include "Session.h"
+#include "smtk/bridge/exodus/Session.h"
+#include "smtk/bridge/exodus/SessionExodusIOJSON.h"
 
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
@@ -562,6 +563,25 @@ bool Session::ensureChildParentMapEntry(vtkDataObject* child, vtkMultiBlockDataS
 {
   return this->m_cpMap.insert(ChildParentMap_t::value_type(child, ParentAndIndex_t(parent, idxInParent))).second;
 }
+
+/**\brief Return a delegate to export session-specific data.
+  *
+  * If your session needs to store additional information when being
+  * serialized to JSON or some other format (only JSON is currently
+  * supported), this method is called by the exporter to create an
+  * object used to write this data.
+  */
+// ++ 12 ++
+SessionIOPtr Session::createIODelegate(const std::string& format)
+{
+  if (format == "json")
+    {
+    return SessionIOJSON::create();
+    }
+
+  return SessionIOPtr();
+}
+// -- 12 --
 
     } // namespace exodus
   } // namespace bridge

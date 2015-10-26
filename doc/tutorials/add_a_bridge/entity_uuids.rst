@@ -39,7 +39,17 @@ UUIDs:
    it also saves session information, it can be used to
    "restore" a modeling session so that the same files
    are loaded on the server and the UUIDs preserved.
-   *This is the approach our Exodus session example takes.*
+
+The Exodus session follows the first approach and
+expects UUIDs to be saved as field-data
+on each data object to be represented in SMTK.
+To accelerate lookups of UUIDs,
+the Exodus session stores the UUID as a string value
+on each :cxx:`vtkDataObject`'s information object using the :cxx:`SMTK_UUID_KEY` key.
+
+.. literalinclude:: ../../../smtk/bridge/exodus/ReadOperator.cxx
+   :start-after: // ++ 1 ++
+   :end-before: // -- 1 --
 
 The advantage to the first approach is that modeling
 kernels with attribute systems generally provide a way
@@ -63,17 +73,18 @@ for our example, we've created a new type named :cxx:`EntityHandle`.
    :start-after: // ++ 2 ++
    :end-before: // -- 2 --
 
-The :cxx:`EntityHandle` type stores 3 integer values for each model
-or group it exposes to SMTK:
-(1) the type of object being exposed (an Exodus model, an element
-block, a side set, or a node set),
-(2) the offset of the model in a vector of vtkMultiBlockDataSet
-instances held by the session (one per Exodus file)
-(3) the ID of the block holding the vtkUnstructuredGrid that contains
-the tessellation information for the object (or -1 when the object
-is an Exodus MODEL since it has no tessellation, only groups).
-Given an :cxx:`EntityHandle` we can easily look up the vtkUnstructuredGrid
-in the Session's :cxx:`m_models` member.
+Each :cxx:`EntityHandle` instance stores information about a model
+or group that should be presented in SMTK:
+(1) :cxx:`m_session`,
+    a pointer to the session owning the model or group;
+(2) :cxx:`m_modelNumber`,
+    an integer offset into the session's list of top-level models
+    (this indicates the model that owns the data object); and
+(3) :cxx:`m_object`,
+    a pointer to a VTK dataset holding the corresponding model geometry.
+The session also holds a map to identify the parent model or group of
+each VTK data object since multiblock datasets in VTK do not provide
+a way to discover the parent of a dataset (only its children).
 
 Adding UUIDs as attributes
 --------------------------
@@ -95,16 +106,12 @@ from inputs to corresponding outputs, so (for filters that support
 pedigree IDs) VTK behaves much like an attribute system in a geometric
 modeling kernel.
 
-Thus, when given any VTK dataset, we would first search for point and cell
-arrays that define UUIDs and create them if they are not present.
+If we ever expose individual points and cells in the SMTK Exodus session,
+we could search for point- and cell-data arrays containing UUIDs.
+Currently, we only search for field data specifying the UUID of a dataset
+as shown above.
 
-Besides points and cells, we might wish to assign UUIDs to datasets
-themselves and even filter objects.
-This might be achieved by creating a new vtkInformationKey to hold
-UUIDs and assigning it to the vtkInformation object on the dataset
-or filter.
-
-Although not required by this technique, you should be aware that you
+Although not required by this example, you should be aware that you
 may store information about a particular session instance in
 an SMTK JSON file by subclassing the :smtk:`SessionIOJSON` class.
 
@@ -119,15 +126,26 @@ traversal order, then you should
 1. store the arrays in your session class in the proper order and use
    them to perform the lookups.
 
-   .. literalinclude:: ../../../smtk/bridge/exodus/Session.cxx
-      :start-after: // ++ 2 ++
-      :end-before: // -- 2 --
+2. subclass :smtk:`SessionIOJSON <smtk::model::SessionIOJSON>` in order to preserve the UUID arrays.
+   The Exodus session illustrates how to do this but does not currently
+   export any session information.
 
-2. subclass :smtk:`SessionIOJSON` in order to preserve the UUID arrays:
+   The Exodus session class provides a method to create an IO delegate:
+
+   .. literalinclude:: ../../../smtk/bridge/exodus/Session.cxx
+      :start-after: // ++ 12 ++
+      :end-before: // -- 12 --
+
+   The IO delegate class is then implemented to provide methods for
+   importing and exporting session-specific information:
 
    .. literalinclude:: ../../../smtk/bridge/exodus/SessionExodusIOJSON.h
       :start-after: // ++ 1 ++
       :end-before: // -- 1 --
+
+Note that you can use the :smtk:`smtk::bridge::exodus::SessionIOJSON` class
+to import and export information other than UUID arrays, should the session
+store some other state that should be preserved across processes.
 
 Summary
 -------
