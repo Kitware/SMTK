@@ -22,7 +22,6 @@ if (SMTK_ENABLE_REMUS_SUPPORT)
   )
 endif()
 
-find_package(GDAL)
 if(GDAL_FOUND)
   list(APPEND headers
     vtkGDALRasterReader.h
