@@ -69,6 +69,7 @@ struct SMTKEXODUSSESSION_EXPORT EntityHandle
   EntityType entityType() const;
   std::string name() const;
   int pedigree() const;
+  bool visible() const;
 
   int modelNumber() const { return this->m_modelNumber; }
 
@@ -122,6 +123,7 @@ public:
 
   // VTK keys used to mark blocks.
   static vtkInformationIntegerKey* SMTK_DIMENSION();
+  static vtkInformationIntegerKey* SMTK_VISIBILITY();
   static vtkInformationIntegerKey* SMTK_GROUP_TYPE();
   static vtkInformationIntegerKey* SMTK_PEDIGREE();
   static vtkInformationStringKey* SMTK_UUID_KEY();

@@ -11,8 +11,8 @@
         </File>
         <String Name="filetype" NumberOfRequiredValues="1"/>
         <Int Name="readSLACVolumes" NumberOfRequiredValues="1">
-          <DefaultValue>0</DefaultValue>
-          <DiscreteInfo DefaultIndex="0">
+          <DefaultValue>1</DefaultValue>
+          <DiscreteInfo DefaultIndex="1">
             <Structure><Value Enum="no">0</Value></Structure>
             <Structure><Value Enum="yes">1</Value></Structure>
           </DiscreteInfo>

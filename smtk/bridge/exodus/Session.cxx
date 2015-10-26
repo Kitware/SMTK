@@ -35,6 +35,7 @@ namespace smtk {
     namespace exodus {
 
 vtkInformationKeyMacro(Session,SMTK_DIMENSION,Integer);
+vtkInformationKeyMacro(Session,SMTK_VISIBILITY,Integer);
 vtkInformationKeyMacro(Session,SMTK_GROUP_TYPE,Integer);
 vtkInformationKeyMacro(Session,SMTK_PEDIGREE,Integer);
 vtkInformationKeyMacro(Session,SMTK_UUID_KEY,String);
@@ -130,6 +131,19 @@ int EntityHandle::pedigree() const
   return obj->GetInformation()->Get(Session::SMTK_PEDIGREE());
 }
 
+/// Return the default visibility assigned to this object.
+bool EntityHandle::visible() const
+{
+  vtkDataObject* obj = this->object<vtkDataObject>();
+  if (!obj)
+    return true; // Visible by default
+
+  int eprop = obj->GetInformation()->Get(Session::SMTK_VISIBILITY());
+  // When eprop is 0, the property was not present (or was set to 0).
+  // In that case, assume the object is visible.
+  // If eprop is set, it should be either -1 (invisible) or +1 (visible):
+  return eprop == 0 ? true : (eprop < 0 ? false : true);
+}
 
 /// Given a handle, return its parent if it has one.
 EntityHandle EntityHandle::parent() const
@@ -363,6 +377,10 @@ SessionInfoBits Session::transcribeInternal(
     {
     // Set properties.
     EntityType etype = handle.entityType();
+    if (!handle.visible())
+      {
+      mutableEntityRef.setIntegerProperty("visible", 0);
+      }
     switch (etype)
       {
     case EXO_BLOCK:

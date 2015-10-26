@@ -118,6 +118,21 @@ static void MarkSLACMeshWithChildren(
     }
 }
 
+template<typename T, typename V>
+void MarkChildren(vtkMultiBlockDataSet* data, T* key, V value)
+{
+  if (!key)
+    return;
+
+  int nb = data->GetNumberOfBlocks();
+  for (int i = 0; i < nb; ++i)
+    {
+    vtkDataObject* obj = data->GetBlock(i);
+    if (obj)
+      obj->GetInformation()->Set(key, value);
+    }
+}
+
 smtk::model::OperatorResult ReadOperator::readExodus()
 {
   smtk::attribute::FileItem::Ptr filenameItem =
@@ -239,6 +254,9 @@ smtk::model::OperatorResult ReadOperator::readSLAC()
   MarkMeshInfo(modelOut.GetPointer(), 3, path(filename).stem().c_str(), EXO_MODEL, -1);
   MarkSLACMeshWithChildren(surfBlocks.GetPointer(), 2, "surfaces", EXO_SIDE_SETS, EXO_SIDE_SET);
   MarkSLACMeshWithChildren(voluBlocks.GetPointer(), 3, "volumes", EXO_BLOCKS, EXO_BLOCK);
+
+  // Mark any volumes as "invisible" so there is no z-fighting by default:
+  MarkChildren(voluBlocks.GetPointer(), Session::SMTK_VISIBILITY(), -1);
 
   Session* brdg = this->exodusSession();
   smtk::model::Model smtkModelOut =
