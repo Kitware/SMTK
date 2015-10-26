@@ -90,8 +90,9 @@ protected:
   void SetCachedOutput(vtkMultiBlockDataSet*);
 
   void FindEntitiesWithTessellation(
-    const smtk::model::CellEntity &cellent,
-    std::map<smtk::model::EntityRef, smtk::model::EntityRef> &entityrefMap);
+    const smtk::model::EntityRef& root,
+    std::map<smtk::model::EntityRef, smtk::model::EntityRef>& entityrefMap,
+    std::set<smtk::model::EntityRef>& touched);
 
   smtk::model::ManagerPtr ModelMgr;
   vtkMultiBlockDataSet* CachedOutput;

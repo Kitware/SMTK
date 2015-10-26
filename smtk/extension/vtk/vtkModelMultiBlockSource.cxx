@@ -376,20 +376,37 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
 
 /// Recursively find all the entities with tessellation
 void vtkModelMultiBlockSource::FindEntitiesWithTessellation(
-  const CellEntity &cellent,
-  std::map<smtk::model::EntityRef, smtk::model::EntityRef> &entityrefMap)
+  const EntityRef& root,
+  std::map<smtk::model::EntityRef, smtk::model::EntityRef>& entityrefMap,
+  std::set<smtk::model::EntityRef>& touched)
 {
-  CellEntities cellents = cellent.isModel() ?
-    cellent.as<Model>().cells() : cellent.boundingCells();
-  for (CellEntities::const_iterator it = cellents.begin(); it != cellents.end(); ++it)
+  EntityRefArray children =
+    (root.isModel() ?
+     root.as<Model>().cellsAs<EntityRefArray>() :
+     (root.isCellEntity() ?
+      root.as<CellEntity>().boundingCellsAs<EntityRefArray>() :
+      (root.isGroup() ?
+       root.as<Group>().members<EntityRefArray>() :
+       EntityRefArray())));
+  if (root.isModel())
     {
-    if((*it).hasTessellation())
+    // Make sure groups are handled last to avoid unexpected "parents" in entityrefMap.
+    EntityRefArray tmp;
+    tmp = root.as<Model>().submodelsAs<EntityRefArray>();
+    children.insert(children.end(), tmp.begin(), tmp.end());
+    tmp = root.as<Model>().groupsAs<EntityRefArray>();
+    children.insert(children.end(), tmp.begin(), tmp.end());
+    }
+  for (EntityRefArray::const_iterator it = children.begin(); it != children.end(); ++it)
+    {
+    if (touched.find(*it) == touched.end())
       {
-      entityrefMap[*it] = cellent;
-      }
-    if((*it).boundingCells().size() > 0)
-      {
-      this->FindEntitiesWithTessellation(*it, entityrefMap);
+      touched.insert(*it);
+      if (it->hasTessellation())
+        {
+        entityrefMap[*it] = root;
+        }
+      this->FindEntitiesWithTessellation(*it, entityrefMap, touched);
       }
     }
 }
@@ -421,10 +438,14 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
       // Map from entityref to its parent cell entity
       std::map<smtk::model::EntityRef, smtk::model::EntityRef> entityrefMap;
 
-      this->FindEntitiesWithTessellation(modelEntity, entityrefMap);
+      if (1)
+        {
+        std::set<smtk::model::EntityRef> touched; // make this go out of scope soon.
+        this->FindEntitiesWithTessellation(modelEntity, entityrefMap, touched);
+        }
 
-      Groups groups = modelEntity.groups();
-      mbds->SetNumberOfBlocks(entityrefMap.size() + groups.size());
+      //Groups groups = modelEntity.groups();
+      mbds->SetNumberOfBlocks(entityrefMap.size()); // + groups.size());
       vtkIdType i;
       std::map<smtk::model::EntityRef, smtk::model::EntityRef>::iterator cit;
       for (i = 0, cit = entityrefMap.begin(); cit != entityrefMap.end(); ++cit, ++i)
@@ -443,6 +464,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
         }
 
       // Now look at groups of the model to see if those have any tessellation data
+      /*
       i = 0;
       for (Groups::iterator git = groups.begin(); git != groups.end(); ++git, ++i)
         {
@@ -456,6 +478,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
           internal_AddBlockInfo(manager, *git, modelEntity, entityrefMap.size() + i, poly.GetPointer(), this->UUID2BlockIdMap);
           }
         }
+        */
       // TODO: how do we handle submodels in a multiblock dataset? We could have
       //       a cycle in the submodels, so treating them as trees would not work.
       // Finally, if nothing has any tessellation information, see if any is associated

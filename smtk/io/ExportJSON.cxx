@@ -670,6 +670,7 @@ int ExportJSON::forManagerMeshes(
                      cJSON* mdesc,
                      smtk::model::ManagerPtr modelMgr)
 {
+  (void)modelMgr;
   //current issue is that a mesh Manager needs to know where to write
   //these collections to disk.
   typedef smtk::model::EntityRefs EntityRefs;
@@ -785,8 +786,6 @@ public:
   void write(const smtk::mesh::MeshSet& mesh, cJSON* parent,
              bool writeMeshes, bool writeCellAndPoints)
   {
-    std::size_t numCells = mesh.cells().size();
-    std::size_t numPoints = mesh.points().size();
     std::string cell_bit_types = mesh.types().cellTypes().to_string();
 
     cJSON_AddStringToObject(parent,"cell_types", cell_bit_types.c_str());

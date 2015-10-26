@@ -31,7 +31,7 @@ vtkDataObject* Operator::exodusData(const smtk::model::EntityRef& smtkEntity)
   if (!brdg)
     return NULL;
 
-  return brdg->toBlock<vtkDataObject>(brdg->toEntity(smtkEntity));
+  return brdg->toEntity(smtkEntity).object<vtkDataObject>();
 }
 
 /**\brief A helper to return the Exodus handle associated with an \a smtkEntity.

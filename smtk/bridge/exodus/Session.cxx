@@ -19,7 +19,6 @@
 
 #include "vtkCellArray.h"
 #include "vtkGeometryFilter.h"
-#include "vtkHyperTreeGrid.h"
 #include "vtkInformation.h"
 #include "vtkInformationIntegerKey.h"
 #include "vtkInformationIntegerVectorKey.h"
@@ -35,6 +34,10 @@ namespace smtk {
   namespace bridge {
     namespace exodus {
 
+vtkInformationKeyMacro(Session,SMTK_DIMENSION,Integer);
+vtkInformationKeyMacro(Session,SMTK_VISIBILITY,Integer);
+vtkInformationKeyMacro(Session,SMTK_GROUP_TYPE,Integer);
+vtkInformationKeyMacro(Session,SMTK_PEDIGREE,Integer);
 vtkInformationKeyMacro(Session,SMTK_UUID_KEY,String);
 
 enum smtkCellTessRole {
@@ -42,6 +45,116 @@ enum smtkCellTessRole {
   SMTK_ROLE_LINES,
   SMTK_ROLE_POLYS
 };
+
+/// Return a string representing the type of object
+std::string EntityTypeNameString(EntityType etype)
+{
+  switch(etype)
+    {
+  case EXO_MODEL:     return "model";
+
+  case EXO_BLOCK:     return "element block";
+  case EXO_SIDE_SET:  return "side set";
+  case EXO_NODE_SET:  return "node set";
+
+  case EXO_BLOCKS:    return "element blocks";
+  case EXO_SIDE_SETS: return "side sets";
+  case EXO_NODE_SETS: return "node sets";
+  default: break;
+    }
+  return "invalid";
+}
+
+
+/// Construct an invalid handle.
+EntityHandle::EntityHandle()
+  : m_modelNumber(-1), m_object(NULL), m_session(NULL)
+{
+}
+
+/// Construct a possibly-valid handle (of a top-level model).
+EntityHandle::EntityHandle(int emod, vtkDataObject* obj, Session* sess)
+  : m_modelNumber(emod), m_object(obj), m_session(sess)
+{
+}
+
+/// Construct a possibly-valid handle (of a non-top-level entity).
+EntityHandle::EntityHandle(int emod, vtkDataObject* obj, vtkMultiBlockDataSet* parent, int idxInParent, Session* sess)
+  : m_modelNumber(emod), m_object(obj), m_session(sess)
+{
+  if (sess && obj && parent && idxInParent > 0)
+    {
+    sess->ensureChildParentMapEntry(obj, parent, idxInParent);
+    }
+}
+
+/// Returns true when the object is owned by a session and has a non-NULL pointer.
+bool EntityHandle::isValid() const
+{
+  return
+    this->m_session &&
+    this->m_object &&
+    this->m_modelNumber >= 0 &&
+    this->m_modelNumber < static_cast<int>(this->m_session->numberOfModels());
+}
+
+/// Return the type of object this handle represents (or EXO_INVALID).
+EntityType EntityHandle::entityType() const
+{
+  vtkDataObject* obj = this->object<vtkDataObject>();
+  if (!obj)
+    return EXO_INVALID;
+
+  int etype = obj->GetInformation()->Get(Session::SMTK_GROUP_TYPE());
+  return etype > 0 ? static_cast<EntityType>(etype) : EXO_INVALID;
+}
+
+/// Return the name assigned to this object.
+/// Note that this is *not* the same as the block name that VTK uses!
+std::string EntityHandle::name() const
+{
+  vtkDataObject* obj = this->object<vtkDataObject>();
+  if (!obj)
+    return std::string();
+
+  return obj->GetInformation()->Get(vtkCompositeDataSet::NAME());
+}
+
+/// Return the pedigree ID assigned to this object.
+/// For Exodus files, this is the block or set ID. For SLAC files, it is the block index.
+int EntityHandle::pedigree() const
+{
+  vtkDataObject* obj = this->object<vtkDataObject>();
+  if (!obj)
+    return -1;
+
+  return obj->GetInformation()->Get(Session::SMTK_PEDIGREE());
+}
+
+/// Return the default visibility assigned to this object.
+bool EntityHandle::visible() const
+{
+  vtkDataObject* obj = this->object<vtkDataObject>();
+  if (!obj)
+    return true; // Visible by default
+
+  int eprop = obj->GetInformation()->Get(Session::SMTK_VISIBILITY());
+  // When eprop is 0, the property was not present (or was set to 0).
+  // In that case, assume the object is visible.
+  // If eprop is set, it should be either -1 (invisible) or +1 (visible):
+  return eprop == 0 ? true : (eprop < 0 ? false : true);
+}
+
+/// Given a handle, return its parent if it has one.
+EntityHandle EntityHandle::parent() const
+{
+  EntityType etype = this->entityType();
+  // Top-level and invalid handles have an invalid parent.
+  if (etype == EXO_MODEL || etype == EXO_INVALID)
+    return EntityHandle();
+
+  return EntityHandle(this->m_modelNumber, this->m_session->parent(this->m_object), this->m_session);
+}
 
 // ++ 2 ++
 Session::Session()
@@ -68,7 +181,7 @@ EntityHandle Session::toEntity(const smtk::model::EntityRef& eid)
 // ++ 4 ++
 smtk::model::EntityRef Session::toEntityRef(const EntityHandle& ent)
 {
-  vtkDataObject* entData = this->toBlock<vtkDataObject>(ent);
+  vtkDataObject* entData = ent.object<vtkDataObject>();
   if (!entData)
     return EntityRef(); // an invalid entityref
 
@@ -87,50 +200,15 @@ smtk::model::EntityRef Session::toEntityRef(const EntityHandle& ent)
 }
 // -- 4 --
 
-// ++ 5 ++
-std::vector<EntityHandle> Session::childrenOf(const EntityHandle& ent)
-{
-  std::vector<EntityHandle> children;
-  if (ent.entityType != EXO_MODEL)
-    return children; // element blocks, side sets, and node sets have no children (yet).
-
-  vtkMultiBlockDataSet* model = this->toBlock<vtkMultiBlockDataSet>(ent);
-  if (!model)
-    return children;
-
-  struct {
-    EntityType entityType;
-    int blockId;
-  } blocksByType[] = {
-    {EXO_BLOCK,    0},
-    {EXO_SIDE_SET, 4},
-    {EXO_NODE_SET, 7}
-  };
-  const int numBlocksByType =
-    sizeof(blocksByType) / sizeof(blocksByType[0]);
-  for (int i = 0; i < numBlocksByType; ++i)
-    {
-    vtkMultiBlockDataSet* typeSet =
-      dynamic_cast<vtkMultiBlockDataSet*>(
-        model->GetBlock(blocksByType[i].blockId));
-    if (!typeSet) continue;
-    for (unsigned j = 0; j < typeSet->GetNumberOfBlocks(); ++j)
-      children.push_back(
-        EntityHandle(blocksByType[i].entityType, ent.modelNumber, j));
-    }
-  return children;
-}
-// -- 5 --
-
 // ++ 6 ++
 /// Add the dataset and its blocks to the session.
 smtk::model::Model Session::addModel(
   vtkSmartPointer<vtkMultiBlockDataSet>& model)
 {
-  EntityHandle handle;
-  handle.modelNumber = static_cast<int>(this->m_models.size());
-  handle.entityType = EXO_MODEL;
-  handle.entityId = -1; // unused for EXO_MODEL.
+  EntityHandle handle(
+    static_cast<int>(this->m_models.size()),
+    model.GetPointer(),
+    this);
   this->m_models.push_back(model);
   smtk::model::Model result = this->toEntityRef(handle);
   this->m_revIdMap[result] = handle;
@@ -153,15 +231,15 @@ SessionInfoBits Session::transcribeInternal(
   if (!handle.isValid())
     return actual;
 
-  vtkDataObject* obj = this->toBlock<vtkDataObject>(handle);
+  vtkDataObject* obj = handle.object<vtkDataObject>();
   // ...
 // -- 7 --
   if (!obj)
     return actual;
 
-  int dim = obj->GetInformation()->Get(vtkHyperTreeGrid::DIMENSION());
+  int dim = obj->GetInformation()->Get(Session::SMTK_DIMENSION());
 
-  // Grab the parent entity early if possible... we need its dimension().
+  // Grab the parent entity early if possible...
   EntityRef parentEntityRef;
   EntityHandle parentHandle = handle.parent();
   if (parentHandle.isValid())
@@ -174,7 +252,6 @@ SessionInfoBits Session::transcribeInternal(
       this->declareDanglingEntity(parentEntityRef, 0);
       this->transcribe(parentEntityRef, requestedInfo, true, depth < 0 ? depth : depth - 1);
       }
-    dim = parentEntityRef.embeddingDimension();
     }
 
 // ++ 8 ++
@@ -184,7 +261,7 @@ SessionInfoBits Session::transcribeInternal(
     {
 // -- 8 --
 // ++ 9 ++
-    switch (handle.entityType)
+    switch (handle.entityType())
       {
     case EXO_MODEL:
       mutableEntityRef.manager()->insertModel(
@@ -196,25 +273,49 @@ SessionInfoBits Session::transcribeInternal(
       entityDimBits = Entity::dimensionToDimensionBits(dim);
       mutableEntityRef.manager()->insertGroup(
         mutableEntityRef.entity(), MODEL_DOMAIN | entityDimBits,
-        this->toBlockName(handle));
+        handle.name());
       mutableEntityRef.as<Group>().setMembershipMask(VOLUME);
       break;
     // .. and other cases.
 // -- 9 --
     case EXO_SIDE_SET:
       entityDimBits = 0;
-      for (int i = 0; i < dim; ++i)
+      for (int i = 0; i <= dim; ++i)
         entityDimBits |= Entity::dimensionToDimensionBits(i);
       mutableEntityRef.manager()->insertGroup(
         mutableEntityRef.entity(), MODEL_BOUNDARY | entityDimBits,
-        this->toBlockName(handle));
+        handle.name());
       mutableEntityRef.as<Group>().setMembershipMask(CELL_ENTITY | entityDimBits);
       break;
     case EXO_NODE_SET:
       mutableEntityRef.manager()->insertGroup(
         mutableEntityRef.entity(), MODEL_BOUNDARY | DIMENSION_0,
-        this->toBlockName(handle));
+        handle.name());
       mutableEntityRef.as<Group>().setMembershipMask(VERTEX);
+      break;
+
+    // Groups of groups:
+    case EXO_BLOCKS:
+      entityDimBits = Entity::dimensionToDimensionBits(dim);
+      mutableEntityRef.manager()->insertGroup(
+        mutableEntityRef.entity(), GROUP_ENTITY | entityDimBits,
+        handle.name());
+      mutableEntityRef.as<Group>().setMembershipMask(VOLUME | GROUP_ENTITY);
+      break;
+    case EXO_SIDE_SETS:
+      entityDimBits = 0;
+      for (int i = 0; i <= dim; ++i)
+        entityDimBits |= Entity::dimensionToDimensionBits(i);
+      mutableEntityRef.manager()->insertGroup(
+        mutableEntityRef.entity(), GROUP_ENTITY | entityDimBits,
+        handle.name());
+      mutableEntityRef.as<Group>().setMembershipMask(CELL_ENTITY | GROUP_ENTITY | entityDimBits);
+      break;
+    case EXO_NODE_SETS:
+      mutableEntityRef.manager()->insertGroup(
+        mutableEntityRef.entity(), GROUP_ENTITY | DIMENSION_0,
+        handle.name());
+      mutableEntityRef.as<Group>().setMembershipMask(VERTEX | GROUP_ENTITY);
       break;
 // ++ 10 ++
     default:
@@ -241,8 +342,8 @@ SessionInfoBits Session::transcribeInternal(
       mutableEntityRef.findOrAddRawRelation(parentEntityRef);
       }
     // Now add children.
-    std::vector<EntityHandle> children = this->childrenOf(handle);
-    std::vector<EntityHandle>::iterator cit;
+    EntityHandleArray children = handle.childrenAs<EntityHandleArray>(0); // Only immediate children.
+    EntityHandleArray::iterator cit;
     for (cit = children.begin(); cit != children.end(); ++cit)
       {
       EntityRef childEntityRef = this->toEntityRef(*cit);
@@ -252,7 +353,10 @@ SessionInfoBits Session::transcribeInternal(
         this->declareDanglingEntity(childEntityRef, 0);
         this->transcribeInternal(childEntityRef, requestedInfo, depth < 0 ? depth : depth - 1);
         }
-      mutableEntityRef.as<smtk::model::Model>().addGroup(childEntityRef);
+      if (handle.entityType() == EXO_MODEL)
+        mutableEntityRef.as<smtk::model::Model>().addGroup(childEntityRef);
+      else
+        mutableEntityRef.as<smtk::model::Group>().addEntity(childEntityRef);
       }
 
     // Mark that we added this information to the manager:
@@ -272,41 +376,50 @@ SessionInfoBits Session::transcribeInternal(
   if (requestedInfo & smtk::model::SESSION_PROPERTIES)
     {
     // Set properties.
+    EntityType etype = handle.entityType();
+    if (!handle.visible())
+      {
+      mutableEntityRef.setIntegerProperty("visible", 0);
+      }
+    switch (etype)
+      {
+    case EXO_BLOCK:
+      mutableEntityRef.setStringProperty("_simple type", "element block");
+      mutableEntityRef.as<smtk::model::Group>().setMembershipMask(DIMENSION_3 | MODEL_DOMAIN);
+      mutableEntityRef.setIntegerProperty("pedigree id", handle.pedigree());
+      break;
+    case EXO_NODE_SET:
+      mutableEntityRef.setStringProperty("_simple type", "node set");
+      mutableEntityRef.as<smtk::model::Group>().setMembershipMask(DIMENSION_0 | MODEL_BOUNDARY);
+      mutableEntityRef.setIntegerProperty("pedigree id", handle.pedigree());
+      break;
+    case EXO_SIDE_SET:
+      mutableEntityRef.setStringProperty("_simple type", "side set");
+      mutableEntityRef.as<smtk::model::Group>().setMembershipMask(ANY_DIMENSION | MODEL_BOUNDARY);
+      mutableEntityRef.setIntegerProperty("pedigree id", handle.pedigree());
+      break;
+    case EXO_BLOCKS:
+      mutableEntityRef.setStringProperty("_simple type", "element block collection");
+      break;
+    case EXO_NODE_SETS:
+      mutableEntityRef.setStringProperty("_simple type", "node set collection");
+      break;
+    case EXO_SIDE_SETS:
+      mutableEntityRef.setStringProperty("_simple type", "side set collection");
+      break;
+    case EXO_MODEL:
+      mutableEntityRef.setStringProperty("_simple type", "file");
+      break;
+    default:
+      break;
+      }
+    mutableEntityRef.setName(handle.name());
+
     actual |= smtk::model::SESSION_PROPERTIES;
     }
 
   this->declareDanglingEntity(mutableEntityRef, actual);
   return actual;
-}
-
-/// Return the block name for the given handle.
-std::string Session::toBlockName(const EntityHandle& handle) const
-{
-  if (
-    handle.entityType == EXO_INVALID ||
-    (handle.entityType != EXO_MODEL && handle.entityId < 0) ||
-    handle.modelNumber < 0 ||
-    handle.modelNumber > static_cast<int>(this->m_models.size()))
-    return NULL;
-
-  int blockId = -1; // Where in the VTK dataset is the entity type data?
-  switch (handle.entityType)
-    {
-  case EXO_MODEL:    return std::string(); break;
-  case EXO_BLOCK:    blockId = 0; break;
-  case EXO_SIDE_SET: blockId = 4; break;
-  case EXO_NODE_SET: blockId = 7; break;
-  default:
-    return std::string();
-    }
-  vtkMultiBlockDataSet* typeSet =
-    vtkMultiBlockDataSet::SafeDownCast(
-      this->m_models[handle.modelNumber]->GetBlock(blockId));
-  if (!typeSet || handle.entityId >= typeSet->GetNumberOfBlocks())
-    return std::string();
-  return std::string(
-    typeSet->GetMetaData(handle.entityId)->Get(
-      vtkCompositeDataSet::NAME()));
 }
 
 // A method that helps convert vtkPolyData into an SMTK Tessellation.
@@ -375,7 +488,6 @@ static void AddCellsToTessellation(
     }
 }
 
-
 bool Session::addTessellation(
   const smtk::model::EntityRef& entityref,
   const EntityHandle& handle)
@@ -383,9 +495,12 @@ bool Session::addTessellation(
   if (entityref.hasTessellation())
     return true; // no need to recompute.
 
-  vtkDataObject* data = this->toBlock<vtkDataObject>(handle);
+  vtkDataObject* data = handle.object<vtkDataObject>();
   if (!data)
-    return false; // can't squeeze triangles from a NULL
+    return false; // Can't squeeze triangles from a NULL
+
+  if (vtkMultiBlockDataSet::SafeDownCast(data))
+    return false; // Don't try to tessellate parent groups of leaf nodes.
 
   vtkNew<vtkGeometryFilter> bdyFilter;
   bdyFilter->MergingOff();
@@ -410,6 +525,42 @@ bool Session::addTessellation(
     entityref.manager()->setTessellation(entityref.entity(), tess);
 
   return true;
+}
+
+size_t Session::numberOfModels() const
+{
+  return this->m_models.size();
+}
+
+/// Return the model owning the given handle, \a h.
+vtkMultiBlockDataSet* Session::modelOfHandle(const EntityHandle& h) const
+{
+  return (h.isValid() ? this->m_models[h.modelNumber()] : NULL);
+}
+
+/// Return the parent dataset of \a obj.
+vtkMultiBlockDataSet* Session::parent(vtkDataObject* obj) const
+{
+  ChildParentMap_t::const_iterator it = this->m_cpMap.find(obj);
+  if (it == this->m_cpMap.end())
+    return NULL;
+
+  return it->second.first;
+}
+
+/// Return the index of \a obj in its parent's list of children.
+int Session::parentIndex(vtkDataObject* obj) const
+{
+  ChildParentMap_t::const_iterator it = this->m_cpMap.find(obj);
+  if (it == this->m_cpMap.end())
+    return -1;
+
+  return it->second.second;
+}
+
+bool Session::ensureChildParentMapEntry(vtkDataObject* child, vtkMultiBlockDataSet* parent, int idxInParent)
+{
+  return this->m_cpMap.insert(ChildParentMap_t::value_type(child, ParentAndIndex_t(parent, idxInParent))).second;
 }
 
     } // namespace exodus
