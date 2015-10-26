@@ -7,7 +7,7 @@
       <ItemDefinitions>
         <File Name="filename" NumberOfRequiredValues="1"
           ShouldExist="true"
-          FileFilters="Exodus II Datasets (*.e *.exo *.ex2);;NetCDF files (*.nc *.ncdf);;All files (*.*)">
+          FileFilters="Exodus II Datasets (*.e *.exo *.ex2);;Label maps (*.vti);; NetCDF files (*.nc *.ncdf);;All files (*.*)">
         </File>
         <String Name="filetype" NumberOfRequiredValues="1"/>
         <Int Name="readSLACVolumes" NumberOfRequiredValues="1">
@@ -17,6 +17,11 @@
             <Structure><Value Enum="yes">1</Value></Structure>
           </DiscreteInfo>
         </Int>
+        <String Name="label map" NumberOfRequiredValues="1">
+          <BriefDescription>
+            The name of a scalar cell-data array indicating which segment each cell belongs to.
+          </BriefDescription>
+        </String>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->

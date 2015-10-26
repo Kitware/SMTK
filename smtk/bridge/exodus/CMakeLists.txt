@@ -29,6 +29,8 @@ target_link_libraries(smtkExodusSession
   LINK_PRIVATE
     vtkIOExodus
     vtkIONetCDF
+    vtkIOXML
+    vtkFiltersGeneral
     vtkIOParallelExodus
     vtkFiltersGeometry
     vtkCommonDataModel

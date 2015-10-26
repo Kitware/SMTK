@@ -6,6 +6,7 @@
       "filetypes": [
         ".exo (Exodus files)",
         ".ex2 (Exodus-II files)",
+        ".vti (Label map files)",
         ".nc  (SLAC files)",
         ".ncdf (SLAC files)"
       ]
