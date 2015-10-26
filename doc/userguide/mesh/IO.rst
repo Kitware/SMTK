@@ -34,6 +34,7 @@ Serialization
 
 .. highlight:: json
 .. code-block:: json
+
     "70ec982c-9562-44bd-a7e7-bd12b84a3271": {
      "formatVersion":  1,
      "name": "",
