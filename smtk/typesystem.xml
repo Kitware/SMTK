@@ -1857,6 +1857,34 @@
           </inject-code>
         </modify-function>
 
+        <modify-function signature="definitions(std::vector&lt; smtk::shared_ptr&lt; smtk::attribute::Definition &gt; &gt;&amp;) const">
+          <modify-argument index="1">
+            <remove-argument />
+          </modify-argument>
+          <modify-argument index="return">
+            <replace-type modified-type="std::vector&lt; smtk::shared_ptr&lt; smtk::attribute::Definition &gt; &gt;" />
+          </modify-argument>
+          <inject-code class="target" position="beginning">
+            std::vector&lt; smtk::shared_ptr&lt; smtk::attribute::Definition &gt; &gt; _out;
+            %CPPSELF->definitions(_out);
+            %PYARG_0 = %CONVERTTOPYTHON[std::vector&lt; smtk::shared_ptr&lt; smtk::attribute::Definition &gt; &gt;](_out);
+          </inject-code>
+        </modify-function>
+
+        <modify-function signature="attributes(std::vector&lt; smtk::shared_ptr&lt; smtk::attribute::Attribute &gt; &gt;&amp;) const">
+          <modify-argument index="1">
+            <remove-argument />
+          </modify-argument>
+          <modify-argument index="return">
+            <replace-type modified-type="std::vector&lt; smtk::shared_ptr&lt; smtk::attribute::Attribute &gt; &gt;" />
+          </modify-argument>
+          <inject-code class="target" position="beginning">
+            std::vector&lt; smtk::shared_ptr&lt; smtk::attribute::Attribute &gt; &gt; _out;
+            %CPPSELF->attributes(_out);
+            %PYARG_0 = %CONVERTTOPYTHON[std::vector&lt; smtk::shared_ptr&lt; smtk::attribute::Attribute &gt; &gt;](_out);
+          </inject-code>
+        </modify-function>
+
         <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::common::Resource &gt; &amp;)"
           static="yes"
           return-type="smtk::shared_ptr&lt;smtk::attribute::System &gt;">
