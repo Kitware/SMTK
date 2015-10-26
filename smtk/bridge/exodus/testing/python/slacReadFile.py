@@ -38,7 +38,7 @@ class TestExodusSession(smtk.testing.TestCase):
     numGroups = len(subgroups)
     self.assertEqual(numGroups, 2, 'Expected 2 groups, found %d' % numGroups)
 
-    numSubGroupsExpected = [5, 0]
+    numSubGroupsExpected = [5, 1]
     allgroups = []
     for i in range(len(numSubGroupsExpected)):
         numSubGroups = len(subgroups[i].members())
@@ -54,7 +54,7 @@ class TestExodusSession(smtk.testing.TestCase):
         'side set 3':                     '#559e83',
         'side set 4':                     '#c3cb71',
         'side set 6':                     '#1b85b8',
-        #'element block 1':                '#cb2c31'
+        'element block 1':                '#cb2c31'
     }
     self.assertTrue(all([x.name() in nameset for x in allgroups]),
         'Not all group names recognized.')
@@ -70,7 +70,7 @@ class TestExodusSession(smtk.testing.TestCase):
     gtc = {x:grouptypes.count(x) for x in grouptypes}
     expectedgrouptypecounts = {
       'boundary group (0,1,2-d entities)': 5,
-      #'domain group (3-d entities)': 1
+      'domain group (3-d entities)': 1
       }
     for entry in gtc.items():
       print '%40s: %d' % entry
@@ -83,6 +83,8 @@ class TestExodusSession(smtk.testing.TestCase):
         for grp in allgroups:
             color = self.hex2rgb(nameset[grp.name()])
             SetEntityProperty(grp, 'color', as_float=color)
+            if grp.name() == 'element block 1':
+              grp.setTessellation(smtk.model.Tessellation())
 
         self.startRenderTest()
         mbs = self.addModelToScene(self.model)
