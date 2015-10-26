@@ -182,7 +182,6 @@ smtk::model::EntityRef Session::toEntityRef(const EntityHandle& ent)
     {
     uid = smtk::common::UUID(uuidChar);
     }
-  const char* name = entData->GetInformation()->Get(vtkCompositeDataSet::NAME());
   return EntityRef(this->manager(), uid);
 }
 // -- 4 --

@@ -88,7 +88,6 @@ class TestExodusSession(smtk.testing.TestCase):
         for grp in allgroups:
             color = self.hex2rgb(nameset[grp.name()])
             SetEntityProperty(grp, 'color', as_float=color)
-            print floatColorToHex(grp.color()), ' vs ', floatColorToHex(color)
             # The element block should not be shown as it is coincident with some
             # of the side sets and throws off baseline images. Remove its tessellation.
             if grp.name() ==  'Unnamed block ID: 1 Type: HEX8':
