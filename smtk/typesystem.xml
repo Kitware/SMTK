@@ -65,6 +65,10 @@
   <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::end', unmatched return type 'smtk::attribute::ModelEntityItem::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::begin', unmatched return type 'smtk::attribute::ModelEntityItem::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::model::Operator::addEntitiesToResult', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::CellEntity::boundingCellsAs', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::Model::submodelsAs', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::Model::groupsAs', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::Model::cellsAs', unmatched return type 'T'"/>
 
   <!-- Return a list.  For now we will ignore the iterators-->
   <suppress-warning text="skipping function 'smtk::model::Item::beginAssociatedAttributes', unmatched return type 'smtk::model::Item::const_iterator'"/>
