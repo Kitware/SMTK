@@ -17,9 +17,15 @@ function(smtk_unit_tests)
     )
 
   set(have_testing_data OFF)
+  set(using_hdf OFF)
+  if(MOAB_USE_HDF)
+    set(using_hdf ON)
+  elseif(ENABLE_HDF5)
+    set(using_hdf ON)
+  endif()
   if (SMTK_DATA_DIR
       AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd
-      AND MOAB_USE_HDF)
+      AND using_hdf)
     #we check moab for hdf support since that is the file format
     #for all our test data
     set(have_testing_data ON)
