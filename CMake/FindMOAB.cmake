@@ -36,25 +36,34 @@ find_package_handle_standard_args(MOAB DEFAULT_MSG
     MOAB_INCLUDE_DIR)
 
 if(MOAB_FOUND)
-  if(EXISTS ${MOAB_ROOT_DIR}/lib/MOABConfig.cmake)
-
-    #Because we have a built-in moab the config.cmake
-    #will fail to include targets.cmake so we must do it
-    #manually
-    if(SMTK_USE_SYSTEM_MOAB)
-        include(${MOAB_ROOT_DIR}/lib/MOABConfig.cmake)
-        include(${MOAB_ROOT_DIR}/lib/MOABTargets.cmake)
-    else()
-        #otherwise we are use the third-party bundled version
-        #and nothing else needs to be done
-        include(MOABConfig.cmake)
-        include(MOABTargets.cmake)
-    endif()
-
-    set_target_properties(MOAB PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${MOAB_INCLUDE_DIR}"
-        )
+  #if not set deduce the ROOT_DIR from the INCLUDE_DIR
+  if(NOT MOAB_ROOT_DIR)
+    get_filename_component(MOAB_ROOT_DIR
+                           "${MOAB_INCLUDE_DIR}"
+                           DIRECTORY)
   endif()
+
+  if(SMTK_USE_SYSTEM_MOAB)
+    #if using system moab, determine if we have found a build or install
+    #version of the library
+    if(EXISTS ${MOAB_ROOT_DIR}/lib/MOABConfig.cmake)
+      #found a build version of moab
+      include(${MOAB_ROOT_DIR}/lib/MOABConfig.cmake)
+      include(${MOAB_ROOT_DIR}/lib/MOABTargets.cmake)
+    elseif(EXISTS ${MOAB_ROOT_DIR}/lib/cmake/MOAB/MOABConfig.cmake)
+      #found an install version of moab
+      include(${MOAB_ROOT_DIR}/lib/cmake/MOAB/MOABConfig.cmake)
+      include(${MOAB_ROOT_DIR}/lib/cmake/MOAB/MOABTargets.cmake)
+    endif()
+  else()
+      #Use the config files provided by the third-party version of moab
+      include(MOABConfig.cmake)
+      include(MOABTargets.cmake)
+  endif()
+
+  set_target_properties(MOAB PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES "${MOAB_INCLUDE_DIR}"
+      )
 endif()
 
 set(MOAB_INCLUDE_DIRS ${MOAB_INCLUDE_DIR})
