@@ -89,6 +89,52 @@ bool MeshSet::operator!=(const MeshSet& other) const
 }
 
 //----------------------------------------------------------------------------
+bool MeshSet::operator<(const MeshSet& other) const
+{
+  const std::size_t myLen = this->m_range.size();
+  const std::size_t otherLen = other.size();
+
+  //only when the number of elements in the two meshsets are equal do
+  //we need to do a complex less than comparison
+  if(myLen == otherLen)
+    {
+    //next we look at psize which is the number of pairs inside the range
+    const std::size_t myPLen = this->m_range.psize();
+    const std::size_t otherPLen = other.m_range.psize();
+
+    if(myPLen == otherPLen)
+      {
+      //we now have two handle ranges with same number of values, and
+      //the same number of pairs. Now we need
+
+      smtk::mesh::HandleRange::const_pair_iterator i, j;
+      i = this->m_range.const_pair_begin();
+      j = other.m_range.const_pair_begin();
+      for ( ; i != this->m_range.const_pair_end(); ++i, ++j)
+        {
+        if (i->first != j->first)
+          {
+          return i->first < j->first;
+          }
+        else if(i->second != j->second)
+          {
+          return i->second < j->second;
+          }
+        }
+      //we looped over the entire set and everything was equal, so therefore
+      //the two ranges must be equal
+      return false;
+      }
+
+    //prefer less pair sets over more pair sets for less than operator
+    return myPLen < otherPLen;
+    }
+
+  //prefer smaller lengths over larger for less than operator
+  return myLen < otherLen;
+}
+
+//----------------------------------------------------------------------------
 bool MeshSet::append( const MeshSet& other)
 {
   const bool can_append = this->m_parent == other.m_parent &&
