@@ -66,8 +66,11 @@ public:
 
   //Copy assignment operator required for rule of 3
   MeshSet& operator= (const MeshSet& other);
+
+  //Comparison operators
   bool operator==( const MeshSet& other ) const;
   bool operator!=( const MeshSet& other ) const;
+  bool operator<(  const MeshSet& other ) const;
 
   //append another MeshSet to this MeshSet, if the parents and collection
   //pointers don't match the append will return false
