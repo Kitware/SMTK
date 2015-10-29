@@ -39,6 +39,7 @@ set(meshHeaders
   MeshSet.h
   PointConnectivity.h
   PointSet.h
+  PropertyData.h
   QueryTypes.h
   TypeSet.h
 

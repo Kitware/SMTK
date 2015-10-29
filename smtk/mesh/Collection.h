@@ -21,6 +21,7 @@
 #include "smtk/mesh/PointConnectivity.h"
 #include "smtk/mesh/Handle.h"
 #include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/PropertyData.h"
 #include "smtk/mesh/QueryTypes.h"
 #include "smtk/mesh/TypeSet.h"
 
@@ -217,8 +218,33 @@ public:
   void setModelManager(smtk::model::ManagerPtr mgr) { this->m_modelManager = mgr; }
   smtk::model::ManagerPtr modelManager() const { return this->m_modelManager.lock(); }
 
+  // Associate a model to the collection.
   bool associateModel(const smtk::common::UUID& uuid);
   smtk::common::UUID associatedModel() const;
+
+  //----------------------------------------------------------------------------
+  // Float, String, Integer properties for a meshset given its handle range.
+  //----------------------------------------------------------------------------
+  void setFloatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName, smtk::model::Float propValue);
+  void setFloatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName, const smtk::model::FloatList& propValue);
+  smtk::model::FloatList const& floatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
+  smtk::model::FloatList& floatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName);
+  bool hasFloatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
+  bool removeFloatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName);
+
+  void setStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName, const smtk::model::String& propValue);
+  void setStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName, const smtk::model::StringList& propValue);
+  smtk::model::StringList const& stringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
+  smtk::model::StringList& stringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName);
+  bool hasStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
+  bool removeStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName);
+
+  void setIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName, smtk::model::Integer propValue);
+  void setIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName, const smtk::model::IntegerList& propValue);
+  smtk::model::IntegerList const& integerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
+  smtk::model::IntegerList& integerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName);
+  bool hasIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
+  bool removeIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName);
 
 private:
   Collection( const Collection& other ); //blank since we are used by shared_ptr
@@ -240,6 +266,9 @@ private:
 
   smtk::model::WeakManagerPtr m_modelManager;
   smtk::common::UUID m_modelEntity;
+  smtk::shared_ptr<MeshFloatData> m_floatData;
+  smtk::shared_ptr<MeshStringData> m_stringData;
+  smtk::shared_ptr<MeshIntegerData> m_integerData;
 
   //holds a reference to both the manager and the specific backend interface
   class InternalImpl;
