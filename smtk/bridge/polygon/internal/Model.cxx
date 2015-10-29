@@ -235,6 +235,14 @@ smtk::model::Vertices pmodel::findOrAddModelVertices(
   return vertices;
 }
 
+/**\brief Add a vertex to the model manager.
+  *
+  * This creates a vertex record in the model manager and adds its tessellation.
+  * It also adds the integer coordinates of the point to
+  * the internal model's data (this instance).
+  * This does **not** relate the vertex record in the model manager to a parent model
+  * or owning geometric entity (such as an edge, face, or volume).
+  */
 smtk::model::Vertex pmodel::findOrAddModelVertex(
   smtk::model::ManagerPtr mgr,
   const Point& pt)

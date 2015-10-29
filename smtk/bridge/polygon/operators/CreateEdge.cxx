@@ -334,6 +334,33 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
       }
     }
 
+  // III. Bookkeeping
+  //
+  // The model owning the new edges may have listed
+  // some model vertices as free cells which now serve
+  // as edge endpoints. Because they bound edges, they
+  // are no longer free and must be removed. The new edges
+  // must be added to the model's free cells.
+  smtk::model::VertexSet endpointVertices;
+  smtk::model::Edges::iterator creIt;
+  for (creIt = created.begin(); creIt != created.end(); ++creIt)
+    {
+    smtk::model::Vertices tmp = creIt->vertices();
+    endpointVertices.insert(tmp.begin(), tmp.end());
+    }
+  smtk::model::VertexSet::iterator vertIt;
+  smtk::model::VertexSet freeVertices = parentModel.cellsAs<smtk::model::VertexSet>();
+  for (vertIt = endpointVertices.begin(); vertIt != endpointVertices.end(); ++vertIt)
+    {
+    if (freeVertices.find(*vertIt) != freeVertices.end())
+      { // Remove vertex from the model's list of free cells.
+      parentModel.removeCell(*vertIt);
+      }
+    }
+  // Add the new edges to the owning model.
+  parentModel.addCells(created);
+
+
   smtk::model::OperatorResult opResult;
   if (ok)
     {

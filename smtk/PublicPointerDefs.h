@@ -141,6 +141,7 @@ namespace smtk
     typedef std::vector<smtk::model::UseEntity> UseEntities;
     class Vertex;
     typedef std::vector<smtk::model::Vertex> Vertices;
+    typedef std::set<smtk::model::Vertex> VertexSet;
     class VertexUse;
     typedef std::vector<smtk::model::VertexUse> VertexUses;
     class Volume;

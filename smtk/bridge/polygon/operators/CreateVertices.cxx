@@ -23,6 +23,11 @@ smtk::model::OperatorResult CreateVertices::operateInternal()
 {
   smtk::attribute::DoubleItem::Ptr pointsItem = this->findDouble("points");
   smtk::attribute::IntItem::Ptr coordinatesItem = this->findInt("coordinates");
+  int numCoordsPerPt = coordinatesItem->value(0);
+  numCoordsPerPt =
+    (numCoordsPerPt < 2 ? 2 :
+     (numCoordsPerPt > 3 ? 3 :
+      numCoordsPerPt));
 
   smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
 
@@ -31,15 +36,19 @@ smtk::model::OperatorResult CreateVertices::operateInternal()
   if (sess)
     {
     smtk::model::Manager::Ptr mgr = sess->manager();
+    smtk::model::Model model = modelItem->value(0);
     internal::pmodel::Ptr storage =
       sess->findStorage<internal::pmodel>(
-        modelItem->value(0).entity());
+        model.entity());
     std::vector<double> pcoords(pointsItem->begin(), pointsItem->end());
     smtk::model::Vertices verts =
-      storage->findOrAddModelVertices(
-        mgr, pcoords, coordinatesItem->value(0));
+      storage->findOrAddModelVertices(mgr, pcoords, numCoordsPerPt);
     result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
     this->addEntitiesToResult(result, verts, CREATED);
+    for (smtk::model::Vertices::const_iterator it = verts.begin(); it != verts.end(); ++it)
+      { // Add raw relationships from model to/from vertex:
+      model.addCell(*it);
+      }
     }
   if (!result)
     {
