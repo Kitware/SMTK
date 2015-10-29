@@ -18,6 +18,8 @@ if (NOT SMTK_USE_SYSTEM_MOAB)
   set(CMAKE_CXX_FLAGS "${save_CMAKE_CXX_FLAGS}" CACHE STRING "" FORCE)
   set(CMAKE_Fortran_FLAGS "${save_CMAKE_Fortran_FLAGS}" CACHE STRING "" FORCE)
 
+  set(MOAB_DIR "${CMAKE_CURRENT_BINARY_DIR}/moab" CACHE STRING "" FORCE)
+
   #hide all of the CMake options that moab has. This is done to keep
   #the smtk ccmake/cmake-gui interface simple.
   mark_as_advanced(
