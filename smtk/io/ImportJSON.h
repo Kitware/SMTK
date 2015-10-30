@@ -50,6 +50,7 @@ public:
   static int ofOperatorResult(cJSON* node, smtk::model::OperatorResult& resOut, smtk::model::RemoteOperatorPtr op);
   static int ofDanglingEntities(cJSON* node, smtk::model::ManagerPtr context);
 
+  static int ofLog(const char* jsonStr, smtk::io::Logger& log);
   static int ofLog(cJSON* logrecordarray, smtk::io::Logger& log);
 
   //write all mesh collections that have associations to a model

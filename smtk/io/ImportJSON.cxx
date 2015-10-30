@@ -968,6 +968,18 @@ int ImportJSON::ofDanglingEntities(cJSON* node, ManagerPtr context)
   return 1;
 }
 
+/**\brief Append all of the entries in \a jsonStr (a string containing a JSON array of arrays) to the \a log.
+  *
+  * See the other variant for details.
+  */
+int ImportJSON::ofLog(const char* jsonStr, smtk::io::Logger& log)
+{
+  cJSON* json = cJSON_Parse(jsonStr);
+  int stat = ImportJSON::ofLog(json, log);
+  cJSON_Delete(json);
+  return stat;
+}
+
 /**\brief Append all of the entries in \a logrecordarray (an array of arrays) to the \a log.
   *
   * This returns the number of records (whether or not they were actually

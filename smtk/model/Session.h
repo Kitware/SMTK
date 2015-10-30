@@ -111,7 +111,7 @@ public: \
   virtual std::string findOperatorXML(const std::string& opName) const; \
   virtual smtk::model::OperatorConstructor findOperatorConstructor( \
     const std::string& opName) const; \
-  virtual bool inheritsOperators() const;
+  virtual bool inheritsOperators() const
 
 /**\brief Implement methods declared by smtkDeclareOperatorRegistration().
   *
@@ -125,6 +125,7 @@ public: \
     const std::string& opName, const char* opDescrXML, \
     smtk::model::OperatorConstructor opCtor) \
   { \
+    std::cerr << "Register " << opName << " w/ " << #Cls << "\n"; \
     bool result = Cls ::registerStaticOperator(opName, opDescrXML, opCtor); \
     if (opDescrXML) \
       this->importOperatorXML(opDescrXML); \
@@ -197,7 +198,7 @@ public: \
   static std::string staticClassName(); \
   virtual std::string name() const { return sessionName; } \
   virtual std::string className() const; \
-  smtkDeclareOperatorRegistration();
+  smtkDeclareOperatorRegistration()
 
 /**\brief Declare that a class implements a session to a solid modeling kernel.
   *

@@ -146,8 +146,7 @@ bool ModelEntityItem::appendValue(const smtk::model::EntityRef& val)
     {
     if (!this->isSet(i))
       {
-      this->setValue(i, val);
-      return true;
+      return this->setValue(i, val);
       }
     }
   // Second - are we allowed to change the number of values?

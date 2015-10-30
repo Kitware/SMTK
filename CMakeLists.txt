@@ -106,6 +106,7 @@ option(SMTK_ENABLE_PARAVIEW_SUPPORT "Build paraview plugins for model sessions" 
 
 option(SMTK_ENABLE_CGM_SESSION "Build CGM component" OFF)
 option(SMTK_ENABLE_DISCRETE_SESSION "Build discrete model session components" OFF)
+option(SMTK_ENABLE_POLYGON_SESSION "Build Boost.polygon model session." ON)
 if (SMTK_ENABLE_VTK_SUPPORT)
   option(SMTK_ENABLE_EXODUS_SESSION "Build a session to Exodus-II side sets" ON)
 endif()
