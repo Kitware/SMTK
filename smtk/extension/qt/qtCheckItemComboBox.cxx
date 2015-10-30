@@ -132,31 +132,34 @@ void qtModelEntityItemCombo::init()
   tmpGrp.setMembershipMask(itemDef->membershipMask());
 
   int row=1;
-  for (smtk::model::UUIDWithEntity it = modelManager->topology().begin();
-      it != modelManager->topology().end(); ++it)
+  if (modelManager)
     {
+    for (smtk::model::UUIDWithEntity it = modelManager->topology().begin();
+      it != modelManager->topology().end(); ++it)
+      {
 
-    smtk::model::EntityRef entref(modelManager, it->first);
-    if (entref.isValid() && !entref.isUseEntity() &&
+      smtk::model::EntityRef entref(modelManager, it->first);
+      if (entref.isValid() && !entref.isUseEntity() &&
         // if the mask is only groups, get all groups from manager
         ((onlyGroups && entref.isGroup()) ||
-        // else, check the membership constraints
+         // else, check the membership constraints
          (!onlyGroups && tmpGrp.meetsMembershipConstraints(entref))))
-      {
-      QStandardItem* item = new QStandardItem;
-      std::string entName = entref.name();
-      item->setText(entName.c_str());
-      item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-      //item->setData(this->Internals->AttSelections[keyName], Qt::CheckStateRole);
-      item->setData(Qt::Unchecked, Qt::CheckStateRole);
-      item->setCheckable(true);
-      item->setCheckState(ModelEntityItem->has(entref) ? Qt::Checked : Qt::Unchecked);
+        {
+        QStandardItem* item = new QStandardItem;
+        std::string entName = entref.name();
+        item->setText(entName.c_str());
+        item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        //item->setData(this->Internals->AttSelections[keyName], Qt::CheckStateRole);
+        item->setData(Qt::Unchecked, Qt::CheckStateRole);
+        item->setCheckable(true);
+        item->setCheckState(ModelEntityItem->has(entref) ? Qt::Checked : Qt::Unchecked);
 
-      item->setData(entref.entity().toString().c_str(), Qt::UserRole);
-      itemModel->insertRow(row, item);
+        item->setData(entref.entity().toString().c_str(), Qt::UserRole);
+        itemModel->insertRow(row, item);
+        }
       }
+    itemModel->sort(0);
     }
-  itemModel->sort(0);
 
   connect(this->model(),
     SIGNAL(dataChanged ( const QModelIndex&, const QModelIndex&)),

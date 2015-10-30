@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<typesystem package="@TYPESYSTEM_NAME@">
+
+  @EXTRA_TYPESYSTEMS@
+
+  <!-- Ignore Shiboken notice that polygon lives inside SMTK namespace -->
+  <suppress-warning text="Duplicate type entry: 'smtk'"/>
+
+  <!-- Ignore the internal polygon namespace -->
+  <suppress-warning text="namespace 'smtk::bridge::polygon::internal' does not have a type entry"/>
+
+  <!-- Ignore miscellaneous crufty warnings -->
+  <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::addStorage', unmatched parameter type 'smtk::bridge::polygon::internal::entity::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::create', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::polygon::Session::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::findOperatorConstructor', unmatched return type 'smtk::model::OperatorConstructor'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::findStorage', unmatched return type 'T::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::findOrAddStorage', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::registerOperator', unmatched parameter type 'smtk::model::OperatorConstructor'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::registerStaticOperator', unmatched parameter type 'smtk::model::OperatorConstructor'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::bridge::polygon::Session::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::polygon::Session::SelfType&gt;'"/>
+  <suppress-warning text="skipping field 'Session::m_storage' with unmatched type 'internal::EntityIdToPtr'"/>
+  <suppress-warning text="skipping field 'Session::s_operators' with unmatched type 'std::map&lt;std::string,smtk::model::StaticOperatorInfo&gt;'"/>
+
+  <!-- Additional objects to be wrapped when building with polygon -->
+  <namespace-type name="smtk" generate = "no">
+    <namespace-type name="bridge" generate = "no">
+      <namespace-type name="polygon" generate = "yes">
+
+        <object-type name="Session">
+          <include file-name="smtk/bridge/polygon/Session.h" location="local"/>
+        </object-type>
+
+      </namespace-type>
+    </namespace-type>
+  </namespace-type>
+
+  <value-type template="smtk::shared_ptr" args="smtk::bridge::polygon::Session">
+  </value-type>
+
+  @EXTRA_OBJECTS@
+
+</typesystem>

@@ -48,9 +48,10 @@
   <suppress-warning text="skipping function 'smtk::model::EntityRef::instances', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityRef::removeMemberEntities', unmatched parameter type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityRef::addMemberEntities', unmatched parameter type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::EntityRef::relationsAs', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::Group::addEntities', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::addSubmodels', unmatched parameter type 'T const&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::model::EntityRef::relationsAs', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::Model::appendCells', unmatched parameter type 'T&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::removeSubmodels', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::removeGroups', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::removeCells', unmatched parameter type 'T const&amp;'"/>
@@ -1498,6 +1499,15 @@
       <value-type name="Vertex" hash-function="smtk::model::entityrefHash">
         <include file-name="smtk/model/Vertex.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+        <add-function
+          signature="coordinates()" static="no"
+          return-type="std::vector&lt; double &gt;">
+          <inject-code>
+            const double* x = %CPPSELF->coordinates();
+            std::vector&lt; double &gt; result(x, x + 3);
+            return %CONVERTTOPYTHON[ std::vector&lt; double &gt; ](result);
+          </inject-code>
+        </add-function>
       </value-type>
 
       <value-type name="VertexUse" hash-function="smtk::model::entityrefHash">

@@ -42,6 +42,7 @@ will use its operators. ::
 import smtk
 
 activeSession = None
+lastOperatorResult = None
 
 def SetActiveSession(sess):
   """Set the session to be used when performing modeling operations."""
@@ -52,6 +53,16 @@ def GetActiveSession():
   """Return the currently-active modeling session."""
   global activeSession
   return activeSession
+
+def SetLastResult(res):
+  """An internal method used by operations to save their results for advanced users."""
+  global lastOperatorResult
+  lastOperatorResult = res
+
+def GetLastResult():
+  """Returns the result of the last operation invoked via the smtk.simple API."""
+  global lastOperatorResult
+  return lastOperatorResult
 
 class CurveType:
   ARC = 1
@@ -83,9 +94,13 @@ def SetVectorValue(item,v):
   if the values in v cannot be converted to the proper
   type.
   """
-  item.setNumberOfValues(len(v))
-  for i in range(len(v)):
-    item.setValue(i,v[i])
+  try:
+    item.setNumberOfValues(len(v))
+    for i in range(len(v)):
+      item.setValue(i,v[i])
+  except: # Maybe v is a scalar
+    item.setNumberOfValues(1)
+    item.setValue(0, v)
 
 def GetVectorValue(item):
   """Given an smtk.attribute.Item, return a list containing its values."""
@@ -96,7 +111,58 @@ def PrintResultLog(res, always = False):
   """Given an operator result, print log messages if unsuccessful."""
   if always or res.findInt('outcome').value(0) != smtk.model.OPERATION_SUCCEEDED:
     slog = res.findString('log')
-    print '\n'.join([slog.value(i) for i in range(slog.numberOfValues())])
+    tmplog = smtk.io.Logger()
+    smtk.io.ImportJSON.ofLog(slog.value(0), tmplog)
+    print '\n'.join(
+        [
+          tmplog.severityAsString(tmplog.record(i).severity) + ': ' +
+          tmplog.record(i).message for i in range(tmplog.numberOfRecords())])
+    #print '\n'.join([slog.value(i) for i in range(slog.numberOfValues())])
+
+def CreateModel(**args):
+  """Create an empty geometric model.
+  """
+  sess = GetActiveSession()
+  cm = sess.op('create model')
+  if cm is None:
+    return
+  xAxis = args['x_axis'] if 'x_axis' in args else None
+  yAxis = args['y_axis'] if 'y_axis' in args else None
+  normal = args['normal'] if 'normal' in args else (args['z_axis'] if 'z_axis' in args else None)
+  origin = args['origin'] if 'origin' in args else None
+  modelScale = args['model_scale'] if 'model_scale' in args else None
+  featureSize = args['feature_size'] if 'feature_size' in args else None
+  if modelScale is not None and featureSize is not None:
+    print 'Specify either model_scale or feature_size but not both'
+    return
+  method = -1
+  if modelScale is not None:
+    if normal is not None:
+      print 'When specifying model_scale, you must specify x and y axes. Normal is ignored.'
+    method = 2
+  if featureSize is not None:
+    if normal is not None:
+      method = 1
+    else:
+      method = 0
+  cm.findAsInt('construction method').setDiscreteIndex(method)
+  if origin is not None:
+    SetVectorValue(cm.findAsDouble('origin'), origin)
+  if xAxis is not None:
+    SetVectorValue(cm.findAsDouble('x axis'), xAxis)
+  if yAxis is not None:
+    SetVectorValue(cm.findAsDouble('y axis'), yAxis)
+  if normal is not None:
+    SetVectorValue(cm.findAsDouble('z axis'), normal)
+  if modelScale is not None:
+    SetVectorValue(cm.findAsInt('model scale'), modelScale)
+  if featureSize is not None:
+    SetVectorValue(cm.findAsDouble('feature size'), featureSize)
+  res = cm.operate()
+  SetLastResult(res)
+  PrintResultLog(res)
+  mod = res.findModelEntity('created').value(0)
+  return mod
 
 def CreateSphere(**args):
   """Create a sphere.
@@ -124,6 +190,7 @@ def CreateSphere(**args):
     cc = cs.findAsDouble('center')
     SetVectorValue(cc, args['center'])
   res = cs.operate()
+  SetLastResult(res)
   PrintResultLog(res)
   sph = res.findModelEntity('created').value(0)
   return sph
@@ -164,6 +231,7 @@ def CreateCylinder(**args):
   if 'height' in args:
     cs.findAsDouble('height').setValue(args['height'])
   res = cs.operate()
+  SetLastResult(res)
   PrintResultLog(res)
   cyl = res.findModelEntity('created').value(0)
   return cyl
@@ -213,6 +281,7 @@ def CreateBrick(**args):
     ctrVal = args['center']
     SetVectorValue(cb.findAsDouble('center'), ctrVal)
   res = cb.operate()
+  SetLastResult(res)
   PrintResultLog(res)
   brick = res.findModelEntity('created').value(0)
   return brick
@@ -236,6 +305,7 @@ def Intersect(bodies, **args):
   except:
     op.associateEntity(bodies)
   res = op.operate()
+  SetLastResult(res)
   PrintResultLog(res)
   return res.findModelEntity('modified').value(0)
 
@@ -258,6 +328,7 @@ def Union(bodies, **args):
   except:
     op.associateEntity(bodies)
   res = op.operate()
+  SetLastResult(res)
   PrintResultLog(res)
   return res.findModelEntity('modified').value(0)
 
@@ -291,6 +362,7 @@ def Subtract(workpiece, tool, **args):
   SetVectorValue(op.findModelEntity('tools',smtk.attribute.ALL_CHILDREN), tool)
 
   res = op.operate()
+  SetLastResult(res)
   PrintResultLog(res)
   return res.findModelEntity('modified').value(0)
 
@@ -322,6 +394,7 @@ def Rotate(bodies, **args):
   if 'angle' in args:
     rop.findAsDouble('angle').setValue(args['angle'])
   res = rop.operate()
+  SetLastResult(res)
   PrintResultLog(res)
   return GetVectorValue(res.findModelEntity('modified'))
 
@@ -352,6 +425,7 @@ def Scale(bodies, factor, **kwargs):
     origin = sca.findAsDouble('origin')
     SetVectorValue(origin, kwargs['origin'])
   res = sca.operate()
+  SetLastResult(res)
   PrintResultLog(res)
   return GetVectorValue(res.findModelEntity('modified'))
 
@@ -365,6 +439,7 @@ def Translate(bodies, vec):
     top.associateEntity(bodies)
   SetVectorValue(top.findAsDouble('offset'),vec)
   res = top.operate()
+  SetLastResult(res)
   PrintResultLog(res)
   return GetVectorValue(res.findModelEntity('modified'))
 
@@ -379,26 +454,119 @@ def CreateVertex(pt, **kwargs):
     c.setValue(0, kwargs['color'])
   SetVectorValue(x, pt)
   res = crv.operate()
+  SetLastResult(res)
   PrintResultLog(res)
   return res.findModelEntity('created').value(0)
+
+def CreateVertices(pt, model, **kwargs):
+  """Create one or more vertices given point coordinates.
+  Point coordinates should be specified as a list of 3-tuples.
+  The vertices are inserted into the given model
+  """
+  import itertools
+  sref = GetActiveSession()
+  # Not all sessions define "create vertices"
+  # Fall back to "create vertex" if needed:
+  crv = sref.op('create vertices')
+  if not crv:
+    return [CreateVertex(pt[i]) for i in range(len(pt))]
+  # OK, we have create vertices.
+  # Determine the maximum number of coordinates per point
+  numCoordsPerPoint = max([len(pt[i]) for i in range(len(pt))])
+  tmp = min([len(pt[i]) for i in range(len(pt))])
+  x = crv.findAsDouble('points')
+  c = crv.findAsInt('coordinates')
+  crv.associateEntity(model)
+  if c:
+    c.setValue(0, numCoordsPerPoint)
+  if tmp != numCoordsPerPoint:
+    ptflat = []
+    for p in pt:
+      ptflat.append(p + [0,]*(numCoordsPerPoint - len(p)))
+    ptflat = list(itertools.chain(*ptflat))
+  else:
+    ptflat = list(itertools.chain(*pt))
+  SetVectorValue(x, ptflat)
+  res = crv.operate()
+  SetLastResult(res)
+  PrintResultLog(res)
+  created = res.findModelEntity('created')
+  return [created.value(i) for i in range(created.numberOfValues())]
 
 def CreateEdge(verts, curve_type = CurveType.LINE, **kwargs):
   """Create an edge from a pair of vertices.
   """
+  import itertools
   sref = GetActiveSession()
   cre = sref.op('create edge')
-  [cre.associateEntity(x) for x in verts]
+  # Some kernels accept points (not model-verts) in which case
+  # the model should be associated with the operator. Otherwise,
+  # the model vertices should be associated with the operator.
+  if len(verts) < 1:
+    print 'Error: No vertices specified.'
+    return None
+  if hasattr(verts[0], '__iter__'):
+    # Verts is actually a list of tuples specifying point coordinates.
+    # Look for a model to associate with the operator.
+    if 'model' not in kwargs:
+      print 'Error: No model specified.'
+      return None
+    cre.associateEntity(kwargs['model'])
+    # Pad and flatten point data
+    numCoordsPerPoint = max([len(verts[i]) for i in range(len(verts))])
+    tmp = min([len(verts[i]) for i in range(len(verts))])
+    x = cre.findAsDouble('points')
+    c = cre.findAsInt('coordinates')
+    if c:
+      c.setValue(0, numCoordsPerPoint)
+    if tmp != numCoordsPerPoint:
+      ptflat = []
+      for p in verts:
+        ptflat.append(p + [0,]*(numCoordsPerPoint - len(p)))
+      ptflat = list(itertools.chain(*ptflat))
+    else:
+      ptflat = list(itertools.chain(*verts))
+    if x:
+      SetVectorValue(x, ptflat)
+  else:
+    [cre.associateEntity(x) for x in verts]
   t = cre.findAsInt('curve type')
-  t.setValue(0, curve_type)
+  if t:
+    t.setValue(0, curve_type)
+  if 'offsets' in kwargs:
+    o = cre.findAsInt('offsets')
+    if o:
+      SetVectorValue(o, kwargs['offsets'])
   if 'midpoint' in kwargs:
     x = cre.findAsDouble('point')
-    SetVectorValue(x, kwargs['midpoint'])
+    if x:
+      SetVectorValue(x, kwargs['midpoint'])
   if 'color' in kwargs:
     c = cre.findAsInt('color')
-    c.setValue(0, kwargs['color'])
+    if c:
+      c.setValue(0, kwargs['color'])
   res = cre.operate()
+  SetLastResult(res)
   PrintResultLog(res)
-  return res.findModelEntity('created').value(0)
+  edgeList = res.findModelEntity('created')
+  numEdges = edgeList.numberOfValues()
+  return edgeList.value(0) if numEdges == 1 else [edgeList.value(i) for i in range(numEdges)]
+
+def SplitEdge(edge, point, **kwargs):
+  """Split an edge at a point along the edge.
+  """
+  import itertools
+  sref = GetActiveSession()
+  spl = sref.op('split edge')
+  spl.associateEntity(edge)
+  x = spl.findAsDouble('point')
+  SetVectorValue(x, point)
+  res = spl.operate()
+  SetLastResult(res)
+  PrintResultLog(res)
+  edgeList = res.findModelEntity('created')
+  numEdges = edgeList.numberOfValues()
+  return edgeList.value(0) if numEdges == 1 else [edgeList.value(i) for i in range(numEdges)]
 
 def CreateFace(edges, surface_type = SurfaceType.PLANAR, **kwargs):
   """Create a face from a set of edges.
@@ -412,6 +580,7 @@ def CreateFace(edges, surface_type = SurfaceType.PLANAR, **kwargs):
     c = crf.findAsInt('color')
     c.setValue(0, kwargs['color'])
   res = crf.operate()
+  SetLastResult(res)
   PrintResultLog(res)
   return res.findModelEntity('created').value(0)
 
@@ -434,6 +603,7 @@ def CreateBody(ents, **kwargs):
     c = crb.findAsInt('keep inputs')
     c.setValue(0, kwargs['keep_inputs'])
   res = crb.operate()
+  SetLastResult(res)
   PrintResultLog(res)
   bodies = res.findModelEntity('created')
   return [bodies.value(i) for i in range(bodies.numberOfValues())]
@@ -481,6 +651,7 @@ def Sweep(stuffToSweep, method = SweepType.EXTRUDE, **kwargs):
     if 'handedness' in kwargs:
       angl = swp.findAsInt('handedness').setValue(0, kwargs['handedness'])
   res = swp.operate()
+  SetLastResult(res)
   PrintResultLog(res)
   return res.findModelEntity('created').value(0)
 
@@ -520,6 +691,7 @@ def SetEntityProperty(ents, propName, **kwargs):
       vlist = [vlist,]
     SetVectorValue(spr.findAsString('string value'), vlist)
   res = spr.operate()
+  SetLastResult(res)
   return res.findInt('outcome').value(0)
 
 def Read(filename, **kwargs):
@@ -531,6 +703,7 @@ def Read(filename, **kwargs):
   if 'filetype' in kwargs:
     rdr.findAsString('filetype').setValue(0, kwargs['filetype'])
   res = rdr.operate()
+  SetLastResult(res)
   PrintResultLog(res)
   return GetVectorValue(res.findModelEntity('created'))
 
@@ -546,6 +719,7 @@ def Import(filename, **kwargs):
   if 'filetype' in kwargs:
     rdr.findAsString('filetype').setValue(0, kwargs['filetype'])
   res = rdr.operate()
+  SetLastResult(res)
   PrintResultLog(res)
   return GetVectorValue(res.findModelEntity('created'))
 
@@ -559,6 +733,7 @@ def Write(filename, entities = [], **kwargs):
   if 'filetype' in kwargs:
     wri.findAsString('filetype').setValue(0, kwargs['filetype'])
   res = wri.operate()
+  SetLastResult(res)
   PrintResultLog(res)
   return res.findInt('outcome').value(0)
 
@@ -572,6 +747,7 @@ def CloseModel(models = [], **kwargs):
   SetVectorValue(moditem, models)
 
   res = closeop.operate()
+  SetLastResult(res)
   PrintResultLog(res)
 
   return res
