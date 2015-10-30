@@ -17,6 +17,7 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS ${VTK_DEFINITIONS})
 
 # Don't do VTK header test. It is broken at the moment.
 set(vtkSMTKExt_NO_HeaderTest 1)
+set(VTK_INSTALL_NO_HEADERS 1)
 vtk_module_library(vtkSMTKExt ${VTKLibSrcs})
 
 target_link_libraries(vtkSMTKExt

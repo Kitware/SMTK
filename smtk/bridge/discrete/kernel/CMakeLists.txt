@@ -219,9 +219,11 @@ if (MSVC)
 endif(MSVC)
 
 SET_SOURCE_FILES_PROPERTIES(
-${ModelFiles}
-${DiscreteModelFiles}
-WRAP_EXCLUDE
+  ${ModelFiles}
+  ${DiscreteModelFiles}
+  PROPERTIES
+    WRAP_EXCLUDE
+    WRAP_EXCLUDE_PYTHON
 )
 
 set(_module_src
@@ -231,6 +233,7 @@ set(_module_src
 )
 
 set(vtkSMTKDiscreteModel_NO_HeaderTest 1)
+set(VTK_INSTALL_NO_HEADERS 1)
 vtk_module_library(vtkSMTKDiscreteModel ${_module_src})
 
 target_link_libraries(vtkSMTKDiscreteModel LINK_PRIVATE ${UUID_LIBS})

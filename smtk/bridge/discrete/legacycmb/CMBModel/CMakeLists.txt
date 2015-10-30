@@ -100,8 +100,10 @@ if (MSVC)
 endif(MSVC)
 
 SET_SOURCE_FILES_PROPERTIES(
-${CmbModelFiles}
-WRAP_EXCLUDE
+  ${CmbModelFiles}
+  PROPERTIES
+    WRAP_EXCLUDE
+    WRAP_EXCLUDE_PYTHON
 )
 
 set(_module_src
@@ -109,6 +111,7 @@ set(_module_src
   ${CMBOperationFiles}
 )
 set(vtkCmbDiscreteModel_NO_HeaderTest 1)
+set(VTK_INSTALL_NO_HEADERS 1)
 vtk_module_library(vtkCmbDiscreteModel ${_module_src})
 
 target_link_libraries(vtkCmbDiscreteModel
