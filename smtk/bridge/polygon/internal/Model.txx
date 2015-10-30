@@ -3,6 +3,8 @@
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/Model.h"
+#include "smtk/model/Vertex.h"
 #include "smtk/bridge/polygon/Session.h"
 #include "smtk/bridge/polygon/internal/Vertex.h"
 #include "smtk/bridge/polygon/internal/Edge.h"
@@ -79,17 +81,29 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
   for (T segIt = begin; segIt != end; ++segIt)
     storage->m_points.insert(storage->m_points.end(), segIt->second.high());
 
+  smtk::model::Model parentModel(mgr, this->id());
   // Insert edge at proper place in model vertex edge-lists
   if (vInitStorage)
     {
     vInitStorage->insertEdgeAt(whereBegin, created.entity(), /* edge is outwards: */ true);
+    smtk::model::Vertex vert(mgr, vInit);
+    if (parentModel.isEmbedded(vert))
+      parentModel.unembedEntity(vert);
+    created.findOrAddRawRelation(vert);
     }
   if (vFiniStorage)
     {
     vFiniStorage->insertEdgeAt(whereEnd, created.entity(), /* edge is outwards: */ false);
+    smtk::model::Vertex vert(mgr, vFini);
+    if (parentModel.isEmbedded(vert))
+      parentModel.unembedEntity(vert);
+    created.findOrAddRawRelation(vert);
     }
   // Add tesselation to created edge using storage to lift point coordinates:
   this->addEdgeTessellation(created, storage);
+
+  parentModel.embedEntity(created);
+  created.assignDefaultName(); // Do not move above parentModel.embedEntity() or name will suck.
 
   return created;
 }

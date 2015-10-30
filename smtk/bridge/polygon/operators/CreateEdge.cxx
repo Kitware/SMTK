@@ -109,14 +109,15 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
     // Fill in a list of segments for the edge so we can
     // check for self-intersections.
     std::list<internal::Segment> edgeSegs;
+    bool edgeIsPeriodic = true;
     switch (method)
       {
     case 0: // points, coordinates, offsets
         {
         std::vector<double> pt(numCoordsPerPt, 0.);
-        std::vector<internal::Point> ppts;
         internal::Point curr;
         internal::Point prev;
+        internal::Point orig;
         bool first = true;
         for (; edgeOffset < edgeEnd; ++edgeOffset, prev = curr)
           {
@@ -130,15 +131,23 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
           else
             {
             first = false;
+            orig = curr;
             }
+          }
+        if (!first && orig != curr)
+          { // non-periodic edge forces endpts to be model vertices
+          smtk::model::Vertex vs = storage->findOrAddModelVertex(mgr, orig);
+          smtk::model::Vertex ve = storage->findOrAddModelVertex(mgr, curr);
+          edgeIsPeriodic = false;
           }
         }
       break;
-    case 1: // edges, offsets
+    case 1: // vertices, offsets
         {
         internal::Point curr;
         internal::Point prev;
         bool first = true;
+        edgeIsPeriodic = (modelItem->value(edgeOffset) == modelItem->value(edgeEnd));
         for (; edgeOffset < edgeEnd; ++edgeOffset, prev = curr)
           {
           internal::vertex::Ptr vert =
@@ -227,13 +236,6 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
       SegmentSplitsT::iterator segEnd;
       SegmentSplitsT::iterator firstModelVertex;
       bool haveFirstModelVertex = false;
-      bool edgeIsPeriodic = (edgeSegs.front().low() == edgeSegs.back().high());
-      // Edges that are not periodic must have model vertices at each end:
-      if (!edgeIsPeriodic)
-        {
-        smtk::model::Vertex vs = storage->findOrAddModelVertex(mgr, result.front().second.low());
-        smtk::model::Vertex ve = storage->findOrAddModelVertex(mgr, result.back().second.high());
-        }
       // Loop over all intersection-output segments by their input segment (edgeIt):
       for (SegmentSplitsT::iterator sit = result.begin(); sit != result.end(); ++edgeIt)
         {
@@ -333,33 +335,6 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
         }
       }
     }
-
-  // III. Bookkeeping
-  //
-  // The model owning the new edges may have listed
-  // some model vertices as free cells which now serve
-  // as edge endpoints. Because they bound edges, they
-  // are no longer free and must be removed. The new edges
-  // must be added to the model's free cells.
-  smtk::model::VertexSet endpointVertices;
-  smtk::model::Edges::iterator creIt;
-  for (creIt = created.begin(); creIt != created.end(); ++creIt)
-    {
-    smtk::model::Vertices tmp = creIt->vertices();
-    endpointVertices.insert(tmp.begin(), tmp.end());
-    }
-  smtk::model::VertexSet::iterator vertIt;
-  smtk::model::VertexSet freeVertices = parentModel.cellsAs<smtk::model::VertexSet>();
-  for (vertIt = endpointVertices.begin(); vertIt != endpointVertices.end(); ++vertIt)
-    {
-    if (freeVertices.find(*vertIt) != freeVertices.end())
-      { // Remove vertex from the model's list of free cells.
-      parentModel.removeCell(*vertIt);
-      }
-    }
-  // Add the new edges to the owning model.
-  parentModel.addCells(created);
-
 
   smtk::model::OperatorResult opResult;
   if (ok)

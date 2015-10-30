@@ -266,7 +266,12 @@ smtk::model::Vertex pmodel::findOrAddModelVertex(
   smtk::model::Tessellation tess;
   tess.addPoint(snappedPt);
   v.setTessellation(&tess);
-  // TODO: Add the vertex to the model as a free cell?
+
+  // Add vertex to model as a free cell (which it is until it bounds something).
+  smtk::model::Model self(mgr, this->id());
+  self.embedEntity(v);
+
+  v.assignDefaultName();
   return v;
 }
 

@@ -78,6 +78,35 @@ class TestPolygonCreation(smtk.testing.TestCase):
     self.assertEqual(vlist[2], vlist[4],
         'Expected vertices with nearly-identical coordinates to be equivalent.')
 
+    # Test a simple case: a non-periodic edge of one segment
+    # whose ends must be promoted to model vertices. Note that
+    # the edge goes from right to left, so we check that the
+    # endpoints are ordered properly.
+    openEdgeTestVerts = [[4,3.5], [3,3.5]]
+    elist = CreateEdge(openEdgeTestVerts, model=mod)
+    edge = smtk.model.Edge(elist)
+    self.assertIsNotNone(edge, 'Expected a single edge.')
+    self.assertEqual(len(edge.vertices()), 2, 'Expected two vertices bounding edge.')
+    # NB. We cannot test direction of edge using order of edge.vertices() because
+    #     they will be ordered by UUID, not parameter value.
+    #     Should we start creating edge and vertex uses, plus "vertex chains",
+    #     we can then use the SMTK API to properly fetch edge direction. But
+    #     arguably, these records should not exist until edges are actually used
+    #     by a higher-dimensional entity.
+
+    # Test non-periodic edge of multiple segments whose
+    # ends must be promoted to model vertices. Note that
+    # the final segment has reversed order relative to
+    # boost.polygon's left-right, bottom-top order, so we
+    # are verifying that endpoints are computed correctly.
+    # This prevents an observed regression.
+    openEdgeTestVerts = [[3,4], [3,5], [4,5], [4,4]]
+    elist = CreateEdge(openEdgeTestVerts, model=mod)
+
+    # Test multiple edge insertion.
+    # Test invalid edge connectivity.
+    # Test self-intersecting edges.
+    # Test periodic edges with non-model-vertex at first point.
     edgeTestVerts = [[0,0], [1,1], [0,1], [1,0],   [3,0], [3,3], [4,3], [2,0], [3,0], [10,10]]
     edgeTestOffsets = [0, 4, 9, 9, 12]; # Only first 2 edges are valid
     elist = CreateEdge(edgeTestVerts, offsets=edgeTestOffsets, model=mod)
@@ -86,12 +115,13 @@ class TestPolygonCreation(smtk.testing.TestCase):
     logStr = res.findString('log').value(0)
     log = smtk.io.Logger()
     smtk.io.ImportJSON.ofLog(logStr, log)
+    print log.convertToString()
     self.assertEqual(
         log.numberOfRecords(), 3,
-        'Expected 3 warnings due to invalid offsets')
+        'Expected 3 warnings due to invalid offsets, got\n' + log.convertToString())
     #print elist
 
-    # Now test creation of periodic edge with no model vertices.
+    # Test creation of periodic edge with no model vertices.
     # Verify that no model vertices are created.
     periodicEdgeVerts = [[0, 4], [1, 4], [1, 5], [0, 5], [0, 4]]
     elist = CreateEdge(periodicEdgeVerts, model=mod)
@@ -103,10 +133,13 @@ class TestPolygonCreation(smtk.testing.TestCase):
     # or unioned, then the shared point should become a model vertex.
     periodicEdgeVerts = [[1, 3], [2, 3], [2, 4], [1, 4], [1, 3]]
     elist = CreateEdge(periodicEdgeVerts, model=mod)
+    edge = smtk.model.Edge(elist)
+    self.assertIsNotNone(edge, 'Expected a single edge.')
+    self.assertEqual(edge.vertices(), [], 'Expected no model vertices bounding edge.')
 
     arf = SplitEdge(elist, [2, 4])
 
-    smtk.io.ExportJSON.fromModelManagerToFile(self.mgr, '/tmp/poly.json')
+    #smtk.io.ExportJSON.fromModelManagerToFile(self.mgr, '/tmp/poly.json')
 
   def testCreation(self):
     mod = CreateModel()
