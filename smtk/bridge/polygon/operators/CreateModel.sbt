@@ -57,6 +57,13 @@
               <DetailedDescription>
                 This is the smallest world-coordinate edge length that you wish
                 resolved across all edges in a model.
+
+                It is **not** a guarantee that vertices closer than this
+                distance will be snapped together.
+                It is **not** a guarantee that edges must always be longer than this.
+                It **is** a guarantee that vertices further apart than the feature size
+                and edges longer than the feature size will be properly resolved.
+
                 This is not equivalent to a difference of 1 in the integer
                 coordinate system used by the modeling session as then
                 intersection points along short (but not feature-sized or
