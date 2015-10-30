@@ -94,7 +94,7 @@ class TestExodusSession(smtk.testing.TestCase):
                 grp.setTessellation(smtk.model.Tessellation())
 
         self.startRenderTest()
-        mbs = self.addModelToScene(self.model)
+        mbs, filt, mapper, actor = self.addModelToScene(self.model)
 
         self.renderer.SetBackground(1,1,1)
         cam = self.renderer.GetActiveCamera()
