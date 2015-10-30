@@ -70,5 +70,17 @@ FaceUse Face::positiveUse() const
     relationFromArrangement(HAS_USE, *arr.begin(), 0).as<FaceUse>();
 }
 
+/**\brief Add or replace any existing face use with the given use-record \a u.
+  *
+  */
+void Face::setFaceUse(Orientation orientation, const FaceUse& u)
+{
+  smtk::model::Manager::Ptr mgr = this->manager();
+  if (this->isValid())
+    {
+    mgr->findCreateOrReplaceCellUseOfSenseAndOrientation(this->m_entity, 0, orientation, u.entity());
+    }
+}
+
   } // namespace model
 } // namespace smtk

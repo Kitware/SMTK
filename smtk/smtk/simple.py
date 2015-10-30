@@ -586,6 +586,26 @@ def CreateFace(edges, surface_type = SurfaceType.PLANAR, **kwargs):
   PrintResultLog(res)
   return res.findModelEntity('created').value(0)
 
+def CreateFaces(modelOrEdges, **kwargs):
+  """Create all possible planar faces from a set of edges.
+  """
+  sref = GetActiveSession()
+  crf = sref.op('create faces')
+
+  # Associate model or edges to operator:
+  if hasattr(modelOrEdges, '__iter__'):
+    [crf.associateEntity(ent) for ent in modelOrEdges]
+  else:
+    crf.associateEntity(modelOrEdges)
+
+  res = crf.operate()
+  SetLastResult(res)
+  PrintResultLog(res)
+
+  faceList = res.findModelEntity('created')
+  numFaces = faceList.numberOfValues()
+  return faceList.value(0) if numFaces == 1 else [faceList.value(i) for i in range(numFaces)]
+
 def CreateBody(ents, **kwargs):
   """Create a set of bodies from a set of cells.
 

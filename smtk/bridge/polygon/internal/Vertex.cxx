@@ -65,32 +65,16 @@ bool vertex::canInsertEdge(const Point& neighborhood, incident_edges::iterator* 
       currPt.y() - this->m_coords.y()
     );
 
-    bool inside;
-    Coord axb = pa.x() * pb.y() - pb.x() * pa.y();
-    if (axb < 0)
-      { // CCW angle between pa and pb is < 180 degrees
-      Coord axt = pa.x() * pt.y() - pt.x() * pa.y();
-      if (axt < 0)
-        inside = false; // vectors pa->pb don't bracket pt CCW
-      long double mb = sqrt(pb.x() * pb.x() + pb.y() * pb.y());
-      long double mt = sqrt(pt.x() * pt.x() + pt.y() * pt.y());
-      if (axt * mb < axb * mt)
-        { // pa->pb brackets pt CCW.
-        inside = true;
-        }
-      }
-    else
-      { // CCW angle between pa and pb is >= 180 degrees
-      Coord bxt = pb.x() * pt.y() - pt.x() * pb.y();
-      inside = (bxt < 0);
-      if (!inside)
-        {
-        Coord bxa = -axb;
-        long double ma = sqrt(pa.x() * pa.x() + pa.y() * pa.y());
-        long double mt = sqrt(pt.x() * pt.x() + pt.y() * pt.y());
-        inside = (bxt * ma > bxa * mt);
-        }
-      }
+    // Test whether "t" is in the CCW range between "a" and "b":
+    // (Done using signs of cross-products to check angle relationships.)
+    HighPrecisionCoord axb = HighPrecisionCoord(pa.x()) * pb.y() - HighPrecisionCoord(pb.x()) * pa.y();
+    HighPrecisionCoord axt = HighPrecisionCoord(pa.x()) * pt.y() - HighPrecisionCoord(pt.x()) * pa.y();
+    HighPrecisionCoord txb = HighPrecisionCoord(pt.x()) * pb.y() - HighPrecisionCoord(pb.x()) * pt.y();
+    bool inside =
+      (axb > 0 && axt > 0 && txb > 0) ||    // A->B < 180 degrees => A->T and T->B also < 180 degrees
+      (axb < 0 && !(axt < 0 && txb < 0)) || // A->B > 180 degrees => if B->T and T->A < 180 degrees, T outside A->B
+      (axb == 0 && axt < 0 && txb < 0);     // A->B = 180 degrees => A->T and T->B also < 180 degrees
+
     if (inside)
       {
       if (!it->m_adjacentFace)

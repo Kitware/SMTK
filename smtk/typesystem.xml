@@ -51,6 +51,8 @@
   <suppress-warning text="skipping function 'smtk::model::EntityRef::addMemberEntities', unmatched parameter type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityRef::relationsAs', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::Group::addEntities', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::insertModelFaceOrientedInnerLoop', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::insertModelFaceWithOrientedOuterLoop', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::addSubmodels', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::appendCells', unmatched parameter type 'T&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::removeSubmodels', unmatched parameter type 'T const&amp;'"/>
@@ -64,6 +66,7 @@
   <suppress-warning text="skipping function 'smtk::attribute::ValueItemTemplate::end', unmatched return type 'std::vector&lt;DataT&gt;::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ValueItemTemplate::begin', unmatched return type 'std::vector&lt;DataT&gt;::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::setValues', unmatched parameter type 'I'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::appendValues', unmatched parameter type 'I'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::end', unmatched return type 'smtk::attribute::ModelEntityItem::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::begin', unmatched return type 'smtk::attribute::ModelEntityItem::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::model::Operator::addEntitiesToResult', unmatched parameter type 'T const&amp;'"/>
@@ -161,6 +164,7 @@
   <suppress-warning text="skipping function 'smtk::model::Manager::insertEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::removeEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::elideEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::elideOneEntityReference', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
   <suppress-warning text="skipping field 'Manager::m_topology' with unmatched type 'smtk::shared_ptr&lt;UUIDsToEntities&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::Manager', unmatched parameter type 'shared_ptr&lt;UUIDsToEntities&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_tessellations' with unmatched type 'smtk::shared_ptr&lt;UUIDsToTessellations&gt;'"/>

@@ -110,6 +110,7 @@ namespace smtk
     class DescriptivePhrase;
     class Edge;
     typedef std::vector<smtk::model::Edge> Edges;
+    typedef std::set<smtk::model::Edge> EdgeSet;
     class EdgeUse;
     typedef std::vector<smtk::model::EdgeUse> EdgeUses;
     class EntityPhrase;

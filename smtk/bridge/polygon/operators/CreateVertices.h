@@ -25,6 +25,7 @@ public:
   smtkTypeMacro(CreateVertices);
   smtkCreateMacro(CreateVertices);
   smtkSharedFromThisMacro(Operator);
+  smtkSuperclassMacro(Operator);
   smtkDeclareModelOperator();
 
 protected:

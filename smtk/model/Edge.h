@@ -34,6 +34,8 @@ public:
 
   EdgeUses edgeUses() const;
   Vertices vertices() const;
+
+  EdgeUse findOrAddEdgeUse(Orientation o, int sense = 0);
 };
 
   } // namespace model

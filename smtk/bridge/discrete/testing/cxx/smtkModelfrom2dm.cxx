@@ -45,7 +45,7 @@
 #include "vtkXMLMultiBlockDataWriter.h"
 #include "vtkRegressionTestImage.h"
 
-#include "smtk/extension/vtk/vtkMeshMultiBlockSource.h"
+#include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 #include "smtk/bridge/discrete/Session.h"
 
 #include "smtk/model/testing/cxx/helpers.h"

@@ -845,6 +845,20 @@ void Manager::insertEntityReferences(const UUIDWithEntity& c)
     }
 }
 
+/**\brief Given an entity \a c and the ID of one of its related entities \a r,
+  *       overwrite the occurrence of \a r in \a c's array of relations with an
+  *       invalid UUID.
+  *
+  * Use this method to avoid the need to rewrite indices into \a c's
+  * array of relations held by \a c and potentially other entities related
+  * to \a c.
+  */
+bool Manager::elideOneEntityReference(const UUIDWithEntity& c, const UUID& r)
+{
+  UUIDArray::const_iterator bit;
+  return c->second.invalidateRelation(r) < 0 ? false : true;
+}
+
 /**\brief Given an entity \a c, ensure that all of its references
   *       contain <b>no</b> reference to it.
   *

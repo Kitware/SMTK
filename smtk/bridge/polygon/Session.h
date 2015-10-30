@@ -52,11 +52,8 @@ public:
   virtual SessionInfoBits allSupportedInformation() const;
 
 protected:
+  friend class Neighborhood;
   friend class Operator;
-  friend class CreateModel;
-  friend class CreateVertices;
-  friend class CreateEdge;
-  friend class SplitEdge;
   friend class internal::pmodel;
 
   Session();
@@ -92,6 +89,7 @@ protected:
     }
 
   internal::EntityIdToPtr m_storage;
+  int m_nextModelNumber;
 
 private:
   Session(const Session&); // Not implemented.

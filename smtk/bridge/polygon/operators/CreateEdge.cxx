@@ -89,7 +89,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
     }
 
   internal::pmodel::Ptr storage =
-    sess->findStorage<internal::pmodel>(
+    this->findStorage<internal::pmodel>(
       parentModel.entity());
   bool ok = true;
   int numEdges = offsetsItem->numberOfValues();
@@ -160,7 +160,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
         for (; edgeOffset < edgeEnd; ++edgeOffset, prev = curr)
           {
           internal::vertex::Ptr vert =
-            sess->findStorage<internal::vertex>(modelItem->value(edgeOffset).entity());
+            this->findStorage<internal::vertex>(modelItem->value(edgeOffset).entity());
           if (!vert)
             {
             ok = false;
@@ -251,12 +251,12 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
         std::size_t numSegsPerSrc = 0; // Number of result segs per input edge in edgeSegs
         // Determine whether segments are reversed from the input edge:
         //printSegment(storage, "Seg ", sit->second);
-        internal::Point deltaSrc =
-          internal::Point(
+        internal::HighPrecisionPoint deltaSrc =
+          internal::HighPrecisionPoint(
             edgeIt->high().x() - edgeIt->low().x(),
             edgeIt->high().y() - edgeIt->low().y());
-        internal::Point deltaDst =
-          internal::Point(
+        internal::HighPrecisionPoint deltaDst =
+          internal::HighPrecisionPoint(
             sit->second.high().x() - sit->second.low().x(),
             sit->second.high().y() - sit->second.low().y());
         // Whether the segments are reversed or not, determine which
@@ -285,7 +285,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
         sit = segStart;
         // If the first point in the first ouput segment for any input-segment is
         // a model vertex, make a note of it for periodic edges:
-        if (edgeIsPeriodic && storage->pointId(sit->second.low()))
+        if (edgeIsPeriodic && storage->pointId(sit->second.low()) && !haveFirstModelVertex)
           {
           haveFirstModelVertex = true;
           firstModelVertex = sit;

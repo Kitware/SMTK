@@ -26,6 +26,7 @@ public:
   smtkTypeMacro(CreateEdge);
   smtkCreateMacro(CreateEdge);
   smtkSharedFromThisMacro(Operator);
+  smtkSuperclassMacro(Operator);
   smtkDeclareModelOperator();
 
 protected:

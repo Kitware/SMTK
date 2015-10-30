@@ -154,6 +154,10 @@ smtk::attribute::AttributePtr System::createAttribute(const std::string &name,
                                              const std::string &typeName)
 {
   smtk::attribute::DefinitionPtr def = this->findDefinition(typeName);
+  if(!def)
+    {
+    return smtk::attribute::AttributePtr();
+    }
   smtk::attribute::AttributePtr att = this->createAttribute(name, def);
   return att;
 }

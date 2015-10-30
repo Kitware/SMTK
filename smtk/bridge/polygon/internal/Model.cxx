@@ -332,6 +332,44 @@ bool pmodel::splitModelEdgeAtModelVertex(smtk::model::ManagerPtr mgr, const Id& 
 
 typedef std::vector<std::pair<size_t, Segment> > SegmentSplitsT;
 
+#if 0
+static void DumpSegSplits(
+  const char* msg,
+  SegmentSplitsT::iterator a,
+  SegmentSplitsT::iterator b)
+{
+  if (msg)
+    std::cout << msg << "\n";
+
+  SegmentSplitsT::iterator ii;
+  for (ii = a; ii != b; ++ii)
+    {
+    std::cout << "  " << ii->first
+      << " : " << ii->second.low().x() << " " << ii->second.low().y()
+      << " -- " << ii->second.high().x() << " " << ii->second.high().y()
+      << "\n";
+    }
+}
+
+static void DumpPointSeq(
+  const char* msg,
+  PointSeq::const_iterator a,
+  PointSeq::const_iterator b,
+  PointSeq::const_iterator loc)
+{
+  if (msg)
+    std::cout << msg << "\n";
+
+  PointSeq::const_iterator ii;
+  for (ii = a; ii != b; ++ii)
+    {
+    std::cout
+      << "  " << ii->x() << " " << ii->y()
+      << (ii == loc ? " *\n" : "\n");
+    }
+}
+#endif // 0
+
 bool pmodel::splitModelEdgeAtModelVertex(
   smtk::model::ManagerPtr mgr, edge::Ptr edgeToSplit, vertex::Ptr splitPoint, PointSeq::const_iterator location)
 {
@@ -344,18 +382,48 @@ bool pmodel::splitModelEdgeAtModelVertex(
     *location == *edgeToSplit->pointsRBegin())
     return false;
 
+  //DumpPointSeq("Split Edge", edgeToSplit->pointsBegin(), edgeToSplit->pointsEnd(), location);
+  PointSeq::const_iterator it;
+  size_t n = 0;
+  if (
+    *edgeToSplit->pointsBegin() == *edgeToSplit->pointsRBegin() && // edge is periodic
+    this->m_vertices.find(*edgeToSplit->pointsBegin()) == this->m_vertices.end()) // edge has no model vertices (those must be at start+end)
+    {
+    // Edge had no model vertices and we are being asked to split it at a
+    // point interior to its sequence; reorder the sequence so the split
+    // point is at the beginning+end of the sequence.
+    //
+    // Note that this is kinda futzy becase periodic edges repeat one point
+    // at their beginning and end... we have to remove the duplicate before
+    // splicing and then add a duplicate of the new start point to the end
+    // of the list.
+    std::cout << "Edge is periodic, split is interior!!!!\n";
+    it = edgeToSplit->pointsEnd();
+    --it;
+    edgeToSplit->m_points.erase(it);
+    it = edgeToSplit->pointsBegin();
+    edgeToSplit->m_points.splice(it, edgeToSplit->m_points, location, edgeToSplit->pointsEnd());
+    edgeToSplit->m_points.insert(edgeToSplit->pointsEnd(), *location);
+
+    // Regenerate the tessellation for the edge with the new point order:
+    //mgr->erase(edgeToSplit->id(), smtk::model::SESSION_TESSELLATION);
+    smtk::model::Edge modelEdge(mgr, edgeToSplit->id());
+    this->addEdgeTessellation(modelEdge, edgeToSplit);
+    return true;
+    }
   SegmentSplitsT segs;
   SegmentSplitsT::iterator segSplit;
-  segs.reserve(npts - 1); // Preallocation to prevent vector from reallocating and invalidating segSplit iterator.
   PointSeq::const_iterator prev = edgeToSplit->pointsBegin();
-  size_t n = 0;
-  PointSeq::const_iterator it = prev;
-  for (++it; it != edgeToSplit->pointsEnd(); ++it, ++n, prev = it)
+  segs.reserve(npts - 1); // Preallocation to prevent vector from reallocating and invalidating segSplit iterator.
+  it = prev;
+  for (++it; it != edgeToSplit->pointsEnd(); ++it, ++n)
     {
     segs.push_back(std::pair<size_t,Segment>(n, Segment(*prev, *it)));
     if (prev == location)
       segSplit = segs.begin() + n;
+    prev = it;
     }
+  //DumpSegSplits("Pre-split: ", segs.begin(), segs.end());
 
   // Remove edgeToSplit from its endpoint vertices so that creation
   // of new edges can succeed (otherwise it will fail when trying
@@ -363,9 +431,13 @@ bool pmodel::splitModelEdgeAtModelVertex(
   std::pair<Id,Id> adjacentFaces = this->removeModelEdgeFromEndpoints(mgr, edgeToSplit);
   (void)adjacentFaces;
 
+  //DumpSegSplits("Split A: ", segs.begin(), segSplit);
+  //DumpSegSplits("Split B: ", segSplit, segs.end());
+  mgr->erase(edgeToSplit->id());
   // Now we can create the new model edges.
-  this->createModelEdgeFromSegments(mgr, segs.begin(), segSplit);
-  this->createModelEdgeFromSegments(mgr, segSplit, segs.end());
+  smtk::model::Edge eA = this->createModelEdgeFromSegments(mgr, segs.begin(), segSplit);
+  smtk::model::Edge eB = this->createModelEdgeFromSegments(mgr, segSplit, segs.end());
+  //std::cout << "Split into " << eA.name() << " " << eB.name() << "\n";
 
   // TODO: Fix face adjacency information (face relations and at all 3 vertices)
   //       Fix face loops by replacing old edge with new edges.
@@ -414,6 +486,17 @@ std::pair<Id,Id> pmodel::removeModelEdgeFromEndpoints(smtk::model::ManagerPtr mg
   return result;
 }
 
+/**\brief Return the point closest to one of an edge's endpoints.
+  *
+  * Returns the point nearest but not at the tail end of the edge
+  * (using the edge's forward ordering of points)
+  * when \a edgeEndPt is true.
+  * Returns the point nearest but not at the front end of the edge
+  * when \a edgeEndPt is false.
+  *
+  * This method is used to order edges in the immediate neighborhood
+  * of model vertices (which may only be endpoints, not interior points).
+  */
 Point pmodel::edgeTestPoint(const Id& edgeId, bool edgeEndPt) const
 {
   edge::Ptr e = this->m_session->findStorage<edge>(edgeId);

@@ -165,6 +165,7 @@ public:
   smtk::common::UUID addCellOfDimensionWithUUID(const smtk::common::UUID& uid, int dim);
 
   void insertEntityReferences(const UUIDWithEntity& c);
+  bool elideOneEntityReference(const UUIDWithEntity& c, const smtk::common::UUID& r);
   void elideEntityReferences(const UUIDWithEntity& c);
   void removeEntityReferences(const UUIDWithEntity& c);
 
@@ -369,6 +370,19 @@ public:
 
   Instance addInstance();
   Instance addInstance(const EntityRef& instanceOf);
+
+  template<typename T>
+  bool insertModelFaceWithOrientedOuterLoop(
+    const smtk::common::UUID& faceId, // to be created
+    const smtk::common::UUID& faceUseId, // to be created
+    const smtk::common::UUID& loopId, // to be created
+    const T& orderedEdgesWithOrientation);
+
+  template<typename T>
+  bool insertModelFaceOrientedInnerLoop(
+    const smtk::common::UUID& loopId, // to be created
+    const smtk::common::UUID& preExistingLoopId, // the outer loop to contain the inner loop
+    const T& orderedEdgesWithOrientation);
 
   void observe(ManagerEventType event, ConditionCallback functionHandle, void* callData);
   void observe(ManagerEventType event, OneToOneCallback functionHandle, void* callData);

@@ -26,6 +26,7 @@ public:
   smtkTypeMacro(SplitEdge);
   smtkCreateMacro(SplitEdge);
   smtkSharedFromThisMacro(Operator);
+  smtkSuperclassMacro(Operator);
   smtkDeclareModelOperator();
 
 protected:

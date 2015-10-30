@@ -322,12 +322,12 @@ void Operator::addEntitiesToResult(OperatorResult res, const T& container, Resul
   if (!created.empty())
     {
     attribute::ModelEntityItemPtr creItem = res->findModelEntity("created");
-    creItem->setValues(created.begin(), created.end());
+    creItem->appendValues(created.begin(), created.end());
     }
   if (!modified.empty())
     {
     attribute::ModelEntityItemPtr modItem = res->findModelEntity("modified");
-    modItem->setValues(modified.begin(), modified.end());
+    modItem->appendValues(modified.begin(), modified.end());
     }
 }
 

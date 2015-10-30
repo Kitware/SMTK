@@ -93,6 +93,10 @@ CellEntities Model::cells() const
 {
   CellEntities result;
   ManagerPtr mgr = this->manager();
+  if (!mgr)
+    {
+    return result;
+    }
   EntityRefArrangementOps::appendAllRelations(*this, INCLUDES, result);
   if (result.empty())
     { // We may have a "simple" model that has no arrangements but does have relations.
@@ -135,7 +139,19 @@ Model& Model::addCell(const CellEntity& c)
 
 Model& Model::removeCell(const CellEntity& c)
 {
+  ManagerPtr mgr = this->manager();
   this->unembedEntity(c);
+  UUIDWithEntity ent;
+  ent = mgr->topology().find(this->m_entity);
+  if (ent != mgr->topology().end())
+    {
+    mgr->elideOneEntityReference(ent, c.entity());
+    }
+  ent = mgr->topology().find(c.entity());
+  if (ent != mgr->topology().end())
+    {
+    mgr->elideOneEntityReference(ent, this->m_entity);
+    }
   return *this;
 }
 

@@ -35,6 +35,7 @@ if(SMTK_ENABLE_VTK_SUPPORT)
         vtkInteractionStyle
         vtkViewsCore
         vtkViewsInfovis
+        vtkIOGDAL
         vtkIOXML
         vtkIOLegacy
         vtkInteractionStyle

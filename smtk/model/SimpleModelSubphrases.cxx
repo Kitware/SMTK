@@ -328,7 +328,10 @@ void SimpleModelSubphrases::childrenOfPropertyList(
 void SimpleModelSubphrases::childrenOfMesh(
   MeshPhrase::Ptr meshphr, DescriptivePhrases& result)
 {
-  this->meshsetsOfMesh(meshphr, result);
+  if (meshphr)
+    {
+    this->meshsetsOfMesh(meshphr, result);
+    }
 }
 
 void SimpleModelSubphrases::childrenOfMeshList(

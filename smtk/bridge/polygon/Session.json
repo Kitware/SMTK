@@ -4,7 +4,9 @@
     {
       "name": "native",
       "filetypes": [
+        ".map (Map polygon file)",
         ".poly (Triangle polygon file)",
+        ".shp (Lines polygon file)",
         ".smesh (Surface mesh)"
       ]
     }

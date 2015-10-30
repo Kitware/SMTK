@@ -145,7 +145,7 @@ class TestCase:
         """Return True if SMTK was built with the VTK extension enabled.
         """
         try:
-            import vtkSMTKExtPython
+            import vtkSMTKSourceExtPython
             return True
         except:
             pass
@@ -180,8 +180,8 @@ class TestCase:
       return [msource, vsource, mp, ac]
 
     def addModelToScene(self, model):
-        import vtkSMTKExtPython
-        mbs = vtkSMTKExtPython.vtkModelMultiBlockSource()
+        import vtkSMTKSourceExtPython
+        mbs = vtkSMTKSourceExtPython.vtkModelMultiBlockSource()
         mbs.SetModelManager(self.mgr.pointerAsString())
         mbs.SetModelEntityID(str(model.entity()))
         #mbs.ShowAnalysisTessellationOff()

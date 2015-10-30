@@ -49,7 +49,7 @@ smtk::model::OperatorResult SplitEdge::operateInternal()
     }
 
   internal::edge::Ptr storage =
-    sess->findStorage<internal::edge>(
+    this->findStorage<internal::edge>(
       edgeToSplit.entity());
   internal::pmodel* mod = storage->parentAs<internal::pmodel>();
   if (!storage || !mod)

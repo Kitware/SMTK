@@ -22,6 +22,16 @@ Session* Operator::polygonSession()
   return dynamic_cast<smtk::bridge::polygon::Session*>(this->session());
 }
 
+void Operator::addStorage(const smtk::common::UUID& uid, smtk::bridge::polygon::internal::entity::Ptr storage)
+{
+  this->polygonSession()->addStorage(uid, storage);
+}
+
+bool Operator::removeStorage(const smtk::common::UUID& uid)
+{
+  return this->polygonSession()->removeStorage(uid);
+}
+
 /*
 /// A helper to return the polygon entity associated with \a smtkEntity.
 internal::Entity* Operator::polygonEntity(const smtk::model::EntityRef& smtkEntity)

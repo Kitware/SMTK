@@ -42,6 +42,19 @@ public:
   PointSeq::const_reverse_iterator pointsREnd() const { return this->m_points.rend(); }
   PointSeq::reverse_iterator pointsREnd() { return this->m_points.rend(); }
 
+  bool pointsOfSegment(ssize_t idx, Point& lo, Point& hi) const
+    {
+    if (idx < 0 || idx >= this->m_points.size())
+      return false;
+
+    PointSeq::const_iterator it = this->pointsBegin();
+    for (ssize_t i = 0; i <= idx && it != this->pointsEnd(); ++i, ++it, lo = hi)
+      hi = *it;
+    hi = *it;
+    return true;
+    }
+
+
 protected:
   edge() { }
 
