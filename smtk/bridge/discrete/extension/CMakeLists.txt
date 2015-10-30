@@ -44,10 +44,13 @@ if(GDAL_FOUND)
 endif()
 
 # no wrapping for sources
-set_source_files_properties(${srcs} WRAP_EXCLUDE)
+set_source_files_properties(${srcs}
+  PROPERTIES
+    WRAP_EXCLUDE
+    WRAP_EXCLUDE_PYTHON)
 
 set(vtkSMTKDiscreteExt_NO_HeaderTest 1)
-
+set(VTK_INSTALL_NO_HEADERS 1)
 vtk_module_library(vtkSMTKDiscreteExt ${srcs})
 
 if(SMTK_ENABLE_REMUS_SUPPORT)

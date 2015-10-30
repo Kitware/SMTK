@@ -121,8 +121,10 @@ SET_SOURCE_FILES_PROPERTIES(
 )
 
 SET_SOURCE_FILES_PROPERTIES(
-${DiscreteModelFiles}
-WRAP_EXCLUDE
+  ${DiscreteModelFiles}
+  PROPERTIES
+    WRAP_EXCLUDE
+    WRAP_EXCLUDE_PYTHON
 )
 
 set(_module_src
