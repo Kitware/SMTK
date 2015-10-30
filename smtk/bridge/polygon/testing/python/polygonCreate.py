@@ -100,8 +100,9 @@ class TestPolygonCreation(smtk.testing.TestCase):
     # boost.polygon's left-right, bottom-top order, so we
     # are verifying that endpoints are computed correctly.
     # This prevents an observed regression.
-    openEdgeTestVerts = [[3,4], [3,5], [4,5], [4,4]]
-    elist = CreateEdge(openEdgeTestVerts, model=mod)
+    openEdgeTestVerts = [[3,4], [3,5], [4,5], [4,4],  [0, 1.5], [1, 2.5]]
+    openEdgeTestOffsets = [0, 4]
+    elist = CreateEdge(openEdgeTestVerts, offsets=openEdgeTestOffsets, model=mod)
 
     # Test multiple edge insertion.
     # Test invalid edge connectivity.
