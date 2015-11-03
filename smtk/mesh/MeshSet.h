@@ -38,6 +38,13 @@ class SMTKCORE_EXPORT MeshSet
   friend void for_each( const MeshSet& a, MeshForEach& filter);
   friend class Collection; //required for deletion of meshes
 public:
+  //default constructor generates an invalid MeshSet
+  MeshSet();
+
+#ifndef SHIBOKEN_SKIP
+  //need to suppress all MeshSet constructors that have a CollectionPtr
+  //Otherwise shiboken will not wrap ANY of the constructors
+
   //construct a MeshSet that represents all meshes that are children
   //of the handle
   MeshSet(const smtk::mesh::CollectionPtr& parent,
@@ -48,17 +55,22 @@ public:
   MeshSet(const smtk::mesh::CollectionPtr& parent,
           smtk::mesh::Handle handle,
           const smtk::mesh::HandleRange& range);
+#endif
 
   //Copy Constructor required for rule of 3
   MeshSet(const MeshSet& other);
+
 
   //required to be in the cpp file as we hold a HandleRange
   ~MeshSet();
 
   //Copy assignment operator required for rule of 3
   MeshSet& operator= (const MeshSet& other);
+
+  //Comparison operators
   bool operator==( const MeshSet& other ) const;
   bool operator!=( const MeshSet& other ) const;
+  bool operator<(  const MeshSet& other ) const;
 
   //append another MeshSet to this MeshSet, if the parents and collection
   //pointers don't match the append will return false

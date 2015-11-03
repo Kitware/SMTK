@@ -87,9 +87,9 @@ public:
   virtual void initTraversal( IterationState& state ) = 0;
 
   virtual bool fetchNextCell( IterationState& state,
-                      smtk::mesh::CellType& cellType,
-                      int& numPts,
-                      const smtk::mesh::Handle* &points) = 0;
+                              smtk::mesh::CellType& cellType,
+                              int& numPts,
+                              const smtk::mesh::Handle* &points) = 0;
 
   virtual bool equal( ConnectivityStorage* other ) const = 0;
 
@@ -192,15 +192,15 @@ public:
   //----------------------------------------------------------------------------
   //get all the coordinates for the points in this range
   //xyz needs to be allocated to 3*points.size()
-  //Floats are not how we store the coordinates internally, so asking for
-  //the coordinates in such a manner could cause data inaccuracies to appear
-  //so generally this is only used if you fully understand the input domain
   virtual bool getCoordinates(const smtk::mesh::HandleRange& points,
                               double* xyz) const = 0;
 
   //----------------------------------------------------------------------------
   //get all the coordinates for the points in this range
   //xyz needs to be allocated to 3*points.size()
+  //Floats are not how we store the coordinates internally, so asking for
+  //the coordinates in such a manner could cause data inaccuracies to appear
+  //so generally this is only used if you fully understand the input domain
   virtual bool getCoordinates(const smtk::mesh::HandleRange& points,
                               float* xyz) const = 0;
 

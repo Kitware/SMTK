@@ -5,7 +5,9 @@
       "name": "default",
       "filetypes": [
         ".exo (Exodus files)",
-        ".ex2 (Exodus-II files)"
+        ".ex2 (Exodus-II files)",
+        ".nc  (SLAC files)",
+        ".ncdf (SLAC files)"
       ]
     }
   ]

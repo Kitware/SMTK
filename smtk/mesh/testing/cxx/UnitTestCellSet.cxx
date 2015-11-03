@@ -565,14 +565,12 @@ public:
     }
 
   //--------------------------------------------------------------------------
-  void operator()(smtk::mesh::CellType& cellType,
-                  int numPts,
-                  const smtk::mesh::Handle* const pointIds,
-                  const double* const coords)
+  void forCell(smtk::mesh::CellType cellType, int numPts)
   {
   this->numCellsVisited++;
   this->numPointsSeen += numPts;
-  this->pointsSeen.insert( pointIds, pointIds+numPts);
+  this->pointsSeen.insert( this->pointIds(),
+                           this->pointIds()+numPts);
   this->cellTypesSeen[static_cast<int>(cellType)] = true;
   }
 

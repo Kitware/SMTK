@@ -14,6 +14,9 @@ import smtk.testing
 from smtk.simple import *
 import sys
 
+def floatColorToHex(fc):
+  return '#' + ''.join(['{:02x}'.format(int(x*255.0)) for x in fc])
+
 class TestExodusSession(smtk.testing.TestCase):
 
   def setUp(self):
@@ -34,8 +37,17 @@ class TestExodusSession(smtk.testing.TestCase):
         'Expected discrete model, got {gs}'.format(gs=self.model.geometryStyle()))
 
     #Verify that the file contains the proper number of groups.
-    numGroups = len(self.model.groups())
-    self.assertEqual(numGroups, 11, 'Expected 11 groups, found %d' % numGroups)
+    subgroups = self.model.groups()
+    numGroups = len(subgroups)
+    self.assertEqual(numGroups, 3, 'Expected 3 groups, found %d' % numGroups)
+
+    numSubGroupsExpected = [1, 7, 3]
+    allgroups = []
+    for i in range(len(numSubGroupsExpected)):
+        numSubGroups = len(subgroups[i].members())
+        self.assertEqual(numSubGroupsExpected[i], numSubGroups,
+            'Expected {e} groups, found {a}'.format(e=numSubGroupsExpected[i], a=numSubGroups))
+        allgroups += subgroups[i].members()
 
     #Verify that the group names match those from the Exodus file.
     nameset = {
@@ -48,16 +60,17 @@ class TestExodusSession(smtk.testing.TestCase):
         'Unnamed set ID: 6':              '#8b1ec4',
         'Unnamed set ID: 7':              '#ff6700'
     }
-    self.assertTrue(all([x.name() in nameset for x in self.model.groups()]),
+    self.assertTrue(all([x.name() in nameset for x in allgroups]),
         'Not all group names recognized.')
 
     # Verify that no groups which are not in the list above are present.
-    groupnames = [x.name() for x in self.model.groups()]
+    groupnames = [x.name() for x in allgroups]
     self.assertTrue(all([x in groupnames for x in nameset]),
         'Some expected group names not present.')
 
     # Count the number of each *type* of group (node, face, volume)
-    grouptypes = [x.flagSummary() for x in self.model.groups()]
+    #print '\n'.join([str((x.name(), x.flagSummary())) for x in allgroups])
+    grouptypes = [x.flagSummary() for x in allgroups]
     gtc = {x:grouptypes.count(x) for x in grouptypes}
     expectedgrouptypecounts = {
       'boundary group (0-d entities)': 3,
@@ -72,12 +85,16 @@ class TestExodusSession(smtk.testing.TestCase):
     if self.haveVTK() and self.haveVTKExtension():
 
         # Render groups with colors:
-        for grp in self.model.groups():
+        for grp in allgroups:
             color = self.hex2rgb(nameset[grp.name()])
             SetEntityProperty(grp, 'color', as_float=color)
+            # The element block should not be shown as it is coincident with some
+            # of the side sets and throws off baseline images. Remove its tessellation.
+            if grp.name() ==  'Unnamed block ID: 1 Type: HEX8':
+                grp.setTessellation(smtk.model.Tessellation())
 
         self.startRenderTest()
-        mbs = self.addModelToScene(self.model)
+        mbs, filt, mapper, actor = self.addModelToScene(self.model)
 
         self.renderer.SetBackground(1,1,1)
         cam = self.renderer.GetActiveCamera()
@@ -86,8 +103,21 @@ class TestExodusSession(smtk.testing.TestCase):
         cam.SetViewUp(-0.891963, -0.122107, -0.435306)
         self.renderer.ResetCamera()
         self.renderWindow.Render()
-        self.assertImageMatch(['baselines', 'exodus', 'disk_out_ref.png'])
-        self.interact()
+        import vtk
+        #wri = vtk.vtkCompositeDataWriter()
+        #wri.SetInputData(mbs.GetOutputDataObject(0))
+        #wri.SetFileName('/tmp/foofar.vtk')
+        #wri.Write()
+        ## wri = vtk.vtkXMLDataSetWriter()
+        wri = vtk.vtkXMLMultiBlockDataWriter()
+        wri.SetDataModeToAscii()
+        wri.SetInputData(mbs.GetOutputDataObject(0))
+        wri.SetFileName('/tmp/foofar.vtm')
+        wri.Write()
+        try:
+          self.assertImageMatch(['baselines', 'exodus', 'disk_out_ref.png'])
+        finally:
+          self.interact()
 
     else:
         self.assertFalse(

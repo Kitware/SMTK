@@ -45,13 +45,21 @@ public:
   std::size_t size() const;
 
   //Get the number of points in the array
-  std::size_t numberOfPointSet() const;
+  std::size_t numberOfPoints() const;
 
   //returns true if the point set contains a given point id
   bool contains( const smtk::mesh::Handle& pointId ) const;
 
   //returns the index in this point set for the given point id
   std::size_t find( const smtk::mesh::Handle& pointId ) const;
+
+  //Get all the point coordinates and store them in the passed in std::vector
+  bool get(std::vector<double>& xyz ) const;
+
+#ifndef SHIBOKEN_SKIP
+  // Skipping the following:
+  // double*, and float* they are not nicely wrapped so the length is unknown
+  // std::vector<float>& skipped since python uses doubles not floats
 
   //Get all the point coordinates and store them in a pre-allocated buffer
   bool get(double* xyz) const;
@@ -61,6 +69,17 @@ public:
   //the coordinates in such a manner could cause data inaccuracies to appear
   //so generally this is only used if you fully understand the input domain
   bool get(float* xyz) const;
+
+  //Get all the point coordinates and store them in a std::vector
+  //Floats are not how we store the coordinates internally, so asking for
+  //the coordinates in such a manner could cause data inaccuracies to appear
+  //so generally this is only used if you fully understand the input domain
+  bool get(std::vector<float>& xyz) const;
+#endif
+
+
+
+
 
   //get the underlying HandleRange that this PointSet represents
   const smtk::mesh::HandleRange& range() const { return this->m_points; }

@@ -23,13 +23,16 @@ namespace smtk {
   * importJSON and exportJSON methods.
   */
 // ++ 1 ++
-class SMTKCORE_EXPORT SessionExodusIOJSON : public SessionIO
+class SMTKCORE_EXPORT SessionIOJSON : public SessionIO
 {
 public:
-  smtkTypeMacro(SessionExodusIOJSON);
+  smtkTypeMacro(SessionIOJSON);
+  smtkCreateMacro(SessionIOJSON);
+  virtual ~SessionIOJSON() { }
 
   virtual int importJSON(SessionRef modelMgr, cJSON* sessionRec);
   virtual int exportJSON(SessionRef modelMgr, cJSON* sessionRec);
+  virtual int exportJSON(ManagerPtr modelMgr, const common::UUIDs& modelIds, cJSON* sessionRec);
 };
 // -- 1 --
 

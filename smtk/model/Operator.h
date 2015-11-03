@@ -55,7 +55,7 @@ enum OperatorOutcome
   static std::string operatorName; \
   virtual std::string name() const { return operatorName; } \
   virtual std::string className() const; \
-  static smtk::model::OperatorPtr baseCreate();
+  static smtk::model::OperatorPtr baseCreate()
 
 /**\brief Declare that a class implements an operator for solid models.
   *

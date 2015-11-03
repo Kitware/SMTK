@@ -34,9 +34,18 @@ public:
   CellEntities boundingCells() const;
   UseEntities boundingCellUses(Orientation orientation) const;
 
+  template<typename T> T boundingCellsAs() const;
   template<typename T> T inclusions() const;
   template<typename T> T uses() const;
 };
+
+template<typename T>
+T CellEntity::boundingCellsAs() const
+{
+  CellEntities tmp = this->boundingCells();
+  T result(tmp.begin(), tmp.end());
+  return result;
+}
 
 template<typename T>
 T CellEntity::inclusions() const

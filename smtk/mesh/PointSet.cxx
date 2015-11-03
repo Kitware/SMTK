@@ -72,7 +72,7 @@ std::size_t PointSet::size( ) const
 }
 
 //----------------------------------------------------------------------------
-std::size_t PointSet::numberOfPointSet( ) const
+std::size_t PointSet::numberOfPoints( ) const
 {
   return this->m_points.size();
 }
@@ -104,10 +104,30 @@ bool PointSet::get(double* xyz) const
 }
 
 //----------------------------------------------------------------------------
+bool PointSet::get(std::vector<double>& xyz) const
+{
+  const std::size_t size = this->numberOfPoints();
+  xyz.resize(size*3);
+
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  return iface->getCoordinates(this->m_points, &xyz[0]);
+}
+
+//----------------------------------------------------------------------------
 bool PointSet::get(float* xyz) const
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
   return iface->getCoordinates(this->m_points, xyz);
+}
+
+//----------------------------------------------------------------------------
+bool PointSet::get(std::vector<float>& xyz) const
+{
+  const std::size_t size = this->numberOfPoints();
+  xyz.resize(size*3);
+
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  return iface->getCoordinates(this->m_points, &xyz[0]);
 }
 
 //----------------------------------------------------------------------------

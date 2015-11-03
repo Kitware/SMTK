@@ -278,7 +278,7 @@ void verify_meshset_add_tags(const smtk::mesh::CollectionPtr& c)
   const std::size_t numDirValues = c->dirichlets().size();
 
   test( applied == true, "didn't apply the dirichlet property");
-  test( numDirValues == 1, "should only have a single dirichlet set currently");
+  test( numDirValues > 0, "should have more than zero dirichlet sets");
 
 }
 
@@ -409,7 +409,7 @@ public:
     }
 
   //--------------------------------------------------------------------------
-  void operator()(const smtk::mesh::MeshSet& mesh)
+  void forMesh(const smtk::mesh::MeshSet& mesh)
   {
   this->numMeshesIteratedOver++;
   this->cellsSeen.append( mesh.cells( ) );

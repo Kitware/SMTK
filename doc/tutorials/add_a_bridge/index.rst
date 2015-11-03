@@ -31,6 +31,9 @@ The groups themselves have a tessellation (i.e., a graphical representation)
 based on the cells they contain but the groups do not expose any of
 these cells to SMTK.
 
+Our example session uses VTK's Exodus reader to load files and
+obtain a tessellation for each element block, side set, and node set.
+
 .. toctree::
 
    entity_uuids.rst

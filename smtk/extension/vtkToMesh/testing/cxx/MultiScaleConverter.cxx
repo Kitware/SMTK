@@ -50,18 +50,16 @@ public:
   smtk::mesh::HandleRange validPoints;
 
   YFilter( double value ) :
-    smtk::mesh::CellForEach(),
+    smtk::mesh::CellForEach(true), //needs coordinates
     yvalue( value )
     {
     }
 
   //--------------------------------------------------------------------------
-  void operator()(smtk::mesh::CellType& cellType,
-                  int numPts,
-                  const smtk::mesh::Handle* const pointIds,
-                  const double* const coords)
+  void forCell(smtk::mesh::CellType, int numPts)
   {
-    (void) cellType;
+    const std::vector<double>& coords = this->coordinates();
+    const smtk::mesh::Handle* const ptIds = this->pointIds();
     for( int i=0; i < numPts; ++i)
       {
       const double currValue = coords[(i*3)+1];
@@ -69,7 +67,7 @@ public:
       if(currValue >= (yvalue-0.002) &&
          currValue <= (yvalue+0.002))
         {
-        validPoints.insert(pointIds[i]);
+        validPoints.insert(ptIds[i]);
         }
       }
   }

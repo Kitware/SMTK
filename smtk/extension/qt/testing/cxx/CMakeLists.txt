@@ -16,7 +16,7 @@ qt4_use_modules(browseModel Core Gui)
 target_link_libraries(browseModel smtkCore smtkCoreModelTesting smtkQtExt)
 
 #add in the attribute preview executable
-add_executable(qtAttributePreview qtAttributePreview.cxx)
+add_executable(qtAttributePreview MACOSX_BUNDLE qtAttributePreview.cxx)
 target_link_libraries(qtAttributePreview LINK_PUBLIC smtkQtExt)
 
 

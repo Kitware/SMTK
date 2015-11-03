@@ -1193,23 +1193,42 @@ UUID Manager::modelOwningEntity(const UUID& ent) const
     switch (etype & ENTITY_MASK)
       {
     case GROUP_ENTITY:
-      // Assume the first relationship that is a group or model is our owner.
-      // Keep going up parent groups until we hit the top.
-      for (
-        UUIDArray::const_iterator sit = it->second.relations().begin();
-        sit != it->second.relations().end();
-        ++sit)
         {
-        UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
-        if (subentity != this->topology().end() && subentity->first != uid)
+        // If we have a superset arrangement, ask for supersets and traverse upwards.
+        ManagerPtr self = const_cast<Manager*>(this)->shared_from_this();
+        EntityRefArray supersets;
+        EntityRefArrangementOps::appendAllRelations(
+          EntityRef(self->shared_from_this(), ent), SUBSET_OF, supersets);
+        if (!supersets.empty())
           {
-          if (subentity->second.entityFlags() & MODEL_ENTITY)
-            return subentity->first;
-          if (subentity->second.entityFlags() & GROUP_ENTITY)
-            { // Switch to finding relations of the group (assume it is our parent)
-            uid = subentity->first;
-            it = this->m_topology->find(uid);
-            sit = it->second.relations().begin();
+          EntityRef super;
+          for (EntityRefArray::iterator spit = supersets.begin(); spit != supersets.end(); ++spit)
+            {
+            if (spit->isModel())
+              return spit->entity();
+            }
+          // No models are in my superset... traverse up the first superset to find a model:
+          return this->modelOwningEntity(supersets.begin()->entity());
+          }
+
+        // Assume the first relationship that is a group or model is our owner.
+        // Keep going up parent groups until we hit the top.
+        for (
+          UUIDArray::const_iterator sit = it->second.relations().begin();
+          sit != it->second.relations().end();
+          ++sit)
+          {
+          UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
+          if (subentity != this->topology().end() && subentity->first != uid)
+            {
+            if (subentity->second.entityFlags() & MODEL_ENTITY)
+              return subentity->first;
+            if (subentity->second.entityFlags() & GROUP_ENTITY)
+              { // Switch to finding relations of the group (assume it is our parent)
+              uid = subentity->first;
+              it = this->m_topology->find(uid);
+              sit = it->second.relations().begin();
+              }
             }
           }
         }

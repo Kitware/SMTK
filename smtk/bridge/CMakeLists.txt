@@ -13,6 +13,19 @@ if(SMTK_ENABLE_DISCRETE_SESSION)
 endif()
 
 ################################################################################
+# Build Boost.Polygon session
+################################################################################
+if (SMTK_ENABLE_POLYGON_SESSION)
+  if (${Boost_MAJOR_VERSION} LESS 2 AND ${Boost_MINOR_VERSION} LESS 52)
+    message(WARNING
+      "Polygon session requires Boost 1.52 or newer, found ${Boost_VERSION}. "
+      "Not building polygon session.")
+  else()
+    add_subdirectory(polygon)
+  endif()
+endif()
+
+################################################################################
 # Build Exodus-II session
 ################################################################################
 if (SMTK_ENABLE_EXODUS_SESSION)

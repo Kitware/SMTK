@@ -15,3 +15,7 @@ that may each interact with different solid modeling kernels.
    sessions.rst
    property-names.rst
    user-interface.rst
+   session-cgm.rst
+   session-discrete.rst
+   session-exodus.rst
+   session-polygon.rst

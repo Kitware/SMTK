@@ -42,6 +42,7 @@ public:
   //this manager
   smtk::mesh::CollectionPtr makeCollection(const smtk::common::UUID& collectionID);
 
+#ifndef SHIBOKEN_SKIP
   //Construct a collection. Manager will generate the UUID, and use
   //the Interface provided by the caller
   smtk::mesh::CollectionPtr makeCollection(smtk::mesh::InterfacePtr interface);
@@ -51,6 +52,7 @@ public:
   //this manager
   smtk::mesh::CollectionPtr makeCollection(const smtk::common::UUID& collectionID,
                                            smtk::mesh::InterfacePtr interface);
+#endif
 
   std::size_t numberOfCollections() const;
   bool hasCollection( const smtk::mesh::CollectionPtr& collection ) const;
