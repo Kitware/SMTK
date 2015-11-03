@@ -6,12 +6,14 @@ list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
 set(exodusSrcs
   Session.cxx
+  SessionExodusIOJSON.cxx
   Operator.cxx
   ReadOperator.cxx
 )
 
 set(exodusHeaders
   Session.h
+  SessionExodusIOJSON.h
   Operator.h
   ReadOperator.h
 )
@@ -26,9 +28,11 @@ target_link_libraries(smtkExodusSession
     smtkCore
   LINK_PRIVATE
     vtkIOExodus
+    vtkIONetCDF
     vtkIOParallelExodus
     vtkFiltersGeometry
     vtkCommonDataModel
+    ${Boost_LIBRARIES}
 )
 smtk_export_header(smtkExodusSession Exports.h)
 

@@ -45,6 +45,16 @@ static const char* cellNamesByDimensionPlural[] = {
   "mixed-dimension cells"
 };
 
+static const char* entityTypeNames[] = {
+  "cell",
+  "use",
+  "shell",
+  "group",
+  "model",
+  "instance",
+  "session"
+};
+
 /**\class smtk::model::Entity
   *
   * Store links between named entities.
@@ -641,6 +651,26 @@ std::string Entity::flagToSpecifierString(BitFlags val, bool textual)
       if (isInstance(val)) { if (haveType) spec << "|"; else haveType = true; spec << "instance"; }
       if (isSessionRef(val))  { if (haveType) spec << "|"; else haveType = true; spec << "session"; }
 
+      // It is possible to get here with a non-zero value but no text in spec yet.
+      // This happens with group/attribute-association membership masks. Check for
+      // combinations of entity type bits.
+      if (!haveType && spec.str().empty() && (val|smtk::model::ENTITY_MASK))
+        {
+        int eti = 0;
+        for (BitFlags ebit = CELL_ENTITY; ebit < smtk::model::ENTITY_MASK; ebit <<= 1, ++eti)
+          {
+          if (ebit & val)
+            {
+            if (haveType)
+              {
+              spec << "|";
+              }
+            spec << entityTypeNames[eti];
+            haveType = true;
+            }
+          }
+        }
+
       if (!haveType)             { spec << "none"; }
 
       if (hasBit<smtk::model::MODEL_DOMAIN>(val))     spec << "|domain";
@@ -677,6 +707,9 @@ std::string Entity::flagToSpecifierString(BitFlags val, bool textual)
   return spec.str();
 }
 
+// WARNING!!! This array must be kept sorted (according to
+// std::string's less-than operator) so that bisection works
+// for searching by keyword.
 static struct {
   std::string name;
   BitFlags value;

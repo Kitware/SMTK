@@ -77,7 +77,8 @@ int main(int argc, char *argv[])
     root = smtk::common::View::New("Group", "RootView");
     root->details().setAttribute("TopLevel", "true");
     system.addView(root);
-    smtk::common::View::Component &temp = root->details().addChild("Views");
+    smtk::common::View::Component& temp = root->details().addChild("Views");
+    (void)temp;
     int viewsIndex = root->details().findChild("Views");
 
     //  Lets add instances of all

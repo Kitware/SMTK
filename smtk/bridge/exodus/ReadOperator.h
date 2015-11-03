@@ -26,6 +26,8 @@ public:
 
 protected:
   virtual smtk::model::OperatorResult operateInternal();
+  virtual smtk::model::OperatorResult readExodus();
+  virtual smtk::model::OperatorResult readSLAC();
 };
 
     } // namespace exodus

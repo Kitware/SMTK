@@ -342,7 +342,7 @@ int TupleList::find(unsigned int key_num, ulong value)
 
 int TupleList::find(unsigned int key_num, realType value)
 {
-  if (!key_num > mr)
+  if (!(key_num > mr))
   {
     // Sequential search: TupleList cannot be sorted by reals
     for (uint index = 0; index < n; index++)

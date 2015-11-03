@@ -127,7 +127,8 @@ void Collection::removeManagerConnection()
 bool Collection::isValid() const
 {
   //make sure we have a valid uuid, and that our internals are valid
-  return this->m_entity.isNull() == false && this->m_internals->valid();
+  return (this->m_entity.isNull() != true) &&
+         (this->m_internals->valid());
 }
 
 //----------------------------------------------------------------------------
@@ -297,6 +298,25 @@ smtk::mesh::MeshSet Collection::meshes( const std::string& name )
                               this->m_internals->mesh_root_handle(),
                               entities );
 }
+
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet Collection::meshes(const smtk::mesh::Domain& d )
+{
+  return this->domainMeshes(d);
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet Collection::meshes(const smtk::mesh::Dirichlet& d )
+{
+  return this->dirichletMeshes(d);
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet Collection::meshes(const smtk::mesh::Neumann& n)
+{
+  return this->neumannMeshes(n);
+}
+
 
 //----------------------------------------------------------------------------
 smtk::mesh::CellSet Collection::cells( smtk::mesh::CellType cellType )

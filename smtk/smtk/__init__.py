@@ -76,6 +76,7 @@ __import_shared_ptrs__()
 common = _temp.smtk.common
 attribute = _temp.smtk.attribute
 model = _temp.smtk.model
+mesh = _temp.smtk.mesh
 simulation = _temp.smtk.simulation
 io = _temp.smtk.io
 
@@ -119,6 +120,16 @@ try:
     btuple.append(('discrete', _tempdis.discrete))
   except:
     failed += ['discrete']
+  finally:
+    _temp = _tempmain
+
+  try:
+    _tempdis = __import__('smtkPolygonSessionPython', globals(), locals(), [], -1)
+    _temp = _tempdis
+    __import_shared_ptrs__()
+    btuple.append(('polygon', _tempdis.polygon))
+  except:
+    failed += ['polygon']
   finally:
     _temp = _tempmain
 

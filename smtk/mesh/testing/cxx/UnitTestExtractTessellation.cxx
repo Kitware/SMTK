@@ -50,10 +50,7 @@ VerifyCells( const smtk::mesh::PointSet& points,
   }
 
 //--------------------------------------------------------------------------
-void operator()(smtk::mesh::CellType& cellType,
-                int numPts,
-                const smtk::mesh::Handle* const pointIds,
-                const double* const coords)
+void forCell(smtk::mesh::CellType cellType, int numPts)
 {
 //verify the offset is in the correct location
 boost::int64_t offset = this->m_locations[this->m_currentIndex];
@@ -74,7 +71,7 @@ else
 //verify the points ids are mapped properly
 for(int i=0; i < numPts; ++i)
   {
-  test( this->m_conn[offset+ i] == this->m_points.find(pointIds[i]) );
+  test( this->m_conn[offset+ i] == this->m_points.find(this->pointIds()[i] ) );
   }
 
 this->m_currentIndex++;
@@ -96,12 +93,12 @@ VerifyPoints( const std::vector<T>& points ):
 {
 }
 //--------------------------------------------------------------------------
-void operator()(const smtk::mesh::Handle& pointId,
-                const double* const coords)
+void forPoint(const smtk::mesh::Handle& pointId,
+              double x, double y, double z)
 {
-  test( this->m_points[m_currentIndex] == static_cast<T>(coords[0]) );
-  test( this->m_points[m_currentIndex+1] == static_cast<T>(coords[1]) );
-  test( this->m_points[m_currentIndex+2] == static_cast<T>(coords[2]) );
+  test( this->m_points[m_currentIndex] == static_cast<T>(x) );
+  test( this->m_points[m_currentIndex+1] == static_cast<T>(y) );
+  test( this->m_points[m_currentIndex+2] == static_cast<T>(z) );
   this->m_currentIndex += 3;
 }
 
@@ -135,19 +132,19 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
 
     smtk::mesh::PreAllocatedTessellation tess(&conn[0]);
 
-    test(tess.m_connectivity != NULL);
-    test(tess.m_cellLocations  == NULL);
-    test(tess.m_cellTypes  == NULL);
-    test(tess.m_dpoints  == NULL);
-    test(tess.m_fpoints  == NULL);
+    test(tess.hasConnectivity() == true);
+    test(tess.hasCellLocations() == false);
+    test(tess.hasCellTypes() == false);
+    test(tess.hasDoublePoints()  == false);
+    test(tess.hasFloatPoints() == false);
 
-    test(tess.m_useVTKConnectivity == true);
+    test(tess.useVTKConnectivity() == true);
     tess.disableVTKStyleConnectivity(true);
-    test(tess.m_useVTKConnectivity == false);
+    test(tess.useVTKConnectivity() == false);
 
-    test(tess.m_useVTKCellTypes == true);
+    test(tess.useVTKCellTypes() == true);
     tess.disableVTKCellTypes(true);
-    test(tess.m_useVTKCellTypes == false);
+    test(tess.useVTKCellTypes() == false);
 
   }
 
@@ -158,25 +155,25 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
 
     smtk::mesh::PreAllocatedTessellation ftess(&conn[0], &fpoints[0]);
 
-    test(ftess.m_connectivity != NULL);
-    test(ftess.m_cellLocations  == NULL);
-    test(ftess.m_cellTypes  == NULL);
-    test(ftess.m_dpoints  == NULL);
-    test(ftess.m_fpoints  != NULL);
-    test(ftess.m_useVTKConnectivity == true);
-    test(ftess.m_useVTKCellTypes == true);
+    test(ftess.hasConnectivity() == true);
+    test(ftess.hasCellLocations() == false);
+    test(ftess.hasCellTypes() == false);
+    test(ftess.hasDoublePoints()  == false);
+    test(ftess.hasFloatPoints()  == true);
+    test(ftess.useVTKConnectivity() == true);
+    test(ftess.useVTKCellTypes() == true);
 
     //now test with doubles
     std::vector<double> dpoints(1);   //size doesn't matter right now
     smtk::mesh::PreAllocatedTessellation dtess(&conn[0], &dpoints[0]);
 
-    test(dtess.m_connectivity != NULL);
-    test(dtess.m_cellLocations  == NULL);
-    test(dtess.m_cellTypes  == NULL);
-    test(dtess.m_dpoints  != NULL);
-    test(dtess.m_fpoints  == NULL);
-    test(dtess.m_useVTKConnectivity == true);
-    test(dtess.m_useVTKCellTypes == true);
+    test(dtess.hasConnectivity() == true);
+    test(dtess.hasCellLocations() == false);
+    test(dtess.hasCellTypes() == false);
+    test(dtess.hasDoublePoints()  == true);
+    test(dtess.hasFloatPoints() == false);
+    test(dtess.useVTKConnectivity() == true);
+    test(dtess.useVTKCellTypes() == true);
   }
 
   //construct tessellation object that only wants connectivity info, cell types
@@ -190,13 +187,13 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
                                               &locations[0],
                                               &types[0]);
 
-    test(tess.m_connectivity != NULL);
-    test(tess.m_cellLocations  != NULL);
-    test(tess.m_cellTypes  != NULL);
-    test(tess.m_dpoints  == NULL);
-    test(tess.m_fpoints  == NULL);
-    test(tess.m_useVTKConnectivity == true);
-    test(tess.m_useVTKCellTypes == true);
+    test(tess.hasConnectivity() == true);
+    test(tess.hasCellLocations() == true);
+    test(tess.hasCellTypes() == true);
+    test(tess.hasDoublePoints()  == false);
+    test(tess.hasFloatPoints() == false);
+    test(tess.useVTKConnectivity() == true);
+    test(tess.useVTKCellTypes() == true);
   }
 
   //construct tessellation object that wants everything
@@ -211,13 +208,13 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
                                                &types[0],
                                                &fpoints[0]);
 
-    test(ftess.m_connectivity != NULL);
-    test(ftess.m_cellLocations  != NULL);
-    test(ftess.m_cellTypes  != NULL);
-    test(ftess.m_dpoints  == NULL);
-    test(ftess.m_fpoints  != NULL);
-    test(ftess.m_useVTKConnectivity == true);
-    test(ftess.m_useVTKCellTypes == true);
+    test(ftess.hasConnectivity() == true);
+    test(ftess.hasCellLocations() == true);
+    test(ftess.hasCellTypes() == true);
+    test(ftess.hasDoublePoints()  == false);
+    test(ftess.hasFloatPoints()  == true);
+    test(ftess.useVTKConnectivity() == true);
+    test(ftess.useVTKCellTypes() == true);
 
     //now test with doubles
     std::vector<double> dpoints(1);   //size doesn't matter right now
@@ -226,13 +223,13 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
                                                &types[0],
                                                &dpoints[0]);
 
-    test(dtess.m_connectivity != NULL);
-    test(dtess.m_cellLocations  != NULL);
-    test(dtess.m_cellTypes  != NULL);
-    test(dtess.m_dpoints  != NULL);
-    test(dtess.m_fpoints  == NULL);
-    test(dtess.m_useVTKConnectivity == true);
-    test(dtess.m_useVTKCellTypes == true);
+    test(dtess.hasConnectivity() == true);
+    test(dtess.hasCellLocations() == true);
+    test(dtess.hasCellTypes() == true);
+    test(dtess.hasDoublePoints()  == true);
+    test(dtess.hasFloatPoints() == false);
+    test(dtess.useVTKConnectivity() == true);
+    test(dtess.useVTKCellTypes() == true);
   }
 }
 
@@ -364,12 +361,6 @@ void verify_extract_packed_single_type(const smtk::mesh::CollectionPtr& c)
   ftess.disableVTKStyleConnectivity(true);
   ftess.disableVTKCellTypes(true);
   smtk::mesh::extractTessellation(quads, ftess);
-
-  // //lets iterate the cells, and verify that the extraction matches
-  // //what we see when we iterate
-  // VerifyConn vc(conn);
-  // smtk::mesh::for_each(quads. vc);
-  // test( vc.valid() == true );
 
   //lets iterate the points and make sure they all match
   VerifyPoints<float> vp(fpoints);
@@ -522,9 +513,9 @@ int UnitTestExtractTessellation(int, char**)
   verify_alloc_lengths_cellset(c);
 
   verify_extract_packed_single_type(c);
-  verify_extract_only_connectivity_and_types(c);
+  // verify_extract_only_connectivity_and_types(c);
 
-  verify_extract_all_to_vtk(c);
+  // verify_extract_all_to_vtk(c);
   verify_extract_only_connectivity_to_vtk(c);
 
   verify_extract_volume_meshes_by_global_points_to_vtk(c);

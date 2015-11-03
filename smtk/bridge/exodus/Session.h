@@ -19,58 +19,79 @@
 #include "smtk/common/UUIDGenerator.h"
 
 #include "vtkMultiBlockDataSet.h"
+#include "vtkDataObjectTreeIterator.h"
 #include "vtkNew.h"
 #include "vtkSmartPointer.h"
 
 #include <map>
 #include <vector>
 
+class vtkInformationStringKey;
+class vtkInformationIntegerKey;
+
 namespace smtk {
   namespace bridge {
     namespace exodus {
+
+class Session;
 
 // ++ 2 ++
 /// The types of entities in an Exodus "model"
 enum EntityType
 {
-  EXO_MODEL,        //!< An entire Exodus dataset (a file).
-  EXO_BLOCK,        //!< Exodus BLOCKs are groups of cells inside a MODEL.
-  EXO_SIDE_SET,     //!< Exodus SIDE_SETs are groups of cell boundaries in a MODEL.
-  EXO_NODE_SET,     //!< Exodus NODE_SETs are groups of points in a MODEL.
+  EXO_MODEL      = 0x01,   //!< An entire Exodus dataset (a file).
+  EXO_BLOCK      = 0x02,   //!< Exodus BLOCKs are groups of cells inside a MODEL.
+  EXO_SIDE_SET   = 0x03,   //!< Exodus SIDE_SETs are groups of cell boundaries in a MODEL.
+  EXO_NODE_SET   = 0x04,   //!< Exodus NODE_SETs are groups of points in a MODEL.
 
-  EXO_INVALID       //!< The handle is invalid
+  EXO_BLOCKS     = 0x05,   //!< A group of Exodus BLOCKs.
+  EXO_SIDE_SETS  = 0x06,   //!< A group of Exodus SIDE_SETs.
+  EXO_NODE_SETS  = 0x07,   //!< A group of Exodus NODE_SETs.
+
+  EXO_INVALID    = 0xff    //!< The handle is invalid
 };
+
+SMTKEXODUSSESSION_EXPORT std::string EntityTypeNameString(EntityType etype);
 
 /// A "handle" for an Exodus entity (file, block, side set, or node set)
 struct SMTKEXODUSSESSION_EXPORT EntityHandle
 {
-  EntityType entityType;   //!< Describes the type of entity.
-  int modelNumber;         //!< An offset in the vector of models (m_models).
-  vtkIdType entityId;      //!< The offset in the array of a model's blocks describing this entity.
+  int m_modelNumber; //!< An offset in the vector of models (m_models) owned by the session, whose model owns m_object.
+  vtkSmartPointer<vtkDataObject> m_object; //!< The dataset being presented as this entity.
+  Session* m_session; //!< The session owning this entity.
 
-  /// Construct an invalid handle.
-  EntityHandle()
-    : entityType(EXO_INVALID), modelNumber(-1), entityId(-1)
-    { }
+  EntityHandle();
+  EntityHandle(int emod, vtkDataObject* obj, Session* sess);
+  EntityHandle(int emod, vtkDataObject* obj, vtkMultiBlockDataSet* parent, int idxInParent, Session* sess);
 
-  /// Construct a possibly-valid handle.
-  EntityHandle(EntityType etyp, int emod, vtkIdType eid)
-    : entityType(etyp), modelNumber(emod), entityId(eid)
-    { }
+  bool isValid() const;
 
-  bool isValid() const
-    { return this->entityType != EXO_INVALID && this->modelNumber >= 0; }
+  EntityType entityType() const;
+  std::string name() const;
+  int pedigree() const;
+  bool visible() const;
 
-  /// Given a handle, return its parent if it has one.
-  EntityHandle parent() const
+  int modelNumber() const { return this->m_modelNumber; }
+
+  EntityHandle parent() const;
+
+  template<typename T>
+  T* object() const;
+
+  template<typename T>
+  T childrenAs(int depth) const
     {
-    return
-      (this->entityType == EXO_MODEL || this->entityType == EXO_INVALID) ?
-      EntityHandle() :
-      EntityHandle(EXO_MODEL, this->modelNumber, -1);
+    T container;
+    this->appendChildrenTo(container, depth);
+    return container;
     }
+
+  template<typename T>
+  void appendChildrenTo(T& container, int depth) const;
 };
 // -- 2 --
+
+typedef std::vector<EntityHandle> EntityHandleArray;
 
 // ++ 1 ++
 /**\brief Implement a session from Exodus mesh files to SMTK.
@@ -84,6 +105,8 @@ class SMTKEXODUSSESSION_EXPORT Session : public smtk::model::Session
 public:
   typedef std::vector<vtkSmartPointer<vtkMultiBlockDataSet> > ModelVector_t;
   typedef std::map<smtk::model::EntityRef,EntityHandle> ReverseIdMap_t;
+  typedef std::pair<vtkMultiBlockDataSet*, int> ParentAndIndex_t;
+  typedef std::map<vtkDataObject*, ParentAndIndex_t> ChildParentMap_t;
 
   smtkTypeMacro(Session);
   smtkSuperclassMacro(smtk::model::Session);
@@ -98,14 +121,18 @@ public:
   EntityHandle toEntity(const smtk::model::EntityRef& eid);
   smtk::model::EntityRef toEntityRef(const EntityHandle& ent);
 
-  std::vector<EntityHandle> childrenOf(const EntityHandle& ent);
-
+  // VTK keys used to mark blocks.
+  static vtkInformationIntegerKey* SMTK_DIMENSION();
+  static vtkInformationIntegerKey* SMTK_VISIBILITY();
+  static vtkInformationIntegerKey* SMTK_GROUP_TYPE();
+  static vtkInformationIntegerKey* SMTK_PEDIGREE();
   static vtkInformationStringKey* SMTK_UUID_KEY();
 
   smtk::model::Model addModel(vtkSmartPointer<vtkMultiBlockDataSet>& model);
 
 protected:
   friend class Operator;
+  friend struct EntityHandle;
 
   Session();
 
@@ -114,20 +141,24 @@ protected:
     SessionInfoBits requestedInfo,
     int depth = -1);
 
-  template<typename T>
-  T* toBlock(const EntityHandle& handle);
-
-  std::string toBlockName(const EntityHandle& handle) const;
-
   smtk::common::UUIDGenerator m_uuidGen;
   ModelVector_t m_models;
   ReverseIdMap_t m_revIdMap;
+  ChildParentMap_t m_cpMap; // vtkMultiBlockDataSet doesn't provide a fast way to obtain parent of leaf datasets.
   // std::map<EntityHandle,smtk::model::EntityRef> m_fwdIdMap; // not needed; store UUID in vtkInformation.
   // -- 1 --
 
   bool addTessellation(
     const smtk::model::EntityRef&,
     const EntityHandle&);
+
+  size_t numberOfModels() const;
+  vtkMultiBlockDataSet* modelOfHandle(const EntityHandle& h) const;
+  vtkMultiBlockDataSet* parent(vtkDataObject* obj) const;
+  int parentIndex(vtkDataObject* obj) const;
+  bool ensureChildParentMapEntry(vtkDataObject* child, vtkMultiBlockDataSet* parent, int idxInParent);
+
+  virtual smtk::model::SessionIOPtr createIODelegate(const std::string& format);
 
 private:
   Session(const Session&); // Not implemented.
@@ -136,36 +167,51 @@ private:
 
 // ++ 3 ++
 template<typename T>
-T* Session::toBlock(const EntityHandle& handle)
+T* EntityHandle::object() const
 {
+  // Never return the pointer if the other data is invalid:
   if (
-    handle.entityType == EXO_INVALID ||
-    (handle.entityType != EXO_MODEL && handle.entityId < 0) ||
-    handle.modelNumber < 0 ||
-    handle.modelNumber > static_cast<int>(this->m_models.size()))
+    !this->m_session ||
+    !this->m_object ||
+    this->m_modelNumber < 0 ||
+    this->m_modelNumber > static_cast<int>(this->m_session->numberOfModels()))
     return NULL;
 
-  int blockId = -1; // Where in the VTK dataset is the entity type data?
-  switch (handle.entityType)
-    {
-  case EXO_MODEL:
-    return dynamic_cast<T*>(
-      this->m_models[handle.modelNumber].GetPointer());
-    break;
-  case EXO_BLOCK:    blockId = 0; break;
-  case EXO_SIDE_SET: blockId = 4; break;
-  case EXO_NODE_SET: blockId = 7; break;
-  default:
-    return NULL;
-    }
-  vtkMultiBlockDataSet* typeSet =
-    vtkMultiBlockDataSet::SafeDownCast(
-      this->m_models[handle.modelNumber]->GetBlock(blockId));
-  if (!typeSet || handle.entityId >= typeSet->GetNumberOfBlocks())
-    return NULL;
-  return dynamic_cast<T*>(typeSet->GetBlock(handle.entityId));
+  return dynamic_cast<T*>(this->m_object.GetPointer());
 }
 // -- 3 --
+
+// ++ 4 ++
+template<typename T>
+void EntityHandle::appendChildrenTo(T& container, int depth) const
+{
+  if (!this->m_session)
+    return;
+
+  vtkMultiBlockDataSet* data = this->object<vtkMultiBlockDataSet>();
+  // For now, leaf-datasets have no children.
+  // In the future, this may change to include model-faces/edges/segments/...
+  if (!data)
+    return;
+
+  int nb = data->GetNumberOfBlocks();
+  for (int i = 0; i < nb; ++i)
+    {
+    vtkDataObject* childData = data->GetBlock(i);
+    if (!childData)
+      continue;
+
+    EntityHandle child(this->m_modelNumber, childData, data, i, this->m_session);
+    container.insert(container.end(), child);
+
+    vtkMultiBlockDataSet* mbds = vtkMultiBlockDataSet::SafeDownCast(childData);
+    if (mbds && depth != 0)
+      {
+      child.appendChildrenTo(container, depth < 0 ? depth : depth - 1);
+      }
+    }
+}
+// -- 4 --
 
 
     } // namespace exodus
