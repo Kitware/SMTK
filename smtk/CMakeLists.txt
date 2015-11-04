@@ -159,7 +159,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
         "bin/Lib/site-packages")
     else()
       set(SMTK_PYTHON_MODULEDIR
-        "${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION}/site-packages")
+        "${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages")
     endif()
   endif()
 
