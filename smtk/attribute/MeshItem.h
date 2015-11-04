@@ -29,6 +29,7 @@ class SMTKCORE_EXPORT MeshItem : public Item
 {
 public:
   typedef std::map<smtk::common::UUID, smtk::mesh::MeshSet >::const_iterator const_mesh_it;
+  typedef std::map<smtk::common::UUID, smtk::mesh::MeshSet >::iterator mesh_it;
 
   smtkTypeMacro(MeshItem);
   virtual ~MeshItem();

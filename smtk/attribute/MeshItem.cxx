@@ -139,7 +139,7 @@ void MeshItem::removeValue(const smtk::common::UUID& uuid,
 {
   const MeshItemDefinition* def =
     static_cast<const MeshItemDefinition *>(this->definition().get());
-  smtk::attribute::MeshItem::const_mesh_it it =
+  smtk::attribute::MeshItem::mesh_it it =
     this->m_meshValues.find(uuid);
   if(it != this->m_meshValues.end())
     {
