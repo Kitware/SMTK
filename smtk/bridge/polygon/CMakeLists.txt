@@ -56,6 +56,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
 
   # Extract the headers from polygon library we built to give them to shiboken
   sbk_wrap_library(smtkPolygonSession
+    PACKAGE smtk
     GENERATOR_ARGS --avoid-protected-hack
     WORKING_DIRECTORY ${SMTK_SOURCE_DIR}/smtk
     LOCAL_INCLUDE_DIRECTORIES
