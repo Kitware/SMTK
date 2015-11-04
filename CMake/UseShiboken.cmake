@@ -311,7 +311,7 @@ function(sbk_wrap_library NAME)
   elseif (WIN32)
     set(python_install_dir bin/Lib/site-packages)
   else ()
-    set(python_install_dir ${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION}/site-packages)
+    set(python_install_dir ${CMAKE_INSTALL_LIBDIR}/${PYTHON_SHORT}/site-packages)
   endif ()
 
   INSTALL(TARGETS ${_pyname} RUNTIME DESTINATION ${python_install_dir}${package} LIBRARY DESTINATION ${python_install_dir}${package} ARCHIVE DESTINATION lib)
