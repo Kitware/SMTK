@@ -53,6 +53,7 @@ namespace smtk
         COLOR,
         MODEL_ENTITY,
         MESH_SELECTION,
+        MESH_ENTITY,
         NUMBER_OF_TYPES
       };
 

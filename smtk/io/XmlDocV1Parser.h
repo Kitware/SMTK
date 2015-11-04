@@ -117,6 +117,10 @@ namespace smtk
                              smtk::attribute::ModelEntityItemPtr item);
       void processModelEntityDef(pugi::xml_node &node,
                             smtk::attribute::ModelEntityItemDefinitionPtr idef);
+      virtual void processMeshEntityItem(pugi::xml_node &node,
+                          attribute::MeshItemPtr item);
+      virtual void processMeshEntityDef(pugi::xml_node &node,
+                            smtk::attribute::MeshItemDefinitionPtr idef);
       virtual void processMeshSelectionItem(pugi::xml_node &node,
                           attribute::MeshSelectionItemPtr item);
       virtual void processMeshSelectionDef(pugi::xml_node &node,

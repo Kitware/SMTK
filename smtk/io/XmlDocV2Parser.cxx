@@ -14,6 +14,8 @@
 #include "pugixml/src/pugixml.cpp"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/MeshItem.h"
+#include "smtk/attribute/MeshItemDefinition.h"
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
@@ -21,8 +23,12 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/json/Interface.h"
+#include "smtk/mesh/Manager.h"
 #include <iostream>
 #include <algorithm>
+#include "cJSON.h"
 
 using namespace pugi;
 using namespace smtk::io;
@@ -262,6 +268,82 @@ void XmlDocV2Parser::processMeshSelectionItem(pugi::xml_node &node,
       }
     }
 }
+//----------------------------------------------------------------------------
+void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node &node,
+  attribute::MeshItemPtr item)
+{
+  xml_attribute xatt;
+  std::size_t n = item->numberOfValues();
+  std::size_t numRequiredVals = item->numberOfRequiredValues();
+  if (!numRequiredVals || item->isExtensible())
+    {
+    // The node should have an attribute indicating how many values are
+    // associated with the item
+    xatt = node.attribute("NumberOfValues");
+    if (!xatt)
+      {
+      smtkErrorMacro(this->m_logger,
+                     "XML Attribute NumberOfValues is missing for Item: "
+                     << item->name());
+      return;
+      }
+    n = xatt.as_uint();
+    }
+
+  if (!n)
+    {
+    return;
+    }
+
+  smtk::common::UUID cid;
+  smtk::model::ManagerPtr modelmgr = this->m_system.refModelManager();
+  xml_node valsNode, val;
+  std::string attName;
+  AttRefInfo info;
+
+  std::size_t i = 0;
+  valsNode = node.child("Values");
+  if (valsNode)
+    {
+    for (val = valsNode.child("Val"); val; val = val.next_sibling("Val"), ++i)
+      {
+      xatt = val.attribute("collectionid");
+      if (!xatt)
+        {
+        smtkErrorMacro(this->m_logger,
+                       "XML Attribute collectionid is missing for Item: " << item->name());
+        continue;
+        }
+      if (i >= n)
+        {
+        smtkErrorMacro(this->m_logger, "The number of values: " << i
+                       << " is out of range for Item: " << item->name());
+        break;
+        }
+      cid = smtk::common::UUID(xatt.value());    
+
+      //convert back to a handle
+      cJSON* jshandle = cJSON_Parse(val.text().get());
+      smtk::mesh::HandleRange hrange = smtk::mesh::from_json(jshandle);
+      cJSON_Delete(jshandle);
+      smtk::mesh::CollectionPtr c = modelmgr->meshes()->collection(cid);
+      smtk::mesh::json::InterfacePtr interface =
+        smtk::dynamic_pointer_cast< smtk::mesh::json::Interface >(c->interface());
+      
+      if(!interface)
+        {
+        smtkErrorMacro(this->m_logger, "Expecting a json interface for mesh item: " << item->name());
+        continue;
+        }
+
+      item->setValue(cid, smtk::mesh::MeshSet(c, interface->getRoot(), hrange));
+      }
+    }
+  else
+    {
+    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
+    }
+}
 
 //----------------------------------------------------------------------------
 void XmlDocV2Parser::processMeshSelectionDef(pugi::xml_node &node,
@@ -292,6 +374,33 @@ void XmlDocV2Parser::processMeshSelectionDef(pugi::xml_node &node,
         mmask.text().as_string()));
     }
 
+}
+//----------------------------------------------------------------------------
+void XmlDocV2Parser::processMeshEntityDef(pugi::xml_node &node,
+                                         attribute::MeshItemDefinitionPtr idef)
+{
+  xml_node child;
+  xml_attribute xatt;
+
+  this->processItemDef(node, idef);
+
+  xatt = node.attribute("NumberOfRequiredValues");
+  if (xatt)
+    {
+    idef->setNumberOfRequiredValues(xatt.as_int());
+    }
+  else
+    {
+    smtkErrorMacro(this->m_logger,
+                   "Missing XML Attribute NumberOfRequiredValues for Item Definition : "
+                   << idef->name());
+    }
+
+  xatt = node.attribute("Extensible");
+  if (xatt)
+    {
+    idef->setIsExtensible(xatt.as_bool());
+    }
 }
 
 //----------------------------------------------------------------------------

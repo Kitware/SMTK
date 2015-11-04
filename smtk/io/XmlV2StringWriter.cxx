@@ -33,6 +33,8 @@
 #include "smtk/attribute/System.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
+#include "smtk/attribute/MeshItem.h"
+#include "smtk/attribute/MeshItemDefinition.h"
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
@@ -45,8 +47,10 @@
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/StringData.h"
+#include "smtk/mesh/MeshSet.h"
 
 #include <sstream>
+#include "cJSON.h"
 
 using namespace pugi;
 using namespace smtk;
@@ -628,6 +632,9 @@ XmlV2StringWriter::processItemDefinition(xml_node &node,
     case Item::MESH_SELECTION:
       this->processMeshSelectionItemDef(node, smtk::dynamic_pointer_cast<MeshSelectionItemDefinition>(idef));
       break;
+    case Item::MESH_ENTITY:
+      this->processMeshEntityDef(node, smtk::dynamic_pointer_cast<MeshItemDefinition>(idef));
+      break;
     case Item::VOID:
       // Nothing to do!
       break;
@@ -730,8 +737,20 @@ void XmlV2StringWriter::processMeshSelectionItemDef(pugi::xml_node &node,
 }
 
 //----------------------------------------------------------------------------
+void XmlV2StringWriter::processMeshEntityDef(pugi::xml_node& node,
+                                         smtk::attribute::MeshItemDefinitionPtr idef)
+{
+  node.append_attribute("NumberOfRequiredValues") =
+    static_cast<unsigned int>(idef->numberOfRequiredValues());
+  if (idef->isExtensible())
+    {
+    node.append_attribute("Extensible") = true;
+    }
+}
+
+//----------------------------------------------------------------------------
 void XmlV2StringWriter::processValueDef(pugi::xml_node &node,
-                                        attribute::ValueItemDefinitionPtr idef)
+                                        smtk::attribute::ValueItemDefinitionPtr idef)
 {
   node.append_attribute("NumberOfRequiredValues") =
     static_cast<unsigned int>(idef->numberOfRequiredValues());
@@ -1049,6 +1068,9 @@ void XmlV2StringWriter::processItem(xml_node &node,
     case Item::MESH_SELECTION:
       this->processMeshSelectionItem(node, smtk::dynamic_pointer_cast<MeshSelectionItem>(item));
       break;
+    case Item::MESH_ENTITY:
+      this->processMeshEntityItem(node, smtk::dynamic_pointer_cast<MeshItem>(item));
+      break;
     default:
       smtkErrorMacro(this->m_logger,
                      "Unsupported Type: " << Item::type2String(item->type())
@@ -1182,6 +1204,32 @@ void XmlV2StringWriter::processModelEntityItem(pugi::xml_node &node,
       val = values.append_child("UnsetVal");
       val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       }
+    }
+}
+
+//----------------------------------------------------------------------------
+void XmlV2StringWriter::processMeshEntityItem(pugi::xml_node &node,
+                                          attribute::MeshItemPtr item)
+{
+  size_t n = item->numberOfValues();
+  // we should always have "NumberOfValues" set
+  node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
+
+  if (!n)
+    {
+    return;
+    }
+
+  xml_node values = node.append_child("Values");
+  smtk::attribute::MeshItem::const_mesh_it it;
+  xml_node val;
+  for(it = item->begin(); it != item->end(); ++it)
+    {
+    val = values.append_child("Val");
+    val.append_attribute("collectionid").set_value(it->first.toString().c_str());
+    cJSON* jrange = smtk::mesh::to_json(it->second.range());
+    val.text().set(cJSON_Print(jrange));
+    cJSON_Delete(jrange);
     }
 }
 
@@ -1485,6 +1533,7 @@ void XmlV2StringWriter::processModelInfo()
   /** This seems to be outdated with ModelEntityItem already being processed
   **/
 }
+
 //----------------------------------------------------------------------------
 std::string XmlV2StringWriter::encodeColor(const double *c)
 {

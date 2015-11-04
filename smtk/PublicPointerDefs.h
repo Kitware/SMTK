@@ -52,6 +52,8 @@ namespace smtk
     class Item;
     class ItemDefinition;
     class System;
+    class MeshItem;
+    class MeshItemDefinition;
     class MeshSelectionItem;
     class MeshSelectionItemDefinition;
     class ModelEntityItem;
@@ -292,6 +294,8 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::attribute::IntItemDefinition >        IntItemDefinitionPtr;
     typedef smtk::shared_ptr< smtk::attribute::StringItem >               StringItemPtr;
     typedef smtk::shared_ptr< smtk::attribute::StringItemDefinition >     StringItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::MeshItem >                 MeshItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::MeshItemDefinition >       MeshItemDefinitionPtr;
     typedef smtk::shared_ptr< smtk::attribute::MeshSelectionItem >           MeshSelectionItemPtr;
     typedef smtk::shared_ptr< smtk::attribute::MeshSelectionItemDefinition > MeshSelectionItemDefinitionPtr;
     typedef smtk::shared_ptr< smtk::attribute::ModelEntityItem >          ModelEntityItemPtr;
@@ -311,6 +315,8 @@ namespace smtk
     typedef smtk::shared_ptr< const smtk::attribute::IntItemDefinition >         ConstIntItemDefinitionPtr;
     typedef smtk::shared_ptr< const smtk::attribute::StringItem >                ConstStringItemPtr;
     typedef smtk::shared_ptr< const smtk::attribute::StringItemDefinition >      ConstStringItemDefinitionPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::MeshItem >                  ConstMeshItemPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::MeshItemDefinition >        ConstMeshItemDefinitionPtr;
     typedef smtk::shared_ptr< const smtk::attribute::MeshSelectionItem >            ConstMeshSelectionItemPtr;
     typedef smtk::shared_ptr< const smtk::attribute::MeshSelectionItemDefinition >  ConstMeshSelectionItemDefinitionPtr;
     typedef smtk::shared_ptr< const smtk::attribute::ModelEntityItem >           ConstModelEntityItemPtr;
