@@ -1228,8 +1228,10 @@ void XmlV2StringWriter::processMeshEntityItem(pugi::xml_node &node,
     val = values.append_child("Val");
     val.append_attribute("collectionid").set_value(it->first.toString().c_str());
     cJSON* jrange = smtk::mesh::to_json(it->second.range());
-    val.text().set(cJSON_Print(jrange));
+    char* json = cJSON_Print(jrange);
     cJSON_Delete(jrange);
+    val.text().set(json);
+    free(json);
     }
 }
 
