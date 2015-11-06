@@ -1128,6 +1128,9 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
       //set the collections model manager so that we can do model based
       //queries properly
       collection->setModelManager( modelMgr );
+
+      //write propertis to the new collection
+      ImportJSON::ofMeshProperties(child, collection);
       }
     else
       {
@@ -1136,6 +1139,74 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
       }
     }
   return status ? 0 : 1;
+}
+
+/**\brief Import all mesh properties of an smtk::mesh::Collection.
+  *
+  * All mesh properties in the json \a node for collection are imported in,
+  * and added to the mesh \a collection.
+  *
+  */
+int ImportJSON::ofMeshProperties(cJSON* node,
+                                smtk::mesh::CollectionPtr collection)
+{
+  cJSON* jsonProperties = cJSON_GetObjectItem(node, "properties");
+  if(!jsonProperties)
+    return 0;
+
+  // iterate through all mesh properties records
+  for (cJSON* meshEntry = jsonProperties->child; meshEntry; meshEntry = meshEntry->next)
+    {
+    smtk::mesh::HandleRange hrange = smtk::mesh::from_json(meshEntry);
+    smtk::mesh::MeshSet mesh = smtk::mesh::MeshSet(
+      collection, collection->interface()->getRoot(), hrange);
+    // float properties
+    cJSON* floatNode = cJSON_GetObjectItem(meshEntry, "f");
+    if (floatNode)
+      {
+      for (cJSON* floatProp = floatNode->child; floatProp; floatProp = floatProp->next)
+        {
+        if (!floatProp->string || !floatProp->string[0])
+          { // skip un-named property arrays.
+          continue;
+          }
+        FloatList propVal;
+        cJSON_GetRealArray(floatProp, propVal);
+        collection->setFloatProperty(mesh, floatProp->string, propVal);
+        }
+      }
+    // string properties
+    cJSON* stringNode = cJSON_GetObjectItem(meshEntry, "s");
+    if (stringNode)
+      {
+      for (cJSON* stringProp = stringNode->child; stringProp; stringProp = stringProp->next)
+        {
+        if (!stringProp->string || !stringProp->string[0])
+          { // skip un-named property arrays.
+          continue;
+          }
+        StringList propVal;
+        cJSON_GetStringArray(stringProp, propVal);
+        collection->setStringProperty(mesh, stringProp->string, propVal);
+        }
+      }
+    // integer properties
+    cJSON* integerNode = cJSON_GetObjectItem(meshEntry, "i");
+    if (integerNode)
+      {
+      for (cJSON* intProp = integerNode->child; intProp; intProp = intProp->next)
+        {
+        if (!intProp->string || !intProp->string[0])
+          { // skip un-named property arrays.
+          continue;
+          }
+        IntegerList propVal;
+        cJSON_GetIntegerArray(intProp, propVal);
+        collection->setIntegerProperty(mesh, intProp->string, propVal);
+        }
+      }
+    }
+  return 1;
 }
 
 std::string ImportJSON::sessionNameFromTagData(cJSON* tagData)
