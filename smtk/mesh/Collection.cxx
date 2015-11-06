@@ -845,19 +845,40 @@ bool Collection::removeIntegerProperty(
  */
 template<>
 SMTKCORE_EXPORT
-smtk::model::StringData* Collection::properties<smtk::model::StringData>(
+smtk::mesh::MeshStringData* Collection::properties<smtk::mesh::MeshStringData>()
+{ return &(*this->m_stringData); }
+
+template<>
+SMTKCORE_EXPORT
+smtk::mesh::MeshFloatData* Collection::properties<smtk::mesh::MeshFloatData>()
+{ return &(*this->m_floatData); }
+
+template<>
+SMTKCORE_EXPORT
+smtk::mesh::MeshIntegerData* Collection::properties<smtk::mesh::MeshIntegerData>()
+{ return &(*this->m_integerData); }
+
+/*! \fn Collection::meshProperties<T>(const smtk::mesh::MeshSet& meshset)
+ *  \brief Return a pointer to the properties of an \a meshset in the collection.
+ *
+ * This templated version exists for use in functions where the
+ * property type is a template parameter.
+ */
+template<>
+SMTKCORE_EXPORT
+smtk::model::StringData* Collection::meshProperties<smtk::model::StringData>(
   const smtk::mesh::MeshSet& meshset)
 { return &(*this->m_stringData)[meshset]; }
 
 template<>
 SMTKCORE_EXPORT
-smtk::model::FloatData* Collection::properties<smtk::model::FloatData>(
+smtk::model::FloatData* Collection::meshProperties<smtk::model::FloatData>(
   const smtk::mesh::MeshSet& meshset)
 { return &(*this->m_floatData)[meshset]; }
 
 template<>
 SMTKCORE_EXPORT
-smtk::model::IntegerData* Collection::properties<smtk::model::IntegerData>(
+smtk::model::IntegerData* Collection::meshProperties<smtk::model::IntegerData>(
   const smtk::mesh::MeshSet& meshset)
 { return &(*this->m_integerData)[meshset]; }
 

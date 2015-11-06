@@ -246,8 +246,10 @@ public:
   bool hasIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
   bool removeIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName);
 #ifndef SHIBOKEN_SKIP
+  // For T = {MeshIntegerData, MeshFloatData, MeshStringData}:
+  template<typename T> T* properties();
   // For T = {IntegerData, FloatData, StringData}:
-  template<typename T> T* properties(const smtk::mesh::MeshSet& meshset);
+  template<typename T> T* meshProperties(const smtk::mesh::MeshSet& meshset);
   template<typename T> bool removeProperty(const smtk::mesh::MeshSet& meshset, const std::string& name);
 #endif // SHIBOKEN_SKIP
 

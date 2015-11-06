@@ -50,7 +50,7 @@ void SetPropertyValue(const std::string& name, typename VI::Ptr item,
       values.push_back(item->value(i));
 
     // Add or overwrite the property with the values.
-    (*c->properties<VD>(mesh))[name] = values;
+    (*c->meshProperties<VD>(mesh))[name] = values;
     }
 }
 
