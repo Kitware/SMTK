@@ -23,6 +23,8 @@ set(meshSrcs
   moab/MergeMeshVertices.cxx
   moab/Readers.cxx
   moab/Writers.cxx
+
+  operators/SetProperty.cxx
   )
 
 set(meshHeaders
@@ -50,8 +52,11 @@ set(meshHeaders
   moab/Interface.h
   moab/Allocator.h
   moab/HandleRange.h
+
+  operators/SetProperty.h
   )
 
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetProperty.sbt" defOpXML)
 
 #install the headers
 smtk_public_headers(${meshHeaders})
