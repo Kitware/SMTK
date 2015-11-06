@@ -837,6 +837,56 @@ bool Collection::removeIntegerProperty(
     this->m_integerData->erase(uit);
   return true;
 }
+/*! \fn Collection::properties<T>()
+ *  \brief Return a pointer to the properties of the collection.
+ *
+ * This templated version exists for use in functions where the
+ * property type is a template parameter.
+ */
+template<>
+SMTKCORE_EXPORT
+smtk::model::StringData* Collection::properties<smtk::model::StringData>(
+  const smtk::mesh::MeshSet& meshset)
+{ return &(*this->m_stringData)[meshset]; }
+
+template<>
+SMTKCORE_EXPORT
+smtk::model::FloatData* Collection::properties<smtk::model::FloatData>(
+  const smtk::mesh::MeshSet& meshset)
+{ return &(*this->m_floatData)[meshset]; }
+
+template<>
+SMTKCORE_EXPORT
+smtk::model::IntegerData* Collection::properties<smtk::model::IntegerData>(
+  const smtk::mesh::MeshSet& meshset)
+{ return &(*this->m_integerData)[meshset]; }
+
+/*! \fn EntityRef::removeProperty<T>(const std::string& name)
+ *  \brief Remove the property of type \a T with the given \a name, returning true on success.
+ *
+ * False is returned if the property did not exist for the given entity.
+ *
+ * This templated version exists for use in functions where the
+ * property type is a template parameter.
+ */
+template<>
+SMTKCORE_EXPORT
+bool Collection::removeProperty<smtk::model::StringData>(
+  const smtk::mesh::MeshSet& meshset, const std::string& pname)
+{ return this->removeStringProperty(meshset, pname); }
+
+template<>
+SMTKCORE_EXPORT
+bool Collection::removeProperty<smtk::model::FloatData>(
+  const smtk::mesh::MeshSet& meshset, const std::string& pname)
+{ return this->removeFloatProperty(meshset, pname); }
+
+template<>
+SMTKCORE_EXPORT
+bool Collection::removeProperty<smtk::model::IntegerData>(
+  const smtk::mesh::MeshSet& meshset, const std::string& pname)
+{ return this->removeIntegerProperty(meshset, pname); }
+
 //----------------------------------------------------------------------------
 
 }
