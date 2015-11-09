@@ -23,7 +23,9 @@ public:
   smtkTypeMacro(MeshPhrase);
   smtkSharedPtrCreateMacro(DescriptivePhrase);
   Ptr setup(const smtk::mesh::MeshSet& meshset, DescriptivePhrase::Ptr parent = DescriptivePhrasePtr());
+#ifndef SHIBOKEN_SKIP
   Ptr setup(const smtk::mesh::CollectionPtr& meshes, DescriptivePhrase::Ptr parent = DescriptivePhrasePtr());
+#endif
   virtual ~MeshPhrase() { }
 
   virtual std::string title();

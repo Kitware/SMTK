@@ -37,8 +37,8 @@ public:
 
   std::size_t numberOfRequiredValues() const;
   bool isExtensible() const;
-
-  bool setValue(const smtk::common::UUID&, const smtk::mesh::MeshSet&);
+  /// associated item with collection's meshes given \a collectionid and its \a meshset
+  bool setValue(const smtk::common::UUID& collectionid, const smtk::mesh::MeshSet& meshset);
   bool appendValue(const smtk::common::UUID&, const smtk::mesh::MeshSet&);
   void removeValue(const smtk::common::UUID&, const smtk::mesh::MeshSet&);
 
