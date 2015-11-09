@@ -3,7 +3,6 @@ PROJECT(SMTKDiscreteExtensionReader)
 set(srcs
     vtkCMBSTLReader.cxx
     vtkCUBITReader.cxx
-    #vtkDataSetRegionSurfaceFilter.cxx
     vtkCMBGeometryReader.cxx
     vtkCMBMeshReader.cxx
     vtkExtractRegionEdges.cxx
@@ -17,7 +16,6 @@ set(srcs
 set(headers
   vtkCMBSTLReader.h
   vtkCUBITReader.h
-  vtkDataSetRegionSurfaceFilter.h
   vtkCMBGeometryReader.h
   vtkCMBMeshReader.h
   vtkExtractRegionEdges.h
@@ -48,11 +46,9 @@ endif()
 
 if(GDAL_FOUND)
   list(APPEND srcs
-    vtkGDALRasterReader.cxx
     vtkGDALRasterPolydataWrapper.cxx
   )
   list(APPEND headers
-    vtkGDALRasterReader.h
     vtkGDALRasterPolydataWrapper.h
   )
 endif()

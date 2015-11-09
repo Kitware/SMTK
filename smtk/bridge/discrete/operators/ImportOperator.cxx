@@ -29,7 +29,7 @@
 #include "vtkPDataSetReader.h"
 #include "vtkMasterPolyDataNormals.h"
 #include "vtkMergeDuplicateCells.h"
-#include "smtk/bridge/discrete/extension/reader/vtkDataSetRegionSurfaceFilter.h"
+#include "vtkDataSetRegionSurfaceFilter.h"
 #include "smtk/bridge/discrete/extension/reader/vtkCMBGeometryReader.h"
 
 #ifdef SMTK_ENABLE_REMUS_SUPPORT
