@@ -334,10 +334,15 @@
   <suppress-warning text="skipping function 'smtk::model::EntityListPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::EntityListPhrase::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::MeshPhrase::setup', unmatched return type 'smtk::model::MeshPhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::MeshPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::MeshPhrase::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::MeshPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::MeshPhrase::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::MeshPhrase::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::MeshPhrase::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::MeshListPhrase::setup', unmatched return type 'smtk::model::MeshListPhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::MeshListPhrase::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::MeshListPhrase::SelfType&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::model::MeshListPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::EntityListPhrase::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::MeshListPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::MeshListPhrase::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::MeshListPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::MeshListPhrase::SelfType&gt;'"/>
+
+
+
   <suppress-warning text="skipping field 'DescriptivePhrase::m_delegate' with unmatched type 'smtk::shared_ptr&lt;SubphraseGenerator&gt;'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ValueItemTemplate::setValue', unmatched parameter type 'size_t'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ValueItemTemplate::concreteDefinition', unmatched return type 'shared_ptr&lt;const smtk::attribute::ValueItemTemplate&lt;DataT&gt;::DefType&gt;"/>
@@ -369,6 +374,31 @@
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::usesOfShell', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::boundingShellsOfUse', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::childrenOfEntityList', unmatched parameter type 'smtk::model::EntityListPhrase::Ptr'"/>
+
+  <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::childrenOfMesh', unmatched parameter type 'smtk::model::MeshPhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::childrenOfMeshList', unmatched parameter type 'smtk::model::MeshListPhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::addMeshPhrases', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::meshsetsOfCollectionByDim', unmatched parameter type 'smtk::model::MeshPhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::meshesOfModel', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::meshesOfMeshList', unmatched parameter type 'smtk::model::MeshListPhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::meshsetsOfMesh', unmatched parameter type 'smtk::model::MeshPhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofMeshProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forStringData', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forFloatData', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forIntegerData', unmatched parameter type 'cJSON*'"/>
+  skipping function '
+  skipping function '
+  skipping function '
+  skipping function '
+  skipping function '
+  skipping function ''
+  skipping function '
+  skipping function '
+  skipping function '
+  skipping function '
+  skipping function '
+
+
   <suppress-warning text="skipping field 'Manager::m_conditionTriggers' with unmatched type 'std::set&lt;ConditionTrigger&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_oneToOneTriggers' with unmatched type 'std::set&lt;OneToOneTrigger&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_oneToManyTriggers' with unmatched type 'std::set&lt;OneToManyTrigger&gt;'"/>
@@ -1300,7 +1330,7 @@
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
-        <add-function signature="setup(const std::vector&lt;smtk::model::EntityRef&gt;&amp;)"
+        <add-function signature="setup(const std::vector&lt;smtk::mesh::MeshSet&gt;&amp;)"
           return-type="smtk::shared_ptr&lt;smtk::model::MeshListPhrase&gt;">
           <inject-code>
             smtk::model::DescriptivePhrasePtr invalid;
