@@ -221,7 +221,7 @@ target_link_libraries(smtkDiscreteSession
     vtkRendering${VTK_RENDERING_BACKEND}
     vtksys
     ${__private_dependencies}
-    vtkSMTKDiscreteExt
+    vtkSMTKDiscreteReaderExt
     vtkSMTKDiscreteModel
   )
 

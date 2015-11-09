@@ -19,7 +19,7 @@
 #ifndef __smtkdiscrete_vtkDataSetRegionSurfaceFilter_h
 #define __smtkdiscrete_vtkDataSetRegionSurfaceFilter_h
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/reader/vtkSMTKDiscreteReaderExtModule.h" // For export macro
 #include "vtkDataSetSurfaceFilter.h"
 
 class vtkCharArray;
@@ -28,7 +28,7 @@ namespace smtk {
   namespace bridge {
     namespace discrete {
 
-class VTKSMTKDISCRETEEXT_EXPORT vtkDataSetRegionSurfaceFilter : public vtkDataSetSurfaceFilter
+class VTKSMTKDISCRETEREADEREXT_EXPORT vtkDataSetRegionSurfaceFilter : public vtkDataSetSurfaceFilter
 {
 public:
   static vtkDataSetRegionSurfaceFilter* New();

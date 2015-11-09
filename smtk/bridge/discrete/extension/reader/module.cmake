@@ -1,4 +1,9 @@
-vtk_module(vtkSMTKDiscreteExt
+set(_deps)
+if (SMTK_ENABLE_REMUS_SUPPORT)
+  list(APPEND _deps vtkSMTKDiscreteMeshingExt)
+endif ()
+
+vtk_module(vtkSMTKDiscreteReaderExt
   DEPENDS
     vtkIOXML
   PRIVATE_DEPENDS
@@ -16,5 +21,6 @@ vtk_module(vtkSMTKDiscreteExt
     vtkRenderingVolume${VTK_RENDERING_BACKEND}
     vtkRenderingContext${VTK_RENDERING_BACKEND}
     vtksys
+    ${_deps}
   EXCLUDE_FROM_WRAP_HIERARCHY
 )

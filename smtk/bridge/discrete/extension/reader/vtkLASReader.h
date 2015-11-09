@@ -20,7 +20,7 @@
 #ifndef __smtkdiscrete_LASReader_h
 #define __smtkdiscrete_LASReader_h
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/reader/vtkSMTKDiscreteReaderExtModule.h" // For export macro
 #include "vtkMultiBlockDataSetAlgorithm.h"
 #include "vtkSmartPointer.h"
 
@@ -41,7 +41,7 @@ namespace smtk {
   namespace bridge {
     namespace discrete {
 
-class VTKSMTKDISCRETEEXT_EXPORT vtkLASReader : public vtkMultiBlockDataSetAlgorithm
+class VTKSMTKDISCRETEREADEREXT_EXPORT vtkLASReader : public vtkMultiBlockDataSetAlgorithm
 {
 public:
   static vtkLASReader *New();

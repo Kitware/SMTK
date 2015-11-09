@@ -248,3 +248,7 @@ smtk_public_headers(${DiscreteModelHeaders})
 
 # ... and make header compilation tests link properly:
 smtk_install_library(vtkSMTKDiscreteModel)
+
+if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+  vtk_add_cs_wrapping(${vtk-module})
+endif ()

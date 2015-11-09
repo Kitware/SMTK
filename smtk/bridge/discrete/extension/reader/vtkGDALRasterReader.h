@@ -11,7 +11,7 @@
 #ifndef __smtkdiscrete_vtkGDALRasterReader_h
 #define __smtkdiscrete_vtkGDALRasterReader_h
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/reader/vtkSMTKDiscreteReaderExtModule.h" // For export macro
 #include <vtkImageReader2.h>
 
 #include <string>
@@ -21,7 +21,7 @@ namespace smtk {
   namespace bridge {
     namespace discrete {
 
-class VTKSMTKDISCRETEEXT_EXPORT vtkGDALRasterReader : public vtkImageReader2
+class VTKSMTKDISCRETEREADEREXT_EXPORT vtkGDALRasterReader : public vtkImageReader2
 {
 public:
   static vtkGDALRasterReader* New();

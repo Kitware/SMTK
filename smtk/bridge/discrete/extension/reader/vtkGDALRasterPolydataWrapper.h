@@ -14,7 +14,7 @@
 #ifndef __smtkdiscrete_vtkGDALRasterPolydataWrapper_h
 #define __smtkdiscrete_vtkGDALRasterPolydataWrapper_h
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/reader/vtkSMTKDiscreteReaderExtModule.h" // For export macro
 #include "vtkDataSetAlgorithm.h"
 #include "vtkSmartPointer.h"
 #include "vtkTransform.h"
@@ -23,13 +23,13 @@
 #include <string>
 #include <vector>
 
-#include "smtk/bridge/discrete/extension/reader/vtkGDALRasterReader.h"
+#include "vtkGDALRasterReader.h"
 
 namespace smtk {
   namespace bridge {
     namespace discrete {
 
-class VTKSMTKDISCRETEEXT_EXPORT vtkGDALRasterPolydataWrapper : public vtkDataSetAlgorithm
+class VTKSMTKDISCRETEREADEREXT_EXPORT vtkGDALRasterPolydataWrapper : public vtkDataSetAlgorithm
 {
 public:
   static vtkGDALRasterPolydataWrapper *New();
