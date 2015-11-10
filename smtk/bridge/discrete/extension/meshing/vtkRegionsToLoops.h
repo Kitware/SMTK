@@ -11,7 +11,7 @@
 #ifndef __smtkdiscrete_vtkRegionsToLoops_h
 #define __smtkdiscrete_vtkRegionsToLoops_h
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/meshing/vtkSMTKDiscreteMeshingExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 namespace smtk {
@@ -22,7 +22,7 @@ namespace smtk {
 // Limitations:
 // This does not handle non-manifold loops where a vertex has more than 2 line
 // segments attached.
-class VTKSMTKDISCRETEEXT_EXPORT vtkRegionsToLoops : public vtkPolyDataAlgorithm
+class VTKSMTKDISCRETEMESHINGEXT_EXPORT vtkRegionsToLoops : public vtkPolyDataAlgorithm
 {
 public:
   static vtkRegionsToLoops* New();

@@ -16,7 +16,7 @@
 #ifndef __smtkdiscrete_vtkCMBMapReader_h
 #define __smtkdiscrete_vtkCMBMapReader_h
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/reader/vtkSMTKDiscreteReaderExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 class vtkIntArray;
@@ -25,7 +25,7 @@ namespace smtk {
   namespace bridge {
     namespace discrete {
 
-class VTKSMTKDISCRETEEXT_EXPORT vtkCMBMapReader : public vtkPolyDataAlgorithm
+class VTKSMTKDISCRETEREADEREXT_EXPORT vtkCMBMapReader : public vtkPolyDataAlgorithm
 {
   public:
     static vtkCMBMapReader *New();

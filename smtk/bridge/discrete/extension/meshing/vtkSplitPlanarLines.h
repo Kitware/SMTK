@@ -20,14 +20,14 @@
 // There is no guarantee that edge order is preserved, but pedigree IDs are
 // generated to indicate the correspondence between input and output edges.
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/meshing/vtkSMTKDiscreteMeshingExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 namespace smtk {
   namespace bridge {
     namespace discrete {
 
-class VTKSMTKDISCRETEEXT_EXPORT vtkSplitPlanarLines : public vtkPolyDataAlgorithm
+class VTKSMTKDISCRETEMESHINGEXT_EXPORT vtkSplitPlanarLines : public vtkPolyDataAlgorithm
 {
 public:
   static vtkSplitPlanarLines* New();

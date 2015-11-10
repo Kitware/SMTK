@@ -11,7 +11,7 @@
 #ifndef __smtkdiscrete_vtkDiscoverRegions_h
 #define __smtkdiscrete_vtkDiscoverRegions_h
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/meshing/vtkSMTKDiscreteMeshingExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 //#define VTK_CELL_REGION_IDS "CellRegionIds"
@@ -69,7 +69,7 @@ namespace smtk {
  * for the regions containing the respective points.
  * Point data from these points will be added to the output field data.
  */
-class VTKSMTKDISCRETEEXT_EXPORT vtkDiscoverRegions : public vtkPolyDataAlgorithm
+class VTKSMTKDISCRETEMESHINGEXT_EXPORT vtkDiscoverRegions : public vtkPolyDataAlgorithm
 {
 public:
   static vtkDiscoverRegions* New();

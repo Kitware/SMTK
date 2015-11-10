@@ -23,7 +23,7 @@
 #ifndef __smtkdiscrete_vtkRayIntersectionLocator_h
 #define __smtkdiscrete_vtkRayIntersectionLocator_h
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/meshing/vtkSMTKDiscreteMeshingExtModule.h" // For export macro
 #include "vtkCellTreeLocator.h"
 #include "vtkVector.h"
 #include <vector> // Needed for public interface.
@@ -32,7 +32,7 @@ namespace smtk {
   namespace bridge {
     namespace discrete {
 
-class VTKSMTKDISCRETEEXT_EXPORT vtkRayIntersectionLocator : public vtkCellTreeLocator
+class VTKSMTKDISCRETEMESHINGEXT_EXPORT vtkRayIntersectionLocator : public vtkCellTreeLocator
 {
 public:
   static vtkRayIntersectionLocator* New();

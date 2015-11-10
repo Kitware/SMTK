@@ -11,7 +11,7 @@
 #ifndef __smtkdiscrete_vtkPolylineTriangulator_h
 #define __smtkdiscrete_vtkPolylineTriangulator_h
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/meshing/vtkSMTKDiscreteMeshingExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 namespace smtk {
@@ -21,7 +21,7 @@ namespace smtk {
 class vtkCMBMeshServerLauncher;
 
 /// Turn polylines describing facet boundaries into triangulated facets.
-class VTKSMTKDISCRETEEXT_EXPORT vtkPolylineTriangulator : public vtkPolyDataAlgorithm
+class VTKSMTKDISCRETEMESHINGEXT_EXPORT vtkPolylineTriangulator : public vtkPolyDataAlgorithm
 {
 public:
   static vtkPolylineTriangulator* New();
