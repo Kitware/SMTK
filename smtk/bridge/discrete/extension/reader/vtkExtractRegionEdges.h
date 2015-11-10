@@ -18,14 +18,14 @@
 #ifndef __smtkdiscrete_vtkExtractRegionEdges_h
 #define __smtkdiscrete_vtkExtractRegionEdges_h
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/reader/vtkSMTKDiscreteReaderExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 namespace smtk {
   namespace bridge {
     namespace discrete {
 
-class VTKSMTKDISCRETEEXT_EXPORT vtkExtractRegionEdges : public vtkPolyDataAlgorithm
+class VTKSMTKDISCRETEREADEREXT_EXPORT vtkExtractRegionEdges : public vtkPolyDataAlgorithm
 {
 public:
   static vtkExtractRegionEdges *New();

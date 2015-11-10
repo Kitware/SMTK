@@ -15,7 +15,7 @@
 #ifndef __smtkdiscrete_cmbFaceMeshHelper_h
 #define __smtkdiscrete_cmbFaceMeshHelper_h
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/meshing/vtkSMTKDiscreteMeshingExtModule.h" // For export macro
 #include <map> // Needed for STL map.
 #include <set> // Needed for STL set.
 #include <list> // Needed for STL list.
@@ -34,7 +34,7 @@ class cmbFaceMesherInterface;
 //-----------------------------------------------------------------------------
 namespace CmbFaceMesherClasses
 {
-class VTKSMTKDISCRETEEXT_EXPORT meshVertex
+class VTKSMTKDISCRETEMESHINGEXT_EXPORT meshVertex
 {
 public:
   meshVertex(const double& a, const double& b);
@@ -50,7 +50,7 @@ public:
   bool operator<(const meshVertex &p) const;
 };
 
-class VTKSMTKDISCRETEEXT_EXPORT meshEdge
+class VTKSMTKDISCRETEMESHINGEXT_EXPORT meshEdge
 {
 public:
   meshEdge(const vtkIdType& f, const vtkIdType& s);
@@ -73,7 +73,7 @@ protected:
   vtkIdType ModelId;
 };
 
-class VTKSMTKDISCRETEEXT_EXPORT ModelEdgeRep
+class VTKSMTKDISCRETEMESHINGEXT_EXPORT ModelEdgeRep
 {
 public:
   ModelEdgeRep(const int &id):Id(id){}
@@ -106,7 +106,7 @@ protected:
   std::set<meshVertex> ModelVerts;
 };
 
-class VTKSMTKDISCRETEEXT_EXPORT ModelLoopRep
+class VTKSMTKDISCRETEMESHINGEXT_EXPORT ModelLoopRep
 {
 public:
   ModelLoopRep(const vtkIdType &id, const bool &isInternal)
@@ -272,7 +272,7 @@ protected:
   std::map<vtkIdType,meshVertex> IdsToPoints;
 };
 
-class VTKSMTKDISCRETEEXT_EXPORT ModelFaceRep
+class VTKSMTKDISCRETEMESHINGEXT_EXPORT ModelFaceRep
 {
   public:
     void addLoop(const ModelLoopRep &loop);

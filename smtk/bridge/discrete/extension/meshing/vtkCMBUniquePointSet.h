@@ -16,7 +16,7 @@
 #ifndef __smtkdiscrete_vtkCMBUniquePointSet_
 #define __smtkdiscrete_vtkCMBUniquePointSet_
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/meshing/vtkSMTKDiscreteMeshingExtModule.h" // For export macro
 
 #include <map>
 #include <vector>
@@ -29,7 +29,7 @@ namespace smtk {
   namespace bridge {
     namespace discrete {
 
-class VTKSMTKDISCRETEEXT_EXPORT vtkCMBUniquePointSet
+class VTKSMTKDISCRETEMESHINGEXT_EXPORT vtkCMBUniquePointSet
   {
   public:
     struct InternalPt
