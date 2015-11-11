@@ -28,8 +28,8 @@ namespace smtk {
 class SMTKCORE_EXPORT MeshItem : public Item
 {
 public:
-  typedef std::map<smtk::common::UUID, smtk::mesh::MeshSet >::const_iterator const_mesh_it;
-  typedef std::map<smtk::common::UUID, smtk::mesh::MeshSet >::iterator mesh_it;
+  typedef smtk::mesh::MeshList::const_iterator const_mesh_it;
+  typedef smtk::mesh::MeshList::iterator mesh_it;
 
   smtkTypeMacro(MeshItem);
   virtual ~MeshItem();
@@ -38,12 +38,13 @@ public:
   std::size_t numberOfRequiredValues() const;
   bool isExtensible() const;
   /// associated item with collection's meshes given \a collectionid and its \a meshset
-  bool setValue(const smtk::common::UUID& collectionid, const smtk::mesh::MeshSet& meshset);
-  bool appendValue(const smtk::common::UUID&, const smtk::mesh::MeshSet&);
-  void removeValue(const smtk::common::UUID&, const smtk::mesh::MeshSet&);
+  bool setValue(const smtk::mesh::MeshSet& meshset);
+  bool appendValue(const smtk::mesh::MeshSet&);
+  bool appendValues(const smtk::mesh::MeshList&);
+  void removeValue(const smtk::mesh::MeshSet&);
 
   std::size_t numberOfValues() const;
-  smtk::mesh::MeshSet value(const smtk::common::UUID&) const;
+  const smtk::mesh::MeshList& values() const;
   virtual void reset();
   virtual void copyFrom(
     const smtk::attribute::ItemPtr sourceItem,
@@ -58,7 +59,7 @@ protected:
   MeshItem(Attribute *owningAttribute, int itemPosition);
   MeshItem(Item *owningItem, int position, int subGroupPosition);
   virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
-  std::map<smtk::common::UUID, smtk::mesh::MeshSet >m_meshValues;
+  smtk::mesh::MeshList m_meshValues;
 
 };
 

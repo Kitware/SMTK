@@ -13,7 +13,7 @@
 #include "smtk/attribute/Attribute.h"
 #include <iostream>
 #include <stdio.h>
-#include <algorithm>    // std::set_difference
+#include <algorithm>    // for std::find and std::copy
 
 using namespace smtk::attribute;
 
@@ -95,77 +95,67 @@ bool MeshItem::isExtensible() const
 }
 
 //----------------------------------------------------------------------------
-bool MeshItem::setValue(const smtk::common::UUID& uuid,
-                         const smtk::mesh::MeshSet& vals)
+bool MeshItem::setValue(const smtk::mesh::MeshSet& val)
 {
-  smtk::attribute::MeshItem::const_mesh_it it =
-    this->m_meshValues.find(uuid);
   const MeshItemDefinition* def =
     static_cast<const MeshItemDefinition *>(this->definition().get());
-  if (!def->isExtensible() && it == this->m_meshValues.end() &&
+  if (!def->isExtensible() &&
       this->m_meshValues.size() >= def->numberOfRequiredValues())
     {
     // The maximum number of values is fixed
     return false;
     }
 
-  this->m_meshValues[uuid] = vals;
+  this->m_meshValues.clear();
+  this->m_meshValues.push_back(val);
   return true;
 }
 
 //----------------------------------------------------------------------------
-bool MeshItem::appendValue(const smtk::common::UUID& uuid,
-                           const smtk::mesh::MeshSet& vals)
+bool MeshItem::appendValue(const smtk::mesh::MeshSet& val)
 {
-  smtk::attribute::MeshItem::const_mesh_it it =
-    this->m_meshValues.find(uuid);
+  smtk::mesh::MeshList meshes;
+  meshes.push_back(val);
+  return this->appendValues(meshes);
+}
+
+//----------------------------------------------------------------------------
+bool MeshItem::appendValues(const smtk::mesh::MeshList& vals)
+{
   const MeshItemDefinition* def =
     static_cast<const MeshItemDefinition *>(this->definition().get());
-  if (!def->isExtensible() && it == this->m_meshValues.end() &&
+  if (!def->isExtensible() &&
       this->m_meshValues.size() >= def->numberOfRequiredValues())
     {
     // The maximum number of values is fixed
     return false;
     }
 
-  this->m_meshValues[uuid] = smtk::mesh::set_union(
-    this->m_meshValues[uuid], vals);
+  std::copy(vals.begin(),vals.end(),
+    std::back_inserter(this->m_meshValues));
+
   return true;
 }
 
 //----------------------------------------------------------------------------
-void MeshItem::removeValue(const smtk::common::UUID& uuid,
-                            const smtk::mesh::MeshSet& vals)
+void MeshItem::removeValue(const smtk::mesh::MeshSet& val)
 {
   const MeshItemDefinition* def =
     static_cast<const MeshItemDefinition *>(this->definition().get());
-  smtk::attribute::MeshItem::mesh_it it =
-    this->m_meshValues.find(uuid);
+  if(!def->isExtensible())
+    return;
+  smtk::attribute::MeshItem::mesh_it it = std::find(m_meshValues.begin(),
+                                                    m_meshValues.end(), val);
   if(it != this->m_meshValues.end())
     {
-    if(!vals.is_empty()) // remove the vals from collection map
-      {
-      this->m_meshValues[uuid] = smtk::mesh::set_difference(
-      this->m_meshValues[uuid], vals);
-      }
-    else if(def->isExtensible())
-      {
-      this->m_meshValues.erase(it);
-      }
+    this->m_meshValues.erase(it);
     }
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::MeshSet MeshItem::value(
-  const smtk::common::UUID& uuid) const
+const smtk::mesh::MeshList& MeshItem::values() const
 {
-  smtk::attribute::MeshItem::const_mesh_it it =
-    this->m_meshValues.find(uuid);
-  if(it != this->m_meshValues.end())
-    {
-    return it->second;
-    }
-  return smtk::mesh::MeshSet();
+  return this->m_meshValues;
 }
 
 //----------------------------------------------------------------------------
@@ -182,8 +172,9 @@ void MeshItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
   this->reset();
   MeshItemPtr sourceMeshItem =
     smtk::dynamic_pointer_cast<MeshItem>(sourceItem);
-  this->m_meshValues.insert(sourceMeshItem->begin(),
-                            sourceMeshItem->end());
+  this->m_meshValues.clear();
+  std::copy(sourceMeshItem->begin(),sourceMeshItem->end(),
+    std::back_inserter(this->m_meshValues));
 }
 //----------------------------------------------------------------------------
 smtk::attribute::MeshItem::const_mesh_it MeshItem::begin() const

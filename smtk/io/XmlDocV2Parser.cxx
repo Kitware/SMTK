@@ -336,7 +336,7 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node &node,
         continue;
         }
 
-      item->setValue(cid, smtk::mesh::MeshSet(c, interface->getRoot(), hrange));
+      item->appendValue(smtk::mesh::MeshSet(c, interface->getRoot(), hrange));
       }
     }
   else
