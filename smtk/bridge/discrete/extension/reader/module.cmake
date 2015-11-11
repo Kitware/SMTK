@@ -15,6 +15,7 @@ vtk_module(vtkSMTKDiscreteReaderExt
     vtkIOParallelExodus
     vtkRenderingCore
     vtkRenderingFreeType
+    vtkPVVTKExtensionsDefault
     vtkRendering${VTK_RENDERING_BACKEND}
     vtkRenderingMatplotlib
     vtkRenderingVolume
