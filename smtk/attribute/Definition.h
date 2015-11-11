@@ -100,6 +100,8 @@ namespace smtk
       void setAdvanceLevel(int level)
       {this->m_advanceLevel = level;}
 
+      // Indicates if a model entity can have multiple attributes of this
+      // type associated with it
       bool isUnique() const
       {return this->m_isUnique;}
       // Be careful with setting isUnique to be false
