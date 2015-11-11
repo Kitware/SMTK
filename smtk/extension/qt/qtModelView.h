@@ -60,7 +60,7 @@ public:
     const QColor& clr);
   void currentSelectionByMask(
     smtk::model::EntityRefs& selentityrefs, const BitFlags& entityFlags,
-    bool searchUp = false);
+    bool searchUp = false, smtk::mesh::MeshList* selmeshes = NULL);
   virtual void updateWithOperatorResult(
     const smtk::model::SessionRef& sref, const OperatorResult& result);
   std::string determineAction(const QPoint& pPos) const;
@@ -86,6 +86,7 @@ public slots:
 
 signals:
   void entitiesSelected(const smtk::model::EntityRefs& selEntityRefs);
+  void meshesSelected(const smtk::mesh::MeshList& selmeshes);
   void operationRequested(const smtk::model::OperatorPtr& brOp);
   void operationCancelled(const smtk::model::OperatorPtr& brOp);
   void operationFinished(const smtk::model::OperatorResult&);
@@ -149,9 +150,11 @@ protected:
     const smtk::common::UUIDs& selEntities,
     QItemSelection& selItems);
   void expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx);
-  void recursiveSelect (smtk::model::DescriptivePhrasePtr dPhrase,
-    smtk::model::EntityRefs& selentityrefs, BitFlags entityFlags,
-    bool exactMatch = false);
+  void recursiveSelect (const smtk::model::DescriptivePhrasePtr& dPhrase,
+    smtk::model::EntityRefs& selentityrefs, BitFlags entityFlags, bool exactMatch,
+    smtk::mesh::MeshList* selmeshes = NULL);
+  void selectMeshes (const smtk::model::DescriptivePhrasePtr& dPhrase,
+                   smtk::mesh::MeshList* selmeshes);
 
   smtk::model::Group groupParentOfIndex(const QModelIndex& qidx);
   smtk::model::Group groupParent(const DescriptivePhrasePtr& phrase);
@@ -169,9 +172,11 @@ protected:
 */
   bool setEntityVisibility(
     const smtk::model::EntityRefs& selentityrefs,
+    const smtk::mesh::MeshList& selmeshes,
     int vis, OperatorPtr op);
   bool setEntityColor(
   const smtk::model::EntityRefs& selentityrefs,
+  const smtk::mesh::MeshList& selmeshes,
   const QColor& newcolor, OperatorPtr brOp);
 
   QMenu* m_ContextMenu;

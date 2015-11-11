@@ -37,8 +37,8 @@ enum DescriptivePhraseType {
   STRING_PROPERTY_VALUE,        //!< One property of an entity has a list of string values.
   INTEGER_PROPERTY_VALUE,       //!< One property of an entity has a list of integer values.
   ENTITY_HAS_SUBPHRASES,        //!< The entity has many phrases of one type; this phrase summarizes them.
-  MESH_SUMMARY,                 //!< Summarize an mesh by displaying its name, type, and dimension.
-  MESH_LIST,              //!< Summarize an mesh collection by displaying its name.
+  MESH_SUMMARY,                 //!< Summarize an meshset or collection by displaying its name, type, and dimension.
+  MESH_LIST,                    //!< Summarize a list of meshsets or collections.
   INVALID_DESCRIPTION           //!< This is used to indicate an invalid or empty descriptive phrase.
 };
 

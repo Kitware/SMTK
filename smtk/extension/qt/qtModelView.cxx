@@ -24,6 +24,8 @@
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/Operator.h"
 #include "smtk/model/SessionRef.h"
+#include "smtk/model/MeshPhrase.h"
+#include "smtk/model/MeshListPhrase.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -32,12 +34,16 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
+#include "smtk/attribute/MeshItem.h"
 
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtOperatorDockWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
+
+#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/Collection.h"
 
 #include <QPointer>
 #include <QDropEvent>
@@ -367,10 +373,13 @@ void qtModelView::selectionChanged (
 {
   QTreeView::selectionChanged(selected, deselected);
   smtk::model::EntityRefs selentityrefs;
+  smtk::mesh::MeshList selmeshes;
   this->currentSelectionByMask(selentityrefs,
-    CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY | INSTANCE_ENTITY);
+    CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY | INSTANCE_ENTITY,
+    false, &selmeshes);
 
   emit this->entitiesSelected(selentityrefs);
+  emit this->meshesSelected(selmeshes);
 }
 
 //-----------------------------------------------------------------------------
@@ -382,25 +391,65 @@ void qtModelView::newIndexAdded(const QModelIndex & newidx)
 }
 
 //----------------------------------------------------------------------------
-void qtModelView::recursiveSelect (smtk::model::DescriptivePhrasePtr dPhrase,
-    smtk::model::EntityRefs& selentityrefs, BitFlags entityFlags,
-    bool exactMatch)
+void qtModelView::recursiveSelect (const smtk::model::DescriptivePhrasePtr& dPhrase,
+    smtk::model::EntityRefs& selentityrefs, BitFlags entityFlags, bool exactMatch,
+    smtk::mesh::MeshList* selmeshes)
 {
   if(dPhrase)
     {
-    BitFlags masked = dPhrase->relatedEntity().entityFlags() & entityFlags;
-    if ((masked && entityFlags == ANY_ENTITY) ||
-      (!exactMatch && masked) ||
-      (exactMatch && masked == entityFlags))
+    if(selmeshes && (dPhrase->phraseType() == MESH_SUMMARY ||
+      dPhrase->phraseType() == MESH_LIST))
       {
-      selentityrefs.insert(dPhrase->relatedEntity());
+      this->selectMeshes(dPhrase, selmeshes);
       }
+    else if(dPhrase->phraseType() != MESH_SUMMARY &&
+      dPhrase->phraseType() != MESH_LIST)
+      {
+      BitFlags masked = dPhrase->relatedEntity().entityFlags() & entityFlags;
+      if ((masked && entityFlags == ANY_ENTITY) ||
+        (!exactMatch && masked) ||
+        (exactMatch && masked == entityFlags))
+        {
+        selentityrefs.insert(dPhrase->relatedEntity());
+        }
 
-    smtk::model::DescriptivePhrases sub = dPhrase->subphrases();
+      smtk::model::DescriptivePhrases sub = dPhrase->subphrases();
+      for (smtk::model::DescriptivePhrases::iterator it = sub.begin();
+        it != sub.end(); ++it)
+        {
+        this->recursiveSelect(*it, selentityrefs, entityFlags, exactMatch,
+                              selmeshes);
+        }
+      }
+    }
+}
+
+//----------------------------------------------------------------------------
+void qtModelView::selectMeshes( const DescriptivePhrasePtr& dp,
+                               smtk::mesh::MeshList* selmeshes)
+{
+  if(!selmeshes)
+    {
+    return;
+    }
+  if(dp->phraseType() == MESH_SUMMARY)
+    {
+    MeshPhrasePtr mphrase = smtk::dynamic_pointer_cast<MeshPhrase>(dp);
+    if(mphrase)
+      {
+      if(mphrase->relatedMeshCollection())
+        selmeshes->push_back(mphrase->relatedMeshCollection()->meshes());
+      else if(!mphrase->relatedMesh().is_empty())
+        selmeshes->push_back(mphrase->relatedMesh());
+      }
+    }
+  else if(dp->phraseType() == MESH_LIST)
+    {
+    smtk::model::DescriptivePhrases sub = dp->subphrases();
     for (smtk::model::DescriptivePhrases::iterator it = sub.begin();
       it != sub.end(); ++it)
       {
-      this->recursiveSelect(*it, selentityrefs, entityFlags, exactMatch);
+      this->selectMeshes(*it, selmeshes);
       }
     }
 }
@@ -439,7 +488,7 @@ void qtModelView::owningEntitiesByMask (
 //----------------------------------------------------------------------------
 void qtModelView::currentSelectionByMask (
     smtk::model::EntityRefs& selentityrefs, const BitFlags& entityFlags,
-    bool searchUp)
+    bool searchUp, smtk::mesh::MeshList* selmeshes)
 {
   smtk::model::QEntityItemModel* qmodel = this->getModel();
   if(!qmodel)
@@ -449,9 +498,11 @@ void qtModelView::currentSelectionByMask (
   foreach(QModelIndex sel, this->selectedIndexes())
     {
     if(searchUp)
-      this->owningEntitiesByMask(qmodel->getItem(sel), selentityrefs, entityFlags);      
+      this->owningEntitiesByMask(qmodel->getItem(sel),
+        selentityrefs, entityFlags);      
     else
-      this->recursiveSelect(qmodel->getItem(sel), selentityrefs, entityFlags);
+      this->recursiveSelect(qmodel->getItem(sel),
+        selentityrefs, entityFlags, false, selmeshes);
     }
 }
 
@@ -984,12 +1035,50 @@ void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
   if(!brOp || !brOp->specification()->isValid())
     return;
   smtk::model::EntityRefs selentityrefs;
-  this->recursiveSelect(this->getModel()->getItem(idx), selentityrefs,
-    CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY |
-    MODEL_ENTITY | INSTANCE_ENTITY | SESSION);
+  smtk::mesh::MeshList selmeshes;
   DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
+  this->recursiveSelect(dp, selentityrefs,
+    CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY |
+    MODEL_ENTITY | INSTANCE_ENTITY | SESSION,
+    false, &selmeshes);
   bool visible = true;
-  if(dp->relatedEntity().hasVisibility())
+  if(dp->phraseType() == MESH_LIST || dp->phraseType() == MESH_SUMMARY)
+    {
+    if(selmeshes.size() == 0)
+      {
+      return; // nothing to do
+      }
+    smtk::mesh::ManagerPtr meshMgr = brOp->manager()->meshes();
+    smtk::mesh::CollectionPtr c;
+    if(dp->phraseType() == MESH_SUMMARY)
+      {
+      MeshPhrasePtr mphrase = smtk::dynamic_pointer_cast<MeshPhrase>(dp);
+      smtk::mesh::MeshSet meshkey;
+      if(!mphrase->relatedMesh().is_empty())
+        {
+        c = meshMgr->collection(mphrase->relatedMesh().collectionId());
+        meshkey = mphrase->relatedMesh();
+        }
+      else
+        {
+        c = mphrase->relatedMeshCollection();
+        meshkey = c->meshes();
+        }
+      if(c && !meshkey.is_empty())
+        {
+        const IntegerList& prop(c->integerProperty(meshkey, "visible"));
+        if(!prop.empty())
+          visible = (prop[0] != 0);
+        }
+      }
+/*
+    else if(dp->phraseType() == MESH_LIST)
+      {
+      // should not come in here here
+      }
+*/
+    }
+  else if(dp->relatedEntity().hasVisibility())
     {
     const IntegerList& prop(dp->relatedEntity().integerProperty("visible"));
     if(!prop.empty())
@@ -997,14 +1086,16 @@ void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
     }
 
   int newVis = visible ? 0 : 1;
-  if(this->setEntityVisibility(selentityrefs, newVis, brOp))
+  if(this->setEntityVisibility(selentityrefs, selmeshes, newVis, brOp))
     this->dataChanged(idx, idx);
   this->update();
 }
 
 //----------------------------------------------------------------------------
 bool qtModelView::setEntityVisibility(
-  const smtk::model::EntityRefs& selentityrefs, int vis, OperatorPtr brOp)
+  const smtk::model::EntityRefs& selentityrefs,
+  const smtk::mesh::MeshList& selmeshes,
+  int vis, OperatorPtr brOp)
 {
   smtk::attribute::AttributePtr attrib = brOp->specification();
   smtk::attribute::StringItemPtr nameItem =
@@ -1024,11 +1115,24 @@ bool qtModelView::setEntityVisibility(
 
   EntityRefs::const_iterator it;
   int numChangingEnts = 0;
+  // for model entities
   for (it=selentityrefs.begin(); it != selentityrefs.end(); it++)
     {
     numChangingEnts++;
     attrib->associateEntity(*it);
     }
+  // for meshes
+  if(selmeshes.size())
+    {
+    smtk::attribute::MeshItemPtr meshItem =
+      attrib->findMesh("meshes");
+    if(meshItem)
+      {
+      meshItem->appendValues(selmeshes);
+      numChangingEnts += selmeshes.size();
+      }
+    }
+
   if(numChangingEnts)
     {
     emit this->operationRequested(brOp);
@@ -1043,23 +1147,56 @@ void qtModelView::changeEntityColor( const QModelIndex& idx)
   OperatorPtr brOp = this->getOp(idx, "set property");
   if(!brOp || !brOp->specification()->isValid())
     return;
-//  this->recursiveSelect(this->getModel()->getItem(idx), selentityrefs,
-//    CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY |
-//    MODEL_ENTITY | INSTANCE_ENTITY | SESSION);
+
   DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
-  if(dp && dp->relatedEntity().isValid())
+  if(!dp)
+    return;
+
+  smtk::model::EntityRefs selentityrefs;
+  smtk::mesh::MeshList selmeshes;
+  QColor currentColor;
+  if(dp->phraseType() == MESH_SUMMARY)
     {
-    smtk::model::EntityRefs selentityrefs;
+    MeshPhrasePtr mphrase = smtk::dynamic_pointer_cast<MeshPhrase>(dp);
+    smtk::mesh::ManagerPtr meshMgr = brOp->manager()->meshes();
+    smtk::mesh::CollectionPtr c;
+    smtk::mesh::MeshSet meshkey;
+    if(!mphrase->relatedMesh().is_empty())
+      {
+      c = meshMgr->collection(mphrase->relatedMesh().collectionId());
+      meshkey = mphrase->relatedMesh();
+      }
+    else
+      {
+      c = mphrase->relatedMeshCollection();
+      meshkey = c->meshes();
+      }
+
+    if(c && !meshkey.is_empty())
+      {
+      const FloatList& rgba(c->floatProperty(meshkey, "color"));
+      int ncomp = static_cast<int>(rgba.size());
+      currentColor = ncomp >= 3 ?
+        QColor::fromRgbF(rgba[0], rgba[1], rgba[2]) : QColor();
+      selmeshes.push_back(meshkey);
+      }
+    }
+  else if(dp->relatedEntity().isValid())
+    {
     selentityrefs.insert(dp->relatedEntity());
 
     smtk::model::FloatList rgba(4);
     rgba = dp->relatedColor();
-    QColor currentColor = QColor::fromRgbF(rgba[0], rgba[1], rgba[2]);
+    currentColor = QColor::fromRgbF(rgba[0], rgba[1], rgba[2]);
+    }
+
+  if(selentityrefs.size() > 0 || selmeshes.size() > 0)
+    {
     QColor newColor = QColorDialog::getColor(currentColor, this,
       "Choose Entity Color", QColorDialog::DontUseNativeDialog);
     if(newColor.isValid() && newColor != currentColor)
       {
-      if(this->setEntityColor(selentityrefs, newColor, brOp))
+      if(this->setEntityColor(selentityrefs, selmeshes, newColor, brOp))
         this->dataChanged(idx, idx);
       }
     }
@@ -1068,6 +1205,7 @@ void qtModelView::changeEntityColor( const QModelIndex& idx)
 //----------------------------------------------------------------------------
 bool qtModelView::setEntityColor(
   const smtk::model::EntityRefs& selentityrefs,
+  const smtk::mesh::MeshList& selmeshes,
   const QColor& newColor, OperatorPtr brOp)
 {
   smtk::attribute::AttributePtr attrib = brOp->specification();
@@ -1083,13 +1221,6 @@ bool qtModelView::setEntityColor(
     }
   nameItem->setNumberOfValues(1);
   nameItem->setValue("color");
-/*
-  DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
-  smtk::model::FloatList rgba(4);
-  rgba = dp->relatedColor();
-  QColor currentColor = QColor::fromRgbF(rgba[0], rgba[1], rgba[2]);
-  QColor newColor = QColorDialog::getColor(currentColor, this);
-*/
   if(newColor.isValid())
     {
     colorItem->setNumberOfValues(4);
@@ -1099,14 +1230,13 @@ bool qtModelView::setEntityColor(
     colorItem->setValue(3, newColor.alphaF());
     }
   else
+    {
     colorItem->setNumberOfValues(0);
-
- //   EntityRefs entities;
- //   EntityRef::EntityRefsFromUUIDs(entities, brOp->manager(), ids);
-    std::cout << "set color to " << selentityrefs.size() << " entities\n";
+    }
 
   int numChangingEnts = 0;
   smtk::model::FloatList rgba(4);
+  // for model entities
   EntityRefs::const_iterator it;
   for (it=selentityrefs.begin(); it != selentityrefs.end(); it++)
     {
@@ -1130,6 +1260,19 @@ bool qtModelView::setEntityColor(
       attrib->associateEntity(*it);
       }
     }
+
+  // for meshes
+  if(selmeshes.size())
+    {
+    smtk::attribute::MeshItemPtr meshItem =
+      attrib->findMesh("meshes");
+    if(meshItem)
+      {
+      meshItem->appendValues(selmeshes);
+      numChangingEnts += selmeshes.size();
+      }
+    }
+
   if(numChangingEnts)
     {
     emit this->operationRequested(brOp);
@@ -1173,7 +1316,7 @@ void qtModelView::syncEntityVisibility(
       continue;
     EntityRefs entities;
     EntityRef::EntityRefsFromUUIDs(entities, qmodel->manager(), brEntities[session]);
-    this->setEntityVisibility(entities, vis, brOp);
+    this->setEntityVisibility(entities, smtk::mesh::MeshList(), vis, brOp);
     }
   // Now recursively check which model indices should be included:
 //  QModelIndexList& foundIndexes
@@ -1197,7 +1340,7 @@ void qtModelView::syncEntityColor(
       continue;
     EntityRefs entities;
     EntityRef::EntityRefsFromUUIDs(entities, qmodel->manager(), brEntities[session]);
-    this->setEntityColor(entities, clr, brOp);
+    this->setEntityColor(entities, smtk::mesh::MeshList(), clr, brOp);
     }
   // update index to redraw
   foreach(QModelIndex idx, this->selectedIndexes())
@@ -1230,8 +1373,33 @@ void qtModelView::changeEntityName( const QModelIndex& idx)
   titleItem->setNumberOfValues(1);
   titleItem->setValue(dp->title());
 
-  attrib->associateEntity(dp->relatedEntity());
-  emit this->operationRequested(brOp);
+  if(dp->phraseType() == MESH_SUMMARY)
+    {
+    MeshPhrasePtr mphrase = smtk::dynamic_pointer_cast<MeshPhrase>(dp);
+    smtk::mesh::MeshSet meshkey;
+    if(!mphrase->relatedMesh().is_empty())
+      {
+      meshkey = mphrase->relatedMesh();
+      }
+    else
+      {
+      smtk::mesh::ManagerPtr meshMgr = brOp->manager()->meshes();
+      smtk::mesh::CollectionPtr c = mphrase->relatedMeshCollection();
+      meshkey = c->meshes();
+      }
+    smtk::attribute::MeshItemPtr meshItem =
+      attrib->findMesh("meshes");
+    if(meshItem && !meshkey.is_empty())
+      {
+      meshItem->appendValue(meshkey);
+      emit this->operationRequested(brOp);
+      }
+    }
+  else if(dp->relatedEntity().isValid())
+    {
+    attrib->associateEntity(dp->relatedEntity());
+    emit this->operationRequested(brOp);
+    }
 }
 //-----------------------------------------------------------------------------
 void qtModelView::updateWithOperatorResult(
