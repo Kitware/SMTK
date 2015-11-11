@@ -27,6 +27,15 @@
 namespace smtk {
   namespace mesh {
 
+typedef std::vector<smtk::mesh::MeshSet> MeshList;
+#ifdef SMTK_HASH_STORAGE
+/// Store information mapping mesh collection IDs to meshsets records.
+typedef google::sparse_hash_map<smtk::common::UUID, MeshList> UUIDsToMeshes;
+#else
+/// Store information mapping mesh collection IDs to meshsets records.
+typedef std::map<smtk::common::UUID, MeshList> UUIDsToMeshes;
+#endif
+
 //Represents a collection of meshes that have been constructed by a Collection
 //We represent the collection of meshes by holding onto the parent entity
 //and a vector/range of mesh entities
@@ -131,6 +140,9 @@ public:
 
   //get the underlying HandleRange that this MeshSet represents
   const smtk::mesh::HandleRange& range() const { return this->m_range; }
+
+  //get the underlying collection uuid that this MeshSet belongs to
+  const smtk::common::UUID collectionId() const;
 
 private:
   smtk::mesh::CollectionPtr m_parent;
