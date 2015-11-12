@@ -56,7 +56,7 @@ public:
   vtkSetStringMacro(MeshCollectionID);
   vtkGetStringMacro(MeshCollectionID);
 
-  void GetUUID2BlockIdMap(std::map<smtk::common::UUID, unsigned int>& uuid2mid);
+  void GetMeshSet2BlockIdMap(std::map<smtk::mesh::MeshSet, unsigned int>& mesh2block);
   void Dirty();
 
   vtkGetMacro(AllowNormalGeneration,int);
@@ -81,16 +81,18 @@ protected:
   void SetCachedOutput(vtkMultiBlockDataSet*);
 
   void FindEntitiesWithMesh(
-  const smtk::mesh::CollectionPtr& meshes,
-  const smtk::model::CellEntity &cellent,
-  std::map<smtk::model::EntityRef, smtk::model::EntityRef> &entityrefMap);
+    const smtk::mesh::CollectionPtr& meshes,
+    const smtk::model::EntityRef &root,
+    std::map<smtk::model::EntityRef,
+              std::pair<smtk::model::EntityRef, smtk::mesh::MeshSet> > &entityrefMap,
+    std::set<smtk::model::EntityRef>& touched);
 
   void GenerateNormals(
     vtkPolyData* pd, const smtk::model::EntityRef& entityref, bool genNormals);
 
   smtk::model::ManagerPtr m_modelMgr;
   smtk::mesh::ManagerPtr m_meshMgr;
-  std::map<smtk::common::UUID, unsigned int> m_UUID2BlockIdMap; // UUIDs to block index map
+  std::map<smtk::mesh::MeshSet, unsigned int> m_Meshset2BlockIdMap; // MeshSets to block index map
   vtkNew<vtkPolyDataNormals> m_normalGenerator;
 
   vtkMultiBlockDataSet* CachedOutput;

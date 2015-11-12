@@ -87,6 +87,7 @@ void vtkMeshMultiBlockSource::SetModelManager(smtk::model::ManagerPtr model)
     return;
     }
   this->m_modelMgr = model;
+  this->SetMeshManager(model ? model->meshes() : smtk::mesh::ManagerPtr());
   this->Modified();
 }
 
@@ -114,10 +115,10 @@ smtk::mesh::ManagerPtr vtkMeshMultiBlockSource::GetMeshManager()
 }
 
 /// Get the map from model entity UUID to the block index in multiblock output
-void vtkMeshMultiBlockSource::GetUUID2BlockIdMap(std::map<smtk::common::UUID, unsigned int>& uuid2mid)
+void vtkMeshMultiBlockSource::GetMeshSet2BlockIdMap(std::map<smtk::mesh::MeshSet, unsigned int>& uuid2mid)
 {
   uuid2mid.clear();
-  uuid2mid.insert(this->m_UUID2BlockIdMap.begin(), this->m_UUID2BlockIdMap.end());
+  uuid2mid.insert(this->m_Meshset2BlockIdMap.begin(), this->m_Meshset2BlockIdMap.end());
 }
 
 /// Indicate that the model has changed and should have its VTK representation updated.
@@ -132,12 +133,13 @@ void vtkMeshMultiBlockSource::Dirty()
 /// Add customized block info.
 /// Mapping from UUID to block id
 static void internal_AddBlockEntityInfo(
+  const smtk::mesh::MeshSet& mesh,
   const smtk::model::EntityRef& entityref,
   const vtkIdType& blockId,
   vtkPolyData* poly,
-  std::map<smtk::common::UUID, unsigned int>& uuid2BlockId )
+  std::map<smtk::mesh::MeshSet, unsigned int>& mesh2BlockId )
 {
-  uuid2BlockId[entityref.entity()] = static_cast<unsigned int>(blockId);
+  mesh2BlockId[mesh] = static_cast<unsigned int>(blockId);
 
   // Add Entity UUID to fieldData
   vtkNew<vtkStringArray> uuidArray;
@@ -149,18 +151,20 @@ static void internal_AddBlockEntityInfo(
 }
 
 /// Add customized block info.
-/// Mapping from UUID to block id
+/// Mapping from MeshSet to block id
 /// 'Volume' field array to color by volume
-static void internal_AddBlockInfo(smtk::model::ManagerPtr manager,
+static void internal_AddBlockInfo(
+  const smtk::mesh::CollectionPtr& meshcollect,
   const smtk::model::EntityRef& entityref,
+  const smtk::mesh::MeshSet& blockmesh,
   const smtk::model::EntityRef& bordantCell,
   const vtkIdType& blockId,
   vtkPolyData* poly,
-  std::map<smtk::common::UUID, unsigned int>& uuid2BlockId)
+  std::map<smtk::mesh::MeshSet, unsigned int>& mesh2BlockId)
 {
-  manager->setIntegerProperty(entityref.entity(), "block_index", blockId);
+  meshcollect->setIntegerProperty(blockmesh, "block_index", blockId);
 
-  internal_AddBlockEntityInfo(entityref, blockId, poly, uuid2BlockId);
+  internal_AddBlockEntityInfo(blockmesh, entityref, blockId, poly, mesh2BlockId);
 
   smtk::model::EntityRefs vols;
   if(bordantCell.isValid() && bordantCell.isVolume())
@@ -347,27 +351,48 @@ void vtkMeshMultiBlockSource::GenerateRepresentationForSingleMesh(
     }
 }
 
-
-/// Recursively find all the entities with tessellation
+/// Recursively find all the entities with meshes
+/// \a entityrefMap is map from entityref to its parent cell entity and its meshset
 void vtkMeshMultiBlockSource::FindEntitiesWithMesh(
   const smtk::mesh::CollectionPtr& meshes,
-  const CellEntity &cellent,
-  std::map<smtk::model::EntityRef, smtk::model::EntityRef> &entityrefMap)
+  const EntityRef& root,
+  std::map<smtk::model::EntityRef,
+           std::pair<smtk::model::EntityRef, smtk::mesh::MeshSet> > &entityrefMap,
+  std::set<smtk::model::EntityRef>& touched)
 {
-  CellEntities cellents = cellent.isModel() ?
-    cellent.as<Model>().cells() : cellent.boundingCells();
-  for (CellEntities::const_iterator it = cellents.begin(); it != cellents.end(); ++it)
+  EntityRefArray children =
+    (root.isModel() ?
+     root.as<Model>().cellsAs<EntityRefArray>() :
+     (root.isCellEntity() ?
+      root.as<CellEntity>().boundingCellsAs<EntityRefArray>() :
+      (root.isGroup() ?
+       root.as<Group>().members<EntityRefArray>() :
+       EntityRefArray())));
+  if (root.isModel())
     {
-    if(!meshes->findAssociatedMeshes(*it).is_empty())
+    // Make sure groups are handled last to avoid unexpected "parents" in entityrefMap.
+    EntityRefArray tmp;
+    tmp = root.as<Model>().submodelsAs<EntityRefArray>();
+    children.insert(children.end(), tmp.begin(), tmp.end());
+    tmp = root.as<Model>().groupsAs<EntityRefArray>();
+    children.insert(children.end(), tmp.begin(), tmp.end());
+    }
+  for (EntityRefArray::const_iterator it = children.begin(); it != children.end(); ++it)
+    {
+    if (touched.find(*it) == touched.end())
       {
-      entityrefMap[*it] = cellent;
-      }
-    if((*it).boundingCells().size() > 0)
-      {
-      this->FindEntitiesWithMesh(meshes, *it, entityrefMap);
+      touched.insert(*it);
+
+      smtk::mesh::MeshSet entMesh = meshes->findAssociatedMeshes(*it);
+      if(!entMesh.is_empty())
+        {
+        entityrefMap[*it] = std::pair<smtk::model::EntityRef, smtk::mesh::MeshSet>(root, entMesh);
+        }
+      this->FindEntitiesWithMesh(meshes, *it, entityrefMap, touched);
       }
     }
 }
+
 
 /// Do the actual work of grabbing primitives from the model.
 void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(
@@ -397,52 +422,33 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(
           modelRequiresNormals = true;
         }
 
-      // First, enumerate all free cells and their boundaries to
-      // find those which provide tessellations.
-      // smtk::model::EntityRefs entityrefs;
-      // Map from entityref to its parent cell entity
-      std::map<smtk::model::EntityRef, smtk::model::EntityRef> entityrefMap;
+      // Map from entityref to its parent cell entity and its meshset
+      std::map<smtk::model::EntityRef,
+               std::pair<smtk::model::EntityRef, smtk::mesh::MeshSet> > entityrefMap;
+      std::set<smtk::model::EntityRef> touched; // make this go out of scope soon.
+      this->FindEntitiesWithMesh(meshcollect, modelEntity, entityrefMap, touched);
 
-      this->FindEntitiesWithMesh(meshcollect, modelEntity, entityrefMap);
-
-      Groups groups = modelEntity.groups();
-      mbds->SetNumberOfBlocks(entityrefMap.size() + groups.size());
+      mbds->SetNumberOfBlocks(entityrefMap.size());
       vtkIdType i;
-      std::map<smtk::model::EntityRef, smtk::model::EntityRef>::iterator cit;
+      std::map<smtk::model::EntityRef,
+               std::pair<smtk::model::EntityRef, smtk::mesh::MeshSet> >::iterator cit;
       for (i = 0, cit = entityrefMap.begin(); cit != entityrefMap.end(); ++cit, ++i)
         {
         vtkNew<vtkPolyData> poly;
         mbds->SetBlock(i, poly.GetPointer());
         // Set the block name to the entity UUID.
         mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), cit->first.name().c_str());
-        this->GenerateRepresentationForSingleMesh(meshcollect->findAssociatedMeshes(cit->first),
+        this->GenerateRepresentationForSingleMesh(cit->second.second,
           poly.GetPointer(), cit->first, modelRequiresNormals);
         // std::cout << "UUID: " << (*cit).entity().toString().c_str() << " Block: " << i << std::endl;
         // as a convenient method to get the flat block index in multiblock
         if(!(cit->first.entity().isNull()))
           {
-          internal_AddBlockInfo(this->m_modelMgr, cit->first, cit->second,
-            i, poly.GetPointer(), this->m_UUID2BlockIdMap);
+          internal_AddBlockInfo(meshcollect, cit->first, cit->second.second, cit->second.first,
+            i, poly.GetPointer(), this->m_Meshset2BlockIdMap);
           }
         }
 
-      // Now look at groups of the model to see if those have any tessellation data
-      i = 0;
-      for (Groups::iterator git = groups.begin(); git != groups.end(); ++git, ++i)
-        {
-        if (git->hasTessellation())
-          {
-          vtkNew<vtkPolyData> poly;
-          mbds->SetBlock(entityrefMap.size() + i, poly.GetPointer());
-          mbds->GetMetaData(entityrefMap.size() + i)->Set(vtkCompositeDataSet::NAME(), git->name().c_str());
-
-          this->GenerateRepresentationForSingleMesh(meshcollect->findAssociatedMeshes(*git),
-            poly.GetPointer(), *git, modelRequiresNormals);
-          // as a convenient method to get the flat block_index in multiblock
-          internal_AddBlockInfo(this->m_modelMgr, *git, modelEntity, entityrefMap.size() + i,
-            poly.GetPointer(), this->m_UUID2BlockIdMap);
-          }
-        }
       // TODO: how do we handle submodels in a multiblock dataset? We could have
       //       a cycle in the submodels, so treating them as trees would not work.
       // Finally, if nothing has any tessellation information, see if any is associated
@@ -480,7 +486,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(
         smtk::model::EntityRefArray ents = singleMesh.modelEntities();
         if( ents.size() > 0 )
           {
-          internal_AddBlockEntityInfo(ents[0], i, poly.GetPointer(), this->m_UUID2BlockIdMap);
+          internal_AddBlockEntityInfo(singleMesh, ents[0], i, poly.GetPointer(), this->m_Meshset2BlockIdMap);
           }
         }
       }
@@ -497,7 +503,7 @@ int vtkMeshMultiBlockSource::RequestData(
   vtkInformationVector** vtkNotUsed(inInfo),
   vtkInformationVector* outInfo)
 {
-  this->m_UUID2BlockIdMap.clear();
+  this->m_Meshset2BlockIdMap.clear();
   vtkMultiBlockDataSet* output = vtkMultiBlockDataSet::GetData(outInfo, 0);
   if (!output)
     {
