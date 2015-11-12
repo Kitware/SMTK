@@ -323,7 +323,7 @@ bool ValueItem::assign(ConstItemPtr &sourceItem, unsigned int options)
                                       options & Item::COPY_MODEL_ASSOCIATIONS, options);
           if (!att)
             {
-            std::cerr << "EROOR:Could not copy Attribute:"
+            std::cerr << "ERROR: Could not copy Attribute:"
                       << sourceValueItem->expression(i)->name()
                       << " used as an expression by item: "
                       << sourceItem->name() << "\n";

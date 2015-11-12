@@ -272,7 +272,7 @@ bool RefItem::assign(ConstItemPtr &sourceItem, unsigned int options)
                                     options & Item::COPY_MODEL_ASSOCIATIONS, options);
         if (!att)
           {
-          std::cerr << "Could not copy Attribute:"
+          std::cerr << "ERROR: Could not copy Attribute:"
                     << sourceRefItem->value()->name() << " referenced by item: "
                     << sourceItem->name() << "\n";
           return false; // Something went wrong!
