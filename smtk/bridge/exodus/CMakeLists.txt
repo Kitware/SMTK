@@ -9,6 +9,7 @@ set(exodusSrcs
   SessionExodusIOJSON.cxx
   Operator.cxx
   ReadOperator.cxx
+  WriteOperator.cxx
 )
 
 set(exodusHeaders
@@ -16,6 +17,7 @@ set(exodusHeaders
   SessionExodusIOJSON.h
   Operator.h
   ReadOperator.h
+  WriteOperator.h
 )
 
 install(FILES PointerDefs.h DESTINATION include/smtk/${SMTK_VERSION}/smtk/bridge/exodus)
@@ -56,6 +58,7 @@ smtk_install_library(smtkExodusSession)
 # to exodusOperatorXML) since the operators themselves include
 # the header in their implementations.
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ReadOperator.sbt" exodusOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/WriteOperator.sbt" exodusOperatorXML)
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" exodusSessionJSON)
 
 # Install the headers
