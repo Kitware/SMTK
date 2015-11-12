@@ -33,6 +33,7 @@
 #include "vtkUnsignedCharArray.h"
 #include "vtkImageData.h"
 #include "vtkStringArray.h"
+#include "vtkTypeInt32Array.h"
 #include "vtkInformation.h"
 #include "vtkUnstructuredGrid.h"
 
@@ -317,6 +318,19 @@ int DiscoverLabels(vtkDataSet* obj, std::string& labelname, std::set<double>& la
       labelArray = dsa->GetScalars();
       }
     }
+  if (!labelArray || !vtkTypeInt32Array::SafeDownCast(labelArray))
+    {
+    int numArrays = dsa->GetNumberOfArrays();
+    for (int i = 0; i < numArrays; ++i)
+      {
+      if (vtkTypeInt32Array::SafeDownCast(dsa->GetArray(i)))
+        {
+        labelArray = dsa->GetArray(i);
+        std::cout << "Found labels: \"" << labelArray->GetName() << "\"\n";
+        break;
+        }
+      }
+    }
 
   if (!labelArray)
     { // No scalars or array of the given name? Create one.
@@ -413,6 +427,7 @@ smtk::model::OperatorResult ReadOperator::readLabelMap()
     brdg->addModel(modelOut);
   smtkModelOut.setStringProperty("url", filename);
   smtkModelOut.setStringProperty("type", "label map");
+  smtkModelOut.setStringProperty("label array", labelname);
 
   // Now set model for session and transcribe everything.
   smtk::model::OperatorResult result = this->createResult(
