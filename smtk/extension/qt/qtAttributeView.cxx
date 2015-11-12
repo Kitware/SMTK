@@ -423,6 +423,8 @@ void qtAttributeView::onListBoxSelectionChanged()
     }
   else
     {
+    delete this->Internals->CurrentAtt;
+    this->Internals->CurrentAtt = NULL;
     this->updateAssociationEnableState(smtk::attribute::AttributePtr());
     }
 
