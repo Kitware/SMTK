@@ -60,8 +60,10 @@ namespace smtk
       typename T::ConstPtr findAs(const std::string& name) const;
 
       virtual void reset();
-      virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
-                            smtk::attribute::Item::CopyInfo& info);
+      // Assigns this item to be equivalent to another.  Options are processed by derived item classes
+      // Returns true if success and false if a problem occured - options are use when copying sub-items.
+      // See Items.h for a description of these options.
+      virtual bool assign(smtk::attribute::ConstItemPtr &sourceItem, unsigned int options = 0);
     protected:
       GroupItem(Attribute *owningAttribute, int itemPosition);
       GroupItem(Item *owningItem, int myPosition, int mySubGroupPosition);

@@ -52,8 +52,12 @@ namespace smtk
       virtual bool isSet(std::size_t element=0) const
       {return this->m_values[element].lock().get() != NULL;}
       virtual void unset(std::size_t element=0);
-      virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
-                            smtk::attribute::Item::CopyInfo& info);
+      // Assigns this item to be equivalent to another.  Options are processed by derived item classes
+      // Returns true if success and false if a problem occured.  By default, an attribute being referenced by this
+      // item will also be copied if needed.  Use IGNORE_ATTRIBUTE_REF_ITEMS option to prevent this.
+      // When the reference attribute is copied, its model associations are not copied by default.
+      // Use COPY_MODEL_ASSOCIATIONS if you want them copied as well These options are defined in Item.h .
+      virtual bool assign(smtk::attribute::ConstItemPtr &sourceItem, unsigned int options = 0);
 
     protected:
       RefItem(Attribute *owningAttribute, int itemPosition);

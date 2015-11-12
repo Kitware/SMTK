@@ -238,14 +238,23 @@ RefItem::reset()
   Item::reset();
 }
 //----------------------------------------------------------------------------
-void RefItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+bool RefItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
   // Assigns my contents to be same as sourceItem
-  Item::copyFrom(sourceItem, info);
-
   // Cast input pointer to RefItem
-  RefItemPtr sourceRefItem = smtk::dynamic_pointer_cast<RefItem>(sourceItem);
+  smtk::shared_ptr<const RefItem > sourceRefItem =
+    smtk::dynamic_pointer_cast<const RefItem>(sourceItem);
 
+  if (!sourceRefItem)
+    {
+    return false; // Source is not a RefItem
+    }
+
+  if (options & Item::IGNORE_ATTRIBUTE_REF_ITEMS)
+    {
+    return Item::assign(sourceItem, options);
+    }
+  
   // Get reference to attribute system
   System *system = this->attribute()->system();
 
@@ -257,23 +266,26 @@ void RefItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
       {
       std::string nameStr = sourceRefItem->value()->name();
       AttributePtr att = system->findAttribute(nameStr);
-      if (att)
+      if (!att)
         {
-        this->setValue(i, att);
+        att = system->copyAttribute(sourceRefItem->value(),
+                                    options & Item::COPY_MODEL_ASSOCIATIONS, options);
+        if (!att)
+          {
+          std::cerr << "Could not copy Attribute:"
+                    << sourceRefItem->value()->name() << " referenced by item: "
+                    << sourceItem->name() << "\n";
+          return false; // Something went wrong!
+          }
         }
-      else
-        {
-        std::cout << "Adding  \"" << nameStr
-                  << "\" to copy-attribute queue"
-                  << std::endl;
-        Item::UnresolvedItemInfo itemInfo(nameStr, this->pointer(), i);
-        info.UnresolvedRefItems.push(itemInfo);
-        }
+      this->setValue(i, att);
       }
     else
       {
       this->unset(i);
       }
     }
+  
+  return Item::assign(sourceItem, options);
 }
 //----------------------------------------------------------------------------

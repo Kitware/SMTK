@@ -665,12 +665,25 @@ void qtAttributeView::createNewAttribute(
 //----------------------------------------------------------------------------
 void qtAttributeView::onCopySelected()
 {
-  smtk::attribute::AttributePtr selObject = this->getSelectedAttribute();
-  if(selObject)
+  smtk::attribute::AttributePtr newObject, selObject = this->getSelectedAttribute();
+  if(!selObject)
     {
-    this->createNewAttribute(selObject->definition());
+    return;
+    }
+  
+  System *attSystem = selObject->system();
+  newObject = attSystem->copyAttribute(selObject);
+  if (newObject)
+    {
+    QTableWidgetItem* item = this->addAttributeListItem(newObject);
+    if(item)
+      {
+      this->Internals->ListTable->selectRow(item->row());
+      }
+    emit this->numOfAttriubtesChanged();
     }
 }
+
 //----------------------------------------------------------------------------
 void qtAttributeView::onDeleteSelected()
 {

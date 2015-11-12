@@ -76,8 +76,12 @@ namespace smtk
       virtual bool isUsingDefault() const;
       DataT defaultValue() const;
       const std::vector<DataT>& defaultValues() const;
-      virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
-                            smtk::attribute::Item::CopyInfo& info);
+      // Assigns this item to be equivalent to another.  Options are processed by derived item classes
+      // Returns true if success and false if a problem occured.  By default, an attribute being used by this
+      // to represent an expression will be copied if needed.  Use IGNORE_EXPRESSIONS option to prevent this
+      // When an expression attribute is copied, its model associations are by default not.
+      // Use COPY_MODEL_ASSOCIATIONS if you want them copied as well.These options are defined in Item.h .
+      virtual bool assign(smtk::attribute::ConstItemPtr &sourceItem, unsigned int options = 0);
       shared_ptr<const DefType> concreteDefinition() const
         { return dynamic_pointer_cast<const DefType>(this->definition()); }
     protected:
@@ -540,17 +544,23 @@ namespace smtk
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
-    void
+    bool
     ValueItemTemplate<DataT>::
-    copyFrom(const smtk::attribute::ItemPtr sourceItem,
-             smtk::attribute::Item::CopyInfo& info)
-      {
-      ValueItem::copyFrom(sourceItem, info);
-
+    assign(smtk::attribute::ConstItemPtr &sourceItem,
+           unsigned int options)
+    {
+      if (!ValueItem::assign(sourceItem, options))
+        {
+        return false;
+        }
       // Cast input pointer to ValueItemTemplate
-      ValueItemTemplate<DataT> *sourceValueItemTemplate =
-        dynamic_cast<ValueItemTemplate<DataT> *>(sourceItem.get());
-
+      const ValueItemTemplate<DataT> *sourceValueItemTemplate =
+        dynamic_cast<const ValueItemTemplate<DataT> *>(sourceItem.get());
+      
+      if (!sourceValueItemTemplate)
+        {
+        return false; // Source is not the right type of item
+        }
       // Update values
       for (std::size_t i=0; i<sourceValueItemTemplate->numberOfValues(); ++i)
         {
@@ -561,8 +571,8 @@ namespace smtk
           this->setValue(i, sourceValueItemTemplate->value(i));
           }
         } // for
-    }
-
+      return true;
+      }
   }  // namespace attribute
 }  // namespace smtk
 
