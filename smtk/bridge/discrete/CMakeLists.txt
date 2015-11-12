@@ -226,6 +226,12 @@ target_link_libraries(smtkDiscreteSession
     vtkSMTKDiscreteModel
   )
 
+if (SMTK_ENABLE_REMUS_SUPPORT)
+  target_link_libraries(smtkDiscreteSession
+    LINK_PRIVATE
+      vtkSMTKDiscreteMeshingExt)
+endif ()
+
 
 smtk_export_header(smtkDiscreteSession Exports.h)
 
