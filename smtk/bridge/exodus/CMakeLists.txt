@@ -32,6 +32,7 @@ target_link_libraries(smtkExodusSession
     vtkIOExodus
     vtkIONetCDF
     vtkIOXML
+    vtkImagingCore
     vtkFiltersGeneral
     vtkIOParallelExodus
     vtkFiltersGeometry

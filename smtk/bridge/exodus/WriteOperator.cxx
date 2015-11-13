@@ -36,6 +36,8 @@
 #include "vtkTypeInt32Array.h"
 #include "vtkInformation.h"
 #include "vtkUnstructuredGrid.h"
+#include "vtkPassArrays.h"
+#include "vtkImageConstantPad.h"
 
 #include "vtkVector.h"
 #include "vtkVectorOperators.h"
@@ -218,12 +220,36 @@ smtk::model::OperatorResult WriteOperator::writeLabelMap()
       RewriteLabels(img, static_cast<VTK_TT*>(lbl->GetVoidPointer(0)), -500.0, scenter, sradius, basept, normal));
     }
 
-  std::string filename = filenameItem->value();
+  // Omit the density field from the MRI scan (and other, non-label arrays):
+  vtkNew<vtkPassArrays> pass;
+  pass->SetInputDataObject(img);
+  pass->AddArray(vtkDataObject::POINT, labelStr.c_str());
+
+  // Pad volume so it is a multiple of 16 voxels in each direction:
+  vtkNew<vtkImageConstantPad> pad;
+  pad->SetInputConnection(pass->GetOutputPort());
+  pad->SetConstant(-1); // pad exterior voxels
+
+  int extent[6];
+  img->GetExtent(extent);
+  int dims[3] = {extent[1] - extent[0] + 1, extent[3] - extent[2] + 1, extent[5] - extent[4] + 1};
+  for (int i = 0; i < 3; ++i)
+    {
+    if (dims[i] % 16 > 0)
+      {
+      dims[i]  = dims[i] + (16 - (dims[i] % 16));
+      }
+    }
+  extent[1] = extent[0] + dims[0] - 1;
+  extent[3] = extent[3] + dims[1] - 1;
+  extent[5] = extent[5] + dims[2] - 1;
+  pad->SetOutputWholeExtent(extent);
 
   // Write out the data
+  std::string filename = filenameItem->value();
   vtkNew<vtkDataSetWriter> wri;
   wri->SetFileName(filenameItem->value(0).c_str());
-  wri->SetInputDataObject(img);
+  wri->SetInputConnection(pad->GetOutputPort());
   wri->SetFileTypeToBinary();
   wri->Write();
 
