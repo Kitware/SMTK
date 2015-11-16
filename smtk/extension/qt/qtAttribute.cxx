@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/extension/qt/qtAttribute.h"
 
+#include "smtk/extension/qt/qtAttributeItemWidgetFactory.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtGroupItem.h"
 #include "smtk/extension/qt/qtInputsItem.h"
@@ -44,7 +45,11 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
+#include <stdlib.h> // for atexit()
+
 using namespace smtk::attribute;
+
+qtAttributeItemWidgetFactory* qtAttribute::s_factory = NULL;
 
 //----------------------------------------------------------------------------
 class qtAttributeInternals
@@ -83,7 +88,7 @@ qtAttribute::~qtAttribute()
     {
     delete this->m_internals->m_items.value(i);
     }
-  
+
   this->m_internals->m_items.clear();
   if (this->m_widget)
     {
@@ -100,6 +105,12 @@ void qtAttribute::createWidget()
     {
     return;
     }
+
+  if (!qtAttribute::s_factory)
+    {
+    qtAttribute::setItemWidgetFactory(new qtAttributeItemWidgetFactory());
+    }
+
   int numShowItems = 0;
   smtk::attribute::AttributePtr att = this->attribute();
   std::size_t i, n = att->numberOfItems();
@@ -163,7 +174,7 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
     {
     return;
     }
-  
+
   QLayout* layout = this->m_widget->layout();
   qtItem* qItem = NULL;
   smtk::attribute::AttributePtr att = this->attribute();
@@ -227,32 +238,38 @@ qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW,
   switch (item->type())
     {
     case smtk::attribute::Item::ATTRIBUTE_REF: // This is always inside valueItem ???
-      aItem = new qtAttributeRefItem(smtk::dynamic_pointer_cast<RefItem>(item), pW, bview, enVectorItemOrient);
+      aItem = qtAttribute::s_factory->createRefItemWidget(
+        smtk::dynamic_pointer_cast<RefItem>(item), pW, bview, enVectorItemOrient);
       break;
     case smtk::attribute::Item::DOUBLE:
     case smtk::attribute::Item::INT:
     case smtk::attribute::Item::STRING:
-      aItem = new qtInputsItem(smtk::dynamic_pointer_cast<ValueItem>(item), pW, bview, enVectorItemOrient);
+      aItem = qtAttribute::s_factory->createValueItemWidget(
+        smtk::dynamic_pointer_cast<ValueItem>(item), pW, bview, enVectorItemOrient);
       break;
     case smtk::attribute::Item::DIRECTORY:
-      aItem = new qtFileItem(smtk::dynamic_pointer_cast<DirectoryItem>(item), pW, bview, enVectorItemOrient);
+      aItem = qtAttribute::s_factory->createDirectoryItemWidget(
+        smtk::dynamic_pointer_cast<DirectoryItem>(item), pW, bview, enVectorItemOrient);
       break;
     case smtk::attribute::Item::FILE:
-      aItem = new qtFileItem(smtk::dynamic_pointer_cast<FileItem>(item), pW, bview, enVectorItemOrient);
+      aItem = qtAttribute::s_factory->createFileItemWidget(
+        smtk::dynamic_pointer_cast<FileItem>(item), pW, bview, enVectorItemOrient);
       break;
     case smtk::attribute::Item::GROUP:
-      aItem = new qtGroupItem(smtk::dynamic_pointer_cast<GroupItem>(item), pW, bview, enVectorItemOrient);
+      aItem = qtAttribute::s_factory->createGroupItemWidget(
+        smtk::dynamic_pointer_cast<GroupItem>(item), pW, bview, enVectorItemOrient);
       break;
     case smtk::attribute::Item::VOID:
-      aItem = new qtVoidItem(smtk::dynamic_pointer_cast<VoidItem>(item), pW, bview);
+      aItem = qtAttribute::s_factory->createVoidItemWidget(
+        smtk::dynamic_pointer_cast<VoidItem>(item), pW, bview, enVectorItemOrient);
       break;
     case smtk::attribute::Item::MODEL_ENTITY:
-      aItem = new qtModelEntityItem(smtk::dynamic_pointer_cast<ModelEntityItem>(item),
-                                     pW, bview, enVectorItemOrient);
+      aItem = qtAttribute::s_factory->createModelEntityItemWidget(
+        smtk::dynamic_pointer_cast<ModelEntityItem>(item), pW, bview, enVectorItemOrient);
       break;
     case smtk::attribute::Item::MESH_SELECTION:
-      aItem = new qtMeshSelectionItem(smtk::dynamic_pointer_cast<MeshSelectionItem>(item), pW,
-                                      bview, enVectorItemOrient);
+      aItem = qtAttribute::s_factory->createMeshSelectionItemWidget(
+        smtk::dynamic_pointer_cast<MeshSelectionItem>(item), pW, bview, enVectorItemOrient);
       break;
     default:
       //this->m_errorStatus << "Error: Unsupported Item Type: " <<
@@ -260,4 +277,35 @@ qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW,
       break;
     }
   return aItem;
+}
+
+// Used with atexit() to prevent leakage:
+static void cleanupItemFactory()
+{
+  qtAttribute::setItemWidgetFactory(NULL);
+}
+
+/**\brief Set the factory to be used for all future items created.
+ *
+ * This method is ignored if \a f is ignored.
+ */
+void qtAttribute::setItemWidgetFactory(qtAttributeItemWidgetFactory* f)
+{
+  if (f == qtAttribute::s_factory)
+    return;
+
+  delete qtAttribute::s_factory;
+  qtAttribute::s_factory = f;
+  static bool once = false;
+  if (!once && qtAttribute::s_factory)
+    {
+    once = true;
+    atexit(cleanupItemFactory);
+    }
+}
+
+/// Return the factory currently being used to create widgets for child items.
+qtAttributeItemWidgetFactory* qtAttribute::itemWidgetFactory()
+{
+  return qtAttribute::s_factory;
 }
