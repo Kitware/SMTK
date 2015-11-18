@@ -1157,13 +1157,12 @@ void qtModelView::changeEntityColor( const QModelIndex& idx)
   if(dp->phraseType() == MESH_SUMMARY)
     {
     MeshPhrasePtr mphrase = smtk::dynamic_pointer_cast<MeshPhrase>(dp);
-    smtk::mesh::ManagerPtr meshMgr = brOp->manager()->meshes();
     smtk::mesh::CollectionPtr c;
     smtk::mesh::MeshSet meshkey;
     if(!mphrase->relatedMesh().is_empty())
       {
-      c = mphrase->relatedMesh().collection();
       meshkey = mphrase->relatedMesh();
+      c = meshkey.collection();
       }
     else
       {

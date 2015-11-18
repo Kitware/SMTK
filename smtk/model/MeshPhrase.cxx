@@ -69,30 +69,45 @@ std::string MeshPhrase::title()
     }
   else if(!this->m_relatedMesh.is_empty())
     {
-    // trying to use associatied model entity name
-    smtk::model::EntityRefArray relatedEnts = this->m_relatedMesh.modelEntities();
-    if(relatedEnts.size() == 1)
+    smtk::mesh::CollectionPtr c = this->m_relatedMesh.collection();
+    bool hasValidNameProp = false;
+    if(c && c->hasIntegerProperty(this->m_relatedMesh, "name"))
       {
-      strText = relatedEnts[0].name();
+      smtk::model::StringList const& nprop(c->stringProperty(this->m_relatedMesh, "name"));
+      if (!nprop.empty() && !nprop[0].empty())
+        {
+        strText = nprop[0];
+        hasValidNameProp = true;
+        }
       }
-    else if(relatedEnts.size() > 1)
+
+    if(!hasValidNameProp)
       {
-      // assuming we have same dimensions in the set
-      if(!this->m_relatedMesh.subset(smtk::mesh::Dims3).is_empty())
+      // trying to use associatied model entity name
+      smtk::model::EntityRefArray relatedEnts = this->m_relatedMesh.modelEntities();
+      if(relatedEnts.size() == 1)
         {
-        strText = "Volumes";
+        strText = relatedEnts[0].name();
         }
-      else if(!this->m_relatedMesh.subset(smtk::mesh::Dims2).is_empty())
+      else if(relatedEnts.size() > 1)
         {
-        strText = "Faces";
-        }
-      else if(!this->m_relatedMesh.subset(smtk::mesh::Dims1).is_empty())
-        {
-        strText = "Edges";
-        }
-      else
-        {
-        strText = "unknown meshes";
+        // assuming we have same dimensions in the set
+        if(!this->m_relatedMesh.subset(smtk::mesh::Dims3).is_empty())
+          {
+          strText = "Volumes";
+          }
+        else if(!this->m_relatedMesh.subset(smtk::mesh::Dims2).is_empty())
+          {
+          strText = "Faces";
+          }
+        else if(!this->m_relatedMesh.subset(smtk::mesh::Dims1).is_empty())
+          {
+          strText = "Edges";
+          }
+        else
+          {
+          strText = "unknown meshes";
+          }
         }
       }
     }
@@ -102,27 +117,31 @@ std::string MeshPhrase::title()
 /// True when the meshset is valid and marked as mutable (the default, setMutability(0x1)).
 bool MeshPhrase::isTitleMutable() const
 {
-  return false;//(this->m_mutability & 0x1) && !this->m_relatedMesh.is_empty();
+  return (this->m_mutability & 0x1) && 
+   (!this->m_relatedMesh.is_empty() || this->m_relatedCollection->isValid());
 }
 
 bool MeshPhrase::setTitle(const std::string& newTitle)
 {
-  /*
   // The title is the name, so set the name as long as we're allowed.
-  if (this->isTitleMutable() && this->m_relatedMesh.name() != newTitle)
+  if (this->isTitleMutable() && newTitle != this->title())
     {
-    if (!newTitle.empty())
-      this->m_relatedMesh.setName(newTitle);
-    else
+    if(!this->m_relatedMesh.is_empty())
       {
-      this->m_relatedMesh.removeStringProperty("name");
-      // Don't let name be a blank... assign a default.
-      this->m_relatedMesh.manager()->assignDefaultName(
-        this->m_relatedMesh.entity());
+      smtk::mesh::CollectionPtr c = this->m_relatedMesh.collection();
+      if(c->isValid())
+        {
+        c->setStringProperty(this->m_relatedMesh, "name", newTitle);
+        return true;
+        }
       }
-    return true;
+    else if(this->isCollection())
+      {
+      this->m_relatedCollection->name(newTitle);
+      return true;
+      }
     }
-  */
+
   return false;
 }
 
@@ -140,18 +159,58 @@ smtk::mesh::CollectionPtr MeshPhrase::relatedMeshCollection() const
 /// Return a color associated with the related meshset.
 FloatList MeshPhrase::relatedColor() const
 {
-  return FloatList(4, 1.);//this->m_relatedMesh.color();
+  smtk::mesh::CollectionPtr c;
+  smtk::mesh::MeshSet meshkey;
+  if(!this->m_relatedMesh.is_empty())
+    {
+    meshkey = this->m_relatedMesh;
+    c = meshkey.collection();
+    }
+  else
+    {
+    c = this->relatedMeshCollection();
+    meshkey = c->meshes();
+    }
+
+  if(c && !meshkey.is_empty())
+    {
+    FloatList result = c->floatProperty(meshkey, "color");
+    int ncomp = static_cast<int>(result.size());
+    if (ncomp < 4)
+      {
+      result.resize(4);
+      for (int i = ncomp; i < 3; ++i)
+        result[i] = 0.;
+      switch (ncomp)
+        {
+      default:
+      case 0: // Assuming color not defined; mark alpha invalid.
+        result[3] = -1.;
+        break;
+      case 1:
+      case 3: // Assume RGB or greyscale; default alpha = 1.
+        result[3] = 1.;
+        break;
+      case 2: // Assume greyscale+alpha; remap alpha to result[4]
+        result[3] = (result[1] >= 0. && result[1] <= 0. ? result[1] : 1.);
+        break;
+        }
+      }
+    return result;
+    }
+
+  return FloatList(4, 0.0);
 }
 
 /// True when the entity is valid and marked as mutable (the default, setMutability(0x4)).
 bool MeshPhrase::isRelatedColorMutable() const
 {
-  return false; //(this->m_mutability & 0x4) && this->m_relatedMesh.isValid();
+  return (this->m_mutability & 0x4) &&
+   (!this->m_relatedMesh.is_empty() || this->m_relatedCollection->isValid());
 }
 
 bool MeshPhrase::setRelatedColor(const FloatList& rgba)
 {
-  /*
   if (this->isRelatedColorMutable())
     {
     bool colorValid = rgba.size() == 4;
@@ -159,11 +218,26 @@ bool MeshPhrase::setRelatedColor(const FloatList& rgba)
       colorValid &= (rgba[i] >= 0. && rgba[i] <= 1.);
     if (colorValid)
       {
-      this->m_relatedMesh.setColor(rgba);
-      return true;
+      smtk::mesh::CollectionPtr c;
+      smtk::mesh::MeshSet meshkey;
+      if(!this->m_relatedMesh.is_empty())
+        {
+        meshkey = this->m_relatedMesh;
+        c = meshkey.collection();
+        }
+      else
+        {
+        c = this->relatedMeshCollection();
+        meshkey = c->meshes();
+        }
+
+      if(c && !meshkey.is_empty())
+        {
+        c->setFloatProperty(meshkey, "color", rgba);
+        return true;
+        }
       }
     }
-    */
   return false;
 }
 

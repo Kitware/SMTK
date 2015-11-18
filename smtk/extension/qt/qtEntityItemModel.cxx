@@ -14,8 +14,12 @@
 #include "smtk/model/FloatData.h"
 #include "smtk/model/IntegerData.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/MeshPhrase.h"
 #include "smtk/model/StringData.h"
 #include "smtk/model/SubphraseGenerator.h"
+
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"
@@ -260,22 +264,47 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
           this->lookupIconForEntityFlags(
             item->phraseType()));
         }
-      else if (role == EntityVisibilityRole && item->relatedEntity().isValid())
+      else if (role == EntityVisibilityRole)
         {
         // by default, everything should be visible
         bool visible = true;
-        if(item->relatedEntity().hasVisibility())
+
+        if(item->phraseType() == MESH_SUMMARY)
+          {
+          MeshPhrasePtr mphrase = smtk::dynamic_pointer_cast<MeshPhrase>(item);
+          smtk::mesh::MeshSet meshkey;
+          smtk::mesh::CollectionPtr c;
+          if(!mphrase->relatedMesh().is_empty())
+            {
+            meshkey = mphrase->relatedMesh();
+            c = meshkey.collection();
+            }
+          else
+            {
+            c = mphrase->relatedMeshCollection();
+            meshkey = c->meshes();
+            }
+          if(c && !meshkey.is_empty() && c->hasIntegerProperty(meshkey, "visible"))
+            {
+            const IntegerList& prop(c->integerProperty(meshkey, "visible"));
+            if(!prop.empty())
+              visible = (prop[0] != 0);
+            }
+          }
+        else if(item->relatedEntity().isValid() && item->relatedEntity().hasVisibility())
           {
           const IntegerList& prop(item->relatedEntity().integerProperty("visible"));
           if(!prop.empty())
             visible = (prop[0] != 0);
           }
+
         if (visible)
           return QVariant(QIcon(":/icons/display/eyeball_16.png"));
         else
           return QVariant(QIcon(":/icons/display/eyeballx_16.png"));
         }
-      else if (role == EntityColorRole && item->relatedEntity().isValid())
+      else if (role == EntityColorRole &&
+        (item->phraseType() == MESH_SUMMARY || item->relatedEntity().isValid()))
         {
         QColor color;
         FloatList rgba = item->relatedColor();
