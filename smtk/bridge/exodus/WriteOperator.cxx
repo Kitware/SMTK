@@ -241,8 +241,8 @@ smtk::model::OperatorResult WriteOperator::writeLabelMap()
       }
     }
   extent[1] = extent[0] + dims[0] - 1;
-  extent[3] = extent[3] + dims[1] - 1;
-  extent[5] = extent[5] + dims[2] - 1;
+  extent[3] = extent[2] + dims[1] - 1;
+  extent[5] = extent[4] + dims[2] - 1;
   pad->SetOutputWholeExtent(extent);
 
   // Write out the data
