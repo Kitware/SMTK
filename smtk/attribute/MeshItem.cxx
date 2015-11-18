@@ -163,19 +163,28 @@ void MeshItem::reset()
 {
   this->m_meshValues.clear();
 }
+
+/// Assigns contents to be same as source item
 //----------------------------------------------------------------------------
-void MeshItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+bool MeshItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
-  // Assigns the contents to be same as sourceItem
-  // Assuming they have the same number of required values
-  Item::copyFrom(sourceItem, info);
+  // Cast input pointer to ModelEntityItem
+  smtk::shared_ptr<const MeshItem > sourceMeshItem =
+    smtk::dynamic_pointer_cast<const MeshItem>(sourceItem);
+
+  if (!sourceMeshItem)
+    {
+    return false; // Source is not a mesh item
+    }
+
+  // Update values
   this->reset();
-  MeshItemPtr sourceMeshItem =
-    smtk::dynamic_pointer_cast<MeshItem>(sourceItem);
   this->m_meshValues.clear();
   std::copy(sourceMeshItem->begin(),sourceMeshItem->end(),
     std::back_inserter(this->m_meshValues));
+  return Item::assign(sourceItem, options);
 }
+
 //----------------------------------------------------------------------------
 smtk::attribute::MeshItem::const_mesh_it MeshItem::begin() const
 {

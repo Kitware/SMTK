@@ -144,6 +144,7 @@
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperator', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forEntities', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forEntities', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forEntityMeshes', unmatched parameter type 'cJSON*'"/>
 
   <suppress-warning text="skipping function 'smtk::io::ImportMesh::entireJSON', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportMesh::entireJSONToCollection', unmatched parameter type 'cJSON*'"/>
@@ -459,7 +460,6 @@
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findMesh', unmatched return type 'smtk::attribute::MeshItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::model::Operator::findMesh', unmatched return type 'smtk::attribute::MeshItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::MeshItem::end', unmatched return type 'smtk::attribute::MeshItem::const_mesh_it'"/>
-  <suppress-warning text="skipping function 'smtk::attribute::MeshItem::copyFrom', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;'"/>
   <suppress-warning text="skipping function 'smtk::attribute::MeshItem::begin', unmatched return type 'smtk::attribute::MeshItem::const_mesh_it'"/>
 
   @EXTRA_TYPESYSTEMS@

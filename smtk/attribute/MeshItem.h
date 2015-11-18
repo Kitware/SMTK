@@ -46,9 +46,9 @@ public:
   std::size_t numberOfValues() const;
   const smtk::mesh::MeshList& values() const;
   virtual void reset();
-  virtual void copyFrom(
-    const smtk::attribute::ItemPtr sourceItem,
-    smtk::attribute::Item::CopyInfo& info);
+  // Assigns this item to be equivalent to another.  Options are processed by derived item classes
+  // Returns true if success and false if a problem occured.
+  virtual bool assign(smtk::attribute::ConstItemPtr &sourceItem, unsigned int options = 0);
 
   const_mesh_it begin() const;
   const_mesh_it end() const;
