@@ -585,7 +585,9 @@ int ExportJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
   cJSON_AddAttributeSpec(entRec, "result", "resultXML", res);
   EntityRefs ents = res->modelEntitiesAs<EntityRefs>("created");
   EntityRefs mdfs = res->modelEntitiesAs<EntityRefs>("modified");
+  EntityRefs meshents = res->modelEntitiesAs<EntityRefs>("mesh_created");
   ents.insert(mdfs.begin(), mdfs.end());
+  ents.insert(meshents.begin(), meshents.end());
   if (!ents.empty())
     {
     // If the operator reports new/modified entities, transcribe the affected models.
@@ -594,6 +596,14 @@ int ExportJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
     cJSON* records = cJSON_CreateObject();
     ExportJSON::forEntities(records, ents, smtk::model::ITERATE_MODELS, JSON_CLIENT_DATA);
     cJSON_AddItemToObject(entRec, "records", records);
+
+    // Also export JSON meshes as a new node "mesh_records"
+    if(!meshents.empty())
+      {
+      cJSON* mesh_records = cJSON_CreateObject();
+      ExportJSON::forEntityMeshes(mesh_records, meshents, res->modelManager()->meshes());
+      cJSON_AddItemToObject(entRec, "mesh_records", mesh_records);
+      }
     }
 
   return 1;
@@ -704,6 +714,49 @@ int ExportJSON::forManagerMeshes(
        it != meshes->collectionEnd(); ++it)
     {
     status &= forSingleCollection(mdesc, it->second);
+    }
+
+  return status;
+}
+
+/**\brief Serialize all the smtk::mesh associated with given EntityRefs.
+  *
+  * This creates and populate an JSON Object "mesh_collections"
+  * and add it to the parent json node (\a pnode) with
+  * data required to recreate the smtk::mesh Collections
+  * associated with the given EntityRefs.
+  */
+int ExportJSON::forEntityMeshes(
+                     cJSON* pnode,
+                     const smtk::model::EntityRefs& ents,
+                     smtk::mesh::ManagerPtr meshMgr)
+{
+  if (!pnode || pnode->type != cJSON_Object)
+    {
+    return 0;
+    }
+
+  // get all collections associated with the input entities
+  smtk::common::UUIDs collectionIds;  
+  smtk::model::EntityRefs::const_iterator iter;
+  for (iter = ents.begin(); iter != ents.end(); ++iter)
+    {
+    smtk::common::UUIDs cids = meshMgr->associatedCollectionIds(*iter);
+    collectionIds.insert(cids.begin(), cids.end());
+    }
+
+  if(collectionIds.empty())
+    {
+    return 0;
+    }
+  int status = 1;
+  cJSON* mesh = cJSON_CreateObject();
+  cJSON_AddItemToObject(pnode, "mesh_collections", mesh);
+
+  smtk::common::UUIDs::const_iterator cit;
+  for(cit = collectionIds.begin(); cit != collectionIds.end(); ++cit)
+    {
+    status &= forSingleCollection(mesh, meshMgr->collection(*cit));
     }
 
   return status;
@@ -846,14 +899,16 @@ public:
     smtk::mesh::MeshIntegerData* iProperties =
       collection->properties<smtk::mesh::MeshIntegerData>();
     // if there are no properties, just return
-    if(fProperties->size() + sProperties->size() + iProperties->size() == 0)
+    if( !(fProperties && fProperties->size() > 0) &&
+        !(sProperties && sProperties->size() > 0) &&
+        !(iProperties && iProperties->size() > 0))
       {
       return;
       }
     std::string meshid("meshid");
     cJSON* jsonProperties = cJSON_CreateObject();
     cJSON_AddItemToObject(parent, "properties", jsonProperties);
-    if(fProperties->size() > 0)
+    if(fProperties && fProperties->size() > 0)
       {
       for(smtk::mesh::MeshFloatData::const_iterator it = fProperties->begin();
           it != fProperties->end(); ++it)
@@ -863,7 +918,7 @@ public:
         ExportJSON::forFloatData(jMesh, it->second);
         }
       }
-    if(sProperties->size() > 0)
+    if(sProperties && sProperties->size() > 0)
       {
       for(smtk::mesh::MeshStringData::const_iterator it = sProperties->begin();
           it != sProperties->end(); ++it)
@@ -873,7 +928,7 @@ public:
         ExportJSON::forStringData(jMesh, it->second);
         }
       }
-    if(iProperties->size() > 0)
+    if(iProperties && iProperties->size() > 0)
       {
       for(smtk::mesh::MeshIntegerData::const_iterator it = iProperties->begin();
           it != iProperties->end(); ++it)
@@ -923,6 +978,12 @@ int ExportJSON::forSingleCollection(cJSON* mdesc,
 
   cJSON_AddItemToObject(jsonCollection,"formatVersion", cJSON_CreateNumber(1));
   cJSON_AddStringToObject(jsonCollection,"name", collection->name().c_str());
+  //assoicated model uuid of the collection
+  if(!collection->associatedModel().isNull())
+    {
+    cJSON_AddStringToObject(jsonCollection,"associatedModel",
+                            collection->associatedModel().toString().c_str());
+    }
 
   //because collection returns by value, not const ref
   std::string interfaceName = collection->interfaceName();

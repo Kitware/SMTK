@@ -103,6 +103,12 @@ public:
   static int forSingleCollection(cJSON* mdesc,
                                  smtk::mesh::CollectionPtr collection);
 
+  // Serialize all the smtk::mesh associated with given EntityRefs.
+  static int forEntityMeshes(
+                     cJSON* pnode,
+                     const smtk::model::EntityRefs& ents,
+                     smtk::mesh::ManagerPtr meshMgr);
+
   static int forLog(
     cJSON* logrecordarray,
     const smtk::io::Logger& log,

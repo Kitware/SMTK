@@ -921,11 +921,20 @@ int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::mode
   // remote operator's model manager:
   smtk::model::ManagerPtr mgr = op->manager();
   cJSON* records = cJSON_GetObjectItem(node, "records");
-  if (mgr && records)
+  cJSON* mesh_records = cJSON_GetObjectItem(node, "mesh_records");
+  if (mgr)
     {
-    for (cJSON* c = records->child; c; c = c->next)
-      mgr->erase(smtk::common::UUID(c->string));
-    ImportJSON::ofManager(records, mgr);
+    if(records)
+      {
+      for (cJSON* c = records->child; c; c = c->next)
+        mgr->erase(smtk::common::UUID(c->string));
+      status = ImportJSON::ofManager(records, mgr);
+      }
+
+    if(mesh_records)
+      {
+      status &= ImportJSON::ofMeshesOfModel(mesh_records, mgr);
+      }
     }
   return status;
 }
@@ -1081,7 +1090,14 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
       std::cerr << "Importing a mesh collection that already exists: " << child->string << "\n";
       continue;
       }
-
+    //assoicated model uuid of the collection
+    smtk::common::UUID associatedModelId;
+    if(cJSON* modelIdNode = cJSON_GetObjectItem(child, "associatedModel"))
+      {
+      std::string modelIdVal;
+      cJSON_GetStringValue(modelIdNode, modelIdVal);
+      associatedModelId = UUID(modelIdVal);
+      }
     //get the location and type nodes from json
     cJSON* fLocationNode = cJSON_GetObjectItem(child, "location");
     cJSON* fTypeNode = cJSON_GetObjectItem(child, "type");
@@ -1129,8 +1145,12 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
       //queries properly
       collection->setModelManager( modelMgr );
 
+      if(!associatedModelId.isNull())
+        {
+        collection->associateModel(associatedModelId);
+        }
       //write propertis to the new collection
-      ImportJSON::ofMeshProperties(child, collection);
+      status = ImportJSON::ofMeshProperties(child, collection);
       }
     else
       {
@@ -1206,7 +1226,7 @@ int ImportJSON::ofMeshProperties(cJSON* node,
         }
       }
     }
-  return 1;
+  return 0;
 }
 
 std::string ImportJSON::sessionNameFromTagData(cJSON* tagData)
