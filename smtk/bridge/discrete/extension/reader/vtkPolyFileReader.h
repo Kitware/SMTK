@@ -11,7 +11,7 @@
 #ifndef __smtkdiscrete_vtkPolyFileReader_h
 #define __smtkdiscrete_vtkPolyFileReader_h
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/reader/vtkSMTKDiscreteReaderExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 
@@ -90,7 +90,7 @@ namespace smtk {
 /**\brief Read TetGen polyfiles (.poly) and surface meshes (.smesh).
   *
   */
-class VTKSMTKDISCRETEEXT_EXPORT vtkPolyFileReader : public vtkPolyDataAlgorithm
+class VTKSMTKDISCRETEREADEREXT_EXPORT vtkPolyFileReader : public vtkPolyDataAlgorithm
 {
 public:
   static vtkPolyFileReader* New();

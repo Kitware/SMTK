@@ -126,7 +126,7 @@
 #ifndef __smtkdiscrete_vtkCMBPrepareForTriangleMesher_h
 #define __smtkdiscrete_vtkCMBPrepareForTriangleMesher_h
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/meshing/vtkSMTKDiscreteMeshingExtModule.h" // For export macro
 #include "vtkObject.h"
 #include "smtk/bridge/discrete/extension/meshing/cmbFaceMeshHelper.h"
 
@@ -140,7 +140,7 @@ namespace smtk {
   namespace bridge {
     namespace discrete {
 
-class VTKSMTKDISCRETEEXT_EXPORT vtkCMBPrepareForTriangleMesher : public vtkObject
+class VTKSMTKDISCRETEMESHINGEXT_EXPORT vtkCMBPrepareForTriangleMesher : public vtkObject
 {
 public:
   static vtkCMBPrepareForTriangleMesher *New();

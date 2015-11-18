@@ -27,7 +27,7 @@
 #ifndef __smtkdiscrete_vtkCMBTriangleMesher_h
 #define __smtkdiscrete_vtkCMBTriangleMesher_h
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/meshing/vtkSMTKDiscreteMeshingExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 namespace smtk {
@@ -36,7 +36,7 @@ namespace smtk {
 
 class vtkCMBMeshServerLauncher;
 
-class VTKSMTKDISCRETEEXT_EXPORT vtkCMBTriangleMesher : public vtkPolyDataAlgorithm
+class VTKSMTKDISCRETEMESHINGEXT_EXPORT vtkCMBTriangleMesher : public vtkPolyDataAlgorithm
 {
 
   public:

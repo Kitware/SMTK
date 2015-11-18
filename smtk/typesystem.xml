@@ -273,18 +273,6 @@
   <suppress-warning text="Shadowing: ValueItemDefinition::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const and StringItemDefinition::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const" />
   <suppress-warning text="Shadowing: ValueItemDefinition::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const and ValueItemDefinitionTemplate::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const" />
   <suppress-warning text="Shadowing: ValueItemDefinition::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const and IntItemDefinition::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const" />
-  <suppress-warning text="skipping function 'smtk::attribute::DirectoryItem::copyFrom', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;" />
-  <suppress-warning text="skipping function 'smtk::attribute::DoubleItem::copyFrom', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;" />
-  <suppress-warning text="skipping function 'smtk::attribute::FileItem::copyFrom', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;" />
-  <suppress-warning text="skipping function 'smtk::attribute::GroupItem::copyFrom', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;" />
-  <suppress-warning text="skipping function 'smtk::attribute::IntItem::copyFrom', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;" />
-  <suppress-warning text="skipping function 'smtk::attribute::Item::copyFrom', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;" />
-  <suppress-warning text="skipping function 'smtk::attribute::System::copyAttributeImpl', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;" />
-  <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::copyFrom', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;" />
-  <suppress-warning text="skipping function 'smtk::attribute::RefItem::copyFrom', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;" />
-  <suppress-warning text="skipping function 'smtk::attribute::StringItem::copyFrom', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;" />
-  <suppress-warning text="skipping function 'smtk::attribute::ValueItem::copyFrom', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;" />
-  <suppress-warning text="skipping function 'smtk::attribute::ValueItemTemplate::copyFrom', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;" />
 
   <!-- ignore templated cast for now. -->
   <suppress-warning text="skipping function 'smtk::model::CellEntity::inclusions', unmatched return type 'T'"/>
@@ -466,7 +454,6 @@
   <suppress-warning text="skipping function 'smtk::model::Operator::findMeshSelection', unmatched return type 'smtk::attribute::MeshSelectionItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findGroup', unmatched return type 'smtk::attribute::ConstGroupItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::MeshSelectionItem::end', unmatched return type 'smtk::attribute::MeshSelectionItem::const_sel_map_it'"/>
-  <suppress-warning text="skipping function 'smtk::attribute::MeshSelectionItem::copyFrom', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;'"/>
   <suppress-warning text="skipping function 'smtk::attribute::MeshSelectionItem::begin', unmatched return type 'smtk::attribute::MeshSelectionItem::const_sel_map_it'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findMesh', unmatched return type 'smtk::attribute::ConstMeshItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findMesh', unmatched return type 'smtk::attribute::MeshItemPtr'"/>
@@ -767,6 +754,7 @@
   </value-type>
 
   <value-type template="smtk::shared_ptr" args="const smtk::attribute::Item">
+    <modify-function signature="assign(smtk::shared_ptr&lt; const  smtk::attribute::Item &gt; &amp;,unsigned int)" remove="all"/>
     <modify-function signature="setAdvanceLevel(int,int)" remove="all"/>
     <modify-function signature="unsetAdvanceLevel(int)" remove="all"/>
     <modify-function signature="setUserData(const std::string &amp;, smtk::shared_ptr&lt; smtk::simulation::UserData &gt; )"  remove="all"/>
@@ -1861,6 +1849,7 @@
 
       <object-type name="Item">
         <include file-name="smtk/attribute/Item.h" location="local"/>
+        <enum-type name="AssignmentOptions"/>
         <enum-type name="Type"/>
       </object-type>
 

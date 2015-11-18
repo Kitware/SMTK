@@ -16,7 +16,7 @@
 #ifndef __smtkdiscrete_vtkCMBMeshServerLauncher_h
 #define __smtkdiscrete_vtkCMBMeshServerLauncher_h
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/meshing/vtkSMTKDiscreteMeshingExtModule.h" // For export macro
 #include "vtkObject.h"
 #include "vtkStdString.h" //needed for the HostName
 
@@ -26,7 +26,7 @@ namespace smtk {
   namespace bridge {
     namespace discrete {
 
-class VTKSMTKDISCRETEEXT_EXPORT vtkCMBMeshServerLauncher : public vtkObject
+class VTKSMTKDISCRETEMESHINGEXT_EXPORT vtkCMBMeshServerLauncher : public vtkObject
 {
 public:
   //construction of this class will spawn

@@ -38,9 +38,9 @@ Item::Type StringItem::type() const
   return STRING;
 }
 //----------------------------------------------------------------------------
-void StringItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+bool StringItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
   // Assigns my contents to be same as sourceItem
-  ValueItemTemplate<std::string>::copyFrom(sourceItem, info);
+  return ValueItemTemplate<std::string>::assign(sourceItem, options);
 }
 //----------------------------------------------------------------------------

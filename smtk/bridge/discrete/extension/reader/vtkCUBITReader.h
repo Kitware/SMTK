@@ -16,7 +16,7 @@
 #ifndef __smtkdiscrete_CUBITReader_h
 #define __smtkdiscrete_CUBITReader_h
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/reader/vtkSMTKDiscreteReaderExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 
@@ -24,7 +24,7 @@ namespace smtk {
   namespace bridge {
     namespace discrete {
 
-class VTKSMTKDISCRETEEXT_EXPORT vtkCUBITReader : public vtkPolyDataAlgorithm
+class VTKSMTKDISCRETEREADEREXT_EXPORT vtkCUBITReader : public vtkPolyDataAlgorithm
 {
 public:
   static vtkCUBITReader *New();

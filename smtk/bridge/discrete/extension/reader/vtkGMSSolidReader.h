@@ -16,7 +16,7 @@
 #ifndef __smtkdiscrete_vtkGMSSolidReader_h
 #define __smtkdiscrete_vtkGMSSolidReader_h
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/reader/vtkSMTKDiscreteReaderExtModule.h" // For export macro
 #include "vtkMultiBlockDataSetAlgorithm.h"
 
 class vtkCellArray;
@@ -32,7 +32,7 @@ namespace smtk {
 struct vtkGMSSolidReaderInternals;
 //ETX
 
-class VTKSMTKDISCRETEEXT_EXPORT vtkGMSSolidReader : public vtkMultiBlockDataSetAlgorithm
+class VTKSMTKDISCRETEREADEREXT_EXPORT vtkGMSSolidReader : public vtkMultiBlockDataSetAlgorithm
 {
 public:
   static vtkGMSSolidReader *New();

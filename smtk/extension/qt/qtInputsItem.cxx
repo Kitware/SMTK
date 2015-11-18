@@ -40,6 +40,8 @@
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/ValueItemTemplate.h"
 
+//#include "pqApplicationCore.h"
+
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
@@ -86,6 +88,8 @@ void qtInputsItem::setLabelVisible(bool visible)
 //----------------------------------------------------------------------------
 void qtInputsItem::createWidget()
 {
+  //pqApplicationCore* paraViewApp = pqApplicationCore::instance();
+  //std::cout << "PV app: " << paraViewApp << "\n";
   smtk::attribute::ItemPtr dataObj = this->getObject();
   if(!dataObj || !this->passAdvancedCheck() || (this->baseView() &&
     !this->baseView()->uiManager()->passItemCategoryCheck(

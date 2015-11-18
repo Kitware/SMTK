@@ -16,7 +16,7 @@
 #ifndef __smtkdiscrete_CMBGeometryReader_h
 #define __smtkdiscrete_CMBGeometryReader_h
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/reader/vtkSMTKDiscreteReaderExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 
@@ -24,7 +24,7 @@ namespace smtk {
   namespace bridge {
     namespace discrete {
 
-class VTKSMTKDISCRETEEXT_EXPORT vtkCMBGeometryReader : public vtkPolyDataAlgorithm
+class VTKSMTKDISCRETEREADEREXT_EXPORT vtkCMBGeometryReader : public vtkPolyDataAlgorithm
 {
 public:
   static vtkCMBGeometryReader *New();

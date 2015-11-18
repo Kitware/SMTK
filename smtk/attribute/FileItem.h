@@ -53,8 +53,10 @@ namespace smtk
       {return this->m_isSet[element];}
       virtual void unset(std::size_t element=0)
       {this->m_isSet[element] = false;}
-      virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
-                            smtk::attribute::Item::CopyInfo& info);
+      
+      // Assigns this item to be equivalent to another.  Options are processed by derived item classes
+      // Returns true if success and false if a problem occured.  Does not use options.
+      virtual bool assign(smtk::attribute::ConstItemPtr &sourceItem, unsigned int options = 0);
       const std::vector<std::string>& recentValues() const
       { return this->m_recentValues; }
       void addRecentValue(const std::string& val);

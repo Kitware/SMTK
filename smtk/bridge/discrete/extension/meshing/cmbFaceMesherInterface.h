@@ -17,7 +17,7 @@
 #ifndef __smtkdiscrete_cmbFaceMesherInterface_h
 #define __smtkdiscrete_cmbFaceMesherInterface_h
 
-#include "smtk/bridge/discrete/extension/vtkSMTKDiscreteExtModule.h" // For export macro
+#include "smtk/bridge/discrete/extension/meshing/vtkSMTKDiscreteMeshingExtModule.h" // For export macro
 #include <string> //for std string
 #include "vtkABI.h"
 
@@ -29,7 +29,7 @@ namespace smtk {
 
 class vtkCMBMeshServerLauncher;
 
-class VTKSMTKDISCRETEEXT_EXPORT cmbFaceMesherInterface
+class VTKSMTKDISCRETEMESHINGEXT_EXPORT cmbFaceMesherInterface
 {
 public:
   cmbFaceMesherInterface();

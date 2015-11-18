@@ -709,170 +709,74 @@ bool System::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef,
 // copy additional attributes from the source attribute system.
 smtk::attribute::AttributePtr
 System::copyAttribute(const smtk::attribute::AttributePtr sourceAtt,
-                       unsigned int options)
+                      const bool &copyModelAssocs, const unsigned int &itemCopyOptions)
 {
-  // Returns attribute pointer
-  smtk::attribute::AttributePtr newAtt = smtk::attribute::AttributePtr();
-
-  // Check if attribute already exists
-  std::string name = sourceAtt->name();
-  if (this->findAttribute(name))
+  smtk::attribute::AttributePtr newAtt;
+  smtk::attribute::DefinitionPtr newDef;
+  // Are we copying the attribute to the same attribute system?
+  bool sameSystem = (this == sourceAtt->system());
+  std::string newName;
+  if (sameSystem)
     {
-    std::cout << "WARNING: System contains attribute with name \"" << name
-              << "\" -- not copying." << std::endl;
-    return newAtt;
+    newName = this->createUniqueName(sourceAtt->definition()->type());
+    newDef = sourceAtt->definition();
     }
-
-  // Copy attribute definition if needed
-  this->copyDefinition(sourceAtt->definition());
-
-  // Call internal copy method
-  smtk::attribute::Item::CopyInfo info;
-  smtk::model::ManagerPtr thisModel = this->refModelManager();
-  smtk::model::ManagerPtr thatModel = sourceAtt->system()->refModelManager();
-  info.IsSameModel =
-    (thisModel && (thisModel == thatModel)) ||
-    (options & FORCE_COPY_ASSOCIATIONS);
-  bool ok = this->copyAttributeImpl(sourceAtt, info, options);
-  if (ok)
+  else
     {
-    newAtt = this->findAttribute(name);
-
-    // Process unresolved ref & exp items
-    while (!info.UnresolvedRefItems.empty() || !info.UnresolvedExpItems.empty())
+    // Copying into a new system
+    // First do we need tp copy its definition?
+    newDef = this->findDefinition(sourceAtt->definition()->type());
+    if (!newDef)
       {
-      // Process ref items first
-      while (!info.UnresolvedRefItems.empty())
+      newDef = this->copyDefinition(sourceAtt->definition());
+      if (!newDef)
         {
-        // Check if att has been created (copied) already
-        Item::UnresolvedItemInfo& itemInfo = info.UnresolvedRefItems.front();
-        std::string attName = itemInfo.AttributeName;
-        AttributePtr att = this->findAttribute(attName);
-        if (att)
-          {
-          RefItemPtr refItem =
-            smtk::dynamic_pointer_cast<RefItem>(itemInfo.UnresolvedItem);
-          refItem->setValue(itemInfo.Index, att);
-          info.UnresolvedRefItems.pop();
-          }
-        else
-          {
-          // Need to copy attribute, first find it in the input system
-          std::cout << "Copying \"" << attName << "\" attribute" << std::endl;
-          AttributePtr nextAtt = sourceAtt->system()->findAttribute(attName);
-          // Attribute missing only if source system is invalid, but check anyway
-          if (!nextAtt)
-            {
-            std::cerr << "ERROR: Unable to find source attribute " << attName
-                      << " -- copy operation incomplete" << std::endl;
-            return newAtt;
-            }
-
-          // Copy attribute
-          if (!this->copyAttributeImpl(nextAtt, info, options))
-            {
-            std::cerr << "ERROR: Unable to copy attribute " << att
-                      << " -- copy operation incomplete" << std::endl;
-            return newAtt;
-            }
-          }
-        }  // while (ref items)
-
-      // Process expressions next
-      while (!info.UnresolvedExpItems.empty())
-        {
-        // Check if att has been copied already
-        Item::UnresolvedItemInfo& itemInfo = info.UnresolvedExpItems.front();
-        std::string attName = itemInfo.AttributeName;
-        AttributePtr att = this->findAttribute(attName);
-        if (att)
-          {
-          ValueItemPtr valItem =
-            smtk::dynamic_pointer_cast<ValueItem>(itemInfo.UnresolvedItem);
-          valItem->setExpression(itemInfo.Index, att);
-          info.UnresolvedExpItems.pop();
-          }
-        else
-          {
-          // Need to copy attribute, first find it in input system
-          std::cout << "Copying \"" << attName << "\" attribute" << std::endl;
-          AttributePtr nextAtt = sourceAtt->system()->findAttribute(attName);
-          // Attribute missing only if source system is invalid, but check anyway
-          if (!nextAtt)
-            {
-            std::cerr << "ERROR: Unable to find source attribute " << attName
-                      << " -- copy operation incomplete" << std::endl;
-            return newAtt;
-            }
-
-          // Copy attribute
-          if (!this->copyAttributeImpl(nextAtt, info, options))
-            {
-            std::cerr << "ERROR: Unable to copy attribute " << att
-                      << " -- copy operation incomplete" << std::endl;
-            return newAtt;
-            }
-          }
-        }  // while (exp items)
-
-      }  // while (ref || exp items)
-
-    } // if (ok)
-
-  return newAtt;
-}
-//----------------------------------------------------------------------------
-// Copies attribute defintion into this system, returning true if successful
-// Note: Any model associations are *not* copied
-bool System::copyAttributeImpl(smtk::attribute::AttributePtr sourceAtt,
-                                smtk::attribute::Item::CopyInfo& info,
-                                unsigned options)
-{
-  bool ok = true;
-
-  // Check if attribute already exists
-  std::string name = sourceAtt->name();
-  if (this->findAttribute(name))
-    {
-    std::cout << "WARNING: System contains attribute with name \"" << name
-              << "\" -- not copying." << std::endl;
-    return false;
+        std::cerr << "ERROR: Could not copy Definition: " << sourceAtt->definition()->type()
+                  << " needed to create Attribute: " << sourceAtt->name() << "\n";
+        return newAtt;
+        }
+      }
+    else
+      {
+      //TODO Should make sure the definition we found matches the structure of the definition
+      // used by the Source Attribute if they don't then error out
+      }
+    
+    std::string name =  sourceAtt->name();
+    if (this->findAttribute(name))
+      {
+      newName = this->createUniqueName(sourceAtt->definition()->type());
+      }
+    else
+      {
+      newName = name;
+      }
     }
-
-  // Get definition
-  smtk::attribute::DefinitionPtr def = this->findDefinition(sourceAtt->type());
-  if (!def)
-    {
-    std::cerr << "Unabled to find attribute definition \""
-              << sourceAtt->type() << "\"" << std::endl;
-    return false;
-    }
-
-  // Create attribute
-  smtk::attribute::AttributePtr newAtt =
-    this->createAttribute(name, def);
-
+  newAtt = this->createAttribute(newName, newDef);
   // Copy properties
   if (sourceAtt->isColorSet())
     {
     newAtt->setColor(sourceAtt->color());
     }
-  bool bstate = sourceAtt->appliesToBoundaryNodes();
-  newAtt->setAppliesToBoundaryNodes(bstate);
-  bool istate = sourceAtt->appliesToInteriorNodes();
-  newAtt->setAppliesToInteriorNodes(istate);
-
+  newAtt->setAppliesToBoundaryNodes(sourceAtt->appliesToBoundaryNodes());
+  newAtt->setAppliesToInteriorNodes(sourceAtt->appliesToInteriorNodes());
   // Copy/update items
   for (std::size_t i=0; i<sourceAtt->numberOfItems(); ++i)
     {
-    smtk::attribute::ItemPtr sourceItem = sourceAtt->item(i);
+    smtk::attribute::ConstItemPtr sourceItem =
+      smtk::const_pointer_cast<const Item>(sourceAtt->item(i));
     smtk::attribute::ItemPtr newItem = newAtt->item(i);
-    newItem->copyFrom(sourceItem, info);
+    if (!newItem->assign(sourceItem, itemCopyOptions))
+      {
+      std::cerr << "ERROR:Could not copy Attribute: " << sourceAtt->name() << "\n";
+      this->removeAttribute(newAtt);
+      newAtt.reset();
+      return newAtt;
+      }
     }
-
-  // Copy model associations (implemented for "new" smtk model storage only)
-  // But only if the models are the same
-  if (info.IsSameModel && ((options & COPY_ASSOCIATIONS) == COPY_ASSOCIATIONS))
+  // Copy model associations if requested and the attribute is not Unique
+  // with respects to the model entitiy
+  if (copyModelAssocs && !sourceAtt->definition()->isUnique())
     {
     smtk::common::UUIDs uuidSet = sourceAtt->associatedModelEntityIds();
     smtk::common::UUIDs::const_iterator it;
@@ -883,8 +787,7 @@ bool System::copyAttributeImpl(smtk::attribute::AttributePtr sourceAtt,
     }
 
   // TODO what about m_userData?
-
-  return ok;
+  return newAtt;
 }
 //----------------------------------------------------------------------------
 void System::addView(smtk::common::ViewPtr v)

@@ -220,13 +220,17 @@ FileItem::reset()
     }
 }
 //----------------------------------------------------------------------------
-void FileItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+bool FileItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
   // Assigns my contents to be same as sourceItem
-  Item::copyFrom(sourceItem, info);
-
-  FileItemPtr sourceFileItem =
-    smtk::dynamic_pointer_cast<FileItem>(sourceItem);
+  smtk::shared_ptr<const FileItem > sourceFileItem =
+    smtk::dynamic_pointer_cast<const FileItem>(sourceItem);
+  
+  if (!sourceFileItem)
+    {
+    return false; // Source is not a file item
+    }
+  
   // copy all recentValues list
   this->m_recentValues.clear();
   this->m_recentValues.insert(m_recentValues.end(),
@@ -244,6 +248,8 @@ void FileItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
       this->unset(i);
       }
     }
+  
+  return Item::assign(sourceItem, options);
 }
 
 //----------------------------------------------------------------------------
