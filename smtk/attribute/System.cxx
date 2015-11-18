@@ -776,7 +776,7 @@ System::copyAttribute(const smtk::attribute::AttributePtr sourceAtt,
     }
   // Copy model associations if requested and the attribute is not Unique
   // with respects to the model entitiy
-  if (copyModelAssocs && !sourceAtt->definition()->isUnique())
+  if (copyModelAssocs && !(sameSystem && sourceAtt->definition()->isUnique()))
     {
     smtk::common::UUIDs uuidSet = sourceAtt->associatedModelEntityIds();
     smtk::common::UUIDs::const_iterator it;
