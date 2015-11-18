@@ -105,12 +105,10 @@ smtk::model::OperatorResult SetProperty::operateInternal()
   smtk::mesh::MeshList modifiedMeshes;
   if(meshItem)
     {
-    smtk::model::ManagerPtr modelmgr = this->manager();
-    smtk::mesh::ManagerPtr meshmgr = modelmgr->meshes();
     smtk::attribute::MeshItem::const_mesh_it it;
     for(it = meshItem->begin(); it != meshItem->end(); ++it)
       {
-      smtk::mesh::CollectionPtr c = meshmgr->collection(it->collectionId());
+      smtk::mesh::CollectionPtr c = it->collection();
       if(!c)
         continue;
       SetMeshPropertyValue<String,StringList,StringData,StringItem>(

@@ -166,7 +166,7 @@ smtk::model::OperatorResult SetProperty::operateInternal()
     smtk::attribute::MeshItem::const_mesh_it it;
     for(it = meshItem->begin(); it != meshItem->end(); ++it)
       {
-      smtk::mesh::CollectionPtr c = meshmgr->collection(it->collectionId());
+      smtk::mesh::CollectionPtr c = it->collection();
       if(!c)
         continue;
       SetMeshPropertyValue<String,StringList,StringData,StringItem>(

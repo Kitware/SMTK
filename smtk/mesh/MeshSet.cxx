@@ -234,12 +234,12 @@ bool MeshSet::setModelEntities(const smtk::model::EntityRef& ent)
   return iface->setModelEntity(this->m_range, ent.entity());
 }
 
-/**\brief Get the parent collection entity that this meshset belongs to.
+/**\brief Get the parent collection that this meshset belongs to.
   *
   */
-const smtk::common::UUID MeshSet::collectionId() const
+const smtk::mesh::CollectionPtr& MeshSet::collection() const
 {
-  return this->m_parent->entity();
+  return this->m_parent;
 }
 
 //----------------------------------------------------------------------------

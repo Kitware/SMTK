@@ -1048,7 +1048,6 @@ void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
       {
       return; // nothing to do
       }
-    smtk::mesh::ManagerPtr meshMgr = brOp->manager()->meshes();
     smtk::mesh::CollectionPtr c;
     if(dp->phraseType() == MESH_SUMMARY)
       {
@@ -1056,15 +1055,15 @@ void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
       smtk::mesh::MeshSet meshkey;
       if(!mphrase->relatedMesh().is_empty())
         {
-        c = meshMgr->collection(mphrase->relatedMesh().collectionId());
         meshkey = mphrase->relatedMesh();
+        c = meshkey.collection();
         }
       else
         {
         c = mphrase->relatedMeshCollection();
         meshkey = c->meshes();
         }
-      if(c && !meshkey.is_empty())
+      if(c && !meshkey.is_empty() && c->hasIntegerProperty(meshkey, "visible"))
         {
         const IntegerList& prop(c->integerProperty(meshkey, "visible"));
         if(!prop.empty())
@@ -1163,7 +1162,7 @@ void qtModelView::changeEntityColor( const QModelIndex& idx)
     smtk::mesh::MeshSet meshkey;
     if(!mphrase->relatedMesh().is_empty())
       {
-      c = meshMgr->collection(mphrase->relatedMesh().collectionId());
+      c = mphrase->relatedMesh().collection();
       meshkey = mphrase->relatedMesh();
       }
     else

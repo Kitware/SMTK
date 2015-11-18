@@ -141,8 +141,8 @@ public:
   //get the underlying HandleRange that this MeshSet represents
   const smtk::mesh::HandleRange& range() const { return this->m_range; }
 
-  //get the underlying collection uuid that this MeshSet belongs to
-  const smtk::common::UUID collectionId() const;
+  //get the underlying collection that this MeshSet belongs to
+  const smtk::mesh::CollectionPtr& collection() const;
 
 private:
   smtk::mesh::CollectionPtr m_parent;

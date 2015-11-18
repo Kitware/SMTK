@@ -47,7 +47,7 @@
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/StringData.h"
-#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/Collection.h"
 
 #include <sstream>
 #include "cJSON.h"
@@ -1226,7 +1226,8 @@ void XmlV2StringWriter::processMeshEntityItem(pugi::xml_node &node,
   for(it = item->begin(); it != item->end(); ++it)
     {
     val = values.append_child("Val");
-    val.append_attribute("collectionid").set_value(it->collectionId().toString().c_str());
+    val.append_attribute("collectionid").set_value(
+      it->collection()->entity().toString().c_str());
     cJSON* jrange = smtk::mesh::to_json(it->range());
     char* json = cJSON_Print(jrange);
     cJSON_Delete(jrange);
