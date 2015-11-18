@@ -223,7 +223,6 @@ static void convert_smtkMesh_singleDimCells_to_vtkPolyData(const smtk::mesh::Cel
   else
     {
     pts->SetNumberOfPoints(numberOfPoints);
-    pts->Allocate(numberOfPoints);
     double *rawPoints = static_cast<double*>(pts->GetVoidPointer(0));
 
     cellarray->Allocate(connectivityLength + numberOfCells);
@@ -346,7 +345,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationForSingleMesh(
     toRender.append(zeroD);
         
     convert_smtkMesh_to_vtkPolyData(toRender, pts.GetPointer(), pd);
-    
+    // std::cout << "Number of points: " << pd->GetNumberOfPoints() << std::endl;
     this->GenerateNormals(pd, entityref, genNormals);
     }
 }
@@ -377,7 +376,9 @@ void vtkMeshMultiBlockSource::FindEntitiesWithMesh(
     tmp = root.as<Model>().groupsAs<EntityRefArray>();
     children.insert(children.end(), tmp.begin(), tmp.end());
     }
-  for (EntityRefArray::const_iterator it = children.begin(); it != children.end(); ++it)
+  EntityRefs uniqueChildren;
+  std::copy( children.begin(), children.end(), std::inserter( uniqueChildren, uniqueChildren.end() ) );
+  for (EntityRefs::const_iterator it = uniqueChildren.begin(); it != uniqueChildren.end(); ++it)
     {
     if (touched.find(*it) == touched.end())
       {
@@ -398,6 +399,7 @@ void vtkMeshMultiBlockSource::FindEntitiesWithMesh(
 void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(
   vtkMultiBlockDataSet* mbds)
 {
+
   if(this->MeshCollectionID && this->MeshCollectionID[0] && this->m_meshMgr)
     {
     smtk::common::UUID mcuid(this->MeshCollectionID);
@@ -411,6 +413,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(
       modelEntity = entity.isModel() ?
         entity.as<smtk::model::Model>() : entity.owningModel();
       }
+
     if (modelEntity.isValid() && meshcollect->isValid() && meshcollect->numberOfMeshes() > 0)
       {
       // See if the model has any instructions about
@@ -469,7 +472,6 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(
       for(std::size_t i=0; i<allMeshes.size(); ++i)
         {
         vtkNew<vtkPolyData> poly;
-        mbds->SetBlock(i, poly.GetPointer());
 
         std::ostringstream defaultName;
         defaultName << "mesh " << i;
@@ -483,6 +485,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(
         mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), meshName.c_str());
         this->GenerateRepresentationForSingleMesh(
           singleMesh, poly.GetPointer(), smtk::model::EntityRef(), modelRequiresNormals);
+        mbds->SetBlock(i, poly.GetPointer());
         smtk::model::EntityRefArray ents = singleMesh.modelEntities();
         if( ents.size() > 0 )
           {
