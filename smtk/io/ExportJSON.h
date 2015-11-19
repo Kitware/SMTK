@@ -104,9 +104,9 @@ public:
                                  smtk::mesh::CollectionPtr collection);
 
   // Serialize all the smtk::mesh associated with given EntityRefs.
-  static int forEntityMeshes(
+  static int forMeshes(
                      cJSON* pnode,
-                     const smtk::model::EntityRefs& ents,
+                     const smtk::common::UUIDs& collectionIds,
                      smtk::mesh::ManagerPtr meshMgr);
 
   static int forLog(

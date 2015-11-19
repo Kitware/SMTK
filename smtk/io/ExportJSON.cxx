@@ -23,6 +23,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/System.h"
 
 #include "smtk/mesh/Manager.h"
@@ -586,6 +587,7 @@ int ExportJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
   EntityRefs ents = res->modelEntitiesAs<EntityRefs>("created");
   EntityRefs mdfs = res->modelEntitiesAs<EntityRefs>("modified");
   EntityRefs meshents = res->modelEntitiesAs<EntityRefs>("mesh_created");
+
   ents.insert(mdfs.begin(), mdfs.end());
   ents.insert(meshents.begin(), meshents.end());
   if (!ents.empty())
@@ -596,12 +598,33 @@ int ExportJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
     cJSON* records = cJSON_CreateObject();
     ExportJSON::forEntities(records, ents, smtk::model::ITERATE_MODELS, JSON_CLIENT_DATA);
     cJSON_AddItemToObject(entRec, "records", records);
+    }
 
-    // Also export JSON meshes as a new node "mesh_records"
-    if(!meshents.empty())
+  smtk::attribute::MeshItemPtr modifiedMeshes = res->findMesh("mesh_modified");
+  // Also export JSON meshes as a new node "mesh_records"
+  if(!meshents.empty() || modifiedMeshes)
+    {
+    // get all collections associated with the input entities
+    smtk::common::UUIDs collectionIds;
+    smtk::mesh::ManagerPtr meshMgr = res->modelManager()->meshes();
+    smtk::model::EntityRefs::const_iterator iter;
+    for (iter = meshents.begin(); iter != meshents.end(); ++iter)
+      {
+      smtk::common::UUIDs cids = meshMgr->associatedCollectionIds(*iter);
+      collectionIds.insert(cids.begin(), cids.end());
+      }
+    if(modifiedMeshes)
+      {
+      smtk::attribute::MeshItem::const_mesh_it it;
+      for(it = modifiedMeshes->begin(); it != modifiedMeshes->end(); ++it)
+        {
+        collectionIds.insert(it->collection()->entity());
+        }
+      }
+    if(collectionIds.size() > 0)
       {
       cJSON* mesh_records = cJSON_CreateObject();
-      ExportJSON::forEntityMeshes(mesh_records, meshents, res->modelManager()->meshes());
+      ExportJSON::forMeshes(mesh_records, collectionIds, meshMgr);
       cJSON_AddItemToObject(entRec, "mesh_records", mesh_records);
       }
     }
@@ -724,25 +747,16 @@ int ExportJSON::forManagerMeshes(
   * This creates and populate an JSON Object "mesh_collections"
   * and add it to the parent json node (\a pnode) with
   * data required to recreate the smtk::mesh Collections
-  * associated with the given EntityRefs.
+  * associated with the given \a collectionIds.
   */
-int ExportJSON::forEntityMeshes(
+int ExportJSON::forMeshes(
                      cJSON* pnode,
-                     const smtk::model::EntityRefs& ents,
+                     const smtk::common::UUIDs& collectionIds,
                      smtk::mesh::ManagerPtr meshMgr)
 {
   if (!pnode || pnode->type != cJSON_Object)
     {
     return 0;
-    }
-
-  // get all collections associated with the input entities
-  smtk::common::UUIDs collectionIds;  
-  smtk::model::EntityRefs::const_iterator iter;
-  for (iter = ents.begin(); iter != ents.end(); ++iter)
-    {
-    smtk::common::UUIDs cids = meshMgr->associatedCollectionIds(*iter);
-    collectionIds.insert(cids.begin(), cids.end());
     }
 
   if(collectionIds.empty())

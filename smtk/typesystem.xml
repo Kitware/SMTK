@@ -144,7 +144,7 @@
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperator', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forEntities', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forEntities', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forEntityMeshes', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forMeshes', unmatched parameter type 'cJSON*'"/>
 
   <suppress-warning text="skipping function 'smtk::io::ImportMesh::entireJSON', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportMesh::entireJSONToCollection', unmatched parameter type 'cJSON*'"/>

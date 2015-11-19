@@ -933,7 +933,7 @@ int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::mode
 
     if(mesh_records)
       {
-      status &= ImportJSON::ofMeshesOfModel(mesh_records, mgr);
+      status &= ImportJSON::ofMeshesOfModel(mesh_records, mgr, true);
       }
     }
   return status;
@@ -1050,7 +1050,8 @@ int ImportJSON::ofLog(cJSON* logrecordarray, smtk::io::Logger& log)
   *
   */
 int ImportJSON::ofMeshesOfModel(cJSON* node,
-                                smtk::model::ManagerPtr modelMgr)
+                                smtk::model::ManagerPtr modelMgr,
+                                bool updateExisting)
 
 {
   int status = 1;
@@ -1085,9 +1086,19 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
       }
 
     //first verify the collection doesn't already exist
-    if (meshMgr->collection(uid))
+    if (smtk::mesh::CollectionPtr existingC = meshMgr->collection(uid))
       {
-      std::cerr << "Importing a mesh collection that already exists: " << child->string << "\n";
+      if(updateExisting)
+        {
+        // Import everything in a json string into the existing collection?, need to clear first?
+        // smtk::mesh::json::import(child, existingC);
+        // update properties, if any, to the existing collection
+        status = ImportJSON::ofMeshProperties(child, existingC);
+        }
+      else
+        {
+        std::cerr << "Importing a mesh collection that already exists: " << child->string << "\n";
+        }
       continue;
       }
     //assoicated model uuid of the collection
@@ -1149,7 +1160,7 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
         {
         collection->associateModel(associatedModelId);
         }
-      //write propertis to the new collection
+      //write properties to the new collection
       status = ImportJSON::ofMeshProperties(child, collection);
       }
     else
@@ -1180,6 +1191,7 @@ int ImportJSON::ofMeshProperties(cJSON* node,
     smtk::mesh::HandleRange hrange = smtk::mesh::from_json(meshEntry);
     smtk::mesh::MeshSet mesh = smtk::mesh::MeshSet(
       collection, collection->interface()->getRoot(), hrange);
+
     // float properties
     cJSON* floatNode = cJSON_GetObjectItem(meshEntry, "f");
     if (floatNode)
@@ -1226,6 +1238,7 @@ int ImportJSON::ofMeshProperties(cJSON* node,
         }
       }
     }
+
   return 0;
 }
 

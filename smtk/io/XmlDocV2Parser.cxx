@@ -298,8 +298,6 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node &node,
   smtk::common::UUID cid;
   smtk::model::ManagerPtr modelmgr = this->m_system.refModelManager();
   xml_node valsNode, val;
-  std::string attName;
-  AttRefInfo info;
 
   std::size_t i = 0;
   valsNode = node.child("Values");
@@ -327,12 +325,11 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node &node,
       smtk::mesh::HandleRange hrange = smtk::mesh::from_json(jshandle);
       cJSON_Delete(jshandle);
       smtk::mesh::CollectionPtr c = modelmgr->meshes()->collection(cid);
-      smtk::mesh::json::InterfacePtr interface =
-        smtk::dynamic_pointer_cast< smtk::mesh::json::Interface >(c->interface());
+      smtk::mesh::InterfacePtr interface =c->interface();
       
       if(!interface)
         {
-        smtkErrorMacro(this->m_logger, "Expecting a json interface for mesh item: " << item->name());
+        smtkErrorMacro(this->m_logger, "Expecting a valid interface for mesh item: " << item->name());
         continue;
         }
 

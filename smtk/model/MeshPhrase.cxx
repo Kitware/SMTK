@@ -71,7 +71,7 @@ std::string MeshPhrase::title()
     {
     smtk::mesh::CollectionPtr c = this->m_relatedMesh.collection();
     bool hasValidNameProp = false;
-    if(c && c->hasIntegerProperty(this->m_relatedMesh, "name"))
+    if(c && c->hasStringProperty(this->m_relatedMesh, "name"))
       {
       smtk::model::StringList const& nprop(c->stringProperty(this->m_relatedMesh, "name"));
       if (!nprop.empty() && !nprop[0].empty())
