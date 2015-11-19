@@ -23,6 +23,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/MeshItem.h"
 #include <QtCore/QDir>
 #include <QtCore/QDirIterator>
 #include <QtCore/QFile>
@@ -739,6 +740,28 @@ inline void _internal_findAllExistingPhrases(
     }
 }
 
+inline void _internal_findAllExistingMeshPhrases(
+  const DescriptivePhrasePtr& parntDp,
+  const smtk::attribute::MeshItemPtr& modMeshes,
+  DescriptivePhrases& modifiedPhrases)
+{
+  if(!parntDp || !parntDp->areSubphrasesBuilt())
+    return;
+
+  smtk::model::DescriptivePhrases& subs(parntDp->subphrases());
+  for (smtk::model::DescriptivePhrases::iterator it = subs.begin();
+    it != subs.end(); ++it)
+    {
+    if (modMeshes->hasValue((*it)->relatedMesh()))
+      {
+      modifiedPhrases.push_back(*it);
+      }
+
+    // Descend 
+    _internal_findAllExistingMeshPhrases(*it, modMeshes, modifiedPhrases);
+    }
+}
+
 void QEntityItemModel::addChildPhrases(
     const DescriptivePhrasePtr& parntDp,
     const std::vector< std::pair<DescriptivePhrasePtr, int> > & newDphrs,
@@ -1109,6 +1132,28 @@ void QEntityItemModel::updateWithOperatorResult(
       this->updateChildPhrases(*mit, sessIndex);
     }
 
+  // mesh properties modifed
+  DescriptivePhrases modifiedMeshPhrases;
+  smtk::attribute::MeshItem::Ptr modifiedMeshes =
+    result->findMesh("mesh_modified");
+  if(modifiedMeshes && modifiedMeshes->numberOfValues() > 0)
+    {
+    _internal_findAllExistingMeshPhrases(startPhr, modifiedMeshes, modifiedMeshPhrases);
+    smtk::model::DescriptivePhrases::iterator mit;
+    for(mit = modifiedMeshPhrases.begin(); mit != modifiedMeshPhrases.end(); ++mit)
+      {
+//      (*mit)->setup()
+      QModelIndex qidx(_internal_getPhraseIndex(
+        this, *mit, sessIndex, true));
+      if(!qidx.isValid())
+        {
+        std::cerr << "Can't find valid QModelIndex for phrase: " << (*mit)->title() << "\n";
+        return;  
+        }
+
+      emit dataChanged(qidx, qidx);
+      }
+    }
 }
 
 void QEntityItemModel::newSessionOperatorResult(

@@ -42,6 +42,7 @@ public:
   bool appendValue(const smtk::mesh::MeshSet&);
   bool appendValues(const smtk::mesh::MeshList&);
   void removeValue(const smtk::mesh::MeshSet&);
+  bool hasValue(const smtk::mesh::MeshSet&) const;
 
   std::size_t numberOfValues() const;
   const smtk::mesh::MeshList& values() const;

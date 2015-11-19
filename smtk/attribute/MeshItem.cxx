@@ -153,6 +153,14 @@ void MeshItem::removeValue(const smtk::mesh::MeshSet& val)
 }
 
 //----------------------------------------------------------------------------
+bool MeshItem::hasValue(const smtk::mesh::MeshSet& val) const
+{
+  smtk::mesh::MeshList::const_iterator it = std::find(m_meshValues.begin(),
+                                                m_meshValues.end(), val);
+  return it != this->m_meshValues.end();
+}
+
+//----------------------------------------------------------------------------
 const smtk::mesh::MeshList& MeshItem::values() const
 {
   return this->m_meshValues;

@@ -412,14 +412,13 @@ void qtModelView::recursiveSelect (const smtk::model::DescriptivePhrasePtr& dPhr
         {
         selentityrefs.insert(dPhrase->relatedEntity());
         }
-
-      smtk::model::DescriptivePhrases sub = dPhrase->subphrases();
-      for (smtk::model::DescriptivePhrases::iterator it = sub.begin();
-        it != sub.end(); ++it)
-        {
-        this->recursiveSelect(*it, selentityrefs, entityFlags, exactMatch,
-                              selmeshes);
-        }
+      }
+    smtk::model::DescriptivePhrases sub = dPhrase->subphrases();
+    for (smtk::model::DescriptivePhrases::iterator it = sub.begin();
+      it != sub.end(); ++it)
+      {
+      this->recursiveSelect(*it, selentityrefs, entityFlags, exactMatch,
+                            selmeshes);
       }
     }
 }
@@ -441,15 +440,6 @@ void qtModelView::selectMeshes( const DescriptivePhrasePtr& dp,
         selmeshes->push_back(mphrase->relatedMeshCollection()->meshes());
       else if(!mphrase->relatedMesh().is_empty())
         selmeshes->push_back(mphrase->relatedMesh());
-      }
-    }
-  else if(dp->phraseType() == MESH_LIST)
-    {
-    smtk::model::DescriptivePhrases sub = dp->subphrases();
-    for (smtk::model::DescriptivePhrases::iterator it = sub.begin();
-      it != sub.end(); ++it)
-      {
-      this->selectMeshes(*it, selmeshes);
       }
     }
 }
