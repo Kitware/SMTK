@@ -248,8 +248,9 @@ bool Manager::isAssociatedToACollection( const smtk::model::EntityRef& eref ) co
       i != this->m_collector->end() && isAssociated == false;
       ++i)
     {
-    smtk::mesh::MeshSet ms = i->second->findAssociatedMeshes( eref );
-    isAssociated = !ms.is_empty();
+    isAssociated = eref.isModel() ?
+      i->second->associatedModel() == eref.entity() :
+      !(i->second->findAssociatedMeshes( eref ).is_empty());
     }
   return isAssociated;
 }
@@ -263,10 +264,32 @@ Manager::associatedCollections( const smtk::model::EntityRef& eref) const
       i != this->m_collector->end();
       ++i)
     {
-    smtk::mesh::MeshSet ms = i->second->findAssociatedMeshes( eref );
-    if(!ms.is_empty())
+    bool found = eref.isModel() ?
+      i->second->associatedModel() == eref.entity() :
+      !(i->second->findAssociatedMeshes( eref ).is_empty());
+    if(found)
       {
       result.push_back(i->second);
+      }
+    }
+  return result;
+}
+
+//----------------------------------------------------------------------------
+smtk::common::UUIDs
+Manager::associatedCollectionIds( const smtk::model::EntityRef& eref) const
+{
+  smtk::common::UUIDs result;
+  for(const_iterator i = this->m_collector->begin();
+      i != this->m_collector->end();
+      ++i)
+    {
+    bool found = eref.isModel() ?
+      i->second->associatedModel() == eref.entity() :
+      !(i->second->findAssociatedMeshes( eref ).is_empty());
+    if(found)
+      {
+      result.insert(i->second->entity());
       }
     }
   return result;

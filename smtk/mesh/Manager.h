@@ -84,6 +84,8 @@ public:
   //Manager.
   std::vector<smtk::mesh::CollectionPtr> associatedCollections(
                                        const smtk::model::EntityRef& c ) const;
+  smtk::common::UUIDs associatedCollectionIds(
+                                       const smtk::model::EntityRef& c ) const;
 
 private:
   //needs to be created using shared_ptr

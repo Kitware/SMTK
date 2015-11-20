@@ -144,6 +144,7 @@
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperator', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forEntities', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forEntities', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forMeshes', unmatched parameter type 'cJSON*'"/>
 
   <suppress-warning text="skipping function 'smtk::io::ImportMesh::entireJSON', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportMesh::entireJSONToCollection', unmatched parameter type 'cJSON*'"/>
@@ -320,6 +321,17 @@
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::boundingCellsOfCell', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityListPhrase::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::EntityListPhrase::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityListPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::EntityListPhrase::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::MeshPhrase::setup', unmatched return type 'smtk::model::MeshPhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::MeshPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::MeshPhrase::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::MeshPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::MeshPhrase::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::MeshPhrase::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::MeshPhrase::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::MeshListPhrase::setup', unmatched return type 'smtk::model::MeshListPhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::MeshListPhrase::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::MeshListPhrase::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::MeshListPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::MeshListPhrase::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::MeshListPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::MeshListPhrase::SelfType&gt;'"/>
+
+
+
   <suppress-warning text="skipping field 'DescriptivePhrase::m_delegate' with unmatched type 'smtk::shared_ptr&lt;SubphraseGenerator&gt;'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ValueItemTemplate::setValue', unmatched parameter type 'size_t'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ValueItemTemplate::concreteDefinition', unmatched return type 'shared_ptr&lt;const smtk::attribute::ValueItemTemplate&lt;DataT&gt;::DefType&gt;"/>
@@ -351,6 +363,31 @@
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::usesOfShell', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::boundingShellsOfUse', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::childrenOfEntityList', unmatched parameter type 'smtk::model::EntityListPhrase::Ptr'"/>
+
+  <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::childrenOfMesh', unmatched parameter type 'smtk::model::MeshPhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::childrenOfMeshList', unmatched parameter type 'smtk::model::MeshListPhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::addMeshPhrases', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::meshsetsOfCollectionByDim', unmatched parameter type 'smtk::model::MeshPhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::meshesOfModel', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::meshesOfMeshList', unmatched parameter type 'smtk::model::MeshListPhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::meshsetsOfMesh', unmatched parameter type 'smtk::model::MeshPhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofMeshProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forStringData', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forFloatData', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forIntegerData', unmatched parameter type 'cJSON*'"/>
+  skipping function '
+  skipping function '
+  skipping function '
+  skipping function '
+  skipping function '
+  skipping function ''
+  skipping function '
+  skipping function '
+  skipping function '
+  skipping function '
+  skipping function '
+
+
   <suppress-warning text="skipping field 'Manager::m_conditionTriggers' with unmatched type 'std::set&lt;ConditionTrigger&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_oneToOneTriggers' with unmatched type 'std::set&lt;OneToOneTrigger&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_oneToManyTriggers' with unmatched type 'std::set&lt;OneToManyTrigger&gt;'"/>
@@ -419,6 +456,11 @@
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findGroup', unmatched return type 'smtk::attribute::ConstGroupItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::MeshSelectionItem::end', unmatched return type 'smtk::attribute::MeshSelectionItem::const_sel_map_it'"/>
   <suppress-warning text="skipping function 'smtk::attribute::MeshSelectionItem::begin', unmatched return type 'smtk::attribute::MeshSelectionItem::const_sel_map_it'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::findMesh', unmatched return type 'smtk::attribute::ConstMeshItemPtr'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::findMesh', unmatched return type 'smtk::attribute::MeshItemPtr'"/>
+  <suppress-warning text="skipping function 'smtk::model::Operator::findMesh', unmatched return type 'smtk::attribute::MeshItemPtr'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::MeshItem::end', unmatched return type 'smtk::attribute::MeshItem::const_mesh_it'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::MeshItem::begin', unmatched return type 'smtk::attribute::MeshItem::const_mesh_it'"/>
 
   @EXTRA_TYPESYSTEMS@
 
@@ -742,6 +784,8 @@
   <value-type template="smtk::shared_ptr" args="smtk::model::DescriptivePhrase"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::EntityPhrase"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::EntityListPhrase"/>
+  <value-type template="smtk::shared_ptr" args="smtk::model::MeshPhrase"/>
+  <value-type template="smtk::shared_ptr" args="smtk::model::MeshListPhrase"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::SubphraseGenerator"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::SimpleModelSubphrases"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::Operator">
@@ -1010,6 +1054,8 @@
   <value-type template="smtk::shared_ptr" args="smtk::attribute::ModelEntityItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::MeshSelectionItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::MeshSelectionItemDefinition" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::MeshItem" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::MeshItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::System">
     <modify-function signature="findAttributes(const std::string &amp;, std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Attribute&gt; &gt; &amp;)">
       <modify-argument index="2">
@@ -1242,6 +1288,38 @@
         </add-function>
         <add-function signature="setup(const std::vector&lt;smtk::model::EntityRef&gt;&amp;)"
           return-type="smtk::shared_ptr&lt;smtk::model::EntityListPhrase&gt;">
+          <inject-code>
+            smtk::model::DescriptivePhrasePtr invalid;
+            %RETURN_TYPE %0 = %CPPSELF-&gt;setup(%1, invalid);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
+      <object-type name="MeshPhrase">
+        <include file-name="smtk/model/MeshPhrase.h" location="local"/>
+        <add-function signature="create()"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::model::MeshPhrase&gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::model::MeshPhrase::create();
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
+      <object-type name="MeshListPhrase">
+        <include file-name="smtk/model/MeshListPhrase.h" location="local"/>
+        <add-function signature="create()"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::model::MeshListPhrase&gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::model::MeshListPhrase::create();
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="setup(const std::vector&lt;smtk::mesh::MeshSet&gt;&amp;)"
+          return-type="smtk::shared_ptr&lt;smtk::model::MeshListPhrase&gt;">
           <inject-code>
             smtk::model::DescriptivePhrasePtr invalid;
             %RETURN_TYPE %0 = %CPPSELF-&gt;setup(%1, invalid);
@@ -1937,6 +2015,39 @@
                       return-type="smtk::shared_ptr&lt;smtk::attribute::ModelEntityItemDefinition &gt;">
           <inject-code>
             %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::ModelEntityItemDefinition &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
+      <object-type name="MeshItem">
+        <include file-name="smtk/attribute/MeshItem.h" location="local" />
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::Item &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::MeshItem &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::MeshItem &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
+      <object-type name="MeshItemDefinition">
+        <include file-name="smtk/attribute/MeshItemDefinition.h" location="local" />
+        <modify-function signature="MeshItemDefinition(const std::string &amp;)" access="private" />
+        <add-function signature="ToItemDefinition(const smtk::shared_ptr&lt;smtk::attribute::MeshItemDefinition &gt;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::ItemDefinition &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::MeshItemDefinition &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::MeshItemDefinition &gt;(%1);
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>

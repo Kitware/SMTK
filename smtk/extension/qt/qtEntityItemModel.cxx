@@ -14,11 +14,16 @@
 #include "smtk/model/FloatData.h"
 #include "smtk/model/IntegerData.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/MeshPhrase.h"
 #include "smtk/model/StringData.h"
 #include "smtk/model/SubphraseGenerator.h"
 
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/MeshItem.h"
 #include <QtCore/QDir>
 #include <QtCore/QDirIterator>
 #include <QtCore/QFile>
@@ -260,22 +265,47 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
           this->lookupIconForEntityFlags(
             item->phraseType()));
         }
-      else if (role == EntityVisibilityRole && item->relatedEntity().isValid())
+      else if (role == EntityVisibilityRole)
         {
         // by default, everything should be visible
         bool visible = true;
-        if(item->relatedEntity().hasVisibility())
+
+        if(item->phraseType() == MESH_SUMMARY)
+          {
+          MeshPhrasePtr mphrase = smtk::dynamic_pointer_cast<MeshPhrase>(item);
+          smtk::mesh::MeshSet meshkey;
+          smtk::mesh::CollectionPtr c;
+          if(!mphrase->relatedMesh().is_empty())
+            {
+            meshkey = mphrase->relatedMesh();
+            c = meshkey.collection();
+            }
+          else
+            {
+            c = mphrase->relatedMeshCollection();
+            meshkey = c->meshes();
+            }
+          if(c && !meshkey.is_empty() && c->hasIntegerProperty(meshkey, "visible"))
+            {
+            const IntegerList& prop(c->integerProperty(meshkey, "visible"));
+            if(!prop.empty())
+              visible = (prop[0] != 0);
+            }
+          }
+        else if(item->relatedEntity().isValid() && item->relatedEntity().hasVisibility())
           {
           const IntegerList& prop(item->relatedEntity().integerProperty("visible"));
           if(!prop.empty())
             visible = (prop[0] != 0);
           }
+
         if (visible)
           return QVariant(QIcon(":/icons/display/eyeball_16.png"));
         else
           return QVariant(QIcon(":/icons/display/eyeballx_16.png"));
         }
-      else if (role == EntityColorRole && item->relatedEntity().isValid())
+      else if (role == EntityColorRole &&
+        (item->phraseType() == MESH_SUMMARY || item->relatedEntity().isValid()))
         {
         QColor color;
         FloatList rgba = item->relatedColor();
@@ -710,6 +740,28 @@ inline void _internal_findAllExistingPhrases(
     }
 }
 
+inline void _internal_findAllExistingMeshPhrases(
+  const DescriptivePhrasePtr& parntDp,
+  const smtk::attribute::MeshItemPtr& modMeshes,
+  DescriptivePhrases& modifiedPhrases)
+{
+  if(!parntDp || !parntDp->areSubphrasesBuilt())
+    return;
+
+  smtk::model::DescriptivePhrases& subs(parntDp->subphrases());
+  for (smtk::model::DescriptivePhrases::iterator it = subs.begin();
+    it != subs.end(); ++it)
+    {
+    if (modMeshes->hasValue((*it)->relatedMesh()))
+      {
+      modifiedPhrases.push_back(*it);
+      }
+
+    // Descend 
+    _internal_findAllExistingMeshPhrases(*it, modMeshes, modifiedPhrases);
+    }
+}
+
 void QEntityItemModel::addChildPhrases(
     const DescriptivePhrasePtr& parntDp,
     const std::vector< std::pair<DescriptivePhrasePtr, int> > & newDphrs,
@@ -1080,6 +1132,28 @@ void QEntityItemModel::updateWithOperatorResult(
       this->updateChildPhrases(*mit, sessIndex);
     }
 
+  // mesh properties modifed
+  DescriptivePhrases modifiedMeshPhrases;
+  smtk::attribute::MeshItem::Ptr modifiedMeshes =
+    result->findMesh("mesh_modified");
+  if(modifiedMeshes && modifiedMeshes->numberOfValues() > 0)
+    {
+    _internal_findAllExistingMeshPhrases(startPhr, modifiedMeshes, modifiedMeshPhrases);
+    smtk::model::DescriptivePhrases::iterator mit;
+    for(mit = modifiedMeshPhrases.begin(); mit != modifiedMeshPhrases.end(); ++mit)
+      {
+//      (*mit)->setup()
+      QModelIndex qidx(_internal_getPhraseIndex(
+        this, *mit, sessIndex, true));
+      if(!qidx.isValid())
+        {
+        std::cerr << "Can't find valid QModelIndex for phrase: " << (*mit)->title() << "\n";
+        return;  
+        }
+
+      emit dataChanged(qidx, qidx);
+      }
+    }
 }
 
 void QEntityItemModel::newSessionOperatorResult(

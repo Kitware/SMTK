@@ -39,6 +39,7 @@ set(meshHeaders
   MeshSet.h
   PointConnectivity.h
   PointSet.h
+  PropertyData.h
   QueryTypes.h
   TypeSet.h
 
@@ -50,7 +51,6 @@ set(meshHeaders
   moab/Allocator.h
   moab/HandleRange.h
   )
-
 
 #install the headers
 smtk_public_headers(${meshHeaders})

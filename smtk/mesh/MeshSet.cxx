@@ -234,6 +234,21 @@ bool MeshSet::setModelEntities(const smtk::model::EntityRef& ent)
   return iface->setModelEntity(this->m_range, ent.entity());
 }
 
+/**\brief Get the parent collection that this meshset belongs to.
+  *
+  */
+const smtk::mesh::CollectionPtr& MeshSet::collection() const
+{
+  return this->m_parent;
+}
+
+//----------------------------------------------------------------------------
+std::vector< std::string > MeshSet::names( ) const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  return iface->computeNames( this->m_range );
+}
+
 //----------------------------------------------------------------------------
 smtk::mesh::TypeSet MeshSet::types() const
 {
@@ -332,6 +347,21 @@ smtk::mesh::MeshSet MeshSet::subset( const smtk::mesh::Neumann& n ) const
   return smtk::mesh::MeshSet(this->m_parent,
                              this->m_handle,
                              iface->rangeIntersect(nMeshes,this->m_range));
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet MeshSet::subset( std::size_t ith ) const
+{
+  smtk::mesh::HandleRange singlHandleRange;
+  if(!this->m_range.empty() && ith < this->m_range.size())
+    {
+    smtk::mesh::HandleRange::const_iterator cit = this->m_range.begin();
+    cit += ith;
+
+    singlHandleRange.insert(*cit);
+    }
+  smtk::mesh::MeshSet singleMesh(this->m_parent,this->m_handle,singlHandleRange);
+  return singleMesh;
 }
 
 //----------------------------------------------------------------------------
