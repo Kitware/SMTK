@@ -66,10 +66,19 @@ public:
   std::string determineAction(const QPoint& pPos) const;
 
 public slots:
+  void selectItems(
+    const smtk::common::UUIDs& selEntities,
+    const smtk::mesh::MeshSets& selMeshes,
+    bool blocksignal);
   void selectEntityItems(const smtk::common::UUIDs& selEntityRefs,
     bool blocksignal);
   void selectEntities(const smtk::common::UUIDs& selEntIds)
   { this->selectEntityItems(selEntIds, false); }
+  void selectMeshItems(const smtk::mesh::MeshSets& selMeshes,
+    bool blocksignal);
+  void selectMeshes(const smtk::mesh::MeshSets& selMeshes)
+  { this->selectMeshItems(selMeshes, false); }
+
   void showContextMenu(const QPoint &p);
   void showContextMenu(const QModelIndex &idx, const QPoint &p = QPoint());
   void operatorInvoked();
@@ -148,6 +157,7 @@ protected:
   QEntityItemModel* qmodel,
     const QModelIndex& parent,
     const smtk::common::UUIDs& selEntities,
+    const smtk::mesh::MeshSets& selMeshes,
     QItemSelection& selItems);
   void expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx);
   void recursiveSelect (const smtk::model::DescriptivePhrasePtr& dPhrase,

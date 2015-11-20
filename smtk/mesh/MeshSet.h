@@ -28,13 +28,7 @@ namespace smtk {
   namespace mesh {
 
 typedef std::vector<smtk::mesh::MeshSet> MeshList;
-#ifdef SMTK_HASH_STORAGE
-/// Store information mapping mesh collection IDs to meshsets records.
-typedef google::sparse_hash_map<smtk::common::UUID, MeshList> UUIDsToMeshes;
-#else
-/// Store information mapping mesh collection IDs to meshsets records.
-typedef std::map<smtk::common::UUID, MeshList> UUIDsToMeshes;
-#endif
+typedef std::set<smtk::mesh::MeshSet> MeshSets;
 
 //Represents a collection of meshes that have been constructed by a Collection
 //We represent the collection of meshes by holding onto the parent entity

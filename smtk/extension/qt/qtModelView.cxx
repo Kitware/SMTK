@@ -497,15 +497,18 @@ void qtModelView::currentSelectionByMask (
 }
 
 //----------------------------------------------------------------------------
-void qtModelView::selectEntityItems(const smtk::common::UUIDs& selEntities,
-                                 bool blocksignal)
+void qtModelView::selectItems(
+  const smtk::common::UUIDs& selEntities,
+  const smtk::mesh::MeshSets& selMeshes,
+  bool blocksignal)
 {
   smtk::model::QEntityItemModel* qmodel =
     dynamic_cast<smtk::model::QEntityItemModel*>(this->model());
 
   // Now recursively check which model indices should be selected:
   QItemSelection selItems;
-  this->selectionHelper(qmodel, this->rootIndex(), selEntities, selItems);
+  this->selectionHelper(qmodel, this->rootIndex(),
+                        selEntities, selMeshes, selItems);
   this->blockSignals(blocksignal);
   // If we have any items selected, show them
   if(selItems.count())
@@ -513,9 +516,25 @@ void qtModelView::selectEntityItems(const smtk::common::UUIDs& selEntities,
     this->selectionModel()->select(selItems, QItemSelectionModel::ClearAndSelect);
     this->scrollTo(selItems.value(0).topLeft());
     }
-  else 
+  else
+    {
     this->clearSelection();
+    }
   this->blockSignals(false);
+}
+
+//----------------------------------------------------------------------------
+void qtModelView::selectEntityItems(const smtk::common::UUIDs& selEntities,
+                                 bool blocksignal)
+{
+  this->selectItems(selEntities, smtk::mesh::MeshSets(), blocksignal);
+}
+
+//----------------------------------------------------------------------------
+void qtModelView::selectMeshItems(const smtk::mesh::MeshSets& selMeshes,
+    bool blocksignal)
+{
+    this->selectItems(smtk::common::UUIDs(), selMeshes, blocksignal);
 }
 
 void qtModelView::expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx)
@@ -536,10 +555,12 @@ void qtModelView::expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx)
     }
 }
 
+//----------------------------------------------------------------------------
 void qtModelView::selectionHelper(
   QEntityItemModel* qmodel,
   const QModelIndex& parentIdx,
   const smtk::common::UUIDs& selEntities,
+  const smtk::mesh::MeshSets& selMeshes,
   QItemSelection& selItems)
 {
   // For all the children of this index, see if
@@ -548,13 +569,15 @@ void qtModelView::selectionHelper(
     {
     QModelIndex idx(qmodel->index(row, 0, parentIdx));
     DescriptivePhrasePtr dPhrase = qmodel->getItem(idx);
-    if (dPhrase && selEntities.find(dPhrase->relatedEntityId()) != selEntities.end())
+    if (dPhrase &&
+        (selEntities.find(dPhrase->relatedEntityId()) != selEntities.end() ||
+         selMeshes.find(dPhrase->relatedMesh()) != selMeshes.end()))
       {
       this->expandToRoot(qmodel, parentIdx);
       QItemSelectionRange sr(idx);
       selItems.append(sr);
       }
-    this->selectionHelper(qmodel, idx, selEntities, selItems);
+    this->selectionHelper(qmodel, idx, selEntities, selMeshes, selItems);
     }
 }
 
