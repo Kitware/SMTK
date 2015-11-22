@@ -102,7 +102,7 @@ smtk::model::OperatorResult SetProperty::operateInternal()
 
   // check whether there are mesh entities's properties need to be changed
   smtk::attribute::MeshItemPtr meshItem = this->findMesh("meshes");
-  smtk::mesh::MeshList modifiedMeshes;
+  smtk::mesh::MeshSets modifiedMeshes;
   if(meshItem)
     {
     smtk::attribute::MeshItem::const_mesh_it it;
@@ -117,7 +117,7 @@ smtk::model::OperatorResult SetProperty::operateInternal()
         nameItem->value(0), floatItem, c, *it);
       SetMeshPropertyValue<Integer,IntegerList,IntegerData,IntItem>(
         nameItem->value(0), integerItem, c, *it);
-      modifiedMeshes.push_back(*it);
+      modifiedMeshes.insert(*it);
       }
     }
 

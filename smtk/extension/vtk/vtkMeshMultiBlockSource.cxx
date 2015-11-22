@@ -337,12 +337,12 @@ void vtkMeshMultiBlockSource::GenerateRepresentationForSingleMesh(
     smtk::mesh::MeshSet shell = meshes.subset(smtk::mesh::Dims3).extractShell();
     smtk::mesh::MeshSet twoD = meshes.subset(smtk::mesh::Dims2);
     smtk::mesh::MeshSet oneD = meshes.subset(smtk::mesh::Dims1);
-    smtk::mesh::MeshSet zeroD = meshes.subset(smtk::mesh::Dims0);
+//    smtk::mesh::MeshSet zeroD = meshes.subset(smtk::mesh::Dims0);
 
     smtk::mesh::MeshSet toRender = shell;
     toRender.append(twoD);
     toRender.append(oneD);
-    toRender.append(zeroD);
+//    toRender.append(zeroD);
         
     convert_smtkMesh_to_vtkPolyData(toRender, pts.GetPointer(), pd);
     // std::cout << "Number of points: " << pd->GetNumberOfPoints() << std::endl;
