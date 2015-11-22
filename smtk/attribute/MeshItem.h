@@ -28,8 +28,8 @@ namespace smtk {
 class SMTKCORE_EXPORT MeshItem : public Item
 {
 public:
-  typedef smtk::mesh::MeshList::const_iterator const_mesh_it;
-  typedef smtk::mesh::MeshList::iterator mesh_it;
+  typedef smtk::mesh::MeshSets::const_iterator const_mesh_it;
+  typedef smtk::mesh::MeshSets::iterator mesh_it;
 
   smtkTypeMacro(MeshItem);
   virtual ~MeshItem();
@@ -41,11 +41,12 @@ public:
   bool setValue(const smtk::mesh::MeshSet& meshset);
   bool appendValue(const smtk::mesh::MeshSet&);
   bool appendValues(const smtk::mesh::MeshList&);
+  bool appendValues(const smtk::mesh::MeshSets&);
   void removeValue(const smtk::mesh::MeshSet&);
   bool hasValue(const smtk::mesh::MeshSet&) const;
 
   std::size_t numberOfValues() const;
-  const smtk::mesh::MeshList& values() const;
+  const smtk::mesh::MeshSets& values() const;
   virtual void reset();
   // Assigns this item to be equivalent to another.  Options are processed by derived item classes
   // Returns true if success and false if a problem occured.
@@ -60,7 +61,7 @@ protected:
   MeshItem(Attribute *owningAttribute, int itemPosition);
   MeshItem(Item *owningItem, int position, int subGroupPosition);
   virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
-  smtk::mesh::MeshList m_meshValues;
+  smtk::mesh::MeshSets m_meshValues;
 
 };
 
