@@ -569,7 +569,7 @@ bool Session::addTessellation(
   if (etype == EXO_LABEL_MAP)
     return false;
 
-  vtkPolyData* bdy = NULL;
+  vtkSmartPointer<vtkPolyData> bdy;
   if (etype == EXO_LABEL)
     {
     bdy = vtkPolyData::SafeDownCast(data);
