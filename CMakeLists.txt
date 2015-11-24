@@ -424,6 +424,9 @@ add_subdirectory(thirdparty)
 include_directories(
   "${CMAKE_CURRENT_BINARY_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+include_directories(
+  SYSTEM
   "${SPARSEHASH_INCLUDE_DIRS}"
   "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cJSON"
   "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/pugixml"
