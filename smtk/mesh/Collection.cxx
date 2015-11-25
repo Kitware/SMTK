@@ -402,13 +402,13 @@ smtk::mesh::CellSet Collection::findAssociatedCells( const smtk::model::EntityRe
 
 
 //----------------------------------------------------------------------------
-bool Collection::addAssociation( const smtk::model::EntityRef& eref ,
+bool Collection::setAssociation( const smtk::model::EntityRef& eref ,
                                  const smtk::mesh::MeshSet& meshset )
 {
   const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
   // This causes the eref to become a meshset with the tag MODEL;
   // then all meshsets in m_range become child meshsets of eref:
-  return iface->addAssociation( eref.entity(), meshset.m_range );
+  return iface->setAssociation( eref.entity(), meshset.m_range );
 }
 
 //----------------------------------------------------------------------------
@@ -421,6 +421,26 @@ bool Collection::hasAssociations( ) const
 
   smtk::common::UUIDArray associations = iface->computeModelEntities(entities);
   return !associations.empty();
+}
+
+//----------------------------------------------------------------------------
+bool Collection::associateToModel(const smtk::common::UUID& uuid)
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
+  return iface->setRootAssociation( uuid );
+}
+
+//----------------------------------------------------------------------------
+bool Collection::isAssociatedToModel() const
+{
+  return this->associatedModel() != smtk::common::UUID::null();
+}
+
+//----------------------------------------------------------------------------
+smtk::common::UUID Collection::associatedModel() const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
+  return iface->rootAssociation( );
 }
 
 //----------------------------------------------------------------------------
@@ -576,33 +596,6 @@ bool Collection::setNeumannOnMeshes(const smtk::mesh::MeshSet& meshes,
     return iface->setNeumann(meshes.m_range,n);
     }
   return false;
-}
-
-//----------------------------------------------------------------------------
-bool Collection::associateModel(const smtk::common::UUID& uuid)
-{
-  if(m_modelEntity == uuid)
-    return true;
-  this->m_modelEntity = uuid;
-
-  return this->m_internals->mesh_iface()->setModelEntity(
-            HandleRange(this->m_internals->mesh_root_handle(),
-                        this->m_internals->mesh_root_handle()), uuid);
-}
-
-//----------------------------------------------------------------------------
-smtk::common::UUID Collection::associatedModel() const
-{
-  return m_modelEntity;
-/*
-  smtk::common::UUIDArray associatedModels =
-    this->m_internals->mesh_iface()->computeModelEntities(
-      HandleRange(this->m_internals->mesh_root_handle(),
-                  this->m_internals->mesh_root_handle()));
-
-  return associatedModels.size() > 0 ?
-         associatedModels[0] : smtk::common::UUID();
-*/
 }
 
 //----------------------------------------------------------------------------

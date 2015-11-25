@@ -373,9 +373,14 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& 
       //now create a mesh from those cells
       smtk::mesh::CellSet cellsForMesh(collection, i->second);
       smtk::mesh::MeshSet ms = collection->createMesh(cellsForMesh);
-      collection->addAssociation(i->first, ms);
+      collection->setAssociation(i->first, ms);
       }
-    // collection->addAssociation(ModelEntityRef, all_ms);
+
+    EntityRefs currentModels = modelManager->entitiesMatchingFlagsAs<EntityRefs>( smtk::model::MODEL_ENTITY);
+    if(currentModels.size() > 0)
+      {
+      collection->associateToModel(currentModels.begin()->entity());
+      }
     }
   }
 

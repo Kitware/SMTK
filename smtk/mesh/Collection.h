@@ -27,6 +27,7 @@
 
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/Model.h"
 
 #include <vector>
 
@@ -139,10 +140,19 @@ public:
   smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType );
   smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim );
 
-  bool addAssociation( const smtk::model::EntityRef& eref, const smtk::mesh::MeshSet& meshset );
+  bool setAssociation( const smtk::model::EntityRef& eref, const smtk::mesh::MeshSet& meshset );
 
   //determine if this collection has any associations to a model
   bool hasAssociations() const;
+
+  // Associate a model to the collection.
+  bool associateToModel(const smtk::common::UUID& uuid);
+
+  // Find if the collection has an associated model
+  bool isAssociatedToModel() const;
+
+  // Return the uuid of the associated model
+  smtk::common::UUID associatedModel() const;
 
   //----------------------------------------------------------------------------
   // Construction of new meshes
@@ -218,9 +228,6 @@ public:
   void setModelManager(smtk::model::ManagerPtr mgr) { this->m_modelManager = mgr; }
   smtk::model::ManagerPtr modelManager() const { return this->m_modelManager.lock(); }
 
-  // Associate a model to the collection.
-  bool associateModel(const smtk::common::UUID& uuid);
-  smtk::common::UUID associatedModel() const;
 
   //----------------------------------------------------------------------------
   // Float, String, Integer properties for a meshset given its handle range.
@@ -272,7 +279,6 @@ private:
   std::string m_writeLocation;
 
   smtk::model::WeakManagerPtr m_modelManager;
-  smtk::common::UUID m_modelEntity;
   smtk::shared_ptr<MeshFloatData> m_floatData;
   smtk::shared_ptr<MeshStringData> m_stringData;
   smtk::shared_ptr<MeshIntegerData> m_integerData;

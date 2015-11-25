@@ -152,14 +152,16 @@ void verify_has_association()
   smtk::model::EntityRef invalidModelRef;
 
   //verify that the null uuid isn't part of a collection
-  test( mgr->isAssociatedToACollection( invalidModelRef ) == false );
+  test( mgr->isAssociatedToACollection( invalidModelRef ) == false,
+        "invalid model ref associated to collection" );
 
   //add some empty collection to the manager
   const int size=256;
   for( int i=0 ; i < size; ++i) { mgr->makeCollection(); }
 
   //verify that at this point no collections have associations
-  test(mgr->collectionsWithAssociations().size() == 0);
+  test(mgr->collectionsWithAssociations().size() == 0,
+       "new empty collections reporting they have associations");
 
   //next we are going to create a simple smtk model
   smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
@@ -171,11 +173,13 @@ void verify_has_association()
   test( mgr->numberOfCollections() == (size+1) );
 
   //now verify that the manager can see the association
-  test(mgr->collectionsWithAssociations().size() == 1);
+  test(mgr->collectionsWithAssociations().size() == 1,
+       "only one collection should have an association");
 
   //verify that the null uuid isn't part of a collection even after we
   //have an association
-  test( mgr->isAssociatedToACollection( invalidModelRef ) == false );
+  test( mgr->isAssociatedToACollection( invalidModelRef ) == false,
+        "invalid model ref associated to collection");
 
   //walk the model and verify that we can query the Manager to get the
   //collection that is associated to it.
@@ -198,7 +202,8 @@ void verify_has_association()
       test( assocCollections[0] == collectionWithAssoc);
       }
     }
-  test( num_models == count );
+
+  test( (num_models + num_volumes_in_model) == count, "incorrect number of associations");
 
   //walk all the collections and get the model uuids that is aware of
   smtk::mesh::MeshSet meshes = collectionWithAssoc->meshes();
