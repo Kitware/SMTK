@@ -502,7 +502,7 @@ void verify_extract_volume_meshes_by_global_points_to_vtk(const smtk::mesh::Coll
 }
 
 //----------------------------------------------------------------------------
-int UnitTestExtractTessellation(int, char**)
+int UnitTestExtractTessellation(int, char** const)
 {
   smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = load_mesh(mngr);

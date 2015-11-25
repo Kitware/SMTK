@@ -322,7 +322,7 @@ void verify_no_association()
 } // anonymous namespace
 
 //----------------------------------------------------------------------------
-int UnitTestManager(int, char**)
+int UnitTestManager(int, char** const)
 {
   verify_constructors();
 

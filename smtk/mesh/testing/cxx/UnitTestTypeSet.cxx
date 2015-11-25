@@ -112,7 +112,7 @@ void verify_typeset_with_cells_and_dims()
 }
 
 //----------------------------------------------------------------------------
-int UnitTestTypeSet(int, char**)
+int UnitTestTypeSet(int, char** const)
 {
   //first lets test the very basic interactions.
   verify_basic_typeset();
