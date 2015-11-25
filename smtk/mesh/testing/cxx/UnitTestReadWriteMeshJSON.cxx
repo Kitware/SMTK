@@ -374,7 +374,7 @@ void verify_loading_existing_collection_fails()
 }
 
 //----------------------------------------------------------------------------
-int UnitTestReadWriteMeshJSON(int, char**)
+int UnitTestReadWriteMeshJSON(int, char** const)
 {
   verify_writing_and_loading_collection();
   verify_writing_and_loading_multiple_collections();

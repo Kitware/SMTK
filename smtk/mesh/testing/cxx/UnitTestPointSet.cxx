@@ -308,7 +308,7 @@ void verify_pointset_for_each(const smtk::mesh::CollectionPtr& c)
 }
 
 //----------------------------------------------------------------------------
-int UnitTestPointSet(int, char**)
+int UnitTestPointSet(int, char** const)
 {
   smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = load_mesh(mngr);

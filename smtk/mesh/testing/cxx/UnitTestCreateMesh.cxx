@@ -178,7 +178,7 @@ void verify_create_mesh_num_cells(const smtk::mesh::CollectionPtr& c)
 }
 
 //----------------------------------------------------------------------------
-int UnitTestCreateMesh(int, char**)
+int UnitTestCreateMesh(int, char** const)
 {
   smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = load_mesh(mngr);
