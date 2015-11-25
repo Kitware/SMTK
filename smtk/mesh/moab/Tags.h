@@ -36,6 +36,14 @@ class QueryNameTag
   ::moab::Tag m_tag;
   char m_tagData[32]; //same length as NAME_TAG_SIZE
 public:
+
+//disable warning about elements of array 'm_tagData' will be default initialized
+//this is only a warning on msvc, since previously it was broken and wouldn't
+//default initialize member arrays
+# ifdef _MSC_VER
+#   pragma warning(push)
+#   pragma warning(disable: 4351)
+# endif
   QueryNameTag(::moab::Interface* iface):
   m_iface(iface),
   m_tag(),
@@ -47,6 +55,10 @@ public:
                                 ::moab::MB_TYPE_OPAQUE,
                                 this->m_tag);
   }
+//reset our warnings to the original level
+# ifdef _MSC_VER
+#   pragma warning(pop)
+# endif
 
   bool fetch_name(const smtk::mesh::Handle& entity)
   {
