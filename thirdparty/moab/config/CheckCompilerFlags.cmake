@@ -7,10 +7,10 @@ SET(MOAB_CXX_FLAGS "")
 #
 # Set -pedantic if the compiler supports it.
 #
-IF(NOT (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND
-        CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.4"))
-  ENABLE_IF_SUPPORTED(MOAB_CXX_FLAGS "-pedantic")
-ENDIF()
+#IF(NOT (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND
+#        CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.4"))
+#  ENABLE_IF_SUPPORTED(MOAB_CXX_FLAGS "-pedantic")
+#ENDIF()
 
 # Check for compiler types and add flags accordingly
 if (CMAKE_COMPILER_IS_GNUCXX)
