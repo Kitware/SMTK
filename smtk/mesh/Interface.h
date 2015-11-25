@@ -27,7 +27,7 @@ namespace smtk {
 namespace mesh {
 
 //forward declare classes we use
-struct ContainsFunctor;
+class ContainsFunctor;
 class PointConnectivity;
 
 //----------------------------------------------------------------------------
