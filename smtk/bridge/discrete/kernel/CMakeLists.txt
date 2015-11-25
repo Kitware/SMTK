@@ -254,5 +254,5 @@ if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   # so it will not be CS wrapped properly, and generate a lot of warning at CMake configure time.
   # Therefore we disable CS wrapping until the issue with source files in sub directories is addressed.
   # vtk_add_cs_wrapping(${vtk-module})
-  smtk_install_library(${vtk-module}CS)
+  # smtk_install_library(${vtk-module}CS)
 endif ()
