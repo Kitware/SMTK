@@ -217,9 +217,9 @@ smtk::mesh::moab::InterfacePtr extract_interface( const smtk::mesh::CollectionPt
 //----------------------------------------------------------------------------
 Interface::Interface():
   m_iface( new ::moab::Core() ),
-  m_alloc( new smtk::mesh::moab::Allocator( this->m_iface.get() ) )
+  m_alloc( NULL )
 {
-
+  this->m_alloc = new smtk::mesh::moab::Allocator( this->m_iface.get() ) );
 }
 
 //----------------------------------------------------------------------------
@@ -288,7 +288,7 @@ bool Interface::createMesh(const smtk::mesh::HandleRange& cells,
 
       //iterate the entities and find the higest dimension of cell.
       //once that is found add a geom sparse tag to the mesh
-      hasDim = cells.num_of_dimension(dimension);
+      hasDim = (cells.num_of_dimension(dimension) > 0);
       }
 
     //add the dim tag
