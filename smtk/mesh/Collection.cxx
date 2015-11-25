@@ -74,10 +74,10 @@ Collection::Collection():
   m_name(),
   m_readLocation(),
   m_writeLocation(),
-  m_internals( new InternalImpl() ),
   m_floatData(new MeshFloatData),
   m_stringData(new MeshStringData),
-  m_integerData(new MeshIntegerData)
+  m_integerData(new MeshIntegerData),
+  m_internals( new InternalImpl() )
 {
 
 }
@@ -89,10 +89,10 @@ Collection::Collection(const smtk::common::UUID& collectionID,
   m_name(),
   m_readLocation(),
   m_writeLocation(),
-  m_internals( new InternalImpl(mngr) ),
   m_floatData(new MeshFloatData),
   m_stringData(new MeshStringData),
-  m_integerData(new MeshIntegerData)
+  m_integerData(new MeshIntegerData),
+  m_internals( new InternalImpl(mngr) )
 {
 }
 
@@ -104,10 +104,10 @@ Collection::Collection( const smtk::common::UUID& collectionID,
   m_name(),
   m_readLocation(),
   m_writeLocation(),
-  m_internals( new InternalImpl(mngr, interface) ),
   m_floatData(new MeshFloatData),
   m_stringData(new MeshStringData),
-  m_integerData(new MeshIntegerData)
+  m_integerData(new MeshIntegerData),
+  m_internals( new InternalImpl(mngr, interface) )
 {
 
 }
