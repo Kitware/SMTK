@@ -217,9 +217,9 @@ smtk::mesh::moab::InterfacePtr extract_interface( const smtk::mesh::CollectionPt
 //----------------------------------------------------------------------------
 Interface::Interface():
   m_iface( new ::moab::Core() ),
-  m_alloc( NULL )
+  m_alloc( )
 {
-  this->m_alloc = new smtk::mesh::moab::Allocator( this->m_iface.get() ) );
+  this->m_alloc.reset( new smtk::mesh::moab::Allocator( this->m_iface.get() ) );
 }
 
 //----------------------------------------------------------------------------
