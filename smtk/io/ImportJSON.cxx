@@ -1158,7 +1158,7 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
 
       if(!associatedModelId.isNull())
         {
-        collection->associateModel(associatedModelId);
+        collection->associateToModel(associatedModelId);
         }
       //write properties to the new collection
       status = ImportJSON::ofMeshProperties(child, collection);
