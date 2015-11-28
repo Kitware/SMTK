@@ -1,3 +1,5 @@
+.. _smtk-contributing:
+
 ********************
 Contributing to SMTK
 ********************
@@ -31,6 +33,7 @@ With that in mind:
   * common — source for classes used throughout the smtkCore library
   * attribute — source for :ref:`smtk-attribute-sys` in the smtkCore library
   * model — source for :ref:`smtk-model-sys` in the smtkCore library
+  * mesh — source for :ref:`smtk-mesh-sys` in the smtkCore library
   * simulation — aids to exporting simulation input decks in the smtkCore library
   * io — file and string I/O in the smtkCore library, a mix of XML and JSON
   * view — source for providing views of attributes and models in the smtkCore library
