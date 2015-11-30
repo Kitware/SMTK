@@ -206,13 +206,17 @@ DirectoryItem::reset()
     }
 }
 //----------------------------------------------------------------------------
-void DirectoryItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+bool DirectoryItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
   // Assigns my contents to be same as sourceItem
-  Item::copyFrom(sourceItem, info);
 
-  DirectoryItemPtr sourceDirItem =
-    smtk::dynamic_pointer_cast<DirectoryItem>(sourceItem);
+  smtk::shared_ptr<const DirectoryItem > sourceDirItem =
+    smtk::dynamic_pointer_cast<const DirectoryItem>(sourceItem);
+  
+  if (!sourceDirItem)
+    {
+    return false; // Source is not a directory item!
+    }
 
   for (std::size_t i=0; i<sourceDirItem->numberOfValues(); ++i)
     {
@@ -225,5 +229,7 @@ void DirectoryItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
       this->unset(i);
       }
     }
+  
+  return Item::assign(sourceItem, options);
 }
 //----------------------------------------------------------------------------

@@ -103,6 +103,12 @@ public:
   static int forSingleCollection(cJSON* mdesc,
                                  smtk::mesh::CollectionPtr collection);
 
+  // Serialize all the smtk::mesh associated with given EntityRefs.
+  static int forMeshes(
+                     cJSON* pnode,
+                     const smtk::common::UUIDs& collectionIds,
+                     smtk::mesh::ManagerPtr meshMgr);
+
   static int forLog(
     cJSON* logrecordarray,
     const smtk::io::Logger& log,
@@ -123,6 +129,9 @@ public:
   static cJSON* createStringArray(const std::vector<std::string>& arr);
   static cJSON* createUUIDArray(const std::vector<smtk::common::UUID>& arr);
   static cJSON* createIntegerArray(const std::vector<long>& arr);
+  static int forFloatData(cJSON* dict, const smtk::model::FloatData& fdata);
+  static int forStringData(cJSON* dict, const smtk::model::StringData& sdata);
+  static int forIntegerData(cJSON* dict, const smtk::model::IntegerData& idata);
 };
 
   } // namespace model

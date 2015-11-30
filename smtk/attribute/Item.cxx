@@ -194,10 +194,8 @@ int Item::advanceLevel(int mode) const
   return this->m_advanceLevel[mode];
 }
 //----------------------------------------------------------------------------
-void Item::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+bool Item::assign(ConstItemPtr &sourceItem, unsigned int)
 {
-  (void)info;
-
   // Assigns my contents to be same as sourceItem
   m_isEnabled = sourceItem->isEnabled();
   for (unsigned i=0; i<2; ++i)
@@ -207,6 +205,7 @@ void Item::copyFrom(ItemPtr sourceItem, CopyInfo& info)
       this->setAdvanceLevel(i, sourceItem->advanceLevel(i));
       }
     }  // for
+  return true;
 }
 //----------------------------------------------------------------------------
 std::string Item::type2String(Item::Type t)
@@ -235,6 +234,8 @@ std::string Item::type2String(Item::Type t)
       return "ModelEntity";
     case MESH_SELECTION:
       return "MeshSelection";
+    case MESH_ENTITY:
+      return "MeshEntity";
     default:
       return "";
     }
@@ -286,6 +287,10 @@ Item::Type Item::string2Type(const std::string &s)
   if (s == "MeshSelection")
     {
     return MESH_SELECTION;
+    }
+  if (s == "MeshEntity")
+    {
+    return MESH_ENTITY;
     }
   return NUMBER_OF_TYPES;
 }

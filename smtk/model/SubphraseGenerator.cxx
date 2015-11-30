@@ -27,6 +27,10 @@
 #include "smtk/model/PropertyListPhrase.h"
 #include "smtk/model/PropertyValuePhrase.h"
 
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/MeshSet.h"
+
 #include <algorithm>
 //required for insert_iterator on VS2010+
 #include <iterator>
@@ -287,6 +291,13 @@ void SubphraseGenerator::freeCellsOfModel(
   addEntityPhrases(freeCellsInModel, src, this->directLimit(), result);
 }
 
+void SubphraseGenerator::meshesOfModel(
+  DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result)
+{
+  std::vector<smtk::mesh::CollectionPtr> meshCollections =
+    mod.manager()->meshes()->associatedCollections(mod);
+  addMeshPhrases(meshCollections, src, this->directLimit(), result);
+}
 
 void SubphraseGenerator::prototypeOfInstance(
   DescriptivePhrase::Ptr src, const Instance& ent, DescriptivePhrases& result)
@@ -387,6 +398,58 @@ void SubphraseGenerator::addEntityProperties(
     result.push_back(
       PropertyListPhrase::create()->setup(
         parnt->relatedEntity(), ptype, props, parnt));
+    }
+}
+
+void SubphraseGenerator::meshsetsOfMesh(
+  MeshPhrase::Ptr meshphr, DescriptivePhrases& result)
+{
+  smtk::mesh::MeshSet meshes = meshphr->relatedMesh();
+  // if this is a mesh collection
+  if(meshphr->isCollection())
+    {
+    this->meshsetsOfCollectionByDim(meshphr, smtk::mesh::Dims3, result);
+    this->meshsetsOfCollectionByDim(meshphr, smtk::mesh::Dims2, result);
+    this->meshsetsOfCollectionByDim(meshphr, smtk::mesh::Dims1, result);
+    }
+  // if this is a MeshSet
+  else if(meshes.size() > 1)
+    {
+    // if the MeshSet contains more than one mesh, we need to create subphrases for
+    // each subset, otherwise the meshphr will represent the relatedMesh.
+    for(std::size_t i=0; i < meshes.size(); ++i)
+      {
+      result.push_back(
+        MeshPhrase::create()->setup(meshes.subset(i), meshphr));
+      }
+    }
+}
+
+void SubphraseGenerator::meshsetsOfCollectionByDim(
+  MeshPhrase::Ptr meshphr, smtk::mesh::DimensionType dim, DescriptivePhrases& result)
+{
+  if(meshphr->isCollection())
+    {
+    smtk::mesh::CollectionPtr meshcollection = meshphr->relatedMeshCollection();
+    smtk::mesh::MeshSet dimMeshes = meshcollection->meshes(dim);
+    if(!dimMeshes.is_empty())
+      {
+      result.push_back(
+        MeshPhrase::create()->setup(dimMeshes, meshphr));
+      }
+    }
+}
+
+void SubphraseGenerator::meshesOfMeshList(
+  MeshListPhrase::Ptr src, DescriptivePhrases& result)
+{
+  if(src->relatedCollections().size() > 0)
+    {
+    addMeshPhrases(src->relatedCollections(), src, this->directLimit(), result);
+    }
+  else if(src->relatedMeshes().size() > 0)
+    {
+    addMeshPhrases(src->relatedMeshes(), src, this->directLimit(), result);
     }
 }
 

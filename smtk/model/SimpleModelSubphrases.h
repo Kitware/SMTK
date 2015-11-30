@@ -43,6 +43,8 @@ protected:
   virtual void childrenOfEntity(EntityPhrase::Ptr, DescriptivePhrases&);
   virtual void childrenOfEntityList(EntityListPhrase::Ptr, DescriptivePhrases&);
   virtual void childrenOfPropertyList(PropertyListPhrase::Ptr, DescriptivePhrases&);
+  virtual void childrenOfMesh(MeshPhrase::Ptr, DescriptivePhrases&);
+  virtual void childrenOfMeshList(MeshListPhrase::Ptr, DescriptivePhrases&);
 
   bool m_abridgeUses;
 };

@@ -22,12 +22,15 @@
 #include "vtkDataObjectTreeIterator.h"
 #include "vtkNew.h"
 #include "vtkSmartPointer.h"
+#include "vtkInformation.h"
+#include "vtkInformationObjectBaseVectorKey.h"
 
 #include <map>
 #include <vector>
 
-class vtkInformationStringKey;
+class vtkInformationDoubleKey;
 class vtkInformationIntegerKey;
+class vtkInformationStringKey;
 
 namespace smtk {
   namespace bridge {
@@ -48,6 +51,9 @@ enum EntityType
   EXO_SIDE_SETS  = 0x06,   //!< A group of Exodus SIDE_SETs.
   EXO_NODE_SETS  = 0x07,   //!< A group of Exodus NODE_SETs.
 
+  EXO_LABEL_MAP  = 0x08,   //!< A dataset with a label-map array
+  EXO_LABEL      = 0x09,   //!< A dataset representing one label in a label-map array
+
   EXO_INVALID    = 0xff    //!< The handle is invalid
 };
 
@@ -62,7 +68,7 @@ struct SMTKEXODUSSESSION_EXPORT EntityHandle
 
   EntityHandle();
   EntityHandle(int emod, vtkDataObject* obj, Session* sess);
-  EntityHandle(int emod, vtkDataObject* obj, vtkMultiBlockDataSet* parent, int idxInParent, Session* sess);
+  EntityHandle(int emod, vtkDataObject* obj, vtkDataObject* parent, int idxInParent, Session* sess);
 
   bool isValid() const;
 
@@ -105,7 +111,7 @@ class SMTKEXODUSSESSION_EXPORT Session : public smtk::model::Session
 public:
   typedef std::vector<vtkSmartPointer<vtkMultiBlockDataSet> > ModelVector_t;
   typedef std::map<smtk::model::EntityRef,EntityHandle> ReverseIdMap_t;
-  typedef std::pair<vtkMultiBlockDataSet*, int> ParentAndIndex_t;
+  typedef std::pair<vtkDataObject*, int> ParentAndIndex_t;
   typedef std::map<vtkDataObject*, ParentAndIndex_t> ChildParentMap_t;
 
   smtkTypeMacro(Session);
@@ -126,12 +132,16 @@ public:
   static vtkInformationIntegerKey* SMTK_VISIBILITY();
   static vtkInformationIntegerKey* SMTK_GROUP_TYPE();
   static vtkInformationIntegerKey* SMTK_PEDIGREE();
+  static vtkInformationIntegerKey* SMTK_OUTER_LABEL();
   static vtkInformationStringKey* SMTK_UUID_KEY();
+  static vtkInformationObjectBaseVectorKey* SMTK_CHILDREN();
+  static vtkInformationDoubleKey* SMTK_LABEL_VALUE();
 
   smtk::model::Model addModel(vtkSmartPointer<vtkMultiBlockDataSet>& model);
 
 protected:
   friend class Operator;
+  friend class ReadOperator;
   friend struct EntityHandle;
 
   Session();
@@ -153,10 +163,18 @@ protected:
     const EntityHandle&);
 
   size_t numberOfModels() const;
-  vtkMultiBlockDataSet* modelOfHandle(const EntityHandle& h) const;
-  vtkMultiBlockDataSet* parent(vtkDataObject* obj) const;
+  vtkDataObject* modelOfHandle(const EntityHandle& h) const;
+  vtkDataObject* parent(vtkDataObject* obj) const;
   int parentIndex(vtkDataObject* obj) const;
-  bool ensureChildParentMapEntry(vtkDataObject* child, vtkMultiBlockDataSet* parent, int idxInParent);
+  bool ensureChildParentMapEntry(vtkDataObject* child, vtkDataObject* parent, int idxInParent);
+
+  template<typename T>
+  T* modelOfHandleAs(const EntityHandle& h) const
+    { return T::SafeDownCast(this->modelOfHandle(h)); }
+
+  template<typename T>
+  T* parentAs(vtkDataObject* obj) const
+    { return T::SafeDownCast(this->parent(obj)); }
 
   virtual smtk::model::SessionIOPtr createIODelegate(const std::string& format);
 
@@ -188,26 +206,55 @@ void EntityHandle::appendChildrenTo(T& container, int depth) const
   if (!this->m_session)
     return;
 
-  vtkMultiBlockDataSet* data = this->object<vtkMultiBlockDataSet>();
-  // For now, leaf-datasets have no children.
-  // In the future, this may change to include model-faces/edges/segments/...
-  if (!data)
+  vtkDataObject* obj = this->object<vtkDataObject>();
+  if (!obj)
     return;
 
-  int nb = data->GetNumberOfBlocks();
-  for (int i = 0; i < nb; ++i)
+  vtkInformation* info = obj->GetInformation();
+  int objkids = Session::SMTK_CHILDREN()->Length(info);
+  vtkMultiBlockDataSet* data = vtkMultiBlockDataSet::SafeDownCast(obj);
+  if (!data && objkids < 1)
+    return;
+
+  if (data)
     {
-    vtkDataObject* childData = data->GetBlock(i);
-    if (!childData)
-      continue;
-
-    EntityHandle child(this->m_modelNumber, childData, data, i, this->m_session);
-    container.insert(container.end(), child);
-
-    vtkMultiBlockDataSet* mbds = vtkMultiBlockDataSet::SafeDownCast(childData);
-    if (mbds && depth != 0)
+    int nb = data->GetNumberOfBlocks();
+    for (int i = 0; i < nb; ++i)
       {
-      child.appendChildrenTo(container, depth < 0 ? depth : depth - 1);
+      vtkDataObject* childData = data->GetBlock(i);
+      if (!childData)
+        continue;
+
+      EntityHandle child(this->m_modelNumber, childData, data, i, this->m_session);
+      container.insert(container.end(), child);
+
+      vtkMultiBlockDataSet* mbds = vtkMultiBlockDataSet::SafeDownCast(childData);
+      if (mbds && depth != 0)
+        {
+        child.appendChildrenTo(container, depth < 0 ? depth : depth - 1);
+        }
+      }
+    }
+  else // objkids > 0
+    {
+    for (int i = 0; i < objkids; ++i)
+      {
+      vtkDataObject* childData =
+        vtkDataObject::SafeDownCast(
+          Session::SMTK_CHILDREN()->Get(info, i));
+      if (!childData)
+        continue;
+
+      EntityHandle child(this->m_modelNumber, childData, obj, i, this->m_session);
+      container.insert(container.end(), child);
+
+      // Recurse here to see if children have children...
+      if (
+        depth != 0 &&
+        Session::SMTK_CHILDREN()->Length(childData->GetInformation()) > 0)
+        {
+        child.appendChildrenTo(container, depth < 0 ? depth : depth - 1);
+        }
       }
     }
 }

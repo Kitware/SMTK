@@ -102,9 +102,12 @@ namespace smtk
         return this->m_activeChildrenItems[static_cast<std::size_t>(i)];
       }
 
-     // Used by System::copyAttribute()
-     virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
-                           smtk::attribute::Item::CopyInfo& info);
+      // Assigns this item to be equivalent to another.  Options are processed by derived item classes
+      // Returns true if success and false if a problem occured.  By default, an attribute being used by this
+      // to represent an expression will be copied if needed.  Use IGNORE_EXPRESSIONS option to prevent this
+      // When an expression attribute is copied, its model associations are by default not.
+      // Use COPY_MODEL_ASSOCIATIONS if you want them copied as well.These options are defined in Item.h .
+      virtual bool assign(smtk::attribute::ConstItemPtr &sourceItem, unsigned int options = 0);
 
       ItemPtr findChild(const std::string& name, smtk::attribute::SearchStyle);
       ConstItemPtr findChild(const std::string& name, smtk::attribute::SearchStyle) const;

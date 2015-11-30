@@ -93,6 +93,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${vtk-module}Module.h  DESTINATION inc
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   vtk_add_cs_wrapping(${vtk-module})
+  smtk_install_library(${vtk-module}CS)
 endif ()
 
 smtk_public_headers(${headers})

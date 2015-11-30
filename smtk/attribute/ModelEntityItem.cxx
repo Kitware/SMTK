@@ -229,20 +229,28 @@ void ModelEntityItem::unset(std::size_t i)
 }
 
 /// Assigns contents to be same as source item
-void ModelEntityItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+bool ModelEntityItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
-  Item::copyFrom(sourceItem, info);
-
   // Cast input pointer to ModelEntityItem
-  ModelEntityItemPtr sourceModelEntityItem =
-    smtk::dynamic_pointer_cast<ModelEntityItem>(sourceItem);
+  smtk::shared_ptr<const ModelEntityItem > sourceModelEntityItem =
+    smtk::dynamic_pointer_cast<const ModelEntityItem>(sourceItem);
 
+  if (!sourceModelEntityItem)
+    {
+    return false; // Source is not a model entity item
+    }
+  // Are we suppose to assign the model enity values?
+  if (options & Item::IGNORE_MODEL_ENTITIES)
+    {
+      return Item::assign(sourceItem, options);
+    }
+  
   // Update values
   // Only set values if both att systems are using the same model
   this->setNumberOfValues(sourceModelEntityItem->numberOfValues());
   for (std::size_t i=0; i<sourceModelEntityItem->numberOfValues(); ++i)
     {
-    if (sourceModelEntityItem->isSet(i) && info.IsSameModel)
+    if (sourceModelEntityItem->isSet(i))
       {
       smtk::model::EntityRef val = sourceModelEntityItem->value(i);
       this->setValue(i, val);
@@ -252,6 +260,7 @@ void ModelEntityItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
       this->unset(i);
       }
     }
+  return Item::assign(sourceItem, options);
 }
 
 /// A convenience method returning whether the item's definition is extensible.

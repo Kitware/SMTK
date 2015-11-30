@@ -13,6 +13,8 @@
 #include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityListPhrase.h"
+#include "smtk/model/MeshPhrase.h"
+#include "smtk/model/MeshListPhrase.h"
 #include "smtk/model/PropertyListPhrase.h"
 
 #include "smtk/model/Manager.h" // For PropertyType enum.
@@ -85,12 +87,21 @@ protected:
   void entitiesOfEntityList(EntityListPhrase::Ptr src, const EntityRefArray& ents, DescriptivePhrases& result);
   void propertiesOfPropertyList(PropertyListPhrase::Ptr src, PropertyType p, DescriptivePhrases& result);
 
+  void meshesOfModel(DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result);
+  void meshsetsOfMesh(MeshPhrase::Ptr meshphr, DescriptivePhrases& result);
+  void meshesOfMeshList(MeshListPhrase::Ptr src, DescriptivePhrases& result);
+  void meshsetsOfCollectionByDim(
+  MeshPhrase::Ptr meshphr, smtk::mesh::DimensionType dim, DescriptivePhrases& result);
+
   void addEntityProperties(
     PropertyType ptype, std::set<std::string>& props,
     DescriptivePhrase::Ptr parent, DescriptivePhrases& result);
 
   template<typename T>
   void addEntityPhrases(const T& ents, DescriptivePhrase::Ptr parent, int limit, DescriptivePhrases& result);
+
+  template<typename T>
+  void addMeshPhrases(const T& ents, DescriptivePhrase::Ptr parent, int limit, DescriptivePhrases& result);
 
   int m_directlimit;
   bool m_skipAttributes;
@@ -113,6 +124,31 @@ void SubphraseGenerator::addEntityPhrases(
     {
     result.push_back(
       EntityListPhrase::create()->setup(ents, parent));
+    }
+}
+
+/**\brief Add child MeshPhrases with an iterable container of meshes.
+  *
+  * This templated method is provided so that arrays of MeshSets or Collections
+  * are both accepted.
+  */
+
+template<typename T>
+void SubphraseGenerator::addMeshPhrases(
+  const T& meshes, DescriptivePhrase::Ptr parent, int limit, DescriptivePhrases& result)
+{
+  if (limit < 0 || static_cast<int>(meshes.size()) < limit)
+    {
+    for (typename T::const_iterator it = meshes.begin(); it != meshes.end(); ++it)
+      {
+      result.push_back(
+        MeshPhrase::create()->setup(*it, parent));
+      }
+    }
+  else
+    {
+    result.push_back(
+      MeshListPhrase::create()->setup(meshes, parent));
     }
 }
 

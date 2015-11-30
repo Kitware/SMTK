@@ -12,6 +12,7 @@
 
 #include "smtk/SharedFromThis.h"
 #include "smtk/model/EntityRef.h"
+#include "smtk/mesh/MeshSet.h"
 
 #include <string>
 #include <vector>
@@ -36,6 +37,8 @@ enum DescriptivePhraseType {
   STRING_PROPERTY_VALUE,        //!< One property of an entity has a list of string values.
   INTEGER_PROPERTY_VALUE,       //!< One property of an entity has a list of integer values.
   ENTITY_HAS_SUBPHRASES,        //!< The entity has many phrases of one type; this phrase summarizes them.
+  MESH_SUMMARY,                 //!< Summarize an meshset or collection by displaying its name, type, and dimension.
+  MESH_LIST,                    //!< Summarize a list of meshsets or collections.
   INVALID_DESCRIPTION           //!< This is used to indicate an invalid or empty descriptive phrase.
 };
 
@@ -105,6 +108,9 @@ public:
   virtual FloatList relatedColor() const                       { return FloatList(4, -1.); }
   virtual bool isRelatedColorMutable() const                   { return false; }
   virtual bool setRelatedColor(const FloatList& rgba)          { (void)rgba; return false; }
+
+  virtual smtk::mesh::CollectionPtr relatedMeshCollection() const { return smtk::mesh::CollectionPtr(); }
+  virtual smtk::mesh::MeshSet relatedMesh() const              { return smtk::mesh::MeshSet(); }
 
   unsigned int phraseId() const                                { return this->m_phraseId; }
 

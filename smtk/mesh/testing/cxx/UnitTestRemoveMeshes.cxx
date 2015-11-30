@@ -231,7 +231,7 @@ void verify_remove_meshes_removes_unused_cells(const smtk::mesh::CollectionPtr& 
 }
 
 //----------------------------------------------------------------------------
-int UnitTestRemoveMeshes(int, char**)
+int UnitTestRemoveMeshes(int, char** const)
 {
   smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = load_mesh(mngr);

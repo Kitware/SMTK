@@ -168,6 +168,8 @@ namespace smtk
 
       MeshSelectionItemPtr findMeshSelection(const std::string &name);
       ConstMeshSelectionItemPtr findMeshSelection(const std::string &name) const;
+      MeshItemPtr findMesh(const std::string &name);
+      ConstMeshItemPtr findMesh(const std::string &name) const;
 
       // These methods only applies to Attributes whose
       // definition returns true for isNodal()

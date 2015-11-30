@@ -44,7 +44,7 @@ protected:
     : m_parent(NULL)
     { }
   entity(const Id& uid, entity* p)
-    : m_id(uid), m_parent(p)
+    : m_parent(p), m_id(uid)
     { }
   virtual ~entity()
     {

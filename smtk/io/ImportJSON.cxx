@@ -921,11 +921,20 @@ int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::mode
   // remote operator's model manager:
   smtk::model::ManagerPtr mgr = op->manager();
   cJSON* records = cJSON_GetObjectItem(node, "records");
-  if (mgr && records)
+  cJSON* mesh_records = cJSON_GetObjectItem(node, "mesh_records");
+  if (mgr)
     {
-    for (cJSON* c = records->child; c; c = c->next)
-      mgr->erase(smtk::common::UUID(c->string));
-    ImportJSON::ofManager(records, mgr);
+    if(records)
+      {
+      for (cJSON* c = records->child; c; c = c->next)
+        mgr->erase(smtk::common::UUID(c->string));
+      status = ImportJSON::ofManager(records, mgr);
+      }
+
+    if(mesh_records)
+      {
+      status &= ImportJSON::ofMeshesOfModel(mesh_records, mgr, true);
+      }
     }
   return status;
 }
@@ -1041,7 +1050,8 @@ int ImportJSON::ofLog(cJSON* logrecordarray, smtk::io::Logger& log)
   *
   */
 int ImportJSON::ofMeshesOfModel(cJSON* node,
-                                smtk::model::ManagerPtr modelMgr)
+                                smtk::model::ManagerPtr modelMgr,
+                                bool updateExisting)
 
 {
   int status = 1;
@@ -1076,12 +1086,29 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
       }
 
     //first verify the collection doesn't already exist
-    if (meshMgr->collection(uid))
+    if (smtk::mesh::CollectionPtr existingC = meshMgr->collection(uid))
       {
-      std::cerr << "Importing a mesh collection that already exists: " << child->string << "\n";
+      if(updateExisting)
+        {
+        // Import everything in a json string into the existing collection?, need to clear first?
+        // smtk::mesh::json::import(child, existingC);
+        // update properties, if any, to the existing collection
+        status = ImportJSON::ofMeshProperties(child, existingC);
+        }
+      else
+        {
+        std::cerr << "Importing a mesh collection that already exists: " << child->string << "\n";
+        }
       continue;
       }
-
+    //assoicated model uuid of the collection
+    smtk::common::UUID associatedModelId;
+    if(cJSON* modelIdNode = cJSON_GetObjectItem(child, "associatedModel"))
+      {
+      std::string modelIdVal;
+      cJSON_GetStringValue(modelIdNode, modelIdVal);
+      associatedModelId = UUID(modelIdVal);
+      }
     //get the location and type nodes from json
     cJSON* fLocationNode = cJSON_GetObjectItem(child, "location");
     cJSON* fTypeNode = cJSON_GetObjectItem(child, "type");
@@ -1128,6 +1155,13 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
       //set the collections model manager so that we can do model based
       //queries properly
       collection->setModelManager( modelMgr );
+
+      if(!associatedModelId.isNull())
+        {
+        collection->associateToModel(associatedModelId);
+        }
+      //write properties to the new collection
+      status = ImportJSON::ofMeshProperties(child, collection);
       }
     else
       {
@@ -1136,6 +1170,76 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
       }
     }
   return status ? 0 : 1;
+}
+
+/**\brief Import all mesh properties of an smtk::mesh::Collection.
+  *
+  * All mesh properties in the json \a node for collection are imported in,
+  * and added to the mesh \a collection.
+  *
+  */
+int ImportJSON::ofMeshProperties(cJSON* node,
+                                smtk::mesh::CollectionPtr collection)
+{
+  cJSON* jsonProperties = cJSON_GetObjectItem(node, "properties");
+  if(!jsonProperties)
+    return 0;
+
+  // iterate through all mesh properties records
+  for (cJSON* meshEntry = jsonProperties->child; meshEntry; meshEntry = meshEntry->next)
+    {
+    smtk::mesh::HandleRange hrange = smtk::mesh::from_json(meshEntry);
+    smtk::mesh::MeshSet mesh = smtk::mesh::MeshSet(
+      collection, collection->interface()->getRoot(), hrange);
+
+    // float properties
+    cJSON* floatNode = cJSON_GetObjectItem(meshEntry, "f");
+    if (floatNode)
+      {
+      for (cJSON* floatProp = floatNode->child; floatProp; floatProp = floatProp->next)
+        {
+        if (!floatProp->string || !floatProp->string[0])
+          { // skip un-named property arrays.
+          continue;
+          }
+        FloatList propVal;
+        cJSON_GetRealArray(floatProp, propVal);
+        collection->setFloatProperty(mesh, floatProp->string, propVal);
+        }
+      }
+    // string properties
+    cJSON* stringNode = cJSON_GetObjectItem(meshEntry, "s");
+    if (stringNode)
+      {
+      for (cJSON* stringProp = stringNode->child; stringProp; stringProp = stringProp->next)
+        {
+        if (!stringProp->string || !stringProp->string[0])
+          { // skip un-named property arrays.
+          continue;
+          }
+        StringList propVal;
+        cJSON_GetStringArray(stringProp, propVal);
+        collection->setStringProperty(mesh, stringProp->string, propVal);
+        }
+      }
+    // integer properties
+    cJSON* integerNode = cJSON_GetObjectItem(meshEntry, "i");
+    if (integerNode)
+      {
+      for (cJSON* intProp = integerNode->child; intProp; intProp = intProp->next)
+        {
+        if (!intProp->string || !intProp->string[0])
+          { // skip un-named property arrays.
+          continue;
+          }
+        IntegerList propVal;
+        cJSON_GetIntegerArray(intProp, propVal);
+        collection->setIntegerProperty(mesh, intProp->string, propVal);
+        }
+      }
+    }
+
+  return 0;
 }
 
 std::string ImportJSON::sessionNameFromTagData(cJSON* tagData)

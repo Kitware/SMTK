@@ -78,6 +78,7 @@ public:
 
   QPushButton* AddButton;
   QComboBox* DefsCombo;
+  QLabel* DefLabel;
   QPushButton* DeleteButton;
   QPushButton* CopyButton;
 
@@ -88,6 +89,7 @@ public:
 
   QComboBox* ViewByCombo;
   QComboBox* PropDefsCombo;
+  QLabel* PropDefLabel;
 
   QPointer<qtAssociationWidget> AssociationsWidget;
   QPointer<qtReferencesWidget> ReferencesWidget;
@@ -161,6 +163,21 @@ void qtAttributeView::createWidget( )
   // Add link from the listbox selection to the table widget
   // A common add/delete/(copy/paste ??) widget
 
+  // Initialize definition info
+  this->getAllDefinitions();
+  
+  // Create a map for all catagories so we can cluster the definitions
+  this->Internals->AttDefMap.clear();
+  const System* attSys = this->uiManager()->attSystem();
+  std::set<std::string>::const_iterator it;
+  const std::set<std::string> &cats = attSys->categories();
+
+  for (it = cats.begin(); it != cats.end(); it++)
+    {
+    QList<smtk::attribute::DefinitionPtr> attdeflist;
+    this->Internals->AttDefMap[it->c_str()] = attdeflist;
+    }
+  
   QSplitter* frame = new QSplitter(this->parentWidget());
   //this panel looks better in a over / under layout, rather than left / right
   frame->setOrientation( Qt::Vertical );
@@ -192,13 +209,26 @@ void qtAttributeView::createWidget( )
   filterLayout->addWidget(labelViewBy, 0, 0);
   filterLayout->addWidget(this->Internals->ViewByCombo, 0, 1);
 
-  this->Internals->PropDefsCombo = new QComboBox(TopFrame);
-  this->Internals->PropDefsCombo->setVisible(false);
-  this->Internals->PropDefsCombo->setToolTip("Select definition to filter attributes and properties");
-  filterLayout->addWidget(this->Internals->PropDefsCombo, 0, 2);
-  QObject::connect(this->Internals->PropDefsCombo,  SIGNAL(currentIndexChanged(int)),
-    this, SLOT(onPropertyDefSelected()), Qt::QueuedConnection);
-
+  //If we have more than 1 def then create a combo box for selecting a def for property viewing,
+  // else just create a label
+  if (this->Internals->m_attDefinitions.size() > 1)
+    {
+    this->Internals->PropDefsCombo = new QComboBox(TopFrame);
+    this->Internals->PropDefsCombo->setVisible(false);
+    this->Internals->PropDefsCombo->setToolTip("Select definition to filter attributes and properties");
+    filterLayout->addWidget(this->Internals->PropDefsCombo, 0, 2);
+    QObject::connect(this->Internals->PropDefsCombo,  SIGNAL(currentIndexChanged(int)),
+                     this, SLOT(onPropertyDefSelected()), Qt::QueuedConnection);
+    this->Internals->PropDefLabel = NULL;
+    }
+  else
+    {
+    this->Internals->PropDefLabel = new QLabel(TopFrame);
+    this->Internals->PropDefLabel->setText(this->Internals->m_attDefinitions[0]->type().c_str());
+    filterLayout->addWidget(this->Internals->PropDefLabel, 0, 2);
+    this->Internals->PropDefLabel->setVisible(false);
+    this->Internals->PropDefsCombo = NULL;
+    }
   this->Internals->SelectPropCombo = new qtCheckItemComboBox(TopFrame, "Properties");
   this->Internals->SelectPropCombo->setVisible(false);
   this->Internals->SelectPropCombo->setToolTip("Select properties to compare");
@@ -219,16 +249,6 @@ void qtAttributeView::createWidget( )
     new qtCheckableComboItemDelegate(this->Internals->SelectAttCombo));
   filterLayout->addWidget(this->Internals->SelectAttCombo, 0, 4);
 
-  const System* attSys = this->uiManager()->attSystem();
-  std::set<std::string>::const_iterator it;
-  const std::set<std::string> &cats = attSys->categories();
-  this->Internals->AttDefMap.clear();
-  for (it = cats.begin(); it != cats.end(); it++)
-    {
-    QList<smtk::attribute::DefinitionPtr> attdeflist;
-    this->Internals->AttDefMap[it->c_str()] = attdeflist;
-    }
-
   QSizePolicy tableSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   // create a list box for all the entries
   this->Internals->ListTable = new qtTableWidget(frame);
@@ -248,10 +268,24 @@ void qtAttributeView::createWidget( )
   this->Internals->DeleteButton->setSizePolicy(sizeFixedPolicy);
   this->Internals->CopyButton = new QPushButton("Copy", this->Internals->ButtonsFrame);
   this->Internals->CopyButton->setSizePolicy(sizeFixedPolicy);
-  this->Internals->DefsCombo = new QComboBox(this->Internals->ButtonsFrame);
-  this->Internals->DefsCombo->setVisible(false);
-  buttonLayout->addWidget(this->Internals->DefsCombo);
-
+  
+  //If we have more than 1 def then create a combo box for selecting a def,
+  // else just create a label
+  if (this->Internals->m_attDefinitions.size() > 1)
+    {
+    this->Internals->DefsCombo = new QComboBox(this->Internals->ButtonsFrame);
+    this->Internals->DefsCombo->setVisible(false);
+    buttonLayout->addWidget(this->Internals->DefsCombo);
+    this->Internals->DefLabel = NULL;
+    }
+  else
+    {
+    this->Internals->DefLabel = new QLabel(this->Internals->ButtonsFrame);
+    this->Internals->DefLabel->setText(this->Internals->m_attDefinitions[0]->type().c_str());
+    this->Internals->DefLabel->setVisible(false);
+    buttonLayout->addWidget(this->Internals->DefLabel);
+    this->Internals->DefsCombo = NULL;
+    }
   buttonLayout->addWidget(this->Internals->AddButton);
   buttonLayout->addWidget(this->Internals->CopyButton);
   buttonLayout->addWidget(this->Internals->DeleteButton);
@@ -334,7 +368,6 @@ void qtAttributeView::createWidget( )
   this->Internals->ValuesTable->setVisible(0);
 
   this->Widget = frame;
-  this->getAllDefinitions();
 
   this->updateModelAssociation();
 }
@@ -423,6 +456,8 @@ void qtAttributeView::onListBoxSelectionChanged()
     }
   else
     {
+    delete this->Internals->CurrentAtt;
+    this->Internals->CurrentAtt = NULL;
     this->updateAssociationEnableState(smtk::attribute::AttributePtr());
     }
 
@@ -464,12 +499,21 @@ void qtAttributeView::updateTableWithProperties()
   this->Internals->ValuesTable->clear();
   this->Internals->ValuesTable->setRowCount(0);
   this->Internals->ValuesTable->setColumnCount(0);
-//  this->Internals->ComparedPropMap.clear();
+  //  this->Internals->ComparedPropMap.clear();
   this->updateAssociationEnableState(smtk::attribute::AttributePtr());
 
-  Definition* rawPtr = static_cast<Definition*>(
-    this->Internals->PropDefsCombo->itemData(
-    this->Internals->PropDefsCombo->currentIndex(), Qt::UserRole).value<void *>());
+  Definition* rawPtr;
+  if (this->Internals->m_attDefinitions.size() == 1)
+    {
+    rawPtr = this->Internals->m_attDefinitions[0].get();
+    }
+  else
+    {
+    rawPtr =
+      static_cast<Definition*>(this->Internals->
+                               PropDefsCombo->itemData(this->Internals->PropDefsCombo->currentIndex(),
+                                                       Qt::UserRole).value<void *>());
+    }
   if(!rawPtr)
     {
     this->Internals->ValuesTable->blockSignals(false);
@@ -626,10 +670,18 @@ void qtAttributeView::onCreateNew()
     }
   attribute::DefinitionPtr newAttDef = this->Internals->m_attDefinitions[0];
 
-  QString strDef = this->Internals->DefsCombo->currentText();
+  QString strDef;
+  if (this->Internals->m_attDefinitions.size() == 1)
+    {
+    strDef = this->Internals->m_attDefinitions[0]->type().c_str();
+    }
+  else
+    {
+     strDef = this->Internals->DefsCombo->currentText();
+    }
   foreach (attribute::DefinitionPtr attDef,
-    this->Internals->getCurrentDefs(
-      this->uiManager()->currentCategory().c_str()))
+           this->Internals->
+           getCurrentDefs(this->uiManager()->currentCategory().c_str()))
     {
     std::string txtDef = attDef->label().empty() ?
       attDef->type() : attDef->label();
@@ -665,12 +717,25 @@ void qtAttributeView::createNewAttribute(
 //----------------------------------------------------------------------------
 void qtAttributeView::onCopySelected()
 {
-  smtk::attribute::AttributePtr selObject = this->getSelectedAttribute();
-  if(selObject)
+  smtk::attribute::AttributePtr newObject, selObject = this->getSelectedAttribute();
+  if(!selObject)
     {
-    this->createNewAttribute(selObject->definition());
+    return;
+    }
+  
+  System *attSystem = selObject->system();
+  newObject = attSystem->copyAttribute(selObject);
+  if (newObject)
+    {
+    QTableWidgetItem* item = this->addAttributeListItem(newObject);
+    if(item)
+      {
+      this->Internals->ListTable->selectRow(item->row());
+      }
+    emit this->numOfAttriubtesChanged();
     }
 }
+
 //----------------------------------------------------------------------------
 void qtAttributeView::onDeleteSelected()
 {
@@ -757,32 +822,39 @@ void qtAttributeView::onViewBy(int viewBy)
     {
     this->Internals->ListTable->setHorizontalHeaderItem(2, new QTableWidgetItem("Color"));
     }
-  this->Internals->DefsCombo->clear();
-  this->Internals->PropDefsCombo->clear();
-  foreach (attribute::DefinitionPtr attDef, currentDefs)
+  if(this->Internals->m_attDefinitions.size() == 1)
     {
-    if(!attDef->isAbstract())
-      {
-      std::string txtDef = attDef->label().empty() ?
-        attDef->type() : attDef->label();
-      this->Internals->DefsCombo->addItem(
-        QString::fromUtf8(txtDef.c_str()));
-      this->Internals->PropDefsCombo->addItem(
-        QString::fromUtf8(txtDef.c_str()));
-      QVariant vdata;
-      vdata.setValue(static_cast<void*>(attDef.get()));
-      int idx = this->Internals->PropDefsCombo->count()-1;
-      this->Internals->PropDefsCombo->setItemData(idx, vdata, Qt::UserRole);
-      }
+    this->Internals->DefLabel->setVisible(true);
+    this->Internals->PropDefLabel->setVisible(!viewAtt);
     }
-
-  this->Internals->DefsCombo->setCurrentIndex(0);
-  this->Internals->DefsCombo->setVisible(true);
-  this->Internals->PropDefsCombo->setVisible(!viewAtt);
-  this->Internals->PropDefsCombo->blockSignals(true);
-  this->Internals->PropDefsCombo->setCurrentIndex(0);
-  this->Internals->PropDefsCombo->blockSignals(false);
-
+  else
+    {
+    this->Internals->DefsCombo->clear();
+    this->Internals->PropDefsCombo->clear();
+    foreach (attribute::DefinitionPtr attDef, currentDefs)
+      {
+      if(!attDef->isAbstract())
+        {
+        std::string txtDef = attDef->label().empty() ?
+          attDef->type() : attDef->label();
+        this->Internals->DefsCombo->addItem(
+                                            QString::fromUtf8(txtDef.c_str()));
+        this->Internals->PropDefsCombo->addItem(
+                                                QString::fromUtf8(txtDef.c_str()));
+        QVariant vdata;
+        vdata.setValue(static_cast<void*>(attDef.get()));
+        int idx = this->Internals->PropDefsCombo->count()-1;
+        this->Internals->PropDefsCombo->setItemData(idx, vdata, Qt::UserRole);
+        }
+      }
+    
+    this->Internals->DefsCombo->setCurrentIndex(0);
+    this->Internals->DefsCombo->setVisible(true);
+    this->Internals->PropDefsCombo->setVisible(!viewAtt);
+    this->Internals->PropDefsCombo->blockSignals(true);
+    this->Internals->PropDefsCombo->setCurrentIndex(0);
+    this->Internals->PropDefsCombo->blockSignals(false);
+    }
   this->initSelectionFilters();
   if(viewAtt)
     {
@@ -892,16 +964,25 @@ void qtAttributeView::initSelectionFilters()
     }
   this->Internals->AttFrame->setVisible(0);
   this->Internals->ValuesTable->setVisible(1);
-
-  Definition* rawPtr = static_cast<Definition*>(
-    this->Internals->PropDefsCombo->itemData(
-    this->Internals->PropDefsCombo->currentIndex(), Qt::UserRole).value<void *>());
-  if(!rawPtr)
+  DefinitionPtr dp;
+  if (this->Internals->m_attDefinitions.size() > 1)
     {
-    return;
+    Definition* rawPtr =
+      static_cast<Definition*>(this->
+                               Internals->PropDefsCombo->itemData(this->Internals->PropDefsCombo->currentIndex(),
+                                                                  Qt::UserRole).value<void *>());
+    if(!rawPtr)
+      {
+      return;
+      }
+    dp = rawPtr->pointer();
     }
-  this->initSelectPropCombo(rawPtr->pointer());
-  this->initSelectAttCombo(rawPtr->pointer());
+  else
+    {
+    dp = this->Internals->m_attDefinitions[0];
+    }
+  this->initSelectPropCombo(dp);
+  this->initSelectAttCombo(dp);
   this->updateTableWithProperties();
 }
 
@@ -926,7 +1007,7 @@ void qtAttributeView::initSelectPropCombo(
     this->Internals->SelectPropCombo->blockSignals(false);
     return;
     }
-
+  std::cerr << "Found " << result.size() << " attributes\n";
   smtk::attribute::AttributePtr childData = result[0];
   // Now lets process its items
   std::size_t i, n = childData->numberOfItems();
@@ -934,6 +1015,7 @@ void qtAttributeView::initSelectPropCombo(
   for (i = 0; i < n; i++)
     {
     smtk::attribute::ItemPtr attItem = childData->item(static_cast<int>(i));
+    std::cerr << "Processing Item: " << attItem->name() << "\n";
     if(this->uiManager()->passItemCategoryCheck(
         attItem->definition()) &&
       this->uiManager()->passAdvancedCheck(
@@ -1165,9 +1247,17 @@ void qtAttributeView::onPropertyDefSelected()
     return;
     }
 
-  Definition* rawPtr = static_cast<Definition*>(
+  Definition* rawPtr;
+  if (this->Internals->m_attDefinitions.size() == 1)
+    {
+    rawPtr = this->Internals->m_attDefinitions[0].get();
+    }
+  else
+    {
+    rawPtr= static_cast<Definition*>(
     this->Internals->PropDefsCombo->itemData(
     this->Internals->PropDefsCombo->currentIndex(), Qt::UserRole).value<void *>());
+    }
   if(!rawPtr)
     {
     return;
@@ -1205,9 +1295,18 @@ void qtAttributeView::addComparativeProperty(
     return;
     }
 
-  Definition* rawPtr = static_cast<Definition*>(
+  Definition* rawPtr;
+  if (this->Internals->m_attDefinitions.size() == 1)
+    {
+    rawPtr = this->Internals->m_attDefinitions[0].get();
+    }
+  else
+    {
+    rawPtr= static_cast<Definition*>(
     this->Internals->PropDefsCombo->itemData(
     this->Internals->PropDefsCombo->currentIndex(), Qt::UserRole).value<void *>());
+    }
+
   if(rawPtr->pointer() != attDef)
     {
     return;

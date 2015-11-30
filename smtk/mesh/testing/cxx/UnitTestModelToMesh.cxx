@@ -126,6 +126,32 @@ void verify_empty_model()
 }
 
 //----------------------------------------------------------------------------
+void verify_model_association()
+{
+  smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
+  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
+
+  create_simple_model(modelManager);
+
+  smtk::io::ModelToMesh convert;
+  smtk::mesh::CollectionPtr c = convert(meshManager,modelManager);
+
+  //we need to verify that the collection is now has an associated model
+  test( c->hasAssociations(), "collection should have associations");
+  test( (c->associatedModel() != smtk::common::UUID()), "collection should be associated to a real model");
+  test( (c->isAssociatedToModel()), "collection should be associated to a real model");
+
+  //verify the MODEL_ENTITY is correct
+  smtk::model::EntityRefs currentModels = modelManager->entitiesMatchingFlagsAs<
+                                            smtk::model::EntityRefs>( smtk::model::MODEL_ENTITY);
+  if(currentModels.size() > 0)
+    { //presuming only a single model in the model manager
+    test( (c->associatedModel() == currentModels.begin()->entity()), "collection associated model should match model manager");
+    }
+}
+
+
+//----------------------------------------------------------------------------
 template<int Dim>
 void testFindAssociations(smtk::mesh::CollectionPtr c, smtk::model::EntityIterator& it, std::size_t correct)
 {
@@ -324,10 +350,11 @@ void verify_cell_have_points()
 }
 
 //----------------------------------------------------------------------------
-int UnitTestModelToMesh(int, char**)
+int UnitTestModelToMesh(int, char** const)
 {
   verify_null_managers();
   verify_empty_model();
+  verify_model_association();
   verify_cell_conversion();
   verify_vertex_conversion();
   verify_cell_have_points();

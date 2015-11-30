@@ -196,18 +196,18 @@ public:
                   const smtk::mesh::Neumann& neumann) const;
 
   //----------------------------------------------------------------------------
-  bool setModelEntity(
-    const smtk::mesh::HandleRange& meshsets,
-    const smtk::common::UUID& uuid) const;
+  bool setAssociation(const smtk::common::UUID& modelUUID,
+                      const smtk::mesh::HandleRange& range) const;
 
   //----------------------------------------------------------------------------
-  smtk::mesh::HandleRange findAssociations(
-    const smtk::mesh::Handle& root,
-    const smtk::common::UUID& modelUUID);
+  smtk::mesh::HandleRange findAssociations(const smtk::mesh::Handle& root,
+                                           const smtk::common::UUID& modelUUID) const;
 
   //----------------------------------------------------------------------------
-  bool addAssociation(const smtk::common::UUID& modelUUID,
-                      const smtk::mesh::HandleRange& range);
+  bool setRootAssociation(const smtk::common::UUID& modelUUID) const;
+
+  //----------------------------------------------------------------------------
+  smtk::common::UUID rootAssociation() const;
 
   //----------------------------------------------------------------------------
   smtk::mesh::HandleRange rangeIntersect(const smtk::mesh::HandleRange& a,

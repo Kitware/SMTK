@@ -132,7 +132,7 @@ void verify_DimsType_usage()
   }
 }
 
-int UnitTestQueryTypes(int, char**)
+int UnitTestQueryTypes(int, char** const)
 {
   verify_dims_value();
   verify_CellTypes_usage();

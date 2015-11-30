@@ -188,18 +188,19 @@ public:
                   const smtk::mesh::Neumann& neumann) const;
 
   //----------------------------------------------------------------------------
-  bool setModelEntity(
-    const smtk::mesh::HandleRange& meshsets,
-    const smtk::common::UUID& uuid) const;
+  bool setAssociation(const smtk::common::UUID& modelUUID,
+                      const smtk::mesh::HandleRange& meshsets) const;
+
 
   //----------------------------------------------------------------------------
-  smtk::mesh::HandleRange findAssociations(
-    const smtk::mesh::Handle& root,
-    const smtk::common::UUID& modelUUID);
+  smtk::mesh::HandleRange findAssociations(const smtk::mesh::Handle& root,
+                                           const smtk::common::UUID& modelUUID) const;
 
   //----------------------------------------------------------------------------
-  bool addAssociation(const smtk::common::UUID& modelUUID,
-                      const smtk::mesh::HandleRange& range);
+  bool setRootAssociation(const smtk::common::UUID& modelUUID) const;
+
+  //----------------------------------------------------------------------------
+  smtk::common::UUID rootAssociation() const;
 
   //----------------------------------------------------------------------------
   smtk::mesh::HandleRange rangeIntersect(const smtk::mesh::HandleRange& a,
@@ -245,6 +246,11 @@ private:
   MeshInfoVecType::const_iterator find(smtk::mesh::Handle handle) const;
 
   std::vector<smtk::mesh::json::MeshInfo> m_meshInfo;
+
+  //this is ugly, but as this is the only state we have I am going to roll
+  //with it. If we start adding more member variables, we should offload it
+  //all to an internal class
+  mutable smtk::common::UUID m_associated_model;
 };
 
 }

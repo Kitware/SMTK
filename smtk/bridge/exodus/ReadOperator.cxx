@@ -23,10 +23,19 @@
 
 #include "vtkExodusIIReader.h"
 #include "vtkSLACReader.h"
+#include "vtkXMLImageDataReader.h"
+#include "vtkContourFilter.h"
+#include "vtkThreshold.h"
 #include "vtkFieldData.h"
 #include "vtkDataArray.h"
+#include "vtkDataSetAttributes.h"
+#include "vtkPointData.h"
+#include "vtkUnsignedCharArray.h"
+#include "vtkImageData.h"
 #include "vtkStringArray.h"
+#include "vtkTypeInt32Array.h"
 #include "vtkInformation.h"
+#include "vtkUnstructuredGrid.h"
 
 #include "boost/filesystem.hpp"
 
@@ -53,6 +62,8 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
     std::string ext = path(filename).extension().string();
     if (ext == ".nc" || ext == ".ncdf")
       filetype = "slac";
+    else if (ext == ".vti")
+      filetype = "label map";
     else if (ext == ".exo" || ext == ".g" || ext == ".ex2" || ext == ".exii")
       filetype = "exodus";
     }
@@ -62,6 +73,8 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
 
   if (filetype == "slac")
     return this->readSLAC();
+  else if (filetype == "label map")
+    return this->readLabelMap();
 
   // The default is to assume it is an Exodus file:
   return this->readExodus();
@@ -265,6 +278,156 @@ smtk::model::OperatorResult ReadOperator::readSLAC()
     brdg->addModel(modelOut);
   smtkModelOut.setStringProperty("url", filename);
   smtkModelOut.setStringProperty("type", "slac");
+
+  // Now set model for session and transcribe everything.
+  smtk::model::OperatorResult result = this->createResult(
+    smtk::model::OPERATION_SUCCEEDED);
+  smtk::attribute::ModelEntityItem::Ptr resultModels =
+    result->findModelEntity("model");
+  resultModels->setValue(smtkModelOut);
+  smtk::attribute::ModelEntityItem::Ptr created =
+    result->findModelEntity("created");
+  created->setNumberOfValues(1);
+  created->setValue(smtkModelOut);
+  created->setIsEnabled(true);
+
+  return result;
+}
+
+int DiscoverLabels(vtkDataSet* obj, std::string& labelname, std::set<double>& labelSet)
+{
+  if (!obj)
+    return 0;
+
+  vtkDataSetAttributes* dsa = obj->GetPointData();
+  vtkIdType card = obj->GetNumberOfPoints();
+
+  if (card < 1 || !dsa)
+    return 0;
+
+  vtkDataArray* labelArray;
+  if (labelname.empty())
+    {
+    labelArray = dsa->GetScalars();
+    }
+  else
+    {
+    labelArray = dsa->GetArray(labelname.c_str());
+    if (!labelArray)
+      {
+      labelArray = dsa->GetScalars();
+      }
+    }
+  if (!labelArray || !vtkTypeInt32Array::SafeDownCast(labelArray))
+    {
+    int numArrays = dsa->GetNumberOfArrays();
+    for (int i = 0; i < numArrays; ++i)
+      {
+      if (vtkTypeInt32Array::SafeDownCast(dsa->GetArray(i)))
+        {
+        labelArray = dsa->GetArray(i);
+        std::cout << "Found labels: \"" << labelArray->GetName() << "\"\n";
+        break;
+        }
+      }
+    }
+
+  if (!labelArray)
+    { // No scalars or array of the given name? Create one.
+    vtkNew<vtkUnsignedCharArray> arr;
+    arr->SetName(labelname.empty() ? "label map" : labelname.c_str());
+    labelname = arr->GetName(); // Upon output, labelname must be valid
+    arr->SetNumberOfTuples(card);
+    arr->FillComponent(0, 0.0);
+    dsa->SetScalars(arr.GetPointer());
+
+    labelSet.insert(0.0); // We have one label. It is zero.
+    return 1;
+    }
+
+  labelname = labelArray->GetName();
+  for (vtkIdType i = 0; i < card; ++i)
+    {
+    labelSet.insert(labelArray->GetTuple1(i));
+    }
+  return labelSet.size();
+}
+
+smtk::model::OperatorResult ReadOperator::readLabelMap()
+{
+  smtk::attribute::FileItem::Ptr filenameItem =
+    this->specification()->findFile("filename");
+
+  smtk::attribute::StringItem::Ptr labelItem =
+    this->specification()->findString("label map");
+
+  std::string filename = filenameItem->value();
+  std::string labelname = labelItem->value();
+  if (labelname.empty())
+    labelname = "label map";
+
+  vtkNew<vtkXMLImageDataReader> rdr;
+  rdr->SetFileName(filenameItem->value(0).c_str());
+
+  // Read in the data and discover the labels:
+  rdr->Update();
+  vtkNew<vtkImageData> img;
+  img->ShallowCopy(rdr->GetOutput());
+  int imgDim = img->GetDataDimension();
+  std::set<double> labelSet;
+  int numLabels = DiscoverLabels(img.GetPointer(), labelname, labelSet);
+  // Upon exit, labelname will be a point-data array in img.
+
+  // Prepare the children of the image (holding contour data)
+  vtkNew<vtkContourFilter> bdyFilt;
+  vtkInformation* info = img->GetInformation();
+  Session::SMTK_CHILDREN()->Resize(info, numLabels);
+  int i = 0;
+  bdyFilt->SetInputDataObject(0, img.GetPointer());
+  bdyFilt->SetInputArrayToProcess(
+    0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_POINTS, labelname.c_str());
+  bdyFilt->UseScalarTreeOn();
+  bdyFilt->ComputeNormalsOn();
+  bdyFilt->ComputeGradientsOn();
+  bdyFilt->SetNumberOfContours(1);
+  for (std::set<double>::iterator it = labelSet.begin(); it != labelSet.end(); ++it, ++i)
+    {
+    bdyFilt->SetValue(0, *it);
+    bdyFilt->Update();
+    vtkNew<vtkPolyData> childData;
+    childData->ShallowCopy(bdyFilt->GetOutput());
+    Session::SMTK_CHILDREN()->Set(info, childData.GetPointer(), i);
+    childData->GetInformation()->Set(Session::SMTK_LABEL_VALUE(), *it);
+
+    std::ostringstream cname;
+    cname << "label " << i; // << " (" << *it << ")";
+    MarkMeshInfo(childData.GetPointer(), imgDim, cname.str().c_str(), EXO_LABEL, int(*it));
+    if (*it == 0.0)
+      childData->GetInformation()->Set(Session::SMTK_OUTER_LABEL(), 1);
+    }
+
+  vtkSmartPointer<vtkMultiBlockDataSet> modelOut =
+    vtkSmartPointer<vtkMultiBlockDataSet>::New();
+
+  modelOut->SetNumberOfBlocks(1);
+  modelOut->SetBlock(0, img.GetPointer());
+
+  MarkMeshInfo(modelOut.GetPointer(), imgDim, path(filename).stem().c_str(), EXO_MODEL, -1);
+  MarkMeshInfo(img.GetPointer(), imgDim, labelname.c_str(), EXO_LABEL_MAP, -1);
+  for (int i = 0; i < numLabels; ++i)
+    {
+    this->exodusSession()->ensureChildParentMapEntry(
+      vtkDataObject::SafeDownCast(Session::SMTK_CHILDREN()->Get(info, i)),
+      img.GetPointer(),
+      i);
+    }
+
+  Session* brdg = this->exodusSession();
+  smtk::model::Model smtkModelOut =
+    brdg->addModel(modelOut);
+  smtkModelOut.setStringProperty("url", filename);
+  smtkModelOut.setStringProperty("type", "label map");
+  smtkModelOut.setStringProperty("label array", labelname);
 
   // Now set model for session and transcribe everything.
   smtk::model::OperatorResult result = this->createResult(

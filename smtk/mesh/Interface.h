@@ -27,7 +27,7 @@ namespace smtk {
 namespace mesh {
 
 //forward declare classes we use
-struct ContainsFunctor;
+class ContainsFunctor;
 class PointConnectivity;
 
 //----------------------------------------------------------------------------
@@ -244,18 +244,29 @@ public:
                           const smtk::mesh::Neumann& neumann) const = 0;
 
   //----------------------------------------------------------------------------
-  virtual bool setModelEntity(
-    const smtk::mesh::HandleRange& meshsets,
-    const smtk::common::UUID& uuid) const = 0;
+  // Specify for a given sets of handles what the associated model entity is.
+  // This allows for a model region, face, or edge to be associated with a
+  // given set of meshes.
+  // Note: Only MeshSets can have associations applied. Other elements will cause
+  // undefined behavior
+  //
+  virtual bool setAssociation(const smtk::common::UUID& modelUUID,
+                              const smtk::mesh::HandleRange& meshsets) const = 0;
 
   //----------------------------------------------------------------------------
-  virtual smtk::mesh::HandleRange findAssociations(
-    const smtk::mesh::Handle& root,
-    const smtk::common::UUID& modelUUID) = 0;
+  // For a given handle root, find all meshsets that have an association to
+  // the given model uuid
+  virtual smtk::mesh::HandleRange findAssociations(const smtk::mesh::Handle& root,
+                                                   const smtk::common::UUID& modelUUID) const = 0;
 
   //----------------------------------------------------------------------------
-  virtual bool addAssociation(const smtk::common::UUID& modelUUID,
-                              const smtk::mesh::HandleRange& range) = 0;
+  // Specify the model uuid that the root of this interface is associated too
+  // This represents generally is the MODEL_ENTITY that owns all associations
+  // with this interface
+  virtual bool setRootAssociation(const smtk::common::UUID& modelUUID) const = 0;
+
+  //----------------------------------------------------------------------------
+  virtual smtk::common::UUID rootAssociation() const = 0;
 
   //----------------------------------------------------------------------------
   virtual smtk::mesh::HandleRange rangeIntersect(const smtk::mesh::HandleRange& a,

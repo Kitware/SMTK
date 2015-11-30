@@ -118,16 +118,22 @@ void MeshSelectionItem::reset()
   this->m_selectionValues.clear();
 }
 //----------------------------------------------------------------------------
-void MeshSelectionItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+bool MeshSelectionItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
-  // Assigns my contents to be same as sourceItem
-  Item::copyFrom(sourceItem, info);
-
-  MeshSelectionItemPtr sourceMeshSelectionItem =
-    smtk::dynamic_pointer_cast<MeshSelectionItem>(sourceItem);
+  smtk::shared_ptr<const MeshSelectionItem > sourceMeshSelectionItem =
+    smtk::dynamic_pointer_cast<const MeshSelectionItem>(sourceItem);
+  
+  if (!sourceMeshSelectionItem)
+    {
+    return false; // Source is not a mesh selection item
+    }
+  
   this->m_modifyMode = sourceMeshSelectionItem->modifyMode();
   this->m_isCtrlKeyDown = sourceMeshSelectionItem->isCtrlKeyDown();
   this->m_selectionValues = sourceMeshSelectionItem->m_selectionValues;
+
+  // Assigns my contents to be same as sourceItem
+  return Item::assign(sourceItem, options);
 }
 //----------------------------------------------------------------------------
 smtk::attribute::MeshSelectionItem::const_sel_map_it MeshSelectionItem::begin() const
