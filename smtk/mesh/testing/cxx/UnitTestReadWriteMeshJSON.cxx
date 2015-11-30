@@ -90,7 +90,7 @@ void verify_writing_and_loading_collection()
 
   //now remove the collection
   meshManager->removeCollection(c);
-  test(meshManager->collection(cUUID) == NULL);
+  test(!meshManager->collection(cUUID));
   c.reset(); //actually remove the collection from memory
 
 
@@ -103,7 +103,7 @@ void verify_writing_and_loading_collection()
 
   //verify collection uuid is the same.
   smtk::mesh::CollectionPtr c2 = meshManager->collection(cUUID);
-  test(c2 != NULL,
+  test(c2,
        "Collection UUID can't change when being loaded from JSON");
 
   test( c2->modelManager()  == modelManager,
