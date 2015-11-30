@@ -96,7 +96,7 @@ void verify_writing_and_loading_collection()
 
   //now import collection from json stream
   const bool importGood = smtk::io::ImportJSON::ofMeshesOfModel(top,modelManager);
-  test(importGood == 0, "Failed to import the mesh collections related to the model");
+  test(importGood == 1, "Failed to import the mesh collections related to the model");
 
   //before we verify if the write was good, first remove the output file(s)
   cleanup( write_path );
@@ -155,7 +155,7 @@ void verify_writing_and_loading_multiple_collections()
   cleanup( write_path );
   cleanup( write_path2 );
 
-  test(importGood == 0, "Failed to import the mesh collections related to the model");
+  test(importGood == 1, "Failed to import the mesh collections related to the model");
 
   test(meshManager->numberOfCollections() == 2, "number of collections incorrect");
 
@@ -202,7 +202,7 @@ void verify_writing_and_loading_collections_without_file_path()
   //before we verify if the write was good, first remove the output file(s)
   cleanup( write_path );
 
-  test(importGood == 0, "Failed to import the mesh collections related to the model");
+  test(importGood == 1, "Failed to import the mesh collections related to the model");
 
   test(meshManager->numberOfCollections() == 2, "number of collections incorrect");
 
@@ -366,7 +366,7 @@ void verify_loading_existing_collection_fails()
   //before we verify if the write was good, first remove the output file(s)
   cleanup( write_path );
 
-  test(importGood == 0, "Import of mesh was supposed to fail");
+  test(importGood == 1, "Import of mesh was supposed to fail");
   test(numberOfCollections == meshManager->numberOfCollections(),
        "Importing existing collections should not change the number of collections");
 }
