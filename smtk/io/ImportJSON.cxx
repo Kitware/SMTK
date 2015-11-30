@@ -1048,6 +1048,8 @@ int ImportJSON::ofLog(cJSON* logrecordarray, smtk::io::Logger& log)
   * All collections listed in \a node are imported in, and added to the mesh
   * manager that is owned by the model \a meshMgr.
   *
+  * Returns a status value of 1 when everything has been loading in properly
+  *
   */
 int ImportJSON::ofMeshesOfModel(cJSON* node,
                                 smtk::model::ManagerPtr modelMgr,
@@ -1057,14 +1059,14 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
   int status = 1;
   if (!node || !modelMgr)
     {
-    return status;
+    return 0;
     }
 
   cJSON* collections;
   if (node->type != cJSON_Object ||
       // Does the node have fields "mesh_collections"
       !(collections = cJSON_GetObjectItem(node, "mesh_collections")) )
-    {
+    { //not having meshes is not a failure
     return status;
     }
 
@@ -1093,7 +1095,7 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
         // Import everything in a json string into the existing collection?, need to clear first?
         // smtk::mesh::json::import(child, existingC);
         // update properties, if any, to the existing collection
-        status = ImportJSON::ofMeshProperties(child, existingC);
+        status &= ImportJSON::ofMeshProperties(child, existingC);
         }
       else
         {
@@ -1161,7 +1163,7 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
         collection->associateToModel(associatedModelId);
         }
       //write properties to the new collection
-      status = ImportJSON::ofMeshProperties(child, collection);
+      status &= ImportJSON::ofMeshProperties(child, collection);
       }
     else
       {
@@ -1169,7 +1171,7 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
       continue;
       }
     }
-  return status ? 0 : 1;
+  return status;
 }
 
 /**\brief Import all mesh properties of an smtk::mesh::Collection.
@@ -1183,7 +1185,7 @@ int ImportJSON::ofMeshProperties(cJSON* node,
 {
   cJSON* jsonProperties = cJSON_GetObjectItem(node, "properties");
   if(!jsonProperties)
-    return 0;
+    return 1;
 
   // iterate through all mesh properties records
   for (cJSON* meshEntry = jsonProperties->child; meshEntry; meshEntry = meshEntry->next)
@@ -1239,7 +1241,7 @@ int ImportJSON::ofMeshProperties(cJSON* node,
       }
     }
 
-  return 0;
+  return 1;
 }
 
 std::string ImportJSON::sessionNameFromTagData(cJSON* tagData)
