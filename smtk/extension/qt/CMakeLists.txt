@@ -8,6 +8,7 @@ set(QAttrLibSrcs
   qtAttributeItemWidgetFactory.cxx
   qtBaseView.cxx
   qtCheckItemComboBox.cxx
+  qtCollapsibleGroupWidget.cxx
   qtEntityItemDelegate.cxx
   qtEntityItemEditor.cxx
   qtEntityItemModel.cxx
@@ -40,6 +41,7 @@ set(QAttrLibSrcs
 
 set(QAttrLibUIs
   qtAttributeAssociation.ui
+  qtCollapsibleGroupWidgetInternals.ui
   qtModelPanel.ui
   qtNewAttributeWidget.ui
 )
@@ -51,6 +53,7 @@ set(QAttrLibMocHeaders
   qtAttributeDisplay.h
   qtBaseView.h
   qtCheckItemComboBox.h
+  qtCollapsibleGroupWidget.h
   qtEntityItemDelegate.h
   qtEntityItemEditor.h
   qtEntityItemModel.h
