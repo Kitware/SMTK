@@ -34,14 +34,16 @@ smtk::mesh::json::InterfacePtr make_interface()
 
 //----------------------------------------------------------------------------
 Interface::Interface():
-  m_meshInfo()
+  m_meshInfo(),
+  m_associated_model( smtk::common::UUID::null() )
 {
 
 }
 
 //----------------------------------------------------------------------------
 Interface::Interface( const std::vector<smtk::mesh::json::MeshInfo>& info ):
-  m_meshInfo(info)
+  m_meshInfo(info),
+  m_associated_model( smtk::common::UUID::null() )
 {
 
 }
@@ -474,9 +476,8 @@ bool Interface::setNeumann(const smtk::mesh::HandleRange& meshsets,
 //----------------------------------------------------------------------------
 /**\brief Set the model entity assigned to each meshset member to \a ent.
   */
-bool Interface::setModelEntity(
-  const smtk::mesh::HandleRange& meshsets,
-  const smtk::common::UUID& uuid) const
+bool Interface::setAssociation(const smtk::common::UUID& modelUUID,
+                               const smtk::mesh::HandleRange& meshsets) const
 {
   return false;
 }
@@ -487,7 +488,7 @@ bool Interface::setModelEntity(
   */
 smtk::mesh::HandleRange Interface::findAssociations(
   const smtk::mesh::Handle& root,
-  const smtk::common::UUID& modelUUID)
+  const smtk::common::UUID& modelUUID) const
 {
   smtk::mesh::HandleRange result;
   if (!modelUUID)
@@ -508,10 +509,19 @@ smtk::mesh::HandleRange Interface::findAssociations(
 }
 
 //----------------------------------------------------------------------------
-bool Interface::addAssociation(const smtk::common::UUID& modelUUID,
-                               const smtk::mesh::HandleRange& range)
+/**\brief Set the model entity assigned to the root of this interface.
+  */
+bool Interface::setRootAssociation(const smtk::common::UUID& modelUUID) const
 {
-  return false;
+  this->m_associated_model = modelUUID;
+  return true;
+}
+//----------------------------------------------------------------------------
+/**\brief Get the model entity assigned to the root of this interface.
+  */
+smtk::common::UUID Interface::rootAssociation() const
+{
+  return this->m_associated_model;
 }
 
 //----------------------------------------------------------------------------

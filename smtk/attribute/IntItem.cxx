@@ -38,9 +38,9 @@ Item::Type IntItem::type() const
   return INT;
 }
 //----------------------------------------------------------------------------
-void IntItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+bool IntItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
   // Assigns my contents to be same as sourceItem
-  ValueItemTemplate<int>::copyFrom(sourceItem, info);
+  return ValueItemTemplate<int>::assign(sourceItem, options);
 }
 //----------------------------------------------------------------------------

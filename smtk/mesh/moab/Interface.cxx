@@ -158,6 +158,29 @@ T computeDenseOpaqueTagValues(
 }
 
 //----------------------------------------------------------------------------
+template<typename T, typename U>
+T computeDenseOpaqueTagValue(
+  U tag,
+  const smtk::mesh::Handle& handle,
+  ::moab::Interface* iface)
+{
+  std::vector<unsigned char> tag_values;
+  tag_values.resize(tag.size());
+  void* tag_v_ptr = &tag_values[0];
+
+  // Fetch the tag for each item in the range in bulk
+  ::moab::ErrorCode rval = iface->tag_get_data(tag.moabTag(), &handle, 1, tag_v_ptr);
+
+  T result;
+  if(rval == ::moab::MB_SUCCESS)
+    {
+    std::vector<unsigned char>::const_iterator i = tag_values.begin();
+    result = T( &(*i), &(*i)+tag.size() );
+    }
+  return result;
+}
+
+//----------------------------------------------------------------------------
 template<typename T>
 bool setDenseTagValues(T tag, const smtk::mesh::HandleRange& handles,
                        ::moab::Interface* iface)
@@ -173,6 +196,7 @@ bool setDenseTagValues(T tag, const smtk::mesh::HandleRange& handles,
   return (rval == ::moab::MB_SUCCESS);
 }
 
+//----------------------------------------------------------------------------
 template<typename T>
 bool setDenseOpaqueTagValues(T tag, const smtk::mesh::HandleRange& handles,
                        ::moab::Interface* iface)
@@ -187,6 +211,23 @@ bool setDenseOpaqueTagValues(T tag, const smtk::mesh::HandleRange& handles,
   ::moab::ErrorCode rval =
     iface->tag_set_data(
       tag.moabTag(), handles, tag_v_ptr);
+  return (rval == ::moab::MB_SUCCESS);
+}
+
+//----------------------------------------------------------------------------
+template<typename T>
+bool setDenseOpaqueTagValue(T tag, const smtk::mesh::Handle& handle,
+                           ::moab::Interface* iface)
+{
+  //create a vector the same value so we can assign a tag
+  std::vector<unsigned char> values;
+  values.resize(tag.size());
+  memcpy(&values[0], tag.value(), tag.size());
+  const void* tag_v_ptr = &values[0];
+
+  ::moab::ErrorCode rval =
+    iface->tag_set_data(
+      tag.moabTag(), &handle, 1, tag_v_ptr);
   return (rval == ::moab::MB_SUCCESS);
 }
 
@@ -217,9 +258,9 @@ smtk::mesh::moab::InterfacePtr extract_interface( const smtk::mesh::CollectionPt
 //----------------------------------------------------------------------------
 Interface::Interface():
   m_iface( new ::moab::Core() ),
-  m_alloc( new smtk::mesh::moab::Allocator( this->m_iface.get() ) )
+  m_alloc( )
 {
-
+  this->m_alloc.reset( new smtk::mesh::moab::Allocator( this->m_iface.get() ) );
 }
 
 //----------------------------------------------------------------------------
@@ -288,7 +329,7 @@ bool Interface::createMesh(const smtk::mesh::HandleRange& cells,
 
       //iterate the entities and find the higest dimension of cell.
       //once that is found add a geom sparse tag to the mesh
-      hasDim = cells.num_of_dimension(dimension);
+      hasDim = (cells.num_of_dimension(dimension) > 0);
       }
 
     //add the dim tag
@@ -670,12 +711,13 @@ std::vector< smtk::mesh::Neumann > Interface::computeNeumannValues(const smtk::m
                                                             this->moabInterface());
 }
 
+//----------------------------------------------------------------------------
 /**\brief Return the set of all UUIDs set on all entities in the meshsets.
   *
   */
 smtk::common::UUIDArray Interface::computeModelEntities(const smtk::mesh::HandleRange& meshsets) const
 {
-  tag::QueryModelTag mtag(this->moabInterface());
+  tag::QueryEntRefTag mtag(this->moabInterface());
   return detail::computeDenseOpaqueTagValues<smtk::common::UUIDArray>(
     mtag, meshsets, this->moabInterface());
 }
@@ -860,82 +902,94 @@ bool Interface::setNeumann(const smtk::mesh::HandleRange& meshsets,
   return tagged;
 }
 
+//----------------------------------------------------------------------------
 /**\brief Set the model entity assigned to each meshset member to \a ent.
   */
-bool Interface::setModelEntity(
-  const smtk::mesh::HandleRange& meshsets,
-  const smtk::common::UUID& uuid) const
-{
-  if (meshsets.empty())
-    return true;
-
-  tag::QueryModelTag mtag(uuid, this->moabInterface());
-
-  // I. Tag the meshsets
-  bool tagged = detail::setDenseOpaqueTagValues(
-    mtag, meshsets, this->moabInterface());
-
-  // II. Tag the cells
-  tagged &= detail::setDenseOpaqueTagValues(
-    mtag, this->getCells(meshsets), this->moabInterface());
-  return tagged;
-}
-
-/**\brief Find mesh entities associated with the given model entity.
-  *
-  */
-smtk::mesh::HandleRange Interface::findAssociations(
-  const smtk::mesh::Handle& root,
-  const smtk::common::UUID& modelUUID)
-{
-  smtk::mesh::HandleRange result;
-  if (!modelUUID)
-    return result;
-
-  ::moab::Tag model_tag;
-  m_iface->tag_get_handle(
-    "MODEL", smtk::common::UUID::size(),
-    ::moab::MB_TYPE_OPAQUE, model_tag,
-    ::moab::MB_TAG_BYTES| ::moab::MB_TAG_CREAT| ::moab::MB_TAG_SPARSE);
-
-  const void* tag_v_ptr = &modelUUID;
-
-  ::moab::ErrorCode rval = m_iface->get_entities_by_type_and_tag(
-    root, ::moab::MBENTITYSET, &model_tag, &tag_v_ptr, 1, result);
-  (void)rval;
-  return result;
-}
-
-//----------------------------------------------------------------------------
-bool Interface::addAssociation(const smtk::common::UUID& modelUUID,
-                               const smtk::mesh::HandleRange& range)
+bool Interface::setAssociation(const smtk::common::UUID& modelUUID,
+                               const smtk::mesh::HandleRange& range) const
 {
   if(range.empty() || !modelUUID)
     { //if empty range or invalid uuid
     return false;
     }
 
-  // Set the value of the MODEL tag to the modelUUID for every item in the range
-  ::moab::Tag model_tag;
-  m_iface->tag_get_handle("MODEL",
-                          smtk::common::UUID::size(), //this should be 128 bits
-                          ::moab::MB_TYPE_OPAQUE,
-                          model_tag,
-                          ::moab::MB_TAG_BYTES| ::moab::MB_TAG_CREAT| ::moab::MB_TAG_SPARSE);
+  tag::QueryEntRefTag mtag(modelUUID, this->moabInterface());
 
-  const void* tag_v_ptr = &modelUUID;
-  bool valid = true;
-  typedef smtk::mesh::HandleRange::const_iterator cit;
-  for(cit i=range.begin(); i!=range.end() && valid;++i)
+  //Tag the meshsets
+  bool tagged = detail::setDenseOpaqueTagValues(mtag,
+                                                range,
+                                                this->moabInterface());
+  return tagged;
+}
+
+//----------------------------------------------------------------------------
+/**\brief Find mesh entities associated with the given model entity.
+  *
+  */
+smtk::mesh::HandleRange Interface::findAssociations(
+  const smtk::mesh::Handle& root,
+  const smtk::common::UUID& modelUUID) const
+{
+  smtk::mesh::HandleRange result;
+  if (!modelUUID)
     {
-    const ::moab::EntityHandle& currentHandle = *i;
-    ::moab::ErrorCode rval = m_iface->tag_set_data(model_tag,
-                                                   &currentHandle,
-                                                   1,
-                                                   tag_v_ptr);
-    valid = (rval == ::moab::MB_SUCCESS);
+    return result;
     }
-  return valid;
+
+  tag::QueryEntRefTag mtag(modelUUID, this->moabInterface());
+
+  ::moab::ErrorCode rval;
+  rval = m_iface->get_entities_by_type_and_tag(root,
+                                               ::moab::MBENTITYSET,
+                                               mtag.moabTagPtr(),
+                                               mtag.moabTagValuePtr(),
+                                               1,
+                                               result);
+  if(rval != ::moab::MB_SUCCESS)
+    {
+    result.clear();
+    }
+  return result;
+}
+
+//----------------------------------------------------------------------------
+// brief Set the model entity assigned to the root of this interface.
+//
+bool Interface::setRootAssociation(const smtk::common::UUID& modelUUID) const
+{
+  if (!modelUUID)
+    {
+    return false;
+    }
+
+  smtk::mesh::Handle root = m_iface->get_root_set();
+  tag::QueryRootModelEntTag mtag(modelUUID, this->moabInterface());
+
+  //Tag the root
+  bool tagged = detail::setDenseOpaqueTagValue(mtag,
+                                               root,
+                                               this->moabInterface());
+  return tagged;
+}
+
+//----------------------------------------------------------------------------
+/// brief Get the model entity assigned to the root of this interface.
+//
+smtk::common::UUID Interface::rootAssociation() const
+{
+  //first we need to verify that we have a ROOT_MODEL tag first
+  std::vector< ::moab::Tag > tag_handles;
+  smtk::mesh::Handle root = m_iface->get_root_set();
+  m_iface->tag_get_tags_on_entity(root,tag_handles);
+
+  if(tag_handles.size() > 0)
+    {
+    tag::QueryRootModelEntTag mtag(this->moabInterface());
+    return detail::computeDenseOpaqueTagValue<smtk::common::UUID>(mtag,
+                                                                  root,
+                                                                  this->moabInterface());
+    }
+  return smtk::common::UUID::null();
 }
 
 //----------------------------------------------------------------------------

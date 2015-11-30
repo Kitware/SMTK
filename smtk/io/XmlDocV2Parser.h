@@ -44,6 +44,10 @@ namespace smtk
                           attribute::MeshSelectionItemPtr idef);
       virtual void processMeshSelectionDef(pugi::xml_node &node,
                             smtk::attribute::MeshSelectionItemDefinitionPtr idef);
+      virtual void processMeshEntityItem(pugi::xml_node &node,
+                          attribute::MeshItemPtr item);
+      virtual void processMeshEntityDef(pugi::xml_node &node,
+                            smtk::attribute::MeshItemDefinitionPtr idef);
       virtual void processViews(pugi::xml_node &root);
       virtual void processViewComponent(smtk::common::View::Component &comp,
                                         pugi::xml_node &node, bool isTopComp);

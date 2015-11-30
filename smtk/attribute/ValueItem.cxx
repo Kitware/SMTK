@@ -282,15 +282,18 @@ void ValueItem::updateActiveChildrenItems()
     }
 }
 //----------------------------------------------------------------------------
-void ValueItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+bool ValueItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
   // Assigns my contents to be same as sourceItem
-  Item::copyFrom(sourceItem, info);
-
   // Cast input pointer to ValueItem
-  ValueItemPtr sourceValueItem =
-    smtk::dynamic_pointer_cast<ValueItem>(sourceItem);
-
+  smtk::shared_ptr<const ValueItem > sourceValueItem =
+    smtk::dynamic_pointer_cast<const ValueItem>(sourceItem);
+  
+  if (!sourceValueItem)
+    {
+    return false; //Source is not a value item!
+    }
+  
   this->setNumberOfValues(sourceValueItem->numberOfValues());
 
   // Get reference to attribute system
@@ -305,19 +308,29 @@ void ValueItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
       }
     else if (sourceValueItem->isExpression(i))
       {
-      std::string nameStr = sourceValueItem->expression(i)->name();
-      AttributePtr att = system->findAttribute(nameStr);
-      if (att)
+      // Are we copying expressions?
+      if (options & Item::IGNORE_EXPRESSIONS)
         {
-        this->setExpression(i, att);
+        this->unset(i);
         }
       else
         {
-        std::cout << "Adding  \"" << nameStr
-                  << "\" to copy-expression queue"
-                  << std::endl;
-        Item::UnresolvedItemInfo itemInfo(nameStr, this->pointer(), i);
-        info.UnresolvedExpItems.push(itemInfo);
+        std::string nameStr = sourceValueItem->expression(i)->name();
+        AttributePtr att = system->findAttribute(nameStr);
+        if (!att)
+          {
+          att = system->copyAttribute(sourceValueItem->expression(i),
+                                      options & Item::COPY_MODEL_ASSOCIATIONS, options);
+          if (!att)
+            {
+            std::cerr << "ERROR: Could not copy Attribute:"
+                      << sourceValueItem->expression(i)->name()
+                      << " used as an expression by item: "
+                      << sourceItem->name() << "\n";
+            return false; // Something went wrong!
+            }
+          }
+        this->setExpression(i, att);
         }
       }
     else if (sourceValueItem->isDiscrete())
@@ -325,24 +338,29 @@ void ValueItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
       this->setDiscreteIndex(i, sourceValueItem->discreteIndex(i));
       }
     } // for
-
+  
   // Update children items
   std::map<std::string, smtk::attribute::ItemPtr>::const_iterator sourceIter =
     sourceValueItem->m_childrenItems.begin();
   std::map<std::string, smtk::attribute::ItemPtr>::const_iterator newIter;
   for (; sourceIter != sourceValueItem->m_childrenItems.end(); sourceIter++)
     {
-    ItemPtr sourceChild = sourceIter->second;
+    ConstItemPtr sourceChild = smtk::const_pointer_cast<const Item>(sourceIter->second);
     newIter = m_childrenItems.find(sourceIter->first);
     if (newIter == m_childrenItems.end())
       {
-      std::cerr << "Could not find child item \"" << sourceIter->first
+      std::cerr << "ERROR:Could not find child item \"" << sourceIter->first
                 << "\" -- cannot copy" << std::endl;
       continue;
       }
     ItemPtr newChild = newIter->second;
-    newChild->copyFrom(sourceChild, info);
+    if (!newChild->assign(sourceChild, options))
+      {
+      std::cerr << "ERROR:Could not properly assign child item: " << newChild->name() << "\n";
+      return false;
+      }
     }
+  return Item::assign(sourceItem, options);
 }
 
 /**\brief Find a child of this item with the given name.

@@ -14,16 +14,8 @@
 #include "smtk/SystemConfig.h"
 #include "smtk/HashFunctor.h"
 
-#ifdef __GCC__
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored "-Wshadow"
-#  pragma GCC diagnostic ignored "-Wdeprecated-register"
-#endif
 #ifndef SHIBOKEN_SKIP
 #include <boost/uuid/uuid.hpp>
-#endif
-#ifndef _MSC_VER
-#  pragma GCC diagnostic pop
 #endif
 
 #include <iostream>

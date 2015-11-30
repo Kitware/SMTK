@@ -5,8 +5,10 @@ set(QAttrLibSrcs
   qtUIManager.cxx
   qtAttribute.cxx
   qtAttributeDisplay.cxx
+  qtAttributeItemWidgetFactory.cxx
   qtBaseView.cxx
   qtCheckItemComboBox.cxx
+  qtCollapsibleGroupWidget.cxx
   qtEntityItemDelegate.cxx
   qtEntityItemEditor.cxx
   qtEntityItemModel.cxx
@@ -39,17 +41,19 @@ set(QAttrLibSrcs
 
 set(QAttrLibUIs
   qtAttributeAssociation.ui
+  qtCollapsibleGroupWidgetInternals.ui
   qtModelPanel.ui
   qtNewAttributeWidget.ui
 )
 
 
-set(QAttrLibHeaders
+set(QAttrLibMocHeaders
   qtUIManager.h
   qtAttribute.h
   qtAttributeDisplay.h
   qtBaseView.h
   qtCheckItemComboBox.h
+  qtCollapsibleGroupWidget.h
   qtEntityItemDelegate.h
   qtEntityItemEditor.h
   qtEntityItemModel.h
@@ -80,10 +84,15 @@ set(QAttrLibHeaders
   qtOperatorDockWidget.h
 )
 
+set(QAttrLibHeaders
+  ${QAttrLibMocHeaders}
+  qtAttributeItemWidgetFactory.h
+)
+
 #install the headers
 smtk_public_headers(${QAttrLibHeaders})
 
-qt4_wrap_cpp(MOC_BUILT_SOURCES ${QAttrLibHeaders})
+qt4_wrap_cpp(MOC_BUILT_SOURCES ${QAttrLibMocHeaders})
 qt4_wrap_ui(SMTKQTEXT_UI_BUILT_SOURCES ${QAttrLibUIs})
 qt4_add_resources(RCS_RESOURCES qtEntityItemModelIcons.qrc qtAttributeIcons.qrc)
 

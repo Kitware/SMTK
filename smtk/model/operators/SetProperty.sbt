@@ -22,6 +22,8 @@
         entities' floating-point map.
       </DetailedDescription>
       <ItemDefinitions>
+        <MeshEntity Name="meshes" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11">
+        </MeshEntity>
         <String Name="name" NumberOfRequiredValues="1">
           <BriefDescription>The name of the property to set.</BriefDescription>
         </String>
@@ -38,7 +40,10 @@
     </AttDef>
     <!-- Result -->
     <AttDef Type="result(set property)" BaseType="result">
-      <!-- The modified entities are stored in the base result's "modified" item. -->
+      <ItemDefinitions>
+        <!-- The modified entities are stored in the base result's "modified" item. -->
+        <MeshEntity Name="mesh_modified" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
+      </ItemDefinitions>
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>

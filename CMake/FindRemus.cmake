@@ -43,8 +43,9 @@ if(REMUS_FOUND)
   #include paths
   find_package(ZeroMQ REQUIRED)
 
-  include_directories(${Boost_INCLUDE_DIRS}
-                      ${ZeroMQ_INCLUDE_DIRS})
+  include_directories(SYSTEM
+      ${Boost_INCLUDE_DIRS}
+      ${ZeroMQ_INCLUDE_DIRS})
 endif()
 
 set(REMUS_INCLUDE_DIRS ${REMUS_INCLUDE_DIR})

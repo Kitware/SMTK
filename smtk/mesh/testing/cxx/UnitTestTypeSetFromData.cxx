@@ -154,7 +154,7 @@ void verify_tet_typeset_queries(const smtk::mesh::CollectionPtr& c)
 }
 
 //----------------------------------------------------------------------------
-int UnitTestTypeSetFromData(int, char**)
+int UnitTestTypeSetFromData(int, char** const)
 {
   smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
 

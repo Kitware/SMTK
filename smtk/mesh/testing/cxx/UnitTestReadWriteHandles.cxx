@@ -159,7 +159,7 @@ void verify_large_number_of_values_handle()
 }
 
 //----------------------------------------------------------------------------
-int UnitTestReadWriteHandles(int, char**)
+int UnitTestReadWriteHandles(int, char** const)
 {
   verify_empty_handle();
 

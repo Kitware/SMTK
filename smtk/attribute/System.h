@@ -17,6 +17,7 @@
 #include "smtk/common/Resource.h"    // base class
 #include "smtk/common/UUID.h"
 
+#include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -135,11 +136,12 @@ namespace smtk
         copyDefinition(const smtk::attribute::DefinitionPtr def,
                        unsigned int options=0);
       // Copies attribute from another system
-      // Note: does *not* copy model associations. If needed, a method can be added to
-      // Attribute for copying associations.
+      // Note: that if the attribute is unique (meaning only 1 attribute of this type can be asociated
+      // to a model entity, the copyModelAssociations flag is ignored since it would violate this constraint.
+      // In terms of options - these are item assignment options - see Item.h for documentation.
       smtk::attribute::AttributePtr
-        copyAttribute(const smtk::attribute::AttributePtr att,
-                      unsigned int options=0);
+        copyAttribute(const smtk::attribute::AttributePtr att, const bool &copyModelAssociations=false,
+                      const unsigned int &options=0);
 
       //Get a list of all definitions in the system
       void definitions(std::vector<smtk::attribute::DefinitionPtr> &result) const;
@@ -153,9 +155,6 @@ namespace smtk
                                   std::vector<smtk::attribute::AttributePtr> &result) const;
       bool copyDefinitionImpl(const smtk::attribute::DefinitionPtr sourceDef,
                               smtk::attribute::ItemDefinition::CopyInfo& info);
-      bool copyAttributeImpl(const smtk::attribute::AttributePtr sourceAtt,
-                             smtk::attribute::Item::CopyInfo& info,
-                             unsigned options);
 
       std::map<std::string, smtk::attribute::DefinitionPtr> m_definitions;
       std::map<std::string, std::set<smtk::attribute::AttributePtr> > m_attributeClusters;

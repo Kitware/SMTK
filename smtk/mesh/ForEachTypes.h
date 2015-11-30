@@ -50,10 +50,10 @@ public:
   bool wantsCoordinates() const
     { return this->m_wantsCoordinates; }
 
-  const smtk::mesh::Handle* const pointIds() const
+  const smtk::mesh::Handle* pointIds() const
     { return this->m_pointIds; }
 
-  smtk::mesh::Handle const pointId(int index) const
+  smtk::mesh::Handle pointId(int index) const
     { return this->m_pointIds[index]; }
 
   const std::vector<double>& coordinates() const

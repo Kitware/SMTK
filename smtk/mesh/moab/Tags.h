@@ -36,6 +36,14 @@ class QueryNameTag
   ::moab::Tag m_tag;
   char m_tagData[32]; //same length as NAME_TAG_SIZE
 public:
+
+//disable warning about elements of array 'm_tagData' will be default initialized
+//this is only a warning on msvc, since previously it was broken and wouldn't
+//default initialize member arrays
+# ifdef _MSC_VER
+#   pragma warning(push)
+#   pragma warning(disable: 4351)
+# endif
   QueryNameTag(::moab::Interface* iface):
   m_iface(iface),
   m_tag(),
@@ -47,9 +55,17 @@ public:
                                 ::moab::MB_TYPE_OPAQUE,
                                 this->m_tag);
   }
+//reset our warnings to the original level
+# ifdef _MSC_VER
+#   pragma warning(pop)
+# endif
 
   bool fetch_name(const smtk::mesh::Handle& entity)
   {
+  if(!m_tag)
+    {
+    return false;
+    }
   ::moab::ErrorCode rval= m_iface->tag_get_data(m_tag,&entity,1,&m_tagData);
   return (rval == ::moab::MB_SUCCESS);
   }
@@ -155,15 +171,34 @@ public:
   const char* value() const { return this->m_value; }
 };
 
-class QueryModelTag: public QueryOpaqueTag<smtk::common::UUID::SIZE>
+class QueryEntRefTag: public QueryOpaqueTag<smtk::common::UUID::SIZE>
 {
 public:
-  QueryModelTag(::moab::Interface* iface)
-    : QueryOpaqueTag("MODEL",reinterpret_cast<const char*>(smtk::common::UUID::null().begin()),iface)
+  QueryEntRefTag(::moab::Interface* iface)
+    : QueryOpaqueTag("ENT_REF",reinterpret_cast<const char*>(smtk::common::UUID::null().begin()),iface)
     {
     }
-  QueryModelTag(const smtk::common::UUID& v, ::moab::Interface* iface)
-    : QueryOpaqueTag("MODEL",reinterpret_cast<const char*>(v.begin()),iface)
+  QueryEntRefTag(const smtk::common::UUID& v, ::moab::Interface* iface)
+    : QueryOpaqueTag("ENT_REF",reinterpret_cast<const char*>(v.begin()),iface)
+    {
+    }
+  smtk::common::UUID uuid() const
+    {
+    return smtk::common::UUID(
+      reinterpret_cast<const unsigned char*>(this->value()),
+      reinterpret_cast<const unsigned char*>(this->value()) + smtk::common::UUID::SIZE);
+    }
+};
+
+class QueryRootModelEntTag: public QueryOpaqueTag<smtk::common::UUID::SIZE>
+{
+public:
+  QueryRootModelEntTag(::moab::Interface* iface)
+    : QueryOpaqueTag("ROOT_MODEL_ENT",reinterpret_cast<const char*>(smtk::common::UUID::null().begin()),iface)
+    {
+    }
+  QueryRootModelEntTag(const smtk::common::UUID& v, ::moab::Interface* iface)
+    : QueryOpaqueTag("ROOT_MODEL_ENT",reinterpret_cast<const char*>(v.begin()),iface)
     {
     }
   smtk::common::UUID uuid() const

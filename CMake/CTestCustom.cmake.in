@@ -10,6 +10,7 @@ set (CTEST_CUSTOM_WARNING_EXCEPTION
   "Python/.* warning: declaration of .* shadows a member of 'this' \\[-Wshadow\\]"
   "vtkPythonArgs.h.* warning: use of old-style cast \\[-Wold-style-cast\\]"
   "moab/.* warning: array subscript is above array bounds \\[-Warray-bounds\\]"
+  "moab/.* warning: use of old-style cast"
   "Done, 0 warnings"
 )
 

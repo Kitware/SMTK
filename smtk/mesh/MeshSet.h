@@ -27,6 +27,9 @@
 namespace smtk {
   namespace mesh {
 
+typedef std::vector<smtk::mesh::MeshSet> MeshList;
+typedef std::set<smtk::mesh::MeshSet> MeshSets;
+
 //Represents a collection of meshes that have been constructed by a Collection
 //We represent the collection of meshes by holding onto the parent entity
 //and a vector/range of mesh entities
@@ -93,8 +96,9 @@ public:
 
   smtk::common::UUIDArray modelEntityIds() const;
   smtk::model::EntityRefArray modelEntities() const;
-  bool setModelEntities(const smtk::model::EntityRef&);
+  bool setModelEntity(const smtk::model::EntityRef&);
 
+  std::vector< std::string > names() const;
   smtk::mesh::TypeSet types() const;
   smtk::mesh::CellSet cells() const; //all cells of the meshset
   smtk::mesh::PointSet points() const; //all points of the meshset
@@ -112,6 +116,9 @@ public:
   smtk::mesh::MeshSet   subset( const smtk::mesh::Dirichlet& d ) const;
   smtk::mesh::MeshSet   subset( const smtk::mesh::Neumann& n ) const;
 
+  //subset this MeshSet given an index into moab entity sets (m_range)
+  smtk::mesh::MeshSet   subset( std::size_t ith ) const;
+
   //Extract the shell ( exterior face elements ) of this set of meshes
   //This operation might create new cells if no shell already exists
   //for the given meshset. The resulting meshset will be added to the
@@ -127,6 +134,9 @@ public:
 
   //get the underlying HandleRange that this MeshSet represents
   const smtk::mesh::HandleRange& range() const { return this->m_range; }
+
+  //get the underlying collection that this MeshSet belongs to
+  const smtk::mesh::CollectionPtr& collection() const;
 
 private:
   smtk::mesh::CollectionPtr m_parent;

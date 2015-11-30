@@ -11,6 +11,7 @@
 #include "smtk/extension/qt/qtGroupView.h"
 
 #include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/extension/qt/qtCollapsibleGroupWidget.h"
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
 
@@ -37,7 +38,8 @@ public:
   enum Style
   {
     TABBED,
-    TILED
+    TILED,
+    GROUP_BOX
   };
   qtGroupViewInternals() : m_style(TABBED), m_currentTabSelected(0) {}
   QList<smtk::attribute::qtBaseView*> ChildViews;
@@ -88,12 +90,26 @@ void qtGroupView::createWidget( )
   if (view->details().attribute("Style", val))
     {
     std::transform(val.begin(), val.end(), val.begin(), ::tolower);
-    this->Internals->m_style = (val == "tiled" ? qtGroupViewInternals::TILED :
-      qtGroupViewInternals::TABBED);
+    if (val == "tiled")
+      {
+      this->Internals->m_style = qtGroupViewInternals::TILED;
+      }
+    else if (val == "tabbed")
+      {
+      this->Internals->m_style = qtGroupViewInternals::TABBED;
+      }
+    else if (val == "groupbox")
+      {
+      this->Internals->m_style = qtGroupViewInternals::GROUP_BOX;
+      }
+    else
+      {
+      view->details().attribute("Style", val);
+      std::cerr << "Unsupported Group View Style = " << val << "\n";
+      }
     }
-
   this->clearChildViews();
-  if(this->Internals->m_style == qtGroupViewInternals::TILED)
+  if(this->Internals->m_style != qtGroupViewInternals::TABBED)
     {
     this->Widget = new QFrame(this->parentWidget());
     }
@@ -193,6 +209,10 @@ void qtGroupView::addChildView(qtBaseView* child)
     if(this->Internals->m_style == qtGroupViewInternals::TILED)
       {
       this->addTileEntry(child);
+      }
+    else if(this->Internals->m_style == qtGroupViewInternals::GROUP_BOX)
+      {
+      this->addGroupBoxEntry(child);
       }
     else
       {
@@ -296,15 +316,29 @@ void qtGroupView::addTabEntry(qtBaseView* child)
 }
 
 //----------------------------------------------------------------------------
+void qtGroupView::addGroupBoxEntry(qtBaseView* child)
+{
+  QFrame* frame = dynamic_cast<QFrame*>(this->Widget);
+  if(!frame || !child || !child->getObject())
+    {
+    return;
+    }
+  smtk::qtCollapsibleGroupWidget *gw = new qtCollapsibleGroupWidget(frame);
+  this->Widget->layout()->addWidget(gw);
+  gw->setName(child->getObject()->title().c_str());
+  gw->contentsLayout()->addWidget(child->widget());
+  gw->collapse();
+}
+//----------------------------------------------------------------------------
 void qtGroupView::addTileEntry(qtBaseView* child)
 {
-  QFrame* frame = static_cast<QFrame*>(this->Widget);
+  QFrame* frame = dynamic_cast<QFrame*>(this->Widget);
   if(!frame || !child || !child->getObject())
     {
     return;
     }
   QLabel* label = new QLabel(child->getObject()->title().c_str(),
-    this->Widget);
+                             this->Widget);
   QFont titleFont;
   titleFont.setBold(true);
   titleFont.setItalic(true);

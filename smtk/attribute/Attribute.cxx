@@ -10,6 +10,7 @@
 
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
@@ -599,3 +600,8 @@ smtk::attribute::MeshSelectionItemPtr Attribute::findMeshSelection(const std::st
 { return smtk::dynamic_pointer_cast<MeshSelectionItem>(this->find(nameStr)); }
 smtk::attribute::ConstMeshSelectionItemPtr Attribute::findMeshSelection(const std::string &nameStr) const
 { return smtk::dynamic_pointer_cast<const MeshSelectionItem>(this->find(nameStr)); }
+
+smtk::attribute::MeshItemPtr Attribute::findMesh(const std::string &nameStr)
+{ return smtk::dynamic_pointer_cast<MeshItem>(this->find(nameStr)); }
+smtk::attribute::ConstMeshItemPtr Attribute::findMesh(const std::string &nameStr) const
+{ return smtk::dynamic_pointer_cast<const MeshItem>(this->find(nameStr)); }

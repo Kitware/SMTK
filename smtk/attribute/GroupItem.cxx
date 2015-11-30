@@ -11,6 +11,8 @@
 
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/GroupItemDefinition.h"
+#include <iostream>
+
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
@@ -262,25 +264,34 @@ smtk::attribute::ConstItemPtr GroupItem::find(std::size_t element, const std::st
   return this->m_items[element][static_cast<std::size_t>(i)];
 }
 //----------------------------------------------------------------------------
-void GroupItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+bool GroupItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
   // Assigns my contents to be same as sourceItem
-  Item::copyFrom(sourceItem, info);
-
   // Cast input pointer to GroupItem
-  GroupItemPtr sourceGroupItem =
-    smtk::dynamic_pointer_cast<GroupItem>(sourceItem);
-
+  smtk::shared_ptr<const GroupItem > sourceGroupItem =
+    smtk::dynamic_pointer_cast<const GroupItem>(sourceItem);
+  
+  if(!sourceGroupItem)
+    {
+    return false; // Source is not a group item
+    }
+  
   // Update children (items)
   this->setNumberOfGroups(sourceGroupItem->numberOfGroups());
   for (std::size_t i=0; i<sourceGroupItem->numberOfGroups(); ++i)
     {
     for (std::size_t j=0; j<sourceGroupItem->numberOfItemsPerGroup(); ++j)
       {
-      ItemPtr sourceChildItem = sourceGroupItem->item(i, j);
+      ConstItemPtr sourceChildItem = smtk::const_pointer_cast<const Item>(sourceGroupItem->item(i, j));
       ItemPtr childItem = this->item(i, j);
-      childItem->copyFrom(sourceChildItem, info);
+      if (!childItem->assign(sourceChildItem, options))
+        {
+        std::cerr << "ERROR:Failed to assign child item: " << this->item(i,j)->name() << "\n";
+        return false;
+        }
       }
     }
+  return Item::assign(sourceItem, options);
+
 }
 //----------------------------------------------------------------------------

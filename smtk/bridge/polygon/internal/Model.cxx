@@ -359,8 +359,9 @@ bool pmodel::splitModelEdgeAtModelVertex(
 
   // Remove edgeToSplit from its endpoint vertices so that creation
   // of new edges can succeed (otherwise it will fail when trying
-  // to insert a coincident edge at the existing edge endpoints). 
+  // to insert a coincident edge at the existing edge endpoints).
   std::pair<Id,Id> adjacentFaces = this->removeModelEdgeFromEndpoints(mgr, edgeToSplit);
+  (void)adjacentFaces;
 
   // Now we can create the new model edges.
   this->createModelEdgeFromSegments(mgr, segs.begin(), segSplit);
@@ -374,7 +375,7 @@ bool pmodel::splitModelEdgeAtModelVertex(
 
 // TODO: Remove edgeToSplit so that creation can succeed (otherwise
 //       it will fail when trying to insert a coincident edge at the
-//       existing edge endpoints. 
+//       existing edge endpoints.
 std::pair<Id,Id> pmodel::removeModelEdgeFromEndpoints(smtk::model::ManagerPtr mgr, EdgePtr edg)
 {
   std::pair<Id,Id> result;

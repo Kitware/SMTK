@@ -174,7 +174,7 @@ void verify_collection_info()
 }
 
 //----------------------------------------------------------------------------
-int UnitTestCollection(int, char**)
+int UnitTestCollection(int, char** const)
 {
   verify_invalid_constructor();
   verify_valid_constructor();

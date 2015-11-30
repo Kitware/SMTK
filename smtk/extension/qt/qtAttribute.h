@@ -22,13 +22,14 @@
 class qtAttributeInternals;
 class QWidget;
 
-namespace smtk
-{
-  namespace attribute
-  {
-  class qtItem;
+namespace smtk {
+  namespace attribute {
+
+  class qtAttributeItemWidgetFactory;
   class qtBaseView;
-    class SMTKQTEXT_EXPORT qtAttribute : public QObject
+  class qtItem;
+
+  class SMTKQTEXT_EXPORT qtAttribute : public QObject
     {
       Q_OBJECT
 
@@ -52,6 +53,9 @@ namespace smtk
       static qtItem* createItem(smtk::attribute::ItemPtr item, QWidget* p, qtBaseView* view,
         Qt::Orientation enVectorItemOrient = Qt::Horizontal);
 
+      static void setItemWidgetFactory(qtAttributeItemWidgetFactory* f);
+      static qtAttributeItemWidgetFactory* itemWidgetFactory();
+
     public slots:
       virtual void onRequestEntityAssociation();
 
@@ -61,12 +65,13 @@ namespace smtk
       virtual void createWidget();
 
       QPointer<QWidget> m_widget;
+      static qtAttributeItemWidgetFactory* s_factory;
+
     private:
+      qtAttributeInternals* m_internals;
+    };
 
-      qtAttributeInternals *m_internals;
-
-    }; // class
-  }; // namespace attribute
-}; // namespace smtk
+  } // namespace attribute
+} // namespace smtk
 
 #endif

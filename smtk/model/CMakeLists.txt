@@ -27,6 +27,8 @@ set(modelSrcs
   GridInfo.cxx
   Instance.cxx
   Loop.cxx
+  MeshListPhrase.cxx
+  MeshPhrase.cxx
   Model.cxx
   Operator.cxx
   PropertyListPhrase.cxx
@@ -81,6 +83,8 @@ set(modelHeaders
   Instance.h
   IntegerData.h
   Loop.h
+  MeshListPhrase.h
+  MeshPhrase.h
   Model.h
   Operator.h
   PropertyType.h
