@@ -481,7 +481,7 @@ export(PACKAGE SMTK)
 #
 # Required to happen before we include the docs directory
 set(MOAB_ROOT_DIR "${MOAB_ROOT_DIR}")
-set(SMTK_MODULE_DIR "${SMTK_SOURCE_DIR}/CMake")
+set(SMTK_MODULE_DIR "${CMAKE_BINARY_DIR}/lib/cmake/SMTK")
 set(SMTK_CONFIG_DIR "${PROJECT_BINARY_DIR}")
 configure_file(
   ${PROJECT_SOURCE_DIR}/CMake/SMTKConfig.cmake.in
