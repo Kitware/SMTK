@@ -103,11 +103,18 @@ public:
   static int forSingleCollection(cJSON* mdesc,
                                  smtk::mesh::CollectionPtr collection);
 
-  // Serialize all the smtk::mesh associated with given EntityRefs.
-  static int forMeshes(
+  // Serialize all the input mesh Collections in mesh manager \a meshMgr,
+  // given the mesh \a collectionIds.
+  static int forMeshCollections(
                      cJSON* pnode,
                      const smtk::common::UUIDs& collectionIds,
                      smtk::mesh::ManagerPtr meshMgr);
+
+  // Serialize all the smtk::mesh collections associated with given \a modelid.
+  static int forModelMeshes(
+                     const smtk::common::UUID& modelid,
+                     cJSON* pnode,
+                     smtk::model::ManagerPtr modelMgr);
 
   static int forLog(
     cJSON* logrecordarray,

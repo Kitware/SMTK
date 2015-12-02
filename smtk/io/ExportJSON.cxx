@@ -624,7 +624,7 @@ int ExportJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
     if(collectionIds.size() > 0)
       {
       cJSON* mesh_records = cJSON_CreateObject();
-      ExportJSON::forMeshes(mesh_records, collectionIds, meshMgr);
+      ExportJSON::forMeshCollections(mesh_records, collectionIds, meshMgr);
       cJSON_AddItemToObject(entRec, "mesh_records", mesh_records);
       }
     }
@@ -742,14 +742,14 @@ int ExportJSON::forManagerMeshes(
   return status;
 }
 
-/**\brief Serialize all the smtk::mesh associated with given EntityRefs.
+/**\brief Serialize input mesh Collections.
   *
   * This creates and populate an JSON Object "mesh_collections"
   * and add it to the parent json node (\a pnode) with
-  * data required to recreate the smtk::mesh Collections
-  * associated with the given \a collectionIds.
+  * data required to recreate the mesh Collections
+  * associated with the given \a collectionIds of mesh manager (\a meshMgr)
   */
-int ExportJSON::forMeshes(
+int ExportJSON::forMeshCollections(
                      cJSON* pnode,
                      const smtk::common::UUIDs& collectionIds,
                      smtk::mesh::ManagerPtr meshMgr)
@@ -774,6 +774,32 @@ int ExportJSON::forMeshes(
     }
 
   return status;
+}
+
+/**\brief Serialize all the mesh collections associated with given \a modelid.
+  *
+  * This creates and populate an JSON Object "mesh_collections"
+  * and add it to the parent json node (\a pnode) with
+  * all mesh collections associated with the given \a modelid.
+  */
+int ExportJSON::forModelMeshes(
+                     const smtk::common::UUID& modelid,
+                     cJSON* pnode,
+                     smtk::model::ManagerPtr modelMgr)
+{
+  if (!pnode || pnode->type != cJSON_Object)
+    {
+    return 0;
+    }
+  smtk::mesh::ManagerPtr meshMgr = modelMgr->meshes();
+  smtk::model::Model model(modelMgr, modelid);
+  if(!model.isValid() || !meshMgr)
+    {
+    return 0;
+    }
+
+  smtk::common::UUIDs cids = meshMgr->associatedCollectionIds(model);
+  return ExportJSON::forMeshCollections(pnode, cids, meshMgr);
 }
 
 namespace {
