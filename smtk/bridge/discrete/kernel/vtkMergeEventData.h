@@ -19,7 +19,7 @@
 #ifndef __smtkdiscrete_vtkMergeEventData_h
 #define __smtkdiscrete_vtkMergeEventData_h
 
-#include "vtkSMTKDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 
 

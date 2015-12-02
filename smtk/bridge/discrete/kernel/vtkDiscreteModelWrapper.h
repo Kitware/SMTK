@@ -26,7 +26,7 @@
 #ifndef __smtkdiscrete_vtkDiscreteModelWrapper_h
 #define __smtkdiscrete_vtkDiscreteModelWrapper_h
 
-#include "vtkSMTKDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkDataObjectTree.h"
 #include "vtkSmartPointer.h"
 #include "vtkWeakPointer.h"
