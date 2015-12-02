@@ -97,9 +97,9 @@ int testLifecycle()
   AttributePtr att = createAttribForTest(system);
   qtUIManager* mgr = new qtUIManager(system);
   QWidget* w = new QWidget;
-  qtBaseView* v = new qtBaseView(
-    smtk::common::View::New("base", "test view"),
-    w, mgr);
+  smtk::attribute::ViewInfo vinfo(smtk::common::View::New("base", "test view"),
+                                  w, mgr);
+  qtBaseView* v = new qtBaseView(vinfo);
   qtAttribute* qatt = new qtAttribute(att, w, v);
 
   delete qatt;

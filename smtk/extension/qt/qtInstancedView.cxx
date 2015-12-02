@@ -39,18 +39,17 @@ public:
 
 //----------------------------------------------------------------------------
 qtBaseView *
-qtInstancedView::createViewWidget(smtk::common::ViewPtr dataObj,
-                                  QWidget* p, qtUIManager* uiman)
+qtInstancedView::createViewWidget(const ViewInfo &info)
 {
-  qtInstancedView *view = new qtInstancedView(dataObj, p, uiman);
+  qtInstancedView *view = new qtInstancedView(info);
   view->buildUI();
   return view;
 }
 
 //----------------------------------------------------------------------------
 qtInstancedView::
-qtInstancedView(smtk::common::ViewPtr dataObj, QWidget* p, qtUIManager* uiman) :
-  qtBaseView(dataObj, p, uiman)
+qtInstancedView(const ViewInfo &info) :
+  qtBaseView(info)
 {
   this->Internals = new qtInstancedViewInternals;
 

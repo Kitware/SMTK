@@ -30,10 +30,9 @@ namespace smtk
       Q_OBJECT
 
     public:
-      static qtBaseView *createViewWidget(smtk::common::ViewPtr view, QWidget* p,
-                                          qtUIManager* uiman);
+      static qtBaseView *createViewWidget(const ViewInfo &info);
 
-      qtInstancedView(smtk::common::ViewPtr view , QWidget* p, qtUIManager* uiman);
+      qtInstancedView(const ViewInfo &info);
       virtual ~qtInstancedView();
 
     public slots:

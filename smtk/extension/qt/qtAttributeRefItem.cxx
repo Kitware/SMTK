@@ -224,8 +224,8 @@ void qtAttributeRefItem::onLaunchAttributeView()
   attViewDlg.setWindowTitle(attDef->label().empty() ?
                             attDef->type().c_str() : attDef->label().c_str());
   QVBoxLayout* layout = new QVBoxLayout(&attViewDlg);
-
-  qtAttributeView attView(newAttView, &attViewDlg, this->baseView()->uiManager());
+  smtk::attribute::ViewInfo vinfo(newAttView, &attViewDlg, this->baseView()->uiManager());
+  qtAttributeView attView(vinfo);
   //layout->addWidget(attView.widget())
   QDialogButtonBox* buttonBox=new QDialogButtonBox( &attViewDlg );
   buttonBox->setStandardButtons(QDialogButtonBox::Ok);

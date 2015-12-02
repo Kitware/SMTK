@@ -41,27 +41,27 @@ public:
     TILED,
     GROUP_BOX
   };
-  qtGroupViewInternals() : m_style(TABBED), m_currentTabSelected(0) {}
+  qtGroupViewInternals() : m_style(TABBED), m_currentTabSelected(0),
+                           m_tabPosition(QTabWidget::East) {}
   QList<smtk::attribute::qtBaseView*> ChildViews;
   qtGroupViewInternals::Style m_style;
   std::vector<smtk::common::ViewPtr> m_views;
   int m_currentTabSelected;
+  QTabWidget::TabPosition m_tabPosition;
 };
 
 //----------------------------------------------------------------------------
 qtBaseView *
-qtGroupView::createViewWidget(smtk::common::ViewPtr dataObj,
-                                  QWidget* p, qtUIManager* uiman)
+qtGroupView::createViewWidget(const ViewInfo &info)
 {
-  qtGroupView *view = new qtGroupView(dataObj, p, uiman);
+  qtGroupView *view = new qtGroupView(info);
   view->buildUI();
   return view;
 }
 
 //----------------------------------------------------------------------------
 qtGroupView::
-qtGroupView(smtk::common::ViewPtr dataObj, QWidget* p,
-  qtUIManager* uiman) : qtBaseView(dataObj, p, uiman)
+qtGroupView(const ViewInfo &info) : qtBaseView(info)
 {
   this->Internals = new qtGroupViewInternals;
 }
@@ -115,6 +115,23 @@ void qtGroupView::createWidget( )
     }
   else
     {
+    if (view->details().attribute("TabPosition", val))
+      {
+      std::transform(val.begin(), val.end(), val.begin(), ::tolower);
+      if (val == "north")
+        {
+        this->Internals->m_tabPosition = QTabWidget::North;
+        }
+      else if (val == "south")
+        {
+        this->Internals->m_tabPosition = QTabWidget::South;
+        }
+      else if (val == "west")
+        {
+        this->Internals->m_tabPosition = QTabWidget::West;
+        }
+      //Else leave it as the default which is East
+      }
     QTabWidget *tab = new QTabWidget(this->parentWidget());
     tab->setUsesScrollButtons( true );
     this->Widget = tab;
@@ -157,7 +174,12 @@ void qtGroupView::createWidget( )
 
       continue;
       }
-    qtView = this->uiManager()->createView(v, this->Widget);
+    // Setup the information for the new child view based off of
+    // this one
+    smtk::attribute::ViewInfo vinfo = this->m_viewInfo;
+    vinfo.m_view = v;
+    vinfo.m_parent = this->Widget;
+    qtView = this->uiManager()->createView(vinfo);
     if (qtView)
       {
       this->addChildView(qtView);
@@ -167,7 +189,7 @@ void qtGroupView::createWidget( )
       {
       tabWidget->setCurrentIndex(this->Internals->m_currentTabSelected);
       tabWidget->setIconSize( QSize(24,24) );
-      tabWidget->setTabPosition(QTabWidget::East);
+      tabWidget->setTabPosition(this->Internals->m_tabPosition);
       }
     if(this->Internals->m_style == qtGroupViewInternals::TABBED)
     {

@@ -232,7 +232,8 @@ void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
     }
   this->internalInitialize();
 
-  this->m_topView = this->createView(this->m_smtkView, pWidget);
+  smtk::attribute::ViewInfo vinfo(this->m_smtkView, pWidget, this);
+  this->m_topView = this->createView(vinfo);
   if (this->m_topView)
     {
     this->m_topView->showAdvanceLevel(this->m_currentAdvLevel);
@@ -1242,18 +1243,23 @@ void qtUIManager::registerViewConstructor(const std::string &vtype,
   this->m_constructors[vtype] = f;
 }
 //----------------------------------------------------------------------------
-qtBaseView *qtUIManager::createView(smtk::common::ViewPtr smtkView,
-  QWidget *pWidget)
+qtBaseView *qtUIManager::createView(const ViewInfo &info)
 {
+  if (info.m_UIManager != this)
+    {
+    // The view being constructed is not refering to this manager!
+    return NULL;
+    }
+  
   std::map<std::string, widgetConstructor>::const_iterator it;
-  it = this->m_constructors.find(smtkView->type());
+  it = this->m_constructors.find(info.m_view->type());
   if (it == this->m_constructors.end())
     {
     // Constructor for that type could not be found)
     return NULL;
     }
 
-  qtBaseView *qtView = (it->second)(smtkView, pWidget, this);
+  qtBaseView *qtView = (it->second)(info);
   return qtView;
 }
 
