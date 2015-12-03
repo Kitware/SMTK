@@ -7,6 +7,9 @@ Contributing to SMTK
 .. role:: cxx(code)
    :language: c++
 
+.. role:: cmake(code)
+   :language: cmake
+
 .. contents::
 
 The first step to contributing to SMTK is to obtain the source code and build it.
@@ -69,9 +72,15 @@ Code style
 Using SMTK from another project
 ===============================
 
-.. todo::
+SMTK generates a file named :file:`SMTKConfig.cmake` that allows other projects to find and use SMTK.
+This file is installed to :file:`${CMAKE_INSTALL_PREFIX}/lib/cmake/SMTK/`.
+Your project can add SMTK with
 
-  SMTK does not currently export an SMTKConfig.cmake file like it should.
+.. code:: cmake
+
+    find_package(SMTK)
+
+Then, when building your project, set CMake's :cmake:`SMTK_DIR` to the directory containing :file:`SMTKConfig.cmake`.
 
 Extending SMTK
 ==============
