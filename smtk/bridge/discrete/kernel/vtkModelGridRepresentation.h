@@ -17,7 +17,7 @@
 #ifndef __smtkdiscrete_vtkModelGridRepresentation_h
 #define __smtkdiscrete_vtkModelGridRepresentation_h
 
-#include "vtkSMTKDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 
 #include <vtkObject.h>
 

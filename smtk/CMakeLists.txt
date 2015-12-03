@@ -44,6 +44,8 @@ set(smtk_srcs
 add_library(smtkCore ${smtk_srcs})
 target_include_directories(smtkCore
   PUBLIC
+    $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${SMTK_BINARY_DIR}>
     $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>
 )
 target_link_libraries(smtkCore

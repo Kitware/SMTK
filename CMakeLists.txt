@@ -82,7 +82,7 @@ mark_as_advanced(
 ################################################################################
 # Options that the user controls
 ################################################################################
-option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" OFF)
+option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" ON)
 option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" ON)
 # Option to build Qt ui compoments for attributes
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
@@ -481,7 +481,7 @@ export(PACKAGE SMTK)
 #
 # Required to happen before we include the docs directory
 set(MOAB_ROOT_DIR "${MOAB_ROOT_DIR}")
-set(SMTK_MODULE_DIR "${SMTK_SOURCE_DIR}/CMake")
+set(SMTK_MODULE_DIR "${CMAKE_BINARY_DIR}/lib/cmake/SMTK")
 set(SMTK_CONFIG_DIR "${PROJECT_BINARY_DIR}")
 configure_file(
   ${PROJECT_SOURCE_DIR}/CMake/SMTKConfig.cmake.in
