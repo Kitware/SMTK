@@ -16,7 +16,7 @@
 #ifndef __smtkdiscrete_DISCRETEMESH_H
 #define __smtkdiscrete_DISCRETEMESH_H
 
-#include "vtkSMTKDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 
 #include "DiscreteMeshCellIdIterator.h" //needed for iterator
 #include "vtkType.h" //needed for vtkIdType

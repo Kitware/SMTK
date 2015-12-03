@@ -21,6 +21,11 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS ${VTK_DEFINITIONS})
 set(vtkSMTKExt_NO_HeaderTest 1)
 set(VTK_INSTALL_NO_HEADERS 1)
 vtk_module_library(vtkSMTKExt ${VTKLibSrcs})
+target_include_directories(vtkSMTKExt
+  PUBLIC
+    $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${SMTK_BINARY_DIR}>
+    $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>)
 
 target_link_libraries(vtkSMTKExt
   LINK_PUBLIC

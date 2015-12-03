@@ -38,6 +38,11 @@ set_source_files_properties(
 set(${vtk-module}_NO_HeaderTest 1)
 set(VTK_INSTALL_NO_HEADERS 1)
 vtk_module_library(${vtk-module} ${srcs})
+target_include_directories(${vtk-module}
+  PUBLIC
+    $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${SMTK_BINARY_DIR}>
+    $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>)
 
 if(SMTK_ENABLE_REMUS_SUPPORT)
   #Remus is needed
