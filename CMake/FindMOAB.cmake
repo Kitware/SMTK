@@ -61,6 +61,12 @@ if(MOAB_FOUND)
       include(MOABTargets.cmake)
   endif()
 
+  #Certain version of moab define a scope variable called BUILD_SHARED_LIBS
+  #which hides the cache version of said variable. So we defend against
+  #this by unsetting the variable
+  unset(BUILD_SHARED_LIBS)
+
+
   set_target_properties(MOAB PROPERTIES
       INTERFACE_INCLUDE_DIRECTORIES "${MOAB_INCLUDE_DIR}"
       )

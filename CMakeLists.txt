@@ -82,7 +82,7 @@ mark_as_advanced(
 ################################################################################
 # Options that the user controls
 ################################################################################
-option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" OFF)
+option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" ON)
 option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" ON)
 # Option to build Qt ui compoments for attributes
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
