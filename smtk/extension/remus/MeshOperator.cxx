@@ -170,9 +170,22 @@ OperatorResult MeshOperator::operateInternal()
         ++gen[0];
       }
 
+    this->log().setFlushToStdout(true);
+
     //current question is how do we know how to mark the tessellations
     //of the model as modified?
-    this->addEntitiesToResult(result, models, MODIFIED);
+
+    //mark all models and submodels as modified
+    smtk::model::Models allModels = models;
+    for(smtk::model::Models::const_iterator m = models.begin();
+        m != models.end();
+        ++m)
+      {
+      smtk::model::Models submodels = m->submodels();
+      allModels.insert(allModels.end(), submodels.begin(), submodels.end());
+      }
+    this->addEntitiesToResult(result, allModels, MODIFIED);
+
     result->findModelEntity("mesh_created")->setValues(models.begin(), models.end());
     }
   return result;
