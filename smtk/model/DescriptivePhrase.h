@@ -96,6 +96,8 @@ public:
   virtual void markDirty(bool dirty = true)                    { this->m_subphrasesBuilt = !dirty; }
   virtual int argFindChild(const DescriptivePhrase* child) const;
   virtual int argFindChild(const EntityRef& child) const;
+  virtual int argFindChild(const smtk::mesh::MeshSet& child) const;
+  virtual int argFindChild(const smtk::mesh::CollectionPtr& child) const;
   int indexInParent() const;
 
   virtual EntityRef relatedEntity() const                      { return EntityRef(); }

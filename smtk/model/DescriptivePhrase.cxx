@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/SubphraseGenerator.h"
+#include "smtk/mesh/Collection.h"
 
 namespace smtk {
   namespace model {
@@ -75,6 +76,43 @@ int DescriptivePhrase::argFindChild(const EntityRef& child) const
   return -1;
 }
 
+/// Return the index of the given MeshSet in this instance's subphrases (or -1).
+int DescriptivePhrase::argFindChild(const smtk::mesh::MeshSet& child) const
+{
+  if(child.is_empty())
+    {
+    return -1;
+    }
+  int i = 0;
+  DescriptivePhrases::const_iterator it;
+  for (it = this->m_subphrases.begin(); it != this->m_subphrases.end(); ++it, ++i)
+    {
+    if (it->get()->phraseType() == MESH_SUMMARY &&
+        !it->get()->relatedMesh().is_empty() &&
+        it->get()->relatedMesh() == child)
+      return i;
+    }
+  return -1;
+}
+
+/// Return the index of the given CollectionPtr in this instance's subphrases (or -1).
+int DescriptivePhrase::argFindChild(const smtk::mesh::CollectionPtr& child) const
+{
+  if(!child)
+    {
+    return -1;
+    }
+  int i = 0;
+  DescriptivePhrases::const_iterator it;
+  for (it = this->m_subphrases.begin(); it != this->m_subphrases.end(); ++it, ++i)
+    {
+    if (it->get()->phraseType() == MESH_SUMMARY &&
+        it->get()->relatedMeshCollection() &&
+        it->get()->relatedMeshCollection()->entity() == child->entity())
+      return i;
+    }
+  return -1;
+}
 
 /// Return the index of this phrase in its parent instance's subphrases (or -1).
 int DescriptivePhrase::indexInParent() const
