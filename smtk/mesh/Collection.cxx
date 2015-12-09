@@ -182,6 +182,14 @@ void Collection::writeLocation(const std::string& n)
 }
 
 //----------------------------------------------------------------------------
+void Collection::clearReadWriteLocations()
+{
+  this->m_readLocation.clear();
+  this->m_writeLocation.clear();
+}
+
+
+//----------------------------------------------------------------------------
 std::string Collection::interfaceName() const
 {
   return this->interface()->name();
