@@ -18,6 +18,9 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 
+#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/Collection.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
@@ -156,10 +159,12 @@ OperatorResult MeshOperator::operateInternal()
     //now fetch the latest results from the server
     remus::proto::JobResult meshMetaData = client.retrieveResults(job);
 
+    smtk::mesh::ManagerPtr meshManager = this->manager()->meshes();
+
     //determine all existing collection
     typedef std::map< smtk::common::UUID, smtk::mesh::CollectionPtr > CollectionStorage;
-    CollectionStorage existingCollections(this->manager()->collectionBegin(),
-                                          this->manager()->collectionEnd());
+    CollectionStorage existingCollections(meshManager->collectionBegin(),
+                                          meshManager->collectionEnd());
 
     //parse the job result as json mesh data
     cJSON* root = cJSON_Parse(meshMetaData.data());
@@ -176,12 +181,12 @@ OperatorResult MeshOperator::operateInternal()
     //
     //
     //
-    for(smtk::mesh::Manager::const_iterator i = this->manager()->collectionBegin();
-        i != this->manager()->collectionEnd();
+    for(smtk::mesh::Manager::const_iterator i = meshManager->collectionBegin();
+        i != meshManager->collectionEnd();
         ++i)
       {
       smtk::mesh::CollectionPtr collection = i->second;
-      smtk::mesh::UUID collectionUUID = i->first;
+      smtk::common::UUID collectionUUID = i->first;
       if( existingCollections.find(collectionUUID) ==  existingCollections.end())
         { //found a new collection
         std::string location = collection->readLocation();
