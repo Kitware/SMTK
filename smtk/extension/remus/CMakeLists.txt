@@ -4,9 +4,10 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/MeshOperator.sbt" remusOperatorXM
 
 add_library(smtkRemusExt ${remusExtSource})
 target_link_libraries(smtkRemusExt
-  PRIVATE
+  LINK_PRIVATE
     RemusClient
     smtkCore
+    ${Boost_LIBRARIES}
 )
 
 target_include_directories(smtkRemusExt PRIVATE ${REMUS_INCLUDE_DIRS})
