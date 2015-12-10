@@ -79,6 +79,8 @@ mark_as_advanced(
   LIBRARY_OUTPUT_PATH
 )
 
+include(CMakeDependentOption)
+
 ################################################################################
 # Options that the user controls
 ################################################################################
@@ -87,32 +89,30 @@ option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" O
 # Option to build Qt ui compoments for attributes
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
 option(SMTK_ENABLE_PYTHON_WRAPPING "Build Python Wrappings using Shiboken" OFF)
-if (SMTK_ENABLE_PYTHON_WRAPPING)
-  # Provide system packagers with the ability to install SMTK
-  # to the system's Python site package directory. The default
-  # is off so that people building relocatable bundles (such as
-  # CMB) can distribute their own Python interpreter with
-  # internal packages (e.g., as part of a Mac ".app" bundle).
-  option(
-    SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES
-    "Install Python modules to the interpreter's site-packages directory or into CMAKE_INSTALL_PREFIX?"
-    OFF)
-  mark_as_advanced(SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES)
-endif()
+# Provide system packagers with the ability to install SMTK
+# to the system's Python site package directory. The default
+# is off so that people building relocatable bundles (such as
+# CMB) can distribute their own Python interpreter with
+# internal packages (e.g., as part of a Mac ".app" bundle).
+cmake_dependent_option(
+  SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES
+  "Install Python modules to the interpreter's site-packages directory or into CMAKE_INSTALL_PREFIX?"
+  OFF
+  SMTK_ENABLE_PYTHON_WRAPPING OFF)
+mark_as_advanced(SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES)
 option(SMTK_ENABLE_QT_SUPPORT "Build Qt GUI" OFF)
 option(SMTK_ENABLE_VTK_SUPPORT "Build VTK component" OFF)
 option(SMTK_ENABLE_REMUS_SUPPORT "Build Remus components" OFF)
-option(SMTK_ENABLE_PARAVIEW_SUPPORT "Build paraview plugins for model sessions" OFF)
+cmake_dependent_option(SMTK_ENABLE_PARAVIEW_SUPPORT "Build paraview plugins for model sessions" OFF
+  SMTK_ENABLE_VTK_SUPPORT OFF)
 
 option(SMTK_ENABLE_CGM_SESSION "Build CGM component" OFF)
 option(SMTK_ENABLE_DISCRETE_SESSION "Build discrete model session components" OFF)
 option(SMTK_ENABLE_POLYGON_SESSION "Build Boost.polygon model session." ON)
-if (SMTK_ENABLE_VTK_SUPPORT)
-  option(SMTK_ENABLE_EXODUS_SESSION "Build a session to Exodus-II side sets" ON)
-endif()
-if (SMTK_ENABLE_REMUS_SUPPORT)
-  option(SMTK_ENABLE_REMOTE_SESSION "Build a session that allows modeling in a remote process." ON)
-endif()
+cmake_dependent_option(SMTK_ENABLE_EXODUS_SESSION "Build a session to Exodus-II side sets" ON
+  SMTK_ENABLE_VTK_SUPPORT OFF)
+cmake_dependent_option(SMTK_ENABLE_REMOTE_SESSION "Build a session that allows modeling in a remote process" ON
+  SMTK_ENABLE_REMUS_SUPPORT OFF)
 
 option(SMTK_USE_SYSTEM_MOAB "Use the system-installed moab?" OFF)
 option(SMTK_USE_SYSTEM_SPARSEHASH "Use the system-installed sparsehash?" OFF)
