@@ -13,6 +13,8 @@
 
 #include "smtk/common/UUID.h"
 
+#include <boost/lexical_cast.hpp>
+
 #include <map>
 
 namespace smtk {
@@ -99,10 +101,34 @@ private:
   ContainerType Collections;
 };
 
+//----------------------------------------------------------------------------
+class Manager::InternalNameGeneratorImpl
+{
+public:
+  InternalNameGeneratorImpl():
+  m_value(1),
+  m_basename("Mesh_")
+  {
+  }
+
+  std::string next()
+  {
+    std::string result(this->m_basename);
+    result += boost::lexical_cast< std::string >(this->m_value++);
+    return result;
+  }
+
+
+private:
+  int m_value;
+  std::string m_basename;
+};
+
 
 //----------------------------------------------------------------------------
 Manager::Manager():
   m_collector( new InternalStorageImpl() ),
+  m_nameGenerator( new InternalNameGeneratorImpl() ),
   m_uuidGenerator()
 {
 
@@ -294,6 +320,48 @@ Manager::associatedCollectionIds( const smtk::model::EntityRef& eref) const
     }
   return result;
 }
+
+//----------------------------------------------------------------------------
+bool
+Manager::assignUniqueName( smtk::mesh::CollectionPtr collection )
+{
+  //if we don't own this collection, we can't generate a unique name for it
+  if(!this->hasCollection(collection) )
+    {
+    return false;
+    }
+
+  bool needsName = false;
+  if(collection->name().empty())
+    {
+    //fast code path, the collection name is empty, so we don't need to check
+    //if the existing name is unique
+    needsName = true;
+    }
+  else
+    {
+    std::string currentName = collection->name();
+    //slow path, we have to determine if the current name is unique or not
+    for(const_iterator i = this->m_collector->begin();
+      i != this->m_collector->end() && needsName == false;
+      ++i)
+      {
+      if(i->second != collection)
+        {
+        needsName = ( i->second->name() == currentName );
+        }
+      }
+    }
+
+  if(needsName)
+    {
+    //time to generate a new name
+    collection->name( this->m_nameGenerator->next() );
+    }
+
+  return true;
+}
+
 
 }
 }

@@ -73,6 +73,14 @@ public:
   const std::string& name() const;
   void name(const std::string& n);
 
+  //assign the collection a unique name, given the current manager.
+  //Note:
+  //If the current name is already unique, no change will happen but we will
+  //return true.
+  //If the collection has no manager, the current name is not changed, and
+  //false is returned
+  bool assignUniqueNameIfNotAlready();
+
   //get the file that this collection was created from
   //will return an empty string if this collection wasn't read from file
   const std::string& readLocation() const;
