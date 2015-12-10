@@ -26,6 +26,12 @@
 #include "smtk/io/ExportJSON.txx"
 #include "smtk/io/ImportJSON.h"
 
+//todo: remove this once remus supports automatic transfer of FileHandles
+// and Destructive Read of FileHandles
+//force to use filesystem version 3
+#define BOOST_FILESYSTEM_VERSION 3
+#include <boost/filesystem.hpp>
+
 //todo: remove this once remus Issue #183 has been resolved.
 // #include <boost/date_time/posix_time/posix_time.hpp>
 // #include <boost/thread/thread.hpp>
@@ -148,14 +154,45 @@ OperatorResult MeshOperator::operateInternal()
   if(haveResultFromWorker)
     {
     //now fetch the latest results from the server
-    remus::proto::JobResult updatedModel = client.retrieveResults(job);
+    remus::proto::JobResult meshMetaData = client.retrieveResults(job);
 
-    //parse the job result as a json string
-    smtk::io::ImportJSON::intoModelManager(updatedModel.data(), this->manager());
+    //determine all existing collection
+    typedef std::map< smtk::common::UUID, smtk::mesh::CollectionPtr > CollectionStorage;
+    CollectionStorage existingCollections(this->manager()->collectionBegin(),
+                                          this->manager()->collectionEnd());
 
-    cJSON* root = cJSON_Parse(updatedModel.data());
+    //parse the job result as json mesh data
+    cJSON* root = cJSON_Parse(meshMetaData.data());
     smtk::io::ImportJSON::ofMeshesOfModel(root, this->manager());
     cJSON_Delete(root);
+
+    //
+    //iterate over all collections looking for new collections. When we find
+    //a new mesh collection, we will delete the file that was used to generate
+    //that collection, as that file is meant to be temporary and only exist
+    //for data transfer back from the worker.
+    //
+    //This all should be removed, and instead remus should handle all this logic
+    //
+    //
+    //
+    for(smtk::mesh::Manager::const_iterator i = this->manager()->collectionBegin();
+        i != this->manager()->collectionEnd();
+        ++i)
+      {
+      smtk::mesh::CollectionPtr collection = i->second;
+      smtk::mesh::UUID collectionUUID = i->first;
+      if( existingCollections.find(collectionUUID) ==  existingCollections.end())
+        { //found a new collection
+        std::string location = collection->readLocation();
+        if(!location.empty())
+          { //delete the file if it exists
+          ::boost::filesystem::path cpath( location );
+          ::boost::filesystem::remove( cpath );
+          }
+        collection->clearReadWriteLocations();
+        }
+      }
 
     //mark all models and submodels as modified
     smtk::model::Models allModels = models;

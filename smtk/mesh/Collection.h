@@ -90,6 +90,11 @@ public:
   void writeLocation(const std::string& path);
   const std::string& writeLocation() const;
 
+  //clear both the read and write locations for the collection. This
+  //is generally done when de-serializing a collection and the read and write
+  //locations are going to be deleted by the calling code.
+  void clearReadWriteLocations();
+
   //get a string the identifies the interface type of the collection
   // valid types are:
   // "moab"
