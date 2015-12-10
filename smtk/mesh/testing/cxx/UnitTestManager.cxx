@@ -179,7 +179,7 @@ void verify_name_generation()
   test( c->name() == std::string("a"), "assignUniqueName overwrote existing unique name" );
   }
 
-  //verify that assignUniqueName override an existing name that isn't unique
+  //verify that assignUniqueName overrides an existing name that isn't unique
   {
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c1 = mgr->makeCollection();
@@ -193,6 +193,23 @@ void verify_name_generation()
         "assignUniqueName didn't overwrite existing non-unique name" );
   test( c2->name() == std::string("a"),
        "assignUniqueName overwrote existing unique name" );
+  }
+
+
+  //verify that assignUniqueName handles not generating a clashing unique
+  //name, when the existing name matches the pattern of the auto generator
+  {
+  smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
+  smtk::mesh::CollectionPtr c1 = mgr->makeCollection();
+  smtk::mesh::CollectionPtr c2 = mgr->makeCollection();
+  c1->name( std::string("Mesh_1") );
+  mgr->assignUniqueName(c1);
+  mgr->assignUniqueName(c2); //shoud be Mesh_2 not Mesh_1
+
+  test( c1->name() == std::string("Mesh_1"),
+        "assignUniqueName overwrote existing unique name" );
+  test( c2->name() == std::string("Mesh_2"),
+       "assignUniqueName generated a non-unique name" );
   }
 
   //verify that the only the owning manager can assign unique names
