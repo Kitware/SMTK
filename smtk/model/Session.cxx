@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/model/Session.h"
 
-#include "smtk/model/SessionIO.h"
+#include "smtk/model/SessionIOJSON.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/RemoteOperator.h"
 #include "smtk/model/ArrangementHelper.h"
@@ -806,7 +806,11 @@ OperatorConstructor Session::findOperatorConstructorInternal(
   */
 SessionIOPtr Session::createIODelegate(const std::string& format)
 {
-  (void)format;
+  if (format == "json")
+    {
+    return SessionIOJSON::create();
+    }
+
   return SessionIOPtr();
 }
 

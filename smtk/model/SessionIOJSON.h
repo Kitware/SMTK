@@ -28,9 +28,23 @@ public:
   smtkTypeMacro(SessionIOJSON);
   smtkCreateMacro(SessionIOJSON);
 
+  virtual ~SessionIOJSON() { }
+
   virtual int importJSON(ManagerPtr modelMgr, cJSON* sessionRec);
+  virtual int importJSON(ManagerPtr modelMgr, const SessionPtr& session,
+                         cJSON* sessionRec);
   virtual int exportJSON(ManagerPtr modelMgr, cJSON* sessionRec);
-  virtual int exportJSON(ManagerPtr modelMgr, const common::UUIDs &modelIds, cJSON* sessionRec);
+  virtual int exportJSON(ManagerPtr modelMgr, const SessionPtr& session,
+                         const common::UUIDs &modelIds, cJSON* sessionRec);
+
+protected:
+  virtual int writeNativeModel(smtk::model::ManagerPtr modelMgr,
+                              const smtk::model::SessionPtr& sess,
+                              const smtk::model::Model& model,
+                              std::string& outNativeFile);
+  virtual int loadNativeModel(smtk::model::ManagerPtr modelMgr,
+                              const smtk::model::SessionPtr& sess,
+                              const std::string& inNativeFile);
 };
 
   } // namespace model

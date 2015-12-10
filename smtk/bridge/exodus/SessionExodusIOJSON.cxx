@@ -29,6 +29,20 @@ int SessionIOJSON::importJSON(ManagerPtr modelMgr, cJSON* sessionRec)
 }
 // -- 2 --
 
+/**\brief Decode information from \a sessionRec for the given \a modelMgr.
+  *
+  * Subclasses should return 1 on success and 0 on failure.
+  */
+int SessionIOJSON::importJSON(ManagerPtr modelMgr,
+                              const SessionPtr& session,
+                              cJSON* sessionRec)
+{
+  (void)modelMgr;
+  (void)session;
+  (void)sessionRec;
+  return 1;
+}
+
 /**\brief Encode information into \a sessionRec for the given \a modelMgr.
   *
   * Subclasses should return 1 on success and 0 on failure.
@@ -48,9 +62,11 @@ int SessionIOJSON::exportJSON(ManagerPtr modelMgr, cJSON* sessionRec)
   * This variant should export only information for the given models.
   */
 // ++ 3 ++
-int SessionIOJSON::exportJSON(ManagerPtr modelMgr, const common::UUIDs& modelIds, cJSON* sessionRec)
+int SessionIOJSON::exportJSON(ManagerPtr modelMgr, const SessionPtr& session,
+                         const common::UUIDs &modelIds, cJSON* sessionRec)
 {
   (void)modelMgr;
+  (void)session;
   (void)modelIds;
   (void)sessionRec;
   return 1;

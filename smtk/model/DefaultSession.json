@@ -4,7 +4,8 @@
     {
       "name": "native",
       "filetypes": [
-        ".json (Native SMTK model)"
+        ".smtk (SMTK JSON model)",
+        ".json (SMTK JSON model)"
       ]
     }
   ]
