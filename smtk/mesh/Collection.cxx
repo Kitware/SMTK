@@ -153,7 +153,7 @@ void Collection::name(const std::string& n)
 }
 
 //----------------------------------------------------------------------------
-bool Collection::assignUniqueName()
+bool Collection::assignUniqueNameIfNotAlready()
 {
   smtk::mesh::ManagerPtr currentManager = this->m_internals->manager();
   if(currentManager)
