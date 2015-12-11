@@ -13,7 +13,10 @@
 
 #include "smtk/common/UUID.h"
 
+#include <boost/lexical_cast.hpp>
+
 #include <map>
+#include <set>
 
 namespace smtk {
 namespace mesh {
@@ -99,10 +102,40 @@ private:
   ContainerType Collections;
 };
 
+//----------------------------------------------------------------------------
+class Manager::InternalNameGeneratorImpl
+{
+public:
+  InternalNameGeneratorImpl():
+  m_value(1),
+  m_basename("Mesh_")
+  {
+  }
+
+  std::string next( const std::set< std::string >& usedNames )
+  {
+    std::string result(this->m_basename);
+    result += boost::lexical_cast< std::string >(this->m_value++);
+    while( usedNames.find(result) != usedNames.end() )
+      {
+      result = (std::string(this->m_basename) += boost::lexical_cast< std::string >(this->m_value++));
+      }
+
+    std::cout << "generating name: " << result << std::endl;
+    return result;
+  }
+
+
+private:
+  int m_value;
+  std::string m_basename;
+};
+
 
 //----------------------------------------------------------------------------
 Manager::Manager():
   m_collector( new InternalStorageImpl() ),
+  m_nameGenerator( new InternalNameGeneratorImpl() ),
   m_uuidGenerator()
 {
 
@@ -294,6 +327,40 @@ Manager::associatedCollectionIds( const smtk::model::EntityRef& eref) const
     }
   return result;
 }
+
+//----------------------------------------------------------------------------
+bool
+Manager::assignUniqueName( smtk::mesh::CollectionPtr collection )
+{
+  //if we don't own this collection, we can't generate a unique name for it
+  if(!this->hasCollection(collection) )
+    {
+    return false;
+    }
+
+
+  std::set< std::string > usedNames;
+  for(const_iterator i = this->m_collector->begin(); i != this->m_collector->end(); ++i)
+    {
+    if(i->second != collection)
+      {
+      usedNames.insert( i->second->name() );
+      }
+    }
+
+  const bool nameAlreadyUsed = ( usedNames.find(collection->name()) != usedNames.end() );
+  const bool nameEmpty = ( collection->name().empty() );
+
+  if(nameAlreadyUsed || nameEmpty )
+    {
+    //time to generate a new name, we pass the number of existing meshes
+    //to
+    collection->name( this->m_nameGenerator->next(usedNames) );
+    }
+
+  return true;
+}
+
 
 }
 }

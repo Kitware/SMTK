@@ -87,6 +87,21 @@ public:
   smtk::common::UUIDs associatedCollectionIds(
                                        const smtk::model::EntityRef& c ) const;
 
+
+  //----------------------------------------------------------------------------
+  // Collection name commands
+
+  // Will generate a name that is not used by any other collection owned by this
+  // manager, and assign it to the collection that is past in.
+  //
+  // Notes:
+  // If the collection already has a name, that name will be kept as long as it
+  // is unique.
+  //
+  // Will return false and not assign a name if the collection is not owned
+  // by the manager being called.
+  bool assignUniqueName( smtk::mesh::CollectionPtr collection );
+
 private:
   //needs to be created using shared_ptr
   Manager();
@@ -96,6 +111,8 @@ private:
 
   smtk::common::UUID nextEntityId();
 
+  std::string nextUniqueName();
+
   //returns true if the collection was added or already is part of this manager
   //if the collection is currently part of a different manager we will reparent
   //it to this collection
@@ -103,6 +120,9 @@ private:
 
   class InternalStorageImpl;
   smtk::shared_ptr< InternalStorageImpl > m_collector;
+
+  class InternalNameGeneratorImpl;
+  smtk::shared_ptr< InternalNameGeneratorImpl > m_nameGenerator;
 
   smtk::common::UUIDGenerator m_uuidGenerator;
 };

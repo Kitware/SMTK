@@ -13,3 +13,4 @@ entity.
    :maxdepth: 3
 
    concepts.rst
+   IO.rst

@@ -979,7 +979,7 @@ private:
 };
 
 }
-/**\brief Serialize a single mesh colelction
+/**\brief Serialize a single mesh collection
   *
   */
 int ExportJSON::forSingleCollection(cJSON* mdesc,
@@ -991,6 +991,7 @@ int ExportJSON::forSingleCollection(cJSON* mdesc,
   cJSON_AddItemToObject(mdesc, collectionUUID.c_str(), jsonCollection);
 
   cJSON_AddItemToObject(jsonCollection,"formatVersion", cJSON_CreateNumber(1));
+
   cJSON_AddStringToObject(jsonCollection,"name", collection->name().c_str());
   //assoicated model uuid of the collection
   if(!collection->associatedModel().isNull())
