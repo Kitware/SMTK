@@ -1146,13 +1146,24 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
       //remove the old collection, as its interface is now owned by the new
       //collection
       meshMgr->removeCollection(importedCollection);
-      importedCollection.reset();
+
+      //We need to set the read location on the orginal collection if
+      //the interface is moab
+      if(isValidMoab)
+        {
+        collection->readLocation( importedCollection->readLocation() );
+        }
 
       //set the name back to the collection
       cJSON* collecNameNode = cJSON_GetObjectItem(child, "name");
       std::string collectionName;
       cJSON_GetStringValue(collecNameNode, collectionName);
       collection->name(collectionName);
+
+      //ask the manager to generate a unique name for the collection, if it
+      //doesn't already have a unique name. This occurs when meshes have
+      //no name, or a name that has already been used
+      collection->assignUniqueNameIfNotAlready();
 
       //set the collections model manager so that we can do model based
       //queries properly

@@ -16,6 +16,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include <map>
+#include <set>
 
 namespace smtk {
 namespace mesh {
@@ -111,10 +112,16 @@ public:
   {
   }
 
-  std::string next()
+  std::string next( const std::set< std::string >& usedNames )
   {
     std::string result(this->m_basename);
     result += boost::lexical_cast< std::string >(this->m_value++);
+    while( usedNames.find(result) != usedNames.end() )
+      {
+      result = (std::string(this->m_basename) += boost::lexical_cast< std::string >(this->m_value++));
+      }
+
+    std::cout << "generating name: " << result << std::endl;
     return result;
   }
 
@@ -331,32 +338,24 @@ Manager::assignUniqueName( smtk::mesh::CollectionPtr collection )
     return false;
     }
 
-  bool needsName = false;
-  if(collection->name().empty())
+
+  std::set< std::string > usedNames;
+  for(const_iterator i = this->m_collector->begin(); i != this->m_collector->end(); ++i)
     {
-    //fast code path, the collection name is empty, so we don't need to check
-    //if the existing name is unique
-    needsName = true;
-    }
-  else
-    {
-    std::string currentName = collection->name();
-    //slow path, we have to determine if the current name is unique or not
-    for(const_iterator i = this->m_collector->begin();
-      i != this->m_collector->end() && needsName == false;
-      ++i)
+    if(i->second != collection)
       {
-      if(i->second != collection)
-        {
-        needsName = ( i->second->name() == currentName );
-        }
+      usedNames.insert( i->second->name() );
       }
     }
 
-  if(needsName)
+  const bool nameAlreadyUsed = ( usedNames.find(collection->name()) != usedNames.end() );
+  const bool nameEmpty = ( collection->name().empty() );
+
+  if(nameAlreadyUsed || nameEmpty )
     {
-    //time to generate a new name
-    collection->name( this->m_nameGenerator->next() );
+    //time to generate a new name, we pass the number of existing meshes
+    //to
+    collection->name( this->m_nameGenerator->next(usedNames) );
     }
 
   return true;
