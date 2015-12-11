@@ -928,12 +928,22 @@ void QEntityItemModel::updateChildPhrases(
   for (smtk::model::DescriptivePhrases::iterator it = origSubs.begin();
     it != origSubs.end(); ++it, ++remIdx)
     {
-    EntityRef related = (*it)->relatedEntity();
     found = false;
+    EntityRef related = (*it)->relatedEntity();
     for (smtk::model::DescriptivePhrases::iterator nit = newSubs.begin();
       nit != newSubs.end(); ++nit)
       {
-      if(related == (*nit)->relatedEntity())
+      if((*it)->phraseType() != (*nit)->phraseType())
+        continue;
+      if( // mesh phrases 
+        ((*it)->phraseType() == MESH_SUMMARY &&
+        (((*it)->relatedMeshCollection() &&
+           (*it)->relatedMeshCollection()->entity() == (*nit)->relatedMeshCollection()->entity()) ||
+        (!(*it)->relatedMesh().is_empty() && (*it)->relatedMesh() == (*nit)->relatedMesh())))
+        ||
+        // model phrases
+        ((*it)->phraseType() != MESH_SUMMARY && related == (*nit)->relatedEntity())
+        )
         {
         found = true;
         break;
@@ -950,7 +960,18 @@ void QEntityItemModel::updateChildPhrases(
   for (smtk::model::DescriptivePhrases::iterator it = newSubs.begin();
     it != newSubs.end(); ++it, ++newIdx)
     {
-    int origId = phrase->argFindChild((*it)->relatedEntity());
+    int origId = -1;
+    if((*it)->phraseType() == MESH_SUMMARY)
+      {
+      if((*it)->relatedMeshCollection())
+        origId = phrase->argFindChild((*it)->relatedMeshCollection());
+      else
+        origId = phrase->argFindChild((*it)->relatedMesh());
+      }
+    else
+      {
+      origId = phrase->argFindChild((*it)->relatedEntity());
+      }
     if( origId < 0 )
       newDphrs.push_back(std::make_pair(*it, newIdx));
     }
