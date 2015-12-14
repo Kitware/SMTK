@@ -49,14 +49,15 @@ WriteOperator::WriteOperator()
 
 bool WriteOperator::ableToOperate()
 {
-  smtk::model::Model model;
+  smtk::model::Models models =
+    this->specification()->associatedModelEntities<smtk::model::Models>();
+
   bool able2Op =
     this->ensureSpecification() &&
     // The SMTK model must be valid
-    (model = this->specification()->findModelEntity("model")
-      ->value().as<smtk::model::Model>()).isValid() &&
+    (models.size() > 0 && models[0].isValid() &&
     // The CMB model must exist
-    this->discreteSession()->findModelEntity(model.entity());
+    this->discreteSession()->findModelEntity(models[0].entity()));
   if(!able2Op)
     return false;
 
@@ -74,8 +75,12 @@ OperatorResult WriteOperator::operateInternal()
   Session* opsession = this->discreteSession();
 
   // ableToOperate should have verified that the model exists
-  smtk::model::Model model = this->specification()->
-    findModelEntity("model")->value().as<smtk::model::Model>();
+  smtk::model::Models models =
+    this->specification()->associatedModelEntities<smtk::model::Models>();
+  if (models.size() == 0)
+    return this->createResult(OPERATION_FAILED);
+
+  smtk::model::Model model = models[0];
   vtkDiscreteModelWrapper* modelWrapper =
     opsession->findModelEntity(model.entity());
 
