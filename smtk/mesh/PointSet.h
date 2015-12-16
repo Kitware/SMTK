@@ -22,10 +22,10 @@ namespace mesh {
 
 class SMTKCORE_EXPORT PointSet
 {
-  friend PointSet set_intersect( const PointSet& a, const PointSet& b);
-  friend PointSet set_difference( const PointSet& a, const PointSet& b);
-  friend PointSet set_union( const PointSet& a, const PointSet& b );
-  friend void for_each( const PointSet& a, PointForEach& filter);
+  friend SMTKCORE_EXPORT PointSet set_intersect( const PointSet& a, const PointSet& b);
+  friend SMTKCORE_EXPORT PointSet set_difference( const PointSet& a, const PointSet& b);
+  friend SMTKCORE_EXPORT PointSet set_union( const PointSet& a, const PointSet& b );
+  friend SMTKCORE_EXPORT void for_each( const PointSet& a, PointForEach& filter);
 public:
   PointSet(const smtk::mesh::CollectionPtr& parent,
            const smtk::mesh::HandleRange& points);
