@@ -28,6 +28,7 @@ add_library(smtkExodusSession ${exodusSrcs})
 target_link_libraries(smtkExodusSession
   LINK_PUBLIC
     smtkCore
+    vtkCommonDataModel
   LINK_PRIVATE
     vtkIOExodus
     vtkIONetCDF
@@ -36,7 +37,6 @@ target_link_libraries(smtkExodusSession
     vtkFiltersGeneral
     vtkIOParallelExodus
     vtkFiltersGeometry
-    vtkCommonDataModel
     ${Boost_LIBRARIES}
 )
 smtk_export_header(smtkExodusSession Exports.h)
