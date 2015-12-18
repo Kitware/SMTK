@@ -62,22 +62,11 @@ include(FindHashFunctor)
 
 # Set the directory where the binaries will be stored
 set(EXECUTABLE_OUTPUT_PATH
-  ${PROJECT_BINARY_DIR}/bin
-  CACHE PATH
-  "Directory where all executable will be stored"
-)
+  ${PROJECT_BINARY_DIR}/bin)
 
 # Set the directory where the libraries will be stored
 set(LIBRARY_OUTPUT_PATH
-  ${PROJECT_BINARY_DIR}/lib
-  CACHE PATH
-  "Directory where all the libraries will be stored"
-)
-
-mark_as_advanced(
-  EXECUTABLE_OUTPUT_PATH
-  LIBRARY_OUTPUT_PATH
-)
+  ${PROJECT_BINARY_DIR}/lib)
 
 include(CMakeDependentOption)
 

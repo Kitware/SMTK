@@ -5,6 +5,8 @@
 #define __func__ __FUNCTION__
 #endif
 
+#include "moab_export.h"
+
 #include "moab/Types.hpp"
 
 #include <sstream>
@@ -17,18 +19,23 @@ namespace moab {
 enum ErrorType {MB_ERROR_TYPE_NEW_GLOBAL = 0, MB_ERROR_TYPE_NEW_LOCAL = 1, MB_ERROR_TYPE_EXISTING = 2};
 
 //! Initialize MOAB error handler (e.g. create a utility object for printing error output)
+MOAB_EXPORT
 void MBErrorHandler_Init();
 
 //! Finalize MOAB error handler (e.g. delete the utility object for printing error output)
+MOAB_EXPORT
 void MBErrorHandler_Finalize();
 
 //! Indicates whether MBErrorHandler_Init has been called
+MOAB_EXPORT
 bool MBErrorHandler_Initialized();
 
 //! Get information about the last error
+MOAB_EXPORT
 void MBErrorHandler_GetLastError(std::string& error);
 
 //! Routine that is called to create a new error or handle an existing one
+MOAB_EXPORT
 ErrorCode MBError(int line, const char* func, const char* file, const char* dir,
                   ErrorCode err_code, const char* err_msg, ErrorType err_type);
 
