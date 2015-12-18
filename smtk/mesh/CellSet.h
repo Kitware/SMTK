@@ -35,12 +35,12 @@ namespace mesh {
 //a new MeshSet using Collection::createMesh.
 class SMTKCORE_EXPORT CellSet
 {
-  friend CellSet set_intersect( const CellSet& a, const CellSet& b);
-  friend CellSet set_difference( const CellSet& a, const CellSet& b);
-  friend CellSet set_union( const CellSet& a, const CellSet& b );
-  friend CellSet point_intersect( const CellSet& a, const CellSet& b, ContainmentType t);
-  friend CellSet point_difference( const CellSet& a, const CellSet& b, ContainmentType t);
-  friend void for_each( const CellSet& a, CellForEach& filter);
+  friend SMTKCORE_EXPORT CellSet set_intersect( const CellSet& a, const CellSet& b);
+  friend SMTKCORE_EXPORT CellSet set_difference( const CellSet& a, const CellSet& b);
+  friend SMTKCORE_EXPORT CellSet set_union( const CellSet& a, const CellSet& b );
+  friend SMTKCORE_EXPORT CellSet point_intersect( const CellSet& a, const CellSet& b, ContainmentType t);
+  friend SMTKCORE_EXPORT CellSet point_difference( const CellSet& a, const CellSet& b, ContainmentType t);
+  friend SMTKCORE_EXPORT void for_each( const CellSet& a, CellForEach& filter);
   friend class Collection; //required for creation of new meshes, deletion of cells
 public:
 
