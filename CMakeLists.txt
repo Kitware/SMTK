@@ -470,7 +470,8 @@ export(PACKAGE SMTK)
 #
 # Required to happen before we include the docs directory
 set(MOAB_ROOT_DIR "${MOAB_ROOT_DIR}")
-set(SMTK_MODULE_DIR "${CMAKE_BINARY_DIR}/lib/cmake/SMTK")
+set(SMTK_VTK_MODULE_DIR "${CMAKE_BINARY_DIR}/lib/cmake/SMTK")
+set(SMTK_MODULE_DIR "${PROJECT_SOURCE_DIR}/CMake")
 set(SMTK_CONFIG_DIR "${PROJECT_BINARY_DIR}")
 configure_file(
   ${PROJECT_SOURCE_DIR}/CMake/SMTKConfig.cmake.in
@@ -483,6 +484,7 @@ configure_file(
 # Setup the config file for exports that stores what other thirdparty
 # packages we need to search for ( MOAB, Remus, etc ) for when using the
 # install version of smtk
+set(SMTK_VTK_MODULE_DIR "\${CMAKE_CURRENT_LIST_DIR}")
 set(SMTK_MODULE_DIR "\${CMAKE_CURRENT_LIST_DIR}")
 set(SMTK_CONFIG_DIR "\${CMAKE_CURRENT_LIST_DIR}")
 configure_file(
