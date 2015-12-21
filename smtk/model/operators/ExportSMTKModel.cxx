@@ -61,7 +61,7 @@ smtk::model::OperatorResult ExportSMTKModel::operateInternal()
     }
   
   cJSON* top = cJSON_CreateObject();
-  cJSON_AddItemToObject(top, "type", cJSON_CreateString("Session"));
+  cJSON_AddItemToObject(top, "type", cJSON_CreateString("SMTK_Session"));
 
   // Add the output smtk model name to the model "smtk_url", so that the individual session can
   // use that name to construct a filename for saving native models of the session.

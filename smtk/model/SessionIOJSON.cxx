@@ -49,10 +49,21 @@ int SessionIOJSON::importJSON(ManagerPtr modelMgr,
   int status = 0;
   smtk::common::UUIDs models =
     modelMgr->entitiesMatchingFlags(smtk::model::MODEL_ENTITY);
+
+  cJSON* modelsObj = cJSON_GetObjectItem(sessionRec, "models");
+  if (!modelsObj)
+    {
+    smtkInfoMacro(modelMgr->log(), "Expecting a \"models\" entry!");
+    return status;
+    }
+
   cJSON* modelentry;
   // import all model entites, should only have meta info
-  for (modelentry = sessionRec->child; modelentry; modelentry = modelentry->next)
+  for (modelentry = modelsObj->child; modelentry; modelentry = modelentry->next)
     {
+    if (!modelentry->string || !modelentry->string[0])
+      continue;
+
     smtk::common::UUID modelid = smtk::common::UUID(modelentry->string);
     if (modelid.isNull())
       {
@@ -132,6 +143,9 @@ int SessionIOJSON::exportJSON(ManagerPtr modelMgr,
                               const smtk::common::UUIDs& modelIds,
                               cJSON* sessionRec)
 {
+  cJSON* jmodels = cJSON_CreateObject();
+  cJSON_AddItemToObject(sessionRec, "models", jmodels);
+
   // we will write each model seperately
   smtk::common::UUIDs::const_iterator modit;
   for(modit = modelIds.begin(); modit != modelIds.end(); ++modit)
@@ -159,7 +173,7 @@ int SessionIOJSON::exportJSON(ManagerPtr modelMgr,
     // When writing a single collection, all its MeshSets will also be written out.
     smtk::io::ExportJSON::forModelMeshes(*modit, jmodel, modelMgr);
 
-    cJSON_AddItemToObject(sessionRec, modit->toString().c_str(), jmodel);
+    cJSON_AddItemToObject(jmodels, modit->toString().c_str(), jmodel);
     }
   return 1;
 }

@@ -520,6 +520,7 @@ int ExportJSON::forManagerSessionPartial(const smtk::common::UUID& sessionid,
 
   cJSON* sess = cJSON_CreateObject();
   cJSON_AddItemToObject(node, sessionid.toString().c_str(), sess);
+  cJSON_AddStringToObject(sess, "type", "session");
   cJSON_AddStringToObject(sess, "name", session->name().c_str());
 
   SessionIOJSONPtr delegate =

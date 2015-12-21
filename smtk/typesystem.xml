@@ -101,7 +101,6 @@
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerStringProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerTessellation', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofLocalSession', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofLocalSessions', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofLog', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofMeshesOfModel', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofRemoteSession', unmatched parameter type 'cJSON*'"/>

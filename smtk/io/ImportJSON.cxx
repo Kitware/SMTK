@@ -827,24 +827,8 @@ int ImportJSON::ofLocalSession(cJSON* node, ManagerPtr context)
       sref.session()->createIODelegate("json"));
   if (delegate)
     {
-    status = delegate->importJSON(context, sref.session(), node);
-    }
-  return status;
-}
-
-/**\brief Create local sessions and import JSON into the sessions.
-  *
-  * This iterates over the session child nodes in parent json \a node,
-  * and then call ofLocalSession to import the json description into
-  * each session.
-*/
-int ImportJSON::ofLocalSessions(cJSON* node, ManagerPtr context)
-{
-  int status = 0;
-  cJSON* sessentry;
-  for (sessentry = node->child; sessentry; sessentry = sessentry->next)
-    {
-    status &= ImportJSON::ofLocalSession(sessentry, context);
+    status = 1;
+    //status = delegate->importJSON(context, sref.session(), node);
     }
   return status;
 }

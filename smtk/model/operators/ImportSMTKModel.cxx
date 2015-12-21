@@ -75,9 +75,9 @@ smtk::model::OperatorResult ImportSMTKModel::operateInternal()
     {
     cJSON* mtyp = cJSON_GetObjectItem(root, "type");
     if (mtyp && mtyp->type == cJSON_String && mtyp->valuestring &&
-       !strcmp(mtyp->valuestring,"Session"))
+       !strcmp(mtyp->valuestring,"SMTK_Session"))
       {
-      status = smtk::io::ImportJSON::ofLocalSessions(root, this->manager());
+      status = smtk::io::ImportJSON::ofLocalSession(root->child, this->manager());
       }
     }
 
