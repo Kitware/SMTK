@@ -1,6 +1,6 @@
 #Setup the CMake module paths
-list(APPEND CMAKE_MODULE_PATH "@SMTK_MODULE_DIR@")
-set(smtk_module_dir "@SMTK_MODULE_DIR@/Modules")
+list(APPEND CMAKE_MODULE_PATH "@SMTK_MODULE_DIR@;@SMTK_VTK_MODULE_DIR@")
+set(smtk_module_dir "@SMTK_VTK_MODULE_DIR@/Modules")
 if(IS_DIRECTORY "${smtk_module_dir}")
   list(APPEND CMAKE_MODULE_PATH "${smtk_module_dir}")
   file(GLOB config_files RELATIVE "${smtk_module_dir}" "${smtk_module_dir}/*.cmake")
