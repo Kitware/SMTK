@@ -459,7 +459,7 @@ install(
   FILE SMTKTargets.cmake
 )
 
-export(PACKAGE SMTK)
+export(EXPORT SMTK FILE "${PROJECT_BINARY_DIR}/SMTKTargets.cmake")
 
 ################################################################################
 # Create a build directory package configuration file
