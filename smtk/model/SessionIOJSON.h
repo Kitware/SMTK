@@ -26,6 +26,7 @@ class SMTKCORE_EXPORT SessionIOJSON : public SessionIO
 {
 public:
   smtkTypeMacro(SessionIOJSON);
+  smtkCreateMacro(SessionIOJSON);
 
   virtual int importJSON(ManagerPtr modelMgr, cJSON* sessionRec);
   virtual int exportJSON(ManagerPtr modelMgr, cJSON* sessionRec);
