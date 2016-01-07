@@ -25,6 +25,7 @@ public:
 
 protected:
   virtual smtk::model::OperatorResult operateInternal();
+
 };
 
   } //namespace model

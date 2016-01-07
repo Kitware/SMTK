@@ -20,26 +20,15 @@ namespace smtk {
   *
   * Subclasses should return 1 on success and 0 on failure.
   */
-// ++ 2 ++
-int SessionIOJSON::importJSON(ManagerPtr modelMgr, cJSON* sessionRec)
-{
-  (void)modelMgr;
-  (void)sessionRec;
-  return 1;
-}
-// -- 2 --
-
-/**\brief Decode information from \a sessionRec for the given \a modelMgr.
-  *
-  * Subclasses should return 1 on success and 0 on failure.
-  */
 int SessionIOJSON::importJSON(ManagerPtr modelMgr,
                               const SessionPtr& session,
-                              cJSON* sessionRec)
+                              cJSON* sessionRec,
+                              bool loadNativeModels)
 {
   (void)modelMgr;
   (void)session;
   (void)sessionRec;
+  (void)loadNativeModels;
   return 1;
 }
 
@@ -48,10 +37,15 @@ int SessionIOJSON::importJSON(ManagerPtr modelMgr,
   * Subclasses should return 1 on success and 0 on failure.
   */
 // ++ 1 ++
-int SessionIOJSON::exportJSON(ManagerPtr modelMgr, cJSON* sessionRec)
+int SessionIOJSON::exportJSON(ManagerPtr modelMgr,
+                              const SessionPtr& session,
+                              cJSON* sessionRec,
+                              bool writeNativeModels)
 {
   (void)modelMgr;
+  (void)session;
   (void)sessionRec;
+  (void)writeNativeModels;
   return 1;
 }
 // -- 1 --
@@ -63,12 +57,14 @@ int SessionIOJSON::exportJSON(ManagerPtr modelMgr, cJSON* sessionRec)
   */
 // ++ 3 ++
 int SessionIOJSON::exportJSON(ManagerPtr modelMgr, const SessionPtr& session,
-                         const common::UUIDs &modelIds, cJSON* sessionRec)
+                         const common::UUIDs &modelIds, cJSON* sessionRec,
+                         bool writeNativeModels)
 {
   (void)modelMgr;
   (void)session;
   (void)modelIds;
   (void)sessionRec;
+  (void)writeNativeModels;
   return 1;
 }
 // -- 3 --

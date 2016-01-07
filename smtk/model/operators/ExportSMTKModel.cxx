@@ -9,27 +9,25 @@
 //=========================================================================
 #include "smtk/model/operators/ExportSMTKModel.h"
 
-#include "smtk/model/Session.h"
-
-#include "smtk/model/CellEntity.h"
-#include "smtk/model/Manager.h"
-#include "smtk/model/Model.h"
-
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
-
 #include "smtk/io/ExportJSON.h"
 #include "smtk/io/ExportJSON.txx"
-#include "cJSON.h"
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
+#include "smtk/model/Session.h"
+#include "smtk/model/CellEntity.h"
+#include "smtk/model/Manager.h"
+#include "smtk/model/Model.h"
 
+#include "boost/filesystem.hpp"
+#include "cJSON.h"
 #include <fstream>
 
 using namespace smtk::model;
-using smtk::attribute::FileItem;
-using smtk::attribute::IntItem;
-using smtk::io::JSONFlags;
+using namespace boost::filesystem;
 
 namespace smtk {
   namespace model {
@@ -39,7 +37,7 @@ smtk::model::OperatorResult ExportSMTKModel::operateInternal()
   smtk::attribute::FileItemPtr filenameItem = this->findFile("filename");
   smtk::attribute::IntItemPtr flagsItem = this->findInt("flags");
 
-  smtk::common::UUIDs models = this->m_specification->associatedModelEntityIds();
+  smtk::model::Models models = this->m_specification->associatedModelEntities<smtk::model::Models>();
   if (models.empty())
     {
     smtkErrorMacro(this->log(), "No valid models selected for export.");
@@ -61,18 +59,32 @@ smtk::model::OperatorResult ExportSMTKModel::operateInternal()
     }
   
   cJSON* top = cJSON_CreateObject();
-  cJSON_AddItemToObject(top, "type", cJSON_CreateString("SMTK_Session"));
+  std::string smtkfilepath = path(filename).parent_path().string();
+  std::string smtkfilename = path(filename).stem().string();
 
   // Add the output smtk model name to the model "smtk_url", so that the individual session can
   // use that name to construct a filename for saving native models of the session.
-  smtk::common::UUIDs::const_iterator modit;
+  smtk::model::Models::const_iterator modit;
   for(modit = models.begin(); modit != models.end(); ++modit)
     {
-    this->manager()->setStringProperty(*modit, "smtk_url", filename);
+    this->manager()->setStringProperty(modit->entity(), "smtk_url", filename);
+
+    // we also want to write out the meshes to new "write_locations"
+    std::vector<smtk::mesh::CollectionPtr> collections =
+      this->manager()->meshes()->associatedCollections(*modit);
+    std::vector<smtk::mesh::CollectionPtr>::const_iterator cit;
+    for(cit = collections.begin(); cit != collections.end(); ++cit)
+      {
+      std::ostringstream outmeshname;
+      outmeshname << smtkfilename << "_" << (*cit)->name() << ".h5m";
+      std::string write_path = (path(smtkfilepath) / path(outmeshname.str())).string();
+      (*cit)->writeLocation(write_path);
+      }
     }
 
   smtk::io::ExportJSON::forManagerSessionPartial(this->session()->sessionId(),
-                                                 models, top, this->manager());
+                                                 this->m_specification->associatedModelEntityIds(),
+                                                 top, this->manager(), true);
 
   char* json = cJSON_Print(top);
   jsonFile << json;

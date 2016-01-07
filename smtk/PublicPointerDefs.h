@@ -129,6 +129,7 @@ namespace smtk
     class MeshPhrase;
     class MeshListPhrase;
     class Model;
+    typedef std::vector<Model> Models;
     class Operator;
     class PropertyValuePhrase;
     class PropertyListPhrase;

@@ -30,23 +30,11 @@ namespace smtk {
   *
   * Subclasses should return 1 on success and 0 on failure.
   */
-// ++ 2 ++
-int SessionIOJSON::importJSON(ManagerPtr modelMgr, cJSON* sessionRec)
-{
-  (void)modelMgr;
-  (void)sessionRec;
-  return 1;
-}
-
-/**\brief Decode information from \a sessionRec for the given \a modelMgr.
-  *
-  * Subclasses should return 1 on success and 0 on failure.
-  */
 int SessionIOJSON::importJSON(ManagerPtr modelMgr,
                               const SessionPtr& session,
-                              cJSON* sessionRec)
+                              cJSON* sessionRec,
+                              bool loadNativeModels)
 {
-  int status = 0;
   smtk::common::UUIDs models =
     modelMgr->entitiesMatchingFlags(smtk::model::MODEL_ENTITY);
 
@@ -54,11 +42,11 @@ int SessionIOJSON::importJSON(ManagerPtr modelMgr,
   if (!modelsObj)
     {
     smtkInfoMacro(modelMgr->log(), "Expecting a \"models\" entry!");
-    return status;
+    return 0;
     }
 
   cJSON* modelentry;
-  // import all model entites, should only have meta info
+  // import all native models model entites, should only have meta info
   for (modelentry = modelsObj->child; modelentry; modelentry = modelentry->next)
     {
     if (!modelentry->string || !modelentry->string[0])
@@ -94,43 +82,102 @@ int SessionIOJSON::importJSON(ManagerPtr modelMgr,
         break;
         }
 
-      std::string nativemodelfile;
-      std::string nativefilekey = modelMgr->hasStringProperty(modelid, "output_native_url") ?
-                                  "output_native_url" :
-                                  (modelMgr->hasStringProperty(modelid, "url") ? "url" : "");
-      if (!nativefilekey.empty())
+      if(loadNativeModels)
         {
-        smtk::model::StringList const& nprop(modelMgr->stringProperty(modelid, nativefilekey));
-        if (!nprop.empty())
+        std::string nativemodelfile;
+        std::string nativefilekey = modelMgr->hasStringProperty(modelid, "output_native_url") ?
+                                    "output_native_url" :
+                                    (modelMgr->hasStringProperty(modelid, "url") ? "url" : "");
+        if (!nativefilekey.empty())
           {
-          nativemodelfile = nprop[0];
+          smtk::model::StringList const& nprop(modelMgr->stringProperty(modelid, nativefilekey));
+          if (!nprop.empty())
+            {
+            nativemodelfile = nprop[0];
+            }
+          }
+
+        if(!nativemodelfile.empty())
+          {
+          // failed to load native model is still ok
+          this->loadNativeModel(modelMgr, session, nativemodelfile);
           }
         }
-
-      if(!nativemodelfile.empty())
-        {
-        // failed to load native model is still ok
-        this->loadNativeModel(modelMgr, session, nativemodelfile);
-        }
       }
+    }
+  int status = this->loadModelsRecord(modelMgr, sessionRec);
+  status &= this->loadMeshesRecord(modelMgr, sessionRec);
+  return status;
+}
 
+/**\brief Parse models info from \a sessionRec for the given \a modelMgr.
+  *
+  * Subclasses should return 1 on success and 0 on failure.
+  */
+int SessionIOJSON::loadModelsRecord(ManagerPtr modelMgr,
+                                    cJSON* sessionRec)
+{
+  cJSON* modelsObj = cJSON_GetObjectItem(sessionRec, "models");
+  if (!modelsObj)
+    {
+    // It's okay if we don't have "models" entry. Could be a record that
+    // did not come from SessionIOJSON;
+    smtkInfoMacro(modelMgr->log(), "Expecting a \"models\" entry!");
+    return 1;
+    }
+
+  int status = 1;
+  cJSON* modelentry;
+  // import all native models model entites, should only have meta info
+  for (modelentry = modelsObj->child; modelentry; modelentry = modelentry->next)
+    {
+    if (!modelentry->string || !modelentry->string[0])
+      continue;
+
+    smtk::common::UUID modelid = smtk::common::UUID(modelentry->string);
+    if (modelid.isNull())
+      {
+      smtkInfoMacro(modelMgr->log(), "Invalid model uuid, skipping!");
+      continue;
+      }
     // model meta info 
     status &= smtk::io::ImportJSON::ofManager(modelentry, modelMgr);
-    // mesh collections related to this model
-    status &= smtk::io::ImportJSON::ofMeshesOfModel(modelentry, modelMgr, true);
     }
 
   return status;
+}
+
+/**\brief Parse meshes info from \a sessionRec for the given \a modelMgr.
+  *
+  * Subclasses should return 1 on success and 0 on failure.
+  */
+int SessionIOJSON::loadMeshesRecord(ManagerPtr modelMgr,
+                                    cJSON* sessionRec)
+{
+  cJSON* meshesObj = cJSON_GetObjectItem(sessionRec, "mesh_collections");
+  if (!meshesObj)
+    {
+    // It's okay if we don't have "mesh_collections" entry. Could be a record that
+    // did not come from SessionIOJSON;
+    smtkInfoMacro(modelMgr->log(), "Expecting a \"mesh_collections\" entry!");
+    return 1;
+    }
+  return smtk::io::ImportJSON::ofMeshesOfModel(sessionRec, modelMgr, true);
 }
 
 /**\brief Encode information into \a sessionRec for the given \a modelMgr.
   *
   * Subclasses should return 1 on success and 0 on failure.
   */
-int SessionIOJSON::exportJSON(ManagerPtr modelMgr, cJSON* sessionRec)
+int SessionIOJSON::exportJSON(ManagerPtr modelMgr,
+                              const SessionPtr& session,
+                              cJSON* sessionRec,
+                              bool writeNativeModels)
 {
   (void)modelMgr;
+  (void)session;
   (void)sessionRec;
+  (void)writeNativeModels;
   return 1;
 }
 
@@ -141,41 +188,97 @@ int SessionIOJSON::exportJSON(ManagerPtr modelMgr, cJSON* sessionRec)
 int SessionIOJSON::exportJSON(ManagerPtr modelMgr,
                               const SessionPtr& session,
                               const smtk::common::UUIDs& modelIds,
-                              cJSON* sessionRec)
+                              cJSON* sessionRec,
+                              bool writeNativeModels)
+{
+  if(writeNativeModels)
+    {
+    // we will write each model seperately
+    smtk::common::UUIDs::const_iterator modit;
+    for(modit = modelIds.begin(); modit != modelIds.end(); ++modit)
+      {
+      smtk::model::Model model(modelMgr, *modit);
+      std::string outNativeFile = this->getOutputFileNameForNativeModel(modelMgr, session, model);
+      if(this->writeNativeModel(modelMgr, session, model, outNativeFile))
+        {
+        modelMgr->setStringProperty(*modit, "output_native_url", outNativeFile);
+        }
+      }
+    }
+
+  this->addModelsRecord(modelMgr, modelIds, sessionRec);
+  this->addMeshesRecord(modelMgr, modelIds, sessionRec);
+  return 1;
+}
+
+/**\brief Add records for \a modelIds to its parent \a sessionRec.
+  *
+  * This will add a "models" record to \a sessionRec, and all models
+  * will be added as children of "models"
+  */
+void SessionIOJSON::addModelsRecord(const ManagerPtr& modelMgr,
+                                    const smtk::common::UUIDs& modelIds,
+                                    cJSON* sessionRec)
+{
+  smtk::model::Models models;
+  smtk::model::EntityRef::EntityRefsFromUUIDs(models, modelMgr, modelIds);
+  this->addModelsRecord(modelMgr, models, sessionRec);
+}
+
+void SessionIOJSON::addModelsRecord(const ManagerPtr& modelMgr,
+                                    const smtk::model::Models& inModels,
+                                    cJSON* sessionRec)
+
 {
   cJSON* jmodels = cJSON_CreateObject();
   cJSON_AddItemToObject(sessionRec, "models", jmodels);
 
-  // we will write each model seperately
-  smtk::common::UUIDs::const_iterator modit;
-  for(modit = modelIds.begin(); modit != modelIds.end(); ++modit)
+  // add record for each model
+  smtk::model::Models::const_iterator modit;
+  for(modit = inModels.begin(); modit != inModels.end(); ++modit)
     {
-    smtk::model::Model model(modelMgr, *modit);
-    std::string outNativeFile;
-    if(this->writeNativeModel(
-      modelMgr, session, model, outNativeFile))
-      {
-      modelMgr->setStringProperty(*modit, "output_native_url", outNativeFile);
-      }
-
+    //smtk::model::Model model(modelMgr, *modit);
     cJSON* jmodel = cJSON_CreateObject();
 
-    cJSON_AddStringToObject(jmodel, "type", "model");
-    cJSON_AddStringToObject(jmodel, "name", model.name().c_str());
     // Write out all entities of the model, only the meta data
     smtk::model::Models currentmodels;
-    currentmodels.push_back(model);
+    currentmodels.push_back(*modit);
     smtk::io::ExportJSON::forEntities(jmodel, currentmodels,
                                       smtk::model::ITERATE_MODELS,
-                                      smtk::io::JSON_CLIENT_DATA);
+                                      static_cast<smtk::io::JSONFlags>(
+                                        smtk::io::JSON_ENTITIES | smtk::io::JSON_PROPERTIES));
 
+    cJSON_AddItemToObject(jmodels, modit->entity().toString().c_str(), jmodel);
+    }
+}
+
+/**\brief Add records for meshes of \a modelIds to its parent \a sessionRec.
+  *
+  * This will add a "mesh_collections" record to \a sessionRec, and all meshes
+  * will be added as children of "mesh_collections"
+  */
+void SessionIOJSON::addMeshesRecord(const ManagerPtr& modelMgr,
+                                    const smtk::common::UUIDs& modelIds,
+                                    cJSON* sessionRec)
+{
+  smtk::model::Models models;
+  smtk::model::EntityRef::EntityRefsFromUUIDs(models, modelMgr, modelIds);
+  this->addMeshesRecord(modelMgr, models, sessionRec);
+}
+
+void SessionIOJSON::addMeshesRecord(const ManagerPtr& modelMgr,
+                                    const smtk::model::Models& inModels,
+                                    cJSON* sessionRec)
+
+{
+  // add record for each model
+  smtk::model::Models::const_iterator modit;
+  for(modit = inModels.begin(); modit != inModels.end(); ++modit)
+    {
     // Write out related mesh collections.
     // When writing a single collection, all its MeshSets will also be written out.
-    smtk::io::ExportJSON::forModelMeshes(*modit, jmodel, modelMgr);
-
-    cJSON_AddItemToObject(jmodels, modit->toString().c_str(), jmodel);
+    smtk::io::ExportJSON::forModelMeshes(modit->entity(), sessionRec, modelMgr);
     }
-  return 1;
 }
 
 /**\brief Create and write to a file (\a outNativeFile) for the given \a model.
@@ -185,7 +288,7 @@ int SessionIOJSON::exportJSON(ManagerPtr modelMgr,
 int SessionIOJSON::writeNativeModel(smtk::model::ManagerPtr modelMgr,
                               const smtk::model::SessionPtr& sess,
                               const smtk::model::Model& model,
-                              std::string& outNativeFile)
+                              const std::string& outNativeFile)
 {
   // if this is not a valid session, return;
   if(!sess)
@@ -194,6 +297,35 @@ int SessionIOJSON::writeNativeModel(smtk::model::ManagerPtr modelMgr,
     return 0;
     }
 
+  smtk::model::OperatorPtr writeOp = sess->op("write");
+  if (!writeOp)
+    {
+    smtkInfoMacro(modelMgr->log(), "Failed to create a write operator to write the model for native kernel!");
+    return 0;
+    }
+  writeOp->specification()->findFile("filename")->setValue(outNativeFile);
+  writeOp->specification()->associateEntity(model);
+
+  smtk::model::OperatorResult opresult = writeOp->operate();
+  if (opresult->findInt("outcome")->value() !=
+      smtk::model::OPERATION_SUCCEEDED)
+    {
+    smtkInfoMacro(modelMgr->log(), "Failed to write the model for native kernel!");
+    return 0;
+    }
+
+  return 1;
+}
+
+/**\brief Get or construct a filename for saving the native model.
+  *
+  * Return a full file path.
+  */
+std::string SessionIOJSON::getOutputFileNameForNativeModel(
+  smtk::model::ManagerPtr modelMgr,
+  const smtk::model::SessionPtr& sess,
+  const smtk::model::Model& model) const
+{
   std::string smtkfilepath, smtkfilename, origfilename, origfileext;
   if (modelMgr->hasStringProperty(model.entity(), "smtk_url"))
     {
@@ -222,26 +354,8 @@ int SessionIOJSON::writeNativeModel(smtk::model::ManagerPtr modelMgr,
 
   std::ostringstream outfilename;
   outfilename << smtkfilename << "_native" << origfileext;
-  outNativeFile = (path(smtkfilepath) / path(outfilename.str())).string();
+  return (path(smtkfilepath) / path(outfilename.str())).string();
 
-  smtk::model::OperatorPtr writeOp = sess->op("write");
-  if (!writeOp)
-    {
-    smtkInfoMacro(modelMgr->log(), "Failed to create a write operator to write the model for native kernel!");
-    return 0;
-    }
-  writeOp->specification()->findFile("filename")->setValue(outNativeFile);
-  writeOp->specification()->associateEntity(model);
-
-  smtk::model::OperatorResult opresult = writeOp->operate();
-  if (opresult->findInt("outcome")->value() !=
-      smtk::model::OPERATION_SUCCEEDED)
-    {
-    smtkInfoMacro(modelMgr->log(), "Failed to write the model for native kernel!");
-    return 0;
-    }
-
-  return 1;
 }
 
 /**\brief Load the native model given the filename (\a inNativeFile).

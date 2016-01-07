@@ -22,7 +22,9 @@
     </AttDef>
     <!-- Result -->
     <AttDef Type="result(import smtk model)" BaseType="result">
+      <ItemDefinitions>
         <ModelEntity Name="mesh_created" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
+      </ItemDefinitions>
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>

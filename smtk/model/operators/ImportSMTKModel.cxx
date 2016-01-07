@@ -73,40 +73,37 @@ smtk::model::OperatorResult ImportSMTKModel::operateInternal()
   cJSON* root = cJSON_Parse(data.c_str());
   if (root && root->type == cJSON_Object && root->child)
     {
-    cJSON* mtyp = cJSON_GetObjectItem(root, "type");
-    if (mtyp && mtyp->type == cJSON_String && mtyp->valuestring &&
-       !strcmp(mtyp->valuestring,"SMTK_Session"))
-      {
-      status = smtk::io::ImportJSON::ofLocalSession(root->child, this->manager());
-      }
+    status = smtk::io::ImportJSON::ofLocalSession(root->child, this->manager(), true);
     }
 
   OperatorResult result = this->createResult( status ? OPERATION_SUCCEEDED :
                                               OPERATION_FAILED);
+  cJSON* modelsObj = cJSON_GetObjectItem(root->child, "models");
   // figure out new models and meshes
-  if(status)
+  if(status && modelsObj)
     {
     smtk::model::EntityRefArray modelModArr;
     smtk::model::EntityRefArray modelCreArr;
     smtk::model::EntityRefArray meshArr;
     smtk::mesh::ManagerPtr meshMgr = this->manager()->meshes();
-    for (cJSON* sessentry = root->child; sessentry; sessentry = sessentry->next)
+    cJSON* modelentry;
+    // import all native models model entites, should only have meta info
+    for (modelentry = modelsObj->child; modelentry; modelentry = modelentry->next)
       {
-      for (cJSON* modelentry = sessentry->child; modelentry; modelentry = modelentry->next)
-        {
-        smtk::common::UUID modId(modelentry->string);
-        smtk::model::Model curModel(this->manager(), modId);
-        bool existing = std::find(models.begin(), models.end(), curModel) != models.end();
-        if(existing)
-          modelModArr.push_back(curModel);
-        else
-          modelCreArr.push_back(curModel);
+      if (!modelentry->string || !modelentry->string[0])
+        continue;
+      smtk::common::UUID modId(modelentry->string);
+      smtk::model::Model curModel(this->manager(), modId);
+      bool existing = std::find(models.begin(), models.end(), curModel) != models.end();
+      if(existing)
+        modelModArr.push_back(curModel);
+      else
+        modelCreArr.push_back(curModel);
 
-        if(meshMgr->associatedCollections(curModel).size() > 0)
-          meshArr.push_back(curModel);
-
-        }
+      if(meshMgr->associatedCollections(curModel).size() > 0)
+        meshArr.push_back(curModel);
       }
+
     this->addEntitiesToResult(result, modelModArr, MODIFIED);
     this->addEntitiesToResult(result, modelCreArr, CREATED);
     result->findModelEntity("mesh_created")->setValues(meshArr.begin(), meshArr.end());

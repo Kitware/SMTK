@@ -30,12 +30,13 @@ public:
   smtkCreateMacro(SessionIOJSON);
   virtual ~SessionIOJSON() { }
 
-  virtual int importJSON(ManagerPtr modelMgr, cJSON* sessionRec);
   virtual int importJSON(ManagerPtr modelMgr, const SessionPtr& session,
-                         cJSON* sessionRec);
-  virtual int exportJSON(ManagerPtr modelMgr, cJSON* sessionRec);
+                         cJSON* sessionRec, bool loadNativeModels = false);
+  virtual int exportJSON(ManagerPtr modelMgr, const SessionPtr& sessPtr,
+                         cJSON* sessionRec, bool writeNativeModels = false);
   virtual int exportJSON(ManagerPtr modelMgr, const SessionPtr& session,
-                         const common::UUIDs &modelIds, cJSON* sessionRec);
+                         const common::UUIDs &modelIds, cJSON* sessionRec,
+                         bool writeNativeModels = false);
 };
 // -- 1 --
 

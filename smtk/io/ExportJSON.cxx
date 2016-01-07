@@ -488,7 +488,8 @@ int ExportJSON::forManagerIntegerProperties(const smtk::common::UUID& uid, cJSON
 
 int ExportJSON::forManagerSession(const smtk::common::UUID& uid,
                                   cJSON* node,
-                                  ManagerPtr modelMgr)
+                                  ManagerPtr modelMgr,
+                                  bool writeNativeModels)
 {
   int status = 1;
   SessionPtr session = SessionRef(modelMgr, uid).session();
@@ -503,7 +504,7 @@ int ExportJSON::forManagerSession(const smtk::common::UUID& uid,
     smtk::dynamic_pointer_cast<SessionIOJSON>(
       session->createIODelegate("json"));
   if (delegate)
-    status &= delegate->exportJSON(modelMgr, sess);
+    status &= delegate->exportJSON(modelMgr, session, sess, writeNativeModels);
   status &= ExportJSON::forOperatorDefinitions(session->operatorSystem(), sess);
   return status;
 }
@@ -511,7 +512,8 @@ int ExportJSON::forManagerSession(const smtk::common::UUID& uid,
 int ExportJSON::forManagerSessionPartial(const smtk::common::UUID& sessionid,
                                          const smtk::common::UUIDs& modelIds,
                                          cJSON* node,
-                                         ManagerPtr modelMgr)
+                                         ManagerPtr modelMgr,
+                                         bool writeNativeModels)
 {
   int status = 1;
   SessionPtr session = SessionRef(modelMgr, sessionid).session();
@@ -527,7 +529,7 @@ int ExportJSON::forManagerSessionPartial(const smtk::common::UUID& sessionid,
     smtk::dynamic_pointer_cast<SessionIOJSON>(
       session->createIODelegate("json"));
   if (delegate)
-    status &= delegate->exportJSON(modelMgr, session, modelIds, sess);
+    status &= delegate->exportJSON(modelMgr, session, modelIds, sess, writeNativeModels);
   status &= ExportJSON::forOperatorDefinitions(session->operatorSystem(), sess);
   return status;
 }
@@ -767,8 +769,12 @@ int ExportJSON::forMeshCollections(
     return 0;
     }
   int status = 1;
-  cJSON* mesh = cJSON_CreateObject();
-  cJSON_AddItemToObject(pnode, "mesh_collections", mesh);
+  cJSON* mesh = cJSON_GetObjectItem(pnode, "mesh_collections");
+  if(!mesh)
+    {
+    mesh = cJSON_CreateObject();
+    cJSON_AddItemToObject(pnode, "mesh_collections", mesh);
+    }
 
   smtk::common::UUIDs::const_iterator cit;
   for(cit = collectionIds.begin(); cit != collectionIds.end(); ++cit)

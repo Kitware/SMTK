@@ -45,7 +45,7 @@ public:
   static int ofManagerIntegerProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
   static int forManagerMeshes(smtk::mesh::ManagerPtr meshes, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int ofRemoteSession(cJSON*, smtk::model::DefaultSessionPtr destSession, smtk::model::ManagerPtr context);
-  static int ofLocalSession(cJSON*, smtk::model::ManagerPtr context);
+  static int ofLocalSession(cJSON*, smtk::model::ManagerPtr context, bool loadNativeModels = false);
 
   static int ofOperator(cJSON* node, smtk::model::OperatorPtr& op, smtk::model::ManagerPtr context);
   static int ofOperatorResult(cJSON* node, smtk::model::OperatorResult& resOut, smtk::model::RemoteOperatorPtr op);
