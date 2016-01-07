@@ -17,7 +17,7 @@
 #  REMUS_INCLUDE_DIRS        The location of Remus headers
 
 find_path(REMUS_ROOT_DIR
-    NAMES include/remus/version.h
+    NAMES include/remus/Version.h
 )
 
 find_path(REMUS_INCLUDE_DIR
