@@ -17,11 +17,13 @@
 #  REMUS_INCLUDE_DIRS        The location of Remus headers
 
 find_path(REMUS_ROOT_DIR
-    NAMES include/remus/Version.h
+    NAMES include/remus/version.h
+          include/remus/Version.h
 )
 
 find_path(REMUS_INCLUDE_DIR
     NAMES remus/version.h
+          remus/Version.h
     HINTS ${REMUS_ROOT_DIR}/include/
 )
 
@@ -35,10 +37,6 @@ if(REMUS_FOUND)
   #now we create the import targets to be used
   include(${REMUS_ROOT_DIR}/lib/Remus-targets.cmake)
 
-  #find boost since it could be in a location that isn't part of our
-  #include paths
-  #cmb_find_boost()
-
   #next find ZeroMQ since it could be in a location that isn't part of our
   #include paths
   find_package(ZeroMQ REQUIRED)
@@ -46,6 +44,7 @@ if(REMUS_FOUND)
   include_directories(SYSTEM
       ${Boost_INCLUDE_DIRS}
       ${ZeroMQ_INCLUDE_DIRS})
+
 endif()
 
 set(REMUS_INCLUDE_DIRS ${REMUS_INCLUDE_DIR})
