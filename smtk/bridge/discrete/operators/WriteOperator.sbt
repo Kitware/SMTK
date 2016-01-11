@@ -4,10 +4,15 @@
   <Definitions>
     <!-- Operator -->
     <AttDef Type="write" BaseType="operator">
+      <AssociationsDef Name="Model" NumberOfRequiredValues="1">
+        <MembershipMask>model</MembershipMask>
+      </AssociationsDef>
       <ItemDefinitions>
+<!--
         <ModelEntity Name="model" NumberOfRequiredValues="1">
           <MembershipMask>model</MembershipMask>
         </ModelEntity>
+-->
         <File Name="filename" NumberOfRequiredValues="1"
           ShouldExist="false"
           FileFilters="Conceptual Model Builder (*.cmb)">
