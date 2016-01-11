@@ -48,7 +48,7 @@ smtk::model::OperatorResult ImportSMTKModel::operateInternal()
     }
 
 //  smtkDebugMacro("Reading a JSON file.");
-  std::ifstream file(filename);
+  std::ifstream file(filename.c_str());
   if (!file.good())
     {
     smtkErrorMacro(this->log(), "Could not open file \"" << filename << "\".\n");
