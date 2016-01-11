@@ -86,8 +86,29 @@ smtk::model::OperatorResult ImportSMTKModel::operateInternal()
     smtk::model::EntityRefArray modelCreArr;
     smtk::model::EntityRefArray meshArr;
     smtk::mesh::ManagerPtr meshMgr = this->manager()->meshes();
-    cJSON* modelentry;
+
+    // cache number of models and meshes
+    smtk::model::Models newmodels =
+      this->manager()->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY);
+    smtk::model::Models::const_iterator newit;
+    for(newit = newmodels.begin(); newit != newmodels.end(); ++newit)
+      {
+      // ignore submodels
+      if(newit->parent().isModel())
+        continue;
+      bool existing = std::find(models.begin(), models.end(), *newit) != models.end();
+      if(existing)
+        modelModArr.push_back(*newit);
+      else
+        modelCreArr.push_back(*newit);
+
+      if(meshMgr->associatedCollections(*newit).size() > 0)
+        meshArr.push_back(*newit);
+      }
+
+/*
     // import all native models model entites, should only have meta info
+    cJSON* modelentry;
     for (modelentry = modelsObj->child; modelentry; modelentry = modelentry->next)
       {
       if (!modelentry->string || !modelentry->string[0])
@@ -103,7 +124,7 @@ smtk::model::OperatorResult ImportSMTKModel::operateInternal()
       if(meshMgr->associatedCollections(curModel).size() > 0)
         meshArr.push_back(curModel);
       }
-
+*/
     this->addEntitiesToResult(result, modelModArr, MODIFIED);
     this->addEntitiesToResult(result, modelCreArr, CREATED);
     result->findModelEntity("mesh_created")->setValues(meshArr.begin(), meshArr.end());
