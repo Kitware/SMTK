@@ -48,6 +48,8 @@ set(modelSrcs
   operators/CloseModel.cxx
   operators/SetProperty.cxx
   operators/ExportModelJSON.cxx
+  operators/ExportSMTKModel.cxx
+  operators/ImportSMTKModel.cxx
   )
 
 set(modelHeaders
@@ -112,6 +114,8 @@ smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/DefaultSession.json" defSessionJS
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CloseModel.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetProperty.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportModelJSON.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportSMTKModel.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ImportSMTKModel.sbt" defOpXML)
 
 #install the headers
 smtk_public_headers(${modelHeaders})

@@ -20,6 +20,7 @@
 #  pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
 #endif
 #include "remus/server/Server.h"
+#include "remus/server/PortNumbers.h"
 #include "remus/server/WorkerFactory.h"
 #ifndef _MSC_VER
 #  pragma GCC diagnostic pop
@@ -59,8 +60,8 @@ struct ProgOpts
   ProgOpts()
     :
       m_printhelp(false), m_clientSet(false), m_workerSet(false),
-      m_clientHost("127.0.0.1"), m_clientPort(remus::SERVER_CLIENT_PORT),
-      m_workerHost("127.0.0.1"), m_workerPort(remus::SERVER_WORKER_PORT)
+      m_clientHost("127.0.0.1"), m_clientPort(remus::server::CLIENT_PORT),
+      m_workerHost("127.0.0.1"), m_workerPort(remus::server::WORKER_PORT)
     {
     smtk::common::Paths paths;
     this->m_search = paths.workerSearchPaths();
@@ -159,13 +160,16 @@ int main (int argc, char* argv[])
   for (it = mtypes.begin(); it != mtypes.end(); ++it)
     std::cout << "  Worker " << it->inputType() << "->" << it->outputType() << "\n";
 
+  remus::server::Server server(ports, factory);
+  bool valid = server.startBrokeringWithoutSignalHandling();
+
+  //now that the server is brokering, find out what ports it actually bound too
+  ports = server.serverPortInfo();
   std::cout
     << "Listening for clients on " << ports.client().host() << ":" << ports.client().port() << "\n"
     << "Listening for workers on " << ports.worker().host() << ":" << ports.worker().port() << "\n"
     << "...\n";
 
-  remus::server::Server server(ports, factory);
-  bool valid = server.startBrokeringWithoutSignalHandling();
   server.waitForBrokeringToFinish();
   return valid ? 0 : 1;
 }

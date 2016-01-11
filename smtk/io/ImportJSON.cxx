@@ -747,7 +747,7 @@ int ImportJSON::ofRemoteSession(cJSON* node, DefaultSessionPtr destSession, Mana
       destSession->createIODelegate("json"));
   if (delegate)
     {
-    delegate->importJSON(context, node);
+    delegate->importJSON(context, destSession, node);
     }
   return status;
 }
@@ -785,7 +785,7 @@ int ImportJSON::ofRemoteSession(cJSON* node, DefaultSessionPtr destSession, Mana
   * special care must be taken to avoid that behavior when importing
   * a session.
   */
-int ImportJSON::ofLocalSession(cJSON* node, ManagerPtr context)
+int ImportJSON::ofLocalSession(cJSON* node, ManagerPtr context, bool loadNativeModels)
 {
   int status = 0;
   cJSON* opsObj;
@@ -827,7 +827,7 @@ int ImportJSON::ofLocalSession(cJSON* node, ManagerPtr context)
       sref.session()->createIODelegate("json"));
   if (delegate)
     {
-    status = delegate->importJSON(context, node);
+    status = delegate->importJSON(context, sref.session(), node, loadNativeModels);
     }
   return status;
 }

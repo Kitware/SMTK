@@ -652,12 +652,8 @@ bool Session::ensureChildParentMapEntry(vtkDataObject* child, vtkDataObject* par
 // ++ 12 ++
 SessionIOPtr Session::createIODelegate(const std::string& format)
 {
-  if (format == "json")
-    {
-    return SessionIOJSON::create();
-    }
-
-  return SessionIOPtr();
+  // Currently the DefaultSession is handling this.
+  return this->Superclass::createIODelegate(format);
 }
 // -- 12 --
 

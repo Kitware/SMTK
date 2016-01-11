@@ -122,10 +122,20 @@ bool RemusConnection::connectToServer(const std::string& hostname, int port)
     this->m_localServer->startBrokering();
 
     // Connect to the process-local server
-    this->m_conn = remus::client::ServerConnection();
+    const remus::server::ServerPorts& ports = this->m_localServer->serverPortInfo();
+
+    //The server could have bound to a different port than the one requested.
+    //This happens when another remus server is active, so ask the server
+    //for the information on how to connect to it.
+    this->m_conn = remus::client::make_ServerConnection( ports.client().endpoint() );
+    //since the server and client are local they can share the same context
+    this->m_conn.context( ports.context() );
     }
   else
+    {
     this->m_conn = remus::client::ServerConnection(hostname, port);
+    }
+
   this->m_client =
     smtk::shared_ptr<remus::client::Client>(
       new remus::client::Client(this->m_conn));

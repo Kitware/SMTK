@@ -83,8 +83,10 @@ public:
   static int forManagerStringProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forManagerIntegerProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forManagerMeshes(smtk::mesh::ManagerPtr meshes, cJSON*, smtk::model::ManagerPtr modelMgr);
-  static int forManagerSession(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
-  static int forManagerSessionPartial(const smtk::common::UUID& sessionId, const common::UUIDs &modelIds, cJSON*, smtk::model::ManagerPtr modelMgrId);
+  static int forManagerSession(const smtk::common::UUID& sessionId, cJSON*, smtk::model::ManagerPtr modelMgr,
+                               bool writeNativeModels = false);
+  static int forManagerSessionPartial(const smtk::common::UUID& sessionId, const common::UUIDs &modelIds, cJSON*,
+                                      smtk::model::ManagerPtr modelMgrId, bool writeNativeModels = false);
   //static int forModelOperators(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forOperatorDefinitions(smtk::attribute::System* opSys, cJSON*);
   static int forOperator(smtk::model::OperatorSpecification op, cJSON*);
@@ -103,11 +105,18 @@ public:
   static int forSingleCollection(cJSON* mdesc,
                                  smtk::mesh::CollectionPtr collection);
 
-  // Serialize all the smtk::mesh associated with given EntityRefs.
-  static int forMeshes(
+  // Serialize all the input mesh Collections in mesh manager \a meshMgr,
+  // given the mesh \a collectionIds.
+  static int forMeshCollections(
                      cJSON* pnode,
                      const smtk::common::UUIDs& collectionIds,
                      smtk::mesh::ManagerPtr meshMgr);
+
+  // Serialize all the smtk::mesh collections associated with given \a modelid.
+  static int forModelMeshes(
+                     const smtk::common::UUID& modelid,
+                     cJSON* pnode,
+                     smtk::model::ManagerPtr modelMgr);
 
   static int forLog(
     cJSON* logrecordarray,

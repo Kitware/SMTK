@@ -23,8 +23,7 @@
 #include "remus/client/ServerConnection.h"
 
 #include "remus/server/Server.h"
-
-#include "remus/common/remusGlobals.h"
+#include "remus/server/PortNumbers.h"
 
 #include "remus/proto/JobRequirements.h"
 
@@ -75,7 +74,7 @@ public:
 #ifndef SHIBOKEN_SKIP
   bool connectToServer(
     const std::string& hostname = "local",
-    int port = remus::SERVER_CLIENT_PORT);
+    int port = remus::server::CLIENT_PORT);
 #else
   // Shiboken cannot parse the default port and does not
   // properly handle default arguments anyway, so provide
