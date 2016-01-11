@@ -44,7 +44,8 @@ int SessionIOJSON::importJSON(ManagerPtr modelMgr,
     smtkInfoMacro(modelMgr->log(), "Expecting a \"models\" entry!");
     return 0;
     }
-
+  
+  std::map<smtk::common::UUID, std::string> existingURLs;
   cJSON* modelentry;
   // import all native models model entites, should only have meta info
   for (modelentry = modelsObj->child; modelentry; modelentry = modelentry->next)
@@ -104,9 +105,23 @@ int SessionIOJSON::importJSON(ManagerPtr modelMgr,
           }
         }
       }
+    else if(modelMgr->hasStringProperty(modelid, "url"))
+      {
+      smtk::model::StringList const& nprop(modelMgr->stringProperty(modelid, "url"));
+      if (!nprop.empty())
+        {
+        existingURLs[modelid] = nprop[0];
+        }
+      }
     }
   int status = this->loadModelsRecord(modelMgr, sessionRec);
   status &= this->loadMeshesRecord(modelMgr, sessionRec);
+  // recover "url" property for models already loaded
+  std::map<smtk::common::UUID, std::string>::const_iterator mit;
+  for(mit = existingURLs.begin(); mit != existingURLs.end(); ++mit)
+    {
+    modelMgr->setStringProperty(mit->first, "url", mit->second);
+    }
   return status;
 }
 
