@@ -6,7 +6,7 @@
 # MOAB_INCLUDE_DIRS - include directories from which to pick up MOAB includes
 # MOAB_LIBRARIES    - libraries need to link to MOAB; use this in target_link_libraries for MOAB-dependent targets
 # MOAB_CXX, MOAB_CC, MOAB_F77, MOAB_FC - compilers used to compile MOAB
-# MOAB_CXXFLAGS, MOAB_CCFLAGS, MOAB_FFLAGS, MOAB_FCFLAGS - compiler flags used to compile MOAB; possibly need to use these in add_definitions or CMAKE_<LANG>_FLAGS_<MODE> 
+# MOAB_CXXFLAGS, MOAB_CCFLAGS, MOAB_FFLAGS, MOAB_FCFLAGS - compiler flags used to compile MOAB; possibly need to use these in add_definitions or CMAKE_<LANG>_FLAGS_<MODE>
 
 set(MOAB_FOUND 1)
 
@@ -15,7 +15,7 @@ set(MOAB_CC @CC@)
 set(MOAB_FC @FC@)
 set(MOAB_F77 @F77@)
 
-set(BUILD_SHARED_LIBS @BUILD_SHARED_LIBS@)
+set(MOAB_BUILT_SHARED_LIBS @BUILD_SHARED_LIBS@)
 set(MOAB_USE_MPI @MOAB_USE_MPI@)
 set(MPI_DIR "@MPI_DIR@")
 set(MOAB_USE_HDF @MOAB_USE_HDF@)
@@ -51,13 +51,14 @@ set(MOAB_HAS_IMESH "@ENABLE_IMESH@")
 set(MOAB_HAS_MPI "@MOAB_HAS_MPI@")
 
 if(MOAB_USE_HDF)
-  if(EXISTS "@HDF5_DIR@/share/cmake/hdf5/hdf5-config.cmake")
-    include(@HDF5_DIR@/share/cmake/hdf5/hdf5-config.cmake)
+  if(EXISTS "@HDF5_DIR@/hdf5-config.cmake")
+    include(@HDF5_DIR@/hdf5-config.cmake)
   endif()
 endif()
 
-set(MOAB_LIBRARY_DIRS, "@CMAKE_INSTALL_PREFIX@/lib")
+
+set(MOAB_LIBRARY_DIRS "@CMAKE_INSTALL_PREFIX@/lib")
 set(MOAB_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/include")
 set(MOAB_LIBRARIES MOAB)
-set(MOAB_LIBS @LIBS@)
+set(MOAB_LIBS @MOAB_LIBS@)
 

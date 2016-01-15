@@ -35,10 +35,10 @@ typedef std::set<smtk::mesh::MeshSet> MeshSets;
 //and a vector/range of mesh entities
 class SMTKCORE_EXPORT MeshSet
 {
-  friend MeshSet set_intersect( const MeshSet& a, const MeshSet& b);
-  friend MeshSet set_difference( const MeshSet& a, const MeshSet& b);
-  friend MeshSet set_union( const MeshSet& a, const MeshSet& b );
-  friend void for_each( const MeshSet& a, MeshForEach& filter);
+  friend SMTKCORE_EXPORT MeshSet set_intersect( const MeshSet& a, const MeshSet& b);
+  friend SMTKCORE_EXPORT MeshSet set_difference( const MeshSet& a, const MeshSet& b);
+  friend SMTKCORE_EXPORT MeshSet set_union( const MeshSet& a, const MeshSet& b );
+  friend SMTKCORE_EXPORT void for_each( const MeshSet& a, MeshForEach& filter);
   friend class Collection; //required for deletion of meshes
 public:
   //default constructor generates an invalid MeshSet

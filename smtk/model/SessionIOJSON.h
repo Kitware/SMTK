@@ -26,10 +26,48 @@ class SMTKCORE_EXPORT SessionIOJSON : public SessionIO
 {
 public:
   smtkTypeMacro(SessionIOJSON);
+  smtkCreateMacro(SessionIOJSON);
 
-  virtual int importJSON(ManagerPtr modelMgr, cJSON* sessionRec);
-  virtual int exportJSON(ManagerPtr modelMgr, cJSON* sessionRec);
-  virtual int exportJSON(ManagerPtr modelMgr, const common::UUIDs &modelIds, cJSON* sessionRec);
+  virtual ~SessionIOJSON() { }
+
+  virtual int importJSON(ManagerPtr modelMgr, const SessionPtr& session,
+                         cJSON* sessionRec, bool loadNativeModels = false);
+  virtual int exportJSON(ManagerPtr modelMgr, const SessionPtr& sessPtr,
+                         cJSON* sessionRec, bool writeNativeModels = false);
+  virtual int exportJSON(ManagerPtr modelMgr, const SessionPtr& session,
+                         const common::UUIDs &modelIds, cJSON* sessionRec,
+                         bool writeNativeModels = false);
+
+protected:
+  virtual int writeNativeModel(smtk::model::ManagerPtr modelMgr,
+                              const smtk::model::SessionPtr& sess,
+                              const smtk::model::Model& model,
+                              const std::string& outNativeFile);
+  virtual int loadNativeModel(smtk::model::ManagerPtr modelMgr,
+                              const smtk::model::SessionPtr& sess,
+                              const std::string& inNativeFile);
+  virtual std::string getOutputFileNameForNativeModel(
+    smtk::model::ManagerPtr modelMgr,
+    const smtk::model::SessionPtr& sess,
+    const smtk::model::Model& model) const;
+
+  virtual void addModelsRecord(const smtk::model::ManagerPtr& modelMgr,
+                               const smtk::common::UUIDs& modelIds,
+                               cJSON* sessionRec);
+  virtual void addModelsRecord(const smtk::model::ManagerPtr& modelMgr,
+                               const smtk::model::Models& models,
+                               cJSON* sessionRec);
+  virtual void addMeshesRecord(const ManagerPtr& modelMgr,
+                               const smtk::common::UUIDs& modelIds,
+                               cJSON* sessionRec);
+  virtual void addMeshesRecord(const ManagerPtr& modelMgr,
+                               const smtk::model::Models& inModels,
+                               cJSON* sessionRec);
+  virtual int loadModelsRecord(smtk::model::ManagerPtr modelMgr,
+                               cJSON* sessionRec);
+  virtual int loadMeshesRecord(smtk::model::ManagerPtr modelMgr,
+                               cJSON* sessionRec);
+
 };
 
   } // namespace model

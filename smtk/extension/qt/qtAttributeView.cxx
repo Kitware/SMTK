@@ -210,7 +210,7 @@ void qtAttributeView::createWidget( )
 
   //If we have more than 1 def then create a combo box for selecting a def for property viewing,
   // else just create a label
-  if (this->Internals->m_attDefinitions.size() > 1)
+  if (this->Internals->AllDefs.size() > 1)
     {
     this->Internals->PropDefsCombo = new QComboBox(TopFrame);
     this->Internals->PropDefsCombo->setVisible(false);
@@ -223,7 +223,7 @@ void qtAttributeView::createWidget( )
   else
     {
     this->Internals->PropDefLabel = new QLabel(TopFrame);
-    this->Internals->PropDefLabel->setText(this->Internals->m_attDefinitions[0]->type().c_str());
+    this->Internals->PropDefLabel->setText(this->Internals->AllDefs[0]->type().c_str());
     filterLayout->addWidget(this->Internals->PropDefLabel, 0, 2);
     this->Internals->PropDefLabel->setVisible(false);
     this->Internals->PropDefsCombo = NULL;
@@ -270,7 +270,7 @@ void qtAttributeView::createWidget( )
   
   //If we have more than 1 def then create a combo box for selecting a def,
   // else just create a label
-  if (this->Internals->m_attDefinitions.size() > 1)
+  if (this->Internals->AllDefs.size() > 1)
     {
     this->Internals->DefsCombo = new QComboBox(this->Internals->ButtonsFrame);
     this->Internals->DefsCombo->setVisible(false);
@@ -280,7 +280,7 @@ void qtAttributeView::createWidget( )
   else
     {
     this->Internals->DefLabel = new QLabel(this->Internals->ButtonsFrame);
-    this->Internals->DefLabel->setText(this->Internals->m_attDefinitions[0]->type().c_str());
+    this->Internals->DefLabel->setText(this->Internals->AllDefs[0]->type().c_str());
     this->Internals->DefLabel->setVisible(false);
     buttonLayout->addWidget(this->Internals->DefLabel);
     this->Internals->DefsCombo = NULL;
@@ -502,9 +502,9 @@ void qtAttributeView::updateTableWithProperties()
   this->updateAssociationEnableState(smtk::attribute::AttributePtr());
 
   Definition* rawPtr;
-  if (this->Internals->m_attDefinitions.size() == 1)
+  if (this->Internals->AllDefs.size() == 1)
     {
-    rawPtr = this->Internals->m_attDefinitions[0].get();
+    rawPtr = this->Internals->AllDefs[0].get();
     }
   else
     {
@@ -667,12 +667,12 @@ void qtAttributeView::onCreateNew()
     {
     return;
     }
-  attribute::DefinitionPtr newAttDef = this->Internals->m_attDefinitions[0];
+  attribute::DefinitionPtr newAttDef = this->Internals->AllDefs[0];
 
   QString strDef;
-  if (this->Internals->m_attDefinitions.size() == 1)
+  if (this->Internals->AllDefs.size() == 1)
     {
-    strDef = this->Internals->m_attDefinitions[0]->type().c_str();
+    strDef = this->Internals->AllDefs[0]->type().c_str();
     }
   else
     {
@@ -821,7 +821,7 @@ void qtAttributeView::onViewBy(int viewBy)
     {
     this->Internals->ListTable->setHorizontalHeaderItem(2, new QTableWidgetItem("Color"));
     }
-  if(this->Internals->m_attDefinitions.size() == 1)
+  if(this->Internals->AllDefs.size() == 1)
     {
     this->Internals->DefLabel->setVisible(true);
     this->Internals->PropDefLabel->setVisible(!viewAtt);
@@ -964,7 +964,7 @@ void qtAttributeView::initSelectionFilters()
   this->Internals->AttFrame->setVisible(0);
   this->Internals->ValuesTable->setVisible(1);
   DefinitionPtr dp;
-  if (this->Internals->m_attDefinitions.size() > 1)
+  if (this->Internals->AllDefs.size() > 1)
     {
     Definition* rawPtr =
       static_cast<Definition*>(this->
@@ -978,7 +978,7 @@ void qtAttributeView::initSelectionFilters()
     }
   else
     {
-    dp = this->Internals->m_attDefinitions[0];
+    dp = this->Internals->AllDefs[0];
     }
   this->initSelectPropCombo(dp);
   this->initSelectAttCombo(dp);
@@ -1247,9 +1247,9 @@ void qtAttributeView::onPropertyDefSelected()
     }
 
   Definition* rawPtr;
-  if (this->Internals->m_attDefinitions.size() == 1)
+  if (this->Internals->AllDefs.size() == 1)
     {
-    rawPtr = this->Internals->m_attDefinitions[0].get();
+    rawPtr = this->Internals->AllDefs[0].get();
     }
   else
     {
@@ -1295,9 +1295,9 @@ void qtAttributeView::addComparativeProperty(
     }
 
   Definition* rawPtr;
-  if (this->Internals->m_attDefinitions.size() == 1)
+  if (this->Internals->AllDefs.size() == 1)
     {
-    rawPtr = this->Internals->m_attDefinitions[0].get();
+    rawPtr = this->Internals->AllDefs[0].get();
     }
   else
     {

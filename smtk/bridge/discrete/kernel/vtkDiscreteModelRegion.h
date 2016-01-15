@@ -14,7 +14,7 @@
 #ifndef __smtkdiscrete_vtkDiscreteModelRegion_h
 #define __smtkdiscrete_vtkDiscreteModelRegion_h
 
-#include "vtkSMTKDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "Model/vtkModelRegion.h"
 #include "vtkDiscreteModelGeometricEntity.h"
 

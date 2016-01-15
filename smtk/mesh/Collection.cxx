@@ -153,6 +153,17 @@ void Collection::name(const std::string& n)
 }
 
 //----------------------------------------------------------------------------
+bool Collection::assignUniqueNameIfNotAlready()
+{
+  smtk::mesh::ManagerPtr currentManager = this->m_internals->manager();
+  if(currentManager)
+    { //if we are associated with a valid manager
+      return currentManager->assignUniqueName( this->shared_from_this() );
+    }
+  return false;
+}
+
+//----------------------------------------------------------------------------
 const std::string& Collection::readLocation() const
 {
   return this->m_readLocation;
@@ -180,6 +191,14 @@ void Collection::writeLocation(const std::string& n)
 {
   this->m_writeLocation = n;
 }
+
+//----------------------------------------------------------------------------
+void Collection::clearReadWriteLocations()
+{
+  this->m_readLocation.clear();
+  this->m_writeLocation.clear();
+}
+
 
 //----------------------------------------------------------------------------
 std::string Collection::interfaceName() const

@@ -181,7 +181,7 @@ smtk::model::OperatorResult ReadOperator::readExodus()
   // Now iterate over the dataset and mark each block (leaf or not)
   // with information needed by the session to determine how it should
   // be presented.
-  MarkMeshInfo(modelOut, dim, path(filename).stem().c_str(), EXO_MODEL, -1);
+  MarkMeshInfo(modelOut, dim, path(filename).stem().string<std::string>().c_str(), EXO_MODEL, -1);
   vtkMultiBlockDataSet* elemBlocks =
     vtkMultiBlockDataSet::SafeDownCast(
       modelOut->GetBlock(0));
@@ -266,7 +266,7 @@ smtk::model::OperatorResult ReadOperator::readSLAC()
   modelOut->SetBlock(0, surfBlocks.GetPointer());
   modelOut->SetBlock(1, voluBlocks.GetPointer());
 
-  MarkMeshInfo(modelOut.GetPointer(), 3, path(filename).stem().c_str(), EXO_MODEL, -1);
+  MarkMeshInfo(modelOut.GetPointer(), 3, path(filename).stem().string<std::string>().c_str(), EXO_MODEL, -1);
   MarkSLACMeshWithChildren(surfBlocks.GetPointer(), 2, "surfaces", EXO_SIDE_SETS, EXO_SIDE_SET);
   MarkSLACMeshWithChildren(voluBlocks.GetPointer(), 3, "volumes", EXO_BLOCKS, EXO_BLOCK);
 
@@ -412,7 +412,7 @@ smtk::model::OperatorResult ReadOperator::readLabelMap()
   modelOut->SetNumberOfBlocks(1);
   modelOut->SetBlock(0, img.GetPointer());
 
-  MarkMeshInfo(modelOut.GetPointer(), imgDim, path(filename).stem().c_str(), EXO_MODEL, -1);
+  MarkMeshInfo(modelOut.GetPointer(), imgDim, path(filename).stem().string<std::string>().c_str(), EXO_MODEL, -1);
   MarkMeshInfo(img.GetPointer(), imgDim, labelname.c_str(), EXO_LABEL_MAP, -1);
   for (int i = 0; i < numLabels; ++i)
     {

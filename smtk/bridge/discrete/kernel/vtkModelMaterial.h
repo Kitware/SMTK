@@ -14,7 +14,7 @@
 #ifndef __smtkdiscrete_vtkModelMaterial_h
 #define __smtkdiscrete_vtkModelMaterial_h
 
-#include "vtkSMTKDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 
 #include "vtkModelEntity.h"
 

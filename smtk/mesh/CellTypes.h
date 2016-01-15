@@ -11,6 +11,8 @@
 #ifndef __smtk_mesh_CellTypes_h
 #define __smtk_mesh_CellTypes_h
 
+#include "smtk/CoreExports.h"
+
 #include <bitset>
 #include <string>
 
@@ -36,8 +38,8 @@ enum CellType
   CellType_MAX  = 9
 };
 
-int verticesPerCell(CellType ctype);
-std::string cellTypeSummary(CellType ctype, int flag = 0);
+SMTKCORE_EXPORT int verticesPerCell(CellType ctype);
+SMTKCORE_EXPORT std::string cellTypeSummary(CellType ctype, int flag = 0);
 
 //Need a basic blitter for cell queries, mainly used by
 //TypeSet

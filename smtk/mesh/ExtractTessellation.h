@@ -89,7 +89,7 @@ public:
 
 
 private:
-  friend void extractTessellation( const smtk::mesh::CellSet&, const smtk::mesh::PointSet& , PreAllocatedTessellation& );
+  friend SMTKCORE_EXPORT void extractTessellation( const smtk::mesh::CellSet&, const smtk::mesh::PointSet& , PreAllocatedTessellation& );
   boost::int64_t* m_connectivity;
   boost::int64_t* m_cellLocations;
   unsigned char* m_cellTypes;

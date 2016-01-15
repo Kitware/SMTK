@@ -486,7 +486,10 @@ int ExportJSON::forManagerIntegerProperties(const smtk::common::UUID& uid, cJSON
   return ExportJSON::forIntegerData(dict, entIt->second);
 }
 
-int ExportJSON::forManagerSession(const smtk::common::UUID& uid, cJSON* node, ManagerPtr modelMgr)
+int ExportJSON::forManagerSession(const smtk::common::UUID& uid,
+                                  cJSON* node,
+                                  ManagerPtr modelMgr,
+                                  bool writeNativeModels)
 {
   int status = 1;
   SessionPtr session = SessionRef(modelMgr, uid).session();
@@ -501,30 +504,32 @@ int ExportJSON::forManagerSession(const smtk::common::UUID& uid, cJSON* node, Ma
     smtk::dynamic_pointer_cast<SessionIOJSON>(
       session->createIODelegate("json"));
   if (delegate)
-    status &= delegate->exportJSON(modelMgr, sess);
+    status &= delegate->exportJSON(modelMgr, session, sess, writeNativeModels);
   status &= ExportJSON::forOperatorDefinitions(session->operatorSystem(), sess);
   return status;
 }
 
-int ExportJSON::forManagerSessionPartial(const smtk::common::UUID& uid,
+int ExportJSON::forManagerSessionPartial(const smtk::common::UUID& sessionid,
                                          const smtk::common::UUIDs& modelIds,
                                          cJSON* node,
-                                         ManagerPtr modelMgr)
+                                         ManagerPtr modelMgr,
+                                         bool writeNativeModels)
 {
   int status = 1;
-  SessionPtr session = SessionRef(modelMgr, uid).session();
+  SessionPtr session = SessionRef(modelMgr, sessionid).session();
   if (!session)
     return status;
 
   cJSON* sess = cJSON_CreateObject();
-  cJSON_AddItemToObject(node, uid.toString().c_str(), sess);
+  cJSON_AddItemToObject(node, sessionid.toString().c_str(), sess);
   cJSON_AddStringToObject(sess, "type", "session");
   cJSON_AddStringToObject(sess, "name", session->name().c_str());
+
   SessionIOJSONPtr delegate =
     smtk::dynamic_pointer_cast<SessionIOJSON>(
       session->createIODelegate("json"));
   if (delegate)
-    status &= delegate->exportJSON(modelMgr, modelIds, sess);
+    status &= delegate->exportJSON(modelMgr, session, modelIds, sess, writeNativeModels);
   status &= ExportJSON::forOperatorDefinitions(session->operatorSystem(), sess);
   return status;
 }
@@ -624,7 +629,7 @@ int ExportJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
     if(collectionIds.size() > 0)
       {
       cJSON* mesh_records = cJSON_CreateObject();
-      ExportJSON::forMeshes(mesh_records, collectionIds, meshMgr);
+      ExportJSON::forMeshCollections(mesh_records, collectionIds, meshMgr);
       cJSON_AddItemToObject(entRec, "mesh_records", mesh_records);
       }
     }
@@ -742,14 +747,14 @@ int ExportJSON::forManagerMeshes(
   return status;
 }
 
-/**\brief Serialize all the smtk::mesh associated with given EntityRefs.
+/**\brief Serialize input mesh Collections.
   *
   * This creates and populate an JSON Object "mesh_collections"
   * and add it to the parent json node (\a pnode) with
-  * data required to recreate the smtk::mesh Collections
-  * associated with the given \a collectionIds.
+  * data required to recreate the mesh Collections
+  * associated with the given \a collectionIds of mesh manager (\a meshMgr)
   */
-int ExportJSON::forMeshes(
+int ExportJSON::forMeshCollections(
                      cJSON* pnode,
                      const smtk::common::UUIDs& collectionIds,
                      smtk::mesh::ManagerPtr meshMgr)
@@ -764,8 +769,12 @@ int ExportJSON::forMeshes(
     return 0;
     }
   int status = 1;
-  cJSON* mesh = cJSON_CreateObject();
-  cJSON_AddItemToObject(pnode, "mesh_collections", mesh);
+  cJSON* mesh = cJSON_GetObjectItem(pnode, "mesh_collections");
+  if(!mesh)
+    {
+    mesh = cJSON_CreateObject();
+    cJSON_AddItemToObject(pnode, "mesh_collections", mesh);
+    }
 
   smtk::common::UUIDs::const_iterator cit;
   for(cit = collectionIds.begin(); cit != collectionIds.end(); ++cit)
@@ -774,6 +783,32 @@ int ExportJSON::forMeshes(
     }
 
   return status;
+}
+
+/**\brief Serialize all the mesh collections associated with given \a modelid.
+  *
+  * This creates and populate an JSON Object "mesh_collections"
+  * and add it to the parent json node (\a pnode) with
+  * all mesh collections associated with the given \a modelid.
+  */
+int ExportJSON::forModelMeshes(
+                     const smtk::common::UUID& modelid,
+                     cJSON* pnode,
+                     smtk::model::ManagerPtr modelMgr)
+{
+  if (!pnode || pnode->type != cJSON_Object)
+    {
+    return 0;
+    }
+  smtk::mesh::ManagerPtr meshMgr = modelMgr->meshes();
+  smtk::model::Model model(modelMgr, modelid);
+  if(!model.isValid() || !meshMgr)
+    {
+    return 0;
+    }
+
+  smtk::common::UUIDs cids = meshMgr->associatedCollectionIds(model);
+  return ExportJSON::forMeshCollections(pnode, cids, meshMgr);
 }
 
 namespace {
@@ -979,7 +1014,7 @@ private:
 };
 
 }
-/**\brief Serialize a single mesh colelction
+/**\brief Serialize a single mesh collection
   *
   */
 int ExportJSON::forSingleCollection(cJSON* mdesc,
@@ -991,6 +1026,7 @@ int ExportJSON::forSingleCollection(cJSON* mdesc,
   cJSON_AddItemToObject(mdesc, collectionUUID.c_str(), jsonCollection);
 
   cJSON_AddItemToObject(jsonCollection,"formatVersion", cJSON_CreateNumber(1));
+
   cJSON_AddStringToObject(jsonCollection,"name", collection->name().c_str());
   //assoicated model uuid of the collection
   if(!collection->associatedModel().isNull())

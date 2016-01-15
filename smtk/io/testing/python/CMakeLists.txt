@@ -27,6 +27,19 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
     )
   endforeach()
 
+  set(reader_test attributeReaderTest)
+  add_test(${reader_test}Py
+    ${PYTHON_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/${reader_test}.py
+    ${SMTK_DATA_DIR}/smtk/attribute/resourceTest/ShallowWater2D.sbi
+    29
+    19
+  )
+  set_tests_properties(${reader_test}Py
+    PROPERTIES
+      ENVIRONMENT "PYTHONPATH=${VTKPY_DIR}${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}"
+  )
+
   set(reader_test ResourceSetReaderTest)
   add_test(${reader_test}Py
     ${PYTHON_EXECUTABLE}

@@ -118,7 +118,7 @@ class SMTKCORE_EXPORT UUIDTag : public OpaqueTag<smtk::common::UUID::SIZE>
 {
 public:
   explicit UUIDTag(const smtk::common::UUID& value):
-    OpaqueTag(value.begin())
+    OpaqueTag<smtk::common::UUID::SIZE>(value.begin())
     {
     }
 

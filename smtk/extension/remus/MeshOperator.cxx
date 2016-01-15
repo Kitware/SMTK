@@ -18,6 +18,9 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 
+#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/Collection.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
@@ -25,6 +28,12 @@
 #include "smtk/io/ExportJSON.h"
 #include "smtk/io/ExportJSON.txx"
 #include "smtk/io/ImportJSON.h"
+
+//todo: remove this once remus supports automatic transfer of FileHandles
+// and Destructive Read of FileHandles
+//force to use filesystem version 3
+#define BOOST_FILESYSTEM_VERSION 3
+#include <boost/filesystem.hpp>
 
 //todo: remove this once remus Issue #183 has been resolved.
 // #include <boost/date_time/posix_time/posix_time.hpp>
@@ -148,31 +157,59 @@ OperatorResult MeshOperator::operateInternal()
   if(haveResultFromWorker)
     {
     //now fetch the latest results from the server
-    remus::proto::JobResult updatedModel = client.retrieveResults(job);
+    remus::proto::JobResult meshMetaData = client.retrieveResults(job);
 
-    //parse the job result as a json string
-    smtk::io::ImportJSON::intoModelManager(updatedModel.data(), this->manager());
+    smtk::mesh::ManagerPtr meshManager = this->manager()->meshes();
 
-    cJSON* root = cJSON_Parse(updatedModel.data());
+    //determine all existing collection
+    typedef std::map< smtk::common::UUID, smtk::mesh::CollectionPtr > CollectionStorage;
+    CollectionStorage existingCollections(meshManager->collectionBegin(),
+                                          meshManager->collectionEnd());
+
+    //parse the job result as json mesh data
+    cJSON* root = cJSON_Parse(meshMetaData.data());
     smtk::io::ImportJSON::ofMeshesOfModel(root, this->manager());
     cJSON_Delete(root);
 
-    // Now set or increment the SMTK_MESH_GEN_PROP property for the models
-    // The client can use this property to check if there is an analysis mesh created
-    // for the model
-    smtk::model::Models::iterator it;
-    for (it = models.begin(); it != models.end(); ++it)
+    //
+    //iterate over all collections looking for new collections. When we find
+    //a new mesh collection, we will delete the file that was used to generate
+    //that collection, as that file is meant to be temporary and only exist
+    //for data transfer back from the worker.
+    //
+    //This all should be removed, and instead remus should handle all this logic
+    //
+    //
+    //
+    for(smtk::mesh::Manager::const_iterator i = meshManager->collectionBegin();
+        i != meshManager->collectionEnd();
+        ++i)
       {
-      IntegerList& gen(this->manager()->integerProperty(it->entity(), SMTK_MESH_GEN_PROP));
-      if (gen.empty())
-        gen.push_back(0);
-      else
-        ++gen[0];
+      smtk::mesh::CollectionPtr collection = i->second;
+      smtk::common::UUID collectionUUID = i->first;
+      if( existingCollections.find(collectionUUID) ==  existingCollections.end())
+        { //found a new collection
+        std::string location = collection->readLocation();
+        if(!location.empty())
+          { //delete the file if it exists
+          ::boost::filesystem::path cpath( location );
+          ::boost::filesystem::remove( cpath );
+          }
+        collection->clearReadWriteLocations();
+        }
       }
 
-    //current question is how do we know how to mark the tessellations
-    //of the model as modified?
-    this->addEntitiesToResult(result, models, MODIFIED);
+    //mark all models and submodels as modified
+    smtk::model::Models allModels = models;
+    for(smtk::model::Models::const_iterator m = models.begin();
+        m != models.end();
+        ++m)
+      {
+      smtk::model::Models submodels = m->submodels();
+      allModels.insert(allModels.end(), submodels.begin(), submodels.end());
+      }
+    this->addEntitiesToResult(result, allModels, MODIFIED);
+
     result->findModelEntity("mesh_created")->setValues(models.begin(), models.end());
     }
   return result;
