@@ -34,10 +34,8 @@ namespace smtk
       Q_OBJECT
 
     public:
-      static qtBaseView *createViewWidget(smtk::common::ViewPtr view, QWidget* p,
-                                          qtUIManager* uiman);
-      qtSimpleExpressionView(smtk::common::ViewPtr view, QWidget* parent,
-                             qtUIManager* uiman);
+      static qtBaseView *createViewWidget(const ViewInfo &info);
+      qtSimpleExpressionView(const ViewInfo &info);
       virtual ~qtSimpleExpressionView();
 
       void buildSimpleExpression(

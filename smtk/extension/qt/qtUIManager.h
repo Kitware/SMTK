@@ -17,6 +17,7 @@
 
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/Exports.h"
+#include "smtk/extension/qt/qtBaseView.h" // Needed for ViewInfo definition
 #include "smtk/attribute/System.h"
 #include <map>
 #include <QFont>
@@ -40,7 +41,7 @@ namespace smtk
     class qtBaseView;
     class qtUIManager;
 
-    typedef qtBaseView* (*widgetConstructor)(smtk::common::ViewPtr, QWidget* p, qtUIManager* uiman);
+    typedef qtBaseView* (*widgetConstructor)(const ViewInfo &info);
 
     class SMTKQTEXT_EXPORT qtUIManager : public QObject
     {
@@ -156,7 +157,7 @@ namespace smtk
       const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs,
       const QFont &font);
 
-    qtBaseView* createView(smtk::common::ViewPtr smtkView, QWidget *pWidget);
+    qtBaseView* createView(const ViewInfo &info);
 
 #ifdef _WIN32
     #define LINE_BREAKER_STRING "\n";

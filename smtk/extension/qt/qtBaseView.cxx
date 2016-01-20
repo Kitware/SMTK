@@ -34,14 +34,7 @@ using namespace smtk::attribute;
 class qtBaseViewInternals
 {
 public:
-  qtBaseViewInternals(smtk::common::ViewPtr dataObject, QWidget* p,
-    qtUIManager* uiman)
-  {
-  this->ParentWidget = p;
-  this->DataObject = dataObject;
-  this->UIManager = uiman;
-  this->FixedLabelWidth = uiman->maxValueLabelLength();
-  }
+  qtBaseViewInternals(){}
   ~qtBaseViewInternals()
   {
     this->clearWidgets();
@@ -66,9 +59,6 @@ public:
       }
   }
 
-  smtk::common::ViewPtr DataObject;
-  QPointer<QWidget> ParentWidget;
-  QPointer<qtUIManager> UIManager;
   QPointer<QComboBox> AdvLevelCombo;
   QPointer<QCheckBox> FilterByCheck;
   QPointer<QComboBox> ShowCategoryCombo;
@@ -76,23 +66,25 @@ public:
   QPointer<QToolButton> AdvLevelEditButton;
   QPointer<QHBoxLayout> TopLevelLayout;
 
- int FixedLabelWidth;
 };
 
 
 //----------------------------------------------------------------------------
-qtBaseView::qtBaseView(smtk::common::ViewPtr dataObject, QWidget* p,
-  qtUIManager* uiman)
+qtBaseView::qtBaseView(const ViewInfo &info)
 {
-  this->Internals  = new qtBaseViewInternals(dataObject, p, uiman);
+  this->m_viewInfo = info;
+  this->Internals  = new qtBaseViewInternals;
+  this->m_fixedLabelWidth =
+    this->m_viewInfo.m_UIManager->maxValueLabelLength();
   this->Widget = NULL;
   this->m_advOverlayVisible = false;
   this->m_ScrollArea = NULL;
   this->m_isTopLevel = false;
   this->m_topLevelInitialized = false;
-  if (dataObject)
+  if (this->m_viewInfo.m_view)
     {
-    this->m_isTopLevel = dataObject->details().attributeAsBool("TopLevel");
+    this->m_isTopLevel =
+      this->m_viewInfo.m_view->details().attributeAsBool("TopLevel");
     }
 }
 
@@ -109,17 +101,6 @@ qtBaseView::~qtBaseView()
     }
 }
 
-//----------------------------------------------------------------------------
-smtk::common::ViewPtr qtBaseView::getObject()
-{
-  return this->Internals->DataObject;
-}
-
-//----------------------------------------------------------------------------
-QWidget* qtBaseView::parentWidget()
-{
-  return this->Internals->ParentWidget;
-}
 //----------------------------------------------------------------------------
 void qtBaseView::getDefinitions(
   smtk::attribute::DefinitionPtr attDef,
@@ -153,12 +134,6 @@ bool qtBaseView::displayItem(smtk::attribute::ItemPtr item)
 }
 
 //----------------------------------------------------------------------------
-qtUIManager* qtBaseView::uiManager()
-{
-  return this->Internals->UIManager;
-}
-
-//----------------------------------------------------------------------------
 void qtBaseView::valueChanged(smtk::attribute::ItemPtr item)
 {
   emit this->modified(item);
@@ -166,17 +141,11 @@ void qtBaseView::valueChanged(smtk::attribute::ItemPtr item)
 }
 
 //----------------------------------------------------------------------------
-int qtBaseView::fixedLabelWidth()
-{
-  return this->Internals->FixedLabelWidth;
-}
-
-//----------------------------------------------------------------------------
 bool qtBaseView::setFixedLabelWidth(int w)
 {
   w = std::min(w, this->uiManager()->maxValueLabelLength());
   w = std::max(w, this->uiManager()->minValueLabelLength());
-  this->Internals->FixedLabelWidth = w;
+  this->m_fixedLabelWidth = w;
   return false;
 }
 //----------------------------------------------------------------------------
