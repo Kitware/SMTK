@@ -119,19 +119,16 @@ public:
 };
 
 //----------------------------------------------------------------------------
-qtBaseView *
-qtSimpleExpressionView::createViewWidget(smtk::common::ViewPtr dataObj,
-                                  QWidget* p, qtUIManager* uiman)
+qtBaseView *qtSimpleExpressionView::createViewWidget(const ViewInfo &info)
 {
-  qtSimpleExpressionView *view = new qtSimpleExpressionView(dataObj, p, uiman);
+  qtSimpleExpressionView *view = new qtSimpleExpressionView(info);
   view->buildUI();
   return view;
 }
 
 //----------------------------------------------------------------------------
-qtSimpleExpressionView::
-qtSimpleExpressionView(smtk::common::ViewPtr dataObj, QWidget* p, qtUIManager* uiman) :
-  qtBaseView(dataObj, p, uiman)
+qtSimpleExpressionView::qtSimpleExpressionView(const ViewInfo &info) :
+  qtBaseView(info)
 {
   this->Internals = new qtSimpleExpressionViewInternals;
 }

@@ -273,7 +273,10 @@ void Tessellation::extract( const smtk::mesh::CellSet& cs,
 
   this->m_connectivity.resize( connectivityLength );
   this->m_cellLocations.resize( numberOfCells );
-  this->m_cellTypes.resize( numberOfPoints * 3 );
+  this->m_cellTypes.resize( numberOfCells );
+  //since the input PointSet can contain more points that the computed number,
+  //set numberOfPoints to the PointSet size.
+  numberOfPoints = ps.size();
   this->m_points.resize( numberOfPoints * 3 );
 
   smtk::mesh::PreAllocatedTessellation tess(&this->m_connectivity[0],
@@ -400,8 +403,6 @@ void extractTessellation( const smtk::mesh::CellSet& cs,
     }
 
   //we now have to read in the points if requested
-  const std::size_t connLength = conn_index;
-  boost::int64_t* conn = tess.m_connectivity;
   if(fetch_dPoints)
     {
     ps.get(tess.m_dpoints);

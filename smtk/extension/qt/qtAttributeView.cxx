@@ -121,18 +121,17 @@ public:
 
 //----------------------------------------------------------------------------
 qtBaseView *
-qtAttributeView::createViewWidget(smtk::common::ViewPtr dataObj,
-                                  QWidget* p, qtUIManager* uiman)
+qtAttributeView::createViewWidget(const ViewInfo &info)
 {
-  qtAttributeView *view = new qtAttributeView(dataObj, p, uiman);
+  qtAttributeView *view = new qtAttributeView(info);
   view->buildUI();
   return view;
 }
 
 //----------------------------------------------------------------------------
 qtAttributeView::
-qtAttributeView(smtk::common::ViewPtr dataObj, QWidget* p, qtUIManager* uiman) :
-  qtBaseView(dataObj, p, uiman)
+qtAttributeView(const ViewInfo &info) :
+  qtBaseView(info)
 {
   this->Internals = new qtAttributeViewInternals;
 }
