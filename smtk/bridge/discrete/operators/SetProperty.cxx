@@ -159,6 +159,7 @@ smtk::model::OperatorResult SetProperty::operateInternal()
   // check whether there are mesh entities's properties need to be changed
   smtk::attribute::MeshItemPtr meshItem = this->findMesh("meshes");
   smtk::mesh::MeshSets modifiedMeshes;
+  smtk::model::EntityRefs extraModifiedModels;
   if(meshItem)
     {
     smtk::model::ManagerPtr modelmgr = this->manager();
@@ -176,23 +177,37 @@ smtk::model::OperatorResult SetProperty::operateInternal()
       SetMeshPropertyValue<Integer,IntegerList,IntegerData,IntItem>(
         nameItem->value(0), integerItem, c, *it);
       modifiedMeshes.insert(*it);
+  
+      // label the assoicated model as modified
+      smtk::common::UUID modid = c->associatedModel();
+    if(!modid.isNull())
+        extraModifiedModels.insert(smtk::model::Model(this->manager(), modid));
       }
     }
 
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
 
+  // if a model is in the changed entities and it is a submodel, we
+  // want to label its parent model to be modified too.
+  smtk::model::EntityRefArray::iterator it;
+  for (it = entities.begin(); it != entities.end(); ++it)
+    {
+    if(it->isModel() && it->as<model::Model>().parent().isModel())
+      {
+      smtk::model::Model pmodel = it->as<model::Model>().parent().as<model::Model>();
+      extraModifiedModels.insert(pmodel);
+      }
+    }
+
+  entities.insert(entities.end(), extraModifiedModels.begin(), extraModifiedModels.end());
+
   // Return the list of entities that were potentially
   // modified so that remote sessions can track what records
   // need to be re-fetched.
   smtk::attribute::ModelEntityItem::Ptr resultEntities =
     result->findModelEntity("modified");
-
-  int numEntitiesOut = static_cast<int>(entities.size());
-  resultEntities->setNumberOfValues(numEntitiesOut);
-  smtk::model::EntityRefArray::iterator it = entities.begin();
-  for (int i = 0; i < numEntitiesOut; ++i, ++it)
-    resultEntities->setValue(i, *it);
+  resultEntities->setValues(entities.begin(), entities.end());
 
   // Return the list of meshes that were potentially modified.
   if (modifiedMeshes.size() > 0)
