@@ -137,8 +137,11 @@ bool MeshSet::operator<(const MeshSet& other) const
 //----------------------------------------------------------------------------
 bool MeshSet::append( const MeshSet& other)
 {
-  const bool can_append = this->m_parent == other.m_parent &&
-                          this->m_handle == other.m_handle;
+  if(!this->m_parent)
+    {
+    this->m_parent = other.m_parent;
+    }
+  const bool can_append = this->m_parent == other.m_parent;
   if(can_append)
     {
     this->m_range.insert(other.m_range.begin(), other.m_range.end());
