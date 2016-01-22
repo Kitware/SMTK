@@ -77,10 +77,6 @@ public:
   bool get(std::vector<float>& xyz) const;
 #endif
 
-
-
-
-
   //get the underlying HandleRange that this PointSet represents
   const smtk::mesh::HandleRange& range() const { return this->m_points; }
 
