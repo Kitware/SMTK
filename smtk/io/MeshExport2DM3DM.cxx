@@ -60,9 +60,6 @@ struct OpenFile
     this->m_deleteFile = !written;
   }
 
-
-
-
   std::string m_path;
   std::fstream m_stream;
   bool m_canWrite;
@@ -100,6 +97,28 @@ struct MeshByRegion
   smtk::mesh::DimensionType m_dim;
   int m_regionId;
 };
+
+//----------------------------------------------------------------------------
+template<typename T, typename U>
+double find_sum(const U& conn, const T& points, std::size_t index, int nVerts)
+{
+  double sum = 0;
+  for(int j=0; j < nVerts; ++j)
+    {
+    std::size_t c1 = conn[ index + j ];
+    std::size_t c2 = conn[ index + ( (j + 1) % nVerts ) ];
+
+    double x1 = points[c1*3];
+    double y1 = points[c1*3+1];
+
+    double x2 = points[c2*3];
+    double y2 = points[c2*3+1];
+
+    sum += ( x2 - x1 ) * ( y2 + y1 );
+    }
+  return sum;
+}
+
 
 //----------------------------------------------------------------------------
 std::string to_CardType(smtk::mesh::CellType type)
@@ -156,7 +175,6 @@ public:
   void operator()(const MeshByRegion& mbr,
                   const smtk::mesh::CellType& type)
   {
-    const int regionId = mbr.region();
     smtk::mesh::CellSet cells = mbr.cells(type);
 
     //If we have zero cells, don't do anything
@@ -165,6 +183,27 @@ public:
       return;
       }
 
+    const int regionId = mbr.region();
+    const int nVerts = smtk::mesh::verticesPerCell(type);
+    std::string cardType = to_CardType(type);
+
+    if(type == smtk::mesh::Triangle ||
+       type == smtk::mesh::Quad )
+      {
+      this->writeCounterClockwise(cells,cardType,regionId,nVerts);
+      }
+    else
+      {
+      this->write(cells,cardType,regionId,nVerts);
+      }
+  }
+
+  //--------------------------------------------------------------------------
+  void write(const smtk::mesh::CellSet& cells,
+             const std::string& cardType,
+             int regionId,
+             int nVerts)
+  {
     //Use the extractTessellation helpers to convert the connectivity
     //to map properly to the PointSet that represents ALL points we are
     //using, not just the points these cells are using
@@ -176,8 +215,6 @@ public:
     smtk::mesh::extractTessellation( cells, this->m_PointSet, connectivityInfo);
 
     //now we just need to write out the cells
-    std::string cardType = to_CardType(type);
-    int nVerts = smtk::mesh::verticesPerCell(type);
     std::size_t nCells = cells.size();
     for(std::size_t i=0; i < nCells; ++i)
       {
@@ -185,6 +222,54 @@ public:
       for(int j=0; j < nVerts; ++j)
         {
         this->m_Stream << std::setw(8) << conn[nVerts*i + j] << " ";
+        }
+      this->m_Stream << std::setw(8) << regionId << std::endl;
+      }
+  }
+
+  //--------------------------------------------------------------------------
+  void writeCounterClockwise(const smtk::mesh::CellSet& cells,
+             const std::string& cardType,
+             int regionId,
+             int nVerts)
+  {
+    //Use the extractTessellation helpers to convert the connectivity
+    //to map properly to the PointSet that represents ALL points we are
+    //using, not just the points these cells are using
+    boost::int64_t connectivityLen = cells.pointConnectivity().size();
+    boost::int64_t pointLen = this->m_PointSet.size() * 3;
+
+    std::vector<boost::int64_t> conn(connectivityLen);
+    std::vector<double> points(pointLen);
+
+    smtk::mesh::PreAllocatedTessellation connectivityInfo(&conn[0], &points[0]);
+    connectivityInfo.disableVTKStyleConnectivity(true);
+    smtk::mesh::extractTessellation( cells, this->m_PointSet, connectivityInfo);
+
+    //when writing out a triangle or quad region the cell must be written
+    //in counter clockwise orientation. We are presuming that for 2d meshes
+    //the triangles are all planar, so we can use the shoelace formula
+    //to determine if the points are in clockwise order.
+    // https://en.wikipedia.org/wiki/Shoelace_formula
+    std::size_t nCells = cells.size();
+    std::size_t cIndex = 0;
+    for(std::size_t i=0; i < nCells; ++i, cIndex+=nVerts)
+      {
+
+      //determine if the triangle/quad is counterclockwise
+      //a positive sum denotes a clockwise winding
+      double sum = find_sum(conn, points, cIndex, nVerts);
+      if(sum > 0)
+        { //we have a clockwise cell that we need to reverse
+        std::reverse( &conn[cIndex], &conn[cIndex+nVerts] );
+        }
+
+      //now that the connectivity is the correct order we can write it out
+      //We add 1, since the points are written out in
+      this->m_Stream << cardType << " \t " <<  this->m_CellId++ << " ";
+      for(int j=0; j < nVerts; ++j)
+        {
+        this->m_Stream << std::setw(8) << 1 + conn[cIndex + j] << " ";
         }
       this->m_Stream << std::setw(8) << regionId << std::endl;
       }
