@@ -160,7 +160,7 @@ void verify_meshset_by_dim(const smtk::mesh::CollectionPtr& c)
   test( size == collec_numMeshes );
 
   //query for all meshsets of dimension 0, 1, 2, and 3
-  smtk::mesh::MeshSet all_dims = c->meshes( "bad name string" );
+  smtk::mesh::MeshSet all_dims;
   std::size_t numMeshesFoundByDimCalls = 0;
   for(int i=0; i<4; ++i)
     {
@@ -337,7 +337,7 @@ void verify_meshset_union(const smtk::mesh::CollectionPtr& c)
 
   //construct empty meshset(s)
   smtk::mesh::MeshSet all_dims = c->meshes( "bad name string" );
-  smtk::mesh::MeshSet append_output = all_dims;
+  smtk::mesh::MeshSet append_output;
   //verify that append and union produce the same result
   for(int i=0; i<4; ++i)
     {
