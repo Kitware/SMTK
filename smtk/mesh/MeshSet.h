@@ -75,8 +75,15 @@ public:
   bool operator!=( const MeshSet& other ) const;
   bool operator<(  const MeshSet& other ) const;
 
-  //append another MeshSet to this MeshSet, if the parents and collection
-  //pointers don't match the append will return false
+  //append another MeshSet to this MeshSet.
+  //If both MeshSets have valid parent pointers they must be to the same parent
+  //for the append to occur.
+  //If the lhs MeshSet parent is NULL and the rhs parent isn't we will copy
+  //the rhs parent to be the lhs parent.
+  //This is done so the following works:
+  //
+  // smtk::mesh::MeshSet ms;
+  // for( int i=0; i < size; ++i ) { ms.append( query.meshes() ) }
   bool append( const MeshSet& other);
 
   bool is_empty() const;

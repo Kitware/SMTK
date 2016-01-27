@@ -180,6 +180,7 @@ Session::~Session()
       ++mbit;
       }
     }
+  this->m_itemWatcher->session = NULL;
   this->m_itemWatcher->Delete();
   if(this->m_bathymetryHelper)
     {
@@ -877,6 +878,7 @@ int Session::findOrAddUseAdjacencies(
             this->addEntity(entRef, subloop, smtk::model::INCLUDES, helper);
             ++numEnts;
             }
+          loopIt->Delete();
           }
         else
           { // we are an inner loop use.
@@ -1945,6 +1947,7 @@ static vtkModelFaceUse* locateLoopInFace(
           vtkModelLoopUse* outerLoop = refFaceUse->GetOuterLoopUse();
           refLoopParent = (other == outerLoop) ? NULL : outerLoop;
           faceUseOrientation = i;
+          loopUseIt->Delete();
           return refFaceUse;
           }
         }

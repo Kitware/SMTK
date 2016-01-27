@@ -24,7 +24,7 @@
 #include <vtkIntArray.h>
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
-
+#include <vtkNew.h>
 
 vtkCMBParserBase::vtkCMBParserBase()
 {
@@ -42,13 +42,13 @@ void vtkCMBParserBase::SetGeometry(vtkDiscreteModel* Model, vtkObject* Geometry)
   //So what we can do is do a CopyStructure first, and DeepCopy that
   //to only deep copy the structure
 
-  vtkPolyData* copiedStructure = vtkPolyData::New();
+  vtkNew<vtkPolyData> copiedStructure;
   copiedStructure->CopyStructure(vtkDataSet::SafeDownCast(Geometry));
 
-  vtkPolyData* deepCopy = vtkPolyData::New();
-  deepCopy->DeepCopy(copiedStructure);
+  vtkNew<vtkPolyData> deepCopy;
+  deepCopy->DeepCopy(copiedStructure.GetPointer());
 
-  DiscreteMesh mesh(deepCopy);
+  DiscreteMesh mesh(deepCopy.GetPointer());
   Model->SetMesh(mesh);
 }
 
