@@ -7,6 +7,7 @@ set(ioSrcs
   ImportMesh.cxx
   Logger.cxx
   ModelToMesh.cxx
+  MeshExport2DM3DM.cxx
   OperatorLog.cxx
   ResourceSetReader.cxx
   ResourceSetWriter.cxx
@@ -24,6 +25,8 @@ set(ioHeaders
   ImportMesh.h
   Logger.h
   ModelToMesh.h
+  MeshExport2DM.h
+  MeshExport3DM.h
   OperatorLog.h
   ResourceSetReader.h
   ResourceSetWriter.h

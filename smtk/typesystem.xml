@@ -2222,6 +2222,14 @@
         <object-type name="Record" />
       </object-type>
 
+      <object-type name="MeshExport2DM">
+        <include file-name="smtk/io/MeshExport2DM.h" location="local"/>
+      </object-type>
+
+      <object-type name="MeshExport3DM">
+        <include file-name="smtk/io/MeshExport3DM.h" location="local"/>
+      </object-type>
+
       <object-type name="OperatorLog">
         <include file-name="smtk/io/OperatorLog.h" location="local"/>
       </object-type>
