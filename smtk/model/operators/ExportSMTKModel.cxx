@@ -57,7 +57,7 @@ smtk::model::OperatorResult ExportSMTKModel::operateInternal()
     smtkErrorMacro(this->log(), "Could not open file \"" << filename << "\".");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
-  
+
   cJSON* top = cJSON_CreateObject();
   std::string smtkfilepath = path(filename).parent_path().string();
   std::string smtkfilename = path(filename).stem().string();
@@ -82,9 +82,10 @@ smtk::model::OperatorResult ExportSMTKModel::operateInternal()
       }
     }
 
-  smtk::io::ExportJSON::forManagerSessionPartial(this->session()->sessionId(),
-                                                 this->m_specification->associatedModelEntityIds(),
-                                                 top, this->manager(), true);
+  smtk::io::ExportJSON::forManagerSessionPartial(
+    this->session()->sessionId(),
+    this->m_specification->associatedModelEntityIds(),
+    top, this->manager(), true, smtkfilepath);
 
   char* json = cJSON_Print(top);
   jsonFile << json;

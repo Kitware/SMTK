@@ -671,7 +671,11 @@ int ImportJSON::ofManagerIntegerProperties(const smtk::common::UUID& uid, cJSON*
   * The \a destSession must be of a proper type for your application
   * (i.e., be able to forward requests for data and operations).
   */
-int ImportJSON::ofRemoteSession(cJSON* node, DefaultSessionPtr destSession, ManagerPtr context)
+int ImportJSON::ofRemoteSession(
+  cJSON* node,
+  DefaultSessionPtr destSession,
+  ManagerPtr context,
+  const std::string& refPath)
 {
   int status = 0;
   cJSON* opsObj;
@@ -747,6 +751,7 @@ int ImportJSON::ofRemoteSession(cJSON* node, DefaultSessionPtr destSession, Mana
       destSession->createIODelegate("json"));
   if (delegate)
     {
+    delegate->setReferencePath(refPath);
     delegate->importJSON(context, destSession, node);
     }
   return status;
@@ -785,7 +790,8 @@ int ImportJSON::ofRemoteSession(cJSON* node, DefaultSessionPtr destSession, Mana
   * special care must be taken to avoid that behavior when importing
   * a session.
   */
-int ImportJSON::ofLocalSession(cJSON* node, ManagerPtr context, bool loadNativeModels)
+int ImportJSON::ofLocalSession(
+  cJSON* node, ManagerPtr context, bool loadNativeModels, const std::string& refPath)
 {
   int status = 0;
   cJSON* opsObj;
@@ -827,6 +833,7 @@ int ImportJSON::ofLocalSession(cJSON* node, ManagerPtr context, bool loadNativeM
       sref.session()->createIODelegate("json"));
   if (delegate)
     {
+    delegate->setReferencePath(refPath);
     status = delegate->importJSON(context, sref.session(), node, loadNativeModels);
     }
   return status;

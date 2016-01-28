@@ -23,12 +23,16 @@
 #include "smtk/attribute/VoidItem.h"
 
 #include "smtk/io/ImportJSON.h"
+
+#include "boost/filesystem.hpp"
+
 #include "cJSON.h"
 
 #include <fstream>
 #include <iostream>
 
 using namespace smtk::model;
+using namespace boost::filesystem;
 using smtk::attribute::FileItem;
 using smtk::attribute::IntItem;
 
@@ -73,7 +77,8 @@ smtk::model::OperatorResult ImportSMTKModel::operateInternal()
   cJSON* root = cJSON_Parse(data.c_str());
   if (root && root->type == cJSON_Object && root->child)
     {
-    status = smtk::io::ImportJSON::ofLocalSession(root->child, this->manager(), true);
+    status = smtk::io::ImportJSON::ofLocalSession(root->child, this->manager(), true,
+      path(filename).parent_path().string());
     }
 
   OperatorResult result = this->createResult( status ? OPERATION_SUCCEEDED :

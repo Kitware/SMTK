@@ -29,6 +29,8 @@ protected:
   virtual smtk::model::OperatorResult readExodus();
   virtual smtk::model::OperatorResult readSLAC();
   virtual smtk::model::OperatorResult readLabelMap();
+
+  attribute::ModelEntityItemPtr m_preservedUUIDs;
 };
 
     } // namespace exodus
