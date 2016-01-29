@@ -128,6 +128,10 @@ public:
   virtual void Execute(
     vtkObject* caller, unsigned long eventId, void* callData)
     {
+    if (!session)
+      { // The session has been deleted while models still existed.
+      return;
+      }
     (void)eventId;
     (void)callData;
     smtk::common::UUID uid = session->findOrSetEntityUUID(vtkInformation::SafeDownCast(caller));
