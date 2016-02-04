@@ -14,7 +14,9 @@
 #include "smtk/mesh/Interface.h"
 #include "smtk/mesh/Collection.h"
 
+#include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityIterator.h"
+#include "smtk/model/Group.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Volume.h"
 #include "smtk/model/Tessellation.h"
@@ -174,8 +176,8 @@ void convert_vertex(std::vector<int>& cell_conn,
   //instead of changing the connectivity like a normal cell, instead
   //we modify the cell id list, as it is empty since no cells are allocated
   //for vertices
-  currentCellids.insert(global_coordinate_offset,
-                        global_coordinate_offset+numVerts);
+  currentCellids.insert(global_coordinate_offset, //insert is inclusive on both ends
+                        global_coordinate_offset+numVerts-1);
 }
 
 //----------------------------------------------------------------------------
@@ -346,6 +348,46 @@ convert_cells(const smtk::model::EntityRefs& ents,
   return newlyCreatedCells;
 }
 
+//----------------------------------------------------------------------------
+/// Recursively find all the entities with tessellation
+void find_entities_with_tessellation(
+  const smtk::model::EntityRef& root,
+  smtk::model::EntityRefs& tessEntities,
+  smtk::model::EntityRefs& touched)
+{
+  typedef smtk::model::EntityRefArray EntityRefArray;
+  EntityRefArray children =
+    (root.isModel() ?
+     root.as<smtk::model::Model>().cellsAs<EntityRefArray>() :
+     (root.isCellEntity() ?
+      root.as<smtk::model::CellEntity>().boundingCellsAs<EntityRefArray>() :
+      (root.isGroup() ?
+       root.as<smtk::model::Group>().members<EntityRefArray>() :
+       EntityRefArray())));
+
+  if (root.isModel())
+    {
+    // Make sure sub-models and groups are handled.
+    EntityRefArray tmp;
+    tmp = root.as<smtk::model::Model>().submodelsAs<EntityRefArray>();
+    children.insert(children.end(), tmp.begin(), tmp.end());
+    tmp = root.as<smtk::model::Model>().groupsAs<EntityRefArray>();
+    children.insert(children.end(), tmp.begin(), tmp.end());
+    }
+
+  for (EntityRefArray::const_iterator it = children.begin(); it != children.end(); ++it)
+    {
+    if (touched.find(*it) == touched.end())
+      {
+      touched.insert(*it);
+      if (it->hasTessellation())
+        {
+        tessEntities.insert(*it);
+        }
+      detail::find_entities_with_tessellation(*it, tessEntities, touched);
+      }
+    }
+}
 } //namespace detail
 
 
@@ -431,6 +473,66 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& 
 
   return collection;
 
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::model::Model& model) const
+{
+  typedef smtk::model::EntityRefs EntityRefs;
+  typedef smtk::model::EntityTypeBits EntityTypeBits;
+  typedef std::map< smtk::model::EntityRef, std::size_t > CoordinateOffsetMap;
+  smtk::model::ManagerPtr modelManager = model.manager();
+  smtk::mesh::CollectionPtr nullCollectionPtr;
+  if(!modelManager || !modelManager->meshes())
+    {
+    return nullCollectionPtr;
+    }
+
+  if(modelManager->tessellations().empty())
+    {
+    //we have zero tesselations, we can't continue. This is an invalid model
+    return nullCollectionPtr;
+    }
+
+  smtk::mesh::ManagerPtr meshManager = modelManager->meshes();
+  //Create the collection and extract the allocation interface from it
+  smtk::mesh::CollectionPtr collection = meshManager->makeCollection();
+  smtk::mesh::InterfacePtr iface = collection->interface();
+  smtk::mesh::AllocatorPtr ialloc = iface->allocator();
+  collection->setModelManager(modelManager);
+
+  //We create a new mesh each for the Edge(s), Face(s) and Volume(s).
+  //the MODEL_ENTITY will be associated with the meshset that contains all
+  // meshes.
+  CoordinateOffsetMap coordinateLocationMapping;
+  EntityRefs tessEntities, touched;
+  detail::find_entities_with_tessellation(model, tessEntities, touched);
+  if( !tessEntities.empty() )
+    {
+    detail::convert_vertices(tessEntities,
+                             coordinateLocationMapping,
+                             ialloc);
+
+    //for each volumes, faces, edges, and vertices entity we need to create a range of handles
+    //that represent the cell ids for that volume.
+    std::map<smtk::model::EntityRef, smtk::mesh::HandleRange> per_ent_cells =
+        detail::convert_cells(tessEntities,
+                              coordinateLocationMapping,
+                              ialloc);
+
+    typedef std::map<smtk::model::EntityRef, smtk::mesh::HandleRange>::const_iterator c_it;
+    for(c_it i= per_ent_cells.begin(); i != per_ent_cells.end(); ++i)
+      {
+      //now create a mesh from those cells
+      smtk::mesh::CellSet cellsForMesh(collection, i->second);
+      smtk::mesh::MeshSet ms = collection->createMesh(cellsForMesh);
+      collection->setAssociation(i->first, ms);
+      }
+
+    collection->associateToModel(model.entity());
+    }
+
+  return collection;
 }
 
 }

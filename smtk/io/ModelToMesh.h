@@ -14,6 +14,11 @@
 #include "smtk/PublicPointerDefs.h"
 
 namespace smtk {
+  namespace model
+  {
+    class Model;
+  }
+
 namespace io {
 class SMTKCORE_EXPORT ModelToMesh
 {
@@ -21,6 +26,8 @@ public:
   //convert smtk::model to a collection
   smtk::mesh::CollectionPtr operator()(const smtk::mesh::ManagerPtr& meshManager,
                                        const smtk::model::ManagerPtr& modelManager) const;
+  //convert smtk::model to a collection
+  smtk::mesh::CollectionPtr operator()(const smtk::model::Model& model) const;
 };
 
 }
