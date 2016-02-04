@@ -245,12 +245,11 @@ static void convert_smtkMesh_singleDimCells_to_vtkPolyData(const smtk::mesh::Cel
       {
       pd->SetLines(cellarray.GetPointer());
       }
-  /*
     else if (ctypes[smtk::mesh::Vertex])
       {
       pd->SetVerts(cellarray.GetPointer());
       }
-
+/*
     else if (ctypes[smtk::mesh::Tetrahedron]
       || ctypes[smtk::mesh::Pyramid]
       || ctypes[smtk::mesh::Wedge]
@@ -337,12 +336,12 @@ void vtkMeshMultiBlockSource::GenerateRepresentationForSingleMesh(
     smtk::mesh::MeshSet shell = meshes.subset(smtk::mesh::Dims3).extractShell();
     smtk::mesh::MeshSet twoD = meshes.subset(smtk::mesh::Dims2);
     smtk::mesh::MeshSet oneD = meshes.subset(smtk::mesh::Dims1);
-//    smtk::mesh::MeshSet zeroD = meshes.subset(smtk::mesh::Dims0);
+    smtk::mesh::MeshSet zeroD = meshes.subset(smtk::mesh::Dims0);
 
     smtk::mesh::MeshSet toRender = shell;
     toRender.append(twoD);
     toRender.append(oneD);
-//    toRender.append(zeroD);
+    toRender.append(zeroD);
         
     convert_smtkMesh_to_vtkPolyData(toRender, pts.GetPointer(), pd);
     // std::cout << "Number of points: " << pd->GetNumberOfPoints() << std::endl;
@@ -465,9 +464,6 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(
 
       smtk::mesh::MeshSet allMeshes = meshcollect->meshes( );
       mbds->SetNumberOfBlocks(allMeshes.size());
-
-      std::cout << "Total meshes=" << allMeshes.size() << std::endl;
-      std::cout << "Total cells=" << allMeshes.cells().size() << std::endl;
 
       for(std::size_t i=0; i<allMeshes.size(); ++i)
         {
