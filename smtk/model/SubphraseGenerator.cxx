@@ -411,6 +411,7 @@ void SubphraseGenerator::meshsetsOfMesh(
     this->meshsetsOfCollectionByDim(meshphr, smtk::mesh::Dims3, result);
     this->meshsetsOfCollectionByDim(meshphr, smtk::mesh::Dims2, result);
     this->meshsetsOfCollectionByDim(meshphr, smtk::mesh::Dims1, result);
+    this->meshsetsOfCollectionByDim(meshphr, smtk::mesh::Dims0, result);
     }
   // if this is a MeshSet
   else if(meshes.size() > 1)

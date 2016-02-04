@@ -104,6 +104,10 @@ std::string MeshPhrase::title()
           {
           strText = "Edges";
           }
+        else if(!this->m_relatedMesh.subset(smtk::mesh::Dims0).is_empty())
+          {
+          strText = "Vertices";
+          }
         else
           {
           strText = "unknown meshes";
