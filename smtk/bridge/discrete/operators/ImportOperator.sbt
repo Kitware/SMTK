@@ -63,6 +63,10 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
-    <AttDef Type="result(import)" BaseType="result"/>
+    <AttDef Type="result(import)" BaseType="result">
+      <ItemDefinitions>
+        <ModelEntity Name="mesh_created" NumberOfRequiredValues="1"/>
+      </ItemDefinitions>
+    </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>
