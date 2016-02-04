@@ -61,7 +61,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
     COMMAND
       $<TARGET_FILE:displayModelToMesh>
       "${SMTK_DATA_DIR}/smtk/simple.json"
-      -V "${SMTK_DATA_DIR}/baselines/vtk/simple-with-colors.png"
+      -V "${SMTK_DATA_DIR}/baselines/vtk/simple-Model2Mesh.png"
       -T "${CMAKE_CURRENT_BINARY_DIR}"
   )
 
