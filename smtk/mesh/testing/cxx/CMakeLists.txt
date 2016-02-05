@@ -14,7 +14,7 @@ set(unit_tests
   UnitTestCellTypes.cxx
   UnitTestCollection.cxx
   UnitTestManager.cxx
-  UnitTestModelToMesh.cxx
+  UnitTestModelToMesh3D.cxx
   UnitTestQueryTypes.cxx
   UnitTestReadWriteHandles.cxx
   UnitTestTypeSet.cxx
@@ -29,6 +29,7 @@ set(unit_tests_which_require_data
   UnitTestExportMesh3DM.cxx
   UnitTestLoadMesh.cxx
   UnitTestMeshSet.cxx
+  UnitTestModelToMesh2D.cxx
   UnitTestPointConnectivity.cxx
   UnitTestPointSet.cxx
   UnitTestReadWriteMeshJSON.cxx
