@@ -14,6 +14,8 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
+#include <string>
+
 namespace smtk {
   namespace model {
 
@@ -48,6 +50,21 @@ class SMTKCORE_EXPORT SessionIO
 public:
   smtkTypeMacro(SessionIO);
   virtual ~SessionIO() { } // virtual method needed so dynamic_cast will work
+
+  /**\brief Return a reference directory to use during import/export.
+    *
+    * Any relative file or directory specification should be
+    * relative to this reference path. This is used during export to
+    * turn absolute paths into relative ones. It may be used
+    * during import to do the reverse.
+    */
+  std::string referencePath() const { return this->m_referencePath; }
+
+  /// Set the directory to use during import/export for creating relative paths.
+  void setReferencePath(const std::string& p) { this->m_referencePath = p; }
+
+protected:
+  std::string m_referencePath;
 };
 
   } // namespace model

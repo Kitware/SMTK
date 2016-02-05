@@ -51,18 +51,6 @@ protected:
     const smtk::model::SessionPtr& sess,
     const smtk::model::Model& model) const;
 
-  virtual void addModelsRecord(const smtk::model::ManagerPtr& modelMgr,
-                               const smtk::common::UUIDs& modelIds,
-                               cJSON* sessionRec);
-  virtual void addModelsRecord(const smtk::model::ManagerPtr& modelMgr,
-                               const smtk::model::Models& models,
-                               cJSON* sessionRec);
-  virtual void addMeshesRecord(const ManagerPtr& modelMgr,
-                               const smtk::common::UUIDs& modelIds,
-                               cJSON* sessionRec);
-  virtual void addMeshesRecord(const ManagerPtr& modelMgr,
-                               const smtk::model::Models& inModels,
-                               cJSON* sessionRec);
   virtual int loadModelsRecord(smtk::model::ManagerPtr modelMgr,
                                cJSON* sessionRec);
   virtual int loadMeshesRecord(smtk::model::ManagerPtr modelMgr,

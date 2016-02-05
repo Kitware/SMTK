@@ -112,6 +112,8 @@ def PrintResultLog(res, always = False):
   if always or res.findInt('outcome').value(0) != smtk.model.OPERATION_SUCCEEDED:
     slog = res.findString('log')
     tmplog = smtk.io.Logger()
+    if slog.numberOfValues() < 1:
+      return
     smtk.io.ImportJSON.ofLog(slog.value(0), tmplog)
     print '\n'.join(
         [
