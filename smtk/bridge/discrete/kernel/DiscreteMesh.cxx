@@ -235,6 +235,7 @@ vtkSmartPointer<vtkPolyData> DiscreteMesh::GetAsSinglePolyData() const
 
   vtkSmartPointer<vtkPolyData> copy = vtkSmartPointer<vtkPolyData>::New();
   copy->DeepCopy(shallowStruct);
+  shallowStruct->Delete();
   return copy;
 }
 
