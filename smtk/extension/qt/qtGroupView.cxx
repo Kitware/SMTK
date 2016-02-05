@@ -76,6 +76,11 @@ qtGroupView::~qtGroupView()
 void qtGroupView::updateCurrentTab(int ithTab)
 {
   this->Internals->m_currentTabSelected = ithTab;
+  qtBaseView* currView = this->getChildView(ithTab);
+  if(currView)
+    {
+    currView->updateUI();
+    }
 }
 
 //----------------------------------------------------------------------------

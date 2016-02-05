@@ -154,6 +154,10 @@ public:
   static void EntityRefsFromUUIDs(
     S& result, ManagerPtr, const T& uids);
 
+  template<typename S, typename T>
+  static void EntityRefsToUUIDs(
+    S& uids, const T& entRefs);
+
   EntityRefs bordantEntities(int ofDimension = -2) const;
   EntityRefs boundaryEntities(int ofDimension = -2) const;
 
@@ -298,13 +302,25 @@ template<typename S, typename T>
 void EntityRef::EntityRefsFromUUIDs(
   S& result, ManagerPtr mgr, const T& uids)
 {
-  typename S::size_type expected = 1;
-  for (typename T::const_iterator it = uids.begin(); it != uids.end(); ++it, ++expected)
+  for (typename T::const_iterator it = uids.begin(); it != uids.end(); ++it)
     {
     typename S::value_type entry(mgr, *it);
     if (entry.isValid())
       {
       result.insert(result.end(), entry);
+      }
+    }
+}
+
+template<typename S, typename T>
+void EntityRef::EntityRefsToUUIDs(
+  S& uids, const T& entRefs)
+{
+  for (typename T::const_iterator it = entRefs.begin(); it != entRefs.end(); ++it)
+    {
+    if (it->entity())
+      {
+      uids.insert(uids.end(), it->entity());
       }
     }
 }

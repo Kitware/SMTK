@@ -10,6 +10,7 @@ set(smtkModelPythonDataTests
   modelSetPropertyOp
   modelCloseModelOp
   modelPhrase
+  importExport
 )
 
 # Additional tests that require specific bridges
