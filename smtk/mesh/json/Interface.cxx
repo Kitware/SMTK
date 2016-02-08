@@ -572,9 +572,11 @@ void Interface::pointForEach(const HandleRange &points,
 }
 
 //----------------------------------------------------------------------------
-void Interface::cellForEach(smtk::mesh::PointConnectivity& pc,
+void Interface::cellForEach(const HandleRange &cells,
+                            smtk::mesh::PointConnectivity& pc,
                             smtk::mesh::CellForEach& filter) const
 {
+  (void) cells;
   (void) pc;
   (void) filter;
 }

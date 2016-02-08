@@ -52,8 +52,11 @@ public:
     }
 
   //--------------------------------------------------------------------------
-  void forCell(smtk::mesh::CellType cellType, int numPts)
+  void forCell(const smtk::mesh::Handle& cellId,
+               smtk::mesh::CellType cellType,
+               int numPts)
   {
+  (void) cellId;
   (void)cellType;
   this->numCellsVisited++;
   this->numPointsSeen += numPts;

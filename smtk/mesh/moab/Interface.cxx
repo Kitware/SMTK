@@ -1162,7 +1162,8 @@ void Interface::pointForEach(const HandleRange &points,
 }
 
 //----------------------------------------------------------------------------
-void Interface::cellForEach(smtk::mesh::PointConnectivity& pc,
+void Interface::cellForEach(const HandleRange &cells,
+                            smtk::mesh::PointConnectivity& pc,
                             smtk::mesh::CellForEach& filter) const
 {
   if(!pc.is_empty())
@@ -1172,13 +1173,13 @@ void Interface::cellForEach(smtk::mesh::PointConnectivity& pc,
     const smtk::mesh::Handle* points;
 
 
-    typedef smtk::mesh::HandleRange::const_iterator cit;
-
+    smtk::mesh::HandleRange::const_iterator currentCell = cells.begin();
     if(filter.wantsCoordinates())
       {
       std::vector<double> coords;
       for(pc.initCellTraversal();
           pc.fetchNextCell(cellType, size, points) == true;
+          currentCell++
           )
         {
         coords.resize(size*3);
@@ -1190,18 +1191,19 @@ void Interface::cellForEach(smtk::mesh::PointConnectivity& pc,
         //call the custom filter
         filter.pointIds(points);
         filter.coordinates(&coords);
-        filter.forCell(cellType,size);
+        filter.forCell(*currentCell,cellType,size);
         }
       }
     else
       { //don't extract the coords
       for(pc.initCellTraversal();
           pc.fetchNextCell(cellType, size, points) == true;
+          currentCell++
           )
         {
         filter.pointIds(points);
         //call the custom filter
-        filter.forCell(cellType,size);
+        filter.forCell(*currentCell, cellType,size);
         }
       }
     }

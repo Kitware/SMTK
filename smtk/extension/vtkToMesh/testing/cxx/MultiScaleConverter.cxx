@@ -56,7 +56,9 @@ public:
     }
 
   //--------------------------------------------------------------------------
-  void forCell(smtk::mesh::CellType, int numPts)
+  void forCell(const smtk::mesh::Handle&,
+               smtk::mesh::CellType,
+               int numPts)
   {
     const std::vector<double>& coords = this->coordinates();
     const smtk::mesh::Handle* const ptIds = this->pointIds();
