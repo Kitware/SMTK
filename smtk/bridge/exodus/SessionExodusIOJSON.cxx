@@ -58,8 +58,7 @@ int SessionIOJSON::loadExodusFileWithUUIDs(
   path absURL(url);
   if (!this->referencePath().empty() && !absURL.is_absolute())
     {
-    path tryme(this->referencePath());
-    tryme += absURL;
+    path tryme = this->referencePath() / absURL;
     if (exists(tryme))
       {
       absURL = tryme;
