@@ -10,6 +10,7 @@ set(meshSrcs
   MeshSet.cxx
   PointConnectivity.cxx
   PointSet.cxx
+  Reclassify.cxx
   TypeSet.cxx
 
   json/Interface.cxx
@@ -41,6 +42,7 @@ set(meshHeaders
   PointSet.h
   PropertyData.h
   QueryTypes.h
+  Reclassify.h
   TypeSet.h
 
   #Limit the amount of headers for each backend we install. These should be
