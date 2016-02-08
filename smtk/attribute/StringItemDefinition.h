@@ -40,12 +40,21 @@ namespace smtk
       void setIsMultiline(bool val)
       {this->m_multiline = val;}
 
+      //Set/Get the secure property of the item definition
+      //Note this is purely a GUI hint for now - the default is false.  Also this
+      // will not be supported when the Item is multiline.
+      void setIsSecure(bool val)
+      {this->m_secure = val;}
+      bool isSecure() const
+      {return this->m_secure;}
+
       virtual smtk::attribute::ItemDefinitionPtr
         createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const;
     protected:
       StringItemDefinition(const std::string &myName);
       bool m_multiline;
     private:
+      bool m_secure;
 
     };
   }

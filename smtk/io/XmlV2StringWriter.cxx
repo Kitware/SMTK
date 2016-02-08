@@ -675,6 +675,10 @@ void XmlV2StringWriter::processStringDef(pugi::xml_node &node,
     {
     node.append_attribute("MultipleLines").set_value(true);
     }
+  if (idef->isSecure())
+    {
+    node.append_attribute("Secure").set_value("true");
+    }
   processDerivedValueDef<attribute::StringItemDefinitionPtr>(node, idef);
 }
 //----------------------------------------------------------------------------

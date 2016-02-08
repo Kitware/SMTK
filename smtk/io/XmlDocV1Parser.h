@@ -83,7 +83,7 @@ namespace smtk
       void processAttribute(pugi::xml_node &attNode);
       void processItem(pugi::xml_node &node,
                        smtk::attribute::ItemPtr item);
-      void processItemDef(pugi::xml_node &node,
+      virtual void processItemDef(pugi::xml_node &node,
                           smtk::attribute::ItemDefinitionPtr idef);
       void processRefItem(pugi::xml_node &node,
                                    smtk::attribute::RefItemPtr item);
@@ -111,8 +111,8 @@ namespace smtk
                          smtk::attribute::IntItemDefinitionPtr idef);
       void processStringItem(pugi::xml_node &node,
                              smtk::attribute::StringItemPtr item);
-      void processStringDef(pugi::xml_node &node,
-                            smtk::attribute::StringItemDefinitionPtr idef);
+      virtual void processStringDef(pugi::xml_node &node,
+                                    smtk::attribute::StringItemDefinitionPtr idef);
       virtual void processModelEntityItem(pugi::xml_node &node,
                              smtk::attribute::ModelEntityItemPtr item);
       void processModelEntityDef(pugi::xml_node &node,

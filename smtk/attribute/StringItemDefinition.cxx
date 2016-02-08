@@ -15,7 +15,8 @@ using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
 StringItemDefinition::StringItemDefinition(const std::string &myName):
-  ValueItemDefinitionTemplate<std::string>(myName), m_multiline(false)
+  ValueItemDefinitionTemplate<std::string>(myName), m_multiline(false),
+  m_secure(false)
 {
 }
 
