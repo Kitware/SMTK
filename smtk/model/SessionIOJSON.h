@@ -42,7 +42,7 @@ protected:
   virtual int writeNativeModel(smtk::model::ManagerPtr modelMgr,
                               const smtk::model::SessionPtr& sess,
                               const smtk::model::Model& model,
-                              const std::string& outNativeFile);
+                              std::string& outNativeFile);
   virtual int loadNativeModel(smtk::model::ManagerPtr modelMgr,
                               const smtk::model::SessionPtr& sess,
                               const std::string& inNativeFile);

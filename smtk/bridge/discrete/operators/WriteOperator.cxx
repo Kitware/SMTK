@@ -105,6 +105,7 @@ OperatorResult WriteOperator::operateInternal()
     }
 
   OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
+  this->specification()->findFile("filename")->setValue(fname);
   // The model was not modified while writing cmb file.
   // this->addEntityToResult(result, model, MODIFIED);
 

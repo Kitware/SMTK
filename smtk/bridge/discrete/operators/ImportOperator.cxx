@@ -305,6 +305,10 @@ OperatorResult ImportOperator::operateInternal()
     smtk::mesh::CollectionPtr c = convert(modelEntity.as<smtk::model::Model>());
     if(c->isValid() && c->numberOfMeshes() > 0)
       {
+      if(c->name().empty())
+        {
+        c->name("original_mesh");
+        }
       result->findModelEntity("mesh_created")->setValue(modelEntity);
       }
     }
