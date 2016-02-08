@@ -334,14 +334,14 @@ ENDIF (CMAKE_BUILD_TYPE MATCHES "Debug")
 #  OUTPUT_STRIP_TRAILING_WHITESPACE
 #  )
 CONFIGURE_FILE(config/MOABConfig.cmake.h.in "${PROJECT_BINARY_DIR}/src/moab/MOABConfig.h" @ONLY)
-#INSTALL( FILES "${PROJECT_BINARY_DIR}/src/moab/MOABConfig.h" DESTINATION include )
+INSTALL( FILES "${PROJECT_BINARY_DIR}/src/moab/MOABConfig.h" DESTINATION include )
 
 CONFIGURE_FILE(MOABConfig.new.cmake.in "${PROJECT_BINARY_DIR}/MOABConfig.cmake" @ONLY)
 # CONFIGURE_FILE(moab.make.in "${PROJECT_BINARY_DIR}/lib/moab.make" @ONLY)
 
 # Not needed to install as we bundle this as part of SMTK
 # INSTALL( FILES "${PROJECT_BINARY_DIR}/lib/moab.make" DESTINATION lib )
-# INSTALL( FILES "${PROJECT_BINARY_DIR}/MOABConfig.cmake" DESTINATION lib/cmake/MOAB )
+INSTALL( FILES "${PROJECT_BINARY_DIR}/MOABConfig.cmake" DESTINATION lib/cmake/MOAB )
 
 # ADD_CUSTOM_TARGET(uninstall
 #     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
