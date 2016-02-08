@@ -41,6 +41,7 @@ Definition::Definition(
   this->m_isRequired = false;
   this->m_isNotApplicableColorSet = false;
   this->m_isDefaultColorSet = false;
+  this->m_rootName = this->m_type;
   if (myBaseDef)
     {
     this->m_baseItemOffset = myBaseDef->numberOfItemDefinitions();

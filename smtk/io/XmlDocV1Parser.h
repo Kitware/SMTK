@@ -79,7 +79,9 @@ namespace smtk
       virtual void processViews(pugi::xml_node &root);
       virtual void processModelInfo(pugi::xml_node &root);
 
-      void processDefinition(pugi::xml_node &defNode);
+      void createDefinition(pugi::xml_node &defNode);
+      virtual void processDefinition(pugi::xml_node &defNode,
+                                     smtk::attribute::DefinitionPtr def);
       void processAttribute(pugi::xml_node &attNode);
       void processItem(pugi::xml_node &node,
                        smtk::attribute::ItemPtr item);

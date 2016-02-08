@@ -480,6 +480,10 @@ void XmlV2StringWriter::processDefinition(xml_node &definitions,
       {
       node.append_attribute("Unique").set_value("false");
       }
+    if (def->rootName() != def->type())
+      {
+      node.append_attribute("RootName").set_value(def->rootName().c_str());
+      }
     if (def->isNodal())
       {
       node.append_attribute("Nodal").set_value("true");

@@ -35,6 +35,8 @@ namespace smtk
       static pugi::xml_node getRootNode(pugi::xml_document &doc);
 
     protected:
+      virtual void processDefinition(pugi::xml_node &defNode,
+                                     smtk::attribute::DefinitionPtr def);
       virtual void processFileItem(pugi::xml_node &node,
                            smtk::attribute::FileItemPtr item);
       virtual void processModelInfo(pugi::xml_node &root);

@@ -166,6 +166,31 @@ int main()
     status = -1;
     }
 
+  //Lets test the RootName feature
+  att1 = system.createAttribute("testDef");
+  if (att1->name() != "testDef-0")
+    {
+    std::cout << "Name = " << att1->name() << "\n";
+    std::cout << "ERROR: Creating Attribute without name test Failed\n";
+    status = -1;
+    }
+  else
+    {
+    std::cout << "Created attribute with default name testDef-0\n";
+    }
+  def->setRootName("Foo");
+  att1 = system.createAttribute("testDef");
+  if (att1->name() != "Foo-0")
+    {
+    std::cout << "Name = " << att1->name() << "\n";
+    std::cout << "ERROR: Creating Attribute using RootName test Failed\n";
+    status = -1;
+    }
+  else
+    {
+    std::cout << "Created attribute with RootName name Foo-0\n";
+    }
+  
   std::cout << "System destroyed\n";
   }
   return status;

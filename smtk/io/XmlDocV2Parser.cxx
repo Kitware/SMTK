@@ -13,6 +13,7 @@
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/MeshItemDefinition.h"
@@ -120,6 +121,19 @@ void XmlDocV2Parser::process(xml_document &doc)
 }
 
 
+//----------------------------------------------------------------------------
+  void XmlDocV2Parser::processDefinition(xml_node &defNode,
+                                         smtk::attribute::DefinitionPtr def)
+{
+  xml_attribute xatt;
+  // we just need to process Secure XML Attribute added in V2
+  this->XmlDocV1Parser::processDefinition(defNode, def);
+  xatt = defNode.attribute("RootName");
+  if (xatt)
+    {
+    def->setRootName(xatt.value());
+    }
+}
 //----------------------------------------------------------------------------
 void XmlDocV2Parser::processStringDef(xml_node &node,
                                     smtk::attribute::StringItemDefinitionPtr idef)

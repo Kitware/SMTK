@@ -54,6 +54,7 @@ namespace smtk
       smtk::attribute::DefinitionPtr createDefinition(const std::string &name,
                                                     attribute::DefinitionPtr baseDefiniiton);
       smtk::attribute::AttributePtr createAttribute(const std::string &name, const std::string &type);
+      smtk::attribute::AttributePtr createAttribute(attribute::DefinitionPtr def);
       smtk::attribute::AttributePtr createAttribute(const std::string &type);
       smtk::attribute::AttributePtr createAttribute(const std::string &name, attribute::DefinitionPtr def);
       bool removeAttribute(smtk::attribute::AttributePtr att);
