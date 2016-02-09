@@ -71,6 +71,16 @@ OperatorResult WriteOperator::operateInternal()
   if (fname.empty())
     return this->createResult(OPERATION_FAILED);
 
+  // make sure the filename has .cmb extension
+  std::string ext = vtksys::SystemTools::GetFilenameLastExtension(fname);
+  std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+  if(ext != ".cmb")
+    {
+    std::string tmpname = vtksys::SystemTools::GetFilenameWithoutLastExtension(fname); 
+    fname = vtksys::SystemTools::GetFilenamePath(fname);
+    fname.append("/").append(tmpname).append(".cmb");
+    }
+
   this->m_op->SetFileName(fname.c_str());
   Session* opsession = this->discreteSession();
 
@@ -95,6 +105,7 @@ OperatorResult WriteOperator::operateInternal()
     }
 
   OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
+  this->specification()->findFile("filename")->setValue(fname);
   // The model was not modified while writing cmb file.
   // this->addEntityToResult(result, model, MODIFIED);
 

@@ -350,7 +350,7 @@ void verify_cell_have_points()
 }
 
 //----------------------------------------------------------------------------
-int UnitTestModelToMesh(int, char** const)
+int UnitTestModelToMesh3D(int, char** const)
 {
   verify_null_managers();
   verify_empty_model();
