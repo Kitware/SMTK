@@ -1,10 +1,10 @@
 [hooks]
-	url = http://public.kitware.com/GitSetup.git
-
-[ssh]
-	host = www.kitware.com
-	key = id_git_www
-	request-url = https://www.kitware.com/Admin/SendPassword.cgi
-
-[stage]
-	url = git@www.kitware.com:stage/SMTK.git
+	url = https://gitlab.kitware.com/utils/gitsetup.git
+[upstream]
+	url = https://gitlab.kitware.com/cmb/smtk.git
+[gitlab]
+	host = gitlab.kitware.com
+	group-path = cmb
+	group-name = CMB
+	project-path = smtk
+	project-name = SMTK
