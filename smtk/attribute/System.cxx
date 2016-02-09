@@ -127,10 +127,25 @@ smtk::attribute::AttributePtr System::createAttribute(const std::string &name,
 }
 
 //----------------------------------------------------------------------------
-smtk::attribute::AttributePtr System::createAttribute(const std::string &typeName)
+smtk::attribute::AttributePtr
+System::createAttribute(smtk::attribute::DefinitionPtr def)
 {
   smtk::attribute::AttributePtr att =
-    this->createAttribute(this->createUniqueName(typeName), typeName);
+    this->createAttribute(this->createUniqueName(def->rootName()), def);
+  return att;
+}
+
+//----------------------------------------------------------------------------
+smtk::attribute::AttributePtr System::createAttribute(const std::string &typeName)
+{
+  smtk::attribute::DefinitionPtr def = this->findDefinition(typeName);
+  if (!def)
+    {
+    return smtk::attribute::AttributePtr();
+    }
+    
+  smtk::attribute::AttributePtr att =
+    this->createAttribute(this->createUniqueName(def->rootName()), def);
   return att;
 }
 

@@ -480,6 +480,10 @@ void XmlV2StringWriter::processDefinition(xml_node &definitions,
       {
       node.append_attribute("Unique").set_value("false");
       }
+    if (def->rootName() != def->type())
+      {
+      node.append_attribute("RootName").set_value(def->rootName().c_str());
+      }
     if (def->isNodal())
       {
       node.append_attribute("Nodal").set_value("true");
@@ -674,6 +678,10 @@ void XmlV2StringWriter::processStringDef(pugi::xml_node &node,
   if (idef->isMultiline())
     {
     node.append_attribute("MultipleLines").set_value(true);
+    }
+  if (idef->isSecure())
+    {
+    node.append_attribute("Secure").set_value("true");
     }
   processDerivedValueDef<attribute::StringItemDefinitionPtr>(node, idef);
 }

@@ -44,3 +44,14 @@ bool StringItem::assign(ConstItemPtr &sourceItem, unsigned int options)
   return ValueItemTemplate<std::string>::assign(sourceItem, options);
 }
 //----------------------------------------------------------------------------
+bool StringItem::isSecure() const
+{
+  const StringItemDefinition *sdef = static_cast<const StringItemDefinition *>
+    (this->definition().get());
+  if (!sdef)
+    {
+    return false;
+    }
+  return sdef->isSecure();
+}
+//----------------------------------------------------------------------------
