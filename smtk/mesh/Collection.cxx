@@ -171,13 +171,13 @@ bool Collection::assignUniqueNameIfNotAlready()
 }
 
 //----------------------------------------------------------------------------
-const std::string& Collection::readLocation() const
+const smtk::common::FileLocation& Collection::readLocation() const
 {
   return this->m_readLocation;
 }
 
 //----------------------------------------------------------------------------
-void Collection::readLocation(const std::string& n)
+void Collection::readLocation(const smtk::common::FileLocation& n)
 {
   this->m_readLocation = n;
   //if the write location hasn't been set, update it to be the read location
@@ -188,13 +188,13 @@ void Collection::readLocation(const std::string& n)
 }
 
 //----------------------------------------------------------------------------
-const std::string& Collection::writeLocation() const
+const smtk::common::FileLocation& Collection::writeLocation() const
 {
   return this->m_writeLocation;
 }
 
 //----------------------------------------------------------------------------
-void Collection::writeLocation(const std::string& n)
+void Collection::writeLocation(const smtk::common::FileLocation& n)
 {
   this->m_writeLocation = n;
 }
@@ -205,7 +205,6 @@ void Collection::clearReadWriteLocations()
   this->m_readLocation.clear();
   this->m_writeLocation.clear();
 }
-
 
 //----------------------------------------------------------------------------
 std::string Collection::interfaceName() const
