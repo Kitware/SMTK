@@ -38,7 +38,7 @@ std::string data_root = SMTK_DATA_DIR;
 std::string write_root = data_root + "/mesh/tmp";
 
 //----------------------------------------------------------------------------
-void create_simple_model( smtk::model::ManagerPtr mgr )
+void create_simple_mesh_model( smtk::model::ManagerPtr mgr )
 {
   std::string file_path(data_root);
   file_path += "/smtk/test2D.json";
@@ -100,7 +100,7 @@ void verify_model_association()
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
   smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
 
-  create_simple_model(modelManager);
+  create_simple_mesh_model(modelManager);
 
   smtk::io::ModelToMesh convert;
   smtk::mesh::CollectionPtr c = convert(meshManager,modelManager);
@@ -125,7 +125,7 @@ void verify_cell_conversion()
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
   smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
 
-  create_simple_model(modelManager);
+  create_simple_mesh_model(modelManager);
 
   smtk::io::ModelToMesh convert;
   smtk::mesh::CollectionPtr c = convert(meshManager,modelManager);
@@ -140,7 +140,7 @@ void verify_cell_conversion()
   test( edge_cells.size() == 32 );
 
   smtk::mesh::CellSet vert_cells = c->cells( smtk::mesh::Dims0 );
-  test( vert_cells.size() == 8 );
+  test( vert_cells.size() == 7 );
 
 }
 
@@ -150,7 +150,7 @@ void verify_vertex_conversion()
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
   smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
 
-  create_simple_model(modelManager);
+  create_simple_mesh_model(modelManager);
 
   smtk::io::ModelToMesh convert;
   smtk::mesh::CollectionPtr c = convert(meshManager,modelManager);
@@ -165,6 +165,11 @@ void verify_vertex_conversion()
 
   points = c->points( );
   test( points.size() == 32, "After merging of identical points we should have 32");
+
+  //verify that after merging points we haven't deleted any of the cells
+  //that represent a model vert
+  smtk::mesh::CellSet vert_cells = c->cells( smtk::mesh::Dims0 );
+  test( vert_cells.size() == 7 );
 }
 
 }
