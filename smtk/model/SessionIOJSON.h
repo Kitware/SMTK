@@ -45,7 +45,8 @@ protected:
                               std::string& outNativeFile);
   virtual int loadNativeModel(smtk::model::ManagerPtr modelMgr,
                               const smtk::model::SessionPtr& sess,
-                              const std::string& inNativeFile);
+                              const std::string& inNativeFile,
+                              std::string& loadedURL);
   virtual std::string getOutputFileNameForNativeModel(
     smtk::model::ManagerPtr modelMgr,
     const smtk::model::SessionPtr& sess,
