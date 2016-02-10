@@ -452,7 +452,16 @@ bool Collection::hasAssociations( ) const
 bool Collection::associateToModel(const smtk::common::UUID& uuid)
 {
   const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
-  return iface->setRootAssociation( uuid );
+
+  //before we associate this model make sure we are not already associated
+  //to this model UUID. This is needed so that we are serializing/de-serializing
+  //meshes we don't set the modify bit to true, when we re-associate to the model
+  //and already had that info
+  if(iface->rootAssociation() != uuid)
+    {
+    return iface->setRootAssociation( uuid );
+    }
+  return true;
 }
 
 //----------------------------------------------------------------------------
