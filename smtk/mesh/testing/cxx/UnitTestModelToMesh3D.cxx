@@ -143,6 +143,7 @@ void verify_model_association()
   test( c->hasAssociations(), "collection should have associations");
   test( (c->associatedModel() != smtk::common::UUID()), "collection should be associated to a real model");
   test( (c->isAssociatedToModel()), "collection should be associated to a real model");
+  test( c->isModified() == true, "A mesh created in memory with no file is considered modified" );
 
   //verify the MODEL_ENTITY is correct
   smtk::model::EntityRefs currentModels = modelManager->entitiesMatchingFlagsAs<

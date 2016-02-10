@@ -112,10 +112,24 @@ public:
   //For example, the moab interface would return "moab"
   virtual std::string name() const = 0;
 
+  //---------------------------------------------------------------------------
+  //returns if the underlying data has been modified since the mesh was loaded
+  //from disk. If the mesh has no underlying file, it will always be considered
+  //modified. Once the mesh is written to disk, we will reset the modified
+  //flag.
+  virtual bool isModified() const = 0;
+
   //----------------------------------------------------------------------------
   //get back a lightweight interface around allocating memory into the given
   //interface. This is generally used to create new coordinates or cells that
-  //are than assigned to an existing mesh or new mesh
+  //are than assigned to an existing mesh or new mesh.
+  //
+  //If the current interface is read-only, the AllocatorPtr that is returned
+  //will be NULL.
+  //
+  //Note: Merely fetching a valid allocator will mark the collection as
+  //modified. This is done instead on a per-allocation basis so that
+  //modification state changes don't impact performance.
   virtual smtk::mesh::AllocatorPtr allocator() = 0;
 
   //----------------------------------------------------------------------------
@@ -132,6 +146,7 @@ public:
   //the mesh will have the root as its parent.
   //Will fail if the HandleRange is empty or doesn't contain valid
   //cell handles.
+  //Note: Will mark the interface as modified when successful
   virtual bool createMesh(const smtk::mesh::HandleRange& cells,
                           smtk::mesh::Handle& meshHandle) = 0;
 
@@ -228,18 +243,22 @@ public:
 
   //----------------------------------------------------------------------------
   //merge any duplicate points used by the cells that have been passed
+  //Note: Will mark the interface as modified when successful
   virtual bool mergeCoincidentContactPoints(const smtk::mesh::HandleRange& meshes,
                                            double tolerance) const = 0;
 
   //----------------------------------------------------------------------------
+  // Note: Will mark the interface as modified when successful
   virtual bool setDomain(const smtk::mesh::HandleRange& meshsets,
                          const smtk::mesh::Domain& domain) const = 0;
 
   //----------------------------------------------------------------------------
+  // Note: Will mark the interface as modified when successful
   virtual bool setDirichlet(const smtk::mesh::HandleRange& meshsets,
                             const smtk::mesh::Dirichlet& dirichlet) const = 0;
 
   //----------------------------------------------------------------------------
+  // Note: Will mark the interface as modified when successful
   virtual bool setNeumann(const smtk::mesh::HandleRange& meshsets,
                           const smtk::mesh::Neumann& neumann) const = 0;
 
@@ -249,7 +268,7 @@ public:
   // given set of meshes.
   // Note: Only MeshSets can have associations applied. Other elements will cause
   // undefined behavior
-  //
+  // Note: Will mark the interface as modified when successful
   virtual bool setAssociation(const smtk::common::UUID& modelUUID,
                               const smtk::mesh::HandleRange& meshsets) const = 0;
 
@@ -263,6 +282,7 @@ public:
   // Specify the model uuid that the root of this interface is associated too
   // This represents generally is the MODEL_ENTITY that owns all associations
   // with this interface
+  // Note: Will mark the interface as modified when successful
   virtual bool setRootAssociation(const smtk::common::UUID& modelUUID) const = 0;
 
   //----------------------------------------------------------------------------
@@ -311,7 +331,14 @@ public:
   //and return true.
   //When deleting meshes if the range contains the root handle (getRoot()) the
   //request will fail, nothing will be deleted, and we will return false.
+  //Note: Will mark the interface as modified when successful
   virtual bool deleteHandles(const smtk::mesh::HandleRange& toDel) = 0;
+
+  //----------------------------------------------------------------------------
+  //Manually modify the modified state. This is only done to set the modified
+  //state to be proper after serialization / deserialization.
+  virtual void setModifiedState(bool state)=0;
+
 };
 
 }

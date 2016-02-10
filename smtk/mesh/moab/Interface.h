@@ -63,10 +63,24 @@ public:
   //Requirements: The string must be all lower-case.
   virtual std::string name() const { return std::string("moab"); }
 
+  //---------------------------------------------------------------------------
+  //returns if the underlying data has been modified since the mesh was loaded
+  //from disk. If the mesh has no underlying file, it will always be considered
+  //modified. Once the mesh is written to disk, we will reset the modified
+  //flag.
+  virtual bool isModified() const;
+
   //----------------------------------------------------------------------------
   //get back a lightweight interface around allocating memory into the given
   //interface. This is generally used to create new coordinates or cells that
   //are than assigned to an existing mesh or new mesh
+  //
+  //If the current interface is read-only, the AllocatorPtr that is returned
+  //will be NULL.
+  //
+  //Note: Merely fetching a valid allocator will mark the collection as
+  //modified. This is done instead on a per-allocation basis so that
+  //modification state changes don't impact performance.
   smtk::mesh::AllocatorPtr allocator();
 
   //----------------------------------------------------------------------------
@@ -85,6 +99,7 @@ public:
   //equal to highest dimension of cell inside
   //Will fail if the HandleRange is empty or doesn't contain valid
   //cell handles.
+  //Note: Will mark the interface as modified when successful
   bool createMesh(const smtk::mesh::HandleRange& cells,
                   smtk::mesh::Handle& meshHandle);
 
@@ -180,6 +195,7 @@ public:
 
   //----------------------------------------------------------------------------
   //merge any duplicate points used by the cells that have been passed
+  //Note: Will mark the interface as modified when successful
   bool mergeCoincidentContactPoints(const smtk::mesh::HandleRange& meshes,
                                    double tolerance) const;
 
@@ -251,10 +267,14 @@ public:
   //----------------------------------------------------------------------------
   ::moab::Interface * moabInterface() const;
 
+  //----------------------------------------------------------------------------
+  void setModifiedState(bool state) { m_modified = state; }
+
 private:
   //holds a reference to the real moab interface
   smtk::shared_ptr< ::moab::Interface > m_iface;
   smtk::mesh::AllocatorPtr m_alloc;
+  mutable bool m_modified;
 };
 
 }

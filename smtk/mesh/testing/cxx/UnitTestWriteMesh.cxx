@@ -88,6 +88,7 @@ void verify_write_valid_collection_hdf5()
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
   test( c->isValid(), "collection should be valid");
+  test( !c->isModified() , "collection shouldn't be marked as modified");
 
   //write out the mesh.
   bool result = smtk::io::WriteMesh::entireCollection(write_path, c);
@@ -100,6 +101,7 @@ void verify_write_valid_collection_hdf5()
   //reload the written file and verify the number of meshes are the same as the
   //input mesh
   smtk::mesh::CollectionPtr c2 = smtk::io::ImportMesh::entireFile(write_path, manager);
+  test( !c2->isModified() , "collection shouldn't be marked as modified");
 
   //remove the file from disk
   cleanup( write_path );
@@ -164,6 +166,7 @@ void verify_write_valid_collection_using_write_path()
 
   c->writeLocation(write_path);
   test( c->writeLocation() == write_path, "writeLocation should match write_path");
+  test( !c->isModified() , "changing write path shouldn't change modified flag");
 
   //write out the mesh.
   bool result = smtk::io::WriteMesh::entireCollection(c);
@@ -308,6 +311,51 @@ void verify_write_onlyDirichlet()
   test( c2->types() == c3->types() );
 }
 
+//----------------------------------------------------------------------------
+void verify_write_clears_modified_flag()
+{
+  std::string file_path(data_root);
+  file_path += "/mesh/64bricks_12ktet.h5m";
+
+  std::string write_path(write_root);
+  write_path += "/64bricks_12ktet.h5m";
+
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
+  test( c->isValid(), "collection should be valid");
+  test( !c->isModified(), "collection loaded from disk shouldn't be modified");
+
+  smtk::mesh::MeshSet meshes3D = c->meshes( smtk::mesh::Dims3 );
+  smtk::mesh::MeshSet shell = meshes3D.extractShell();
+  test( c->isModified(), "extracting the shell should mark the collection as modified");
+
+  //write out the mesh.
+  bool result = smtk::io::WriteMesh::entireCollection(write_path, c);
+  if(!result)
+    {
+    cleanup( write_path );
+    test( result == true, "failed to properly write out the mesh");
+    }
+
+  test( !c->isModified(), "after a write the collection should not be modified");
+
+  //now remove the shell, and verify the mesh is again marked as modified
+  c->removeMeshes(shell);
+  test( c->isModified(), "after mesh removal the collection should be modified");
+
+  //write out the mesh again
+  result = smtk::io::WriteMesh::entireCollection(write_path, c);
+  if(!result)
+    {
+    cleanup( write_path );
+    test( result == true, "failed to properly write out the mesh");
+    }
+  test( !c->isModified(), "after a write the collection should not be modified");
+
+  //remove the file from disk
+  cleanup( write_path );
+}
+
 
 }
 
@@ -324,6 +372,8 @@ int UnitTestWriteMesh(int, char** const)
   verify_write_onlyDomain();
   verify_write_onlyNeumann();
   verify_write_onlyDirichlet();
+
+  verify_write_clears_modified_flag();
 
   return 0;
 }

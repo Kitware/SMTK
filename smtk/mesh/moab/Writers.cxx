@@ -101,7 +101,12 @@ namespace
     }
 #endif
 
-  return err == ::moab::MB_SUCCESS;
+  const bool written = (err == ::moab::MB_SUCCESS);
+  if(written)
+    { //if we have written to file, we clear the modified flag
+    interface->setModifiedState(false);
+    }
+  return written;
   }
 
   //--------------------------------------------------------------------------

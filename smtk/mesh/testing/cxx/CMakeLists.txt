@@ -11,6 +11,7 @@
 #=============================================================================
 
 set(unit_tests
+  UnitTestAllocator.cxx
   UnitTestCellTypes.cxx
   UnitTestCollection.cxx
   UnitTestManager.cxx

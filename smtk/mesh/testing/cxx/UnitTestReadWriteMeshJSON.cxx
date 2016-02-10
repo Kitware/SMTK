@@ -81,6 +81,7 @@ void verify_writing_and_loading_collection()
   smtk::common::UUID cUUID = c->entity();
   smtk::common::UUIDArray associations = c->meshes().modelEntityIds();
 
+  test( c->isModified() == true, "A mesh created in memory with no file is considered modified" );
 
   cJSON* top = cJSON_CreateObject();
   c->writeLocation(write_path);
@@ -92,7 +93,6 @@ void verify_writing_and_loading_collection()
   meshManager->removeCollection(c);
   test(!meshManager->collection(cUUID));
   c.reset(); //actually remove the collection from memory
-
 
   //now import collection from json stream
   const bool importGood = smtk::io::ImportJSON::ofMeshesOfModel(top,modelManager);
@@ -115,6 +115,11 @@ void verify_writing_and_loading_collection()
         "associations after loading from JSON should be the same" );
 
   test( meshManager->collectionsWithAssociations().size() == 1);
+
+  //a collection loaded from json should have the same modified state
+  //as the mesh that was written to disk
+  test( c2->isModified() == false,
+       "a collection with a writeLocation is always read back in as not modified");
 }
 
 //----------------------------------------------------------------------------
@@ -184,10 +189,22 @@ void verify_writing_and_loading_collections_without_file_path()
 
   c2->name("jsonBased");
 
+  //At this point both files should be considered modified
+  test(c->isModified(), "mesh from memory is considered modified");
+  test(c2->isModified(), "mesh from memory is considered modified");
+
   cJSON* top = cJSON_CreateObject();
 
   const bool exportGood = smtk::io::ExportJSON::fromModelManager(top, modelManager);
   test(exportGood == 1, "Failed to export the mesh collections related to the model");
+
+  //Now that we have export the meshes, what are the states?
+  test(!c->isModified(), "mesh was flushed to disk");
+  test(c2->isModified(), "mesh from memory is considered modified");
+
+  //cache the collection uuids, as they should be identical once we load back
+  smtk::common::UUID cUUID = c->entity();
+  smtk::common::UUID c2UUID = c2->entity();
 
   //now remove the collection
   meshManager->removeCollection(c);
@@ -215,10 +232,19 @@ void verify_writing_and_loading_collections_without_file_path()
   names.push_back( collections[0]->name() );
   names.push_back( collections[1]->name() );
   std::sort(names.begin(), names.end());
-
   test( (names[0]==std::string("fileBased")), "Name doesn't match name during export");
   test( (names[1]==std::string("jsonBased")), "Name doesn't match name during export");
 
+  //actual fetch the collections by uuid, and verify the names match to the uuids
+  c = meshManager->collection(cUUID);
+  c2 = meshManager->collection(c2UUID);
+  test( (c->name()==std::string("fileBased")), "Name doesn't match name during export");
+  test( (c2->name()==std::string("jsonBased")), "Name doesn't match name during export");
+
+  //next verify that the fileBased mesh is marked as not modified, while
+  //the mesh that wasn't saved to disk is marked as modified
+  test(!c->isModified(), "mesh was flushed to disk");
+  test(c2->isModified(), "mesh from memory is considered modified");
 }
 
 
@@ -290,6 +316,7 @@ void verify_reading_of_single_collection_from_json()
   {
   smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
   test( c->isValid(), "collection should be valid");
+  test( !c->isModified(), "collection shouldn't be modified");
 
   std::size_t numMeshes = c->numberOfMeshes();
   test( numMeshes != 0, "dataset once loaded should have more than zero meshes");
@@ -312,6 +339,8 @@ void verify_reading_of_single_collection_from_json()
   //get the first child node which is a collection
   cJSON* collection = top->child;
   smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireJSON(collection, manager);
+  test( c->isValid(), "collection should be valid");
+  test( !c->isModified(), "a serialized collection should propagate modified flag state");
 
   std::size_t numMeshes = c->numberOfMeshes();
   test( numMeshes != 0, "dataset once loaded should have more than zero meshes");

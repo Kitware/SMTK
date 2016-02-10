@@ -39,6 +39,7 @@ void verify_valid_constructor()
   smtk::mesh::CollectionPtr collection = mgr->makeCollection();
 
   test( collection->isValid() , "collection should be valid");
+  test( collection->isModified() == false, "collection shouldn't be marked as modified");
 
   smtk::common::UUID uid = collection->entity();
   test( (uid!=smtk::common::UUID::null()) , "collection uuid should be valid");

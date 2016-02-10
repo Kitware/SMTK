@@ -101,6 +101,12 @@ namespace
     }
 #endif
 
+  const bool readFromDisk = (err == ::moab::MB_SUCCESS);
+  if(readFromDisk)
+    { //if we are loaded from file, we clear the modified flag
+    interface->setModifiedState(false);
+    }
+
   return err == ::moab::MB_SUCCESS;
   }
 

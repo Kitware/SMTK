@@ -56,6 +56,7 @@ void verify_remove_empty_mesh(const smtk::mesh::CollectionPtr& c)
   const bool result = c->removeMeshes( emptyMeshSet );
 
   test(result, "delete nothing is always true");
+  test(!c->isModified(), "deleting nothing should not change the modify flag");
 
   test(numMeshesBeforeRemoval == c->numberOfMeshes(),
        "deleting no meshes shouldn't modify number of meshes");
@@ -76,6 +77,7 @@ void verify_remove_mesh_from_other_collection(
   const bool result = c->removeMeshes( meshesFromOtherCollection );
 
   test( !result, "can't remove meshes from the incorrect collection");
+  test( !c->isModified(), "shouldn't be modified after an invalid removal");
   test( numMeshesBeforeRemoval == c->numberOfMeshes());
   test( numCellsBeforeRemoval == c->cells().size());
 
@@ -148,6 +150,7 @@ void verify_remove_single_mesh(const smtk::mesh::CollectionPtr& c)
   const bool result = c->removeMeshes(newMesh);
 
   test(result, "should have no problem removing these meshes");
+  test(c->isModified(), "should be modified after a valid removal");
   test(numMeshesBeforeRemoval == c->numberOfMeshes());
   test(numCellsBeforeRemoval == c->cells().size());
 
@@ -175,6 +178,7 @@ void verify_remove_multiple_meshes(const smtk::mesh::CollectionPtr& c)
   const bool result = c->removeMeshes(newMeshes);
 
   test(result, "should have no problem removing these meshes");
+  test(c->isModified(), "should be modified after a valid removal");
   test(numMeshesBeforeRemoval == c->numberOfMeshes());
   test(numCellsBeforeRemoval == c->cells().size());
 
@@ -193,6 +197,8 @@ void verify_remove_all_meshes(const smtk::mesh::CollectionPtr& c)
        "deleting all meshes should result in zero meshes");
   test(0 == c->cells().size(),
        "deleting all meshes should result in zero cells");
+
+  test(c->isModified(), "should be modified after a valid removal");
 
   reset(c);
 }
@@ -219,6 +225,7 @@ void verify_remove_meshes_removes_unused_cells(const smtk::mesh::CollectionPtr& 
   const bool result = c->removeMeshes( onlyVolumeMeshes );
 
   test(result, "deleting all volume only meshes should work");
+  test(c->isModified(), "should be modified after a valid removal");
 
   const std::size_t expectedNumberOfMeshes = numMeshesBeforeRemoval - numVolumeMeshes;
   const std::size_t expectedNumberOfCells = numCellsBeforeRemoval - numVolumeCells;

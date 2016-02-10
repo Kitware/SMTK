@@ -148,6 +148,13 @@ bool Collection::isValid() const
 }
 
 //----------------------------------------------------------------------------
+bool Collection::isModified() const
+{
+  //make sure we have a valid uuid, and that our internals are valid
+  return this->interface()->isModified();
+}
+
+//----------------------------------------------------------------------------
 const std::string& Collection::name() const
 {
   return this->m_name;
