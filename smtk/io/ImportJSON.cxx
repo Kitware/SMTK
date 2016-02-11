@@ -1127,7 +1127,7 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
         path tryme = refPath / absPath;
         if (exists(tryme))
           {
-          absPath = tryme;
+          absPath = canonical(tryme, refPath);
           }
         }
       importedCollection = smtk::io::ImportMesh::entireFile(absPath.string(), meshMgr);

@@ -52,6 +52,11 @@ std::string FileLocation::absolutePath() const
   if (!this->m_referencePath.empty() && !absPath.is_absolute())
     {
     absPath = this->m_referencePath / absPath;
+    if(exists(absPath))
+      {
+      // remove potential ".." from the path
+      absPath = canonical(absPath, this->m_referencePath);
+      }
     }
 
   return absPath.is_absolute() ? absPath.string() : std::string();
