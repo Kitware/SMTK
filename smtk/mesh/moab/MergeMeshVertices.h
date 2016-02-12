@@ -39,6 +39,14 @@ private:
   //- perform the actual merge
   ::moab::ErrorCode perform_merge(::moab::Tag merged_to);
 
+  //- correct any occurrences of vertices inside a mesh being deleted and
+  // the replacement vertex not already being an entity of that mesh
+  ::moab::ErrorCode correct_vertex_merge(::moab::Tag merged_to,
+                                         const smtk::mesh::HandleRange&  meshsets);
+
+  //Identify higher dimension to be merged
+  ::moab::ErrorCode merge_higher_dimensions(::moab::Range &elems);
+
   ::moab::Interface *mbImpl;
 
   //- the tag pointing to the entity to which an entity will be merged
