@@ -68,3 +68,8 @@ if(SMTK_ENABLE_VTK_SUPPORT)
   #to be linked for IO routines.
   add_subdirectory(vtkToMesh)
 endif()
+
+# Add the cumulus UI if we have Qt support and cumulus enabled
+if(SMTK_ENABLE_QT_SUPPORT AND SMTK_ENABLE_CUMULUS_SUPPORT)
+  add_subdirectory(cumulus)
+endif()
