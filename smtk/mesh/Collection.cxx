@@ -61,8 +61,6 @@ public:
   smtk::mesh::Handle mesh_root_handle() const
     { return this->Interface->getRoot(); }
 
-
-
 private:
   smtk::weak_ptr<smtk::mesh::Manager> WeakManager;
   smtk::mesh::InterfacePtr Interface;
@@ -120,10 +118,19 @@ Collection::~Collection()
     delete this->m_internals;
     }
 }
+
 //----------------------------------------------------------------------------
 const smtk::mesh::InterfacePtr& Collection::interface() const
 {
   return this->m_internals->mesh_iface();
+}
+
+//----------------------------------------------------------------------------
+void Collection::swapInterfaces(smtk::mesh::CollectionPtr& other)
+{
+  smtk::mesh::Collection::InternalImpl* temp = other->m_internals;
+  other->m_internals = this->m_internals;
+  this->m_internals = temp;
 }
 
 //----------------------------------------------------------------------------

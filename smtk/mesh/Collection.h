@@ -277,7 +277,13 @@ private:
   Collection( const Collection& other ); //blank since we are used by shared_ptr
   Collection& operator=( const Collection& other ); //blank since we are used by shared_ptr
 
+  //Sets the location that this collection was loaded from
   void readLocation(const std::string& path);
+
+  //Swap the internal interfaces between this Collection and another Collection
+  //this is how we can easily update a collection that has already been
+  //loaded with a newer version from disk
+  void swapInterfaces(smtk::mesh::CollectionPtr& other);
 
   friend class smtk::mesh::Manager;
   friend class smtk::io::ImportMesh;
