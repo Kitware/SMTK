@@ -418,6 +418,7 @@ void SubphraseGenerator::meshsetsOfMesh(
     {
     // if the MeshSet contains more than one mesh, we need to create subphrases for
     // each subset, otherwise the meshphr will represent the relatedMesh.
+    std::cout << "number of meshes: " << meshes.size() << std::endl;
     for(std::size_t i=0; i < meshes.size(); ++i)
       {
       result.push_back(

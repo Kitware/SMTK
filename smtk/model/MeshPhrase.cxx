@@ -53,6 +53,58 @@ MeshPhrase::Ptr MeshPhrase::setup(
   return this->shared_from_this();
 }
 
+/**\brief Update the phrase with a new mesh collection.
+  * NOTE: This is not updating subphrases, just the related mesh
+  */
+void MeshPhrase::updateMesh(
+  const smtk::mesh::CollectionPtr& meshcollection)
+{
+  this->m_relatedCollection = meshcollection;
+  // update child-phrases' meshes if they are already built, but not triggering
+  // rebuild of child phrases' subphrases, which should be handled from ui since they
+  // are linked with qtEntityItemModel of the tree view.
+  if(this->areSubphrasesBuilt())
+    {
+    smtk::model::DescriptivePhrases& meshsubs(this->subphrases());
+    for (smtk::model::DescriptivePhrases::iterator it = meshsubs.begin();
+      it != meshsubs.end(); ++it)
+      {
+      MeshPhrasePtr mphrase = smtk::dynamic_pointer_cast<MeshPhrase>(*it);
+      if(!mphrase)
+        continue;
+      smtk::mesh::MeshSet relMesh = mphrase->relatedMesh();
+      if(relMesh.is_empty())
+        continue;
+       // assuming we have same dimensions in the set
+      if(!relMesh.subset(smtk::mesh::Dims3).is_empty())
+        {
+        mphrase->updateMesh(meshcollection->meshes(smtk::mesh::Dims3));
+        }
+      else if(!relMesh.subset(smtk::mesh::Dims2).is_empty())
+        {
+        mphrase->updateMesh(meshcollection->meshes(smtk::mesh::Dims2));
+        }
+      else if(!relMesh.subset(smtk::mesh::Dims1).is_empty())
+        {
+        mphrase->updateMesh(meshcollection->meshes(smtk::mesh::Dims1));
+        }
+      else if(!relMesh.subset(smtk::mesh::Dims0).is_empty())
+        {
+        mphrase->updateMesh(meshcollection->meshes(smtk::mesh::Dims0));
+        }
+      }
+    }
+}
+
+/**\brief Update the phrase with a new meshset.
+  * NOTE: This is not updating subphrases, just the related mesh
+  */
+void MeshPhrase::updateMesh(
+  const smtk::mesh::MeshSet& meshset)
+{
+  this->m_relatedMesh = meshset;
+}
+
 bool MeshPhrase::isCollection() const
 {
   return this->m_relatedCollection && this->m_relatedCollection->isValid();
