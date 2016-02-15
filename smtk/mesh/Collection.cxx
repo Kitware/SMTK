@@ -478,7 +478,7 @@ smtk::mesh::MeshSet Collection::createMesh( const smtk::mesh::CellSet& cells )
   if(cells.m_parent == this->shared_from_this())
     {
     smtk::mesh::Handle meshSetHandle;
-    const bool meshCreated = iface->createMesh(cells.m_range, meshSetHandle);
+    const bool meshCreated = iface->createMesh(cells.range(), meshSetHandle);
     if(meshCreated)
       {
       entities.insert(meshSetHandle);
@@ -503,20 +503,12 @@ bool Collection::removeMeshes(smtk::mesh::MeshSet& meshesToDelete )
                       smtk::mesh::set_difference(this->meshes(),
                                                  meshesToDelete);
 
-    //find all non vertex cells that we use
-    smtk::mesh::CellSet cellsUsedByDeletedMeshes = smtk::mesh::set_difference(
-                                                     meshesToDelete.cells( ),
-                                                     meshesToDelete.cells( smtk::mesh::Dims0 ));
-    //now find the cells that used only by the mesh we are about to delete.
-    //we can't delete vertex cells since they might be used as connectivity
-    //for a different cell that we aren't deleting.
-    cellsUsedByDeletedMeshes =
-        smtk::mesh::set_difference(cellsUsedByDeletedMeshes,
-                                    all_OtherMeshes.cells( ));
-
+    //now find the cells that are only used by the mesh we are about to delete.
+    smtk::mesh::CellSet cellsToDelete = smtk::mesh::set_difference(meshesToDelete.cells(),
+                                                                   all_OtherMeshes.cells( ));
     //delete our mesh and cells that aren't used by any one else
-    bool deletedMeshes = iface->deleteHandles(meshesToDelete.m_range);
-    bool deletedCells = iface->deleteHandles(cellsUsedByDeletedMeshes.m_range);
+    const bool deletedMeshes = iface->deleteHandles(meshesToDelete.m_range);
+    const bool deletedCells = iface->deleteHandles(cellsToDelete.range());
     return deletedMeshes && deletedCells;
     }
   return false;
