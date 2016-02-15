@@ -247,24 +247,40 @@ bool merge(smtk::mesh::CollectionPtr collection,
   smtk::mesh::MeshSet toAddToMS = collection->findAssociatedMeshes(toAddTo);
   const smtk::model::EntityRef& eref = toAddTo;
 
-  //set up a removal of both the edge and the vertex mesh sets
-  smtk::mesh::MeshSet toRemoveMS = smtk::mesh::set_union(edgeToRemoveMS,
-                                                         vertexToRemoveMS);
-
-
-  return fuse(collection, toRemoveMS, toAddToMS, eref);
+  //first we need to delete the vertex, that way if the delete fails, we
+  //can rollback properly. If we merge the edge and vertex and delete them
+  //in the fuse call, the vertex mesh items will get the edge model association
+  //if we have to rollback the delete
+  bool merged = collection->removeMeshes(vertexToRemoveMS);
+  if(merged)
+    {
+    return fuse(collection, edgeToRemoveMS, toAddToMS, eref);
+    }
+  else
+    {
+    //make sure the association is restored, since the delete failed
+    //it is better to be safe than sorry
+    collection->setAssociation(toRemoveVert, vertexToRemoveMS);
+    }
+  return false;
 }
 
 //----------------------------------------------------------------------------
 bool fuse(smtk::mesh::CollectionPtr collection,
           smtk::mesh::MeshSet& toRemove,
           smtk::mesh::MeshSet& toAddTo,
-          const smtk::model::EntityRef& modelAssoc)
+          const smtk::model::EntityRef& toAddToAssoc)
 {
-  //this should be an incredibly simple operation. The key being that we need
-  //to add the new MeshSet before we remove the originals. If we remove the
-  //originals first we will delete the cells and points as they are not
-  //used anymore
+  //Merge two mesh sets together and create a single meshset from that
+  //
+  //The logic of the fuse is slightly more complicated than expected because
+  //you want to handle the ability to rollback a failed removal properly.
+  //
+  //Secondly you want to add the new mesh before removing the old mesh,
+  //that signals to the underlying interface that the cells of the
+  //deleted mesh are used by another meshset and shouldn't be deleted,
+  //but just delete the meshset
+
   smtk::mesh::CellSet newSetCells = toAddTo.cells();
   newSetCells.append(toRemove.cells());
   if(newSetCells.is_empty())
@@ -273,7 +289,6 @@ bool fuse(smtk::mesh::CollectionPtr collection,
   smtk::mesh::MeshSet newSet = collection->createMesh( newSetCells );
   if(newSet.is_empty())
     { return false; }
-  collection->setAssociation(modelAssoc, newSet);
 
   bool removed = collection->removeMeshes(toAddTo);
   if(!removed)
@@ -287,7 +302,7 @@ bool fuse(smtk::mesh::CollectionPtr collection,
     {
     //rollback the deletion of the first meshset
     toAddTo = collection->createMesh( toAddTo.cells() );
-    collection->setAssociation(modelAssoc, toAddTo);
+    collection->setAssociation(toAddToAssoc, toAddTo);
 
     collection->removeMeshes( newSet );
     return false;
@@ -295,6 +310,7 @@ bool fuse(smtk::mesh::CollectionPtr collection,
 
   //update what toAddTo is point too
   toAddTo = newSet;
+  collection->setAssociation(toAddToAssoc, toAddTo);
   return true;
 }
 
