@@ -24,6 +24,13 @@ class vtkDiscreteModelVertex;
 class vtkDiscreteModelEdge;
 
 namespace smtk {
+  namespace mesh {
+    class MeshSet;
+    typedef std::set<smtk::mesh::MeshSet> MeshSets;
+  }
+}
+
+namespace smtk {
   namespace bridge {
     namespace discrete {
 
@@ -56,6 +63,7 @@ protected:
     smtk::bridge::discrete::Session* opsession,
     smtk::model::EntityRefArray& srcsRemoved,
     smtk::model::EntityRefArray& srcsModified,
+    smtk::mesh::MeshSets& modifiedMeshes,
     vtkMergeOperator* mergOp);
   bool splitSelectedEdgeNodes(
     const std::map< smtk::common::UUID,
@@ -64,6 +72,7 @@ protected:
     smtk::bridge::discrete::Session* opsession,
     smtk::model::EntityRefArray& srcsCreated,
     smtk::model::EntityRefArray& srcsModified,
+    smtk::mesh::MeshSets& modifiedMeshes,
     vtkEdgeSplitOperator* splitOp);
   int convertToGlobalPointId(int localPid, vtkDiscreteModelEdge* cmbModelEdge);
 

@@ -15,8 +15,14 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
+
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/Reclassify.h"
 
 #include "smtk/model/Operator.h"
 #include "smtk/model/Edge.h"
@@ -52,6 +58,49 @@ namespace smtk {
 
   namespace discrete {
 
+inline bool internal_mergeAssociatedMeshes(const smtk::model::Vertex& remVert,
+  const smtk::model::Edge& toRemove, const smtk::model::Edge& toAddTo,
+  smtk::mesh::ManagerPtr meshMgr, smtk::mesh::MeshSets& modifiedMeshes)
+{
+  bool ok = true;
+  std::vector<smtk::mesh::CollectionPtr> meshCollections =
+    meshMgr->associatedCollections(toAddTo);
+  std::vector<smtk::mesh::CollectionPtr>::iterator it;
+  for(it = meshCollections.begin(); it != meshCollections.end(); ++it)
+    {
+    ok &= smtk::mesh::merge(*it, remVert, toRemove, toAddTo);
+    if(ok)
+      {
+      smtk::mesh::MeshSet toMeshes = (*it)->findAssociatedMeshes(toAddTo);
+      if(!toMeshes.is_empty())
+         modifiedMeshes.insert(toMeshes);
+      }
+    }
+  return ok;
+}
+
+bool internal_splitAssociatedMeshes(
+  const smtk::model::Edge& srcEdge, const smtk::model::Edge& newEdge,
+  const smtk::model::Vertex& newVert,
+  smtk::mesh::ManagerPtr meshMgr, smtk::mesh::MeshSets& modifiedMeshes)
+{
+  bool ok = true;
+  std::vector<smtk::mesh::CollectionPtr> meshCollections =
+    meshMgr->associatedCollections(srcEdge);
+  std::vector<smtk::mesh::CollectionPtr>::iterator it;
+  for(it = meshCollections.begin(); it != meshCollections.end(); ++it)
+    {
+    ok &= smtk::mesh::split(*it, srcEdge, newEdge, newVert);
+    if(ok)
+      {
+      smtk::mesh::MeshSet srcMeshes = (*it)->findAssociatedMeshes(srcEdge);
+      if(!srcMeshes.is_empty())
+         modifiedMeshes.insert(srcMeshes);
+      }
+    }
+  return ok;
+}
+
 EdgeOperator::EdgeOperator()
 {
 }
@@ -67,6 +116,46 @@ bool EdgeOperator::ableToOperate()
     // There must be a MeshEntity for input selection
     this->specification()->findMeshSelection("selection")
     ;
+}
+
+int EdgeOperator::convertToGlobalPointId(int localPid, vtkDiscreteModelEdge* cmbModelEdge)
+{
+  int globalPid = -1;
+  Session* opsession = this->discreteSession();
+  smtk::common::UUID edgeid = opsession->findOrSetEntityUUID(cmbModelEdge);
+  smtk::model::Edge edge(opsession->manager(), edgeid);
+
+  vtkPolyData* edgePoly =  vtkPolyData::SafeDownCast(cmbModelEdge->GetGeometry());
+  const smtk::model::Tessellation* tess;
+  if (!edgePoly || !(tess = edge.hasTessellation()))
+    { // Oops.
+    return globalPid;
+    }
+
+  smtk::model::Tessellation::size_type off;
+  int cellIdx = -1, pointIdx = -1;
+  std::vector<int>::const_iterator it;
+  smtk::model::Tessellation::size_type num_verts;
+  for (off = tess->begin(); off != tess->end(); off = tess->nextCellOffset(off))
+    {
+    cellIdx++;
+    std::vector<int> cell_conn;
+    num_verts = tess->vertexIdsOfCell(off, cell_conn);
+    it = std::find(cell_conn.begin(), cell_conn.end(), localPid);
+    if( it != cell_conn.end())
+      {
+      pointIdx = it - cell_conn.begin();
+      break;
+      }
+    }
+  if(pointIdx >= 0 && cellIdx < edgePoly->GetNumberOfCells())
+    {
+    vtkIdType npts, *cellPnts;
+    edgePoly->GetCellPoints(cellIdx, npts, cellPnts);
+    if(pointIdx < npts)
+      globalPid = cellPnts[pointIdx];
+    }
+  return globalPid;
 }
 
 void EdgeOperator::getSelectedVertsAndEdges(
@@ -131,12 +220,197 @@ void EdgeOperator::getSelectedVertsAndEdges(
     }
 }
 
-bool  EdgeOperator::convertSelectedEndNodes(
+smtk::model::OperatorResult EdgeOperator::operateInternal()
+{
+  Session* opsession = this->discreteSession();
+  smtk::model::Model model = this->specification()->findModelEntity(
+    "model")->value().as<smtk::model::Model>();
+  vtkDiscreteModelWrapper* modelWrapper =
+    opsession->findModelEntity(model.entity());
+  bool ok = false;
+  smtk::attribute::MeshSelectionItem::Ptr inSelectionItem =
+     this->specification()->findMeshSelection("selection");
+
+  std::map<smtk::common::UUID, vtkDiscreteModelVertex*> selVTXs;
+  std::map<smtk::common::UUID, std::pair<vtkDiscreteModelEdge*, std::set<int> > > selArcs;
+  smtk::model::EntityRefArray srcsRemoved;
+  smtk::model::EntityRefArray srcsModified;
+  smtk::model::EntityRefArray srcsCreated;
+  smtk::mesh::MeshSets modifiedMeshes;
+
+  MeshModifyMode opType = inSelectionItem->modifyMode();
+  switch(opType)
+  {
+    case ACCEPT:
+      this->getSelectedVertsAndEdges(selVTXs, selArcs, inSelectionItem, opsession);
+
+      // We do either merge or split, not both in same operation,
+      // and merge is always being processed before split
+      // Find if any vertex is selected, if yes, we do merge.
+      // Promotion is always being processed before Demotion
+      if (selVTXs.size()>0)
+        ok = this->convertSelectedEndNodes(selVTXs, modelWrapper,
+             opsession, srcsRemoved, srcsModified, modifiedMeshes,
+             m_mergeOp.GetPointer());
+      else if (selArcs.size()>0)
+        ok = this->splitSelectedEdgeNodes(selArcs, modelWrapper,
+             opsession, srcsCreated, srcsModified, modifiedMeshes,
+             m_splitOp.GetPointer());
+      break;
+    case RESET:
+    case MERGE:
+    case SUBTRACT:
+      // don't know what to do, will return OPERATION_FAILED
+      break;
+    case NONE:
+      ok = true; // stop
+      break;
+    default:
+      std::cerr << "ERROR: Unrecognized MeshModifyMode: " << std::endl;
+      break;
+  }
+
+  OperatorResult result =
+    this->createResult(
+      ok ?  OPERATION_SUCCEEDED : OPERATION_FAILED);
+
+  if (ok)
+    {
+    switch(opType)
+      {
+      case ACCEPT:
+        if (selVTXs.size()>0)
+          {
+          if(srcsRemoved.size() > 0)
+            result->findModelEntity("expunged")->setValues(srcsRemoved.begin(), srcsRemoved.end());
+          }
+        else if (selArcs.size() >0)
+          {
+          if(srcsCreated.size() > 0)
+            this->addEntitiesToResult(result, srcsCreated, CREATED);
+          }
+
+        if(srcsModified.size() > 0)
+          this->addEntitiesToResult(result, srcsModified, MODIFIED);
+        if (modifiedMeshes.size() > 0)
+          {
+          smtk::attribute::MeshItemPtr resultMeshes =
+            result->findMesh("mesh_modified");
+          if(resultMeshes)
+            resultMeshes->appendValues(modifiedMeshes);
+          }
+        break;
+      case RESET:
+      case MERGE:
+      case SUBTRACT:
+      case NONE:
+        break;
+      default:
+        break;
+      }
+    }
+
+  return result;
+}
+
+bool EdgeOperator::splitSelectedEdgeNodes(
+  const std::map< smtk::common::UUID,
+    std::pair<vtkDiscreteModelEdge*, std::set<int> > >& selArcs,
+  vtkDiscreteModelWrapper* modelWrapper,
+  smtk::bridge::discrete::Session* opsession,
+  smtk::model::EntityRefArray& srcsCreated,
+  smtk::model::EntityRefArray& srcsModified,
+  smtk::mesh::MeshSets& modifiedMeshes,
+  vtkEdgeSplitOperator* splitOp
+  )
+{
+  if(selArcs.size() == 0)
+    {
+    return false;
+    }
+  smtk::model::Model model = this->specification()->findModelEntity(
+    "model")->value().as<smtk::model::Model>();
+
+  vtkIdType selEdgeId;
+  bool success = false;
+  std::map< smtk::common::UUID, std::pair<vtkDiscreteModelEdge*, std::set<int> > >::const_iterator arcIt;
+  for(arcIt=selArcs.begin(); arcIt!=selArcs.end(); ++arcIt)
+    {
+    vtkDiscreteModelEdge* cmbModelEdge = arcIt->second.first;
+    if(!cmbModelEdge)
+      continue;
+    if( arcIt->second.second.size() ==0 )
+      {
+      continue;
+      }
+
+    // Find the first point Id that is not a model vertex, and only split at this point,
+    // the rest of points will be ignored
+    vtkIdType pointId = *(arcIt->second.second.begin());
+    if(pointId < 0)
+      {
+      continue;
+      }
+
+    selEdgeId = cmbModelEdge->GetUniquePersistentId();
+    splitOp->SetEdgeId(selEdgeId);
+    splitOp->SetPointId(pointId);
+    splitOp->Operate(modelWrapper);
+    success = splitOp->GetOperateSucceeded();
+    if(success)
+      {
+      smtk::common::UUID modelid = opsession->findOrSetEntityUUID(modelWrapper->GetModel());
+      smtk::model::Model inModel(this->manager(), modelid);
+
+      opsession->retranscribeModel(inModel);
+
+      vtkModelVertex* newvtx = vtkModelVertex::SafeDownCast(
+        modelWrapper->GetModelEntity(vtkModelVertexType,
+        splitOp->GetCreatedModelVertexId()));
+      smtk::common::UUID newVid = opsession->findOrSetEntityUUID(newvtx);
+      smtk::model::Vertex newVert(this->manager(), newVid);
+      srcsCreated.push_back(newVert);
+
+      vtkModelEdge* newedge = vtkModelEdge::SafeDownCast(
+        modelWrapper->GetModelEntity(vtkModelEdgeType,
+        splitOp->GetCreatedModelEdgeId()));
+      smtk::common::UUID newEid = opsession->findOrSetEntityUUID(newedge);
+      smtk::model::Edge newEdge(this->manager(), newEid);
+      srcsCreated.push_back(newEdge);
+
+      // for the modifed edge, add it to "modified" item in op result;
+      smtk::common::UUID srcEid = opsession->findOrSetEntityUUID(cmbModelEdge);
+      smtk::model::Edge srced(opsession->manager(), srcEid);
+      srcsModified.push_back(srced);
+
+      // update associated meshes
+      if(!internal_splitAssociatedMeshes(srced, newEdge, newVert,
+         this->manager()->meshes(), modifiedMeshes))
+        {
+        std::cout << "ERROR: Associated edge meshes failed to split properly." << std::endl;
+        }
+
+      vtkModelItemIterator* faces = cmbModelEdge->NewAdjacentModelFaceIterator();
+      for(faces->Begin();!faces->IsAtEnd();faces->Next())
+        {
+        vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
+        smtk::common::UUID faceuuid = opsession->findOrSetEntityUUID(face);
+        smtk::model::Face faceErf(opsession->manager(), faceuuid);
+        srcsModified.push_back(faceErf);
+        }
+      faces->Delete();
+      }
+    }
+  return success;
+}
+
+bool EdgeOperator::convertSelectedEndNodes(
   const std::map<smtk::common::UUID, vtkDiscreteModelVertex*>& selVTXs,
   vtkDiscreteModelWrapper* modelWrapper,
   smtk::bridge::discrete::Session* opsession,
   smtk::model::EntityRefArray& srcsRemoved,
   smtk::model::EntityRefArray& srcsModified,
+  smtk::mesh::MeshSets& modifiedMeshes,
   vtkMergeOperator* mergOp
   )
 {
@@ -185,6 +459,8 @@ bool  EdgeOperator::convertSelectedEndNodes(
     // becasue the operation will delete the edge
     smtk::common::UUID fromEid = opsession->findOrSetEntityUUID(
         targetSwitched ? selEdges[0] : selEdges[1]);
+    smtk::common::UUID toEid = opsession->findOrSetEntityUUID(
+        targetSwitched ? selEdges[1] : selEdges[0]);
 
     mergOp->SetTargetId(toEdgeId);
     mergOp->SetSourceId(fromEdgeId);
@@ -194,20 +470,31 @@ bool  EdgeOperator::convertSelectedEndNodes(
     if(success)
       {
       // add the removed vertex to the list
-      srcsRemoved.push_back(smtk::model::EntityRef(this->manager(),it->first));
+      smtk::model::Vertex remVert(opsession->manager(),it->first);
+      srcsRemoved.push_back(remVert);
       // update the removed and modified edge list
-      srcsRemoved.push_back(smtk::model::EntityRef(this->manager(),fromEid));
+      smtk::model::Edge toRemove(opsession->manager(),fromEid);
+      srcsRemoved.push_back(toRemove);
+
+      // update assoicated mesh first before removing the edge
+      if(!internal_mergeAssociatedMeshes(remVert, toRemove,
+         smtk::model::Edge(this->manager(), toEid),
+         this->manager()->meshes(), modifiedMeshes))
+        {
+        std::cout << "ERROR: Associated edge meshes failed to merge properly." << std::endl;
+        }
+
       opsession->manager()->erase(it->first);
       opsession->manager()->erase(fromEid);
 
       smtk::common::UUID modelid = opsession->findOrSetEntityUUID(modelWrapper->GetModel());
-      smtk::model::Model inModel(this->manager(), modelid);
+      smtk::model::Model inModel(opsession->manager(), modelid);
 
       opsession->retranscribeModel(inModel);
 
       vtkModelEdge* tgtEdge = targetSwitched ? selEdges[1] : selEdges[0];
-      smtk::common::UUID toEid = opsession->findOrSetEntityUUID(tgtEdge);
-      srcsModified.push_back(smtk::model::EntityRef(this->manager(),toEid));
+      toEid = opsession->findOrSetEntityUUID(tgtEdge);
+      srcsModified.push_back(smtk::model::EntityRef(opsession->manager(),toEid));
       vtkModelItemIterator* faces = tgtEdge->NewAdjacentModelFaceIterator();
       for(faces->Begin();!faces->IsAtEnd();faces->Next())
         {
@@ -227,210 +514,6 @@ bool  EdgeOperator::convertSelectedEndNodes(
     }
 
   return success;
-}
-
-int EdgeOperator::convertToGlobalPointId(int localPid, vtkDiscreteModelEdge* cmbModelEdge)
-{
-  int globalPid = -1;
-  Session* opsession = this->discreteSession();
-  smtk::common::UUID edgeid = opsession->findOrSetEntityUUID(cmbModelEdge);
-  smtk::model::Edge edge(opsession->manager(), edgeid);
-
-  vtkPolyData* edgePoly =  vtkPolyData::SafeDownCast(cmbModelEdge->GetGeometry());
-  const smtk::model::Tessellation* tess;
-  if (!edgePoly || !(tess = edge.hasTessellation()))
-    { // Oops.
-    return globalPid;
-    }
-
-  smtk::model::Tessellation::size_type off;
-  int cellIdx = -1, pointIdx = -1;
-  std::vector<int>::const_iterator it;
-  smtk::model::Tessellation::size_type num_verts;
-  for (off = tess->begin(); off != tess->end(); off = tess->nextCellOffset(off))
-    {
-    cellIdx++;
-    std::vector<int> cell_conn;
-    num_verts = tess->vertexIdsOfCell(off, cell_conn);
-    it = std::find(cell_conn.begin(), cell_conn.end(), localPid);
-    if( it != cell_conn.end())
-      {
-      pointIdx = it - cell_conn.begin();
-      break;
-      }
-    }
-  if(pointIdx >= 0 && cellIdx < edgePoly->GetNumberOfCells())
-    {
-    vtkIdType npts, *cellPnts;
-    edgePoly->GetCellPoints(cellIdx, npts, cellPnts);
-    if(pointIdx < npts)
-      globalPid = cellPnts[pointIdx];
-    }
-  return globalPid;
-}
-
-bool EdgeOperator::splitSelectedEdgeNodes(
-  const std::map< smtk::common::UUID,
-    std::pair<vtkDiscreteModelEdge*, std::set<int> > >& selArcs,
-  vtkDiscreteModelWrapper* modelWrapper,
-  smtk::bridge::discrete::Session* opsession,
-  smtk::model::EntityRefArray& srcsCreated,
-  smtk::model::EntityRefArray& srcsModified,
-  vtkEdgeSplitOperator* splitOp
-  )
-{
-  if(selArcs.size() == 0)
-    {
-    return false;
-    }
-  smtk::model::Model model = this->specification()->findModelEntity(
-    "model")->value().as<smtk::model::Model>();
-
-  vtkIdType selEdgeId;
-  bool success = false;
-  std::map< smtk::common::UUID, std::pair<vtkDiscreteModelEdge*, std::set<int> > >::const_iterator arcIt;
-  for(arcIt=selArcs.begin(); arcIt!=selArcs.end(); ++arcIt)
-    {
-    vtkDiscreteModelEdge* cmbModelEdge = arcIt->second.first;
-    if(!cmbModelEdge)
-      continue;
-    if( arcIt->second.second.size() ==0 )
-      {
-      continue;
-      }
-
-    // Find the first point Id that is not a model vertex, and only split at this point,
-    // the rest of points will be ignored
-    vtkIdType pointId = *(arcIt->second.second.begin());
-    if(pointId < 0)
-      {
-      continue;
-      }
-
-    selEdgeId = cmbModelEdge->GetUniquePersistentId();
-    splitOp->SetEdgeId(selEdgeId);
-    splitOp->SetPointId(pointId);
-    splitOp->Operate(modelWrapper);
-    success = splitOp->GetOperateSucceeded();
-    if(success)
-      {
-      smtk::common::UUID modelid = opsession->findOrSetEntityUUID(modelWrapper->GetModel());
-      smtk::model::Model inModel(this->manager(), modelid);
-
-      opsession->retranscribeModel(inModel);
-
-      vtkModelVertex* newvtx = vtkModelVertex::SafeDownCast(
-        modelWrapper->GetModelEntity(vtkModelVertexType,
-        splitOp->GetCreatedModelVertexId()));
-      smtk::common::UUID newVid = opsession->findOrSetEntityUUID(newvtx);
-      srcsCreated.push_back(smtk::model::Vertex(this->manager(), newVid));
-
-      vtkModelEdge* newedge = vtkModelEdge::SafeDownCast(
-        modelWrapper->GetModelEntity(vtkModelEdgeType,
-        splitOp->GetCreatedModelEdgeId()));
-      smtk::common::UUID newEid = opsession->findOrSetEntityUUID(newedge);
-      srcsCreated.push_back(smtk::model::Edge(this->manager(), newEid));
-
-      // for the modifed edge, add it to "modified" item in op result;
-      smtk::common::UUID srcEid = opsession->findOrSetEntityUUID(cmbModelEdge);
-      smtk::model::Edge srced(opsession->manager(), srcEid);
-      srcsModified.push_back(srced);
-
-      vtkModelItemIterator* faces = cmbModelEdge->NewAdjacentModelFaceIterator();
-      for(faces->Begin();!faces->IsAtEnd();faces->Next())
-        {
-        vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
-        smtk::common::UUID faceuuid = opsession->findOrSetEntityUUID(face);
-        smtk::model::Face faceErf(opsession->manager(), faceuuid);
-        srcsModified.push_back(faceErf);
-        }
-      faces->Delete();
-      }
-    }
-  return success;
-}
-
-smtk::model::OperatorResult EdgeOperator::operateInternal()
-{
-  Session* opsession = this->discreteSession();
-  smtk::model::Model model = this->specification()->findModelEntity(
-    "model")->value().as<smtk::model::Model>();
-  vtkDiscreteModelWrapper* modelWrapper =
-    opsession->findModelEntity(model.entity());
-  bool ok = false;
-  smtk::attribute::MeshSelectionItem::Ptr inSelectionItem =
-     this->specification()->findMeshSelection("selection");
-
-  std::map<smtk::common::UUID, vtkDiscreteModelVertex*> selVTXs;
-  std::map<smtk::common::UUID, std::pair<vtkDiscreteModelEdge*, std::set<int> > > selArcs;
-  smtk::model::EntityRefArray srcsRemoved;
-  smtk::model::EntityRefArray srcsModified;
-  smtk::model::EntityRefArray srcsCreated;
-
-  MeshModifyMode opType = inSelectionItem->modifyMode();
-  switch(opType)
-  {
-    case ACCEPT:
-      this->getSelectedVertsAndEdges(selVTXs, selArcs, inSelectionItem, opsession);
-
-      // We do either merge or split, not both in same operation,
-      // and merge is always being processed before split
-      // Find if any vertex is selected, if yes, we do merge.
-      // Promotion is always being processed before Demotion
-      if (selVTXs.size()>0)
-        ok = this->convertSelectedEndNodes(selVTXs, modelWrapper,
-             opsession, srcsRemoved, srcsModified, m_mergeOp.GetPointer());
-      else if (selArcs.size()>0)
-        ok = this->splitSelectedEdgeNodes(selArcs, modelWrapper,
-             opsession, srcsCreated, srcsModified, m_splitOp.GetPointer());
-      break;
-    case RESET:
-    case MERGE:
-    case SUBTRACT:
-      // don't know what to do, will return OPERATION_FAILED
-      break;
-    case NONE:
-      ok = true; // stop
-      break;
-    default:
-      std::cerr << "ERROR: Unrecognized MeshModifyMode: " << std::endl;
-      break;
-  }
-
-  OperatorResult result =
-    this->createResult(
-      ok ?  OPERATION_SUCCEEDED : OPERATION_FAILED);
-
-  if (ok)
-    {
-    switch(opType)
-      {
-      case ACCEPT:
-        if (selVTXs.size()>0)
-          {
-          if(srcsRemoved.size() > 0)
-            result->findModelEntity("expunged")->setValues(srcsRemoved.begin(), srcsRemoved.end());
-          }
-        else if (selArcs.size() >0)
-          {
-          if(srcsCreated.size() > 0)
-            this->addEntitiesToResult(result, srcsCreated, CREATED);
-          }
-
-        if(srcsModified.size() > 0)
-          this->addEntitiesToResult(result, srcsModified, MODIFIED);
-        break;
-      case RESET:
-      case MERGE:
-      case SUBTRACT:
-      case NONE:
-        break;
-      default:
-        break;
-      }
-    }
-
-  return result;
 }
 
 Session* EdgeOperator::discreteSession() const
