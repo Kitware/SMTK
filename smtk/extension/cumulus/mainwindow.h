@@ -19,7 +19,7 @@ class MainWindow;
 namespace cumulus
 {
 class JobTableModel;
-
+class CumulusProxy;
 
 class MainWindow : public QMainWindow
 {
@@ -31,8 +31,6 @@ public:
 
   void girderUrl(const QString &url);
 
-public slots:
-
 protected:
   void createJobTable();
   void createMainMenu();
@@ -41,18 +39,12 @@ protected:
   Ui::MainWindow *m_ui;
 
 private slots:
-  void fetchJobs();
-  void authenticateNewt(const QString &username, const QString &password);
-  void authenticationNewtFinished(QNetworkReply *reply);
-  void authenticateGirder(const QString &newtSessionId);
-  void authenticationGirderFinished(QNetworkReply *reply);
-  void fetchJobsFinished(QNetworkReply *reply);
+  void startJobFetchLoop();
+
 private:
   JobTableModel *m_jobTableModel;
+  CumulusProxy *m_cumulusProxy;
   QTimer *m_timer;
-  QString m_girderUrl;
-  QString m_newtSessionId;
-  QString m_girderToken;
   LoginDialog m_loginDialog;
 };
 

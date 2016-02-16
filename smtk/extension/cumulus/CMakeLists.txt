@@ -23,6 +23,7 @@ set(src
   logindialog.cxx
   jobtablemodel.cxx
   job.cxx
+  cumulusproxy.cxx
 )
 
 #add in the attribute preview executable
