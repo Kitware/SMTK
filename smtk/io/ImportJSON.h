@@ -63,7 +63,7 @@ public:
   static int ofLog(cJSON* logrecordarray, smtk::io::Logger& log);
 
   //write all mesh collections that have associations to a model
-  static int ofMeshesOfModel(cJSON* node, smtk::model::ManagerPtr modelMgr, bool updateExisting=false);
+  static int ofMeshesOfModel(cJSON* node, smtk::model::ManagerPtr modelMgr);
   //write all mesh properties for the collection
   static int ofMeshProperties(cJSON* node, smtk::mesh::CollectionPtr collection);
   // Mid-level helpers:

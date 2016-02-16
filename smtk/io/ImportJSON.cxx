@@ -940,7 +940,7 @@ int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::mode
 
     if(mesh_records)
       {
-      status &= ImportJSON::ofMeshesOfModel(mesh_records, mgr, true);
+      status &= ImportJSON::ofMeshesOfModel(mesh_records, mgr);
       }
     }
   return status;
@@ -1059,8 +1059,7 @@ int ImportJSON::ofLog(cJSON* logrecordarray, smtk::io::Logger& log)
   *
   */
 int ImportJSON::ofMeshesOfModel(cJSON* node,
-                                smtk::model::ManagerPtr modelMgr,
-                                bool updateExisting)
+                                smtk::model::ManagerPtr modelMgr)
 
 {
   int status = 1;
@@ -1094,22 +1093,6 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
       continue;
       }
 
-    //first verify the collection doesn't already exist
-    if (smtk::mesh::CollectionPtr existingC = meshMgr->collection(uid))
-      {
-      if(updateExisting)
-        {
-        // Import everything in a json string into the existing collection?, need to clear first?
-        // smtk::mesh::json::import(child, existingC);
-        // update properties, if any, to the existing collection
-        status &= ImportJSON::ofMeshProperties(child, existingC);
-        }
-      else
-        {
-        std::cerr << "Importing a mesh collection that already exists: " << child->string << "\n";
-        }
-      continue;
-      }
     //assoicated model uuid of the collection
     smtk::common::UUID associatedModelId;
     if(cJSON* modelIdNode = cJSON_GetObjectItem(child, "associatedModel"))
@@ -1145,10 +1128,20 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
 
     if(importedCollection)
       {
-      //Transfer ownership of the interface over to this new collection
-      //done so that we get the correct uuid for the collection
-      smtk::mesh::CollectionPtr collection =
-            meshMgr->makeCollection(uid, importedCollection->interface());
+      smtk:mesh::CollectionPtr collection;
+      smtk::mesh::CollectionPtr existingC = meshMgr->collection(uid);
+      if(existingC)
+        {
+        existingC->swapInterfaces(importedCollection);
+        collection = existingC;
+        }
+      else
+        {
+        //Transfer ownership of the interface over to this new collection
+        //done so that we get the correct uuid for the collection
+        collection = meshMgr->makeCollection(uid, importedCollection->interface());
+        }
+
 
       //remove the old collection, as its interface is now owned by the new
       //collection

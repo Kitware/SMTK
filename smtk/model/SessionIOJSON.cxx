@@ -154,7 +154,7 @@ int SessionIOJSON::loadModelsRecord(ManagerPtr modelMgr,
       smtkInfoMacro(modelMgr->log(), "Invalid model uuid, skipping!");
       continue;
       }
-    // model meta info 
+    // model meta info
     status &= smtk::io::ImportJSON::ofManager(modelentry, modelMgr);
     }
 
@@ -176,7 +176,7 @@ int SessionIOJSON::loadMeshesRecord(ManagerPtr modelMgr,
     smtkInfoMacro(modelMgr->log(), "Expecting a \"mesh_collections\" entry!");
     return 1;
     }
-  return smtk::io::ImportJSON::ofMeshesOfModel(sessionRec, modelMgr, true);
+  return smtk::io::ImportJSON::ofMeshesOfModel(sessionRec, modelMgr);
 }
 
 /**\brief Encode information into \a sessionRec for the given \a modelMgr.
