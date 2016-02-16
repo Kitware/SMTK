@@ -7,6 +7,7 @@
 
 #include <QtCore/QDebug>
 #include <QtGui/QDesktopWidget>
+#include <QtGui/QMessageBox>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
@@ -14,6 +15,7 @@
 #include <QtCore/QVariant>
 #include <QtCore/QList>
 #include <QtCore/QTimer>
+
 
 namespace cumulus {
 
@@ -40,6 +42,11 @@ MainWindow::MainWindow()
           this, SLOT(startJobFetchLoop()));
   connect(this->m_cumulusProxy, SIGNAL(jobsUpdated(QList<Job>)),
           this->m_jobTableModel, SLOT(jobsUpdated(QList<Job>)));
+  connect(this->m_cumulusProxy, SIGNAL(error(QString)),
+          this, SLOT(displayError(QString)));
+  connect(this->m_cumulusProxy, SIGNAL(newtAuthenticationError(QString)),
+          this, SLOT(displayAuthError(QString)));
+
 
   if (this->m_cumulusProxy->isAuthenticated()) {
     m_loginDialog.show();
@@ -81,6 +88,17 @@ void MainWindow::closeEvent(QCloseEvent *theEvent)
     this->m_timer->stop();
   }
   qApp->quit();
+}
+
+void MainWindow::displayAuthError(const QString &msg)
+{
+  this->m_loginDialog.setErrorMessage(msg);
+  this->m_loginDialog.show();
+}
+
+void MainWindow::displayError(const QString &msg)
+{
+  QMessageBox::critical(this, "", msg, QMessageBox::Ok);
 }
 
 } // end namespace

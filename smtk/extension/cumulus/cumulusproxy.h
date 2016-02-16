@@ -30,6 +30,7 @@ signals:
   void jobsUpdated(QList<Job> jobs);
   void newtAuthenticationError(const QString &msg);
   void authenticationFinished();
+  void error(const QString &msg);
 
 private slots:
   void authenticationNewtFinished(QNetworkReply *reply);
@@ -40,6 +41,8 @@ private:
   QString m_girderUrl;
   QString m_newtSessionId;
   QString m_girderToken;
+
+  void handleGirderError(QNetworkReply *reply, const QByteArray &bytes);
 };
 
 } // end namespace
