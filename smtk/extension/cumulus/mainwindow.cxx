@@ -65,7 +65,8 @@ void MainWindow::girderUrl(const QString &url)
 
 void MainWindow::createJobTable()
 {
-  m_ui->jobTableWidget->setModel(m_jobTableModel);
+  this->m_ui->jobTableWidget->setModel(this->m_jobTableModel);
+  this->m_ui->jobTableWidget->setCumulusProxy(this->m_cumulusProxy);
 }
 
 void MainWindow::createMainMenu()

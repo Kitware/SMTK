@@ -49,10 +49,9 @@ QVariant JobTableModel::data(const QModelIndex &modelIndex, int role) const
   if (!modelIndex.isValid() || modelIndex.column() + 1 > COLUMN_COUNT)
     return QVariant();
 
+  Job job = m_jobs[modelIndex.row()];
+
   if (role == Qt::DisplayRole) {
-    Job job = m_jobs[modelIndex.row()];
-
-
     switch (modelIndex.column()) {
     case JOB_ID:
       return QVariant(job.id());
@@ -63,6 +62,9 @@ QVariant JobTableModel::data(const QModelIndex &modelIndex, int role) const
     default:
       return QVariant();
     }
+  }
+  else if (role == Qt::UserRole) {
+    return QVariant::fromValue(job);
   }
   else {
     return QVariant();

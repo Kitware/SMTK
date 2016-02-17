@@ -1,4 +1,5 @@
 #include "job.h"
+#include "cJSON.h"
 
 #include <QString>
 
@@ -28,5 +29,29 @@ Job::~Job()
 {
 
 }
+
+Job Job::fromJSON(cJSON *obj)
+{
+  cJSON *idItem = cJSON_GetObjectItem(obj, "_id");
+  if (!idItem || idItem->type != cJSON_String) {
+    return Job();
+  }
+  QString id(idItem->valuestring);
+
+  cJSON *nameItem = cJSON_GetObjectItem(obj, "name");
+  if (!nameItem || nameItem->type != cJSON_String) {
+    return Job();
+  }
+  QString name(nameItem->valuestring);
+
+  cJSON *statusItem = cJSON_GetObjectItem(obj, "status");
+  if (!statusItem || statusItem->type != cJSON_String) {
+    return Job();
+  }
+  QString status(statusItem->valuestring);
+
+  return Job(id, name, status);
+}
+
 
 } // end namespace

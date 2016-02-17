@@ -3,6 +3,7 @@
 
 #include "jobtablewidget.h"
 #include "jobtablemodel.h"
+#include "cumulusproxy.h"
 
 #include <QtGui/QMessageBox>
 
@@ -29,7 +30,12 @@ void JobTableWidget::setModel(QAbstractItemModel *model)
 
   ui->table->horizontalHeader()
       ->setResizeMode(QHeaderView::Stretch);
-
 }
+
+void JobTableWidget::setCumulusProxy(CumulusProxy *cumulusProxy)
+{
+  ui->table->setCumulusProxy(cumulusProxy);
+}
+
 
 } // end namespace

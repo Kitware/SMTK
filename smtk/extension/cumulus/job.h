@@ -4,6 +4,9 @@
 #include <QtCore/QString>
 #include <QtCore/QMetaType>
 
+
+struct cJSON;
+
 namespace cumulus
 {
 
@@ -18,7 +21,9 @@ public:
   QString id() const { return this->m_id; };
   QString name() const { return this->m_name; };
   QString status() const { return this->m_status; };
+  bool isValid() const { return !this->m_id.isEmpty(); };
 
+  static Job fromJSON(cJSON *obj);
 private:
   QString m_id;
   QString m_name;

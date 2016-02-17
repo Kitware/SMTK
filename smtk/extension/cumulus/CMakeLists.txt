@@ -24,6 +24,8 @@ set(src
   jobtablemodel.cxx
   job.cxx
   cumulusproxy.cxx
+  jobrequest.cxx
+  utils.cxx
 )
 
 #add in the attribute preview executable

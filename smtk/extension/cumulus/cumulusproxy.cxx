@@ -1,6 +1,8 @@
 #include "cumulusproxy.h"
 #include "cJSON.h"
 #include "job.h"
+#include "utils.h"
+#include "jobrequest.h"
 
 #include <QtCore/QDebug>
 #include <QtNetwork/QNetworkAccessManager>
@@ -29,28 +31,6 @@ void CumulusProxy::girderUrl(const QString &url)
   this->m_girderUrl = url;
 }
 
-void CumulusProxy::handleGirderError(QNetworkReply *reply,
-    const QByteArray &bytes)
-{
-  cJSON *jsonReply = cJSON_Parse(bytes.constData());
-
-  if (!reply) {
-    emit error(reply->errorString());
-    return;
-  }
-
-  char *msg = cJSON_GetObjectItem(jsonReply, "message")->valuestring;
-  if (msg) {
-    emit error(QString("Girder error: %1").arg(QString(msg)));
-  }
-  else {
-    emit error(QString(bytes));
-  }
-
-  cJSON_Delete(jsonReply);
-
-}
-
 void CumulusProxy::authenticateNewt(const QString &username, const QString &password)
 {
   QNetworkAccessManager *manager = new QNetworkAccessManager(this);
@@ -72,7 +52,7 @@ void CumulusProxy::authenticationNewtFinished(QNetworkReply *reply)
 {
   QByteArray bytes = reply->readAll();
   if (reply->error()) {
-    this->handleGirderError(reply, bytes);
+    emit error(handleGirderError(reply, bytes));
   }
   else {
     cJSON *reply = cJSON_Parse(bytes.constData());
@@ -115,7 +95,7 @@ void CumulusProxy::authenticationGirderFinished(QNetworkReply *reply)
 {
   QByteArray bytes = reply->readAll();
   if (reply->error()) {
-    this->handleGirderError(reply, bytes);
+    emit error(handleGirderError(reply, bytes));
   }
   else {
     QVariant v = reply->header(QNetworkRequest::SetCookieHeader);
@@ -156,7 +136,7 @@ void CumulusProxy::fetchJobsFinished(QNetworkReply *reply)
 {
   QByteArray bytes = reply->readAll();
   if (reply->error()) {
-    this->handleGirderError(reply, bytes);
+    emit error(handleGirderError(reply, bytes));
   }
   else {
     cJSON *jsonResponse = cJSON_Parse(bytes.constData());
@@ -164,33 +144,22 @@ void CumulusProxy::fetchJobsFinished(QNetworkReply *reply)
     if (jsonResponse && jsonResponse->type == cJSON_Array) {
       QList<Job> jobs;
 
-      for (cJSON* job = jsonResponse->child; job; job = job->next) {
-        cJSON *idItem = cJSON_GetObjectItem(job, "_id");
-        if (!idItem || idItem->type != cJSON_String) {
-          continue;
-        }
-        QString id(idItem->valuestring);
+      for (cJSON* jsonJob = jsonResponse->child; jsonJob; jsonJob = jsonJob->next) {
+        Job job = Job::fromJSON(jsonJob);
 
-        cJSON *nameItem = cJSON_GetObjectItem(job, "name");
-        if (!nameItem || nameItem->type != cJSON_String) {
-          continue;
+        if (job.isValid()) {
+          jobs.append(job);
         }
-        QString name(nameItem->valuestring);
-
-        cJSON *statusItem = cJSON_GetObjectItem(job, "status");
-        if (!statusItem || statusItem->type != cJSON_String) {
-          continue;
+        else {
+          emit error(QString("Error parsing job JSON."));
         }
-        QString status(statusItem->valuestring);
-
-        jobs.append(Job(id, name, status));
       }
 
       emit jobsUpdated(jobs);
 
     }
     else {
-      emit error("Girder send JSON response of the incorrect format.");
+      emit error(QString("Girder send JSON response of the incorrect format."));
     }
 
     cJSON_Delete(jsonResponse);
@@ -203,6 +172,84 @@ bool CumulusProxy::isAuthenticated()
   return this->m_girderToken.isEmpty();
 }
 
+void CumulusProxy::fetchJob(const QString &id)
+{
+  QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+
+  QString girderAuthUrl = QString("%1/jobs/%2")
+      .arg(this->m_girderUrl).arg(id);
+
+  QNetworkRequest request(girderAuthUrl);
+  request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
+
+  QObject::connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(fetchJobStatusFinished(QNetworkReply *)));
+
+  manager->get(request);
+}
+
+void CumulusProxy::fetchJobFinished(QNetworkReply *reply)
+{
+  QByteArray bytes = reply->readAll();
+  if (reply->error()) {
+    emit error(handleGirderError(reply, bytes));
+  }
+  else {
+    cJSON *jsonResponse = cJSON_Parse(bytes.constData());
+
+   if (jsonResponse) {
+     Job job = Job::fromJSON(jsonResponse);
+
+     if (job.isValid()) {
+       emit jobUpdated(job);
+     }
+     else {
+       emit error(QString("Error parsing job JSON."));
+     }
+   }
+   else {
+     emit error(QString("Girder send JSON response of the incorrect format."));
+   }
+
+   cJSON_Delete(jsonResponse);
+   this->sender()->deleteLater();
+  }
+}
+
+void CumulusProxy::deleteJob(Job job)
+{
+  DeleteJobRequest *request = new DeleteJobRequest(this->m_girderUrl,
+      this->m_girderToken, job, this);
+  connect(request, SIGNAL(complete()), this, SLOT(deleteJobFinished()));
+  connect(request, SIGNAL(error(const QString)), this, SIGNAL(error(const QString)));
+  request->send();
+}
+
+void CumulusProxy::deleteJobFinished()
+{
+  DeleteJobRequest *request = qobject_cast<DeleteJobRequest*>(sender());
+
+  emit jobDeleted(request->job());
+  request->deleteLater();
+  this->fetchJobs();
+}
+
+void CumulusProxy::terminateJob(Job job)
+{
+  TerminateJobRequest *request = new TerminateJobRequest(this->m_girderUrl,
+      this->m_girderToken, job, this);
+  connect(request, SIGNAL(complete()), this, SLOT(terminateJobFinished()));
+  connect(request, SIGNAL(error(const QString)), this, SIGNAL(error(const QString)));
+  request->send();
+}
+
+void CumulusProxy::terminateJobFinished()
+{
+  TerminateJobRequest *request = qobject_cast<TerminateJobRequest*>(sender());
+
+  emit jobTerminated(request->job());
+  request->deleteLater();
+  this->fetchJobs();
+}
 
 
 } // end namespace

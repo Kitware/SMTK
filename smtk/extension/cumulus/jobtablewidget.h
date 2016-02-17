@@ -10,6 +10,7 @@ class JobTableWidget;
 namespace cumulus
 {
 class JobTableModel;
+class CumulusProxy;
 
 class JobTableWidget : public QWidget
 {
@@ -20,7 +21,7 @@ public:
   ~JobTableWidget();
 
   void setModel(QAbstractItemModel *model);
-
+  void setCumulusProxy(CumulusProxy *cumulusProxy);
 protected:
   Ui::JobTableWidget *ui;
 
