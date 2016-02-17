@@ -544,6 +544,10 @@ class CountCells : public smtk::mesh::CellForEach
   //seen all the cells that we expect to be given
   smtk::mesh::HandleRange pointsSeen;
 
+  //keep the range of cells we have seen so we can verify that we
+  //seen all the cells that we expect to be given
+  smtk::mesh::HandleRange cellsSeen;
+
   //keep track of all the cell types we have been passed
   smtk::mesh::CellTypes cellTypesSeen;
 
@@ -559,14 +563,17 @@ public:
   CountCells( ):
     smtk::mesh::CellForEach(),
     pointsSeen( ),
+    cellsSeen(),
     numCellsVisited(0),
     numPointsSeen(0)
     {
     }
 
   //--------------------------------------------------------------------------
-  void forCell(smtk::mesh::CellType cellType, int numPts)
+  void forCell(const smtk::mesh::Handle& cellId,
+               smtk::mesh::CellType cellType, int numPts)
   {
+  this->cellsSeen.insert(cellId);
   this->numCellsVisited++;
   this->numPointsSeen += numPts;
   this->pointsSeen.insert( this->pointIds(),
@@ -578,6 +585,7 @@ public:
   int numberOPointsSeen() const { return numPointsSeen; }
 
   smtk::mesh::HandleRange points() const { return pointsSeen; }
+  smtk::mesh::HandleRange cells() const { return cellsSeen; }
 
   smtk::mesh::CellTypes cellTypes() const { return cellTypesSeen; }
 };
@@ -607,7 +615,8 @@ void verify_cellset_for_each(const smtk::mesh::CollectionPtr& c)
     }
 
   //verify that point connectivity iteration and cell for_each visit
-  //the exact same number of cells
+  //all the same cells, and we also see all the points
+  test( volMeshes.cells() == smtk::mesh::CellSet(c,functor.cells()) );
   test( pointsFromConnectivity == functor.points() );
   test( numPointsSeen == functor.numberOPointsSeen() );
 

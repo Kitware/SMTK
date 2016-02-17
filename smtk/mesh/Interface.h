@@ -297,7 +297,8 @@ public:
                              smtk::mesh::PointForEach& filter) const = 0;
 
   //----------------------------------------------------------------------------
-  virtual void cellForEach( smtk::mesh::PointConnectivity& a,
+  virtual void cellForEach( const HandleRange& cells,
+                            smtk::mesh::PointConnectivity& a,
                             smtk::mesh::CellForEach& filter) const = 0;
 
   //----------------------------------------------------------------------------

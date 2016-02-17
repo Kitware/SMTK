@@ -28,6 +28,8 @@ set(unit_tests_which_require_data
   UnitTestExportMesh2DM.cxx
   UnitTestExportMesh3DM.cxx
   UnitTestLoadMesh.cxx
+  UnitTestReclassifyEdges.cxx
+  UnitTestMergeContactPoints.cxx
   UnitTestMeshSet.cxx
   UnitTestModelToMesh2D.cxx
   UnitTestPointConnectivity.cxx

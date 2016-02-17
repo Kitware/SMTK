@@ -43,7 +43,9 @@ public:
 
   virtual ~CellForEach();
 
-  virtual void forCell(smtk::mesh::CellType cellType, int numPointIds) = 0;
+  virtual void forCell(const smtk::mesh::Handle& cellId,
+                       smtk::mesh::CellType cellType,
+                       int numPointIds) = 0;
 
   //returns true if the CellForEach visitor wants its coordinates member
   //variable filled

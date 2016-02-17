@@ -22,6 +22,7 @@ namespace
 //----------------------------------------------------------------------------
 class VerifyCells : public smtk::mesh::CellForEach
 {
+  smtk::mesh::HandleRange m_cells;
   smtk::mesh::PointSet m_points;
   const std::vector<boost::int64_t>& m_conn;
   const std::vector<boost::int64_t>& m_locations;
@@ -33,13 +34,14 @@ class VerifyCells : public smtk::mesh::CellForEach
   bool m_is_vtk;
 public:
 //--------------------------------------------------------------------------
-VerifyCells( const smtk::mesh::PointSet& points,
+VerifyCells( const smtk::mesh::CellSet& cells,
              const std::vector<boost::int64_t>& conn,
              const std::vector<boost::int64_t>& locations,
              const std::vector<unsigned char>& types,
              bool is_vtk_conn):
   smtk::mesh::CellForEach(),
-  m_points(points),
+  m_cells(),
+  m_points(cells.points()),
   m_conn(conn),
   m_locations(locations),
   m_types(types),
@@ -50,33 +52,43 @@ VerifyCells( const smtk::mesh::PointSet& points,
   }
 
 //--------------------------------------------------------------------------
-void forCell(smtk::mesh::CellType cellType, int numPts)
+void forCell(const smtk::mesh::Handle& cellId,
+             smtk::mesh::CellType cellType,
+             int numPts)
 {
-//verify the offset is in the correct location
-boost::int64_t offset = this->m_locations[this->m_currentIndex];
-test(offset == this->m_currentLocation);
-if(m_is_vtk)
-  {
-  //the connectivity at offset should hold the number of points
-  test( this->m_conn[offset] == numPts );
-  this->m_currentLocation++;
-  offset++;
-  }
-else
-  {
-  //verify the types match when doing smtk types
-  test(this->m_types[this->m_currentIndex] == static_cast<unsigned char>(cellType));
-  }
+  this->m_cells.insert(cellId);
+  //verify the offset is in the correct location
+  boost::int64_t offset = this->m_locations[this->m_currentIndex];
+  test(offset == this->m_currentLocation);
+  if(m_is_vtk)
+    {
+    //the connectivity at offset should hold the number of points
+    test( this->m_conn[offset] == numPts );
+    this->m_currentLocation++;
+    offset++;
+    }
+  else
+    {
+    //verify the types match when doing smtk types
+    test(this->m_types[this->m_currentIndex] == static_cast<unsigned char>(cellType));
+    }
 
-//verify the points ids are mapped properly
-for(int i=0; i < numPts; ++i)
-  {
-  test( this->m_conn[offset+ i] == this->m_points.find(this->pointIds()[i] ) );
-  }
+  //verify the points ids are mapped properly
+  for(int i=0; i < numPts; ++i)
+    {
+    test( this->m_conn[offset+ i] == this->m_points.find(this->pointIds()[i] ) );
+    }
 
-this->m_currentIndex++;
-this->m_currentLocation += numPts;
+  this->m_currentIndex++;
+  this->m_currentLocation += numPts;
 }
+
+//--------------------------------------------------------------------------
+smtk::mesh::CellSet cells(smtk::mesh::CollectionPtr c) const
+{
+  return smtk::mesh::CellSet(c,m_cells);
+}
+
 };
 
 //----------------------------------------------------------------------------
@@ -394,8 +406,9 @@ void verify_extract_only_connectivity_and_types(const smtk::mesh::CollectionPtr&
 
   //lets iterate the cells, and verify that the extraction matches
   //what we see when we iterate
-  VerifyCells vc(cells3d.points(),conn, locations, types, false);
+  VerifyCells vc(cells3d, conn, locations, types, false);
   smtk::mesh::for_each(cells3d, vc);
+  test( vc.cells(c) == cells3d);
 }
 
 //----------------------------------------------------------------------------
@@ -427,8 +440,9 @@ void verify_extract_all_to_vtk(const smtk::mesh::CollectionPtr& c)
 
   //lets iterate the cells, and verify that the extraction matches
   //what we see when we iterate
-  VerifyCells vc(cells3d.points(),conn, locations, types, true);
+  VerifyCells vc(cells3d, conn, locations, types, true);
   smtk::mesh::for_each(cells3d, vc);
+  test( vc.cells(c) == cells3d);
 
   //lets iterate the points and make sure they all match
   VerifyPoints<double> vp(dpoints);
@@ -462,8 +476,9 @@ void verify_extract_only_connectivity_to_vtk(const smtk::mesh::CollectionPtr& c)
 
   //lets iterate the cells, and verify that the extraction matches
   //what we see when we iterate
-  VerifyCells vc(cells2d.points(),conn, locations, types, true);
+  VerifyCells vc(cells2d, conn, locations, types, true);
   smtk::mesh::for_each(cells2d, vc);
+  test( vc.cells(c) == cells2d);
 }
 
 //----------------------------------------------------------------------------
@@ -493,10 +508,11 @@ void verify_extract_volume_meshes_by_global_points_to_vtk(const smtk::mesh::Coll
   //extract in releation to the points of all the meshes
   smtk::mesh::extractTessellation(cells, c->points(), tess);
 
-  //lets iterate the cells, and verify that the extraction matches
-  //what we see when we iterate
-  VerifyCells vc(c->points(), conn, locations, types, true);
+  // //lets iterate the cells, and verify that the extraction matches
+  // //what we see when we iterate
+  VerifyCells vc(c->cells(), conn, locations, types, true);
   smtk::mesh::for_each(cells, vc);
+  test( vc.cells(c) == cells);
 }
 
 }
@@ -513,12 +529,12 @@ int UnitTestExtractTessellation(int, char** const)
   verify_alloc_lengths_cellset(c);
 
   verify_extract_packed_single_type(c);
-  // verify_extract_only_connectivity_and_types(c);
+  verify_extract_only_connectivity_and_types(c);
 
-  // verify_extract_all_to_vtk(c);
+  verify_extract_all_to_vtk(c);
   verify_extract_only_connectivity_to_vtk(c);
 
-  verify_extract_volume_meshes_by_global_points_to_vtk(c);
+  // verify_extract_volume_meshes_by_global_points_to_vtk(c);
 
   return 0;
 }

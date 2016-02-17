@@ -11,6 +11,7 @@
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
+#include "smtk/model/EntityRef.h"
 #include "smtk/io/ImportMesh.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
@@ -98,7 +99,7 @@ void verify_remove_invalid_meshes(const smtk::mesh::CollectionPtr& c)
 
   const bool result = c->removeMeshes(invalidMeshIds);
 
-  test(!result, "shouldn't be able to remove non-existent handle ids");
+  test( result, "deletion of non-existent cells, is equal to deleting an empty mesh");
   test( numMeshesBeforeRemoval == c->numberOfMeshes());
   test( numCellsBeforeRemoval == c->cells().size());
 
@@ -228,6 +229,43 @@ void verify_remove_meshes_removes_unused_cells(const smtk::mesh::CollectionPtr& 
   reset(c);
 }
 
+//----------------------------------------------------------------------------
+void verify_remove_verts_with_model_association(const smtk::mesh::CollectionPtr& c)
+{
+  //make a mesh that only holds verts
+  std::size_t num_meshes = c->meshes().size();
+  std::size_t num_cells = c->cells().size();
+
+  smtk::mesh::CellSet vertCells = c->cells(smtk::mesh::Dims0);
+  smtk::mesh::MeshSet vertMesh = c->createMesh(vertCells);
+
+  test( (num_meshes == c->meshes().size()-1), "");
+  test( (num_cells == (c->cells().size()) ),"");
+
+  //add a model association to the vert mesh
+  smtk::common::UUID entity = smtk::common::UUID::random();
+  smtk::model::EntityRef eref;
+  eref.setEntity(entity);
+  c->setAssociation(eref, vertMesh);
+
+  //verify we have an association
+  std::size_t numAssoc = c->findAssociatedMeshes(eref).size();
+  test(numAssoc == 1, "");
+
+  bool removed = c->removeMeshes(vertMesh);
+
+  //verify the association is removed
+  numAssoc = c->findAssociatedMeshes(eref).size();
+  test(numAssoc == 0, "");
+
+  test(removed, "should be able to remove mesh of just verts");
+  test((num_meshes == c->meshes().size()), "");
+  test((num_cells == c->cells().size()), "");
+
+  reset(c);
+}
+
+
 }
 
 //----------------------------------------------------------------------------
@@ -244,10 +282,10 @@ int UnitTestRemoveMeshes(int, char** const)
   verify_remove_single_mesh(c);
   verify_remove_multiple_meshes(c);
 
-  // remove all meshes currently fails when removing the cells
   verify_remove_all_meshes(c);
-
   verify_remove_meshes_removes_unused_cells(c);
+
+  verify_remove_verts_with_model_association(c);
 
   return 0;
 }
