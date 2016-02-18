@@ -251,5 +251,12 @@ void CumulusProxy::terminateJobFinished()
   this->fetchJobs();
 }
 
+void CumulusProxy::sslErrors(QNetworkReply * reply,
+    const QList<QSslError> & errors)
+{
+  emit error(reply->errorString());
+  this->sender()->deleteLater();
+}
+
 
 } // end namespace

@@ -6,6 +6,7 @@
 #include <QtCore/QList>
 
 class QNetworkReply;
+class QSslError;
 
 namespace cumulus
 {
@@ -45,6 +46,7 @@ private slots:
   void fetchJobFinished(QNetworkReply *reply);
   void deleteJobFinished();
   void terminateJobFinished();
+  void sslErrors(QNetworkReply * reply, const QList<QSslError> & errors);
 
 
 private:
