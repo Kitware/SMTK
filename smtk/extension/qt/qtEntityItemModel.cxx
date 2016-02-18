@@ -762,6 +762,50 @@ inline void _internal_findAllExistingMeshPhrases(
     }
 }
 
+inline void _internal_updateAllMeshCollectionPhrases(
+  const DescriptivePhrasePtr& parntDp,
+  const smtk::common::UUIDs& collectionIds,
+  DescriptivePhrases& childPhrasesNeedUpdate,
+  DescriptivePhrases& collectionPhrases,
+  smtk::mesh::ManagerPtr meshMgr)
+{
+  if(!parntDp || !parntDp->areSubphrasesBuilt())
+    return;
+
+  smtk::model::DescriptivePhrases& subs(parntDp->subphrases());
+  for (smtk::model::DescriptivePhrases::iterator it = subs.begin();
+    it != subs.end(); ++it)
+    {
+    // mesh phrases
+    if( (*it)->phraseType() == MESH_SUMMARY )
+      {
+      if((*it)->relatedMeshCollection()
+          && collectionIds.find((*it)->relatedMeshCollection()->entity()) != collectionIds.end()
+          && (*it)->areSubphrasesBuilt())
+        {
+        // for the MeshPhrase of a modified collection, the phrase itself has to be re-setup,
+        // so that its child phrases will have the updated MeshSets in the collection
+        if(smtk::mesh::CollectionPtr c = meshMgr->collection(
+            (*it)->relatedMeshCollection()->entity()))
+          {
+          collectionPhrases.insert(collectionPhrases.end(), *it);
+          MeshPhrasePtr mphrase = smtk::dynamic_pointer_cast<MeshPhrase>(*it);
+          mphrase->updateMesh(c);
+          smtk::model::DescriptivePhrases& meshsubs(mphrase->subphrases());
+          childPhrasesNeedUpdate.insert(childPhrasesNeedUpdate.end(),
+             meshsubs.begin(), meshsubs.end());
+          }
+        }
+      }
+    else if((*it)->relatedEntity().isModel())// || item->relatedEntity().isGroup())
+      {
+      // Only descending when we have a model since mesh collections are only children of model phrases
+      _internal_updateAllMeshCollectionPhrases(*it, collectionIds, childPhrasesNeedUpdate,
+                                               collectionPhrases, meshMgr);
+      }
+    }
+}
+
 void QEntityItemModel::addChildPhrases(
     const DescriptivePhrasePtr& parntDp,
     const std::vector< std::pair<DescriptivePhrasePtr, int> > & newDphrs,
@@ -904,7 +948,7 @@ void QEntityItemModel::removeChildPhrases(
 }
 
 void QEntityItemModel::updateChildPhrases(
-  const DescriptivePhrasePtr& phrase, const QModelIndex& topIndex)
+  const DescriptivePhrasePtr& phrase, const QModelIndex& topIndex, bool emitEvenNoChanges)
 {
   if(!phrase)
     {
@@ -982,7 +1026,7 @@ void QEntityItemModel::updateChildPhrases(
   if(newDphrs.size() > 0)
     this->addChildPhrases(phrase, newDphrs, topIndex);
   // subphrases did not change, just emit dataChanged signal
-  if(remDphrs.size() == 0 && newDphrs.size() == 0)
+  if(remDphrs.size() == 0 && newDphrs.size() == 0 && emitEvenNoChanges)
     {
     QModelIndex qidx(_internal_getPhraseIndex(
       this, phrase, topIndex, true));
@@ -1020,8 +1064,10 @@ void QEntityItemModel::findDirectParentPhrasesForRemove(
       // parntDp->removeSubphrase(*it); // Don't remove them yet.
       changedPhrases[parntDp].push_back(std::make_pair(*it, newIdx));
       }
-    else
+    else if ((*it)->phraseType() != MESH_SUMMARY) // skip meshes
+      {
       this->findDirectParentPhrasesForRemove(*it, remEnts, changedPhrases);
+      }
     }
 }
 
@@ -1046,7 +1092,7 @@ void QEntityItemModel::findDirectParentPhrasesForAdd(
       // parntDp->removeSubphrase(*it); // Don't remove them yet.
       changedPhrases[parntDp].push_back(std::make_pair(*it, newIdx));
       }
-    else
+    else if((*it)->phraseType() != MESH_SUMMARY) // skip meshes
       {
       int origId = parntDp->argFindChild(related);
     // we only want to descend with the built subphrases that
@@ -1066,6 +1112,29 @@ void QEntityItemModel::findDirectParentPhrasesForAdd(
 //                                      ent, changedPhrases, onlyBuilt);
       }
 */
+    }
+}
+
+void QEntityItemModel::updateMeshPhrases(
+  const smtk::common::UUIDs& relatedCollections,
+  const DescriptivePhrasePtr& startDp,
+  const QModelIndex& topIndex,
+  smtk::mesh::ManagerPtr meshMgr)
+{
+  DescriptivePhrases meshPhrasesNeedUpdate;
+  DescriptivePhrases collectionPhrases;
+  _internal_updateAllMeshCollectionPhrases(startDp, relatedCollections,
+    meshPhrasesNeedUpdate, collectionPhrases, meshMgr);
+  smtk::model::DescriptivePhrases::iterator mit;
+  for(mit = meshPhrasesNeedUpdate.begin(); mit != meshPhrasesNeedUpdate.end(); ++mit)
+    this->updateChildPhrases(*mit, topIndex, false);
+
+  // emit DataChanged signal for collection index
+  for(mit = collectionPhrases.begin(); mit != collectionPhrases.end(); ++mit)
+    {
+    QModelIndex qidx(_internal_getPhraseIndex(this, *mit, topIndex, true));
+    if(qidx.isValid())
+      emit this->dataChanged(qidx, qidx);
     }
 }
 
@@ -1105,42 +1174,11 @@ void QEntityItemModel::updateWithOperatorResult(
     {
 //    std::map<DescriptivePhrasePtr, DescriptivePhrases>& newLists;
     this->findDirectParentPhrasesForAdd(startPhr, newEnts, changedPhrases);
-/*
-    // If there are new lists, the relatedEntities in the new lists need to be removed
-    // from their current parents first
-    std::map<DescriptivePhrasePtr, DescriptivePhrases>::const_iterator newit;
-    for(newit = newLists.begin(); newit != newLists.end(); ++newit)
-      {
-      DescriptivePhrases& tmpphrases(newit->first->subphrases());
-      DescriptivePhrases::const_iterator currit;
-      // if this subphrase is already in one of the new list, remove it.
-      std::vector< std::pair<DescriptivePhrasePtr, int> > remDphrs;
-      int rmrow = 0;
-      for(currit = tmpphrases.begin(); currit != tmpphrases.end(); ++currit, ++rmrow)
-        {
-        DescriptivePhrases::const_iterator lit;
-        for(lit = newit->second.begin(); lit != newit->second.end(); ++lit)
-          {
-          EntityListPhrasePtr lphrase = smtk::dynamic_pointer_cast<EntityListPhrase>(*lit);
-          if (!lphrase)
-            continue;
-          if(std::find(lphrase->relatedEntities().begin(),
-                    lphrase->relatedEntities().end(),
-                    (*currit)->relatedEntity())
-                  != lphrase->relatedEntities().end())
-            {
-            remDphrs.push_back(std::make_pair(*currit, rmrow));
-            break;
-            }
-          }
-        }
-      if(remDphrs.size() > 0)
-        this->removeChildPhrases(newit->first, remDphrs, sessIndex)
-      }
-*/
+
     for(pit = changedPhrases.begin(); pit != changedPhrases.end(); ++pit)
       this->addChildPhrases(pit->first, pit->second, sessIndex);
     }
+
 
   DescriptivePhrases modifiedPhrases;
   smtk::attribute::ModelEntityItem::Ptr modEnts =
@@ -1159,11 +1197,22 @@ void QEntityItemModel::updateWithOperatorResult(
     result->findMesh("mesh_modified");
   if(modifiedMeshes && modifiedMeshes->numberOfValues() > 0)
     {
+    smtk::common::UUIDs relatedCollections;
+    smtk::attribute::MeshItem::const_mesh_it it;
+    for(it = modifiedMeshes->begin(); it != modifiedMeshes->end(); ++it)
+      {
+      smtk::mesh::CollectionPtr c = it->collection();
+      relatedCollections.insert(c->entity());
+      }
+    // update mesh phrases
+    if(relatedCollections.size() > 0)
+      this->updateMeshPhrases(relatedCollections, startPhr, sessIndex, this->manager()->meshes());
+
     _internal_findAllExistingMeshPhrases(startPhr, modifiedMeshes, modifiedMeshPhrases);
+
     smtk::model::DescriptivePhrases::iterator mit;
     for(mit = modifiedMeshPhrases.begin(); mit != modifiedMeshPhrases.end(); ++mit)
       {
-//      (*mit)->setup()
       QModelIndex qidx(_internal_getPhraseIndex(
         this, *mit, sessIndex, true));
       if(!qidx.isValid())

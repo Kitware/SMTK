@@ -133,7 +133,7 @@ protected:
     const DescriptivePhrasePtr& pDphr, const std::vector< std::pair<DescriptivePhrasePtr, int> >& cDphrs,
     const QModelIndex& topIndex);
   virtual void updateChildPhrases(
-    const DescriptivePhrasePtr& phrase, const QModelIndex& topIndex);
+    const DescriptivePhrasePtr& phrase, const QModelIndex& topIndex, bool emitEvenNoChanges = true);
   virtual void findDirectParentPhrasesForAdd(
           const DescriptivePhrasePtr& parntDp,
           const smtk::attribute::ModelEntityItemPtr& newEnts,
@@ -144,6 +144,11 @@ protected:
           const smtk::attribute::ModelEntityItemPtr& remEnts,
           std::map<DescriptivePhrasePtr,
             std::vector< std::pair<DescriptivePhrasePtr, int> > >& changedPhrases);
+
+  virtual void updateMeshPhrases (const smtk::common::UUIDs& relatedCollections,
+                                  const DescriptivePhrasePtr& startDp,
+                                  const QModelIndex& topIndex,
+                                  smtk::mesh::ManagerPtr meshMgr);
 };
 
 /**\brief Iterate over all expanded entries in the tree.

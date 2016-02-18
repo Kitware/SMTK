@@ -386,6 +386,8 @@ smtk::common::UUIDArray Interface::computeModelEntities(const smtk::mesh::Handle
   for(i=meshsets.begin(); i != meshsets.end(); ++i)
     {
     MeshInfoVecType::const_iterator m = this->find(*i);
+    if(m == this->m_meshInfo.end())
+      continue;
     const smtk::common::UUIDArray& t = m->modelUUIDS();
     if(t.size() > 0)
       {
