@@ -61,7 +61,7 @@ int SessionIOJSON::loadExodusFileWithUUIDs(
     path tryme = this->referencePath() / absURL;
     if (exists(tryme))
       {
-      absURL = tryme;
+      absURL = canonical(tryme, this->referencePath());
       }
     }
 
@@ -193,6 +193,8 @@ int SessionIOJSON::exportJSON(model::ManagerPtr modelMgr, const model::SessionPt
             url = tryme.string();
             }
           }
+        // set the url property to be consistent with "modelFiles" record when written out
+        mit->setStringProperty("url", url.string());
         modelFiles.insert(url.string());
         }
       }

@@ -337,8 +337,6 @@
   <suppress-warning text="skipping function 'smtk::model::MeshListPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::MeshListPhrase::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::MeshListPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::MeshListPhrase::SelfType&gt;'"/>
 
-
-
   <suppress-warning text="skipping field 'DescriptivePhrase::m_delegate' with unmatched type 'smtk::shared_ptr&lt;SubphraseGenerator&gt;'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ValueItemTemplate::setValue', unmatched parameter type 'size_t'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ValueItemTemplate::concreteDefinition', unmatched return type 'shared_ptr&lt;const smtk::attribute::ValueItemTemplate&lt;DataT&gt;::DefType&gt;"/>
@@ -392,7 +390,10 @@
   <suppress-warning text="skipping function 'smtk::io::MeshExport3DM::write', unmatched parameter type 'std::ostream&amp;'"/>
   <suppress-warning text="template baseclass 'std::bitset&lt;CellType_MAX&gt;' of 'CellTypes' is not known"/>
   <suppress-warning text="skipping function 'smtk::mesh::Collection::interface', unmatched return type 'smtk::mesh::InterfacePtr const&amp;'"/>
-
+  <suppress-warning text="skipping function 'smtk::mesh::Collection::readLocation', unmatched return type 'smtk::common::FileLocation const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::mesh::Collection::readLocation', unmatched parameter type 'smtk::common::FileLocation const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::mesh::Collection::writeLocation', unmatched parameter type 'smtk::common::FileLocation const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::mesh::Collection::writeLocation', unmatched return type 'smtk::common::FileLocation const&amp;'"/>
 
   <suppress-warning text="skipping field 'Manager::m_conditionTriggers' with unmatched type 'std::set&lt;ConditionTrigger&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_oneToOneTriggers' with unmatched type 'std::set&lt;OneToOneTrigger&gt;'"/>

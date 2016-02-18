@@ -23,7 +23,7 @@ bool WriteMesh::entireCollection(smtk::mesh::CollectionPtr collection)
   { //require a file location to write too
     return false;
   }
-  return smtk::mesh::moab::write(collection->writeLocation(), collection);
+  return smtk::mesh::moab::write(collection->writeLocation().absolutePath(), collection);
 }
 
 bool WriteMesh::onlyDomain(smtk::mesh::CollectionPtr collection)
@@ -32,7 +32,7 @@ bool WriteMesh::onlyDomain(smtk::mesh::CollectionPtr collection)
   { //require a file location to write too
     return false;
   }
-  return smtk::mesh::moab::write_domain(collection->writeLocation(), collection);
+  return smtk::mesh::moab::write_domain(collection->writeLocation().absolutePath(), collection);
 }
 
 bool WriteMesh::onlyNeumann(smtk::mesh::CollectionPtr collection)
@@ -41,7 +41,7 @@ bool WriteMesh::onlyNeumann(smtk::mesh::CollectionPtr collection)
   { //require a file location to write too
     return false;
   }
-  return smtk::mesh::moab::write_neumann(collection->writeLocation(), collection);
+  return smtk::mesh::moab::write_neumann(collection->writeLocation().absolutePath(), collection);
 }
 
 bool WriteMesh::onlyDirichlet(smtk::mesh::CollectionPtr collection)
@@ -50,7 +50,7 @@ bool WriteMesh::onlyDirichlet(smtk::mesh::CollectionPtr collection)
   { //require a file location to write too
     return false;
   }
-  return smtk::mesh::moab::write_dirichlet(collection->writeLocation(), collection);
+  return smtk::mesh::moab::write_dirichlet(collection->writeLocation().absolutePath(), collection);
 }
 
 bool WriteMesh::entireCollection(const std::string& filePath,

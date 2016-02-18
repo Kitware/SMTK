@@ -1,6 +1,7 @@
 # set up sources to build
 set(commonSrcs
   Environment.cxx
+  FileLocation.cxx
   Paths.cxx
   Resource.cxx
   ResourceSet.cxx
@@ -12,6 +13,7 @@ set(commonSrcs
 
 set(commonHeaders
   Environment.h
+  FileLocation.h
   Paths.h
   Resource.h
   ResourceSet.h

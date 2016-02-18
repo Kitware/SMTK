@@ -64,10 +64,10 @@ smtk::model::OperatorResult ExportSMTKModel::operateInternal()
 
   // Add the output smtk model name to the model "smtk_url", so that the individual session can
   // use that name to construct a filename for saving native models of the session.
-  smtk::model::Models::const_iterator modit;
+  smtk::model::Models::iterator modit;
   for(modit = models.begin(); modit != models.end(); ++modit)
     {
-    this->manager()->setStringProperty(modit->entity(), "smtk_url", filename);
+    modit->setStringProperty("smtk_url", filename);
 
     // we also want to write out the meshes to new "write_locations"
     std::vector<smtk::mesh::CollectionPtr> collections =
@@ -78,7 +78,8 @@ smtk::model::OperatorResult ExportSMTKModel::operateInternal()
       std::ostringstream outmeshname;
       outmeshname << smtkfilename << "_" << (*cit)->name() << ".h5m";
       std::string write_path = (path(smtkfilepath) / path(outmeshname.str())).string();
-      (*cit)->writeLocation(write_path);
+      smtk::common::FileLocation wfLocation(write_path, smtkfilepath);
+      (*cit)->writeLocation(wfLocation);
       }
     }
 
@@ -92,6 +93,27 @@ smtk::model::OperatorResult ExportSMTKModel::operateInternal()
   free(json);
   cJSON_Delete(top);
   jsonFile.close();
+
+  // Now we need to do some work to reset the url property of models since
+  // during export, the property may be changed to be relative path, and we want
+  // to set it back to be absolute path to display
+  if(!smtkfilepath.empty())
+    {
+    for(modit = models.begin(); modit != models.end(); ++modit)
+      {
+      if(modit->hasStringProperty("url"))
+        {
+        path url(modit->stringProperty("url")[0]);
+        if (!url.string().empty() && !url.is_absolute())
+          {
+          url = smtkfilepath / url;
+          url = canonical(url, smtkfilepath);
+          // set the url property to be consistent with "modelFiles" record when written out
+          modit->setStringProperty("url", url.string());
+          }
+        }
+      }
+    }
 
   return this->createResult(smtk::model::OPERATION_SUCCEEDED);
 }

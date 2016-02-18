@@ -1062,7 +1062,13 @@ int ExportJSON::forSingleCollection(cJSON* mdesc,
   //if it should use the type, or fall back to the json interface
   if(!collection->writeLocation().empty())
     {
-    const std::string& fileWriteLocation = collection->writeLocation();
+    // if there is a reference path, write out the relative path to it;
+    // otherwise, write out the absolute path
+    const std::string& fileWriteLocation =
+      collection->writeLocation().referencePath().empty() ?
+      collection->writeLocation().absolutePath() :
+      collection->writeLocation().relativePath();
+
     cJSON_AddStringToObject(jsonCollection, "location", fileWriteLocation.c_str() );
     smtk::io::WriteMesh::entireCollection(collection);
     }

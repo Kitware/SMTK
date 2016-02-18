@@ -16,6 +16,7 @@
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/common/UUID.h"
+#include "smtk/common/FileLocation.h"
 
 #include "smtk/mesh/CellSet.h"
 #include "smtk/mesh/PointConnectivity.h"
@@ -82,13 +83,15 @@ public:
   bool assignUniqueNameIfNotAlready();
 
   //get the file that this collection was created from
-  //will return an empty string if this collection wasn't read from file
-  const std::string& readLocation() const;
+  //will return an empty FileLocation if this collection wasn't read from file
+  const smtk::common::FileLocation& readLocation() const;
 
   //set the file that this collection should be saved to.
   //By default this is set to be the same as the readLocation()
-  void writeLocation(const std::string& path);
-  const std::string& writeLocation() const;
+  void writeLocation(const smtk::common::FileLocation& path);
+  void writeLocation(const std::string& path)
+  { this->writeLocation(smtk::common::FileLocation(path)); }
+  const smtk::common::FileLocation& writeLocation() const;
 
   //clear both the read and write locations for the collection. This
   //is generally done when de-serializing a collection and the read and write
@@ -278,7 +281,9 @@ private:
   Collection& operator=( const Collection& other ); //blank since we are used by shared_ptr
 
   //Sets the location that this collection was loaded from
-  void readLocation(const std::string& path);
+  void readLocation(const std::string& path)
+  { this->readLocation(smtk::common::FileLocation(path)); }
+  void readLocation(const smtk::common::FileLocation& path);
 
   //Swap the internal interfaces between this Collection and another Collection
   //this is how we can easily update a collection that has already been
@@ -295,8 +300,8 @@ private:
 
   smtk::common::UUID m_entity;
   std::string m_name;
-  std::string m_readLocation;
-  std::string m_writeLocation;
+  smtk::common::FileLocation m_readLocation;
+  smtk::common::FileLocation m_writeLocation;
 
   smtk::model::WeakManagerPtr m_modelManager;
   smtk::shared_ptr<MeshFloatData> m_floatData;

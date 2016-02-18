@@ -99,8 +99,14 @@ int SessionIOJSON::importJSON(ManagerPtr modelMgr,
 
         if(!nativemodelfile.empty())
           {
-          // failed to load native model is still ok
-          this->loadNativeModel(modelMgr, session, nativemodelfile);
+          // failed to load native model is still ok;
+          // If the model is loaded successfully, we need to cache the loadedURL so that we
+          // can recover it because loadModelsRecord may set the "url" to something else
+          std::string loadedURL;
+          if(this->loadNativeModel(modelMgr, session, nativemodelfile, loadedURL))
+            {
+            existingURLs[modelid] = loadedURL;
+            }
           }
         }
       }
@@ -176,7 +182,8 @@ int SessionIOJSON::loadMeshesRecord(ManagerPtr modelMgr,
     smtkInfoMacro(modelMgr->log(), "Expecting a \"mesh_collections\" entry!");
     return 1;
     }
-  return smtk::io::ImportJSON::ofMeshesOfModel(sessionRec, modelMgr);
+  return smtk::io::ImportJSON::ofMeshesOfModel(sessionRec, modelMgr,
+                                               this->referencePath());
 }
 
 /**\brief Encode information into \a sessionRec for the given \a modelMgr.
@@ -318,7 +325,8 @@ std::string SessionIOJSON::getOutputFileNameForNativeModel(
   */
 int SessionIOJSON::loadNativeModel(smtk::model::ManagerPtr modelMgr,
                               const smtk::model::SessionPtr& sess,
-                              const std::string& inNativeFile)
+                              const std::string& inNativeFile,
+                              std::string& loadedURL)
 {
   // if this is not a valid session, return;
   if(!sess)
@@ -342,7 +350,7 @@ int SessionIOJSON::loadNativeModel(smtk::model::ManagerPtr modelMgr,
       path tryme = this->referencePath() / actualFilename;
       if (exists(tryme))
         {
-        actualFilename = tryme;
+        actualFilename = canonical(tryme, this->referencePath());
         }
       }
     readOp->specification()->findFile("filename")->setValue(actualFilename.string());
@@ -353,6 +361,7 @@ int SessionIOJSON::loadNativeModel(smtk::model::ManagerPtr modelMgr,
       smtkInfoMacro(modelMgr->log(), "Failed to read the model for native kernel!");
       return 0;
       }
+    loadedURL = actualFilename.string();
     return 1;
     }
 

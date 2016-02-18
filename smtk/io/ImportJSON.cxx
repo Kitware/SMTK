@@ -32,6 +32,9 @@
 #include "smtk/io/Logger.h"
 #include "smtk/io/ImportMesh.h"
 
+#include "boost/filesystem.hpp"
+#include "boost/system/error_code.hpp"
+
 #include "cJSON.h"
 
 #include <stdio.h>
@@ -44,6 +47,7 @@
 using namespace smtk::io;
 using namespace smtk::common;
 using namespace smtk::model;
+using namespace boost::filesystem;
 
 // Some cJSON helpers
 namespace {
@@ -1059,8 +1063,8 @@ int ImportJSON::ofLog(cJSON* logrecordarray, smtk::io::Logger& log)
   *
   */
 int ImportJSON::ofMeshesOfModel(cJSON* node,
-                                smtk::model::ManagerPtr modelMgr)
-
+                                smtk::model::ManagerPtr modelMgr,
+                                const std::string& refPath)
 {
   int status = 1;
   if (!node || !modelMgr)
@@ -1117,7 +1121,16 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
       //get the file_path from json
       std::string file_path;
       cJSON_GetStringValue(fLocationNode, file_path);
-      importedCollection = smtk::io::ImportMesh::entireFile(file_path, meshMgr);
+      path absPath(file_path);
+      if (!refPath.empty() && !absPath.is_absolute())
+        {
+        path tryme = refPath / absPath;
+        if (exists(tryme))
+          {
+          absPath = canonical(tryme, refPath);
+          }
+        }
+      importedCollection = smtk::io::ImportMesh::entireFile(absPath.string(), meshMgr);
       }
 
     //wasnt moab, or failed to load as moab
@@ -1141,7 +1154,6 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
         //done so that we get the correct uuid for the collection
         collection = meshMgr->makeCollection(uid, importedCollection->interface());
         }
-
 
       //remove the old collection, as its interface is now owned by the new
       //collection
