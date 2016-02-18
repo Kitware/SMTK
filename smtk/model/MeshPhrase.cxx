@@ -76,21 +76,21 @@ void MeshPhrase::updateMesh(
       if(relMesh.is_empty())
         continue;
        // assuming we have same dimensions in the set
-      if(!relMesh.subset(smtk::mesh::Dims3).is_empty())
+      if(!relMesh.subset(smtk::mesh::Dims0).is_empty())
         {
-        mphrase->updateMesh(meshcollection->meshes(smtk::mesh::Dims3));
-        }
-      else if(!relMesh.subset(smtk::mesh::Dims2).is_empty())
-        {
-        mphrase->updateMesh(meshcollection->meshes(smtk::mesh::Dims2));
+        mphrase->updateMesh(meshcollection->meshes(smtk::mesh::Dims0));
         }
       else if(!relMesh.subset(smtk::mesh::Dims1).is_empty())
         {
         mphrase->updateMesh(meshcollection->meshes(smtk::mesh::Dims1));
         }
-      else if(!relMesh.subset(smtk::mesh::Dims0).is_empty())
+      else if(!relMesh.subset(smtk::mesh::Dims2).is_empty())
         {
-        mphrase->updateMesh(meshcollection->meshes(smtk::mesh::Dims0));
+        mphrase->updateMesh(meshcollection->meshes(smtk::mesh::Dims2));
+        }
+      else if(!relMesh.subset(smtk::mesh::Dims3).is_empty())
+        {
+        mphrase->updateMesh(meshcollection->meshes(smtk::mesh::Dims3));
         }
       }
     }
