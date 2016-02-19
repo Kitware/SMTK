@@ -14,12 +14,10 @@
 
 namespace cumulus {
 
-JobRequest::JobRequest(const QString &girderUrl,  const QString &girderToken,
+JobRequest::JobRequest(const QString &girderUrl, const QString &girderToken,
     Job job, QObject *parent) :
-  QObject(parent),
-  m_job(job),
-  m_girderUrl(girderUrl),
-  m_girderToken(girderToken)
+    GirderRequest(girderUrl, girderToken, parent),
+  m_job(job)
 {
 
 }
@@ -33,7 +31,7 @@ DeleteJobRequest::DeleteJobRequest(const QString &girderUrl,
     const QString &girderToken, Job job, QObject *parent) :
     JobRequest(girderUrl, girderToken, job, parent)
 {
-
+  qDebug() << "DeleteJobRequest" << girderUrl;
 }
 
 DeleteJobRequest::~DeleteJobRequest()
@@ -43,17 +41,15 @@ DeleteJobRequest::~DeleteJobRequest()
 
 void DeleteJobRequest::send()
 {
-  QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-
   QString girderAuthUrl = QString("%1/jobs/%2")
       .arg(this->m_girderUrl).arg(this->m_job.id());
 
   QNetworkRequest request(girderAuthUrl);
   request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
 
-  QObject::connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(finished(QNetworkReply *)));
+  QObject::connect(this->m_networkManager, SIGNAL(finished(QNetworkReply *)), this, SLOT(finished(QNetworkReply *)));
 
-  manager->deleteResource(request);
+  this->m_networkManager->deleteResource(request);
 }
 
 void DeleteJobRequest::finished(QNetworkReply *reply)
@@ -65,8 +61,6 @@ void DeleteJobRequest::finished(QNetworkReply *reply)
   else {
     emit complete();
   }
-
-  this->sender()->deleteLater();
 }
 
 TerminateJobRequest::TerminateJobRequest(const QString &girderUrl,
@@ -84,18 +78,16 @@ TerminateJobRequest::~TerminateJobRequest()
 
 void TerminateJobRequest::send()
 {
-  QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-
   QString girderAuthUrl = QString("%1/jobs/%2/terminate")
       .arg(this->m_girderUrl).arg(this->m_job.id());
 
   QNetworkRequest request(girderAuthUrl);
   request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
 
-  QObject::connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(finished(QNetworkReply *)));
+  QObject::connect(this->m_networkManager, SIGNAL(finished(QNetworkReply *)), this, SLOT(finished(QNetworkReply *)));
 
   QByteArray empty;
-  manager->put(request, empty);
+  this->m_networkManager->put(request, empty);
 }
 
 void TerminateJobRequest::finished(QNetworkReply *reply)
@@ -107,8 +99,50 @@ void TerminateJobRequest::finished(QNetworkReply *reply)
   else {
     emit complete();
   }
-
-  this->sender()->deleteLater();
 }
 
+DownloadJobRequest::DownloadJobRequest(const QString &girderUrl,
+    const QString &girderToken, const QString &downloadPath, Job job,
+    QObject *parent) :
+  JobRequest(girderUrl, girderToken, job, parent),
+  m_downloadPath(downloadPath)
+{
+
+}
+
+DownloadJobRequest::~DownloadJobRequest()
+{
+
+}
+
+void DownloadJobRequest::send()
+{
+  foreach(QString folderId, this->m_job.outputFolderIds()) {
+    this->m_foldersToDownload << folderId;
+
+    DownloadFolderRequest *request = new DownloadFolderRequest(this->m_girderUrl,
+        this->m_girderToken, this->m_downloadPath, folderId, this);
+    connect(request, SIGNAL(complete()), this, SLOT(downloadFolderFinished()));
+    connect(request, SIGNAL(error(const QString)), this,
+        SIGNAL(error(const QString)));
+    connect(request, SIGNAL(info(const QString)), this,
+        SIGNAL(info(const QString)));
+
+    request->send();
+  }
+}
+
+void DownloadJobRequest::downloadFolderFinished()
+{
+  DownloadFolderRequest *request
+    = qobject_cast<DownloadFolderRequest*>(this->sender());
+
+  this->m_foldersToDownload.remove(request->folderId());
+
+  if (this->m_foldersToDownload.isEmpty()) {
+    emit complete();
+  }
+
+  request->deleteLater();
+}
 }

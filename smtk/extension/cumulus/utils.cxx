@@ -16,13 +16,14 @@ QString handleGirderError(QNetworkReply *reply,
   if (!jsonReply) {
     errorMessage =  reply->errorString();
   }
-
-  char *msg = cJSON_GetObjectItem(jsonReply, "message")->valuestring;
-  if (msg) {
-    errorMessage = QString("Girder error: %1").arg(QString(msg));
-  }
   else {
-    errorMessage = QString(bytes);
+    char *msg = cJSON_GetObjectItem(jsonReply, "message")->valuestring;
+    if (msg) {
+      errorMessage = QString("Girder error: %1").arg(QString(msg));
+    }
+    else {
+      errorMessage = QString(bytes);
+    }
   }
 
   cJSON_Delete(jsonReply);

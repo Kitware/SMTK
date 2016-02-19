@@ -29,6 +29,7 @@ public slots:
   void fetchJob(const QString &id);
   void deleteJob(Job job);
   void terminateJob(Job job);
+  void downloadJob(const QString &downloadDirectory, Job job);
 
 signals:
   void jobsUpdated(QList<Job> jobs);
@@ -38,6 +39,8 @@ signals:
   void jobUpdated(cumulus::Job job);
   void jobDeleted(cumulus::Job job);
   void jobTerminated(cumulus::Job job);
+  void jobDownloaded(cumulus::Job job);
+  void info(const QString &msg);
 
 private slots:
   void authenticationNewtFinished(QNetworkReply *reply);
@@ -47,7 +50,7 @@ private slots:
   void deleteJobFinished();
   void terminateJobFinished();
   void sslErrors(QNetworkReply * reply, const QList<QSslError> & errors);
-
+  void downloadJobFinished();
 
 private:
   QString m_girderUrl;

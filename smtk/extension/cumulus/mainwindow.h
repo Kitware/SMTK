@@ -42,6 +42,7 @@ private slots:
   void startJobFetchLoop();
   void displayAuthError(const QString &msg);
   void displayError(const QString &msg);
+  void displayInfo(const QString &msg);
 
 private:
   JobTableModel *m_jobTableModel;

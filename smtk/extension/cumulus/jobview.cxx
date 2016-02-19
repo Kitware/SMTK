@@ -4,7 +4,7 @@
 
 #include <QtGui/QMenu>
 #include <QtGui/QContextMenuEvent>
-
+#include <QtGui/QFileDialog>
 
 namespace cumulus
 {
@@ -28,15 +28,19 @@ void JobView::contextMenuEvent(QContextMenuEvent *e)
   QMenu *menu = new QMenu(this);
   QAction *del = new QAction("Delete", this);
   QAction *terminate = new QAction("Terminate", this);
+  QAction *download = new QAction("Download output", this);
   del->setData(jobVariant);
   terminate->setData(jobVariant);
+  download->setData(jobVariant);
 
-  // Delete
+
   if (job.status() == "running" || job.status() == "queued" ||
       job.status() == "terminating" || job.status() == "uploading" ||
       job.status() == "terminating") {
     del->setEnabled(false);
+    download->setEnabled(false);
   }
+  // Delete
   connect(del, SIGNAL(triggered()), this, SLOT(deleteJob()));
   menu->addAction(del);
 
@@ -47,6 +51,10 @@ void JobView::contextMenuEvent(QContextMenuEvent *e)
   }
   connect(terminate, SIGNAL(triggered()), this, SLOT(terminateJob()));
   menu->addAction(terminate);
+
+  // Download
+  connect(download, SIGNAL(triggered()), this, SLOT(downloadJob()));
+  menu->addAction(download);
 
   menu->exec(QCursor::pos());
 }
@@ -71,6 +79,22 @@ void JobView::terminateJob()
   Job job = action->data().value<Job>();
 
   this->m_cumulusProxy->terminateJob(job);
+}
+
+void JobView::downloadJob()
+{
+  QAction *action = qobject_cast<QAction*>(sender());
+    if (!action)
+      return;
+
+  Job job = action->data().value<Job>();
+
+  QString downloadDir = QFileDialog::getExistingDirectory(
+      NULL, tr("Select download directory"), QString(),
+      QFileDialog::ShowDirsOnly);
+
+
+  this->m_cumulusProxy->downloadJob(downloadDir, job);
 }
 
 void JobView::setCumulusProxy(CumulusProxy *cumulusProxy)

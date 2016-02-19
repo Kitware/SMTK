@@ -226,7 +226,7 @@ void CumulusProxy::deleteJob(Job job)
 
 void CumulusProxy::deleteJobFinished()
 {
-  DeleteJobRequest *request = qobject_cast<DeleteJobRequest*>(sender());
+  DeleteJobRequest *request = qobject_cast<DeleteJobRequest*>(this->sender());
 
   emit jobDeleted(request->job());
   request->deleteLater();
@@ -258,5 +258,25 @@ void CumulusProxy::sslErrors(QNetworkReply * reply,
   this->sender()->deleteLater();
 }
 
+
+void CumulusProxy::downloadJob(const QString &downloadDirectory, Job job)
+{
+
+  DownloadJobRequest *request = new DownloadJobRequest(this->m_girderUrl,
+      this->m_girderToken, downloadDirectory, job, this);
+  connect(request, SIGNAL(complete()), this, SLOT(downloadJobFinished()));
+  connect(request, SIGNAL(error(const QString)), this, SIGNAL(error(const QString)));
+  connect(request, SIGNAL(info(const QString)), this, SIGNAL(info(const QString)));
+  request->send();
+}
+
+void CumulusProxy::downloadJobFinished()
+{
+  DownloadJobRequest *request = qobject_cast<DownloadJobRequest*>(sender());
+
+  emit jobDownloaded(request->job());
+  emit info("Job download complete.");
+  request->deleteLater();
+}
 
 } // end namespace

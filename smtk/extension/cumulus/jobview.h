@@ -25,6 +25,7 @@ public:
 private slots:
   void deleteJob();
   void terminateJob();
+  void downloadJob();
 
 private:
   CumulusProxy *m_cumulusProxy;

@@ -8,6 +8,7 @@
 #include <QtCore/QDebug>
 #include <QtGui/QDesktopWidget>
 #include <QtGui/QMessageBox>
+#include <QtGui/QStatusBar>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
@@ -46,7 +47,8 @@ MainWindow::MainWindow()
           this, SLOT(displayError(QString)));
   connect(this->m_cumulusProxy, SIGNAL(newtAuthenticationError(QString)),
           this, SLOT(displayAuthError(QString)));
-
+  connect(this->m_cumulusProxy, SIGNAL(info(QString)),
+            this, SLOT(displayInfo(QString)));
 
   if (this->m_cumulusProxy->isAuthenticated()) {
     m_loginDialog.show();
@@ -101,5 +103,11 @@ void MainWindow::displayError(const QString &msg)
 {
   QMessageBox::critical(this, "", msg, QMessageBox::Ok);
 }
+
+void MainWindow::displayInfo(const QString &msg)
+{
+  this->statusBar()->showMessage(msg);
+}
+
 
 } // end namespace

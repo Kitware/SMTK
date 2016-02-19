@@ -2,15 +2,17 @@
 #define __smtk_extension_cumulus_jobrequest_h
 
 #include "job.h"
+#include "girderrequest.h"
 
 #include <QtCore/QList>
+#include <QtCore/QSet>
 
 class QNetworkReply;
 
 namespace cumulus
 {
 
-class JobRequest : public QObject
+class JobRequest : public GirderRequest
 {
   Q_OBJECT
 
@@ -28,8 +30,6 @@ signals:
 
 protected:
   Job m_job;
-  QString m_girderUrl;
-  QString m_girderToken;
 
 };
 
@@ -64,6 +64,28 @@ private slots:
   void finished(QNetworkReply *reply);
 
 };
+
+class DownloadJobRequest: public JobRequest
+{
+  Q_OBJECT
+
+public:
+  DownloadJobRequest(const QString &girderUrl, const QString &girderToken,
+      const QString &downloadPath, Job job, QObject *parent = 0);
+  ~DownloadJobRequest();
+
+  void send();
+
+private slots:
+  void downloadFolderFinished();
+
+private:
+  QSet<QString> m_foldersToDownload;
+  QString m_downloadPath;
+
+
+};
+
 
 } // end namespace
 

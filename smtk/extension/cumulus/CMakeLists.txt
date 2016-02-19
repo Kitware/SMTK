@@ -24,6 +24,7 @@ set(src
   jobtablemodel.cxx
   job.cxx
   cumulusproxy.cxx
+  girderrequest.cxx
   jobrequest.cxx
   utils.cxx
 )
