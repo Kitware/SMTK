@@ -5,6 +5,8 @@ set (__dependencies)
 foreach(target
     vtkInteractionStyle
     vtkRenderingFreeType
+    vtkIOExport${VTK_RENDERING_BACKEND}
+    vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
     vtkRendering${VTK_RENDERING_BACKEND}
 )
   if (TARGET ${target})

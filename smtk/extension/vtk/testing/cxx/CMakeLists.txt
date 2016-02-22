@@ -2,6 +2,7 @@ add_executable(displayModel MACOSX_BUNDLE displayModel.cxx)
 target_link_libraries(displayModel
   smtkCore
   vtkSMTKExt
+  vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
   vtkTestingRendering
   ${SMTK_VTK_TARGET_LIST}
 )
@@ -10,6 +11,7 @@ add_executable(displayMultiBlockModel MACOSX_BUNDLE displayMultiBlockModel.cxx)
 target_link_libraries(displayMultiBlockModel
   smtkCore
   vtkSMTKExt
+  vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
   vtkTestingRendering
 )
 
@@ -17,6 +19,7 @@ add_executable(displayMultiBlockMesh MACOSX_BUNDLE displayMultiBlockMesh.cxx)
 target_link_libraries(displayMultiBlockMesh
   smtkCore
   vtkSMTKExt
+  vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
   vtkTestingRendering
 )
 
@@ -24,6 +27,7 @@ add_executable(displayModelToMesh MACOSX_BUNDLE displayModelToMesh.cxx)
 target_link_libraries(displayModelToMesh
   smtkCore
   vtkSMTKExt
+  vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
   vtkTestingRendering
 )
 
