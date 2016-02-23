@@ -38,6 +38,8 @@ namespace smtk
     public slots:
       virtual void showAdvanceLevelOverlay(bool show);
       virtual void requestModelEntityAssociation();
+      virtual void onShowCategory()
+       { this->updateAttributeData(); }
 
     protected:
       virtual void updateAttributeData();

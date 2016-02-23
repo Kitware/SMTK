@@ -272,6 +272,16 @@ void qtGroupView::updateUI()
 }
 
 //----------------------------------------------------------------------------
+void qtGroupView::onShowCategory()
+{
+  foreach(qtBaseView* childView, this->Internals->ChildViews)
+    {
+    childView->onShowCategory();
+    }
+  this->qtBaseView::onShowCategory();
+}
+
+//----------------------------------------------------------------------------
 void qtGroupView::showAdvanceLevelOverlay(bool show)
 {
   foreach(qtBaseView* childView, this->Internals->ChildViews)

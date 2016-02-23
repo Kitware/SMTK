@@ -77,10 +77,9 @@ namespace smtk
       bool advanceLevelVisible()
         { return m_advOverlayVisible; }
       virtual int advanceLevel();
-      virtual bool categoryEnabled()
-      {return false;}
-      virtual std::string currentCategory()
-      {return "";}
+      virtual bool categoryEnabled();
+      virtual std::string currentCategory();
+
       bool isTopLevel() const
       {return this->m_isTopLevel;}
 
