@@ -5,6 +5,8 @@
 #include <QtGui/QApplication>
 #include <QtGui/QMessageBox>
 
+#include <QtNetwork/QSslSocket>
+
 #include "mainwindow.h"
 
 #include <cstdio>
@@ -46,7 +48,12 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  QApplication::setQuitOnLastWindowClosed(false);
+  if (!QSslSocket::supportsSsl()) {
+    QMessageBox::critical(NULL, QObject::tr("SSL support"),
+        QObject::tr("SSL support is required, please ensure Qt has been compiled with SSL support."));
+    return EXIT_FAILURE;
+  }
+
 
   cumulus::MainWindow window;
   window.girderUrl(url);
