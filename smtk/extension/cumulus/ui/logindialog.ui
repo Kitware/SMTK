@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>NERSC NIM login</string>
+   <string>NERSC NEWT login</string>
   </property>
   <layout class="QFormLayout" name="formLayout_2">
    <property name="fieldGrowthPolicy">
