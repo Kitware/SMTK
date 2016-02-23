@@ -41,7 +41,7 @@ protected:
 private slots:
   void startJobFetchLoop();
   void displayAuthError(const QString &msg);
-  void displayError(const QString &msg);
+  void handleError(const QString &msg, int statusCode);
   void displayInfo(const QString &msg);
 
 private:

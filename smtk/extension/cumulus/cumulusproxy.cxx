@@ -52,7 +52,8 @@ void CumulusProxy::authenticationNewtFinished(QNetworkReply *reply)
 {
   QByteArray bytes = reply->readAll();
   if (reply->error()) {
-    emit error(handleGirderError(reply, bytes));
+    emit error(handleGirderError(reply, bytes),
+        reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).value<int>());
   }
   else {
     cJSON *reply = cJSON_Parse(bytes.constData());
@@ -87,7 +88,8 @@ void CumulusProxy::authenticateGirder(const QString &newtSessionId)
       .arg(this->m_girderUrl).arg(this->m_newtSessionId);
 
   QNetworkRequest request(girderAuthUrl);
-  QObject::connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(authenticationGirderFinished(QNetworkReply *)));
+  QObject::connect(manager, SIGNAL(finished(QNetworkReply *)),
+      this, SLOT(authenticationGirderFinished(QNetworkReply *)));
 
   QByteArray empty;
   manager->put(request, empty);
@@ -97,7 +99,8 @@ void CumulusProxy::authenticationGirderFinished(QNetworkReply *reply)
 {
   QByteArray bytes = reply->readAll();
   if (reply->error()) {
-    emit error(handleGirderError(reply, bytes));
+    emit error(handleGirderError(reply, bytes),
+        reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).value<int>());
   }
   else {
     QVariant v = reply->header(QNetworkRequest::SetCookieHeader);
@@ -129,7 +132,8 @@ void CumulusProxy::fetchJobs()
     QNetworkRequest request(girderAuthUrl);
     request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
 
-    QObject::connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(fetchJobsFinished(QNetworkReply *)));
+    QObject::connect(manager, SIGNAL(finished(QNetworkReply *)),
+        this, SLOT(fetchJobsFinished(QNetworkReply *)));
 
     manager->get(request);
 }
@@ -138,7 +142,8 @@ void CumulusProxy::fetchJobsFinished(QNetworkReply *reply)
 {
   QByteArray bytes = reply->readAll();
   if (reply->error()) {
-    emit error(handleGirderError(reply, bytes));
+    emit error(handleGirderError(reply, bytes),
+        reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).value<int>());
   }
   else {
     cJSON *jsonResponse = cJSON_Parse(bytes.constData());
@@ -193,7 +198,8 @@ void CumulusProxy::fetchJobFinished(QNetworkReply *reply)
 {
   QByteArray bytes = reply->readAll();
   if (reply->error()) {
-    emit error(handleGirderError(reply, bytes));
+    emit error(handleGirderError(reply, bytes),
+        reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).value<int>());
   }
   else {
     cJSON *jsonResponse = cJSON_Parse(bytes.constData());
@@ -222,7 +228,8 @@ void CumulusProxy::deleteJob(Job job)
   DeleteJobRequest *request = new DeleteJobRequest(this->m_girderUrl,
       this->m_girderToken, job, this);
   connect(request, SIGNAL(complete()), this, SLOT(deleteJobFinished()));
-  connect(request, SIGNAL(error(const QString)), this, SIGNAL(error(const QString)));
+  connect(request, SIGNAL(error(const QString, int)),
+      this, SIGNAL(error(const QString, int)));
   request->send();
 }
 
@@ -240,7 +247,8 @@ void CumulusProxy::terminateJob(Job job)
   TerminateJobRequest *request = new TerminateJobRequest(this->m_girderUrl,
       this->m_girderToken, job, this);
   connect(request, SIGNAL(complete()), this, SLOT(terminateJobFinished()));
-  connect(request, SIGNAL(error(const QString)), this, SIGNAL(error(const QString)));
+  connect(request, SIGNAL(error(const QString, int)),
+      this, SIGNAL(error(const QString, int)));
   request->send();
 }
 
@@ -264,11 +272,13 @@ void CumulusProxy::sslErrors(QNetworkReply * reply,
 void CumulusProxy::downloadJob(const QString &downloadDirectory, Job job)
 {
 
-  DownloadJobRequest *request = new DownloadJobRequest(this->m_girderUrl,
-      this->m_girderToken, downloadDirectory, job, this);
+  DownloadJobRequest *request = new DownloadJobRequest(this->m_cookieJar,
+      this->m_girderUrl, this->m_girderToken, downloadDirectory, job, this);
   connect(request, SIGNAL(complete()), this, SLOT(downloadJobFinished()));
-  connect(request, SIGNAL(error(const QString)), this, SIGNAL(error(const QString)));
-  connect(request, SIGNAL(info(const QString)), this, SIGNAL(info(const QString)));
+  connect(request, SIGNAL(error(const QString, int)),
+      this, SIGNAL(error(const QString, int)));
+  connect(request, SIGNAL(info(const QString)),
+      this, SIGNAL(info(const QString)));
   request->send();
 }
 

@@ -31,7 +31,7 @@ DeleteJobRequest::DeleteJobRequest(const QString &girderUrl,
     const QString &girderToken, Job job, QObject *parent) :
     JobRequest(girderUrl, girderToken, job, parent)
 {
-  qDebug() << "DeleteJobRequest" << girderUrl;
+
 }
 
 DeleteJobRequest::~DeleteJobRequest()
@@ -47,7 +47,8 @@ void DeleteJobRequest::send()
   QNetworkRequest request(girderAuthUrl);
   request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
 
-  QObject::connect(this->m_networkManager, SIGNAL(finished(QNetworkReply *)), this, SLOT(finished(QNetworkReply *)));
+  QObject::connect(this->m_networkManager, SIGNAL(finished(QNetworkReply *)),
+      this, SLOT(finished(QNetworkReply *)));
 
   this->m_networkManager->deleteResource(request);
 }
@@ -56,7 +57,8 @@ void DeleteJobRequest::finished(QNetworkReply *reply)
 {
   QByteArray bytes = reply->readAll();
   if (reply->error()) {
-    emit error(handleGirderError(reply, bytes));
+    emit error(handleGirderError(reply, bytes),
+        reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).value<int>());
   }
   else {
     emit complete();
@@ -84,7 +86,8 @@ void TerminateJobRequest::send()
   QNetworkRequest request(girderAuthUrl);
   request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
 
-  QObject::connect(this->m_networkManager, SIGNAL(finished(QNetworkReply *)), this, SLOT(finished(QNetworkReply *)));
+  QObject::connect(this->m_networkManager, SIGNAL(finished(QNetworkReply *)),
+      this, SLOT(finished(QNetworkReply *)));
 
   QByteArray empty;
   this->m_networkManager->put(request, empty);
@@ -123,8 +126,8 @@ void DownloadJobRequest::send()
     DownloadFolderRequest *request = new DownloadFolderRequest(this->m_girderUrl,
         this->m_girderToken, this->m_downloadPath, folderId, this);
     connect(request, SIGNAL(complete()), this, SLOT(downloadFolderFinished()));
-    connect(request, SIGNAL(error(const QString)), this,
-        SIGNAL(error(const QString)));
+    connect(request, SIGNAL(error(const QString, int)), this,
+        SIGNAL(error(const QString, int)));
     connect(request, SIGNAL(info(const QString)), this,
         SIGNAL(info(const QString)));
 

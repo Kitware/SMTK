@@ -24,10 +24,6 @@ public:
   void virtual send() = 0;
   Job job() const { return this->m_job; };
 
-signals:
-  void complete();
-  void error(const QString &msg);
-
 protected:
   Job m_job;
 
@@ -46,7 +42,6 @@ public:
 
 private slots:
   void finished(QNetworkReply *reply);
-
 };
 
 class TerminateJobRequest: public JobRequest

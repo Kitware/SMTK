@@ -17,9 +17,9 @@ QString handleGirderError(QNetworkReply *reply,
     errorMessage =  reply->errorString();
   }
   else {
-    char *msg = cJSON_GetObjectItem(jsonReply, "message")->valuestring;
-    if (msg) {
-      errorMessage = QString("Girder error: %1").arg(QString(msg));
+    cJSON *msgItem = cJSON_GetObjectItem(jsonReply, "message");
+    if (msgItem) {
+      errorMessage = QString("Girder error: %1").arg(QString(msgItem->valuestring));
     }
     else {
       errorMessage = QString(bytes);

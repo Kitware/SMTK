@@ -53,7 +53,8 @@ void ListItemsRequest::send()
   QNetworkRequest request(url);
   request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
 
-  QObject::connect(this->m_networkManager, SIGNAL(finished(QNetworkReply *)), this, SLOT(finished(QNetworkReply *)));
+  QObject::connect(this->m_networkManager, SIGNAL(finished(QNetworkReply *)),
+      this, SLOT(finished(QNetworkReply *)));
 
   this->m_networkManager->get(request);
 }
@@ -62,7 +63,8 @@ void ListItemsRequest::finished(QNetworkReply *reply)
 {
   QByteArray bytes = reply->readAll();
   if (reply->error()) {
-    emit error(handleGirderError(reply, bytes));
+    emit error(handleGirderError(reply, bytes),
+        reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).value<int>());
   }
   else {
     cJSON *jsonResponse = cJSON_Parse(bytes.constData());
@@ -114,7 +116,8 @@ void ListFilesRequest::send()
   QNetworkRequest request(girderAuthUrl);
   request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
 
-  QObject::connect(this->m_networkManager, SIGNAL(finished(QNetworkReply *)), this, SLOT(finished(QNetworkReply *)));
+  QObject::connect(this->m_networkManager, SIGNAL(finished(QNetworkReply *)),
+      this, SLOT(finished(QNetworkReply *)));
 
   this->m_networkManager->get(request);
 }
@@ -123,7 +126,8 @@ void ListFilesRequest::finished(QNetworkReply *reply)
 {
   QByteArray bytes = reply->readAll();
   if (reply->error()) {
-    emit error(handleGirderError(reply, bytes));
+    emit error(handleGirderError(reply, bytes),
+        reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).value<int>());
   }
   else {
     cJSON *jsonResponse = cJSON_Parse(bytes.constData());
@@ -182,7 +186,8 @@ void ListFoldersRequest::send()
   QNetworkRequest request(url);
   request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
 
-  QObject::connect(this->m_networkManager, SIGNAL(finished(QNetworkReply *)), this, SLOT(finished(QNetworkReply *)));
+  QObject::connect(this->m_networkManager, SIGNAL(finished(QNetworkReply *)),
+      this, SLOT(finished(QNetworkReply *)));
 
   this->m_networkManager->get(request);
 }
@@ -191,7 +196,8 @@ void ListFoldersRequest::finished(QNetworkReply *reply)
 {
   QByteArray bytes = reply->readAll();
   if (reply->error()) {
-    emit error(handleGirderError(reply, bytes));
+    emit error(handleGirderError(reply, bytes),
+        reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).value<int>());
   }
   else {
     cJSON *jsonResponse = cJSON_Parse(bytes.constData());
@@ -252,8 +258,8 @@ void DownloadFolderRequest::send()
 
   connect(itemsRequest, SIGNAL(items(const QList<QString>)),
       this, SLOT(items(const QList<QString>)));
-  connect(itemsRequest, SIGNAL(error(const QString)), this,
-      SIGNAL(error(const QString)));
+  connect(itemsRequest, SIGNAL(error(const QString, int)), this,
+      SIGNAL(error(const QString, int)));
 
   itemsRequest->send();
 
@@ -262,8 +268,8 @@ void DownloadFolderRequest::send()
 
   connect(foldersRequest, SIGNAL(folders(const QMap<QString, QString>)),
       this, SLOT(folders(const QMap<QString, QString>)));
-  connect(foldersRequest, SIGNAL(error(const QString)), this,
-      SIGNAL(error(const QString)));
+  connect(foldersRequest, SIGNAL(error(const QString, int)), this,
+      SIGNAL(error(const QString, int)));
 
   foldersRequest->send();
 
@@ -278,13 +284,14 @@ void DownloadFolderRequest::items(const QList<QString> &itemIds)
   this->m_itemsToDownload = new QList<QString>(itemIds);
 
   foreach(QString itemId, itemIds) {
-    DownloadItemRequest *request = new DownloadItemRequest(this->m_girderUrl,
-        this->m_girderToken, this->m_downloadPath, itemId, this);
+    DownloadItemRequest *request = new DownloadItemRequest(this->m_cookieJar,
+        this->m_girderUrl, this->m_girderToken, this->m_downloadPath,
+        itemId, this);
 
     connect(request, SIGNAL(complete()),
         this, SLOT(downloadItemFinished()));
-    connect(request, SIGNAL(error(const QString)), this,
-        SIGNAL(error(const QString)));
+    connect(request, SIGNAL(error(const QString, int)), this,
+        SIGNAL(error(const QString, int)));
     connect(request, SIGNAL(info(const QString)), this,
             SIGNAL(info(const QString)));
     request->send();
@@ -318,13 +325,13 @@ void DownloadFolderRequest::folders(const QMap<QString, QString> &folders)
      QString id  = i.key();
      QString name = i.value();
      QString path = QDir(this->m_downloadPath).filePath(name);
-     DownloadFolderRequest *request = new DownloadFolderRequest(this->m_girderUrl,
-         this->m_girderToken, path, id, this);
+     DownloadFolderRequest *request = new DownloadFolderRequest(this->m_cookieJar,
+         this->m_girderUrl, this->m_girderToken, path, id, this);
 
      connect(request, SIGNAL(complete()),
          this, SLOT(downloadFolderFinished()));
-     connect(request, SIGNAL(error(const QString)), this,
-         SIGNAL(error(const QString)));
+     connect(request, SIGNAL(error(const QString, int)), this,
+         SIGNAL(error(const QString, int)));
      connect(request, SIGNAL(info(const QString)), this,
              SIGNAL(info(const QString)));
 
@@ -375,8 +382,8 @@ void DownloadItemRequest::send()
 
   connect(request, SIGNAL(files(const QMap<QString, QString>)),
       this, SLOT(files(const QMap<QString, QString>)));
-  connect(request, SIGNAL(error(const QString)), this,
-      SIGNAL(error(const QString)));
+  connect(request, SIGNAL(error(const QString, int)), this,
+      SIGNAL(error(const QString, int)));
   connect(request, SIGNAL(info(const QString)), this,
           SIGNAL(info(const QString)));
 
@@ -395,13 +402,14 @@ void DownloadItemRequest::files(const QMap<QString, QString> &files)
     i.next();
     QString id  = i.key();
     QString name = i.value();
-    DownloadFileRequest *request = new DownloadFileRequest(this->m_girderUrl,
-        this->m_girderToken, this->m_downloadPath, name, id, this);
+    DownloadFileRequest *request = new DownloadFileRequest(this->m_cookieJar,
+        this->m_girderUrl, this->m_girderToken, this->m_downloadPath,
+        name, id, this);
 
     connect(request, SIGNAL(complete()),
         this, SLOT(fileDownloadFinish()));
-    connect(request, SIGNAL(error(const QString)), this,
-        SIGNAL(error(const QString)));
+    connect(request, SIGNAL(error(const QString, int)), this,
+        SIGNAL(error(const QString, int)));
     connect(request, SIGNAL(info(const QString)), this,
             SIGNAL(info(const QString)));
 
@@ -446,7 +454,8 @@ void DownloadFileRequest::send()
   QNetworkRequest request(girderAuthUrl);
   request.setRawHeader(QByteArray("Girder-Token"), this->m_girderToken.toUtf8());
 
-  QObject::connect(this->m_networkManager, SIGNAL(finished(QNetworkReply *)), this, SLOT(finished(QNetworkReply *)));
+  QObject::connect(this->m_networkManager, SIGNAL(finished(QNetworkReply *)),
+      this, SLOT(finished(QNetworkReply *)));
 
   this->m_networkManager->get(request);
 }
@@ -455,7 +464,8 @@ void DownloadFileRequest::finished(QNetworkReply *reply)
 {
   if (reply->error()) {
     QByteArray bytes = reply->readAll();
-    emit error(handleGirderError(reply, bytes));
+    emit error(handleGirderError(reply, bytes),
+        reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).value<int>());
   }
   else {
     emit info(QString("Downloading %1 ...").arg(this->fileName()));

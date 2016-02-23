@@ -43,8 +43,8 @@ MainWindow::MainWindow()
           this, SLOT(startJobFetchLoop()));
   connect(this->m_cumulusProxy, SIGNAL(jobsUpdated(QList<Job>)),
           this->m_jobTableModel, SLOT(jobsUpdated(QList<Job>)));
-  connect(this->m_cumulusProxy, SIGNAL(error(QString)),
-          this, SLOT(displayError(QString)));
+  connect(this->m_cumulusProxy, SIGNAL(error(QString, int)),
+          this, SLOT(handleError(QString, int)));
   connect(this->m_cumulusProxy, SIGNAL(newtAuthenticationError(QString)),
           this, SLOT(displayAuthError(QString)));
   connect(this->m_cumulusProxy, SIGNAL(info(QString)),
@@ -99,9 +99,15 @@ void MainWindow::displayAuthError(const QString &msg)
   this->m_loginDialog.show();
 }
 
-void MainWindow::displayError(const QString &msg)
+void MainWindow::handleError(const QString &msg, int statusCode)
 {
-  QMessageBox::critical(this, "", msg, QMessageBox::Ok);
+  // Forbidden, ask the user to authenticate again
+  if (statusCode == 403) {
+    this->m_loginDialog.show();
+  }
+  else {
+    QMessageBox::critical(this, "", msg, QMessageBox::Ok);
+  }
 }
 
 void MainWindow::displayInfo(const QString &msg)

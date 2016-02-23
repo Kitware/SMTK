@@ -24,7 +24,7 @@ public:
 
 signals:
   void complete();
-  void error(const QString &msg);
+  void error(const QString &msg, int statusCode = 0);
   void info(const QString &msg);
 
 protected:
