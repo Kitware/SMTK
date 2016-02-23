@@ -4,6 +4,7 @@
 
 #include <QtGui/QMenu>
 #include <QtGui/QContextMenuEvent>
+#include <QtGui/QMessageBox>
 #include <QtGui/QFileDialog>
 
 namespace cumulus
@@ -61,6 +62,16 @@ void JobView::contextMenuEvent(QContextMenuEvent *e)
 
 void JobView::deleteJob()
 {
+  QMessageBox::StandardButton reply = QMessageBox::question(this->parentWidget(),
+      tr("Delete job?"),
+      tr("Are you sure you want to delete this job?\n\n"
+         "Deleting the job will remove all output files from the cluster."),
+      QMessageBox::Yes|QMessageBox::No);
+
+  if (reply == QMessageBox::No) {
+      return;
+  }
+
   QAction *action = qobject_cast<QAction*>(sender());
     if (!action)
       return;
