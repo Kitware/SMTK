@@ -45,6 +45,7 @@ namespace smtk
       virtual void updateUI();
       virtual void showAdvanceLevelOverlay(bool show);
       virtual void updateModelAssociation();
+      virtual void onShowCategory();
 
     protected:
       virtual void createWidget( );

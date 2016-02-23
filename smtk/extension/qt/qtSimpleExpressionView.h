@@ -59,6 +59,8 @@ namespace smtk
       void onRemoveSelectedValues();
 
       virtual void createFunctionWithExpression();
+      virtual void onShowCategory()
+      { this->updateAttributeData(); }
 
     signals:
       void onCreateFunctionWithExpression(
