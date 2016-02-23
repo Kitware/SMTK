@@ -7,6 +7,7 @@
 
 class QNetworkReply;
 class QSslError;
+class QNetworkCookieJar;
 
 namespace cumulus
 {
@@ -56,6 +57,7 @@ private:
   QString m_girderUrl;
   QString m_newtSessionId;
   QString m_girderToken;
+  QNetworkCookieJar *m_cookieJar;
 };
 
 } // end namespace

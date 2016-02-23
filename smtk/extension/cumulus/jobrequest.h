@@ -65,8 +65,9 @@ class DownloadJobRequest: public JobRequest
   Q_OBJECT
 
 public:
-  DownloadJobRequest(const QString &girderUrl, const QString &girderToken,
-      const QString &downloadPath, Job job, QObject *parent = 0);
+  DownloadJobRequest(QNetworkCookieJar *cookieJar,const QString &girderUrl,
+      const QString &girderToken, const QString &downloadPath, Job job,
+      QObject *parent = 0);
   ~DownloadJobRequest();
 
   void send();
@@ -77,6 +78,8 @@ private slots:
 private:
   QSet<QString> m_foldersToDownload;
   QString m_downloadPath;
+  QNetworkCookieJar *m_cookieJar;
+
 
 
 };

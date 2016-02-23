@@ -97,18 +97,19 @@ void TerminateJobRequest::finished(QNetworkReply *reply)
 {
   QByteArray bytes = reply->readAll();
   if (reply->error()) {
-    emit error(handleGirderError(reply, bytes));
+    emit error(handleGirderError(reply, bytes),
+        reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).value<int>());
   }
   else {
     emit complete();
   }
 }
 
-DownloadJobRequest::DownloadJobRequest(const QString &girderUrl,
-    const QString &girderToken, const QString &downloadPath, Job job,
-    QObject *parent) :
+DownloadJobRequest::DownloadJobRequest(QNetworkCookieJar *cookieJar,
+    const QString &girderUrl, const QString &girderToken,
+    const QString &downloadPath, Job job, QObject *parent) :
   JobRequest(girderUrl, girderToken, job, parent),
-  m_downloadPath(downloadPath)
+  m_downloadPath(downloadPath), m_cookieJar(cookieJar)
 {
 
 }
@@ -123,8 +124,9 @@ void DownloadJobRequest::send()
   foreach(QString folderId, this->m_job.outputFolderIds()) {
     this->m_foldersToDownload << folderId;
 
-    DownloadFolderRequest *request = new DownloadFolderRequest(this->m_girderUrl,
-        this->m_girderToken, this->m_downloadPath, folderId, this);
+    DownloadFolderRequest *request = new DownloadFolderRequest(this->m_cookieJar,
+        this->m_girderUrl, this->m_girderToken, this->m_downloadPath,
+        folderId, this);
     connect(request, SIGNAL(complete()), this, SLOT(downloadFolderFinished()));
     connect(request, SIGNAL(error(const QString, int)), this,
         SIGNAL(error(const QString, int)));

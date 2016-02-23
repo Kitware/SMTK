@@ -7,6 +7,7 @@
 
 class QNetworkReply;
 class QNetworkAccessManager;
+class QNetworkCookieJar;
 
 namespace cumulus
 {
@@ -105,7 +106,8 @@ class DownloadFolderRequest: public GirderRequest
   Q_OBJECT
 
 public:
-  DownloadFolderRequest(const QString &girderUrl, const QString &girderToken,
+  DownloadFolderRequest(QNetworkCookieJar *cookieJar,
+      const QString &girderUrl, const QString &girderToken,
       const QString &downloadPath, const QString &folderId,
       QObject *parent = 0);
   ~DownloadFolderRequest();
@@ -125,6 +127,7 @@ private:
   QString m_downloadPath;
   QList<QString> *m_itemsToDownload;
   QMap<QString, QString> *m_foldersToDownload;
+  QNetworkCookieJar *m_cookieJar;
 
   bool isComplete();
 };
@@ -134,7 +137,8 @@ class DownloadFileRequest: public GirderRequest
   Q_OBJECT
 
 public:
-  DownloadFileRequest(const QString &girderUrl, const QString &girderToken,
+  DownloadFileRequest(QNetworkCookieJar *cookieJar,
+      const QString &girderUrl, const QString &girderToken,
       const QString &path, const QString &fileName, const QString &fileId,
       QObject *parent = 0);
   ~DownloadFileRequest();
@@ -151,6 +155,7 @@ private:
   QString m_fileName;
   QString m_fileId;
   QString m_downloadPath;
+  QNetworkCookieJar *m_cookieJar;
 };
 
 class DownloadItemRequest: public GirderRequest
@@ -158,7 +163,8 @@ class DownloadItemRequest: public GirderRequest
   Q_OBJECT
 
 public:
-  DownloadItemRequest(const QString &girderUrl, const QString &girderToken,
+  DownloadItemRequest(QNetworkCookieJar *cookieJar,
+      const QString &girderUrl, const QString &girderToken,
       const QString &path, const QString &itemId, QObject *parent = 0);
   ~DownloadItemRequest();
 
@@ -175,6 +181,7 @@ private:
   QString m_downloadPath;
   // <fileId => fileName>
   QMap<QString, QString> m_filesToDownload;
+  QNetworkCookieJar *m_cookieJar;
 };
 
 }

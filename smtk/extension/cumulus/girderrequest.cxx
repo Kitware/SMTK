@@ -5,6 +5,7 @@
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
+#include <QtNetwork/QNetworkCookieJar>
 #include <QtCore/QList>
 #include <QtCore/QMap>
 #include <QtCore/QDir>
@@ -235,12 +236,12 @@ void ListFoldersRequest::finished(QNetworkReply *reply)
 }
 
 
-DownloadFolderRequest::DownloadFolderRequest(const QString &girderUrl,
-    const QString &girderToken, const QString &downloadPath,
-    const QString &folderId, QObject *parent) :
+DownloadFolderRequest::DownloadFolderRequest(QNetworkCookieJar *cookieJar,
+    const QString &girderUrl, const QString &girderToken,
+    const QString &downloadPath, const QString &folderId, QObject *parent) :
     GirderRequest(girderUrl, girderToken, parent),
     m_folderId(folderId), m_downloadPath(downloadPath), m_itemsToDownload(NULL),
-    m_foldersToDownload(NULL)
+    m_foldersToDownload(NULL), m_cookieJar(cookieJar)
 {
   QDir(this->m_downloadPath).mkpath(".");
 }
@@ -361,11 +362,12 @@ bool DownloadFolderRequest::isComplete()
 }
 
 
-DownloadItemRequest::DownloadItemRequest(const QString &girderUrl,
-    const QString &girderToken, const QString &path, const QString &itemId,
+DownloadItemRequest::DownloadItemRequest(QNetworkCookieJar *cookieJar,
+    const QString &girderUrl, const QString &girderToken,
+    const QString &path, const QString &itemId,
     QObject *parent) :
     GirderRequest(girderUrl, girderToken, parent),
-    m_itemId(itemId), m_downloadPath(path)
+    m_itemId(itemId), m_downloadPath(path), m_cookieJar(cookieJar)
 {
 
 }
@@ -432,13 +434,15 @@ void DownloadItemRequest::fileDownloadFinish()
   request->deleteLater();
 }
 
-DownloadFileRequest::DownloadFileRequest(const QString &girderUrl,
-    const QString &girderToken, const QString &path, const QString &fileName,
-    const QString &fileId, QObject *parent) :
+DownloadFileRequest::DownloadFileRequest(QNetworkCookieJar *cookieJar,
+    const QString &girderUrl, const QString &girderToken, const QString &path,
+    const QString &fileName, const QString &fileId, QObject *parent) :
     GirderRequest(girderUrl, girderToken, parent),
-    m_fileName(fileName), m_fileId(fileId), m_downloadPath(path)
+    m_fileName(fileName), m_fileId(fileId), m_downloadPath(path),
+    m_cookieJar(cookieJar)
 {
-
+  this->m_networkManager->setCookieJar(this->m_cookieJar);
+  this->m_cookieJar->setParent(NULL);
 }
 
 DownloadFileRequest::~DownloadFileRequest()

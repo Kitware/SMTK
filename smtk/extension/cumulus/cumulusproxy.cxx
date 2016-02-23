@@ -9,6 +9,7 @@
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkCookie>
+#include <QtNetwork/QNetworkCookieJar>
 #include <QtCore/QVariant>
 #include <QtCore/QList>
 #include <QtCore/QTimer>
@@ -16,14 +17,14 @@
 namespace cumulus {
 
 CumulusProxy::CumulusProxy(QObject *parent) :
-  QObject(parent)
+  QObject(parent), m_cookieJar(new QNetworkCookieJar())
 {
 
 }
 
 CumulusProxy::~CumulusProxy()
 {
-
+  delete this->m_cookieJar;
 }
 
 void CumulusProxy::girderUrl(const QString &url)
@@ -34,6 +35,8 @@ void CumulusProxy::girderUrl(const QString &url)
 void CumulusProxy::authenticateNewt(const QString &username, const QString &password)
 {
   QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+  manager->setCookieJar(this->m_cookieJar);
+  this->m_cookieJar->setParent(NULL);
 
   QUrl url("https://newt.nersc.gov/newt/auth");
   QNetworkRequest request(url);
