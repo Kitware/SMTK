@@ -70,6 +70,8 @@ void CumulusProxy::authenticationNewtFinished(QNetworkReply *reply)
     else {
       emit newtAuthenticationError(QString("Invalid login"));
     }
+
+    cJSON_Delete(reply);
   }
 
   this->sender()->deleteLater();
