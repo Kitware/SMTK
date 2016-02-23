@@ -472,6 +472,16 @@ void DownloadFileRequest::finished(QNetworkReply *reply)
         reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).value<int>());
   }
   else {
+    // We need todo the redirect ourselves!
+    QUrl redirectUrl = reply->attribute(
+        QNetworkRequest::RedirectionTargetAttribute).toUrl();
+    if(!redirectUrl.isEmpty()) {
+      QNetworkRequest request;
+      request.setUrl(redirectUrl);
+      this->m_networkManager->get(request);
+      return;
+    }
+
     emit info(QString("Downloading %1 ...").arg(this->fileName()));
     QDir downloadDir(this->m_downloadPath);
     QFile file(downloadDir.filePath(this->fileName()));
