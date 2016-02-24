@@ -10,6 +10,8 @@
 #ifndef __smtk_model_SessionExodusIOJSON_h
 #define __smtk_model_SessionExodusIOJSON_h
 
+#include "smtk/bridge/exodus/Exports.h"
+
 #include "smtk/model/SessionIOJSON.h"
 
 struct cJSON;
@@ -24,7 +26,7 @@ namespace smtk {
   * importJSON and exportJSON methods.
   */
 // ++ 1 ++
-class SMTKCORE_EXPORT SessionIOJSON : public smtk::model::SessionIOJSON
+class SMTKEXODUSSESSION_EXPORT SessionIOJSON : public smtk::model::SessionIOJSON
 {
 public:
   smtkTypeMacro(SessionIOJSON);
