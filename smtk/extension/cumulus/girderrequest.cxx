@@ -439,7 +439,7 @@ DownloadFileRequest::DownloadFileRequest(QNetworkCookieJar *cookieJar,
     const QString &fileName, const QString &fileId, QObject *parent) :
     GirderRequest(girderUrl, girderToken, parent),
     m_fileName(fileName), m_fileId(fileId), m_downloadPath(path),
-    m_cookieJar(cookieJar)
+    m_cookieJar(cookieJar), m_retryCount(0)
 {
   this->m_networkManager->setCookieJar(this->m_cookieJar);
   this->m_cookieJar->setParent(NULL);
@@ -468,8 +468,16 @@ void DownloadFileRequest::finished(QNetworkReply *reply)
 {
   if (reply->error()) {
     QByteArray bytes = reply->readAll();
-    emit error(handleGirderError(reply, bytes),
-        reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).value<int>());
+
+    int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).value<int>();
+
+    if (statusCode == 400 && this->m_retryCount < 5) {
+      this->send();
+      this->m_retryCount++;
+    }
+    else {
+      emit error(handleGirderError(reply, bytes), statusCode);
+    }
   }
   else {
     // We need todo the redirect ourselves!

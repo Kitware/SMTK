@@ -156,6 +156,7 @@ private:
   QString m_fileId;
   QString m_downloadPath;
   QNetworkCookieJar *m_cookieJar;
+  int m_retryCount;
 };
 
 class DownloadItemRequest: public GirderRequest
