@@ -392,6 +392,14 @@ void find_entities_with_tessellation(
 
 
 //----------------------------------------------------------------------------
+ModelToMesh::ModelToMesh():
+  m_mergeDuplicates(true),
+  m_tolerance(-1)
+{
+
+}
+
+//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& meshManager,
                                                   const smtk::model::ManagerPtr& modelManager) const
 {
@@ -470,6 +478,18 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& 
     }
   }
 
+  //Now merge all duplicate points inside the collection
+  if(this->m_mergeDuplicates)
+    {
+    if(this->m_tolerance >= 0)
+      {
+      collection->meshes().mergeCoincidentContactPoints(this->m_tolerance);
+      }
+    else
+      { //allow the meshes api to specify the default
+      collection->meshes().mergeCoincidentContactPoints();
+      }
+    }
 
   return collection;
 
@@ -530,6 +550,19 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::model::Model& mode
       }
 
     collection->associateToModel(model.entity());
+    }
+
+  //Now merge all duplicate points inside the collection
+  if(this->m_mergeDuplicates)
+    {
+    if(this->m_tolerance >= 0)
+      {
+      collection->meshes().mergeCoincidentContactPoints(this->m_tolerance);
+      }
+    else
+      { //allow the meshes api to specify the default
+      collection->meshes().mergeCoincidentContactPoints();
+      }
     }
 
   return collection;

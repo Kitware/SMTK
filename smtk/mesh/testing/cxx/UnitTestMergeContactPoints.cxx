@@ -89,11 +89,13 @@ void verify_simple_merge()
   create_simple_mesh_model(modelManager);
 
   smtk::io::ModelToMesh convert;
+  convert.setIsMerging(false);
   smtk::mesh::CollectionPtr c = convert(meshManager,modelManager);
   test( c->isValid(), "collection should be valid");
 
   //make sure merging points works properly
   smtk::mesh::PointSet points = c->points( );
+
   test( points.size() == 88, "Should be exactly 88 points in the original mesh");
 
   c->meshes().mergeCoincidentContactPoints();
@@ -116,6 +118,7 @@ void verify_complex_merge()
   create_simple_mesh_model(modelManager);
 
   smtk::io::ModelToMesh convert;
+  convert.setIsMerging(false);
   smtk::mesh::CollectionPtr c = convert(meshManager,modelManager);
   test( c->isValid(), "collection should be valid");
 

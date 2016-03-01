@@ -310,16 +310,7 @@ void verify_vertex_conversion()
   test( c->isValid(), "collection should be valid");
   test( c->numberOfMeshes() == numTetsInModel, "collection should have a mesh per tet");
 
-  //make sure we have the proper number of meshsets.
-
-  //Some bug in our point logic as 1 / 10 times the results are incorrect
-  //need to figure out why
   smtk::mesh::PointSet points = c->points( );
-  test( points.size() == 28, "Should be exactly 28 points in the original mesh");
-
-  c->meshes().mergeCoincidentContactPoints();
-
-  points = c->points( );
   test( points.size() == 7, "After merging of identical points we should have 7");
 }
 
