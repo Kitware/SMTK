@@ -51,11 +51,6 @@ if(SMTK_ENABLE_REMUS_SUPPORT)
 endif()
 
 
-# On Mac OS X, set the directory included as part of the installed library's path:
-if (BUILD_SHARED_LIBS)
-  set_target_properties(${vtk-module} PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
-endif()
-
 # Link GDAL and Add a compiler definition to the target
 if(GDAL_FOUND)
   target_link_libraries(${vtk-module} LINK_PRIVATE ${GDAL_LIBRARY} )

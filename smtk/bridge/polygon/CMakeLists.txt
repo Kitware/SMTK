@@ -35,11 +35,6 @@ target_link_libraries(smtkPolygonSession
   )
 smtk_export_header(smtkPolygonSession Exports.h)
 
-# On Mac OS X, set the directory included as part of the installed library's path:
-if (BUILD_SHARED_LIBS)
-  set_target_properties(smtkPolygonSession PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
-endif()
-
 # Install the library and exports the library when used from a build tree
 smtk_install_library(smtkPolygonSession)
 # Install the headers

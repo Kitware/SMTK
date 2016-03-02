@@ -72,12 +72,6 @@ if (APPLE)
   mark_as_advanced(SMTK_MACOS_FOUNDATION_FMWK)
 endif()
 
-# On Mac OS X, set the dir. included as part of the installed library's path:
-if (BUILD_SHARED_LIBS)
-  set_target_properties(smtkCore
-    PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
-endif()
-
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkCore)
 

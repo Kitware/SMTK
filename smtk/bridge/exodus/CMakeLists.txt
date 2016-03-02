@@ -45,11 +45,6 @@ smtk_export_header(smtkExodusSession Exports.h)
 #set_property(TARGET smtkExodusSession APPEND PROPERTY COMPILE_FLAGS ${EXODUS_DEFINES})
 #set_property(TARGET smtkExodusSession APPEND PROPERTY INCLUDE_DIRECTORIES ${EXODUS_INCLUDE_DIRS})
 
-# On Mac OS X, set the directory included as part of the installed library's path:
-if (BUILD_SHARED_LIBS)
-  set_target_properties(smtkExodusSession PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
-endif()
-
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkExodusSession)
 
