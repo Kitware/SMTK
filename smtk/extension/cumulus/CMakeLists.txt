@@ -5,6 +5,7 @@ set(ui_files
   ui/jobtablewidget.ui
   ui/mainwindow.ui
   ui/logindialog.ui
+  ui/cumuluswidget.ui
 )
 
 set(qt_components
@@ -27,6 +28,7 @@ set(src
   girderrequest.cxx
   jobrequest.cxx
   utils.cxx
+  cumuluswidget.cxx
 )
 
 #add in the attribute preview executable

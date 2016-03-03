@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="cumulus::JobTableWidget" name="jobTableWidget" native="true"/>
+     <widget class="cumulus::CumulusWidget" name="cumulusWidget" native="true"/>
     </item>
    </layout>
   </widget>
@@ -75,9 +75,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>cumulus::JobTableWidget</class>
+   <class>cumulus::CumulusWidget</class>
    <extends>QWidget</extends>
-   <header>jobtablewidget.h</header>
+   <header>cumuluswidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
