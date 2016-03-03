@@ -107,12 +107,6 @@ add_library(smtkQtExt
   ${RCS_RESOURCES}
 )
 
-# On Mac OS X, set the directory included as part of the installed library's path:
-set_target_properties(smtkQtExt
-  PROPERTIES
-    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib"
-)
-
 #we need to add the location of the moc files to the include dir for qtsmtk
 target_include_directories(smtkQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 

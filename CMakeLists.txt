@@ -445,6 +445,11 @@ endif()
 # Finally build smtk
 ################################################################################
 
+# On Mac OS X, set the dir. included as part of the installed library's path:
+if (BUILD_SHARED_LIBS)
+  set(CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+endif ()
+
 add_subdirectory(smtk)
 
 ################################################################################

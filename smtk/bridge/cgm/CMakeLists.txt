@@ -79,11 +79,6 @@ smtk_export_header(smtkCGMSession Exports.h)
 set_property(TARGET smtkCGMSession APPEND PROPERTY COMPILE_FLAGS ${CGM_DEFINES})
 set_property(TARGET smtkCGMSession APPEND PROPERTY INCLUDE_DIRECTORIES ${CGM_INCLUDE_DIRS})
 
-# On Mac OS X, set the directory included as part of the installed library's path:
-if (BUILD_SHARED_LIBS)
-  set_target_properties(smtkCGMSession PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
-endif()
-
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkCGMSession)
 

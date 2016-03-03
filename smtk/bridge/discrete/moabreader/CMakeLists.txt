@@ -41,11 +41,6 @@ target_link_libraries(vtkDiscreteMoabReader
 
 smtk_export_header(vtkDiscreteMoabReader discreteMoabExports.h)
 
-# On Mac OS X, set the directory included as part of the installed library's path:
-if (BUILD_SHARED_LIBS)
-  set_target_properties(vtkDiscreteMoabReader PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
-endif()
-
 # Install the headers.
 smtk_public_headers(vtkCmbMoabReader.h)
 
