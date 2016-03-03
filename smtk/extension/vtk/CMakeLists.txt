@@ -40,11 +40,6 @@ target_include_directories(vtkSMTKExt
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-# On Mac OS X, set the directory included as part of the installed library's path:
-if (BUILD_SHARED_LIBS)
-  set_target_properties(vtkSMTKExt PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
-endif()
-
 # Link *everything* in this directory to VTK modules
 # This is required for the TestBuild targets.
 # We must test whether each of the targets below exist

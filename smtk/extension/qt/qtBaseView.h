@@ -77,10 +77,9 @@ namespace smtk
       bool advanceLevelVisible()
         { return m_advOverlayVisible; }
       virtual int advanceLevel();
-      virtual bool categoryEnabled()
-      {return false;}
-      virtual std::string currentCategory()
-      {return "";}
+      virtual bool categoryEnabled();
+      virtual std::string currentCategory();
+
       bool isTopLevel() const
       {return this->m_isTopLevel;}
 
@@ -101,7 +100,7 @@ namespace smtk
       { m_advOverlayVisible = val;}
       virtual void showAdvanceLevel(int i);
       virtual void updateViewUI(int /* currentTab */){}
-      virtual void enableShowBy(int /* enable */){}
+      virtual void enableShowBy(int /* enable */);
       virtual void onShowCategory(){}
 
 
@@ -119,7 +118,7 @@ namespace smtk
       // Description:
       // Creates the main QT Widget that is associated with a View.  Typically this
       // is the only method a derived View needs to override.
-      virtual void createWidget();
+      virtual void createWidget(){}
 
       // Description:
       // Adds properties associated with respects to a top level view

@@ -35,6 +35,8 @@ namespace smtk
       static pugi::xml_node getRootNode(pugi::xml_document &doc);
 
     protected:
+      virtual void processDefinition(pugi::xml_node &defNode,
+                                     smtk::attribute::DefinitionPtr def);
       virtual void processFileItem(pugi::xml_node &node,
                            smtk::attribute::FileItemPtr item);
       virtual void processModelInfo(pugi::xml_node &root);
@@ -48,6 +50,8 @@ namespace smtk
                           attribute::MeshItemPtr item);
       virtual void processMeshEntityDef(pugi::xml_node &node,
                             smtk::attribute::MeshItemDefinitionPtr idef);
+      virtual void processStringDef(pugi::xml_node &node,
+                                    smtk::attribute::StringItemDefinitionPtr idef);
       virtual void processViews(pugi::xml_node &root);
       virtual void processViewComponent(smtk::common::View::Component &comp,
                                         pugi::xml_node &node, bool isTopComp);

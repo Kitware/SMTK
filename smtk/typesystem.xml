@@ -41,6 +41,7 @@
   <suppress-warning text="skipping function 'smtk::model::SessionRef::models', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::SessionRef::operatorsForAssociation', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityRef::EntityRefsFromUUIDs', unmatched parameter type 'S&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::EntityRef::EntityRefsToUUIDs', unmatched parameter type 'S&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::addCells', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::addGroups', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Group::members', unmatched return type 'T'"/>
@@ -151,6 +152,10 @@
   <suppress-warning text="skipping function 'smtk::io::ImportMesh::entireJSONToCollection', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::mesh::from_json', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::mesh::to_json', unmatched return type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::addModelsRecord', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::addMeshesRecord', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::addModelsRecord', unmatched parameter type 'smtk::model::Models const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::addMeshesRecord', unmatched parameter type 'smtk::model::Models const&amp;'"/>
 
   <!-- Ignore warnings from protected functions and members -->
   <suppress-warning text="skipping function 'smtk::model::Manager::insertEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
@@ -294,6 +299,7 @@
   <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'const int *' in function 'smtk::model::Tessellation::insertNextCell(int connLen, const int * cellConn)'."/>
   <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'int *' in function 'smtk::model::Tessellation::numberOfCellVertices(int offset, int * cellTypeOut) const'."/>
   <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'double *' in function 'smtk::model::Tessellation::addQuad(double * a, double * b, double * c, double * d)'."/>
+  <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'const smtk::mesh::Handle *' in function 'smtk::mesh::CellForEach::pointIds(const smtk::mesh::Handle * ptIds)'"/>
 
 
   <!-- ignore shared_from_this base class-->
@@ -330,8 +336,6 @@
   <suppress-warning text="skipping function 'smtk::model::MeshListPhrase::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::MeshListPhrase::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::MeshListPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::MeshListPhrase::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::MeshListPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::MeshListPhrase::SelfType&gt;'"/>
-
-
 
   <suppress-warning text="skipping field 'DescriptivePhrase::m_delegate' with unmatched type 'smtk::shared_ptr&lt;SubphraseGenerator&gt;'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ValueItemTemplate::setValue', unmatched parameter type 'size_t'"/>
@@ -376,18 +380,20 @@
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forStringData', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forFloatData', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forIntegerData', unmatched parameter type 'cJSON*'"/>
-  skipping function '
-  skipping function '
-  skipping function '
-  skipping function '
-  skipping function '
-  skipping function ''
-  skipping function '
-  skipping function '
-  skipping function '
-  skipping function '
-  skipping function '
 
+  <suppress-warning text="skipping function 'smtk::mesh::Manager::collectionBegin', unmatched return type 'smtk::mesh::Manager::const_iterator'"/>
+  <suppress-warning text="skipping function 'smtk::model::Operator::setMeshManager', unmatched return type 'smtk::model::Operator::Ptr'"/>
+  <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;Collection&gt;' of 'Collection' is not known"/>
+  <suppress-warning text="skipping function 'smtk::mesh::Manager::findCollection', unmatched return type 'smtk::mesh::Manager::const_iterator'"/>
+  <suppress-warning text="skipping function 'smtk::mesh::Manager::collectionEnd', unmatched return type 'smtk::mesh::Manager::const_iterator'"/>
+  <suppress-warning text="skipping function 'smtk::io::MeshExport2DM::write', unmatched parameter type 'std::ostream&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::io::MeshExport3DM::write', unmatched parameter type 'std::ostream&amp;'"/>
+  <suppress-warning text="template baseclass 'std::bitset&lt;CellType_MAX&gt;' of 'CellTypes' is not known"/>
+  <suppress-warning text="skipping function 'smtk::mesh::Collection::interface', unmatched return type 'smtk::mesh::InterfacePtr const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::mesh::Collection::readLocation', unmatched return type 'smtk::common::FileLocation const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::mesh::Collection::readLocation', unmatched parameter type 'smtk::common::FileLocation const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::mesh::Collection::writeLocation', unmatched parameter type 'smtk::common::FileLocation const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::mesh::Collection::writeLocation', unmatched return type 'smtk::common::FileLocation const&amp;'"/>
 
   <suppress-warning text="skipping field 'Manager::m_conditionTriggers' with unmatched type 'std::set&lt;ConditionTrigger&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_oneToOneTriggers' with unmatched type 'std::set&lt;OneToOneTrigger&gt;'"/>
@@ -752,6 +758,7 @@
     <modify-function signature="setBriefDescription(const std::string &amp;)" remove="all"/>
     <modify-function signature="setDetailedDescription(const std::string &amp;)" remove="all"/>
     <modify-function signature="setLabel(const std::string &amp;)" remove="all"/>
+    <modify-function signature="setRootName(const std::string &amp;)" remove="all"/>
   </value-type>
 
   <value-type template="smtk::shared_ptr" args="const smtk::attribute::Item">

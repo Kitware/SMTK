@@ -385,8 +385,22 @@ void qtBaseView::showAdvanceLevel(int level)
   this->buildUI();
 }
 
-void qtBaseView::createWidget()
+void qtBaseView::enableShowBy(int enable)
 {
+  this->Internals->ShowCategoryCombo->setEnabled(enable ? true : false);
+  this->onShowCategory();
+}
+
+std::string qtBaseView::currentCategory()
+{
+  return this->categoryEnabled() ?
+         this->Internals->ShowCategoryCombo->currentText().toStdString() : "";
+}
+
+bool qtBaseView::categoryEnabled()
+{
+  return this->Internals->ShowCategoryCombo &&
+        this->Internals->ShowCategoryCombo->isEnabled();
 }
 
 //----------------------------------------------------------------------------

@@ -135,6 +135,10 @@ bool Item::setDefinition(smtk::attribute::ConstItemDefinitionPtr def)
 //----------------------------------------------------------------------------
 bool Item::isOptional() const
 {
+  if (!this->m_definition)
+    {
+    return false;
+    }
   return this->m_definition->isOptional();
 }
 //----------------------------------------------------------------------------=

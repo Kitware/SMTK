@@ -574,7 +574,7 @@ void XmlDocV1Parser::processAttributeInformation(xml_node &root)
     {
     for (child = node.first_child(); child; child = child.next_sibling())
       {
-      this->processDefinition(child);
+      this->createDefinition(child);
       }
 
     // At this point we have all the definitions read in so lets
@@ -665,9 +665,8 @@ void XmlDocV1Parser::processAttributeInformation(xml_node &root)
 
 }
 //----------------------------------------------------------------------------
-void XmlDocV1Parser::processDefinition(xml_node &defNode)
+void XmlDocV1Parser::createDefinition(xml_node &defNode)
 {
-  xml_node node;
   attribute::DefinitionPtr def, baseDef;
   xml_attribute xatt;
   std::string type, baseType;
@@ -712,6 +711,15 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
       }
     return;
     }
+  this->processDefinition(defNode, def);
+}
+
+//----------------------------------------------------------------------------
+  void XmlDocV1Parser::processDefinition(xml_node &defNode,
+                                         smtk::attribute::DefinitionPtr def)
+{
+  xml_attribute xatt;
+  xml_node node;
   xatt = defNode.attribute("Label");
   if (xatt)
     {
@@ -856,7 +864,7 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
     default:
       smtkErrorMacro(this->m_logger, "Unsupported Item definition Type: "
                      << node.name()
-                     << " needed to create Definition: " << type);
+                     << " needed to create Definition: " << def->type());
       }
     }
 }

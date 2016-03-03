@@ -32,6 +32,9 @@ namespace smtk
       virtual ~StringItem();
       virtual Item::Type type() const;
       
+     // Returns true is the item's value is not to be displayed in a GUI
+     bool isSecure() const;
+      
       // Assigns this item to be equivalent to another.  Options are processed by derived item classes
       // Returns true if success and false if a problem occured.  By default, an attribute being used by this
       // to represent an expression will be copied if needed.  Use IGNORE_EXPRESSIONS option to prevent this

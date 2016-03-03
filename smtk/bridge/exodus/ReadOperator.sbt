@@ -22,6 +22,7 @@
             The name of a scalar cell-data array indicating which segment each cell belongs to.
           </BriefDescription>
         </String>
+        <ModelEntity Name="preservedUUIDs" NumberOfRequiredValues="0" Extensible="1"/>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->

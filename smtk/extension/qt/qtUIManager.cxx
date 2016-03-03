@@ -1033,6 +1033,11 @@ QWidget* qtUIManager::createEditBox(
       else
         {
         QLineEdit* lineEdit = new QLineEdit(pWidget);
+        if (sitem->isSecure())
+          {
+          lineEdit->setEchoMode(QLineEdit::Password);
+          }
+        
         lineEdit->setText(valText);
         inputWidget = lineEdit;
         }

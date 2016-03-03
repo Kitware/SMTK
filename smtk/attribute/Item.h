@@ -90,8 +90,9 @@ namespace smtk
      // owned by either an attribute or by another item it will return
      // an empty shared pointer
      smtk::attribute::ItemPtr pointer() const;
+     // Returns true if the item is optional
      bool isOptional() const;
-
+     
      // isEnabled only matters for optional items.  All non-optional
      // items will return true for isEnabled regardless of the value
      // of m_isEnabled

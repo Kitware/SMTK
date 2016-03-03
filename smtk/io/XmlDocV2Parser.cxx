@@ -13,12 +13,14 @@
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/MeshItemDefinition.h"
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/common/View.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
@@ -118,6 +120,33 @@ void XmlDocV2Parser::process(xml_document &doc)
   this->process(amnode);
 }
 
+
+//----------------------------------------------------------------------------
+  void XmlDocV2Parser::processDefinition(xml_node &defNode,
+                                         smtk::attribute::DefinitionPtr def)
+{
+  xml_attribute xatt;
+  // we just need to process Secure XML Attribute added in V2
+  this->XmlDocV1Parser::processDefinition(defNode, def);
+  xatt = defNode.attribute("RootName");
+  if (xatt)
+    {
+    def->setRootName(xatt.value());
+    }
+}
+//----------------------------------------------------------------------------
+void XmlDocV2Parser::processStringDef(xml_node &node,
+                                    smtk::attribute::StringItemDefinitionPtr idef)
+{
+  xml_attribute xatt;
+  // we just need to process Secure XML Attribute added in V2
+  this->XmlDocV1Parser::processStringDef(node, idef);
+  xatt = node.attribute("Secure");
+  if (xatt)
+    {
+    idef->setIsSecure(xatt.as_bool());
+    }
+}
 
 //----------------------------------------------------------------------------
 smtk::common::UUID XmlDocV2Parser::getAttributeID(xml_node &attNode)

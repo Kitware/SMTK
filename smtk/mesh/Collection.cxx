@@ -61,8 +61,6 @@ public:
   smtk::mesh::Handle mesh_root_handle() const
     { return this->Interface->getRoot(); }
 
-
-
 private:
   smtk::weak_ptr<smtk::mesh::Manager> WeakManager;
   smtk::mesh::InterfacePtr Interface;
@@ -120,10 +118,19 @@ Collection::~Collection()
     delete this->m_internals;
     }
 }
+
 //----------------------------------------------------------------------------
 const smtk::mesh::InterfacePtr& Collection::interface() const
 {
   return this->m_internals->mesh_iface();
+}
+
+//----------------------------------------------------------------------------
+void Collection::swapInterfaces(smtk::mesh::CollectionPtr& other)
+{
+  smtk::mesh::Collection::InternalImpl* temp = other->m_internals;
+  other->m_internals = this->m_internals;
+  this->m_internals = temp;
 }
 
 //----------------------------------------------------------------------------
@@ -164,13 +171,13 @@ bool Collection::assignUniqueNameIfNotAlready()
 }
 
 //----------------------------------------------------------------------------
-const std::string& Collection::readLocation() const
+const smtk::common::FileLocation& Collection::readLocation() const
 {
   return this->m_readLocation;
 }
 
 //----------------------------------------------------------------------------
-void Collection::readLocation(const std::string& n)
+void Collection::readLocation(const smtk::common::FileLocation& n)
 {
   this->m_readLocation = n;
   //if the write location hasn't been set, update it to be the read location
@@ -181,13 +188,13 @@ void Collection::readLocation(const std::string& n)
 }
 
 //----------------------------------------------------------------------------
-const std::string& Collection::writeLocation() const
+const smtk::common::FileLocation& Collection::writeLocation() const
 {
   return this->m_writeLocation;
 }
 
 //----------------------------------------------------------------------------
-void Collection::writeLocation(const std::string& n)
+void Collection::writeLocation(const smtk::common::FileLocation& n)
 {
   this->m_writeLocation = n;
 }
@@ -198,7 +205,6 @@ void Collection::clearReadWriteLocations()
   this->m_readLocation.clear();
   this->m_writeLocation.clear();
 }
-
 
 //----------------------------------------------------------------------------
 std::string Collection::interfaceName() const
@@ -471,7 +477,7 @@ smtk::mesh::MeshSet Collection::createMesh( const smtk::mesh::CellSet& cells )
   if(cells.m_parent == this->shared_from_this())
     {
     smtk::mesh::Handle meshSetHandle;
-    const bool meshCreated = iface->createMesh(cells.m_range, meshSetHandle);
+    const bool meshCreated = iface->createMesh(cells.range(), meshSetHandle);
     if(meshCreated)
       {
       entities.insert(meshSetHandle);
@@ -496,20 +502,12 @@ bool Collection::removeMeshes(smtk::mesh::MeshSet& meshesToDelete )
                       smtk::mesh::set_difference(this->meshes(),
                                                  meshesToDelete);
 
-    //find all non vertex cells that we use
-    smtk::mesh::CellSet cellsUsedByDeletedMeshes = smtk::mesh::set_difference(
-                                                     meshesToDelete.cells( ),
-                                                     meshesToDelete.cells( smtk::mesh::Dims0 ));
-    //now find the cells that used only by the mesh we are about to delete.
-    //we can't delete vertex cells since they might be used as connectivity
-    //for a different cell that we aren't deleting.
-    cellsUsedByDeletedMeshes =
-        smtk::mesh::set_difference(cellsUsedByDeletedMeshes,
-                                    all_OtherMeshes.cells( ));
-
+    //now find the cells that are only used by the mesh we are about to delete.
+    smtk::mesh::CellSet cellsToDelete = smtk::mesh::set_difference(meshesToDelete.cells(),
+                                                                   all_OtherMeshes.cells( ));
     //delete our mesh and cells that aren't used by any one else
-    bool deletedMeshes = iface->deleteHandles(meshesToDelete.m_range);
-    bool deletedCells = iface->deleteHandles(cellsUsedByDeletedMeshes.m_range);
+    const bool deletedMeshes = iface->deleteHandles(meshesToDelete.m_range);
+    const bool deletedCells = iface->deleteHandles(cellsToDelete.range());
     return deletedMeshes && deletedCells;
     }
   return false;

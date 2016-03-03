@@ -434,6 +434,7 @@ SessionInfoBits Session::transcribeInternal(
 
     case EXO_MODEL:
       mutableEntityRef.setStringProperty("_simple type", "file");
+      mutableEntityRef.setIntegerProperty("file order", handle.pedigree());
       break;
     default:
       break;
@@ -652,8 +653,13 @@ bool Session::ensureChildParentMapEntry(vtkDataObject* child, vtkDataObject* par
 // ++ 12 ++
 SessionIOPtr Session::createIODelegate(const std::string& format)
 {
-  // Currently the DefaultSession is handling this.
-  return this->Superclass::createIODelegate(format);
+  SessionIOPtr result;
+  if (format == "json")
+    {
+    //result = this->Superclass::createIODelegate(format);
+    result = SessionIOJSON::create();
+    }
+  return result;
 }
 // -- 12 --
 

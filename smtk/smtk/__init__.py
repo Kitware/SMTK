@@ -9,7 +9,6 @@
 #  PURPOSE.  See the above copyright notice for more information.
 #
 #=============================================================================
-#BEGIN REMOVE ME FROM PACKAGE
 
 def __bootstrap_smtk__():
   import sys, os
@@ -27,9 +26,8 @@ def __bootstrap_smtk__():
       extra_paths = extra_paths + x
   sys.path = sys.path + extra_paths
 
-__bootstrap_smtk__()
-
-#END REMOVE ME FROM PACKAGE
+if '@smtk_find_shiboken@':
+  __bootstrap_smtk__()
 
 def __import_shared_ptrs__():
   import re

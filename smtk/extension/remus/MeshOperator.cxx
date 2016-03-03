@@ -189,7 +189,7 @@ OperatorResult MeshOperator::operateInternal()
       smtk::common::UUID collectionUUID = i->first;
       if( existingCollections.find(collectionUUID) ==  existingCollections.end())
         { //found a new collection
-        std::string location = collection->readLocation();
+        std::string location = collection->readLocation().absolutePath();
         if(!location.empty())
           { //delete the file if it exists
           ::boost::filesystem::path cpath( location );

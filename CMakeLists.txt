@@ -168,7 +168,7 @@ set(Boost_NO_SYSTEM_PATHS ${SMTK_NO_SYSTEM_BOOST})
 # * Shared Ptr
 # * String algorithms
 # * UUID Generation
-find_package(Boost 1.50.0
+find_package(Boost 1.60.0
              COMPONENTS   filesystem system  REQUIRED)
 
 #setup windows exception handling so we can compile properly with boost enabled
@@ -393,8 +393,6 @@ install(
 install(
   FILES
     ${PROJECT_SOURCE_DIR}/CMake/FindCGM.cmake
-    ${PROJECT_SOURCE_DIR}/CMake/FindRemus.cmake
-    ${PROJECT_SOURCE_DIR}/CMake/FindZeroMQ.cmake
   DESTINATION
     ${CMAKE_INSTALL_LIBDIR}/cmake/SMTK
 )
@@ -448,6 +446,11 @@ endif()
 ################################################################################
 # Finally build smtk
 ################################################################################
+
+# On Mac OS X, set the dir. included as part of the installed library's path:
+if (BUILD_SHARED_LIBS)
+  set(CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+endif ()
 
 add_subdirectory(smtk)
 

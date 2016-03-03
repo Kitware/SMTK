@@ -32,6 +32,9 @@
 #include "smtk/io/Logger.h"
 #include "smtk/io/ImportMesh.h"
 
+#include "boost/filesystem.hpp"
+#include "boost/system/error_code.hpp"
+
 #include "cJSON.h"
 
 #include <stdio.h>
@@ -44,6 +47,7 @@
 using namespace smtk::io;
 using namespace smtk::common;
 using namespace smtk::model;
+using namespace boost::filesystem;
 
 // Some cJSON helpers
 namespace {
@@ -671,7 +675,11 @@ int ImportJSON::ofManagerIntegerProperties(const smtk::common::UUID& uid, cJSON*
   * The \a destSession must be of a proper type for your application
   * (i.e., be able to forward requests for data and operations).
   */
-int ImportJSON::ofRemoteSession(cJSON* node, DefaultSessionPtr destSession, ManagerPtr context)
+int ImportJSON::ofRemoteSession(
+  cJSON* node,
+  DefaultSessionPtr destSession,
+  ManagerPtr context,
+  const std::string& refPath)
 {
   int status = 0;
   cJSON* opsObj;
@@ -747,6 +755,7 @@ int ImportJSON::ofRemoteSession(cJSON* node, DefaultSessionPtr destSession, Mana
       destSession->createIODelegate("json"));
   if (delegate)
     {
+    delegate->setReferencePath(refPath);
     delegate->importJSON(context, destSession, node);
     }
   return status;
@@ -785,7 +794,8 @@ int ImportJSON::ofRemoteSession(cJSON* node, DefaultSessionPtr destSession, Mana
   * special care must be taken to avoid that behavior when importing
   * a session.
   */
-int ImportJSON::ofLocalSession(cJSON* node, ManagerPtr context, bool loadNativeModels)
+int ImportJSON::ofLocalSession(
+  cJSON* node, ManagerPtr context, bool loadNativeModels, const std::string& refPath)
 {
   int status = 0;
   cJSON* opsObj;
@@ -827,6 +837,7 @@ int ImportJSON::ofLocalSession(cJSON* node, ManagerPtr context, bool loadNativeM
       sref.session()->createIODelegate("json"));
   if (delegate)
     {
+    delegate->setReferencePath(refPath);
     status = delegate->importJSON(context, sref.session(), node, loadNativeModels);
     }
   return status;
@@ -933,7 +944,7 @@ int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::mode
 
     if(mesh_records)
       {
-      status &= ImportJSON::ofMeshesOfModel(mesh_records, mgr, true);
+      status &= ImportJSON::ofMeshesOfModel(mesh_records, mgr);
       }
     }
   return status;
@@ -1053,8 +1064,7 @@ int ImportJSON::ofLog(cJSON* logrecordarray, smtk::io::Logger& log)
   */
 int ImportJSON::ofMeshesOfModel(cJSON* node,
                                 smtk::model::ManagerPtr modelMgr,
-                                bool updateExisting)
-
+                                const std::string& refPath)
 {
   int status = 1;
   if (!node || !modelMgr)
@@ -1087,22 +1097,6 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
       continue;
       }
 
-    //first verify the collection doesn't already exist
-    if (smtk::mesh::CollectionPtr existingC = meshMgr->collection(uid))
-      {
-      if(updateExisting)
-        {
-        // Import everything in a json string into the existing collection?, need to clear first?
-        // smtk::mesh::json::import(child, existingC);
-        // update properties, if any, to the existing collection
-        status &= ImportJSON::ofMeshProperties(child, existingC);
-        }
-      else
-        {
-        std::cerr << "Importing a mesh collection that already exists: " << child->string << "\n";
-        }
-      continue;
-      }
     //assoicated model uuid of the collection
     smtk::common::UUID associatedModelId;
     if(cJSON* modelIdNode = cJSON_GetObjectItem(child, "associatedModel"))
@@ -1127,7 +1121,16 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
       //get the file_path from json
       std::string file_path;
       cJSON_GetStringValue(fLocationNode, file_path);
-      importedCollection = smtk::io::ImportMesh::entireFile(file_path, meshMgr);
+      path absPath(file_path);
+      if (!refPath.empty() && !absPath.is_absolute())
+        {
+        path tryme = refPath / absPath;
+        if (exists(tryme))
+          {
+          absPath = canonical(tryme, refPath);
+          }
+        }
+      importedCollection = smtk::io::ImportMesh::entireFile(absPath.string(), meshMgr);
       }
 
     //wasnt moab, or failed to load as moab
@@ -1138,10 +1141,19 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
 
     if(importedCollection)
       {
-      //Transfer ownership of the interface over to this new collection
-      //done so that we get the correct uuid for the collection
-      smtk::mesh::CollectionPtr collection =
-            meshMgr->makeCollection(uid, importedCollection->interface());
+      smtk:mesh::CollectionPtr collection;
+      smtk::mesh::CollectionPtr existingC = meshMgr->collection(uid);
+      if(existingC)
+        {
+        existingC->swapInterfaces(importedCollection);
+        collection = existingC;
+        }
+      else
+        {
+        //Transfer ownership of the interface over to this new collection
+        //done so that we get the correct uuid for the collection
+        collection = meshMgr->makeCollection(uid, importedCollection->interface());
+        }
 
       //remove the old collection, as its interface is now owned by the new
       //collection

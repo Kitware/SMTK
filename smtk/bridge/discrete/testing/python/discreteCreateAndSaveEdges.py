@@ -79,18 +79,18 @@ class TestDiscreteCreateAndSaveEdges(smtk.testing.TestCase):
     self.assertIsNotNone(btm, 'Missing create edges operator.')
     SetVectorValue(btm.findAsModelEntity('model'), [mod,])
 
-    res = btm.operate()   
+    res = btm.operate()
     sys.stdout.flush()
     self.assertEqual(res.findInt('outcome').value(0), smtk.model.OPERATION_SUCCEEDED,
         'create edges failed.')
 
     writeop = GetActiveSession().op('write')
     self.assertIsNotNone(writeop, 'Missing discrete write operator.')
-    SetVectorValue(writeop.findAsModelEntity('model'), [mod,])
+    SetVectorValue(writeop.specification().associations(), [mod,])
     tmpfile = ['testCreateAndSaveEdges.cmb',]
     outfilename = os.path.join(*([smtk.testing.TEMP_DIR,] + tmpfile))
     writeop.findAsFile('filename').setValue(0, outfilename)
-    res = writeop.operate()   
+    res = writeop.operate()
     sys.stdout.flush()
     self.assertEqual(res.findInt('outcome').value(0), smtk.model.OPERATION_SUCCEEDED,
         'write SimpleBox model with edges failed.')

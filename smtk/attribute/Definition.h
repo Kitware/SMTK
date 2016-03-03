@@ -211,6 +211,16 @@ namespace smtk
       // attribute already has items, clear them out.
       void buildAttribute(smtk::attribute::Attribute *attribute) const;
 
+      // Description:
+      // Sets and returns the root name to be used to construct the name for
+      // an attribute. This is used by the attribute system when creating an
+      // attribute without specifying a name - by default it is set to be the
+      // type name of the definition
+      void setRootName(const std::string &val)
+      {this->m_rootName = val;}
+      std::string rootName() const
+      {return this->m_rootName;}
+
       //This method resets the definition item offset - this is used by the
       // system when a definition is modified
       void resetItemOffset();
@@ -259,6 +269,7 @@ namespace smtk
       std::string m_briefDescription;
       // Used by the find method to calculate an item's position
       std::size_t m_baseItemOffset;
+      std::string m_rootName;
     private:
 
       // These colors are returned for base definitions w/o set colors

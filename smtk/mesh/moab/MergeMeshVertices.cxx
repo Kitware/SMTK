@@ -72,7 +72,7 @@ MergeMeshVertices::~MergeMeshVertices()
       ++i)
     {
     Range tmp;
-    rval = mbImpl->get_entities_by_handle(*i, entities, /*recursive*/ true);
+    rval = mbImpl->get_entities_by_handle(*i, tmp, /*recursive*/ true);
     if (MB_SUCCESS != rval)
       {
       return rval;
@@ -80,10 +80,9 @@ MergeMeshVertices::~MergeMeshVertices()
     entities.insert(tmp.begin(), tmp.end());
     }
 
-  Range sets= entities.subset_by_type(MBENTITYSET);
-  entities= ::moab::subtract(entities, sets);
   Range verts;
-  rval = mbImpl->get_connectivity(entities, verts);;
+  rval = mbImpl->get_connectivity(entities, verts);
+
   if (MB_SUCCESS != rval)
     {
     return rval;
@@ -99,19 +98,32 @@ MergeMeshVertices::~MergeMeshVertices()
     }
 
   // find matching vertices, mark them
-  rval = find_merged_to(tree_root, kd, mbMergeTag);;
+  rval = find_merged_to(tree_root, kd, mbMergeTag);
   if (MB_SUCCESS != rval)
     {
     return rval;
     }
 
-  rval = perform_merge(mbMergeTag);;
+  rval = perform_merge(mbMergeTag);
   if (MB_SUCCESS != rval)
     {
     return rval;
     }
 
-  //currently skipping higher dimensions
+  rval = correct_vertex_merge(mbMergeTag, meshsets);
+  if (MB_SUCCESS != rval)
+    {
+    return rval;
+    }
+
+  //delete the deadEnts
+  mbImpl->delete_entities(deadEnts);
+
+  rval = merge_higher_dimensions(entities);
+  if (MB_SUCCESS != rval)
+    {
+    return rval;
+    }
 
   return MB_SUCCESS;
 }
@@ -297,14 +309,148 @@ MergeMeshVertices::~MergeMeshVertices()
     assert(merge_tag_val[i]);
     if (MBVERTEX==mbImpl->type_from_handle(merge_tag_val[i]) )
       mergedToVertices.insert(merge_tag_val[i]);
+
     result = mbImpl->merge_entities(merge_tag_val[i], *rit, false, false);
     if (MB_SUCCESS != result)
     {
       return result;
     }
   }
-  result = mbImpl->delete_entities(deadEnts);
+
   return result;
+}
+
+
+//----------------------------------------------------------------------------
+//now before we delete the entities,
+//we need to make sure that any mesh that is losing an explicit vertex
+//has it replaced with the merged vertex, this isn't handled by perform_merge
+//as it only does dim > 0
+::moab::ErrorCode MergeMeshVertices::correct_vertex_merge(::moab::Tag merged_to,
+                                         const smtk::mesh::HandleRange&  meshsets)
+{
+  using ::moab::EntityHandle;
+  using ::moab::ErrorCode;
+  using ::moab::Range;
+  using ::moab::MBVERTEX;
+  using ::moab::MB_SUCCESS;
+  using ::moab::MB_FAILURE;
+
+  for(smtk::mesh::HandleRange::const_iterator i = meshsets.begin();
+    i != meshsets.end();
+    ++i)
+   {
+    Range entitiesVerts;
+    mbImpl->get_entities_by_dimension(*i, 0 /*dimension*/, entitiesVerts, /*recursive*/ true);
+
+    //determine if we have a vert which is going deleted
+    Range vertsToDelete = ::moab::intersect(deadEnts, entitiesVerts);
+    if(!vertsToDelete.empty())
+      {
+      std::vector<EntityHandle> merge_tag_val(vertsToDelete.size());
+      mbImpl->tag_get_data(mbMergeTag, vertsToDelete, &merge_tag_val[0]);
+
+      Range::iterator rit;
+      std::size_t j;
+      for (rit = vertsToDelete.begin(), j = 0; rit != vertsToDelete.end(); rit++, j++)
+        {
+        //now we add these entities to the new meshset
+        EntityHandle t = merge_tag_val[j];
+        mbImpl->add_entities(*i, &t, 1);
+        }
+      mbImpl->remove_entities(*i, vertsToDelete);
+      }
+    }
+
+  return MB_SUCCESS;
+}
+
+
+//----------------------------------------------------------------------------
+//Determine which higher dimensional entities should be merged
+::moab::ErrorCode MergeMeshVertices::merge_higher_dimensions(::moab::Range &elems)
+{
+  using ::moab::EntityHandle;
+  using ::moab::ErrorCode;
+  using ::moab::Range;
+  using ::moab::MBVERTEX;
+  using ::moab::MB_SUCCESS;
+  using ::moab::MB_FAILURE;
+
+  // apply a different strategy
+  // look at the vertices that were merged to, earlier, and find all entities adjacent to them
+  // elems (input) are used just for initial connectivity
+  ErrorCode result;
+  Range verts;
+  result = mbImpl->get_connectivity(elems, verts);
+  verts.merge(elems.subset_by_dimension(0)); //don't forget these
+  if (MB_SUCCESS!=result)
+    return result;
+
+  // all higher dim entities that will be merged will be connected to the vertices that were
+  // merged earlier; we will look at these vertices only
+  Range vertsOfInterest=intersect(this->mergedToVertices, verts);
+  //Go through each dimension
+  Range possibleEntsToMerge, conn, matches, moreDeadEnts;
+
+  for (int dim = 1; dim < 3; dim++)
+  {
+    moreDeadEnts.clear();
+    possibleEntsToMerge.clear();
+    result = mbImpl->get_adjacencies(vertsOfInterest,
+                                             dim, false, possibleEntsToMerge,
+                                             ::moab::Interface::UNION);
+    if (MB_SUCCESS!=result)
+      return result;
+    //Go through each possible entity and see if it shares vertices with another entity of same dimension
+    for (Range::iterator pit = possibleEntsToMerge.begin();
+        pit != possibleEntsToMerge.end(); pit++)
+    {
+      EntityHandle eh=*pit;//possible entity to be matched
+      conn.clear();
+      //Get the vertices connected to it in a range
+      if(mbImpl->type_from_handle(eh) != MBVERTEX)
+        {
+        result = mbImpl->get_connectivity(&eh, 1, conn);
+        }
+      else
+        {
+        conn.insert(eh);
+        result = MB_SUCCESS;
+        }
+
+      if (MB_SUCCESS!=result)
+        return result;
+      matches.clear();
+      // now retrieve all entities connected to all conn vertices
+      result = mbImpl->get_adjacencies(conn, dim, false, matches,
+                                                   ::moab::Interface::INTERSECT);
+      if (MB_SUCCESS!=result)
+        return result;
+      if (matches.size() > 1)
+      {
+        for (Range::iterator matchIt = matches.begin();
+            matchIt != matches.end(); matchIt++)
+        {
+          EntityHandle to_remove=*matchIt;
+          if (to_remove != eh)
+          {
+            moreDeadEnts.insert(to_remove);
+            result = mbImpl->merge_entities(eh, to_remove, false, false);
+            if (result != MB_SUCCESS)
+              return result;
+            possibleEntsToMerge.erase(to_remove);
+          }
+        }
+      }
+
+    }
+    //Delete the entities of dimension dim
+    result = mbImpl->delete_entities(moreDeadEnts);
+    if (result != MB_SUCCESS)
+      return result;
+  }
+  return MB_SUCCESS;
 }
 
 

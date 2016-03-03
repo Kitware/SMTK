@@ -17,7 +17,8 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
-
+#include "smtk/io/ModelToMesh.h"
+#include "smtk/mesh/Collection.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
@@ -296,6 +297,21 @@ OperatorResult ImportOperator::operateInternal()
 
   OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
   this->addEntityToResult(result, modelEntity, CREATED);
+  // for 2dm files model and mesh have same geometry,
+  // so create meshes for faces and edges
+  if (ext == ".2dm" || ext == ".3dm")
+    {
+    smtk::io::ModelToMesh convert;
+    smtk::mesh::CollectionPtr c = convert(modelEntity.as<smtk::model::Model>());
+    if(c->isValid() && c->numberOfMeshes() > 0)
+      {
+      if(c->name().empty())
+        {
+        c->name("original_mesh");
+        }
+      result->findModelEntity("mesh_created")->setValue(modelEntity);
+      }
+    }
 
 /*
 //#include "smtk/io/ExportJSON.h"

@@ -1162,7 +1162,8 @@ void Interface::pointForEach(const HandleRange &points,
 }
 
 //----------------------------------------------------------------------------
-void Interface::cellForEach(smtk::mesh::PointConnectivity& pc,
+void Interface::cellForEach(const HandleRange &cells,
+                            smtk::mesh::PointConnectivity& pc,
                             smtk::mesh::CellForEach& filter) const
 {
   if(!pc.is_empty())
@@ -1172,13 +1173,13 @@ void Interface::cellForEach(smtk::mesh::PointConnectivity& pc,
     const smtk::mesh::Handle* points;
 
 
-    typedef smtk::mesh::HandleRange::const_iterator cit;
-
+    smtk::mesh::HandleRange::const_iterator currentCell = cells.begin();
     if(filter.wantsCoordinates())
       {
       std::vector<double> coords;
       for(pc.initCellTraversal();
           pc.fetchNextCell(cellType, size, points) == true;
+          currentCell++
           )
         {
         coords.resize(size*3);
@@ -1190,18 +1191,19 @@ void Interface::cellForEach(smtk::mesh::PointConnectivity& pc,
         //call the custom filter
         filter.pointIds(points);
         filter.coordinates(&coords);
-        filter.forCell(cellType,size);
+        filter.forCell(*currentCell,cellType,size);
         }
       }
     else
       { //don't extract the coords
       for(pc.initCellTraversal();
           pc.fetchNextCell(cellType, size, points) == true;
+          currentCell++
           )
         {
         filter.pointIds(points);
         //call the custom filter
-        filter.forCell(cellType,size);
+        filter.forCell(*currentCell, cellType,size);
         }
       }
     }
@@ -1248,14 +1250,29 @@ bool Interface::deleteHandles(const smtk::mesh::HandleRange& toDel)
   //this could be a performance bottleneck since we are using size
   if(toDel.all_of_type(::moab::MBENTITYSET))
     {
+    //first remove any model entity relation-ship these meshes have
+    tag::QueryEntRefTag mtag(this->moabInterface());
+    m_iface->tag_delete_data(mtag.moabTag(), toDel);
+
     //we are all moab entity sets, fine to delete
     const::moab::ErrorCode rval = m_iface->delete_entities(toDel);
     return (rval == ::moab::MB_SUCCESS);
     }
   else if(toDel.num_of_type(::moab::MBENTITYSET) == 0)
     {
+    //first remove any model entity relation-ship these cells have
+    tag::QueryEntRefTag mtag(this->moabInterface());
+    m_iface->tag_delete_data(mtag.moabTag(), toDel);
+
+    //for now we are going to avoid deleting any vertex
+    smtk::mesh::HandleRange vertCells = toDel.subset_by_dimension(0);
+    smtk::mesh::HandleRange otherCells = ::moab::subtract(toDel, vertCells);
+
     //we have zero entity sets so we must be all cells/coords
-    const::moab::ErrorCode rval = m_iface->delete_entities(toDel);
+    const ::moab::ErrorCode rval = m_iface->delete_entities(otherCells);
+
+    //we don't delete the vertices, as those can't be explicitly deleted
+    //instead they are deleted when the mesh goes away
     return (rval == ::moab::MB_SUCCESS);
     }
 

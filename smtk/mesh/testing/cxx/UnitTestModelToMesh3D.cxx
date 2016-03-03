@@ -52,8 +52,11 @@ public:
     }
 
   //--------------------------------------------------------------------------
-  void forCell(smtk::mesh::CellType cellType, int numPts)
+  void forCell(const smtk::mesh::Handle& cellId,
+               smtk::mesh::CellType cellType,
+               int numPts)
   {
+  (void) cellId;
   (void)cellType;
   this->numCellsVisited++;
   this->numPointsSeen += numPts;
@@ -350,7 +353,7 @@ void verify_cell_have_points()
 }
 
 //----------------------------------------------------------------------------
-int UnitTestModelToMesh(int, char** const)
+int UnitTestModelToMesh3D(int, char** const)
 {
   verify_null_managers();
   verify_empty_model();

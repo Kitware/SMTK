@@ -72,12 +72,6 @@ if (APPLE)
   mark_as_advanced(SMTK_MACOS_FOUNDATION_FMWK)
 endif()
 
-# On Mac OS X, set the dir. included as part of the installed library's path:
-if (BUILD_SHARED_LIBS)
-  set_target_properties(smtkCore
-    PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
-endif()
-
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkCore)
 
@@ -129,6 +123,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
     testing
   )
   set(SMTK_PYTHON_MODULEFILES)
+  set(smtk_find_shiboken "build_tree")
   foreach(pyfile ${SMTK_PYTHON_MODULE_SRCS})
     configure_file(
       "${CMAKE_CURRENT_SOURCE_DIR}/smtk/${pyfile}.py"
@@ -169,9 +164,13 @@ if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
     FILES ${SMTK_PYTHON_MODULEFILES}
     DESTINATION "${SMTK_PYTHON_MODULEDIR}/smtk"
   )
+  set(SMTK_FIND_SHIBOKEN "install_tree"
+    CACHE STRING "Set to empty if shiboken should be impicitly found in the install")
+  mark_as_advanced(SMTK_FIND_SHIBOKEN)
   install(CODE
     "set(LIBRARY_OUTPUT_PATH \"${CMAKE_INSTALL_PREFIX}/lib\")
      set(SHIBOKEN_LIBRARY \"${CMAKE_INSTALL_PREFIX}/lib/${SHIBOKEN_LIBRARY_NAME}\")
+     set(smtk_find_shiboken \"${SMTK_FIND_SHIBOKEN}\")
      configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/smtk/__init__.py
        ${CMAKE_INSTALL_PREFIX}/${SMTK_PYTHON_MODULEDIR}/smtk/__init__.py )"
   )

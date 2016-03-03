@@ -76,23 +76,52 @@ public:
 
   static int forManager(cJSON* body, cJSON* sess, cJSON* mesh, smtk::model::ManagerPtr modelMgr, JSONFlags sections = JSON_DEFAULT);
   static int forManagerEntity(smtk::model::UUIDWithEntity& entry, cJSON*, smtk::model::ManagerPtr modelMgr);
-  static int forManagerArrangement(const smtk::model::UUIDWithArrangementDictionary& entry, cJSON*, smtk::model::ManagerPtr modelMgr);
+  static int forManagerArrangement(
+    const smtk::model::UUIDWithArrangementDictionary& entry,
+    cJSON*,
+    smtk::model::ManagerPtr modelMgr);
   static int forManagerTessellation(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forManagerAnalysis(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forManagerFloatProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forManagerStringProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forManagerIntegerProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forManagerMeshes(smtk::mesh::ManagerPtr meshes, cJSON*, smtk::model::ManagerPtr modelMgr);
-  static int forManagerSession(const smtk::common::UUID& sessionId, cJSON*, smtk::model::ManagerPtr modelMgr,
-                               bool writeNativeModels = false);
-  static int forManagerSessionPartial(const smtk::common::UUID& sessionId, const common::UUIDs &modelIds, cJSON*,
-                                      smtk::model::ManagerPtr modelMgrId, bool writeNativeModels = false);
+  static int forManagerSession(
+    const smtk::common::UUID& sessionId,
+    cJSON*,
+    smtk::model::ManagerPtr modelMgr,
+    bool writeNativeModels = false,
+    const std::string& referencePath = std::string());
+  static int forManagerSessionPartial(
+    const smtk::common::UUID& sessionId,
+    const common::UUIDs &modelIds, cJSON*,
+    smtk::model::ManagerPtr modelMgrId,
+    bool writeNativeModels = false,
+    const std::string& referencePath = std::string());
   //static int forModelOperators(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
   static int forOperatorDefinitions(smtk::attribute::System* opSys, cJSON*);
   static int forOperator(smtk::model::OperatorSpecification op, cJSON*);
   static int forOperator(smtk::model::OperatorPtr op, cJSON*);
   static int forOperatorResult(smtk::model::OperatorResult res, cJSON*);
   static int forDanglingEntities(const smtk::common::UUID& sessionId, cJSON* node, smtk::model::ManagerPtr modelMgr);
+
+  // Utilities used by above:
+  static int addModelsRecord(
+    const smtk::model::ManagerPtr modelMgr,
+    const smtk::common::UUIDs& modelIds,
+    cJSON* sessionRec);
+  static int addModelsRecord(
+    const smtk::model::ManagerPtr modelMgr,
+    const smtk::model::Models& models,
+    cJSON* sessionRec);
+  static int addMeshesRecord(
+    const smtk::model::ManagerPtr modelMgr,
+    const smtk::common::UUIDs& modelIds,
+    cJSON* sessionRec);
+  static int addMeshesRecord(
+    const smtk::model::ManagerPtr modelMgr,
+    const smtk::model::Models& inModels,
+    cJSON* sessionRec);
 
   static int forModelWorker(
     cJSON* workerDescription,
@@ -102,21 +131,20 @@ public:
     const std::string& workerPath, const std::string& requirementsFileName);
 
   //write out a all the information about a single mesh collection
-  static int forSingleCollection(cJSON* mdesc,
-                                 smtk::mesh::CollectionPtr collection);
+  static int forSingleCollection(cJSON* mdesc, smtk::mesh::CollectionPtr collection);
 
   // Serialize all the input mesh Collections in mesh manager \a meshMgr,
   // given the mesh \a collectionIds.
   static int forMeshCollections(
-                     cJSON* pnode,
-                     const smtk::common::UUIDs& collectionIds,
-                     smtk::mesh::ManagerPtr meshMgr);
+    cJSON* pnode,
+    const smtk::common::UUIDs& collectionIds,
+    smtk::mesh::ManagerPtr meshMgr);
 
   // Serialize all the smtk::mesh collections associated with given \a modelid.
   static int forModelMeshes(
-                     const smtk::common::UUID& modelid,
-                     cJSON* pnode,
-                     smtk::model::ManagerPtr modelMgr);
+    const smtk::common::UUID& modelid,
+    cJSON* pnode,
+    smtk::model::ManagerPtr modelMgr);
 
   static int forLog(
     cJSON* logrecordarray,

@@ -1179,6 +1179,20 @@ std::size_t entityrefHash(const EntityRef& c)
 
 /*! \fn template<typename S, typename T> void EntityRef::EntityRefsFromUUIDs(S& result, ManagerPtr mgr, const T& uids)
  *\brief Convert a set of UUIDs into a set of entityrefs referencing the same \a mgr.
+ *
+ * Only valid entities are inserted into \a result.
+ * This means that the UUID must be non-NULL **and** have a corresponding
+ * entry in the model manager, \a mgr, that matches the output container type
+ * in order to appear in \a result.
+ */
+
+/*! \fn template<typename S, typename T> void EntityRef::EntityRefsFromUUIDs(S& result, const T& entRefs)
+ *\brief Convert a set of entity references into just UUIDs.
+ *
+ * EntityRef entities in \a entRefs are **not** checked for validity before insertion;
+ * however, only non-NULL UUIDs are inserted into \a result.
+ * (This means that cursors that do not have entries in the model manager will
+ * still have their UUIDs added to the result.)
  */
 
 /*! \fn template<typename T> EntityRef::embedEntities(const T& container)

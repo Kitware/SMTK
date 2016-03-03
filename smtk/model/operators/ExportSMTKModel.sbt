@@ -14,11 +14,8 @@
         Export models in SMTK's native JSON format.
       </DetailedDescription>
       <ItemDefinitions>
-        <File Name="filename" Label="SMTK Model File Name" NumberOfRequiredValues="1">
+        <File Name="filename" Label="SMTK Model File Name " FileFilters="SMTK Model (*.smtk);;All files (*.*)" NumberOfRequiredValues="1">
           <BriefDescription>The destination file for the JSON.</BriefDescription>
-        </File>
-        <File Name="nativemodelfilename" Label="Native Model File Name" NumberOfRequiredValues="1">
-          <BriefDescription>The destination file for the native model.</BriefDescription>
         </File>
       </ItemDefinitions>
     </AttDef>

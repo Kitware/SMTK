@@ -24,7 +24,13 @@
   <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::SMTK_DIMENSION', unmatched return type 'vtkInformationIntegerKey*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::numberOfModels', unmatched return type 'size_t'"/>
   <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::ensureChildParentMapEntry', unmatched parameter type 'vtkDataObject*'"/>
-
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::parentAs', unmatched return type 'T*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::modelOfHandleAs', unmatched return type 'T*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::modelOfHandle', unmatched return type 'vtkDataObject*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::SMTK_CHILDREN', unmatched return type 'vtkInformationObjectBaseVectorKey*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::SMTK_LABEL_VALUE', unmatched return type 'vtkInformationDoubleKey*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::SMTK_OUTER_LABEL', unmatched return type 'vtkInformationIntegerKey*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Session::parent', unmatched return type 'vtkDataObject*'"/>
 
   <!-- Ignore Exodus-specific enums -->
 

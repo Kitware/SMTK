@@ -68,6 +68,7 @@ ConnectivityStorage::ConnectivityStorage(
     this->ConnectivityStartPositions.push_back(connectivity);
     this->ConnectivityArraysLengths.push_back(numCellsInSubRange);
     this->ConnectivityVertsPerCell.push_back(numVertsPerCell);
+    this->ConnectivityTypePerCell.push_back( smtk::mesh::Vertex );
 
     //increment our iterator
     cells_current += static_cast<std::size_t>(numCellsInSubRange);

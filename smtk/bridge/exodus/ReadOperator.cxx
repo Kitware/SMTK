@@ -53,6 +53,8 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
     this->specification()->findFile("filename");
   smtk::attribute::StringItem::Ptr filetypeItem =
     this->specification()->findString("filetype");
+  this->m_preservedUUIDs =
+    this->specification()->findModelEntity("preservedUUIDs");
 
   std::string filename = filenameItem->value();
   std::string filetype = filetypeItem->value();
@@ -80,6 +82,33 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
   return this->readExodus();
 }
 
+static void AddPreservedUUID(
+  vtkDataObject* data, int& curId, attribute::ModelEntityItem::Ptr uuids)
+{
+  if (!data || curId < 0 || curId >= uuids->numberOfValues())
+    return;
+
+  vtkInformation* info = data->GetInformation();
+  info->Set(Session::SMTK_UUID_KEY(), uuids->value(curId).entity().toString().c_str());
+  ++curId;
+}
+
+static void AddPreservedUUIDsRecursive(
+  vtkDataObject* data, int& curId, attribute::ModelEntityItem::Ptr uuids)
+{
+  AddPreservedUUID(data, curId, uuids);
+
+  vtkMultiBlockDataSet* mbds = vtkMultiBlockDataSet::SafeDownCast(data);
+  if (mbds)
+    {
+    int nb = mbds->GetNumberOfBlocks();
+    for (int i = 0; i < nb; ++i)
+      {
+      AddPreservedUUIDsRecursive(mbds->GetBlock(i), curId, uuids);
+      }
+    }
+}
+
 static void MarkMeshInfo(
   vtkDataObject* data, int dim, const char* name, EntityType etype, int pedigree)
 {
@@ -91,14 +120,18 @@ static void MarkMeshInfo(
   info->Set(Session::SMTK_GROUP_TYPE(), etype);
   info->Set(vtkCompositeDataSet::NAME(), name);
 
-  // ++ 1 ++
-  // If a UUID has been saved to field data, we should copy it to the info object here.
-  vtkStringArray* uuidArr =
-    vtkStringArray::SafeDownCast(
-      data->GetFieldData()->GetAbstractArray("UUID"));
-  if (uuidArr && uuidArr->GetNumberOfTuples() > 0)
-    info->Set(Session::SMTK_UUID_KEY(), uuidArr->GetValue(0).c_str());
-  // -- 1 --
+  const char* existingUUID = info->Get(Session::SMTK_UUID_KEY());
+  if (!existingUUID || !existingUUID[0])
+    {
+    // ++ 1 ++
+    // If a UUID has been saved to field data, we should copy it to the info object here.
+    vtkStringArray* uuidArr =
+      vtkStringArray::SafeDownCast(
+        data->GetFieldData()->GetAbstractArray("UUID"));
+    if (uuidArr && uuidArr->GetNumberOfTuples() > 0)
+      info->Set(Session::SMTK_UUID_KEY(), uuidArr->GetValue(0).c_str());
+    // -- 1 --
+    }
 
   info->Set(Session::SMTK_PEDIGREE(), pedigree);
 }
@@ -177,6 +210,10 @@ smtk::model::OperatorResult ReadOperator::readExodus()
     vtkMultiBlockDataSet::SafeDownCast(
       rdr->GetOutputDataObject(0)));
   int dim = rdr->GetDimensionality();
+
+  // If we have preserved UUIDs, assign them now before anything else does:
+  int curId = 0;
+  AddPreservedUUIDsRecursive(modelOut, curId, this->m_preservedUUIDs);
 
   // Now iterate over the dataset and mark each block (leaf or not)
   // with information needed by the session to determine how it should
@@ -265,6 +302,10 @@ smtk::model::OperatorResult ReadOperator::readSLAC()
   modelOut->SetNumberOfBlocks(2);
   modelOut->SetBlock(0, surfBlocks.GetPointer());
   modelOut->SetBlock(1, voluBlocks.GetPointer());
+
+  // If we have preserved UUIDs, assign them now before anything else does:
+  int curId = 0;
+  AddPreservedUUIDsRecursive(modelOut, curId, this->m_preservedUUIDs);
 
   MarkMeshInfo(modelOut.GetPointer(), 3, path(filename).stem().string<std::string>().c_str(), EXO_MODEL, -1);
   MarkSLACMeshWithChildren(surfBlocks.GetPointer(), 2, "surfaces", EXO_SIDE_SETS, EXO_SIDE_SET);
@@ -411,6 +452,10 @@ smtk::model::OperatorResult ReadOperator::readLabelMap()
 
   modelOut->SetNumberOfBlocks(1);
   modelOut->SetBlock(0, img.GetPointer());
+
+  // If we have preserved UUIDs, assign them now before anything else does:
+  int curId = 0;
+  AddPreservedUUIDsRecursive(modelOut, curId, this->m_preservedUUIDs);
 
   MarkMeshInfo(modelOut.GetPointer(), imgDim, path(filename).stem().string<std::string>().c_str(), EXO_MODEL, -1);
   MarkMeshInfo(img.GetPointer(), imgDim, labelname.c_str(), EXO_LABEL_MAP, -1);

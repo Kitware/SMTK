@@ -41,7 +41,7 @@ class SMTKCORE_EXPORT CellSet
   friend SMTKCORE_EXPORT CellSet point_intersect( const CellSet& a, const CellSet& b, ContainmentType t);
   friend SMTKCORE_EXPORT CellSet point_difference( const CellSet& a, const CellSet& b, ContainmentType t);
   friend SMTKCORE_EXPORT void for_each( const CellSet& a, CellForEach& filter);
-  friend class Collection; //required for creation of new meshes, deletion of cells
+  friend class Collection; //required for creation of new meshes
 public:
 
   //construct a CellSet that represents an arbitrary unknown subset of cells that
