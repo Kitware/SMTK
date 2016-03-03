@@ -103,7 +103,7 @@ void verify_writing_and_loading_collection()
 
   //verify collection uuid is the same.
   smtk::mesh::CollectionPtr c2 = meshManager->collection(cUUID);
-  test(c2,
+  test(c2 != 0,
        "Collection UUID can't change when being loaded from JSON");
 
   test( c2->modelManager()  == modelManager,
