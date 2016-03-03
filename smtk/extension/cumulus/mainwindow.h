@@ -4,12 +4,11 @@
 #include "logindialog.h"
 
 #include <QtGui/QMainWindow>
-
+#include <QtNetwork/QNetworkReply>
 
 class QAction;
 class QIcon;
 class QLabel;
-class QNetworkReply;
 class QTimer;
 
 namespace Ui {
@@ -41,7 +40,7 @@ protected:
 private slots:
   void startJobFetchLoop();
   void displayAuthError(const QString &msg);
-  void handleError(const QString &msg, int statusCode);
+  void handleError(const QString &msg, QNetworkReply *networkReply);
   void displayInfo(const QString &msg);
 
 private:

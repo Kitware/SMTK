@@ -16,6 +16,7 @@
 #include <QtCore/QVariant>
 #include <QtCore/QList>
 #include <QtCore/QTimer>
+#include <QtGui/QMessageBox>
 
 
 namespace cumulus {
@@ -43,8 +44,8 @@ MainWindow::MainWindow()
           this, SLOT(startJobFetchLoop()));
   connect(this->m_cumulusProxy, SIGNAL(jobsUpdated(QList<Job>)),
           this->m_jobTableModel, SLOT(jobsUpdated(QList<Job>)));
-  connect(this->m_cumulusProxy, SIGNAL(error(QString, int)),
-          this, SLOT(handleError(QString, int)));
+  connect(this->m_cumulusProxy, SIGNAL(error(QString, QNetworkReply*)),
+          this, SLOT(handleError(QString, QNetworkReply*)));
   connect(this->m_cumulusProxy, SIGNAL(newtAuthenticationError(QString)),
           this, SLOT(displayAuthError(QString)));
   connect(this->m_cumulusProxy, SIGNAL(info(QString)),
@@ -99,11 +100,26 @@ void MainWindow::displayAuthError(const QString &msg)
   this->m_loginDialog.show();
 }
 
-void MainWindow::handleError(const QString &msg, int statusCode)
+void MainWindow::handleError(const QString &msg,
+    QNetworkReply *networkReply)
 {
-  // Forbidden, ask the user to authenticate again
-  if (statusCode == 403) {
-    this->m_loginDialog.show();
+  if (networkReply) {
+    int statusCode = networkReply->attribute(
+        QNetworkRequest::HttpStatusCodeAttribute).value<int>();
+
+    // Forbidden, ask the user to authenticate again
+    if (statusCode == 403) {
+      this->m_loginDialog.show();
+    }
+    else if (networkReply->error() == QNetworkReply::ConnectionRefusedError) {
+      QMessageBox::critical(NULL, QObject::tr("Connection refused"),
+             QObject::tr("Unable to connect to server at %1:%2, please ensure server is running.")
+                .arg(networkReply->url().host()).arg(networkReply->url().port()));
+      this->m_loginDialog.show();
+    }
+    else {
+        QMessageBox::critical(this, "", msg, QMessageBox::Ok);
+    }
   }
   else {
     QMessageBox::critical(this, "", msg, QMessageBox::Ok);

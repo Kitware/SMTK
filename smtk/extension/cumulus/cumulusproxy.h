@@ -36,7 +36,7 @@ signals:
   void jobsUpdated(QList<Job> jobs);
   void newtAuthenticationError(const QString &msg);
   void authenticationFinished();
-  void error(const QString &msg, int statusCode = 0);
+  void error(const QString &msg, QNetworkReply *networkReply = NULL);
   void jobUpdated(cumulus::Job job);
   void jobDeleted(cumulus::Job job);
   void jobTerminated(cumulus::Job job);

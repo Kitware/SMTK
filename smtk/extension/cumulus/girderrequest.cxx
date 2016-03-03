@@ -64,8 +64,7 @@ void ListItemsRequest::finished(QNetworkReply *reply)
 {
   QByteArray bytes = reply->readAll();
   if (reply->error()) {
-    emit error(handleGirderError(reply, bytes),
-        reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).value<int>());
+    emit error(handleGirderError(reply, bytes), reply);
   }
   else {
     cJSON *jsonResponse = cJSON_Parse(bytes.constData());
@@ -127,8 +126,7 @@ void ListFilesRequest::finished(QNetworkReply *reply)
 {
   QByteArray bytes = reply->readAll();
   if (reply->error()) {
-    emit error(handleGirderError(reply, bytes),
-        reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).value<int>());
+    emit error(handleGirderError(reply, bytes), reply);
   }
   else {
     cJSON *jsonResponse = cJSON_Parse(bytes.constData());
@@ -197,8 +195,7 @@ void ListFoldersRequest::finished(QNetworkReply *reply)
 {
   QByteArray bytes = reply->readAll();
   if (reply->error()) {
-    emit error(handleGirderError(reply, bytes),
-        reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).value<int>());
+    emit error(handleGirderError(reply, bytes), reply);
   }
   else {
     cJSON *jsonResponse = cJSON_Parse(bytes.constData());
@@ -259,8 +256,8 @@ void DownloadFolderRequest::send()
 
   connect(itemsRequest, SIGNAL(items(const QList<QString>)),
       this, SLOT(items(const QList<QString>)));
-  connect(itemsRequest, SIGNAL(error(const QString, int)), this,
-      SIGNAL(error(const QString, int)));
+  connect(itemsRequest, SIGNAL(error(const QString, QNetworkReply*)), this,
+      SIGNAL(error(const QString, QNetworkReply*)));
 
   itemsRequest->send();
 
@@ -269,8 +266,8 @@ void DownloadFolderRequest::send()
 
   connect(foldersRequest, SIGNAL(folders(const QMap<QString, QString>)),
       this, SLOT(folders(const QMap<QString, QString>)));
-  connect(foldersRequest, SIGNAL(error(const QString, int)), this,
-      SIGNAL(error(const QString, int)));
+  connect(foldersRequest, SIGNAL(error(const QString, QNetworkReply*)), this,
+      SIGNAL(error(const QString, QNetworkReply*)));
 
   foldersRequest->send();
 
@@ -291,8 +288,8 @@ void DownloadFolderRequest::items(const QList<QString> &itemIds)
 
     connect(request, SIGNAL(complete()),
         this, SLOT(downloadItemFinished()));
-    connect(request, SIGNAL(error(const QString, int)), this,
-        SIGNAL(error(const QString, int)));
+    connect(request, SIGNAL(error(const QString, QNetworkReply*)), this,
+        SIGNAL(error(const QString, QNetworkReply*)));
     connect(request, SIGNAL(info(const QString)), this,
             SIGNAL(info(const QString)));
     request->send();
@@ -331,8 +328,8 @@ void DownloadFolderRequest::folders(const QMap<QString, QString> &folders)
 
      connect(request, SIGNAL(complete()),
          this, SLOT(downloadFolderFinished()));
-     connect(request, SIGNAL(error(const QString, int)), this,
-         SIGNAL(error(const QString, int)));
+     connect(request, SIGNAL(error(const QString, QNetworkReply*)), this,
+         SIGNAL(error(const QString, QNetworkReply*)));
      connect(request, SIGNAL(info(const QString)), this,
              SIGNAL(info(const QString)));
 
@@ -384,8 +381,8 @@ void DownloadItemRequest::send()
 
   connect(request, SIGNAL(files(const QMap<QString, QString>)),
       this, SLOT(files(const QMap<QString, QString>)));
-  connect(request, SIGNAL(error(const QString, int)), this,
-      SIGNAL(error(const QString, int)));
+  connect(request, SIGNAL(error(const QString, QNetworkReply*)), this,
+      SIGNAL(error(const QString, QNetworkReply*)));
   connect(request, SIGNAL(info(const QString)), this,
           SIGNAL(info(const QString)));
 
@@ -410,8 +407,8 @@ void DownloadItemRequest::files(const QMap<QString, QString> &files)
 
     connect(request, SIGNAL(complete()),
         this, SLOT(fileDownloadFinish()));
-    connect(request, SIGNAL(error(const QString, int)), this,
-        SIGNAL(error(const QString, int)));
+    connect(request, SIGNAL(error(const QString, QNetworkReply*)), this,
+        SIGNAL(error(const QString, QNetworkReply*)));
     connect(request, SIGNAL(info(const QString)), this,
             SIGNAL(info(const QString)));
 
@@ -476,7 +473,7 @@ void DownloadFileRequest::finished(QNetworkReply *reply)
       this->m_retryCount++;
     }
     else {
-      emit error(handleGirderError(reply, bytes), statusCode);
+      emit error(handleGirderError(reply, bytes), reply);
     }
   }
   else {

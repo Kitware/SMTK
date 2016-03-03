@@ -4,10 +4,12 @@
 #include <QtCore/QObject>
 #include <QtCore/QList>
 #include <QtCore/QMap>
+#include <QtNetwork/QNetworkReply>
 
-class QNetworkReply;
+
 class QNetworkAccessManager;
 class QNetworkCookieJar;
+class QNetworkReply;
 
 namespace cumulus
 {
@@ -25,7 +27,7 @@ public:
 
 signals:
   void complete();
-  void error(const QString &msg, int statusCode = 0);
+  void error(const QString &msg, QNetworkReply *networkReply = NULL);
   void info(const QString &msg);
 
 protected:

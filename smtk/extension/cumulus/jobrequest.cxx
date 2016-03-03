@@ -57,8 +57,7 @@ void DeleteJobRequest::finished(QNetworkReply *reply)
 {
   QByteArray bytes = reply->readAll();
   if (reply->error()) {
-    emit error(handleGirderError(reply, bytes),
-        reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).value<int>());
+    emit error(handleGirderError(reply, bytes), reply);
   }
   else {
     emit complete();
@@ -97,8 +96,7 @@ void TerminateJobRequest::finished(QNetworkReply *reply)
 {
   QByteArray bytes = reply->readAll();
   if (reply->error()) {
-    emit error(handleGirderError(reply, bytes),
-        reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).value<int>());
+    emit error(handleGirderError(reply, bytes), reply);
   }
   else {
     emit complete();
@@ -128,8 +126,8 @@ void DownloadJobRequest::send()
         this->m_girderUrl, this->m_girderToken, this->m_downloadPath,
         folderId, this);
     connect(request, SIGNAL(complete()), this, SLOT(downloadFolderFinished()));
-    connect(request, SIGNAL(error(const QString, int)), this,
-        SIGNAL(error(const QString, int)));
+    connect(request, SIGNAL(error(const QString, QNetworkReply*)), this,
+        SIGNAL(error(const QString, QNetworkReply*)));
     connect(request, SIGNAL(info(const QString)), this,
         SIGNAL(info(const QString)));
 
