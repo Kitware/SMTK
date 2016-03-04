@@ -20,6 +20,8 @@ MainWindow::MainWindow()
 
   connect(this->m_ui->cumulusWidget, SIGNAL(info(QString)),
       this, SLOT(displayInfo(QString)));
+
+  m_ui->cumulusWidget->showLoginDialog();
 }
 
 MainWindow::~MainWindow()

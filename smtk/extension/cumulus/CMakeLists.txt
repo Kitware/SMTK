@@ -19,8 +19,6 @@ qt4_wrap_ui(ui_srcs ${ui_files})
 set(src
   jobtablewidget.cxx
   jobview.cxx
-  mainwindow.cxx
-  main.cxx
   logindialog.cxx
   jobtablemodel.cxx
   job.cxx
@@ -29,6 +27,7 @@ set(src
   jobrequest.cxx
   utils.cxx
   cumuluswidget.cxx
+  mainwindow.cxx
 )
 
 #add moc files
@@ -62,12 +61,11 @@ smtk_public_headers(${hdrs})
 
 #standalone cumulus executable
 add_executable(cumulus MACOSX_BUNDLE
-    ${src}
-    ${ui_srcs}
+  main.cxx
 )
 
 set_target_properties(cumulus PROPERTIES AUTOMOC TRUE)
 
 qt4_use_modules(cumulus ${qt_components})
 
-target_link_libraries(cumulus cJSON)
+target_link_libraries(cumulus smtkCumulusExt cJSON)

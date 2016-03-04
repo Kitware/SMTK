@@ -176,7 +176,7 @@ void CumulusProxy::fetchJobsFinished(QNetworkReply *reply)
 
 bool CumulusProxy::isAuthenticated()
 {
-  return this->m_girderToken.isEmpty();
+  return !this->m_girderToken.isEmpty();
 }
 
 void CumulusProxy::fetchJob(const QString &id)
