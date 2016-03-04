@@ -29,6 +29,7 @@ public:
   ~CumulusWidget();
 
   void girderUrl(const QString &url);
+  bool isGirderRunning() const;
   void showLoginDialog();
 
 signals:

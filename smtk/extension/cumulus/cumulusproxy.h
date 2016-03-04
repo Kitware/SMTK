@@ -21,6 +21,7 @@ public:
   ~CumulusProxy();
 
   void girderUrl(const QString &url);
+  bool isGirderRunning(int timeoutSec = 5);
 
 public slots:
   void authenticateGirder(const QString &newtSessionId);

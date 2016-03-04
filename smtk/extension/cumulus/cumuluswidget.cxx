@@ -48,6 +48,11 @@ void CumulusWidget::girderUrl(const QString &url)
   this->m_cumulusProxy->girderUrl(url);
 }
 
+bool CumulusWidget::isGirderRunning() const
+{
+  return this->m_cumulusProxy->isGirderRunning();
+}
+
 void CumulusWidget::showLoginDialog()
 {
   m_loginDialog.show();
