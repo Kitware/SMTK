@@ -1,4 +1,4 @@
-
+include(${QT_USE_FILE})
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(ui_files
@@ -31,7 +31,36 @@ set(src
   cumuluswidget.cxx
 )
 
-#add in the attribute preview executable
+#add moc files
+set(mochdrs
+  cumulusproxy.h
+  cumuluswidget.h
+  girderrequest.h
+  jobrequest.h
+  jobtablemodel.h
+  jobtablewidget.h
+  jobview.h
+  logindialog.h
+  mainwindow.h
+)
+qt4_wrap_cpp(moc_srcs ${mochdrs})
+
+#extension library
+add_library(smtkCumulusExt
+ ${src}
+ ${moc_srcs}
+ ${ui_srcs}
+)
+smtk_install_library(smtkCumulusExt)
+
+#install headers
+set(hdrs
+  cumuluswidget.h
+  logindialog.h
+)
+smtk_public_headers(${hdrs})
+
+#standalone cumulus executable
 add_executable(cumulus MACOSX_BUNDLE
     ${src}
     ${ui_srcs}
