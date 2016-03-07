@@ -131,6 +131,8 @@ void verify_complex_merge()
 
   //failing to merge this point into the other points
   c->meshes().mergeCoincidentContactPoints();
+
+  points = c->points( );
   test( c->points().size() == 32, "After merging of identical points we should have 32");
 
   //verify the point is merged properly
@@ -143,7 +145,7 @@ void verify_complex_merge()
 //----------------------------------------------------------------------------
 int UnitTestMergeContactPoints(int, char** const)
 {
-  // verify_simple_merge();
+  verify_simple_merge();
   verify_complex_merge();
   return 0;
 }
