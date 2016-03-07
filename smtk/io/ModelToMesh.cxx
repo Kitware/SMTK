@@ -337,9 +337,19 @@ convert_cells(const smtk::model::EntityRefs& ents,
       if (*cellsOfTypeIt <= 0)
         continue;
 
+      //update the connectivity as long as we aren't vertices
+      smtk::mesh::CellType cellType = static_cast<smtk::mesh::CellType>(ctype);
+      smtk::mesh::HandleRange& currentCellids = allocIt->first;
+      if(cellType != smtk::mesh::Vertex)
+        {
+        int numVertsPerCell = smtk::mesh::verticesPerCell(cellType);
+        smtk::mesh::Handle* connectivity = allocIt->second;
+        ialloc->connectivityModified(currentCellids, numVertsPerCell, connectivity);
+        }
+
       //we need to add these cells to the range that represents all
       //cells for this volume
-      cellsForThisEntity.insert(allocIt->first.begin(), allocIt->first.end());
+      cellsForThisEntity.insert(currentCellids.begin(), currentCellids.end());
       }
 
     //save all the cells of this volume
