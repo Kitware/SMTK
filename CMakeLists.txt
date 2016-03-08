@@ -431,11 +431,12 @@ if(SMTK_ENABLE_DISCRETE_SESSION)
     find_package(VTK REQUIRED)
   endif()
 
-  # This option is only available when SMTK_ENABLE_DISCRETE_SESSION is ON
+  # This option is only available when SMTK_ENABLE_DISCRETE_SESSION is ON, and
+  # it should be OFF by default since exodus session should handle exodus files
   option(
     SMTK_ENABLE_MOAB_DISCRETE_READER
     "Build moab reader for discrete model"
-    ${SMTK_USE_SYSTEM_MOAB} )
+    OFF )
 
   # Support shapefiles in the discrete session if GDAL is available:
   find_package(GDAL)

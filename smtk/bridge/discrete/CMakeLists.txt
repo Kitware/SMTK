@@ -218,6 +218,7 @@ target_link_libraries(smtkDiscreteSession
     vtkIOParallel
     vtkRenderingCore
     vtkRenderingFreeType
+    vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
     vtkRendering${VTK_RENDERING_BACKEND}
     vtksys
     ${__private_dependencies}
