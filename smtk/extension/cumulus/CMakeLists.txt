@@ -50,14 +50,25 @@ add_library(smtkCumulusExt
  ${moc_srcs}
  ${ui_srcs}
 )
-smtk_install_library(smtkCumulusExt)
-
 #install headers
 set(hdrs
   cumuluswidget.h
   logindialog.h
 )
 smtk_public_headers(${hdrs})
+
+#we need to add the location of the moc files to the include dir
+target_include_directories(smtkCumulusExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+
+#link to qtGUI and include dirs
+qt4_use_modules(smtkCumulusExt LINK_PUBLIC Core Gui Network)
+
+#publicly link to smtkCore
+target_link_libraries(smtkCumulusExt LINK_PUBLIC smtkCore)
+smtk_export_header(smtkCumulusExt Exports.h)
+
+#install the library and exports
+smtk_install_library(smtkCumulusExt)
 
 #standalone cumulus executable
 add_executable(cumulus MACOSX_BUNDLE
