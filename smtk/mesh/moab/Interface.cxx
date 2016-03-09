@@ -827,8 +827,15 @@ bool Interface::computeShell(const smtk::mesh::HandleRange& meshes,
 
 //----------------------------------------------------------------------------
 bool Interface::mergeCoincidentContactPoints(const smtk::mesh::HandleRange& meshes,
-                                            double tolerance) const
+                                             double tolerance) const
 {
+  if(meshes.empty())
+    {
+    //I can't see a reason why we should consider a merge of nothing to be a
+    //failure. So we return true.
+    return true;
+    }
+
   //we want to merge the contact points for all dimensions
   //of the meshes, not just the highest dimension i expect
   smtk::mesh::moab::MergeMeshVertices meshmerger(this->moabInterface());

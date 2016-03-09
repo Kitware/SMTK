@@ -23,11 +23,27 @@ namespace io {
 class SMTKCORE_EXPORT ModelToMesh
 {
 public:
+  //By default will merge duplicate elements, and will use the default tolerance
+  //specified by mergeCoincidentContactPoints
+  ModelToMesh();
+
+  //By default will merge duplicate elements
+  bool isMergingEnabled() const { return this->m_mergeDuplicates; }
+  void setIsMerging(bool m) { this->m_mergeDuplicates = m; }
+
+  //Allow you to specify a custom tolerance for the merging of duplicate elements
+  double getMergeTolerance() const { return this->m_tolerance; }
+  void setMergeTolerance(double tol) { this->m_tolerance = tol; }
+
   //convert smtk::model to a collection
   smtk::mesh::CollectionPtr operator()(const smtk::mesh::ManagerPtr& meshManager,
                                        const smtk::model::ManagerPtr& modelManager) const;
   //convert smtk::model to a collection
   smtk::mesh::CollectionPtr operator()(const smtk::model::Model& model) const;
+
+private:
+  bool m_mergeDuplicates;
+  double m_tolerance;
 };
 
 }

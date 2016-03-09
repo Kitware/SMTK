@@ -20,7 +20,8 @@ MergeMeshVertices::MergeMeshVertices(::moab::Interface* iface):
   mbImpl(iface),
   mbMergeTag(),
   deadEnts(),
-  mergedToVertices()
+  mergedToVertices(),
+  mappingFromDeadToAlive()
 {
 }
 
@@ -110,7 +111,9 @@ MergeMeshVertices::~MergeMeshVertices()
     return rval;
     }
 
-  rval = correct_vertex_merge(mbMergeTag, meshsets);
+  //Any meshset that explicitly has a deleted vertex needs to have the
+  //the replacement vertex added back to it.
+  rval = correct_vertex_merge(meshsets);
   if (MB_SUCCESS != rval)
     {
     return rval;
@@ -275,7 +278,6 @@ MergeMeshVertices::~MergeMeshVertices()
   return MB_SUCCESS;
 }
 
-
 //----------------------------------------------------------------------------
 ::moab::ErrorCode MergeMeshVertices::perform_merge(::moab::Tag merged_to)
 {
@@ -295,6 +297,7 @@ MergeMeshVertices::~MergeMeshVertices()
     std::cout << "deadEnts size is zero" << std::endl;
     return MB_SUCCESS; //nothing to merge carry on with the program
   }
+
   if (mbImpl->type_from_handle(*deadEnts.rbegin()) != MBVERTEX)
     return MB_FAILURE;
   std::vector<EntityHandle> merge_tag_val(deadEnts.size());
@@ -302,19 +305,27 @@ MergeMeshVertices::~MergeMeshVertices()
   if (MB_SUCCESS != result)
     return result;
 
+  //first build up the mapping from dead to new vertices
   Range::iterator rit;
   unsigned int i;
   for (rit = deadEnts.begin(), i = 0; rit != deadEnts.end(); rit++, i++)
   {
     assert(merge_tag_val[i]);
     if (MBVERTEX==mbImpl->type_from_handle(merge_tag_val[i]) )
+      {
       mergedToVertices.insert(merge_tag_val[i]);
+      mappingFromDeadToAlive[*rit]= static_cast<EntityHandle>(merge_tag_val[i]);
+      }
+  }
 
+  //before we delete any elements, we need to update the connectivity of elements
+  //that use the dead vertices
+  this->update_connectivity();
+
+  //delete the vertices
+  for (rit = deadEnts.begin(), i = 0; rit != deadEnts.end(); rit++, i++)
+  {
     result = mbImpl->merge_entities(merge_tag_val[i], *rit, false, false);
-    if (MB_SUCCESS != result)
-    {
-      return result;
-    }
   }
 
   return result;
@@ -326,7 +337,7 @@ MergeMeshVertices::~MergeMeshVertices()
 //we need to make sure that any mesh that is losing an explicit vertex
 //has it replaced with the merged vertex, this isn't handled by perform_merge
 //as it only does dim > 0
-::moab::ErrorCode MergeMeshVertices::correct_vertex_merge(::moab::Tag merged_to,
+::moab::ErrorCode MergeMeshVertices::correct_vertex_merge(
                                          const smtk::mesh::HandleRange&  meshsets)
 {
   using ::moab::EntityHandle;
@@ -347,21 +358,76 @@ MergeMeshVertices::~MergeMeshVertices()
     Range vertsToDelete = ::moab::intersect(deadEnts, entitiesVerts);
     if(!vertsToDelete.empty())
       {
-      std::vector<EntityHandle> merge_tag_val(vertsToDelete.size());
-      mbImpl->tag_get_data(mbMergeTag, vertsToDelete, &merge_tag_val[0]);
-
       Range::iterator rit;
       std::size_t j;
       for (rit = vertsToDelete.begin(), j = 0; rit != vertsToDelete.end(); rit++, j++)
         {
         //now we add these entities to the new meshset
-        EntityHandle t = merge_tag_val[j];
+        EntityHandle t = mappingFromDeadToAlive[*rit];
         mbImpl->add_entities(*i, &t, 1);
         }
       mbImpl->remove_entities(*i, vertsToDelete);
       }
     }
 
+  return MB_SUCCESS;
+}
+
+//----------------------------------------------------------------------------
+//Update the connectivity of the cells that used one or more of the
+//soon to be dead points
+::moab::ErrorCode MergeMeshVertices::update_connectivity()
+{
+  using ::moab::EntityHandle;
+  using ::moab::ErrorCode;
+  using ::moab::Range;
+  using ::moab::MBVERTEX;
+  using ::moab::MB_SUCCESS;
+  using ::moab::MB_FAILURE;
+
+  ErrorCode result;
+
+  for (int dim = 1; dim <= 3; dim++)
+    {
+    Range entsToUpdate;
+    result = mbImpl->get_adjacencies(deadEnts,
+                                     dim,
+                                     false,
+                                     entsToUpdate,
+                                     ::moab::Interface::UNION);
+
+
+    if(MB_SUCCESS!=result)
+      { return result; }
+
+    //get the connectivity for all the deadEnts
+    Range::iterator iter = entsToUpdate.begin();
+    Range::iterator end = entsToUpdate.end();
+    while (iter != end)
+      {
+      int numCellsInSubRange = 0;
+      int verts_per_ent = 0;
+      EntityHandle* connectivity = NULL;
+      result = mbImpl->connect_iterate(iter, end, connectivity, verts_per_ent, numCellsInSubRange);
+      if(MB_SUCCESS!=result)
+        { return result; }
+
+      //now we can iterate the connectivity, fixing it up as needed
+      const std::size_t size = static_cast<std::size_t>(verts_per_ent * numCellsInSubRange);
+      for(std::size_t i=0; i < size; ++i)
+        {
+        typedef std::map< ::moab::EntityHandle, ::moab::EntityHandle > MapType;
+        MapType::const_iterator pos = mappingFromDeadToAlive.find(connectivity[i]);
+
+        if(pos != mappingFromDeadToAlive.end())
+          {
+          connectivity[i] = pos->second;
+          }
+        }
+      iter += numCellsInSubRange;
+      }
+
+    }
   return MB_SUCCESS;
 }
 

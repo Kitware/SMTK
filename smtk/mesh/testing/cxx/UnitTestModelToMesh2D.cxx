@@ -157,14 +157,9 @@ void verify_vertex_conversion()
   test( c->isValid(), "collection should be valid");
   test( c->numberOfMeshes() == 21, "collection should have a mesh per tet");
 
-  //make sure merging points works properly
+  //make sure the merging points from ModelToMesh works properly
   smtk::mesh::PointSet points = c->points( );
-  test( points.size() == 88, "Should be exactly 88 points in the original mesh");
-
-  c->meshes().mergeCoincidentContactPoints();
-
-  points = c->points( );
-  test( points.size() == 32, "After merging of identical points we should have 32");
+  test( points.size() == 32, "We should have 32 points");
 
   //verify that after merging points we haven't deleted any of the cells
   //that represent a model vert

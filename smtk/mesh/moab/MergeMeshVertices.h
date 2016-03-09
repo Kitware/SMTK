@@ -16,6 +16,8 @@
 #include "moab/AdaptiveKDTree.hpp"
 #include "smtk/mesh/Handle.h"
 
+#include <map>
+
 namespace smtk {
   namespace mesh {
     namespace moab {
@@ -41,8 +43,11 @@ private:
 
   //- correct any occurrences of vertices inside a mesh being deleted and
   // the replacement vertex not already being an entity of that mesh
-  ::moab::ErrorCode correct_vertex_merge(::moab::Tag merged_to,
-                                         const smtk::mesh::HandleRange&  meshsets);
+  ::moab::ErrorCode correct_vertex_merge(const smtk::mesh::HandleRange&  meshsets);
+
+  //Update the connectivity of the cells that used one or more of the
+  //soon to be dead points
+  ::moab::ErrorCode update_connectivity();
 
   //Identify higher dimension to be merged
   ::moab::ErrorCode merge_higher_dimensions(::moab::Range &elems);
@@ -57,6 +62,9 @@ private:
 
   // vertices that were merged with other vertices, and were left in the database
   ::moab::Range mergedToVertices;
+
+  // mapping from deadEnts to vertices that we are keeping
+  std::map< ::moab::EntityHandle, ::moab::EntityHandle> mappingFromDeadToAlive;
 
   double mergeTol, mergeTolSq;
 

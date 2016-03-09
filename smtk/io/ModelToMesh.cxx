@@ -337,9 +337,19 @@ convert_cells(const smtk::model::EntityRefs& ents,
       if (*cellsOfTypeIt <= 0)
         continue;
 
+      //update the connectivity as long as we aren't vertices
+      smtk::mesh::CellType cellType = static_cast<smtk::mesh::CellType>(ctype);
+      smtk::mesh::HandleRange& currentCellids = allocIt->first;
+      if(cellType != smtk::mesh::Vertex)
+        {
+        int numVertsPerCell = smtk::mesh::verticesPerCell(cellType);
+        smtk::mesh::Handle* connectivity = allocIt->second;
+        ialloc->connectivityModified(currentCellids, numVertsPerCell, connectivity);
+        }
+
       //we need to add these cells to the range that represents all
       //cells for this volume
-      cellsForThisEntity.insert(allocIt->first.begin(), allocIt->first.end());
+      cellsForThisEntity.insert(currentCellids.begin(), currentCellids.end());
       }
 
     //save all the cells of this volume
@@ -390,6 +400,14 @@ void find_entities_with_tessellation(
 }
 } //namespace detail
 
+
+//----------------------------------------------------------------------------
+ModelToMesh::ModelToMesh():
+  m_mergeDuplicates(true),
+  m_tolerance(-1)
+{
+
+}
 
 //----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& meshManager,
@@ -470,6 +488,18 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& 
     }
   }
 
+  //Now merge all duplicate points inside the collection
+  if(this->m_mergeDuplicates)
+    {
+    if(this->m_tolerance >= 0)
+      {
+      collection->meshes().mergeCoincidentContactPoints(this->m_tolerance);
+      }
+    else
+      { //allow the meshes api to specify the default
+      collection->meshes().mergeCoincidentContactPoints();
+      }
+    }
 
   return collection;
 
@@ -530,6 +560,19 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::model::Model& mode
       }
 
     collection->associateToModel(model.entity());
+    }
+
+  //Now merge all duplicate points inside the collection
+  if(this->m_mergeDuplicates)
+    {
+    if(this->m_tolerance >= 0)
+      {
+      collection->meshes().mergeCoincidentContactPoints(this->m_tolerance);
+      }
+    else
+      { //allow the meshes api to specify the default
+      collection->meshes().mergeCoincidentContactPoints();
+      }
     }
 
   return collection;
