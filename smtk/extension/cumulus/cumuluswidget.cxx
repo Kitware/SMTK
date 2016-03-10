@@ -36,10 +36,6 @@ CumulusWidget::CumulusWidget(QWidget *parentObject)
           this, SLOT(displayAuthError(QString)));
   connect(this->m_cumulusProxy, SIGNAL(info(QString)),
             this, SIGNAL(info(QString)));
-
-  if (this->m_cumulusProxy->isAuthenticated()) {
-    m_loginDialog.show();
-  }
 }
 
 CumulusWidget::~CumulusWidget()
@@ -50,6 +46,16 @@ CumulusWidget::~CumulusWidget()
 void CumulusWidget::girderUrl(const QString &url)
 {
   this->m_cumulusProxy->girderUrl(url);
+}
+
+bool CumulusWidget::isGirderRunning() const
+{
+  return this->m_cumulusProxy->isGirderRunning();
+}
+
+void CumulusWidget::showLoginDialog()
+{
+  m_loginDialog.show();
 }
 
 void CumulusWidget::createJobTable()

@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "jobrequest.h"
 
+#include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
@@ -12,7 +13,21 @@
 #include <QtNetwork/QNetworkCookieJar>
 #include <QtCore/QVariant>
 #include <QtCore/QList>
+#include <QtCore/QThread>
 #include <QtCore/QTimer>
+
+namespace
+{
+// Local class to provide sleep method for wait loops
+class qtSleeper : public QThread
+{
+public:
+  static void msleep(unsigned long msecs)
+  {
+    QThread::msleep(msecs);
+  }
+};
+}  // namespace
 
 namespace cumulus {
 
@@ -30,6 +45,45 @@ CumulusProxy::~CumulusProxy()
 void CumulusProxy::girderUrl(const QString &url)
 {
   this->m_girderUrl = url;
+}
+
+bool CumulusProxy::isGirderRunning(int timeoutSec)
+{
+  bool running = false;  // return value
+
+  // Request system version
+  QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+  QString girderVersionUrl = QString("%1/system/version")
+      .arg(this->m_girderUrl);
+
+  QNetworkRequest request(girderVersionUrl);
+  QNetworkReply *reply = manager->get(request);
+
+  // Wait for reply to finish
+  qtSleeper sleeper;
+  int timeoutMsec = timeoutSec * 1000;
+  int deltaMsec = 100;
+  sleeper.msleep(deltaMsec);
+  for (int waitMsec=0;
+       !reply->isFinished() && waitMsec < timeoutMsec;
+       waitMsec += deltaMsec)
+    {
+    QCoreApplication::sendPostedEvents();
+#ifdef WIN32
+    QCoreApplication::processEvents();
+#endif
+    //qDebug() << "wait" << waitMsec << "msec";
+    sleeper.msleep(deltaMsec);
+    }
+
+  // Check for timeout
+  if (reply->isFinished() && reply->error() == QNetworkReply::NoError)
+    {
+    running = true;
+    }
+
+  reply->deleteLater();
+  return running;
 }
 
 void CumulusProxy::authenticateNewt(const QString &username, const QString &password)
@@ -176,7 +230,7 @@ void CumulusProxy::fetchJobsFinished(QNetworkReply *reply)
 
 bool CumulusProxy::isAuthenticated()
 {
-  return this->m_girderToken.isEmpty();
+  return !this->m_girderToken.isEmpty();
 }
 
 void CumulusProxy::fetchJob(const QString &id)
