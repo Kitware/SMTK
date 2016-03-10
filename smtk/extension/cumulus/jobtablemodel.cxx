@@ -31,11 +31,11 @@ QVariant JobTableModel::headerData(int section, Qt::Orientation orientation,
   if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
     switch (section) {
     case JOB_ID:
-      return QVariant("#");
+      return QVariant("Job Id");
     case MACHINE:
       return QVariant("Machine");
     case JOB_NAME:
-      return QVariant("Job name");
+      return QVariant("Job Name");
     case JOB_STATUS:
       return QVariant("Status");
     default:
