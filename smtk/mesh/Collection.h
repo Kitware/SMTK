@@ -70,6 +70,14 @@ public:
   //to a manager.
   bool isValid() const;
 
+  //determine if the Collection has been modified. Being Modified means that
+  //the version we would write out to disk would differ from the version that
+  //we loaded from disk. If a collection started as in-memory it
+  //is considered modified once it is not empty.
+  //Every time the collection is saved to disk, the Modified flag will be
+  //reset to false.
+  bool isModified() const;
+
   //get the name of a mesh collection
   const std::string& name() const;
   void name(const std::string& n);

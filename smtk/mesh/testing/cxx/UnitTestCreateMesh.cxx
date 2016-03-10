@@ -175,6 +175,23 @@ void verify_create_mesh_num_cells(const smtk::mesh::CollectionPtr& c)
   cleanup(c, result);
 }
 
+//----------------------------------------------------------------------------
+void verify_create_mesh_marks_modified( )
+{
+  //verify that a collection loaded from file is not marked as modified
+  smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
+  smtk::mesh::CollectionPtr c = load_mesh(mngr);
+  test( c->isModified() == false, "collection loaded from disk shouldn't be modified");
+
+  //verify a failure to create meshes doesn't mark as modify
+  verify_create_mesh_with_invalid_cell_ids(c);
+  test( c->isModified() == false, "collection loaded from disk shouldn't be modified");
+
+  //verify that creating a mesh does mark update modify flag
+  verify_create_mesh(c);
+  test( c->isModified() == true, "collection should be marked as modified now");
+}
+
 }
 
 //----------------------------------------------------------------------------
@@ -193,6 +210,8 @@ int UnitTestCreateMesh(int, char** const)
   verify_create_mesh_updated_mesh_queries(c);
 
   verify_create_mesh_num_cells(c);
+
+  verify_create_mesh_marks_modified();
 
   return 0;
 }

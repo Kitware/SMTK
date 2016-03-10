@@ -87,9 +87,11 @@ void verify_write_valid_collection()
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
   test( c->isValid(), "collection should be valid");
+  test( !c->isModified(), "loaded collection should be marked as not modifed");
 
   //extract a surface mesh, and write that out
   c->meshes(smtk::mesh::Dims3).extractShell();
+  test(c->isModified(), "extractShell should mark the collection as modified");
 
   smtk::io::MeshExport2DM exporter;
   const bool result = exporter.write(c, write_path);

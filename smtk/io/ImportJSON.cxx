@@ -1111,6 +1111,11 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
     std::string collectionTypeName;
     cJSON_GetStringValue(fTypeNode, collectionTypeName);
 
+    //get what the state of the modification flag was before we
+    //serialized the mesh
+    cJSON* fModified = cJSON_GetObjectItem(child, "modified");
+    bool isModifedState = (fModified->type == cJSON_True);
+
     //todo codify "moab" and "json" string types as proper types
     const bool isValidMoab = collectionTypeName == std::string("moab") &&
                              fLocationNode;
@@ -1187,6 +1192,13 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
         }
       //write properties to the new collection
       status &= ImportJSON::ofMeshProperties(child, collection);
+
+      //lastly we need to restore the serialized modified flag state
+      //if the currently don't match
+      if(collection->isModified() != isModifedState)
+        {
+        collection->interface()->setModifiedState(isModifedState);
+        }
       }
     else
       {

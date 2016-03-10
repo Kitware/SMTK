@@ -258,7 +258,8 @@ smtk::mesh::moab::InterfacePtr extract_interface( const smtk::mesh::CollectionPt
 //----------------------------------------------------------------------------
 Interface::Interface():
   m_iface( new ::moab::Core() ),
-  m_alloc( )
+  m_alloc( ),
+  m_modified(false)
 {
   this->m_alloc.reset( new smtk::mesh::moab::Allocator( this->m_iface.get() ) );
 }
@@ -270,8 +271,16 @@ Interface::~Interface()
 }
 
 //----------------------------------------------------------------------------
+bool Interface::isModified() const
+{
+  return this->m_modified;
+}
+
+//----------------------------------------------------------------------------
 smtk::mesh::AllocatorPtr Interface::allocator()
 {
+  //mark us as modified as the caller is going to add something to the database
+  this->m_modified = true;
   return this->m_alloc;
 }
 
@@ -338,7 +347,13 @@ bool Interface::createMesh(const smtk::mesh::HandleRange& cells,
                            &meshHandle, 1,
                            dimTag.moabTagValuePtr());
     }
-   return (rval == ::moab::MB_SUCCESS);
+
+  if(rval == ::moab::MB_SUCCESS)
+    {
+    this->m_modified = true;
+    return true;
+    }
+  return false;
 }
 
 //----------------------------------------------------------------------------
@@ -840,7 +855,12 @@ bool Interface::mergeCoincidentContactPoints(const smtk::mesh::HandleRange& mesh
   //of the meshes, not just the highest dimension i expect
   smtk::mesh::moab::MergeMeshVertices meshmerger(this->moabInterface());
   ::moab::ErrorCode rval = meshmerger.merge_entities(meshes, tolerance);
-  return (rval == ::moab::MB_SUCCESS);
+  if(rval == ::moab::MB_SUCCESS)
+    {
+    this->m_modified = true;
+    return true;
+    }
+  return false;
 }
 
 //----------------------------------------------------------------------------
@@ -853,7 +873,12 @@ bool Interface::setDomain(const smtk::mesh::HandleRange& meshsets,
     }
 
   tag::QueryMaterialTag mtag(domain.value(),this->moabInterface());
-  return detail::setDenseTagValues(mtag,meshsets,this->moabInterface());
+  bool tagged = detail::setDenseTagValues(mtag,meshsets,this->moabInterface());
+  if(tagged)
+    {
+    this->m_modified = true;
+    }
+  return tagged;
 }
 
 //----------------------------------------------------------------------------
@@ -870,7 +895,13 @@ bool Interface::setDirichlet(const smtk::mesh::HandleRange& meshsets,
   smtk::mesh::HandleRange cells = this->getCells(meshsets, smtk::mesh::Dims0);
   bool cellsTagged = detail::setDenseTagValues(dtag,cells,this->moabInterface());
   bool meshesTagged =detail::setDenseTagValues(dtag,meshsets,this->moabInterface());
-  return cellsTagged && meshesTagged;
+
+  const bool tagged = cellsTagged && meshesTagged;
+  if(tagged)
+    {
+    this->m_modified = true;
+    }
+  return tagged;
 }
 
 //----------------------------------------------------------------------------
@@ -906,6 +937,11 @@ bool Interface::setNeumann(const smtk::mesh::HandleRange& meshsets,
     cells = this->getCells(meshsets, static_cast<smtk::mesh::DimensionType>(dimension));
     tagged = tagged && detail::setDenseTagValues(ntag,cells,this->moabInterface());
     }
+
+  if(tagged)
+    {
+    this->m_modified = true;
+    }
   return tagged;
 }
 
@@ -926,6 +962,10 @@ bool Interface::setAssociation(const smtk::common::UUID& modelUUID,
   bool tagged = detail::setDenseOpaqueTagValues(mtag,
                                                 range,
                                                 this->moabInterface());
+  if(tagged)
+    {
+    this->m_modified = true;
+    }
   return tagged;
 }
 
@@ -976,6 +1016,10 @@ bool Interface::setRootAssociation(const smtk::common::UUID& modelUUID) const
   bool tagged = detail::setDenseOpaqueTagValue(mtag,
                                                root,
                                                this->moabInterface());
+  if(tagged)
+    {
+    this->m_modified = true;
+    }
   return tagged;
 }
 
@@ -1255,6 +1299,7 @@ bool Interface::deleteHandles(const smtk::mesh::HandleRange& toDel)
 
   //step 3. verify HandleRange is either all entity sets or cells/verts
   //this could be a performance bottleneck since we are using size
+  bool isDeleted = false;
   if(toDel.all_of_type(::moab::MBENTITYSET))
     {
     //first remove any model entity relation-ship these meshes have
@@ -1263,7 +1308,7 @@ bool Interface::deleteHandles(const smtk::mesh::HandleRange& toDel)
 
     //we are all moab entity sets, fine to delete
     const::moab::ErrorCode rval = m_iface->delete_entities(toDel);
-    return (rval == ::moab::MB_SUCCESS);
+    isDeleted = (rval == ::moab::MB_SUCCESS);
     }
   else if(toDel.num_of_type(::moab::MBENTITYSET) == 0)
     {
@@ -1282,9 +1327,11 @@ bool Interface::deleteHandles(const smtk::mesh::HandleRange& toDel)
     //instead they are deleted when the mesh goes away
     return (rval == ::moab::MB_SUCCESS);
     }
-
-  //we are mixed cells and entity sets and must fail
-  return false;
+  if(isDeleted)
+    {
+    this->m_modified = true;
+    }
+  return isDeleted;
 
 }
 
@@ -1293,6 +1340,7 @@ bool Interface::deleteHandles(const smtk::mesh::HandleRange& toDel)
 {
   return this->m_iface.get();
 }
+
 
 }
 }

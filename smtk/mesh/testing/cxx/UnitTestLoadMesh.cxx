@@ -225,7 +225,7 @@ int UnitTestLoadMesh(int, char** const)
   verify_load_onlyDirichlet();
 
   verify_load_bad_onlyDomain();
-  // verify_load_bad_onlyNeumann();
+  verify_load_bad_onlyNeumann();
   verify_load_bad_onlyDirichlet();
 
   return 0;

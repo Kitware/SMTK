@@ -11,6 +11,9 @@
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 
+#include "smtk/mesh/json/Interface.h"
+#include "smtk/mesh/moab/Interface.h"
+
 #include "smtk/mesh/testing/cxx/helpers.h"
 
 namespace
@@ -36,6 +39,7 @@ void verify_valid_constructor()
   smtk::mesh::CollectionPtr collection = mgr->makeCollection();
 
   test( collection->isValid() , "collection should be valid");
+  test( collection->isModified() == false, "collection shouldn't be marked as modified");
 
   smtk::common::UUID uid = collection->entity();
   test( (uid!=smtk::common::UUID::null()) , "collection uuid should be valid");
@@ -143,10 +147,30 @@ void verify_reparenting_after_manager_deletion()
 }
 
 //----------------------------------------------------------------------------
-void verify_collection_info()
+void verify_collection_unique_name()
+{
+  //very simple test for unique name assignment
+  //a far more robust test is done in UnitTestManager
+  smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
+
+  smtk::mesh::CollectionPtr c1 = mgr->makeCollection();
+  smtk::mesh::CollectionPtr c2 = mgr->makeCollection();
+
+  c1->name( std::string("a") );
+  c1->assignUniqueNameIfNotAlready();
+  test( c1->name() == std::string("a"), "assignUniqueNameIfNotAlready overwrote existing unique name" );
+
+  c2->name( std::string("a") );
+  c1->assignUniqueNameIfNotAlready();
+  test( c1->name() != std::string("a"), "assignUniqueNameIfNotAlready didn't generate an unique name" );
+}
+
+//----------------------------------------------------------------------------
+void verify_collection_info_moab()
 {
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr collection = mgr->makeCollection();
+  smtk::mesh::InterfacePtr iface = smtk::mesh::moab::make_interface();
+  smtk::mesh::CollectionPtr collection = mgr->makeCollection(iface);
 
   test( collection->isValid() , "collection should be valid");
 
@@ -160,6 +184,7 @@ void verify_collection_info()
 
   //verify the interface name
   test( (collection->interfaceName() != std::string()) );
+  test( (collection->interfaceName() == std::string("moab")) );
 
   //verify the read and write location
   test( (collection->readLocation() == std::string()) );
@@ -171,6 +196,36 @@ void verify_collection_info()
   test( (collection->writeLocation() == std::string("foo")) );
 }
 
+//----------------------------------------------------------------------------
+void verify_collection_info_json()
+{
+  smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
+  smtk::mesh::InterfacePtr iface = smtk::mesh::json::make_interface();
+  smtk::mesh::CollectionPtr collection = mgr->makeCollection(iface);
+
+  test( collection->isValid() , "collection should be valid");
+
+  smtk::common::UUID uid = collection->entity();
+  test( (uid!=smtk::common::UUID::null()) , "collection uuid should be valid");
+
+  //verify the name
+  test( (collection->name() == std::string()) );
+  collection->name("example");
+  test( (collection->name() == std::string("example")) );
+
+  //verify the interface name
+  test( (collection->interfaceName() != std::string()) );
+  test( (collection->interfaceName() == std::string("json")) );
+
+  //verify the read and write location
+  test( (collection->readLocation() == std::string()) );
+  test( (collection->writeLocation() == std::string()) );
+
+  //set and check read/write location
+  collection->writeLocation("foo");
+  test( (collection->readLocation() == std::string()) );
+  test( (collection->writeLocation() == std::string("foo")) );
+}
 }
 
 //----------------------------------------------------------------------------
@@ -186,6 +241,9 @@ int UnitTestCollection(int, char** const)
   verify_reparenting_twice();
   verify_reparenting_after_manager_deletion();
 
-  verify_collection_info();
+  verify_collection_unique_name();
+  verify_collection_info_moab();
+  verify_collection_info_json();
+
   return 0;
 }

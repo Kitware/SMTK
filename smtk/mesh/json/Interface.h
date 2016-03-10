@@ -47,18 +47,32 @@ public:
   virtual ~Interface();
 
   //---------------------------------------------------------------------------
-  //Add more meshes to the Interface
-  void addMeshes( const std::vector<smtk::mesh::json::MeshInfo>& info );
+  //returns if the underlying data has been modified since the mesh was loaded
+  //from disk. If the mesh has no underlying file, it will always be considered
+  //modified. Once the mesh is written to disk, we will reset the modified
+  //flag.
+  virtual bool isModified() const;
 
   //---------------------------------------------------------------------------
   //get back a string that contains the pretty name for the interface class.
   //Requirements: The string must be all lower-case.
   virtual std::string name() const { return std::string("json"); }
 
+  //---------------------------------------------------------------------------
+  //Add more meshes to the Interface
+  void addMeshes( const std::vector<smtk::mesh::json::MeshInfo>& info );
+
   //----------------------------------------------------------------------------
   //get back a lightweight interface around allocating memory into the given
   //interface. This is generally used to create new coordinates or cells that
   //are than assigned to an existing mesh or new mesh
+  //
+  //If the current interface is read-only, the AllocatorPtr that is returned
+  //will be NULL.
+  //
+  //Note: Merely fetching a valid allocator will mark the collection as
+  //modified. This is done instead on a per-allocation basis so that
+  //modification state changes don't impact performance.
   smtk::mesh::AllocatorPtr allocator();
 
   //----------------------------------------------------------------------------
@@ -241,6 +255,9 @@ public:
   //----------------------------------------------------------------------------
   bool deleteHandles(const smtk::mesh::HandleRange& toDel);
 
+  //----------------------------------------------------------------------------
+  void setModifiedState(bool state) { m_modified = state; }
+
 private:
   typedef std::vector<smtk::mesh::json::MeshInfo> MeshInfoVecType;
 
@@ -252,6 +269,7 @@ private:
   //with it. If we start adding more member variables, we should offload it
   //all to an internal class
   mutable smtk::common::UUID m_associated_model;
+  mutable bool m_modified;
 };
 
 }

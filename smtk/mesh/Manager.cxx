@@ -120,8 +120,6 @@ public:
       {
       result = (std::string(this->m_basename) += boost::lexical_cast< std::string >(this->m_value++));
       }
-
-    std::cout << "generating name: " << result << std::endl;
     return result;
   }
 

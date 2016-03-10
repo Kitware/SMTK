@@ -1052,7 +1052,6 @@ int ExportJSON::forSingleCollection(cJSON* mdesc,
                             collection->associatedModel().toString().c_str());
     }
 
-  //because collection returns by value, not const ref
   std::string interfaceName = collection->interfaceName();
   cJSON_AddStringToObject(jsonCollection, "type", interfaceName.c_str());
 
@@ -1072,6 +1071,12 @@ int ExportJSON::forSingleCollection(cJSON* mdesc,
     cJSON_AddStringToObject(jsonCollection, "location", fileWriteLocation.c_str() );
     smtk::io::WriteMesh::entireCollection(collection);
     }
+
+  //currently we only write out the modification state after the possibility
+  //of a file write. This is done so that meshes that have a file location
+  //have a modified state of false
+  bool isModified = collection->isModified();
+  cJSON_AddBoolToObject(jsonCollection, "modified", isModified);
 
   ///now to dump everything inside the collection by reusing the class
   //that writes out a single meshset, but instead pass it all meshsets

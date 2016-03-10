@@ -195,7 +195,17 @@ OperatorResult MeshOperator::operateInternal()
           ::boost::filesystem::path cpath( location );
           ::boost::filesystem::remove( cpath );
           }
+
+        //clear the read write locations so it looks like this
+        //mesh was created from being in memory
         collection->clearReadWriteLocations();
+
+        //fetch the allocator so that the collection modified bit becomes
+        //dirty. This is needed so it looks like this mesh was created in-memory
+        //and not loaded from file.
+        collection->interface()->allocator();
+
+
         }
       }
 
