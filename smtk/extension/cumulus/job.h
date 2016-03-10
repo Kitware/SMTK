@@ -15,13 +15,14 @@ class Job
 public:
   Job();
   Job(const QString &id, const QString &name, const QString &status,
-      const QList<QString> &outputFolderIds);
+      const QList<QString> &outputFolderIds, const QString &machine);
   Job(const Job &job);
 
   ~Job();
   QString id() const { return this->m_id; };
   QString name() const { return this->m_name; };
   QString status() const { return this->m_status; };
+  QString machine() const { return this->m_machine; };
   QList<QString> outputFolderIds() const { return this->m_outputFolderIds; };
   bool isValid() const { return !this->m_id.isEmpty(); };
 
@@ -30,6 +31,7 @@ private:
   QString m_id;
   QString m_name;
   QString m_status;
+  QString m_machine;
   QList<QString> m_outputFolderIds;
 };
 

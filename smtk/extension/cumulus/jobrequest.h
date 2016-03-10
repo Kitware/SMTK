@@ -69,6 +69,7 @@ public:
       const QString &girderToken, const QString &downloadPath, Job job,
       QObject *parent = 0);
   ~DownloadJobRequest();
+  QString path() { return m_downloadPath; };
 
   void send();
 

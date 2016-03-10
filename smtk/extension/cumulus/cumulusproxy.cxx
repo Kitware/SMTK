@@ -285,7 +285,7 @@ void CumulusProxy::downloadJobFinished()
 {
   DownloadJobRequest *request = qobject_cast<DownloadJobRequest*>(sender());
 
-  emit jobDownloaded(request->job());
+  emit jobDownloaded(request->job(), request->path());
   emit info("Job download complete.");
   request->deleteLater();
 }

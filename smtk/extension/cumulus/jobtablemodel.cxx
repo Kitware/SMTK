@@ -32,6 +32,8 @@ QVariant JobTableModel::headerData(int section, Qt::Orientation orientation,
     switch (section) {
     case JOB_ID:
       return QVariant("#");
+    case MACHINE:
+      return QVariant("Machine");
     case JOB_NAME:
       return QVariant("Job name");
     case JOB_STATUS:
@@ -55,6 +57,8 @@ QVariant JobTableModel::data(const QModelIndex &modelIndex, int role) const
     switch (modelIndex.column()) {
     case JOB_ID:
       return QVariant(job.id());
+    case MACHINE:
+      return QVariant(job.machine());
     case JOB_NAME:
       return QVariant(job.name());
     case JOB_STATUS:

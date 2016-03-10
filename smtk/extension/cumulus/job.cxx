@@ -12,12 +12,13 @@ Job::Job()
 }
 
 Job::Job(const QString &id, const QString &name, const QString &status,
-    const QList<QString> &outputFolderIds)
+    const QList<QString> &outputFolderIds, const QString &machine)
 {
   this->m_id = id;
   this->m_name = name;
   this->m_status = status;
   this->m_outputFolderIds = outputFolderIds;
+  this->m_machine = machine;
 }
 
 Job::Job(const Job &job)
@@ -26,6 +27,7 @@ Job::Job(const Job &job)
   this->m_name = job.name();
   this->m_status = job.status();
   this->m_outputFolderIds = job.outputFolderIds();
+  this->m_machine = job.machine();
 }
 
 Job::~Job()
@@ -67,7 +69,16 @@ Job Job::fromJSON(cJSON *obj)
     }
   }
 
-  return Job(id, name, status, outputFolderIds);
+  QString machine;
+  cJSON *paramsItem = cJSON_GetObjectItem(obj, "params");
+  if (paramsItem && paramsItem->type == cJSON_Object) {
+    cJSON *machineItem = cJSON_GetObjectItem(paramsItem, "machine");
+    if (machineItem && machineItem->type == cJSON_String) {
+      machine = QString(machineItem->valuestring);
+    }
+  }
+
+  return Job(id, name, status, outputFolderIds, machine);
 }
 
 

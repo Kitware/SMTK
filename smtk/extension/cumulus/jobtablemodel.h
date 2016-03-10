@@ -18,6 +18,7 @@ public:
 
   enum ColumnNames {
     JOB_ID = 0,
+    MACHINE,
     JOB_NAME ,
     JOB_STATUS,
     COLUMN_COUNT
