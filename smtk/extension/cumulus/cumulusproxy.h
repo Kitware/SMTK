@@ -40,7 +40,7 @@ signals:
   void jobUpdated(cumulus::Job job);
   void jobDeleted(cumulus::Job job);
   void jobTerminated(cumulus::Job job);
-  void jobDownloaded(cumulus::Job job);
+  void jobDownloaded(cumulus::Job job, const QString &path);
   void info(const QString &msg);
 
 private slots:
