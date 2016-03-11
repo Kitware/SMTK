@@ -8,7 +8,7 @@
 set (NETCDF_DIR "" CACHE PATH "Path to search for NetCDF header and library files" )
 set (NETCDF_FOUND NO CACHE INTERNAL "Found NetCDF components successfully." )
 
-if (EXISTS "${NETCDF_DIR}/lib/pkgconfig/netcdf.pc")
+if (FALSE AND EXISTS "${NETCDF_DIR}/lib/pkgconfig/netcdf.pc")
   execute_process(COMMAND pkg-config --cflags-only-I "${NETCDF_DIR}/lib/pkgconfig/netcdf.pc" OUTPUT_VARIABLE NETCDF_INCLUDES)
   execute_process(COMMAND pkg-config --libs-only-L "${NETCDF_DIR}/lib/pkgconfig/netcdf.pc" OUTPUT_VARIABLE NETCDF_LDLAGS)
   execute_process(COMMAND pkg-config --libs-only-l "${NETCDF_DIR}/lib/pkgconfig/netcdf.pc" OUTPUT_VARIABLE NETCDF_LIBRARY)
@@ -28,7 +28,7 @@ if (EXISTS "${NETCDF_DIR}/lib/pkgconfig/netcdf.pc")
     endif ( NETCDF_INCLUDES AND NETCDF_LIBS )
   ENDIF (NOT NETCDF_FOUND)
 
-else (EXISTS "${NETCDF_DIR}/lib/pkgconfig/netcdf.pc")
+else ()
 
   find_path( NETCDF_INCLUDE_DIR netcdf.h
     HINTS ${NETCDF_DIR}
@@ -78,7 +78,7 @@ find_library( NETCDF_FORTRAN_LIBRARY
     endif ( NETCDF_INCLUDE_DIR AND NETCDF_C_LIBRARY )
   ENDIF (NOT NETCDF_FOUND)
 
-endif (EXISTS "${NETCDF_DIR}/lib/pkgconfig/netcdf.pc")
+endif ()
 
 message (STATUS "---   NetCDF Configuration ::")
 message (STATUS "        Found  : ${NETCDF_FOUND}")
