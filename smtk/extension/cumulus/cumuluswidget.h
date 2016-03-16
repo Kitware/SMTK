@@ -19,6 +19,7 @@ namespace cumulus
 {
 class JobTableModel;
 class CumulusProxy;
+class Job;
 
 class CumulusWidget : public QWidget
 {
@@ -34,6 +35,7 @@ public:
 
 signals:
   void info(const QString &msg);
+  void resultDownloaded(const QString &path);
 
 protected:
   void createJobTable();
@@ -44,6 +46,7 @@ private slots:
   void startJobFetchLoop();
   void displayAuthError(const QString &msg);
   void handleError(const QString &msg, QNetworkReply *networkReply);
+  void handleDownloadResult(const cumulus::Job&, const QString &);
 
 private:
   JobTableModel *m_jobTableModel;

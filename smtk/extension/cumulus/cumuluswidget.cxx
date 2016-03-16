@@ -36,6 +36,8 @@ CumulusWidget::CumulusWidget(QWidget *parentObject)
           this, SLOT(displayAuthError(QString)));
   connect(this->m_cumulusProxy, SIGNAL(info(QString)),
             this, SIGNAL(info(QString)));
+  connect(this->m_cumulusProxy, SIGNAL(jobDownloaded(cumulus::Job, const QString &)),
+            this, SLOT(handleDownloadResult(cumulus::Job, const QString &)));
 }
 
 CumulusWidget::~CumulusWidget()
@@ -102,6 +104,12 @@ void CumulusWidget::handleError(const QString &msg,
   else {
     QMessageBox::critical(this, "", msg, QMessageBox::Ok);
   }
+}
+
+void CumulusWidget::handleDownloadResult(const cumulus::Job& job, const QString &path)
+{
+  (void)job;
+  emit this->resultDownloaded(path);
 }
 
 } // end namespace
