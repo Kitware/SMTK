@@ -43,14 +43,24 @@ vtkDataSet* readXMLFile(const std::string& fileName)
 }
 
 //----------------------------------------------------------------------------
-class YFilter : public smtk::mesh::CellForEach
+class Filter : public smtk::mesh::CellForEach
+{
+public:
+  Filter() :
+    smtk::mesh::CellForEach(true) // needs coordinates
+  { }
+
+  smtk::mesh::HandleRange validPoints;
+};
+
+//----------------------------------------------------------------------------
+class YFilter : public Filter
 {
   double yvalue;
 public:
-  smtk::mesh::HandleRange validPoints;
 
   YFilter( double value ) :
-    smtk::mesh::CellForEach(true), //needs coordinates
+    Filter(),
     yvalue( value )
     {
     }
@@ -66,12 +76,104 @@ public:
       {
       const double currValue = coords[(i*3)+1];
       //add in a small tolerance
-      if(currValue >= (yvalue-0.002) &&
-         currValue <= (yvalue+0.002))
+
+      if(currValue >= (this->yvalue-0.002) &&
+         currValue <= (this->yvalue+0.002))
         {
-        validPoints.insert(ptIds[i]);
+          this->validPoints.insert(ptIds[i]);
         }
       }
+  }
+};
+
+//----------------------------------------------------------------------------
+class OuterEdgeFilter : public Filter
+{
+  double origin[3];
+  double rmin;
+public:
+  OuterEdgeFilter( const double o[3], double r ) :
+    Filter(),
+    rmin(r)
+    {
+      for (int i=0;i<3;i++)
+      {
+        this->origin[i] = o[i];
+      }
+    }
+
+  //--------------------------------------------------------------------------
+  void forCell(const smtk::mesh::Handle&,
+               smtk::mesh::CellType,
+               int numPts)
+  {
+    const std::vector<double>& coords = this->coordinates();
+    const smtk::mesh::Handle* const ptIds = this->pointIds();
+
+    if (numPts < 3)
+    {
+      return;
+    }
+
+    double v0[3], v1[3], v2[3], normal[3];
+    double len[3] = {0.,0,0.};
+
+    for ( int i=0; i < 3; ++i)
+    {
+      v0[i] = coords[i] - this->origin[i];
+      len[0] += v0[i]*v0[i];
+      v1[i] = coords[3+i] - coords[i];
+      len[1] += v1[i]*v1[i];
+      v2[i] = coords[6+i] - coords[i];
+      len[2] += v2[i]*v2[i];
+    }
+
+    for ( int i=0; i < 3; ++i)
+    {
+      len[i] = sqrt(len[i]);
+    }
+
+    for ( int i=0; i < 3; ++i)
+    {
+      v0[i] /= len[0];
+      v1[i] /= len[1];
+      v2[i] /= len[2];
+    }
+
+    int i1,i2;
+    for ( int i=0; i < 3; ++i)
+    {
+      i1 = (i+1)%3;
+      i2 = (i+2)%3;
+      normal[i] = v1[i1]*v2[i2] - v1[i2]*v2[i1];
+    }
+
+    if (fabs(normal[0]) < 1.e-6 ||
+        fabs(normal[1]) < 1.e-6 ||
+        fabs(normal[2]) < 1.e-6)
+    {
+      return;
+    }
+
+    double dot = 0;
+    for ( int i=0; i < 3; ++i)
+    {
+      dot += v0[i]*normal[i];
+    }
+
+    if (dot < .5)
+    {
+      return;
+    }
+
+    for ( int i=0; i < numPts; ++i)
+    {
+      double r = sqrt(coords[3*i]*coords[3*i] + coords[3*i+2]*coords[3*i+2]);
+      if (r > rmin)
+      {
+        this->validPoints.insert(ptIds[i]);
+      }
+    }
   }
 };
 
@@ -103,16 +205,17 @@ void labelShellWithMaterial(const smtk::mesh::CollectionPtr& c,
       }
     }
 }
+
+  static int nextDirId = 0;
+
 //----------------------------------------------------------------------------
 bool labelIntersection(const smtk::mesh::CollectionPtr& c,
-              const smtk::mesh::MeshSet& shell,
-              double value)
+                       const smtk::mesh::MeshSet& shell,
+                       Filter& filter)
 {
-  static int nextDirId = 0;
   //need to removing the verts cells from the query for now
   //todo: filter needs to support vert cells
   smtk::mesh::CellSet shellCells = shell.cells( );
-  YFilter filter(value);
 
   //extract the top cells
   smtk::mesh::for_each(shellCells ,filter);
@@ -208,17 +311,31 @@ void extractMaterials(smtk::mesh::CollectionPtr c, std::string outputFile, doubl
   smtk::mesh::MeshSet shell = c->meshes().extractShell();
 
   //break the shell based on the materials
-  labelShellWithMaterial( c, shell );
+  // labelShellWithMaterial( c, shell );
 
   //find the top and bottom of the shell and apply dirichlet properties
   //to each section
   if(bounds != NULL)
-    {
+  {
     const double ymin = bounds[2];
-    const double ymax = bounds[3];
-    labelIntersection(c, shell, ymin);
-    labelIntersection(c, shell, ymax);
+    {
+      YFilter filter(ymin);
+      labelIntersection(c, shell, filter);
     }
+
+    const double ymax = bounds[3];
+    {
+      YFilter filter(ymax);
+      labelIntersection(c, shell, filter);
+    }
+
+    const double center[3] = {0.,(ymax+ymin)*.5,0.};
+    const double rmin = (bounds[1]-bounds[0])*.75;
+    {
+      OuterEdgeFilter filter(center,rmin);
+      labelIntersection(c, shell, filter);
+    }
+  }
 
   //take all meshes that have a material, and break them into a mesh per
   //cell type. This is required since a block in exodus must be of
