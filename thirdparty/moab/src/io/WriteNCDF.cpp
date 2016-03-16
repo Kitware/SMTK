@@ -1327,7 +1327,7 @@ ErrorCode WriteNCDF::initialize_exodus_file(ExodusMeshInfo &mesh_info,
     MB_SET_ERR(MB_FAILURE, "WriteNCDF: failed to locate four in file");
   }
 
-  if (nc_def_dim(ncFile, "time_step", 1, &dim_time) != NC_NOERR) {
+  if (nc_def_dim(ncFile, "time_step", 0, &dim_time) != NC_NOERR) {
     MB_SET_ERR(MB_FAILURE, "WriteNCDF: failed to locate time step in file");
   }
 
