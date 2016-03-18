@@ -84,7 +84,7 @@ macro(vtk_smtk_setup_module_environment _name)
   set (VTK_INSTALL_LIBRARY_DIR "lib")
   set (VTK_INSTALL_ARCHIVE_DIR "lib")
   set (VTK_INSTALL_INCLUDE_DIR "include")
-  set (VTK_INSTALL_PACKAGE_DIR "lib/cmake/${_name}")
+  set (VTK_INSTALL_PACKAGE_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${_name}")
 
   if (NOT VTK_FOUND)
     set (VTK_FOUND ${ParaView_FOUND})
