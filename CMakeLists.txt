@@ -172,6 +172,7 @@ find_package(Boost 1.60.0
 #setup windows exception handling so we can compile properly with boost enabled
 if(WIN32 AND MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
+  add_definitions(-DBOOST_ALL_NO_LIB)
 endif()
 
 ################################################################################
