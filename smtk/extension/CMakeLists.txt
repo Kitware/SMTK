@@ -18,6 +18,7 @@ if(SMTK_ENABLE_VTK_SUPPORT)
     # that require ParaView include paths.
     include("${PARAVIEW_USE_FILE}")
     pv_setup_module_environment("SMTK")
+    set(VTK_INSTALL_PACKAGE_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/SMTK")
     pv_process_modules()
   else()
     # Only include the VTK use-file in subdirectories
