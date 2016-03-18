@@ -21,15 +21,10 @@ smtk_public_headers(${RemoteLibHeaders})
 target_link_libraries(smtkRemoteSession
   LINK_PUBLIC
     smtkCore
-  LINK_PRIVATE
     RemusCommon
+  LINK_PRIVATE
     RemusClient
     RemusServer
-  )
-
-target_include_directories(smtkRemoteSession
-  PUBLIC
-  ${REMUS_INCLUDE_DIRS}
   )
 
 if (SMTK_ENABLE_CGM_SESSION)
