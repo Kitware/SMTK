@@ -41,6 +41,7 @@
 #include "vtkRegressionTestImage.h"
 
 #include "smtk/extension/vtk/vtkMeshMultiBlockSource.h"
+#include "smtk/bridge/discrete/Session.h"
 
 using namespace smtk::model;
 using namespace smtk::io;
@@ -61,7 +62,8 @@ int main(int argc, char* argv[])
 
     int status = 1;
     ManagerPtr mgr = Manager::create();
-    Session::Ptr brg = mgr->createSessionOfType("discrete");
+    smtk::bridge::discrete::Session::Ptr brg = smtk::bridge::discrete::Session::create();
+//    Session::Ptr brg = mgr->createSessionOfType("discrete");
     mgr->registerSession(brg);
     Operator::Ptr op;
     OperatorResult result;
