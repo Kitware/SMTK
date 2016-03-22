@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
 
       act->SetMapper(map.GetPointer());
       act->GetProperty()->SetPointSize(5);
-      act->GetProperty()->SetLineWidth(2);
+      act->GetProperty()->SetLineWidth(1);
       act->GetProperty()->SetEdgeVisibility(1);
       act->GetProperty()->SetEdgeColor(0, 0, 0.5);
       win->AddRenderer(ren.GetPointer());
