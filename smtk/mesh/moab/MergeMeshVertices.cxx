@@ -413,21 +413,29 @@ MergeMeshVertices::~MergeMeshVertices()
         { return result; }
 
       //now we can iterate the connectivity, fixing it up as needed
-      const std::size_t size = static_cast<std::size_t>(verts_per_ent * numCellsInSubRange);
-      for(std::size_t i=0; i < size; ++i)
+      std::size_t index = 0;
+      for(int i=0; i < numCellsInSubRange; ++i, ++iter)
         {
-        typedef std::map< ::moab::EntityHandle, ::moab::EntityHandle > MapType;
-        MapType::const_iterator pos = mappingFromDeadToAlive.find(connectivity[i]);
-
-        if(pos != mappingFromDeadToAlive.end())
+        for(int j=0; j < verts_per_ent; ++j, ++index)
           {
-          connectivity[i] = pos->second;
+          typedef std::map< ::moab::EntityHandle, ::moab::EntityHandle > MapType;
+          MapType::const_iterator pos = mappingFromDeadToAlive.find(connectivity[index]);
+          if(pos != mappingFromDeadToAlive.end())
+            {
+            //when we update the connectivity array we also need to update
+            //the adjacencies table. This makes sure that quick lookups
+            //are aware of the merging of points
+            mbImpl->remove_adjacencies(*iter, connectivity + index, 1);
+            connectivity[index] = pos->second;
+            mbImpl->add_adjacencies(*iter, connectivity + index, 1, true);
+            }
           }
-        }
-      iter += numCellsInSubRange;
-      }
 
+
+        }
+      }
     }
+
   return MB_SUCCESS;
 }
 
