@@ -225,7 +225,7 @@ int vtkCmbMoabReader::RequestData(vtkInformation *vtkNotUsed(request),
       ids[0] = i->FaceId;
       ids[1] = regions[i->Region0];
       ids[2] = regions[i->Region1];
-      faceAdjRegionIds->SetTupleValue(index,ids);
+      faceAdjRegionIds->SetTypedTuple(index,ids);
       }
 
 
@@ -247,7 +247,7 @@ int vtkCmbMoabReader::RequestData(vtkInformation *vtkNotUsed(request),
       //the region enity handle passed through the region id lookup table
       ids[1] = regions[i->first];
 
-      domainRegionIds->SetTupleValue(index,ids);
+      domainRegionIds->SetTypedTuple(index,ids);
       }
   }
   //generate the boundary condition sets, using the information we have

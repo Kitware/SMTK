@@ -508,7 +508,7 @@ bool vtkDiscreteModelEdge::AddCellsClassificationToMesh(vtkIdList* cellids)
 
     const vtkIdType newLocalCellId =
               entityPoly->InsertNextCell(cellType,pointIds.GetPointer());
-    this->GetReverseClassificationArray()->InsertNextTupleValue(&masterCellId);
+    this->GetReverseClassificationArray()->InsertNextTypedTuple(&masterCellId);
 
     // update the classification on the model to this info
     classification.SetEntity(masterCellId, newLocalCellId, this);
