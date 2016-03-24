@@ -38,8 +38,11 @@ private:
                                    ::moab::AdaptiveKDTree &tree,
                                    ::moab::Tag merged_to);
 
-  //- perform the actual merge
-  ::moab::ErrorCode perform_merge(::moab::Tag merged_to);
+  //- fill mappingFromDeadToAlive
+  ::moab::ErrorCode map_dead_to_alive(::moab::Tag merged_to);
+
+  //- delete the deadEnts
+  ::moab::ErrorCode delete_dead_entities(::moab::Tag merged_to);
 
   //- correct any occurrences of vertices inside a mesh being deleted and
   // the replacement vertex not already being an entity of that mesh
