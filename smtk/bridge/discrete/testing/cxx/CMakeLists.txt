@@ -22,4 +22,22 @@ if(SMTK_DATA_DIR)
       -V "${SMTK_DATA_DIR}/baselines/discrete/import2dm.png"
       -T "${CMAKE_CURRENT_BINARY_DIR}"
   )
+
+  add_executable(EdgeOp2dmTest edgeOp2dm.cxx)
+  target_link_libraries(EdgeOp2dmTest
+    smtkCore
+    smtkDiscreteSession
+    vtkSMTKExt
+    vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
+    vtkTestingRendering
+  )
+  add_test(
+    NAME discreteEdgeOp2dmTest
+    COMMAND
+      $<TARGET_FILE:EdgeOp2dmTest>
+      "${SMTK_DATA_DIR}/mesh/test2D.2dm"
+      -V "${SMTK_DATA_DIR}/baselines/discrete/edgeOp2dm.png"
+      -T "${CMAKE_CURRENT_BINARY_DIR}"
+  )
+
 endif()
