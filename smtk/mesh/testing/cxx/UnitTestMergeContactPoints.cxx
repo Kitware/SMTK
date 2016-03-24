@@ -122,12 +122,15 @@ void verify_complex_merge()
   smtk::mesh::CollectionPtr c = convert(meshManager,modelManager);
   test( c->isValid(), "collection should be valid");
 
-  //add a new mesh which is a single point very close to 0,2,0
-  smtk::mesh::MeshSet newMeshPoint = make_MeshPoint(c, 0.0, 2.0, 0.0 );
+  //add multiple new mesh points
+  smtk::mesh::MeshSet newMeshPoint1 = make_MeshPoint(c, 0.0, 2.0, 0.0 );
+  smtk::mesh::MeshSet newMeshPoint2 = make_MeshPoint(c, 1.0, 0.0, 0.0 );
+  smtk::mesh::MeshSet newMeshPoint3 = make_MeshPoint(c, 3.0, 0.0, 0.0 );
+  smtk::mesh::MeshSet newMeshPoint4 = make_MeshPoint(c, 0.0, 2.0, 0.0 );
 
   //make sure merging points works properly
   smtk::mesh::PointSet points = c->points( );
-  test( points.size() == 89, "should be 89 points before merge");
+  test( points.size() == 92, "should be 92 points before merge");
 
   //failing to merge this point into the other points
   c->meshes().mergeCoincidentContactPoints();
@@ -135,10 +138,20 @@ void verify_complex_merge()
   points = c->points( );
   test( c->points().size() == 32, "After merging of identical points we should have 32");
 
-  //verify the point is merged properly
+  //verify the all the points merged properly
   std::vector<double> p(3);
-  newMeshPoint.points().get(&p[0]);
-  test(p[0] == 0); test(p[1] == 2.0); test(p[2] == 0);
+
+  newMeshPoint1.points().get(&p[0]);
+  test(p[0] == 0.0); test(p[1] == 2.0); test(p[2] == 0.0);
+
+  newMeshPoint2.points().get(&p[0]);
+  test(p[0] == 1.0); test(p[1] == 0.0); test(p[2] == 0.0);
+
+  newMeshPoint3.points().get(&p[0]);
+  test(p[0] == 3.0); test(p[1] == 0.0); test(p[2] == 0.0);
+
+  newMeshPoint4.points().get(&p[0]);
+  test(p[0] == 0.0); test(p[1] == 2.0); test(p[2] == 0.0);
 }
 }
 

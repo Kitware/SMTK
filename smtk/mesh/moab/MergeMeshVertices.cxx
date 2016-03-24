@@ -105,22 +105,26 @@ MergeMeshVertices::~MergeMeshVertices()
     return rval;
     }
 
-  rval = perform_merge(mbMergeTag);
-  if (MB_SUCCESS != rval)
-    {
-    return rval;
-    }
+  if (deadEnts.size() > 0)
+  {
+    rval = map_dead_to_alive(mbMergeTag);
+    if (MB_SUCCESS != rval)
+      {
+      return rval;
+      }
 
-  //Any meshset that explicitly has a deleted vertex needs to have the
-  //the replacement vertex added back to it.
-  rval = correct_vertex_merge(meshsets);
-  if (MB_SUCCESS != rval)
-    {
-    return rval;
-    }
+    //before we delete any elements, we need to update the connectivity of elements
+    //that use the dead vertices
+    this->update_connectivity();
 
-  //delete the deadEnts
-  mbImpl->delete_entities(deadEnts);
+    //Any meshset that explicitly has a deleted vertex needs to have the
+    //the replacement vertex added back to it.
+    rval = correct_vertex_merge(meshsets);
+    if (MB_SUCCESS != rval)
+      {
+      return rval;
+      }
+  }
 
   rval = merge_higher_dimensions(entities);
   if (MB_SUCCESS != rval)
@@ -279,7 +283,7 @@ MergeMeshVertices::~MergeMeshVertices()
 }
 
 //----------------------------------------------------------------------------
-::moab::ErrorCode MergeMeshVertices::perform_merge(::moab::Tag merged_to)
+::moab::ErrorCode MergeMeshVertices::map_dead_to_alive(::moab::Tag merged_to)
 {
   using ::moab::EntityHandle;
   using ::moab::ErrorCode;
@@ -294,7 +298,6 @@ MergeMeshVertices::~MergeMeshVertices()
   ErrorCode result;
   if (deadEnts.size() == 0)
   {
-    std::cout << "deadEnts size is zero" << std::endl;
     return MB_SUCCESS; //nothing to merge carry on with the program
   }
 
@@ -318,19 +321,8 @@ MergeMeshVertices::~MergeMeshVertices()
       }
   }
 
-  //before we delete any elements, we need to update the connectivity of elements
-  //that use the dead vertices
-  this->update_connectivity();
-
-  //delete the vertices
-  for (rit = deadEnts.begin(), i = 0; rit != deadEnts.end(); rit++, i++)
-  {
-    result = mbImpl->merge_entities(merge_tag_val[i], *rit, false, false);
-  }
-
-  return result;
+  return MB_SUCCESS;
 }
-
 
 //----------------------------------------------------------------------------
 //now before we delete the entities,
