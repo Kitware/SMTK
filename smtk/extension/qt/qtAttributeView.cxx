@@ -162,9 +162,8 @@ void qtAttributeView::createWidget( )
   // Add link from the listbox selection to the table widget
   // A common add/delete/(copy/paste ??) widget
 
-  // Initialize definition info
-  this->getAllDefinitions();
-  
+  // this->Internals->AttDefMap has to be initialized before getAllDefinitions()
+  // since the getAllDefinitions() call needs the categories list in AttDefMap
   // Create a map for all catagories so we can cluster the definitions
   this->Internals->AttDefMap.clear();
   const System* attSys = this->uiManager()->attSystem();
@@ -176,7 +175,10 @@ void qtAttributeView::createWidget( )
     QList<smtk::attribute::DefinitionPtr> attdeflist;
     this->Internals->AttDefMap[it->c_str()] = attdeflist;
     }
-  
+
+  // Initialize definition info
+  this->getAllDefinitions();
+
   QSplitter* frame = new QSplitter(this->parentWidget());
   //this panel looks better in a over / under layout, rather than left / right
   frame->setOrientation( Qt::Vertical );
