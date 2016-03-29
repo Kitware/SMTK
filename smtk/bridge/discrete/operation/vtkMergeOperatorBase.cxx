@@ -64,7 +64,7 @@ void vtkMergeOperatorBase::SetSourceId(vtkIdType sourceId)
 
 void vtkMergeOperatorBase::AddLowerDimensionalId(vtkIdType Id)
 {
-  this->LowerDimensionalIds->InsertNextTupleValue(&Id);
+  this->LowerDimensionalIds->InsertNextTypedTuple(&Id);
 }
 
 void vtkMergeOperatorBase::RemoveAllLowerDimensionalIds()

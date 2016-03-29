@@ -168,10 +168,10 @@ bool vtkModel3dmGridRepresentation::GetBoundaryGroupAnalysisFacets(
           // to the boundary facet
           vtkIdType masterCellId = entity->GetMasterCellId(i);
           vtkIdType id;
-          this->ModelCellToAnalysisCells->GetTupleValue(masterCellId, &id);
+          this->ModelCellToAnalysisCells->GetTypedTuple(masterCellId, &id);
           cellIds->InsertNextId(id);
           char side;
-          this->ModelCellToAnalysisCellSides->GetTupleValue(masterCellId, &side);
+          this->ModelCellToAnalysisCellSides->GetTypedTuple(masterCellId, &side);
           cellSides->InsertNextId(side);
           }
         }

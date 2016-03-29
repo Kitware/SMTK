@@ -94,7 +94,7 @@ bool vtkCMBParserV2::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
       Model->BuildModelFace(0, 0, 0, FaceIdsArray->GetValue(i)));
     ModelEntities[i] = face;
     vtkIdType RegionIds[2];
-    ModelFaceRegions->GetTupleValue(i, RegionIds);
+    ModelFaceRegions->GetTypedTuple(i, RegionIds);
     for(int j=0;j<2;j++)
       {
       if(RegionIds[j] >= 0) // should be -1 if no region exists on that side
@@ -173,7 +173,7 @@ bool vtkCMBParserV2::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
     if (!pointInsideValidity || pointInsideValidity->GetValue(i))
       {
       double Point[3];
-      PointInside->GetTupleValue(i, Point);
+      PointInside->GetTypedTuple(i, Point);
       region->SetPointInside(Point);
       }
     ModelEntities[i] = region;
@@ -200,8 +200,8 @@ bool vtkCMBParserV2::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
       for(vtkIdType i=0;i<EdgeRegionlId->GetNumberOfTuples();i++)
         {
         vtkIdType RegionId = EdgeRegionlId->GetValue(i);
-        endPoints->GetTupleValue(2*i, point1);
-        endPoints->GetTupleValue(2*i+1, point2);
+        endPoints->GetTypedTuple(2*i, point1);
+        endPoints->GetTypedTuple(2*i+1, point2);
         vtkDiscreteModelEdge* edge = vtkDiscreteModelEdge::SafeDownCast(
           Model->BuildFloatingRegionEdge(point1, point2, lineSpacing->GetValue(i), RegionId));
         ModelEntities[i] = edge;
@@ -372,7 +372,7 @@ void vtkCMBParserV2::SetModelEntityData(
     this->SetUniquePersistentId(Entity, Id);
     // color
     double RGBA[4];
-    EntityRGBA->GetTupleValue(i, RGBA);
+    EntityRGBA->GetTypedTuple(i, RGBA);
     Entity->SetColor(RGBA[0], RGBA[1], RGBA[2], RGBA[3]);
     // visibility
     Entity->SetVisibility(1);

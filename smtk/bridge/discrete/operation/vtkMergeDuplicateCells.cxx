@@ -245,7 +245,7 @@ void vtkMergeDuplicateCells::InsertCell(vtkPolyData* input, vtkIdType cellId,
     Region0 = tmp;
     }
   vtkIdType FaceId = this->GetModelFaceId(Region0, Region1);
-  ModelFaceIdArray->InsertNextTupleValue(&FaceId);
+  ModelFaceIdArray->InsertNextTypedTuple(&FaceId);
 }
 
 //----------------------------------------------------------------------------
@@ -259,7 +259,7 @@ void vtkMergeDuplicateCells::FillCellFaceInfo(
     Region0 = tmp;
     }
   vtkIdType FaceId = this->GetModelFaceId(Region0, Region1);
-  ModelFaceIdArray->InsertNextTupleValue(&FaceId);
+  ModelFaceIdArray->InsertNextTypedTuple(&FaceId);
 }
 
 //----------------------------------------------------------------------------
@@ -315,7 +315,7 @@ void vtkMergeDuplicateCells::SetModelFaceRegionInfo(vtkPolyData* Poly)
     ids[0] = it->second;
     ids[1] = it->first.first;
     ids[2] = it->first.second;
-    ModelFaceAdjacentRegionsId->InsertNextTupleValue(ids);
+    ModelFaceAdjacentRegionsId->InsertNextTypedTuple(ids);
     }
 
   ModelFaceAdjacentRegionsId->SetName(

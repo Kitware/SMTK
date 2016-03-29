@@ -375,7 +375,7 @@ void vtkGMSTINReader::ReadVerts(vtkPolyData *tin)
   for (vtkIdType i=0; i<numVerts; i++)
     {
     *this->Internals->Stream >> pnt[0] >> pnt[1] >> pnt[2];
-    dpts->SetTupleValue(i,pnt);
+    dpts->SetTypedTuple(i,pnt);
     *this->Internals->Stream >> linfo;
     lockInfo->SetValue(i,linfo);
     }

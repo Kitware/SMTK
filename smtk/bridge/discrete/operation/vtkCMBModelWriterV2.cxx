@@ -86,7 +86,7 @@ bool vtkCMBModelWriterV2::Write(vtkDiscreteModel* Model,
     if(!entity)
       std::cout << *i << std::endl;
     vtkIdType id = entity->GetThisModelEntity()->GetUniquePersistentId();
-    Classification->SetTupleValue(index, &id);
+    Classification->SetTypedTuple(index, &id);
     }
   Poly->GetCellData()->AddArray(Classification.GetPointer());
 
@@ -159,7 +159,7 @@ void vtkCMBModelWriterV2::SetModelFaceData(vtkDiscreteModel* Model, vtkPolyData*
         ids[j] = Region->GetUniquePersistentId();
         }
       }
-    ModelFaceAdjacentRegionsId->InsertNextTupleValue(ids);
+    ModelFaceAdjacentRegionsId->InsertNextTypedTuple(ids);
     }
   Faces->Delete();
   ModelFaceAdjacentRegionsId->SetName(ModelParserHelper::GetModelFaceRegionsString());
@@ -183,16 +183,16 @@ void vtkCMBModelWriterV2::SetModelRegionData(vtkDiscreteModel* Model, vtkPolyDat
     vtkDiscreteModelRegion* Region = vtkDiscreteModelRegion::SafeDownCast(Regions->GetCurrentItem());
     Entities.push_back(Region);
     vtkIdType id = Region->GetMaterial()->GetUniquePersistentId();
-    RegionMaterialId->InsertNextTupleValue(&id);
+    RegionMaterialId->InsertNextTypedTuple(&id);
     if (Region->GetPointInside())
       {
-      PointInside->InsertNextTupleValue(Region->GetPointInside());
+      PointInside->InsertNextTypedTuple(Region->GetPointInside());
       pointInsideValidity->InsertNextValue(1);
       }
     else
       {
       double dummyPt[3] = {0, 0, 0};
-      PointInside->InsertNextTupleValue(dummyPt);
+      PointInside->InsertNextTypedTuple(dummyPt);
       pointInsideValidity->InsertNextValue(0);
       }
     }
@@ -244,7 +244,7 @@ void vtkCMBModelWriterV2::SetModelEntityGroupData(vtkDiscreteModel* Model, vtkPo
       vtkDiscreteModelEntityGroup::SafeDownCast(EntityGroups->GetCurrentItem());
     Entities.push_back(EntityGroup);
     vtkIdType NumberOfModelEntities = EntityGroup->GetNumberOfModelEntities();
-    GroupedEntityIds->InsertNextTupleValue(&NumberOfModelEntities);
+    GroupedEntityIds->InsertNextTypedTuple(&NumberOfModelEntities);
     if(NumberOfModelEntities>0)
       {
       vtkModelItemIterator* EntitiesIter = EntityGroup->NewModelEntityIterator();
@@ -252,7 +252,7 @@ void vtkCMBModelWriterV2::SetModelEntityGroupData(vtkDiscreteModel* Model, vtkPo
         {
         vtkIdType EntityId = vtkModelEntity::SafeDownCast(
           EntitiesIter->GetCurrentItem())->GetUniquePersistentId();
-        GroupedEntityIds->InsertNextTupleValue(&EntityId);
+        GroupedEntityIds->InsertNextTypedTuple(&EntityId);
         }
       EntitiesIter->Delete();
       }
@@ -288,11 +288,11 @@ void vtkCMBModelWriterV2::SetFloatingEdgeData(vtkDiscreteModel* Model, vtkPolyDa
       {
       Entities.push_back(edge);
       vtkIdType id = edge->GetModelRegion()->GetUniquePersistentId();
-      EdgeRegionlId->InsertNextTupleValue(&id);
+      EdgeRegionlId->InsertNextTypedTuple(&id);
       double xyz[3];
       if(edge->GetAdjacentModelVertex(0)->GetPoint(xyz))
         {
-        endPoints->InsertNextTupleValue(xyz);
+        endPoints->InsertNextTypedTuple(xyz);
         }
       else
         {
@@ -300,7 +300,7 @@ void vtkCMBModelWriterV2::SetFloatingEdgeData(vtkDiscreteModel* Model, vtkPolyDa
         }
       if(edge->GetAdjacentModelVertex(1)->GetPoint(xyz))
         {
-        endPoints->InsertNextTupleValue(xyz);
+        endPoints->InsertNextTypedTuple(xyz);
         }
       else
         {
@@ -437,7 +437,7 @@ void vtkCMBModelWriterV2::SetModelEntityData(
     // unique persistent id
     EntityIds->SetValue(i, Entity->GetUniquePersistentId());
     // color
-    EntityRGBA->SetTupleValue(i, Entity->GetColor());
+    EntityRGBA->SetTypedTuple(i, Entity->GetColor());
     // visibility
     EntityVisibility->SetValue(i, Entity->GetVisibility());
     // username

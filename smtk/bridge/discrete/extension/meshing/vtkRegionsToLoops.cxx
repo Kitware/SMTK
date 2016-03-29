@@ -473,7 +473,7 @@ int vtkRegionsToLoops::RequestData(
     vtkIdType pedigree;
     if (pedigreeIds)
       {
-      pedigreeIds->GetTupleValue(i, &pedigree);
+      pedigreeIds->GetTypedTuple(i, &pedigree);
       }
     else
       {
@@ -481,7 +481,7 @@ int vtkRegionsToLoops::RequestData(
       }
     cells->GetNextCell(npts, conn);
     vtkIdType regions[2];
-    cellRegions->GetTupleValue(i, regions);
+    cellRegions->GetTypedTuple(i, regions);
     //cout << "** Considering edge " << conn[0] << " " << conn[1] << "  r " << regions[0] << " " << regions[1] << " **\n";
     // Only add manifold edges
     // TODO: Handle non-manifold loops.

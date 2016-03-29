@@ -246,7 +246,7 @@ int vtkCompleteShells::RequestData(
     ids[0] = faceMapIter->first;
     ids[1] = faceMapIter->second.first;
     ids[2] = faceMapIter->second.second;
-    modelFaceRegionsArray->InsertNextTupleValue(ids);
+    modelFaceRegionsArray->InsertNextTypedTuple(ids);
     }
 
   modelFaceRegionsArray->SetName(

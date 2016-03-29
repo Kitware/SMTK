@@ -83,7 +83,7 @@ void vtkCMBModelWriterV5::SetModelEdgeData(vtkDiscreteModel* model, vtkPolyData*
         pointIds[i] = vertex->GetUniquePersistentId();
         }
       }
-    pointIdArray->SetTupleValue(counter, pointIds);
+    pointIdArray->SetTypedTuple(counter, pointIds);
     if(edge->GetModelRegion())
       {
       edgeRegionId->SetValue(counter, edge->GetModelRegion()->GetUniquePersistentId());
@@ -196,7 +196,7 @@ void vtkCMBModelWriterV5::SetModelFaceData(vtkDiscreteModel* Model, vtkPolyData*
           ids[j] = Region->GetUniquePersistentId();
           }
         }
-      ModelFaceAdjacentRegionsId->InsertNextTupleValue(ids);
+      ModelFaceAdjacentRegionsId->InsertNextTypedTuple(ids);
       }
     Faces->Delete();
     ModelFaceAdjacentRegionsId->SetName(ModelParserHelper::GetModelFaceRegionsString());

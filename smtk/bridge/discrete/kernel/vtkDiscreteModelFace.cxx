@@ -439,9 +439,9 @@ void vtkDiscreteModelFace::BuildEdges(bool showEdge,
   if(saveLoopInfo)
     {
     // The map of <faceId, nloops, nEdges, (gedges[n]...), (orientations[n]...)>
-    splitInfo.FaceEdgeLoopIDs->InsertNextTupleValue(&fid);
+    splitInfo.FaceEdgeLoopIDs->InsertNextTypedTuple(&fid);
     idLoops = nLoops;
-    splitInfo.FaceEdgeLoopIDs->InsertNextTupleValue(&idLoops);
+    splitInfo.FaceEdgeLoopIDs->InsertNextTypedTuple(&idLoops);
     }
   std::vector<int> orientations;
   std::vector<vtkModelEdge *> gedges;
@@ -454,7 +454,7 @@ void vtkDiscreteModelFace::BuildEdges(bool showEdge,
     if(saveLoopInfo)
       {
       idEdges = nEdges;
-      splitInfo.FaceEdgeLoopIDs->InsertNextTupleValue(&idEdges);
+      splitInfo.FaceEdgeLoopIDs->InsertNextTypedTuple(&idEdges);
       }
 
     for (j = 0; j < nEdges; j++)
@@ -490,9 +490,9 @@ void vtkDiscreteModelFace::BuildEdges(bool showEdge,
       if(saveLoopInfo)
         {
         gid = gedge->GetUniquePersistentId();
-        splitInfo.FaceEdgeLoopIDs->InsertNextTupleValue(&gid);
+        splitInfo.FaceEdgeLoopIDs->InsertNextTypedTuple(&gid);
         idOrient = orientations[j];
-        splitInfo.FaceEdgeLoopIDs->InsertNextTupleValue(&idOrient);
+        splitInfo.FaceEdgeLoopIDs->InsertNextTypedTuple(&idOrient);
         }
       }
     // std::cout << "\n";
@@ -823,7 +823,7 @@ CreateModelEdges(NewModelEdgeInfo &newEdgesInfo,
           {gedge->GetUniquePersistentId(),
            v0->GetUniquePersistentId(),
            v1->GetUniquePersistentId()};
-        splitInfo.CreatedModelEdgeVertIDs->InsertNextTupleValue(newEdgeVV);
+        splitInfo.CreatedModelEdgeVertIDs->InsertNextTypedTuple(newEdgeVV);
 
         gedge->AddCellsToGeometry(edgeCells.GetPointer());
         newEdges[currentModelEdgeId] = gedge;
@@ -874,7 +874,7 @@ CreateModelEdges(NewModelEdgeInfo &newEdgesInfo,
         {gedge->GetUniquePersistentId(),
          v0->GetUniquePersistentId(),
          v1->GetUniquePersistentId()};
-      splitInfo.CreatedModelEdgeVertIDs->InsertNextTupleValue(newEdgeVV);
+      splitInfo.CreatedModelEdgeVertIDs->InsertNextTypedTuple(newEdgeVV);
 
       gedge->AddCellsToGeometry(edgeCells.GetPointer());
       newEdges[currentModelEdgeId] = gedge;
@@ -966,7 +966,7 @@ void vtkDiscreteModelFace::SplitEdges(vtkDiscreteModelFace* newModelFace,
         {
         vtkIdType splitEdgeVEdge[3] =
           {splitEdge->GetUniquePersistentId(), newVertexId, newEdgeId};
-        splitInfo.SplitEdgeVertIds->InsertNextTupleValue(splitEdgeVEdge);
+        splitInfo.SplitEdgeVertIds->InsertNextTypedTuple(splitEdgeVEdge);
         splitEdge = vtkDiscreteModelEdge::SafeDownCast(
           thisModel->GetModelEntity(vtkModelEdgeType, newEdgeId));
         // The map of <OldEdgeId, NewVertId, NewEdgId>

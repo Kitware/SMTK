@@ -256,7 +256,7 @@ int vtkMasterPolyDataNormals::RequestData(
       {
       pdNormalOutputPolys->GetNextCell(npts, pts);
       vtkIdType cellId = newPolys->InsertNextCell(npts, pts);
-      tmpNormals->GetTupleValue(polyIndex, normal);
+      tmpNormals->GetTypedTuple(polyIndex, normal);
       normals->SetTuple(cellId, normal);
       output->GetCellData()->CopyData(input->GetCellData(),
         cellIndex[polyIndex], cellId);
