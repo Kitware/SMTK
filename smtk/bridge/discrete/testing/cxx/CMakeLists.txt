@@ -40,4 +40,23 @@ if(SMTK_DATA_DIR)
       -T "${CMAKE_CURRENT_BINARY_DIR}"
   )
 
+  add_executable(smtkModelfrom2dmTest smtkModelfrom2dm.cxx)
+  target_link_libraries(smtkModelfrom2dmTest
+    smtkCore
+    smtkDiscreteSession
+    vtkSMTKExt
+    vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
+    vtkTestingRendering
+    ${Boost_LIBRARIES}
+  )
+  target_compile_definitions(smtkModelfrom2dmTest PRIVATE "SMTK_DATA_DIR=\"${SMTK_DATA_DIR}\"")
+  add_test(
+    NAME discreteSmtkModelfrom2dmTest
+    COMMAND
+      $<TARGET_FILE:smtkModelfrom2dmTest>
+      "${SMTK_DATA_DIR}/mesh/test2D.2dm"
+      -V "${SMTK_DATA_DIR}/baselines/discrete/smtkModelfrom2dm.png"
+      -T "${CMAKE_CURRENT_BINARY_DIR}"
+  )
+
 endif()

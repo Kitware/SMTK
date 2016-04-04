@@ -14,6 +14,7 @@
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
+#include "smtk/io/ImportMesh.h"
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Volume.h"
@@ -35,6 +36,18 @@ namespace
 
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
+std::string write_root = data_root + "/mesh/tmp";
+
+void cleanup( const std::string& file_path )
+{
+  //first verify the file exists
+  ::boost::filesystem::path path( file_path );
+  if( ::boost::filesystem::is_regular_file( path ) )
+    {
+    //remove the file_path if it exists.
+    ::boost::filesystem::remove( path );
+    }
+}
 
 //----------------------------------------------------------------------------
 void create_simple_mesh_model( smtk::model::ManagerPtr mgr )
@@ -153,6 +166,86 @@ void verify_complex_merge()
   newMeshPoint4.points().get(&p[0]);
   test(p[0] == 0.0); test(p[1] == 2.0); test(p[2] == 0.0);
 }
+
+//----------------------------------------------------------------------------
+void verify_write_valid_collection_hdf5_after_merge()
+{
+  smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
+  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
+
+  create_simple_mesh_model(modelManager);
+
+  smtk::io::ModelToMesh convert;
+  convert.setIsMerging(false);
+  smtk::mesh::CollectionPtr c = convert(meshManager,modelManager);
+  test( c->isValid(), "collection should be valid");
+
+  //make sure merging points works properly
+  smtk::mesh::PointSet points = c->points( );
+
+  test( points.size() == 88, "Should be exactly 88 points in the original mesh");
+
+  //add multiple new mesh points
+  smtk::mesh::MeshSet newMeshPoint1 = make_MeshPoint(c, 0.0, 2.0, 0.0 );
+  smtk::mesh::MeshSet newMeshPoint2 = make_MeshPoint(c, 1.0, 0.0, 0.0 );
+  smtk::mesh::MeshSet newMeshPoint3 = make_MeshPoint(c, 3.0, 0.0, 0.0 );
+  smtk::mesh::MeshSet newMeshPoint4 = make_MeshPoint(c, 0.0, 2.0, 0.0 );
+
+  points = c->points( );
+  test( c->points().size() == 92, "Should be exactly 92 points before merge");
+  test( c->meshes( smtk::mesh::Dims0 ).size() == 11, "Should have 11 vertices before merge");
+
+  smtk::mesh::CellSet vert_cells = c->cells( smtk::mesh::Dims0 );
+  test( vert_cells.size() == 11, "Should have 11 vertex cells before merge");
+
+  c->meshes().mergeCoincidentContactPoints();
+
+  points = c->points( );
+  test( points.size() == 32, "After merging of identical points we should have 32");
+
+  //verify that after merging points we haven't deleted any of the cells
+  //that represent a model vert
+  test( c->meshes( smtk::mesh::Dims0 ).size() == 11, "Should have 11 vertices after merge");
+
+  vert_cells = c->cells( smtk::mesh::Dims0 );
+  test( vert_cells.size() == 9, "Should have 9 vertex cells after merge");
+
+  // write out the collection after mergeCoincidentContactPoints()
+  std::string write_path(write_root);
+  write_path += "/test2D_json_output.h5m";
+
+  //write out the mesh.
+  bool result = smtk::io::WriteMesh::entireCollection(write_path, c);
+  if(!result)
+    {
+    cleanup( write_path );
+    test( result == true, "failed to properly write out a valid hdf5 collection");
+    }
+
+  //reload the written file and verify the number of meshes are the same as the
+  //input mesh
+  smtk::mesh::CollectionPtr c2 = smtk::io::ImportMesh::entireFile(write_path, meshManager);
+
+  //remove the file from disk
+  cleanup( write_path );
+
+  //verify the meshes
+  test( c2->isValid(), "collection should be valid");
+  test( c2->name() == c->name() );
+  test( c2->types() == c->types() );
+
+  test( c->meshes( smtk::mesh::Dims2 ).size() == 4, "Should have 4 faces in saved collection");
+  test( c->meshes( smtk::mesh::Dims1 ).size() == 10, "Should have 10 edges in saved collection");
+  test( c->meshes( smtk::mesh::Dims0 ).size() == 11, "Should have 11 vertices in saved collection");
+
+  vert_cells = c->cells( smtk::mesh::Dims0 );
+  test( vert_cells.size() == 9, "Should have 9 vertex cells in saved collection");
+
+  points = c2->points( );
+  test( points.size() == 32, "Should have 32 points in saved collection");
+
+}
+
 }
 
 //----------------------------------------------------------------------------
@@ -160,5 +253,6 @@ int UnitTestMergeContactPoints(int, char** const)
 {
   verify_simple_merge();
   verify_complex_merge();
+  verify_write_valid_collection_hdf5_after_merge();
   return 0;
 }
