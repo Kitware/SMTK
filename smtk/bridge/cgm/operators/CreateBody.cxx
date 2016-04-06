@@ -107,7 +107,11 @@ smtk::model::OperatorResult CreateBody::operateInternal()
   for (int i = 0; i < faceList.size(); ++i)
     {
     RefFace* face = faceList.get_and_step();
+#if CGM_MAJOR_VERSION >= 15
+    bod = GeometryModifyTool::instance()->make_Body(face);
+#else
     bod = GeometryModifyTool::instance()->make_Body(face, /* extended_from: */ CUBIT_FALSE);
+#endif
     if (!bod)
       {
       smtkInfoMacro(log(),

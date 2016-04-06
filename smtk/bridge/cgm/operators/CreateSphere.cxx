@@ -73,7 +73,13 @@ smtk::model::OperatorResult CreateSphere::operateInternal()
 
   // Do this separately because CGM's sphere() method is broken (for OCC at a minimum).
   CubitVector delta(center[0],center[1],center[2]);
+#if CGM_MAJOR_VERSION >= 15
+  DLIList<Body*> cgmBodies;
+  cgmBodies.push(cgmBody);
+  CubitStatus status = GeometryQueryTool::instance()->translate(cgmBodies, delta);
+#else
   CubitStatus status = GeometryQueryTool::instance()->translate(cgmBody, delta, center[2]);
+#endif
   if (status != CUBIT_SUCCESS)
     {
     smtkInfoMacro(log(), "Failed to translate body.");

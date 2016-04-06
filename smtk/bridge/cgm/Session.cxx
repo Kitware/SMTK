@@ -962,29 +962,35 @@ bool Session::addNamesIfAny(smtk::model::EntityRef& entityref, RefEntity* cgmEnt
 void Session::colorPropFromIndex(
   smtk::model::EntityRef& entityref, int colorIndex)
 {
-  if (colorIndex != CUBIT_DEFAULT_COLOR)
+#if CGM_MAJOR_VERSION >= 15
+#define cubit_color(c) CUBIT_ ## c ## _INDEX
+#else
+#define cubit_color(c) CUBIT_ ## c
+#endif
+
+  if (colorIndex != cubit_color(DEFAULT_COLOR))
     {
     smtk::model::FloatList rgba(4);
     rgba[3] = 1.; // All CGM colors are solid, not transparent.
     switch (colorIndex)
       {
-    case CUBIT_BLACK:       rgba[0] = 0.00; rgba[1] = 0.00; rgba[2] = 0.00; break;
-    case CUBIT_GREY:        rgba[0] = 0.75; rgba[1] = 0.75; rgba[2] = 0.75; break;
-    case CUBIT_ORANGE:      rgba[0] = 1.00; rgba[1] = 0.65; rgba[2] = 0.00; break;
-    case CUBIT_RED:         rgba[0] = 0.86; rgba[1] = 0.08; rgba[2] = 0.24; break;
-    case CUBIT_GREEN:       rgba[0] = 0.00; rgba[1] = 0.50; rgba[2] = 0.00; break;
-    case CUBIT_YELLOW:      rgba[0] = 1.00; rgba[1] = 1.00; rgba[2] = 0.00; break;
-    case CUBIT_MAGENTA:     rgba[0] = 0.50; rgba[1] = 0.00; rgba[2] = 0.50; break;
-    case CUBIT_CYAN:        rgba[0] = 0.00; rgba[1] = 0.50; rgba[2] = 0.50; break;
-    case CUBIT_BLUE:        rgba[0] = 0.00; rgba[1] = 0.00; rgba[2] = 1.00; break;
-    case CUBIT_WHITE:       rgba[0] = 1.00; rgba[1] = 1.00; rgba[2] = 1.00; break;
-    case CUBIT_BROWN:       rgba[0] = 0.55; rgba[1] = 0.27; rgba[2] = 0.07; break;
-    case CUBIT_GOLD:        rgba[0] = 1.00; rgba[1] = 0.84; rgba[2] = 0.00; break;
-    case CUBIT_LIGHTBLUE:   rgba[0] = 0.88; rgba[1] = 1.00; rgba[2] = 1.00; break;
-    case CUBIT_LIGHTGREEN:  rgba[0] = 0.56; rgba[1] = 0.93; rgba[2] = 0.56; break;
-    case CUBIT_SALMON:      rgba[0] = 0.98; rgba[1] = 0.50; rgba[2] = 0.45; break;
-    case CUBIT_CORAL:       rgba[0] = 0.86; rgba[1] = 0.44; rgba[2] = 0.58; break;
-    case CUBIT_PINK:        rgba[0] = 1.00; rgba[1] = 0.71; rgba[2] = 0.76; break;
+    case cubit_color(BLACK):       rgba[0] = 0.00; rgba[1] = 0.00; rgba[2] = 0.00; break;
+    case cubit_color(GREY):        rgba[0] = 0.75; rgba[1] = 0.75; rgba[2] = 0.75; break;
+    case cubit_color(ORANGE):      rgba[0] = 1.00; rgba[1] = 0.65; rgba[2] = 0.00; break;
+    case cubit_color(RED):         rgba[0] = 0.86; rgba[1] = 0.08; rgba[2] = 0.24; break;
+    case cubit_color(GREEN):       rgba[0] = 0.00; rgba[1] = 0.50; rgba[2] = 0.00; break;
+    case cubit_color(YELLOW):      rgba[0] = 1.00; rgba[1] = 1.00; rgba[2] = 0.00; break;
+    case cubit_color(MAGENTA):     rgba[0] = 0.50; rgba[1] = 0.00; rgba[2] = 0.50; break;
+    case cubit_color(CYAN):        rgba[0] = 0.00; rgba[1] = 0.50; rgba[2] = 0.50; break;
+    case cubit_color(BLUE):        rgba[0] = 0.00; rgba[1] = 0.00; rgba[2] = 1.00; break;
+    case cubit_color(WHITE):       rgba[0] = 1.00; rgba[1] = 1.00; rgba[2] = 1.00; break;
+    case cubit_color(BROWN):       rgba[0] = 0.55; rgba[1] = 0.27; rgba[2] = 0.07; break;
+    case cubit_color(GOLD):        rgba[0] = 1.00; rgba[1] = 0.84; rgba[2] = 0.00; break;
+    case cubit_color(LIGHTBLUE):   rgba[0] = 0.88; rgba[1] = 1.00; rgba[2] = 1.00; break;
+    case cubit_color(LIGHTGREEN):  rgba[0] = 0.56; rgba[1] = 0.93; rgba[2] = 0.56; break;
+    case cubit_color(SALMON):      rgba[0] = 0.98; rgba[1] = 0.50; rgba[2] = 0.45; break;
+    case cubit_color(CORAL):       rgba[0] = 0.86; rgba[1] = 0.44; rgba[2] = 0.58; break;
+    case cubit_color(PINK):        rgba[0] = 1.00; rgba[1] = 0.71; rgba[2] = 0.76; break;
     default: rgba[3] = -1.; // invalid.
       }
     if (rgba[3] >= 0.)
