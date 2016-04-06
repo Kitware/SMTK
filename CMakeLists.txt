@@ -361,6 +361,10 @@ configure_file(
 install (FILES ${PROJECT_BINARY_DIR}/smtk/HashFunctor.h
   DESTINATION include/smtk/${SMTK_VERSION}/smtk)
 
+find_file(CGM_HAVE_VERSION_H
+  NAMES cgm_version.h
+  PATHS ${CGM_INCLUDE_DIRS}
+  DOC   "Location of CGM's cgm_version.h")
 
 ################################################################################
 # Save compile-time options for use by other packages
