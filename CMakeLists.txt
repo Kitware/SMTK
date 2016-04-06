@@ -388,14 +388,6 @@ install(
     ${CMAKE_INSTALL_LIBDIR}/cmake/SMTK
 )
 
-# Install find modules for SMTK needs to find external packages:
-install(
-  FILES
-    ${PROJECT_SOURCE_DIR}/CMake/FindCGM.cmake
-  DESTINATION
-    ${CMAKE_INSTALL_LIBDIR}/cmake/SMTK
-)
-
 ################################################################################
 # Build third party libraries
 ################################################################################
