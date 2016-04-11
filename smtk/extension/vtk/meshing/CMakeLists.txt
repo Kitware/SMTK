@@ -63,8 +63,8 @@ endif()
 smtk_install_library(${vtk-module})
 
 # ... and install the export header
-smtk_get_kit_name(name dir_prefix)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${vtk-module}Module.h  DESTINATION include/smtk/${SMTK_VERSION}/${dir_prefix})
+#has to be after the vtk_module_library
+smtk_export_header(${vtk-module} Exports.h)
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
 #  vtk_add_cs_wrapping(${vtk-module})

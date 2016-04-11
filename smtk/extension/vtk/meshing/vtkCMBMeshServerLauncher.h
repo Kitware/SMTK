@@ -16,7 +16,7 @@
 #ifndef __smtk_vtk_vtkCMBMeshServerLauncher_h
 #define __smtk_vtk_vtkCMBMeshServerLauncher_h
 
-#include "smtk/extension/vtk/meshing/vtkSMTKMeshingExtModule.h" // For export macro
+#include "smtk/extension/vtk/meshing/Exports.h" // For export macro
 #include "vtkObject.h"
 #include "vtkStdString.h" //needed for the HostName
 

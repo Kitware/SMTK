@@ -16,7 +16,7 @@
 #ifndef __smtk_vtk_CUBITReader_h
 #define __smtk_vtk_CUBITReader_h
 
-#include "smtk/extension/vtk/reader/vtkSMTKReaderExtModule.h" // For export macro
+#include "smtk/extension/vtk/reader/Exports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 

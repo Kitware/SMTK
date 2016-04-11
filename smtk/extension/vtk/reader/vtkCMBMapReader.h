@@ -16,7 +16,7 @@
 #ifndef __smtk_vtk_vtkCMBMapReader_h
 #define __smtk_vtk_vtkCMBMapReader_h
 
-#include "smtk/extension/vtk/reader/vtkSMTKReaderExtModule.h" // For export macro
+#include "smtk/extension/vtk/reader/Exports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 class vtkIntArray;

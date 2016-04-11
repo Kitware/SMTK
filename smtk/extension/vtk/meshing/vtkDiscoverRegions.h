@@ -11,7 +11,7 @@
 #ifndef __smtk_vtk_vtkDiscoverRegions_h
 #define __smtk_vtk_vtkDiscoverRegions_h
 
-#include "smtk/extension/vtk/meshing/vtkSMTKMeshingExtModule.h" // For export macro
+#include "smtk/extension/vtk/meshing/Exports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 //#define VTK_CELL_REGION_IDS "CellRegionIds"
