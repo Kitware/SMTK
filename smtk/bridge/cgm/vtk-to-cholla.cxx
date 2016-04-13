@@ -233,7 +233,11 @@ int main(int argc, char* argv[])
     }
 
   // Initialize CGM
-#if CGM_MAJOR_VERSION >= 14
+#if CGM_MAJOR_VERSION >= 15
+  std::vector<CubitString> args(argv + 1, argv + argc);
+  AppUtil::instance()->startup();
+  CGMApp::instance()->startup(args);
+#elif CGM_MAJOR_VERSION >= 14
   std::vector<CubitString> args(argv + 1, argv + argc);
   AppUtil::instance()->startup(args);
   CGMApp::instance()->startup(args);

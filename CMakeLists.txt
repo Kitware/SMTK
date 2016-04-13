@@ -361,6 +361,10 @@ configure_file(
 install (FILES ${PROJECT_BINARY_DIR}/smtk/HashFunctor.h
   DESTINATION include/smtk/${SMTK_VERSION}/smtk)
 
+find_file(CGM_HAVE_VERSION_H
+  NAMES cgm_version.h
+  PATHS ${CGM_INCLUDE_DIRS}
+  DOC   "Location of CGM's cgm_version.h")
 
 ################################################################################
 # Save compile-time options for use by other packages
@@ -384,14 +388,6 @@ install(
     ${PROJECT_SOURCE_DIR}/CMake/EncodeCStringFunctions.cmake
     ${PROJECT_SOURCE_DIR}/CMake/SMTKOperatorXML.cmake
     ${PROJECT_SOURCE_DIR}/CMake/SMTKSessionJSON.cmake
-  DESTINATION
-    ${CMAKE_INSTALL_LIBDIR}/cmake/SMTK
-)
-
-# Install find modules for SMTK needs to find external packages:
-install(
-  FILES
-    ${PROJECT_SOURCE_DIR}/CMake/FindCGM.cmake
   DESTINATION
     ${CMAKE_INSTALL_LIBDIR}/cmake/SMTK
 )
