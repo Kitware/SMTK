@@ -183,6 +183,10 @@ namespace smtk
         {
         this->m_values[element] = val;
         this->m_isSet[element] = true;
+	if (def->allowsExpressions())
+	  {
+          this->m_expressions[element]->unset();
+	  }
         return true;
         }
       return false;

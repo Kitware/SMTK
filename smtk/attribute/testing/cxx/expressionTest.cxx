@@ -26,6 +26,7 @@ int main()
   typedef smtk::attribute::IntItemDefinition IntItemDef;
   typedef smtk::attribute::DoubleItemDefinition DoubleItemDef;
   typedef smtk::attribute::StringItemDefinition StringItemDef;
+  typedef smtk::attribute::DoubleItem DoubleItem;
   typedef smtk::attribute::ValueItem ValueItem;
   typedef smtk::attribute::Item AttItem;
 
@@ -89,8 +90,38 @@ int main()
   vitem = smtk::dynamic_pointer_cast<ValueItem>(item);
   if (vitem->allowsExpressions())
     {
+    // By default the item shouls not be an expression
+    if (!vitem->isExpression())
+      {
+	std::cout << "Item " << vitem->name() << " does not have an expression\n";
+      }
+    else
+      {
+	std::cout << "Error: Item " << vitem->name() << " does have an expression\n";
+	status = -1;
+      }	  
     vitem->setExpression(expAtt);
     std::cout << "Expression Set on " << vitem->name() << "\n";
+    if (vitem->isExpression())
+      {
+	std::cout << "After setting an expression, Item " << vitem->name() << " does have an expression\n";
+      }
+    else
+      {
+	std::cout << "Error: After setting an expression, Item " << vitem->name() << " does not have an expression\n";
+	status = -1;
+      }
+    smtk::attribute::DoubleItemPtr ditem = smtk::dynamic_pointer_cast<DoubleItem>(vitem);
+    ditem->setValue(10.0);
+    if (!vitem->isExpression())
+      {
+	std::cout << "After setting a value, Item " << vitem->name() << " does not have an expression\n";
+      }
+    else
+      {
+	std::cout << "Error: After setting a value , Item " << vitem->name() << " does have an expression\n";
+	status = -1;
+      }
     }
   else
     {
