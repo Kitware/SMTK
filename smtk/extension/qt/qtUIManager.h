@@ -191,6 +191,7 @@ namespace smtk
     protected slots:
       void invokeEntitiesSelected(const smtk::common::UUIDs& uuids)
         { emit this->entitiesSelected(uuids); }
+      void displayExpressionWidget(bool checkstate);
 
     protected:
       virtual void internalInitialize();
