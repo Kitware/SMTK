@@ -36,6 +36,8 @@
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QFontMetrics>
+#include <QToolButton>
+#include <QStackedLayout>
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -645,51 +647,124 @@ QWidget* qtUIManager::createExpressionRefWidget(
     {
     return NULL;
     }
-  smtk::attribute::RefItemPtr item =inputitem->expressionReference(elementIdx);
-  if(!item)
-    {
-    return NULL;
-    }
 
-  const RefItemDefinition *itemDef =
-    dynamic_cast<const RefItemDefinition*>(item->definition().get());
-  smtk::attribute::DefinitionPtr attDef = itemDef->attributeDefinition();
-  if(!attDef)
-    {
-    return NULL;
-    }
-  QList<QString> attNames;
-  std::vector<smtk::attribute::AttributePtr> result;
-  System *lAttSystem = attDef->system();
-  lAttSystem->findAttributes(attDef, result);
-  std::vector<smtk::attribute::AttributePtr>::iterator it;
-  for (it=result.begin(); it!=result.end(); ++it)
-    {
-    attNames.push_back((*it)->name().c_str());
-    }
+  QFrame* checkFrame = new QFrame(pWidget);
+  QHBoxLayout* mainlayout = new QHBoxLayout(checkFrame);
 
-  QComboBox* combo = new QComboBox(pWidget);
+  QToolButton* funCheck = new QToolButton(pWidget);
+  funCheck->setCheckable(true);
+  QString resourceName(":/icons/attribute/function.png");
+  funCheck->setIconSize(QSize(16, 16));
+  funCheck->setIcon(QIcon(resourceName));
+//  funCheck->setLayoutDirection(Qt::RightToLeft);
+  funCheck->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  funCheck->setToolTip("Switch between a constant value or function instance");
   QVariant vdata(elementIdx);
-  combo->setProperty("ElementIndex", vdata);
+  funCheck->setProperty("ElementIndex", vdata);
   QVariant vobject;
   vobject.setValue(static_cast<void*>(attitem.get()));
+  funCheck->setProperty("AttItemObj", vobject);
+
+  // create combobox for expression reference
+  QComboBox* combo = new QComboBox(pWidget);
+  combo->setProperty("ElementIndex", vdata);
   combo->setProperty("AttItemObj", vobject);
-  combo->addItems(attNames);
-
-  int setIndex = -1;
-  if (item->isSet(elementIdx))
-    {
-    setIndex = attNames.indexOf(item->valueAsString(elementIdx).c_str());
-    }
-  combo->setCurrentIndex(setIndex);
-  QVariant viewobject;
-  viewobject.setValue(static_cast<void*>(bview));
-  combo->setProperty("QtViewObj", viewobject);
-
   QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
     this, SLOT(onExpressionReferenceChanged()), Qt::QueuedConnection);
 
-  return combo;
+  // check if there are attributes already created, if not
+  // disable the function checkbox
+  const ValueItemDefinition *valItemDef =
+    dynamic_cast<const ValueItemDefinition*>(inputitem->definition().get());
+  smtk::attribute::DefinitionPtr attDef = valItemDef->expressionDefinition();
+  std::vector<smtk::attribute::AttributePtr> result;
+  if(attDef)
+    {
+    System *lAttSystem = attDef->system();
+    lAttSystem->findAttributes(attDef, result);
+    }
+  funCheck->setEnabled(result.size() > 0);
+
+  // create line edit for expression which is a const value
+  QWidget* valeditor = this->createEditBox(attitem, elementIdx, pWidget, bview);
+
+  QStackedLayout* stackLayout = new QStackedLayout();
+  stackLayout->addWidget(valeditor);
+  stackLayout->addWidget(combo);
+  mainlayout->addWidget(funCheck);
+  mainlayout->addLayout(stackLayout);
+  QVariant vlayout;
+  vlayout.setValue(static_cast<void*>(stackLayout));
+  funCheck->setProperty("StackedLayout", vlayout);
+
+  QObject::connect(funCheck, SIGNAL(toggled(bool)),
+    this, SLOT(displayExpressionWidget(bool)));
+  funCheck->setChecked(inputitem->isExpression(elementIdx));
+  return checkFrame;
+}
+
+//----------------------------------------------------------------------------
+void qtUIManager::displayExpressionWidget(bool checkstate)
+{
+  QToolButton* const funCheck = qobject_cast<QToolButton*>(
+    QObject::sender());
+  if(!funCheck)
+    {
+    return;
+    }
+
+  int elementIdx = funCheck->property("ElementIndex").toInt();
+  ValueItem* inputitem =static_cast<ValueItem*>(
+    funCheck->property("AttItemObj").value<void *>());
+  if(!inputitem)
+    {
+    return;
+    }
+  QStackedLayout* stackLayout =static_cast<QStackedLayout*>(
+    funCheck->property("StackedLayout").value<void *>());
+  if(!stackLayout)
+    {
+    return;
+    }
+  stackLayout->setCurrentIndex(checkstate ? 1 : 0);
+  QComboBox* combo = qobject_cast<QComboBox*>(stackLayout->currentWidget());
+  if(combo)
+    {
+    combo->blockSignals(true);
+    combo->clear();
+    const ValueItemDefinition *valItemDef =
+      dynamic_cast<const ValueItemDefinition*>(inputitem->definition().get());
+    smtk::attribute::DefinitionPtr attDef = valItemDef->expressionDefinition();
+    QList<QString> attNames;
+    if(attDef)
+      {
+      std::vector<smtk::attribute::AttributePtr> result;
+      System *lAttSystem = attDef->system();
+      lAttSystem->findAttributes(attDef, result);
+      std::vector<smtk::attribute::AttributePtr>::iterator it;
+      for (it=result.begin(); it!=result.end(); ++it)
+        {
+        attNames.push_back((*it)->name().c_str());
+        }
+      if(attNames.count() > 0)
+        combo->addItems(attNames);
+      }
+
+    int setIndex = -1;
+    if(inputitem->isExpression(elementIdx))
+      {
+      smtk::attribute::RefItemPtr item =inputitem->expressionReference(elementIdx);
+      if(item && item->definition().get())
+        {
+        if (item->isSet(elementIdx))
+          {
+          setIndex = attNames.indexOf(item->valueAsString(elementIdx).c_str());
+          }
+        }
+      }
+    combo->setCurrentIndex(setIndex);
+    combo->blockSignals(false);
+    }
 }
 //----------------------------------------------------------------------------
 void qtUIManager::onExpressionReferenceChanged()
