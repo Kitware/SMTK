@@ -654,7 +654,7 @@ QWidget* qtUIManager::createExpressionRefWidget(
   QToolButton* funCheck = new QToolButton(pWidget);
   funCheck->setCheckable(true);
   QString resourceName(":/icons/attribute/function.png");
-  funCheck->setIconSize(QSize(16, 16));
+  funCheck->setIconSize(QSize(13, 13));
   funCheck->setIcon(QIcon(resourceName));
 //  funCheck->setLayoutDirection(Qt::RightToLeft);
   funCheck->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -691,8 +691,10 @@ QWidget* qtUIManager::createExpressionRefWidget(
   QStackedLayout* stackLayout = new QStackedLayout();
   stackLayout->addWidget(valeditor);
   stackLayout->addWidget(combo);
+  stackLayout->setContentsMargins(0,0,0,0);
   mainlayout->addWidget(funCheck);
   mainlayout->addLayout(stackLayout);
+  mainlayout->setContentsMargins(0,0,0,0);
   QVariant vlayout;
   vlayout.setValue(static_cast<void*>(stackLayout));
   funCheck->setProperty("StackedLayout", vlayout);
