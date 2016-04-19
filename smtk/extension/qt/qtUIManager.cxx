@@ -21,6 +21,7 @@
 #include "smtk/extension/qt/qtInstancedView.h"
 #include "smtk/extension/qt/qtSimpleExpressionView.h"
 #include "smtk/extension/qt/qtDiscreteValueEditor.h"
+#include "smtk/extension/qt/qtSMTKUtilities.h"
 
 #include <QTableWidget>
 #include <QLayout>
@@ -208,6 +209,9 @@ qtUIManager::qtUIManager(smtk::attribute::System &system) :
   this->registerViewConstructor("Group", qtGroupView::createViewWidget);
   this->registerViewConstructor("Instanced", qtInstancedView::createViewWidget);
   this->registerViewConstructor("SimpleExpression", qtSimpleExpressionView::createViewWidget);
+
+  // register view constructors coming from plugins.
+  qtSMTKUtilities::updateViewConstructors(this);
 }
 
 //----------------------------------------------------------------------------

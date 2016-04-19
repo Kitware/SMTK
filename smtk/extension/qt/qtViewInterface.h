@@ -24,8 +24,6 @@ namespace smtk
   namespace attribute
   {
 
-  class qtBaseView;
-
   /// interface class for plugins that add a QDockWindow
   class SMTKQTEXT_EXPORT qtViewInterface
   {

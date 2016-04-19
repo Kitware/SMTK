@@ -38,6 +38,7 @@ set(QAttrLibSrcs
   qtModelOperationWidget.cxx
   qtOperatorDockWidget.cxx
   qtViewInterface.cxx
+  qtSMTKUtilities.cxx
   )
 
 set(QAttrLibUIs
@@ -89,6 +90,7 @@ set(QAttrLibHeaders
   ${QAttrLibMocHeaders}
   qtAttributeItemWidgetFactory.h
   qtViewInterface.h
+  qtSMTKUtilities.h
 )
 
 #install the headers
