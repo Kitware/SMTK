@@ -1,0 +1,34 @@
+// Generated file.  Do not edit.
+
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+
+#include "@ARG_CLASS_NAME@Implementation.h"
+#include "@ARG_CLASS_NAME@.h"
+
+@ARG_CLASS_NAME@Implementation::@ARG_CLASS_NAME@Implementation(QObject* p)
+: QObject(p)
+{
+  this->view_constructor_pointer = &@ARG_CLASS_NAME@::createViewWidget;
+}
+
+@ARG_CLASS_NAME@Implementation::~@ARG_CLASS_NAME@Implementation()
+{
+}
+
+QString @ARG_CLASS_NAME@Implementation::viewName() const
+{
+  return "@ARG_VIEW_NAME@";
+}
+
+qtSMTKViewConstructor @ARG_CLASS_NAME@Implementation::viewConstructor()
+{
+  return this->view_constructor_pointer;
+}

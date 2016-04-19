@@ -70,3 +70,7 @@ if(SMTK_ENABLE_VTK_SUPPORT)
   #to be linked for IO routines.
   add_subdirectory(vtkToMesh)
 endif()
+
+if(SMTK_ENABLE_PARAVIEW_SUPPORT)
+  add_subdirectory(paraview)
+endif()

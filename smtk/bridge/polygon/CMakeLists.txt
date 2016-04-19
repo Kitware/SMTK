@@ -113,6 +113,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
 endif()
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
+  add_subdirectory(qt)
   add_subdirectory(plugin)
 endif()
 

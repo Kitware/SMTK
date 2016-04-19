@@ -149,3 +149,42 @@ function(smtk_source_group source_dir)
 
 endfunction(smtk_source_group)
 
+# create implementation for a new ui view interface
+# ADD_SMTK_UI_VIEW(
+#    OUTIFACES
+#    OUTSRCS
+#    CLASS_NAME classname
+#    [VIEW_NAME viewname]
+#
+#  CLASS_NAME: is the name of the class that implements a qtBaseView
+#  VIEW_NAME: option to a name of the view which will be registered to ui-manager
+MACRO(ADD_SMTK_UI_VIEW OUTIFACES OUTSRCS)
+
+  SET(ARG_VIEW_NAME)
+
+  PV_PLUGIN_PARSE_ARGUMENTS(ARG "CLASS_NAME;VIEW_NAME" "" ${ARGN} )
+
+  IF(NOT ARG_VIEW_NAME)
+    SET(ARG_VIEW_NAME myNoNameView)
+  ENDIF()
+  SET(${OUTIFACES} ${ARG_CLASS_NAME})
+
+  CONFIGURE_FILE(${SMTK_SOURCE_DIR}/CMake/qtSMTKViewImplementation.h.in
+                 ${CMAKE_CURRENT_BINARY_DIR}/${ARG_CLASS_NAME}Implementation.h @ONLY)
+  CONFIGURE_FILE(${SMTK_SOURCE_DIR}/CMake/qtSMTKViewImplementation.cxx.in
+                 ${CMAKE_CURRENT_BINARY_DIR}/${ARG_CLASS_NAME}Implementation.cxx @ONLY)
+
+  SET(VIEW_MOC_SRCS)
+  IF (PARAVIEW_QT_VERSION VERSION_GREATER "4")
+    QT5_WRAP_CPP(VIEW_MOC_SRCS ${CMAKE_CURRENT_BINARY_DIR}/${ARG_CLASS_NAME}Implementation.h)
+  ELSE ()
+    QT4_WRAP_CPP(VIEW_MOC_SRCS ${CMAKE_CURRENT_BINARY_DIR}/${ARG_CLASS_NAME}Implementation.h)
+  ENDIF ()
+
+  SET(${OUTSRCS}
+      ${CMAKE_CURRENT_BINARY_DIR}/${ARG_CLASS_NAME}Implementation.cxx
+      ${CMAKE_CURRENT_BINARY_DIR}/${ARG_CLASS_NAME}Implementation.h
+      ${VIEW_MOC_SRCS}
+      )
+ENDMACRO()
+

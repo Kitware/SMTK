@@ -1,0 +1,38 @@
+// Generated file.  Do not edit.
+
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+
+#ifndef _@ARG_CLASS_NAME@Implementation_h
+#define _@ARG_CLASS_NAME@Implementation_h
+
+#include "smtk/extension/qt/qtViewInterface.h"
+#include <QObject>
+
+/// interface class for plugins that create QActionGroups
+/// for adding actions to menus and toolbars
+class @ARG_CLASS_NAME@Implementation : public QObject, public smtk::attribute::qtViewInterface
+{
+  Q_OBJECT
+  Q_INTERFACES(smtk::attribute::qtViewInterface)
+public:
+  @ARG_CLASS_NAME@Implementation(QObject* p);
+  ~@ARG_CLASS_NAME@Implementation();
+
+  virtual QString viewName() const;
+
+  /// return a static constructor for derived class of qtBaseView 
+  virtual qtSMTKViewConstructor viewConstructor();
+
+protected:
+  qtSMTKViewConstructor view_constructor_pointer;
+};
+
+#endif
