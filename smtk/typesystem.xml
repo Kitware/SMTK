@@ -2244,6 +2244,10 @@
       <object-type name="ResourceSetReader">
         <include file-name="smtk/io/ResourceSetReader.h" location="local"/>
       </object-type>
+      <object-type name="ResourceSetWriter">
+        <include file-name="smtk/io/ResourceSetWriter.h" location="local"/>
+        <enum-type name="LinkedFilesOption" />
+      </object-type>
 
       <object-type name="WriteMesh">
         <include file-name="smtk/io/WriteMesh.h" location="local"/>

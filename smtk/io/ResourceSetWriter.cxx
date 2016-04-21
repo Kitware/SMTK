@@ -34,11 +34,11 @@ ResourceSetWriter::
 writeFile(std::string filename,
           const ResourceSet& resources,
           smtk::io::Logger& logger,
-          bool writeLinkedFiles)
+          LinkedFilesOption option)
 {
   logger.reset();
   std::string content;
-  this->writeString(content, resources, logger, writeLinkedFiles);
+  this->writeString(content, resources, logger, option);
   if (!logger.hasErrors())
     {
     std::ofstream outfile;
@@ -56,7 +56,7 @@ ResourceSetWriter::
 writeString(std::string& content,
             const ResourceSet& resources,
             smtk::io::Logger& logger,
-            bool writeLinkedFiles)
+            LinkedFilesOption option)
 {
   logger.reset();
 
@@ -92,7 +92,8 @@ writeString(std::string& content,
       resourceElement.append_attribute("role").set_value(rstring.c_str());
       }
 
-    if ("" == link && ResourceSet::LOADED == state)
+    if ((("" == link) || (EXPAND_LINKED_FILES == option)) &&
+        ResourceSet::LOADED == state)
       {
       // Use XmlV2StringWriter to generate xml for this attribute system
       smtk::common::ResourcePtr resource;
@@ -109,7 +110,7 @@ writeString(std::string& content,
       includeElement.append_attribute("href").set_value(link.c_str());
 
       // Save linked resources if option selected
-      if (writeLinkedFiles)
+      if (option == WRITE_LINKED_FILES)
         {
         smtk::common::ResourcePtr resource;
         ok = resources.get(id, resource);

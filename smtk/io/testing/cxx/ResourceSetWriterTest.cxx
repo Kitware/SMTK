@@ -101,7 +101,9 @@ int main(int argc, const char* argv[])
   // Write resource set to file
   smtk::io::ResourceSetWriter writer;
   const char *output_path = argv[argc-1];
-  bool writeHasErrors = writer.writeFile(output_path, resources, logger);
+  smtk::io::ResourceSetWriter::LinkedFilesOption option =
+    smtk::io::ResourceSetWriter::EXPAND_LINKED_FILES;
+  bool writeHasErrors = writer.writeFile(output_path, resources, logger, option);
   if (writeHasErrors)
     {
     std::cerr << "ERROR writing " << output_path << "\n";
