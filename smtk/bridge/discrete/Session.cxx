@@ -894,8 +894,12 @@ int Session::findOrAddUseAdjacencies(
           }
         }
       }
-    // Add child edge-uses of loop
-    numEnts += this->addEntities(entRef, dscLoop->NewModelEdgeUseIterator(), smtk::model::HAS_USE, helper);
+
+    // Add child edge-uses of loops
+    numEnts += this->addEntities(entRef,
+                                 dscLoop->NewModelEdgeUseIterator(),
+                                 smtk::model::HAS_USE,
+                                 helper);
     }
   else if (entRef.isChain() && (dscEdgeUse = helper->edgeUseFromChainId(entRef.entity())))
     {
@@ -1358,7 +1362,8 @@ void Session::addEntity(
   smtk::model::ArrangementKind k,
   ArrangementHelper* helper,
   int sense,
-  smtk::model::Orientation orientation)
+  smtk::model::Orientation orientation,
+  int iterpos)
 {
   if(!child)
     {
@@ -1367,12 +1372,17 @@ void Session::addEntity(
   smtk::model::EntityRef childRef(
     parent.manager(),
     this->findOrSetEntityUUID(child));
+
   this->addEntityRecord(parent);
   if (parent.isUseEntity()) helper->reset(parent);
+
   this->addEntityRecord(childRef);
   if (childRef.isUseEntity()) helper->reset(childRef);
+
   this->findOrAddRelatedEntities(childRef, smtk::model::SESSION_EVERYTHING, helper);
-  helper->addArrangement(parent, k, childRef, sense, orientation);
+
+  helper->addArrangement(parent, k, childRef, sense, orientation, iterpos);
+
 }
 
 /// Add a parent to the manager and a parent-child relationship to the helper.
@@ -1382,7 +1392,8 @@ void Session::addEntity(
   smtk::model::ArrangementKind k,
   ArrangementHelper* helper,
   int sense,
-  smtk::model::Orientation orientation)
+  smtk::model::Orientation orientation,
+  int iterpos)
 {
   if(!parent)
     {
@@ -1391,12 +1402,16 @@ void Session::addEntity(
   smtk::model::EntityRef parentRef(
     child.manager(),
     this->findOrSetEntityUUID(parent));
+
   this->addEntityRecord(parentRef);
   if (parentRef.isUseEntity()) helper->reset(parentRef);
+
   this->addEntityRecord(child);
   if (child.isUseEntity()) helper->reset(child);
+
   this->findOrAddRelatedEntities(parentRef, smtk::model::SESSION_EVERYTHING, helper);
-  helper->addArrangement(parentRef, k, child, sense, orientation);
+
+  helper->addArrangement(parentRef, k, child, sense, orientation, iterpos);
 }
 
 /**\brief Add children to \a parent's manager and parent-child relationships to \a helper.
@@ -1412,11 +1427,13 @@ int Session::addEntities(
   int numEnts = 0;
   for (it->Begin(); !it->IsAtEnd(); it->Next(), ++numEnts)
     {
-    this->addEntity(parent, it->GetCurrentItem(), k, helper, -1, smtk::model::UNDEFINED);
+    vtkModelItem* item = it->GetCurrentItem();
+    this->addEntity(parent, item, k, helper, -1, smtk::model::UNDEFINED, numEnts);
     }
   it->Delete();
   return numEnts;
 }
+
 
 /**\brief Add children to \a parent's manager and parent-child relationships to \a helper.
   *
@@ -1435,10 +1452,11 @@ int Session::addEntities(
   int numEnts = 0;
   for (it->Begin(); !it->IsAtEnd(); it->Next(), ++numEnts)
     {
+    vtkModelItem* item = it->GetCurrentItem();
     int sense = -1;
     Orientation orientation = smtk::model::UNDEFINED;
     senseLookup(it->GetCurrentItem(), sense, orientation);
-    this->addEntity(parent, it->GetCurrentItem(), k, helper, sense, orientation);
+    this->addEntity(parent, item, k, helper, sense, orientation, numEnts);
     }
   it->Delete();
   return numEnts;
@@ -1454,10 +1472,11 @@ int Session::addEntities(
   smtk::model::ArrangementKind k,
   ArrangementHelper* helper)
 {
+
   int numEnts = 0;
   for (it->Begin(); !it->IsAtEnd(); it->Next(), ++numEnts)
     {
-    this->addEntity(it->GetCurrentItem(), child, k, helper, -1, smtk::model::UNDEFINED);
+    this->addEntity(it->GetCurrentItem(), child, k, helper, -1, smtk::model::UNDEFINED, numEnts);
     }
   it->Delete();
   return numEnts;
@@ -1483,7 +1502,7 @@ int Session::addEntities(
     int sense;
     Orientation orientation;
     senseLookup(it->GetCurrentItem(), sense, orientation);
-    this->addEntity(it->GetCurrentItem(), child, k, helper, sense, orientation);
+    this->addEntity(it->GetCurrentItem(), child, k, helper, sense, orientation, numEnts);
     }
   it->Delete();
   return numEnts;

@@ -21,6 +21,20 @@
 
 static smtk::common::UUIDGenerator s_idGen;
 
+namespace {
+  struct IterationOrder
+  {
+    template<typename T>
+    bool operator()(const T& a, const T& b) const
+    {
+    return (a->kind < b->kind || (a->kind == b->kind &&
+           (a->parent < b->parent || (a->parent == b->parent &&
+           (a->iter_pos < b->iter_pos || (a->iter_pos == b->iter_pos &&
+           (a->child < b->child || (a->child == b->child &&
+            a->sense < b->sense)))))))) ? true : false;
+    }
+  };
+}
 namespace smtk {
   namespace bridge {
     namespace discrete {
@@ -39,7 +53,7 @@ void ArrangementHelper::addArrangement(
   smtk::model::ArrangementKind k,
   const smtk::model::EntityRef& child)
 {
-  this->addArrangement(parent, k, child, -1, smtk::model::UNDEFINED);
+  this->addArrangement(parent, k, child, -1, smtk::model::UNDEFINED, 0);
 }
 
 void ArrangementHelper::addArrangement(
@@ -47,21 +61,31 @@ void ArrangementHelper::addArrangement(
   smtk::model::ArrangementKind k,
   const smtk::model::EntityRef& child,
   int sense,
-  smtk::model::Orientation orientation)
+  smtk::model::Orientation orientation,
+  int iter_pos)
 {
-  /*
-  std::cout
-    << "##Add " << parent.name() << " -"
-    << smtk::model::NameForArrangementKind(k) << "- "
-    << child.name()
-    << " s " << sense << " o " << orientation << "\n";
-    */
-  this->m_arrangements.insert(
-    Spec(
-      parent,
-      child,
-      k,
-      2 * sense + (orientation == smtk::model::POSITIVE ? 1 : 0)));
+
+  Spec s(
+    parent,
+    child,
+    k,
+    2 * sense + (orientation == smtk::model::POSITIVE ? 1 : 0),
+    iter_pos
+    );
+
+  // std::cout
+  //   << "##Add " << parent.name() << " -"
+  //   << smtk::model::NameForArrangementKind(k) << "- "
+  //   << child.name()
+  //   << " s " << sense << " o " << orientation
+  //   << " iter_pos: " << iter_pos << "\n";
+
+  typedef std::set<Spec>::const_iterator iter;
+  std::pair<iter, bool> insertedInfo = this->m_arrangements.insert(s);
+  if(insertedInfo.second == false)
+    { //already added just update the iter_pos
+    insertedInfo.first->iter_pos = iter_pos;
+    }
 }
 
 void ArrangementHelper::resetArrangements()
@@ -90,22 +114,35 @@ void ArrangementHelper::doneAddingEntities(
     if (dscGeom && (flags & smtk::model::SESSION_TESSELLATION))
       sess->addTessellation(mutableRef, dscGeom);
     }
-  // II. Add relations between visited entities
-  std::set<Spec>::iterator it;
-  //     Track groups and the entities they own; we need to add
-  //     the group to the parent model. But we can only be guaranteed
-  //     to find the parent model after all the arrangements have been
-  //     processed. So, hold onto them in groupToMember.
-  std::map<smtk::model::EntityRef, smtk::model::EntityRef> groupToMember;
-  for (it = this->m_arrangements.begin(); it != this->m_arrangements.end(); ++it)
+
+  // II. sort the specification based on IterationOrder. We use a set of
+  //     pointers so we don't require the Specificaitions twice in memory
+  //
+  typedef std::set<Spec, IterationOrder>::iterator SpecIterType;
+  std::set<const Spec*, IterationOrder> arrangement_inOrder;
+  for (SpecIterType it = m_arrangements.begin(); it != m_arrangements.end(); ++it)
     {
-    /*
-    std::cout
-      << "Add " << it->parent.flagSummary(0) << " (" << it->parent.name() << ")"
-      << " " << smtk::model::NameForArrangementKind(it->kind)
-      << " " << it->child.flagSummary(0) << " (" << it->child.name() << ")"
-      << " sense " << it->sense << "\n";
-      */
+    const Spec& s = *it;
+    arrangement_inOrder.insert(&s);
+    }
+
+  // III. Add relations between visited entities
+  //      Track groups and the entities they own; we need to add
+  //      the group to the parent model. But we can only be guaranteed
+  //      to find the parent model after all the arrangements have been
+  //      processed. So, hold onto them in groupToMember.
+  typedef std::set<const Spec*, IterationOrder>::iterator SpecPIterType;
+  std::map<smtk::model::EntityRef, smtk::model::EntityRef> groupToMember;
+  for (SpecPIterType itp = arrangement_inOrder.begin(); itp != arrangement_inOrder.end(); ++itp)
+    {
+    const Spec* it = *(itp);
+    // std::cout
+    //   << "Add " << it->parent.flagSummary(0) << " (" << it->parent.name() << ")"
+    //   << " " << smtk::model::NameForArrangementKind(it->kind)
+    //   << " " << it->child.flagSummary(0) << " (" << it->child.name() << ")"
+    //   << " sense " << it->sense
+    //   << " iter_pos " << it->iter_pos << "\n";
+
     if (it->parent.manager() != it->child.manager())
       {
       std::cerr << "  Mismatched or nil managers. Skipping.\n";

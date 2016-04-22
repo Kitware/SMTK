@@ -190,7 +190,8 @@ protected:
     smtk::model::ArrangementKind k,
     ArrangementHelper* helper,
     int sense = -1,
-    smtk::model::Orientation orientation = smtk::model::UNDEFINED);
+    smtk::model::Orientation orientation = smtk::model::UNDEFINED,
+    int iterpos=0);
 
   void addEntity(
     vtkModelItem* parent,
@@ -198,7 +199,8 @@ protected:
     smtk::model::ArrangementKind k,
     ArrangementHelper* helper,
     int sense = -1,
-    smtk::model::Orientation orientation = smtk::model::UNDEFINED);
+    smtk::model::Orientation orientation = smtk::model::UNDEFINED,
+    int iterpos=0);
 
   int addEntities(
     const smtk::model::EntityRef& parent,
@@ -218,6 +220,7 @@ protected:
     const smtk::model::EntityRef& parent,
     smtk::model::ArrangementKind k,
     ArrangementHelper* helper);
+
   template<typename T>
   int addEntities(
     vtkModelItemIterator* it,

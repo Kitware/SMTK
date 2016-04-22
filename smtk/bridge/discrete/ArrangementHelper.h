@@ -50,7 +50,8 @@ public:
     smtk::model::ArrangementKind k,
     const smtk::model::EntityRef& child,
     int sense,
-    smtk::model::Orientation orientation);
+    smtk::model::Orientation orientation,
+    int iter_pos=0);
   void resetArrangements();
 
   virtual void doneAddingEntities(
@@ -80,26 +81,27 @@ protected:
     smtk::model::EntityRef child;
     smtk::model::ArrangementKind kind;
     int sense;
+    mutable int iter_pos;
 
-    Spec()
-      : kind(smtk::model::KINDS_OF_ARRANGEMENTS), sense(-2) { }
-    Spec(const smtk::model::EntityRef& p, const smtk::model::EntityRef& c, smtk::model::ArrangementKind k)
-      : parent(p), child(c), kind(k), sense(-2) { }
-    Spec(const smtk::model::EntityRef& p, const smtk::model::EntityRef& c, smtk::model::ArrangementKind k, int s)
-      : parent(p), child(c), kind(k), sense(s) { }
+    Spec(const smtk::model::EntityRef& p,
+         const smtk::model::EntityRef& c,
+         smtk::model::ArrangementKind k,
+         int s, int ip)
+      : parent(p), child(c), kind(k), sense(s), iter_pos(ip) {}
 
     bool operator < (const Spec& other) const
       {
       return
         (this->kind < other.kind ||
          (this->kind == other.kind &&
-          (this->parent < other.parent ||
-           (this->parent == other.parent &&
-            (this->child < other.child ||
-             (this->child == other.child &&
-              this->sense < other.sense)))))) ? true : false;
+            (this->parent < other.parent ||
+              (this->parent == other.parent &&
+                (this->child < other.child ||
+                  (this->child == other.child &&
+                    this->sense < other.sense)))))) ? true : false;
       }
   };
+
 
   std::set<Spec> m_arrangements;
   EdgeToUseSenseMap m_edgeUseSenses;
