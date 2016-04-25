@@ -573,7 +573,7 @@ void pqArcWidgetPanel::updateSubArcRepresentation(bool visible)
 
   //tell the provider the arc id it needs to be connected too
   vtkSMProxy *sourceProxy = this->Internals->SubArcSource->getProxy();
-  vtkSMPropertyHelper(sourceProxy,"ArcId").Set(this->Arc->getArcId());
+//  vtkSMPropertyHelper(sourceProxy,"ArcId").Set(this->Arc->getArcId());
   vtkSMPropertyHelper(sourceProxy,"StartPointId").Set(this->StartPoint.PointId);
   vtkSMPropertyHelper(sourceProxy,"EndPointId").Set(this->EndPoint.PointId);
   sourceProxy->UpdateVTKObjects();

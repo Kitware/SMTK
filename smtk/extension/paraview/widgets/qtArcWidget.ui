@@ -87,7 +87,7 @@
         <string>Delete All Nodes</string>
        </property>
        <property name="icon">
-        <iconset>
+        <iconset resource="qtWidgetsIcons.qrc">
          <normaloff>:/icons/pqwidgets/delete.png</normaloff>:/icons/pqwidgets/delete.png</iconset>
        </property>
        <property name="toolButtonStyle">
@@ -96,20 +96,19 @@
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+      <widget class="QPushButton" name="Finished">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
-       <property name="sizeHint" stdset="0">
+       <property name="minimumSize">
         <size>
-         <width>40</width>
-         <height>20</height>
+         <width>0</width>
+         <height>32</height>
         </size>
        </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="Finished">
        <property name="text">
         <string>Finished</string>
        </property>
@@ -135,6 +134,18 @@
    </item>
    <item>
     <widget class="QPushButton" name="buttonRectArc">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>32</height>
+      </size>
+     </property>
      <property name="text">
       <string>Generate Closed Rectangle Arc</string>
      </property>

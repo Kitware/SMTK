@@ -39,7 +39,7 @@ namespace smtk
     class qtMeshSelectionItem;
     class qtModelEntityItem;
     class qtBaseView;
-    class qtUIManager;
+    class qtModelView;
 
     typedef qtBaseView* (*widgetConstructor)(const ViewInfo &info);
 
@@ -61,6 +61,9 @@ namespace smtk
 
       smtk::attribute::System* attSystem() const
       {return &this->m_AttSystem;}
+
+      void setActiveModelView(smtk::extension::qtModelView*);
+      smtk::extension::qtModelView* activeModelView();
 
       // Description:
       // Set/Get the color used for indicating items with default values
@@ -101,6 +104,10 @@ namespace smtk
       //Description:
       // Registers a view construction function with a view type string
       void registerViewConstructor(const std::string &vtype, widgetConstructor f);
+      //Description:
+      // Check if view type string has a registered view construction function
+      bool hasViewConstructor(const std::string &vtype)
+      { return this->m_constructors.find(vtype) != this->m_constructors.end(); }
 
       qtBaseView* topView()
         {return this->m_topView;}
@@ -182,7 +189,7 @@ namespace smtk
       void fileItemCreated(smtk::extension::qtFileItem* fileItem);
       void modelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem);
       void meshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*);
-      void uiChanged(smtk::extension::qtBaseView*, smtk::attribute::ItemPtr);
+      void viewUIChanged(smtk::extension::qtBaseView*, smtk::attribute::ItemPtr);
       void entitiesSelected(const smtk::common::UUIDs&);
 
     friend class qtRootView;
@@ -200,6 +207,8 @@ namespace smtk
       qtBaseView* m_topView;
       smtk::common::ViewPtr m_smtkView;
       QWidget *m_parentWidget;
+      qtModelView* m_activeModelView;
+
       QFont advFont;
       QColor DefaultValueColor;
       QColor InvalidValueColor;

@@ -35,6 +35,12 @@ public slots:
   virtual void requestModelEntityAssociation();
   virtual void onShowCategory()
    { this->updateAttributeData(); }
+  // This will be triggered by selecting different type
+  // of operations, create, edit, or remove edges.
+  virtual void valueChanged(smtk::attribute::ItemPtr optype);
+
+protected slots:
+  virtual void requestOperation(const smtk::model::OperatorPtr& op);
 
 protected:
   virtual void updateAttributeData();

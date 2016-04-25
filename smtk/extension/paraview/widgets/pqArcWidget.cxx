@@ -94,7 +94,7 @@ void pqArcWidget::createWidget(pqServer* server)
 {
   vtkSMNewWidgetRepresentationProxy* widget = NULL;
   widget = pqApplicationCore::instance()->get3DWidgetFactory()->
-    get3DWidget("ArcWidgetRepresentation", server);
+    get3DWidget("smtkArcWidgetRepresentation", server);
 
   this->setWidgetProxy(widget);
 

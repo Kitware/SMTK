@@ -17,8 +17,11 @@
 #define __smtk_polygon_pq_ArcWidgetManager_h
 
 #include "smtk/bridge/polygon/qt/Exports.h"
+
 #include <QList>
 #include <QObject>
+#include <QPointer>
+#include <QWidget>
 #include "vtkType.h"
 
 class pqArcWidget;
@@ -39,11 +42,13 @@ public:
 
   int create();
   int edit();
+  void reset();
 
   pqArcWidget* createDefaultContourWidget(int& normal, double& pos);
 
   QWidget* getActiveWidget() { return ActiveWidget; }
   pqPolygonArc* getActiveArc();
+  void setActiveArc(pqPolygonArc*);
 
 signals:
   void Busy();
@@ -67,17 +72,17 @@ public slots:
   void collapseSubArc(vtkIdType startIdx, vtkIdType endIdx);
   void makeArc(vtkIdType startIdx, vtkIdType endIdx);
 
+  void updateActiveView( pqRenderView *view ){ View=view;}
+  void updateActiveServer( pqServer *server ){ Server=server;}
+
 protected slots:
   // called when a whole arc is done creating or modifying.
-  void updateArcNode();
+  void createEdge();
   // called when a sub arc modification is done
   void updateModifiedArc(
     pqArcWidget* subArcWidget, vtkIdType startPID, vtkIdType endPID);
   // called when the edit widget is closed
   void editingFinished();
-
-  void updateActiveView( pqRenderView *view ){ View=view;}
-  void updateActiveServer( pqServer *server ){ Server=server;}
 
 protected:
   void getDefaultArcPlane(int& normal, double& pos);
@@ -88,13 +93,13 @@ protected:
     const int &normal,const double &position,const int &closedLoop,
     vtkDoubleArray* nodePositions, vtkIdTypeArray* SelIndices);
 
-  pqArcWidget* Widget;
-  pqArcWidgetPanel* EditWidget;
-  pqPolygonArc *Arc;
+  QPointer<pqArcWidget> ArcWidget;
+  QPointer<pqArcWidgetPanel> EditWidget;
+  QPointer<pqPolygonArc> Arc;
 
   pqRenderView *View;
   pqServer *Server;
-  QWidget* ActiveWidget;
+  QPointer<QWidget> ActiveWidget;
 };
 
 #endif /* __smtk_polygon_pq_ArcWidgetManager_h */

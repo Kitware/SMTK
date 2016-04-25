@@ -9,6 +9,12 @@
 //=========================================================================
 #include "smtk/bridge/polygon/qt/pqPolygonArc.h"
 
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/DoubleItem.h"
+#include "smtk/attribute/IntItem.h"
+#include "smtk/extension/vtk/widgets/vtkSMTKArcRepresentation.h"
+#include "smtk/model/Operator.h"
+
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
 #include "pqObjectBuilder.h"
@@ -18,14 +24,8 @@
 #include "pqSMAdaptor.h"
 #include "pqServer.h"
 #include "pqServerManagerModel.h"
-/*
-#include "vtkCMBArcCreateClientOperator.h"
-#include "vtkCMBArcDeleteClientOperator.h"
-#include "vtkCMBArcEditClientOperator.h"
-#include "vtkCMBArcUpdateAndSplitClientOperator.h"
-#include "vtkCMBArcAutoConnectClientOperator.h"
-#include "vtkCMBArcFindPickPointOperator.h"
-*/
+
+#include "vtkCellArray.h"
 #include "vtkCommand.h"
 #include "vtkIdTypeArray.h"
 #include "vtkProcessModule.h"
@@ -37,6 +37,40 @@
 #include "vtkSMSourceProxy.h"
 //#include "vtkPVArcInfo.h"
 #include "vtkNew.h"
+
+#include "vtk3DWidgetRepresentation.h"
+#include "vtkContourWidget.h"
+#include "vtkPolyData.h"
+#include "vtkPoints.h"
+
+//----------------------------------------------------------------------------
+void polyLines2modelEdges(vtkPolyData *mesh,
+                         smtk::attribute::DoubleItem::Ptr pointsItem,
+                         vtkIdType *pts, vtkIdType npts)
+{
+  double p[3];
+  // create edge for current line cell
+  pointsItem->setNumberOfValues(npts * 3);
+  for (vtkIdType j=0; j < npts; ++j)
+    {
+    mesh->GetPoint(pts[j],p);
+    for (int i = 0; i < 3; ++i)
+      {
+      pointsItem->setValue(3 * j + i, p[i]);
+      }
+    }
+/*
+  OperatorResult edgeResult = edgeOp->operate();
+  if (edgeResult->findInt("outcome")->value() != OPERATION_SUCCEEDED)
+    {
+    smtkDebugMacro(logger, "\"create edge\" op failed to creat edge with given line cells.");
+    return 0;
+    }
+  smtk::attribute::ModelEntityItem::Ptr newEdges = edgeResult->findModelEntity("created");
+  createdEds.insert(createdEds.end(), newEdges->begin(), newEdges->end());
+  return newEdges->numberOfValues();
+*/
+}
 
 //-----------------------------------------------------------------------------
 pqPolygonArc::pqPolygonArc(QObject * prnt)
@@ -51,22 +85,6 @@ pqPolygonArc::pqPolygonArc(QObject * prnt)
   this->selColor[0]=this->selColor[2]=this->selColor[3]= 1.0;
   this->selColor[1]=0.0;
   this->origColor[0]=this->origColor[1]=this->origColor[2]=this->origColor[3]= 1.0;
-}
-
-//-----------------------------------------------------------------------------
-pqPolygonArc::pqPolygonArc(vtkSMSourceProxy *proxy)
-{
-  //for an arc the source is actually the arc provider not the arc itself
-  this->Source = NULL;
-//  this->ArcInfo = NULL;
-  this->ArcId = -1;
-  this->PlaneProjectionNormal = 2;
-  this->PlaneProjectionPosition = 0;
-  this->selColor[0]=this->selColor[2]=this->selColor[3]= 1.0;
-  this->selColor[1]=0.0;
-  this->origColor[0]=this->origColor[1]=this->origColor[2]=this->origColor[3]= 1.0;
-
-  this->createArc(proxy);
 }
 
 //-----------------------------------------------------------------------------
@@ -95,61 +113,58 @@ pqPolygonArc::~pqPolygonArc()
 */
 }
 
+void pqPolygonArc::setEdgeOperator(smtk::model::OperatorPtr edgeOp)
+{
+  this->m_edgeOp = edgeOp;
+}
+smtk::shared_ptr<smtk::model::Operator> pqPolygonArc::edgeOperator()
+{ 
+  return this->m_edgeOp.lock();
+}
+
 //-----------------------------------------------------------------------------
-bool pqPolygonArc::createArc(vtkSMNewWidgetRepresentationProxy *widget)
+bool pqPolygonArc::createEdge(vtkSMNewWidgetRepresentationProxy *widgetProxy)
 {
-  if (this->ArcId == -1)
+  if(!widgetProxy || !this->edgeOperator())
+    return false;
+  smtk::attribute::AttributePtr spec = this->edgeOperator()->specification();
+  if(spec->type() != "edit edge")
+    return false;
+
+  vtk3DWidgetRepresentation* widgetRep = vtk3DWidgetRepresentation::SafeDownCast(
+    widgetProxy->GetClientSideObject());
+  if(!widgetRep || !widgetRep->GetRepresentation())
+    return false;
+  vtkContourWidget* widget = vtkContourWidget::SafeDownCast(widgetRep->GetWidget());
+  vtkSMTKArcRepresentation *rep = vtkSMTKArcRepresentation::
+    SafeDownCast(widgetRep->GetRepresentation());
+  if(rep)
     {
-/*
-    vtkNew<vtkCMBArcCreateClientOperator> createOp;
-    bool valid = createOp->Create(widget);
-    if (!valid)
+    vtkPolyData *pd = rep->GetContourRepresentationAsPolyData();
+    std::cout << "contour points: " << pd->GetNumberOfPoints() << std::endl;
+    std::cout << "contour cells: " << pd->GetNumberOfCells() << std::endl;
+    vtkCellArray* lines = pd->GetLines();
+    std::cout << "line cells: " << lines->GetNumberOfCells() << std::endl;
+
+    // If less than 2 points, we can't define an edge
+    if (lines && pd->GetPoints()->GetNumberOfPoints() >= 2)
       {
-      return false;
+  //    spec->associateEntity(model);
+      smtk::attribute::DoubleItem::Ptr pointsItem = spec->findAs<smtk::attribute::DoubleItem>(
+                  "edge points", smtk::attribute::ALL_CHILDREN);
+      vtkIdType *pts,npts;
+      lines->InitTraversal();
+      while(lines->GetNextCell(npts,pts))
+        {
+        // create edge for current line cell
+        polyLines2modelEdges(pd, pointsItem, pts, npts);
+        emit this->operationRequested(this->edgeOperator());
+        }
+
+      //update the plane normal and position
+      this->updatePlaneProjectionInfo(widgetProxy);
+      return true;
       }
-
-    //update the arc id
-    this->ArcId = createOp->GetArcId();
-*/
-    //update the rep
-    this->updateRepresentation();
-
-    //update the plane normal and position
-    this->updatePlaneProjectionInfo(widget);
-    return true;
-    }
-  return false;
-}
-
-//------------- ----------------------------------------------------------------
-bool pqPolygonArc::createArc(vtkSMSourceProxy *proxy)
-{
-/*
-  if (this->ArcId == -1)
-    {
-    vtkNew<vtkCMBArcCreateClientOperator> createOp;
-    bool valid = createOp->Create(proxy);
-    if (!valid)
-      {
-      return false;
-      }
-
-    this->ArcId = createOp->GetArcId();
-    this->updateRepresentation();
-    return true;
-    }
-*/
-  return false;
-}
-
-//------------- ----------------------------------------------------------------
-bool pqPolygonArc::createArc(const vtkIdType& arcId)
-{
-  if (this->ArcId == -1 && arcId > -1)
-    {
-    this->ArcId = arcId;
-    this->updateRepresentation();
-    return true;
     }
   return false;
 }
@@ -410,53 +425,6 @@ void pqPolygonArc::arcIsModified()
     (*it)->arcIsDirty(this);
     }
 */
-}
-
-//-----------------------------------------------------------------------------
-void pqPolygonArc::updateRepresentation()
-{
-  if ( this->ArcId == -1 )
-    {
-    return;
-    }
-
-  pqApplicationCore* core = pqApplicationCore::instance();
-  pqView* view = pqActiveObjects::instance().activeView();
-  pqObjectBuilder* builder = core->getObjectBuilder();
-
-  //use case for this is if a person creates an invalid arc
-  //we can call this after each edit / update cycle to make
-  //sure that we can have a representation.
-  //Also this will support if for some odd reason the ArcId changes
-  if (!this->Source)
-    {
-    //create an arc provider for this arc
-    this->Source = builder->createSource("CmbArcGroup", "ArcProvider",
-                                        core->getActiveServer());
-    }
-
-  //tell the provider the arc id it needs to be connected too
-  vtkSMProxy *sourceProxy = this->Source->getProxy();
-  vtkSMPropertyHelper(sourceProxy,"ArcId").Set(-1);
-  sourceProxy->UpdateVTKObjects();
-  vtkSMPropertyHelper(sourceProxy,"ArcId").Set(this->ArcId);
-  sourceProxy->UpdateVTKObjects();
-
-  //key line to tell the client to re-render the arc
-  //this is needed since another arc could have caused this
-  //arc to move.
-  sourceProxy->MarkModified(NULL);
-  vtkSMSourceProxy::SafeDownCast(sourceProxy)->UpdatePipeline();
-
-/*
-  if (!this->getRepresentation())
-    {
-    pqDataRepresentation* repr = builder->createDataRepresentation(
-      this->Source->getOutputPort(0), view, "GeometryRepresentation");
-    this->setRepresentation(repr);
-    }
-*/
-  //this->Superclass::updateRepresentation();
 }
 
 //-----------------------------------------------------------------------------

@@ -24,10 +24,12 @@ ADD_SMTK_UI_VIEW(
 
 add_paraview_plugin(
   smtkPolygonSessionPlugin "1.0"
+  SERVER_MANAGER_XML smconfig.xml
   SERVER_SOURCES sessionInit.cxx
   GUI_INTERFACES ${OUTIFACES}
   GUI_SOURCES ${OUTSRCS} ${MOC_SRCS} ${UI_SRCS}
               qtPolygonEdgeOperationView.cxx
+  CS_KITS vtkSMTKWidgetsExt
   )
 
 target_link_libraries(smtkPolygonSessionPlugin
@@ -39,5 +41,6 @@ target_link_libraries(smtkPolygonSessionPlugin
     vtkPVServerManagerApplication
   LINK_PRIVATE
     vtkPVServerManagerApplicationCS
+    vtkSMTKWidgetsExtCS
 )
 smtk_install_library(smtkPolygonSessionPlugin)

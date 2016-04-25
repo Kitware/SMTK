@@ -15,6 +15,7 @@
 #define __smtk_polygon_pq_Arc_h
 
 #include "smtk/bridge/polygon/qt/Exports.h"
+#include "smtk/PublicPointerDefs.h"
 #include <QObject>
 #include <QPointer>
 #include "vtkType.h"
@@ -32,30 +33,19 @@ class vtkIdTypeArray;
 class  SMTKPOLYGONQTEXT_EXPORT pqPolygonArc : public QObject
 {
   Q_OBJECT
+
 public:
   //Description: Default constructor that than
   //needs createArc called on once its input for arc shape is created
   pqPolygonArc(QObject * parent = 0);
 
-  //Description: Constructor that takes in the proxy
-  //to call createArc on.
-  pqPolygonArc(vtkSMSourceProxy *proxy);
-
   virtual ~pqPolygonArc();
 
   //Description:
-  //The server side arc has already been created, we just
-  //need to create the client side object and the representation.
-  //this called after a split operation
-  //Note: This doesn't change to make sure the arcId exists on the
-  //server so watch out!
-  virtual bool createArc(const vtkIdType& arcId);
-
-  //Description:
   //Creates the server side arc from the widget poly data that is passed in
-  //this method can only be called once per cmbArc.
+  //this method can only be called once per polygonArc.
   //returns true if it created the arc
-  virtual bool createArc(vtkSMNewWidgetRepresentationProxy *widget);
+  virtual bool createEdge(vtkSMNewWidgetRepresentationProxy *widget);
 
   //Description:
   //Edit this arc representation with the widget proxy passed in
@@ -86,7 +76,8 @@ public:
   virtual bool isDefaultConstrained() const{return true;}
 //  vtkPVArcInfo* getArcInfo();
 
-  vtkIdType getArcId(){return ArcId;}
+  smtk::shared_ptr<smtk::model::Operator> edgeOperator();
+  void setEdgeOperator(smtk::model::OperatorPtr edgeOp);
 
   bool isClosedLoop();
   int getClosedLoop();
@@ -116,16 +107,13 @@ public:
   virtual void unsetMarkedForDeletion();
 
   void arcIsModified();
-  virtual void updateRepresentation();
+
+signals:
+  void operationRequested(const smtk::model::OperatorPtr& brOp);
+
 protected:
 
   //vtkPVArcInfo *ArcInfo;
-
-  //Description:
-  //Creates the server side arc from the proxy poly data that is passed in
-  //this method can only be called once per cmbArc.
-  //returns true if it created the arc
-  virtual bool createArc(vtkSMSourceProxy *proxy);
 
   virtual void setRepresentation(pqDataRepresentation *rep);
   void updatePlaneProjectionInfo(vtkSMNewWidgetRepresentationProxy *widget);
@@ -145,6 +133,6 @@ protected:
 
   vtkIdType ArcId;
   QPointer<pqPipelineSource> Source;
-
+  smtk::weak_ptr<smtk::model::Operator> m_edgeOp;
 };
 #endif

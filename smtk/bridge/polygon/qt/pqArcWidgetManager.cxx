@@ -46,7 +46,7 @@ pqArcWidgetManager::pqArcWidgetManager(pqServer *server, pqRenderView *view)
   //server and view need to be set before we call createContourWidget
   this->Server = server;
   this->View = view;
-  this->Widget = NULL;
+  this->ArcWidget = NULL;
 
   this->EditWidget = NULL;
   this->ActiveWidget = NULL;
@@ -55,19 +55,25 @@ pqArcWidgetManager::pqArcWidgetManager(pqServer *server, pqRenderView *view)
 //-----------------------------------------------------------------------------
 pqArcWidgetManager::~pqArcWidgetManager()
 {
-  this->Server = NULL;
+  this->reset();
+}
 
-  if ( this->Widget )
+//-----------------------------------------------------------------------------
+void pqArcWidgetManager::reset()
+{
+  this->Server = NULL;
+  this->setActiveArc(NULL);
+  if ( this->ArcWidget )
     {
     //if a widget is deleted without having an active view it throws errors
-    if ( this->View && !this->Widget->view() )
+    if ( this->View && !this->ArcWidget->view() )
       {
-      this->Widget->setView(this->View);
+      this->ArcWidget->setView(this->View);
       }
 
-    delete this->Widget;
+    delete this->ArcWidget;
     }
-  this->Widget = NULL;
+  this->ArcWidget = NULL;
   if ( this->EditWidget )
     {
     delete this->EditWidget;
@@ -80,6 +86,15 @@ pqArcWidgetManager::~pqArcWidgetManager()
 pqPolygonArc* pqArcWidgetManager::getActiveArc()
 {
   return this->Arc;
+}
+void pqArcWidgetManager::setActiveArc(pqPolygonArc* arc)
+{
+  if(this->Arc != arc)
+    {
+    if(this->Arc)
+      delete this->Arc;
+    this->Arc = arc;
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -94,28 +109,28 @@ int pqArcWidgetManager::create()
   bool created = false;
   int normal;
   double planepos;
-  if ( !this->Widget )
+  if ( !this->ArcWidget )
     {
-    this->Widget = this->createDefaultContourWidget(normal, planepos);
-    QObject::connect(this->Widget,SIGNAL(contourDone()),
-      this,SLOT(updateArcNode()));
+    this->ArcWidget = this->createDefaultContourWidget(normal, planepos);
+    QObject::connect(this->ArcWidget,SIGNAL(contourDone()),
+      this,SLOT(createEdge()));
     created = true;
     }
 
   if ( !created )
     {
-    this->Widget->setView(this->View);
+    this->ArcWidget->setView(this->View);
     this->getDefaultArcPlane(normal, planepos);
     this->resetArcPlane(normal, planepos);
-    this->Widget->setView(this->View);
-    this->Widget->setWidgetVisible(true);
+    this->ArcWidget->setView(this->View);
+    this->ArcWidget->setWidgetVisible(true);
 
-    vtkSMPropertyHelper(this->Widget->getWidgetProxy(), "Enabled").Set(1);
-    this->Widget->getWidgetProxy()->UpdateVTKObjects();
-    this->Widget->showWidget();
+    vtkSMPropertyHelper(this->ArcWidget->getWidgetProxy(), "Enabled").Set(1);
+    this->ArcWidget->getWidgetProxy()->UpdateVTKObjects();
+    this->ArcWidget->showWidget();
     }
 
-  this->Widget->select();
+  this->ArcWidget->select();
 /*
   if(this->Node != NULL)
     {
@@ -132,7 +147,7 @@ int pqArcWidgetManager::create()
     this->Arc->setPlaneProjectionNormal(normal);
     this->Arc->setPlaneProjectionPosition(planepos);
     }
-  this->ActiveWidget = this->Widget;
+  this->ActiveWidget = this->ArcWidget;
   return 1;
 }
 
@@ -177,7 +192,7 @@ int pqArcWidgetManager::edit()
 }
 
 //-----------------------------------------------------------------------------
-void pqArcWidgetManager::updateArcNode()
+void pqArcWidgetManager::createEdge()
 {
   if ( !this->Arc )
     {
@@ -189,8 +204,9 @@ void pqArcWidgetManager::updateArcNode()
   pqPolygonArc* obj = this->Arc;
   if ( obj )
     {
-    vtkSMNewWidgetRepresentationProxy *widget = this->Widget->getWidgetProxy();
-
+    vtkSMNewWidgetRepresentationProxy *widget = this->ArcWidget->getWidgetProxy();
+    obj->createEdge(widget);
+/*
     //if the object hasn't been created yet update will call createArc
     //this way we don't have to check here
     QList<vtkIdType> newArcIds;
@@ -207,28 +223,29 @@ void pqArcWidgetManager::updateArcNode()
         }
       }
     arcIdsFromSplit->Delete();
-/*
+
     //make sure the model rep is visible, it would be hidden if we can from edit mode
     pqDataRepresentation *modelRep = obj->getRepresentation();
     if(modelRep)
       {
       modelRep->setVisible(true);
       }
-*/
+
     //pass onto the scene tree that this scene polyline is finished being editing
     //it needs the signal so that the tree can split the arcset into arcs.
     //Also this is need to make all the arc representation rerender to fix
     //any old end nodes hanging around
       emit this->ArcSplit2(this->Arc, newArcIds);
+*/
    }
 
   //update the object
-  this->Widget->setVisible(false);
-  this->Widget->reset();
-  this->Widget->removeAllNodes();
-  this->Widget->setWidgetVisible(false);
-  this->Widget->getWidgetProxy()->UpdatePropertyInformation();
-  this->Widget->setView(NULL);
+  this->ArcWidget->setVisible(false);
+  this->ArcWidget->reset();
+  this->ArcWidget->removeAllNodes();
+  this->ArcWidget->setWidgetVisible(false);
+  this->ArcWidget->getWidgetProxy()->UpdatePropertyInformation();
+  this->ArcWidget->setView(NULL);
   this->ActiveWidget = NULL;
 
   this->Arc = NULL;
@@ -329,7 +346,7 @@ pqArcWidget* pqArcWidgetManager::createContourWidget(
 
   vtkSMProxy* repProxy =
     widget->getWidgetProxy()->GetRepresentationProxy();
-  widget->setObjectName("CmbSceneContourWidget");
+  widget->setObjectName("smtkArcWidget");
 
   vtkSMPropertyHelper(pointplacer, "ProjectionNormal").Set(normal);
   vtkSMPropertyHelper(pointplacer, "ProjectionPosition").Set(position);
@@ -401,7 +418,7 @@ pqPolygonArc* pqArcWidgetManager::createLegacyV1Contour(
     }
 
   pqPolygonArc *obj = new pqPolygonArc();
-  obj->createArc(widgetProxy);
+  obj->createEdge(widgetProxy);
 
   //obj->SetPlaneProjectionNormal(normal);
   //obj->SetPlaneProjectionPosition(position);
@@ -447,7 +464,7 @@ void pqArcWidgetManager::resetArcPlane(
 {
   vtkSMProxyProperty* proxyProp =
     vtkSMProxyProperty::SafeDownCast(
-    this->Widget->getWidgetProxy()->GetProperty("PointPlacer"));
+    this->ArcWidget->getWidgetProxy()->GetProperty("PointPlacer"));
   if (proxyProp && proxyProp->GetNumberOfProxies())
     {
     vtkSMProxy* pointplacer = proxyProp->GetProxy(0);
