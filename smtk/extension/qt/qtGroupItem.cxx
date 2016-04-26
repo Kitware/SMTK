@@ -27,6 +27,7 @@
 #include <QToolButton>
 #include <QTableWidget>
 #include <QCoreApplication>
+#include <QHeaderView>
 
 using namespace smtk::attribute;
 
@@ -40,7 +41,6 @@ public:
   QList<QToolButton*> MinusButtonIndices;
   QPointer<QToolButton> AddItemButton;
   QPointer<QTableWidget> ItemsTable;
-  bool creatingWidget;
 };
 
 //----------------------------------------------------------------------------
@@ -92,7 +92,6 @@ void qtGroupItem::createWidget()
     {
     return;
     }
-  this->Internals->creatingWidget = true;
 
   QString title = item->label().empty() ? item->name().c_str() : item->label().c_str();
   QGroupBox* groupBox = new QGroupBox(title, this->parentWidget());
@@ -124,7 +123,6 @@ void qtGroupItem::createWidget()
     connect(groupBox, SIGNAL(toggled(bool)),
             this, SLOT(setEnabledState(bool)));
     }
-  this->Internals->creatingWidget = false;
 }
 
 //----------------------------------------------------------------------------
@@ -364,6 +362,7 @@ void qtGroupItem::addItemsToTable(int i)
     {
     this->Internals->ItemsTable = new QTableWidget(this->Internals->ChildrensFrame);
     this->Internals->ItemsTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    //this->Internals->ItemsTable->horizontalHeader()->setStretchLastSection(true);
     //this->Internals->ItemsTable->setFixedHeight(120);
     this->Internals->ItemsTable->setColumnCount(1); // for minus button
     frameLayout->addWidget(this->Internals->ItemsTable);
@@ -378,7 +377,7 @@ void qtGroupItem::addItemsToTable(int i)
     {
     smtk::attribute::ItemPtr attItem = item->item(i, static_cast<int>(j));
     qtItem* childItem = qtAttribute::createItem(attItem, this->Widget,
-      this->baseView(), Qt::Vertical);
+      this->baseView(), Qt::Horizontal);
     if(childItem)
       {
       if(added == 0)
@@ -435,10 +434,9 @@ void qtGroupItem::addItemsToTable(int i)
 //----------------------------------------------------------------------------
 void qtGroupItem::onChildWidgetSizeChanged()
 {
-  if(this->Internals->ItemsTable && !this->Internals->creatingWidget)
+  if(this->Internals->ItemsTable)
     {
     this->Internals->ItemsTable->resizeColumnsToContents();
-    QCoreApplication::processEvents();
     this->Internals->ItemsTable->resizeRowsToContents();
     }
 }
