@@ -19,7 +19,8 @@ using namespace smtk::attribute;
 FileItemDefinition::
 FileItemDefinition(const std::string &myName):
   ItemDefinition(myName), m_shouldExist(false), m_shouldBeRelative(false),
-  m_useCommonLabel(false), m_numberOfRequiredValues(1), m_hasDefault(false)
+  m_useCommonLabel(false), m_numberOfRequiredValues(1), m_maxNumberOfValues(0),
+  m_hasDefault(false), m_isExtensible(false)
 {
 }
 
@@ -56,22 +57,32 @@ smtk::attribute::ItemPtr FileItemDefinition::buildItem(Item *owningItem,
                                               subGroupPosition));
 }
 //----------------------------------------------------------------------------
-void FileItemDefinition::setNumberOfRequiredValues(std::size_t esize)
+bool FileItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {
   if (esize == this->m_numberOfRequiredValues)
     {
-    return;
+    return true;
     }
+  if (this->m_maxNumberOfValues && (esize > this->m_maxNumberOfValues))
+    {
+    return false;
+    }
+
   this->m_numberOfRequiredValues = esize;
-  if (!this->m_useCommonLabel)
+  if (!this->hasValueLabels())
+    {
+    return true;
+    }
+  if (!(this->m_useCommonLabel || this->m_isExtensible))
     {
     this->m_valueLabels.resize(esize);
     }
+  return true;
 }
 //----------------------------------------------------------------------------
 void FileItemDefinition::setValueLabel(std::size_t element, const std::string &elabel)
 {
-  if (this->m_numberOfRequiredValues == 0)
+  if (this->m_isExtensible)
     {
     return;
     }
@@ -113,6 +124,23 @@ void FileItemDefinition::setDefaultValue(const std::string& val)
   this->m_hasDefault = true;
 }
 //----------------------------------------------------------------------------
+void FileItemDefinition::setIsExtensible(bool mode)
+{
+  this->m_isExtensible = mode;
+  if (!this->hasValueLabels())
+    {
+    // If there are no value labels there is nothing to do
+    return;
+    }
+
+  if (mode && !this->usingCommonLabel())
+    {
+    // Need to clear individual labels - can only use common label with
+    // extensible values
+    this->setCommonValueLabel("");
+    }
+}
+//----------------------------------------------------------------------------
 smtk::attribute::ItemDefinitionPtr
 smtk::attribute::FileItemDefinition::
 createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
@@ -143,6 +171,7 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
   instance->setShouldExist(m_shouldExist);
   instance->setShouldBeRelative(m_shouldBeRelative);
   instance->setFileFilters(m_fileFilters);
+  instance->setIsExtensible(m_isExtensible);
 
   if (m_hasDefault)
     {

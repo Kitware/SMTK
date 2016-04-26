@@ -38,6 +38,7 @@ namespace smtk
       {return this->m_values.size();}
       bool  setNumberOfValues(std::size_t newSize);
       std::size_t numberOfRequiredValues() const;
+      bool isExtensible() const;
       std::string value(std::size_t element=0) const
       {return this->m_values[element];}
       bool setValue(const std::string &val)
@@ -53,7 +54,7 @@ namespace smtk
       {return this->m_isSet[element];}
       virtual void unset(std::size_t element=0)
       {this->m_isSet[element] = false;}
-      
+
       // Assigns this item to be equivalent to another.  Options are processed by derived item classes
       // Returns true if success and false if a problem occured.  Does not use options.
       virtual bool assign(smtk::attribute::ConstItemPtr &sourceItem, unsigned int options = 0);

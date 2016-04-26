@@ -90,6 +90,17 @@ std::size_t FileItem::numberOfRequiredValues() const
   return def->numberOfRequiredValues();
 }
 //----------------------------------------------------------------------------
+bool FileItem::isExtensible() const
+{
+  const FileItemDefinition *def =
+    static_cast<const FileItemDefinition*>(this->m_definition.get());
+  if (!def)
+    {
+    return false;
+    }
+  return def->isExtensible();
+}
+//----------------------------------------------------------------------------
 bool FileItem::shouldBeRelative() const
 {
   const FileItemDefinition *def =
@@ -151,7 +162,7 @@ FileItem::appendValue(const std::string &val)
   //First - are we allowed to change the number of values?
   const FileItemDefinition *def =
     static_cast<const FileItemDefinition *>(this->definition().get());
-  if (def->numberOfRequiredValues() != 0)
+  if (def->isExtensible() != 0)
     {
     return false; // The number of values is fixed
     }
@@ -171,7 +182,7 @@ FileItem::removeValue(std::size_t element)
   //First - are we allowed to change the number of values?
   const FileItemDefinition *def =
     static_cast<const FileItemDefinition *>(this->definition().get());
-  if ( def->numberOfRequiredValues() != 0 )
+  if ( def->isExtensible() != 0 )
     {
     return false; // The number of values is fixed
     }
@@ -225,12 +236,12 @@ bool FileItem::assign(ConstItemPtr &sourceItem, unsigned int options)
   // Assigns my contents to be same as sourceItem
   smtk::shared_ptr<const FileItem > sourceFileItem =
     smtk::dynamic_pointer_cast<const FileItem>(sourceItem);
-  
+
   if (!sourceFileItem)
     {
     return false; // Source is not a file item
     }
-  
+
   // copy all recentValues list
   this->m_recentValues.clear();
   this->m_recentValues.insert(m_recentValues.end(),
@@ -248,13 +259,13 @@ bool FileItem::assign(ConstItemPtr &sourceItem, unsigned int options)
       this->unset(i);
       }
     }
-  
+
   return Item::assign(sourceItem, options);
 }
 
 //----------------------------------------------------------------------------
 void FileItem::addRecentValue(const std::string& val)
-{ 
+{
   if(std::find(this->m_recentValues.begin(), this->m_recentValues.end(), val)
      == this->m_recentValues.end())
     this->m_recentValues.push_back(val);
