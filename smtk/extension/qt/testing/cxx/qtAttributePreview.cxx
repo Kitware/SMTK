@@ -177,7 +177,7 @@ int main(int argc, char *argv[])
   widget->show();
 //  uiManager->rootView()->showAdvanceLevel(0);
   int retcode = app->exec();
-
+  QCoreApplication::processEvents();
   if (argc > 2)
     {
     char *outputPath = argv[2];
