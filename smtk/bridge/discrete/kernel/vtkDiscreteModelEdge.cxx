@@ -239,6 +239,13 @@ bool vtkDiscreteModelEdge::Split(
   // if a model vertex already exists at splitPointId we don't need to split
   vtkSmartPointer<vtkIdList> pointCells =
     vtkSmartPointer<vtkIdList>::New();
+  poly->GetPointCells(modelEdgeEndPoint, pointCells);
+  if(pointCells->GetNumberOfIds() != 1 &&
+     (pointCells->GetNumberOfIds() != 2 && modelEdgeStartPoint == modelEdgeEndPoint))
+    {
+    vtkWarningMacro("Improper grid.");
+    return 0;
+    }
   poly->GetPointCells(splitPointId, pointCells);
   if(pointCells->GetNumberOfIds() < 2)
     {
@@ -247,23 +254,16 @@ bool vtkDiscreteModelEdge::Split(
     return 0;
     }
 
-  poly->GetPointCells(modelEdgeEndPoint, pointCells);
-  if(pointCells->GetNumberOfIds() != 1 &&
-     (pointCells->GetNumberOfIds() != 2 && modelEdgeStartPoint == modelEdgeEndPoint))
-    {
-    vtkWarningMacro("Improper grid.");
-    return 0;
-    }
-  // we do a cell walk from the last point id of the edge polydata
-  // to the split point and those are the cells that get assigned to
-  // the new model edge
+  // we do a cell walk from the split point to the end the edge polydata
+  // and those are the cells that get assigned to the new model edge
   vtkSmartPointer<vtkIdList> newModelEdgeCells =
     vtkSmartPointer<vtkIdList>::New();
-  vtkIdType currentCellId = pointCells->GetId(0);
-  newModelEdgeCells->InsertNextId(this->GetMasterCellId(currentCellId));
-  vtkIdType currentPointId = modelEdgeEndPoint;
-  vtkSmartPointer<vtkIdList> tempIds = vtkSmartPointer<vtkIdList>::New();
+  vtkIdType currentCellId = pointCells->GetId(1);
 
+  newModelEdgeCells->InsertNextId(currentCellId);
+
+  vtkIdType currentPointId = splitPointId;
+  vtkSmartPointer<vtkIdList> tempIds = vtkSmartPointer<vtkIdList>::New();
   while(currentCellId >= 0)
     {
     vtkIdType nextCellId = -1;
@@ -273,7 +273,7 @@ bool vtkDiscreteModelEdge::Split(
       if(tempIds->GetId(i) != currentPointId)
         {
         poly->GetPointCells(tempIds->GetId(i), pointCells);
-        if(tempIds->GetId(i) == splitPointId)
+        if(tempIds->GetId(i) == modelEdgeEndPoint)
           {
           nextCellId = -2; // stop condition
           }
@@ -284,7 +284,7 @@ bool vtkDiscreteModelEdge::Split(
             if(pointCells->GetId(j) != currentCellId)
               {
               nextCellId = pointCells->GetId(j);
-              newModelEdgeCells->InsertNextId(this->GetMasterCellId(nextCellId));
+              newModelEdgeCells->InsertNextId(nextCellId);
               currentPointId = tempIds->GetId(i);
               }
             }
@@ -298,6 +298,17 @@ bool vtkDiscreteModelEdge::Split(
       }
     currentCellId = nextCellId;
     }
+
+  //Now we convert from local id space to global id space
+    {
+    const vtkIdType size = newModelEdgeCells->GetNumberOfIds();
+    for(vtkIdType s=0; s < size; ++s)
+      {
+      const vtkIdType mc = this->GetMasterCellId(newModelEdgeCells->GetId(s));
+      newModelEdgeCells->SetId(s, mc);
+      }
+    }
+
   // we could save this for later use but for now assume we should
   // delete to save memory
   poly->DeleteLinks();
