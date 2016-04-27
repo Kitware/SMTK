@@ -1428,6 +1428,13 @@ void XmlDocV1Parser::processFileDef(pugi::xml_node &node,
     idef->setShouldBeRelative(xatt.as_bool());
     }
 
+
+  xatt = node.attribute("Extensible");
+  if (xatt)
+    {
+    idef->setIsExtensible(xatt.as_bool());
+    }
+
   // Lets see if there are labels
   if(node.child("Labels"))
     {
@@ -2416,13 +2423,13 @@ void XmlDocV1Parser::processViews(xml_node &root)
     }
   smtk::common::ViewPtr rootView = this->createView(views, "Group");
   rootView->details().setAttribute("TopLevel", "true");
-  
+
   if (!rootView)
     {
     smtkErrorMacro(this->m_logger, "Can't process Root View");
     return;
     }
-  
+
   xml_node node;
   xml_attribute xatt;
   node = views.child("DefaultColor");
@@ -2435,7 +2442,7 @@ void XmlDocV1Parser::processViews(xml_node &root)
     {
     rootView->details().addChild("InvalidColor").setContents(node.text().get());
     }
-  
+
   node = views.child("AdvancedFontEffects");
   if (node)
     {
@@ -2488,7 +2495,7 @@ void XmlDocV1Parser::processAttributeView(xml_node &node,
     return;
     }
   smtk::common::View::Component &comp = view->details().addChild("AttributeTypes");
-  
+
   for (child = attTypes.child("Type"); child; child = child.next_sibling("Type"))
     {
     comp.addChild("Att").setAttribute("Type", child.text().get());
@@ -2518,7 +2525,7 @@ void XmlDocV1Parser::processInstancedView(xml_node &node,
                      << " for Instanced View: " << view->title());
       continue;
       }
-   
+
     comp.addChild("Att").setAttribute("Type", xatt.value())
       .setAttribute("Name",child.text().get());
     }
@@ -2538,7 +2545,7 @@ void XmlDocV1Parser::processModelEntityView(xml_node &node,
   if (child)
     {
     view->details().addChild("Type").setContents(child.text().get());
-    }    
+    }
 }
 
 //----------------------------------------------------------------------------

@@ -15,6 +15,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/MeshItemDefinition.h"
 #include "smtk/attribute/MeshSelectionItem.h"
@@ -347,7 +348,7 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node &node,
                        << " is out of range for Item: " << item->name());
         break;
         }
-      cid = smtk::common::UUID(xatt.value());    
+      cid = smtk::common::UUID(xatt.value());
 
       //convert back to a handle
       cJSON* jshandle = cJSON_Parse(val.text().get());
@@ -355,7 +356,7 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node &node,
       cJSON_Delete(jshandle);
       smtk::mesh::CollectionPtr c = modelmgr->meshes()->collection(cid);
       smtk::mesh::InterfacePtr interface =c->interface();
-      
+
       if(!interface)
         {
         smtkErrorMacro(this->m_logger, "Expecting a valid interface for mesh item: " << item->name());
@@ -455,7 +456,7 @@ void XmlDocV2Parser::processViews(xml_node &root)
                    "Could not find View's Title - skipping it!");
       continue;
       }
-    
+
     xatt = child.attribute("Type");
     if (xatt)
       {
@@ -487,7 +488,7 @@ void XmlDocV2Parser::processViewComponent(smtk::common::View::Component &comp,
   // Add the attributes of the node to the component
   xml_attribute xatt;
   std::string name;
-  
+
   for (xatt = node.first_attribute(); xatt; xatt = xatt.next_attribute())
     {
     // If this is the top View comp then skip Title and Type Attributes

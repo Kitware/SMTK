@@ -200,10 +200,21 @@ bool FileItem::setNumberOfValues(std::size_t newSize)
     }
 
   //Next - are we allowed to change the number of values?
+  if (!this->isExtensible())
+    {
+    return false; // The number of values is fixed
+    }
+
+  //Next - are we allowed to change the number of values?
   const FileItemDefinition *def =
     static_cast<const FileItemDefinition *>(this->definition().get());
   std::size_t n = def->numberOfRequiredValues();
-  if (n != 0)
+  if (n > newSize)
+    {
+    return false; // The number of values is fixed
+    }
+  n = def->maxNumberOfValues();
+  if (n && n < newSize)
     {
     return false; // The number of values is fixed
     }
