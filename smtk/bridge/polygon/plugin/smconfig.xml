@@ -198,4 +198,30 @@
     </NewWidgetRepresentationProxy>
   </ProxyGroup>
 
+  <ProxyGroup name="polygon_operators">
+
+    <Proxy name="PolygonArcOperator" class="vtkPolygonArcOperator">
+      <Documentation>
+        Operator to convert the line cells in the input polygon to multiple edge(s) in a polygon model
+      </Documentation>
+      
+      <InputProperty
+        name="ArcSource"
+        command="SetArcSource">
+        <ProxyGroupDomain name="groups">
+          <Group name="sources"/>
+          <Group name="filters"/>
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkPolyData" />
+        </DataTypeDomain>
+        <Documentation>
+          Set the polydata of the arc source.
+        </Documentation>
+      </InputProperty>
+
+      <!-- End of PolygonArcOperator -->
+    </Proxy>
+
+  </ProxyGroup>
 </ServerManagerConfiguration>

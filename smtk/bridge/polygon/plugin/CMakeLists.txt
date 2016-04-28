@@ -29,7 +29,9 @@ add_paraview_plugin(
   GUI_INTERFACES ${OUTIFACES}
   GUI_SOURCES ${OUTSRCS} ${MOC_SRCS} ${UI_SRCS}
               qtPolygonEdgeOperationView.cxx
-  CS_KITS vtkSMTKWidgetsExt
+  CS_KITS
+    vtkSMTKWidgetsExt
+    vtkPolygonOperatorsExt
   )
 
 target_link_libraries(smtkPolygonSessionPlugin
@@ -42,5 +44,6 @@ target_link_libraries(smtkPolygonSessionPlugin
   LINK_PRIVATE
     vtkPVServerManagerApplicationCS
     vtkSMTKWidgetsExtCS
+    vtkPolygonOperatorsExtCS
 )
 smtk_install_library(smtkPolygonSessionPlugin)

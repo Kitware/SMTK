@@ -49,6 +49,15 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitEdge.sbt" polygonO
 if(SMTK_ENABLE_VTK_SUPPORT)
   include("${VTK_USE_FILE}")
   list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
+
+  # Don't add the VTK or other subdirectories as they use the
+  # vtk_module_library() macro and vtk/module.cmake file.
+  # The vtk_smtk_process_modules() macro finds all subdirectories
+  # containing a module.cmake file automatically.
+  include (smtkVTKModules)
+  vtk_smtk_setup_module_environment("SMTK")
+  vtk_smtk_process_modules()
+
   set(polygonSrcs ${polygonSrcs}
      operators/Import.cxx
      )

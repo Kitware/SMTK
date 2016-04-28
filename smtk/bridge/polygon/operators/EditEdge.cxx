@@ -30,7 +30,7 @@
 #include "smtk/bridge/polygon/EditEdge_xml.h"
 
 #include "smtk/io/ExportJSON.h"
-
+#include <sstream>
 #include "cJSON.h"
 #include <limits>
 
@@ -186,7 +186,7 @@ bool internal_createModel(smtk::model::Operator::Ptr modOp,
 
 int internal_createEdge(smtk::model::Operator::Ptr edgeOp,
   smtk::attribute::AttributePtr opSpec,
-  smtk::model::EntityRefArray createdEds,
+  smtk::model::EntityRefArray& createdEds,
   const smtk::model::Model& model,
   smtk::io::Logger& logger)
 {
@@ -202,6 +202,10 @@ int internal_createEdge(smtk::model::Operator::Ptr edgeOp,
   smtk::attribute::IntItem::Ptr offsetsItem = spec->findInt("offsets");
   sourceItem = opSpec->find("edge offsets", smtk::attribute::ALL_CHILDREN);
   offsetsItem->assign(sourceItem);
+  smtk::attribute::ConstStringItemPtr nameItem =
+    smtk::dynamic_pointer_cast<const smtk::attribute::StringItem>(
+    opSpec->find("edge name", smtk::attribute::ALL_CHILDREN));
+  std::string edgeName = nameItem->value();
 
   OperatorResult edgeResult = edgeOp->operate();
   if (edgeResult->findInt("outcome")->value() != OPERATION_SUCCEEDED)
@@ -211,13 +215,22 @@ int internal_createEdge(smtk::model::Operator::Ptr edgeOp,
     }
   smtk::attribute::ModelEntityItem::Ptr newEdges = edgeResult->findModelEntity("created");
   createdEds.insert(createdEds.end(), newEdges->begin(), newEdges->end());
-  return newEdges->numberOfValues();
+  smtk::model::EntityRefArray::iterator it;
+  int i=0;
+  for(it = createdEds.begin(); i < createdEds.size() && it != createdEds.end(); ++it, ++i)
+    {
+    std::ostringstream nss(edgeName);
+    // if more than one edge, append a number
+    if(i > 0)
+      nss << i;     
+    it->setName(nss.str());
+    }
+  return createdEds.size();
 
 }
 
 OperatorResult EditEdge::operateInternal()
 {
-  smtk::model::ManagerPtr pstore = this->manager();
   Session* opsession = this->polygonSession();
   // ableToOperate should have verified that model is valid
   smtk::model::Model model = this->specification()->associations()
@@ -284,9 +297,14 @@ OperatorResult EditEdge::operateInternal()
     if(optype == "Create")
       {
       if(newModel)
+        {
         this->addEntityToResult(result, model, CREATED);
+        }
       else
+        {
         this->addEntitiesToResult(result, newEdges, CREATED);
+        this->addEntityToResult(result, model, MODIFIED);
+        }
       }
     if(modEdges.size() > 0)
       this->addEntitiesToResult(result, modEdges, MODIFIED);

@@ -72,6 +72,10 @@
             </Structure>
           </DiscreteInfo>
         </String>
+
+        <Int Name="HelperGlobalID" Label="Unique global ID for a helper object" AdvanceLevel="11" NumberOfRequiredValues="1" Optional="true">
+          <DefaultValue>0</DefaultValue>
+        </Int>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->

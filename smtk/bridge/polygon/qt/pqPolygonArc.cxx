@@ -35,42 +35,10 @@
 #include "vtkSMProxyProperty.h"
 #include "vtkSMProxyManager.h"
 #include "vtkSMSourceProxy.h"
-//#include "vtkPVArcInfo.h"
+#include "vtkSMSession.h"
 #include "vtkNew.h"
 
-#include "vtk3DWidgetRepresentation.h"
-#include "vtkContourWidget.h"
-#include "vtkPolyData.h"
-#include "vtkPoints.h"
-
-//----------------------------------------------------------------------------
-void polyLines2modelEdges(vtkPolyData *mesh,
-                         smtk::attribute::DoubleItem::Ptr pointsItem,
-                         vtkIdType *pts, vtkIdType npts)
-{
-  double p[3];
-  // create edge for current line cell
-  pointsItem->setNumberOfValues(npts * 3);
-  for (vtkIdType j=0; j < npts; ++j)
-    {
-    mesh->GetPoint(pts[j],p);
-    for (int i = 0; i < 3; ++i)
-      {
-      pointsItem->setValue(3 * j + i, p[i]);
-      }
-    }
-/*
-  OperatorResult edgeResult = edgeOp->operate();
-  if (edgeResult->findInt("outcome")->value() != OPERATION_SUCCEEDED)
-    {
-    smtkDebugMacro(logger, "\"create edge\" op failed to creat edge with given line cells.");
-    return 0;
-    }
-  smtk::attribute::ModelEntityItem::Ptr newEdges = edgeResult->findModelEntity("created");
-  createdEds.insert(createdEds.end(), newEdges->begin(), newEdges->end());
-  return newEdges->numberOfValues();
-*/
-}
+#include "vtkClientServerStream.h"
 
 //-----------------------------------------------------------------------------
 pqPolygonArc::pqPolygonArc(QObject * prnt)
@@ -130,43 +98,36 @@ bool pqPolygonArc::createEdge(vtkSMNewWidgetRepresentationProxy *widgetProxy)
   smtk::attribute::AttributePtr spec = this->edgeOperator()->specification();
   if(spec->type() != "edit edge")
     return false;
-
-  vtk3DWidgetRepresentation* widgetRep = vtk3DWidgetRepresentation::SafeDownCast(
-    widgetProxy->GetClientSideObject());
-  if(!widgetRep || !widgetRep->GetRepresentation())
+  smtk::attribute::IntItem::Ptr opProxyIdItem =
+    this->edgeOperator()->specification()->findInt("HelperGlobalID");
+  if(!opProxyIdItem)
     return false;
-  vtkContourWidget* widget = vtkContourWidget::SafeDownCast(widgetRep->GetWidget());
-  vtkSMTKArcRepresentation *rep = vtkSMTKArcRepresentation::
-    SafeDownCast(widgetRep->GetRepresentation());
-  if(rep)
-    {
-    vtkPolyData *pd = rep->GetContourRepresentationAsPolyData();
-    std::cout << "contour points: " << pd->GetNumberOfPoints() << std::endl;
-    std::cout << "contour cells: " << pd->GetNumberOfCells() << std::endl;
-    vtkCellArray* lines = pd->GetLines();
-    std::cout << "line cells: " << lines->GetNumberOfCells() << std::endl;
 
-    // If less than 2 points, we can't define an edge
-    if (lines && pd->GetPoints()->GetNumberOfPoints() >= 2)
-      {
-  //    spec->associateEntity(model);
-      smtk::attribute::DoubleItem::Ptr pointsItem = spec->findAs<smtk::attribute::DoubleItem>(
-                  "edge points", smtk::attribute::ALL_CHILDREN);
-      vtkIdType *pts,npts;
-      lines->InitTraversal();
-      while(lines->GetNextCell(npts,pts))
-        {
-        // create edge for current line cell
-        polyLines2modelEdges(pd, pointsItem, pts, npts);
-        emit this->operationRequested(this->edgeOperator());
-        }
+  vtkSMProxy* smPolyEdgeOp = vtkSMProxyManager::GetProxyManager()->NewProxy(
+    "polygon_operators", "PolygonArcOperator");
+  if(!smPolyEdgeOp)
+    return false;
+  smPolyEdgeOp->UpdateVTKObjects();
 
-      //update the plane normal and position
-      this->updatePlaneProjectionInfo(widgetProxy);
-      return true;
-      }
-    }
-  return false;
+  // create the vtkPolygonArcOperator proxy, and set its ArcSource with
+  // the coutour representation.
+  vtkSMProxy* repProxy = widgetProxy->GetRepresentationProxy();
+  repProxy->UpdateVTKObjects();
+  vtkClientServerStream stream;
+  stream  << vtkClientServerStream::Invoke
+          << VTKOBJECT(repProxy) << "GetContourRepresentationAsPolyData"
+          << vtkClientServerStream::End
+          << vtkClientServerStream::Invoke
+          << VTKOBJECT(smPolyEdgeOp) << "SetArcSource"
+          << vtkClientServerStream::LastResult
+          << vtkClientServerStream::End;
+  smPolyEdgeOp->GetSession()->ExecuteStream(smPolyEdgeOp->GetLocation(), stream);
+  // Now set the GlobalId of smPolyEdgeOp proxy to the edge op, and later
+  // on the GlobalId will be used to find the proxy
+    // for Create and Edit operation, we need arc source
+  opProxyIdItem->setValue(smPolyEdgeOp->GetGlobalID());
+  emit this->operationRequested(this->edgeOperator());
+  return true;
 }
 
 //-----------------------------------------------------------------------------

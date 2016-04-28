@@ -44,6 +44,7 @@ target_link_libraries(smtkPolygonQtExt LINK_PUBLIC
   pqApplicationComponents
   smtkCore
   smtkPQWidgetsExt
+  vtkPolygonOperatorsExt
 )
 
 smtk_export_header(smtkPolygonQtExt Exports.h)
