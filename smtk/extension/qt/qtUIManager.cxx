@@ -37,7 +37,7 @@
 #include <QLineEdit>
 #include <QFontMetrics>
 #include <QToolButton>
-#include <QStackedLayout>
+#include <QSpacerItem>
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -651,12 +651,11 @@ QWidget* qtUIManager::createExpressionRefWidget(
   QFrame* checkFrame = new QFrame(pWidget);
   QHBoxLayout* mainlayout = new QHBoxLayout(checkFrame);
 
-  QToolButton* funCheck = new QToolButton(pWidget);
+  QToolButton* funCheck = new QToolButton(checkFrame);
   funCheck->setCheckable(true);
   QString resourceName(":/icons/attribute/function.png");
   funCheck->setIconSize(QSize(13, 13));
   funCheck->setIcon(QIcon(resourceName));
-//  funCheck->setLayoutDirection(Qt::RightToLeft);
   funCheck->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   funCheck->setToolTip("Switch between a constant value or function instance");
   QVariant vdata(elementIdx);
@@ -666,7 +665,7 @@ QWidget* qtUIManager::createExpressionRefWidget(
   funCheck->setProperty("AttItemObj", vobject);
 
   // create combobox for expression reference
-  QComboBox* combo = new QComboBox(pWidget);
+  QComboBox* combo = new QComboBox(checkFrame);
   combo->setProperty("ElementIndex", vdata);
   combo->setProperty("AttItemObj", vobject);
   QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
@@ -686,18 +685,20 @@ QWidget* qtUIManager::createExpressionRefWidget(
   funCheck->setEnabled(result.size() > 0);
 
   // create line edit for expression which is a const value
-  QWidget* valeditor = this->createEditBox(attitem, elementIdx, pWidget, bview);
+  QWidget* valeditor = this->createEditBox(attitem, elementIdx, checkFrame, bview);
 
-  QStackedLayout* stackLayout = new QStackedLayout();
-  stackLayout->addWidget(valeditor);
-  stackLayout->addWidget(combo);
-  stackLayout->setContentsMargins(0,0,0,0);
   mainlayout->addWidget(funCheck);
-  mainlayout->addLayout(stackLayout);
+  mainlayout->addWidget(valeditor);
+  combo->setVisible(0);
+  mainlayout->addWidget(combo);
+  mainlayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding));
   mainlayout->setContentsMargins(0,0,0,0);
-  QVariant vlayout;
-  vlayout.setValue(static_cast<void*>(stackLayout));
-  funCheck->setProperty("StackedLayout", vlayout);
+  QVariant vcombo;
+  vcombo.setValue(static_cast<void*>(combo));
+  funCheck->setProperty("FuncCombo", vcombo);
+  QVariant veditor;
+  veditor.setValue(static_cast<void*>(valeditor));
+  funCheck->setProperty("FuncEditor", veditor);
 
   QObject::connect(funCheck, SIGNAL(toggled(bool)),
     this, SLOT(displayExpressionWidget(bool)));
@@ -722,15 +723,17 @@ void qtUIManager::displayExpressionWidget(bool checkstate)
     {
     return;
     }
-  QStackedLayout* stackLayout =static_cast<QStackedLayout*>(
-    funCheck->property("StackedLayout").value<void *>());
-  if(!stackLayout)
+  QComboBox* combo =static_cast<QComboBox*>(
+    funCheck->property("FuncCombo").value<void *>());
+  QWidget* funcEditor =static_cast<QWidget*>(
+    funCheck->property("FuncEditor").value<void *>());
+
+  if(!combo || !funcEditor)
     {
     return;
     }
-  stackLayout->setCurrentIndex(checkstate ? 1 : 0);
-  QComboBox* combo = qobject_cast<QComboBox*>(stackLayout->currentWidget());
-  if(combo)
+
+  if(checkstate)
     {
     combo->blockSignals(true);
     combo->clear();
@@ -767,6 +770,9 @@ void qtUIManager::displayExpressionWidget(bool checkstate)
     combo->setCurrentIndex(setIndex);
     combo->blockSignals(false);
     }
+
+  funcEditor->setVisible(!checkstate);
+  combo->setVisible(checkstate);
 }
 //----------------------------------------------------------------------------
 void qtUIManager::onExpressionReferenceChanged()
