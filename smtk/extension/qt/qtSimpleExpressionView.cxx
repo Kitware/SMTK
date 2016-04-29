@@ -446,6 +446,7 @@ int qtSimpleExpressionView::getNumberOfComponents()
     }
   return static_cast<int>(itemDefinition->numberOfItemDefinitions());
 }
+
 //----------------------------------------------------------------------------
 void qtSimpleExpressionView::onCreateNew()
 {
@@ -456,23 +457,33 @@ void qtSimpleExpressionView::onCreateNew()
     {
     return;  //This does not support expressions!
     }
-  for(int i=0; i < numRows; i++)
+  // If the Function Parser checkbox is checked, just emit a signal to
+  // give the consumer (e.g. cmb ModelBuilder app) a chance to use its
+  // function parser to create a function with the a string description.
+  // NOTE:: qtSimpleExpressionView currently does not offer a function parser.
+  if(this->Internals->EditorGroup->isChecked())
     {
-    for(int c=0; c<numberOfComponents-1; c++)
+    this->createFunctionWithExpression();
+    }
+  else
+    {
+    for(int i=0; i < numRows; i++)
       {
-      strVals << "0.0" << "\t";
+      for(int c=0; c<numberOfComponents-1; c++)
+        {
+        strVals << "0.0" << "\t";
+        }
+      strVals << "0.0" << LINE_BREAKER_STRING
       }
-    strVals << "0.0" << LINE_BREAKER_STRING
-      }
-  QString valuesText = strVals.join(" ");
-  smtk::attribute::ValueItemPtr expressionItem =
-    this->getStringDataFromItem(this->Internals->FuncList->currentItem());
-  QString funcExp = expressionItem ?
-    expressionItem->valueAsString().c_str() : "";
+    QString valuesText = strVals.join(" ");
+    smtk::attribute::ValueItemPtr expressionItem =
+      this->getStringDataFromItem(this->Internals->FuncList->currentItem());
+    QString funcExp = expressionItem ?
+      expressionItem->valueAsString().c_str() : "";
 
-  this->buildSimpleExpression(funcExp, valuesText,numberOfComponents);
+    this->buildSimpleExpression(funcExp, valuesText,numberOfComponents);
+    }
 }
-
 
 //----------------------------------------------------------------------------
 void qtSimpleExpressionView::displayExpressionError(
