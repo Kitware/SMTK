@@ -39,6 +39,7 @@
 #include "vtkSMSourceProxy.h"
 #include "vtkAbstractWidget.h"
 #include "vtkNew.h"
+#include <QDebug>
 
 //-----------------------------------------------------------------------------
 pqArcWidgetManager::pqArcWidgetManager(pqServer *server, pqRenderView *view)
@@ -205,39 +206,12 @@ void pqArcWidgetManager::createEdge()
   if ( obj )
     {
     vtkSMNewWidgetRepresentationProxy *widget = this->ArcWidget->getWidgetProxy();
-    obj->createEdge(widget);
-/*
-    //if the object hasn't been created yet update will call createArc
-    //this way we don't have to check here
-    QList<vtkIdType> newArcIds;
-    vtkIdTypeArray *arcIdsFromSplit = vtkIdTypeArray::New();
-    obj->updateArc(widget,arcIdsFromSplit);
-
-    vtkIdType arcIdsSize = arcIdsFromSplit->GetNumberOfTuples();
-    if(arcIdsSize > 0)
+    if(!obj->createEdge(widget))
       {
-      //convert this into a QList of vtkIdTypes so we can emit to the tree
-      for(vtkIdType idx=0; idx < arcIdsSize; ++idx)
-        {
-        newArcIds.push_back(arcIdsFromSplit->GetValue(idx));
-        }
+      qDebug() << "Can't create an edge with given widget!" << widget;
+      return;
       }
-    arcIdsFromSplit->Delete();
-
-    //make sure the model rep is visible, it would be hidden if we can from edit mode
-    pqDataRepresentation *modelRep = obj->getRepresentation();
-    if(modelRep)
-      {
-      modelRep->setVisible(true);
-      }
-
-    //pass onto the scene tree that this scene polyline is finished being editing
-    //it needs the signal so that the tree can split the arcset into arcs.
-    //Also this is need to make all the arc representation rerender to fix
-    //any old end nodes hanging around
-      emit this->ArcSplit2(this->Arc, newArcIds);
-*/
-   }
+    }
 
   //update the object
   this->ArcWidget->setVisible(false);
@@ -248,8 +222,8 @@ void pqArcWidgetManager::createEdge()
   this->ArcWidget->setView(NULL);
   this->ActiveWidget = NULL;
 
-  this->Arc = NULL;
   emit this->Ready();
+  emit this->Finish();
 }
 
 //-----------------------------------------------------------------------------
@@ -260,7 +234,6 @@ void pqArcWidgetManager::editingFinished()
     this->EditWidget->hide();
     }
   this->ActiveWidget = NULL;
-  this->Arc = NULL;
   emit this->Ready();
   emit this->Finish();
 }

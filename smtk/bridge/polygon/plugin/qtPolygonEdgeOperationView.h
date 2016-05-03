@@ -41,6 +41,7 @@ public slots:
 
 protected slots:
   virtual void requestOperation(const smtk::model::OperatorPtr& op);
+  virtual void operationDone();
 
 protected:
   virtual void updateAttributeData();

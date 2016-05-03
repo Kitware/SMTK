@@ -107,7 +107,25 @@ void qtPolygonEdgeOperationView::createWidget( )
 
   this->updateAttributeData();
 }
-
+inline qtAttribute* internal_createAttUI(
+  smtk::attribute::AttributePtr att, QWidget* pw, qtBaseView* view)
+{
+  if(att && att->numberOfItems()>0)
+    {
+    qtAttribute* attInstance = new qtAttribute(att, pw, view);
+    if(attInstance)
+      {
+      //Without any additional info lets use a basic layout with model associations
+      // if any exists
+      attInstance->createBasicLayout(true);
+      attInstance->widget()->setObjectName("polygonEdgeOpEditor");
+      QVBoxLayout* parentlayout = static_cast<QVBoxLayout*> (pw->layout());
+      parentlayout->insertWidget(0, attInstance->widget());
+      return attInstance;
+      }
+    }
+  return NULL;
+}
 //----------------------------------------------------------------------------
 void qtPolygonEdgeOperationView::updateAttributeData()
 {
@@ -155,19 +173,7 @@ void qtPolygonEdgeOperationView::updateAttributeData()
                        operatorsWidget()->existingOperator(defName);
   // expecting only 1 instance of the op?
   smtk::attribute::AttributePtr att = edgeOp->specification();
-  if(att->numberOfItems()>0)
-    {
-    qtAttribute* attInstance = new qtAttribute(att, this->Widget, this);
-    if(attInstance)
-      {
-      //Without any additional info lets use a basic layout with model associations
-      // if any exists
-      attInstance->createBasicLayout(true);
-      attInstance->widget()->setObjectName("polygonEdgeOpEditor");
-      this->Widget->layout()->addWidget(attInstance->widget());
-      this->Internals->CurrentAtt = attInstance;
-      }
-    }
+  this->Internals->CurrentAtt = internal_createAttUI(att, this->Widget, this);
 
   pqRenderView* renView = qobject_cast<pqRenderView*>(pqActiveObjects::instance().activeView());
   pqServer* server = pqApplicationCore::instance()->getActiveServer();
@@ -187,11 +193,12 @@ void qtPolygonEdgeOperationView::updateAttributeData()
   this->Internals->ArcManager->setActiveArc( objArc );
   QObject::connect(objArc, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)),
        this, SLOT(requestOperation(const smtk::model::OperatorPtr&)));
+  QObject::connect(this->Internals->ArcManager, SIGNAL(Finish()),
+                   this, SLOT(operationDone()));
 
   smtk::attribute::StringItem::Ptr optypeItem = att->findString("Operation");
-  std::string optype = optypeItem->value();
-  if(optype.empty())
-    optypeItem->setDiscreteIndex(0);// default to "Create"
+  optypeItem->setToDefault();// default to "Create"
+
   this->valueChanged(optypeItem);
 }
 //----------------------------------------------------------------------------
@@ -199,6 +206,25 @@ void qtPolygonEdgeOperationView::requestOperation(const smtk::model::OperatorPtr
 {
   this->uiManager()->activeModelView()->requestOperation(op, false);
 }
+//----------------------------------------------------------------------------
+void qtPolygonEdgeOperationView::operationDone()
+{
+  // set the operation to "Remove"
+  if(!this->Internals->CurrentAtt || !this->Widget
+     || !this->Internals->ArcManager)
+    return;
+
+  smtk::attribute::AttributePtr att =  this->Internals->CurrentAtt->attribute();
+  smtk::attribute::StringItem::Ptr optypeItem = att->findString("Operation");
+  std::string optype = optypeItem->value();
+  if(optype != "Remove")
+    {
+    optypeItem->setValue("Remove");// set to "Remove Edge"
+    delete this->Internals->CurrentAtt;
+    this->Internals->CurrentAtt = internal_createAttUI(att, this->Widget, this);
+    }
+}
+
 //----------------------------------------------------------------------------
 void qtPolygonEdgeOperationView::valueChanged(smtk::attribute::ItemPtr valitem)
 {
