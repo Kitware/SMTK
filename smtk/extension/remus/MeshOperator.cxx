@@ -12,6 +12,7 @@
 #include "smtk/extension/remus/MeshOperator.h"
 
 #include <remus/client/Client.h>
+#include <remus/proto/SMTKMeshSubmission.h>
 
 #include "smtk/model/Session.h"
 #include "smtk/model/CellEntity.h"
@@ -96,23 +97,18 @@ OperatorResult MeshOperator::operateInternal()
   smtk::attribute::StringItemPtr requirementsItem = this->findString("remusRequirements");
   smtk::attribute::StringItemPtr attributeItem = this->findString("meshingControlAttributes");
 
+  //convert the model and uuids to to mesh to a string representation
+  std::string modelSerialized = smtk::io::ExportJSON::fromModelManager(this->manager());
+  std::string modelUUIDSSerialized = extractModelUUIDSAsJSON(models);
 
   //deserialize the reqs from the string
   std::istringstream buffer( requirementsItem->value() );
   remus::proto::JobRequirements reqs; buffer >> reqs;
 
-  remus::proto::JobSubmission submission(reqs);
-  remus::proto::JobContent meshingControls(reqs.formatType(), attributeItem->value() );
-
-  //create a JobContent that contains the location were to save the output
-  //of the mesher
-  submission["meshing_attributes"] = meshingControls;
-
-  std::string modelSerialized = smtk::io::ExportJSON::fromModelManager(this->manager());
-  submission["model"] = remus::proto::make_JobContent(modelSerialized);
-
-  std::string modelUUIDSSerialized = extractModelUUIDSAsJSON(models);
-  submission["modelUUIDS"] = remus::proto::make_JobContent( modelUUIDSSerialized );
+  remus::proto::SMTKMeshSubmission submission(reqs);
+  submission.model( modelSerialized, remus::common::ContentFormat::JSON );
+  submission.attributes( attributeItem->value(), remus::common::ContentFormat::XML );
+  submission.modelItemsToMesh( modelUUIDSSerialized, remus::common::ContentFormat::JSON );
 
   //now that we have the submission, construct a remus client to submit it
   const remus::client::ServerConnection conn =
