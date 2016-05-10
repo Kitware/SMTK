@@ -25,28 +25,37 @@ class Session;
   * specification to be returned to the client.
   *
   * The operator's remusRequirements attribute holds the exact requirements
-  * to be used to submit the job. These need to be added to a job submission
-  * along side the meshingControlAttributes and all the control keys. See
-  * bottom of this doc on what all the job submission keys are
+  * to be used to submit the job. These need to be given to the SMTKMeshSubmission,
+  * during construction alongside the serialized model, serialized meshingControlAttributes,
+  * and the UUIDS of models that you want meshed.
   *
-  * The operator's meshingControlAttributes attribute holds a serialized smtk attribute
-  * instance that defines all the relevant meshing controls for the given worker
+  * Required Input:
   *
-  * The operator's endpoint attribute holds how to connect to the remus
-  * server, this will generally looks like tcp://127.0.0.1:50505
+  * Key ["endpoint"]:  Holds how to connect to the remus server, this will
+  *                    generally looks like tcp://127.0.0.1:50505
   *
-  * This operator submits a job to a remus server. The JobSubmission it
-  * submits will have the following key/value pairs.
+  * Key ["remusRequirements"]: The filled out requirements of the worker
   *
-  *
-  * Required Keys:
-  *
-  * Key ["meshing_attributes"]: The contents of the meshingControlAttributes string
-  *
-  * Key ["model"]: The input model serialized as a json string OR the path
-  *                to the model if we are unable to serialize it.
+  * Key ["meshingControlAttributes"]: The attribute system of the worker
   *
   *
+  *
+  * This operator submits a job to a remus server. The SMTKMeshSubmission it
+  * submits needs to have the model, attribute, and modelItemsToMesh member
+  * data filled in.
+  *
+  *
+  *
+  * Required SMTKMeshSubmission components:
+  *
+  * model(): The input model serialized as a JSON string.
+  * attributes(): The contents of the meshingControlAttributes string
+  * modelItemsToMesh(): an JSON string of the form
+  *   {
+  *     "ids":  ["2add8c09-01f6-457e-9ed9-a75cc833411a", "5ade8c11-6f06-e754-9ad3-e75dd8334325"]
+  *   }
+  *   that lists all the models that you want meshed. Currently this is all
+  *   the models in the manager
   *
   */
 class SMTKREMUSEXT_EXPORT MeshOperator : public Operator
