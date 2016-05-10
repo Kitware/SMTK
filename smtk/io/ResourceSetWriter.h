@@ -30,10 +30,19 @@ namespace smtk {
 class SMTKCORE_EXPORT ResourceSetWriter
 {
  public:
-  bool writeFile(std::string filename, const smtk::common::ResourceSet& resources,
-                 smtk::io::Logger& logger, bool writeLinkedFiles = true);
-  bool writeString(std::string& content, const smtk::common::ResourceSet& resources,
-                   smtk::io::Logger& logger, bool writeLinkedFiles = true);
+  enum LinkedFilesOption
+  {
+    SKIP_LINKED_FILES = 0,
+    EXPAND_LINKED_FILES,
+    WRITE_LINKED_FILES
+  };
+
+  bool writeFile(
+    std::string filename, const smtk::common::ResourceSet& resources,
+    smtk::io::Logger& logger, LinkedFilesOption option = WRITE_LINKED_FILES);
+  bool writeString(
+    std::string& content, const smtk::common::ResourceSet& resources,
+    smtk::io::Logger& logger, LinkedFilesOption option = WRITE_LINKED_FILES);
 
  protected:
 };
