@@ -64,14 +64,8 @@
 # define SRCDIR .
 #endif
 
-#define TEST_OCC
-#ifdef TEST_ACIS
-#  define ENGINE "ACIS"
-#elif defined (TEST_OCC)
-#  define ENGINE "OCC"
-#else
-#  error "Which engine to test?"
-#endif
+// The solid modeling engine we wish to test:
+#define ENGINE "OCC"
 
 #define STRINGIFY_(X) #X
 #define STRINGIFY(X) STRINGIFY_(X)

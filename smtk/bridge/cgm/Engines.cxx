@@ -45,20 +45,6 @@ namespace smtk {
     namespace cgm {
 
 static bool cgmaInitialized = false;
-/* We keep these around because there are no headers for the Cubit(ACIS)
- * engine, even when building against Cubit. There are also no virtual
- * methods to identify which modeler is associated with a Modify or Healer
- * engine pointer. So, the only way to obtain the cubit Modify and Healer
- * engines is to initialize CGMA with Cubit/ACIS as the default engine and,
- * if successful, save pointers the resulting engines.
- *
- * Ugly ugly ugly.
- */
-static bool originalEnginesAreACIS = false;
-static GeometryQueryEngine* originalQueryEngine = NULL;
-static GeometryModifyEngine* originalModifyEngine = NULL;
-static GeometryHealerEngine* originalHealerEngine = NULL;
-
 static std::string s_currentEngine;
 
 bool Engines::areInitialized()
@@ -68,19 +54,6 @@ bool Engines::areInitialized()
 
 bool Engines::isInitialized(const std::string& engine, const std::vector<std::string>& args)
 {
-  // Always try to initialize with ACIS first for reason discussed above.
-  if (!cgmaInitialized && !originalQueryEngine && engine != "ACIS" && engine != "Cubit")
-    {
-    if (Engines::isInitialized("ACIS", args))
-      {
-      originalEnginesAreACIS = true;
-      }
-    cgmaInitialized = originalQueryEngine ? true : false;
-    // OK, we got ACIS defaults, now make the user-requested engine default
-    return Engines::setDefault(engine);
-    }
-
-  // OK, either the user is asking for ACIS or we don't have it anyway...
   std::vector<const char*> targs; // translated arguments
   targs.push_back("smtk"); // input \a args should not provide program name.
   std::vector<std::string>::const_iterator ait;
@@ -98,21 +71,12 @@ bool Engines::isInitialized(const std::string& engine, const std::vector<std::st
   smtk::bridge::cgm::CAUUID::registerWithAttributeManager();
   CubitStatus s = InitCGMA::initialize_cgma(
     engine.empty() ? "OCC" : engine.c_str());
-  if (!originalQueryEngine)
-    {
-    originalQueryEngine = GeometryQueryTool::instance()->get_gqe();
-    originalModifyEngine = GeometryModifyTool::instance()->get_gme();
-    }
   if (GeometryQueryTool::instance())
     {
     const char* modType = GeometryQueryTool::instance()->get_gqe()->modeler_type();
-    // An empty modeler type means Cubit, which means ACIS:
-    s_currentEngine = modType ? modType : "ACIS";
+    s_currentEngine = modType ? modType : "Unknown";
     }
-  if (originalQueryEngine)
-    {
-    cgmaInitialized = true;
-    }
+  cgmaInitialized = true;
   return (s == CUBIT_SUCCESS) ? true : false;
 }
 
@@ -180,8 +144,6 @@ bool Engines::setDefault(const std::string& engine)
   else if (engine == "OCC")
     gme = OCCModifyEngine::instance();
 #endif
-  else if ((engine == "ACIS" || engine == "Cubit") && originalEnginesAreACIS)
-    gme = originalModifyEngine;
   else
     gme = NULL;
   if (gme)
@@ -189,24 +151,7 @@ bool Engines::setDefault(const std::string& engine)
     gmt = GeometryModifyTool::instance(gme);
     }
 
-  /* GeometryHealerEngine does not provide modeler_type().
-   * Nor does GeometryHealerTool provide an instance() method
-   * or a get_ghe() method.
-   *
-  GeometryHealerTool::instance()->get_ghe_list(ghes);
-  for (int i = 0; i < ghes.size(); ++i)
-    {
-    ghe = ghes.get_and_step();
-    std::string modeler = ghe->modeler_type();
-    if (modeler == engineLower)
-      {
-      ght = GeometryHealerTool::instance(ghe);
-      break;
-      }
-    }
-    */
-
-  // For now, we cannot rely on anyone providing a healer.
+  // For now, we cannot rely on anyone providing a healer, so only gmt & gqt are tested:
   defaultChanged = (gmt && gqt ? true : false);
   s_currentEngine = engine;
   return defaultChanged;
@@ -234,13 +179,9 @@ std::vector<std::string> Engines::listEngines()
       continue; // skip, e.g., virtual geometry engine
     const char* kernel = gqe->modeler_type();
     if (!kernel || !kernel[0])
-      { // Cubit is nasty
+      {
       std::string typeName = typeid(*gqe).name();
-      if (typeName.find("AcisQueryEngine") != std::string::npos)
-        {
-        kernel = "ACIS";
-        }
-      else if (typeName.find("FacetQueryEngine") != std::string::npos)
+      if (typeName.find("FacetQueryEngine") != std::string::npos)
         {
         kernel = "FACET";
         }
@@ -259,9 +200,6 @@ bool Engines::shutdown()
 {
   InitCGMA::deinitialize_cgma();
   cgmaInitialized = false;
-  originalQueryEngine = NULL;
-  originalModifyEngine = NULL;
-  originalHealerEngine = NULL;
   return true;
 }
 

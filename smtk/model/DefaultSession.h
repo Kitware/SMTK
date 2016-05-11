@@ -31,7 +31,7 @@ namespace smtk {
   * However, it does provide mechanisms for serialization and deserialization
   * of storage, operators, and operator results.
   * Since Session instances are the interface between modeling kernels such
-  * as OpenCascade or ACIS, this makes them the place where requests must
+  * as OpenCascade, this makes them the place where requests must
   * be forwarded if they are going to be.
   *
   * By default this session will create instances of RemoteOperator
