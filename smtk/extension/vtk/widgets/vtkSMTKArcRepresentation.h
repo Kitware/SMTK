@@ -89,6 +89,18 @@ public:
   // the bounding box of all available points.
   void Rectangularize();
 
+  //Description:
+  // This will make the representation a straight line containing only the
+  // start and end points of the original arc.
+  void Straighten();
+
+  //Description:
+  // Expose method in superClass
+  void InitializeContour( vtkPolyData * poly)
+  {
+    this->Initialize(poly);
+  }
+
 protected:
   vtkSMTKArcRepresentation();
   ~vtkSMTKArcRepresentation();

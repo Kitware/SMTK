@@ -468,13 +468,29 @@ void vtkSMTKArcRepresentation::Initialize( vtkPolyData * pd )
     value |= Point_Original;
     this->ModifiedPointMap->insert(
           std::pair<int,int>(numPointsInLineCells-1,value));
+    this->SetClosedLoop(0);
     }
 
-  // Update the contour representation from the nodes using the line interpolator
-  for (vtkIdType i=1; i <= nPoints; ++i)
+  // Update the contour representation from the nodes using the line interpolator.
+  // NOTE: Don't use UpdateLines(i) for every point because it will call BuildLines(),
+  // which means re-building the line nPoints times!!!
+  if (this->LineInterpolator)
     {
-    this->UpdateLines(i);
+    int indices[2];
+    vtkNew<vtkIntArray> arr;
+    for (vtkIdType i=1; i < nPoints; ++i)
+      {
+      this->LineInterpolator->GetSpan( i, arr.GetPointer(), this );
+      int nNodes = arr->GetNumberOfTuples();
+      for (int i = 0; i < nNodes; i++)
+        {
+        arr->GetTypedTuple( i, indices );
+        this->UpdateLine( indices[0], indices[1] );
+        }
+      }
     }
+
+  this->UpdateLines(nPoints);
   this->BuildRepresentation();
 
   // Show the contour.
@@ -509,6 +525,45 @@ void vtkSMTKArcRepresentation::Rectangularize()
       lineSegments->InsertNextCell(5, arcVerts);
       newContour->SetLines(lineSegments.GetPointer());
       this->Initialize(newContour.GetPointer());
+      }
+    }
+}
+
+//-----------------------------------------------------------------------------
+void vtkSMTKArcRepresentation::Straighten()
+{
+  vtkPolyData* contourPoly = this->GetContourRepresentationAsPolyData();
+  if(contourPoly && contourPoly->GetNumberOfLines() > 0
+     && contourPoly->GetNumberOfPoints() > 2)
+    {
+    vtkCellArray* lines = contourPoly->GetLines();
+    vtkNew<vtkPolyData> newContour;
+    vtkNew<vtkPoints> linePoints;
+    newContour->SetPoints(linePoints.GetPointer());
+    linePoints->SetNumberOfPoints(2);
+    double pt[3];
+    vtkIdType numCells = lines->GetNumberOfCells();
+    if(numCells > 0)
+      {
+      vtkIdType *fpts,fnpts, *lpts, lnpts;
+      lines->GetCell(0, fnpts, fpts);
+      lines->GetCell(numCells - 1, lnpts, lpts);
+      if(fnpts > 0 && lnpts > 0)
+        {
+        contourPoly->GetPoint(fpts[0], pt);
+        linePoints->InsertPoint(0, pt);
+
+        vtkIdType lstP = (this->ClosedLoop && lnpts > 1) ? lnpts - 2 : lnpts - 1;
+        contourPoly->GetPoint(lpts[lstP], pt);
+        linePoints->InsertPoint(1, pt);
+
+        vtkNew<vtkCellArray> lineSegments;
+        vtkIdType arcVerts[2]={0, 1};
+        lineSegments->InsertNextCell(2, arcVerts);
+        newContour->SetLines(lineSegments.GetPointer());
+        this->Initialize(newContour.GetPointer());
+
+        }
       }
     }
 }
