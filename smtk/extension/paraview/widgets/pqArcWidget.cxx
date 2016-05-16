@@ -73,9 +73,18 @@ pqArcWidget::pqArcWidget(
     this, SLOT(updateMode()));
   QObject::connect(this->Internals->Finished, SIGNAL(clicked()),
     this, SLOT(finishContour()));
+  QPushButton* finishButton = this->Internals->Finished;
+  QPalette applyPalette = finishButton->palette();
+  applyPalette.setColor(QPalette::Active, QPalette::Button, QColor(161, 213, 135));
+  applyPalette.setColor(QPalette::Inactive, QPalette::Button, QColor(161, 213, 135));
+  finishButton->setPalette(applyPalette);
+  finishButton->setDefault(true);
+
   QObject::connect(this->Internals->buttonRectArc, SIGNAL(clicked()),
     this, SLOT(generateRectangleArc()));
 
+  QObject::connect(this->Internals->ArcStraightenButton, SIGNAL(released()),
+    this, SLOT(onStraightenArc()));
 
   pqServerManagerModel* smmodel =
     pqApplicationCore::instance()->getServerManagerModel();
@@ -85,7 +94,7 @@ pqArcWidget::pqArcWidget(
 //-----------------------------------------------------------------------------
 pqArcWidget::~pqArcWidget()
 {
-  this->cleanupWidget();
+  this->freeWidget();
   delete this->Internals;
 }
 
@@ -107,14 +116,17 @@ void pqArcWidget::createWidget(pqServer* server)
 }
 
 //-----------------------------------------------------------------------------
-void pqArcWidget::cleanupWidget()
+void pqArcWidget::freeWidget()
 {
   vtkSMNewWidgetRepresentationProxy* widget = this->getWidgetProxy();
 
   if (widget)
     {
+/*
     vtkSMPropertyHelper(widget, "Enabled").Set(1);
+    widget->UpdateVTKObjects();
     widget->InvokeCommand("Initialize");
+*/
     pqApplicationCore::instance()->get3DWidgetFactory()->
       free3DWidget(widget);
     }
@@ -168,7 +180,7 @@ void pqArcWidget::removeAllNodes()
   if (widget)
     {
     widget->InvokeCommand("ClearAllNodes");
-    widget->InvokeCommand("Initialize");
+//    widget->InvokeCommand("Initialize");
     this->setModified();
     this->render();
     }
@@ -283,6 +295,19 @@ void pqArcWidget::generateRectangleArc( )
   emit this->contourDone();
 }
 
+//-----------------------------------------------------------------------------
+void pqArcWidget::onStraightenArc()
+{
+  vtkSMNewWidgetRepresentationProxy* widget = this->getWidgetProxy();
+  if (widget)
+    {
+    widget->InvokeCommand("Straighten");
+    this->setModified();
+    this->render();
+    }
+  emit this->contourDone();
+}
+
 //----------------------------------------------------------------------------
 void pqArcWidget::setPointPlacer(vtkSMProxy* placerProxy)
 {
@@ -306,6 +331,8 @@ void pqArcWidget::reset()
   this->Internals->Closed->blockSignals(true);
   this->Internals->Closed->setEnabled(true);
   this->Internals->Closed->setChecked(false);
+  // consistent with Closed checkbox
+  this->closeLoop(false);
   this->Internals->Closed->blockSignals(false);
 }
 

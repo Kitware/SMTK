@@ -48,16 +48,19 @@ namespace smtk {
     virtual void expungeEntities(
       const smtk::model::EntityRefs& expungedEnts);
     virtual void onOperate();
+    virtual void setOperationTargetActive(const smtk::common::UUID& eid)
+    {emit activateOperationTarget(eid);}
 
   signals:
     void operationRequested(const smtk::model::OperatorPtr& brOp);
     void operationCancelled(const smtk::model::OperatorPtr& brOp);
-    void fileItemCreated(smtk::attribute::qtFileItem* fileItem);
-    void modelEntityItemCreated(smtk::attribute::qtModelEntityItem* entItem);
+    void fileItemCreated(smtk::extension::qtFileItem* fileItem);
+    void modelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem);
     void meshSelectionItemCreated(
-        smtk::attribute::qtMeshSelectionItem* meshItem,
+        smtk::extension::qtMeshSelectionItem* meshItem,
         const std::string& opName, const smtk::common::UUID& uuid);
     void entitiesSelected(const smtk::common::UUIDs&);
+    void activateOperationTarget(const smtk::common::UUID&);
 
   friend class qtModelView;
 
@@ -65,7 +68,7 @@ namespace smtk {
     virtual void onOperationSelected();
     virtual void cancelCurrentOperator();
     virtual void cancelOperator(const std::string& opName);
-    virtual void onMeshSelectionItemCreated(smtk::attribute::qtMeshSelectionItem*);
+    virtual void onMeshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*);
     virtual bool checkExistingOperator(const std::string& opName);
 
   protected:
@@ -77,7 +80,7 @@ namespace smtk {
     qtModelOperationWidgetInternals *Internals;
 
   }; // class
-  }; // namespace extension
+  }; // namespace model
 }; // namespace smtk
 
 

@@ -8,17 +8,14 @@
         <MembershipMask>model</MembershipMask>
         <BriefDescription>The model to which this edge op will be operated on.</BriefDescription>
         <DetailedDescription>
-          The model to which this edge op (create, remove, edit edge) will be operated on.
+          The model to which this edge op (create, edit edge) will be operated on.
         </DetailedDescription>
       </AssociationsDef>
       <ItemDefinitions>
         <String Name="Operation" Label="Operation" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <BriefDescription>operation for the operator</BriefDescription>
           <ChildrenDefinitions>
-            <ModelEntity Name="edit edge" NumberOfRequiredValues="1">
-              <MembershipMask>edge</MembershipMask>
-            </ModelEntity>
-            <ModelEntity Name="remove edge" Extensible="1" NumberOfRequiredValues="0">
+            <ModelEntity Name="edge" NumberOfRequiredValues="1">
               <MembershipMask>edge</MembershipMask>
             </ModelEntity>
 
@@ -61,15 +58,17 @@
             <Structure>
               <Value Enum="Edit Edge">Edit</Value>
               <Items>
-                <Item>edit edge</Item>
+                <Item>edge</Item>
               </Items>
             </Structure>
+<!--
             <Structure>
               <Value Enum="Remove Edge">Remove</Value>
               <Items>
-                <Item>remove edge</Item>
+                <Item>edge</Item>
               </Items>
             </Structure>
+-->
           </DiscreteInfo>
         </String>
 

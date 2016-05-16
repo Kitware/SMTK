@@ -84,7 +84,7 @@ void pqArcWidgetManager::reset()
 }
 
 //-----------------------------------------------------------------------------
-pqPolygonArc* pqArcWidgetManager::getActiveArc()
+pqPolygonArc* pqArcWidgetManager::activeArc()
 {
   return this->Arc;
 }
@@ -101,6 +101,13 @@ void pqArcWidgetManager::setActiveArc(pqPolygonArc* arc)
 //-----------------------------------------------------------------------------
 int pqArcWidgetManager::create()
 {
+  if(this->EditWidget && this->EditWidget->isVisible())
+    {
+    this->EditWidget->hideArcWidget();
+    this->EditWidget->hide();
+    this->ActiveWidget = NULL;
+    }
+
   emit this->Busy();
   if ( !this->Arc )
     {
@@ -132,22 +139,9 @@ int pqArcWidgetManager::create()
     }
 
   this->ArcWidget->select();
-/*
-  if(this->Node != NULL)
-    {
-    pqCMBSceneObjectBase* obj = this->Node->getDataObject();
-    if ( obj  && obj->getType()==pqCMBSceneObjectBase::Arc)
-      {
-      dynamic_cast<pqPolygonArc*>(obj)->setPlaneProjectionNormal(normal);
-      dynamic_cast<pqPolygonArc*>(obj)->setPlaneProjectionPosition(planepos);
-      }
-    }
-  else
-*/
-    {
-    this->Arc->setPlaneProjectionNormal(normal);
-    this->Arc->setPlaneProjectionPosition(planepos);
-    }
+  this->Arc->setPlaneProjectionNormal(normal);
+  this->Arc->setPlaneProjectionPosition(planepos);
+
   this->ActiveWidget = this->ArcWidget;
   return 1;
 }
@@ -155,6 +149,12 @@ int pqArcWidgetManager::create()
 //-----------------------------------------------------------------------------
 int pqArcWidgetManager::edit()
 {
+  if(this->ArcWidget && this->ArcWidget->isVisible())
+    {
+    this->disableArcWidget();
+    this->ActiveWidget = NULL;
+    }
+
   emit this->Busy();
   if ( !this->Arc )
     {
@@ -165,31 +165,47 @@ int pqArcWidgetManager::edit()
     {
     this->EditWidget = new pqArcWidgetPanel();
     QObject::connect(this->EditWidget,SIGNAL(
-      arcModified(pqArcWidget*, vtkIdType, vtkIdType)),
-      this,SLOT(updateModifiedArc(pqArcWidget*, vtkIdType, vtkIdType)));
+      arcModified(pqArcWidget*, const smtk::common::UUID&)),
+      this,SLOT(updateEdge(pqArcWidget*, const smtk::common::UUID&)));
     QObject::connect(this->EditWidget,SIGNAL(arcModificationfinished()),
       this,SLOT(editingFinished()));
     QObject::connect(this->EditWidget,SIGNAL(startArcEditing()),
       this,SIGNAL(editingStarted()));
-
+    QObject::connect(this->EditWidget,SIGNAL(startArcPicking()),
+      this,SIGNAL(startPicking()));
     }
-/*
+
   pqPolygonArc* arcObj = this->Arc;
-
-  if(this->Node != NULL)
-    {
-    pqCMBSceneObjectBase* obj = this->Node->getDataObject();
-    arcObj = dynamic_cast<pqPolygonArc*>(obj);
-    }
-*/
   this->EditWidget->setView(this->View);
 
-//  this->EditWidget->setArc(arcObj);
+  this->EditWidget->setArc(arcObj);
   this->EditWidget->setArcManager(this);
+  this->EditWidget->resetWidget();
   this->EditWidget->show();
   this->ActiveWidget = this->EditWidget;
 
   return 1;
+}
+
+//----------------------------------------------------------------------------
+void pqArcWidgetManager::cancelOperation(const smtk::model::OperatorPtr& op)
+{
+  if( !this->Arc || this->Arc->edgeOperator() != op)
+    return;
+
+  if(this->EditWidget && this->EditWidget->isVisible())
+    {
+    this->EditWidget->cancelEdit();
+    this->EditWidget->hide();
+    }
+
+  if(this->ArcWidget && this->ArcWidget->isVisible())
+    {
+    this->disableArcWidget();
+    }
+
+  this->ActiveWidget = NULL;
+  emit this->Finish();
 }
 
 //-----------------------------------------------------------------------------
@@ -214,12 +230,7 @@ void pqArcWidgetManager::createEdge()
     }
 
   //update the object
-  this->ArcWidget->setVisible(false);
-  this->ArcWidget->reset();
-  this->ArcWidget->removeAllNodes();
-  this->ArcWidget->setWidgetVisible(false);
-  this->ArcWidget->getWidgetProxy()->UpdatePropertyInformation();
-  this->ArcWidget->setView(NULL);
+  this->disableArcWidget();
   this->ActiveWidget = NULL;
 
   emit this->Ready();
@@ -229,18 +240,14 @@ void pqArcWidgetManager::createEdge()
 //-----------------------------------------------------------------------------
 void pqArcWidgetManager::editingFinished()
 {
-  if(this->EditWidget && this->ActiveWidget == this->EditWidget)
-    {
-    this->EditWidget->hide();
-    }
   this->ActiveWidget = NULL;
   emit this->Ready();
   emit this->Finish();
 }
 
 //-----------------------------------------------------------------------------
-void pqArcWidgetManager::updateModifiedArc(
-  pqArcWidget* subArcWidget, vtkIdType startPID, vtkIdType endPID)
+void pqArcWidgetManager::updateEdge(
+  pqArcWidget* subArcWidget, const smtk::common::UUID& edgeId)
 {
   if ( (!this->Arc) || this->ActiveWidget != this->EditWidget)
     {
@@ -252,12 +259,13 @@ void pqArcWidgetManager::updateModifiedArc(
   if ( obj )
     {
     vtkSMNewWidgetRepresentationProxy *widget = subArcWidget->getWidgetProxy();
-
+    obj->editEdge(widget, edgeId);
+/*
     //if the object hasn't been created yet update will call createArc
     //this way we don't have to check here
     QList<vtkIdType> newArcIds;
     vtkNew<vtkIdTypeArray> arcIdsFromSplit;
-/*
+
     //call the update arc operator
     vtkNew<vtkCMBSubArcModifyClientOperator> updateAndSplitOp;
     updateAndSplitOp->SetStartPointId(startPID);
@@ -273,7 +281,7 @@ void pqArcWidgetManager::updateModifiedArc(
 
     //copy the arc ids to create new arcs for
     arcIdsFromSplit->DeepCopy(updateAndSplitOp->GetCreatedArcs());
-*/
+
     vtkIdType arcIdsSize = arcIdsFromSplit->GetNumberOfTuples();
     if(arcIdsSize > 0)
       {
@@ -283,19 +291,20 @@ void pqArcWidgetManager::updateModifiedArc(
         newArcIds.push_back(arcIdsFromSplit->GetValue(idx));
         }
       }
-/*
+
     //make sure the model rep is visible, it would be hidden if we can from edit mode
     pqDataRepresentation *modelRep = obj->getRepresentation();
     if(modelRep)
       {
       modelRep->setVisible(true);
       }
-*/
+
     //pass onto the scene tree that this scene polyline is finished being editing
     //it needs the signal so that the tree can split the arcset into arcs.
     //Also this is need to make all the arc representation rerender to fix
     //any old end nodes hanging around
     emit this->ArcSplit2(this->Arc,newArcIds);
+*/
     }
 }
 
@@ -449,84 +458,15 @@ void pqArcWidgetManager::resetArcPlane(
 }
 
 //-----------------------------------------------------------------------------
-void pqArcWidgetManager::modifyArc(
-  vtkIdType startPID, vtkIdType endPID, int opType)
+void pqArcWidgetManager::disableArcWidget()
 {
-  if ( (!this->Arc) || this->ActiveWidget != this->EditWidget)
+  if(this->ArcWidget)
     {
-    return;
+    this->ArcWidget->setVisible(false);
+    this->ArcWidget->reset();
+    this->ArcWidget->removeAllNodes();
+    this->ArcWidget->setWidgetVisible(false);
+    this->ArcWidget->getWidgetProxy()->UpdatePropertyInformation();
+    this->ArcWidget->setView(NULL);
     }
-  pqPolygonArc* obj = this->Arc;
-  if ( obj )
-    {
-/*
-    //call the update arc operator
-    vtkNew<vtkCMBSubArcModifyClientOperator> modifyOp;
-    modifyOp->SetStartPointId(startPID);
-    modifyOp->SetEndPointId(endPID);
-    bool valid = modifyOp->Operate(obj->getArcId(),NULL,
-      vtkSMSourceProxy::SafeDownCast(obj->getSource()->getProxy()),opType);
-    if (!valid)
-      {
-      return;
-      }
-
-    //make sure the model rep is visible, it would be hidden if we can from edit mode
-    pqDataRepresentation *modelRep = obj->getRepresentation();
-    if(modelRep)
-      {
-      obj->updateRepresentation();
-      modelRep->setVisible(true);
-      }
-*/    
-
-// if there are new arcs, emit proper signals
-    if(opType == 3 /*vtkCMBSubArcModifyClientOperator::OpMAKEARC */)
-      {
-      QList<vtkIdType> newArcIds;
-      vtkNew<vtkIdTypeArray> arcIdsFromSplit;
-      //copy the arc ids to create new arcs for
-//      arcIdsFromSplit->DeepCopy(modifyOp->GetCreatedArcs());
-
-      vtkIdType arcIdsSize = arcIdsFromSplit->GetNumberOfTuples();
-      if(arcIdsSize > 0)
-        {
-        //convert this into a QList of vtkIdTypes so we can emit to the tree
-        for(vtkIdType idx=0; idx < arcIdsSize; ++idx)
-          {
-          newArcIds.push_back(arcIdsFromSplit->GetValue(idx));
-          }
-        }
-      //pass onto the scene tree that this scene polyline is finished being editing
-      //it needs the signal so that the tree can split the arcset into arcs.
-      //Also this is need to make all the arc representation rerender to fix
-      //any old end nodes hanging around
-      emit this->ArcSplit2(this->Arc,newArcIds);
-      }
-    else
-      {
-      emit this->ArcModified2(this->Arc);
-      }
-   }
-}
-
-//-----------------------------------------------------------------------------
-void pqArcWidgetManager::straightenArc(vtkIdType startPID, vtkIdType endPID)
-{
-  this->modifyArc(startPID, endPID, 1 /*
-    vtkCMBSubArcModifyClientOperator::OpSTRAIGHTEN */);
-}
-
-//-----------------------------------------------------------------------------
-void pqArcWidgetManager::collapseSubArc(vtkIdType startPID, vtkIdType endPID)
-{
-  this->modifyArc(startPID, endPID, 2 /*
-    vtkCMBSubArcModifyClientOperator::OpCOLLAPSE */);
-}
-
-//-----------------------------------------------------------------------------
-void pqArcWidgetManager::makeArc(vtkIdType startPID, vtkIdType endPID)
-{
-  this->modifyArc(startPID, endPID, 3 /*
-    vtkCMBSubArcModifyClientOperator::OpMAKEARC */);
 }

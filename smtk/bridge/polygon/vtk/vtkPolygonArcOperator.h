@@ -19,6 +19,8 @@
 #include "smtk/extension/vtk/operators/vtkSMTKOperator.h"
 
 class vtkPolyData;
+class vtkContourRepresentation;
+
 class VTKPOLYGONOPERATORSEXT_EXPORT vtkPolygonArcOperator : public vtkSMTKOperator
 {
 public:
@@ -30,18 +32,17 @@ public:
   //Convert the passed-in polydata into polygon edge(s)
   virtual bool AbleToOperate();
   virtual smtk::model::OperatorResult Operate();
-  virtual smtk::model::OperatorResult Operate(vtkPolyData *source);
 
   //Description:
-  //Get/Set the polydata arc source
-  vtkGetMacro(ArcSource, vtkPolyData*);
-  vtkSetMacro(ArcSource, vtkPolyData*);
+  //Get/Set the arc representation
+  vtkGetMacro(ArcRepresentation, vtkContourRepresentation*);
+  vtkSetMacro(ArcRepresentation, vtkContourRepresentation*);
 
 protected:
   vtkPolygonArcOperator();
   virtual ~vtkPolygonArcOperator();
 
-  vtkPolyData* ArcSource;
+  vtkContourRepresentation* ArcRepresentation;
 private:
   vtkPolygonArcOperator(const vtkPolygonArcOperator&);  // Not implemented.
   void operator=(const vtkPolygonArcOperator&);  // Not implemented.

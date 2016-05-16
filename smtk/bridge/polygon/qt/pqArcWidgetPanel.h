@@ -12,9 +12,9 @@
 #define __smtk_polygon_pq_ArcWidgetPanel_h
 
 #include "smtk/bridge/polygon/qt/Exports.h"
+#include "smtk/common/UUID.h"
 #include <QWidget>
-#include <QAction> //needed for ArcPointPicker
-#include <QStringBuilder> //needed for more efficient string concatenating
+#include <QAction> //needed for ArcPicker
 #include "vtkType.h"
 
 class pqOutputPort;
@@ -23,37 +23,28 @@ class pqRenderViewSelectionReaction;
 class pqPolygonArc;
 class pqArcWidget;
 class pqArcWidgetManager;
+class pqPipelineSource;
+class vtkSelectionNode;
+class vtkPVSelectionInformation;
 
 namespace Ui {
-class pqArcWidgetPanel;
 
 struct PickInfo
 {
-  bool IsValid;
-  double pointLocation[3];
   pqOutputPort *port;
-  vtkIdType PointId;
+  smtk::common::UUID EdgeId;
+  vtkIdType BlockIndex;
 
-  PickInfo():IsValid(false), PointId(-1){}
-
-  QString text() const
-    {
-    return QString("Id: ") %
-      QString::number(PointId) %
-      QString("; Position: ") %
-      QString::number(pointLocation[0]) % ", "
-      % QString::number(pointLocation[1]) % ", "
-      % QString::number(pointLocation[2]);
-    }
+  PickInfo():port(NULL), EdgeId(smtk::common::UUID::null()), BlockIndex(-1){}
 };
 
-class ArcPointPicker : public QAction
+class ArcPicker : public QAction
 {
 Q_OBJECT
 
 public:
-  ArcPointPicker(QObject * parent);
-  virtual ~ArcPointPicker();
+  ArcPicker(QObject * parent);
+  virtual ~ArcPicker();
 signals:
   //called by the selector when a valid selection is finished.
   void pickFinished();
@@ -61,13 +52,16 @@ signals:
   void triggered(bool);
 
 public slots:
-  void doPick(pqRenderView *view, pqPolygonArc *arc, PickInfo &info);
+  void doPick(pqRenderView *view, pqPolygonArc *arc, PickInfo& info);
 
 protected slots:
   //saves the information returned from the selection.
   void selectedInfo(pqOutputPort* port);
   // picking arc end point finished
   void onPickingFinished();
+  vtkSelectionNode* gatherSelectionNode(
+    pqPipelineSource* source,
+    vtkPVSelectionInformation* selInfo);
 
 private:
 
@@ -75,7 +69,9 @@ private:
   pqPolygonArc* Arc;
   pqRenderView* View;
   pqRenderViewSelectionReaction* Selecter;
+  bool m_isActive;
 };
+
 }
 
 class SMTKPOLYGONQTEXT_EXPORT pqArcWidgetPanel : public QWidget
@@ -90,16 +86,14 @@ explicit pqArcWidgetPanel(QWidget *parent = 0);
   virtual void setArc(pqPolygonArc* arc);
   virtual void setArcManager(pqArcWidgetManager* arcManager)
     {this->ArcManager = arcManager;}
-  // is the sub-arc valid
-  bool isSubArcValid();
-  // if the whole arc is selected, the original contour widget panel
-  // will be shown. Otherwise the new sub-arc editing panel will be shown
-  bool isWholeArcSelected();
 
 signals:
-  void arcModified(pqArcWidget*, vtkIdType, vtkIdType);
+  void arcModified(pqArcWidget*, const smtk::common::UUID& edgeid);
   void arcModificationfinished();
   void startArcEditing();
+  void startArcPicking();
+
+friend class pqArcWidgetManager;
 
 protected slots:
   //shows the edit widget and hides the pick widget
@@ -109,37 +103,17 @@ protected slots:
   void showPickWidget();
   //called when arc editing is done
   void arcEditingFinished();
-  //marks that we are finished editing this arc
-  void finishedArcModification();
 
   //marks that that we don't want to save the modifications
   //to the arc
   void cancelEdit();
 
-  // save the modified sub-arc to original arc. This will
-  // replace all the points in the arc (StartPoint-to-EndPoint)
-  // with the points on the arc widget.
+  // save the modified arc to original edge. This will
+  // replace all the points in the arc with the points on the arc widget.
   void saveEdit();
 
-  //allows the user to select the start position of the arc.
-  //will record the position that is selected
-  void PickStartPoint();
-
-  //allows the user to select the end position of the arc.
-  //will record the position that is selected
-  void PickEndPoint();
-
-  // start modifying the selected sub-arc.
-  void modifySubArc();
-
-  // remove all the nodes of the selected sub-arc
-  void onCollapseSubArc();
-
-  // clear all the internal nodes of the selected the sub-arc.
-  void onStraightenArc();
-
-  // make arcs out of the sub-arc.
-  void onMakeArc();
+  // start modifying the selected edge.
+  void modifyArc();
 
   // hide the arc editing widget
   void hideArcWidget();
@@ -147,27 +121,24 @@ protected slots:
   // pick the whole arc for operations
   void pickWholeArc();
 
+  void arcPicked();
+
 private:
   //resets the widget to what it would be like if it was just created
   void resetWidget();
   // this will create a representation for the specified sub arc
-  void updateSubArcRepresentation(bool visible);
-  // update the existing arc representation.
-  void updateWholeArcRepresentation(bool visible);
-  // set visibility of the sub arc representation
-  void setSubArcVisible(int visible);
+  void updateWidgetRepresentation();
 
   class pqInternals;
   pqInternals* Internals;
 
-  Ui::ArcPointPicker Picker;
+  Ui::PickInfo ArcInfo;
+  Ui::ArcPicker Picker;
   pqRenderView *View;
   pqPolygonArc *Arc;
-  pqArcWidget* SubWidget;
+  pqArcWidget* ArcWidget;
   pqArcWidgetManager* ArcManager;
 
-  Ui::PickInfo StartPoint;
-  Ui::PickInfo EndPoint;
 };
 
 #endif // __smtk_polygon_pq_ArcWidgetPanel_h

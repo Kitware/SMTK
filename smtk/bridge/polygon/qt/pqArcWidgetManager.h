@@ -17,6 +17,8 @@
 #define __smtk_polygon_pq_ArcWidgetManager_h
 
 #include "smtk/bridge/polygon/qt/Exports.h"
+#include "smtk/common/UUID.h"
+#include "smtk/PublicPointerDefs.h"
 
 #include <QList>
 #include <QObject>
@@ -47,31 +49,20 @@ public:
   pqArcWidget* createDefaultContourWidget(int& normal, double& pos);
 
   QWidget* getActiveWidget() { return ActiveWidget; }
-  pqPolygonArc* getActiveArc();
+  pqPolygonArc* activeArc();
   void setActiveArc(pqPolygonArc*);
+  // cancel the op if it is the current edge op
+  void cancelOperation(const smtk::model::OperatorPtr&);
 
 signals:
   void Busy();
   void Ready();
   void Finish();
 
-  //This signal is emitted when an arc is split into multiple new arcs
-  void ArcSplit(QList<vtkIdType>);
-  void ArcSplit2(pqPolygonArc*, QList<vtkIdType>);
-
-  //this signal is emitted whenever an arc is modified, including when
-  //split
-  void ArcModified();
-  void ArcModified2(pqPolygonArc*);
-
   void editingStarted();
+  void startPicking();
 
 public slots:
-  // slot for operations on an arc or sub-arc
-  void straightenArc(vtkIdType startIdx, vtkIdType endIdx);
-  void collapseSubArc(vtkIdType startIdx, vtkIdType endIdx);
-  void makeArc(vtkIdType startIdx, vtkIdType endIdx);
-
   void updateActiveView( pqRenderView *view ){ View=view;}
   void updateActiveServer( pqServer *server ){ Server=server;}
 
@@ -79,8 +70,7 @@ protected slots:
   // called when a whole arc is done creating or modifying.
   void createEdge();
   // called when a sub arc modification is done
-  void updateModifiedArc(
-    pqArcWidget* subArcWidget, vtkIdType startPID, vtkIdType endPID);
+  void updateEdge(pqArcWidget*, const smtk::common::UUID& edgeid);
   // called when the edit widget is closed
   void editingFinished();
 
@@ -88,10 +78,10 @@ protected:
   void getDefaultArcPlane(int& normal, double& pos);
   void resetArcPlane(int normal, double pos);
   pqArcWidget* createContourWidget( int normal, double position );
-  void modifyArc(vtkIdType startIdx, vtkIdType endIdx, int opType);
   pqPolygonArc* createLegacyV1Contour(
     const int &normal,const double &position,const int &closedLoop,
     vtkDoubleArray* nodePositions, vtkIdTypeArray* SelIndices);
+  void disableArcWidget();
 
   QPointer<pqArcWidget> ArcWidget;
   QPointer<pqArcWidgetPanel> EditWidget;

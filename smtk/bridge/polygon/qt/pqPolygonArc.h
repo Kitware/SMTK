@@ -16,6 +16,7 @@
 
 #include "smtk/bridge/polygon/qt/Exports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/common/UUID.h"
 #include <QObject>
 #include <QPointer>
 #include "vtkType.h"
@@ -27,8 +28,9 @@ class pqPipelineSource;
 class pqDataRepresentation;
 class vtkSMNewWidgetRepresentationProxy;
 class vtkSMSourceProxy;
-//class vtkPVArcInfo;
+class vtkPolygonArcInfo;
 class vtkIdTypeArray;
+class vtkSMProxy;
 
 class  SMTKPOLYGONQTEXT_EXPORT pqPolygonArc : public QObject
 {
@@ -50,14 +52,8 @@ public:
   //Description:
   //Edit this arc representation with the widget proxy passed in
   //this will update the arc state when it is done
-  virtual bool editArc(vtkSMNewWidgetRepresentationProxy *widget);
-
-  //Description:
-  //Given a selection object find the middle point and use
-  //that as the new selection for the arc. This is used when
-  //determine the start and end points for editing an arc, when
-  //the user want to edit on a section of the arc.
-  virtual bool findPickPoint(vtkSMOutputPort *port);
+  virtual bool editEdge(vtkSMNewWidgetRepresentationProxy *widget,
+                        const smtk::common::UUID& edgeid);
 
   //Description:
   //Update the server side arc with the new widget proxy shape
@@ -74,7 +70,9 @@ public:
   virtual vtkIdType autoConnect(const vtkIdType& secondArcId);
 
   virtual bool isDefaultConstrained() const{return true;}
-//  vtkPVArcInfo* getArcInfo();
+  vtkPolygonArcInfo* getArcInfo(int block_index);
+  pqPipelineSource * getSource();
+  void setSource(pqPipelineSource*);
 
   smtk::shared_ptr<smtk::model::Operator> edgeOperator();
   void setEdgeOperator(smtk::model::OperatorPtr edgeOp);
@@ -107,16 +105,21 @@ public:
   virtual void unsetMarkedForDeletion();
 
   void arcIsModified();
+  int getAssignedEdgeBlock() const;
+
+  void resetOperationSource();
 
 signals:
   void operationRequested(const smtk::model::OperatorPtr& brOp);
+  void activateModel(const smtk::common::UUID& modelid);
 
 protected:
 
-  //vtkPVArcInfo *ArcInfo;
+  vtkPolygonArcInfo *ArcInfo;
 
   virtual void setRepresentation(pqDataRepresentation *rep);
   void updatePlaneProjectionInfo(vtkSMNewWidgetRepresentationProxy *widget);
+  vtkSMProxy* prepareOperation(vtkSMNewWidgetRepresentationProxy *widget);
 
   // Indicates the projection normal as lying along the
   // XAxis, YAxis, ZAxis, or Oblique. For X, Y, and Z axes,
@@ -131,7 +134,7 @@ protected:
   double origColor[4];
   double selColor[4];
 
-  vtkIdType ArcId;
+  smtk::common::UUID m_currentModelId;
   QPointer<pqPipelineSource> Source;
   smtk::weak_ptr<smtk::model::Operator> m_edgeOp;
 };

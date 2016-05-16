@@ -16,6 +16,7 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/model/Operator.h"
 
+#include "vtkContourRepresentation.h"
 #include "vtkPoints.h"
 #include "vtkPolyData.h"
 #include "vtkObjectFactory.h"
@@ -23,33 +24,15 @@
 vtkStandardNewMacro(vtkPolygonArcOperator);
 
 //----------------------------------------------------------------------------
-void polyLines2edgePoints(vtkPolyData *mesh,
-                         smtk::attribute::DoubleItem::Ptr pointsItem,
-                         vtkIdType *pts, vtkIdType npts)
-{
-  double p[3];
-  // create edge for current line cell
-  pointsItem->setNumberOfValues(npts * 3);
-  for (vtkIdType j=0; j < npts; ++j)
-    {
-    mesh->GetPoint(pts[j],p);
-    for (int i = 0; i < 3; ++i)
-      {
-      pointsItem->setValue(3 * j + i, p[i]);
-      }
-    }
-}
-
-//----------------------------------------------------------------------------
 vtkPolygonArcOperator::vtkPolygonArcOperator()
 {
-  this->ArcSource = NULL;
+  this->ArcRepresentation = NULL;
 }
 
 //----------------------------------------------------------------------------
 vtkPolygonArcOperator::~vtkPolygonArcOperator()
 {
-  this->SetArcSource(NULL);
+  this->SetArcRepresentation(NULL);
 }
 
 //----------------------------------------------------------------------------
@@ -71,10 +54,18 @@ bool vtkPolygonArcOperator::AbleToOperate()
   if(optype == "Create" || optype == "Edit")
     {
     //we need at least two point to create a valid edge
-    able2Op = this->ArcSource != NULL
-              && this->ArcSource->GetNumberOfLines() > 0
-              && this->ArcSource->GetNumberOfPoints() >= 2
+    vtkPolyData* arcPoly = this->ArcRepresentation ?
+      this->ArcRepresentation->GetContourRepresentationAsPolyData() : NULL;
+    able2Op = arcPoly != NULL
+              && arcPoly->GetNumberOfLines() > 0
+              && arcPoly->GetNumberOfPoints() >= 2
               ;
+    }
+
+  if(able2Op && optype == "Edit")
+    {
+    able2Op = this->m_smtkOp.lock()->specification()->findModelEntity("edge")
+        ->value().isValid();;
     }
 
   return able2Op;
@@ -85,55 +76,74 @@ smtk::model::OperatorResult vtkPolygonArcOperator::Operate()
 {
   if(!this->AbleToOperate())
     {
-    return smtk::model::OperatorResult();
+    return this->m_smtkOp.lock()->createResult(smtk::model::OPERATION_FAILED);
     }
 
   smtk::model::OperatorResult edgeResult;
   smtk::attribute::AttributePtr spec = this->m_smtkOp.lock()->specification();
+  vtkPolyData *pd = this->ArcRepresentation->GetContourRepresentationAsPolyData();
+  vtkCellArray* lines = pd->GetLines();
+
+  smtk::attribute::IntItem::Ptr offsetsItem = spec->findAs<smtk::attribute::IntItem>(
+              "edge offsets", smtk::attribute::ALL_CHILDREN);
+  smtk::attribute::DoubleItem::Ptr pointsItem = spec->findAs<smtk::attribute::DoubleItem>(
+              "edge points", smtk::attribute::ALL_CHILDREN);
   smtk::attribute::StringItem::Ptr optypeItem =
     spec->findString("Operation");
   std::string optype = optypeItem->value();
-  if(optype == "Create")
+  if(optype == "Create" || optype == "Edit")
     {
-    vtkPolyData *pd = this->ArcSource;
-    vtkCellArray* lines = pd->GetLines();
-
-    smtk::attribute::IntItem::Ptr offsetsItem = spec->findAs<smtk::attribute::IntItem>(
-                "edge offsets", smtk::attribute::ALL_CHILDREN);
-    smtk::attribute::DoubleItem::Ptr pointsItem = spec->findAs<smtk::attribute::DoubleItem>(
-                "edge points", smtk::attribute::ALL_CHILDREN);
-    int offsets = 0;
+    double p[3];
+    int numPoints = 0;
     vtkIdType *pts,npts;
     lines->InitTraversal();
     while(lines->GetNextCell(npts,pts))
       {
-      // create edge for current line cell
-      polyLines2edgePoints(pd, pointsItem, pts, npts);
-      if(offsets > 0)
+      // add points for current line cell
+      pointsItem->setNumberOfValues((numPoints + npts) * 3);
+      for (vtkIdType j=0; j < npts; ++j)
+        {
+        pd->GetPoint(pts[j],p);
+        int idx = 3 * (numPoints+j);
+        for (int i = 0; i < 3; ++i)
+          {
+          pointsItem->setValue( idx + i, p[i]);
+          }
+        }
+      numPoints += npts;
+      }
+
+    // we skip the selected state of the first and last nodes in the contour,
+    // because they should not be modified with "edit edge" operator. If users
+    // do want to modify those vertices, they should do it with "merge edge" operator.
+    int count = this->ArcRepresentation->GetNumberOfNodes() - 1;
+    int offsets = 1;
+    for ( int i = 1; i < count; ++i, ++offsets ) // ++offset for the node
+      {
+      offsets += this->ArcRepresentation->GetNumberOfIntermediatePoints(i);
+      if(this->ArcRepresentation->GetNthNodeSelected(i))
+        {
         offsetsItem->appendValue(offsets);
-      offsets += npts;
+        }
       }
 
     edgeResult = this->m_smtkOp.lock()->operate();
+    }
+  else
+    {
+    edgeResult = this->m_smtkOp.lock()->createResult(smtk::model::OPERATION_FAILED);
     }
 
   return edgeResult;
 }
 
 //----------------------------------------------------------------------------
-smtk::model::OperatorResult vtkPolygonArcOperator::Operate(vtkPolyData *source)
-{
-  this->SetArcSource(source);
-  return this->Operate();
-}
-
-//----------------------------------------------------------------------------
 void vtkPolygonArcOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  if(this->ArcSource)
+  if(this->ArcRepresentation)
     {
     os << indent << "Arc Source::PrintSelf " << endl;
-    this->ArcSource->PrintSelf(os, indent.GetNextIndent());
+    this->ArcRepresentation->PrintSelf(os, indent.GetNextIndent());
     }
   else
     {

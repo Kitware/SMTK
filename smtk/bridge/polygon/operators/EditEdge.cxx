@@ -127,11 +127,8 @@ bool EditEdge::ableToOperate()
     return able2Op;
     }
 
-  if(optype == "Remove")
-    able2Op = this->specification()->findModelEntity("remove edge")
-      ->value().isValid();
-  else if(optype == "Edit")
-    able2Op = this->specification()->findModelEntity("edit edge")
+  if(optype == "Edit")
+    able2Op = this->specification()->findModelEntity("edge")
       ->value().isValid();;
 
   return able2Op;
@@ -276,15 +273,22 @@ OperatorResult EditEdge::operateInternal()
       edgeOp, this->specification(), newEdges, model, log());
     ok = numEdges > 0;
     }
-  else if(optype == "Remove")
-    {
-    smtk::attribute::ModelEntityItemPtr remEdgeItem =
-      this->specification()->findModelEntity("remove edge");
-    }
   else if(optype == "Edit")
     {
     smtk::attribute::ModelEntityItemPtr editEdgeItem =
-      this->specification()->findModelEntity("edit edge");
+      this->specification()->findModelEntity("edge");
+    // 1. Replace the existing edge points with the new edge-points.
+    // 2. Check validity of new edge-points among themselves and against existing edges,
+    //    create new model vertices if necessary, such as when the new edge-points
+    //    intersect among themselves or exisitng edges 
+    //
+    // 3. Copy all properties and attributes of existing edge to the new edges if any generated
+    // 4. Make sure all the edges still have valid topological relationships
+ 
+    smtk::attribute::DoubleItem::Ptr pointsItem =
+      this->specification()->findAs<smtk::attribute::DoubleItem>(
+      "edge points", smtk::attribute::ALL_CHILDREN);
+
     }
 
   OperatorResult result =
@@ -308,19 +312,6 @@ OperatorResult EditEdge::operateInternal()
       }
     if(modEdges.size() > 0)
       this->addEntitiesToResult(result, modEdges, MODIFIED);
-
-    if(optype == "Remove" && remEdges.size() > 0)
-      {
-      // Return the created or modified group.
-      smtk::attribute::ModelEntityItem::Ptr remEntities =
-        result->findModelEntity("expunged");
-      remEntities->setNumberOfValues(remEdges.size());
-      remEntities->setIsEnabled(true);
-      smtk::model::EntityRefs::const_iterator it;
-      int rid = 0;
-      for (it=remEdges.begin(); it != remEdges.end(); it++)
-        remEntities->setValue(rid++, *it);
-      }
 
     }
 

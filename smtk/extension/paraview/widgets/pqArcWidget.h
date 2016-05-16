@@ -97,11 +97,13 @@ protected:
   /// Update the widget visibility according to the WidgetVisible and Selected flags
   virtual void updateWidgetVisibility();
 
-  /// Internal method to cleanup widget.
-  void cleanupWidget();
+  /// Internal method to free widget.
+  void freeWidget();
 
 protected slots:
   void deleteAllNodes();
+  // clear all the internal nodes of the selected the arc.
+  void onStraightenArc();
 
 private:
   pqArcWidget(const pqArcWidget&); // Not implemented.

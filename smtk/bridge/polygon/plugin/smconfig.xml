@@ -130,6 +130,11 @@
         command="Rectangularize">
       </Property>
 
+      <Property
+        name="Straighten"
+        command="Straighten">
+      </Property>
+
       <Hints>
         <!-- View can be used to specify the way to get the poly data for the representation -->
         <Output />
@@ -176,6 +181,7 @@
           <Property name="SelectNodes" />
           <Property name="ClosedLoop" />
           <Property name="Rectangularize"/>
+          <Property name="Straighten" />
         </ExposedProperties>
       </SubProxy>
 
@@ -205,23 +211,41 @@
         Operator to convert the line cells in the input polygon to multiple edge(s) in a polygon model
       </Documentation>
       
-      <InputProperty
-        name="ArcSource"
-        command="SetArcSource">
+      <ProxyProperty
+        name="ArcRepresentation"
+        command="SetArcRepresentation">
+        <ProxyGroupDomain name="groups">
+          <Group name="props"/>
+        </ProxyGroupDomain>
+        <Documentation>
+          Set the ArcRepresentation for the operation.
+        </Documentation>
+      </ProxyProperty>
+
+      <!-- End of PolygonArcOperator -->
+    </Proxy>
+
+    <SourceProxy name="PolygonArcProvider" class="vtkPolygonArcProvider">
+      <InputProperty name="Input" command="SetInputConnection">
         <ProxyGroupDomain name="groups">
           <Group name="sources"/>
           <Group name="filters"/>
         </ProxyGroupDomain>
         <DataTypeDomain name="input_type">
-          <DataType value="vtkPolyData" />
+          <DataType value="vtkMultiBlockDataSet"/>
         </DataTypeDomain>
-        <Documentation>
-          Set the polydata of the arc source.
-        </Documentation>
       </InputProperty>
 
-      <!-- End of PolygonArcOperator -->
-    </Proxy>
+      <IdTypeVectorProperty
+        name="BlockIndex"
+        command="SetBlockIndex"
+        number_of_elements="1"
+        default_values="none" >
+        <Documentation>
+          Set the BlockIndex of the input multiblock to be used for creating a polyline.
+        </Documentation>
+      </IdTypeVectorProperty>
+    </SourceProxy>
 
   </ProxyGroup>
 </ServerManagerConfiguration>

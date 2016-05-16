@@ -35,6 +35,7 @@
 #include <QTableWidget>
 #include <QScrollArea>
 #include <QMessageBox>
+#include <QSpacerItem>
 
 using namespace smtk::attribute;
 
@@ -55,6 +56,7 @@ public:
 
   QPointer<pqArcWidgetManager> ArcManager;
   QPointer<qtAttribute> CurrentAtt;
+  QPointer<QVBoxLayout> EditorLayout;
 };
 
 //----------------------------------------------------------------------------
@@ -105,8 +107,18 @@ void qtPolygonEdgeOperationView::createWidget( )
   layout->setMargin(0);
   this->Widget->setLayout( layout );
 
+  this->Internals->EditorLayout = new QVBoxLayout;
   this->updateAttributeData();
+  layout->addLayout(this->Internals->EditorLayout);
+  layout->addItem(
+    new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Maximum));
+
+  QObject::disconnect(this->uiManager()->activeModelView());
+  QObject::connect(this->uiManager()->activeModelView(),
+    SIGNAL(operationCancelled(const smtk::model::OperatorPtr&)),
+    this, SLOT(cancelOperation(const smtk::model::OperatorPtr&)));
 }
+
 inline qtAttribute* internal_createAttUI(
   smtk::attribute::AttributePtr att, QWidget* pw, qtBaseView* view)
 {
@@ -126,6 +138,7 @@ inline qtAttribute* internal_createAttUI(
     }
   return NULL;
 }
+
 //----------------------------------------------------------------------------
 void qtPolygonEdgeOperationView::updateAttributeData()
 {
@@ -180,6 +193,10 @@ void qtPolygonEdgeOperationView::updateAttributeData()
   if(!this->Internals->ArcManager)
     {
     this->Internals->ArcManager = new pqArcWidgetManager(server, renView);
+    QObject::connect(this->Internals->ArcManager, SIGNAL(Finish()),
+                     this, SLOT(operationDone()));
+    QObject::connect(this->Internals->ArcManager,SIGNAL(startPicking()),
+      this,SLOT(clearSelection()));
     }
   else
     {
@@ -193,23 +210,36 @@ void qtPolygonEdgeOperationView::updateAttributeData()
   this->Internals->ArcManager->setActiveArc( objArc );
   QObject::connect(objArc, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)),
        this, SLOT(requestOperation(const smtk::model::OperatorPtr&)));
-  QObject::connect(this->Internals->ArcManager, SIGNAL(Finish()),
-                   this, SLOT(operationDone()));
+  QObject::connect(objArc, SIGNAL(activateModel(const smtk::common::UUID&)),
+       this->uiManager()->activeModelView()->operatorsWidget(),
+       SLOT(setOperationTargetActive(const smtk::common::UUID&)));
+
 
   smtk::attribute::StringItem::Ptr optypeItem = att->findString("Operation");
   optypeItem->setToDefault();// default to "Create"
 
   this->valueChanged(optypeItem);
 }
+
 //----------------------------------------------------------------------------
 void qtPolygonEdgeOperationView::requestOperation(const smtk::model::OperatorPtr& op)
 {
   this->uiManager()->activeModelView()->requestOperation(op, false);
 }
+
+//----------------------------------------------------------------------------
+void qtPolygonEdgeOperationView::cancelOperation(const smtk::model::OperatorPtr& op)
+{
+  if( !op || !this->Widget || !this->Internals->CurrentAtt
+      || !this->Internals->ArcManager)
+    return;
+
+  this->Internals->ArcManager->cancelOperation(op);
+}
+
 //----------------------------------------------------------------------------
 void qtPolygonEdgeOperationView::operationDone()
 {
-  // set the operation to "Remove"
   if(!this->Internals->CurrentAtt || !this->Widget
      || !this->Internals->ArcManager)
     return;
@@ -217,12 +247,19 @@ void qtPolygonEdgeOperationView::operationDone()
   smtk::attribute::AttributePtr att =  this->Internals->CurrentAtt->attribute();
   smtk::attribute::StringItem::Ptr optypeItem = att->findString("Operation");
   std::string optype = optypeItem->value();
-  if(optype != "Remove")
+  // If previous op is "Create", set the operation to "Edit"
+  if(optype == "Create")
     {
-    optypeItem->setValue("Remove");// set to "Remove Edge"
+    optypeItem->setValue("Edit");// set to "Edit Edge"
     delete this->Internals->CurrentAtt;
     this->Internals->CurrentAtt = internal_createAttUI(att, this->Widget, this);
     }
+}
+
+//----------------------------------------------------------------------------
+void qtPolygonEdgeOperationView::clearSelection()
+{  
+  this->uiManager()->activeModelView()->clearSelection();
 }
 
 //----------------------------------------------------------------------------
@@ -236,7 +273,7 @@ void qtPolygonEdgeOperationView::valueChanged(smtk::attribute::ItemPtr valitem)
   // default to create arc mode
   smtk::attribute::StringItem::Ptr optypeItem =
     smtk::dynamic_pointer_cast<smtk::attribute::StringItem>(valitem);
-  if(!optypeItem)
+  if(!optypeItem || optypeItem->name() != "Operation")
     return;
 
   QWidget* prevUiWidget = this->Internals->ArcManager->getActiveWidget();
@@ -251,10 +288,6 @@ void qtPolygonEdgeOperationView::valueChanged(smtk::attribute::ItemPtr valitem)
     {
     this->Internals->ArcManager->edit();
     }
-  else if(optype == "Remove")
-    {
-    // att->findModelEntity("remove edge")->value();
-    }
 
   QWidget* pWidget = this->Widget;
   QWidget* selUiWidget = this->Internals->ArcManager->getActiveWidget();
@@ -264,63 +297,62 @@ void qtPolygonEdgeOperationView::valueChanged(smtk::attribute::ItemPtr valitem)
     }
   pq3DWidget* sel3dWidget = qobject_cast<pq3DWidget*>(selUiWidget);
   QString widgetName = selUiWidget->objectName();
-  if(optype != "Remove")
+ 
+  // we need to make invisible all 3d widget UI panels
+  QList< pq3DWidget* > user3dWidgets = pWidget->findChildren<pq3DWidget*>();
+  QList< QWidget* > userUiWidgets;
+  // if this is not a 3d widget
+  if(!sel3dWidget)
     {
-    // we need to make invisible all 3d widget UI panels
-    QList< pq3DWidget* > user3dWidgets = pWidget->findChildren<pq3DWidget*>();
-    QList< QWidget* > userUiWidgets;
-    // if this is not a 3d widget
-    if(!sel3dWidget)
+    userUiWidgets = pWidget->findChildren<QWidget*>(widgetName);
+    }
+  userUiWidgets.append(reinterpret_cast< QList<QWidget*>& >(user3dWidgets));
+  bool found = false;
+  for(int i=0; i<userUiWidgets.count(); i++)
+    {
+    if(!found && userUiWidgets.value(i) == selUiWidget)
       {
-      userUiWidgets = pWidget->findChildren<QWidget*>(widgetName);
+      found = true;
       }
-    userUiWidgets.append(reinterpret_cast< QList<QWidget*>& >(user3dWidgets));
-    bool found = false;
-    for(int i=0; i<userUiWidgets.count(); i++)
+    else
       {
-      if(!found && userUiWidgets.value(i) == selUiWidget)
-        {
-        found = true;
-        }
-      else
-        {
-        userUiWidgets.value(i)->setVisible(0);
-        }
-      }
-    if(!found)
-      {
-      selUiWidget->setParent(pWidget);
-      pWidget->layout()->addWidget(selUiWidget);
-      }
-
-    // turn off previous active widgets if they are not the active one anymore
-    if(prev3dWidget && prev3dWidget != sel3dWidget)
-      {
-      prev3dWidget->deselect();
-      prev3dWidget->setVisible(false);
-      prev3dWidget->setEnabled(false);
-      }
-    else if(prevUiWidget && prevUiWidget != selUiWidget)
-      {
-      prevUiWidget->setVisible(false);
-      prevUiWidget->setEnabled(false);
-      prevUiWidget->hide();
-      }
-
-
-    if(sel3dWidget && sel3dWidget->widgetVisible())
-      {
-      sel3dWidget->select();
-      sel3dWidget->setVisible(true);
-      sel3dWidget->setEnabled(true);
-      }
-    else if(!sel3dWidget)
-      {
-      selUiWidget->setVisible(true);
-      selUiWidget->setEnabled(true);
-      selUiWidget->show();
+      userUiWidgets.value(i)->setVisible(0);
       }
     }
+  if(!found)
+    {
+    selUiWidget->setParent(pWidget);
+    this->Internals->EditorLayout->addWidget(selUiWidget);
+    }
+
+  // turn off previous active widgets if they are not the active one anymore
+  if(prev3dWidget && prev3dWidget != sel3dWidget)
+    {
+    prev3dWidget->deselect();
+    prev3dWidget->setVisible(false);
+    prev3dWidget->setEnabled(false);
+    }
+  else if(prevUiWidget && prevUiWidget != selUiWidget)
+    {
+    prevUiWidget->setVisible(false);
+    prevUiWidget->setEnabled(false);
+    prevUiWidget->hide();
+    }
+
+
+  if(sel3dWidget && sel3dWidget->widgetVisible())
+    {
+    sel3dWidget->select();
+    sel3dWidget->setVisible(true);
+    sel3dWidget->setEnabled(true);
+    }
+  else if(!sel3dWidget)
+    {
+    selUiWidget->setVisible(true);
+    selUiWidget->setEnabled(true);
+    selUiWidget->show();
+    }
+/*
   else // turn off the active widget
     {
     if(sel3dWidget && sel3dWidget->widgetVisible())
@@ -336,7 +368,7 @@ void qtPolygonEdgeOperationView::valueChanged(smtk::attribute::ItemPtr valitem)
       selUiWidget->hide();
       }
     }
-
+*/
 }
 
 //----------------------------------------------------------------------------
