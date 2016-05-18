@@ -257,23 +257,70 @@ bool vtkDiscreteModelEdge::Split(
   // we do a cell walk from the split point to the end the edge polydata
   // and those are the cells that get assigned to the new model edge
   vtkSmartPointer<vtkIdList> newModelEdgeCells =
-    vtkSmartPointer<vtkIdList>::New();
-  vtkIdType currentCellId = pointCells->GetId(1);
+    vtkSmartPointer<vtkIdList>::New(); 
+  vtkSmartPointer<vtkIdList> currentPtIds = vtkSmartPointer<vtkIdList>::New();
+
+  /*
+  * Before we start walking the edges to go from the split 
+  * point to the end point we first need to determine the
+  * cell to start at. 
+  * 
+  *    p1 ----c1---- p2 ----- c2 ----- p3
+  *
+  * If we consider the split point is p2 and the end point is p3,
+  * we need to determine if we should start walking at c1 or c2. 
+  * Do do this we look at all the cells that use p2, and select
+  * the cell that uses p2 as the first point id (this does presume
+  * all cells are ordered head to tail ). 
+  * 
+  */
+
+  vtkIdType currentCellId = -1;
+  for(int i=0; i < pointCells->GetNumberOfIds(); ++i)
+    {
+    poly->GetCellPoints(pointCells->GetId(i), currentPtIds);
+    if( splitPointId == currentPtIds->GetId(0) )
+      {
+      currentCellId = pointCells->GetId(i);
+      break;
+      }
+    }
+
+  if(currentCellId < 0)
+    {
+    vtkWarningMacro("Could not find a proper line cell to start splitting edge.");
+    poly->DeleteLinks();
+    return false;
+    }
+
+  /*
+  * Now start the walk from the cell that uses the split
+  * point as its first point Id, intill we find a cell
+  * that uses the end point 
+  *
+  * The logic is:
+  * Start at a given cell
+  * Find the points of said cell. ( label start )
+  * Find the first point used by the cell that isn't our
+  *   marked point ( currentPointId )
+  * For this point find the first cell that isn't our self
+  * Loop back to label start
+  * 
+  */
 
   newModelEdgeCells->InsertNextId(currentCellId);
-
   vtkIdType currentPointId = splitPointId;
-  vtkSmartPointer<vtkIdList> tempIds = vtkSmartPointer<vtkIdList>::New();
   while(currentCellId >= 0)
     {
     vtkIdType nextCellId = -1;
-    poly->GetCellPoints(currentCellId, tempIds);
+    poly->GetCellPoints(currentCellId, currentPtIds);
+
     for(int i=0; i<2 && nextCellId == -1 ;i++)
       {
-      if(tempIds->GetId(i) != currentPointId)
+      if(currentPtIds->GetId(i) != currentPointId)
         {
-        poly->GetPointCells(tempIds->GetId(i), pointCells);
-        if(tempIds->GetId(i) == modelEdgeEndPoint)
+        poly->GetPointCells(currentPtIds->GetId(i), pointCells);
+        if(currentPtIds->GetId(i) == modelEdgeEndPoint)
           {
           nextCellId = -2; // stop condition
           }
@@ -285,7 +332,7 @@ bool vtkDiscreteModelEdge::Split(
               {
               nextCellId = pointCells->GetId(j);
               newModelEdgeCells->InsertNextId(nextCellId);
-              currentPointId = tempIds->GetId(i);
+              currentPointId = currentPtIds->GetId(i);
               }
             }
           if(nextCellId < 0)
