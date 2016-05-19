@@ -17,7 +17,7 @@
 #include <QMouseEvent>
 
 namespace smtk {
-  namespace model {
+  namespace extension {
 
 QEntityItemDelegate::QEntityItemDelegate(QWidget* owner) :
   QStyledItemDelegate(owner), m_swatchSize(16),
@@ -190,7 +190,7 @@ QWidget* QEntityItemDelegate::createEditor(
 {
   (void)option;
   (void)idx;
-  smtk::model::QEntityItemEditor* editor = new QEntityItemEditor(owner);
+  smtk::extension::QEntityItemEditor* editor = new QEntityItemEditor(owner);
   QObject::connect(
     editor, SIGNAL(editingFinished()),
     this, SLOT(commitAndCloseEditor()));
@@ -201,8 +201,8 @@ void QEntityItemDelegate::setEditorData(
   QWidget* editor,
   const QModelIndex& idx) const
 {
-  smtk::model::QEntityItemEditor* entityEditor =
-    qobject_cast<smtk::model::QEntityItemEditor*>(editor);
+  smtk::extension::QEntityItemEditor* entityEditor =
+    qobject_cast<smtk::extension::QEntityItemEditor*>(editor);
   if (entityEditor)
     {
     entityEditor->setTitle(idx.data(QEntityItemModel::TitleTextRole).toString());
@@ -215,8 +215,8 @@ void QEntityItemDelegate::setModelData(
   QAbstractItemModel* model,
   const QModelIndex &idx) const
 {
-  smtk::model::QEntityItemEditor* entityEditor =
-    qobject_cast<smtk::model::QEntityItemEditor*>(editor);
+  smtk::extension::QEntityItemEditor* entityEditor =
+    qobject_cast<smtk::extension::QEntityItemEditor*>(editor);
   if (entityEditor)
     {
     // TODO: editor should also allow adjusting entity type?
@@ -227,8 +227,8 @@ void QEntityItemDelegate::setModelData(
 
 void QEntityItemDelegate::commitAndCloseEditor()
 {
-  smtk::model::QEntityItemEditor* entityEditor =
-    qobject_cast<smtk::model::QEntityItemEditor*>(sender());
+  smtk::extension::QEntityItemEditor* entityEditor =
+    qobject_cast<smtk::extension::QEntityItemEditor*>(sender());
   emit commitData(entityEditor);
   emit closeEditor(entityEditor);
 }

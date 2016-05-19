@@ -57,6 +57,7 @@
 #include <iostream>
 #include <set>
 using namespace smtk::attribute;
+using namespace smtk::extension;
 
 //----------------------------------------------------------------------------
 class qtAttributeViewInternals

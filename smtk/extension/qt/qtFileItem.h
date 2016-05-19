@@ -36,7 +36,7 @@ class qtFileItemInternals;
 
 namespace smtk
 {
-  namespace attribute
+  namespace extension
   {
     class SMTKQTEXT_EXPORT qtFileItem : public qtItem
     {

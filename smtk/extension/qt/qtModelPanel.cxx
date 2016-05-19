@@ -27,7 +27,7 @@ namespace Ui { class qtModelPanel; }
 
 // -----------------------------------------------------------------------------
 namespace smtk {
-  namespace model {
+  namespace extension {
 
 
 //-----------------------------------------------------------------------------
@@ -64,7 +64,7 @@ qtModelPanel::~qtModelPanel()
 }
 
 //-----------------------------------------------------------------------------
-smtk::model::qtModelView* qtModelPanel::getModelView()
+smtk::extension::qtModelView* qtModelPanel::getModelView()
 {
   return this->Internal->ModelView;
 }
@@ -75,5 +75,5 @@ void qtModelPanel::onClearSelection()
   this->getModelView()->clearSelection();
 }
 
-  } // namespace model
+  } // namespace extension
 } // namespace smtk

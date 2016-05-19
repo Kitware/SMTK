@@ -24,7 +24,7 @@ class QBoxLayout;
 
 namespace smtk
 {
-  namespace attribute
+  namespace extension
   {
     class SMTKQTEXT_EXPORT qtModelEntityItem : public qtItem
     {
@@ -64,7 +64,7 @@ namespace smtk
       qtModelEntityItemInternals *Internals;
 
     }; // class
-  }; // namespace attribute
+  }; // namespace extension
 }; // namespace smtk
 
 #endif

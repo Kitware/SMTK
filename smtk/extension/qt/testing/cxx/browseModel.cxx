@@ -65,8 +65,8 @@ int main(int argc, char* argv[])
   smtk::io::ImportJSON::intoModelManager(json.c_str(), model);
   model->assignDefaultNames();
 
-  smtk::model::QEntityItemModel* qmodel = new smtk::model::QEntityItemModel;
-  smtk::model::QEntityItemDelegate* qdelegate = new smtk::model::QEntityItemDelegate;
+  smtk::extension::QEntityItemModel* qmodel = new smtk::extension::QEntityItemModel;
+  smtk::extension::QEntityItemDelegate* qdelegate = new smtk::extension::QEntityItemDelegate;
   qdelegate->setTitleFontSize(12);
   qdelegate->setTitleFontWeight(2);
   qdelegate->setSubtitleFontSize(10);

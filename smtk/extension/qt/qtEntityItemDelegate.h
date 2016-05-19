@@ -16,7 +16,7 @@
 #include <QStyledItemDelegate>
 
 namespace smtk {
-  namespace model {
+  namespace extension {
 
 /**\brief Present the contents of an smtk::model::Manager instance via QEntityItemModel.
   *
@@ -92,7 +92,7 @@ protected:
   int m_subtitleFontWeight;
 };
 
-  } // namespace model
+  } // namespace extension
 } // namespace smtk
 
 #endif // __smtk_qt_QEntityItemDelegate_h

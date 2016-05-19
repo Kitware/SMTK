@@ -27,7 +27,7 @@ class QBoxLayout;
 
 namespace smtk
 {
-  namespace attribute
+  namespace extension
   {
     class SMTKQTEXT_EXPORT qtMeshSelectionItem : public qtItem
     {

@@ -49,6 +49,7 @@
 namespace Ui { class qtAttributeAssociation; }
 
 using namespace smtk::attribute;
+using namespace smtk::extension;
 using smtk::model::EntityRef;
 using smtk::model::EntityRefs;
 using smtk::model::Group;

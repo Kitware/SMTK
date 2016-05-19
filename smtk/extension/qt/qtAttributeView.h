@@ -29,7 +29,7 @@ class QTableWidget;
 
 namespace smtk
 {
-  namespace attribute
+  namespace extension
   {
     class SMTKQTEXT_EXPORT qtAttributeView : public qtBaseView
     {

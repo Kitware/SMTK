@@ -39,6 +39,7 @@
 #include <QButtonGroup>
 
 using namespace smtk::attribute;
+using namespace smtk::extension;
 
 //----------------------------------------------------------------------------
 class qtMeshSelectionItemInternals

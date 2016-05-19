@@ -25,7 +25,7 @@ class QScrollArea;
 
 namespace smtk
 {
-  namespace attribute
+  namespace extension
   {
     class qtUIManager;
     class qtItem;

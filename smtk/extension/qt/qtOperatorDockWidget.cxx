@@ -12,7 +12,7 @@
 
 // -----------------------------------------------------------------------------
 namespace smtk {
-  namespace model {
+  namespace extension {
 
 //-----------------------------------------------------------------------------
 qtOperatorDockWidget::qtOperatorDockWidget(QWidget* p)

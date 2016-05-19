@@ -61,8 +61,10 @@ inline void cleanupIconResource()
 }
 // -----------------------------------------------------------------------------
 
+using namespace smtk::model;
+
 namespace smtk {
-  namespace model {
+  namespace extension {
 
 /// Private storage for QEntityItemModel.
 class QEntityItemModel::Internal
@@ -672,7 +674,7 @@ void QEntityItemModel::rebuildSubphrases(const QModelIndex& qidx)
 
 /*
 inline QModelIndex _internal_getPhraseIndex(
-  smtk::model::QEntityItemModel* qmodel,
+  smtk::extension::QEntityItemModel* qmodel,
   const smtk::model::EntityRef& entRef,
   const QModelIndex& top, bool recursive = false)
 {
@@ -694,7 +696,7 @@ inline QModelIndex _internal_getPhraseIndex(
 */
 
 inline QModelIndex _internal_getPhraseIndex(
-  smtk::model::QEntityItemModel* qmodel,
+  smtk::extension::QEntityItemModel* qmodel,
   const DescriptivePhrasePtr& phrase,
   const QModelIndex& top, bool recursive = false)
 {
@@ -1283,5 +1285,5 @@ void QEntityItemModel::updateObserver()
     }
 }
 
-  } // namespace model
+  } // namespace extension
 } // namespace smtk

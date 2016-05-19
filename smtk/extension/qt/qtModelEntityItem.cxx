@@ -36,6 +36,7 @@
 #include <QAbstractItemView>
 
 using namespace smtk::attribute;
+using namespace smtk::extension;
 
 //----------------------------------------------------------------------------
 class qtModelEntityItemInternals

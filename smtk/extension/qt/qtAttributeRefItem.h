@@ -23,7 +23,7 @@ class qtAttributeRefItemInternals;
 
 namespace smtk
 {
-  namespace attribute
+  namespace extension
   {
     class qtBaseView;
     class qtAttribute;

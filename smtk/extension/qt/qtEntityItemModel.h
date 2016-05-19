@@ -20,7 +20,7 @@
 #include <map>
 
 namespace smtk {
-  namespace model {
+  namespace extension {
 
 /**\brief Adapt an smtk::model::Manager instance into a hierarchical Qt model.
   *
@@ -74,7 +74,7 @@ public:
 
   Qt::ItemFlags flags(const QModelIndex& index) const;
 
-  void setRoot(DescriptivePhrasePtr root)
+  void setRoot(model::DescriptivePhrasePtr root)
     {
     this->m_root = root;
     this->updateObserver();
@@ -89,7 +89,7 @@ public:
 
   static QIcon lookupIconForEntityFlags(smtk::model::BitFlags flags);
 
-  DescriptivePhrasePtr getItem(const QModelIndex& idx) const;
+  model::DescriptivePhrasePtr getItem(const QModelIndex& idx) const;
 
   template<typename T, typename C>
   bool foreach_phrase(T& visitor, C& collector, const QModelIndex& top = QModelIndex(), bool onlyBuilt = true);
@@ -108,9 +108,9 @@ public:
   */
   virtual void updateWithOperatorResult(
     const QModelIndex& sessIdx,
-    const OperatorResult& result);
-  virtual void newSessionOperatorResult(
-    const smtk::model::SessionRef& sref, const OperatorResult& result);
+    const model::OperatorResult& result);
+  virtual void newSessionOperatorResult(const smtk::model::SessionRef& sref,
+					const model::OperatorResult& result);
 
 signals:
   void phraseTitleChanged(const QModelIndex&);
@@ -125,28 +125,26 @@ protected:
   void updateObserver();
 
   // create child indices for new subphrases \a cDphrs under parent phrase \a pDphr index
-  virtual void addChildPhrases(
-    const DescriptivePhrasePtr& pDphr, const std::vector< std::pair<DescriptivePhrasePtr, int> >& cDphrs,
+  virtual void addChildPhrases(const model::DescriptivePhrasePtr& pDphr,
+			       const std::vector< std::pair<model::DescriptivePhrasePtr, int> >& cDphrs,
     const QModelIndex& topIndex, bool descend = true);
   // remove child indices for subphrases \a cDphrs from parent phrase \a pDphr index
-  virtual void removeChildPhrases(
-    const DescriptivePhrasePtr& pDphr, const std::vector< std::pair<DescriptivePhrasePtr, int> >& cDphrs,
+  virtual void removeChildPhrases(const model::DescriptivePhrasePtr& pDphr,
+				  const std::vector< std::pair<model::DescriptivePhrasePtr, int> >& cDphrs,
     const QModelIndex& topIndex);
-  virtual void updateChildPhrases(
-    const DescriptivePhrasePtr& phrase, const QModelIndex& topIndex, bool emitEvenNoChanges = true);
-  virtual void findDirectParentPhrasesForAdd(
-          const DescriptivePhrasePtr& parntDp,
-          const smtk::attribute::ModelEntityItemPtr& newEnts,
-          std::map<DescriptivePhrasePtr,
-            std::vector< std::pair<DescriptivePhrasePtr, int> > >& changedPhrases);
-  virtual void findDirectParentPhrasesForRemove(
-          const DescriptivePhrasePtr& parntDp,
-          const smtk::attribute::ModelEntityItemPtr& remEnts,
-          std::map<DescriptivePhrasePtr,
-            std::vector< std::pair<DescriptivePhrasePtr, int> > >& changedPhrases);
+  virtual void updateChildPhrases(const model::DescriptivePhrasePtr& phrase, const QModelIndex& topIndex,
+				  bool emitEvenNoChanges = true);
+  virtual void findDirectParentPhrasesForAdd(const model::DescriptivePhrasePtr& parntDp,
+					     const smtk::attribute::ModelEntityItemPtr& newEnts,
+					     std::map<model::DescriptivePhrasePtr,
+					     std::vector< std::pair<model::DescriptivePhrasePtr, int> > >& changedPhrases);
+  virtual void findDirectParentPhrasesForRemove(const model::DescriptivePhrasePtr& parntDp,
+						const smtk::attribute::ModelEntityItemPtr& remEnts,
+						std::map<model::DescriptivePhrasePtr,
+						std::vector< std::pair<model::DescriptivePhrasePtr, int> > >& changedPhrases);
 
   virtual void updateMeshPhrases (const smtk::common::UUIDs& relatedCollections,
-                                  const DescriptivePhrasePtr& startDp,
+                                  const model::DescriptivePhrasePtr& startDp,
                                   const QModelIndex& topIndex,
                                   smtk::mesh::ManagerPtr meshMgr);
 };
@@ -160,7 +158,7 @@ bool QEntityItemModel::foreach_phrase(T& visitor, C& collector, const QModelInde
   // visit parent, then children if we aren't told to terminate:
   if (!visitor(this, top, collector))
     {
-    DescriptivePhrasePtr phrase = this->getItem(top);
+      model::DescriptivePhrasePtr phrase = this->getItem(top);
     // Do not descend if top's corresponding phrase would have to invoke
     // the subphrase generator to obtain the list of children... some models
     // are cyclic graphs. In these cases, only descend if "onlyBuilt" is false.
@@ -183,7 +181,7 @@ bool QEntityItemModel::foreach_phrase(T& visitor, C& collector, const QModelInde
   // visit parent, then children if we aren't told to terminate:
   if (!visitor(this, top, collector))
     {
-    DescriptivePhrasePtr phrase = this->getItem(top);
+      model::DescriptivePhrasePtr phrase = this->getItem(top);
     // Do not descend if top's corresponding phrase would have to invoke
     // the subphrase generator to obtain the list of children... some models
     // are cyclic graphs. In these cases, only descend if "onlyBuilt" is false.

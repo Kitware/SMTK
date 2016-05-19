@@ -24,7 +24,7 @@
 #include <QDockWidget>
 
 namespace smtk {
-  namespace model {
+  namespace extension {
 
 class SMTKQTEXT_EXPORT qtOperatorDockWidget : public QDockWidget
 {

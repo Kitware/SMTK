@@ -30,7 +30,7 @@
 #include <QGridLayout>
 #include <QComboBox>
 
-using namespace smtk::attribute;
+using namespace smtk::extension;
 
 //----------------------------------------------------------------------------
 class qtFileItemInternals
@@ -134,8 +134,8 @@ void qtFileItem::enableFileBrowser(bool state)
 //----------------------------------------------------------------------------
 void qtFileItem::updateItemData()
 {
-  smtk::attribute::FileItemPtr fItem =dynamic_pointer_cast<FileItem>(this->getObject());
-  smtk::attribute::DirectoryItemPtr dItem =dynamic_pointer_cast<DirectoryItem>(this->getObject());
+  smtk::attribute::FileItemPtr fItem =dynamic_pointer_cast<attribute::FileItem>(this->getObject());
+  smtk::attribute::DirectoryItemPtr dItem =dynamic_pointer_cast<attribute::DirectoryItem>(this->getObject());
   if(!fItem && !dItem)
     {
     return;
@@ -191,7 +191,7 @@ void qtFileItem::updateItemData()
     }
 
   // Add label
-  smtk::attribute::ItemPtr item = dynamic_pointer_cast<Item>(this->getObject());
+  smtk::attribute::ItemPtr item = dynamic_pointer_cast<attribute::Item>(this->getObject());
   QString labelText;
   if(!item->label().empty())
     {
@@ -242,8 +242,8 @@ void qtFileItem::updateItemData()
 //----------------------------------------------------------------------------
 QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
 {
-  smtk::attribute::FileItemPtr fItem =dynamic_pointer_cast<FileItem>(this->getObject());
-  smtk::attribute::DirectoryItemPtr dItem =dynamic_pointer_cast<DirectoryItem>(this->getObject());
+  smtk::attribute::FileItemPtr fItem =dynamic_pointer_cast<attribute::FileItem>(this->getObject());
+  smtk::attribute::DirectoryItemPtr dItem =dynamic_pointer_cast<attribute::DirectoryItem>(this->getObject());
 
   QWidget* fileTextWidget = NULL;
   QComboBox* fileCombo = NULL;
@@ -254,7 +254,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   if (fItem)
     {
     const smtk::attribute::FileItemDefinition *fDef =
-      dynamic_cast<const FileItemDefinition*>(fItem->definition().get());
+      dynamic_cast<const attribute::FileItemDefinition*>(fItem->definition().get());
     if (fDef->hasDefault())
       defaultText = fDef->defaultValue().c_str();
     // For open Files, we use a combobox to show the recent file list
@@ -366,8 +366,8 @@ void qtFileItem::onInputValueChanged()
     return;
     }
 
-  smtk::attribute::FileItemPtr fItem =dynamic_pointer_cast<FileItem>(this->getObject());
-  smtk::attribute::DirectoryItemPtr dItem =dynamic_pointer_cast<DirectoryItem>(this->getObject());
+  smtk::attribute::FileItemPtr fItem =dynamic_pointer_cast<attribute::FileItem>(this->getObject());
+  smtk::attribute::DirectoryItemPtr dItem =dynamic_pointer_cast<attribute::DirectoryItem>(this->getObject());
   int elementIdx = editBox->property("ElementIndex").toInt();
 
   if((fItem && fItem->isSet(elementIdx) && fItem->value(elementIdx) == editBox->text().toStdString()) ||
@@ -465,7 +465,7 @@ void qtFileItem::updateFileComboList()
     this->Internals->fileCombo->blockSignals(true);
     QString currentFile = this->Internals->fileCombo->currentText();
     this->Internals->fileCombo->clear();
-    smtk::attribute::FileItemPtr fItem =dynamic_pointer_cast<FileItem>(this->getObject());
+    smtk::attribute::FileItemPtr fItem =dynamic_pointer_cast<attribute::FileItem>(this->getObject());
     std::vector<std::string>::const_iterator it;
     for(it = fItem->recentValues().begin();
         it != fItem->recentValues().end(); ++it)

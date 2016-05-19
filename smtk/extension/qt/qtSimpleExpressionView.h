@@ -27,7 +27,7 @@ class QKeyEvent;
 
 namespace smtk
 {
-  namespace attribute
+  namespace extension
   {
     class SMTKQTEXT_EXPORT qtSimpleExpressionView : public qtBaseView
     {

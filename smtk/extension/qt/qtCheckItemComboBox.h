@@ -21,7 +21,7 @@
 class QStandardItem;
 
 namespace smtk {
-  namespace attribute {
+  namespace extension {
 
 //A sublcass of QTextEdit to give initial sizehint
 class SMTKQTEXT_EXPORT qtCheckableComboItemDelegate : public QStyledItemDelegate
@@ -72,7 +72,7 @@ class SMTKQTEXT_EXPORT qtCheckItemComboBox : public QComboBox
       smtk::attribute::WeakItemPtr m_ModelEntityItem;
     };
 
-  } // namespace attribute
+  } // namespace extension
 } // namespace smtk
 
 #endif // __smtk_qt_qtCheckItemComboBox_h

@@ -22,7 +22,7 @@ class qtGroupItemInternals;
 
 namespace smtk
 {
-  namespace attribute
+  namespace extension
   {
     class SMTKQTEXT_EXPORT qtGroupItem : public qtItem
     {

@@ -23,7 +23,7 @@ class QScrollArea;
 
 namespace smtk
 {
-  namespace attribute
+  namespace extension
   {
     class SMTKQTEXT_EXPORT qtInstancedView : public qtBaseView
     {

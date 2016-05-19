@@ -23,7 +23,7 @@ class qtAttributeInternals;
 class QWidget;
 
 namespace smtk {
-  namespace attribute {
+  namespace extension {
 
   class qtAttributeItemWidgetFactory;
   class qtBaseView;

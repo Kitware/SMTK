@@ -26,7 +26,7 @@ class qtAttributeDisplayInternals;
 
 namespace smtk
 {
-  namespace attribute
+  namespace extension
   {
 
     class qtUIManager;
@@ -36,7 +36,7 @@ namespace smtk
       Q_OBJECT
 
     public:
-      qtAttributeDisplay(QWidget* p, smtk::attribute::qtUIManager* uiman);
+      qtAttributeDisplay(QWidget* p, smtk::extension::qtUIManager* uiman);
       virtual ~qtAttributeDisplay();
 
     public slots:

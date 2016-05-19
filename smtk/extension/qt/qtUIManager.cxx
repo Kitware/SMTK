@@ -68,6 +68,7 @@ double nextafter(double x, double y)
 #endif
 
 using namespace smtk::attribute;
+using namespace smtk::extension;
 
 //-----------------------------------------------------------------------------
 qtDoubleValidator::qtDoubleValidator(QObject * inParent)
@@ -76,7 +77,7 @@ qtDoubleValidator::qtDoubleValidator(QObject * inParent)
   this->UIManager = NULL;
 }
 //-----------------------------------------------------------------------------
-void qtDoubleValidator::setUIManager(smtk::attribute::qtUIManager* uiman)
+void qtDoubleValidator::setUIManager(smtk::extension::qtUIManager* uiman)
 {
   this->UIManager = uiman;
 }
@@ -127,7 +128,7 @@ qtIntValidator::qtIntValidator(QObject * inParent)
 }
 
 //-----------------------------------------------------------------------------
-void qtIntValidator::setUIManager(smtk::attribute::qtUIManager* uiman)
+void qtIntValidator::setUIManager(smtk::extension::qtUIManager* uiman)
 {
   this->UIManager = uiman;
 }
@@ -234,7 +235,7 @@ void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
     }
   this->internalInitialize();
 
-  smtk::attribute::ViewInfo vinfo(this->m_smtkView, pWidget, this);
+  smtk::extension::ViewInfo vinfo(this->m_smtkView, pWidget, this);
   this->m_topView = this->createView(vinfo);
   if (this->m_topView)
     {
@@ -627,13 +628,13 @@ void qtUIManager::onFileItemCreated(qtFileItem* fileItem)
 }
 //----------------------------------------------------------------------------
 void qtUIManager::onModelEntityItemCreated(
-  smtk::attribute::qtModelEntityItem* entItem)
+  smtk::extension::qtModelEntityItem* entItem)
 {
   emit this->modelEntityItemCreated(entItem);
 }
 //----------------------------------------------------------------------------
 void qtUIManager::onMeshSelectionItemCreated(
-  smtk::attribute::qtMeshSelectionItem* entItem)
+  smtk::extension::qtMeshSelectionItem* entItem)
 {
   emit this->meshSelectionItemCreated(entItem);
 }
@@ -1352,7 +1353,7 @@ qtBaseView *qtUIManager::createView(const ViewInfo &info)
 }
 
 //----------------------------------------------------------------------------
-void qtUIManager::onViewUIModified(smtk::attribute::qtBaseView* bview,
+void qtUIManager::onViewUIModified(smtk::extension::qtBaseView* bview,
                                    smtk::attribute::ItemPtr item)
 {
   emit this->uiChanged(bview, item);

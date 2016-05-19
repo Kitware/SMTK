@@ -25,13 +25,16 @@
 #include <QMouseEvent>
 
 using namespace smtk::attribute;
+using namespace smtk::extension;
 
 qtCheckableComboItemDelegate::qtCheckableComboItemDelegate(QWidget* owner) :
   QStyledItemDelegate(owner)
 {
 }
 
-void qtCheckableComboItemDelegate::paint(QPainter * painter_, const QStyleOptionViewItem & option_, const QModelIndex & index_) const
+void qtCheckableComboItemDelegate::paint(QPainter * painter_,
+					 const QStyleOptionViewItem & option_,
+					 const QModelIndex & index_) const
 {
     QStyleOptionViewItem & refToNonConstOption = const_cast<QStyleOptionViewItem &>(option_);
     refToNonConstOption.showDecorationSelected = false;

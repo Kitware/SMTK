@@ -22,7 +22,7 @@
 #include <QWidget>
 
 namespace smtk {
-  namespace model {
+  namespace extension {
 
 class SMTKQTEXT_EXPORT qtModelPanel : public QWidget
 {
@@ -32,7 +32,7 @@ public:
   qtModelPanel(QWidget* p = NULL);
   ~qtModelPanel();
 
-  smtk::model::qtModelView* getModelView();
+  qtModelView* getModelView();
 
 public slots:
   void onClearSelection();

@@ -48,6 +48,7 @@
 #include <stdlib.h> // for atexit()
 
 using namespace smtk::attribute;
+using namespace smtk::extension;
 
 qtAttributeItemWidgetFactory* qtAttribute::s_factory = NULL;
 
@@ -67,7 +68,7 @@ public:
   }
  smtk::attribute::WeakAttributePtr m_attribute;
  QPointer<QWidget> m_parentWidget;
- QList<smtk::attribute::qtItem*> m_items;
+ QList<smtk::extension::qtItem*> m_items;
  QPointer<qtBaseView> m_view;
 };
 

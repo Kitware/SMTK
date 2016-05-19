@@ -19,7 +19,7 @@ class QTreeView;
 class QModelIndex;
 
 namespace smtk {
-  namespace model {
+  namespace extension {
     class QEntityItemModel;
     class QEntityItemDelegate;
   }
@@ -36,8 +36,8 @@ public:
 
   void setup(
     smtk::model::ManagerPtr s,
-    smtk::model::QEntityItemModel* qm,
-    smtk::model::QEntityItemDelegate* qd,
+    smtk::extension::QEntityItemModel* qm,
+    smtk::extension::QEntityItemDelegate* qd,
     smtk::model::DescriptivePhrasePtr root);
 
 public slots:

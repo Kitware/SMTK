@@ -30,7 +30,7 @@ class QListWidget;
 
 namespace smtk
 {
-  namespace attribute
+  namespace extension
   {
     class qtBaseView;
     class SMTKQTEXT_EXPORT qtAssociationWidget : public QWidget

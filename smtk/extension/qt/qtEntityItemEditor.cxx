@@ -13,7 +13,7 @@
 #include <QtGui/QHBoxLayout>
 
 namespace smtk {
-  namespace model {
+  namespace extension {
 
 QEntityItemEditor::QEntityItemEditor(QWidget* super)
   : QWidget(super)

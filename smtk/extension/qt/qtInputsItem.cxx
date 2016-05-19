@@ -43,6 +43,7 @@
 //#include "pqApplicationCore.h"
 
 using namespace smtk::attribute;
+using namespace smtk::extension;
 
 //----------------------------------------------------------------------------
 class qtInputsItemInternals

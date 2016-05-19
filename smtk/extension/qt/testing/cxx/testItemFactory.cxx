@@ -46,6 +46,7 @@
 #include <iostream>
 
 using namespace smtk::attribute;
+using namespace smtk::extension;
 
 static int numDeleted = 0;
 
@@ -97,7 +98,7 @@ int testLifecycle()
   AttributePtr att = createAttribForTest(system);
   qtUIManager* mgr = new qtUIManager(system);
   QWidget* w = new QWidget;
-  smtk::attribute::ViewInfo vinfo(smtk::common::View::New("base", "test view"),
+  smtk::extension::ViewInfo vinfo(smtk::common::View::New("base", "test view"),
                                   w, mgr);
   qtBaseView* v = new qtBaseView(vinfo);
   qtAttribute* qatt = new qtAttribute(att, w, v);

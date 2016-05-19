@@ -24,7 +24,7 @@ class QListWidgetItem;
 
 namespace smtk
 {
-  namespace attribute
+  namespace extension
   {
     class SMTKQTEXT_EXPORT qtModelView : public qtBaseView
     {
