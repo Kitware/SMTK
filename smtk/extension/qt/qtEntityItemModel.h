@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_qt_qtEntityItemModel_h
-#define __smtk_qt_qtEntityItemModel_h
+#ifndef __smtk_extension_qtEntityItemModel_h
+#define __smtk_extension_qtEntityItemModel_h
 
 #include "QAbstractItemModel"
 #include "QIcon"
@@ -200,4 +200,4 @@ bool QEntityItemModel::foreach_phrase(T& visitor, C& collector, const QModelInde
   } // namespace model
 } // namespace smtk
 
-#endif // __smtk_qt_qtEntityItemModel_h
+#endif // __smtk_extension_qtEntityItemModel_h

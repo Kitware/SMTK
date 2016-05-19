@@ -12,8 +12,8 @@
 // .SECTION See Also
 // qtItem
 
-#ifndef __smtk_attribute_qtMeshSelectionItem_h
-#define __smtk_attribute_qtMeshSelectionItem_h
+#ifndef __smtk_extension_qtMeshSelectionItem_h
+#define __smtk_extension_qtMeshSelectionItem_h
 
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/Exports.h"

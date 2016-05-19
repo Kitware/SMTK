@@ -12,8 +12,8 @@
 // .SECTION See Also
 // qtSection
 
-#ifndef __smtk_attribute_qtAttributeView_h
-#define __smtk_attribute_qtAttributeView_h
+#ifndef __smtk_extension_qtAttributeView_h
+#define __smtk_extension_qtAttributeView_h
 
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/Exports.h"

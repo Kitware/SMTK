@@ -12,8 +12,8 @@
 // .SECTION See Also
 // qtBaseView
 
-#ifndef __smtk_attribute_qtSimpleExpressionView_h
-#define __smtk_attribute_qtSimpleExpressionView_h
+#ifndef __smtk_extension_qtSimpleExpressionView_h
+#define __smtk_extension_qtSimpleExpressionView_h
 
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/Exports.h"

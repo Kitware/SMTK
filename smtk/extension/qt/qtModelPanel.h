@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION Caveats
 
-#ifndef _qtModelPanel_h
-#define _qtModelPanel_h
+#ifndef __smtk_extension_qtModelPanel_h
+#define __smtk_extension_qtModelPanel_h
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtModelView.h"
@@ -50,4 +50,4 @@ private:
   } // namespace model
 } // namespace smtk
 
-#endif // !_qtModelPanel_h
+#endif // __smtk_extension_qtModelPanel_h

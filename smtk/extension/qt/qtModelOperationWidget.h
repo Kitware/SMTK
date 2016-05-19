@@ -12,8 +12,8 @@
 // .SECTION See Also
 // qtSection
 
-#ifndef __smtk_attribute_qtModelOperationWidget_h
-#define __smtk_attribute_qtModelOperationWidget_h
+#ifndef __smtk_extension_qtModelOperationWidget_h
+#define __smtk_extension_qtModelOperationWidget_h
 
 #include <QWidget>
 #include "smtk/extension/qt/Exports.h"

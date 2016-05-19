@@ -13,10 +13,10 @@
 #include <QCheckBox>
 #include <QFrame>
 #include "ui_qtCollapsibleGroupWidgetInternals.h"
-using namespace smtk;
+using namespace smtk::extension;
 
 //----------------------------------------------------------------------------
-class smtk::qtCollapsibleGroupWidgetInternals : public Ui::qtCollapsibleGroupWidgetInternals
+class smtk::extension::qtCollapsibleGroupWidgetInternals : public Ui::qtCollapsibleGroupWidgetInternals
 {
 public:
   qtCollapsibleGroupWidgetInternals() {}

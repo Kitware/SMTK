@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION Caveats
 
-#ifndef _qtModelView_h
-#define _qtModelView_h
+#ifndef __smtk_extension_qtModelView_h
+#define __smtk_extension_qtModelView_h
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtEntityItemModel.h"
@@ -201,4 +201,4 @@ namespace smtk {
  } // namespace extension
 } // namespace smtk
 
-#endif // !_qtModelView_h
+#endif // __smtk_extension_qtModelView_h

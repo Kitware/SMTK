@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_qt_qtCheckItemComboBox_h
-#define __smtk_qt_qtCheckItemComboBox_h
+#ifndef __smtk_extension_qtCheckItemComboBox_h
+#define __smtk_extension_qtCheckItemComboBox_h
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -75,4 +75,4 @@ class SMTKQTEXT_EXPORT qtCheckItemComboBox : public QComboBox
   } // namespace extension
 } // namespace smtk
 
-#endif // __smtk_qt_qtCheckItemComboBox_h
+#endif // __smtk_extension_qtCheckItemComboBox_h

@@ -361,7 +361,7 @@ void qtGroupView::addGroupBoxEntry(qtBaseView* child)
     {
     return;
     }
-  smtk::qtCollapsibleGroupWidget *gw = new qtCollapsibleGroupWidget(frame);
+  smtk::extension::qtCollapsibleGroupWidget *gw = new qtCollapsibleGroupWidget(frame);
   this->Widget->layout()->addWidget(gw);
   gw->setName(child->getObject()->title().c_str());
   gw->contentsLayout()->addWidget(child->widget());

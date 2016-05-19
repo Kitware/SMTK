@@ -11,39 +11,41 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __qtCollapsibleGroupWidget_h
-#define __qtCollapsibleGroupWidget_h
+#ifndef __smtk_extension_qtCollapsibleGroupWidget_h
+#define __smtk_extension_qtCollapsibleGroupWidget_h
 
 #include <QWidget>
 
 class QFrame;
 namespace smtk
 {
-  class qtCollapsibleGroupWidgetInternals;
-  
-  class qtCollapsibleGroupWidget: public QWidget
+  namespace extension
   {
-    Q_OBJECT
+    class qtCollapsibleGroupWidgetInternals;
+  
+    class qtCollapsibleGroupWidget: public QWidget
+    {
+      Q_OBJECT
 
-  public:
-    qtCollapsibleGroupWidget(QWidget *parent);
-    virtual ~qtCollapsibleGroupWidget();
+    public:
+      qtCollapsibleGroupWidget(QWidget *parent);
+      virtual ~qtCollapsibleGroupWidget();
     
-    QLayout *contentsLayout() const;
-    void setContentsLayout(QLayout *newLayout);
-    QFrame *contents() const;
-    void setName(const QString &newName);
-    QString name() const;
+      QLayout *contentsLayout() const;
+      void setContentsLayout(QLayout *newLayout);
+      QFrame *contents() const;
+      void setName(const QString &newName);
+      QString name() const;
 
-  public slots:
-    void open();
-    void collapse();
-  protected:
-    qtCollapsibleGroupWidgetInternals *m_internals;
+      public slots:
+	void open();
+	void collapse();
+    protected:
+	qtCollapsibleGroupWidgetInternals *m_internals;
 
-  private:
+    private:
+    };
   };
 };
 
-
-#endif /* __qtCollapsibleGroupWidget_h */
+#endif /* __smtk_extension_qtCollapsibleGroupWidget_h */

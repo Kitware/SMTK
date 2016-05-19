@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef _qtOverlay_h
+#ifndef __smtk_extension_qtOverlay_h
 #define _qtOverlay_h
 
 #include <QWidget>
@@ -17,7 +17,7 @@
 
 namespace smtk
 {
-  namespace attribute
+  namespace extension
   {
     class SMTKQTEXT_EXPORT  qtOverlay : public QWidget
     {
@@ -61,4 +61,4 @@ namespace smtk
   };
 };
 
-#endif // !_qtOverlay_
+#endif // __smtk_extension_qtOverlay_

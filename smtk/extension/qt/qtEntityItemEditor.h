@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_qt_QEntityItemEditor_h
-#define __smtk_qt_QEntityItemEditor_h
+#ifndef __smtk_extension_QEntityItemEditor_h
+#define __smtk_extension_QEntityItemEditor_h
 
 #include "smtk/extension/qt/Exports.h"
 #include <QtGui/QWidget>
@@ -43,4 +43,4 @@ protected:
   } // namespace model
 } // namespace smtk
 
-#endif // __smtk_qt_QEntityItemEditor_h
+#endif // __smtk_extension_QEntityItemEditor_h

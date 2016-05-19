@@ -26,8 +26,8 @@
 // .SECTION See Also
 // qtItem
 
-#ifndef __smtk_attribute_qtFileItem_h
-#define __smtk_attribute_qtFileItem_h
+#ifndef __smtk_extension_qtFileItem_h
+#define __smtk_extension_qtFileItem_h
 
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/Exports.h"
