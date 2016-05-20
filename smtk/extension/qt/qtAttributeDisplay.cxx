@@ -46,6 +46,7 @@
 #include <iostream>
 #include <set>
 using namespace smtk::attribute;
+using namespace smtk::extension;
 
 //----------------------------------------------------------------------------
 class qtAttributeDisplayInternals
@@ -78,14 +79,14 @@ public:
   QPointer<QComboBox> PropDefsCombo;
   QPointer<QComboBox> SelectPropCombo;
 
-  QPointer<smtk::attribute::qtUIManager> UIManager;
+  QPointer<smtk::extension::qtUIManager> UIManager;
   QPointer<QStandardItemModel> PropComboModel;
 
 };
 
 //----------------------------------------------------------------------------
 qtAttributeDisplay::
-qtAttributeDisplay(QWidget* p, smtk::attribute::qtUIManager* uiman) : QWidget(p)
+qtAttributeDisplay(QWidget* p, smtk::extension::qtUIManager* uiman) : QWidget(p)
 {
   this->Internals = new qtAttributeDisplayInternals;
   this->Internals->UIManager = uiman;

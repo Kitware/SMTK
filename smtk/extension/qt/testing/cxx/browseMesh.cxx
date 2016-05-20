@@ -113,8 +113,8 @@ int main(int argc, char* argv[])
   test( c->isValid(), "collection should be valid");
   test( c->numberOfMeshes() == numTetsInModel, "collection should have a mesh per tet");
 
-  smtk::model::QEntityItemModel* qmodel = new smtk::model::QEntityItemModel;
-  smtk::model::QEntityItemDelegate* qdelegate = new smtk::model::QEntityItemDelegate;
+  smtk::extension::QEntityItemModel* qmodel = new smtk::extension::QEntityItemModel;
+  smtk::extension::QEntityItemDelegate* qdelegate = new smtk::extension::QEntityItemDelegate;
   qdelegate->setTitleFontSize(12);
   qdelegate->setTitleFontWeight(2);
   qdelegate->setSubtitleFontSize(10);

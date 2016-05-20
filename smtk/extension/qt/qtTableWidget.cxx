@@ -13,6 +13,7 @@
 
 #include <QKeyEvent>
 #include <QHeaderView>
+using namespace smtk::extension;
 
 //-----------------------------------------------------------------------------
 qtTableWidget::qtTableWidget(QWidget* p)

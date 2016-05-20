@@ -10,8 +10,8 @@
 // .NAME qtBaseView - a base class for all view types
 // .SECTION Description
 
-#ifndef __smtk_attribute_qtBaseView_h
-#define __smtk_attribute_qtBaseView_h
+#ifndef __smtk_extension_qtBaseView_h
+#define __smtk_extension_qtBaseView_h
 
 #include <QObject>
 #include <QList>
@@ -25,7 +25,7 @@ class QScrollArea;
 
 namespace smtk
 {
-  namespace attribute
+  namespace extension
   {
     class qtUIManager;
     class qtItem;

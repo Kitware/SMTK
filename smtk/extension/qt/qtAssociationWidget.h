@@ -12,8 +12,8 @@
 // .SECTION See Also
 // qtSection
 
-#ifndef __smtk_attribute_qtAssociationWidget_h
-#define __smtk_attribute_qtAssociationWidget_h
+#ifndef __smtk_extension_qtAssociationWidget_h
+#define __smtk_extension_qtAssociationWidget_h
 
 #include <QWidget>
 #include "smtk/extension/qt/Exports.h"
@@ -30,7 +30,7 @@ class QListWidget;
 
 namespace smtk
 {
-  namespace attribute
+  namespace extension
   {
     class qtBaseView;
     class SMTKQTEXT_EXPORT qtAssociationWidget : public QWidget

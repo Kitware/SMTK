@@ -30,6 +30,7 @@
 #include <QFont>
 
 using namespace smtk::attribute;
+using namespace smtk::extension;
 
 //----------------------------------------------------------------------------
 class qtGroupViewInternals
@@ -43,7 +44,7 @@ public:
   };
   qtGroupViewInternals() : m_style(TABBED), m_currentTabSelected(0),
                            m_tabPosition(QTabWidget::East) {}
-  QList<smtk::attribute::qtBaseView*> ChildViews;
+  QList<smtk::extension::qtBaseView*> ChildViews;
   qtGroupViewInternals::Style m_style;
   std::vector<smtk::common::ViewPtr> m_views;
   int m_currentTabSelected;
@@ -181,7 +182,7 @@ void qtGroupView::createWidget( )
       }
     // Setup the information for the new child view based off of
     // this one
-    smtk::attribute::ViewInfo vinfo = this->m_viewInfo;
+    smtk::extension::ViewInfo vinfo = this->m_viewInfo;
     vinfo.m_view = v;
     vinfo.m_parent = this->Widget;
     qtView = this->uiManager()->createView(vinfo);
@@ -360,7 +361,7 @@ void qtGroupView::addGroupBoxEntry(qtBaseView* child)
     {
     return;
     }
-  smtk::qtCollapsibleGroupWidget *gw = new qtCollapsibleGroupWidget(frame);
+  smtk::extension::qtCollapsibleGroupWidget *gw = new qtCollapsibleGroupWidget(frame);
   this->Widget->layout()->addWidget(gw);
   gw->setName(child->getObject()->title().c_str());
   gw->contentsLayout()->addWidget(child->widget());

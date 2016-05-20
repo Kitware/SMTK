@@ -11,8 +11,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_qtDiscreteValueEditor_h
-#define __smtk_attribute_qtDiscreteValueEditor_h
+#ifndef __smtk_extension_qtDiscreteValueEditor_h
+#define __smtk_extension_qtDiscreteValueEditor_h
 
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/Exports.h"
@@ -22,7 +22,7 @@ class qtDiscreteValueEditorInternals;
 
 namespace smtk
 {
-  namespace attribute
+  namespace extension
   {
     class SMTKQTEXT_EXPORT qtDiscreteValueEditor : public QWidget
     {

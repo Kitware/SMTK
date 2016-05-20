@@ -61,10 +61,11 @@
 #include <iomanip>
 #include <algorithm>    // std::sort
 
+using namespace smtk::model;
 // -----------------------------------------------------------------------------
 
 namespace smtk {
-  namespace model {
+  namespace extension {
 
 static const std::string pEntityGroupOpName("entity group");
 
@@ -72,8 +73,8 @@ static const std::string pEntityGroupOpName("entity group");
 qtModelView::qtModelView(QWidget* p)
   : QTreeView(p)
 {
-  QPointer<smtk::model::QEntityItemModel> qmodel = new smtk::model::QEntityItemModel;
-  QPointer<smtk::model::QEntityItemDelegate> qdelegate = new smtk::model::QEntityItemDelegate;
+  QPointer<smtk::extension::QEntityItemModel> qmodel = new smtk::extension::QEntityItemModel;
+  QPointer<smtk::extension::QEntityItemDelegate> qdelegate = new smtk::extension::QEntityItemDelegate;
   qmodel->setSupportedDragActions(Qt::CopyAction);
   this->setModel(qmodel); // must come after qmodel->setRoot()
   this->setItemDelegate(qdelegate);
@@ -129,7 +130,7 @@ qtModelView::~qtModelView()
 }
 
 //-----------------------------------------------------------------------------
-smtk::model::QEntityItemModel* qtModelView::getModel() const
+smtk::extension::QEntityItemModel* qtModelView::getModel() const
 {
   return qobject_cast<QEntityItemModel*>(this->model());
 }
@@ -143,7 +144,7 @@ void qtModelView::keyPressEvent(QKeyEvent* keyEvent)
   if (keyEvent && (keyEvent->key() == Qt::Key_Backspace ||
       keyEvent->key() == Qt::Key_Delete))
     {
-    smtk::model::QEntityItemModel* qmodel = this->getModel();
+    smtk::extension::QEntityItemModel* qmodel = this->getModel();
     // Fow now, keep indices that are either groups themselves, or
     // their direct parent is a group
     QMap<smtk::model::Model, QList<smtk::model::Group> >  grpModels;
@@ -261,7 +262,7 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
     return;  
     }
 
-  smtk::model::QEntityItemModel* qmodel = this->getModel();
+  smtk::extension::QEntityItemModel* qmodel = this->getModel();
   DescriptivePhrasePtr dp = qmodel->getItem(dropIdx);
   smtk::model::Group group;
   if (dp && (group = dp->relatedEntity().as<smtk::model::Group>()).isValid())
@@ -480,7 +481,7 @@ void qtModelView::currentSelectionByMask (
     smtk::model::EntityRefs& selentityrefs, const BitFlags& entityFlags,
     bool searchUp, smtk::mesh::MeshSets* selmeshes)
 {
-  smtk::model::QEntityItemModel* qmodel = this->getModel();
+  smtk::extension::QEntityItemModel* qmodel = this->getModel();
   if(!qmodel)
     {
     return;
@@ -502,8 +503,8 @@ void qtModelView::selectItems(
   const smtk::mesh::MeshSets& selMeshes,
   bool blocksignal)
 {
-  smtk::model::QEntityItemModel* qmodel =
-    dynamic_cast<smtk::model::QEntityItemModel*>(this->model());
+  smtk::extension::QEntityItemModel* qmodel =
+    dynamic_cast<smtk::extension::QEntityItemModel*>(this->model());
 
   // Now recursively check which model indices should be selected:
   QItemSelection selItems;
@@ -827,7 +828,7 @@ void qtModelView::operatorInvoked()
   QVariant var = action->data();
   smtk::common::UUID sessId( var.toString().toStdString() );
 
-  smtk::model::QEntityItemModel* qmodel = this->getModel();
+  smtk::extension::QEntityItemModel* qmodel = this->getModel();
   smtk::model::SessionPtr session =
     smtk::model::SessionRef(qmodel->manager(), sessId).session();
   if (!session)
@@ -863,15 +864,15 @@ qtOperatorDockWidget* qtModelView::operatorsDock()
     this, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)));
   QObject::connect(opWidget, SIGNAL(operationCancelled(const smtk::model::OperatorPtr&)),
     this, SIGNAL(operationCancelled(const smtk::model::OperatorPtr&)));
-  QObject::connect(opWidget, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),
-    this, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)));
-  QObject::connect(opWidget, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)),
-    this, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)));
+  QObject::connect(opWidget, SIGNAL(fileItemCreated(smtk::extension::qtFileItem*)),
+    this, SIGNAL(fileItemCreated(smtk::extension::qtFileItem*)));
+  QObject::connect(opWidget, SIGNAL(modelEntityItemCreated(smtk::extension::qtModelEntityItem*)),
+    this, SIGNAL(modelEntityItemCreated(smtk::extension::qtModelEntityItem*)));
   QObject::connect(opWidget, SIGNAL(meshSelectionItemCreated(
-                   smtk::attribute::qtMeshSelectionItem*,
+                   smtk::extension::qtMeshSelectionItem*,
                    const std::string&, const smtk::common::UUID&)),
     this, SIGNAL(meshSelectionItemCreated(
-                 smtk::attribute::qtMeshSelectionItem*,
+                 smtk::extension::qtMeshSelectionItem*,
                  const std::string&, const smtk::common::UUID&)));
   QObject::connect(opWidget, SIGNAL(entitiesSelected(const smtk::common::UUIDs&)),
     this, SLOT(selectEntities(const smtk::common::UUIDs&)));
@@ -956,8 +957,8 @@ bool qtModelView::requestOperation(
 bool qtModelView::requestOperation(
     const std::string& opName, const smtk::common::UUID& sessionId, bool launchOp)
 {
-  smtk::model::QEntityItemModel* qmodel =
-    dynamic_cast<smtk::model::QEntityItemModel*>(this->model());
+  smtk::extension::QEntityItemModel* qmodel =
+    dynamic_cast<smtk::extension::QEntityItemModel*>(this->model());
   smtk::model::SessionPtr session =
     smtk::model::SessionRef(qmodel->manager(), sessionId).session();
 
@@ -1330,8 +1331,8 @@ void qtModelView::syncEntityVisibility(
   if(!brOp || !brOp->specification()->isValid())
     return;
   EntityRefs entities;
-  smtk::model::QEntityItemModel* qmodel =
-    dynamic_cast<smtk::model::QEntityItemModel*>(this->model());
+  smtk::extension::QEntityItemModel* qmodel =
+    dynamic_cast<smtk::extension::QEntityItemModel*>(this->model());
   EntityRef::EntityRefsFromUUIDs(entities, qmodel->manager(), entuids);
   this->setEntityVisibility(entities, meshes, vis, brOp);
 
@@ -1358,8 +1359,8 @@ void qtModelView::syncEntityColor(
   if(!brOp || !brOp->specification()->isValid())
     return;
   EntityRefs entities;
-  smtk::model::QEntityItemModel* qmodel =
-    dynamic_cast<smtk::model::QEntityItemModel*>(this->model());
+  smtk::extension::QEntityItemModel* qmodel =
+    dynamic_cast<smtk::extension::QEntityItemModel*>(this->model());
   EntityRef::EntityRefsFromUUIDs(entities, qmodel->manager(), entuids);
   this->setEntityColor(entities, meshes, clr, brOp);
 
@@ -1426,8 +1427,8 @@ void qtModelView::changeEntityName( const QModelIndex& idx)
 void qtModelView::updateWithOperatorResult(
     const smtk::model::SessionRef& sref, const OperatorResult& result)
 {
-  smtk::model::QEntityItemModel* qmodel =
-    dynamic_cast<smtk::model::QEntityItemModel*>(this->model());
+  smtk::extension::QEntityItemModel* qmodel =
+    dynamic_cast<smtk::extension::QEntityItemModel*>(this->model());
   QModelIndex top = this->rootIndex();
   for (int row = 0; row < qmodel->rowCount(top); ++row)
     {
@@ -1484,8 +1485,8 @@ void qtModelView::syncEntityVisibility(
     const smtk::mesh::MeshSets& meshes,
     int vis)
 {
-  smtk::model::QEntityItemModel* qmodel =
-    dynamic_cast<smtk::model::QEntityItemModel*>(this->model());
+  smtk::extension::QEntityItemModel* qmodel =
+    dynamic_cast<smtk::extension::QEntityItemModel*>(this->model());
   smtk::model::SessionPtr session =
     smtk::model::SessionRef(qmodel->manager(), sessid).session();
   this->syncEntityVisibility(session, entids, meshes, vis);
@@ -1498,8 +1499,8 @@ void qtModelView::syncEntityColor(
     const smtk::mesh::MeshSets& meshes,
     const QColor& clr)
 {
-  smtk::model::QEntityItemModel* qmodel =
-    dynamic_cast<smtk::model::QEntityItemModel*>(this->model());
+  smtk::extension::QEntityItemModel* qmodel =
+    dynamic_cast<smtk::extension::QEntityItemModel*>(this->model());
   smtk::model::SessionPtr session =
     smtk::model::SessionRef(qmodel->manager(), sessid).session();
   this->syncEntityColor(session, entids, meshes, clr);

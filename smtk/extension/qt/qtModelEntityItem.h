@@ -12,8 +12,8 @@
 // .SECTION See Also
 // qtItem
 
-#ifndef __smtk_attribute_qtModelEntityItem_h
-#define __smtk_attribute_qtModelEntityItem_h
+#ifndef __smtk_extension_qtModelEntityItem_h
+#define __smtk_extension_qtModelEntityItem_h
 
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/Exports.h"
@@ -24,7 +24,7 @@ class QBoxLayout;
 
 namespace smtk
 {
-  namespace attribute
+  namespace extension
   {
     class SMTKQTEXT_EXPORT qtModelEntityItem : public qtItem
     {
@@ -64,7 +64,7 @@ namespace smtk
       qtModelEntityItemInternals *Internals;
 
     }; // class
-  }; // namespace attribute
+  }; // namespace extension
 }; // namespace smtk
 
 #endif

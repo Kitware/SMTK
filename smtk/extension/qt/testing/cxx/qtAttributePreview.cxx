@@ -129,8 +129,8 @@ int main(int argc, char *argv[])
   QApplication *app = new QApplication(argc, argv);
 
   // Instantiate smtk's qtUIManager
-  smtk::attribute::qtUIManager *uiManager =
-    new smtk::attribute::qtUIManager(system);
+  smtk::extension::qtUIManager *uiManager =
+    new smtk::extension::qtUIManager(system);
 
   // Instantiate empty widget as containter for qtUIManager
   QWidget *widget = new QWidget();

@@ -32,6 +32,7 @@
 #include <QGridLayout>
 
 using namespace smtk::attribute;
+using namespace smtk::extension;
 
 inline void init_Att_Names_and_NEW(QList<QString>& attNames,
   const RefItemDefinition *itemDef)
@@ -224,7 +225,7 @@ void qtAttributeRefItem::onLaunchAttributeView()
   attViewDlg.setWindowTitle(attDef->label().empty() ?
                             attDef->type().c_str() : attDef->label().c_str());
   QVBoxLayout* layout = new QVBoxLayout(&attViewDlg);
-  smtk::attribute::ViewInfo vinfo(newAttView, &attViewDlg, this->baseView()->uiManager());
+  smtk::extension::ViewInfo vinfo(newAttView, &attViewDlg, this->baseView()->uiManager());
   qtAttributeView attView(vinfo);
   //layout->addWidget(attView.widget())
   QDialogButtonBox* buttonBox=new QDialogButtonBox( &attViewDlg );

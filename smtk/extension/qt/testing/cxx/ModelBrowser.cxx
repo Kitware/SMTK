@@ -30,8 +30,8 @@ using namespace smtk::model;
 class ModelBrowser::Internals : public Ui::ModelBrowser
 {
 public:
-  smtk::model::QEntityItemModel* qmodel;
-  smtk::model::QEntityItemDelegate* qdelegate;
+  smtk::extension::QEntityItemModel* qmodel;
+  smtk::extension::QEntityItemDelegate* qdelegate;
 };
 
 ModelBrowser::ModelBrowser(QWidget* p) :
@@ -65,8 +65,8 @@ QTreeView* ModelBrowser::tree() const
 
 void ModelBrowser::setup(
   smtk::model::ManagerPtr manager,
-  smtk::model::QEntityItemModel* qmodel,
-  smtk::model::QEntityItemDelegate* qdelegate,
+  smtk::extension::QEntityItemModel* qmodel,
+  smtk::extension::QEntityItemDelegate* qdelegate,
   smtk::model::DescriptivePhrasePtr root)
 {
   this->m_manager = manager;
@@ -166,8 +166,8 @@ void ModelBrowser::removeFromGroup()
         {
         std::cout
           << "Erp! Model parents"
-          << "   s\"" << sidx.model()->data(sidx.parent(), smtk::model::QEntityItemModel::TitleTextRole).toString().toStdString()
-          << "\" q\"" << sidx.model()->data(qidx.parent(), smtk::model::QEntityItemModel::TitleTextRole).toString().toStdString()
+          << "   s\"" << sidx.model()->data(sidx.parent(), smtk::extension::QEntityItemModel::TitleTextRole).toString().toStdString()
+          << "\" q\"" << sidx.model()->data(qidx.parent(), smtk::extension::QEntityItemModel::TitleTextRole).toString().toStdString()
           << "\" differ\n";
         }
       this->m_p->modelTree->selectionModel()->select(

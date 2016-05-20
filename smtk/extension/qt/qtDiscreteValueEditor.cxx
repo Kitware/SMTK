@@ -24,7 +24,7 @@
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
-using namespace smtk::attribute;
+using namespace smtk::extension;
 
 //----------------------------------------------------------------------------
 class qtDiscreteValueEditorInternals
@@ -45,7 +45,7 @@ public:
 
   QPointer<QWidget> ParentWidget;
   smtk::attribute::WeakItemPtr DataObject;
-  QList<smtk::attribute::qtItem*> ChildItems;
+  QList<smtk::extension::qtItem*> ChildItems;
   QPointer<qtBaseView> BaseView;
   QPointer<QLayout> ChildrenLayout;
   int hintChildWidth;
@@ -91,7 +91,7 @@ void qtDiscreteValueEditor::createWidget()
   wlayout->setMargin(0);
 //  this->Widget = new QFrame(this->Internals->ParentWidget);
 
-  smtk::attribute::ValueItemPtr item =smtk::dynamic_pointer_cast<ValueItem>(
+  smtk::attribute::ValueItemPtr item =smtk::dynamic_pointer_cast<attribute::ValueItem>(
     this->Internals->DataObject.lock());
   if(!item || !item->isDiscrete())
     {
@@ -104,8 +104,8 @@ void qtDiscreteValueEditor::createWidget()
     return;
     }
 
-  const ValueItemDefinition *itemDef =
-    dynamic_cast<const ValueItemDefinition*>(item->definition().get());
+  const attribute::ValueItemDefinition *itemDef =
+    dynamic_cast<const attribute::ValueItemDefinition*>(item->definition().get());
   QList<QString> discreteVals;
   QString tooltip;
   for (size_t i = 0; i < itemDef->numberOfDiscreteValues(); i++)
@@ -137,7 +137,7 @@ void qtDiscreteValueEditor::createWidget()
 //----------------------------------------------------------------------------
 void qtDiscreteValueEditor::updateItemData()
 {
-  smtk::attribute::ValueItemPtr item =smtk::dynamic_pointer_cast<ValueItem>(
+  smtk::attribute::ValueItemPtr item =smtk::dynamic_pointer_cast<attribute::ValueItem>(
     this->Internals->DataObject.lock());
   if(!item || !item->isDiscrete())
     {
@@ -154,8 +154,8 @@ void qtDiscreteValueEditor::updateItemData()
     {
     return;
     }
-  const ValueItemDefinition *itemDef =
-    dynamic_cast<const ValueItemDefinition*>(item->definition().get());
+  const attribute::ValueItemDefinition *itemDef =
+    dynamic_cast<const attribute::ValueItemDefinition*>(item->definition().get());
 
   int setIndex = -1, elementIdx = this->Internals->ElementIndex;
   if (item->isSet(elementIdx))
@@ -184,11 +184,11 @@ void qtDiscreteValueEditor::onInputValueChanged()
 
   int curIdx = comboBox->currentIndex();
   int elementIdx =this->Internals->ElementIndex;
-  smtk::attribute::ValueItemPtr item =smtk::dynamic_pointer_cast<ValueItem>(
+  smtk::attribute::ValueItemPtr item =smtk::dynamic_pointer_cast<attribute::ValueItem>(
     this->Internals->DataObject.lock());
   bool refresh = false;
-  const ValueItemDefinition *itemDef =
-    dynamic_cast<const ValueItemDefinition*>(item->definition().get());
+  const attribute::ValueItemDefinition *itemDef =
+    dynamic_cast<const attribute::ValueItemDefinition*>(item->definition().get());
   if(itemDef->isDiscreteIndexValid(curIdx) && item->isSet(elementIdx) &&
       item->discreteIndex(elementIdx) == curIdx)
     {

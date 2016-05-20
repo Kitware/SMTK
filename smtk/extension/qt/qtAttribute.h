@@ -10,8 +10,8 @@
 // .NAME qtAttribute - a class that encapsulates the UI of an Attribute
 // .SECTION Description
 
-#ifndef __smtk_attribute_qtAttribute_h
-#define __smtk_attribute_qtAttribute_h
+#ifndef __smtk_extension_qtAttribute_h
+#define __smtk_extension_qtAttribute_h
 
 #include <QObject>
 #include <QPointer>
@@ -23,7 +23,7 @@ class qtAttributeInternals;
 class QWidget;
 
 namespace smtk {
-  namespace attribute {
+  namespace extension {
 
   class qtAttributeItemWidgetFactory;
   class qtBaseView;

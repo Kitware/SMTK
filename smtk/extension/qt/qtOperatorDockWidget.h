@@ -17,14 +17,14 @@
 // area and its tab becomes selected or unselected, which is not what we want.
 // .SECTION Caveats
 
-#ifndef _qtOperatorDockWidget_h
-#define _qtOperatorDockWidget_h
+#ifndef __smtk_extension_qtOperatorDockWidget_h
+#define __smtk_extension_qtOperatorDockWidget_h
 
 #include "smtk/extension/qt/Exports.h"
 #include <QDockWidget>
 
 namespace smtk {
-  namespace model {
+  namespace extension {
 
 class SMTKQTEXT_EXPORT qtOperatorDockWidget : public QDockWidget
 {
@@ -45,4 +45,4 @@ protected:
   } // namespace model
 } // namespace smtk
 
-#endif // !_qtOperatorDockWidget_h
+#endif // __smtk_extension_qtOperatorDockWidget_h

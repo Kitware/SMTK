@@ -15,7 +15,7 @@
 #include <QComboBox>
 #include <QStringList>
 
-using namespace smtk::attribute;
+using namespace smtk::extension;
 
 qtOverlay::qtOverlay(QWidget * parentW ) : QWidget(parentW)
 {

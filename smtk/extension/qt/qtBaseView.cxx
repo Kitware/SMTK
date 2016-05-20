@@ -28,7 +28,7 @@
 #include <QToolButton>
 #include <QWidget>
 
-using namespace smtk::attribute;
+using namespace smtk::extension;
 
 //----------------------------------------------------------------------------
 class qtBaseViewInternals
@@ -107,7 +107,7 @@ void qtBaseView::getDefinitions(
   QList<smtk::attribute::DefinitionPtr>& defs)
 {
   std::vector<smtk::attribute::DefinitionPtr> newdefs;
-  System *attSystem = attDef->system();
+  attribute::System *attSystem = attDef->system();
   attSystem->findAllDerivedDefinitions(attDef, true, newdefs);
   if(!attDef->isAbstract() && !defs.contains(attDef))
     {
@@ -260,7 +260,7 @@ void qtBaseView::makeTopLevel()
     }
 
   this->Internals->clearWidgets();
-  const System* attSys = this->uiManager()->attSystem();
+  const attribute::System* attSys = this->uiManager()->attSystem();
   
   bool flag;
   // Do we need to provide advance level filtering? - this is on by default

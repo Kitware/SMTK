@@ -19,35 +19,38 @@
 //  5.  Customized Drag-n-Drop
 // .SECTION Caveats
 
-#ifndef _qtTableWidget_h
-#define _qtTableWidget_h
+#ifndef __smtk_extension_qtTableWidget_h
+#define __smtk_extension_qtTableWidget_h
 
 #include <QTableWidget>
 #include "smtk/extension/qt/Exports.h"
 
 class QKeyEvent;
 
-class SMTKQTEXT_EXPORT qtTableWidget : public QTableWidget
-{
-  Q_OBJECT
-
-public:
-
-  qtTableWidget(QWidget* p = NULL);
-  ~qtTableWidget();
-
-  QModelIndexList getSelectedIndexes() const
+namespace smtk {
+  namespace extension {
+    class SMTKQTEXT_EXPORT qtTableWidget : public QTableWidget
     {
-    return this->selectedIndexes();
-    }
-public slots:
+      Q_OBJECT
 
-signals:
-  void keyPressed(QKeyEvent*);
+    public:
 
-protected slots:
-  virtual void keyPressEvent(QKeyEvent*);
+      qtTableWidget(QWidget* p = NULL);
+      ~qtTableWidget();
 
+      QModelIndexList getSelectedIndexes() const
+      {
+	return this->selectedIndexes();
+      }
+      public slots:
+
+	signals:
+      void keyPressed(QKeyEvent*);
+      
+      protected slots:
+	virtual void keyPressEvent(QKeyEvent*);
+    };
+  };
 };
 
-#endif // !_qtTableWidget_h
+#endif // __smtk_extension_qtTableWidget_h

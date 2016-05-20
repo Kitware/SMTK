@@ -27,6 +27,7 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/VoidItem.h"
 
+using namespace smtk::extension;
 using namespace smtk::attribute;
 
 /**\brief Create a widget that illustrates an item referencing another attribute.

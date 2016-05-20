@@ -8,15 +8,15 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_qt_QEntityItemDelegate_h
-#define __smtk_qt_QEntityItemDelegate_h
+#ifndef __smtk_extension_QEntityItemDelegate_h
+#define __smtk_extension_QEntityItemDelegate_h
 
 #include "smtk/extension/qt/Exports.h"
 
 #include <QStyledItemDelegate>
 
 namespace smtk {
-  namespace model {
+  namespace extension {
 
 /**\brief Present the contents of an smtk::model::Manager instance via QEntityItemModel.
   *
@@ -92,7 +92,7 @@ protected:
   int m_subtitleFontWeight;
 };
 
-  } // namespace model
+  } // namespace extension
 } // namespace smtk
 
-#endif // __smtk_qt_QEntityItemDelegate_h
+#endif // __smtk_extension_QEntityItemDelegate_h

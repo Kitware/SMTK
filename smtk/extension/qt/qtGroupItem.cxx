@@ -29,7 +29,7 @@
 #include <QCoreApplication>
 #include <QHeaderView>
 
-using namespace smtk::attribute;
+using namespace smtk::extension;
 
 //----------------------------------------------------------------------------
 class qtGroupItemInternals
@@ -68,7 +68,7 @@ void qtGroupItem::setLabelVisible(bool visible)
     {
     return;
     }
-  smtk::attribute::GroupItemPtr item =dynamic_pointer_cast<GroupItem>(this->getObject());
+  smtk::attribute::GroupItemPtr item =dynamic_pointer_cast<attribute::GroupItem>(this->getObject());
   if(!item || !item->numberOfGroups())
     {
     return;
@@ -87,7 +87,7 @@ void qtGroupItem::createWidget()
     return;
     }
   this->clearChildItems();
-  smtk::attribute::GroupItemPtr item =dynamic_pointer_cast<GroupItem>(this->getObject());
+  smtk::attribute::GroupItemPtr item =dynamic_pointer_cast<attribute::GroupItem>(this->getObject());
   if(!item || (!item->numberOfGroups() && !item->isExtensible()))
     {
     return;
@@ -144,7 +144,7 @@ void qtGroupItem::setEnabledState(bool checked)
 //----------------------------------------------------------------------------
 void qtGroupItem::updateItemData()
 {
-  smtk::attribute::GroupItemPtr item =dynamic_pointer_cast<GroupItem>(this->getObject());
+  smtk::attribute::GroupItemPtr item =dynamic_pointer_cast<attribute::GroupItem>(this->getObject());
   if(!item || (!item->numberOfGroups() && !item->isExtensible()))
     {
     return;
@@ -213,7 +213,8 @@ void qtGroupItem::updateItemData()
 //----------------------------------------------------------------------------
 void qtGroupItem::onAddSubGroup()
 {
-  smtk::attribute::GroupItemPtr item =dynamic_pointer_cast<GroupItem>(this->getObject());
+  smtk::attribute::GroupItemPtr item =
+    dynamic_pointer_cast<attribute::GroupItem>(this->getObject());
   if(!item || (!item->numberOfGroups() && !item->isExtensible()))
     {
     return;
@@ -236,7 +237,8 @@ void qtGroupItem::onAddSubGroup()
 //----------------------------------------------------------------------------
 void qtGroupItem::addSubGroup(int i)
 {
-  smtk::attribute::GroupItemPtr item =dynamic_pointer_cast<GroupItem>(this->getObject());
+  smtk::attribute::GroupItemPtr item =
+    dynamic_pointer_cast<attribute::GroupItem>(this->getObject());
   if(!item || (!item->numberOfGroups() && !item->isExtensible()))
     {
     return;
@@ -258,7 +260,7 @@ void qtGroupItem::addSubGroup(int i)
       static_cast<int>(j))->definition();
     //smtk::attribute::ItemDefinitionPtr childDef(
     //  smtk::const_pointer_cast<ItemDefinition>(itDef));
-    childDefs.push_back(smtk::const_pointer_cast<ItemDefinition>(itDef));
+    childDefs.push_back(smtk::const_pointer_cast<attribute::ItemDefinition>(itDef));
     }
   int tmpLen = this->baseView()->uiManager()->getWidthOfItemsMaxLabel(
     childDefs, this->baseView()->uiManager()->advancedFont());
@@ -290,7 +292,8 @@ void qtGroupItem::onRemoveSubGroup()
     }
 
   int gIdx = this->Internals->MinusButtonIndices.indexOf(minusButton);//minusButton->property("SubgroupIndex").toInt();
-  smtk::attribute::GroupItemPtr item =dynamic_pointer_cast<GroupItem>(this->getObject());
+  smtk::attribute::GroupItemPtr item =
+    dynamic_pointer_cast<attribute::GroupItem>(this->getObject());
   if(!item || gIdx < 0 || gIdx >= static_cast<int>(item->numberOfGroups()))
     {
     return;
@@ -329,7 +332,8 @@ void qtGroupItem::onRemoveSubGroup()
 //----------------------------------------------------------------------------
 void qtGroupItem::updateExtensibleState()
 {
-  smtk::attribute::GroupItemPtr item =dynamic_pointer_cast<GroupItem>(this->getObject());
+  smtk::attribute::GroupItemPtr item =
+    dynamic_pointer_cast<attribute::GroupItem>(this->getObject());
   if(!item || !item->isExtensible())
     {
     return;
@@ -349,7 +353,8 @@ void qtGroupItem::updateExtensibleState()
 //----------------------------------------------------------------------------
 void qtGroupItem::addItemsToTable(int i)
 {
-  smtk::attribute::GroupItemPtr item =dynamic_pointer_cast<GroupItem>(this->getObject());
+  smtk::attribute::GroupItemPtr item =
+    dynamic_pointer_cast<attribute::GroupItem>(this->getObject());
   if(!item || !item->isExtensible())
     {
     return;

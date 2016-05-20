@@ -54,6 +54,7 @@
 #define MAX_NUMBEWR_FUNC_POINTS 10000
 
 using namespace smtk::attribute;
+using namespace smtk::extension;
 
 //----------------------------------------------------------------------------
 class qtSimpleExpressionViewInternals

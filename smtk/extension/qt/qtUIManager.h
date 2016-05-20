@@ -12,8 +12,8 @@
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_qtUIManager_h
-#define __smtk_attribute_qtUIManager_h
+#ifndef __smtk_extension_qtUIManager_h
+#define __smtk_extension_qtUIManager_h
 
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/Exports.h"
@@ -32,7 +32,7 @@ class QComboBox;
 
 namespace smtk
 {
-  namespace attribute
+  namespace extension
   {
     class qtItem;
     class qtFileItem;
@@ -166,23 +166,23 @@ namespace smtk
 #endif
 
     public slots:
-      void onFileItemCreated(smtk::attribute::qtFileItem*);
-      void onModelEntityItemCreated(smtk::attribute::qtModelEntityItem*);
-      void onMeshSelectionItemCreated(smtk::attribute::qtMeshSelectionItem*);
+      void onFileItemCreated(smtk::extension::qtFileItem*);
+      void onModelEntityItemCreated(smtk::extension::qtModelEntityItem*);
+      void onMeshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*);
       void onExpressionReferenceChanged();
       void updateModelViews();
       void onTextEditChanged();
       void onLineEditChanged();
       void onLineEditFinished();
       void onInputValueChanged(QObject*);
-      void onViewUIModified(smtk::attribute::qtBaseView*, smtk::attribute::ItemPtr);
+      void onViewUIModified(smtk::extension::qtBaseView*, smtk::attribute::ItemPtr);
       void setAdvanceLevel(int b);
 
     signals:
-      void fileItemCreated(smtk::attribute::qtFileItem* fileItem);
-      void modelEntityItemCreated(smtk::attribute::qtModelEntityItem* entItem);
-      void meshSelectionItemCreated(smtk::attribute::qtMeshSelectionItem*);
-      void uiChanged(smtk::attribute::qtBaseView*, smtk::attribute::ItemPtr);
+      void fileItemCreated(smtk::extension::qtFileItem* fileItem);
+      void modelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem);
+      void meshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*);
+      void uiChanged(smtk::extension::qtBaseView*, smtk::attribute::ItemPtr);
       void entitiesSelected(const smtk::common::UUIDs&);
 
     friend class qtRootView;

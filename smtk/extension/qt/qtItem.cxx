@@ -21,6 +21,7 @@
 #include <QComboBox>
 
 using namespace smtk::attribute;
+using namespace smtk::extension;
 
 //----------------------------------------------------------------------------
 class qtItemInternals
@@ -38,7 +39,7 @@ public:
   }
  smtk::attribute::WeakItemPtr DataObject;
  QPointer<QWidget> ParentWidget;
- QList<smtk::attribute::qtItem*> ChildItems;
+ QList<smtk::extension::qtItem*> ChildItems;
  QPointer<qtBaseView> BaseView;
  QPointer<qtOverlayFilter> advOverlay;
  QPointer<QComboBox> AdvLevelCombo;

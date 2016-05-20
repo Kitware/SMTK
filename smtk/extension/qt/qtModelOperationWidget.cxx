@@ -41,7 +41,7 @@
 #include <map>
 #include <algorithm>    // std::sort
 
-using namespace smtk::attribute;
+using namespace smtk::extension;
 using namespace smtk::model;
 
 //----------------------------------------------------------------------------
@@ -242,15 +242,15 @@ bool qtModelOperationWidget::initOperatorUI(
   comp.setAttribute("Type", att->type()).setAttribute("Name", att->name());  
   att->system()->addView(instanced);
 
-  smtk::attribute::qtUIManager* uiManager =
-    new smtk::attribute::qtUIManager(*(att->system()));
+  smtk::extension::qtUIManager* uiManager =
+    new smtk::extension::qtUIManager(*(att->system()));
 
-  QObject::connect(uiManager, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),
-    this, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)));
-  QObject::connect(uiManager, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)),
-    this, SIGNAL(modelEntityItemCreated(smtk::attribute::qtModelEntityItem*)));
-  QObject::connect(uiManager, SIGNAL(meshSelectionItemCreated(smtk::attribute::qtMeshSelectionItem*)),
-    this, SLOT(onMeshSelectionItemCreated(smtk::attribute::qtMeshSelectionItem*)));
+  QObject::connect(uiManager, SIGNAL(fileItemCreated(smtk::extension::qtFileItem*)),
+    this, SIGNAL(fileItemCreated(smtk::extension::qtFileItem*)));
+  QObject::connect(uiManager, SIGNAL(modelEntityItemCreated(smtk::extension::qtModelEntityItem*)),
+    this, SIGNAL(modelEntityItemCreated(smtk::extension::qtModelEntityItem*)));
+  QObject::connect(uiManager, SIGNAL(meshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*)),
+    this, SLOT(onMeshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*)));
   QObject::connect(uiManager, SIGNAL(entitiesSelected(const smtk::common::UUIDs&)),
     this, SIGNAL(entitiesSelected(const smtk::common::UUIDs&)));
 
@@ -344,7 +344,7 @@ void qtModelOperationWidget::onOperate()
 
 //----------------------------------------------------------------------------
 void qtModelOperationWidget::onMeshSelectionItemCreated(
-  smtk::attribute::qtMeshSelectionItem* meshItem)
+  smtk::extension::qtMeshSelectionItem* meshItem)
 {
   if(this->Internals->CurrentSession.lock())
     {
