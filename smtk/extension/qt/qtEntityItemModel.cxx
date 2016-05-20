@@ -294,6 +294,26 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
               visible = (prop[0] != 0);
             }
           }
+        else if(item->phraseType() == ENTITY_LIST)
+          {
+          EntityListPhrasePtr lphrase = smtk::dynamic_pointer_cast<EntityListPhrase>(item);
+          // if all its children is off, then show as off
+          bool hasVisibleChild = false;
+          EntityRefArray::const_iterator it;
+          for(it = lphrase->relatedEntities().begin();
+              it != lphrase->relatedEntities().end() && !hasVisibleChild; ++it)
+            {
+            if(it->hasVisibility())
+              {
+              const IntegerList& prop(it->integerProperty("visible"));
+              if(!prop.empty() && prop[0] != 0)
+                hasVisibleChild = true;
+              }
+            else // default is visible
+              hasVisibleChild = true;
+            }
+          visible = hasVisibleChild;
+          }
         else if(item->relatedEntity().isValid() && item->relatedEntity().hasVisibility())
           {
           const IntegerList& prop(item->relatedEntity().integerProperty("visible"));

@@ -1095,12 +1095,26 @@ void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
           visible = (prop[0] != 0);
         }
       }
-/*
-    else if(dp->phraseType() == MESH_LIST)
+    }
+  else if(dp->phraseType() == ENTITY_LIST)
+    {
+    EntityListPhrasePtr lphrase = smtk::dynamic_pointer_cast<EntityListPhrase>(dp);
+    // if all its children is off, then show as off
+    bool hasVisibleChild = false;
+    EntityRefArray::const_iterator it;
+    for(it = lphrase->relatedEntities().begin();
+        it != lphrase->relatedEntities().end() && !hasVisibleChild; ++it)
       {
-      // should not come in here here
+      if(it->hasVisibility())
+        {
+        const IntegerList& prop(it->integerProperty("visible"));
+        if(!prop.empty() && prop[0] != 0)
+          hasVisibleChild = true;
+        }
+      else // default is visible
+        hasVisibleChild = true;
       }
-*/
+    visible = hasVisibleChild;
     }
   else if(dp->relatedEntity().hasVisibility())
     {

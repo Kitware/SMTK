@@ -21,6 +21,7 @@ set(modelSrcs
   EntityIterator.cxx
   EntityListPhrase.cxx
   EntityPhrase.cxx
+  EntityTypeSubphrases.cxx
   Face.cxx
   FaceUse.cxx
   Group.cxx
@@ -76,6 +77,7 @@ set(modelHeaders
   EntityListPhrase.h
   EntityPhrase.h
   EntityTypeBits.h
+  EntityTypeSubphrases.h
   Events.h
   Face.h
   FaceUse.h
