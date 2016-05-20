@@ -2,15 +2,6 @@
   "kernel": "cgm",
   "engines": [
     {
-      "name": "ACIS",
-      "filetypes": [
-        ".iges (Initial Graphics Exchange Specification)",
-        ".igs (Initial Graphics Exchange Specification)",
-        ".sat (Standard ACIS Text)",
-        ".sab (Standard ACIS Binary)"
-      ]
-    },
-    {
       "name": "OpenCascade",
       "filetypes": [
         ".brep (OpenCascade Boundary Representation)",

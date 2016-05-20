@@ -143,7 +143,7 @@ This macro takes 6 parameters:
    If you do not have any static configuration parameters, then
    simply pass :smtk:`SessionHasNoStaticSetup`.
    The CGM session provides an implementation of this to set the default
-   modeling kernel engine (e.g., to either OpenCascade or ACIS) since the
+   modeling kernel engine (e.g., OpenCascade, FACET) since the
    engine should be prepared before the session is constructed.
    Otherwise, the modeling operations listed in the session's
    attribute system might not reflect those available for the engine

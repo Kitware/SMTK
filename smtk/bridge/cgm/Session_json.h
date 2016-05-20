@@ -20,17 +20,6 @@ static const char Session_json[] =
 "{"
 "  \"kernel\": \"cgm\","
 "  \"engines\": ["
-#ifdef HAVE_ACIS
-"    {"
-"      \"name\": \"ACIS\","
-"      \"filetypes\": ["
-"        \".sat (Standard ACIS Text)\""
-"        ,\".sab (Standard ACIS Binary)\""
-"        ,\".iges (Initial Graphics Exchange Specification)\""
-"        ,\".igs (Initial Graphics Exchange Specification)\""
-"      ]"
-"    },"
-#endif
 #if defined(HAVE_OCC)
 "    {"
 "      \"name\": \"OpenCascade\","

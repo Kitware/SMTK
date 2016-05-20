@@ -18,8 +18,8 @@ also accessible in Python, whose instances perform the following functions:
   a solid modeling kernel; the session provides a way to synchronize
   the representations in the Manager and the modeling kernel.
   A manager may contain entity records from multiple sessions
-  (e.g., a single Manager may contain some models back by an ACIS
-  modeling kernel session and some backed by an OpenCascade session).
+  (e.g., a single Manager may contain some models back by an OpenCascade
+  modeling kernel session and some backed by a FACET session).
 
 :smtk:`Operator <smtk::model::Operator>`
   instances represent modeling operations that a modeling kernel

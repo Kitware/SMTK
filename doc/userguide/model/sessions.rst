@@ -4,7 +4,7 @@ Sessions
 As mentioned above, :smtk:`Sessions <Session>` link, or *back* SMTK model entities
 to a solid-modeling kernel's representation of those model entities.
 Not all of the model entities in a model manager need to be backed by the same session;
-SMTK can track models from ACIS and OpenCascade in the same model manager.
+SMTK can track models from multiple modeling kernels in the same model manager.
 However, in general you cannot perform modeling operations using entities from different sessions.
 
 Sessions (1) transcribe modeling-kernel entities into SMTK’s storage and
