@@ -6,7 +6,7 @@ set(smtkPolygonSessionPythonDataTests
   polygonCreate
   polygonCreateFaces
   polygonForceCreateFace
-  polygonImport
+  #polygonImport
   #polygonReadFile
 )
 
