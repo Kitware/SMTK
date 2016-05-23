@@ -22,9 +22,9 @@ namespace smtk {
 
 struct EdgeFragment;
 struct EdgeFragmentComparator;
-struct Neighborhood;
-struct Region;
-struct SweepEvent;
+class Neighborhood;
+class Region;
+class SweepEvent;
 struct SweeplinePosition;
 
 typedef size_t FragmentId;

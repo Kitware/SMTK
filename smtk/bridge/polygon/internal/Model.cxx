@@ -98,7 +98,7 @@ bool pmodel::computeModelScaleAndNormal(
   yl2 = sqrt(yl2);
   zl2 = sqrt(zl2);
   // Scale each feature size to be 231000 integer quanta.
-  this->m_scale = 231000 / featureSize;
+  this->m_scale = static_cast<long long>(231000 / featureSize);
   // Make the world (x,y) axes unit length and the (i,j) axes one quantum in length:
   for (int i = 0; i < 3; ++i)
     {
@@ -161,7 +161,7 @@ bool pmodel::computeModelScaleAndYAxis(
   yl2 = sqrt(yl2);
   zl2 = sqrt(zl2);
   // Make the axes one feature-size in length:
-  this->m_scale = 231000 / featureSize;
+  this->m_scale = static_cast<long long>(231000 / featureSize);
   // Make the world (x,y) axes unit length and the (i,j) axes one quantum in length:
   for (int i = 0; i < 3; ++i)
     {
@@ -535,7 +535,7 @@ void pmodel::addEdgeTessellation(smtk::model::Edge& edgeRec, internal::edge::Ptr
   std::vector<int> conn;
   conn.reserve(numPts + 2);
   conn.push_back(smtk::model::TESS_POLYLINE);
-  conn.push_back(numPts);
+  conn.push_back(static_cast<int>(numPts));
   for (ptIt = edgeData->pointsBegin(); ptIt != edgeData->pointsEnd(); ++ptIt)
     {
     this->liftPoint(*ptIt, coords.begin());

@@ -53,10 +53,9 @@ inline void locationsToSearchForWorkers(
 
 
 namespace smtk {
-  namespace bridge {
-    namespace discrete {
+  namespace vtk {
 
-vtkStandardNewMacro(vtkCMBMeshServerLauncher)
+vtkStandardNewMacro(vtkCMBMeshServerLauncher);
 
 //-----------------------------------------------------------------------------
 vtkCMBMeshServerLauncher::vtkCMBMeshServerLauncher()

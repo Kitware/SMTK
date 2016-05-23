@@ -13,6 +13,15 @@
 #include "smtk/bridge/polygon/internal/Entity.h"
 #include "smtk/SharedPtr.h"
 
+
+#ifndef _WIN32
+#  include <sys/types.h> // for ssize_t
+#else
+# include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+typedef SIZE_T size_t;
+#endif  // _WIN32
+
 namespace smtk {
   namespace bridge {
     namespace polygon {
