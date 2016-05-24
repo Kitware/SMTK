@@ -9,7 +9,15 @@
         Create a model given a set of coordinate axes in 3D and a minimum feature size.
       </DetailedDescription>
       <ItemDefinitions>
-        <Int Name="construction method">
+        <String Name="name" NumberOfValuesRequired="1" Optional="true">
+          <BriefDescription>A user-assigned name for the model.</BriefDescription>
+          <DetailedDescription>
+            A user-assigned name for the model.
+            The name need not be unique, but unique names are best.
+            If not assigned, a machine-generated name will be assigned.
+          </DetailedDescription>
+        </String>
+        <Int Name="construction method" AdvanceLevel="1">
           <ChildrenDefinitions>
             <Double Name="origin" NumberOfRequiredValues="3" Optional="true">
               <DefaultValue>0., 0., 0.</DefaultValue>

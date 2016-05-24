@@ -38,6 +38,8 @@ public:
   Volumes volumes() const;
   FaceUse negativeUse() const;
   FaceUse positiveUse() const;
+
+  void setFaceUse(Orientation o, const FaceUse& u);
 };
 
   } // namespace model

@@ -29,6 +29,9 @@ namespace smtk
   //bring the correct shared_ptr implementation into our project namespace
   using @POINTER_NAMESPACE@::shared_ptr;
 
+  //bring the correct make_shared implementation into our project namespace
+  using @POINTER_NAMESPACE@::make_shared;
+
   //bring the correct weak_ptr implementation into our project namespace
   using @POINTER_NAMESPACE@::weak_ptr;
 

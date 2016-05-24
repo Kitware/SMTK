@@ -10,12 +10,12 @@
 #include "BathymetryHelper.h"
 
 #ifdef HAS_GDAL_RASTER_READER
-#include "smtk/bridge/discrete/extension/reader/vtkGDALRasterReader.h"
-#include "smtk/bridge/discrete/extension/reader/vtkGDALRasterPolydataWrapper.h"
+#include "smtk/extension/vtk/reader/vtkGDALRasterReader.h"
+#include "smtk/extension/vtk/reader/vtkGDALRasterPolydataWrapper.h"
 #endif
 
-#include "smtk/bridge/discrete/extension/reader/vtkCMBGeometryReader.h"
-#include "smtk/bridge/discrete/extension/reader/vtkLASReader.h"
+#include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
+#include "smtk/extension/vtk/reader/vtkLASReader.h"
 #include "smtk/bridge/discrete/Session.h"
 
 #include "vtkAppendPoints.h"
@@ -33,6 +33,8 @@
 #include "DiscreteMesh.h"
 
 #include <algorithm> // for std::transform
+
+using namespace smtk::vtk;
 
 namespace smtk {
   namespace bridge {

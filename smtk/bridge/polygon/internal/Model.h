@@ -65,6 +65,9 @@ public:
   model::Edge createModelEdgeFromSegments(smtk::model::ManagerPtr mgr, T begin, T end);
 
   template<typename T>
+  model::Edge createModelEdgeFromPoints(smtk::model::ManagerPtr mgr, T begin, T end, bool isFreeCell);
+
+  template<typename T>
   std::set<Id> createModelEdgesFromPoints(T begin, T end);
 
   bool splitModelEdgeAtPoint(smtk::model::ManagerPtr mgr, const Id& edgeId, const std::vector<double>& point);

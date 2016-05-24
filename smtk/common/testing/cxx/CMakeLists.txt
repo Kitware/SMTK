@@ -3,6 +3,7 @@ smtk_public_headers(helpers.h)
 set(commonTests
   unitUUID
   unitPaths
+  unitUnionFind
 )
 
 foreach (test ${commonTests})

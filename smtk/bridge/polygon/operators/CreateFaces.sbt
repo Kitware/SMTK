@@ -11,14 +11,13 @@
         Faces with intersecting edges will cause new (split) edges to be created
         and used in place of those specifying the face.
       </DetailedDescription>
-      <AssociationsDef Name="model" NumberOfRequiredValues="1">
-        <MembershipMask>model</MembershipMask>
-        <BriefDescription>The model to which faces should be added.</BriefDescription>
+      <AssociationsDef Name="model" NumberOfRequiredValues="1" Extensible="yes">
+        <MembershipMask>model|cell</MembershipMask>
+        <BriefDescription>The model to which faces should be added (or edges to collect into a face).</BriefDescription>
         <DetailedDescription>
-          The model to which faces should be added.
-
-          This is required in order to project point coordinates into
-          the model plane properly and perform intersection tests.
+          The model to which faces should be added or the edges
+          that form the boundary of a face (when the construction
+          method is "bounding edges").
         </DetailedDescription>
       </AssociationsDef>
       <ItemDefinitions>
@@ -82,7 +81,7 @@
               </DetailedDescription>
             </Int>
           </ChildrenDefinitions>
-          <DiscreteInfo DefaultIndex="0">
+          <DiscreteInfo DefaultIndex="2">
             <!-- Option 0: points, coordinates, and offsets -->
             <Structure>
               <Value Enum="point coordinates">0</Value>
@@ -94,10 +93,11 @@
             </Structure>
             <!-- Option 1: edges and offsets -->
             <Structure>
-              <Value Enum="edge ids">1</Value>
+              <Value Enum="edges">1</Value>
               <Items>
                 <Item>edges</Item>
-                <Item>offsets</Item>
+                <Item>points</Item>
+                <Item>coordinates</Item>
               </Items>
             </Structure>
             <!-- Option 2: all possible faces -->

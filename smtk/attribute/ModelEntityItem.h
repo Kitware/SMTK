@@ -59,13 +59,24 @@ public:
   bool setValues(I vbegin, I vend)
     {
     bool ok = false;
-    std::size_t num = vend - vbegin;
+    if (this->setNumberOfValues(0))
+      {
+      return this->appendValues(vbegin, vend);
+      }
+    return false;
+    }
+  template<typename I>
+  bool appendValues(I vbegin, I vend)
+    {
+    bool ok = false;
+    std::size_t start = this->numberOfValues();
+    std::size_t num = vend - vbegin + this->numberOfValues();
     if (this->setNumberOfValues(num))
       {
       ok = true;
       std::size_t i = 0;
       for (I it = vbegin; it != vend; ++it, ++i)
-        if (!this->setValue(i, *it))
+        if (!this->setValue(start + i, *it))
           {
           ok = false;
           break;

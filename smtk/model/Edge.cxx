@@ -33,6 +33,27 @@ smtk::model::EdgeUses Edge::edgeUses() const
   return this->uses<EdgeUses>();
 }
 
+/**\brief Return the edge use-record with the given \a sense and \a orientation, creating it if needed.
+  *
+  * The \a orientation specifies whether the edge use-record refers to the positive (\a orientation true)
+  * or negative direction of the edge.
+  *
+  * The \a sense specifies the context in which the edge is used.
+  * For models whose parametric dimension is 2, the \a sense should always be 0.
+  * For models with higher dimension (e.g., volumetric models), each loop
+  * referring to an edge should have a unique combination of (sense, orientation).
+  */
+EdgeUse Edge::findOrAddEdgeUse(Orientation orientation, int sense)
+{
+  smtk::model::Manager::Ptr mgr(this->m_manager.lock());
+  if (this->isValid())
+    {
+    return EdgeUse(mgr,
+      mgr->findCreateOrReplaceCellUseOfSenseAndOrientation(this->m_entity, sense, orientation));
+    }
+  return EdgeUse();
+}
+
 /**\brief Return the vertices which bound this edge.
   *
   * This method is provided for convenience.

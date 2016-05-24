@@ -10,7 +10,7 @@ if(SMTK_DATA_DIR)
   target_link_libraries(Import2dmTest
     smtkCore
     smtkDiscreteSession
-    vtkSMTKExt
+    vtkSMTKSourceExt
     vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
     vtkTestingRendering
   )
@@ -27,7 +27,7 @@ if(SMTK_DATA_DIR)
   target_link_libraries(EdgeOp2dmTest
     smtkCore
     smtkDiscreteSession
-    vtkSMTKExt
+    vtkSMTKSourceExt
     vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
     vtkTestingRendering
   )
@@ -44,7 +44,7 @@ if(SMTK_DATA_DIR)
   target_link_libraries(smtkModelfrom2dmTest
     smtkCore
     smtkDiscreteSession
-    vtkSMTKExt
+    vtkSMTKSourceExt
     vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
     vtkTestingRendering
     ${Boost_LIBRARIES}

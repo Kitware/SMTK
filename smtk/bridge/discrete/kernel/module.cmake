@@ -8,6 +8,7 @@ foreach(target
     vtkIOExport${VTK_RENDERING_BACKEND}
     vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
     vtkRendering${VTK_RENDERING_BACKEND}
+    vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
 )
   if (TARGET ${target})
     list(APPEND __dependencies ${target})

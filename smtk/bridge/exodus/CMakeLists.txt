@@ -25,6 +25,16 @@ install(FILES PointerDefs.h DESTINATION include/smtk/${SMTK_VERSION}/smtk/bridge
 add_library(smtkExodusSession ${exodusSrcs})
 
 #set smtkExodusSession to publicly link to smtkCore and VTK
+set(__dependencies)
+foreach(lib IN ITEMS
+    vtkIOMPIImage
+    vtkIOMPIParallel
+    )
+  if (TARGET ${lib})
+    list(APPEND __dependencies ${lib})
+  endif()
+endforeach()
+
 target_link_libraries(smtkExodusSession
   LINK_PUBLIC
     smtkCore
@@ -36,7 +46,9 @@ target_link_libraries(smtkExodusSession
     vtkImagingCore
     vtkFiltersGeneral
     vtkIOParallelExodus
+    vtkIOGeometry
     vtkFiltersGeometry
+    ${__dependencies}
     ${Boost_LIBRARIES}
 )
 smtk_export_header(smtkExodusSession Exports.h)

@@ -72,7 +72,14 @@ template<typename T> T Model::cellsAs() const
 {
   // TODO: This could be done more efficiently without a copy.
   CellEntities tmp = this->cells();
-  return T(tmp.begin(), tmp.end());
+  T result;
+  for (CellEntities::iterator it = tmp.begin(); it != tmp.end(); ++it)
+    {
+    typename T::value_type entry(*it);
+    if (entry.isValid())
+      result.insert(result.end(), *it);
+    }
+  return result;
 }
 
 /// Return the top-level (free) groups of this model in a container of the template type.
@@ -80,7 +87,14 @@ template<typename T> T Model::groupsAs() const
 {
   // TODO: This could be done more efficiently without a copy.
   Groups tmp = this->groups();
-  return T(tmp.begin(), tmp.end());
+  T result;
+  for (Groups::iterator it = tmp.begin(); it != tmp.end(); ++it)
+    {
+    typename T::value_type entry(*it);
+    if (entry.isValid())
+      result.insert(result.end(), *it);
+    }
+  return result;
 }
 
 /// Return the child models of this model in a container of the template type.
@@ -88,7 +102,14 @@ template<typename T> T Model::submodelsAs() const
 {
   // TODO: This could be done more efficiently without a copy.
   Models tmp = this->submodels();
-  return T(tmp.begin(), tmp.end());
+  T result;
+  for (Models::iterator it = tmp.begin(); it != tmp.end(); ++it)
+    {
+    typename T::value_type entry(*it);
+    if (entry.isValid())
+      result.insert(result.end(), *it);
+    }
+  return result;
 }
 
 /// Append free cells of this model to the given \a container. Only valid cells are inserted.
@@ -96,7 +117,12 @@ template<typename T> void Model::appendCells(T& container) const
 {
   // TODO: This could be done more efficiently without a copy.
   CellEntities tmp = this->cells();
-  container.insert(container.end(), tmp.begin(), tmp.end());
+  for (CellEntities::iterator it = tmp.begin(); it != tmp.end(); ++it)
+    {
+    typename T::value_type entry(*it);
+    if (entry.isValid())
+      container.insert(container.end(), *it);
+    }
 }
 
 /// Add all the free cells in \a container to this model.

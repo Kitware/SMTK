@@ -1,23 +1,36 @@
 set(polygonSrcs
   Session.cxx
   Operator.cxx
+  internal/ActiveFragmentTree.cxx
+  internal/Fragment.cxx
   internal/Model.cxx
+  internal/Neighborhood.cxx
+  internal/Region.cxx
+  internal/SweepEvent.cxx
   internal/Vertex.cxx
   operators/CreateModel.cxx
   operators/CreateVertices.cxx
   operators/CreateEdge.cxx
   operators/CreateFaces.cxx
+  operators/ForceCreateFace.cxx
   operators/SplitEdge.cxx
 )
 
 set(polygonHeaders
   Session.h
   Operator.h
+  internal/ActiveFragmentTree.h
+  internal/Fragment.h
   internal/Model.h
+  internal/Neighborhood.h
+  internal/Neighborhood.txx
+  internal/Region.h
+  internal/SweepEvent.h
   operators/CreateModel.h
   operators/CreateVertices.h
   operators/CreateEdge.h
   operators/CreateFaces.h
+  operators/ForceCreateFace.h
   operators/SplitEdge.h
 )
 
@@ -26,12 +39,39 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateModel.sbt" polygo
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateVertices.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdge.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateFaces.sbt" polygonOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ForceCreateFace.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitEdge.sbt" polygonOperatorXML)
+
+# The import operator is only available if there is VTK
+if(SMTK_ENABLE_VTK_SUPPORT)
+  include("${VTK_USE_FILE}")
+  list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
+  set(polygonSrcs ${polygonSrcs}
+     operators/Import.cxx
+     )
+  set(polygonHeaders ${polygonHeaders}
+     operators/Import.h
+     )
+  smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Import.sbt" polygonOperatorXML)
+  set(import_vtk_depends
+      vtkCommonCore
+      vtkCommonDataModel
+      vtkInteractionStyle
+      vtkIOParallel
+      vtkRenderingCore
+      vtkRenderingFreeType
+      vtkRendering${VTK_RENDERING_BACKEND}
+      vtkSMTKReaderExt
+      vtksys
+      )
+endif()
 
 add_library(smtkPolygonSession ${polygonSrcs})
 target_link_libraries(smtkPolygonSession
   LINK_PUBLIC
     smtkCore
+  LINK_PRIVATE
+    ${import_vtk_depends}
   )
 smtk_export_header(smtkPolygonSession Exports.h)
 
@@ -44,7 +84,7 @@ smtk_public_headers(${polygonHeaders})
 install(FILES PointerDefs.h DESTINATION include/smtk/${SMTK_VERSION}/smtk/bridge/polygon)
 target_include_directories(smtkPolygonSession
   PUBLIC
-    $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}/smtk/bridge/discrete/extension/meshing>
+    $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}/smtk/extension/vtk/meshing>
 )
 
 if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)

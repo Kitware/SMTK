@@ -46,6 +46,7 @@ namespace smtk {
 
 /// Default constructor.
 Session::Session()
+  : m_nextModelNumber(0)
 {
   this->initializeOperatorSystem(Session::s_operators);
 }

@@ -36,6 +36,7 @@ public:
   smtkTypeMacro(CreateModel);
   smtkCreateMacro(CreateModel);
   smtkSharedFromThisMacro(Operator);
+  smtkSuperclassMacro(Operator);
   smtkDeclareModelOperator();
 
 protected:

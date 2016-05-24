@@ -223,14 +223,14 @@ target_link_libraries(smtkDiscreteSession
     vtksys
     ${__private_dependencies}
     vtkPVVTKExtensionsDefault
-    vtkSMTKDiscreteReaderExt
+    vtkSMTKReaderExt
     vtkSMTKDiscreteModel
   )
 
 if (SMTK_ENABLE_REMUS_SUPPORT)
   target_link_libraries(smtkDiscreteSession
     LINK_PRIVATE
-      vtkSMTKDiscreteMeshingExt)
+      vtkSMTKMeshingExt)
 endif ()
 
 

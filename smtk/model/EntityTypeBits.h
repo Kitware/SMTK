@@ -109,6 +109,9 @@ enum EntityTypeBits
   MODEL_ENTITY         = 0x00001000, //!< A bit indicating a (sub)model.
   INSTANCE_ENTITY      = 0x00002000, //!< A bit indicating an instance of model.
   SESSION              = 0x00004000, //!< A bit indicating a session.
+  PREVIEW_ENTITY       = 0x00008000, //!< A bit indicating a geometric preview or construction entity.
+  CONCEPT_ENTITY       = 0x00010000, //!< A bit indicating the entity is a conceptual entity (a class of objects that are abstract)
+  SURFACE_ENTITY       = 0x00020000, //!< An algebraically-modeled geometric point locus
   // Inherent property bits (arguably inappropriate as they could be hard to maintain):
   COVER                = 0x00100000, //!< The entity must have a relation indicating which cover(s) it participates in
   PARTITION            = 0x00200000, //!< The entity must have a relation indicating which partition(s) it participates in

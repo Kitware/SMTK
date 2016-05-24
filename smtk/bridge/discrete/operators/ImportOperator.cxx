@@ -31,12 +31,12 @@
 #include "vtkMasterPolyDataNormals.h"
 #include "vtkMergeDuplicateCells.h"
 #include "vtkDataSetRegionSurfaceFilter.h"
-#include "smtk/bridge/discrete/extension/reader/vtkCMBGeometryReader.h"
+#include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
 
 #ifdef SMTK_ENABLE_REMUS_SUPPORT
-  #include "smtk/bridge/discrete/extension/reader/vtkCMBGeometry2DReader.h"
-  #include "smtk/bridge/discrete/extension/reader/vtkCMBMapReader.h"
-  #include "smtk/bridge/discrete/extension/meshing/vtkCMBTriangleMesher.h"
+  #include "smtk/extension/vtk/reader/vtkCMBGeometry2DReader.h"
+  #include "smtk/extension/vtk/reader/vtkCMBMapReader.h"
+  #include "smtk/extension/vtk/meshing/vtkCMBTriangleMesher.h"
 #endif
 
 #ifdef SMTK_ENABLE_MOAB_DISCRETE_READER
@@ -51,6 +51,7 @@
 #include "cJSON.h"
 
 using namespace smtk::model;
+using namespace smtk::vtk;
 
 namespace smtk {
   namespace bridge {

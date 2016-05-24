@@ -37,10 +37,13 @@ namespace smtk {
         typedef smtk::shared_ptr<face> FacePtr;
 
         typedef long long Coord;
+        typedef boost::polygon::high_precision_type<Coord>::type HighPrecisionCoord;
         typedef smtk::common::UUID Id;
         typedef boost::polygon::point_data<Coord> Point;
+        typedef boost::polygon::point_data<HighPrecisionCoord> HighPrecisionPoint;
         typedef boost::polygon::segment_data<Coord> Segment;
         typedef boost::polygon::interval_data<Coord> Interval;
+        typedef boost::polygon::rectangle_data<Coord> Rect;
         typedef std::map<Point,Id> PointToVertexId;
         typedef std::map<Id,EntityPtr> EntityIdToPtr;
         typedef std::list<Point> PointSeq;
