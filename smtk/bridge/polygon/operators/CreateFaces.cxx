@@ -21,6 +21,7 @@
 
 #include "smtk/bridge/polygon/Operator.txx"
 #include "smtk/bridge/polygon/internal/Neighborhood.txx"
+#include "smtk/bridge/polygon/internal/Model.txx"
 
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
