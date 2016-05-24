@@ -2,7 +2,6 @@ set (__dependencies)
 # Test for targets that might be required or
 # might not exist.
 foreach(target
-    vtkInteractionStyle
     vtkRenderingFreeType
     vtkRenderingMatplotlib
     vtkRendering${VTK_RENDERING_BACKEND}
@@ -13,9 +12,12 @@ foreach(target
   endif()
 endforeach()
 
+
 vtk_module(vtkPolygonOperatorsExt
   DEPENDS
     vtkCommonDataModel
+    vtkCommonExecutionModel
+    vtkInteractionWidgets
   PRIVATE_DEPENDS
     ${__dependencies}
   TEST_DEPENDS
