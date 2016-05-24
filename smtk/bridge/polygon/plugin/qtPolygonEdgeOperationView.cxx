@@ -37,7 +37,7 @@
 #include <QMessageBox>
 #include <QSpacerItem>
 
-using namespace smtk::attribute;
+using namespace smtk::extension;
 
 //----------------------------------------------------------------------------
 class qtPolygonEdgeOperationViewInternals

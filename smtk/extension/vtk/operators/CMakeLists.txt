@@ -24,14 +24,14 @@ smtk_install_library(${vtk-module})
 smtk_export_header(${vtk-module} Exports.h)
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-  vtk_add_cs_wrapping(${vtk-module})
-  smtk_install_library(${vtk-module}CS)
+#  vtk_add_cs_wrapping(${vtk-module})
+#  smtk_install_library(${vtk-module}CS)
 endif ()
 
 smtk_public_headers(${headers})
 
 # Potentially wrap in Python using VTK's wrapping methods, not shiboken.
 # This makes the filters available for use with other VTK-wrapped filters.
-if (SMTK_ENABLE_PYTHON_WRAPPING AND VTK_WRAP_PYTHON)
-  vtk_smtk_wrap_module_python3(${vtk-module} "${headers}")
-endif()
+#if (SMTK_ENABLE_PYTHON_WRAPPING AND VTK_WRAP_PYTHON)
+# vtk_smtk_wrap_module_python3(${vtk-module} "${headers}")
+#endif()

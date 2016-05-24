@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/extension/qt/qtViewInterface.h"
 
-using namespace smtk::attribute;
+using namespace smtk::extension;
 
 //-----------------------------------------------------------------------------
 qtViewInterface::qtViewInterface()

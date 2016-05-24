@@ -19,15 +19,15 @@
 
 class qtPolygonEdgeOperationViewInternals;
 
-class qtPolygonEdgeOperationView : public smtk::attribute::qtBaseView
+class qtPolygonEdgeOperationView : public smtk::extension::qtBaseView
 {
   Q_OBJECT
 
 public:
-  static smtk::attribute::qtBaseView *createViewWidget(
-         const smtk::attribute::ViewInfo &info);
+  static smtk::extension::qtBaseView *createViewWidget(
+         const smtk::extension::ViewInfo &info);
 
-  qtPolygonEdgeOperationView(const smtk::attribute::ViewInfo &info);
+  qtPolygonEdgeOperationView(const smtk::extension::ViewInfo &info);
   virtual ~qtPolygonEdgeOperationView();
 
 public slots:

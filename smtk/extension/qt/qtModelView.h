@@ -27,12 +27,8 @@
 class QDropEvent;
 class QMenu;
 
-namespace smtk {
-  namespace model {
-    class DescriptivePhrase;
-  }
-  
- namespace extension {
+namespace smtk{  
+  namespace extension {
   class qtFileItem;
   class qtModelEntityItem;
   class qtMeshSelectionItem;
@@ -47,8 +43,8 @@ namespace smtk {
     qtModelView(QWidget* p = NULL);
     ~qtModelView();
 
-    smtk::model::QEntityItemModel* getModel() const;
-    DescriptivePhrasePtr currentItem() const;
+    smtk::extension::QEntityItemModel* getModel() const;
+    smtk::model::DescriptivePhrasePtr currentItem() const;
     void syncEntityVisibility(
       const smtk::model::SessionPtr& sessPtr,
       const smtk::common::UUIDs& entids,
@@ -71,10 +67,10 @@ namespace smtk {
       const QColor& clr);
 
     void currentSelectionByMask(
-      smtk::model::EntityRefs& selentityrefs, const BitFlags& entityFlags,
+      smtk::model::EntityRefs& selentityrefs, const smtk::model::BitFlags& entityFlags,
       bool searchUp = false, smtk::mesh::MeshSets* selmeshes = NULL);
     virtual void updateWithOperatorResult(
-      const smtk::model::SessionRef& sref, const OperatorResult& result);
+      const smtk::model::SessionRef& sref, const smtk::model::OperatorResult& result);
     std::string determineAction(const QPoint& pPos) const;
     qtModelOperationWidget* operatorsWidget();
 

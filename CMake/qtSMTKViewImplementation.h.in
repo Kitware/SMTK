@@ -18,10 +18,10 @@
 
 /// interface class for plugins that create QActionGroups
 /// for adding actions to menus and toolbars
-class @ARG_CLASS_NAME@Implementation : public QObject, public smtk::attribute::qtViewInterface
+class @ARG_CLASS_NAME@Implementation : public QObject, public smtk::extension::qtViewInterface
 {
   Q_OBJECT
-  Q_INTERFACES(smtk::attribute::qtViewInterface)
+  Q_INTERFACES(smtk::extension::qtViewInterface)
 public:
   @ARG_CLASS_NAME@Implementation(QObject* p);
   ~@ARG_CLASS_NAME@Implementation();

@@ -17,11 +17,11 @@
 #include <QString>
 #include <QtPlugin>
 
-typedef smtk::attribute::qtBaseView* (*qtSMTKViewConstructor)(const smtk::attribute::ViewInfo &info);
+typedef smtk::extension::qtBaseView* (*qtSMTKViewConstructor)(const smtk::extension::ViewInfo &info);
 
 namespace smtk
 {
-  namespace attribute
+  namespace extension
   {
 
   /// interface class for plugins that add a QDockWindow
@@ -39,9 +39,9 @@ namespace smtk
     Q_DISABLE_COPY(qtViewInterface)
   };
 
-  }; // namespace attribute
+  }; // namespace extension
 }; // namespace smtk
 
-Q_DECLARE_INTERFACE(smtk::attribute::qtViewInterface, "com.kitware/paraview/smtkview")
+Q_DECLARE_INTERFACE(smtk::extension::qtViewInterface, "com.kitware/paraview/smtkview")
 
 #endif

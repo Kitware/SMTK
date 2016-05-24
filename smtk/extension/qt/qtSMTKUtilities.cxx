@@ -24,7 +24,7 @@ void qtSMTKUtilities::registerViewConstructor(const std::string& viewname, qtSMT
   qtSMTKUtilities::m_viewConstructors[viewname] = viewc;
 }
 
-void qtSMTKUtilities::updateViewConstructors(smtk::attribute::qtUIManager* uiMan)
+void qtSMTKUtilities::updateViewConstructors(smtk::extension::qtUIManager* uiMan)
 {
   if(!uiMan || qtSMTKUtilities::viewConstructors().size() == 0)
     return;

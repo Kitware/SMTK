@@ -28,7 +28,7 @@ public:
   // this will overwrite the existing constructor if the viewname exists in the map
   static void registerViewConstructor(const std::string& viewname, qtSMTKViewConstructor viewc);
 
-  static void updateViewConstructors(smtk::attribute::qtUIManager* uiMan);
+  static void updateViewConstructors(smtk::extension::qtUIManager* uiMan);
 
 private:
   static SMTKViewConstructorMap m_viewConstructors;

@@ -29,8 +29,8 @@ pqPluginSMTKViewBehavior::pqPluginSMTKViewBehavior(QObject* p)
 //-----------------------------------------------------------------------------
 void pqPluginSMTKViewBehavior::addPluginInterface(QObject* iface)
 {
-  smtk::attribute::qtViewInterface* svi = qobject_cast<
-    smtk::attribute::qtViewInterface*>(iface);
+  smtk::extension::qtViewInterface* svi = qobject_cast<
+    smtk::extension::qtViewInterface*>(iface);
   if (!svi)
     {
     return;

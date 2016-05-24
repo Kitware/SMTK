@@ -49,8 +49,8 @@ smtk_public_headers(${VTKLibHeaders})
 smtk_install_library(${vtk-module})
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-  vtk_add_cs_wrapping(${vtk-module})
-  smtk_install_library(${vtk-module}CS)
+#  vtk_add_cs_wrapping(${vtk-module})
+#  smtk_install_library(${vtk-module}CS)
 endif ()
 
 # Potentially wrap in Python using VTK's wrapping methods, not shiboken.

@@ -18,7 +18,7 @@ set(PQWidgetsMocHeaders
 )
 
 #install the headers
-smtk_public_headers(${PQWidgetsMocHeaders})
+smtk_public_headers(${PQWidgetsMocHeaders} vtkPolygonArcInfo.h)
 
 qt4_wrap_cpp(MOC_BUILT_SOURCES ${PQWidgetsMocHeaders})
 qt4_wrap_ui(UI_BUILT_SOURCES ${PQWidgetsUIs})
@@ -30,6 +30,7 @@ source_group("Qt_Header" FILES ${PQWidgetsMocHeaders})
 
 add_library(smtkPolygonQtExt
   ${PQWidgetsSrcs}
+  vtkPolygonArcInfo.cxx
   ${MOC_BUILT_SOURCES}
   ${UI_BUILT_SOURCES}
   ${RCS_RESOURCES}
@@ -45,9 +46,31 @@ target_link_libraries(smtkPolygonQtExt LINK_PUBLIC
   smtkCore
   smtkPQWidgetsExt
   vtkPolygonOperatorsExt
+  vtkSMTKSourceExt
 )
 
 smtk_export_header(smtkPolygonQtExt Exports.h)
 
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkPolygonQtExt)
+
+if (SMTK_ENABLE_TESTING)
+  # Link *everything* in this directory to VTK modules
+  # This is required for the TestBuild targets.
+  # We must test whether each of the targets below exist
+  # because they are required when built into VTK but
+  # may not be present, especially since the OpenGL2
+  # backend became available.
+  set(SMTK_VTK_TARGET_LIST)
+  foreach(target
+    vtkInteractionStyle
+    vtkRenderingFreeType
+    vtkRendering${VTK_RENDERING_BACKEND}
+    )
+    if (TARGET ${target})
+      list(APPEND SMTK_VTK_TARGET_LIST ${target})
+    endif()
+  endforeach()
+
+  target_link_libraries(TestBuild_smtk_bridge_polygon_qt PUBLIC ${SMTK_VTK_TARGET_LIST})
+endif()
