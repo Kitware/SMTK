@@ -37,12 +37,6 @@ static const char Session_json[] =
 "        ,\".cub (Moab Files)\""
 "        ,\".exo (Moab Files)\""
 #endif
-#ifdef SMTK_ENABLE_REMUS_SUPPORT
-"        ,\".poly (Poly Files)\""
-"        ,\".smesh (Surface Meshes)\""
-"        ,\".map (Map Files)\""
-"        ,\".shp (Shape Files)\""
-#endif
 "      ]"
 "    }"
 "  ]"
