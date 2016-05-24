@@ -94,8 +94,8 @@ smtk_install_library(${vtk-module})
 smtk_export_header(${vtk-module} Exports.h)
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-#  vtk_add_cs_wrapping(${vtk-module})
-#  smtk_install_library(${vtk-module}CS)
+  vtk_add_cs_wrapping(${vtk-module})
+  smtk_install_library(${vtk-module}CS)
 endif ()
 
 smtk_public_headers(${headers})
