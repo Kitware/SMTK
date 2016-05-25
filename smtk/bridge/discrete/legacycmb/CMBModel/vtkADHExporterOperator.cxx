@@ -150,7 +150,7 @@ void vtkADHExporterOperator::Operate(vtkDiscreteModelWrapper* modelWrapper)
           vtkIdType values[2];
           for(vtkIdType j=0;j<analysisCellEdges->GetNumberOfTuples();j++)
             {
-            analysisCellEdges->GetTupleValue(j, values);
+            analysisCellEdges->GetTypedTuple(j, values);
             if(edge->GetNumberOfAdjacentModelFaces() >= 2)
               {
               file << "MDS " << values[0]+1 << " " << values[1]+1 << " " << bcIndex << endl;

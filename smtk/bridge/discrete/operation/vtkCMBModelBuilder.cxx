@@ -207,7 +207,7 @@ void vtkCMBModelBuilder::Operate(
     vtkIdType ids[2];
     for(vtkIdType i=0;i<modelRegionDomainMap->GetNumberOfTuples();i++)
       {
-      modelRegionDomainMap->GetTupleValue(i,ids);
+      modelRegionDomainMap->GetTypedTuple(i,ids);
       domains.addDomain(ids[0]);
       domains.addRegionToDomain(ids[0],ids[1]);
       }
@@ -240,7 +240,7 @@ void vtkCMBModelBuilder::Operate(
   std::map<vtkIdType, std::pair<vtkIdType, vtkIdType> > faceToRegionsMap;
   for(vtkIdType i=0;i<modelFaceRegionsMap->GetNumberOfTuples();i++)
     {
-    modelFaceRegionsMap->GetTupleValue(i, faceRegions);
+    modelFaceRegionsMap->GetTypedTuple(i, faceRegions);
     std::pair<vtkIdType, vtkIdType> regionIds;
     regionIds.first = faceRegions[1];
     regionIds.second = faceRegions[2];
