@@ -14,7 +14,7 @@
 #ifndef __smtk_vtk_vtkGDALRasterPolydataWrapper_h
 #define __smtk_vtk_vtkGDALRasterPolydataWrapper_h
 
-#include "smtk/extension/vtk/reader/vtkSMTKReaderExtModule.h" // For export macro
+#include "smtk/extension/vtk/reader/Exports.h" // For export macro
 #include "vtkDataSetAlgorithm.h"
 #include "vtkSmartPointer.h"
 #include "vtkTransform.h"

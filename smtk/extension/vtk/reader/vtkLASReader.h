@@ -20,7 +20,7 @@
 #ifndef __smtk_vtk_LASReader_h
 #define __smtk_vtk_LASReader_h
 
-#include "smtk/extension/vtk/reader/vtkSMTKReaderExtModule.h" // For export macro
+#include "smtk/extension/vtk/reader/Exports.h" // For export macro
 #include "vtkMultiBlockDataSetAlgorithm.h"
 #include "vtkSmartPointer.h"
 

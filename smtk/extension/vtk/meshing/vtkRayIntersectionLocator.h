@@ -23,7 +23,7 @@
 #ifndef __smtk_vtk_vtkRayIntersectionLocator_h
 #define __smtk_vtk_vtkRayIntersectionLocator_h
 
-#include "smtk/extension/vtk/meshing/vtkSMTKMeshingExtModule.h" // For export macro
+#include "smtk/extension/vtk/meshing/Exports.h" // For export macro
 #include "vtkCellTreeLocator.h"
 #include "vtkVector.h"
 #include <vector> // Needed for public interface.

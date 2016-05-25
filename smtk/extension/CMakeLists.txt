@@ -17,9 +17,7 @@ if(SMTK_ENABLE_VTK_SUPPORT)
     # Only include the ParaView use-file in subdirectories
     # that require ParaView include paths.
     include("${PARAVIEW_USE_FILE}")
-    pv_setup_module_environment("SMTK")
-    set(VTK_INSTALL_PACKAGE_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/SMTK")
-    pv_process_modules()
+    include (vtkClientServerWrapping)
   else()
     # Only include the VTK use-file in subdirectories
     # that require VTK include paths. Otherwise, command
@@ -54,14 +52,14 @@ if(SMTK_ENABLE_VTK_SUPPORT)
     list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
     # message("VTK_MODULES_DIR=${VTK_MODULES_DIR}")
 
-    # Don't add the VTK or other subdirectories as they use the
-    # vtk_module_library() macro and vtk/module.cmake file.
-    # The pv_process_modules() macro finds all subdirectories
-    # containing a module.cmake file automatically.
-    include (smtkVTKModules)
-    vtk_smtk_setup_module_environment("SMTK")
-    vtk_smtk_process_modules()
   endif()
+  # Don't add the VTK or other subdirectories as they use the
+  # vtk_module_library() macro and vtk/module.cmake file.
+  # The pv_process_modules() macro finds all subdirectories
+  # containing a module.cmake file automatically.
+  include (smtkVTKModules)
+  vtk_smtk_setup_module_environment("SMTK")
+  vtk_smtk_process_modules()
 
   # These are  converters to allow importing of vtk data into smtk mesh system.
   # We keep this out of the common vtk model for 2 primary reasons.
@@ -69,4 +67,8 @@ if(SMTK_ENABLE_VTK_SUPPORT)
   # smtk, not rendering, and secondly we don't want to require vtk rendering
   #to be linked for IO routines.
   add_subdirectory(vtkToMesh)
+endif()
+
+if(SMTK_ENABLE_PARAVIEW_SUPPORT)
+  add_subdirectory(paraview)
 endif()

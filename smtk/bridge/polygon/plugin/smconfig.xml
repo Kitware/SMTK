@@ -1,0 +1,251 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="props">
+
+    <Proxy name="polygonContourRepresentationBase" class="not-used">
+      <Documentation>
+        Defines interface defined by vtkContourRepresentation. Don't instantiate directly.
+      </Documentation>
+
+      <IntVectorProperty name="Visibility"
+        command="SetVisibility"
+        number_of_elements="1"
+        default_values="1"
+        animateable="1">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+
+      <DoubleVectorProperty name="PlaceWidget"
+        command="PlaceWidget"
+        number_of_elements="6"
+        argument_is_array="1"
+        default_values="none">
+        <DoubleRangeDomain name="range"/>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty name="PlaceFactor"
+        command="SetPlaceFactor"
+        number_of_elements="1"
+        default_values="1.0">
+        <DoubleRangeDomain name="range" min="0.01" />
+      </DoubleVectorProperty>
+
+      <IntVectorProperty name="ClosedLoop"
+        command="SetClosedLoop"
+        number_of_elements="1"
+        default_values="0">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+
+      <IntVectorProperty
+         name="ClosedLoopInfo"
+         command="GetClosedLoop"
+         number_of_elements="1"
+         information_only="1"
+         default_values="0">
+        <SimpleIntInformationHelper/>
+      </IntVectorProperty>
+
+      <ProxyProperty
+        name="PointPlacer"
+        command="SetPointPlacer">
+        <ProxyGroupDomain name="groups">
+          <Group name="point_placers" />
+        </ProxyGroupDomain>
+      </ProxyProperty>
+
+      <ProxyProperty
+        name="LineInterpolator"
+        command="SetLineInterpolator">
+        <ProxyGroupDomain name="groups">
+          <Group name="contour_line_interpolators" />
+        </ProxyGroupDomain>
+      </ProxyProperty>
+
+      <DoubleVectorProperty
+        name="NodePositions"
+        command="AddNodeAtWorldPosition"
+        repeat_command="1"
+        number_of_elements_per_command="3">
+      </DoubleVectorProperty>
+
+      <IntVectorProperty
+        name="SelectNodes"
+        command="SetNthNodeSelected"
+        repeat_command="1"
+        number_of_elements_per_command="1">
+      </IntVectorProperty>
+
+      <IntVectorProperty name="ShowSelectedNodes"
+        command="SetShowSelectedNodes"
+        number_of_elements="1"
+        default_values="1">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+
+      <Property name="ClearAllNodes" command="ClearAllNodes" />
+
+      <!-- End of polygonContourRepresentationBase -->
+    </Proxy>
+
+    <Proxy name="smtkArcRepresentation" class="vtkSMTKArcRepresentation"
+           base_proxygroup="props" base_proxyname="polygonContourRepresentationBase">
+      <Documentation>
+        Proxy for vtkSMTKArcRepresentation. Don't use directly since it's not
+        coupled with the widget. Use "smtkArcWidgetRepresentation" instead which
+        include this representation as well as the widget to modify the
+        representation.
+      </Documentation>
+
+      <DoubleVectorProperty name="LineColor"
+        command="SetLineColor"
+        number_of_elements="3"
+        default_values="1.0 1.0 1.0">
+        <DoubleRangeDomain name="range" min="0 0 0" max="1 1 1" />
+      </DoubleVectorProperty>
+
+      <IntVectorProperty name="AlwaysOnTop"
+        command="SetAlwaysOnTop"
+        number_of_elements="1"
+        default_values="0">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+
+       <IntVectorProperty name="EnableLogging"
+        command="SetLoggingEnabled"
+        number_of_elements="1"
+        default_values="0">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+
+       <IntVectorProperty name="CanEdit"
+        command="GetCanEdit"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0">
+        <SimpleIntInformationHelper/>
+      </IntVectorProperty>
+
+      <Property
+        name="Rectangularize"
+        command="Rectangularize">
+      </Property>
+
+      <Property
+        name="Straighten"
+        command="Straighten">
+      </Property>
+
+      <Hints>
+        <!-- View can be used to specify the way to get the poly data for the representation -->
+        <Output />
+      </Hints>
+      <!-- End of smtkArcRepresentation -->
+    </Proxy>
+
+  </ProxyGroup>
+
+  <ProxyGroup name="representations">
+    <!-- ================================================================== -->
+    <NewWidgetRepresentationProxy name="smtkArcWidgetRepresentation"
+    class="vtk3DWidgetRepresentation">
+      <Documentation>
+        Representation proxy for the the Contour widget. This includes the
+        widget/representation proxies for the contour 3D widget.
+      </Documentation>
+
+      <IntVectorProperty name="Enabled"
+        command="SetEnabled"
+        number_of_elements="1"
+        default_values="0">
+        <BooleanDomain name="bool"/>
+        <Documentation>
+          Enable/Disable widget interaction.
+        </Documentation>
+      </IntVectorProperty>
+
+      <SubProxy>
+        <Proxy name="Prop"
+          proxygroup="props" proxyname="smtkArcRepresentation">
+        </Proxy>
+        <ExposedProperties>
+          <Property name="EnableLogging" />
+          <Property name="PlaceWidget" />
+          <Property name="Visibility" />
+          <Property name="PointPlacer" />
+          <Property name="LineInterpolator" />
+          <Property name="ClearAllNodes" />
+          <Property name="LineColor" />
+          <Property name="AlwaysOnTop" />
+          <Property name="NodePositions" />
+          <Property name="ShowSelectedNodes" />
+          <Property name="SelectNodes" />
+          <Property name="ClosedLoop" />
+          <Property name="Rectangularize"/>
+          <Property name="Straighten" />
+        </ExposedProperties>
+      </SubProxy>
+
+      <SubProxy>
+        <Proxy name="Widget"
+          proxygroup="3d_widgets" proxyname="ContourWidget">
+        </Proxy>
+        <ExposedProperties>
+  <!--        <Property name="Enabled" />  -->
+          <Property name="CloseLoop" />
+          <Property name="WidgetState" />
+          <Property name="WidgetStateInfo" />
+          <Property name="AllowNodePicking" />
+          <Property name="Initialize" />
+          <Property name="ProcessEvents"/>
+        </ExposedProperties>
+      </SubProxy>
+
+      <!-- End of smtkArcWidgetRepresentation -->
+    </NewWidgetRepresentationProxy>
+  </ProxyGroup>
+
+  <ProxyGroup name="polygon_operators">
+
+    <Proxy name="PolygonArcOperator" class="vtkPolygonArcOperator">
+      <Documentation>
+        Operator to convert the line cells in the input polygon to multiple edge(s) in a polygon model
+      </Documentation>
+      
+      <ProxyProperty
+        name="ArcRepresentation"
+        command="SetArcRepresentation">
+        <ProxyGroupDomain name="groups">
+          <Group name="props"/>
+        </ProxyGroupDomain>
+        <Documentation>
+          Set the ArcRepresentation for the operation.
+        </Documentation>
+      </ProxyProperty>
+
+      <!-- End of PolygonArcOperator -->
+    </Proxy>
+
+    <SourceProxy name="PolygonArcProvider" class="vtkPolygonArcProvider">
+      <InputProperty name="Input" command="SetInputConnection">
+        <ProxyGroupDomain name="groups">
+          <Group name="sources"/>
+          <Group name="filters"/>
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkMultiBlockDataSet"/>
+        </DataTypeDomain>
+      </InputProperty>
+
+      <IdTypeVectorProperty
+        name="BlockIndex"
+        command="SetBlockIndex"
+        number_of_elements="1"
+        default_values="none" >
+        <Documentation>
+          Set the BlockIndex of the input multiblock to be used for creating a polyline.
+        </Documentation>
+      </IdTypeVectorProperty>
+    </SourceProxy>
+
+  </ProxyGroup>
+</ServerManagerConfiguration>

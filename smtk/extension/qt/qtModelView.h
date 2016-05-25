@@ -27,16 +27,11 @@
 class QDropEvent;
 class QMenu;
 
-namespace smtk {
-  namespace model {
-    class DescriptivePhrase;
-  }
-  
- namespace extension {
+namespace smtk{  
+  namespace extension {
   class qtFileItem;
   class qtModelEntityItem;
   class qtMeshSelectionItem;
-
   class qtModelOperationWidget;
   class qtOperatorDockWidget;
 
@@ -48,32 +43,36 @@ namespace smtk {
     qtModelView(QWidget* p = NULL);
     ~qtModelView();
 
-    QEntityItemModel* getModel() const;
-    model::DescriptivePhrasePtr currentItem() const;
-    void syncEntityVisibility(const smtk::model::SessionPtr& sessPtr,
-			      const smtk::common::UUIDs& entids,
-			      const smtk::mesh::MeshSets& meshes,
-			      int vis);
-    void syncEntityColor(const smtk::model::SessionPtr&,
-			 const smtk::common::UUIDs& entids,
-			 const smtk::mesh::MeshSets& meshes,
-			 const QColor& clr);
-    void syncEntityVisibility(const smtk::common::UUID& sessid,
-			      const smtk::common::UUIDs& entids,
-			      const smtk::mesh::MeshSets& meshes,
-			      int vis);
-    void syncEntityColor(const smtk::common::UUID& sessid,
-			 const smtk::common::UUIDs& entids,
-			 const smtk::mesh::MeshSets& meshes,
-			 const QColor& clr);
+    smtk::extension::QEntityItemModel* getModel() const;
+    smtk::model::DescriptivePhrasePtr currentItem() const;
+    void syncEntityVisibility(
+      const smtk::model::SessionPtr& sessPtr,
+      const smtk::common::UUIDs& entids,
+      const smtk::mesh::MeshSets& meshes,
+      int vis);
+    void syncEntityColor(
+      const smtk::model::SessionPtr&,
+      const smtk::common::UUIDs& entids,
+      const smtk::mesh::MeshSets& meshes,
+      const QColor& clr);
+    void syncEntityVisibility(
+      const smtk::common::UUID& sessid,
+      const smtk::common::UUIDs& entids,
+      const smtk::mesh::MeshSets& meshes,
+      int vis);
+    void syncEntityColor(
+      const smtk::common::UUID& sessid,
+      const smtk::common::UUIDs& entids,
+      const smtk::mesh::MeshSets& meshes,
+      const QColor& clr);
 
-    void currentSelectionByMask(smtk::model::EntityRefs& selentityrefs,
-				const model::BitFlags& entityFlags,
-				bool searchUp = false,
-				smtk::mesh::MeshSets* selmeshes = NULL);
-  virtual void updateWithOperatorResult(const smtk::model::SessionRef& sref,
-					const model::OperatorResult& result);
-  std::string determineAction(const QPoint& pPos) const;
+    void currentSelectionByMask(
+      smtk::model::EntityRefs& selentityrefs, const smtk::model::BitFlags& entityFlags,
+      bool searchUp = false, smtk::mesh::MeshSets* selmeshes = NULL);
+    virtual void updateWithOperatorResult(
+      const smtk::model::SessionRef& sref, const smtk::model::OperatorResult& result);
+    std::string determineAction(const QPoint& pPos) const;
+    qtModelOperationWidget* operatorsWidget();
 
   public slots:
     void selectItems(const smtk::common::UUIDs& selEntities,
@@ -198,7 +197,7 @@ namespace smtk {
     qtModelOperationWidget* m_OperatorsWidget;
   };
 
- } // namespace extension
+  } // namespace extension
 } // namespace smtk
 
 #endif // __smtk_extension_qtModelView_h

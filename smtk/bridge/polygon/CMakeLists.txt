@@ -12,6 +12,7 @@ set(polygonSrcs
   operators/CreateVertices.cxx
   operators/CreateEdge.cxx
   operators/CreateFaces.cxx
+  operators/EditEdge.cxx
   operators/ForceCreateFace.cxx
   operators/SplitEdge.cxx
 )
@@ -30,6 +31,7 @@ set(polygonHeaders
   operators/CreateVertices.h
   operators/CreateEdge.h
   operators/CreateFaces.h
+  operators/EditEdge.h
   operators/ForceCreateFace.h
   operators/SplitEdge.h
 )
@@ -39,6 +41,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateModel.sbt" polygo
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateVertices.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdge.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateFaces.sbt" polygonOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EditEdge.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ForceCreateFace.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitEdge.sbt" polygonOperatorXML)
 
@@ -46,6 +49,15 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitEdge.sbt" polygonO
 if(SMTK_ENABLE_VTK_SUPPORT)
   include("${VTK_USE_FILE}")
   list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
+
+  # Don't add the VTK or other subdirectories as they use the
+  # vtk_module_library() macro and vtk/module.cmake file.
+  # The vtk_smtk_process_modules() macro finds all subdirectories
+  # containing a module.cmake file automatically.
+  include (smtkVTKModules)
+  vtk_smtk_setup_module_environment("SMTK")
+  vtk_smtk_process_modules()
+
   set(polygonSrcs ${polygonSrcs}
      operators/Import.cxx
      )
@@ -113,6 +125,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
 endif()
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
+  add_subdirectory(qt)
   add_subdirectory(plugin)
 endif()
 

@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/icons/pqwidgets">
+    <file>edgepoint.png</file>
+    <file>contour.png</file>
+  </qresource>
+</RCC>
