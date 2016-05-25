@@ -21,6 +21,8 @@
 #include "smtk/extension/qt/qtInstancedView.h"
 #include "smtk/extension/qt/qtSimpleExpressionView.h"
 #include "smtk/extension/qt/qtDiscreteValueEditor.h"
+#include "smtk/extension/qt/qtSMTKUtilities.h"
+#include "smtk/extension/qt/qtModelView.h"
 
 #include <QTableWidget>
 #include <QLayout>
@@ -192,6 +194,7 @@ qtUIManager::qtUIManager(smtk::attribute::System &system) :
   m_useInternalFileBrowser(false)
 {
   this->m_topView = NULL;
+  this->m_activeModelView = NULL;
   this->m_maxValueLabelLength = 200;
   this->m_minValueLabelLength = 50;
 
@@ -208,6 +211,9 @@ qtUIManager::qtUIManager(smtk::attribute::System &system) :
   this->registerViewConstructor("Group", qtGroupView::createViewWidget);
   this->registerViewConstructor("Instanced", qtInstancedView::createViewWidget);
   this->registerViewConstructor("SimpleExpression", qtSimpleExpressionView::createViewWidget);
+
+  // register view constructors coming from plugins.
+  qtSMTKUtilities::updateViewConstructors(this);
 }
 
 //----------------------------------------------------------------------------
@@ -265,6 +271,20 @@ qtBaseView *qtUIManager::setSMTKView(smtk::common::ViewPtr v, QWidget* pWidget,
     }
   return this->m_topView;
 }
+//----------------------------------------------------------------------------
+void qtUIManager::setActiveModelView(smtk::extension::qtModelView* mv)
+{
+  if (this->m_activeModelView != mv)
+    {
+    this->m_activeModelView = mv;
+    }
+}
+//----------------------------------------------------------------------------
+smtk::extension::qtModelView *qtUIManager::activeModelView()
+{
+  return this->m_activeModelView;
+}
+
 //----------------------------------------------------------------------------
 void qtUIManager::internalInitialize()
 {
@@ -1356,7 +1376,7 @@ qtBaseView *qtUIManager::createView(const ViewInfo &info)
 void qtUIManager::onViewUIModified(smtk::extension::qtBaseView* bview,
                                    smtk::attribute::ItemPtr item)
 {
-  emit this->uiChanged(bview, item);
+  emit this->viewUIChanged(bview, item);
 }
 
 //----------------------------------------------------------------------------

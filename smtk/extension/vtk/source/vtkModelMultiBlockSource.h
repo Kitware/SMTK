@@ -16,13 +16,13 @@
 #include "smtk/common/UUID.h"
 
 #include "vtkMultiBlockDataSetAlgorithm.h"
-
 #include "vtkNew.h"
 
 #include <map>
 
 class vtkPolyData;
 class vtkPolyDataNormals;
+class vtkInformationStringKey;
 
 /**\brief A VTK source for exposing model geometry in SMTK Manager as multiblock data.
   *
@@ -67,6 +67,10 @@ public:
   static const char* GetGroupTagName() { return "Group"; }
   static const char* GetVolumeTagName() { return "Volume"; }
   static const char* GetAttributeTagName() { return "Attribute"; }
+
+  // Description:
+  // Key used to put entity UUID in the meta-data associated with a block.
+  static vtkInformationStringKey* ENTITYID();
 
 protected:
   vtkModelMultiBlockSource();

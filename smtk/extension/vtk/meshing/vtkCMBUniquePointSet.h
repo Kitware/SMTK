@@ -16,7 +16,7 @@
 #ifndef __smtk_vtk_vtkCMBUniquePointSet_
 #define __smtk_vtk_vtkCMBUniquePointSet_
 
-#include "smtk/extension/vtk/meshing/vtkSMTKMeshingExtModule.h" // For export macro
+#include "smtk/extension/vtk/meshing/Exports.h" // For export macro
 
 #include <map>
 #include <vector>

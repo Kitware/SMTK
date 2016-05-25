@@ -860,6 +860,7 @@ qtOperatorDockWidget* qtModelView::operatorsDock()
     }
 
   qtModelOperationWidget* opWidget = new qtModelOperationWidget();
+  opWidget->setModelView(this);
   QObject::connect(opWidget, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)),
     this, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)));
   QObject::connect(opWidget, SIGNAL(operationCancelled(const smtk::model::OperatorPtr&)),
@@ -905,6 +906,16 @@ qtOperatorDockWidget* qtModelView::operatorsDock()
   this->m_OperatorsDock = dw;
 //  this->m_OperatorsDock->hide();
   return dw;
+}
+
+//----------------------------------------------------------------------------
+qtModelOperationWidget* qtModelView::operatorsWidget()
+{
+  if(!this->m_OperatorsWidget)
+    {
+    this->operatorsDock();
+    }
+  return this->m_OperatorsWidget;
 }
 
 //----------------------------------------------------------------------------

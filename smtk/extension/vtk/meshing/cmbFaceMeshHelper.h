@@ -15,7 +15,7 @@
 #ifndef __smtk_vtk_cmbFaceMeshHelper_h
 #define __smtk_vtk_cmbFaceMeshHelper_h
 
-#include "smtk/extension/vtk/meshing/vtkSMTKMeshingExtModule.h" // For export macro
+#include "smtk/extension/vtk/meshing/Exports.h" // For export macro
 #include <map> // Needed for STL map.
 #include <set> // Needed for STL set.
 #include <list> // Needed for STL list.

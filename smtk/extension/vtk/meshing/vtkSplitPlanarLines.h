@@ -20,7 +20,7 @@
 // There is no guarantee that edge order is preserved, but pedigree IDs are
 // generated to indicate the correspondence between input and output edges.
 
-#include "smtk/extension/vtk/meshing/vtkSMTKMeshingExtModule.h" // For export macro
+#include "smtk/extension/vtk/meshing/Exports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 namespace smtk {

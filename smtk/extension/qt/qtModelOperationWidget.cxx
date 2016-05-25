@@ -14,6 +14,7 @@
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtInstancedView.h"
 #include "smtk/extension/qt/qtModelEntityItem.h"
+#include "smtk/extension/qt/qtModelView.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -53,7 +54,7 @@ public:
   smtk::model::OperatorPtr opPtr;
   QPointer<qtUIManager> opUiManager;
   QPointer<QFrame> opUiParent;
-  QPointer<qtInstancedView> opUiView;
+  QPointer<qtBaseView> opUiView;
   };
 
   smtk::model::Session::WeakPtr CurrentSession;
@@ -64,6 +65,7 @@ public:
   QPointer<QPushButton> OperateButton;
   // <operator-name, <opPtr, opUI-parent> >
   QMap<std::string, OperatorInfo > OperatorMap;
+  QPointer<qtModelView> ModelView;
 };
 
 //----------------------------------------------------------------------------
@@ -158,6 +160,19 @@ void qtModelOperationWidget::setSession(smtk::model::SessionPtr session)
   this->Internals->OperationCombo->blockSignals(false);
   this->Internals->OperatorMap.clear();
 }
+//----------------------------------------------------------------------------
+void qtModelOperationWidget::setModelView(qtModelView* mv)
+{
+  if (this->Internals->ModelView != mv)
+    {
+    this->Internals->ModelView = mv;
+    }
+}
+//----------------------------------------------------------------------------
+qtModelView *qtModelOperationWidget::modelView()
+{
+  return this->Internals->ModelView;
+}
 
 //----------------------------------------------------------------------------
 void qtModelOperationWidget::cancelCurrentOperator()
@@ -233,17 +248,50 @@ bool qtModelOperationWidget::initOperatorUI(
   smtk::attribute::AttributePtr att = brOp->specification();
   att->system()->setRefModelManager(brOp->manager());
 
-  //Lets create a view for the operator itself
-  smtk::common::ViewPtr instanced = smtk::common::View::New("Instanced", brOp->name());
-  instanced->details().setAttribute("TopLevel", "true");
-  
-  smtk::common::View::Component &comp =
-    instanced->details().addChild("InstancedAttributes").addChild("Att");
-  comp.setAttribute("Type", att->type()).setAttribute("Name", att->name());  
-  att->system()->addView(instanced);
-
   smtk::extension::qtUIManager* uiManager =
     new smtk::extension::qtUIManager(*(att->system()));
+  uiManager->setActiveModelView(this->Internals->ModelView);
+
+  // find out what view to use to construct the UI, if none is specified for this op
+  // ( meaning if there is no "AttributeTypes" specified in view components' children,
+  // or the att->type() is not included in any view "AttributeTypes" ),
+  // use "Instanced" view by default
+  smtk::common::ViewPtr opView;
+
+  std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
+  for(it = att->system()->views().begin(); it != att->system()->views().end(); ++it)
+    {
+    int i = it->second->details().findChild("AttributeTypes");
+    if(i < 0)
+      {
+      continue;
+      }
+    smtk::common::View::Component& comp = it->second->details().child(i);
+    for(int ci = 0; ci < comp.numberOfChildren(); ++ci)
+      {
+      std::string optype;
+      if(comp.child(ci).attribute("Type", optype) && optype == att->type())
+        {
+        opView = it->second;
+        break;
+        }
+      }
+    if(opView)
+      break;
+    }
+
+  if(!opView || !uiManager->hasViewConstructor(opView->type()))
+    {
+    //Lets create a default view for the operator itself
+    opView = smtk::common::View::New("Instanced", brOp->name());
+    
+    smtk::common::View::Component &comp =
+      opView->details().addChild("InstancedAttributes").addChild("Att");
+    comp.setAttribute("Type", att->type()).setAttribute("Name", att->name());  
+    att->system()->addView(opView);
+    }
+
+  opView->details().setAttribute("TopLevel", "true");
 
   QObject::connect(uiManager, SIGNAL(fileItemCreated(smtk::extension::qtFileItem*)),
     this, SIGNAL(fileItemCreated(smtk::extension::qtFileItem*)));
@@ -254,16 +302,17 @@ bool qtModelOperationWidget::initOperatorUI(
   QObject::connect(uiManager, SIGNAL(entitiesSelected(const smtk::common::UUIDs&)),
     this, SIGNAL(entitiesSelected(const smtk::common::UUIDs&)));
 
-  qtInstancedView* theView =
-    qobject_cast<qtInstancedView*>(uiManager->setSMTKView(instanced, opParent, false));
-  theView->requestModelEntityAssociation();
   qtModelOperationWidgetInternals::OperatorInfo opInfo;
   opInfo.opPtr = brOp;
   opInfo.opUiParent = opParent;
   opInfo.opUiManager = uiManager;
-  opInfo.opUiView = theView;
-
   this->Internals->OperatorMap[opName] = opInfo;
+
+  qtBaseView* theView = uiManager->setSMTKView(opView, opParent, false);
+  theView->requestModelEntityAssociation();
+
+  this->Internals->OperatorMap[opName].opUiView = theView;
+
   this->Internals->OperationsLayout->addWidget(opParent);
   this->Internals->OperationsLayout->setCurrentWidget(opParent);
   this->Internals->CurrrentOpName = opName;
@@ -301,7 +350,18 @@ bool qtModelOperationWidget::setCurrentOperator(
     }
   return this->initOperatorUI(brOp);
 }
+//----------------------------------------------------------------------------
+smtk::model::OperatorPtr qtModelOperationWidget::existingOperator(
+  const std::string& opName)
+{
+  OperatorPtr brOp;
+  if(this->Internals->OperatorMap.contains(opName))
+    {
+    brOp = this->Internals->OperatorMap[opName].opPtr;
+    }
 
+  return brOp;
+}
 //----------------------------------------------------------------------------
 void qtModelOperationWidget::expungeEntities(
         const smtk::model::EntityRefs& expungedEnts)

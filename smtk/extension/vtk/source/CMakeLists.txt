@@ -18,24 +18,24 @@ set(VTKLibHeaders
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS ${VTK_DEFINITIONS})
 
 # Don't do VTK header test. It is broken at the moment.
-set(vtkSMTKSourceExt_NO_HeaderTest 1)
+set(${vtk-module}_NO_HeaderTest 1)
 set(VTK_INSTALL_NO_HEADERS 1)
-vtk_module_library(vtkSMTKSourceExt ${VTKLibSrcs})
-target_include_directories(vtkSMTKSourceExt
+vtk_module_library(${vtk-module} ${VTKLibSrcs})
+target_include_directories(${vtk-module}
   PUBLIC
     $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}>
     $<BUILD_INTERFACE:${SMTK_BINARY_DIR}>
     $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>)
 
-target_link_libraries(vtkSMTKSourceExt
+target_link_libraries(${vtk-module}
   LINK_PUBLIC
     smtkCore
 )
 
 #has to be after the vtk_module_library
-smtk_export_header(vtkSMTKSourceExt Exports.h)
+smtk_export_header(${vtk-module} Exports.h)
 
-target_include_directories(vtkSMTKSourceExt
+target_include_directories(${vtk-module}
   PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}
 )
@@ -67,30 +67,35 @@ foreach(target
   endif()
 endforeach()
 
-target_link_libraries(vtkSMTKSourceExt PUBLIC ${SMTK_VTK_TARGET_LIST})
+target_link_libraries(${vtk-module} PUBLIC ${SMTK_VTK_TARGET_LIST})
 
 #install the headers
 smtk_public_headers(${VTKLibHeaders})
 # ... and make header compilation tests link properly:
-smtk_install_library(vtkSMTKSourceExt)
+smtk_install_library(${vtk-module})
+
+if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+  vtk_add_cs_wrapping(${vtk-module})
+  smtk_install_library(${vtk-module}CS)
+endif ()
 
 # Potentially wrap in Python using VTK's wrapping methods, not shiboken.
 # This makes the filters available for use with other VTK-wrapped filters.
 if (SMTK_ENABLE_PYTHON_WRAPPING AND VTK_WRAP_PYTHON)
-  vtk_wrap_python3(vtkSMTKSourceExtPython SMTKVTKPY_SRCS "${VTKLibHeaders}")
-  add_library(vtkSMTKSourceExtPythonD ${SMTKVTKPY_SRCS} ${SMTKVTKPY_EXTRA_SRCS})
-  python_add_module(vtkSMTKSourceExtPython
-    vtkSMTKSourceExtPythonInit.cxx
-    vtkSMTKSourceExtPythonInitImpl.cxx
+  vtk_wrap_python3(${vtk-module}Python SMTKVTKPY_SRCS "${VTKLibHeaders}")
+  add_library(${vtk-module}PythonD ${SMTKVTKPY_SRCS} ${SMTKVTKPY_EXTRA_SRCS})
+  python_add_module(${vtk-module}Python
+    ${vtk-module}PythonInit.cxx
+    ${vtk-module}PythonInitImpl.cxx
   )
-  target_link_libraries(vtkSMTKSourceExtPythonD
+  target_link_libraries(${vtk-module}PythonD
     PUBLIC
-      vtkSMTKSourceExt
+      ${vtk-module}
       vtkWrappingPythonCore
       vtkCommonExecutionModelPythonD
       vtkViewsInfovisPythonD
   )
-  target_link_libraries(vtkSMTKSourceExtPython
+  target_link_libraries(${vtk-module}Python
     PUBLIC
       vtkSMTKSourceExtPythonD
       ${PYTHON_LIBRARY}

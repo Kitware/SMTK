@@ -37,6 +37,8 @@ set(QAttrLibSrcs
   qtModelEntityItem.cxx
   qtModelOperationWidget.cxx
   qtOperatorDockWidget.cxx
+  qtViewInterface.cxx
+  qtSMTKUtilities.cxx
   )
 
 set(QAttrLibUIs
@@ -87,6 +89,8 @@ set(QAttrLibMocHeaders
 set(QAttrLibHeaders
   ${QAttrLibMocHeaders}
   qtAttributeItemWidgetFactory.h
+  qtViewInterface.h
+  qtSMTKUtilities.h
 )
 
 #install the headers
@@ -111,10 +115,10 @@ add_library(smtkQtExt
 target_include_directories(smtkQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 #set smtkQtExt to link to qtGUI and include dirs
-qt4_use_modules(smtkQtExt LINK_PUBLIC Core Gui)
+#qt4_use_modules(smtkQtExt LINK_PUBLIC Core Gui)
 
 #set smtkQtExt to publicly link to smtkCore
-target_link_libraries(smtkQtExt LINK_PUBLIC smtkCore)
+target_link_libraries(smtkQtExt LINK_PUBLIC smtkCore ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY})
 smtk_export_header(smtkQtExt Exports.h)
 
 #install the library and exports the library when used from a build tree

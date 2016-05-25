@@ -66,7 +66,7 @@ namespace {
       wri.includeDefinitions(false);
       wri.includeInstances(true);
       wri.includeModelInformation(false);
-      wri.includeViews(false);
+      wri.includeViews(true); // now operator could specify views
       std::string xml;
       bool err = wri.writeContents(tmpSys, xml, log, true);
       if (!err)
@@ -568,7 +568,7 @@ int ExportJSON::forOperatorDefinitions(smtk::attribute::System* opSys, cJSON* en
   wri.includeDefinitions(true);
   wri.includeInstances(false);
   wri.includeModelInformation(false);
-  wri.includeViews(false);
+  wri.includeViews(true); // now operator could specify views
   std::string xml;
   bool err = wri.writeContents(*opSys, xml, log, true);
   if (!err)

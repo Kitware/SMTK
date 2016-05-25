@@ -281,6 +281,7 @@ void qtDiscreteValueEditor::onInputValueChanged()
       this->layout()->addWidget(this->Internals->ChildrenFrame);
       }
     }
+  this->Internals->BaseView->valueChanged(item);
   this->Internals->BaseView->childrenResized();
 }
 

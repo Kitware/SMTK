@@ -55,28 +55,18 @@ public:
   smtk::model::EntityRef value(std::size_t element = 0) const;
   bool setValue(const smtk::model::EntityRef& val);
   bool setValue(std::size_t element, const smtk::model::EntityRef& val);
+
   template<typename I>
-  bool setValues(I vbegin, I vend)
+  bool setValues(I vbegin, I vend, std::size_t offset = 0)
     {
     bool ok = false;
-    if (this->setNumberOfValues(0))
-      {
-      return this->appendValues(vbegin, vend);
-      }
-    return false;
-    }
-  template<typename I>
-  bool appendValues(I vbegin, I vend)
-    {
-    bool ok = false;
-    std::size_t start = this->numberOfValues();
-    std::size_t num = vend - vbegin + this->numberOfValues();
+    std::size_t num = vend - vbegin + offset;
     if (this->setNumberOfValues(num))
       {
       ok = true;
       std::size_t i = 0;
       for (I it = vbegin; it != vend; ++it, ++i)
-        if (!this->setValue(start + i, *it))
+        if (!this->setValue(offset + i, *it))
           {
           ok = false;
           break;
@@ -87,6 +77,12 @@ public:
       this->setIsEnabled(num > 0 ? true : false);
     return ok;
     }
+  template<typename I>
+  bool appendValues(I vbegin, I vend)
+    {
+    return this->setValues(vbegin, vend, this->numberOfValues());
+    }
+
   bool appendValue(const smtk::model::EntityRef& val);
   bool removeValue(std::size_t element);
   virtual void reset();
@@ -117,6 +113,7 @@ protected:
   ModelEntityItem(Item *owningItem, int myPosition, int mySubGroupPosition);
 
   virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
+
 
   smtk::model::EntityRefArray m_values;
 };

@@ -41,6 +41,7 @@
 
 using namespace smtk::model;
 
+vtkInformationKeyMacro(vtkModelMultiBlockSource, ENTITYID, String);
 vtkStandardNewMacro(vtkModelMultiBlockSource);
 vtkCxxSetObjectMacro(vtkModelMultiBlockSource,CachedOutput,vtkMultiBlockDataSet);
 
@@ -452,8 +453,9 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
         {
         vtkNew<vtkPolyData> poly;
         mbds->SetBlock(i, poly.GetPointer());
-        // Set the block name to the entity UUID.
+        // Set the block name and the entity UUID.
         mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), cit->first.name().c_str());
+        mbds->GetMetaData(i)->Set(vtkModelMultiBlockSource::ENTITYID(), cit->first.entity().toString().c_str());
         this->GenerateRepresentationFromModel(poly.GetPointer(), cit->first, modelRequiresNormals);
         // std::cout << "UUID: " << (*cit).entity().toString().c_str() << " Block: " << i << std::endl;
         // as a convenient method to get the flat block index in multiblock
@@ -503,6 +505,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
       smtk::model::EntityRef entityref(manager, it->first);
       // Set the block name to the entity UUID.
       mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), entityref.name().c_str());
+      mbds->GetMetaData(i)->Set(vtkModelMultiBlockSource::ENTITYID(), entityref.entity().toString().c_str());
       this->GenerateRepresentationFromModel(poly.GetPointer(), entityref, this->AllowNormalGeneration);
 
       // as a convenient method to get the flat block_index in multiblock
