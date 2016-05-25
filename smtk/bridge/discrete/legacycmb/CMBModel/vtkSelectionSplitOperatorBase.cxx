@@ -48,7 +48,7 @@ void vtkSelectionSplitOperatorBase::AddModifiedPair(
   vtkIdType SourceID, vtkIdType TargetID)
 {
   vtkIdType Ids[2] = {SourceID, TargetID};
-  this->ModifiedPairIDs->InsertNextTupleValue(Ids);
+  this->ModifiedPairIDs->InsertNextTypedTuple(Ids);
 }
 
 

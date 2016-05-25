@@ -177,14 +177,14 @@ bool vtkCMBMeshGridRepresentationServer::GetModelEdgeAnalysisPoints(
     polys->InitTraversal();
     while(polys->GetNextCell(npts,pts))
       {
-      ids->GetTupleValue(i++,modelIds);
+      ids->GetTypedTuple(i++,modelIds);
       for (vtkIdType j=0; j < 3; j++)
         {
         if (modelIds[j] == edgeId)
           {
           edge[0] = pts[indices[j]];
           edge[1] = pts[indices[j+1]];
-          edgePoints->InsertNextTupleValue(edge);
+          edgePoints->InsertNextTypedTuple(edge);
           }
         }
       }
@@ -200,15 +200,15 @@ bool vtkCMBMeshGridRepresentationServer::GetModelEdgeAnalysisPoints(
     vtkIdType pointIds[3];
     for(vtkIdType id=0; id<cellptsids->GetNumberOfTuples(); id++)
       {
-      ids->GetTupleValue(id, modelIds);
+      ids->GetTypedTuple(id, modelIds);
       for (vtkIdType j=0; j < 3; j++)
         {
         if (modelIds[j] == edgeId)
           {
-          cellptsids->GetTupleValue(id,pointIds);
+          cellptsids->GetTypedTuple(id,pointIds);
           edge[0] = pointIds[indices[j]];
           edge[1] = pointIds[indices[j+1]];
-          edgePoints->InsertNextTupleValue(edge);
+          edgePoints->InsertNextTypedTuple(edge);
           }
         }
       }
@@ -256,7 +256,7 @@ bool vtkCMBMeshGridRepresentationServer::GetBoundaryGroupAnalysisFacets(
       polys->InitTraversal(); //needs to be reset for each entities
       for(vtkIdType i=0; polys->GetNextCell(npts,pts); ++i)
         {
-        ids->GetTupleValue(i,modelIds);
+        ids->GetTypedTuple(i,modelIds);
         for (vtkIdType j=0; j < 3; j++)
           {
           if (modelIds[j] == id)

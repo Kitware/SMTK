@@ -100,7 +100,7 @@ boundaryItemsOf(int modelEntityId, GridInfo::ApiStatus& status)
       vtkIdType values[2];
       for(vtkIdType j=0;j<analysisCellEdges->GetNumberOfTuples();j++)
         {
-        analysisCellEdges->GetTupleValue(j, values);
+        analysisCellEdges->GetTypedTuple(j, values);
         std::cout << "edge->GetNumberOfAdjacentModelFaces()" << edge->GetNumberOfAdjacentModelFaces() << std::endl;
          // if(edge->GetNumberOfAdjacentModelFaces() >= 2)
          //   {
@@ -209,7 +209,7 @@ edgeGridItems(int boundaryGroupId, ApiStatus& status)
       vtkIdType pointIds[2];
       for(vtkIdType i=0; i<edgePoints->GetNumberOfTuples(); i++)
         {
-        edgePoints->GetTupleValue(i, pointIds);
+        edgePoints->GetTypedTuple(i, pointIds);
         gridItems.push_back(std::pair<int, int>(pointIds[0], pointIds[1]));
         }
       }
