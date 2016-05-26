@@ -76,7 +76,8 @@ QIcon qtColorButton::renderColorSwatch(const QColor& color)
 //-----------------------------------------------------------------------------
 void qtColorButton::chooseColor()
 {
-  this->setChosenColor(QColorDialog::getColor(this->Color, this));
+  this->setChosenColor(QColorDialog::getColor(this->Color, this,
+    "Choose Color", QColorDialog::DontUseNativeDialog));
 }
 
 //-----------------------------------------------------------------------------
