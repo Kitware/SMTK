@@ -11,6 +11,6 @@
 
 int main(int argc, char** argv)
 {
-  std::shared_ptr<float> f;
+  std::shared_ptr<float> f = std::make_shared(42.0f);
   return 0;
 }
