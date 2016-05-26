@@ -1457,7 +1457,8 @@ void qtAttributeView::onListBoxClicked(QTableWidgetItem* item)
       QTableWidgetItem* selItem = this->Internals->ListTable->item(item->row(), 0);
       smtk::attribute::AttributePtr selAtt = this->getAttributeFromItem(selItem);
       QBrush bgBrush = item->background();
-      QColor color = QColorDialog::getColor(bgBrush.color(), this->Widget);
+      QColor color = QColorDialog::getColor(bgBrush.color(), this->Widget,
+        "Choose Attribute Color", QColorDialog::DontUseNativeDialog);
       if(color.isValid() && color != bgBrush.color() && selAtt)
         {
         bgBrush.setColor(color);
