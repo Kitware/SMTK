@@ -40,9 +40,6 @@
 #include "smtk/extension/vtk/meshing/vtkCMBPrepareForTriangleMesher.h"
 #include "smtk/extension/vtk/meshing/vtkCMBUniquePointSet.h"
 
-namespace smtk {
-  namespace vtk {
-
 vtkCxxSetObjectMacro(vtkCMBTriangleMesher,Launcher,vtkCMBMeshServerLauncher);
 
 //Unique Cell is used for appending multiple polydata's together that may
@@ -419,5 +416,3 @@ int vtkCMBTriangleMesher::RequestData(vtkInformation * /*request*/,
     }
   return true;
 }
-  } // namespace vtk
-} // namespace smtk

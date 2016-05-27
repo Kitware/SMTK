@@ -41,9 +41,6 @@
 typedef vtkVector2d vec2d;
 typedef vtkVector3d vec3d;
 
-namespace smtk {
-  namespace vtk {
-
 // A edge's use of a vertex
 struct VertexEdgeUse
 {
@@ -1851,5 +1848,3 @@ int vtkDiscoverRegions::RequestData(
 
   return 1;
 }
-  } // namespace vtk
-} // namespace smtk

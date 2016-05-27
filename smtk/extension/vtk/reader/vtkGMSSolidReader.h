@@ -24,9 +24,6 @@ class vtkDoubleArray;
 class vtkMultiBlockDataSet;
 class vtkUnsignedCharArray;
 
-namespace smtk {
-  namespace vtk {
-
 //BTX
 struct vtkGMSSolidReaderInternals;
 //ETX
@@ -66,8 +63,5 @@ private:
 
   vtkGMSSolidReaderInternals* Internals;
 };
-
-  } // namespace vtk
-} // namespace smtk
 
 #endif

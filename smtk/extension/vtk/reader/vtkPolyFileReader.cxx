@@ -38,9 +38,6 @@
 #include "smtk/extension/vtk/reader/vtkPolyFileTokenConverters.h"
 #include "smtk/extension/vtk/reader/vtkPolyFileErrorReporter.h"
 
-namespace smtk {
-  namespace vtk {
-
 vtkStandardNewMacro(vtkPolyFileReader);
 
 template<typename Converter, typename ErrorReporter>
@@ -872,6 +869,3 @@ int vtkPolyFileReader::RequestData(
 
   return 1;
 }
-
-  } // namespace vtk
-} // namespace smtk

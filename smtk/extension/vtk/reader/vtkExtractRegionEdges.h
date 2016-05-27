@@ -21,9 +21,6 @@
 #include "smtk/extension/vtk/reader/Exports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
-namespace smtk {
-  namespace vtk {
-
 class VTKSMTKREADEREXT_EXPORT vtkExtractRegionEdges : public vtkPolyDataAlgorithm
 {
 public:
@@ -64,8 +61,5 @@ private:
   vtkInternal* Internal;
 //ETX
 };
-
-  } // namespace vtk
-} // namespace smtk
 
 #endif

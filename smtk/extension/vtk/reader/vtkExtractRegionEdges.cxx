@@ -30,9 +30,6 @@
 #include <deque>
 #include <set>
 
-namespace smtk {
-  namespace vtk {
-
 vtkStandardNewMacro(vtkExtractRegionEdges);
 
 struct EdgeSegmentInfo
@@ -858,6 +855,3 @@ void vtkExtractRegionEdges::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }
-
-  } // namespace vtk
-} // namespace smtk

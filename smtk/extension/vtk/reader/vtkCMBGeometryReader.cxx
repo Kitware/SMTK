@@ -53,9 +53,6 @@
 #include "smtk/extension/vtk/reader/vtkGMSTINReader.h"
 #include "smtk/extension/vtk/reader/vtkLIDARReader.h"
 
-namespace smtk {
-  namespace vtk {
-
 vtkStandardNewMacro(vtkCMBGeometryReader);
 
 //-----------------------------------------------------------------------------
@@ -478,6 +475,3 @@ int vtkCMBGeometryReader::RequestInformation(
 
   return 1;
 }
-
-  } // namespace vtk
-} // namespace smtk

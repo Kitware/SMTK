@@ -83,9 +83,6 @@
   */
 #define VTK_POLYFILE_REGION_GROUP_NUMBER "RegionGroupNumbers"
 
-namespace smtk {
-  namespace vtk {
-
 /**\brief Read TetGen polyfiles (.poly) and surface meshes (.smesh).
   *
   */
@@ -188,8 +185,5 @@ private:
   vtkPolyFileReader(const vtkPolyFileReader&); // Not implemented.
   void operator = (const vtkPolyFileReader&); // Not implemented.
 };
-
-  } // namespace vtk
-} // namespace smtk
 
 #endif // __vtkPolyFileReader_h

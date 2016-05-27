@@ -25,9 +25,6 @@
 #include "vtkType.h"
 #include "vtkABI.h"
 
-namespace smtk {
-  namespace vtk {
-
 class VTKSMTKMESHINGEXT_EXPORT vtkCMBUniquePointSet
   {
   public:
@@ -94,7 +91,5 @@ class VTKSMTKMESHINGEXT_EXPORT vtkCMBUniquePointSet
     std::vector<InternalPt> ptId2pt;
     //ETX
   };
-  } // namespace vtk
-} // namespace smtk
 
 #endif

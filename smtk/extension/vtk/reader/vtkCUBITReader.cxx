@@ -21,9 +21,6 @@
 
 #include <sstream>
 
-namespace smtk {
-  namespace vtk {
-
 vtkStandardNewMacro(vtkCUBITReader);
 
 //-----------------------------------------------------------------------------
@@ -188,6 +185,3 @@ int vtkCUBITReader::RequestInformation(
 
   return 1;
 }
-
-  } // namespace vtk
-} // namespace smtk

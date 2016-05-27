@@ -19,9 +19,6 @@
 #include "smtk/extension/vtk/reader/Exports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
-namespace smtk {
-  namespace vtk {
-
 class VTKSMTKREADEREXT_EXPORT vtkCMBPolygonModelImporter : public vtkPolyDataAlgorithm
 {
 public:
@@ -127,7 +124,5 @@ private:
   vtkCMBPolygonModelImporter(const vtkCMBPolygonModelImporter&);  // Not implemented.
   void operator=(const vtkCMBPolygonModelImporter&);  // Not implemented.
 };
-  } // namespace vtk
-} // namespace smtk
 
 #endif // __vtkCMBPolygonModelImporter_h

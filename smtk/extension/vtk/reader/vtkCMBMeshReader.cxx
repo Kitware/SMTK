@@ -31,9 +31,6 @@
 
 #define ABORT_FREQ 10000
 
-namespace smtk {
-  namespace vtk {
-
 vtkStandardNewMacro(vtkCMBMeshReader);
 
 struct vtkCMBMeshReaderInternals
@@ -490,6 +487,3 @@ int vtkCMBMeshReader::RequestInformation(
 
   return 1;
 }
-
-  } // namespace vtk
-} // namespace smtk

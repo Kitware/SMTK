@@ -78,9 +78,8 @@ enum ModelEventIdsCOPY {
 #include "vtkXMLPolyDataWriter.h"
 #endif
 
-namespace smtk {
-  namespace vtk {
-
+namespace 
+{
   inline bool arePointsCollinear(const double &x1, const double &y1,
                                  const double &x2, const double &y2,
                                  const double &x3, const double &y3)
@@ -104,6 +103,7 @@ namespace smtk {
       center[1] = bounds[1] + (center[1]/2);
       }
     }
+}
 
 using namespace CmbFaceMesherClasses;
 
@@ -1354,6 +1354,3 @@ bool ModelLoopRep::findPointInsideConcaveNotIn(double& x,double& y, const std::l
 }
 //----------------------------------------------------------------------------
 */
-
-  } // namespace vtk
-} // namespace smtk

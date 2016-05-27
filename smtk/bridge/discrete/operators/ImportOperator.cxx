@@ -51,7 +51,6 @@
 #include "cJSON.h"
 
 using namespace smtk::model;
-using namespace smtk::vtk;
 
 namespace smtk {
   namespace bridge {

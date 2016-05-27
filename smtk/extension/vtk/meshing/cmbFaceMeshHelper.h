@@ -24,10 +24,6 @@
 
 
 class vtkPolyData;
-
-namespace smtk {
-  namespace vtk {
-
 class cmbFaceMesherInterface;
 
 //-----------------------------------------------------------------------------
@@ -307,8 +303,5 @@ class VTKSMTKMESHINGEXT_EXPORT ModelFaceRep
     std::list<ModelLoopRep> Loops;
 };
 }
-
-  } // namespace vtk
-} // namespace smtk
 
 #endif

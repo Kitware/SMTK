@@ -30,9 +30,6 @@
 #include "smtk/extension/vtk/meshing/Exports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
-namespace smtk {
-  namespace vtk {
-
 class vtkCMBMeshServerLauncher;
 
 class VTKSMTKMESHINGEXT_EXPORT vtkCMBTriangleMesher : public vtkPolyDataAlgorithm
@@ -168,7 +165,5 @@ class VTKSMTKMESHINGEXT_EXPORT vtkCMBTriangleMesher : public vtkPolyDataAlgorith
     vtkCMBTriangleMesher(const vtkCMBTriangleMesher&);  // Not implemented.
     void operator=(const vtkCMBTriangleMesher&);  // Not implemented.
 };
-  } // namespace vtk
-} // namespace smtk
 
 #endif

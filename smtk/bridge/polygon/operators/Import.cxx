@@ -236,111 +236,27 @@ OperatorResult Import::operateInternal()
       ext == ".stl" ||
       ext == ".vtp")
     {
-    vtkNew<smtk::vtk::vtkCMBGeometryReader> reader;
+    vtkNew<vtkCMBGeometryReader> reader;
     reader->SetFileName(filename.c_str());
     reader->SetPrepNonClosedSurfaceForModelCreation(false);
     reader->SetEnablePostProcessMesh(false);
     reader->Update();
     polyOutput->ShallowCopy( reader->GetOutput() );
-/*
-    bool hasBoundaryEdges = reader->GetHasBoundaryEdges();
-
-    if(ext == ".poly" || ext == ".smesh" || hasBoundaryEdges)
-      {
-      this->m_op->Operate(mod.GetPointer(), reader.GetPointer());
-      }
-    else
-      {
-      vtkNew<vtkMasterPolyDataNormals> normals;
-      normals->SetInputData(0, reader->GetOutputDataObject(0));
-      normals->Update();
-
-      vtkNew<vtkMergeDuplicateCells> merge;
-      merge->SetModelRegionArrayName(ModelParserHelper::GetShellTagName());
-      merge->SetModelFaceArrayName(ModelParserHelper::GetModelFaceTagName());
-      merge->SetInputData(0, normals->GetOutputDataObject(0));
-      merge->Update();
-
-      this->m_op->Operate(mod.GetPointer(), merge.GetPointer());
-      }
-*/
     }
 #ifdef SMTK_ENABLE_REMUS_SUPPORT
   else if(ext == ".map")
     {
-    vtkNew<smtk::vtk::vtkCMBMapReader> reader;
+    vtkNew<vtkCMBMapReader> reader;
     reader->SetFileName(filename.c_str());
     reader->Update();
     polyOutput->ShallowCopy( reader->GetOutput() );
-/*
-    vtkNew<vtkCMBTriangleMesher> trimesher;
-    trimesher->SetPreserveEdgesAndNodes(true);
-    trimesher->SetInputData(0, reader->GetOutputDataObject(0));
-    trimesher->Update();
-
-    this->m_mapOp->Operate(mod.GetPointer(), trimesher.GetPointer());
-*/
     }
   else if(ext == ".shp")
     {
-    vtkNew<smtk::vtk::vtkCMBPolygonModelImporter> reader;
+    vtkNew<vtkCMBPolygonModelImporter> reader;
     reader->SetFileName(filename.c_str());
     reader->Update();
     polyOutput->ShallowCopy( reader->GetOutput() );
-/* 
-    smtk::attribute::StringItem::Ptr boundaryItem =
-      this->specification()->findString("ShapeBoundaryStyle");
-    if(boundaryItem->isEnabled())
-      {
-      vtkNew<smtk::vtk::vtkCMBGeometry2DReader> reader;
-      reader->SetFileName(filename.c_str());
-      std::string boundaryStyle = boundaryItem->value();
-      if (boundaryStyle == "None") // default
-        {
-        reader->SetBoundaryStyle(smtk::vtk::vtkCMBGeometry2DReader::NONE);
-        }
-      else if (boundaryStyle == "Relative Margin")
-        {
-        reader->SetBoundaryStyle(smtk::vtk::vtkCMBGeometry2DReader::RELATIVE_MARGIN);
-        smtk::attribute::StringItem::Ptr relMarginItem =
-          this->specification()->findString("relative margin");
-        reader->SetRelativeMarginString(relMarginItem->value().c_str());
-        }
-      else if (boundaryStyle == "Absolute Margin")
-        {
-        reader->SetBoundaryStyle(smtk::vtk::vtkCMBGeometry2DReader::ABSOLUTE_MARGIN);
-        smtk::attribute::StringItem::Ptr absMarginItem =
-          this->specification()->findString("absolute margin");
-        reader->SetAbsoluteMarginString(absMarginItem->value().c_str());
-        }
-      else if (boundaryStyle == "Bounding Box")
-        {
-        reader->SetBoundaryStyle(smtk::vtk::vtkCMBGeometry2DReader::ABSOLUTE_BOUNDS);
-        smtk::attribute::StringItem::Ptr absBoundsItem =
-          this->specification()->findString("absolute bounds");
-        reader->SetAbsoluteBoundsString(absBoundsItem->value().c_str());
-        }
-      else if (boundaryStyle == "Bounding File")
-        {
-        reader->SetBoundaryStyle(smtk::vtk::vtkCMBGeometry2DReader::IMPORTED_POLYGON);
-        smtk::attribute::StringItem::Ptr boundsFileItem =
-          this->specification()->findString("imported polygon");
-        reader->SetBoundaryFile(boundsFileItem->value().c_str());
-        }
-      else
-        {
-        std::cerr << "Invalid Shape file boundary. No boundary will be set.\n";
-        reader->SetBoundaryStyle(smtk::vtk::vtkCMBGeometry2DReader::NONE);
-        }
-      reader->Update();
-      polyOutput->ShallowCopy( reader->GetOutput() );
-      }
-    else
-      {
-      smtkInfoMacro(log(), "Shape file boundary has to be set.");
-      return this->createResult(OPERATION_FAILED);
-      }
-*/
     }
 #endif
   else if(ext == ".vtk")
@@ -353,19 +269,6 @@ OperatorResult Import::operateInternal()
     surface->SetInputData(0, reader->GetOutputDataObject(0));
     surface->Update();
     polyOutput->ShallowCopy( surface->GetOutput() );
-/*
-    vtkNew<vtkMasterPolyDataNormals> normals;
-    normals->SetInputData(0, surface->GetOutputDataObject(0));
-    normals->Update();
-
-    vtkNew<vtkMergeDuplicateCells> merge;
-    merge->SetModelRegionArrayName(ModelParserHelper::GetShellTagName());
-    merge->SetModelFaceArrayName(ModelParserHelper::GetModelFaceTagName());
-    merge->SetInputData(0, normals->GetOutputDataObject(0));
-    merge->Update();
-
-    this->m_op->Operate(mod.GetPointer(), merge.GetPointer());
-*/
     }
   else
     {

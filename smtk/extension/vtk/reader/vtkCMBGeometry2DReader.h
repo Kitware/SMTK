@@ -19,9 +19,6 @@
 #include "smtk/extension/vtk/reader/Exports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
-namespace smtk {
-  namespace vtk {
-
 class VTKSMTKREADEREXT_EXPORT vtkCMBGeometry2DReader : public vtkPolyDataAlgorithm
 {
 public:
@@ -127,7 +124,5 @@ private:
   vtkCMBGeometry2DReader(const vtkCMBGeometry2DReader&);  // Not implemented.
   void operator=(const vtkCMBGeometry2DReader&);  // Not implemented.
 };
-  } // namespace vtk
-} // namespace smtk
 
 #endif // __vtkCMBGeometry2DReader_h

@@ -51,10 +51,6 @@ inline void locationsToSearchForWorkers(
 
 }
 
-
-namespace smtk {
-  namespace vtk {
-
 vtkStandardNewMacro(vtkCMBMeshServerLauncher);
 
 //-----------------------------------------------------------------------------
@@ -130,6 +126,3 @@ void vtkCMBMeshServerLauncher::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "Port Number: " << this->PortNumber << std::endl;
   os << indent << "Alive: " << this->Alive << std::endl;
 }
-
-  } // namespace vtk
-} // namespace smtk

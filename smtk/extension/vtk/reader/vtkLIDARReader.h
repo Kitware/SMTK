@@ -35,9 +35,6 @@ class vtkFloatArray;
 #define VTK_ASCII 1
 #define VTK_BINARY 2
 
-namespace smtk {
-  namespace vtk {
-
 class VTKSMTKREADEREXT_EXPORT vtkLIDARReader : public vtkPolyDataAlgorithm
 {
 public:
@@ -240,8 +237,5 @@ private:
   void operator=(const vtkLIDARReader&);  // Not implemented.
   //ETX
 };
-
-  } // namespace vtk
-} // namespace smtk
 
 #endif

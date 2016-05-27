@@ -30,9 +30,6 @@
 //#define LIDAR_PREVIEW_PIECE_NUM_POINTS 10000
 #define LIDAR_BINARY_POINT_SIZE sizeof(double)*3
 
-namespace smtk {
-  namespace vtk {
-
 vtkStandardNewMacro(vtkLIDARReader);
 
 vtkCxxSetObjectMacro(vtkLIDARReader, Transform, vtkTransform);
@@ -951,7 +948,3 @@ int vtkLIDARReader::RequestInformation(
 
   return 1;
 }
-
-  } // namespace vtk
-} // namespace smtk
-

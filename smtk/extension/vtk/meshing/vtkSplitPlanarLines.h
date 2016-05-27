@@ -23,9 +23,6 @@
 #include "smtk/extension/vtk/meshing/Exports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
-namespace smtk {
-  namespace vtk {
-
 class VTKSMTKMESHINGEXT_EXPORT vtkSplitPlanarLines : public vtkPolyDataAlgorithm
 {
 public:
@@ -52,7 +49,5 @@ private:
   vtkSplitPlanarLines(const vtkSplitPlanarLines&); // Not implemented.
   void operator = (const vtkSplitPlanarLines&); // Not implemented.
 };
-  } // namespace vtk
-} // namespace smtk
 
 #endif // __vtkSplitPlanarLines_h

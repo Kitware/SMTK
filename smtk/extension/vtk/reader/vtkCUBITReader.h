@@ -19,10 +19,6 @@
 #include "smtk/extension/vtk/reader/Exports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
-
-namespace smtk {
-  namespace vtk {
-
 class VTKSMTKREADEREXT_EXPORT vtkCUBITReader : public vtkPolyDataAlgorithm
 {
 public:
@@ -55,8 +51,5 @@ private:
   vtkCUBITReader(const vtkCUBITReader&);  // Not implemented.
   void operator=(const vtkCUBITReader&);  // Not implemented.
 };
-
-  } // namespace vtk
-} // namespace smtk
 
 #endif

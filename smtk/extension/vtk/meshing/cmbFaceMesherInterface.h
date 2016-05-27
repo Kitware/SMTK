@@ -23,9 +23,6 @@
 
 class vtkPolyData;
 
-namespace smtk {
-  namespace vtk {
-
 class vtkCMBMeshServerLauncher;
 
 class VTKSMTKMESHINGEXT_EXPORT cmbFaceMesherInterface
@@ -103,8 +100,5 @@ private:
   TriangleInput *Ti;
   //ETX
 };
-
-  } // namespace vtk
-} // namespace smtk
 
 #endif

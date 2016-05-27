@@ -28,9 +28,6 @@
 #include "vtkVector.h"
 #include <vector> // Needed for public interface.
 
-namespace smtk {
-  namespace vtk {
-
 class VTKSMTKMESHINGEXT_EXPORT vtkRayIntersectionLocator : public vtkCellTreeLocator
 {
 public:
@@ -95,7 +92,5 @@ private:
   vtkRayIntersectionLocator(const vtkRayIntersectionLocator&); // Not implemented.
   void operator = (const vtkRayIntersectionLocator&); // Not implemented.
 };
-  } // namespace vtk
-} // namespace smtk
 
 #endif // __vtkRayIntersectionLocator_h

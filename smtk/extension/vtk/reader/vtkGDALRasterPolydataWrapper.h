@@ -25,9 +25,6 @@
 
 #include "vtkGDALRasterReader.h"
 
-namespace smtk {
-  namespace vtk {
-
 class VTKSMTKREADEREXT_EXPORT vtkGDALRasterPolydataWrapper : public vtkDataSetAlgorithm
 {
 public:
@@ -158,8 +155,5 @@ private:
   vtkGDALRasterPolydataWrapper(const vtkGDALRasterPolydataWrapper&); // Not implemented.
   vtkGDALRasterPolydataWrapper& operator=(const vtkGDALRasterPolydataWrapper&); // Not implemented.
 };
-
-  } // namespace vtk
-} // namespace smtk
 
 #endif

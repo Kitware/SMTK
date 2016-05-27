@@ -28,9 +28,6 @@
 
 #include <vector>
 
-namespace smtk {
-  namespace vtk {
-
 struct TriangleOutput
   {
   std::vector<double> points;
@@ -470,9 +467,6 @@ bool cmbFaceMesherInterface::unPackData(const char* rawData,
 
   return true;
 }
-
-  } // namespace vtk
-} // namespace smtk
 
 // for Triangles
 #undef ANSI_DECLARATORS

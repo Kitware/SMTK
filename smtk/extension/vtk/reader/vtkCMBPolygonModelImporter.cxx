@@ -39,9 +39,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-namespace smtk {
-  namespace vtk {
-
 vtkStandardNewMacro(vtkCMBPolygonModelImporter);
 
 vtkCMBPolygonModelImporter::vtkCMBPolygonModelImporter()
@@ -219,5 +216,3 @@ int vtkCMBPolygonModelImporter::RequestData(
   output->GetFieldData()->AddArray( filenameFD.GetPointer() );
   return 1;
 }
-  } // namespace vtk
-} // namespace smtk

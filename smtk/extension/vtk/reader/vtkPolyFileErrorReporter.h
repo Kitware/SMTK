@@ -29,9 +29,6 @@
 #include <sstream>
 #include <string>
 
-namespace smtk {
-  namespace vtk {
-
 class vtkPolyFileErrorReporter
 {
 public:
@@ -114,8 +111,5 @@ public:
   int EndOfFile;
   int ProvideContext;
 };
-
-  } // namespace vtk
-} // namespace smtk
 
 #endif // __vtkPolyFileErrorReporter_h
