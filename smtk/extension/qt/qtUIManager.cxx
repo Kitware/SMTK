@@ -102,7 +102,7 @@ void qtDoubleValidator::fixup(QString &input) const
   if ( input.length() == 0 )
     {
     item->unset(elementIdx);
-    this->UIManager->setWidgetColor(editBox, Qt::white);
+    this->UIManager->setWidgetColor(editBox, this->UIManager->invalidValueColor());
     return;
     }
 
@@ -154,8 +154,8 @@ void qtIntValidator::fixup(QString &input) const
   int elementIdx = editBox->property("ElementIndex").toInt();
   if ( input.length() == 0 )
     {
-    item->unset(elementIdx);
-    this->UIManager->setWidgetColor(editBox, Qt::white);
+   item->unset(elementIdx);
+    this->UIManager->setWidgetColor(editBox, this->UIManager->invalidValueColor());
     return;
     }
 
@@ -966,7 +966,14 @@ QWidget* qtUIManager::createEditBox(
 
   QWidget* inputWidget = NULL;
   QVariant vdata(elementIdx);
-  bool isDefault = false;
+  QString tooltip;
+
+  // If the item is not set but has a default lets use it
+  if (!item->isSet(elementIdx) && item->hasDefault())
+    {
+      item->setToDefault(elementIdx);
+    }
+  
   switch (item->type())
     {
     case smtk::attribute::Item::DOUBLE:
@@ -975,10 +982,10 @@ QWidget* qtUIManager::createEditBox(
       const DoubleItemDefinition *dDef =
         dynamic_cast<const DoubleItemDefinition*>(item->definition().get());
       qtDoubleValidator *validator = new qtDoubleValidator(pWidget);
+      
       validator->setUIManager(this);
       editBox->setValidator(validator);
       editBox->setFixedWidth(100);
-      QString tooltip;
       double value=smtk_DOUBLE_MIN;
       if(dDef->hasMinRange())
         {
@@ -991,7 +998,8 @@ QWidget* qtUIManager::createEditBox(
           }
         validator->setBottom(value);
         QString inclusive = dDef->minRangeInclusive() ? "Inclusive" : "Not Inclusive";
-        tooltip.append("Min(").append(inclusive).append("): ").append(QString::number(dDef->minRange()));
+        tooltip.append("Min(").append(inclusive).append("): ").
+	  append(QString::number(dDef->minRange()));
         }
       value=smtk_DOUBLE_MAX;
       if(dDef->hasMaxRange())
@@ -1009,7 +1017,8 @@ QWidget* qtUIManager::createEditBox(
           tooltip.append("; ");
           }
         QString inclusive = dDef->maxRangeInclusive() ? "Inclusive" : "Not Inclusive";
-        tooltip.append("Max(").append(inclusive).append("): ").append(QString::number(dDef->maxRange()));
+        tooltip.append("Max(").append(inclusive).append("): ")
+	  .append(QString::number(dDef->maxRange()));
         }
       if(dDef->hasDefault())
         {
@@ -1021,21 +1030,11 @@ QWidget* qtUIManager::createEditBox(
         tooltip.append("Default: ").append(QString::number(value));
         }
 
-      smtk::attribute::DoubleItemPtr ditem =dynamic_pointer_cast<DoubleItem>(item);
       if(item->isSet(elementIdx))
         {
         editBox->setText(item->valueAsString(elementIdx).c_str());
-        isDefault = item->isUsingDefault(elementIdx);
         }
-      else if(dDef->hasDefault())
-        {
-        editBox->setText(QString::number(dDef->defaultValue(elementIdx)));
-        isDefault = true;
-        }
-      if(!tooltip.isEmpty())
-        {
-        editBox->setToolTip(tooltip);
-        }
+      
       QVariant tvdata;
       tvdata.setValue(static_cast<void*>(editBox));
       validator->setProperty("MyWidget", tvdata);
@@ -1051,7 +1050,6 @@ QWidget* qtUIManager::createEditBox(
       validator->setUIManager(this);
       editBox->setValidator(validator);
       editBox->setFixedWidth(100);
-      QString tooltip;
 
       int value=smtk_INT_MIN;
       if(iDef->hasMinRange())
@@ -1078,10 +1076,6 @@ QWidget* qtUIManager::createEditBox(
       if(iDef->hasDefault())
         {
         value = iDef->defaultValue(elementIdx);
-        if(!tooltip.isEmpty())
-          {
-          tooltip.append("; ");
-          }
         tooltip.append("Default: ").append(QString::number(value));
         }
 
@@ -1089,18 +1083,6 @@ QWidget* qtUIManager::createEditBox(
       if(item->isSet(elementIdx))
         {
         editBox->setText(item->valueAsString(elementIdx).c_str());
-
-        isDefault = iDef->hasDefault() &&
-          iDef->defaultValue(elementIdx)==iItem->value(elementIdx);
-        }
-      else if(iDef->hasDefault())
-        {
-        editBox->setText(QString::number(iDef->defaultValue(elementIdx)));
-        isDefault = true;
-        }
-      if(!tooltip.isEmpty())
-        {
-        editBox->setToolTip(tooltip);
         }
       QVariant tvdata;
       tvdata.setValue(static_cast<void*>(editBox));
@@ -1117,13 +1099,6 @@ QWidget* qtUIManager::createEditBox(
       if(item->isSet(elementIdx))
         {
         valText = item->valueAsString(elementIdx).c_str();
-        isDefault = sDef->hasDefault() &&
-          sDef->defaultValue(elementIdx)==sitem->value(elementIdx);
-        }
-      else if(sDef->hasDefault())
-        {
-        valText = sDef->defaultValue(elementIdx).c_str();
-        isDefault = true;
         }
 
       if(sDef->isMultiline())
@@ -1149,9 +1124,7 @@ QWidget* qtUIManager::createEditBox(
       inputWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
       if(sDef->hasDefault())
         {
-        QString tooltip;
         tooltip.append("Default: ").append(sDef->defaultValue(elementIdx).c_str());
-        inputWidget->setToolTip(tooltip);
        }
      break;
       }
@@ -1160,20 +1133,38 @@ QWidget* qtUIManager::createEditBox(
       // smtk::attribute::Item::type2String(item->type()) << "\n";
       break;
     }
-  if(inputWidget)
+  
+  if(!inputWidget)
     {
-    inputWidget->setProperty("ElementIndex", vdata);
-    QVariant vobject;
-    vobject.setValue(static_cast<void*>(attitem.get()));
-    inputWidget->setProperty("AttItemObj", vobject);
-//    inputWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+      return NULL;
+    }
+  
+  inputWidget->setProperty("ElementIndex", vdata);
+  QVariant vobject;
+  vobject.setValue(static_cast<void*>(attitem.get()));
+  inputWidget->setProperty("AttItemObj", vobject);
+  //    inputWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
 
-    QVariant viewobject;
-    viewobject.setValue(static_cast<void*>(bview));
-    inputWidget->setProperty("QtViewObj", viewobject);
-
-    this->setWidgetColor(inputWidget,
-      isDefault ? this->DefaultValueColor : Qt::white);
+  QVariant viewobject;
+  viewobject.setValue(static_cast<void*>(bview));
+  inputWidget->setProperty("QtViewObj", viewobject);
+  // Lets determine the item's state
+  if (!item->isSet(elementIdx) && item->isEnabled())
+    {
+      this->setWidgetColor(inputWidget,this->InvalidValueColor);
+    }
+  else if (item->isUsingDefault(elementIdx))
+    {
+      this->setWidgetColor(inputWidget,this->DefaultValueColor);
+    }
+  else
+    {
+      this->setWidgetColor(inputWidget,Qt::white);
+    }
+  
+  if(!tooltip.isEmpty())
+    {
+      inputWidget->setToolTip(tooltip);
     }
   if(QLineEdit* const editBox = qobject_cast<QLineEdit*>(inputWidget))
     {
@@ -1248,46 +1239,38 @@ void qtUIManager::onInputValueChanged(QObject* obj)
     textBox->property("ElementIndex").toInt();
   bool isDefault = false;
   bool valChanged = false;
+  bool isInvalid = false;
   if(editBox && !editBox->text().isEmpty())
     {
     if(rawitem->type()==smtk::attribute::Item::DOUBLE)
       {
-      double val = smtk::dynamic_pointer_cast<DoubleItem>(rawitem->pointer())->value(elementIdx);
+      DoubleItem *ditem = dynamic_cast<DoubleItem *>(rawitem);
+      double val = ditem->value(elementIdx);
       if(!(rawitem->isSet(elementIdx)) || val != editBox->text().toDouble())
         {
-        smtk::dynamic_pointer_cast<DoubleItem>(rawitem->pointer())
-          ->setValue(elementIdx, editBox->text().toDouble());
+	ditem->setValue(elementIdx, editBox->text().toDouble());
         valChanged = true;
         }
-      const DoubleItemDefinition* def =
-        dynamic_cast<const DoubleItemDefinition*>(rawitem->definition().get());
-      isDefault = def->hasDefault() && editBox->text().toDouble() == def->defaultValue(elementIdx);
       }
     else if(rawitem->type()==smtk::attribute::Item::INT)
       {
-      int val = smtk::dynamic_pointer_cast<IntItem>(rawitem->pointer())->value(elementIdx);
+      IntItem *iitem = dynamic_cast<IntItem *>(rawitem);
+      int val = iitem->value(elementIdx);
       if(!(rawitem->isSet(elementIdx)) || val != editBox->text().toInt())
         {
-        smtk::dynamic_pointer_cast<IntItem>(rawitem->pointer())
-          ->setValue(elementIdx, editBox->text().toInt());
+        iitem->setValue(elementIdx, editBox->text().toInt());
         valChanged = true;
         }
-      const IntItemDefinition* def =
-        dynamic_cast<const IntItemDefinition*>(rawitem->definition().get());
-      isDefault = def->hasDefault() && editBox->text().toInt() == def->defaultValue(elementIdx);
       }
     else if(rawitem->type()==smtk::attribute::Item::STRING)
       {
-      std::string val = smtk::dynamic_pointer_cast<StringItem>(rawitem->pointer())->value(elementIdx);
+      StringItem *sitem = dynamic_cast<StringItem *>(rawitem);
+      std::string val = sitem->value(elementIdx);
       if(!(rawitem->isSet(elementIdx)) || val != editBox->text().toStdString())
         {
-        smtk::dynamic_pointer_cast<StringItem>(rawitem->pointer())
-          ->setValue(elementIdx, editBox->text().toStdString());
+        sitem->setValue(elementIdx, editBox->text().toStdString());
         valChanged = true;
         }
-      const StringItemDefinition* def =
-        dynamic_cast<const StringItemDefinition*>(rawitem->definition().get());
-      isDefault = def->hasDefault() && editBox->text().toStdString() == def->defaultValue(elementIdx);
       }
     else
       {
@@ -1298,32 +1281,32 @@ void qtUIManager::onInputValueChanged(QObject* obj)
   else if(textBox && !textBox->toPlainText().isEmpty() &&
      rawitem->type()==smtk::attribute::Item::STRING)
     {
-    std::string val = smtk::dynamic_pointer_cast<StringItem>(rawitem->pointer())->value(elementIdx);
+    StringItem *sitem = dynamic_cast<StringItem *>(rawitem);
+    std::string val = sitem->value(elementIdx);
     if(!(rawitem->isSet(elementIdx)) || val != textBox->toPlainText().toStdString())
       {
-      smtk::dynamic_pointer_cast<StringItem>(rawitem->pointer())
-        ->setValue(elementIdx, textBox->toPlainText().toStdString());
+      sitem->setValue(elementIdx, textBox->toPlainText().toStdString());
       valChanged = true;
       }
-    const StringItemDefinition* def =
-      dynamic_cast<const StringItemDefinition*>(rawitem->definition().get());
-    isDefault = def->hasDefault() && textBox->toPlainText().toStdString() == def->defaultValue(elementIdx);
     }
   else
     {
     rawitem->unset(elementIdx);
+    isInvalid = true;
     valChanged = true;
     }
-
+  // Lets determine if the item is set to the default value -
+  isDefault = rawitem->isUsingDefault(elementIdx);
+  isInvalid = !rawitem->isSet(elementIdx);
   qtBaseView* bview =static_cast<qtBaseView*>(
     inputBox->property("QtViewObj").value<void *>());
   if(bview && valChanged)
     {
     bview->valueChanged(rawitem->pointer());
     }
-
   this->setWidgetColor(inputBox,
-    isDefault ? this->DefaultValueColor : Qt::white);
+		       isDefault ? this->DefaultValueColor
+		       : (isInvalid ? this->InvalidValueColor : Qt::white));
 
 }
 //----------------------------------------------------------------------------

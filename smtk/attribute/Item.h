@@ -93,9 +93,11 @@ namespace smtk
      // Returns true if the item is optional
      bool isOptional() const;
      
-     // isEnabled only matters for optional items.  All non-optional
-     // items will return true for isEnabled regardless of the value
-     // of m_isEnabled
+     // An item is enabled under the following coditions:
+     // 1. If it is not owned by another item (such as a group), and either
+     // it is not optional or it has been explicitly enabled
+     // 2. If it's owning item is enabled and  either
+     // it is not optional or it has been explicitly enabled
      bool isEnabled() const;
      void setIsEnabled(bool isEnabledValue)
      {this->m_isEnabled = isEnabledValue;}

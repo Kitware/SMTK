@@ -144,7 +144,24 @@ bool Item::isOptional() const
 //----------------------------------------------------------------------------=
 bool Item::isEnabled() const
 {
-  return this->isOptional() ? this->m_isEnabled : true;
+  // determine if the item is locally enabled - meaning that
+  //either it is not optional or its enabled flag is true
+  bool enabled = this->isOptional() ? this->m_isEnabled : true;
+  
+  // If it is not enabled we are done
+  if (!enabled)
+    {
+      return false;
+    }
+  
+  // If there is no owning item then its enabled
+  if (!this->m_owningItem)
+    {
+      return true;
+    }
+
+  // Else delegate this to the owning item 
+  return this->m_owningItem->isEnabled();
 }
 //----------------------------------------------------------------------------
 bool Item::isMemberOf(const std::string &category) const
