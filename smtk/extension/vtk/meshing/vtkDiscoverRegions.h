@@ -17,9 +17,6 @@
 //#define VTK_CELL_REGION_IDS "CellRegionIds"
 #define VTK_CELL_REGION_IDS "Region"
 
-namespace smtk {
-  namespace vtk {
-
 /**\brief Discover shells and regions.
  *
  * Given a triangulated surface (no strips accepted),
@@ -169,7 +166,5 @@ private:
   vtkDiscoverRegions(const vtkDiscoverRegions&); // Not implemented.
   void operator = (const vtkDiscoverRegions&); // Not implemented.
 };
-  } // namespace vtk
-} // namespace smtk
 
 #endif // __vtkDiscoverRegions_h

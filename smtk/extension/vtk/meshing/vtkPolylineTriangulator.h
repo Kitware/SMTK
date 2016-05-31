@@ -14,9 +14,6 @@
 #include "smtk/extension/vtk/meshing/Exports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
-namespace smtk {
-  namespace vtk {
-
 class vtkCMBMeshServerLauncher;
 
 /// Turn polylines describing facet boundaries into triangulated facets.
@@ -68,7 +65,5 @@ private:
   vtkPolylineTriangulator(const vtkPolylineTriangulator&); // Not implemented.
   void operator = (const vtkPolylineTriangulator&); // Not implemented.
 };
-  } // namespace vtk
-} // namespace smtk
 
 #endif // __vtkPolylineTriangulator_h

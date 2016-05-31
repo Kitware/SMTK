@@ -22,9 +22,6 @@
 
 namespace remus { namespace server { class Server; } }
 
-namespace smtk {
-  namespace vtk {
-
 class VTKSMTKMESHINGEXT_EXPORT vtkCMBMeshServerLauncher : public vtkObject
 {
 public:
@@ -64,8 +61,5 @@ private:
   bool Alive;
   remus::server::Server* Implementation;
 };
-
-  } // namespace vtk
-} // namespace smtk
 
 #endif

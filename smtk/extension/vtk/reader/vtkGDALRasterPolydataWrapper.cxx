@@ -41,9 +41,6 @@
 #include <iostream>
 #include <vector>
 
-namespace smtk {
-  namespace vtk {
-
 vtkStandardNewMacro(vtkGDALRasterPolydataWrapper);
 
 vtkCxxSetObjectMacro(vtkGDALRasterPolydataWrapper, Transform, vtkTransform);
@@ -300,5 +297,3 @@ void vtkGDALRasterPolydataWrapper::SetTransform(double elements[16])
   this->SetTransform(tmpTransform);
   tmpTransform->Delete();
 }
-  } // namespace vtk
-} // namespace smtk

@@ -17,9 +17,6 @@
 #include <set>
 #include <vector>
 
-namespace smtk {
-  namespace vtk {
-
 struct UnionFindSet
 {
   UnionFindSet(vtkIdType parent, vtkIdType rank = 0)
@@ -135,8 +132,5 @@ inline void UnionFind::CollapseIds(
       }
     }
 }
-
-  } // namespace vtk
-} // namespace smtk
 
 #endif // __union_find_h

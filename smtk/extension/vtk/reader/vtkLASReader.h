@@ -37,9 +37,6 @@ class vtkGeoSphereTransform;
 
 #define NUMBER_OF_CLASSIFICATIONS 32
 
-namespace smtk {
-  namespace vtk {
-
 class VTKSMTKREADEREXT_EXPORT vtkLASReader : public vtkMultiBlockDataSetAlgorithm
 {
 public:
@@ -177,8 +174,5 @@ private:
   double Offset[3];
   //ETX
 };
-
-  } // namespace vtk
-} // namespace smtk
 
 #endif

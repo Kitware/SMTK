@@ -34,8 +34,6 @@
 
 #include <algorithm> // for std::transform
 
-using namespace smtk::vtk;
-
 namespace smtk {
   namespace bridge {
     namespace discrete {

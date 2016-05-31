@@ -18,9 +18,6 @@
 #include "smtk/extension/vtk/reader/Exports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
-namespace smtk {
-  namespace vtk {
-
 class VTKSMTKREADEREXT_EXPORT vtkCMBSTLReader : public vtkPolyDataAlgorithm
 {
 public:
@@ -50,8 +47,5 @@ private:
   // The name of the file to be read in.
   char* FileName;
 };
-
-  } // namespace vtk
-} // namespace smtk
 
 #endif

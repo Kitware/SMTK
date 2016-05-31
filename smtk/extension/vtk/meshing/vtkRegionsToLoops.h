@@ -14,10 +14,6 @@
 #include "smtk/extension/vtk/meshing/Exports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
-namespace smtk {
-  namespace vtk {
-
-
 // Limitations:
 // This does not handle non-manifold loops where a vertex has more than 2 line
 // segments attached.
@@ -44,7 +40,5 @@ private:
   vtkRegionsToLoops(const vtkRegionsToLoops&); // Not implemented.
   void operator = (const vtkRegionsToLoops&); // Not implemented.
 };
-  } // namespace vtk
-} // namespace smtk
 
 #endif // __vtkRegionsToLoops_h

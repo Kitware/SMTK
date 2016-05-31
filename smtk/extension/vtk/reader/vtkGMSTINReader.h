@@ -25,9 +25,6 @@ class vtkMultiBlockDataSet;
 class vtkUnsignedCharArray;
 class vtkPolyData;
 
-namespace smtk {
-  namespace vtk {
-
 //BTX
 struct vtkGMSTINReaderInternals;
 //ETX
@@ -67,8 +64,5 @@ private:
 
   vtkGMSTINReaderInternals* Internals;
 };
-
-  } // namespace vtk
-} // namespace smtk
 
 #endif

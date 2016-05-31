@@ -36,9 +36,6 @@
 //very inefficient, but easy to debug
 #define WRITE_DEBUG_CELLDATA 1
 
-namespace smtk {
-  namespace vtk {
-
 using namespace ReaderHelperFunctions;
 
 vtkStandardNewMacro(vtkCMBMapReader);
@@ -597,6 +594,3 @@ void vtkCMBMapReader::PrintSelf(ostream& os, vtkIndent indent)
 
   return 1;
 }
-
-  } // namespace vtk
-} // namespace smtk

@@ -36,9 +36,6 @@
 typedef vtkVector2d vec2d;
 typedef vtkVector3d vec3d;
 
-namespace smtk {
-  namespace vtk {
-
 struct FacetLoops
 {
   vtkSmartPointer<vtkPoints> Points;
@@ -1017,5 +1014,3 @@ int vtkPolylineTriangulator::RequestData(
 
   return 1;
 }
-  } // namespace vtk
-} // namespace smtk

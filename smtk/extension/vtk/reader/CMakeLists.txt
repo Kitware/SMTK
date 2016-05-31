@@ -9,7 +9,7 @@ set(srcs
     vtkGMSSolidReader.cxx
     vtkGMSTINReader.cxx
     vtkLIDARReader.cxx
-    vtkCMBReaderHelperFunctions.cxx
+#    vtkCMBReaderHelperFunctions.cxx
     vtkLASReader.cxx
 )
 

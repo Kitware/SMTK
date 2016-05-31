@@ -23,9 +23,6 @@
 #include "vtkPolyData.h"
 #include "smtk/extension/vtk/reader/vtkCMBReaderHelperFunctions.h"
 
-namespace smtk {
-  namespace vtk {
-
 vtkStandardNewMacro(vtkCMBSTLReader);
 
 vtkCMBSTLReader::vtkCMBSTLReader()
@@ -123,6 +120,3 @@ void vtkCMBSTLReader::PrintSelf(ostream& os, vtkIndent indent)
   this->Superclass::PrintSelf(os,indent);
   os << indent << "FileName: " << this->FileName << endl;
 }
-
-  } // namespace vtk
-} // namespace smtk

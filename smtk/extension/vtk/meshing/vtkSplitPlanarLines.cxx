@@ -31,9 +31,6 @@
 #include <map>
 #include <vector>
 
-namespace smtk {
-  namespace vtk {
-
 struct SegmentRecord
 {
   vtkIdType CellId;
@@ -308,5 +305,3 @@ int vtkSplitPlanarLines::RequestData(
 
   return 1;
 }
-  } // namespace vtk
-} // namespace smtk

@@ -40,10 +40,6 @@
 #include <sstream>
 #include <vector>
 
-namespace smtk {
-  namespace vtk {
-
-
 vtkStandardNewMacro(vtkRegionsToLoops);
 
 vtkRegionsToLoops::vtkRegionsToLoops()
@@ -519,5 +515,3 @@ int vtkRegionsToLoops::RequestData(
   pdOut->GetCellData()->SetPedigreeIds(pedigrees.GetPointer());
   return 1;
 }
-  } // namespace vtk
-} // namespace smtk

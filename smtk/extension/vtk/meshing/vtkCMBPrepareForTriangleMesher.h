@@ -136,9 +136,6 @@
 class vtkPolyData;
 class vtkIdTypeArray;
 
-namespace smtk {
-  namespace vtk {
-
 class VTKSMTKMESHINGEXT_EXPORT vtkCMBPrepareForTriangleMesher : public vtkObject
 {
 public:
@@ -265,8 +262,5 @@ private:
   vtkCMBPrepareForTriangleMesher(const vtkCMBPrepareForTriangleMesher&);  // Not implemented.
   void operator=(const vtkCMBPrepareForTriangleMesher&);  // Not implemented.
 };
-
-  } // namespace vtk
-} // namespace smtk
 
 #endif

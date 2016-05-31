@@ -21,9 +21,6 @@
 
 class vtkIntArray;
 
-namespace smtk {
-  namespace vtk {
-
 class VTKSMTKREADEREXT_EXPORT vtkCMBMapReader : public vtkPolyDataAlgorithm
 {
   public:
@@ -58,8 +55,5 @@ class VTKSMTKREADEREXT_EXPORT vtkCMBMapReader : public vtkPolyDataAlgorithm
     vtkCMBMapReader(const vtkCMBMapReader&);  // Not implemented.
     void operator=(const vtkCMBMapReader&);  // Not implemented.
 };
-
-  } // namespace vtk
-} // namespace smtk
 
 #endif

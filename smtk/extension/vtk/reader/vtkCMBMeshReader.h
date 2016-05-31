@@ -64,9 +64,6 @@ class vtkIntArray;
 class vtkUnstructuredGrid;
 class vtkIdTypeArray;
 
-namespace smtk {
-  namespace vtk {
-
 //BTX
 struct vtkCMBMeshReaderInternals;
 //ETX
@@ -148,8 +145,5 @@ private:
 
   vtkCMBMeshReaderInternals* Internals;
 };
-
-  } // namespace vtk
-} // namespace smtk
 
 #endif

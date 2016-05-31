@@ -27,9 +27,6 @@
 #include "vtkPointData.h"
 #include "vtkVectorOperators.h"
 
-namespace smtk {
-  namespace vtk {
-
 typedef std::stack<vtkRayIntersectionLocator::vtkCellTreeNode*, std::vector<vtkRayIntersectionLocator::vtkCellTreeNode*> > nodeStack;
 
 vtkStandardNewMacro(vtkRayIntersectionLocator);
@@ -176,5 +173,3 @@ int vtkRayIntersectionLocator::IntersectWithLine(
     }
   return hit;
 }
-  } // namespace vtk
-} // namespace smtk

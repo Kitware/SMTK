@@ -27,9 +27,6 @@
 #include <string>
 #include <sys/stat.h>
 
-namespace smtk {
-  namespace vtk {
-
 vtkStandardNewMacro(vtkGMSSolidReader);
 
 struct vtkGMSSolidReaderInternals
@@ -315,6 +312,3 @@ int vtkGMSSolidReader::RequestInformation(
 
   return 1;
 }
-
-  } // namespace vtk
-} // namespace smtk

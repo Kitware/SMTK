@@ -27,9 +27,6 @@
 #include <string>
 #include <sys/stat.h>
 
-namespace smtk {
-  namespace vtk {
-
 vtkStandardNewMacro(vtkGMSTINReader);
 
 struct vtkGMSTINReaderInternals
@@ -404,6 +401,3 @@ int vtkGMSTINReader::RequestInformation(
 
   return 1;
 }
-
-  } // namespace vtk
-} // namespace smtk

@@ -18,9 +18,6 @@
 #include "vtkFieldData.h"
 #include "vtkCellData.h"
 
-namespace smtk {
-  namespace vtk {
-
 vtkStandardNewMacro(vtkCMBPrepareForTriangleMesher);
 
 using namespace CmbFaceMesherClasses;
@@ -685,6 +682,3 @@ void vtkCMBPrepareForTriangleMesher::PrintSelf(ostream& os, vtkIndent indent)
   //TODO: add more to this
   os << "vtkCMBPrepareForTriangleMesher\n";
 }
-
-  } // namespace vtk
-} // namespace smtk

@@ -34,9 +34,6 @@
 //#define LIDAR_PREVIEW_PIECE_NUM_POINTS 10000
 #define LIDAR_BINARY_POINT_SIZE sizeof(double)*3
 
-namespace smtk {
-  namespace vtk {
-
 enum FileReadingStatus
   {
     READ_OK = 0,
@@ -812,6 +809,3 @@ int vtkLASReader::RequestInformation(
 
   return 1;
 }
-
-  } // namespace vtk
-} // namespace smtk

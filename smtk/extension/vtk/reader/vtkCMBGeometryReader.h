@@ -19,10 +19,6 @@
 #include "smtk/extension/vtk/reader/Exports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
-
-namespace smtk {
-  namespace vtk {
-
 class VTKSMTKREADEREXT_EXPORT vtkCMBGeometryReader : public vtkPolyDataAlgorithm
 {
 public:
@@ -89,8 +85,5 @@ private:
   bool RegionIdentifiersModified;
   bool EnablePostProcessMesh;
 };
-
-  } // namespace vtk
-} // namespace smtk
 
 #endif

@@ -21,9 +21,6 @@
 #define strtoll _strtoi64
 #endif
 
-namespace smtk {
-  namespace vtk {
-
 class DoubleConverter
 {
 public:
@@ -69,7 +66,5 @@ public:
     return v;
     }
 };
-  } // namespace vtk
-} // namespace smtk
 
 #endif // __vtkPolyFileTokenConverters_h
