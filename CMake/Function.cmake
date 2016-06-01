@@ -56,10 +56,12 @@ function(determineFunctionType found type ptype incType)
         //     \"using namespace smtk::placeholders;\"
         // in your code anyway (for people using C++11 or tr1).
       ")
-      set(INCLUDE_RESULT "#include <boost/function.hpp>
-#include <boost/bind.hpp>
-#include <boost/functional.hpp>
-#include <boost/mpl/placeholders.hpp> // for _1, _2, ..., _N
+      set(INCLUDE_RESULT "#ifndef SHIBOKEN_SKIP
+#  include <boost/function.hpp>
+#  include <boost/bind.hpp>
+#  include <boost/functional.hpp>
+#  include <boost/mpl/placeholders.hpp> // for _1, _2, ..., _N
+#endif
 ")
       set(${type}_BOOST_TRUE TRUE PARENT_SCOPE)
     endif()
