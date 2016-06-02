@@ -44,11 +44,9 @@ public:
   vtkGetMacro(IsFeatureAngleSet, int);
   void SetFeatureAngle(double featureAngle);
 
-//BTX
   // Description:
   // Return the model entity.
   vtkModelEntity* GetModelEntity(vtkDiscreteModel* Model);
-//ETX
 
   // Description:
   // Get the list of created model faces during a split operation.

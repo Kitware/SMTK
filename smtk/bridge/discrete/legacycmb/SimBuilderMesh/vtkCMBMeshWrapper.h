@@ -32,9 +32,8 @@ public:
   // Description:
   // Initialize vtkCMBMeshServer.
   void SetModelWrapper(vtkDiscreteModelWrapper*);
-//BTX
+
   vtkCMBMeshServer* GetMesh();
-//ETX
 
   // Description:
   // Pass to actual mesh

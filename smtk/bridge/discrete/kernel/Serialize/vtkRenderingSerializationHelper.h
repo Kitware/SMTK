@@ -54,7 +54,6 @@ public:
   // Serialize the input object.  Returns 1 if successful.
   virtual int Serialize(vtkObject *object, vtkSerializer *serializer);
 
-  //BTX
 protected:
   vtkRenderingSerializationHelper();
   ~vtkRenderingSerializationHelper() {}
@@ -66,7 +65,7 @@ protected:
 private:
   vtkRenderingSerializationHelper(const vtkRenderingSerializationHelper&);  // Not implemented.
   void operator=(const vtkRenderingSerializationHelper&);  // Not implemented.
-  //ETX
+
 };
 
 #endif

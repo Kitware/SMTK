@@ -57,7 +57,7 @@ protected:
   void AddModelFaceUse(vtkModelFaceUse* faceUse);
 
   virtual bool Destroy();
-//BTX
+
   friend class vtkModelRegion;
   friend class vtkDiscreteModelFace;
   friend class vtkModelFaceUse;
@@ -66,7 +66,6 @@ protected:
   friend class vtkSplitOperatorClient;
   friend class vtkSelectionSplitOperatorClient;
   friend class vtkDiscreteModelGeometricEntity;
-//ETX
 
 private:
   vtkModelShellUse(const vtkModelShellUse&);  // Not implemented.

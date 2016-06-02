@@ -117,10 +117,9 @@ private:
   vtkInformation* Properties;
   vtkModelItemInternals* Internal;
 
-//BTX
   friend class vtkModelItemListIterator;
   friend class vtkXMLModelReader;
-//ETX
+
 };
 
 #endif

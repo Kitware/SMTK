@@ -50,7 +50,6 @@ public:
   // Returns success (1) or failue (0) for Operation.
   vtkGetMacro(OperateSucceeded, int);
 
-//BTX
 protected:
   vtkCMBModelStateOperator();
   ~vtkCMBModelStateOperator();
@@ -85,7 +84,6 @@ private:
   vtkCMBModelStateOperator(const vtkCMBModelStateOperator&);  // Not implemented.
   void operator=(const vtkCMBModelStateOperator&);  // Not implemented.
 
-//ETX
 };
 
 #endif

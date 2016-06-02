@@ -66,7 +66,7 @@ private:
 
   vtkPolygonArcInfo(const vtkPolygonArcInfo&); // Not implemented
   void operator=(const vtkPolygonArcInfo&); // Not implemented
-  //ETX
+
 };
 
 #endif

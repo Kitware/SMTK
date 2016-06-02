@@ -38,11 +38,9 @@ public:
   // Modify the color, user name, and/or the visibility of an object.
   virtual void Operate(vtkDiscreteModelWrapper* ModelWrapper);
 
-//BTX
   // Description:
   // Return the model entity.
   vtkModelEntity* GetModelEntity(vtkDiscreteModelWrapper* ModelWrapper);
-//ETX
 
   // Description:
   // Returns success (1) or failue (0) for Operation.

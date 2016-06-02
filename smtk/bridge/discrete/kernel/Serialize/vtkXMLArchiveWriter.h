@@ -57,10 +57,8 @@
 #include <vector> // Vector of smart pointers
 #include "vtkSmartPointer.h" // Vector of smart pointers
 
-//BTX
 struct vtkXMLArchiveWriterInternals;
 class vtkXMLElement;
-//ETX
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkXMLArchiveWriter : public vtkSerializer
 {

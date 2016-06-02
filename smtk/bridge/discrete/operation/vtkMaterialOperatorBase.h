@@ -42,11 +42,9 @@ public:
   // the superclass virtual function.
   virtual void SetItemType(int itemType);
 
-//BTX
   // Description:
   // Get the material from Model.
   vtkModelMaterial* GetMaterial(vtkDiscreteModel* Model);
-//ETX
 
   // Description:
   // Add a vtkCMBGeometricModelEntity to this material.  Note that
@@ -55,9 +53,8 @@ public:
   // only way to remove a vtkCMBGeometricModelEntity from a material
   // is by adding it to another material.
   void AddModelGeometricEntity(vtkIdType GeometricEntityId);
-//BTX
+
   void AddModelGeometricEntity(vtkModelGeometricEntity* GeometricEntity);
-//ETX
 
   // Description:
   // Clear the list of model geometric entities to be added to
@@ -79,7 +76,6 @@ public:
   // Get the list of PreviousMaterialsOfGeometricEntities.
   vtkGetObjectMacro(PreviousMaterialsOfGeometricEntities, vtkIdList);
 
-//BTX
   // Description:
   // Do the operations on the specified material.
   virtual bool Operate(vtkDiscreteModel* Model);
@@ -93,7 +89,6 @@ public:
   // Description:
   // Destroy the material on the server and client if possible.
   virtual bool Destroy(vtkDiscreteModel* Model);
-//ETX
 
 protected:
   vtkMaterialOperatorBase();

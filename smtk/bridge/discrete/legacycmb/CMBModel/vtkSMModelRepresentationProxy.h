@@ -30,7 +30,6 @@ public:
   // Set the type of representation.
   virtual void SetRepresentation(int type);
 
-//BTX
   enum ModelRepresentationType
     {
     POINTS=0,
@@ -56,7 +55,6 @@ private:
   vtkSMModelRepresentationProxy(const vtkSMModelRepresentationProxy&); // Not implemented
   void operator=(const vtkSMModelRepresentationProxy&); // Not implemented
 
-//ETX
 };
 
 #endif

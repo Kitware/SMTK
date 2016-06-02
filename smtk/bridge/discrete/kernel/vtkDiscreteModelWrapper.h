@@ -59,7 +59,6 @@ public:
   // Function to serialize the model from the server to the client.
   vtkStringArray* SerializeModel();
 
-//BTX
   // Description:
   // Function for getting a model entity from its unique persistent id.
   vtkModelEntity* GetModelEntity(vtkIdType uniquePersistentId);
@@ -92,7 +91,6 @@ public:
   void AddGeometricEntities(std::set<vtkIdType> &entities);
   void AddGeometricEntities(std::vector<vtkModelGeometricEntity*> &entities);
   void AddGeometricEntities(int entType);
-//ETX
 
   // Description:
   // Reset all its children with geometry entities
@@ -152,7 +150,6 @@ public:
   static void ModelEntitySetGeometryCallback(vtkObject *caller,
     unsigned long event, void *clientData, void *callData);
 
-//BTX
 protected:
   vtkDiscreteModelWrapper();
   ~vtkDiscreteModelWrapper();
@@ -175,7 +172,6 @@ private:
   vtkDiscreteModelWrapper(const vtkDiscreteModelWrapper&);  // Not implemented.
   void operator=(const vtkDiscreteModelWrapper&);  // Not implemented.
 
-//ETX
 };
 
 #endif

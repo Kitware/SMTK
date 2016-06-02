@@ -44,7 +44,6 @@ public:
   void SetModelWrapper(vtkDiscreteModelWrapper*);
   vtkGetObjectMacro(ModelWrapper, vtkDiscreteModelWrapper);
 
-//BTX
 protected:
   vtkCMBModelSelectionSource();
   ~vtkCMBModelSelectionSource();
@@ -66,7 +65,7 @@ private:
 
   class vtkInternal;
   vtkInternal* Internal;
-//ETX
+
 };
 
 #endif

@@ -33,7 +33,6 @@ public:
 
   vtkGetMacro(RegionIdentifiersModified, bool);
 
-//BTX
 protected:
   vtkExtractRegionEdges();
   ~vtkExtractRegionEdges();
@@ -59,7 +58,7 @@ private:
 
   class vtkInternal;
   vtkInternal* Internal;
-//ETX
+
 };
 
 #endif

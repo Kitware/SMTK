@@ -30,11 +30,9 @@ public:
   vtkTypeMacro(vtkModelEdgeOperatorBase,vtkModelEntityOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-//BTX
   // Description:
   // Modify the color, user name, and/or the visibility of an object.
   virtual bool Operate(vtkDiscreteModel* Model);
-//ETX
 
   // Description:
   // Set/get the line resolution.
@@ -42,11 +40,9 @@ public:
   vtkGetMacro(LineResolution, int);
   virtual void SetLineResolution(int resolution);
 
-//BTX
   // Description:
   // Set/get the line resolution.
   vtkDiscreteModelEdge* GetModelEdgeEntity(vtkDiscreteModel* Model);
-//ETX
 
 protected:
   vtkModelEdgeOperatorBase();

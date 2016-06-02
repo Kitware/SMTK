@@ -109,10 +109,8 @@ protected:
   bool FlattenZValues;
   bool NoOP;
 
-  //BTX
   class vtkCmbInternalTerrainInfo;
   vtkCmbInternalTerrainInfo *TerrainInfo;
-  //ETX
 
 private:
   vtkCMBApplyBathymetryFilter(const vtkCMBApplyBathymetryFilter&);  // Not implemented.

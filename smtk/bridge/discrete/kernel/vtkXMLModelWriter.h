@@ -53,11 +53,9 @@
 #include <sstream>
 #include "vtkSmartPointer.h" // Vector of smart pointers
 
-//BTX
 struct vtkXMLModelWriterInternals;
 class vtkXMLElement;
 class vtkSerializableObject;
-//ETX
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkXMLModelWriter : public vtkSerializer
 {
@@ -71,7 +69,6 @@ public:
   // serializer (writer). Returns true.
   virtual bool IsWriting() {return true;}
 
-//BTX
   // Description:
   // This is the main entry point used to write a vector of
   // objects to the XML archive. The rootName is the name
@@ -98,7 +95,6 @@ public:
   // \endcode
   virtual void Serialize(std::ostringstream& ostr, const char* rootName,
     std::vector<vtkSmartPointer<vtkObject> >& objs);
-//ETX
 
   // Description:
   // Serializes a single integer.
@@ -140,11 +136,9 @@ public:
   // Serializes a string.
   virtual void Serialize(const char* name, char*& str);
 
-//BTX
   // Description:
   // Serializes a string.
   virtual void Serialize(const char* name, std::string& str);
-//ETX
 
   // Description:
   // Serializes a vtkSerializableObject.
@@ -155,7 +149,6 @@ public:
   // Serializes a vtkInformationObject.
   virtual void Serialize(const char* name, vtkInformation* info);
 
-//BTX
   // Description:
   // Serializes a vector of vtkSerializableObjects.
   virtual void Serialize(const char* name,
@@ -166,7 +159,6 @@ public:
   // Serializes a map from int to vector of vtkSerializableObject.
   virtual void Serialize(const char* name,
     std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& objs);
-//ETX
 
 protected:
   vtkXMLModelWriter();
@@ -179,10 +171,8 @@ private:
   vtkXMLModelWriter(const vtkXMLModelWriter&);  // Not implemented.
   void operator=(const vtkXMLModelWriter&);  // Not implemented.
 
-//BTX
   virtual vtkXMLElement* CreateDOM(const char* rootName,
     std::vector<vtkSmartPointer<vtkObject> >& objs);
-//ETX
 
   void SetRootElement(vtkXMLElement*);
 

@@ -143,7 +143,6 @@ protected:
     vtkInformationVector** inVec,
     vtkInformationVector* outVec);
 
-  //BTX
   template<typename T>
     void ReadFile(std::istream& in, int isSimpleMesh, T& errorReporter,
       const std::string& nodeFileName = std::string());
@@ -170,7 +169,6 @@ protected:
 
   template<typename T>
   bool ReadRegionAttributes(std::istream& in, int dimension, T& err);
-  //ETX
 
   class Private;
   Private* P;

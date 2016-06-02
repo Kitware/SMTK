@@ -22,9 +22,7 @@
 class vtkCollection;
 class vtkModelXMLParser;
 
-//BTX
 struct vtkXMLElementInternals;
-//ETX
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkXMLElement : public vtkObject
 {
@@ -201,9 +199,7 @@ protected:
   vtkXMLElement* LookupElementUpScope(const char* id);
   void SetParent(vtkXMLElement* parent);
 
-  //BTX
   friend class vtkModelXMLParser;
-  //ETX
 
 private:
   vtkXMLElement(const vtkXMLElement&);  // Not implemented.

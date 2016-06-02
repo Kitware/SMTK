@@ -41,11 +41,9 @@ public:
   // Returns success (1) or failue (0) for Operation.
   vtkGetMacro(OperateSucceeded, int);
 
-//BTX
   // Description:
   // Get the target geometric model entity.
   vtkDiscreteModelGeometricEntity* GetTargetModelEntity(vtkDiscreteModelWrapper*);
-//ETX
 
 protected:
   vtkMergeOperator();

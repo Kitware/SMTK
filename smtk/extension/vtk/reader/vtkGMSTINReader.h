@@ -25,9 +25,7 @@ class vtkMultiBlockDataSet;
 class vtkUnsignedCharArray;
 class vtkPolyData;
 
-//BTX
 struct vtkGMSTINReaderInternals;
-//ETX
 
 class VTKSMTKREADEREXT_EXPORT vtkGMSTINReader : public vtkMultiBlockDataSetAlgorithm
 {

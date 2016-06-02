@@ -31,11 +31,8 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelItemIterator.h"
 
-
-//BTX
 class vtkModelItem;
 struct vtkModelItemGenericIteratorInternals;
-//ETX
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkModelItemGenericIterator : public vtkModelItemIterator
 {
@@ -89,11 +86,10 @@ private:
   vtkModelItemGenericIterator(const vtkModelItemGenericIterator&);  // Not implemented.
   void operator=(const vtkModelItemGenericIterator&);  // Not implemented.
 
-//BTX
   // Description:
   // Container for the objects to be iterated over.
   vtkModelItemGenericIteratorInternals* Internal;
-//ETX
+
 };
 
 #endif

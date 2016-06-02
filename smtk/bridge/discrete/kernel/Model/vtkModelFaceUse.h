@@ -64,12 +64,10 @@ private:
   vtkModelFaceUse(const vtkModelFaceUse&);  // Not implemented.
   void operator=(const vtkModelFaceUse&);  // Not implemented.
 
-//BTX
   friend class vtkXMLModelReader;
   friend class vtkModel;
   friend class vtkModelShellUse;
   friend class vtkModelFace;
-//ETX
 
 };
 

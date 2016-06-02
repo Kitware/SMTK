@@ -53,9 +53,9 @@ public:
 
 protected:
   static vtkDiscreteModelRegion *New();
-//BTX
+
   friend class vtkDiscreteModel;
-//ETX
+
   vtkDiscreteModelRegion();
   virtual ~vtkDiscreteModelRegion();
   virtual vtkModelEntity* GetThisModelEntity();

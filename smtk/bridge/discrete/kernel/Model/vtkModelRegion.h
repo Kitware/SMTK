@@ -70,9 +70,8 @@ protected:
 
   virtual bool IsDestroyable();
   virtual bool Destroy();
-//BTX
+
   friend class vtkModel;
-//ETX
 
 private:
   vtkModelRegion(const vtkModelRegion&);  // Not implemented.

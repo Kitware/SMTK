@@ -98,7 +98,6 @@ public:
   virtual void SetSpecularColor(double r, double g, double b);
   virtual void SetSpecularPower(double val);
 
-//BTX
 protected:
   vtkCMBModelRepresentation();
   ~vtkCMBModelRepresentation();
@@ -152,7 +151,6 @@ private:
   vtkInternal* Internal;
   void RemoveAllSelectedEntityIdsInternal();
 
-//ETX
 };
 
 #endif

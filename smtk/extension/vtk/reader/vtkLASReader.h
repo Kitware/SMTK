@@ -118,8 +118,6 @@ public:
   vtkSetMacro(OutputDataTypeIsDouble, bool);
   vtkGetMacro(OutputDataTypeIsDouble, bool);
 
-  //BTX
-
 protected:
   vtkLASReader();
   ~vtkLASReader();
@@ -172,7 +170,7 @@ private:
 
   double ScaleFactor[3];
   double Offset[3];
-  //ETX
+
 };
 
 #endif

@@ -45,11 +45,9 @@ public:
   vtkGetMacro(PointId, vtkIdType);
   void SetPointId(vtkIdType id);
 
-//BTX
   // Description:
   // Return the model entity.
   vtkModelEntity* GetModelEntity(vtkDiscreteModel* Model);
-//ETX
 
   // Description:
   // Get the Id of the created model edge during a split operation.

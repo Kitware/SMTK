@@ -29,11 +29,10 @@ class VTK_EXPORT vtkCMBModelFaceMesh : public vtkCMBModelEntityMesh
 public:
   vtkTypeMacro(vtkCMBModelFaceMesh,vtkCMBModelEntityMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
-//BTX
+
   virtual vtkModelGeometricEntity* GetModelGeometricEntity();
 
   virtual void Initialize(vtkCMBMesh* mesh, vtkModelFace* face);
-//ETX
 
   // Description:
   // BuildModelEntityMesh will generate a mesh for the associated

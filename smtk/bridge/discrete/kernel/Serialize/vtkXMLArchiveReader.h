@@ -31,11 +31,8 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkSerializer.h"
 
-
-//BTX
 class vtkXMLElement;
 struct vtkXMLArchiveReaderInternals;
-//ETX
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkXMLArchiveReader : public vtkSerializer
 {

@@ -125,9 +125,7 @@ protected:
   void CombineModelVertexUses(vtkModelEdgeUse* edgeUse1,
                               vtkModelEdgeUse* edgeUse2);
 
-//BTX
   friend class vtkModel;
-//ETX
 
 private:
   vtkModelFace(const vtkModelFace&);  // Not implemented.

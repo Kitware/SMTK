@@ -76,7 +76,6 @@ public:
   void SetModelWrapper(vtkDiscreteModelWrapper*);
   vtkGetObjectMacro(ModelWrapper, vtkDiscreteModelWrapper);
 
-//BTX
 protected:
   vtkSeedGrowSelectionFilter();
   ~vtkSeedGrowSelectionFilter();
@@ -156,7 +155,6 @@ private:
   class vtkInternal;
   vtkInternal* Internal;
 
-//ETX
 };
 
 #endif

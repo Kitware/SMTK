@@ -64,16 +64,13 @@ class vtkIntArray;
 class vtkUnstructuredGrid;
 class vtkIdTypeArray;
 
-//BTX
 struct vtkCMBMeshReaderInternals;
-//ETX
 
 class VTKSMTKREADEREXT_EXPORT vtkCMBMeshReader : public vtkUnstructuredGridAlgorithm
 {
 public:
-//BTX
+
   enum vtkCMBMeshDimension { MESH1D = 1, MESH2D = 2, MESH3D = 3 };
-//ETX
 
   static vtkCMBMeshReader *New();
   vtkTypeMacro(vtkCMBMeshReader,vtkUnstructuredGridAlgorithm);

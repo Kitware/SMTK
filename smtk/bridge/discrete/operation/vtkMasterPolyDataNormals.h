@@ -33,7 +33,6 @@ public:
   vtkTypeMacro(vtkMasterPolyDataNormals, vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-//BTX
 protected:
   vtkMasterPolyDataNormals();
   ~vtkMasterPolyDataNormals();
@@ -50,7 +49,7 @@ protected:
 private:
   vtkMasterPolyDataNormals(const vtkMasterPolyDataNormals&); // Not implemented.
   void operator=(const vtkMasterPolyDataNormals&); // Not implemented.
-//ETX
+
 };
 
 #endif

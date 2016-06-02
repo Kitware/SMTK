@@ -48,12 +48,11 @@ public:
   void Operate(vtkDiscreteModelWrapper* ModelWrapper,
                smtk::bridge::discrete::Session* session);
 
-//BTX
   // Description:
   // Write the CMB file out.
   void Write(vtkDiscreteModel* model,
              smtk::bridge::discrete::Session* session);
-//ETX
+
   // Description:
   // Get/Set the name of the output file.
   vtkSetStringMacro(FileName);

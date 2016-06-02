@@ -83,11 +83,9 @@ protected:
     vtkModelVertexUse* vertexUse0, vtkModelVertexUse* vertexUse1,
     vtkModelVertexUse* vertexUse2);
 
-//BTX
   friend class vtkModel;
   friend class vtkModelFace;
   friend class vtkModelLoopUse;
-//ETX
 
 private:
   vtkModelEdge(const vtkModelEdge&);  // Not implemented.

@@ -88,9 +88,7 @@ protected:
   // Initialize a default opengl display property
   void InitDefaultDisplayProperty();
 
-//BTX
   friend class vtkModel;
-//ETX
 
 private:
   vtkModelGeometricEntity(const vtkModelGeometricEntity&);  // Not implemented.
