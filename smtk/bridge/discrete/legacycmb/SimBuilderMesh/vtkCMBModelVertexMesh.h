@@ -41,11 +41,10 @@ public:
     return true;
   }
 
-//BTX
   virtual vtkModelGeometricEntity* GetModelGeometricEntity();
 
   void Initialize(vtkCMBMesh* mesh, vtkModelVertex* vertex);
-//ETX
+
   // Description:
   // BuildModelEntityMesh will generate a mesh for the associated
   // model entity.  If meshHigherDimensionalEntities is set to true

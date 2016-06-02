@@ -68,9 +68,9 @@ protected:
 private:
   vtkModelMaterial(const vtkModelMaterial&);  // Not implemented.
   void operator=(const vtkModelMaterial&);  // Not implemented.
-//BTX
+
   friend class vtkDiscreteModel;
-//ETX
+
 };
 
 #endif

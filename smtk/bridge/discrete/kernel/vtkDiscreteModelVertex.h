@@ -56,7 +56,6 @@ protected:
   vtkDiscreteModelVertex();
   virtual ~vtkDiscreteModelVertex();
 
-//BTX
   friend class vtkDiscreteModel;
   friend class vtkModel;
   friend class vtkModelVertexUse;
@@ -65,8 +64,6 @@ protected:
   friend class vtkXMLModelReader;
   friend class vtkDiscreteModelWrapper;
   friend class vtkCMBMapToCMBModel;
-//ETX
-
 
 private:
   vtkDiscreteModelVertex(const vtkDiscreteModelVertex&);  // Not implemented.

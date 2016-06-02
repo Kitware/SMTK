@@ -70,7 +70,7 @@ protected:
   // vtkModelVertexUse.
   vtkModelVertexUse* BuildModelVertexUse();
   void DestroyModelVertexUse(vtkModelVertexUse* vertexUse);
-//BTX
+
   friend class vtkDiscreteModel;
   friend class vtkDiscreteModelGeometricEntity;
   friend class vtkModel;
@@ -78,7 +78,6 @@ protected:
   friend class vtkModelEdgeUse;
   friend class vtkModelEdge;
   friend class vtkXMLModelReader;
-//ETX
 
 private:
   vtkModelVertex(const vtkModelVertex&);  // Not implemented.

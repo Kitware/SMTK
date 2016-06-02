@@ -40,7 +40,6 @@ public:
   vtkGetMacro(TargetId, vtkIdType);
   void SetTargetId(vtkIdType targetId);
 
-//BTX
   // Description:
   // Get the vtkDiscreteModelGeometricEntity corresponding to TargetId.
   vtkDiscreteModelGeometricEntity* GetTargetModelEntity(vtkDiscreteModel* model);
@@ -48,7 +47,6 @@ public:
   // Description:
   // Get the vtkDiscreteModelGeometricEntity corresponding to SourceId.
   vtkDiscreteModelGeometricEntity* GetSourceModelEntity(vtkDiscreteModel* model);
-//ETX
 
   // Description:
   // Set/get the source vtkDiscreteModelGeometricEntity's unique persistent
@@ -72,11 +70,10 @@ public:
   // Remove all of the ids in LowerDimensionalIds.
   void RemoveAllLowerDimensionalIds();
 
-//BTX
   // Description:
   // Check to see if everything is properly set for the operator.
   virtual bool AbleToOperate(vtkDiscreteModel* Model);
-//ETX
+
 protected:
   vtkMergeOperatorBase();
   virtual ~vtkMergeOperatorBase();

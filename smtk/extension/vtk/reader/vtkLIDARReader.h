@@ -161,8 +161,6 @@ public:
   vtkSetMacro(OutputDataTypeIsDouble, bool);
   vtkGetMacro(OutputDataTypeIsDouble, bool);
 
-  //BTX
-
 protected:
   vtkLIDARReader();
   ~vtkLIDARReader();
@@ -235,7 +233,7 @@ protected:
 private:
   vtkLIDARReader(const vtkLIDARReader&);  // Not implemented.
   void operator=(const vtkLIDARReader&);  // Not implemented.
-  //ETX
+
 };
 
 #endif

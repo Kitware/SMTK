@@ -46,10 +46,9 @@ public:
   // with "NDS #pointId+1 bcIndex".  bcIndex should correspond
   // to a SimBuilder BC.
   void AddAppliedNodalBC(int bcIndex, vtkIdType bcsGroupId, int bcsNodalGroupType);
-//BTX
+
   void AddAppliedNodalBC(int bcIndex, vtkDiscreteModelEntityGroup* bcsGroup,
    int bcsNodalGroupType);
-//ETX
 
   int GetNumberOfAppliedNodalBCs();
   // Description:
@@ -68,9 +67,8 @@ public:
   // with "FCS #cellId+1 cellSide bcIndex".  bcIndex should correspond
   // to a SimBuilder BC.
   void AddAppliedElementBC(int bcIndex, vtkIdType faceGroupId);
-//BTX
+
   void AddAppliedElementBC(int bcIndex, vtkDiscreteModelEntityGroup* faceGroup);
-//ETX
 
   int GetNumberOfAppliedElementBCs();
   // Description:
@@ -82,7 +80,6 @@ public:
   // Remove all of the nodal groups.
   void RemoveAllAppliedElementBCs();
 
-//BTX
   // Description:
   virtual bool Operate(vtkDiscreteModel* model);
 
@@ -100,7 +97,7 @@ private:
 
   vtkADHExporterOperatorBase(const vtkADHExporterOperatorBase&);  // Not implemented.
   void operator=(const vtkADHExporterOperatorBase&);  // Not implemented.
-//ETX
+
 };
 
 #endif

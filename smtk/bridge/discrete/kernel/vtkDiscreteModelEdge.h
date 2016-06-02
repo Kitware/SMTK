@@ -94,7 +94,6 @@ protected:
 
   virtual vtkModelEntity* GetThisModelEntity();
 
-  //BTX
   // for using AddCellsToGeometry
   friend class vtkDiscreteModel;
   friend class vtkCMBParserBase;
@@ -107,7 +106,6 @@ protected:
   friend class pqCMBGeologyBuilderMainWindowCore;
   friend class pqCMBSceneBuilderMainWindowCore;
   friend class vtkCreateModelEdgesOperator;
-  //ETX
 
   // Description:
   // Add cells to this geometric representation.  This should

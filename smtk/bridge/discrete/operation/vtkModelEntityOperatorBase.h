@@ -68,10 +68,10 @@ public:
   // Functions to set/get the RGBA that will be set.
   vtkGetMacro(IsRGBASet, int);
   vtkGetMacro(IsRepresentationRGBASet, int);
-//BTX
+
   vtkGetMacro(RGBA, double*);
   vtkGetMacro(RepresentationRGBA, double*);
-//ETX
+
   void SetRGBA(double *Color);
   void SetRGBA(double R, double G, double B, double A);
   void SetRepresentationRGBA(double *Color);
@@ -82,7 +82,6 @@ public:
   vtkSetStringMacro(UserName);
   vtkGetStringMacro(UserName);
 
-//BTX
   // Description:
   // Return the model entity.
   virtual vtkModelEntity* GetModelEntity(vtkDiscreteModel* Model);
@@ -92,7 +91,6 @@ public:
   // Do the basic operation to modify the model.  This should be
   // able to be done on both the server and the client.
   virtual bool Operate(vtkDiscreteModel* Model);
-//ETX
 
 protected:
   vtkModelEntityOperatorBase();

@@ -33,9 +33,8 @@ class vtkCellLocator;
 class vtkIdTypeArray;
 class vtkIntArray;
 class vtkPolyData;
-//BTX
+
 struct vtkCompleteShellsInternals;
-//ETX
 
 class SMTKDISCRETESESSION_EXPORT vtkCompleteShells : public vtkPolyDataAlgorithm
 {
@@ -83,8 +82,6 @@ protected:
                           vtkInformationVector **,
                           vtkInformationVector *);
 
-//BTX
-
 private:
   vtkCompleteShells(const vtkCompleteShells&); // Not implemented.
   void operator=(const vtkCompleteShells&); // Not implemented.
@@ -118,7 +115,6 @@ private:
   int MinimumSubmergedVoteCountToAvoidWarning;
 
   vtkCompleteShellsInternals* Internals;
-//ETX
 
 };
 

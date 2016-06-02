@@ -28,7 +28,6 @@ public:
   vtkTypeMacro(vtkSMOperatorProxy, vtkSMProxy);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-//BTX
   // Description:
   // Operate on the model on the server.
   virtual void Operate(vtkDiscreteModel* ClientModel, vtkSMProxy* ModelProxy);
@@ -53,7 +52,7 @@ protected:
 private:
   vtkSMOperatorProxy(const vtkSMOperatorProxy&); // Not implemented
   void operator=(const vtkSMOperatorProxy&); // Not implemented
-//ETX
+
 };
 
 #endif

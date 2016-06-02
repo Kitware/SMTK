@@ -41,7 +41,6 @@ class vtkModelVertexUse;
 #include "DiscreteMesh.h" //needed for Discrete Mesh
 #include "MeshClassification.h" //needed for Discrete Mesh Classification
 
-//BTX
 #include <string>
 
 // Description:
@@ -68,7 +67,6 @@ enum DiscreteModelEventIds {
   DomainSetAboutToDestroy,
   DomainSetDestroyed
 };
-//ETX
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkDiscreteModel : public vtkModel
 {
@@ -78,7 +76,6 @@ public:
 
   static vtkDiscreteModel* New();
 
-//BTX
   vtkTypeMacro(vtkDiscreteModel,vtkModel);
   void PrintSelf(ostream& os, vtkIndent indent);
 
@@ -233,7 +230,6 @@ protected:
   void GetModelEntityDefaultName(int entityType, const char* baseName,
                                  std::string & defaultEntityName);
 
-//BTX
   friend class vtkDiscreteModelGeometricEntity;
   friend class vtkCMBParserBase;
   friend class vtkDiscreteModelFace;
@@ -245,7 +241,6 @@ protected:
   friend class pqCMBGeologyBuilderMainWindowCore;
   friend class vtkCMBMapToCMBModel;
   friend class vtkCMBIncorporateMeshOperator;
-//ETX
 
   // Description:
   // Set the Discrete mesh. This should only be called on the server.
@@ -279,7 +274,7 @@ private:
 
   vtkDiscreteModel(const vtkDiscreteModel&);  // Not implemented.
   void operator=(const vtkDiscreteModel&);  // Not implemented.
-//ETX
+
 };
 
 

@@ -49,12 +49,10 @@ public:
   void Operate(vtkDiscreteModelWrapper* ModelWrapper,
                smtk::bridge::discrete::Session* session);
 
-//BTX
   // Description:
   // Load the file into Model.
   void Read(vtkDiscreteModel* model,
             smtk::bridge::discrete::Session* session);
-//ETX
 
   // Description:
   // Get/Set the name of the input file.

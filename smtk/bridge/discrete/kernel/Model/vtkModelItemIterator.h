@@ -29,10 +29,7 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 
-
-//BTX
 class vtkModelItem;
-//ETX
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkModelItemIterator : public vtkObject
 {

@@ -51,18 +51,16 @@ protected:
 
   void AddModelEdgeUse(vtkModelEdgeUse* edgeUse);
   void RemoveModelEdgeUse(vtkModelEdgeUse* edgeUse);
-//BTX
+
   friend class vtkModelEdge;
   friend class vtkModelEdgeUse;
-//ETX
 
   virtual bool Destroy();
   // for destroying
-//BTX
+
   friend class vtkModelFace;
   friend class vtkModelFaceUse;
   friend class vtkModelVertex;
-//ETX
 
 private:
   vtkModelVertexUse(const vtkModelVertexUse&);  // Not implemented.

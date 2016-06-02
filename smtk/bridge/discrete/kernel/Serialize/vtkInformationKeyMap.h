@@ -27,9 +27,7 @@
 
 #include <string>
 
-//BTX
 class vtkInformationKey;
-//ETX
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkInformationKeyMap : public vtkObject
 {

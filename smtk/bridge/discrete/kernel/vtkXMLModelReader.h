@@ -31,8 +31,6 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "Serialize/vtkSerializer.h"
 
-
-//BTX
 class vtkDiscreteModel;
 class vtkDiscreteModelEntityGroup;
 class vtkCollection;
@@ -46,7 +44,6 @@ class vtkModelRegion;
 class vtkModelShellUse;
 class vtkModelVertex;
 class vtkModelVertexUse;
-//ETX
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkXMLModelReader : public vtkSerializer
 {
@@ -106,11 +103,9 @@ public:
   // Serializes a string.
   virtual void Serialize(const char* name, char*& str);
 
-//BTX
   // Description:
   // Serializes a string.
   virtual void Serialize(const char* name, std::string& str);
-//ETX
 
   // Description:
   // Reads a vtkSerializableObject.
@@ -128,12 +123,11 @@ public:
   // Description:
   // Set/get methods for the Model.  If Model is not set before Serialize
   // is called then a Model will be created internally.
-//BTX
+
   vtkGetMacro(Model, vtkDiscreteModel*);
-//ETX
+
   void SetModel(vtkDiscreteModel*);
 
-//BTX
   // Description:
   // Serializes a vector of vtkSerializableObjects.
   virtual void Serialize(
@@ -145,7 +139,6 @@ public:
   virtual void Serialize(
     const char* name,
     std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& objs);
-//ETX
 
   // Description:
   // Serialize the model.
@@ -161,7 +154,6 @@ protected:
   vtkXMLModelReader();
   ~vtkXMLModelReader();
 
-//BTX
   // Description:
   // Gets the associations.
   void GetAssociations(vtkXMLElement* elem,
@@ -171,7 +163,7 @@ protected:
   // Gets the associations for a given entity type.
   void GetAssociations(vtkXMLElement* elem, int entityType,
                        std::vector<vtkIdType>& objs);
-//ETX
+
   vtkModelLoopUse* ConstructModelLoopUse(int id);
   vtkModelFace* ConstructModelFace(int id);
   vtkModelFaceUse* ConstructModelFaceUse(int id);

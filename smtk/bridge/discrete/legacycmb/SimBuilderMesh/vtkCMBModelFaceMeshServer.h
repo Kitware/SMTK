@@ -59,9 +59,8 @@ private:
   vtkCMBModelFaceMeshServer(const vtkCMBModelFaceMeshServer&);  // Not implemented.
   void operator=(const vtkCMBModelFaceMeshServer&);  // Not implemented.
 
-  //BTX
   CmbFaceMesherClasses::ModelFaceRep *FaceInfo;
-  //ETX
+
 };
 
 #endif

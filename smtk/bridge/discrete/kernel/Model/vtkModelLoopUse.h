@@ -62,14 +62,12 @@ protected:
 
   void RemoveModelEdgeUseAssociation(vtkModelEdgeUse* edgeUse);
 
-//BTX
   friend class vtkDiscreteModelGeometricEntity;
   friend class vtkXMLModelReader;
   friend class vtkModelEdge;
   friend class vtkModelFace;
   friend class vtkModelFaceUse;
   friend class vtkModel;
-//ETX
 
   virtual bool Destroy();
 

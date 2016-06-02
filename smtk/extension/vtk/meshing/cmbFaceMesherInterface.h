@@ -95,10 +95,10 @@ private:
   const int NumberOfHoles;
   const int NumberOfRegions;
   int NumberOfNodes; //Set implicitly by adding points with ids
-  //BTX
+
   struct TriangleInput;
   TriangleInput *Ti;
-  //ETX
+
 };
 
 #endif

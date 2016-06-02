@@ -40,10 +40,9 @@ public:
   vtkGetStringMacro(ClientText);
 
   using Superclass::Operate;
-//BTX
+
   // Description:
   virtual bool Operate(vtkDiscreteModel* model, vtkSMProxy* serverModelProxy);
-//ETX
 
 protected:
   vtkADHExporterOperatorClient();

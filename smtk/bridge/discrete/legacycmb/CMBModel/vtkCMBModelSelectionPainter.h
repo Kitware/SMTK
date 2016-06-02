@@ -32,7 +32,6 @@ public:
   // simply forwards the input data object as the output.
   virtual vtkDataObject* GetOutput();
 
-//BTX
 protected:
   vtkCMBModelSelectionPainter();
   ~vtkCMBModelSelectionPainter();
@@ -54,7 +53,7 @@ protected:
 private:
   vtkCMBModelSelectionPainter(const vtkCMBModelSelectionPainter&); // Not implemented.
   void operator=(const vtkCMBModelSelectionPainter&); // Not implemented.
-//ETX
+
 };
 
 #endif

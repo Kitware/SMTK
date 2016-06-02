@@ -26,7 +26,7 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent);
 
   void Refresh();
-//BTX
+
 protected:
   vtkCMBSMModelProxy();
   ~vtkCMBSMModelProxy();
@@ -34,7 +34,7 @@ protected:
 private:
   vtkCMBSMModelProxy(const vtkCMBSMModelProxy&); // Not implemented
   void operator=(const vtkCMBSMModelProxy&); // Not implemented
-//ETX
+
 };
 
 #endif

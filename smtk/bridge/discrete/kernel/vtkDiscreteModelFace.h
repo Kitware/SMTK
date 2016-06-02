@@ -68,11 +68,11 @@ public:
     bool saveLoopInfo=true);
 
 protected:
-//BTX
+
   friend class vtkDiscreteModel;
   friend class vtkCMBMapToCMBModel;
   friend class vtkModelBCGridRepresentation;
-//ETX
+
   vtkDiscreteModelFace();
   virtual ~vtkDiscreteModelFace();
 

@@ -13,12 +13,9 @@
 
 #include <vtkSmartPointer.h>
 
-
-//BTX
 struct vtkModelItemInternals
 {
   typedef std::map<int,
     std::list<vtkSmartPointer<vtkModelItem> > > AssociationsMap;
   AssociationsMap Associations;
 };
-//ETX

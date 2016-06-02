@@ -41,11 +41,9 @@ protected:
   int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
   char *FileName;
 
-  //BTX
   // Description:
   // Get next line of data (and put in lineStream); skips over comments or blank lines
   int GetNextLineOfData(ifstream &fin, std::stringstream &lineStream);
-  //ETX
 
 private:
   vtkCUBITReader(const vtkCUBITReader&);  // Not implemented.

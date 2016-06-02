@@ -86,10 +86,10 @@ class VTKSMTKMESHINGEXT_EXPORT vtkCMBUniquePointSet
     int getNumberOfPoints() const {return static_cast<int>(ptId2pt.size());}
 
   private:
-    //BTX
+
     std::map<InternalPt,vtkIdType> pt2ptId;
     std::vector<InternalPt> ptId2pt;
-    //ETX
+
   };
 
 #endif

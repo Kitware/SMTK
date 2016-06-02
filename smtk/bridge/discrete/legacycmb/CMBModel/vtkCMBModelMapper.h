@@ -51,7 +51,6 @@ public:
   vtkSetMacro(ShowEdgePoints, bool);
   vtkGetMacro(ShowEdgePoints, bool);
 
-//BTX
 protected:
   vtkCMBModelMapper();
   ~vtkCMBModelMapper();
@@ -84,7 +83,7 @@ protected:
 private:
   vtkCMBModelMapper(const vtkCMBModelMapper&); // Not implemented.
   void operator=(const vtkCMBModelMapper&); // Not implemented.
-//ETX
+
 };
 
 #endif

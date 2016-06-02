@@ -203,25 +203,24 @@ public:
   //       Whether this is an outer or and inner loop
   //       the arc indexes that make up this polygon
   //Output: the loop index/id
-  //ETX
+
   vtkIdType AddLoopWithArcs(const vtkIdType& PolyId,
                             const bool& isOuter,
                             const std::vector<vtkIdType>& arcIndexes);
-  //BTX
 
   //-----------------------------------------------------------
   //Functions for querying a map file
   bool IsValidForReading();
-  //BTX
+
   //returns true if the map is valid and has the face rep
   bool GetPolyId2ModelFaceRepMap(std::map<vtkIdType, CmbFaceMesherClasses::ModelFaceRep* >& pid2Face);
-  //ETX
+
   void GetArc(vtkIdType arcId, vtkPolyData* toReturn);
 protected:
-  //BTX
+
   bool BuildLoopId2ArcIndexMap(std::map<vtkIdType, std::vector<vtkIdType> >& loopId2ArcIndex);
   bool BuildPolygonId2ModelFaceMap(const std::map<vtkIdType, std::vector<vtkIdType> >& loopId2ArcIndex, std::map<vtkIdType, CmbFaceMesherClasses::ModelFaceRep* >& pid2Face);
-  //ETX
+
 protected:
   vtkCMBPrepareForTriangleMesher();
   ~vtkCMBPrepareForTriangleMesher();
@@ -253,11 +252,10 @@ protected:
   bool mapInfoInitialized; //Set to true once the allocation has been done for
                            //the map info fielddata/celldata
 
-  //BTX
   // maps a vector of arcids that make up a loop to an index
   // This is only used when using AddLoopWithArcs
   std::map< std::vector<vtkIdType>, vtkIdType > loop2loopIndex;
-  //ETX
+
 private:
   vtkCMBPrepareForTriangleMesher(const vtkCMBPrepareForTriangleMesher&);  // Not implemented.
   void operator=(const vtkCMBPrepareForTriangleMesher&);  // Not implemented.

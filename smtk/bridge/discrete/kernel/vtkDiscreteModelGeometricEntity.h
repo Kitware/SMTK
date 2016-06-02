@@ -80,7 +80,6 @@ protected:
   vtkDiscreteModelGeometricEntity();
   virtual ~vtkDiscreteModelGeometricEntity();
 
-//BTX
   // for using AddCellsToGeometry
   friend class vtkDiscreteModel;
   friend class vtkCMBParserBase;
@@ -91,7 +90,6 @@ protected:
   friend class vtkGenerateSimpleModelOperator;
   friend class pqCMBGeologyBuilderMainWindowCore;
   friend class pqCMBSceneBuilderMainWindowCore;
-//ETX
 
   // Description:
   // Add cells to this geometric representation.  This should
@@ -110,9 +108,8 @@ protected:
   vtkIdTypeArray* GetReverseClassificationArray();
 
   void SetMaterial(vtkModelMaterial* material);
-//BTX
+
   friend class vtkModelMaterial;
-//ETX
 
 private:
   vtkDiscreteModelGeometricEntity(const vtkDiscreteModelGeometricEntity&);  // Not implemented.

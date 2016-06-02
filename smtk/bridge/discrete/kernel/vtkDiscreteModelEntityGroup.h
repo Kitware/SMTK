@@ -58,9 +58,8 @@ protected:
   vtkDiscreteModelEntityGroup();
   virtual ~vtkDiscreteModelEntityGroup();
   static vtkDiscreteModelEntityGroup *New();
-//BTX
+
   friend class vtkDiscreteModel;
-//ETX
 
   virtual bool IsDestroyable();
   virtual bool Destroy();

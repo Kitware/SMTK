@@ -41,18 +41,15 @@ public:
   // the superclass virtual function.
   virtual void SetItemType(int itemType);
 
-//BTX
   // Description:
   // Get the model entity group from Model.
   vtkDiscreteModelEntityGroup* GetModelEntityGroup(vtkDiscreteModel* Model);
-//ETX
 
   // Description:
   // Add a vtkDiscreteModelEntity to this model entity group.
   void AddModelEntity(vtkIdType EntityId);
-//BTX
+
   void AddModelEntity(vtkDiscreteModelEntity* Entity);
-//ETX
 
   // Description:
   // Clear the list of model entities to be added to
@@ -72,9 +69,8 @@ public:
   // Description:
   // Remove a vtkDiscreteModelEntity from this model entity group.
   void RemoveModelEntity(vtkIdType EntityId);
-//BTX
+
   void RemoveModelEntity(vtkDiscreteModelEntity* Entity);
-//ETX
 
   // Description:
   // Clear the list of model entities to be removed from
@@ -85,7 +81,6 @@ public:
   // Get the list of EntitiesToRemove.
   vtkGetObjectMacro(EntitiesToRemove, vtkIdList);
 
-//BTX
   // Description:
   // Do the operations on the specified model entity group.
   virtual bool Operate(vtkDiscreteModel* Model);
@@ -99,7 +94,6 @@ public:
   // Description:
   // Destroy the model entity group on the server and client if possible.
   virtual bool Destroy(vtkDiscreteModel* Model);
-//ETX
 
 protected:
   vtkModelEntityGroupOperatorBase();

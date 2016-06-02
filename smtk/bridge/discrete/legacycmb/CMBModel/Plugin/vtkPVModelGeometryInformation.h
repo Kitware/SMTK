@@ -53,7 +53,6 @@ public:
   virtual void CopyToStream(vtkClientServerStream*);
   virtual void CopyFromStream(const vtkClientServerStream*);
 
-  //BTX
 protected:
   vtkPVModelGeometryInformation();
   ~vtkPVModelGeometryInformation();
@@ -70,7 +69,7 @@ private:
 
   vtkPVModelGeometryInformation(const vtkPVModelGeometryInformation&); // Not implemented
   void operator=(const vtkPVModelGeometryInformation&); // Not implemented
-  //ETX
+
 };
 
 #endif

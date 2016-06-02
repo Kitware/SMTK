@@ -92,8 +92,6 @@ protected:
   // Given two model region Ids, return a consistent model face id.
   vtkIdType GetModelFaceId(int ModelRegionId0, int ModelRegionId1);
 
-//BTX
-
 private:
   vtkMergeDuplicateCells(const vtkMergeDuplicateCells&); // Not implemented.
   void operator=(const vtkMergeDuplicateCells&); // Not implemented.
@@ -116,7 +114,6 @@ private:
 
   class vtkInternal;
   vtkInternal* Internal;
-//ETX
 
 };
 

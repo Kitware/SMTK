@@ -82,13 +82,11 @@ protected:
 
   void SetDirection(int direction);
 
-//BTX
   friend class vtkModelEdge;
   friend class vtkModelFace;
   friend class vtkModelFaceUse;
   friend class vtkXMLModelReader;
   friend class vtkDiscreteModelGeometricEntity;
-//ETX
 
 private:
   vtkModelEdgeUse(const vtkModelEdgeUse&);  // Not implemented.

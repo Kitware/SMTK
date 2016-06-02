@@ -55,7 +55,6 @@ public:
   vtkSetMacro(CreateEdgePointVerts, bool);
   vtkGetMacro(CreateEdgePointVerts, bool);
 
-//BTX
 protected:
   vtkCMBMeshPolyDataProvider();
   ~vtkCMBMeshPolyDataProvider();
@@ -87,7 +86,7 @@ private:
   vtkIdType EntityId;
   bool EntityIdIsSet;
   bool CreateEdgePointVerts;
-//ETX
+
 };
 
 #endif

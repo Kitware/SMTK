@@ -24,9 +24,7 @@ class vtkDoubleArray;
 class vtkMultiBlockDataSet;
 class vtkUnsignedCharArray;
 
-//BTX
 struct vtkGMSSolidReaderInternals;
-//ETX
 
 class VTKSMTKREADEREXT_EXPORT vtkGMSSolidReader : public vtkMultiBlockDataSetAlgorithm
 {

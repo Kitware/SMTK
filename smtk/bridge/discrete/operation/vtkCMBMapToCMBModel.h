@@ -46,14 +46,14 @@ class SMTKDISCRETESESSION_EXPORT vtkCMBMapToCMBModel : public vtkObject
     int OperateSucceeded;
 
   private:
-    //BTX
+
     void CreateEdgeList(std::vector<std::pair<vtkModelEdge*,int> >& edge_list,
                     std::vector<int>& used_ids,
                     std::vector<vtkModelEdge*>& edges,
                     std::map<int,vtkModelVertex*>& nodeIdToModelVertex,
                     std::map<int, int>& loopNodeIdToCount,
                     std::map<vtkModelEdge*, std::pair<int,int> >& modelEdgeToNodes);
-    //ETX
+
     vtkCMBMapToCMBModel(const vtkCMBMapToCMBModel&);  // Not implemented.
     void operator=(const vtkCMBMapToCMBModel&);  // Not implemented.
 };

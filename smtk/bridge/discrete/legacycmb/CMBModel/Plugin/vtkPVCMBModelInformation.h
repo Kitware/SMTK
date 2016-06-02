@@ -63,7 +63,6 @@ public:
   virtual int GetMasterCellId(int idx);
   virtual vtkIdType GetModelEntityId(unsigned int flatidx);
 
-  //BTX
 protected:
   vtkPVCMBModelInformation();
   ~vtkPVCMBModelInformation();
@@ -89,7 +88,7 @@ private:
 
   vtkPVCMBModelInformation(const vtkPVCMBModelInformation&); // Not implemented
   void operator=(const vtkPVCMBModelInformation&); // Not implemented
-  //ETX
+
 };
 
 #endif
