@@ -38,11 +38,13 @@ function(determineSharedPtrType type incType)
 
   if(NOT ${SHARED_PTR_TYPE_FOUND})
     set(RESULT "boost")
-    set(INCLUDE_RESULT "#include <boost/shared_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/weak_ptr.hpp>
-#include <boost/smart_ptr/owner_less.hpp>")
+    set(INCLUDE_RESULT "#ifndef SHIBOKEN_SKIP
+#  include <boost/shared_ptr.hpp>
+#  include <boost/enable_shared_from_this.hpp>
+#  include <boost/make_shared.hpp>
+#  include <boost/weak_ptr.hpp>
+#  include <boost/smart_ptr/owner_less.hpp>
+#endif")
     set(${type}_BOOST_TRUE TRUE PARENT_SCOPE)
     set(HAS_OWNER_LESS 1 PARENT_SCOPE)
   endif()
