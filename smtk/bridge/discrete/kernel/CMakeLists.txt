@@ -45,7 +45,7 @@ endif(UNIX)
 # Test if os defines a length for sockaddr
 # only doing the test when we have sys/socket
 if( ${CMAKE_HAVE_SYS_SOCKET_H} )
-  if("HAVE_SA_LEN" MATCHES "^HAVE_SA_LEN$")
+  if(NOT DEFINED "HAVE_SA_LEN")
     STRING(ASCII 35 POUND)
     FILE(WRITE ${PROJECT_BINARY_DIR}/CMakeTmp/kweCommonTestHAVESALEN.c
       "${POUND}include <sys/types.h>\n"
@@ -71,7 +71,7 @@ if( ${CMAKE_HAVE_SYS_SOCKET_H} )
         "failed with the following output:\n"
         "${OUTPUT}\n" APPEND)
     endif(HAVE_SA_LEN)
-  endif("HAVE_SA_LEN" MATCHES "^HAVE_SA_LEN$")
+  endif()
 endif( ${CMAKE_HAVE_SYS_SOCKET_H} )
 ###############################################################################
 ###############################################################################

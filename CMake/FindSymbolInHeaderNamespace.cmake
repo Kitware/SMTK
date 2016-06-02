@@ -53,7 +53,7 @@
 function(find_symbol_in_header_namespace HEADER_OUT NAMESPACE_OUT)
 
   # Require names for output variables
-  if ("${HEADER_OUT}" STREQUAL "" OR "${NAMESPACE_OUT}" STREQUAL "")
+  if (HEADER_OUT STREQUAL "" OR NAMESPACE_OUT STREQUAL "")
     message(FATAL_ERROR "find_symbol_in_header_namespace not passed required HEADER_OUR or NAMESPACE_OUT")
     return()
   endif()
@@ -61,7 +61,7 @@ function(find_symbol_in_header_namespace HEADER_OUT NAMESPACE_OUT)
   include(CMakeParseArguments)
   cmake_parse_arguments(_FSIH "" "CODE;SUMMARY" "HEADERS;NAMESPACES" ${ARGN})
 
-  if ("${_FSIH_HEADERS}" STREQUAL "" OR "${_FSIH_NAMESPACES}" STREQUAL "" OR "${_FSIH_CODE}" STREQUAL "")
+  if (_FSIH_HEADERS STREQUAL "" OR _FSIH_NAMESPACES STREQUAL "" OR _FSIH_CODE STREQUAL "")
     message(FATAL_ERROR "find_symbol_in_header_namespace not passed required arguments")
     return()
   endif()
@@ -70,7 +70,7 @@ function(find_symbol_in_header_namespace HEADER_OUT NAMESPACE_OUT)
   # Now, only try to find the symbol if the header is *not* defined
   # in the cache. Done in order to save time, which could be expensive
   # as there could be many TRY_COMPILE calls.
-  if ("${${HEADER_OUT}}" STREQUAL "")
+  if (${HEADER_OUT} STREQUAL "")
     foreach(_inc ${_FSIH_HEADERS})
       check_include_file_cxx("${_inc}" _have_header)
       if (_have_header)
