@@ -350,6 +350,9 @@ install (FILES ${PROJECT_BINARY_DIR}/smtk/SharedPtr.h
 # Determine hash<X> specialization
 ################################################################################
 find_hash_functor(SMTK_HASH_H SMTK_HASH_NS SMTK_HASH_BEGIN_NS SMTK_HASH_END_NS SMTK_HASH_SPECIALIZATION)
+if (NOT SMTK_HASH_H)
+  message(FATAL_ERROR "Failed to find a header which provides std::hash<> (or equivalent).")
+endif ()
 configure_file(
   ${PROJECT_SOURCE_DIR}/CMake/HashFunctor.h.in
   ${PROJECT_BINARY_DIR}/smtk/HashFunctor.h
