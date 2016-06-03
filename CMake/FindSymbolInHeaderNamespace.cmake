@@ -70,7 +70,7 @@ function(find_symbol_in_header_namespace HEADER_OUT NAMESPACE_OUT)
   # Now, only try to find the symbol if the header is *not* defined
   # in the cache. Done in order to save time, which could be expensive
   # as there could be many TRY_COMPILE calls.
-  if (${HEADER_OUT} STREQUAL "")
+  if (NOT DEFINED "${HEADER_OUT}")
     foreach(_inc ${_FSIH_HEADERS})
       check_include_file_cxx("${_inc}" _have_header)
       if (_have_header)
