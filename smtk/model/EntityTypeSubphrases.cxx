@@ -218,7 +218,7 @@ bool EntityTypeSubphrases::shouldOmitProperty(
   return false;
 }
 
-/// Recursively find all the entities with tessellation
+/// Recursively find all the cell entities
 inline void internal_findEntities(
   const EntityRef& root,
   EntityRefs& vols, EntityRefs& faces, EntityRefs& edges,

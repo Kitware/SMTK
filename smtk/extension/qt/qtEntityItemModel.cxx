@@ -851,6 +851,7 @@ void QEntityItemModel::addChildPhrases(
     return;
     }
 
+  EntityListPhrasePtr lphrase = smtk::dynamic_pointer_cast<EntityListPhrase>(parntDp);
   DescriptivePhrases& subrefs(parntDp->subphrases());
   int row = 0;
   // iterate all subphrases, if child is part of newDphrs, insert an QModelIndex
@@ -859,22 +860,32 @@ void QEntityItemModel::addChildPhrases(
   std::vector< std::pair<DescriptivePhrasePtr, int> >::const_iterator it;
   for (it = newDphrs.begin(); it != newDphrs.end(); ++it)
     {
-  /*
-    if(it->first->phraseType() == ENTITY_LIST)
-      listPhrases.insert(listPhrases.end(),
-        it->first->subphrases().begin(),
-        it->first->subphrases().end());
-  */
     // this sub is new, insert the QModelIndex for it
     row = it->second;
-    this->beginInsertRows(qidx, row, row);
-    if(row >= static_cast<int>(subrefs.size()))
-        subrefs.push_back(it->first);
+    if(row < 0)
+      continue;
+    // for entity list phrase we are rebuliding subphrases, so no need to track individual rows
+    if(lphrase)
+      {
+      lphrase->relatedEntities().push_back(it->first->relatedEntity());
+      }
     else
-      subrefs.insert(subrefs.begin() + row, it->first);
-
-    this->endInsertRows();
+      {
+      this->beginInsertRows(qidx, row, row);
+      if(row >= static_cast<int>(subrefs.size()))
+        subrefs.push_back(it->first);
+      else
+        subrefs.insert(subrefs.begin() + row, it->first);
+      this->endInsertRows();
+      }
     }
+
+  if(lphrase)
+    {
+    this->rebuildSubphrases(qidx);
+    return;
+    }
+
 /* TODO: We need to handle the case when adding new subphrases will create a Entity_List
 
   if(listPhrases.size() > 0)
@@ -928,6 +939,9 @@ void QEntityItemModel::removeChildPhrases(
   std::vector< std::pair<DescriptivePhrasePtr, int> >::const_reverse_iterator rit;
   int row = 0;
 
+  // in case this is a entity_list phrase,
+  EntityListPhrasePtr lphrase = smtk::dynamic_pointer_cast<EntityListPhrase>(parntDp);
+
   // if child is part of remDphrs, remove the QModelIndex
   DescriptivePhrases& subs(parntDp->subphrases());
   for (rit = remDphrs.rbegin(); rit != remDphrs.rend(); ++rit)
@@ -936,6 +950,14 @@ void QEntityItemModel::removeChildPhrases(
 //      this->removeRows(row, row, qidx);
     this->beginRemoveRows(qidx, row, row);
     subs.erase(subs.begin() + row);
+
+    if(lphrase)
+      {
+      EntityRefArray::iterator it = std::find(lphrase->relatedEntities().begin(),
+                lphrase->relatedEntities().end(), rit->first->relatedEntity());
+      if(it != lphrase->relatedEntities().end())
+        lphrase->relatedEntities().erase(it);
+      }
 
     this->endRemoveRows();
     }
@@ -1107,7 +1129,61 @@ void QEntityItemModel::findDirectParentPhrasesForAdd(
     it != newSubs.end(); ++it, ++newIdx)
     {
     EntityRef related = (*it)->relatedEntity();
-    if (newEnts->has(related))
+    if( (*it)->phraseType() == ENTITY_LIST)
+      {
+      // in case this is a entity_list phrase,
+      EntityListPhrasePtr lphrase = smtk::dynamic_pointer_cast<EntityListPhrase>(*it);
+      std::size_t numNewRefs = 0;
+      int row = 0;
+      DescriptivePhrases& newsubphrases(lphrase->subphrases());
+      std::vector< std::pair<DescriptivePhrasePtr, int> > phraserows;
+      DescriptivePhrases::const_iterator rit;
+      EntityRef existingRef;
+      for(rit = newsubphrases.begin(); rit != newsubphrases.end(); ++rit, ++row)
+        {
+        if(newEnts->has((*rit)->relatedEntity()))
+          {
+          numNewRefs++;
+          phraserows.push_back(std::make_pair(*rit, row));
+          }
+        else if(!existingRef.isValid())
+          existingRef = (*rit)->relatedEntity();
+        }
+
+      // if the relatedEntities of the list has intersection with newEnts,
+      if(numNewRefs > 0)
+        {
+        // if this list is a brand new list
+        if(numNewRefs == lphrase->relatedEntities().size())
+          {
+          // add this listPhrase to the changed phrases and stop;
+          changedPhrases[parntDp].push_back(std::make_pair(*it, newIdx));
+          }
+        else if(existingRef.isValid())
+          {
+          // else, there is an existing list, find it and update changedPhrases, then stop
+          // Assumption: if a list has the same type of entities as the new list,
+          //             we find the matching list
+          for(rit = parntDp->subphrases().begin();
+              rit != parntDp->subphrases().end(); ++rit)
+            {
+            if((*rit)->phraseType() == ENTITY_LIST)
+              {
+              EntityListPhrasePtr listphrase = smtk::dynamic_pointer_cast<
+                EntityListPhrase>(*rit);
+              if(std::find(listphrase->relatedEntities().begin(),
+                listphrase->relatedEntities().end(), existingRef) !=
+                listphrase->relatedEntities().end())
+                {
+                changedPhrases[listphrase] = phraserows;
+                break;
+                }
+              }
+            }
+          }
+        }
+      }
+    else if (newEnts->has(related))
       {
       // this parent has the subphrase for \a ent
       // so it is changed
@@ -1123,17 +1199,6 @@ void QEntityItemModel::findDirectParentPhrasesForAdd(
         this->findDirectParentPhrasesForAdd(parntDp->subphrases()[origId],
             newEnts, changedPhrases/*, newLists*/);
       }
-/*
-    else if( (*it)->phraseType() == ENTITY_LIST)
-      {
-      // in case this is a newly generated entity_list phrase, due to number
-      // of total entities triggered a new list entity being build
-      changedPhrases[parntDp].push_back(std::make_pair(*it, newIdx));
-      newLists[parntDp].push_back(*it);
-//        this->findDirectParentPhrases(parntDp->subphrases()[origId],
-//                                      ent, changedPhrases, onlyBuilt);
-      }
-*/
     }
 }
 
