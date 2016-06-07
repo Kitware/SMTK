@@ -383,7 +383,6 @@ bool pmodel::splitModelEdgeAtModelVertex(
     return false;
 
   //DumpPointSeq("Split Edge", edgeToSplit->pointsBegin(), edgeToSplit->pointsEnd(), location);
-  PointSeq::const_iterator it;
   size_t n = 0;
   if (
     *edgeToSplit->pointsBegin() == *edgeToSplit->pointsRBegin() && // edge is periodic
@@ -398,11 +397,28 @@ bool pmodel::splitModelEdgeAtModelVertex(
     // splicing and then add a duplicate of the new start point to the end
     // of the list.
     std::cout << "Edge is periodic, split is interior!!!!\n";
-    it = edgeToSplit->pointsEnd();
+#if defined(GCC_STDLIBCXX_SUPPORT_BROKEN)
+    // GCC 4.9.2 does not support iterator conversions for
+    // std::list<>::iterator and its ::splice method only takes mutable
+    // iterators. With C++11, they are supposed to be const_iterators, but
+    // without the conversion, things. Compiler detection is done by CMake
+    // because so many non-GNU compilers define __GNUC__.
+    PointSeq::iterator it = edgeToSplit->pointsEnd();
+    --it;
+    edgeToSplit->m_points.erase(it);
+    PointSeq::const_iterator cBegin = edgeToSplit->pointsBegin();
+    size_t dist = std::distance(cBegin, location);
+    PointSeq::iterator loc2 = edgeToSplit->pointsBegin();
+    std::advance(loc2, dist);
+    PointSeq::iterator it2 = edgeToSplit->pointsEnd();
+    edgeToSplit->m_points.splice(it2, edgeToSplit->m_points, loc2, edgeToSplit->pointsEnd());
+#else
+    PointSeq::const_iterator it = edgeToSplit->pointsEnd();
     --it;
     edgeToSplit->m_points.erase(it);
     it = edgeToSplit->pointsBegin();
     edgeToSplit->m_points.splice(it, edgeToSplit->m_points, location, edgeToSplit->pointsEnd());
+#endif
     edgeToSplit->m_points.insert(edgeToSplit->pointsEnd(), *location);
 
     // Regenerate the tessellation for the edge with the new point order:
@@ -415,7 +431,7 @@ bool pmodel::splitModelEdgeAtModelVertex(
   SegmentSplitsT::iterator segSplit;
   PointSeq::const_iterator prev = edgeToSplit->pointsBegin();
   segs.reserve(npts - 1); // Preallocation to prevent vector from reallocating and invalidating segSplit iterator.
-  it = prev;
+  PointSeq::const_iterator it = prev;
   for (++it; it != edgeToSplit->pointsEnd(); ++it, ++n)
     {
     segs.push_back(std::pair<size_t,Segment>(n, Segment(*prev, *it)));
