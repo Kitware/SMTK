@@ -864,23 +864,24 @@ void QEntityItemModel::addChildPhrases(
     row = it->second;
     if(row < 0)
       continue;
-    // for entity list phrase we are rebuliding subphrases, so no need to track individual rows
-    if(lphrase)
+    // for entity list phrase we are rebuliding subphrases, so no need to track individual rows.
+    // for rootIndex, the sessionRef should already be in the relatedEntities with newSessionOperatorResult()
+    if(lphrase && lphrase != this->m_root)
       {
       lphrase->relatedEntities().push_back(it->first->relatedEntity());
       }
-    else
+    else if (parntDp == this->m_root || qidx.isValid())
       {
       this->beginInsertRows(qidx, row, row);
-      if(row >= static_cast<int>(subrefs.size()))
-        subrefs.push_back(it->first);
+      if(row >= static_cast<int>(parntDp->subphrases().size()))
+        parntDp->subphrases().push_back(it->first);
       else
-        subrefs.insert(subrefs.begin() + row, it->first);
+        parntDp->subphrases().insert(subrefs.begin() + row, it->first);
       this->endInsertRows();
       }
     }
 
-  if(lphrase)
+  if(lphrase && lphrase != this->m_root)
     {
     this->rebuildSubphrases(qidx);
     return;

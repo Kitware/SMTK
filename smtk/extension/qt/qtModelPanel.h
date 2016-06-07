@@ -17,7 +17,7 @@
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtModelView.h"
 
-#include "smtk/common/UUID.h"
+#include "smtk/PublicPointerDefs.h"
 
 #include <QWidget>
 
@@ -34,12 +34,18 @@ public:
 
   qtModelView* getModelView();
 
+  enum enumTreeView
+    {
+    VIEW_BY_TOPOLOGY = 0,
+    VIEW_BY_ENTITY_LIST
+    };
+
 public slots:
   void onClearSelection();
+  void onViewTypeChanged();
+  void resetView(qtModelPanel::enumTreeView enType,
+                 smtk::model::ManagerPtr modelMgr);
 
-signals:
-
-protected:
 
 private:
   class qInternal;
