@@ -17,6 +17,13 @@ set(polygonSrcs
   operators/SplitEdge.cxx
 )
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND
+    CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.0")
+  set_source_files_properties(internal/Model.cxx
+    PROPERTIES
+      COMPILE_DEFINITIONS "GCC_STDLIBCXX_SUPPORT_BROKEN")
+endif ()
+
 set(polygonHeaders
   Session.h
   Operator.h
