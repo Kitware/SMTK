@@ -94,7 +94,9 @@ bool ModelEntityItemDefinition::isValueValid(const smtk::model::EntityRef& c) co
     )
     return false;
   if (itemType != this->membershipMask() &&
-      itemType & smtk::model::GROUP_ENTITY)
+      itemType & smtk::model::GROUP_ENTITY &&
+      // if the mask is only defined as "group", don't have to check further for members
+      this->m_membershipMask != smtk::model::GROUP_ENTITY)
     {
     // If the the membershipMask is the same as itemType, we don't need to check, else
     // if the item is a group: recursively check that its members
