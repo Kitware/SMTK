@@ -73,6 +73,7 @@ namespace smtk{
       const smtk::model::SessionRef& sref, const smtk::model::OperatorResult& result);
     std::string determineAction(const QPoint& pPos) const;
     qtModelOperationWidget* operatorsWidget();
+    void expandAllModels();
 
   public slots:
     void selectItems(const smtk::common::UUIDs& selEntities,

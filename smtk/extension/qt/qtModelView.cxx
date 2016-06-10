@@ -1095,12 +1095,26 @@ void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
           visible = (prop[0] != 0);
         }
       }
-/*
-    else if(dp->phraseType() == MESH_LIST)
+    }
+  else if(dp->phraseType() == ENTITY_LIST)
+    {
+    EntityListPhrasePtr lphrase = smtk::dynamic_pointer_cast<EntityListPhrase>(dp);
+    // if all its children is off, then show as off
+    bool hasVisibleChild = false;
+    EntityRefArray::const_iterator it;
+    for(it = lphrase->relatedEntities().begin();
+        it != lphrase->relatedEntities().end() && !hasVisibleChild; ++it)
       {
-      // should not come in here here
+      if(it->hasVisibility())
+        {
+        const IntegerList& prop(it->integerProperty("visible"));
+        if(!prop.empty() && prop[0] != 0)
+          hasVisibleChild = true;
+        }
+      else // default is visible
+        hasVisibleChild = true;
       }
-*/
+    visible = hasVisibleChild;
     }
   else if(dp->relatedEntity().hasVisibility())
     {
@@ -1448,11 +1462,44 @@ void qtModelView::updateWithOperatorResult(
     if(dp && (dp->relatedEntity() == sref))
       {
       qmodel->updateWithOperatorResult(sessIdx, result);
+      this->setExpanded(sessIdx, true);
+
+      // find and expand the new model
+      smtk::attribute::ModelEntityItem::Ptr newEntities =
+        result->findModelEntity("created");
+      if(!newEntities)
+        return;
+      for (int mrow=0; mrow < qmodel->rowCount(sessIdx); ++mrow)
+        {
+        QModelIndex modelIdx(qmodel->index(mrow, 0, sessIdx));
+        DescriptivePhrasePtr modp = qmodel->getItem(modelIdx);
+        // all phrases should be for models in the session
+        if(modp && newEntities->has(modp->relatedEntity()))
+          {
+          this->setExpanded(modelIdx, true);
+          }
+        }
       return;
       }
     }
   // this is a new session, mostly from a read operator of a new session
   qmodel->newSessionOperatorResult(sref, result);
+  // expand the models inside the new session
+  for (int row = 0; row < qmodel->rowCount(top); ++row)
+    {
+    QModelIndex sessIdx = qmodel->index(row, 0, top);
+    DescriptivePhrasePtr dp = qmodel->getItem(sessIdx);
+    if(dp && (dp->relatedEntity() == sref))
+      {
+      this->setExpanded(sessIdx, true);
+      for (int mrow=0; mrow < qmodel->rowCount(sessIdx); ++mrow)
+        {
+        QModelIndex modelIdx(qmodel->index(mrow, 0, sessIdx));
+        this->setExpanded(modelIdx, true);
+        }
+      break;
+      }
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -1515,6 +1562,23 @@ void qtModelView::syncEntityColor(
   smtk::model::SessionPtr session =
     smtk::model::SessionRef(qmodel->manager(), sessid).session();
   this->syncEntityColor(session, entids, meshes, clr);
+}
+
+//-----------------------------------------------------------------------------
+void qtModelView::expandAllModels()
+{
+  smtk::extension::QEntityItemModel* qmodel = this->getModel();
+  QModelIndex top = this->rootIndex();
+  for (int row = 0; row < qmodel->rowCount(top); ++row)
+    {
+    QModelIndex sessIdx = qmodel->index(row, 0, top);
+    this->setExpanded(sessIdx, true);
+    for (int mrow=0; mrow < qmodel->rowCount(sessIdx); ++mrow)
+      {
+      QModelIndex modelIdx(qmodel->index(mrow, 0, sessIdx));
+      this->setExpanded(modelIdx, true);
+      }
+    }
 }
 
   } // namespace model
