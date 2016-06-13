@@ -103,6 +103,8 @@ smtk::model::OperatorResult CreateModel::operateInternal()
       storage->setId(model.entity());
       storage->setSession(sess);
       this->addStorage(model.entity(), storage);
+      model.setSession(smtk::model::SessionRef(mgr, sess->sessionId()));
+
       result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
       this->addEntityToResult(result, model, CREATED);
       model.setFloatProperty("x axis", smtk::model::FloatList(storage->xAxis(), storage->xAxis() + 3));
