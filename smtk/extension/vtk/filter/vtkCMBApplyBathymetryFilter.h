@@ -14,12 +14,12 @@
 #ifndef __smtkdiscrete_vtkCMBApplyBathymetryFilter_h
 #define __smtkdiscrete_vtkCMBApplyBathymetryFilter_h
 
-#include "smtk/bridge/discrete/Exports.h" // For export macro
+#include "smtk/extension/vtk/filter/Exports.h" // For export macro
 #include "vtkDataSetAlgorithm.h"
 
 class vtkPoints;
 
-class SMTKDISCRETESESSION_EXPORT vtkCMBApplyBathymetryFilter : public vtkDataSetAlgorithm
+class VTKSMTKFILTEREXT_EXPORT vtkCMBApplyBathymetryFilter : public vtkDataSetAlgorithm
 {
 public:
   static vtkCMBApplyBathymetryFilter *New();
