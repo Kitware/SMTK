@@ -267,13 +267,13 @@ int vtkLASReader::ReadHeaderBlock()
   fin.read(reinterpret_cast<char *>(&this->PointDataRecordLength), 2);
   vtkByteSwap::Swap2LE(&this->PointDataRecordLength);
 
-  if ((this->PointDataFormat == 0 && this->PointDataRecordLength != 20) ||
-    (this->PointDataFormat == 1 && this->PointDataRecordLength != 28) ||
-    (this->PointDataFormat == 2 && this->PointDataRecordLength != 26) ||
-    (this->PointDataFormat == 3 && this->PointDataRecordLength != 34) ||
-    this->PointDataFormat > 4)
+  if ((this->PointDataFormat == 0 && this->PointDataRecordLength < 20) ||
+      (this->PointDataFormat == 1 && this->PointDataRecordLength < 28) ||
+      (this->PointDataFormat == 2 && this->PointDataRecordLength < 26) ||
+      (this->PointDataFormat == 3 && this->PointDataRecordLength < 34) ||
+      this->PointDataFormat > 4)
     {
-    vtkErrorMacro("Invalid data format (" << this->PointDataFormat
+    vtkErrorMacro("Invalid data format (" << static_cast<int>(this->PointDataFormat)
       << ") / record lengh (" << this->PointDataRecordLength << ") combo!");
     return READ_ERROR;
     }
