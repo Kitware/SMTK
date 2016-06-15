@@ -174,6 +174,78 @@ void verify_float_get(const smtk::mesh::CollectionPtr& c)
 }
 
 //----------------------------------------------------------------------------
+void verify_set(const smtk::mesh::CollectionPtr& c)
+{
+
+  //current plan, is to fetch all the points, mark all the Y values
+  //as zero, and set that back onto the data, and than finally verify
+  //those values by getting again
+  smtk::mesh::PointSet all_points = c->points();
+  const std::size_t numCoords = 3 * all_points.size();
+
+  std::vector<double> coords(numCoords);
+  all_points.get(&coords[0]); //now test the double* interface
+
+  //flatten in the Y ( and store a copy of the original Y values, so we can roll back )
+  std::vector<double> original_y(all_points.size());
+  for(std::size_t i=0, yi = 0; i < coords.size(); i+=3, ++yi)
+    {
+    original_y[yi] = coords[i+1];
+    coords[i+1] = 0.0;
+    }
+  all_points.set(coords); //push the new point coords
+
+  all_points.get(coords); //now test the std::vector interface
+  for(std::size_t i=0; i < coords.size(); i+=3)
+    {
+    test( (coords[i+1] == 0.0) );
+    }
+
+  //now reset the Y values to original values
+  for(std::size_t i=0, yi = 0; i < coords.size(); i+=3, ++yi)
+    {
+    coords[i+1] = original_y[yi];
+    }
+  all_points.set(coords); //roll back to original points
+}
+
+//----------------------------------------------------------------------------
+void verify_float_set(const smtk::mesh::CollectionPtr& c)
+{
+
+  //current plan, is to fetch all the points, mark all the Y values
+  //as zero, and set that back onto the data, and than finally verify
+  //those values by getting again
+  smtk::mesh::PointSet all_points = c->points();
+  const std::size_t numCoords = 3 * all_points.size();
+
+  std::vector<float> coords(numCoords);
+  all_points.get(&coords[0]); //now test the double* interface
+
+  //flatten in the Y ( and store a copy of the original Y values, so we can roll back )
+  std::vector<float> original_y(all_points.size());
+  for(std::size_t i=0, yi = 0; i < coords.size(); i+=3, ++yi)
+    {
+    original_y[yi] = coords[i+1];
+    coords[i+1] = 0.0f;
+    }
+  all_points.set(coords); //push the new point coords
+
+  all_points.get(coords); //now test the std::vector interface
+  for(std::size_t i=0; i < coords.size(); i+=3)
+    {
+    test( (coords[i+1] == 0.0f) );
+    }
+
+  //now reset the Y values to original values
+  for(std::size_t i=0, yi = 0; i < coords.size(); i+=3, ++yi)
+    {
+    coords[i+1] = original_y[yi];
+    }
+  all_points.set(coords); //roll back to original points
+}
+
+//----------------------------------------------------------------------------
 void verify_pointset_intersect(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::PointSet all_points = c->points();
@@ -385,6 +457,9 @@ int UnitTestPointSet(int, char** const)
 
   verify_get(c);
   verify_float_get(c);
+
+  verify_set(c);
+  verify_float_set(c);
 
   verify_pointset_intersect(c);
   verify_pointset_union(c);

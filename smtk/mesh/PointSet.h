@@ -56,6 +56,9 @@ public:
   //Get all the point coordinates and store them in the passed in std::vector
   bool get(std::vector<double>& xyz ) const;
 
+  //Set all the point coordinates to the values from the input std::vector
+  bool set(const std::vector<double>& xyz ) const;
+
 #ifndef SHIBOKEN_SKIP
   // Skipping the following:
   // double*, and float* they are not nicely wrapped so the length is unknown
@@ -75,6 +78,18 @@ public:
   //the coordinates in such a manner could cause data inaccuracies to appear
   //so generally this is only used if you fully understand the input domain
   bool get(std::vector<float>& xyz) const;
+
+  //Set all the point coordinates from the pre-allocated buffer. The
+  //buffer is required to have a length of size*3.
+  bool set(const double* const xyz) const;
+
+  //Set all the point coordinates from the pre-allocated buffer. The
+  //buffer is required to have a length of size*3.
+  bool set(const float* const xyz);
+
+  //Set all the point coordinates from the pre-allocated buffer. The
+  //buffer is required to have a length of size*3.
+  bool set(const std::vector<float>& xyz);
 #endif
 
   //get the underlying HandleRange that this PointSet represents

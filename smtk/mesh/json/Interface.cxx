@@ -327,6 +327,21 @@ bool Interface::getCoordinates(const smtk::mesh::HandleRange& points,
   return false;
 }
 
+//----------------------------------------------------------------------------
+bool Interface::setCoordinates(const smtk::mesh::HandleRange& points,
+                               const double* const xyz)
+
+{
+  return false;
+}
+
+//----------------------------------------------------------------------------
+bool Interface::setCoordinates(const smtk::mesh::HandleRange& points,
+                               const float* const xyz)
+
+{
+  return false;
+}
 
 //----------------------------------------------------------------------------
 std::vector< std::string > Interface::computeNames(const smtk::mesh::HandleRange& meshsets) const

@@ -220,6 +220,18 @@ public:
                               float* xyz) const = 0;
 
   //----------------------------------------------------------------------------
+  //set all the coordinates for the points in this range
+  //xyz needs to be allocated to 3*points.size()
+  virtual bool setCoordinates(const smtk::mesh::HandleRange& points,
+                              const double* const xyz) = 0;
+
+  //----------------------------------------------------------------------------
+  //set all the coordinates for the points in this range
+  //xyz needs to be allocated to 3*points.size()
+  virtual bool setCoordinates(const smtk::mesh::HandleRange& points,
+                              const float* const xyz) = 0;
+
+  //----------------------------------------------------------------------------
   virtual std::vector< std::string > computeNames(const smtk::mesh::HandleRange& meshsets) const = 0;
 
   //----------------------------------------------------------------------------
