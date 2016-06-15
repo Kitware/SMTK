@@ -137,7 +137,7 @@ public:
   //Will return true when any points have been merged
   //Will cause any existing PointConnectivity and PointSet's to become
   //invalid, and using them will cause any undefined behavior
-  bool mergeCoincidentContactPoints(double tolerance=1.0e-6) const;
+  bool mergeCoincidentContactPoints(double tolerance=1.0e-6);
 
   //get the underlying HandleRange that this MeshSet represents
   const smtk::mesh::HandleRange& range() const { return this->m_range; }

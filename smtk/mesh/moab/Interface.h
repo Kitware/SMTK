@@ -197,7 +197,7 @@ public:
   //merge any duplicate points used by the cells that have been passed
   //Note: Will mark the interface as modified when successful
   bool mergeCoincidentContactPoints(const smtk::mesh::HandleRange& meshes,
-                                   double tolerance) const;
+                                   double tolerance);
 
   //----------------------------------------------------------------------------
   bool setDomain(const smtk::mesh::HandleRange& meshsets,

@@ -457,7 +457,7 @@ bool Interface::computeShell(const smtk::mesh::HandleRange& meshes,
 
 //----------------------------------------------------------------------------
 bool Interface::mergeCoincidentContactPoints(const smtk::mesh::HandleRange& meshes,
-                                            double tolerance) const
+                                            double tolerance)
 {
   return false;
 }

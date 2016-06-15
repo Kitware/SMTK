@@ -245,7 +245,7 @@ public:
   //merge any duplicate points used by the cells that have been passed
   //Note: Will mark the interface as modified when successful
   virtual bool mergeCoincidentContactPoints(const smtk::mesh::HandleRange& meshes,
-                                           double tolerance) const = 0;
+                                           double tolerance) = 0;
 
   //----------------------------------------------------------------------------
   // Note: Will mark the interface as modified when successful
