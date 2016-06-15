@@ -7,8 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-
-#include "smtk/bridge/discrete/operation/vtkCMBApplyBathymetryFilter.h"
+#include "smtk/extension/vtk/filter/vtkCMBApplyBathymetryFilter.h"
 
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
@@ -45,7 +44,7 @@ namespace{
     }
   template<class T>
   void copyArrayZValues(T *t, vtkIdType size,
-    std::map<vtkIdType,double>& idToElevation,
+    std::vector<double>& idToElevation,
     bool useHighLimit, double eleHigh, bool useLowLimit, double eleLow)
     {
     double dtmp;
@@ -62,7 +61,7 @@ namespace{
 class vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo
   {
 public:
-  vtkCmbInternalTerrainInfo(vtkInformation* input, const double &radius,
+  vtkCmbInternalTerrainInfo(vtkInformation* input, const double &radius, double &invalid,
     bool useHighLimit, double eleHigh, bool useLowLimit, double eleLow);
   ~vtkCmbInternalTerrainInfo()
     {
@@ -76,17 +75,19 @@ public:
     Radius = r;
     }
 
-  std::map<vtkIdType,double> IdToElevation;
+  std::vector<double> IdToElevation;
 protected:
   double Radius;
+  double InvalidValue;
   vtkSmartPointer<vtkIncrementalOctreePointLocator> Locator;
   };
 
 //-----------------------------------------------------------------------------
 vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::vtkCmbInternalTerrainInfo(
-  vtkInformation* inInfo, const double &radius,
-  bool useHighLimit, double eleHigh, bool useLowLimit, double eleLow): Radius(radius)
-  {
+  vtkInformation* inInfo, const double &radius, double &invalid,
+  bool useHighLimit, double eleHigh, bool useLowLimit, double eleLow)
+: Radius(radius), InvalidValue(invalid)
+{
   //1. Create a set of points while removing all the z values from the points
   //and storing them in the map.
   //2. Create locater of the resulting 2D point set
@@ -118,10 +119,10 @@ vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::vtkCmbInternalTerrainInf
   //second iteration is building the point set and elevation mapping
   vtkPoints *inputPoints = NULL;
   vtkPoints *points = vtkPoints::New();
-  vtkIdType size, i, j;
+  vtkIdType size, i;
   double p[3];
   double dtmp;
-   // Uniform Grids may not have the max number of points
+  // Uniform Grids may not have the max number of points
   if (gridInput)
     {
     vtkDataArray *dataArray = gridInput->GetPointData()->GetScalars("Elevation");
@@ -129,7 +130,9 @@ vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::vtkCmbInternalTerrainInf
       {
       return;
       }
-    points->Allocate(numPoints);
+    points->SetNumberOfPoints(numPoints);
+    this->IdToElevation.resize(numPoints);
+    vtkIdType at = 0;
     for (i = 0; numPoints; i++)
       {
       if (!gridInput->IsPointVisible(i))
@@ -143,9 +146,12 @@ vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::vtkCmbInternalTerrainInf
 
       //flatten z
       p[2] = 0.0;
-      j =  points->InsertNextPoint(p);
-      this->IdToElevation[j]=dtmp;
+      points->SetPoint(at, p);
+      this->IdToElevation[at]=dtmp;
+      ++at;
       }
+    points->Resize(at);
+    this->IdToElevation.resize(at);
     }
   else
     {
@@ -154,6 +160,8 @@ vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::vtkCmbInternalTerrainInf
       {
       inputPoints = pd->GetPoints();
       size = inputPoints->GetNumberOfPoints();
+      points->SetNumberOfPoints(size);
+      this->IdToElevation.resize(size);
       for (i=0; i < size; ++i)
         {
         //get the point
@@ -164,12 +172,14 @@ vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::vtkCmbInternalTerrainInf
         //store the z value & flatten
         this->IdToElevation[i]=dtmp;
         p[2] = 0.0;
-        points->InsertPoint(i,p);
+        points->SetPoint(i,p);
         }
       }
     else if(imageInput)
       {
       size = imageInput->GetNumberOfPoints();
+      points->SetNumberOfPoints(size);
+      this->IdToElevation.resize(size);
       vtkDataArray *dataArray = imageInput->GetPointData()->GetScalars("Elevation");
       if(!dataArray || dataArray->GetNumberOfTuples() != size)
         {
@@ -197,7 +207,7 @@ vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::vtkCmbInternalTerrainInf
 
         //flatten z
         p[2] = 0.0;
-        points->InsertPoint(i,p);
+        points->SetPoint(i,p);
         }
       }
     }
@@ -230,16 +240,13 @@ T vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::getElevation(
   for ( vtkIdType i=0; i < size; ++i)
     {
     //average the elevation
-    it = this->IdToElevation.find(ids->GetId(i));
-    if ( it != this->IdToElevation.end() )
-      {
-      sum += it->second;
-      }
+    assert(ids->GetId(i)<this->IdToElevation.size());
+    sum += this->IdToElevation[ids->GetId(i)];
     }
   ids->Delete();
 
   //handle the zero size use case
-  T elev = static_cast<T>((size == 0) ? dpoint[2] : sum/size);
+  T elev = static_cast<T>((size == 0) ? InvalidValue : sum/size);
   return elev;
 }
 
@@ -255,6 +262,7 @@ vtkCMBApplyBathymetryFilter::vtkCMBApplyBathymetryFilter()
   this->UseHighestZValue = false;
   this->UseLowestZValue = false;
   this->HighestZValue=this->LowestZValue=0.0;
+  this->InvalidValue = 0.0;
 }
 
 //-----------------------------------------------------------------------------
@@ -268,7 +276,7 @@ vtkCMBApplyBathymetryFilter::~vtkCMBApplyBathymetryFilter()
 
 //----------------------------------------------------------------------------
 int vtkCMBApplyBathymetryFilter::FillInputPortInformation(int port,
-                                                         vtkInformation *info)
+                                                          vtkInformation *info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkDataSet");
   info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 1);
@@ -293,8 +301,8 @@ void vtkCMBApplyBathymetryFilter::RemoveSourceConnections()
 
 //----------------------------------------------------------------------------
 int vtkCMBApplyBathymetryFilter::RequestData(vtkInformation* /*request*/,
-                                 vtkInformationVector** inputVector,
-                                 vtkInformationVector* outputVector)
+                                             vtkInformationVector** inputVector,
+                                             vtkInformationVector* outputVector)
 {
   // get the info and input data
   vtkInformation *inInfo = inputVector[0]->GetInformationObject(0);
@@ -327,9 +335,9 @@ int vtkCMBApplyBathymetryFilter::RequestData(vtkInformation* /*request*/,
     //Construct the TerrainInfo first
     this->TerrainInfo = new vtkCmbInternalTerrainInfo(
       inputVector[1]->GetInformationObject(0),
-      this->ElevationRadius, this->UseHighestZValue,
+      this->ElevationRadius, this->InvalidValue, this->UseHighestZValue,
       this->HighestZValue, this->UseLowestZValue, this->LowestZValue);
-    if(this->TerrainInfo->IdToElevation.size()>0)
+    if(!this->TerrainInfo->IdToElevation.empty())
       {
       validMesh = this->ApplyBathymetry(finalMesh->GetPoints());
       }
@@ -416,4 +424,5 @@ void vtkCMBApplyBathymetryFilter::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "ElevationRadius: " << this->ElevationRadius << std::endl;
   os << indent << "FlatZValue: " << this->FlatZValue << std::endl;
   os << indent << "FlattenZValues: " << this->FlattenZValues << std::endl;
+  os << indent << "InvalidValue: " << this->InvalidValue << std::endl;
 }

@@ -14,12 +14,12 @@
 #ifndef __smtkdiscrete_vtkCMBApplyBathymetryFilter_h
 #define __smtkdiscrete_vtkCMBApplyBathymetryFilter_h
 
-#include "smtk/bridge/discrete/Exports.h" // For export macro
+#include "smtk/extension/vtk/filter/Exports.h" // For export macro
 #include "vtkDataSetAlgorithm.h"
 
 class vtkPoints;
 
-class SMTKDISCRETESESSION_EXPORT vtkCMBApplyBathymetryFilter : public vtkDataSetAlgorithm
+class VTKSMTKFILTEREXT_EXPORT vtkCMBApplyBathymetryFilter : public vtkDataSetAlgorithm
 {
 public:
   static vtkCMBApplyBathymetryFilter *New();
@@ -75,6 +75,11 @@ public:
   vtkSetMacro(NoOP, bool);
   vtkGetMacro(NoOP, bool);
 
+  // Description:
+  // Value for when bathymetry field has no supporting data
+  vtkSetMacro(InvalidValue, double);
+  vtkGetMacro(InvalidValue, double);
+
   //Description:
   //Remove all connections on port 0, dataset that will be altered
   //with bathymetry
@@ -108,6 +113,7 @@ protected:
   double FlatZValue;
   bool FlattenZValues;
   bool NoOP;
+  double InvalidValue;
 
   class vtkCmbInternalTerrainInfo;
   vtkCmbInternalTerrainInfo *TerrainInfo;

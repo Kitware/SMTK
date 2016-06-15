@@ -47,7 +47,6 @@ SET(DiscreteModelFiles
 )
 
 SET(DiscreteOperationFiles
-  operation/vtkCMBApplyBathymetryFilter.cxx
   operation/vtkCMBModelPointsOperator.cxx
   operation/vtkEdgeSplitOperator.cxx
   operation/vtkEdgeSplitOperatorBase.cxx
@@ -75,7 +74,6 @@ SET(DiscreteOperationFiles
 )
 
 SET(DiscreteModelHeaders
-  operation/vtkCMBApplyBathymetryFilter.h
   operation/vtkCMBModelPointsOperator.h
   operation/vtkCMBMapToCMBModel.h
   operation/vtkCMBModelBuilder.h
@@ -225,6 +223,7 @@ target_link_libraries(smtkDiscreteSession
     vtkPVVTKExtensionsDefault
     vtkSMTKReaderExt
     vtkSMTKDiscreteModel
+    vtkSMTKFilterExt
   )
 
 if (SMTK_ENABLE_REMUS_SUPPORT)

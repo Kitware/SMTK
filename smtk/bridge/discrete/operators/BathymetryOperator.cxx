@@ -12,7 +12,7 @@
 
 #include "smtk/bridge/discrete/Session.h"
 #include "smtk/bridge/discrete/BathymetryHelper.h"
-#include "smtk/bridge/discrete/operation/vtkCMBApplyBathymetryFilter.h"
+#include "smtk/extension/vtk/filter/vtkCMBApplyBathymetryFilter.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
