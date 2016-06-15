@@ -105,13 +105,23 @@ VerifyPoints( const std::vector<T>& points ):
 {
 }
 //--------------------------------------------------------------------------
-void forPoint(const smtk::mesh::Handle& pointId,
-              double x, double y, double z)
+void forPoints(const smtk::mesh::HandleRange& pointIds,
+               std::vector<double>& xyz,
+               bool& coordinatesModified)
 {
-  test( this->m_points[m_currentIndex] == static_cast<T>(x) );
-  test( this->m_points[m_currentIndex+1] == static_cast<T>(y) );
-  test( this->m_points[m_currentIndex+2] == static_cast<T>(z) );
-  this->m_currentIndex += 3;
+  coordinatesModified = false; //we are not modifying the coords
+
+  typedef smtk::mesh::HandleRange::const_iterator c_it;
+  std::size_t offset = 0;
+  for(c_it i = pointIds.begin(); i != pointIds.end(); ++i)
+    {
+    //iterate the range of coords / point ids
+    test( this->m_points[m_currentIndex ]  == static_cast<T>( xyz[offset] ) );
+    test( this->m_points[m_currentIndex+1] == static_cast<T>( xyz[offset+1] ) );
+    test( this->m_points[m_currentIndex+2] == static_cast<T>( xyz[offset+2]) );
+    this->m_currentIndex += 3;
+    offset+=3;
+    }
 }
 
 };

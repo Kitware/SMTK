@@ -92,7 +92,20 @@ class SMTKCORE_EXPORT PointForEach
 public:
   virtual ~PointForEach();
 
-  virtual void forPoint(const smtk::mesh::Handle& pointId, double x, double y, double z)=0;
+  // PointForEach allows read access to the point ids and coordinates and write
+  // access to the coordinates ( x, y, z ) it is iterating. This is different
+  // than Cell and Mesh iteration which are read only.
+  //
+  // If the forPoints needs to modify the coordinates, you have to explicitly
+  // set coordinatesModified to be true, otherwise the modified coordinates will
+  // be ignored.
+  //
+  // Note: by default coordinatesModified is set to false
+  //
+  //
+  virtual void forPoints(const smtk::mesh::HandleRange& pointIds,
+                         std::vector<double>& xyz,
+                         bool& coordinatesModified)=0;
 
   smtk::mesh::CollectionPtr m_collection;
 };

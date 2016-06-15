@@ -283,20 +283,28 @@ public:
     }
 
   //--------------------------------------------------------------------------
-  void forPoint(const smtk::mesh::Handle& pointId,
-                double x, double y, double z)
+  void forPoints(const smtk::mesh::HandleRange& pointIds,
+                 std::vector<double>& xyz,
+                 bool& coordinatesModified)
   {
-  (void) x;
-  (void) y;
-  (void) z;
-  this->numPointsIteratedOver++;
+  //verify the coordinates and the number of points match
+  test( (xyz.size() == (pointIds.size() * 3) ) );
+
+  coordinatesModified = false; //we are not modifying the coords
+
+  typedef smtk::mesh::HandleRange::const_iterator c_it;
+  for(c_it i = pointIds.begin(); i != pointIds.end(); ++i)
+    { //we could just increment by size of pointIds, but I want
+      //to have an example of how to do iteration over the point ids
+    this->numPointsIteratedOver++;
+    }
   }
 
   int numberOfPointsVisited() const { return numPointsIteratedOver; }
 };
 
 //----------------------------------------------------------------------------
-void verify_pointset_for_each(const smtk::mesh::CollectionPtr& c)
+void verify_pointset_for_each_read(const smtk::mesh::CollectionPtr& c)
 {
   CountPoints functor(c);
   smtk::mesh::MeshSet volMeshes = c->meshes( smtk::mesh::Dims3 );
@@ -304,6 +312,62 @@ void verify_pointset_for_each(const smtk::mesh::CollectionPtr& c)
   test( functor.numberOfPointsVisited() == volMeshes.points().size() );
 }
 
+
+//----------------------------------------------------------------------------
+class FlattenZ : public smtk::mesh::PointForEach
+{
+public:
+  //--------------------------------------------------------------------------
+  void forPoints(const smtk::mesh::HandleRange& pointIds,
+                 std::vector<double>& xyz,
+                 bool& coordinatesModified)
+  {
+  //verify the coordinates and the number of points match
+  test( (xyz.size() == (pointIds.size() * 3) ) );
+
+  //we are modifying the coords, so signal that the modifications are saved
+  coordinatesModified = true;
+
+  for(std::size_t offset = 0; offset < xyz.size(); offset+=3)
+    {
+    //make all Z values 0.0
+    xyz[offset+2] = 0.0;
+    }
+  }
+};
+
+//----------------------------------------------------------------------------
+class VerifyZ : public smtk::mesh::PointForEach
+{
+public:
+  //--------------------------------------------------------------------------
+  void forPoints(const smtk::mesh::HandleRange& pointIds,
+                 std::vector<double>& xyz,
+                 bool& coordinatesModified)
+  {
+  //verify the coordinates and the number of points match
+  test( (xyz.size() == (pointIds.size() * 3) ) );
+
+  for(std::size_t offset = 0; offset < xyz.size(); offset+=3)
+    {
+    //make all Z values 0.0
+    test( (xyz[offset+2] == 0.0) );
+    }
+  }
+};
+
+//----------------------------------------------------------------------------
+void verify_pointset_for_each_modify(const smtk::mesh::CollectionPtr& c)
+{
+  //first modify all the points to have 0 for the z value
+  smtk::mesh::MeshSet volMeshes = c->meshes( smtk::mesh::Dims3 );
+  FlattenZ functorA;
+  smtk::mesh::for_each( volMeshes.points(), functorA );
+
+  //now verify that the points all have a z-value of 0
+  VerifyZ functorB;
+  smtk::mesh::for_each( volMeshes.points(), functorB );
+}
 
 }
 
@@ -326,7 +390,8 @@ int UnitTestPointSet(int, char** const)
   verify_pointset_union(c);
   verify_pointset_subtract(c);
 
-  verify_pointset_for_each(c);
+  verify_pointset_for_each_read(c);
+  verify_pointset_for_each_modify(c);
 
   return 0;
 }
