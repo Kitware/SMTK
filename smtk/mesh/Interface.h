@@ -71,6 +71,8 @@ public:
 class SMTKCORE_EXPORT ConnectivityStorage
 {
 public:
+  virtual ~ConnectivityStorage() { }
+
   //struct that holds the required information to compute what is the
   //current cell when we are iterating.
   struct IterationState

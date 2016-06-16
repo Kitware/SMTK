@@ -11,9 +11,6 @@
 #include "smtk/mesh/PointConnectivity.h"
 #include "smtk/mesh/Collection.h"
 
-//needs to be designed to have virtual parent in smtk::mesh
-#include "smtk/mesh/moab/ConnectivityStorage.h"
-
 namespace smtk {
 namespace mesh {
 

@@ -80,9 +80,7 @@ smtk::mesh::AllocatorPtr Interface::allocator()
 smtk::mesh::ConnectivityStoragePtr Interface::connectivityStorage(
                                       const smtk::mesh::HandleRange& cells)
 {
-  //make boost shared_ptr
-  smtk::mesh::ConnectivityStoragePtr cs;
-  return cs;
+  return smtk::mesh::ConnectivityStoragePtr();
 }
 
 
