@@ -391,7 +391,7 @@ smtk::mesh::MeshSet MeshSet::extractShell() const
 }
 
 //----------------------------------------------------------------------------
-bool MeshSet::mergeCoincidentContactPoints( double tolerance ) const
+bool MeshSet::mergeCoincidentContactPoints( double tolerance )
 {
   const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
   return iface->mergeCoincidentContactPoints(this->m_range, tolerance);

@@ -620,6 +620,27 @@ bool Interface::getCoordinates(const smtk::mesh::HandleRange& points,
 }
 
 //----------------------------------------------------------------------------
+namespace { class GetCoords : public smtk::mesh::PointForEach {
+public:
+  std::size_t xyz_index;
+  float* m_xyz;
+  GetCoords(float* xyz): xyz_index(0), m_xyz(xyz) {}
+
+  void forPoints(const smtk::mesh::HandleRange&,
+                 std::vector<double>& xyz,
+                 bool&)
+  {
+    //use local variable instead of member to help locality
+    std::size_t index = xyz_index;
+    for(std::vector<double>::const_iterator i=xyz.begin(); i!=xyz.end(); ++i)
+      {
+      this->m_xyz[index++] = static_cast<float>(*i);
+      }
+    this->xyz_index = index;
+  }
+}; }
+
+//----------------------------------------------------------------------------
 bool Interface::getCoordinates(const smtk::mesh::HandleRange& points,
                                float* xyz) const
 
@@ -628,53 +649,58 @@ bool Interface::getCoordinates(const smtk::mesh::HandleRange& points,
     {
     return false;
     }
-  //Efficiently re-use memory when fetching a significant number of points
-  //this way we don't allocate a massive array of doubles, when that is most
-  //likely going to trash the system memory, and defeat the users goal of keeping
-  //memory usage low
-  std::vector<double> coords;
-  const std::size_t numPoints = points.size();
-  const std::size_t numPointsPerLoop =524288;
-  const std::size_t numLoops = numPoints / 524288;
 
-  coords.reserve(numPointsPerLoop*3);
-  smtk::mesh::HandleRange::const_iterator start = points.begin();
-
-
-  std::size_t xyz_index = 0;
-  for(std::size_t i=0; i < numLoops; ++i)
-    {
-    //determine where the end iterator should be
-    smtk::mesh::HandleRange::const_iterator end = start + numPointsPerLoop;
-
-    //needs to be insert so we use iterator insert, since we don't want
-    //all points between start and end values, but only those that are
-    //in the range. Think not 0 to N, but 0 - 10, 14 - N.
-    ::moab::Range subset;
-    subset.insert(start,end);
-
-    //fetch all the coordinates for the start, end range
-    m_iface->get_coords( subset,  &coords[0] );
-    for(std::size_t i=0; i < (numPointsPerLoop*3); ++i)
-      {
-      xyz[xyz_index++] = static_cast<float>(coords[i]);
-      }
-    }
-
-  std::size_t difference = numPoints - (numPointsPerLoop * numLoops);
-  smtk::mesh::HandleRange::const_iterator end = start + difference;
-  ::moab::Range subset;
-  subset.insert(start,end);
-
-  //fetch all the coordinates for the start, end range
-  m_iface->get_coords( subset,  &coords[0] );
-
-  for(std::size_t i=0; i < (difference*3); ++i)
-    {
-    xyz[xyz_index++] = static_cast<float>(coords[i]);
-    }
-
+  //requires that for_each is serial
+  GetCoords functor(xyz);
+  this->pointForEach(points, functor);
   return true;
+}
+
+//----------------------------------------------------------------------------
+bool Interface::setCoordinates(const smtk::mesh::HandleRange& points,
+                               const double* const xyz)
+
+{
+  if(points.empty())
+    {
+    return false;
+    }
+
+  m_iface->set_coords(points,xyz);
+  return true;
+}
+
+//----------------------------------------------------------------------------
+namespace { class SetCoords : public smtk::mesh::PointForEach {
+public:
+  std::size_t xyz_index;
+  const float* const m_xyz;
+  SetCoords(const float* const xyz): xyz_index(0), m_xyz(xyz) {}
+
+  void forPoints(const smtk::mesh::HandleRange&,
+                 std::vector<double>& xyz,
+                 bool& coordinatesModified)
+  {
+    coordinatesModified = true;
+    //use local variable instead of member to help locality
+    std::size_t index = this->xyz_index;
+    for(std::vector<double>::iterator i=xyz.begin(); i!=xyz.end(); ++i)
+      {
+      *i = static_cast<double>(this->m_xyz[index++]);
+      }
+    this->xyz_index = index;
+  }
+}; }
+
+//----------------------------------------------------------------------------
+bool Interface::setCoordinates(const smtk::mesh::HandleRange& points,
+                               const float* const xyz)
+
+{
+  //requires that for_each is serial
+  SetCoords functor(xyz);
+  this->pointForEach(points, functor);
+  return false;
 }
 
 
@@ -842,7 +868,7 @@ bool Interface::computeShell(const smtk::mesh::HandleRange& meshes,
 
 //----------------------------------------------------------------------------
 bool Interface::mergeCoincidentContactPoints(const smtk::mesh::HandleRange& meshes,
-                                             double tolerance) const
+                                             double tolerance)
 {
   if(meshes.empty())
     {
@@ -1160,10 +1186,14 @@ void Interface::pointForEach(const HandleRange &points,
     //we would want to fetch a subset of points at a time.
     const std::size_t numPoints = points.size();
 
-    const std::size_t numPointsPerLoop =524288;
-    const std::size_t numLoops = numPoints / 524288;
+    const std::size_t numPointsPerLoop=65536; //selected so that buffer is ~1MB
+    const std::size_t numLoops = numPoints/65536;
 
+    //We explicitly reserve than resize to avoid the cost of resize behavior
+    //of setting the value of each element to T(). But at the same time we
+    //need to use resize to set the proper size of the vector ( reserve == capacity )
     coords.reserve(numPointsPerLoop*3);
+    coords.resize(numPointsPerLoop*3);
     smtk::mesh::HandleRange::const_iterator start = points.begin();
 
 
@@ -1181,18 +1211,24 @@ void Interface::pointForEach(const HandleRange &points,
       //fetch all the coordinates for the start, end range
       m_iface->get_coords( subset,  &coords[0] );
 
-      //call the filter for each point
-      for(std::size_t offset = 0; start != end; offset+=3, ++start)
+      //call the filter for this chunk of points
+      bool shouldBeSaved = false;
+      filter.forPoints(subset, coords, shouldBeSaved);
+      if(shouldBeSaved)
         {
-        filter.forPoint( *start,
-                          coords[offset],
-                          coords[offset+1],
-                          coords[offset+2] );
+        //save t
+        m_iface->set_coords( subset, &coords[0] );
         }
+      start += numPointsPerLoop;
 
       }
 
     std::size_t difference = numPoints - (numPointsPerLoop * numLoops);
+
+    //Update the size of the coords, will not cause a re-alloc since
+    //the capacity of coords > difference*3
+    coords.resize(difference*3);
+
     smtk::mesh::HandleRange::const_iterator end = start + difference;
     ::moab::Range subset;
     subset.insert(start,end);
@@ -1200,13 +1236,13 @@ void Interface::pointForEach(const HandleRange &points,
     //fetch all the coordinates for the start, end range
     m_iface->get_coords( subset,  &coords[0] );
 
-    //call the filter for each point
-    for(std::size_t offset = 0; start != end; offset+=3, ++start)
+    //call the filter for the rest of the points
+    bool shouldBeSaved = false;
+    filter.forPoints(subset, coords, shouldBeSaved);
+    if(shouldBeSaved)
       {
-      filter.forPoint( *start,
-                        coords[offset],
-                        coords[offset+1],
-                        coords[offset+2] );
+      //save t
+      m_iface->set_coords( subset, &coords[0] );
       }
     }
   return;

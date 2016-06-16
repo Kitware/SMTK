@@ -174,6 +174,78 @@ void verify_float_get(const smtk::mesh::CollectionPtr& c)
 }
 
 //----------------------------------------------------------------------------
+void verify_set(const smtk::mesh::CollectionPtr& c)
+{
+
+  //current plan, is to fetch all the points, mark all the Y values
+  //as zero, and set that back onto the data, and than finally verify
+  //those values by getting again
+  smtk::mesh::PointSet all_points = c->points();
+  const std::size_t numCoords = 3 * all_points.size();
+
+  std::vector<double> coords(numCoords);
+  all_points.get(&coords[0]); //now test the double* interface
+
+  //flatten in the Y ( and store a copy of the original Y values, so we can roll back )
+  std::vector<double> original_y(all_points.size());
+  for(std::size_t i=0, yi = 0; i < coords.size(); i+=3, ++yi)
+    {
+    original_y[yi] = coords[i+1];
+    coords[i+1] = 0.0;
+    }
+  all_points.set(coords); //push the new point coords
+
+  all_points.get(coords); //now test the std::vector interface
+  for(std::size_t i=0; i < coords.size(); i+=3)
+    {
+    test( (coords[i+1] == 0.0) );
+    }
+
+  //now reset the Y values to original values
+  for(std::size_t i=0, yi = 0; i < coords.size(); i+=3, ++yi)
+    {
+    coords[i+1] = original_y[yi];
+    }
+  all_points.set(coords); //roll back to original points
+}
+
+//----------------------------------------------------------------------------
+void verify_float_set(const smtk::mesh::CollectionPtr& c)
+{
+
+  //current plan, is to fetch all the points, mark all the Y values
+  //as zero, and set that back onto the data, and than finally verify
+  //those values by getting again
+  smtk::mesh::PointSet all_points = c->points();
+  const std::size_t numCoords = 3 * all_points.size();
+
+  std::vector<float> coords(numCoords);
+  all_points.get(&coords[0]); //now test the double* interface
+
+  //flatten in the Y ( and store a copy of the original Y values, so we can roll back )
+  std::vector<float> original_y(all_points.size());
+  for(std::size_t i=0, yi = 0; i < coords.size(); i+=3, ++yi)
+    {
+    original_y[yi] = coords[i+1];
+    coords[i+1] = 0.0f;
+    }
+  all_points.set(coords); //push the new point coords
+
+  all_points.get(coords); //now test the std::vector interface
+  for(std::size_t i=0; i < coords.size(); i+=3)
+    {
+    test( (coords[i+1] == 0.0f) );
+    }
+
+  //now reset the Y values to original values
+  for(std::size_t i=0, yi = 0; i < coords.size(); i+=3, ++yi)
+    {
+    coords[i+1] = original_y[yi];
+    }
+  all_points.set(coords); //roll back to original points
+}
+
+//----------------------------------------------------------------------------
 void verify_pointset_intersect(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::PointSet all_points = c->points();
@@ -283,20 +355,28 @@ public:
     }
 
   //--------------------------------------------------------------------------
-  void forPoint(const smtk::mesh::Handle& pointId,
-                double x, double y, double z)
+  void forPoints(const smtk::mesh::HandleRange& pointIds,
+                 std::vector<double>& xyz,
+                 bool& coordinatesModified)
   {
-  (void) x;
-  (void) y;
-  (void) z;
-  this->numPointsIteratedOver++;
+  //verify the coordinates and the number of points match
+  test( (xyz.size() == (pointIds.size() * 3) ) );
+
+  coordinatesModified = false; //we are not modifying the coords
+
+  typedef smtk::mesh::HandleRange::const_iterator c_it;
+  for(c_it i = pointIds.begin(); i != pointIds.end(); ++i)
+    { //we could just increment by size of pointIds, but I want
+      //to have an example of how to do iteration over the point ids
+    this->numPointsIteratedOver++;
+    }
   }
 
   int numberOfPointsVisited() const { return numPointsIteratedOver; }
 };
 
 //----------------------------------------------------------------------------
-void verify_pointset_for_each(const smtk::mesh::CollectionPtr& c)
+void verify_pointset_for_each_read(const smtk::mesh::CollectionPtr& c)
 {
   CountPoints functor(c);
   smtk::mesh::MeshSet volMeshes = c->meshes( smtk::mesh::Dims3 );
@@ -304,6 +384,62 @@ void verify_pointset_for_each(const smtk::mesh::CollectionPtr& c)
   test( functor.numberOfPointsVisited() == volMeshes.points().size() );
 }
 
+
+//----------------------------------------------------------------------------
+class FlattenZ : public smtk::mesh::PointForEach
+{
+public:
+  //--------------------------------------------------------------------------
+  void forPoints(const smtk::mesh::HandleRange& pointIds,
+                 std::vector<double>& xyz,
+                 bool& coordinatesModified)
+  {
+  //verify the coordinates and the number of points match
+  test( (xyz.size() == (pointIds.size() * 3) ) );
+
+  //we are modifying the coords, so signal that the modifications are saved
+  coordinatesModified = true;
+
+  for(std::size_t offset = 0; offset < xyz.size(); offset+=3)
+    {
+    //make all Z values 0.0
+    xyz[offset+2] = 0.0;
+    }
+  }
+};
+
+//----------------------------------------------------------------------------
+class VerifyZ : public smtk::mesh::PointForEach
+{
+public:
+  //--------------------------------------------------------------------------
+  void forPoints(const smtk::mesh::HandleRange& pointIds,
+                 std::vector<double>& xyz,
+                 bool& coordinatesModified)
+  {
+  //verify the coordinates and the number of points match
+  test( (xyz.size() == (pointIds.size() * 3) ) );
+
+  for(std::size_t offset = 0; offset < xyz.size(); offset+=3)
+    {
+    //make all Z values 0.0
+    test( (xyz[offset+2] == 0.0) );
+    }
+  }
+};
+
+//----------------------------------------------------------------------------
+void verify_pointset_for_each_modify(const smtk::mesh::CollectionPtr& c)
+{
+  //first modify all the points to have 0 for the z value
+  smtk::mesh::MeshSet volMeshes = c->meshes( smtk::mesh::Dims3 );
+  FlattenZ functorA;
+  smtk::mesh::for_each( volMeshes.points(), functorA );
+
+  //now verify that the points all have a z-value of 0
+  VerifyZ functorB;
+  smtk::mesh::for_each( volMeshes.points(), functorB );
+}
 
 }
 
@@ -322,11 +458,15 @@ int UnitTestPointSet(int, char** const)
   verify_get(c);
   verify_float_get(c);
 
+  verify_set(c);
+  verify_float_set(c);
+
   verify_pointset_intersect(c);
   verify_pointset_union(c);
   verify_pointset_subtract(c);
 
-  verify_pointset_for_each(c);
+  verify_pointset_for_each_read(c);
+  verify_pointset_for_each_modify(c);
 
   return 0;
 }

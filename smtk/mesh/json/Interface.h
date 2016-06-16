@@ -163,6 +163,18 @@ public:
                       float* xyz) const;
 
   //----------------------------------------------------------------------------
+  //set all the coordinates for the points in this range
+  //xyz needs to be allocated to 3*points.size()
+  virtual bool setCoordinates(const smtk::mesh::HandleRange& points,
+                              const double* const xyz);
+
+  //----------------------------------------------------------------------------
+  //set all the coordinates for the points in this range
+  //xyz needs to be allocated to 3*points.size()
+  virtual bool setCoordinates(const smtk::mesh::HandleRange& points,
+                              const float* const xyz);
+
+  //----------------------------------------------------------------------------
   std::vector< std::string > computeNames(const smtk::mesh::HandleRange& meshsets) const;
 
   //----------------------------------------------------------------------------
@@ -187,7 +199,7 @@ public:
   //----------------------------------------------------------------------------
   //merge any duplicate points used by the cells that have been passed
   bool mergeCoincidentContactPoints(const smtk::mesh::HandleRange& meshes,
-                                   double tolerance) const;
+                                   double tolerance);
 
   //----------------------------------------------------------------------------
   bool setDomain(const smtk::mesh::HandleRange& meshsets,
