@@ -20,6 +20,7 @@
 #include "smtk/mesh/moab/Allocator.h"
 #include "smtk/mesh/moab/ConnectivityStorage.h"
 #include "smtk/mesh/moab/MergeMeshVertices.h"
+#include "smtk/mesh/moab/PointLocatorImpl.h"
 
 #include "moab/Core.hpp"
 #include "moab/FileOptions.hpp"
@@ -295,10 +296,47 @@ smtk::mesh::ConnectivityStoragePtr Interface::connectivityStorage(
   return cs;
 }
 
+//----------------------------------------------------------------------------
+smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
+                                      const smtk::mesh::HandleRange& points)
+{
+  return smtk::mesh::PointLocatorImplPtr(
+          new smtk::mesh::moab::PointLocatorImpl(this->m_iface.get(),
+                                                 points) );
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
+                                      const double* const xyzs,
+                                      std::size_t numPoints)
+{
+  if(numPoints == 0)
+    {
+    return smtk::mesh::PointLocatorImplPtr();
+    }
+  return smtk::mesh::PointLocatorImplPtr(
+          new smtk::mesh::moab::PointLocatorImpl(this->m_iface.get(),
+                                                 xyzs,
+                                                 numPoints) );
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
+                                      const float* const xyzs,
+                                      std::size_t numPoints)
+{
+  if(numPoints == 0)
+    {
+    return smtk::mesh::PointLocatorImplPtr();
+    }
+  return smtk::mesh::PointLocatorImplPtr(
+          new smtk::mesh::moab::PointLocatorImpl(this->m_iface.get(),
+                                                 xyzs,
+                                                 numPoints) );
+}
 
 //----------------------------------------------------------------------------
 smtk::mesh::Handle Interface::getRoot() const
-
 {
   return m_iface->get_root_set();
 }

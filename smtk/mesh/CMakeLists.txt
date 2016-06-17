@@ -9,6 +9,7 @@ set(meshSrcs
   Manager.cxx
   MeshSet.cxx
   PointConnectivity.cxx
+  PointLocator.cxx
   PointSet.cxx
   Reclassify.cxx
   TypeSet.cxx
@@ -22,6 +23,7 @@ set(meshSrcs
   moab/Interface.cxx
   moab/ConnectivityStorage.cxx
   moab/MergeMeshVertices.cxx
+  moab/PointLocatorImpl.cxx
   moab/Readers.cxx
   moab/Writers.cxx
   )
@@ -50,7 +52,6 @@ set(meshHeaders
   json/Interface.h
   json/MeshInfo.h
   moab/Interface.h
-  moab/Allocator.h
   moab/HandleRange.h
   )
 
