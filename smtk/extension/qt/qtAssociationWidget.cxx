@@ -310,19 +310,23 @@ void qtAssociationWidget::showEntityAssociation(
     this->addModelAssociationListItem(this->Internals->CurrentList, *i, false);
     }
   this->Internals->CurrentList->sortItems();
+  // The returned usedModelEnts should include all of the input modelEnts AND, if attDef is unique,
+  // entities that have been associated with the attributes with same definition.
   std::set<smtk::model::EntityRef> usedModelEnts = this->processAttUniqueness(attDef, modelEnts);
 
   // Now that we have add all the used model entities, we need to move on to all model
-  // entities that are not associated with the attribute, but which could be associated.
+  // entities that are not associated with the attribute, but could be associated.
   // We use the "no-exact match required" flag to catch any entity that could possibly match
   // the association mask. This gets pruned below.
   smtk::model::EntityRefs entityrefs = modelManager->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(
     attDef->associationMask(), false);
 
   EntityRefs avail;
+  // So the available list should be the difference between all "entityrefs" satisfying the mask
+  // and the usedModelEnts that have been associated.
   // Subtract the set of already-associated entities.
   std::set_difference(entityrefs.begin(), entityrefs.end(),
-    modelEnts.begin(), modelEnts.end(),
+    usedModelEnts.begin(), usedModelEnts.end(),
     std::inserter(avail, avail.end()));
 
   // Add a subset of the remainder to the list of available entities.
