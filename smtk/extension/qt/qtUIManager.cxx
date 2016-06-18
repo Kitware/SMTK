@@ -1149,7 +1149,7 @@ QWidget* qtUIManager::createEditBox(
   viewobject.setValue(static_cast<void*>(bview));
   inputWidget->setProperty("QtViewObj", viewobject);
   // Lets determine the item's state
-  if (!item->isSet(elementIdx) && item->isEnabled())
+  if (!item->isSet(elementIdx))
     {
       this->setWidgetColor(inputWidget,this->InvalidValueColor);
     }

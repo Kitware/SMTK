@@ -449,7 +449,7 @@ void qtFileItem::onLaunchFileBrowser()
 void qtFileItem::setOutputOptional(int state)
 {
   bool enable = state ? true : false;
-  this->Internals->EntryFrame->setEnabled(enable);
+  this->Internals->EntryFrame->setVisible(enable);
   if(enable != this->getObject()->isEnabled())
     {
     this->getObject()->setIsEnabled(enable);

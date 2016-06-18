@@ -119,7 +119,7 @@ void qtGroupItem::createWidget()
     {
     groupBox->setCheckable(true);
     groupBox->setChecked(item->isEnabled());
-    this->Internals->ChildrensFrame->setEnabled(item->isEnabled());
+    this->Internals->ChildrensFrame->setVisible(item->isEnabled());
     connect(groupBox, SIGNAL(toggled(bool)),
             this, SLOT(setEnabledState(bool)));
     }
@@ -128,7 +128,7 @@ void qtGroupItem::createWidget()
 //----------------------------------------------------------------------------
 void qtGroupItem::setEnabledState(bool checked)
 {
-  this->Internals->ChildrensFrame->setEnabled(checked);
+  this->Internals->ChildrensFrame->setVisible(checked);
   if(!this->getObject())
     {
     return;
