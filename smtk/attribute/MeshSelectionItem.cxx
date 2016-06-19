@@ -69,6 +69,11 @@ Item::Type MeshSelectionItem::type() const
   return Item::MESH_SELECTION;
 }
 //----------------------------------------------------------------------------
+bool MeshSelectionItem::isValid() const
+{
+  return true;
+}
+//----------------------------------------------------------------------------
 std::size_t MeshSelectionItem::numberOfValues() const
 {
   std::size_t total = 0;

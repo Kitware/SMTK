@@ -264,52 +264,13 @@ bool isInvalid<ValueItemPtr>(ValueItemPtr itemPtr)
   * This can be used to ensure that an attribute is in a good state
   * before using it to perform some operation.
   */
-bool Attribute::isValid()
+bool Attribute::isValid() const
 {
-  std::vector<smtk::attribute::ItemPtr> items;
-  this->references(items);
-  std::vector<smtk::attribute::ItemPtr>::iterator it;
-  for (it = items.begin(); it != items.end(); ++it)
+  for (auto it = m_items.begin(); it != m_items.end(); ++it)
     {
-    switch ((*it)->type())
+    if (! (*it)->isValid())
       {
-    case Item::ATTRIBUTE_REF:
-        {
-        smtk::attribute::RefItemPtr ri =
-          smtk::dynamic_pointer_cast<smtk::attribute::RefItem>(*it);
-        if (isInvalid(ri))
-          return false;
-        }
-      break;
-    case Item::MODEL_ENTITY:
-        {
-        smtk::attribute::ModelEntityItemPtr mei =
-          smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItem>(*it);
-        if (isInvalid(mei))
-          return false;
-        }
-      break;
-    case Item::MESH_SELECTION:
-      break;
-    case Item::GROUP:
-      break;
-    case Item::VOID:
-      break;
-    case Item::DOUBLE:
-    case Item::INT:
-    case Item::STRING:
-    case Item::FILE:
-    case Item::DIRECTORY:
-    case Item::COLOR:
-        {
-        smtk::attribute::ValueItemPtr vi =
-          smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(*it);
-        if (isInvalid(vi))
-          return false;
-        }
-      break;
-    default:
-      break;
+      return false;
       }
     }
   return true;

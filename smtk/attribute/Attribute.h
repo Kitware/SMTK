@@ -182,7 +182,7 @@ namespace smtk
       void setAppliesToInteriorNodes(bool appliesValue)
       {this->m_appliesToInteriorNodes = appliesValue;}
 
-      bool isValid();
+      bool isValid() const;
 
       smtk::attribute::System* system() const;
       smtk::model::ManagerPtr modelManager() const;

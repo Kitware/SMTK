@@ -59,6 +59,28 @@ Item::Type GroupItem::type() const
   return GROUP;
 }
 //----------------------------------------------------------------------------
+bool GroupItem::isValid() const
+{
+  // If the item is not enabled or if all of its values are set then it is valid
+  // else it is enabled and contains unset values making it invalid
+  if (!this->isEnabled())
+    {
+    return true;
+    }
+  for (auto it = this->m_items.begin(); it != this->m_items.end(); ++it)
+    {
+    for (auto it1 = (*it).begin(); it1 != (*it).end(); ++it1)
+      {
+      if (!(*it1)->isValid())
+        {
+        return false;
+        }
+      }
+    }
+  return true;
+}
+
+//----------------------------------------------------------------------------
 bool
 GroupItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr gdef)
 {

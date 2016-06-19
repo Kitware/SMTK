@@ -34,6 +34,7 @@ public:
   smtkTypeMacro(MeshItem);
   virtual ~MeshItem();
   virtual Item::Type type() const;
+  virtual bool isValid() const;
 
   std::size_t numberOfRequiredValues() const;
   bool isExtensible() const;

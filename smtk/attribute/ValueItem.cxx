@@ -94,6 +94,42 @@ ValueItem::~ValueItem()
     }
 }
 //----------------------------------------------------------------------------
+bool ValueItem::isValid() const
+{
+  // If the item is not enabled or if all of its values are set then it is valid
+  // else it is enabled and contains unset values making it invalid
+  if (!this->isEnabled())
+    {
+    return true;
+    }
+  for (std::size_t i = 0; i < this->m_isSet.size(); ++i)
+    {
+    if (!this->m_isSet[i])
+      {
+      return false;
+      }
+    // Is this using an expression?
+    if (this->m_expressions[i])
+      {
+      if (!this->m_expressions[i]->isValid())
+        {
+        return false;
+        }
+      }
+    }
+  // Now we need to check the active items
+    for (auto it = this->m_activeChildrenItems.begin(); 
+         it != this->m_activeChildrenItems.end(); ++it)
+    {
+    if (!(*it)->isValid())
+      {
+      return false;
+      }
+    }
+ return true;
+}
+
+//----------------------------------------------------------------------------
 bool ValueItem::hasDefault() const
 {
   const ValueItemDefinition *def =

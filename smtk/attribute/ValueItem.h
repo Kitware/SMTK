@@ -35,6 +35,7 @@ namespace smtk
       virtual ~ValueItem();
       virtual std::size_t numberOfValues() const
       {return this->m_isSet.size();}
+      virtual bool isValid() const;
       std::size_t numberOfRequiredValues() const;
       std::size_t maxNumberOfValues() const;
 

@@ -69,6 +69,25 @@ Item::Type DirectoryItem::type() const
 }
 
 //----------------------------------------------------------------------------
+bool DirectoryItem::isValid() const
+{
+  // If the item is not enabled or if all of its values are set then it is valid
+  // else it is enabled and contains unset values making it invalid
+  if (!this->isEnabled())
+    {
+    return true;
+    }
+  for (auto it = this->m_isSet.begin(); it != this->m_isSet.end(); ++it)
+    {
+    if (!(*it))
+      {
+      return false;
+      }
+    }
+  return true;
+}
+
+//----------------------------------------------------------------------------
 std::size_t DirectoryItem::numberOfRequiredValues() const
 {
   const DirectoryItemDefinition *def =

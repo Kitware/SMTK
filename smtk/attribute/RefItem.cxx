@@ -82,6 +82,27 @@ Item::Type RefItem::type() const
 }
 
 //----------------------------------------------------------------------------
+bool RefItem::isValid() const
+{
+  // If the item is not enabled or if all of its values are set then it is valid
+  // else it is enabled and contains unset values making it invalid
+  if (!this->isEnabled())
+    {
+    return true;
+    }
+  for (auto it = this->m_values.begin(); it != this->m_values.end(); ++it)
+    {
+    // Is the attribute this is referencing valid?
+    auto att = (*it).lock();
+    if (!att)
+      {
+      return false;
+      }
+    }
+  
+ return true;
+}
+//----------------------------------------------------------------------------
 std::size_t RefItem::numberOfRequiredValues() const
 {
   const RefItemDefinition *def =

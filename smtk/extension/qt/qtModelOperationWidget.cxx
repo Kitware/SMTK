@@ -234,7 +234,7 @@ bool qtModelOperationWidget::initOperatorUI(
     return true;
     }
 
-  if(!brOp->specification()->isValid())
+  if(!brOp->specification())
     {
     return false;
     }

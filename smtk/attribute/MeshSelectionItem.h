@@ -43,6 +43,7 @@ public:
   smtkTypeMacro(MeshSelectionItem);
   virtual ~MeshSelectionItem();
   virtual Item::Type type() const;
+  virtual bool isValid() const;
 
   void setValues(const smtk::common::UUID&, const std::set<int>&);
   void unionValues(const smtk::common::UUID&, const std::set<int>&);
