@@ -101,6 +101,7 @@ public:
   std::set<FragmentId> m_fragmentsToDeactivate;
   std::list<FragmentId> m_ring; // offsets into m_fragments that order a neighborhood CCW
   std::set<std::pair<RegionId,RegionId> > m_related; // regions containing other regions (first = parent, second=child)
+  RegionId m_outside;
   smtk::model::Manager::Ptr m_mgr;
   smtk::bridge::polygon::Session* m_session;
 };

@@ -60,7 +60,7 @@
               </DetailedDescription>
             </Double>
             <Double Name="feature size" NumberOfRequiredValues="1">
-              <DefaultValue>1e-8</DefaultValue>
+              <DefaultValue>1e-4</DefaultValue>
               <BriefDescription>The smallest resolvable edge length in world coordinates.</BriefDescription>
               <DetailedDescription>
                 This is the smallest world-coordinate edge length that you wish
@@ -79,7 +79,7 @@
               </DetailedDescription>
             </Double>
             <Int Name="model scale" NumberOfRequiredValues="1">
-              <DefaultValue>231000</DefaultValue>
+              <DefaultValue>2310</DefaultValue>
               <BriefDescription>The denominator .</BriefDescription>
               <DetailedDescription>
                 The length along which the associated entities should be swept.

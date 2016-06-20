@@ -40,6 +40,7 @@ Neighborhood::Neighborhood(
 
 int Neighborhood::sweep()
 {
+  this->m_outside = -1;
   std::set<SweepEvent>::iterator event;
 
   while (!this->m_eventQueue->empty())
@@ -304,7 +305,10 @@ void Neighborhood::mergeRelated()
   std::set<std::pair<RegionId,RegionId> >::iterator relIt;
   for (relIt = this->m_related.begin(); relIt != this->m_related.end(); ++relIt)
     {
-    this->m_regionIds.mergeSets(relIt->first, relIt->second);
+    if (this->m_regionIds.mergeSets(relIt->first, relIt->second) < 0)
+      {
+      this->m_outside = this->m_regionIds.find(relIt->first < 0 ? relIt->second : relIt->first);
+      }
     }
 }
 
@@ -348,30 +352,6 @@ void Neighborhood::assignAndMergeRegions(
   fragB.nextFragmentSense(!isOutB) = isOutA;
 
   this->relateNeighborhoods(*ringA, fragA, isOutA, *ringB, fragB, isOutB, winner);
-  /*
-  if (this->m_point.position() > fragA.lo())
-  {
-  this->m_regions[winner].insert(fragA.xxx)
-  this->m_regionIds.mergeSets(fragA.regionIds[0], fragB.regionIds[1]);
-  // TODO. Pop m_regions[whichever fragX.regionId[z] is not returned by mergeSets] and append/prepend
-  //       to m_regions[whichever fragX.regionId[z] *is* returned by mergeSets] depending on
-  //       whether survivor X == A (prepend m_regions[m_regionIds->find(B)]) or X == b (append ...find(A)).
-  }
-  */
-
-  /*
-  if (!isOutA && !isOutB && edgeA.below(edgeB))
-  {
-  // Both edges are ending here... we should mark the A-B region
-  // as an inner loop contained by the edges immediately above
-  // and below neighborhood.
-  xxx
-  }
-  */
-
-  // TODO. Could also check whether fragments are both segment-end events;
-  //       if so, see whether chain is complete and output a "create face
-  //       from chain" event.
 }
 
 /// Insert \a fragId into \a m_ring if it is between \a ringA and \a ringB

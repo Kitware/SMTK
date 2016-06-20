@@ -97,8 +97,8 @@ bool pmodel::computeModelScaleAndNormal(
   xl2 = sqrt(xl2);
   yl2 = sqrt(yl2);
   zl2 = sqrt(zl2);
-  // Scale each feature size to be 231000 integer quanta.
-  this->m_scale = static_cast<long long>(231000 / featureSize);
+  // Scale each feature size to be 231 integer quanta. (NB: 231 = 3 * 7 * 11, some nice primes)
+  this->m_scale = static_cast<long long>(231.0 / featureSize);
   // Make the world (x,y) axes unit length and the (i,j) axes one quantum in length:
   for (int i = 0; i < 3; ++i)
     {
@@ -161,7 +161,7 @@ bool pmodel::computeModelScaleAndYAxis(
   yl2 = sqrt(yl2);
   zl2 = sqrt(zl2);
   // Make the axes one feature-size in length:
-  this->m_scale = static_cast<long long>(231000 / featureSize);
+  this->m_scale = static_cast<long long>(231.0 / featureSize);
   // Make the world (x,y) axes unit length and the (i,j) axes one quantum in length:
   for (int i = 0; i < 3; ++i)
     {

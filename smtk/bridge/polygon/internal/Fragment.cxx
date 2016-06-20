@@ -83,6 +83,80 @@ bool EdgeFragmentComparator::operator() (FragmentId a, FragmentId b) const
   EdgeFragment& lineB((*this->fragments())[b]);
 
 #if 1
+  std::cout
+    << "        "
+    << a << " (" << lineA.lo().x()/2.31e13 << " " << lineA.lo().y()/2.31e13 << " -- " << lineA.hi().x()/2.31e13 << " " << lineA.hi().y()/2.31e13 << ") <? "
+    << b << " (" << lineB.lo().x()/2.31e13 << " " << lineB.lo().y()/2.31e13 << " -- " << lineB.hi().x()/2.31e13 << " " << lineB.hi().y()/2.31e13 << ")";
+  // Simple accept/reject:
+  internal::Coord aymax = lineA.lo().y() > lineA.hi().y() ? lineA.lo().y() : lineA.hi().y();
+  internal::Coord bymin = lineB.lo().y() < lineB.hi().y() ? lineB.lo().y() : lineB.hi().y();
+  if (aymax < bymin)
+    {
+    std::cout << ": Y  1\n";
+    return true;
+    }
+  internal::Coord aymin = lineA.lo().y() < lineA.hi().y() ? lineA.lo().y() : lineA.hi().y();
+  internal::Coord bymax = lineB.lo().y() > lineB.hi().y() ? lineB.lo().y() : lineB.hi().y();
+  if (aymin > bymax)
+    {
+    std::cout << ": N  2\n";
+    return false;
+    }
+
+  internal::HighPrecisionCoord dxA = lineA.hi().x() - lineA.lo().x();
+  internal::HighPrecisionCoord dxB = lineB.hi().x() - lineB.lo().x();
+
+  if (dxA == 0)
+    {
+    if (dxB == 0)
+      { // Really shouldn't be possible unless a, b share a common vertex where they meet, which the tests above should catch.
+      std::cout << "FRAB! a(" << a << ") and b(" << b << ") are vertical and overlap!\n";
+      return a < b;
+      }
+    std::cout << "FRAB! a(" << a << ") is vertical and b(" << b << ") intersects its interior!\n";
+    // Count a as below b when b@x* is below the sweep point (x*,y*) on the theory that a intersects
+    // the sweep point exactly. Immediately to the right of the sweep point, a is vertical while b
+    // is not, so a > b.
+    internal::HighPrecisionCoord dxBs = this->m_sweepPoint->position().x() - lineB.lo().x();
+    // FIXME: Be more careful about precision here:
+    internal::HighPrecisionCoord ybs = lineB.lo().y() + (dxBs / dxB) * (lineB.hi().y() - lineB.lo().y());
+    std::cout << ": " << ybs/2.31e13 << " > " << this->m_sweepPoint->position().y()/2.31e13 << "  3\n";
+    return ybs > this->m_sweepPoint->position().y();
+    }
+
+  // A is not vertical but B may be.
+  if (dxB == 0)
+    {
+    // Count a as below b when a@x* is at or below the sweep point (x*,y*) on the theory that b intersects
+    // the sweep point exactly. Immediately to the right of the sweep point, b is vertical while a
+    // is not, so a < b.
+    //
+    internal::HighPrecisionCoord dxAs = this->m_sweepPoint->position().x() - lineA.lo().x();
+    // FIXME: Be more careful about precision here:
+    internal::HighPrecisionCoord yas = lineA.lo().y() + (dxAs / dxA) * (lineA.hi().y() - lineA.lo().y());
+    std::cout << ": " << yas/2.31e13 << " <= " << this->m_sweepPoint->position().y()/2.31e13 << "  4\n";
+    return yas <= this->m_sweepPoint->position().y();
+    }
+
+  // Neither a nor b are vertical.
+  // See how they behave at or just up/right of the sweep point.
+  internal::HighPrecisionCoord dxAs = this->m_sweepPoint->position().x() - lineA.lo().x();
+  internal::HighPrecisionCoord yas = lineA.lo().y() + (dxAs / dxA) * (lineA.hi().y() - lineA.lo().y());
+  internal::HighPrecisionCoord dxBs = this->m_sweepPoint->position().x() - lineB.lo().x();
+  internal::HighPrecisionCoord ybs = lineB.lo().y() + (dxBs / dxB) * (lineB.hi().y() - lineB.lo().y());
+  if (yas != ybs)
+    {
+    std::cout << ": " << yas/2.31e13 << " < " << ybs/2.31e13 << "  5\n";
+    return yas < ybs;
+    }
+
+  internal::HighPrecisionCoord slopeDiff =
+    dxB * (lineA.hi().y() - lineA.lo().y()) -
+    dxA * (lineB.hi().y() - lineB.lo().y());
+
+  std::cout << ": " << slopeDiff << " < 0  6\n";
+  return slopeDiff/2.31e13/2.31e13 < 0;
+#elif 0
   // I. Compare y coordinates of fragment lo() points.
   //    Since active fragments do not cross (or have their hi() coordinates
   //    altered to an intersection point) comparing low coordinates is
