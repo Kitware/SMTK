@@ -273,6 +273,11 @@ bool Attribute::isValid() const
       return false;
       }
     }
+  // also check associations
+  if(this->m_associations && !this->m_associations->isValid())
+    {
+    return false;
+    }
   return true;
 }
 
