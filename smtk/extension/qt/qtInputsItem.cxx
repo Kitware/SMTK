@@ -55,11 +55,11 @@ public:
   Qt::Orientation VectorItemOrient;
 
   // for discrete items that with potential child widget
-  // <Enum-Combo, QPair<child-layout, child-Widget> >
-  QMap<QWidget*, QPair<QLayout*, QWidget*> >ChildrenMap;
+  // <Enum-Combo, child-layout >
+  QMap<QWidget*, QPointer<QLayout> >ChildrenMap;
 
   // for extensible items
-  QMap<QToolButton*, QPair<QLayout*, QWidget*> > ExtensibleMap;
+  QMap<QToolButton*, QPair<QPointer<QLayout>, QPointer<QWidget> > > ExtensibleMap;
   QList<QToolButton*> MinusButtonIndices;
   QPointer<QToolButton> AddItemButton;
 };
@@ -156,7 +156,7 @@ void qtInputsItem::addInputEditor(int i)
     editorLayout->addWidget(minusButton);
     connect(minusButton, SIGNAL(clicked()),
       this, SLOT(onRemoveValue()));
-    QPair<QLayout*, QWidget*> pair;
+    QPair<QPointer<QLayout>, QPointer<QWidget> > pair;
     pair.first = editorLayout;
     pair.second = editBox;
     this->Internals->ExtensibleMap[minusButton] = pair;
@@ -199,11 +199,7 @@ void qtInputsItem::addInputEditor(int i)
     this->Internals->EntryLayout->addLayout(editorLayout, 0, i+1);
     }
 
-  QPair<QLayout*, QWidget*> pair;
-  pair.first = childLayout;
-  pair.second = (childLayout && childLayout->count()>0) ?
-    childLayout->itemAt(0)->widget() : NULL;
-  this->Internals->ChildrenMap[editBox] = pair;
+  this->Internals->ChildrenMap[editBox] = childLayout;
   this->updateExtensibleState();
 }
 
@@ -362,19 +358,21 @@ void qtInputsItem::setOutputOptional(int state)
     {
     if(this->Internals->AddItemButton)
       {
-      this->Internals->AddItemButton->setEnabled(enable);
+      this->Internals->AddItemButton->setVisible(enable);
       }
     foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
       {
-      tButton->setEnabled(enable);
+      tButton->setVisible(enable);
       }
    }
 
   foreach(QWidget* cwidget, this->Internals->ChildrenMap.keys())
     {
-    if(this->Internals->ChildrenMap.value(cwidget).second)
+    QLayout* childLayout = this->Internals->ChildrenMap.value(cwidget);
+    if(childLayout)
       {
-      this->Internals->ChildrenMap.value(cwidget).second->setEnabled(enable);
+      for (int i = 0; i < childLayout->count(); ++i)
+        childLayout->itemAt(i)->widget()->setVisible(enable);
       }
     cwidget->setVisible(enable);
     }
@@ -422,13 +420,15 @@ void qtInputsItem::onRemoveValue()
     }
 
   QWidget* childwidget = this->Internals->ExtensibleMap.value(minusButton).second;
-  if(this->Internals->ChildrenMap.value(childwidget).second)
+  QLayout* childLayout = this->Internals->ChildrenMap.value(childwidget);
+  if(childLayout)
     {
-    delete this->Internals->ChildrenMap.value(childwidget).second;
-    }
-  if(this->Internals->ChildrenMap.value(childwidget).first)
-    {
-    delete this->Internals->ChildrenMap.value(childwidget).first;
+    QLayoutItem *child;
+    while ((child = childLayout->takeAt(0)) != 0)
+      {
+      delete child;
+      }
+    delete childLayout;
     }
   delete childwidget;
   delete this->Internals->ExtensibleMap.value(minusButton).first;
@@ -506,13 +506,15 @@ void qtInputsItem::clearChildWidgets()
 
   foreach(QWidget* cwidget, this->Internals->ChildrenMap.keys())
     {
-    if(this->Internals->ChildrenMap.value(cwidget).second)
+    QLayout* childLayout = this->Internals->ChildrenMap.value(cwidget);
+    if(childLayout)
       {
-      delete this->Internals->ChildrenMap.value(cwidget).second;
-      }
-    if(this->Internals->ChildrenMap.value(cwidget).first)
-      {
-      delete this->Internals->ChildrenMap.value(cwidget).first;
+      QLayoutItem *child;
+      while ((child = childLayout->takeAt(0)) != 0)
+        {
+        delete child;
+        }
+      delete childLayout;
       }
     delete cwidget;
     }
