@@ -109,7 +109,7 @@ bool ValueItem::isValid() const
       return false;
       }
     // Is this using an expression?
-    if (this->m_expressions[i])
+    if (this->allowsExpressions() && this->m_expressions[i])
       {
       if (!this->m_expressions[i]->isValid())
         {
