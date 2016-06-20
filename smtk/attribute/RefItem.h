@@ -31,6 +31,8 @@ namespace smtk
       friend class RefItemDefinition;
       friend class ValueItemDefinition;
     public:
+      typedef std::vector<attribute::WeakAttributePtr>::const_iterator const_iterator;
+
       smtkTypeMacro(RefItem);
       virtual ~RefItem();
       virtual Item::Type type() const;
@@ -59,6 +61,13 @@ namespace smtk
       virtual bool isSet(std::size_t element=0) const
       {return this->m_values[element].lock().get() != NULL;}
       virtual void unset(std::size_t element=0);
+
+      // Iterator-style access to values:
+      const_iterator begin() const;
+      const_iterator end() const;
+      template<typename I> bool setValues(I vbegin, I vend, std::size_t offset = 0);
+      template<typename I> bool appendValues(I vbegin, I vend);
+
       // Assigns this item to be equivalent to another.  Options are processed by derived item classes
       // Returns true if success and false if a problem occured.  By default, an attribute being referenced by this
       // item will also be copied if needed.  Use IGNORE_ATTRIBUTE_REF_ITEMS option to prevent this.
@@ -74,6 +83,37 @@ namespace smtk
       std::vector<attribute::WeakAttributePtr>m_values;
     private:
     };
+
+    template<typename I>
+    bool RefItem::setValues(I vbegin, I vend, std::size_t offset)
+      {
+      bool ok = false;
+      std::size_t num = vend - vbegin + offset;
+      if (this->setNumberOfValues(num))
+        {
+        ok = true;
+        std::size_t i = 0;
+        for (I it = vbegin; it != vend; ++it, ++i)
+          {
+          if (!this->setValue(offset + i, *it))
+            {
+            ok = false;
+            break;
+            }
+          }
+        }
+      // Enable or disable the item if it is optional.
+      if (ok)
+        this->setIsEnabled(num > 0 ? true : false);
+      return ok;
+      }
+
+    template<typename I>
+    bool RefItem::appendValues(I vbegin, I vend)
+      {
+      return this->setValues(vbegin, vend, this->numberOfValues());
+      }
+
   }
 }
 

@@ -269,7 +269,7 @@ bool ModelEntityItem::assign(ConstItemPtr &sourceItem, unsigned int options)
     {
       return Item::assign(sourceItem, options);
     }
-  
+
   // Update values
   // Only set values if both att systems are using the same model
   this->setNumberOfValues(sourceModelEntityItem->numberOfValues());
@@ -315,7 +315,7 @@ bool ModelEntityItem::has(const smtk::model::EntityRef& entity) const
   return this->find(entity) >= 0;
 }
 
-/**\brief
+/**\brief Return an iterator to the first model-entity value in this item.
   *
   */
 smtk::model::EntityRefArray::const_iterator ModelEntityItem::begin() const
@@ -323,7 +323,7 @@ smtk::model::EntityRefArray::const_iterator ModelEntityItem::begin() const
   return this->m_values.begin();
 }
 
-/**\brief
+/**\brief Return an iterator just past the last model-entity value in this item.
   *
   */
 smtk::model::EntityRefArray::const_iterator ModelEntityItem::end() const
@@ -339,8 +339,12 @@ std::ptrdiff_t ModelEntityItem::find(const smtk::common::UUID& entity) const
   std::ptrdiff_t idx = 0;
   smtk::model::EntityRefArray::const_iterator it;
   for (it = this->begin(); it != this->end(); ++it, ++idx)
+    {
     if (it->entity() == entity)
+      {
       return idx;
+      }
+    }
   return -1;
 }
 
@@ -352,7 +356,11 @@ std::ptrdiff_t ModelEntityItem::find(const smtk::model::EntityRef& entity) const
   std::ptrdiff_t idx = 0;
   smtk::model::EntityRefArray::const_iterator it;
   for (it = this->begin(); it != this->end(); ++it, ++idx)
+    {
     if (*it == entity)
+      {
       return idx;
+      }
+    }
   return -1;
 }

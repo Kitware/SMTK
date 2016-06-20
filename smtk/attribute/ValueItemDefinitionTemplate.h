@@ -127,8 +127,12 @@ namespace smtk
         return false; // only fixed-size attributes can have vector defaults.
       typename std::vector<DataT>::const_iterator it;
       for (it = dvalue.begin(); it != dvalue.end(); ++it)
+        {
         if (!this->isValueValid(*it))
+          {
           return false; // Is each value valid?
+          }
+        }
       this->m_defaultValue = dvalue;
       this->m_hasDefault = true;
       return true;

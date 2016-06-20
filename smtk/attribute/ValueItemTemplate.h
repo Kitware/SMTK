@@ -59,11 +59,13 @@ namespace smtk
           ok = true;
           std::size_t i = 0;
           for (I it = vbegin; it != vend; ++it, ++i)
+            {
             if (!this->setValue(i, *it))
               {
               ok = false;
               break;
               }
+            }
           }
         return ok;
         }
@@ -134,9 +136,13 @@ namespace smtk
           // Assumes that if the definition is discrete then default value
           // will be based on the default discrete index
           if (def->defaultValues().size() > 1)
+            {
             this->m_values = def->defaultValues();
+            }
           else
+            {
             this->m_values.resize(n, def->defaultValue());
+            }
           }
         else
           {
@@ -183,10 +189,10 @@ namespace smtk
         {
         this->m_values[element] = val;
         this->m_isSet[element] = true;
-	if (def->allowsExpressions())
-	  {
+        if (def->allowsExpressions())
+          {
           this->m_expressions[element]->unset();
-	  }
+          }
         return true;
         }
       return false;
