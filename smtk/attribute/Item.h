@@ -69,6 +69,7 @@ namespace smtk
      std::string name() const;
      std::string label() const;
      virtual Item::Type type() const = 0;
+     virtual bool isValid() const = 0;
      smtk::attribute::ConstItemDefinitionPtr definition() const
      {return this->m_definition;}
 

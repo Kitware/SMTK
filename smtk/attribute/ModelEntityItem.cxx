@@ -38,6 +38,31 @@ Item::Type ModelEntityItem::type() const
   return MODEL_ENTITY;
 }
 
+bool ModelEntityItem::isValid() const
+{
+  // If the item is not enabled or if all of its values are set then it is valid
+  // else it is enabled and contains unset values making it invalid
+  if (!this->isEnabled())
+    {
+    return true;
+    }
+  // Do we have atleats the number of required values present?
+  if(this->numberOfValues() < this->numberOfRequiredValues())
+    {
+    return false;
+    }
+  for (auto it = this->m_values.begin(); it != this->m_values.end(); ++it)
+    {
+    // If the enitity is NULL then its unset
+    if (!(*it).entity())
+      {
+      return false;
+      }
+    }
+  return true;
+
+}
+
 /// Set the definition of this attribute.
 bool ModelEntityItem::setDefinition(
   smtk::attribute::ConstItemDefinitionPtr adef)

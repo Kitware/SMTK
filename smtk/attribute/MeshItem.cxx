@@ -72,6 +72,18 @@ std::size_t MeshItem::numberOfValues() const
   return this->m_meshValues.size();
 }
 //----------------------------------------------------------------------------
+bool MeshItem::isValid() const
+{
+  // If the item is not enabled or if it contains atleast the number of 
+  // required values
+  if ((!this->isEnabled()) || 
+      (this->numberOfValues() >= this->numberOfRequiredValues()))
+    {
+    return true;
+    }
+  return false;
+ }
+//----------------------------------------------------------------------------
 /// Return the number of values required by this item's definition (if it has one).
 std::size_t MeshItem::numberOfRequiredValues() const
 {

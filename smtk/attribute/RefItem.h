@@ -34,6 +34,13 @@ namespace smtk
       smtkTypeMacro(RefItem);
       virtual ~RefItem();
       virtual Item::Type type() const;
+      // A RefItem is valid if it is either no enabled or if all of 
+      // its values are set and the attributes it references exist
+      // It does NOT check to see if the attribute(s) it refers to are 
+      // valid - the reason for this is to avoid infinite loops if 2 
+      // attributes contain items that reference each other.
+      virtual bool isValid() const;
+
       std::size_t numberOfValues() const
       {return this->m_values.size();}
       bool  setNumberOfValues(std::size_t newSize);

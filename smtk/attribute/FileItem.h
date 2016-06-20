@@ -32,6 +32,7 @@ namespace smtk
       smtkTypeMacro(FileItem);
       virtual ~FileItem();
       virtual Item::Type type() const;
+      virtual bool isValid() const;
       bool shouldBeRelative() const;
       bool shouldExist() const;
       std::size_t numberOfValues() const

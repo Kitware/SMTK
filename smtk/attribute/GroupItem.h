@@ -29,6 +29,7 @@ namespace smtk
       smtkTypeMacro(GroupItem);
       virtual ~GroupItem();
       virtual Item::Type type() const;
+      virtual bool isValid() const;
       std::size_t numberOfRequiredGroups() const;
       std::size_t maxNumberOfGroups() const;
 

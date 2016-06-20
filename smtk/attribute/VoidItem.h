@@ -31,6 +31,7 @@ namespace smtk
       smtkTypeMacro(VoidItem);
       virtual ~VoidItem();
       virtual Item::Type type() const;
+      virtual bool isValid() const;
 
     protected:
       VoidItem(Attribute *owningAttribute, int itemPosition);

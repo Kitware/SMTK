@@ -47,6 +47,7 @@ public:
   smtkTypeMacro(ModelEntityItem);
   virtual ~ModelEntityItem();
   virtual Item::Type type() const;
+  virtual bool isValid() const;
 
   std::size_t numberOfValues() const;
   bool setNumberOfValues(std::size_t newSize);

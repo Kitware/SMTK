@@ -58,6 +58,11 @@ AttributePtr Item::attribute() const
   return AttributePtr();
 }
 //----------------------------------------------------------------------------
+bool Item::isValid() const
+{
+  return true;
+}
+//----------------------------------------------------------------------------
 ItemPtr Item::pointer() const
 {
   // We need to find the object that owns this item
