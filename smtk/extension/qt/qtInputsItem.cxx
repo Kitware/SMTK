@@ -376,7 +376,7 @@ void qtInputsItem::setOutputOptional(int state)
       {
       this->Internals->ChildrenMap.value(cwidget).second->setEnabled(enable);
       }
-    cwidget->setEnabled(enable);
+    cwidget->setVisible(enable);
     }
 
 //  this->Internals->EntryFrame->setEnabled(enable);

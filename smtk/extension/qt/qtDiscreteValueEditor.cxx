@@ -115,6 +115,7 @@ void qtDiscreteValueEditor::createWidget()
       static_cast<size_t>(itemDef->defaultDiscreteIndex()) == i)
       {
       tooltip = "Default: " + QString(enumText.c_str());
+      enumText+= " (Default)";
       }
     discreteVals.push_back(enumText.c_str());
     }

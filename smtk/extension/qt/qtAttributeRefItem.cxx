@@ -459,17 +459,17 @@ void qtAttributeRefItem::setOutputOptional(int state)
 {
   bool enable = state ? true : false;
 
-  this->Internals->EditButton->setEnabled(enable);
-  this->Internals->CollapseButton->setEnabled(enable);
+  this->Internals->EditButton->setVisible(enable);
+  this->Internals->CollapseButton->setVisible(enable);
   foreach(QComboBox* combo, this->Internals->comboBoxes)
     {
-    combo->setEnabled(enable);
+    combo->setVisible(enable);
     }
   foreach(qtAttribute* qa, this->Internals->RefAtts.values())
     {
     if(qa)
       {
-      qa->widget()->setEnabled(enable);
+      qa->widget()->setVisible(enable);
       }
     }
   if(enable != this->getObject()->isEnabled())
