@@ -55,6 +55,9 @@ public:
                std::size_t numPoints,
                bool ignoreZValues=false);
 
+  //returns all the point ids that are inside the locator
+  smtk::mesh::HandleRange range() const;
+
   //Find the set of points that are within the radius of a single point.
   //
   //See smtk/mesh/Interface.h for the full implementation of Results

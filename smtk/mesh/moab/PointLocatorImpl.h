@@ -42,6 +42,8 @@ public:
 
   ~PointLocatorImpl();
 
+  smtk::mesh::HandleRange range() const;
+
   //returns the set of points that are within the radius of a single point
   void locatePointsWithinRadius(double x, double y, double z, double radius,
                                 Results& results);

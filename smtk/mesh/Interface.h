@@ -126,6 +126,9 @@ public:
 
   virtual ~PointLocatorImpl() {}
 
+  //returns all the point ids that are inside the locator
+  virtual smtk::mesh::HandleRange range() const = 0;
+
   virtual void locatePointsWithinRadius(double x, double y, double z,
                                         double radius,
                                         Results& results) = 0;

@@ -128,6 +128,13 @@ PointLocatorImpl::~PointLocatorImpl()
     }
 }
 
+//----------------------------------------------------------------------------
+smtk::mesh::HandleRange PointLocatorImpl::range() const
+{
+   smtk::mesh::HandleRange entities;
+   m_interface->get_entities_by_handle(m_meshOwningPoints, entities);
+   return entities;
+}
 
 //----------------------------------------------------------------------------
 namespace {
