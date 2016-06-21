@@ -9,15 +9,15 @@
           ShouldExist="true"
           FileFilters="Exodus II Datasets (*.e *.exo *.ex2);;Label maps (*.vti);; NetCDF files (*.nc *.ncdf);;All files (*.*)">
         </File>
-        <String Name="filetype" NumberOfRequiredValues="1"/>
-        <Int Name="readSLACVolumes" NumberOfRequiredValues="1">
+        <String Name="filetype" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false"/>
+        <Int Name="readSLACVolumes" NumberOfRequiredValues="0">
           <DefaultValue>1</DefaultValue>
           <DiscreteInfo DefaultIndex="1">
             <Structure><Value Enum="no">0</Value></Structure>
             <Structure><Value Enum="yes">1</Value></Structure>
           </DiscreteInfo>
         </Int>
-        <String Name="label map" NumberOfRequiredValues="1">
+        <String Name="label map" NumberOfRequiredValues="0">
           <BriefDescription>
             The name of a scalar cell-data array indicating which segment each cell belongs to.
           </BriefDescription>

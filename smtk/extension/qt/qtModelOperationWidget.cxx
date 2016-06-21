@@ -371,7 +371,7 @@ void qtModelOperationWidget::expungeEntities(
   while(it.hasNext())
     {
     it.next();
-    if(it.value().opPtr && it.value().opPtr->specification()->isValid())
+    if(it.value().opPtr && it.value().opPtr->specification())
       {
       for (EntityRefs::const_iterator bit = expungedEnts.begin();
         bit != expungedEnts.end(); ++bit)

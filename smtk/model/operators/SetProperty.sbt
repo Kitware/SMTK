@@ -4,11 +4,12 @@
   <Definitions>
     <!-- Operator -->
     <AttDef Type="set property" BaseType="operator">
-      <AssociationsDef Name="Entities" NumberOfRequiredValues="1" Extensible="true">
+      <AssociationsDef Name="Entities" NumberOfRequiredValues="0" Extensible="true">
         <MembershipMask>any</MembershipMask>
       </AssociationsDef>
       <BriefDescription>
-        Set (or remove) a property value on a set of entities.
+        Set (or remove) a property value on a set of entities. Because this op can also
+        take MeshEntity as input, so NumberOfRequiredValues for model associatons is 0.
       </BriefDescription>
       <DetailedDescription>
         Set (or remove) a property value on a set of entities.

@@ -256,9 +256,9 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
     return;
 
   OperatorPtr brOp = this->getOp(dropIdx, pEntityGroupOpName);
-  if(!brOp || !brOp->specification()->isValid())
+  if(!brOp || !brOp->specification())
     {
-    std::cout << "No entity group operator to handel the drop!\n";
+    std::cout << "No entity group operator to handle the drop!\n";
     return;  
     }
 
@@ -601,7 +601,7 @@ void qtModelView::removeEntityGroup(
     return;
 
   OperatorPtr brOp = this->getOp(sessionRef.session(), pEntityGroupOpName);
-  if(!brOp || !brOp->specification()->isValid())
+  if(!brOp || !brOp->specification())
     {
     std::cout << "No entity group operator to handle the key press!\n";
     return;  
@@ -643,7 +643,7 @@ void qtModelView::removeFromEntityGroup(
     return;
 
   OperatorPtr brOp = this->getOp(sessionRef.session(), pEntityGroupOpName);
-  if(!brOp || !brOp->specification()->isValid())
+  if(!brOp || !brOp->specification())
     {
     std::cout << "No entity group operator to handle the key press!\n";
     return;  
@@ -1041,7 +1041,7 @@ OperatorPtr qtModelView::getOp(const smtk::model::SessionPtr& brSession,
     }
 
   smtk::attribute::AttributePtr attrib = brOp->specification();
-  if(!attrib->isValid())
+  if(!attrib)
     {
     std::cerr
       << "Invalid spec for the op: " << brOp->name() << "\n";
@@ -1057,7 +1057,7 @@ OperatorPtr qtModelView::getOp(const smtk::model::SessionPtr& brSession,
 void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
 {
   OperatorPtr brOp = this->getOp(idx, "set property");
-  if(!brOp || !brOp->specification()->isValid())
+  if(!brOp || !brOp->specification())
     return;
   smtk::model::EntityRefs selentityrefs;
   smtk::mesh::MeshSets selmeshes;
@@ -1183,7 +1183,7 @@ bool qtModelView::setEntityVisibility(
 void qtModelView::changeEntityColor( const QModelIndex& idx)
 {
   OperatorPtr brOp = this->getOp(idx, "set property");
-  if(!brOp || !brOp->specification()->isValid())
+  if(!brOp || !brOp->specification())
     return;
 
   DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
@@ -1353,7 +1353,7 @@ void qtModelView::syncEntityVisibility(
     return;
     }
   OperatorPtr brOp = this->getOp(session, "set property");
-  if(!brOp || !brOp->specification()->isValid())
+  if(!brOp || !brOp->specification())
     return;
   EntityRefs entities;
   smtk::extension::QEntityItemModel* qmodel =
@@ -1381,7 +1381,7 @@ void qtModelView::syncEntityColor(
     return;
     }
   OperatorPtr brOp = this->getOp(session, "set property");
-  if(!brOp || !brOp->specification()->isValid())
+  if(!brOp || !brOp->specification())
     return;
   EntityRefs entities;
   smtk::extension::QEntityItemModel* qmodel =
@@ -1400,7 +1400,7 @@ void qtModelView::syncEntityColor(
 void qtModelView::changeEntityName( const QModelIndex& idx)
 {
   OperatorPtr brOp = this->getOp(idx, "set property");
-  if(!brOp || !brOp->specification()->isValid())
+  if(!brOp || !brOp->specification())
     return;
   DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
   smtk::attribute::AttributePtr attrib = brOp->specification();
