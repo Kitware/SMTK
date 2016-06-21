@@ -3,6 +3,7 @@ set(meshSrcs
   CellSet.cxx
   CellTypes.cxx
   Collection.cxx
+  Displace.cxx
   ExtractTessellation.cxx
   ForEachTypes.cxx
   Handle.cxx
@@ -34,6 +35,7 @@ set(meshHeaders
   CellTypes.h
   Collection.h
   DimensionTypes.h
+  Displace.h
   ExtractTessellation.h
   ForEachTypes.h
   Handle.h
