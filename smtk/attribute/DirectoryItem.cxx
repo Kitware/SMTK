@@ -49,11 +49,19 @@ setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
     }
   // Find out how many values this item is suppose to have
   // if the size is 0 then its unbounded
-  size_t n = def->numberOfRequiredValues();
+  std::size_t n = def->numberOfRequiredValues();
   if (n)
     {
-    this->m_isSet.resize(n, false);
-    this->m_values.resize(n);
+    if (def->hasDefault())
+      {
+      this->m_values.resize(n, def->defaultValue());
+      this->m_isSet.resize(n, true);
+      }
+    else
+      {
+      this->m_isSet.resize(n, false);
+      this->m_values.resize(n);
+      }
     }
   return true;
 }
@@ -88,6 +96,17 @@ bool DirectoryItem::isValid() const
 }
 
 //----------------------------------------------------------------------------
+bool DirectoryItem::isExtensible() const
+{
+  auto def =
+    static_cast<const DirectoryItemDefinition*>(this->m_definition.get());
+  if (!def)
+    {
+    return false;
+    }
+  return def->isExtensible();
+}
+//----------------------------------------------------------------------------
 std::size_t DirectoryItem::numberOfRequiredValues() const
 {
   const DirectoryItemDefinition *def =
@@ -97,6 +116,17 @@ std::size_t DirectoryItem::numberOfRequiredValues() const
     return 0;
     }
   return def->numberOfRequiredValues();
+}
+//----------------------------------------------------------------------------
+std::size_t DirectoryItem::maxNumberOfValues() const
+{
+  const DirectoryItemDefinition *def =
+    static_cast<const DirectoryItemDefinition*>(this->m_definition.get());
+  if (def == NULL)
+    {
+    return 0;
+    }
+  return def->maxNumberOfValues();
 }
 //----------------------------------------------------------------------------
 bool DirectoryItem::shouldBeRelative() const
@@ -154,14 +184,19 @@ DirectoryItem::valueAsString(std::size_t element,
 bool
 DirectoryItem::appendValue(const std::string &val)
 {
-  //First - are we allowed to change the number of values?
-  const DirectoryItemDefinition *def =
-    static_cast<const DirectoryItemDefinition *>(this->definition().get());
-  if (def->numberOfRequiredValues() != 0)
+ //First - are we allowed to change the number of values?
+  if (!this->isExtensible())
     {
     return false; // The number of values is fixed
     }
-
+  // See if we have it max number of values (if there is such a limit)
+  std::size_t maxN = this->maxNumberOfValues();
+  if ( maxN && (this->numberOfValues() >= maxN))
+    {
+    return false;
+    }
+  auto def =
+    static_cast<const DirectoryItemDefinition*>(this->m_definition.get());
   if (def->isValueValid(val))
     {
     this->m_values.push_back(val);
@@ -175,11 +210,14 @@ bool
 DirectoryItem::removeValue(int element)
 {
   //First - are we allowed to change the number of values?
-  const DirectoryItemDefinition *def =
-    static_cast<const DirectoryItemDefinition *>(this->definition().get());
-  if (def->numberOfRequiredValues() != 0)
+ if (!this->isExtensible())
     {
     return false; // The number of values is fixed
+    }
+  // Would removing teh value take us under the number of required values?
+  if (this->numberOfValues()  <= this->numberOfRequiredValues())
+    {
+    return false;
     }
   this->m_values.erase(this->m_values.begin()+element);
   this->m_isSet.erase(this->m_isSet.begin()+element);
@@ -195,33 +233,121 @@ bool DirectoryItem::setNumberOfValues(std::size_t newSize)
     }
 
   //Next - are we allowed to change the number of values?
-  const DirectoryItemDefinition *def =
-    static_cast<const DirectoryItemDefinition *>(this->definition().get());
-  if (def->numberOfRequiredValues() != 0)
+  if (!this->isExtensible())
     {
-    return false; // The number of values is fixed
+    return false;
     }
-  this->m_values.resize(newSize);
-  this->m_isSet.resize(newSize, false); //Any added values are not set
+  // Is the nre size smaller than the number of required values?
+  if (newSize < this->numberOfRequiredValues())
+    {
+    return false;
+    }
+  // Is the new size > than the max number of values?
+  std::size_t maxN = this->maxNumberOfValues();
+  if (maxN && (newSize > maxN))
+    {
+    return false;
+    }
+  if (this->hasDefault())
+    {
+    this->m_values.resize(newSize, this->defaultValue());
+    this->m_isSet.resize(newSize, true);
+    }
+  else
+    {
+    this->m_values.resize(newSize);
+    this->m_isSet.resize(newSize, false); //Any added values are not set
+    }
   return true;
+}
+//----------------------------------------------------------------------------
+bool DirectoryItem::hasDefault() const
+{
+  auto def = static_cast<const DirectoryItemDefinition *>(this->definition().get());
+  if (!def)
+    {
+    return false;
+    }
+  return def->hasDefault();
+}
+//----------------------------------------------------------------------------
+bool DirectoryItem::setToDefault(std::size_t element)
+{
+  auto def = static_cast<const DirectoryItemDefinition *>(this->definition().get());
+  if (!def->hasDefault())
+    {
+    return false; // Doesn't have a default value
+    }
+
+  this->setValue(element, def->defaultValue());
+  return true;
+}
+//----------------------------------------------------------------------------
+bool DirectoryItem::isUsingDefault() const
+{
+  auto def = static_cast<const DirectoryItemDefinition *>(this->definition().get());
+  if (!def->hasDefault())
+    {
+    return false; // Doesn't have a default value
+    }
+
+  std::size_t i, n = this->numberOfValues();
+  std::string dval = def->defaultValue();
+  for (i = 0; i < n; i++)
+    {
+    if (!(this->m_isSet[i] && (this->m_values[i] == dval)))
+      {
+      return false;
+       }
+    }
+  return true;
+}
+//----------------------------------------------------------------------------
+ bool DirectoryItem::isUsingDefault(std::size_t element) const
+{
+  auto def = static_cast<const DirectoryItemDefinition *>(this->definition().get());
+  if (def->hasDefault() && this->m_isSet[element] && 
+      this->m_values[element] == def->defaultValue())
+    {
+    return true; 
+    }
+  return false;
+}
+//----------------------------------------------------------------------------
+std::string DirectoryItem::defaultValue() const
+{
+  auto def = static_cast<const DirectoryItemDefinition *>(this->definition().get());
+  if (!def)
+    {
+      return "";
+    }
+  return def->defaultValue();
 }
 //----------------------------------------------------------------------------
 void
 DirectoryItem::reset()
 {
-  const DirectoryItemDefinition *def
-    = static_cast<const DirectoryItemDefinition *>(this->definition().get());
-  // Was the initial size 0?
-  std::size_t i, n = def->numberOfRequiredValues();
-  if (!n)
+  auto def = static_cast<const DirectoryItemDefinition *>(this->definition().get());
+  std::size_t i, n = this->numberOfRequiredValues();
+  if (this->numberOfValues() != n)
     {
-    this->m_values.clear();
-    this->m_isSet.clear();
-    return;
+    this->setNumberOfValues(n);
     }
-  for (i = 0; i < n; i++)
+
+  if (!def->hasDefault())
     {
-    this->unset(i);
+    for (i = 0; i < n; i++)
+      {
+      this->unset(i);
+      }
+    }
+  else
+    {
+    std::string dval = def->defaultValue();
+    for (i = 0; i < n; i++)
+      {
+      this->setValue(i, dval);
+      }    
     }
 }
 //----------------------------------------------------------------------------

@@ -88,7 +88,7 @@ namespace smtk
       // Returns false if the new max is less than the number of required groups
       // and is not 0
       bool setMaxNumberOfGroups(std::size_t esize);
-\
+
       void setSubGroupLabel(std::size_t element, const std::string &elabel);
       void setCommonSubGroupLabel(const std::string &elabel);
       bool usingCommonSubGroupLabel() const

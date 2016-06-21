@@ -39,6 +39,8 @@ namespace smtk
       {return this->m_values.size();}
       bool  setNumberOfValues(std::size_t newSize);
       std::size_t numberOfRequiredValues() const;
+      bool isExtensible() const;
+      std::size_t maxNumberOfValues() const;
       std::string value(std::size_t element=0) const
       {return this->m_values[element];}
       bool setValue(const std::string &val)
@@ -47,7 +49,15 @@ namespace smtk
       bool appendValue(const std::string &val);
       bool removeValue(int element);
       virtual void reset();
-      virtual std::string valueAsString(const std::string &format="") const
+      virtual bool setToDefault(std::size_t elementIndex=0);
+      // Returns true if there is a default defined and the item is curently set to it
+      virtual bool isUsingDefault(std::size_t elementIndex) const;
+      // This method tests all of the values of the items w/r the default value
+      virtual bool isUsingDefault() const;
+      // Does this item have a default value?
+      bool hasDefault() const;
+      std::string defaultValue() const;
+     virtual std::string valueAsString(const std::string &format="") const
       {return this->valueAsString(0, format);}
       virtual std::string valueAsString(std::size_t element, const std::string &format="") const;
       virtual bool isSet(std::size_t element=0) const

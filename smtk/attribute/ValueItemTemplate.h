@@ -323,9 +323,13 @@ namespace smtk
       if (def->hasDefault())
         {
         if (def->defaultValues().size() == newSize)
+          {
           this->m_values = def->defaultValues();
+          }
         else
+          {
           this->m_values.resize(newSize, def->defaultValue());
+          }
         this->m_isSet.resize(newSize, true);
         }
       else

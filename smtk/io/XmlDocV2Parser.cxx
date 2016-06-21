@@ -14,7 +14,10 @@
 #include "pugixml/src/pugixml.cpp"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/DirectoryItem.h"
+#include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/MeshItemDefinition.h"
 #include "smtk/attribute/MeshSelectionItem.h"
@@ -134,6 +137,50 @@ void XmlDocV2Parser::process(xml_document &doc)
     def->setRootName(xatt.value());
     }
 }
+//----------------------------------------------------------------------------
+void XmlDocV2Parser::processDirectoryDef(pugi::xml_node &node,
+                                         attribute::DirectoryItemDefinitionPtr idef)
+{
+  xml_node defaultNode;
+  xml_attribute xatt;
+  this->XmlDocV1Parser::processDirectoryDef(node, idef);
+
+  xatt = node.attribute("Extensible");
+  if (xatt)
+    {
+    idef->setIsExtensible(xatt.as_bool());
+    xatt = node.attribute("MaxNumberOfValues");
+    if (xatt)
+      {
+      idef->setMaxNumberOfValues(xatt.as_uint());
+      }
+    }
+  // Check for default value
+  defaultNode = node.child("DefaultValue");
+  if (defaultNode)
+    {
+    idef->setDefaultValue(defaultNode.text().get());
+    }
+}
+//----------------------------------------------------------------------------
+void XmlDocV2Parser::processFileDef(pugi::xml_node &node,
+                                       attribute::FileItemDefinitionPtr idef)
+{
+  xml_attribute xatt;
+  this->XmlDocV1Parser::processFileDef(node, idef);
+
+  xatt = node.attribute("Extensible");
+  if (xatt)
+    {
+    idef->setIsExtensible(xatt.as_bool());
+    xatt = node.attribute("MaxNumberOfValues");
+    if (xatt)
+      {
+      idef->setMaxNumberOfValues(xatt.as_uint());
+      }
+    }
+  }
+
 //----------------------------------------------------------------------------
 void XmlDocV2Parser::processStringDef(xml_node &node,
                                     smtk::attribute::StringItemDefinitionPtr idef)

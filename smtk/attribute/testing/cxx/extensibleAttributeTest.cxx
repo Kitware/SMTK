@@ -19,6 +19,8 @@
 #include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/GroupItemDefinition.h"
+#include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
@@ -31,7 +33,8 @@
 #include <iostream>
 
 const char *d2items[] = {
-  "IntItem1", "IntItem2", "DoubleItem1", "DoubleItem2", "StringItem1", "StringItem2", "StringItem3"
+  "IntItem1", "IntItem2", "DoubleItem1", "DoubleItem2", "StringItem1", "StringItem2", "StringItem3",
+  "FileItem1", "FileItem2", "FileItem3","DirectoryItem1", "DirectoryItem2", "DirectoryItem3"
 };
 
 const char *d3items[] = {
@@ -111,7 +114,7 @@ int checkGroupItem(const char *name, smtk::attribute::AttributePtr att, bool isE
     {
     if (!gitem->appendGroup())
       {
-      std::cout << name << "did not allow append op for a fixed length item - PASSED\n";
+      std::cout << name << " did not allow append op for a fixed length item - PASSED\n";
       }
     else
       {
@@ -122,7 +125,7 @@ int checkGroupItem(const char *name, smtk::attribute::AttributePtr att, bool isE
     // Can we remove from the item?
     if (!gitem->removeGroup(0))
       {
-      std::cout << name << "did not allow remove op for a fixed length item - PASSED\n";
+      std::cout << name << " did not allow remove op for a fixed length item - PASSED\n";
       }
     else
       {
@@ -275,7 +278,107 @@ int checkStringItemDef(const char *name, smtk::attribute::DefinitionPtr def, boo
   return pos;
 }
 
-int checkDefaults(smtk::attribute::StringItemPtr sitem)
+int checkFileItemDef(const char *name, smtk::attribute::DefinitionPtr def, bool isExtensible)
+{
+  int pos = def->findItemPosition(name);
+  if (pos < 0)
+    {
+    std::cerr << "Could not find " << name << "! - ERROR\n";
+    return -1;
+    }
+  else
+    {
+    std::cout << "Pos of " << name << " = " << pos << std::endl;
+    }
+  auto sdef =
+    smtk::dynamic_pointer_cast<smtk::attribute::FileItemDefinition>(def->itemDefinition(pos));
+  if (!sdef)
+    {
+    std::cerr << name << " Def is not a file! at pos: " << pos << " - ERROR\n";
+    return -1;
+    }
+  // Is this suppose to be extenisble
+  // Is it extensible?
+  if (isExtensible)
+    {
+    if (sdef->isExtensible())
+      {
+      std::cout << name << " is extensible!, NumOfRequired Values: " << sdef->numberOfRequiredValues()
+                << " MaxNumberOfValues: " << sdef->maxNumberOfValues() << " - PASSED\n";
+      }
+    else
+      {
+      std::cerr << name << " Def is not extensible - ERROR\n";
+      return -1;
+      }
+    }
+  else
+    {
+    if (!sdef->isExtensible())
+      {
+      std::cout << name << " is not extensible - PASSED\n";
+      }
+    else
+      {
+      std::cerr << name << " Def is  extensible - ERROR\n";
+      return -1;
+      }
+    }
+
+  return pos;
+}
+
+int checkDirectoryItemDef(const char *name, smtk::attribute::DefinitionPtr def, bool isExtensible)
+{
+  int pos = def->findItemPosition(name);
+  if (pos < 0)
+    {
+    std::cerr << "Could not find " << name << "! - ERROR\n";
+    return -1;
+    }
+  else
+    {
+    std::cout << "Pos of " << name << " = " << pos << std::endl;
+    }
+  auto sdef =
+    smtk::dynamic_pointer_cast<smtk::attribute::DirectoryItemDefinition>(def->itemDefinition(pos));
+  if (!sdef)
+    {
+    std::cerr << name << " Def is not a directory! at pos: " << pos << " - ERROR\n";
+    return -1;
+    }
+  // Is this suppose to be extenisble
+  // Is it extensible?
+  if (isExtensible)
+    {
+    if (sdef->isExtensible())
+      {
+      std::cout << name << " is extensible!, NumOfRequired Values: " << sdef->numberOfRequiredValues()
+                << " MaxNumberOfValues: " << sdef->maxNumberOfValues() << " - PASSED\n";
+      }
+    else
+      {
+      std::cerr << name << " Def is not extensible - ERROR\n";
+      return -1;
+      }
+    }
+  else
+    {
+    if (!sdef->isExtensible())
+      {
+      std::cout << name << " is not extensible - PASSED\n";
+      }
+    else
+      {
+      std::cerr << name << " Def is  extensible - ERROR\n";
+      return -1;
+      }
+    }
+
+  return pos;
+}
+
+template<typename T> int checkDefaults(T sitem)
 {
   std::size_t n = sitem->numberOfValues();
   // If there is a default value is it correct?
@@ -297,24 +400,11 @@ int checkDefaults(smtk::attribute::StringItemPtr sitem)
   return 0;
 }
 
-
-int checkStringItem(const char *name, smtk::attribute::AttributePtr att, bool isExtensible)
+template<typename T> int checkItem(T sitem, bool isExtensible)
 {
-  int status = 0;
-  smtk::attribute::ItemPtr item = att->find(name);
-  if (!item)
-    {
-    std::cerr << name << " could not be found\n";
-    return -1;
-    }
-  smtk::attribute::StringItemPtr sitem =
-    smtk::dynamic_pointer_cast<smtk::attribute::StringItem>(item);
-  if (!sitem)
-    {
-    std::cerr << name << " is not a string\n";
-    return -1;
-    }
   std::size_t minN = sitem->numberOfRequiredValues(), maxN = sitem->maxNumberOfValues();
+  std::string name = sitem->name();
+  int status = 0;
   std::cout << name << ": NumOfRequired Values: " << minN
               << " MaxNumberOfValues: " << maxN << "\n";
   if (checkDefaults(sitem))
@@ -326,7 +416,7 @@ int checkStringItem(const char *name, smtk::attribute::AttributePtr att, bool is
     {
     if (!sitem->appendValue("New Val"))
       {
-      std::cout << name << "did not allow append op for a fixed length item - PASSED\n";
+      std::cout << name << " did not allow append op for a fixed length item - PASSED\n";
       }
     else
       {
@@ -337,7 +427,7 @@ int checkStringItem(const char *name, smtk::attribute::AttributePtr att, bool is
     // Can we remove from the item?
     if (!sitem->removeValue(0))
       {
-      std::cout << name << "did not allow remove op for a fixed length item - PASSED\n";
+      std::cout << name << " did not allow remove op for a fixed length item - PASSED\n";
       }
     else
       {
@@ -391,7 +481,7 @@ int checkStringItem(const char *name, smtk::attribute::AttributePtr att, bool is
     std::cout << name << "'s resize test - PASSED\n";
     }
 
-  if (checkDefaults(sitem))
+  if (checkDefaults<T>(sitem))
     {
     std::cout << "Problem with default for resized " << sitem->name() << "- ERROR\n";
     status = -1;
@@ -444,6 +534,62 @@ int checkStringItem(const char *name, smtk::attribute::AttributePtr att, bool is
     }
   return status;
 }
+int checkStringItem(const char *name, smtk::attribute::AttributePtr att, bool isExtensible)
+{
+  int status = 0;
+  smtk::attribute::ItemPtr item = att->find(name);
+  if (!item)
+    {
+    std::cerr << name << " could not be found\n";
+    return -1;
+    }
+  auto sitem =
+    smtk::dynamic_pointer_cast<smtk::attribute::StringItem>(item);
+  if (!sitem)
+    {
+    std::cerr << name << " is not a string\n";
+    return -1;
+    }
+  return checkItem<>(sitem, isExtensible);
+}
+
+int checkFileItem(const char *name, smtk::attribute::AttributePtr att, bool isExtensible)
+{
+  int status = 0;
+  smtk::attribute::ItemPtr item = att->find(name);
+  if (!item)
+    {
+    std::cerr << name << " could not be found\n";
+    return -1;
+    }
+  auto sitem =
+    smtk::dynamic_pointer_cast<smtk::attribute::FileItem>(item);
+  if (!sitem)
+    {
+    std::cerr << name << " is not a file\n";
+    return -1;
+    }
+  return checkItem<>(sitem, isExtensible);
+}
+
+int checkDirectoryItem(const char *name, smtk::attribute::AttributePtr att, bool isExtensible)
+{
+  int status = 0;
+  smtk::attribute::ItemPtr item = att->find(name);
+  if (!item)
+    {
+    std::cerr << name << " could not be found\n";
+    return -1;
+    }
+  auto sitem =
+    smtk::dynamic_pointer_cast<smtk::attribute::DirectoryItem>(item);
+  if (!sitem)
+    {
+    std::cerr << name << " is not a file\n";
+    return -1;
+    }
+  return checkItem<>(sitem, isExtensible);
+}
 
 
 int checkSystem(smtk::attribute::System& system)
@@ -459,9 +605,10 @@ int checkSystem(smtk::attribute::System& system)
     }
 
   int i, n = def->numberOfItemDefinitions();
-  if (n != 7)
+  if (n != 13)
     {
-    std::cerr << "Derived 2 has incorrect number of items! - ERROR\n";
+    std::cerr << "Derived 2 has incorrect number of items! Reported:"
+              << n << " should have 13!- ERROR\n";
     return -2;
     }
 
@@ -505,6 +652,48 @@ int checkSystem(smtk::attribute::System& system)
     return -4;
     }
 
+  pos1 = checkFileItemDef("FileItem1", def, true);
+  if (pos1 < 0)
+    {
+    std::cerr << "Problem with FileItem1 Def - ERROR\n";
+    return -3;
+    }
+
+  pos2 = checkFileItemDef("FileItem2", def, true);
+  if (pos2 < 0)
+    {
+    std::cerr << "Problem with FileItem2 Def - ERROR\n";
+    return -4;
+    }
+
+  pos3 = checkFileItemDef("FileItem3", def, false);
+  if (pos3 < 0)
+    {
+    std::cerr << "Problem with FileItem3 Def - ERROR\n";
+    return -4;
+    }
+
+  pos1 = checkDirectoryItemDef("DirectoryItem1", def, true);
+  if (pos1 < 0)
+    {
+    std::cerr << "Problem with DirectoryItem1 Def - ERROR\n";
+    return -3;
+    }
+
+  pos2 = checkDirectoryItemDef("DirectoryItem2", def, true);
+  if (pos2 < 0)
+    {
+    std::cerr << "Problem with DirectoryItem2 Def - ERROR\n";
+    return -4;
+    }
+
+  pos3 = checkDirectoryItemDef("DirectoryItem3", def, false);
+  if (pos3 < 0)
+    {
+    std::cerr << "Problem with DirectoryItem3 Def - ERROR\n";
+    return -4;
+    }
+
   // Find or Create an attribute
   smtk::attribute::AttributePtr att = system.findAttribute("Derived2Att");
   if (!att)
@@ -537,6 +726,42 @@ int checkSystem(smtk::attribute::System& system)
   if (checkStringItem("StringItem3", att, false))
     {
     std::cerr << "Problem with StringItem3- ERROR\n";
+    status =  -8;
+    }
+
+  if (checkFileItem("FileItem1", att, true))
+    {
+    std::cerr << "Problem with FileItem1- ERROR\n";
+    status =  -6;
+    }
+
+  if (checkFileItem("FileItem2", att, true))
+    {
+    std::cerr << "Problem with FileItem2- ERROR\n";
+    status = -7;
+    }
+
+  if (checkFileItem("FileItem3", att, false))
+    {
+    std::cerr << "Problem with FileItem3- ERROR\n";
+    status =  -8;
+    }
+
+  if (checkDirectoryItem("DirectoryItem1", att, true))
+    {
+    std::cerr << "Problem with DirectoryItem1- ERROR\n";
+    status =  -6;
+    }
+
+  if (checkDirectoryItem("DirectoryItem2", att, true))
+    {
+    std::cerr << "Problem with DirectoryItem2- ERROR\n";
+    status = -7;
+    }
+
+  if (checkDirectoryItem("DirectoryItem3", att, false))
+    {
+    std::cerr << "Problem with DirectoryItem3- ERROR\n";
     status =  -8;
     }
 
@@ -701,6 +926,13 @@ int main(int argc, char *argv[])
 
   status = checkSystem(readbackSystem);
   }
-
+  if (status == 0)
+    {
+    std::cout << "All Test PASSED!\n";
+    }
+  else
+    {
+    std::cerr << "FAILURES Detected!  - Status = " << status << "\n";
+    }
   return status;
 }

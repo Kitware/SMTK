@@ -109,6 +109,17 @@ std::size_t FileItem::numberOfRequiredValues() const
   return def->numberOfRequiredValues();
 }
 //----------------------------------------------------------------------------
+std::size_t FileItem::maxNumberOfValues() const
+{
+  const FileItemDefinition *def =
+    static_cast<const FileItemDefinition*>(this->m_definition.get());
+  if (def == NULL)
+    {
+    return 0;
+    }
+  return def->maxNumberOfValues();
+}
+//----------------------------------------------------------------------------
 bool FileItem::shouldBeRelative() const
 {
   const FileItemDefinition *def =
@@ -163,18 +174,35 @@ FileItem::valueAsString(std::size_t element,
     }
   return dummy;
 }
+
+//----------------------------------------------------------------------------
+bool FileItem::isExtensible() const
+{
+  auto def =
+    static_cast<const FileItemDefinition*>(this->m_definition.get());
+  if (!def)
+    {
+    return false;
+    }
+  return def->isExtensible();
+}
 //----------------------------------------------------------------------------
 bool
 FileItem::appendValue(const std::string &val)
 {
   //First - are we allowed to change the number of values?
-  const FileItemDefinition *def =
-    static_cast<const FileItemDefinition *>(this->definition().get());
-  if (def->numberOfRequiredValues() != 0)
+  if (!this->isExtensible())
     {
     return false; // The number of values is fixed
     }
-
+  // See if we have it max number of values (if there is such a limit)
+  std::size_t maxN = this->maxNumberOfValues();
+  if ( maxN && (this->numberOfValues() >= maxN))
+    {
+    return false;
+    }
+  auto def =
+    static_cast<const FileItemDefinition*>(this->m_definition.get());
   if (def->isValueValid(val))
     {
     this->m_values.push_back(val);
@@ -188,11 +216,14 @@ bool
 FileItem::removeValue(std::size_t element)
 {
   //First - are we allowed to change the number of values?
-  const FileItemDefinition *def =
-    static_cast<const FileItemDefinition *>(this->definition().get());
-  if ( def->numberOfRequiredValues() != 0 )
+ if (!this->isExtensible())
     {
     return false; // The number of values is fixed
+    }
+  // Would removing teh value take us under the number of required values?
+  if (this->numberOfValues()  <= this->numberOfRequiredValues())
+    {
+    return false;
     }
   this->m_values.erase(this->m_values.begin()+element);
   this->m_isSet.erase(this->m_isSet.begin()+element);
@@ -208,34 +239,120 @@ bool FileItem::setNumberOfValues(std::size_t newSize)
     }
 
   //Next - are we allowed to change the number of values?
-  const FileItemDefinition *def =
-    static_cast<const FileItemDefinition *>(this->definition().get());
-  std::size_t n = def->numberOfRequiredValues();
-  if (n != 0)
+  if (!this->isExtensible())
     {
-    return false; // The number of values is fixed
+    return false;
     }
-  this->m_values.resize(newSize);
-  this->m_isSet.resize(newSize, false); //Any added values are not set
+  // Is the nre size smaller than the number of required values?
+  if (newSize < this->numberOfRequiredValues())
+    {
+    return false;
+    }
+  // Is the new size > than the max number of values?
+  std::size_t maxN = this->maxNumberOfValues();
+  if (maxN && (newSize > maxN))
+    {
+    return false;
+    }
+  if (this->hasDefault())
+    {
+    this->m_values.resize(newSize, this->defaultValue());
+    this->m_isSet.resize(newSize, true);
+    }
+  else
+    {
+    this->m_values.resize(newSize);
+    this->m_isSet.resize(newSize, false); //Any added values are not set
+  }
   return true;
+}
+//----------------------------------------------------------------------------
+bool FileItem::hasDefault() const
+{
+  auto def = static_cast<const FileItemDefinition *>(this->definition().get());
+  if (!def)
+    {
+    return false;
+    }
+  return def->hasDefault();
+}
+//----------------------------------------------------------------------------
+bool FileItem::setToDefault(std::size_t element)
+{
+  auto def = static_cast<const FileItemDefinition *>(this->definition().get());
+  if (!def->hasDefault())
+    {
+    return false; // Doesn't have a default value
+    }
+
+  this->setValue(element, def->defaultValue());
+  return true;
+}
+//----------------------------------------------------------------------------
+bool FileItem::isUsingDefault() const
+{
+  auto def = static_cast<const FileItemDefinition *>(this->definition().get());
+  if (!def->hasDefault())
+    {
+    return false; // Doesn't have a default value
+    }
+
+  std::size_t i, n = this->numberOfValues();
+  std::string dval = def->defaultValue();
+  for (i = 0; i < n; i++)
+    {
+    if (!(this->m_isSet[i] && (this->m_values[i] == dval)))
+      {
+      return false;
+       }
+    }
+  return true;
+}
+//----------------------------------------------------------------------------
+ bool FileItem::isUsingDefault(std::size_t element) const
+{
+  auto def = static_cast<const FileItemDefinition *>(this->definition().get());
+  if (def->hasDefault() && this->m_isSet[element] && 
+      this->m_values[element] == def->defaultValue())
+    {
+    return true; 
+    }
+  return false;
+}
+//----------------------------------------------------------------------------
+std::string FileItem::defaultValue() const
+{
+  auto def = static_cast<const FileItemDefinition *>(this->definition().get());
+  if (!def)
+    {
+      return "";
+    }
+  return def->defaultValue();
 }
 //----------------------------------------------------------------------------
 void
 FileItem::reset()
 {
-  const FileItemDefinition *def
-    = static_cast<const FileItemDefinition *>(this->definition().get());
-  // Was the initial size 0?
-  std::size_t i, n = def->numberOfRequiredValues();
-  if (n == 0)
+  auto def = static_cast<const FileItemDefinition *>(this->definition().get());
+  std::size_t i, n = this->numberOfRequiredValues();
+  if (this->numberOfValues() != n)
     {
-    this->m_values.clear();
-    this->m_isSet.clear();
-    return;
+    this->setNumberOfValues(n);
     }
-  for (i = 0; i < n; i++)
+  if (!def->hasDefault())
     {
-    this->unset(i);
+    for (i = 0; i < n; i++)
+      {
+      this->unset(i);
+      }
+    }
+  else
+    {
+    std::string dval = def->defaultValue();
+    for (i = 0; i < n; i++)
+      {
+      this->setValue(i, dval);
+      }    
     }
 }
 //----------------------------------------------------------------------------

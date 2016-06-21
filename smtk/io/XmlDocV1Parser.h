@@ -95,13 +95,13 @@ namespace smtk
                              smtk::attribute::DoubleItemPtr item);
       void processDoubleDef(pugi::xml_node &node,
                             smtk::attribute::DoubleItemDefinitionPtr idef);
-      void processDirectoryItem(pugi::xml_node &node,
+      virtual void processDirectoryItem(pugi::xml_node &node,
                                 smtk::attribute::DirectoryItemPtr item);
-      void processDirectoryDef(pugi::xml_node &node,
+      virtual void processDirectoryDef(pugi::xml_node &node,
                                smtk::attribute::DirectoryItemDefinitionPtr idef);
       virtual void processFileItem(pugi::xml_node &node,
                            smtk::attribute::FileItemPtr item);
-      void processFileDef(pugi::xml_node &node,
+      virtual void processFileDef(pugi::xml_node &node,
                           smtk::attribute::FileItemDefinitionPtr idef);
       void processGroupItem(pugi::xml_node &node,
                              smtk::attribute::GroupItemPtr item);
