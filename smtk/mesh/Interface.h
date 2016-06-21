@@ -176,8 +176,8 @@ public:
   //get back an efficient point locator for a range of points
   //This allows for efficient point locator on a per interface basis.
   virtual smtk::mesh::PointLocatorImplPtr pointLocator(const smtk::mesh::HandleRange& points) = 0;
-  virtual smtk::mesh::PointLocatorImplPtr pointLocator(const double* const xyzs, std::size_t numPoints) = 0;
-  virtual smtk::mesh::PointLocatorImplPtr pointLocator(const float* const xyzs, std::size_t numPoints) = 0;
+  virtual smtk::mesh::PointLocatorImplPtr pointLocator(const double* const xyzs, std::size_t numPoints, bool ignoreZValues=false) = 0;
+  virtual smtk::mesh::PointLocatorImplPtr pointLocator(const float* const xyzs, std::size_t numPoints, bool ignoreZValues=false) = 0;
 
   //----------------------------------------------------------------------------
   virtual smtk::mesh::Handle getRoot() const = 0;

@@ -31,11 +31,13 @@ public:
 
   PointLocatorImpl(::moab::Interface* interface,
                    const double* const xyzs,
-                   std::size_t numPoints);
+                   std::size_t numPoints,
+                   bool ignoreZValues);
 
   PointLocatorImpl(::moab::Interface* interface,
                    const float* const xyzs,
-                   std::size_t numPoints);
+                   std::size_t numPoints,
+                   bool ignoreZValues);
 
 
   ~PointLocatorImpl();

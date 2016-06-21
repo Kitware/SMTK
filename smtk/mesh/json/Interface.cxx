@@ -93,7 +93,8 @@ smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
 //----------------------------------------------------------------------------
 smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
                                       const double* const xyzs,
-                                      std::size_t numPoints)
+                                      std::size_t numPoints,
+                                      bool ignoreZValues)
 {
   return smtk::mesh::PointLocatorImplPtr();
 }
@@ -101,7 +102,8 @@ smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
 //----------------------------------------------------------------------------
 smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
                                       const float* const xyzs,
-                                      std::size_t numPoints)
+                                      std::size_t numPoints,
+                                      bool ignoreZValues)
 {
   return smtk::mesh::PointLocatorImplPtr();
 }

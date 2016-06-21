@@ -308,7 +308,8 @@ smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
 //----------------------------------------------------------------------------
 smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
                                       const double* const xyzs,
-                                      std::size_t numPoints)
+                                      std::size_t numPoints,
+                                      bool ignoreZValues)
 {
   if(numPoints == 0)
     {
@@ -317,13 +318,15 @@ smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
   return smtk::mesh::PointLocatorImplPtr(
           new smtk::mesh::moab::PointLocatorImpl(this->m_iface.get(),
                                                  xyzs,
-                                                 numPoints) );
+                                                 numPoints,
+                                                 ignoreZValues) );
 }
 
 //----------------------------------------------------------------------------
 smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
                                       const float* const xyzs,
-                                      std::size_t numPoints)
+                                      std::size_t numPoints,
+                                      bool ignoreZValues)
 {
   if(numPoints == 0)
     {
@@ -332,7 +335,8 @@ smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
   return smtk::mesh::PointLocatorImplPtr(
           new smtk::mesh::moab::PointLocatorImpl(this->m_iface.get(),
                                                  xyzs,
-                                                 numPoints) );
+                                                 numPoints,
+                                                 ignoreZValues) );
 }
 
 //----------------------------------------------------------------------------

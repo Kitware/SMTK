@@ -23,6 +23,7 @@ template<typename T>
 smtk::mesh::Handle create_point_mesh(::moab::Interface* iface,
                                      const T* const xyzs,
                                      std::size_t numPoints,
+                                     bool ignoreZValues,
                                      smtk::mesh::HandleRange& points)
 {
   ::moab::ReadUtilIface* alloc;
@@ -38,11 +39,23 @@ smtk::mesh::Handle create_point_mesh(::moab::Interface* iface,
                          coords);
 
   //copy the points into the collection
-  for( std::size_t i=0; i < numPoints; ++i)
+  if(ignoreZValues)
+    { //in this case ignoring the z values from the input points
+    for( std::size_t i=0; i < numPoints; ++i)
+      {
+      coords[0][i] = static_cast<double>(xyzs[(i*3)]);
+      coords[1][i] = static_cast<double>(xyzs[(i*3)+1]);
+      coords[2][i] = 0.0;
+      }
+    }
+  else
     {
-    coords[0][i] = static_cast<double>(xyzs[(i*3)]);
-    coords[1][i] = static_cast<double>(xyzs[(i*3)+1]);
-    coords[2][i] = static_cast<double>(xyzs[(i*3)+2]);
+    for( std::size_t i=0; i < numPoints; ++i)
+      {
+      coords[0][i] = static_cast<double>(xyzs[(i*3)]);
+      coords[1][i] = static_cast<double>(xyzs[(i*3)+1]);
+      coords[2][i] = static_cast<double>(xyzs[(i*3)+2]);
+      }
     }
   points.insert(firstId, firstId+numPoints-1);
 
@@ -76,28 +89,30 @@ m_tree(interface, points)
 //----------------------------------------------------------------------------
 PointLocatorImpl::PointLocatorImpl(::moab::Interface* interface,
                                    const double* const xyzs,
-                                   std::size_t numPoints):
+                                   std::size_t numPoints,
+                                   bool ignoreZValues):
 m_interface( interface ),
 m_meshOwningPoints(),
 m_deletePoints( true ),
 m_tree(interface)
 {
   smtk::mesh::HandleRange points;
-  m_meshOwningPoints = create_point_mesh(interface, xyzs, numPoints, points);
+  m_meshOwningPoints = create_point_mesh(interface, xyzs, numPoints, ignoreZValues, points);
   m_tree.build_tree(points);
 }
 
 //----------------------------------------------------------------------------
 PointLocatorImpl::PointLocatorImpl(::moab::Interface* interface,
                                    const float* const xyzs,
-                                   std::size_t numPoints):
+                                   std::size_t numPoints,
+                                   bool ignoreZValues):
 m_interface( interface ),
 m_meshOwningPoints( ),
 m_deletePoints( true ),
 m_tree(interface)
 {
   smtk::mesh::HandleRange points;
-  m_meshOwningPoints = create_point_mesh(interface, xyzs, numPoints, points);
+  m_meshOwningPoints = create_point_mesh(interface, xyzs, numPoints, ignoreZValues, points);
   m_tree.build_tree(points);
 }
 

@@ -24,8 +24,9 @@ PointLocator::PointLocator(const smtk::mesh::PointSet& ps):
 //----------------------------------------------------------------------------
 PointLocator::PointLocator(const smtk::mesh::CollectionPtr collection,
                            const double* const xyzs,
-                           std::size_t numPoints):
-  m_locator(collection->interface()->pointLocator(xyzs, numPoints) )
+                           std::size_t numPoints,
+                           bool ignoreZValues):
+  m_locator(collection->interface()->pointLocator(xyzs, numPoints, ignoreZValues) )
 {
 
 }
@@ -33,8 +34,9 @@ PointLocator::PointLocator(const smtk::mesh::CollectionPtr collection,
 //----------------------------------------------------------------------------
 PointLocator::PointLocator(const smtk::mesh::CollectionPtr collection,
                            const float* const xyzs,
-                           std::size_t numPoints):
-  m_locator(collection->interface()->pointLocator(xyzs, numPoints) )
+                           std::size_t numPoints,
+                           bool ignoreZValues):
+  m_locator(collection->interface()->pointLocator(xyzs, numPoints, ignoreZValues) )
 {
 
 }

@@ -38,16 +38,22 @@ public:
   //Construct a point locator given a set of raw points.
   //Based on the backend these points maybe be added to the collection for
   //duration of the PointLocator
+  //Set ignoreZValues to true if you want all the points to be located
+  //on a plane at Z == 0.0
   PointLocator(const smtk::mesh::CollectionPtr collection,
                const double* const xyzs,
-               std::size_t numPoints);
+               std::size_t numPoints,
+               bool ignoreZValues=false);
 
   //Construct a point locator given a set of raw points.
   //Based on the backend these points maybe be added to the collection for
   //duration of the PointLocator
+  //Set ignoreZValues to true if you want all the points to be located
+  //on a plane at Z == 0.0
   PointLocator(const smtk::mesh::CollectionPtr collection,
                const float* const xyzs,
-               std::size_t numPoints);
+               std::size_t numPoints,
+               bool ignoreZValues=false);
 
   //Find the set of points that are within the radius of a single point.
   //
