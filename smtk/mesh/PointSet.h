@@ -95,8 +95,10 @@ public:
   //get the underlying HandleRange that this PointSet represents
   const smtk::mesh::HandleRange& range() const { return this->m_points; }
 
-private:
+  //get the underlying collection that this PointSet belongs to
+  const smtk::mesh::CollectionPtr& collection() const;
 
+private:
   smtk::mesh::CollectionPtr m_parent;
   smtk::mesh::HandleRange m_points;
 };

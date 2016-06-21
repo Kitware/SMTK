@@ -78,6 +78,9 @@ public:
 
   //get the underlying HandleRange that this CellSet represents
   const smtk::mesh::HandleRange& range() const { return this->m_range; }
+
+  //get the underlying collection that this CellSet belongs to
+  const smtk::mesh::CollectionPtr& collection() const;
 private:
   smtk::mesh::CollectionPtr m_parent;
   smtk::mesh::HandleRange m_range; //range of moab cell ids
