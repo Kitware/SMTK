@@ -57,7 +57,8 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
     this->specification()->findModelEntity("preservedUUIDs");
 
   std::string filename = filenameItem->value();
-  std::string filetype = filetypeItem->value();
+  std::string filetype = filetypeItem->numberOfValues() > 0 ?
+    filetypeItem->value() : std::string();
 
   if (filetype.empty())
     { // Infer file type from name
