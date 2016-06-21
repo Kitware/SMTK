@@ -18,6 +18,7 @@ set ( mhdf_LIB_SRCS
 add_library( mhdf OBJECT ${mhdf_LIB_SRCS} )
 if (BUILD_SHARED_LIBS)
   set(shared_define "-DIS_BUILDING_MB_SHARED")
+  set_target_properties(mhdf PROPERTIES POSITION_INDEPENDENT_CODE True)
 endif ()
 set_target_properties( mhdf
                        PROPERTIES COMPILE_FLAGS "${shared_define}")
