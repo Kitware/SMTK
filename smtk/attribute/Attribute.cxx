@@ -417,6 +417,10 @@ bool Attribute::associateEntity(const smtk::model::EntityRef& entityRef)
     return res;
 
   smtk::model::ManagerPtr modelMgr = this->modelManager();
+  if (!modelMgr)
+    {
+    modelMgr = entityRef.manager();
+    }
   if (modelMgr)
     res = modelMgr->associateAttribute(this->system(), this->id(), entityRef.entity());
   return res;

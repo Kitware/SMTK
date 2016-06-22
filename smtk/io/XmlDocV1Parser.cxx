@@ -1816,7 +1816,23 @@ void XmlDocV1Parser::processAttribute(xml_node &attNode)
   assocsNode = attNode.child("Associations");
   if (assocsNode)
     {
-    this->processItem(assocsNode, att->associations());
+    smtk::attribute::ModelEntityItem::Ptr assocsItem = att->associations();
+    this->processItem(assocsNode, assocsItem);
+    // Now the ModelEntityItem is deserialized but we need
+    // to let the model manager know about the associations
+    // (assuming we have a model manager):
+    smtk::model::Manager::Ptr mmgr = att->modelManager();
+    if (mmgr)
+      {
+      smtk::attribute::ModelEntityItem::const_iterator eit;
+      for (eit = assocsItem->begin(); eit != assocsItem->end(); ++eit)
+        {
+        // Calling associateAttribute() with a NULL attribute system
+        // prevents the model manager from attempting to add the association
+        // back to the attribute we are currently deserializing:
+        mmgr->associateAttribute(NULL, att->id(), eit->entity());
+        }
+      }
     }
 }
 

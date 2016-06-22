@@ -63,6 +63,18 @@ class TestExodusSession(smtk.testing.TestCase):
     self.assertTrue(all([x.name() in nameset for x in allgroups]),
         'Not all group names recognized.')
 
+    someGroup = allgroups[0]
+    self.assertEqual(someGroup.attributes(), set([]),
+        'Group should not have any attribute associations.')
+    asys = smtk.attribute.System()
+    adef = asys.createDefinition('testDef')
+    adef.setAssociationMask(smtk.model.GROUP_ENTITY)
+    attr = asys.createAttribute(adef.type())
+    self.assertTrue(attr.associateEntity(someGroup),
+        'Could not associate group to attribute');
+    self.assertEqual(someGroup.attributes(), set([attr.id()]),
+        'Group should have the assigned attribute.')
+
     # Verify that no groups which are not in the list above are present.
     groupnames = [x.name() for x in allgroups]
     self.assertTrue(all([x in groupnames for x in nameset]),

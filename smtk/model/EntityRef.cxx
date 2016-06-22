@@ -699,7 +699,13 @@ bool EntityRef::disassociateAllAttributes(smtk::attribute::System* sys,
 AttributeSet EntityRef::attributes() const
 {
   ManagerPtr mgr = this->m_manager.lock();
-  return mgr->attributeAssignments().find(this->m_entity)->second.attributes();
+  UUIDsToAttributeAssignments::const_iterator entry =
+    mgr->attributeAssignments().find(this->m_entity);
+  if (entry == mgr->attributeAssignments().end())
+    {
+    return AttributeSet();
+    }
+  return entry->second.attributes();
 }
 ///@}
 
