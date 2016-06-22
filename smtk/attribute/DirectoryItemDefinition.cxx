@@ -19,7 +19,8 @@ using namespace smtk::attribute;
 DirectoryItemDefinition::
 DirectoryItemDefinition(const std::string &myName):
   ItemDefinition(myName), m_shouldExist(false), m_shouldBeRelative(false),
-  m_useCommonLabel(false), m_numberOfRequiredValues(1)
+  m_useCommonLabel(false), m_numberOfRequiredValues(1), m_hasDefault(false),
+  m_isExtensible(false), m_maxNumberOfValues(0)
 {
 }
 
@@ -58,17 +59,39 @@ DirectoryItemDefinition::buildItem(Item *owningItem,
                                                    subGroupPosition));
 }
 //----------------------------------------------------------------------------
-void DirectoryItemDefinition::setNumberOfRequiredValues(std::size_t esize)
+void DirectoryItemDefinition::setIsExtensible(bool mode)
+{
+  this->m_isExtensible = mode;
+  if (mode && !this->usingCommonLabel())
+    {
+    // Need to clear individual labels - can only use common label with
+    // extensible groups
+    this->setCommonValueLabel("");
+    }
+}
+//----------------------------------------------------------------------------
+bool DirectoryItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {
   if (esize == this->m_numberOfRequiredValues)
     {
-    return;
+    return true;
     }
+  std::size_t maxN = this->maxNumberOfValues();
+  if (maxN && (esize > maxN))
+    {
+    return false;
+    }
+
   this->m_numberOfRequiredValues = esize;
-  if (!this->m_useCommonLabel)
+  if (!this->hasValueLabels())
+    {
+    return true;
+    }
+  if (!(this->m_useCommonLabel || this->m_isExtensible))
     {
     this->m_valueLabels.resize(esize);
     }
+  return true;
 }
 //----------------------------------------------------------------------------
 void DirectoryItemDefinition::setValueLabel(std::size_t element, const std::string &elabel)
@@ -109,6 +132,22 @@ std::string DirectoryItemDefinition::valueLabel(std::size_t element) const
   return ""; // If we threw execeptions this method could return const string &
 }
 //----------------------------------------------------------------------------
+bool  DirectoryItemDefinition::setMaxNumberOfValues(std::size_t esize)
+{
+  if (esize && (esize < this->m_numberOfRequiredValues))
+    {
+    return false;
+    }
+  this->m_maxNumberOfValues = esize;
+  return true;
+}
+//----------------------------------------------------------------------------
+void DirectoryItemDefinition::setDefaultValue(const std::string& val)
+{
+  this->m_defaultValue = val;
+  this->m_hasDefault = true;
+}
+//----------------------------------------------------------------------------
 smtk::attribute::ItemDefinitionPtr
 smtk::attribute::DirectoryItemDefinition::
 createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
@@ -118,7 +157,9 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
     smtk::attribute::DirectoryItemDefinition::New(this->name());
   ItemDefinition::copyTo(instance);
 
+  instance->setIsExtensible(m_isExtensible);
   instance->setNumberOfRequiredValues(m_numberOfRequiredValues);
+  instance->setMaxNumberOfValues(m_maxNumberOfValues);
 
   // Add label(s)
   if (m_useCommonLabel)
@@ -136,6 +177,10 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
   instance->setShouldExist(m_shouldExist);
   instance->setShouldBeRelative(m_shouldBeRelative);
 
-  return instance;
+  if (m_hasDefault)
+    {
+    instance->setDefaultValue(m_defaultValue);
+    }
+ return instance;
 }
 //----------------------------------------------------------------------------

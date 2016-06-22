@@ -37,8 +37,12 @@ namespace smtk
     protected:
       virtual void processDefinition(pugi::xml_node &defNode,
                                      smtk::attribute::DefinitionPtr def);
+      virtual void processDirectoryDef(pugi::xml_node &node,
+                               smtk::attribute::DirectoryItemDefinitionPtr idef);
       virtual void processFileItem(pugi::xml_node &node,
                            smtk::attribute::FileItemPtr item);
+      virtual void processFileDef(pugi::xml_node &node,
+                          smtk::attribute::FileItemDefinitionPtr idef);
       virtual void processModelInfo(pugi::xml_node &root);
       virtual void processModelEntityItem(pugi::xml_node &node,
                                           smtk::attribute::ModelEntityItemPtr item);

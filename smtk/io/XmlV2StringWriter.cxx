@@ -859,6 +859,14 @@ void XmlV2StringWriter::processDirectoryDef(pugi::xml_node &node,
                                             attribute::DirectoryItemDefinitionPtr idef)
 {
   node.append_attribute("NumberOfRequiredValues") = static_cast<unsigned int>(idef->numberOfRequiredValues());
+  if (idef->isExtensible())
+    {
+    node.append_attribute("Extensible").set_value("true");
+    if (idef->maxNumberOfValues())
+      {
+      node.append_attribute("MaxNumberOfValues") = static_cast<unsigned int>(idef->maxNumberOfValues());
+      }
+    }
   if (idef->shouldExist())
     {
     node.append_attribute("ShouldExist").set_value(true);
@@ -887,12 +895,25 @@ void XmlV2StringWriter::processDirectoryDef(pugi::xml_node &node,
         }
       }
     }
+  if (idef->hasDefault())
+    {
+    xml_node defaultNode = node.append_child();
+    defaultNode.set_value(idef->defaultValue().c_str());
+    }
 }
 //----------------------------------------------------------------------------
 void XmlV2StringWriter::processFileDef(pugi::xml_node &node,
                                        attribute::FileItemDefinitionPtr idef)
 {
   node.append_attribute("NumberOfRequiredValues") = static_cast<unsigned int>(idef->numberOfRequiredValues());
+  if (idef->isExtensible())
+    {
+    node.append_attribute("Extensible").set_value("true");
+    if (idef->maxNumberOfValues())
+      {
+      node.append_attribute("MaxNumberOfValues") = static_cast<unsigned int>(idef->maxNumberOfValues());
+      }
+    }
   if (idef->shouldExist())
     {
     node.append_attribute("ShouldExist").set_value(true);

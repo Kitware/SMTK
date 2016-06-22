@@ -19,7 +19,8 @@ using namespace smtk::attribute;
 FileItemDefinition::
 FileItemDefinition(const std::string &myName):
   ItemDefinition(myName), m_shouldExist(false), m_shouldBeRelative(false),
-  m_useCommonLabel(false), m_numberOfRequiredValues(1), m_hasDefault(false)
+  m_useCommonLabel(false), m_numberOfRequiredValues(1), m_hasDefault(false),
+  m_isExtensible(false), m_maxNumberOfValues(0)
 {
 }
 
@@ -56,22 +57,44 @@ smtk::attribute::ItemPtr FileItemDefinition::buildItem(Item *owningItem,
                                               subGroupPosition));
 }
 //----------------------------------------------------------------------------
-void FileItemDefinition::setNumberOfRequiredValues(std::size_t esize)
+void FileItemDefinition::setIsExtensible(bool mode)
+{
+  this->m_isExtensible = mode;
+  if (mode && !this->usingCommonLabel())
+    {
+    // Need to clear individual labels - can only use common label with
+    // extensible groups
+    this->setCommonValueLabel("");
+    }
+}
+//----------------------------------------------------------------------------
+bool FileItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {
   if (esize == this->m_numberOfRequiredValues)
     {
-    return;
+    return true;
     }
+  std::size_t maxN = this->maxNumberOfValues();
+  if (maxN && (esize > maxN))
+    {
+    return false;
+    }
+
   this->m_numberOfRequiredValues = esize;
-  if (!this->m_useCommonLabel)
+  if (!this->hasValueLabels())
+    {
+    return true;
+    }
+  if (!(this->m_useCommonLabel || this->m_isExtensible))
     {
     this->m_valueLabels.resize(esize);
     }
+  return true;
 }
 //----------------------------------------------------------------------------
 void FileItemDefinition::setValueLabel(std::size_t element, const std::string &elabel)
 {
-  if (this->m_numberOfRequiredValues == 0)
+  if (this->isExtensible())
     {
     return;
     }
@@ -107,6 +130,16 @@ std::string FileItemDefinition::valueLabel(std::size_t element) const
   return ""; // If we threw execeptions this method could return const string &
 }
 //----------------------------------------------------------------------------
+bool  FileItemDefinition::setMaxNumberOfValues(std::size_t esize)
+{
+  if (esize && (esize < this->m_numberOfRequiredValues))
+    {
+    return false;
+    }
+  this->m_maxNumberOfValues = esize;
+  return true;
+}
+//----------------------------------------------------------------------------
 void FileItemDefinition::setDefaultValue(const std::string& val)
 {
   this->m_defaultValue = val;
@@ -125,7 +158,9 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
     smtk::attribute::FileItemDefinition::New(this->name());
   ItemDefinition::copyTo(instance);
 
+  instance->setIsExtensible(m_isExtensible);
   instance->setNumberOfRequiredValues(m_numberOfRequiredValues);
+  instance->setMaxNumberOfValues(m_maxNumberOfValues);
 
   // Add label(s)
   if (m_useCommonLabel)
