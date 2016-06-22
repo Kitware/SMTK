@@ -1240,7 +1240,7 @@ void XmlV2StringWriter::processModelEntityItem(pugi::xml_node &node,
 void XmlV2StringWriter::processMeshEntityItem(pugi::xml_node &node,
                                           attribute::MeshItemPtr item)
 {
-  size_t n = item->numberOfValues();
+  size_t i=0, n = item->numberOfValues();
   // we should always have "NumberOfValues" set
   node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
 
@@ -1252,16 +1252,19 @@ void XmlV2StringWriter::processMeshEntityItem(pugi::xml_node &node,
   xml_node values = node.append_child("Values");
   smtk::attribute::MeshItem::const_mesh_it it;
   xml_node val;
-  for(it = item->begin(); it != item->end(); ++it)
+  for(it = item->begin(); it != item->end(); ++it, ++i)
     {
-    val = values.append_child("Val");
-    val.append_attribute("collectionid").set_value(
-      it->collection()->entity().toString().c_str());
-    cJSON* jrange = smtk::mesh::to_json(it->range());
-    char* json = cJSON_Print(jrange);
-    cJSON_Delete(jrange);
-    val.text().set(json);
-    free(json);
+    if(item->isSet(i))
+      {
+      val = values.append_child("Val");
+      val.append_attribute("collectionid").set_value(
+        it->collection()->entity().toString().c_str());
+      cJSON* jrange = smtk::mesh::to_json(it->range());
+      char* json = cJSON_Print(jrange);
+      cJSON_Delete(jrange);
+      val.text().set(json);
+      free(json);
+      }
     }
 }
 
