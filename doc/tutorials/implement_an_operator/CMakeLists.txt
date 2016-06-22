@@ -1,5 +1,5 @@
 project(ex_implement_an_operator)
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.5)
 
 # ++ 1 ++
 include(SMTKOperatorXML) # defines smtk_operator_xml()

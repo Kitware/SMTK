@@ -1,5 +1,5 @@
 project(ex_add_a_session)
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.5)
 
 # ++ 1 ++
 include(SMTKSessionJSON) # defines smtk_session_json()
