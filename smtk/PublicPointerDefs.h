@@ -73,6 +73,7 @@ namespace smtk
     class Interface;
     class Allocator;
     class ConnectivityStorage;
+    class PointLocatorImpl;
 
     namespace moab
     {
@@ -200,6 +201,9 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::mesh::Allocator >             AllocatorPtr;
     typedef smtk::shared_ptr< smtk::mesh::ConnectivityStorage >
                                                         ConnectivityStoragePtr;
+    typedef smtk::shared_ptr< smtk::mesh::PointLocatorImpl >
+                                                        PointLocatorImplPtr;
+
 
     namespace moab
     {

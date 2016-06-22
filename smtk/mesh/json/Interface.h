@@ -82,6 +82,13 @@ public:
   smtk::mesh::ConnectivityStoragePtr connectivityStorage(const smtk::mesh::HandleRange& cells);
 
   //----------------------------------------------------------------------------
+  //get back an efficient point locator for a range of points
+  //This allows for efficient point locator on a per interface basis.
+  smtk::mesh::PointLocatorImplPtr pointLocator(const smtk::mesh::HandleRange& points);
+  smtk::mesh::PointLocatorImplPtr pointLocator(const double* const xyzs, std::size_t numPoints, bool ignoreZValues=false);
+  smtk::mesh::PointLocatorImplPtr pointLocator(const float* const xyzs, std::size_t numPoints, bool ignoreZValues=false);
+
+  //----------------------------------------------------------------------------
   smtk::mesh::Handle getRoot() const;
 
   //----------------------------------------------------------------------------

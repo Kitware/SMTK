@@ -20,6 +20,9 @@
 namespace smtk {
 namespace mesh {
 
+//forward declare
+class PointLocator;
+
 class SMTKCORE_EXPORT PointSet
 {
   friend SMTKCORE_EXPORT PointSet set_intersect( const PointSet& a, const PointSet& b);

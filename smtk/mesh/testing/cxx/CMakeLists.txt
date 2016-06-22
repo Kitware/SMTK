@@ -33,6 +33,7 @@ set(unit_tests_which_require_data
   UnitTestMeshSet.cxx
   UnitTestModelToMesh2D.cxx
   UnitTestPointConnectivity.cxx
+  UnitTestPointLocator.cxx
   UnitTestPointSet.cxx
   UnitTestReadWriteMeshJSON.cxx
   UnitTestReclassifyEdges.cxx

@@ -71,6 +71,8 @@ public:
 class SMTKCORE_EXPORT ConnectivityStorage
 {
 public:
+  virtual ~ConnectivityStorage() { }
+
   //struct that holds the required information to compute what is the
   //current cell when we are iterating.
   struct IterationState
@@ -96,6 +98,38 @@ public:
   virtual std::size_t cellSize() const = 0;
 
   virtual std::size_t vertSize() const = 0;
+};
+
+//----------------------------------------------------------------------------
+class SMTKCORE_EXPORT PointLocatorImpl
+{
+public:
+
+  //copy of vector on return, ugggh.
+  struct Results
+    {
+    Results():
+      pointIds(),
+      sqDistances(),
+      x_s(), y_s(), z_s(),
+      want_sqDistances(false),
+      want_Coordinates(false)
+    {
+    }
+
+    smtk::mesh::HandleRange pointIds;
+    std::vector<double> sqDistances;
+    std::vector<double> x_s, y_s, z_s;
+    bool want_sqDistances;
+    bool want_Coordinates;
+    };
+
+  virtual ~PointLocatorImpl() {}
+
+  virtual void locatePointsWithinRadius(double x, double y, double z,
+                                        double radius,
+                                        Results& results) = 0;
+
 };
 
 //----------------------------------------------------------------------------
@@ -137,6 +171,13 @@ public:
   //connectivity. This allows for efficient iteration of cell connectivity, and
   //conversion to other formats
   virtual smtk::mesh::ConnectivityStoragePtr connectivityStorage(const smtk::mesh::HandleRange& cells) = 0;
+
+  //----------------------------------------------------------------------------
+  //get back an efficient point locator for a range of points
+  //This allows for efficient point locator on a per interface basis.
+  virtual smtk::mesh::PointLocatorImplPtr pointLocator(const smtk::mesh::HandleRange& points) = 0;
+  virtual smtk::mesh::PointLocatorImplPtr pointLocator(const double* const xyzs, std::size_t numPoints, bool ignoreZValues=false) = 0;
+  virtual smtk::mesh::PointLocatorImplPtr pointLocator(const float* const xyzs, std::size_t numPoints, bool ignoreZValues=false) = 0;
 
   //----------------------------------------------------------------------------
   virtual smtk::mesh::Handle getRoot() const = 0;

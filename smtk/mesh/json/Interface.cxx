@@ -80,11 +80,33 @@ smtk::mesh::AllocatorPtr Interface::allocator()
 smtk::mesh::ConnectivityStoragePtr Interface::connectivityStorage(
                                       const smtk::mesh::HandleRange& cells)
 {
-  //make boost shared_ptr
-  smtk::mesh::ConnectivityStoragePtr cs;
-  return cs;
+  return smtk::mesh::ConnectivityStoragePtr();
 }
 
+//----------------------------------------------------------------------------
+smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
+                                      const smtk::mesh::HandleRange& points)
+{
+  return smtk::mesh::PointLocatorImplPtr();
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
+                                      const double* const xyzs,
+                                      std::size_t numPoints,
+                                      bool ignoreZValues)
+{
+  return smtk::mesh::PointLocatorImplPtr();
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
+                                      const float* const xyzs,
+                                      std::size_t numPoints,
+                                      bool ignoreZValues)
+{
+  return smtk::mesh::PointLocatorImplPtr();
+}
 
 //----------------------------------------------------------------------------
 smtk::mesh::Handle Interface::getRoot() const
