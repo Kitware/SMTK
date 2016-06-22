@@ -169,6 +169,15 @@ bool PointSet::set(const std::vector<float>& xyz)
 }
 
 //----------------------------------------------------------------------------
+/**\brief Get the parent collection that this meshset belongs to.
+  *
+  */
+const smtk::mesh::CollectionPtr& PointSet::collection() const
+{
+  return this->m_parent;
+}
+
+//----------------------------------------------------------------------------
 PointSet set_intersect( const PointSet& a, const PointSet& b )
 {
   if( a.m_parent != b.m_parent )

@@ -129,6 +129,15 @@ smtk::mesh::PointConnectivity CellSet::pointConnectivity( std::size_t position )
 }
 
 //----------------------------------------------------------------------------
+/**\brief Get the parent collection that this meshset belongs to.
+  *
+  */
+const smtk::mesh::CollectionPtr& CellSet::collection() const
+{
+  return this->m_parent;
+}
+
+//----------------------------------------------------------------------------
 //intersect two mesh sets, placing the results in the return mesh set
 CellSet set_intersect( const CellSet& a, const CellSet& b)
 {
