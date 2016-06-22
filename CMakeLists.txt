@@ -8,6 +8,14 @@ if (POLICY CMP0046)
   cmake_policy(SET CMP0046 NEW)
 endif()
 
+#If the user/superbuild hasn't explicitly stated what c++ standard to use
+#require C++11
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 11)
+  set(CMAKE_CXX_STANDARD_REQUIRED True)
+  set(CMAKE_CXX_EXTENSIONS FALSE)
+endif()
+
 project(SMTK)
 
 # Remove SMTKTargets.cmake at the beginning of each CMake run; each time
