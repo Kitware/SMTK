@@ -56,6 +56,7 @@ vtkGDALRasterPolydataWrapper::vtkGDALRasterPolydataWrapper()
   this->Transform = 0;
   this->TransformOutputData = false;
   this->LimitReadToBounds = false;
+  this->Origin[0] = this->Origin[1] = this->Origin[2] = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -196,15 +197,15 @@ int vtkGDALRasterPolydataWrapper::RequestData(vtkInformation* vtkNotUsed(request
   this->RealNumberOfOutputPoints = 0;
   for(int x = extent[0]; x <= extent[1]; x+=step)
     {
-    xyz[0] = x;
+    xyz[0] = x - Origin[0];
     for(int y = extent[2]; y <= extent[3]; y+=step)
       {
-      xyz[1] = y;
+      xyz[1] = y - Origin[1];
       vtkIdType id = img->ComputePointId(xyz);
       if(ugrid == NULL || ugrid->IsPointVisible(id))
         {
         img->GetPoint(id, pt);
-        pt[2] = img->GetScalarComponentAsDouble(x,y,0,0);
+        pt[2] = img->GetScalarComponentAsDouble(x,y,0,0) - Origin[2];
         if(dotrans)
           {
           this->Transform->TransformPoint(pt, tranpt);

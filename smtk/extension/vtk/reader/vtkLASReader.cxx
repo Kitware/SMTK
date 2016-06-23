@@ -52,6 +52,7 @@ vtkLASReader::vtkLASReader()
   this->LimitReadToBounds = false;
   this->ReadBounds[0] = this->ReadBounds[2] = this->ReadBounds[4] = VTK_DOUBLE_MAX;
   this->ReadBounds[1] = this->ReadBounds[3] = this->ReadBounds[5] = VTK_DOUBLE_MIN;
+  this->Origin[0] = this->Origin[1] = this->Origin[2] = 0;
   for (int i = 0; i < NUMBER_OF_CLASSIFICATIONS; i++)
     {
     this->Transform[i] = 0;
@@ -299,6 +300,14 @@ int vtkLASReader::ReadHeaderBlock()
   fin.read(reinterpret_cast<char *>(this->DataBounds + 5), 8);
   fin.read(reinterpret_cast<char *>(this->DataBounds + 4), 8);
 
+  this->DataBounds[0] -= Origin[0];
+  this->DataBounds[1] -= Origin[0];
+  this->DataBounds[2] -= Origin[1];
+  this->DataBounds[3] -= Origin[1];
+  this->DataBounds[4] -= Origin[2];
+  this->DataBounds[5] -= Origin[2];
+
+
   fin.close();
 
   return READ_OK;
@@ -544,6 +553,10 @@ int vtkLASReader::ReadPoints(vtkMultiBlockDataSet *output)
         }
       this->LatLongTransform2->TransformPoint(pt, pt);
       }
+
+    pt[0] -= Origin[0];
+    pt[1] -= Origin[1];
+    pt[2] -= Origin[2];
 
     // add the point, but 1st make sure it is in the ReadBounds (if specified);
     // consider the Transform if set (and "on")

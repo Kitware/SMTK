@@ -59,6 +59,8 @@ public:
 
   double GetInvalidValue();
 
+  vtkSetVector3Macro(Origin, double);
+
   // Description:
   // Return domain metadata
   std::vector<std::string> GetDomainMetaData(const std::string& domain);
@@ -150,6 +152,8 @@ protected:
 
   int Zone;
   bool IsNorth;
+
+  double Origin[3];
 
 private:
   vtkGDALRasterPolydataWrapper(const vtkGDALRasterPolydataWrapper&); // Not implemented.
