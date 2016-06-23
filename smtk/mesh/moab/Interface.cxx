@@ -819,9 +819,9 @@ smtk::mesh::TypeSet Interface::computeTypes(const smtk::mesh::HandleRange& range
 
   //compute the type of the meshes, I don't want to try and extract the range
   //of cells for all the meshes, as that could be large
-  for (cit i = meshes.begin(); i != meshes.end(); ++i)
+  for (cit m = meshes.begin(); m != meshes.end(); ++m)
     {
-    const ::moab::EntityHandle& currentHandle = *i;
+    const ::moab::EntityHandle& currentHandle = *m;
     for (std::size_t i = 0; i < ctypes.size(); ++i )
       {
       const CellEnum ce = static_cast<CellEnum>(i);

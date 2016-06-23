@@ -25,9 +25,10 @@ set(unit_tests_which_require_data
   UnitTestAddFileToCollection.cxx
   UnitTestCellSet.cxx
   UnitTestCreateMesh.cxx
-  UnitTestExtractTessellation.cxx
+  UnitTestElevate.cxx
   UnitTestExportMesh2DM.cxx
   UnitTestExportMesh3DM.cxx
+  UnitTestExtractTessellation.cxx
   UnitTestLoadMesh.cxx
   UnitTestMergeContactPoints.cxx
   UnitTestMeshSet.cxx

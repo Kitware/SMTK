@@ -76,8 +76,6 @@ bool convert_vertices(const smtk::model::EntityRefs& ents,
                       MappingType& mapping,
                       const smtk::mesh::AllocatorPtr& ialloc)
 {
-  typedef typename MappingType::value_type value_type;
-
   //count the number of points in the tessellation so that we can properly
   //allocate a single pool large enough for all the points
   std::size_t numPointsToAlloc = 0;
@@ -160,16 +158,14 @@ void convert_fixed_size_cell(std::vector<int>& cell_conn,
 
 //----------------------------------------------------------------------------
 template<typename HandleData>
-void convert_vertex(std::vector<int>& cell_conn,
+void convert_vertex(std::vector<int>&,
                     smtk::mesh::CellType cellType,
                     smtk::model::Tessellation::size_type numVerts,
-                    std::vector<std::size_t>& numCellsOfType,
+                    std::vector<std::size_t>&,
                     std::vector<HandleData>& cellMBConn,
                     std::size_t global_coordinate_offset
                     )
 {
-  int idx = numCellsOfType[cellType]++;
-
   //get the list of vertex cells for this entity
   smtk::mesh::HandleRange& currentCellids = cellMBConn[cellType].first;
 
@@ -215,7 +211,6 @@ convert_cells(const smtk::model::EntityRefs& ents,
               const smtk::mesh::AllocatorPtr& ialloc)
 {
   typedef smtk::model::Tessellation Tess;
-  typedef typename MappingType::value_type value_type;
 
   std::map<smtk::model::EntityRef, smtk::mesh::HandleRange> newlyCreatedCells;
 
@@ -472,12 +467,12 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& 
                               ialloc);
 
     typedef std::map<smtk::model::EntityRef, smtk::mesh::HandleRange>::const_iterator c_it;
-    for(c_it i= per_ent_cells.begin(); i != per_ent_cells.end(); ++i)
+    for(c_it j = per_ent_cells.begin(); j != per_ent_cells.end(); ++j)
       {
       //now create a mesh from those cells
-      smtk::mesh::CellSet cellsForMesh(collection, i->second);
+      smtk::mesh::CellSet cellsForMesh(collection, j->second);
       smtk::mesh::MeshSet ms = collection->createMesh(cellsForMesh);
-      collection->setAssociation(i->first, ms);
+      collection->setAssociation(j->first, ms);
       }
 
     EntityRefs currentModels = modelManager->entitiesMatchingFlagsAs<EntityRefs>( smtk::model::MODEL_ENTITY);
@@ -509,7 +504,6 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& 
 smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::model::Model& model) const
 {
   typedef smtk::model::EntityRefs EntityRefs;
-  typedef smtk::model::EntityTypeBits EntityTypeBits;
   typedef std::map< smtk::model::EntityRef, std::size_t > CoordinateOffsetMap;
   smtk::model::ManagerPtr modelManager = model.manager();
   smtk::mesh::CollectionPtr nullCollectionPtr;

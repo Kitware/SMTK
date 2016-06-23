@@ -128,6 +128,13 @@ PointLocatorImpl::~PointLocatorImpl()
     }
 }
 
+//----------------------------------------------------------------------------
+smtk::mesh::HandleRange PointLocatorImpl::range() const
+{
+   smtk::mesh::HandleRange entities;
+   m_interface->get_entities_by_handle(m_meshOwningPoints, entities);
+   return entities;
+}
 
 //----------------------------------------------------------------------------
 namespace {
@@ -136,13 +143,13 @@ template< bool>
 void reserve_space(std::vector<double>& container, std::size_t size) { container.reserve(size); }
 
 template< >
-void reserve_space < false > (std::vector<double>& container, std::size_t) { }
+void reserve_space < false > (std::vector<double>&, std::size_t) { }
 
 template< bool >
 void add_to(std::vector<double>& container, double value) { container.push_back(value); }
 
 template< >
-void add_to < false > (std::vector<double>& container, double) { }
+void add_to < false > (std::vector<double>&, double) { }
 
 template< bool SaveSqDistances, bool SaveCoords >
 void find_valid_points(const double x, const double y, const double z,
