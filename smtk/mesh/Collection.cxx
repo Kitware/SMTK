@@ -386,7 +386,6 @@ smtk::mesh::CellSet Collection::cells( smtk::mesh::DimensionType dim )
 //----------------------------------------------------------------------------
 smtk::mesh::TypeSet Collection::findAssociatedTypes( const smtk::model::EntityRef& eref )
 {
-  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
   return this->findAssociatedMeshes(eref).types();
 }
 

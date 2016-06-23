@@ -68,8 +68,10 @@ namespace
   template<typename T>
   struct clamper<false,false, T>
   {
-    T operator()(T value,  double c_min, double c_max) const
-    { return value; }
+    T operator()(T value,  double, double) const
+    {
+      return value;
+    }
   };
 
   //----------------------------------------------------------------------------
@@ -239,9 +241,9 @@ namespace
     double m_radius;
   public:
     DisplacePoint(smtk::mesh::PointLocator& locator,
-                  double radius,
-                  const smtk::mesh::elevation::clamp_controls& controls):
-      m_locator(locator)
+                  double radius):
+      m_locator(locator),
+      m_radius(radius)
     {
     }
 
@@ -281,12 +283,11 @@ namespace
 //----------------------------------------------------------------------------
 bool displace( const smtk::mesh::PointSet& pointcloud,
                const smtk::mesh::MeshSet& ms,
-               double radius,
-               elevation::clamp_controls controls)
+               double radius)
 {
   smtk::mesh::PointLocator locator(pointcloud);
 
-  DisplacePoint functor(locator, radius, controls);
+  DisplacePoint functor(locator, radius);
   smtk::mesh::for_each(ms.points(), functor);
   return true;
 }
@@ -294,12 +295,11 @@ bool displace( const smtk::mesh::PointSet& pointcloud,
 //----------------------------------------------------------------------------
 bool displace( const smtk::mesh::PointSet& pointcloud,
                const smtk::mesh::PointSet& ps,
-               double radius,
-               elevation::clamp_controls controls)
+               double radius)
 {
   smtk::mesh::PointLocator locator(pointcloud);
 
-  DisplacePoint functor(locator, radius, controls);
+  DisplacePoint functor(locator, radius);
   smtk::mesh::for_each(ps, functor);
   return true;
 }

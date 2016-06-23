@@ -1146,7 +1146,7 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
 
     if(importedCollection)
       {
-      smtk:mesh::CollectionPtr collection;
+      smtk::mesh::CollectionPtr collection;
       smtk::mesh::CollectionPtr existingC = meshMgr->collection(uid);
       if(existingC)
         {

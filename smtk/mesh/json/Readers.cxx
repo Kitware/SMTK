@@ -75,11 +75,12 @@ namespace detail
     return false;
     }
 
-  int i=0; int validMeshesLoaded=0;
+  int meshIdIdx = 0;
+  std::size_t validMeshesLoaded=0;
   //each child represents a single MeshInfo
   for(cJSON* child = meshesNode->child;
       child != NULL;
-      child = child->next, ++i)
+      child = child->next, ++meshIdIdx)
     {
     //get the Typeset from the json
     std::string cell_bit_types;
@@ -148,7 +149,7 @@ namespace detail
     const bool valid = (!cells.empty() && !points.empty());
     if(valid)
       {
-      smtk::mesh::json::MeshInfo minfo(meshIds[i],
+      smtk::mesh::json::MeshInfo minfo(meshIds[meshIdIdx],
                                       cells,
                                       points,
                                       types);
