@@ -208,6 +208,11 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
 smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
                                                const smtk::mesh::Dirichlet &dirichlet) const
 {
+  if(handle != this->getRoot())
+    {
+    return smtk::mesh::HandleRange();
+    }
+
   smtk::mesh::HandleRange meshes;
   MeshInfoVecType::const_iterator i;
   for(i=this->m_meshInfo.begin(); i != this->m_meshInfo.end(); ++i)
@@ -225,6 +230,11 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
 smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
                                                const smtk::mesh::Neumann &neumann) const
 {
+  if(handle != this->getRoot())
+    {
+    return smtk::mesh::HandleRange();
+    }
+
   smtk::mesh::HandleRange meshes;
   MeshInfoVecType::const_iterator i;
   for(i=this->m_meshInfo.begin(); i != this->m_meshInfo.end(); ++i)
@@ -422,16 +432,15 @@ smtk::common::UUIDArray Interface::computeModelEntities(const smtk::mesh::Handle
 //----------------------------------------------------------------------------
 smtk::mesh::TypeSet Interface::computeTypes(const smtk::mesh::HandleRange& range) const
 {
-  typedef smtk::mesh::HandleRange::const_iterator cit;
   typedef ::smtk::mesh::CellType CellEnum;
-
 
   smtk::mesh::HandleRange meshes = range.subset_by_type( ::moab::MBENTITYSET );
   smtk::mesh::HandleRange cells = ::moab::subtract(range,meshes);
 
   smtk::mesh::TypeSet result;
-  smtk::mesh::HandleRange::const_iterator i;
-  for(i=meshes.begin(); i != meshes.end(); ++i)
+  for(smtk::mesh::HandleRange::const_iterator i=meshes.begin();
+      i != meshes.end();
+      ++i)
     {
     MeshInfoVecType::const_iterator m = this->find(*i);
     result += m->types();
@@ -511,7 +520,7 @@ bool Interface::setAssociation(const smtk::common::UUID&,
   *
   */
 smtk::mesh::HandleRange Interface::findAssociations(
-  const smtk::mesh::Handle& root,
+  const smtk::mesh::Handle&,
   const smtk::common::UUID& modelUUID) const
 {
   smtk::mesh::HandleRange result;
@@ -570,19 +579,19 @@ smtk::mesh::HandleRange Interface::rangeUnion(const smtk::mesh::HandleRange& a,
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::HandleRange Interface::pointIntersect(const smtk::mesh::HandleRange& a,
-                                                  const smtk::mesh::HandleRange& b,
-                                                  smtk::mesh::PointConnectivity& bpc,
-                                                  const smtk::mesh::ContainsFunctor& containsFunctor) const
+smtk::mesh::HandleRange Interface::pointIntersect(const smtk::mesh::HandleRange&,
+                                                  const smtk::mesh::HandleRange&,
+                                                  smtk::mesh::PointConnectivity&,
+                                                  const smtk::mesh::ContainsFunctor&) const
 {
   return smtk::mesh::HandleRange();
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange& a,
-                                                   const smtk::mesh::HandleRange& b,
-                                                   smtk::mesh::PointConnectivity& bpc,
-                                                   const smtk::mesh::ContainsFunctor& containsFunctor) const
+smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange&,
+                                                   const smtk::mesh::HandleRange&,
+                                                   smtk::mesh::PointConnectivity&,
+                                                   const smtk::mesh::ContainsFunctor&) const
 {
   return smtk::mesh::HandleRange();
 }
@@ -607,7 +616,7 @@ void Interface::meshForEach(const smtk::mesh::HandleRange &,
 }
 
 //----------------------------------------------------------------------------
-bool Interface::deleteHandles(const smtk::mesh::HandleRange& toDel)
+bool Interface::deleteHandles(const smtk::mesh::HandleRange&)
 {
   return false;
 }

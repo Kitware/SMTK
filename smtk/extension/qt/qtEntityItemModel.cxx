@@ -757,7 +757,7 @@ inline void _internal_findAllExistingPhrases(
       modifiedPhrases.push_back(*it);
       }
 
-    // Descend 
+    // Descend
     _internal_findAllExistingPhrases(*it, modEnts, modifiedPhrases);
     }
 }
@@ -779,7 +779,7 @@ inline void _internal_findAllExistingMeshPhrases(
       modifiedPhrases.push_back(*it);
       }
 
-    // Descend 
+    // Descend
     _internal_findAllExistingMeshPhrases(*it, modMeshes, modifiedPhrases);
     }
 }
@@ -841,7 +841,7 @@ void QEntityItemModel::addChildPhrases(
     if(!qidx.isValid())
       {
       std::cerr << "Can't find valid QModelIndex for phrase: " << parntDp->title() << "\n";
-      return;  
+      return;
       }
     }
 
@@ -934,7 +934,7 @@ void QEntityItemModel::removeChildPhrases(
   if(!qidx.isValid())
     {
     std::cerr << "Can't find valid QModelIndex for phrase: " << parntDp->title() << "\n";
-    return;  
+    return;
     }
 
   std::vector< std::pair<DescriptivePhrasePtr, int> >::const_reverse_iterator rit;
@@ -998,7 +998,7 @@ void QEntityItemModel::updateChildPhrases(
   if(!phrase)
     {
     std::cerr << "The input phrase is null!\n";
-    return;  
+    return;
     }
 
   // we need to rebuild a temporary subphrases using the same subphrase generator
@@ -1024,7 +1024,7 @@ void QEntityItemModel::updateChildPhrases(
       {
       if((*it)->phraseType() != (*nit)->phraseType())
         continue;
-      if( // mesh phrases 
+      if( // mesh phrases
         ((*it)->phraseType() == MESH_SUMMARY &&
         (((*it)->relatedMeshCollection() &&
            (*it)->relatedMeshCollection()->entity() == (*nit)->relatedMeshCollection()->entity()) ||
@@ -1078,7 +1078,7 @@ void QEntityItemModel::updateChildPhrases(
     if(!qidx.isValid())
       {
       std::cerr << "Can't find valid QModelIndex for phrase: " << phrase->title() << "\n";
-      return;  
+      return;
       }
 
     emit dataChanged(qidx, qidx);
@@ -1233,7 +1233,7 @@ void QEntityItemModel::updateWithOperatorResult(
   if(!sessIndex.isValid())
     {
     std::cerr << "The input QModelIndex is not valid!\n";
-    return;  
+    return;
     }
   DescriptivePhrasePtr startPhr = this->getItem(sessIndex);
   // We only searching those that already have subphrases built.
@@ -1245,7 +1245,6 @@ void QEntityItemModel::updateWithOperatorResult(
   // process "created" in result to figure out if there are new cell entities
   std::map<DescriptivePhrasePtr,  std::vector< std::pair<DescriptivePhrasePtr, int> > > changedPhrases;
   std::map<DescriptivePhrasePtr,  std::vector< std::pair<DescriptivePhrasePtr, int> > >::const_iterator pit;
-  smtk::model::EntityRefArray::const_iterator it;
   smtk::attribute::ModelEntityItem::Ptr remEnts =
     result->findModelEntity("expunged");
   if(remEnts && remEnts->numberOfValues() > 0 && startPhr->areSubphrasesBuilt())
@@ -1306,7 +1305,7 @@ void QEntityItemModel::updateWithOperatorResult(
       if(!qidx.isValid())
         {
         std::cerr << "Can't find valid QModelIndex for phrase: " << (*mit)->title() << "\n";
-        return;  
+        return;
         }
 
       emit dataChanged(qidx, qidx);
@@ -1320,7 +1319,7 @@ void QEntityItemModel::newSessionOperatorResult(
   if(!sref.isValid())
     {
     std::cerr << "The input SessionRef is not valid!\n";
-    return;  
+    return;
     }
 
   EntityListPhrasePtr lphrase = smtk::dynamic_pointer_cast<EntityListPhrase>(this->m_root);
