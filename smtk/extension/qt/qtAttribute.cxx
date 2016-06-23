@@ -11,34 +11,20 @@
 
 #include "smtk/extension/qt/qtAttributeItemWidgetFactory.h"
 #include "smtk/extension/qt/qtUIManager.h"
-#include "smtk/extension/qt/qtGroupItem.h"
-#include "smtk/extension/qt/qtInputsItem.h"
-#include "smtk/extension/qt/qtFileItem.h"
-#include "smtk/extension/qt/qtAttributeRefItem.h"
-#include "smtk/extension/qt/qtMeshSelectionItem.h"
-#include "smtk/extension/qt/qtModelEntityItem.h"
-#include "smtk/extension/qt/qtVoidItem.h"
 #include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtModelEntityItem.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
-#include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/DirectoryItem.h"
-#include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/FileItem.h"
-#include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/GroupItem.h"
-#include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/IntItemDefinition.h"
+#include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/MeshSelectionItem.h"
-#include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
-#include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
-#include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/VoidItem.h"
-#include "smtk/attribute/VoidItemDefinition.h"
 
 #include <QPointer>
 #include <QFrame>
@@ -271,6 +257,10 @@ qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW,
     case smtk::attribute::Item::MESH_SELECTION:
       aItem = qtAttribute::s_factory->createMeshSelectionItemWidget(
         smtk::dynamic_pointer_cast<MeshSelectionItem>(item), pW, bview, enVectorItemOrient);
+      break;
+    case smtk::attribute::Item::MESH_ENTITY:
+      aItem = qtAttribute::s_factory->createMeshItemWidget(
+        smtk::dynamic_pointer_cast<MeshItem>(item), pW, bview, enVectorItemOrient);
       break;
     default:
       //this->m_errorStatus << "Error: Unsupported Item Type: " <<

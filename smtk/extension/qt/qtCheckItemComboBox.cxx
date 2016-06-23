@@ -10,12 +10,16 @@
 #include "smtk/extension/qt/qtCheckItemComboBox.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/MeshItem.h"
+#include "smtk/attribute/MeshItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/System.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
 
 #include <QAbstractItemView>
 #include <QStandardItemModel>
@@ -91,6 +95,13 @@ void qtCheckItemComboBox::hidePopup()
   this->view()->clearSelection();
   this->QComboBox::hidePopup();
   this->setCurrentIndex(0);
+}
+
+//-----------------------------------------------------------------------------
+void qtCheckItemComboBox::showPopup()
+{
+  this->view()->updateGeometry();
+  this->QComboBox::showPopup();
 }
 
 //-----------------------------------------------------------------------------
@@ -264,6 +275,212 @@ void qtModelEntityItemCombo::itemCheckChanged(
           ModelEntityItem->removeValue(idx);
         else
           ModelEntityItem->unset(idx);
+        }
+      }
+    this->updateText();
+    }
+}
+
+//-----------------------------------------------------------------------------
+qtMeshItemCombo::qtMeshItemCombo(
+  smtk::attribute::ItemPtr entitem, QWidget * inParent, const QString& displayExt)
+: qtCheckItemComboBox(inParent, displayExt), m_MeshItem(entitem)
+{
+  this->setMinimumWidth(80);
+}
+
+//----------------------------------------------------------------------------
+void qtMeshItemCombo::init()
+{
+  this->blockSignals(true);
+  this->clear();
+  this->qtCheckItemComboBox::init();
+  this->model()->disconnect();
+
+  if(!this->m_MeshItem.lock())
+    {
+    this->blockSignals(false);
+    return;
+    }
+
+  MeshItemPtr meshItem =
+    smtk::dynamic_pointer_cast<smtk::attribute::MeshItem>(
+    this->m_MeshItem.lock());
+  const MeshItemDefinition *itemDef =
+    static_cast<const MeshItemDefinition *>(meshItem->definition().get());
+  System *attSystem = meshItem->attribute()->system();
+  smtk::model::ManagerPtr modelManager = attSystem->refModelManager();
+
+  QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
+
+  if (modelManager)
+    {
+    // find out all assoicated collections, or use all collections if none associated
+    smtk::common::UUIDs collectionIds;
+    smtk::model::EntityRefs associatedEnts =
+      meshItem->attribute()->associatedModelEntities<smtk::model::EntityRefs>();
+    smtk::model::EntityRefs::const_iterator it;
+    for(it = associatedEnts.begin(); it != associatedEnts.end(); ++it)
+      {
+      smtk::common::UUIDs uuids = modelManager->meshes()->associatedCollectionIds(*it);
+      collectionIds.insert(uuids.begin(), uuids.end());
+      }
+    std::vector<smtk::mesh::CollectionPtr> collections;
+    smtk::common::UUIDs::const_iterator uit;
+    for(uit = collectionIds.begin(); uit != collectionIds.end(); ++uit)
+      {
+      collections.push_back(modelManager->meshes()->collection(*uit));
+      }
+    // if no entities assoicated, use all collections with associations
+    if(associatedEnts.size() == 0)
+      {
+      collections = modelManager->meshes()->collectionsWithAssociations();
+      }
+
+    smtk::mesh::MeshSets availableMeshes;
+    int row = 1;
+    for (std::vector<smtk::mesh::CollectionPtr>::const_iterator cit =
+        collections.begin(); cit != collections.end(); ++cit)
+      {
+      if ((*cit)->isValid())
+        {
+        QStandardItem* item = new QStandardItem;
+        std::string meshName = (*cit)->name();
+        item->setText(meshName.c_str());
+        item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        //item->setData(this->Internals->AttSelections[keyName], Qt::CheckStateRole);
+        item->setData(Qt::Unchecked, Qt::CheckStateRole);
+        item->setCheckable(true);
+        smtk::mesh::MeshSet amesh = (*cit)->meshes();
+        availableMeshes.insert(amesh);
+        item->setCheckState( meshItem->hasValue(amesh) ? Qt::Checked : Qt::Unchecked);
+
+        item->setData((*cit)->entity().toString().c_str(), Qt::UserRole);
+        itemModel->insertRow(row, item);
+        }
+      }
+    itemModel->sort(0);
+    // for any assigned value in the MeshItem, it has to be in the availableMeshes list
+    for(std::size_t i=0; i<meshItem->numberOfValues(); ++i)
+      {
+      if(meshItem->isSet(i))
+        {
+        smtk::mesh::MeshSet amesh = meshItem->value(i);
+        if(availableMeshes.find(amesh) == availableMeshes.end())
+          {
+          meshItem->unset(i);
+          }
+        }
+      }
+
+    }
+
+  connect(this->model(),
+    SIGNAL(dataChanged ( const QModelIndex&, const QModelIndex&)),
+    this, SLOT(itemCheckChanged(const QModelIndex&, const QModelIndex&)));
+
+  //connect(this->Internals->checkableAttComboModel, SIGNAL(itemChanged ( QStandardItem*)),
+  //  this, SLOT(attributeFilterChanged(QStandardItem*)));
+  this->blockSignals(false);
+  this->view()->viewport()->installEventFilter(this);
+  // this->view()->setSelectionMode(QAbstractItemView::ExtendedSelection);
+  this->updateText();
+  this->hidePopup();
+}
+
+//-----------------------------------------------------------------------------
+void qtMeshItemCombo::showPopup()
+{
+  this->init();
+  this->qtCheckItemComboBox::showPopup();
+}
+
+//-----------------------------------------------------------------------------
+bool qtMeshItemCombo::eventFilter(QObject* editor, QEvent* evt)
+{
+  if(evt->type()==QEvent::MouseButtonRelease)
+    {
+    int index = view()->currentIndex().row();
+/*
+    // with the help of styles, check if checkbox rect contains 'pos'
+    QMouseEvent* e = dynamic_cast<QMouseEvent*>(evt);
+    QStyleOptionButton opt;
+    opt.rect = view()->visualRect(view()->currentIndex());
+    QRect r = style()->subElementRect(QStyle::SE_ViewItemCheckIndicator, &opt);
+    if(r.contains(e->pos()))
+      {
+*/
+      if (itemData(index, Qt::CheckStateRole) == Qt::Checked)
+        setItemData(index, Qt::Unchecked, Qt::CheckStateRole);
+      else
+        setItemData(index, Qt::Checked, Qt::CheckStateRole);
+//      }
+    return true;
+    }
+
+  return QObject::eventFilter(editor, evt);
+}
+
+//----------------------------------------------------------------------------
+void qtMeshItemCombo::itemCheckChanged(
+  const QModelIndex& topLeft, const QModelIndex& )
+{
+  QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
+  QStandardItem* item = itemModel->item(topLeft.row());
+  if(!item)
+    {
+    return;
+    }
+  QString strcollectionid = item->data(Qt::UserRole).toString();
+  if(strcollectionid.isEmpty())
+    {
+    return;
+    }
+  MeshItemPtr meshItem =
+    smtk::dynamic_pointer_cast<smtk::attribute::MeshItem>(
+    this->m_MeshItem.lock());
+  const MeshItemDefinition *itemDef =
+    static_cast<const MeshItemDefinition *>(meshItem->definition().get());
+  smtk::common::UUID collectionid(strcollectionid.toStdString());
+  smtk::mesh::CollectionPtr selcollection = meshItem->attribute()->
+    system()->refModelManager()->meshes()->collection(collectionid);
+  if(selcollection && selcollection->isValid())
+    {
+    smtk::mesh::MeshSet allmeshes = selcollection->meshes();
+    if(item->checkState() == Qt::Checked)
+      {
+      bool success = false;
+      // find an un-set index, and set the value
+      for(std::size_t idx=0;
+        idx < meshItem->numberOfValues(); ++idx)
+        {
+        if(meshItem->value(idx).is_empty())
+          {
+          success = meshItem->setValue(idx, allmeshes);
+          break;
+          }
+        }
+
+      if(!success)
+        {
+        success = meshItem->appendValue(allmeshes);
+        if(!success)
+          {
+          this->blockSignals(true);
+          item->setCheckState(Qt::Unchecked);
+          this->blockSignals(false);
+          }
+        }
+      }
+    else
+      {
+      std::ptrdiff_t idx = meshItem->find(allmeshes);
+      if(idx >=0)
+        {
+        if(itemDef->isExtensible())
+          meshItem->removeValue(idx);
+        else
+          meshItem->unset(idx);
         }
       }
     this->updateText();

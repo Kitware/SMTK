@@ -48,6 +48,7 @@ public:
   Qt::Orientation VectorItemOrient;
 
   QPointer<QToolButton> LinkSelectionButton;
+  QPointer<QToolButton> ClearButton;
   QPointer<qtModelEntityItemCombo> EntityItemCombo;
 
 };
@@ -158,6 +159,7 @@ void qtModelEntityItem::addEntityAssociationWidget()
   clearButton->setSizePolicy(sizeFixedPolicy);
   connect(clearButton, SIGNAL(clicked()),
     this, SLOT(clearEntityAssociations()));
+  this->Internals->ClearButton = clearButton;
 
   editorLayout->addWidget(clearButton);
   editorLayout->addWidget(this->Internals->LinkSelectionButton);
@@ -292,12 +294,22 @@ void qtModelEntityItem::setOutputOptional(int state)
     return;
     }
   bool enable = state ? true : false;
-//  this->Internals->EntryFrame->setEnabled(enable);
+  if(this->Internals->EntityItemCombo)
+    {
+    this->Internals->EntityItemCombo->setVisible(enable);
+    }
+  if(this->Internals->LinkSelectionButton)
+    {
+    this->Internals->LinkSelectionButton->setVisible(enable);
+    this->Internals->ClearButton->setVisible(enable);
+    }
   if(enable != this->getObject()->isEnabled())
     {
     this->getObject()->setIsEnabled(enable);
     if(this->baseView())
+      {
       this->baseView()->valueChanged(this->getObject());
+      }
     }
 }
 
@@ -320,19 +332,27 @@ void qtModelEntityItem::associateEntities(
     {
     bool success = false;
     if(idx < modEntityItem->numberOfValues())
+      {
       success = modEntityItem->setValue(idx, *it);
+      }
 
     if(!success)
+      {
       success = modEntityItem->appendValue(*it);
+      }
 
     if(!success)
+      {
       std::cerr << "ERROR: Unable to set entity to ModelEntityItem: "
                 << it->entity().toString() << std::endl;
+      }
 
     ++idx;
     }
   if(this->Internals->EntityItemCombo)
+    {
     this->Internals->EntityItemCombo->init();
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -347,7 +367,9 @@ void qtModelEntityItem::clearEntityAssociations()
   modEntityItem->reset();
 
   if(this->Internals->EntityItemCombo)
+    {
     this->Internals->EntityItemCombo->init();
+    }
 }
 
 //----------------------------------------------------------------------------
