@@ -17,6 +17,9 @@
 #include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
 #include "smtk/extension/vtk/reader/vtkLASReader.h"
 #include "smtk/bridge/discrete/Session.h"
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/PointSet.h"
 
 #include "vtkAppendPoints.h"
 #include "vtkCompositeDataIterator.h"
@@ -196,6 +199,59 @@ vtkPolyData* BathymetryHelper::findOrShallowCopyModelPoly(
 
   this->m_modelIdsToMasterPolys[modelId].TakeReference(tmpModelPoly);
   return this->m_modelIdsToMasterPolys[modelId].GetPointer();
+}
+
+bool BathymetryHelper::storeMeshPointsZ(smtk::mesh::CollectionPtr collection)
+{
+  if(!collection->isValid())
+    {
+    return false;
+    }
+  // if this mesh is already cached, return true;
+  std::vector<double> originalZs(this->cachedMeshPointsZ(collection->entity()));
+  if(originalZs.size() > 0)
+    {
+    return true;
+    }
+  // don't use originalZs here, because that's m_dummy
+  std::vector<double> zvals;
+  smtk::mesh::MeshSet meshes = collection->meshes();
+  ZValueHelper functorA(zvals, false);
+  smtk::mesh::for_each( meshes.points(), functorA );
+  this->m_meshIdsToPoints[collection->entity()] = zvals;
+  return true;
+}
+
+bool BathymetryHelper::resetMeshPointsZ(smtk::mesh::CollectionPtr collection)
+{
+  if(!collection->isValid())
+    {
+    return false;
+    }
+  // if removing, and we don't have a cached Z-value array, we did not apply bathy yet
+  std::vector<double> originalZs(this->cachedMeshPointsZ(collection->entity()));
+  if(originalZs.size() == 0)
+    {
+    return true;
+    }
+
+  smtk::mesh::MeshSet meshes = collection->meshes();
+  ZValueHelper functorA(originalZs, true);
+  smtk::mesh::for_each( meshes.points(), functorA );
+  return true;
+}
+
+const std::vector<double>& BathymetryHelper::cachedMeshPointsZ(
+  const smtk::common::UUID& collectionId) const
+{
+  BathymetryHelper::MeshIdToPointsMap::const_iterator it =
+    this->m_meshIdsToPoints.find(collectionId);
+
+  if(it != this->m_meshIdsToPoints.end())
+    {
+    return it->second;
+    }
+  return m_dummy;
 }
 
 void BathymetryHelper::clear()
