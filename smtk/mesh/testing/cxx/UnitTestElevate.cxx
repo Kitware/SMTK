@@ -127,13 +127,13 @@ void verify_elevate_self()
     test( collection->points().size() == points.size() );
     } //verify the elevate can safely leave scope
 
-    //confirm all the points have a z value of -i
-    points.get(pointCloud);
-    for(std::size_t i=0; i < pointCloud.size(); i+=3)
-      {
-      const T correct_z = static_cast<T>(i) * T(-1.0f);
-      test( (pointCloud[i+2] == correct_z) );
-      }
+  //confirm all the points have a z value of -i
+  points.get(pointCloud);
+  for(std::size_t i=0; i < pointCloud.size(); i+=3)
+    {
+    const T correct_z = static_cast<T>(i) * T(-1.0f);
+    test( (pointCloud[i+2] == correct_z) );
+    }
 }
 
 }
