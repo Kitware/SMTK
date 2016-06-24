@@ -83,8 +83,8 @@ private:
 //----------------------------------------------------------------------------
 class ZValueHelper : public smtk::mesh::PointForEach
 {
-  bool m_modifyZ;
   std::vector<double>& m_originalZs;
+  bool m_modifyZ;
 public:
   ZValueHelper(std::vector<double>& originalZs, bool modifyZ) :
     m_originalZs(originalZs),
