@@ -61,6 +61,8 @@ vtkLIDARReader::vtkLIDARReader()
 
   this->OutputDataTypeIsDouble = false;
   this->FileType = VTK_ASCII;
+
+  this->Origin[0] = this->Origin[1] = this->Origin[2] = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -711,6 +713,10 @@ int vtkLIDARReader::ReadPiece(ifstream &fin, int pieceIndex, int onRatio,
           }
         this->LatLongTransform2->TransformPoint(pt, pt);
         }
+
+      pt[0] -= this->Origin[0];
+      pt[1] -= this->Origin[1];
+      pt[1] -= this->Origin[2];
 
       // always computing/updating the bounds... which can/will frequently
       // be wasted effort; done before transformation

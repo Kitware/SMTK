@@ -76,6 +76,8 @@ public:
   // the bounds of data/pieces that have been read.
   vtkGetVector6Macro(DataBounds, double);
 
+  vtkSetVector3Macro(Origin, double);
+
   // Description:
   // Transform to apply to the pts being read in for determining whether the
   // data is in/out of the ReadBounds (if LimitReadToBounds is true), or for
@@ -106,8 +108,8 @@ public:
   vtkGetMacro(ConvertFromLatLongToXYZ, bool);
 
   // Description:
-  // If set (true), will only scan the file, colledting info about the data
-  // different classifications) that is present
+  // If set (true), will only scan the file, collecting info about the data
+  // different classifications that are present
   vtkBooleanMacro(ScanMode, bool);
   vtkSetMacro(ScanMode, bool);
   vtkGetMacro(ScanMode, bool);
@@ -170,6 +172,7 @@ private:
 
   double ScaleFactor[3];
   double Offset[3];
+  double Origin[3];
 
 };
 

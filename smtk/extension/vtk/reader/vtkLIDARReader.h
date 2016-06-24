@@ -117,6 +117,8 @@ public:
   // the bounds of data/pieces that have been read.
   vtkGetVector6Macro(DataBounds, double);
 
+  vtkSetVector3Macro(Origin, double);
+
   // Description:
   // Transform to apply to the pts being read in for determining whether the
   // data is in/out of the ReadBounds (if LimitReadToBounds is true), or for
@@ -229,6 +231,8 @@ protected:
   vtkSmartPointer<vtkTransform> LatLongTransform2;
 
   bool TransformOutputData;
+
+  double Origin[3];
 
 private:
   vtkLIDARReader(const vtkLIDARReader&);  // Not implemented.
