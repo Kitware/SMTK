@@ -43,6 +43,7 @@ class SMTKQTEXT_EXPORT qtCheckItemComboBox : public QComboBox
   public:
     qtCheckItemComboBox(QWidget * parentW, const QString& displayExt);
     virtual void hidePopup();
+    virtual void showPopup();
     virtual void init();
     virtual void updateText();
 
@@ -70,6 +71,27 @@ class SMTKQTEXT_EXPORT qtCheckItemComboBox : public QComboBox
 
     private:
       smtk::attribute::WeakItemPtr m_ModelEntityItem;
+    };
+
+  //A sublcass of qtCheckItemComboBox to refresh the list on popup
+  class SMTKQTEXT_EXPORT qtMeshItemCombo : public qtCheckItemComboBox
+    {
+    Q_OBJECT
+    public:
+      qtMeshItemCombo(smtk::attribute::ItemPtr,
+        QWidget * parent, const QString& displayExt);
+      virtual void showPopup();
+      virtual void init();
+
+    protected slots:
+      virtual void itemCheckChanged(
+        const QModelIndex& topLeft, const QModelIndex& bottomRight);
+
+    protected:
+      virtual bool eventFilter(QObject* editor, QEvent* event);
+
+    private:
+      smtk::attribute::WeakItemPtr m_MeshItem;
     };
 
   } // namespace extension

@@ -17,11 +17,13 @@
 #include "smtk/extension/qt/qtVoidItem.h"
 #include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtMeshSelectionItem.h"
+#include "smtk/extension/qt/qtMeshItem.h"
 
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/ValueItem.h"
@@ -99,7 +101,7 @@ qtItem* qtAttributeItemWidgetFactory::createModelEntityItemWidget(
     smtk::dynamic_pointer_cast<ModelEntityItem>(item), p, bview, orient);
 }
 
-/**\brief Create a widget that illustrates an item whose value is a set of geometric mesh entities.
+/**\brief Create a widget that illustrates an item whose value is a set of model geometric selections.
   *
   */
 qtItem* qtAttributeItemWidgetFactory::createMeshSelectionItemWidget(
@@ -107,4 +109,14 @@ qtItem* qtAttributeItemWidgetFactory::createMeshSelectionItemWidget(
 {
   return new qtMeshSelectionItem(
     smtk::dynamic_pointer_cast<MeshSelectionItem>(item), p, bview, orient);
+}
+
+/**\brief Create a widget that illustrates an item whose value is a set of geometric mesh entities.
+  *
+  */
+qtItem* qtAttributeItemWidgetFactory::createMeshItemWidget(
+  MeshItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient)
+{
+  return new qtMeshItem(
+    smtk::dynamic_pointer_cast<MeshItem>(item), p, bview, orient);
 }

@@ -38,6 +38,8 @@ namespace smtk
       virtual Item::Type type() const;
       std::size_t numberOfRequiredValues() const;
       void setNumberOfRequiredValues(std::size_t esize);
+      std::size_t maxNumberOfValues() const { return this->m_maxNumberOfValues; }
+      void setMaxNumberOfValues(std::size_t maxNum);
 
       bool isValueValid(const smtk::mesh::MeshSet &val) const;
       bool isExtensible() const { return this->m_isExtensible; }
@@ -55,6 +57,7 @@ namespace smtk
       MeshItemDefinition(const std::string &myName);
 
       std::size_t m_numberOfRequiredValues;
+      std::size_t m_maxNumberOfValues;
       bool m_isExtensible;
 
     };

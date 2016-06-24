@@ -21,6 +21,7 @@ MeshItemDefinition(const std::string &myName):
 {
   this->m_numberOfRequiredValues = 0;
   this->m_isExtensible = false;
+  this->m_maxNumberOfValues = 0;
 }
 
 //----------------------------------------------------------------------------
@@ -46,6 +47,12 @@ void MeshItemDefinition::setNumberOfRequiredValues(std::size_t esize)
     return;
     }
   this->m_numberOfRequiredValues = esize;
+}
+
+/// Set the maximum number of values accepted (or 0 for no limit).
+void MeshItemDefinition::setMaxNumberOfValues(std::size_t maxNum)
+{
+  this->m_maxNumberOfValues = maxNum;
 }
 
 //----------------------------------------------------------------------------

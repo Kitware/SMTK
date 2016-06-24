@@ -49,6 +49,7 @@ public:
   virtual qtItem* createVoidItemWidget(attribute::VoidItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
   virtual qtItem* createModelEntityItemWidget(attribute::ModelEntityItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
   virtual qtItem* createMeshSelectionItemWidget(attribute::MeshSelectionItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
+  virtual qtItem* createMeshItemWidget(attribute::MeshItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
 };
 
   } // namespace extension
