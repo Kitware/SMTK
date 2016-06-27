@@ -937,8 +937,18 @@ int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::mode
     {
     if(records)
       {
+//      std::cout << "records: \n" << cJSON_Print(records) << "\n";
       for (cJSON* c = records->child; c; c = c->next)
-        mgr->erase(smtk::common::UUID(c->string));
+        {
+        smtk::common::UUID uid(c->string);
+        // we can't erase a session
+        smtk::model::SessionRef sref(mgr, uid);
+        if(sref.isValid())
+          {
+          continue;
+          }
+        mgr->erase(uid);
+        }
       status = ImportJSON::ofManager(records, mgr);
       }
 
