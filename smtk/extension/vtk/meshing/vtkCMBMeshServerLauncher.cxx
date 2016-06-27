@@ -69,8 +69,8 @@ vtkCMBMeshServerLauncher::vtkCMBMeshServerLauncher()
   this->Implementation = new remus::server::Server(factory);
 
   //now setup the server to poll fairly fast, so that when we ask it shutdown,
-  //it can in a fairly timely manner. Range is 32ms to 6sec for our polling
-  remus::server::PollingRates rates(32,60*1000);
+  //it can in a fairly timely manner. Range is 32ms to 2.5sec for our polling
+  remus::server::PollingRates rates(32,2500);
   this->Implementation->pollingRates(rates); //update the server rates
 
   //launch the server, this must be done before we grab the port info
