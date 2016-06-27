@@ -2209,6 +2209,21 @@
 
       <object-type name="AttributeWriter">
         <include file-name="smtk/io/AttributeWriter.h" location="local"/>
+        <modify-function
+          signature="writeContents(const smtk::attribute::System &amp;, std::string &amp;, smtk::io::Logger &amp;, bool)">
+          <modify-argument index="return">
+            <replace-type modified-type="std::string">
+            </replace-type>
+          </modify-argument>
+          <modify-argument index="2">
+            <remove-argument />
+          </modify-argument>
+          <inject-code class="target" position="beginning">
+            std::string result;
+            %CPPSELF->writeContents(%1, result, %3, %4);
+            %PYARG_0 = %CONVERTTOPYTHON[std::string](result);
+          </inject-code>
+        </modify-function>
       </object-type>
 
       <object-type name="ExportJSON">
@@ -2239,6 +2254,10 @@
 
       <object-type name="MeshExport3DM">
         <include file-name="smtk/io/MeshExport3DM.h" location="local"/>
+      </object-type>
+
+      <object-type name="ModelToMesh">
+        <include file-name="smtk/io/ModelToMesh.h" location="local"/>
       </object-type>
 
       <object-type name="OperatorLog">
