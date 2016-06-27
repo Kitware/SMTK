@@ -25,12 +25,16 @@
 #include "vtkCompositeDataIterator.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelWrapper.h"
+#include "vtkDoubleArray.h"
+#include "vtkFloatArray.h"
 #include "vtkImageData.h"
 #include "vtkImageToStructuredGrid.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkNew.h"
+#include "vtkPointData.h"
 #include "vtkPolyData.h"
 #include "vtkStructuredGrid.h"
+#include "vtkUniformGrid.h"
 #include "vtkXMLImageDataReader.h"
 #include <vtksys/SystemTools.hxx>
 #include "DiscreteMesh.h"
@@ -40,6 +44,20 @@
 namespace smtk {
   namespace bridge {
     namespace discrete {
+
+  template<class T>
+  void copyArrayZValues(T *t, vtkImageData* imageInput, vtkPoints* outputPoints)
+    {
+    vtkIdType i, size = imageInput->GetNumberOfPoints();
+    double p[3];
+    for (i=0; i < size; ++i)
+      {
+      //get the point
+      imageInput->GetPoint(i,p);
+      p[2] = t[i];
+      outputPoints->SetPoint(i,p);
+      }
+    }
 
 /// Private constructor since this class is a base class which should not be instantiated.
 BathymetryHelper::BathymetryHelper()
@@ -261,6 +279,92 @@ void BathymetryHelper::clear()
   this->m_modelIdsToBathymetrys.clear();
 }
 
+bool BathymetryHelper::computeBathymetryPoints(
+  vtkDataSet* input, vtkPoints* outputPoints)
+{
+  if(!input || !outputPoints)
+    {
+    return false;
+    }
+  vtkIdType numPoints = 0;
+  vtkPolyData* pd = vtkPolyData::SafeDownCast(input);
+  vtkUniformGrid* gridInput = vtkUniformGrid::SafeDownCast(input);
+  vtkImageData* imageInput = vtkImageData::SafeDownCast(input);
+  if (pd)
+    {
+    numPoints = pd->GetNumberOfPoints();
+    }
+  else if(imageInput)
+    {
+    outputPoints->SetDataType(VTK_DOUBLE);
+    numPoints = imageInput->GetNumberOfPoints();
+    }
+  if(numPoints <=0)
+    {
+    return false;
+    }
+
+  //second iteration is building the point set and elevation mapping
+  vtkPoints *inputPoints = NULL;
+  vtkIdType size, i;
+  double p[3];
+  // Uniform Grids may not have the max number of points
+  if (gridInput)
+    {
+    vtkDataArray *dataArray = gridInput->GetPointData()->GetScalars("Elevation");
+    if(!dataArray || dataArray->GetNumberOfTuples() != numPoints)
+      {
+      return false;
+      }
+    outputPoints->SetNumberOfPoints(numPoints);
+    vtkIdType at = 0;
+    for (i = 0; i < numPoints; ++i)
+      {
+      if (!gridInput->IsPointVisible(i))
+        {
+        continue;
+        }
+      imageInput->GetPoint(i,p);
+
+      //copy z from "Elevation"
+      p[2] = dataArray->GetTuple1(i);
+      outputPoints->SetPoint(at, p);
+      ++at;
+      }
+    outputPoints->Resize(at);
+    }
+  else
+    {
+    outputPoints->SetNumberOfPoints(numPoints);
+    if (pd)
+      {
+      outputPoints->ShallowCopy(pd->GetPoints());
+      }
+    else if(imageInput)
+      {
+      size = imageInput->GetNumberOfPoints();
+      outputPoints->SetNumberOfPoints(size);
+      vtkDataArray *dataArray = imageInput->GetPointData()->GetScalars("Elevation");
+      if(!dataArray || dataArray->GetNumberOfTuples() != size)
+        {
+        return false;
+        }
+
+      //copy the z value of the "Elevation"
+      if (dataArray->GetDataType() == VTK_FLOAT)
+        {
+        vtkFloatArray *floatArray = static_cast<vtkFloatArray *>(dataArray);
+        copyArrayZValues(floatArray->GetPointer(0), imageInput, outputPoints);
+        }
+      else if (dataArray->GetDataType() == VTK_DOUBLE)
+        {
+        vtkDoubleArray *doubleArray = static_cast<vtkDoubleArray *>(dataArray);
+        copyArrayZValues(doubleArray->GetPointer(0), imageInput, outputPoints);
+        }
+      }
+    }
+  return true;
+}
 
     } // namespace discrete
   } // namespace bridge

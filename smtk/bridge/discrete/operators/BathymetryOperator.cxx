@@ -36,6 +36,8 @@
 #include "vtkModel.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelWrapper.h"
+#include "vtkDoubleArray.h"
+#include "vtkFloatArray.h"
 #include "vtkPolyData.h"
 #include <vtksys/SystemTools.hxx>
 
@@ -48,7 +50,7 @@ namespace smtk {
   namespace discrete {
 
 bool internal_bathyToAssociatedMeshes(
-  BathymetryHelper* bathyHelper, vtkPointSet* bathyPoints,
+  BathymetryHelper* bathyHelper, vtkDataSet* bathyData,
   const smtk::model::Model& srcModel, const bool &removing,
   const double &radius, const bool &useHighLimit, 
   const double &eleHigh, const bool &useLowLimit, const double &eleLow,
@@ -59,13 +61,18 @@ bool internal_bathyToAssociatedMeshes(
     {
     return ok;
     }
-  if (!removing && (!bathyPoints || !bathyPoints->GetPoints()))
-    {
-    std::cerr << "No bathymetry points to use for meshes!\n";
-    return false;
-    }
   std::vector<smtk::mesh::CollectionPtr> meshCollections =
     meshMgr->associatedCollections(srcModel);
+  if(meshCollections.size() == 0)
+    {
+    return ok;
+    }
+  if (!removing && !bathyData)
+    {
+    std::cerr << "No bathymetry dataset to use for meshes!\n";
+    return false;
+    }
+
   std::vector<smtk::mesh::CollectionPtr>::iterator it;
   for(it = meshCollections.begin(); it != meshCollections.end(); ++it)
     {
@@ -77,18 +84,40 @@ bool internal_bathyToAssociatedMeshes(
       }
     else
       {
+      vtkNew<vtkPoints> bathyPoints;
+      if(!bathyHelper->computeBathymetryPoints(bathyData, bathyPoints.GetPointer()) ||
+         bathyPoints->GetNumberOfPoints() == 0)
+        {
+        std::cerr << "Failed to compuate bathymetry points to use for meshes!\n";
+        return false;
+        }
+
       // cache the original mesh points Z values first
       if(!bathyHelper->storeMeshPointsZ(*it))
         {
         return false;
         }
-      double *rawPoints = static_cast<double*>(bathyPoints->GetPoints()->GetVoidPointer(0));
       smtk::mesh::elevation::clamp_controls clamp(useHighLimit, eleHigh, useLowLimit, eleLow);
-      ok &= smtk::mesh::elevate( rawPoints,
-                           bathyPoints->GetNumberOfPoints(),
-                           meshes.points(),
-                           radius,
-                           clamp);
+      vtkDataArray* pointCoords = bathyPoints->GetData();
+      if (pointCoords->GetDataType() == VTK_FLOAT)
+        {
+        vtkFloatArray *floatArray = static_cast<vtkFloatArray *>(pointCoords);
+        ok &= smtk::mesh::elevate( floatArray->GetPointer(0),
+                             bathyPoints->GetNumberOfPoints(),
+                             meshes.points(),
+                             radius,
+                             clamp);
+        }
+      else if (pointCoords->GetDataType() == VTK_DOUBLE)
+        {
+        vtkDoubleArray *doubleArray = static_cast<vtkDoubleArray *>(pointCoords);
+        ok &= smtk::mesh::elevate( doubleArray->GetPointer(0),
+                               bathyPoints->GetNumberOfPoints(),
+                               meshes.points(),
+                               radius,
+                               clamp);
+        }
+
       }
 
     if(ok)
@@ -214,7 +243,7 @@ OperatorResult BathymetryOperator::operateInternal()
     smtk::mesh::MeshSets modifiedMeshes;
     // update associated meshes
     if(!internal_bathyToAssociatedMeshes(
-       bathyHelper, vtkPointSet::SafeDownCast(bathyPoints),
+       bathyHelper, bathyPoints,
        inModel.as<smtk::model::Model>(),
        optype == "Remove Bathymetry",
        aveEleRadius, highZItem ? highZItem->isEnabled() : false, highElevation,
