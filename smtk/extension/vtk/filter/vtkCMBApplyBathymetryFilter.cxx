@@ -133,7 +133,7 @@ vtkCMBApplyBathymetryFilter::vtkCmbInternalTerrainInfo::vtkCmbInternalTerrainInf
     points->SetNumberOfPoints(numPoints);
     this->IdToElevation.resize(numPoints);
     vtkIdType at = 0;
-    for (i = 0; numPoints; i++)
+    for (i = 0; i < numPoints; i++)
       {
       if (!gridInput->IsPointVisible(i))
         {

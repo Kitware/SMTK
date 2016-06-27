@@ -21,6 +21,7 @@
 
 class vtkDataSet;
 class vtkPolyData;
+class vtkPoints;
 
 namespace smtk {
   namespace bridge {
@@ -57,6 +58,8 @@ public:
   bool storeMeshPointsZ(smtk::mesh::CollectionPtr collection);
   bool resetMeshPointsZ(smtk::mesh::CollectionPtr collection);
   void clear();
+
+  bool computeBathymetryPoints(vtkDataSet* input, vtkPoints* output);
 
 protected:
   friend class Session;
