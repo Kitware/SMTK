@@ -11,7 +11,10 @@
 
   <!-- Ignore miscellaneous crufty warnings -->
   <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::addStorage', unmatched parameter type 'smtk::bridge::polygon::internal::entity::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::beginStorage', unmatched return type 'internal::EntityIdToPtr::const_iterator'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::endStorage', unmatched return type 'internal::EntityIdToPtr::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::create', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::polygon::Session::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::createIODelegate', unmatched return type 'smtk::model::SessionIOPtr'"/>
   <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::findOperatorConstructor', unmatched return type 'smtk::model::OperatorConstructor'"/>
   <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::findStorage', unmatched return type 'T::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::findOrAddStorage', unmatched return type 'T'"/>

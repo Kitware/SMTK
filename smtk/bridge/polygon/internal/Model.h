@@ -52,6 +52,16 @@ public:
     long long modelScale,
     smtk::io::Logger& log);
 
+  bool restoreModel(
+    std::vector<double>& origin,
+    std::vector<double>& x_axis,
+    std::vector<double>& y_axis,
+    std::vector<double>& z_axis,
+    std::vector<double>& i_axis,
+    std::vector<double>& j_axis,
+    double featureSize,
+    long long modelScale);
+
   smtk::model::Vertices findOrAddModelVertices(
     smtk::model::ManagerPtr mgr,
     const std::vector<double>& points,
@@ -92,11 +102,14 @@ public:
   double* zAxis() { return this->m_zAxis; }
   const double* zAxis() const { return this->m_zAxis; }
 
+  double* iAxis() { return this->m_iAxis; }
+  const double* iAxis() const { return this->m_iAxis; }
+
+  double* jAxis() { return this->m_jAxis; }
+  const double* jAxis() const { return this->m_jAxis; }
+
   double featureSize() const { return this->m_featureSize; }
   double modelScale() const { return this->m_scale; }
-
-  Id id() const { return this->m_id; }
-  void setId(const Id& id) { this->m_id = id; }
 
   const Session* session() const { return this->m_session; }
   Session* session() { return this->m_session; }
@@ -120,7 +133,6 @@ public:
 
 protected:
   Session* m_session; // Parent session of this pmodel.
-  Id m_id;
   long long m_scale; // Recommend this be a large composite number w/ factors 2, 3, 5 (e.g., 15360, 231000, or 1182720)
   double m_featureSize;
 

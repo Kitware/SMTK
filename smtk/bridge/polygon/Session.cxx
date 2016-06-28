@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/bridge/polygon/Session.h"
+#include "smtk/bridge/polygon/SessionIOJSON.h"
 
 #include "smtk/AutoInit.h"
 
@@ -83,6 +84,25 @@ void Session::addStorage(
 bool Session::removeStorage(const smtk::common::UUID& uid)
 {
   return this->m_storage.erase(uid) > 0;
+}
+
+smtk::model::SessionIOPtr Session::createIODelegate(const std::string& format)
+{
+  if (format == "json")
+    {
+    return SessionIOJSON::create();
+    }
+  return NULL;
+}
+
+internal::EntityIdToPtr::const_iterator Session::beginStorage()
+{
+  return this->m_storage.begin();
+}
+
+internal::EntityIdToPtr::const_iterator Session::endStorage()
+{
+  return this->m_storage.end();
 }
 
     } // namespace polygon

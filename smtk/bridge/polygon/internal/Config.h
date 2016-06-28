@@ -35,6 +35,7 @@ namespace smtk {
         typedef smtk::shared_ptr<vertex> VertexPtr;
         typedef smtk::shared_ptr<edge> EdgePtr;
         typedef smtk::shared_ptr<face> FacePtr;
+        typedef smtk::shared_ptr<pmodel> ModelPtr;
 
         typedef long long Coord;
         typedef boost::polygon::high_precision_type<Coord>::type HighPrecisionCoord;

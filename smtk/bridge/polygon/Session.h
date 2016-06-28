@@ -55,6 +55,7 @@ protected:
   friend class Neighborhood;
   friend class Operator;
   friend class internal::pmodel;
+  friend class SessionIOJSON;
 
   Session();
 
@@ -87,6 +88,11 @@ protected:
         uid,smtk::dynamic_pointer_cast<internal::entity>(blank))).first;
     return smtk::dynamic_pointer_cast<T>(it->second);
     }
+
+  virtual smtk::model::SessionIOPtr createIODelegate(const std::string& format);
+
+  internal::EntityIdToPtr::const_iterator beginStorage();
+  internal::EntityIdToPtr::const_iterator endStorage();
 
   internal::EntityIdToPtr m_storage;
   int m_nextModelNumber;

@@ -1,5 +1,6 @@
 set(polygonSrcs
   Session.cxx
+  SessionIOJSON.cxx
   Operator.cxx
   internal/ActiveFragmentTree.cxx
   internal/Fragment.cxx
@@ -26,6 +27,7 @@ endif ()
 
 set(polygonHeaders
   Session.h
+  SessionIOJSON.h
   Operator.h
   internal/ActiveFragmentTree.h
   internal/Fragment.h
@@ -91,6 +93,7 @@ target_link_libraries(smtkPolygonSession
     smtkCore
   LINK_PRIVATE
     ${import_vtk_depends}
+    ${Boost_LIBRARIES}
   )
 smtk_export_header(smtkPolygonSession Exports.h)
 
