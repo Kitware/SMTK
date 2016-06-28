@@ -634,7 +634,13 @@ void Session::initializeOperatorSystem(const OperatorConstructors* opList)
   assignNamesDefn->setIsOptional(true);
   assignNamesDefn->setAdvanceLevel(11);
 
+  IntItemDefinition::Ptr debugLevelDefn = IntItemDefinition::New("debug level");
+  debugLevelDefn->setIsOptional(true);
+  debugLevelDefn->setDefaultValue(0);
+  debugLevelDefn->setAdvanceLevel(10);
+
   opdefn->addItemDefinition(assignNamesDefn);
+  opdefn->addItemDefinition(debugLevelDefn);
 
   Definition::Ptr resultdefn = this->m_operatorSys->createDefinition("result");
   IntItemDefinition::Ptr outcomeDefn = IntItemDefinition::New("outcome");

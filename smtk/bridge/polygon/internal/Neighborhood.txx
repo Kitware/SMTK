@@ -26,7 +26,6 @@ template<typename T>
 void Neighborhood::getLoops(T evaluator)
 {
   FragmentArray::iterator fit;
-  std::cout << "\nFeepy crawler\n";
   fit = this->m_fragments->begin();
   if (fit == this->m_fragments->end())
     {

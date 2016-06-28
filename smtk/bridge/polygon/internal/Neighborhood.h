@@ -85,6 +85,7 @@ public:
   RegionId traverseLoop(OrientedEdges& result, std::set<RegionId>& neighborRegions, FragmentId fragId, bool orientation);
   void dumpLoop(OrientedEdges& loopEdges, RegionId contained, std::set<RegionId>& neighborRegions);
   void dumpRegions2();
+  void setDebugLevel(int lvl) { this->m_debugLevel = lvl; }
 
   template<typename T>
     typename T::Ptr findStorage(const smtk::common::UUID& uid)
@@ -104,6 +105,7 @@ public:
   RegionId m_outside;
   smtk::model::Manager::Ptr m_mgr;
   smtk::bridge::polygon::Session* m_session;
+  int m_debugLevel;
 };
 
     } // namespace polygon
