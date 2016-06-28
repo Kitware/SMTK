@@ -558,19 +558,72 @@ bool vtkDiscreteModelEdge::AddCellsClassificationToMesh(vtkIdList* cellids)
                                             model->GetMeshClassification();
 
   vtkNew<vtkIdList> pointIds;
-  for(vtkIdType i=0;i<cellids->GetNumberOfIds();i++)
+  vtkIdType nextPId = -1, numCells = cellids->GetNumberOfIds();
+  vtkIdType nextCellId;
+  // We can not be sure which is the first cell of the edge so we need to find it
+  // The first cell will  not have its first point id be refered in any other cell's last pid
+  // unless it is a circular loop  and in that case it doesn't matter
+  std::set<vtkIdType> endPIDS;
+  vtkIdType i;
+  for (i=0; i< numCells;i++)
     {
-    const vtkIdType masterCellId = cellids->GetId(i);
-    const vtkIdType cellType = mesh.GetCellType(masterCellId);
-    mesh.GetCellPointIds(masterCellId,pointIds.GetPointer());
-
-    const vtkIdType newLocalCellId =
+    nextCellId = cellids->GetId(i);
+    mesh.GetCellPointIds(nextCellId,pointIds.GetPointer());
+    endPIDS.insert(pointIds->GetId(pointIds->GetNumberOfIds() -1));
+    }
+ for (i=0; i< numCells;i++)
+    {
+    nextCellId = cellids->GetId(i);
+    mesh.GetCellPointIds(nextCellId,pointIds.GetPointer());
+    if (endPIDS.find(pointIds->GetId(0)) == endPIDS.end())
+      {
+      // We found the starting cell!
+     break;
+      }
+    }
+  // Did we fund a loop edge?  (i.e. we did not find a PID that was not included in two different cells)
+  if (i == numCells)
+    {
+    nextCellId = cellids->GetId(0);
+    }
+  for(i=0; i< numCells;i++)
+    {
+    // Is this the first cell being inserted?
+    if (!i)
+      {
+      mesh.GetCellPointIds(nextCellId,pointIds.GetPointer());
+      }
+    else
+      {
+      // Need to find the next cell along the edge - assuming most of the time the cells are
+      // already sorted we will initial start at the next available ID
+      vtkIdType j, k;
+      bool found;
+      for (found = false, j =(i+1) % numCells, k=0;
+        !found && (k < numCells); j=(j+1) % numCells, k++)
+        {
+        nextCellId = cellids->GetId(j);
+        mesh.GetCellPointIds(nextCellId,pointIds.GetPointer());
+        if (pointIds->GetId(0) == nextPId)
+          {
+          found = true;
+          }
+        }
+      if (!found)
+        {
+        std::cerr << "\tERROR!!!  Edge is not continuous!!\n";
+        }
+      }
+     const vtkIdType cellType = mesh.GetCellType(nextCellId);
+     const vtkIdType newLocalCellId =
               entityPoly->InsertNextCell(cellType,pointIds.GetPointer());
-    this->GetReverseClassificationArray()->InsertNextTypedTuple(&masterCellId);
+     this->GetReverseClassificationArray()->InsertNextTypedTuple(&nextCellId);
 
     // update the classification on the model to this info
-    classification.SetEntity(masterCellId, newLocalCellId, this);
+    classification.SetEntity(nextCellId, newLocalCellId, this);
+    nextPId = pointIds->GetId(pointIds->GetNumberOfIds() -1);
     }
+
   if(cellids->GetNumberOfIds())
     {
     entityPoly->Modified();
