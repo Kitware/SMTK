@@ -142,6 +142,10 @@ protected:
 						const smtk::attribute::ModelEntityItemPtr& remEnts,
 						std::map<model::DescriptivePhrasePtr,
 						std::vector< std::pair<model::DescriptivePhrasePtr, int> > >& changedPhrases);
+  virtual void findDirectParentPhrasesForRemove(const model::DescriptivePhrasePtr& parntDp,
+            const smtk::attribute::MeshItemPtr& remMeshes,
+            std::map<model::DescriptivePhrasePtr,
+            std::vector< std::pair<model::DescriptivePhrasePtr, int> > >& changedPhrases);
 
   virtual void updateMeshPhrases (const smtk::common::UUIDs& relatedCollections,
                                   const model::DescriptivePhrasePtr& startDp,
