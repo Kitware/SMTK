@@ -1087,6 +1087,67 @@ void QEntityItemModel::updateChildPhrases(
 
 void QEntityItemModel::findDirectParentPhrasesForRemove(
   const DescriptivePhrasePtr& parntDp,
+  const smtk::attribute::MeshItemPtr& remMeshes,
+  std::map<DescriptivePhrasePtr,
+    std::vector< std::pair<DescriptivePhrasePtr, int> > >& changedPhrases)
+{
+  smtk::mesh::MeshSet meshkey;
+  smtk::mesh::CollectionPtr c;
+  if(parntDp->phraseType() == MESH_SUMMARY)
+    {
+    if(!parntDp->relatedMesh().is_empty())
+      {
+      meshkey = parntDp->relatedMesh();
+      c = meshkey.collection();
+      }
+    else
+      {
+      c = parntDp->relatedMeshCollection();
+      meshkey = c->meshes();
+      }
+  // if the parntDp related mesh is being removed, do not descend
+    if(remMeshes->hasValue(meshkey))
+      {
+      return;
+      }
+    }
+
+  smtk::model::DescriptivePhrases& origSubs(parntDp->subphrases());
+  int newIdx = 0;
+  for (smtk::model::DescriptivePhrases::iterator it = origSubs.begin();
+    it != origSubs.end(); ++it, ++newIdx)
+    {
+    if((*it)->phraseType() == MESH_SUMMARY)
+      {
+      if(!(*it)->relatedMesh().is_empty())
+        {
+        meshkey = (*it)->relatedMesh();
+        }
+      else
+        {
+        c = (*it)->relatedMeshCollection();
+        meshkey = c->meshes();
+        }
+      if (remMeshes->hasValue(meshkey))
+        {
+        // this parent has the subphrase for \a ent
+        // so it is changed
+        changedPhrases[parntDp].push_back(std::make_pair(*it, newIdx));
+        }
+      else
+        {
+        this->findDirectParentPhrasesForRemove(*it, remMeshes, changedPhrases);
+        }    
+      }
+    else if((*it)->relatedEntity().isModel())
+      {
+      this->findDirectParentPhrasesForRemove(*it, remMeshes, changedPhrases);
+      }    
+    }
+}
+
+void QEntityItemModel::findDirectParentPhrasesForRemove(
+  const DescriptivePhrasePtr& parntDp,
   const smtk::attribute::ModelEntityItemPtr& remEnts,
   std::map<DescriptivePhrasePtr,
     std::vector< std::pair<DescriptivePhrasePtr, int> > >& changedPhrases)
@@ -1115,6 +1176,7 @@ void QEntityItemModel::findDirectParentPhrasesForRemove(
       }
     }
 }
+
 
 void QEntityItemModel::findDirectParentPhrasesForAdd(
   const DescriptivePhrasePtr& parntDp,
@@ -1250,6 +1312,16 @@ void QEntityItemModel::updateWithOperatorResult(
   if(remEnts && remEnts->numberOfValues() > 0 && startPhr->areSubphrasesBuilt())
     {
     this->findDirectParentPhrasesForRemove(startPhr, remEnts, changedPhrases);
+    for(pit = changedPhrases.begin(); pit != changedPhrases.end(); ++pit)
+      this->removeChildPhrases(pit->first, pit->second, sessIndex);
+    }
+
+  changedPhrases.clear();
+  smtk::attribute::MeshItem::Ptr remMeshes =
+    result->findMesh("mesh_expunged");
+  if(remMeshes && remMeshes->numberOfValues() > 0 && startPhr->areSubphrasesBuilt())
+    {
+    this->findDirectParentPhrasesForRemove(startPhr, remMeshes, changedPhrases);
     for(pit = changedPhrases.begin(); pit != changedPhrases.end(); ++pit)
       this->removeChildPhrases(pit->first, pit->second, sessIndex);
     }
