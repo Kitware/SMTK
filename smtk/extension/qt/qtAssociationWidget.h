@@ -58,17 +58,17 @@ namespace smtk
       virtual void onExchange();
       virtual void onNodalOptionChanged(int);
       virtual void onDomainAssociationChanged();
-      virtual void onEntitySelected(QListWidgetItem * , QListWidgetItem * );
+      virtual void onEntitySelected();
 
     protected:
       virtual void initWidget( );
-      QListWidgetItem* getSelectedItem(QListWidget* theLis);
-      virtual void removeSelectedItem(QListWidget* theLis);
+      QList<QListWidgetItem*> getSelectedItems(QListWidget* theLis) const;
+      virtual void removeItem(QListWidget*, QListWidgetItem*);
       smtk::attribute::AttributePtr getAttribute(QListWidgetItem * item);
-      smtk::attribute::AttributePtr getSelectedAttribute(QListWidget* theLis);
+      smtk::attribute::AttributePtr getSelectedAttribute(QListWidgetItem*);
 
       smtk::model::EntityRef getModelEntityItem(QListWidgetItem * item);
-      smtk::model::EntityRef getSelectedModelEntityItem(QListWidget* theLis);
+      smtk::model::EntityRef getSelectedModelEntityItem(QListWidgetItem*);
 
       //returns the Item it has added to the widget
       //ownership of the item is handled by the widget so no need to delete
