@@ -379,8 +379,8 @@ void qtModelView::selectionChanged (
     CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY | INSTANCE_ENTITY,
     false, &selmeshes);
 
-  emit this->entitiesSelected(selentityrefs);
   emit this->meshesSelected(selmeshes);
+  emit this->entitiesSelected(selentityrefs);
 }
 
 //-----------------------------------------------------------------------------
