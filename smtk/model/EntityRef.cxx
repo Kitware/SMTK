@@ -1037,6 +1037,23 @@ EntityRef EntityRef::relationFromArrangement(
   return EntityRef();
 }
 
+/**\brief Remove an arrangement.
+  *
+  * This will remove an arrangement -- starting with the side held by this entity.
+  * Unlike other methods that generally start with the "parent" (the "one" in a
+  * "one-to-many" relationship), this starts with the current entity (even if it
+  * is the "child" or one of the "many").
+  * This makes it possible to remove a broken, one-sided arrangement.
+  *
+  * If \a index is invalid (i.e., negative), then the first arrangement of the
+  * given kind will be removed.
+  */
+bool EntityRef::removeArrangement(ArrangementKind k, int index)
+{
+  ManagerPtr mgr = this->m_manager.lock();
+  return mgr ? mgr->unarrangeEntity(this->m_entity, k, index < 0 ? 0 : index) : false;
+}
+
 /**\brief Embed the specified \a thingToEmbed as an inclusion into this entityref's entity.
   *
   * This adds an INCLUDES relation (if necessary) to this entity and

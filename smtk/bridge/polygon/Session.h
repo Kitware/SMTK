@@ -91,8 +91,11 @@ protected:
 
   virtual smtk::model::SessionIOPtr createIODelegate(const std::string& format);
 
-  internal::EntityIdToPtr::const_iterator beginStorage();
-  internal::EntityIdToPtr::const_iterator endStorage();
+  internal::EntityIdToPtr::iterator findStorageIterator(const smtk::common::UUID& uid);
+  internal::EntityIdToPtr::iterator beginStorage();
+  internal::EntityIdToPtr::iterator endStorage();
+  internal::EntityIdToPtr::const_iterator beginStorage() const;
+  internal::EntityIdToPtr::const_iterator endStorage() const;
 
   internal::EntityIdToPtr m_storage;
   int m_nextModelNumber;

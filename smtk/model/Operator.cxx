@@ -17,13 +17,14 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/StringItem.h"
-#include "smtk/attribute/GroupItem.h"
+#include "smtk/attribute/VoidItem.h"
 
 #include "smtk/common/UUID.h"
 
@@ -42,6 +43,7 @@ using smtk::attribute::RefItem;
 using smtk::attribute::ModelEntityItem;
 using smtk::attribute::MeshSelectionItem;
 using smtk::attribute::MeshItem;
+using smtk::attribute::VoidItem;
 
 namespace smtk {
   namespace model {
@@ -403,6 +405,12 @@ smtk::attribute::RefItemPtr Operator::findRef(const std::string& pname, smtk::at
 smtk::attribute::ModelEntityItemPtr Operator::findModelEntity(const std::string& pname, smtk::attribute::SearchStyle search)
 {
   return this->specification()->findAs<ModelEntityItem>(pname, search);
+}
+
+/// Return the integer-valued parameter named \a name or NULL if it does not exist.
+smtk::attribute::VoidItemPtr Operator::findVoid(const std::string& pname, smtk::attribute::SearchStyle search)
+{
+  return this->specification()->findAs<VoidItem>(pname, search);
 }
 
 /// Return the mesh-selection-item parameter named \a name or NULL if it does not exist.

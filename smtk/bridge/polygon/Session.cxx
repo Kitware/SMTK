@@ -95,12 +95,27 @@ smtk::model::SessionIOPtr Session::createIODelegate(const std::string& format)
   return NULL;
 }
 
-internal::EntityIdToPtr::const_iterator Session::beginStorage()
+internal::EntityIdToPtr::iterator Session::findStorageIterator(const smtk::common::UUID& uid)
+{
+  return this->m_storage.find(uid);
+}
+
+internal::EntityIdToPtr::iterator Session::beginStorage()
 {
   return this->m_storage.begin();
 }
 
-internal::EntityIdToPtr::const_iterator Session::endStorage()
+internal::EntityIdToPtr::iterator Session::endStorage()
+{
+  return this->m_storage.end();
+}
+
+internal::EntityIdToPtr::const_iterator Session::beginStorage() const
+{
+  return this->m_storage.begin();
+}
+
+internal::EntityIdToPtr::const_iterator Session::endStorage() const
 {
   return this->m_storage.end();
 }
