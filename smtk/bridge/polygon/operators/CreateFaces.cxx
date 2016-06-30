@@ -205,6 +205,19 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
     break;
   case 1: // edges, points, coordinates
       {
+      if (!model.isValid())
+        {
+        smtkErrorMacro(this->log(), "Invalid model (or non-model entity) specified when a model was expected.");
+        return this->createResult(smtk::model::OPERATION_FAILED);
+        }
+      for (int i = 0; i < modelItem->numberOfValues(); ++i)
+        {
+        smtk::model::Edge edgeIn(modelItem->value(i));
+        if (edgeIn.isValid())
+          {
+          modelEdgeMap[edgeIn] = 0;
+          }
+        }
       // for each edge
       //   for each model vertex
       //     walk loops where vertices have no face, aborting walk if an unselected edge is found.
@@ -225,6 +238,11 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
   case 2: // all non-overlapping
       {
       model = modelItem->value(0);
+      if (!model.isValid())
+        {
+        smtkErrorMacro(this->log(), "Invalid model (or non-model entity) specified when a model was expected.");
+        return this->createResult(smtk::model::OPERATION_FAILED);
+        }
       smtk::model::Edges allEdges =
         model.cellsAs<smtk::model::Edges>();
       for (smtk::model::Edges::const_iterator it = allEdges.begin(); it != allEdges.end(); ++it)
@@ -261,7 +279,10 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
   SweepEventSet eventQueue; // (QE) sorted into a queue by point-x, point-y, event-type, and then event-specific data.
   for (modelEdgeIt = modelEdgeMap.begin(); modelEdgeIt != modelEdgeMap.end(); ++modelEdgeIt)
     {
-    std::cout << "Consider " << modelEdgeIt->first.name() << "\n";
+    if (this->m_debugLevel > 0)
+      {
+      std::cout << "Considering input edge: " << modelEdgeIt->first.name() << "\n";
+      }
     internal::EdgePtr erec =
       this->findStorage<internal::edge>(
         modelEdgeIt->first.entity());
@@ -279,7 +300,10 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
       last = *pit;
       }
     }
-  DumpEventQueue( "Initial", eventQueue);
+  if (this->m_debugLevel > 0)
+    {
+    DumpEventQueue( "Initial", eventQueue);
+    }
 
   // The first event in eventQueue had better be a segment-start event.
   // So the first thing this event-loop should do is start processing edges.
@@ -294,8 +318,13 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
   SweeplinePosition sweepPosn(startPoint);
   ActiveFragmentTree activeEdges(fragments, sweepPosn); // (IT)
   Neighborhood neighborhood(sweepPosn, fragments, eventQueue, activeEdges, this->polygonSession()); // N(x)
+  neighborhood.setDebugLevel(this->m_debugLevel);
 
   neighborhood.sweep(); // Run through events in the queue
+  if (this->m_debugLevel > 0)
+    {
+    neighborhood.dumpRegions();
+    }
 
   // Now we have loops for each region; iterate over them and
   // create SMTK topology records:
@@ -344,7 +373,10 @@ void CreateFaces::evaluateLoop(
     smtk::common::UUID modelFaceId = mgr->unusedUUID();
     smtk::common::UUID modelFaceUseId = mgr->unusedUUID();
     smtk::common::UUID outerLoopId = mgr->unusedUUID();
-    std::cout << "Face " << faceNumber << " " << modelFaceId << " with outer loop " << outerLoopId << "\n";
+    if (this->m_debugLevel > 0)
+      {
+      std::cout << "Face " << faceNumber << " " << modelFaceId << " with outer loop " << outerLoopId << "\n";
+      }
     // Transcribe the outer loop, face use, and face:
     if (!mgr->insertModelFaceWithOrientedOuterLoop(modelFaceId, modelFaceUseId, outerLoopId, loop))
       {
@@ -355,14 +387,24 @@ void CreateFaces::evaluateLoop(
     smtk::model::Face modelFace(mgr, modelFaceId);
     this->m_model.addCell(modelFace);
 		this->addEntityToResult(this->m_result, modelFace, CREATED);
-    std::cout << "Adding " << faceNumber << " as model face " << this->m_result->findModelEntity("created")->numberOfValues() << "\n";
+    if (this->m_debugLevel > 0)
+      {
+      std::cout
+        << "Adding " << faceNumber << " as model face "
+        << this->m_result->findModelEntity("created")->numberOfValues() << "\n";
+      }
 		this->m_regionFaces[faceNumber] = modelFace;
     }
   else
     {
     smtk::common::UUID innerLoopId = mgr->unusedUUID();
 		smtk::common::UUID parentLoopId = fit->second.positiveUse().loops()[0].entity();
-    std::cout << "Face " << faceNumber << " parent loop " << parentLoopId << " with inner loop " << innerLoopId << "\n";
+    if (this->m_debugLevel > 0)
+      {
+      std::cout
+        << "Face " << faceNumber << " parent loop " << parentLoopId
+        << " with inner loop " << innerLoopId << "\n";
+      }
 		if (!mgr->insertModelFaceOrientedInnerLoop(innerLoopId, parentLoopId, loop))
 			{
       smtkErrorMacro(this->log(), "Could not create SMTK outer loop of face.");
@@ -372,13 +414,15 @@ void CreateFaces::evaluateLoop(
     }
 }
 
-void printPts(const std::string& msg, const std::vector<internal::Point>& polypts)
+template<typename T>
+void printPts(const std::string& msg, T begin, T end)
 {
   std::cout << msg << "\n";
-  std::vector<internal::Point>::const_iterator pit;
-  for (pit = polypts.begin(); pit != polypts.end(); ++pit)
+  T pit;
+  for (pit = begin; pit != end; ++pit)
     {
-    std::cout << "      " << pit->x()/2.31e13 << " " << pit->y()/2.31e13 << "\n";
+    //std::cout << "      " << pit->x()/2.31e13 << " " << pit->y()/2.31e13 << "\n";
+    std::cout << "      " << pit->x() << " " << pit->y() << "\n";
     }
 }
 
@@ -387,7 +431,10 @@ void CreateFaces::addTessellations()
   std::map<RegionId, std::vector<OrientedEdges> >::iterator rit; // Face iterator
   for (rit = this->m_regionLoops.begin(); rit != this->m_regionLoops.end(); ++rit)
     {
-    std::cout << "Tessellate region " << rit->first << "\n";
+    if (this->m_debugLevel > 2)
+      {
+      std::cout << "Tessellate region " << rit->first << "\n";
+      }
     // Look up SMTK face and owning model from region number:
     smtk::model::Face modelFace = this->m_regionFaces[rit->first];
     smtk::model::Model model = modelFace.owningModel();
@@ -395,34 +442,54 @@ void CreateFaces::addTessellations()
 
     // Now traverse loops of face to create boost::poly tessellation:
     std::vector<OrientedEdges>::iterator lit; // Loops-of-face iterator
+    poly::polygon_set_data<internal::Coord> polys;
+#if 0
     poly::polygon_with_holes_data<internal::Coord> pface;
     std::vector<poly::polygon_data<internal::Coord> > holes;
+#else
+    poly::polygon_data<internal::Coord> pface;
+#endif
     bool isOuter = true;
-    for (lit = rit->second.begin(); lit != rit->second.end(); ++lit)
+    size_t npp = rit->second.end() - rit->second.begin();
+    std::vector<std::vector<internal::Point> > pp2(npp);
+    size_t ppi = 0;
+    for (lit = rit->second.begin(); lit != rit->second.end(); ++lit, ++ppi)
       {
-      std::vector<internal::Point> polypts;
       this->pointsInLoopOrderFromOrientedEdges(
-        polypts, lit->begin(), lit->end(), pmodel);
+        pp2[ppi], lit->begin(), lit->end(), pmodel);
       if (isOuter)
         {
         isOuter = false;
-        pface.set(polypts.rbegin(), polypts.rend());
-        printPts("  Outer", polypts);
+        pface.set(pp2[ppi].rbegin(), pp2[ppi].rend());
+        if (this->m_debugLevel > 2)
+          {
+          printPts("  Outer", pp2[ppi].rbegin(), pp2[ppi].rend());
+          }
+        poly::assign(polys, pface);
         }
       else
         {
         poly::polygon_data<internal::Coord> loop;
-        loop.set(polypts.rbegin(), polypts.rend());
-        printPts("  Inner", polypts);
+        loop.set(pp2[ppi].rbegin(), pp2[ppi].rend());
+        if (this->m_debugLevel > 2)
+          {
+          printPts("  Subtract Inner", pp2[ppi].rbegin(), pp2[ppi].rend());
+          }
+#if 0
         holes.push_back(loop);
+#else
+        polys -= loop;
+#endif
         }
       }
+#if 0
     pface.set_holes(holes.begin(), holes.end());
-
-    poly::polygon_set_data<internal::Coord> polys;
-    std::vector<poly::polygon_data<internal::Coord> > tess;
     polys.insert(pface);
+#endif
+
+    std::vector<poly::polygon_data<internal::Coord> > tess;
     polys.get_trapezoids(tess);
+    //polys.get(tess);
     std::vector<poly::polygon_data<internal::Coord> >::const_iterator pit;
     smtk::model::Tessellation blank;
     smtk::model::UUIDsToTessellations::iterator smtkTess =

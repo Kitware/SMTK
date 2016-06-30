@@ -253,6 +253,7 @@ protected:
   OperatorSpecification m_specification;
   std::set<BareOperatorObserver> m_willOperateTriggers;
   std::set<OperatorWithResultObserver> m_didOperateTriggers;
+  int m_debugLevel;
 #endif // SHIBOKEN_SKIP
 };
 

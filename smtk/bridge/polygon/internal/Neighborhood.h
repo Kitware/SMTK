@@ -85,6 +85,7 @@ public:
   RegionId traverseLoop(OrientedEdges& result, std::set<RegionId>& neighborRegions, FragmentId fragId, bool orientation);
   void dumpLoop(OrientedEdges& loopEdges, RegionId contained, std::set<RegionId>& neighborRegions);
   void dumpRegions2();
+  void setDebugLevel(int lvl) { this->m_debugLevel = lvl; }
 
   template<typename T>
     typename T::Ptr findStorage(const smtk::common::UUID& uid)
@@ -101,8 +102,10 @@ public:
   std::set<FragmentId> m_fragmentsToDeactivate;
   std::list<FragmentId> m_ring; // offsets into m_fragments that order a neighborhood CCW
   std::set<std::pair<RegionId,RegionId> > m_related; // regions containing other regions (first = parent, second=child)
+  RegionId m_outside;
   smtk::model::Manager::Ptr m_mgr;
   smtk::bridge::polygon::Session* m_session;
+  int m_debugLevel;
 };
 
     } // namespace polygon

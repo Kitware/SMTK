@@ -26,11 +26,11 @@ template<typename T>
 void Neighborhood::getLoops(T evaluator)
 {
   FragmentArray::iterator fit;
-  std::cout << "\nFeepy crawler\n";
   fit = this->m_fragments->begin();
-  // The left/lower region of the first fragment to be inserted is always exterior
-  // to all faces. It corresponds to a "hole" cut in the infinite plane of all fragments.
-  RegionId outside = this->m_regionIds.find(fit->lowerRegion());
+  if (fit == this->m_fragments->end())
+    {
+    return;
+    }
 
   // Traverse every fragment. For each unprocessed coedge,
   // if the region it bounds is not marked as "exterior", then queue the loop
@@ -44,12 +44,12 @@ void Neighborhood::getLoops(T evaluator)
   FragmentId fid = 0;
   for (fit = this->m_fragments->begin(); fit != this->m_fragments->end(); ++fit, ++fid)
     {
-    if (!fit->marked(false) && this->m_regionIds.find(fit->ccwRegion(false)) != outside)
+    if (!fit->marked(false) && this->m_regionIds.find(fit->ccwRegion(false)) != this->m_outside)
       {
       RegionId contained = this->traverseLoop(loopEdges, neighborRegions, fid, false);
       evaluator->evaluateLoop(this->m_regionIds.find(contained), loopEdges, neighborRegions);
       }
-    if (!fit->marked(true) && this->m_regionIds.find(fit->ccwRegion(true)) != outside)
+    if (!fit->marked(true) && this->m_regionIds.find(fit->ccwRegion(true)) != this->m_outside)
       {
       RegionId contained = this->traverseLoop(loopEdges, neighborRegions, fid, true);
       evaluator->evaluateLoop(this->m_regionIds.find(contained), loopEdges, neighborRegions);
