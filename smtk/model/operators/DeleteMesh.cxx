@@ -45,12 +45,16 @@ smtk::model::OperatorResult DeleteMesh::operateInternal()
     for (attribute::MeshItem::const_mesh_it mit = meshItem->begin();
       mit != meshItem->end(); ++mit)
       {
-      if(!meshMgr->removeCollection(mit->collection()))
-        {
-        success = false;
-        break;
+      smtk::mesh::CollectionPtr collec = mit->collection();
+      if(collec)
+        {//can have an invalid collection when trying to delete
+          //an NULL/Invalid MeshSet.
+        const bool wasRemoved = meshMgr->removeCollection(collec);
+        if(wasRemoved)
+          {
+          expunged.insert(*mit);
+          }
         }
-      expunged.insert(*mit);
       }
     }
 
