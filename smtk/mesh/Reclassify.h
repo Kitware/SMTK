@@ -21,7 +21,6 @@
 namespace smtk {
   namespace mesh {
 
-#ifndef SHIBOKEN_SKIP
   //This operation is the mesh mirror for the split operator of a model
   //It needs to occur after the model operation has been run.
   //The first parameter is the original Edge that has been split,
@@ -65,8 +64,6 @@ namespace smtk {
              smtk::mesh::MeshSet& toRemove,
              smtk::mesh::MeshSet& toAddTo,
              const smtk::model::EntityRef& assoc);
-
-#endif
   }
 }
 

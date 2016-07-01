@@ -1,5 +1,5 @@
 
-##General##
+##General ToDo##
 
 1. Ability to set the names for meshCollections and specific meshes
 
@@ -24,13 +24,8 @@
 
 ```
 
-3. Create easy to use Tags for Neumann sets with a given value.
-
-
-4. Ability to extract all the point locations for a given collection
-   of cells or meshes.
-
-5. Add in smtk::mesh::for_each that works on PointSets.
+3. Create easy to use Tags of arbitrary types (float/int/etc) with varying
+   values for all points/cells in a meshset.
 
 
 ##Meshing to Mesh##
@@ -210,18 +205,3 @@ Current goals of the system are:
   smtk::mesh::MeshSet shell = c->extractShell( c->meshes( smtk::mesh::Dims3 ) );
 
   ```
-
-
-##IO##
-
-1. Able to write a mesh out
-
-```
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = manager.collection( uuid );
-  ...
-  //save the entire collection
-  bool result = smtk::io::WriteMesh::entireCollection(write_path, c);
-
-
-```

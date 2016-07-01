@@ -2405,11 +2405,18 @@
         <include file-name="smtk/mesh/TypeSet.h" location="local"/>
       </value-type>
 
-    </namespace-type>
+      <value-type name="ElevationControls">
+        <include file-name="smtk/mesh/Displace.h" location="local"/>
+      </value-type>
+
+      <!-- Needed so we can wrap merge/split functions  -->
+      <include file-name="smtk/mesh/Reclassify.h" location="local"/>
 
     </namespace-type>
 
- <rejection class="smtk::model::Manager" function-name="trigger"/>
+    </namespace-type>
+
+  <rejection class="smtk::model::Manager" function-name="trigger"/>
   <rejection class="smtk::model::Manager" function-name="observe"/>
   <rejection class="smtk::model::Manager" function-name="unobserve"/>
 

@@ -101,7 +101,7 @@ namespace
     ElevatePoint(smtk::mesh::PointLocator& locator,
                  std::vector<T>& z_values,
                  double radius,
-                 const smtk::mesh::elevation::clamp_controls& controls):
+                 const smtk::mesh::ElevationControls& controls):
       m_locator(locator),
       m_zValues(z_values),
       m_pointIdOffset( locator.range()[0] ),
@@ -151,7 +151,7 @@ namespace
                    std::size_t numPoints,
                    const smtk::mesh::PointSet& ps,
                    double radius,
-                   smtk::mesh::elevation::clamp_controls controls)
+                   smtk::mesh::ElevationControls controls)
   {
   if(pointcloud == NULL || numPoints == 0)
     { //can't elevate with an empty point cloud
@@ -193,11 +193,30 @@ namespace smtk {
 namespace mesh {
 
 //----------------------------------------------------------------------------
+bool elevate( const std::vector<double>& pointcloud,
+              const smtk::mesh::MeshSet& ms,
+              double radius,
+              ElevationControls controls )
+{
+  return do_elevate(&pointcloud[0], pointcloud.size(), ms.points(), radius, controls);
+}
+
+//----------------------------------------------------------------------------
+bool elevate( const std::vector<double>& pointcloud,
+              const smtk::mesh::PointSet& ps,
+              double radius,
+              ElevationControls controls )
+{
+  return do_elevate(&pointcloud[0], pointcloud.size(), ps, radius, controls);
+}
+
+
+//----------------------------------------------------------------------------
 bool elevate( const double* const pointcloud,
               std::size_t numPoints,
               const smtk::mesh::MeshSet& ms,
               double radius,
-              elevation::clamp_controls controls )
+              ElevationControls controls )
 {
   return do_elevate(pointcloud, numPoints, ms.points(), radius, controls);
 }
@@ -207,7 +226,7 @@ bool elevate( const float* const pointcloud,
               std::size_t numPoints,
               const smtk::mesh::MeshSet& ms,
               double radius,
-              elevation::clamp_controls controls )
+              ElevationControls controls )
 {
   return do_elevate(pointcloud, numPoints, ms.points(), radius, controls);
 }
@@ -217,7 +236,7 @@ bool elevate( const double* const pointcloud,
               std::size_t numPoints,
               const smtk::mesh::PointSet& ps,
               double radius,
-              elevation::clamp_controls controls )
+              ElevationControls controls )
 {
   return do_elevate(pointcloud, numPoints, ps, radius, controls);
 }
@@ -227,7 +246,7 @@ bool elevate( const float* const pointcloud,
               std::size_t numPoints,
               const smtk::mesh::PointSet& ps,
               double radius,
-              elevation::clamp_controls controls )
+              ElevationControls controls )
 {
   return do_elevate(pointcloud, numPoints, ps, radius, controls);
 }
