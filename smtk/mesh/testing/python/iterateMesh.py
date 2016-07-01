@@ -51,8 +51,8 @@ class PointVisitor(smtk.mesh.PointForEach) :
         smtk.mesh.PointForEach.__init__(self)
         self.count = 0
 
-    def forPoint(self, pointId, x, y, z):
-        self.count += 1
+    def forPoint(self, pointIds, xyz, doModify):
+        self.count += pointIds.size()
         #x,y,z is the physical location of the point
         pass
 
