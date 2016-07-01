@@ -52,7 +52,7 @@ namespace smtk {
 bool internal_bathyToAssociatedMeshes(
   BathymetryHelper* bathyHelper, vtkDataSet* bathyData,
   const smtk::model::Model& srcModel, const bool &removing,
-  const double &radius, const bool &useHighLimit, 
+  const double &radius, const bool &useHighLimit,
   const double &eleHigh, const bool &useLowLimit, const double &eleLow,
   smtk::mesh::ManagerPtr meshMgr, smtk::mesh::MeshSets& modifiedMeshes)
 {
@@ -97,7 +97,7 @@ bool internal_bathyToAssociatedMeshes(
         {
         return false;
         }
-      smtk::mesh::elevation::clamp_controls clamp(useHighLimit, eleHigh, useLowLimit, eleLow);
+      smtk::mesh::ElevationControls clamp(useHighLimit, eleHigh, useLowLimit, eleLow);
       vtkDataArray* pointCoords = bathyPoints->GetData();
       if (pointCoords->GetDataType() == VTK_FLOAT)
         {
@@ -221,7 +221,7 @@ OperatorResult BathymetryOperator::operateInternal()
       filter->Update();
       newModelPoints->ShallowCopy(filter->GetOutputDataObject(0));
       }
-    else 
+    else
       return this->createResult(OPERATION_FAILED);
     }
 

@@ -19,31 +19,20 @@
 namespace smtk {
   namespace mesh {
 
-#ifndef SHIBOKEN_SKIP
   //This operation is the mesh mirror for model bathymetry operations.
   //Given a set of mesh elements, and a point cloud. Displace the mesh
   //z values using the point cloud as a reference
-
-  //Things we need to handle
-  // clamping for both Low and High
-  // Invalid value ( )
-  // Radius
-  //Options:
-  // Looks like the classic implementation flattens both the mesh and point
-  // cloud down a z value of zero. Than it caches the clamped point cloud
-  // z values in a separate array.
-
-  namespace elevation {
-    struct clamp_controls {
-
-    clamp_controls():
+  class ElevationControls
+  {
+    public:
+    ElevationControls():
       m_clampMin(false),
       m_clampMax(false),
       m_useInvalid(false)
     {
     }
 
-    clamp_controls(bool clampMin, double minElev,
+    ElevationControls(bool clampMin, double minElev,
                    bool clampMax, double maxElev,
                    bool useInvalid=false, double invalid=0.0):
       m_clampMin(clampMin),
@@ -62,35 +51,56 @@ namespace smtk {
     double m_maxElev;
     double m_invalid;
   };
-  }
+
+  //flattens point cloud so we have a cylindrical search space
+  SMTKCORE_EXPORT
+  bool elevate( const std::vector<double>& pointcloud,
+                const smtk::mesh::MeshSet& ms,
+                double radius,
+                ElevationControls controls = ElevationControls() );
+
+  //flattens point cloud so we have a cylindrical search space
+  SMTKCORE_EXPORT
+  bool elevate( const std::vector<double>& pointcloud,
+                const smtk::mesh::PointSet& ps,
+                double radius,
+                ElevationControls controls = ElevationControls() );
+
+
+#ifndef SHIBOKEN_SKIP
+  // Skipping the following:
+  // double*, and float* they are not nicely wrapped so the length is unknown
+  // std::vector<float>& skipped since python uses doubles not floats
 
   //flattens point cloud so we have a cylindrical search space
   SMTKCORE_EXPORT
   bool elevate( const double* const pointcloud, std::size_t numPoints,
                 const smtk::mesh::MeshSet& ms,
                 double radius,
-                elevation::clamp_controls controls = elevation::clamp_controls() );
+                ElevationControls controls = ElevationControls() );
 
   //flattens point cloud so we have a cylindrical search space
   SMTKCORE_EXPORT
   bool elevate( const float* const pointcloud, std::size_t numPoints,
                 const smtk::mesh::MeshSet& ms,
                 double radius,
-                elevation::clamp_controls controls  = elevation::clamp_controls() );
+                ElevationControls controls  = ElevationControls() );
 
   //flattens point cloud so we have a cylindrical search space
   SMTKCORE_EXPORT
   bool elevate( const double* const pointcloud, std::size_t numPoints,
                 const smtk::mesh::PointSet& ps,
                 double radius,
-                elevation::clamp_controls controls = elevation::clamp_controls() );
+                ElevationControls controls = ElevationControls() );
 
   //flattens point cloud so we have a cylindrical search space
   SMTKCORE_EXPORT
   bool elevate( const float* const pointcloud, std::size_t numPoints,
                 const smtk::mesh::PointSet& ps,
                 double radius,
-                elevation::clamp_controls controls  = elevation::clamp_controls() );
+                ElevationControls controls  = ElevationControls() );
+#endif
+
 
   //displace a set of points, given a point cloud. Doesn't flatten like
   //elevate. If multiple points from the cloud are within the radius the
@@ -108,9 +118,6 @@ namespace smtk {
                  const smtk::mesh::PointSet&,
                  double radius);
 
-
-
-#endif
   }
 }
 
