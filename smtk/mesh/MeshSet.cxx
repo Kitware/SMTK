@@ -122,8 +122,18 @@ bool MeshSet::operator<(const MeshSet& other) const
           }
         }
       //we looped over the entire set and everything was equal, so therefore
-      //the two ranges must be equal
-      return false;
+      //we must compare parents.
+
+      if(this->m_parent && other.m_parent)
+        { //If and only if the two parents exist can we safely compare
+          //the uuids of the parents
+        return this->m_parent->entity() < other.m_parent->entity();
+        }
+      else
+        {
+        //Return true when we have a non null parent
+        return !!this->m_parent;
+        }
       }
 
     //prefer less pair sets over more pair sets for less than operator
