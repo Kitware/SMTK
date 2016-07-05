@@ -401,6 +401,11 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node &node,
       smtk::mesh::HandleRange hrange = smtk::mesh::from_json(jshandle);
       cJSON_Delete(jshandle);
       smtk::mesh::CollectionPtr c = modelmgr->meshes()->collection(cid);
+      if(!c)
+        {
+        smtkErrorMacro(this->m_logger, "Expecting a valid collection for mesh item: " << item->name());
+        continue;
+        }
       smtk::mesh::InterfacePtr interface =c->interface();
       
       if(!interface)
@@ -473,6 +478,11 @@ void XmlDocV2Parser::processMeshEntityDef(pugi::xml_node &node,
   if (xatt)
     {
     idef->setIsExtensible(xatt.as_bool());
+    xatt = node.attribute("MaxNumberOfValues");
+    if (xatt)
+      {
+      idef->setMaxNumberOfValues(xatt.as_uint());
+      }
     }
 }
 

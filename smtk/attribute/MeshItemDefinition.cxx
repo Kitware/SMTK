@@ -88,6 +88,7 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
   ItemDefinition::copyTo(newDef);
   newDef->setNumberOfRequiredValues(this->numberOfRequiredValues());
   newDef->setIsExtensible(m_isExtensible);
+  newDef->setMaxNumberOfValues(m_maxNumberOfValues);
   return newDef;
 }
 //----------------------------------------------------------------------------
