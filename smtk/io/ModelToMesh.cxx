@@ -161,11 +161,13 @@ template<typename HandleData>
 void convert_vertex(std::vector<int>&,
                     smtk::mesh::CellType cellType,
                     smtk::model::Tessellation::size_type numVerts,
-                    std::vector<std::size_t>&,
+                    std::vector<std::size_t>& numCellsOfType,
                     std::vector<HandleData>& cellMBConn,
                     std::size_t global_coordinate_offset
                     )
 {
+  numCellsOfType[cellType]++;
+
   //get the list of vertex cells for this entity
   smtk::mesh::HandleRange& currentCellids = cellMBConn[cellType].first;
 
