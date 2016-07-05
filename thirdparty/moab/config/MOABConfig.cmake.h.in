@@ -109,6 +109,12 @@
 /* MOAB qualified HAVE_INTTYPES_H */
 #cmakedefine MOAB_HAVE_INTTYPES_H
 
+/* Define if finite is supported */
+#cmakedefine MOAB_HAVE_FINITE
+
+/* Define if isfinite is supported */
+#cmakedefine MOAB_HAVE_ISFINITE
+
 /* Define to 1 if you have the `gvc' library (-lgvc). */
 #cmakedefine MOAB_HAVE_LIBGVC
 

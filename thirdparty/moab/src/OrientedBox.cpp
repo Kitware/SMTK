@@ -36,17 +36,13 @@
 #include "OrientedBox.hpp"
 #include "moab/Range.hpp"
 #include "moab/Matrix3.hpp"
+#include "moab/Util.hpp"
 #include <ostream>
 #include <assert.h>
 #include <limits>
 
 namespace moab {
 
-#if defined(_MSC_VER) || defined(__MINGW32__)
-#  include <float.h>
-#  define finite(A) _finite(A)
-#endif
- 
 std::ostream& operator<<( std::ostream& s, const OrientedBox& b )
 {
   return s << b.center 
@@ -88,7 +84,7 @@ static double point_perp( const CartVect& p,   // closest to this point
 #else
   double t = (m % (p - b)) / (m % m);
 #endif
-  return finite(t) ? t : 0.0;
+  return Util::is_finite(t) ? t : 0.0;
 }
 
 OrientedBox::OrientedBox( const CartVect axes[3], const CartVect& mid )

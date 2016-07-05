@@ -7,6 +7,7 @@
 #include "moab/Range.hpp"
 #include "moab/ElemEvaluator.hpp"
 #include "moab/CpuTimer.hpp"
+#include "moab/Util.hpp"
 #include "Internals.hpp"
 #include <math.h>
 
@@ -2002,7 +2003,7 @@ namespace moab {
           // Note: we maintain seg.beg <= seg.end at all times, so assume that here.
     
           // If segment is parallel to plane
-        if (!finite(t)) {
+        if (!Util::is_finite(t)) {
           if (ray_pt[plane.norm] - tol <= plane.coord)
             list.push_back( NodeSeg( children[0], seg.beg, seg.end ) );
           if (ray_pt[plane.norm] + tol >= plane.coord)
