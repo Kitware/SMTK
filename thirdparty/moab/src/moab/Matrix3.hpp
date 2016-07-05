@@ -27,14 +27,13 @@
 //#include "moab/EigenDecomp.hpp"
 #include <iostream>
 #include "moab/CartVect.hpp"
+#include "moab/Util.hpp"
 
 #include <iosfwd>
 #include <limits>
 #include <float.h>
 #include <assert.h>
-#ifdef _MSC_VER
-# define finite _finite
-#endif
+
 
 namespace moab {
 
@@ -412,7 +411,7 @@ inline Matrix3( double v00, double v01, double v02,
   
   inline bool invert() {
     double i = 1.0 / determinant();
-    if (!finite(i) || fabs(i) < std::numeric_limits<double>::epsilon())
+    if (!Util::is_finite(i) || fabs(i) < std::numeric_limits<double>::epsilon())
       return false;
     *this = inverse( i );
     return true;

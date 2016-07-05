@@ -19,6 +19,7 @@
 #include "Internals.hpp" // For MB_START_ID
 #include "moab/Range.hpp"
 #include "moab/FileOptions.hpp"
+#include "moab/Util.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -27,11 +28,6 @@
 #include <cstdlib>
 #include "assert.h"
 #include "math.h"
-
-#if defined(_MSC_VER) || defined(__MINGW32__)
-#  include <float.h>
-#  define finite(A) _finite(A)
-#endif
 
 namespace moab {
 
@@ -807,11 +803,11 @@ ErrorCode ReadMCNP5::read_element_values_and_errors(std::fstream &file,
         ss >> errors[index];
 
         // Make sure that input data is good
-        if (!finite(errors[index])) {
+        if (!Util::is_finite(errors[index])) {
           std::cerr << "found nan error while reading file" << std::endl;
           errors[index] = 1.0;
         }
-        if (!finite(values[index])) {
+        if (!Util::is_finite(values[index])) {
           std::cerr << "found nan value while reading file" << std::endl;
           values[index] = 0.0;
         }
@@ -1128,7 +1124,7 @@ ErrorCode ReadMCNP5::average_tally_values(const unsigned long int nps0,
                  (values0[i]*nps0 + values1[i]*nps1);
 
     // It is possible to introduce nans if the values are zero.
-    if (!finite(errors0[i]))
+    if (!Util::is_finite(errors0[i]))
       errors0[i] = 1.0;
 
     values0[i] = (values0[i]*nps0 + values1[i]*nps1) / (nps0 + nps1);
