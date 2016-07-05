@@ -753,6 +753,11 @@ void XmlV2StringWriter::processMeshEntityDef(pugi::xml_node& node,
   if (idef->isExtensible())
     {
     node.append_attribute("Extensible") = true;
+    if (idef->maxNumberOfValues())
+      {
+      node.append_attribute("MaxNumberOfValues") =
+        static_cast<unsigned int>(idef->maxNumberOfValues());
+      }
     }
 }
 
