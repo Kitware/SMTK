@@ -403,14 +403,16 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node &node,
       smtk::mesh::CollectionPtr c = modelmgr->meshes()->collection(cid);
       if(!c)
         {
-        smtkErrorMacro(this->m_logger, "Expecting a valid collection for mesh item: " << item->name());
+        std::cerr << "Expecting a valid collection for mesh item: "
+                  << item->name() << std::endl;
         continue;
         }
       smtk::mesh::InterfacePtr interface =c->interface();
       
       if(!interface)
         {
-        smtkErrorMacro(this->m_logger, "Expecting a valid interface for mesh item: " << item->name());
+        std::cerr << "Expecting a valid mesh interface for mesh item: "
+                  << item->name() << std::endl;
         continue;
         }
 
