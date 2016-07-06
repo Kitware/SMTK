@@ -96,7 +96,7 @@ void Attribute::references(std::vector<smtk::attribute::ItemPtr> &list) const
     {
     if (it->second.size())
       {
-      list.push_back(it->first->pointer());
+      list.push_back(it->first->shared_from_this());
       }
     }
 }
@@ -302,16 +302,6 @@ smtk::model::ManagerPtr Attribute::modelManager() const
     result = attSys->refModelManager();
     }
   return result;
-}
-//----------------------------------------------------------------------------
-smtk::attribute::AttributePtr Attribute::pointer() const
-{
-  System *m = this->system();
-  if (m)
-    {
-    return m->findAttribute(this->m_name);
-    }
-  return smtk::attribute::AttributePtr();
 }
 //----------------------------------------------------------------------------
 /**\brief Remove all associations of this attribute with model entities.

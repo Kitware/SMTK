@@ -135,7 +135,7 @@ smtk::attribute::AttributePtr qtReferencesWidget::getAttributeFromItem(
 {
   Attribute* rawPtr = item ?
     static_cast<Attribute*>(item->data(Qt::UserRole).value<void *>()) : NULL;
-  return rawPtr ? rawPtr->pointer() : smtk::attribute::AttributePtr();
+  return rawPtr ? rawPtr->shared_from_this() : smtk::attribute::AttributePtr();
 }
 //-----------------------------------------------------------------------------
 QListWidgetItem *qtReferencesWidget::getSelectedItem(QListWidget* theList)

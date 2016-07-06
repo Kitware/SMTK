@@ -195,7 +195,7 @@ smtk::attribute::ItemPtr qtAttributeDisplay::getAttributeItemFromItem(
 {
   Item* rawPtr = item ?
     static_cast<Item*>(item->data(Qt::UserRole).value<void *>()) : NULL;
-  return rawPtr ? rawPtr->pointer() : smtk::attribute::ItemPtr();
+  return rawPtr ? rawPtr->shared_from_this() : smtk::attribute::ItemPtr();
 }
 
 //----------------------------------------------------------------------------
@@ -266,7 +266,7 @@ void qtAttributeDisplay::initSelectionFilters(const QString& currentItemName)
   if(!rawPtr)
     return;
 
-  this->initSelectPropCombo(rawPtr->pointer(), currentItemName);
+  this->initSelectPropCombo(rawPtr->shared_from_this(), currentItemName);
   this->onFieldSelected();
   //  this->updateTableWithProperties();
 }
@@ -352,8 +352,8 @@ void qtAttributeDisplay::onFieldSelected()
     irawPtr = static_cast<Item*>(item->data(Qt::UserRole).value<void *>());
     }
 
-  emit this->attributeFieldSelected(rawPtr->pointer()->type().c_str(),
-    irawPtr ? irawPtr->pointer()->name().c_str() : "");
+  emit this->attributeFieldSelected(rawPtr->type().c_str(),
+    irawPtr ? irawPtr->name().c_str() : "");
 }
 
 //----------------------------------------------------------------------------

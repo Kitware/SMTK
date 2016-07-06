@@ -49,7 +49,7 @@ AttributePtr Item::attribute() const
 {
   if (this->m_attribute)
     {
-    return this->m_attribute->pointer();
+    return this->m_attribute->shared_from_this();
     }
   if (this->m_owningItem)
     {
@@ -61,49 +61,6 @@ AttributePtr Item::attribute() const
 bool Item::isValid() const
 {
   return true;
-}
-//----------------------------------------------------------------------------
-ItemPtr Item::pointer() const
-{
-  // We need to find the object that owns this item
-  if (this->m_attribute)
-    {
-    return this->m_attribute->item(this->m_position);
-    }
-  if (this->m_owningItem)
-    {
-    GroupItem *gitem = dynamic_cast<GroupItem *>(this->m_owningItem);
-    if (gitem)
-      {
-      return gitem->item(static_cast<size_t>(this->m_subGroupPosition),
-                         static_cast<size_t>(this->m_position));
-      }
-    ValueItem *vitem = dynamic_cast<ValueItem *>(this->m_owningItem);
-    if (vitem)
-      {
-      if(vitem->numberOfChildrenItems() > 0)
-        {
-        const std::map<std::string, smtk::attribute::ItemPtr> childrenItems =
-          vitem->childrenItems();
-        std::map<std::string, smtk::attribute::ItemPtr>::const_iterator it =
-          childrenItems.find(this->name());
-        if (it != childrenItems.end())
-          {
-          return it->second;
-          }
-        }
-      else if(vitem->isExpression(static_cast<size_t>(this->m_position)))
-        {
-        // assume that this is owned by an expression
-        return vitem->expressionReference(static_cast<size_t>(this->m_position));
-        }
-      else
-        {
-        std::cerr << "Cannot find owning item.\n";
-        }
-      }
-    }
-  return ItemPtr();
 }
 //----------------------------------------------------------------------------
 std::string Item::name() const
