@@ -33,7 +33,7 @@ namespace smtk
     class ValueItemDefinition;
     class Attribute;
 
-    class SMTKCORE_EXPORT Item
+    class SMTKCORE_EXPORT Item: public smtk::enable_shared_from_this<Item>
     {
       friend class Definition;
       friend class GroupItemDefinition;
@@ -76,7 +76,7 @@ namespace smtk
      // Return the attribute that owns this item
      smtk::attribute::AttributePtr attribute() const;
      smtk::attribute::ItemPtr owningItem() const
-     {return (this->m_owningItem ? this->m_owningItem->pointer() :
+     {return (this->m_owningItem ? this->m_owningItem->shared_from_this() :
               smtk::attribute::ItemPtr());}
      //Position is the item's location w/r to the owning item if not null
      // or the owning attribute. Currently the only items that can own other items are
@@ -87,10 +87,6 @@ namespace smtk
      int subGroupPosition() const
      {return this->m_subGroupPosition;}
 
-     // Returns the shared pointer of the item - if the item is no longer
-     // owned by either an attribute or by another item it will return
-     // an empty shared pointer
-     smtk::attribute::ItemPtr pointer() const;
      // Returns true if the item is optional
      bool isOptional() const;
      

@@ -387,7 +387,7 @@ smtk::attribute::AttributePtr qtAttributeView::getAttributeFromItem(
     {
     Attribute* rawPtr = item ?
       static_cast<Attribute*>(item->data(Qt::UserRole).value<void *>()) : NULL;
-    return rawPtr ? rawPtr->pointer() : smtk::attribute::AttributePtr();
+    return rawPtr ? rawPtr->shared_from_this() : smtk::attribute::AttributePtr();
     }
   return smtk::attribute::AttributePtr();
 }
@@ -399,7 +399,7 @@ smtk::attribute::ItemPtr qtAttributeView::getAttributeItemFromItem(
     {
     Item* rawPtr = item ?
       static_cast<Item*>(item->data(Qt::UserRole).value<void *>()) : NULL;
-    return rawPtr ? rawPtr->pointer() : smtk::attribute::ItemPtr();
+    return rawPtr ? rawPtr->shared_from_this() : smtk::attribute::ItemPtr();
     }
   return smtk::attribute::ItemPtr();
 }
@@ -523,8 +523,8 @@ void qtAttributeView::updateTableWithProperties()
     }
 
   std::vector<smtk::attribute::AttributePtr> result;
-  System *attSystem = rawPtr->pointer()->system();
-  attSystem->findAttributes(rawPtr->pointer(), result);
+  System *attSystem = rawPtr->system();
+  attSystem->findAttributes(rawPtr->shared_from_this(), result);
   if(result.size() == 0)
     {
     this->Internals->ValuesTable->blockSignals(false);
@@ -546,7 +546,7 @@ void qtAttributeView::updateTableWithProperties()
       continue;
       }
     this->insertTableColumn(vtWidget, j, (*it)->name().c_str(),
-      rawPtr->pointer()->advanceLevel());
+      rawPtr->advanceLevel());
     j++;
     }
 
@@ -560,7 +560,7 @@ void qtAttributeView::updateTableWithProperties()
       if(irawPtr)
         {
         smtk::attribute::ItemPtr attItem =
-          irawPtr ? irawPtr->pointer() : smtk::attribute::ItemPtr();
+          irawPtr ? irawPtr->shared_from_this() : smtk::attribute::ItemPtr();
         smtk::attribute::AttributePtr att = attItem->attribute();
         this->addComparativeProperty(current, att->definition());
         }
@@ -595,7 +595,7 @@ void qtAttributeView::onAttributeValueChanged(QTableWidgetItem* item)
     {
     linkedData->setIsEnabled(item->checkState()==Qt::Checked);
     this->updateChildWidgetsEnableState(
-     linkedData->pointer(), item);
+     linkedData->shared_from_this(), item);
     }
 }
 //----------------------------------------------------------------------------
@@ -977,7 +977,7 @@ void qtAttributeView::initSelectionFilters()
       {
       return;
       }
-    dp = rawPtr->pointer();
+    dp = rawPtr->shared_from_this();
     }
   else
     {
@@ -1132,7 +1132,7 @@ void qtAttributeView::propertyFilterChanged(
   if(rawPtr)
     {
   this->Internals->ValuesTable->blockSignals(true);
-    smtk::attribute::ItemPtr attItem = rawPtr->pointer();
+    smtk::attribute::ItemPtr attItem = rawPtr->shared_from_this();
     smtk::attribute::AttributePtr att = attItem->attribute();
     std::string keyName = att->definition()->type() + item->text().toStdString();
     this->Internals->AttProperties[keyName] = item->checkState();
@@ -1169,11 +1169,11 @@ void qtAttributeView::attributeFilterChanged(
     this->Internals->AttSelections[rawPtr->name()] = item->checkState();
     if(item->checkState() == Qt::Checked)
       {
-      this->addComparativeAttribute(rawPtr->pointer());
+      this->addComparativeAttribute(rawPtr->shared_from_this());
       }
     else
       {
-      this->removeComparativeAttribute(rawPtr->pointer());
+      this->removeComparativeAttribute(rawPtr->shared_from_this());
       }
     this->Internals->SelectAttCombo->updateText();
     this->Internals->ValuesTable->blockSignals(false);
@@ -1309,7 +1309,7 @@ void qtAttributeView::addComparativeProperty(
     this->Internals->PropDefsCombo->currentIndex(), Qt::UserRole).value<void *>());
     }
 
-  if(rawPtr->pointer() != attDef)
+  if(rawPtr->shared_from_this() != attDef)
     {
     return;
     }

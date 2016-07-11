@@ -307,6 +307,9 @@
 
 
   <!-- ignore shared_from_this base class-->
+  <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;Attribute&gt;' of 'Attribute' is not known"/>
+  <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;Definition&gt;' of 'Definition' is not known"/>
+  <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;Item&gt;' of 'Item' is not known"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'Manager' is not known"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'Session' is not known"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'DescriptivePhrase' is not known"/>

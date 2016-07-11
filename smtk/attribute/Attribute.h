@@ -41,7 +41,7 @@ namespace smtk
     /**\brief Represent a (possibly composite) value according to a definition.
       *
       */
-    class SMTKCORE_EXPORT Attribute
+    class SMTKCORE_EXPORT Attribute: public smtk::enable_shared_from_this<Attribute>
     {
       friend class smtk::attribute::Definition;
       friend class smtk::attribute::System;
@@ -78,9 +78,6 @@ namespace smtk
       {return this->m_isColorSet;}
       void unsetColor()
       {this->m_isColorSet = false;}
-
-      // Return the public pointer for this attribute.
-      smtk::attribute::AttributePtr pointer() const;
 
       bool isMemberOf(const std::string &category) const;
       bool isMemberOf(const std::vector<std::string> &categories) const;

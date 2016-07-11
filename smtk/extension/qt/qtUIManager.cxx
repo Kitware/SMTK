@@ -848,7 +848,7 @@ void qtUIManager::onExpressionReferenceChanged()
     comboBox->property("QtViewObj").value<void *>());
   if(bview)
     {
-    bview->valueChanged(inputitem->pointer());
+    bview->valueChanged(inputitem->shared_from_this());
     }
 }
 /*
@@ -1302,7 +1302,7 @@ void qtUIManager::onInputValueChanged(QObject* obj)
     inputBox->property("QtViewObj").value<void *>());
   if(bview && valChanged)
     {
-    bview->valueChanged(rawitem->pointer());
+    bview->valueChanged(rawitem->shared_from_this());
     }
   this->setWidgetColor(inputBox,
 		       isDefault ? this->DefaultValueColor

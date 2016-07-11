@@ -248,7 +248,7 @@ smtk::model::ItemPtr qtModelView::getModelEntityItem(
 {
   smtk::model::Item* rawPtr = item ?
     static_cast<smtk::model::Item*>(item->data(Qt::UserRole).value<void *>()) : NULL;
-  return rawPtr ? rawPtr->pointer() : smtk::model::ItemPtr();
+  return rawPtr ? rawPtr->shared_from_this() : smtk::model::ItemPtr();
 }
 //-----------------------------------------------------------------------------
 QListWidgetItem *qtModelView::getSelectedItem()

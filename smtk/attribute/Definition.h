@@ -41,7 +41,7 @@ namespace smtk
     class ItemDefinition;
     class System;
 
-    class SMTKCORE_EXPORT Definition
+    class SMTKCORE_EXPORT Definition : public smtk::enable_shared_from_this<Definition>
     {
     public:
       smtkTypeMacro(Definition);
@@ -227,8 +227,6 @@ namespace smtk
       std::size_t itemOffset() const
       {return this->m_baseItemOffset;}
 
-      // Return the public pointer for this definition.
-      smtk::attribute::DefinitionPtr pointer() const;
     protected:
       friend class smtk::attribute::System;
       // AttributeDefinitions can only be created by an attribute system

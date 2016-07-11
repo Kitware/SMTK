@@ -292,7 +292,7 @@ bool Definition::addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
 //----------------------------------------------------------------------------
 void Definition::updateDerivedDefinitions()
 {
-  DefinitionPtr def = this->pointer();
+  DefinitionPtr def = this->shared_from_this();
   if (def)
     {
     this->m_system->updateDerivedDefinitionIndexOffsets(def);
@@ -316,16 +316,6 @@ void Definition::setCategories()
     const std::set<std::string> &itemCats = this->m_itemDefs[i]->categories();
     this->m_categories.insert(itemCats.begin(), itemCats.end());
     }
-}
-//----------------------------------------------------------------------------
-smtk::attribute::DefinitionPtr Definition::pointer() const
-{
-  System *m = this->system();
-  if (m)
-    {
-    return m->findDefinition(this->m_type);
-    }
-  return smtk::attribute::DefinitionPtr();
 }
 //----------------------------------------------------------------------------
 smtk::attribute::ItemDefinitionPtr Definition::itemDefinition(int ith) const
