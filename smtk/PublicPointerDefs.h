@@ -102,6 +102,8 @@ namespace smtk
     class SessionIO;
     class SessionIOJSON;
     class CellEntity;
+    typedef std::vector<smtk::model::CellEntity> Cells;
+    typedef std::set<smtk::model::CellEntity> CellSet;
     class Chain;
     typedef std::vector<smtk::model::Chain> Chains;
     class EntityRef;
@@ -118,6 +120,7 @@ namespace smtk
     class EntityListPhrase;
     class Face;
     typedef std::vector<smtk::model::Face> Faces;
+    typedef std::set<smtk::model::Face> FaceSet;
     class FaceUse;
     typedef std::vector<smtk::model::FaceUse> FaceUses;
     class GridInfo;

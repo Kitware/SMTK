@@ -27,6 +27,7 @@
 #include "smtk/model/Loop.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Shell.h"
+#include "smtk/model/ShellEntity.txx"
 #include "smtk/model/Vertex.h"
 #include "smtk/model/VertexUse.h"
 #include "smtk/model/Volume.h"
@@ -562,8 +563,22 @@ UUIDs Manager::bordantEntities(const UUID& ofEntity, int ofDimension) const
     if (
       (ofDimension >= 0 && other->second.dimension() == ofDimension) ||
       (ofDimension == -2 && other->second.dimension() >= it->second.dimension()))
-      {
+      { // The dimension is higher, so dumbly push it into the result:
       result.insert(*ai);
+      }
+    else if ((it->second.entityFlags() & CELL_ENTITY) && (other->second.entityFlags() & USE_ENTITY))
+      { // ... or it is a use: follow the use upwards.
+      ShellEntities bshells =
+        UseEntity(smtk::const_pointer_cast<Manager>(shared_from_this()), *ai).
+        boundingShellEntities<ShellEntities>();
+      for (ShellEntities::iterator shellIt = bshells.begin(); shellIt != bshells.end(); ++shellIt)
+        {
+        CellEntity cell = shellIt->boundingCell();
+        if (cell.dimension() >= ofDimension)
+          {
+          result.insert(cell.entity());
+          }
+        }
       }
     }
   return result;
@@ -615,6 +630,23 @@ UUIDs Manager::boundaryEntities(const UUID& ofEntity, int ofDimension) const
       (ofDimension == -2 && other->second.dimension() <= it->second.dimension()))
       {
       result.insert(*ai);
+      }
+    else if ((it->second.entityFlags() & CELL_ENTITY) && (other->second.entityFlags() & USE_ENTITY))
+      { // ... or it is a use: follow the use downwards.
+      ShellEntities shells =
+        UseEntity(smtk::const_pointer_cast<Manager>(shared_from_this()), *ai).
+        shellEntities<ShellEntities>();
+      for (ShellEntities::iterator shellIt = shells.begin(); shellIt != shells.end(); ++shellIt)
+        {
+        CellEntities cells = shellIt->cellsOfUses<CellEntities>();
+        for (CellEntities::iterator cellIt = cells.begin(); cellIt != cells.end(); ++cellIt)
+          {
+          if (cellIt->dimension() <= ofDimension)
+            {
+            result.insert(cellIt->entity());
+            }
+          }
+        }
       }
     }
   return result;

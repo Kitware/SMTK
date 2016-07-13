@@ -23,11 +23,14 @@ class qtModelOperationWidgetInternals;
 class QAbstractButton;
 
 namespace smtk {
- namespace extension {
-  class qtFileItem;
-  class qtModelEntityItem;
-  class qtMeshSelectionItem;
-  class qtModelView;
+  namespace io {
+    class Logger;
+  }
+  namespace extension {
+    class qtFileItem;
+    class qtModelEntityItem;
+    class qtMeshSelectionItem;
+    class qtModelView;
 
   class SMTKQTEXT_EXPORT qtModelOperationWidget : public QWidget
   {
@@ -50,6 +53,7 @@ namespace smtk {
     virtual void onOperate();
     virtual void setOperationTargetActive(const smtk::common::UUID& eid)
     {emit activateOperationTarget(eid);}
+    virtual void displayResult(const smtk::io::Logger& html);
 
   signals:
     void operationRequested(const smtk::model::OperatorPtr& brOp);

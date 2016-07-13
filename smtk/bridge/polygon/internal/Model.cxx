@@ -228,6 +228,59 @@ bool pmodel::computeFeatureSizeAndNormal(
   return true;
 }
 
+bool pmodel::restoreModel(
+    std::vector<double>& origin,
+    std::vector<double>& x_axis,
+    std::vector<double>& y_axis,
+    std::vector<double>& z_axis,
+    std::vector<double>& i_axis,
+    std::vector<double>& j_axis,
+    double featureSize,
+    long long modelScale)
+{
+  if (
+    origin.size() != 3 ||
+    x_axis.size() != 3 ||
+    y_axis.size() != 3 ||
+    z_axis.size() != 3 ||
+    i_axis.size() != 3 ||
+    j_axis.size() != 3)
+    {
+    std::cerr
+      << "Vector of length 3 expected for"
+      << " origin (" << origin.size() << "),"
+      << " x axis (" << x_axis.size() << "),"
+      << " y axis (" << y_axis.size() << "),"
+      << " z axis (" << z_axis.size() << "),"
+      << " i axis (" << i_axis.size() << "),"
+      << " and"
+      << " j axis (" << j_axis.size() << ").";
+    return false;
+    }
+  if (featureSize <= 0.)
+    {
+    std::cerr << "Specified feature size (" << featureSize << ") is not positive.";
+    return false;
+    }
+  if (modelScale <= 0)
+    {
+    std::cerr << "Specified model scale (" << modelScale << ") is not positive.";
+    return false;
+    }
+
+  for (int i = 0; i < 3; ++i)
+    {
+    this->m_xAxis[i] = x_axis[i];
+    this->m_yAxis[i] = y_axis[i];
+    this->m_zAxis[i] = z_axis[i];
+    this->m_iAxis[i] = i_axis[i];
+    this->m_jAxis[i] = j_axis[i];
+    }
+  this->m_scale = modelScale;
+  this->m_featureSize = featureSize;
+  return true;
+}
+
 smtk::model::Vertices pmodel::findOrAddModelVertices(
   smtk::model::ManagerPtr mgr,
   const std::vector<double>& points,

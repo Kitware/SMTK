@@ -145,6 +145,9 @@ namespace smtk
       ConstModelEntityItemPtr findModelEntity(const std::string &name) const;
       template<typename T> T modelEntitiesAs(const std::string& name) const;
 
+      VoidItemPtr findVoid(const std::string& name);
+      ConstVoidItemPtr findVoid(const std::string& name) const;
+
       void references(std::vector<smtk::attribute::ItemPtr> &list) const;
 
       ConstModelEntityItemPtr associations() const { return this->m_associations; }

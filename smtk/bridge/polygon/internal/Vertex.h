@@ -38,6 +38,15 @@ public:
     Id m_adjacentFace; // Face immediately CW of m_edgeId. May be NULL.
     bool m_edgeOut; // True when edge points outward from vertex (i.e., edge oriented so beginning vertex is this vertex)
 
+    incident_edge_data(Id edgeId, bool isEdgeOut)
+      : m_edgeId(edgeId), m_edgeOut(isEdgeOut) { }
+    incident_edge_data(Id faceId)
+      : m_adjacentFace(faceId) { }
+    incident_edge_data(Id edgeId, bool isEdgeOut, Id faceId)
+      : m_edgeId(edgeId), m_edgeOut(isEdgeOut), m_adjacentFace(faceId) { }
+    incident_edge_data()
+      : m_edgeOut(false) { }
+
     Id edgeId() const { return this->m_edgeId; }
     Id clockwiseFaceId() const { return this->m_adjacentFace; }
     bool isEdgeOutgoing() const { return this->m_edgeOut; }

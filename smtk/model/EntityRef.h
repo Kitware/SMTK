@@ -234,6 +234,8 @@ public:
 
   EntityRef relationFromArrangement(ArrangementKind k, int arrangementIndex, int offset) const;
 
+  bool removeArrangement(ArrangementKind k, int index = -1);
+
   // Manage embedded_in/includes relationships
   EntityRef& embedEntity(const EntityRef& thingToEmbed);
   template<typename T> EntityRef& embedEntities(const T& container);

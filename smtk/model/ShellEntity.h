@@ -37,6 +37,7 @@ public:
   UseEntity boundingUseEntity() const;
 
   template<typename T> T uses() const;
+  template<typename T> T cellsOfUses() const;
 
   ShellEntity containingShellEntity() const;
   template<typename T> T containedShellEntities() const;

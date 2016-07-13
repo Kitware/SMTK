@@ -63,6 +63,9 @@ public:
     return true;
     }
 
+  PointSeq& points() { return this->m_points; }
+  const PointSeq& points() const { return this->m_points; }
+
 
 protected:
   edge() { }

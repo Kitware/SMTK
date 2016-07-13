@@ -76,11 +76,11 @@ std::string Logger::severityAsString(Severity s)
 /**\brief Convert the given log entry to a string.
   *
   */
-std::string Logger::toString(std::size_t i) const
+std::string Logger::toString(std::size_t i, bool includeSourceLoc) const
 {
   std::stringstream ss;
   ss << severityAsString(this->m_records[i].severity) << ": ";
-  if (this->m_records[i].fileName != "")
+  if (includeSourceLoc && this->m_records[i].fileName != "")
     {
     ss << "In " << this->m_records[i].fileName << ", line "
       << this->m_records[i].lineNumber << ": ";
@@ -92,13 +92,13 @@ std::string Logger::toString(std::size_t i) const
 /**\brief Convert the given log entry range to a string.
   *
   */
-std::string Logger::toString(std::size_t i, std::size_t j) const
+std::string Logger::toString(std::size_t i, std::size_t j, bool includeSourceLoc) const
 {
   std::stringstream ss;
   for (; i < j; i++)
     {
     ss << severityAsString(this->m_records[i].severity) << ": ";
-    if (this->m_records[i].fileName != "")
+    if (includeSourceLoc && this->m_records[i].fileName != "")
       {
       ss << "In " << this->m_records[i].fileName << ", line "
          << this->m_records[i].lineNumber << ": ";
@@ -108,10 +108,42 @@ std::string Logger::toString(std::size_t i, std::size_t j) const
   return ss.str();
 }
 
-//----------------------------------------------------------------------------
-std::string Logger::convertToString() const
+std::string Logger::toHTML(std::size_t i, std::size_t j, bool includeSourceLoc) const
 {
-  return this->toString(0, this->m_records.size());
+  std::stringstream ss;
+  ss << "<table>";
+  for (; i < j; i++)
+    {
+    ss << "<tr class=\"" << severityAsString(this->m_records[i].severity) << "\">";
+    if (includeSourceLoc)
+      {
+      ss << "<td>";
+      if (this->m_records[i].fileName != "")
+        {
+        ss << this->m_records[i].fileName << ", line " << this->m_records[i].lineNumber;
+        }
+      else
+        {
+        ss << "&nbsp;";
+        }
+      ss << "</td>";
+      }
+    ss << "<td>" << this->m_records[i].message << "</td></tr>\n";
+    }
+  ss << "</table>";
+  return ss.str();
+}
+
+//----------------------------------------------------------------------------
+std::string Logger::convertToString(bool includeSourceLoc) const
+{
+  return this->toString(0, this->m_records.size(), includeSourceLoc);
+}
+
+//----------------------------------------------------------------------------
+std::string Logger::convertToHTML(bool includeSourceLog) const
+{
+  return this->toHTML(0, this->m_records.size(), includeSourceLog);
 }
 
 /**\brief Request all records be flushed to \a output as they are logged.

@@ -32,6 +32,7 @@ public:
   SessionPtr session() const;
 
   template<typename T> T models() const;
+  SessionRef& addModel(const Model& mod);
 
   StringList operatorNames(bool includeAdvanced = true) const;
   smtk::attribute::System* opSys() const;

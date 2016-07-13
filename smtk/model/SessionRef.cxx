@@ -48,6 +48,16 @@ Session::Ptr SessionRef::session() const
   return mgr->sessionData(*this);
 }
 
+/**\brief Add a model to the session.
+  *
+  * This adds a bijective arrangement to the session and the model.
+  */
+SessionRef& SessionRef::addModel(const Model& mod)
+{
+  this->addMemberEntity(mod);
+  return *this;
+}
+
 /**\brief Return the list of operations this session supports.
   *
   */

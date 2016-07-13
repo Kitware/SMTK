@@ -208,6 +208,9 @@ public:
   smtk::attribute::ModelEntityItemPtr findModelEntity(
     const std::string& name,
     smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+  smtk::attribute::VoidItemPtr findVoid(
+    const std::string& name,
+    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
   smtk::attribute::MeshSelectionItemPtr findMeshSelection(
     const std::string& name,
     smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
@@ -231,6 +234,7 @@ public:
     {
     CREATED,  //!< This operation is the origin of the entities in question.
     MODIFIED, //!< This operation modified pre-existing entities.
+    EXPUNGED, //!< This operation deleted pre-existing entities from the modeling kernel.
     UNKNOWN   //!< The entities in question may be pre-existing or newly-created. Infer as possible.
     };
 
@@ -260,7 +264,6 @@ protected:
 SMTKCORE_EXPORT std::string outcomeAsString(int oc);
 SMTKCORE_EXPORT OperatorOutcome stringToOutcome(const std::string& oc);
 
-
 template<typename T>
 T Operator::associatedEntitiesAs() const
 {
@@ -289,8 +292,8 @@ T Operator::associatedEntitiesAs() const
   * If so, it is stored in the result's "modified" item.
   * Otherwise, it is stored in the result's "created" item.
   *
-  * If \a origin is MODIFIED or CREATED, all the entities are forced
-  * into either "modified" or "created", respectively.
+  * If \a origin is EXPUNGED, MODIFIED, or CREATED, all the entities are
+  * forced into "expunged," "modified," or "created," respectively.
   *
   * Be aware that passing UNKNOWN assumes that the entries in \a container
   * have **not** already been transcribed.
@@ -303,6 +306,7 @@ void Operator::addEntitiesToResult(OperatorResult res, const T& container, Resul
 {
   T created;
   T modified;
+  T expunged;
   switch (origin)
     {
   case CREATED:
@@ -310,6 +314,9 @@ void Operator::addEntitiesToResult(OperatorResult res, const T& container, Resul
     break;
   case MODIFIED:
     modified = container;
+    break;
+  case EXPUNGED:
+    expunged = container;
     break;
   default:
   case UNKNOWN:
@@ -329,6 +336,11 @@ void Operator::addEntitiesToResult(OperatorResult res, const T& container, Resul
     {
     attribute::ModelEntityItemPtr modItem = res->findModelEntity("modified");
     modItem->appendValues(modified.begin(), modified.end());
+    }
+  if (!expunged.empty())
+    {
+    attribute::ModelEntityItemPtr expItem = res->findModelEntity("expunged");
+    expItem->appendValues(expunged.begin(), expunged.end());
     }
 }
 

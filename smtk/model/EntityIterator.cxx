@@ -156,6 +156,15 @@ void EntityIterator::updateQueue(const EntityRef& ent)
       else if (ent.isShellEntity())
         {
         children = ent.as<ShellEntity>().uses<EntityRefs>();
+        // Add the cells corresponding to lower-dimensional use records here since
+        // we can't add them when we traverse the use record -- that would result
+        // in an infinite loop.
+        EntityRefs referencedCells;
+        for (EntityRefs::const_iterator cit = children.begin(); cit != children.end(); ++cit)
+          {
+          referencedCells.insert(cit->as<UseEntity>().cell());
+          }
+        children.insert(referencedCells.begin(), referencedCells.end());
         EntityRefs subshells = ent.as<ShellEntity>().containedShellEntities<EntityRefs>();
         children.insert(subshells.begin(), subshells.end());
         }

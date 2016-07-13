@@ -25,6 +25,7 @@
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/System.h"
+#include "smtk/attribute/VoidItem.h"
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/EntityRef.h"
@@ -555,6 +556,11 @@ smtk::attribute::ModelEntityItemPtr Attribute::findModelEntity(const std::string
 { return smtk::dynamic_pointer_cast<ModelEntityItem>(this->find(nameStr)); }
 smtk::attribute::ConstModelEntityItemPtr Attribute::findModelEntity(const std::string &nameStr) const
 { return smtk::dynamic_pointer_cast<const ModelEntityItem>(this->find(nameStr)); }
+
+smtk::attribute::VoidItemPtr Attribute::findVoid(const std::string& nameStr)
+{ return smtk::dynamic_pointer_cast<VoidItem>(this->find(nameStr)); }
+smtk::attribute::ConstVoidItemPtr Attribute::findVoid(const std::string& nameStr) const
+{ return smtk::dynamic_pointer_cast<const VoidItem>(this->find(nameStr)); }
 
 smtk::attribute::MeshSelectionItemPtr Attribute::findMeshSelection(const std::string &nameStr)
 { return smtk::dynamic_pointer_cast<MeshSelectionItem>(this->find(nameStr)); }
