@@ -106,11 +106,14 @@ namespace smtk
       const Record &record(std::size_t i) const
       {return this->m_records[i];}
 
-      std::string toString(std::size_t i) const;
-      std::string toString(std::size_t i, std::size_t j) const;
+      std::string toString(std::size_t i, bool includeSourceLoc = false) const;
+      std::string toString(std::size_t i, std::size_t j, bool includeSourceLoc = false) const;
+
+      std::string toHTML(std::size_t i, std::size_t j, bool includeSourceLoc) const;
 
       // Convert all the messages into a single string
-      std::string convertToString() const;
+      std::string convertToString(bool includeSourceLoc = false) const;
+      std::string convertToHTML(bool includeSourceLoc = false) const;
       void reset();
 
       void append(const Logger &l);

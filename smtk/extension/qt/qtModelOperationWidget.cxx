@@ -29,15 +29,18 @@
 #include "smtk/model/StringData.h"
 #include "smtk/common/View.h"
 
+#include "smtk/io/Logger.h"
+
 #include <QStackedLayout>
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QFrame>
 #include <QComboBox>
-#include <QLabel>
+#include <QTextEdit>
 #include <QPointer>
 #include <QSpacerItem>
+#include <QSplitter>
 
 #include <map>
 #include <algorithm>    // std::sort
@@ -59,6 +62,7 @@ public:
 
   smtk::model::Session::WeakPtr CurrentSession;
   std::string CurrrentOpName;
+  QSplitter* LogSplitter;
   QVBoxLayout* WidgetLayout;
   QPointer<QComboBox> OperationCombo;
   QStackedLayout* OperationsLayout;
@@ -66,6 +70,7 @@ public:
   // <operator-name, <opPtr, opUI-parent> >
   QMap<std::string, OperatorInfo > OperatorMap;
   QPointer<qtModelView> ModelView;
+  QTextEdit* ResultLog;
 };
 
 //----------------------------------------------------------------------------
@@ -86,7 +91,13 @@ qtModelOperationWidget::~qtModelOperationWidget()
 void qtModelOperationWidget::initWidget( )
 {
   this->setObjectName("modelOperationWidget");
-  this->Internals->WidgetLayout = new QVBoxLayout(this);
+  QWidget* mainArea = new QWidget();
+  this->Internals->LogSplitter = new QSplitter(this);
+  QVBoxLayout* universe = new QVBoxLayout(this);
+  universe->addWidget(this->Internals->LogSplitter);
+  this->Internals->LogSplitter->setOrientation(Qt::Vertical);
+  this->Internals->WidgetLayout = new QVBoxLayout(mainArea);
+  this->Internals->LogSplitter->addWidget(mainArea);
   this->Internals->OperationCombo = new QComboBox(this);
   this->Internals->OperationCombo->setToolTip("Select an operator");
   this->Internals->OperationsLayout = new QStackedLayout();
@@ -108,6 +119,10 @@ void qtModelOperationWidget::initWidget( )
   operatorLayout->addWidget(this->Internals->OperationCombo);
   this->Internals->WidgetLayout->addLayout(operatorLayout);
   this->Internals->WidgetLayout->addLayout(this->Internals->OperationsLayout);
+  this->Internals->ResultLog = new QTextEdit();
+  this->Internals->ResultLog->setReadOnly(true);
+  this->Internals->ResultLog->setStyleSheet("font: \"Monaco\", \"Menlo\", \"Andale Mono\", \"fixed\";");
+  this->Internals->LogSplitter->addWidget(this->Internals->ResultLog);
 
   // signals/slots
   QObject::connect(this->Internals->OperationCombo,
@@ -400,6 +415,13 @@ void qtModelOperationWidget::onOperate()
     OperatorPtr brOp = this->Internals->OperatorMap[opName].opPtr;
     emit this->operationRequested(brOp);
     }
+}
+
+/// Display messages summarizing the result of an operation to the user.
+void qtModelOperationWidget::displayResult(const smtk::io::Logger& log)
+{
+  QString txt(log.convertToString(false).c_str());
+  this->Internals->ResultLog->setText(txt);
 }
 
 //----------------------------------------------------------------------------
