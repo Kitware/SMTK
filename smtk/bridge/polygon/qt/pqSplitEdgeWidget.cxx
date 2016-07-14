@@ -24,16 +24,21 @@
 #include "vtkPVSelectionInformation.h"
 #include "vtkSelection.h"
 #include "vtkSelectionNode.h"
+#include "vtkUnsignedIntArray.h"
+#include "vtkPolygonArcInfo.h"
+#include "vtkPVRenderView.h"
+#include "vtkSmartPointer.h"
+#include "vtkMemberFunctionCommand.h"
+
 #include "vtkSMNewWidgetRepresentationProxy.h"
 #include "vtkSMPropertyHelper.h"
 #include "vtkSMProxyManager.h"
 #include "vtkSMProxyProperty.h"
 #include "vtkSMRepresentationProxy.h"
+#include "vtkSMRenderViewProxy.h"
 #include "vtkSMSession.h"
 #include "vtkSMSourceProxy.h"
 #include "vtkSMVectorProperty.h"
-#include "vtkUnsignedIntArray.h"
-#include "vtkPolygonArcInfo.h"
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/Manager.h"
@@ -71,6 +76,7 @@ void EdgePointPicker::doPick(pqRenderView* view)
   this->Selecter = new pqRenderViewSelectionReaction(this, view,
                         pqRenderViewSelectionReaction::SELECT_SURFACE_POINTS_INTERACTIVELY);
 
+
   // we only want selection on one representation.
   view->setUseMultipleRepresentationSelection(false);
 
@@ -80,8 +86,13 @@ void EdgePointPicker::doPick(pqRenderView* view)
 
 void EdgePointPicker::donePicking(pqRenderView* view)
 {
-  //we want the connection to happen once the view goes away so
-  //remove the connection
+  //resets the widget to what it would be like if it was just created
+  this->InteractiveSelectButton->blockSignals(true);
+  this->InteractiveSelectButton->setChecked(false);
+  this->InteractiveSelectButton->blockSignals(false);
+  this->m_isActive = false;
+  emit triggered(false);
+  //we want the connection to stop so remove the connection
   if(this->Selecter)
     {
     this->Selecter->disconnect();
@@ -90,23 +101,23 @@ void EdgePointPicker::donePicking(pqRenderView* view)
     }
   if(view)
     {
-    view->forceRender();
     // reset multiple selection to true
     view->setUseMultipleRepresentationSelection(true);
-    view->setCursor(QCursor());
     }
-  //resets the widget to what it would be like if it was just created
-  this->InteractiveSelectButton->blockSignals(true);
-  this->InteractiveSelectButton->setChecked(false);
-  this->InteractiveSelectButton->blockSignals(false);
-  this->m_isActive = false;
-  emit triggered(false);
 }
 }
+
+
+class pqSplitEdgeWidget::pqInternals
+{
+  public:
+    vtkSmartPointer<vtkCommand> InteractionModePropertyObserver;
+};
 
 //-----------------------------------------------------------------------------
 pqSplitEdgeWidget::pqSplitEdgeWidget(QWidget *prent) :
   QWidget(prent),
+  Internals(new pqSplitEdgeWidget::pqInternals),
   m_edgePointPicker(new pqSplitEdgeWidgetInternals::EdgePointPicker(this)),
   View(NULL)
 {
@@ -127,6 +138,10 @@ pqSplitEdgeWidget::pqSplitEdgeWidget(QWidget *prent) :
   layout->setMargin(0);
   layout->addWidget(splitButton);
 
+  this->Internals->InteractionModePropertyObserver.TakeReference(
+    vtkMakeMemberFunctionCommand(*this,
+      &pqSplitEdgeWidget::onSelectionModeChanged));
+
   //connect up the split buttons
   QObject::connect(splitButton, SIGNAL(toggled(bool)),
     this, SLOT(splitEdgeOperation(bool)));
@@ -135,7 +150,33 @@ pqSplitEdgeWidget::pqSplitEdgeWidget(QWidget *prent) :
 //-----------------------------------------------------------------------------
 pqSplitEdgeWidget::~pqSplitEdgeWidget()
 {
+  this->setView(NULL);
+  delete this->Internals;
   delete this->m_edgePointPicker;
+}
+
+void pqSplitEdgeWidget::setView(pqRenderView* view)
+{
+  if(this->View != view)
+    {
+    vtkSMProperty* controlledProperty;
+    vtkSMRenderViewProxy* rmp;
+    if(this->View)
+      {
+      rmp = this->View->getRenderViewProxy();
+      controlledProperty = rmp->GetProperty("InteractionMode");
+      controlledProperty->RemoveObserver(
+        this->Internals->InteractionModePropertyObserver);
+      }
+    this->View = view;
+    if(this->View)
+      {
+      rmp = this->View->getRenderViewProxy();
+      controlledProperty = rmp->GetProperty("InteractionMode");
+      controlledProperty->AddObserver(vtkCommand::ModifiedEvent,
+        this->Internals->InteractionModePropertyObserver);
+      }
+    }
 }
 
 void pqSplitEdgeWidget::setEdgeOperator(smtk::model::OperatorPtr edgeOp)
@@ -151,6 +192,18 @@ void pqSplitEdgeWidget::splitEdgeOperation(bool start)
 {
   if(this->View && this->m_edgeOp.lock() && start)
     {
+    int curSelMode = 0;
+    vtkSMPropertyHelper(this->View->getRenderViewProxy(),
+      "InteractionMode").Get(&curSelMode);
+    if(curSelMode == vtkPVRenderView::INTERACTION_MODE_SELECTION)
+      {
+      qCritical() << "The render view is in use with another selection. Stop that selection first.\n";
+      this->m_edgePointPicker->InteractiveSelectButton->blockSignals(true);
+      this->m_edgePointPicker->InteractiveSelectButton->setChecked(false);
+      this->m_edgePointPicker->InteractiveSelectButton->blockSignals(false);
+      return;
+      }
+
     // things are selected
     QObject::connect(this->View,SIGNAL(selected(pqOutputPort*)),
                      this,SLOT(arcPointPicked(pqOutputPort*)),
@@ -221,6 +274,26 @@ void pqSplitEdgeWidget::arcPointPicked(pqOutputPort* port)
       }
     }
 }
+//-----------------------------------------------------------------------------
+void pqSplitEdgeWidget::onSelectionModeChanged()
+{
+  if (!this->View || !this->isActive())
+    {
+    return;
+    }
+  // check if the InteractionMode is changed, maybe from other selection reaction
+  if(this->View)
+    {
+    vtkSMRenderViewProxy* rmp = this->View->getRenderViewProxy();
+    int curSelMode = 0;
+    vtkSMPropertyHelper(rmp, "InteractionMode").Get(&curSelMode);
+    if(curSelMode != vtkPVRenderView::INTERACTION_MODE_SELECTION)
+      {
+      this->resetWidget();
+      }
+    }
+}
+
 //-----------------------------------------------------------------------------
 bool pqSplitEdgeWidget::isActive()
 {

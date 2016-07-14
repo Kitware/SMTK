@@ -51,7 +51,7 @@ public:
 explicit pqSplitEdgeWidget(QWidget *parent = 0);
   virtual ~pqSplitEdgeWidget();
 
-  virtual void setView(pqRenderView* view) { this->View=view; }
+  virtual void setView(pqRenderView* view);
   void setEdgeOperator(smtk::model::OperatorPtr edgeOp);
   bool isActive();
 
@@ -59,12 +59,15 @@ signals:
   void operationRequested(const smtk::model::OperatorPtr& brOp);
 public slots:
   void resetWidget();
+  void onSelectionModeChanged();
 
 protected slots:
   void arcPointPicked(pqOutputPort*);
   void splitEdgeOperation(bool start);
 
 private:
+  class pqInternals;
+  pqInternals* Internals;
 
   pqSplitEdgeWidgetInternals::EdgePointPicker* m_edgePointPicker;
 
