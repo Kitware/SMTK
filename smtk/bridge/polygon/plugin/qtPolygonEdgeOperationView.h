@@ -36,14 +36,17 @@ public slots:
   virtual void onShowCategory()
    { this->updateAttributeData(); }
   // This will be triggered by selecting different type
-  // of operations, create, edit, or remove edges.
+  // of edge operations, create-edge, edit-edge, or split-edge.
+  virtual void operationSelected(const smtk::model::OperatorPtr& op);
+  // This will be triggered by selecting different type
+  // of construction method in create-edge op.
   virtual void valueChanged(smtk::attribute::ItemPtr optype);
 
 protected slots:
   virtual void requestOperation(const smtk::model::OperatorPtr& op);
-  virtual void operationDone();
   virtual void cancelOperation(const smtk::model::OperatorPtr&);
   virtual void clearSelection();
+  virtual void arcOperationDone();
 
 protected:
   virtual void updateAttributeData();

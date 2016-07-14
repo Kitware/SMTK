@@ -20,7 +20,7 @@
         Any intersections between different edges are handled when faces are created.
       </DetailedDescription>
       <AssociationsDef Name="model" NumberOfRequiredValues="1" Extensible="yes">
-        <MembershipMask>model|cell</MembershipMask>
+        <MembershipMask>model</MembershipMask>
         <BriefDescription>Vertices to join into an edge or the model to which edges should be added.</BriefDescription>
         <DetailedDescription>
           You must either (a) associate 2 or more model vertices to this
@@ -67,7 +67,7 @@
               </DetailedDescription>
             </Int>
           </ChildrenDefinitions>
-          <DiscreteInfo DefaultIndex="0">
+          <DiscreteInfo DefaultIndex="2">
             <!-- Option 0: points, coordinates, and offsets -->
             <Structure>
               <Value Enum="point coordinates">0</Value>
@@ -78,13 +78,21 @@
               </Items>
             </Structure>
             <Structure>
-              <Value Enum="vertex ids">0</Value>
+              <Value Enum="vertex ids">1</Value>
               <Items>
                 <!-- vertices are associated with the operator in this case -->
                 <Item>offsets</Item>
               </Items>
             </Structure>
+            <Structure>
+              <Value Enum="interactive widget">2</Value>
+            </Structure>
           </DiscreteInfo>
+        </Int>
+        <!-- This is needed for linking with a vtkSMTKOperator that is used as an smtk operator interface
+        to vtk pipeline -->
+        <Int Name="HelperGlobalID" Label="Unique global ID for a helper object" AdvanceLevel="11" NumberOfRequiredValues="1" Optional="true">
+          <DefaultValue>0</DefaultValue>
         </Int>
       </ItemDefinitions>
     </AttDef>
@@ -95,4 +103,20 @@
       </ItemDefinitions>
     </AttDef>
   </Definitions>
+
+  <Views>
+     <!-- The customized view "Type" needs to be the the same as in plugin macro
+      ADD_SMTK_UI_VIEW(
+        OUTIFACES
+        OUTSRCS
+        CLASS_NAME qtPolygonEdgeOperationView
+        VIEW_NAME smtkPolygonEdgeView
+        )
+      -->
+    <View Type="smtkPolygonEdgeView" Title="Create Polygon Edge">
+      <AttributeTypes>
+        <Att Type="create edge" />
+      </AttributeTypes>
+    </View>
+  </Views>
 </SMTK_AttributeSystem>

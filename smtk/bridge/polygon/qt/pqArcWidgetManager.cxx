@@ -205,7 +205,7 @@ void pqArcWidgetManager::cancelOperation(const smtk::model::OperatorPtr& op)
     }
 
   this->ActiveWidget = NULL;
-  emit this->Finish();
+  emit this->operationCancelled();
 }
 
 //-----------------------------------------------------------------------------
@@ -234,7 +234,7 @@ void pqArcWidgetManager::createEdge()
   this->ActiveWidget = NULL;
 
   emit this->Ready();
-  emit this->Finish();
+  emit this->operationDone();
 }
 
 //-----------------------------------------------------------------------------
@@ -242,7 +242,7 @@ void pqArcWidgetManager::editingFinished()
 {
   this->ActiveWidget = NULL;
   emit this->Ready();
-  emit this->Finish();
+  emit this->operationDone();
 }
 
 //-----------------------------------------------------------------------------

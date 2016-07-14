@@ -68,6 +68,8 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
   // Either modelItem contains a single Model or 2+ Vertex entities.
   // If method == 0 (points), use the owningModel of any Vertex or complain
   // If method == 1 (vertices), complain if the entities are not vertices or there are too few.
+  // If method == 2 (interactive widget), after widget interaction, same requirements are needed
+  //    as method == 0 (points) because widget representation points will be set to "points", etc.
   smtk::model::Model parentModel(modelItem->value(0));
   if (!parentModel.isValid())
     {
@@ -94,9 +96,17 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
   bool ok = true;
   int numEdges = offsetsItem->numberOfValues();
   int numCoordsPerPt = coordinatesItem->value(0);
+  if ((method == 0 || method == 2) && numCoordsPerPt == 0)
+    {
+    smtkErrorMacro(this->log(),
+      "When constructing an edge from points or interactive widget,"
+      "the number of coordinates per point must be specified!");
+    return this->createResult(smtk::model::OPERATION_FAILED);
+    }
+
   // numPts is the number of points total (across all edges)
   long long numPts =
-    (method == 0 ?
+    ((method == 0 || method == 2) ?
      pointsItem->numberOfValues() / numCoordsPerPt : // == #pts / #coordsPerPt
      modelItem->numberOfValues());
   int ei;
@@ -122,6 +132,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
     switch (method)
       {
     case 0: // points, coordinates, offsets
+    case 2: // interactive widget, representation points will be set to points, coords, offsets
         {
         std::vector<double> pt(numCoordsPerPt, 0.);
         internal::Point curr;

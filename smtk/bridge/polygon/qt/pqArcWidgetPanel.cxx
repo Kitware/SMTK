@@ -518,7 +518,7 @@ void pqArcWidgetPanel::cancelEdit()
 
   //now show the pick widget
   this->resetWidget();
-  emit this->arcModificationfinished();
+  emit this->arcModificationCacelled();
 }
 
 //-----------------------------------------------------------------------------

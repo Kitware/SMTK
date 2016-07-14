@@ -11,6 +11,7 @@
 #include "qtPolygonEdgeOperationView.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
@@ -19,6 +20,7 @@
 #include "smtk/extension/paraview/widgets/pqArcWidget.h"
 #include "smtk/bridge/polygon/qt/pqArcWidgetManager.h"
 #include "smtk/bridge/polygon/qt/pqPolygonArc.h"
+#include "smtk/bridge/polygon/qt/pqSplitEdgeWidget.h"
 #include "smtk/common/View.h"
 #include "smtk/model/Operator.h"
 
@@ -57,6 +59,9 @@ public:
   QPointer<pqArcWidgetManager> ArcManager;
   QPointer<qtAttribute> CurrentAtt;
   QPointer<QVBoxLayout> EditorLayout;
+
+  QPointer<pqSplitEdgeWidget> SplitEdgeWidget;
+  smtk::weak_ptr<smtk::model::Operator> CurrentOp;
 };
 
 //----------------------------------------------------------------------------
@@ -119,6 +124,29 @@ void qtPolygonEdgeOperationView::createWidget( )
     this, SLOT(cancelOperation(const smtk::model::OperatorPtr&)));
 }
 
+inline bool internal_needArc(const smtk::model::OperatorPtr& op)
+{
+  bool able2Op = op
+                 && (op->name() == "edit edge"
+                    || op->name() == "create edge")
+                 && op->ensureSpecification()
+                 ;
+  if(!able2Op)
+    {
+    return able2Op;
+    }
+
+  // for create-edge operation, we only handle "interactive widget" case
+  if(op->name() == "create edge")
+    {
+    smtk::attribute::IntItem::Ptr optypeItem =
+      op->specification()->findInt("construction method");
+    able2Op = optypeItem && (optypeItem->discreteIndex(0) == 2);
+    }
+
+  return able2Op;
+}
+
 inline qtAttribute* internal_createAttUI(
   smtk::attribute::AttributePtr att, QWidget* pw, qtBaseView* view)
 {
@@ -171,7 +199,8 @@ void qtPolygonEdgeOperationView::updateAttributeData()
       continue;
       }
     std::string optype;
-    if(attComp.attribute("Type", optype) && optype == "edit edge")
+    if(attComp.attribute("Type", optype) &&
+      (optype == "edit edge" || optype == "create edge" || "split edge"))
       {
       defName = optype;
       break;
@@ -184,76 +213,100 @@ void qtPolygonEdgeOperationView::updateAttributeData()
 
   smtk::model::OperatorPtr edgeOp = this->uiManager()->activeModelView()->
                        operatorsWidget()->existingOperator(defName);
+  this->Internals->CurrentOp = edgeOp;
   // expecting only 1 instance of the op?
   smtk::attribute::AttributePtr att = edgeOp->specification();
   this->Internals->CurrentAtt = internal_createAttUI(att, this->Widget, this);
 
-  pqRenderView* renView = qobject_cast<pqRenderView*>(pqActiveObjects::instance().activeView());
-  pqServer* server = pqApplicationCore::instance()->getActiveServer();
-  if(!this->Internals->ArcManager)
+  // The arc widget interaction is only needed for:
+  // * create edge op : with "construction method" set to "interactive widget"
+  // * edit edge
+  if(internal_needArc(edgeOp))
     {
-    this->Internals->ArcManager = new pqArcWidgetManager(server, renView);
-    QObject::connect(this->Internals->ArcManager, SIGNAL(Finish()),
-                     this, SLOT(operationDone()));
-    QObject::connect(this->Internals->ArcManager,SIGNAL(startPicking()),
-      this,SLOT(clearSelection()));
+    pqRenderView* renView = qobject_cast<pqRenderView*>(pqActiveObjects::instance().activeView());
+    pqServer* server = pqApplicationCore::instance()->getActiveServer();
+    if(!this->Internals->ArcManager)
+      {
+      this->Internals->ArcManager = new pqArcWidgetManager(server, renView);
+      QObject::connect(this->Internals->ArcManager, SIGNAL(operationDone()),
+                       this, SLOT(arcOperationDone()));
+      QObject::connect(this->Internals->ArcManager,SIGNAL(startPicking()),
+        this,SLOT(clearSelection()));
+      }
+    else
+      {
+      this->Internals->ArcManager->reset();
+      this->Internals->ArcManager->updateActiveView(renView);
+      this->Internals->ArcManager->updateActiveServer(server);
+      }
+
+    pqPolygonArc *objArc = new pqPolygonArc;
+    objArc->setEdgeOperator(edgeOp);
+    this->Internals->ArcManager->setActiveArc( objArc );
+    QObject::connect(objArc, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)),
+         this, SLOT(requestOperation(const smtk::model::OperatorPtr&)));
+    QObject::connect(objArc, SIGNAL(activateModel(const smtk::common::UUID&)),
+         this->uiManager()->activeModelView()->operatorsWidget(),
+         SLOT(setOperationTargetActive(const smtk::common::UUID&)));
     }
-  else
-    {
-    this->Internals->ArcManager->reset();
-    this->Internals->ArcManager->updateActiveView(renView);
-    this->Internals->ArcManager->updateActiveServer(server);
-    }
 
-  pqPolygonArc *objArc = new pqPolygonArc;
-  objArc->setEdgeOperator(edgeOp);
-  this->Internals->ArcManager->setActiveArc( objArc );
-  QObject::connect(objArc, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)),
-       this, SLOT(requestOperation(const smtk::model::OperatorPtr&)));
-  QObject::connect(objArc, SIGNAL(activateModel(const smtk::common::UUID&)),
-       this->uiManager()->activeModelView()->operatorsWidget(),
-       SLOT(setOperationTargetActive(const smtk::common::UUID&)));
-
-
-  smtk::attribute::StringItem::Ptr optypeItem = att->findString("Operation");
-  optypeItem->setToDefault();// default to "Create"
-
-  this->valueChanged(optypeItem);
+  this->operationSelected(edgeOp);
 }
 
 //----------------------------------------------------------------------------
 void qtPolygonEdgeOperationView::requestOperation(const smtk::model::OperatorPtr& op)
 {
+  if(!op || !op->specification())
+    {
+    return;
+    }
   this->uiManager()->activeModelView()->requestOperation(op, false);
 }
 
 //----------------------------------------------------------------------------
 void qtPolygonEdgeOperationView::cancelOperation(const smtk::model::OperatorPtr& op)
 {
-  if( !op || !this->Widget || !this->Internals->CurrentAtt
-      || !this->Internals->ArcManager)
+  if( !op || !this->Widget || !this->Internals->CurrentAtt )
     return;
+  if(this->Internals->ArcManager)
+    {
+    this->Internals->ArcManager->cancelOperation(op);
+    }
+  if(this->Internals->SplitEdgeWidget && this->Internals->SplitEdgeWidget->isActive())
+    {
+    this->Internals->SplitEdgeWidget->resetWidget();
+    }
+}
+//----------------------------------------------------------------------------
+void qtPolygonEdgeOperationView::valueChanged(smtk::attribute::ItemPtr valitem)
+{
+  // "create edge" op "construction method" changed.
+  if(!this->Internals->CurrentAtt || !this->Widget
+     || !this->Internals->CurrentOp.lock()
+     || this->Internals->CurrentOp.lock()->name() != "create edge")
+    {
+    return;
+    }
 
-  this->Internals->ArcManager->cancelOperation(op);
+  smtk::attribute::IntItem::Ptr optypeItem =
+    smtk::dynamic_pointer_cast<smtk::attribute::IntItem>(valitem);
+  if(!optypeItem || optypeItem->name() != "construction method")
+    {
+    return;
+    }
+  this->operationSelected(this->Internals->CurrentOp.lock());
 }
 
 //----------------------------------------------------------------------------
-void qtPolygonEdgeOperationView::operationDone()
+void qtPolygonEdgeOperationView::arcOperationDone()
 {
-  if(!this->Internals->CurrentAtt || !this->Widget
-     || !this->Internals->ArcManager)
-    return;
-
-  smtk::attribute::AttributePtr att =  this->Internals->CurrentAtt->attribute();
-  smtk::attribute::StringItem::Ptr optypeItem = att->findString("Operation");
-  std::string optype = optypeItem->value();
-  // If previous op is "Create", set the operation to "Edit"
-  if(optype == "Create")
+  if(!this->Internals->CurrentAtt || !this->Widget ||
+     !this->Internals->CurrentOp.lock())
     {
-    optypeItem->setValue("Edit");// set to "Edit Edge"
-    delete this->Internals->CurrentAtt;
-    this->Internals->CurrentAtt = internal_createAttUI(att, this->Widget, this);
+    return;
     }
+
+  this->operationSelected(this->Internals->CurrentOp.lock());
 }
 
 //----------------------------------------------------------------------------
@@ -263,112 +316,140 @@ void qtPolygonEdgeOperationView::clearSelection()
 }
 
 //----------------------------------------------------------------------------
-void qtPolygonEdgeOperationView::valueChanged(smtk::attribute::ItemPtr valitem)
+void qtPolygonEdgeOperationView::operationSelected(const smtk::model::OperatorPtr& op)
 {
-  if(!this->Internals->CurrentAtt || !this->Widget
-     || !this->Internals->ArcManager)
+  if(!this->Internals->CurrentAtt || !this->Widget)
     return;
 
   // Based on which type of operations, we update UI panel
-  // default to create arc mode
-  smtk::attribute::StringItem::Ptr optypeItem =
-    smtk::dynamic_pointer_cast<smtk::attribute::StringItem>(valitem);
-  if(!optypeItem || optypeItem->name() != "Operation")
-    return;
-
-  QWidget* prevUiWidget = this->Internals->ArcManager->getActiveWidget();
-  pq3DWidget* prev3dWidget = qobject_cast<pq3DWidget*>(prevUiWidget);
-
-  std::string optype = optypeItem->value();
-  if(optype == "Create")
+  if(internal_needArc(op) && this->Internals->ArcManager)
     {
-    this->Internals->ArcManager->create();
-    }
-  else if(optype == "Edit")
-    {
-    this->Internals->ArcManager->edit();
-    }
-
-  QWidget* pWidget = this->Widget;
-  QWidget* selUiWidget = this->Internals->ArcManager->getActiveWidget();
-  if(!selUiWidget)
-    {
-    return;
-    }
-  pq3DWidget* sel3dWidget = qobject_cast<pq3DWidget*>(selUiWidget);
-  QString widgetName = selUiWidget->objectName();
- 
-  // we need to make invisible all 3d widget UI panels
-  QList< pq3DWidget* > user3dWidgets = pWidget->findChildren<pq3DWidget*>();
-  QList< QWidget* > userUiWidgets;
-  // if this is not a 3d widget
-  if(!sel3dWidget)
-    {
-    userUiWidgets = pWidget->findChildren<QWidget*>(widgetName);
-    }
-  userUiWidgets.append(reinterpret_cast< QList<QWidget*>& >(user3dWidgets));
-  bool found = false;
-  for(int i=0; i<userUiWidgets.count(); i++)
-    {
-    if(!found && userUiWidgets.value(i) == selUiWidget)
+    if(this->Internals->SplitEdgeWidget)
       {
-      found = true;
+      this->Internals->SplitEdgeWidget->setVisible(false);
       }
-    else
+
+    // This handles ui panel update when we need an arc-edit widget
+    QWidget* prevUiWidget = this->Internals->ArcManager->getActiveWidget();
+    pq3DWidget* prev3dWidget = qobject_cast<pq3DWidget*>(prevUiWidget);
+
+    if(op->name() == "create edge")
       {
-      userUiWidgets.value(i)->setVisible(0);
+      this->Internals->ArcManager->create();
       }
-    }
-  if(!found)
-    {
-    selUiWidget->setParent(pWidget);
-    this->Internals->EditorLayout->addWidget(selUiWidget);
-    }
+    else if(op->name() == "edit edge")
+      {
+      this->Internals->ArcManager->edit();
+      }
 
-  // turn off previous active widgets if they are not the active one anymore
-  if(prev3dWidget && prev3dWidget != sel3dWidget)
-    {
-    prev3dWidget->deselect();
-    prev3dWidget->setVisible(false);
-    prev3dWidget->setEnabled(false);
-    }
-  else if(prevUiWidget && prevUiWidget != selUiWidget)
-    {
-    prevUiWidget->setVisible(false);
-    prevUiWidget->setEnabled(false);
-    prevUiWidget->hide();
-    }
+    QWidget* pWidget = this->Widget;
+    QWidget* selUiWidget = this->Internals->ArcManager->getActiveWidget();
+    if(!selUiWidget)
+      {
+      return;
+      }
+    pq3DWidget* sel3dWidget = qobject_cast<pq3DWidget*>(selUiWidget);
+    QString widgetName = selUiWidget->objectName();
+   
+    // we need to make invisible all 3d widget UI panels
+    QList< pq3DWidget* > user3dWidgets = pWidget->findChildren<pq3DWidget*>();
+    QList< QWidget* > userUiWidgets;
+    // if this is not a 3d widget
+    if(!sel3dWidget)
+      {
+      userUiWidgets = pWidget->findChildren<QWidget*>(widgetName);
+      }
+    userUiWidgets.append(reinterpret_cast< QList<QWidget*>& >(user3dWidgets));
+    bool found = false;
+    for(int i=0; i<userUiWidgets.count(); i++)
+      {
+      if(!found && userUiWidgets.value(i) == selUiWidget)
+        {
+        found = true;
+        }
+      else
+        {
+        userUiWidgets.value(i)->setVisible(0);
+        }
+      }
+    if(!found)
+      {
+      selUiWidget->setParent(pWidget);
+      this->Internals->EditorLayout->addWidget(selUiWidget);
+      }
 
+    // turn off previous active widgets if they are not the active one anymore
+    if(prev3dWidget && prev3dWidget != sel3dWidget)
+      {
+      prev3dWidget->deselect();
+      prev3dWidget->setVisible(false);
+      prev3dWidget->setEnabled(false);
+      }
+    else if(prevUiWidget && prevUiWidget != selUiWidget)
+      {
+      prevUiWidget->setVisible(false);
+      prevUiWidget->setEnabled(false);
+      prevUiWidget->hide();
+      }
 
-  if(sel3dWidget && sel3dWidget->widgetVisible())
-    {
-    sel3dWidget->select();
-    sel3dWidget->setVisible(true);
-    sel3dWidget->setEnabled(true);
-    }
-  else if(!sel3dWidget)
-    {
-    selUiWidget->setVisible(true);
-    selUiWidget->setEnabled(true);
-    selUiWidget->show();
-    }
-/*
-  else // turn off the active widget
-    {
     if(sel3dWidget && sel3dWidget->widgetVisible())
       {
-      sel3dWidget->deselect();
-      sel3dWidget->setVisible(false);
-      sel3dWidget->setEnabled(false);
+      sel3dWidget->select();
+      sel3dWidget->setVisible(true);
+      sel3dWidget->setEnabled(true);
       }
     else if(!sel3dWidget)
       {
-      selUiWidget->setVisible(false);
-      selUiWidget->setEnabled(false);
-      selUiWidget->hide();
+      selUiWidget->setVisible(true);
+      selUiWidget->setEnabled(true);
+      selUiWidget->show();
       }
     }
-*/
+  else
+    {
+    // This handles ui panel update when we don't need an arc-edit widget
+    // first, hide arc widget related panels if they exist
+    if(this->Internals->ArcManager)
+      {
+      QWidget* prevUiWidget = this->Internals->ArcManager->getActiveWidget();
+      pq3DWidget* prev3dWidget = qobject_cast<pq3DWidget*>(prevUiWidget);
+
+      // turn off previous active widgets if they are not the active one anymore
+      if(prev3dWidget)
+        {
+        prev3dWidget->deselect();
+        prev3dWidget->setVisible(false);
+        prev3dWidget->setEnabled(false);
+        }
+      else if(prevUiWidget)
+        {
+        prevUiWidget->setVisible(false);
+        prevUiWidget->setEnabled(false);
+        prevUiWidget->hide();
+        }
+      }
+
+    // for edge operations that do not need arc-edit widget
+    // * create edge op : "points" and "vertex ids" // no custom ui needed
+    // * split edge: // this need a special 
+    if(op->name() == "split edge") // otherwise, only handle split edge custom ui
+      {
+      if(!this->Internals->SplitEdgeWidget)
+        {
+        this->Internals->SplitEdgeWidget = new pqSplitEdgeWidget(this->Widget);
+        this->Internals->EditorLayout->addWidget(this->Internals->SplitEdgeWidget);
+        QObject::connect(this->Internals->SplitEdgeWidget,
+          SIGNAL(operationRequested(const smtk::model::OperatorPtr&)),
+          this, SLOT(requestOperation(const smtk::model::OperatorPtr&)));
+        }
+
+      pqRenderView* renView = qobject_cast<pqRenderView*>(pqActiveObjects::instance().activeView());
+      this->Internals->SplitEdgeWidget->resetWidget();
+      this->Internals->SplitEdgeWidget->setView(renView);
+      this->Internals->SplitEdgeWidget->setEdgeOperator(op);
+      this->Internals->SplitEdgeWidget->setVisible(true);
+      }
+    }
 }
 
 //----------------------------------------------------------------------------
