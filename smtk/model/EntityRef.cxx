@@ -1165,6 +1165,12 @@ bool EntityRef::operator == (const EntityRef& other) const
     false;
 }
 
+/// A comparator provided for convenience.
+bool EntityRef::operator != (const EntityRef& other) const
+{
+  return !(*this == other);
+}
+
 /// A comparator provided so that entityrefs may be included in ordered sets.
 bool EntityRef::operator < (const EntityRef& other) const
 {

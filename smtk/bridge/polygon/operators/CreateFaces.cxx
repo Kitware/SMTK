@@ -145,9 +145,7 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
 
   smtk::attribute::DoubleItem::Ptr pointsItem = this->findDouble("points");
   smtk::attribute::IntItem::Ptr coordinatesItem = this->findInt("coordinates");
-  smtk::attribute::IntItem::Ptr offsetsItem = this->findInt("offsets");
-
-  smtk::attribute::ModelEntityItem::Ptr edgesItem = this->findModelEntity("edges");
+  smtk::attribute::IntItem::Ptr countsItem = this->findInt("counts");
 
   smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
   smtk::model::Model model;
@@ -182,7 +180,7 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
   // These case values match CreateFaces.sbt indices (and enum values):
   switch (method)
     {
-  case 0: // points, coordinates, offsets
+  case 0: // points, coordinates, counts
       {
       // identify pre-existing model vertices from points
       // verify that existing edges/faces incident to model vertices
@@ -203,20 +201,34 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
       // create faces
       }
     break;
-  case 1: // edges, points, coordinates
+  case 1: // edges
       {
-      if (!model.isValid())
-        {
-        smtkErrorMacro(this->log(), "Invalid model (or non-model entity) specified when a model was expected.");
-        return this->createResult(smtk::model::OPERATION_FAILED);
-        }
       for (int i = 0; i < modelItem->numberOfValues(); ++i)
         {
         smtk::model::Edge edgeIn(modelItem->value(i));
         if (edgeIn.isValid())
           {
+          if (model.isValid())
+            {
+            if (model != edgeIn.owningModel())
+              {
+              smtkErrorMacro(this->log(),
+                "Edges from different models (" << model.name() <<
+                " and " << edgeIn.owningModel().name() << ") selected.");
+              return this->createResult(smtk::model::OPERATION_FAILED);
+              }
+            }
+          else
+            {
+            model = edgeIn.owningModel();
+            }
           modelEdgeMap[edgeIn] = 0;
           }
+        }
+      if (modelEdgeMap.empty() || !model.isValid())
+        {
+        smtkErrorMacro(this->log(), "No edges selected or invalid model specified.");
+        return this->createResult(smtk::model::OPERATION_FAILED);
         }
       // for each edge
       //   for each model vertex

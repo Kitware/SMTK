@@ -554,6 +554,41 @@ def CreateEdge(verts, curve_type = CurveType.LINE, **kwargs):
   numEdges = edgeList.numberOfValues()
   return edgeList.value(0) if numEdges == 1 else [edgeList.value(i) for i in range(numEdges)]
 
+def TweakEdge(edge, newPts, **kwargs):
+  """Tweak an edge by providing a new set of points along it.
+  """
+  import itertools
+  sref = GetActiveSession()
+  twk = sref.op('tweak edge')
+  twk.associateEntity(edge)
+  numCoordsPerPoint = max([len(newPts[i]) for i in range(len(newPts))])
+  tmp = min([len(newPts[i]) for i in range(len(newPts))])
+  x = twk.findAsDouble('points')
+  c = twk.findAsInt('coordinates')
+  if c:
+    c.setValue(0, numCoordsPerPoint)
+  if tmp != numCoordsPerPoint:
+    ptflat = []
+    for p in newPts:
+      ptflat.append(p + [0,]*(numCoordsPerPoint - len(p)))
+    ptflat = list(itertools.chain(*ptflat))
+  else:
+    ptflat = list(itertools.chain(*newPts))
+  if x:
+    SetVectorValue(x, ptflat)
+  if 'promote' in kwargs:
+    o = twk.findAsInt('promote')
+    if o:
+      SetVectorValue(o, kwargs['promote'])
+  res = twk.operate()
+  SetLastResult(res)
+  PrintResultLog(res)
+  modlist = res.findModelEntity('modified')
+  result = [modlist.value(i) for i in range(modlist.numberOfValues())]
+  crelist = res.findModelEntity('created')
+  result += [crelist.value(i) for i in range(crelist.numberOfValues())]
+  return result
+
 def SplitEdge(edge, point, **kwargs):
   """Split an edge at a point along the edge.
   """

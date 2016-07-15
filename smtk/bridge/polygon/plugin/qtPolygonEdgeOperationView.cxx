@@ -128,7 +128,7 @@ void qtPolygonEdgeOperationView::createWidget( )
 inline bool internal_needArc(const smtk::model::OperatorPtr& op)
 {
   bool able2Op = op
-                 && (op->name() == "edit edge"
+                 && (op->name() == "tweak edge"
                     || op->name() == "create edge")
                  && op->ensureSpecification()
                  ;
@@ -188,7 +188,7 @@ void qtPolygonEdgeOperationView::updateAttributeData()
     return;
     }
   smtk::common::View::Component& comp = view->details().child(i);
-  // for now, we only handle "edit edge" operator; later we could use a list
+  // for now, we only handle "tweak edge" operator; later we could use a list
   // to show all operators (attributes), and a panel underneath to edit current
   // selected operator.
   std::string defName;
@@ -201,7 +201,7 @@ void qtPolygonEdgeOperationView::updateAttributeData()
       }
     std::string optype;
     if(attComp.attribute("Type", optype) &&
-      (optype == "edit edge" || optype == "create edge" || "split edge"))
+      (optype == "tweak edge" || optype == "create edge" || "split edge"))
       {
       defName = optype;
       break;
@@ -221,7 +221,7 @@ void qtPolygonEdgeOperationView::updateAttributeData()
 
   // The arc widget interaction is only needed for:
   // * create edge op : with "construction method" set to "interactive widget"
-  // * edit edge
+  // * tweak edge
   if(internal_needArc(edgeOp))
     {
     pqRenderView* renView = qobject_cast<pqRenderView*>(pqActiveObjects::instance().activeView());
@@ -338,7 +338,7 @@ void qtPolygonEdgeOperationView::operationSelected(const smtk::model::OperatorPt
       {
       this->Internals->ArcManager->create();
       }
-    else if(op->name() == "edit edge")
+    else if(op->name() == "tweak edge")
       {
       this->Internals->ArcManager->edit();
       }

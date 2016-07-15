@@ -253,7 +253,7 @@ public:
   Groups containingGroups() const;
 
   bool operator == (const EntityRef& other) const;
-  bool operator != (const EntityRef& other) const { return !(*this == other); }
+  bool operator != (const EntityRef& other) const;
   bool operator < (const EntityRef& other) const;
 
   std::size_t hash() const;

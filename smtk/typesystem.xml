@@ -450,6 +450,9 @@
   <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::beginStorage', unmatched return type 'internal::EntityIdToPtr::iterator'"/>
   <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::endStorage', unmatched return type 'internal::EntityIdToPtr::iterator'"/>
 
+  <!-- Platform-specific warnings induced by system headers -->
+  <suppress-warning text="enum '__codecvt_result' does not have a type entry or is not an enum"/>
+
   <!-- Ignore until we have time to support Operators -->
   <suppress-warning text="skipping field 'Manager::m_defaultSession' with unmatched type 'smtk::shared_ptr&lt;Session&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::Manager::SelfType&gt;'"/>

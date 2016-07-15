@@ -75,7 +75,7 @@ void pqPolygonArc::setEdgeOperator(smtk::model::OperatorPtr edgeOp)
   this->m_edgeOp = edgeOp;
 }
 smtk::shared_ptr<smtk::model::Operator> pqPolygonArc::edgeOperator()
-{ 
+{
   return this->m_edgeOp.lock();
 }
 
@@ -108,7 +108,7 @@ vtkSMProxy* pqPolygonArc::prepareOperation(
   if(!widgetProxy || !this->edgeOperator())
     return NULL;
   smtk::attribute::AttributePtr spec = this->edgeOperator()->specification();
-  if(spec->type() != "edit edge" && spec->type() != "create edge")
+  if(spec->type() != "tweak edge" && spec->type() != "create edge")
     return NULL;
   smtk::attribute::IntItem::Ptr opProxyIdItem = spec->findInt("HelperGlobalID");
   if(!opProxyIdItem)
@@ -266,7 +266,7 @@ void pqPolygonArc::resetOperationSource()
       {
       model = entref.as<smtk::model::Model>();
       }
-    else if(entref.isEdge()) // "edit edge"
+    else if(entref.isEdge()) // "tweak edge"
       {
       model = entref.as<smtk::model::Edge>().owningModel();
       }
@@ -319,7 +319,7 @@ int pqPolygonArc::getAssignedEdgeBlock() const
       {
       edge = entref.as<smtk::model::Edge>();
       }
-    else if(entref.isEdge()) // "edit edge"
+    else if(entref.isEdge()) // "tweak edge"
       {
       edge = entref.as<smtk::model::Edge>();
       }
