@@ -90,6 +90,7 @@ explicit pqArcWidgetPanel(QWidget *parent = 0);
 signals:
   void arcModified(pqArcWidget*, const smtk::common::UUID& edgeid);
   void arcModificationfinished();
+  void arcModificationCacelled();
   void startArcEditing();
   void startArcPicking();
 

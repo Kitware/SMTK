@@ -47,19 +47,29 @@ public:
   vtkGetMacro(BlockIndex, vtkIdType);
 
   // Description:
+  // Set/Get the SelectedPointId to querry point coordinates
+  vtkSetMacro(SelectedPointId, vtkIdType);
+  vtkGetMacro(SelectedPointId, vtkIdType);
+
+  // Description:
   // Get Model entity ID that this information is related.
   vtkGetStringMacro(ModelEntityID);
+
+  // Get point cooridnates for the SelectedPointId of the block.
+  vtkGetVector3Macro(SelectedPointCoordinates, double);
 
 protected:
   vtkPolygonArcInfo();
   ~vtkPolygonArcInfo();
 
   vtkSetStringMacro(ModelEntityID);
+  vtkSetVector3Macro(SelectedPointCoordinates, double);
 
   bool ClosedLoop;
   vtkIdType BlockIndex;
-
+  vtkIdType SelectedPointId;
   vtkIdType NumberOfPoints;
+  double SelectedPointCoordinates[3];
   char* ModelEntityID;
 
 private:

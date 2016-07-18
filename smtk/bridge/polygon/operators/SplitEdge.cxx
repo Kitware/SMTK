@@ -64,8 +64,17 @@ smtk::model::OperatorResult SplitEdge::operateInternal()
   smtk::model::OperatorResult opResult;
   if (ok)
     {
+    smtk::bridge::polygon::internal::Point pt = mod->projectPoint(point.begin(), point.end());
+    smtk::model::EntityRefArray created;
+    smtk::model::Vertex v = mod->vertexAtPoint(mgr, pt);
+    smtk::model::Edges edges = v.edges();
+    created.insert(created.end(), edges.begin(), edges.end());
+    // no need to add the new vertex since it will be under new edges
+    // created.push_back(v);
+
     opResult = this->createResult(smtk::model::OPERATION_SUCCEEDED);
-    //this->addEntitiesToResult(opResult, created, CREATED);
+    this->addEntitiesToResult(opResult, created, CREATED);
+    this->addEntityToResult(opResult, edgeToSplit, EXPUNGED);
     }
   else
     {

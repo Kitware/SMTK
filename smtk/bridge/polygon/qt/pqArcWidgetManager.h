@@ -57,7 +57,8 @@ public:
 signals:
   void Busy();
   void Ready();
-  void Finish();
+  void operationDone();
+  void operationCancelled();
 
   void editingStarted();
   void startPicking();

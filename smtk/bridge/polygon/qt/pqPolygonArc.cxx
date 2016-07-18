@@ -107,7 +107,7 @@ vtkSMProxy* pqPolygonArc::prepareOperation(
   if(!widgetProxy || !this->edgeOperator())
     return NULL;
   smtk::attribute::AttributePtr spec = this->edgeOperator()->specification();
-  if(spec->type() != "edit edge")
+  if(spec->type() != "edit edge" && spec->type() != "create edge")
     return NULL;
   smtk::attribute::IntItem::Ptr opProxyIdItem = spec->findInt("HelperGlobalID");
   if(!opProxyIdItem)

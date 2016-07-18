@@ -5,6 +5,7 @@ set(PQWidgetsSrcs
   pqArcWidgetManager.cxx
   pqArcWidgetPanel.cxx
   pqPolygonArc.cxx
+  pqSplitEdgeWidget.cxx
 )
 
 set(PQWidgetsUIs
@@ -15,6 +16,7 @@ set(PQWidgetsMocHeaders
   pqArcWidgetManager.h
   pqArcWidgetPanel.h
   pqPolygonArc.h
+  pqSplitEdgeWidget.h
 )
 
 #install the headers

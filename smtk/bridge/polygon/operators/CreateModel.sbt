@@ -60,7 +60,7 @@
               </DetailedDescription>
             </Double>
             <Double Name="feature size" NumberOfRequiredValues="1">
-              <DefaultValue>1e-4</DefaultValue>
+              <DefaultValue>1e-6</DefaultValue>
               <BriefDescription>The smallest resolvable edge length in world coordinates.</BriefDescription>
               <DetailedDescription>
                 This is the smallest world-coordinate edge length that you wish

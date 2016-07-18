@@ -99,6 +99,7 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
     if (parentModel.isEmbedded(vert))
       parentModel.unembedEntity(vert);
     created.findOrAddRawRelation(vert);
+    vert.findOrAddRawRelation(created);
     }
   if (vFiniStorage)
     {
@@ -107,6 +108,7 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
     if (parentModel.isEmbedded(vert))
       parentModel.unembedEntity(vert);
     created.findOrAddRawRelation(vert);
+    vert.findOrAddRawRelation(created);
     }
   // Add tesselation to created edge using storage to lift point coordinates:
   this->addEdgeTessellation(created, storage);
@@ -191,6 +193,7 @@ model::Edge pmodel::createModelEdgeFromPoints(model::ManagerPtr mgr, T begin, T 
     if (parentModel.isEmbedded(vert))
       parentModel.unembedEntity(vert);
     created.findOrAddRawRelation(vert);
+    vert.findOrAddRawRelation(created);
     }
   if (vFiniStorage)
     {
@@ -199,6 +202,7 @@ model::Edge pmodel::createModelEdgeFromPoints(model::ManagerPtr mgr, T begin, T 
     if (parentModel.isEmbedded(vert))
       parentModel.unembedEntity(vert);
     created.findOrAddRawRelation(vert);
+    vert.findOrAddRawRelation(created);
     }
   // Add tesselation to created edge using storage to lift point coordinates:
   this->addEdgeTessellation(created, storage);

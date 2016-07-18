@@ -98,6 +98,7 @@ namespace smtk{
     bool requestOperation(const smtk::model::OperatorPtr& brOp, bool launchUI);
     bool requestOperation(const std::string& opName,
 			  const smtk::common::UUID& sessionId, bool launchOp);
+    virtual void onOperationPanelClosing();
 
   signals:
     void entitiesSelected(const smtk::model::EntityRefs& selEntityRefs);
@@ -122,7 +123,6 @@ namespace smtk{
 				       const smtk::model::Group& grp,
 				       const smtk::model::EntityRefs& entities);
     virtual void newIndexAdded(const QModelIndex & newidx);
-    virtual void onOperationPanelClosing();
 
   protected:
     // If 'Delete' button is pressed, invoke proper operation if possible.

@@ -28,6 +28,10 @@ vtkPolygonArcInfo::vtkPolygonArcInfo()
   this->ClosedLoop = 0;
   this->NumberOfPoints = 0;
   this->ModelEntityID = NULL;
+  this->SelectedPointId = -1;
+  this->SelectedPointCoordinates[0] =
+  this->SelectedPointCoordinates[1] = 
+  this->SelectedPointCoordinates[2] = 0.0;
 }
 
 //----------------------------------------------------------------------------
@@ -44,6 +48,11 @@ void vtkPolygonArcInfo::PrintSelf(ostream &os, vtkIndent indent)
   os << indent << "ClosedLoop: " << this->ClosedLoop << endl;
   os << indent << "BlockIndex: " << this->BlockIndex << endl;
   os << indent << "ModelEntityID: " << this->ModelEntityID << endl;
+  os << indent << "SelectedPointId: " << this->SelectedPointId << endl;
+  os << indent << "SelectedPointCoordinates: "
+               << this->SelectedPointCoordinates[0] << ", "
+               << this->SelectedPointCoordinates[1] << ", "
+               << this->SelectedPointCoordinates[2] << endl;
 }
 
 //----------------------------------------------------------------------------
@@ -113,6 +122,11 @@ void vtkPolygonArcInfo::CopyFromObject(vtkObject* obj)
                      && p1[2] == p2[2];
   //get the number of points on the edge
   this->NumberOfPoints = edgePoly->GetNumberOfPoints();
+
+  if(this->SelectedPointId >=0 && this->SelectedPointId < this->NumberOfPoints)
+    {
+    edgePoly->GetPoint(this->SelectedPointId, this->SelectedPointCoordinates);
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -122,6 +136,8 @@ void vtkPolygonArcInfo::CopyToStream(vtkClientServerStream* css)
   *css << vtkClientServerStream::Reply;
   *css << this->ClosedLoop
        << this->NumberOfPoints
+       << this->SelectedPointId
+       << vtkClientServerStream::InsertArray(this->SelectedPointCoordinates, 3)
        << strlen(this->ModelEntityID)
        << this->ModelEntityID
        << vtkClientServerStream::End;
@@ -132,9 +148,12 @@ void vtkPolygonArcInfo::CopyFromStream(const vtkClientServerStream* css)
 {
   css->GetArgument(0, 0, &this->ClosedLoop);
   css->GetArgument(0, 1, &this->NumberOfPoints);
+  css->GetArgument(0, 2, &this->SelectedPointId);
+  css->GetArgument(0, 3, this->SelectedPointCoordinates, 3);
+
   int len;
-  css->GetArgument(0, 3, &len);
+  css->GetArgument(0, 4, &len);
   this->SetModelEntityID(NULL);
   this->ModelEntityID = new char[len];
-  css->GetArgument(0, 3, this->ModelEntityID, len);
+  css->GetArgument(0, 5, this->ModelEntityID, len);
 }
