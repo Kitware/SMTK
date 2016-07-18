@@ -29,7 +29,9 @@
 #include "vtkPVRenderView.h"
 #include "vtkSmartPointer.h"
 #include "vtkMemberFunctionCommand.h"
-
+#include "vtkPVRenderView.h"
+#include "vtkRenderWindow.h"
+#include "vtkRenderWindowInteractor.h"
 #include "vtkSMNewWidgetRepresentationProxy.h"
 #include "vtkSMPropertyHelper.h"
 #include "vtkSMProxyManager.h"
@@ -71,6 +73,7 @@ void EdgePointPicker::doPick(pqRenderView* view)
 {
   if(this->Selecter)
     {
+    this->Selecter->disconnect();
     delete this->Selecter;
     }
   this->Selecter = new pqRenderViewSelectionReaction(this, view,
@@ -105,6 +108,7 @@ void EdgePointPicker::donePicking(pqRenderView* view)
     view->setUseMultipleRepresentationSelection(true);
     }
 }
+
 }
 
 
@@ -254,6 +258,7 @@ void pqSplitEdgeWidget::arcPointPicked(pqOutputPort* port)
         if(edge.isValid())
           {
           smtk::attribute::AttributePtr opSpec = this->m_edgeOp.lock()->specification();
+          opSpec->removeAllAssociations();
           opSpec->associateEntity(edge);
           double ptcoords[3];
           arcInfo->GetSelectedPointCoordinates(ptcoords);
@@ -271,6 +276,15 @@ void pqSplitEdgeWidget::arcPointPicked(pqOutputPort* port)
     if(readytoOp)
       {
       emit this->operationRequested(this->m_edgeOp.lock());
+      // keep picking mode. We need this to refresh the Selecter with new model geometry
+      vtkPVRenderView* rv = vtkPVRenderView::SafeDownCast(
+        this->View->getRenderViewProxy()->GetClientSideObject());
+      if(rv != NULL)
+        {
+        rv->InvalidateCachedSelection();
+        rv->GetRenderWindow()->Render();
+        rv->GetInteractor()->Render();
+        }
       }
     }
 }

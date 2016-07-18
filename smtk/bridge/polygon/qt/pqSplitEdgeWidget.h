@@ -33,6 +33,7 @@ public:
 
   void doPick(pqRenderView* view);
   void donePicking(pqRenderView* view);
+
   pqRenderViewSelectionReaction* Selecter;
   QToolButton* InteractiveSelectButton;
   bool m_isActive;
