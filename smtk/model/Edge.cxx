@@ -10,9 +10,10 @@
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
 
-#include "smtk/model/Vertex.h"
+#include "smtk/model/Face.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Tessellation.h"
+#include "smtk/model/Vertex.h"
 
 namespace smtk {
   namespace model {
@@ -53,6 +54,27 @@ EdgeUse Edge::findOrAddEdgeUse(Orientation orientation, int sense)
     }
   return EdgeUse();
 }
+
+/**\brief Return the faces which this edge bounds.
+  *
+  * This method is provided for convenience.
+  * The *proper* way to obtain faces bounded by an edge
+  * is to fetch the loops of an edge-use and
+  * add faces from the respective face-use
+  * records along each loop.
+  */
+smtk::model::Faces Edge::faces() const
+{
+  Faces result;
+  EntityRefs all = this->bordantEntities(/*dim = */ 2);
+  for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
+    {
+    if (it->isFace())
+      result.push_back(*it);
+    }
+  return result;
+}
+
 
 /**\brief Return the vertices which bound this edge.
   *
