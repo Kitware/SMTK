@@ -31,6 +31,8 @@
 #include <sys/stat.h>
 #include <vtksys/SystemTools.hxx>
 
+#include <sstream>
+
 //#define LIDAR_PREVIEW_PIECE_NUM_POINTS 10000
 #define LIDAR_BINARY_POINT_SIZE sizeof(double)*3
 
@@ -66,9 +68,9 @@ vtkLASReader::vtkLASReader()
   this->LatLongTransform2 = vtkSmartPointer<vtkTransform>::New();
   this->LatLongTransform2Initialized = false;
 
-  this->GlobalEncoding = 0; // GPS "Week" Time
-  this->HeaderSize = 0;
-  this->OffsetToPointData = 0;
+  this->Header.GlobalEncoding = 0; // GPS "Week" Time
+  this->Header.Size = 0;
+  this->Header.OffsetToPointData = 0;
   this->OutputDataTypeIsDouble = false;
 }
 
@@ -210,88 +212,79 @@ int vtkLASReader::ReadHeaderBlock()
     return READ_ERROR;
     }
 
-  char fileSignature[5];
-  fin.read(fileSignature, 4);
-  fileSignature[4] = 0;
-  if (strcmp(fileSignature, "LASF"))
+  fin.read(this->Header.FileSignature, 4);
+  this->Header.FileSignature[4] = 0;
+  if (strcmp(this->Header.FileSignature, "LASF"))
     {
     vtkErrorMacro("File " << this->FileName << " doesn't appear to be LAS file!");
     return READ_ERROR;
     }
 
-  unsigned short fileSourceId;
-  fin.read(reinterpret_cast<char *>(&fileSourceId), 2);
-  fin.read(reinterpret_cast<char *>(&this->GlobalEncoding), 2);
-  vtkByteSwap::Swap2LE(&this->GlobalEncoding);
+  fin.read(reinterpret_cast<char *>(&this->Header.FileSourceId), 2);
+  fin.read(reinterpret_cast<char *>(&this->Header.GlobalEncoding), 2);
+  vtkByteSwap::Swap2LE(&this->Header.GlobalEncoding);
 
 
-  vtkTypeUInt32 projectIDGUID1;
-  vtkTypeUInt16 projectIDGUID2, projectIDGUID3;
-  unsigned char projectIDGUID4[8];
-  fin.read(reinterpret_cast<char *>(&projectIDGUID1), 4);
-  fin.read(reinterpret_cast<char *>(&projectIDGUID2), 2);
-  fin.read(reinterpret_cast<char *>(&projectIDGUID3), 2);
-  fin.read(reinterpret_cast<char *>(projectIDGUID4), 8);
+  fin.read(reinterpret_cast<char *>(&this->Header.ProjectIDGUID1), 4);
+  fin.read(reinterpret_cast<char *>(&this->Header.ProjectIDGUID2), 2);
+  fin.read(reinterpret_cast<char *>(&this->Header.ProjectIDGUID3), 2);
+  fin.read(reinterpret_cast<char *>(this->Header.ProjectIDGUID4), 8);
 
-  unsigned char versionMajor, versionMinor;
-  fin.read(reinterpret_cast<char *>(&versionMajor), 1);
-  fin.read(reinterpret_cast<char *>(&versionMinor), 1);
-  if (versionMajor != 1 || (versionMinor != 1 && versionMinor != 2))
+  fin.read(reinterpret_cast<char *>(&this->Header.VersionMajor), 1);
+  fin.read(reinterpret_cast<char *>(&this->Header.VersionMinor), 1);
+  if (this->Header.VersionMajor != 1 || (this->Header.VersionMinor != 1 &&
+                                         this->Header.VersionMinor != 2))
     {
     vtkErrorMacro("Invalid version; must be 1.1 or 1.2!");
     return READ_ERROR;
     }
 
-  char systemIdentifier[33];
-  fin.read(systemIdentifier, 32);
-  systemIdentifier[32] = 0;
+  fin.read(this->Header.SystemIdentifier, 32);
+  this->Header.SystemIdentifier[32] = 0;
 
-  char generatingSoftware[33];
-  fin.read(generatingSoftware, 32);
-  generatingSoftware[32] = 0;
+  fin.read(this->Header.GeneratingSoftware, 32);
+  this->Header.GeneratingSoftware[32] = 0;
 
-  vtkTypeUInt16 creationDay, creationYear;
-  fin.read(reinterpret_cast<char *>(&creationDay), 2);
-  fin.read(reinterpret_cast<char *>(&creationYear), 2);
+  fin.read(reinterpret_cast<char *>(&this->Header.CreationDay), 2);
+  fin.read(reinterpret_cast<char *>(&this->Header.CreationYear), 2);
 
-  fin.read(reinterpret_cast<char *>(&this->HeaderSize), 2);
-  vtkByteSwap::Swap2LE(&this->HeaderSize);
+  fin.read(reinterpret_cast<char *>(&this->Header.Size), 2);
+  vtkByteSwap::Swap2LE(&this->Header.Size);
 
-  fin.read(reinterpret_cast<char *>(&this->OffsetToPointData), 4);
-  vtkByteSwap::Swap4LE(&this->OffsetToPointData);
+  fin.read(reinterpret_cast<char *>(&this->Header.OffsetToPointData), 4);
+  vtkByteSwap::Swap4LE(&this->Header.OffsetToPointData);
 
-  fin.read(reinterpret_cast<char *>(&this->NumberOfVariableLengthRecords), 4);
-  vtkByteSwap::Swap4LE(&this->NumberOfVariableLengthRecords);
+  fin.read(reinterpret_cast<char *>(&this->Header.NumberOfVariableLengthRecords), 4);
+  vtkByteSwap::Swap4LE(&this->Header.NumberOfVariableLengthRecords);
 
-  fin.read(reinterpret_cast<char *>(&this->PointDataFormat), 1);
+  fin.read(reinterpret_cast<char *>(&this->Header.PointDataFormat), 1);
 
-  fin.read(reinterpret_cast<char *>(&this->PointDataRecordLength), 2);
-  vtkByteSwap::Swap2LE(&this->PointDataRecordLength);
+  fin.read(reinterpret_cast<char *>(&this->Header.PointDataRecordLength), 2);
+  vtkByteSwap::Swap2LE(&this->Header.PointDataRecordLength);
 
-  if ((this->PointDataFormat == 0 && this->PointDataRecordLength < 20) ||
-      (this->PointDataFormat == 1 && this->PointDataRecordLength < 28) ||
-      (this->PointDataFormat == 2 && this->PointDataRecordLength < 26) ||
-      (this->PointDataFormat == 3 && this->PointDataRecordLength < 34) ||
-      this->PointDataFormat > 4)
+  if ((this->Header.PointDataFormat == 0 && this->Header.PointDataRecordLength < 20) ||
+      (this->Header.PointDataFormat == 1 && this->Header.PointDataRecordLength < 28) ||
+      (this->Header.PointDataFormat == 2 && this->Header.PointDataRecordLength < 26) ||
+      (this->Header.PointDataFormat == 3 && this->Header.PointDataRecordLength < 34) ||
+      this->Header.PointDataFormat > 4)
     {
-    vtkErrorMacro("Invalid data format (" << static_cast<int>(this->PointDataFormat)
-      << ") / record lengh (" << this->PointDataRecordLength << ") combo!");
+    vtkErrorMacro("Invalid data format (" << static_cast<int>(this->Header.PointDataFormat)
+      << ") / record lengh (" << this->Header.PointDataRecordLength << ") combo!");
     return READ_ERROR;
     }
 
-  fin.read(reinterpret_cast<char *>(&this->NumberOfPointRecords), 4);
-  vtkByteSwap::Swap4LE(&this->NumberOfPointRecords);
+  fin.read(reinterpret_cast<char *>(&this->Header.NumberOfPointRecords), 4);
+  vtkByteSwap::Swap4LE(&this->Header.NumberOfPointRecords);
   for (int i = 0; i < NUMBER_OF_CLASSIFICATIONS; i++)
     {
-    this->PointRecordsPerClassification[i] = this->NumberOfPointRecords;
+    this->PointRecordsPerClassification[i] = this->Header.NumberOfPointRecords;
     }
 
-  vtkTypeUInt32 numberOfPointsByReturn[5];
-  fin.read(reinterpret_cast<char *>(numberOfPointsByReturn), 4 * 5);
-  vtkByteSwap::Swap4LERange(numberOfPointsByReturn, 5);
+  fin.read(reinterpret_cast<char *>(this->Header.NumberOfPointsByReturn), 4 * 5);
+  vtkByteSwap::Swap4LERange(this->Header.NumberOfPointsByReturn, 5);
 
-  fin.read(reinterpret_cast<char *>(this->ScaleFactor), 8 * 3);
-  fin.read(reinterpret_cast<char *>(this->Offset), 8 * 3);
+  fin.read(reinterpret_cast<char *>(this->Header.ScaleFactor), 8 * 3);
+  fin.read(reinterpret_cast<char *>(this->Header.Offset), 8 * 3);
   // read bounds into memory as VTK wants it!
   fin.read(reinterpret_cast<char *>(this->DataBounds + 1), 8);
   fin.read(reinterpret_cast<char *>(this->DataBounds + 0), 8);
@@ -311,6 +304,20 @@ int vtkLASReader::ReadHeaderBlock()
   fin.close();
 
   return READ_OK;
+}
+
+std::string vtkLASReader::GetHeaderInfo()
+{
+  if(this->ReadHeaderBlock() == READ_ERROR)
+  {
+    return "";
+  }
+  std::stringstream ss;
+  ss << "\tNumber of Points:\t" << this->Header.NumberOfPointRecords << std::endl
+     << "\tBounds\t\t\t\tX:\t" << this->DataBounds[0] << "\t" << this->DataBounds[1] << std::endl
+     << "\t\t\t\t\t\t\tY:\t" << this->DataBounds[2] << "\t" << this->DataBounds[3] << std::endl
+     << "\t\t\t\t\t\t\tZ:\t" << this->DataBounds[4] << "\t" << this->DataBounds[5] << std::endl;
+  return ss.str();
 }
 
 //-----------------------------------------------------------------------------
@@ -402,7 +409,7 @@ int vtkLASReader::ReadPoints(vtkMultiBlockDataSet *output)
 
   // We already succesfully read the header, so know file exists
   ifstream fin(this->FileName, ios::binary);
-  fin.seekg( this->OffsetToPointData, ios::beg );
+  fin.seekg( this->Header.OffsetToPointData, ios::beg );
 
   vtkTypeInt32 *ptRaw;
   double pt[3];
@@ -410,7 +417,7 @@ int vtkLASReader::ReadPoints(vtkMultiBlockDataSet *output)
   unsigned char classification, classificationField;
   unsigned char classificationMask = 0x1F;
 //  char scanAngle;
-  vtkTypeUInt32 progressInterval = this->NumberOfPointRecords / 1000;
+  vtkTypeUInt32 progressInterval = this->Header.NumberOfPointRecords / 1000;
   // If the progressInterval is 0 then lets set it to a sane value
   if (!progressInterval)
     {
@@ -422,11 +429,12 @@ int vtkLASReader::ReadPoints(vtkMultiBlockDataSet *output)
   vtkUnsignedCharArray *colorArray = NULL;
   vtkUnsignedShortArray *intensityArray = NULL;
   vtkIdType idx;
-  for (vtkTypeUInt32 ptIndex = 0; ptIndex < this->NumberOfPointRecords; ptIndex++)
+  for (vtkTypeUInt32 ptIndex = 0; ptIndex < this->Header.NumberOfPointRecords; ptIndex++)
     {
     if (ptIndex % progressInterval == 0)
       {
-      this->UpdateProgress( static_cast<double>(ptIndex) / static_cast<double>(this->NumberOfPointRecords) );
+      this->UpdateProgress( static_cast<double>(ptIndex) /
+                           static_cast<double>(this->Header.NumberOfPointRecords) );
       if (this->GetAbortExecute())
         {
         fin.close();
@@ -441,7 +449,7 @@ int vtkLASReader::ReadPoints(vtkMultiBlockDataSet *output)
         }
       }
 
-    fin.read(pointDataRecord, this->PointDataRecordLength);
+    fin.read(pointDataRecord, this->Header.PointDataRecordLength);
     classificationField = *reinterpret_cast<unsigned char *>(pointDataRecord + 15);
     if (classificationField > 127)
       {
@@ -530,9 +538,9 @@ int vtkLASReader::ReadPoints(vtkMultiBlockDataSet *output)
     // THE point
     ptRaw = reinterpret_cast<vtkTypeInt32 *>(pointDataRecord);
     vtkByteSwap::Swap4LERange(ptRaw, 3);
-    pt[0] = ptRaw[0] * this->ScaleFactor[0] + this->Offset[0];
-    pt[1] = ptRaw[1] * this->ScaleFactor[1] + this->Offset[1];
-    pt[2] = ptRaw[2] * this->ScaleFactor[2] + this->Offset[2];
+    pt[0] = ptRaw[0] * this->Header.ScaleFactor[0] + this->Header.Offset[0];
+    pt[1] = ptRaw[1] * this->Header.ScaleFactor[1] + this->Header.Offset[1];
+    pt[2] = ptRaw[2] * this->Header.ScaleFactor[2] + this->Header.Offset[2];
 
     if (this->ConvertFromLatLongToXYZ)
       {
@@ -600,10 +608,10 @@ int vtkLASReader::ReadPoints(vtkMultiBlockDataSet *output)
 
     // color
     unsigned char bytergb[3] = {0, 0, 0};
-    if (this->PointDataFormat == 2 || this->PointDataFormat == 3)
+    if (this->Header.PointDataFormat == 2 || this->Header.PointDataFormat == 3)
       {
       vtkTypeUInt16 *rgb;
-      if (this->PointDataFormat == 2)
+      if (this->Header.PointDataFormat == 2)
         {
         rgb = reinterpret_cast<vtkTypeUInt16 *>(pointDataRecord + 20);
         }
