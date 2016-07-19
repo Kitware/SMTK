@@ -59,7 +59,7 @@ vtkLIDARReader::vtkLIDARReader()
   this->MaxNumberOfPoints = 1000000;
   this->LimitToMaxNumberOfPoints = false;
 
-  this->OutputDataTypeIsDouble = false;
+  this->OutputDataTypeIsDouble = true;
   this->FileType = VTK_ASCII;
 
   this->Origin[0] = this->Origin[1] = this->Origin[2] = 0;
