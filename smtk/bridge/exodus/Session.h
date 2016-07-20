@@ -142,6 +142,7 @@ public:
 protected:
   friend class Operator;
   friend class ReadOperator;
+  friend class SessionIOJSON;
   friend struct EntityHandle;
 
   Session();
@@ -167,6 +168,8 @@ protected:
   vtkDataObject* parent(vtkDataObject* obj) const;
   int parentIndex(vtkDataObject* obj) const;
   bool ensureChildParentMapEntry(vtkDataObject* child, vtkDataObject* parent, int idxInParent);
+
+  smtk::common::UUID uuidOfHandleObject(vtkDataObject* obj) const;
 
   template<typename T>
   T* modelOfHandleAs(const EntityHandle& h) const

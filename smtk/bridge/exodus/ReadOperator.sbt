@@ -10,7 +10,7 @@
           FileFilters="Exodus II Datasets (*.e *.exo *.ex2);;Label maps (*.vti);; NetCDF files (*.nc *.ncdf);;All files (*.*)">
         </File>
         <String Name="filetype" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false"/>
-        <Int Name="readSLACVolumes" NumberOfRequiredValues="0">
+        <Int Name="readSLACVolumes" NumberOfRequiredValues="1">
           <DefaultValue>1</DefaultValue>
           <DiscreteInfo DefaultIndex="1">
             <Structure><Value Enum="no">0</Value></Structure>
