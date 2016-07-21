@@ -4,7 +4,7 @@
   <Definitions>
     <!-- Operator -->
     <AttDef Type="edit edge" BaseType="operator">
-      <AssociationsDef Name="model" NumberOfRequiredValues="1" Extensible="yes">
+      <AssociationsDef Name="model" NumberOfRequiredValues="1" Extensible="yes" AdvanceLevel="1">
         <MembershipMask>model</MembershipMask>
         <BriefDescription>The model to which this edge op will be operated on.</BriefDescription>
         <DetailedDescription>
@@ -12,16 +12,16 @@
         </DetailedDescription>
       </AssociationsDef>
       <ItemDefinitions>
-        <ModelEntity Name="edge" NumberOfRequiredValues="1">
+        <ModelEntity Name="edge" NumberOfRequiredValues="1" AdvanceLevel="1">
           <MembershipMask>edge</MembershipMask>
         </ModelEntity>
-        <Double Name="points" NumberOfRequiredValues="6" Extensible="yes">
+        <Double Name="points" NumberOfRequiredValues="6" Extensible="yes" AdvanceLevel="1">
           <BriefDescription>The (x,y,z) coordinates of the edges.</BriefDescription>
           <DetailedDescription>
             The world coordinates of 1 or more edges.
           </DetailedDescription>
         </Double>
-        <Int Name="coordinates" NumberOfRequiredValues="1">
+        <Int Name="coordinates" NumberOfRequiredValues="1" AdvanceLevel="1">
           <DefaultValue>3</DefaultValue>
           <BriefDescription>The number of coordinates per vertex.</BriefDescription>
           <DetailedDescription>
@@ -34,7 +34,7 @@
             <Max Inclusive="true">3</Max>
           </RangeInfo>
         </Int>
-        <Int Name="offsets" NumberOfRequiredValues="1" Extensible="true">
+        <Int Name="offsets" NumberOfRequiredValues="1" Extensible="true" AdvanceLevel="1">
           <DefaultValue>0</DefaultValue>
           <BriefDescription>Offsets into the list of "edge points" where each edge starts.</BriefDescription>
           <DetailedDescription>
