@@ -4,17 +4,14 @@
   <Definitions>
     <!-- Operator -->
     <AttDef Type="edit edge" BaseType="operator">
-      <AssociationsDef Name="model" NumberOfRequiredValues="1" Extensible="yes" AdvanceLevel="1">
-        <MembershipMask>model</MembershipMask>
-        <BriefDescription>The model to which this edge op will be operated on.</BriefDescription>
+      <AssociationsDef Name="edge" NumberOfRequiredValues="1" AdvanceLevel="1">
+        <MembershipMask>edge</MembershipMask>
+        <BriefDescription>The edge to which this edge op will be operated on.</BriefDescription>
         <DetailedDescription>
-          The model to which this edge op (create, edit edge) will be operated on.
+          The edge to which this edge op (create, edit edge) will be operated on.
         </DetailedDescription>
       </AssociationsDef>
       <ItemDefinitions>
-        <ModelEntity Name="edge" NumberOfRequiredValues="1" AdvanceLevel="1">
-          <MembershipMask>edge</MembershipMask>
-        </ModelEntity>
         <Double Name="points" NumberOfRequiredValues="6" Extensible="yes" AdvanceLevel="1">
           <BriefDescription>The (x,y,z) coordinates of the edges.</BriefDescription>
           <DetailedDescription>
