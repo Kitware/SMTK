@@ -111,6 +111,7 @@ void qtPolygonEdgeOperationView::createWidget( )
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);
   this->Widget->setLayout( layout );
+  this->Widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
 
   this->Internals->EditorLayout = new QVBoxLayout;
   this->updateAttributeData();
@@ -153,7 +154,7 @@ inline qtAttribute* internal_createAttUI(
   if(att && att->numberOfItems()>0)
     {
     qtAttribute* attInstance = new qtAttribute(att, pw, view);
-    if(attInstance)
+    if(attInstance && attInstance->widget())
       {
       //Without any additional info lets use a basic layout with model associations
       // if any exists
@@ -161,8 +162,8 @@ inline qtAttribute* internal_createAttUI(
       attInstance->widget()->setObjectName("polygonEdgeOpEditor");
       QVBoxLayout* parentlayout = static_cast<QVBoxLayout*> (pw->layout());
       parentlayout->insertWidget(0, attInstance->widget());
-      return attInstance;
       }
+    return attInstance;
     }
   return NULL;
 }

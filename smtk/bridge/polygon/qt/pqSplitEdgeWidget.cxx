@@ -201,7 +201,8 @@ void pqSplitEdgeWidget::splitEdgeOperation(bool start)
       "InteractionMode").Get(&curSelMode);
     if(curSelMode == vtkPVRenderView::INTERACTION_MODE_SELECTION)
       {
-      qCritical() << "The render view is in use with another selection. Stop that selection first.\n";
+      qCritical() << "The render view is in use with another selection. Stop that selection first.\n"
+                  << "You can do a rubber band selection in the render window to reset selection mode";
       this->m_edgePointPicker->InteractiveSelectButton->blockSignals(true);
       this->m_edgePointPicker->InteractiveSelectButton->setChecked(false);
       this->m_edgePointPicker->InteractiveSelectButton->blockSignals(false);

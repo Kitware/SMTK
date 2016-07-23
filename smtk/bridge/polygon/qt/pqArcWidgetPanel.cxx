@@ -347,12 +347,10 @@ void pqArcWidgetPanel::arcPicked()
       {
       smtk::attribute::AttributePtr opSpec = this->Arc->edgeOperator()->specification();
       edge.setIntegerProperty("block_index", this->ArcInfo.BlockIndex);
-      opSpec->findModelEntity("edge")->setValue(edge);
-      smtk::model::Model model = edge.owningModel();
-      if(!opSpec->isEntityAssociated(model))
+      if(!opSpec->isEntityAssociated(edge))
         {
         opSpec->removeAllAssociations();
-        opSpec->associateEntity(model);
+        opSpec->associateEntity(edge);
         }
       this->showEditWidget();
       return;

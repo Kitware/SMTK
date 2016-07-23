@@ -43,38 +43,34 @@ namespace smtk {
 
 bool EditEdge::ableToOperate()
 {
-  bool able2Op = this->ensureSpecification();
-
-  if(!able2Op)
+  if(!this->ensureSpecification())
     {
-    return able2Op;
+    return false;
     }
 
-  smtk::model::Model model;
-  able2Op =
+  smtk::model::Edge edge =
+    this->specification()->associations()->value().as<smtk::model::Edge>();
+  if(!edge.isValid())
+    {
+    return false;
+    }
+
+  smtk::model::Edge model = edge.owningModel();;
   // The SMTK model must be valid
-    (model = this->specification()->associations()->value().as<smtk::model::Model>()).isValid()
-  // The polygon model must exist
-    && this->findStorage<internal::pmodel>(model.entity())
-    ;
-
-  if(!able2Op)
+  if(!model.isValid() || !this->findStorage<internal::pmodel>(model.entity()))
     {
-    return able2Op;
+    return false;
     }
 
-  able2Op = this->specification()->findModelEntity("edge")
-    ->value().isValid();;
-
-  return able2Op;
+  return true;
 }
 
 OperatorResult EditEdge::operateInternal()
 {
   Session* opsession = this->polygonSession();
   // ableToOperate should have verified that model is valid
-  smtk::model::Model model = this->specification()->associations()
-    ->value().as<smtk::model::Model>();
+  smtk::model::Edge edge = this->specification()->associations()
+    ->value().as<smtk::model::Edge>();
   bool ok = false;
   smtk::model::EntityRefArray newEdges;
   smtk::model::EntityRefArray modEdges;
@@ -88,8 +84,6 @@ OperatorResult EditEdge::operateInternal()
     //
     // 3. Copy all properties and attributes of existing edge to the new edges if any generated
     // 4. Make sure all the edges still have valid topological relationships
-  smtk::attribute::ModelEntityItemPtr editEdgeItem =
-    this->specification()->findModelEntity("edge");
   smtk::attribute::DoubleItem::Ptr pointsItem =
     this->specification()->findAs<smtk::attribute::DoubleItem>(
     "points", smtk::attribute::ALL_CHILDREN);

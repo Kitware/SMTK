@@ -15,6 +15,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/model/Operator.h"
+#include "smtk/model/Edge.h"
 
 #include "vtkContourRepresentation.h"
 #include "vtkPoints.h"
@@ -71,8 +72,9 @@ bool vtkPolygonArcOperator::AbleToOperate()
 
   if(able2Op && this->m_smtkOp.lock()->name() == "edit edge")
     {
-    able2Op = this->m_smtkOp.lock()->specification()->findModelEntity("edge")
-        ->value().isValid();;
+    smtk::model::Edge edge = this->m_smtkOp.lock()->specification()->
+      associations()->value().as<smtk::model::Edge>();
+    able2Op = edge.isValid();;
     }
 
   return able2Op;

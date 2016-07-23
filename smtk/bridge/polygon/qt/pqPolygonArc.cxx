@@ -44,6 +44,7 @@
 #include "vtkNew.h"
 
 #include "vtkClientServerStream.h"
+#include <QDebug>
 
 //-----------------------------------------------------------------------------
 pqPolygonArc::pqPolygonArc(QObject * prnt)
@@ -139,11 +140,21 @@ bool pqPolygonArc::editEdge(vtkSMNewWidgetRepresentationProxy *widgetProxy,
 {
   vtkSMProxy* smPolyEdgeOp = this->prepareOperation(widgetProxy);
   if(!smPolyEdgeOp)
+    {
     return false;
+    }
 
-  this->edgeOperator()->specification()->
-          findModelEntity("edge")->setValue(smtk::model::EntityRef(
-          this->edgeOperator()->manager(), edgeId));
+  smtk::attribute::AttributePtr opSpec = this->edgeOperator()->specification();
+  smtk::model::Edge edge(this->edgeOperator()->manager(), edgeId);
+  if(!edge.isValid())
+    {
+    return false;
+    }
+  if(!opSpec->isEntityAssociated(edge))
+    {
+    opSpec->removeAllAssociations();
+    opSpec->associateEntity(edge);
+    }
 
   emit this->operationRequested(this->edgeOperator());
   smPolyEdgeOp->Delete();
@@ -210,6 +221,10 @@ vtkIdType pqPolygonArc::autoConnect(const vtkIdType& secondArcId)
 //-----------------------------------------------------------------------------
 vtkPolygonArcInfo* pqPolygonArc::getArcInfo(int blockIndex)
 {
+  if(blockIndex < 0)
+  {
+    qCritical() << "The render view is in use with another selection. Stop that selection first.\n";
+  }
   bool newInfo = false;
   if ( !this->ArcInfo )
     {
@@ -240,8 +255,21 @@ void pqPolygonArc::resetOperationSource()
   // which should be activated by emitting activateModel()
   if(this->m_edgeOp.lock() && this->m_edgeOp.lock()->specification())
     {
-    smtk::model::Model model = this->m_edgeOp.lock()->specification()->
-      associations()->value().as<smtk::model::Model>();
+    smtk::model::EntityRef entref = this->m_edgeOp.lock()->specification()->
+      associations()->value();
+    if(!entref.isValid())
+      {
+      return;
+      }
+    smtk::model::Model model;
+    if(entref.isModel()) // "create edge"
+      {
+      model = entref.as<smtk::model::Model>();
+      }
+    else if(entref.isEdge()) // "edit edge"
+      {
+      model = entref.as<smtk::model::Edge>().owningModel();
+      }
     if(model.isValid() && this->m_currentModelId == model.entity() && this->Source
        && this->Source == pqActiveObjects::instance().activeSource())
       {
@@ -253,7 +281,15 @@ void pqPolygonArc::resetOperationSource()
       this->m_currentModelId = model.entity();
       emit this->activateModel(model.entity());
       this->Source = pqActiveObjects::instance().activeSource();
-      this->getArcInfo(this->getAssignedEdgeBlock());
+      int blockIndex = this->getAssignedEdgeBlock();
+      if(blockIndex < 0)
+        {
+        qCritical() << "Invalid block index for the edge.\n";
+        }
+      else
+        {
+        this->getArcInfo(blockIndex);
+        }
       }
     }
 }
@@ -276,19 +312,23 @@ int pqPolygonArc::getAssignedEdgeBlock() const
   if(this->m_edgeOp.lock() && this->m_edgeOp.lock()->specification())
     {
     // for Destroy and Modify operation, we need edge is set
-    smtk::model::Model model = this->m_edgeOp.lock()->specification()->
-      associations()->value().as<smtk::model::Model>();
-    if(model.isValid())
+    smtk::model::EntityRef entref = this->m_edgeOp.lock()->specification()->
+      associations()->value();
+    smtk::model::Edge edge;
+    if(entref.isModel()) // "create edge"
       {
-      smtk::model::Edge edge = this->m_edgeOp.lock()->specification()->
-        findModelEntity("edge")->value().as<smtk::model::Edge>();
-      if(edge.isValid())
+      edge = entref.as<smtk::model::Edge>();
+      }
+    else if(entref.isEdge()) // "edit edge"
+      {
+      edge = entref.as<smtk::model::Edge>();
+      }
+    if(edge.isValid())
+      {
+      const smtk::model::IntegerList& prop(edge.integerProperty("block_index"));
+      if(!prop.empty())
         {
-        const smtk::model::IntegerList& prop(edge.integerProperty("block_index"));
-        if(!prop.empty())
-          {
-          return prop[0];
-          }
+        return prop[0];
         }
       }
     }

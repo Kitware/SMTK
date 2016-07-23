@@ -928,6 +928,16 @@ void qtModelView::initOperatorsDock(
 
   this->m_OperatorsWidget->setCurrentOperator(opName, session);
   this->m_OperatorsDock->setWindowTitle(bs.flagSummary().c_str());
+
+  if(QScrollArea* scrollArea = qobject_cast<QScrollArea*>(
+    this->m_OperatorsDock->widget()))
+    {
+    scrollArea->ensureWidgetVisible(this->m_OperatorsWidget);
+    }
+  // sizeHint() alone doesn't work, so force resize 
+  this->m_OperatorsDock->resize(this->m_OperatorsWidget->sizeHint());
+  this->m_OperatorsDock->updateGeometry();
+
 }
 
 //-----------------------------------------------------------------------------
@@ -950,6 +960,15 @@ bool qtModelView::requestOperation(
 
     this->m_OperatorsWidget->initOperatorUI(brOp);
     this->m_OperatorsDock->setWindowTitle(bs.flagSummary().c_str());
+
+    if(QScrollArea* scrollArea = qobject_cast<QScrollArea*>(
+      this->m_OperatorsDock->widget()))
+      {
+      scrollArea->ensureWidgetVisible(this->m_OperatorsWidget);
+      }
+    // sizeHint() alone doesn't work, so force resize 
+    this->m_OperatorsDock->resize(this->m_OperatorsWidget->sizeHint());
+    this->m_OperatorsDock->updateGeometry();
     }
   return true;
 //  cJSON* json = cJSON_CreateObject();
