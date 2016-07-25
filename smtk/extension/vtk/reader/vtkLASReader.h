@@ -120,6 +120,8 @@ public:
   vtkSetMacro(OutputDataTypeIsDouble, bool);
   vtkGetMacro(OutputDataTypeIsDouble, bool);
 
+  std::string GetHeaderInfo();
+
 protected:
   vtkLASReader();
   ~vtkLASReader();
@@ -138,6 +140,29 @@ protected:
 private:
   vtkLASReader(const vtkLASReader&);  // Not implemented.
   void operator=(const vtkLASReader&);  // Not implemented.
+
+  struct Header
+  {
+    char FileSignature[5];
+    unsigned short FileSourceId;
+    vtkTypeUInt16 GlobalEncoding;
+    vtkTypeUInt32 ProjectIDGUID1;
+    vtkTypeUInt16 ProjectIDGUID2, ProjectIDGUID3;
+    unsigned char ProjectIDGUID4[8];
+    unsigned char VersionMajor, VersionMinor;
+    char SystemIdentifier[33];
+    char GeneratingSoftware[33];
+    vtkTypeUInt16 CreationDay, CreationYear;
+    vtkTypeUInt16 Size;
+    vtkTypeUInt32 OffsetToPointData;
+    vtkTypeUInt32 NumberOfVariableLengthRecords;
+    unsigned char PointDataFormat;
+    vtkTypeUInt16 PointDataRecordLength;
+    vtkTypeUInt32 NumberOfPointRecords;
+    vtkTypeUInt32 NumberOfPointsByReturn[5];
+    double ScaleFactor[3];
+    double Offset[3];
+  } Header;
 
   char *FileName;
 
@@ -162,16 +187,6 @@ private:
   bool TransformOutputData;
   bool OutputDataTypeIsDouble;
 
-  vtkTypeUInt16 GlobalEncoding;
-  vtkTypeUInt16 HeaderSize;
-  vtkTypeUInt32 OffsetToPointData;
-  vtkTypeUInt32 NumberOfVariableLengthRecords;
-  unsigned char PointDataFormat;
-  vtkTypeUInt16 PointDataRecordLength;
-  vtkTypeUInt32 NumberOfPointRecords;
-
-  double ScaleFactor[3];
-  double Offset[3];
   double Origin[3];
 
 };
