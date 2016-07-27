@@ -54,7 +54,9 @@
     } \
   /* Required for shiboken: */ \
   bool operator == (const EntityRef& other) const \
-    { return this->superclass::operator == (other); }
+    { return this->superclass::operator == (other); } \
+  bool operator != (const EntityRef& other) const \
+    { return this->superclass::operator != (other); }
 
 namespace smtk {
   namespace model {
@@ -250,6 +252,7 @@ public:
   Groups containingGroups() const;
 
   bool operator == (const EntityRef& other) const;
+  bool operator != (const EntityRef& other) const { return !(*this == other); }
   bool operator < (const EntityRef& other) const;
 
   std::size_t hash() const;

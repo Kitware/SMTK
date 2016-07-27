@@ -15,6 +15,8 @@
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Vertex.h"
 
+#include "smtk/common/GeometryUtilities.h"
+
 namespace smtk {
   namespace model {
 
@@ -95,6 +97,27 @@ smtk::model::Vertices Edge::vertices() const
     {
     if (it->isVertex())
       result.push_back(*it);
+    }
+
+  // Now attempt to get the order correct for cases we can handle.
+  if (result.size() == 2 && result[0] != result[1])
+    {
+    const Tessellation* etess = this->hasTessellation();
+    if (etess)
+      {
+      int i0, i1;
+      if (etess->vertexIdsOfPolylineEndpoints(0, i0, i1))
+        {
+        double v0d = smtk::common::distance2(&etess->coords()[3 * i0], result[0].coordinates());
+        double v1d = smtk::common::distance2(&etess->coords()[3 * i1], result[0].coordinates());
+        if (v0d > v1d)
+          { // swap the vertices
+          smtk::model::Vertex tmp = result[0];
+          result[0] = result[1];
+          result[1] = tmp;
+          }
+        }
+      }
     }
   return result;
 }

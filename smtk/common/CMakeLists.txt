@@ -14,6 +14,7 @@ set(commonSrcs
 set(commonHeaders
   Environment.h
   FileLocation.h
+  GeometryUtilities.h
   Paths.h
   Resource.h
   ResourceSet.h

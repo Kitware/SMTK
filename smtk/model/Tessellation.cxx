@@ -240,6 +240,25 @@ Tessellation::size_type Tessellation::materialIdOfCell(size_type offset) const
   return this->m_conn[offset];
 }
 
+/**\brief Populate \a first and \a last with the vertex IDs at each end of a polyline at \a offset.
+  *
+  * Note that when the cell at \a offset is not a polyline (or when the polyline
+  * is degenerate by virtue of having 0 or 1 vertices),
+  * this method will return false and \a first and \a last will be undefined.
+  */
+bool Tessellation::vertexIdsOfPolylineEndpoints(size_type offset, int& first, int& last) const
+{
+  size_type ct;
+  size_type nv = this->numberOfCellVertices(offset, &ct);
+  if (ct != TESS_POLYLINE || nv < 2)
+    {
+    return false;
+    }
+  first = this->m_conn[2];
+  last = this->m_conn[nv + 1];
+  return true;
+}
+
 /**\brief Insert by specifying exactly the values
   *       to be appended to the end of the connectivity array.
   *
