@@ -142,6 +142,9 @@ int main(int argc, char* argv[])
   search2 = sm->findEntitiesOfType(smtk::model::VOLUME, true);
   test(search2.size() == 1 && search2.begin()->entity() == uids[21]);
 
+  // Test session creation (and create a session to own the model)
+  SessionRef sref = sm->createSession("native");
+
   // Test addModel
   UUIDArray::size_type modelStart = uids.size();
   for (int i = 0; i < 53; ++i)
@@ -159,6 +162,10 @@ int main(int argc, char* argv[])
   for (int i = 0; i < 22; ++i)
     model.addCell(EntityRef(sm, uids[i]));
   model.addSubmodel(Model(sm, uids[modelStart + 26]));
+  model.setSession(sref);
+
+  test(sm->sessionOwningEntity(uids[0]) == sref.entity());
+  test(sm->sessionOwningEntity(model.entity()) == sref.entity());
 
   sm->assignDefaultNames();
   // Verify we don't overwrite existing names

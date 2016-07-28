@@ -1130,6 +1130,20 @@ Model EntityRef::owningModel() const
     mgr->modelOwningEntity(this->m_entity));
 }
 
+/**\brief Return the SessionRef which owns this entity.
+  *
+  * A session is a collection of models held at the same URL
+  * (i.e., in the same file), if loaded from storage, and
+  * managed by the same modeling kernel.
+  */
+SessionRef EntityRef::owningSession() const
+{
+  ManagerPtr mgr = this->m_manager.lock();
+  return SessionRef(
+    mgr,
+    mgr->sessionOwningEntity(this->m_entity));
+}
+
 /**\brief Return the Groups which contains this entity.
   *
   */

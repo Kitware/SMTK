@@ -249,6 +249,7 @@ public:
   template<typename T> T instances() const;
 
   Model owningModel() const;
+  SessionRef owningSession() const;
   Groups containingGroups() const;
 
   bool operator == (const EntityRef& other) const;

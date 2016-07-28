@@ -354,7 +354,10 @@ protected:
 
   void setSessionId(const smtk::common::UUID& sessId);
   void setManager(Manager* mgr);
+
   virtual bool removeGeneratedProperties(const EntityRef& ent, SessionInfoBits propFlags);
+  virtual bool splitProperties(const EntityRef& from, const EntityRefs& to);
+  virtual bool mergeProperties(const EntityRefs& from, EntityRef& to);
 
   virtual Entity* addEntityRecord(const EntityRef& entRef);
   virtual ArrangementHelper* createArrangementHelper();
