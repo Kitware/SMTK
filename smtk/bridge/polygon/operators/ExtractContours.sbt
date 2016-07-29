@@ -4,7 +4,7 @@
   <Definitions>
     <!-- Operator -->
     <AttDef Type="extract contours" BaseType="operator">
-      <AssociationsDef Name="model" NumberOfRequiredValues="1" AdvanceLevel="1">
+      <AssociationsDef Name="model" NumberOfRequiredValues="1" AdvanceLevel="0">
         <MembershipMask>model</MembershipMask>
         <BriefDescription>The model to which this op will operate on.</BriefDescription>
         <DetailedDescription>

@@ -7,7 +7,7 @@ set(srcs
 set(headers
   vtkPolygonArcOperator.h
   vtkPolygonArcProvider.h
-  vtkPolygonContourOperator.cxx
+  vtkPolygonContourOperator.h
 )
 
 set(${vtk-module}_NO_HeaderTest 1)

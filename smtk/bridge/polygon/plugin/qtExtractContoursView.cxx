@@ -23,15 +23,25 @@
 
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
+#include "pqObjectBuilder.h"
 #include "pqPipelineSource.h"
 #include "pqRenderView.h"
 #include "pqServer.h"
+
+#include "vtkClientServerStream.h"
+#include "vtkProcessModule.h"
+#include "vtkSMPropertyHelper.h"
+#include "vtkSMProxyProperty.h"
+#include "vtkSMProxyManager.h"
+#include "vtkSMSourceProxy.h"
+#include "vtkSMSession.h"
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QPointer>
 #include <QPushButton>
-#include <QMessageBox>
+#include <QDebug>
+#include <QFileInfo>
 
 using namespace smtk::extension;
 
@@ -44,10 +54,13 @@ public:
     }
   ~qtExtractContoursViewInternals()
     {
-    if(ArcManager)
-      delete ArcManager;
     if(CurrentAtt)
       delete CurrentAtt;
+    if(this->ContoursDialog)
+      {
+      this->ContoursDialog->close();
+      delete this->ContoursDialog;
+      }
     }
 
   QPointer<pqGenerateContoursDialog> ContoursDialog;
@@ -98,15 +111,23 @@ void qtExtractContoursView::createWidget( )
       }
     delete this->Widget;
     }
+  this->Widget = new QFrame(this->parentWidget());
+  //create the layout for the tabs area
+  QVBoxLayout* layout = new QVBoxLayout(this->Widget);
+  layout->setMargin(0);
+  this->Widget->setLayout( layout );
+  this->Widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
 
-  this->Widget = new QPushButton(this->parentWidget());
-  this->Widget->setObjectName("polygonStartContourButton");
-  this->Widget->setText("Generate Contour From Image");
+  QPushButton* contourButton = new QPushButton(this->parentWidget());
+  contourButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+  contourButton->setMinimumHeight(32);
+  contourButton->setObjectName("polygonStartContourButton");
+  contourButton->setText("Launch Contour Preview");
   this->updateAttributeData();
 
-  QObject::connect(this->Widget,
-    SIGNAL(clicked()),
+  QObject::connect(contourButton, SIGNAL(clicked()),
     this, SLOT(startContourOperation()));
+  layout->addWidget(contourButton);
 }
 
 inline qtAttribute* internal_createAttUI(
@@ -244,19 +265,18 @@ void qtExtractContoursView::acceptContours(pqPipelineSource* contourSource)
 
   smtk::attribute::AttributePtr spec = this->Internals->CurrentOp.lock()->specification();
   if(spec->type() != "extract contours")
-    return NULL;
+    return;
   smtk::attribute::IntItem::Ptr opProxyIdItem = spec->findInt("HelperGlobalID");
   if(!opProxyIdItem)
-    return NULL;
+    return;
   vtkSMProxy* smPolyEdgeOp = internal_createVTKContourOperator(contourSource->getProxy());
   if(!smPolyEdgeOp)
-    return NULL;
+    return;
   // Now set the GlobalId of smPolyEdgeOp proxy to the edge op, and later
   // on the GlobalId will be used to find the proxy
     // for Create and Edit operation, we need arc source
   opProxyIdItem->setValue(smPolyEdgeOp->GetGlobalID());
-  return smPolyEdgeOp;
-
+  this->requestOperation(this->Internals->CurrentOp.lock());
 }
 
 pqPipelineSource* internal_createImageSource(const std::string& imageurl)
@@ -283,7 +303,7 @@ pqPipelineSource* internal_createImageSource(const std::string& imageurl)
 
   if(source)
     {
-    source = builder->createFilter("filters", "cmbStructedToMesh", source);
+    source = builder->createFilter("polygon_filters", "StructedToMesh", source);
     vtkSMPropertyHelper(source->getProxy(), "UseScalerForZ").Set(0);
     source->getProxy()->UpdateVTKObjects();
     }
@@ -322,11 +342,11 @@ void qtExtractContoursView::operationSelected(const smtk::model::OperatorPtr& op
     {
     this->Internals->ContoursDialog = new pqGenerateContoursDialog(source,
       this->parentWidget());
-    this->Internals->ContoursDialog->setModal(true);
-    this->Internals->ContoursDialog->exec();
     QObject::connect(this->Internals->ContoursDialog,
           SIGNAL(contoursAccepted(pqPipelineSource*)),
           this, SLOT(acceptContours(pqPipelineSource*)));
+    this->Internals->ContoursDialog->setModal(true);
+    this->Internals->ContoursDialog->exec();
     }
 }
 

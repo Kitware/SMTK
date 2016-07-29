@@ -40,7 +40,7 @@ public:
   virtual ~pqGenerateContoursDialog();
 
   int exec();
-  int close();
+  void close();
 
 signals:
   void contoursAccepted(pqPipelineSource*);

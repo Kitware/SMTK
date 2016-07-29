@@ -24,8 +24,8 @@ ADD_SMTK_UI_VIEW(
   VIEW_NAME smtkPolygonEdgeView
   )
 ADD_SMTK_UI_VIEW(
-  OUTIFACES
-  OUTSRCS
+  OUTIFACES1
+  OUTSRCS1
   CLASS_NAME qtExtractContoursView
   VIEW_NAME smtkPolygonContourView
   )
@@ -34,8 +34,8 @@ add_paraview_plugin(
   smtkPolygonSessionPlugin "1.0"
   SERVER_MANAGER_XML smconfig.xml
   SERVER_SOURCES sessionInit.cxx
-  GUI_INTERFACES ${OUTIFACES}
-  GUI_SOURCES ${OUTSRCS} ${MOC_SRCS} ${UI_SRCS}
+  GUI_INTERFACES ${OUTIFACES} ${OUTIFACES1}
+  GUI_SOURCES ${OUTSRCS} ${OUTSRCS1} ${MOC_SRCS} ${UI_SRCS}
               qtPolygonEdgeOperationView.cxx
               qtExtractContoursView.cxx
   CS_KITS
@@ -55,5 +55,6 @@ target_link_libraries(smtkPolygonSessionPlugin
     vtkPVServerManagerApplicationCS
     vtkSMTKWidgetsExtCS
     vtkPolygonOperatorsExtCS
+    vtkSMTKFilterExtCS
 )
 smtk_install_library(smtkPolygonSessionPlugin)

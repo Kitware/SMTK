@@ -65,10 +65,6 @@ smtk::model::OperatorResult vtkPolygonContourOperator::Operate()
     return this->m_smtkOp.lock()->createResult(smtk::model::OPERATION_FAILED);
     }
 
-  smtk::attribute::IntItem::Ptr optypeItem =
-    this->m_smtkOp.lock()->specification()->findInt("construction method");
-  optypeItem->setDiscreteIndex(0); // "point coordinates"
-
   smtk::model::OperatorResult edgeResult;
   smtk::attribute::AttributePtr spec = this->m_smtkOp.lock()->specification();
   smtk::attribute::IntItem::Ptr offsetsItem = spec->findAs<smtk::attribute::IntItem>(
@@ -89,7 +85,7 @@ smtk::model::OperatorResult vtkPolygonContourOperator::Operate()
     {
     // for each line we are creating an edge, so set the "offsets" into the 
     // points list
-    offsets.push_back(3*numPoints);
+    offsets.push_back(numPoints);
     // add points for current line cell
     pointsItem->setNumberOfValues((numPoints + npts) * 3);
     for (vtkIdType j=0; j < npts; ++j)

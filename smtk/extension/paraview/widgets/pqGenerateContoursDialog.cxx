@@ -328,7 +328,7 @@ void pqGenerateContoursDialog::generateContours()
   // less than 5 times the average line length are discarded)
   if (!this->CleanPolyLines)
     {
-    this->CleanPolyLines = builder->createFilter("filters",
+    this->CleanPolyLines = builder->createFilter("polygon_filters",
       "CleanPolylines", this->ContourSource);
     }
   vtkSMPropertyHelper(this->CleanPolyLines->getProxy(), "UseRelativeLineLength").Set(
@@ -340,7 +340,7 @@ void pqGenerateContoursDialog::generateContours()
     UpdatePipeline();
 
 
-  pqPipelineSource *polyDataStatsFilter = builder->createFilter("filters",
+  pqPipelineSource *polyDataStatsFilter = builder->createFilter("polygon_filters",
     "PolyDataStatsFilter", this->CleanPolyLines);
   vtkSMSourceProxy::SafeDownCast( polyDataStatsFilter->getProxy() )->
     UpdatePipeline();
@@ -397,54 +397,6 @@ void pqGenerateContoursDialog::onAccecptContours()
   this->disableWhileProcessing();
 
   emit this->contoursAccepted(this->CleanPolyLines);
-/*
-  pqObjectBuilder* builder = pqApplicationCore::instance()->getObjectBuilder();
-  pqServer *server = this->ParentNode->getTree()->getCurrentServer();
-
-  pqPipelineSource *polyDataStatsFilter = builder->createFilter("filters",
-    "PolyDataStatsFilter", this->CleanPolyLines);
-  vtkSMSourceProxy::SafeDownCast( polyDataStatsFilter->getProxy() )->
-    UpdatePipeline();
-  polyDataStatsFilter->getProxy()->UpdatePropertyInformation();
-  int numberOfLines = pqSMAdaptor::getElementProperty(
-    polyDataStatsFilter->getProxy()->GetProperty("NumberOfLines")).toInt();
-  builder->destroy( polyDataStatsFilter );
-
-  QFileInfo info(this->ImageNodeName);
-  this->ProgressMessage = "Creating Nodes";
-
-  cmbSceneNodeReplaceEvent *event = NULL;
-  // Are we recording events?
-  if (this->ParentNode->getTree()->recordingEvents())
-    {
-    event = new cmbSceneNodeReplaceEvent(numberOfLines, 0);
-    this->ParentNode->getTree()->insertEvent(event);
-    }
-
-  for (int i = 0; i < numberOfLines; i++)
-    {
-    this->updateProgress(this->ProgressMessage, 100 * (static_cast<double>(i) / static_cast<double>(numberOfLines)));
-    pqPipelineSource *extractLine = builder->createFilter("filters",
-      "ExtractLine", this->CleanPolyLines);
-    vtkSMPropertyHelper(extractLine->getProxy(), "LineId").Set(i);
-    extractLine->getProxy()->UpdateVTKObjects();
-    vtkSMSourceProxy *proxy  = vtkSMSourceProxy::SafeDownCast( extractLine->getProxy() );
-    proxy->UpdatePipeline();
-
-    //construct a scene arc from the extractLine proxy
-    pqCMBArc* obj = new pqCMBArc(proxy);
-    builder->destroy(extractLine);
-
-
-    pqDataRepresentation* repr = obj->getRepresentation();
-
-    QString nodeName = info.baseName();
-    nodeName += QString("%1").arg(i);
-    this->ParentNode->getTree()->createNode(nodeName.toStdString().c_str(),
-                                            this->ParentNode, obj, event);
-    repr->getProxy()->UpdateVTKObjects();
-    }
-*/
   this->MainDialog->done(QDialog::Accepted);
 
   delete this->Progress;
@@ -458,6 +410,12 @@ void pqGenerateContoursDialog::onCancel()
   this->MainDialog->done(QDialog::Rejected);
 
   // disconnect progressManager????
+}
+
+//-----------------------------------------------------------------------------
+void pqGenerateContoursDialog::close()
+{
+  this->onCancel();
 }
 
 //-----------------------------------------------------------------------------

@@ -53,8 +53,6 @@ target_include_directories(smtkPQWidgetsExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(smtkPQWidgetsExt LINK_PUBLIC
   pqApplicationComponents
   vtkPVServerManagerRendering
-  vtkSMTKFilterExt
-  vtkSMTKFilterExtCS
   smtkCore
   ${QT_QTGUI_LIBRARY}
   ${QT_QTCORE_LIBRARY}
