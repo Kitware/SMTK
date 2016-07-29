@@ -39,7 +39,7 @@ vtkPolygonContourOperator::~vtkPolygonContourOperator()
 bool vtkPolygonContourOperator::AbleToOperate()
 {
   bool able2Op = this->m_smtkOp.lock()
-                 && this->m_smtkOp.lock()->name() == "create edge"
+                 && this->m_smtkOp.lock()->name() == "extract contours"
                  && this->m_smtkOp.lock()->ensureSpecification()
                  ;
   if(!able2Op)
@@ -71,9 +71,6 @@ smtk::model::OperatorResult vtkPolygonContourOperator::Operate()
 
   smtk::model::OperatorResult edgeResult;
   smtk::attribute::AttributePtr spec = this->m_smtkOp.lock()->specification();
-  vtkPolyData *pd = this->ArcRepresentation->GetContourRepresentationAsPolyData();
-  vtkCellArray* lines = pd->GetLines();
-
   smtk::attribute::IntItem::Ptr offsetsItem = spec->findAs<smtk::attribute::IntItem>(
               "offsets", smtk::attribute::ALL_CHILDREN);
   smtk::attribute::DoubleItem::Ptr pointsItem = spec->findAs<smtk::attribute::DoubleItem>(
@@ -85,6 +82,7 @@ smtk::model::OperatorResult vtkPolygonContourOperator::Operate()
   double p[3];
   int numPoints = 0;
   vtkIdType *pts,npts;
+  vtkCellArray* lines = this->ContourInput->GetLines();
   lines->InitTraversal();
   std::vector<int> offsets;
   while(lines->GetNextCell(npts,pts))
@@ -96,7 +94,7 @@ smtk::model::OperatorResult vtkPolygonContourOperator::Operate()
     pointsItem->setNumberOfValues((numPoints + npts) * 3);
     for (vtkIdType j=0; j < npts; ++j)
       {
-      pd->GetPoint(pts[j],p);
+      this->ContourInput->GetPoint(pts[j],p);
       int idx = 3 * (numPoints+j);
       for (int i = 0; i < 3; ++i)
         {
@@ -115,7 +113,7 @@ smtk::model::OperatorResult vtkPolygonContourOperator::Operate()
 //----------------------------------------------------------------------------
 void vtkPolygonContourOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  if(this->ArcRepresentation)
+  if(this->ContourInput)
     {
     os << indent << "Contour Source::PrintSelf " << endl;
     this->ContourInput->PrintSelf(os, indent.GetNextIndent());
