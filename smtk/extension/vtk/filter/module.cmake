@@ -1,4 +1,5 @@
 set (__dependencies)
+list(APPEND __dependencies vtksys)
 
 vtk_module(vtkSMTKFilterExt
   DEPENDS
