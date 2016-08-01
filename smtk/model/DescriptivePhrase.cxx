@@ -114,6 +114,23 @@ int DescriptivePhrase::argFindChild(const smtk::mesh::CollectionPtr& child) cons
   return -1;
 }
 
+/// Return the index of the given property (name, type) in this instance's subphrases (or -1).
+int DescriptivePhrase::argFindChild(const std::string& propName,
+                                    smtk::model::PropertyType propType) const
+{
+  int i = 0;
+  DescriptivePhrases::const_iterator it;
+  for (it = this->m_subphrases.begin(); it != this->m_subphrases.end(); ++it, ++i)
+    {
+    if(propName == (*it)->title() &&
+       (((*it)->phraseType() == FLOAT_PROPERTY_VALUE && propType == FLOAT_PROPERTY)||
+       ((*it)->phraseType() == STRING_PROPERTY_VALUE && propType == STRING_PROPERTY) ||
+       ((*it)->phraseType() == INTEGER_PROPERTY_VALUE && propType == INTEGER_PROPERTY)))
+      return i;
+    }
+  return -1;
+}
+
 /// Return the index of this phrase in its parent instance's subphrases (or -1).
 int DescriptivePhrase::indexInParent() const
 {
