@@ -20,7 +20,7 @@ namespace smtk {
 /**\brief Import an image file to a polygon model.
   *
   * The supported file extensions currently:
-  *    "Image files (*.vti *.tif);;DEM(*.dem)
+  *    "Image files (*.vti *.tif *tiff);;DEM(*.dem)
   */
 class SMTKPOLYGONSESSION_EXPORT ImportImage : public Operator
 {

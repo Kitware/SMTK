@@ -63,6 +63,7 @@ bool ImportImage::ableToOperate()
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
   if (ext == ".vti" ||
       ext == ".dem" ||
+      ext == ".tif" ||
       ext == ".tiff" )
     {
     return true;

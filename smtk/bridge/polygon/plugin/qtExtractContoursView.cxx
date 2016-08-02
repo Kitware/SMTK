@@ -291,7 +291,9 @@ pqPipelineSource* internal_createImageSource(const std::string& imageurl)
 
   pqPipelineSource* source;
   QFileInfo finfo(imageurl.c_str());
-  if (finfo.completeSuffix().toLower() == "tif" || finfo.completeSuffix().toLower() == "dem")
+  if (finfo.completeSuffix().toLower() == "tif" ||
+      finfo.completeSuffix().toLower() == "tiff" ||
+      finfo.completeSuffix().toLower() == "dem")
     {
     source =  builder->createReader("sources", "GDALRasterReader", files, server);
     }

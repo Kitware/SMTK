@@ -16,7 +16,7 @@
       <ItemDefinitions>
         <File Name="filename" Label="File Name" NumberOfRequiredValues="1"
           ShouldExist="true"
-          FileFilters="Image files (*.vti *.tif);;DEM(*.dem);;All files (*.*)">
+          FileFilters="Image files (*.vti *.tif *.tiff);;DEM(*.dem);;All files (*.*)">
         </File>
 
       </ItemDefinitions>
