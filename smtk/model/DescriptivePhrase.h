@@ -98,6 +98,7 @@ public:
   virtual int argFindChild(const EntityRef& child) const;
   virtual int argFindChild(const smtk::mesh::MeshSet& child) const;
   virtual int argFindChild(const smtk::mesh::CollectionPtr& child) const;
+  virtual int argFindChild(const std::string& propName, smtk::model::PropertyType propType) const;
   int indexInParent() const;
 
   virtual EntityRef relatedEntity() const                      { return EntityRef(); }

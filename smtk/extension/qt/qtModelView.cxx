@@ -1078,9 +1078,23 @@ void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
   OperatorPtr brOp = this->getOp(idx, "set property");
   if(!brOp || !brOp->specification())
     return;
+
+  DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
+  smtk::model::EntityRef curRef = dp->relatedEntity();
+
+  // if the DescriptivePhrase is for a property, we only handle model's
+  // image_url property to change visibility of the image representation.
+  // This is temparary until we have auxiliary geometry for image in smtk model.
+  if(dp->phraseType() == FLOAT_PROPERTY_VALUE ||
+     dp->phraseType() == INTEGER_PROPERTY_VALUE ||
+     (dp->phraseType() == STRING_PROPERTY_VALUE &&
+     (!curRef.isValid() || !curRef.hasStringProperty("image_url"))))
+    {
+    return;
+    }
+
   smtk::model::EntityRefs selentityrefs;
   smtk::mesh::MeshSets selmeshes;
-  DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
   this->recursiveSelect(dp, selentityrefs,
     CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY |
     MODEL_ENTITY | INSTANCE_ENTITY | SESSION,
