@@ -80,15 +80,42 @@ public:
   template<typename T>
   std::set<Id> createModelEdgesFromPoints(T begin, T end);
 
-  bool splitModelEdgeAtPoint(smtk::model::ManagerPtr mgr, const Id& edgeId, const std::vector<double>& point);
-  bool splitModelEdgeAtModelVertex(smtk::model::ManagerPtr mgr, const Id& edgeId, const Id& vertexId);
-  bool splitModelEdgeAtModelVertex(smtk::model::ManagerPtr mgr, EdgePtr edgeToSplit, VertexPtr splitPoint, PointSeq::const_iterator location);
+  bool splitModelEdgeAtPoint(
+    smtk::model::ManagerPtr mgr,
+    const Id& edgeId,
+    const std::vector<double>& point,
+    smtk::model::EntityRefs& created,
+    smtk::model::EntityRefs& modified);
+  bool splitModelEdgeAtModelVertex(
+    smtk::model::ManagerPtr mgr,
+    const Id& edgeId,
+    const Id& vertexId,
+    smtk::model::EntityRefs& created,
+    smtk::model::EntityRefs& modified);
+  bool splitModelEdgeAtModelVertex(
+    smtk::model::ManagerPtr mgr,
+    EdgePtr edgeToSplit,
+    VertexPtr splitPoint,
+    PointSeq::const_iterator location,
+    smtk::model::EntityRefs& created,
+    smtk::model::EntityRefs& modified);
+  bool splitModelEdgeAtModelVertices(
+    smtk::model::ManagerPtr mgr,
+    EdgePtr edgeToSplit,
+    std::vector<VertexPtr>& splitPoints,
+    std::vector<PointSeq::const_iterator>& locations,
+    smtk::model::EntityRefs& created,
+    smtk::model::EntityRefs& modified);
 
   std::pair<Id,Id> removeModelEdgeFromEndpoints(smtk::model::ManagerPtr mgr, EdgePtr edg);
 
   Point edgeTestPoint(const Id& edgeId, bool edgeEndPt) const;
 
+  void pointsInLoopOrder(std::vector<Point>& pts, const smtk::model::Loop& loop);
+
+  void addFaceTessellation(smtk::model::Face& faceRec);
   void addEdgeTessellation(smtk::model::Edge& edgeRec, internal::EdgePtr edgeData);
+  void addVertTessellation(smtk::model::Vertex& vertRec, internal::VertexPtr vertData);
 
   double* origin() { return this->m_origin; }
   const double* origin() const { return this->m_origin; }
@@ -131,6 +158,7 @@ public:
   template<typename T>
   void liftPoint(const Point& ix, T coordBegin);
 
+  bool tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn, smtk::model::EntityRefs& modifiedEdgesAndFaces);
 protected:
   Session* m_session; // Parent session of this pmodel.
   long long m_scale; // Recommend this be a large composite number w/ factors 2, 3, 5 (e.g., 15360, 231000, or 1182720)

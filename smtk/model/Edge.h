@@ -33,6 +33,8 @@ public:
   SMTK_ENTITYREF_CLASS(Edge,CellEntity,isEdge);
 
   EdgeUses edgeUses() const;
+
+  Faces faces() const;
   Vertices vertices() const;
 
   EdgeUse findOrAddEdgeUse(Orientation o, int sense = 0);

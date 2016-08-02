@@ -358,6 +358,77 @@ bool Session::removeGeneratedProperties(const EntityRef& ent, SessionInfoBits pr
   return false;
 }
 
+/**\brief Called when an entity is being split or cut into one or more descendants.
+  *
+  * Sessions are responsible for overriding this to handle propagation of any
+  * property values.
+  *
+  * Return true on success and false on failure.
+  * It is not a failure for an entity to be missing properties.
+  * Depending on the context, it may be an error for a destination entity
+  * to already have a property when it is inconsistent with the value on \a from.
+  *
+  * The base class implementation simply copies the "pedigree" property
+  * to the descendants.
+  */
+bool Session::splitProperties(const EntityRef& from, const EntityRefs& to)
+{
+  const char* intPropertyNamesToCopy[] = {
+    "pedigree id"
+  };
+  unsigned npc = sizeof(intPropertyNamesToCopy) / sizeof(intPropertyNamesToCopy[0]);
+
+  const IntegerData& idata(from.integerProperties());
+  for (unsigned i = 0; i < npc; ++i)
+    {
+    IntegerData::const_iterator ipit;
+    if ((ipit = idata.find(intPropertyNamesToCopy[i])) != idata.end())
+      {
+      for (EntityRefs::iterator oit = to.begin(); oit != to.end(); ++oit)
+        {
+        EntityRef mutableEnt(*oit);
+        mutableEnt.setIntegerProperty(intPropertyNamesToCopy[i], ipit->second);
+        }
+      }
+    }
+  return true;
+}
+
+/**\brief Called when one or more entities are being merged or joined into a descendant.
+  *
+  * Sessions are responsible for overriding this to handle propagation of any
+  * property values.
+  *
+  * Return true on success and false on failure.
+  *
+  * The base class implementation simply copies the union of the "pedigree" properties
+  * from the ancestors to the descendant.
+  */
+bool Session::mergeProperties(const EntityRefs& from, EntityRef& to)
+{
+  const char* intPropertyNamesToMerge[] = {
+    "pedigree id"
+  };
+  unsigned npc = sizeof(intPropertyNamesToMerge) / sizeof(intPropertyNamesToMerge[0]);
+
+  std::set<int> imerged;
+  for (unsigned i = 0; i < npc; ++i)
+    {
+    EntityRefs::const_iterator eit;
+    for (eit = from.begin(); eit != from.end(); ++eit)
+      {
+      const IntegerData& values(eit->integerProperties());
+      IntegerData::const_iterator valueIt = values.find(intPropertyNamesToMerge[i]);
+      if (valueIt != values.end())
+        {
+        imerged.insert(valueIt->second.begin(), valueIt->second.end());
+        }
+      }
+    to.setIntegerProperty(intPropertyNamesToMerge[i], IntegerList(imerged.begin(), imerged.end()));
+    }
+  return true;
+}
+
 /// Subclasses implement this; it should add a record for \a entRef to the manager.
 Entity* Session::addEntityRecord(const EntityRef& entRef)
 {

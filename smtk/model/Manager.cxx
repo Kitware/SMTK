@@ -1379,6 +1379,59 @@ UUID Manager::modelOwningEntity(const UUID& ent) const
   return UUID::null();
 }
 
+/// Attempt to find a session owning the given entity.
+UUID Manager::sessionOwningEntity(const UUID& ent) const
+{
+  const Entity* erec = this->findEntity(ent);
+  if (erec)
+    {
+    // Traverse up to the owning model
+    UUID uid = isModel(erec->entityFlags()) ? ent : modelOwningEntity(ent);
+    // The parent of a model should be another model or session.
+
+    // If we have a superset arrangement, ask for supersets and traverse upwards.
+    ManagerPtr self = const_cast<Manager*>(this)->shared_from_this();
+    EntityRefArray supersets;
+    EntityRefArrangementOps::appendAllRelations(
+      EntityRef(self->shared_from_this(), uid), SUBSET_OF, supersets);
+    if (!supersets.empty())
+      {
+      EntityRef super;
+      for (EntityRefArray::iterator spit = supersets.begin(); spit != supersets.end(); ++spit)
+        {
+        if (spit->isSessionRef())
+          return spit->entity();
+        }
+      // No sessions are in my superset... traverse up the first superset to find one:
+      return this->sessionOwningEntity(supersets.begin()->entity());
+      }
+
+    // Assume the first relationship that is a session or model is our owner.
+    // Keep going up parents until we hit the top.
+    UUIDsToEntities::const_iterator it = this->m_topology->find(uid);
+    for (
+      UUIDArray::const_iterator sit = it->second.relations().begin();
+      sit != it->second.relations().end();
+      ++sit)
+      {
+      UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
+      if (subentity != this->topology().end() && subentity->first != uid)
+        {
+        if (isSessionRef(subentity->second.entityFlags()))
+          return subentity->first;
+        if (isModel(subentity->second.entityFlags()))
+          { // Switch to finding relations of the model (assume it is our parent)
+          uid = subentity->first;
+          it = this->m_topology->find(uid);
+          sit = it->second.relations().begin();
+          }
+        }
+      }
+    return uid;
+    }
+  return UUID::null();
+}
+
 /**\brief Assign a string property named "name" to every entity without one.
   *
   * This descends sessions and models owned by sessions rather than

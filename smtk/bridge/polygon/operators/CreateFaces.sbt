@@ -47,37 +47,18 @@
                 <Max Inclusive="true">3</Max>
               </RangeInfo>
             </Int>
-            <ModelEntity Name="edges" NumberOfRequiredValues="1" Extensible="true">
-              <BriefDescription>The edges defining the boundary of the model face(s).</BriefDescription>
+            <Int Name="counts" NumberOfRequiredValues="1" Extensible="true">
+              <DefaultValue>-1</DefaultValue>
+              <BriefDescription>Offsets into the list of points where each edge starts.</BriefDescription>
               <DetailedDescription>
-                By default, all edges create a single face.
-                The first edge passed for each face must be on the outer loop of the face.
-                All other loops are considered holes.
-                If offsets are specified, then multiple disjoint faces will be created.
-              </DetailedDescription>
-            </ModelEntity>
-            <Int Name="offsets" NumberOfRequiredValues="1" Extensible="true">
-              <DefaultValue>0</DefaultValue>
-              <BriefDescription>Offsets into the list of points or edges where each face and its holes start.</BriefDescription>
-              <DetailedDescription>
-                Offsets into the list of points or edges where each face and its holes start.
+                The number of points per edge.
 
-                The first number specifies an offset into the list of points or edges
-                for the first face's outer loop.
-                This is followed by the number of holes for the face, followed by an
-                integer offset for each hole relative to the start of the face.
-                The pattern can be repeated for additional faces.
+                A value of -1 indicates that there is only one edge (which in turn
+                must be the outer loop of a simple polygonal face) which is composed
+                of all the points listed.
 
-                An example would be [0, 0,  3, 2, 2, 4,  10, 0].
-                This example corresponds to 3 faces.
-                The first face has 3 edges in its outer loop and no holes.
-                The second face has 2 edges in its outer loop and 2 holes: one hole with 2 edges and another with 3 edges.
-                The third face has no holes and uses the remainder of the edges in its outer loop.
-
-                When "points" are specified instead of "edges",
-                offset values (except values specifying the number of holes)
-                are internally multiplied by the value of "coordinates".
-                (Offsets should count the number of points, not coordinates.)
+                Note that these integers count the number of points per edge;
+                they are not offsets into the list array of point coordinates.
               </DetailedDescription>
             </Int>
           </ChildrenDefinitions>
@@ -88,16 +69,13 @@
               <Items>
                 <Item>points</Item>
                 <Item>coordinates</Item>
-                <Item>offsets</Item>
+                <Item>counts</Item>
               </Items>
             </Structure>
             <!-- Option 1: edges and offsets -->
             <Structure>
               <Value Enum="edges">1</Value>
               <Items>
-                <Item>edges</Item>
-                <Item>points</Item>
-                <Item>coordinates</Item>
               </Items>
             </Structure>
             <!-- Option 2: all possible faces -->

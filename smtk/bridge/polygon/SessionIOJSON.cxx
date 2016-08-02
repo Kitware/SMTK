@@ -128,6 +128,7 @@ int SessionIOJSON::importJSON(
         {
         internal::pmodel::Ptr mod = this->deserializeModel(entry, smtk::model::Model(mgr, uid));
         parentAddrMap[uid] = mod;
+        mod->setSession(psession.get());
         eptr = mod;
         }
       else if (etype == "face")
@@ -322,21 +323,34 @@ cJSON* SessionIOJSON::serializeEdge(internal::EdgePtr edge, const smtk::model::E
 {
   cJSON* result = cJSON_CreateObject();
   cJSON_AddItemToObject(result, "type", cJSON_CreateString("edge"));
+  if (edge->parent())
+    {
+    cJSON_AddItemToObject(result, "parent", cJSON_CreateString(edge->parent()->id().toString().c_str()));
+    }
   std::size_t np = edge->pointsSize();
-  const int stride = 2 /* coords per pt */ * 2 /* ints per coord */;
+  const int stride = 2 /* coords per pt */ * 4 /* ints per coord */;
   std::vector<long> ptdata(np * stride, 0);
   internal::PointSeq::const_iterator pit = edge->pointsBegin();
   for (std::size_t i = 0; i < np; ++i, ++pit)
     {
     internal::Coord c = pit->x();
-    ptdata[i * stride + 0] = c & 0xffffffff;
-    c >>= 32;
-    ptdata[i * stride + 1] = c & 0xffffffff;
+    unsigned long long& uc(*reinterpret_cast<unsigned long long*>(&c));
+    ptdata[i * stride + 0] = uc & 0xffff;
+    uc >>= 16;
+    ptdata[i * stride + 1] = uc & 0xffff;
+    uc >>= 16;
+    ptdata[i * stride + 2] = uc & 0xffff;
+    uc >>= 16;
+    ptdata[i * stride + 3] = uc & 0xffff;
 
     c = pit->y();
-    ptdata[i * stride + 2] = c & 0xffffffff;
-    c >>= 32;
-    ptdata[i * stride + 3] = c & 0xffffffff;
+    ptdata[i * stride + 4] = uc & 0xffff;
+    uc >>= 16;
+    ptdata[i * stride + 5] = uc & 0xffff;
+    uc >>= 16;
+    ptdata[i * stride + 6] = uc & 0xffff;
+    uc >>= 16;
+    ptdata[i * stride + 7] = uc & 0xffff;
     }
   cJSON_AddItemToObject(result, "points", smtk::io::ExportJSON::createIntegerArray(ptdata));
   smtk::io::ExportJSON::forManagerTessellation(e.entity(), result, e.manager());
@@ -347,6 +361,10 @@ cJSON* SessionIOJSON::serializeVertex(internal::VertexPtr vert, const smtk::mode
 {
   cJSON* result = cJSON_CreateObject();
   cJSON_AddItemToObject(result, "type", cJSON_CreateString("vertex"));
+  if (vert->parent())
+    {
+    cJSON_AddItemToObject(result, "parent", cJSON_CreateString(vert->parent()->id().toString().c_str()));
+    }
   // Store exact integer point coordinates safely:
   std::vector<long> ptdata(4, 0);
   internal::Coord c = vert->point().x();
@@ -454,7 +472,7 @@ internal::EdgePtr SessionIOJSON::deserializeEdge(cJSON* record, const smtk::mode
   if (ok)
     {
     result = internal::edge::create();
-    const int stride = 2 /* coords per pt */ * 2 /* ints per coord */;
+    const int stride = 2 /* coords per pt */ * 4 /* ints per coord */;
     std::size_t np = ptdata.size() / stride;
     std::vector<long>::const_iterator cit = ptdata.begin();
     for (std::size_t i = 0; i < np; ++i)
@@ -462,9 +480,14 @@ internal::EdgePtr SessionIOJSON::deserializeEdge(cJSON* record, const smtk::mode
       internal::Coord xy[2] = {0, 0};
       for (int j = 0; j < 2; ++j)
         {
-        xy[j] = *cit;
+        unsigned long long& uc(*reinterpret_cast<unsigned long long*>(&xy[j]));
+        uc = *cit;
         ++cit;
-        xy[j] += ((*cit) << 32);
+        uc |= ((*cit) << 16);
+        ++cit;
+        uc |= ((*cit) << 32);
+        ++cit;
+        uc |= ((*cit) << 48);
         ++cit;
         }
       result->points().insert(result->pointsEnd(), internal::Point(xy[0], xy[1]));

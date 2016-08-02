@@ -131,6 +131,8 @@ public:
   size_type vertexIdsOfCell(size_type offset, std::vector<int>& cellConn) const;
   size_type materialIdOfCell(size_type offset) const;
 
+  bool vertexIdsOfPolylineEndpoints(size_type offset, int& first, int& last) const;
+
   // TODO: Implement access to UVs, normals, colors, etc.
   //size_type vertexUVIdsOfCell(size_type offset, std::vector<int>& vertUVs) const;
   //...
