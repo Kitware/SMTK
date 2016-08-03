@@ -44,6 +44,8 @@ public:
       : m_adjacentFace(faceId) { }
     incident_edge_data(Id edgeId, bool isEdgeOut, Id faceId)
       : m_edgeId(edgeId), m_edgeOut(isEdgeOut), m_adjacentFace(faceId) { }
+    incident_edge_data(const incident_edge_data& other)
+      : m_edgeId(other.edgeId()), m_edgeOut(other.isEdgeOutgoing()), m_adjacentFace(other.clockwiseFaceId()) { }
     incident_edge_data()
       : m_edgeOut(false) { }
 

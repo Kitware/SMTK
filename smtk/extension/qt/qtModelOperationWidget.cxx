@@ -15,6 +15,7 @@
 #include "smtk/extension/qt/qtInstancedView.h"
 #include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtModelView.h"
+#include "smtk/extension/qt/qtCollapsibleGroupWidget.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -92,6 +93,7 @@ void qtModelOperationWidget::initWidget( )
 {
   this->setObjectName("modelOperationWidget");
   QWidget* mainArea = new QWidget();
+  mainArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
   this->Internals->LogSplitter = new QSplitter(this);
   QVBoxLayout* universe = new QVBoxLayout(this);
   universe->addWidget(this->Internals->LogSplitter);
@@ -122,7 +124,20 @@ void qtModelOperationWidget::initWidget( )
   this->Internals->ResultLog = new QTextEdit();
   this->Internals->ResultLog->setReadOnly(true);
   this->Internals->ResultLog->setStyleSheet("font: \"Monaco\", \"Menlo\", \"Andale Mono\", \"fixed\";");
-  this->Internals->LogSplitter->addWidget(this->Internals->ResultLog);
+  this->Internals->ResultLog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+  qtCollapsibleGroupWidget *gw = new qtCollapsibleGroupWidget(this->Internals->LogSplitter);
+  gw->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+  gw->setName("Show Operator Log");
+  gw->contentsLayout()->addWidget(this->Internals->ResultLog);
+  gw->collapse();
+  this->Internals->LogSplitter->addWidget(gw);
+  this->Internals->LogSplitter->setCollapsible(0, false);
+  this->Internals->LogSplitter->setCollapsible(1, false);
+  this->Internals->LogSplitter->setStretchFactor(1, 0);
+  QList<int> sizes;
+  sizes << 500 << 10;
+  this->Internals->LogSplitter->setSizes(sizes);
 
   // signals/slots
   QObject::connect(this->Internals->OperationCombo,
@@ -137,12 +152,20 @@ QSize qtModelOperationWidget::sizeHint() const
 {
   if(QWidget* opW = this->Internals->OperationsLayout->currentWidget())
     {
-//    std::cout << "Use current op widget for size hint \n"
-//    << "width: " << opW->width() << "height: " << opW->height() << "\n";
-    return QSize(opW->width(),
-                 opW->height() + this->Internals->OperationCombo->height() + 20);
+    QSize newSize(this->width(), 0);
+    int height = 20;
+    for (int i = 0; i < this->Internals->WidgetLayout->count(); ++i)
+      {
+      height += this->Internals->WidgetLayout->itemAt(i)->geometry().height();
+      }
+    
+    height = height + this->Internals->LogSplitter->handleWidth()
+            + this->Internals->LogSplitter->widget(1)->size().height();
+    newSize.setHeight( height > 500 ? height : 500);
+    return newSize;
     }
-  return QSize(450, 250);
+
+  return QSize(500, 650);
 }
 
 //----------------------------------------------------------------------------
@@ -257,6 +280,7 @@ bool qtModelOperationWidget::initOperatorUI(
   SessionRef bs(brOp->manager(), brOp->session()->sessionId());
   this->setSession(bs.session());
   QFrame* opParent = new QFrame(this);
+  opParent->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
   QVBoxLayout* opLayout = new QVBoxLayout(opParent);
   opLayout->setMargin(0);
 

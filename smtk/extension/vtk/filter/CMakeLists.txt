@@ -1,10 +1,18 @@
 
 set(srcs
    vtkCMBApplyBathymetryFilter.cxx
+   vtkCleanPolylines.cxx
+   vtkDEMToMesh.cxx
+   vtkExtractLine.cxx
+   vtkPolyDataStatsFilter.cxx
   )
 
 set(headers
    vtkCMBApplyBathymetryFilter.h
+   vtkCleanPolylines.h
+   vtkDEMToMesh.h
+   vtkExtractLine.h
+   vtkPolyDataStatsFilter.h
 )
 
 set(${vtk-module}_NO_HeaderTest 1)

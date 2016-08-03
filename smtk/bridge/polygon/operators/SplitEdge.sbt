@@ -14,7 +14,7 @@
         Otherwise 2 new edges are created.
         Regardless, the input edge is always destroyed; it is never modified.
       </DetailedDescription>
-      <AssociationsDef Name="edge" NumberOfRequiredValues="1" Extensible="yes">
+      <AssociationsDef Name="edge" NumberOfRequiredValues="1" Extensible="yes" AdvanceLevel="1">
         <MembershipMask>edge</MembershipMask>
         <BriefDescription>The edge to split.</BriefDescription>
         <DetailedDescription>
@@ -28,7 +28,7 @@
         </DetailedDescription>
       </AssociationsDef>
       <ItemDefinitions>
-        <Double Name="point" NumberOfRequiredValues="2" Extensible="yes">
+        <Double Name="point" NumberOfRequiredValues="2" Extensible="yes" AdvanceLevel="1">
           <BriefDescription>The point where the edge should be split.</BriefDescription>
           <DetailedDescription>
             The world coordinates of the point where the edge should be split.

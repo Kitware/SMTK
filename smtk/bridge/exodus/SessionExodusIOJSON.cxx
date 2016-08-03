@@ -9,6 +9,8 @@
 //=========================================================================
 #include "smtk/bridge/exodus/SessionExodusIOJSON.h"
 
+#include "smtk/bridge/exodus/Session.h"
+
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
@@ -24,6 +26,9 @@
 
 #include "boost/filesystem.hpp"
 #include "boost/system/error_code.hpp"
+
+#include "vtkDataObject.h"
+#include "vtkMultiBlockDataSet.h"
 
 #include "cJSON.h"
 
@@ -179,8 +184,7 @@ int SessionIOJSON::exportJSON(model::ManagerPtr modelMgr, const model::SessionPt
       {
       modelNumbers.push_back(modelNumber);
       toplevelOffsets.push_back(static_cast<long>(uuidArray.size()));
-      uuidArray.push_back(mit->entity());
-      this->addChildrenUUIDs(*mit, uuidArray);
+      this->addModelUUIDs(*mit, uuidArray);
       if (mit->hasStringProperty("url"))
         {
         path url(mit->stringProperty("url")[0]);
@@ -218,23 +222,43 @@ int SessionIOJSON::exportJSON(model::ManagerPtr modelMgr, const model::SessionPt
   *
   * The children are assumed to be listed in a stable order across file loads.
   */
-void SessionIOJSON::addChildrenUUIDs(const model::EntityRef& parent, common::UUIDArray& uuids)
+void SessionIOJSON::addModelUUIDs(const model::EntityRef& parent, common::UUIDArray& uuids)
 {
-  model::EntityRefArray children;
-  if (parent.isModel())
+  // Traverse entities in exactly the same way that they are
+  // traversed by the read operator, to avoid causing deserialization problems.
+  // Unfortunately that means this class peeks at the underlying VTK objects
+  // which should be hidden by the "handle" abstraction. We accept the leaky
+  // abstraction in order to ensure the traversal results are proper.
+  smtk::model::SessionRef sref = parent.isModel() ?
+    parent.as<smtk::model::Model>().session() :
+    parent.owningModel().session();
+  smtk::shared_ptr<Session> sess = smtk::dynamic_pointer_cast<Session>(sref.session());
+  if (sess)
     {
-    children = parent.as<model::Model>().submodelsAs<model::EntityRefArray>();
-    this->addChildrenUUIDsIn(children, uuids);
-
-    children = parent.as<model::Model>().groupsAs<model::EntityRefArray>();
-    this->addChildrenUUIDsIn(children, uuids);
-
-    // NB: Exodus session doesn't provide cells, but if it did, traverse them here.
+    EntityHandle eh = sess->toEntity(parent);
+    if (eh.isValid())
+      {
+      this->addUUIDsRecursive(sess, eh.object<vtkDataObject>(), uuids);
+      }
     }
-  else if (parent.isGroup())
+}
+
+void SessionIOJSON::addUUIDsRecursive(smtk::shared_ptr<Session> s, vtkDataObject* node, common::UUIDArray& uuids)
+{
+  if (!node || !s)
     {
-    children = parent.as<model::Group>().members<model::EntityRefArray>();
-    this->addChildrenUUIDsIn(children, uuids);
+    return;
+    }
+  smtk::common::UUID uid = s->uuidOfHandleObject(node);
+  uuids.push_back(uid);
+  vtkMultiBlockDataSet* mbds = vtkMultiBlockDataSet::SafeDownCast(node);
+  if (mbds)
+    {
+    int nc = mbds->GetNumberOfBlocks();
+    for (int cc = 0; cc < nc; ++cc)
+      {
+      this->addUUIDsRecursive(s, mbds->GetBlock(cc), uuids);
+      }
     }
 }
 

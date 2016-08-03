@@ -928,6 +928,16 @@ void qtModelView::initOperatorsDock(
 
   this->m_OperatorsWidget->setCurrentOperator(opName, session);
   this->m_OperatorsDock->setWindowTitle(bs.flagSummary().c_str());
+
+  if(QScrollArea* scrollArea = qobject_cast<QScrollArea*>(
+    this->m_OperatorsDock->widget()))
+    {
+    scrollArea->ensureWidgetVisible(this->m_OperatorsWidget);
+    }
+  // sizeHint() alone doesn't work, so force resize 
+  this->m_OperatorsDock->resize(this->m_OperatorsWidget->sizeHint());
+  this->m_OperatorsDock->updateGeometry();
+
 }
 
 //-----------------------------------------------------------------------------
@@ -950,6 +960,15 @@ bool qtModelView::requestOperation(
 
     this->m_OperatorsWidget->initOperatorUI(brOp);
     this->m_OperatorsDock->setWindowTitle(bs.flagSummary().c_str());
+
+    if(QScrollArea* scrollArea = qobject_cast<QScrollArea*>(
+      this->m_OperatorsDock->widget()))
+      {
+      scrollArea->ensureWidgetVisible(this->m_OperatorsWidget);
+      }
+    // sizeHint() alone doesn't work, so force resize 
+    this->m_OperatorsDock->resize(this->m_OperatorsWidget->sizeHint());
+    this->m_OperatorsDock->updateGeometry();
     }
   return true;
 //  cJSON* json = cJSON_CreateObject();
@@ -1059,9 +1078,23 @@ void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
   OperatorPtr brOp = this->getOp(idx, "set property");
   if(!brOp || !brOp->specification())
     return;
+
+  DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
+  smtk::model::EntityRef curRef = dp->relatedEntity();
+
+  // if the DescriptivePhrase is for a property, we only handle model's
+  // image_url property to change visibility of the image representation.
+  // This is temparary until we have auxiliary geometry for image in smtk model.
+  if(dp->phraseType() == FLOAT_PROPERTY_VALUE ||
+     dp->phraseType() == INTEGER_PROPERTY_VALUE ||
+     (dp->phraseType() == STRING_PROPERTY_VALUE &&
+     (!curRef.isValid() || !curRef.hasStringProperty("image_url"))))
+    {
+    return;
+    }
+
   smtk::model::EntityRefs selentityrefs;
   smtk::mesh::MeshSets selmeshes;
-  DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
   this->recursiveSelect(dp, selentityrefs,
     CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY |
     MODEL_ENTITY | INSTANCE_ENTITY | SESSION,

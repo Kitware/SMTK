@@ -92,7 +92,7 @@ public:
 
   // Overwrite the databounds
   virtual void getDataBounds(double bounds[6]) const
-    {/*this->getBounds(bounds)*/;}
+    { (void)bounds; /*this->getBounds(bounds)*/;}
 
   virtual void setSelectionInput(vtkSMSourceProxy *selectionInput);
   virtual void select();

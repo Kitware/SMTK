@@ -10,9 +10,12 @@
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
 
-#include "smtk/model/Vertex.h"
+#include "smtk/model/Face.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Tessellation.h"
+#include "smtk/model/Vertex.h"
+
+#include "smtk/common/GeometryUtilities.h"
 
 namespace smtk {
   namespace model {
@@ -54,6 +57,27 @@ EdgeUse Edge::findOrAddEdgeUse(Orientation orientation, int sense)
   return EdgeUse();
 }
 
+/**\brief Return the faces which this edge bounds.
+  *
+  * This method is provided for convenience.
+  * The *proper* way to obtain faces bounded by an edge
+  * is to fetch the loops of an edge-use and
+  * add faces from the respective face-use
+  * records along each loop.
+  */
+smtk::model::Faces Edge::faces() const
+{
+  Faces result;
+  EntityRefs all = this->bordantEntities(/*dim = */ 2);
+  for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
+    {
+    if (it->isFace())
+      result.push_back(*it);
+    }
+  return result;
+}
+
+
 /**\brief Return the vertices which bound this edge.
   *
   * This method is provided for convenience.
@@ -73,6 +97,27 @@ smtk::model::Vertices Edge::vertices() const
     {
     if (it->isVertex())
       result.push_back(*it);
+    }
+
+  // Now attempt to get the order correct for cases we can handle.
+  if (result.size() == 2 && result[0] != result[1])
+    {
+    const Tessellation* etess = this->hasTessellation();
+    if (etess)
+      {
+      int i0, i1;
+      if (etess->vertexIdsOfPolylineEndpoints(0, i0, i1))
+        {
+        double v0d = smtk::common::distance2(&etess->coords()[3 * i0], result[0].coordinates());
+        double v1d = smtk::common::distance2(&etess->coords()[3 * i1], result[0].coordinates());
+        if (v0d > v1d)
+          { // swap the vertices
+          smtk::model::Vertex tmp = result[0];
+          result[0] = result[1];
+          result[1] = tmp;
+          }
+        }
+      }
     }
   return result;
 }

@@ -88,7 +88,8 @@ qtAttribute::~qtAttribute()
 //----------------------------------------------------------------------------
 void qtAttribute::createWidget()
 {
-  if(!this->attribute() || !this->attribute()->numberOfItems())
+  if(!this->attribute() || (!this->attribute()->numberOfItems() &&
+    !this->attribute()->associations()))
     {
     return;
     }
@@ -110,10 +111,15 @@ void qtAttribute::createWidget()
         numShowItems++;
         }
       }
+    // also check associations
+    if(this->m_internals->m_view->displayItem(att->associations()))
+      {
+      numShowItems++;
+      }
     }
   else // show everything
     {
-    numShowItems = n;
+    numShowItems = att->associations() ? n + 1 : n;
     }
   if(numShowItems == 0)
     {

@@ -16,9 +16,13 @@
 
 struct cJSON;
 
+class vtkDataObject;
+
 namespace smtk {
   namespace bridge {
     namespace exodus {
+
+class Session;
 
 /**\brief A base class for delegating session I/O to/from JSON.
   *
@@ -43,18 +47,8 @@ public:
                          bool writeNativeModels = false);
 
 protected:
-  void addChildrenUUIDs(const model::EntityRef& parent, common::UUIDArray& uuids);
-
-  template<typename T>
-  void addChildrenUUIDsIn(const T& container, common::UUIDArray& uuids)
-    {
-    typename T::const_iterator it;
-    for (it = container.begin(); it != container.end(); ++it)
-      {
-      uuids.push_back(it->entity());
-      this->addChildrenUUIDs(*it, uuids);
-      }
-    }
+  void addModelUUIDs(const model::EntityRef& parent, common::UUIDArray& uuids);
+  void addUUIDsRecursive(smtk::shared_ptr<Session> s, vtkDataObject* node, common::UUIDArray& uuids);
 
   int loadExodusFileWithUUIDs(
     const model::SessionRef& sref,

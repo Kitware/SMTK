@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_session_polygon_EditEdge_h
-#define __smtk_session_polygon_EditEdge_h
+#ifndef __smtk_session_polygon_ImportImage_h
+#define __smtk_session_polygon_ImportImage_h
 
 #include "smtk/bridge/polygon/Operator.h"
 
@@ -17,26 +17,23 @@ namespace smtk {
   namespace bridge {
     namespace polygon {
 
-/**\brief Edit an edge in a polygon model file.
+/**\brief Import an image file to a polygon model.
   *
-  * This operator allows to create and modify an edge
-  * in a polygon model. It interacts with the application
-  * through a view "UIConstructor", specified in the operator's template
-  * file.
-  *
+  * The supported file extensions currently:
+  *    "Image files (*.vti *.tif *tiff);;DEM(*.dem)
   */
-class SMTKPOLYGONSESSION_EXPORT EditEdge : public Operator
+class SMTKPOLYGONSESSION_EXPORT ImportImage : public Operator
 {
 public:
-  smtkTypeMacro(EditEdge);
-  smtkCreateMacro(EditEdge);
+  smtkTypeMacro(ImportImage);
+  smtkCreateMacro(ImportImage);
   smtkSharedFromThisMacro(Operator);
-  smtkSuperclassMacro(Operator);
   smtkDeclareModelOperator();
 
   virtual bool ableToOperate();
 
 protected:
+  ImportImage();
   virtual smtk::model::OperatorResult operateInternal();
 
 };
@@ -45,4 +42,4 @@ protected:
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_session_polygon_EditEdge_h
+#endif // __smtk_session_polygon_ImportImage_h

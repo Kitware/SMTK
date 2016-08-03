@@ -46,6 +46,7 @@
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addEntity', unmatched parameter type 'vtkModelItem*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::addEntities', unmatched parameter type 'vtkModelItemIterator*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::Session::bathymetryHelper', unmatched return type 'smtk::bridge::discrete::BathymetryHelper*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::discrete::BathymetryHelper::computeBathymetryPoints', unmatched parameter type 'vtkDataSet*'"/>
   <suppress-warning text="skipping field 'Session::m_bathymetryHelper' with unmatched type 'smtk::bridge::discrete::BathymetryHelper'"/>
   <suppress-warning text="skipping field 'BathymetryHelper::m_modelIdsToMasterPolys' with unmatched type 'std::map&lt;smtk::common::UUID,vtkSmartPointer&lt;vtkPolyData&gt;&gt;'"/>
   <suppress-warning text="skipping function 'smtk::bridge::discrete::BathymetryHelper::bathymetryData', unmatched return type 'vtkDataSet*'"/>

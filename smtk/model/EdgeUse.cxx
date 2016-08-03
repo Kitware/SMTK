@@ -33,7 +33,7 @@ Loop EdgeUse::loop() const
   return this->boundingShellEntity().as<Loop>();
 }
 
-// the (parent) underlying edge of this use
+/// The (parent) underlying edge of this use
 Edge EdgeUse::edge() const
 {
   return this->cell().as<Edge>();

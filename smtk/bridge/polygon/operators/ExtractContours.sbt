@@ -1,27 +1,24 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the smtk polygon Model "edit edge" Operator -->
+<!-- Description of the smtk polygon Model "extract contours" Operator -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="edit edge" BaseType="operator">
-      <AssociationsDef Name="model" NumberOfRequiredValues="1" Extensible="yes">
+    <AttDef Type="extract contours" BaseType="operator">
+      <AssociationsDef Name="model" NumberOfRequiredValues="1" AdvanceLevel="0">
         <MembershipMask>model</MembershipMask>
-        <BriefDescription>The model to which this edge op will be operated on.</BriefDescription>
+        <BriefDescription>The model to which this op will operate on.</BriefDescription>
         <DetailedDescription>
-          The model to which this edge op (create, edit edge) will be operated on.
+          The model to which this op will operate on. This model should have a "image_url" string property.
         </DetailedDescription>
       </AssociationsDef>
       <ItemDefinitions>
-        <ModelEntity Name="edge" NumberOfRequiredValues="1">
-          <MembershipMask>edge</MembershipMask>
-        </ModelEntity>
-        <Double Name="points" NumberOfRequiredValues="6" Extensible="yes">
+        <Double Name="points" NumberOfRequiredValues="6" Extensible="yes" AdvanceLevel="1">
           <BriefDescription>The (x,y,z) coordinates of the edges.</BriefDescription>
           <DetailedDescription>
             The world coordinates of 1 or more edges.
           </DetailedDescription>
         </Double>
-        <Int Name="coordinates" NumberOfRequiredValues="1">
+        <Int Name="coordinates" NumberOfRequiredValues="1" AdvanceLevel="1">
           <DefaultValue>3</DefaultValue>
           <BriefDescription>The number of coordinates per vertex.</BriefDescription>
           <DetailedDescription>
@@ -34,9 +31,9 @@
             <Max Inclusive="true">3</Max>
           </RangeInfo>
         </Int>
-        <Int Name="offsets" NumberOfRequiredValues="1" Extensible="true">
+        <Int Name="offsets" NumberOfRequiredValues="1" Extensible="true" AdvanceLevel="1">
           <DefaultValue>0</DefaultValue>
-          <BriefDescription>Offsets into the list of "edge points" where each edge starts.</BriefDescription>
+          <BriefDescription>Offsets into the list of "points" where each edge starts.</BriefDescription>
           <DetailedDescription>
             Offsets into the list of points where each edge starts.
 
@@ -54,7 +51,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
-    <AttDef Type="result(edit edge)" BaseType="result"/>
+    <AttDef Type="result(extract contours)" BaseType="result"/>
   </Definitions>
 
   <Views>
@@ -62,13 +59,13 @@
       ADD_SMTK_UI_VIEW(
         OUTIFACES
         OUTSRCS
-        CLASS_NAME qtPolygonEdgeOperationView
-        VIEW_NAME smtkPolygonEdgeView
+        CLASS_NAME qtExtractContoursView
+        VIEW_NAME smtkPolygonContourView
         )
       -->
-    <View Type="smtkPolygonEdgeView" Title="Edit Polygon Edge">
+    <View Type="smtkPolygonContourView" Title="Extract Polygon Edges">
       <AttributeTypes>
-        <Att Type="edit edge" />
+        <Att Type="extract contours" />
       </AttributeTypes>
     </View>
   </Views>

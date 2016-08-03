@@ -277,6 +277,35 @@
   <suppress-warning text="Shadowing: EntityRef::operator==(const smtk::model::EntityRef &amp; other) const and VertexUse::operator==(const smtk::model::EntityRef &amp; other) const"/>
   <suppress-warning text="Shadowing: ShellEntity::operator==(const smtk::model::EntityRef &amp; other) const and Chain::operator==(const smtk::model::EntityRef &amp; other) const"/>
   <suppress-warning text="Shadowing: EntityRef::operator==(const smtk::model::EntityRef &amp; other) const and SessionRef::operator==(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator!=(const smtk::model::EntityRef &amp; other) const and Edge::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator!=(const smtk::model::EntityRef &amp; other) const and Model::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator!=(const smtk::model::EntityRef &amp; other) const and UseEntity::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator!=(const smtk::model::EntityRef &amp; other) const and Face::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator!=(const smtk::model::EntityRef &amp; other) const and VolumeUse::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: CellEntity::operator!=(const smtk::model::EntityRef &amp; other) const and Face::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator!=(const smtk::model::EntityRef &amp; other) const and FaceUse::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: UseEntity::operator!=(const smtk::model::EntityRef &amp; other) const and EdgeUse::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: ShellEntity::operator!=(const smtk::model::EntityRef &amp; other) const and Loop::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator!=(const smtk::model::EntityRef &amp; other) const and Chain::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: ShellEntity::operator!=(const smtk::model::EntityRef &amp; other) const and Chain::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator!=(const smtk::model::EntityRef &amp; other) const and Vertex::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: CellEntity::operator!=(const smtk::model::EntityRef &amp; other) const and Edge::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator!=(const smtk::model::EntityRef &amp; other) const and Group::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: CellEntity::operator!=(const smtk::model::EntityRef &amp; other) const and Vertex::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: UseEntity::operator!=(const smtk::model::EntityRef &amp; other) const and VolumeUse::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator!=(const smtk::model::EntityRef &amp; other) const and Instance::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator!=(const smtk::model::EntityRef &amp; other) const and Shell::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator!=(const smtk::model::EntityRef &amp; other) const and CellEntity::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: UseEntity::operator!=(const smtk::model::EntityRef &amp; other) const and FaceUse::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator!=(const smtk::model::EntityRef &amp; other) const and VertexUse::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator!=(const smtk::model::EntityRef &amp; other) const and Volume::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator!=(const smtk::model::EntityRef &amp; other) const and Loop::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: ShellEntity::operator!=(const smtk::model::EntityRef &amp; other) const and Shell::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator!=(const smtk::model::EntityRef &amp; other) const and EdgeUse::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator!=(const smtk::model::EntityRef &amp; other) const and ShellEntity::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: CellEntity::operator!=(const smtk::model::EntityRef &amp; other) const and Volume::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: UseEntity::operator!=(const smtk::model::EntityRef &amp; other) const and VertexUse::operator!=(const smtk::model::EntityRef &amp; other) const"/>
+  <suppress-warning text="Shadowing: EntityRef::operator!=(const smtk::model::EntityRef &amp; other) const and SessionRef::operator!=(const smtk::model::EntityRef &amp; other) const"/>
 
   <!-- ignore sundry warnings associated with attribute/definition copy methods -->
   <suppress-warning text="skipping field 'CopyInfo::UnresolvedRefItems' with unmatched type 'std::queue&lt;std::pair&lt;std::string,smtk::attribute::ItemDefinitionPtr&gt;&gt;'" />
@@ -305,7 +334,7 @@
   <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'int *' in function 'smtk::model::Tessellation::numberOfCellVertices(int offset, int * cellTypeOut) const'."/>
   <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'double *' in function 'smtk::model::Tessellation::addQuad(double * a, double * b, double * c, double * d)'."/>
   <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'const smtk::mesh::Handle *' in function 'smtk::mesh::CellForEach::pointIds(const smtk::mesh::Handle * ptIds)'"/>
-
+  <suppress-warning text="skipping function 'smtk::common::distance2', unmatched parameter type 'T const*'"/>
 
   <!-- ignore shared_from_this base class-->
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;Attribute&gt;' of 'Attribute' is not known"/>
@@ -420,6 +449,9 @@
   <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::findStorageIterator', unmatched return type 'internal::EntityIdToPtr::iterator'"/>
   <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::beginStorage', unmatched return type 'internal::EntityIdToPtr::iterator'"/>
   <suppress-warning text="skipping function 'smtk::bridge::polygon::Session::endStorage', unmatched return type 'internal::EntityIdToPtr::iterator'"/>
+
+  <!-- Platform-specific warnings induced by system headers -->
+  <suppress-warning text="enum '__codecvt_result' does not have a type entry or is not an enum"/>
 
   <!-- Ignore until we have time to support Operators -->
   <suppress-warning text="skipping field 'Manager::m_defaultSession' with unmatched type 'smtk::shared_ptr&lt;Session&gt;'"/>

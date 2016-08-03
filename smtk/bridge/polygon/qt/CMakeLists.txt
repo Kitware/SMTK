@@ -49,6 +49,7 @@ target_link_libraries(smtkPolygonQtExt LINK_PUBLIC
   smtkPQWidgetsExt
   vtkPolygonOperatorsExt
   vtkSMTKSourceExt
+  vtkDomainsChemistryOpenGL2
 )
 
 smtk_export_header(smtkPolygonQtExt Exports.h)

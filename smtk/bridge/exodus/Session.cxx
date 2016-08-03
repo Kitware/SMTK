@@ -196,17 +196,7 @@ smtk::model::EntityRef Session::toEntityRef(const EntityHandle& ent)
   if (!entData)
     return EntityRef(); // an invalid entityref
 
-  const char* uuidChar = entData->GetInformation()->Get(SMTK_UUID_KEY());
-  smtk::common::UUID uid;
-  if (!uuidChar)
-    { // We have not assigned a UUID yet. Do so now.
-    uid = this->m_uuidGen.random();
-    entData->GetInformation()->Set(SMTK_UUID_KEY(), uid.toString().c_str());
-    }
-  else
-    {
-    uid = smtk::common::UUID(uuidChar);
-    }
+  smtk::common::UUID uid = Session::uuidOfHandleObject(entData);
   return EntityRef(this->manager(), uid);
 }
 // -- 4 --
@@ -641,6 +631,27 @@ int Session::parentIndex(vtkDataObject* obj) const
 bool Session::ensureChildParentMapEntry(vtkDataObject* child, vtkDataObject* parent, int idxInParent)
 {
   return this->m_cpMap.insert(ChildParentMap_t::value_type(child, ParentAndIndex_t(parent, idxInParent))).second;
+}
+
+smtk::common::UUID Session::uuidOfHandleObject(vtkDataObject* obj) const
+{
+  smtk::common::UUID uid;
+  if (!obj)
+    {
+    return uid;
+    }
+
+  const char* uuidChar = obj->GetInformation()->Get(SMTK_UUID_KEY());
+  if (!uuidChar)
+    { // We have not assigned a UUID yet. Do so now.
+    uid = const_cast<Session*>(this)->m_uuidGen.random();
+    obj->GetInformation()->Set(SMTK_UUID_KEY(), uid.toString().c_str());
+    }
+  else
+    {
+    uid = smtk::common::UUID(uuidChar);
+    }
+  return uid;
 }
 
 /**\brief Return a delegate to export session-specific data.

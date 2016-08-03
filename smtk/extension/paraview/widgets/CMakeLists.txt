@@ -6,17 +6,20 @@ set(PQWidgetsSrcs
   pq3DWidgetInterface.cxx
   pqArcWidget.cxx
   pqLineWidget.cxx
+  pqGenerateContoursDialog.cxx
 )
 
 set(PQWidgetsUIs
   qtArcWidget.ui
   qtLineWidget.ui
+  qtGenerateContoursDialog.ui
 )
 
 set(PQWidgetsMocHeaders
   pq3DWidget.h
   pqArcWidget.h
   pqLineWidget.h
+  pqGenerateContoursDialog.h
 )
 
 set(PQWidgetsHeaders

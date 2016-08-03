@@ -205,6 +205,7 @@ public:
   UUIDsToIntegerData const& integerProperties() const { return *this->m_integerData; }
 
   smtk::common::UUID modelOwningEntity(const smtk::common::UUID& uid) const;
+  smtk::common::UUID sessionOwningEntity(const smtk::common::UUID& uid) const;
 
   void assignDefaultNames();
   void assignDefaultNamesToModelChildren(const smtk::common::UUID& modelId);

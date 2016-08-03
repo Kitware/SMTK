@@ -247,5 +247,237 @@
       </IdTypeVectorProperty>
     </SourceProxy>
 
+    <Proxy name="PolygonContourOperator" class="vtkPolygonContourOperator">
+      <Documentation>
+        Operator to convert the line cells in the input polygon to multiple edge(s) in a polygon model
+      </Documentation>
+      
+      <ProxyProperty
+        name="ContourInput"
+        command="SetContourInput">
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkPolyData"/>
+        </DataTypeDomain>
+        <Documentation>
+          Set the ArcRepresentation for the operation.
+        </Documentation>
+      </ProxyProperty>
+
+      <!-- End of PolygonContourOperator -->
+    </Proxy>
+
+  </ProxyGroup>
+  <ProxyGroup name="polygon_filters">
+      <SourceProxy name="StructedToMesh"
+                 class="vtkDEMToMesh"
+                 label="Takes a structured image data and creates polydata">
+      <Documentation
+        short_help="creates Polydata from image data."
+        long_help="creates Polydata from image data.">
+      </Documentation>
+      <InputProperty
+          name="Input"
+          command="SetInputConnection">
+          <ProxyGroupDomain name="groups">
+            <Group name="sources"/>
+            <Group name="filters"/>
+          </ProxyGroupDomain>
+          <DataTypeDomain name="input_type">
+            <DataType value="vtkDataSet"/>
+          </DataTypeDomain>
+          <Documentation>
+            Set the input to the vtkDEMToMesh filter.
+          </Documentation>
+      </InputProperty>
+      <IntVectorProperty
+        name="UseScalerForZ"
+        label="Cache Refine Results To Disk"
+        command="SetUseScalerForZ"
+        number_of_elements="1"
+        default_values="0" >
+        <Documentation>
+          controls coping elevation to z value.
+        </Documentation>
+      </IntVectorProperty>
+    </SourceProxy>
+
+    <SourceProxy name="CleanPolylines" class="vtkCleanPolylines"
+      label="Clean Polylines">
+      <Documentation
+        long_help="Remove any lines (polylines) below a threshold length."
+        short_help="Remove short polylines.">
+        Remove any lines (polylines) below a threshold length.  Input is cleaned and stripped
+        before remove shour polylines.
+      </Documentation>
+      <InputProperty
+         name="Input"
+         command="SetInputConnection">
+        <ProxyGroupDomain name="groups">
+          <Group name="sources"/>
+          <Group name="filters"/>
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkPolyData"/>
+        </DataTypeDomain>
+        <Documentation>
+          Set the input to the CleanPolylines filter.
+        </Documentation>
+      </InputProperty>
+
+      <DoubleVectorProperty name="MinimumLineLength"
+        command="SetMinimumLineLength"
+        repeat_command="0"
+        number_of_elements="1"
+        default_values="5">
+        <DoubleRangeDomain name="range" min="0"/>
+        <Documentation>
+          Sets the minimum line length for the filter
+        </Documentation>
+      </DoubleVectorProperty>
+
+      <IntVectorProperty
+        name="UseRelativeLineLength"
+        command="SetUseRelativeLineLength"
+        number_of_elements="1"
+        default_values="1">
+        <BooleanDomain name="bool"/>
+        <Documentation>
+          Set whether or not the test line length is a factor of the average line length
+        </Documentation>
+      </IntVectorProperty>
+
+    </SourceProxy>
+
+    <SourceProxy name="PolyDataStatsFilter" class="vtkPolyDataStatsFilter" label="PolyDataStats">
+     <Documentation
+        long_help="Calculate the statistics of a PolyDataSet."
+        short_help="Get PolyDataSet Statistics.">
+     </Documentation>
+     <InputProperty
+        name="Input"
+        command="SetInputConnection">
+           <ProxyGroupDomain name="groups">
+             <Group name="sources"/>
+             <Group name="filters"/>
+           </ProxyGroupDomain>
+           <DataTypeDomain name="input_type">
+             <DataType value="vtkPolyData"/>
+           </DataTypeDomain>
+      </InputProperty>
+
+      <DoubleVectorProperty
+         name="AreaStats"
+         label="Area Statistics"
+         command="GetAreaStats"
+         number_of_elements="3"
+         information_only="1"
+         default_values="0.0 0.0 0.0" >
+        <SimpleDoubleInformationHelper/>
+        <Documentation>
+          Area Result of the PolyDataSet Statistic calculation.
+        </Documentation>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="GeometryBounds"
+         label="Geometry Bounds"
+         command="GetGeometryBounds"
+         number_of_elements="6"
+         information_only="1"
+         default_values="0.0 0.0 0.0 0.0 0.0 0.0" >
+        <SimpleDoubleInformationHelper/>
+        <Documentation>
+          Geometric Bounds Result of the PolyDataSet Statistic calculation.
+        </Documentation>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="PolygonalSideStats"
+         label="Polygonal Side Statistics"
+         command="GetPolygonalSideStats"
+         number_of_elements="3"
+         information_only="1"
+         default_values="0.0 0.0 0.0" >
+        <SimpleDoubleInformationHelper/>
+        <Documentation>
+          Polygonal Side Result of the PolyDataSet Statistic calculation.
+        </Documentation>
+      </DoubleVectorProperty>
+
+      <IdTypeVectorProperty
+        name="NumberOfPoints"
+        label="Number of Points"
+        command="GetNumberOfPoints"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0">
+        <SimpleIdTypeInformationHelper/>
+      </IdTypeVectorProperty>
+
+      <IdTypeVectorProperty
+        name="NumberOfLines"
+        label="Number of Lines"
+        command="GetNumberOfLines"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0">
+        <SimpleIdTypeInformationHelper/>
+      </IdTypeVectorProperty>
+
+      <IdTypeVectorProperty
+        name="NumberOfPolygons"
+        label="Number of Polygons"
+        command="GetNumberOfPolygons"
+        information_only="1"
+        number_of_elements="1"
+        default_values="0">
+        <SimpleIdTypeInformationHelper/>
+      </IdTypeVectorProperty>
+
+      <DoubleVectorProperty
+        name="TotalSurfaceArea"
+        label="Total Surface Area"
+        command="GetTotalSurfaceArea"
+        information_only="1"
+        number_of_elements="1"
+        default_values="0.0">
+        <SimpleDoubleInformationHelper/>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="Translation"
+         label="Translation"
+         command="SetTranslation"
+         number_of_elements="3"
+         default_values="0.0 0.0 0.0" >
+          <Documentation>
+           Defines the translation from data space to world space.
+         </Documentation>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="Orientation"
+         label="Orientation"
+         command="SetOrientation"
+         number_of_elements="3"
+         default_values="0.0 0.0 0.0" >
+          <Documentation>
+           Defines the orientation from data space to world space.
+         </Documentation>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="Scale"
+         label="Scale"
+         command="SetScale"
+         number_of_elements="3"
+         default_values="1.0 1.0 1.0" >
+          <Documentation>
+           Defines the scale from data space to world space.
+         </Documentation>
+      </DoubleVectorProperty>
+      <!-- End PolyDataStatsFilter -->
+   </SourceProxy>
+
   </ProxyGroup>
 </ServerManagerConfiguration>

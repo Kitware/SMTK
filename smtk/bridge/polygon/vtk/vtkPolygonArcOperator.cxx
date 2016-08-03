@@ -15,6 +15,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/model/Operator.h"
+#include "smtk/model/Edge.h"
 
 #include "vtkContourRepresentation.h"
 #include "vtkPoints.h"
@@ -39,7 +40,7 @@ vtkPolygonArcOperator::~vtkPolygonArcOperator()
 bool vtkPolygonArcOperator::AbleToOperate()
 {
   bool able2Op = this->m_smtkOp.lock()
-                 && (this->m_smtkOp.lock()->name() == "edit edge"
+                 && (this->m_smtkOp.lock()->name() == "tweak edge"
                     || this->m_smtkOp.lock()->name() == "create edge")
                  && this->m_smtkOp.lock()->ensureSpecification()
                  ;
@@ -69,10 +70,11 @@ bool vtkPolygonArcOperator::AbleToOperate()
             && arcPoly->GetNumberOfPoints() >= 2
             ;
 
-  if(able2Op && this->m_smtkOp.lock()->name() == "edit edge")
+  if(able2Op && this->m_smtkOp.lock()->name() == "tweak edge")
     {
-    able2Op = this->m_smtkOp.lock()->specification()->findModelEntity("edge")
-        ->value().isValid();;
+    smtk::model::Edge edge = this->m_smtkOp.lock()->specification()->
+      associations()->value().as<smtk::model::Edge>();
+    able2Op = edge.isValid();;
     }
 
   return able2Op;
@@ -92,13 +94,12 @@ smtk::model::OperatorResult vtkPolygonArcOperator::Operate()
   vtkPolyData *pd = this->ArcRepresentation->GetContourRepresentationAsPolyData();
   vtkCellArray* lines = pd->GetLines();
 
-  smtk::attribute::IntItem::Ptr offsetsItem = spec->findAs<smtk::attribute::IntItem>(
-              "offsets", smtk::attribute::ALL_CHILDREN);
-  smtk::attribute::DoubleItem::Ptr pointsItem = spec->findAs<smtk::attribute::DoubleItem>(
-              "points", smtk::attribute::ALL_CHILDREN);
-  smtk::attribute::IntItem::Ptr numCoords = spec->findAs<smtk::attribute::IntItem>(
-              "coordinates", smtk::attribute::ALL_CHILDREN);
-  numCoords->setValue(3); // number of elements in coordinates
+  bool isTweak = this->m_smtkOp.lock()->name() == "tweak edge";
+  spec->findAs<smtk::attribute::IntItem>("coordinates", smtk::attribute::ALL_CHILDREN)->setValue(3); // number of coordinates per point
+  smtk::attribute::DoubleItem::Ptr pointsItem =
+    spec->findAs<smtk::attribute::DoubleItem>("points", smtk::attribute::ALL_CHILDREN);
+  smtk::attribute::IntItem::Ptr offsetsItem =
+    spec->findAs<smtk::attribute::IntItem>(isTweak ? "promote" : "offsets", smtk::attribute::ALL_CHILDREN);
 
   double p[3];
   int numPoints = 0;
@@ -120,19 +121,22 @@ smtk::model::OperatorResult vtkPolygonArcOperator::Operate()
     numPoints += npts;
     }
 
-  // we skip the selected state of the first and last nodes in the contour,
-  // because they should not be modified with "edit edge" operator. If users
-  // do want to modify those vertices, they should do it with "merge edge" operator.
+  std::vector<int> indices;
+  if (!isTweak && !this->ArcRepresentation->GetNumberOfIntermediatePoints(0))
+    { // We must indicate that the first edge starts at 0 even if it is not marked as a model edge
+    indices.push_back(0);
+    }
   int count = this->ArcRepresentation->GetNumberOfNodes() - 1;
-  int offsets = 1;
-  for ( int i = 1; i < count; ++i, ++offsets ) // ++offset for the node
+  int offsets = 0;
+  for ( int i = 0; i < count; ++i, ++offsets ) // ++offset for the node
     {
     offsets += this->ArcRepresentation->GetNumberOfIntermediatePoints(i);
     if(this->ArcRepresentation->GetNthNodeSelected(i))
       {
-      offsetsItem->appendValue(offsets);
+      indices.push_back(offsets);
       }
     }
+  offsetsItem->setValues(indices.begin(), indices.end());
 
   edgeResult = this->m_smtkOp.lock()->operate();
 

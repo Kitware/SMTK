@@ -14,9 +14,11 @@ set(polygonSrcs
   operators/CreateEdge.cxx
   operators/CreateFaces.cxx
   operators/Delete.cxx
-  operators/EditEdge.cxx
   operators/ForceCreateFace.cxx
   operators/SplitEdge.cxx
+  operators/TweakEdge.cxx
+  operators/ImportImage.cxx
+  operators/ExtractContours.cxx
 )
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND
@@ -42,9 +44,11 @@ set(polygonHeaders
   operators/CreateEdge.h
   operators/CreateFaces.h
   operators/Delete.h
-  operators/EditEdge.h
   operators/ForceCreateFace.h
   operators/SplitEdge.h
+  operators/TweakEdge.h
+  operators/ImportImage.h
+  operators/ExtractContours.h
 )
 
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" polygonSessionJSON)
@@ -53,9 +57,11 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateVertices.sbt" pol
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdge.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateFaces.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Delete.sbt" polygonOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EditEdge.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ForceCreateFace.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitEdge.sbt" polygonOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/TweakEdge.sbt" polygonOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ImportImage.sbt" polygonOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExtractContours.sbt" polygonOperatorXML)
 
 # The import operator is only available if there is VTK
 if(SMTK_ENABLE_VTK_SUPPORT)
