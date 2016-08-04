@@ -159,6 +159,9 @@ public:
   void liftPoint(const Point& ix, T coordBegin);
 
   bool tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn, smtk::model::EntityRefs& modifiedEdgesAndFaces);
+
+  void addVertexIndex(VertexPtr vert);
+
 protected:
   Session* m_session; // Parent session of this pmodel.
   long long m_scale; // Recommend this be a large composite number w/ factors 2, 3, 5 (e.g., 15360, 231000, or 1182720)
