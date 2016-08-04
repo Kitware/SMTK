@@ -45,8 +45,11 @@ class TestPolygonCreation(smtk.testing.TestCase):
     [self.assertAlmostEqual(mod.floatProperty('x axis')[i], x_axis[i], 'Bad x axis') for i in range(3)]
     self.assertEqual(mod.floatProperty('y axis'), y_axis, 'Bad y axis')
     self.assertEqual(mod.floatProperty('normal'), normal, 'Bad normal')
-    self.assertEqual(mod.floatProperty('feature size'), [feature_size,], 'Bad feature size')
-    self.assertEqual(mod.integerProperty('model scale'), [int(model_scale / feature_size),], 'Bad model scale')
+    self.assertEqual(mod.floatProperty('feature size'), [feature_size,],
+        'Bad feature size {:.3g}'.format(*mod.floatProperty('feature size')))
+    print 'Mod scale ', mod.floatProperty('model scale')[0], int(model_scale / feature_size), mod.floatProperty('model scale')[0] / int(model_scale / feature_size)
+    self.assertEqual(int(mod.floatProperty('model scale')[0]), int(model_scale / feature_size),
+        'Bad model scale {:1}'.format(*mod.floatProperty('model scale')))
 
     #print smtk.io.ExportJSON.fromModelManager(self.mgr, smtk.io.JSON_DEFAULT)
 
@@ -56,10 +59,10 @@ class TestPolygonCreation(smtk.testing.TestCase):
     print '  y axis  ', ('  {:.3g}'*3).format(*mod.floatProperty('y axis'))
     print '  normal  ', ('  {:.3g}'*3).format(*mod.floatProperty('normal'))
     print '  feature size  {:14.3g}'.format(mod.floatProperty('feature size')[0])
-    print '  model scale   {:14d}'.format(mod.integerProperty('model scale')[0])
+    print '  model scale   {:14f}'.format(mod.floatProperty('model scale')[0])
 
     # Create vertices and test that they are correct
-    # NB: 2.000000005 is chosen below since it is within 1e-8/231000 of 2.0
+    # NB: 2.000000005 is chosen below since it is within 1e-6/231000 of 2.0
     #     and thus should result in two identical points for all of the models
     #     in testCreation().
     testVerts = [[1,1], [2,1], [2,2,0], [1,2], [2.00000000000001, 2, 0]]
@@ -144,16 +147,16 @@ class TestPolygonCreation(smtk.testing.TestCase):
 
   def testCreation(self):
     mod = CreateModel()
-    self.checkModel(mod, [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], 1e-8, 231000)
+    self.checkModel(mod, [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], 1e-6, 231)
 
     mod = CreateModel(x_axis=[1,0,0], y_axis=[0,1,0], model_scale=231000)
     self.checkModel(mod, [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], 1, 231000)
 
     mod = CreateModel(x_axis=[1,0,0], y_axis=[0,1,0], feature_size=1e-8)
-    self.checkModel(mod, [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], 1e-8, 231000)
+    self.checkModel(mod, [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], 1e-8, 231)
 
-    mod = CreateModel(x_axis=[1,0,0], normal=[0,0,1], feature_size=1e-8)
-    self.checkModel(mod, [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], 1e-8, 231000)
+    mod = CreateModel(x_axis=[1,0,0], normal=[0,0,1], feature_size=1e-6)
+    self.checkModel(mod, [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], 1e-6, 231)
 
     mod = CreateModel(x_axis=[1,0,0], normal=[0,0,1], model_scale=1182720)
     self.checkModel(mod, [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], 1, 1182720)
