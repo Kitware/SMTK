@@ -921,6 +921,11 @@ bool pmodel::tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn, smt
   return true;
 }
 
+void pmodel::addVertexIndex(vertex::Ptr vert)
+{
+  this->m_vertices[vert->point()] = vert->id();
+}
+
       } // namespace internal
     } // namespace polygon
   } // namespace bridge

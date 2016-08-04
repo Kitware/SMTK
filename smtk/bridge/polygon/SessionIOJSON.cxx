@@ -163,6 +163,9 @@ int SessionIOJSON::importJSON(
     // Add "parent" entries to session storage entries in childParentMap
     // Do this after processing all "internal" entries since models may
     // appear after their children (JSON allows dict item shuffling).
+    //
+    // Also, make sure model vertices are registered with their parent
+    // model's point-to-id lookup map.
     internal::EntityIdToPtr::const_iterator sit;
     for (sit = psession->beginStorage(); sit != psession->endStorage(); ++sit)
       {
@@ -171,6 +174,11 @@ int SessionIOJSON::importJSON(
         {
         internal::pmodel::Ptr parentAddr = parentAddrMap[parentId];
         sit->second->setParent(parentAddr.get());
+        internal::vertex::Ptr vert = smtk::dynamic_pointer_cast<internal::vertex>(sit->second);
+        if (vert)
+          {
+          parentAddr->addVertexIndex(vert);
+          }
         }
       }
     }
@@ -571,7 +579,7 @@ internal::vertex::incident_edge_data SessionIOJSON::deserializeIncidentEdgeRecor
   if ((entry = cJSON_GetObjectItem(record, "edge")))
     {
     edgeId = smtk::common::UUID(entry->valuestring);
-    entry = cJSON_GetObjectItem(record, "edgedir");
+    entry = cJSON_GetObjectItem(record, "edgeout");
     edgeOut = (entry ? entry->type == cJSON_True : false);
     haveEdge = true;
     }

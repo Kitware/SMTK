@@ -356,11 +356,35 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
       }
     }
 
+  // Remove all non-free vertices from the model and mark the model as modified
+  // if any were removed.
+  smtk::model::VertexSet freeVerts = parentModel.cellsAs<smtk::model::VertexSet>();
+  smtk::model::Edges::iterator crit;
+  smtk::model::Vertices dead;
+  for (crit = created.begin(); crit != created.end(); ++crit)
+    {
+    smtk::model::Vertices endpts = crit->vertices();
+    for (smtk::model::Vertices::iterator evit = endpts.begin(); evit != endpts.end(); ++evit)
+      {
+      if (freeVerts.find(*evit) != freeVerts.end())
+        {
+        dead.push_back(*evit);
+        }
+      }
+    }
+  smtk::model::EntityRefArray modified;
+  if (!freeVerts.empty())
+    {
+    parentModel.removeCells(dead);
+    modified.push_back(parentModel);
+    }
+
   smtk::model::OperatorResult opResult;
   if (ok)
     {
     opResult = this->createResult(smtk::model::OPERATION_SUCCEEDED);
     this->addEntitiesToResult(opResult, created, CREATED);
+    this->addEntitiesToResult(opResult, modified, MODIFIED);
     }
   else
     {

@@ -132,7 +132,7 @@ template<typename T> Model& Model::addCells(const T& container)
   return *this;
 }
 
-/// Add all the free cells in \a container to this model.
+/// Remove all the free cells in \a container from this model.
 template<typename T> Model& Model::removeCells(const T& container)
 {
   this->unembedEntities(container);
