@@ -56,7 +56,7 @@ public:
   typedef std::list<incident_edge_data> incident_edges;
 
   const Point& point() const { return this->m_coords; }
-  Point point() { return this->m_coords; }
+  Point& point() { return this->m_coords; }
 
   bool canInsertEdge(const Point& neighborhood, incident_edges::iterator* where);
   void insertEdgeAt(incident_edges::iterator where, const Id& edgeId, bool edgeOutwards);
@@ -73,6 +73,12 @@ public:
 
   incident_edges::reverse_iterator edgesRBegin() { return this->m_edges.rbegin(); }
   incident_edges::reverse_iterator edgesREnd() { return this->m_edges.rend(); }
+
+  /// To be used by SessionIOJSON only (for deserializing from storage):
+  void dangerousAppendEdge(const incident_edge_data& rec)
+    {
+    this->m_edges.insert(this->m_edges.end(), rec);
+    }
 
 protected:
   friend class pmodel;

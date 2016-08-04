@@ -144,9 +144,10 @@ int SessionIOJSON::importJSON(
           childParentMap[uid] = internal::Id(trec->valuestring);
           }
         }
-      else if (etype == "vert")
+      else if (etype == "vertex")
         {
         eptr = this->deserializeVertex(entry, smtk::model::Vertex(mgr, uid));
+        trec = cJSON_GetObjectItem(entry, "parent");
         if (trec && trec->type == cJSON_String && trec->valuestring && trec->valuestring[0])
           {
           childParentMap[uid] = internal::Id(trec->valuestring);
@@ -366,15 +367,23 @@ cJSON* SessionIOJSON::serializeVertex(internal::VertexPtr vert, const smtk::mode
     cJSON_AddItemToObject(result, "parent", cJSON_CreateString(vert->parent()->id().toString().c_str()));
     }
   // Store exact integer point coordinates safely:
-  std::vector<long> ptdata(4, 0);
+  std::vector<long> ptdata(8, 0);
   internal::Coord c = vert->point().x();
-  ptdata[0] = c & 0xffffffff;
-  c >>= 32;
-  ptdata[1] = c & 0xffffffff;
+  ptdata[0] = c & 0xffff;
+  c >>= 16;
+  ptdata[1] = c & 0xffff;
+  c >>= 16;
+  ptdata[2] = c & 0xffff;
+  c >>= 16;
+  ptdata[3] = c & 0xffff;
   c = vert->point().y();
-  ptdata[2] = c & 0xffffffff;
-  c >>= 32;
-  ptdata[3] = c & 0xffffffff;
+  ptdata[4] = c & 0xffff;
+  c >>= 16;
+  ptdata[5] = c & 0xffff;
+  c >>= 16;
+  ptdata[6] = c & 0xffff;
+  c >>= 16;
+  ptdata[7] = c & 0xffff;
   cJSON_AddItemToObject(result, "point", smtk::io::ExportJSON::createIntegerArray(ptdata));
   cJSON* iearr = cJSON_CreateArray();
   cJSON_AddItemToObject(result, "edges", iearr);
@@ -503,8 +512,51 @@ internal::EdgePtr SessionIOJSON::deserializeEdge(cJSON* record, const smtk::mode
 internal::VertexPtr SessionIOJSON::deserializeVertex(cJSON* record, const smtk::model::Vertex& v)
 {
   internal::vertex::Ptr result;
-  // Fetch tessellation
-  smtk::io::ImportJSON::ofManagerTessellation(v.entity(), record, v.manager());
+  std::vector<long> ptdata;
+  cJSON* item;
+
+  bool ok = true;
+
+  ok &= (item = cJSON_GetObjectItem(record, "t")) && item->type == cJSON_Object;
+  ok &= (item = cJSON_GetObjectItem(record, "point")) && smtk::io::ImportJSON::getIntegerArrayFromJSON(item, ptdata) > 0;
+  ok &= (item = cJSON_GetObjectItem(record, "edges")) && item->type == cJSON_Array;
+
+  if (ok)
+    {
+    // Create an internal vertex record
+    result = internal::vertex::create();
+
+    // Set the integer point coordinates
+    const int stride = 2 /* coords per pt */ * 4 /* ints per coord */;
+    std::size_t np = ptdata.size() / stride;
+    std::vector<long>::const_iterator cit = ptdata.begin();
+    if (np > 0)
+      {
+      internal::Coord xy[2] = {0, 0};
+      for (int j = 0; j < 2; ++j)
+        {
+        unsigned long long& uc(*reinterpret_cast<unsigned long long*>(&xy[j]));
+        uc = *cit;
+        ++cit;
+        uc |= ((*cit) << 16);
+        ++cit;
+        uc |= ((*cit) << 32);
+        ++cit;
+        uc |= ((*cit) << 48);
+        ++cit;
+        }
+      result->point() = internal::Point(xy[0], xy[1]);
+      }
+
+    // Deserialize the CCW-ordered list of incident edges:
+    for (cJSON* er = item->child; er; er = er->next)
+      {
+      result->dangerousAppendEdge(this->deserializeIncidentEdgeRecord(er));
+      }
+
+    // Fetch tessellation
+    smtk::io::ImportJSON::ofManagerTessellation(v.entity(), record, v.manager());
+    }
   return result;
 }
 
