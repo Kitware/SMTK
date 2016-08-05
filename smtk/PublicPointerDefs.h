@@ -45,6 +45,8 @@ namespace smtk
     class DoubleItemDefinition;
     class FileItem;
     class FileItemDefinition;
+    class FileSystemItem;
+    class FileSystemItemDefinition;
     class GroupItem;
     class GroupItemDefinition;
     class IntItem;
@@ -297,6 +299,8 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::attribute::DoubleItemDefinition >     DoubleItemDefinitionPtr;
     typedef smtk::shared_ptr< smtk::attribute::FileItem >                 FileItemPtr;
     typedef smtk::shared_ptr< smtk::attribute::FileItemDefinition >       FileItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::FileSystemItem >           FileSystemItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::FileSystemItemDefinition > FileSystemItemDefinitionPtr;
     typedef smtk::shared_ptr< smtk::attribute::GroupItem >                GroupItemPtr;
     typedef smtk::shared_ptr< smtk::attribute::GroupItemDefinition >      GroupItemDefinitionPtr;
     typedef smtk::shared_ptr< smtk::attribute::IntItem >                  IntItemPtr;
@@ -318,6 +322,8 @@ namespace smtk
     typedef smtk::shared_ptr< const smtk::attribute::DoubleItemDefinition >      ConstDoubleItemDefinitionPtr;
     typedef smtk::shared_ptr< const smtk::attribute::FileItem >                  ConstFileItemPtr;
     typedef smtk::shared_ptr< const smtk::attribute::FileItemDefinition >        ConstFileItemDefinitionPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::FileSystemItem >            ConstFileSystemItemPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::FileSystemItemDefinition >  ConstFileSystemItemDefinitionPtr;
     typedef smtk::shared_ptr< const smtk::attribute::GroupItem >                 ConstGroupItemPtr;
     typedef smtk::shared_ptr< const smtk::attribute::GroupItemDefinition >       ConstGroupItemDefinitionPtr;
     typedef smtk::shared_ptr< const smtk::attribute::IntItem >                   ConstIntItemPtr;

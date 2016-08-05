@@ -17,10 +17,7 @@ using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
 FileItemDefinition::
-FileItemDefinition(const std::string &myName):
-  ItemDefinition(myName), m_shouldExist(false), m_shouldBeRelative(false),
-  m_useCommonLabel(false), m_numberOfRequiredValues(1), m_hasDefault(false),
-  m_isExtensible(false), m_maxNumberOfValues(0)
+FileItemDefinition(const std::string &myName): FileSystemItemDefinition(myName)
 {
 }
 
@@ -28,6 +25,7 @@ FileItemDefinition(const std::string &myName):
 FileItemDefinition::~FileItemDefinition()
 {
 }
+
 //----------------------------------------------------------------------------
 Item::Type FileItemDefinition::type() const
 {
@@ -35,115 +33,20 @@ Item::Type FileItemDefinition::type() const
 }
 
 //----------------------------------------------------------------------------
-bool
-FileItemDefinition::isValueValid(const std::string &/*val*/) const
+smtk::attribute::ItemPtr
+FileItemDefinition::buildItem(Attribute *owningAttribute,
+                                   int itemPosition) const
 {
-  return true;
+  return smtk::attribute::ItemPtr(new FileItem(owningAttribute, itemPosition));
 }
 //----------------------------------------------------------------------------
-smtk::attribute::ItemPtr FileItemDefinition::buildItem(Attribute *owningAttribute,
-                                      int itemPosition) const
+smtk::attribute::ItemPtr
+FileItemDefinition::buildItem(Item *owningItem,
+                              int itemPosition,
+                              int subGroupPosition) const
 {
-  return smtk::attribute::ItemPtr(new FileItem(owningAttribute,
-                                              itemPosition));
-}
-//----------------------------------------------------------------------------
-smtk::attribute::ItemPtr FileItemDefinition::buildItem(Item *owningItem,
-                                                      int itemPosition,
-                                                      int subGroupPosition) const
-{
-  return smtk::attribute::ItemPtr(new FileItem(owningItem,
-                                              itemPosition,
-                                              subGroupPosition));
-}
-//----------------------------------------------------------------------------
-void FileItemDefinition::setIsExtensible(bool mode)
-{
-  this->m_isExtensible = mode;
-  if (mode && !this->usingCommonLabel())
-    {
-    // Need to clear individual labels - can only use common label with
-    // extensible groups
-    this->setCommonValueLabel("");
-    }
-}
-//----------------------------------------------------------------------------
-bool FileItemDefinition::setNumberOfRequiredValues(std::size_t esize)
-{
-  if (esize == this->m_numberOfRequiredValues)
-    {
-    return true;
-    }
-  std::size_t maxN = this->maxNumberOfValues();
-  if (maxN && (esize > maxN))
-    {
-    return false;
-    }
-
-  this->m_numberOfRequiredValues = esize;
-  if (!this->hasValueLabels())
-    {
-    return true;
-    }
-  if (!(this->m_useCommonLabel || this->m_isExtensible))
-    {
-    this->m_valueLabels.resize(esize);
-    }
-  return true;
-}
-//----------------------------------------------------------------------------
-void FileItemDefinition::setValueLabel(std::size_t element, const std::string &elabel)
-{
-  if (this->isExtensible())
-    {
-    return;
-    }
-  if (this->m_valueLabels.size() != this->m_numberOfRequiredValues)
-    {
-    this->m_valueLabels.resize(this->m_numberOfRequiredValues);
-    }
-  this->m_useCommonLabel = false;
-  this->m_valueLabels[element] = elabel;
-}
-//----------------------------------------------------------------------------
-void FileItemDefinition::setCommonValueLabel(const std::string &elabel)
-{
-  if (this->m_valueLabels.size() != 1)
-    {
-    this->m_valueLabels.resize(1);
-    }
-  this->m_useCommonLabel = true;
-  this->m_valueLabels[0] = elabel;
-}
-
-//----------------------------------------------------------------------------
-std::string FileItemDefinition::valueLabel(std::size_t element) const
-{
-  if (this->m_useCommonLabel)
-    {
-    return this->m_valueLabels[0];
-    }
-  if (this->m_valueLabels.size())
-    {
-    return this->m_valueLabels[element];
-    }
-  return ""; // If we threw execeptions this method could return const string &
-}
-//----------------------------------------------------------------------------
-bool  FileItemDefinition::setMaxNumberOfValues(std::size_t esize)
-{
-  if (esize && (esize < this->m_numberOfRequiredValues))
-    {
-    return false;
-    }
-  this->m_maxNumberOfValues = esize;
-  return true;
-}
-//----------------------------------------------------------------------------
-void FileItemDefinition::setDefaultValue(const std::string& val)
-{
-  this->m_defaultValue = val;
-  this->m_hasDefault = true;
+  return smtk::attribute::ItemPtr(new FileItem(owningItem, itemPosition,
+                                               subGroupPosition));
 }
 //----------------------------------------------------------------------------
 smtk::attribute::ItemDefinitionPtr

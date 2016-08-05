@@ -495,6 +495,7 @@
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findInt', unmatched return type 'smtk::attribute::ConstIntItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findRef', unmatched return type 'smtk::attribute::ConstRefItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findFile', unmatched return type 'smtk::attribute::ConstFileItemPtr'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::findFile', unmatched return type 'smtk::attribute::ConstFileSystemItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findDirectory', unmatched return type 'smtk::attribute::ConstDirectoryItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::model::Session::findOperatorConstructor', unmatched return type 'smtk::model::OperatorConstructor'"/>
   <suppress-warning text="skipping function 'smtk::model::Session::findOperatorConstructorInternal', unmatched return type 'smtk::model::OperatorConstructor'"/>
@@ -1077,6 +1078,8 @@
   <value-type template="smtk::shared_ptr" args="smtk::attribute::DoubleItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::FileItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::FileItemDefinition" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::FileSystemItem" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::FileSystemItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::GroupItem">
     <modify-function signature="find(const std::string &amp;)">
       <modify-argument index="return">
@@ -1828,6 +1831,39 @@
           return-type="smtk::shared_ptr&lt;smtk::attribute::FileItemDefinition &gt;">
           <inject-code>
             %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::FileItemDefinition &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
+      <object-type name="FileSystemItem">
+        <include file-name="smtk/attribute/FileSystemItem.h" location="local"/>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::Item &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::FileSystemItem &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::FileSystemItem &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
+      <object-type name="FileSystemItemDefinition">
+        <include file-name="smtk/attribute/FileSystemItemDefinition.h" location="local"/>
+        <modify-function signature="FileSystemItemDefinition(const std::string &amp;)" access="private" />
+        <add-function signature="ToItemDefinition(const smtk::shared_ptr&lt;smtk::attribute::FileSystemItemDefinition &gt;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::ItemDefinition &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt; &amp;)"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::attribute::FileSystemItemDefinition &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::FileSystemItemDefinition &gt;(%1);
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
