@@ -7,22 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME qtFileItem - UI components for attribute FileItem
+// .NAME qtFileItem - UI components for attribute ValueItem
 // .SECTION Description
-//
-// This is widget is designed to let applications connect a file
-// browser widget for selecting files, by connecting to the
-// launchFileBrowser signal and onInputValueChanged slot.
-//
-// The class can also instantiate its own file browser.
-// To use this option, you can call the enableFileBrowser() method
-// in response to the qtUIManager::fileItemCreated signal.
-// In more typical applications, use the second, optional
-// argument in qtUIManager.initializeUI() to enable the option.
-//
-// Note: The current code does not support multiple file
-// or directory selection.
-//
 // .SECTION See Also
 // qtItem
 
@@ -33,6 +19,7 @@
 #include "smtk/extension/qt/Exports.h"
 
 class qtFileItemInternals;
+class QBoxLayout;
 
 namespace smtk
 {
@@ -43,31 +30,37 @@ namespace smtk
       Q_OBJECT
 
     public:
-      qtFileItem(smtk::attribute::FileItemPtr, QWidget* parent, qtBaseView* bview,
-                 Qt::Orientation enVectorItemOrient = Qt::Horizontal);
-      qtFileItem(smtk::attribute::DirectoryItemPtr, QWidget* parent, qtBaseView* bview,
-                 Qt::Orientation enVectorItemOrient = Qt::Horizontal);
+      qtFileItem(smtk::attribute::FileSystemItemPtr, QWidget* p,
+        qtBaseView* bview, Qt::Orientation enumOrient = Qt::Horizontal);
       virtual ~qtFileItem();
+      virtual void setLabelVisible(bool);
+
       void enableFileBrowser(bool state=true);
       bool isDirectory();
-      virtual void setLabelVisible(bool);
       virtual void setInputValue(const QString&);
 
     public slots:
       virtual void onInputValueChanged();
+      void setOutputOptional(int);
       virtual void onLaunchFileBrowser();
-      virtual void setOutputOptional(int);
-      virtual void updateFileComboList();
+      virtual void updateFileComboList(const QString&);
 
     signals:
       void launchFileBrowser();
 
     protected slots:
       virtual void updateItemData();
+      virtual void onAddNewValue();
+      virtual void onRemoveValue();
 
     protected:
       virtual void createWidget();
       QWidget* createFileBrowseWidget(int elementIdx);
+      virtual void loadInputValues();
+      virtual void updateUI();
+      virtual void addInputEditor(int i);
+      virtual void updateExtensibleState();
+      virtual void clearChildWidgets();
 
     private:
 
@@ -76,6 +69,5 @@ namespace smtk
     }; // class
   }; // namespace attribute
 }; // namespace smtk
-
 
 #endif
