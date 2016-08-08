@@ -3,16 +3,16 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="create vertices" Label="Vertex - Create" BaseType="operator">
-      <BriefDescription>Create model vertices.</BriefDescription>
+    <AttDef Type="create edge from points" Label="Edge - Create from Points" BaseType="operator">
+      <BriefDescription>Create model edge based on a list of points.</BriefDescription>
       <DetailedDescription>
         Create one or more vertices in the associated model.
       </DetailedDescription>
       <AssociationsDef Name="model" NumberOfRequiredValues="1">
         <MembershipMask>model</MembershipMask>
-        <BriefDescription>The model to which vertices should be added.</BriefDescription>
+        <BriefDescription>The model to which edge should be added.</BriefDescription>
         <DetailedDescription>
-          The model to which vertices should be added.
+          The model to which the edge should be added.
 
           This is required in order to project point coordinates into
           the model plane.
@@ -61,7 +61,7 @@
               </Items>
             </Structure>
 	  </DiscreteInfo>
-          <BriefDescription>Point Geometry used to created Vertices.</BriefDescription>
+          <BriefDescription>Point Geometry used to created the Edge.</BriefDescription>
           <DetailedDescription>
             Depending on the setting of 2D or 3D, this will consist of
 	    either a set of 2D or 3D points respectively
@@ -70,9 +70,9 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
-        <AttDef Type="result(create vertices)" BaseType="result">
+        <AttDef Type="result(create edge from points)" BaseType="result">
       <ItemDefinitions>
-        <!-- The vertices created are reported in the base result's "created" item. -->
+        <!-- The edge created is reported in the base result's "created" item. -->
       </ItemDefinitions>
     </AttDef>
   </Definitions>

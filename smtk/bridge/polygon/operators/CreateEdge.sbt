@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="create edge" BaseType="operator">
+    <AttDef Type="create edge" Label="Edge - Create Interactively" BaseType="operator">
       <BriefDescription>Create model edge(s).</BriefDescription>
       <DetailedDescription>
         Create one or more edges in the associated model.
@@ -20,7 +20,7 @@
         Any intersections between different edges are handled when faces are created.
       </DetailedDescription>
       <AssociationsDef Name="model" NumberOfRequiredValues="1" Extensible="yes">
-        <MembershipMask>model|cell</MembershipMask>
+        <MembershipMask>model</MembershipMask>
         <BriefDescription>Vertices to join into an edge or the model to which edges should be added.</BriefDescription>
         <DetailedDescription>
           You must either (a) associate 2 or more model vertices to this
@@ -31,7 +31,7 @@
         </DetailedDescription>
       </AssociationsDef>
       <ItemDefinitions>
-        <Int Name="construction method">
+        <Int Name="construction method" AdvanceLevel="1">
           <ChildrenDefinitions>
             <Double Name="points" NumberOfRequiredValues="4" Extensible="yes">
               <BriefDescription>The (x,y,z) coordinates of the edges.</BriefDescription>

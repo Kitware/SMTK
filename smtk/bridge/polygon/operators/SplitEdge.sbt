@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="split edge" BaseType="operator">
+    <AttDef Type="split edge" Label="Edge - Split" BaseType="operator">
       <BriefDescription>Split a model edge at the given point.</BriefDescription>
       <DetailedDescription>
         Split a model edge in two at the given point.

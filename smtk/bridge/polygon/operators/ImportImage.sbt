@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="import image" BaseType="operator">
+    <AttDef Type="import image" Label=" Model - Import Image" BaseType="operator">
       <AssociationsDef Name="model" NumberOfRequiredValues="1" Extensible="yes">
         <MembershipMask>model</MembershipMask>
         <BriefDescription>The model that the image will be attached to.</BriefDescription>

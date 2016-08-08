@@ -23,6 +23,8 @@
 #include <QTreeView>
 #include <QPoint>
 #include <QMap>
+#include <map>
+#include <utility>
 
 class QDropEvent;
 class QMenu;
@@ -196,6 +198,7 @@ namespace smtk{
     QMenu* m_ContextMenu;
     qtOperatorDockWidget* m_OperatorsDock;
     qtModelOperationWidget* m_OperatorsWidget;
+    std::map<std::string, std::pair<std::vector<std::string>, std::map<std::string, std::string> > > m_sessionInfo;
   };
 
   } // namespace extension

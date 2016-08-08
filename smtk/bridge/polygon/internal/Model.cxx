@@ -687,6 +687,89 @@ bool pmodel::splitModelEdgeAtModelVertices(
   return true;
 }
 
+/**\brief Create a model edge from 2 model vertices.
+  *
+  * The model vertices should be different.
+  *
+  * If these preconditions do not hold, either an invalid (empty) edge will be
+  * returned or the model will become inconsistent.
+  */
+model::Edge pmodel::createModelEdgeFromVertices(model::ManagerPtr mgr,
+						internal::VertexPtr v0,
+						internal::VertexPtr v1)
+{
+  if (!mgr || !v0 || !v1)
+    {
+    smtkErrorMacro(this->m_session->log(),
+		   "Detected either invalid Model Manager or at "
+		   "least one of the vertices was NULL");
+    return smtk::model::Edge();
+    }
+      
+  if (v0 == v1)
+    {
+    smtkErrorMacro(this->m_session->log(),
+		   "Vertices must be unique");
+    return smtk::model::Edge();
+    }
+
+  internal::vertex::incident_edges::iterator whereBegin;
+  internal::vertex::incident_edges::iterator whereEnd;
+  // Ensure edge can be inserted without splitting a face.
+  if (!v0->canInsertEdge(v1->point(), &whereBegin))
+    {
+    smtkErrorMacro(this->m_session->log(),
+		   "Edge would overlap face in neighborhood of first vertex");
+    return smtk::model::Edge();
+    }
+  
+ // Ensure edge can be inserted without splitting a face.
+  if (!v1->canInsertEdge(v0->point(), &whereEnd))
+    {
+    smtkErrorMacro(this->m_session->log(),
+		   "Edge would overlap face in neighborhood of last vertex");
+    return smtk::model::Edge();
+    }
+
+
+  // We can safely create the edge now
+  smtk::model::Edge created = mgr->addEdge();
+  internal::edge::Ptr storage = internal::edge::create();
+  storage->setParent(this);
+  storage->setId(created.entity());
+  this->m_session->addStorage(created.entity(), storage);
+  storage->m_points.clear();
+  storage->m_points.push_back(v0->point());
+  storage->m_points.push_back(v1->point());
+
+  smtk::model::Model parentModel(mgr, this->id());
+  // Insert edge at proper place in model vertex edge-lists
+  v0->insertEdgeAt(whereBegin, created.entity(), /* edge is outwards: */ true);
+  smtk::model::Vertex vert0(mgr, v0->id());
+  if (parentModel.isEmbedded(vert0))
+    {
+    parentModel.removeCell(vert0);
+    }
+  created.findOrAddRawRelation(vert0);
+  vert0.findOrAddRawRelation(created);
+ 
+  v1->insertEdgeAt(whereEnd, created.entity(), /* edge is outwards: */ false);
+  smtk::model::Vertex vert1(mgr, v1->id());
+  if (parentModel.isEmbedded(vert1))
+    {
+    parentModel.removeCell(vert1);
+    }
+  created.findOrAddRawRelation(vert1);
+  vert1.findOrAddRawRelation(created);
+ 
+  // Add tesselation to created edge using storage to lift point coordinates:
+  this->addEdgeTessellation(created, storage);
+
+  parentModel.embedEntity(created);
+  created.assignDefaultName(); // Do not move above parentModel.embedEntity() or name will suck.
+  return created;
+}
+
 // TODO: Remove edgeToSplit so that creation can succeed (otherwise
 //       it will fail when trying to insert a coincident edge at the
 //       existing edge endpoints.

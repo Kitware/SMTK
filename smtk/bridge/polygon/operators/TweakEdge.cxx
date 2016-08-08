@@ -143,7 +143,6 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
   for (smtk::model::Vertices::iterator vit = verts.begin(); vit != verts.end(); ++vit)
     {
     internal::Point locn = ((vit == verts.begin()) != !isFirstVertStart) ? *epts.begin() :  *(++epts.rbegin()).base();
-    //internal::Point locn = (vit == verts.begin() ? *epts.begin() :  *(++epts.rbegin()).base());
     if (pmod->tweakVertex(*vit, locn, modEdgesAndFaces))
       {
       modified.push_back(*vit);

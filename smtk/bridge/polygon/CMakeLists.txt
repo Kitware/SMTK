@@ -12,7 +12,10 @@ set(polygonSrcs
   operators/CreateModel.cxx
   operators/CreateVertices.cxx
   operators/CreateEdge.cxx
+  operators/CreateEdgeFromPoints.cxx
+  operators/CreateEdgeFromVertices.cxx
   operators/CreateFaces.cxx
+  operators/CreateFacesFromEdges.cxx
   operators/Delete.cxx
   operators/ForceCreateFace.cxx
   operators/SplitEdge.cxx
@@ -42,7 +45,10 @@ set(polygonHeaders
   operators/CreateModel.h
   operators/CreateVertices.h
   operators/CreateEdge.h
+  operators/CreateEdgeFromPoints.h
+  operators/CreateEdgeFromVertices.h
   operators/CreateFaces.h
+  operators/CreateFacesFromEdges.h
   operators/Delete.h
   operators/ForceCreateFace.h
   operators/SplitEdge.h
@@ -55,7 +61,10 @@ smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" polygonSessionJSON)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateModel.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateVertices.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdge.sbt" polygonOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdgeFromPoints.sbt" polygonOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdgeFromVertices.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateFaces.sbt" polygonOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateFacesFromEdges.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Delete.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ForceCreateFace.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitEdge.sbt" polygonOperatorXML)

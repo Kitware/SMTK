@@ -7,7 +7,7 @@
 // the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 // PURPOSE.  See the above copyright notice for more information.
 //=============================================================================
-#include "smtk/bridge/polygon/operators/CreateFaces.h"
+#include "smtk/bridge/polygon/operators/CreateFacesFromEdges.h"
 
 #include "smtk/bridge/polygon/Session.h"
 #include "smtk/bridge/polygon/internal/ActiveFragmentTree.h"
@@ -37,7 +37,7 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/bridge/polygon/CreateFaces_xml.h"
+#include "smtk/bridge/polygon/CreateFacesFromEdges_xml.h"
 
 #include <deque>
 #include <map>
@@ -100,7 +100,7 @@ typedef std::vector<std::pair<smtk::model::Edge,bool> > OrientedEdges;
 
 #if 0
 static void AddLoopsForEdge(
-  CreateFaces* op,
+  CreateFacesFromEdges* op,
   ModelEdgeMap& modelEdgeMap,
   ModelEdgeMap::iterator edgeInfo,
   LoopsById& loops,
@@ -137,7 +137,7 @@ static void DumpEventQueue(const char* msg, SweepEventSet& eventQueue)
   std::cout << "<<<<<   Event Queue\n";
 }
 
-smtk::model::OperatorResult CreateFaces::operateInternal()
+smtk::model::OperatorResult CreateFacesFromEdges::operateInternal()
 {
   smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
   smtk::model::Model model;
@@ -152,49 +152,37 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
     // error logging requires mgr...
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
-  // Keep a set of model edges marked by the directions in which they
-  // should be used to form faces. This will constrain what faces
-  // may be created without requiring users to pick a point interior
-  // to the face.
-  //
-  // This way, when users specify oriented (CCW) point sequences or
-  // a preferred set of edges as outer loop + inner loops, we don't
-  // create faces that fill the holes.
-  // But when users specify that all possible faces should be created,
-  // they don't have to pick interior points.
-  //
-  // -1 = use only negative orientation
-  //  0 = no preferred direction: use in either or both directions
-  // +1 = use only positive orientation
+
   ModelEdgeMap modelEdgeMap;
 
-  // First, collect the edges to process:
-  model = modelItem->value(0);
-  if (!model.isValid())
+  // First, collect  edges to process:
+  for (int i = 0; i < modelItem->numberOfValues(); ++i)
     {
-    smtkErrorMacro(this->log(), "Invalid model (or non-model entity) specified when a model was expected.");
+    smtk::model::Edge edgeIn(modelItem->value(i));
+    if (edgeIn.isValid())
+      {
+      if (model.isValid())
+	{
+	if (model != edgeIn.owningModel())
+	  {
+	  smtkErrorMacro(this->log(),
+			 "Edges from different models (" << model.name() <<
+			 " and " << edgeIn.owningModel().name() << ") selected.");
+	  return this->createResult(smtk::model::OPERATION_FAILED);
+	  }
+	}
+      else
+	{
+	model = edgeIn.owningModel();
+	}
+      modelEdgeMap[edgeIn] = 0;
+      }
+    }
+  if (modelEdgeMap.empty() || !model.isValid())
+    {
+    smtkErrorMacro(this->log(), "No edges selected or invalid model specified.");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
-  smtk::model::Edges allEdges =
-    model.cellsAs<smtk::model::Edges>();
-  for (smtk::model::Edges::const_iterator it = allEdges.begin(); it != allEdges.end(); ++it)
-    {
-    modelEdgeMap[*it] = 0;
-    }
-  // Create a union-find struct
-  // for each "model" vertex
-  //   for each edge attached to each vertex
-  //     add 2 union-find entries (UFEs), 1 per co-edge
-  //     merge adjacent pairs of UFEs
-  //     store UFEs on edges
-  // For each loop, discover nestings and merge UFEs
-  // For each edge
-  //   For each unprocessed (nesting-wise) UFE
-  //     Discover nesting via ray test
-  //     Merge parent and child UFEs (if applicable)
-  //     Add an (edge, coedge sign) tuple to a "face" identified by the given UFE
-  // FIXME: Test for self-intersections?
-  // FIXME: Deal w/ pre-existing faces?
 
   // Create an event queue and populate it with events
   // for each segment of each edge in modelEdgeMap.
@@ -256,12 +244,6 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
   this->m_model = model;
   neighborhood.getLoops(this);
 
-  // Make sure the application knows the model has new faces.
-  if (this->m_result->findModelEntity("created")->numberOfValues() > 0)
-    {
-    this->addEntityToResult(this->m_result, model, MODIFIED);
-    }
-
   // Finally, tessellate each face using Boost::polygon
   // (although TODO: it would be better to triangulate while sweeping).
   this->addTessellations();
@@ -276,7 +258,7 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
   return this->m_result;
 }
 
-void CreateFaces::evaluateLoop(
+void CreateFacesFromEdges::evaluateLoop(
   RegionId faceNumber,
   OrientedEdges& loop,
   std::set<RegionId>& borders)
@@ -315,7 +297,6 @@ void CreateFaces::evaluateLoop(
       }
     smtk::model::Face modelFace(mgr, modelFaceId);
     this->m_model.addCell(modelFace);
-    modelFace.assignDefaultName();
 		this->addEntityToResult(this->m_result, modelFace, CREATED);
     if (this->m_debugLevel > 0)
       {
@@ -356,7 +337,7 @@ void printPts(const std::string& msg, T begin, T end)
     }
 }
 
-void CreateFaces::addTessellations()
+void CreateFacesFromEdges::addTessellations()
 {
   std::map<RegionId, std::vector<OrientedEdges> >::iterator rit; // Face iterator
   for (rit = this->m_regionLoops.begin(); rit != this->m_regionLoops.end(); ++rit)
@@ -461,8 +442,8 @@ void CreateFaces::addTessellations()
 
 smtkImplementsModelOperator(
   SMTKPOLYGONSESSION_EXPORT,
-  smtk::bridge::polygon::CreateFaces,
-  polygon_create_faces,
-  "create faces",
-  CreateFaces_xml,
+  smtk::bridge::polygon::CreateFacesFromEdges,
+  polygon_create_faces_from_edges,
+  "create faces from edges",
+  CreateFacesFromEdges_xml,
   smtk::bridge::polygon::Session);

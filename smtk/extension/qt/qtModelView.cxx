@@ -743,30 +743,48 @@ void qtModelView::showContextMenu(const QModelIndex &idx, const QPoint& p)
     this->m_ContextMenu->setTitle("Operators Menu");
     }
 
-  smtk::model::SessionRef brSession;
+  smtk::model::SessionRef brSession =
+    this->owningEntityAs<smtk::model::SessionRef>(idx);
 
-  if ((brSession =
-    this->owningEntityAs<smtk::model::SessionRef>(idx)).isValid())
+  if (!brSession.isValid())
     {
-    StringList opNames = brSession.operatorNames(false);
-    std::sort(opNames.begin(), opNames.end()); 
-    for(StringList::const_iterator it = opNames.begin();
-        it != opNames.end(); ++it)
-      {
-      QAction* act = this->m_ContextMenu->addAction((*it).c_str());
-      QVariant vdata( QString::fromStdString(brSession.entity().toString()) );
-      act->setData(vdata);
-      QObject::connect(act, SIGNAL(triggered()), this, SLOT(operatorInvoked()));
-      }
-    QPoint popP = p;
-    if(popP.isNull())
-      {
-      QRect idxRec = this->visualRect(idx);
-      popP.setX(idxRec.right()/2);
-      popP.setY(idxRec.top());
-      }
-    this->m_ContextMenu->popup(this->mapToGlobal(popP));
+    // Nothing to do the session is not valid;
+    return;
     }
+  std::string sessionString = brSession.entity().toString();
+  // Have we already processed this session previously?
+  if (this->m_sessionInfo.find(sessionString) == this->m_sessionInfo.end())
+    {
+    // This is the first time seeing this session
+    // First we need to get the mapping between operator labels and their names
+    std::map<std::string, std::string> opLabelsMap = brSession.session()->operatorLabelsMap(false);
+    // Next lets get the list of labels so we can sort them
+    std::vector<std::string> keyList;
+    for (auto imap: opLabelsMap)
+      {
+      keyList.push_back(imap.first);
+      }
+    std::sort(keyList.begin(), keyList.end());
+    this->m_sessionInfo[sessionString] =
+      std::pair<std::vector<std::string>, std::map<std::string, std::string> >(keyList, opLabelsMap);
+    }
+  auto sinfo = this->m_sessionInfo[sessionString];
+  for(StringList::const_iterator it = sinfo.first.begin();
+      it != sinfo.first.end(); ++it)
+    {
+    QAction* act = this->m_ContextMenu->addAction((*it).c_str());
+    QVariant vdata( QString::fromStdString(sessionString) );
+    act->setData(vdata);
+    QObject::connect(act, SIGNAL(triggered()), this, SLOT(operatorInvoked()));
+    }
+  QPoint popP = p;
+  if(popP.isNull())
+    {
+    QRect idxRec = this->visualRect(idx);
+    popP.setX(idxRec.right()/2);
+    popP.setY(idxRec.top());
+    }
+  this->m_ContextMenu->popup(this->mapToGlobal(popP));
 }
 
 //-----------------------------------------------------------------------------
@@ -826,7 +844,8 @@ void qtModelView::operatorInvoked()
     return;
     }
   QVariant var = action->data();
-  smtk::common::UUID sessId( var.toString().toStdString() );
+  std::string sessionName = var.toString().toStdString();
+  smtk::common::UUID sessId(sessionName);
 
   smtk::extension::QEntityItemModel* qmodel = this->getModel();
   smtk::model::SessionPtr session =
@@ -836,7 +855,8 @@ void qtModelView::operatorInvoked()
     std::cout << "No session available from session: \"" << sessId.toString() << "\"\n";
     return;
     }
-  std::string opName = action->text().toStdString();
+  std::string opLabel = action->text().toStdString();
+  std::string opName  = this->m_sessionInfo[sessionName].second[opLabel];
   this->initOperatorsDock(opName, session);
 
 //  cJSON* json = cJSON_CreateObject();

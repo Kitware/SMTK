@@ -154,6 +154,29 @@ StringList Session::operatorNames(bool includeAdvanced) const
   return nameList;
 }
 
+/// Return a map between the labels associated with the session's operators
+/// and its names
+std::map<std::string, std::string> Session::operatorLabelsMap(bool includeAdvanced) const
+{
+  std::vector<smtk::attribute::DefinitionPtr> ops;
+  std::map<std::string, std::string> result;
+    this->m_operatorSys->derivedDefinitions(
+    this->m_operatorSys->findDefinition("operator"), ops);
+    std::cerr << "Getting Map from system " << this->m_operatorSys << ": \n";
+  std::vector<smtk::attribute::DefinitionPtr>::iterator it;
+  for (it = ops.begin(); it != ops.end(); ++it)
+    {
+    // only show operators that are not advanced
+    if (!includeAdvanced && (*it)->advanceLevel() > 0)
+      {
+      continue;
+      }
+    result[(*it)->label()] = (*it)->type();
+    std::cerr << "\tType: " << (*it)->type() << " Label: " << (*it)->label() << "\n";
+    }
+  return result;
+}
+
 OperatorPtr Session::op(const std::string& opName) const
 {
   OperatorPtr oper;
@@ -812,7 +835,6 @@ void Session::importOperatorXML(const std::string& opXML)
     {
     smtk::io::AttributeReader rdr;
     bool ok = true;
-
     ok &= !rdr.readContents(
       *this->m_operatorSys,
       opXML.c_str(), opXML.size(),

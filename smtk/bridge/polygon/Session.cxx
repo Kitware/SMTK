@@ -33,7 +33,7 @@
 
 #include "smtk/Options.h"
 #include "smtk/AutoInit.h"
-
+#include "smtk/attribute/Definition.h"
 #include "smtk/bridge/polygon/internal/Model.h"
 
 #include <string.h> // for strcmp
@@ -50,6 +50,17 @@ Session::Session()
   : m_nextModelNumber(0)
 {
   this->initializeOperatorSystem(Session::s_operators);
+  // Lets rename the export model operator definition  to be save model in terms of its label
+  auto attDef  = this->m_operatorSys->findDefinition("export smtk model");
+  if (attDef)
+    {
+    attDef->setLabel(" Model - Save");
+    }
+  attDef = this->m_operatorSys->findDefinition("close model");
+  if (attDef)
+    {
+    attDef->setLabel(" Model -  Close");
+    }
 }
 
 /// Virtual destructor. Here because Session overrides virtual methods from Session.
