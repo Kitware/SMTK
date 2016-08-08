@@ -144,7 +144,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
           for (int i = 0; i < numCoordsPerPt; ++i)
             pt[i] = pointsItem->value(edgeOffset * numCoordsPerPt + i);
           curr = storage->projectPoint(pt.begin(), pt.end());
-          if (!first)
+          if (!first && curr != prev)
             {
             edgeSegs.push_back(internal::Segment(prev, curr));
             }
