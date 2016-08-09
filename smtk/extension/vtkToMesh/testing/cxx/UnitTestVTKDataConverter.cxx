@@ -200,7 +200,7 @@ void verify_mixed_cell_ugrid()
 }
 
 //----------------------------------------------------------------------------
-int UnitTestVTKDataConverter(int argc, char** argv)
+int UnitTestVTKDataConverter(int argc, char* argv[])
 {
 
   verify_null_polydata();

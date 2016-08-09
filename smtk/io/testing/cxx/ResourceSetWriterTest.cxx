@@ -85,7 +85,7 @@ int main(int argc, const char* argv[])
       // Strip off path to just get the filename
       //link  = vtksys::SystemTools::GetFilenameName(input_paths[i]);
       boost::filesystem::path p(input_path);
-      link = p.filename().c_str();
+      link = p.filename().string<std::string>();
       role = smtk::common::ResourceSet::INSTANCE;
       }
 
