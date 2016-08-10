@@ -102,6 +102,8 @@ cmake_dependent_option(SMTK_ENABLE_PARAVIEW_SUPPORT "Build paraview plugins for 
 option(SMTK_ENABLE_CGM_SESSION "Build CGM component" OFF)
 cmake_dependent_option(SMTK_ENABLE_DISCRETE_SESSION "Build discrete model session components" OFF
   SMTK_ENABLE_VTK_SUPPORT OFF)
+cmake_dependent_option(SMTK_ENABLE_MOAB_DISCRETE_READER "Build moab reader for discrete model" OFF
+  "SMTK_ENABLE_DISCRETE_SESSION" OFF)
 cmake_dependent_option(SMTK_ENABLE_POLYGON_SESSION "Build Boost.polygon model session." ON
   SMTK_ENABLE_VTK_SUPPORT OFF)
 cmake_dependent_option(SMTK_ENABLE_EXODUS_SESSION "Build a session to Exodus-II side sets" ON
@@ -408,19 +410,6 @@ include_directories(
   "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/pugixml"
   "${Boost_INCLUDE_DIRS}"
 )
-
-################################################################################
-# Look for Discrete session discrete model modules
-################################################################################
-
-if(SMTK_ENABLE_DISCRETE_SESSION)
-  # This option is only available when SMTK_ENABLE_DISCRETE_SESSION is ON, and
-  # it should be OFF by default since exodus session should handle exodus files
-  option(
-    SMTK_ENABLE_MOAB_DISCRETE_READER
-    "Build moab reader for discrete model"
-    OFF )
-endif()
 
 ################################################################################
 # Finally build smtk
