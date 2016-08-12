@@ -72,6 +72,20 @@ public:
   QMap<std::string, OperatorInfo > OperatorMap;
   QPointer<qtModelView> ModelView;
   QTextEdit* ResultLog;
+  std::map<std::string, std::string> m_operatorLabelMap;
+  std::map<std::string, std::string> m_operatorNameMap;
+  std::vector<std::string> m_sortedOperatorLabels;
+  int findLabelPosition(const std::string &label)
+  {
+    return (std::find(this->m_sortedOperatorLabels.begin(),
+			this->m_sortedOperatorLabels.end(), label)
+	    - this->m_sortedOperatorLabels.begin());
+  }
+  int findNamePosition(const std::string &opName)
+  {
+    std::string opLabel = this->m_operatorNameMap[opName];
+    return this->findLabelPosition(opLabel);
+  }
 };
 
 //----------------------------------------------------------------------------
@@ -187,12 +201,20 @@ void qtModelOperationWidget::setSession(smtk::model::SessionPtr session)
   this->Internals->OperationCombo->clear();
   if(session)
     {
-    StringList opNames = session->operatorNames(false);
-    std::sort(opNames.begin(), opNames.end());
-    for(StringList::const_iterator it = opNames.begin();
-        it != opNames.end(); ++it)
+    this->Internals->m_operatorLabelMap = session->operatorLabelsMap(false);
+    this->Internals->m_sortedOperatorLabels.clear();
+    this->Internals->m_operatorNameMap.clear();
+    // Next lets get the list of labels so we can sort them
+    for (auto imap: this->Internals->m_operatorLabelMap)
       {
-      this->Internals->OperationCombo->addItem((*it).c_str());
+      this->Internals->m_sortedOperatorLabels.push_back(imap.first);
+      this->Internals->m_operatorNameMap[imap.second] = imap.first;
+      }
+    std::sort(this->Internals->m_sortedOperatorLabels.begin(),
+	      this->Internals->m_sortedOperatorLabels.end());
+    for(auto it: this->Internals->m_sortedOperatorLabels)
+      {
+      this->Internals->OperationCombo->addItem(it.c_str());
       }
     }
   this->Internals->OperationCombo->blockSignals(false);
@@ -247,6 +269,7 @@ bool qtModelOperationWidget::initOperatorUI(
   const smtk::model::OperatorPtr& brOp)
 {
   std::string opName = brOp->name();
+  std::string opLabel = this->Internals->m_operatorNameMap[opName];
   std::string prevOpName = this->Internals->CurrrentOpName;
   if(!prevOpName.empty() && opName != prevOpName)
     {
@@ -254,12 +277,10 @@ bool qtModelOperationWidget::initOperatorUI(
     this->cancelOperator(prevOpName);
     }
 
-  // set the operator combobox to the corrent index
-  if(opName != this->Internals->OperationCombo->currentText().toStdString())
+  // set the operator combobox to the new index
+  if(opLabel != this->Internals->OperationCombo->currentText().toStdString())
     {
-    StringList opNames = brOp->session()->operatorNames(false);
-    std::sort(opNames.begin(), opNames.end());
-    int idx = std::find(opNames.begin(), opNames.end(), opName) - opNames.begin();
+    int idx = this->Internals->findLabelPosition(opLabel);
     this->Internals->OperationCombo->blockSignals(true);
     this->Internals->OperationCombo->setCurrentIndex(idx);
     this->Internals->OperationCombo->blockSignals(false);
@@ -364,17 +385,17 @@ bool qtModelOperationWidget::setCurrentOperator(
 {
   this->setSession(session);
   if(!session)
+    {
     return false;
-
-  StringList opNames = session->operatorNames(false);
-  std::sort(opNames.begin(), opNames.end());
-  int idx = std::find(opNames.begin(), opNames.end(), opName) - opNames.begin();
+    }
+  
+  std::string opLabel = this->Internals->m_operatorNameMap[opName];
+  int idx = this->Internals->findLabelPosition(opLabel);
   if(this->Internals->OperationCombo->currentIndex() != idx)
     {
     this->Internals->OperationCombo->setCurrentIndex(idx);
     return true;
     }
-
   OperatorPtr brOp = this->Internals->OperatorMap.contains(opName) ?
     this->Internals->OperatorMap[opName].opPtr :
     session->op(opName); // create the operator
@@ -426,14 +447,16 @@ void qtModelOperationWidget::expungeEntities(
 //----------------------------------------------------------------------------
 void qtModelOperationWidget::onOperationSelected()
 {
-  this->setCurrentOperator(
-    this->Internals->OperationCombo->currentText().toStdString(),
+  std::string opName =
+    this->Internals->m_operatorLabelMap[this->Internals->OperationCombo->currentText().toStdString()];
+  this->setCurrentOperator(opName,
     this->Internals->CurrentSession.lock());
 }
 //----------------------------------------------------------------------------
 void qtModelOperationWidget::onOperate()
 {
-  std::string opName = this->Internals->OperationCombo->currentText().toStdString();
+  std::string opLabel = this->Internals->OperationCombo->currentText().toStdString();
+  std::string opName = this->Internals->m_operatorLabelMap[opLabel];
   if(this->Internals->OperatorMap.contains(opName))
     {
     OperatorPtr brOp = this->Internals->OperatorMap[opName].opPtr;
@@ -454,7 +477,8 @@ void qtModelOperationWidget::onMeshSelectionItemCreated(
 {
   if(this->Internals->CurrentSession.lock())
     {
-    std::string opName = this->Internals->OperationCombo->currentText().toStdString();
+    std::string opLabel = this->Internals->OperationCombo->currentText().toStdString();
+    std::string opName = this->Internals->m_operatorLabelMap[opLabel];
     smtk::common::UUID sessId =
       this->Internals->CurrentSession.lock()->sessionId();
     emit this->meshSelectionItemCreated(meshItem, opName, sessId);

@@ -58,6 +58,7 @@ namespace smtk
 
       // The label is what can be displayed in an application.  Unlike the type
       // which is constant w/r to the definition, an application can change the label
+      // By default it is set to the same value as the type.
       const std::string &label() const
       { return this->m_label;}
 

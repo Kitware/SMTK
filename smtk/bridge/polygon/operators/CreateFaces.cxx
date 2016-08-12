@@ -51,32 +51,6 @@ namespace smtk {
   namespace bridge {
     namespace polygon {
 
-/// An internal structure used when discovering edge loops.
-struct ModelEdgeInfo
-{
-  ModelEdgeInfo()
-    : m_allowedOrientations(0)
-    {
-    this->m_visited[0] = this->m_visited[1] = false;
-    }
-  ModelEdgeInfo(int allowedOrientations)
-    {
-    this->m_allowedOrientations = allowedOrientations > 0 ? +1 : allowedOrientations < 0 ? -1 : 0;
-    this->m_visited[0] = this->m_visited[1] = false;
-    }
-  ModelEdgeInfo(const ModelEdgeInfo& other)
-    : m_allowedOrientations(other.m_allowedOrientations)
-    {
-    for (int i = 0; i < 2; ++i)
-      m_visited[i] = other.m_visited[i];
-    }
-
-  int m_allowedOrientations; // 0: all, -1: only negative, +1: only positive
-  bool m_visited[2]; // has the [0]: negative, [1]: positive orientation of the edge been visited already?
-};
-
-/// An internal structure used to map model edges to information about the space between them.
-typedef std::map<smtk::model::Edge, ModelEdgeInfo> ModelEdgeMap;
 
 /// An internal structure used to hold a sequence of model edges which form a loop.
 struct LoopInfo
@@ -98,34 +72,7 @@ typedef std::vector<EdgeFragment> FragmentArray; // List of all output fragments
 
 typedef std::vector<std::pair<smtk::model::Edge,bool> > OrientedEdges;
 
-#if 0
-static void AddLoopsForEdge(
-  CreateFaces* op,
-  ModelEdgeMap& modelEdgeMap,
-  ModelEdgeMap::iterator edgeInfo,
-  LoopsById& loops,
-  smtk::model::VertexSet& visitedVerts,
-  std::map<internal::Point, int>& visitedPoints // number of times a point has been encountered (not counting periodic repeat at end of a single-edge loop); used to identify points that must be promoted to model vertices.
-)
-{
-  if (!edgeInfo->first.isValid() || !op)
-    {
-    return; // garbage-in? garbage-out.
-    }
-  internal::EdgePtr edgeRec = op->findStorage<internal::edge>(edgeInfo->first.entity());
-
-  smtk::model::Vertices endpts = edgeInfo->first.vertices();
-  if (endpts.empty())
-    { // Tessellation had better be a periodic loop. Traverse for bbox.
-    //AddEdgePointsToBox(tess, box);
-    }
-  else
-    { // Choose an endpoint and walk around the edge.
-    }
-}
-#endif // 0
-
-void DumpEventQueue(const char* msg, SweepEventSet& eventQueue)
+static void DumpEventQueue(const char* msg, SweepEventSet& eventQueue)
 {
   std::cout << ">>>>>   " << msg << "\n";
   std::cout << ">>>>>   Event Queue:\n";
@@ -137,16 +84,50 @@ void DumpEventQueue(const char* msg, SweepEventSet& eventQueue)
   std::cout << "<<<<<   Event Queue\n";
 }
 
+/**\brief Populate the list of edges we should use to generate faces.
+  *
+  * Subclasses may override this method.
+  *
+  * We keep a set of model edges (this->m_edgeMap) marked by the
+  * directions in which they should be used to form faces.
+  * This will constrain what faces may be created without
+  * requiring users to pick a point interior
+  * to the face.
+  *
+  * This way, when users specify oriented (CCW) point sequences or
+  * a preferred set of edges as outer loop + inner loops, we don't
+  * create faces that fill the holes.
+  * But when users specify that all possible faces should be created,
+  * they don't have to pick interior points.
+  *
+  * -1 = use only negative orientation
+  *  0 = no preferred direction: use in either or both directions
+  * +1 = use only positive orientation
+  */
+bool CreateFaces::populateEdgeMap()
+{
+  smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
+  smtk::model::Model model;
+  model = modelItem->value(0);
+  if (!model.isValid())
+    {
+    smtkErrorMacro(this->log(), "Invalid model (or non-model entity) specified when a model was expected.");
+    this->m_result = this->createResult(smtk::model::OPERATION_FAILED);
+    return false;
+    }
+  this->m_model = model;
+
+  smtk::model::Edges allEdges =
+    model.cellsAs<smtk::model::Edges>();
+  for (smtk::model::Edges::const_iterator it = allEdges.begin(); it != allEdges.end(); ++it)
+    {
+    this->m_edgeMap[*it] = 0;
+    }
+  return true;
+}
+
 smtk::model::OperatorResult CreateFaces::operateInternal()
 {
-  // Discover how the user wants to specify scaling.
-  smtk::attribute::IntItem::Ptr constructionMethodItem = this->findInt("construction method");
-  int method = constructionMethodItem->discreteIndex(0);
-
-  smtk::attribute::DoubleItem::Ptr pointsItem = this->findDouble("points");
-  smtk::attribute::IntItem::Ptr coordinatesItem = this->findInt("coordinates");
-  smtk::attribute::IntItem::Ptr countsItem = this->findInt("counts");
-
   smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
   smtk::model::Model model;
 
@@ -160,136 +141,34 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
     // error logging requires mgr...
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
-  // Keep a set of model edges marked by the directions in which they
-  // should be used to form faces. This will constrain what faces
-  // may be created without requiring users to pick a point interior
-  // to the face.
-  //
-  // This way, when users specify oriented (CCW) point sequences or
-  // a preferred set of edges as outer loop + inner loops, we don't
-  // create faces that fill the holes.
-  // But when users specify that all possible faces should be created,
-  // they don't have to pick interior points.
-  //
-  // -1 = use only negative orientation
-  //  0 = no preferred direction: use in either or both directions
-  // +1 = use only positive orientation
-  ModelEdgeMap modelEdgeMap;
 
-  // First, collect or create edges to process:
-  // These case values match CreateFaces.sbt indices (and enum values):
-  switch (method)
+  // First, collect the edges to process:
+  if (!this->populateEdgeMap())
     {
-  case 0: // points, coordinates, counts
-      {
-      // identify pre-existing model vertices from points
-      // verify that existing edges/faces incident to model vertices
-      //        do not impinge on proposed edge/face
-      // run edge-creation pre-processing on each point-sequence?
-      // determine sub-sequences of points that will
-      //   (a) form new edges
-      //   (b) make use of existing edges (with orientation)
-      // determine loop nesting and edge splits required by intersecting loops
-      // report point sequences, model vertices (existing, imposed by intersections, non-manifold), loops w/ nesting
-      // ---
-      // create new vertices as required
-      // create edges on point sequences
-      // modify/create vertex uses
-      // create chains
-      // create edge uses
-      // create loops
-      // create faces
-      }
-    break;
-  case 1: // edges
-      {
-      for (int i = 0; i < modelItem->numberOfValues(); ++i)
-        {
-        smtk::model::Edge edgeIn(modelItem->value(i));
-        if (edgeIn.isValid())
-          {
-          if (model.isValid())
-            {
-            if (model != edgeIn.owningModel())
-              {
-              smtkErrorMacro(this->log(),
-                "Edges from different models (" << model.name() <<
-                " and " << edgeIn.owningModel().name() << ") selected.");
-              return this->createResult(smtk::model::OPERATION_FAILED);
-              }
-            }
-          else
-            {
-            model = edgeIn.owningModel();
-            }
-          modelEdgeMap[edgeIn] = 0;
-          }
-        }
-      if (modelEdgeMap.empty() || !model.isValid())
-        {
-        smtkErrorMacro(this->log(), "No edges selected or invalid model specified.");
-        return this->createResult(smtk::model::OPERATION_FAILED);
-        }
-      // for each edge
-      //   for each model vertex
-      //     walk loops where vertices have no face, aborting walk if an unselected edge is found.
-      //     mark traversed regions and do not re-traverse
-      //   OR IF NO MODEL VERTICES
-      //     edge must be periodic and oriented properly... treat it as a loop to bound a hole+/^face-filling-the-hole.
-      //     mark traversed regions and do not re-traverse
-      //   determine loop nesting and edge splits required by intersecting loops
-      //   report model vertices (imposed by intersections, non-manifold), loops w/ nesting
-      // ---
-      // create new vertices as required
-      // modify vertex uses
-      // create edge uses
-      // create loops
-      // create faces
-      }
-    break;
-  case 2: // all non-overlapping
-      {
-      model = modelItem->value(0);
-      if (!model.isValid())
-        {
-        smtkErrorMacro(this->log(), "Invalid model (or non-model entity) specified when a model was expected.");
-        return this->createResult(smtk::model::OPERATION_FAILED);
-        }
-      smtk::model::Edges allEdges =
-        model.cellsAs<smtk::model::Edges>();
-      for (smtk::model::Edges::const_iterator it = allEdges.begin(); it != allEdges.end(); ++it)
-        {
-        modelEdgeMap[*it] = 0;
-        }
-      // Same as case 1 but with the set of all edges in model.
-      //
-      // Create a union-find struct
-      // for each "model" vertex
-      //   for each edge attached to each vertex
-      //     add 2 union-find entries (UFEs), 1 per co-edge
-      //     merge adjacent pairs of UFEs
-      //     store UFEs on edges
-      // For each loop, discover nestings and merge UFEs
-      // For each edge
-      //   For each unprocessed (nesting-wise) UFE
-      //     Discover nesting via ray test
-      //     Merge parent and child UFEs (if applicable)
-      //     Add an (edge, coedge sign) tuple to a "face" identified by the given UFE
-      // FIXME: Test for self-intersections?
-      // FIXME: Deal w/ pre-existing faces?
-      }
-    break;
-  default:
-    ok = false;
-    smtkInfoMacro(log(), "Unhandled construction method " << method << ".");
-    break;
+    return this->m_result ? this->m_result : this->createResult(smtk::model::OPERATION_FAILED);
     }
+  model = this->m_model; // should have been set by populateEdgeMap()
+
+  // Create a union-find struct
+  // for each "model" vertex
+  //   for each edge attached to each vertex
+  //     add 2 union-find entries (UFEs), 1 per co-edge
+  //     merge adjacent pairs of UFEs
+  //     store UFEs on edges
+  // For each loop, discover nestings and merge UFEs
+  // For each edge
+  //   For each unprocessed (nesting-wise) UFE
+  //     Discover nesting via ray test
+  //     Merge parent and child UFEs (if applicable)
+  //     Add an (edge, coedge sign) tuple to a "face" identified by the given UFE
+  // FIXME: Test for self-intersections?
+  // FIXME: Deal w/ pre-existing faces?
 
   // Create an event queue and populate it with events
-  // for each segment of each edge in modelEdgeMap.
+  // for each segment of each edge in this->m_edgeMap.
   ModelEdgeMap::iterator modelEdgeIt;
   SweepEventSet eventQueue; // (QE) sorted into a queue by point-x, point-y, event-type, and then event-specific data.
-  for (modelEdgeIt = modelEdgeMap.begin(); modelEdgeIt != modelEdgeMap.end(); ++modelEdgeIt)
+  for (modelEdgeIt = this->m_edgeMap.begin(); modelEdgeIt != this->m_edgeMap.end(); ++modelEdgeIt)
     {
     if (this->m_debugLevel > 0)
       {

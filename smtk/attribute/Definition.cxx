@@ -33,6 +33,7 @@ Definition::Definition(
   this->m_system = mySystem;
   this->m_baseDefinition = myBaseDef;
   this->m_type = myType;
+  this->m_label = this->m_type;
   this->m_version = 0;
   this->m_isAbstract = false;
   this->m_isNodal = false;

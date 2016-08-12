@@ -108,8 +108,8 @@ smtk::model::Vertices Edge::vertices() const
       int i0, i1;
       if (etess->vertexIdsOfPolylineEndpoints(0, i0, i1))
         {
-        double v0d = smtk::common::distance2(&etess->coords()[3 * i0], result[0].coordinates());
-        double v1d = smtk::common::distance2(&etess->coords()[3 * i1], result[0].coordinates());
+        double v0d = smtk::common::distance2(&(etess->coords()[3 * i0]), &(result[0].coordinates()[0]));
+        double v1d = smtk::common::distance2(&(etess->coords()[3 * i1]), &(result[0].coordinates()[0]));
         if (v0d > v1d)
           { // swap the vertices
           smtk::model::Vertex tmp = result[0];

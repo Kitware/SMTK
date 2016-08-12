@@ -71,6 +71,8 @@ public:
     smtk::model::ManagerPtr mgr,
     const Point& pt);
 
+  model::Edge createModelEdgeFromVertices(smtk::model::ManagerPtr mgr,
+					  internal::VertexPtr v0, internal::VertexPtr v1);
   template<typename T>
   model::Edge createModelEdgeFromSegments(smtk::model::ManagerPtr mgr, T begin, T end);
 
