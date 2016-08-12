@@ -98,7 +98,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
   int numCoordsPerPt = coordinatesItem->value(0);
 
   smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
-  smtk::model::Model model;
+  smtk::model::Model smodel;
 
   Session* sess = this->polygonSession();
   smtk::model::ManagerPtr mgr;
@@ -112,10 +112,10 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
   switch (method)
     {
   case ForceCreateFace::POINTS:
-    model = modelItem->value(0).as<smtk::model::Model>();
+    smodel = modelItem->value(0).as<smtk::model::Model>();
     break;
   case ForceCreateFace::EDGES:
-    model = modelItem->value(0).as<smtk::model::Edge>().owningModel();
+    smodel = modelItem->value(0).as<smtk::model::Edge>().owningModel();
     break;
   default:
       {
@@ -124,7 +124,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
       }
     break;
     }
-  internal::pmodel::Ptr pmodel = this->findStorage<internal::pmodel>(model.entity());
+  internal::pmodel::Ptr pmodel = this->findStorage<internal::pmodel>(smodel.entity());
   if (!pmodel)
     {
     smtkErrorMacro(this->log(), "The associated model is not a polygon-session model.");
@@ -244,7 +244,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
       return this->createResult(smtk::model::OPERATION_FAILED);
       }
     smtk::model::Face modelFace(mgr, modelFaceId);
-    model.addCell(modelFace);
+    smodel.addCell(modelFace);
     modelFace.assignDefaultName();
     created.push_back(modelFace);
 

@@ -22,6 +22,7 @@
 #include "smtk/model/Vertex.h"
 
 #include "smtk/io/Logger.h"
+//#include "smtk/io/ExportJSON.h"
 
 #include "smtk/bridge/polygon/internal/Model.txx"
 
@@ -602,6 +603,7 @@ bool pmodel::splitModelEdgeAtModelVertices(
   smtk::model::Vertices::iterator avit = allVertices.begin();
   smtk::model::Edge eout;
   smtk::model::Model model(mgr, this->id());
+  smtk::model::EntityRefArray cre;
   for (std::vector<SegmentSplitsT::iterator>::iterator sgit = segSplits.begin(); sgit != segSplits.end(); ++sgit)
     {
     eout = this->createModelEdgeFromSegments(mgr, last, *sgit);
@@ -614,6 +616,7 @@ bool pmodel::splitModelEdgeAtModelVertices(
       {
       model.addCell(eout);
       }
+    cre.push_back(eout);
     created.insert(eout);
     last = *sgit;
     }
@@ -624,8 +627,48 @@ bool pmodel::splitModelEdgeAtModelVertices(
       {
       model.addCell(eout);
       }
+    cre.push_back(eout);
     created.insert(eout);
     }
+
+  // Update loops of face(s) attached to original edge.
+  // Each use-record of the old (original) edge should be replaced with one
+  // use-record for each of the new edges. Traverse the list of modelEdge uses:
+  smtk::model::EdgeUses oldEdgeUses = modelEdge.uses<smtk::model::EdgeUses>();
+  for (smtk::model::EdgeUses::iterator oeus = oldEdgeUses.begin(); oeus != oldEdgeUses.end(); ++oeus)
+    {
+    // Find the loop the use participates in:
+    smtk::model::Loop modelLoop =
+      oeus->boundingShellEntity().as<smtk::model::Loop>();
+    // Create uses of replacement edge(s) in order of modelEdgeUse
+    // Since we use modelEdge's point sequence, we know that our new uses
+    // must have the same sense and orientation. If the orientation of the
+    // old-edge-use is NEGATIVE, then we should reverse the order of
+    // the replacement uses.
+    smtk::model::EdgeUses replacements;
+    int origSense = oeus->sense();
+    smtk::model::Orientation origOrientation = oeus->orientation();
+    if (origOrientation == smtk::model::POSITIVE)
+      {
+      smtk::model::EntityRefArray::iterator creit;
+      for (creit = cre.begin(); creit != cre.end(); ++creit)
+        {
+        replacements.push_back(
+          mgr->addEdgeUse(*creit, origSense, origOrientation));
+        }
+      }
+    else
+      {
+      smtk::model::EntityRefArray::reverse_iterator creit;
+      for (creit = cre.rbegin(); creit != cre.rend(); ++creit)
+        {
+        replacements.push_back(
+          mgr->addEdgeUse(*creit, origSense, origOrientation));
+        }
+      }
+    modelLoop.replaceEdgeUseWithUses(*oeus, replacements);
+    }
+  //smtk::io::ExportJSON::fromModelManagerToFile(mgr, "/tmp/inanity.json");
 
   // Handle property assignments to output edges:
   this->session()->splitProperties(modelEdge, created);
@@ -759,21 +802,21 @@ void pmodel::addFaceTessellation(smtk::model::Face& faceRec)
   smtk::model::Tessellation blank;
   smtk::model::UUIDsToTessellations::iterator smtkTess =
     faceRec.manager()->setTessellation(faceRec.entity(), blank);
-  std::cout << "Tessellate " << faceRec.name() << "\n";
+  //std::cout << "Tessellate " << faceRec.name() << "\n";
   for (smtk::model::Loops::iterator lit = outerLoops.begin(); lit != outerLoops.end(); ++lit)
     {
     smtk::model::Loops innerLoops = lit->containedLoops();
     int npp = 1 + innerLoops.size();
     std::vector<std::vector<internal::Point> > pp2(npp);
     int ll = 0;
-    std::cout << "  Loop " << lit->name() << "\n";
+    //std::cout << "  Loop " << lit->name() << "\n";
     this->pointsInLoopOrder(pp2[ll], *lit);
     pface.set(pp2[ll].rbegin(), pp2[ll].rend()); // boost likes its loops backwards
     poly::assign(polys, pface);
     ++ll;
     for (smtk::model::Loops::iterator ilit = innerLoops.begin(); ilit != innerLoops.end(); ++ilit, ++ll)
       {
-      std::cout << "    Inner Loop " << ilit->name() << "\n";
+      //std::cout << "    Inner Loop " << ilit->name() << "\n";
       this->pointsInLoopOrder(pp2[ll], *ilit);
       poly::polygon_data<internal::Coord> loop;
       loop.set(pp2[ll].rbegin(), pp2[ll].rend());

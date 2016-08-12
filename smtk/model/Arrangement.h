@@ -198,10 +198,21 @@ protected:
 class ArrangementReference
 {
 public:
+  /// Construct a valid reference.
   ArrangementReference(
     const smtk::common::UUID& entId, ArrangementKind k, int idx)
     : entityId(entId), kind(k), index(idx)
     { }
+  /// Construct an invalid reference.
+  ArrangementReference()
+    : kind(KINDS_OF_ARRANGEMENTS), index(-1)
+    { }
+
+  /// Indicate whether a reference is valid or not:
+  bool isValid() const
+    {
+    return this->kind == KINDS_OF_ARRANGEMENTS || this->index < 0 || !this->entityId;
+    }
 
   smtk::common::UUID entityId; //!< The ID of the entity on which the arrangement is defined.
   ArrangementKind kind;      //!< The kind of the arrangement.

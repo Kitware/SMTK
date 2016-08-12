@@ -127,6 +127,62 @@ UseEntities CellEntity::boundingCellUses(Orientation orientation) const
   return result;
 }
 
+/**\brief Return the shell entity bounding this cell which contains \a bdyUse.
+  *
+  * This can be used to determine (for cells with holes) which boundary
+  * segment contains a given orientation and sense of a given bounding cell.
+  * For example, you may ask a volume for the shell containing a face-use.
+  * You can then ask the shell for its sense relative to the cell and its
+  * parent (either the cell if it is an outer shell or another shell if it
+  * is an inner shell).
+  */
+ShellEntity CellEntity::findShellEntityContainingUse(const UseEntity& bdyUse)
+{
+  UseEntities cellUses = this->uses<smtk::model::UseEntities>();
+  for (UseEntities::iterator uit = cellUses.begin(); uit != cellUses.end(); ++uit)
+    {
+    ShellEntities shellsOfUse = uit->boundingShellEntities<ShellEntities>();
+    for (ShellEntities::iterator sit = shellsOfUse.begin(); sit != shellsOfUse.end(); ++sit)
+      {
+      if (sit->contains(bdyUse))
+        {
+        return *sit;
+        }
+      ShellEntities innerShells = sit->containedShellEntities<ShellEntities>();
+      for (ShellEntities::iterator iit = innerShells.begin(); iit != innerShells.end(); ++iit)
+        {
+        if (iit->contains(bdyUse))
+          {
+          return *iit;
+          }
+        }
+      }
+    }
+  // Didn't find anything. Return an invalid shell:
+  return ShellEntity();
+}
+
+/**\brief Return the shell entity bounding this cell which contains \a useEnt.
+  *
+  * Return all of the shells bounding this cell which reference the given \a cell.
+  * This obtains all the uses of \a cell and collects the shell entities
+  * for each using CellEntity::findShellEntityContainingUse().
+  */
+ShellEntities CellEntity::findShellEntitiesContainingCell(const CellEntity& cell)
+{
+  ShellEntities result;
+  UseEntities uses = cell.uses<UseEntities>();
+  for (UseEntities::iterator it = uses.begin(); it != uses.end(); ++it)
+    {
+    ShellEntity shellEnt = this->findShellEntityContainingUse(*it);
+    if (shellEnt.isValid())
+      {
+      result.push_back(shellEnt);
+      }
+    }
+  return result;
+}
+
 /*! \fn CellEntity::inclusions() const
  * \brief Return the list of all entities embedded in this cell.
  *

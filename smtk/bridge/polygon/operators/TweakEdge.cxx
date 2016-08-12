@@ -167,7 +167,7 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
     }
 
   // Split the edge as requested by the user:
-  std::vector<internal::vertex::Ptr> dummy;
+  std::vector<internal::vertex::Ptr> promotedVerts;
   std::vector<internal::PointSeq::const_iterator> splitLocs;
   internal::PointSeq::const_iterator ptit = epts.begin();
   int last = 0;
@@ -175,23 +175,50 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
     {
     std::advance(ptit, *promit - last);
     last = *promit;
-    dummy.push_back(this->findStorage<internal::vertex>(pmod->findOrAddModelVertex(mgr, *ptit).entity()));
+    if (!!pmod->pointId(*ptit))
+      {
+      continue; // skip points that are already model vertices (should only happen at start/end)
+      }
+    smtk::model::Vertex pv = pmod->findOrAddModelVertex(mgr, *ptit);
+    promotedVerts.push_back(this->findStorage<internal::vertex>(pv.entity()));
     splitLocs.push_back(ptit);
+    std::cout << "  " << ptit->x() << " " << ptit->y() << "\n";
     }
+  std::cout << "Split @ " << splitLocs.size() << " places\n";
   smtk::model::EntityRefs eset;
   smtk::model::EntityRefs emod;
-  if (!pmod->splitModelEdgeAtModelVertices(mgr, storage, dummy, splitLocs, eset, emod))
-    {
-    smtkErrorMacro(this->log(), "Could not split edge.");
-    ok = false;
-    }
   smtk::model::EntityRefArray expunged;
-  if (!eset.empty())
+  if (!splitLocs.empty())
     {
-    expunged.push_back(src);
+    if (!pmod->splitModelEdgeAtModelVertices(mgr, storage, promotedVerts, splitLocs, eset, emod))
+      {
+      smtkErrorMacro(this->log(), "Could not split edge.");
+      ok = false;
+      }
+    if (!eset.empty())
+      {
+      expunged.push_back(src);
+      }
+    created.insert(created.end(), eset.begin(), eset.end());
+    modified.insert(modified.end(), emod.begin(), emod.end());
     }
-  created.insert(created.end(), eset.begin(), eset.end());
-  modified.insert(modified.end(), emod.begin(), emod.end());
+
+#if 0
+  for (smtk::model::Edges::iterator crit = created.begin(); crit != created.end(); ++crit)
+    {
+    std::cout << "Created " << crit->name() << "\n";
+    }
+
+  for (smtk::model::EntityRefArray::iterator moit = modified.begin(); moit != modified.end(); ++moit)
+    {
+    std::cout << "Modified " << moit->name() << "\n";
+    }
+
+  for (smtk::model::EntityRefArray::iterator epit = expunged.begin(); epit != expunged.end(); ++epit)
+    {
+    std::cout << "Expunged " << epit->name() << "\n";
+    }
+#endif
 
   smtk::model::OperatorResult opResult;
   if (ok)
