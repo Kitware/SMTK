@@ -11,6 +11,7 @@
 #define __smtk_model_Face_h
 
 #include "smtk/model/CellEntity.h"
+#include "smtk/model/Arrangement.h" // for ArrangementReference
 
 //#include "smtk/common/Eigen.h" // For Vector3d
 
@@ -21,6 +22,7 @@ namespace smtk {
 
 class Edge;
 class FaceUse;
+class Loop;
 class Volume;
 typedef std::vector<Edge> Edges;
 typedef std::vector<FaceUse> FaceUses;

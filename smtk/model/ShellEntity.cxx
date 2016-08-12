@@ -50,6 +50,23 @@ UseEntity ShellEntity::boundingUseEntity() const
   return result.as<UseEntity>();
 }
 
+/**\brief Returns true when \a bdyUse is in this shell's list of low-dimensional use-records.
+  *
+  * For example, you may ask any Loop bounding a Face whether it contains an EdgeUse.
+  * Note that Loop is a subclass of ShellEntity.
+  * This method will return true when the corresponding Edge serves as part of the Face's boundary,
+  * but only if
+  * (1) the EdgeUse participates in the Face's boundary as part of this Loop and not
+  *     some other Loop; and
+  * (2) the sense and orientation of the EdgeUse match the sense specified by the Loop.
+  */
+bool ShellEntity::contains(const UseEntity& bdyUse) const
+{
+  // TODO: This takes a lot of storage and will not terminate early.
+  std::set<UseEntity> useRecs = this->uses<std::set<UseEntity> >();
+  return useRecs.find(bdyUse) != useRecs.end();
+}
+
 /**\brief Return the shell-entity containing this one (or an invalid shell-entity if unbounded).
   *
   */

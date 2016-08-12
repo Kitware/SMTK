@@ -146,6 +146,35 @@ public:
         }
       }
     }
+  /// Invalidate all the relations participating in shell-has-use arrangements, clear the arrangements,
+  /// and place the use records in \a result (in sequential order).
+  /// Add the indices of the invalidated relations to \a rangeDetector.
+  ///
+  /// This can be used as a first step in rewriting loops (which must have edge-uses remain in order).
+  template<typename T, typename U>
+  static void popAllShellHasUseRelations(
+    ManagerPtr manager, Entity* entRec, Arrangements* arr, T& result, U& rangeDetector)
+    {
+    smtk::common::UUIDArray const& relations(entRec->relations());
+    for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
+      {
+      // Shell HAS_USE arrangements are specified as [min,max[ offset-ranges,
+      // not arrays of offset values.
+      int i0, i1;
+      arrIt->IndexRangeFromShellHasUse(i0, i1);
+      for (int i = i0; i < i1; ++i)
+        {
+        typename T::value_type entry(manager, relations[i]);
+        rangeDetector.insert(i);
+        entRec->invalidateRelationByIndex(i);
+        if (entry.isValid())
+          {
+          result.insert(result.end(), entry);
+          }
+        }
+      }
+    arr->clear();
+    }
   template<typename T>
   static void appendAllSimpleRelations(
     ManagerPtr manager, Entity* entRec, Arrangements* arr, T& result)

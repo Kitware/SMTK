@@ -37,6 +37,9 @@ public:
   template<typename T> T boundingCellsAs() const;
   template<typename T> T inclusions() const;
   template<typename T> T uses() const;
+
+  ShellEntity findShellEntityContainingUse(const UseEntity& bdyUse);
+  ShellEntities findShellEntitiesContainingCell(const CellEntity& cell);
 };
 
 template<typename T>

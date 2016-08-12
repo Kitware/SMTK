@@ -16,6 +16,7 @@ set(commonHeaders
   FileLocation.h
   GeometryUtilities.h
   Paths.h
+  RangeDetector.h
   Resource.h
   ResourceSet.h
   StringUtil.h

@@ -36,6 +36,8 @@ public:
   CellEntity boundingCell() const;
   UseEntity boundingUseEntity() const;
 
+  bool contains(const UseEntity& bdyUse) const;
+
   template<typename T> T uses() const;
   template<typename T> T cellsOfUses() const;
 

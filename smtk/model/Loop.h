@@ -38,6 +38,8 @@ public:
   EdgeUses edgeUses() const;
   Loop containingLoop() const;
   Loops containedLoops() const;
+
+  bool replaceEdgeUseWithUses(const EdgeUse& original, const EdgeUses& replacements);
 };
 
   } // namespace model

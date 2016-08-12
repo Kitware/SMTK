@@ -4,6 +4,7 @@ set(commonTests
   unitUUID
   unitPaths
   unitUnionFind
+  unitRangeDetector
 )
 
 foreach (test ${commonTests})
