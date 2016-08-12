@@ -345,6 +345,12 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
   this->m_model = model;
   neighborhood.getLoops(this);
 
+  // Make sure the application knows the model has new faces.
+  if (this->m_result->findModelEntity("created")->numberOfValues() > 0)
+    {
+    this->addEntityToResult(this->m_result, model, MODIFIED);
+    }
+
   // Finally, tessellate each face using Boost::polygon
   // (although TODO: it would be better to triangulate while sweeping).
   this->addTessellations();
@@ -398,6 +404,7 @@ void CreateFaces::evaluateLoop(
       }
     smtk::model::Face modelFace(mgr, modelFaceId);
     this->m_model.addCell(modelFace);
+    modelFace.assignDefaultName();
 		this->addEntityToResult(this->m_result, modelFace, CREATED);
     if (this->m_debugLevel > 0)
       {
