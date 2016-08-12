@@ -10,17 +10,7 @@
 #ifndef __smtk_session_polygon_CreateFacesFromEdges_h
 #define __smtk_session_polygon_CreateFacesFromEdges_h
 
-#include "smtk/bridge/polygon/Operator.h"
-#include "smtk/bridge/polygon/internal/Fragment.h" // for various internal types help by CreateFacesFromEdges
-#include "smtk/bridge/polygon/internal/Neighborhood.h" // for various internal types help by CreateFacesFromEdges
-
-#include "smtk/model/Face.h"
-
-#include "smtk/common/UnionFind.h"
-
-#include <map>
-#include <set>
-#include <vector>
+#include "smtk/bridge/polygon/operators/CreateFaces.h"
 
 namespace smtk {
   namespace bridge {
@@ -32,28 +22,18 @@ class Neighborhood;
 /**\brief Create a face given a set of point coordinates or edges (but not both).
   *
   */
-class SMTKPOLYGONSESSION_EXPORT CreateFacesFromEdges : public Operator
+class SMTKPOLYGONSESSION_EXPORT CreateFacesFromEdges : public CreateFaces
 {
 public:
   smtkTypeMacro(CreateFacesFromEdges);
   smtkCreateMacro(CreateFacesFromEdges);
-  smtkSharedFromThisMacro(Operator);
-  smtkSuperclassMacro(Operator);
+  smtkSharedFromThisMacro(CreateFaces);
+  smtkSuperclassMacro(CreateFaces);
   smtkDeclareModelOperator();
 
 protected:
-  friend class Neighborhood;
 
-  virtual smtk::model::OperatorResult operateInternal();
-
-  void evaluateLoop(RegionId faceNumber, OrientedEdges& loop, std::set<RegionId>& borders);
-  void addTessellations();
-
-  std::map<RegionId, smtk::model::Face> m_regionFaces;
-  std::map<RegionId, std::vector<OrientedEdges> > m_regionLoops;
-  smtk::model::OperatorResult m_result;
-  smtk::model::Model m_model;
-  smtk::model::OperatorOutcome m_status;
+  virtual bool populateEdgeMap();
 };
 
     } // namespace polygon

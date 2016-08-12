@@ -29,6 +29,33 @@ namespace smtk {
 class ActiveFragmentTree;
 class Neighborhood;
 
+/// An internal structure used when discovering edge loops.
+struct SMTKPOLYGONSESSION_EXPORT ModelEdgeInfo
+{
+  ModelEdgeInfo()
+    : m_allowedOrientations(0)
+    {
+    this->m_visited[0] = this->m_visited[1] = false;
+    }
+  ModelEdgeInfo(int allowedOrientations)
+    {
+    this->m_allowedOrientations = allowedOrientations > 0 ? +1 : allowedOrientations < 0 ? -1 : 0;
+    this->m_visited[0] = this->m_visited[1] = false;
+    }
+  ModelEdgeInfo(const ModelEdgeInfo& other)
+    : m_allowedOrientations(other.m_allowedOrientations)
+    {
+    for (int i = 0; i < 2; ++i)
+      m_visited[i] = other.m_visited[i];
+    }
+
+  int m_allowedOrientations; // 0: all, -1: only negative, +1: only positive
+  bool m_visited[2]; // has the [0]: negative, [1]: positive orientation of the edge been visited already?
+};
+
+/// An internal structure used to map model edges to information about the space between them.
+typedef std::map<smtk::model::Edge, ModelEdgeInfo> ModelEdgeMap;
+
 /**\brief Create a face given a set of point coordinates or edges (but not both).
   *
   */
@@ -44,6 +71,7 @@ public:
 protected:
   friend class Neighborhood;
 
+  virtual bool populateEdgeMap();
   virtual smtk::model::OperatorResult operateInternal();
 
   void evaluateLoop(RegionId faceNumber, OrientedEdges& loop, std::set<RegionId>& borders);
@@ -54,6 +82,7 @@ protected:
   smtk::model::OperatorResult m_result;
   smtk::model::Model m_model;
   smtk::model::OperatorOutcome m_status;
+  ModelEdgeMap m_edgeMap;
 };
 
     } // namespace polygon
