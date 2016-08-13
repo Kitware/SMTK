@@ -91,7 +91,7 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
       --sit;
       }
     std::set<int>::reverse_iterator rsit;
-    for (rsit = splits.rbegin(); rsit != splits.rend() && *rsit >= npts; ++rsit)
+    for (rsit = splits.rbegin(); rsit != splits.rend() && *rsit >= static_cast<int>(npts); ++rsit)
       {
       derp << " " << *rsit;
       std::set<int>::iterator tmp = --rsit.base();

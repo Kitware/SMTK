@@ -53,7 +53,7 @@ public:
 
   bool pointsOfSegment(ssize_t idx, Point& lo, Point& hi) const
     {
-    if (idx < 0 || idx >= this->m_points.size())
+    if (idx < 0 || idx >= static_cast<ssize_t>(this->m_points.size()))
       return false;
 
     PointSeq::const_iterator it = this->pointsBegin();
