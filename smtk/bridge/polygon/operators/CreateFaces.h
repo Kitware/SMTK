@@ -75,6 +75,7 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 
   void evaluateLoop(RegionId faceNumber, OrientedEdges& loop, std::set<RegionId>& borders);
+  void updateLoopVertices(const smtk::model::Loop& loop, const smtk::model::Face& brd, bool isCCW);
   void addTessellations();
 
   std::map<RegionId, smtk::model::Face> m_regionFaces;

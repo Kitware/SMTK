@@ -363,7 +363,10 @@ bool pmodel::splitModelEdgeAtPoint(
 {
   Point pt = this->projectPoint(coords.begin(), coords.end());
   if (this->pointId(pt))
+    {
+    smtkWarningMacro(this->session()->log(), "Point is already a model vertex.");
     return false; // Point is already a model vertex.
+    }
   // TODO: Find point on edge closest to pt? Need to find where to insert model vertex?
   smtk::model::Vertex v = this->findOrAddModelVertex(mgr, pt);
   return this->splitModelEdgeAtModelVertex(mgr, edgeId, v.entity(), created, modified);
@@ -388,11 +391,23 @@ bool pmodel::splitModelEdgeAtModelVertex(
   vertex::Ptr vrt = this->session()->findStorage<vertex>(vertexId);
   if (!edg || !vrt)
     return false;
-  PointSeq::const_iterator split;
+  PointSeq::iterator split;
+  Coord maxDelta = static_cast<Coord>(this->m_featureSize * this->m_scale);
   for (split = edg->pointsBegin(); split != edg->pointsEnd(); ++split)
     {
-    if (vrt->point() == *split)
+    if (
+      std::abs(vrt->point().x() - split->x()) < maxDelta &&
+      std::abs(vrt->point().y() - split->y()) < maxDelta)
       { // Split the edge at this location by creating 2 new edges and deleting this edge.
+      if (split == edg->pointsBegin() && *split == *edg->pointsRBegin())
+        { // User wants to split periodic edge... overwrite both front and back with vertex point
+        *split = vrt->point();
+        *(edg->pointsRBegin()) = vrt->point();
+        }
+      else
+        { // Overwrite split point with vertex point.
+        *split = vrt->point();
+        }
       return this->splitModelEdgeAtModelVertex(mgr, edg, vrt, split, created, modified);
       }
     }
@@ -470,6 +485,7 @@ bool pmodel::splitModelEdgeAtModelVertices(
   smtk::model::EntityRefs& created,
   smtk::model::EntityRefs& modified)
 {
+  (void)modified;
   size_t npts;
   if (
     !edgeToSplit ||
@@ -484,7 +500,8 @@ bool pmodel::splitModelEdgeAtModelVertices(
   smtk::model::Vertices allVertices;
   smtk::model::Vertex finalModelVert;
   bool isPeriodic = (*edgeToSplit->pointsBegin() == *edgeToSplit->pointsRBegin());
-  bool noModelVertices = (this->m_vertices.find(*edgeToSplit->pointsBegin()) == this->m_vertices.end());
+  //bool noModelVertices = (this->m_vertices.find(*edgeToSplit->pointsBegin()) == this->m_vertices.end());
+  bool noModelVertices = modelEdge.vertices().empty();
   if (isPeriodic && noModelVertices)
     {
     // Edge had no model vertices and we are being asked to split it at a
@@ -719,7 +736,7 @@ model::Edge pmodel::createModelEdgeFromVertices(model::ManagerPtr mgr,
   if (!v0->canInsertEdge(v1->point(), &whereBegin))
     {
     smtkErrorMacro(this->m_session->log(),
-		   "Edge would overlap face in neighborhood of first vertex");
+		   "Edge would overlap face in neighborhood of first vertex (" << smtk::model::Vertex(mgr, v0->id()).name() << ").");
     return smtk::model::Edge();
     }
   
@@ -727,7 +744,7 @@ model::Edge pmodel::createModelEdgeFromVertices(model::ManagerPtr mgr,
   if (!v1->canInsertEdge(v0->point(), &whereEnd))
     {
     smtkErrorMacro(this->m_session->log(),
-		   "Edge would overlap face in neighborhood of last vertex");
+		   "Edge would overlap face in neighborhood of last vertex (" << smtk::model::Vertex(mgr, v1->id()).name() << ").");
     return smtk::model::Edge();
     }
 

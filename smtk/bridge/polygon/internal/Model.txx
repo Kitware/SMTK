@@ -64,7 +64,7 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
     if (!vInitStorage->canInsertEdge(begin->second.high(), &whereBegin))
       {
       smtkErrorMacro(this->m_session->log(),
-        "Edge would overlap face in neighborhood of first vertex");
+        "Edge would overlap face in neighborhood of first vertex (" << smtk::model::Vertex(mgr, vInit).name() << ").");
       return smtk::model::Edge();
       }
     }
@@ -74,7 +74,7 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
     if (!vFiniStorage->canInsertEdge((begin + (end - begin - 1))->second.low(), &whereEnd))
       {
       smtkErrorMacro(this->m_session->log(),
-        "Edge would overlap face in neighborhood of last vertex");
+        "Edge would overlap face in neighborhood of last vertex (" << smtk::model::Vertex(mgr, vFini).name() << ").");
       return smtk::model::Edge();
       }
     }
@@ -160,7 +160,7 @@ model::Edge pmodel::createModelEdgeFromPoints(model::ManagerPtr mgr, T begin, T 
     if (!vInitStorage->canInsertEdge(*begin, &whereBegin))
       {
       smtkErrorMacro(this->m_session->log(),
-        "Edge would overlap face in neighborhood of first vertex");
+        "Edge would overlap face in neighborhood of first vertex (" << smtk::model::Vertex(mgr, vInit).name() << ").");
       return smtk::model::Edge();
       }
     }
@@ -170,7 +170,7 @@ model::Edge pmodel::createModelEdgeFromPoints(model::ManagerPtr mgr, T begin, T 
     if (!vFiniStorage->canInsertEdge(*(end - 1), &whereEnd))
       {
       smtkErrorMacro(this->m_session->log(),
-        "Edge would overlap face in neighborhood of last vertex");
+        "Edge would overlap face in neighborhood of last vertex (" << smtk::model::Vertex(mgr, vFini).name() << ").");
       return smtk::model::Edge();
       }
     }

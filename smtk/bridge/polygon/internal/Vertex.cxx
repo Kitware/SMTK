@@ -119,6 +119,51 @@ void vertex::removeEdgeAt(incident_edges::iterator where)
   this->m_edges.erase(where);
 }
 
+bool vertex::setFaceAdjacency(const Id& incidentEdge, const Id& adjacentFace, bool isCCW, int edgeDir)
+{
+  incident_edges::iterator it;
+  for (it = this->m_edges.begin(); it != this->m_edges.end(); ++it)
+    {
+    // This conditional is complex because we must handle the case when
+    // an edge has both endpoints into the same vertex:
+    if (
+      it->edgeId() == incidentEdge && (                          // The edge ID matches and either:
+        edgeDir == 0 ||                                          // we don't care about edge direction or
+        (edgeDir != 0 && (edgeDir > 0) == it->isEdgeOutgoing())  // the edge direction also matches (i.e., head at vertex)
+      ))
+      {
+      if (isCCW)
+        {
+        ++it;
+        if (it == this->edgesEnd())
+          {
+          it = this->edgesBegin();
+          }
+        it->m_adjacentFace = adjacentFace;
+        }
+      else
+        {
+        it->m_adjacentFace = adjacentFace;
+        }
+      this->dump();
+      return true;
+      }
+    }
+  this->dump();
+  return false;
+}
+
+void vertex::dump()
+{
+  std::cout << "    Vertex " << this->id() << "   (" << this->point().x() << " " << this->point().y() << ")" << "\n";
+  for (incident_edges::iterator it = this->edgesBegin(); it != edgesEnd(); ++it)
+    {
+    std::cout
+      << "      e: " << it->edgeId() << " " << (it->isEdgeOutgoing() ? "O" : "I")
+      << "      f: " << it->clockwiseFaceId() << "\n";
+    }
+}
+
       } // namespace internal
     } // namespace polygon
   } // namespace bridge
