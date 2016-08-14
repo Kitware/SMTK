@@ -736,7 +736,7 @@ model::Edge pmodel::createModelEdgeFromVertices(model::ManagerPtr mgr,
   if (!v0->canInsertEdge(v1->point(), &whereBegin))
     {
     smtkErrorMacro(this->m_session->log(),
-		   "Edge would overlap face in neighborhood of first vertex (" << smtk::model::Vertex(mgr, v0->id()).name() << ").");
+		   "Edge would overlap face in neighborhood of first vertex (" << smtk::model::Vertex(mgr, v0->id()).name() << ")A.");
     return smtk::model::Edge();
     }
   
@@ -744,7 +744,7 @@ model::Edge pmodel::createModelEdgeFromVertices(model::ManagerPtr mgr,
   if (!v1->canInsertEdge(v0->point(), &whereEnd))
     {
     smtkErrorMacro(this->m_session->log(),
-		   "Edge would overlap face in neighborhood of last vertex (" << smtk::model::Vertex(mgr, v1->id()).name() << ").");
+		   "Edge would overlap face in neighborhood of last vertex (" << smtk::model::Vertex(mgr, v1->id()).name() << ")B.");
     return smtk::model::Edge();
     }
 
@@ -1011,14 +1011,16 @@ Id pmodel::pointId(const Point& p) const
   */
 bool pmodel::tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn, smtk::model::EntityRefs& modifiedEdgesAndFaces)
 {
+  bool didChange = false;
   vertex::Ptr vv = this->session()->findStorage<vertex>(vertRec.entity());
   if (!vv)
     {
-    return false;
+    return didChange;
     }
-  if (vv->point() == vertPosn)
+  bool vertexTweaked = (vv->point() == vertPosn);
+  if (vertexTweaked)
     {
-    return false; // no change == no op
+    didChange = true;
     }
 
   // Erase old reverse lookup, update vertex, and add new reverse lookup:
@@ -1029,29 +1031,32 @@ bool pmodel::tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn, smt
   vertex::incident_edges::iterator eit;
   for (eit = vv->edgesBegin(); eit != vv->edgesEnd(); ++eit)
     {
-    PointSeq::iterator pit;
-    edge::Ptr ee = this->session()->findStorage<edge>(eit->edgeId());
-    if (eit->isEdgeOutgoing())
-      { // Update the first point along the edge
-      pit = ee->pointsBegin();
-      }
-    else
-      { // Update the last point along the edge
-      pit = (++ee->pointsRBegin()).base();
-      }
-    *pit = vertPosn;
     smtk::model::Edge edgeRec(vertRec.manager(), eit->edgeId());
-    this->addEdgeTessellation(edgeRec, ee);
-    modifiedEdgesAndFaces.insert(edgeRec);
+    if (vertexTweaked)
+      { // Only update edges if the endpoint changed.
+      PointSeq::iterator pit;
+      edge::Ptr ee = this->session()->findStorage<edge>(eit->edgeId());
+      if (eit->isEdgeOutgoing())
+        { // Update the first point along the edge
+        pit = ee->pointsBegin();
+        }
+      else
+        { // Update the last point along the edge
+        pit = (++ee->pointsRBegin()).base();
+        }
+      *pit = vertPosn;
+      this->addEdgeTessellation(edgeRec, ee);
+      modifiedEdgesAndFaces.insert(edgeRec);
+      }
 
-    /**
-      **/
+    // If any faces are attached to the vertex, they must be retessellated.
     smtk::model::Faces facesOnEdge = edgeRec.faces();
     for (smtk::model::Faces::iterator fit = facesOnEdge.begin(); fit != facesOnEdge.end(); ++fit)
       {
       // If we have a face attached, re-tessellate it and add to modifiedEdgesAndFaces
       if (modifiedEdgesAndFaces.find(*fit) == modifiedEdgesAndFaces.end())
         {
+        didChange = true;
         this->addFaceTessellation(*fit);
         modifiedEdgesAndFaces.insert(*fit);
         }
@@ -1061,7 +1066,7 @@ bool pmodel::tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn, smt
   // Update the SMTK tessellation in world coordinates:
   this->addVertTessellation(vertRec, vv);
 
-  return true;
+  return didChange;
 }
 
 void pmodel::addVertexIndex(vertex::Ptr vert)

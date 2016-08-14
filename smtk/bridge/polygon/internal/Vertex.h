@@ -84,13 +84,20 @@ public:
     this->m_edges.insert(this->m_edges.end(), rec);
     }
 
+  /// For use only by pmodel::splitEdge
+  void setInsideSplit(bool duringSplit)
+    {
+    this->m_insideSplit = duringSplit;
+    }
+
 protected:
   friend class pmodel;
 
-  vertex() { }
+  vertex() : m_insideSplit(false) { }
 
   Point m_coords; // position in the plane.
   incident_edges m_edges; // CCW list of incident edges
+  bool m_insideSplit; // Is an edge attached here being split? If so, canInsertEdge will behave differently.
 
   // NB: One extension to this structure would be:
   // Ptr m_prev; // Previous model vertex located at this exact point in the plane
