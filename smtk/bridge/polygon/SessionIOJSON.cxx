@@ -299,6 +299,7 @@ int SessionIOJSON::exportJSON(
 
 cJSON* SessionIOJSON::serializeModel(internal::pmodel::Ptr model, const smtk::model::Model& mod)
 {
+  (void)mod;
   cJSON* result = cJSON_CreateObject();
   cJSON_AddItemToObject(result, "type", cJSON_CreateString("model"));
   cJSON_AddItemToObject(result, "origin", cJSON_CreateDoubleArray(model->origin(), 3));
@@ -425,6 +426,7 @@ cJSON* SessionIOJSON::serializeIncidentEdgeRecord(const internal::vertex::incide
 
 internal::pmodel::Ptr SessionIOJSON::deserializeModel(cJSON* record, const smtk::model::Model& m)
 {
+  (void)m;
   internal::pmodel::Ptr result;
   std::vector<double> origin;
   std::vector<double> xAxis;
