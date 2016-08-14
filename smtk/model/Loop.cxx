@@ -133,7 +133,7 @@ bool Loop::replaceEdgeUseWithUses(const EdgeUse& original, const EdgeUses& repla
       {
       entRec->relations()[ii] = uit->entity();
       }
-    arr->push_back(Arrangement::ShellHasUseWithIndexRange(rdit->first, ii - 1));
+    arr->push_back(Arrangement::ShellHasUseWithIndexRange(rdit->first, ii));
     }
 
   // The above created a new arrangement for the Loop... now we need to

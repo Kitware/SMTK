@@ -646,6 +646,13 @@ UUIDs Manager::boundaryEntities(const UUID& ofEntity, int ofDimension) const
             result.insert(cellIt->entity());
             }
           }
+        // Add any inner shells owned by this outer shell. Note the iterator math:
+        // since shellIt can be invalidated as we add new entries to the vector,
+        // we recompute shellIt after insertion.
+        std::size_t itposn = shellIt - shells.begin();
+        ShellEntities innerShells = shellIt->containedShellEntities<ShellEntities>();
+        shells.insert(shells.end(), innerShells.begin(), innerShells.end());
+        shellIt = shells.begin() + itposn;
         }
       }
     }
