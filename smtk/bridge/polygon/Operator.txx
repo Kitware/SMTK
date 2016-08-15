@@ -95,6 +95,7 @@ void Operator::pointsForLoop(
 template<typename T, typename U>
 void Operator::pointsInLoopOrderFromOrientedEdges(T& polypts, U begin, U end, smtk::shared_ptr<internal::pmodel> pmodel)
 {
+  (void)pmodel;
   U oit; // Oriented-edges-of-loop iterator
   bool firstInLoop = true;
   for (oit = begin; oit != end; ++oit)

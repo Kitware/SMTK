@@ -110,6 +110,9 @@ Vertices EdgeUse::vertices() const
     {
     result.push_back(it->vertex());
     }
+  // FIXME: If the model does not create vertex uses then this
+  //        fetch vertices from the edge and shuffle them according
+  //        to the orientation of the use.
   return result;
 }
 

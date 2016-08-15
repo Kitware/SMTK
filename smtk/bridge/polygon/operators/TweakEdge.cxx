@@ -91,7 +91,7 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
       --sit;
       }
     std::set<int>::reverse_iterator rsit;
-    for (rsit = splits.rbegin(); rsit != splits.rend() && *rsit >= npts; ++rsit)
+    for (rsit = splits.rbegin(); rsit != splits.rend() && *rsit >= static_cast<int>(npts); ++rsit)
       {
       derp << " " << *rsit;
       std::set<int>::iterator tmp = --rsit.base();
@@ -202,22 +202,23 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
     modified.insert(modified.end(), emod.begin(), emod.end());
     }
 
-#if 1
-  for (smtk::model::Edges::iterator crit = created.begin(); crit != created.end(); ++crit)
+  if (this->m_debugLevel > 0)
     {
-    std::cout << "Created " << crit->name() << "\n";
-    }
+    for (smtk::model::Edges::iterator crit = created.begin(); crit != created.end(); ++crit)
+      {
+      std::cout << "Created " << crit->name() << "\n";
+      }
 
-  for (smtk::model::EntityRefArray::iterator moit = modified.begin(); moit != modified.end(); ++moit)
-    {
-    std::cout << "Modified " << moit->name() << "\n";
-    }
+    for (smtk::model::EntityRefArray::iterator moit = modified.begin(); moit != modified.end(); ++moit)
+      {
+      std::cout << "Modified " << moit->name() << "\n";
+      }
 
-  for (smtk::model::EntityRefArray::iterator epit = expunged.begin(); epit != expunged.end(); ++epit)
-    {
-    std::cout << "Expunged " << epit->name() << "\n";
+    for (smtk::model::EntityRefArray::iterator epit = expunged.begin(); epit != expunged.end(); ++epit)
+      {
+      std::cout << "Expunged " << epit->name() << "\n";
+      }
     }
-#endif
 
   smtk::model::OperatorResult opResult;
   if (ok)

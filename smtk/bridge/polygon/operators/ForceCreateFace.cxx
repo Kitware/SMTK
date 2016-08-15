@@ -79,7 +79,7 @@ bool ForceCreateFace::ableToOperate()
     (method == ForceCreateFace::POINTS ||
      (method == ForceCreateFace::EDGES &&
       (numOrient == -1 ||
-       numOrient == this->specification()->associations()->numberOfValues()
+       numOrient == static_cast<int>(this->specification()->associations()->numberOfValues())
       )
      )
     );

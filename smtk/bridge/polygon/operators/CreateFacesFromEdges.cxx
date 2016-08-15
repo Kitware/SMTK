@@ -57,10 +57,9 @@ bool CreateFacesFromEdges::populateEdgeMap()
   smtk::model::Model model;
 
   internal::pmodel::Ptr storage; // Look up from session = internal::pmodel::create();
-  bool ok = true;
 
   // First, collect  edges to process:
-  for (int i = 0; i < modelItem->numberOfValues(); ++i)
+  for (int i = 0; i < static_cast<int>(modelItem->numberOfValues()); ++i)
     {
     smtk::model::Edge edgeIn(modelItem->value(i));
     if (edgeIn.isValid())

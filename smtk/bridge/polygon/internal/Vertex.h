@@ -43,9 +43,9 @@ public:
     incident_edge_data(Id faceId)
       : m_adjacentFace(faceId) { }
     incident_edge_data(Id edgeId, bool isEdgeOut, Id faceId)
-      : m_edgeId(edgeId), m_edgeOut(isEdgeOut), m_adjacentFace(faceId) { }
+      : m_edgeId(edgeId), m_adjacentFace(faceId), m_edgeOut(isEdgeOut) { }
     incident_edge_data(const incident_edge_data& other)
-      : m_edgeId(other.edgeId()), m_edgeOut(other.isEdgeOutgoing()), m_adjacentFace(other.clockwiseFaceId()) { }
+      : m_edgeId(other.edgeId()), m_adjacentFace(other.clockwiseFaceId()), m_edgeOut(other.isEdgeOutgoing()) { }
     incident_edge_data()
       : m_edgeOut(false) { }
 
@@ -74,19 +74,30 @@ public:
   incident_edges::reverse_iterator edgesRBegin() { return this->m_edges.rbegin(); }
   incident_edges::reverse_iterator edgesREnd() { return this->m_edges.rend(); }
 
+  bool setFaceAdjacency(const Id& incidentEdge, const Id& adjacentFace, bool isCCW = true, int edgeDir = 0);
+
+  void dump();
+
   /// To be used by SessionIOJSON only (for deserializing from storage):
   void dangerousAppendEdge(const incident_edge_data& rec)
     {
     this->m_edges.insert(this->m_edges.end(), rec);
     }
 
+  /// For use only by pmodel::splitEdge
+  void setInsideSplit(bool duringSplit)
+    {
+    this->m_insideSplit = duringSplit;
+    }
+
 protected:
   friend class pmodel;
 
-  vertex() { }
+  vertex() : m_insideSplit(false) { }
 
   Point m_coords; // position in the plane.
   incident_edges m_edges; // CCW list of incident edges
+  bool m_insideSplit; // Is an edge attached here being split? If so, canInsertEdge will behave differently.
 
   // NB: One extension to this structure would be:
   // Ptr m_prev; // Previous model vertex located at this exact point in the plane

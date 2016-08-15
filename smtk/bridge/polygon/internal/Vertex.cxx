@@ -32,11 +32,20 @@ bool vertex::canInsertEdge(const Point& neighborhood, incident_edges::iterator* 
   // matter where we insert
   if (this->m_edges.size() < 2)
     {
-    // A vertex with 1 incident edge that is part of a face has face completely
-    // surrounding the vertex; it will never be valid to insert another edge
-    // there without removing the face first.
-    if (!this->m_edges.empty() && this->m_edges.front().m_adjacentFace)
-      return false;
+    // Are we busy splitting an edge?
+    // If so, an edge has been removed from this vertex and
+    // will be replaced by the new edge. Don't panic if it looks
+    // like a face will be split.
+    // If not...
+    if (!this->m_insideSplit)
+      {
+      // A vertex with 1 incident edge that is part of a face has face completely
+      // surrounding the vertex; it will never be valid to insert another edge
+      // there without removing the face first.
+      if (!this->m_edges.empty() && this->m_edges.front().m_adjacentFace)
+        return false;
+      }
+
     // Otherwise, it is always valid to insert a new edge anywhere.
     if (where)
       *where = this->m_edges.begin();
@@ -77,7 +86,7 @@ bool vertex::canInsertEdge(const Point& neighborhood, incident_edges::iterator* 
 
     if (inside)
       {
-      if (!it->m_adjacentFace)
+      if (!it->m_adjacentFace || this->m_insideSplit)
         { // There is no face; it's OK to add the edge here.
         if (where)
           *where = it;
@@ -117,6 +126,51 @@ void vertex::insertEdgeAt(incident_edges::iterator where, const Id& edgeId, bool
 void vertex::removeEdgeAt(incident_edges::iterator where)
 {
   this->m_edges.erase(where);
+}
+
+bool vertex::setFaceAdjacency(const Id& incidentEdge, const Id& adjacentFace, bool isCCW, int edgeDir)
+{
+  incident_edges::iterator it;
+  for (it = this->m_edges.begin(); it != this->m_edges.end(); ++it)
+    {
+    // This conditional is complex because we must handle the case when
+    // an edge has both endpoints into the same vertex:
+    if (
+      it->edgeId() == incidentEdge && (                          // The edge ID matches and either:
+        edgeDir == 0 ||                                          // we don't care about edge direction or
+        (edgeDir != 0 && (edgeDir > 0) == it->isEdgeOutgoing())  // the edge direction also matches (i.e., head at vertex)
+      ))
+      {
+      if (isCCW)
+        {
+        ++it;
+        if (it == this->edgesEnd())
+          {
+          it = this->edgesBegin();
+          }
+        it->m_adjacentFace = adjacentFace;
+        }
+      else
+        {
+        it->m_adjacentFace = adjacentFace;
+        }
+      this->dump();
+      return true;
+      }
+    }
+  this->dump();
+  return false;
+}
+
+void vertex::dump()
+{
+  std::cout << "    Vertex " << this->id() << "   (" << this->point().x() << " " << this->point().y() << ")" << "\n";
+  for (incident_edges::iterator it = this->edgesBegin(); it != edgesEnd(); ++it)
+    {
+    std::cout
+      << "      e: " << it->edgeId() << " " << (it->isEdgeOutgoing() ? "O" : "I")
+      << "      f: " << it->clockwiseFaceId() << "\n";
+    }
 }
 
       } // namespace internal

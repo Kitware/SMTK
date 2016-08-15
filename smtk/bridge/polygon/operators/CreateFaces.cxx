@@ -23,6 +23,8 @@
 #include "smtk/bridge/polygon/internal/Neighborhood.txx"
 #include "smtk/bridge/polygon/internal/Model.txx"
 
+#include "smtk/model/Edge.h"
+#include "smtk/model/EdgeUse.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Loop.h"
@@ -132,7 +134,6 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
   smtk::model::Model model;
 
   internal::pmodel::Ptr storage; // Look up from session = internal::pmodel::create();
-  bool ok = true;
 
   Session* sess = this->polygonSession();
   smtk::model::ManagerPtr mgr;
@@ -249,6 +250,7 @@ void CreateFaces::evaluateLoop(
   OrientedEdges& loop,
   std::set<RegionId>& borders)
 {
+  (void) borders;
 	// Keep track of loops for tessellation
   // TODO: Handle tessellation as part of the Neighborhood sweep instead of re-sweeping with boost.polygon.
   this->m_regionLoops[faceNumber].push_back(loop);
@@ -281,9 +283,11 @@ void CreateFaces::evaluateLoop(
 			this->m_status = smtk::model::OPERATION_FAILED;
       return;
       }
+    // Update vertex neighborhoods to include new face adjacency.
     smtk::model::Face modelFace(mgr, modelFaceId);
     this->m_model.addCell(modelFace);
     modelFace.assignDefaultName();
+    this->updateLoopVertices(smtk::model::Loop(mgr, outerLoopId), modelFace, /* isCCW */ true);
 		this->addEntityToResult(this->m_result, modelFace, CREATED);
     if (this->m_debugLevel > 0)
       {
@@ -309,6 +313,84 @@ void CreateFaces::evaluateLoop(
 			this->m_status = smtk::model::OPERATION_FAILED;
       return;
 			}
+    this->updateLoopVertices(smtk::model::Loop(mgr, innerLoopId), fit->second, /* isCCW */ false);
+    }
+}
+
+/**\brief Visit each edge of the loop and update its vertices' polygon-storage.
+  *
+  * This method does 2 things:
+  * (1) it ensures that the vertex has an incident-edge record for each edge of the loop
+  * and (2) it marks the proper indicent-edge record as adjacent to the bordant face (\a brd).
+  *
+  * The question of which indicent-edge record should be marked is determined by the \a isCCW flag,
+  * which indicates to which side of the loop the face lies.
+  * When \a isCCW is true, \a brd lies to the left of the edges in the loop (looking from above the
+  * face in the direction of the model's normal vector). Otherwise, it lies to the right.
+  */
+void CreateFaces::updateLoopVertices(const smtk::model::Loop& loop, const smtk::model::Face& brd, bool isCCW)
+{
+  smtk::model::EdgeUses edgesOfLoop = loop.uses<smtk::model::EdgeUses>();
+  smtk::common::UUIDs done;
+  if (this->m_debugLevel > 0)
+    {
+    std::cout << "Loop " << loop.name() << " " << (isCCW ? "outer" : "inner") << " brd " << brd.name() << "\n";
+    }
+  isCCW = true;
+  for (smtk::model::EdgeUses::iterator eit = edgesOfLoop.begin(); eit != edgesOfLoop.end(); ++eit)
+    {
+    smtk::model::Edge edge = eit->edge();
+    if (this->m_debugLevel > 0)
+      {
+      std::cout
+        << "  " << edge.name()
+        << "  " << (eit->orientation() == smtk::model::POSITIVE ? "+" : "-")
+        << "  " << eit->sense()
+        << "\n";
+      }
+    smtk::model::Vertices verts = edge.vertices();
+    /*
+    int vertOrder[2][2] = {
+      { 0, 1 },
+      { 1, 0 }
+    };
+    int* econn = (eit->sense() == smtk::model::NEGATIVE && verts.size() > 1) ? vertOrder[1] : vertOrder[0];
+    */
+    /*
+    std::cout << "  VerticesFromEdge   ";
+    if (verts.size() > 0) { std::cout << " " << verts[0].name(); }
+    if (verts.size() > 1) { std::cout << " " << verts[1].name(); }
+    */
+    if (eit->orientation() == smtk::model::NEGATIVE && verts.size() > 1)
+      {
+      smtk::model::Vertex tmp = verts[0];
+      verts[0] = verts[1];
+      verts[1] = tmp;
+      }
+    /*
+    std::cout << "\n";
+    std::cout << "  LoopOrderedVertices";
+    if (verts.size() > 0) { std::cout << " " << verts[0].name(); }
+    if (verts.size() > 1) { std::cout << " " << verts[1].name(); }
+    std::cout << "\n";
+    */
+    // FIXME: Handle case when the same edge is incident to the same model vertex at both ends.
+    //        In this case, the face-adjacency could be accidentally reversed because the
+    //        wrong incident_edge_data struct of the vertex might be found first and modified.
+    for (smtk::model::Vertices::iterator vit = verts.begin(); vit != verts.end(); ++vit)
+      {
+      internal::vertex::Ptr vrec = this->findStorage<internal::vertex>(vit->entity());
+      if (!vrec)
+        {
+        smtkWarningMacro(this->log(), "Could not update vertex on edge " << edge.name() << " " << edge.entity());
+        continue;
+        }
+      vrec->setFaceAdjacency(edge.entity(), brd.entity(), isCCW);
+      isCCW = !isCCW;
+      // Find incident edge corresponding to "edge"
+      // if isCCW, mark its face.
+      // if !isCCW, traverse the ring and mark the last entry before the incident edge
+      }
     }
 }
 

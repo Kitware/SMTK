@@ -363,7 +363,10 @@ bool pmodel::splitModelEdgeAtPoint(
 {
   Point pt = this->projectPoint(coords.begin(), coords.end());
   if (this->pointId(pt))
+    {
+    smtkWarningMacro(this->session()->log(), "Point is already a model vertex.");
     return false; // Point is already a model vertex.
+    }
   // TODO: Find point on edge closest to pt? Need to find where to insert model vertex?
   smtk::model::Vertex v = this->findOrAddModelVertex(mgr, pt);
   return this->splitModelEdgeAtModelVertex(mgr, edgeId, v.entity(), created, modified);
@@ -388,11 +391,23 @@ bool pmodel::splitModelEdgeAtModelVertex(
   vertex::Ptr vrt = this->session()->findStorage<vertex>(vertexId);
   if (!edg || !vrt)
     return false;
-  PointSeq::const_iterator split;
+  PointSeq::iterator split;
+  Coord maxDelta = static_cast<Coord>(this->m_featureSize * this->m_scale);
   for (split = edg->pointsBegin(); split != edg->pointsEnd(); ++split)
     {
-    if (vrt->point() == *split)
+    if (
+      std::abs(vrt->point().x() - split->x()) < maxDelta &&
+      std::abs(vrt->point().y() - split->y()) < maxDelta)
       { // Split the edge at this location by creating 2 new edges and deleting this edge.
+      if (split == edg->pointsBegin() && *split == *edg->pointsRBegin())
+        { // User wants to split periodic edge... overwrite both front and back with vertex point
+        *split = vrt->point();
+        *(edg->pointsRBegin()) = vrt->point();
+        }
+      else
+        { // Overwrite split point with vertex point.
+        *split = vrt->point();
+        }
       return this->splitModelEdgeAtModelVertex(mgr, edg, vrt, split, created, modified);
       }
     }
@@ -470,6 +485,7 @@ bool pmodel::splitModelEdgeAtModelVertices(
   smtk::model::EntityRefs& created,
   smtk::model::EntityRefs& modified)
 {
+  (void)modified;
   size_t npts;
   if (
     !edgeToSplit ||
@@ -484,57 +500,56 @@ bool pmodel::splitModelEdgeAtModelVertices(
   smtk::model::Vertices allVertices;
   smtk::model::Vertex finalModelVert;
   bool isPeriodic = (*edgeToSplit->pointsBegin() == *edgeToSplit->pointsRBegin());
-  bool noModelVertices = (this->m_vertices.find(*edgeToSplit->pointsBegin()) == this->m_vertices.end());
+  //bool noModelVertices = (this->m_vertices.find(*edgeToSplit->pointsBegin()) == this->m_vertices.end());
+  bool noModelVertices = modelEdge.vertices().empty();
   if (isPeriodic && noModelVertices)
     {
-    // Edge had no model vertices and we are being asked to split it at a
-    // point interior to its sequence; reorder the sequence so the split
-    // point is at the beginning+end of the sequence.
-    //
-    // Note that this is kinda futzy becase periodic edges repeat one point
-    // at their beginning and end... we have to remove the duplicate before
-    // splicing and then add a duplicate of the new start point to the end
-    // of the list.
-    smtkDebugMacro(this->session()->log(), "Edge is periodic, split is interior!");
+    // Edge has no model vertices because it's periodic.
+    // Are we being asked to split only at interior points?
+    // Or is one of the split locations the start/end point
+    // of the edge's sequence. If the former, then we reorder
+    // edge points so a split occurs at the beginning/end:
+    if (
+      **locationsInEdgeOrder.begin() != *edgeToSplit->pointsBegin() &&
+      **locationsInEdgeOrder.rbegin() != *edgeToSplit->pointsRBegin())
+      {
+      // Note that this is kinda futzy becase periodic edges repeat one point
+      // at their beginning and end... we have to remove the duplicate before
+      // splicing and then add a duplicate of the new start point to the end
+      // of the list.
+      smtkDebugMacro(this->session()->log(), "Edge is periodic, split is interior!");
 
 #if defined(GCC_STDLIBCXX_SUPPORT_BROKEN)
-    // GCC 4.9.2 does not support iterator conversions for
-    // std::list<>::iterator and its ::splice method only takes mutable
-    // iterators. With C++11, they are supposed to be const_iterators, but
-    // without the conversion, things. Compiler detection is done by CMake
-    // because so many non-GNU compilers define __GNUC__.
-    PointSeq::iterator it = edgeToSplit->pointsEnd();
-    --it;
-    edgeToSplit->m_points.erase(it);
-    PointSeq::const_iterator cBegin = edgeToSplit->pointsBegin();
-    size_t dist = std::distance(cBegin, *locationsInEdgeOrder.begin());
-    PointSeq::iterator loc2 = edgeToSplit->pointsBegin();
-    std::advance(loc2, dist);
-    PointSeq::iterator it2 = edgeToSplit->pointsEnd();
-    edgeToSplit->m_points.splice(it2, edgeToSplit->m_points, loc2, edgeToSplit->pointsEnd());
+      // GCC 4.9.2 does not support iterator conversions for
+      // std::list<>::iterator and its ::splice method only takes mutable
+      // iterators. With C++11, they are supposed to be const_iterators, but
+      // without the conversion, things. Compiler detection is done by CMake
+      // because so many non-GNU compilers define __GNUC__.
+      PointSeq::iterator it = edgeToSplit->pointsEnd();
+      --it;
+      edgeToSplit->m_points.erase(it);
+      PointSeq::const_iterator cBegin = edgeToSplit->pointsBegin();
+      size_t dist = std::distance(cBegin, *locationsInEdgeOrder.begin());
+      PointSeq::iterator loc2 = edgeToSplit->pointsBegin();
+      std::advance(loc2, dist);
+      PointSeq::iterator it2 = edgeToSplit->pointsEnd();
+      edgeToSplit->m_points.splice(it2, edgeToSplit->m_points, loc2, edgeToSplit->pointsEnd());
 #else
-    PointSeq::const_iterator it = edgeToSplit->pointsEnd();
-    --it;
-    edgeToSplit->m_points.erase(it);
-    it = edgeToSplit->pointsBegin();
-    edgeToSplit->m_points.splice(it, edgeToSplit->m_points, *locationsInEdgeOrder.begin(), edgeToSplit->pointsEnd());
+      PointSeq::const_iterator it = edgeToSplit->pointsEnd();
+      --it;
+      edgeToSplit->m_points.erase(it);
+      it = edgeToSplit->pointsBegin();
+      edgeToSplit->m_points.splice(it, edgeToSplit->m_points, *locationsInEdgeOrder.begin(), edgeToSplit->pointsEnd());
 #endif
-    edgeToSplit->m_points.insert(edgeToSplit->pointsEnd(), **locationsInEdgeOrder.begin());
+      edgeToSplit->m_points.insert(edgeToSplit->pointsEnd(), **locationsInEdgeOrder.begin());
 
-    // Now the edge's points have been reordered so that the first (and last) point
-    // will be promoted to a model vertex. Because PointSeq is a list, none of the
-    // iterators in locationsInEdgeOrder are invalid.
+      // Now the edge's points have been reordered so that the first (and last) point
+      // will be promoted to a model vertex. Because PointSeq is a list, none of the
+      // iterators in locationsInEdgeOrder are invalid.
 
-    /*
-    // Regenerate the tessellation for the edge with the new point order:
-    //mgr->erase(edgeToSplit->id(), smtk::model::SESSION_TESSELLATION);
-    smtk::model::Edge modelEdge(mgr, edgeToSplit->id());
-    this->addEdgeTessellation(modelEdge, edgeToSplit);
-    modified.insert(modelEdge);
-    return true;
-    */
-    allVertices.reserve(locationsInEdgeOrder.size() + 1);
-    finalModelVert = smtk::model::Vertex(mgr, (*splitPointsInEdgeOrder.rbegin())->id());
+      allVertices.reserve(locationsInEdgeOrder.size() + 1);
+      finalModelVert = smtk::model::Vertex(mgr, (*splitPointsInEdgeOrder.rbegin())->id());
+      }
     }
   else if (!noModelVertices) // i.e., we have model vertices at our endpoints.
     {
@@ -719,7 +734,7 @@ model::Edge pmodel::createModelEdgeFromVertices(model::ManagerPtr mgr,
   if (!v0->canInsertEdge(v1->point(), &whereBegin))
     {
     smtkErrorMacro(this->m_session->log(),
-		   "Edge would overlap face in neighborhood of first vertex");
+		   "Edge would overlap face in neighborhood of first vertex (" << smtk::model::Vertex(mgr, v0->id()).name() << ")A.");
     return smtk::model::Edge();
     }
   
@@ -727,7 +742,7 @@ model::Edge pmodel::createModelEdgeFromVertices(model::ManagerPtr mgr,
   if (!v1->canInsertEdge(v0->point(), &whereEnd))
     {
     smtkErrorMacro(this->m_session->log(),
-		   "Edge would overlap face in neighborhood of last vertex");
+		   "Edge would overlap face in neighborhood of last vertex (" << smtk::model::Vertex(mgr, v1->id()).name() << ")B.");
     return smtk::model::Edge();
     }
 
@@ -994,14 +1009,16 @@ Id pmodel::pointId(const Point& p) const
   */
 bool pmodel::tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn, smtk::model::EntityRefs& modifiedEdgesAndFaces)
 {
+  bool didChange = false;
   vertex::Ptr vv = this->session()->findStorage<vertex>(vertRec.entity());
   if (!vv)
     {
-    return false;
+    return didChange;
     }
-  if (vv->point() == vertPosn)
+  bool vertexTweaked = (vv->point() == vertPosn);
+  if (vertexTweaked)
     {
-    return false; // no change == no op
+    didChange = true;
     }
 
   // Erase old reverse lookup, update vertex, and add new reverse lookup:
@@ -1012,29 +1029,32 @@ bool pmodel::tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn, smt
   vertex::incident_edges::iterator eit;
   for (eit = vv->edgesBegin(); eit != vv->edgesEnd(); ++eit)
     {
-    PointSeq::iterator pit;
-    edge::Ptr ee = this->session()->findStorage<edge>(eit->edgeId());
-    if (eit->isEdgeOutgoing())
-      { // Update the first point along the edge
-      pit = ee->pointsBegin();
-      }
-    else
-      { // Update the last point along the edge
-      pit = (++ee->pointsRBegin()).base();
-      }
-    *pit = vertPosn;
     smtk::model::Edge edgeRec(vertRec.manager(), eit->edgeId());
-    this->addEdgeTessellation(edgeRec, ee);
-    modifiedEdgesAndFaces.insert(edgeRec);
+    if (vertexTweaked)
+      { // Only update edges if the endpoint changed.
+      PointSeq::iterator pit;
+      edge::Ptr ee = this->session()->findStorage<edge>(eit->edgeId());
+      if (eit->isEdgeOutgoing())
+        { // Update the first point along the edge
+        pit = ee->pointsBegin();
+        }
+      else
+        { // Update the last point along the edge
+        pit = (++ee->pointsRBegin()).base();
+        }
+      *pit = vertPosn;
+      this->addEdgeTessellation(edgeRec, ee);
+      modifiedEdgesAndFaces.insert(edgeRec);
+      }
 
-    /**
-      **/
+    // If any faces are attached to the vertex, they must be retessellated.
     smtk::model::Faces facesOnEdge = edgeRec.faces();
     for (smtk::model::Faces::iterator fit = facesOnEdge.begin(); fit != facesOnEdge.end(); ++fit)
       {
       // If we have a face attached, re-tessellate it and add to modifiedEdgesAndFaces
       if (modifiedEdgesAndFaces.find(*fit) == modifiedEdgesAndFaces.end())
         {
+        didChange = true;
         this->addFaceTessellation(*fit);
         modifiedEdgesAndFaces.insert(*fit);
         }
@@ -1044,7 +1064,7 @@ bool pmodel::tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn, smt
   // Update the SMTK tessellation in world coordinates:
   this->addVertTessellation(vertRec, vv);
 
-  return true;
+  return didChange;
 }
 
 void pmodel::addVertexIndex(vertex::Ptr vert)
