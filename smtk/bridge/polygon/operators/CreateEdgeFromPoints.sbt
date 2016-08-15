@@ -20,10 +20,10 @@
       </AssociationsDef>
 
       <ItemDefinitions>
-        <Int Name="pointGeometry" Label="Vertex Information">
+        <Int Name="pointGeometry" Label="Point Information">
           <ChildrenDefinitions>
             <Group Name="2DPoints" Label="Coordinates"
-                   Extensible="true" NumberOfRequiredGroups="1" >
+                   Extensible="true" NumberOfRequiredGroups="2" >
               <ItemDefinitions>
                 <Double Name="points" Label="Point" NumberOfRequiredValues="2">
                   <ComponentLabels>
@@ -35,7 +35,7 @@
             </Group>
 
             <Group Name="3DPoints" Label="Coordinates"
-                   Extensible="true" NumberOfRequiredGroups="1" >
+                   Extensible="true" NumberOfRequiredGroups="2" >
               <ItemDefinitions>
                 <Double Name="points" Label="Point" NumberOfRequiredValues="3">
                   <ComponentLabels>
