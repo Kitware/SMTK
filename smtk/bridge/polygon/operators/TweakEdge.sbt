@@ -13,7 +13,7 @@
         The edge can be split at points along the list of new coordinates by
         passing the indices of those points you wish to promote into model vertices.
       </DetailedDescription>
-      <AssociationsDef Name="edge" NumberOfRequiredValues="1">
+      <AssociationsDef Name="edge" NumberOfRequiredValues="1" AdvanceLevel="1">
         <MembershipMask>edge</MembershipMask>
         <BriefDescription>An edge to be reshaped.</BriefDescription>
         <DetailedDescription>
@@ -25,7 +25,7 @@
         </DetailedDescription>
       </AssociationsDef>
       <ItemDefinitions>
-        <Double Name="points" NumberOfRequiredValues="4" Extensible="yes">
+        <Double Name="points" NumberOfRequiredValues="4" Extensible="yes" AdvanceLevel="1">
           <BriefDescription>The (x,y,z) coordinates of the edges.</BriefDescription>
           <DetailedDescription>
             The world coordinates of 1 or more edges.
@@ -34,7 +34,7 @@
             Be sure to set the value of the coordinates item as required.
           </DetailedDescription>
         </Double>
-        <Int Name="coordinates" NumberOfRequiredValues="1">
+        <Int Name="coordinates" NumberOfRequiredValues="1" AdvanceLevel="1">
           <BriefDescription>The number of coordinates per vertex.</BriefDescription>
           <DetailedDescription>
             When specifying coordinates for more than 1 vertex,
@@ -46,7 +46,7 @@
             <Max Inclusive="true">3</Max>
           </RangeInfo>
         </Int>
-        <Int Name="promote" Optional="true" Extensible="true">
+        <Int Name="promote" Optional="true" Extensible="true" AdvanceLevel="1">
           <BriefDescription>Indices into the list of points indicating model vertices.</BriefDescription>
           <DetailedDescription>
             By default, the input edge will have only its tessellation modified.
