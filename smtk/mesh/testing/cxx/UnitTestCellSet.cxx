@@ -53,6 +53,39 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
 }
 
 //----------------------------------------------------------------------------
+void verify_subsets(const smtk::mesh::CollectionPtr& c)
+{
+  std::vector< std::string > mesh_names = c->meshNames();
+
+  smtk::mesh::MeshSet ms = c->meshes( mesh_names[0] );
+  smtk::mesh::CellSet ps = ms.cells();
+
+  smtk::mesh::HandleRange range;
+
+  std::set<smtk::mesh::Handle> set;
+  std::vector<smtk::mesh::Handle> vec;
+
+  for( smtk::mesh::HandleRange::pair_iterator iter = ps.range().begin();
+       iter != ps.range().end(); ++iter )
+     {
+     range.insert( iter->first, iter->second - 1 );
+     for ( smtk::mesh::Handle i=iter->first; i < iter->second - 1; ++i)
+       {
+       set.insert(i);
+       vec.push_back(i);
+       }
+     }
+
+  smtk::mesh::CellSet ps2(c, range);
+  smtk::mesh::CellSet ps3(c, set);
+  smtk::mesh::CellSet ps4(c, vec);
+
+  test( ps  != ps2 );
+  test( ps2 == ps3 );
+  test( ps3 == ps4 );
+}
+
+//----------------------------------------------------------------------------
 void verify_empty(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::MeshSet no_mesh = c->meshes( "bad name string" );
@@ -638,6 +671,7 @@ int UnitTestCellSet(int, char** const)
   smtk::mesh::CollectionPtr c = load_mesh(mngr);
 
   verify_constructors(c);
+  verify_subsets(c);
   verify_empty(c);
   verify_comparisons(c);
   verify_typeset(c);

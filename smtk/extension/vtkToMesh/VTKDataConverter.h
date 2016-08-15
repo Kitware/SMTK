@@ -37,15 +37,20 @@ public:
   //that all conversion will be added as new collections to this manager
   explicit VTKDataConverter(const smtk::mesh::ManagerPtr& manager);
 
+  //convert a VTK xml polydata or xml unstructured grid file to a collection.
+  //Optionally specify the cell property name to be used to split
+  //the mesh into muliple domains.
+  smtk::mesh::CollectionPtr operator()(std::string& filename,
+                                       std::string domainPropertyName) const;
   //convert a polydata to a collection.
   //Optionally specify the cell property name to be used to split
-  //the mesh into muliple domain.
+  //the mesh into muliple domains.
   smtk::mesh::CollectionPtr operator()(vtkPolyData* polydata,
                                        std::string domainPropertyName = std::string()) const;
 
   //convert an unstructured grid to a collection.
   //Optionally specify the cell property name to be used to split
-  //the mesh into muliple domain.
+  //the mesh into muliple domains.
   smtk::mesh::CollectionPtr operator()(vtkUnstructuredGrid* ugrid,
                                        std::string domainPropertyName = std::string()) const;
 

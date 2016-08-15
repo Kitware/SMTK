@@ -22,6 +22,10 @@
 #include "vtkCellData.h"
 #include "vtkDataArray.h"
 #include "vtkIntArray.h"
+#include "vtkXMLPolyDataReader.h"
+#include "vtkXMLUnstructuredGridReader.h"
+
+#include "vtksys/SystemTools.hxx"
 
 #include "moab/ReadUtilIface.hpp"
 
@@ -268,6 +272,48 @@ VTKDataConverter::VTKDataConverter(const smtk::mesh::ManagerPtr& manager):
   m_manager( manager )
 {
 
+}
+
+//-------------------------------------------------------------------------
+namespace
+{
+template<typename TReader>
+vtkDataSet* readXMLFile(const std::string& fileName)
+{
+  vtkSmartPointer<TReader> reader = vtkSmartPointer<TReader>::New();
+  reader->SetFileName(fileName.c_str());
+  reader->Update();
+  reader->GetOutput()->Register(reader);
+  return vtkDataSet::SafeDownCast(reader->GetOutput());
+}
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::CollectionPtr
+VTKDataConverter::operator()(std::string& filename,
+                             std::string materialPropertyName) const
+{
+  std::string extension =
+    vtksys::SystemTools::GetFilenameLastExtension(filename.c_str());
+
+  // Dispatch based on the file extension
+  vtkDataSet* data;
+  double* bounds = NULL;
+  smtk::mesh::CollectionPtr c;
+  if (extension == ".vtu")
+   {
+   data = readXMLFile<vtkXMLUnstructuredGridReader> (filename);
+   return this->operator()(vtkUnstructuredGrid::SafeDownCast(data),
+                           materialPropertyName);
+   }
+  else if (extension == ".vtp")
+   {
+   data = readXMLFile<vtkXMLPolyDataReader> (filename);
+   return this->operator()(vtkPolyData::SafeDownCast(data),
+                           materialPropertyName);
+   }
+
+  return c;
 }
 
 //----------------------------------------------------------------------------
