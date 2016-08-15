@@ -350,20 +350,27 @@ void CreateFaces::updateLoopVertices(const smtk::model::Loop& loop, const smtk::
     };
     int* econn = (eit->sense() == smtk::model::NEGATIVE && verts.size() > 1) ? vertOrder[1] : vertOrder[0];
     */
+    /*
     std::cout << "  VerticesFromEdge   ";
     if (verts.size() > 0) { std::cout << " " << verts[0].name(); }
     if (verts.size() > 1) { std::cout << " " << verts[1].name(); }
+    */
     if (eit->orientation() == smtk::model::NEGATIVE && verts.size() > 1)
       {
       smtk::model::Vertex tmp = verts[0];
       verts[0] = verts[1];
       verts[1] = tmp;
       }
+    /*
     std::cout << "\n";
     std::cout << "  LoopOrderedVertices";
     if (verts.size() > 0) { std::cout << " " << verts[0].name(); }
     if (verts.size() > 1) { std::cout << " " << verts[1].name(); }
     std::cout << "\n";
+    */
+    // FIXME: Handle case when the same edge is incident to the same model vertex at both ends.
+    //        In this case, the face-adjacency could be accidentally reversed because the
+    //        wrong incident_edge_data struct of the vertex might be found first and modified.
     for (smtk::model::Vertices::iterator vit = verts.begin(); vit != verts.end(); ++vit)
       {
       internal::vertex::Ptr vrec = this->findStorage<internal::vertex>(vit->entity());
