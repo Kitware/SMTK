@@ -332,16 +332,22 @@ void CreateFaces::updateLoopVertices(const smtk::model::Loop& loop, const smtk::
 {
   smtk::model::EdgeUses edgesOfLoop = loop.uses<smtk::model::EdgeUses>();
   smtk::common::UUIDs done;
-  std::cout << "Loop " << loop.name() << " " << (isCCW ? "outer" : "inner") << " brd " << brd.name() << "\n";
+  if (this->m_debugLevel > 0)
+    {
+    std::cout << "Loop " << loop.name() << " " << (isCCW ? "outer" : "inner") << " brd " << brd.name() << "\n";
+    }
   isCCW = true;
   for (smtk::model::EdgeUses::iterator eit = edgesOfLoop.begin(); eit != edgesOfLoop.end(); ++eit)
     {
     smtk::model::Edge edge = eit->edge();
-    std::cout
-      << "  " << edge.name()
-      << "  " << (eit->orientation() == smtk::model::POSITIVE ? "+" : "-")
-      << "  " << eit->sense()
-      << "\n";
+    if (this->m_debugLevel > 0)
+      {
+      std::cout
+        << "  " << edge.name()
+        << "  " << (eit->orientation() == smtk::model::POSITIVE ? "+" : "-")
+        << "  " << eit->sense()
+        << "\n";
+      }
     smtk::model::Vertices verts = edge.vertices();
     /*
     int vertOrder[2][2] = {
