@@ -31,7 +31,6 @@
 
 #include "smtk/io/ExportJSON.h"
 #include "cJSON.h"
-#include <vtksys/SystemTools.hxx>
 
 using namespace smtk::model;
 
@@ -59,7 +58,8 @@ bool ImportImage::ableToOperate()
   if (filename.empty())
     return false;
   // support 2d models by vtkCMBGeometryReader
-  std::string ext = vtksys::SystemTools::GetFilenameLastExtension(filename);
+  std::string::size_type dot_pos = filename.rfind('.');
+  std::string ext = filename.substr(dot_pos);
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
   if (ext == ".vti" ||
       ext == ".dem" ||
