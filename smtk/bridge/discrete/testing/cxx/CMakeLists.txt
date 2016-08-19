@@ -11,7 +11,7 @@ if(SMTK_DATA_DIR)
     smtkCore
     smtkDiscreteSession
     vtkSMTKSourceExt
-    vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
+    vtkRenderingGL2PSOpenGL2
     vtkTestingRendering
   )
   add_test(
@@ -28,7 +28,7 @@ if(SMTK_DATA_DIR)
     smtkCore
     smtkDiscreteSession
     vtkSMTKSourceExt
-    vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
+    vtkRenderingGL2PSOpenGL2
     vtkTestingRendering
   )
   add_test(
@@ -45,7 +45,7 @@ if(SMTK_DATA_DIR)
     smtkCore
     smtkDiscreteSession
     vtkSMTKSourceExt
-    vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
+    vtkRenderingGL2PSOpenGL2
     vtkTestingRendering
     ${Boost_LIBRARIES}
   )

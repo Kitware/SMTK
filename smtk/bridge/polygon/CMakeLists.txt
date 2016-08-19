@@ -99,7 +99,7 @@ if(SMTK_ENABLE_VTK_SUPPORT)
       vtkIOParallel
       vtkRenderingCore
       vtkRenderingFreeType
-      vtkRendering${VTK_RENDERING_BACKEND}
+      vtkRenderingOpenGL2
       vtkSMTKReaderExt
       vtksys
       )

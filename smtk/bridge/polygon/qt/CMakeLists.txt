@@ -68,7 +68,7 @@ if (SMTK_ENABLE_TESTING)
   foreach(target
     vtkInteractionStyle
     vtkRenderingFreeType
-    vtkRendering${VTK_RENDERING_BACKEND}
+    vtkRenderingOpenGL2
     )
     if (TARGET ${target})
       list(APPEND SMTK_VTK_TARGET_LIST ${target})

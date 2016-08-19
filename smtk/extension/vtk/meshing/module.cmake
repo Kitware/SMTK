@@ -5,12 +5,12 @@ set (__dependencies)
 foreach(target
     vtkInteractionStyle
     vtkRenderingFreeType
-    vtkRendering${VTK_RENDERING_BACKEND}
+    vtkRenderingOpenGL2
     vtkRenderingMatplotlib
     vtkRenderingVolume
-    vtkRenderingVolume${VTK_RENDERING_BACKEND}
-    vtkRenderingContext${VTK_RENDERING_BACKEND}
-    vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
+    vtkRenderingVolumeOpenGL2
+    vtkRenderingContextOpenGL2
+    vtkRenderingGL2PSOpenGL2
 )
   if (TARGET ${target})
     list(APPEND __dependencies ${target})

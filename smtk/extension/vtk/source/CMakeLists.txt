@@ -54,10 +54,10 @@ foreach(target
   vtkRenderingMatplotlib
   vtkRenderingFreeType
   vtkRenderingVolume
-  vtkRenderingContext${VTK_RENDERING_BACKEND}
-  vtkRendering${VTK_RENDERING_BACKEND}
-  vtkRenderingVolume${VTK_RENDERING_BACKEND}
-  vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
+  vtkRenderingContextOpenGL2
+  vtkRenderingOpenGL2
+  vtkRenderingVolumeOpenGL2
+  vtkRenderingGL2PSOpenGL2
   vtkIOGeometry
   vtkIOMPIParallel
   vtkIOMPIImage
