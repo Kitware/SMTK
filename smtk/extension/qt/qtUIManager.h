@@ -25,6 +25,7 @@
 #include <QDoubleValidator>
 #include <QTextEdit>
 #include <QMap>
+#include <QPointer>
 
 class QTableWidget;
 class QTableWidgetItem;

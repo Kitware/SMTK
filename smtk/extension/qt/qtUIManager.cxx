@@ -43,6 +43,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/System.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
@@ -54,6 +55,9 @@
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
+#include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/FileItemDefinition.h"
+#include "smtk/attribute/FileSystemItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 
@@ -973,7 +977,7 @@ QWidget* qtUIManager::createEditBox(
     {
       item->setToDefault(elementIdx);
     }
-  
+
   switch (item->type())
     {
     case smtk::attribute::Item::DOUBLE:
@@ -982,7 +986,7 @@ QWidget* qtUIManager::createEditBox(
       const DoubleItemDefinition *dDef =
         dynamic_cast<const DoubleItemDefinition*>(item->definition().get());
       qtDoubleValidator *validator = new qtDoubleValidator(pWidget);
-      
+
       validator->setUIManager(this);
       editBox->setValidator(validator);
       editBox->setFixedWidth(100);
@@ -1034,7 +1038,7 @@ QWidget* qtUIManager::createEditBox(
         {
         editBox->setText(item->valueAsString(elementIdx).c_str());
         }
-      
+
       QVariant tvdata;
       tvdata.setValue(static_cast<void*>(editBox));
       validator->setProperty("MyWidget", tvdata);
@@ -1116,7 +1120,7 @@ QWidget* qtUIManager::createEditBox(
           {
           lineEdit->setEchoMode(QLineEdit::Password);
           }
-        
+
         lineEdit->setText(valText);
         inputWidget = lineEdit;
         }
@@ -1133,12 +1137,12 @@ QWidget* qtUIManager::createEditBox(
       // smtk::attribute::Item::type2String(item->type()) << "\n";
       break;
     }
-  
+
   if(!inputWidget)
     {
       return NULL;
     }
-  
+
   inputWidget->setProperty("ElementIndex", vdata);
   QVariant vobject;
   vobject.setValue(static_cast<void*>(attitem.get()));
@@ -1161,7 +1165,7 @@ QWidget* qtUIManager::createEditBox(
     {
       this->setWidgetColor(inputWidget,Qt::white);
     }
-  
+
   if(!tooltip.isEmpty())
     {
       inputWidget->setToolTip(tooltip);
@@ -1342,7 +1346,7 @@ qtBaseView *qtUIManager::createView(const ViewInfo &info)
     // The view being constructed is not refering to this manager!
     return NULL;
     }
-  
+
   std::map<std::string, widgetConstructor>::const_iterator it;
   it = this->m_constructors.find(info.m_view->type());
   if (it == this->m_constructors.end())

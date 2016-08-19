@@ -9,6 +9,8 @@ set(attributeHeaders
   DoubleItemDefinition.h
   FileItem.h
   FileItemDefinition.h
+  FileSystemItem.h
+  FileSystemItemDefinition.h
   GroupItem.h
   GroupItemDefinition.h
   IntItem.h
@@ -44,6 +46,8 @@ set(attributeSrcs
   DoubleItemDefinition.cxx
   FileItem.cxx
   FileItemDefinition.cxx
+  FileSystemItem.cxx
+  FileSystemItemDefinition.cxx
   GroupItem.cxx
   GroupItemDefinition.cxx
   IntItem.cxx
@@ -74,4 +78,3 @@ smtk_public_headers(${attributeHeaders})
 if(SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
 endif(SMTK_ENABLE_TESTING)
-
