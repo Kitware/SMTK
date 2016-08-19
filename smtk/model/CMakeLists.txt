@@ -52,6 +52,7 @@ set(modelSrcs
   operators/ExportSMTKModel.cxx
   operators/ImportSMTKModel.cxx
   operators/DeleteMesh.cxx
+  operators/ExportMesh.cxx
   )
 
 set(modelHeaders
@@ -114,6 +115,7 @@ set(modelHeaders
   operators/ExportSMTKModel.h
   operators/ImportSMTKModel.h
   operators/DeleteMesh.h
+  operators/ExportMesh.h
   )
 
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/DefaultSession.json" defSessionJSON)
@@ -123,6 +125,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportModelJSON.sbt" de
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportSMTKModel.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ImportSMTKModel.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/DeleteMesh.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportMesh.sbt" defOpXML)
 
 #install the headers
 smtk_public_headers(${modelHeaders})
