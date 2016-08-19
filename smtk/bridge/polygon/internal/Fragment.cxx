@@ -91,14 +91,14 @@ bool EdgeFragmentComparator::operator() (FragmentId a, FragmentId b) const
   // Simple accept/reject:
   internal::Coord aymax = lineA.lo().y() > lineA.hi().y() ? lineA.lo().y() : lineA.hi().y();
   internal::Coord bymin = lineB.lo().y() < lineB.hi().y() ? lineB.lo().y() : lineB.hi().y();
-  if (aymax < bymin)
+  if (aymax <= bymin)
     {
     //std::cout << ": Y  1\n";
     return true;
     }
   internal::Coord aymin = lineA.lo().y() < lineA.hi().y() ? lineA.lo().y() : lineA.hi().y();
   internal::Coord bymax = lineB.lo().y() > lineB.hi().y() ? lineB.lo().y() : lineB.hi().y();
-  if (aymin > bymax)
+  if (aymin >= bymax)
     {
     //std::cout << ": N  2\n";
     return false;
@@ -152,11 +152,14 @@ bool EdgeFragmentComparator::operator() (FragmentId a, FragmentId b) const
     }
 
   internal::HighPrecisionCoord slopeDiff =
-    dxB * (lineA.hi().y() - lineA.lo().y()) -
-    dxA * (lineB.hi().y() - lineB.lo().y());
+    this->m_sweepPoint->position().x() > lineA.lo().x() ?
+      dxB * (lineA.hi().y() - lineA.lo().y()) -
+      dxA * (lineB.hi().y() - lineB.lo().y()) :
+      dxA * (lineB.hi().y() - lineB.lo().y()) -
+      dxB * (lineA.hi().y() - lineA.lo().y());
 
   //std::cout << ": " << slopeDiff << " < 0  6\n";
-  return slopeDiff < 0;
+  return slopeDiff > 0;
 }
 
 SweeplinePosition::SweeplinePosition(const internal::Point& posn)
