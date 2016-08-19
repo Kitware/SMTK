@@ -56,7 +56,13 @@ target_link_libraries(smtkPQWidgetsExt LINK_PUBLIC
   smtkCore
   ${QT_QTGUI_LIBRARY}
   ${QT_QTCORE_LIBRARY}
-)
+  )
+
+if (SMTK_ENABLE_TESTING)
+  target_link_libraries(TestBuild_smtk_extension_paraview_widgets LINK_PUBLIC
+    smtkPQWidgetsExt
+    )
+endif()
 
 smtk_export_header(smtkPQWidgetsExt Exports.h)
 

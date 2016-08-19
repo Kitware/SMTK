@@ -120,7 +120,11 @@ target_include_directories(smtkQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 #qt4_use_modules(smtkQtExt LINK_PUBLIC Core Gui)
 
 #set smtkQtExt to publicly link to smtkCore
-target_link_libraries(smtkQtExt LINK_PUBLIC smtkCore ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY})
+target_link_libraries(smtkQtExt LINK_PUBLIC
+  smtkCore
+  ${QT_QTGUI_LIBRARY}
+  ${QT_QTCORE_LIBRARY}
+  )
 smtk_export_header(smtkQtExt Exports.h)
 
 #install the library and exports the library when used from a build tree

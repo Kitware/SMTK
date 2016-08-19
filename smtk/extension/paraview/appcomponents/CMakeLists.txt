@@ -34,6 +34,13 @@ target_link_libraries(smtkPQComponentsExt LINK_PUBLIC
   ${QT_QTCORE_LIBRARY}
 )
 
+if (SMTK_ENABLE_TESTING)
+  target_link_libraries(TestBuild_smtk_extension_paraview_appcomponents
+    LINK_PUBLIC
+    smtkPQComponentsExt
+    )
+endif()
+
 smtk_export_header(smtkPQComponentsExt Exports.h)
 
 #install the library and exports the library when used from a build tree
