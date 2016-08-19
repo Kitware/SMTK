@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="tweak edge" BaseType="operator">
+    <AttDef Type="tweak edge" Label="Edge - Reshape" BaseType="operator">
       <BriefDescription>Tweak the shape of a model edge.</BriefDescription>
       <DetailedDescription>
         Replace all the point coordinates of an edge.
