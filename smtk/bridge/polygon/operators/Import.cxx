@@ -113,7 +113,7 @@ int polyLines2modelEdgesAndFaces(vtkPolyData *mesh,
     vtkIdTypeArray* pedigreeIds = vtkIdTypeArray::SafeDownCast(
       mesh->GetCellData()->GetPedigreeIds());
     vtkIdType numPedIDs = pedigreeIds ? pedigreeIds->GetNumberOfTuples() : 0;
-    vtkIdType* pedigree = numPedIDs == lines->GetNumberOfCells() ?
+    vtkIdType* pedigree = numPedIDs == lines->GetNumberOfCells() && pedigreeIds ?
       pedigreeIds->GetPointer(0) : NULL;
 /*
     std::cout << "number of line cells: " << lines->GetNumberOfCells() << std::endl;
