@@ -13,6 +13,9 @@
 
 #include "smtk/bridge/polygon/Operator.h"
 
+class vtkIdTypeArray;
+class vtkPolyData;
+
 namespace smtk {
   namespace bridge {
     namespace polygon {
@@ -43,7 +46,11 @@ public:
 protected:
   Import();
   virtual smtk::model::OperatorResult operateInternal();
-
+  int taggedPolyData2PolygonModelEntities(vtkIdTypeArray *tagInfo,
+					  vtkPolyData *mesh,
+					  smtk::model::Model& model);
+  int basicPolyData2PolygonModelEntities(vtkPolyData *mesh,
+					  smtk::model::Model& model);
 };
 
     } // namespace polygon

@@ -69,6 +69,8 @@ smtk::model::OperatorResult CreateEdgeFromPoints::operateInternal()
       pointsInfo = this->findGroup("3DPoints");
     }
 
+  // numPts is the number of points total (across all edges)
+  long long numPts =  pointsInfo->numberOfGroups();
   smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
   smtk::model::Model parentModel(modelItem->value(0));
   if (!parentModel.isValid())
@@ -77,32 +79,52 @@ smtk::model::OperatorResult CreateEdgeFromPoints::operateInternal()
       "A model must be associated with the operator.");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
+  
+  std::vector<double> pnts(numPts * numCoordsPerPt);
+  int pIndex, j;
+  for (j = 0, pIndex = 0; pIndex != numPts; ++pIndex)
+    {
+    for (int i = 0; i < numCoordsPerPt; ++i)
+      {
+      pnts[j++] = smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>
+        (pointsInfo->item(pIndex,0))->value(i);
+      }
+    }
+  return this->process(pnts, numCoordsPerPt, parentModel);
+}
+      
+smtk::model::OperatorResult CreateEdgeFromPoints::process(std::vector<double> &pnts,
+							  int numCoordsPerPoint,
+							  smtk::model::Model &parentModel)
+{
+  smtk::bridge::polygon::Session* sess = this->polygonSession();
+  smtk::model::Manager::Ptr mgr;
+  if (!sess)
+    return this->createResult(smtk::model::OPERATION_FAILED);
+
+  mgr = sess->manager();
+  bool ok = true;
 
   internal::pmodel::Ptr storage =
     this->findStorage<internal::pmodel>(
       parentModel.entity());
 
-  bool ok = true;
-
-  // numPts is the number of points total (across all edges)
-  long long numPts =  pointsInfo->numberOfGroups();
   smtk::model::Edges created;
 
   // Fill in a list of segments for the edge so we can
   // check for self-intersections.
   std::list<internal::Segment> edgeSegs;
   bool edgeIsPeriodic = true;
-  std::vector<double> pt(numCoordsPerPt, 0.);
+  std::vector<double> pt(numCoordsPerPoint, 0.);
   internal::Point curr;
   internal::Point prev;
   internal::Point orig;
   bool first = true;
-  for (int pIndex = 0; pIndex != numPts; ++pIndex, prev = curr)
+  for (int pIndex = 0; pIndex != pnts.size(); prev = curr)
     {
-    for (int i = 0; i < numCoordsPerPt; ++i)
+    for (int i = 0; i < numCoordsPerPoint; ++i)
       {
-      pt[i] = smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>
-        (pointsInfo->item(pIndex,0))->value(i);
+      pt[i] = pnts[pIndex++];
       }
     curr = storage->projectPoint(pt.begin(), pt.end());
     if (!first && curr != prev)
