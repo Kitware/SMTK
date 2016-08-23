@@ -13,6 +13,17 @@ function(determineSharedPtrType type incType)
   #we mark c++11
   set(HAS_OWNER_LESS 0 PARENT_SCOPE)
 
+  if(DEFINED CMAKE_CXX_STANDARD AND
+    NOT CMAKE_CXX_STANDARD STREQUAL "98")
+    #if we are not building with as c++98 we
+    #must be C+11/14/17/etc
+      set(RESULT "std")
+      set(INCLUDE_RESULT "#include <memory>")
+      set(HAS_OWNER_LESS 1 PARENT_SCOPE)
+      set(SHARED_PTR_TYPE_FOUND TRUE)
+  endif()
+
+
   if(NOT ${SHARED_PTR_TYPE_FOUND})
     try_compile(SHARED_PTR_TYPE_FOUND
       ${PROJECT_BINARY_DIR}/CMakeTmp
