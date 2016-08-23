@@ -4,7 +4,6 @@ set (__dependencies)
 # might not exist.
 foreach(target
     vtkInteractionStyle
-    vtkRenderingFreeType
     vtkRenderingOpenGL2
     vtkRenderingGL2PSOpenGL2
 )
@@ -20,6 +19,7 @@ vtk_module(vtkSMTKSourceExt
     vtkCommonExecutionModel
     vtkRenderingCore
     vtkInteractionStyle
+    vtkRenderingFreeType
     vtkViewsCore
     vtkViewsInfovis
     vtkIOXML

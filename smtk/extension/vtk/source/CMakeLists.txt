@@ -52,7 +52,6 @@ foreach(target
   vtkFiltersGeometry
   vtkInteractionStyle
   vtkRenderingContext2D
-  vtkRenderingMatplotlib
   vtkRenderingFreeType
   vtkRenderingVolume
   vtkRenderingContextOpenGL2

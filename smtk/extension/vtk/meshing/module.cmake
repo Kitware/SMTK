@@ -6,7 +6,6 @@ foreach(target
     vtkInteractionStyle
     vtkRenderingFreeType
     vtkRenderingOpenGL2
-    vtkRenderingMatplotlib
     vtkRenderingVolume
     vtkRenderingVolumeOpenGL2
     vtkRenderingContextOpenGL2
