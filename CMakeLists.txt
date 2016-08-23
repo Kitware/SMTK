@@ -122,6 +122,8 @@ if (SMTK_ENABLE_DOCUMENTATION)
   find_package(Sphinx)
 endif()
 
+option(SMTK_ENABLE_CUMULUS_SUPPORT "Build cumulus GUI" OFF)
+
 ################################################################################
 # Testing Related Settings
 ################################################################################
