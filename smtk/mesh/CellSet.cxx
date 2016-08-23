@@ -28,6 +28,26 @@ CellSet::CellSet(const smtk::mesh::CollectionPtr& parent,
 }
 
 //----------------------------------------------------------------------------
+CellSet::CellSet(const smtk::mesh::CollectionPtr& parent,
+                 const std::vector<smtk::mesh::Handle>& cellIds):
+  m_parent(parent),
+  m_range()
+{
+  std::copy(cellIds.rbegin(), cellIds.rend(),
+            HandleRangeInserter(this->m_range));
+}
+
+//----------------------------------------------------------------------------
+CellSet::CellSet(const smtk::mesh::CollectionPtr& parent,
+                 const std::set<smtk::mesh::Handle>& cellIds):
+  m_parent(parent),
+  m_range()
+{
+  std::copy(cellIds.rbegin(), cellIds.rend(),
+            HandleRangeInserter(this->m_range));
+}
+
+//----------------------------------------------------------------------------
 CellSet::CellSet(const smtk::mesh::CellSet& other):
   m_parent(other.m_parent),
   m_range(other.m_range)

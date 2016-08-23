@@ -26,6 +26,26 @@ PointSet::PointSet(const smtk::mesh::CollectionPtr& parent,
 }
 
 //----------------------------------------------------------------------------
+PointSet::PointSet(const smtk::mesh::CollectionPtr& parent,
+                   const std::vector<smtk::mesh::Handle>& points):
+  m_parent(parent),
+  m_points()
+{
+  std::copy(points.rbegin(), points.rend(),
+            HandleRangeInserter(this->m_points));
+}
+
+//----------------------------------------------------------------------------
+PointSet::PointSet(const smtk::mesh::CollectionPtr& parent,
+                   const std::set<smtk::mesh::Handle>& points):
+  m_parent(parent),
+  m_points()
+{
+  std::copy(points.rbegin(), points.rend(),
+            HandleRangeInserter(this->m_points));
+}
+
+//----------------------------------------------------------------------------
 PointSet::PointSet(const smtk::mesh::PointSet& other):
   m_parent(other.m_parent),
   m_points(other.m_points)

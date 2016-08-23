@@ -21,6 +21,8 @@
 #include "smtk/mesh/QueryTypes.h"
 #include "smtk/mesh/TypeSet.h"
 
+#include <vector>
+
 namespace smtk {
 namespace mesh {
 
@@ -48,6 +50,19 @@ public:
   //are children of the handle.
   CellSet(const smtk::mesh::CollectionPtr& parent,
           const smtk::mesh::HandleRange& range);
+
+  //construct a CellSet that represents an arbitrary unknown subset of cells that
+  //are children of the handle via an explicit vector of cell ids. While this
+  //method is inefficient, it is useful for the python bindings where <cellIds>
+  //is converted to a list.
+  CellSet(const smtk::mesh::CollectionPtr& parent,
+          const std::vector<smtk::mesh::Handle>& cellIds);
+
+  //construct a CellSet that represents an arbitrary unknown subset of cells that
+  //are children of the handle via an explicit set of cell ids. This constructor
+  //is preferred over the variant that takes a std::vector.
+  CellSet(const smtk::mesh::CollectionPtr& parent,
+          const std::set<smtk::mesh::Handle>& cellIds);
 
   //Copy Constructor required for rule of 3
   CellSet(const CellSet& other);

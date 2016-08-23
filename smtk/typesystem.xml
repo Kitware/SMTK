@@ -11,10 +11,11 @@
   <suppress-warning text="namespace 'mpl_' does not have a type entry"/>
   <suppress-warning text="namespace 'pugi' does not have a type entry"/>
   <suppress-warning text="namespace 'remote' does not have a type entry"/>
-	<suppress-warning text="namespace 'smtk::bridge' does not have a type entry"/>
-	<suppress-warning text="namespace 'smtk::bridge::remote' does not have a type entry"/>
-	<suppress-warning text="namespace 'smtk::internal' does not have a type entry"/>
-	<suppress-warning text="namespace 'smtk::mesh::json' does not have a type entry"/>
+  <suppress-warning text="namespace 'smtk::bridge' does not have a type entry"/>
+  <suppress-warning text="namespace 'smtk::bridge::remote' does not have a type entry"/>
+  <suppress-warning text="namespace 'smtk::extension' does not have a type entry"/>
+  <suppress-warning text="namespace 'smtk::internal' does not have a type entry"/>
+  <suppress-warning text="namespace 'smtk::mesh::json' does not have a type entry"/>
   <suppress-warning text="namespace 'smtk::mesh::moab' does not have a type entry"/>
   <suppress-warning text="namespace 'vtk' does not have a type entry"/>
   <suppress-warning text="namespace 'std' does not have a type entry"/>
