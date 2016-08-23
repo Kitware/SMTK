@@ -215,6 +215,38 @@ void testFindAssociations<-1>(smtk::mesh::CollectionPtr c, smtk::model::EntityIt
 }
 
 //----------------------------------------------------------------------------
+template<int Dim>
+void testFindAssociationsByRef(smtk::mesh::CollectionPtr c, smtk::model::EntityIterator& it, std::size_t correct)
+{
+  smtk::mesh::MeshSet entMesh = c->findAssociatedMeshes(it, static_cast<smtk::mesh::DimensionType>(Dim));
+  smtk::mesh::CellSet entCells = c->findAssociatedCells(it, static_cast<smtk::mesh::DimensionType>(Dim));
+
+  test(entMesh.cells() == entCells, "Expected mesh cellset to be the same as queried cellset.");
+
+  std::ostringstream msg;
+  msg
+    << "Expected " << !entMesh.is_empty()
+    << " non-empty meshset of dimension " << Dim
+    << " for all tetrahedra.";
+  test(entMesh.size() == correct, msg.str());
+}
+
+template<>
+void testFindAssociationsByRef<-1>(smtk::mesh::CollectionPtr c, smtk::model::EntityIterator& it, std::size_t correct)
+{
+  smtk::mesh::MeshSet entMesh = c->findAssociatedMeshes(it);
+  smtk::mesh::CellSet entCells = c->findAssociatedCells(it);
+  smtk::mesh::TypeSet entTypes = c->findAssociatedTypes(it);
+  const smtk::model::Tessellation* tess = it->hasTessellation();
+
+  test(entMesh.cells() == entCells, "Expected mesh cellset to be the same as queried cellset.");
+
+  test(entMesh.types() == entTypes, "Expected mesh typeset to be the same as queried typeset.");
+
+  test(entMesh.size() == correct, "Expected a non-empty meshset for all tetrahedra.");
+}
+
+//----------------------------------------------------------------------------
 void verify_cell_conversion()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
@@ -252,6 +284,28 @@ void verify_cell_conversion()
   testFindAssociations<2>(c, it, numTetsInModel);
   std::cout << "Dim 3 associations:\n";
   testFindAssociations<3>(c, it, 0);
+
+  {
+  it.traverse(models.begin(), models.end(), smtk::model::ITERATE_MODELS);
+  std::cout << "All associations:\n";
+  testFindAssociationsByRef<-1>(c, it, numTetsInModel);
+  std::cout << "Dim 0 associations:\n";
+  testFindAssociationsByRef<0>(c, it, 0);
+  std::cout << "Dim 1 associations:\n";
+  testFindAssociationsByRef<1>(c, it, 0);
+  std::cout << "Dim 2 associations:\n";
+  testFindAssociationsByRef<2>(c, it, numTetsInModel);
+  std::cout << "Dim 3 associations:\n";
+  testFindAssociationsByRef<3>(c, it, 0);
+  }
+
+  {
+  std::cout << "Querying an empty collection:\n";
+  it.traverse(models.begin(), models.end(), smtk::model::ITERATE_MODELS);
+  std::cout << "All associations:\n";
+  smtk::mesh::CollectionPtr emptyCollection = smtk::mesh::Collection::create();
+  testFindAssociationsByRef<-1>(emptyCollection, it, 0);
+  }
 
   std::cout << "Find type info of first cell:\n";
   if (!models.empty())
