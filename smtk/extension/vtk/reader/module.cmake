@@ -16,11 +16,11 @@ vtk_module(vtkSMTKReaderExt
     vtkRenderingCore
     vtkRenderingFreeType
     vtkPVVTKExtensionsDefault
-    vtkRendering${VTK_RENDERING_BACKEND}
+    vtkRenderingOpenGL2
     vtkRenderingMatplotlib
     vtkRenderingVolume
-    vtkRenderingVolume${VTK_RENDERING_BACKEND}
-    vtkRenderingContext${VTK_RENDERING_BACKEND}
+    vtkRenderingVolumeOpenGL2
+    vtkRenderingContextOpenGL2
     vtksys
     ${_deps}
   EXCLUDE_FROM_WRAP_HIERARCHY
