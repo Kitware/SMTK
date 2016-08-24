@@ -13,6 +13,8 @@
 
 #include "smtk/mesh/moab/Interface.h"
 
+#include "smtk/model/EntityIterator.h"
+
 namespace smtk {
 namespace mesh {
 
@@ -431,6 +433,57 @@ smtk::mesh::CellSet Collection::findAssociatedCells( const smtk::model::EntityRe
   return ms.cells();
 }
 
+//----------------------------------------------------------------------------
+smtk::mesh::TypeSet Collection::findAssociatedTypes( smtk::model::EntityIterator& refIt )
+{
+  return this->findAssociatedMeshes(refIt).types();
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet Collection::findAssociatedMeshes( smtk::model::EntityIterator& refIt )
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
+  smtk::mesh::moab::Handle handle = this->m_internals->mesh_root_handle();
+
+  smtk::mesh::HandleRange range;
+  for (refIt.begin(); !refIt.isAtEnd(); ++refIt)
+    {
+    range = iface->rangeUnion( range, iface->findAssociations(handle, (*refIt).entity() ) );
+    }
+
+  return smtk::mesh::MeshSet( this->shared_from_this(), handle, range );
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet Collection::findAssociatedMeshes( smtk::model::EntityIterator& refIt,
+                                                      smtk::mesh::DimensionType dim )
+{
+  smtk::mesh::MeshSet unfiltered = this->findAssociatedMeshes(refIt);
+  return unfiltered.subset(dim);
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::CellSet Collection::findAssociatedCells( smtk::model::EntityIterator& refIt )
+{
+  smtk::mesh::MeshSet ms = this->findAssociatedMeshes(refIt);
+  return ms.cells();
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::CellSet Collection::findAssociatedCells( smtk::model::EntityIterator& refIt,
+                                                     smtk::mesh::CellType cellType )
+{
+  smtk::mesh::MeshSet ms = this->findAssociatedMeshes(refIt);
+  return ms.cells(cellType);
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::CellSet Collection::findAssociatedCells( smtk::model::EntityIterator& refIt,
+                                                     smtk::mesh::DimensionType dim )
+{
+  smtk::mesh::MeshSet ms = this->findAssociatedMeshes(refIt, dim);
+  return ms.cells();
+}
 
 //----------------------------------------------------------------------------
 bool Collection::setAssociation( const smtk::model::EntityRef& eref ,

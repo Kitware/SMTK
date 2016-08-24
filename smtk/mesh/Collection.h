@@ -21,6 +21,7 @@
 #include "smtk/mesh/CellSet.h"
 #include "smtk/mesh/PointConnectivity.h"
 #include "smtk/mesh/Handle.h"
+#include "smtk/mesh/Interface.h"
 #include "smtk/mesh/MeshSet.h"
 #include "smtk/mesh/PropertyData.h"
 #include "smtk/mesh/QueryTypes.h"
@@ -36,6 +37,7 @@ namespace smtk {
 
   //forward declare friends
   namespace io { class ImportMesh; }
+  namespace model { class EntityIterator; }
   namespace mesh {
 
 //Flyweight interface around a moab database of meshes. When constructed
@@ -163,6 +165,16 @@ public:
   smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref );
   smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType );
   smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim );
+
+  smtk::mesh::TypeSet   findAssociatedTypes( smtk::model::EntityIterator& refIt );
+  smtk::mesh::MeshSet   findAssociatedMeshes( smtk::model::EntityIterator& refIt );
+  smtk::mesh::MeshSet   findAssociatedMeshes( smtk::model::EntityIterator& refIt,
+                                              smtk::mesh::DimensionType dim );
+  smtk::mesh::CellSet   findAssociatedCells( smtk::model::EntityIterator& refIt );
+  smtk::mesh::CellSet   findAssociatedCells( smtk::model::EntityIterator& refIt,
+                                             smtk::mesh::CellType cellType );
+  smtk::mesh::CellSet   findAssociatedCells( smtk::model::EntityIterator& refIt,
+                                             smtk::mesh::DimensionType dim );
 
   bool setAssociation( const smtk::model::EntityRef& eref, const smtk::mesh::MeshSet& meshset );
 

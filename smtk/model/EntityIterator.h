@@ -35,6 +35,7 @@ public:
   void traverse(const EntityRef& x, IteratorStyle style);
 
   void begin();
+  void end();
   bool advance();
   bool isAtEnd() const;
 
