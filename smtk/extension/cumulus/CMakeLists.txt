@@ -8,12 +8,6 @@ set(ui_files
   ui/cumuluswidget.ui
 )
 
-set(qt_components
-  Core
-  Gui
-  Network
-)
-
 qt4_wrap_ui(ui_srcs ${ui_files})
 
 set(src
@@ -60,11 +54,13 @@ smtk_public_headers(${hdrs})
 #we need to add the location of the moc files to the include dir
 target_include_directories(smtkCumulusExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
-#link to qtGUI and include dirs
-qt4_use_modules(smtkCumulusExt LINK_PUBLIC Core Gui Network)
-
 #publicly link to smtkCore
-target_link_libraries(smtkCumulusExt LINK_PUBLIC smtkCore)
+target_link_libraries(smtkCumulusExt LINK_PUBLIC
+  smtkCore
+  ${QT_QTNETWORK_LIBRARY}
+  ${QT_QTGUI_LIBRARY}
+  ${QT_QTCORE_LIBRARY}
+)
 smtk_export_header(smtkCumulusExt Exports.h)
 
 #install the library and exports
@@ -77,6 +73,7 @@ add_executable(cumulus MACOSX_BUNDLE
 
 set_target_properties(cumulus PROPERTIES AUTOMOC TRUE)
 
-qt4_use_modules(cumulus ${qt_components})
-
-target_link_libraries(cumulus smtkCumulusExt cJSON)
+target_link_libraries(cumulus
+  smtkCumulusExt
+  cJSON
+)
