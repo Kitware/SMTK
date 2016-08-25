@@ -14,45 +14,33 @@
 #ifndef __smtk_SharedPtr_h
 #define __smtk_SharedPtr_h
 
-@POINTER_TYPE_HEADERS@
-
-//first check if we configured with boost or c++11
-//second check if we are using a c++11 compilant compiler and tr1 somehow
-//lastly check microsoft mainly for legacy reasons, but it the boost check
-//should have returned true already
-#if ( ( 1 == @HAS_OWNER_LESS@ ) || ( __cplusplus >= 201103L) || (defined(_WIN32) && defined(_MSC_VER) && _MSC_VER  >= 1600 ) )
-  #define smtk_has_owner_less
-#endif
+#include <memory>
 
 namespace smtk
 {
   //bring the correct shared_ptr implementation into our project namespace
-  using @POINTER_NAMESPACE@::shared_ptr;
+  using std::shared_ptr;
 
   //bring the correct make_shared implementation into our project namespace
-  using @POINTER_NAMESPACE@::make_shared;
+  using std::make_shared;
 
   //bring the correct weak_ptr implementation into our project namespace
-  using @POINTER_NAMESPACE@::weak_ptr;
+  using std::weak_ptr;
 
   //bring in the correct shared_ptr dynamic cast
-  using @POINTER_NAMESPACE@::dynamic_pointer_cast;
+  using std::dynamic_pointer_cast;
 
   //bring in the correct shared_ptr const_pointer_cast
-  using @POINTER_NAMESPACE@::const_pointer_cast;
+  using std::const_pointer_cast;
 
   //bring in the correct shared_ptr static_pointer_cast
-  using @POINTER_NAMESPACE@::static_pointer_cast;
+  using std::static_pointer_cast;
 
   //bring in the correct enable_shared_from_this
-  using @POINTER_NAMESPACE@::enable_shared_from_this;
+  using std::enable_shared_from_this;
 
-#ifdef smtk_has_owner_less
   //bring in the correct owner_less so that
   //we store weak ptr in sets/maps even more safely
-  using @POINTER_NAMESPACE@::owner_less;
-#endif
-
-
+  using std::owner_less;
 }
 #endif /* __smtk_SharedPtr_h */
