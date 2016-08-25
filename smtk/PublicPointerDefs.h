@@ -362,7 +362,6 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::simulation::UserData > UserDataPtr;
   }
 
-#ifdef smtk_has_owner_less
   //special map and set typedefs for better safety with sets of weak pointers
   //since sets of weak pointers can be dangerous.
   namespace attribute
@@ -376,18 +375,6 @@ namespace smtk
     typedef std::set< attribute::WeakItemPtr,
       smtk::owner_less< attribute::WeakItemPtr > >   WeakItemPtrSet;
   }
-
-#else
-  //we can use less than operator
-  namespace attribute
-  {
-    typedef std::set< attribute::WeakAttributePtr  >      WeakAttributePtrSet;
-    typedef std::set< attribute::WeakDefinitionPtr  >     WeakDefinitionPtrSet;
-    typedef std::set< attribute::WeakItemDefinitionPtr >  WeakItemDefinitionPtrSet;
-    typedef std::set< attribute::WeakItemPtr  >           WeakItemPtrSet;
-  }
-
-#endif
 
   // These are used internally by SMTK
   namespace internal
