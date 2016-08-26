@@ -38,10 +38,33 @@ MeshSet::MeshSet(const smtk::mesh::CollectionPtr& parent,
 }
 
 //----------------------------------------------------------------------------
+MeshSet::MeshSet(const smtk::mesh::ConstCollectionPtr& parent,
+                 smtk::mesh::Handle handle)
+{
+  this->m_parent = std::const_pointer_cast<smtk::mesh::Collection>(parent);
+  this->m_handle = handle;
+
+  const smtk::mesh::InterfacePtr& iface = parent->interface();
+  //range of moab entity sets
+  this->m_range = iface->getMeshsets( handle );
+}
+
+//----------------------------------------------------------------------------
 MeshSet::MeshSet(const smtk::mesh::CollectionPtr& parent,
                  smtk::mesh::Handle handle,
                  const smtk::mesh::HandleRange& range):
   m_parent(parent),
+  m_handle(handle),
+  m_range(range) //range of moab entity sets
+{
+
+}
+
+//----------------------------------------------------------------------------
+MeshSet::MeshSet(const smtk::mesh::ConstCollectionPtr& parent,
+                 smtk::mesh::Handle handle,
+                 const smtk::mesh::HandleRange& range):
+  m_parent(std::const_pointer_cast<smtk::mesh::Collection>(parent)),
   m_handle(handle),
   m_range(range) //range of moab entity sets
 {

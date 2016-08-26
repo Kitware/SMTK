@@ -32,6 +32,8 @@ class SMTKCORE_EXPORT PointSet
 public:
   PointSet(const smtk::mesh::CollectionPtr& parent,
            const smtk::mesh::HandleRange& points);
+  PointSet(const smtk::mesh::ConstCollectionPtr& parent,
+           const smtk::mesh::HandleRange& points);
 
   //construct a PointSet that represents an arbitrary unknown subset of points
   //that are children of the handle via an explicit vector of point ids. While

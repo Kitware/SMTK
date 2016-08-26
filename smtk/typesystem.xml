@@ -435,6 +435,8 @@
   <suppress-warning text="skipping function 'smtk::mesh::Collection::findAssociatedMeshes', unmatched parameter type 'smtk::model::EntityIterator&amp;'"/>
   <suppress-warning text="skipping function 'smtk::mesh::Collection::findAssociatedTypes', unmatched parameter type 'smtk::model::EntityIterator&amp;'"/>
   <suppress-warning text="skipping function 'smtk::mesh::Collection::findAssociatedCells', unmatched parameter type 'smtk::model::EntityIterator&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::mesh::PointSet::PointSet', unmatched parameter type 'smtk::mesh::ConstCollectionPtr const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::mesh::CellSet::CellSet', unmatched parameter type 'smtk::mesh::ConstCollectionPtr const&amp;'"/>
   <suppress-warning text="skipping field 'Manager::m_conditionTriggers' with unmatched type 'std::set&lt;ConditionTrigger&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_oneToOneTriggers' with unmatched type 'std::set&lt;OneToOneTrigger&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_oneToManyTriggers' with unmatched type 'std::set&lt;OneToManyTrigger&gt;'"/>
