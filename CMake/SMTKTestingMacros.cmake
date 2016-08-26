@@ -23,6 +23,17 @@ function(smtk_unit_tests)
   elseif(ENABLE_HDF5)
     set(using_hdf ON)
   endif()
+
+  if (SMTK_DATA_DIR)
+    if (NOT EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
+      message(WARNING
+	"SMTK_DATA_DIR has been set to invalid location \"${SMTK_DATA_DIR}\".")
+    elseif(SMTK_ENABLE_TESTING AND NOT using_hdf AND NOT ENABLE_HDF5)
+      message(WARNING
+	"SMTK_DATA_DIR has been set, but hdf5 is not enabled. Skipping tests that use data.")
+    endif ()
+  endif()
+
   if (SMTK_DATA_DIR
       AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd
       AND using_hdf)
