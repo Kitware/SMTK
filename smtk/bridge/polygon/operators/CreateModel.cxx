@@ -113,6 +113,7 @@ smtk::model::OperatorResult CreateModel::operateInternal()
       model.setFloatProperty("origin", smtk::model::FloatList(storage->origin(), storage->origin() + 3));
       model.setFloatProperty("feature size", storage->featureSize());
       model.setFloatProperty("model scale", storage->modelScale());
+      model.setIntegerProperty(SMTK_GEOM_STYLE_PROP, smtk::model::DISCRETE);
       }
     }
   if (!result)
