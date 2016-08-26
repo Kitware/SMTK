@@ -28,6 +28,15 @@ CellSet::CellSet(const smtk::mesh::CollectionPtr& parent,
 }
 
 //----------------------------------------------------------------------------
+CellSet::CellSet(const smtk::mesh::ConstCollectionPtr& parent,
+                 const smtk::mesh::HandleRange& range):
+  m_parent(std::const_pointer_cast<smtk::mesh::Collection>(parent)),
+  m_range(range) //range of moab cell entity ids
+{
+
+}
+
+//----------------------------------------------------------------------------
 CellSet::CellSet(const smtk::mesh::CollectionPtr& parent,
                  const std::vector<smtk::mesh::Handle>& cellIds):
   m_parent(parent),

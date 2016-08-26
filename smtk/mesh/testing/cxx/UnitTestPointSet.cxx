@@ -85,10 +85,13 @@ void verify_subsets(const smtk::mesh::CollectionPtr& c)
   smtk::mesh::PointSet ps2(c, range);
   smtk::mesh::PointSet ps3(c, set);
   smtk::mesh::PointSet ps4(c, vec);
+  smtk::mesh::PointSet ps5(
+    std::const_pointer_cast<const smtk::mesh::Collection>(c), range);
 
   test( ps  != ps2 );
   test( ps2 == ps3 );
   test( ps3 == ps4 );
+  test( ps4 == ps5 );
 }
 
 //----------------------------------------------------------------------------

@@ -50,6 +50,8 @@ public:
   //are children of the handle.
   CellSet(const smtk::mesh::CollectionPtr& parent,
           const smtk::mesh::HandleRange& range);
+  CellSet(const smtk::mesh::ConstCollectionPtr& parent,
+          const smtk::mesh::HandleRange& range);
 
   //construct a CellSet that represents an arbitrary unknown subset of cells that
   //are children of the handle via an explicit vector of cell ids. While this
