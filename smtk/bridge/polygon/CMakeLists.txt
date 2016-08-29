@@ -72,6 +72,8 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/TweakEdge.sbt" polygonO
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ImportImage.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExtractContours.sbt" polygonOperatorXML)
 
+set(import_vtk_depends)
+
 # The import operator is only available if there is VTK
 if(SMTK_ENABLE_VTK_SUPPORT)
   include("${VTK_USE_FILE}")
@@ -92,17 +94,17 @@ if(SMTK_ENABLE_VTK_SUPPORT)
      operators/Import.h
      )
   smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Import.sbt" polygonOperatorXML)
-  set(import_vtk_depends
-      vtkCommonCore
-      vtkCommonDataModel
-      vtkInteractionStyle
-      vtkIOParallel
-      vtkRenderingCore
-      vtkRenderingFreeType
-      vtkRenderingOpenGL2
-      vtkSMTKReaderExt
-      vtksys
-      )
+  list(APPEND import_vtk_depends
+    vtkCommonCore
+    vtkCommonDataModel
+    vtkInteractionStyle
+    vtkIOParallel
+    vtkRenderingCore
+    vtkRenderingFreeType
+    vtkRenderingOpenGL2
+    vtkSMTKReaderExt
+    vtksys
+    )
 endif()
 
 add_library(smtkPolygonSession ${polygonSrcs})
@@ -113,6 +115,19 @@ target_link_libraries(smtkPolygonSession
     ${import_vtk_depends}
     ${Boost_LIBRARIES}
   )
+
+#vtk targets don't specify an include directory through usage-requirements, so
+#we manually add them here
+set(includes_from_vtk)
+foreach(module ${import_vtk_depends})
+  list(APPEND includes_from_vtk "${${module}_INCLUDE_DIRS}")
+endforeach(module)
+
+target_include_directories(smtkPolygonSession
+  PRIVATE
+  ${includes_from_vtk}
+  )
+
 smtk_export_header(smtkPolygonSession Exports.h)
 
 # Install the library and exports the library when used from a build tree

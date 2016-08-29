@@ -95,11 +95,21 @@ if (SMTK_ENABLE_PYTHON_WRAPPING AND VTK_WRAP_PYTHON)
       vtkCommonExecutionModelPythonD
       vtkViewsInfovisPythonD
   )
+  target_include_directories(${vtk-module}PythonD
+    PRIVATE
+    ${vtkPython_INCLUDE_DIRS}
+    ${vtkWrappingPythonCore_INCLUDE_DIRS}
+    )
   target_link_libraries(${vtk-module}Python
     PUBLIC
       vtkSMTKSourceExtPythonD
       ${PYTHON_LIBRARY}
-  )
+      )
+  target_include_directories(${vtk-module}Python
+    PRIVATE
+    ${vtkPython_INCLUDE_DIRS}
+    ${vtkWrappingPythonCore_INCLUDE_DIRS}
+    )
 endif()
 
 if (SMTK_ENABLE_TESTING)

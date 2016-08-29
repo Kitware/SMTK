@@ -15,7 +15,6 @@ vtk_module(vtkSMTKReaderExt
     vtkIOParallelExodus
     vtkRenderingCore
     vtkRenderingFreeType
-    vtkPVVTKExtensionsDefault
     vtkRenderingOpenGL2
     vtkRenderingMatplotlib
     vtkRenderingVolume

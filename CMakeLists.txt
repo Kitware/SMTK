@@ -93,14 +93,16 @@ cmake_dependent_option(
   SMTK_ENABLE_PYTHON_WRAPPING OFF)
 mark_as_advanced(SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES)
 option(SMTK_ENABLE_QT_SUPPORT "Build Qt GUI" OFF)
-option(SMTK_ENABLE_VTK_SUPPORT "Build VTK component" OFF)
+option(SMTK_ENABLE_VTK_SUPPORT "Build VTK component" ON)
 option(SMTK_ENABLE_REMUS_SUPPORT "Build Remus components" OFF)
 cmake_dependent_option(SMTK_ENABLE_PARAVIEW_SUPPORT "Build paraview plugins for model sessions" OFF
   SMTK_ENABLE_VTK_SUPPORT OFF)
 
 option(SMTK_ENABLE_CGM_SESSION "Build CGM component" OFF)
-option(SMTK_ENABLE_DISCRETE_SESSION "Build discrete model session components" OFF)
-option(SMTK_ENABLE_POLYGON_SESSION "Build Boost.polygon model session." ON)
+cmake_dependent_option(SMTK_ENABLE_DISCRETE_SESSION "Build discrete model session components" OFF
+  SMTK_ENABLE_VTK_SUPPORT OFF)
+cmake_dependent_option(SMTK_ENABLE_POLYGON_SESSION "Build Boost.polygon model session." ON
+  SMTK_ENABLE_VTK_SUPPORT OFF)
 cmake_dependent_option(SMTK_ENABLE_EXODUS_SESSION "Build a session to Exodus-II side sets" ON
   SMTK_ENABLE_VTK_SUPPORT OFF)
 cmake_dependent_option(SMTK_ENABLE_REMOTE_SESSION "Build a session that allows modeling in a remote process" ON
@@ -209,10 +211,7 @@ endif()
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   # include ParaView and ensure it is using the OpenGL2 backend
-  find_package(ParaView REQUIRED
-    COMPONENTS
-    vtkRenderingOpenGL2
-    )
+  find_package(ParaView)
 endif()
 
 ################################################################################
@@ -222,19 +221,20 @@ endif()
 if(SMTK_ENABLE_VTK_SUPPORT)
   if(SMTK_ENABLE_PARAVIEW_SUPPORT)
     # include ParaView and ensure it is using the OpenGL2 backend
-    find_package(ParaView REQUIRED
-      COMPONENTS
-      vtkRenderingOpenGL2
-      )
+    find_package(ParaView)
   else()
     # Find the package here so environment variables are set, but
     # be careful not to include the VTK_USE_FILE until inside
     # a subdirectory that requires it; otherwise the list of include
     # paths can become too long for some platforms.
-    find_package(VTK REQUIRED
-      COMPONENTS
-      vtkRenderingOpenGL2
-      )
+    find_package(VTK)
+  endif()
+endif()
+
+if (SMTK_ENABLE_PARAVIEW_SUPPORT OR SMTK_ENABLE_VTK_SUPPORT)
+  if(NOT VTK_RENDERING_BACKEND STREQUAL "OpenGL2")
+    message(FATAL_ERROR
+      "SMTK requires that VTK be built with the OpenGL2 Rendering backend.")
   endif()
 endif()
 
@@ -418,12 +418,6 @@ include_directories(
 ################################################################################
 
 if(SMTK_ENABLE_DISCRETE_SESSION)
-  if(SMTK_ENABLE_PARAVIEW_SUPPORT)
-    find_package(ParaView REQUIRED)
-  else()
-    find_package(VTK REQUIRED)
-  endif()
-
   # This option is only available when SMTK_ENABLE_DISCRETE_SESSION is ON, and
   # it should be OFF by default since exodus session should handle exodus files
   option(
