@@ -30,6 +30,7 @@ set(unit_tests_which_require_data
   UnitTestExportMesh3DM.cxx
   UnitTestExtractTessellation.cxx
   UnitTestExtractTessellationOfModel.cxx
+  UnitTestExtractOrderedTessellation.cxx
   UnitTestLoadMesh.cxx
   UnitTestMergeContactPoints.cxx
   UnitTestMeshSet.cxx
@@ -48,5 +49,5 @@ smtk_unit_tests(
   LABEL "Mesh"
   SOURCES ${unit_tests}
   SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
-  LIBRARIES smtkCore smtkCoreModelTesting ${Boost_LIBRARIES}
+  LIBRARIES smtkCore smtkDiscreteSession smtkCoreModelTesting ${Boost_LIBRARIES}
 )

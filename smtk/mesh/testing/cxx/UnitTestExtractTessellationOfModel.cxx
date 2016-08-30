@@ -20,6 +20,9 @@
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
+#include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/IntItem.h"
+
 #include <fstream>
 
 namespace
@@ -300,13 +303,11 @@ int UnitTestExtractTessellationOfModel(int, char** const)
     if (!currentEnts.empty())
       {
       eRef = *currentEnts.begin();
-      break;
+      verify_alloc_lengths_entityref(eRef, c);
+      verify_extract(eRef, c);
+      verify_extract_volume_meshes_by_global_points_to_vtk(eRef, c);
       }
     }
-
-  verify_alloc_lengths_entityref(eRef, c);
-  verify_extract(eRef, c);
-  verify_extract_volume_meshes_by_global_points_to_vtk(eRef, c);
 
   return 0;
 }
