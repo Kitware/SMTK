@@ -11,10 +11,11 @@
   <suppress-warning text="namespace 'mpl_' does not have a type entry"/>
   <suppress-warning text="namespace 'pugi' does not have a type entry"/>
   <suppress-warning text="namespace 'remote' does not have a type entry"/>
-	<suppress-warning text="namespace 'smtk::bridge' does not have a type entry"/>
-	<suppress-warning text="namespace 'smtk::bridge::remote' does not have a type entry"/>
-	<suppress-warning text="namespace 'smtk::internal' does not have a type entry"/>
-	<suppress-warning text="namespace 'smtk::mesh::json' does not have a type entry"/>
+  <suppress-warning text="namespace 'smtk::bridge' does not have a type entry"/>
+  <suppress-warning text="namespace 'smtk::bridge::remote' does not have a type entry"/>
+  <suppress-warning text="namespace 'smtk::extension' does not have a type entry"/>
+  <suppress-warning text="namespace 'smtk::internal' does not have a type entry"/>
+  <suppress-warning text="namespace 'smtk::mesh::json' does not have a type entry"/>
   <suppress-warning text="namespace 'smtk::mesh::moab' does not have a type entry"/>
   <suppress-warning text="namespace 'vtk' does not have a type entry"/>
   <suppress-warning text="namespace 'std' does not have a type entry"/>
@@ -431,7 +432,11 @@
   <suppress-warning text="skipping function 'smtk::mesh::Collection::readLocation', unmatched parameter type 'smtk::common::FileLocation const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::mesh::Collection::writeLocation', unmatched parameter type 'smtk::common::FileLocation const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::mesh::Collection::writeLocation', unmatched return type 'smtk::common::FileLocation const&amp;'"/>
-
+  <suppress-warning text="skipping function 'smtk::mesh::Collection::findAssociatedMeshes', unmatched parameter type 'smtk::model::EntityIterator&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::mesh::Collection::findAssociatedTypes', unmatched parameter type 'smtk::model::EntityIterator&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::mesh::Collection::findAssociatedCells', unmatched parameter type 'smtk::model::EntityIterator&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::mesh::PointSet::PointSet', unmatched parameter type 'smtk::mesh::ConstCollectionPtr const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::mesh::CellSet::CellSet', unmatched parameter type 'smtk::mesh::ConstCollectionPtr const&amp;'"/>
   <suppress-warning text="skipping field 'Manager::m_conditionTriggers' with unmatched type 'std::set&lt;ConditionTrigger&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_oneToOneTriggers' with unmatched type 'std::set&lt;OneToOneTrigger&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_oneToManyTriggers' with unmatched type 'std::set&lt;OneToManyTrigger&gt;'"/>

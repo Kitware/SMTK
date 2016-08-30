@@ -22,8 +22,9 @@ namespace smtk {
 namespace mesh {
 namespace moab {
 
-typedef ::moab::EntityHandle  Handle;
-typedef ::moab::Range         HandleRange;
+typedef ::moab::EntityHandle   Handle;
+typedef ::moab::Range          HandleRange;
+typedef ::moab::range_inserter HandleRangeInserter;
 
 }
 }

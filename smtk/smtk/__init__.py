@@ -70,13 +70,19 @@ def __import_shared_ptrs__():
 import shiboken
 _temp = __import__('smtkCorePython', globals(), locals(), [], -1)
 __import_shared_ptrs__()
-
 common = _temp.smtk.common
 attribute = _temp.smtk.attribute
 model = _temp.smtk.model
 mesh = _temp.smtk.mesh
 simulation = _temp.smtk.simulation
 io = _temp.smtk.io
+
+try:
+  _tempext = __import__('vtkToSMTKMeshPython', globals(), locals(), [], -1)
+  __import_shared_ptrs__()
+  vtkToMesh = _tempext.vtkToMesh
+except:
+  pass
 
 # Try loading optional extensions.
 # Do not complain if they are not present.

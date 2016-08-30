@@ -22,6 +22,7 @@ namespace smtk {
 namespace mesh {
   typedef smtk::mesh::moab::Handle Handle;
   typedef smtk::mesh::moab::HandleRange HandleRange;
+  typedef smtk::mesh::moab::HandleRangeInserter HandleRangeInserter;
 
   SMTKCORE_EXPORT cJSON* to_json(const smtk::mesh::HandleRange& range);
 

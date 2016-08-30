@@ -4,8 +4,8 @@ set (__dependencies)
 foreach(target
     vtkRenderingFreeType
     vtkRenderingMatplotlib
-    vtkRendering${VTK_RENDERING_BACKEND}
-    vtkRenderingVolume${VTK_RENDERING_BACKEND}
+    vtkRenderingOpenGL2
+    vtkRenderingVolumeOpenGL2
 )
   if (TARGET ${target})
     list(APPEND __dependencies ${target})

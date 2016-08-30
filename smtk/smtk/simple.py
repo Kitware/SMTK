@@ -288,6 +288,35 @@ def CreateBrick(**args):
   brick = res.findModelEntity('created').value(0)
   return brick
 
+def Delete(ents, **kwargs):
+  """Delete entities and (optionally) their bordant entities.
+
+  To delete dependent entities, pass delete_dependents=True.
+  """
+  sess = GetActiveSession()
+  op = sess.op('delete')
+  SetVectorValue(op.specification().associations(), ents)
+  if 'delete_dependents' in kwargs and kwargs['delete_dependents']:
+    op.findVoid('delete dependents', smtk.attribute.ALL_CHILDREN).setIsEnabled()
+  res = op.operate()
+  SetLastResult(res)
+  PrintResultLog(res)
+  exp = res.findModelEntity('expunged')
+  return [exp.value(i) for i in range(exp.numberOfValues())]
+
+
+def ImportSMTKModel(filename):
+  """Import an SMTK model into the active session."""
+  sess = GetActiveSession()
+  op = sess.op('import smtk model')
+  fname = op.findFile('filename', smtk.attribute.ALL_CHILDREN)
+  fname.setValue(filename)
+  res = op.operate()
+  SetLastResult(res)
+  PrintResultLog(res)
+  cre = res.findModelEntity('created')
+  return [cre.value(i) for i in range(cre.numberOfValues())]
+
 def Intersect(bodies, **args):
   """Compute the boolean intersection of a set of bodies.
 

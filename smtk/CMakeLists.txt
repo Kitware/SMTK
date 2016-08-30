@@ -83,6 +83,7 @@ install(
     AutoInit.h
     PublicPointerDefs.h
     SharedFromThis.h
+    SharedPtr.h
     SystemConfig.h
   DESTINATION
     include/smtk/${SMTK_VERSION}/smtk

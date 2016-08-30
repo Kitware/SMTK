@@ -79,7 +79,12 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
   smtk::model::SessionInfoBits requestedInfo,
   int depth)
 {
-  (void)entity;
+  if(entity.isModel())
+    {
+    smtk::model::EntityRef mutableEnt(entity);
+    mutableEnt.setIntegerProperty(SMTK_GEOM_STYLE_PROP, smtk::model::DISCRETE);
+    }
+
   (void)requestedInfo;
   (void)depth;
   return smtk::model::SESSION_EVERYTHING;

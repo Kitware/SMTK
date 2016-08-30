@@ -71,7 +71,7 @@ vtkLASReader::vtkLASReader()
   this->Header.GlobalEncoding = 0; // GPS "Week" Time
   this->Header.Size = 0;
   this->Header.OffsetToPointData = 0;
-  this->OutputDataTypeIsDouble = false;
+  this->OutputDataTypeIsDouble = true;
 }
 
 //-----------------------------------------------------------------------------

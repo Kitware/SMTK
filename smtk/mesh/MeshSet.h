@@ -52,10 +52,15 @@ public:
   //of the handle
   MeshSet(const smtk::mesh::CollectionPtr& parent,
           smtk::mesh::Handle handle);
+  MeshSet(const smtk::mesh::ConstCollectionPtr& parent,
+          smtk::mesh::Handle handle);
 
   //construct a MeshSet that represents an arbitrary unkown subset meshes that
   //are children of the handle.
   MeshSet(const smtk::mesh::CollectionPtr& parent,
+          smtk::mesh::Handle handle,
+          const smtk::mesh::HandleRange& range);
+  MeshSet(const smtk::mesh::ConstCollectionPtr& parent,
           smtk::mesh::Handle handle,
           const smtk::mesh::HandleRange& range);
 #endif

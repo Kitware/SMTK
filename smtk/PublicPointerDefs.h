@@ -202,6 +202,7 @@ namespace smtk
   {
     typedef smtk::shared_ptr< smtk::mesh::Manager >               ManagerPtr;
     typedef smtk::shared_ptr< smtk::mesh::Collection >            CollectionPtr;
+    typedef smtk::shared_ptr< const smtk::mesh::Collection >      ConstCollectionPtr;
     typedef smtk::shared_ptr< smtk::mesh::Interface >             InterfacePtr;
     typedef smtk::shared_ptr< smtk::mesh::Allocator >             AllocatorPtr;
     typedef smtk::shared_ptr< smtk::mesh::ConnectivityStorage >
@@ -362,7 +363,6 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::simulation::UserData > UserDataPtr;
   }
 
-#ifdef smtk_has_owner_less
   //special map and set typedefs for better safety with sets of weak pointers
   //since sets of weak pointers can be dangerous.
   namespace attribute
@@ -376,18 +376,6 @@ namespace smtk
     typedef std::set< attribute::WeakItemPtr,
       smtk::owner_less< attribute::WeakItemPtr > >   WeakItemPtrSet;
   }
-
-#else
-  //we can use less than operator
-  namespace attribute
-  {
-    typedef std::set< attribute::WeakAttributePtr  >      WeakAttributePtrSet;
-    typedef std::set< attribute::WeakDefinitionPtr  >     WeakDefinitionPtrSet;
-    typedef std::set< attribute::WeakItemDefinitionPtr >  WeakItemDefinitionPtrSet;
-    typedef std::set< attribute::WeakItemPtr  >           WeakItemPtrSet;
-  }
-
-#endif
 
   // These are used internally by SMTK
   namespace internal

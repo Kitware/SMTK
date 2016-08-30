@@ -32,6 +32,21 @@ class SMTKCORE_EXPORT PointSet
 public:
   PointSet(const smtk::mesh::CollectionPtr& parent,
            const smtk::mesh::HandleRange& points);
+  PointSet(const smtk::mesh::ConstCollectionPtr& parent,
+           const smtk::mesh::HandleRange& points);
+
+  //construct a PointSet that represents an arbitrary unknown subset of points
+  //that are children of the handle via an explicit vector of point ids. While
+  //this method is inefficient, it is useful for the python bindings where
+  //<points> is converted to a list.
+  PointSet(const smtk::mesh::CollectionPtr& parent,
+           const std::vector<smtk::mesh::Handle>& points);
+
+  //construct a PointSet that represents an arbitrary unknown subset of points
+  //that are children of the handle via an explicit set of point ids. This
+  //constructor is preferred over the variant that takes a std::vector.
+  PointSet(const smtk::mesh::CollectionPtr& parent,
+           const std::set<smtk::mesh::Handle>& points);
 
   //Copy Constructor required for rule of 3
   PointSet(const PointSet& other);

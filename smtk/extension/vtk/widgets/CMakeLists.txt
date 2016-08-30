@@ -13,9 +13,9 @@ foreach(target
     vtkInteractionStyle
     vtkRenderingFreeType
     vtkRenderingMatplotlib
-    vtkRendering${VTK_RENDERING_BACKEND}
-    vtkRenderingVolume${VTK_RENDERING_BACKEND}
-    vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
+    vtkRenderingOpenGL2
+    vtkRenderingVolumeOpenGL2
+    vtkRenderingGL2PSOpenGL2
 )
   if (TARGET ${target})
     list(APPEND __dependencies ${target})

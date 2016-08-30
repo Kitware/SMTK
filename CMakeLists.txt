@@ -54,9 +54,6 @@ include(SMTKMacros)
 # and also provides helpers around create_test_sourcelist
 include(CMake/SMTKTestingMacros.cmake)
 
-# Include mechanism for determining shared and weak pointer support
-include(SharedPtr)
-
 # Include mechanism for determining function and bind support
 include(Function)
 
@@ -154,7 +151,7 @@ endif()
 ################################################################################
 
 # Boost is required for boost::uuids::uuid and, depending
-# on the platform, for boost::shared_ptr, as well as for filesystem support.
+# on the platform, for filesystem support.
 #setup if we should use boost static libraries based on if we are
 #building static or shared. We need to match boosts library type to ours so
 #that we handle symbol visibility properly, plus at the same time we have
@@ -175,8 +172,6 @@ set(Boost_NO_SYSTEM_PATHS ${SMTK_NO_SYSTEM_BOOST})
 
 # List of Boost features used:
 # * Filesystem
-# * Scoped Ptr
-# * Shared Ptr
 # * String algorithms
 # * UUID Generation
 find_package(Boost 1.60.0
@@ -220,7 +215,11 @@ endif()
 ################################################################################
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
-  find_package(ParaView REQUIRED)
+  # include ParaView and ensure it is using the OpenGL2 backend
+  find_package(ParaView REQUIRED
+    COMPONENTS
+    vtkRenderingOpenGL2
+    )
 endif()
 
 ################################################################################
@@ -229,20 +228,21 @@ endif()
 
 if(SMTK_ENABLE_VTK_SUPPORT)
   if(SMTK_ENABLE_PARAVIEW_SUPPORT)
-    find_package(ParaView REQUIRED)
+    # include ParaView and ensure it is using the OpenGL2 backend
+    find_package(ParaView REQUIRED
+      COMPONENTS
+      vtkRenderingOpenGL2
+      )
   else()
     # Find the package here so environment variables are set, but
     # be careful not to include the VTK_USE_FILE until inside
     # a subdirectory that requires it; otherwise the list of include
     # paths can become too long for some platforms.
-    find_package(VTK REQUIRED)
+    find_package(VTK REQUIRED
+      COMPONENTS
+      vtkRenderingOpenGL2
+      )
   endif()
-endif()
-
-# Maintain compatibility with older VTK/ParaView, check for the definition
-# of, and define if not, VTK_RENDERING_BACKEND.
-if(NOT DEFINED VTK_RENDERING_BACKEND)
-  set(VTK_RENDERING_BACKEND "OpenGL")
 endif()
 
 ################################################################################
@@ -347,19 +347,6 @@ configure_file(
   @ONLY)
 
 install (FILES ${PROJECT_BINARY_DIR}/smtk/Function.h
-  DESTINATION include/smtk/${SMTK_VERSION}/smtk)
-
-################################################################################
-# Determine shared_ptr
-################################################################################
-determineSharedPtrType(POINTER_NAMESPACE POINTER_TYPE_HEADERS)
-
-configure_file(
-  ${PROJECT_SOURCE_DIR}/CMake/SharedPtr.h.in
-  ${PROJECT_BINARY_DIR}/smtk/SharedPtr.h
-  @ONLY)
-
-install (FILES ${PROJECT_BINARY_DIR}/smtk/SharedPtr.h
   DESTINATION include/smtk/${SMTK_VERSION}/smtk)
 
 ################################################################################

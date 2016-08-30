@@ -5,10 +5,10 @@ set (__dependencies)
 foreach(target
     vtkInteractionStyle
     vtkRenderingFreeType
-    vtkIOExport${VTK_RENDERING_BACKEND}
-    vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
-    vtkRendering${VTK_RENDERING_BACKEND}
-    vtkRenderingGL2PS${VTK_RENDERING_BACKEND}
+    vtkIOExportOpenGL2
+    vtkRenderingGL2PSOpenGL2
+    vtkRenderingOpenGL2
+    vtkRenderingGL2PSOpenGL2
 )
   if (TARGET ${target})
     list(APPEND __dependencies ${target})

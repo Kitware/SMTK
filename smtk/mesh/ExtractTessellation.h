@@ -17,6 +17,7 @@
 #include "smtk/mesh/MeshSet.h"
 
 namespace smtk {
+namespace model { class EntityRef; }
 namespace mesh {
 
 class SMTKCORE_EXPORT PreAllocatedTessellation
@@ -32,6 +33,12 @@ public:
                                          boost::int64_t& numberOfPoints);
 
   static void determineAllocationLengths(const smtk::mesh::CellSet& cs,
+                                         boost::int64_t& connectivityLength,
+                                         boost::int64_t& numberOfCells,
+                                         boost::int64_t& numberOfPoints);
+
+  static void determineAllocationLengths(const smtk::model::EntityRef& eRef,
+                                         const smtk::mesh::CollectionPtr& c,
                                          boost::int64_t& connectivityLength,
                                          boost::int64_t& numberOfCells,
                                          boost::int64_t& numberOfPoints);
@@ -143,14 +150,27 @@ private:
 //and the extract method
 #ifndef SHIBOKEN_SKIP
 
-SMTKCORE_EXPORT void extractTessellation( const smtk::mesh::MeshSet&, PreAllocatedTessellation& );
-SMTKCORE_EXPORT void extractTessellation( const smtk::mesh::CellSet&, PreAllocatedTessellation& );
+SMTKCORE_EXPORT void extractTessellation( const smtk::mesh::MeshSet&,
+                                          PreAllocatedTessellation& );
+SMTKCORE_EXPORT void extractTessellation( const smtk::mesh::CellSet&,
+                                          PreAllocatedTessellation& );
+SMTKCORE_EXPORT void extractTessellation( const smtk::model::EntityRef&,
+                                          const smtk::mesh::CollectionPtr&,
+                                          PreAllocatedTessellation& );
 
 //Extract Tessellation in respect to another PointSet instead of the PointSet
 //contained by the meshset. This is useful if you are sharing a single
 //PointSet among multiple Tessellations.
-SMTKCORE_EXPORT void extractTessellation( const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedTessellation& );
-SMTKCORE_EXPORT void extractTessellation( const smtk::mesh::CellSet&, const smtk::mesh::PointSet& , PreAllocatedTessellation& );
+SMTKCORE_EXPORT void extractTessellation( const smtk::mesh::MeshSet&,
+                                          const smtk::mesh::PointSet&,
+                                          PreAllocatedTessellation& );
+SMTKCORE_EXPORT void extractTessellation( const smtk::mesh::CellSet&,
+                                          const smtk::mesh::PointSet&,
+                                          PreAllocatedTessellation& );
+SMTKCORE_EXPORT void extractTessellation( const smtk::model::EntityRef&,
+                                          const smtk::mesh::CollectionPtr&,
+                                          const smtk::mesh::PointSet&,
+                                          PreAllocatedTessellation& );
 
 #endif //SHIBOKEN_SKIP
 

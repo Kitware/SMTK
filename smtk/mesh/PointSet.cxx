@@ -18,11 +18,40 @@ namespace mesh {
 
 //----------------------------------------------------------------------------
 PointSet::PointSet(const smtk::mesh::CollectionPtr& parent,
-                 const smtk::mesh::HandleRange& points):
+                   const smtk::mesh::HandleRange& points):
   m_parent(parent),
   m_points(points)
 {
 
+}
+
+//----------------------------------------------------------------------------
+PointSet::PointSet(const smtk::mesh::ConstCollectionPtr& parent,
+                   const smtk::mesh::HandleRange& points):
+  m_parent(std::const_pointer_cast<smtk::mesh::Collection>(parent)),
+  m_points(points)
+{
+
+}
+
+//----------------------------------------------------------------------------
+PointSet::PointSet(const smtk::mesh::CollectionPtr& parent,
+                   const std::vector<smtk::mesh::Handle>& points):
+  m_parent(parent),
+  m_points()
+{
+  std::copy(points.rbegin(), points.rend(),
+            HandleRangeInserter(this->m_points));
+}
+
+//----------------------------------------------------------------------------
+PointSet::PointSet(const smtk::mesh::CollectionPtr& parent,
+                   const std::set<smtk::mesh::Handle>& points):
+  m_parent(parent),
+  m_points()
+{
+  std::copy(points.rbegin(), points.rend(),
+            HandleRangeInserter(this->m_points));
 }
 
 //----------------------------------------------------------------------------

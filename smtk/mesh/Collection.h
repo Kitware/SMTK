@@ -21,6 +21,7 @@
 #include "smtk/mesh/CellSet.h"
 #include "smtk/mesh/PointConnectivity.h"
 #include "smtk/mesh/Handle.h"
+#include "smtk/mesh/Interface.h"
 #include "smtk/mesh/MeshSet.h"
 #include "smtk/mesh/PropertyData.h"
 #include "smtk/mesh/QueryTypes.h"
@@ -36,6 +37,7 @@ namespace smtk {
 
   //forward declare friends
   namespace io { class ImportMesh; }
+  namespace model { class EntityIterator; }
   namespace mesh {
 
 //Flyweight interface around a moab database of meshes. When constructed
@@ -126,43 +128,53 @@ public:
   //Queries on the full Collection
   //----------------------------------------------------------------------------
   smtk::mesh::TypeSet   types() const;
-  smtk::mesh::MeshSet   meshes( ); //all meshes
-  smtk::mesh::CellSet   cells( ); //all cells
-  smtk::mesh::PointSet  points( ); //all points
+  smtk::mesh::MeshSet   meshes( ) const; //all meshes
+  smtk::mesh::CellSet   cells( ) const; //all cells
+  smtk::mesh::PointSet  points( ) const; //all points
 
   //todo:
   //find all cells of a given dimension that are attached to ?
   //smtk::mesh::CellSet   connectivity( smtk::mesh::DimensionType dim );
 
-  smtk::mesh::PointConnectivity pointConnectivity( ); //all point connectivity info for all cells
+  smtk::mesh::PointConnectivity pointConnectivity( ) const; //all point connectivity info for all cells
 
   //For any mesh set that has a name we return that name. It is possible
   //that the we have un-named mesh sets.
-  std::vector< std::string > meshNames();
+  std::vector< std::string > meshNames() const;
 
   //Find all meshes that have at least one cell of the given type.
   //This means that you can get back meshes of mixed dimension
   //type.
-  smtk::mesh::MeshSet   meshes( smtk::mesh::DimensionType dim );
-  smtk::mesh::MeshSet   meshes( const smtk::mesh::Domain& d );
-  smtk::mesh::MeshSet   meshes( const smtk::mesh::Dirichlet& d );
-  smtk::mesh::MeshSet   meshes( const smtk::mesh::Neumann& n );
-  smtk::mesh::MeshSet   meshes( const std::string& name );
+  smtk::mesh::MeshSet   meshes( smtk::mesh::DimensionType dim ) const;
+  smtk::mesh::MeshSet   meshes( const smtk::mesh::Domain& d ) const;
+  smtk::mesh::MeshSet   meshes( const smtk::mesh::Dirichlet& d ) const;
+  smtk::mesh::MeshSet   meshes( const smtk::mesh::Neumann& n ) const;
+  smtk::mesh::MeshSet   meshes( const std::string& name ) const;
 
   //find a cells of a given type or a collection of types
-  smtk::mesh::CellSet   cells( smtk::mesh::CellType cellType );
-  smtk::mesh::CellSet   cells( smtk::mesh::CellTypes cellTypes );
-  smtk::mesh::CellSet   cells( smtk::mesh::DimensionType dim );
+  smtk::mesh::CellSet   cells( smtk::mesh::CellType cellType ) const;
+  smtk::mesh::CellSet   cells( smtk::mesh::CellTypes cellTypes ) const;
+  smtk::mesh::CellSet   cells( smtk::mesh::DimensionType dim ) const;
 
   //----------------------------------------------------------------------------
   // Queries by a model Cursor
   //----------------------------------------------------------------------------
-  smtk::mesh::TypeSet   findAssociatedTypes( const smtk::model::EntityRef& eref );
-  smtk::mesh::MeshSet   findAssociatedMeshes( const smtk::model::EntityRef& eref );
-  smtk::mesh::MeshSet   findAssociatedMeshes( const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim );
-  smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref );
-  smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType );
-  smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim );
+  smtk::mesh::TypeSet   findAssociatedTypes( const smtk::model::EntityRef& eref ) const;
+  smtk::mesh::MeshSet   findAssociatedMeshes( const smtk::model::EntityRef& eref ) const;
+  smtk::mesh::MeshSet   findAssociatedMeshes( const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim ) const;
+  smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref ) const;
+  smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType ) const;
+  smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim ) const;
+
+  smtk::mesh::TypeSet   findAssociatedTypes( smtk::model::EntityIterator& refIt ) const;
+  smtk::mesh::MeshSet   findAssociatedMeshes( smtk::model::EntityIterator& refIt ) const;
+  smtk::mesh::MeshSet   findAssociatedMeshes( smtk::model::EntityIterator& refIt,
+                                              smtk::mesh::DimensionType dim ) const;
+  smtk::mesh::CellSet   findAssociatedCells( smtk::model::EntityIterator& refIt ) const;
+  smtk::mesh::CellSet   findAssociatedCells( smtk::model::EntityIterator& refIt,
+                                             smtk::mesh::CellType cellType ) const;
+  smtk::mesh::CellSet   findAssociatedCells( smtk::model::EntityIterator& refIt,
+                                             smtk::mesh::DimensionType dim ) const;
 
   bool setAssociation( const smtk::model::EntityRef& eref, const smtk::mesh::MeshSet& meshset );
 
@@ -203,11 +215,11 @@ public:
   // Domain Queries
   //----------------------------------------------------------------------------
   //get all the current domains
-  std::vector< smtk::mesh::Domain > domains();
+  std::vector< smtk::mesh::Domain > domains() const;
 
   //get the meshes with a given domain value. If no meshes have
   //this domain value the result will be empty
-  smtk::mesh::MeshSet domainMeshes( const smtk::mesh::Domain& m );
+  smtk::mesh::MeshSet domainMeshes( const smtk::mesh::Domain& m ) const;
 
   //Assign a given domain to a collection of meshes. Overwrites
   //any existing domain value
@@ -218,12 +230,12 @@ public:
   // Dirichlet Queries
   //----------------------------------------------------------------------------
   //get all the current dirichlet on the points of the mesh
-  std::vector< smtk::mesh::Dirichlet > dirichlets();
+  std::vector< smtk::mesh::Dirichlet > dirichlets() const;
 
   //get the meshes with a given dirichlet value. If no meshes have
   //this dirichlet value the result will be empty.
   //Generally Dirichlet meshes only contain vertices
-  smtk::mesh::MeshSet dirichletMeshes( const smtk::mesh::Dirichlet& d );
+  smtk::mesh::MeshSet dirichletMeshes( const smtk::mesh::Dirichlet& d ) const;
 
   //Assign a given dirichlet to a collection of meshes. Overwrites
   //any existing dirichlet value
@@ -235,11 +247,11 @@ public:
   // Neumann Queries
   //----------------------------------------------------------------------------
   //get all the current dirichlet on the points of the mesh
-  std::vector< smtk::mesh::Neumann > neumanns();
+  std::vector< smtk::mesh::Neumann > neumanns() const;
 
   //get the meshes with a given neumann value. If no meshes have
   //this material value the result will be empty.
-  smtk::mesh::MeshSet neumannMeshes( const smtk::mesh::Neumann& n );
+  smtk::mesh::MeshSet neumannMeshes( const smtk::mesh::Neumann& n ) const;
 
   //Assign a given neumann to a collection of meshes. Overwrites
   //any existing neumann value
