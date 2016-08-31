@@ -29,8 +29,8 @@ EdgeFragment::EdgeFragment()
 void EdgeFragment::dump(RegionIdSet& ufind) const
 {
   std::cout
-    << "  " << this->lo().x()/1182720.0 << " " << this->lo().y()/1182720.0
-    << " -- " << this->hi().x()/1182720.0 << " " << this->hi().y()/1182720.0
+    << "  " << this->lo().x() << " " << this->lo().y()
+    << "    " << this->hi().x() << " " << this->hi().y()
     << "  " << this->m_edge.name() << ", seg " << this->m_segment
     << " regIds "
     << (ufind.find(this->m_regionId[0]) / 2)
