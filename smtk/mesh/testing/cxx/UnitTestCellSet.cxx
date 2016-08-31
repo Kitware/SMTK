@@ -57,6 +57,8 @@ void verify_subsets(const smtk::mesh::CollectionPtr& c)
 {
   std::vector< std::string > mesh_names = c->meshNames();
 
+  test( mesh_names.empty() == false, "There are no meshes in the collection.");
+
   smtk::mesh::MeshSet ms = c->meshes( mesh_names[0] );
   smtk::mesh::CellSet ps = ms.cells();
 
@@ -69,7 +71,7 @@ void verify_subsets(const smtk::mesh::CollectionPtr& c)
        iter != ps.range().end(); ++iter )
      {
      range.insert( iter->first, iter->second - 1 );
-     for ( smtk::mesh::Handle i=iter->first; i < iter->second - 1; ++i)
+     for ( smtk::mesh::Handle i=iter->first; i < iter->second; ++i)
        {
        set.insert(i);
        vec.push_back(i);
