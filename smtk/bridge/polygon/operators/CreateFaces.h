@@ -84,6 +84,8 @@ protected:
   smtk::model::Model m_model;
   smtk::model::OperatorOutcome m_status;
   ModelEdgeMap m_edgeMap;
+  internal::Point m_bdsLo;
+  internal::Point m_bdsHi;
 };
 
     } // namespace polygon
