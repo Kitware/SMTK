@@ -305,7 +305,6 @@ bool BathymetryHelper::computeBathymetryPoints(
     }
 
   //second iteration is building the point set and elevation mapping
-  vtkPoints *inputPoints = NULL;
   vtkIdType size, i;
   double p[3];
   // Uniform Grids may not have the max number of points

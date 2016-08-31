@@ -95,7 +95,6 @@ int main(int argc, char* argv[])
       }
 
     // Set "import" operator's file to a test file
-    std::string data_root = SMTK_DATA_DIR;
     importOp->specification()->findFile("filename")->
       setValue(std::string(argv[1]));
 
@@ -128,7 +127,6 @@ int main(int argc, char* argv[])
         }
 
       // Set "export mesh" operator's file
-      std::string write_root = data_root + "/mesh/tmp";
       std::string write_path = std::string(write_root + "/testmesh" +
                                            extension[fileType]);
       exportMeshOp->specification()->findFile("filename")->

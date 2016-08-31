@@ -142,7 +142,7 @@ void verify_tri_polydata()
   smtk::mesh::CollectionPtr c = convert( pd );
   test( c->isValid(), "collection should valid");
   test( c->numberOfMeshes() == 1, "collection should only have a single mesh");
-  test( c->cells().size() == pd->GetNumberOfCells());
+  test( c->cells().size() == static_cast<std::size_t>(pd->GetNumberOfCells()));
 
   //this is a triangle pd so it is 2d only
   smtk::mesh::MeshSet meshes = c->meshes( smtk::mesh::Dims2 );
@@ -164,7 +164,7 @@ void verify_tri_ugrid()
   smtk::mesh::CollectionPtr c = convert( ug );
   test( c->isValid(), "collection should valid");
   test( c->numberOfMeshes() == 1, "collection should only have a single mesh");
-  test( c->cells().size() == ug->GetNumberOfCells());
+  test( c->cells().size() == static_cast<std::size_t>(ug->GetNumberOfCells()));
 
   //this is a triangle grid so it is 2d only
   smtk::mesh::MeshSet meshes = c->meshes( smtk::mesh::Dims2 );
@@ -189,7 +189,8 @@ void verify_mixed_cell_ugrid()
 
   test( c->isValid(), "collection should valid");
   test( c->numberOfMeshes() == 1, "collection should only have a single mesh");
-  test( c->cells().size() == ug->GetNumberOfCells(), "number of cells in mesh don't match");
+  test( c->cells().size() == static_cast<std::size_t>(ug->GetNumberOfCells()),
+        "number of cells in mesh don't match");
 
   //this is a volume only grid
   smtk::mesh::MeshSet meshes = c->meshes( smtk::mesh::Dims3 );
@@ -202,6 +203,8 @@ void verify_mixed_cell_ugrid()
 //----------------------------------------------------------------------------
 int UnitTestVTKDataConverter(int argc, char* argv[])
 {
+  (void)argc;
+  (void)argv;
 
   verify_null_polydata();
 

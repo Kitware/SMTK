@@ -385,7 +385,7 @@ class CountPoints : public smtk::mesh::PointForEach
   int numPointsIteratedOver;
 public:
   //--------------------------------------------------------------------------
-  CountPoints( smtk::mesh::CollectionPtr collection ):
+  CountPoints( smtk::mesh::CollectionPtr ):
     numPointsIteratedOver(0)
     {
     }
@@ -417,7 +417,8 @@ void verify_pointset_for_each_read(const smtk::mesh::CollectionPtr& c)
   CountPoints functor(c);
   smtk::mesh::MeshSet volMeshes = c->meshes( smtk::mesh::Dims3 );
   smtk::mesh::for_each( volMeshes.points(), functor );
-  test( functor.numberOfPointsVisited() == volMeshes.points().size() );
+  test( static_cast<std::size_t>(functor.numberOfPointsVisited()) ==
+        volMeshes.points().size() );
 }
 
 
@@ -453,6 +454,8 @@ public:
                  std::vector<double>& xyz,
                  bool& coordinatesModified)
   {
+  (void)coordinatesModified;
+
   //verify the coordinates and the number of points match
   test( (xyz.size() == (pointIds.size() * 3) ) );
 

@@ -86,7 +86,8 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
 static void AddPreservedUUID(
   vtkDataObject* data, int& curId, attribute::ModelEntityItem::Ptr uuids)
 {
-  if (!data || curId < 0 || curId >= uuids->numberOfValues())
+  if (!data || curId < 0 ||
+      static_cast<std::size_t>(curId) >= uuids->numberOfValues())
     return;
 
   vtkInformation* info = data->GetInformation();
@@ -460,12 +461,12 @@ smtk::model::OperatorResult ReadOperator::readLabelMap()
 
   MarkMeshInfo(modelOut.GetPointer(), imgDim, path(filename).stem().string<std::string>().c_str(), EXO_MODEL, -1);
   MarkMeshInfo(img.GetPointer(), imgDim, labelname.c_str(), EXO_LABEL_MAP, -1);
-  for (int i = 0; i < numLabels; ++i)
+  for (int j = 0; j < numLabels; ++j)
     {
     this->exodusSession()->ensureChildParentMapEntry(
-      vtkDataObject::SafeDownCast(Session::SMTK_CHILDREN()->Get(info, i)),
+      vtkDataObject::SafeDownCast(Session::SMTK_CHILDREN()->Get(info, j)),
       img.GetPointer(),
-      i);
+      j);
     }
 
   Session* brdg = this->exodusSession();

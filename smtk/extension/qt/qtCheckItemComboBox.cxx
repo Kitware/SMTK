@@ -306,8 +306,6 @@ void qtMeshItemCombo::init()
   MeshItemPtr meshItem =
     smtk::dynamic_pointer_cast<smtk::attribute::MeshItem>(
     this->m_MeshItem.lock());
-  const MeshItemDefinition *itemDef =
-    static_cast<const MeshItemDefinition *>(meshItem->definition().get());
   System *attSystem = meshItem->attribute()->system();
   smtk::model::ManagerPtr modelManager = attSystem->refModelManager();
 

@@ -379,7 +379,6 @@ void verify_loading_existing_collection_fails()
 
   smtk::io::ModelToMesh convert;
   smtk::mesh::CollectionPtr c = convert(meshManager,modelManager);
-  smtk::common::UUID cUUID = c->entity();
 
   cJSON* top = cJSON_CreateObject();
   c->writeLocation(write_path);
