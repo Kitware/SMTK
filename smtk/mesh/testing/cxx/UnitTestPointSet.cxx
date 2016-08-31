@@ -75,7 +75,7 @@ void verify_subsets(const smtk::mesh::CollectionPtr& c)
        iter != ps.range().end(); ++iter )
      {
      range.insert( iter->first, iter->second - 1 );
-     for ( smtk::mesh::Handle i=iter->first; i < iter->second - 1; ++i)
+     for ( smtk::mesh::Handle i=iter->first; i < iter->second; ++i)
        {
        set.insert(i);
        vec.push_back(i);
