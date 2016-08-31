@@ -96,7 +96,7 @@ public:
 
   //Description:
   // Expose method in superClass
-  void InitializeContour( vtkPolyData * poly)
+  void InitializeContour( vtkPolyData * poly, vtkIdList *)
   {
     this->Initialize(poly);
   }
