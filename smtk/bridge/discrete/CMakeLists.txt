@@ -220,7 +220,6 @@ target_link_libraries(smtkDiscreteSession
     vtkRenderingOpenGL2
     vtksys
     ${__private_dependencies}
-    vtkPVVTKExtensionsDefault
     vtkSMTKReaderExt
     vtkSMTKDiscreteModel
     vtkSMTKFilterExt

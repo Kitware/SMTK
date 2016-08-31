@@ -35,22 +35,39 @@ foreach(lib IN ITEMS
   endif()
 endforeach()
 
-target_link_libraries(smtkExodusSession
-  LINK_PUBLIC
-    smtkCore
-    vtkCommonDataModel
-  LINK_PRIVATE
+set(import_vtk_depends
     vtkIOExodus
     vtkIONetCDF
     vtkIOXML
     vtkImagingCore
     vtkFiltersGeneral
+    vtkIOLegacy
+    vtkIOParallel
     vtkIOParallelExodus
     vtkIOGeometry
     vtkFiltersGeometry
+    )
+
+target_link_libraries(smtkExodusSession
+  LINK_PUBLIC
+    smtkCore
+    vtkCommonDataModel
+  LINK_PRIVATE
+    ${import_vtk_depends}
     ${__dependencies}
     ${Boost_LIBRARIES}
 )
+
+#vtk targets don't specify an include directory through usage-requirements, so
+#we manually add them here
+set(includes_from_vtk)
+foreach(module ${import_vtk_depends})
+  list(APPEND includes_from_vtk "${${module}_INCLUDE_DIRS}")
+endforeach(module)
+target_include_directories(smtkExodusSession
+  PRIVATE
+  ${includes_from_vtk}
+  )
 smtk_export_header(smtkExodusSession Exports.h)
 
 # Add compile definitions and include directories
