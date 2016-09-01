@@ -44,7 +44,6 @@ struct TriangleOutput
 template<typename T>
 bool AllocFromStream(std::stringstream& buffer, std::vector<T> &dest, int numElements)
 {
-  typedef typename std::vector<T>::iterator it;
   if(numElements <= 0)
     {return true;}
 
@@ -64,8 +63,6 @@ bool AllocFromStream(std::stringstream& buffer, std::vector<T> &dest, int numEle
 template<typename T>
 bool WriteToStream(std::stringstream& buffer, std::vector<T>& src, int numElements)
 {
-  typedef typename std::vector<T>::iterator it;
-
   if(numElements <= 0)
     {return true;}
 
