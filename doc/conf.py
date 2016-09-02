@@ -165,7 +165,7 @@ pygments_style = 'sphinx'
 findfigure_paths = {
   '*':[
     sourcedir,
-    os.path.join(sourcedir, 'userguide', 'figures'),
+    os.path.join(sourcedir, 'images', 'userguide', 'figures'),
     builddir,
     os.path.join(builddir,'..')]
 }
