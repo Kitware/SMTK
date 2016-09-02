@@ -827,6 +827,18 @@ std::pair<Id,Id> pmodel::removeModelEdgeFromEndpoints(smtk::model::ManagerPtr mg
   return result;
 }
 
+/// Remove a reverse lookup (from coordinates to vertex ID) from the model's search structure.
+bool pmodel::removeVertexLookup(const Point& location, const Id& vid)
+{
+  PointToVertexId::const_iterator pit = this->m_vertices.find(location);
+  if (pit == this->m_vertices.end() || pit->second != vid)
+    {
+    return false;
+    }
+  this->m_vertices.erase(pit);
+  return true;
+}
+
 /**\brief Return the point closest to one of an edge's endpoints.
   *
   * Returns the point nearest but not at the tail end of the edge

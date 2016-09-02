@@ -120,11 +120,15 @@ bool CreateFaces::populateEdgeMap()
     }
   this->m_model = model;
 
+  // Collect all the edges in this model, not just the free cells:
   smtk::model::Edges allEdges =
-    model.cellsAs<smtk::model::Edges>();
+    model.manager()->entitiesMatchingFlagsAs<smtk::model::Edges>(smtk::model::EDGE, true);
   for (smtk::model::Edges::const_iterator it = allEdges.begin(); it != allEdges.end(); ++it)
     {
-    this->m_edgeMap[*it] = 0;
+    if (it->owningModel() == model)
+      {
+      this->m_edgeMap[*it] = 0;
+      }
     }
   return true;
 }
@@ -262,11 +266,11 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
   // (although TODO: it would be better to triangulate while sweeping).
   this->addTessellations();
 
-	smtk::attribute::IntItem::Ptr outcome =
-		this->m_result->findInt("outcome");
+  smtk::attribute::IntItem::Ptr outcome =
+    this->m_result->findInt("outcome");
   if (this->m_status != outcome->value())
     {
-		outcome->setValue(0, this->m_status);
+    outcome->setValue(0, this->m_status);
     }
 
   return this->m_result;
@@ -278,18 +282,18 @@ void CreateFaces::evaluateLoop(
   std::set<RegionId>& borders)
 {
   (void) borders;
-	// Keep track of loops for tessellation
+  // Keep track of loops for tessellation
   // TODO: Handle tessellation as part of the Neighborhood sweep instead of re-sweeping with boost.polygon.
   this->m_regionLoops[faceNumber].push_back(loop);
 
   // Traverse fragments to build a list of oriented model edges.
   // TODO: Handle split edges here or during sweep?
   for (OrientedEdges::const_iterator oit = loop.begin(); oit != loop.end(); ++oit)
-		{
+    {
     this->m_model.removeCell(oit->first);
-		}
+    }
 
-	smtk::model::Manager::Ptr mgr = this->manager();
+  smtk::model::Manager::Ptr mgr = this->manager();
   std::map<RegionId, smtk::model::Face>::iterator fit = this->m_regionFaces.find(faceNumber);
   // Now transcribe SMTK loop-use from edges referenced by fragments in loop
   // ** OR **
@@ -307,7 +311,7 @@ void CreateFaces::evaluateLoop(
     if (!mgr->insertModelFaceWithOrientedOuterLoop(modelFaceId, modelFaceUseId, outerLoopId, loop))
       {
       smtkErrorMacro(this->log(), "Could not create SMTK outer loop of face.");
-			this->m_status = smtk::model::OPERATION_FAILED;
+      this->m_status = smtk::model::OPERATION_FAILED;
       return;
       }
     // Update vertex neighborhoods to include new face adjacency.
@@ -315,31 +319,33 @@ void CreateFaces::evaluateLoop(
     this->m_model.addCell(modelFace);
     modelFace.assignDefaultName();
     this->updateLoopVertices(smtk::model::Loop(mgr, outerLoopId), modelFace, /* isCCW */ true);
-		this->addEntityToResult(this->m_result, modelFace, CREATED);
+    this->addEntityToResult(this->m_result, modelFace, CREATED);
     if (this->m_debugLevel > 0)
       {
       std::cout
         << "Adding " << faceNumber << " as model face "
         << this->m_result->findModelEntity("created")->numberOfValues() << "\n";
       }
-		this->m_regionFaces[faceNumber] = modelFace;
+    this->m_regionFaces[faceNumber] = modelFace;
     }
   else
     {
     smtk::common::UUID innerLoopId = mgr->unusedUUID();
-		smtk::common::UUID parentLoopId = fit->second.positiveUse().loops()[0].entity();
+    smtk::common::UUID parentLoopId = fit->second.positiveUse().loops()[0].entity();
     if (this->m_debugLevel > 0)
       {
       std::cout
         << "Face " << faceNumber << " parent loop " << parentLoopId
         << " with inner loop " << innerLoopId << "\n";
       }
-		if (!mgr->insertModelFaceOrientedInnerLoop(innerLoopId, parentLoopId, loop))
-			{
-      smtkErrorMacro(this->log(), "Could not create SMTK outer loop of face.");
-			this->m_status = smtk::model::OPERATION_FAILED;
+    if (!mgr->insertModelFaceOrientedInnerLoop(innerLoopId, parentLoopId, loop))
+      {
+      smtkErrorMacro(this->log(), "Could not create SMTK inner loop of face.");
+      this->m_status = smtk::model::OPERATION_FAILED;
       return;
-			}
+      }
+    smtk::model::Loop tmp(mgr, innerLoopId);
+    smtk::model::EdgeUses leus = tmp.edgeUses();
     this->updateLoopVertices(smtk::model::Loop(mgr, innerLoopId), fit->second, /* isCCW */ false);
     }
 }
