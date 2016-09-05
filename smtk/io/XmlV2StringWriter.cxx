@@ -903,7 +903,8 @@ void XmlV2StringWriter::processDirectoryDef(pugi::xml_node &node,
   if (idef->hasDefault())
     {
     xml_node defaultNode = node.append_child();
-    defaultNode.set_value(idef->defaultValue().c_str());
+    defaultNode.set_name("DefaultValue");
+    defaultNode.text().set(idef->defaultValue().c_str());
     }
 }
 //----------------------------------------------------------------------------
@@ -950,7 +951,8 @@ void XmlV2StringWriter::processFileDef(pugi::xml_node &node,
   if (idef->hasDefault())
     {
     xml_node defaultNode = node.append_child();
-    defaultNode.set_value(idef->defaultValue().c_str());
+    defaultNode.set_name("DefaultValue");
+    defaultNode.text().set(idef->defaultValue().c_str());
     }
   std::string fileFilters = idef->getFileFilters();
   if (fileFilters != "")
