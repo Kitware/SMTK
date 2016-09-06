@@ -34,7 +34,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
     LOCAL_INCLUDE_DIRECTORIES
       ${SMTK_SOURCE_DIR}/smtk/common
       ${SMTK_SOURCE_DIR}/smtk/mesh
-      ${SMTK_SOURCE_DIR}/smtk/extension/VTKToMesh
+      ${SMTK_SOURCE_DIR}/smtk/extension/vtkToMesh
       ${SMTK_SOURCE_DIR}/smtk
       ${SMTK_BINARY_DIR}/smtk
       ${CMAKE_CURRENT_BINARY_DIR}
