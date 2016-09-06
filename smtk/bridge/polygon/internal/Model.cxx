@@ -280,6 +280,7 @@ bool pmodel::restoreModel(
 
   for (int i = 0; i < 3; ++i)
     {
+    this->m_origin[i] = origin[i];
     this->m_xAxis[i] = x_axis[i];
     this->m_yAxis[i] = y_axis[i];
     this->m_zAxis[i] = z_axis[i];
