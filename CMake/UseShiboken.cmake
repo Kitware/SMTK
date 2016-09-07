@@ -301,9 +301,16 @@ function(sbk_wrap_library NAME)
     ${SHIBOKEN_LIBRARY}
     ${_extra_link_libraries}
   )
+
   # Avoid generating warnings from generated code.
-  if (CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    set_target_properties(${_pyname} PROPERTIES COMPILE_FLAGS " -Wno-cast-qual -Wno-missing-field-initializers -Wno-unused-function -Wno-unused-parameter -Wno-overloaded-virtual")
+  if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR
+      CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(${_pyname} PRIVATE 
+      -Wno-cast-qual
+      -Wno-missing-field-initializers
+      -Wno-unused-function
+      -Wno-unused-parameter
+      -Wno-overloaded-virtual)
   endif()
 
   if (PYTHON_INSTALL_DIR)
