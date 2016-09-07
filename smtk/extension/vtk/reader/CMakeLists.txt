@@ -1,11 +1,16 @@
 PROJECT(SMTKVTKExtensionReader)
 
+# Required for support of shapefiles, which is required to construct
+# the gdal wrapper classes needed by cmb.
+find_package(GDAL REQUIRED)
+
 set(srcs
     vtkCMBSTLReader.cxx
     vtkCUBITReader.cxx
     vtkCMBGeometryReader.cxx
     vtkCMBMeshReader.cxx
     vtkExtractRegionEdges.cxx
+    vtkGDALRasterPolydataWrapper.cxx
     vtkGMSSolidReader.cxx
     vtkGMSTINReader.cxx
     vtkLIDARReader.cxx
@@ -19,6 +24,7 @@ set(headers
   vtkCMBGeometryReader.h
   vtkCMBMeshReader.h
   vtkExtractRegionEdges.h
+  vtkGDALRasterPolydataWrapper.h
   vtkGMSSolidReader.h
   vtkGMSTINReader.h
   vtkLIDARReader.h
@@ -46,15 +52,6 @@ if(SMTK_ENABLE_REMUS_SUPPORT)
   )
 endif()
 
-if(GDAL_FOUND)
-  list(APPEND srcs
-    vtkGDALRasterPolydataWrapper.cxx
-  )
-  list(APPEND headers
-    vtkGDALRasterPolydataWrapper.h
-  )
-endif()
-
 # no wrapping for sources
 set_source_files_properties(
   vtkCMBReaderHelperFunctions.cxx
@@ -79,12 +76,9 @@ endif()
 
 
 # Link GDAL and Add a compiler definition to the target
-if(GDAL_FOUND)
-  target_link_libraries(${vtk-module} LINK_PRIVATE ${GDAL_LIBRARY} )
-  target_include_directories(${vtk-module} PRIVATE ${GDAL_INCLUDE_DIR})
-
-  set_property(TARGET ${vtk-module} APPEND PROPERTY COMPILE_DEFINITIONS HAS_GDAL_RASTER_READER)
-endif()
+target_link_libraries(${vtk-module} LINK_PRIVATE ${GDAL_LIBRARY} )
+target_include_directories(${vtk-module} PRIVATE ${GDAL_INCLUDE_DIR})
+target_compile_definitions(${vtk-module} INTERFACE HAS_GDAL_RASTER_READER)
 
 # ... and make header compilation tests link properly:
 smtk_install_library(${vtk-module})

@@ -218,17 +218,12 @@ endif()
 # VTK Related Settings
 ################################################################################
 
-if(SMTK_ENABLE_VTK_SUPPORT)
-  if(SMTK_ENABLE_PARAVIEW_SUPPORT)
-    # include ParaView and ensure it is using the OpenGL2 backend
-    find_package(ParaView)
-  else()
-    # Find the package here so environment variables are set, but
-    # be careful not to include the VTK_USE_FILE until inside
-    # a subdirectory that requires it; otherwise the list of include
-    # paths can become too long for some platforms.
-    find_package(VTK)
-  endif()
+if(SMTK_ENABLE_VTK_SUPPORT AND NOT SMTK_ENABLE_PARAVIEW_SUPPORT)
+  # Find the package here so environment variables are set, but
+  # be careful not to include the VTK_USE_FILE until inside
+  # a subdirectory that requires it; otherwise the list of include
+  # paths can become too long for some platforms.
+  find_package(VTK REQUIRED)
 endif()
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT OR SMTK_ENABLE_VTK_SUPPORT)
@@ -424,9 +419,6 @@ if(SMTK_ENABLE_DISCRETE_SESSION)
     SMTK_ENABLE_MOAB_DISCRETE_READER
     "Build moab reader for discrete model"
     OFF )
-
-  # Support shapefiles in the discrete session if GDAL is available:
-  find_package(GDAL)
 endif()
 
 ################################################################################
