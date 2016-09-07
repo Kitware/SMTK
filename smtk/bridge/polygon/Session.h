@@ -51,6 +51,9 @@ public:
 
   virtual SessionInfoBits allSupportedInformation() const;
 
+  template<typename T>
+  void consistentInternalDelete(T& container);
+
 protected:
   friend class Neighborhood;
   friend class Operator;
@@ -64,6 +67,10 @@ protected:
 
   void addStorage(const smtk::common::UUID& uid, smtk::bridge::polygon::internal::entity::Ptr storage);
   bool removeStorage(const smtk::common::UUID& uid);
+
+  bool removeFaceReferences(const smtk::model::Face& f);
+  bool removeEdgeReferences(const smtk::model::Edge& e);
+  bool removeVertReferences(const smtk::model::Vertex& v);
 
   template<typename T>
   typename T::Ptr findStorage(const smtk::common::UUID& uid)

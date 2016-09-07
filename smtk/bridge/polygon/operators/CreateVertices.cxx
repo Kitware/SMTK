@@ -36,11 +36,11 @@ smtk::model::OperatorResult CreateVertices::operateInternal()
   int numCoordsPerPt = coordinatesItem->value();
   if (numCoordsPerPt == 2)
     {
-      pointsInfo = this->findGroup("2DPoints");
+    pointsInfo = this->findGroup("2DPoints");
     }
   else
     {
-      pointsInfo = this->findGroup("3DPoints");
+    pointsInfo = this->findGroup("3DPoints");
     }
   smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
 
@@ -60,12 +60,12 @@ smtk::model::OperatorResult CreateVertices::operateInternal()
     // Save the points into the vector to be processed by create vertex method
     for (int i = 0; i < npnts; i++)
       {
-	for (int j = 0; j < numCoordsPerPt; j++)
-	  {
-	    pcoords.push_back(smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(pointsInfo->item(i,0))->value(j));
-	  }
+      for (int j = 0; j < numCoordsPerPt; j++)
+        {
+        pcoords.push_back(smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(pointsInfo->item(i,0))->value(j));
+        }
       }
-    
+
     smtk::model::Vertices verts =
       storage->findOrAddModelVertices(mgr, pcoords, numCoordsPerPt);
     result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
@@ -74,6 +74,7 @@ smtk::model::OperatorResult CreateVertices::operateInternal()
       { // Add raw relationships from model to/from vertex:
       model.addCell(*it);
       }
+    this->addEntityToResult(result, model, MODIFIED);
     }
   if (!result)
     {

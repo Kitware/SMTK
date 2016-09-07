@@ -75,6 +75,9 @@ public:
   incident_edges::reverse_iterator edgesREnd() { return this->m_edges.rend(); }
 
   bool setFaceAdjacency(const Id& incidentEdge, const Id& adjacentFace, bool isCCW = true, int edgeDir = 0);
+  int removeFaceAdjacencies(const Id& face);
+
+  int removeIncidentEdge(const Id& edge);
 
   void dump();
 

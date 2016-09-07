@@ -162,6 +162,62 @@ bool vertex::setFaceAdjacency(const Id& incidentEdge, const Id& adjacentFace, bo
   return false;
 }
 
+/**\brief Remove all references to \a face from this vertex.
+  *
+  * Note that this always loops through every edge-incidence record
+  * since a face may have any arbitrary number of edges incoming to
+  * the same vertex. The same edge may be incident once or twice.
+  *
+  * The number of incident edges attached to \a face at the vertex
+  * is returned.
+  */
+int vertex::removeFaceAdjacencies(const Id& face)
+{
+  int numIncidents = 0;
+  incident_edges::iterator it;
+  for (it = this->m_edges.begin(); it != this->m_edges.end(); ++it)
+    {
+    if (it->m_adjacentFace == face)
+      {
+      it->m_adjacentFace = Id();
+      ++numIncidents;
+      }
+    }
+  return numIncidents;
+}
+
+/**\brief Remove all references to \a edge from this vertex.
+  *
+  * Note that this always loops through every edge-incidence record
+  * since an edge may be incident to the same vertex at both its ends.
+  *
+  * The number of incidences featuring \a edge is returned.
+  */
+int vertex::removeIncidentEdge(const Id& edge)
+{
+  int numIncidences = 0;
+  if (this->m_edges.empty())
+    {
+    return numIncidences;
+    }
+
+  incident_edges::iterator it;
+  incident_edges::iterator tmp = this->m_edges.begin();
+  do
+    {
+    it = tmp;
+    ++it;
+    if (tmp->m_edgeId == edge)
+      {
+      ++numIncidences;
+      this->m_edges.erase(tmp);
+      }
+    tmp = it;
+    }
+  while (tmp != this->m_edges.end());
+  return numIncidences;
+}
+
 void vertex::dump()
 {
   std::cout << "    Vertex " << this->id() << "   (" << this->point().x() << " " << this->point().y() << ")" << "\n";

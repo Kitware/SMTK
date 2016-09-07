@@ -12,6 +12,8 @@
 
 #include "smtk/bridge/polygon/Operator.h"
 
+//#include "smtk/EntityRef.h"
+
 namespace smtk {
   namespace bridge {
     namespace polygon {
@@ -41,6 +43,18 @@ public:
 
 protected:
   virtual smtk::model::OperatorResult operateInternal();
+
+  template<typename U, typename V, typename W>
+  bool addDependents(const smtk::model::EntityRef& ent, bool deleteDependents, U& verts, V& edges, W& faces);
+
+  template<typename T>
+  bool deleteEntities(T& entities);
+
+  int m_numInUse;
+  int m_numWarnings;
+  smtk::model::EntityRefs m_notRemoved;
+  smtk::model::EntityRefs m_modified;
+  smtk::model::EntityRefArray m_expunged;
 };
 
     } // namespace polygon
