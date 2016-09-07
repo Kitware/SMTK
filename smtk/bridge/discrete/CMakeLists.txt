@@ -1,5 +1,10 @@
 PROJECT(smtkDiscreteSession)
 
+if(SMTK_ENABLE_VTK_SUPPORT AND SMTK_ENABLE_PARAVIEW_SUPPORT)
+  #if using paraview we need to explicitly look for vtkIOGDAL
+  find_package(ParaView COMPONENTS vtkIOGDAL REQUIRED)
+endif()
+
 # Only include the VTK use-file in subdirectories
 # that require VTK include paths. Otherwise, command
 # lines get too long on some platforms.
@@ -213,10 +218,12 @@ target_link_libraries(smtkDiscreteSession
     vtkFiltersGeometry
     vtkFiltersSources
     vtkGeovisCore
+    vtkIOGDAL
     vtkIOParallel
     vtkRenderingCore
     vtkRenderingFreeType
     vtkRenderingGL2PSOpenGL2
+    vtkRenderingContextOpenGL2
     vtkRenderingOpenGL2
     vtksys
     ${__private_dependencies}

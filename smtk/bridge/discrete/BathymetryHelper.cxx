@@ -9,11 +9,6 @@
 //=========================================================================
 #include "BathymetryHelper.h"
 
-#ifdef HAS_GDAL_RASTER_READER
-#include "smtk/extension/vtk/reader/vtkGDALRasterReader.h"
-#include "smtk/extension/vtk/reader/vtkGDALRasterPolydataWrapper.h"
-#endif
-
 #include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
 #include "smtk/extension/vtk/reader/vtkLASReader.h"
 #include "smtk/bridge/discrete/Session.h"
@@ -27,6 +22,7 @@
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkDoubleArray.h"
 #include "vtkFloatArray.h"
+#include "vtkGDALRasterReader.h"
 #include "vtkImageData.h"
 #include "vtkImageToStructuredGrid.h"
 #include "vtkMultiBlockDataSet.h"
@@ -104,7 +100,6 @@ bool BathymetryHelper::loadBathymetryFile(const std::string& filename)
     polyOutput->ShallowCopy( reader->GetOutput() );
     dataOutput = polyOutput;
     }
-#ifdef HAS_GDAL_RASTER_READER
   else if (ext == ".dem")
     {
     vtkNew<vtkGDALRasterReader> reader;
@@ -114,7 +109,6 @@ bool BathymetryHelper::loadBathymetryFile(const std::string& filename)
     ugOutput->ShallowCopy( reader->GetOutput() );
     dataOutput = ugOutput;
     }
-#endif
   else if(ext == ".las")
     {
     vtkNew<vtkLASReader> reader;

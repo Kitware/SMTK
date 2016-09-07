@@ -50,15 +50,6 @@ if(SMTK_ENABLE_REMUS_SUPPORT)
   target_include_directories(${vtk-module} PRIVATE ${REMUS_INCLUDE_DIRS})
 endif()
 
-
-# Link GDAL and Add a compiler definition to the target
-if(GDAL_FOUND)
-  target_link_libraries(${vtk-module} LINK_PRIVATE ${GDAL_LIBRARY} )
-  target_include_directories(${vtk-module} PRIVATE ${GDAL_INCLUDE_DIR})
-
-  set_property(TARGET ${vtk-module} APPEND PROPERTY COMPILE_DEFINITIONS HAS_GDAL_RASTER_READER)
-endif()
-
 # ... and make header compilation tests link properly:
 smtk_install_library(${vtk-module})
 
