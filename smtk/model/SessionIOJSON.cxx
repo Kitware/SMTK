@@ -213,6 +213,8 @@ int SessionIOJSON::exportJSON(
   cJSON* sessionRec,
   bool writeNativeModels)
 {
+  (void)sessionRec;
+
   if (writeNativeModels)
     {
     // We will write each model seperately:
