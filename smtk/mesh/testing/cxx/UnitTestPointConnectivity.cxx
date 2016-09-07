@@ -244,7 +244,7 @@ void verify_shared_iteration(const smtk::mesh::CollectionPtr& c)
 
 
   //make sure the iterator on twoDimCopy keeps going
-  for(int i=10; i < reportedNumCells; ++i)
+  for(std::size_t i=10; i < reportedNumCells; ++i)
     {
     //if we iterate too far this will through an exception
     test( twoDimCopy.fetchNextCell(size, points) == true);

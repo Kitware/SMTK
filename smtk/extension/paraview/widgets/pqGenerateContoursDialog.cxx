@@ -182,7 +182,6 @@ pqGenerateContoursDialog::pqGenerateContoursDialog(
       this->RenderView->getProxy()->GetProperty("CameraParallelProjection"), 1);
     // paraview default 2d manipulators
     const int TwoDManipulators[9] = {1, 3, 2, 2, 2, 6, 3, 1, 4};
-    const int *manipTypes = &TwoDManipulators[0];
     vtkSMProxy* viewproxy = this->RenderView->getProxy();
     vtkSMPropertyHelper(
       viewproxy->GetProperty("Camera2DManipulators")).Set(TwoDManipulators, 9);

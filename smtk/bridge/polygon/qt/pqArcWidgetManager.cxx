@@ -326,8 +326,6 @@ pqArcWidget* pqArcWidgetManager::createContourWidget(
   pqArcWidget *widget= new pqArcWidget(
     pointplacer, pointplacer, NULL);
 
-  vtkSMProxy* repProxy =
-    widget->getWidgetProxy()->GetRepresentationProxy();
   widget->setObjectName("smtkArcWidget");
 
   vtkSMPropertyHelper(pointplacer, "ProjectionNormal").Set(normal);

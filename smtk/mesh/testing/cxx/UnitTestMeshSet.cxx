@@ -427,7 +427,8 @@ void verify_meshset_for_each(const smtk::mesh::CollectionPtr& c)
   smtk::mesh::MeshSet volMeshes = c->meshes( smtk::mesh::Dims3 );
   smtk::mesh::for_each( volMeshes, functor );
 
-  test( functor.numberOfMeshesVisited() == volMeshes.size() );
+  test( static_cast<std::size_t>(functor.numberOfMeshesVisited()) ==
+        volMeshes.size() );
   test( functor.cells() == volMeshes.cells() );
 }
 

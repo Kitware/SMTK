@@ -129,7 +129,7 @@ void verify_create_mesh_num_meshes(const smtk::mesh::CollectionPtr& c)
     }
   test( (numMeshesBeforeCreation + 3) == c->numberOfMeshes());
 
-  for(int i=0; i < results.size(); ++i)
+  for(std::size_t i=0; i < results.size(); ++i)
     {
     cleanup(c, results[i]);
     }

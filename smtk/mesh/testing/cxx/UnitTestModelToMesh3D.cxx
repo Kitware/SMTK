@@ -238,6 +238,7 @@ void testFindAssociationsByRef<-1>(smtk::mesh::CollectionPtr c, smtk::model::Ent
   smtk::mesh::CellSet entCells = c->findAssociatedCells(it);
   smtk::mesh::TypeSet entTypes = c->findAssociatedTypes(it);
   const smtk::model::Tessellation* tess = it->hasTessellation();
+  (void)tess;
 
   test(entMesh.cells() == entCells, "Expected mesh cellset to be the same as queried cellset.");
 

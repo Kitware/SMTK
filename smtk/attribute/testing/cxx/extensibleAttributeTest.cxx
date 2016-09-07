@@ -536,7 +536,6 @@ template<typename T> int checkItem(T sitem, bool isExtensible)
 }
 int checkStringItem(const char *name, smtk::attribute::AttributePtr att, bool isExtensible)
 {
-  int status = 0;
   smtk::attribute::ItemPtr item = att->find(name);
   if (!item)
     {
@@ -555,7 +554,6 @@ int checkStringItem(const char *name, smtk::attribute::AttributePtr att, bool is
 
 int checkFileItem(const char *name, smtk::attribute::AttributePtr att, bool isExtensible)
 {
-  int status = 0;
   smtk::attribute::ItemPtr item = att->find(name);
   if (!item)
     {
@@ -574,7 +572,6 @@ int checkFileItem(const char *name, smtk::attribute::AttributePtr att, bool isEx
 
 int checkDirectoryItem(const char *name, smtk::attribute::AttributePtr att, bool isExtensible)
 {
-  int status = 0;
   smtk::attribute::ItemPtr item = att->find(name);
   if (!item)
     {
