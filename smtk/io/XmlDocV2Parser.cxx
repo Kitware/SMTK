@@ -179,6 +179,12 @@ void XmlDocV2Parser::processFileDef(pugi::xml_node &node,
       idef->setMaxNumberOfValues(xatt.as_uint());
       }
     }
+  // Check for default value
+  xml_node defaultNode = node.child("DefaultValue");
+  if (defaultNode)
+    {
+    idef->setDefaultValue(defaultNode.text().get());
+    }
   }
 
 //----------------------------------------------------------------------------
