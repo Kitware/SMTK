@@ -250,9 +250,11 @@ following votes followed by nothing but whitespace before the end
 of the line:
 
 *   `-1` or :-1: (`:-1:`) means "The change is not ready for integration."
-*   `+1` or :+1: (`:+1:`) means "I like the change but defer to others."
-*   `+2` means "The change is ready for integration."
+*   `+1` or :+1: (`:+1:`) means "I've reviewed the source changes and they look good."
+*   `+2` means "I've reviewed and compiled the changes and they look good."
 *   `+3` means "I have tested the change and verified it works."
+
+**Note:** In the case of large commits, several reviewers may be involved.  In these cases each reviewer should document which section of the commit their comments pertain to. 
 
 The middle lines of a comment may be free-form [GitLab Flavored Markdown][].
 
@@ -261,8 +263,8 @@ of the following votes followed by nothing but whitespace before the end
 of the line:
 
 *   `Rejected-by: me` means "The change is not ready for integration."
-*   `Acked-by: me` means "I like the change but defer to others."
-*   `Reviewed-by: me` means "The change is ready for integration."
+*   `Acked-by: me` means "I've reviewed the source changes and they look good."
+*   `Reviewed-by: me` means "I've reviewed and compiled the changes and they look good."
 *   `Tested-by: me` means "I have tested the change and verified it works."
 
 Each `me` reference may instead be an `@username` reference or a full
