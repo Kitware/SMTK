@@ -142,6 +142,7 @@ bool Loop::replaceEdgeUseWithUses(const EdgeUse& original, const EdgeUses& repla
   int aidx = mgr->findArrangementInvolvingEntity(original.entity(), HAS_SHELL, this->m_entity);
   //std::cout << "Original idx " << aidx << "\n";
   int didRemove = mgr->unarrangeEntity(original.entity(), HAS_SHELL, aidx, false);
+  (void)didRemove;
   //std::cout << "Did remove original " << didRemove << "\n";
   for (EdgeUses::const_iterator rit = replacements.begin(); rit != replacements.end(); ++rit)
     {
