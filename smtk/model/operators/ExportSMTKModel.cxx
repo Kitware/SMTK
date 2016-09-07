@@ -13,6 +13,7 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/common/CompilerInformation.h"
 #include "smtk/io/ExportJSON.h"
 #include "smtk/io/ExportJSON.txx"
 #include "smtk/mesh/Collection.h"
@@ -22,7 +23,10 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
+
 #include "cJSON.h"
 #include <fstream>
 

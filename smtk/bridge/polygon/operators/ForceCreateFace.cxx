@@ -18,6 +18,7 @@
 
 #include "smtk/bridge/polygon/Operator.txx"
 
+#include "smtk/common/CompilerInformation.h"
 #include "smtk/common/UnionFind.h"
 
 #include "smtk/io/Logger.h"
@@ -38,7 +39,9 @@
 
 #include "smtk/bridge/polygon/ForceCreateFace_xml.h"
 
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/polygon/polygon.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <deque>
 #include <map>

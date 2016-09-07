@@ -11,6 +11,7 @@
 
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/common/CompilerInformation.h"
 #include "smtk/common/UUID.h"
 #include "smtk/io/ExportJSON.h"
 #include "smtk/io/ExportJSON.txx"
@@ -18,7 +19,9 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
 
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 #include "cJSON.h"
 

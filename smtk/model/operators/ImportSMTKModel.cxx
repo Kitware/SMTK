@@ -22,9 +22,13 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/VoidItem.h"
 
+#include "smtk/common/CompilerInformation.h"
+
 #include "smtk/io/ImportJSON.h"
 
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 #include "cJSON.h"
 

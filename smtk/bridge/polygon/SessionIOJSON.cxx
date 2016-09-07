@@ -9,6 +9,8 @@
 //=========================================================================
 #include "smtk/bridge/polygon/SessionIOJSON.h"
 
+#include "smtk/common/CompilerInformation.h"
+
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/common/UUID.h"
@@ -22,7 +24,9 @@
 #include "smtk/bridge/polygon/internal/Model.h"
 #include "smtk/bridge/polygon/internal/Edge.h"
 
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 #include "cJSON.h"
 

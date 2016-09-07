@@ -14,6 +14,19 @@ if (NOT SMTK_USE_SYSTEM_MOAB)
       PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
   endif()
 
+  # disable all warning flags for MOAB. This is optional because we should
+  # be continually pushing updates to MOAB, rather than just using it. For the
+  # sanity of our own dashboards, though, it is nice to be able to distinguish
+  # between MOAB's warnings and our own.
+  option(MOAB_IGNORE_ALL_WARNINGS "disable all warning flags for MOAB" ON)
+  mark_as_advanced(MOAB_IGNORE_ALL_WARNINGS)
+  if (MOAB_IGNORE_ALL_WARNINGS)
+    if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
+      set_property( TARGET MOAB APPEND_STRING PROPERTY COMPILE_FLAGS /w )
+    else()
+      set_property( TARGET MOAB APPEND_STRING PROPERTY COMPILE_FLAGS -w )
+    endif()
+  endif()
   set(CMAKE_C_FLAGS "${save_CMAKE_C_FLAGS}" CACHE STRING "" FORCE)
   set(CMAKE_CXX_FLAGS "${save_CMAKE_CXX_FLAGS}" CACHE STRING "" FORCE)
   set(CMAKE_Fortran_FLAGS "${save_CMAKE_Fortran_FLAGS}" CACHE STRING "" FORCE)

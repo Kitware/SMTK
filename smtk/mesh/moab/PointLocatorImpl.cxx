@@ -11,8 +11,10 @@
 #include "smtk/mesh/moab/PointLocatorImpl.h"
 #include "smtk/mesh/moab/Interface.h"
 
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "moab/AdaptiveKDTree.hpp"
 #include "moab/ReadUtilIface.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <algorithm>
 

@@ -18,6 +18,8 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/common/CompilerInformation.h"
+
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
@@ -42,7 +44,9 @@
 #include "vtkVector.h"
 #include "vtkVectorOperators.h"
 
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 using namespace smtk::model;
 using namespace smtk::common;

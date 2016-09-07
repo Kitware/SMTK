@@ -14,9 +14,13 @@
 #ifndef __smtk_mesh_moab_Types_h
 #define __smtk_mesh_moab_Types_h
 
+#include "smtk/common/CompilerInformation.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
 //these require us to install moab headers, so lets fix that
 #include "moab/EntityHandle.hpp"
 #include "moab/Range.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 namespace smtk {
 namespace mesh {
