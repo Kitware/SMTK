@@ -60,12 +60,26 @@ public:
   // Get the number of selected nodes
   virtual int GetNumberOfSelectedNodes();
 
+  // Description:
+  // Given a display position, activate a node. The closest
+  // node within tolerance will be activated. If a node is
+  // activated, 1 will be returned, otherwise 0 will be
+  // returned.
+  // Override vtkContourRepresentation to make sure that if there is
+  // no point yet in the representation, don't do any point locating.
+  virtual int ActivateNode( double displayPos[2] );
+
   //overloaded for logging purposes
   virtual int DeleteNthNode(int n);
   virtual int SetActiveNodeToWorldPosition( double worldPos[3],double worldOrient[9] );
   virtual int SetActiveNodeToWorldPosition(double worldPos[3]);
   virtual int AddNodeOnContour(int X, int Y);
 
+  // Description:
+  // A method that the widget and its representation use to
+  // communicate with each other.
+  // Re-implement to add initial 0-point checking
+  virtual int ComputeInteractionState(int X, int Y, int modified=0);
 
   // Description:
   // Get the points in this contour as a vtkPolyData.
