@@ -491,6 +491,7 @@ void pqArcWidgetPanel::updateWidgetRepresentation()
           << vtkClientServerStream::Invoke
           << VTKOBJECT(repProxy) << "InitializeContour"
           << vtkClientServerStream::LastResult
+          << 0
           << vtkClientServerStream::End;
   repProxy->GetSession()->ExecuteStream(repProxy->GetLocation(), stream);
 
