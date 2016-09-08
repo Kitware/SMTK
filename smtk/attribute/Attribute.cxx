@@ -216,48 +216,6 @@ smtk::attribute::ItemPtr Attribute::itemAtPath(
   return result;
 }
 
-namespace {
-
-template<typename T>
-bool isInvalid(T itemPtr)
-{
-  if (!itemPtr)
-    return true;
-  std::size_t actual = itemPtr->numberOfValues();
-  std::size_t minNum = itemPtr->numberOfRequiredValues();
-  if (
-    actual < minNum ||
-    (minNum && actual > minNum))
-    return true;
-
-  for (std::size_t i = 0; i < actual; ++i)
-    if (!itemPtr->isSet(i))
-      return true;
-  return false;
-}
-
-template<>
-bool isInvalid<ValueItemPtr>(ValueItemPtr itemPtr)
-{
-  if (!itemPtr)
-    return true;
-  std::size_t actual = itemPtr->numberOfValues();
-  std::size_t minNum = itemPtr->numberOfRequiredValues();
-  std::size_t maxNum = itemPtr->maxNumberOfValues();
-  if (
-    actual < minNum ||
-    actual > maxNum ||
-    (maxNum == 0 && actual > minNum && !itemPtr->isExtensible()))
-    return true;
-
-  for (std::size_t i = 0; i < actual; ++i)
-    if (!itemPtr->isSet(i))
-      return true;
-  return false;
-}
-
-}
-
 /**\brief Validate the attribute against its definition.
   *
   * This method will only return true when every (required) item in the
