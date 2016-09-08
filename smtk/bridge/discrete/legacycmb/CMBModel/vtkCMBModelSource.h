@@ -43,7 +43,7 @@ public:
 
   // Description:
   // Get the modified time of this object.
-  virtual unsigned long GetMTime();
+  virtual vtkMTimeType GetMTime();
 
 protected:
   vtkCMBModelSource();
