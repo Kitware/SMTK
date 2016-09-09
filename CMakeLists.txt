@@ -80,6 +80,7 @@ option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" ON)
 option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" ON)
 # Option to build Qt ui compoments for attributes
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
+option(SMTK_ENABLE_EXAMPLES "Enable Examples" OFF)
 option(SMTK_ENABLE_PYTHON_WRAPPING "Build Python Wrappings using Shiboken" OFF)
 # Provide system packagers with the ability to install SMTK
 # to the system's Python site package directory. The default
