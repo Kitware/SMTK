@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
       {
       smtk::common::ViewPtr instanced =
         smtk::common::View::New("Instanced", (*defIter)->type());
-      
+
       smtk::common::View::Component &comp =
         instanced->details().addChild("InstancedAttributes").addChild("Att");
       comp.setAttribute("Type", (*defIter)->type());

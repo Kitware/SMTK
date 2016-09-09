@@ -116,5 +116,3 @@ int main(int argc, char* argv[])
   // Verify that widget factory lifecycle management is done properly.
   return testLifecycle();
 }
-
-
