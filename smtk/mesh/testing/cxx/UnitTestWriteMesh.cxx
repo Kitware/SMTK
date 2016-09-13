@@ -26,7 +26,7 @@ namespace
 
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
-std::string write_root = data_root + "/mesh/tmp";
+std::string write_root = data_root + "/tmp";
 
 void cleanup( const std::string& file_path )
 {
@@ -80,7 +80,7 @@ void verify_write_null_collection()
 void verify_write_valid_collection_hdf5()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/twoassm_out.h5m";
+  file_path += "/mesh/3d/twoassm_out.h5m";
 
   std::string write_path(write_root);
   write_path += "/twoassm_output.h5m";
@@ -117,7 +117,7 @@ void verify_write_valid_collection_hdf5()
 void verify_write_valid_collection_exodus()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/twoassm_out.h5m";
+  file_path += "/mesh/3d/twoassm_out.h5m";
 
   std::string write_path(write_root);
   write_path += "/twoassm_output.exo";
@@ -153,7 +153,7 @@ void verify_write_valid_collection_exodus()
 void verify_write_valid_collection_using_write_path()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/twoassm_out.h5m";
+  file_path += "/mesh/3d/twoassm_out.h5m";
 
   std::string write_path(write_root);
   write_path += "/twoassm_output.h5m";
@@ -194,7 +194,7 @@ void verify_write_valid_collection_using_write_path()
 void verify_write_onlyDomain()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/64bricks_12ktet.h5m";
+  file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   std::string write_path(write_root);
   write_path += "/64bricks_12ktet.h5m";
@@ -233,7 +233,7 @@ void verify_write_onlyDomain()
 void verify_write_onlyNeumann()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/64bricks_12ktet.h5m";
+  file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   std::string write_path(write_root);
   write_path += "/64bricks_12ktet.h5m";
@@ -275,7 +275,7 @@ void verify_write_onlyNeumann()
 void verify_write_onlyDirichlet()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/64bricks_12ktet.h5m";
+  file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   std::string write_path(write_root);
   write_path += "/64bricks_12ktet.h5m";
@@ -315,7 +315,7 @@ void verify_write_onlyDirichlet()
 void verify_write_clears_modified_flag()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/64bricks_12ktet.h5m";
+  file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   std::string write_path(write_root);
   write_path += "/64bricks_12ktet.h5m";

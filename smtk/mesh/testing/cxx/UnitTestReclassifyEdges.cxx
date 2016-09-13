@@ -37,13 +37,13 @@ namespace
 
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
-std::string write_root = data_root + "/mesh/tmp";
+std::string write_root = data_root + "/tmp";
 
 //----------------------------------------------------------------------------
 void create_simple_2d_model( smtk::model::ManagerPtr mgr )
 {
   std::string file_path(data_root);
-  file_path += "/smtk/test2D.json";
+  file_path += "/model/2d/smtk/test2D.json";
 
   std::ifstream file(file_path.c_str());
 

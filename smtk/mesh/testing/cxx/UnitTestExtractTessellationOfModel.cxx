@@ -140,7 +140,7 @@ std::string data_root = SMTK_DATA_DIR;
 void create_simple_mesh_model( smtk::model::ManagerPtr mgr )
 {
   std::string file_path(data_root);
-  file_path += "/smtk/test2D.json";
+  file_path += "/model/2d/smtk/test2D.json";
 
   std::ifstream file(file_path.c_str());
 

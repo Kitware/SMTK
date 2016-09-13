@@ -25,7 +25,7 @@ function(smtk_unit_tests)
   endif()
 
   if (SMTK_DATA_DIR)
-    if (NOT EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
+    if (NOT EXISTS ${SMTK_DATA_DIR}/ReadMe.md)
       message(WARNING
 	"SMTK_DATA_DIR has been set to invalid location \"${SMTK_DATA_DIR}\".")
     elseif(SMTK_ENABLE_TESTING AND NOT using_hdf AND NOT ENABLE_HDF5)
@@ -35,7 +35,7 @@ function(smtk_unit_tests)
   endif()
 
   if (SMTK_DATA_DIR
-      AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd
+      AND EXISTS ${SMTK_DATA_DIR}/ReadMe.md
       AND using_hdf)
     #we check moab for hdf support since that is the file format
     #for all our test data
@@ -80,7 +80,7 @@ function(smtk_unit_tests)
     endforeach(test)
   endif (SMTK_ENABLE_TESTING)
 
-if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
+if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.md)
   list(APPEND unit_tests
 
        )

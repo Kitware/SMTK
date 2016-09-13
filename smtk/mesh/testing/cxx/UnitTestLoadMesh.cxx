@@ -39,7 +39,7 @@ void verify_load_bad_mesh()
 void verify_load_valid_mesh()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/twoassm_out.h5m";
+  file_path += "/mesh/3d/twoassm_out.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
@@ -55,7 +55,7 @@ void verify_load_valid_mesh()
 void verify_load_writeLocation()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/twoassm_out.h5m";
+  file_path += "/mesh/3d/twoassm_out.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
@@ -69,8 +69,8 @@ void verify_load_writeLocation()
 void verify_load_multiple_meshes()
 {
   std::string first_file_path(data_root), second_file_path(data_root);
-  first_file_path += "/mesh/twoassm_out.h5m";
-  second_file_path += "/mesh/64bricks_12ktet.h5m";
+  first_file_path += "/mesh/3d/twoassm_out.h5m";
+  second_file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c1 = smtk::io::ImportMesh::entireFile(first_file_path, manager);
@@ -104,7 +104,7 @@ void verify_load_multiple_meshes()
 void verify_load_same_mesh_multiple_times()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/64bricks_12ktet.h5m";
+  file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c1 = smtk::io::ImportMesh::entireFile(file_path, manager);
@@ -121,7 +121,7 @@ void verify_load_same_mesh_multiple_times()
 void verify_load_onlyNeumann()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/64bricks_12ktet.h5m";
+  file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyNeumann(file_path, manager);
@@ -137,7 +137,7 @@ void verify_load_onlyNeumann()
 void verify_load_onlyDirichlet()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/64bricks_12ktet.h5m";
+  file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyDirichlet(file_path, manager);
@@ -152,7 +152,7 @@ void verify_load_onlyDirichlet()
 void verify_load_onlyDomain()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/64bricks_12ktet.h5m";
+  file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyDomain(file_path, manager);
@@ -168,7 +168,7 @@ void verify_load_bad_onlyDomain()
 {
   std::cout << "verify_load_bad_onlyDomain" << std::endl;
   std::string file_path(data_root);
-  file_path += "/mesh/sixth_hexflatcore.h5m";
+  file_path += "/mesh/3d/sixth_hexflatcore.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyDomain(file_path, manager);
@@ -182,7 +182,7 @@ void verify_load_bad_onlyNeumann()
 {
   std::cout << "verify_load_bad_onlyNeumann" << std::endl;
   std::string file_path(data_root);
-  file_path += "/mesh/invalid_file.h5m";
+  file_path += "/mesh/3d/invalid_file.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyNeumann(file_path, manager);
@@ -199,7 +199,7 @@ void verify_load_bad_onlyDirichlet()
   std::cout << "verify_load_bad_onlyNeumann" << std::endl;
 
   std::string file_path(data_root);
-  file_path += "/mesh/sixth_hexflatcore.h5m";
+  file_path += "/mesh/3d/sixth_hexflatcore.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyDirichlet(file_path, manager);
