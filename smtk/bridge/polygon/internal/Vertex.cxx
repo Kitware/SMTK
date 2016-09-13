@@ -13,7 +13,11 @@
 
 #include "smtk/io/Logger.h"
 
+#include "smtk/common/CompilerInformation.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/polygon/polygon.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 namespace smtk {
   namespace bridge {

@@ -37,7 +37,11 @@
 #include "vtkInformation.h"
 #include "vtkUnstructuredGrid.h"
 
+#include "smtk/common/CompilerInformation.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 using namespace smtk::model;
 using namespace smtk::common;

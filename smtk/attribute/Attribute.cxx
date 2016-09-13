@@ -29,9 +29,13 @@
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/EntityRef.h"
+
+#include "smtk/common/CompilerInformation.h"
 #include "smtk/common/UUIDGenerator.h"
 
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/algorithm/string.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <iostream>
 

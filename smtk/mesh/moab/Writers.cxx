@@ -14,7 +14,9 @@
 
 #include "smtk/mesh/Collection.h"
 
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "moab/Interface.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 namespace smtk {
 namespace mesh {

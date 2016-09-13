@@ -22,12 +22,17 @@
 #include "smtk/mesh/moab/MergeMeshVertices.h"
 #include "smtk/mesh/moab/PointLocatorImpl.h"
 
+#include "smtk/common/CompilerInformation.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "moab/Core.hpp"
 #include "moab/FileOptions.hpp"
 #include "moab/Interface.hpp"
 
 #include "moab/ReaderIface.hpp"
 #include "moab/Skinner.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
+
 
 #define BEING_INCLUDED_BY_INTERFACE_CXX
 //required to go after moab includes

@@ -15,8 +15,12 @@
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 
+#include "smtk/common/CompilerInformation.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "moab/Core.hpp"
 #include "moab/FileOptions.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 namespace smtk {
 namespace mesh {

@@ -24,8 +24,12 @@
 #include "smtk/io/ImportJSON.h"
 #include "smtk/io/ExportJSON.h"
 
+#include "smtk/common/CompilerInformation.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
 #include "boost/system/error_code.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 #include "vtkDataObject.h"
 #include "vtkMultiBlockDataSet.h"

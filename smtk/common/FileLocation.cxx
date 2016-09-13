@@ -14,8 +14,12 @@
 
 #include "smtk/common/FileLocation.h"
 
+#include "smtk/common/CompilerInformation.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
 #include "boost/system/error_code.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 using namespace boost::filesystem;
 
@@ -28,7 +32,7 @@ FileLocation::FileLocation(
   const std::string& refPath) :
   m_filePath(filePath),
   m_referencePath(refPath)
-{ 
+{
 }
 
 FileLocation::FileLocation(const FileLocation& other)
