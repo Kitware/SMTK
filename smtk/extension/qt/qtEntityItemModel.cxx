@@ -1057,9 +1057,7 @@ void QEntityItemModel::updateChildPhrases(
       else
         origId = phrase->argFindChild((*it)->relatedMesh());
       }
-    else if((*it)->phraseType() == FLOAT_PROPERTY_VALUE ||
-            (*it)->phraseType() == STRING_PROPERTY_VALUE  ||
-            (*it)->phraseType() == INTEGER_PROPERTY_VALUE )
+    else if((*it)->isPropertyValueType())
       {
       // for property_value subphrases, we can't use the related entity to find child index,
       // because PropertyValuePhrase refers to its parent's entity.
