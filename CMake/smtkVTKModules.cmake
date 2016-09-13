@@ -96,6 +96,20 @@ macro(vtk_smtk_setup_module_environment _name)
 
   include(vtkExternalModuleMacros)
   if (VTK_WRAP_PYTHON)
+    if (NOT PYTHON_MAJOR_VERSION OR NOT PYTHON_MINOR_VERSION)
+      # Currently, VTK's FindPythonLibs.cmake sets the above variables, but
+      # CMake's FindPythonLibs.cmake does not. An issue has been made for VTK
+      # to update its FindPythonLibs to reflect the parameters of the newer
+      # CMake version (see https://gitlab.kitware.com/vtk/vtk/issues/16848).
+      # Until this is resolved, we manually set these legacy parameters here.
+
+      string (FIND ${PYTHONLIBS_VERSION_STRING} "." first_separator)
+      string (SUBSTRING ${PYTHONLIBS_VERSION_STRING} 0 ${first_separator} PYTHON_MAJOR_VERSION)
+      math (EXPR first_separator ${first_separator}+1)
+      string (SUBSTRING ${PYTHONLIBS_VERSION_STRING} ${first_separator} -1 remainder)
+      string (FIND ${remainder} "." second_separator)
+      string (SUBSTRING ${remainder} 0 ${second_separator} PYTHON_MINOR_VERSION)
+    endif()
     include(vtkPythonWrapping)
   endif()
 
