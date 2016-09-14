@@ -22,7 +22,6 @@
 #include <map>
 #include <QFont>
 #include <QColor>
-#include <QDoubleValidator>
 #include <QTextEdit>
 #include <QMap>
 #include <QPointer>
@@ -129,7 +128,9 @@ namespace smtk
       {return this->m_currentAdvLevel;}
       void initAdvanceLevels(QComboBox* combo);
 
-      void setWidgetColor(QWidget *widget, const QColor &color);
+      void setWidgetColorToInvalid(QWidget *widget);
+      void setWidgetColorToDefault(QWidget *widget);
+      void setWidgetColorToNormal(QWidget *widget);
       bool getExpressionArrayString(
         smtk::attribute::GroupItemPtr dataItem, QString& strValues);
 
@@ -148,16 +149,6 @@ namespace smtk
     bool updateTableItemCheckState(
       QTableWidgetItem* labelitem, smtk::attribute::ItemPtr attItem);
 
-    virtual QWidget* createInputWidget(smtk::attribute::ItemPtr,
-                                       int elementIdx, QWidget* pWidget,
-                                       qtBaseView* bview, QLayout* childLayout);
-    virtual QWidget* createEditBox(smtk::attribute::ItemPtr,
-                                   int elementIdx, QWidget* pWidget, qtBaseView* bview);
-//    virtual QWidget* createComboBox(smtk::attribute::ItemPtr,
-//                                    int elementIdx, QWidget* pWidget,
-//                                   qtBaseView* bview);
-    virtual QWidget* createExpressionRefWidget(smtk::attribute::ItemPtr,
-                                               int elementIdx,QWidget* pWidget, qtBaseView* bview);
 
     virtual int getWidthOfAttributeMaxLabel(smtk::attribute::DefinitionPtr def,
                                      const QFont &font);
@@ -177,12 +168,7 @@ namespace smtk
       void onFileItemCreated(smtk::extension::qtFileItem*);
       void onModelEntityItemCreated(smtk::extension::qtModelEntityItem*);
       void onMeshSelectionItemCreated(smtk::extension::qtMeshSelectionItem*);
-      void onExpressionReferenceChanged();
       void updateModelViews();
-      void onTextEditChanged();
-      void onLineEditChanged();
-      void onLineEditFinished();
-      void onInputValueChanged(QObject*);
       void onViewUIModified(smtk::extension::qtBaseView*, smtk::attribute::ItemPtr);
       void setAdvanceLevel(int b);
 
@@ -199,7 +185,6 @@ namespace smtk
     protected slots:
       void invokeEntitiesSelected(const smtk::common::UUIDs& uuids)
         { emit this->entitiesSelected(uuids); }
-      void displayExpressionWidget(bool checkstate);
 
     protected:
       virtual void internalInitialize();
@@ -237,32 +222,6 @@ namespace smtk
 
     }; // class
 
-    //A sublcass of QDoubleValidator to fixup input outside of range
-    class SMTKQTEXT_EXPORT qtDoubleValidator : public QDoubleValidator
-    {
-      Q_OBJECT
-    public:
-        qtDoubleValidator(QObject * parent);
-        virtual void fixup(QString &input) const;
-
-        void setUIManager(qtUIManager* uiman);
-    private:
-      qtUIManager* UIManager;
-    };
-
-    //A sublcass of QIntValidator to fixup input outside of range
-    class SMTKQTEXT_EXPORT qtIntValidator : public QIntValidator
-      {
-      Q_OBJECT
-      public:
-        qtIntValidator(QObject * parent);
-        virtual void fixup(QString &input) const;
-
-        void setUIManager(qtUIManager* uiman);
-      private:
-        qtUIManager* UIManager;
-      };
-
     //A sublcass of QTextEdit to give initial sizehint
     class SMTKQTEXT_EXPORT qtTextEdit : public QTextEdit
       {
@@ -272,7 +231,7 @@ namespace smtk
         virtual QSize sizeHint() const;
       };
 
-  }; // namespace attribute
+  }; // namespace extension
 }; // namespace smtk
 
 #endif
