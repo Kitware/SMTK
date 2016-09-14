@@ -1,5 +1,6 @@
 ##################################
 SMTK: Simulation Modeling Tool Kit
+Version 1.0.0
 ##################################
 
 .. highlight:: c++
