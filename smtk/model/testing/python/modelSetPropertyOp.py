@@ -23,7 +23,7 @@ import unittest
 class TestModelSetPropertyOp(unittest.TestCase):
 
   def testSetPropertyOp(self):
-    model_path = os.path.join(smtk.testing.DATA_DIR, 'smtk', 'pyramid.json')
+    model_path = os.path.join(smtk.testing.DATA_DIR, 'model', '2d', 'smtk', 'pyramid.json')
     print 'Loading %s' % model_path
 
     status = 0
