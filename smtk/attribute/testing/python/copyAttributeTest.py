@@ -56,7 +56,7 @@ if __name__ == '__main__':
   #
   # Load smtk model file
   #
-  model_path = os.path.join(smtk_test_data, 'smtk', MODEL_FILENAME)
+  model_path = os.path.join(smtk_test_data, 'model', '2d', 'smtk', MODEL_FILENAME)
   logging.info('Reading %s' % model_path)
   json_string = None
   with open(model_path, 'r') as f:
@@ -73,7 +73,7 @@ if __name__ == '__main__':
   #
   # Load attribute file into system
   #
-  att_folder = os.path.join(smtk_test_data, 'smtk', 'attribute')
+  att_folder = os.path.join(smtk_test_data, 'attribute', 'attribute_system')
   att_path = os.path.join(att_folder, INPUT_FILENAME)
   logging.info('Reading %s' % att_path)
   input_system = smtk.attribute.System()
