@@ -26,7 +26,7 @@ namespace
 
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
-std::string write_root = data_root + "/mesh/tmp";
+std::string write_root = data_root + "/tmp";
 
 void cleanup( const std::string& file_path )
 {
@@ -79,7 +79,7 @@ void verify_write_null_collection()
 void verify_write_valid_collection()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/twoassm_out.h5m";
+  file_path += "/mesh/3d/twoassm_out.h5m";
 
   std::string write_path(write_root);
   write_path += "/twoassm_output.2dm";

@@ -33,7 +33,7 @@ namespace
 {
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
-std::string write_root = data_root + "/mesh/tmp";
+std::string write_root = data_root + "/tmp";
 
 void cleanup( const std::string& file_path )
 {
@@ -252,7 +252,7 @@ void verify_writing_and_loading_collections_without_file_path()
 void verify_writing_of_single_collection_to_disk()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/twoassm_out.h5m";
+  file_path += "/mesh/3d/twoassm_out.h5m";
 
   std::string write_path(write_root);
   write_path += "/output.h5m";
@@ -283,7 +283,7 @@ void verify_writing_of_single_collection_to_disk()
 void verify_writing_of_single_collection_to_json()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/twoassm_out.h5m";
+  file_path += "/mesh/3d/twoassm_out.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
@@ -308,7 +308,7 @@ void verify_writing_of_single_collection_to_json()
 void verify_reading_of_single_collection_from_json()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/twoassm_out.h5m";
+  file_path += "/mesh/3d/twoassm_out.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   cJSON* top = cJSON_CreateObject();

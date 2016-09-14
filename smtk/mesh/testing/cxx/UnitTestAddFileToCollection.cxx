@@ -25,7 +25,7 @@ std::string data_root = SMTK_DATA_DIR;
 std::string first_mesh_path()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/64bricks_12ktet.h5m";
+  file_path += "/mesh/3d/64bricks_12ktet.h5m";
   return file_path;
 }
 
@@ -33,7 +33,7 @@ std::string first_mesh_path()
 std::string second_mesh_path()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/twoassm_out.h5m";
+  file_path += "/mesh/3d/twoassm_out.h5m";
   return file_path;
 }
 
