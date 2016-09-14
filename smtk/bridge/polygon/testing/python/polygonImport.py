@@ -94,7 +94,7 @@ class TestPolygonImport(smtk.testing.TestCase):
       # Skip the image match if we don't have a baseline.
       # This allows the test to succeed even on systems without the test
       # data but requires a match on systems with the test data.
-      self.assertImageMatch(['baselines', 'polygon', 'import-ne_110m_land.png'], 50.0)
+      self.assertImageMatch(['baseline', 'smtk', 'polygon', 'import-ne_110m_land.png'], 50.0)
       self.interact()
 
     else:

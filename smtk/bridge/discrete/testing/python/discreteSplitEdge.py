@@ -107,7 +107,7 @@ class TestDiscreteSplitEdge(smtk.testing.TestCase):
       cam = self.renderer.GetActiveCamera()
       self.renderer.ResetCamera()
       self.renderWindow.Render()
-      self.assertImageMatch(['baselines', 'discrete', 'edge-split-test2D.png'])
+      self.assertImageMatch(['baseline', 'smtk', 'discrete', 'edge-split-test2D.png'])
       self.interact()
 
   def setUp(self):

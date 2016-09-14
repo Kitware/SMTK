@@ -180,7 +180,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
       # Skip the image match if we don't have a baseline.
       # This allows the test to succeed even on systems without the test
       # data but requires a match on systems with the test data.
-      self.assertImageMatchIfFileExists(['baselines', 'polygon', 'creation.png'])
+      self.assertImageMatchIfFileExists(['baseline', 'smtk', 'polygon', 'creation.png'])
       self.interact()
 
     else:

@@ -223,7 +223,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
       res = GetLastResult()
       created = res.findModelEntity('created')
       print 'created ', created.numberOfValues(), ' faces'
-      self.imageComparison(mod, created, ['baselines', 'polygon', 'createFacesA.png'], False)
+      self.imageComparison(mod, created, ['baseline', 'smtk', 'polygon', 'createFacesA.png'], False)
 
   def testModelBCreation(self):
     t = 0
@@ -237,7 +237,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
       res = GetLastResult()
       created = res.findModelEntity('created')
       print 'created ', created.numberOfValues(), ' faces'
-      self.imageComparison(mod, created, ['baselines', 'polygon', 'createFacesB{:1}.png'.format(t)], False) # or p[6])
+      self.imageComparison(mod, created, ['baseline', 'smtk', 'polygon', 'createFacesB{:1}.png'.format(t)], False) # or p[6])
 
   def imageComparison(self, mod, created, imagePath, doInteract):
     if self.haveVTK() and self.haveVTKExtension():
