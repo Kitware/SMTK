@@ -63,10 +63,10 @@ class TestModelCloseModelOp(unittest.TestCase):
     status = 0
     if smtk.testing.DATA_DIR != '':
       session_files = {
-          'native': ['smtk', 'pyramid.json'],
-          'discrete': ['cmb', 'test2D.cmb'],
-          'exodus': ['exodus', 'disk_out_ref.ex2'],
-          'cgm': ['cgm', 'pyramid.brep']
+          'native': ['model', '2d', 'smtk', 'pyramid.json'],
+          'discrete': ['model', '2d', 'cmb', 'test2D.cmb'],
+          'exodus': ['model', '3d', 'exodus', 'disk_out_ref.ex2'],
+          'cgm': ['model', '3d', 'solidmodel', 'occ', 'pyramid.brep']
       }
 
       for (session_type,path) in session_files.items():
