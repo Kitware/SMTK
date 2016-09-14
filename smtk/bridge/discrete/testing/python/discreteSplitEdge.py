@@ -113,10 +113,7 @@ class TestDiscreteSplitEdge(smtk.testing.TestCase):
   def setUp(self):
     import os, sys
     self.resetTestFiles()
-    self.addTestFile(['cmb', 'test2D.cmb'], self.findSplitsTest2D, self.validateTest2D)
-    #self.addTestFile(['cmb', 'SimpleBox.cmb'], 1, 2)
-    #self.addTestFile(['cmb', 'smooth_surface.cmb'], 6, 0)
-    #self.addTestFile(['cmb', 'pmdc.cmb'], 7, 13, self.validatePMDC)
+    self.addTestFile(['model', '2d', 'cmb', 'test2D.cmb'], self.findSplitsTest2D, self.validateTest2D)
 
     self.mgr = smtk.model.Manager.create()
     sess = self.mgr.createSession('discrete')
