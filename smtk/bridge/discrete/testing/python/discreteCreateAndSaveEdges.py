@@ -56,7 +56,7 @@ class TestDiscreteCreateAndSaveEdges(smtk.testing.TestCase):
   def setUp(self):
     import os, sys
     self.resetTestFiles()
-    self.addTestFile(['cmb', 'hybridModelOneCube.cmb'], self.validateCreateAndSaveEdges)
+    self.addTestFile(['model', '3d', 'cmb', 'hybridModelOneCube.cmb'], self.validateCreateAndSaveEdges)
 
     self.mgr = smtk.model.Manager.create()
     sess = self.mgr.createSession('discrete')

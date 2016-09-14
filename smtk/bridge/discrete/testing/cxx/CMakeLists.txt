@@ -3,7 +3,7 @@ if(SMTK_DATA_DIR)
   target_link_libraries(SessionTest smtkCore smtkDiscreteSession)
   add_test(
     NAME discreteSessionTest
-    COMMAND SessionTest ${SMTK_DATA_DIR}/model/2d/cmb/test2D.cmb ${SMTK_DATA_DIR}/model/2d/cmb/smooth_surface.cmb
+    COMMAND SessionTest ${SMTK_DATA_DIR}/model/2d/cmb/test2D.cmb ${SMTK_DATA_DIR}/model/3d/cmb/smooth_surface.cmb
   )
 
   add_executable(Import2dmTest import2dm.cxx)
