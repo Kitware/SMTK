@@ -10,6 +10,7 @@
 #include "smtk/model/operators/ExportSMTKModel.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
@@ -36,30 +37,30 @@ using namespace boost::filesystem;
 namespace smtk {
   namespace model {
 
-smtk::model::OperatorResult ExportSMTKModel::operateInternal()
+OperatorResult ExportSMTKModel::operateInternal()
 {
   smtk::attribute::FileItemPtr filenameItem = this->findFile("filename");
   smtk::attribute::IntItemPtr flagsItem = this->findInt("flags");
 
-  smtk::model::Models models = this->m_specification->associatedModelEntities<smtk::model::Models>();
+  Models models = this->m_specification->associatedModelEntities<Models>();
   if (models.empty())
     {
     smtkErrorMacro(this->log(), "No valid models selected for export.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(OPERATION_FAILED);
     }
 
   std::string filename = filenameItem->value();
   if (filename.empty())
     {
     smtkErrorMacro(this->log(), "A filename must be provided.");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(OPERATION_FAILED);
     }
 
   std::ofstream jsonFile(filename.c_str(), std::ios::trunc);
   if (!jsonFile.good())
     {
     smtkErrorMacro(this->log(), "Could not open file \"" << filename << "\".");
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    return this->createResult(OPERATION_FAILED);
     }
 
   cJSON* top = cJSON_CreateObject();
@@ -68,7 +69,7 @@ smtk::model::OperatorResult ExportSMTKModel::operateInternal()
 
   // Add the output smtk model name to the model "smtk_url", so that the individual session can
   // use that name to construct a filename for saving native models of the session.
-  smtk::model::Models::iterator modit;
+  Models::iterator modit;
   for(modit = models.begin(); modit != models.end(); ++modit)
     {
     modit->setStringProperty("smtk_url", filename);
@@ -119,7 +120,25 @@ smtk::model::OperatorResult ExportSMTKModel::operateInternal()
       }
     }
 
-  return this->createResult(smtk::model::OPERATION_SUCCEEDED);
+  return this->createResult(OPERATION_SUCCEEDED);
+}
+
+void ExportSMTKModel::generateSummary(OperatorResult& res)
+{
+  std::ostringstream msg;
+  int outcome = res->findInt("outcome")->value();
+  smtk::attribute::FileItemPtr fitem = this->findFile("filename");
+  msg << this->specification()->definition()->label();
+  if (outcome == static_cast<int>(OPERATION_SUCCEEDED))
+    {
+    msg << ": wrote \"" << fitem->value(0) << "\"";
+    smtkInfoMacro(this->log(), msg.str());
+    }
+  else
+    {
+    msg << ": failed to write \"" << fitem->value(0) << "\"";
+    smtkErrorMacro(this->log(), msg.str());
+    }
 }
 
   } //namespace model
