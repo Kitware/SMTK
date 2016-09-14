@@ -30,10 +30,11 @@ class Version(unittest.TestCase):
     self.assertEqual(number, mmp, 'Version number should be formatted as major.minor.patch.')
     self.assertEqual(combined, intversion, 'Combined integer version miscalculated.')
 
-    readme = open(os.path.join(smtk.testing.SOURCE_DIR, 'ReadMe.mkd'))
-    readme.readline() # Skip ReadMe title line
+    readme = open(os.path.join(smtk.testing.SOURCE_DIR, 'doc/index.rst'))
+    readme.readline() # Skip title flare
+    readme.readline() # Skip title
     readmeVersion = readme.readline().strip()
-    readmeMatch = '## Version %s' % number
+    readmeMatch = 'Version %s' % number
 
     self.assertEqual(readmeVersion, readmeMatch,
         """Mismatched version numbers in CMakeLists.txt and ReadMe.mkd.
