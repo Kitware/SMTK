@@ -25,7 +25,7 @@ class TestAttributeItemByPath(smtk.testing.TestCase):
         self.system = smtk.attribute.System()
         logger = smtk.io.Logger()
         reader = smtk.io.AttributeReader()
-        filenm = os.path.join(smtk.testing.DATA_DIR, 'smtk', 'attribute', 'HydraTemplateV1.sbt')
+        filenm = os.path.join(smtk.testing.DATA_DIR, 'attribute', 'attribute_system', 'HydraTemplateV1.sbt')
         status = reader.read(self.system, filenm, logger)
         print '\n'.join([logger.record(i).message for i in range(logger.numberOfRecords())])
         self.assertFalse(status, 'Could not read {fn}'.format(fn=filenm))

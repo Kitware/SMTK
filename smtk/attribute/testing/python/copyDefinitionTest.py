@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
   # Load attribute file into system
   smtk_test_data = sys.argv[1]
-  att_folder = os.path.join(smtk_test_data, 'smtk', 'attribute')
+  att_folder = os.path.join(smtk_test_data, 'attribute', 'attribute_system')
   att_path = os.path.join(att_folder, SBT_FILENAME)
   logging.info('Reading %s' % att_path)
   input_system = smtk.attribute.System()
