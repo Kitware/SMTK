@@ -7,12 +7,12 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/qt/testing/cxx/ModelBrowser.h"
+#include "smtk/extension/qt/examples/cxx/ModelBrowser.h"
 
 #include "smtk/extension/qt/qtEntityItemModel.h"
 #include "smtk/extension/qt/qtEntityItemDelegate.h"
 
-#include "smtk/extension/qt/testing/cxx/ui_ModelBrowser.h"
+#include "smtk/extension/qt/examples/cxx/ui_ModelBrowser.h"
 
 #include "smtk/model/Group.h"
 #include "smtk/model/Model.h"
