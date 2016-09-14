@@ -31,7 +31,7 @@ target_link_libraries(displayModelToMesh
 )
 
 # Only run tests if the data directory exists
-if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
+if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
   add_test(
     NAME displayModel
     COMMAND

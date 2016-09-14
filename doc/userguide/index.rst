@@ -37,7 +37,7 @@ SMTK, clone the repository:
 
    git clone https://gitlab.kitware.com/cmb/smtk.git
 
-and follow the instructions in the :file:`ReadMe.mkd` file
+and follow the instructions in the :file:`ReadMe.md` file
 in the top-level source directory.
 The rest of this user's guide assumes you have built
 and installed SMTK according to these instructions.
