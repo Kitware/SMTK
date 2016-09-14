@@ -17,7 +17,7 @@
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/SimpleModelSubphrases.h"
 
-#include "smtk/extension/qt/testing/cxx/ModelBrowser.h"
+#include "smtk/extension/qt/examples/cxx/ModelBrowser.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
