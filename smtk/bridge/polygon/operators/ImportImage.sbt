@@ -18,7 +18,9 @@
           ShouldExist="true"
           FileFilters="Image files (*.vti *.tif *.tiff);;DEM(*.dem);;All files (*.*)">
         </File>
-
+        <Void Name="UseScalarColoring" Label="Map Scalars" Optional="true">
+          <BriefDescription>Should scalars be mapped with a color table for displaying image? If unchecked, the scalar values will be treated directly as colors?</BriefDescription>
+        </Void>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
