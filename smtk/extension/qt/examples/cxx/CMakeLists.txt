@@ -41,12 +41,12 @@ add_test(
 ##
 ## Test model browsing (for crashes only, not behavior)
 
-if (NOT WIN32 AND SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
+if (NOT WIN32 AND SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
   add_test(
     NAME browseModel
     COMMAND
       $<TARGET_FILE:browseModel>
-      "${SMTK_DATA_DIR}/smtk/simple.json"
+      "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json"
       0xffffffff
   )
 endif()

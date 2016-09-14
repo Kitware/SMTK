@@ -36,7 +36,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
     NAME displayModel
     COMMAND
       $<TARGET_FILE:displayModel>
-      "${SMTK_DATA_DIR}/smtk/simple.json"
+      "${SMTK_DATA_DIR}/model/3d/smtk/simple.json"
       -V "${SMTK_DATA_DIR}/baseline/smtk/vtk/simple.png"
       -T "${CMAKE_CURRENT_BINARY_DIR}"
   )
@@ -45,7 +45,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
     NAME displayMultiBlockModel-simple
     COMMAND
       $<TARGET_FILE:displayMultiBlockModel>
-      "${SMTK_DATA_DIR}/smtk/simple.json"
+      "${SMTK_DATA_DIR}/model/3d/smtk/simple.json"
       -V "${SMTK_DATA_DIR}/baseline/smtk/vtk/simple-with-colors.png"
       -T "${CMAKE_CURRENT_BINARY_DIR}"
   )
@@ -54,7 +54,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
     NAME displayMultiBlockModel-test2D
     COMMAND
       $<TARGET_FILE:displayMultiBlockModel>
-      "${SMTK_DATA_DIR}/smtk/test2D.json"
+      "${SMTK_DATA_DIR}/model/3d/smtk/test2D.json"
       -V "${SMTK_DATA_DIR}/baseline/smtk/vtk/test2D-with-colors.png"
       -T "${CMAKE_CURRENT_BINARY_DIR}"
   )
@@ -63,7 +63,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
     NAME displayModelToMesh-simple
     COMMAND
       $<TARGET_FILE:displayModelToMesh>
-      "${SMTK_DATA_DIR}/smtk/simple.json"
+      "${SMTK_DATA_DIR}/model/3d/smtk/simple.json"
       -V "${SMTK_DATA_DIR}/baseline/smtk/vtk/simple-Model2Mesh.png"
       -T "${CMAKE_CURRENT_BINARY_DIR}"
   )
@@ -73,7 +73,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
       NAME displayMultiBlockMesh-twoassm
       COMMAND
         $<TARGET_FILE:displayMultiBlockMesh>
-        "${SMTK_DATA_DIR}/mesh/twoassm_out.h5m"
+        "${SMTK_DATA_DIR}/mesh/3d/twoassm_out.h5m"
         -V "${SMTK_DATA_DIR}/baseline/smtk/vtk/twoassm_out.png"
         -T "${CMAKE_CURRENT_BINARY_DIR}"
     )

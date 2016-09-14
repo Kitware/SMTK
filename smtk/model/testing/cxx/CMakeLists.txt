@@ -64,7 +64,7 @@ target_link_libraries(unitExportMeshOperator smtkCore smtkCoreModelTesting
 add_test(NAME unitExportMeshOperator
   COMMAND $<TARGET_FILE:unitExportMeshOperator>
 #  TODO: this should be an smtk native model with an associated mesh.
-#  "${SMTK_DATA_DIR}/smtk/simple.json"
+#  "${SMTK_DATA_DIR}/model/3d/smtk/simple.json"
 )
 
 add_executable(benchmarkModel benchmarkModel.cxx)
@@ -76,5 +76,5 @@ target_link_libraries(benchmarkModel smtkCore smtkCoreModelTesting)
 ################################################################################
 if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
   add_test(NAME unitDescriptivePhrase COMMAND unitDescriptivePhrase
-    "${SMTK_DATA_DIR}/smtk/simple.json")
+    "${SMTK_DATA_DIR}/model/3d/smtk/simple.json")
 endif()
