@@ -14,6 +14,7 @@
 #include "smtk/io/Logger.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/FileItem.h"
@@ -124,6 +125,7 @@ OperatorResult Operator::operate()
           model.assignDefaultNames();
         }
       }
+    this->generateSummary(result);
     // Now grab all log messages and serialize them into the result attribute.
     std::size_t logEnd = this->log().numberOfRecords();
     if (logEnd > logStart)
@@ -487,6 +489,21 @@ void Operator::eraseResult(OperatorResult res)
 bool Operator::operator < (const Operator& other) const
 {
   return this->name() < other.name();
+}
+
+void Operator::generateSummary(OperatorResult& res)
+{
+  std::ostringstream msg;
+  int outcome = res->findInt("outcome")->value();
+  msg << this->specification()->definition()->label() << ": " << outcomeAsString(outcome);
+  if (outcome == static_cast<int>(OPERATION_SUCCEEDED))
+    {
+    smtkInfoMacro(this->log(), msg.str());
+    }
+  else
+    {
+    smtkErrorMacro(this->log(), msg.str());
+    }
 }
 
 /// Return a string summarizing the outcome of an operation.

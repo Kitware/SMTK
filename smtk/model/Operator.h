@@ -245,6 +245,7 @@ protected:
   virtual ~Operator();
 
   virtual OperatorResult operateInternal() = 0;
+  virtual void generateSummary(OperatorResult& res);
 
   void addEntityToResult(OperatorResult res, const EntityRef& ent, ResultEntityOrigin gen = UNKNOWN);
   template<typename T>
