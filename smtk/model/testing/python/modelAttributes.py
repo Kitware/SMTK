@@ -98,6 +98,7 @@ class TestModelAttributes(unittest.TestCase):
     '''
       # Load attribute file
     att_folder = os.path.join(self.model_folder, 'attribute')
+    att_folder = os.path.join(smtk.testing.DATA_DIR, 'attribute', 'attribute_system')
     att_path = os.path.join(att_folder, SBT_FILENAME)
     logging.info('Reading %s' % att_path)
     system = smtk.attribute.System()
@@ -211,7 +212,7 @@ class TestModelAttributes(unittest.TestCase):
     # Define scope object to store shared data
     ScopeType = type('Scope', (object,), dict())
     scope = ScopeType()
-    self.model_folder = os.path.join(smtk.testing.DATA_DIR, 'smtk')
+    self.model_folder = os.path.join(smtk.testing.DATA_DIR, 'model', '2d', 'smtk')
 
     # Load the model file
     model_path = os.path.join(self.model_folder, MODEL_FILENAME)
