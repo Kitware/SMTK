@@ -31,7 +31,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
   add_test(${reader_test}Py
     ${PYTHON_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/${reader_test}.py
-    ${SMTK_DATA_DIR}/smtk/attribute/resourceTest/ShallowWater2D.sbi
+    ${SMTK_DATA_DIR}/attribute/attribute_system/resourceTest/ShallowWater2D.sbi
     29
     19
   )
@@ -44,7 +44,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
   add_test(${reader_test}Py
     ${PYTHON_EXECUTABLE}
     ${CMAKE_CURRENT_SOURCE_DIR}/${reader_test}.py
-    ${SMTK_DATA_DIR}/smtk/attribute/resourceTest/resources.xml
+    ${SMTK_DATA_DIR}/attribute/attribute_system/resourceTest/resources.xml
     2
   )
   set_tests_properties(${reader_test}Py

@@ -19,7 +19,7 @@ foreach (test ${smtkPolygonSessionPythonTests})
   )
 endforeach()
 
-if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
+if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
   foreach (test ${smtkPolygonSessionPythonDataTests})
     add_test(${test}Py
       ${PYTHON_EXECUTABLE}

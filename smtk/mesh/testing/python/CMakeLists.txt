@@ -10,7 +10,7 @@ set(smtkMeshPythonDataTests
 #only run these tests if we have a valid data directory and we have a moab
 #built with hdf5
 if (SMTK_DATA_DIR
-    AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd
+    AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker
     AND using_hdf)
   foreach (test ${smtkMeshPythonDataTests})
     add_test(${test}Py
