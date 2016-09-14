@@ -36,7 +36,7 @@ the binary above.
 
 You can also download the source code from the git repostory and
 follow the instructions for building and installing SMTK in the
-toplevel :file:`ReadMe.mkd` file.
+toplevel :file:`ReadMe.md` file.
 
 .. todo:: Expand on details of installation and configuration.
 

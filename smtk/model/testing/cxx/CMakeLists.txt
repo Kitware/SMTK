@@ -74,7 +74,7 @@ target_link_libraries(benchmarkModel smtkCore smtkCoreModelTesting)
 ################################################################################
 # Tests that require SMTK_DATA_DIR
 ################################################################################
-if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
+if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
   add_test(NAME unitDescriptivePhrase COMMAND unitDescriptivePhrase
     "${SMTK_DATA_DIR}/model/3d/smtk/simple.json")
 endif()
