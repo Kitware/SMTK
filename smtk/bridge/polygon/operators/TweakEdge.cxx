@@ -133,6 +133,7 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
     }
   if (isPeriodic && (*epts.begin()) != (*(++epts.rbegin()).base()))
     { // It was periodic but isn't any more. Close the loop naively.
+    smtkOpDebug("Closing non-periodic tweak to preserve topology.");
     epts.insert(epts.end(), *epts.begin());
     }
   // Lift the integer points into world coordinates:
@@ -143,6 +144,7 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
   for (smtk::model::Vertices::iterator vit = verts.begin(); vit != verts.end(); ++vit)
     {
     internal::Point locn = ((vit == verts.begin()) != !isFirstVertStart) ? *epts.begin() :  *(++epts.rbegin()).base();
+    smtkOpDebug("Tweaking vertex " << vit->name() << ".");
     if (pmod->tweakVertex(*vit, locn, modEdgesAndFaces))
       {
       modified.push_back(*vit);
@@ -159,6 +161,7 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
       // If we have a face attached, re-tessellate it and add to modEdgesAndFaces
       if (modEdgesAndFaces.find(*fit) == modEdgesAndFaces.end())
         {
+        smtkOpDebug("Retessellating face " << fit->name() << ".");
         pmod->addFaceTessellation(*fit);
         modEdgesAndFaces.insert(*fit);
         }
@@ -206,17 +209,17 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
     {
     for (smtk::model::Edges::iterator crit = created.begin(); crit != created.end(); ++crit)
       {
-      std::cout << "Created " << crit->name() << "\n";
+      smtkOpDebug("Created " << crit->name() << ".");
       }
 
     for (smtk::model::EntityRefArray::iterator moit = modified.begin(); moit != modified.end(); ++moit)
       {
-      std::cout << "Modified " << moit->name() << "\n";
+      smtkOpDebug("Modified " << moit->name() << ".");
       }
 
     for (smtk::model::EntityRefArray::iterator epit = expunged.begin(); epit != expunged.end(); ++epit)
       {
-      std::cout << "Expunged " << epit->name() << "\n";
+      smtkOpDebug("Expunged " << epit->name() << ".");
       }
     }
 
