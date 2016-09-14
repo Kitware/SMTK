@@ -54,7 +54,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
     NAME displayMultiBlockModel-test2D
     COMMAND
       $<TARGET_FILE:displayMultiBlockModel>
-      "${SMTK_DATA_DIR}/model/3d/smtk/test2D.json"
+      "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json"
       -V "${SMTK_DATA_DIR}/baseline/smtk/vtk/test2D-with-colors.png"
       -T "${CMAKE_CURRENT_BINARY_DIR}"
   )
