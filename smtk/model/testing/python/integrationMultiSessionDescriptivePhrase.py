@@ -41,7 +41,8 @@ class IntegrationMultiSessionDescriptivePhrase(unittest.TestCase):
 
         baseline = (
             smtk.testing.DATA_DIR,
-            'baselines',
+            'baseline',
+            'smtk',
             'model',
             'integrationMultiSessionDescriptivePhrases.json')
 

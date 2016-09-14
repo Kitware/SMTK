@@ -96,7 +96,7 @@ class TestExodusSession(smtk.testing.TestCase):
         cam.SetViewUp(0,1,0)
         self.renderer.ResetCamera()
         self.renderWindow.Render()
-        self.assertImageMatch(['baselines', 'exodus', 'pillbox.png'])
+        self.assertImageMatch(['baseline', 'smtk', 'exodus', 'pillbox.png'])
         self.interact()
 
     else:

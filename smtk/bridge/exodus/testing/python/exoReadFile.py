@@ -127,7 +127,7 @@ class TestExodusSession(smtk.testing.TestCase):
         wri.SetFileName('/tmp/foofar.vtm')
         wri.Write()
         try:
-          self.assertImageMatch(['baselines', 'exodus', 'disk_out_ref.png'])
+          self.assertImageMatch(['baseline', 'smtk', 'exodus', 'disk_out_ref.png'])
         finally:
           self.interact()
 

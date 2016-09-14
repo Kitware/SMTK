@@ -101,7 +101,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
       tinkered += mods
       smtk.io.ExportJSON.fromModelManagerToFile(self.mgr, '/tmp/polyb.json')
       print 'Tinkered with ', tinkered
-      self.imageComparison(mod, tinkered, ['baselines', 'polygon', 'tweakEdge-caseA.png'], False)
+      self.imageComparison(mod, tinkered, ['baseline', 'smtk', 'polygon', 'tweakEdge-caseA.png'], False)
 
   def imageComparison(self, mod, edges, imagePath, doInteract):
     if self.haveVTK() and self.haveVTKExtension():

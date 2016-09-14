@@ -80,7 +80,7 @@ class CGMTransforms(smtk.testing.TestCase):
             cam.SetViewUp(-0.891963, -0.122107, -0.435306)
             self.renderer.ResetCamera()
             self.renderWindow.Render()
-            self.assertImageMatchIfFileExists(['baselines', 'cgm', 'transforms.png'])
+            self.assertImageMatchIfFileExists(['baseline', 'smtk', 'cgm', 'transforms.png'])
             self.interact()
 
         else:

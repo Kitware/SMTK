@@ -37,7 +37,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
     COMMAND
       $<TARGET_FILE:displayModel>
       "${SMTK_DATA_DIR}/smtk/simple.json"
-      -V "${SMTK_DATA_DIR}/baselines/vtk/simple.png"
+      -V "${SMTK_DATA_DIR}/baseline/smtk/vtk/simple.png"
       -T "${CMAKE_CURRENT_BINARY_DIR}"
   )
 
@@ -46,7 +46,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
     COMMAND
       $<TARGET_FILE:displayMultiBlockModel>
       "${SMTK_DATA_DIR}/smtk/simple.json"
-      -V "${SMTK_DATA_DIR}/baselines/vtk/simple-with-colors.png"
+      -V "${SMTK_DATA_DIR}/baseline/smtk/vtk/simple-with-colors.png"
       -T "${CMAKE_CURRENT_BINARY_DIR}"
   )
 
@@ -55,7 +55,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
     COMMAND
       $<TARGET_FILE:displayMultiBlockModel>
       "${SMTK_DATA_DIR}/smtk/test2D.json"
-      -V "${SMTK_DATA_DIR}/baselines/vtk/test2D-with-colors.png"
+      -V "${SMTK_DATA_DIR}/baseline/smtk/vtk/test2D-with-colors.png"
       -T "${CMAKE_CURRENT_BINARY_DIR}"
   )
 
@@ -64,7 +64,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
     COMMAND
       $<TARGET_FILE:displayModelToMesh>
       "${SMTK_DATA_DIR}/smtk/simple.json"
-      -V "${SMTK_DATA_DIR}/baselines/vtk/simple-Model2Mesh.png"
+      -V "${SMTK_DATA_DIR}/baseline/smtk/vtk/simple-Model2Mesh.png"
       -T "${CMAKE_CURRENT_BINARY_DIR}"
   )
 
@@ -74,7 +74,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
       COMMAND
         $<TARGET_FILE:displayMultiBlockMesh>
         "${SMTK_DATA_DIR}/mesh/twoassm_out.h5m"
-        -V "${SMTK_DATA_DIR}/baselines/vtk/twoassm_out.png"
+        -V "${SMTK_DATA_DIR}/baseline/smtk/vtk/twoassm_out.png"
         -T "${CMAKE_CURRENT_BINARY_DIR}"
     )
   endif()

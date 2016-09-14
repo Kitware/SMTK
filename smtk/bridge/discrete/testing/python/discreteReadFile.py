@@ -65,7 +65,7 @@ class TestDiscreteSession(smtk.testing.TestCase):
       cam.SetViewUp(0,1,0)
       self.renderer.ResetCamera()
       self.renderWindow.Render()
-      self.assertImageMatch(['baselines', 'discrete', 'hybridModelOneCube.png'])
+      self.assertImageMatch(['baseline', 'smtk', 'discrete', 'hybridModelOneCube.png'])
       self.interact()
 
     else:
@@ -117,7 +117,7 @@ class TestDiscreteSession(smtk.testing.TestCase):
       cam.SetViewUp(0,1,0)
       self.renderer.ResetCamera()
       self.renderWindow.Render()
-      self.assertImageMatch(['baselines', 'discrete', 'pmdc.png'])
+      self.assertImageMatch(['baseline', 'smtk', 'discrete', 'pmdc.png'])
       self.interact()
 
     else:
