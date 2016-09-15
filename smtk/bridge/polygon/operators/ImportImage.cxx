@@ -21,6 +21,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/VoidItem.h"
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
@@ -81,6 +82,14 @@ OperatorResult ImportImage::operateInternal()
     {
     std::cerr << "A model is not set, or the file name is empty!\n";
     return this->createResult(OPERATION_FAILED);
+    }
+
+  smtk::attribute::VoidItem::Ptr scalarColoringItem =
+    this->findVoid("UseScalarColoring");
+  if(scalarColoringItem)
+    {
+    bool scalarColoring = scalarColoringItem->isEnabled();
+    model.setIntegerProperty("UseScalarColoring", scalarColoring ? 1 : 0);
     }
 
   // TODO:

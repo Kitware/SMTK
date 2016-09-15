@@ -280,6 +280,7 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
       CELL_2D : CELL_3D;
 */
     smtk::model::EntityRefs selentityrefs;
+    smtk::model::DescriptivePhrases selproperties;
     BitFlags ef = group.membershipMask();
     foreach(QModelIndex sel, this->selectedIndexes())
       {
@@ -288,7 +289,7 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
       smtk::model::Model selmodel =
         this->owningEntityAs<smtk::model::Model>(sel);
       if(selmodel == modelEnt)
-        this->recursiveSelect(qmodel->getItem(sel), selentityrefs, ef, true);
+        this->recursiveSelect(qmodel->getItem(sel), selentityrefs, ef, selproperties, true);
       }
     std::cout << selentityrefs.size() << " selentityrefs, " << selentityrefs.size() << " entities\n";
     if(selentityrefs.size() == 0)
@@ -374,13 +375,13 @@ void qtModelView::selectionChanged (
 {
   QTreeView::selectionChanged(selected, deselected);
   smtk::model::EntityRefs selentityrefs;
+  smtk::model::DescriptivePhrases selproperties;
   smtk::mesh::MeshSets selmeshes;
   this->currentSelectionByMask(selentityrefs,
     CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY | INSTANCE_ENTITY,
-    false, &selmeshes);
+    selproperties, false, &selmeshes);
 
-  emit this->meshesSelected(selmeshes);
-  emit this->entitiesSelected(selentityrefs);
+  emit this->selectionChanged(selentityrefs, selmeshes, selproperties);
 }
 
 //-----------------------------------------------------------------------------
@@ -393,7 +394,8 @@ void qtModelView::newIndexAdded(const QModelIndex & newidx)
 
 //----------------------------------------------------------------------------
 void qtModelView::recursiveSelect (const smtk::model::DescriptivePhrasePtr& dPhrase,
-    smtk::model::EntityRefs& selentityrefs, BitFlags entityFlags, bool exactMatch,
+    smtk::model::EntityRefs& selentityrefs, BitFlags entityFlags,
+    smtk::model::DescriptivePhrases& selproperties, bool exactMatch,
     smtk::mesh::MeshSets* selmeshes)
 {
   if(dPhrase)
@@ -411,15 +413,23 @@ void qtModelView::recursiveSelect (const smtk::model::DescriptivePhrasePtr& dPhr
         (!exactMatch && masked) ||
         (exactMatch && masked == entityFlags))
         {
-        selentityrefs.insert(dPhrase->relatedEntity());
+        // if this is property value phrase, add it to the property phrase list
+        if (dPhrase->isPropertyValueType())
+          {
+          selproperties.push_back(dPhrase);
+          }
+        else // add to the entity list
+          {
+          selentityrefs.insert(dPhrase->relatedEntity());
+          }
         }
       }
     smtk::model::DescriptivePhrases sub = dPhrase->subphrases();
     for (smtk::model::DescriptivePhrases::iterator it = sub.begin();
       it != sub.end(); ++it)
       {
-      this->recursiveSelect(*it, selentityrefs, entityFlags, exactMatch,
-                            selmeshes);
+      this->recursiveSelect(*it, selentityrefs, entityFlags, selproperties,
+                            exactMatch, selmeshes);
       }
     }
 }
@@ -479,6 +489,7 @@ void qtModelView::owningEntitiesByMask (
 //----------------------------------------------------------------------------
 void qtModelView::currentSelectionByMask (
     smtk::model::EntityRefs& selentityrefs, const BitFlags& entityFlags,
+    smtk::model::DescriptivePhrases& selproperties,
     bool searchUp, smtk::mesh::MeshSets* selmeshes)
 {
   smtk::extension::QEntityItemModel* qmodel = this->getModel();
@@ -493,7 +504,7 @@ void qtModelView::currentSelectionByMask (
         selentityrefs, entityFlags);      
     else
       this->recursiveSelect(qmodel->getItem(sel),
-        selentityrefs, entityFlags, false, selmeshes);
+        selentityrefs, entityFlags, selproperties, false, selmeshes);
     }
 }
 
@@ -501,6 +512,7 @@ void qtModelView::currentSelectionByMask (
 void qtModelView::selectItems(
   const smtk::common::UUIDs& selEntities,
   const smtk::mesh::MeshSets& selMeshes,
+  const std::map<std::string, smtk::common::UUIDs>& property2Entities,
   bool blocksignal)
 {
   smtk::extension::QEntityItemModel* qmodel =
@@ -509,7 +521,7 @@ void qtModelView::selectItems(
   // Now recursively check which model indices should be selected:
   QItemSelection selItems;
   this->selectionHelper(qmodel, this->rootIndex(),
-                        selEntities, selMeshes, selItems);
+                        selEntities, selMeshes, property2Entities, selItems);
   this->blockSignals(blocksignal);
   // If we have any items selected, show them
   if(selItems.count())
@@ -528,16 +540,28 @@ void qtModelView::selectItems(
 void qtModelView::selectEntityItems(const smtk::common::UUIDs& selEntities,
                                  bool blocksignal)
 {
-  this->selectItems(selEntities, smtk::mesh::MeshSets(), blocksignal);
+  this->selectItems(selEntities, smtk::mesh::MeshSets(),
+                    std::map<std::string, smtk::common::UUIDs>(), blocksignal);
 }
 
 //----------------------------------------------------------------------------
 void qtModelView::selectMeshItems(const smtk::mesh::MeshSets& selMeshes,
     bool blocksignal)
 {
-    this->selectItems(smtk::common::UUIDs(), selMeshes, blocksignal);
+    this->selectItems(smtk::common::UUIDs(), selMeshes,
+                      std::map<std::string, smtk::common::UUIDs>(), blocksignal);
 }
 
+//----------------------------------------------------------------------------
+void qtModelView::selectPropertyItems(
+  const std::map<std::string, smtk::common::UUIDs>& property2Entities,
+  bool blocksignal)
+{
+    this->selectItems(smtk::common::UUIDs(),
+                      smtk::mesh::MeshSets(), property2Entities, blocksignal);
+}
+
+//----------------------------------------------------------------------------
 void qtModelView::expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx)
 {
   if(0)
@@ -562,23 +586,45 @@ void qtModelView::selectionHelper(
   const QModelIndex& parentIdx,
   const smtk::common::UUIDs& selEntities,
   const smtk::mesh::MeshSets& selMeshes,
+  const std::map<std::string, smtk::common::UUIDs>& property2Entities,
   QItemSelection& selItems)
 {
   // For all the children of this index, see if
   // each child should be selected and then queue its children.
   for (int row=0; row < qmodel->rowCount(parentIdx); ++row)
     {
+    bool itemfound = false;
     QModelIndex idx(qmodel->index(row, 0, parentIdx));
     DescriptivePhrasePtr dPhrase = qmodel->getItem(idx);
-    if (dPhrase &&
-        (selEntities.find(dPhrase->relatedEntityId()) != selEntities.end() ||
-         selMeshes.find(dPhrase->relatedMesh()) != selMeshes.end()))
+    if (dPhrase)
       {
-      this->expandToRoot(qmodel, parentIdx);
-      QItemSelectionRange sr(idx);
-      selItems.append(sr);
+      if(dPhrase->isPropertyValueType())
+        {
+        // if the property is in the selected property list, and the related entity also match,
+        // then select the property tree entry
+        std::string pName = dPhrase->title();
+        std::map<std::string, smtk::common::UUIDs>::const_iterator it =
+          property2Entities.find(pName);
+        if(it!= property2Entities.end())
+          {
+          itemfound = it->second.find(dPhrase->relatedEntityId()) != it->second.end();
+          }
+        }
+      else if (selEntities.find(dPhrase->relatedEntityId()) != selEntities.end() ||
+        selMeshes.find(dPhrase->relatedMesh()) != selMeshes.end())
+        {
+        itemfound = true;
+        }
+
+      if(itemfound)
+        {
+        this->expandToRoot(qmodel, parentIdx);
+        QItemSelectionRange sr(idx);
+        selItems.append(sr);
+        }
+      this->selectionHelper(qmodel, idx, selEntities, selMeshes,
+        property2Entities, selItems);
       }
-    this->selectionHelper(qmodel, idx, selEntities, selMeshes, selItems);
     }
 }
 
@@ -1108,17 +1154,18 @@ void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
   if(dp->phraseType() == FLOAT_PROPERTY_VALUE ||
      dp->phraseType() == INTEGER_PROPERTY_VALUE ||
      (dp->phraseType() == STRING_PROPERTY_VALUE &&
-     (!curRef.isValid() || !curRef.hasStringProperty("image_url"))))
+     (!curRef.isModel() || !curRef.hasStringProperty("image_url"))))
     {
     return;
     }
 
   smtk::model::EntityRefs selentityrefs;
   smtk::mesh::MeshSets selmeshes;
+  smtk::model::DescriptivePhrases selproperties;
   this->recursiveSelect(dp, selentityrefs,
     CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY |
     MODEL_ENTITY | INSTANCE_ENTITY | SESSION,
-    false, &selmeshes);
+    selproperties, false, &selmeshes);
   bool visible = true;
   if(dp->phraseType() == MESH_LIST || dp->phraseType() == MESH_SUMMARY)
     {
@@ -1174,6 +1221,23 @@ void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
     const IntegerList& prop(dp->relatedEntity().integerProperty("visible"));
     if(!prop.empty())
       visible = (prop[0] != 0);
+    }
+  // if only properties are selected, trafer its entity to selentities.
+  // This is the case where model's image_url property is selected, we want
+  // to pass it back to client for image visibility control.
+  if(selentityrefs.size() == 0 && selmeshes.size() == 0 &&
+     selproperties.size() > 0)
+    {
+    for (smtk::model::DescriptivePhrases::const_iterator pit = selproperties.begin();
+         pit != selproperties.end(); ++pit)
+      {
+      smtk::model::EntityRef curRef = (*pit)->relatedEntity();
+      if ((*pit)->phraseType() == STRING_PROPERTY_VALUE &&
+          curRef.isValid() && curRef.hasStringProperty("image_url"))
+        {
+        selentityrefs.insert(curRef);
+        }
+      }
     }
 
   int newVis = visible ? 0 : 1;
@@ -1271,7 +1335,7 @@ void qtModelView::changeEntityColor( const QModelIndex& idx)
       selmeshes.insert(meshkey);
       }
     }
-  else if(dp->relatedEntity().isValid())
+  else if(!dp->isPropertyValueType() && dp->relatedEntity().isValid())
     {
     selentityrefs.insert(dp->relatedEntity());
 

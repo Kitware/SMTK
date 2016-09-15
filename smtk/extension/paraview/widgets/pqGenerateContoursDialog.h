@@ -36,6 +36,7 @@ class SMTKPQWIDGETSEXT_EXPORT pqGenerateContoursDialog : public QDialog
   Q_OBJECT
 public:
   pqGenerateContoursDialog(pqPipelineSource*,
+    const bool& mapScalars2Colors,
     QWidget *parent = NULL, Qt::WindowFlags flags= 0);
   virtual ~pqGenerateContoursDialog();
 
@@ -63,6 +64,7 @@ protected:
   QDialog *MainDialog;
   pqRenderView *RenderView;
   pqPipelineSource *ImageSource;
+  pqPipelineSource *ImageMesh;
   pqDataRepresentation* ImageRepresentation;
 
   pqDataRepresentation *ContourRepresentation;

@@ -87,7 +87,7 @@ public:
   virtual bool isSubtitleMutable() const                       { return false; }
   virtual bool setSubtitle(const std::string& newSubtitle)     { (void)newSubtitle; return false; }
 
-  virtual DescriptivePhraseType phraseType()                   { return this->m_type; }
+  virtual DescriptivePhraseType phraseType() const             { return this->m_type; }
 
   virtual DescriptivePhrasePtr parent() const                  { return this->m_parent.lock(); }
   virtual DescriptivePhrases& subphrases();
@@ -118,6 +118,7 @@ public:
   unsigned int phraseId() const                                { return this->m_phraseId; }
 
   SubphraseGeneratorPtr findDelegate();
+  virtual bool isPropertyValueType() const;
 
 protected:
   DescriptivePhrase();

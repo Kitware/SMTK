@@ -31,6 +31,7 @@
 #include "vtkSMRepresentationProxy.h"
 #include "vtkSMProxyManager.h"
 #include "vtkSMPVRepresentationProxy.h"
+#include "vtkSMTransferFunctionProxy.h"
 
 #include <QDoubleValidator>
 #include <QFileInfo>
@@ -105,6 +106,7 @@ inline bool internal_COLOR_REP_BY_ARRAY(
 //-----------------------------------------------------------------------------
 pqGenerateContoursDialog::pqGenerateContoursDialog(
                                           pqPipelineSource* imagesource,
+                                          const bool& mapScalars2Colors,
                                           QWidget *parent,
                                           Qt::WindowFlags flags)
   : QDialog(parent, flags), ImageSource(imagesource)
@@ -154,6 +156,7 @@ pqGenerateContoursDialog::pqGenerateContoursDialog(
   if(imagesource)
     {
     pqObjectBuilder* builder = pqApplicationCore::instance()->getObjectBuilder();
+
     // setup the render widget
     this->RenderView = qobject_cast<pqRenderView*>(
       builder->createView(pqRenderView::renderViewType(),
@@ -191,50 +194,51 @@ pqGenerateContoursDialog::pqGenerateContoursDialog(
       imagesource->getOutputPort(0), this->RenderView);
     if(imagerep)
       {
-      internal_COLOR_REP_BY_ARRAY(
-          imagerep->getProxy(), "Elevation", vtkDataObject::POINT);
-
-      vtkSMProxy* lut = builder->createProxy("lookup_tables", "PVLookupTable",
-                                           imagerep->getServer(), "transfer_functions");
-
-      QList<QVariant> values;
-      values << -5000.0  << 0.0 << 0.0 << 0
-       << -1000.0  << 0.0 << 0.0 << 1.0
-       <<  -100.0  << 0.129412 << 0.345098 << 0.996078
-       <<   -50.0  << 0.0 << 0.501961 << 1.0
-       <<   -10.0  << 0.356863 << 0.678431 << 1.0
-       <<    -0.0  << 0.666667 << 1.0 << 1.0
-       <<     0.01 << 0.0 << 0.250998 << 0.0
-       <<    10.0 << 0.301961 << 0.482353 << 0.0
-       <<    25.0 << 0.501961 << 1.0 << 0.501961
-       <<   500.0 << 0.188224 << 1.0 << 0.705882
-       <<  1000.0 << 1.0 << 1.0 << 0.0
-       <<  2500.0 << 0.505882 << 0.211765 << 0.0
-       <<  3200.0 << 0.752941 << 0.752941 << 0.752941
-       <<  6000.0 << 1.0 << 1.0 << 1.0;
-      pqSMAdaptor::setMultipleElementProperty(lut->GetProperty("RGBPoints"), values);
-      vtkSMPropertyHelper(lut, "ColorSpace").Set(0);
-       vtkSMPropertyHelper(lut, "Discretize").Set(0);
-      lut->UpdateVTKObjects();
-      vtkSMPropertyHelper(imagerep->getProxy(), "LookupTable").Set(lut);
-      vtkSMPropertyHelper(imagerep->getProxy(), "SelectionVisibility").Set(0);
+      if(mapScalars2Colors)
+        {
+        // If there is an elevation field on the points then use it.
+        internal_COLOR_REP_BY_ARRAY(
+            imagerep->getProxy(), "Elevation", vtkDataObject::POINT);
+        vtkSMProxy* lut = builder->createProxy("lookup_tables", "PVLookupTable",
+                                             imagesource->getServer(), "transfer_functions");
+        vtkSMTransferFunctionProxy::ApplyPreset(lut, "CMB Elevation Map 2", false);
+        vtkSMPropertyHelper(lut, "ColorSpace").Set(0);
+         vtkSMPropertyHelper(lut, "Discretize").Set(0);
+        lut->UpdateVTKObjects();
+        vtkSMPropertyHelper(imagerep->getProxy(), "LookupTable").Set(lut);
+        vtkSMPropertyHelper(imagerep->getProxy(), "SelectionVisibility").Set(0);
+        }
+      else
+        {
+        vtkSMPropertyHelper(imagerep->getProxy(), "MapScalars").Set(0);
+        }
 
       imagerep->getProxy()->UpdateVTKObjects();
       imagerep->renderViewEventually();
       this->ImageRepresentation = imagerep;
       }
+
+    // create the image mesh, which will be used for generating contours
+    this->ImageMesh = builder->createFilter("polygon_filters", "StructedToMesh", imagesource);
+    vtkSMPropertyHelper(this->ImageMesh->getProxy(), "UseScalerForZ").Set(0);
+    this->ImageMesh->getProxy()->UpdateVTKObjects();
+    this->ImageMesh->getSourceProxy()->UpdatePipeline();
     }
 
   this->InternalWidget->generateContoursBox->setEnabled(true);
   this->RenderView->resetCamera();
   this->RenderView->forceRender();
  // see pqProxyInformationWidget
-  if(imagesource)
-    {
-    vtkPVDataInformation *imageInfo = imagesource->getOutputPort(0)->getDataInformation();
+  if(this->ImageMesh)
+    {  
     int extents[6];
-    imageInfo->GetExtent(extents);
-    vtkPVDataSetAttributesInformation *pointInfo = imageInfo->GetPointDataInformation();
+    // The extents info will only be available from the original image source used for image representation
+    imagesource->getOutputPort(0)->getDataInformation()->GetExtent(extents);
+    this->InternalWidget->imageDimensionsLabel->setText(
+      QString("Dimensions:   %1 x %2").arg(extents[1] - extents[0] + 1).arg(extents[3] - extents[2] + 1) );
+
+    vtkPVDataInformation *meshInfo = this->ImageMesh->getOutputPort(0)->getDataInformation();
+    vtkPVDataSetAttributesInformation *pointInfo = meshInfo->GetPointDataInformation();
     double range[2] = {0, 0};
     if (pointInfo->GetNumberOfArrays() > 0)
       {
@@ -245,8 +249,6 @@ pqGenerateContoursDialog::pqGenerateContoursDialog(
         }
       }
 
-    this->InternalWidget->imageDimensionsLabel->setText(
-      QString("Dimensions:   %1 x %2").arg(extents[1] - extents[0] + 1).arg(extents[3] - extents[2] + 1) );
     this->InternalWidget->imageScalarRangeLabel->setText(
       QString("Scalar Range:   %1, %2").arg(range[0]).arg(range[1]) );
 
@@ -284,6 +286,11 @@ pqGenerateContoursDialog::~pqGenerateContoursDialog()
     builder->destroy(this->ContourSource);
     this->ContourSource = 0;
     }
+  if (this->ImageMesh)
+    {
+    builder->destroy(this->ImageMesh);
+    this->ImageMesh = 0;
+    }
   if (this->ImageSource)
     {
     builder->destroy(this->ImageSource);
@@ -317,7 +324,7 @@ void pqGenerateContoursDialog::generateContours()
   if (!this->ContourSource)
     {
     this->ContourSource = builder->createFilter("filters",
-                                                "Contour", this->ImageSource);
+                                                "Contour", this->ImageMesh);
     }
   vtkSMPropertyHelper(this->ContourSource->getProxy(), "ContourValues").Set(
     this->ContourValue );
