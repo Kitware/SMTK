@@ -129,7 +129,7 @@ class TestDiscreteSession(smtk.testing.TestCase):
     import os
     self.resetTestFiles()
     self.addTestFile(['model', '2d', 'cmb', 'test2D.cmb'], 4, 0, self.validateTest2D)
-    self.addTestFile(['model', '3d', 'cmb', 'SimpleBox.cmb'], 1, 2)
+    self.addTestFile(['model', '3d', 'cmb', 'RectangleBox.cmb'], 1, 2)
     self.addTestFile(['model', '3d', 'cmb', 'smooth_surface.cmb'], 6, 0)
     self.addTestFile(['model', '3d', 'cmb', 'pmdc.cmb'], 7, 13, self.validatePMDC)
     self.addTestFile(['model', '3d', 'cmb', 'hybridModelOneCube.cmb'], 2, 1, self.validateHybrid)

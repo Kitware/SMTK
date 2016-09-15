@@ -89,7 +89,7 @@ class TestExportImport(smtk.testing.TestCase):
 
   def testImportExport(self):
     sequence = [ \
-        {'sessionType':'exodus', 'filename':smtk.testing.find_data(['exodus', 'pillbox.ncdf']), 'modelChecker':self.checkPillbox}, \
+        {'sessionType':'exodus', 'filename':smtk.testing.find_data(['model', '3d', 'netcdf', 'pillbox.ncdf']), 'modelChecker':self.checkPillbox}, \
     ]
     for test in sequence:
       self.checkExportImport(**test)
