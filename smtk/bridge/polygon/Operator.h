@@ -15,6 +15,13 @@
 #include "smtk/model/Operator.h"
 #include "smtk/model/Manager.h"
 
+/// A convenience macro for generating debug log messages.
+#define smtkOpDebug(x) \
+  if (this->m_debugLevel > 0) \
+    { \
+    smtkDebugMacro(this->log(), x ); \
+    }
+
 namespace smtk {
   namespace bridge {
     namespace polygon {

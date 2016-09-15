@@ -34,12 +34,6 @@
 
 #define MAX_WARNINGS 50
 
-#define smtkOpDebug(x) \
-  if (this->m_debugLevel > 0) \
-    { \
-    smtkDebugMacro(this->log(), x ); \
-    }
-
 namespace smtk {
   namespace bridge {
     namespace polygon {

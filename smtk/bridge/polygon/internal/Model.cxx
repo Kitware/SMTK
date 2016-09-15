@@ -1089,10 +1089,17 @@ bool pmodel::tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn, smt
     {
     return didChange;
     }
-  bool vertexTweaked = (vv->point() == vertPosn);
-  if (vertexTweaked)
+  didChange = (vv->point() != vertPosn);
+  /*
+  smtkDebugMacro(this->session()->log(),
+    "  Vert from " << vv->point().x() << " " << vv->point().y() <<
+    " to " << vertPosn.x() << " " << vertPosn.y() << "\n" <<
+    "  Did tweak? " << (didChange ? "Y" : "N") <<
+    );
+    */
+  if (!didChange)
     {
-    didChange = true;
+    return didChange;
     }
 
   // Erase old reverse lookup, update vertex, and add new reverse lookup:
@@ -1104,22 +1111,19 @@ bool pmodel::tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn, smt
   for (eit = vv->edgesBegin(); eit != vv->edgesEnd(); ++eit)
     {
     smtk::model::Edge edgeRec(vertRec.manager(), eit->edgeId());
-    if (vertexTweaked)
-      { // Only update edges if the endpoint changed.
-      PointSeq::iterator pit;
-      edge::Ptr ee = this->session()->findStorage<edge>(eit->edgeId());
-      if (eit->isEdgeOutgoing())
-        { // Update the first point along the edge
-        pit = ee->pointsBegin();
-        }
-      else
-        { // Update the last point along the edge
-        pit = (++ee->pointsRBegin()).base();
-        }
-      *pit = vertPosn;
-      this->addEdgeTessellation(edgeRec, ee);
-      modifiedEdgesAndFaces.insert(edgeRec);
+    PointSeq::iterator pit;
+    edge::Ptr ee = this->session()->findStorage<edge>(eit->edgeId());
+    if (eit->isEdgeOutgoing())
+      { // Update the first point along the edge
+      pit = ee->pointsBegin();
       }
+    else
+      { // Update the last point along the edge
+      pit = (++ee->pointsRBegin()).base();
+      }
+    *pit = vertPosn;
+    this->addEdgeTessellation(edgeRec, ee);
+    modifiedEdgesAndFaces.insert(edgeRec);
 
     // If any faces are attached to the vertex, they must be retessellated.
     smtk::model::Faces facesOnEdge = edgeRec.faces();
