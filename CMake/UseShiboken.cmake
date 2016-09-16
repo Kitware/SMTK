@@ -305,8 +305,10 @@ function(sbk_wrap_library NAME)
   # Avoid generating warnings from generated code.
   if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR
       CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    target_compile_options(${_pyname} PRIVATE 
+    target_compile_options(${_pyname} PRIVATE
       -Wno-cast-qual
+      -Wno-delete-non-virtual-dtor
+      -Wno-deprecated-declarations
       -Wno-missing-field-initializers
       -Wno-unused-function
       -Wno-unused-parameter
