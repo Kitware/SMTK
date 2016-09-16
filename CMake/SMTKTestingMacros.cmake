@@ -62,6 +62,7 @@ function(smtk_unit_tests)
         PRIVATE
         ${CMAKE_CURRENT_BINARY_DIR}
         ${MOAB_INCLUDE_DIRS}
+        ${VTK_INCLUDE_DIRS}
         )
 
     if(have_testing_data)
