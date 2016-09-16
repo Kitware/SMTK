@@ -165,6 +165,8 @@ bool pqPolygonArc::editEdge(vtkSMNewWidgetRepresentationProxy *widgetProxy,
 bool pqPolygonArc::updateArc(vtkSMNewWidgetRepresentationProxy *widget,
                             vtkIdTypeArray *newlyCreatedArcIds)
 {
+  (void)widget;
+  (void)newlyCreatedArcIds;
 /*
   if (this->ArcId == -1)
     {
@@ -207,6 +209,7 @@ bool pqPolygonArc::updateArc(vtkSMNewWidgetRepresentationProxy *widget,
 //-----------------------------------------------------------------------------
 vtkIdType pqPolygonArc::autoConnect(const vtkIdType& secondArcId)
 {
+  (void)secondArcId;
 /*
   vtkNew<vtkCMBArcAutoConnectClientOperator> autoConnectOp;
   bool valid = autoConnectOp->Operate(this->ArcId,secondArcId);
@@ -376,6 +379,7 @@ int pqPolygonArc::getClosedLoop()
 //-----------------------------------------------------------------------------
 void pqPolygonArc::inheritPolygonRelationships(pqPolygonArc *parent)
 {
+  (void)parent;
 /*
   //make us have the same polygons
   this->PolygonsUsingArc = parent->PolygonsUsingArc;
@@ -428,6 +432,7 @@ void pqPolygonArc::getColor(double color[4]) const
 //-----------------------------------------------------------------------------
 void pqPolygonArc::setColor(double color[4], bool updateRep)
 {
+  (void)updateRep;
   for(int i=0; i<4; i++)
     {
     this->origColor[i] = color[i];

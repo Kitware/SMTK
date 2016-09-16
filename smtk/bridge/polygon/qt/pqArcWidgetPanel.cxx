@@ -468,9 +468,6 @@ void pqArcWidgetPanel::updateWidgetRepresentation()
     return;
     }
 
-  pqApplicationCore* core = pqApplicationCore::instance();
-  pqObjectBuilder* builder = core->getObjectBuilder();
-
   //create an arc provider for this arc
   vtkSMProxy* smArcSource = vtkSMProxyManager::GetProxyManager()->NewProxy(
     "polygon_operators", "PolygonArcProvider");

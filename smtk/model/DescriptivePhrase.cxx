@@ -118,6 +118,7 @@ int DescriptivePhrase::argFindChild(const smtk::mesh::CollectionPtr& child) cons
 int DescriptivePhrase::argFindChild(const std::string& propName,
                                     smtk::model::PropertyType propType) const
 {
+  (void)propType;
   int i = 0;
   DescriptivePhrases::const_iterator it;
   for (it = this->m_subphrases.begin(); it != this->m_subphrases.end(); ++it, ++i)

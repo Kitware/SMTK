@@ -152,9 +152,9 @@ static void MarkExodusMeshWithChildren(
     {
     std::ostringstream autoName;
     autoName << EntityTypeNameString(childType) << " " << i;
-    const char* name = data->GetMetaData(i)->Get(vtkCompositeDataSet::NAME());
+    const char* name2 = data->GetMetaData(i)->Get(vtkCompositeDataSet::NAME());
     int pedigree = rdr->GetObjectId(rdrIdType, i);
-    MarkMeshInfo(data->GetBlock(i), dim, name && name[0] ? name : autoName.str().c_str(), childType, pedigree);
+    MarkMeshInfo(data->GetBlock(i), dim, name2 && name2[0] ? name2 : autoName.str().c_str(), childType, pedigree);
     }
 }
 
@@ -167,8 +167,8 @@ static void MarkSLACMeshWithChildren(
     {
     std::ostringstream autoName;
     autoName << EntityTypeNameString(childType) << " " << i;
-    const char* name = data->GetMetaData(i)->Get(vtkCompositeDataSet::NAME());
-    MarkMeshInfo(data->GetBlock(i), dim, name && name[0] ? name : autoName.str().c_str(), childType, i);
+    const char* name2 = data->GetMetaData(i)->Get(vtkCompositeDataSet::NAME());
+    MarkMeshInfo(data->GetBlock(i), dim, name2 && name2[0] ? name2 : autoName.str().c_str(), childType, i);
     }
 }
 

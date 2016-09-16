@@ -175,7 +175,7 @@ void qtModelView::keyPressEvent(QKeyEvent* keyEvent)
             mapGroup2Ents.remove(grp);
             remGroups.push_back(grp);
             grpModels[grpModel].push_back(grp);
-            modelSessions[grpModel] = sref;    
+            modelSessions[grpModel] = sref;
             }
           }
         }
@@ -191,7 +191,7 @@ void qtModelView::keyPressEvent(QKeyEvent* keyEvent)
             {
             mapGroup2Ents[grp].insert(dPhrase->relatedEntity());
             grpModels[grpModel].push_back(grp);
-            modelSessions[grpModel] = sref;    
+            modelSessions[grpModel] = sref;
             }
           }
         }
@@ -259,7 +259,7 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
   if(!brOp || !brOp->specification())
     {
     std::cout << "No entity group operator to handle the drop!\n";
-    return;  
+    return;
     }
 
   smtk::extension::QEntityItemModel* qmodel = this->getModel();
@@ -310,7 +310,7 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
     if(!modelItem || !optypeItem || !grpItem || !addItem)
       {
       std::cerr << "The entity group operator's specification is missing items!\n";
-      return;  
+      return;
       }
 
     modelItem->setValue(modelEnt);
@@ -501,7 +501,7 @@ void qtModelView::currentSelectionByMask (
     {
     if(searchUp)
       this->owningEntitiesByMask(qmodel->getItem(sel),
-        selentityrefs, entityFlags);      
+        selentityrefs, entityFlags);
     else
       this->recursiveSelect(qmodel->getItem(sel),
         selentityrefs, entityFlags, selproperties, false, selmeshes);
@@ -650,7 +650,7 @@ void qtModelView::removeEntityGroup(
   if(!brOp || !brOp->specification())
     {
     std::cout << "No entity group operator to handle the key press!\n";
-    return;  
+    return;
     }
 
   // prepare the 'entity group' operation
@@ -665,7 +665,7 @@ void qtModelView::removeEntityGroup(
   if(!modelItem || !optypeItem || !grpItem)
     {
     std::cerr << "The entity group operator's specification is missing items!\n";
-    return;  
+    return;
     }
 
   modelItem->setValue(modelEnt);
@@ -692,7 +692,7 @@ void qtModelView::removeFromEntityGroup(
   if(!brOp || !brOp->specification())
     {
     std::cout << "No entity group operator to handle the key press!\n";
-    return;  
+    return;
     }
 
   // prepare the 'entity group' operation
@@ -710,7 +710,7 @@ void qtModelView::removeFromEntityGroup(
   if(!modelItem || !optypeItem || !grpItem || !remItem)
     {
     std::cerr << "The entity group operator's specification is missing items!\n";
-    return;  
+    return;
     }
 
   modelItem->setValue(modelEnt);
@@ -1000,7 +1000,7 @@ void qtModelView::initOperatorsDock(
     {
     scrollArea->ensureWidgetVisible(this->m_OperatorsWidget);
     }
-  // sizeHint() alone doesn't work, so force resize 
+  // sizeHint() alone doesn't work, so force resize
   this->m_OperatorsDock->resize(this->m_OperatorsWidget->sizeHint());
   this->m_OperatorsDock->updateGeometry();
 
@@ -1032,7 +1032,7 @@ bool qtModelView::requestOperation(
       {
       scrollArea->ensureWidgetVisible(this->m_OperatorsWidget);
       }
-    // sizeHint() alone doesn't work, so force resize 
+    // sizeHint() alone doesn't work, so force resize
     this->m_OperatorsDock->resize(this->m_OperatorsWidget->sizeHint());
     this->m_OperatorsDock->updateGeometry();
     }
@@ -1231,7 +1231,7 @@ void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
     for (smtk::model::DescriptivePhrases::const_iterator pit = selproperties.begin();
          pit != selproperties.end(); ++pit)
       {
-      smtk::model::EntityRef curRef = (*pit)->relatedEntity();
+      curRef = (*pit)->relatedEntity();
       if ((*pit)->phraseType() == STRING_PROPERTY_VALUE &&
           curRef.isValid() && curRef.hasStringProperty("image_url"))
         {
