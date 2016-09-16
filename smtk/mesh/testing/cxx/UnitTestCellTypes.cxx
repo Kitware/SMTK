@@ -13,7 +13,9 @@
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
-#if defined(__GNUC__) || defined(__clang__)
+#include "smtk/common/CompilerInformation.h"
+
+#if defined(SMTK_CLANG) || ( defined(__GNUC__) && ( __GNUC__ > 5 && __GNUC_MINOR__ > 0 ) )
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wtautological-compare"
 #endif
