@@ -55,7 +55,7 @@ class TestDiscreteCreateEdges(smtk.testing.TestCase):
   def setUp(self):
     import os, sys
     self.resetTestFiles()
-    self.addTestFile(['model', '3d', 'cmb', 'SimpleBox.cmb'], self.validateCreateEdges)
+    self.addTestFile(['model', '3d', 'cmb', 'simplebox.cmb'], self.validateCreateEdges)
 
     self.mgr = smtk.model.Manager.create()
     sess = self.mgr.createSession('discrete')
@@ -79,7 +79,7 @@ class TestDiscreteCreateEdges(smtk.testing.TestCase):
     SetVectorValue(btm.findAsModelEntity('model'), [mod,])
 
     res = btm.operate()
-    
+
     sys.stdout.flush()
 
     self.assertEqual(res.findInt('outcome').value(0), smtk.model.OPERATION_SUCCEEDED,
