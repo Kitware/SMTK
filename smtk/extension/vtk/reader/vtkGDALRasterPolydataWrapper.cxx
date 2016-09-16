@@ -32,9 +32,25 @@
 #include <vtkPolyData.h>
 #include <vtkStringArray.h>
 
+// GDAL's configure defines LT_OBJDIR without checking if it is already set. To
+// circumvent the associated warning, we cache the current value of LT_OBJDIR
+// and undefine LT_OBJDIR prior to including GDAL headers. Once their included,
+// we reset LT_OBJDIR to its original value.
+#ifdef LT_OBJDIR
+#define LT_OBJDIR_TMP LT_OBJDIR
+#undef LT_OBJDIR
+#endif
+
 // GDAL includes
 #include <gdal_priv.h>
 #include <ogr_spatialref.h>
+
+#if defined(LT_OBJDIR_TMP) && defined(LT_OBJDIR)
+#undef LT_OBJDIR
+#define LT_OBJDIR LT_OBJDIR_TMP
+#undef LT_OBJDIR_TMP
+#endif
+
 
 // C/C++ includes
 #include <cassert>
@@ -218,7 +234,7 @@ int vtkGDALRasterPolydataWrapper::RequestData(vtkInformation* vtkNotUsed(request
           }
         }
       }
-    
+
     }
 
   vtkInformation* outInfo = outputVector->GetInformationObject(0);
@@ -287,7 +303,7 @@ int vtkGDALRasterPolydataWrapper
     this->GetExecutive()->SetOutputData(0, output);
     output->Delete();
     }
-  
+
   return 1;
 }
 
