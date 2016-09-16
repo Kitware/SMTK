@@ -59,6 +59,7 @@ target_link_libraries(unitEntity smtkCore smtkCoreModelTesting)
 add_test(NAME unitEntity COMMAND unitEntity)
 
 add_executable(unitExportMeshOperator unitExportMeshOperator.cxx)
+target_compile_definitions(unitExportMeshOperator PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
 target_link_libraries(unitExportMeshOperator smtkCore smtkCoreModelTesting
   ${Boost_LIBRARIES})
 add_test(NAME unitExportMeshOperator
