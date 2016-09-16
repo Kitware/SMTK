@@ -199,7 +199,7 @@ void qtExtractContoursView::updateAttributeData()
   // to show all operators (attributes), and a panel underneath to edit current
   // selected operator.
   std::string defName;
-  for(int ci = 0; ci < comp.numberOfChildren(); ++ci)
+  for(std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
     {
     smtk::common::View::Component &attComp = comp.child(ci);
     if (attComp.name() != "Att")
