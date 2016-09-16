@@ -92,7 +92,8 @@ public:
   int GetNodeModifiedFlags(int n);
 
   // Description:
-  // Controls whether the contour widget can be moved to the edit mode
+  // Controls whether the contour widget can be moved to the edit mode.
+  // Default is 1.
   vtkSetMacro( CanEdit, int );
   vtkGetMacro( CanEdit, int );
   vtkBooleanMacro( CanEdit, int );

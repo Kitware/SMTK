@@ -439,6 +439,10 @@ void pqArcWidgetPanel::modifyArc()
     //pass the info from the arc into the widget proxy
     this->updateWidgetRepresentation();
 
+    vtkSMProxy* repProxy = this->ArcWidget->getWidgetProxy()->GetRepresentationProxy();
+    vtkSMPropertyHelper(repProxy, "CanEdit").Set(0);
+    repProxy->UpdateVTKObjects();
+
     this->ArcWidget->checkContourLoopClosed();
     this->ArcWidget->ModifyMode();
     this->ArcWidget->checkCanBeEdited();
