@@ -149,21 +149,6 @@ void verify_load_onlyDirichlet()
 }
 
 //----------------------------------------------------------------------------
-void verify_load_onlyDomain()
-{
-  std::string file_path(data_root);
-  file_path += "/mesh/3d/64bricks_12ktet.h5m";
-
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyDomain(file_path, manager);
-  test( c->isValid(), "collection should be valid");
-
-  std::size_t numMeshes = c->numberOfMeshes();
-  std::cout << "number of domain meshes in 64bricks_12ktet is: " << numMeshes << std::endl;
-  test( numMeshes == 800, "dataset once loaded should have 800 meshes");
-}
-
-//----------------------------------------------------------------------------
 void verify_load_bad_onlyDomain()
 {
   std::cout << "verify_load_bad_onlyDomain" << std::endl;

@@ -554,7 +554,7 @@ int UnitTestExtractTessellation(int, char** const)
   verify_extract_all_to_vtk(c);
   verify_extract_only_connectivity_to_vtk(c);
 
-  // verify_extract_volume_meshes_by_global_points_to_vtk(c);
+  verify_extract_volume_meshes_by_global_points_to_vtk(c);
 
   return 0;
 }
