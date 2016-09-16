@@ -49,7 +49,7 @@ if(SMTK_DATA_DIR)
     vtkTestingRendering
     ${Boost_LIBRARIES}
   )
-  target_compile_definitions(smtkModelfrom2dmTest PRIVATE "SMTK_DATA_DIR=\"${SMTK_DATA_DIR}\"")
+  target_compile_definitions(smtkModelfrom2dmTest PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
   add_test(
     NAME discreteSmtkModelfrom2dmTest
     COMMAND

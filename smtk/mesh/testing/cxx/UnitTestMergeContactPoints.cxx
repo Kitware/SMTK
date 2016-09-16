@@ -36,7 +36,7 @@ namespace
 
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
-std::string write_root = data_root + "/tmp";
+std::string write_root = SMTK_SCRATCH_DIR;
 
 void cleanup( const std::string& file_path )
 {
