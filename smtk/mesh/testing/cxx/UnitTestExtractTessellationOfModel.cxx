@@ -82,7 +82,8 @@ void forCell(const smtk::mesh::Handle& cellId,
   //verify the points ids are mapped properly
   for(int i=0; i < numPts; ++i)
     {
-    test( this->m_conn[offset+ i] == this->m_points.find(this->pointIds()[i] ) );
+    test( static_cast<std::size_t>(this->m_conn[offset+ i]) ==
+          this->m_points.find(this->pointIds()[i] ) );
     }
 
   this->m_currentIndex++;
@@ -177,9 +178,10 @@ void verify_alloc_lengths_entityref(const smtk::model::EntityRef& eRef,
   test(numberOfCells != -1);
   test(numberOfPoints != -1);
 
-  test(connectivityLength == mesh.pointConnectivity().size() );
-  test(numberOfCells == mesh.cells().size() );
-  test(numberOfPoints == mesh.points().size() );
+  test(static_cast<std::size_t>(connectivityLength) ==
+       mesh.pointConnectivity().size() );
+  test(static_cast<std::size_t>(numberOfCells) == mesh.cells().size() );
+  test(static_cast<std::size_t>(numberOfPoints) == mesh.points().size() );
 
 }
 
