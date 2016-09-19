@@ -10,7 +10,7 @@ foreach (test ${smtkVTKExtPythonTests})
   add_test(${test}Py ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py)
   set_tests_properties(${test}Py
     PROPERTIES
-      ENVIRONMENT "PYTHONPATH=${VTKPY_DIR}${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}"
+      ENVIRONMENT "${SMTK_TEST_LIB_ENV};${SMTK_PYTHONPATH}"
   )
 endforeach()
 

@@ -14,7 +14,7 @@ foreach (test ${smtkCGMSessionPythonTests})
   add_test(${test}Py ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py)
   set_tests_properties(${test}Py
     PROPERTIES
-    ENVIRONMENT "PYTHONPATH=${VTKPY_DIR}${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}"
+      ENVIRONMENT "${SMTK_TEST_LIB_ENV};${SMTK_PYTHONPATH}"
   )
 endforeach()
 
@@ -26,7 +26,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
              ${SMTK_DATA_DIR})
     set_tests_properties(${test}Py
       PROPERTIES
-        ENVIRONMENT "PYTHONPATH=${VTKPY_DIR}${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}"
+        ENVIRONMENT "${SMTK_TEST_LIB_ENV};${SMTK_PYTHONPATH}"
     )
   endforeach()
 endif()
