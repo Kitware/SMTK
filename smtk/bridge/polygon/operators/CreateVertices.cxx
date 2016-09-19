@@ -32,15 +32,15 @@ namespace smtk {
 smtk::model::OperatorResult CreateVertices::operateInternal()
 {
   smtk::attribute::GroupItem::Ptr pointsInfo;
-  smtk::attribute::IntItem::Ptr coordinatesItem = this->findInt("pointGeometry");
+  smtk::attribute::IntItem::Ptr coordinatesItem = this->findInt("point dimension");
   int numCoordsPerPt = coordinatesItem->value();
   if (numCoordsPerPt == 2)
     {
-    pointsInfo = this->findGroup("2DPoints");
+    pointsInfo = this->findGroup("2d points");
     }
   else
     {
-    pointsInfo = this->findGroup("3DPoints");
+    pointsInfo = this->findGroup("3d points");
     }
   smtk::attribute::ModelEntityItem::Ptr modelItem = this->specification()->associations();
 

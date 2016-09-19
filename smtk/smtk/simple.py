@@ -500,24 +500,19 @@ def CreateVertices(pt, model, **kwargs):
   # Fall back to "create vertex" if needed:
   crv = sref.op('create vertices')
   if not crv:
-    return [CreateVertex(pt[i]) for i in range(len(pt))]
+      return [CreateVertex(pt[i]) for i in range(numPts)]
   # OK, we have create vertices.
   # Determine the maximum number of coordinates per point
-  numCoordsPerPoint = max([len(pt[i]) for i in range(len(pt))])
-  tmp = min([len(pt[i]) for i in range(len(pt))])
-  x = crv.findAsDouble('points')
-  c = crv.findAsInt('coordinates')
+  numPts = len(pt)
   crv.associateEntity(model)
-  if c:
-    c.setValue(0, numCoordsPerPoint)
-  if tmp != numCoordsPerPoint:
-    ptflat = []
-    for p in pt:
-      ptflat.append(p + [0,]*(numCoordsPerPoint - len(p)))
-    ptflat = list(itertools.chain(*ptflat))
-  else:
-    ptflat = list(itertools.chain(*pt))
-  SetVectorValue(x, ptflat)
+  numCoordsPerPoint = max([len(pt[i]) for i in range(numPts)])
+  pgi = crv.findAsInt('point dimension')
+  pgi.setDiscreteIndex(0 if numCoordsPerPoint == 2 else 1)
+  pgr = crv.findAsGroup('2d points' if numCoordsPerPoint == 2 else '3d points')
+  pgr.setNumberOfGroups(numPts)
+  for ix in range(numPts):
+      xx = smtk.attribute.to_concrete(pgr.item(ix,0))
+      SetVectorValue(xx, pt[ix][0:numCoordsPerPoint] + [0,]*(numCoordsPerPoint - len(pt[ix])))
   res = crv.operate()
   SetLastResult(res)
   PrintResultLog(res)
