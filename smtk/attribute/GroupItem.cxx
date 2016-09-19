@@ -71,7 +71,7 @@ bool GroupItem::isValid() const
     {
     for (auto it1 = (*it).begin(); it1 != (*it).end(); ++it1)
       {
-      if (!(*it1)->isValid())
+      if (!*it1 || !(*it1)->isValid())
         {
         return false;
         }
