@@ -29,7 +29,7 @@ void Region::merge(const Region* other)
     {
     return;
     }
-  if (this->m_seedFragment == -1)
+  if (this->m_seedFragment == static_cast<FragmentId>(-1))
     {
     this->m_seedFragment = other->m_seedFragment;
     this->m_seedSense = other->m_seedSense;
