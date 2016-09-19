@@ -121,8 +121,8 @@ class TestPolygonCreation(smtk.testing.TestCase):
     smtk.io.ImportJSON.ofLog(logStr, log)
     print log.convertToString()
     self.assertEqual(
-        log.numberOfRecords(), 3,
-        'Expected 3 warnings due to invalid offsets, got\n' + log.convertToString())
+        log.numberOfRecords(), 4,
+        'Expected 4 messages due to 3 invalid offsets, got\n' + log.convertToString())
     #print elist
 
     # Test creation of periodic edge with no model vertices.
