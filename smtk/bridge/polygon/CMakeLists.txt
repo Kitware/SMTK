@@ -97,6 +97,7 @@ if(SMTK_ENABLE_VTK_SUPPORT)
   list(APPEND import_vtk_depends
     vtkCommonCore
     vtkCommonDataModel
+    vtkFiltersGeometry
     vtkInteractionStyle
     vtkIOParallel
     vtkRenderingCore
