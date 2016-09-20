@@ -298,6 +298,10 @@ void verify_writing_of_single_collection_to_json()
   c->meshes( smtk::mesh::Domain(444) ).setNeumann( smtk::mesh::Neumann(3) );
   c->meshes( smtk::mesh::Domain(446) ).setNeumann( smtk::mesh::Neumann(2) );
 
+  // By default, the writeLocation is set to readLocation, and we don't want
+  // this test to write to the input file, so set writeLocation to empty 
+  c->writeLocation(std::string());
+  test( (c->writeLocation() == std::string()) );
   cJSON* top = cJSON_CreateObject();
   const bool exportGood = smtk::io::ExportJSON::forSingleCollection(top, c);
 
@@ -312,6 +316,7 @@ void verify_reading_of_single_collection_from_json()
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   cJSON* top = cJSON_CreateObject();
+  std::string write_path(write_root);
 
   {
   smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
@@ -327,6 +332,10 @@ void verify_reading_of_single_collection_from_json()
   c->meshes( smtk::mesh::Domain(444) ).setNeumann( smtk::mesh::Neumann(3) );
   c->meshes( smtk::mesh::Domain(446) ).setNeumann( smtk::mesh::Neumann(2) );
 
+  // By default, the writeLocation is set to readLocation, and we don't want
+  // this test to write to the input file, so set writeLocation to scratch space 
+  write_path += "/twoassm_output.h5m";
+  c->writeLocation(write_path);
   const bool exportGood = smtk::io::ExportJSON::forSingleCollection(top, c);
 
   test(exportGood == 1, "Expected the Export of forSingleCollection to pass");
@@ -364,6 +373,7 @@ void verify_reading_of_single_collection_from_json()
   test( nMeshes.size() == 2, "wrong number of neumann sets");
   }
 
+  cleanup( write_path );
 }
 
 //----------------------------------------------------------------------------
