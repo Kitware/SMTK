@@ -48,6 +48,7 @@ target_include_directories(${vtk-module}
 # backend became available.
 set(SMTK_VTK_TARGET_LIST)
 foreach(target
+  vtkFiltersExtraction
   vtkFiltersGeometry
   vtkInteractionStyle
   vtkRenderingContext2D

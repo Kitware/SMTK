@@ -17,6 +17,7 @@ vtk_module(vtkPolygonOperatorsExt
   DEPENDS
     vtkCommonDataModel
     vtkCommonExecutionModel
+    vtkInteractionStyle
     vtkInteractionWidgets
   PRIVATE_DEPENDS
     ${__dependencies}
