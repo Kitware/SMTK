@@ -8,7 +8,7 @@ if (SMTK_ENABLE_DISCRETE_SESSION)
   )
 endif()
 
-if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
+if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
   foreach (test ${smtkRemusExtPythonDataTests})
     add_test(${test}Py
              ${PYTHON_EXECUTABLE}
@@ -16,7 +16,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
              --data-dir=${SMTK_DATA_DIR})
     set_tests_properties(${test}Py
       PROPERTIES
-        ENVIRONMENT "PYTHONPATH=${VTKPY_DIR}${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}"
+        ENVIRONMENT "${SMTK_TEST_LIB_ENV};${SMTK_PYTHONPATH}"
     )
   endforeach()
 endif()

@@ -19,9 +19,9 @@ class IntegrationMultiSessionDescriptivePhrase(unittest.TestCase):
 
     def setUp(self):
         self.session_files = {
-            'cgm': ['cgm', 'pyramid.brep'],
-            'discrete': ['cmb', 'test2D.cmb'],
-            'exodus': ['exodus', 'disk_out_ref.ex2']
+            'cgm': ['model', '3d', 'solidmodel', 'occ', 'pyramid.brep'],
+            'discrete': ['model', '2d', 'cmb', 'test2D.cmb'],
+            'exodus': ['model', '3d', 'exodus', 'disk_out_ref.ex2']
         }
         for required in self.session_files.keys():
             if required not in smtk.model.Manager.sessionTypeNames():
@@ -37,11 +37,13 @@ class IntegrationMultiSessionDescriptivePhrase(unittest.TestCase):
 
             filename = os.path.join(*([smtk.testing.DATA_DIR,] + path))
             self.sessions[session_type]['entities'] = Read(filename)
+            print 'Session ', session_type, ' entities ', self.sessions[session_type]['entities']
         self.mgr.assignDefaultNames()
 
         baseline = (
             smtk.testing.DATA_DIR,
-            'baselines',
+            'baseline',
+            'smtk',
             'model',
             'integrationMultiSessionDescriptivePhrases.json')
 
@@ -52,28 +54,32 @@ class IntegrationMultiSessionDescriptivePhrase(unittest.TestCase):
         jsdata.close()
 
     def recursePhrase(self, phrase, depth):
-      record = '%s (%s)' % (phrase.title(), phrase.subtitle())
+        record = '{:1} ({:2})'.format(phrase.title(), phrase.subtitle())
+        if phrase.title() == 'url':
+            record = 'url ({:1})'.format(os.path.split(phrase.subtitle())[-1])
 
-      if depth > 3:
-          return [record,]
-      subs = [self.recursePhrase(x, depth + 1) for x in phrase.subphrases()]
-      return [record, subs]
+        if depth > 3:
+            return [record,]
+        subs = [self.recursePhrase(x, depth + 1) for x in phrase.subphrases()]
+        return [record, subs]
 
     def printPhrases(self, indent, top):
         for entry in top:
-            if type(entry) == str:
-              print indent + entry
+            if type(entry) == str or type(entry) == unicode:
+                print indent + entry
             else:
-              self.printPhrases(indent + '  ', entry)
+                self.printPhrases(indent + '  ', entry)
 
     def testPhrase(self):
         #sessions = self.mgr.findEntitiesOfType(smtk.model.SESSION, True)
         phrase = smtk.model.EntityListPhrase.create().setup(
             [x[1]['session_ref'] for x in self.sessions.items()])
         spg = smtk.model.SimpleModelSubphrases.create()
+        spg.setDirectLimit(-1)
         phrase.setDelegate(spg)
 
         allPhrases = self.recursePhrase(phrase, 0)
+        print allPhrases
         self.printPhrases('', allPhrases)
         self.assertEqual(allPhrases, self.correct, "Phrases mismatched.")
 

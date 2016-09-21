@@ -49,10 +49,7 @@ class qtFileItemInternals
 {
 public:
   qtFileItemInternals() : FileBrowser(NULL) {}
-  ~qtFileItemInternals()
-    {
-    delete this->FileBrowser;
-    }
+  ~qtFileItemInternals() {}
 
   bool IsDirectory;
   QFileDialog *FileBrowser;
@@ -114,6 +111,7 @@ void qtFileItem::enableFileBrowser(bool state)
 {
   if (!state)
     {
+    this->Internals->FileBrowser->setParent(NULL);
     delete this->Internals->FileBrowser;
     this->Internals->FileBrowser = NULL;
     }

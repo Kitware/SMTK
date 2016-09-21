@@ -860,56 +860,28 @@ void XmlV2StringWriter::processRefDef(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV2StringWriter::processDirectoryDef(pugi::xml_node &node,
-                                            attribute::DirectoryItemDefinitionPtr idef)
+void XmlV2StringWriter::processDirectoryDef(
+  pugi::xml_node &node,
+  attribute::DirectoryItemDefinitionPtr idef)
 {
-  node.append_attribute("NumberOfRequiredValues") = static_cast<unsigned int>(idef->numberOfRequiredValues());
-  if (idef->isExtensible())
-    {
-    node.append_attribute("Extensible").set_value("true");
-    if (idef->maxNumberOfValues())
-      {
-      node.append_attribute("MaxNumberOfValues") = static_cast<unsigned int>(idef->maxNumberOfValues());
-      }
-    }
-  if (idef->shouldExist())
-    {
-    node.append_attribute("ShouldExist").set_value(true);
-    }
-  if (idef->shouldBeRelative())
-    {
-    node.append_attribute("ShouldBeRelative").set_value(true);
-    }
-  if (idef->hasValueLabels())
-    {
-    xml_node lnode = node.append_child();
-    lnode.set_name("ComponentLabels");
-    if (idef->usingCommonLabel())
-      {
-      lnode.append_attribute("CommonLabel") = idef->valueLabel(0).c_str();
-      }
-    else
-      {
-      size_t i, n = idef->numberOfRequiredValues();
-      xml_node ln;
-      for (i = 0; i < n; i++)
-        {
-        ln = lnode.append_child();
-        ln.set_name("Label");
-        ln.set_value(idef->valueLabel(i).c_str());
-        }
-      }
-    }
-  if (idef->hasDefault())
-    {
-    xml_node defaultNode = node.append_child();
-    defaultNode.set_value(idef->defaultValue().c_str());
-    }
+  this->processFileSystemDef(node, idef);
 }
 //----------------------------------------------------------------------------
 void XmlV2StringWriter::processFileDef(pugi::xml_node &node,
                                        attribute::FileItemDefinitionPtr idef)
 {
+  this->processFileSystemDef(node, idef);
+  std::string fileFilters = idef->getFileFilters();
+  if (fileFilters != "")
+    {
+    node.append_attribute("FileFilters") = fileFilters.c_str();
+    }
+}
+//----------------------------------------------------------------------------
+void XmlV2StringWriter::processFileSystemDef(
+  pugi::xml_node &node,
+  attribute::FileSystemItemDefinitionPtr idef)
+{
   node.append_attribute("NumberOfRequiredValues") = static_cast<unsigned int>(idef->numberOfRequiredValues());
   if (idef->isExtensible())
     {
@@ -950,12 +922,8 @@ void XmlV2StringWriter::processFileDef(pugi::xml_node &node,
   if (idef->hasDefault())
     {
     xml_node defaultNode = node.append_child();
-    defaultNode.set_value(idef->defaultValue().c_str());
-    }
-  std::string fileFilters = idef->getFileFilters();
-  if (fileFilters != "")
-    {
-    node.append_attribute("FileFilters") = fileFilters.c_str();
+    defaultNode.set_name("DefaultValue");
+    defaultNode.text().set(idef->defaultValue().c_str());
     }
 }
 //----------------------------------------------------------------------------
@@ -1353,45 +1321,8 @@ void XmlV2StringWriter::processRefItem(pugi::xml_node &node,
 void XmlV2StringWriter::processDirectoryItem(pugi::xml_node &node,
                                              attribute::DirectoryItemPtr item)
 {
-  size_t i, n = item->numberOfValues();
-  std::size_t  numRequiredVals = item->numberOfRequiredValues();
-  if (!n)
-    {
-    return;
-    }
-
-  // If the item can have variable number of values then store how many
-  // values it has
-  if (!numRequiredVals)
-    {
-    node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
-    }
-
-  if (numRequiredVals == 1)
-    {
-    if (item->isSet())
-      {
-      node.text().set(item->value().c_str());
-      }
-    return;
-    }
-  xml_node val, values = node.append_child("Values");
-  for(i = 0; i < n; i++)
-    {
-    if (item->isSet(i))
-      {
-      val = values.append_child("Val");
-      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
-      val.text().set(item->value(i).c_str());
-      }
-    else
-      {
-      val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
-      }
-    }
+  this->processFileSystemItem(node, item);
 }
-
 //----------------------------------------------------------------------------
 void XmlV2StringWriter::processFileItem(pugi::xml_node &node,
                                         attribute::FileItemPtr item)
@@ -1408,6 +1339,13 @@ void XmlV2StringWriter::processFileItem(pugi::xml_node &node,
       }
     }
 
+  this->processFileSystemItem(node, item);
+}
+//----------------------------------------------------------------------------
+void XmlV2StringWriter::processFileSystemItem(
+  pugi::xml_node &node,
+  attribute::FileSystemItemPtr item)
+{
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   size_t i, n = item->numberOfValues();
   if (!n)

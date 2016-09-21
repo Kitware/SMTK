@@ -121,8 +121,8 @@ class TestPolygonCreation(smtk.testing.TestCase):
     smtk.io.ImportJSON.ofLog(logStr, log)
     print log.convertToString()
     self.assertEqual(
-        log.numberOfRecords(), 3,
-        'Expected 3 warnings due to invalid offsets, got\n' + log.convertToString())
+        log.numberOfRecords(), 4,
+        'Expected 4 messages due to 3 invalid offsets, got\n' + log.convertToString())
     #print elist
 
     # Test creation of periodic edge with no model vertices.
@@ -180,7 +180,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
       # Skip the image match if we don't have a baseline.
       # This allows the test to succeed even on systems without the test
       # data but requires a match on systems with the test data.
-      self.assertImageMatchIfFileExists(['baselines', 'polygon', 'creation.png'])
+      self.assertImageMatchIfFileExists(['baseline', 'smtk', 'polygon', 'creation.png'])
       self.interact()
 
     else:

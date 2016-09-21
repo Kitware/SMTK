@@ -3,7 +3,7 @@ if(SMTK_DATA_DIR)
   target_link_libraries(SessionTest smtkCore smtkDiscreteSession)
   add_test(
     NAME discreteSessionTest
-    COMMAND SessionTest ${SMTK_DATA_DIR}/cmb/test2D.cmb ${SMTK_DATA_DIR}/cmb/smooth_surface.cmb
+    COMMAND SessionTest ${SMTK_DATA_DIR}/model/2d/cmb/test2D.cmb ${SMTK_DATA_DIR}/model/3d/cmb/smooth_surface.cmb
   )
 
   add_executable(Import2dmTest import2dm.cxx)
@@ -18,8 +18,8 @@ if(SMTK_DATA_DIR)
     NAME discreteImport2dmTest
     COMMAND
       $<TARGET_FILE:Import2dmTest>
-      "${SMTK_DATA_DIR}/mesh/test2D.2dm"
-      -V "${SMTK_DATA_DIR}/baselines/discrete/import2dm.png"
+      "${SMTK_DATA_DIR}/mesh/2d/test2D.2dm"
+      -V "${SMTK_DATA_DIR}/baseline/smtk/discrete/import2dm.png"
       -T "${CMAKE_CURRENT_BINARY_DIR}"
   )
 
@@ -35,8 +35,8 @@ if(SMTK_DATA_DIR)
     NAME discreteEdgeOp2dmTest
     COMMAND
       $<TARGET_FILE:EdgeOp2dmTest>
-      "${SMTK_DATA_DIR}/mesh/test2D.2dm"
-      -V "${SMTK_DATA_DIR}/baselines/discrete/edgeOp2dm.png"
+      "${SMTK_DATA_DIR}/mesh/2d/test2D.2dm"
+      -V "${SMTK_DATA_DIR}/baseline/smtk/discrete/edgeOp2dm.png"
       -T "${CMAKE_CURRENT_BINARY_DIR}"
   )
 
@@ -49,13 +49,13 @@ if(SMTK_DATA_DIR)
     vtkTestingRendering
     ${Boost_LIBRARIES}
   )
-  target_compile_definitions(smtkModelfrom2dmTest PRIVATE "SMTK_DATA_DIR=\"${SMTK_DATA_DIR}\"")
+  target_compile_definitions(smtkModelfrom2dmTest PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
   add_test(
     NAME discreteSmtkModelfrom2dmTest
     COMMAND
       $<TARGET_FILE:smtkModelfrom2dmTest>
-      "${SMTK_DATA_DIR}/mesh/test2D.2dm"
-      -V "${SMTK_DATA_DIR}/baselines/discrete/smtkModelfrom2dm.png"
+      "${SMTK_DATA_DIR}/mesh/2d/test2D.2dm"
+      -V "${SMTK_DATA_DIR}/baseline/smtk/discrete/smtkModelfrom2dm.png"
       -T "${CMAKE_CURRENT_BINARY_DIR}"
   )
 

@@ -76,12 +76,12 @@ int vtkCMBModelSource::FillOutputPortInformation(
 }
 
 //-----------------------------------------------------------------------------
-unsigned long vtkCMBModelSource::GetMTime()
+vtkMTimeType vtkCMBModelSource::GetMTime()
 {
-  unsigned long mtime = this->Superclass::GetMTime();
+  vtkMTimeType mtime = this->Superclass::GetMTime();
   if (this->Source)
     {
-    unsigned long stime = this->Source->GetMTime();
+    vtkMTimeType stime = this->Source->GetMTime();
     if (stime > mtime)
       {
       mtime = stime;

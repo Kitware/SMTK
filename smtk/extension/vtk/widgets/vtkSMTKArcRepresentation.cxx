@@ -135,6 +135,17 @@ int vtkSMTKArcRepresentation::ToggleActiveNodeSelected()
 
 }
 
+//----------------------------------------------------------------------
+int vtkSMTKArcRepresentation::ActivateNode( double displayPos[2] )
+{
+  // if there is no nodes yet, nothing to activate.
+  if(this->GetNumberOfNodes() == 0)
+    {
+    return 0;
+    }
+
+  return this->vtkContourRepresentation::ActivateNode(displayPos);
+}
 
 //----------------------------------------------------------------------
 int vtkSMTKArcRepresentation::DeleteNthNode(int n)
@@ -329,7 +340,19 @@ void vtkSMTKArcRepresentation::UpdatePropertyMap(int index, int flags)
       it->second |= flags;
       }
     }
-  }
+}
+
+//-------------------------------------------------------------------------
+int vtkSMTKArcRepresentation::ComputeInteractionState(
+  int X, int Y, int modified)
+{
+  if(this->FocalPoint->GetNumberOfPoints() == 0)
+    {
+    return this->InteractionState;
+    }
+  return this->vtkOrientedGlyphContourRepresentation::
+         ComputeInteractionState(X, Y, modified);
+}
 
 //-----------------------------------------------------------------------------
 vtkPolyData* vtkSMTKArcRepresentation::GetContourRepresentationAsPolyData()
@@ -482,9 +505,9 @@ void vtkSMTKArcRepresentation::Initialize( vtkPolyData * pd )
       {
       this->LineInterpolator->GetSpan( i, arr.GetPointer(), this );
       int nNodes = arr->GetNumberOfTuples();
-      for (int i = 0; i < nNodes; i++)
+      for (int j = 0; j < nNodes; j++)
         {
-        arr->GetTypedTuple( i, indices );
+        arr->GetTypedTuple( j, indices );
         this->UpdateLine( indices[0], indices[1] );
         }
       }

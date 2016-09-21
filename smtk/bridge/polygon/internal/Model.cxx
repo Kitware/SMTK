@@ -280,6 +280,7 @@ bool pmodel::restoreModel(
 
   for (int i = 0; i < 3; ++i)
     {
+    this->m_origin[i] = origin[i];
     this->m_xAxis[i] = x_axis[i];
     this->m_yAxis[i] = y_axis[i];
     this->m_zAxis[i] = z_axis[i];
@@ -826,6 +827,18 @@ std::pair<Id,Id> pmodel::removeModelEdgeFromEndpoints(smtk::model::ManagerPtr mg
   return result;
 }
 
+/// Remove a reverse lookup (from coordinates to vertex ID) from the model's search structure.
+bool pmodel::removeVertexLookup(const Point& location, const Id& vid)
+{
+  PointToVertexId::const_iterator pit = this->m_vertices.find(location);
+  if (pit == this->m_vertices.end() || pit->second != vid)
+    {
+    return false;
+    }
+  this->m_vertices.erase(pit);
+  return true;
+}
+
 /**\brief Return the point closest to one of an edge's endpoints.
   *
   * Returns the point nearest but not at the tail end of the edge
@@ -891,6 +904,59 @@ void pmodel::pointsInLoopOrder(std::vector<Point>& pts, const smtk::model::Loop&
     }
 }
 
+template<typename T>
+void preparePointsForBoost(T& ppts, internal::Coord& denx, internal::Coord& deny, bool useExistingDenominators)
+{
+  // If we aren't given denx + deny, loop through ppts to find them:
+  if (!useExistingDenominators)
+    {
+    if (ppts.empty())
+      {
+      denx = 1;
+      deny = 1;
+      }
+    else
+      {
+      internal::Coord xblo, xbhi;
+      internal::Coord yblo, ybhi;
+      auto pit = ppts.begin();
+      xbhi = pit->x(); xblo = xbhi;
+      ybhi = pit->y(); yblo = ybhi;
+      for (++pit; pit != ppts.end(); ++pit)
+        {
+        if (xbhi < pit->x()) { xbhi = pit->x(); } else if (xblo > pit->x()) { xblo = pit->x(); }
+        if (ybhi < pit->y()) { ybhi = pit->y(); } else if (yblo > pit->y()) { yblo = pit->y(); }
+        }
+      internal::Point bdsLo = internal::Point(xblo, yblo);
+      internal::Point bdsHi = internal::Point(xbhi, ybhi);
+      internal::Coord dx = xbhi;
+      if (xblo < 0 && -xblo > dx)
+        {
+        dx = -xblo;
+        }
+      internal::Coord dy = ybhi;
+      if (yblo < 0 && -yblo > dy)
+        {
+        dy = -yblo;
+        }
+      double lx = dx > 0 ? (std::log(dx) / std::log(2.0)) : 1.0;
+      double ly = dy > 0 ? (std::log(dy) / std::log(2.0)) : 1.0;
+      denx = lx > 31 ? (1 << static_cast<int>(std::ceil(lx - 31))) : 1;
+      deny = ly > 31 ? (1 << static_cast<int>(std::ceil(ly - 31))) : 1;
+      }
+    }
+  bool denom = denx > 1 || deny > 1;
+  // If we need to truncate points, loop through them and do it:
+  if (denom)
+    {
+    for (auto fpit = ppts.begin(); fpit != ppts.end(); ++fpit)
+      {
+      fpit->x(fpit->x() / denx);
+      fpit->y(fpit->y() / deny);
+      }
+    }
+}
+
 void pmodel::addFaceTessellation(smtk::model::Face& faceRec)
 {
   smtk::model::Model model = faceRec.owningModel();
@@ -909,6 +975,9 @@ void pmodel::addFaceTessellation(smtk::model::Face& faceRec)
     int ll = 0;
     //std::cout << "  Loop " << lit->name() << "\n";
     this->pointsInLoopOrder(pp2[ll], *lit);
+    internal::Coord denx, deny;
+    preparePointsForBoost(pp2[ll], denx, deny, false);
+    bool denom = denx > 1 || deny > 1;
     pface.set(pp2[ll].rbegin(), pp2[ll].rend()); // boost likes its loops backwards
     poly::assign(polys, pface);
     ++ll;
@@ -916,6 +985,7 @@ void pmodel::addFaceTessellation(smtk::model::Face& faceRec)
       {
       //std::cout << "    Inner Loop " << ilit->name() << "\n";
       this->pointsInLoopOrder(pp2[ll], *ilit);
+      preparePointsForBoost(pp2[ll], denx, deny, true);
       poly::polygon_data<internal::Coord> loop;
       loop.set(pp2[ll].rbegin(), pp2[ll].rend());
       polys -= loop;
@@ -926,6 +996,7 @@ void pmodel::addFaceTessellation(smtk::model::Face& faceRec)
     polys.get_trapezoids(tess);
     std::vector<poly::polygon_data<internal::Coord> >::const_iterator pit;
     double smtkPt[3];
+    internal::Point ipt;
     for (pit = tess.begin(); pit != tess.end(); ++pit)
       {
       poly::polygon_data<internal::Coord>::iterator_type pcit;
@@ -933,18 +1004,21 @@ void pmodel::addFaceTessellation(smtk::model::Face& faceRec)
       std::vector<int> triConn;
       triConn.resize(4);
       triConn[0] = smtk::model::TESS_TRIANGLE;
-      this->liftPoint(*pcit, &smtkPt[0]);
+      ipt = !denom ? *pcit : internal::Point(pcit->x() * denx, pcit->y() * deny);
+      this->liftPoint(ipt, &smtkPt[0]);
       triConn[1] = smtkTess->second.addCoords(&smtkPt[0]);
       //std::cout << "  " << triConn[1] << "  " << smtkPt[0] << " " << smtkPt[1] << " " << smtkPt[2] << "\n";
       ++pcit;
-      this->liftPoint(*pcit, &smtkPt[0]);
+      ipt = !denom ? *pcit : internal::Point(pcit->x() * denx, pcit->y() * deny);
+      this->liftPoint(ipt, &smtkPt[0]);
       triConn[3] = smtkTess->second.addCoords(&smtkPt[0]);
       ++pcit;
       //std::cout << "  " << triConn[3] << "  " << smtkPt[0] << " " << smtkPt[1] << " " << smtkPt[2] << "\n";
       for (; pcit != poly::end_points(*pit); ++pcit)
         {
         triConn[2] = triConn[3];
-        this->liftPoint(*pcit, &smtkPt[0]);
+        ipt = !denom ? *pcit : internal::Point(pcit->x() * denx, pcit->y() * deny);
+        this->liftPoint(ipt, &smtkPt[0]);
         triConn[3] = smtkTess->second.addCoords(&smtkPt[0]);
         //std::cout << "  " << triConn[3] << "  " << smtkPt[0] << " " << smtkPt[1] << " " << smtkPt[2] << "\n";
         smtkTess->second.insertNextCell(triConn);
@@ -1015,10 +1089,17 @@ bool pmodel::tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn, smt
     {
     return didChange;
     }
-  bool vertexTweaked = (vv->point() == vertPosn);
-  if (vertexTweaked)
+  didChange = (vv->point() != vertPosn);
+  /*
+  smtkDebugMacro(this->session()->log(),
+    "  Vert from " << vv->point().x() << " " << vv->point().y() <<
+    " to " << vertPosn.x() << " " << vertPosn.y() << "\n" <<
+    "  Did tweak? " << (didChange ? "Y" : "N") <<
+    );
+    */
+  if (!didChange)
     {
-    didChange = true;
+    return didChange;
     }
 
   // Erase old reverse lookup, update vertex, and add new reverse lookup:
@@ -1030,22 +1111,19 @@ bool pmodel::tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn, smt
   for (eit = vv->edgesBegin(); eit != vv->edgesEnd(); ++eit)
     {
     smtk::model::Edge edgeRec(vertRec.manager(), eit->edgeId());
-    if (vertexTweaked)
-      { // Only update edges if the endpoint changed.
-      PointSeq::iterator pit;
-      edge::Ptr ee = this->session()->findStorage<edge>(eit->edgeId());
-      if (eit->isEdgeOutgoing())
-        { // Update the first point along the edge
-        pit = ee->pointsBegin();
-        }
-      else
-        { // Update the last point along the edge
-        pit = (++ee->pointsRBegin()).base();
-        }
-      *pit = vertPosn;
-      this->addEdgeTessellation(edgeRec, ee);
-      modifiedEdgesAndFaces.insert(edgeRec);
+    PointSeq::iterator pit;
+    edge::Ptr ee = this->session()->findStorage<edge>(eit->edgeId());
+    if (eit->isEdgeOutgoing())
+      { // Update the first point along the edge
+      pit = ee->pointsBegin();
       }
+    else
+      { // Update the last point along the edge
+      pit = (++ee->pointsRBegin()).base();
+      }
+    *pit = vertPosn;
+    this->addEdgeTessellation(edgeRec, ee);
+    modifiedEdgesAndFaces.insert(edgeRec);
 
     // If any faces are attached to the vertex, they must be retessellated.
     smtk::model::Faces facesOnEdge = edgeRec.faces();

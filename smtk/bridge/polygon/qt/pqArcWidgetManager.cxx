@@ -326,8 +326,6 @@ pqArcWidget* pqArcWidgetManager::createContourWidget(
   pqArcWidget *widget= new pqArcWidget(
     pointplacer, pointplacer, NULL);
 
-  vtkSMProxy* repProxy =
-    widget->getWidgetProxy()->GetRepresentationProxy();
   widget->setObjectName("smtkArcWidget");
 
   vtkSMPropertyHelper(pointplacer, "ProjectionNormal").Set(normal);
@@ -417,6 +415,11 @@ void pqArcWidgetManager::getDefaultArcPlane(
 {
   double focalPt[3], position[3], viewUp[3], viewDirection[3];
   double cameraDistance, parallelScale;
+  (void)parallelScale;
+  (void)viewUp;
+  (void)position;
+  (void)cameraDistance;
+  (void)focalPt;
 /*
   pqCMBCommonMainWindowCore::getViewCameraInfo(
     this->View, focalPt, position, viewDirection, cameraDistance,

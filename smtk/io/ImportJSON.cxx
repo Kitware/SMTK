@@ -32,8 +32,12 @@
 #include "smtk/io/Logger.h"
 #include "smtk/io/ImportMesh.h"
 
+#include "smtk/common/CompilerInformation.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
 #include "boost/system/error_code.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 #include "cJSON.h"
 

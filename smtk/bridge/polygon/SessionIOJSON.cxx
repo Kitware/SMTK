@@ -9,6 +9,8 @@
 //=========================================================================
 #include "smtk/bridge/polygon/SessionIOJSON.h"
 
+#include "smtk/common/CompilerInformation.h"
+
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/common/UUID.h"
@@ -22,7 +24,9 @@
 #include "smtk/bridge/polygon/internal/Model.h"
 #include "smtk/bridge/polygon/internal/Edge.h"
 
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 #include "cJSON.h"
 
@@ -104,6 +108,7 @@ int SessionIOJSON::importJSON(
       }
     }
 
+  std::set<smtk::model::Model> newModels;
   // Create internal data structures for polygon session if requested:
   cJSON* idata = cJSON_GetObjectItem(sessionRec, "internal");
   if (loadNativeModels && idata && idata->type == cJSON_Object)
@@ -126,7 +131,9 @@ int SessionIOJSON::importJSON(
       internal::EntityPtr eptr;
       if (etype == "model")
         {
-        internal::pmodel::Ptr mod = this->deserializeModel(entry, smtk::model::Model(mgr, uid));
+        smtk::model::Model newModel(mgr, uid);
+        newModels.insert(newModel);
+        internal::pmodel::Ptr mod = this->deserializeModel(entry, newModel);
         parentAddrMap[uid] = mod;
         mod->setSession(psession.get());
         eptr = mod;
@@ -191,6 +198,15 @@ int SessionIOJSON::importJSON(
     {
     mgr->setStringProperty(mit->first, "url", mit->second);
     }
+
+  // set the SessionRef for the newModels
+  smtk::model::SessionRef sess(mgr, psession->sessionId());
+  std::set<smtk::model::Model>::const_iterator modit;
+  for(modit = newModels.begin(); modit != newModels.end(); ++modit)
+    {
+    sess.addModel(*modit);
+    }
+
   return status;
 }
 

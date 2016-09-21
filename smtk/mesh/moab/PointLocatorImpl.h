@@ -16,7 +16,12 @@
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/mesh/moab/Interface.h"
+
+#include "smtk/common/CompilerInformation.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "moab/AdaptiveKDTree.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 namespace smtk {
 namespace mesh {

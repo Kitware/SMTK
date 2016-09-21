@@ -21,7 +21,7 @@ class TestExodusSession(smtk.testing.TestCase):
 
   def setUp(self):
     import os
-    self.filename = os.path.join(smtk.testing.DATA_DIR, 'exodus', 'disk_out_ref.ex2')
+    self.filename = os.path.join(smtk.testing.DATA_DIR, 'model', '3d', 'exodus', 'disk_out_ref.ex2')
 
     self.mgr = smtk.model.Manager.create()
     sess = self.mgr.createSession('exodus')
@@ -127,7 +127,7 @@ class TestExodusSession(smtk.testing.TestCase):
         wri.SetFileName('/tmp/foofar.vtm')
         wri.Write()
         try:
-          self.assertImageMatch(['baselines', 'exodus', 'disk_out_ref.png'])
+          self.assertImageMatch(['baseline', 'smtk', 'exodus', 'disk_out_ref.png'])
         finally:
           self.interact()
 

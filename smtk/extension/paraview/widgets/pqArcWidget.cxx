@@ -240,16 +240,15 @@ void pqArcWidget::checkCanBeEdited()
   if (widget)
     {
     vtkSMProxy* repProxy = widget->GetRepresentationProxy();
-    vtkSMPropertyHelper canEditHelper(repProxy,"CanEdit");
+    vtkSMPropertyHelper canEditHelper(repProxy,"CanEditInfo");
     canEditHelper.UpdateValueFromServer();
     int canEdit = canEditHelper.GetAsInt();
     if (!canEdit)
       {
       this->Internals->ModifyMode->setChecked(true);
-      this->Internals->EditMode->setDisabled(true);
-      this->Internals->Closed->setChecked(false);
-      this->Internals->Closed->setDisabled(true);
       }
+    this->Internals->EditMode->setVisible(canEdit);
+    this->Internals->Closed->setVisible(canEdit);
     }
 }
 

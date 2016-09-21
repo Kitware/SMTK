@@ -96,6 +96,10 @@ namespace smtk
                            smtk::attribute::FileItemPtr item);
       void processFileDef(pugi::xml_node &node,
                           smtk::attribute::FileItemDefinitionPtr idef);
+      void processFileSystemItem(pugi::xml_node &node,
+                                 smtk::attribute::FileSystemItemPtr item);
+      void processFileSystemDef(pugi::xml_node &node,
+                                smtk::attribute::FileSystemItemDefinitionPtr idef);
       void processGroupItem(pugi::xml_node &node,
                              smtk::attribute::GroupItemPtr item);
       void processGroupDef(pugi::xml_node &node,

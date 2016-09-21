@@ -37,7 +37,11 @@
 #include "vtkInformation.h"
 #include "vtkUnstructuredGrid.h"
 
+#include "smtk/common/CompilerInformation.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 using namespace smtk::model;
 using namespace smtk::common;
@@ -86,7 +90,8 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
 static void AddPreservedUUID(
   vtkDataObject* data, int& curId, attribute::ModelEntityItem::Ptr uuids)
 {
-  if (!data || curId < 0 || curId >= uuids->numberOfValues())
+  if (!data || curId < 0 ||
+      static_cast<std::size_t>(curId) >= uuids->numberOfValues())
     return;
 
   vtkInformation* info = data->GetInformation();
@@ -147,9 +152,9 @@ static void MarkExodusMeshWithChildren(
     {
     std::ostringstream autoName;
     autoName << EntityTypeNameString(childType) << " " << i;
-    const char* name = data->GetMetaData(i)->Get(vtkCompositeDataSet::NAME());
+    const char* name2 = data->GetMetaData(i)->Get(vtkCompositeDataSet::NAME());
     int pedigree = rdr->GetObjectId(rdrIdType, i);
-    MarkMeshInfo(data->GetBlock(i), dim, name && name[0] ? name : autoName.str().c_str(), childType, pedigree);
+    MarkMeshInfo(data->GetBlock(i), dim, name2 && name2[0] ? name2 : autoName.str().c_str(), childType, pedigree);
     }
 }
 
@@ -162,8 +167,8 @@ static void MarkSLACMeshWithChildren(
     {
     std::ostringstream autoName;
     autoName << EntityTypeNameString(childType) << " " << i;
-    const char* name = data->GetMetaData(i)->Get(vtkCompositeDataSet::NAME());
-    MarkMeshInfo(data->GetBlock(i), dim, name && name[0] ? name : autoName.str().c_str(), childType, i);
+    const char* name2 = data->GetMetaData(i)->Get(vtkCompositeDataSet::NAME());
+    MarkMeshInfo(data->GetBlock(i), dim, name2 && name2[0] ? name2 : autoName.str().c_str(), childType, i);
     }
 }
 
@@ -460,12 +465,12 @@ smtk::model::OperatorResult ReadOperator::readLabelMap()
 
   MarkMeshInfo(modelOut.GetPointer(), imgDim, path(filename).stem().string<std::string>().c_str(), EXO_MODEL, -1);
   MarkMeshInfo(img.GetPointer(), imgDim, labelname.c_str(), EXO_LABEL_MAP, -1);
-  for (int i = 0; i < numLabels; ++i)
+  for (int j = 0; j < numLabels; ++j)
     {
     this->exodusSession()->ensureChildParentMapEntry(
-      vtkDataObject::SafeDownCast(Session::SMTK_CHILDREN()->Get(info, i)),
+      vtkDataObject::SafeDownCast(Session::SMTK_CHILDREN()->Get(info, j)),
       img.GetPointer(),
-      i);
+      j);
     }
 
   Session* brdg = this->exodusSession();

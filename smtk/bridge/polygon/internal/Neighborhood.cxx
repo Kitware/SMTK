@@ -33,8 +33,8 @@ Neighborhood::Neighborhood(
     m_fragments(&fragments),
     m_eventQueue(&eventQueue),
     m_activeEdges(&active),
-    m_session(sess),
     m_mgr(sess->manager()),
+    m_session(sess),
     m_debugLevel(0)
 {
 }
@@ -372,6 +372,7 @@ bool Neighborhood::insertFragmentBetween(
   EdgeFragment& frag,
   const internal::Point& other)
 {
+  (void)frag;
   EdgeFragment& fragA((*this->m_fragments)[*ringA]);
   EdgeFragment& fragB((*this->m_fragments)[*ringB]);
   internal::Point otherA(fragA.lo() == this->m_nextPoint ? fragA.hi() : fragA.lo());
@@ -471,6 +472,7 @@ void Neighborhood::insertFragment(FragmentId fragId, EdgeFragment& frag, const i
 
 void Neighborhood::queueActiveEdge(FragmentId fragId, EdgeFragment& frag)
 {
+  (void)frag;
   this->m_fragmentsToQueue.push_back(fragId);
 }
 
@@ -617,11 +619,11 @@ void Neighborhood::processNeighbors()
   this->m_ring.clear();
   if (this->m_debugLevel > 2)
     {
-    ActiveFragmentTreeType::const_iterator it;
+    ActiveFragmentTreeType::const_iterator it2;
     std::cout << "                 Active fragments: ";
-    for (it = this->m_activeEdges->begin(); it != this->m_activeEdges->end(); ++it)
+    for (it2 = this->m_activeEdges->begin(); it2 != this->m_activeEdges->end(); ++it2)
       {
-      std::cout << " " << *it;
+      std::cout << " " << *it2;
       }
     std::cout << "\n";
     }

@@ -118,14 +118,12 @@ int DescriptivePhrase::argFindChild(const smtk::mesh::CollectionPtr& child) cons
 int DescriptivePhrase::argFindChild(const std::string& propName,
                                     smtk::model::PropertyType propType) const
 {
+  (void)propType;
   int i = 0;
   DescriptivePhrases::const_iterator it;
   for (it = this->m_subphrases.begin(); it != this->m_subphrases.end(); ++it, ++i)
     {
-    if(propName == (*it)->title() &&
-       (((*it)->phraseType() == FLOAT_PROPERTY_VALUE && propType == FLOAT_PROPERTY)||
-       ((*it)->phraseType() == STRING_PROPERTY_VALUE && propType == STRING_PROPERTY) ||
-       ((*it)->phraseType() == INTEGER_PROPERTY_VALUE && propType == INTEGER_PROPERTY)))
+    if(propName == (*it)->title() && (*it)->isPropertyValueType())
       return i;
     }
   return -1;
@@ -165,6 +163,15 @@ void DescriptivePhrase::buildSubphrases()
       this->m_subphrases =
         delegate->subphrases(shared_from_this());
     }
+}
+
+/// Return whether this is a property value phrase.
+bool DescriptivePhrase::isPropertyValueType() const
+{
+  DescriptivePhraseType phType = this->phraseType();
+  return phType == FLOAT_PROPERTY_VALUE ||
+         phType == INTEGER_PROPERTY_VALUE ||
+         phType == STRING_PROPERTY_VALUE;
 }
 
   } // model namespace

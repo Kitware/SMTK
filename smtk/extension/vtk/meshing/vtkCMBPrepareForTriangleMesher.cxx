@@ -512,7 +512,6 @@ bool vtkCMBPrepareForTriangleMesher::BuildLoopId2ArcIndexMap(
   vtkIdTypeArray* fLoop2 = vtkIdTypeArray::SafeDownCast(fData->GetArray("Loop2"));
 
   typedef std::map<vtkIdType, std::vector<vtkIdType> >::iterator LoopIterator;
-  typedef std::pair<LoopIterator,bool> LoopIteratorResult;
 
   for(int i = 0; i < fLoop1->GetNumberOfTuples(); i++)
     {

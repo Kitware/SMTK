@@ -80,6 +80,7 @@ option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" ON)
 option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" ON)
 # Option to build Qt ui compoments for attributes
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
+option(SMTK_ENABLE_EXAMPLES "Enable Examples" OFF)
 option(SMTK_ENABLE_PYTHON_WRAPPING "Build Python Wrappings using Shiboken" OFF)
 # Provide system packagers with the ability to install SMTK
 # to the system's Python site package directory. The default
@@ -93,14 +94,18 @@ cmake_dependent_option(
   SMTK_ENABLE_PYTHON_WRAPPING OFF)
 mark_as_advanced(SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES)
 option(SMTK_ENABLE_QT_SUPPORT "Build Qt GUI" OFF)
-option(SMTK_ENABLE_VTK_SUPPORT "Build VTK component" OFF)
+option(SMTK_ENABLE_VTK_SUPPORT "Build VTK component" ON)
 option(SMTK_ENABLE_REMUS_SUPPORT "Build Remus components" OFF)
 cmake_dependent_option(SMTK_ENABLE_PARAVIEW_SUPPORT "Build paraview plugins for model sessions" OFF
   SMTK_ENABLE_VTK_SUPPORT OFF)
 
 option(SMTK_ENABLE_CGM_SESSION "Build CGM component" OFF)
-option(SMTK_ENABLE_DISCRETE_SESSION "Build discrete model session components" OFF)
-option(SMTK_ENABLE_POLYGON_SESSION "Build Boost.polygon model session." ON)
+cmake_dependent_option(SMTK_ENABLE_DISCRETE_SESSION "Build discrete model session components" OFF
+  SMTK_ENABLE_VTK_SUPPORT OFF)
+cmake_dependent_option(SMTK_ENABLE_MOAB_DISCRETE_READER "Build moab reader for discrete model" OFF
+  "SMTK_ENABLE_DISCRETE_SESSION" OFF)
+cmake_dependent_option(SMTK_ENABLE_POLYGON_SESSION "Build Boost.polygon model session." ON
+  SMTK_ENABLE_VTK_SUPPORT OFF)
 cmake_dependent_option(SMTK_ENABLE_EXODUS_SESSION "Build a session to Exodus-II side sets" ON
   SMTK_ENABLE_VTK_SUPPORT OFF)
 cmake_dependent_option(SMTK_ENABLE_REMOTE_SESSION "Build a session that allows modeling in a remote process" ON
@@ -216,32 +221,25 @@ endif()
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   # include ParaView and ensure it is using the OpenGL2 backend
-  find_package(ParaView REQUIRED
-    COMPONENTS
-    vtkRenderingOpenGL2
-    )
+  find_package(ParaView)
 endif()
 
 ################################################################################
 # VTK Related Settings
 ################################################################################
 
-if(SMTK_ENABLE_VTK_SUPPORT)
-  if(SMTK_ENABLE_PARAVIEW_SUPPORT)
-    # include ParaView and ensure it is using the OpenGL2 backend
-    find_package(ParaView REQUIRED
-      COMPONENTS
-      vtkRenderingOpenGL2
-      )
-  else()
-    # Find the package here so environment variables are set, but
-    # be careful not to include the VTK_USE_FILE until inside
-    # a subdirectory that requires it; otherwise the list of include
-    # paths can become too long for some platforms.
-    find_package(VTK REQUIRED
-      COMPONENTS
-      vtkRenderingOpenGL2
-      )
+if(SMTK_ENABLE_VTK_SUPPORT AND NOT SMTK_ENABLE_PARAVIEW_SUPPORT)
+  # Find the package here so environment variables are set, but
+  # be careful not to include the VTK_USE_FILE until inside
+  # a subdirectory that requires it; otherwise the list of include
+  # paths can become too long for some platforms.
+  find_package(VTK REQUIRED)
+endif()
+
+if (SMTK_ENABLE_PARAVIEW_SUPPORT OR SMTK_ENABLE_VTK_SUPPORT)
+  if(NOT VTK_RENDERING_BACKEND STREQUAL "OpenGL2")
+    message(FATAL_ERROR
+      "SMTK requires that VTK be built with the OpenGL2 Rendering backend.")
   endif()
 endif()
 
@@ -285,9 +283,9 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
   # Set up environment variables needed to import the python modules for tests.
   if (PYTHONINTERP_FOUND AND SMTK_ENABLE_TESTING)
     get_filename_component(SHIBOKEN_LIBRARY_PATH ${SHIBOKEN_LIBRARY} PATH)
-    set(LIB_ENV_VAR "")
+    set(SMTK_TEST_LIB_ENV "")
     if(APPLE AND UNIX)
-      set(LIB_ENV_VAR "DYLD_FALLBACK_LIBRARY_PATH=${SHIBOKEN_LIBRARY_PATH}:${LIBRARY_OUTPUT_PATH}")
+      set(SMTK_TEST_LIB_ENV "DYLD_FALLBACK_LIBRARY_PATH=${SHIBOKEN_LIBRARY_PATH}:${LIBRARY_OUTPUT_PATH}")
       if (ParaView_DIR)
         set(VTKPY_DIR "${ParaView_DIR}/lib/site-packages:${ParaView_DIR}/lib:")
       elseif (VTK_DIR)
@@ -296,14 +294,14 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     elseif(UNIX)
       if (ParaView_DIR)
         # Note that ending with a colon should only be done if followed by
-        # another path... be careful when changing LIB_ENV_VAR!
+        # another path... be careful when changing SMTK_TEST_LIB_ENV!
         set(PV_LIB_DIR "${ParaView_DIR}/lib:")
         set(VTKPY_DIR "${ParaView_DIR}/lib/site-packages:${PV_LIB_DIR}")
       elseif (VTK_DIR)
         set(PV_LIB_DIR "${VTK_DIR}/lib:")
         set(VTKPY_DIR "${VTK_DIR}/lib/site-packages:${PV_LIB_DIR}")
       endif()
-      set(LIB_ENV_VAR "LD_LIBRARY_PATH=${PV_LIB_DIR}${SHIBOKEN_LIBRARY_PATH}:${LIBRARY_OUTPUT_PATH}")
+      set(SMTK_TEST_LIB_ENV "LD_LIBRARY_PATH=${PV_LIB_DIR}${SHIBOKEN_LIBRARY_PATH}:${LIBRARY_OUTPUT_PATH}")
     endif()
     set(SHIBOKEN_SMTK_PYTHON "${CMAKE_BINARY_DIR}")
     if(UNIX)
@@ -319,8 +317,10 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     if (rc)
       set(SHIBOKEN_SMTK_PYTHON "${SHIBOKEN_SMTK_PYTHON}${sep}${SHIBOKEN_PYTHONPATH}")
     endif ()
+    set(SMTK_BINARY_TEST_PATHS "${CMAKE_BINARY_DIR}/lib${sep}${PROJECT_BINARY_DIR}/lib${sep}${PROJECT_BINARY_DIR}${sep}")
+    set(SMTK_PYTHONPATH "PYTHONPATH=${SMTK_BINARY_TEST_PATHS}${VTKPY_DIR}${SHIBOKEN_SMTK_PYTHON}")
   endif()
-  #message("${LIB_ENV_VAR}   PYTHONPATH=${SHIBOKEN_SMTK_PYTHON}")
+  #message("${SMTK_TEST_LIB_ENV}   ${SMTK_PYTHONPATH}")
   #message("${SHIBOKEN_LIBRARY_PATH}")
 endif()
 
@@ -419,28 +419,6 @@ include_directories(
   "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/pugixml"
   "${Boost_INCLUDE_DIRS}"
 )
-
-################################################################################
-# Look for Discrete session discrete model modules
-################################################################################
-
-if(SMTK_ENABLE_DISCRETE_SESSION)
-  if(SMTK_ENABLE_PARAVIEW_SUPPORT)
-    find_package(ParaView REQUIRED)
-  else()
-    find_package(VTK REQUIRED)
-  endif()
-
-  # This option is only available when SMTK_ENABLE_DISCRETE_SESSION is ON, and
-  # it should be OFF by default since exodus session should handle exodus files
-  option(
-    SMTK_ENABLE_MOAB_DISCRETE_READER
-    "Build moab reader for discrete model"
-    OFF )
-
-  # Support shapefiles in the discrete session if GDAL is available:
-  find_package(GDAL)
-endif()
 
 ################################################################################
 # Finally build smtk

@@ -25,7 +25,7 @@ function(smtk_unit_tests)
   endif()
 
   if (SMTK_DATA_DIR)
-    if (NOT EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
+    if (NOT EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
       message(WARNING
 	"SMTK_DATA_DIR has been set to invalid location \"${SMTK_DATA_DIR}\".")
     elseif(SMTK_ENABLE_TESTING AND NOT using_hdf AND NOT ENABLE_HDF5)
@@ -35,7 +35,7 @@ function(smtk_unit_tests)
   endif()
 
   if (SMTK_DATA_DIR
-      AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd
+      AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker
       AND using_hdf)
     #we check moab for hdf support since that is the file format
     #for all our test data
@@ -62,10 +62,12 @@ function(smtk_unit_tests)
         PRIVATE
         ${CMAKE_CURRENT_BINARY_DIR}
         ${MOAB_INCLUDE_DIRS}
+        ${VTK_INCLUDE_DIRS}
         )
 
     if(have_testing_data)
       target_compile_definitions(${test_prog} PRIVATE "SMTK_DATA_DIR=\"${SMTK_DATA_DIR}\"")
+      target_compile_definitions(${test_prog} PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
     endif()
 
     foreach (test ${SMTK_ut_SOURCES})
@@ -80,7 +82,7 @@ function(smtk_unit_tests)
     endforeach(test)
   endif (SMTK_ENABLE_TESTING)
 
-if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
+if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
   list(APPEND unit_tests
 
        )

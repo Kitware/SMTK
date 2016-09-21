@@ -9,7 +9,9 @@
           ShouldExist="true"
           FileFilters="OpenCascade Boundary Representation (*.brep *.occ);;All files (*.*)">
         </File>
-        <String Name="filetype" NumberOfRequiredValues="1"/>
+        <String Name="filetype" NumberOfRequiredValues="1">
+          <DefaultValue></DefaultValue>
+        </String>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->

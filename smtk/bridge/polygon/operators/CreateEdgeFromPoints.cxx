@@ -79,7 +79,7 @@ smtk::model::OperatorResult CreateEdgeFromPoints::operateInternal()
       "A model must be associated with the operator.");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
-  
+
   std::vector<double> pnts(numPts * numCoordsPerPt);
   int pIndex, j;
   for (j = 0, pIndex = 0; pIndex != numPts; ++pIndex)
@@ -92,7 +92,7 @@ smtk::model::OperatorResult CreateEdgeFromPoints::operateInternal()
     }
   return this->process(pnts, numCoordsPerPt, parentModel);
 }
-      
+
 smtk::model::OperatorResult CreateEdgeFromPoints::process(std::vector<double> &pnts,
 							  int numCoordsPerPoint,
 							  smtk::model::Model &parentModel)
@@ -120,7 +120,7 @@ smtk::model::OperatorResult CreateEdgeFromPoints::process(std::vector<double> &p
   internal::Point prev;
   internal::Point orig;
   bool first = true;
-  for (int pIndex = 0; pIndex != pnts.size(); prev = curr)
+  for (std::size_t pIndex = 0; pIndex != pnts.size(); prev = curr)
     {
     for (int i = 0; i < numCoordsPerPoint; ++i)
       {

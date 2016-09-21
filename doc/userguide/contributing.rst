@@ -13,7 +13,7 @@ Contributing to SMTK
 .. contents::
 
 The first step to contributing to SMTK is to obtain the source code and build it.
-The top-level ReadMe.mkd file in the source code includes instructions for building SMTK.
+The top-level ReadMe.md file in the source code includes instructions for building SMTK.
 The rest of this section discusses how the source and documentation are organized
 and provides guidelines for how to match the SMTK style.
 

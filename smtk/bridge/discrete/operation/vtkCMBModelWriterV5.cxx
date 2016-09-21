@@ -119,10 +119,10 @@ void vtkCMBModelWriterV5::SetModelFaceData(vtkDiscreteModel* Model, vtkPolyData*
 
   vtkIdTypeArray* ModelFaceMaterialIds = vtkIdTypeArray::New();
 
-  vtkModelItemIterator* Faces = Model->NewIterator(vtkModelFaceType);
-  for(Faces->Begin();!Faces->IsAtEnd();Faces->Next())
+  vtkModelItemIterator* FacesIt = Model->NewIterator(vtkModelFaceType);
+  for(FacesIt->Begin();!FacesIt->IsAtEnd();FacesIt->Next())
     {
-    vtkDiscreteModelFace* Face = vtkDiscreteModelFace::SafeDownCast(Faces->GetCurrentItem());
+    vtkDiscreteModelFace* Face = vtkDiscreteModelFace::SafeDownCast(FacesIt->GetCurrentItem());
     Entities.push_back(Face);
     vtkModelMaterial* Material = Face->GetMaterial();
     if(Material)
@@ -162,7 +162,7 @@ void vtkCMBModelWriterV5::SetModelFaceData(vtkDiscreteModel* Model, vtkPolyData*
       liter->Delete();
       }
     }
-  Faces->Delete();
+  FacesIt->Delete();
 
   ModelFaceAdjacentEdgesId->SetName(ModelParserHelper::GetModelFaceEdgesString());
   Poly->GetFieldData()->AddArray(ModelFaceAdjacentEdgesId);

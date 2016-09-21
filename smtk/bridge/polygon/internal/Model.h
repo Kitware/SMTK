@@ -110,6 +110,7 @@ public:
     smtk::model::EntityRefs& modified);
 
   std::pair<Id,Id> removeModelEdgeFromEndpoints(smtk::model::ManagerPtr mgr, EdgePtr edg);
+  bool removeVertexLookup(const internal::Point& location, const Id& vid);
 
   Point edgeTestPoint(const Id& edgeId, bool edgeEndPt) const;
 

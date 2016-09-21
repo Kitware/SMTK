@@ -76,7 +76,8 @@ void forCell(const smtk::mesh::Handle& cellId,
   //verify the points ids are mapped properly
   for(int i=0; i < numPts; ++i)
     {
-    test( this->m_conn[offset+ i] == this->m_points.find(this->pointIds()[i] ) );
+    test( static_cast<const std::size_t>(this->m_conn[offset+ i]) ==
+          this->m_points.find(this->pointIds()[i] ) );
     }
 
   this->m_currentIndex++;
@@ -134,7 +135,7 @@ std::string data_root = SMTK_DATA_DIR;
 smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
 {
   std::string file_path(data_root);
-  file_path += "/mesh/sixth_hexflatcore.h5m";
+  file_path += "/mesh/3d/sixth_hexflatcore.h5m";
 
   smtk::mesh::CollectionPtr c  = smtk::io::ImportMesh::entireFile(file_path, mngr);
   test( c->isValid(), "collection should be valid");
@@ -279,9 +280,11 @@ void verify_alloc_lengths_meshset(const smtk::mesh::CollectionPtr& c)
   test(numberOfCells != -1);
   test(numberOfPoints != -1);
 
-  test(connectivityLength == all_meshes.pointConnectivity().size() );
-  test(numberOfCells == all_meshes.cells().size() );
-  test(numberOfPoints == all_meshes.points().size() );
+  test(static_cast<unsigned long>(connectivityLength) ==
+       all_meshes.pointConnectivity().size() );
+  test(static_cast<unsigned long>(numberOfCells) == all_meshes.cells().size() );
+  test(static_cast<unsigned long>(numberOfPoints) ==
+       all_meshes.points().size() );
 
 
   //Now try asking only for 3d cells
@@ -290,9 +293,10 @@ void verify_alloc_lengths_meshset(const smtk::mesh::CollectionPtr& c)
                                                                    numberOfCells,
                                                                    numberOfPoints);
 
-   test(connectivityLength == mesh3d.pointConnectivity().size() );
-   test(numberOfCells == mesh3d.cells().size() );
-   test(numberOfPoints == mesh3d.points().size() );
+   test(static_cast<unsigned long>(connectivityLength) ==
+        mesh3d.pointConnectivity().size() );
+   test(static_cast<unsigned long>(numberOfCells) == mesh3d.cells().size() );
+   test(static_cast<unsigned long>(numberOfPoints) == mesh3d.points().size() );
 
   //Now try asking only for 2d cells
   smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(mesh2d,
@@ -300,9 +304,10 @@ void verify_alloc_lengths_meshset(const smtk::mesh::CollectionPtr& c)
                                                                    numberOfCells,
                                                                    numberOfPoints);
 
-  test(connectivityLength == mesh2d.pointConnectivity().size() );
-  test(numberOfCells == mesh2d.cells().size() );
-  test(numberOfPoints == mesh2d.points().size() );
+  test(static_cast<unsigned long>(connectivityLength)
+       == mesh2d.pointConnectivity().size() );
+  test(static_cast<unsigned long>(numberOfCells) == mesh2d.cells().size() );
+  test(static_cast<unsigned long>(numberOfPoints) == mesh2d.points().size() );
 
 }
 
@@ -330,9 +335,11 @@ void verify_alloc_lengths_cellset(const smtk::mesh::CollectionPtr& c)
   test(numberOfCells != -1);
   test(numberOfPoints != -1);
 
-  test(connectivityLength == all_cells.pointConnectivity().size() );
-  test(numberOfCells == all_cells.size() );
-  test(numberOfPoints == all_cells.points().size() );
+  test(static_cast<unsigned long>(connectivityLength) ==
+       all_cells.pointConnectivity().size() );
+  test(static_cast<unsigned long>(numberOfCells) == all_cells.size() );
+  test(static_cast<unsigned long>(numberOfPoints)
+       == all_cells.points().size() );
 
 
   //Now try asking only for 3d cells
@@ -341,9 +348,11 @@ void verify_alloc_lengths_cellset(const smtk::mesh::CollectionPtr& c)
                                                                    numberOfCells,
                                                                    numberOfPoints);
 
-  test(connectivityLength == cells3d.pointConnectivity().size() );
-  test(numberOfCells == cells3d.size() );
-  test(numberOfPoints == cells3d.points().size() );
+  test(static_cast<unsigned long>(connectivityLength) ==
+       cells3d.pointConnectivity().size() );
+  test(static_cast<unsigned long>(numberOfCells) ==
+       cells3d.size() );
+  test(static_cast<unsigned long>(numberOfPoints) == cells3d.points().size() );
 
   //Now try asking only for 2d cells
   smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(cells2d,
@@ -351,9 +360,10 @@ void verify_alloc_lengths_cellset(const smtk::mesh::CollectionPtr& c)
                                                                    numberOfCells,
                                                                    numberOfPoints);
 
-  test(connectivityLength == cells2d.pointConnectivity().size() );
-  test(numberOfCells == cells2d.size() );
-  test(numberOfPoints == cells2d.points().size() );
+  test(static_cast<unsigned long>(connectivityLength)
+       == cells2d.pointConnectivity().size() );
+  test(static_cast<unsigned long>(numberOfCells) == cells2d.size() );
+  test(static_cast<unsigned long>(numberOfPoints) == cells2d.points().size() );
 
 }
 
@@ -544,7 +554,7 @@ int UnitTestExtractTessellation(int, char** const)
   verify_extract_all_to_vtk(c);
   verify_extract_only_connectivity_to_vtk(c);
 
-  // verify_extract_volume_meshes_by_global_points_to_vtk(c);
+  verify_extract_volume_meshes_by_global_points_to_vtk(c);
 
   return 0;
 }

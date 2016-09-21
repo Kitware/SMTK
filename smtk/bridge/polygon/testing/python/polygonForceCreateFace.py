@@ -120,7 +120,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
       #self.mgr.assignDefaultNames()
       #smtk.io.ExportJSON.fromModelManagerToFile(self.mgr, '/tmp/forcepoly.json')
 
-      self.renderTestModel(mod, ['baselines', 'polygon', 'forceCreateFaces.png'])
+      self.renderTestModel(mod, ['baseline', 'smtk', 'polygon', 'forceCreateFaces.png'])
 
   def createEdges(self, mod, point_arrays):
       (point_seq, point_offsets) = computeOffsets(point_arrays)
@@ -172,7 +172,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
       #self.mgr.assignDefaultNames()
       #smtk.io.ExportJSON.fromModelManagerToFile(self.mgr, '/tmp/forcepoly2.json')
 
-      self.renderTestModel(mod, ['baselines', 'polygon', 'forceCreateFacesFromEdges.png'])
+      self.renderTestModel(mod, ['baseline', 'smtk', 'polygon', 'forceCreateFacesFromEdges.png'])
 
 
 if __name__ == '__main__':

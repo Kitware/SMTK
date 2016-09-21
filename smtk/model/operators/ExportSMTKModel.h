@@ -24,8 +24,8 @@ public:
   smtkDeclareModelOperator();
 
 protected:
-  virtual smtk::model::OperatorResult operateInternal();
-
+  virtual OperatorResult operateInternal();
+  virtual void generateSummary(OperatorResult&);
 };
 
   } //namespace model

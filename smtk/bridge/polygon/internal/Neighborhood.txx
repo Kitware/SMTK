@@ -42,14 +42,15 @@ void Neighborhood::getLoops(T evaluator)
   std::set<RegionId> neighborRegions;
   std::set<RegionId>::const_iterator pit;
   FragmentId fid = 0;
+  RegionId outside = this->m_regionIds.find(this->m_outside);
   for (fit = this->m_fragments->begin(); fit != this->m_fragments->end(); ++fit, ++fid)
     {
-    if (!fit->marked(false) && this->m_regionIds.find(fit->ccwRegion(false)) != this->m_outside)
+    if (!fit->marked(false) && this->m_regionIds.find(fit->ccwRegion(false)) != outside)
       {
       RegionId contained = this->traverseLoop(loopEdges, neighborRegions, fid, false);
       evaluator->evaluateLoop(this->m_regionIds.find(contained), loopEdges, neighborRegions);
       }
-    if (!fit->marked(true) && this->m_regionIds.find(fit->ccwRegion(true)) != this->m_outside)
+    if (!fit->marked(true) && this->m_regionIds.find(fit->ccwRegion(true)) != outside)
       {
       RegionId contained = this->traverseLoop(loopEdges, neighborRegions, fid, true);
       evaluator->evaluateLoop(this->m_regionIds.find(contained), loopEdges, neighborRegions);

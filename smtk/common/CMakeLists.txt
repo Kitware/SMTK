@@ -12,6 +12,7 @@ set(commonSrcs
 )
 
 set(commonHeaders
+  CompilerInformation.h
   Environment.h
   FileLocation.h
   GeometryUtilities.h

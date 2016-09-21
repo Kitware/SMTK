@@ -17,7 +17,11 @@
 
 #include "smtk/attribute/System.h"
 
+#include "smtk/common/CompilerInformation.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <fstream>
 #include <sstream>

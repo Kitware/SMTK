@@ -12,9 +12,12 @@
 #ifndef SHIBOKEN_SKIP
 
 #include "smtk/SharedPtr.h"
+#include "smtk/common/CompilerInformation.h"
 #include "smtk/common/UUID.h"
 
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/polygon/polygon.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <list>
 #include <map>

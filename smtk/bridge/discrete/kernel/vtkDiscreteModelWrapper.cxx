@@ -193,12 +193,12 @@ void vtkDiscreteModelWrapper::PrintSelf(ostream& os, vtkIndent indent)
     }
 }
 
-unsigned long vtkDiscreteModelWrapper::GetMTime()
+vtkMTimeType vtkDiscreteModelWrapper::GetMTime()
 {
-  unsigned long mtime = this->Superclass::GetMTime();
+  vtkMTimeType mtime = this->Superclass::GetMTime();
   if (this->Model)
     {
-    unsigned long stime = this->Model->GetMTime();
+    vtkMTimeType stime = this->Model->GetMTime();
     if (stime > mtime)
       {
       mtime = stime;

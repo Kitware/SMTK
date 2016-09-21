@@ -1,7 +1,4 @@
 # Simulation Modeling Tool Kit (SMTK)
-## Version 1.0.0
-
-[![Build Status](https://travis-ci.org/Kitware/SMTK.svg?branch=master)](https://travis-ci.org/Kitware/SMTK)
 
 SMTK is a library which provides a way to specify attributes
 (such as initial and boundary conditions, but also things
@@ -20,9 +17,12 @@ What's below is a quick guide to building SMTK.
 
 In order to build SMTK you must have
 
-+ A modern C++ compiler (gcc, clang, or VS) that supports C++11 features,
-+ [CMake](http://cmake.org) 2.8.11 or newer (3.2 is advised), and
-+ [Boost](http://boost.org) 1.60.0 or newer.
++ A modern C++ compiler  that supports C++11 features
+ + gcc 4.8 or newer
+ + Xcode 7.1 or newer
+ + Visual Studio 2013 64 bit or newer  
++ [CMake](http://cmake.org) 3.5 or newer
++ [Boost](http://boost.org) 1.60.0 or newer
 
 
 We recommend using [Ninja](http://martine.github.io/ninja/) for fast builds.
@@ -31,9 +31,7 @@ You may optionally provide
 
 + [CGMA](http://trac.mcs.anl.gov/projects/ITAPS/wiki/CGM) v13 or newer,
   built with
-  [OpenCascade](http://opencascade.org/) or
-  [Cubit](http://cubit.sandia.gov/),
-  for importing CAD models;
+  [OpenCascade](http://opencascade.org/) for importing CAD models;
 + [Python](http://python.org) version 2.7.3 or newer and
   [Shiboken](http://github.com/OpenGeoscience/shiboken) from the smtk-head branch,
   for Python wrappings of SMTK's C++ classes;
@@ -64,7 +62,7 @@ If you want to build the documentation you will need
 You may wish to obtain the test-data repository for SMTK in order
 to run tests which require input datasets; run:
 
-    git clone git@www.kitware.com:SMTKTestData.git
+    git clone git@gitlab.kitware.com:cmb/smtk-testing-data.git
 
 somewhere *outside* the SMTK source directory. When running CMake on SMTK,
 set the `SMTK_DATA_DIR` variable to point to the directory `git clone`

@@ -18,6 +18,7 @@
   <suppress-warning text="namespace 'smtk::mesh::json' does not have a type entry"/>
   <suppress-warning text="namespace 'smtk::mesh::moab' does not have a type entry"/>
   <suppress-warning text="namespace 'vtk' does not have a type entry"/>
+  <suppress-warning text="namespace 'vtk_detail' does not have a type entry"/>
   <suppress-warning text="namespace 'std' does not have a type entry"/>
 
   <!-- Suppressed because they are memory variables-->
@@ -457,6 +458,7 @@
 
   <!-- Platform-specific warnings induced by system headers -->
   <suppress-warning text="enum '__codecvt_result' does not have a type entry or is not an enum"/>
+  <suppress-warning text="enum 'FP_NORMAL' does not have a type entry or is not an enum"/>
 
   <!-- Ignore until we have time to support Operators -->
   <suppress-warning text="skipping field 'Manager::m_defaultSession' with unmatched type 'smtk::shared_ptr&lt;Session&gt;'"/>

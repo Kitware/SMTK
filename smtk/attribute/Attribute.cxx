@@ -29,9 +29,13 @@
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/EntityRef.h"
+
+#include "smtk/common/CompilerInformation.h"
 #include "smtk/common/UUIDGenerator.h"
 
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/algorithm/string.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <iostream>
 
@@ -214,48 +218,6 @@ smtk::attribute::ItemPtr Attribute::itemAtPath(
       result = current;
     }
   return result;
-}
-
-namespace {
-
-template<typename T>
-bool isInvalid(T itemPtr)
-{
-  if (!itemPtr)
-    return true;
-  std::size_t actual = itemPtr->numberOfValues();
-  std::size_t minNum = itemPtr->numberOfRequiredValues();
-  if (
-    actual < minNum ||
-    (minNum && actual > minNum))
-    return true;
-
-  for (std::size_t i = 0; i < actual; ++i)
-    if (!itemPtr->isSet(i))
-      return true;
-  return false;
-}
-
-template<>
-bool isInvalid<ValueItemPtr>(ValueItemPtr itemPtr)
-{
-  if (!itemPtr)
-    return true;
-  std::size_t actual = itemPtr->numberOfValues();
-  std::size_t minNum = itemPtr->numberOfRequiredValues();
-  std::size_t maxNum = itemPtr->maxNumberOfValues();
-  if (
-    actual < minNum ||
-    actual > maxNum ||
-    (maxNum == 0 && actual > minNum && !itemPtr->isExtensible()))
-    return true;
-
-  for (std::size_t i = 0; i < actual; ++i)
-    if (!itemPtr->isSet(i))
-      return true;
-  return false;
-}
-
 }
 
 /**\brief Validate the attribute against its definition.

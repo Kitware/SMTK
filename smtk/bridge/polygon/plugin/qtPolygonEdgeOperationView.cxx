@@ -192,7 +192,7 @@ void qtPolygonEdgeOperationView::updateAttributeData()
   // to show all operators (attributes), and a panel underneath to edit current
   // selected operator.
   std::string defName;
-  for(int ci = 0; ci < comp.numberOfChildren(); ++ci)
+  for(std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
     {
     smtk::common::View::Component &attComp = comp.child(ci);
     if (attComp.name() != "Att")
@@ -312,7 +312,7 @@ void qtPolygonEdgeOperationView::arcOperationDone()
 
 //----------------------------------------------------------------------------
 void qtPolygonEdgeOperationView::clearSelection()
-{  
+{
   this->uiManager()->activeModelView()->clearSelection();
 }
 
@@ -351,7 +351,7 @@ void qtPolygonEdgeOperationView::operationSelected(const smtk::model::OperatorPt
       }
     pq3DWidget* sel3dWidget = qobject_cast<pq3DWidget*>(selUiWidget);
     QString widgetName = selUiWidget->objectName();
-   
+
     // we need to make invisible all 3d widget UI panels
     QList< pq3DWidget* > user3dWidgets = pWidget->findChildren<pq3DWidget*>();
     QList< QWidget* > userUiWidgets;
@@ -432,7 +432,7 @@ void qtPolygonEdgeOperationView::operationSelected(const smtk::model::OperatorPt
 
     // for edge operations that do not need arc-edit widget
     // * create edge op : "points" and "vertex ids" // no custom ui needed
-    // * split edge: // this need a special 
+    // * split edge: // this need a special
     if(op->name() == "split edge") // otherwise, only handle split edge custom ui
       {
       if(!this->Internals->SplitEdgeWidget)

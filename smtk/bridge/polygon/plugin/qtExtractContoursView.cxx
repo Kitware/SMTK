@@ -199,7 +199,7 @@ void qtExtractContoursView::updateAttributeData()
   // to show all operators (attributes), and a panel underneath to edit current
   // selected operator.
   std::string defName;
-  for(int ci = 0; ci < comp.numberOfChildren(); ++ci)
+  for(std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
     {
     smtk::common::View::Component &attComp = comp.child(ci);
     if (attComp.name() != "Att")
@@ -303,13 +303,6 @@ pqPipelineSource* internal_createImageSource(const std::string& imageurl)
     }
   builder->blockSignals(false);
 
-  if(source)
-    {
-    source = builder->createFilter("polygon_filters", "StructedToMesh", source);
-    vtkSMPropertyHelper(source->getProxy(), "UseScalerForZ").Set(0);
-    source->getProxy()->UpdateVTKObjects();
-    }
-
   return source;
 }
 
@@ -342,8 +335,15 @@ void qtExtractContoursView::operationSelected(const smtk::model::OperatorPtr& op
   std::string imagefile = urlprop[0];
   if(pqPipelineSource* source = internal_createImageSource(imagefile))
     {
-    this->Internals->ContoursDialog = new pqGenerateContoursDialog(source,
-      this->parentWidget());
+    bool scalarColoring = false;
+    if(model.hasIntegerProperty("UseScalarColoring"))
+      {
+      const smtk::model::IntegerList& uprop(model.integerProperty("UseScalarColoring"));
+      scalarColoring = !uprop.empty() ? (uprop[0] != 0) : scalarColoring;
+      }
+
+    this->Internals->ContoursDialog = new pqGenerateContoursDialog(
+      source, scalarColoring, this->parentWidget());
     QObject::connect(this->Internals->ContoursDialog,
           SIGNAL(contoursAccepted(pqPipelineSource*)),
           this, SLOT(acceptContours(pqPipelineSource*)));

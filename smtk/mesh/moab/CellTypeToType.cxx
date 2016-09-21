@@ -10,7 +10,12 @@
 //
 //=============================================================================
 
+#include "smtk/common/CompilerInformation.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "moab/EntityType.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
+
 #include "smtk/mesh/moab/CellTypeToType.h"
 
 namespace smtk {

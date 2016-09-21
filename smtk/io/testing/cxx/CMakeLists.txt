@@ -18,8 +18,8 @@ if (SMTK_DATA_DIR)
   target_link_libraries(${writer_test} smtkCore ${Boost_LIBRARIES})
   add_test(NAME ${writer_test}
     COMMAND ${writer_test}
-    ${SMTK_DATA_DIR}/smtk/attribute/Basic2DFluid.sbt
-    ${SMTK_DATA_DIR}/smtk/attribute/copyAttributeTest.sbi
+    ${SMTK_DATA_DIR}/attribute/attribute_system/Basic2DFluid.sbt
+    ${SMTK_DATA_DIR}/attribute/attribute_system/copyAttributeTest.sbi
     writer_output.crf
   )
 
@@ -28,7 +28,7 @@ if (SMTK_DATA_DIR)
   target_link_libraries(${reader_test} smtkCore ${Boost_LIBRARIES})
   add_test(NAME ${reader_test}
     COMMAND ${reader_test}
-    ${SMTK_DATA_DIR}/smtk/attribute/resourceTest/resources.xml
+    ${SMTK_DATA_DIR}/attribute/attribute_system/resourceTest/resources.xml
     2
   )
 endif()

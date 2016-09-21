@@ -59,12 +59,13 @@ target_link_libraries(unitEntity smtkCore smtkCoreModelTesting)
 add_test(NAME unitEntity COMMAND unitEntity)
 
 add_executable(unitExportMeshOperator unitExportMeshOperator.cxx)
+target_compile_definitions(unitExportMeshOperator PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
 target_link_libraries(unitExportMeshOperator smtkCore smtkCoreModelTesting
   ${Boost_LIBRARIES})
 add_test(NAME unitExportMeshOperator
   COMMAND $<TARGET_FILE:unitExportMeshOperator>
 #  TODO: this should be an smtk native model with an associated mesh.
-#  "${SMTK_DATA_DIR}/smtk/simple.json"
+#  "${SMTK_DATA_DIR}/model/3d/smtk/simple.json"
 )
 
 add_executable(benchmarkModel benchmarkModel.cxx)
@@ -74,7 +75,7 @@ target_link_libraries(benchmarkModel smtkCore smtkCoreModelTesting)
 ################################################################################
 # Tests that require SMTK_DATA_DIR
 ################################################################################
-if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
+if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
   add_test(NAME unitDescriptivePhrase COMMAND unitDescriptivePhrase
-    "${SMTK_DATA_DIR}/smtk/simple.json")
+    "${SMTK_DATA_DIR}/model/3d/smtk/simple.json")
 endif()

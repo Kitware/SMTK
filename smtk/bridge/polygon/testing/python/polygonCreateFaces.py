@@ -54,7 +54,6 @@ class TestPolygonCreation(smtk.testing.TestCase):
     self.assertEqual(mod.floatProperty('y axis'), y_axis, 'Bad y axis')
     self.assertEqual(mod.floatProperty('normal'), normal, 'Bad normal')
     self.assertEqual(mod.floatProperty('feature size'), [feature_size,], 'Bad feature size {:1} vs {:2}'.format(mod.floatProperty('feature size')[0], feature_size))
-    self.assertEqual(mod.integerProperty('model scale'), [int(model_scale / feature_size),], 'Bad model scale')
 
     #print smtk.io.ExportJSON.fromModelManager(self.mgr, smtk.io.JSON_DEFAULT)
 
@@ -64,7 +63,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
     print '  y axis  ', ('  {:.3g}'*3).format(*mod.floatProperty('y axis'))
     print '  normal  ', ('  {:.3g}'*3).format(*mod.floatProperty('normal'))
     print '  feature size  {:14.3g}'.format(mod.floatProperty('feature size')[0])
-    print '  model scale   {:14d}'.format(mod.integerProperty('model scale')[0])
+    print '  model scale   {:14.3g}'.format(mod.floatProperty('model scale')[0])
 
     # Create vertices and test that they are correct
     # NB: 2.000000005 is chosen below since it is within 1e-8/231000 of 2.0
@@ -126,8 +125,8 @@ class TestPolygonCreation(smtk.testing.TestCase):
     smtk.io.ImportJSON.ofLog(logStr, log)
     print log.convertToString()
     self.assertEqual(
-        log.numberOfRecords(), 3,
-        'Expected 3 warnings due to invalid offsets, got\n' + log.convertToString())
+        log.numberOfRecords(), 4,
+        'Expected 4 messages due to 3 invalid offsets, got\n' + log.convertToString())
     #print elist
 
     # Test creation of periodic edge with no model vertices.
@@ -223,7 +222,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
       res = GetLastResult()
       created = res.findModelEntity('created')
       print 'created ', created.numberOfValues(), ' faces'
-      self.imageComparison(mod, created, ['baselines', 'polygon', 'createFacesA.png'], False)
+      self.imageComparison(mod, created, ['baseline', 'smtk', 'polygon', 'createFacesA.png'], False)
 
   def testModelBCreation(self):
     t = 0
@@ -237,7 +236,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
       res = GetLastResult()
       created = res.findModelEntity('created')
       print 'created ', created.numberOfValues(), ' faces'
-      self.imageComparison(mod, created, ['baselines', 'polygon', 'createFacesB{:1}.png'.format(t)], False) # or p[6])
+      self.imageComparison(mod, created, ['baseline', 'smtk', 'polygon', 'createFacesB{:1}.png'.format(t)], False) # or p[6])
 
   def imageComparison(self, mod, created, imagePath, doInteract):
     if self.haveVTK() and self.haveVTKExtension():

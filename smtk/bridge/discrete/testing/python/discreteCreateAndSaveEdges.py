@@ -50,13 +50,13 @@ class TestDiscreteCreateAndSaveEdges(smtk.testing.TestCase):
       cam.SetViewUp(0,1,0)
       self.renderer.ResetCamera()
       self.renderWindow.Render()
-      self.assertImageMatch(['baselines', 'discrete', 'createedges-hybridModelOneCube.png'])
+      self.assertImageMatch(['baseline', 'smtk', 'discrete', 'createedges-hybridModelOneCube.png'])
       self.interact()
 
   def setUp(self):
     import os, sys
     self.resetTestFiles()
-    self.addTestFile(['cmb', 'hybridModelOneCube.cmb'], self.validateCreateAndSaveEdges)
+    self.addTestFile(['model', '3d', 'cmb', 'hybridModelOneCube.cmb'], self.validateCreateAndSaveEdges)
 
     self.mgr = smtk.model.Manager.create()
     sess = self.mgr.createSession('discrete')

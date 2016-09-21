@@ -26,7 +26,7 @@ std::string data_root = SMTK_DATA_DIR;
 smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
 {
   std::string file_path(data_root);
-  file_path += "/mesh/twoassm_out.h5m";
+  file_path += "/mesh/3d/twoassm_out.h5m";
 
   smtk::mesh::CollectionPtr c  = smtk::io::ImportMesh::entireFile(file_path, mngr);
   test( c->isValid(), "collection should be valid");
@@ -57,6 +57,8 @@ void verify_subsets(const smtk::mesh::CollectionPtr& c)
 {
   std::vector< std::string > mesh_names = c->meshNames();
 
+  test( mesh_names.empty() == false, "There are no meshes in the collection.");
+
   smtk::mesh::MeshSet ms = c->meshes( mesh_names[0] );
   smtk::mesh::CellSet ps = ms.cells();
 
@@ -69,7 +71,7 @@ void verify_subsets(const smtk::mesh::CollectionPtr& c)
        iter != ps.range().end(); ++iter )
      {
      range.insert( iter->first, iter->second - 1 );
-     for ( smtk::mesh::Handle i=iter->first; i < iter->second - 1; ++i)
+     for ( smtk::mesh::Handle i=iter->first; i < iter->second; ++i)
        {
        set.insert(i);
        vec.push_back(i);
@@ -207,7 +209,7 @@ void verify_cell_count_by_type(smtk::mesh::MeshSet ms)
     }
 
   std::size_t sum = 0;
-  for(int i=0; i < all_cell_types.size(); ++i )
+  for(std::size_t i=0; i < all_cell_types.size(); ++i )
     {
     sum += all_cell_types[i].size();
     }
@@ -241,7 +243,7 @@ void verify_cell_count_by_dim(smtk::mesh::MeshSet ms)
     }
 
   std::size_t sum = 0;
-  for(int i=0; i < all_cell_types.size(); ++i )
+  for(std::size_t i=0; i < all_cell_types.size(); ++i )
     {
     sum += all_cell_types[i].size();
     }
@@ -269,7 +271,7 @@ void verify_cells_by_type(const smtk::mesh::CollectionPtr& c)
   test( all_cells_appended == all_cells );
 
   std::size_t sum = 0;
-  for(int i=0; i < all_cell_types.size(); ++i )
+  for(std::size_t i=0; i < all_cell_types.size(); ++i )
     {
     sum += all_cell_types[i].size();
 
@@ -633,9 +635,10 @@ void verify_cellset_for_each(const smtk::mesh::CollectionPtr& c)
   smtk::mesh::MeshSet volMeshes = c->meshes( smtk::mesh::Dims3 );
   smtk::mesh::for_each( volMeshes.cells(), functor );
 
-  test( functor.numberOCellsVisited() == volMeshes.cells().size() );
-  test( functor.numberOPointsSeen() == volMeshes.pointConnectivity().size() );
-
+  test( static_cast<std::size_t>(functor.numberOCellsVisited()) ==
+        volMeshes.cells().size() );
+  test( static_cast<std::size_t>(functor.numberOPointsSeen()) ==
+        volMeshes.pointConnectivity().size() );
 
   smtk::mesh::PointConnectivity pc = volMeshes.pointConnectivity();
   pc.initCellTraversal();

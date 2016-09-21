@@ -18,7 +18,7 @@ class TestExodusSession(smtk.testing.TestCase):
 
   def setUp(self):
     import os
-    self.filename = os.path.join(smtk.testing.DATA_DIR, 'exodus', 'pillbox.ncdf')
+    self.filename = os.path.join(smtk.testing.DATA_DIR, 'model', '3d', 'netcdf', 'pillbox.ncdf')
 
     self.mgr = smtk.model.Manager.create()
     sess = self.mgr.createSession('exodus')
@@ -96,7 +96,7 @@ class TestExodusSession(smtk.testing.TestCase):
         cam.SetViewUp(0,1,0)
         self.renderer.ResetCamera()
         self.renderWindow.Render()
-        self.assertImageMatch(['baselines', 'exodus', 'pillbox.png'])
+        self.assertImageMatch(['baseline', 'smtk', 'exodus', 'pillbox.png'])
         self.interact()
 
     else:

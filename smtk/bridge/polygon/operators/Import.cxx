@@ -105,7 +105,7 @@ int Import::taggedPolyData2PolygonModelEntities(vtkIdTypeArray *tagInfo,
   vtkIdType *pts,npts;
   double pnt[3];
   int numEnts = 0;
-  vtkIdType linesOffset, n;
+  vtkIdType linesOffset, n=0;
   if (verts)
     {
     // Need to copy the point coordinate of the vertices
@@ -148,7 +148,7 @@ int Import::taggedPolyData2PolygonModelEntities(vtkIdTypeArray *tagInfo,
   n = lines->GetNumberOfCells();
   pcoords.clear();
   pcoords.reserve((n+1)*3);
-  
+
   for (cellId = linesOffset, lines->SetTraversalLocation(0);lines->GetNextCell(npts,pts); cellId++)
       {
       // There should only be 2 point per line
@@ -217,7 +217,7 @@ int Import::basicPolyData2PolygonModelEntities(vtkPolyData *polyLines,
   int numEnts = 0;
   vtkIdType n, i, j;
   vtkCellArray* lines = pdata->GetLines();
-  vtkIdType currentEdgeTag, lastPointId, cellId;
+  vtkIdType cellId;
   smtk::model::Operator::Ptr edgeOp = sess->op("create edge from points");
   auto createEdgeOp = std::dynamic_pointer_cast<CreateEdgeFromPoints>(edgeOp);
   if (!lines)
@@ -225,7 +225,7 @@ int Import::basicPolyData2PolygonModelEntities(vtkPolyData *polyLines,
     return numEnts;
     }
   n = lines->GetNumberOfCells();
-  
+
   for (cellId = 0, lines->SetTraversalLocation(0);lines->GetNextCell(npts,pts); cellId++)
     {
       pcoords.clear();
@@ -459,7 +459,7 @@ OperatorResult Import::operateInternal()
     }
   diam = sqrt(diam);
   //std::cout << "diam " << diam << "\n";
-  
+
   // Use the lower-left-front bounds as the origin of the plane.
   // This keeps the projected integer coordinates small when the dataset is not
   // well-centered about the origin and makes overflow less likely.
@@ -471,26 +471,26 @@ OperatorResult Import::operateInternal()
     }
   // Infer a feature size from the bounds:
   modOp->findDouble("feature size")->setValue(diam / 1000.0);
-  
+
   OperatorResult modResult = modOp->operate();
   if (modResult->findInt("outcome")->value() != OPERATION_SUCCEEDED)
     {
     smtkInfoMacro(log(), "CreateModel operator failed.");
     result = this->createResult(OPERATION_FAILED);
     }
-  
+
   /* vtkNew<vtkXMLPolyDataWriter> pdw;
      pdw->SetFileName("/tmp/testPolygonInputData.vtp");
      pdw->SetInputDataObject(polyOutput);
      pdw->Write(); */
-  
+
   smtk::model::Model model = modResult->findModelEntity("created")->value();
   int numEntities;
   // Are we dealing with tagged polydata or polydata with pedigrre info?
   vtkIdTypeArray *tagInfo =
     vtkIdTypeArray::SafeDownCast( polyOutput->GetCellData()->GetArray("ElementIds"));
   vtkIdTypeArray* pedigreeIds = vtkIdTypeArray::SafeDownCast(polyOutput->GetCellData()->GetPedigreeIds());
-  
+
   if (tagInfo)
     {
     numEntities = this->taggedPolyData2PolygonModelEntities(tagInfo, polyOutput, model);
@@ -504,14 +504,14 @@ OperatorResult Import::operateInternal()
     numEntities = polyLines2modelEdgesAndFaces(polyOutput, model, sess, log());
     }
   smtkDebugMacro(log(), "Number of entities: " << numEntities << "\n");
-  
+
   result = this->createResult(OPERATION_SUCCEEDED);
   this->addEntityToResult(result, model, CREATED);
-  
+
   /*
   //#include "smtk/io/ExportJSON.h"
   //#include "cJSON.h"
-  
+
   cJSON* json = cJSON_CreateObject();
   smtk::io::ExportJSON::fromModelManager(json, this->manager());
   std::cout << "Result " << cJSON_Print(json) << "\n";

@@ -26,19 +26,20 @@ public:
     typename std::map<I,I>::iterator it = this->m_collapse.find(val);
     if (it != this->m_collapse.end())
       { // val is not at
-      this->m_ranges[it->second]++;
+      I collapseTarget = it->second;
+      this->m_ranges[collapseTarget]++;
       this->m_collapse.erase(it->first);
       typename std::map<I,I>::iterator rit = this->m_ranges.find(val + 1);
       if (rit != this->m_ranges.end())
         {
-        this->m_ranges[it->second] = rit->second;
+        this->m_ranges[collapseTarget] = rit->second;
         this->m_ranges.erase(rit);
         // The entry in m_collapse will now serve match it->second's range entry:
-        this->m_collapse[rit->second + 1] = it->second;
+        this->m_collapse[rit->second + 1] = collapseTarget;
         }
       else
         {
-        this->m_collapse[val + 1] = it->second;
+        this->m_collapse[val + 1] = collapseTarget;
         }
       }
     else

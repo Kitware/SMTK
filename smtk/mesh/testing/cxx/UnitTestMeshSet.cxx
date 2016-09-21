@@ -26,7 +26,7 @@ std::string data_root = SMTK_DATA_DIR;
 smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
 {
   std::string file_path(data_root);
-  file_path += "/mesh/twoassm_out.h5m";
+  file_path += "/mesh/3d/twoassm_out.h5m";
 
   smtk::mesh::CollectionPtr c  = smtk::io::ImportMesh::entireFile(file_path, mngr);
   test( c->isValid(), "collection should be valid");
@@ -427,7 +427,8 @@ void verify_meshset_for_each(const smtk::mesh::CollectionPtr& c)
   smtk::mesh::MeshSet volMeshes = c->meshes( smtk::mesh::Dims3 );
   smtk::mesh::for_each( volMeshes, functor );
 
-  test( functor.numberOfMeshesVisited() == volMeshes.size() );
+  test( static_cast<std::size_t>(functor.numberOfMeshesVisited()) ==
+        volMeshes.size() );
   test( functor.cells() == volMeshes.cells() );
 }
 

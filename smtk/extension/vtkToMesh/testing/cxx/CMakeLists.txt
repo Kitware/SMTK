@@ -16,7 +16,8 @@ set(unit_tests_which_require_data
 
 smtk_unit_tests(LABEL "Mesh"
                 SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
-                LIBRARIES vtkToSMTKMesh vtkFiltersSources)
+                LIBRARIES vtkToSMTKMesh vtkFiltersSources
+                vtkFiltersCore vtkCommonComputationalGeometry)
 
 
 

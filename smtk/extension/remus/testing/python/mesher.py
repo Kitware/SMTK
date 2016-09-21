@@ -21,7 +21,7 @@ class UnitMeshOperator(unittest.TestCase):
     self.mgr = smtk.model.Manager.create()
     self.sess = self.mgr.createSession('discrete')
     SetActiveSession(self.sess)
-    self.modelFile = os.path.join(smtk.testing.DATA_DIR, 'cmb', 'test2D.cmb')
+    self.modelFile = os.path.join(smtk.testing.DATA_DIR, 'model', '2d', 'cmb', 'test2D.cmb')
     self.models = Read(self.modelFile)
 
   def testMeshing2D(self):

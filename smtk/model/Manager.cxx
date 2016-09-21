@@ -2594,6 +2594,11 @@ UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
           arrIdx = arrCtr;
           break;
           }
+        else if (!entity->relations()[itIdx])
+          { // The arrangement is valid but it references a NULL entity.
+          arrIdx = arrCtr;
+          break;
+          }
         // TODO... emit signals for unarrangement/rearrangement
         return entity->relations()[itIdx];
         }

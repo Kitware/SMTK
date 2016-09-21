@@ -102,6 +102,82 @@ bool Session::removeStorage(const smtk::common::UUID& uid)
   return this->m_storage.erase(uid) > 0;
 }
 
+/**\brief Remove all references to \a face from the polygon-session internal storage.
+  *
+  * Note that this must be called **before** \a face is removed from the SMTK model manager
+  * since it uses information in the model manager to obtain the list of vertices bounding
+  * the face.
+  */
+bool Session::removeFaceReferences(const smtk::model::Face& face)
+{
+  bool ok = true;
+  // Find all vertices of face.
+  smtk::model::Edges fe = face.edges();
+  smtk::model::VertexSet fv;
+  smtk::model::Edges::iterator eit;
+  for (eit = fe.begin(); eit != fe.end(); ++eit)
+    {
+    smtk::model::Vertices ev = eit->vertices();
+    fv.insert(ev.begin(), ev.end());
+    }
+  for (smtk::model::VertexSet::iterator vit = fv.begin(); vit != fv.end(); ++vit)
+    {
+    internal::vertex::Ptr vrec = this->findStorage<internal::vertex>(vit->entity());
+    // If removeFaceAdjacencies returns 0, it means the face was not
+    // listed at that vertex. That is not OK:
+    if (!vrec || vrec->removeFaceAdjacencies(face.entity()) <= 0)
+      {
+      std::cerr << "Face " << face.name() << " not adjacent to " << vit->name() << "\n";
+      ok = false;
+      }
+    }
+  return ok;
+}
+
+/**\brief Remove all references to \a edge from the polygon-session internal storage.
+  *
+  * Note that this must be called **before** \a edge is removed from the SMTK model manager
+  * since it uses information in the model manager to obtain the list of vertices bounding
+  * the edge.
+  */
+bool Session::removeEdgeReferences(const smtk::model::Edge& edge)
+{
+  smtk::model::Vertices ev = edge.vertices();
+  for (smtk::model::Vertices::iterator vit = ev.begin(); vit != ev.end(); ++vit)
+    {
+    internal::vertex::Ptr vrec = this->findStorage<internal::vertex>(vit->entity());
+    // If removeIncidentEdge returns 0, it means the edge was not
+    // incident to a vertex supposedly bounding it. That is not OK:
+    if (!vrec || vrec->removeIncidentEdge(edge.entity()) <= 0)
+      {
+      std::cerr << "Edge " << edge.name() << " not incident to " << vit->name() << "\n";
+      return false;
+      }
+    }
+  return this->removeStorage(edge.entity());
+}
+
+/**\brief Remove all references to \a v from the polygon-session internal storage.
+  *
+  * This will emit an error and return false if the vertex has any incident edges.
+  * It is otherwise identical to calling removeStorage(\a v .entity()).
+  */
+bool Session::removeVertReferences(const smtk::model::Vertex& v)
+{
+  internal::vertex::Ptr vrec = this->findStorage<internal::vertex>(v.entity());
+  if (!vrec || vrec->edgesBegin() != vrec->edgesEnd())
+    {
+    smtkWarningMacro(this->log(), "Could not remove vertex " << v.name() << " because it is invalid or has incident edges.");
+    return false;
+    }
+  internal::pmodel* pmod = vrec->parentAs<internal::pmodel>();
+  if (pmod)
+    {
+    pmod->removeVertexLookup(vrec->point(), v.entity());
+    }
+  return this->removeStorage(v.entity());
+}
+
 smtk::model::SessionIOPtr Session::createIODelegate(const std::string& format)
 {
   if (format == "json")

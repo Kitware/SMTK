@@ -743,8 +743,6 @@ int ExportJSON::forManagerMeshes(
   (void)modelMgr;
   //current issue is that a mesh Manager needs to know where to write
   //these collections to disk.
-  typedef smtk::model::EntityRefs EntityRefs;
-  typedef smtk::model::EntityTypeBits EntityTypeBits;
 
   if (!mdesc || mdesc->type != cJSON_Object)
     {
@@ -1120,6 +1118,12 @@ int ExportJSON::addModelsRecord(
   const smtk::model::Models& inModels,
   cJSON* sessionRec)
 {
+  // This static method's signature matches the other "add###Record" methods,
+  // but parameter <modelMgr> is unused. To remove "unused parameter" warnings,
+  // we therefore cast <modelMgr> to void rather than remove the ManagerPtr from
+  // the signature.
+  (void)modelMgr;
+
   cJSON* jmodels = cJSON_CreateObject();
   cJSON_AddItemToObject(sessionRec, "models", jmodels);
 

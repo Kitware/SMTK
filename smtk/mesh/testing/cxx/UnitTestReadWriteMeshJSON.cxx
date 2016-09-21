@@ -33,7 +33,7 @@ namespace
 {
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
-std::string write_root = data_root + "/mesh/tmp";
+std::string write_root = SMTK_SCRATCH_DIR;
 
 void cleanup( const std::string& file_path )
 {
@@ -252,7 +252,7 @@ void verify_writing_and_loading_collections_without_file_path()
 void verify_writing_of_single_collection_to_disk()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/twoassm_out.h5m";
+  file_path += "/mesh/3d/twoassm_out.h5m";
 
   std::string write_path(write_root);
   write_path += "/output.h5m";
@@ -283,7 +283,7 @@ void verify_writing_of_single_collection_to_disk()
 void verify_writing_of_single_collection_to_json()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/twoassm_out.h5m";
+  file_path += "/mesh/3d/twoassm_out.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
@@ -298,6 +298,10 @@ void verify_writing_of_single_collection_to_json()
   c->meshes( smtk::mesh::Domain(444) ).setNeumann( smtk::mesh::Neumann(3) );
   c->meshes( smtk::mesh::Domain(446) ).setNeumann( smtk::mesh::Neumann(2) );
 
+  // By default, the writeLocation is set to readLocation, and we don't want
+  // this test to write to the input file, so set writeLocation to empty 
+  c->writeLocation(std::string());
+  test( (c->writeLocation() == std::string()) );
   cJSON* top = cJSON_CreateObject();
   const bool exportGood = smtk::io::ExportJSON::forSingleCollection(top, c);
 
@@ -308,10 +312,11 @@ void verify_writing_of_single_collection_to_json()
 void verify_reading_of_single_collection_from_json()
 {
   std::string file_path(data_root);
-  file_path += "/mesh/twoassm_out.h5m";
+  file_path += "/mesh/3d/twoassm_out.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   cJSON* top = cJSON_CreateObject();
+  std::string write_path(write_root);
 
   {
   smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
@@ -327,6 +332,10 @@ void verify_reading_of_single_collection_from_json()
   c->meshes( smtk::mesh::Domain(444) ).setNeumann( smtk::mesh::Neumann(3) );
   c->meshes( smtk::mesh::Domain(446) ).setNeumann( smtk::mesh::Neumann(2) );
 
+  // By default, the writeLocation is set to readLocation, and we don't want
+  // this test to write to the input file, so set writeLocation to scratch space 
+  write_path += "/twoassm_output.h5m";
+  c->writeLocation(write_path);
   const bool exportGood = smtk::io::ExportJSON::forSingleCollection(top, c);
 
   test(exportGood == 1, "Expected the Export of forSingleCollection to pass");
@@ -364,6 +373,7 @@ void verify_reading_of_single_collection_from_json()
   test( nMeshes.size() == 2, "wrong number of neumann sets");
   }
 
+  cleanup( write_path );
 }
 
 //----------------------------------------------------------------------------
@@ -379,7 +389,6 @@ void verify_loading_existing_collection_fails()
 
   smtk::io::ModelToMesh convert;
   smtk::mesh::CollectionPtr c = convert(meshManager,modelManager);
-  smtk::common::UUID cUUID = c->entity();
 
   cJSON* top = cJSON_CreateObject();
   c->writeLocation(write_path);

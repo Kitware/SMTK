@@ -326,6 +326,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
   vtkPolyData* pd, const smtk::model::EntityRef& entityref, bool genNormals)
 {
   vtkNew<vtkPoints> pts;
+  pts->SetDataTypeToDouble();
   pd->SetPoints(pts.GetPointer());
   const smtk::model::Tessellation* tess;
   if (!(tess = entityref.hasTessellation()))

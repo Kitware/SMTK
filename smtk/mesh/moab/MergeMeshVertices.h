@@ -13,7 +13,12 @@
 #ifndef __smtk_mesh_moab_MergeMeshVertices_h
 #define __smtk_mesh_moab_MergeMeshVertices_h
 
+#include "smtk/common/CompilerInformation.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "moab/AdaptiveKDTree.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
+
 #include "smtk/mesh/Handle.h"
 
 #include <map>

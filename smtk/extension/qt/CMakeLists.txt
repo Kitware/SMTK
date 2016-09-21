@@ -130,6 +130,6 @@ smtk_export_header(smtkQtExt Exports.h)
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkQtExt)
 
-if (SMTK_ENABLE_TESTING)
-  add_subdirectory(testing)
+if (SMTK_ENABLE_EXAMPLES)
+  add_subdirectory(examples)
 endif()

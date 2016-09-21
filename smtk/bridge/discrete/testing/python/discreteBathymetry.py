@@ -45,13 +45,13 @@ class TestDiscreteBathymetry(smtk.testing.TestCase):
       cam = self.renderer.GetActiveCamera()
       self.renderer.ResetCamera()
       self.renderWindow.Render()
-      self.assertImageMatch(['baselines', 'discrete', 'bathymetry-ChesapeakeBay.png'])
+      self.assertImageMatch(['baseline', 'smtk', 'discrete', 'bathymetry-ChesapeakeBay.png'])
       self.interact()
 
   def setUp(self):
     import os, sys
     self.resetTestFiles()
-    self.addTestFile(['cmb', 'ChesapeakeBayContour.cmb'], ['bathymetry', 'ChesapeakeBay100x100.vti'], self.validateBathymetry)
+    self.addTestFile(['model', '2d', 'cmb', 'ChesapeakeBayContour.cmb'], ['dem', 'ChesapeakeBay100x100.vti'], self.validateBathymetry)
 
     self.mgr = smtk.model.Manager.create()
     sess = self.mgr.createSession('discrete')

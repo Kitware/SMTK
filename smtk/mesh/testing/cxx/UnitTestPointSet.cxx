@@ -26,7 +26,7 @@ std::string data_root = SMTK_DATA_DIR;
 smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
 {
   std::string file_path(data_root);
-  file_path += "/mesh/twoassm_out.h5m";
+  file_path += "/mesh/3d/twoassm_out.h5m";
 
   smtk::mesh::CollectionPtr c  = smtk::io::ImportMesh::entireFile(file_path, mngr);
   test( c->isValid(), "collection should be valid");
@@ -75,7 +75,7 @@ void verify_subsets(const smtk::mesh::CollectionPtr& c)
        iter != ps.range().end(); ++iter )
      {
      range.insert( iter->first, iter->second - 1 );
-     for ( smtk::mesh::Handle i=iter->first; i < iter->second - 1; ++i)
+     for ( smtk::mesh::Handle i=iter->first; i < iter->second; ++i)
        {
        set.insert(i);
        vec.push_back(i);
@@ -385,7 +385,7 @@ class CountPoints : public smtk::mesh::PointForEach
   int numPointsIteratedOver;
 public:
   //--------------------------------------------------------------------------
-  CountPoints( smtk::mesh::CollectionPtr collection ):
+  CountPoints( smtk::mesh::CollectionPtr ):
     numPointsIteratedOver(0)
     {
     }
@@ -417,7 +417,8 @@ void verify_pointset_for_each_read(const smtk::mesh::CollectionPtr& c)
   CountPoints functor(c);
   smtk::mesh::MeshSet volMeshes = c->meshes( smtk::mesh::Dims3 );
   smtk::mesh::for_each( volMeshes.points(), functor );
-  test( functor.numberOfPointsVisited() == volMeshes.points().size() );
+  test( static_cast<std::size_t>(functor.numberOfPointsVisited()) ==
+        volMeshes.points().size() );
 }
 
 
@@ -453,6 +454,8 @@ public:
                  std::vector<double>& xyz,
                  bool& coordinatesModified)
   {
+  (void)coordinatesModified;
+
   //verify the coordinates and the number of points match
   test( (xyz.size() == (pointIds.size() * 3) ) );
 

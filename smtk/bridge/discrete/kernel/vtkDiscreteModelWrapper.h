@@ -134,7 +134,7 @@ public:
 
   // Description:
   // Get the modified time of this object.
-  virtual unsigned long GetMTime();
+  virtual vtkMTimeType GetMTime();
   // Description:
   // Get the composite index given an entity id, return true if EntityId is found
   bool GetChildIndexByEntityId(

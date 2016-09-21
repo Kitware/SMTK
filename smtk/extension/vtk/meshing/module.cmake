@@ -25,7 +25,6 @@ if(SMTK_ENABLE_REMUS_SUPPORT)
       vtkFiltersGeneral
       vtkFiltersGeometry
       vtkGeovisCore
-      vtkIOGDAL
       vtkIOGeometry
       vtkIOParallelExodus
       vtkRenderingCore

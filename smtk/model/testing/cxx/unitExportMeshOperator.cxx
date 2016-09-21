@@ -28,13 +28,8 @@ using namespace boost::filesystem;
 
 namespace
 {
-#ifndef SMTK_DATA_DIR
-#define SMTK_DATA_DIR "."
-#endif
-
 //SMTK_DATA_DIR is a define setup by cmake
-std::string data_root = SMTK_DATA_DIR;
-std::string write_root = data_root + "/mesh/tmp";
+std::string write_root = SMTK_SCRATCH_DIR;
 
 void cleanup( const std::string& file_path )
 {
@@ -95,7 +90,6 @@ int main(int argc, char* argv[])
       }
 
     // Set "import" operator's file to a test file
-    std::string data_root = SMTK_DATA_DIR;
     importOp->specification()->findFile("filename")->
       setValue(std::string(argv[1]));
 
@@ -128,7 +122,6 @@ int main(int argc, char* argv[])
         }
 
       // Set "export mesh" operator's file
-      std::string write_root = data_root + "/mesh/tmp";
       std::string write_path = std::string(write_root + "/testmesh" +
                                            extension[fileType]);
       exportMeshOp->specification()->findFile("filename")->

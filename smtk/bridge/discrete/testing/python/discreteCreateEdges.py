@@ -49,13 +49,13 @@ class TestDiscreteCreateEdges(smtk.testing.TestCase):
       cam.SetViewUp(0,1,0)
       self.renderer.ResetCamera()
       self.renderWindow.Render()
-      self.assertImageMatch(['baselines', 'discrete', 'createedges-SimpleBox.png'])
+      self.assertImageMatch(['baseline', 'smtk', 'discrete', 'createedges-SimpleBox.png'])
       self.interact()
 
   def setUp(self):
     import os, sys
     self.resetTestFiles()
-    self.addTestFile(['cmb', 'SimpleBox.cmb'], self.validateCreateEdges)
+    self.addTestFile(['model', '3d', 'cmb', 'simplebox.cmb'], self.validateCreateEdges)
 
     self.mgr = smtk.model.Manager.create()
     sess = self.mgr.createSession('discrete')
@@ -79,7 +79,7 @@ class TestDiscreteCreateEdges(smtk.testing.TestCase):
     SetVectorValue(btm.findAsModelEntity('model'), [mod,])
 
     res = btm.operate()
-    
+
     sys.stdout.flush()
 
     self.assertEqual(res.findInt('outcome').value(0), smtk.model.OPERATION_SUCCEEDED,

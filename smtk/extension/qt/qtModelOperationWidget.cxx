@@ -164,7 +164,7 @@ void qtModelOperationWidget::initWidget( )
 //-----------------------------------------------------------------------------
 QSize qtModelOperationWidget::sizeHint() const
 {
-  if(QWidget* opW = this->Internals->OperationsLayout->currentWidget())
+  if(this->Internals->OperationsLayout->currentWidget())
     {
     QSize newSize(this->width(), 0);
     int height = 20;
@@ -172,7 +172,7 @@ QSize qtModelOperationWidget::sizeHint() const
       {
       height += this->Internals->WidgetLayout->itemAt(i)->geometry().height();
       }
-    
+
     height = height + this->Internals->LogSplitter->handleWidth()
             + this->Internals->LogSplitter->widget(1)->size().height();
     newSize.setHeight( height > 500 ? height : 500);
@@ -327,7 +327,7 @@ bool qtModelOperationWidget::initOperatorUI(
       continue;
       }
     smtk::common::View::Component& comp = it->second->details().child(i);
-    for(int ci = 0; ci < comp.numberOfChildren(); ++ci)
+    for(std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
       {
       std::string optype;
       if(comp.child(ci).attribute("Type", optype) && optype == att->type())
@@ -344,10 +344,10 @@ bool qtModelOperationWidget::initOperatorUI(
     {
     //Lets create a default view for the operator itself
     opView = smtk::common::View::New("Instanced", brOp->name());
-    
+
     smtk::common::View::Component &comp =
       opView->details().addChild("InstancedAttributes").addChild("Att");
-    comp.setAttribute("Type", att->type()).setAttribute("Name", att->name());  
+    comp.setAttribute("Type", att->type()).setAttribute("Name", att->name());
     att->system()->addView(opView);
     }
 
@@ -388,7 +388,7 @@ bool qtModelOperationWidget::setCurrentOperator(
     {
     return false;
     }
-  
+
   std::string opLabel = this->Internals->m_operatorNameMap[opName];
   int idx = this->Internals->findLabelPosition(opLabel);
   if(this->Internals->OperationCombo->currentIndex() != idx)

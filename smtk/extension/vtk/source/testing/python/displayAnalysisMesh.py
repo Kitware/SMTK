@@ -75,7 +75,7 @@ class TestDisplayAnalysisMesh(smtk.testing.TestCase):
 
       self.renderer.ResetCamera()
       self.renderWindow.Render()
-      self.assertImageMatch(['baselines', 'vtk', 'both-tess.png'])
+      self.assertImageMatch(['baseline', 'smtk', 'vtk', 'both-tess.png'])
       self.interact()
 
     def testSwitchingTessellations(self):
@@ -95,12 +95,12 @@ class TestDisplayAnalysisMesh(smtk.testing.TestCase):
 
       mbs.ShowAnalysisTessellationOn()
       self.renderWindow.Render()
-      self.assertImageMatch(['baselines', 'vtk', 'analysis-tess.png'])
+      self.assertImageMatch(['baseline', 'smtk', 'vtk', 'analysis-tess.png'])
       self.interact()
 
       mbs.ShowAnalysisTessellationOff()
       self.renderWindow.Render()
-      self.assertImageMatch(['baselines', 'vtk', 'display-tess.png'])
+      self.assertImageMatch(['baseline', 'smtk', 'vtk', 'display-tess.png'])
       self.interact()
 
 

@@ -439,6 +439,10 @@ void pqArcWidgetPanel::modifyArc()
     //pass the info from the arc into the widget proxy
     this->updateWidgetRepresentation();
 
+    vtkSMProxy* repProxy = this->ArcWidget->getWidgetProxy()->GetRepresentationProxy();
+    vtkSMPropertyHelper(repProxy, "CanEdit").Set(0);
+    repProxy->UpdateVTKObjects();
+
     this->ArcWidget->checkContourLoopClosed();
     this->ArcWidget->ModifyMode();
     this->ArcWidget->checkCanBeEdited();
@@ -468,9 +472,6 @@ void pqArcWidgetPanel::updateWidgetRepresentation()
     return;
     }
 
-  pqApplicationCore* core = pqApplicationCore::instance();
-  pqObjectBuilder* builder = core->getObjectBuilder();
-
   //create an arc provider for this arc
   vtkSMProxy* smArcSource = vtkSMProxyManager::GetProxyManager()->NewProxy(
     "polygon_operators", "PolygonArcProvider");
@@ -491,6 +492,7 @@ void pqArcWidgetPanel::updateWidgetRepresentation()
           << vtkClientServerStream::Invoke
           << VTKOBJECT(repProxy) << "InitializeContour"
           << vtkClientServerStream::LastResult
+          << 0
           << vtkClientServerStream::End;
   repProxy->GetSession()->ExecuteStream(repProxy->GetLocation(), stream);
 

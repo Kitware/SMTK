@@ -43,6 +43,7 @@
 
 #include <deque>
 #include <map>
+#include <cmath>
 #include <set>
 #include <vector>
 
@@ -119,11 +120,15 @@ bool CreateFaces::populateEdgeMap()
     }
   this->m_model = model;
 
+  // Collect all the edges in this model, not just the free cells:
   smtk::model::Edges allEdges =
-    model.cellsAs<smtk::model::Edges>();
+    model.manager()->entitiesMatchingFlagsAs<smtk::model::Edges>(smtk::model::EDGE, true);
   for (smtk::model::Edges::const_iterator it = allEdges.begin(); it != allEdges.end(); ++it)
     {
-    this->m_edgeMap[*it] = 0;
+    if (it->owningModel() == model)
+      {
+      this->m_edgeMap[*it] = 0;
+      }
     }
   return true;
 }
@@ -150,6 +155,13 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
     }
   model = this->m_model; // should have been set by populateEdgeMap()
 
+  if (this->m_edgeMap.empty())
+    {
+      smtkErrorMacro(this->log(), "No edges selected.");
+      this->m_result = this->createResult(smtk::model::OPERATION_FAILED);
+      return this->m_result;
+    }
+
   // Create a union-find struct
   // for each "model" vertex
   //   for each edge attached to each vertex
@@ -168,6 +180,9 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
   // Create an event queue and populate it with events
   // for each segment of each edge in this->m_edgeMap.
   ModelEdgeMap::iterator modelEdgeIt;
+  internal::Coord xblo, xbhi;
+  internal::Coord yblo, ybhi;
+  bool xybinit = false;
   SweepEventSet eventQueue; // (QE) sorted into a queue by point-x, point-y, event-type, and then event-specific data.
   for (modelEdgeIt = this->m_edgeMap.begin(); modelEdgeIt != this->m_edgeMap.end(); ++modelEdgeIt)
     {
@@ -185,17 +200,33 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
     internal::PointSeq::const_iterator pit = erec->pointsBegin();
     int seg = 0;
     internal::Point last = *pit;
+    if (!xybinit)
+      {
+      xybinit = true;
+      xbhi = pit->x(); xblo = xbhi;
+      ybhi = pit->y(); yblo = ybhi;
+      }
+    else
+      {
+      if (xbhi < pit->x()) { xbhi = pit->x(); } else if (xblo > pit->x()) { xblo = pit->x(); }
+      if (ybhi < pit->y()) { ybhi = pit->y(); } else if (yblo > pit->y()) { yblo = pit->y(); }
+      }
     for (++pit; pit != erec->pointsEnd(); ++pit, ++seg)
       {
       eventQueue.insert(SweepEvent::SegmentStart(last, *pit, modelEdgeIt->first, seg));
       //eventQueue.insert(SweepEvent::SegmentEnd(*pit, modelEdgeIt->first, seg - 1));
       last = *pit;
+      if (xbhi < pit->x()) { xbhi = pit->x(); } else if (xblo > pit->x()) { xblo = pit->x(); }
+      if (ybhi < pit->y()) { ybhi = pit->y(); } else if (yblo > pit->y()) { yblo = pit->y(); }
       }
     }
+  this->m_bdsLo = internal::Point(xblo, yblo);
+  this->m_bdsHi = internal::Point(xbhi, ybhi);
   if (this->m_debugLevel > 0)
     {
     DumpEventQueue( "Initial", eventQueue);
     }
+  std::cout << "Bounds: " << xblo << " " << yblo << "    " << xbhi << " " << ybhi << "\n";
 
   // The first event in eventQueue had better be a segment-start event.
   // So the first thing this event-loop should do is start processing edges.
@@ -235,11 +266,11 @@ smtk::model::OperatorResult CreateFaces::operateInternal()
   // (although TODO: it would be better to triangulate while sweeping).
   this->addTessellations();
 
-	smtk::attribute::IntItem::Ptr outcome =
-		this->m_result->findInt("outcome");
+  smtk::attribute::IntItem::Ptr outcome =
+    this->m_result->findInt("outcome");
   if (this->m_status != outcome->value())
     {
-		outcome->setValue(0, this->m_status);
+    outcome->setValue(0, this->m_status);
     }
 
   return this->m_result;
@@ -251,18 +282,18 @@ void CreateFaces::evaluateLoop(
   std::set<RegionId>& borders)
 {
   (void) borders;
-	// Keep track of loops for tessellation
+  // Keep track of loops for tessellation
   // TODO: Handle tessellation as part of the Neighborhood sweep instead of re-sweeping with boost.polygon.
   this->m_regionLoops[faceNumber].push_back(loop);
 
   // Traverse fragments to build a list of oriented model edges.
   // TODO: Handle split edges here or during sweep?
   for (OrientedEdges::const_iterator oit = loop.begin(); oit != loop.end(); ++oit)
-		{
+    {
     this->m_model.removeCell(oit->first);
-		}
+    }
 
-	smtk::model::Manager::Ptr mgr = this->manager();
+  smtk::model::Manager::Ptr mgr = this->manager();
   std::map<RegionId, smtk::model::Face>::iterator fit = this->m_regionFaces.find(faceNumber);
   // Now transcribe SMTK loop-use from edges referenced by fragments in loop
   // ** OR **
@@ -280,7 +311,7 @@ void CreateFaces::evaluateLoop(
     if (!mgr->insertModelFaceWithOrientedOuterLoop(modelFaceId, modelFaceUseId, outerLoopId, loop))
       {
       smtkErrorMacro(this->log(), "Could not create SMTK outer loop of face.");
-			this->m_status = smtk::model::OPERATION_FAILED;
+      this->m_status = smtk::model::OPERATION_FAILED;
       return;
       }
     // Update vertex neighborhoods to include new face adjacency.
@@ -288,31 +319,33 @@ void CreateFaces::evaluateLoop(
     this->m_model.addCell(modelFace);
     modelFace.assignDefaultName();
     this->updateLoopVertices(smtk::model::Loop(mgr, outerLoopId), modelFace, /* isCCW */ true);
-		this->addEntityToResult(this->m_result, modelFace, CREATED);
+    this->addEntityToResult(this->m_result, modelFace, CREATED);
     if (this->m_debugLevel > 0)
       {
       std::cout
         << "Adding " << faceNumber << " as model face "
         << this->m_result->findModelEntity("created")->numberOfValues() << "\n";
       }
-		this->m_regionFaces[faceNumber] = modelFace;
+    this->m_regionFaces[faceNumber] = modelFace;
     }
   else
     {
     smtk::common::UUID innerLoopId = mgr->unusedUUID();
-		smtk::common::UUID parentLoopId = fit->second.positiveUse().loops()[0].entity();
+    smtk::common::UUID parentLoopId = fit->second.positiveUse().loops()[0].entity();
     if (this->m_debugLevel > 0)
       {
       std::cout
         << "Face " << faceNumber << " parent loop " << parentLoopId
         << " with inner loop " << innerLoopId << "\n";
       }
-		if (!mgr->insertModelFaceOrientedInnerLoop(innerLoopId, parentLoopId, loop))
-			{
-      smtkErrorMacro(this->log(), "Could not create SMTK outer loop of face.");
-			this->m_status = smtk::model::OPERATION_FAILED;
+    if (!mgr->insertModelFaceOrientedInnerLoop(innerLoopId, parentLoopId, loop))
+      {
+      smtkErrorMacro(this->log(), "Could not create SMTK inner loop of face.");
+      this->m_status = smtk::model::OPERATION_FAILED;
       return;
-			}
+      }
+    smtk::model::Loop tmp(mgr, innerLoopId);
+    smtk::model::EdgeUses leus = tmp.edgeUses();
     this->updateLoopVertices(smtk::model::Loop(mgr, innerLoopId), fit->second, /* isCCW */ false);
     }
 }
@@ -408,6 +441,24 @@ void printPts(const std::string& msg, T begin, T end)
 
 void CreateFaces::addTessellations()
 {
+  // See if we need to prevent boost from overflows and crashes
+  // by truncating coordinates to 31 bits.
+  internal::Coord dx = this->m_bdsHi.x();
+  if (this->m_bdsLo.x() < 0 && -this->m_bdsLo.x() > dx)
+    {
+    dx = -this->m_bdsLo.x();
+    }
+  internal::Coord dy = this->m_bdsHi.y();
+  if (this->m_bdsLo.y() < 0 && -this->m_bdsLo.y() > dy)
+    {
+    dy = -this->m_bdsLo.y();
+    }
+  double lx = dx > 0 ? (std::log(dx) / std::log(2.0)) : 1.0;
+  double ly = dy > 0 ? (std::log(dy) / std::log(2.0)) : 1.0;
+  internal::Coord denx = lx > 31 ? (1 << static_cast<int>(std::ceil(lx - 31))) : 1;
+  internal::Coord deny = ly > 31 ? (1 << static_cast<int>(std::ceil(ly - 31))) : 1;
+  bool denom = denx > 1 || deny > 1;
+
   std::map<RegionId, std::vector<OrientedEdges> >::iterator rit; // Face iterator
   for (rit = this->m_regionLoops.begin(); rit != this->m_regionLoops.end(); ++rit)
     {
@@ -440,6 +491,14 @@ void CreateFaces::addTessellations()
       if (isOuter)
         {
         isOuter = false;
+        if (denom)
+          {
+          for (auto fpit = pp2[ppi].rbegin(); fpit != pp2[ppi].rend(); ++fpit)
+            {
+            fpit->x(fpit->x() / denx);
+            fpit->y(fpit->y() / deny);
+            }
+          }
         pface.set(pp2[ppi].rbegin(), pp2[ppi].rend());
         if (this->m_debugLevel > 2)
           {
@@ -450,6 +509,14 @@ void CreateFaces::addTessellations()
       else
         {
         poly::polygon_data<internal::Coord> loop;
+        if (denom)
+          {
+          for (auto fpit = pp2[ppi].rbegin(); fpit != pp2[ppi].rend(); ++fpit)
+            {
+            fpit->x(fpit->x() / denx);
+            fpit->y(fpit->y() / deny);
+            }
+          }
         loop.set(pp2[ppi].rbegin(), pp2[ppi].rend());
         if (this->m_debugLevel > 2)
           {
@@ -479,22 +546,26 @@ void CreateFaces::addTessellations()
       {
       //std::cout << "Fan\n";
       poly::polygon_data<internal::Coord>::iterator_type pcit;
+      internal::Point ipt;
       pcit = poly::begin_points(*pit);
       std::vector<int> triConn;
       triConn.resize(4);
       triConn[0] = smtk::model::TESS_TRIANGLE;
-      pmodel->liftPoint(*pcit, &smtkPt[0]);
+      ipt = !denom ? *pcit : internal::Point(pcit->x() * denx, pcit->y() * deny);
+      pmodel->liftPoint(ipt, &smtkPt[0]);
       triConn[1] = smtkTess->second.addCoords(&smtkPt[0]);
       //std::cout << "  " << triConn[1] << "  " << smtkPt[0] << " " << smtkPt[1] << " " << smtkPt[2] << "\n";
       ++pcit;
-      pmodel->liftPoint(*pcit, &smtkPt[0]);
+      ipt = !denom ? *pcit : internal::Point(pcit->x() * denx, pcit->y() * deny);
+      pmodel->liftPoint(ipt, &smtkPt[0]);
       triConn[3] = smtkTess->second.addCoords(&smtkPt[0]);
       ++pcit;
       //std::cout << "  " << triConn[3] << "  " << smtkPt[0] << " " << smtkPt[1] << " " << smtkPt[2] << "\n";
       for (; pcit != poly::end_points(*pit); ++pcit)
         {
         triConn[2] = triConn[3];
-        pmodel->liftPoint(*pcit, &smtkPt[0]);
+        ipt = !denom ? *pcit : internal::Point(pcit->x() * denx, pcit->y() * deny);
+        pmodel->liftPoint(ipt, &smtkPt[0]);
         triConn[3] = smtkTess->second.addCoords(&smtkPt[0]);
         //std::cout << "  " << triConn[3] << "  " << smtkPt[0] << " " << smtkPt[1] << " " << smtkPt[2] << "\n";
         smtkTess->second.insertNextCell(triConn);
