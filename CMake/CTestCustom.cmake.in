@@ -11,6 +11,11 @@ set (CTEST_CUSTOM_WARNING_EXCEPTION
   "Python/.* warning: declaration of .* shadows a member of 'this' \\[-Wshadow\\]"
   "vtkPythonArgs.h.* warning: use of old-style cast \\[-Wold-style-cast\\]"
   "Done, 0 warnings"
+  # The KWIML*_VERIFY_ symbols are extern but not actually defined anywhere.
+  # They are only there to cause compiler errors if one of the determined values
+  # is wrong. This confuses shiboken, so we ignore this warning when it comes
+  # from shiboken's code generation.
+  "WARNING scope not found for symbol:KWIML"
 )
 
 ##------------------------------------------------------------------------------
