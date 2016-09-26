@@ -27,6 +27,25 @@
 #include <string>
 #include <sstream>
 
+//force to use filesystem version 3
+#define BOOST_FILESYSTEM_VERSION 3
+#include <boost/filesystem.hpp>
+using namespace boost::filesystem;
+
+namespace
+{
+void cleanup( const std::string& file_path )
+{
+  //first verify the file exists
+  ::boost::filesystem::path path( file_path );
+  if( ::boost::filesystem::is_regular_file( path ) )
+    {
+    //remove the file_path if it exists.
+    ::boost::filesystem::remove( path );
+    }
+}
+}
+
 namespace smtk {
   namespace model {
 
@@ -63,11 +82,14 @@ smtk::model::OperatorResult ExportMesh::operateInternal()
   int index = 0;
 
   smtk::mesh::MeshSets exported;
+  std::vector<std::string> generatedFiles;
 
   for (attribute::MeshItem::const_mesh_it mit = meshItem->begin();
        mit != meshItem->end(); ++mit)
     {
     smtk::mesh::CollectionPtr collection = mit->collection();
+    bool fileWriteSuccess = false;
+
     if(collection)
       {
       if (meshItem->numberOfValues() > 1)
@@ -76,7 +98,6 @@ smtk::model::OperatorResult ExportMesh::operateInternal()
         outputfile = s.str();
         }
 
-      bool fileWriteSuccess;
       switch (componentToWrite)
         {
       case EntireCollection:
@@ -101,8 +122,18 @@ smtk::model::OperatorResult ExportMesh::operateInternal()
       if(fileWriteSuccess)
         {
         ++index;
+        generatedFiles.push_back(outputfile);
         exported.insert(*mit);
         }
+      }
+
+    if (fileWriteSuccess == false)
+      {
+      for (auto&& file : generatedFiles)
+        {
+        cleanup(file);
+        }
+      return this->createResult(OPERATION_FAILED);
       }
     }
 
