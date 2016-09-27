@@ -25,6 +25,8 @@
 
 #include "smtk/bridge/polygon/CreateEdge_xml.h"
 
+using smtk::common::UUID;
+
 namespace smtk {
   namespace bridge {
     namespace polygon {
@@ -341,7 +343,8 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
         // Does the current segment end with a model vertex?
         if (generateEdge)
           { // Generate an edge. segStart->second.low() is guaranteed to be a model vertex.
-          smtk::model::Edge edge = storage->createModelEdgeFromSegments(mgr, segStart, sit);
+          smtk::model::Edge edge = storage->createModelEdgeFromSegments(
+            mgr, segStart, sit, true, std::pair<UUID,UUID>(), false);
           if (edge.isValid())
             created.push_back(edge);
           segStart = sit;
@@ -350,7 +353,8 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
       // Handle the case when there are no model vertices:
       if (segStart != result.end())
         {
-        smtk::model::Edge edge = storage->createModelEdgeFromSegments(mgr, segStart, result.end());
+        smtk::model::Edge edge = storage->createModelEdgeFromSegments(
+          mgr, segStart, result.end(), true, std::pair<UUID,UUID>(), false);
         created.push_back(edge);
         }
       }

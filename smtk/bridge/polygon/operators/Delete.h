@@ -47,9 +47,6 @@ protected:
   template<typename U, typename V, typename W>
   bool addDependents(const smtk::model::EntityRef& ent, bool deleteDependents, U& verts, V& edges, W& faces);
 
-  template<typename T>
-  bool deleteEntities(T& entities);
-
   int m_numInUse;
   int m_numWarnings;
   smtk::model::EntityRefs m_notRemoved;

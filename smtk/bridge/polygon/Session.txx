@@ -10,6 +10,9 @@
 #ifndef smtk_session_polygon_Session_txx
 #define smtk_session_polygon_Session_txx
 
+#include "smtk/model/Manager.h"
+#include "smtk/model/Manager.txx"
+
 namespace smtk {
   namespace bridge {
     namespace polygon {
@@ -23,10 +26,17 @@ namespace smtk {
   * Given an edge, it removes the corresponding incident-edge records from each endpoint.
   * Only lower-dimensional references are processed; this method assumes you have already
   * invoked consistentInternalDelete() on any parent entities.
+  * Finally, the SMTK model manager (assumed to be the same for all entities in \a container)
+  * is told to delete/reconcile records related to the entities.
+  *
+  * This method is provided by the session instead of the
+  * polygon's internal pmodel class because the container
+  * may include cells from multiple models.
   */
-template<typename T>
-void Session::consistentInternalDelete(T& container)
+template<typename T, typename U, typename V>
+void Session::consistentInternalDelete(T& container, U& modified, V& expunged, bool logDebug)
 {
+  smtk::model::Manager::Ptr mgr;
   typename T::iterator it;
   for (it = container.begin(); it != container.end(); ++it)
     {
@@ -35,12 +45,20 @@ void Session::consistentInternalDelete(T& container)
       smtkWarningMacro(this->log(), "Trying to delete polygon storage for " << it->name() << " (" << it->flagSummary() << ")");
       continue;
       }
+    if (!mgr)
+      {
+      mgr = it->manager();
+      }
     switch (it->dimensionBits())
       {
     case smtk::model::DIMENSION_2: this->removeFaceReferences(*it); break;
     case smtk::model::DIMENSION_1: this->removeEdgeReferences(*it); break;
     case smtk::model::DIMENSION_0: this->removeVertReferences(*it); break;
       }
+    }
+  if (mgr)
+    {
+    mgr->deleteEntities(container, modified, expunged, logDebug);
     }
 }
 

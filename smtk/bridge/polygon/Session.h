@@ -51,8 +51,8 @@ public:
 
   virtual SessionInfoBits allSupportedInformation() const;
 
-  template<typename T>
-  void consistentInternalDelete(T& container);
+  template<typename T, typename U, typename V>
+  void consistentInternalDelete(T& container, U& modified, V& expunged, bool logDebug);
 
 protected:
   friend class Neighborhood;

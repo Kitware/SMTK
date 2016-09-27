@@ -282,9 +282,40 @@ void CreateFaces::evaluateLoop(
   std::set<RegionId>& borders)
 {
   (void) borders;
+
+  std::map<RegionId, smtk::model::Face>::iterator fit = this->m_regionFaces.find(faceNumber);
+  if (fit != this->m_regionFaces.end() && !fit->second.isValid())
+    { // An invalid face in the region->face map indicates we should ignore all loops bounding the region
+    return;
+    }
+
   // Keep track of loops for tessellation
   // TODO: Handle tessellation as part of the Neighborhood sweep instead of re-sweeping with boost.polygon.
   this->m_regionLoops[faceNumber].push_back(loop);
+
+  // Do not create a face if any edge is already marked as bounding a face on side indicated by the edge-use.
+  for (OrientedEdges::const_iterator oit = loop.begin(); oit != loop.end(); ++oit)
+    {
+    smtk::model::EdgeUses eus = oit->first.edgeUses();
+    for (smtk::model::EdgeUses::iterator euit = eus.begin(); euit != eus.end(); ++euit)
+      {
+      if (euit->orientation() == smtk::model::POSITIVE == oit->second)
+        { // This use is co-oriented with the loop. Does it have a face?
+        smtk::model::FaceUse fu = euit->faceUse();
+        if (fu.isValid() && fu.face().isValid())
+          {
+          if (this->m_debugLevel > 0)
+            {
+            smtkDebugMacro(this->log(),
+              "  Skipping loop because edge " << oit->first.name() << " (" << oit->first.entity() << ")" <<
+              " is already attached to face " << fu.face().name() << " (" << fu.face().entity() << ")");
+            }
+          this->m_regionFaces[faceNumber] = smtk::model::Face(); // Mark the region as invalid
+          return;
+          }
+        }
+      }
+    }
 
   // Traverse fragments to build a list of oriented model edges.
   // TODO: Handle split edges here or during sweep?
@@ -294,7 +325,6 @@ void CreateFaces::evaluateLoop(
     }
 
   smtk::model::Manager::Ptr mgr = this->manager();
-  std::map<RegionId, smtk::model::Face>::iterator fit = this->m_regionFaces.find(faceNumber);
   // Now transcribe SMTK loop-use from edges referenced by fragments in loop
   // ** OR **
   // if loop edges have "faceNumber" material on both sides, add as included edge
@@ -468,6 +498,10 @@ void CreateFaces::addTessellations()
       }
     // Look up SMTK face and owning model from region number:
     smtk::model::Face modelFace = this->m_regionFaces[rit->first];
+    if (!modelFace.isValid())
+      { // Do not attempt to tessellate an invalid face (we expect the face to already exist).
+      continue;
+      }
     smtk::model::Model model = modelFace.owningModel();
     internal::pmodel::Ptr pmodel = this->findStorage<internal::pmodel>(model.entity());
 

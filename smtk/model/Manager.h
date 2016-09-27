@@ -210,6 +210,7 @@ public:
   void assignDefaultNames();
   void assignDefaultNamesToModelChildren(const smtk::common::UUID& modelId);
   std::string assignDefaultName(const smtk::common::UUID& uid);
+  std::string assignDefaultNameIfMissing(const smtk::common::UUID& uid);
   static std::string shortUUIDName(const smtk::common::UUID& uid, BitFlags entityFlags);
 
   static StringList sessionTypeNames();
@@ -384,6 +385,9 @@ public:
     const smtk::common::UUID& loopId, // to be created
     const smtk::common::UUID& preExistingLoopId, // the outer loop to contain the inner loop
     const T& orderedEdgesWithOrientation);
+
+  template<typename T, typename U, typename V>
+  bool deleteEntities(T& entities, U& modified, V& expunged, bool debugLog);
 
   void observe(ManagerEventType event, ConditionCallback functionHandle, void* callData);
   void observe(ManagerEventType event, OneToOneCallback functionHandle, void* callData);

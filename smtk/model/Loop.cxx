@@ -151,6 +151,13 @@ bool Loop::replaceEdgeUseWithUses(const EdgeUse& original, const EdgeUses& repla
       {
       continue;
       }
+    // An edge-use may only belong to a single shell-use... obliterate pre-existing shells:
+    Arrangements* ua = mgr->hasArrangementsOfKindForEntity(rit->entity(), HAS_SHELL);
+    if (ua && !ua->empty())
+      {
+      ua->clear();
+      }
+    // Now add the shell arrangement:
     mgr->arrangeEntity(rit->entity(), HAS_SHELL, Arrangement::UseHasShellWithIndex(
         useRec->appendRelation(this->m_entity)), -1);
     }

@@ -187,12 +187,11 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
     std::cout << "  " << ptit->x() << " " << ptit->y() << "\n";
     }
   smtk::model::EntityRefs eset;
-  smtk::model::EntityRefs emod;
   smtk::model::EntityRefArray expunged;
   if (!splitLocs.empty())
     {
     smtkInfoMacro(this->log(), "Splitting tweaked edge into " << (splitLocs.size() + 1) << " pieces.");
-    if (!pmod->splitModelEdgeAtModelVertices(mgr, storage, promotedVerts, splitLocs, eset, emod))
+    if (!pmod->splitModelEdgeAtModelVertices(mgr, storage, promotedVerts, splitLocs, eset, this->m_debugLevel))
       {
       smtkErrorMacro(this->log(), "Could not split edge.");
       ok = false;
@@ -202,7 +201,6 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
       expunged.push_back(src);
       }
     created.insert(created.end(), eset.begin(), eset.end());
-    modified.insert(modified.end(), emod.begin(), emod.end());
     }
 
   if (this->m_debugLevel > 0)

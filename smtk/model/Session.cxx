@@ -396,21 +396,44 @@ bool Session::removeGeneratedProperties(const EntityRef& ent, SessionInfoBits pr
   */
 bool Session::splitProperties(const EntityRef& from, const EntityRefs& to)
 {
-  const char* intPropertyNamesToCopy[] = {
+  const char* intPropertyNamesToBroadcast[] = {
     "pedigree id"
   };
-  unsigned npc = sizeof(intPropertyNamesToCopy) / sizeof(intPropertyNamesToCopy[0]);
+  unsigned npc = sizeof(intPropertyNamesToBroadcast) / sizeof(intPropertyNamesToBroadcast[0]);
 
+  const char* stringPropertyNamesToBroadcast[] = {
+    "name"
+  };
+  unsigned nps = sizeof(stringPropertyNamesToBroadcast) / sizeof(stringPropertyNamesToBroadcast[0]);
+
+  // TODO: It should be possible to use different rules on a case-by-case basis:
+  // Split rule for integers: broadcast value to all.
   const IntegerData& idata(from.integerProperties());
   for (unsigned i = 0; i < npc; ++i)
     {
     IntegerData::const_iterator ipit;
-    if ((ipit = idata.find(intPropertyNamesToCopy[i])) != idata.end())
+    if ((ipit = idata.find(intPropertyNamesToBroadcast[i])) != idata.end())
       {
       for (EntityRefs::iterator oit = to.begin(); oit != to.end(); ++oit)
         {
         EntityRef mutableEnt(*oit);
-        mutableEnt.setIntegerProperty(intPropertyNamesToCopy[i], ipit->second);
+        mutableEnt.setIntegerProperty(intPropertyNamesToBroadcast[i], ipit->second);
+        }
+      }
+    }
+
+  // TODO: It should be possible to use different rules on a case-by-case basis:
+  // Split rule for strings: broadcast value to one (the first by UUID).
+  for (int i = 0; i < nps; ++i)
+    {
+    const StringData& sdata(from.stringProperties());
+    StringData::const_iterator spit;
+    if (!to.empty())
+      { // Copy name only to the first entity.
+      EntityRef mutableEnt(*to.begin());
+      if ((spit = sdata.find(stringPropertyNamesToBroadcast[i])) != sdata.end())
+        {
+        mutableEnt.setStringProperty(stringPropertyNamesToBroadcast[i], spit->second);
         }
       }
     }
@@ -429,11 +452,18 @@ bool Session::splitProperties(const EntityRef& from, const EntityRefs& to)
   */
 bool Session::mergeProperties(const EntityRefs& from, EntityRef& to)
 {
-  const char* intPropertyNamesToMerge[] = {
+  const char* intPropertyNamesToReduce[] = {
     "pedigree id"
   };
-  unsigned npc = sizeof(intPropertyNamesToMerge) / sizeof(intPropertyNamesToMerge[0]);
+  unsigned npc = sizeof(intPropertyNamesToReduce) / sizeof(intPropertyNamesToReduce[0]);
 
+  const char* stringPropertyNamesToReduce[] = {
+    "name"
+  };
+  unsigned nps = sizeof(stringPropertyNamesToReduce) / sizeof(stringPropertyNamesToReduce[0]);
+
+  // TODO: It should be possible to use different rules on a case-by-case basis:
+  // Merge rule for integers: union all values.
   std::set<int> imerged;
   for (unsigned i = 0; i < npc; ++i)
     {
@@ -441,13 +471,37 @@ bool Session::mergeProperties(const EntityRefs& from, EntityRef& to)
     for (eit = from.begin(); eit != from.end(); ++eit)
       {
       const IntegerData& values(eit->integerProperties());
-      IntegerData::const_iterator valueIt = values.find(intPropertyNamesToMerge[i]);
+      IntegerData::const_iterator valueIt = values.find(intPropertyNamesToReduce[i]);
       if (valueIt != values.end())
         {
         imerged.insert(valueIt->second.begin(), valueIt->second.end());
         }
       }
-    to.setIntegerProperty(intPropertyNamesToMerge[i], IntegerList(imerged.begin(), imerged.end()));
+    to.setIntegerProperty(intPropertyNamesToReduce[i], IntegerList(imerged.begin(), imerged.end()));
+    }
+
+  // TODO: It should be possible to use different rules on a case-by-case basis:
+  // Merge rule for strings: choose the first one:
+  StringList svalue;
+  for (int i = 0; i < nps; ++i)
+    {
+    bool haveString = false;
+    EntityRefs::const_iterator eit;
+    for (eit = from.begin(); eit != from.end(); ++eit)
+      {
+      const StringData& values(eit->stringProperties());
+      StringData::const_iterator valueIt = values.find(stringPropertyNamesToReduce[i]);
+      if (valueIt != values.end())
+        {
+        haveString = true;
+        svalue.insert(svalue.end(), valueIt->second.begin(), valueIt->second.end());
+        break;
+        }
+      }
+    if (haveString)
+      {
+      to.setStringProperty(stringPropertyNamesToReduce[i], StringList(svalue.begin(), svalue.end()));
+      }
     }
   return true;
 }

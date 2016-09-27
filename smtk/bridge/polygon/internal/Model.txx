@@ -25,7 +25,8 @@ namespace smtk {
 
 /**\brief Create a model edge from ordered segments with preconditions.
   *
-  * + Segments must be ordered head-to-tail.
+  * + Segments must be ordered head-to-tail (head of segment 1 is tail
+  *   of segment 2).
   * + Only the initial and final points may have model vertices associated
   *   with their locations.
   * + If the initial and final points are not identical, then model vertices
@@ -37,9 +38,28 @@ namespace smtk {
   *
   * If these preconditions do not hold, either an invalid (empty) edge will be
   * returned or the model will become inconsistent.
+  *
+  * The \a splitEdgeFaces argument should normally be a pair<Id,Id> = make_pair(Id(),Id()).
+  * When this method is called to create an edge which replaces a *portion* of a pre-existing model-edge,
+  * it may be a pair<Id,Id> indicating face-adjacency information to store in each vertice's
+  * edge-incidence records. It also relaxes the check on whether an edge can be inserted at the
+  * endpoint vertices, since the only time face-adjacencies should be provided is during surgery
+  * to remove an edge and replace it with a different edge which preserves the old edge's adjacencies.
+  *
+  * Finally \a headIsNewVertex indicates whether, when \a splitEdgeFaces is not empty, the
+  * head of the segments is a model vertex that has no other incident edges yet. When true,
+  * the face-adjacency information is only updated on the edge being inserted at the head vertex
+  * and not on other incident edges (since none exist at this point, it would overwrite the
+  * adjacency information on the new edge with the wrong value).
   */
-template<typename T>
-model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, T end)
+template<typename T, typename U>
+model::Edge pmodel::createModelEdgeFromSegments(
+  model::ManagerPtr mgr,
+  T begin,
+  T end,
+  bool addToModel,
+  const U& splitEdgeFaces,
+  bool headIsNewVertex)
 {
   if (!mgr || begin == end)
     return smtk::model::Edge();
@@ -57,11 +77,15 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
     return smtk::model::Edge();
     }
 
+  bool splittingEdge = (!!splitEdgeFaces.first) || (!!splitEdgeFaces.second);
   internal::vertex::incident_edges::iterator whereBegin;
   internal::vertex::incident_edges::iterator whereEnd;
   if (vInitStorage)
     { // Ensure edge can be inserted without splitting a face.
-    vInitStorage->setInsideSplit(true);
+    if (splittingEdge)
+      {
+      vInitStorage->setInsideSplit(true);
+      }
     if (!vInitStorage->canInsertEdge(begin->second.high(), &whereBegin))
       {
       smtkErrorMacro(this->m_session->log(),
@@ -72,7 +96,10 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
 
   if (vFiniStorage)
     { // Ensure edge can be inserted without splitting a face.
-    vFiniStorage->setInsideSplit(true);
+    if (splittingEdge)
+      {
+      vFiniStorage->setInsideSplit(true);
+      }
     if (!vFiniStorage->canInsertEdge((begin + (end - begin - 1))->second.low(), &whereEnd))
       {
       smtkErrorMacro(this->m_session->log(),
@@ -94,9 +121,14 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
 
   smtk::model::Model parentModel(mgr, this->id());
   // Insert edge at proper place in model vertex edge-lists
+  vertex::incident_edges::iterator inserted;
   if (vInitStorage)
     {
-    vInitStorage->insertEdgeAt(whereBegin, created.entity(), /* edge is outwards: */ true);
+    inserted = vInitStorage->insertEdgeAt(whereBegin, created.entity(), /* edge is outwards: */ true, splitEdgeFaces.second);
+    if (splitEdgeFaces.first)
+      { // Need to mark an adjacent edge with the other face
+      (inserted == vInitStorage->edgesBegin() ? vInitStorage->edgesBack() : *(--inserted)).m_adjacentFace = splitEdgeFaces.first;
+      }
     smtk::model::Vertex vert(mgr, vInit);
     if (parentModel.isEmbedded(vert))
       parentModel.unembedEntity(vert);
@@ -106,7 +138,11 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
     }
   if (vFiniStorage)
     {
-    vFiniStorage->insertEdgeAt(whereEnd, created.entity(), /* edge is outwards: */ false);
+    inserted = vFiniStorage->insertEdgeAt(whereEnd, created.entity(), /* edge is outwards: */ false, splitEdgeFaces.first);
+    if (splitEdgeFaces.second && !headIsNewVertex)
+      { // Need to mark an adjacent edge with the other face
+      (inserted == vFiniStorage->edgesBegin() ? vFiniStorage->edgesBack() : *(--inserted)).m_adjacentFace = splitEdgeFaces.second;
+      }
     smtk::model::Vertex vert(mgr, vFini);
     if (parentModel.isEmbedded(vert))
       parentModel.unembedEntity(vert);
@@ -117,8 +153,11 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
   // Add tesselation to created edge using storage to lift point coordinates:
   this->addEdgeTessellation(created, storage);
 
-  parentModel.embedEntity(created);
-  created.assignDefaultName(); // Do not move above parentModel.embedEntity() or name will suck.
+  if (addToModel)
+    {
+    parentModel.embedEntity(created);
+    created.assignDefaultName(); // Do not move above parentModel.embedEntity() or name will suck.
+    }
 
   return created;
 }

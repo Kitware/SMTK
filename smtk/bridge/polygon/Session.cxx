@@ -127,7 +127,9 @@ bool Session::removeFaceReferences(const smtk::model::Face& face)
     // listed at that vertex. That is not OK:
     if (!vrec || vrec->removeFaceAdjacencies(face.entity()) <= 0)
       {
-      std::cerr << "Face " << face.name() << " not adjacent to " << vit->name() << "\n";
+      smtkErrorMacro(this->log(),
+        "Face " << face.name() << " (" << face.entity() << ") " <<
+        " not bounded by " << vit->name() << " (" << vit->entity() << ")");
       ok = false;
       }
     }

@@ -94,6 +94,7 @@ public:
   bool IndexFromSimple(int& relationIdx) const;
 
   bool relations(smtk::common::UUIDArray& relsOut, const Entity* ent, ArrangementKind k) const;
+  bool relationIndices(std::vector<int>& relsOut, const Entity* ent, ArrangementKind k) const;
 
   /// A helper to extract the relationship from an arrangement that stores only an index.
   template<bool (Arrangement::*M)(int&) const>
@@ -110,6 +111,18 @@ public:
             rels.push_back(entity->relations()[idx]);
         }
       return rels.empty() ? false : true;
+      }
+    bool operator () (
+      std::vector<int>& relIdxs, const Entity* entity, const Arrangement& arr) const
+      {
+      if (entity)
+        {
+        int idx;
+        if ((arr.*M)(idx))
+          if (idx >= 0 && idx < static_cast<int>(entity->relations().size()))
+            relIdxs.push_back(idx);
+        }
+      return relIdxs.empty() ? false : true;
       }
   };
 
@@ -128,6 +141,18 @@ public:
             rels.push_back(entity->relations()[idx]);
         }
       return rels.empty() ? false : true;
+      }
+    bool operator () (
+      std::vector<int>& relIdxs, const Entity* entity, const Arrangement& arr) const
+      {
+      if (entity)
+        {
+        int idx, sense;
+        if ((arr.*M)(idx, sense))
+          if (idx >= 0 && idx < static_cast<int>(entity->relations().size()))
+            relIdxs.push_back(idx);
+        }
+      return relIdxs.empty() ? false : true;
       }
   };
 
@@ -148,6 +173,19 @@ public:
         }
       return rels.empty() ? false : true;
       }
+    bool operator () (
+      std::vector<int>& relIdxs, const Entity* entity, const Arrangement& arr) const
+      {
+      if (entity)
+        {
+        int ibeg, iend;
+        if ((arr.*M)(ibeg, iend))
+          for (; ibeg < iend; ++ibeg)
+            if (ibeg >= 0 && ibeg < static_cast<int>(entity->relations().size()))
+              relIdxs.push_back(ibeg);
+        }
+      return relIdxs.empty() ? false : true;
+      }
   };
 
   /// A helper to extract the relationship from an arrangement that stores an index, sense, and orientation.
@@ -166,6 +204,19 @@ public:
             rels.push_back(entity->relations()[idx]);
         }
       return rels.empty() ? false : true;
+      }
+    bool operator () (
+      std::vector<int>& relIdxs, const Entity* entity, const Arrangement& arr) const
+      {
+      if (entity)
+        {
+        int idx, sense;
+        Orientation orient;
+        if ((arr.*M)(idx, sense, orient))
+          if (idx >= 0 && idx < static_cast<int>(entity->relations().size()))
+            relIdxs.push_back(idx);
+        }
+      return relIdxs.empty() ? false : true;
       }
   };
 
