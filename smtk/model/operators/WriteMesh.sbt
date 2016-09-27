@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the mesh "ExportMesh" Operator -->
+<!-- Description of the mesh "WriteMesh" Operator -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="export mesh" BaseType="operator">
+    <AttDef Type="write mesh" BaseType="operator">
       <ItemDefinitions>
         <MeshEntity Name="mesh" NumberOfRequiredValues="1" Extensible="true" />
         <File Name="filename" NumberOfRequiredValues="1" ShouldExist="false"
@@ -13,14 +13,14 @@
 	  <DiscreteInfo DefaultIndex="0">
 	    <Value Enum="Entire Collection">0</Value>
             <Value Enum="Only Domain">1</Value>
-            <Value Enum="Only Neumann">2</Value>
-            <Value Enum="Only Dirichlet">3</Value>
+            <Value Enum="Only Dirichlet">2</Value>
+            <Value Enum="Only Neumann">3</Value>
           </DiscreteInfo>
 	</Int>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
-    <AttDef Type="result(export mesh)" BaseType="result">
+    <AttDef Type="result(write mesh)" BaseType="result">
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>

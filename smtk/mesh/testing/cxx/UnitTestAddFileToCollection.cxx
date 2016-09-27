@@ -10,7 +10,7 @@
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
-#include "smtk/io/ImportMesh.h"
+#include "smtk/io/ReadMesh.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -44,12 +44,13 @@ void verify_cant_append_to_bad_collection()
 
   //create a bad collection
   std::string file_path(data_root);
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
+  smtk::io::ReadMesh read;
+  smtk::mesh::CollectionPtr c = read(file_path, manager);
   test( !c->isValid(), "collection should be invalid");
 
   //append to the bad collection is always a failure
-  bool result = smtk::io::ImportMesh::entireFileToCollection(first_mesh_path(), c);
-  test( !result, "import into an invalid collection should fail");
+  bool result = read(first_mesh_path(), c);
+  test( !result, "read into an invalid collection should fail");
   test( !c->isValid(), "collection should still be invalid");
 }
 
@@ -57,9 +58,9 @@ void verify_cant_append_to_bad_collection()
 void verify_cant_append_to_null_collection()
 {
   smtk::mesh::CollectionPtr null_collection_ptr;
-  bool result = smtk::io::ImportMesh::entireFileToCollection(first_mesh_path(),
-                                                             null_collection_ptr);
-  test( !result, "import into a null collection should fail");
+  smtk::io::ReadMesh read;
+  bool result = read(first_mesh_path(), null_collection_ptr);
+  test( !result, "read into a null collection should fail");
 }
 //----------------------------------------------------------------------------
 void verify_append_to_valid_empty_collection()
@@ -67,9 +68,9 @@ void verify_append_to_valid_empty_collection()
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr collection = manager->makeCollection();
 
-  bool result = smtk::io::ImportMesh::entireFileToCollection(second_mesh_path(),
-                                                             collection);
-  test( result, "import of self into self should work");
+  smtk::io::ReadMesh read;
+  bool result = read(second_mesh_path(), collection);
+  test( result, "read of self into self should work");
   test( collection->isValid(), "collection should be valid");
 
   std::size_t numMeshes = collection->numberOfMeshes();
@@ -80,15 +81,16 @@ void verify_append_to_valid_empty_collection()
 void verify_append_self_to_self()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(first_mesh_path(), manager);
+  smtk::io::ReadMesh read;
+  smtk::mesh::CollectionPtr c = read(first_mesh_path(), manager);
   test( c->isValid(), "collection should be valid");
 
   std::size_t origNumMeshes = c->numberOfMeshes();
   test( origNumMeshes != 0);
 
   //append the mesh back onto itself
-  bool result = smtk::io::ImportMesh::entireFileToCollection(first_mesh_path(), c);
-  test( result, "import of self into self should work");
+  bool result = read(first_mesh_path(), c);
+  test( result, "read of self into self should work");
   test( c->isValid(), "collection should be valid");
 
   //verify the size has doubled
@@ -100,7 +102,8 @@ void verify_append_self_to_self()
 void verify_append_subsection_of_self()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(first_mesh_path(), manager);
+  smtk::io::ReadMesh read;
+  smtk::mesh::CollectionPtr c = read(first_mesh_path(), manager);
   test( c->isValid(), "collection should be valid");
   std::size_t firstNumMesh = c->numberOfMeshes();
   test( firstNumMesh != 0);
@@ -109,15 +112,15 @@ void verify_append_subsection_of_self()
   //this can be used to verify that the append collection has the proper size
   std::size_t secondNumMesh = 0;
   {
-  smtk::mesh::CollectionPtr c2 = smtk::io::ImportMesh::onlyNeumann(first_mesh_path(),manager);
+  smtk::mesh::CollectionPtr c2 = read(first_mesh_path(),manager,smtk::io::mesh::Subset::OnlyNeumann);
   test( c2->isValid(), "second collection load should be valid");
   secondNumMesh = c2->numberOfMeshes();
   test( secondNumMesh != 0);
   }
   //now append a second file and verify the number of meshes is correct
-  bool result = smtk::io::ImportMesh::addNeumannToCollection(first_mesh_path(), c);
-  test( result, "import into a valid collection should work");
-  test( c->isValid(), "collection after import should still be valid");
+  bool result = read(first_mesh_path(), c, smtk::io::mesh::Subset::OnlyNeumann);
+  test( result, "read into a valid collection should work");
+  test( c->isValid(), "collection after read should still be valid");
 
   std::size_t newNumMeshes = c->numberOfMeshes();
   test( newNumMeshes == firstNumMesh + secondNumMesh );
@@ -127,21 +130,24 @@ void verify_append_subsection_of_self()
 void verify_cant_append_mismatched_data()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(first_mesh_path(), manager);
+  smtk::io::ReadMesh read;
+  smtk::mesh::CollectionPtr c = read(first_mesh_path(), manager);
   test( c->isValid(), "collection should be valid");
   std::size_t firstNumMesh = c->numberOfMeshes();
   test( firstNumMesh != 0);
 
   //now append a second file which has different vertices and verify that fails
-  bool result = smtk::io::ImportMesh::entireFileToCollection(second_mesh_path(), c);
-  test( !result, "import of a second mesh that has different vertices should fail");
+  bool result = read(second_mesh_path(), c);
+  test( !result, "read of a second mesh that has different vertices should fail");
 }
 
 //----------------------------------------------------------------------------
 void verify_append_dirichlet_to_neumann()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyNeumann(first_mesh_path(), manager);
+  smtk::io::ReadMesh read;
+  smtk::mesh::CollectionPtr c = read(first_mesh_path(), manager,
+                                     smtk::io::mesh::Subset::OnlyNeumann);
   test( c->isValid(), "collection should be valid");
   std::size_t firstNumMesh = c->numberOfMeshes();
   test( firstNumMesh != 0);
@@ -150,13 +156,15 @@ void verify_append_dirichlet_to_neumann()
   //this can be used to verify that the append collection has the proper size
   std::size_t secondNumMesh = 0;
   {
-  smtk::mesh::CollectionPtr c2 = smtk::io::ImportMesh::onlyDirichlet(first_mesh_path(),manager);
+  smtk::mesh::CollectionPtr c2 = read(first_mesh_path(), manager,
+                                      smtk::io::mesh::Subset::OnlyDirichlet);
   test( c2->isValid(), "second collection load should be valid");
   secondNumMesh = c2->numberOfMeshes();
   test( secondNumMesh != 0);
   }
   //now append a second file and verify the number of meshes is correct
-  bool result = smtk::io::ImportMesh::addDirichletToCollection(first_mesh_path(), c);
+  bool result = read(first_mesh_path(), c,
+                     smtk::io::mesh::Subset::OnlyDirichlet);
   test( result, "import into a valid collection should work");
   test( c->isValid(), "collection after import should still be valid");
 
@@ -168,7 +176,9 @@ void verify_append_dirichlet_to_neumann()
 void verify_append_neumann_to_dirichlet()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyDirichlet(first_mesh_path(), manager);
+  smtk::io::ReadMesh read;
+  smtk::mesh::CollectionPtr c = read(first_mesh_path(), manager,
+                                     smtk::io::mesh::Subset::OnlyDirichlet);
   test( c->isValid(), "collection should be valid");
   std::size_t firstNumMesh = c->numberOfMeshes();
   test( firstNumMesh != 0);
@@ -177,13 +187,15 @@ void verify_append_neumann_to_dirichlet()
   //this can be used to verify that the append collection has the proper size
   std::size_t secondNumMesh = 0;
   {
-  smtk::mesh::CollectionPtr c2 = smtk::io::ImportMesh::onlyNeumann(first_mesh_path(),manager);
+  smtk::mesh::CollectionPtr c2 = read(first_mesh_path(), manager,
+                                     smtk::io::mesh::Subset::OnlyNeumann);
   test( c2->isValid(), "second collection load should be valid");
   secondNumMesh = c2->numberOfMeshes();
   test( secondNumMesh != 0);
   }
   //now append a second file and verify the number of meshes is correct
-  bool result = smtk::io::ImportMesh::addNeumannToCollection(first_mesh_path(), c);
+  bool result = read(first_mesh_path(), c,
+                     smtk::io::mesh::Subset::OnlyNeumann);
   test( result, "import into a valid collection should work");
   test( c->isValid(), "collection after import should still be valid");
 
@@ -195,7 +207,9 @@ void verify_append_neumann_to_dirichlet()
 void verify_append_domain_to_dirichlet()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyDirichlet(first_mesh_path(), manager);
+  smtk::io::ReadMesh read;
+  smtk::mesh::CollectionPtr c = read(first_mesh_path(), manager,
+                                     smtk::io::mesh::Subset::OnlyDirichlet);
   test( c->isValid(), "collection should be valid");
   std::size_t firstNumMesh = c->numberOfMeshes();
   test( firstNumMesh != 0);
@@ -204,14 +218,16 @@ void verify_append_domain_to_dirichlet()
   //this can be used to verify that the append collection has the proper size
   std::size_t secondNumMesh = 0;
   {
-  smtk::mesh::CollectionPtr c2 = smtk::io::ImportMesh::onlyDomain(first_mesh_path(),manager);
+  smtk::mesh::CollectionPtr c2 = read(first_mesh_path(), manager,
+                                     smtk::io::mesh::Subset::OnlyDomain);
   test( c2->isValid(), "expected domains in this file");
   secondNumMesh = c2->numberOfMeshes();
   test( secondNumMesh != 0);
   }
 
   //now append a second file and verify the number of meshes is correct
-  bool result = smtk::io::ImportMesh::addDomainToCollection(first_mesh_path(), c);
+  bool result = read(first_mesh_path(), c,
+                     smtk::io::mesh::Subset::OnlyDomain);
   test( result, "import into a valid collection should work");
   test( c->isValid(), "collection after import should still be valid");
 

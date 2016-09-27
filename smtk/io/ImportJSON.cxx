@@ -26,6 +26,7 @@
 #include "smtk/mesh/Manager.h"
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/json/Interface.h"
+#include "smtk/mesh/json/Readers.h"
 #include "smtk/mesh/moab/Interface.h"
 
 #include "smtk/io/AttributeReader.h"
@@ -1149,13 +1150,14 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
           absPath = canonical(tryme, refPath);
           }
         }
-      importedCollection = smtk::io::ImportMesh::entireFile(absPath.string(), meshMgr);
+      smtk::io::ImportMesh import;
+      importedCollection = import(absPath.string(), meshMgr);
       }
 
     //wasnt moab, or failed to load as moab
     if(!isValidMoab || !importedCollection)
       {
-      importedCollection = smtk::io::ImportMesh::entireJSON(child, meshMgr);
+      importedCollection = smtk::mesh::json::import(child,meshMgr);
       }
 
     if(importedCollection)

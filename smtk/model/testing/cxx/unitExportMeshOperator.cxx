@@ -110,43 +110,43 @@ int main(int argc, char* argv[])
     smtk::mesh::CollectionPtr c = convert(meshManager,manager);
 
     // Test all three mesh file types
-    std::string extension[3] = {".exo", ".vtk", ".h5m"};
+    std::string extension[2] = {".exo", ".h5m"};
 
-    for (int fileType = 0; fileType < 3; ++fileType)
+    for (int fileType = 0; fileType < 2; ++fileType)
       {
       std::cout<<"Testing file type "<<extension[fileType]<<std::endl;
 
-      // Create a new "export mesh" operator
-      smtk::model::OperatorPtr exportMeshOp = sessRef.session()->
-        op("export mesh");
-      if (!exportMeshOp)
+      // Create a new "write mesh" operator
+      smtk::model::OperatorPtr writeMeshOp = sessRef.session()->
+        op("write mesh");
+      if (!writeMeshOp)
         {
-        std::cerr << "No \"export mesh\" operator\n";
+        std::cerr << "No \"write mesh\" operator\n";
         return 1;
         }
 
-      // Set "export mesh" operator's file
+      // Set "write mesh" operator's file
       std::string write_path = std::string(write_root + "/testmesh" +
                                            extension[fileType]);
-      exportMeshOp->specification()->findFile("filename")->
+      writeMeshOp->specification()->findFile("filename")->
         setValue(write_path);
 
-      bool valueSet = exportMeshOp->specification()->findMesh("mesh")->
+      bool valueSet = writeMeshOp->specification()->findMesh("mesh")->
         setValue(meshManager->collectionBegin()->second->meshes());
 
       if (!valueSet)
         {
-        std::cerr << "Failed to set mesh value on export mesh operator\n";
+        std::cerr << "Failed to set mesh value on write mesh operator\n";
         return 1;
         }
 
-      // Execute "export mesh" operator...
-      smtk::model::OperatorResult exportMeshOpResult = exportMeshOp->operate();
+      // Execute "write mesh" operator...
+      smtk::model::OperatorResult writeMeshOpResult = writeMeshOp->operate();
       // ...and test the results for success.
-      if (exportMeshOpResult->findInt("outcome")->value() !=
+      if (writeMeshOpResult->findInt("outcome")->value() !=
           smtk::model::OPERATION_SUCCEEDED)
         {
-        std::cerr << "Export mesh operator failed\n";
+        std::cerr << "Write mesh operator failed\n";
         return 1;
         }
 
@@ -167,8 +167,8 @@ int main(int argc, char* argv[])
       //     our little trick of grabbing the first collection above will result
       //     in test failures.
       smtk::mesh::ManagerPtr m2 = smtk::mesh::Manager::create();
-      smtk::mesh::CollectionPtr c2 =
-        smtk::io::ImportMesh::entireFile( write_path, m2 );
+      smtk::io::ImportMesh import;
+      smtk::mesh::CollectionPtr c2 = import( write_path, m2 );
       if( c2->isModified() )
         {
         std::cerr<<"collection shouldn't be marked as modified"<<std::endl;
@@ -191,9 +191,9 @@ int main(int argc, char* argv[])
         }
 
       // We only guarantee that Moab's native .h5m format is bidirectional. The
-      // other mesh formats will export, but information is lost when they are
+      // other mesh formats will write, but information is lost when they are
       // subsequently imported.
-      if (fileType == 2)
+      if (extension[fileType] == ".h5m")
         {
         if ( c2->numberOfMeshes() != c->numberOfMeshes() )
           {

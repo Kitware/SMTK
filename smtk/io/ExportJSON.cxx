@@ -32,6 +32,7 @@
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/WriteMesh.h"
 #include "smtk/io/Logger.h"
+#include "smtk/io/mesh/MeshIO.h"
 
 #include "cJSON.h"
 
@@ -1067,7 +1068,8 @@ int ExportJSON::forSingleCollection(cJSON* mdesc,
       collection->writeLocation().relativePath();
 
     cJSON_AddStringToObject(jsonCollection, "location", fileWriteLocation.c_str() );
-    smtk::io::WriteMesh::entireCollection(collection);
+    smtk::io::WriteMesh write;
+    write(collection, mesh::Subset::EntireCollection);
     }
 
   //currently we only write out the modification state after the possibility

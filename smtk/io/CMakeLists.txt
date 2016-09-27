@@ -5,6 +5,7 @@ set(ioSrcs
   ExportJSON.cxx
   ImportJSON.cxx
   Logger.cxx
+  ModelToMesh.cxx
   OperatorLog.cxx
   ResourceSetReader.cxx
   ResourceSetWriter.cxx
@@ -19,6 +20,7 @@ set(ioHeaders
   ExportJSON.h
   ImportJSON.h
   Logger.h
+  ModelToMesh.h
   OperatorLog.h
   ResourceSetReader.h
   ResourceSetWriter.h
@@ -29,18 +31,24 @@ set(ioHeaders
 
 # mesh-related I/O
 list(APPEND ioSrcs
-  mesh/ImportMesh.cxx
-  mesh/MeshExport2DM3DM.cxx
-  mesh/ModelToMesh.cxx
-  mesh/WriteMesh.cxx
+  ExportMesh.cxx
+  ImportMesh.cxx
+  ReadMesh.cxx
+  WriteMesh.cxx
+  mesh/Format.cxx
+  mesh/MeshIOMoab.cxx
+  mesh/MeshIOXMS.cxx
 )
 
 list(APPEND ioHeaders
-  mesh/ImportMesh.h
-  mesh/MeshExport2DM.h
-  mesh/MeshExport3DM.h
-  mesh/ModelToMesh.h
-  mesh/WriteMesh.h
+  ExportMesh.h
+  ImportMesh.h
+  ReadMesh.h
+  WriteMesh.h
+  mesh/Format.h
+  mesh/MeshIO.h
+  mesh/MeshIOMoab.h
+  mesh/MeshIOXMS.h
 )
 
 #install the headers

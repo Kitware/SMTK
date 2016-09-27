@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_ExportMesh_h
-#define __smtk_model_ExportMesh_h
+#ifndef __smtk_model_WriteMesh_h
+#define __smtk_model_WriteMesh_h
 
 #include "smtk/model/Operator.h"
 
@@ -17,11 +17,11 @@ namespace smtk {
 
 /**\brief A class for writing meshes to file.
   */
-class SMTKCORE_EXPORT ExportMesh : public Operator
+class SMTKCORE_EXPORT WriteMesh : public Operator
 {
 public:
-  smtkTypeMacro(ExportMesh);
-  smtkCreateMacro(ExportMesh);
+  smtkTypeMacro(WriteMesh);
+  smtkCreateMacro(WriteMesh);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
@@ -34,4 +34,4 @@ protected:
   } // model namespace
 } // smtk namespace
 
-#endif // __smtk_model_ExportMesh_h
+#endif // __smtk_model_WriteMesh_h

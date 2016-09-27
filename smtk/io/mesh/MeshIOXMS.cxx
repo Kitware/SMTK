@@ -9,8 +9,8 @@
 //=========================================================================
 
 
-#include "smtk/io/MeshExport2DM.h"
-#include "smtk/io/MeshExport3DM.h"
+#include "smtk/io/mesh/MeshIOXMS.h"
+#include "smtk/io/mesh/MeshIO.h"
 
 #include "smtk/mesh/CellTypes.h"
 #include "smtk/mesh/CellSet.h"
@@ -22,11 +22,17 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Manager.h"
 
+SMTK_THIRDPARTY_PRE_INCLUDE
+#include "boost/filesystem.hpp"
+#include "boost/system/error_code.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
+
 #include <fstream>
 #include <iomanip>
 
 namespace smtk {
   namespace io {
+namespace mesh {
 
 namespace {
 
@@ -489,110 +495,108 @@ bool write_dm(smtk::mesh::CollectionPtr collection,
 }
 
 }
-
 //----------------------------------------------------------------------------
-MeshExport2DM::MeshExport2DM()
+MeshIOXMS::MeshIOXMS() : MeshIO()
 {
-
+  this->Formats.push_back( Format( "xms 2d",
+                                   std::vector<std::string>({ ".2dm" }),
+                                   Format::Export ) );
+  this->Formats.push_back( Format( "xms 3d",
+                                   std::vector<std::string>({ ".3dm" }),
+                                   Format::Export ) );
 }
 
 //----------------------------------------------------------------------------
-bool MeshExport2DM::write(smtk::mesh::CollectionPtr collection,
-                          const std::string& filePath) const
+bool MeshIOXMS::exportMesh( std::ostream& stream,
+                            smtk::mesh::CollectionPtr collection,
+                            smtk::mesh::DimensionType dim ) const
+{
+  return write_dm(collection, stream, dim);
+}
+
+//----------------------------------------------------------------------------
+bool MeshIOXMS::exportMesh( const std::string& filePath,
+                            smtk::mesh::CollectionPtr collection,
+                            smtk::mesh::DimensionType dim ) const
 {
   bool result = false;
   OpenFile of(filePath);
   if(of.m_canWrite)
   {
-    result = this->write(collection, of.m_stream);
+    result = this->exportMesh(of.m_stream, collection, dim);
     of.fileWritten(result);
   }
   return result;
 }
 
 //----------------------------------------------------------------------------
-bool MeshExport2DM::write(smtk::mesh::CollectionPtr collection,
-                          smtk::model::ManagerPtr manager,
-                          const std::string& modelPropertyName,
-                          const std::string& filePath) const
+bool MeshIOXMS::exportMesh( const std::string& filePath,
+                            smtk::mesh::CollectionPtr collection ) const
+{
+  // Grab the file extension
+  std::string ext = boost::filesystem::extension(filePath);
+  std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+  if (ext == ".2dm")
+    {
+    return this->exportMesh( filePath, collection, smtk::mesh::Dims2 );
+    }
+  else
+    {
+    return this->exportMesh( filePath, collection, smtk::mesh::Dims3 );
+    }
+}
+
+//----------------------------------------------------------------------------
+bool MeshIOXMS::exportMesh( std::ostream& stream,
+                            smtk::mesh::CollectionPtr collection,
+                            smtk::model::ManagerPtr manager,
+                            const std::string& modelPropertyName,
+                            smtk::mesh::DimensionType dim ) const
+{
+  return write_dm(collection, manager, modelPropertyName, stream, dim);
+}
+
+//----------------------------------------------------------------------------
+bool MeshIOXMS::exportMesh( const std::string& filePath,
+                            smtk::mesh::CollectionPtr collection,
+                            smtk::model::ManagerPtr manager,
+                            const std::string& modelPropertyName,
+                            smtk::mesh::DimensionType dim ) const
 {
   bool result = false;
   OpenFile of(filePath);
   if(of.m_canWrite)
   {
-    result = this->write(collection,manager,modelPropertyName,of.m_stream);
+    result = this->exportMesh( of.m_stream, collection, manager,
+                               modelPropertyName, dim );
     of.fileWritten(result);
   }
   return result;
 }
 
 //----------------------------------------------------------------------------
-bool MeshExport2DM::write(smtk::mesh::CollectionPtr collection,
-                          std::ostream& stream) const
+bool MeshIOXMS::exportMesh( const std::string& filePath,
+                            smtk::mesh::CollectionPtr collection,
+                            smtk::model::ManagerPtr manager,
+                            const std::string& modelPropertyName ) const
 {
-  return write_dm(collection, stream, smtk::mesh::Dims2);
+  // Grab the file extension
+  std::string ext = boost::filesystem::extension(filePath);
+  std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+  if (ext == ".2dm")
+    {
+    return this->exportMesh( filePath, collection, manager, modelPropertyName,
+                             smtk::mesh::Dims2 );
+    }
+  else
+    {
+    return this->exportMesh( filePath, collection, manager, modelPropertyName,
+                             smtk::mesh::Dims3 );
+    }
 }
 
-//----------------------------------------------------------------------------
-bool MeshExport2DM::write(smtk::mesh::CollectionPtr collection,
-                          smtk::model::ManagerPtr manager,
-                          const std::string& modelPropertyName,
-                          std::ostream& stream) const
-{
-  return write_dm(collection, manager, modelPropertyName, stream, smtk::mesh::Dims2);
 }
-
-//----------------------------------------------------------------------------
-MeshExport3DM::MeshExport3DM()
-{
-
-}
-
-//----------------------------------------------------------------------------
-bool MeshExport3DM::write(smtk::mesh::CollectionPtr collection,
-                          const std::string& filePath) const
-{
-  bool result = false;
-  OpenFile of(filePath);
-  if(of.m_canWrite)
-  {
-    result = this->write(collection, of.m_stream);
-    of.fileWritten(result);
-  }
-  return result;
-}
-
-//----------------------------------------------------------------------------
-bool MeshExport3DM::write(smtk::mesh::CollectionPtr collection,
-                          smtk::model::ManagerPtr manager,
-                          const std::string& modelPropertyName,
-                          const std::string& filePath) const
-{
-  bool result = false;
-  OpenFile of(filePath);
-  if(of.m_canWrite)
-  {
-    result = this->write(collection,manager,modelPropertyName,of.m_stream);
-    of.fileWritten(result);
-  }
-  return result;
-}
-
-//----------------------------------------------------------------------------
-bool MeshExport3DM::write(smtk::mesh::CollectionPtr collection,
-                          std::ostream& stream) const
-{
-  return write_dm(collection, stream, smtk::mesh::Dims3);
-}
-
-//----------------------------------------------------------------------------
-bool MeshExport3DM::write(smtk::mesh::CollectionPtr collection,
-                          smtk::model::ManagerPtr manager,
-                          const std::string& modelPropertyName,
-                          std::ostream& stream) const
-{
-  return write_dm(collection, manager, modelPropertyName, stream, smtk::mesh::Dims3);
-}
-
 }
 }

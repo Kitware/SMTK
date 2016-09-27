@@ -16,6 +16,7 @@
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
+#include "smtk/mesh/json/Readers.h"
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Volume.h"
@@ -258,7 +259,8 @@ void verify_writing_of_single_collection_to_disk()
   write_path += "/output.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
+  smtk::io::ImportMesh import;
+  smtk::mesh::CollectionPtr c = import(file_path, manager);
   test( c->isValid(), "collection should be valid");
 
   std::size_t numMeshes = c->numberOfMeshes();
@@ -286,7 +288,8 @@ void verify_writing_of_single_collection_to_json()
   file_path += "/mesh/3d/twoassm_out.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
+  smtk::io::ImportMesh import;
+  smtk::mesh::CollectionPtr c = import(file_path, manager);
   test( c->isValid(), "collection should be valid");
 
   std::size_t numMeshes = c->numberOfMeshes();
@@ -299,7 +302,7 @@ void verify_writing_of_single_collection_to_json()
   c->meshes( smtk::mesh::Domain(446) ).setNeumann( smtk::mesh::Neumann(2) );
 
   // By default, the writeLocation is set to readLocation, and we don't want
-  // this test to write to the input file, so set writeLocation to empty 
+  // this test to write to the input file, so set writeLocation to empty
   c->writeLocation(std::string());
   test( (c->writeLocation() == std::string()) );
   cJSON* top = cJSON_CreateObject();
@@ -319,7 +322,8 @@ void verify_reading_of_single_collection_from_json()
   std::string write_path(write_root);
 
   {
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
+  smtk::io::ImportMesh import;
+  smtk::mesh::CollectionPtr c = import(file_path, manager);
   test( c->isValid(), "collection should be valid");
   test( !c->isModified(), "collection shouldn't be modified");
 
@@ -333,7 +337,7 @@ void verify_reading_of_single_collection_from_json()
   c->meshes( smtk::mesh::Domain(446) ).setNeumann( smtk::mesh::Neumann(2) );
 
   // By default, the writeLocation is set to readLocation, and we don't want
-  // this test to write to the input file, so set writeLocation to scratch space 
+  // this test to write to the input file, so set writeLocation to scratch space
   write_path += "/twoassm_output.h5m";
   c->writeLocation(write_path);
   const bool exportGood = smtk::io::ExportJSON::forSingleCollection(top, c);
@@ -347,7 +351,7 @@ void verify_reading_of_single_collection_from_json()
   {
   //get the first child node which is a collection
   cJSON* collection = top->child;
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireJSON(collection, manager);
+  smtk::mesh::CollectionPtr c = smtk::mesh::json::import(collection, manager);
   test( c->isValid(), "collection should be valid");
   test( !c->isModified(), "a serialized collection should propagate modified flag state");
 

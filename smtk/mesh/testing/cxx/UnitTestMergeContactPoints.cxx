@@ -215,7 +215,8 @@ void verify_write_valid_collection_hdf5_after_merge()
   write_path += "/test2D_json_output.h5m";
 
   //write out the mesh.
-  bool result = smtk::io::WriteMesh::entireCollection(write_path, c);
+  smtk::io::WriteMesh write;
+  bool result = write(write_path, c);
   if(!result)
     {
     cleanup( write_path );
@@ -224,7 +225,8 @@ void verify_write_valid_collection_hdf5_after_merge()
 
   //reload the written file and verify the number of meshes are the same as the
   //input mesh
-  smtk::mesh::CollectionPtr c2 = smtk::io::ImportMesh::entireFile(write_path, meshManager);
+  smtk::io::ImportMesh import;
+  smtk::mesh::CollectionPtr c2 = import(write_path, meshManager);
 
   //remove the file from disk
   cleanup( write_path );

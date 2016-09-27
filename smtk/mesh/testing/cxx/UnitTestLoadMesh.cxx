@@ -11,6 +11,7 @@
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 #include "smtk/io/ImportMesh.h"
+#include "smtk/io/ReadMesh.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -27,7 +28,8 @@ void verify_load_bad_mesh()
   std::string file_path(data_root);
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
+  smtk::io::ReadMesh read;
+  smtk::mesh::CollectionPtr c = read(file_path, manager);
   test( !c->isValid(), "collection should be invalid");
   test( c->entity().isNull(), "uuid should be invalid");
 
@@ -42,7 +44,8 @@ void verify_load_valid_mesh()
   file_path += "/mesh/3d/twoassm_out.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
+  smtk::io::ReadMesh read;
+  smtk::mesh::CollectionPtr c = read(file_path, manager);
   test( c->isValid(), "collection should be valid");
 
   std::size_t numMeshes = c->numberOfMeshes();
@@ -58,7 +61,8 @@ void verify_load_writeLocation()
   file_path += "/mesh/3d/twoassm_out.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
+  smtk::io::ReadMesh read;
+  smtk::mesh::CollectionPtr c = read(file_path, manager);
   test( c->isValid(), "collection should be valid");
 
   test( c->readLocation() == file_path, "collection readLocation is wrong");
@@ -73,8 +77,9 @@ void verify_load_multiple_meshes()
   second_file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c1 = smtk::io::ImportMesh::entireFile(first_file_path, manager);
-  smtk::mesh::CollectionPtr c2 = smtk::io::ImportMesh::entireFile(second_file_path, manager);
+  smtk::io::ReadMesh read;
+  smtk::mesh::CollectionPtr c1 = read(first_file_path, manager);
+  smtk::mesh::CollectionPtr c2 = read(second_file_path, manager);
 
   test( c1->isValid(), "collection should be valid");
   test( c2->isValid(), "collection should be valid");
@@ -107,12 +112,13 @@ void verify_load_same_mesh_multiple_times()
   file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c1 = smtk::io::ImportMesh::entireFile(file_path, manager);
+  smtk::io::ReadMesh read;
+  smtk::mesh::CollectionPtr c1 = read(file_path, manager);
   test( c1->isValid(), "collection should be valid");
   test(manager->numberOfCollections() == 1);
 
   //load the same mesh a second time and confirm that is valid
-  smtk::mesh::CollectionPtr c2 = smtk::io::ImportMesh::entireFile(file_path, manager);
+  smtk::mesh::CollectionPtr c2 = read(file_path, manager);
   test( c2->isValid(), "collection should be valid");
   test(manager->numberOfCollections() == 2);
 }
@@ -124,7 +130,9 @@ void verify_load_onlyNeumann()
   file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyNeumann(file_path, manager);
+  smtk::io::ReadMesh read;
+  smtk::mesh::CollectionPtr c = read(file_path, manager,
+                                     smtk::io::mesh::Subset::OnlyNeumann);
   test( c->isValid(), "collection should be valid");
 
   std::size_t numMeshes = c->numberOfMeshes();
@@ -140,7 +148,9 @@ void verify_load_onlyDirichlet()
   file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyDirichlet(file_path, manager);
+  smtk::io::ReadMesh read;
+  smtk::mesh::CollectionPtr c = read(file_path, manager,
+                                     smtk::io::mesh::Subset::OnlyDirichlet);
   test( c->isValid(), "collection should be valid");
 
   std::size_t numMeshes = c->numberOfMeshes();
@@ -156,7 +166,9 @@ void verify_load_bad_onlyDomain()
   file_path += "/mesh/3d/sixth_hexflatcore.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyDomain(file_path, manager);
+  smtk::io::ReadMesh read;
+  smtk::mesh::CollectionPtr c = read(file_path, manager,
+                                     smtk::io::mesh::Subset::OnlyDomain);
   //this dataset has no domain sets
   test( !c->isValid(), "collection should be invalid");
 
@@ -170,7 +182,9 @@ void verify_load_bad_onlyNeumann()
   file_path += "/mesh/3d/invalid_file.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyNeumann(file_path, manager);
+  smtk::io::ReadMesh read;
+  smtk::mesh::CollectionPtr c = read(file_path, manager,
+                                     smtk::io::mesh::Subset::OnlyNeumann);
 
   //this dataset has no neumann sets, since it doesn't exist
   //all other tests data sets have neumann sets
@@ -187,7 +201,9 @@ void verify_load_bad_onlyDirichlet()
   file_path += "/mesh/3d/sixth_hexflatcore.h5m";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyDirichlet(file_path, manager);
+  smtk::io::ReadMesh read;
+  smtk::mesh::CollectionPtr c = read(file_path, manager,
+                                     smtk::io::mesh::Subset::OnlyDirichlet);
 
   //this dataset has no dirichlet sets
   test( !c->isValid(), "collection should be invalid");
