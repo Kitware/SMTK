@@ -64,8 +64,7 @@ target_link_libraries(unitExportMeshOperator smtkCore smtkCoreModelTesting
   ${Boost_LIBRARIES})
 add_test(NAME unitExportMeshOperator
   COMMAND $<TARGET_FILE:unitExportMeshOperator>
-#  TODO: this should be an smtk native model with an associated mesh.
-#  "${SMTK_DATA_DIR}/model/3d/smtk/simple.json"
+  "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json"
 )
 
 add_executable(benchmarkModel benchmarkModel.cxx)

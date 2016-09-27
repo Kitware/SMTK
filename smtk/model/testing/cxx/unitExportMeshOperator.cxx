@@ -10,8 +10,12 @@
 
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/MeshItem.h"
 
+#include "smtk/io/ImportJSON.h"
 #include "smtk/io/ImportMesh.h"
+#include "smtk/io/ModelToMesh.h"
+#include "smtk/io/WriteMesh.h"
 
 #include "smtk/model/DefaultSession.h"
 
@@ -20,6 +24,8 @@
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
+
+#include <fstream>
 
 //force to use filesystem version 3
 #define BOOST_FILESYSTEM_VERSION 3
@@ -30,6 +36,22 @@ namespace
 {
 //SMTK_DATA_DIR is a define setup by cmake
 std::string write_root = SMTK_SCRATCH_DIR;
+
+void create_simple_mesh_model( smtk::model::ManagerPtr mgr,
+                               std::string file_path )
+{
+  std::ifstream file(file_path.c_str());
+
+  std::string json(
+    (std::istreambuf_iterator<char>(file)),
+    (std::istreambuf_iterator<char>()));
+
+  //we should load in the test2D.json file as an smtk to model
+  smtk::io::ImportJSON::intoModelManager(json.c_str(), mgr);
+  mgr->assignDefaultNames();
+
+  file.close();
+}
 
 void cleanup( const std::string& file_path )
 {
@@ -57,6 +79,8 @@ int main(int argc, char* argv[])
         return 1;
       }
 
+    std::vector<std::string> files_to_delete;
+
     // Create a model manager
     smtk::model::ManagerPtr manager = smtk::model::Manager::create();
 
@@ -64,6 +88,7 @@ int main(int argc, char* argv[])
     std::cout << "Available sessions\n";
     typedef smtk::model::StringList StringList;
     StringList sessions = manager->sessionTypeNames();
+    smtk::mesh::ManagerPtr meshManager = manager->meshes();
     for (StringList::iterator it = sessions.begin(); it != sessions.end(); ++it)
       std::cout << "  " << *it << "\n";
     std::cout << "\n";
@@ -80,33 +105,12 @@ int main(int argc, char* argv[])
       }
     std::cout << "\n";
 
-    // Create a new "import" operator
-    smtk::model::OperatorPtr importOp = sessRef.session()->
-      op("import smtk model");
-    if (!importOp)
-      {
-      std::cerr << "No \"import\" operator\n";
-      return 1;
-      }
-
-    // Set "import" operator's file to a test file
-    importOp->specification()->findFile("filename")->
-      setValue(std::string(argv[1]));
-
-    std::cout<<std::string(argv[1])<<std::endl;
-
-    // Execute "import" operator...
-    smtk::model::OperatorResult importOpResult = importOp->operate();
-    // ...and test the results for success.
-    if (importOpResult->findInt("outcome")->value() !=
-        smtk::model::OPERATION_SUCCEEDED)
-      {
-      std::cerr << "Import operator failed\n";
-      return 1;
-      }
+    create_simple_mesh_model( manager, std::string(argv[1]) );
+    smtk::io::ModelToMesh convert;
+    smtk::mesh::CollectionPtr c = convert(meshManager,manager);
 
     // Test all three mesh file types
-    std::string extension[3] = {".h5m",".vtk",".exo"};
+    std::string extension[3] = {".exo", ".vtk", ".h5m"};
 
     for (int fileType = 0; fileType < 3; ++fileType)
       {
@@ -127,6 +131,15 @@ int main(int argc, char* argv[])
       exportMeshOp->specification()->findFile("filename")->
         setValue(write_path);
 
+      bool valueSet = exportMeshOp->specification()->findMesh("mesh")->
+        setValue(meshManager->collectionBegin()->second->meshes());
+
+      if (!valueSet)
+        {
+        std::cerr << "Failed to set mesh value on export mesh operator\n";
+        return 1;
+        }
+
       // Execute "export mesh" operator...
       smtk::model::OperatorResult exportMeshOpResult = exportMeshOp->operate();
       // ...and test the results for success.
@@ -140,12 +153,22 @@ int main(int argc, char* argv[])
       // Grab the original mesh collection
       smtk::mesh::CollectionPtr c = sessRef.session()->meshManager()->
         collectionBegin()->second;
+      if( c->isModified() )
+        {
+        std::cerr<<"collection shouldn't be marked as modified"<<std::endl;
+        return 1;
+        }
 
       // Reload the written file and verify the number of meshes are the same as
       // the input mesh
+      //
+      // NB: a new mesh manager must be used here. If the original mesh manager
+      //     is used instead, a corrupt collection is added to our manager and
+      //     our little trick of grabbing the first collection above will result
+      //     in test failures.
+      smtk::mesh::ManagerPtr m2 = smtk::mesh::Manager::create();
       smtk::mesh::CollectionPtr c2 =
-        smtk::io::ImportMesh::entireFile(write_path,
-                                         sessRef.session()->meshManager());
+        smtk::io::ImportMesh::entireFile( write_path, m2 );
       if( c2->isModified() )
         {
         std::cerr<<"collection shouldn't be marked as modified"<<std::endl;
@@ -153,7 +176,7 @@ int main(int argc, char* argv[])
         }
 
       // Remove the file from disk
-      cleanup( write_path );
+      cleanup(write_path);
 
       // Verify the meshes
       if (!c2->isValid())
@@ -166,17 +189,25 @@ int main(int argc, char* argv[])
         std::cerr<<"collection names do not match"<<std::endl;
         return 1;
         }
-      if ( c2->numberOfMeshes() != c->numberOfMeshes() )
+
+      // We only guarantee that Moab's native .h5m format is bidirectional. The
+      // other mesh formats will export, but information is lost when they are
+      // subsequently imported.
+      if (fileType == 2)
         {
-        std::cerr<<"number of meshes do not match"<<std::endl;
-        return 1;
-        }
-      if ( c2->types() != c->types() )
-        {
-        std::cerr<<"collection types do not match"<<std::endl;
-        return 1;
+        if ( c2->numberOfMeshes() != c->numberOfMeshes() )
+          {
+          std::cerr<<"number of meshes do not match"<<std::endl;
+          return 1;
+          }
+        if ( c2->types() != c->types() )
+          {
+          std::cerr<<"collection types do not match"<<std::endl;
+          return 1;
+          }
         }
       }
+
     }
 
   return 0;
