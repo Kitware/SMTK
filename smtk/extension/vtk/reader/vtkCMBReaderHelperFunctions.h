@@ -34,7 +34,7 @@ namespace ReaderHelperFunctions
       {
       return false;
       }
-    int str_len = strlen(line_cstr);
+    size_t str_len = strlen(line_cstr);
     //Remove endline characters
     if(line_cstr[str_len-2] == '\r')
       {
