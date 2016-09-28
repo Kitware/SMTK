@@ -1296,6 +1296,14 @@ bool qtModelView::setEntityVisibility(
   return false;
 }
 
+QColor internal_convertColor(const FloatList& rgba)
+{
+  int ncomp = static_cast<int>(rgba.size());
+  float alpha = ncomp != 4 ? 1. : std::max(0., std::min(rgba[3], 1.0));
+  return ncomp >= 3 ?
+    QColor::fromRgbF(rgba[0], rgba[1], rgba[2], alpha) : QColor(); 
+}
+
 //----------------------------------------------------------------------------
 void qtModelView::changeEntityColor( const QModelIndex& idx)
 {
@@ -1309,7 +1317,7 @@ void qtModelView::changeEntityColor( const QModelIndex& idx)
 
   smtk::model::EntityRefs selentityrefs;
   smtk::mesh::MeshSets selmeshes;
-  QColor currentColor;
+  QColor currentColor = Qt::white;
   if(dp->phraseType() == MESH_SUMMARY)
     {
     MeshPhrasePtr mphrase = smtk::dynamic_pointer_cast<MeshPhrase>(dp);
@@ -1329,9 +1337,7 @@ void qtModelView::changeEntityColor( const QModelIndex& idx)
     if(c && !meshkey.is_empty())
       {
       const FloatList& rgba(c->floatProperty(meshkey, "color"));
-      int ncomp = static_cast<int>(rgba.size());
-      currentColor = ncomp >= 3 ?
-        QColor::fromRgbF(rgba[0], rgba[1], rgba[2]) : QColor();
+      currentColor = internal_convertColor(rgba);
       selmeshes.insert(meshkey);
       }
     }
@@ -1340,14 +1346,15 @@ void qtModelView::changeEntityColor( const QModelIndex& idx)
     selentityrefs.insert(dp->relatedEntity());
 
     smtk::model::FloatList rgba(4);
-    rgba = dp->relatedColor();
-    currentColor = QColor::fromRgbF(rgba[0], rgba[1], rgba[2]);
+    rgba = dp->relatedEntity().color();
+    currentColor = internal_convertColor(rgba);
     }
 
   if(selentityrefs.size() > 0 || selmeshes.size() > 0)
     {
     QColor newColor = QColorDialog::getColor(currentColor, this,
-      "Choose Entity Color", QColorDialog::DontUseNativeDialog);
+      "Choose Entity Color",
+      QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
     if(newColor.isValid() && newColor != currentColor)
       {
       if(this->setEntityColor(selentityrefs, selmeshes, newColor, brOp))
@@ -1396,11 +1403,11 @@ bool qtModelView::setEntityColor(
     {
     if(newColor.isValid())
       {
-      QColor currentColor;
+      QColor currentColor = Qt::white;
       if((*it).hasColor())
         {
         rgba = (*it).color();
-        currentColor = QColor::fromRgbF(rgba[0], rgba[1], rgba[2]);
+        currentColor = internal_convertColor(rgba);
         }
       if(newColor != currentColor)
         {
