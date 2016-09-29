@@ -1392,7 +1392,9 @@ bool qtModelView::setEntityColor(
     }
   else
     {
-    colorItem->setNumberOfValues(0);
+    colorItem->setNumberOfValues(4);
+    std::vector<double> nullColor(4, -1.);
+    colorItem->setValues(nullColor.begin(), nullColor.end());
     }
 
   int numChangingEnts = 0;
