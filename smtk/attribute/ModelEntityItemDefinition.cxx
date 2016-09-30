@@ -71,11 +71,17 @@ void ModelEntityItemDefinition::setMembershipMask(smtk::model::BitFlags entMask)
 bool ModelEntityItemDefinition::isValueValid(const smtk::model::EntityRef& c) const
 {
   if (!this->m_membershipMask)
+    {
     return false; // Nothing can possibly match.
+    }
   if (this->m_membershipMask == smtk::model::ANY_ENTITY)
+    {
     return true; // Fast-track the trivial case.
+    }
   if (!c.isValid())
+    {
     return true;
+    }
 
   smtk::model::BitFlags itemType = c.entityFlags();
   // The m_membershipMask must match the entity type, the dimension, and (if the
@@ -105,11 +111,15 @@ bool ModelEntityItemDefinition::isValueValid(const smtk::model::EntityRef& c) co
     smtk::model::BitFlags typeMask = this->m_membershipMask;
     bool mustBeHomogenous = (typeMask & smtk::model::HOMOGENOUS_GROUP) ? true : false;
     if (!(typeMask & smtk::model::NO_SUBGROUPS) && !(typeMask & smtk::model::GROUP_ENTITY))
+      {
       typeMask |= smtk::model::GROUP_ENTITY; // if groups aren't banned, allow them.
+      }
     if (
       !c.as<model::Group>().meetsMembershipConstraintsInternal(
         c, typeMask, mustBeHomogenous))
+      {
       return false;
+      }
     }
   return true;
 }

@@ -134,6 +134,23 @@ void GroupItem::reset()
     }
   Item::reset();
 }
+
+/**\brief Return an iterator to the first group in this item.
+  *
+  */
+GroupItem::const_iterator GroupItem::begin() const
+{
+  return this->m_items.begin();
+}
+
+/**\brief Return an iterator just past the last group in this item.
+  *
+  */
+GroupItem::const_iterator GroupItem::end() const
+{
+  return this->m_items.end();
+}
+
 //----------------------------------------------------------------------------
 bool GroupItem::isExtensible() const
 {
@@ -292,12 +309,12 @@ bool GroupItem::assign(ConstItemPtr &sourceItem, unsigned int options)
   // Cast input pointer to GroupItem
   smtk::shared_ptr<const GroupItem > sourceGroupItem =
     smtk::dynamic_pointer_cast<const GroupItem>(sourceItem);
-  
+
   if(!sourceGroupItem)
     {
     return false; // Source is not a group item
     }
-  
+
   // Update children (items)
   this->setNumberOfGroups(sourceGroupItem->numberOfGroups());
   for (std::size_t i=0; i<sourceGroupItem->numberOfGroups(); ++i)

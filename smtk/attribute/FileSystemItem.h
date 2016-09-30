@@ -29,6 +29,8 @@ namespace smtk
     {
       friend class FileItemDefinition;
     public:
+      typedef std::vector<std::string>::const_iterator const_iterator;
+
       smtkTypeMacro(FileSystemItem);
       virtual ~FileSystemItem();
       virtual Item::Type type() const = 0;
@@ -65,6 +67,12 @@ namespace smtk
       virtual void unset(std::size_t element=0)
       {this->m_isSet[element] = false;}
 
+      // Iterator-style access to values:
+      const_iterator begin() const;
+      const_iterator end() const;
+      template<typename I> bool setValues(I vbegin, I vend, std::size_t offset = 0);
+      template<typename I> bool appendValues(I vbegin, I vend);
+
       // Assigns this item to be equivalent to another.  Options are processed by derived item classes
       // Returns true if success and false if a problem occured.  Does not use options.
       virtual bool assign(smtk::attribute::ConstItemPtr &sourceItem, unsigned int options = 0);
@@ -77,8 +85,39 @@ namespace smtk
       std::vector<bool> m_isSet;
     private:
     };
-  }
-}
+
+    template<typename I>
+    bool FileSystemItem::setValues(I vbegin, I vend, std::size_t offset)
+      {
+      bool ok = false;
+      std::size_t num = vend - vbegin + offset;
+      if (this->setNumberOfValues(num))
+        {
+        ok = true;
+        std::size_t i = 0;
+        for (I it = vbegin; it != vend; ++it, ++i)
+          {
+          if (!this->setValue(offset + i, *it))
+            {
+            ok = false;
+            break;
+            }
+          }
+        }
+      // Enable or disable the item if it is optional.
+      if (ok)
+        this->setIsEnabled(num > 0 ? true : false);
+      return ok;
+      }
+
+    template<typename I>
+    bool FileSystemItem::appendValues(I vbegin, I vend)
+      {
+      return this->setValues(vbegin, vend, this->numberOfValues());
+      }
+
+  } // namespace attribute
+} // namespace smtk
 
 
 #endif /* __smtk_attribute_FileSystemItem_h */

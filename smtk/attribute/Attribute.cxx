@@ -158,7 +158,9 @@ smtk::attribute::ConstItemPtr Attribute::itemAtPath(
   std::vector<std::string>::iterator it;
   boost::split(tree, path, boost::is_any_of(seps));
   if (tree.empty())
+    {
     return result;
+    }
 
   it = tree.begin();
   smtk::attribute::ConstItemPtr current = this->find(*it, NO_CHILDREN);
@@ -180,7 +182,9 @@ smtk::attribute::ConstItemPtr Attribute::itemAtPath(
         }
       }
     if (ok)
+      {
       result = current;
+      }
     }
   return result;
 }
@@ -193,7 +197,9 @@ smtk::attribute::ItemPtr Attribute::itemAtPath(
   std::vector<std::string>::iterator it;
   boost::split(tree, path, boost::is_any_of(seps));
   if (tree.empty())
+    {
     return result;
+    }
 
   it = tree.begin();
   smtk::attribute::ItemPtr current = this->find(*it, NO_CHILDREN);
@@ -205,9 +211,13 @@ smtk::attribute::ItemPtr Attribute::itemAtPath(
       ValueItemPtr vitm = smtk::dynamic_pointer_cast<ValueItem>(current);
       GroupItemPtr gitm = smtk::dynamic_pointer_cast<GroupItem>(current);
       if (vitm && (current = vitm->findChild(*it, NO_CHILDREN)))
+        {
         continue; // OK, keep descending
+        }
       else if (gitm && (current = gitm->find(*it)))
+        {
         continue; // OK, keep descending
+        }
       else
         {
         ok = false;
@@ -215,7 +225,9 @@ smtk::attribute::ItemPtr Attribute::itemAtPath(
         }
       }
     if (ok)
+      {
       result = current;
+      }
     }
   return result;
 }
@@ -237,7 +249,7 @@ bool Attribute::isValid() const
       }
     }
   // also check associations
-  if(this->m_associations && !this->m_associations->isValid())
+  if (this->m_associations && !this->m_associations->isValid())
     {
     return false;
     }
@@ -286,7 +298,9 @@ void Attribute::removeAllAssociations()
     }
 
   if (this->m_associations)
+    {
     this->m_associations->reset();
+    }
 }
 
 /**\brief Is the model \a entity associated with this attribute?
@@ -312,7 +326,9 @@ smtk::common::UUIDs Attribute::associatedModelEntityIds() const
 {
   smtk::common::UUIDs result;
   if (!this->m_associations)
+    {
     return result;
+    }
 
   smtk::model::EntityRefArray::const_iterator it;
   for (it = this->m_associations->begin(); it != this->m_associations->end(); ++it)
@@ -375,7 +391,9 @@ bool Attribute::associateEntity(const smtk::model::EntityRef& entityRef)
     modelMgr = entityRef.manager();
     }
   if (modelMgr)
+    {
     res = modelMgr->associateAttribute(this->system(), this->id(), entityRef.entity());
+    }
   return res;
 }
 
@@ -388,7 +406,9 @@ bool Attribute::associateEntity(const smtk::model::EntityRef& entityRef)
 void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool reverse)
 {
   if (!this->m_associations)
+    {
     return;
+    }
 
   std::ptrdiff_t idx = this->m_associations->find(entity);
   if (idx >= 0)
@@ -411,7 +431,9 @@ void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool revers
 void Attribute::disassociateEntity(const smtk::model::EntityRef& entity, bool reverse)
 {
   if (!this->m_associations)
+    {
     return;
+    }
 
   std::ptrdiff_t idx = this->m_associations->find(entity);
   if (idx >= 0)
@@ -445,7 +467,9 @@ smtk::attribute::ItemPtr Attribute::find(
       ValueItem::Ptr vitem = dynamic_pointer_cast<ValueItem>(this->item(i));
       Item::Ptr match;
       if (vitem && (match = vitem->findChild(inName, style)))
+        {
         return match;
+        }
       }
     i = -1; // Nothing found.
     }
@@ -469,7 +493,9 @@ smtk::attribute::ConstItemPtr Attribute::find(
       ConstValueItemPtr vitem = dynamic_pointer_cast<const ValueItem>(this->item(i));
       ConstItemPtr match;
       if (vitem && (match = vitem->findChild(inName, style)))
+        {
         return match;
+        }
       }
     i = -1; // Nothing found.
     }

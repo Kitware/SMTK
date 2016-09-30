@@ -175,6 +175,23 @@ FileSystemItem::valueAsString(std::size_t element,
     }
   return dummy;
 }
+
+/**\brief Return an iterator to the first directory value in this item.
+  *
+  */
+FileSystemItem::const_iterator FileSystemItem::begin() const
+{
+  return this->m_values.begin();
+}
+
+/**\brief Return an iterator just past the last directory value in this item.
+  *
+  */
+FileSystemItem::const_iterator FileSystemItem::end() const
+{
+  return this->m_values.end();
+}
+
 //----------------------------------------------------------------------------
 bool
 FileSystemItem::appendValue(const std::string &val)
@@ -293,7 +310,7 @@ bool FileSystemItem::isUsingDefault() const
     if (!(this->m_isSet[i] && (this->m_values[i] == dval)))
       {
       return false;
-       }
+      }
     }
   return true;
 }

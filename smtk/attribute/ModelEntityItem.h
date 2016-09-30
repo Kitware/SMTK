@@ -57,32 +57,8 @@ public:
   bool setValue(const smtk::model::EntityRef& val);
   bool setValue(std::size_t element, const smtk::model::EntityRef& val);
 
-  template<typename I>
-  bool setValues(I vbegin, I vend, std::size_t offset = 0)
-    {
-    bool ok = false;
-    std::size_t num = vend - vbegin + offset;
-    if (this->setNumberOfValues(num))
-      {
-      ok = true;
-      std::size_t i = 0;
-      for (I it = vbegin; it != vend; ++it, ++i)
-        if (!this->setValue(offset + i, *it))
-          {
-          ok = false;
-          break;
-          }
-      }
-    // Enable or disable the item if it is optional.
-    if (ok)
-      this->setIsEnabled(num > 0 ? true : false);
-    return ok;
-    }
-  template<typename I>
-  bool appendValues(I vbegin, I vend)
-    {
-    return this->setValues(vbegin, vend, this->numberOfValues());
-    }
+  template<typename I> bool setValues(I vbegin, I vend, std::size_t offset = 0);
+  template<typename I> bool appendValues(I vbegin, I vend);
 
   bool appendValue(const smtk::model::EntityRef& val);
   bool removeValue(std::size_t element);
@@ -118,6 +94,38 @@ protected:
 
   smtk::model::EntityRefArray m_values;
 };
+
+template<typename I>
+bool ModelEntityItem::setValues(I vbegin, I vend, std::size_t offset)
+{
+  bool ok = false;
+  std::size_t num = vend - vbegin + offset;
+  if (this->setNumberOfValues(num))
+    {
+    ok = true;
+    std::size_t i = 0;
+    for (I it = vbegin; it != vend; ++it, ++i)
+      {
+      if (!this->setValue(offset + i, *it))
+        {
+        ok = false;
+        break;
+        }
+      }
+    }
+  // Enable or disable the item if it is optional.
+  if (ok)
+    {
+    this->setIsEnabled(num > 0 ? true : false);
+    }
+  return ok;
+}
+
+template<typename I>
+bool ModelEntityItem::appendValues(I vbegin, I vend)
+{
+  return this->setValues(vbegin, vend, this->numberOfValues());
+}
 
   } // namespace attribute
 } // namespace smtk

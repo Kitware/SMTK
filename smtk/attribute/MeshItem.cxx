@@ -332,8 +332,12 @@ std::ptrdiff_t MeshItem::find(const smtk::mesh::MeshSet& mesh) const
   std::ptrdiff_t idx = 0;
   smtk::mesh::MeshList::const_iterator it;
   for (it = this->begin(); it != this->end(); ++it, ++idx)
+    {
     if ((*it) == mesh)
+      {
       return idx;
+      }
+    }
   return -1;
 }
 
