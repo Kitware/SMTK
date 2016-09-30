@@ -85,34 +85,6 @@ void create_discrete_mesh_model( smtk::model::ManagerPtr mgr )
 }
 
 //----------------------------------------------------------------------------
-void verify_alloc_lengths_entityref(const smtk::model::EntityRef& eRef,
-                                    const smtk::mesh::CollectionPtr& c)
-{
-
-  smtk::mesh::MeshSet mesh = c->findAssociatedMeshes( eRef );
-
-  boost::int64_t connectivityLength= -1;
-  boost::int64_t numberOfCells = -1;
-  boost::int64_t numberOfPoints = -1;
-
-  //query for all cells
-  smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(eRef, c,
-                                                                   connectivityLength,
-                                                                   numberOfCells,
-                                                                   numberOfPoints);
-
-
-  test(connectivityLength != -1);
-  test(numberOfCells != -1);
-  test(numberOfPoints != -1);
-
-  test(connectivityLength == mesh.pointConnectivity().size() );
-  test(numberOfCells == mesh.cells().size() );
-  test(numberOfPoints == mesh.points().size() );
-
-}
-
-//----------------------------------------------------------------------------
 void removeOnesWithoutTess(smtk::model::EntityRefs& ents)
 {
   smtk::model::EntityIterator it;
@@ -143,15 +115,22 @@ int UnitTestExtractOrderedTessellation(int, char** const)
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
   smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
 
-  // create_simple_mesh_model(modelManager);
-  create_discrete_mesh_model(modelManager);
+  // rather than remove this code path, I will simply shunt it to satisfy
+  // warnings about unused functions.
+  if (false)
+    {
+    create_simple_mesh_model(modelManager);
+    }
+  else
+    {
+    create_discrete_mesh_model(modelManager);
+    }
 
   smtk::io::ModelToMesh convert;
   convert.setIsMerging(false);
   smtk::mesh::CollectionPtr c = convert(meshManager,modelManager);
 
   typedef smtk::model::EntityRefs EntityRefs;
-  typedef smtk::model::EntityTypeBits EntityTypeBits;
 
   EntityRefs currentEnts =
     modelManager->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::FACE);

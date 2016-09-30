@@ -148,6 +148,23 @@ RefItem::valueAsString(std::size_t element,
     }
   return dummy;
 }
+
+/**\brief Return an iterator to the first attribute-reference value in this item.
+  *
+  */
+RefItem::const_iterator RefItem::begin() const
+{
+  return this->m_values.begin();
+}
+
+/**\brief Return an iterator just past the last attribute-reference value in this item.
+  *
+  */
+RefItem::const_iterator RefItem::end() const
+{
+  return this->m_values.end();
+}
+
 //----------------------------------------------------------------------------
 bool
 RefItem::appendValue(smtk::attribute::AttributePtr val)

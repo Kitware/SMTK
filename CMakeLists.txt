@@ -307,7 +307,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     if(UNIX)
       set(sep ":")
     else() #windows
-      set(sep ";")
+      set(sep "\;")
     endif()
     execute_process(
       COMMAND "${PYTHON_EXECUTABLE}" -c "import shiboken"

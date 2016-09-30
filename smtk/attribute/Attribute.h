@@ -260,15 +260,19 @@ namespace smtk
       T result;
       ConstModelEntityItemPtr itm = this->findModelEntity(iname);
       if (!itm)
+        {
         return result;
+        }
 
       smtk::model::EntityRefArray::const_iterator it;
-      for (it = itm->begin(); it != itm->end(); ++it) {
+      for (it = itm->begin(); it != itm->end(); ++it)
+        {
         typename T::value_type entry(*it);
-        if (entry.isValid()) {
+        if (entry.isValid())
+          {
           result.insert(result.end(), entry);
+          }
         }
-      }
       return result;
     }
 //----------------------------------------------------------------------------
@@ -276,15 +280,19 @@ namespace smtk
     {
       T result;
       if (!this->m_associations)
+        {
         return result;
+        }
 
       smtk::model::EntityRefArray::const_iterator it;
-      for (it = this->m_associations->begin(); it != this->m_associations->end(); ++it) {
+      for (it = this->m_associations->begin(); it != this->m_associations->end(); ++it)
+        {
         typename T::value_type entry(*it);
-        if (entry.isValid()) {
+        if (entry.isValid())
+          {
           result.insert(result.end(), entry);
+          }
         }
-      }
       return result;
     }
 //----------------------------------------------------------------------------
@@ -297,7 +305,9 @@ namespace smtk
     typename T::ConstPtr result;
     smtk::attribute::ConstItemPtr itm = this->itemAtPath(path, seps);
     if (!!itm)
+      {
       result = smtk::dynamic_pointer_cast<const T>(itm);
+      }
     return result;
     }
 //----------------------------------------------------------------------------

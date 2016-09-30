@@ -6,7 +6,7 @@
     <AttDef Type="export mesh" BaseType="operator">
       <ItemDefinitions>
         <MeshEntity Name="mesh" NumberOfRequiredValues="1" Extensible="true" />
-        <File Name="filename" NumberOfRequiredValues="1" ShouldExist="true"
+        <File Name="filename" NumberOfRequiredValues="1" ShouldExist="false"
           FileFilters="MOAB native file (*.h5m *.mhdf);;Exodus II file (*.exo *.exoII *.exo2 *.g *.gen);;Kitware VTK file (*.vtk);;SLAC file (*.slac);;General Mesh Viewer (GMV) file (*.gmv);;Ansys file (*.ans);;Gmsh file (*.msh *.gmsh);;Stereo Lithography file (*.stl)">
         </File>
         <Int Name="write-component" NumberOfRequiredValues="1">

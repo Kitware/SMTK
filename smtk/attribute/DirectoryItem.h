@@ -39,8 +39,9 @@ namespace smtk
 
     private:
     };
-  }
-}
+
+  } // namespace attribute
+} // namespace smtk
 
 
 #endif /* __smtk_attribute_DirectoryItem_h */

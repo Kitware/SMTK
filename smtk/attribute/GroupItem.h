@@ -26,6 +26,8 @@ namespace smtk
     {
       friend class GroupItemDefinition;
     public:
+      typedef std::vector<std::vector<smtk::attribute::ItemPtr> >::const_iterator const_iterator;
+
       smtkTypeMacro(GroupItem);
       virtual ~GroupItem();
       virtual Item::Type type() const;
@@ -61,6 +63,11 @@ namespace smtk
       typename T::ConstPtr findAs(const std::string& name) const;
 
       virtual void reset();
+
+      // Iterator-style access to values:
+      const_iterator begin() const;
+      const_iterator end() const;
+
       // Assigns this item to be equivalent to another.  Options are processed by derived item classes
       // Returns true if success and false if a problem occured - options are use when copying sub-items.
       // See Items.h for a description of these options.
@@ -90,8 +97,8 @@ namespace smtk
     }
 //----------------------------------------------------------------------------
 
-  }
-}
+  } // namespace attribute
+} // namespace smtk
 
 
 #endif /* __GroupItem_h */

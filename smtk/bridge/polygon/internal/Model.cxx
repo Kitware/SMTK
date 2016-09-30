@@ -502,13 +502,14 @@ bool pmodel::splitModelEdgeAtModelVertices(
   smtk::model::Vertex finalModelVert;
   bool isPeriodic = (*edgeToSplit->pointsBegin() == *edgeToSplit->pointsRBegin());
   //bool noModelVertices = (this->m_vertices.find(*edgeToSplit->pointsBegin()) == this->m_vertices.end());
-  bool noModelVertices = modelEdge.vertices().empty();
+  smtk::model::Vertices currentVertices = modelEdge.vertices();
+  bool noModelVertices = currentVertices.empty();
   if (isPeriodic && noModelVertices)
     {
     // Edge has no model vertices because it's periodic.
     // Are we being asked to split only at interior points?
     // Or is one of the split locations the start/end point
-    // of the edge's sequence. If the former, then we reorder
+    // of the edge's sequence? If the former, then we reorder
     // edge points so a split occurs at the beginning/end:
     if (
       **locationsInEdgeOrder.begin() != *edgeToSplit->pointsBegin() &&
@@ -571,9 +572,9 @@ bool pmodel::splitModelEdgeAtModelVertices(
 
     allVertices.reserve(locationsInEdgeOrder.size() + 2);
     // Add model vertex at head:
-    allVertices.push_back(modelEdge.vertices()[0]);
+    allVertices.push_back(currentVertices.front());
     // Remember the vertex at the tail for later:
-    finalModelVert = modelEdge.vertices()[1];
+    finalModelVert = currentVertices.back();
     }
   else
     { // We don't have model vertices, but we aren't periodic? This is an error.

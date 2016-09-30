@@ -280,10 +280,10 @@ void verify_alloc_lengths_meshset(const smtk::mesh::CollectionPtr& c)
   test(numberOfCells != -1);
   test(numberOfPoints != -1);
 
-  test(static_cast<unsigned long>(connectivityLength) ==
+  test(static_cast<std::size_t>(connectivityLength) ==
        all_meshes.pointConnectivity().size() );
-  test(static_cast<unsigned long>(numberOfCells) == all_meshes.cells().size() );
-  test(static_cast<unsigned long>(numberOfPoints) ==
+  test(static_cast<std::size_t>(numberOfCells) == all_meshes.cells().size() );
+  test(static_cast<std::size_t>(numberOfPoints) ==
        all_meshes.points().size() );
 
 
@@ -293,10 +293,10 @@ void verify_alloc_lengths_meshset(const smtk::mesh::CollectionPtr& c)
                                                                    numberOfCells,
                                                                    numberOfPoints);
 
-   test(static_cast<unsigned long>(connectivityLength) ==
+   test(static_cast<std::size_t>(connectivityLength) ==
         mesh3d.pointConnectivity().size() );
-   test(static_cast<unsigned long>(numberOfCells) == mesh3d.cells().size() );
-   test(static_cast<unsigned long>(numberOfPoints) == mesh3d.points().size() );
+   test(static_cast<std::size_t>(numberOfCells) == mesh3d.cells().size() );
+   test(static_cast<std::size_t>(numberOfPoints) == mesh3d.points().size() );
 
   //Now try asking only for 2d cells
   smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(mesh2d,
@@ -304,10 +304,10 @@ void verify_alloc_lengths_meshset(const smtk::mesh::CollectionPtr& c)
                                                                    numberOfCells,
                                                                    numberOfPoints);
 
-  test(static_cast<unsigned long>(connectivityLength)
+  test(static_cast<std::size_t>(connectivityLength)
        == mesh2d.pointConnectivity().size() );
-  test(static_cast<unsigned long>(numberOfCells) == mesh2d.cells().size() );
-  test(static_cast<unsigned long>(numberOfPoints) == mesh2d.points().size() );
+  test(static_cast<std::size_t>(numberOfCells) == mesh2d.cells().size() );
+  test(static_cast<std::size_t>(numberOfPoints) == mesh2d.points().size() );
 
 }
 
@@ -335,10 +335,10 @@ void verify_alloc_lengths_cellset(const smtk::mesh::CollectionPtr& c)
   test(numberOfCells != -1);
   test(numberOfPoints != -1);
 
-  test(static_cast<unsigned long>(connectivityLength) ==
+  test(static_cast<std::size_t>(connectivityLength) ==
        all_cells.pointConnectivity().size() );
-  test(static_cast<unsigned long>(numberOfCells) == all_cells.size() );
-  test(static_cast<unsigned long>(numberOfPoints)
+  test(static_cast<std::size_t>(numberOfCells) == all_cells.size() );
+  test(static_cast<std::size_t>(numberOfPoints)
        == all_cells.points().size() );
 
 
@@ -348,11 +348,11 @@ void verify_alloc_lengths_cellset(const smtk::mesh::CollectionPtr& c)
                                                                    numberOfCells,
                                                                    numberOfPoints);
 
-  test(static_cast<unsigned long>(connectivityLength) ==
+  test(static_cast<std::size_t>(connectivityLength) ==
        cells3d.pointConnectivity().size() );
-  test(static_cast<unsigned long>(numberOfCells) ==
+  test(static_cast<std::size_t>(numberOfCells) ==
        cells3d.size() );
-  test(static_cast<unsigned long>(numberOfPoints) == cells3d.points().size() );
+  test(static_cast<std::size_t>(numberOfPoints) == cells3d.points().size() );
 
   //Now try asking only for 2d cells
   smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(cells2d,
@@ -360,10 +360,10 @@ void verify_alloc_lengths_cellset(const smtk::mesh::CollectionPtr& c)
                                                                    numberOfCells,
                                                                    numberOfPoints);
 
-  test(static_cast<unsigned long>(connectivityLength)
+  test(static_cast<std::size_t>(connectivityLength)
        == cells2d.pointConnectivity().size() );
-  test(static_cast<unsigned long>(numberOfCells) == cells2d.size() );
-  test(static_cast<unsigned long>(numberOfPoints) == cells2d.points().size() );
+  test(static_cast<std::size_t>(numberOfCells) == cells2d.size() );
+  test(static_cast<std::size_t>(numberOfPoints) == cells2d.points().size() );
 
 }
 

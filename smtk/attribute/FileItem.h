@@ -47,8 +47,9 @@ namespace smtk
 
     private:
     };
-  }
-}
+
+  } // namespace attribute
+} // namespace smtk
 
 
 #endif /* __smtk_attribute_FileItem_h */

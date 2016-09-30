@@ -33,7 +33,6 @@ set(ioHeaders
   WriteMesh.h
   #XmlDocV1Parser.h
   XmlDocV2Parser.h
-  #XmlV1StringWriter.h
   XmlV2StringWriter.h
 )
 
