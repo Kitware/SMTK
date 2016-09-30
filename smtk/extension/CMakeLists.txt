@@ -73,3 +73,8 @@ endif()
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(paraview)
 endif()
+
+# Add the cumulus UI if Qt support and cumulus enabled
+if(SMTK_ENABLE_QT_SUPPORT AND SMTK_ENABLE_CUMULUS_SUPPORT)
+  add_subdirectory(cumulus)
+endif()
