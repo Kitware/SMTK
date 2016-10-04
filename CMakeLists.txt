@@ -289,12 +289,16 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
       shiboken)
     set(shiboken_PYTHONPATH
       "${SHIBOKEN_PYTHONPATH}")
+    set(shiboken_libpath
+      "${SHIBOKEN_LIBRARY_PATH}")
 
     if (SMTK_ENABLE_PARAVIEW_SUPPORT)
       list(APPEND required_python_modules
         paraview)
       set(paraview_PYTHONPATH
         "${PARAVIEW_PYTHONPATH}")
+      set(paraview_libpath
+        "${PARAVIEW_RUNTIME_DIRS}")
     elseif (SMTK_ENABLE_VTK_SUPPORT)
       list(APPEND required_python_modules
         vtk)
@@ -303,6 +307,8 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
       set(vtk_PYTHONPATH
         "${VTK_DIR}/lib/site-packages"
         "${VTK_DIR}/lib")
+      set(vtk_libpath
+        "${VTK_DIR}/lib")
     endif ()
 
     set(envsep ":")
@@ -310,7 +316,18 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
       set(envsep ";")
     endif ()
 
-    function (smtk_test_python_module output module pythonpath)
+    set(libpath_envvar)
+    if (WIN32)
+      set(libpath_envvar "PATH")
+    elseif (APPLE)
+      set(libpath_envvar "DYLD_FALLBACK_LIBRARY_PATH")
+    elseif (UNIX)
+      set(libpath_envvar "LD_LIBRARY_PATH")
+    else ()
+      message(WARNING "Unknown platform loader path environment variable.")
+    endif ()
+
+    function (smtk_test_python_module output_python output_lib module pythonpath libpath)
       string(REPLACE ";" "${envsep}" pythonpath_env "${pythonpath}")
 
       if (ENV{PYTHONPATH})
@@ -318,11 +335,19 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
           "${pythonpath_env}${envsep}$ENV{PYTHONPATH}")
       endif ()
 
+      string(REPLACE ";" "${envsep}" libpath_env "${libpath}")
+
+      if (ENV{${libpath_envvar}})
+        set(libpath_env
+          "${libpath_env}${envsep}$ENV{${libpath_envvar}}")
+      endif ()
+
       # Test the PYTHONPATH passed in.
       execute_process(
         COMMAND "${CMAKE_COMMAND}"
                 -E env
                 "PYTHONPATH=${pythonpath_env}"
+                "${libpath_envvar}=${libpath_env}"
                 "${PYTHON_EXECUTABLE}"
                 -c "import ${module}"
         RESULT_VARIABLE res
@@ -332,25 +357,34 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
       if (res)
         message(SEND_ERROR
           "Failed to import the ${module} Python module. The attempted "
-          "PYTHONPATH was '${pythonpath_env}', but it still failed. Please "
-          "set the PYTHONPATH environment to make the ${module} module "
-          "successfully import. The error message was '${err}'.")
+          "PYTHONPATH was '${pythonpath_env}' and ${libpath_envvar} set to "
+          "'${libpath_env}', but it still failed. Please set the PYTHONPATH "
+          "environment to make the ${module} module successfully import. The "
+          "error message was '${err}'.")
 
         return ()
       endif ()
 
       # Add to the list of paths required for modules.
-      set("${output}"
-        ${${output}}
+      set("${output_python}"
+        ${${output_python}}
         "${pythonpath}"
+        PARENT_SCOPE)
+
+      # Add to the list of paths required for modules.
+      set("${output_lib}"
+        ${${output_lib}}
+        "${libpath}"
         PARENT_SCOPE)
     endfunction ()
 
     set(smtk_pythonpaths
       "$ENV{PYTHONPATH}")
+    set(smtk_libpaths
+      "$ENV{${libpath_envvar}}")
     foreach (module IN LISTS required_python_modules)
-      smtk_test_python_module(smtk_pythonpaths
-        "${module}" "${${module}_PYTHONPATH}")
+      smtk_test_python_module(smtk_pythonpaths smtk_libpaths
+        "${module}" "${${module}_PYTHONPATH}" "${${module}_libpath}")
     endforeach ()
 
     # Add the path to the build tree's compiled modules.
