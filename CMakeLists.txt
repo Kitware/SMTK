@@ -352,6 +352,10 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
       smtk_test_python_module(smtk_pythonpaths
         "${module}" "${${module}_PYTHONPATH}")
     endforeach ()
+
+    # Add the path to the build tree's compiled modules.
+    list(APPEND smtk_pythonpaths
+      "${CMAKE_BINARY_DIR}")
   endif()
 endif()
 
