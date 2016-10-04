@@ -32,6 +32,11 @@ public:
   WriteMesh();
   ~WriteMesh();
 
+#ifndef SHIBOKEN_SKIP
+  WriteMesh& operator=(const WriteMesh&) = delete;
+  WriteMesh(const WriteMesh&) = delete;
+#endif
+
   bool operator() ( const std::string& filePath,
                     smtk::mesh::CollectionPtr collection,
                     mesh::Subset subset = mesh::Subset::EntireCollection) const;
@@ -39,8 +44,17 @@ public:
                     mesh::Subset subset = mesh::Subset::EntireCollection) const;
 
   protected:
-  std::vector<smtk::io::mesh::MeshIO*> IO;
+  std::vector<smtk::io::mesh::MeshIOPtr> IO;
 };
+
+SMTKCORE_EXPORT bool
+writeMesh( const std::string& filePath,
+           smtk::mesh::CollectionPtr collection,
+           mesh::Subset subset = mesh::Subset::EntireCollection );
+
+SMTKCORE_EXPORT bool
+writeMesh( smtk::mesh::CollectionPtr collection,
+           mesh::Subset subset = mesh::Subset::EntireCollection );
 
 }
 }

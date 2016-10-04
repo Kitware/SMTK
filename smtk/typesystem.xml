@@ -445,6 +445,12 @@
   <suppress-warning text="skipping function 'smtk::io::WriteMesh::operator()', unmatched parameter type 'mesh::Subset'"/>
   <suppress-warning text="skipping function 'smtk::io::ReadMesh::operator()', unmatched parameter type 'mesh::Subset'"/>
   <suppress-warning text="skipping function 'smtk::io::mesh::MeshIO::read', unmatched parameter type 'Subset'"/>
+  <suppress-warning text="skipping field 'ExportMesh::IO' with unmatched type 'std::vector&lt;smtk::io::mesh::MeshIOPtr&gt;'"/>
+  <suppress-warning text="skipping field 'ImportMesh::IO' with unmatched type 'std::vector&lt;smtk::io::mesh::MeshIOPtr&gt;'"/>
+  <suppress-warning text="skipping field 'ReadMesh::IO' with unmatched type 'std::vector&lt;smtk::io::mesh::MeshIOPtr&gt;'"/>
+  <suppress-warning text="skipping field 'WriteMesh::IO' with unmatched type 'std::vector&lt;smtk::io::mesh::MeshIOPtr&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::io::writeMesh', unmatched parameter type 'mesh::Subset'"/>
+  <suppress-warning text="skipping function 'smtk::io::readMesh', unmatched parameter type 'mesh::Subset'"/>
 
   <suppress-warning text="skipping function 'smtk::mesh::Manager::collectionBegin', unmatched return type 'smtk::mesh::Manager::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::model::Operator::setMeshManager', unmatched return type 'smtk::model::Operator::Ptr'"/>

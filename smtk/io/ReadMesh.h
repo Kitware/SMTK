@@ -31,6 +31,12 @@ class SMTKCORE_EXPORT ReadMesh
 public:
   ReadMesh();
   ~ReadMesh();
+
+#ifndef SHIBOKEN_SKIP
+  ReadMesh& operator=(const ReadMesh&) = delete;
+  ReadMesh(const ReadMesh&) = delete;
+#endif
+
   //Load the domain sets from a moab data file as a new collection into the
   //given manager.
   smtk::mesh::CollectionPtr
@@ -42,8 +48,17 @@ public:
                    mesh::Subset subset = mesh::Subset::EntireCollection) const;
 
   protected:
-  std::vector<smtk::io::mesh::MeshIO*> IO;
+  std::vector<smtk::io::mesh::MeshIOPtr> IO;
 };
+
+SMTKCORE_EXPORT smtk::mesh::CollectionPtr
+readMesh( const std::string& filePath,
+          smtk::mesh::ManagerPtr manager,
+          mesh::Subset subset = mesh::Subset::EntireCollection );
+SMTKCORE_EXPORT bool
+readMesh( const std::string& filePath,
+          smtk::mesh::CollectionPtr collection,
+          mesh::Subset subset = mesh::Subset::EntireCollection );
 
 }
 }

@@ -28,16 +28,12 @@ namespace smtk {
 
 ExportMesh::ExportMesh()
 {
-  this->IO.push_back(new mesh::MeshIOXMS());
-  this->IO.push_back(new mesh::MeshIOMoab());
+  this->IO.push_back( smtk::io::mesh::MeshIOPtr( new mesh::MeshIOXMS() ) );
+  this->IO.push_back( smtk::io::mesh::MeshIOPtr( new mesh::MeshIOMoab() ) );
 }
 
 ExportMesh::~ExportMesh()
 {
-  for (auto&& exporter : this->IO)
-    {
-    delete exporter;
-    }
 }
 
 bool ExportMesh::operator() (const std::string& filePath,
@@ -90,6 +86,21 @@ bool ExportMesh::operator() (const std::string& filePath,
   return false;
 }
 
+bool exportMesh( const std::string& filePath,
+                 smtk::mesh::CollectionPtr collection )
+{
+  ExportMesh exportM;
+  return exportM( filePath, collection );
+}
+
+bool exportMesh( const std::string& filePath,
+                 smtk::mesh::CollectionPtr collection,
+                 smtk::model::ManagerPtr manager,
+                 const std::string& modelPropertyName )
+{
+  ExportMesh exportM;
+  return exportM( filePath, collection, manager, modelPropertyName );
+}
 
 }
 }

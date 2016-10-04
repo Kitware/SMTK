@@ -1068,8 +1068,7 @@ int ExportJSON::forSingleCollection(cJSON* mdesc,
       collection->writeLocation().relativePath();
 
     cJSON_AddStringToObject(jsonCollection, "location", fileWriteLocation.c_str() );
-    smtk::io::WriteMesh write;
-    write(collection, mesh::Subset::EntireCollection);
+    smtk::io::writeMesh(collection, mesh::Subset::EntireCollection);
     }
 
   //currently we only write out the modification state after the possibility

@@ -16,6 +16,8 @@
 
 #include "smtk/io/mesh/Format.h"
 
+#include <memory>
+
 namespace smtk {
   namespace io {
 namespace mesh {
@@ -35,6 +37,9 @@ enum class Subset: unsigned int
   * possible actions are then recorded in the mesh Format, which can be queried
   * at runtime.
   */
+
+class MeshIO;
+typedef std::unique_ptr<MeshIO> MeshIOPtr;
 
 class SMTKCORE_EXPORT MeshIO
 {

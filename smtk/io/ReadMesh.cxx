@@ -30,16 +30,12 @@ namespace smtk {
 
 ReadMesh::ReadMesh()
 {
-  this->IO.push_back(new mesh::MeshIOXMS());
-  this->IO.push_back(new mesh::MeshIOMoab());
+  this->IO.push_back( smtk::io::mesh::MeshIOPtr( new mesh::MeshIOXMS() ) );
+  this->IO.push_back( smtk::io::mesh::MeshIOPtr( new mesh::MeshIOMoab() ) );
 }
 
 ReadMesh::~ReadMesh()
 {
-  for (auto&& reader : this->IO)
-    {
-    delete reader;
-    }
 }
 
 smtk::mesh::CollectionPtr
@@ -103,6 +99,22 @@ bool ReadMesh::operator() (const std::string& filePath,
   return false;
 }
 
+smtk::mesh::CollectionPtr
+readMesh( const std::string& filePath,
+          smtk::mesh::ManagerPtr manager,
+          mesh::Subset subset )
+{
+  ReadMesh read;
+  return read( filePath, manager, subset );
+}
+
+bool readMesh( const std::string& filePath,
+               smtk::mesh::CollectionPtr collection,
+               mesh::Subset subset )
+{
+  ReadMesh read;
+  return read( filePath, collection, subset );
+}
 
 }
 }

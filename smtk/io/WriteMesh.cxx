@@ -30,16 +30,12 @@ namespace smtk {
 
 WriteMesh::WriteMesh()
 {
-  this->IO.push_back(new mesh::MeshIOXMS());
-  this->IO.push_back(new mesh::MeshIOMoab());
+  this->IO.push_back( smtk::io::mesh::MeshIOPtr( new mesh::MeshIOXMS() ) );
+  this->IO.push_back( smtk::io::mesh::MeshIOPtr( new mesh::MeshIOMoab() ) );
 }
 
 WriteMesh::~WriteMesh()
 {
-  for (auto&& writer : this->IO)
-    {
-    delete writer;
-    }
 }
 
 bool WriteMesh::operator() (const std::string& filePath,
@@ -90,6 +86,21 @@ bool WriteMesh::operator() (smtk::mesh::CollectionPtr collection,
     }
     }
   return false;
+}
+
+bool writeMesh( const std::string& filePath,
+                smtk::mesh::CollectionPtr collection,
+                mesh::Subset subset )
+{
+  WriteMesh write;
+  return write( filePath, collection, subset );
+}
+
+bool writeMesh( smtk::mesh::CollectionPtr collection,
+                mesh::Subset subset )
+{
+  WriteMesh write;
+  return write( collection, subset );
 }
 
 }

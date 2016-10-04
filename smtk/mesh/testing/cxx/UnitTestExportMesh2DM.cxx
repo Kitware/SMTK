@@ -49,8 +49,7 @@ void verify_write_empty_collection()
   smtk::mesh::CollectionPtr c = manager->makeCollection();
   test( c->isValid(), "empty collection is empty");
 
-  smtk::io::ExportMesh exporter;
-  const bool result = exporter(write_path, c);
+  const bool result = smtk::io::exportMesh(write_path, c);
 
   //before we verify if the write was good, first remove the output file
   cleanup( write_path );
@@ -66,8 +65,7 @@ void verify_write_null_collection()
   //use a null collection ptr
   smtk::mesh::CollectionPtr c;
 
-  smtk::io::ExportMesh exporter;
-  const bool result = exporter(write_path, c);
+  const bool result = smtk::io::exportMesh(write_path, c);
 
   //before we verify if the write was good, first remove the output file
   cleanup( write_path );
@@ -85,8 +83,7 @@ void verify_write_valid_collection()
   write_path += "/twoassm_output.2dm";
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::io::ImportMesh import;
-  smtk::mesh::CollectionPtr c  = import(file_path, manager);
+  smtk::mesh::CollectionPtr c  = smtk::io::importMesh(file_path, manager);
   test( c->isValid(), "collection should be valid");
   test( !c->isModified(), "loaded collection should be marked as not modifed");
 
@@ -94,8 +91,7 @@ void verify_write_valid_collection()
   c->meshes(smtk::mesh::Dims3).extractShell();
   test(c->isModified(), "extractShell should mark the collection as modified");
 
-  smtk::io::ExportMesh exporter;
-  const bool result = exporter(write_path,c);
+  const bool result = smtk::io::exportMesh(write_path,c);
   cleanup( write_path );
 
   if(!result)

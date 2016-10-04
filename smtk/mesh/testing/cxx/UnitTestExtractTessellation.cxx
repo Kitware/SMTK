@@ -137,8 +137,7 @@ smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
   std::string file_path(data_root);
   file_path += "/mesh/3d/sixth_hexflatcore.h5m";
 
-  smtk::io::ImportMesh import;
-  smtk::mesh::CollectionPtr c  = import(file_path, mngr);
+  smtk::mesh::CollectionPtr c  = smtk::io::importMesh(file_path, mngr);
   test( c->isValid(), "collection should be valid");
 
   return c;

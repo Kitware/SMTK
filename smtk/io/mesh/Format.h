@@ -25,13 +25,9 @@ namespace smtk {
   namespace io {
 namespace mesh {
 
-struct Format
+struct SMTKCORE_EXPORT Format
 {
   typedef std::bitset<4> IOFlags;
-  constexpr static IOFlags Import = IOFlags(0x1);
-  constexpr static IOFlags Export = IOFlags(0x2);
-  constexpr static IOFlags Read   = IOFlags(0x4);
-  constexpr static IOFlags Write  = IOFlags(0x8);
 
   Format() : Name(""), Extensions(), Flags(IOFlags(0x0)) {}
   Format(const std::string& name, IOFlags flags) :
@@ -42,10 +38,17 @@ struct Format
   Format(const std::string& name, const std::string& extension, IOFlags flags) :
     Name(name), Extensions(1,extension), Flags(flags) {}
 
+#ifndef SHIBOKEN_SKIP
+  static const IOFlags Import;
+  static const IOFlags Export;
+  static const IOFlags Read;
+  static const IOFlags Write;
+
   bool CanImport() const { return (this->Flags & Import) == Import; }
   bool CanExport() const { return (this->Flags & Export) == Export; }
   bool CanRead()   const { return (this->Flags & Read)   == Read; }
   bool CanWrite()  const { return (this->Flags & Write)  == Write; }
+#endif
 
   std::string Name;
   std::vector<std::string> Extensions;

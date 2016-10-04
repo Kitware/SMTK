@@ -31,44 +31,49 @@ MeshIOMoab::MeshIOMoab() : MeshIO()
     Format("exodus",
            std::vector<std::string>({ ".exo", ".exoII", ".exo2", ".g", ".gen"}),
            Format::Import|Format::Export|Format::Read|Format::Write));
-  this->Formats.push_back(Format("vtk",
-                                 std::vector<std::string>({ ".vtk" }),
-                                 Format::Import|Format::Export));
-  this->Formats.push_back(Format("slac",
-                                 std::vector<std::string>({ ".slac" }),
-                                 Format::Import|Format::Export));
-  this->Formats.push_back(Format("general mesh viewer",
-                                 std::vector<std::string>({ ".gmv" }),
-                                 Format::Import|Format::Export));
-  this->Formats.push_back(Format("ansys",
-                                 std::vector<std::string>({ ".ans" }),
-                          Format::Import|Format::Export));
-  this->Formats.push_back(Format("gmsh",
-                                 std::vector<std::string>({ ".msh", ".gmsh" }),
-                                 Format::Import|Format::Export));
-  this->Formats.push_back(Format("stl",
-                                 std::vector<std::string>({ ".stl" }),
-                                 Format::Import|Format::Export));
+  this->Formats.push_back(
+    Format("vtk",
+           std::vector<std::string>({ ".vtk" }),
+           Format::Import|Format::Export));
+  this->Formats.push_back(
+    Format("slac",
+           std::vector<std::string>({ ".slac" }),
+           Format::Import|Format::Export));
+  this->Formats.push_back(
+    Format("general mesh viewer",
+           std::vector<std::string>({ ".gmv" }),
+           Format::Import|Format::Export));
+  this->Formats.push_back(
+    Format("ansys",
+           std::vector<std::string>({ ".ans" }),
+           Format::Import|Format::Export));
+  this->Formats.push_back(
+    Format("gmsh",
+           std::vector<std::string>({ ".msh", ".gmsh" }),
+           Format::Import|Format::Export));
+  this->Formats.push_back(
+    Format("stl",
+           std::vector<std::string>({ ".stl" }),
+           Format::Import|Format::Export));
 }
 
 smtk::mesh::CollectionPtr
 MeshIOMoab::importMesh( const std::string& filePath,
                         smtk::mesh::ManagerPtr& manager ) const
 {
-  return this->read(filePath, manager, Subset::EntireCollection);
+  return this->read( filePath, manager, Subset::EntireCollection );
 }
 
 bool MeshIOMoab::importMesh( const std::string& filePath,
                              smtk::mesh::CollectionPtr collection ) const
 {
-  return this->read(filePath, collection, Subset::EntireCollection);
+  return this->read( filePath, collection, Subset::EntireCollection );
 }
 
 bool MeshIOMoab::exportMesh( const std::string& filePath,
                              smtk::mesh::CollectionPtr collection) const
 {
-  return this->write( collection->writeLocation().absolutePath(),
-                      collection, Subset::EntireCollection );
+  return this->write( filePath, collection, Subset::EntireCollection );
 }
 
 //TODO:
@@ -84,7 +89,6 @@ smtk::mesh::CollectionPtr MeshIOMoab::read( const std::string& filePath,
                                             smtk::mesh::ManagerPtr& manager,
                                             Subset subset ) const
 {
-  std::cout<<"In read"<<std::endl;
   smtk::mesh::CollectionPtr collection;
 
   switch ( subset )

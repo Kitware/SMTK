@@ -14,6 +14,8 @@
 #include "smtk/CoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/PublicPointerDefs.h"
 
+#include "smtk/io/mesh/MeshIO.h"
+
 #include <string>
 #include <vector>
 
@@ -24,15 +26,17 @@
 namespace smtk {
   namespace io {
 
-namespace mesh {
-class MeshIO;
-}
-
 class SMTKCORE_EXPORT ImportMesh
 {
 public:
   ImportMesh();
   ~ImportMesh();
+
+#ifndef SHIBOKEN_SKIP
+  ImportMesh& operator=(const ImportMesh&) = delete;
+  ImportMesh(const ImportMesh&) = delete;
+#endif
+
   //Load the domain sets from a moab data file as a new collection into the
   //given manager.
   smtk::mesh::CollectionPtr operator() (const std::string& filePath,
@@ -41,8 +45,15 @@ public:
                    smtk::mesh::CollectionPtr collection) const;
 
   protected:
-  std::vector<smtk::io::mesh::MeshIO*> IO;
+  std::vector<smtk::io::mesh::MeshIOPtr> IO;
 };
+
+SMTKCORE_EXPORT smtk::mesh::CollectionPtr
+importMesh(const std::string& filePath,
+           smtk::mesh::ManagerPtr manager);
+SMTKCORE_EXPORT bool
+importMesh(const std::string& filePath,
+           smtk::mesh::CollectionPtr collection);
 
 }
 }

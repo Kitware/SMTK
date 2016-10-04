@@ -14,10 +14,10 @@ namespace smtk {
   namespace io {
 namespace mesh {
 
-constexpr Format::IOFlags Format::Import;
-constexpr Format::IOFlags Format::Export;
-constexpr Format::IOFlags Format::Read;
-constexpr Format::IOFlags Format::Write;
+const Format::IOFlags Format::Import = IOFlags(0x1);
+const Format::IOFlags Format::Export = IOFlags(0x2);
+const Format::IOFlags Format::Read = IOFlags(0x4);
+const Format::IOFlags Format::Write = IOFlags(0x8);
 
 }
 }

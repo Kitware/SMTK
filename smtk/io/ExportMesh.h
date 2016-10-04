@@ -14,6 +14,8 @@
 #include "smtk/CoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/PublicPointerDefs.h"
 
+#include "smtk/io/mesh/MeshIO.h"
+
 #include <string>
 #include <vector>
 
@@ -24,15 +26,16 @@
 namespace smtk {
   namespace io {
 
-namespace mesh {
-class MeshIO;
-}
-
 class SMTKCORE_EXPORT ExportMesh
 {
 public:
   ExportMesh();
   ~ExportMesh();
+
+#ifndef SHIBOKEN_SKIP
+  ExportMesh& operator=(const ExportMesh&) = delete;
+  ExportMesh(const ExportMesh&) = delete;
+#endif
 
   bool operator() ( const std::string& filePath,
                     smtk::mesh::CollectionPtr collection ) const;
@@ -42,8 +45,17 @@ public:
                      const std::string& modelPropertyName ) const;
 
   protected:
-  std::vector<smtk::io::mesh::MeshIO*> IO;
+  std::vector<smtk::io::mesh::MeshIOPtr> IO;
 };
+
+SMTKCORE_EXPORT
+bool exportMesh( const std::string& filePath,
+                 smtk::mesh::CollectionPtr collection );
+SMTKCORE_EXPORT
+bool exportMesh( const std::string& filePath,
+                 smtk::mesh::CollectionPtr collection,
+                 smtk::model::ManagerPtr manager,
+                 const std::string& modelPropertyName );
 
 }
 }

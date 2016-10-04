@@ -1150,8 +1150,7 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
           absPath = canonical(tryme, refPath);
           }
         }
-      smtk::io::ImportMesh import;
-      importedCollection = import(absPath.string(), meshMgr);
+      importedCollection = smtk::io::importMesh(absPath.string(), meshMgr);
       }
 
     //wasnt moab, or failed to load as moab

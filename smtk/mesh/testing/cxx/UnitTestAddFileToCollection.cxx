@@ -44,12 +44,11 @@ void verify_cant_append_to_bad_collection()
 
   //create a bad collection
   std::string file_path(data_root);
-  smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = read(file_path, manager);
+  smtk::mesh::CollectionPtr c = smtk::io::readMesh(file_path, manager);
   test( !c->isValid(), "collection should be invalid");
 
   //append to the bad collection is always a failure
-  bool result = read(first_mesh_path(), c);
+  bool result = smtk::io::readMesh(first_mesh_path(), c);
   test( !result, "read into an invalid collection should fail");
   test( !c->isValid(), "collection should still be invalid");
 }
@@ -58,8 +57,7 @@ void verify_cant_append_to_bad_collection()
 void verify_cant_append_to_null_collection()
 {
   smtk::mesh::CollectionPtr null_collection_ptr;
-  smtk::io::ReadMesh read;
-  bool result = read(first_mesh_path(), null_collection_ptr);
+  bool result = smtk::io::readMesh(first_mesh_path(), null_collection_ptr);
   test( !result, "read into a null collection should fail");
 }
 //----------------------------------------------------------------------------
@@ -68,8 +66,7 @@ void verify_append_to_valid_empty_collection()
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr collection = manager->makeCollection();
 
-  smtk::io::ReadMesh read;
-  bool result = read(second_mesh_path(), collection);
+  bool result = smtk::io::readMesh(second_mesh_path(), collection);
   test( result, "read of self into self should work");
   test( collection->isValid(), "collection should be valid");
 

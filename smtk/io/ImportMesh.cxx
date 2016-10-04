@@ -28,16 +28,12 @@ namespace smtk {
 
 ImportMesh::ImportMesh()
 {
-  this->IO.push_back(new mesh::MeshIOXMS());
-  this->IO.push_back(new mesh::MeshIOMoab());
+  this->IO.push_back( smtk::io::mesh::MeshIOPtr( new mesh::MeshIOXMS() ) );
+  this->IO.push_back( smtk::io::mesh::MeshIOPtr( new mesh::MeshIOMoab() ) );
 }
 
 ImportMesh::~ImportMesh()
 {
-  for (auto&& importer : this->IO)
-    {
-    delete importer;
-    }
 }
 
 smtk::mesh::CollectionPtr ImportMesh::operator() (const std::string& filePath,
@@ -92,6 +88,21 @@ bool ImportMesh::operator() (const std::string& filePath,
   return false;
 }
 
+smtk::mesh::CollectionPtr importMesh(const std::string& filePath,
+                                     smtk::mesh::ManagerPtr manager)
+{
+  ImportMesh importM;
+  return importM( filePath, manager );
+}
+
+bool importMesh(const std::string& filePath,
+                smtk::mesh::CollectionPtr collection)
+{
+{
+  ImportMesh importM;
+  return importM( filePath, collection );
+}
+}
 
 }
 }

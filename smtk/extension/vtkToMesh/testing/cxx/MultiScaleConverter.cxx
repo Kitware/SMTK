@@ -228,8 +228,7 @@ void extractMaterials(smtk::mesh::CollectionPtr c, std::string outputFile, doubl
   std::cout << "number of domains: " << c->domains().size() << std::endl;
   std::cout << "number of dirichlets: " <<  c->dirichlets().size() << std::endl;
 
-  smtk::io::WriteMesh write;
-  write(outputFile, c);
+  smtk::io::writeMesh(outputFile, c);
 }
 
 }
@@ -263,8 +262,7 @@ int main(int argc, char* argv[])
    }
   else if (extension == ".h5m" || extension == ".exo")
    {
-   smtk::io::ImportMesh import;
-   c = import(inputFileName, manager);
+   c = smtk::io::importMesh(inputFileName, manager);
    }
 
   if(!c)

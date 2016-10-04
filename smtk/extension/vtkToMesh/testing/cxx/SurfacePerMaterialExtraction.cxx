@@ -189,8 +189,7 @@ void extractSurfaces(smtk::mesh::CollectionPtr c, std::string outputFile)
 
   std::cout << "number of domains in output: " << c->domains().size() << std::endl;
 
-  smtk::io::WriteMesh write;
-  write(outputFile, c, smtk::io::mesh::Subset::EntireCollection);
+  smtk::io::writeMesh(outputFile, c, smtk::io::mesh::Subset::EntireCollection);
 }
 
 }
@@ -223,8 +222,7 @@ int main(int argc, char* argv[])
    }
   else if (extension == ".h5m" || extension == ".exo")
    {
-   smtk::io::ImportMesh import;
-   c = import(inputFileName, manager);
+   c = smtk::io::importMesh(inputFileName, manager);
    }
 
   if(!c)
