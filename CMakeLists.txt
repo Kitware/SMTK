@@ -285,45 +285,74 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
   # Set up environment variables needed to import the python modules for tests.
   if (PYTHONINTERP_FOUND AND SMTK_ENABLE_TESTING)
     get_filename_component(SHIBOKEN_LIBRARY_PATH ${SHIBOKEN_LIBRARY} PATH)
-    set(SMTK_TEST_LIB_ENV "")
-    if(APPLE AND UNIX)
-      set(SMTK_TEST_LIB_ENV "DYLD_FALLBACK_LIBRARY_PATH=${SHIBOKEN_LIBRARY_PATH}:${LIBRARY_OUTPUT_PATH}")
-      if (ParaView_DIR)
-        set(VTKPY_DIR "${ParaView_DIR}/lib/site-packages:${ParaView_DIR}/lib:")
-      elseif (VTK_DIR)
-        set(VTKPY_DIR "${VTK_DIR}/lib/site-packages:${VTK_DIR}/lib:")
-      endif()
-    elseif(UNIX)
-      if (ParaView_DIR)
-        # Note that ending with a colon should only be done if followed by
-        # another path... be careful when changing SMTK_TEST_LIB_ENV!
-        set(PV_LIB_DIR "${ParaView_DIR}/lib:")
-        set(VTKPY_DIR "${ParaView_DIR}/lib/site-packages:${PV_LIB_DIR}")
-      elseif (VTK_DIR)
-        set(PV_LIB_DIR "${VTK_DIR}/lib:")
-        set(VTKPY_DIR "${VTK_DIR}/lib/site-packages:${PV_LIB_DIR}")
-      endif()
-      set(SMTK_TEST_LIB_ENV "LD_LIBRARY_PATH=${PV_LIB_DIR}${SHIBOKEN_LIBRARY_PATH}:${LIBRARY_OUTPUT_PATH}")
-    endif()
-    set(SHIBOKEN_SMTK_PYTHON "${CMAKE_BINARY_DIR}")
-    if(UNIX)
-      set(sep ":")
-    else() #windows
-      set(sep "\;")
-    endif()
-    execute_process(
-      COMMAND "${PYTHON_EXECUTABLE}" -c "import shiboken"
-      OUTPUT_QUIET
-      ERROR_QUIET
-      RESULT_VARIABLE rc)
-    if (rc)
-      set(SHIBOKEN_SMTK_PYTHON "${SHIBOKEN_SMTK_PYTHON}${sep}${SHIBOKEN_PYTHONPATH}")
+    set(required_python_modules
+      shiboken)
+    set(shiboken_PYTHONPATH
+      "${SHIBOKEN_PYTHONPATH}")
+
+    if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+      list(APPEND required_python_modules
+        paraview)
+      set(paraview_PYTHONPATH
+        "${PARAVIEW_PYTHONPATH}")
+    elseif (SMTK_ENABLE_VTK_SUPPORT)
+      list(APPEND required_python_modules
+        vtk)
+      # TODO: VTK needs to export a variable for this; this currently only
+      # works for VTK build trees.
+      set(vtk_PYTHONPATH
+        "${VTK_DIR}/lib/site-packages"
+        "${VTK_DIR}/lib")
     endif ()
-    set(SMTK_BINARY_TEST_PATHS "${CMAKE_BINARY_DIR}/lib${sep}${PROJECT_BINARY_DIR}/lib${sep}${PROJECT_BINARY_DIR}${sep}")
-    set(SMTK_PYTHONPATH "PYTHONPATH=${SMTK_BINARY_TEST_PATHS}${VTKPY_DIR}${SHIBOKEN_SMTK_PYTHON}")
+
+    set(envsep ":")
+    if (WIN32)
+      set(envsep ";")
+    endif ()
+
+    function (smtk_test_python_module output module pythonpath)
+      string(REPLACE ";" "${envsep}" pythonpath_env "${pythonpath}")
+
+      if (ENV{PYTHONPATH})
+        set(pythonpath_env
+          "${pythonpath_env}${envsep}$ENV{PYTHONPATH}")
+      endif ()
+
+      # Test the PYTHONPATH passed in.
+      execute_process(
+        COMMAND "${CMAKE_COMMAND}"
+                -E env
+                "PYTHONPATH=${pythonpath_env}"
+                "${PYTHON_EXECUTABLE}"
+                -c "import ${module}"
+        RESULT_VARIABLE res
+        OUTPUT_VARIABLE out
+        ERROR_VARIABLE  err)
+
+      if (res)
+        message(SEND_ERROR
+          "Failed to import the ${module} Python module. The attempted "
+          "PYTHONPATH was '${pythonpath_env}', but it still failed. Please "
+          "set the PYTHONPATH environment to make the ${module} module "
+          "successfully import. The error message was '${err}'.")
+
+        return ()
+      endif ()
+
+      # Add to the list of paths required for modules.
+      set("${output}"
+        ${${output}}
+        "${pythonpath}"
+        PARENT_SCOPE)
+    endfunction ()
+
+    set(smtk_pythonpaths
+      "$ENV{PYTHONPATH}")
+    foreach (module IN LISTS required_python_modules)
+      smtk_test_python_module(smtk_pythonpaths
+        "${module}" "${${module}_PYTHONPATH}")
+    endforeach ()
   endif()
-  #message("${SMTK_TEST_LIB_ENV}   ${SMTK_PYTHONPATH}")
-  #message("${SHIBOKEN_LIBRARY_PATH}")
 endif()
 
 ################################################################################
