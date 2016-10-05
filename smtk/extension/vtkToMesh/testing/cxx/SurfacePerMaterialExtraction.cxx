@@ -15,6 +15,7 @@
 #include "smtk/mesh/Manager.h"
 #include "smtk/io/ImportMesh.h"
 #include "smtk/io/WriteMesh.h"
+#include "smtk/io/mesh/MeshIO.h"
 
 #include "vtkNew.h"
 #include "vtkParametricBoy.h"
@@ -188,7 +189,7 @@ void extractSurfaces(smtk::mesh::CollectionPtr c, std::string outputFile)
 
   std::cout << "number of domains in output: " << c->domains().size() << std::endl;
 
-  smtk::io::WriteMesh::entireCollection(outputFile, c);
+  smtk::io::writeMesh(outputFile, c, smtk::io::mesh::Subset::EntireCollection);
 }
 
 }
@@ -221,7 +222,7 @@ int main(int argc, char* argv[])
    }
   else if (extension == ".h5m" || extension == ".exo")
    {
-   c = smtk::io::ImportMesh::entireFile(inputFileName, manager);
+   c = smtk::io::importMesh(inputFileName, manager);
    }
 
   if(!c)

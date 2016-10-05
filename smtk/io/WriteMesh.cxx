@@ -7,76 +7,101 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-
 #include "smtk/io/WriteMesh.h"
 
+#include "smtk/io/mesh/MeshIOMoab.h"
+#include "smtk/io/mesh/MeshIOXMS.h"
+
+#include "smtk/common/CompilerInformation.h"
+
 #include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
-#include "smtk/mesh/moab/Writers.h"
+
+#include <algorithm>
+
+SMTK_THIRDPARTY_PRE_INCLUDE
+#include "boost/filesystem.hpp"
+#include "boost/system/error_code.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
+
+using namespace boost::filesystem;
 
 namespace smtk {
   namespace io {
 
-bool WriteMesh::entireCollection(smtk::mesh::CollectionPtr collection)
+WriteMesh::WriteMesh()
 {
-  if(collection->writeLocation().empty())
-  { //require a file location to write too
-    return false;
-  }
-  return smtk::mesh::moab::write(collection->writeLocation().absolutePath(), collection);
+  this->IO.push_back( smtk::io::mesh::MeshIOPtr( new mesh::MeshIOXMS() ) );
+  this->IO.push_back( smtk::io::mesh::MeshIOPtr( new mesh::MeshIOMoab() ) );
 }
 
-bool WriteMesh::onlyDomain(smtk::mesh::CollectionPtr collection)
+WriteMesh::~WriteMesh()
 {
-  if(collection->writeLocation().empty())
-  { //require a file location to write too
-    return false;
-  }
-  return smtk::mesh::moab::write_domain(collection->writeLocation().absolutePath(), collection);
 }
 
-bool WriteMesh::onlyNeumann(smtk::mesh::CollectionPtr collection)
+bool WriteMesh::operator() (const std::string& filePath,
+                            smtk::mesh::CollectionPtr collection,
+                            mesh::Subset subset) const
 {
-  if(collection->writeLocation().empty())
-  { //require a file location to write too
-    return false;
-  }
-  return smtk::mesh::moab::write_neumann(collection->writeLocation().absolutePath(), collection);
+  // Grab the file extension
+  std::string ext = boost::filesystem::extension(filePath);
+  std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+  // Search for an appropriate writer
+  for (auto&& writer : this->IO)
+    {
+    for (auto&& format : writer->FileFormats())
+      {
+      if ( format.CanWrite() && std::find(format.Extensions.begin(),
+                                          format.Extensions.end(), ext) !=
+           format.Extensions.end() )
+        {
+        // write the collection
+        return writer->write(filePath, collection, subset);
+        }
+      }
+    }
+  return false;
 }
 
-bool WriteMesh::onlyDirichlet(smtk::mesh::CollectionPtr collection)
+bool WriteMesh::operator() (smtk::mesh::CollectionPtr collection,
+                            mesh::Subset subset) const
 {
-  if(collection->writeLocation().empty())
-  { //require a file location to write too
-    return false;
-  }
-  return smtk::mesh::moab::write_dirichlet(collection->writeLocation().absolutePath(), collection);
+  // Grab the file extension
+  std::string ext = boost::filesystem::extension(
+    collection->writeLocation().absolutePath());
+  std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+  // Search for an appropriate writer
+  for (auto&& writer : this->IO)
+    {
+    for (auto&& format : writer->FileFormats())
+      {
+      if ( format.CanWrite() && std::find(format.Extensions.begin(),
+                                          format.Extensions.end(), ext) !=
+           format.Extensions.end() )
+      {
+      // write the collection
+      return writer->write(collection, subset);
+      }
+    }
+    }
+  return false;
 }
 
-bool WriteMesh::entireCollection(const std::string& filePath,
-                             smtk::mesh::CollectionPtr collection)
+bool writeMesh( const std::string& filePath,
+                smtk::mesh::CollectionPtr collection,
+                mesh::Subset subset )
 {
-  return smtk::mesh::moab::write(filePath, collection);
+  WriteMesh write;
+  return write( filePath, collection, subset );
 }
 
-bool WriteMesh::onlyDomain(const std::string& filePath,
-                         smtk::mesh::CollectionPtr collection)
+bool writeMesh( smtk::mesh::CollectionPtr collection,
+                mesh::Subset subset )
 {
-  return smtk::mesh::moab::write_domain(filePath, collection);
+  WriteMesh write;
+  return write( collection, subset );
 }
-
-bool WriteMesh::onlyNeumann(const std::string& filePath,
-                        smtk::mesh::CollectionPtr collection)
-{
-  return smtk::mesh::moab::write_neumann(filePath, collection);
-}
-
-bool WriteMesh::onlyDirichlet(const std::string& filePath,
-                          smtk::mesh::CollectionPtr collection)
-{
-  return smtk::mesh::moab::write_dirichlet(filePath, collection);
-}
-
 
 }
 }

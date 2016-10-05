@@ -28,7 +28,7 @@ smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
   std::string file_path(data_root);
   file_path += "/mesh/3d/twoassm_out.h5m";
 
-  smtk::mesh::CollectionPtr c  = smtk::io::ImportMesh::entireFile(file_path, mngr);
+  smtk::mesh::CollectionPtr c  = smtk::io::importMesh(file_path, mngr);
   test( c->isValid(), "collection should be valid");
 
   return c;

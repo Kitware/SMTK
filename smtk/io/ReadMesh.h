@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_io_ImportMesh_h
-#define __smtk_io_ImportMesh_h
+#ifndef __smtk_io_ReadMesh_h
+#define __smtk_io_ReadMesh_h
 
 #include "smtk/CoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/PublicPointerDefs.h"
@@ -19,41 +19,46 @@
 #include <string>
 #include <vector>
 
-/**\brief Import an entire SMTK mesh collection from a file, or just sub-sections
+/**\brief Read an entire SMTK mesh collection from a file, or just sub-sections
   *
   */
 
 namespace smtk {
   namespace io {
 
-class SMTKCORE_EXPORT ImportMesh
+class SMTKCORE_EXPORT ReadMesh
 {
 public:
-  ImportMesh();
-  ~ImportMesh();
+  ReadMesh();
+  ~ReadMesh();
 
 #ifndef SHIBOKEN_SKIP
-  ImportMesh& operator=(const ImportMesh&) = delete;
-  ImportMesh(const ImportMesh&) = delete;
+  ReadMesh& operator=(const ReadMesh&) = delete;
+  ReadMesh(const ReadMesh&) = delete;
 #endif
 
   //Load the domain sets from a moab data file as a new collection into the
   //given manager.
-  smtk::mesh::CollectionPtr operator() (const std::string& filePath,
-                                        smtk::mesh::ManagerPtr manager) const;
+  smtk::mesh::CollectionPtr
+    operator() (const std::string& filePath,
+                smtk::mesh::ManagerPtr manager,
+                mesh::Subset subset = mesh::Subset::EntireCollection) const;
   bool operator() (const std::string& filePath,
-                   smtk::mesh::CollectionPtr collection) const;
+                   smtk::mesh::CollectionPtr collection,
+                   mesh::Subset subset = mesh::Subset::EntireCollection) const;
 
   protected:
   std::vector<smtk::io::mesh::MeshIOPtr> IO;
 };
 
 SMTKCORE_EXPORT smtk::mesh::CollectionPtr
-importMesh(const std::string& filePath,
-           smtk::mesh::ManagerPtr manager);
+readMesh( const std::string& filePath,
+          smtk::mesh::ManagerPtr manager,
+          mesh::Subset subset = mesh::Subset::EntireCollection );
 SMTKCORE_EXPORT bool
-importMesh(const std::string& filePath,
-           smtk::mesh::CollectionPtr collection);
+readMesh( const std::string& filePath,
+          smtk::mesh::CollectionPtr collection,
+          mesh::Subset subset = mesh::Subset::EntireCollection );
 
 }
 }

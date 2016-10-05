@@ -43,13 +43,14 @@ int main(int argc, char* argv[])
     {
     std::string file_path = argv[1];
     smtk::mesh::ManagerPtr meshmgr = smtk::mesh::Manager::create();
-    smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, meshmgr);
+    smtk::io::ImportMesh import;
+    smtk::mesh::CollectionPtr c = import(file_path, meshmgr);
     test( c->isValid(), "collection should be valid");
 
     std::size_t numMeshes = c->numberOfMeshes();
     std::cout << "number of meshes in twoassm_out is: " << numMeshes << std::endl;
     test( numMeshes!=0, "dataset once loaded should have more than zero meshes");
-    
+
     smtk::common::UUID collectionID = c->entity();
     vtkNew<vtkActor> act;
     vtkNew<vtkMeshMultiBlockSource> src;

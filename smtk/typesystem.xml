@@ -434,13 +434,29 @@
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forFloatData', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forIntegerData', unmatched parameter type 'cJSON*'"/>
 
+  <suppress-warning text="skipping field 'Format::Read' with unmatched type 'std::bitset&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::io::mesh::Format::Format', unmatched parameter type 'smtk::io::mesh::Format::IOFlags'"/>
+  <suppress-warning text="skipping field 'Format::Write' with unmatched type 'std::bitset&gt;'"/>
+  <suppress-warning text="skipping field 'Format::Flags' with unmatched type 'std::bitset&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::io::mesh::MeshIOXMS::exportMesh', unmatched parameter type 'std::ostream&amp;'"/>
+  <suppress-warning text="skipping field 'Format::Export' with unmatched type 'std::bitset&gt;'"/>
+  <suppress-warning text="skipping field 'Format::Import' with unmatched type 'std::bitset&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::io::mesh::MeshIO::write', unmatched parameter type 'Subset'"/>
+  <suppress-warning text="skipping function 'smtk::io::WriteMesh::operator()', unmatched parameter type 'mesh::Subset'"/>
+  <suppress-warning text="skipping function 'smtk::io::ReadMesh::operator()', unmatched parameter type 'mesh::Subset'"/>
+  <suppress-warning text="skipping function 'smtk::io::mesh::MeshIO::read', unmatched parameter type 'Subset'"/>
+  <suppress-warning text="skipping field 'ExportMesh::IO' with unmatched type 'std::vector&lt;smtk::io::mesh::MeshIOPtr&gt;'"/>
+  <suppress-warning text="skipping field 'ImportMesh::IO' with unmatched type 'std::vector&lt;smtk::io::mesh::MeshIOPtr&gt;'"/>
+  <suppress-warning text="skipping field 'ReadMesh::IO' with unmatched type 'std::vector&lt;smtk::io::mesh::MeshIOPtr&gt;'"/>
+  <suppress-warning text="skipping field 'WriteMesh::IO' with unmatched type 'std::vector&lt;smtk::io::mesh::MeshIOPtr&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::io::writeMesh', unmatched parameter type 'mesh::Subset'"/>
+  <suppress-warning text="skipping function 'smtk::io::readMesh', unmatched parameter type 'mesh::Subset'"/>
+
   <suppress-warning text="skipping function 'smtk::mesh::Manager::collectionBegin', unmatched return type 'smtk::mesh::Manager::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::model::Operator::setMeshManager', unmatched return type 'smtk::model::Operator::Ptr'"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;Collection&gt;' of 'Collection' is not known"/>
   <suppress-warning text="skipping function 'smtk::mesh::Manager::findCollection', unmatched return type 'smtk::mesh::Manager::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::mesh::Manager::collectionEnd', unmatched return type 'smtk::mesh::Manager::const_iterator'"/>
-  <suppress-warning text="skipping function 'smtk::io::MeshExport2DM::write', unmatched parameter type 'std::ostream&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::io::MeshExport3DM::write', unmatched parameter type 'std::ostream&amp;'"/>
   <suppress-warning text="template baseclass 'std::bitset&lt;CellType_MAX&gt;' of 'CellTypes' is not known"/>
   <suppress-warning text="skipping function 'smtk::mesh::Collection::interface', unmatched return type 'smtk::mesh::InterfacePtr const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::mesh::Collection::readLocation', unmatched return type 'smtk::common::FileLocation const&amp;'"/>
@@ -2335,6 +2351,18 @@
         <include file-name="smtk/io/ImportMesh.h" location="local"/>
       </object-type>
 
+      <object-type name="ExportMesh">
+        <include file-name="smtk/io/ExportMesh.h" location="local"/>
+      </object-type>
+
+      <object-type name="ReadMesh">
+        <include file-name="smtk/io/ReadMesh.h" location="local"/>
+      </object-type>
+
+      <object-type name="WriteMesh">
+        <include file-name="smtk/io/WriteMesh.h" location="local"/>
+      </object-type>
+
       <enum-type name="JSONFlags">
         <include file-name="smtk/io/ExportJSON.h" location="local"/>
       </enum-type>
@@ -2343,14 +2371,6 @@
         <include file-name="smtk/io/Logger.h" location="local"/>
         <enum-type name="Severity"/>
         <object-type name="Record" />
-      </object-type>
-
-      <object-type name="MeshExport2DM">
-        <include file-name="smtk/io/MeshExport2DM.h" location="local"/>
-      </object-type>
-
-      <object-type name="MeshExport3DM">
-        <include file-name="smtk/io/MeshExport3DM.h" location="local"/>
       </object-type>
 
       <object-type name="ModelToMesh">
@@ -2369,9 +2389,20 @@
         <enum-type name="LinkedFilesOption" />
       </object-type>
 
-      <object-type name="WriteMesh">
-        <include file-name="smtk/io/WriteMesh.h" location="local"/>
-      </object-type>
+      <namespace-type name="mesh">
+	<object-type name="Format">
+          <include file-name="smtk/io/mesh/Format.h" location="local"/>
+	</object-type>
+	<object-type name="MeshIO">
+          <include file-name="smtk/io/mesh/MeshIO.h" location="local"/>
+	</object-type>
+	<object-type name="MeshIOMoab">
+          <include file-name="smtk/io/mesh/MeshIOMoab.h" location="local"/>
+	</object-type>
+	<object-type name="MeshIOXMS">
+          <include file-name="smtk/io/mesh/MeshIOXMS.h" location="local"/>
+	</object-type>
+      </namespace-type>
 
     </namespace-type>
 

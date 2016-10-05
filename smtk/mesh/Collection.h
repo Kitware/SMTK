@@ -36,7 +36,12 @@
 namespace smtk {
 
   //forward declare friends
-  namespace io { class ImportMesh; }
+  namespace io {
+    class ReadMesh;
+  namespace mesh {
+    class MeshIOMoab;
+  }
+  }
   namespace model { class EntityIterator; }
   namespace mesh {
 
@@ -311,8 +316,9 @@ private:
   void swapInterfaces(smtk::mesh::CollectionPtr& other);
 
   friend class smtk::mesh::Manager;
-  friend class smtk::io::ImportMesh;
   friend class smtk::io::ImportJSON;
+  friend class smtk::io::ReadMesh;
+  friend class smtk::io::mesh::MeshIOMoab;
 
   //called by the manager that manages this collection, means that somebody
   //has requested us to be removed from a collection

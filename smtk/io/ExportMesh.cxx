@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/io/ImportMesh.h"
+#include "smtk/io/ExportMesh.h"
 
 #include "smtk/io/mesh/MeshIOMoab.h"
 #include "smtk/io/mesh/MeshIOXMS.h"
@@ -26,82 +26,80 @@ using namespace boost::filesystem;
 namespace smtk {
   namespace io {
 
-ImportMesh::ImportMesh()
+ExportMesh::ExportMesh()
 {
   this->IO.push_back( smtk::io::mesh::MeshIOPtr( new mesh::MeshIOXMS() ) );
   this->IO.push_back( smtk::io::mesh::MeshIOPtr( new mesh::MeshIOMoab() ) );
 }
 
-ImportMesh::~ImportMesh()
+ExportMesh::~ExportMesh()
 {
 }
 
-smtk::mesh::CollectionPtr ImportMesh::operator() (const std::string& filePath,
-                                                  smtk::mesh::ManagerPtr manager) const
-{
-  // Grab the file extension
-  std::string ext = boost::filesystem::extension(filePath);
-  std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-
-  smtk::mesh::CollectionPtr collection;
-
-  // Search for an appropriate importer
-  for (auto&& importer : this->IO)
-    {
-    for (auto&& format : importer->FileFormats())
-      {
-      if ( format.CanImport() && std::find(format.Extensions.begin(),
-                                           format.Extensions.end(), ext) !=
-           format.Extensions.end() )
-        {
-        // import the collection
-        collection = importer->importMesh(filePath, manager);
-        break;
-        }
-      }
-    }
-
-  return collection;
-}
-
-bool ImportMesh::operator() (const std::string& filePath,
+bool ExportMesh::operator() (const std::string& filePath,
                              smtk::mesh::CollectionPtr collection) const
 {
   // Grab the file extension
   std::string ext = boost::filesystem::extension(filePath);
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
-  // Search for an appropriate importer
-  for (auto&& importer : this->IO)
+  // Search for an appropriate exporter
+  for (auto&& exporter : this->IO)
     {
-    for (auto&& format : importer->FileFormats())
+    for (auto&& format : exporter->FileFormats())
       {
-      if ( format.CanImport() && std::find(format.Extensions.begin(),
+      if ( format.CanExport() && std::find(format.Extensions.begin(),
                                            format.Extensions.end(), ext) !=
            format.Extensions.end() )
         {
-        // import the collection
-        return importer->importMesh(filePath, collection);
+        // export the collection
+        return exporter->exportMesh(filePath, collection);
         }
       }
     }
   return false;
 }
 
-smtk::mesh::CollectionPtr importMesh(const std::string& filePath,
-                                     smtk::mesh::ManagerPtr manager)
+bool ExportMesh::operator() (const std::string& filePath,
+                             smtk::mesh::CollectionPtr collection,
+                             smtk::model::ManagerPtr manager,
+                             const std::string& modelPropertyName) const
 {
-  ImportMesh importM;
-  return importM( filePath, manager );
+  // Grab the file extension
+  std::string ext = boost::filesystem::extension(filePath);
+  std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+  // Search for an appropriate exporter
+  for (auto&& exporter : this->IO)
+    {
+    for (auto&& format : exporter->FileFormats())
+      {
+      if ( format.CanExport() && std::find(format.Extensions.begin(),
+                                           format.Extensions.end(), ext) !=
+           format.Extensions.end() )
+        {
+        // export the collection
+        return exporter->exportMesh(filePath, collection, manager, modelPropertyName);
+        }
+      }
+    }
+  return false;
 }
 
-bool importMesh(const std::string& filePath,
-                smtk::mesh::CollectionPtr collection)
+bool exportMesh( const std::string& filePath,
+                 smtk::mesh::CollectionPtr collection )
 {
-{
-  ImportMesh importM;
-  return importM( filePath, collection );
+  ExportMesh exportM;
+  return exportM( filePath, collection );
 }
+
+bool exportMesh( const std::string& filePath,
+                 smtk::mesh::CollectionPtr collection,
+                 smtk::model::ManagerPtr manager,
+                 const std::string& modelPropertyName )
+{
+  ExportMesh exportM;
+  return exportM( filePath, collection, manager, modelPropertyName );
 }
 
 }

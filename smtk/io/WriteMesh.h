@@ -14,10 +14,12 @@
 #include "smtk/CoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/PublicPointerDefs.h"
 
-#include "smtk/common/UUID.h"
+#include "smtk/io/mesh/MeshIO.h"
 
-#include <utility>
-/**\brief Export an SMTK mesh from a file
+#include <string>
+#include <vector>
+
+/**\brief Write an entire SMTK mesh collection from a file, or just sub-sections
   *
   */
 
@@ -27,49 +29,34 @@ namespace smtk {
 class SMTKCORE_EXPORT WriteMesh
 {
 public:
+  WriteMesh();
+  ~WriteMesh();
 
-  //Saves the entire collection to the file specified by the collections
-  //data member writeLocation(). Overwrites any existing content
-  //in the file
-  static bool entireCollection(smtk::mesh::CollectionPtr collection);
+#ifndef SHIBOKEN_SKIP
+  WriteMesh& operator=(const WriteMesh&) = delete;
+  WriteMesh(const WriteMesh&) = delete;
+#endif
 
-  //Saves the only the domain elements of a collection to the file specified by
-  //the collections data member writeLocation(). Overwrites any existing content
-  //in the file
-  static bool onlyDomain(smtk::mesh::CollectionPtr collection);
+  bool operator() ( const std::string& filePath,
+                    smtk::mesh::CollectionPtr collection,
+                    mesh::Subset subset = mesh::Subset::EntireCollection) const;
+  bool operator() ( smtk::mesh::CollectionPtr collection,
+                    mesh::Subset subset = mesh::Subset::EntireCollection) const;
 
-  //Saves the only the neumann elements of a collection to the file specified by
-  //the collections data member writeLocation(). Overwrites any existing content
-  //in the file
-  static bool onlyNeumann(smtk::mesh::CollectionPtr collection);
-
-  //Saves the only the dirichlet elements of a collection to the file specified by
-  //the collections data member writeLocation(). Overwrites any existing content
-  //in the file
-  static bool onlyDirichlet(smtk::mesh::CollectionPtr collection);
-
-  //Saves the entire collection to File. Overwrites any existing content
-  //in the file
-  static bool entireCollection(const std::string& filePath,
-                               smtk::mesh::CollectionPtr collection);
-
-  //Saves the only the domain elements of a collection to File.
-  //Overwrites any existing content in the file
-  static bool onlyDomain(const std::string& filePath,
-                         smtk::mesh::CollectionPtr collection);
-
-  //Saves the only the neumann elements of a collection to File.
-  //Overwrites any existing content in the file
-  static bool onlyNeumann(const std::string& filePath,
-                          smtk::mesh::CollectionPtr collection);
-
-  //Saves the only the dirichlet elements of a collection to File.
-  //Overwrites any existing content in the file
-  static bool onlyDirichlet(const std::string& filePath,
-                            smtk::mesh::CollectionPtr collection);
+  protected:
+  std::vector<smtk::io::mesh::MeshIOPtr> IO;
 };
 
-  }
+SMTKCORE_EXPORT bool
+writeMesh( const std::string& filePath,
+           smtk::mesh::CollectionPtr collection,
+           mesh::Subset subset = mesh::Subset::EntireCollection );
+
+SMTKCORE_EXPORT bool
+writeMesh( smtk::mesh::CollectionPtr collection,
+           mesh::Subset subset = mesh::Subset::EntireCollection );
+
+}
 }
 
 #endif

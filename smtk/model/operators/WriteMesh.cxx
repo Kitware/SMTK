@@ -8,14 +8,14 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/model/operators/ExportMesh.h"
+#include "smtk/model/operators/WriteMesh.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
-#include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
 
-#include "smtk/io/ExportMesh.h"
+#include "smtk/io/WriteMesh.h"
 #include "smtk/io/mesh/MeshIO.h"
 
 #include "smtk/mesh/Collection.h"
@@ -50,7 +50,7 @@ void cleanup( const std::string& file_path )
 namespace smtk {
   namespace model {
 
-bool ExportMesh::ableToOperate()
+bool WriteMesh::ableToOperate()
 {
   if(!this->ensureSpecification())
     return false;
@@ -59,16 +59,14 @@ bool ExportMesh::ableToOperate()
   return meshItem && meshItem->numberOfValues() > 0;
 }
 
-smtk::model::OperatorResult ExportMesh::operateInternal()
+smtk::model::OperatorResult WriteMesh::operateInternal()
 {
   std::string outputfile =
     this->specification()->findFile("filename")->value();
 
-  smtk::attribute::StringItemPtr modelPropertyNameItem =
-    this->specification()->findString("model property name");
-  std::string modelPropertyName =
-    (modelPropertyNameItem && modelPropertyNameItem->isValid() ?
-     modelPropertyNameItem->valueAsString() : "");
+  smtk::io::mesh::Subset componentToWrite =
+    static_cast<smtk::io::mesh::Subset>( this->specification()->
+                                         findInt("write-component")->value() );
 
   // ableToOperate should have verified that mesh(s) are set
   smtk::attribute::MeshItem::Ptr meshItem =
@@ -86,7 +84,7 @@ smtk::model::OperatorResult ExportMesh::operateInternal()
        mit != meshItem->end(); ++mit)
     {
     smtk::mesh::CollectionPtr collection = mit->collection();
-    bool fileExportSuccess = false;
+    bool fileWriteSuccess = false;
 
     if(collection)
       {
@@ -96,28 +94,10 @@ smtk::model::OperatorResult ExportMesh::operateInternal()
         outputfile = s.str();
         }
 
-      smtk::io::ExportMesh exportMesh;
-      if (modelPropertyName.empty())
-        {
-        fileExportSuccess = exportMesh(outputfile, collection);
-        }
-      else
-        {
-        Models entities = this->associatedEntitiesAs<Models>();
-        if (entities.empty())
-          {
-          fileExportSuccess = false;
-          }
-        else
-          {
-          fileExportSuccess = exportMesh(outputfile,
-                                         collection,
-                                         entities[0].manager(),
-                                         modelPropertyName);
-          }
-        }
+      smtk::io::WriteMesh write;
+      fileWriteSuccess = write(outputfile, collection, componentToWrite);
 
-      if(fileExportSuccess)
+      if(fileWriteSuccess)
         {
         ++index;
         generatedFiles.push_back(outputfile);
@@ -125,7 +105,7 @@ smtk::model::OperatorResult ExportMesh::operateInternal()
         }
       }
 
-    if (fileExportSuccess == false)
+    if (fileWriteSuccess == false)
       {
       for (auto&& file : generatedFiles)
         {
@@ -141,12 +121,12 @@ smtk::model::OperatorResult ExportMesh::operateInternal()
 }
 }
 
-#include "smtk/model/ExportMesh_xml.h"
+#include "smtk/model/WriteMesh_xml.h"
 
 smtkImplementsModelOperator(
   SMTKCORE_EXPORT,
-  smtk::model::ExportMesh,
-  export_mesh,
-  "export mesh",
-  ExportMesh_xml,
+  smtk::model::WriteMesh,
+  write_mesh,
+  "write mesh",
+  WriteMesh_xml,
   smtk::model::Session);
