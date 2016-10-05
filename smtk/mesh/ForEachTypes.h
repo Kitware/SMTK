@@ -30,7 +30,7 @@ class SMTKCORE_EXPORT MeshForEach
 public:
   virtual ~MeshForEach();
 
-  virtual void forMesh(const smtk::mesh::MeshSet& singleMesh) = 0;
+  virtual void forMesh(smtk::mesh::MeshSet& singleMesh) = 0;
 
   smtk::mesh::CollectionPtr m_collection;
 };

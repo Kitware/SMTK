@@ -147,6 +147,16 @@ try:
   finally:
     _temp = _tempmain
 
+  try:
+    _tempmesh = __import__('smtkMeshSessionPython', globals(), locals(), [], -1)
+    _temp = _tempmesh
+    __import_shared_ptrs__()
+    btuple.append(('mesh', _tempmesh.mesh))
+  except:
+    failed += ['mesh']
+  finally:
+    _temp = _tempmain
+
   if len(btuple) > 0:
     bridgeModule = namedtuple('bridgeModule', ' '.join([x for x,y in btuple]))
     bridge = bridgeModule(*[y for x,y in btuple])

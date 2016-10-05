@@ -270,6 +270,15 @@ bool MeshSet::setModelEntity(const smtk::model::EntityRef& ent)
   return iface->setAssociation(ent.entity(), this->m_range);
 }
 
+/**\brief Set the model entity for each meshset member to \a ent.
+  *
+  */
+bool MeshSet::setModelEntityId(const smtk::common::UUID& id)
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_parent->interface();
+  return iface->setAssociation(id, this->m_range);
+}
+
 /**\brief Get the parent collection that this meshset belongs to.
   *
   */

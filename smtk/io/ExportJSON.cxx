@@ -1006,7 +1006,7 @@ public:
   }
 
   //--------------------------------------------------------------------------
-  void forMesh(const smtk::mesh::MeshSet& mesh)
+  void forMesh(smtk::mesh::MeshSet& mesh)
   {
     cJSON* meshJson = cJSON_CreateObject();
 

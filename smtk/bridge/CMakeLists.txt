@@ -33,3 +33,10 @@ endif()
 if (SMTK_ENABLE_REMOTE_SESSION AND Remus_FOUND)
   add_subdirectory(remote)
 endif()
+
+################################################################################
+# Build smtk::mesh session
+################################################################################
+if (SMTK_ENABLE_MESH_SESSION)
+  add_subdirectory(mesh)
+endif()

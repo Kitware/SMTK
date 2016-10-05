@@ -439,6 +439,58 @@ smtk::mesh::CellSet Collection::findAssociatedCells(
 
 //----------------------------------------------------------------------------
 smtk::mesh::TypeSet Collection::findAssociatedTypes(
+  const smtk::common::UUID& id ) const
+{
+  return this->findAssociatedMeshes(id).types();
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet Collection::findAssociatedMeshes(
+  const smtk::common::UUID& id) const
+{
+  const smtk::mesh::InterfacePtr& iface = this->m_internals->mesh_iface();
+  smtk::mesh::moab::Handle handle = this->m_internals->mesh_root_handle();
+
+  return smtk::mesh::MeshSet(
+    this->shared_from_this(), handle,
+    iface->findAssociations(handle, id));
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet Collection::findAssociatedMeshes(
+  const smtk::common::UUID& id, smtk::mesh::DimensionType dim ) const
+{
+  smtk::mesh::MeshSet unfiltered = this->findAssociatedMeshes(id);
+  return unfiltered.subset(dim);
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::CellSet Collection::findAssociatedCells(
+  const smtk::common::UUID& id ) const
+{
+  smtk::mesh::MeshSet ms = this->findAssociatedMeshes(id);
+  return ms.cells();
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::CellSet Collection::findAssociatedCells(
+  const smtk::common::UUID& id, smtk::mesh::CellType cellType ) const
+{
+  smtk::mesh::MeshSet ms = this->findAssociatedMeshes(id);
+  return ms.cells(cellType);
+}
+
+
+//----------------------------------------------------------------------------
+smtk::mesh::CellSet Collection::findAssociatedCells(
+  const smtk::common::UUID& id, smtk::mesh::DimensionType dim ) const
+{
+  smtk::mesh::MeshSet ms = this->findAssociatedMeshes(id, dim);
+  return ms.cells();
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::TypeSet Collection::findAssociatedTypes(
   smtk::model::EntityIterator& refIt ) const
 {
   return this->findAssociatedMeshes(refIt).types();

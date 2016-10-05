@@ -171,6 +171,13 @@ public:
   smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType ) const;
   smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim ) const;
 
+  smtk::mesh::TypeSet   findAssociatedTypes( const smtk::common::UUID& id ) const;
+  smtk::mesh::MeshSet   findAssociatedMeshes( const smtk::common::UUID& id ) const;
+  smtk::mesh::MeshSet   findAssociatedMeshes( const smtk::common::UUID& id, smtk::mesh::DimensionType dim ) const;
+  smtk::mesh::CellSet   findAssociatedCells( const smtk::common::UUID& id ) const;
+  smtk::mesh::CellSet   findAssociatedCells( const smtk::common::UUID& id, smtk::mesh::CellType cellType ) const;
+  smtk::mesh::CellSet   findAssociatedCells( const smtk::common::UUID& id, smtk::mesh::DimensionType dim ) const;
+
   smtk::mesh::TypeSet   findAssociatedTypes( smtk::model::EntityIterator& refIt ) const;
   smtk::mesh::MeshSet   findAssociatedMeshes( smtk::model::EntityIterator& refIt ) const;
   smtk::mesh::MeshSet   findAssociatedMeshes( smtk::model::EntityIterator& refIt,
