@@ -127,6 +127,7 @@ public:
   bool isModel()       const { return smtk::model::isModel(this->entityFlags()); }
   bool isInstance()    const { return smtk::model::isInstance(this->entityFlags()); }
   bool isSessionRef()  const { return smtk::model::isSessionRef(this->entityFlags()); }
+  bool isConcept()     const { return smtk::model::isConcept(this->entityFlags()); }
 
   bool isVertex()    const { return smtk::model::isVertex(this->entityFlags()); }
   bool isEdge()      const { return smtk::model::isEdge(this->entityFlags()); }

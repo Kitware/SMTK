@@ -98,6 +98,8 @@ namespace smtk
     typedef std::vector<smtk::model::ArrangementReference> ArrangementReferences;
     class AttributeListPhrase;
     typedef std::vector<smtk::model::Arrangement> Arrangements;
+    class AuxiliaryGeometry;
+    typedef std::vector<smtk::model::AuxiliaryGeometry> AuxiliaryGeometries;
     class Manager;
     class Session;
     class SessionRef;

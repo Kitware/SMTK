@@ -14,9 +14,11 @@
 #include "smtk/model/CellEntity.h" // for CellEntities
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"
+#include "smtk/common/UUIDGenerator.h"
 
 #include "vtkMultiBlockDataSetAlgorithm.h"
 #include "vtkNew.h"
+#include "vtkSmartPointer.h"
 
 #include <map>
 
@@ -35,6 +37,21 @@ public:
   static vtkModelMultiBlockSource* New();
   virtual void PrintSelf(ostream& os, vtkIndent indent);
   vtkTypeMacro(vtkModelMultiBlockSource,vtkMultiBlockDataSetAlgorithm);
+
+  enum ToplevelBlockType
+    {
+    VERTICES,
+    EDGES,
+    FACES,
+    VOLUMES,
+    GROUPS,
+    AUXILIARY_POINTS,
+    AUXILIARY_CURVES,
+    AUXILIARY_SURFACES,
+    AUXILIARY_VOLUMES,
+    AUXILIARY_MIXED,
+    NUMBER_OF_BLOCK_TYPES
+    };
 
   vtkGetObjectMacro(CachedOutput,vtkMultiBlockDataSet);
 
@@ -72,9 +89,28 @@ public:
   // Key used to put entity UUID in the meta-data associated with a block.
   static vtkInformationStringKey* ENTITYID();
 
+  static void SetDataObjectUUID(vtkDataObject* obj, const smtk::common::UUID& uid);
+  static smtk::common::UUID GetDataObjectUUID(vtkDataObject*);
+  template<typename T>
+  static T GetDataObjectEntityAs(smtk::model::ManagerPtr mgr, vtkDataObject* obj)
+    {
+    return T(mgr, vtkModelMultiBlockSource::GetDataObjectUUID(obj));
+    }
+
 protected:
   vtkModelMultiBlockSource();
   virtual ~vtkModelMultiBlockSource();
+
+  vtkSmartPointer<vtkDataObject> GenerateRepresentationFromModel(
+    const smtk::model::EntityRef& entity,
+    bool genNormals);
+  vtkSmartPointer<vtkPolyData> GenerateRepresentationFromTessellation(
+    const smtk::model::EntityRef& entity,
+    const smtk::model::Tessellation* tess,
+    bool genNormals);
+  vtkSmartPointer<vtkDataObject> GenerateRepresentationFromURL(
+    const smtk::model::AuxiliaryGeometry& auxGeom,
+    bool genNormals);
 
   void GenerateRepresentationFromModel(
     vtkPolyData* poly,
@@ -108,6 +144,7 @@ protected:
   int AllowNormalGeneration;
   int ShowAnalysisTessellation;
   vtkNew<vtkPolyDataNormals> NormalGenerator;
+  static smtk::common::UUIDGenerator UUIDGenerator;
 
 private:
   vtkModelMultiBlockSource(const vtkModelMultiBlockSource&); // Not implemented.

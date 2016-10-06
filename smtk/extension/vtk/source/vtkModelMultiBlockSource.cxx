@@ -9,19 +9,25 @@
 //=========================================================================
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
+#include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
+#include "smtk/model/EntityIterator.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Group.h"
+#include "smtk/model/Instance.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/ShellEntity.h"
 #include "smtk/model/Tessellation.h"
+#include "smtk/model/UseEntity.h"
 #include "smtk/model/Volume.h"
 
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
+#include "vtkDataObjectTreeIterator.h"
 #include "vtkIdTypeArray.h"
 #include "vtkInformation.h"
 #include "vtkInformationStringKey.h"
@@ -45,9 +51,12 @@ vtkInformationKeyMacro(vtkModelMultiBlockSource, ENTITYID, String);
 vtkStandardNewMacro(vtkModelMultiBlockSource);
 vtkCxxSetObjectMacro(vtkModelMultiBlockSource,CachedOutput,vtkMultiBlockDataSet);
 
+smtk::common::UUIDGenerator vtkModelMultiBlockSource::UUIDGenerator;
+
 vtkModelMultiBlockSource::vtkModelMultiBlockSource()
 {
   this->SetNumberOfInputPorts(0);
+  this->SetNumberOfOutputPorts(2);
   this->CachedOutput = NULL;
   for (int i = 0; i < 4; ++i)
     {
@@ -157,6 +166,55 @@ void vtkModelMultiBlockSource::Dirty()
   // as modified so that RequestData() will run the next
   // time the representation is updated:
   this->SetCachedOutput(NULL);
+}
+
+/**\brief Return a UUID for the data object, adding one if it was not present.
+  *
+  * UUIDs are stored in the vtkInformation object associated with each
+  * data object.
+  */
+smtk::common::UUID vtkModelMultiBlockSource::GetDataObjectUUID(vtkDataObject* obj)
+{
+  smtk::common::UUID uid;
+  if (!obj)
+    {
+    return uid;
+    }
+
+  const char* uuidChar = obj->GetInformation()->Get(vtkModelMultiBlockSource::ENTITYID());
+  if (!uuidChar)
+    { // We have not assigned a UUID yet. Do so now.
+    uid = vtkModelMultiBlockSource::UUIDGenerator.random();
+    obj->GetInformation()->Set(vtkModelMultiBlockSource::ENTITYID(), uid.toString().c_str());
+    } 
+  else 
+    {
+    uid = smtk::common::UUID(uuidChar);
+    }
+  return uid;
+}
+
+/**\brief Set a data object's UUID to a specific value (\a uid).
+  *
+  * This should be used when restoring data (as from a file) before the
+  * first call to GetDataObjectUUID, which will assign a random UUID if
+  * none has previously been set.
+  */
+void vtkModelMultiBlockSource::SetDataObjectUUID(vtkDataObject* obj, const smtk::common::UUID& uid)
+{
+  if (!obj)
+    {
+    return;
+    }
+
+  if (!uid)
+    { // A null UUID is none at all... remove the UUID key.
+    obj->GetInformation()->Remove(vtkModelMultiBlockSource::ENTITYID());
+    } 
+  else 
+    {
+    obj->GetInformation()->Set(vtkModelMultiBlockSource::ENTITYID(), uid.toString().c_str());
+    }
 }
 
 /*! \fn vtkModelMultiBlockSource::GetDefaultColor()
@@ -285,10 +343,13 @@ static void AddEntityTessToPolyData(
 /// Add customized block info.
 /// Mapping from UUID to block id
 /// 'Volume' field array to color by volume
-static void internal_AddBlockInfo(smtk::model::ManagerPtr manager,
-  const smtk::model::EntityRef& entityref, const smtk::model::EntityRef& bordantCell,
+static void addBlockInfo(
+  smtk::model::ManagerPtr manager,
+  const smtk::model::EntityRef& entityref,
+  const smtk::model::EntityRef& bordantCell,
   const vtkIdType& blockId,
-  vtkPolyData* poly, std::map<smtk::common::UUID, unsigned int>& uuid2BlockId)
+  vtkDataObject* dobj,
+  std::map<smtk::common::UUID, unsigned int>& uuid2BlockId)
 {
   manager->setIntegerProperty(entityref.entity(), "block_index", blockId);
   uuid2BlockId[entityref.entity()] = static_cast<unsigned int>(blockId);
@@ -299,7 +360,7 @@ static void internal_AddBlockInfo(smtk::model::ManagerPtr manager,
   uuidArray->SetNumberOfTuples(1);
   uuidArray->SetName(vtkModelMultiBlockSource::GetEntityTagName());
   uuidArray->SetValue(0, entityref.entity().toString());
-  poly->GetFieldData()->AddArray(uuidArray.GetPointer());
+  dobj->GetFieldData()->AddArray(uuidArray.GetPointer());
 
   smtk::model::EntityRefs vols;
   if(bordantCell.isValid() && bordantCell.isVolume())
@@ -317,8 +378,91 @@ static void internal_AddBlockInfo(smtk::model::ManagerPtr manager,
       volArray->SetValue(ai, (*it).entity().toString());
       }
     volArray->SetName(vtkModelMultiBlockSource::GetVolumeTagName());
-    poly->GetFieldData()->AddArray(volArray.GetPointer());
+    dobj->GetFieldData()->AddArray(volArray.GetPointer());
     }
+}
+
+/// Generate a data object representing the entity. It may be polydata, image data, or a multiblock dataset.
+vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationFromModel(
+  const smtk::model::EntityRef& entity,
+  bool genNormals)
+{
+  const smtk::model::Tessellation* tess;
+  if ((tess = entity.hasTessellation()))
+    {
+    return this->GenerateRepresentationFromTessellation(entity, tess, genNormals);
+    }
+  smtk::model::AuxiliaryGeometry aux(entity);
+  std::string url;
+  if (aux.isValid() && !(url = aux.url()).empty())
+    {
+    return this->GenerateRepresentationFromURL(aux, genNormals);
+    }
+  return vtkSmartPointer<vtkDataObject>();
+}
+
+vtkSmartPointer<vtkPolyData> vtkModelMultiBlockSource::GenerateRepresentationFromTessellation(
+  const smtk::model::EntityRef& entity,
+  const smtk::model::Tessellation* tess,
+  bool genNormals)
+{
+  vtkSmartPointer<vtkPolyData> pd = vtkSmartPointer<vtkPolyData>::New();
+  vtkNew<vtkPoints> pts;
+  pts->SetDataTypeToDouble();
+  pd->SetPoints(pts.GetPointer());
+
+  vtkIdType npts = tess->coords().size() / 3;
+  pts->Allocate(npts);
+  smtk::model::Entity* entrec;
+  if (entity.isValid(&entrec))
+    {
+    AddEntityTessToPolyData(
+      entity, pts.GetPointer(), pd, this->ShowAnalysisTessellation);
+    // Only create the color array if there is a valid default:
+    if (this->DefaultColor[3] >= 0.)
+      {
+      FloatList rgba = entity.color();
+      vtkNew<vtkUnsignedCharArray> cellColor;
+      cellColor->SetNumberOfComponents(4);
+      cellColor->SetNumberOfTuples(pd->GetNumberOfCells());
+      cellColor->SetName("Entity Color");
+      for (int i = 0; i < 4; ++i)
+        {
+        cellColor->FillComponent(i,
+          (rgba[3] >= 0 ? rgba[i] : this->DefaultColor[i])* 255.);
+        }
+      pd->GetCellData()->AddArray(cellColor.GetPointer());
+      pd->GetCellData()->SetScalars(cellColor.GetPointer());
+      }
+    if (this->AllowNormalGeneration && pd->GetPolys()->GetSize() > 0)
+      {
+      bool reallyNeedNormals = genNormals;
+      if ( entity.hasIntegerProperty("generate normals"))
+        { // Allow per-entity setting to override per-model setting
+        const IntegerList& prop(
+          entity.integerProperty(
+            "generate normals"));
+        reallyNeedNormals = (!prop.empty() && prop[0]);
+        }
+      if (reallyNeedNormals)
+        {
+        this->NormalGenerator->SetInputDataObject(pd);
+        this->NormalGenerator->Update();
+        pd->ShallowCopy(this->NormalGenerator->GetOutput());
+        }
+      }
+    }
+  return pd;
+}
+
+/// Create a reader and copy its output into a new data object to serve as the representation for auxiliary geometry.
+vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationFromURL(
+  const smtk::model::AuxiliaryGeometry& auxGeom,
+  bool genNormals)
+{
+  (void)genNormals;
+  std::cout << "Need to load " << auxGeom.url() << "\n";
+  return vtkSmartPointer<vtkDataObject>();
 }
 
 /// Loop over the model generating blocks of polydata.
@@ -376,6 +520,46 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
     }
 }
 
+static smtk::model::Volume volumeOfEntity(const smtk::model::EntityRef& ein)
+{
+  // If we are a instance entity, find the volume owning the prototype (if one exists):
+  smtk::model::EntityRef ent(
+    ein.isInstance() ?
+      ein.as<smtk::model::Instance>().prototype() :
+      ein);
+
+  if (!ent.isValid() || ent.isModel() || ent.isGroup() || ent.isConcept())
+    {
+    return smtk::model::Volume();
+    }
+
+  if (ent.isVolume())
+    {
+    return ent.as<smtk::model::Volume>();
+    }
+
+  // From here, we should be able to get to a cell, which may or may not have a parent volume.
+  smtk::model::CellEntity cent(ent);
+  if (ent.isShellEntity())
+    {
+    cent = ent.as<smtk::model::ShellEntity>().boundingCell();
+    }
+  else if (ent.isUseEntity())
+    {
+    cent = ent.as<smtk::model::UseEntity>().cell();
+    }
+  while (cent.isValid() && !cent.isVolume())
+    {
+    EntityRefs bord = cent.bordantEntities();
+    if (bord.empty())
+      {
+      return smtk::model::Volume();
+      }
+    cent = bord.begin()->as<smtk::model::CellEntity>();
+    }
+  return cent.as<smtk::model::Volume>();
+}
+
 /// Do the actual work of grabbing primitives from the model.
 void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
   vtkMultiBlockDataSet* mbds, smtk::model::ManagerPtr manager)
@@ -401,6 +585,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
       // find those which provide tessellations.
       // smtk::model::EntityRefs entityrefs;
       // Map from entityref to its parent cell entity
+        /*
       std::map<smtk::model::EntityRef, smtk::model::EntityRef> entityrefMap;
 
       if (1)
@@ -425,9 +610,10 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
         // as a convenient method to get the flat block index in multiblock
         if(!(cit->first.entity().isNull()))
           {
-          internal_AddBlockInfo(manager, cit->first, cit->second, i, poly.GetPointer(), this->UUID2BlockIdMap);
+          addBlockInfo(manager, cit->first, cit->second, i, poly.GetPointer(), this->UUID2BlockIdMap);
           }
         }
+      */
 
       // Now look at groups of the model to see if those have any tessellation data
       /*
@@ -441,7 +627,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
           mbds->GetMetaData(entityrefMap.size() + i)->Set(vtkCompositeDataSet::NAME(), git->name().c_str());
           this->GenerateRepresentationFromModel(poly.GetPointer(), *git, modelRequiresNormals);
           // as a convenient method to get the flat block_index in multiblock
-          internal_AddBlockInfo(manager, *git, modelEntity, entityrefMap.size() + i, poly.GetPointer(), this->UUID2BlockIdMap);
+          addBlockInfo(manager, *git, modelEntity, entityrefMap.size() + i, poly.GetPointer(), this->UUID2BlockIdMap);
           }
         }
         */
@@ -449,6 +635,107 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
       //       a cycle in the submodels, so treating them as trees would not work.
       // Finally, if nothing has any tessellation information, see if any is associated
       // with the model itself.
+
+      // Create top-level blocks for model:
+      if (1)
+        {
+        smtk::model::EntityRefArray blockEntities[NUMBER_OF_BLOCK_TYPES];
+        std::vector<vtkSmartPointer<vtkDataObject> > blockDatasets[NUMBER_OF_BLOCK_TYPES];
+        vtkSmartPointer<vtkMultiBlockDataSet> topBlocks[NUMBER_OF_BLOCK_TYPES];
+        mbds->SetNumberOfBlocks(NUMBER_OF_BLOCK_TYPES);
+        int bb;
+        for (bb = 0; bb < NUMBER_OF_BLOCK_TYPES; ++bb)
+          {
+          topBlocks[bb] = vtkSmartPointer<vtkMultiBlockDataSet>::New();
+          mbds->SetBlock(bb, topBlocks[bb]);
+          }
+        smtk::model::EntityIterator eit;
+        eit.traverse(modelEntity, smtk::model::ITERATE_CHILDREN);
+        for (eit.begin(); !eit.isAtEnd(); eit.advance())
+          {
+          BitFlags etype = eit->entityFlags();
+          if (smtk::model::isVertex(etype))
+            {
+            bb = VERTICES;
+            }
+          else if (smtk::model::isEdge(etype))
+            {
+            bb = EDGES;
+            }
+          else if (smtk::model::isFace(etype))
+            {
+            bb = FACES;
+            }
+          else if (smtk::model::isVolume(etype))
+            {
+            bb = VOLUMES;
+            }
+          else if (smtk::model::isGroup(etype))
+            {
+            bb = GROUPS;
+            }
+          else if (smtk::model::isAuxiliaryGeometry(etype))
+            {
+            switch (etype & smtk::model::ANY_DIMENSION)
+              {
+            case DIMENSION_0: bb = AUXILIARY_POINTS; break;
+            case DIMENSION_1: bb = AUXILIARY_CURVES; break;
+            case DIMENSION_2: bb = AUXILIARY_SURFACES; break;
+            case DIMENSION_3: bb = AUXILIARY_VOLUMES; break;
+            default: bb = AUXILIARY_MIXED; break;
+              }
+            }
+          else
+            { // skip anything not listed above... we don't know where to put it.
+            smtkWarningMacro(manager->log(),
+              "MultiBlockDataSet: Entity \"" << eit->name() << "\" (" << eit->flagSummary() << ") skipped.");
+            continue;
+            }
+
+          vtkSmartPointer<vtkDataObject> data =
+            this->GenerateRepresentationFromModel(
+              *eit, modelRequiresNormals);
+          if (data.GetPointer())
+            {
+            blockDatasets[bb].push_back(data);
+            blockEntities[bb].push_back(*eit);
+            }
+          }
+        // We have all the output, now set up the level-2 multiblock datasets.
+        for (bb = 0; bb < NUMBER_OF_BLOCK_TYPES; ++bb)
+          {
+          int nlb = static_cast<int>(blockDatasets[bb].size());
+          topBlocks[bb]->SetNumberOfBlocks(nlb);
+          for (int lb = 0; lb < nlb; ++lb)
+            {
+            topBlocks[bb]->SetBlock(lb, blockDatasets[bb][lb].GetPointer());
+            topBlocks[bb]->GetMetaData(lb)->Set(vtkCompositeDataSet::NAME(), blockEntities[bb][lb].name().c_str());
+            /*
+            topBlocks[bb]->GetMetaData(lb)->Set(
+              vtkModelMultiBlockSource::ENTITYID(), blockEntities[lb].entity().toString().c_str());
+              */
+            }
+          }
+
+        // Now all blocks are set on mbds, so we can get the flat index of each block.
+        // Annotate each block with its flat index.
+        vtkDataObjectTreeIterator* miter = mbds->NewTreeIterator();
+        for (miter->GoToFirstItem(); !miter->IsDoneWithTraversal(); miter->GoToNextItem())
+          {
+          smtk::model::EntityRef ent = this->GetDataObjectEntityAs<smtk::model::EntityRef>(manager, miter->GetCurrentDataObject());
+          if (ent.isValid())
+            {
+            addBlockInfo(
+              manager,
+              ent,
+              volumeOfEntity(ent),
+              miter->GetCurrentFlatIndex(),
+              miter->GetCurrentDataObject(),
+              this->UUID2BlockIdMap);
+            }
+          }
+        miter->Delete();
+        }
       }
     else
       {
@@ -473,7 +760,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
       this->GenerateRepresentationFromModel(poly.GetPointer(), entityref, this->AllowNormalGeneration);
 
       // as a convenient method to get the flat block_index in multiblock
-      internal_AddBlockInfo(manager, entityref, smtk::model::EntityRef(), i, poly.GetPointer(), this->UUID2BlockIdMap);
+      addBlockInfo(manager, entityref, smtk::model::EntityRef(), i, poly.GetPointer(), this->UUID2BlockIdMap);
       }
     }
 }
