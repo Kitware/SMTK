@@ -9,13 +9,14 @@
 //=========================================================================
 #include "smtk/model/SubphraseGenerator.h"
 
-#include "smtk/model/SessionRef.h"
-#include "smtk/model/Model.h"
-#include "smtk/model/Group.h"
-#include "smtk/model/ShellEntity.h"
+#include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/UseEntity.h"
 #include "smtk/model/Instance.h"
+#include "smtk/model/Group.h"
+#include "smtk/model/Model.h"
+#include "smtk/model/ShellEntity.h"
+#include "smtk/model/SessionRef.h"
+#include "smtk/model/UseEntity.h"
 
 #include "smtk/model/FloatData.h"
 #include "smtk/model/StringData.h"
@@ -289,6 +290,13 @@ void SubphraseGenerator::freeCellsOfModel(
 {
   CellEntities freeCellsInModel = mod.cells();
   addEntityPhrases(freeCellsInModel, src, this->directLimit(), result);
+}
+
+void SubphraseGenerator::freeAuxiliaryGeometriesOfModel(
+  DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result)
+{
+  AuxiliaryGeometries freeAuxGeom = mod.auxiliaryGeometry();
+  addEntityPhrases(freeAuxGeom, src, this->directLimit(), result);
 }
 
 void SubphraseGenerator::meshesOfModel(

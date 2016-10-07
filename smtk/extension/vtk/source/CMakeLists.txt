@@ -30,6 +30,8 @@ target_include_directories(${vtk-module}
 target_link_libraries(${vtk-module}
   LINK_PUBLIC
     smtkCore
+  LINK_PRIVATE
+    ${Boost_LIBRARIES}
 )
 
 #has to be after the vtk_module_library

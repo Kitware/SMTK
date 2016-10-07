@@ -9,11 +9,12 @@
 //=========================================================================
 #include "smtk/model/Model.h"
 
-#include "smtk/model/Session.h"
+#include "smtk/model/Arrangement.h"
+#include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/Arrangement.h"
+#include "smtk/model/Session.h"
 
 namespace smtk {
   namespace model {
@@ -131,6 +132,14 @@ Models Model::submodels() const
   return result;
 }
 
+/// Return the auxiliary geometry instances directly owned by this model.
+AuxiliaryGeometries Model::auxiliaryGeometry() const
+{
+  AuxiliaryGeometries result;
+  EntityRefArrangementOps::appendAllRelations(*this, INCLUDES, result);
+  return result;
+}
+
 Model& Model::addCell(const CellEntity& c)
 {
   this->embedEntity(c);
@@ -220,6 +229,23 @@ Model& Model::removeSubmodel(const Model& m)
     }
   return *this;
   */
+}
+
+/// Add the given auxiliary geometry to this model.
+Model& Model::addAuxiliaryGeometry(const AuxiliaryGeometry& ag)
+{
+  this->embedEntity(ag);
+  return *this;
+}
+
+/**\brief Remove the given auxiliary geometry from this model (if present as a top-level entry).
+  *
+  *
+  */
+Model& Model::removeAuxiliaryGeometry(const AuxiliaryGeometry& ag)
+{
+  this->unembedEntity(ag);
+  return *this;
 }
 
 /// Return an operator of the given \a opname with its Manager set to this model's.

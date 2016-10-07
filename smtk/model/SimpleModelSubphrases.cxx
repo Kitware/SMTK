@@ -294,6 +294,7 @@ void SimpleModelSubphrases::childrenOfEntity(
       this->freeSubmodelsOfModel(phr, ment, result);
       this->freeGroupsInModel(phr, ment, result);
       this->freeCellsOfModel(phr, ment, result);
+      this->freeAuxiliaryGeometriesOfModel(phr, ment, result);
       this->meshesOfModel(phr, ment, result);
       }
     else if (ient.isValid())

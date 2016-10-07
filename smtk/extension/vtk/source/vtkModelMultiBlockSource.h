@@ -40,16 +40,16 @@ public:
 
   enum ToplevelBlockType
     {
-    VERTICES,
-    EDGES,
-    FACES,
-    VOLUMES,
-    GROUPS,
-    AUXILIARY_POINTS,
-    AUXILIARY_CURVES,
-    AUXILIARY_SURFACES,
     AUXILIARY_VOLUMES,
+    AUXILIARY_SURFACES,
+    AUXILIARY_CURVES,
+    AUXILIARY_POINTS,
     AUXILIARY_MIXED,
+    GROUPS,
+    VOLUMES,
+    FACES,
+    EDGES,
+    VERTICES,
     NUMBER_OF_BLOCK_TYPES
     };
 
@@ -134,16 +134,17 @@ protected:
     std::map<smtk::model::EntityRef, smtk::model::EntityRef>& entityrefMap,
     std::set<smtk::model::EntityRef>& touched);
 
+  static std::string InferFileTypeFromFileName(const std::string& fname);
+
   smtk::model::ManagerPtr ModelMgr;
   vtkMultiBlockDataSet* CachedOutput;
   double DefaultColor[4];
-
-  std::map<smtk::common::UUID, unsigned int> UUID2BlockIdMap; // UUIDs to block index map
   char* ModelEntityID; // Model Entity UUID
-
   int AllowNormalGeneration;
   int ShowAnalysisTessellation;
   vtkNew<vtkPolyDataNormals> NormalGenerator;
+  std::map<smtk::common::UUID, unsigned int> UUID2BlockIdMap; // UUIDs to block index map
+
   static smtk::common::UUIDGenerator UUIDGenerator;
 
 private:

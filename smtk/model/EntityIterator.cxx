@@ -182,6 +182,9 @@ void EntityIterator::updateQueue(const EntityRef& ent)
 
         Models msubmodels = ent.as<smtk::model::Model>().submodels();
         children.insert(msubmodels.begin(), msubmodels.end());
+
+        AuxiliaryGeometries maux = ent.as<smtk::model::Model>().auxiliaryGeometry();
+        children.insert(maux.begin(), maux.end());
         }
       for (EntityRefs::const_iterator cit = children.begin(); cit != children.end(); ++cit)
         if (this->m_visited.find(*cit) == this->m_visited.end())

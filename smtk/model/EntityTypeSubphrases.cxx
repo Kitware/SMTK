@@ -222,7 +222,7 @@ bool EntityTypeSubphrases::shouldOmitProperty(
 inline void internal_findEntities(
   const EntityRef& root,
   EntityRefs& vols, EntityRefs& faces, EntityRefs& edges,
-  EntityRefs& verts,
+  EntityRefs& verts, EntityRefs& aux,
   std::set<smtk::model::EntityRef>& touched)
 {
   EntityRefArray children =
@@ -248,15 +248,27 @@ inline void internal_findEntities(
       {
       touched.insert(*it);
       if (it->isVolume())
+        {
         vols.insert(*it);
+        }
       else if(it->isFace())
+        {
         faces.insert(*it);
+        }
       else if(it->isEdge())
+        {
         edges.insert(*it);
+        }
       else if(it->isVertex())
+        {
         verts.insert(*it);
+        }
+      else if (it->isAuxiliaryGeometry())
+        {
+        aux.insert(*it);
+        }
 
-      internal_findEntities(*it, vols, faces, edges, verts, touched);
+      internal_findEntities(*it, vols, faces, edges, verts, aux, touched);
       }
     }
 }
@@ -311,15 +323,15 @@ void EntityTypeSubphrases::childrenOfEntity(
       {
       this->freeSubmodelsOfModel(phr, ment, result);
       this->freeGroupsInModel(phr, ment, result);
-//      this->freeCellsOfModel(phr, ment, result);
 
-      EntityRefs vols, faces, edges, verts, touched;
-      internal_findEntities(ment, vols, faces, edges, verts, touched);
+      EntityRefs vols, faces, edges, verts, aux, touched;
+      internal_findEntities(ment, vols, faces, edges, verts, aux, touched);
 
       internal_createEntityList(vols, phr, result);
       internal_createEntityList(faces, phr, result);
       internal_createEntityList(edges, phr, result);
       internal_createEntityList(verts, phr, result);
+      internal_createEntityList(aux, phr, result);
 
       this->meshesOfModel(phr, ment, result);
       }

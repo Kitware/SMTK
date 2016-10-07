@@ -1558,6 +1558,7 @@ ManagerEventRelationType EntityRef::embeddingRelationType(const EntityRef& embed
     case MODEL_ENTITY: reln = MODEL_INCLUDES_MODEL; break;
     case SHELL_ENTITY: reln = MODEL_INCLUDES_FREE_SHELL; break;
     case CELL_ENTITY: reln = MODEL_INCLUDES_FREE_CELL; break;
+    case AUX_GEOM_ENTITY: reln = MODEL_INCLUDES_FREE_AUX_GEOM; break;
     case USE_ENTITY: reln = MODEL_INCLUDES_FREE_USE; break;
       }
     break;
@@ -1572,6 +1573,12 @@ ManagerEventRelationType EntityRef::embeddingRelationType(const EntityRef& embed
       {
     case SHELL_ENTITY: reln = SHELL_INCLUDES_SHELL; break;
     case USE_ENTITY: reln = SHELL_HAS_USE; break;
+      }
+    break;
+  case AUX_GEOM_ENTITY:
+    switch (embedded.entityFlags() & ENTITY_MASK)
+      {
+    case AUX_GEOM_ENTITY: reln = AUX_GEOM_INCLUDES_AUX_GEOM; break;
       }
     break;
     }

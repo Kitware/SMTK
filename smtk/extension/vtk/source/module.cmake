@@ -24,6 +24,7 @@ vtk_module(vtkSMTKSourceExt
     vtkViewsInfovis
     vtkIOXML
     vtkIOLegacy
+    vtkIOGeometry
   PRIVATE_DEPENDS
     ${__dependencies}
   TEST_DEPENDS

@@ -16,6 +16,7 @@
 #include "smtk/SystemConfig.h"
 #include "smtk/SharedPtr.h"
 
+#include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/AttributeAssignments.h"
 #include "smtk/model/Entity.h"
@@ -361,6 +362,11 @@ public:
     int extraFlags = 0,
     const std::string& name = std::string());
   Group addGroup(int extraFlags = 0, const std::string& name = std::string());
+
+  AuxiliaryGeometry insertAuxiliaryGeometry(const smtk::common::UUID& uid, int dim = -1);
+  AuxiliaryGeometry addAuxiliaryGeometry(int dim = -1);
+  AuxiliaryGeometry addAuxiliaryGeometry(const Model& parent, int dim = -1);
+  AuxiliaryGeometry addAuxiliaryGeometry(const AuxiliaryGeometry& parent, int dim = -1);
 
   Model insertModel(
     const smtk::common::UUID& uid,

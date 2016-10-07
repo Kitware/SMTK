@@ -34,12 +34,26 @@
 #include "vtkInformationVector.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkNew.h"
+#include "vtkOBJReader.h"
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
 #include "vtkPoints.h"
 #include "vtkProperty.h"
 #include "vtkStringArray.h"
 #include "vtkPolyDataNormals.h"
+#include "vtkPolyData.h"
+#include "vtkUnstructuredGrid.h"
+#include "vtkImageData.h"
+#include "vtkMultiBlockDataSet.h"
+#include "vtkXMLPolyDataReader.h"
+#include "vtkXMLUnstructuredGridReader.h"
+#include "vtkXMLImageDataReader.h"
+#include "vtkXMLMultiBlockDataReader.h"
+#include "vtkXMLMultiBlockDataWriter.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
+#include "boost/filesystem.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <inttypes.h>
 #include <stdlib.h>
@@ -186,8 +200,8 @@ smtk::common::UUID vtkModelMultiBlockSource::GetDataObjectUUID(vtkDataObject* ob
     { // We have not assigned a UUID yet. Do so now.
     uid = vtkModelMultiBlockSource::UUIDGenerator.random();
     obj->GetInformation()->Set(vtkModelMultiBlockSource::ENTITYID(), uid.toString().c_str());
-    } 
-  else 
+    }
+  else
     {
     uid = smtk::common::UUID(uuidChar);
     }
@@ -210,8 +224,8 @@ void vtkModelMultiBlockSource::SetDataObjectUUID(vtkDataObject* obj, const smtk:
   if (!uid)
     { // A null UUID is none at all... remove the UUID key.
     obj->GetInformation()->Remove(vtkModelMultiBlockSource::ENTITYID());
-    } 
-  else 
+    }
+  else
     {
     obj->GetInformation()->Set(vtkModelMultiBlockSource::ENTITYID(), uid.toString().c_str());
     }
@@ -455,13 +469,44 @@ vtkSmartPointer<vtkPolyData> vtkModelMultiBlockSource::GenerateRepresentationFro
   return pd;
 }
 
+template<typename T, typename U>
+vtkSmartPointer<T> ReadData(const smtk::model::AuxiliaryGeometry& auxGeom)
+{
+  vtkNew<U> rdr;
+  rdr->SetFileName(auxGeom.url().c_str());
+  rdr->Update();
+  vtkSmartPointer<T> data = vtkSmartPointer<T>::New();
+  data->ShallowCopy(rdr->GetOutput());
+  return data;
+}
+
 /// Create a reader and copy its output into a new data object to serve as the representation for auxiliary geometry.
 vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationFromURL(
   const smtk::model::AuxiliaryGeometry& auxGeom,
   bool genNormals)
 {
   (void)genNormals;
-  std::cout << "Need to load " << auxGeom.url() << "\n";
+  smtkErrorMacro(auxGeom.manager()->log(),
+    "Need to load " << auxGeom.url() << " for " << auxGeom.name());
+  std::string fileType;
+  if (auxGeom.hasStringProperty("type"))
+    {
+    const StringList& prop(auxGeom.stringProperty("type"));
+    if (!prop.empty())
+      {
+      fileType = prop[0];
+      }
+    }
+  if (fileType.empty())
+    {
+    fileType = vtkModelMultiBlockSource::InferFileTypeFromFileName(auxGeom.url());
+    }
+  if (fileType == "vtp") { return ReadData<vtkPolyData, vtkXMLPolyDataReader>(auxGeom); }
+  else if (fileType == "vtu") { return ReadData<vtkUnstructuredGrid, vtkXMLUnstructuredGridReader>(auxGeom); }
+  else if (fileType == "vti") { return ReadData<vtkImageData, vtkXMLImageDataReader>(auxGeom); }
+  else if (fileType == "vtm") { return ReadData<vtkMultiBlockDataSet, vtkXMLMultiBlockDataReader>(auxGeom); }
+  else if (fileType == "obj") { return ReadData<vtkPolyData, vtkOBJReader>(auxGeom); }
+
   return vtkSmartPointer<vtkDataObject>();
 }
 
@@ -564,7 +609,7 @@ static smtk::model::Volume volumeOfEntity(const smtk::model::EntityRef& ein)
 void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
   vtkMultiBlockDataSet* mbds, smtk::model::ManagerPtr manager)
 {
-  if(this->ModelEntityID && this->ModelEntityID[0])
+  if (this->ModelEntityID && this->ModelEntityID[0])
     {
     smtk::common::UUID uid(this->ModelEntityID);
     smtk::model::EntityRef entity(manager, uid);
@@ -581,56 +626,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
         if (!prop.empty() && prop[0])
           modelRequiresNormals = true;
         }
-      // First, enumerate all free cells and their boundaries to
-      // find those which provide tessellations.
-      // smtk::model::EntityRefs entityrefs;
-      // Map from entityref to its parent cell entity
-        /*
-      std::map<smtk::model::EntityRef, smtk::model::EntityRef> entityrefMap;
 
-      if (1)
-        {
-        std::set<smtk::model::EntityRef> touched; // make this go out of scope soon.
-        modelEntity.findEntitiesWithTessellation(entityrefMap, touched);
-        }
-
-      //Groups groups = modelEntity.groups();
-      mbds->SetNumberOfBlocks(entityrefMap.size()); // + groups.size());
-      vtkIdType i;
-      std::map<smtk::model::EntityRef, smtk::model::EntityRef>::iterator cit;
-      for (i = 0, cit = entityrefMap.begin(); cit != entityrefMap.end(); ++cit, ++i)
-        {
-        vtkNew<vtkPolyData> poly;
-        mbds->SetBlock(i, poly.GetPointer());
-        // Set the block name and the entity UUID.
-        mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), cit->first.name().c_str());
-        mbds->GetMetaData(i)->Set(vtkModelMultiBlockSource::ENTITYID(), cit->first.entity().toString().c_str());
-        this->GenerateRepresentationFromModel(poly.GetPointer(), cit->first, modelRequiresNormals);
-        // std::cout << "UUID: " << (*cit).entity().toString().c_str() << " Block: " << i << std::endl;
-        // as a convenient method to get the flat block index in multiblock
-        if(!(cit->first.entity().isNull()))
-          {
-          addBlockInfo(manager, cit->first, cit->second, i, poly.GetPointer(), this->UUID2BlockIdMap);
-          }
-        }
-      */
-
-      // Now look at groups of the model to see if those have any tessellation data
-      /*
-      i = 0;
-      for (Groups::iterator git = groups.begin(); git != groups.end(); ++git, ++i)
-        {
-        if (git->hasTessellation())
-          {
-          vtkNew<vtkPolyData> poly;
-          mbds->SetBlock(entityrefMap.size() + i, poly.GetPointer());
-          mbds->GetMetaData(entityrefMap.size() + i)->Set(vtkCompositeDataSet::NAME(), git->name().c_str());
-          this->GenerateRepresentationFromModel(poly.GetPointer(), *git, modelRequiresNormals);
-          // as a convenient method to get the flat block_index in multiblock
-          addBlockInfo(manager, *git, modelEntity, entityrefMap.size() + i, poly.GetPointer(), this->UUID2BlockIdMap);
-          }
-        }
-        */
       // TODO: how do we handle submodels in a multiblock dataset? We could have
       //       a cycle in the submodels, so treating them as trees would not work.
       // Finally, if nothing has any tessellation information, see if any is associated
@@ -647,7 +643,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
         for (bb = 0; bb < NUMBER_OF_BLOCK_TYPES; ++bb)
           {
           topBlocks[bb] = vtkSmartPointer<vtkMultiBlockDataSet>::New();
-          mbds->SetBlock(bb, topBlocks[bb]);
+          mbds->SetBlock(bb, topBlocks[bb].GetPointer());
           }
         smtk::model::EntityIterator eit;
         eit.traverse(modelEntity, smtk::model::ITERATE_CHILDREN);
@@ -706,6 +702,10 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
           {
           int nlb = static_cast<int>(blockDatasets[bb].size());
           topBlocks[bb]->SetNumberOfBlocks(nlb);
+          if (nlb == 0)
+            {
+            mbds->SetBlock(bb, NULL);
+            }
           for (int lb = 0; lb < nlb; ++lb)
             {
             topBlocks[bb]->SetBlock(lb, blockDatasets[bb][lb].GetPointer());
@@ -765,6 +765,12 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
     }
 }
 
+std::string vtkModelMultiBlockSource::InferFileTypeFromFileName(const std::string& fname)
+{
+  ::boost::filesystem::path fp(fname);
+  return fp.extension().string().substr(1);
+}
+
 /// Generate polydata from an smtk::model with tessellation information.
 int vtkModelMultiBlockSource::RequestData(
   vtkInformation* vtkNotUsed(request),
@@ -796,5 +802,10 @@ int vtkModelMultiBlockSource::RequestData(
     this->SetCachedOutput(rep.GetPointer());
     }
   output->ShallowCopy(this->CachedOutput);
+
+  vtkNew<vtkXMLMultiBlockDataWriter> wri;
+  wri->SetInputData(output);
+  wri->SetFileName("/tmp/testme.vtm");
+  wri->Write();
   return 1;
 }

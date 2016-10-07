@@ -1247,6 +1247,20 @@ UUID Manager::modelOwningEntity(const UUID& ent) const
     smtk::model::BitFlags etype = it->second.entityFlags();
     switch (etype & ENTITY_MASK)
       {
+    case AUX_GEOM_ENTITY:
+        {
+        ManagerPtr self = const_cast<Manager*>(this)->shared_from_this();
+        EntityRef aux(self, ent);
+        for (aux = aux.embeddedIn(); aux.isValid(); aux = aux.embeddedIn())
+          {
+          if (aux.isModel())
+            {
+            return aux.entity();
+            }
+          }
+        return UUID();
+        }
+      break;
     case GROUP_ENTITY:
         {
         // If we have a superset arrangement, ask for supersets and traverse upwards.
@@ -3530,6 +3544,43 @@ Group Manager::addGroup(int extraFlags, const std::string& groupName)
 {
   UUID uid = this->unusedUUID();
   return this->insertGroup(uid, extraFlags, groupName);
+}
+
+/// Add auxiliary geometry (of the given \a dim, which may be -1) to the manager with the specified \a uid.
+AuxiliaryGeometry Manager::insertAuxiliaryGeometry(const smtk::common::UUID& uid, int dim)
+{
+  UUIDWithEntity result =
+    this->setEntityOfTypeAndDimension(uid, AUX_GEOM_ENTITY, dim);
+  if (result == this->m_topology->end())
+    {
+    return AuxiliaryGeometry();
+    }
+  return AuxiliaryGeometry(shared_from_this(), uid);
+}
+
+/// Add auxiliary geometry (of the given \a dim, which may be -1) to the manager.
+AuxiliaryGeometry Manager::addAuxiliaryGeometry(int dim)
+{
+  UUID uid = this->unusedUUID();
+  return this->insertAuxiliaryGeometry(uid, dim);
+}
+
+/// Add auxiliary geometry (of the given \a dim, which may be -1) to the manager, embedded in its \a parent.
+AuxiliaryGeometry Manager::addAuxiliaryGeometry(const Model& parent, int dim)
+{
+  Model mutableParent(parent);
+  AuxiliaryGeometry auxGeom = this->addAuxiliaryGeometry(dim);
+  mutableParent.addAuxiliaryGeometry(auxGeom);
+  return auxGeom;
+}
+
+/// Add auxiliary geometry (of the given \a dim, which may be -1) to the manager, embedded in its \a parent.
+AuxiliaryGeometry Manager::addAuxiliaryGeometry(const AuxiliaryGeometry& parent, int dim)
+{
+  AuxiliaryGeometry mutableParent(parent);
+  AuxiliaryGeometry auxGeom = this->addAuxiliaryGeometry(dim);
+  mutableParent.embedEntity(auxGeom);
+  return auxGeom;
 }
 
 /**\brief Add a model to the manager.

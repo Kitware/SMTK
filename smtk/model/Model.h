@@ -40,6 +40,7 @@ public:
   CellEntities cells() const;
   Groups groups() const;
   Models submodels() const;
+  AuxiliaryGeometries auxiliaryGeometry() const;
 
   template<typename T> T cellsAs() const;
   template<typename T> T groupsAs() const;
@@ -60,6 +61,11 @@ public:
   Model& removeSubmodel(const Model& m);
   template<typename T> Model& addSubmodels(const T& container);
   template<typename T> Model& removeSubmodels(const T& container);
+
+  Model& addAuxiliaryGeometry(const AuxiliaryGeometry& ag);
+  Model& removeAuxiliaryGeometry(const AuxiliaryGeometry& ag);
+  template<typename T> Model& addAuxiliaryGeometries(const T& container);
+  template<typename T> Model& removeAuxiliaryGeometries(const T& container);
 
   OperatorPtr op(const std::string& operatorName) const;
   StringList operatorNames() const;
@@ -172,12 +178,32 @@ template<typename T> Model& Model::addSubmodels(const T& container)
   return *this;
 }
 
-/// Add all the models in \a container as submodels to this model.
+/// Remove all the models in \a container from this model (if they are submodels).
 template<typename T> Model& Model::removeSubmodels(const T& container)
 {
   for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)
     {
     this->removeSubmodel(*it);
+    }
+  return *this;
+}
+
+/// Add all the auxiliary geometry entities in \a container to this model.
+template<typename T> Model& Model::addAuxiliaryGeometries(const T& container)
+{
+  for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)
+    {
+    this->addAuxiliaryGeometry(*it);
+    }
+  return *this;
+}
+
+/// Remove all the auxiliary geometry entities in \a container from this model.
+template<typename T> Model& Model::removeAuxiliaryGeometries(const T& container)
+{
+  for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)
+    {
+    this->removeAuxiliaryGeometry(*it);
     }
   return *this;
 }

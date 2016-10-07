@@ -79,6 +79,7 @@ protected:
   void freeSubmodelsOfModel(DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result);
   void freeGroupsInModel(DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result);
   void freeCellsOfModel(DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result);
+  void freeAuxiliaryGeometriesOfModel(DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result);
 
   void prototypeOfInstance(DescriptivePhrase::Ptr src, const Instance& ent, DescriptivePhrases& result);
 
