@@ -4,16 +4,9 @@ set(smtkRemoteSessionPythonDataTests
 
 if (SMTK_DATA_DIR AND EXISTS "${SMTK_DATA_DIR}/cmb-testing-data.marker")
   foreach(test ${smtkRemoteSessionPythonDataTests})
-    add_test(${test}Py
-      ${PYTHON_EXECUTABLE}
-      ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py
+    smtk_add_test_python(${test}Py ${test}.py
       --data-dir=${SMTK_DATA_DIR}
       --temp-dir=${SMTK_BINARY_DIR}/Testing
-      --worker-dir=${SMTK_BINARY_DIR}/Testing
-    )
-    set_tests_properties(${test}Py
-      PROPERTIES
-        ENVIRONMENT "${SMTK_TEST_LIB_ENV};${SMTK_PYTHONPATH}"
-    )
+      --worker-dir=${SMTK_BINARY_DIR}/Testing)
   endforeach()
 endif()

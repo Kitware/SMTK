@@ -4,9 +4,5 @@ set(smtkCommonPythonTests
 )
 
 foreach (test ${smtkCommonPythonTests})
-  add_test(${test}Py ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py --src-dir=${SMTK_SOURCE_DIR})
-  set_tests_properties(${test}Py
-    PROPERTIES
-      ENVIRONMENT "${smtk_python_test_environment}"
-  )
+  smtk_add_test_python(${test}Py ${test}.py --src-dir=${SMTK_SOURCE_DIR})
 endforeach()

@@ -402,6 +402,16 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     set(smtk_python_test_environment
       "PYTHONPATH=${smtk_pythonpath_env}"
       "${libpath_envvar}=${smtk_libpath_env}")
+
+    function (smtk_add_test_python name file)
+      add_test(
+        NAME    "${name}"
+        COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/${file}"
+                ${ARGN})
+      set_tests_properties("${name}"
+        PROPERTIES
+          ENVIRONMENT "${smtk_python_test_environment}")
+    endfunction ()
   endif()
 endif()
 
