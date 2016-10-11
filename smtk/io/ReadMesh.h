@@ -55,10 +55,37 @@ SMTKCORE_EXPORT smtk::mesh::CollectionPtr
 readMesh( const std::string& filePath,
           smtk::mesh::ManagerPtr manager,
           mesh::Subset subset = mesh::Subset::EntireCollection );
+// Explicit functions for each subset type for Shiboken to digest
+SMTKCORE_EXPORT smtk::mesh::CollectionPtr
+readEntireCollection( const std::string& filePath,
+                      smtk::mesh::ManagerPtr manager );
+SMTKCORE_EXPORT smtk::mesh::CollectionPtr
+readDomain( const std::string& filePath,
+            smtk::mesh::ManagerPtr manager );
+SMTKCORE_EXPORT smtk::mesh::CollectionPtr
+readDirichlet( const std::string& filePath,
+               smtk::mesh::ManagerPtr manager );
+SMTKCORE_EXPORT smtk::mesh::CollectionPtr
+readNeumann( const std::string& filePath,
+               smtk::mesh::ManagerPtr manager );
+
 SMTKCORE_EXPORT bool
 readMesh( const std::string& filePath,
           smtk::mesh::CollectionPtr collection,
           mesh::Subset subset = mesh::Subset::EntireCollection );
+// Explicit functions for each subset type for Shiboken to digest
+SMTKCORE_EXPORT bool
+readEntireCollection( const std::string& filePath,
+                      smtk::mesh::CollectionPtr collection );
+SMTKCORE_EXPORT bool
+readDomain( const std::string& filePath,
+            smtk::mesh::CollectionPtr collection );
+SMTKCORE_EXPORT bool
+readDirichlet( const std::string& filePath,
+               smtk::mesh::CollectionPtr collection );
+SMTKCORE_EXPORT bool
+readNeumann( const std::string& filePath,
+             smtk::mesh::CollectionPtr collection );
 
 }
 }
