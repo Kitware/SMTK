@@ -107,13 +107,58 @@ readMesh( const std::string& filePath,
   ReadMesh read;
   return read( filePath, manager, subset );
 }
+smtk::mesh::CollectionPtr
+readEntireCollection( const std::string& filePath,
+                      smtk::mesh::ManagerPtr manager )
+{
+  return smtk::io::readMesh(filePath, manager, mesh::Subset::EntireCollection);
+}
+smtk::mesh::CollectionPtr
+readDomain( const std::string& filePath,
+            smtk::mesh::ManagerPtr manager )
+{
+  return smtk::io::readMesh(filePath, manager, mesh::Subset::OnlyDomain);
+}
+smtk::mesh::CollectionPtr
+readDirichlet( const std::string& filePath,
+               smtk::mesh::ManagerPtr manager )
+{
+  return smtk::io::readMesh(filePath, manager, mesh::Subset::OnlyDirichlet);
+}
+smtk::mesh::CollectionPtr
+readNeumann( const std::string& filePath,
+             smtk::mesh::ManagerPtr manager )
+{
+  return smtk::io::readMesh(filePath, manager, mesh::Subset::OnlyNeumann);
+}
 
 bool readMesh( const std::string& filePath,
                smtk::mesh::CollectionPtr collection,
                mesh::Subset subset )
 {
   ReadMesh read;
-  return read( filePath, collection, subset );
+  return read(filePath, collection, subset);
+}
+bool readEntireCollection( const std::string& filePath,
+                           smtk::mesh::CollectionPtr collection )
+{
+  return smtk::io::readMesh(filePath, collection,
+                            mesh::Subset::EntireCollection);
+}
+bool readDomain( const std::string& filePath,
+                 smtk::mesh::CollectionPtr collection )
+{
+  return smtk::io::readMesh(filePath, collection, mesh::Subset::OnlyDomain);
+}
+bool readDirichlet( const std::string& filePath,
+                    smtk::mesh::CollectionPtr collection )
+{
+  return smtk::io::readMesh(filePath, collection, mesh::Subset::OnlyDirichlet);
+}
+bool readNeumann( const std::string& filePath,
+                  smtk::mesh::CollectionPtr collection )
+{
+  return smtk::io::readMesh(filePath, collection, mesh::Subset::OnlyNeumann);
 }
 
 }

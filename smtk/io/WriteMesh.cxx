@@ -95,12 +95,53 @@ bool writeMesh( const std::string& filePath,
   WriteMesh write;
   return write( filePath, collection, subset );
 }
+bool writeEntireCollection( const std::string& filePath,
+                            smtk::mesh::CollectionPtr collection )
+{
+  return smtk::io::writeMesh( filePath, collection,
+                              mesh::Subset::EntireCollection );
+}
+bool writeDomain( const std::string& filePath,
+                  smtk::mesh::CollectionPtr collection )
+{
+  return smtk::io::writeMesh( filePath, collection, mesh::Subset::OnlyDomain );
+}
+bool writeDirichlet( const std::string& filePath,
+                     smtk::mesh::CollectionPtr collection )
+{
+  return smtk::io::writeMesh(filePath, collection, mesh::Subset::OnlyDirichlet);
+}
+bool writeNeumann( const std::string& filePath,
+                   smtk::mesh::CollectionPtr collection )
+{
+  return smtk::io::writeMesh( filePath, collection, mesh::Subset::OnlyNeumann );
+}
 
 bool writeMesh( smtk::mesh::CollectionPtr collection,
                 mesh::Subset subset )
 {
   WriteMesh write;
   return write( collection, subset );
+}
+bool writeEntireCollection( smtk::mesh::CollectionPtr collection )
+{
+  WriteMesh write;
+  return smtk::io::writeMesh( collection, mesh::Subset::EntireCollection );
+}
+bool writeDomain( smtk::mesh::CollectionPtr collection )
+{
+  WriteMesh write;
+  return smtk::io::writeMesh( collection, mesh::Subset::OnlyDomain );
+}
+bool writeDirichlet( smtk::mesh::CollectionPtr collection )
+{
+  WriteMesh write;
+  return smtk::io::writeMesh( collection, mesh::Subset::OnlyDirichlet );
+}
+bool writeNeumann( smtk::mesh::CollectionPtr collection )
+{
+  WriteMesh write;
+  return smtk::io::writeMesh( collection, mesh::Subset::OnlyNeumann );
 }
 
 }
