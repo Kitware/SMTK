@@ -19,7 +19,7 @@ if (SMTK_DATA_DIR
              --data-dir=${SMTK_DATA_DIR} )
     set_tests_properties(${test}Py
       PROPERTIES
-        ENVIRONMENT "${SMTK_TEST_LIB_ENV};${SMTK_PYTHONPATH}"
+        ENVIRONMENT "${smtk_python_test_environment}"
     )
     set_tests_properties( ${test}Py PROPERTIES LABELS "Mesh" )
   endforeach()

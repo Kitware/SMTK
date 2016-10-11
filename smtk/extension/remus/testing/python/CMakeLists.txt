@@ -16,7 +16,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
              --data-dir=${SMTK_DATA_DIR})
     set_tests_properties(${test}Py
       PROPERTIES
-        ENVIRONMENT "${SMTK_TEST_LIB_ENV};${SMTK_PYTHONPATH}"
+        ENVIRONMENT "${smtk_python_test_environment}"
     )
   endforeach()
 endif()

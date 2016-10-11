@@ -26,7 +26,7 @@ set_tests_properties(
   attributeAutoNamingTestPy attributeAutoNamingTestPy
   attributeReferencingTestPy categoryTestPy attributeFindItemTestPy
   PROPERTIES
-    ENVIRONMENT "${SMTK_TEST_LIB_ENV};${SMTK_PYTHONPATH}"
+    ENVIRONMENT "${smtk_python_test_environment}"
 )
 
 if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
@@ -38,7 +38,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
       ${SMTK_DATA_DIR})
     set_tests_properties(${test}Py
       PROPERTIES
-        ENVIRONMENT "${SMTK_TEST_LIB_ENV};${SMTK_PYTHONPATH}"
+        ENVIRONMENT "${smtk_python_test_environment}"
     )
   endforeach()
   # New-style tests that use smtk.testing.TestCase
@@ -49,7 +49,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
              -D ${SMTK_DATA_DIR})
     set_tests_properties(${test}Py
       PROPERTIES
-        ENVIRONMENT "${SMTK_TEST_LIB_ENV};${SMTK_PYTHONPATH}"
+        ENVIRONMENT "${smtk_python_test_environment}"
     )
   endforeach()
 endif()

@@ -15,7 +15,7 @@ if (SMTK_ENABLE_TESTING AND SMTK_ENABLE_PYTHON_WRAPPING AND SMTK_DATA_DIR AND SM
   # Assign environment variables to the test(s)
   set_tests_properties(tut-debug_python_test
     PROPERTIES
-      ENVIRONMENT "${SMTK_TEST_LIB_ENV};${SMTK_PYTHONPATH}"
+      ENVIRONMENT "${smtk_python_test_environment}"
   )
 endif()
 
