@@ -395,6 +395,10 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
         "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
     endif ()
 
+    # Remove duplicates.
+    list(REMOVE_DUPLICATES smtk_pythonpaths)
+    list(REMOVE_DUPLICATES smtk_libpaths)
+
     string(REPLACE ";" "${envsep}" smtk_pythonpath_env "${smtk_pythonpaths}")
     string(REPLACE ";" "${envsep}" smtk_libpath_env "${smtk_libpaths}")
     string(REPLACE ";" "\;" smtk_pythonpath_env "${smtk_pythonpath_env}")
