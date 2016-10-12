@@ -284,13 +284,17 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
   find_package(PythonInterp 2.7 REQUIRED)
   # Set up environment variables needed to import the python modules for tests.
   if (PYTHONINTERP_FOUND AND SMTK_ENABLE_TESTING)
-    get_filename_component(SHIBOKEN_LIBRARY_PATH ${SHIBOKEN_LIBRARY} PATH)
     set(required_python_modules
       shiboken)
     set(shiboken_PYTHONPATH
       "${SHIBOKEN_PYTHONPATH}")
+    if (WIN32)
+      get_filename_component(shiboken_runtime_dir "${SHIBOKEN_BINARY}" PATH)
+    else ()
+      get_filename_component(shiboken_runtime_dir "${SHIBOKEN_LIBRARY}" PATH)
+    endif ()
     set(shiboken_libpath
-      "${SHIBOKEN_LIBRARY_PATH}")
+      "${shiboken_runtime_dir}")
 
     if (SMTK_ENABLE_PARAVIEW_SUPPORT)
       list(APPEND required_python_modules
