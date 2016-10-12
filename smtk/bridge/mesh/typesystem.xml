@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<typesystem package="@TYPESYSTEM_NAME@">
+
+  @EXTRA_TYPESYSTEMS@
+
+  <!-- Ignore Shiboken notice that Exodus lives inside SMTK namespace -->
+  <suppress-warning text="Duplicate type entry: 'smtk'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::mesh::Session::create', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::mesh::Session::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::mesh::Session::addTopology', unmatched parameter type 'smtk::bridge::mesh::Topology'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::mesh::Session::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::bridge::mesh::Session::SelfType&gt;'"/>
+  <suppress-warning text="skipping field 'Session::m_topologies' with unmatched type 'std::vector&lt;Topology&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::mesh::Session::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::mesh::Session::SelfType&gt;'"/>
+
+  <!-- Additional objects to be wrapped when building with Exodus -->
+  <namespace-type name="smtk" generate = "no">
+    <namespace-type name="bridge" generate = "no">
+      <namespace-type name="mesh" generate = "yes">
+        <object-type name="Session">
+          <include file-name="smtk/bridge/mesh/Session.h" location="local"/>
+        </object-type>
+      </namespace-type>
+    </namespace-type>
+  </namespace-type>
+
+  <value-type template="smtk::shared_ptr" args="smtk::bridge::mesh::Session">
+  </value-type>
+
+  @EXTRA_OBJECTS@
+
+</typesystem>

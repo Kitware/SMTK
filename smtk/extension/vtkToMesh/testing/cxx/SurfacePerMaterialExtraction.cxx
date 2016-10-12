@@ -58,7 +58,7 @@ public:
     }
 
   //--------------------------------------------------------------------------
-  void forMesh(const smtk::mesh::MeshSet& mesh)
+  void forMesh(smtk::mesh::MeshSet& mesh)
   {
   smtk::mesh::CellSet existingShellCells = mesh.cells( smtk::mesh::Dims2 );
   smtk::mesh::MeshSet shell = mesh;

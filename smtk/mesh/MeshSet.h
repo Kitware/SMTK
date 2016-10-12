@@ -108,6 +108,7 @@ public:
 
   smtk::common::UUIDArray modelEntityIds() const;
   smtk::model::EntityRefArray modelEntities() const;
+  bool setModelEntityId(const smtk::common::UUID&);
   bool setModelEntity(const smtk::model::EntityRef&);
 
   std::vector< std::string > names() const;
