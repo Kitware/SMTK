@@ -2,24 +2,62 @@
 IO
 ==
 
-:smtk:`WriteMesh <smtk::io::WriteMesh>`
+:smtk:`writeMesh <smtk::io::writeMesh>`
   Writes out a given :smtk:`Collection <smtk::mesh::Collection>`, or only
-  the elements that match a given Domain, Neumann, or Dirichlet property.
+  the elements that match a given Domain, Dirichlet or Neumann
+  property. This is a preserving process: all information relevant to
+  the mesh is written to file, and subsequent reads from this file
+  should restore the mesh exactly.
 
   Supported formats:
       + MOAB (h5m, mhdf)
       + Exodus II (exo exoII exo2 g gen)
 
-
-:smtk:`ImportMesh <smtk::io::ImportMesh>`
+:smtk:`readMesh <smtk::io::readMesh>`
   Load a given file in as a new :smtk:`Collection <smtk::mesh::Collection>` or
   part of an existing :smtk:`Collection <smtk::mesh::Collection>`. Also
-  supports loading just elements that a given Domain, Neumann, or Dirichlet
-  property.
+  supports loading just elements that a given Domain, Dirichlet or Neumann
+  property. This is a preserving process: all information relevant to
+  the mesh should restore the mesh in the same state as when it was written.
 
   Supported formats:
       + MOAB (h5m, mhdf)
       + Exodus II (exo exoII exo2 g gen)
+
+:smtk:`importMesh <smtk::io::importMesh>`
+  Import a given file in as a new :smtk:`Collection <smtk::mesh::Collection>` or
+  part of an existing :smtk:`Collection
+  <smtk::mesh::Collection>`. Imports are not preserving processes:
+  all mesh information contained in a file is not guaranteed to be
+  read into the mesh database via `ImportMesh`.
+
+  Supported formats:
+      + MOAB (h5m, mhdf)
+      + Exodus II (exo exoII exo2 g gen)
+      + VTK (vtk)
+      + SLAC (slac)
+      + General Mesh Viewer (gmv)
+      + ANSYS (ans)
+      + Gmsh (msh gmsh)
+      + Stereolithography (stl)
+
+:smtk:`exportMesh <smtk::io::exportMesh>`
+  Export a given :smtk:`Collection <smtk::mesh::Collection>`  to
+  file. Exports are not preserving processes:
+  all mesh information contained in the mesh database is not
+  guaranteed to be written to file via `ExportMesh`.
+
+  Supported formats:
+      + MOAB (h5m, mhdf)
+      + Exodus II (exo exoII exo2 g gen)
+      + VTK (vtk)
+      + SLAC (slac)
+      + General Mesh Viewer (gmv)
+      + ANSYS (ans)
+      + Gmsh (msh gmsh)
+      + Stereolithography (stl)
+      + XMS 2D/3D (2dm 3dm)
+
 
 Serialization
 ============
