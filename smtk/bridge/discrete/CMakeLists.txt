@@ -289,6 +289,9 @@ if(SMTK_ENABLE_PARAVIEW_SUPPORT AND SMTK_ENABLE_DISCRETE_SESSION)
 endif()
 
 if (SMTK_ENABLE_TESTING)
+  # ... and make header compilation tests link properly:
+  target_link_libraries(TestBuild_smtk_bridge_discrete LINK_PRIVATE vtkCommonCore)
+
   add_subdirectory(testing)
   add_subdirectory(operation/testing)
 endif()

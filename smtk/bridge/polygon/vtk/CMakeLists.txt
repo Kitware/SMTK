@@ -47,3 +47,8 @@ smtk_public_headers(${headers})
 #if (SMTK_ENABLE_PYTHON_WRAPPING AND VTK_WRAP_PYTHON)
 #  vtk_smtk_wrap_module_python3(${vtk-module} "${headers}")
 #endif()
+
+if (SMTK_ENABLE_TESTING)
+  # ... and make header compilation tests link properly:
+  target_link_libraries(TestBuild_smtk_bridge_polygon_vtk LINK_PRIVATE vtkCommonCore)
+endif()

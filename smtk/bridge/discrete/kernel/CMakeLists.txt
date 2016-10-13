@@ -256,3 +256,8 @@ if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   # vtk_add_cs_wrapping(${vtk-module})
   # smtk_install_library(${vtk-module}CS)
 endif ()
+
+if (SMTK_ENABLE_TESTING)
+  # ... and make header compilation tests link properly:
+  target_link_libraries(TestBuild_smtk_bridge_discrete_kernel LINK_PRIVATE vtkCommonCore)
+endif()

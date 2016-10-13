@@ -63,3 +63,8 @@ if (SMTK_ENABLE_PARAVIEW_SUPPORT)
 endif ()
 
 smtk_public_headers(${headers})
+
+if (SMTK_ENABLE_TESTING)
+  # ... and make header compilation tests link properly:
+  target_link_libraries(TestBuild_smtk_extension_vtk_meshing LINK_PRIVATE vtkCommonCore)
+endif()
