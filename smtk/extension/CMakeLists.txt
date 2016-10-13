@@ -62,12 +62,12 @@ if (SMTK_ENABLE_VTK_SUPPORT)
   vtk_smtk_setup_module_environment("SMTK")
   vtk_smtk_process_modules()
 
-  # These are  converters to allow importing of vtk data into smtk mesh system.
+  # These are converters to allow importing of vtk data into smtk mesh system.
   # We keep this out of the common vtk model for 2 primary reasons.
   # The primary being is that this library is focused on bringing data into
   # smtk, not rendering, and secondly we don't want to require vtk rendering
   #to be linked for IO routines.
-  add_subdirectory(vtkToMesh)
+  add_subdirectory(vtk/io)
 endif()
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)

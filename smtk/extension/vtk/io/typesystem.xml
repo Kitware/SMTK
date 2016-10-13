@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<typesystem package="@TYPESYSTEM_NAME@">
+
+  @EXTRA_TYPESYSTEMS@
+
+  <suppress-warning text="Duplicate type entry: 'smtk'"/>
+
+  <!-- Ignore warnings about wrapping vtk-exposed methods -->
+  <suppress-warning text="skipping function 'smtk::extension::vtk::io::VTKDataConverter::operator()', unmatched parameter type 'vtkUnstructuredGrid*'"/>
+  <suppress-warning text="skipping function 'smtk::extension::vtk::io::VTKDataConverter::operator()', unmatched parameter type 'vtkPolyData*'"/>
+
+  <!-- Additional objects to be wrapped -->
+  <namespace-type name="smtk" generate = "no">
+    <namespace-type name="extension" generate = "no">
+      <namespace-type name="vtk" generate = "yes">
+	<namespace-type name="io" generate = "yes">
+	  <object-type name="VTKDataConverter">
+            <include file-name="smtk/extension/vtk/io/VTKDataConverter.h" location="local"/>
+	  </object-type>
+	</namespace-type>
+      </namespace-type>
+    </namespace-type>
+  </namespace-type>
+
+  @EXTRA_OBJECTS@
+
+</typesystem>

@@ -108,8 +108,6 @@ smtk::mesh::CollectionPtr MeshIOMoab::read( const std::string& filePath,
     default:
       collection = smtk::mesh::Collection::create();
     }
-
-  collection->readLocation(filePath);
   return collection;
 }
 
@@ -135,11 +133,6 @@ bool MeshIOMoab::read( const std::string& filePath,
       break;
     default:
       result = false;
-    }
-
-  if (result && collection->readLocation().empty())
-    { //if no read location is associated with this file, specify one
-    collection->readLocation(filePath);
     }
   return result;
 }
