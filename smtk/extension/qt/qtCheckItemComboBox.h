@@ -23,6 +23,8 @@ class QStandardItem;
 namespace smtk {
   namespace extension {
 
+  class qtModelEntityItem;
+  class qtMeshItem;
 //A sublcass of QTextEdit to give initial sizehint
 class SMTKQTEXT_EXPORT qtCheckableComboItemDelegate : public QStyledItemDelegate
   {
@@ -57,7 +59,7 @@ class SMTKQTEXT_EXPORT qtCheckItemComboBox : public QComboBox
     {
     Q_OBJECT
     public:
-      qtModelEntityItemCombo(smtk::attribute::ItemPtr,
+      qtModelEntityItemCombo(qtModelEntityItem *item,
         QWidget * parent, const QString& displayExt);
       virtual void showPopup();
       virtual void init();
@@ -70,7 +72,7 @@ class SMTKQTEXT_EXPORT qtCheckItemComboBox : public QComboBox
       virtual bool eventFilter(QObject* editor, QEvent* event);
 
     private:
-      smtk::attribute::WeakItemPtr m_ModelEntityItem;
+      qtModelEntityItem *m_ModelEntityItem;
     };
 
   //A sublcass of qtCheckItemComboBox to refresh the list on popup
@@ -78,7 +80,7 @@ class SMTKQTEXT_EXPORT qtCheckItemComboBox : public QComboBox
     {
     Q_OBJECT
     public:
-      qtMeshItemCombo(smtk::attribute::ItemPtr,
+      qtMeshItemCombo(qtMeshItem *item,
         QWidget * parent, const QString& displayExt);
       virtual void showPopup();
       virtual void init();
@@ -91,7 +93,7 @@ class SMTKQTEXT_EXPORT qtCheckItemComboBox : public QComboBox
       virtual bool eventFilter(QObject* editor, QEvent* event);
 
     private:
-      smtk::attribute::WeakItemPtr m_MeshItem;
+      qtMeshItem *m_MeshItem;
     };
 
   } // namespace extension

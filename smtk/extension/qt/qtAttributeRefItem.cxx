@@ -475,6 +475,7 @@ void qtAttributeRefItem::setOutputOptional(int state)
   if(enable != this->getObject()->isEnabled())
     {
     this->getObject()->setIsEnabled(enable);
+    emit this->modified();
     this->baseView()->valueChanged(this->getObject());
     }
 }
@@ -643,6 +644,7 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
 
   if(valChanged)
     {
+    emit this->modified();
     this->baseView()->valueChanged(this->getObject());
     }
 }

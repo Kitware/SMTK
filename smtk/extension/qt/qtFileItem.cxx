@@ -238,6 +238,7 @@ void qtFileItem::onInputValueChanged()
   if(!editBox->text().isEmpty())
     {
     item->setValue(elementIdx, editBox->text().toStdString());
+    emit this->modified();
     if (!this->isDirectory())
       {
       this->updateFileComboList(editBox->text());
@@ -247,7 +248,8 @@ void qtFileItem::onInputValueChanged()
   else
     {
     item->unset(elementIdx);
-    }
+    emit(modified());
+   }
 }
 
 //----------------------------------------------------------------------------
@@ -626,8 +628,11 @@ void qtFileItem::setOutputOptional(int state)
   if(enable != this->getObject()->isEnabled())
     {
     this->getObject()->setIsEnabled(enable);
-    if(this->baseView())
-      this->baseView()->valueChanged(this->getObject());
+    emit this->modified();
+     if(this->baseView())
+       {
+       this->baseView()->valueChanged(this->getObject());
+       }
     }
 }
 
@@ -645,6 +650,8 @@ void qtFileItem::onAddNewValue()
 //    QBoxLayout* entryLayout = qobject_cast<QBoxLayout*>(
 //      this->Internals->EntryFrame->layout());
     this->addInputEditor(static_cast<int>(item->numberOfValues()) - 1);
+    emit this->modified();
+ 
     }
 }
 
@@ -684,7 +691,8 @@ void qtFileItem::onRemoveValue()
   delete minusButton;
 
   item->removeValue(gIdx);
-
+  emit this->modified();
+ 
   this->updateExtensibleState();
 }
 

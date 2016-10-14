@@ -58,107 +58,81 @@ using namespace smtk::attribute;
 using namespace smtk::extension;
 
 //-----------------------------------------------------------------------------
-qtDoubleValidator::qtDoubleValidator(QObject * inParent)
-  :QDoubleValidator(inParent)
+qtDoubleValidator::qtDoubleValidator(qtInputsItem *item, int elementIndex,
+                                     QLineEdit * lineEdit, QObject * inParent)
+  :QDoubleValidator(inParent), m_item(item), m_elementIndex(elementIndex),
+   m_lineWidget(lineEdit)
 {
-  this->UIManager = NULL;
-}
-//-----------------------------------------------------------------------------
-void qtDoubleValidator::setUIManager(smtk::extension::qtUIManager* uiman)
-{
-  this->UIManager = uiman;
 }
 //-----------------------------------------------------------------------------
 void qtDoubleValidator::fixup(QString &input) const
 {
-  QLineEdit* editBox =
-    static_cast<QLineEdit*>(this->property("MyWidget").value<void *>());
-  if(!editBox)
-    {
-    return;
-    }
-  ValueItem* item =static_cast<ValueItem*>(
-    editBox->property("AttItemObj").value<void *>());
+  auto item = this->m_item->valueItem();
   if(!item)
     {
     return;
     }
-  int elementIdx = editBox->property("ElementIndex").toInt();
   if ( input.length() == 0 )
     {
-    item->unset(elementIdx);
-    this->UIManager->setWidgetColorToInvalid(editBox);
+    this->m_item->unsetValue(this->m_elementIndex);
+    this->m_item->uiManager()->setWidgetColorToInvalid(this->m_lineWidget);
     return;
     }
 
   const DoubleItemDefinition* dDef =
     dynamic_cast<const DoubleItemDefinition*>(item->definition().get());
-  if(item->isSet(elementIdx))
+  if(item->isSet(this->m_elementIndex))
     {
-    input = item->valueAsString(elementIdx).c_str();
+    input = item->valueAsString(this->m_elementIndex).c_str();
     }
   else if(dDef->hasDefault())
     {
-    input = QString::number(dDef->defaultValue(elementIdx));
+    input = QString::number(dDef->defaultValue(this->m_elementIndex));
     }
   else
     {
-    this->UIManager->setWidgetColorToInvalid(editBox);
+    this->m_item->uiManager()->setWidgetColorToInvalid(this->m_lineWidget);
     }
 }
 
 //-----------------------------------------------------------------------------
-qtIntValidator::qtIntValidator(QObject * inParent)
-:QIntValidator(inParent)
+qtIntValidator::qtIntValidator(qtInputsItem *item, int elementIndex,
+                               QLineEdit * lineEdit, QObject * inParent)
+:QIntValidator(inParent), m_item(item), m_elementIndex(elementIndex),
+   m_lineWidget(lineEdit)
 {
-  this->UIManager = NULL;
-}
-
-//-----------------------------------------------------------------------------
-void qtIntValidator::setUIManager(smtk::extension::qtUIManager* uiman)
-{
-  this->UIManager = uiman;
 }
 
 //-----------------------------------------------------------------------------
 void qtIntValidator::fixup(QString &input) const
 {
-  QLineEdit* editBox =
-    static_cast<QLineEdit*>(this->property("MyWidget").value<void *>());
-  if(!editBox)
-    {
-    return;
-    }
-  ValueItem* item =static_cast<ValueItem*>(
-    editBox->property("AttItemObj").value<void *>());
+  auto item = this->m_item->valueItem();
   if(!item)
     {
     return;
     }
-
-  int elementIdx = editBox->property("ElementIndex").toInt();
   if ( input.length() == 0 )
     {
-   item->unset(elementIdx);
-    this->UIManager->setWidgetColorToInvalid(editBox);
+    this->m_item->unsetValue(this->m_elementIndex);
+    this->m_item->uiManager()->setWidgetColorToInvalid(this->m_lineWidget);
     return;
     }
 
-  const IntItemDefinition* iDef =
+  const IntItemDefinition* dDef =
     dynamic_cast<const IntItemDefinition*>(item->definition().get());
-  if(item->isSet(elementIdx))
+  if(item->isSet(this->m_elementIndex))
     {
-    input = item->valueAsString(elementIdx).c_str();
+    input = item->valueAsString(this->m_elementIndex).c_str();
     }
-  else if(iDef->hasDefault())
+  else if(dDef->hasDefault())
     {
-    input = QString::number(iDef->defaultValue(elementIdx));
+    input = QString::number(dDef->defaultValue(this->m_elementIndex));
     }
   else
     {
-    this->UIManager->setWidgetColorToInvalid(editBox);
+    this->m_item->uiManager()->setWidgetColorToInvalid(this->m_lineWidget);
     }
-}
+ }
 
 //----------------------------------------------------------------------------
 class qtInputsItemInternals
@@ -196,9 +170,38 @@ qtInputsItem::~qtInputsItem()
   delete this->Internals;
 }
 //----------------------------------------------------------------------------
+void qtInputsItem::unsetValue(int elementIndex)
+{
+  auto item = this->valueItem();
+  if (item->isSet(elementIndex))
+  {
+    item->unset(elementIndex);
+    emit modified();
+    this->baseView()->valueChanged(item);
+ }
+}
+//----------------------------------------------------------------------------
+bool qtInputsItem::setDiscreteValue(int elementIndex, int discreteValIndex)
+{
+  auto item = this->valueItem();
+  if (item->setDiscreteIndex(elementIndex, discreteValIndex))
+  {
+    emit this->modified();
+    this->baseView()->valueChanged(item);
+    return true;
+  }
+  return false;
+}
+//----------------------------------------------------------------------------
 void qtInputsItem::setLabelVisible(bool visible)
 {
   this->Internals->theLabel->setVisible(visible);
+}
+
+//----------------------------------------------------------------------------
+smtk::attribute::ValueItemPtr qtInputsItem::valueItem()
+{
+  return dynamic_pointer_cast<ValueItem>(this->getObject());
 }
 
 //----------------------------------------------------------------------------
@@ -228,7 +231,7 @@ void qtInputsItem::updateItemData()
 //----------------------------------------------------------------------------
 void qtInputsItem::addInputEditor(int i)
 {
-  auto item =dynamic_pointer_cast<ValueItem>(this->getObject());
+  auto item = this->valueItem();
   if(!item)
     {
     return;
@@ -247,7 +250,7 @@ void qtInputsItem::addInputEditor(int i)
     childLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     }
 
-  QWidget* editBox = this->createInputWidget(item, i, childLayout);
+  QWidget* editBox = this->createInputWidget(i, childLayout);
   if(!editBox)
     {
     return;
@@ -320,7 +323,7 @@ void qtInputsItem::addInputEditor(int i)
 //----------------------------------------------------------------------------
 void qtInputsItem::loadInputValues()
 {
-  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
+  smtk::attribute::ValueItemPtr item = this->valueItem();
   if(!item)
     {
     return;
@@ -361,7 +364,7 @@ void qtInputsItem::loadInputValues()
 void qtInputsItem::updateUI()
 {
   //smtk::attribute::ItemPtr dataObj = this->getObject();
-  smtk::attribute::ValueItemPtr dataObj =dynamic_pointer_cast<ValueItem>(this->getObject());
+  smtk::attribute::ValueItemPtr dataObj = this->valueItem();
   if(!dataObj || !this->passAdvancedCheck() || (this->baseView() &&
     !this->baseView()->uiManager()->passItemCategoryCheck(
       dataObj->definition())))
@@ -393,18 +396,17 @@ void qtInputsItem::updateUI()
       this, SLOT(setOutputOptional(int)));
     labelLayout->addWidget(optionalCheck);
     }
-  smtk::attribute::ValueItemPtr item = dynamic_pointer_cast<ValueItem>(dataObj);
   const ValueItemDefinition *itemDef =
     dynamic_cast<const ValueItemDefinition*>(dataObj->definition().get());
 
   QString labelText;
-  if(!item->label().empty())
+  if(!dataObj->label().empty())
     {
-    labelText = item->label().c_str();
+    labelText = dataObj->label().c_str();
     }
   else
     {
-    labelText = item->name().c_str();
+    labelText = dataObj->name().c_str();
     }
   QLabel* label = new QLabel(labelText, this->Widget);
   label->setSizePolicy(sizeFixedPolicy);
@@ -462,7 +464,7 @@ void qtInputsItem::updateUI()
 //----------------------------------------------------------------------------
 void qtInputsItem::setOutputOptional(int state)
 {
-  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
+  smtk::attribute::ValueItemPtr item = this->valueItem();
   if(!item)
     {
     return;
@@ -496,14 +498,17 @@ void qtInputsItem::setOutputOptional(int state)
     {
     this->getObject()->setIsEnabled(enable);
     if(this->baseView())
+      {
       this->baseView()->valueChanged(this->getObject());
+      }
+    emit this->modified();
     }
 }
 
 //----------------------------------------------------------------------------
 void qtInputsItem::onAddNewValue()
 {
-  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
+  smtk::attribute::ValueItemPtr item = this->valueItem();
   if(!item)
     {
     return;
@@ -514,6 +519,7 @@ void qtInputsItem::onAddNewValue()
 //      this->Internals->EntryFrame->layout());
     this->addInputEditor(static_cast<int>(item->numberOfValues()) - 1);
     }
+  emit this->modified();
 }
 
 //----------------------------------------------------------------------------
@@ -527,7 +533,7 @@ void qtInputsItem::onRemoveValue()
     }
 
   int gIdx = this->Internals->MinusButtonIndices.indexOf(minusButton);//minusButton->property("SubgroupIndex").toInt();
-  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
+  smtk::attribute::ValueItemPtr item = this->valueItem();
   if(!item || gIdx < 0 || gIdx >= static_cast<int>(item->numberOfValues()))
     {
     return;
@@ -573,12 +579,13 @@ void qtInputsItem::onRemoveValue()
       break;
     }
   this->updateExtensibleState();
+  emit this->modified();
 }
 
 //----------------------------------------------------------------------------
 void qtInputsItem::updateExtensibleState()
 {
-  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
+  smtk::attribute::ValueItemPtr item = this->valueItem();
   if(!item || !item->isExtensible())
     {
     return;
@@ -598,7 +605,7 @@ void qtInputsItem::updateExtensibleState()
 //----------------------------------------------------------------------------
 void qtInputsItem::clearChildWidgets()
 {
-  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
+  smtk::attribute::ValueItemPtr item = this->valueItem();
   if(!item)
     {
     return;
@@ -635,27 +642,24 @@ void qtInputsItem::clearChildWidgets()
   this->Internals->ChildrenMap.clear();
 }
 //----------------------------------------------------------------------------
-QWidget* qtInputsItem::createInputWidget(smtk::attribute::ItemPtr attitem,
-					 int elementIdx, QLayout* childLayout)
+QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
 {
-  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(attitem);
+  smtk::attribute::ValueItemPtr item = this->valueItem();
   if(!item)
     {
     return NULL;
     }
 
   return (item->allowsExpressions()  ?
-	  this->createExpressionRefWidget(item,elementIdx) :
+	  this->createExpressionRefWidget(elementIdx) :
     (item->isDiscrete() ?
-     (new qtDiscreteValueEditor(item, elementIdx, this->Widget,
-				this->baseView(), childLayout)) :
-     this->createEditBox(item,elementIdx,this->Widget)));
+     (new qtDiscreteValueEditor(this, elementIdx, childLayout)) :
+     this->createEditBox(elementIdx,this->Widget)));
 }
 //----------------------------------------------------------------------------
-QWidget* qtInputsItem::createExpressionRefWidget(smtk::attribute::ItemPtr attitem,
-						 int elementIdx)
+QWidget* qtInputsItem::createExpressionRefWidget(int elementIdx)
 {
-  smtk::attribute::ValueItemPtr inputitem =dynamic_pointer_cast<ValueItem>(attitem);
+  smtk::attribute::ValueItemPtr inputitem = this->valueItem();
   if(!inputitem)
     {
     return NULL;
@@ -673,14 +677,10 @@ QWidget* qtInputsItem::createExpressionRefWidget(smtk::attribute::ItemPtr attite
   funCheck->setToolTip("Switch between a constant value or function instance");
   QVariant vdata(elementIdx);
   funCheck->setProperty("ElementIndex", vdata);
-  QVariant vobject;
-  vobject.setValue(static_cast<void*>(attitem.get()));
-  funCheck->setProperty("AttItemObj", vobject);
 
   // create combobox for expression reference
   QComboBox* combo = new QComboBox(checkFrame);
   combo->setProperty("ElementIndex", vdata);
-  combo->setProperty("AttItemObj", vobject);
   QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
     this, SLOT(onExpressionReferenceChanged()), Qt::QueuedConnection);
 
@@ -698,7 +698,7 @@ QWidget* qtInputsItem::createExpressionRefWidget(smtk::attribute::ItemPtr attite
   funCheck->setEnabled(result.size() > 0);
 
   // create line edit for expression which is a const value
-  QWidget* valeditor = this->createEditBox(attitem, elementIdx, checkFrame);
+  QWidget* valeditor = this->createEditBox(elementIdx, checkFrame);
 
   mainlayout->addWidget(funCheck);
   mainlayout->addWidget(valeditor);
@@ -730,8 +730,8 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
     }
 
   int elementIdx = funCheck->property("ElementIndex").toInt();
-  ValueItem* inputitem =static_cast<ValueItem*>(
-    funCheck->property("AttItemObj").value<void *>());
+  auto inputitem = this->valueItem();
+  System *lAttSystem = inputitem->attribute()->system();
   if(!inputitem)
     {
     return;
@@ -753,11 +753,10 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
     const ValueItemDefinition *valItemDef =
       dynamic_cast<const ValueItemDefinition*>(inputitem->definition().get());
     smtk::attribute::DefinitionPtr attDef = valItemDef->expressionDefinition();
-    QList<QString> attNames;
+    QStringList attNames;
     if(attDef)
       {
       std::vector<smtk::attribute::AttributePtr> result;
-      System *lAttSystem = attDef->system();
       lAttSystem->findAttributes(attDef, result);
       std::vector<smtk::attribute::AttributePtr>::iterator it;
       for (it=result.begin(); it!=result.end(); ++it)
@@ -765,7 +764,10 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
         attNames.push_back((*it)->name().c_str());
         }
       if(attNames.count() > 0)
+        {
+        attNames.sort();
         combo->addItems(attNames);
+        }
       }
 
     int setIndex = -1;
@@ -774,14 +776,56 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
       smtk::attribute::RefItemPtr item =inputitem->expressionReference(elementIdx);
       if(item && item->definition().get())
         {
-        if (item->isSet(elementIdx))
-          {
-          setIndex = attNames.indexOf(item->valueAsString(elementIdx).c_str());
-          }
+        setIndex = attNames.indexOf(item->valueAsString(elementIdx).c_str());
+        }
+      else
+        {
+        // Not pointing to valid item - reset it
+        this->unsetValue(elementIdx);
         }
       }
+    else
+      {
+      // Did the user have a previously set expression?
+      QVariant prevExpression;
+      prevExpression = combo->property("PreviousValue");
+      if (prevExpression.isValid())
+        {
+        QString expName = prevExpression.toString();
+        AttributePtr attPtr =
+           lAttSystem->findAttribute(expName.toStdString());
+        if (attPtr)
+          {
+          setIndex = attNames.indexOf(expName);
+          inputitem->setExpression(elementIdx, attPtr);
+          emit this->modified();
+          }
+        else
+          {
+           this->unsetValue(elementIdx);
+          }
+        }
+      else if (inputitem->isSet(elementIdx))
+      {
+      this->unsetValue(elementIdx);
+      }
+    }
     combo->setCurrentIndex(setIndex);
     combo->blockSignals(false);
+    }
+  else 
+    {
+    // OK - so now we need to deal with going from an expression to 
+    // to a constant - First , was the item an expression?  If so 
+    // we want to save the value in case they change their minds later
+    if (inputitem->isExpression(elementIdx))
+      {
+      smtk::attribute::RefItemPtr item =inputitem->expressionReference(elementIdx);
+      QVariant prevExpression(item->valueAsString(elementIdx).c_str());
+      combo->setProperty("PreviousValue", prevExpression);
+      }
+    // Next - tell the edit box to update the item
+    this->onInputValueChanged(funcEditor);
     }
 
   funcEditor->setVisible(!checkstate);
@@ -798,8 +842,7 @@ void qtInputsItem::onExpressionReferenceChanged()
     }
   int curIdx = comboBox->currentIndex();
   int elementIdx = comboBox->property("ElementIndex").toInt();
-  ValueItem* inputitem =static_cast<ValueItem*>(
-    comboBox->property("AttItemObj").value<void *>());
+  auto inputitem = this->valueItem();
   if(!inputitem)
     {
     return;
@@ -836,20 +879,19 @@ void qtInputsItem::onExpressionReferenceChanged()
     inputitem->unset(elementIdx);
     }
 
-  qtBaseView* bview =static_cast<qtBaseView*>(
-    comboBox->property("QtViewObj").value<void *>());
+  qtBaseView* bview = this->baseView();
   if(bview)
     {
     bview->valueChanged(inputitem->shared_from_this());
     }
+  emit this->modified();
 }
 
 //----------------------------------------------------------------------------
-QWidget* qtInputsItem::createEditBox(smtk::attribute::ItemPtr attitem,int elementIdx,
-				    QWidget* pWidget)
+QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
 {
-  auto item =dynamic_pointer_cast<ValueItem>(attitem);
-  qtUIManager *uimanager = this->baseView()->uiManager();
+  auto item = this->valueItem();
+  qtUIManager *uimanager = this->uiManager();
   if(!item)
     {
     return NULL;
@@ -863,6 +905,7 @@ QWidget* qtInputsItem::createEditBox(smtk::attribute::ItemPtr attitem,int elemen
   if (!item->isSet(elementIdx) && item->hasDefault())
     {
       item->setToDefault(elementIdx);
+      emit this->modified();
     }
 
   switch (item->type())
@@ -872,9 +915,8 @@ QWidget* qtInputsItem::createEditBox(smtk::attribute::ItemPtr attitem,int elemen
       QLineEdit* editBox = new QLineEdit(pWidget);
       const DoubleItemDefinition *dDef =
         dynamic_cast<const DoubleItemDefinition*>(item->definition().get());
-      qtDoubleValidator *validator = new qtDoubleValidator(pWidget);
+      qtDoubleValidator *validator = new qtDoubleValidator(this, elementIdx, editBox, pWidget);
 
-      validator->setUIManager(uimanager);
       editBox->setValidator(validator);
       editBox->setFixedWidth(100);
       double value=smtk_DOUBLE_MIN;
@@ -926,9 +968,6 @@ QWidget* qtInputsItem::createEditBox(smtk::attribute::ItemPtr attitem,int elemen
         editBox->setText(item->valueAsString(elementIdx).c_str());
         }
 
-      QVariant tvdata;
-      tvdata.setValue(static_cast<void*>(editBox));
-      validator->setProperty("MyWidget", tvdata);
       inputWidget = editBox;
       break;
       }
@@ -937,8 +976,7 @@ QWidget* qtInputsItem::createEditBox(smtk::attribute::ItemPtr attitem,int elemen
       QLineEdit* editBox = new QLineEdit(pWidget);
       const IntItemDefinition *iDef =
         dynamic_cast<const IntItemDefinition*>(item->definition().get());
-      qtIntValidator *validator = new qtIntValidator(pWidget);
-      validator->setUIManager(uimanager);
+      qtIntValidator *validator = new qtIntValidator(this, elementIdx, editBox, pWidget);
       editBox->setValidator(validator);
       editBox->setFixedWidth(100);
 
@@ -975,9 +1013,6 @@ QWidget* qtInputsItem::createEditBox(smtk::attribute::ItemPtr attitem,int elemen
         {
         editBox->setText(item->valueAsString(elementIdx).c_str());
         }
-      QVariant tvdata;
-      tvdata.setValue(static_cast<void*>(editBox));
-      validator->setProperty("MyWidget", tvdata);
       inputWidget = editBox;
       break;
       }
@@ -1031,14 +1066,7 @@ QWidget* qtInputsItem::createEditBox(smtk::attribute::ItemPtr attitem,int elemen
     }
 
   inputWidget->setProperty("ElementIndex", vdata);
-  QVariant vobject;
-  vobject.setValue(static_cast<void*>(attitem.get()));
-  inputWidget->setProperty("AttItemObj", vobject);
-  //    inputWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-
-  QVariant viewobject;
-  viewobject.setValue(static_cast<void*>(this->baseView()));
-  inputWidget->setProperty("QtViewObj", viewobject);
+ 
   // Lets determine the item's state
   if (!item->isSet(elementIdx))
     {
@@ -1119,8 +1147,7 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
     {
     inputBox = textBox;
     }
-  ValueItem* rawitem =static_cast<ValueItem*>(
-    inputBox->property("AttItemObj").value<void *>());
+  auto rawitem = this->valueItem();
   if(!rawitem)
     {
     return;
@@ -1135,19 +1162,23 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
     {
     if(rawitem->type()==smtk::attribute::Item::DOUBLE)
       {
-      DoubleItem *ditem = dynamic_cast<DoubleItem *>(rawitem);
+      auto ditem = dynamic_pointer_cast<DoubleItem>(rawitem);
       double val = ditem->value(elementIdx);
-      if(!(rawitem->isSet(elementIdx)) || val != editBox->text().toDouble())
+      if((rawitem->isExpression(elementIdx) || 
+          !rawitem->isSet(elementIdx)) || 
+           val != editBox->text().toDouble())
         {
-	ditem->setValue(elementIdx, editBox->text().toDouble());
+	      ditem->setValue(elementIdx, editBox->text().toDouble());
         valChanged = true;
         }
       }
     else if(rawitem->type()==smtk::attribute::Item::INT)
       {
-      IntItem *iitem = dynamic_cast<IntItem *>(rawitem);
+      auto iitem = dynamic_pointer_cast<IntItem>(rawitem);
       int val = iitem->value(elementIdx);
-      if(!(rawitem->isSet(elementIdx)) || val != editBox->text().toInt())
+      if((rawitem->isExpression(elementIdx) ||
+          !rawitem->isSet(elementIdx)) ||
+           val != editBox->text().toInt())
         {
         iitem->setValue(elementIdx, editBox->text().toInt());
         valChanged = true;
@@ -1155,9 +1186,11 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
       }
     else if(rawitem->type()==smtk::attribute::Item::STRING)
       {
-      StringItem *sitem = dynamic_cast<StringItem *>(rawitem);
+      auto sitem = dynamic_pointer_cast<StringItem>(rawitem);
       std::string val = sitem->value(elementIdx);
-      if(!(rawitem->isSet(elementIdx)) || val != editBox->text().toStdString())
+      if((rawitem->isExpression(elementIdx) ||
+          !rawitem->isSet(elementIdx)) ||
+          val != editBox->text().toStdString())
         {
         sitem->setValue(elementIdx, editBox->text().toStdString());
         valChanged = true;
@@ -1172,31 +1205,49 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
   else if(textBox && !textBox->toPlainText().isEmpty() &&
      rawitem->type()==smtk::attribute::Item::STRING)
     {
-    StringItem *sitem = dynamic_cast<StringItem *>(rawitem);
+    auto sitem = dynamic_pointer_cast<StringItem>(rawitem);
     std::string val = sitem->value(elementIdx);
-    if(!(rawitem->isSet(elementIdx)) || val != textBox->toPlainText().toStdString())
+    if((rawitem->isExpression(elementIdx) || !rawitem->isSet(elementIdx))
+      || val != textBox->toPlainText().toStdString())
       {
       sitem->setValue(elementIdx, textBox->toPlainText().toStdString());
       valChanged = true;
       }
     }
-  else
+  else 
     {
-    rawitem->unset(elementIdx);
+    // OK so the widget is empty - do we have to unset the item?
+    if(rawitem->isSet(elementIdx))
+      {
+      rawitem->unset(elementIdx);
+      valChanged = true;    
+      }
     isInvalid = true;
-    valChanged = true;
     }
   // Lets determine if the item is set to the default value -
   isDefault = rawitem->isUsingDefault(elementIdx);
   isInvalid = !rawitem->isSet(elementIdx);
-  qtBaseView* bview =static_cast<qtBaseView*>(
-    inputBox->property("QtViewObj").value<void *>());
-  if(bview && valChanged)
+  qtBaseView* bview = this->baseView();
+  if(valChanged)
     {
-    bview->valueChanged(rawitem->shared_from_this());
+    if (bview != NULL)
+      {
+      bview->valueChanged(rawitem->shared_from_this());
+      }
+    emit this->modified();
     }
-  qtUIManager *uimanager = this->baseView()->uiManager();
-  isDefault ? uimanager->setWidgetColorToDefault(inputBox) :
-    (isInvalid ? uimanager->setWidgetColorToInvalid(inputBox) :
-     uimanager->setWidgetColorToNormal(inputBox));
+  if (bview != NULL)
+    {
+    qtUIManager *uimanager = bview->uiManager();
+    isDefault ? uimanager->setWidgetColorToDefault(inputBox) :
+       (isInvalid ? uimanager->setWidgetColorToInvalid(inputBox) :
+        uimanager->setWidgetColorToNormal(inputBox));
+    }
 }
+//----------------------------------------------------------------------------
+void qtInputsItem::onChildItemModified()
+{
+  emit this->modified();
+}
+
+

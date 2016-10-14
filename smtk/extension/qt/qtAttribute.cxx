@@ -141,6 +141,8 @@ void qtAttribute::addItem(qtItem* child)
   if(!this->m_internals->m_items.contains(child))
     {
     this->m_internals->m_items.append(child);
+    // When the item is modified so is the attribute that uses it
+    connect(child, SIGNAL(modified()), this, SLOT(onItemModified()));
     }
 }
 
@@ -289,7 +291,9 @@ static void cleanupItemFactory()
 void qtAttribute::setItemWidgetFactory(qtAttributeItemWidgetFactory* f)
 {
   if (f == qtAttribute::s_factory)
+    {
     return;
+    }
 
   delete qtAttribute::s_factory;
   qtAttribute::s_factory = f;
@@ -299,6 +303,24 @@ void qtAttribute::setItemWidgetFactory(qtAttributeItemWidgetFactory* f)
     once = true;
     atexit(cleanupItemFactory);
     }
+}
+
+/* Slot for properly emitting signals when an attribute's item is modified */
+void qtAttribute::onItemModified()
+{
+  // are we here due to a signal?
+  QObject *sobject = this->sender();
+  if (sobject == NULL)
+    {
+    return;
+    }
+  auto iobject = qobject_cast<smtk::extension::qtItem*>(sobject);
+  if (iobject == NULL)
+    {
+    return;
+    }
+  emit this->itemModified(iobject);
+  emit this->modified();
 }
 
 /// Return the factory currently being used to create widgets for child items.

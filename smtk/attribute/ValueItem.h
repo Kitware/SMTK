@@ -43,7 +43,7 @@ namespace smtk
 
       bool allowsExpressions() const;
       bool isExpression(std::size_t elementIndex=0) const
-      { return static_cast<bool>(this->expression(elementIndex));}
+      { return (!!this->expression(elementIndex));}
       smtk::attribute::AttributePtr expression(std::size_t elementIndex=0) const;
       bool setExpression(smtk::attribute::AttributePtr exp)
       {return this->setExpression(0, exp);}
@@ -54,9 +54,10 @@ namespace smtk
       int discreteIndex(std::size_t elementIndex=0) const
       {return this->m_discreteIndices[elementIndex];}
       bool isDiscrete() const;
-
+      bool isDiscreteIndexValid(int value) const;
       bool setDiscreteIndex(int value)
       {return this->setDiscreteIndex(0, value);}
+      // Returns true if value is a valid index - else it returns false
       bool setDiscreteIndex(std::size_t elementIndex, int value);
       // Reset returns the item to its initial state.
       //If the item is of fixed size, then it's values  to their initial state.

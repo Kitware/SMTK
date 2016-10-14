@@ -64,6 +64,44 @@ qtMeshItem::~qtMeshItem()
 }
 
 //----------------------------------------------------------------------------
+smtk::attribute::MeshItemPtr qtMeshItem::meshItem()
+{
+  return dynamic_pointer_cast<MeshItem>(this->getObject());
+}
+
+//----------------------------------------------------------------------------
+bool qtMeshItem::add(const smtk::mesh::MeshSet& val)
+{
+  if (this->meshItem()->appendValue(val))
+    {
+    emit this->modified();
+    return true;
+    }
+  return false;
+}
+
+//----------------------------------------------------------------------------
+bool qtMeshItem::remove(const smtk::mesh::MeshSet& val)
+{
+  auto item = this->meshItem();
+  auto idx = item->find(val);
+  if(idx < 0)
+    {
+    return false;
+    }
+
+  if(item->isExtensible())
+    {
+    item->removeValue(idx);
+    }
+  else
+    {
+    item->unset(idx);
+    }
+  emit this->modified();
+  return true;
+}
+//----------------------------------------------------------------------------
 void qtMeshItem::setLabelVisible(bool visible)
 {
   if (this->Internals->theLabel)
@@ -194,6 +232,7 @@ void qtMeshItem::setOutputOptional(int state)
   if(enable != this->getObject()->isEnabled())
     {
     this->getObject()->setIsEnabled(enable);
+    emit this->modified();
     if(this->baseView())
       {
       this->baseView()->valueChanged(this->getObject());
@@ -232,7 +271,7 @@ void qtMeshItem::loadAssociatedEntities()
     }
 
   qtMeshItemCombo* editBox = new qtMeshItemCombo(
-    this->getObject(), this->Widget, strExt);
+    this, this->Widget, strExt);
   editBox->setToolTip("Associate meshes");
   editBox->setModel(new QStandardItemModel());
   editBox->setItemDelegate(

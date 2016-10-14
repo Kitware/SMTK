@@ -24,13 +24,14 @@ namespace smtk
 {
   namespace extension
   {
+    class qtInputsItem;
+
     class SMTKQTEXT_EXPORT qtDiscreteValueEditor : public QWidget
     {
       Q_OBJECT
 
     public:
-      qtDiscreteValueEditor(smtk::attribute::ItemPtr, int elementIdx,
-        QWidget* parent, qtBaseView* bview, QLayout* childLayout);
+      qtDiscreteValueEditor(qtInputsItem *item, int elementIdx, QLayout* childLayout);
       virtual ~qtDiscreteValueEditor();
       virtual QSize sizeHint() const;
 

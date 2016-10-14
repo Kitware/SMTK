@@ -77,6 +77,15 @@ qtBaseView* qtItem::baseView()
 {
   return this->Internals->BaseView;
 }
+//----------------------------------------------------------------------------
+qtUIManager* qtItem::uiManager() const
+{
+  if (this->Internals->BaseView) 
+    {
+    return this->Internals->BaseView->uiManager();
+   }
+  return NULL;
+}
 
 //----------------------------------------------------------------------------
 void qtItem::updateItemData()

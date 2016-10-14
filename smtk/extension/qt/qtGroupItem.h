@@ -40,6 +40,7 @@ namespace smtk
       virtual void onAddSubGroup();
       virtual void onRemoveSubGroup();
       virtual void onChildWidgetSizeChanged();
+      virtual void onChildItemModified();
 
     protected:
       virtual void createWidget();
