@@ -124,12 +124,15 @@ struct AddBoundElements
           // and add the new id as a child of these sets.
           for (auto&& shell : activeShells)
             {
-            smtk::mesh::MeshSet tmp =
-              this->m_topology->m_collection->createMesh(
-                smtk::mesh::set_difference(shell->first.cells(), m.cells()));
-            this->m_topology->m_collection->removeMeshes(shell->first);
-            shell->first = tmp;
-            shell->second->m_children.push_back(id);
+            if (activeShells.size() > 1)
+              {
+              smtk::mesh::MeshSet tmp =
+                this->m_topology->m_collection->createMesh(
+                  smtk::mesh::set_difference(shell->first.cells(), m.cells()));
+              this->m_topology->m_collection->removeMeshes(shell->first);
+              shell->first = tmp;
+              }
+           shell->second->m_children.push_back(id);
             }
 
           // We then register the intersection witih the new id
@@ -222,8 +225,10 @@ Topology::Topology(smtk::mesh::CollectionPtr collection) :
     {
     std::size_t count[4] = {0,0,0,0};
     for (auto&& i : this->m_elements)
+      {
       if (i.second.m_dimension >= 0 && i.second.m_dimension <= 3)
         count[i.second.m_dimension]++;
+      }
 
     std::cout<<count[3]<<" volumes"<<std::endl;
     std::cout<<count[2]<<" faces"<<std::endl;
