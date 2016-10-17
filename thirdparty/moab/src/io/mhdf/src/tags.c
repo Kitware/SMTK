@@ -219,7 +219,7 @@ int store_tag_val_in_attrib( hid_t tag_id,
   if (value_size == 1) 
     write_type = type_id;
   else if (H5Tget_class(type_id) == H5T_OPAQUE) {
-    write_type = H5Tcreate( H5T_OPAQUE, abs(value_size) );
+    write_type = H5Tcreate( H5T_OPAQUE, value_size );
   }
   else {
 #if defined(H5Tarray_create_vers) && H5Tarray_create_vers > 1  
