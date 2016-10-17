@@ -52,6 +52,8 @@ namespace smtk
   namespace extension
   {
     class qtBaseView;
+    class qtUIManager;
+
     class SMTKQTEXT_EXPORT qtItem : public QObject
     {
       Q_OBJECT
@@ -61,6 +63,8 @@ namespace smtk
       virtual ~qtItem();
 
       smtk::attribute::ItemPtr getObject();
+      qtUIManager* uiManager() const;
+
       QWidget* widget()
       {return this->Widget;}
       QWidget* parentWidget();
@@ -79,6 +83,8 @@ namespace smtk
 
     signals:
        void widgetSizeChanged();
+       // Signal indicates that the underlying item has been modified
+       void modified();
 
     protected slots:
       virtual void updateItemData();

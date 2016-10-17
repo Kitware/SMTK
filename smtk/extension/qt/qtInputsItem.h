@@ -22,6 +22,7 @@
 class qtInputsItemInternals;
 class QBoxLayout;
 class QLayout;
+class QLineEdit;
 
 namespace smtk
 {
@@ -33,11 +34,16 @@ namespace smtk
     {
       Q_OBJECT
 
+    friend class qtDiscreteValueEditor;
+
     public:
       qtInputsItem(smtk::attribute::ItemPtr, QWidget* p,
         qtBaseView* bview, Qt::Orientation enumOrient = Qt::Horizontal);
       virtual ~qtInputsItem();
       virtual void setLabelVisible(bool);
+      smtk::attribute::ValueItemPtr valueItem();
+      void unsetValue(int elementIndex);
+      bool setDiscreteValue(int elementIndex, int discreteValIndex);
 
     public slots:
       void setOutputOptional(int);
@@ -52,6 +58,7 @@ namespace smtk
       virtual void onAddNewValue();
       virtual void onRemoveValue();
       void displayExpressionWidget(bool checkstate);
+      virtual void onChildItemModified();
 
     protected:
       virtual void createWidget();
@@ -60,12 +67,9 @@ namespace smtk
       virtual void addInputEditor(int i);
       virtual void updateExtensibleState();
       virtual void clearChildWidgets();
-      virtual QWidget* createInputWidget(smtk::attribute::ItemPtr,
-					 int elementIdx, QLayout* childLayout);
-      virtual QWidget* createEditBox(smtk::attribute::ItemPtr,
-				     int elementIdx, QWidget* pWidget);
-      virtual QWidget* createExpressionRefWidget(smtk::attribute::ItemPtr,
-						 int elementIdx);
+      virtual QWidget* createInputWidget(int elementIdx, QLayout* childLayout);
+      virtual QWidget* createEditBox(int elementIdx, QWidget* pWidget);
+      virtual QWidget* createExpressionRefWidget(int elementIdx);
 
 
     private:
@@ -79,12 +83,14 @@ namespace smtk
     {
       Q_OBJECT
     public:
-        qtDoubleValidator(QObject * parent);
+        qtDoubleValidator(qtInputsItem *item, int elementIndex,
+                          QLineEdit * lineEdit, QObject * parent);
         virtual void fixup(QString &input) const;
 
-        void setUIManager(qtUIManager* uiman);
-    private:
-      qtUIManager* UIManager;
+     private:
+      qtInputsItem *m_item;
+      int m_elementIndex;
+      QLineEdit *m_lineWidget;
     };
 
     //A sublcass of QIntValidator to fixup input outside of range
@@ -92,13 +98,15 @@ namespace smtk
       {
       Q_OBJECT
       public:
-        qtIntValidator(QObject * parent);
+        qtIntValidator(qtInputsItem *item, int elementIndex,
+                       QLineEdit * lineEdit, QObject *parent);
         virtual void fixup(QString &input) const;
 
-        void setUIManager(qtUIManager* uiman);
 
       private:
-        qtUIManager* UIManager;
+        qtInputsItem *m_item;
+        int m_elementIndex;
+        QLineEdit *m_lineWidget;
       };
 
   }; // namespace extension

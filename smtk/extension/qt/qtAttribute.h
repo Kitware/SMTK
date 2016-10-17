@@ -59,13 +59,20 @@ namespace smtk {
     public slots:
       virtual void onRequestEntityAssociation();
 
-    protected slots:
+    signals:
+       // Signal indicates that the underlying item has been modified
+      void modified();
+      void itemModified(qtItem *);
       
+
     protected:
       virtual void createWidget();
 
       QPointer<QWidget> m_widget;
       static qtAttributeItemWidgetFactory* s_factory;
+
+    protected slots:
+      void onItemModified();
 
     private:
       qtAttributeInternals* m_internals;

@@ -15,6 +15,8 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/System.h"
+#include "smtk/extension/qt/qtMeshItem.h"
+#include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
@@ -106,7 +108,7 @@ void qtCheckItemComboBox::showPopup()
 
 //-----------------------------------------------------------------------------
 qtModelEntityItemCombo::qtModelEntityItemCombo(
-  smtk::attribute::ItemPtr entitem, QWidget * inParent, const QString& displayExt)
+  qtModelEntityItem *entitem, QWidget * inParent, const QString& displayExt)
 : qtCheckItemComboBox(inParent, displayExt), m_ModelEntityItem(entitem)
 {
   this->setMinimumWidth(80);
@@ -120,18 +122,10 @@ void qtModelEntityItemCombo::init()
   this->qtCheckItemComboBox::init();
   this->model()->disconnect();
 
-  if(!this->m_ModelEntityItem.lock())
-    {
-    this->blockSignals(false);
-    return;
-    }
-
-  ModelEntityItemPtr ModelEntityItem =
-    smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItem>(
-    this->m_ModelEntityItem.lock());
+  ModelEntityItemPtr modelEntityItem = this->m_ModelEntityItem->modelEntityItem();
   const ModelEntityItemDefinition *itemDef =
-    static_cast<const ModelEntityItemDefinition *>(ModelEntityItem->definition().get());
-  System *attSystem = ModelEntityItem->attribute()->system();
+    static_cast<const ModelEntityItemDefinition *>(modelEntityItem->definition().get());
+  System *attSystem = modelEntityItem->attribute()->system();
   smtk::model::ManagerPtr modelManager = attSystem->refModelManager();
 
   QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
@@ -166,7 +160,7 @@ void qtModelEntityItemCombo::init()
         //item->setData(this->Internals->AttSelections[keyName], Qt::CheckStateRole);
         item->setData(Qt::Unchecked, Qt::CheckStateRole);
         item->setCheckable(true);
-        item->setCheckState(ModelEntityItem->has(entref) ? Qt::Checked : Qt::Unchecked);
+        item->setCheckState(modelEntityItem->has(entref) ? Qt::Checked : Qt::Unchecked);
 
         item->setData(entref.entity().toString().c_str(), Qt::UserRole);
         itemModel->insertRow(row, item);
@@ -231,51 +225,25 @@ void qtModelEntityItemCombo::itemCheckChanged(
     {
     return;
     }
-  ModelEntityItemPtr ModelEntityItem =
-    smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItem>(
-    this->m_ModelEntityItem.lock());
-  const ModelEntityItemDefinition *itemDef =
-    static_cast<const ModelEntityItemDefinition *>(ModelEntityItem->definition().get());
+  ModelEntityItemPtr modelEntityItem = this->m_ModelEntityItem->modelEntityItem();
   QString entid = item->data(Qt::UserRole).toString();
   if(!entid.isEmpty())
     {
     smtk::model::EntityRef selentityref(
-      ModelEntityItem->attribute()->system()->refModelManager(), entid.toStdString());
+      modelEntityItem->attribute()->system()->refModelManager(), entid.toStdString());
     if(item->checkState() == Qt::Checked)
       {
-      bool success = false;
-      // find an un-set index, and set the value
-      for(std::size_t idx=0;
-        idx < ModelEntityItem->numberOfValues(); ++idx)
+      // see if we can add it to the model item
+      if (!this->m_ModelEntityItem->add(selentityref))
         {
-        if(!ModelEntityItem->value(idx).isValid())
-          {
-          success = ModelEntityItem->setValue(idx, selentityref);
-          break;
-          }
-        }
-
-      if(!success)
-        {
-        success = ModelEntityItem->appendValue(selentityref);
-        if(!success)
-          {
-          this->blockSignals(true);
-          item->setCheckState(Qt::Unchecked);
-          this->blockSignals(false);
-          }
+        this->blockSignals(true);
+        item->setCheckState(Qt::Unchecked);
+        this->blockSignals(false);
         }
       }
     else
       {
-      std::ptrdiff_t idx = ModelEntityItem->find(selentityref);
-      if(idx >=0)
-        {
-        if(itemDef->isExtensible())
-          ModelEntityItem->removeValue(idx);
-        else
-          ModelEntityItem->unset(idx);
-        }
+      this->m_ModelEntityItem->remove(selentityref);
       }
     this->updateText();
     }
@@ -283,7 +251,7 @@ void qtModelEntityItemCombo::itemCheckChanged(
 
 //-----------------------------------------------------------------------------
 qtMeshItemCombo::qtMeshItemCombo(
-  smtk::attribute::ItemPtr entitem, QWidget * inParent, const QString& displayExt)
+  qtMeshItem *entitem, QWidget * inParent, const QString& displayExt)
 : qtCheckItemComboBox(inParent, displayExt), m_MeshItem(entitem)
 {
   this->setMinimumWidth(80);
@@ -297,15 +265,7 @@ void qtMeshItemCombo::init()
   this->qtCheckItemComboBox::init();
   this->model()->disconnect();
 
-  if(!this->m_MeshItem.lock())
-    {
-    this->blockSignals(false);
-    return;
-    }
-
-  MeshItemPtr meshItem =
-    smtk::dynamic_pointer_cast<smtk::attribute::MeshItem>(
-    this->m_MeshItem.lock());
+  MeshItemPtr meshItem = this->m_MeshItem->meshItem();
   System *attSystem = meshItem->attribute()->system();
   smtk::model::ManagerPtr modelManager = attSystem->refModelManager();
 
@@ -434,11 +394,7 @@ void qtMeshItemCombo::itemCheckChanged(
     {
     return;
     }
-  MeshItemPtr meshItem =
-    smtk::dynamic_pointer_cast<smtk::attribute::MeshItem>(
-    this->m_MeshItem.lock());
-  const MeshItemDefinition *itemDef =
-    static_cast<const MeshItemDefinition *>(meshItem->definition().get());
+  MeshItemPtr meshItem = this->m_MeshItem->meshItem();
   smtk::common::UUID collectionid(strcollectionid.toStdString());
   smtk::mesh::CollectionPtr selcollection = meshItem->attribute()->
     system()->refModelManager()->meshes()->collection(collectionid);
@@ -447,39 +403,16 @@ void qtMeshItemCombo::itemCheckChanged(
     smtk::mesh::MeshSet allmeshes = selcollection->meshes();
     if(item->checkState() == Qt::Checked)
       {
-      bool success = false;
-      // find an un-set index, and set the value
-      for(std::size_t idx=0;
-        idx < meshItem->numberOfValues(); ++idx)
+      if (!this->m_MeshItem->add(allmeshes))
         {
-        if(meshItem->value(idx).is_empty())
-          {
-          success = meshItem->setValue(idx, allmeshes);
-          break;
-          }
-        }
-
-      if(!success)
-        {
-        success = meshItem->appendValue(allmeshes);
-        if(!success)
-          {
-          this->blockSignals(true);
-          item->setCheckState(Qt::Unchecked);
-          this->blockSignals(false);
-          }
+        this->blockSignals(true);
+        item->setCheckState(Qt::Unchecked);
+        this->blockSignals(false);
         }
       }
     else
       {
-      std::ptrdiff_t idx = meshItem->find(allmeshes);
-      if(idx >=0)
-        {
-        if(itemDef->isExtensible())
-          meshItem->removeValue(idx);
-        else
-          meshItem->unset(idx);
-        }
+      this->m_MeshItem->remove(allmeshes);
       }
     this->updateText();
     }

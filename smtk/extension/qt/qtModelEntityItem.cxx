@@ -74,6 +74,13 @@ qtModelEntityItem::~qtModelEntityItem()
 {
   delete this->Internals;
 }
+
+//----------------------------------------------------------------------------
+smtk::attribute::ModelEntityItemPtr qtModelEntityItem::modelEntityItem()
+{
+  return dynamic_pointer_cast<ModelEntityItem>(this->getObject());
+}
+
 //----------------------------------------------------------------------------
 void qtModelEntityItem::setLabelVisible(bool visible)
 {
@@ -92,6 +99,39 @@ void qtModelEntityItem::createWidget()
     }
 
   this->updateItemData();
+}
+
+//----------------------------------------------------------------------------
+bool qtModelEntityItem::add(const smtk::model::EntityRef& val)
+{
+  if (this->modelEntityItem()->appendValue(val))
+    {
+    emit this->modified();
+    return true;
+    }
+  return false;
+}
+
+//----------------------------------------------------------------------------
+bool qtModelEntityItem::remove(const smtk::model::EntityRef& val)
+{
+  auto item = this->modelEntityItem();
+  auto idx = item->find(val);
+  if(idx < 0)
+    {
+    return false;
+    }
+
+  if(item->isExtensible())
+    {
+    item->removeValue(idx);
+    }
+  else
+    {
+    item->unset(idx);
+    }
+  emit this->modified();
+  return true;
 }
 
 //----------------------------------------------------------------------------
@@ -128,7 +168,7 @@ void qtModelEntityItem::addEntityAssociationWidget()
       QString::number(def->numberOfRequiredValues())).append(")");
 
   qtModelEntityItemCombo* editBox = new qtModelEntityItemCombo(
-    this->getObject(), this->Widget, strExt);
+    this, this->Widget, strExt);
   editBox->setToolTip("Associate model entities");
   editBox->setModel(new QStandardItemModel());
   editBox->setItemDelegate(
@@ -306,6 +346,7 @@ void qtModelEntityItem::setOutputOptional(int state)
   if(enable != this->getObject()->isEnabled())
     {
     this->getObject()->setIsEnabled(enable);
+    emit this->modified();
     if(this->baseView())
       {
       this->baseView()->valueChanged(this->getObject());
@@ -358,8 +399,7 @@ void qtModelEntityItem::associateEntities(
 //----------------------------------------------------------------------------
 void qtModelEntityItem::clearEntityAssociations()
 {
-  smtk::attribute::ModelEntityItemPtr modEntityItem =
-    dynamic_pointer_cast<ModelEntityItem>(this->getObject());
+  smtk::attribute::ModelEntityItemPtr modEntityItem = this->modelEntityItem();
   if(!modEntityItem)
     {
     return;
@@ -370,19 +410,20 @@ void qtModelEntityItem::clearEntityAssociations()
     {
     this->Internals->EntityItemCombo->init();
     }
+  emit this->modified();
 }
 
 //----------------------------------------------------------------------------
 void qtModelEntityItem::onRequestEntityAssociation()
 {
-  smtk::attribute::ModelEntityItemPtr modEntityItem =
-    dynamic_pointer_cast<ModelEntityItem>(this->getObject());
+  smtk::attribute::ModelEntityItemPtr modEntityItem = this->modelEntityItem();
   if(!modEntityItem)
     {
     return;
     }
 
   emit this->requestEntityAssociation();
+  emit this->modified();
 }
 
 //----------------------------------------------------------------------------

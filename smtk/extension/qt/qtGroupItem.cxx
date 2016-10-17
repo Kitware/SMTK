@@ -137,6 +137,7 @@ void qtGroupItem::setEnabledState(bool checked)
   if(checked != this->getObject()->isEnabled())
     {
     this->getObject()->setIsEnabled(checked);
+    emit this->modified();
     this->baseView()->valueChanged(this->getObject());
     }
 }
@@ -231,6 +232,7 @@ void qtGroupItem::onAddSubGroup()
       this->addSubGroup(subIdx);
       }
     emit this->widgetSizeChanged();
+    emit this->modified();
     }
 }
 
@@ -275,6 +277,7 @@ void qtGroupItem::addSubGroup(int i)
       {
       subGrouplayout->addWidget(childItem->widget());
       itemList.push_back(childItem);
+      connect(childItem, SIGNAL(modified()), this, SLOT(onChildItemModified()));
       }
     }
   this->baseView()->setFixedLabelWidth(currentLen);
@@ -327,6 +330,7 @@ void qtGroupItem::onRemoveSubGroup()
   this->Internals->MinusButtonIndices.removeOne(minusButton);
   delete minusButton;
   this->updateExtensibleState();
+  emit this->modified();
 }
 
 //----------------------------------------------------------------------------
@@ -409,6 +413,7 @@ void qtGroupItem::addItemsToTable(int i)
       connect(childItem, SIGNAL(widgetSizeChanged()),
         this, SLOT(onChildWidgetSizeChanged()));
       added++;
+      connect(childItem, SIGNAL(modified()), this, SLOT(onChildItemModified()));
       }
     }
   QToolButton* minusButton = NULL;
@@ -444,4 +449,10 @@ void qtGroupItem::onChildWidgetSizeChanged()
     this->Internals->ItemsTable->resizeColumnsToContents();
     this->Internals->ItemsTable->resizeRowsToContents();
     }
+}
+
+/* Slot for properly emitting signals when an attribute's item is modified */
+void qtGroupItem::onChildItemModified()
+{
+  emit this->modified();
 }

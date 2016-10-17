@@ -17,6 +17,7 @@
 
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/Exports.h"
+#include "smtk/mesh/MeshSet.h"
 
 class qtMeshItemInternals;
 
@@ -38,6 +39,10 @@ namespace smtk
       virtual ~qtMeshItem();
 
       virtual void setLabelVisible(bool);
+      smtk::attribute::MeshItemPtr meshItem();
+
+      bool add(const smtk::mesh::MeshSet& val);
+      bool remove(const smtk::mesh::MeshSet& val);
 
     public slots:
       void setOutputOptional(int);

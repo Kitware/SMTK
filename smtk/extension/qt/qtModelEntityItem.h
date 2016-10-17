@@ -38,6 +38,10 @@ namespace smtk
       virtual void associateEntities(
           const smtk::model::EntityRefs& selEntityRefs,
           bool resetExisting = true);
+      smtk::attribute::ModelEntityItemPtr modelEntityItem();
+
+      bool add(const smtk::model::EntityRef& val);
+      bool remove(const smtk::model::EntityRef& val);
 
     public slots:
       void setOutputOptional(int);

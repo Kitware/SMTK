@@ -109,11 +109,11 @@ bool ValueItem::isValid() const
       return false;
       }
     // Is this using an expression?
-    if (this->allowsExpressions() && this->m_expressions[i])
-      {
+    if (this->allowsExpressions() && (this->m_expressions[i]->value()!= nullptr))
+      { 
       if (!this->m_expressions[i]->isValid())
         {
-        return false;
+         return false;
         }
       }
     }
@@ -123,7 +123,7 @@ bool ValueItem::isValid() const
     {
     if (!(*it)->isValid())
       {
-      return false;
+       return false;
       }
     }
  return true;
@@ -139,6 +139,17 @@ bool ValueItem::hasDefault() const
     return false;
     }
   return def->hasDefault();
+}
+//----------------------------------------------------------------------------
+bool ValueItem::isDiscreteIndexValid(int value) const
+{
+  const ValueItemDefinition *def =
+    static_cast<const ValueItemDefinition*>(this->m_definition.get());
+  if (!def)
+    {
+    return false;
+    }
+  return def->isDiscreteIndexValid(value);
 }
 //----------------------------------------------------------------------------
 bool ValueItem::isExtensible() const
@@ -187,11 +198,14 @@ bool ValueItem::allowsExpressions() const
 //----------------------------------------------------------------------------
 smtk::attribute::AttributePtr ValueItem::expression(std::size_t element) const
 {
-  const ValueItemDefinition *def =
-    static_cast<const ValueItemDefinition*>(this->m_definition.get());
-  if (def->allowsExpressions())
+  if (this->m_isSet[element])
     {
-    return this->m_expressions[element]->value();
+    const ValueItemDefinition *def =
+      static_cast<const ValueItemDefinition*>(this->m_definition.get());
+    if (def->allowsExpressions())
+      {
+      return this->m_expressions[element]->value();
+      }
     }
   return smtk::attribute::AttributePtr();
 }
@@ -273,6 +287,12 @@ bool ValueItem::setDiscreteIndex(std::size_t element, int index)
     static_cast<const ValueItemDefinition*>(this->m_definition.get());
   if (def->isDiscreteIndexValid(index))
     {
+    // Is this a different value then what is set already?
+    if (this->m_isSet[element] && (this->m_discreteIndices[element] == index))
+      {
+      // Nothing is changed
+      return true;
+      }
     this->m_discreteIndices[element] = index;
     if (def->allowsExpressions())
       {
