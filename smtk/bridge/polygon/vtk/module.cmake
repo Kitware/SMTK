@@ -3,7 +3,6 @@ set (__dependencies)
 # might not exist.
 foreach(target
     vtkRenderingFreeType
-    vtkRenderingMatplotlib
     vtkRenderingOpenGL2
     vtkRenderingVolumeOpenGL2
 )

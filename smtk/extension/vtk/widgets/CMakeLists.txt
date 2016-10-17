@@ -12,7 +12,6 @@ set (__dependencies)
 foreach(target
     vtkInteractionStyle
     vtkRenderingFreeType
-    vtkRenderingMatplotlib
     vtkRenderingOpenGL2
     vtkRenderingVolumeOpenGL2
     vtkRenderingGL2PSOpenGL2
