@@ -28,12 +28,21 @@ namespace smtk {
 
 ExportMesh::ExportMesh()
 {
-  this->IO.push_back( smtk::io::mesh::MeshIOPtr( new mesh::MeshIOXMS() ) );
-  this->IO.push_back( smtk::io::mesh::MeshIOPtr( new mesh::MeshIOMoab() ) );
 }
 
 ExportMesh::~ExportMesh()
 {
+}
+
+std::vector<smtk::io::mesh::MeshIOPtr>& ExportMesh::SupportedIOTypes()
+{
+  static std::vector<smtk::io::mesh::MeshIOPtr> supportedIOTypes;
+  if (supportedIOTypes.empty())
+    {
+    supportedIOTypes.push_back( mesh::MeshIOPtr( new mesh::MeshIOXMS() ) );
+    supportedIOTypes.push_back( mesh::MeshIOPtr( new mesh::MeshIOMoab() ) );
+    }
+  return supportedIOTypes;
 }
 
 bool ExportMesh::operator() (const std::string& filePath,
@@ -44,7 +53,7 @@ bool ExportMesh::operator() (const std::string& filePath,
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
   // Search for an appropriate exporter
-  for (auto&& exporter : this->IO)
+  for (auto&& exporter : smtk::io::ExportMesh::SupportedIOTypes())
     {
     for (auto&& format : exporter->FileFormats())
       {
@@ -70,7 +79,7 @@ bool ExportMesh::operator() (const std::string& filePath,
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
   // Search for an appropriate exporter
-  for (auto&& exporter : this->IO)
+  for (auto&& exporter : smtk::io::ExportMesh::SupportedIOTypes())
     {
     for (auto&& format : exporter->FileFormats())
       {
@@ -79,7 +88,8 @@ bool ExportMesh::operator() (const std::string& filePath,
            format.Extensions.end() )
         {
         // export the collection
-        return exporter->exportMesh(filePath, collection, manager, modelPropertyName);
+        return exporter->exportMesh(filePath, collection, manager,
+                                   modelPropertyName);
         }
       }
     }

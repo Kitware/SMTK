@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/extension/vtkToMesh/VTKDataConverter.h"
+#include "smtk/extension/vtk/io/VTKDataConverter.h"
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
@@ -115,10 +115,10 @@ vtkSmartPointer< vtkUnstructuredGrid > make_MixedVolUGrid()
 void verify_null_polydata()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::extension::vtkToMesh::VTKDataConverter convert(manager);
+  smtk::extension::vtk::io::VTKDataConverter cnvrt;
 
   vtkPolyData* pd = NULL;
-  smtk::mesh::CollectionPtr c = convert(pd);
+  smtk::mesh::CollectionPtr c = cnvrt(pd, manager);
   test( !c, "collection should be invalid for a NULL poly data");
 }
 
@@ -126,9 +126,9 @@ void verify_null_polydata()
 void verify_empty_polydata()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::extension::vtkToMesh::VTKDataConverter convert(manager);
+  smtk::extension::vtk::io::VTKDataConverter cnvrt;
 
-  smtk::mesh::CollectionPtr c = convert( make_EmptyPolyData() );
+  smtk::mesh::CollectionPtr c = cnvrt( make_EmptyPolyData(), manager );
   test( !c, "collection should invalid for empty poly data");
 }
 
@@ -136,10 +136,10 @@ void verify_empty_polydata()
 void verify_tri_polydata()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::extension::vtkToMesh::VTKDataConverter convert(manager);
+  smtk::extension::vtk::io::VTKDataConverter cnvrt;
 
   vtkSmartPointer< vtkPolyData > pd = make_TrianglePolyData();
-  smtk::mesh::CollectionPtr c = convert( pd );
+  smtk::mesh::CollectionPtr c = cnvrt( pd, manager );
   test( c->isValid(), "collection should valid");
   test( c->numberOfMeshes() == 1, "collection should only have a single mesh");
   test( c->cells().size() == static_cast<std::size_t>(pd->GetNumberOfCells()));
@@ -158,10 +158,10 @@ void verify_tri_polydata()
 void verify_tri_ugrid()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::extension::vtkToMesh::VTKDataConverter convert(manager);
+  smtk::extension::vtk::io::VTKDataConverter cnvrt;
 
   vtkSmartPointer< vtkUnstructuredGrid > ug = make_TriangleUGrid();
-  smtk::mesh::CollectionPtr c = convert( ug );
+  smtk::mesh::CollectionPtr c = cnvrt( ug, manager );
   test( c->isValid(), "collection should valid");
   test( c->numberOfMeshes() == 1, "collection should only have a single mesh");
   test( c->cells().size() == static_cast<std::size_t>(ug->GetNumberOfCells()));
@@ -179,10 +179,10 @@ void verify_tri_ugrid()
 void verify_mixed_cell_ugrid()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::extension::vtkToMesh::VTKDataConverter convert(manager);
+  smtk::extension::vtk::io::VTKDataConverter cnvrt;
 
   vtkSmartPointer< vtkUnstructuredGrid > ug = make_MixedVolUGrid();
-  smtk::mesh::CollectionPtr c = convert( ug );
+  smtk::mesh::CollectionPtr c = cnvrt( ug, manager );
 
   std::cout << "number of cells: " << c->cells().size() << std::endl;
   std::cout << "number of cells ug: " <<ug->GetNumberOfCells() << std::endl;

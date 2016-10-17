@@ -35,6 +35,8 @@ public:
 #ifndef SHIBOKEN_SKIP
   WriteMesh& operator=(const WriteMesh&) = delete;
   WriteMesh(const WriteMesh&) = delete;
+
+  static std::vector<smtk::io::mesh::MeshIOPtr>& SupportedIOTypes();
 #endif
 
   bool operator() ( const std::string& filePath,
@@ -42,9 +44,6 @@ public:
                     mesh::Subset subset = mesh::Subset::EntireCollection) const;
   bool operator() ( smtk::mesh::CollectionPtr collection,
                     mesh::Subset subset = mesh::Subset::EntireCollection) const;
-
-  protected:
-  std::vector<smtk::io::mesh::MeshIOPtr> IO;
 };
 
 SMTKCORE_EXPORT bool

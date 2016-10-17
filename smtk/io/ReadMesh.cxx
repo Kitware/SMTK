@@ -30,12 +30,21 @@ namespace smtk {
 
 ReadMesh::ReadMesh()
 {
-  this->IO.push_back( smtk::io::mesh::MeshIOPtr( new mesh::MeshIOXMS() ) );
-  this->IO.push_back( smtk::io::mesh::MeshIOPtr( new mesh::MeshIOMoab() ) );
 }
 
 ReadMesh::~ReadMesh()
 {
+}
+
+std::vector<smtk::io::mesh::MeshIOPtr>& ReadMesh::SupportedIOTypes()
+{
+  static std::vector<smtk::io::mesh::MeshIOPtr> supportedIOTypes;
+  if (supportedIOTypes.empty())
+    {
+    supportedIOTypes.push_back( mesh::MeshIOPtr( new mesh::MeshIOXMS() ) );
+    supportedIOTypes.push_back( mesh::MeshIOPtr( new mesh::MeshIOMoab() ) );
+    }
+  return supportedIOTypes;
 }
 
 smtk::mesh::CollectionPtr
@@ -50,7 +59,7 @@ ReadMesh::operator() (const std::string& filePath,
   smtk::mesh::CollectionPtr collection = nullptr;
 
   // Search for an appropriate reader
-  for (auto&& reader : this->IO)
+  for (auto&& reader : smtk::io::ReadMesh::SupportedIOTypes())
     {
     for (auto&& format : reader->FileFormats())
       {
@@ -70,6 +79,10 @@ ReadMesh::operator() (const std::string& filePath,
     collection = smtk::mesh::Collection::create();
     collection->readLocation(filePath);
     }
+  else
+    {
+    collection->readLocation(filePath);
+    }
 
   return collection;
 }
@@ -83,7 +96,7 @@ bool ReadMesh::operator() (const std::string& filePath,
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
   // Search for an appropriate reader
-  for (auto&& reader : this->IO)
+  for (auto&& reader : smtk::io::ReadMesh::SupportedIOTypes())
     {
     for (auto&& format : reader->FileFormats())
       {

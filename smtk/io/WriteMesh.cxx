@@ -30,12 +30,21 @@ namespace smtk {
 
 WriteMesh::WriteMesh()
 {
-  this->IO.push_back( smtk::io::mesh::MeshIOPtr( new mesh::MeshIOXMS() ) );
-  this->IO.push_back( smtk::io::mesh::MeshIOPtr( new mesh::MeshIOMoab() ) );
 }
 
 WriteMesh::~WriteMesh()
 {
+}
+
+std::vector<smtk::io::mesh::MeshIOPtr>& WriteMesh::SupportedIOTypes()
+{
+  static std::vector<smtk::io::mesh::MeshIOPtr> supportedIOTypes;
+  if (supportedIOTypes.empty())
+    {
+    supportedIOTypes.push_back( mesh::MeshIOPtr( new mesh::MeshIOXMS() ) );
+    supportedIOTypes.push_back( mesh::MeshIOPtr( new mesh::MeshIOMoab() ) );
+    }
+  return supportedIOTypes;
 }
 
 bool WriteMesh::operator() (const std::string& filePath,
@@ -47,7 +56,7 @@ bool WriteMesh::operator() (const std::string& filePath,
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
   // Search for an appropriate writer
-  for (auto&& writer : this->IO)
+  for (auto&& writer : smtk::io::WriteMesh::SupportedIOTypes())
     {
     for (auto&& format : writer->FileFormats())
       {
@@ -72,7 +81,7 @@ bool WriteMesh::operator() (smtk::mesh::CollectionPtr collection,
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
   // Search for an appropriate writer
-  for (auto&& writer : this->IO)
+  for (auto&& writer : smtk::io::WriteMesh::SupportedIOTypes())
     {
     for (auto&& format : writer->FileFormats())
       {

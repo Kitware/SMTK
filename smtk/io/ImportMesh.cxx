@@ -15,6 +15,7 @@
 #include "smtk/common/CompilerInformation.h"
 
 #include <algorithm>
+#include <iostream>
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
@@ -28,12 +29,21 @@ namespace smtk {
 
 ImportMesh::ImportMesh()
 {
-  this->IO.push_back( smtk::io::mesh::MeshIOPtr( new mesh::MeshIOXMS() ) );
-  this->IO.push_back( smtk::io::mesh::MeshIOPtr( new mesh::MeshIOMoab() ) );
 }
 
 ImportMesh::~ImportMesh()
 {
+}
+
+std::vector<smtk::io::mesh::MeshIOPtr>& ImportMesh::SupportedIOTypes()
+{
+  static std::vector<smtk::io::mesh::MeshIOPtr> supportedIOTypes;
+  if (supportedIOTypes.empty())
+    {
+    supportedIOTypes.push_back( mesh::MeshIOPtr( new mesh::MeshIOXMS() ) );
+    supportedIOTypes.push_back( mesh::MeshIOPtr( new mesh::MeshIOMoab() ) );
+    }
+  return supportedIOTypes;
 }
 
 smtk::mesh::CollectionPtr ImportMesh::operator() (const std::string& filePath,
@@ -46,7 +56,7 @@ smtk::mesh::CollectionPtr ImportMesh::operator() (const std::string& filePath,
   smtk::mesh::CollectionPtr collection;
 
   // Search for an appropriate importer
-  for (auto&& importer : this->IO)
+  for (auto&& importer : smtk::io::ImportMesh::SupportedIOTypes())
     {
     for (auto&& format : importer->FileFormats())
       {
@@ -72,7 +82,7 @@ bool ImportMesh::operator() (const std::string& filePath,
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
   // Search for an appropriate importer
-  for (auto&& importer : this->IO)
+  for (auto&& importer : smtk::io::ImportMesh::SupportedIOTypes())
     {
     for (auto&& format : importer->FileFormats())
       {
@@ -98,10 +108,8 @@ smtk::mesh::CollectionPtr importMesh(const std::string& filePath,
 bool importMesh(const std::string& filePath,
                 smtk::mesh::CollectionPtr collection)
 {
-{
   ImportMesh importM;
   return importM( filePath, collection );
-}
 }
 
 }

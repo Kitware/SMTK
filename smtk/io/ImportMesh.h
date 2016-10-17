@@ -35,6 +35,8 @@ public:
 #ifndef SHIBOKEN_SKIP
   ImportMesh& operator=(const ImportMesh&) = delete;
   ImportMesh(const ImportMesh&) = delete;
+
+  static std::vector<smtk::io::mesh::MeshIOPtr>& SupportedIOTypes();
 #endif
 
   //Load the domain sets from a moab data file as a new collection into the
@@ -43,9 +45,6 @@ public:
                                         smtk::mesh::ManagerPtr manager) const;
   bool operator() (const std::string& filePath,
                    smtk::mesh::CollectionPtr collection) const;
-
-  protected:
-  std::vector<smtk::io::mesh::MeshIOPtr> IO;
 };
 
 SMTKCORE_EXPORT smtk::mesh::CollectionPtr

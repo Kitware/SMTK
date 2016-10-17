@@ -325,7 +325,6 @@ private:
   friend class smtk::mesh::Manager;
   friend class smtk::io::ImportJSON;
   friend class smtk::io::ReadMesh;
-  friend class smtk::io::mesh::MeshIOMoab;
 
   //called by the manager that manages this collection, means that somebody
   //has requested us to be removed from a collection

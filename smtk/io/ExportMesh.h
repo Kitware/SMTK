@@ -35,6 +35,8 @@ public:
 #ifndef SHIBOKEN_SKIP
   ExportMesh& operator=(const ExportMesh&) = delete;
   ExportMesh(const ExportMesh&) = delete;
+
+  static std::vector<smtk::io::mesh::MeshIOPtr>& SupportedIOTypes();
 #endif
 
   bool operator() ( const std::string& filePath,
@@ -43,9 +45,6 @@ public:
                      smtk::mesh::CollectionPtr collection,
                      smtk::model::ManagerPtr manager,
                      const std::string& modelPropertyName ) const;
-
-  protected:
-  std::vector<smtk::io::mesh::MeshIOPtr> IO;
 };
 
 SMTKCORE_EXPORT

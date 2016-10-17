@@ -9,7 +9,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/extension/vtkToMesh/VTKDataConverter.h"
+#include "smtk/extension/vtk/io/VTKDataConverter.h"
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 #include "smtk/io/ImportMesh.h"
@@ -188,10 +188,10 @@ smtk::mesh::CollectionPtr convert(vtkDataSetType* input,
                                   smtk::mesh::ManagerPtr manager,
                                   std::string material)
 {
-  smtk::extension::vtkToMesh::VTKDataConverter convert(manager);
+  smtk::extension::vtk::io::VTKDataConverter cnvrt;
 
   //we convert the vtk data into a single mesh.
-  smtk::mesh::CollectionPtr collection = convert( input, material );
+  smtk::mesh::CollectionPtr collection = cnvrt( input, manager, material );
 
   if(!collection)
     {

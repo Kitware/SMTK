@@ -10,7 +10,7 @@
 //
 //=============================================================================
 
-#include "smtk/extension/vtkToMesh/VTKDataConverter.h"
+#include "smtk/extension/vtk/io/VTKDataConverter.h"
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 #include "smtk/mesh/CellTraits.h"
@@ -34,7 +34,8 @@
 
 namespace smtk {
 namespace extension {
-namespace vtkToMesh {
+namespace vtk {
+namespace io {
 
 namespace detail
 {
@@ -214,9 +215,9 @@ bool convertVTKCells( VTKDataSetType* dataset,
 
 //----------------------------------------------------------------------------
 bool convertDomain(vtkCellData* cellData,
-                     const smtk::mesh::InterfacePtr& iface,
-                     const smtk::mesh::HandleRange& cells,
-                     const std::string& materialPropertyName)
+                   const smtk::mesh::InterfacePtr& iface,
+                   const smtk::mesh::HandleRange& cells,
+                   const std::string& materialPropertyName)
 {
   if(cellData == NULL)
     {
@@ -268,8 +269,7 @@ bool convertDomain(vtkCellData* cellData,
 }
 
 //----------------------------------------------------------------------------
-VTKDataConverter::VTKDataConverter(const smtk::mesh::ManagerPtr& manager):
-  m_manager( manager )
+VTKDataConverter::VTKDataConverter()
 {
 
 }
@@ -290,8 +290,19 @@ vtkDataSet* readXMLFile(const std::string& fileName)
 
 //----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr
-VTKDataConverter::operator()(std::string& filename,
+VTKDataConverter::operator()(const std::string& filename,
+                             smtk::mesh::ManagerPtr& manager,
                              std::string materialPropertyName) const
+{
+  smtk::mesh::CollectionPtr collection = manager->makeCollection();
+  return this->operator()(filename, collection, materialPropertyName) ?
+    collection : smtk::mesh::CollectionPtr();
+}
+
+//----------------------------------------------------------------------------
+bool VTKDataConverter::operator()(const std::string& filename,
+                                  smtk::mesh::CollectionPtr collection,
+                                  std::string materialPropertyName) const
 {
   std::string extension =
     vtksys::SystemTools::GetFilenameLastExtension(filename.c_str());
@@ -303,51 +314,42 @@ VTKDataConverter::operator()(std::string& filename,
    {
    data = readXMLFile<vtkXMLUnstructuredGridReader> (filename);
    return this->operator()(vtkUnstructuredGrid::SafeDownCast(data),
+                           collection,
                            materialPropertyName);
    }
   else if (extension == ".vtp")
    {
    data = readXMLFile<vtkXMLPolyDataReader> (filename);
    return this->operator()(vtkPolyData::SafeDownCast(data),
+                           collection,
                            materialPropertyName);
    }
 
-  return c;
+  return false;
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::CollectionPtr
-VTKDataConverter::operator()(vtkPolyData* polydata,
-                             std::string materialPropertyName) const
+bool VTKDataConverter::operator()(vtkPolyData* polydata,
+                                  smtk::mesh::CollectionPtr collection,
+                                  std::string materialPropertyName) const
 {
-  smtk::mesh::CollectionPtr nullCollectionPtr;
-  smtk::mesh::ManagerPtr manager = this->m_manager.lock();
-
   //make sure we have a valid poly data
   if(!polydata)
     {
-    return nullCollectionPtr;
+    return false;
     }
   else if( polydata->GetNumberOfPoints() == 0 ||
            polydata->GetNumberOfCells() == 0)
     {
     //early terminate if the polydata is empty.
-    return nullCollectionPtr;
-    }
-  else if(!manager)
-    {
-    return nullCollectionPtr;
+    return false;
     }
 
   bool pointsConverted = false;
   bool cellsConverted = false;
   bool meshCreated = false;
 
-  //Step 1
-  //create the collection the polydata will be added to
-  smtk::mesh::CollectionPtr collection = manager->makeCollection();
-
-  //Step 2 allocate space for coordinates and load them into moab
+  //allocate space for coordinates and load them into moab
   smtk::mesh::InterfacePtr iface = collection->interface();
   smtk::mesh::AllocatorPtr ialloc = iface->allocator();
 
@@ -357,119 +359,108 @@ VTKDataConverter::operator()(vtkPolyData* polydata,
                                              firstVertHandle);
 
 
-  //step 3 allocate and fill connectivity
+  //allocate and fill connectivity
   smtk::mesh::HandleRange newlyCreatedCells;
-  cellsConverted = detail::convertVTKCells( polydata,
-                                            ialloc,
-                                            firstVertHandle,
-                                            newlyCreatedCells );
+  cellsConverted = detail::convertVTKCells(polydata,
+                                           ialloc,
+                                           firstVertHandle,
+                                           newlyCreatedCells );
 
   if(pointsConverted && cellsConverted)
     {
     if(materialPropertyName.empty())
       { //if we don't have a material we create a single mesh
       smtk::mesh::Handle vtkMeshHandle;
-      meshCreated = iface->createMesh( newlyCreatedCells, vtkMeshHandle);
+      meshCreated = iface->createMesh(newlyCreatedCells, vtkMeshHandle);
       }
     else
       { //make multiple meshes each one assigned a material value
       meshCreated = detail::convertDomain(polydata->GetCellData(),
-                                            iface,
-                                            newlyCreatedCells,
-                                            materialPropertyName);
+                                          iface,
+                                          newlyCreatedCells,
+                                          materialPropertyName);
       }
     }
 
-  if(meshCreated)
-    {
-    return collection;
-    }
-  else
-    {
-    //failed to convert the data. this should be the only
-    //place we return nullCollectionPtr after collection was created
-    manager->removeCollection( collection );
-    return nullCollectionPtr;
-    }
+  return meshCreated;
 }
 
 //----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr
-VTKDataConverter::operator()(vtkUnstructuredGrid* ugrid,
+VTKDataConverter::operator()(vtkPolyData* polydata,
+                             smtk::mesh::ManagerPtr& manager,
                              std::string materialPropertyName) const
 {
-  smtk::mesh::CollectionPtr nullCollectionPtr;
-  smtk::mesh::ManagerPtr manager = this->m_manager.lock();
+  smtk::mesh::CollectionPtr c = manager->makeCollection();
+  return this->operator()(polydata,c,materialPropertyName) ? c : smtk::mesh::CollectionPtr();
+}
 
+//----------------------------------------------------------------------------
+bool VTKDataConverter::operator()(vtkUnstructuredGrid* ugrid,
+                                  smtk::mesh::CollectionPtr collection,
+                                  std::string materialPropertyName) const
+{
   //make sure we have a valid poly data
   if(!ugrid)
     {
-    return nullCollectionPtr;
+    return false;
     }
   else if( ugrid->GetNumberOfPoints() == 0 ||
            ugrid->GetNumberOfCells() == 0)
     {
     //early terminate if the ugrid is empty.
-    return nullCollectionPtr;
-    }
-  else if(!manager)
-    {
-    return nullCollectionPtr;
+    return false;
     }
 
   bool pointsConverted = false;
   bool cellsConverted = false;
   bool meshCreated = false;
 
-  //Step 1
-  //create the collection the ugrid will be added to
-  smtk::mesh::CollectionPtr collection = manager->makeCollection();
-
-  //Step 2 allocate space for coordinates and load them into moab
+  //allocate space for coordinates and load them into moab
   smtk::mesh::InterfacePtr iface = collection->interface();
   smtk::mesh::AllocatorPtr ialloc = iface->allocator();
 
   smtk::mesh::Handle firstVertHandle;
   pointsConverted = detail::convertVTKPoints(ugrid->GetPoints(),
-                                               ialloc,
-                                               firstVertHandle);
+                                             ialloc,
+                                             firstVertHandle);
 
-  //step 3 allocate and fill connectivity
+  //allocate and fill connectivity
   smtk::mesh::HandleRange newlyCreatedCells;
-  cellsConverted = detail::convertVTKCells( ugrid,
-                                            ialloc,
-                                            firstVertHandle,
-                                            newlyCreatedCells );
+  cellsConverted = detail::convertVTKCells(ugrid,
+                                           ialloc,
+                                           firstVertHandle,
+                                           newlyCreatedCells );
 
   if(pointsConverted && cellsConverted)
     {
     if(materialPropertyName.empty())
       { //if we don't have a material we create a single mesh
       smtk::mesh::Handle vtkMeshHandle;
-      meshCreated = iface->createMesh( newlyCreatedCells, vtkMeshHandle);
+      meshCreated = iface->createMesh(newlyCreatedCells, vtkMeshHandle);
       }
     else
       { //make multiple meshes each one assigned a material value
       meshCreated = detail::convertDomain(ugrid->GetCellData(),
-                                            iface,
-                                            newlyCreatedCells,
-                                            materialPropertyName);
+                                          iface,
+                                          newlyCreatedCells,
+                                          materialPropertyName);
       }
     }
-
-  if(meshCreated)
-    {
-    return collection;
-    }
-  else
-    {
-    //failed to convert the data. this should be the only
-    //place we return nullCollectionPtr after collection was created
-    manager->removeCollection( collection );
-    return nullCollectionPtr;
-    }
+  return meshCreated;
 }
 
+//----------------------------------------------------------------------------
+smtk::mesh::CollectionPtr
+VTKDataConverter::operator()(vtkUnstructuredGrid* ugrid,
+                             smtk::mesh::ManagerPtr& manager,
+                             std::string materialPropertyName) const
+{
+  smtk::mesh::CollectionPtr c = manager->makeCollection();
+  return this->operator()(ugrid,c,materialPropertyName) ? c : smtk::mesh::CollectionPtr();
+}
+
+}
 }
 }
 }
