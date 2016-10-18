@@ -8,28 +8,28 @@ set(headers
   VTKDataConverter.h
   )
 
-add_library(IOVTK ${srcs})
+add_library(smtkIOVTK ${srcs})
 
-target_link_libraries(IOVTK
+target_link_libraries(smtkIOVTK
       LINK_PUBLIC smtkCore vtkCommonDataModel vtkIOXML vtksys )
 
-smtk_export_header(IOVTK IOVTKExports.h)
+smtk_export_header(smtkIOVTK IOVTKExports.h)
 
-target_include_directories(IOVTK
+target_include_directories(smtkIOVTK
   PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
-target_include_directories(IOVTK
+target_include_directories(smtkIOVTK
   PRIVATE ${MOAB_INCLUDE_DIRS})
 
 #install the headers
 smtk_public_headers(${headers})
 # ... and make header compilation tests link properly:
-smtk_install_library(IOVTK)
+smtk_install_library(smtkIOVTK)
 
 if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
   #extract the headers from cgm library we built to give them to shiboken
 
-  sbk_wrap_library(IOVTK
+  sbk_wrap_library(smtkIOVTK
     PACKAGE smtk
     GENERATOR_ARGS --avoid-protected-hack
     WORKING_DIRECTORY ${SMTK_SOURCE_DIR}/smtk
