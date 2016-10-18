@@ -15,6 +15,14 @@ set (unit_tests)
 set (unit_tests_which_require_data
   UnitTestMeshSessionReadWrite.cxx)
 
+set(external_libs ${Boost_LIBRARIES})
+
+if (SMTK_ENABLE_VTK_SUPPORT)
+set_source_files_properties(UnitTestMeshSessionTopology.cxx
+  PROPERTIES COMPILE_FLAGS -DSMTK_ENABLE_VTK_SUPPORT)
+list (APPEND external_libs ${VTK_LIBRARIES} vtkSMTKSourceExt smtkIOVTK)
+endif()
+
 smtk_unit_tests(
   LABEL "MeshSession"
   SOURCES ${unit_tests}
