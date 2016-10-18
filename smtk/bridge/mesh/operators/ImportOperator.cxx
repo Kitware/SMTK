@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/bridge/mesh/ReadOperator.h"
+#include "smtk/bridge/mesh/operators/ImportOperator.h"
 
 #include "smtk/bridge/mesh/Session.h"
 
@@ -17,7 +17,7 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/io/ReadMesh.h"
+#include "smtk/io/ImportMesh.h"
 
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
@@ -32,16 +32,20 @@ namespace smtk {
 namespace bridge {
 namespace mesh {
 
-smtk::model::OperatorResult ReadOperator::operateInternal()
+smtk::model::OperatorResult ImportOperator::operateInternal()
 {
   // Get the read file name
   smtk::attribute::FileItem::Ptr filePathItem =
     this->specification()->findFile("filename");
   std::string filePath = filePathItem->value();
 
+  smtk::attribute::StringItem::Ptr labelItem =
+    this->specification()->findString("label");
+  std::string label = labelItem->value();
+
   // Get the collection from the file
   smtk::mesh::CollectionPtr collection =
-    smtk::io::readMesh(filePath, this->activeSession()->meshManager());
+    smtk::io::importMesh(filePath, this->activeSession()->meshManager(), label);
 
   if (!collection || !collection->isValid())
     {
@@ -93,13 +97,13 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-#include "smtk/bridge/mesh/ReadOperator_xml.h"
+#include "smtk/bridge/mesh/ImportOperator_xml.h"
 #include "smtk/bridge/mesh/Exports.h"
 
 smtkImplementsModelOperator(
   SMTKMESHSESSION_EXPORT,
-  smtk::bridge::mesh::ReadOperator,
-  mesh_read,
-  "read",
-  ReadOperator_xml,
+  smtk::bridge::mesh::ImportOperator,
+  mesh_import,
+  "import",
+  ImportOperator_xml,
   smtk::bridge::mesh::Session);

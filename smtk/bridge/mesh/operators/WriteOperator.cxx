@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/bridge/mesh/WriteOperator.h"
+#include "smtk/bridge/mesh/operators/WriteOperator.h"
 
 #include "smtk/bridge/mesh/Session.h"
 
