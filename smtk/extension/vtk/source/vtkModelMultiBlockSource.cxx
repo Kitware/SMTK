@@ -710,6 +710,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
             {
             topBlocks[bb]->SetBlock(lb, blockDatasets[bb][lb].GetPointer());
             topBlocks[bb]->GetMetaData(lb)->Set(vtkCompositeDataSet::NAME(), blockEntities[bb][lb].name().c_str());
+            this->SetDataObjectUUID(blockDatasets[bb][lb].GetPointer(), blockEntities[bb][lb].entity());
             /*
             topBlocks[bb]->GetMetaData(lb)->Set(
               vtkModelMultiBlockSource::ENTITYID(), blockEntities[lb].entity().toString().c_str());
@@ -756,7 +757,8 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
       smtk::model::EntityRef entityref(manager, it->first);
       // Set the block name to the entity UUID.
       mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), entityref.name().c_str());
-      mbds->GetMetaData(i)->Set(vtkModelMultiBlockSource::ENTITYID(), entityref.entity().toString().c_str());
+      this->SetDataObjectUUID(poly.GetPointer(), entityref.entity());
+//      mbds->GetMetaData(i)->Set(vtkModelMultiBlockSource::ENTITYID(), entityref.entity().toString().c_str());
       this->GenerateRepresentationFromModel(poly.GetPointer(), entityref, this->AllowNormalGeneration);
 
       // as a convenient method to get the flat block_index in multiblock
