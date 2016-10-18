@@ -30,7 +30,7 @@
 #include "moab/verdict.h"
 #include <math.h>
 #include <assert.h>
-
+#include <limits>
 
 // computes the dot product of 3d vectors
 //double dot_product( double vec1[], double vec2[] );
@@ -99,6 +99,7 @@ inline double interior_angle( double vec1[], double vec2[] )
   {
     assert(len1 > 0);
     assert(len2 > 0);
+    cosAngle = std::numeric_limits<double>::signaling_NaN();
   }
 
   if ((cosAngle > 1.0) && (cosAngle < 1.0001))
@@ -115,6 +116,7 @@ inline double interior_angle( double vec1[], double vec2[] )
     angleRad = acos(cosAngle);
   else
   {
+    angleRad = std::numeric_limits<double>::signaling_NaN();
     assert(cosAngle < 1.0001 && cosAngle > -1.0001);
   }
 
@@ -123,5 +125,3 @@ inline double interior_angle( double vec1[], double vec2[] )
 }
 
 #endif
-
-
