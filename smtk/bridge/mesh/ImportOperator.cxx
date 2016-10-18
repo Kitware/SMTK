@@ -47,7 +47,7 @@ smtk::model::OperatorResult ImportOperator::operateInternal()
   smtk::mesh::CollectionPtr collection =
     smtk::io::importMesh(filePath, this->activeSession()->meshManager(), label);
 
-  if (!collection->isValid())
+  if (!collection || !collection->isValid())
     {
     // The file was not correctly read.
     return this->createResult(smtk::model::OPERATION_FAILED);
