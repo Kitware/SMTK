@@ -31,7 +31,7 @@ namespace io {
 //Currently we only support creating a new database from a vtk data set.
 //
 //TODO: Allow insertion of a vtk dataset into an existing collection
-class IOVTK_EXPORT VTKDataConverter
+class SMTKIOVTK_EXPORT VTKDataConverter
 {
 public:
   //Construct a VTKDataConverter
