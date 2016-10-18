@@ -178,7 +178,6 @@ void qtDiscreteValueEditor::onInputValueChanged()
   this->Internals->clearChildItems();
 
   int curIdx = comboBox->currentIndex();
-  int elementIdx = this->Internals->m_elementIndex;
   smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->valueItem();
   bool refresh = false;
   const attribute::ValueItemDefinition *itemDef =
@@ -194,7 +193,7 @@ void qtDiscreteValueEditor::onInputValueChanged()
   else
     {
     // We are dealing with a valid value
-    refresh = 
+    refresh =
       this->Internals->m_inputItem->setDiscreteValue(this->Internals->m_elementIndex, curIdx);
     }
   if (!refresh)
