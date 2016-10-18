@@ -8,6 +8,8 @@
   <!-- Ignore warnings about wrapping vtk-exposed methods -->
   <suppress-warning text="skipping function 'smtk::extension::vtk::io::VTKDataConverter::operator()', unmatched parameter type 'vtkUnstructuredGrid*'"/>
   <suppress-warning text="skipping function 'smtk::extension::vtk::io::VTKDataConverter::operator()', unmatched parameter type 'vtkPolyData*'"/>
+  <suppress-warning text="skipping function 'smtk::extension::vtk::io::VTKDataConverter::operator()', unmatched parameter type 'vtkSmartPointer&lt;vtkPolyData&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::extension::vtk::io::VTKDataConverter::operator()', unmatched parameter type 'vtkSmartPointer&lt;vtkUnstructuredGrid&gt;'"/>
 
   <!-- Additional objects to be wrapped -->
   <namespace-type name="smtk" generate = "no">

@@ -16,11 +16,19 @@
 //forward declarers for Manager and Collection
 #include "smtk/PublicPointerDefs.h"
 
+#include <string>
+
 //forward declare vtk classes
+template <class X>
+class vtkSmartPointer;
 class vtkPolyData;
 class vtkUnstructuredGrid;
 
-#include <string>
+namespace smtk {
+namespace mesh {
+class MeshSet;
+}
+}
 
 namespace smtk {
 namespace extension {
@@ -79,6 +87,17 @@ public:
                                        smtk::mesh::ManagerPtr& manager,
                                        std::string domainPropertyName = std::string()) const;
 
+  //convert a collection into a VTK xml polydata or xml unstructured grid file.
+  bool operator()(const std::string& filename,
+                  smtk::mesh::CollectionPtr collection) const;
+
+  //convert the highest dimension cells of a mesh set to polydata (starting with
+  //Dims2).
+  void operator()(const smtk::mesh::MeshSet& meshset, vtkPolyData* pd) const;
+
+  //convert a mesh set to an unstructured grid.
+  void operator()(const smtk::mesh::MeshSet& meshset,
+                  vtkUnstructuredGrid* ug) const;
 
 private:
   //both are blank since we currently don't want to support copy by value
