@@ -39,11 +39,13 @@ public:
   //file can't be loaded
   smtk::mesh::CollectionPtr
     importMesh( const std::string& filePath,
-                smtk::mesh::ManagerPtr& manager ) const override;
+                smtk::mesh::ManagerPtr& manager,
+                const std::string& domainPropertyName ) const override;
 
   //Merge a vtk data file into an existing valid collection.
   bool importMesh( const std::string& filePath,
-                   smtk::mesh::CollectionPtr collection ) const override;
+                   smtk::mesh::CollectionPtr collection,
+                   const std::string& domainPropertyName ) const override;
 };
 
 }

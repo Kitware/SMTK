@@ -40,17 +40,19 @@ MeshIOVTK::MeshIOVTK() : MeshIO()
 
 smtk::mesh::CollectionPtr
 MeshIOVTK::importMesh( const std::string& filePath,
-                        smtk::mesh::ManagerPtr& manager ) const
+                        smtk::mesh::ManagerPtr& manager,
+                       const std::string& domainPropertyName ) const
 {
   smtk::extension::vtk::io::VTKDataConverter convert;
-  return convert( filePath, manager, std::string() );
+  return convert( filePath, manager, domainPropertyName );
 }
 
 bool MeshIOVTK::importMesh( const std::string& filePath,
-                            smtk::mesh::CollectionPtr collection ) const
+                            smtk::mesh::CollectionPtr collection,
+                            const std::string& domainPropertyName ) const
 {
   smtk::extension::vtk::io::VTKDataConverter convert;
-  return convert( filePath, collection, std::string() );
+  return convert( filePath, collection, domainPropertyName );
 }
 
 }

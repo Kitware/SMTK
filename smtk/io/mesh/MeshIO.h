@@ -48,11 +48,13 @@ public:
 
   virtual smtk::mesh::CollectionPtr
     importMesh( const std::string&,
-                smtk::mesh::ManagerPtr& ) const
+                smtk::mesh::ManagerPtr&,
+                const std::string& ) const
   { return smtk::mesh::CollectionPtr(); }
   virtual bool
     importMesh( const std::string&,
-                smtk::mesh::CollectionPtr ) const { return false; }
+                smtk::mesh::CollectionPtr,
+                const std::string& ) const { return false; }
 
   virtual bool exportMesh( const std::string&,
                            smtk::mesh::CollectionPtr ) const { return false; }

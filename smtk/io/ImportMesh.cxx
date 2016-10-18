@@ -46,8 +46,10 @@ std::vector<smtk::io::mesh::MeshIOPtr>& ImportMesh::SupportedIOTypes()
   return supportedIOTypes;
 }
 
-smtk::mesh::CollectionPtr ImportMesh::operator() (const std::string& filePath,
-                                                  smtk::mesh::ManagerPtr manager) const
+smtk::mesh::CollectionPtr ImportMesh::operator() (
+  const std::string& filePath,
+  smtk::mesh::ManagerPtr manager,
+  std::string domainPropertyName) const
 {
   // Grab the file extension
   std::string ext = boost::filesystem::extension(filePath);
@@ -65,7 +67,8 @@ smtk::mesh::CollectionPtr ImportMesh::operator() (const std::string& filePath,
            format.Extensions.end() )
         {
         // import the collection
-        collection = importer->importMesh(filePath, manager);
+        collection = importer->importMesh(filePath, manager,
+                                          domainPropertyName);
         break;
         }
       }
@@ -75,7 +78,8 @@ smtk::mesh::CollectionPtr ImportMesh::operator() (const std::string& filePath,
 }
 
 bool ImportMesh::operator() (const std::string& filePath,
-                             smtk::mesh::CollectionPtr collection) const
+                             smtk::mesh::CollectionPtr collection,
+                             std::string domainPropertyName) const
 {
   // Grab the file extension
   std::string ext = boost::filesystem::extension(filePath);
@@ -91,7 +95,7 @@ bool ImportMesh::operator() (const std::string& filePath,
            format.Extensions.end() )
         {
         // import the collection
-        return importer->importMesh(filePath, collection);
+        return importer->importMesh(filePath, collection, domainPropertyName);
         }
       }
     }
@@ -102,14 +106,30 @@ smtk::mesh::CollectionPtr importMesh(const std::string& filePath,
                                      smtk::mesh::ManagerPtr manager)
 {
   ImportMesh importM;
-  return importM( filePath, manager );
+  return importM( filePath, manager, std::string() );
+}
+
+smtk::mesh::CollectionPtr importMesh(const std::string& filePath,
+                                     smtk::mesh::ManagerPtr manager,
+                                     const std::string& domainPropertyName)
+{
+  ImportMesh importM;
+  return importM( filePath, manager, domainPropertyName );
 }
 
 bool importMesh(const std::string& filePath,
                 smtk::mesh::CollectionPtr collection)
 {
   ImportMesh importM;
-  return importM( filePath, collection );
+  return importM( filePath, collection, std::string() );
+}
+
+bool importMesh(const std::string& filePath,
+                smtk::mesh::CollectionPtr collection,
+                const std::string& domainPropertyName)
+{
+  ImportMesh importM;
+  return importM( filePath, collection, domainPropertyName );
 }
 
 }

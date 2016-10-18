@@ -32,14 +32,19 @@ public:
 
   //Load an entire moab data file as a new collection into the given manager
   //Returns an invalid collection that is NOT part of the manager if the
-  //file can't be loaded
+  //file can't be loaded. The third parameter is a label with which the domain
+  //can be parsed, but it is not currently implemented for the moab interface
   smtk::mesh::CollectionPtr
     importMesh( const std::string& filePath,
-                smtk::mesh::ManagerPtr& manager ) const override;
+                smtk::mesh::ManagerPtr& manager,
+                const std::string& ) const override;
 
-  //Merge a moab data file into an existing valid collection.
+  //Merge a moab data file into an existing valid collection. The third
+  //parameter is a label with which the domain can be parsed, but it is not
+  //currently implemented for the moab interface
   bool importMesh( const std::string& filePath,
-                   smtk::mesh::CollectionPtr collection ) const override;
+                   smtk::mesh::CollectionPtr collection,
+                   const std::string& ) const override;
 
   //Exports the collection to file. Overwrites any existing content in the file
   bool exportMesh( const std::string& filePath,
