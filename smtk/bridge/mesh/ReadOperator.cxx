@@ -43,6 +43,12 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
   smtk::mesh::CollectionPtr collection =
     smtk::io::readMesh(filePath, this->activeSession()->meshManager());
 
+  if (!collection || !collection->isValid())
+    {
+    // The file was not correctly read.
+    return this->createResult(smtk::model::OPERATION_FAILED);
+    }
+
   // Assign its model manager to the one associated with this session
   collection->setModelManager(this->activeSession()->manager());
 

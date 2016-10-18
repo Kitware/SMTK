@@ -10,7 +10,8 @@
 #
 #=============================================================================
 
-set (unit_tests)
+set (unit_tests
+  UnitTestMeshSessionTopology.cxx)
 
 set (unit_tests_which_require_data
   UnitTestMeshSessionReadWrite.cxx)
@@ -27,5 +28,5 @@ smtk_unit_tests(
   LABEL "MeshSession"
   SOURCES ${unit_tests}
   SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
-  LIBRARIES smtkCore smtkMeshSession smtkCoreModelTesting ${Boost_LIBRARIES}
+  LIBRARIES smtkCore smtkMeshSession smtkCoreModelTesting ${external_libs}
 )
