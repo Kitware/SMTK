@@ -59,13 +59,15 @@ MeshIOMoab::MeshIOMoab() : MeshIO()
 
 smtk::mesh::CollectionPtr
 MeshIOMoab::importMesh( const std::string& filePath,
-                        smtk::mesh::ManagerPtr& manager ) const
+                        smtk::mesh::ManagerPtr& manager,
+                        const std::string& ) const
 {
   return this->read( filePath, manager, Subset::EntireCollection );
 }
 
 bool MeshIOMoab::importMesh( const std::string& filePath,
-                             smtk::mesh::CollectionPtr collection ) const
+                             smtk::mesh::CollectionPtr collection,
+                             const std::string& ) const
 {
   return this->read( filePath, collection, Subset::EntireCollection );
 }

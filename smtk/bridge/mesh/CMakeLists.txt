@@ -1,16 +1,18 @@
 set(meshSrcs
-  Session.cxx
+  ImportOperator.cxx
   Operator.cxx
   ReadOperator.cxx
+  Session.cxx
   Topology.cxx
   WriteOperator.cxx
 )
 
 set(meshHeaders
-  Session.h
+  ImportOperator.h
   Operator.h
   PointerDefs.h
   ReadOperator.h
+  Session.h
   Topology.h
   WriteOperator.h
 )
@@ -38,6 +40,7 @@ smtk_install_library(smtkMeshSession)
 # We do not need the path to the generated header (appended
 # to meshOperatorXML) since the operators themselves include
 # the header in their implementations.
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ImportOperator.sbt" meshOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ReadOperator.sbt" meshOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/WriteOperator.sbt" meshOperatorXML)
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" meshSessionJSON)

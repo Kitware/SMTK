@@ -37,22 +37,33 @@ public:
   ImportMesh(const ImportMesh&) = delete;
 
   static std::vector<smtk::io::mesh::MeshIOPtr>& SupportedIOTypes();
-#endif
 
   //Load the domain sets from a moab data file as a new collection into the
   //given manager.
-  smtk::mesh::CollectionPtr operator() (const std::string& filePath,
-                                        smtk::mesh::ManagerPtr manager) const;
+  smtk::mesh::CollectionPtr operator()
+    (const std::string& filePath,
+     smtk::mesh::ManagerPtr manager,
+     std::string domainPropertyName = std::string()) const;
   bool operator() (const std::string& filePath,
-                   smtk::mesh::CollectionPtr collection) const;
+                   smtk::mesh::CollectionPtr collection,
+                   std::string domainPropertyName = std::string()) const;
+#endif
 };
 
 SMTKCORE_EXPORT smtk::mesh::CollectionPtr
 importMesh(const std::string& filePath,
            smtk::mesh::ManagerPtr manager);
+SMTKCORE_EXPORT smtk::mesh::CollectionPtr
+importMesh(const std::string& filePath,
+           smtk::mesh::ManagerPtr manager,
+           const std::string& domainPropertyName);
 SMTKCORE_EXPORT bool
 importMesh(const std::string& filePath,
            smtk::mesh::CollectionPtr collection);
+SMTKCORE_EXPORT bool
+importMesh(const std::string& filePath,
+           smtk::mesh::CollectionPtr collection,
+           const std::string& domainPropertyName);
 
 }
 }
