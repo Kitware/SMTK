@@ -164,6 +164,34 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
 }
 
 //----------------------------------------------------------------------------
+namespace
+{
+template<class T, class U>
+struct swapDataTypesIfNecessary
+{
+  void operator()(T*& in, U*& out, boost::int64_t len)
+  {
+    out = new U[len];
+    for (boost::int64_t i=0;i<len;i++)
+      {
+      out[i] = in[i];
+      }
+    delete [] in;
+  }
+};
+
+template<class T>
+struct swapDataTypesIfNecessary<T,T>
+{
+  void operator()(T*& in, T*& out, boost::int64_t)
+  {
+    out = in;
+  }
+};
+
+}
+
+//----------------------------------------------------------------------------
 void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
                                vtkUnstructuredGrid* ug) const
 {
@@ -175,16 +203,27 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
   smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(
     meshset, connectivityLength, numberOfCells, numberOfPoints);
 
+  // add the number of cells to the connectivity length to get the length of
+  // VTK-style connectivity
+  connectivityLength += numberOfCells;
+
   //create raw data buffers to hold our data
   double* pointsData = new double[3*numberOfPoints];
   unsigned char* cellTypesData = new unsigned char[numberOfCells];
-  vtkIdType* cellLocationsData = new vtkIdType[numberOfCells];
-  vtkIdType* connectivityData = new vtkIdType[connectivityLength+numberOfCells];
+  boost::int64_t* cellLocationsData_ = new boost::int64_t[numberOfCells];
+  boost::int64_t* connectivityData_ = new boost::int64_t[connectivityLength];
 
   //extract tessellation information
-  smtk::mesh::PreAllocatedTessellation tess(connectivityData, cellLocationsData,
+  smtk::mesh::PreAllocatedTessellation tess(connectivityData_,
+                                            cellLocationsData_,
                                             cellTypesData, pointsData);
   smtk::mesh::extractTessellation(meshset, tess);
+
+  swapDataTypesIfNecessary<boost::int64_t, vtkIdType> swap;
+  vtkIdType* cellLocationsData;
+  swap(cellLocationsData_, cellLocationsData, numberOfCells);
+  vtkIdType* connectivityData;
+  swap(connectivityData_, connectivityData, connectivityLength);
 
   // create vtk data arrays to hold our data
   vtkNew<vtkDoubleArray> pointsArray;
