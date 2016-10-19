@@ -336,14 +336,14 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     function (smtk_test_python_module output_python output_lib module pythonpath libpath)
       string(REPLACE ";" "${envsep}" pythonpath_env "${pythonpath}")
 
-      if (ENV{PYTHONPATH})
+      if (DEFINED ENV{PYTHONPATH})
         set(pythonpath_env
           "${pythonpath_env}${envsep}$ENV{PYTHONPATH}")
       endif ()
 
       string(REPLACE ";" "${envsep}" libpath_env "${libpath}")
 
-      if (ENV{${libpath_envvar}})
+      if (DEFINED ENV{${libpath_envvar}})
         set(libpath_env
           "${libpath_env}${envsep}$ENV{${libpath_envvar}}")
       endif ()
