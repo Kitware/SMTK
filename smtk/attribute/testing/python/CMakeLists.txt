@@ -7,49 +7,27 @@ set(smtkAttributePythonNewDataTests
   attributeItemByPath
 )
 
-add_test(associationTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/associationTest.py)
-add_test(basicAttributeTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/basicAttributeTest.py)
-add_test(basicAttributeDefinitionTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/basicAttributeDefinitionTest.py)
-add_test(basicAttributeDerivationTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/basicAttributeDerivationTest.py)
-add_test(basicAttributeXMLWriterTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/basicAttributeXMLWriterTest.py dummypy.sbi)
-add_test(expressintTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/expressionTest.py)
-add_test(expressionTest2Py ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/expressionTest2.py)
-add_test(attributeAutoNamingTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/attributeAutoNamingTest.py)
-add_test(attributeReferencingTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/attributeReferencingTest.py)
-add_test(categoryTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/categoryTest.py)
-add_test(attributeFindItemTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/attributeFindItemTest.py)
-add_test(definitionDefaultValueTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/definitionDefaultValueTest.py dummy.sbt)
-set_tests_properties(
-  associationTestPy basicAttributeTestPy basicAttributeDefinitionTestPy
-  basicAttributeDerivationTestPy basicAttributeXMLWriterTestPy
-  expressintTestPy expressionTest2Py definitionDefaultValueTestPy
-  attributeAutoNamingTestPy attributeAutoNamingTestPy
-  attributeReferencingTestPy categoryTestPy attributeFindItemTestPy
-  PROPERTIES
-    ENVIRONMENT "${SMTK_TEST_LIB_ENV};${SMTK_PYTHONPATH}"
-)
+smtk_add_test_python(associationTestPy associationTest.py)
+smtk_add_test_python(basicAttributeTestPy basicAttributeTest.py)
+smtk_add_test_python(basicAttributeDefinitionTestPy basicAttributeDefinitionTest.py)
+smtk_add_test_python(basicAttributeDerivationTestPy basicAttributeDerivationTest.py)
+smtk_add_test_python(basicAttributeXMLWriterTestPy basicAttributeXMLWriterTest.py dummypy.sbi)
+smtk_add_test_python(expressintTestPy expressionTest.py)
+smtk_add_test_python(expressionTest2Py expressionTest2.py)
+smtk_add_test_python(attributeAutoNamingTestPy attributeAutoNamingTest.py)
+smtk_add_test_python(attributeReferencingTestPy attributeReferencingTest.py)
+smtk_add_test_python(categoryTestPy categoryTest.py)
+smtk_add_test_python(attributeFindItemTestPy attributeFindItemTest.py)
+smtk_add_test_python(definitionDefaultValueTestPy definitionDefaultValueTest.py dummy.sbt)
 
 if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
   foreach (test ${smtkAttributePythonDataTests})
-    add_test(
-      ${test}Py
-      ${PYTHON_EXECUTABLE}
-      ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py
+    smtk_add_test_python(${test}Py ${test}.py
       ${SMTK_DATA_DIR})
-    set_tests_properties(${test}Py
-      PROPERTIES
-        ENVIRONMENT "${SMTK_TEST_LIB_ENV};${SMTK_PYTHONPATH}"
-    )
   endforeach()
   # New-style tests that use smtk.testing.TestCase
   foreach (test ${smtkAttributePythonNewDataTests})
-    add_test(${test}Py
-             ${PYTHON_EXECUTABLE}
-             ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py
-             -D ${SMTK_DATA_DIR})
-    set_tests_properties(${test}Py
-      PROPERTIES
-        ENVIRONMENT "${SMTK_TEST_LIB_ENV};${SMTK_PYTHONPATH}"
-    )
+    smtk_add_test_python(${test}Py ${test}.py
+      -D ${SMTK_DATA_DIR})
   endforeach()
 endif()

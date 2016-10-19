@@ -291,6 +291,7 @@ function(sbk_wrap_library NAME)
                ${SHIBOKEN_INCLUDE_DIR}
                ${_extra_include_dirs}
               )
+  set_property(TARGET ${_pyname} PROPERTY LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/smtk")
   if(WIN32)
     set_property(TARGET ${_pyname} PROPERTY SUFFIX ".pyd")
   endif()

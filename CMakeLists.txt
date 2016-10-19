@@ -68,6 +68,8 @@ set(EXECUTABLE_OUTPUT_PATH
   ${PROJECT_BINARY_DIR}/bin)
 
 # Set the directory where the libraries will be stored
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
+  ${PROJECT_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH
   ${PROJECT_BINARY_DIR}/lib)
 
@@ -284,46 +286,146 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
   find_package(PythonInterp 2.7 REQUIRED)
   # Set up environment variables needed to import the python modules for tests.
   if (PYTHONINTERP_FOUND AND SMTK_ENABLE_TESTING)
-    get_filename_component(SHIBOKEN_LIBRARY_PATH ${SHIBOKEN_LIBRARY} PATH)
-    set(SMTK_TEST_LIB_ENV "")
-    if(APPLE AND UNIX)
-      set(SMTK_TEST_LIB_ENV "DYLD_FALLBACK_LIBRARY_PATH=${SHIBOKEN_LIBRARY_PATH}:${LIBRARY_OUTPUT_PATH}")
-      if (ParaView_DIR)
-        set(VTKPY_DIR "${ParaView_DIR}/lib/site-packages:${ParaView_DIR}/lib:")
-      elseif (VTK_DIR)
-        set(VTKPY_DIR "${VTK_DIR}/lib/site-packages:${VTK_DIR}/lib:")
-      endif()
-    elseif(UNIX)
-      if (ParaView_DIR)
-        # Note that ending with a colon should only be done if followed by
-        # another path... be careful when changing SMTK_TEST_LIB_ENV!
-        set(PV_LIB_DIR "${ParaView_DIR}/lib:")
-        set(VTKPY_DIR "${ParaView_DIR}/lib/site-packages:${PV_LIB_DIR}")
-      elseif (VTK_DIR)
-        set(PV_LIB_DIR "${VTK_DIR}/lib:")
-        set(VTKPY_DIR "${VTK_DIR}/lib/site-packages:${PV_LIB_DIR}")
-      endif()
-      set(SMTK_TEST_LIB_ENV "LD_LIBRARY_PATH=${PV_LIB_DIR}${SHIBOKEN_LIBRARY_PATH}:${LIBRARY_OUTPUT_PATH}")
-    endif()
-    set(SHIBOKEN_SMTK_PYTHON "${CMAKE_BINARY_DIR}")
-    if(UNIX)
-      set(sep ":")
-    else() #windows
-      set(sep "\;")
-    endif()
-    execute_process(
-      COMMAND "${PYTHON_EXECUTABLE}" -c "import shiboken"
-      OUTPUT_QUIET
-      ERROR_QUIET
-      RESULT_VARIABLE rc)
-    if (rc)
-      set(SHIBOKEN_SMTK_PYTHON "${SHIBOKEN_SMTK_PYTHON}${sep}${SHIBOKEN_PYTHONPATH}")
+    set(required_python_modules
+      shiboken)
+    set(shiboken_PYTHONPATH
+      "${SHIBOKEN_PYTHONPATH}")
+    if (WIN32)
+      get_filename_component(shiboken_runtime_dir "${SHIBOKEN_BINARY}" PATH)
+    else ()
+      get_filename_component(shiboken_runtime_dir "${SHIBOKEN_LIBRARY}" PATH)
     endif ()
-    set(SMTK_BINARY_TEST_PATHS "${CMAKE_BINARY_DIR}/lib${sep}${PROJECT_BINARY_DIR}/lib${sep}${PROJECT_BINARY_DIR}${sep}")
-    set(SMTK_PYTHONPATH "PYTHONPATH=${SMTK_BINARY_TEST_PATHS}${VTKPY_DIR}${SHIBOKEN_SMTK_PYTHON}")
+    set(shiboken_libpath
+      "${shiboken_runtime_dir}")
+
+    if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+      list(APPEND required_python_modules
+        paraview)
+      set(paraview_PYTHONPATH
+        "${PARAVIEW_PYTHONPATH}")
+      set(paraview_libpath
+        "${PARAVIEW_RUNTIME_DIRS}")
+    elseif (SMTK_ENABLE_VTK_SUPPORT)
+      list(APPEND required_python_modules
+        vtk)
+      # TODO: VTK needs to export a variable for this; this currently only
+      # works for VTK build trees.
+      set(vtk_PYTHONPATH
+        "${VTK_DIR}/lib/site-packages"
+        "${VTK_DIR}/lib")
+      set(vtk_libpath
+        "${VTK_DIR}/lib")
+    endif ()
+
+    set(envsep ":")
+    if (WIN32)
+      set(envsep ";")
+    endif ()
+
+    set(libpath_envvar)
+    if (WIN32)
+      set(libpath_envvar "PATH")
+    elseif (APPLE)
+      set(libpath_envvar "DYLD_FALLBACK_LIBRARY_PATH")
+    elseif (UNIX)
+      set(libpath_envvar "LD_LIBRARY_PATH")
+    else ()
+      message(WARNING "Unknown platform loader path environment variable.")
+    endif ()
+
+    function (smtk_test_python_module output_python output_lib module pythonpath libpath)
+      string(REPLACE ";" "${envsep}" pythonpath_env "${pythonpath}")
+
+      if (ENV{PYTHONPATH})
+        set(pythonpath_env
+          "${pythonpath_env}${envsep}$ENV{PYTHONPATH}")
+      endif ()
+
+      string(REPLACE ";" "${envsep}" libpath_env "${libpath}")
+
+      if (ENV{${libpath_envvar}})
+        set(libpath_env
+          "${libpath_env}${envsep}$ENV{${libpath_envvar}}")
+      endif ()
+
+      # Test the PYTHONPATH passed in.
+      execute_process(
+        COMMAND "${CMAKE_COMMAND}"
+                -E env
+                "PYTHONPATH=${pythonpath_env}"
+                "${libpath_envvar}=${libpath_env}"
+                "${PYTHON_EXECUTABLE}"
+                -c "import ${module}"
+        RESULT_VARIABLE res
+        OUTPUT_VARIABLE out
+        ERROR_VARIABLE  err)
+
+      if (res)
+        message(SEND_ERROR
+          "Failed to import the ${module} Python module. The attempted "
+          "PYTHONPATH was '${pythonpath_env}' and ${libpath_envvar} set to "
+          "'${libpath_env}', but it still failed. Please set the PYTHONPATH "
+          "environment to make the ${module} module successfully import. The "
+          "error message was '${err}'.")
+
+        return ()
+      endif ()
+
+      # Add to the list of paths required for modules.
+      set("${output_python}"
+        ${${output_python}}
+        "${pythonpath}"
+        PARENT_SCOPE)
+
+      # Add to the list of paths required for modules.
+      set("${output_lib}"
+        ${${output_lib}}
+        "${libpath}"
+        PARENT_SCOPE)
+    endfunction ()
+
+    set(smtk_pythonpaths
+      "$ENV{PYTHONPATH}")
+    set(smtk_libpaths
+      "$ENV{${libpath_envvar}}")
+    foreach (module IN LISTS required_python_modules)
+      smtk_test_python_module(smtk_pythonpaths smtk_libpaths
+        "${module}" "${${module}_PYTHONPATH}" "${${module}_libpath}")
+    endforeach ()
+
+    # Add the path to the build tree's compiled modules.
+    list(APPEND smtk_pythonpaths
+      "${CMAKE_BINARY_DIR}")
+    if (CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+      list(APPEND smtk_libpaths
+        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+    endif ()
+
+    # Remove duplicates.
+    list(REMOVE_DUPLICATES smtk_pythonpaths)
+    list(REMOVE_DUPLICATES smtk_libpaths)
+
+    string(REPLACE ";" "${envsep}" smtk_pythonpath_env "${smtk_pythonpaths}")
+    string(REPLACE ";" "${envsep}" smtk_libpath_env "${smtk_libpaths}")
+    if (WIN32)
+      string(REPLACE "/" "\\" smtk_libpath_env "${smtk_libpath_env}")
+    endif ()
+    string(REPLACE ";" "\;" smtk_pythonpath_env "${smtk_pythonpath_env}")
+    string(REPLACE ";" "\;" smtk_libpath_env "${smtk_libpath_env}")
+    set(smtk_python_test_environment
+      "PYTHONPATH=${smtk_pythonpath_env}"
+      "${libpath_envvar}=${smtk_libpath_env}")
+
+    function (smtk_add_test_python name file)
+      add_test(
+        NAME    "${name}"
+        COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/${file}"
+                ${ARGN})
+      set_tests_properties("${name}"
+        PROPERTIES
+          ENVIRONMENT "${smtk_python_test_environment}")
+    endfunction ()
   endif()
-  #message("${SMTK_TEST_LIB_ENV}   ${SMTK_PYTHONPATH}")
-  #message("${SHIBOKEN_LIBRARY_PATH}")
 endif()
 
 ################################################################################

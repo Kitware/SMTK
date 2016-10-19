@@ -3,16 +3,7 @@ cmake_minimum_required(VERSION 3.5)
 
 if (SMTK_ENABLE_TESTING AND SMTK_ENABLE_PYTHON_WRAPPING AND SMTK_DATA_DIR)
 
-  add_test(
-    NAME tut-python_first_steps
-    COMMAND ${PYTHON_EXECUTABLE}
-      ${CMAKE_CURRENT_SOURCE_DIR}/first_steps.py
+  smtk_add_test_python(tut-python_first_steps first_steps.py
       ${SMTK_DATA_DIR}/model/2d/smtk/test2D.json
-  )
-
-  # Assign environment variables to the test(s)
-  set_tests_properties(tut-python_first_steps
-    PROPERTIES
-      ENVIRONMENT "${SMTK_TEST_LIB_ENV};${SMTK_PYTHONPATH}"
   )
 endif()

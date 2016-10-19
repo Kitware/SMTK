@@ -110,14 +110,6 @@ if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
     HEADERS ${smtk_headers}
   )
 
-  # Copy the shiboken library so developers have an
-  # easier time testing the python wrapping.
-
-  # First we have to resolve the path since shiboken library most
-  # likely uses symlinks and we have to copy that version
-  get_filename_component(shiboken_path "${SHIBOKEN_LIBRARY}" REALPATH)
-  file(COPY "${shiboken_path}" DESTINATION "${SMTK_BINARY_DIR}")
-
   set(SMTK_PYTHON_MODULE_SRCS
     __init__
     simple
