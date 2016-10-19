@@ -17,7 +17,8 @@
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 
-#include "smtk/extension/vtk/io/VTKDataConverter.h"
+#include "smtk/extension/vtk/io/ExportVTKData.h"
+#include "smtk/extension/vtk/io/ImportVTKData.h"
 
 #include <string>
 
@@ -45,23 +46,23 @@ MeshIOVTK::importMesh( const std::string& filePath,
                         smtk::mesh::ManagerPtr& manager,
                        const std::string& domainPropertyName ) const
 {
-  smtk::extension::vtk::io::VTKDataConverter convert;
-  return convert( filePath, manager, domainPropertyName );
+  smtk::extension::vtk::io::ImportVTKData import;
+  return import( filePath, manager, domainPropertyName );
 }
 
 bool MeshIOVTK::importMesh( const std::string& filePath,
                             smtk::mesh::CollectionPtr collection,
                             const std::string& domainPropertyName ) const
 {
-  smtk::extension::vtk::io::VTKDataConverter convert;
-  return convert( filePath, collection, domainPropertyName );
+  smtk::extension::vtk::io::ImportVTKData import;
+  return import( filePath, collection, domainPropertyName );
 }
 
 bool MeshIOVTK::exportMesh( const std::string& filePath,
                             smtk::mesh::CollectionPtr collection) const
 {
-  smtk::extension::vtk::io::VTKDataConverter convert;
-  return convert( filePath, collection );
+  smtk::extension::vtk::io::ExportVTKData export_;
+  return export_( filePath, collection );
 }
 
 

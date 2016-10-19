@@ -1,11 +1,13 @@
 set(srcs
+  ExportVTKData.cxx
+  ImportVTKData.cxx
   MeshIOVTK.cxx
-  VTKDataConverter.cxx
   )
 
 set(headers
+  ExportVTKData.h
+  ImportVTKData.h
   MeshIOVTK.h
-  VTKDataConverter.h
   )
 
 add_library(smtkIOVTK ${srcs})

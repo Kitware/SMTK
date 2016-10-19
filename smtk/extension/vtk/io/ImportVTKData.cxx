@@ -10,7 +10,7 @@
 //
 //=============================================================================
 
-#include "smtk/extension/vtk/io/VTKDataConverter.h"
+#include "smtk/extension/vtk/io/ImportVTKData.h"
 
 #include "smtk/mesh/CellSet.h"
 #include "smtk/mesh/CellTraits.h"
@@ -282,7 +282,7 @@ bool convertDomain(vtkCellData* cellData,
 }
 
 //----------------------------------------------------------------------------
-VTKDataConverter::VTKDataConverter()
+ImportVTKData::ImportVTKData()
 {
 
 }
@@ -303,9 +303,9 @@ vtkDataSet* readXMLFile(const std::string& fileName)
 
 //----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr
-VTKDataConverter::operator()(const std::string& filename,
-                             smtk::mesh::ManagerPtr& manager,
-                             std::string materialPropertyName) const
+ImportVTKData::operator()(const std::string& filename,
+                          smtk::mesh::ManagerPtr& manager,
+                          std::string materialPropertyName) const
 {
   smtk::mesh::CollectionPtr collection = manager->makeCollection();
   return this->operator()(filename, collection, materialPropertyName) ?
@@ -313,9 +313,9 @@ VTKDataConverter::operator()(const std::string& filename,
 }
 
 //----------------------------------------------------------------------------
-bool VTKDataConverter::operator()(const std::string& filename,
-                                  smtk::mesh::CollectionPtr collection,
-                                  std::string materialPropertyName) const
+bool ImportVTKData::operator()(const std::string& filename,
+                               smtk::mesh::CollectionPtr collection,
+                               std::string materialPropertyName) const
 {
   std::string extension =
     vtksys::SystemTools::GetFilenameLastExtension(filename.c_str());
@@ -342,9 +342,9 @@ bool VTKDataConverter::operator()(const std::string& filename,
 }
 
 //----------------------------------------------------------------------------
-bool VTKDataConverter::operator()(vtkPolyData* polydata,
-                                  smtk::mesh::CollectionPtr collection,
-                                  std::string materialPropertyName) const
+bool ImportVTKData::operator()(vtkPolyData* polydata,
+                               smtk::mesh::CollectionPtr collection,
+                               std::string materialPropertyName) const
 {
   //make sure we have a valid poly data
   if(!polydata)
@@ -400,18 +400,19 @@ bool VTKDataConverter::operator()(vtkPolyData* polydata,
 
 //----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr
-VTKDataConverter::operator()(vtkPolyData* polydata,
-                             smtk::mesh::ManagerPtr& manager,
-                             std::string materialPropertyName) const
+ImportVTKData::operator()(vtkPolyData* polydata,
+                          smtk::mesh::ManagerPtr& manager,
+                          std::string materialPropertyName) const
 {
   smtk::mesh::CollectionPtr c = manager->makeCollection();
-  return this->operator()(polydata,c,materialPropertyName) ? c : smtk::mesh::CollectionPtr();
+  return this->operator()(polydata,c,materialPropertyName) ? c :
+    smtk::mesh::CollectionPtr();
 }
 
 //----------------------------------------------------------------------------
-bool VTKDataConverter::operator()(vtkUnstructuredGrid* ugrid,
-                                  smtk::mesh::CollectionPtr collection,
-                                  std::string materialPropertyName) const
+bool ImportVTKData::operator()(vtkUnstructuredGrid* ugrid,
+                               smtk::mesh::CollectionPtr collection,
+                               std::string materialPropertyName) const
 {
   //make sure we have a valid poly data
   if(!ugrid)
@@ -465,171 +466,13 @@ bool VTKDataConverter::operator()(vtkUnstructuredGrid* ugrid,
 
 //----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr
-VTKDataConverter::operator()(vtkUnstructuredGrid* ugrid,
-                             smtk::mesh::ManagerPtr& manager,
-                             std::string materialPropertyName) const
+ImportVTKData::operator()(vtkUnstructuredGrid* ugrid,
+                          smtk::mesh::ManagerPtr& manager,
+                          std::string materialPropertyName) const
 {
   smtk::mesh::CollectionPtr c = manager->makeCollection();
-  return this->operator()(ugrid,c,materialPropertyName) ? c : smtk::mesh::CollectionPtr();
-}
-
-//----------------------------------------------------------------------------
-bool VTKDataConverter::operator()(const std::string& filename,
-                                  smtk::mesh::CollectionPtr collection) const
-{
-  std::string extension =
-    vtksys::SystemTools::GetFilenameLastExtension(filename.c_str());
-
-  // Dispatch based on the file extension
-  if (extension == ".vtu")
-   {
-   vtkSmartPointer<vtkUnstructuredGrid> ug =
-     vtkSmartPointer<vtkUnstructuredGrid>::New();
-   this->operator()(collection->meshes(), ug);
-   vtkNew<vtkXMLUnstructuredGridWriter> writer;
-   writer->SetFileName(filename.c_str());
-   writer->SetInputData(ug);
-   writer->Write();
-   return true;
-   }
-  else if (extension == ".vtp")
-   {
-   vtkSmartPointer<vtkPolyData> pd = vtkSmartPointer<vtkPolyData>::New();
-   this->operator()(collection->meshes(), pd);
-   vtkNew<vtkXMLPolyDataWriter> writer;
-   writer->SetFileName(filename.c_str());
-   writer->SetInputData(pd);
-   writer->Write();
-   return true;
-   }
-
-  return false;
-}
-
-//----------------------------------------------------------------------------
-void VTKDataConverter::operator()(const smtk::mesh::MeshSet& meshset,
-                                  vtkPolyData* pd) const
-{
-  // We are only getting the highest dimension cells starting Dims2
-  smtk::mesh::CellSet cells = meshset.cells(smtk::mesh::Dims2);
-
-  if( cells.is_empty() == true)
-    {
-    cells = meshset.cells(smtk::mesh::Dims1);
-    }
-  if( cells.is_empty() == true)
-    {
-    cells = meshset.cells(smtk::mesh::Dims0);
-    }
-
-  vtkNew<vtkPoints> pts;
-  pd->SetPoints(pts.GetPointer());
-
-  boost::int64_t connectivityLength= -1;
-  boost::int64_t numberOfCells = -1;
-  boost::int64_t numberOfPoints = -1;
-
-  //query for all cells
-  smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(
-    cells, connectivityLength, numberOfCells, numberOfPoints);
-
-  // cell connectivity
-  vtkNew<vtkCellArray> cellarray;
-
-  // points coordinates
-  pts->SetDataTypeToDouble();
-
-  if(numberOfPoints == 1)
-    {
-    double xyz[3];
-    cells.points().get(xyz);
-    pts->InsertNextPoint(xyz);
-    vtkNew<vtkIdList> ptids;
-    ptids->InsertNextId(0);
-    cellarray->InsertNextCell(ptids.GetPointer());
-    pd->SetVerts(cellarray.GetPointer());
-    }
-  else
-    {
-    pts->SetNumberOfPoints(numberOfPoints);
-    double *rawPoints = static_cast<double*>(pts->GetVoidPointer(0));
-
-    cellarray->Allocate(connectivityLength + numberOfCells);
-    boost::int64_t* cellconn = reinterpret_cast<boost::int64_t *>(
-                cellarray->WritePointer(numberOfCells, connectivityLength + numberOfCells));
-    smtk::mesh::PreAllocatedTessellation tess(cellconn,
-                                              rawPoints);
-
-    smtk::mesh::extractTessellation(cells, tess);
-    smtk::mesh::CellTypes ctypes = cells.types().cellTypes();
-
-    if (ctypes[smtk::mesh::Triangle]
-      || ctypes[smtk::mesh::Quad]
-      || ctypes[smtk::mesh::Polygon]
-      )
-      {
-      pd->SetPolys(cellarray.GetPointer());
-      }
-    else if (ctypes[smtk::mesh::Line])
-      {
-      pd->SetLines(cellarray.GetPointer());
-      }
-    else if (ctypes[smtk::mesh::Vertex])
-      {
-      pd->SetVerts(cellarray.GetPointer());
-      }
-    }
-}
-
-//----------------------------------------------------------------------------
-void VTKDataConverter::operator()(const smtk::mesh::MeshSet& meshset,
-                                  vtkUnstructuredGrid* ug) const
-{
-  boost::int64_t connectivityLength= -1;
-  boost::int64_t numberOfCells = -1;
-  boost::int64_t numberOfPoints = -1;
-
-  //determine the allocation lengths
-  smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(
-    meshset, connectivityLength, numberOfCells, numberOfPoints);
-
-  //create raw data buffers to hold our data
-  double* pointsData = new double[3*numberOfPoints];
-  unsigned char* cellTypesData = new unsigned char[numberOfCells];
-  vtkIdType* cellLocationsData = new vtkIdType[numberOfCells];
-  vtkIdType* connectivityData = new vtkIdType[connectivityLength+numberOfCells];
-
-  //extract tessellation information
-  smtk::mesh::PreAllocatedTessellation tess(connectivityData, cellLocationsData,
-                                            cellTypesData, pointsData);
-  smtk::mesh::extractTessellation(meshset, tess);
-
-  // create vtk data arrays to hold our data
-  vtkNew<vtkDoubleArray> pointsArray;
-  vtkNew<vtkUnsignedCharArray> cellTypes;
-  vtkNew<vtkIdTypeArray> cellLocations;
-  vtkNew<vtkIdTypeArray> connectivity;
-
-  // transfer ownership of our raw data arrays to the vtk data arrays
-  pointsArray->SetNumberOfComponents(3);
-  pointsArray->SetArray(pointsData, 3*numberOfPoints, false,
-                        vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
-  cellTypes->SetArray(cellTypesData, numberOfCells, false,
-                      vtkUnsignedCharArray::VTK_DATA_ARRAY_DELETE);
-  cellLocations->SetArray(cellLocationsData, numberOfCells, false,
-                          vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
-  connectivity->SetArray(connectivityData, connectivityLength, false,
-                         vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
-
-  vtkNew<vtkPoints> points;
-  points->SetData(pointsArray.GetPointer());
-
-  vtkNew<vtkCellArray> cells;
-  cells->SetCells(numberOfCells, connectivity.GetPointer());
-
-  ug->SetPoints(points.GetPointer());
-  ug->SetCells(cellTypes.GetPointer(), cellLocations.GetPointer(),
-               cells.GetPointer());
+  return this->operator()(ugrid,c,materialPropertyName) ? c :
+    smtk::mesh::CollectionPtr();
 }
 
 }
