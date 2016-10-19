@@ -378,7 +378,8 @@ void qtModelView::selectionChanged (
   smtk::model::DescriptivePhrases selproperties;
   smtk::mesh::MeshSets selmeshes;
   this->currentSelectionByMask(selentityrefs,
-    CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY | INSTANCE_ENTITY,
+    CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY |
+    AUX_GEOM_ENTITY | INSTANCE_ENTITY,
     selproperties, false, &selmeshes);
 
   emit this->selectionChanged(selentityrefs, selmeshes, selproperties);
@@ -1164,7 +1165,7 @@ void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
   smtk::model::DescriptivePhrases selproperties;
   this->recursiveSelect(dp, selentityrefs,
     CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY |
-    MODEL_ENTITY | INSTANCE_ENTITY | SESSION,
+    MODEL_ENTITY | AUX_GEOM_ENTITY | INSTANCE_ENTITY | SESSION,
     selproperties, false, &selmeshes);
   bool visible = true;
   if(dp->phraseType() == MESH_LIST || dp->phraseType() == MESH_SUMMARY)
@@ -1300,6 +1301,8 @@ QColor internal_convertColor(const FloatList& rgba)
 {
   int ncomp = static_cast<int>(rgba.size());
   float alpha = ncomp != 4 ? 1. : std::max(0., std::min(rgba[3], 1.0));
+  // alpha can't be zero
+  alpha = alpha == 0. ? 1.0 : alpha;
   return ncomp >= 3 ?
     QColor::fromRgbF(rgba[0], rgba[1], rgba[2], alpha) : QColor(); 
 }
