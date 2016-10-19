@@ -220,7 +220,6 @@ bool ImportVTKData::operator()(const std::string& filename,
 
   // Dispatch based on the file extension
   vtkDataSet* data;
-  smtk::mesh::CollectionPtr c;
   if (extension == ".vtu")
    {
    data = readXMLFile<vtkXMLUnstructuredGridReader> (filename);
