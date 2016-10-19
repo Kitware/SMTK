@@ -11,7 +11,7 @@
 #=============================================================================
 
 set(unit_tests_which_require_data
-  UnitTestVTKDataConverter.cxx
+  UnitTestImportExportVTKData.cxx
   UnitTestMeshIOVTK.cxx
   )
 

@@ -46,6 +46,10 @@ public:
   bool importMesh( const std::string& filePath,
                    smtk::mesh::CollectionPtr collection,
                    const std::string& domainPropertyName ) const override;
+
+  //Epxort a collection to a VTK XML unstructured grid or polydata.
+  bool exportMesh( const std::string& filePath,
+                   smtk::mesh::CollectionPtr collection ) const override;
 };
 
 }

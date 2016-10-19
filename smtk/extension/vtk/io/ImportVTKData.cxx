@@ -10,20 +10,33 @@
 //
 //=============================================================================
 
-#include "smtk/extension/vtk/io/VTKDataConverter.h"
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
-#include "smtk/mesh/CellTraits.h"
+#include "smtk/extension/vtk/io/ImportVTKData.h"
 
-#include "vtkPolyData.h"
-#include "vtkUnstructuredGrid.h"
-#include "vtkPoints.h"
+#include "smtk/mesh/CellSet.h"
+#include "smtk/mesh/CellTraits.h"
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/ExtractTessellation.h"
+#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/MeshSet.h"
+
+#include "vtkAOSDataArrayTemplate.h"
 #include "vtkCell.h"
+#include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkDataArray.h"
+#include "vtkDoubleArray.h"
+#include "vtkIdTypeArray.h"
 #include "vtkIntArray.h"
+#include "vtkNew.h"
+#include "vtkPoints.h"
+#include "vtkPolyData.h"
+#include "vtkSmartPointer.h"
+#include "vtkUnsignedCharArray.h"
+#include "vtkUnstructuredGrid.h"
 #include "vtkXMLPolyDataReader.h"
+#include "vtkXMLPolyDataWriter.h"
 #include "vtkXMLUnstructuredGridReader.h"
+#include "vtkXMLUnstructuredGridWriter.h"
 
 #include "vtksys/SystemTools.hxx"
 
@@ -269,7 +282,7 @@ bool convertDomain(vtkCellData* cellData,
 }
 
 //----------------------------------------------------------------------------
-VTKDataConverter::VTKDataConverter()
+ImportVTKData::ImportVTKData()
 {
 
 }
@@ -290,9 +303,9 @@ vtkDataSet* readXMLFile(const std::string& fileName)
 
 //----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr
-VTKDataConverter::operator()(const std::string& filename,
-                             smtk::mesh::ManagerPtr& manager,
-                             std::string materialPropertyName) const
+ImportVTKData::operator()(const std::string& filename,
+                          smtk::mesh::ManagerPtr& manager,
+                          std::string materialPropertyName) const
 {
   smtk::mesh::CollectionPtr collection = manager->makeCollection();
   return this->operator()(filename, collection, materialPropertyName) ?
@@ -300,9 +313,9 @@ VTKDataConverter::operator()(const std::string& filename,
 }
 
 //----------------------------------------------------------------------------
-bool VTKDataConverter::operator()(const std::string& filename,
-                                  smtk::mesh::CollectionPtr collection,
-                                  std::string materialPropertyName) const
+bool ImportVTKData::operator()(const std::string& filename,
+                               smtk::mesh::CollectionPtr collection,
+                               std::string materialPropertyName) const
 {
   std::string extension =
     vtksys::SystemTools::GetFilenameLastExtension(filename.c_str());
@@ -329,9 +342,9 @@ bool VTKDataConverter::operator()(const std::string& filename,
 }
 
 //----------------------------------------------------------------------------
-bool VTKDataConverter::operator()(vtkPolyData* polydata,
-                                  smtk::mesh::CollectionPtr collection,
-                                  std::string materialPropertyName) const
+bool ImportVTKData::operator()(vtkPolyData* polydata,
+                               smtk::mesh::CollectionPtr collection,
+                               std::string materialPropertyName) const
 {
   //make sure we have a valid poly data
   if(!polydata)
@@ -387,18 +400,19 @@ bool VTKDataConverter::operator()(vtkPolyData* polydata,
 
 //----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr
-VTKDataConverter::operator()(vtkPolyData* polydata,
-                             smtk::mesh::ManagerPtr& manager,
-                             std::string materialPropertyName) const
+ImportVTKData::operator()(vtkPolyData* polydata,
+                          smtk::mesh::ManagerPtr& manager,
+                          std::string materialPropertyName) const
 {
   smtk::mesh::CollectionPtr c = manager->makeCollection();
-  return this->operator()(polydata,c,materialPropertyName) ? c : smtk::mesh::CollectionPtr();
+  return this->operator()(polydata,c,materialPropertyName) ? c :
+    smtk::mesh::CollectionPtr();
 }
 
 //----------------------------------------------------------------------------
-bool VTKDataConverter::operator()(vtkUnstructuredGrid* ugrid,
-                                  smtk::mesh::CollectionPtr collection,
-                                  std::string materialPropertyName) const
+bool ImportVTKData::operator()(vtkUnstructuredGrid* ugrid,
+                               smtk::mesh::CollectionPtr collection,
+                               std::string materialPropertyName) const
 {
   //make sure we have a valid poly data
   if(!ugrid)
@@ -452,12 +466,13 @@ bool VTKDataConverter::operator()(vtkUnstructuredGrid* ugrid,
 
 //----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr
-VTKDataConverter::operator()(vtkUnstructuredGrid* ugrid,
-                             smtk::mesh::ManagerPtr& manager,
-                             std::string materialPropertyName) const
+ImportVTKData::operator()(vtkUnstructuredGrid* ugrid,
+                          smtk::mesh::ManagerPtr& manager,
+                          std::string materialPropertyName) const
 {
   smtk::mesh::CollectionPtr c = manager->makeCollection();
-  return this->operator()(ugrid,c,materialPropertyName) ? c : smtk::mesh::CollectionPtr();
+  return this->operator()(ugrid,c,materialPropertyName) ? c :
+    smtk::mesh::CollectionPtr();
 }
 
 }

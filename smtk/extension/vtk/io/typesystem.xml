@@ -6,16 +6,21 @@
   <suppress-warning text="Duplicate type entry: 'smtk'"/>
 
   <!-- Ignore warnings about wrapping vtk-exposed methods -->
-  <suppress-warning text="skipping function 'smtk::extension::vtk::io::VTKDataConverter::operator()', unmatched parameter type 'vtkUnstructuredGrid*'"/>
-  <suppress-warning text="skipping function 'smtk::extension::vtk::io::VTKDataConverter::operator()', unmatched parameter type 'vtkPolyData*'"/>
+  <suppress-warning text="skipping function 'smtk::extension::vtk::io::ExportVTKData::operator()', unmatched parameter type 'vtkPolyData*'"/>
+  <suppress-warning text="skipping function 'smtk::extension::vtk::io::ImportVTKData::operator()', unmatched parameter type 'vtkPolyData*'"/>
+  <suppress-warning text="skipping function 'smtk::extension::vtk::io::ImportVTKData::operator()', unmatched parameter type 'vtkUnstructuredGrid*'"/>
+  <suppress-warning text="skipping function 'smtk::extension::vtk::io::ExportVTKData::operator()', unmatched parameter type 'vtkUnstructuredGrid*'"/>
 
   <!-- Additional objects to be wrapped -->
   <namespace-type name="smtk" generate = "no">
     <namespace-type name="extension" generate = "no">
       <namespace-type name="vtk" generate = "yes">
 	<namespace-type name="io" generate = "yes">
-	  <object-type name="VTKDataConverter">
-            <include file-name="smtk/extension/vtk/io/VTKDataConverter.h" location="local"/>
+	  <object-type name="ImportVTKData">
+            <include file-name="smtk/extension/vtk/io/ImportVTKData.h" location="local"/>
+	  </object-type>
+	  <object-type name="ExportVTKData">
+            <include file-name="smtk/extension/vtk/io/ExportVTKData.h" location="local"/>
 	  </object-type>
 	</namespace-type>
       </namespace-type>
