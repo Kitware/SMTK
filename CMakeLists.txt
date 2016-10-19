@@ -68,6 +68,8 @@ set(EXECUTABLE_OUTPUT_PATH
   ${PROJECT_BINARY_DIR}/bin)
 
 # Set the directory where the libraries will be stored
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
+  ${PROJECT_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH
   ${PROJECT_BINARY_DIR}/lib)
 
