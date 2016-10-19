@@ -407,6 +407,9 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
 
     string(REPLACE ";" "${envsep}" smtk_pythonpath_env "${smtk_pythonpaths}")
     string(REPLACE ";" "${envsep}" smtk_libpath_env "${smtk_libpaths}")
+    if (WIN32)
+      string(REPLACE "/" "\\" smtk_libpath_env "${smtk_libpath_env}")
+    endif ()
     string(REPLACE ";" "\;" smtk_pythonpath_env "${smtk_pythonpath_env}")
     string(REPLACE ";" "\;" smtk_libpath_env "${smtk_libpath_env}")
     set(smtk_python_test_environment
