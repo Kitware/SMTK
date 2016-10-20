@@ -341,7 +341,7 @@ function(sbk_wrap_library NAME)
     CACHE INTERNAL "Shiboken typesystem paths for ${NAME}"
   )
   set(${NAME}_WRAP_INCLUDE_DIRS
-    "${CMAKE_CURRENT_BINARY_DIR}/${_pyname}"
+    "${CMAKE_CURRENT_BINARY_DIR}${package}/${_pyname}"
     ${_extra_include_dirs}
     CACHE INTERNAL "Include directory for wrapped ${NAME} module"
   )
