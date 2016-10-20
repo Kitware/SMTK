@@ -102,6 +102,7 @@ function(sbk_wrap_library NAME)
     set(package "")
   else()
     set(package "/${_PACKAGE}")
+    set(package_namespace "${_PACKAGE}.")
   endif()
 
   # Get base include directories
@@ -190,13 +191,13 @@ function(sbk_wrap_library NAME)
   if(_TYPESYSTEM)
     sbk_cat(EXTRA_TYPESYSTEMS "\n" "${_extra_typesystems}")
     sbk_cat(EXTRA_OBJECTS "\n" "${_objects}")
-    set(TYPESYSTEM_NAME "${_pyname}")
+    set(TYPESYSTEM_NAME "${package_namespace}${_pyname}")
 
     configure_file("${_TYPESYSTEM}" "${_typesystem}")
   else()
     sbk_cat(_content "\n"
       "<?xml version=\"1.0\"?>"
-      "<typesystem package=\"${_pyname}\">"
+      "<typesystem package=\"${package_namespace}${_pyname}\">"
       ${_extra_typesystems}
       ${_objects}
       "</typesystem>"
