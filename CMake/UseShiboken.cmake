@@ -102,6 +102,7 @@ function(sbk_wrap_library NAME)
     set(package "")
   else()
     set(package "/${_PACKAGE}")
+    string(REPLACE "." "/" package "${package}")
     set(package_namespace "${_PACKAGE}.")
   endif()
 
