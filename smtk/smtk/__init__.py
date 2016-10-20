@@ -78,9 +78,9 @@ simulation = _temp.smtk.simulation
 io = _temp.smtk.io
 
 try:
-  _tempext = __import__('vtkToSMTKMeshPython', globals(), locals(), [], -1)
+  _tempext = __import__('smtkIOVTKPython', globals(), locals(), [], -1)
   __import_shared_ptrs__()
-  vtkToMesh = _tempext.vtkToMesh
+  smtkIOVTK = _tempext.smtkIOVTK
 except:
   pass
 
