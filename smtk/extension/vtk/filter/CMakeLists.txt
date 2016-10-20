@@ -4,6 +4,7 @@ set(srcs
    vtkCleanPolylines.cxx
    vtkDEMToMesh.cxx
    vtkExtractLine.cxx
+   vtkImageSpacingFlip.cxx
    vtkPolyDataStatsFilter.cxx
   )
 
@@ -12,6 +13,7 @@ set(headers
    vtkCleanPolylines.h
    vtkDEMToMesh.h
    vtkExtractLine.h
+   vtkImageSpacingFlip.h
    vtkPolyDataStatsFilter.h
 )
 
