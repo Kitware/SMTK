@@ -19,8 +19,6 @@ set (unit_tests_which_require_data
 set(external_libs ${Boost_LIBRARIES})
 
 if (SMTK_ENABLE_VTK_SUPPORT)
-set_source_files_properties(UnitTestMeshSessionTopology.cxx
-  PROPERTIES COMPILE_FLAGS -DSMTK_ENABLE_VTK_SUPPORT)
 list (APPEND external_libs ${VTK_LIBRARIES} vtkSMTKSourceExt smtkIOVTK)
 endif()
 

@@ -25,6 +25,8 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
 
+#include <chrono>
+
 #ifdef SMTK_ENABLE_VTK_SUPPORT
 #include "vtkActor.h"
 #include "vtkCamera.h"
@@ -43,6 +45,9 @@
 #include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
 #include "vtkXMLMultiBlockDataWriter.h"
+
+// This macro ensures the vtk io library is loaded into the executable
+smtkComponentInitMacro(smtk_extension_vtk_io_MeshIOVTK)
 #endif
 
 namespace
@@ -188,7 +193,7 @@ int UnitTestMeshSessionTopology(int argc, char* argv[])
     readFilePath += "/model/3d/exodus/SimpleReactorCore/SimpleReactorCore.exo";
 
     test(ImportModel(model, session, readFilePath) == 0,
-         "Could not import model");
+         "Could not import model " + readFilePath);
 
     std::size_t count[4] = {0,0,0,0};
     ParseModelTopology(model, count);
@@ -209,6 +214,7 @@ int UnitTestMeshSessionTopology(int argc, char* argv[])
       }
   }
 
+#ifdef SMTK_ENABLE_VTK_SUPPORT
   {
     smtk::model::Model model;
 
@@ -216,7 +222,7 @@ int UnitTestMeshSessionTopology(int argc, char* argv[])
     readFilePath += "/mesh/3d/nickel_superalloy.vtu";
 
     test(ImportModel(model, session, readFilePath, "ZoneIds") == 0,
-         "Could not import model");
+         "Could not import model " + readFilePath);
 
     std::size_t count[4] = {0,0,0,0};
     ParseModelTopology(model, count);
@@ -236,6 +242,7 @@ int UnitTestMeshSessionTopology(int argc, char* argv[])
       VisualizeModel(model);
       }
   }
-
+#endif
+  
   return 0;
 }
