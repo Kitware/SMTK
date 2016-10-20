@@ -245,19 +245,14 @@ function(sbk_wrap_library NAME)
   list(APPEND _shiboken_options
     "--output-directory=${CMAKE_CURRENT_BINARY_DIR}"
   )
+  list(APPEND _shiboken_options "--include-paths=${_includes}")
+  list(APPEND _shiboken_options "--typesystem-paths=${_typesystem_paths}")
 
   set(arg_file "${CMAKE_CURRENT_BINARY_DIR}/shiboken-${NAME}.args")
-  file(WRITE "${arg_file}.tmp" "")
-  foreach (arg IN LISTS _shiboken_options)
-    file(APPEND "${arg_file}.tmp" "${arg}\n")
-  endforeach ()
-  file(APPEND "${arg_file}.tmp" "--include-paths=${_includes}\n")
-  file(APPEND "${arg_file}.tmp" "--typesystem-paths=${_typesystem_paths}\n")
-
-  configure_file(
-    "${arg_file}.tmp"
-    "${arg_file}"
-    COPYONLY)
+  string(REPLACE ";" "\n" arg_contents "${_shiboken_options}")
+  file(GENERATE
+    OUTPUT  "${arg_file}"
+    CONTENT "${arg_contents}\n")
 
   add_custom_command(
     OUTPUT ${_sources}
