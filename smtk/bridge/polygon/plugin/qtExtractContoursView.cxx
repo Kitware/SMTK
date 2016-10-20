@@ -296,6 +296,7 @@ pqPipelineSource* internal_createImageSource(const std::string& imageurl)
       finfo.completeSuffix().toLower() == "dem")
     {
     source =  builder->createReader("sources", "GDALRasterReader", files, server);
+    source =  builder->createFilter("props", "ImageSpacingFlip", source);
     }
   else
     {
