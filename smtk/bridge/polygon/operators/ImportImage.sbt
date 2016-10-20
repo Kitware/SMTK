@@ -16,7 +16,7 @@
       <ItemDefinitions>
         <File Name="filename" Label="File Name" NumberOfRequiredValues="1"
           ShouldExist="true"
-          FileFilters="Image files (*.vti *.tif *.tiff);;DEM(*.dem);;All files (*.*)">
+          FileFilters="Supported files (*.vti *.tif *.tiff *.dem);;Image files (*.vti *.tif *.tiff);;DEM(*.dem);;All files (*.*)">
         </File>
         <Void Name="UseScalarColoring" Label="Map Scalars For Coloring" Optional="true">
           <BriefDescription>Should scalars be mapped with a color table for displaying image? If unchecked, the scalar values will be treated directly as colors.</BriefDescription>
