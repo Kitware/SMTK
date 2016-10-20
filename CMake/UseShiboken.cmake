@@ -211,7 +211,7 @@ function(sbk_wrap_library NAME)
     COMMAND "${PYTHON_EXECUTABLE}"
             "${SHIBOKEN_LIST_TYPESYSTEM_SOURCES_SCRIPT}"
             "${_typesystem}"
-            "${WORKING_DIRECTORY}"
+            "${CMAKE_CURRENT_BINARY_DIR}"
     WORKING_DIRECTORY "${_WORKING_DIRECTORY}"
     OUTPUT_VARIABLE _sources
   )
