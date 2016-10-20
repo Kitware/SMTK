@@ -102,6 +102,8 @@ function(sbk_wrap_library NAME)
     set(package "")
   else()
     set(package "/${_PACKAGE}")
+    string(REPLACE "." "/" package "${package}")
+    set(package_namespace "${_PACKAGE}.")
   endif()
 
   # Get base include directories
@@ -190,13 +192,13 @@ function(sbk_wrap_library NAME)
   if(_TYPESYSTEM)
     sbk_cat(EXTRA_TYPESYSTEMS "\n" "${_extra_typesystems}")
     sbk_cat(EXTRA_OBJECTS "\n" "${_objects}")
-    set(TYPESYSTEM_NAME "${_pyname}")
+    set(TYPESYSTEM_NAME "${package_namespace}${_pyname}")
 
     configure_file("${_TYPESYSTEM}" "${_typesystem}")
   else()
     sbk_cat(_content "\n"
       "<?xml version=\"1.0\"?>"
-      "<typesystem package=\"${_pyname}\">"
+      "<typesystem package=\"${package_namespace}${_pyname}\">"
       ${_extra_typesystems}
       ${_objects}
       "</typesystem>"
@@ -209,7 +211,7 @@ function(sbk_wrap_library NAME)
     COMMAND "${PYTHON_EXECUTABLE}"
             "${SHIBOKEN_LIST_TYPESYSTEM_SOURCES_SCRIPT}"
             "${_typesystem}"
-            "${WORKING_DIRECTORY}"
+            "${CMAKE_CURRENT_BINARY_DIR}"
     WORKING_DIRECTORY "${_WORKING_DIRECTORY}"
     OUTPUT_VARIABLE _sources
   )
@@ -243,19 +245,14 @@ function(sbk_wrap_library NAME)
   list(APPEND _shiboken_options
     "--output-directory=${CMAKE_CURRENT_BINARY_DIR}"
   )
+  list(APPEND _shiboken_options "--include-paths=${_includes}")
+  list(APPEND _shiboken_options "--typesystem-paths=${_typesystem_paths}")
 
   set(arg_file "${CMAKE_CURRENT_BINARY_DIR}/shiboken-${NAME}.args")
-  file(WRITE "${arg_file}.tmp" "")
-  foreach (arg IN LISTS _shiboken_options)
-    file(APPEND "${arg_file}.tmp" "${arg}\n")
-  endforeach ()
-  file(APPEND "${arg_file}.tmp" "--include-paths=${_includes}\n")
-  file(APPEND "${arg_file}.tmp" "--typesystem-paths=${_typesystem_paths}\n")
-
-  configure_file(
-    "${arg_file}.tmp"
-    "${arg_file}"
-    COPYONLY)
+  string(REPLACE ";" "\n" arg_contents "${_shiboken_options}")
+  file(GENERATE
+    OUTPUT  "${arg_file}"
+    CONTENT "${arg_contents}\n")
 
   add_custom_command(
     OUTPUT ${_sources}
@@ -271,7 +268,7 @@ function(sbk_wrap_library NAME)
   if(WIN32)
     set(_clean)
     FOREACH (i ${_sources})
-      string(REGEX REPLACE "\\\\" "/" i ${i})
+      string(REPLACE "\\" "/" i ${i})
       set(_clean ${_clean} ${i})
     ENDFOREACH()
     set(_sources ${_clean})
@@ -291,7 +288,7 @@ function(sbk_wrap_library NAME)
                ${SHIBOKEN_INCLUDE_DIR}
                ${_extra_include_dirs}
               )
-  set_property(TARGET ${_pyname} PROPERTY LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/smtk")
+  set_property(TARGET ${_pyname} PROPERTY LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}${package}")
   if(WIN32)
     set_property(TARGET ${_pyname} PROPERTY SUFFIX ".pyd")
   endif()
@@ -344,7 +341,7 @@ function(sbk_wrap_library NAME)
     CACHE INTERNAL "Shiboken typesystem paths for ${NAME}"
   )
   set(${NAME}_WRAP_INCLUDE_DIRS
-    "${CMAKE_CURRENT_BINARY_DIR}/${_pyname}"
+    "${CMAKE_CURRENT_BINARY_DIR}${package}/${_pyname}"
     ${_extra_include_dirs}
     CACHE INTERNAL "Include directory for wrapped ${NAME} module"
   )
