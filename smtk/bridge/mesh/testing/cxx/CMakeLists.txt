@@ -10,10 +10,10 @@
 #
 #=============================================================================
 
-set (unit_tests
-  UnitTestMeshSessionTopology.cxx)
+set (unit_tests)
 
 set (unit_tests_which_require_data
+  UnitTestMeshSessionTopology.cxx
   UnitTestMeshSessionReadWrite.cxx)
 
 set(external_libs ${Boost_LIBRARIES})
