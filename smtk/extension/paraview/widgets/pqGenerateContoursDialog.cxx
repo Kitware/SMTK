@@ -194,6 +194,8 @@ pqGenerateContoursDialog::pqGenerateContoursDialog(
       imagesource->getOutputPort(0), this->RenderView);
     if(imagerep)
       {
+      // always display the image in Slice representation type
+      vtkSMPropertyHelper(imagerep->getProxy(), "Representation").Set("Slice");
       if(mapScalars2Colors)
         {
         // If there is an elevation field on the points then use it.
