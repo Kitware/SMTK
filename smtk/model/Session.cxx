@@ -424,16 +424,16 @@ bool Session::splitProperties(const EntityRef& from, const EntityRefs& to)
 
   // TODO: It should be possible to use different rules on a case-by-case basis:
   // Split rule for strings: broadcast value to one (the first by UUID).
-  for (int i = 0; i < nps; ++i)
+  for (unsigned int ii = 0; ii < nps; ++ii)
     {
     const StringData& sdata(from.stringProperties());
     StringData::const_iterator spit;
     if (!to.empty())
       { // Copy name only to the first entity.
       EntityRef mutableEnt(*to.begin());
-      if ((spit = sdata.find(stringPropertyNamesToBroadcast[i])) != sdata.end())
+      if ((spit = sdata.find(stringPropertyNamesToBroadcast[ii])) != sdata.end())
         {
-        mutableEnt.setStringProperty(stringPropertyNamesToBroadcast[i], spit->second);
+        mutableEnt.setStringProperty(stringPropertyNamesToBroadcast[ii], spit->second);
         }
       }
     }
@@ -483,14 +483,14 @@ bool Session::mergeProperties(const EntityRefs& from, EntityRef& to)
   // TODO: It should be possible to use different rules on a case-by-case basis:
   // Merge rule for strings: choose the first one:
   StringList svalue;
-  for (int i = 0; i < nps; ++i)
+  for (unsigned int ii = 0; ii < nps; ++ii)
     {
     bool haveString = false;
     EntityRefs::const_iterator eit;
     for (eit = from.begin(); eit != from.end(); ++eit)
       {
       const StringData& values(eit->stringProperties());
-      StringData::const_iterator valueIt = values.find(stringPropertyNamesToReduce[i]);
+      StringData::const_iterator valueIt = values.find(stringPropertyNamesToReduce[ii]);
       if (valueIt != values.end())
         {
         haveString = true;
@@ -500,7 +500,7 @@ bool Session::mergeProperties(const EntityRefs& from, EntityRef& to)
       }
     if (haveString)
       {
-      to.setStringProperty(stringPropertyNamesToReduce[i], StringList(svalue.begin(), svalue.end()));
+      to.setStringProperty(stringPropertyNamesToReduce[ii], StringList(svalue.begin(), svalue.end()));
       }
     }
   return true;
