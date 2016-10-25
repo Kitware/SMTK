@@ -58,7 +58,7 @@ class typesystem_parser(xml.sax.ContentHandler):
       self.package_prefix_path = os.path.join(prefix, self.package_name.replace('.', '/'))
       module_name = self.package_name.split('.')[-1]
       self.printFile(module_name + '_module_wrapper.cpp')
-      self.printFile(module_name + '_python.h')
+      self.printFile(self.package_name.replace('.', '_') + '_python.h')
 
     elif name == 'namespace-type':
       self.current_namespace.append(attrs['name'])
