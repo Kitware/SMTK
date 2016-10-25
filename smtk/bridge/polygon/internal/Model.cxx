@@ -24,7 +24,11 @@
 #include "smtk/io/Logger.h"
 //#include "smtk/io/ExportJSON.h"
 
+#include "smtk/bridge/polygon/Session.h"
+
+#include "smtk/model/Manager.txx"
 #include "smtk/bridge/polygon/internal/Model.txx"
+#include "smtk/bridge/polygon/Session.txx"
 
 using namespace smtk::model;
 
@@ -35,6 +39,8 @@ namespace smtk {
   namespace bridge {
     namespace polygon {
       namespace internal {
+
+typedef std::vector<std::pair<size_t, Segment> > SegmentSplitsT;
 
 pmodel::pmodel()
   : m_session(NULL), m_featureSize(1e-8)
@@ -313,12 +319,15 @@ smtk::model::Vertices pmodel::findOrAddModelVertices(
   * This creates a vertex record in the model manager and adds its tessellation.
   * It also adds the integer coordinates of the point to
   * the internal model's data (this instance).
-  * This does **not** relate the vertex record in the model manager to a parent model
-  * or owning geometric entity (such as an edge, face, or volume).
+  * This does **not** create a default name or relate the vertex record in
+  * the model manager to a parent model or owning geometric entity
+  * (such as an edge, face, or volume) unless \a addToModel is true,
+  * in which case the vertex is added as a free cell to the SMTK model.
   */
 smtk::model::Vertex pmodel::findOrAddModelVertex(
   smtk::model::ManagerPtr mgr,
-  const Point& pt)
+  const Point& pt,
+  bool addToModel)
 {
   PointToVertexId::const_iterator pit = this->m_vertices.find(pt);
   if (pit != this->m_vertices.end())
@@ -339,10 +348,231 @@ smtk::model::Vertex pmodel::findOrAddModelVertex(
 
   // Add vertex to model as a free cell (which it is until it bounds something).
   smtk::model::Model self(mgr, this->id());
-  self.embedEntity(v);
+  if (addToModel)
+    {
+    self.embedEntity(v);
+    v.assignDefaultName();
+    }
 
-  v.assignDefaultName();
   return v;
+}
+
+/// Add segments to \a segs for the given \a edge with either forward (\a reverse false) or backward (\a reverse true) orientation.
+template<typename T>
+void addSegmentsForEdge(T& segs, edge::Ptr edge, bool reverse)
+{
+  size_t n = segs.size();
+  if (!reverse)
+    {
+    PointSeq::const_iterator prev = edge->pointsBegin();
+    PointSeq::const_iterator it = prev;
+    for (++it; it != edge->pointsEnd(); ++it, ++n)
+      {
+      segs.push_back(std::pair<size_t,Segment>(n, Segment(*prev, *it)));
+      }
+    }
+  else
+    {
+    PointSeq::const_reverse_iterator prev = edge->pointsRBegin();
+    PointSeq::const_reverse_iterator it = prev;
+    for (++it; it != edge->pointsREnd(); ++it, ++n)
+      {
+      segs.push_back(std::pair<size_t,Segment>(n, Segment(*prev, *it)));
+      }
+    }
+}
+
+/**\brief Replace all edge-uses of \a modelEdge with nothing (if \a replacementEdge
+  *       is invalid) or new edge-uses of \a replacementEdge that mirror the sense
+  *       and orientation of \a modelEdge.
+  *
+  * This assumes \a modelEdge and \replacementEdge have the same underlying direction.
+  *
+  * TODO: Move to smtk/model? Is it generic enough?
+  */
+void edgeUseAndLoopRewrite(smtk::model::Edge& modelEdge, const smtk::model::Edge& replacementEdge)
+{
+  smtk::model::Manager::Ptr mgr = modelEdge.manager();
+  // Each use-record of the old (original) edge should be replaced with one or zero
+  // use-records for each of the new edges. Traverse the list of modelEdge uses:
+  smtk::model::EdgeUses oldEdgeUses = modelEdge.uses<smtk::model::EdgeUses>();
+  for (smtk::model::EdgeUses::iterator oeus = oldEdgeUses.begin(); oeus != oldEdgeUses.end(); ++oeus)
+    {
+    // Find the loop the use participates in:
+    smtk::model::Loop modelLoop =
+      oeus->boundingShellEntity().as<smtk::model::Loop>();
+    // Create uses of replacement edge(s) in order of modelEdgeUse
+    // Since we use modelEdge's point sequence, we know that our new uses
+    // must have the same sense and orientation. If the orientation of the
+    // old-edge-use is NEGATIVE, then we should reverse the order of
+    // the replacement uses.
+    smtk::model::EdgeUses replacements;
+    int origSense = oeus->sense();
+    smtk::model::Orientation origOrientation = oeus->orientation();
+    if (replacementEdge.isValid())
+      {
+      replacements.push_back(
+        mgr->addEdgeUse(replacementEdge, origSense, origOrientation));
+      }
+    modelLoop.replaceEdgeUseWithUses(*oeus, replacements);
+    }
+}
+
+/**\brief Demote a model vertex.
+  *
+  * Returns true when the vertex is deleted and false otherwise (because
+  * exactly 1 or more than 2 edge-incidences were present).
+  */
+bool pmodel::demoteModelVertex(
+  smtk::model::ManagerPtr mgr,
+  internal::VertexPtr vert,
+  smtk::model::EntityRefs& created,
+  smtk::model::EntityRefs& modified,
+  smtk::model::EntityRefs& expunged,
+  int debugLevel)
+{
+  if (!vert)
+    {
+    return false;
+    }
+  vertex::incident_edges::size_type nie = vert->numberOfEdgeIncidences();
+  if (nie != 0 && nie != 2)
+    {
+    smtkErrorMacro(this->session()->log(),
+      "Expected 0 or 2 edge incidences to " << smtk::model::Vertex(mgr, vert->id()).name()
+      << " but got " << nie);
+    return false;
+    }
+
+  // Nothing beyond here could/should cause a failure; so it is safe to modify storage.
+
+  std::pair<Id,Id> adjacentFaces1;
+  std::pair<Id,Id> adjacentFaces2;
+  bool isFreeCell = true;
+  SegmentSplitsT segs;
+  bool vertexSplitLoop = false;
+  if (nie == 2)
+    {
+    // Look up the incident edges:
+    vertex::incident_edges::iterator ierec1 = vert->edgesBegin();
+    vertex::incident_edges::iterator ierec2 = ierec1;
+    ++ierec2;
+    smtk::model::Edge e1(mgr, ierec1->edgeId());
+    smtk::model::Edge e2(mgr, ierec2->edgeId());
+    smtk::model::Model model(e1.owningModel());
+    edge::Ptr ie1 = this->session()->findStorage<edge>(ierec1->edgeId());
+    edge::Ptr ie2 = this->session()->findStorage<edge>(ierec2->edgeId());
+
+    // Find the "other" vertices attached to the incident edges:
+    smtk::model::Vertices everts;
+    everts = e1.vertices();
+    smtk::model::Vertex ve1other = everts.front().entity() == vert->id() ? everts.back() : everts.front();
+    everts = e2.vertices();
+    smtk::model::Vertex ve2other = everts.front().entity() == vert->id() ? everts.back() : everts.front();
+
+    // Perform surgery as needed:
+    if (e1 == e2)
+      { // The same model edge is incident twice.
+      vertexSplitLoop = true;
+      adjacentFaces1 = this->removeModelEdgeFromEndpoints(mgr, ie1);
+      isFreeCell = false; // well, it may be free, but we aren't changing it
+      }
+    else
+      {
+      // Capture the configuration of edges relative to the demoted vertex
+      // before we remove them from the vertex's internal records:
+      //      false: otherVert |--- e[12] ---> demotedVert or
+      //       true: otherVert <--- e[12] ---| demotedVert?
+      bool e1OutgoingFromDemotedVert = ierec1->isEdgeOutgoing();
+      bool e2OutgoingFromDemotedVert = ierec2->isEdgeOutgoing();
+
+      // Remove edges being merged from their endpoint vertices so that creation
+      // of the new edge can succeed (otherwise it will fail when trying
+      // to insert a coincident edge at the remaining edge endpoints).
+      adjacentFaces1 = this->removeModelEdgeFromEndpoints(mgr, ie1);
+      adjacentFaces2 = this->removeModelEdgeFromEndpoints(mgr, ie2);
+      if (debugLevel > -5)
+        {
+        smtkDebugMacro(this->m_session->log(),
+          "Demote adjacencies\n"
+          << "  " << adjacentFaces1.first.toString() << " / " << adjacentFaces1.second.toString()
+          << "  " << (e1OutgoingFromDemotedVert ? "o" : "i") << "\n"
+          << "  " << adjacentFaces2.first.toString() << " / " << adjacentFaces2.second.toString()
+          << "  " << (e2OutgoingFromDemotedVert ? "o" : "i"));
+        }
+      isFreeCell = (!adjacentFaces1.first && !adjacentFaces1.second);
+
+      // Accumulate points from both edges as segments.
+      size_t npts = ie1->pointsSize() + ie2->pointsSize() - 1; // -1 => don't duplicate model vertex location.
+      segs.reserve(npts - 1); // Preallocation to prevent vector from reallocating and invalidating segSplit iterator.
+
+      // Create a new edge with the same orientation as edge 1.
+      // Accumulate points from both edges
+      if (e1OutgoingFromDemotedVert)
+        {
+        addSegmentsForEdge(segs, ie2, e2OutgoingFromDemotedVert);
+        addSegmentsForEdge(segs, ie1, /*reverse?*/ false);
+        }
+      else
+        {
+        addSegmentsForEdge(segs, ie1, /*reverse?*/ false);
+        addSegmentsForEdge(segs, ie2, !e2OutgoingFromDemotedVert);
+        }
+
+      // Now we can create the new model edge.
+      smtk::model::Edge eout = this->createModelEdgeFromSegments(
+        mgr, segs.begin(), segs.end(), /*addToModel:*/ false, adjacentFaces1, false);
+      // FIXME: URHERE: Make sure ve1other and ve2other have face-adjacency recorded properly after eout is created.
+      eout.findOrAddRawRelation(ve1other);
+      if (ve2other != ve1other)
+        { // If the new edge is a loop, only add the common vertex once:
+        eout.findOrAddRawRelation(ve2other);
+        }
+      if (isFreeCell)
+        {
+        model.addCell(eout);
+        }
+      //cre.push_back(eout);
+      created.insert(eout);
+
+      if (debugLevel > 0)
+        {
+        // Print eout's verts to see if demoted vertex somehow ends up there.
+        }
+
+      // Update loops of face(s) attached to edge 1 and 2.
+      edgeUseAndLoopRewrite(e1, eout); // Replace uses of e1 with uses of eout
+      edgeUseAndLoopRewrite(e2, smtk::model::Edge()); // Invalid edge as last arg => replace uses of e2 with an empty set
+      //smtk::io::ExportJSON::fromModelManagerToFile(mgr, "/tmp/inanity.json");
+
+      // Handle property assignments to output edges:
+      smtk::model::EntityRefs merged;
+      merged.insert(e1);
+      merged.insert(e2);
+      this->session()->mergeProperties(merged, eout);
+
+      model.removeCell(e1);
+      model.removeCell(e2);
+      //DumpSegSplits("Split A: ", segs.begin(), segSplit);
+      //DumpSegSplits("Split B: ", segSplit, segs.end());
+      mgr->erase(ie1->id());
+      mgr->erase(ie2->id());
+      expunged.insert(e1);
+      expunged.insert(e2);
+      //std::cout << "Split into " << eA.name() << " " << eB.name() << "\n";
+
+      }
+    }
+
+  // If the number of incident edges is 0, just delete the vertex and return.
+  smtk::model::VertexSet verts;
+  smtk::model::Vertex mvert(mgr, vert->id());
+  verts.insert(mvert);
+  smtk::model::EntityRefArray exptmp;
+  this->session()->consistentInternalDelete(verts, modified, exptmp, debugLevel > 0);
+  expunged.insert(exptmp.begin(), exptmp.end());
+
+  return true;
 }
 
 /**\brief Split the model edge with the given \a edgeId at the given \a coords.
@@ -360,7 +590,7 @@ bool pmodel::splitModelEdgeAtPoint(
   const Id& edgeId,
   const std::vector<double>& coords,
   smtk::model::EntityRefs& created,
-  smtk::model::EntityRefs& modified)
+  int debugLevel)
 {
   Point pt = this->projectPoint(coords.begin(), coords.end());
   if (this->pointId(pt))
@@ -369,8 +599,10 @@ bool pmodel::splitModelEdgeAtPoint(
     return false; // Point is already a model vertex.
     }
   // TODO: Find point on edge closest to pt? Need to find where to insert model vertex?
-  smtk::model::Vertex v = this->findOrAddModelVertex(mgr, pt);
-  return this->splitModelEdgeAtModelVertex(mgr, edgeId, v.entity(), created, modified);
+  smtk::model::Vertex v = this->findOrAddModelVertex(mgr, pt, /*add as free cell?*/ false);
+  bool result = this->splitModelEdgeAtModelVertex(mgr, edgeId, v.entity(), created, debugLevel);
+  v.assignDefaultName(); // Assign the name after the vertex is added to the edge (and has a parent model).
+  return result;
 }
 
 /** Split the model edge at one of its points that has been promoted to a model vertex.
@@ -384,7 +616,7 @@ bool pmodel::splitModelEdgeAtModelVertex(
   const Id& edgeId,
   const Id& vertexId,
   smtk::model::EntityRefs& created,
-  smtk::model::EntityRefs& modified)
+  int debugLevel)
 {
   // Look up edge
   edge::Ptr edg = this->session()->findStorage<edge>(edgeId);
@@ -409,14 +641,12 @@ bool pmodel::splitModelEdgeAtModelVertex(
         { // Overwrite split point with vertex point.
         *split = vrt->point();
         }
-      return this->splitModelEdgeAtModelVertex(mgr, edg, vrt, split, created, modified);
+      return this->splitModelEdgeAtModelVertex(mgr, edg, vrt, split, created, debugLevel);
       }
     }
   // Edge did not contain model vertex in its sequence.
   return false;
 }
-
-typedef std::vector<std::pair<size_t, Segment> > SegmentSplitsT;
 
 #if 0
 static void DumpSegSplits(
@@ -468,14 +698,14 @@ bool pmodel::splitModelEdgeAtModelVertex(
   vertex::Ptr splitPoint,
   PointSeq::const_iterator location,
   smtk::model::EntityRefs& created,
-  smtk::model::EntityRefs& modified)
+  int debugLevel)
 {
   std::vector<vertex::Ptr> splitPoints;
   std::vector<PointSeq::const_iterator> locations;
   splitPoints.push_back(splitPoint);
   locations.push_back(location);
   return this->splitModelEdgeAtModelVertices(
-    mgr, edgeToSplit, splitPoints, locations, created, modified);
+    mgr, edgeToSplit, splitPoints, locations, created, debugLevel);
 }
 
 bool pmodel::splitModelEdgeAtModelVertices(
@@ -484,9 +714,8 @@ bool pmodel::splitModelEdgeAtModelVertices(
   std::vector<vertex::Ptr>& splitPointsInEdgeOrder,
   std::vector<PointSeq::const_iterator>& locationsInEdgeOrder,
   smtk::model::EntityRefs& created,
-  smtk::model::EntityRefs& modified)
+  int debugLevel)
 {
-  (void)modified;
   size_t npts;
   if (
     !edgeToSplit ||
@@ -558,13 +787,13 @@ bool pmodel::splitModelEdgeAtModelVertices(
     // Is the first/last point a split location? If so (and because we already
     // have model vertices), then we should discard those splits.
 
-    if (**locationsInEdgeOrder.begin() == (*splitPointsInEdgeOrder.begin())->point())
+    if (**locationsInEdgeOrder.begin() == *(edgeToSplit->pointsBegin()))
       { // First point is already a model vert... discard the first split
       locationsInEdgeOrder.erase(locationsInEdgeOrder.begin());
       splitPointsInEdgeOrder.erase(splitPointsInEdgeOrder.begin());
       }
 
-    if (!locationsInEdgeOrder.empty() && **locationsInEdgeOrder.rbegin() == (*splitPointsInEdgeOrder.rbegin())->point())
+    if (!locationsInEdgeOrder.empty() && **locationsInEdgeOrder.rbegin() == *(edgeToSplit->pointsRBegin()))
       { // Last point is already a model vert... discard the last split
       locationsInEdgeOrder.erase((++locationsInEdgeOrder.rbegin()).base());
       splitPointsInEdgeOrder.erase((++splitPointsInEdgeOrder.rbegin()).base());
@@ -614,20 +843,27 @@ bool pmodel::splitModelEdgeAtModelVertices(
   // to insert a coincident edge at the existing edge endpoints).
   std::pair<Id,Id> adjacentFaces = this->removeModelEdgeFromEndpoints(mgr, edgeToSplit);
   bool isFreeCell = (!adjacentFaces.first && !adjacentFaces.second);
+  if (debugLevel > -1)
+    {
+    smtkDebugMacro(this->m_session->log(),
+      "Split " << modelEdge.name() << "  faces "
+      << adjacentFaces.first.toString() << " / " << adjacentFaces.second.toString());
+    }
 
   // Now we can create the new model edges.
   SegmentSplitsT::iterator last = segs.begin();
-  smtk::model::Vertices::iterator avit = allVertices.begin();
   smtk::model::Edge eout;
   smtk::model::Model model(mgr, this->id());
   smtk::model::EntityRefArray cre;
-  for (std::vector<SegmentSplitsT::iterator>::iterator sgit = segSplits.begin(); sgit != segSplits.end(); ++sgit)
+  if (segSplits.empty() || segSplits.back() != segs.end())
     {
-    eout = this->createModelEdgeFromSegments(mgr, last, *sgit);
-    // Tie vertices to parent edge:
-    eout.findOrAddRawRelation(*avit);
-    ++avit;
-    eout.findOrAddRawRelation(*avit);
+    segSplits.push_back(segs.end());
+    }
+
+  std::vector<SegmentSplitsT::iterator>::iterator sgit = segSplits.begin();
+  do
+    {
+    eout = this->createModelEdgeFromSegments(mgr, last, *sgit, /*addToModel:*/ false, adjacentFaces, *sgit != segs.end());
     // Tie edge to model (if edge is not "owned" by a face).
     if (isFreeCell)
       {
@@ -636,26 +872,45 @@ bool pmodel::splitModelEdgeAtModelVertices(
     cre.push_back(eout);
     created.insert(eout);
     last = *sgit;
-    }
-  if (last != segs.end())
-    {
-    eout = this->createModelEdgeFromSegments(mgr, last, segs.end());
-    if (isFreeCell)
+    if (last == segs.end())
       {
-      model.addCell(eout);
+      break;
       }
-    cre.push_back(eout);
-    created.insert(eout);
+    ++sgit;
+    }
+  while (1);
+
+  if (debugLevel > -1)
+    {
+    std::ostringstream summ;
+    summ << "Edge incidences at new interior vertices:\n";
+    smtk::model::Vertices::iterator avit;
+    for (avit = allVertices.begin(); avit != allVertices.end(); ++avit)
+      {
+      vertex::Ptr ivrt = this->session()->findStorage<vertex>(avit->entity());
+      summ << "  " << smtk::model::Vertex(mgr, ivrt->id()).name() << " (" << ivrt->id().toString() << ")\n";
+      vertex::incident_edges::const_iterator veit;
+      for (veit = ivrt->edgesBegin(); veit != ivrt->edgesEnd(); ++veit)
+        {
+        summ
+          << "    " << smtk::model::Edge(mgr, veit->edgeId()).name() << " (" << veit->edgeId().toString() << ")"
+          << " cw face " << veit->clockwiseFaceId().toString()
+          << " out? " << (veit->isEdgeOutgoing() ? "Y" : "N")
+          << "\n";
+        }
+      }
+    smtkDebugMacro(this->m_session->log(), summ.str());
     }
 
   // Update loops of face(s) attached to original edge.
   // Each use-record of the old (original) edge should be replaced with one
   // use-record for each of the new edges. Traverse the list of modelEdge uses:
   smtk::model::EdgeUses oldEdgeUses = modelEdge.uses<smtk::model::EdgeUses>();
+  smtk::model::Loop modelLoop;
   for (smtk::model::EdgeUses::iterator oeus = oldEdgeUses.begin(); oeus != oldEdgeUses.end(); ++oeus)
     {
     // Find the loop the use participates in:
-    smtk::model::Loop modelLoop =
+    modelLoop =
       oeus->boundingShellEntity().as<smtk::model::Loop>();
     // Create uses of replacement edge(s) in order of modelEdgeUse
     // Since we use modelEdge's point sequence, we know that our new uses
@@ -683,9 +938,15 @@ bool pmodel::splitModelEdgeAtModelVertices(
           mgr->addEdgeUse(*creit, origSense, origOrientation));
         }
       }
+    if (debugLevel > 0)
+      {
+      smtkDebugMacro(this->m_session->log(),
+        "Replace " << oeus->name() << " (edge " << oeus->edge().name() << " "
+        << " sense " << origSense << " ornt " << (origOrientation == smtk::model::POSITIVE ? "+" : "-")
+        << ") with " << replacements.size() << " uses.");
+      }
     modelLoop.replaceEdgeUseWithUses(*oeus, replacements);
     }
-  //smtk::io::ExportJSON::fromModelManagerToFile(mgr, "/tmp/inanity.json");
 
   // Handle property assignments to output edges:
   this->session()->splitProperties(modelEdge, created);
@@ -696,11 +957,14 @@ bool pmodel::splitModelEdgeAtModelVertices(
   mgr->erase(edgeToSplit->id());
   //std::cout << "Split into " << eA.name() << " " << eB.name() << "\n";
 
-  // TODO: Fix face adjacency information (face relations and at all 3 vertices)
-  //       Create new edge uses if old ones were present.
-  //       Fix face loops by replacing old edge with new edges.
-  //       Create/fix vertex use at model vertex? No, this should be done wherever the vertex is created.
-  //       Add first+last model vertices to "modified" if the edge had any vertices originally.
+  // Now, regardless of whether the new edge(s) are free cells or belong to a loop,
+  // they have a parent model... assign names to those that didn't inherit one:
+  smtk::model::EntityRefs::iterator cit;
+  for (cit = created.begin(); cit != created.end(); ++cit)
+    {
+    smtk::model::Edge credge(*cit);
+    credge.assignDefaultName();
+    }
   return true;
 }
 
@@ -711,22 +975,23 @@ bool pmodel::splitModelEdgeAtModelVertices(
   * If these preconditions do not hold, either an invalid (empty) edge will be
   * returned or the model will become inconsistent.
   */
-model::Edge pmodel::createModelEdgeFromVertices(model::ManagerPtr mgr,
-						internal::VertexPtr v0,
-						internal::VertexPtr v1)
+model::Edge pmodel::createModelEdgeFromVertices(
+  model::ManagerPtr mgr,
+  internal::VertexPtr v0,
+  internal::VertexPtr v1)
 {
   if (!mgr || !v0 || !v1)
     {
     smtkErrorMacro(this->m_session->log(),
-		   "Detected either invalid Model Manager or at "
-		   "least one of the vertices was NULL");
+      "Detected either invalid Model Manager or at "
+      "least one of the vertices was NULL");
     return smtk::model::Edge();
     }
-      
+
   if (v0 == v1)
     {
     smtkErrorMacro(this->m_session->log(),
-		   "Vertices must be unique");
+      "Vertices must be unique");
     return smtk::model::Edge();
     }
 
@@ -736,18 +1001,17 @@ model::Edge pmodel::createModelEdgeFromVertices(model::ManagerPtr mgr,
   if (!v0->canInsertEdge(v1->point(), &whereBegin))
     {
     smtkErrorMacro(this->m_session->log(),
-		   "Edge would overlap face in neighborhood of first vertex (" << smtk::model::Vertex(mgr, v0->id()).name() << ")A.");
-    return smtk::model::Edge();
-    }
-  
- // Ensure edge can be inserted without splitting a face.
-  if (!v1->canInsertEdge(v0->point(), &whereEnd))
-    {
-    smtkErrorMacro(this->m_session->log(),
-		   "Edge would overlap face in neighborhood of last vertex (" << smtk::model::Vertex(mgr, v1->id()).name() << ")B.");
+      "Edge would overlap face in neighborhood of first vertex (" << smtk::model::Vertex(mgr, v0->id()).name() << ")A.");
     return smtk::model::Edge();
     }
 
+  // Ensure edge can be inserted without splitting a face.
+  if (!v1->canInsertEdge(v0->point(), &whereEnd))
+    {
+    smtkErrorMacro(this->m_session->log(),
+      "Edge would overlap face in neighborhood of last vertex (" << smtk::model::Vertex(mgr, v1->id()).name() << ")B.");
+    return smtk::model::Edge();
+    }
 
   // We can safely create the edge now
   smtk::model::Edge created = mgr->addEdge();
@@ -769,7 +1033,7 @@ model::Edge pmodel::createModelEdgeFromVertices(model::ManagerPtr mgr,
     }
   created.findOrAddRawRelation(vert0);
   vert0.findOrAddRawRelation(created);
- 
+
   v1->insertEdgeAt(whereEnd, created.entity(), /* edge is outwards: */ false);
   smtk::model::Vertex vert1(mgr, v1->id());
   if (parentModel.isEmbedded(vert1))
@@ -778,7 +1042,7 @@ model::Edge pmodel::createModelEdgeFromVertices(model::ManagerPtr mgr,
     }
   created.findOrAddRawRelation(vert1);
   vert1.findOrAddRawRelation(created);
- 
+
   // Add tesselation to created edge using storage to lift point coordinates:
   this->addEdgeTessellation(created, storage);
 
@@ -808,21 +1072,26 @@ std::pair<Id,Id> pmodel::removeModelEdgeFromEndpoints(smtk::model::ManagerPtr mg
     {
     vertex::Ptr endpt = this->session()->findStorage<vertex>(epids[i]);
     vertex::incident_edges::iterator where;
-    for (where = endpt->edgesBegin(); where != endpt->edgesEnd(); ++where)
+    vertex::incident_edges::iterator next = endpt->edgesEnd();
+    for (where = endpt->edgesBegin(); where != endpt->edgesEnd(); where = next)
       {
       if (where->edgeId() == edg->id())
         { // found the incident edge.
-        if (!result.first)
+        if (i == 0)
           {
           vertex::incident_edges::iterator tmp = where;
+          ++tmp;
           result.first =
-            (where == endpt->edgesBegin() ?
-             endpt->edgesRBegin()->clockwiseFaceId() :
-             (--tmp)->clockwiseFaceId());
+            (tmp == endpt->edgesEnd() ?
+             endpt->edgesBegin()->clockwiseFaceId() :
+             tmp->clockwiseFaceId());
           result.second = where->clockwiseFaceId();
           }
+        next = where;
+        --next;
         endpt->removeEdgeAt(where);
         }
+      ++next;
       }
     }
   return result;
@@ -839,6 +1108,8 @@ bool pmodel::removeVertexLookup(const Point& location, const Id& vid)
   this->m_vertices.erase(pit);
   return true;
 }
+
+#include <typeinfo>
 
 /**\brief Return the point closest to one of an edge's endpoints.
   *

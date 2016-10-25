@@ -105,7 +105,7 @@ public:
 
   std::string name() const;
   void setName(const std::string& n);
-  std::string assignDefaultName();
+  std::string assignDefaultName(bool overwrite = false);
 
   bool hasVisibility() const;
   bool visible() const;
@@ -171,7 +171,7 @@ public:
   EntityRefs relations() const;
   EntityRef& addRawRelation(const EntityRef& ent);
   EntityRef& findOrAddRawRelation(const EntityRef& ent);
-
+  EntityRef& elideRawRelation(const EntityRef& ent);
 
   const Tessellation* hasTessellation() const;
   const Tessellation* hasAnalysisMesh() const;
@@ -243,7 +243,7 @@ public:
   template<typename T> EntityRef& embedEntities(const T& container);
   bool isEmbedded(EntityRef& ent) const;
   EntityRef embeddedIn() const;
-  EntityRef& unembedEntity(const EntityRef& thingToUnembed);
+  bool unembedEntity(const EntityRef& thingToUnembed);
   template<typename T> EntityRef& unembedEntities(const T& container);
 
   template<typename T> T instances() const;

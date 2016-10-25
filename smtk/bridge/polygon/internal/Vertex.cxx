@@ -114,13 +114,33 @@ bool vertex::canInsertEdge(const Point& neighborhood, incident_edges::iterator* 
   * \a edgeOutwards indicates whether the forward-direction edge
   * is outward or inward-pointing (from/to this vertex).
   */
-void vertex::insertEdgeAt(incident_edges::iterator where, const Id& edgeId, bool edgeOutwards)
+vertex::incident_edges::iterator vertex::insertEdgeAt(incident_edges::iterator where, const Id& edgeId, bool edgeOutwards)
 {
   incident_edge_data edgeData;
   edgeData.m_edgeId = edgeId;
   edgeData.m_edgeOut = edgeOutwards;
-  // NB: Should never insert edge where a face exists, so edgeData.m_adjacentFace should be left NULL.
-  this->m_edges.insert(where, edgeData);
+  // NB: Not inserting edge where a face exists, so edgeData.m_adjacentFace should be left NULL.
+  return this->m_edges.insert(where, edgeData);
+}
+
+/**\brief Insert the edge \a where told (by canInsertEdge).
+  *
+  * \a edgeOutwards indicates whether the forward-direction edge
+  * is outward or inward-pointing (from/to this vertex).
+  * \a faceId is the UUID of the face immediately **clockwise (CW)** of this edge relative to the vertex.
+  */
+vertex::incident_edges::iterator vertex::insertEdgeAt(
+  incident_edges::iterator where,
+  const Id& edgeId,
+  bool edgeOutwards,
+  const Id& faceId
+  )
+{
+  incident_edge_data edgeData;
+  edgeData.m_edgeId = edgeId;
+  edgeData.m_edgeOut = edgeOutwards;
+  edgeData.m_adjacentFace = faceId;
+  return this->m_edges.insert(where, edgeData);
 }
 
 /**\brief Remove the edge incidence record at the given position.
@@ -172,8 +192,8 @@ bool vertex::setFaceAdjacency(const Id& incidentEdge, const Id& adjacentFace, bo
   * since a face may have any arbitrary number of edges incoming to
   * the same vertex. The same edge may be incident once or twice.
   *
-  * The number of incident edges attached to \a face at the vertex
-  * is returned.
+  * The number of edge-incidences marked as having \a face just
+  * clockwise (relative to the vertex) is returned.
   */
 int vertex::removeFaceAdjacencies(const Id& face)
 {

@@ -140,7 +140,14 @@ Model& Model::addCell(const CellEntity& c)
 Model& Model::removeCell(const CellEntity& c)
 {
   ManagerPtr mgr = this->manager();
-  this->unembedEntity(c);
+  bool ok = this->unembedEntity(c);
+  (void)ok;
+  /*
+  if (!ok)
+    {
+    std::cout << "Unable to remove cell " << c.name() << " from model\n";
+    }
+    */
   UUIDWithEntity ent;
   ent = mgr->topology().find(this->m_entity);
   if (ent != mgr->topology().end())

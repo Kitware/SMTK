@@ -59,14 +59,22 @@ public:
   Point& point() { return this->m_coords; }
 
   bool canInsertEdge(const Point& neighborhood, incident_edges::iterator* where);
-  void insertEdgeAt(incident_edges::iterator where, const Id& edgeId, bool edgeOutwards);
+  incident_edges::iterator insertEdgeAt(incident_edges::iterator where, const Id& edgeId, bool edgeOutwards);
+  incident_edges::iterator insertEdgeAt(incident_edges::iterator where, const Id& edgeId, bool edgeOutwards, const Id& faceId);
   void removeEdgeAt(incident_edges::iterator where);
 
+  incident_edges::size_type numberOfEdgeIncidences() const { return this->m_edges.size(); }
   incident_edges::const_iterator edgesBegin() const { return this->m_edges.begin(); }
   incident_edges::const_iterator edgesEnd() const { return this->m_edges.end(); }
 
   incident_edges::iterator edgesBegin() { return this->m_edges.begin(); }
   incident_edges::iterator edgesEnd() { return this->m_edges.end(); }
+
+  const incident_edge_data& edgesFront() const { return this->m_edges.front(); }
+  const incident_edge_data& edgesBack() const { return this->m_edges.back(); }
+
+  incident_edge_data& edgesFront() { return this->m_edges.front(); }
+  incident_edge_data& edgesBack() { return this->m_edges.back(); }
 
   incident_edges::const_reverse_iterator edgesRBegin() const { return this->m_edges.rbegin(); }
   incident_edges::const_reverse_iterator edgesREnd() const { return this->m_edges.rend(); }

@@ -70,6 +70,7 @@ Manager::Manager() :
   m_globalCounters(2,1) // first entry is session counter, second is model counter
 {
   // TODO: throw() when topology == NULL?
+  this->m_log.setFlushToStdout(false);
 }
 
 /// Create a model manager using the given storage instances.
@@ -93,6 +94,7 @@ Manager::Manager(
     m_sessions(new UUIDsToSessions),
     m_globalCounters(2,1) // first entry is session counter, second is model counter
 {
+  this->m_log.setFlushToStdout(false);
 }
 
 /// Destroying a model manager requires us to release the default attribute manager..
@@ -594,8 +596,8 @@ UUIDs Manager::bordantEntities(const UUIDs& ofEntities, int ofDimension) const
   std::insert_iterator<UUIDs> inserter(result, result.begin());
   for (UUIDs::const_iterator it = ofEntities.begin(); it != ofEntities.end(); ++it)
     {
-    UUIDs bdy = this->bordantEntities(*it, ofDimension);
-    std::copy(bdy.begin(), bdy.end(), inserter);
+    UUIDs brd = this->bordantEntities(*it, ofDimension);
+    std::copy(brd.begin(), brd.end(), inserter);
     }
   return result;
 }
@@ -1547,6 +1549,24 @@ std::string Manager::assignDefaultName(const UUID& uid)
   return std::string();
 }
 
+/**\brief Assign a string property named "name" to the given entity.
+  *
+  * This method is like assignDefaultName() but will not replace any
+  * pre-existing name.
+  */
+std::string Manager::assignDefaultNameIfMissing(const UUID& uid)
+{
+  UUIDWithEntity it = this->m_topology->find(uid);
+  if (it != this->m_topology->end())
+    {
+    return
+      this->hasStringProperty(uid, "name") ?
+        this->name(uid) :
+        this->assignDefaultName(it->first, it->second.entityFlags());
+    }
+  return std::string();
+}
+
 void Manager::assignDefaultNamesWithOwner(
   const UUIDWithEntity& irec,
   const UUID& owner,
@@ -2096,7 +2116,19 @@ int Manager::unarrangeEntity(const UUID& entityId, ArrangementKind k, int index,
   if (ak == ad->second.end() || index >= static_cast<int>(ak->second.size()))
     return result;
 
+  ArrangementReferences duals;
+  bool hasDuals = this->findDualArrangements(entityId, k, index, duals);
+
   // TODO: notify relation + entity (or their delegates) of imminent removal?
+  std::vector<int> relIdxs;
+  Entity* erec;
+  if ((ak->second.begin() + index)->relationIndices(relIdxs, (erec = this->findEntity(entityId, false)), k))
+    {
+    for (std::vector<int>::iterator rit = relIdxs.begin(); rit != relIdxs.end(); ++rit)
+      {
+      erec->invalidateRelationByIndex(*rit);
+      }
+    }
   ak->second.erase(ak->second.begin() + index);
   ++result;
 
@@ -2114,8 +2146,7 @@ int Manager::unarrangeEntity(const UUID& entityId, ArrangementKind k, int index,
 
   // Now find and remove the dual arrangement (if one exists)
   // This branch should not be taken if we are inside the inner unarrangeEntity call below.
-  ArrangementReferences duals;
-  if (this->findDualArrangements(entityId, k, index, duals))
+  if (hasDuals)
     {
     // Unarrange every dual to this arrangement.
     bool canIncrement = false;
@@ -2408,10 +2439,26 @@ bool Manager::findDualArrangements(
     case INSTANCE_ENTITY:
       break;
       }
+    break;
+  case INCLUDES: // INCLUDES/EMBEDDED_IN are always simple and duals; entity type doesn't matter.
+  case EMBEDDED_IN:
+    if ((*arr)[index].IndexFromSimple(relationIdx))
+      { // OK, find use's reference to this cell.
+      if (relationIdx < 0 || static_cast<int>(src->relations().size()) <= relationIdx)
+        return false;
+      dualEntityId = src->relations()[relationIdx];
+      dualKind = kind == INCLUDES ? EMBEDDED_IN : INCLUDES;
+      if ((dualIndex =
+          this->findArrangementInvolvingEntity(
+            dualEntityId, dualKind, entityId)) >= 0)
+        {
+        duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
+        return true;
+        }
+      }
+    break;
   case HAS_CELL:
   case HAS_SHELL:
-  case INCLUDES:
-  case EMBEDDED_IN:
   case SUPERSET_OF:
   case SUBSET_OF:
   case INSTANCE_OF:
@@ -2594,7 +2641,7 @@ UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
           arrIdx = arrCtr;
           break;
           }
-        else if (!entity->relations()[itIdx])
+        else if (!entity->relations()[itIdx] || !this->findEntity(entity->relations()[itIdx]))
           { // The arrangement is valid but it references a NULL entity.
           arrIdx = arrCtr;
           break;

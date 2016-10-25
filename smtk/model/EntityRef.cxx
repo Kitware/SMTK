@@ -260,13 +260,15 @@ void EntityRef::setName(const std::string& n)
   * This uses counters associated with the owning
   * model or model manager to name the entity.
   */
-std::string EntityRef::assignDefaultName()
+std::string EntityRef::assignDefaultName(bool overwrite)
 {
   ManagerPtr mgr = this->m_manager.lock();
   if (!mgr || !this->m_entity)
     return std::string();
 
-  return mgr->assignDefaultName(this->m_entity);
+  return overwrite ?
+    mgr->assignDefaultName(this->m_entity) :
+    mgr->assignDefaultNameIfMissing(this->m_entity);
 }
 
 /// Returns true if the "visible" integer-property exists.
@@ -542,6 +544,37 @@ EntityRef& EntityRef::findOrAddRawRelation(const EntityRef& ent)
   return *this;
 }
 
+/**\brief Nullify a relation to the given entity, \a ent.
+  *
+  * Any matching entries to \a ent in this entity's list of relations
+  * is set to the null UUID. This is done (as opposed to removing the
+  * relation) so that indices into the list of relations are preserved
+  * for any UUIDs that appear after \a ent.
+  *
+  * The relation is considered "raw" because no arrangement information
+  * (which would describe the nature of the arrangement)
+  * is presumed to exist.
+  *
+  * This method has no effect if \a ent is unrelated.
+  */
+EntityRef& EntityRef::elideRawRelation(const EntityRef& ent)
+{
+  ManagerPtr mgr = this->m_manager.lock();
+  if (
+    mgr &&
+    !this->m_entity.isNull() &&
+    mgr == ent.manager() &&
+    !ent.entity().isNull() &&
+    ent.entity() != this->m_entity)
+    {
+    UUIDWithEntity entRec = mgr->topology().find(this->m_entity);
+    if (entRec != mgr->topology().end())
+      {
+      mgr->elideOneEntityReference(entRec, ent.entity());
+      }
+    }
+  return *this;
+}
 /**\brief Return the entity's tessellation if one exists or NULL otherwise.
   *
   */
@@ -1078,7 +1111,7 @@ EntityRef& EntityRef::embedEntity(const EntityRef& thingToEmbed)
   * This removes an INCLUDES relation (if necessary) to this entity and
   * an EMBEDDED_IN relation (if necessary) to the \a thingToUnembed.
   */
-EntityRef& EntityRef::unembedEntity(const EntityRef& thingToEmbed)
+bool EntityRef::unembedEntity(const EntityRef& thingToEmbed)
 {
   ManagerPtr mgr = this->m_manager.lock();
   ManagerEventType event = std::make_pair(DEL_EVENT, this->embeddingRelationType(thingToEmbed));
@@ -1087,11 +1120,12 @@ EntityRef& EntityRef::unembedEntity(const EntityRef& thingToEmbed)
     int aidx = EntityRefArrangementOps::findSimpleRelationship(*this, INCLUDES, thingToEmbed);
     if (aidx >= 0)
       {
-      mgr->unarrangeEntity(this->m_entity, EMBEDDED_IN, aidx);
+      mgr->unarrangeEntity(this->m_entity, INCLUDES, aidx);
       mgr->trigger(event, *this, thingToEmbed);
+      return true;
       }
     }
-  return *this;
+  return false;
 }
 
 /**\brief Return whether the specified \a entity is a direct inclusion in this entityref's entity.

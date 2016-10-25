@@ -10,6 +10,13 @@
 #ifndef __smtk_model_Manager_txx
 #define __smtk_model_Manager_txx
 
+#include "smtk/model/Edge.h"
+#include "smtk/model/EdgeUse.h"
+#include "smtk/model/Face.h"
+#include "smtk/model/FaceUse.h"
+#include "smtk/model/Loop.h"
+#include "smtk/model/Vertex.h"
+
 namespace smtk {
   namespace model {
 
@@ -78,6 +85,125 @@ bool Manager::insertModelFaceOrientedInnerLoop(
     smtk::model::Edge mutableEdge(oeit->first);
     EdgeUse eu = mutableEdge.findOrAddEdgeUse(oeit->second ? POSITIVE : NEGATIVE, 0);
     inner.addUse(eu);
+    }
+  return true;
+}
+
+/**\brief Remove free cells from a model consistently.
+  *
+  * This does not check whether the cells are free; it is assumed that they are.
+  * However, unlike the erase() method, deleteEntities should properly reconcile
+  * use records.
+  *
+  * So far has only been tested on 2-D models, not volumetric models.
+  * It also makes assumptions about the presence of loops and edge-uses
+  * (and the absence of vertex-uses and chains) that are particular to
+  * the polygon session. Caveat emptor.
+  */
+template<typename T, typename U, typename V>
+bool Manager::deleteEntities(T& entities, U& modified, V& expunged, bool debugLog)
+{
+  typename T::iterator eit;
+  expunged.reserve(entities.size());
+  for (eit = entities.begin(); eit != entities.end(); ++eit)
+    {
+    smtk::model::Model mod = eit->owningModel();
+    bool hadSomeEffect = false;
+    smtk::model::EntityRefs bdys = eit->boundaryEntities();
+    smtk::model::EntityRefs newFreeCells;
+    smtk::model::Manager::Ptr mgr = eit->manager();
+    if (mgr && eit->entity())
+      {
+      bool isCell = eit->isCellEntity();
+      if (debugLog) { smtkDebugMacro(this->log(), "Erase " << eit->name() << " (c)"); }
+      hadSomeEffect = (mgr->erase(*eit) != 0);
+      if (hadSomeEffect && isCell)
+        { // Remove uses and loops "owned" by the cell
+        expunged.push_back(*eit);
+        if (debugLog) { smtkDebugMacro(this->log(), "Processing cell with " << bdys.size() << " bdys"); }
+        for (smtk::model::EntityRefs::iterator bit = bdys.begin(); bit != bdys.end(); ++bit)
+          {
+          if (bit->isModel())
+            continue;
+          smtk::model::EntityRefs lowerShells =
+            bit->as<smtk::model::UseEntity>().shellEntities<smtk::model::EntityRefs>();
+          // Add child shells (inner loops):
+          for (smtk::model::EntityRefs::iterator sit = lowerShells.begin(); sit != lowerShells.end(); ++sit)
+            {
+            smtk::model::EntityRefs childShells =
+              sit->as<smtk::model::ShellEntity>().containedShellEntities<smtk::model::EntityRefs>();
+            lowerShells.insert(childShells.begin(), childShells.end());
+            }
+          if (debugLog)
+            { smtkDebugMacro(this->log(), "  Processing bdy " << bit->name() << " with " << lowerShells.size() << " shells"); }
+          for (smtk::model::EntityRefs::iterator sit = lowerShells.begin(); sit != lowerShells.end(); ++sit)
+            {
+            smtk::model::Cells bdyCells = sit->as<smtk::model::ShellEntity>().cellsOfUses<smtk::model::Cells>();
+            if (debugLog)
+              { smtkDebugMacro(this->log(), "    Processing shell " << sit->name() << " with " << bdyCells.size() << " bdyCells"); }
+            for (smtk::model::Cells::iterator cit = bdyCells.begin(); cit != bdyCells.end(); ++cit)
+              {
+              if (debugLog)
+                {
+                smtkDebugMacro(this->log(),
+                  "        Considering " << cit->name() << " as free cell: " <<
+                  cit->uses<smtk::model::UseEntities>().size());
+                }
+              if (cit->uses<smtk::model::UseEntities>().size() <= 1)
+                {
+                newFreeCells.insert(*cit);
+                if (debugLog) { smtkDebugMacro(this->log(), "          Definitely a free cell "); }
+                }
+              else
+                {
+                if (debugLog) { smtkDebugMacro(this->log(), "          Not a free cell "); }
+                }
+              }
+            smtk::model::UseEntities bdyUses = sit->as<smtk::model::ShellEntity>().uses<smtk::model::UseEntities>();
+            for (smtk::model::UseEntities::iterator uit = bdyUses.begin(); uit != bdyUses.end(); ++uit)
+              {
+              if (debugLog) { smtkDebugMacro(this->log(), "Erase " << uit->name() << " (su)"); }
+              mgr->erase(*uit);
+              }
+            if (debugLog) { smtkDebugMacro(this->log(), "Erase " << sit->name() << " (s)"); }
+            mgr->erase(*sit);
+            }
+          if (bit->isCellEntity())
+            { // If the boundary entity is a direct cell relationship, see if the boundary should be promoted.
+            if (debugLog)
+              {
+              smtkDebugMacro(this->log(),
+              "        Considering " << bit->name() << " as free cell: " <<
+              bit->as<smtk::model::CellEntity>().uses<smtk::model::UseEntities>().size());
+              }
+            if (bit->as<smtk::model::CellEntity>().uses<smtk::model::UseEntities>().size() <= 1)
+              {
+              newFreeCells.insert(bit->as<smtk::model::CellEntity>());
+              if (debugLog) { smtkDebugMacro(this->log(), "          Definitely a free cell "); }
+              }
+            else
+              {
+              if (debugLog) { smtkDebugMacro(this->log(), "          Not a free cell "); }
+              }
+            }
+          else
+            { // If the boundary entity is not a direct cell relationship (i.e., it's a use), erase it.
+            if (debugLog) { smtkDebugMacro(this->log(), "Erase " << bit->name() << " (u)"); }
+            mgr->erase(*bit);
+            }
+          }
+        }
+      }
+    if (hadSomeEffect)
+      { // Check the boundary cells of the just-removed entity and see if they are now free cells:
+      for (smtk::model::EntityRefs::iterator bit = newFreeCells.begin(); bit != newFreeCells.end(); ++bit)
+        {
+        if (debugLog) { smtkDebugMacro(this->log(), "  Adding free cell " << bit->name() << " (" << mod.cells().size() << ")"); }
+        mod.addCell(*bit);
+        modified.insert(mod);
+        if (debugLog) { smtkDebugMacro(this->log(), "    -> (" << mod.cells().size() << ")"); }
+        }
+      }
     }
   return true;
 }

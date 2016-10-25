@@ -69,12 +69,30 @@ public:
 
   smtk::model::Vertex findOrAddModelVertex(
     smtk::model::ManagerPtr mgr,
-    const Point& pt);
+    const Point& pt,
+    bool addToModel = true);
 
-  model::Edge createModelEdgeFromVertices(smtk::model::ManagerPtr mgr,
-					  internal::VertexPtr v0, internal::VertexPtr v1);
-  template<typename T>
-  model::Edge createModelEdgeFromSegments(smtk::model::ManagerPtr mgr, T begin, T end);
+  bool demoteModelVertex(
+    smtk::model::ManagerPtr mgr,
+    internal::VertexPtr vert,
+    smtk::model::EntityRefs& created,
+    smtk::model::EntityRefs& modified,
+    smtk::model::EntityRefs& expunged,
+    int debugLevel = 0);
+
+  model::Edge createModelEdgeFromVertices(
+    smtk::model::ManagerPtr mgr,
+    internal::VertexPtr v0,
+    internal::VertexPtr v1);
+
+  template<typename T, typename U>
+  model::Edge createModelEdgeFromSegments(
+    smtk::model::ManagerPtr mgr,
+    T begin,
+    T end,
+    bool addToModel,
+    const U& splitEdgeFaces,
+    bool headIsNewVertex);
 
   template<typename T>
   model::Edge createModelEdgeFromPoints(smtk::model::ManagerPtr mgr, T begin, T end, bool isFreeCell);
@@ -87,27 +105,27 @@ public:
     const Id& edgeId,
     const std::vector<double>& point,
     smtk::model::EntityRefs& created,
-    smtk::model::EntityRefs& modified);
+    int debugLevel = 0);
   bool splitModelEdgeAtModelVertex(
     smtk::model::ManagerPtr mgr,
     const Id& edgeId,
     const Id& vertexId,
     smtk::model::EntityRefs& created,
-    smtk::model::EntityRefs& modified);
+    int debugLevel = 0);
   bool splitModelEdgeAtModelVertex(
     smtk::model::ManagerPtr mgr,
     EdgePtr edgeToSplit,
     VertexPtr splitPoint,
     PointSeq::const_iterator location,
     smtk::model::EntityRefs& created,
-    smtk::model::EntityRefs& modified);
+    int debugLevel = 0);
   bool splitModelEdgeAtModelVertices(
     smtk::model::ManagerPtr mgr,
     EdgePtr edgeToSplit,
     std::vector<VertexPtr>& splitPoints,
     std::vector<PointSeq::const_iterator>& locations,
     smtk::model::EntityRefs& created,
-    smtk::model::EntityRefs& modified);
+    int debugLevel = 0);
 
   std::pair<Id,Id> removeModelEdgeFromEndpoints(smtk::model::ManagerPtr mgr, EdgePtr edg);
   bool removeVertexLookup(const internal::Point& location, const Id& vid);
