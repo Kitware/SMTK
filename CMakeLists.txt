@@ -185,11 +185,12 @@ endif()
 set(Boost_NO_SYSTEM_PATHS ${SMTK_NO_SYSTEM_BOOST})
 
 # List of Boost features used:
+# * Date Time
 # * Filesystem
 # * String algorithms
 # * UUID Generation
 find_package(Boost 1.60.0
-             COMPONENTS   filesystem system  REQUIRED)
+             COMPONENTS   date_time filesystem system  REQUIRED)
 
 #setup windows exception handling so we can compile properly with boost enabled
 if(WIN32 AND MSVC)
