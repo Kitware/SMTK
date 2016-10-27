@@ -186,10 +186,24 @@ Topology::Topology(smtk::mesh::CollectionPtr collection) :
                                       &volumeShells };
 
   AddFreeElements addFreeElements(this, model);
-  // all volume meshes are considered to be free elements with the model as
-  // their parent
-    {
+
+  // all meshes of the highest dimension are considered to be free elements with
+  // the model as their parent
     int dimension = 3;
+    smtk::mesh::TypeSet types = collection->types();
+    while (dimension >=0 && !types.hasDimension(
+             static_cast<smtk::mesh::DimensionType>(dimension)))
+      {
+        --dimension;
+      }
+
+    if (dimension < 0)
+      {
+      // We have been passed an empty collection.
+      return;
+      }
+
+    {
     addFreeElements.setElementShells(elementShells[dimension]);
     addFreeElements.setDimension(dimension);
     smtk::mesh::for_each(collection->meshes(
@@ -198,7 +212,8 @@ Topology::Topology(smtk::mesh::CollectionPtr collection) :
     }
 
   AddBoundElements addBoundElements(this);
-  for (int dimension = 2; dimension >= 0; dimension--)
+  --dimension;
+  for (; dimension >= 0; dimension--)
     {
     addFreeElements.setElementShells(elementShells[dimension]);
     addFreeElements.setDimension(dimension);
@@ -211,9 +226,12 @@ Topology::Topology(smtk::mesh::CollectionPtr collection) :
       {
       boundMeshes.append(shell.first);
       }
-    smtk::mesh::MeshSet freeMeshes = m_collection->createMesh(
-      smtk::mesh::set_difference(allMeshes.cells(), boundMeshes.cells()));
-    smtk::mesh::for_each(freeMeshes, addFreeElements);
+    if (!boundMeshes.is_empty() && !boundMeshes.cells().is_empty())
+      {
+      smtk::mesh::MeshSet freeMeshes = m_collection->createMesh(
+        smtk::mesh::set_difference(allMeshes.cells(), boundMeshes.cells()));
+      smtk::mesh::for_each(freeMeshes, addFreeElements);
+      }
 
     addBoundElements.setElementShells(elementShells[dimension]);
     addBoundElements.setDimension(dimension);
