@@ -245,14 +245,15 @@ function(sbk_wrap_library NAME)
   list(APPEND _shiboken_options
     "--output-directory=${CMAKE_CURRENT_BINARY_DIR}"
   )
-  list(APPEND _shiboken_options "--include-paths=${_includes}")
-  list(APPEND _shiboken_options "--typesystem-paths=${_typesystem_paths}")
+  # Set these separately; on Windows the semicolons we replace below are important.
+  set(_shiboken_options_paths
+    "--include-paths=${_includes}\n--typesystem-paths=${_typesystem_paths}\n")
 
   set(arg_file "${CMAKE_CURRENT_BINARY_DIR}/shiboken-${NAME}.args")
   string(REPLACE ";" "\n" arg_contents "${_shiboken_options}")
   file(GENERATE
     OUTPUT  "${arg_file}"
-    CONTENT "${arg_contents}\n")
+    CONTENT "${arg_contents}\n${_shiboken_options_paths}")
 
   add_custom_command(
     OUTPUT ${_sources}
