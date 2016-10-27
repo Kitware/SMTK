@@ -11,15 +11,17 @@
 
 #include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
 #include "smtk/extension/vtk/reader/vtkLASReader.h"
-#include "smtk/bridge/discrete/Session.h"
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/MeshSet.h"
 #include "smtk/mesh/PointSet.h"
 
+#include "smtk/model/Model.h"
+#include "smtk/model/CellEntity.h"
+#include "smtk/model/Group.h"
+#include "smtk/model/Session.h"
+
 #include "vtkAppendPoints.h"
 #include "vtkCompositeDataIterator.h"
-#include "vtkDiscreteModel.h"
-#include "vtkDiscreteModelWrapper.h"
 #include "vtkDoubleArray.h"
 #include "vtkFloatArray.h"
 #include "vtkGDALRasterReader.h"
@@ -33,13 +35,13 @@
 #include "vtkUniformGrid.h"
 #include "vtkXMLImageDataReader.h"
 #include <vtksys/SystemTools.hxx>
-#include "DiscreteMesh.h"
 
 #include <algorithm> // for std::transform
 
+using namespace smtk::model;
+
 namespace smtk {
-  namespace bridge {
-    namespace discrete {
+  namespace model {
 
   template<class T>
   void copyArrayZValues(T *t, vtkImageData* imageInput, vtkPoints* outputPoints)
@@ -176,61 +178,27 @@ void BathymetryHelper::loadedBathymetryFiles(
     result.push_back(it->first);
 }
 
-void BathymetryHelper::addModelBathymetry(const smtk::common::UUID& modelId,
-                          const std::string& bathyfile)
-{
-  this->m_modelIdsToBathymetrys[modelId] = bathyfile;
-}
-
-void BathymetryHelper::removeModelBathymetry(const smtk::common::UUID& modelId)
-{
-  this->m_modelIdsToBathymetrys.erase(modelId);
-}
-
-bool BathymetryHelper::hasModelBathymetry(const smtk::common::UUID& modelId)
-{
-  return this->m_modelIdsToBathymetrys.find(modelId) != this->m_modelIdsToBathymetrys.end();
-}
-
-vtkPolyData* BathymetryHelper::findOrShallowCopyModelPoly(
-  const smtk::common::UUID& modelId, smtk::bridge::discrete::Session* session)
-{
-  if(this->m_modelIdsToMasterPolys.find(modelId) != this->m_modelIdsToMasterPolys.end())
-    return this->m_modelIdsToMasterPolys[modelId].GetPointer();
-
-  vtkDiscreteModelWrapper* modelWrap = session->findModelEntity(modelId);
-  if(!modelWrap)
-    return NULL;
-
-  vtkPolyData* tmpModelPoly = vtkPolyData::New();
-  tmpModelPoly->Initialize();
-  vtkNew<vtkPoints> points;
-  points->ShallowCopy(modelWrap->GetModel()->GetMesh().SharePointsPtr());
-//  tmmModelPoly->ShallowCopy(modelWrap->GetModel()->GetMesh().ShallowCopyFaceData);
-  tmpModelPoly->SetPoints(points.GetPointer());
-
-  this->m_modelIdsToMasterPolys[modelId].TakeReference(tmpModelPoly);
-  return this->m_modelIdsToMasterPolys[modelId].GetPointer();
-}
-
 bool BathymetryHelper::storeMeshPointsZ(smtk::mesh::CollectionPtr collection)
 {
   if(!collection->isValid())
     {
+    std::cout << "invalid collection"<< std::endl;
     return false;
     }
+
   // if this mesh is already cached, return true;
-  std::vector<double> originalZs(this->cachedMeshPointsZ(collection->entity()));
-  if(originalZs.size() > 0)
+  if(collection->hasFloatProperty(collection->meshes(),BO_elevation))
     {
+    std::cout << "We alrady have this float property\n";
     return true;
     }
-  // don't use originalZs here, because that's m_dummy
+
   std::vector<double> zvals;
   smtk::mesh::MeshSet meshes = collection->meshes();
-  ZValueHelper functorA(zvals, false);
-  smtk::mesh::for_each( meshes.points(), functorA );
-  this->m_meshIdsToPoints[collection->entity()] = zvals;
+  bool result = meshes.points().get(zvals);
+  if (!result)
+    zvals = this->m_dummy;
+  collection->setFloatProperty(collection->meshes(),BO_elevation,static_cast<smtk::model::FloatList>(zvals));
   return true;
 }
 
@@ -238,39 +206,24 @@ bool BathymetryHelper::resetMeshPointsZ(smtk::mesh::CollectionPtr collection)
 {
   if(!collection->isValid())
     {
+    std::cout << "collection is invalid!\n";
     return false;
     }
   // if removing, and we don't have a cached Z-value array, we did not apply bathy yet
-  std::vector<double> originalZs(this->cachedMeshPointsZ(collection->entity()));
+  std::vector<double> originalZs(collection->floatProperty(collection->meshes(),BO_elevation));
   if(originalZs.size() == 0)
     {
+    std::cout << "original Z value cache is empty!\n";
     return true;
     }
-
   smtk::mesh::MeshSet meshes = collection->meshes();
-  ZValueHelper functorA(originalZs, true);
-  smtk::mesh::for_each( meshes.points(), functorA );
+  meshes.points().set(originalZs);
   return true;
-}
-
-const std::vector<double>& BathymetryHelper::cachedMeshPointsZ(
-  const smtk::common::UUID& collectionId) const
-{
-  BathymetryHelper::MeshIdToPointsMap::const_iterator it =
-    this->m_meshIdsToPoints.find(collectionId);
-
-  if(it != this->m_meshIdsToPoints.end())
-    {
-    return it->second;
-    }
-  return m_dummy;
 }
 
 void BathymetryHelper::clear()
 {
   this->m_filesToSources.clear();
-  this->m_modelIdsToMasterPolys.clear();
-  this->m_modelIdsToBathymetrys.clear();
 }
 
 bool BathymetryHelper::computeBathymetryPoints(
@@ -359,6 +312,84 @@ bool BathymetryHelper::computeBathymetryPoints(
   return true;
 }
 
-    } // namespace discrete
-  } // namespace bridge
+/// get the points from EntityRef and feed it into pts. Possible duplcate points (Vertex, Edges, faces) possible performance improvement
+vtkIdType BathymetryHelper::GenerateRepresentationFromModel(
+    vtkPoints *pts, const EntityRef &entityref)
+  {
+  const smtk::model::Tessellation* tess;
+  if (!(tess = entityref.hasTessellation()))
+    { // Oops.
+    return 0;
+    }
+  vtkIdType npts = tess->coords().size() / 3;
+  smtk::model::Entity* entity;
+  if (entityref.isValid(&entity))
+    {
+    for (vtkIdType i = 0; i < npts; ++i)
+      {
+      pts->InsertNextPoint(&tess->coords()[3*i]);
+      }
+    }
+  return npts;
+  }
+
+/// set points from pts in EntityRef
+void BathymetryHelper::CopyCoordinatesToTessellation(
+    vtkPoints *pts, const EntityRef &entityref, const vtkIdType startingIndex)
+  {
+  smtk::model::Tessellation* tess;
+  if (!(tess = const_cast<smtk::model::Tessellation*>(entityref.hasTessellation())))
+    { // Oops.
+    std::cerr << "Do not have tessellation" << std::endl;
+    }
+  smtk::model::Entity* entity;
+  vtkIdType npts = tess->coords().size() / 3;
+  if (entityref.isValid(&entity) && (startingIndex + npts <= pts->GetNumberOfPoints()))
+    {
+    for (vtkIdType i = 0; i < npts; ++i)
+      {
+      //set the points in pts into tess( a double vector)
+      double currentPoint[3];
+      pts->GetPoint(startingIndex + i, currentPoint);
+      tess->setPoint(static_cast<std::size_t>(i),currentPoint);
+      }
+    }
+
+  }
+
+  /// get points' z value as a vector from masterModelPts
+  void BathymetryHelper::GetZValuesFromMasterModelPts(
+        vtkPoints *pts, std::vector<double> & zValues)
+  {
+    vtkIdType npts = pts->GetNumberOfPoints();
+    for (vtkIdType i = 0; i< npts; ++i)
+    {
+      double tmp[3];
+      pts->GetPoint(i, tmp);
+      zValues.push_back(tmp[2]);
+    }
+
+  }
+
+  /// set points' z value inside masterModelPts
+  bool BathymetryHelper::SetZValuesIntoMasterModelPts(vtkPoints *pts, const std::vector<double>* zValues)
+  {
+    if (static_cast<size_t>(pts->GetNumberOfPoints()) != zValues->size())
+    {
+      std::cerr << "When removing Bathymetry, the size of points and zValues "
+                   "does not match!\n";
+      return false;
+    }
+    for (vtkIdType i = 0; i < pts->GetNumberOfPoints(); ++i)
+    {
+      double tmp[3];
+      pts->GetPoint(i,tmp);
+      pts->SetPoint(i,tmp[0], tmp[1], (*zValues)[i]);
+    }
+    return true;
+  }
+
+
+/**************************************************************************/
+  } // namespace model
 } // namespace smtk

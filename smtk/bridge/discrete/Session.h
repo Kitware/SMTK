@@ -62,7 +62,6 @@ namespace smtk {
 
 class ArrangementHelper;
 class vtkItemWatcherCommand;
-class BathymetryHelper;
 
 /**\brief A class that handles translation between CMB and SMTK instances.
   *
@@ -112,7 +111,6 @@ public:
     const std::string& filetype);
 
   vtkDiscreteModelWrapper* findModelEntity(const smtk::common::UUID& uid) const;
-  smtk::bridge::discrete::BathymetryHelper* bathymetryHelper();
 
 protected:
   friend class vtkItemWatcherCommand;
@@ -127,7 +125,6 @@ protected:
   friend class RemoveModel;
   friend class ArrangementHelper;
   friend class EdgeOperator;
-  friend class BathymetryOperator;
   friend class Operator;
 
   Session();
@@ -240,8 +237,6 @@ protected:
   vtkItemWatcherCommand* m_itemWatcher;
   smtk::common::UUIDGenerator m_idGenerator;
   std::map<smtk::common::UUID, vtkWeakPointer<vtkModelItem> > m_itemsToRefs;
-
-  smtk::bridge::discrete::BathymetryHelper* m_bathymetryHelper;
 
   /// Track which models are tracked by which sessions.
   std::map<vtkDiscreteModel*,WeakPtr> m_modelsToSessions;

@@ -111,6 +111,17 @@ Tessellation& Tessellation::addQuad(int ai, int bi, int ci, int di)
   return *this;
 }
 
+/// given the id of points, set points into coords
+void Tessellation::setPoint(std::size_t id, const double* points)
+{
+  if (id <= this->m_coords.size())
+  {
+    this->coords()[3*id] = points[0];
+    this->coords()[3*id+1] = points[1];
+    this->coords()[3*id+2] = points[2];
+  }
+}
+
 /// Erase all point coordinates and tessellation primitive records.
 Tessellation& Tessellation::reset()
 {
