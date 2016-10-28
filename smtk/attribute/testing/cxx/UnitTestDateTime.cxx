@@ -9,8 +9,18 @@
 //=========================================================================
 
 #include "smtk/attribute/DateTime.h"
+#include "smtk/attribute/TimeZone.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
+
+//----------------------------------------------------------------------------
+void verifyTimeZones()
+{
+  smtk::attribute::TimeZone tz;
+  test(!tz.isSet(), "Failed to recognize unset TimeZone");
+  test(tz.setRegion("America/New_York"), "Failed to set TimeZone region");
+  test(!tz.setRegion("Invalid"), "Failed to recognize invalid TimeZone region");
+}
 
 //----------------------------------------------------------------------------
 void verify_constructors()
@@ -97,6 +107,7 @@ void verify_setGets()
 //----------------------------------------------------------------------------
 int UnitTestDateTime(int, char** const)
 {
+  verifyTimeZones();
   verify_constructors();
   verify_parsers();
   verify_setGets();

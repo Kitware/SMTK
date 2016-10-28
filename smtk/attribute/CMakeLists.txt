@@ -28,6 +28,7 @@ set(attributeHeaders
   SearchStyle.h
   StringItem.h
   StringItemDefinition.h
+  TimeZone.h
   ValueItem.h
   ValueItemDefinition.h
   ValueItemDefinitionTemplate.h
@@ -65,6 +66,7 @@ set(attributeSrcs
   RefItemDefinition.cxx
   StringItem.cxx
   StringItemDefinition.cxx
+  TimeZone.cxx
   ValueItem.cxx
   ValueItemDefinition.cxx
   VoidItem.cxx
