@@ -152,7 +152,7 @@ def breakMaterialsByCellType(c):
         c.removeMeshes(domainMeshes)
 
 def convert(inputFile, manager, material):
-    cnvrt = smtk.vtk.io.VTKDataConverter();
+    cnvrt = smtk.extension.vtk.io.ImportVTKData();
     collection = cnvrt( inputFile, manager, material );
     return collection
 
