@@ -15,6 +15,7 @@ import math
 import os
 import smtk
 import sys
+import smtk.testing
 import vtk
 
 def readXMLFile(fileName):
@@ -158,7 +159,8 @@ def convert(inputFile, manager, material):
 
 def extractMaterials(c, radius, origin, outputFile, bounds):
     shell = c.meshes().extractShell()
-    print ('There are %d shell mesh sets' % shell.size())
+    if shell.size() != 1:
+        raise RuntimeError('Shell # mismatch (%d vs 1)' % shell.size())
 
     ymin = bounds[2]
     filter_ = CoolingPlateFilter(ymin,radius,origin,True)
@@ -174,22 +176,28 @@ def extractMaterials(c, radius, origin, outputFile, bounds):
 
     breakMaterialsByCellType(c)
 
-    print ('number of domains: %d' % len(c.domains()))
-    print ('number of dirichlets: %d' % len(c.dirichlets()))
+    if len(c.domains()) != 5:
+        raise RuntimeError('Domain # mismatch (%d vs 5)' % len(c.domains()))
+    if len(c.dirichlets()) != 3:
+        raise RuntimeError('Dirichlet # mismatch (%d vs 3)' % len(c.dirichlets()))
 
-    smtk.io.WriteMesh.entireCollection(outputFile, c)
+#    smtk.io.writeEntireCollection(outputFile, c)
 
-if __name__ == '__main__':
+def test_multiscale_converter():
     manager = smtk.mesh.Manager.create()
 
-    inputFileName = sys.argv[1] if len(sys.argv) > 1 else 'mesh3D.vtu'
-    outputFileName = sys.argv[2] if len(sys.argv) > 2 else 'mesh3D.exo'
-    materialName = sys.argv[3] if len(sys.argv) > 3 else ''
-    radius = sys.argv[4] if len(sys.argv) > 4 else -1.
-    origin = [sys.argv[5], sys.argv[6], sys.argv[7]] if len(sys.argv) > 7 else [0.,0.,0.]
+    inputFileName = smtk.testing.DATA_DIR + '/mesh/3d/nickel_superalloy.vtu'
+    outputFileName = 'mesh3D.exo'
+    materialName = 'ZoneIds'
+    radius = 1.2
+    origin = [.02,0.,0.]
 
     c = convert(inputFileName, manager, materialName)
     data = readXMLFile(inputFileName)
     bounds = data.GetBounds()
 
     extractMaterials(c, radius, origin, outputFileName, bounds)
+
+if __name__ == '__main__':
+    smtk.testing.process_arguments()
+    test_multiscale_converter()
