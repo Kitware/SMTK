@@ -20,28 +20,52 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 SMTK_THIRDPARTY_POST_INCLUDE
 #endif
 
-#include <iostream>
 #include <string>
 
 namespace smtk {
   namespace attribute {
 
-//.NAME DateTime - A DateTime represention generally based on ISO 8601
+//.NAME DateTime - Date & time representation generally based on ISO 8601.
 //.SECTION Description
-// This class uses Boost's DateTime class to implement smtk::attribute::DateTime.
+// A minimal wrapper for boost::posix_time::ptime
 class SMTKCORE_EXPORT DateTime
 {
 public:
   DateTime();
 
-  bool isValid() const;
-  bool parseIsoString(const std::string& ts);
-  bool parseString(const std::string& ts);
+  /// Explicitly sets each component, with optional time zone conversion
+  bool setComponents(
+    int year,
+    int month = 1,
+    int day = 1,
+    int hour = 0,
+    int minute = 0,
+    int second = 0,
+    int millisecond = 0);
+    // TODO TimeZone *timeZone = NULL);
+
+  // Returns each component, with optional time zone conversion
+  bool getComponents(
+    int& year,
+    int& month,
+    int& day,
+    int& hour,
+    int& minute,
+    int& second,
+    int& millisecond) const;
+    // TODO TimeZone *timeZone = NULL);
+
+  /// Indicates if instance represents valid datetime value
+  bool isSet() const;
+
+  /// Parses datetime string in "strict" format: YYYYMMDDThhmmss[.uuuuuu]
+  bool parse(const std::string& ts);
+
+  /// Parses using boost time_from_string(), which is NOT ISO COMPLIANT
+  bool parseBoostFormat(const std::string& ts);
 
 protected:
-  // Implemented using Boost's DateTime library.
-  boost::posix_time::ptime m_data;
-
+  boost::posix_time::ptime m_ptime;
 };
 
   } // namespace attribute

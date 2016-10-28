@@ -11,10 +11,7 @@
 
 #ifndef SHIBOKEN_SKIP
 SMTK_THIRDPARTY_PRE_INCLUDE
-#include <boost/date_time/gregorian/gregorian.hpp>
-#include <boost/date_time/time_parsing.hpp>
-#include <boost/date_time/posix_time/posix_time_types.hpp>
-
+#include "boost/date_time/gregorian/gregorian.hpp"
 #include <boost/date_time/posix_time/posix_time.hpp>
 SMTK_THIRDPARTY_POST_INCLUDE
 #endif
@@ -27,43 +24,92 @@ namespace smtk {
 //----------------------------------------------------------------------------
 /// Default constructor creates invalid ptime
 DateTime::DateTime()
-  : m_data()
+  : m_ptime()
 {
 }
 
 //----------------------------------------------------------------------------
-bool DateTime::isValid() const
+bool DateTime::setComponents(
+  int yr, int month, int day, int hr, int min, int sec, int msec)
 {
-  return !this->m_data.is_special();
+  boost::gregorian::date ptimeDate(yr, month, day);
+  // Cannot use main time_duration constructor because fractional_seconds
+  // argument is ambiguous. Use milliseconds constructor instead.
+  int msecTotal = 1000*(hr*3600 + min*60 + sec) + msec;
+  boost::posix_time::time_duration ptimeTime =
+    boost::posix_time::milliseconds(msecTotal);
+
+  this->m_ptime = boost::posix_time::ptime(ptimeDate, ptimeTime);
+
+  return this->isSet();
 }
 
 //----------------------------------------------------------------------------
-bool DateTime::parseIsoString(const std::string& ts)
+bool DateTime::getComponents(
+  int& yr, int& month, int& day, int& hr, int& min, int& sec, int& msec) const
+{
+  if (!this->isSet())
+    {
+    return false;
+    }
+  boost::gregorian::date ptimeDate = this->m_ptime.date();
+  yr = ptimeDate.year();
+  month = ptimeDate.month();
+  day = ptimeDate.day();
+
+  boost::posix_time::time_duration ptimeTime = this->m_ptime.time_of_day();
+  hr = ptimeTime.hours();
+  min = ptimeTime.minutes();
+  sec = ptimeTime.seconds();
+  msec = ptimeTime.total_milliseconds() - 1000*ptimeTime.total_seconds();
+
+  return true;
+}
+
+//----------------------------------------------------------------------------
+bool DateTime::isSet() const
+{
+  return !this->m_ptime.is_special();
+}
+
+//----------------------------------------------------------------------------
+// Parse input string in canonical format only: YYYYMMDDThhmmss[.zzzzzz]
+bool DateTime::parse(const std::string& ts)
 {
   try
     {
-    std::string tsCopy(ts);
-//tsCopy.erase(std::remove(tsCopy.begin(), tsCopy.end(), '-'), tsCopy.end());
-    this->m_data = boost::posix_time::from_iso_string(tsCopy);
+    this->m_ptime = boost::posix_time::from_iso_string(ts);
     }
   catch (std::exception& e)
     {
 #ifndef NDEBUG
     std::cerr << "exception: " << e.what() << std::endl;
 #endif
-    this->m_data = boost::posix_time::not_a_date_time;
+    this->m_ptime = boost::posix_time::not_a_date_time;
     return false;
     }
 
-  return this->isValid();
+  return this->isSet();
 }
 
 //----------------------------------------------------------------------------
-bool DateTime::parseString(const std::string& ts)
+/// Parse string using boost time_from_string(), NOT ISO compliant
+bool DateTime::parseBoostFormat(const std::string& ts)
 {
-  this->m_data = boost::posix_time::time_from_string(ts);
-  return this->isValid();
+  try
+    {
+    this->m_ptime = boost::posix_time::time_from_string(ts);
+    }
+  catch (std::exception& e)
+    {
+#ifndef NDEBUG
+    std::cerr << "exception: " << e.what() << std::endl;
+#endif
+    this->m_ptime = boost::posix_time::not_a_date_time;
+    return false;
+    }
 
+  return this->isSet();
 }
 
   }  // namespace attribute
