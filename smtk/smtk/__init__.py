@@ -80,7 +80,7 @@ io = _temp.smtk.io
 try:
   _tempext = __import__('smtkIOVTKPython', globals(), locals(), [], -1)
   __import_shared_ptrs__()
-  smtkIOVTK = _tempext.smtkIOVTK
+  extension = _tempext
 except:
   pass
 
