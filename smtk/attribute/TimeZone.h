@@ -37,6 +37,7 @@ class SMTKCORE_EXPORT TimeZone
 
   // static std::vector<std::string> regions();
   bool setRegion(const std::string& region);
+  bool setPosix(const std::string& posixTimeZoneString);
   // std::string stdZoneName() const;
   // std::string stdZoneAbbreviation() const;
   // std::string dstZoneName() const;
@@ -45,6 +46,11 @@ class SMTKCORE_EXPORT TimeZone
   // bool hasDST() const;
   // bool utcOffset(int& hours, int& minutes) const;
   // bool dstShift(int& hours, int& minutes) const;
+
+#ifndef SHIBOKEN_SKIP
+  // Intended for internal use
+  const boost::local_time::time_zone_ptr boostPointer() const;
+#endif
  protected:
   boost::local_time::time_zone_ptr m_data;
 

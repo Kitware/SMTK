@@ -53,6 +53,21 @@ bool TimeZone::setRegion(const std::string& region)
   return this->isSet();
 }
 
+//----------------------------------------------------------------------------
+bool TimeZone::setPosix(const std::string& posixTimeZoneString)
+{
+  //boost::local_time::time_zone_ptr tz(
+  boost::local_time::time_zone_ptr tz(
+    new boost::local_time::posix_time_zone(posixTimeZoneString));
+  this->m_data = tz;
+}
+
+//----------------------------------------------------------------------------
+const boost::local_time::time_zone_ptr TimeZone::boostPointer() const
+{
+  return this->m_data;
+}
+
   } // namespace attribute
 } // namespace smtk
 

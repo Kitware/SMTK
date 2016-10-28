@@ -73,7 +73,7 @@ void verify_setGets()
 
   // Read back
   test(
-    dt.getComponents(yr, month, day, hr, minute, sec, msec),
+    dt.components(yr, month, day, hr, minute, sec, msec),
     "Failed to get components");
   test(yr     == 2016, "Failed to get year component");
   test(month  == 10, "Failed to get month component");
@@ -94,7 +94,7 @@ void verify_setGets()
   test(
     dt.setComponents(yr2, month2, day2, hr2, minute2, sec2, msec2),
     "Failed to set components");
-  dt.getComponents(yr, month, day, hr, minute, sec, msec),
+  dt.components(yr, month, day, hr, minute, sec, msec),
   test(yr == yr2, "Failed to get year component");
   test(month == month2, "Failed to get month component");
   test(day == day2, "Failed to get day component");
@@ -102,6 +102,26 @@ void verify_setGets()
   test(minute == minute2, "Failed to get minute component");
   test(sec == sec2, "Failed to get second component");
   test(msec == msec2, "Failed to get millisecond component");
+
+  // Set with time zone
+  smtk::attribute::TimeZone tzCST;
+  tzCST.setPosix("CST-6");
+  test(
+    dt.setComponents(yr2, month2, day2, hr2, minute2, sec2, msec2, &tzCST),
+    "Failed to setComponents() with time zone");
+  dt.components(yr, month, day, hr, minute, sec, msec),
+  // Returned hour should be ahead by 6
+  test(hr == hr2 + 6, "Failed to get hour component for tzCST (set)");
+
+  // Get with time zone
+  smtk::attribute::TimeZone tzPST;
+  tzPST.setPosix("PST-8");
+  test(
+    dt.components(yr, month, day, hr, minute, sec, msec, &tzPST),
+    "Failed components() with time zone");
+  std::cout << "hr: " << hr << ",  hr2: " << hr2 << std::endl;
+  // Returned hour should be behind by 2 (plus 6 minus 8)
+  test(hr == hr2 - 8 + 6, "Failed to get hour component for tzPST (get)");
 }
 
 //----------------------------------------------------------------------------

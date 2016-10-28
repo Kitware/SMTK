@@ -25,6 +25,8 @@ SMTK_THIRDPARTY_POST_INCLUDE
 namespace smtk {
   namespace attribute {
 
+class TimeZone;
+
 //.NAME DateTime - Date & time representation generally based on ISO 8601.
 //.SECTION Description
 // A minimal wrapper for boost::posix_time::ptime
@@ -41,19 +43,19 @@ public:
     int hour = 0,
     int minute = 0,
     int second = 0,
-    int millisecond = 0);
-    // TODO TimeZone *timeZone = NULL);
+    int millisecond = 0,
+    TimeZone *timeZone = NULL);
 
   // Returns each component, with optional time zone conversion
-  bool getComponents(
+  bool components(
     int& year,
     int& month,
     int& day,
     int& hour,
     int& minute,
     int& second,
-    int& millisecond) const;
-    // TODO TimeZone *timeZone = NULL);
+    int& millisecond,
+    TimeZone *timeZone = NULL) const;
 
   /// Indicates if instance represents valid datetime value
   bool isSet() const;
@@ -63,6 +65,9 @@ public:
 
   /// Parses using boost time_from_string(), which is NOT ISO COMPLIANT
   bool parseBoostFormat(const std::string& ts);
+
+  // Todo bool parse(formatString, dataString);
+  // General parser using boost datetime I/O classes
 
 protected:
   boost::posix_time::ptime m_ptime;
