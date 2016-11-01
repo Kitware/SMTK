@@ -42,15 +42,18 @@ public:
   //Export a collection as a VTK xml polydata or xml unstructured grid file
   //(determined by the file name suffix .vtp or .vtu).
   bool operator()(const std::string& filename,
-                  smtk::mesh::CollectionPtr collection) const;
+                  smtk::mesh::CollectionPtr collection,
+                  std::string domainPropertyName) const;
 
   //Export the highest dimension cells of a mesh set to polydata (starting with
   //Dims2).
-  void operator()(const smtk::mesh::MeshSet& meshset, vtkPolyData* pd) const;
+  void operator()(const smtk::mesh::MeshSet& meshset, vtkPolyData* pd,
+                  std::string domainPropertyName = std::string()) const;
 
   //Export a mesh set to an unstructured grid.
   void operator()(const smtk::mesh::MeshSet& meshset,
-                  vtkUnstructuredGrid* ug) const;
+                  vtkUnstructuredGrid* ug,
+                  std::string domainPropertyName = std::string()) const;
 
 private:
   //both are blank since we currently don't want to support copy by value
