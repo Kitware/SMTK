@@ -94,28 +94,37 @@ bool ExportVTKData::operator()(const std::string& filename,
 //----------------------------------------------------------------------------
 namespace
 {
-template<class T, class U>
-struct swapDataTypesIfNecessary
-{
-  void operator()(T*& in, U*& out, boost::int64_t len)
-  {
-    out = new U[len];
-    for (boost::int64_t i=0;i<len;i++)
-      {
-      out[i] = in[i];
-      }
-    delete [] in;
-  }
-};
 
-template<class T>
-struct swapDataTypesIfNecessary<T,T>
+// functions to shunt past data transfer if input and output types match
+void constructNewArrayIfNecessary(vtkIdType*&, vtkIdType*&, boost::int64_t) {}
+void transferDataIfNecessary(vtkIdType*& in, vtkIdType*& out, boost::int64_t)
 {
-  void operator()(T*& in, T*& out, boost::int64_t)
-  {
-    out = in;
-  }
-};
+  out = in;
+}
+void deleteOldArrayIfNecessary(vtkIdType*&, vtkIdType*&) {}
+
+// functions for allocation, transfer and deallocation when there is a type
+// mismatch
+template <typename T>
+void constructNewArrayIfNecessary(vtkIdType*&, T*& out, boost::int64_t len)
+{
+  out = new vtkIdType[len];
+}
+
+template <typename T>
+void transferDataIfNecessary(vtkIdType*& in, T*& out, boost::int64_t len)
+{
+  for (boost::int64_t i=0;i<len;i++)
+    {
+    out[i] = in[i];
+    }
+}
+
+template <typename T>
+void deleteOldArrayIfNecessary(vtkIdType*& in, T*&)
+{
+  delete [] in;
+}
 
 }
 
@@ -203,10 +212,10 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
     smtk::mesh::PreAllocatedField field(cellData_, pointData_);
     smtk::mesh::extractDomainField(meshset, field);
 
-    swapDataTypesIfNecessary<boost::int64_t, vtkIdType> swap;
-
     vtkIdType* cellData;
-    swap(cellData_, cellData, numberOfCells);
+    constructNewArrayIfNecessary(cellData_, cellData, numberOfCells);
+    transferDataIfNecessary(cellData_, cellData, numberOfCells);
+    deleteOldArrayIfNecessary(cellData_, cellData);
 
     vtkNew<vtkIdTypeArray> cellDataArray;
     cellDataArray->SetName(domainPropertyName.c_str());
@@ -215,7 +224,9 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
     pd->GetCellData()->AddArray(cellDataArray.GetPointer());
 
     vtkIdType* pointData;
-    swap(pointData_, pointData, numberOfPoints);
+    constructNewArrayIfNecessary(pointData_, pointData, numberOfPoints);
+    transferDataIfNecessary(pointData_, pointData, numberOfPoints);
+    deleteOldArrayIfNecessary(pointData_, pointData);
 
     vtkNew<vtkIdTypeArray> pointDataArray;
     pointDataArray->SetName(domainPropertyName.c_str());
@@ -254,11 +265,17 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
                                             cellTypesData, pointsData);
   smtk::mesh::extractTessellation(meshset, tess);
 
-  swapDataTypesIfNecessary<boost::int64_t, vtkIdType> swap;
   vtkIdType* cellLocationsData;
-  swap(cellLocationsData_, cellLocationsData, numberOfCells);
+  constructNewArrayIfNecessary(cellLocationsData_, cellLocationsData,
+                               numberOfCells);
+  transferDataIfNecessary(cellLocationsData_, cellLocationsData, numberOfCells);
+  deleteOldArrayIfNecessary(cellLocationsData_, cellLocationsData);
   vtkIdType* connectivityData;
-  swap(connectivityData_, connectivityData, connectivityLength);
+  constructNewArrayIfNecessary(connectivityData_, connectivityData,
+                               connectivityLength);
+  transferDataIfNecessary(connectivityData_, connectivityData,
+                          connectivityLength);
+  deleteOldArrayIfNecessary(connectivityData_, connectivityData);
 
   // create vtk data arrays to hold our data
   vtkNew<vtkDoubleArray> pointsArray;
@@ -296,10 +313,10 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
     smtk::mesh::PreAllocatedField field(cellData_, pointData_);
     smtk::mesh::extractDomainField(meshset, field);
 
-    swapDataTypesIfNecessary<boost::int64_t, vtkIdType> swap;
-
     vtkIdType* cellData;
-    swap(cellData_, cellData, numberOfCells);
+    constructNewArrayIfNecessary(cellData_, cellData, numberOfCells);
+    transferDataIfNecessary(cellData_, cellData, numberOfCells);
+    deleteOldArrayIfNecessary(cellData_, cellData);
 
     vtkNew<vtkIdTypeArray> cellDataArray;
     cellDataArray->SetName(domainPropertyName.c_str());
@@ -308,7 +325,9 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
     ug->GetCellData()->AddArray(cellDataArray.GetPointer());
 
     vtkIdType* pointData;
-    swap(pointData_, pointData, numberOfPoints);
+    constructNewArrayIfNecessary(pointData_, pointData, numberOfPoints);
+    transferDataIfNecessary(pointData_, pointData, numberOfPoints);
+    deleteOldArrayIfNecessary(pointData_, pointData);
 
     vtkNew<vtkIdTypeArray> pointDataArray;
     pointDataArray->SetName(domainPropertyName.c_str());
