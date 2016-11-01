@@ -62,7 +62,7 @@ bool MeshIOVTK::exportMesh( const std::string& filePath,
                             smtk::mesh::CollectionPtr collection) const
 {
   smtk::extension::vtk::io::ExportVTKData export_;
-  return export_( filePath, collection );
+  return export_( filePath, collection, "" );
 }
 
 
