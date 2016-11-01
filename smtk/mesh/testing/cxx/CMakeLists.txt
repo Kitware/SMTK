@@ -28,6 +28,7 @@ set(unit_tests_which_require_data
   UnitTestElevate.cxx
   UnitTestExportMesh2DM.cxx
   UnitTestExportMesh3DM.cxx
+  UnitTestExtractField.cxx
   UnitTestExtractTessellation.cxx
   UnitTestExtractTessellationOfModel.cxx
   UnitTestExtractOrderedTessellation.cxx
