@@ -69,6 +69,11 @@ public:
   // Todo bool parse(formatString, dataString);
   // General parser using boost datetime I/O classes
 
+  // Relational operators
+  bool operator==(const DateTime& dt) const;
+  bool operator<(const DateTime& dt) const;
+  bool operator>(const DateTime& dt) const;
+
 protected:
   boost::posix_time::ptime m_ptime;
 };

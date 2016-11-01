@@ -219,6 +219,8 @@ std::string Item::type2String(Item::Type t)
       return "MeshSelection";
     case MESH_ENTITY:
       return "MeshEntity";
+    case DATE_TIME:
+      return "DateTime";
     default:
       return "";
     }
@@ -274,6 +276,10 @@ Item::Type Item::string2Type(const std::string &s)
   if (s == "MeshEntity")
     {
     return MESH_ENTITY;
+    }
+  if (s == "DateTime")
+    {
+    return DATE_TIME;
     }
   return NUMBER_OF_TYPES;
 }

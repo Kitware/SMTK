@@ -54,6 +54,7 @@ namespace smtk
         MODEL_ENTITY,
         MESH_SELECTION,
         MESH_ENTITY,
+        DATE_TIME,
         NUMBER_OF_TYPES
       };
 

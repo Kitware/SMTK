@@ -165,5 +165,23 @@ bool DateTime::parseBoostFormat(const std::string& ts)
   return this->isSet();
 }
 
+//----------------------------------------------------------------------------
+bool DateTime::operator==(const DateTime& dt) const
+{
+  return this->m_ptime == dt.m_ptime;
+}
+
+//----------------------------------------------------------------------------
+bool DateTime::operator<(const DateTime& dt) const
+{
+  return this->m_ptime < dt.m_ptime;
+}
+
+//----------------------------------------------------------------------------
+bool DateTime::operator>(const DateTime& dt) const
+{
+  return this->m_ptime > dt.m_ptime;
+}
+
   }  // namespace attribute
 }  // namespace smtk
