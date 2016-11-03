@@ -2,6 +2,7 @@ include(${QT_USE_FILE})
 
 # set up sources to build
 set(PQWidgetsSrcs
+  imageFeatureExtractorWidget.cxx
   pqArcWidgetManager.cxx
   pqArcWidgetPanel.cxx
   pqPolygonArc.cxx
@@ -10,9 +11,11 @@ set(PQWidgetsSrcs
 
 set(PQWidgetsUIs
   qtArcWidgetPanel.ui
+  imageFeatureExtractor.ui
 )
 
 set(PQWidgetsMocHeaders
+  imageFeatureExtractorWidget.h
   pqArcWidgetManager.h
   pqArcWidgetPanel.h
   pqPolygonArc.h
@@ -50,6 +53,8 @@ target_link_libraries(smtkPolygonQtExt LINK_PUBLIC
   vtkPolygonOperatorsExt
   vtkSMTKSourceExt
   vtkDomainsChemistryOpenGL2
+  vtkSMTKFilterExt
+${VTK_LIBRARIES}
 )
 
 smtk_export_header(smtkPolygonQtExt Exports.h)
