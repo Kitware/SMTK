@@ -32,11 +32,11 @@ void verify_constructors()
 //----------------------------------------------------------------------------
 void verify_parsers()
 {
-  // Using DateTime::parse():
+  // Using DateTime::deserialize():
   smtk::attribute::DateTime dtInvalid;
-  dtInvalid.parse("");
+  dtInvalid.deserialize("");
   test(!dtInvalid.isSet(), "Failed to detect empty (invalid) iso string");
-  test(!dtInvalid.parse("20160231"), "failed to detect invalid date");
+  test(!dtInvalid.deserialize("20160231"), "failed to detect invalid date");
 
   smtk::attribute::DateTime dtValid;
   const char *validCases[] = {
@@ -46,7 +46,7 @@ void verify_parsers()
   };
   for (std::size_t i = 0; i < sizeof(validCases)/sizeof(const char *); i += 2)
     {
-    test(!!dtValid.parse(validCases[i]), validCases[i+1]);
+    test(!!dtValid.deserialize(validCases[i]), validCases[i+1]);
     test(!!dtValid.isSet(), "Failed to return true for isSet()");
     }
 
@@ -67,7 +67,7 @@ void verify_setGets()
 {
   // Initialize
   smtk::attribute::DateTime dt;
-  dt.parse("20161028T145400.123456");
+  dt.deserialize("20161028T145400.123456");
 
   int yr, month, day, hr, minute, sec, msec;
 

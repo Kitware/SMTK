@@ -10,6 +10,7 @@
 
 
 #include "smtk/attribute/DateTimeItemDefinition.h"
+#include "smtk/attribute/DateTimeItem.h"
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
@@ -34,9 +35,8 @@ smtk::attribute::ItemPtr
 DateTimeItemDefinition::buildItem(Attribute *owningAttribute,
                                 int itemPosition) const
 {
-  // return smtk::attribute::ItemPtr(
-  //   new DateTimeItem(owningAttribute, itemPosition));
-  return smtk::attribute::ItemPtr(0);  // todo
+  return smtk::attribute::ItemPtr(
+    new DateTimeItem(owningAttribute, itemPosition));
 }
 
 //----------------------------------------------------------------------------
@@ -45,9 +45,8 @@ DateTimeItemDefinition::buildItem(Item *owningItem,
                                 int itemPosition,
                                 int subGroupPosition) const
 {
-  // return smtk::attribute::ItemPtr(
-  //   new DateTimeItem(owningItem, itemPosition, subGroupPosition));
-  return smtk::attribute::ItemPtr(0);  // todo
+  return smtk::attribute::ItemPtr(
+    new DateTimeItem(owningItem, itemPosition, subGroupPosition));
 }
 
 //----------------------------------------------------------------------------

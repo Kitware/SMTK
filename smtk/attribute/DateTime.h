@@ -20,6 +20,7 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 SMTK_THIRDPARTY_POST_INCLUDE
 #endif
 
+#include <iostream>
 #include <string>
 
 namespace smtk {
@@ -60,8 +61,11 @@ public:
   /// Indicates if instance represents valid datetime value
   bool isSet() const;
 
-  /// Parses datetime string in "strict" format: YYYYMMDDThhmmss[.uuuuuu]
-  bool parse(const std::string& ts);
+  /// Parses datetime string in canonical format: YYYYMMDDThhmmss[.uuuuuu]
+  bool deserialize(const std::string& ts);
+
+  /// Returns string im canonical format
+  std::string serialize() const;
 
   /// Parses using boost time_from_string(), which is NOT ISO COMPLIANT
   bool parseBoostFormat(const std::string& ts);
@@ -77,6 +81,9 @@ public:
 protected:
   boost::posix_time::ptime m_ptime;
 };
+
+SMTKCORE_EXPORT std::ostream& operator<<(std::ostream& os, const DateTime& dt);
+SMTKCORE_EXPORT std::istream& operator>>(std::istream& is, DateTime& dt);
 
   } // namespace attribute
 } // namespace smtk

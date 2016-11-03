@@ -127,7 +127,7 @@ bool DateTime::isSet() const
 
 //----------------------------------------------------------------------------
 // Parse input string in canonical format only: YYYYMMDDThhmmss[.zzzzzz]
-bool DateTime::parse(const std::string& ts)
+bool DateTime::deserialize(const std::string& ts)
 {
   try
     {
@@ -143,6 +143,13 @@ bool DateTime::parse(const std::string& ts)
     }
 
   return this->isSet();
+}
+
+//----------------------------------------------------------------------------
+// Converts data to canonical string format only: YYYYMMDDThhmmss.zzzzzz
+std::string DateTime::serialize() const
+{
+  return boost::posix_time::to_iso_string(this->m_ptime);
 }
 
 //----------------------------------------------------------------------------
@@ -181,6 +188,22 @@ bool DateTime::operator<(const DateTime& dt) const
 bool DateTime::operator>(const DateTime& dt) const
 {
   return this->m_ptime > dt.m_ptime;
+}
+
+//----------------------------------------------------------------------------
+std::ostream& operator<<(std::ostream& os, const DateTime& dt)
+{
+  os << dt.serialize();
+  return os;
+}
+
+//----------------------------------------------------------------------------
+std::istream& operator>>(std::istream& is, DateTime& dt)
+{
+  std::string text;
+  is >> text;
+  dt.deserialize(text);
+  return is;
 }
 
   }  // namespace attribute

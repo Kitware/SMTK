@@ -39,6 +39,7 @@ namespace smtk
     class Attribute;
     class RefItem;
     class RefItemDefinition;
+    class DateTimeItem;
     class DateTimeItemDefinition;
     class Definition;
     class DirectoryItem;
@@ -300,6 +301,7 @@ namespace smtk
     typedef smtk::shared_ptr< const smtk::attribute::ValueItem >      ConstValueItemPtr;
     typedef smtk::shared_ptr< smtk::attribute::ValueItemDefinition >  ValueItemDefinitionPtr;
 
+    typedef smtk::shared_ptr< smtk::attribute::DateTimeItem >             DateTimeItemPtr;
     typedef smtk::shared_ptr< smtk::attribute::DateTimeItemDefinition >   DateTimeItemDefinitionPtr;
     typedef smtk::shared_ptr< smtk::attribute::DirectoryItem >            DirectoryItemPtr;
     typedef smtk::shared_ptr< smtk::attribute::DirectoryItemDefinition >  DirectoryItemDefinitionPtr;

@@ -2,6 +2,7 @@ set(attributeHeaders
   Attribute.h
   Definition.h
   DateTime.h
+  DateTimeItem.h
   DateTimeItemDefinition.h
   DirectoryItem.h
   DirectoryItemDefinition.h
@@ -41,6 +42,7 @@ set(attributeHeaders
 set(attributeSrcs
   Attribute.cxx
   DateTime.cxx
+  DateTimeItem.cxx
   DateTimeItemDefinition.cxx
   Definition.cxx
   DirectoryItem.cxx
