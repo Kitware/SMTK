@@ -26,6 +26,15 @@ Session::Session()
   this->initializeOperatorSystem(Session::s_operators);
 }
 
+Topology* const Session::topology(smtk::model::Model& model)
+{
+  std::vector<Topology>::iterator it =
+    find_if(this->m_topologies.begin(), this->m_topologies.end(),
+            [&] (const Topology& t)
+            { return t.m_collection->entity() == model.entity(); } );
+  return (it == this->m_topologies.end() ? nullptr : &(*it));
+}
+
 smtk::model::SessionInfoBits Session::transcribeInternal(
 const smtk::model::EntityRef& entityRef,
 SessionInfoBits requestedInfo,
