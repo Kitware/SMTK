@@ -83,6 +83,12 @@ smtk::mesh::BufferedCellAllocatorPtr Interface::bufferedCellAllocator()
 }
 
 //----------------------------------------------------------------------------
+smtk::mesh::IncrementalAllocatorPtr Interface::incrementalAllocator()
+{
+  return smtk::mesh::IncrementalAllocatorPtr();
+}
+
+//----------------------------------------------------------------------------
 smtk::mesh::ConnectivityStoragePtr Interface::connectivityStorage(
                                       const smtk::mesh::HandleRange&)
 {

@@ -76,6 +76,7 @@ namespace smtk
     class Interface;
     class Allocator;
     class BufferedCellAllocator;
+    class IncrementalAllocator;
     class ConnectivityStorage;
     class PointLocatorImpl;
 
@@ -210,6 +211,7 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::mesh::Interface >             InterfacePtr;
     typedef smtk::shared_ptr< smtk::mesh::Allocator >             AllocatorPtr;
     typedef smtk::shared_ptr< smtk::mesh::BufferedCellAllocator > BufferedCellAllocatorPtr;
+    typedef smtk::shared_ptr< smtk::mesh::IncrementalAllocator > IncrementalAllocatorPtr;
     typedef smtk::shared_ptr< smtk::mesh::ConnectivityStorage >
                                                         ConnectivityStoragePtr;
     typedef smtk::shared_ptr< smtk::mesh::PointLocatorImpl >
