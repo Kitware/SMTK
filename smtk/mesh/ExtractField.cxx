@@ -237,7 +237,7 @@ void extractField( const smtk::mesh::MeshSet& ms,
   // <cells> and <points> are kept intact because they are used as references
   // for indexing
   smtk::mesh::CellSet cells = ms.cells();
-  smtk::mesh::PointSet points = ms.points();
+  const smtk::mesh::PointSet& points = ps;
 
   // <remainingCells> and <remainingPoints> are contininually diminished to
   // ensure that no overlapping cells or points are double-counted
