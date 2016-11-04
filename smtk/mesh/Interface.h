@@ -107,7 +107,7 @@ public:
 };
 
 //----------------------------------------------------------------------------
-// BufferedCellAllocator allows for the allocation of meshes by incrementally
+// IncrementalAllocator allows for the allocation of meshes by incrementally
 // filling your points and cell connectivities by point index. This allocator is
 // the least efficient for storage and data retrieval, but provides the most
 // flexible API.
