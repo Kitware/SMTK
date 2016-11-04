@@ -68,6 +68,45 @@ public:
 };
 
 //----------------------------------------------------------------------------
+// BufferedCellAllocator allows for the allocation of meshes by
+// 1. reserving memmory for all of your points
+// 2. filling your points and cell connectivities by point index.
+// Point indices are assumed to be contiguous with first index at 0.
+class SMTKCORE_EXPORT BufferedCellAllocator
+{
+public:
+  BufferedCellAllocator() : m_validState(false) {}
+
+  virtual ~BufferedCellAllocator() {}
+
+  virtual bool reserveNumberOfCoordinates(std::size_t nCoordinates) = 0;
+  virtual bool addCoordinate(std::size_t coord, double* xyz) = 0;
+
+  virtual bool addCell(smtk::mesh::CellType ctype, long long int* pointIds,
+                       std::size_t nCoordinates = 0) = 0;
+  virtual bool addCell(smtk::mesh::CellType ctype, long int* pointIds,
+                       std::size_t nCoordinates = 0) = 0;
+  virtual bool addCell(smtk::mesh::CellType ctype, int* pointIds,
+                       std::size_t nCoordinates = 0) = 0;
+
+  virtual bool flush() = 0;
+
+  virtual smtk::mesh::HandleRange cells() = 0;
+
+  bool addCoordinate(std::size_t coord, double x, double y, double z)
+  { double xyz[3] = {x,y,z}; return this->addCoordinate(coord, xyz); }
+  bool addCoordinate(std::size_t coord, float* xyz)
+  { return this->addCoordinate(coord, xyz[0], xyz[1], xyz[2]); }
+  bool addCoordinate(std::size_t coord, float x, float y, float z)
+  { double xyz[3] = {x,y,z}; return this->addCoordinate(coord, xyz); }
+
+  bool isValid() const { return this->m_validState; }
+
+ protected:
+  bool m_validState;
+};
+
+//----------------------------------------------------------------------------
 class SMTKCORE_EXPORT ConnectivityStorage
 {
 public:
@@ -165,9 +204,22 @@ public:
   //will be NULL.
   //
   //Note: Merely fetching a valid allocator will mark the collection as
-  //modified. This is done instead on a per-allocation basis so that
+  //modified. This is done instead of on a per-allocation basis so that
   //modification state changes don't impact performance.
   virtual smtk::mesh::AllocatorPtr allocator() = 0;
+
+  //----------------------------------------------------------------------------
+  //get back a lightweight interface around incrementally allocating memory into
+  //the given interface. This is generally used to create new coordinates or
+  //cells that are than assigned to an existing mesh or new mesh.
+  //
+  //If the current interface is read-only, the BufferedCellAllocatorPtr that is
+  //returned will be NULL.
+  //
+  //Note: Merely fetching a valid allocator will mark the collection as
+  //modified. This is done instead of on a per-allocation basis so that
+  //modification state changes don't impact performance.
+  virtual smtk::mesh::BufferedCellAllocatorPtr bufferedCellAllocator() = 0;
 
   //----------------------------------------------------------------------------
   //get back an efficient storage mechanism for a range of cells point

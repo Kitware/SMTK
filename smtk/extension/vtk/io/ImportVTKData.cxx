@@ -50,7 +50,7 @@ namespace extension {
 namespace vtk {
 namespace io {
 
-namespace detail
+namespace
 {
 
 smtk::mesh::CellType vtkToSMTKCell(int t)
@@ -93,137 +93,49 @@ smtk::mesh::CellType vtkToSMTKCell(int t)
   }
 
 //----------------------------------------------------------------------------
-bool convertVTKPoints(vtkPoints* points,
-                      const smtk::mesh::AllocatorPtr& ialloc,
-                      smtk::mesh::Handle& firstVertHandle)
+template <typename VTKDataSetType>
+smtk::mesh::HandleRange convertVTKDataSet(
+  VTKDataSetType* dataset, smtk::mesh::BufferedCellAllocatorPtr& alloc)
 {
-  const vtkIdType numberOfPoints = points->GetNumberOfPoints();
-  std::vector<double *> coords;
-  const bool pointsAllocated = ialloc->allocatePoints( numberOfPoints,
-                                                       firstVertHandle,
-                                                       coords);
-  if(pointsAllocated)
+  if (!alloc->reserveNumberOfCoordinates(dataset->GetPoints()->
+                                          GetNumberOfPoints()))
     {
-    double point[3];
-    for(vtkIdType i = 0; i < numberOfPoints; ++i)
-      {
-      //note this could become a performance bottleneck. If that occurs
-      //we will need to move to a template dispatch solution to handle floats,
-      //doubles, and vtk Mapped Arrays
-      points->GetPoint(i, point);
-      coords[0][i] = point[0];
-      coords[1][i] = point[1];
-      coords[2][i] = point[2];
-      }
+    return smtk::mesh::HandleRange();
     }
-  return pointsAllocated;
+
+  //note this could become a performance bottleneck. If that occurs
+  //we will need to move to a template dispatch solution to handle floats,
+  //doubles, and vtk Mapped Arrays
+  double point[3];
+  for (vtkIdType i = 0; i< dataset->GetPoints()->GetNumberOfPoints(); ++i)
+    {
+    dataset->GetPoints()->GetPoint(i, point);
+    alloc->addCoordinate(i, point);
+    }
+
+  vtkIdType npts, *pts;
+  for (vtkIdType i = 0; i < dataset->GetNumberOfCells(); ++i)
+    {
+    dataset->GetCellPoints( i, npts, pts );
+    alloc->addCell(vtkToSMTKCell(dataset->GetCellType(i)), pts, npts);
+    }
+  if (!alloc->flush())
+    {
+    return smtk::mesh::HandleRange();
+    }
+
+  return alloc->cells();
 }
 
 //----------------------------------------------------------------------------
-template<typename VTKDataSetType>
-bool convertVTKCells( VTKDataSetType* dataset,
-                      const smtk::mesh::AllocatorPtr& ialloc,
-                      smtk::mesh::Handle firstVertHandle,
-                      smtk::mesh::HandleRange& newlyCreatedCells)
+template<typename TReader>
+vtkDataSet* readXMLFile(const std::string& fileName)
 {
-  //iterate the dataset collecting cells of the same
-  //time intill we hit the end or find a different cell type
-  //This is done to improve the allocation and insertion performance.
-
-  const vtkIdType numberOfVTKCells = dataset->GetNumberOfCells();
-  std::size_t numberOfCellsConverted = 0;
-
-  vtkIdType currentCellId = 0;
-  while( currentCellId < numberOfVTKCells)
-    {
-    vtkIdType startOfContinousCellIds = currentCellId;
-    vtkIdType endOfContinousCellIds = currentCellId + 1;
-
-    const int currentVTKCellType = dataset->GetCellType( startOfContinousCellIds );
-    //we need to convert from a vtk cell type to a smtk::mesh cell type
-    const smtk::mesh::CellType cellType = vtkToSMTKCell( currentVTKCellType );
-    if(cellType == smtk::mesh::CellType_MAX)
-      {
-      //we hit a vtk cell type we don't support, skip to the next section
-      currentCellId = endOfContinousCellIds;
-      continue;
-      }
-
-    //keep iterating while we have the same cell type. The only exception
-    //is POLYGON
-    const vtkIdType numVertsPerCell = dataset->GetCell( startOfContinousCellIds )->GetNumberOfPoints();
-    if(cellType != smtk::mesh::Polygon)
-      {
-      while( endOfContinousCellIds < numberOfVTKCells &&
-            currentVTKCellType == dataset->GetCellType( endOfContinousCellIds ) )
-        { ++endOfContinousCellIds; }
-      }
-    else
-      {
-      //for polygon we need to continue while the number of points are
-      //the same
-      vtkIdType end_npts = dataset->GetCell( endOfContinousCellIds )->GetNumberOfPoints();
-      while( endOfContinousCellIds < numberOfVTKCells &&
-             currentVTKCellType == dataset->GetCellType( endOfContinousCellIds ) &&
-             numVertsPerCell == end_npts)
-        {
-        end_npts = dataset->GetCell( endOfContinousCellIds )->GetNumberOfPoints();
-        ++endOfContinousCellIds;
-        }
-      }
-
-    //now we know the start(inclusive) and end(exclusive) index.
-    //allocate the moab data
-    const std::size_t numCellsToAlloc = static_cast<std::size_t>(endOfContinousCellIds - startOfContinousCellIds);
-
-    //need to convert from vtk cell type to moab cell type
-    bool allocated = false;
-    smtk::mesh::Handle *startOfConnectivityArray = 0;
-
-    //only convert cells smtk mesh supports
-    smtk::mesh::HandleRange cellsCreatedForThisType;
-    allocated = ialloc->allocateCells( cellType,
-                                       numCellsToAlloc,
-                                       static_cast<int>(numVertsPerCell),
-                                       cellsCreatedForThisType,
-                                       startOfConnectivityArray);
-    if(allocated)
-      {
-      //now that we have the chunk allocated need to fill it
-      //we do this by iterating the cells
-      vtkIdType npts, *pts;
-      smtk::mesh::Handle *currentConnLoc = startOfConnectivityArray;
-      for( vtkIdType i = startOfContinousCellIds; i < endOfContinousCellIds; ++i )
-        {
-        dataset->GetCellPoints( i, npts, pts );
-        //currently only supports linear elements
-        for(vtkIdType j=0; j < npts; ++j)
-          {
-          currentConnLoc[j] = firstVertHandle + pts[j];
-          }
-        currentConnLoc += npts;
-        }
-
-      // notify database that we have written to connectivity, that way
-      // it can properly update adjacencies and other database info
-      ialloc->connectivityModified(newlyCreatedCells,
-                                   static_cast<int>(numVertsPerCell),
-                                   startOfConnectivityArray);
-
-      //update the number of cells that we have converted to smtk::mesh
-      numberOfCellsConverted += numCellsToAlloc;
-
-      //insert these cells back into the range
-      newlyCreatedCells.insert(cellsCreatedForThisType.begin(),
-                               cellsCreatedForThisType.end());
-      }
-
-    //increment the currentCellId to the end of the current continous cell
-    //block so that we can find the next series of cells
-    currentCellId = endOfContinousCellIds;
-    }
-
-  return numberOfCellsConverted != 0;
+  vtkSmartPointer<TReader> reader = vtkSmartPointer<TReader>::New();
+  reader->SetFileName(fileName.c_str());
+  reader->Update();
+  reader->GetOutput()->Register(reader);
+  return vtkDataSet::SafeDownCast(reader->GetOutput());
 }
 
 //----------------------------------------------------------------------------
@@ -287,20 +199,6 @@ ImportVTKData::ImportVTKData()
 
 }
 
-//-------------------------------------------------------------------------
-namespace
-{
-template<typename TReader>
-vtkDataSet* readXMLFile(const std::string& fileName)
-{
-  vtkSmartPointer<TReader> reader = vtkSmartPointer<TReader>::New();
-  reader->SetFileName(fileName.c_str());
-  reader->Update();
-  reader->GetOutput()->Register(reader);
-  return vtkDataSet::SafeDownCast(reader->GetOutput());
-}
-}
-
 //----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr
 ImportVTKData::operator()(const std::string& filename,
@@ -342,11 +240,39 @@ bool ImportVTKData::operator()(const std::string& filename,
 }
 
 //----------------------------------------------------------------------------
+smtk::mesh::MeshSet ImportVTKData::operator()(
+  vtkPolyData* polydata, smtk::mesh::CollectionPtr collection) const
+{
+  //make sure we have a valid poly data
+  if(!polydata)
+    {
+    return smtk::mesh::MeshSet();
+    }
+  else if( polydata->GetNumberOfPoints() == 0 ||
+           polydata->GetNumberOfCells() == 0)
+    {
+    //early terminate if the polydata is empty.
+    return smtk::mesh::MeshSet();
+    }
+
+  smtk::mesh::InterfacePtr iface = collection->interface();
+  smtk::mesh::BufferedCellAllocatorPtr alloc = iface->bufferedCellAllocator();
+
+  if (polydata->NeedToBuildCells())
+    {
+    polydata->BuildCells();
+    }
+  smtk::mesh::HandleRange cells = convertVTKDataSet(polydata, alloc);
+
+  return collection->createMesh(smtk::mesh::CellSet(collection, cells));
+}
+
+//----------------------------------------------------------------------------
 bool ImportVTKData::operator()(vtkPolyData* polydata,
                                smtk::mesh::CollectionPtr collection,
                                std::string materialPropertyName) const
 {
-  //make sure we have a valid poly data
+  //make sure we have valid data
   if(!polydata)
     {
     return false;
@@ -358,44 +284,27 @@ bool ImportVTKData::operator()(vtkPolyData* polydata,
     return false;
     }
 
-  bool pointsConverted = false;
-  bool cellsConverted = false;
-  bool meshCreated = false;
-
-  //allocate space for coordinates and load them into moab
   smtk::mesh::InterfacePtr iface = collection->interface();
-  smtk::mesh::AllocatorPtr ialloc = iface->allocator();
+  smtk::mesh::BufferedCellAllocatorPtr alloc = iface->bufferedCellAllocator();
 
-  smtk::mesh::Handle firstVertHandle;
-  pointsConverted = detail::convertVTKPoints(polydata->GetPoints(),
-                                             ialloc,
-                                             firstVertHandle);
-
-
-  //allocate and fill connectivity
-  smtk::mesh::HandleRange newlyCreatedCells;
-  cellsConverted = detail::convertVTKCells(polydata,
-                                           ialloc,
-                                           firstVertHandle,
-                                           newlyCreatedCells );
-
-  if(pointsConverted && cellsConverted)
+  if (polydata->NeedToBuildCells())
     {
-    if(materialPropertyName.empty())
-      { //if we don't have a material we create a single mesh
-      smtk::mesh::Handle vtkMeshHandle;
-      meshCreated = iface->createMesh(newlyCreatedCells, vtkMeshHandle);
-      }
-    else
-      { //make multiple meshes each one assigned a material value
-      meshCreated = detail::convertDomain(polydata->GetCellData(),
-                                          iface,
-                                          newlyCreatedCells,
-                                          materialPropertyName);
-      }
+    polydata->BuildCells();
     }
+  smtk::mesh::HandleRange cells = convertVTKDataSet(polydata, alloc);
 
-  return meshCreated;
+  if (materialPropertyName.empty())
+    { //if we don't have a material we create a single mesh
+    smtk::mesh::Handle vtkMeshHandle;
+    return iface->createMesh(cells, vtkMeshHandle);
+    }
+  else
+    { //make multiple meshes each one assigned a material value
+    return convertDomain(polydata->GetCellData(),
+                         iface,
+                         cells,
+                         materialPropertyName);
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -414,7 +323,7 @@ bool ImportVTKData::operator()(vtkUnstructuredGrid* ugrid,
                                smtk::mesh::CollectionPtr collection,
                                std::string materialPropertyName) const
 {
-  //make sure we have a valid poly data
+  //make sure we have valid data
   if(!ugrid)
     {
     return false;
@@ -426,42 +335,23 @@ bool ImportVTKData::operator()(vtkUnstructuredGrid* ugrid,
     return false;
     }
 
-  bool pointsConverted = false;
-  bool cellsConverted = false;
-  bool meshCreated = false;
-
-  //allocate space for coordinates and load them into moab
   smtk::mesh::InterfacePtr iface = collection->interface();
-  smtk::mesh::AllocatorPtr ialloc = iface->allocator();
+  smtk::mesh::BufferedCellAllocatorPtr alloc = iface->bufferedCellAllocator();
 
-  smtk::mesh::Handle firstVertHandle;
-  pointsConverted = detail::convertVTKPoints(ugrid->GetPoints(),
-                                             ialloc,
-                                             firstVertHandle);
+  smtk::mesh::HandleRange cells = convertVTKDataSet(ugrid, alloc);
 
-  //allocate and fill connectivity
-  smtk::mesh::HandleRange newlyCreatedCells;
-  cellsConverted = detail::convertVTKCells(ugrid,
-                                           ialloc,
-                                           firstVertHandle,
-                                           newlyCreatedCells );
-
-  if(pointsConverted && cellsConverted)
-    {
-    if(materialPropertyName.empty())
-      { //if we don't have a material we create a single mesh
-      smtk::mesh::Handle vtkMeshHandle;
-      meshCreated = iface->createMesh(newlyCreatedCells, vtkMeshHandle);
-      }
-    else
-      { //make multiple meshes each one assigned a material value
-      meshCreated = detail::convertDomain(ugrid->GetCellData(),
-                                          iface,
-                                          newlyCreatedCells,
-                                          materialPropertyName);
-      }
+  if (materialPropertyName.empty())
+    { //if we don't have a material we create a single mesh
+    smtk::mesh::Handle vtkMeshHandle;
+    return iface->createMesh(cells, vtkMeshHandle);
     }
-  return meshCreated;
+  else
+    { //make multiple meshes each one assigned a material value
+    return convertDomain(ugrid->GetCellData(),
+                         iface,
+                         cells,
+                         materialPropertyName);
+    }
 }
 
 //----------------------------------------------------------------------------

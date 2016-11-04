@@ -18,6 +18,7 @@
 
 #include "smtk/mesh/moab/CellTypeToType.h"
 #include "smtk/mesh/moab/Allocator.h"
+#include "smtk/mesh/moab/BufferedCellAllocator.h"
 #include "smtk/mesh/moab/ConnectivityStorage.h"
 #include "smtk/mesh/moab/MergeMeshVertices.h"
 #include "smtk/mesh/moab/PointLocatorImpl.h"
@@ -265,9 +266,11 @@ smtk::mesh::moab::InterfacePtr extract_interface( const smtk::mesh::CollectionPt
 Interface::Interface():
   m_iface( new ::moab::Core() ),
   m_alloc( ),
+  m_bcAlloc( ),
   m_modified(false)
 {
   this->m_alloc.reset( new smtk::mesh::moab::Allocator( this->m_iface.get() ) );
+  this->m_bcAlloc.reset( new smtk::mesh::moab::BufferedCellAllocator( this->m_iface.get() ) );
 }
 
 //----------------------------------------------------------------------------
@@ -288,6 +291,14 @@ smtk::mesh::AllocatorPtr Interface::allocator()
   //mark us as modified as the caller is going to add something to the database
   this->m_modified = true;
   return this->m_alloc;
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::BufferedCellAllocatorPtr Interface::bufferedCellAllocator()
+{
+  //mark us as modified as the caller is going to add something to the database
+  this->m_modified = true;
+  return this->m_bcAlloc;
 }
 
 //----------------------------------------------------------------------------
