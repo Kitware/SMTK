@@ -231,7 +231,7 @@ if ( ENABLE_HDF5 )
     #set( MOAB_DEFINES "-DHDF5_PARALLEL ${MOAB_DEFINES}" )
     set (MOAB_HAVE_HDF5_PARALLEL 1)
   endif ( )
-  set( MOAB_LIBS ${MOAB_LIBS} ${HDF5_LIBRARIES} )
+  set( MOAB_LIBS ${MOAB_LIBS} ${HDF5_C_LIBRARIES} )
   include_directories( ${HDF5_INCLUDE_DIR} src/io/mhdf/include )
 endif ( ENABLE_HDF5 )
 

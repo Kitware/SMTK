@@ -47,7 +47,7 @@ ADD_CUSTOM_COMMAND(
 
 if( MOAB_HAVE_HDF5 )
   include_directories(${HDF5_INCLUDES})
-  set( MOAB_HDF_LIBS ${HDF5_LIBRARIES} )
+  set( MOAB_HDF_LIBS ${HDF5_C_LIBRARIES} )
 endif()
 if( MOAB_HAVE_NETCDF )
   include_directories(${NETCDF_INCLUDES})

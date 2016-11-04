@@ -24,7 +24,7 @@ set_target_properties( mhdf
                        PROPERTIES COMPILE_FLAGS "${shared_define}")
 
 add_executable( h5minfo include/mhdf.h example/info.c $<TARGET_OBJECTS:mhdf> )
-target_link_libraries( h5minfo ${HDF5_LIBRARIES} )
+target_link_libraries( h5minfo ${HDF5_C_LIBRARIES} )
 install(TARGETS h5minfo RUNTIME DESTINATION bin
                         LIBRARY DESTINATION lib
                         ARCHIVE DESTINATION lib )
@@ -33,4 +33,4 @@ add_executable( h5mvalidate example/validate.c $<TARGET_OBJECTS:mhdf> )
 install(TARGETS h5mvalidate RUNTIME DESTINATION bin
                             LIBRARY DESTINATION lib
                             ARCHIVE DESTINATION lib )
-target_link_libraries( h5mvalidate ${HDF5_LIBRARIES} )
+target_link_libraries( h5mvalidate ${HDF5_C_LIBRARIES} )
