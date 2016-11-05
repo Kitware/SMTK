@@ -326,6 +326,8 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::attribute::VoidItem >                 VoidItemPtr;
     typedef smtk::shared_ptr< smtk::attribute::VoidItemDefinition >       VoidItemDefinitionPtr;
 
+    typedef smtk::shared_ptr< const smtk::attribute::DateTimeItem >              ConstDateTimeItemPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::DateTimeItemDefinition >    ConstDateTimeItemDefinitionPtr;
     typedef smtk::shared_ptr< const smtk::attribute::DirectoryItem >             ConstDirectoryItemPtr;
     typedef smtk::shared_ptr< const smtk::attribute::DirectoryItemDefinition >   ConstDirectoryItemDefinitionPtr;
     typedef smtk::shared_ptr< const smtk::attribute::DoubleItem >                ConstDoubleItemPtr;

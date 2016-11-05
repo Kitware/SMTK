@@ -129,6 +129,14 @@ bool DateTime::isSet() const
 // Parse input string in canonical format only: YYYYMMDDThhmmss[.zzzzzz]
 bool DateTime::deserialize(const std::string& ts)
 {
+  // Special case for uninitialized
+  if (ts == "not-a-date-time")
+    {
+      this->m_ptime = boost::posix_time::ptime(
+	boost::posix_time::not_a_date_time);
+      return true;
+    }
+
   try
     {
     this->m_ptime = boost::posix_time::from_iso_string(ts);

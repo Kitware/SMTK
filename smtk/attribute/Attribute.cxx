@@ -26,6 +26,7 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/System.h"
 #include "smtk/attribute/VoidItem.h"
+#include "smtk/attribute/DateTimeItem.h"
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/EntityRef.h"
@@ -562,3 +563,8 @@ smtk::attribute::MeshItemPtr Attribute::findMesh(const std::string &nameStr)
 { return smtk::dynamic_pointer_cast<MeshItem>(this->find(nameStr)); }
 smtk::attribute::ConstMeshItemPtr Attribute::findMesh(const std::string &nameStr) const
 { return smtk::dynamic_pointer_cast<const MeshItem>(this->find(nameStr)); }
+
+smtk::attribute::DateTimeItemPtr Attribute::findDateTime(const std::string& nameStr)
+{ return smtk::dynamic_pointer_cast<DateTimeItem>(this->find(nameStr)); }
+smtk::attribute::ConstDateTimeItemPtr Attribute::findDateTime(const std::string& nameStr) const
+{ return smtk::dynamic_pointer_cast<const DateTimeItem>(this->find(nameStr)); }

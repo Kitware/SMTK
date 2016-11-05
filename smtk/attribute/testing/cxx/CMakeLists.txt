@@ -54,6 +54,7 @@ endif()
 
 set(unit_tests
   UnitTestDateTime.cxx
+  UnitTestDateTimeItem.cxx
 )
 
 smtk_unit_tests(

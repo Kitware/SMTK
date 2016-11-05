@@ -13,6 +13,8 @@
 
 #include "smtk/common/testing/cxx/helpers.h"
 
+namespace {
+
 //----------------------------------------------------------------------------
 void verifyTimeZones()
 {
@@ -49,6 +51,12 @@ void verify_parsers()
     test(!!dtValid.deserialize(validCases[i]), validCases[i+1]);
     test(!!dtValid.isSet(), "Failed to return true for isSet()");
     }
+
+  smtk::attribute::DateTime dtNotSet;
+  test(
+    dtNotSet.deserialize("not-a-date-time"),
+    "Failed to parse not-a-date-time");
+  test(!dtNotSet.isSet(), "Failed to return isSet() false");
 
   // Using DateTime::parseBoostFormat():
   smtk::attribute::DateTime dt;
@@ -123,6 +131,8 @@ void verify_setGets()
   // Returned hour should be behind by 2 (plus 6 minus 8)
   test(hr == hr2 - 8 + 6, "Failed to get hour component for tzPST (get)");
 }
+
+}  // end namespace
 
 //----------------------------------------------------------------------------
 int UnitTestDateTime(int, char** const)
