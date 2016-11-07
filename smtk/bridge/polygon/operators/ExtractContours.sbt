@@ -4,11 +4,11 @@
   <Definitions>
     <!-- Operator -->
     <AttDef Type="extract contours" Label="Edge - Create from Contours" BaseType="operator">
-      <AssociationsDef Name="model" NumberOfRequiredValues="1" AdvanceLevel="0">
-        <MembershipMask>model</MembershipMask>
-        <BriefDescription>The model to which this op will operate on.</BriefDescription>
+      <AssociationsDef Name="auxiliary geometry" NumberOfRequiredValues="1" AdvanceLevel="0">
+        <MembershipMask>aux_geom</MembershipMask>
+        <BriefDescription>The image auxiliary geometry to which this op will operate on.</BriefDescription>
         <DetailedDescription>
-          The model to which this op will operate on. This model should have a "image_url" string property.
+          The image auxiliary geometry to which this op will operate on. This auxiliary geometry should have an "url" string property.
         </DetailedDescription>
       </AssociationsDef>
       <ItemDefinitions>

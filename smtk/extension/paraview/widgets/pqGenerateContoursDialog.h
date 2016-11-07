@@ -54,6 +54,7 @@ protected slots:
   void updateContourButtonStatus();
 
   void onOpacityChanged(int opacity);
+  void onMapScalars(int mapScalars2Colors);
 
 protected:
   void setupProgressBar(QWidget* progressWidget);

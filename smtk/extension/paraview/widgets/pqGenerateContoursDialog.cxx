@@ -196,29 +196,13 @@ pqGenerateContoursDialog::pqGenerateContoursDialog(
       {
       // always display the image in Slice representation type
       vtkSMPropertyHelper(imagerep->getProxy(), "Representation").Set("Slice");
-      if(mapScalars2Colors)
-        {
-        // If there is an elevation field on the points then use it.
-        internal_COLOR_REP_BY_ARRAY(
-            imagerep->getProxy(), "Elevation", vtkDataObject::POINT);
-        vtkSMProxy* lut = builder->createProxy("lookup_tables", "PVLookupTable",
-                                             imagesource->getServer(), "transfer_functions");
-        vtkSMTransferFunctionProxy::ApplyPreset(lut, "CMB Elevation Map 2", false);
-        vtkSMPropertyHelper(lut, "ColorSpace").Set(0);
-         vtkSMPropertyHelper(lut, "Discretize").Set(0);
-        lut->UpdateVTKObjects();
-        vtkSMPropertyHelper(imagerep->getProxy(), "LookupTable").Set(lut);
-        vtkSMPropertyHelper(imagerep->getProxy(), "SelectionVisibility").Set(0);
-        }
-      else
-        {
-        vtkSMPropertyHelper(imagerep->getProxy(), "MapScalars").Set(0);
-        }
-
-      imagerep->getProxy()->UpdateVTKObjects();
-      imagerep->renderViewEventually();
       this->ImageRepresentation = imagerep;
+      this->onMapScalars(mapScalars2Colors ? 1 : 0);
+      this->InternalWidget->mapScalarsCheck->setChecked(mapScalars2Colors);
       }
+
+    QObject::connect(this->InternalWidget->mapScalarsCheck, SIGNAL(stateChanged(int)),
+      this, SLOT(onMapScalars(int)));
 
     // create the image mesh, which will be used for generating contours
     this->ImageMesh = builder->createFilter("polygon_filters", "StructedToMesh", imagesource);
@@ -471,4 +455,35 @@ void pqGenerateContoursDialog::onOpacityChanged(int opacity)
     this->ImageRepresentation->getProxy()->UpdateVTKObjects();
     this->RenderView->render();
     }
+}
+
+//-----------------------------------------------------------------------------
+void pqGenerateContoursDialog::onMapScalars(int mapScalars2Colors)
+{
+  if(pqDataRepresentation* imagerep = this->ImageRepresentation)
+  {
+    if(mapScalars2Colors)
+    {
+      pqObjectBuilder* builder = pqApplicationCore::instance()->getObjectBuilder();
+      // If there is an elevation field on the points then use it.
+      internal_COLOR_REP_BY_ARRAY(
+          imagerep->getProxy(), "Elevation", vtkDataObject::POINT);
+      vtkSMProxy* lut = builder->createProxy("lookup_tables", "PVLookupTable",
+        this->ImageSource->getServer(), "transfer_functions");
+      vtkSMTransferFunctionProxy::ApplyPreset(lut, "CMB Elevation Map 2", false);
+      vtkSMPropertyHelper(lut, "ColorSpace").Set(0);
+       vtkSMPropertyHelper(lut, "Discretize").Set(0);
+      lut->UpdateVTKObjects();
+      vtkSMPropertyHelper(imagerep->getProxy(), "LookupTable").Set(lut);
+      vtkSMPropertyHelper(imagerep->getProxy(), "SelectionVisibility").Set(0);
+    }
+    else
+    {
+      vtkSMPropertyHelper(imagerep->getProxy(), "MapScalars").Set(0);
+    }
+
+    imagerep->getProxy()->UpdateVTKObjects();
+    imagerep->renderViewEventually();
+  }
+
 }
