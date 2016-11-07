@@ -3,6 +3,7 @@ set(srcs
    vtkCMBApplyBathymetryFilter.cxx
    vtkCleanPolylines.cxx
    vtkDEMToMesh.cxx
+   vtkExtractImageBlock.cxx
    vtkExtractLine.cxx
    vtkImageSpacingFlip.cxx
    vtkPolyDataStatsFilter.cxx
@@ -12,6 +13,7 @@ set(headers
    vtkCMBApplyBathymetryFilter.h
    vtkCleanPolylines.h
    vtkDEMToMesh.h
+   vtkExtractImageBlock.h
    vtkExtractLine.h
    vtkImageSpacingFlip.h
    vtkPolyDataStatsFilter.h
