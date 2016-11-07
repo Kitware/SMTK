@@ -19,6 +19,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/VoidItem.h"
 
 using namespace smtk::model;
 using smtk::attribute::FileItem;
@@ -42,6 +43,10 @@ smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
   smtk::attribute::IntItemPtr dimItem = this->findInt("dimension");
   int dim = dimItem->value(0);
 
+  smtk::attribute::VoidItem::Ptr separateRepOption =
+    this->findVoid("DisplayAsSeparateRepresentation");
+  bool bSeparateRep = separateRepOption->isEnabled();
+
   AuxiliaryGeometry auxGeom;
   if (parent.isModel())
     {
@@ -52,6 +57,7 @@ smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
     auxGeom = parent.manager()->addAuxiliaryGeometry(parent.as<AuxiliaryGeometry>(), dim);
     }
   auxGeom.assignDefaultName();
+  auxGeom.setIntegerProperty("display as separate representation", bSeparateRep ? 1 : 0);
 
   if (urlItem->numberOfValues() > 0 && !urlItem->value(0).empty())
     {

@@ -410,7 +410,18 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
   std::string url;
   if (aux.isValid() && !(url = aux.url()).empty())
     {
-    return this->GenerateRepresentationFromURL(aux, genNormals);
+    bool bShow = true;
+    if ( entity.hasIntegerProperty("display as separate representation"))
+      {
+      const IntegerList& prop(entity.integerProperty(
+          "display as separate representation"));
+      // show this block if the property is not specified or equals to zero
+      bShow = (prop.empty() || prop[0] == 0);
+      }
+    if(bShow)
+      {
+      return this->GenerateRepresentationFromURL(aux, genNormals);
+      }
     }
   return vtkSmartPointer<vtkDataObject>();
 }

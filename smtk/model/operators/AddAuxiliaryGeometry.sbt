@@ -31,7 +31,7 @@
             The type of data at the specified URL.
             The default value is an empty string, which indicates that the type
             is to be inferred from the URL.
-            Valid vales are currently: "vtp", "vtu", "vti", and "vtm".
+            Valid vales are currently: "vtp", "vtu", "vti", "tif", "dem", and "vtm".
           </DetailedDescription>
           <DefaultValue></DefaultValue>
         </String>
@@ -53,6 +53,12 @@
             <Value Enum="mixed- or unknown-dimension">-1</Value>
           </DiscreteInfo>
         </Int>
+
+        <Void Name="DisplayAsSeparateRepresentation" Label="Shown as separate representation from model" Optional="true">
+          <BriefDescription>Should the auxiliary geometry representation be displayed as separate representation from mode representation?.</BriefDescription>
+          <DetailedDescription>Should the auxiliary geometry representation be displayed as separate representation from model? If yes, a separate rendering pipeline will be created for auxiliary geometry and its representation will be controlled with its own set of display properties; if no, the geometry will be shown and controlled as sub-blocks in the model, which may be less flexible.</DetailedDescription>
+        </Void>
+
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
