@@ -9,7 +9,7 @@
         Permanently remove model entities (vertices, edges, faces) from a model.
       </DetailedDescription>
       <AssociationsDef Name="entities" NumberOfRequiredValues="1" Extensible="yes">
-        <MembershipMask>cell</MembershipMask>
+        <MembershipMask>cell|aux_geom</MembershipMask>
         <BriefDescription>Model entities to delete.</BriefDescription>
         <DetailedDescription>
           Permanently delete all of these entities (and optionally all of
