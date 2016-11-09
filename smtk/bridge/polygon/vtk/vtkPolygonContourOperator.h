@@ -37,11 +37,17 @@ public:
   vtkGetMacro(ContourInput, vtkPolyData*);
   vtkSetMacro(ContourInput, vtkPolyData*);
 
+  // Description:
+  // The bounds of the image where the contours are created from
+  vtkSetVector6Macro(ImageBounds, double);
+  vtkGetVector6Macro(ImageBounds, double);
+
 protected:
   vtkPolygonContourOperator();
   virtual ~vtkPolygonContourOperator();
 
   vtkPolyData* ContourInput;
+  double ImageBounds[6];
 private:
   vtkPolygonContourOperator(const vtkPolygonContourOperator&);  // Not implemented.
   void operator=(const vtkPolygonContourOperator&);  // Not implemented.

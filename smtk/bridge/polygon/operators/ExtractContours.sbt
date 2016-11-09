@@ -43,6 +43,18 @@
             the second edge has 2 points, and a third edge exists at the end after these two.
           </DetailedDescription>
         </Int>
+
+        <Double Name="image bounds" NumberOfRequiredValues="6" Optional="true" AdvanceLevel="1">
+          <DefaultValue>0., -1., 0., -1., 0., -1.</DefaultValue>
+          <BriefDescription>The bounds of the image where the contours are extracted from.</BriefDescription>
+          <DetailedDescription>
+            This vector specifies the bounds of the image where the contours are generated from.
+            This operator will try to set the model's origin in 3D to the center of the bounds,
+            if the model does not have any entity with tessellation yet. This will make matching point
+            coordinates between vtk and pmodel storage more robust, for example when doing edge split.
+          </DetailedDescription>
+        </Double>
+
         <!-- This is needed for linking with a vtkSMTKOperator that is used as an smtk operator interface
         to vtk pipeline -->
         <Int Name="HelperGlobalID" Label="Unique global ID for a helper object" AdvanceLevel="11" NumberOfRequiredValues="1" Optional="true">

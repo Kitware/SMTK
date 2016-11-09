@@ -30,6 +30,7 @@
 
 #include "vtkClientServerStream.h"
 #include "vtkProcessModule.h"
+#include "vtkPVDataInformation.h"
 #include "vtkSMPropertyHelper.h"
 #include "vtkSMProxyProperty.h"
 #include "vtkSMProxyManager.h"
@@ -68,6 +69,7 @@ public:
   QPointer<QVBoxLayout> EditorLayout;
 
   smtk::weak_ptr<smtk::model::Operator> CurrentOp;
+  QPointer<pqPipelineSource> CurrentImage;
 };
 
 //----------------------------------------------------------------------------
@@ -272,6 +274,13 @@ void qtExtractContoursView::acceptContours(pqPipelineSource* contourSource)
   vtkSMProxy* smPolyEdgeOp = internal_createVTKContourOperator(contourSource->getProxy());
   if(!smPolyEdgeOp)
     return;
+  if(this->Internals->CurrentImage)
+    {
+    double bounds[6];
+    this->Internals->CurrentImage->getOutputPort(0)->getDataInformation()->GetBounds(bounds);
+    vtkSMPropertyHelper(smPolyEdgeOp, "ImageBounds").Set(bounds, 6);
+    smPolyEdgeOp->UpdateVTKObjects();
+    }
   // Now set the GlobalId of smPolyEdgeOp proxy to the edge op, and later
   // on the GlobalId will be used to find the proxy
     // for Create and Edit operation, we need arc source
@@ -342,7 +351,7 @@ void qtExtractContoursView::operationSelected(const smtk::model::OperatorPtr& op
       const smtk::model::IntegerList& uprop(model.integerProperty("UseScalarColoring"));
       scalarColoring = !uprop.empty() ? (uprop[0] != 0) : scalarColoring;
       }
-
+    this->Internals->CurrentImage = source;
     this->Internals->ContoursDialog = new pqGenerateContoursDialog(
       source, scalarColoring, this->parentWidget());
     QObject::connect(this->Internals->ContoursDialog,

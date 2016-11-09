@@ -376,43 +376,6 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
     }
 }
 
-/// Recursively find all the entities with tessellation
-void vtkModelMultiBlockSource::FindEntitiesWithTessellation(
-  const EntityRef& root,
-  std::map<smtk::model::EntityRef, smtk::model::EntityRef>& entityrefMap,
-  std::set<smtk::model::EntityRef>& touched)
-{
-  EntityRefArray children =
-    (root.isModel() ?
-     root.as<Model>().cellsAs<EntityRefArray>() :
-     (root.isCellEntity() ?
-      root.as<CellEntity>().boundingCellsAs<EntityRefArray>() :
-      (root.isGroup() ?
-       root.as<Group>().members<EntityRefArray>() :
-       EntityRefArray())));
-  if (root.isModel())
-    {
-    // Make sure groups are handled last to avoid unexpected "parents" in entityrefMap.
-    EntityRefArray tmp;
-    tmp = root.as<Model>().submodelsAs<EntityRefArray>();
-    children.insert(children.end(), tmp.begin(), tmp.end());
-    tmp = root.as<Model>().groupsAs<EntityRefArray>();
-    children.insert(children.end(), tmp.begin(), tmp.end());
-    }
-  for (EntityRefArray::const_iterator it = children.begin(); it != children.end(); ++it)
-    {
-    if (touched.find(*it) == touched.end())
-      {
-      touched.insert(*it);
-      if (it->hasTessellation())
-        {
-        entityrefMap[*it] = root;
-        }
-      this->FindEntitiesWithTessellation(*it, entityrefMap, touched);
-      }
-    }
-}
-
 /// Do the actual work of grabbing primitives from the model.
 void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
   vtkMultiBlockDataSet* mbds, smtk::model::ManagerPtr manager)
@@ -443,7 +406,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
       if (1)
         {
         std::set<smtk::model::EntityRef> touched; // make this go out of scope soon.
-        this->FindEntitiesWithTessellation(modelEntity, entityrefMap, touched);
+        modelEntity.findEntitiesWithTessellation(entityrefMap, touched);
         }
 
       //Groups groups = modelEntity.groups();

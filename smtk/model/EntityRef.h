@@ -178,6 +178,9 @@ public:
   const Tessellation* gotMesh() const; //prefers the analaysis over the display
   int setTessellation(const Tessellation* tess, int analysisMesh = 0);
   bool removeTessellation(bool removeGen = false);
+  void findEntitiesWithTessellation(
+    std::map<smtk::model::EntityRef, smtk::model::EntityRef>& entityrefMap,
+    std::set<smtk::model::EntityRef>& touched) const;
 
   bool hasAttributes() const;
   bool hasAttribute(const smtk::common::UUID &attribId) const;

@@ -9,9 +9,10 @@
 //=========================================================================
 #include "smtk/model/EntityRef.h"
 
-#include "smtk/model/EntityRefArrangementOps.h"
+#include "smtk/model/CellEntity.h"
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/Entity.h"
+#include "smtk/model/EntityRefArrangementOps.h"
 #include "smtk/model/Events.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
@@ -1576,6 +1577,47 @@ ManagerEventRelationType EntityRef::embeddingRelationType(const EntityRef& embed
     }
 
   return reln;
+}
+
+/**\brief A convenient method for finding all entities with tessellations owned by this entity.
+  *
+  * Note that the \a entityrefMap is a map of entity with tessellation to its parent, and
+  * the \a touched is a set of entities already visited.
+  *
+  */
+void EntityRef::findEntitiesWithTessellation(
+  std::map<smtk::model::EntityRef, smtk::model::EntityRef>& entityrefMap,
+  std::set<smtk::model::EntityRef>& touched) const
+{
+  EntityRefArray children =
+    (this->isModel() ?
+     this->as<Model>().cellsAs<EntityRefArray>() :
+     (this->isCellEntity() ?
+      this->as<CellEntity>().boundingCellsAs<EntityRefArray>() :
+      (this->isGroup() ?
+       this->as<Group>().members<EntityRefArray>() :
+       EntityRefArray())));
+  if (this->isModel())
+    {
+    // Make sure groups are handled last to avoid unexpected "parents" in entityrefMap.
+    EntityRefArray tmp;
+    tmp = this->as<Model>().submodelsAs<EntityRefArray>();
+    children.insert(children.end(), tmp.begin(), tmp.end());
+    tmp = this->as<Model>().groupsAs<EntityRefArray>();
+    children.insert(children.end(), tmp.begin(), tmp.end());
+    }
+  for (EntityRefArray::const_iterator it = children.begin(); it != children.end(); ++it)
+    {
+    if (touched.find(*it) == touched.end())
+      {
+      touched.insert(*it);
+      if (it->hasTessellation())
+        {
+        entityrefMap[*it] = *this;
+        }
+      it->findEntitiesWithTessellation(entityrefMap, touched);
+      }
+    }
 }
 
   } // namespace model
