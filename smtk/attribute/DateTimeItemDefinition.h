@@ -15,7 +15,7 @@
 #define __smtk_attribute_DateTimeItemDefinition_h
 
 #include "smtk/attribute/ValueItemDefinitionTemplate.h"
-#include "smtk/attribute/DateTime.h"
+#include "smtk/attribute/DateTimeZonePair.h"
 #include <string>
 
 namespace smtk
@@ -23,7 +23,7 @@ namespace smtk
   namespace attribute
   {
     class SMTKCORE_EXPORT DateTimeItemDefinition :
-      public ValueItemDefinitionTemplate<DateTime>
+      public ValueItemDefinitionTemplate<DateTimeZonePair>
     {
     public:
       smtkTypeMacro(DateTimeItemDefinition);

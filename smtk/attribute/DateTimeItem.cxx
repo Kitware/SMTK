@@ -10,18 +10,22 @@
 
 
 #include "smtk/attribute/DateTimeItem.h"
-using namespace smtk::attribute;
+
+namespace smtk {
+  namespace attribute {
+
 
 //----------------------------------------------------------------------------
 DateTimeItem::DateTimeItem(Attribute *owningAttribute, int itemPosition):
-  ValueItemTemplate<DateTime>(owningAttribute, itemPosition)
+  ValueItemTemplate<DateTimeZonePair>(owningAttribute, itemPosition)
 {
 }
 
 //----------------------------------------------------------------------------
 DateTimeItem::DateTimeItem(
   Item *inOwningAttribute, int itemPosition, int mySubGroupPosition):
-  ValueItemTemplate<DateTime>(inOwningAttribute, itemPosition, mySubGroupPosition)
+  ValueItemTemplate<DateTimeZonePair>(
+    inOwningAttribute, itemPosition, mySubGroupPosition)
 {
 }
 
@@ -40,7 +44,10 @@ Item::Type DateTimeItem::type() const
 bool DateTimeItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
   // Assigns my contents to be same as sourceItem
-  return ValueItemTemplate<DateTime>::assign(sourceItem, options);
+  return ValueItemTemplate<DateTimeZonePair>::assign(sourceItem, options);
 }
 
 //----------------------------------------------------------------------------
+
+  }  // namespace attribute
+}  // namespace smtk

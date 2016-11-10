@@ -82,9 +82,6 @@ protected:
   boost::posix_time::ptime m_ptime;
 };
 
-SMTKCORE_EXPORT std::ostream& operator<<(std::ostream& os, const DateTime& dt);
-SMTKCORE_EXPORT std::istream& operator>>(std::istream& is, DateTime& dt);
-
   } // namespace attribute
 } // namespace smtk
 

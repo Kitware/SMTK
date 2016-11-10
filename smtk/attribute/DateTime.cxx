@@ -10,13 +10,9 @@
 #include "smtk/attribute/DateTime.h"
 #include "smtk/attribute/TimeZone.h"
 
-#ifndef SHIBOKEN_SKIP
-SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/date_time/gregorian/gregorian.hpp"
 #include <boost/date_time/local_time/local_time.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-SMTK_THIRDPARTY_POST_INCLUDE
-#endif
 
 #include <exception>
 
@@ -92,7 +88,7 @@ bool DateTime::components(
     // Convert time
     boost::posix_time::ptime ptimeLocal = local.local_time();
     boost::posix_time::time_duration workingTime = ptimeLocal.time_of_day();
-    std::cout << "m_data " << this->m_ptime << std::endl;
+    std::cout << "m_ptime " << this->m_ptime << std::endl;
     std::cout << "workingTime " << workingTime << std::endl;
     hr = workingTime.hours();
     min = workingTime.minutes();
@@ -109,7 +105,7 @@ bool DateTime::components(
   day = ptimeDate.day();
 
   boost::posix_time::time_duration ptimeTime = this->m_ptime.time_of_day();
-  std::cout << "m_data " << this->m_ptime << std::endl;
+  std::cout << "m_ptime " << this->m_ptime << std::endl;
   std::cout << "ptimeTime " << ptimeTime << std::endl;
   hr = ptimeTime.hours();
   min = ptimeTime.minutes();
@@ -196,22 +192,6 @@ bool DateTime::operator<(const DateTime& dt) const
 bool DateTime::operator>(const DateTime& dt) const
 {
   return this->m_ptime > dt.m_ptime;
-}
-
-//----------------------------------------------------------------------------
-std::ostream& operator<<(std::ostream& os, const DateTime& dt)
-{
-  os << dt.serialize();
-  return os;
-}
-
-//----------------------------------------------------------------------------
-std::istream& operator>>(std::istream& is, DateTime& dt)
-{
-  std::string text;
-  is >> text;
-  dt.deserialize(text);
-  return is;
 }
 
   }  // namespace attribute

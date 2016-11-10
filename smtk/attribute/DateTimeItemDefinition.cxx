@@ -15,7 +15,7 @@ using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
 DateTimeItemDefinition::DateTimeItemDefinition(const std::string &myName):
-  ValueItemDefinitionTemplate<DateTime>(myName), m_useTimeZone(true)
+  ValueItemDefinitionTemplate<DateTimeZonePair>(myName), m_useTimeZone(true)
 {
 }
 
@@ -57,7 +57,7 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
   smtk::attribute::DateTimeItemDefinitionPtr newDef =
     smtk::attribute::DateTimeItemDefinition::New(this->name());
 
-  ValueItemDefinitionTemplate<DateTime>::copyTo(newDef, info);
+  ValueItemDefinitionTemplate<DateTimeZonePair>::copyTo(newDef, info);
   return newDef;
 }
 //----------------------------------------------------------------------------

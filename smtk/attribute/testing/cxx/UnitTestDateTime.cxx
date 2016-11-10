@@ -25,14 +25,14 @@ void verifyTimeZones()
 }
 
 //----------------------------------------------------------------------------
-void verify_constructors()
+void verifyConstructors()
 {
   smtk::attribute::DateTime dtEmpty;
   test(!dtEmpty.isSet(), "Failed to recognize invalid state");
 }
 
 //----------------------------------------------------------------------------
-void verify_parsers()
+void verifyParsers()
 {
   // Using DateTime::deserialize():
   smtk::attribute::DateTime dtInvalid;
@@ -71,7 +71,7 @@ void verify_parsers()
 }
 
 //----------------------------------------------------------------------------
-void verify_setGets()
+void verifySetGets()
 {
   // Initialize
   smtk::attribute::DateTime dt;
@@ -113,7 +113,7 @@ void verify_setGets()
 
   // Set with time zone
   smtk::attribute::TimeZone tzCST;
-  tzCST.setPosix("CST-6");
+  tzCST.setPosixString("CST-6");
   test(
     dt.setComponents(yr2, month2, day2, hr2, minute2, sec2, msec2, &tzCST),
     "Failed to setComponents() with time zone");
@@ -123,7 +123,7 @@ void verify_setGets()
 
   // Get with time zone
   smtk::attribute::TimeZone tzPST;
-  tzPST.setPosix("PST-8");
+  tzPST.setPosixString("PST-8");
   test(
     dt.components(yr, month, day, hr, minute, sec, msec, &tzPST),
     "Failed components() with time zone");
@@ -138,8 +138,8 @@ void verify_setGets()
 int UnitTestDateTime(int, char** const)
 {
   verifyTimeZones();
-  verify_constructors();
-  verify_parsers();
-  verify_setGets();
+  verifyConstructors();
+  verifyParsers();
+  verifySetGets();
   return 0;
 }

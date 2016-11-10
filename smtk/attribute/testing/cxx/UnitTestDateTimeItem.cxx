@@ -23,7 +23,7 @@ namespace sa = smtk::attribute;
 namespace {
 
 //----------------------------------------------------------------------------
-void verify_default()
+void verifyDefault()
 {
   // Instantiate item definition
   sa::DateTimeItemDefinitionPtr dtDef = sa::DateTimeItemDefinition::New(
@@ -50,16 +50,25 @@ void verify_default()
   test(!dtItem->isSet(), "isSet() failed to return false for default item");
 
   // Set default value
+  sa::DateTimeZonePair dtz;
+
   sa::DateTime dt;
   dt.setComponents(2016, 11, 5, 13, 41, 33, 555);
-  dtDef->setDefaultValue(dt);
+  dtz.setDateTime(dt);
+
+  sa::TimeZone tz;
+  tz.setRegion("America/New_York");
+  dtz.setTimeZone(tz);
+
+  dtDef->setDefaultValue(dtz);
   sa::AttributePtr attSet = system.createAttribute(attDef);
   sa::DateTimeItemPtr dtItemSet = att->findDateTime("dt-def");
   // Must explicitly set to default
   dtItemSet->setToDefault(0);
   test(dtItem->isSet(), "isSet() failed to return true for default item");
-  sa::DateTime dtSet = dtItemSet->value(0);
-  std::cout << dtSet.serialize() << std::endl;
+  sa::DateTimeZonePair dtzSet = dtItemSet->value(0);
+  //std::cout << dtzSet << std::endl;
+  sa::DateTime dtSet = dtzSet.dateTime();
   int yr=-1, month=-1, day=-1, hr=-1, minute=-1, sec=-1, msec=-1;
   dtSet.components(yr, month, day, hr, minute, sec, msec);
   bool match = (2016 == yr) && (11 == month) && (5 == day) &&
@@ -72,6 +81,6 @@ void verify_default()
 //----------------------------------------------------------------------------
 int UnitTestDateTimeItem(int, char** const)
 {
-  verify_default();
+  verifyDefault();
   return 0;
 }

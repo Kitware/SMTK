@@ -4,6 +4,7 @@ set(attributeHeaders
   DateTime.h
   DateTimeItem.h
   DateTimeItemDefinition.h
+  DateTimeZonePair.h
   DirectoryItem.h
   DirectoryItemDefinition.h
   DoubleItem.h
@@ -44,6 +45,7 @@ set(attributeSrcs
   DateTime.cxx
   DateTimeItem.cxx
   DateTimeItemDefinition.cxx
+  DateTimeZonePair.cxx
   Definition.cxx
   DirectoryItem.cxx
   DirectoryItemDefinition.cxx
