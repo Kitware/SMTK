@@ -14,6 +14,7 @@ set(unit_tests
   UnitTestAllocator.cxx
   UnitTestCellTypes.cxx
   UnitTestCollection.cxx
+  UnitTestBufferedCellAllocator.cxx
   UnitTestManager.cxx
   UnitTestModelToMesh3D.cxx
   UnitTestQueryTypes.cxx

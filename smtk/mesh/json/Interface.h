@@ -71,9 +71,22 @@ public:
   //will be NULL.
   //
   //Note: Merely fetching a valid allocator will mark the collection as
-  //modified. This is done instead on a per-allocation basis so that
+  //modified. This is done instead of on a per-allocation basis so that
   //modification state changes don't impact performance.
   smtk::mesh::AllocatorPtr allocator();
+
+  //----------------------------------------------------------------------------
+  //get back a lightweight interface around incrementally allocating memory into
+  //the given interface. This is generally used to create new coordinates or
+  //cells that are than assigned to an existing mesh or new mesh.
+  //
+  //If the current interface is read-only, the BufferedCellAllocatorPtr that is
+  //returned will be NULL.
+  //
+  //Note: Merely fetching a valid allocator will mark the collection as
+  //modified. This is done instead of on a per-allocation basis so that
+  //modification state changes don't impact performance.
+  smtk::mesh::BufferedCellAllocatorPtr bufferedCellAllocator();
 
   //----------------------------------------------------------------------------
   //get back an efficient storage mechanism for a range of cells point

@@ -23,6 +23,12 @@ class vtkPolyData;
 class vtkUnstructuredGrid;
 
 namespace smtk {
+namespace mesh {
+class MeshSet;
+}
+}
+
+namespace smtk {
 namespace extension {
 namespace vtk {
 namespace io {
@@ -49,6 +55,11 @@ public:
   bool operator()(const std::string& filename,
                   smtk::mesh::CollectionPtr collection,
                   std::string domainPropertyName) const;
+
+  //Import a VTK polydata into an existing collection. Returns a meshset
+  //containing the newly created cells.
+  smtk::mesh::MeshSet operator()(
+    vtkPolyData* polydata, smtk::mesh::CollectionPtr collection) const;
 
   //Import a VTK polydata as a collection.
   //Optionally specify the cell property name to be used to split
