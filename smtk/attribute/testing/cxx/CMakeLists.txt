@@ -7,6 +7,7 @@ set(attributeTests
   basicAttributeDerivationTest
   basicAttributeXMLWriterTest
   childrenItemsTest
+  discreteStringsWithDefaultTest
   expressionTest
   expressionTest2
   attributeAssociationTest
