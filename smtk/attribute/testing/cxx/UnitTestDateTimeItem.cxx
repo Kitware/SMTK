@@ -16,6 +16,9 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/System.h"
+#include "smtk/io/AttributeReader.h"
+#include "smtk/io/AttributeWriter.h"
+#include "smtk/io/Logger.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 
@@ -76,11 +79,110 @@ void verifyDefault()
   test(match, "Failed to read back components");
 }
 
+//----------------------------------------------------------------------------
+void verifySerialize()
+{
+  // Instantiate writer
+  smtk::io::AttributeWriter writer;
+  smtk::io::Logger logger;
+  std::string contents;
+
+  // Instantiate att system, attdef, & attribute to write out
+  sa::System outputSystem;
+  sa::DefinitionPtr attDef = outputSystem.createDefinition("test-att");
+  sa::DateTimeItemDefinitionPtr dtDef = sa::DateTimeItemDefinition::New(
+    "datetime");
+  dtDef->setDisplayFormat("dd-MMM-yyyy  h:mm:ss.zzz AP");
+  dtDef->setUseTimeZone(false);
+  dtDef->setEnableCalendarPopup(false);
+
+  // Set default value
+  sa::DateTimeZonePair dtz;
+  sa::DateTime dt;
+  dt.setComponents(2016, 11, 10, 14, 18, 0, 0);
+  dtz.setDateTime(dt);
+  sa::TimeZone tz;
+  tz.setRegion("America/Chicago");
+  dtz.setTimeZone(tz);
+  dtDef->setDefaultValue(dtz);
+
+  attDef->addItemDefinition(dtDef);
+  sa::AttributePtr att = outputSystem.createAttribute(attDef);
+
+  // Write to string
+  bool writeError = writer.writeContents(outputSystem, contents, logger);
+  if (writeError)
+    {
+    std::string reason = logger.convertToString(true);
+    test(false, reason);
+    }
+
+  std::cout << "File contents" << "\n" << contents << std::endl;
+
+  // Read back
+  sa::System inputSystem;
+  smtk::io::AttributeReader reader;
+  bool readError = reader.readContents(inputSystem, contents, logger);
+  if (readError)
+    {
+    std::string reason = logger.convertToString(true);
+    test(false, reason);
+    }
+
+  // Check item-definition contents
+  sa::DefinitionPtr inputDef = inputSystem.findDefinition("test-att");
+  test(!!inputDef, "Failed to read back definition");
+  test(
+    inputDef->numberOfItemDefinitions() == 1,
+    "Wrong number of item definitions read back");
+  int i = inputDef->findItemPosition("datetime");
+  sa::ItemDefinitionPtr inputItemDef = inputDef->itemDefinition(i);
+  test(!!inputItemDef, "Failed to read back \"datetime\" ItemDefinition");
+  sa::DateTimeItemDefinitionPtr inputDateTimeItemDef =
+    smtk::dynamic_pointer_cast<sa::DateTimeItemDefinition>(inputItemDef);
+  test(!!inputDateTimeItemDef, "Failed to read back DateTimeItemDefinition");
+  test(
+    inputDateTimeItemDef->displayFormat() == "dd-MMM-yyyy  h:mm:ss.zzz AP",
+    "Failed to read back definition display format");
+  test(
+    !inputDateTimeItemDef->useTimeZone(),
+    "Failed to read back use-time-zone setting");
+  test(
+    !inputDateTimeItemDef->useCalendarPopup(),
+    "Failed to read back enable-calendar-popup setting");
+  test(inputDateTimeItemDef->hasDefault(), "Failed to read back default value");
+
+  // Check item contents
+  sa::AttributePtr inputAtt = inputSystem.findAttribute(att->name());
+  test(!!inputAtt, "Failed to read back attribute");
+  sa::DateTimeItemPtr inputDateTimeItem = inputAtt->findDateTime("datetime");
+  test(!!inputDateTimeItem, "Failed to find datetime item");
+  // Must explicitly set to default
+  inputDateTimeItem->setToDefault(0);
+  test(inputDateTimeItem->isSet(), "Failed to read back that default value is set");
+
+  sa::DateTimeZonePair dtzSet = inputDateTimeItem->value(0);
+  //std::cout << dtzSet << std::endl;
+
+  sa::DateTime dtSet = dtzSet.dateTime();
+  int yr=-1, month=-1, day=-1, hr=-1, minute=-1, sec=-1, msec=-1;
+  dtSet.components(yr, month, day, hr, minute, sec, msec);
+  bool match = (2016 == yr) && (11 == month) && (10 == day) &&
+    (14 == hr) && (18 == minute) && (0 == sec) && (0 == msec);
+  test(match, "Failed to set attribute item DateTime");
+
+  sa::TimeZone tzSet = dtzSet.timeZone();
+  test(
+    tzSet.region() == "America/Chicago",
+    "Failed to set attribute item TimeZone");
+}
+
 }  // end namespace
 
 //----------------------------------------------------------------------------
 int UnitTestDateTimeItem(int, char** const)
 {
   verifyDefault();
+  verifySerialize();
   return 0;
 }

@@ -126,8 +126,15 @@ namespace smtk
                       smtk::attribute::MeshItemDefinitionPtr idef);
       void processValueItem(pugi::xml_node &node,
                              smtk::attribute::ValueItemPtr item);
+      void processDateTimeDef(
+        pugi::xml_node &node,
+        smtk::attribute::DateTimeItemDefinitionPtr idef);
+      void processDateTimeItem(
+        pugi::xml_node &node,
+        smtk::attribute::DateTimeItemPtr item);
       void processValueDef(pugi::xml_node &node,
                            smtk::attribute::ValueItemDefinitionPtr idef);
+
 
       virtual void processViewComponent(smtk::common::View::Component &comp,
                                         pugi::xml_node &node);

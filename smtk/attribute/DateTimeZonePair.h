@@ -13,6 +13,7 @@
 #include "smtk/attribute/DateTime.h"
 #include "smtk/attribute/TimeZone.h"
 #include <iostream>
+#include <string>
 
 namespace smtk {
   namespace attribute {
@@ -28,6 +29,9 @@ class SMTKCORE_EXPORT DateTimeZonePair
 
   void setDateTime(const DateTime& dt);
   void setTimeZone(const TimeZone& tz);
+
+  std::string serialize() const;
+  bool deserialize(const std::string& content);
 
   // Relational operators
   bool operator==(const DateTimeZonePair& dt) const;

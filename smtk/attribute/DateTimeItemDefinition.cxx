@@ -15,7 +15,8 @@ using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
 DateTimeItemDefinition::DateTimeItemDefinition(const std::string &myName):
-  ValueItemDefinitionTemplate<DateTimeZonePair>(myName), m_useTimeZone(true)
+  ValueItemDefinitionTemplate<DateTimeZonePair>(myName),
+  m_useTimeZone(true), m_useCalendarPopup(true)
 {
 }
 

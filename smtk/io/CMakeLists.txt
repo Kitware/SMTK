@@ -11,6 +11,7 @@ set(ioSrcs
   ResourceSetWriter.cxx
   XmlDocV1Parser.cxx
   XmlDocV2Parser.cxx
+  XmlDocV3Parser.cxx
   XmlV2StringWriter.cxx
 )
 

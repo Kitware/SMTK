@@ -18,6 +18,8 @@
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/DateTimeItem.h"
+#include "smtk/attribute/DateTimeItemDefinition.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/DirectoryItem.h"
@@ -74,6 +76,12 @@ namespace {
   const char *getValueForXMLElement(const std::string& v)
   {
     return v.c_str();
+  }
+
+//----------------------------------------------------------------------------
+  const char *getValueForXMLElement(const smtk::attribute::DateTimeZonePair& v)
+  {
+    return v.serialize().c_str();
   }
 
 //----------------------------------------------------------------------------
@@ -308,7 +316,7 @@ std::string XmlV2StringWriter::convertToString(Logger &logger,
   xml_document doc;
   doc.append_child(node_comment).set_value("Created by XmlV2StringWriter");
   xml_node root = doc.append_child("SMTK_AttributeSystem");
-  root.append_attribute("Version").set_value(2);
+  root.append_attribute("Version").set_value(3);
 
   // Generate the element tree
   this->generateXml(root, logger, false);
@@ -642,6 +650,8 @@ XmlV2StringWriter::processItemDefinition(xml_node &node,
     case Item::VOID:
       // Nothing to do!
       break;
+    case Item::DATE_TIME:
+      this->processDateTimeDef(node, smtk::dynamic_pointer_cast<DateTimeItemDefinition>(idef));
       break;
     default:
       smtkErrorMacro(this->m_logger,
@@ -759,6 +769,25 @@ void XmlV2StringWriter::processMeshEntityDef(pugi::xml_node& node,
         static_cast<unsigned int>(idef->maxNumberOfValues());
       }
     }
+}
+
+//----------------------------------------------------------------------------
+void XmlV2StringWriter::processDateTimeDef(
+  pugi::xml_node &node, smtk::attribute::DateTimeItemDefinitionPtr idef)
+{
+  // First process the common value item def stuff
+  this->processValueDef(
+    node, dynamic_pointer_cast<ValueItemDefinition>(idef));
+
+  std::string format = idef->displayFormat();
+  if (!format.empty())
+    {
+    node.append_attribute("DisplayFormat").set_value(format.c_str());
+    }
+  node.append_attribute("ShowTimeZone") = idef->useTimeZone();
+  node.append_attribute("ShowCalendarPopup") = idef->useCalendarPopup();
+
+  processDerivedValueDef<attribute::DateTimeItemDefinitionPtr>(node, idef);
 }
 
 //----------------------------------------------------------------------------
@@ -1072,6 +1101,9 @@ void XmlV2StringWriter::processItem(xml_node &node,
       break;
     case Item::MESH_ENTITY:
       this->processMeshEntityItem(node, smtk::dynamic_pointer_cast<MeshItem>(item));
+      break;
+    case Item::DATE_TIME:
+      this->processDateTimeItem(node, smtk::dynamic_pointer_cast<DateTimeItem>(item));
       break;
     default:
       smtkErrorMacro(this->m_logger,
@@ -1430,6 +1462,14 @@ void XmlV2StringWriter::processGroupItem(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
+void XmlV2StringWriter::processDateTimeItem(
+  pugi::xml_node &node,
+  attribute::DateTimeItemPtr item)
+{
+  this->processValueItem(node, dynamic_pointer_cast<ValueItem>(item));
+  processDerivedValue<attribute::DateTimeItemPtr>(node, item);
+}
+//----------------------------------------------------------------------------
 void XmlV2StringWriter::processViews()
 {
   this->m_pugi->root.append_child(node_comment).set_value("********** Workflow Views ***********");
@@ -1437,7 +1477,6 @@ void XmlV2StringWriter::processViews()
   // First write toplevel views and then write out the non-toplevel - note that the
   // attribute or view system do care about this - the assumption is that the designer would
   // probably like all the toplevel views clustered together
-
   xml_node views = this->m_pugi->root.append_child("Views");
   std::map<std::string, smtk::common::ViewPtr>::const_iterator iter;
   bool isTop;
@@ -1449,7 +1488,6 @@ void XmlV2StringWriter::processViews()
       }
     xml_node node;
     node = views.append_child("View");
-
     node.append_attribute("Type").set_value(iter->second->type().c_str());
     node.append_attribute("Title").set_value(iter->second->title().c_str());
     if (iter->second->iconName() != "")
