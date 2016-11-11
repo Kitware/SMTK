@@ -1054,6 +1054,7 @@ int ExportJSON::forSingleCollection(cJSON* mdesc,
   std::string interfaceName = collection->interfaceName();
   cJSON_AddStringToObject(jsonCollection, "type", interfaceName.c_str());
 
+  bool writeMeshFileOk = true;
   //now actually write out the collection to disk, and add the location keyword
   //if we have a file.
   //This allows the importer to use the location keyword to figure out
@@ -1068,7 +1069,7 @@ int ExportJSON::forSingleCollection(cJSON* mdesc,
       collection->writeLocation().relativePath();
 
     cJSON_AddStringToObject(jsonCollection, "location", fileWriteLocation.c_str() );
-    smtk::io::writeMesh(collection, mesh::Subset::EntireCollection);
+    writeMeshFileOk = smtk::io::writeMesh(collection, mesh::Subset::EntireCollection);
     }
 
   //currently we only write out the modification state after the possibility
@@ -1096,7 +1097,7 @@ int ExportJSON::forSingleCollection(cJSON* mdesc,
   ForMeshset perMeshExportToJson(jsonMeshes);
   smtk::mesh::for_each(meshes, perMeshExportToJson);
 
-  return 1;
+  return writeMeshFileOk ? 1 : 0;
 }
 
 /**\brief Add records for \a modelIds to its parent \a sessionRec.
