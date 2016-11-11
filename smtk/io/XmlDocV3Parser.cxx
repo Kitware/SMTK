@@ -135,4 +135,7 @@ void XmlDocV3Parser::processDateTimeDef(
 void XmlDocV3Parser::processDateTimeItem(
   pugi::xml_node &node, attribute::DateTimeItemPtr idef)
 {
+  // Since DateTimeItem is a ValueItem subclass, all work is
+  // done in XmlDocV1Parser
+  XmlDocV1Parser::processDateTimeItem(node, idef);
 }

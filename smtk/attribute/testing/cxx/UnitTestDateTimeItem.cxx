@@ -90,11 +90,12 @@ void verifySerialize()
   // Instantiate att system, attdef, & attribute to write out
   sa::System outputSystem;
   sa::DefinitionPtr attDef = outputSystem.createDefinition("test-att");
-  sa::DateTimeItemDefinitionPtr dtDef = sa::DateTimeItemDefinition::New(
-    "datetime");
-  dtDef->setDisplayFormat("dd-MMM-yyyy  h:mm:ss.zzz AP");
-  dtDef->setUseTimeZone(false);
-  dtDef->setEnableCalendarPopup(false);
+
+  // First DateTimeItemDefinition
+  sa::DateTimeItemDefinitionPtr dt1Def = sa::DateTimeItemDefinition::New("dt1");
+  dt1Def->setDisplayFormat("dd-MMM-yyyy  h:mm:ss.zzz AP");
+  dt1Def->setUseTimeZone(false);
+  dt1Def->setEnableCalendarPopup(false);
 
   // Set default value
   sa::DateTimeZonePair dtz;
@@ -104,10 +105,31 @@ void verifySerialize()
   sa::TimeZone tz;
   tz.setRegion("America/Chicago");
   dtz.setTimeZone(tz);
-  dtDef->setDefaultValue(dtz);
+  dt1Def->setDefaultValue(dtz);
 
-  attDef->addItemDefinition(dtDef);
+  attDef->addItemDefinition(dt1Def);
+
+  // Second DateTimeItemDefinition
+  sa::DateTimeItemDefinitionPtr dt2Def = sa::DateTimeItemDefinition::New("dt2");
+  attDef->addItemDefinition(dt2Def);
+
+  // Intstantiate attribute
   sa::AttributePtr att = outputSystem.createAttribute(attDef);
+
+  // Get first item and set to the default value
+  sa::DateTimeItemPtr dt1Item = att->findDateTime("dt1");
+  dt1Item->setToDefault(0);
+
+  // Set contents of 2nd item
+  sa::DateTimeItemPtr dt2Item = att->findDateTime("dt2");
+  sa::DateTime dt2;
+  dt2.deserialize("19690720T201800");
+  sa::TimeZone tz2;
+  tz2.setPosixString("UTC+0");
+  sa::DateTimeZonePair dtz2;
+  dtz2.setDateTime(dt2);
+  dtz2.setTimeZone(tz2);
+  dt2Item->setValue(dtz2);
 
   // Write to string
   bool writeError = writer.writeContents(outputSystem, contents, logger);
@@ -133,48 +155,67 @@ void verifySerialize()
   sa::DefinitionPtr inputDef = inputSystem.findDefinition("test-att");
   test(!!inputDef, "Failed to read back definition");
   test(
-    inputDef->numberOfItemDefinitions() == 1,
+    inputDef->numberOfItemDefinitions() == 2,
     "Wrong number of item definitions read back");
-  int i = inputDef->findItemPosition("datetime");
-  sa::ItemDefinitionPtr inputItemDef = inputDef->itemDefinition(i);
-  test(!!inputItemDef, "Failed to read back \"datetime\" ItemDefinition");
-  sa::DateTimeItemDefinitionPtr inputDateTimeItemDef =
+  int i1 = inputDef->findItemPosition("dt1");
+  sa::ItemDefinitionPtr inputItemDef = inputDef->itemDefinition(i1);
+  test(!!inputItemDef, "Failed to read back \"dt1\" ItemDefinition");
+  sa::DateTimeItemDefinitionPtr dt1InputDef =
     smtk::dynamic_pointer_cast<sa::DateTimeItemDefinition>(inputItemDef);
-  test(!!inputDateTimeItemDef, "Failed to read back DateTimeItemDefinition");
+  test(!!dt1InputDef, "Failed to read back DateTimeItemDefinition");
   test(
-    inputDateTimeItemDef->displayFormat() == "dd-MMM-yyyy  h:mm:ss.zzz AP",
+    dt1InputDef->displayFormat() == "dd-MMM-yyyy  h:mm:ss.zzz AP",
     "Failed to read back definition display format");
   test(
-    !inputDateTimeItemDef->useTimeZone(),
+    !dt1InputDef->useTimeZone(),
     "Failed to read back use-time-zone setting");
   test(
-    !inputDateTimeItemDef->useCalendarPopup(),
+    !dt1InputDef->useCalendarPopup(),
     "Failed to read back enable-calendar-popup setting");
-  test(inputDateTimeItemDef->hasDefault(), "Failed to read back default value");
+  test(dt1InputDef->hasDefault(), "Failed to read back default value");
 
-  // Check item contents
+  // Check attribute
   sa::AttributePtr inputAtt = inputSystem.findAttribute(att->name());
   test(!!inputAtt, "Failed to read back attribute");
-  sa::DateTimeItemPtr inputDateTimeItem = inputAtt->findDateTime("datetime");
-  test(!!inputDateTimeItem, "Failed to find datetime item");
-  // Must explicitly set to default
-  inputDateTimeItem->setToDefault(0);
-  test(inputDateTimeItem->isSet(), "Failed to read back that default value is set");
 
-  sa::DateTimeZonePair dtzSet = inputDateTimeItem->value(0);
-  //std::cout << dtzSet << std::endl;
+  // Check first DateTimeItem
+  sa::DateTimeItemPtr dt1ItemInput = inputAtt->findDateTime("dt1");
+  test(!!dt1ItemInput, "Failed to find datetime item");
+  test(dt1ItemInput->isSet(), "Failed to read back that default value is set");
 
-  sa::DateTime dtSet = dtzSet.dateTime();
+  sa::DateTimeZonePair dtz1Input = dt1ItemInput->value(0);
+  //std::cout << dtz1Input << std::endl;
+
+  sa::DateTime dt1Input = dtz1Input.dateTime();
   int yr=-1, month=-1, day=-1, hr=-1, minute=-1, sec=-1, msec=-1;
-  dtSet.components(yr, month, day, hr, minute, sec, msec);
-  bool match = (2016 == yr) && (11 == month) && (10 == day) &&
+  dt1Input.components(yr, month, day, hr, minute, sec, msec);
+  bool match1 = (2016 == yr) && (11 == month) && (10 == day) &&
     (14 == hr) && (18 == minute) && (0 == sec) && (0 == msec);
-  test(match, "Failed to set attribute item DateTime");
+  test(match1, "Failed to set 1st item's DateTime");
 
-  sa::TimeZone tzSet = dtzSet.timeZone();
+  sa::TimeZone tz1Input = dtz1Input.timeZone();
   test(
-    tzSet.region() == "America/Chicago",
+    tz1Input.region() == "America/Chicago",
     "Failed to set attribute item TimeZone");
+
+  // Check 2nd DateTimeItem
+  sa::DateTimeItemPtr dt2ItemInput = inputAtt->findDateTime("dt2");
+  sa::DateTimeZonePair dtz2Input = dt2ItemInput->value(0);
+
+  sa::DateTime dt2Input = dtz2Input.dateTime();
+  yr=-1, month=-1, day=-1, hr=-1, minute=-1, sec=-1, msec=-1;
+  dt2Input.components(yr, month, day, hr, minute, sec, msec);
+  bool match2 = (1969 == yr) && (7 == month) && (20 == day) &&
+    (20 == hr) && (18 == minute) && (0 == sec) && (0 == msec);
+  test(match2, "Failed to set 2nd item's DateTime");
+
+  sa::TimeZone tz2Input = dtz2Input.timeZone();
+  test(
+    tz2Input.region().empty(),
+    "Failed to clear region value for 2nd item's TimeZone");
+  test(
+    tz2Input.posixString() == "UTC+00",
+    "Wrong posix string for 2nd item's TimeZone");
 }
 
 }  // end namespace

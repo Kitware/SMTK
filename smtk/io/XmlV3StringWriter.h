@@ -7,12 +7,12 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME XmlV2StringWriter.h -
+// .NAME XmlV3StringWriter.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_io_XmlV2StringWriter_h
-#define __smtk_io_XmlV2StringWriter_h
+#ifndef __smtk_io_XmlV3StringWriter_h
+#define __smtk_io_XmlV3StringWriter_h
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
@@ -35,11 +35,11 @@ namespace smtk
 {
   namespace io
   {
-    class SMTKCORE_EXPORT XmlV2StringWriter
+    class SMTKCORE_EXPORT XmlV3StringWriter
     {
     public:
-      XmlV2StringWriter(const smtk::attribute::System &system);
-      virtual ~XmlV2StringWriter();
+      XmlV3StringWriter(const smtk::attribute::System &system);
+      virtual ~XmlV3StringWriter();
       std::string convertToString(smtk::io::Logger &logger,
                                   bool no_declaration = false);
       void generateXml(pugi::xml_node& parent_node,
@@ -159,4 +159,4 @@ namespace smtk
 }
 
 
-#endif // __smtk_io_XmlV2StringWriter_h
+#endif // __smtk_io_XmlV3StringWriter_h

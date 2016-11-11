@@ -19,7 +19,7 @@
 #include "smtk/attribute/StringItemDefinition.h"
 
 #include "smtk/io/Logger.h"
-#include "smtk/io/XmlV2StringWriter.h"
+#include "smtk/io/XmlV3StringWriter.h"
 
 #include <iostream>
 
@@ -160,7 +160,7 @@ int main()
       }
     }
   smtk::io::Logger logger;
-  smtk::io::XmlV2StringWriter writer(system);
+  smtk::io::XmlV3StringWriter writer(system);
   std::cout << writer.convertToString(logger) << std::endl;
   if (logger.hasErrors())
     {
