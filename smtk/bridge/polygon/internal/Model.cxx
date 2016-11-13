@@ -337,6 +337,7 @@ smtk::model::Vertex pmodel::findOrAddModelVertex(
   smtk::model::Vertex v = mgr->addVertex();
   // Add a coordinate-map lookup to local storage:
   this->m_vertices[pt] = v.entity();
+  // Create internal storage for the neighborhood of the vertex:
   vertex::Ptr vi = vertex::create();
   vi->setParent(this);
   vi->setId(v.entity());
@@ -779,8 +780,8 @@ bool pmodel::splitModelEdgeAtModelVertices(
       // iterators in locationsInEdgeOrder are invalid.
 
       allVertices.reserve(locationsInEdgeOrder.size() + 1);
-      finalModelVert = smtk::model::Vertex(mgr, (*splitPointsInEdgeOrder.rbegin())->id());
       }
+    finalModelVert = smtk::model::Vertex(mgr, (*splitPointsInEdgeOrder.rbegin())->id());
     }
   else if (!noModelVertices) // i.e., we have model vertices at our endpoints.
     {
