@@ -16,7 +16,7 @@
         If 2 distinct edges were incident, one of them will be deleted and
         the other will subsume the points along both edge's sequences.
       </DetailedDescription>
-      <AssociationsDef Name="vertex" NumberOfRequiredValues="1" Extensible="yes">
+      <AssociationsDef Name="vertex" NumberOfRequiredValues="1">
         <MembershipMask>vertex</MembershipMask>
         <BriefDescription>The vertex to demote.</BriefDescription>
         <DetailedDescription>
