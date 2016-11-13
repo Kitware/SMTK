@@ -63,6 +63,7 @@ namespace smtk
       ValueItemDefinitionTemplate(const std::string &myname);
       void copyTo(ValueItemDefinitionPtr def,
         smtk::attribute::ItemDefinition::CopyInfo& info) const;
+      virtual void updateDiscreteValue();
       std::vector<DataT> m_defaultValue;
       DataT m_minRange;
       bool m_minRangeSet;
@@ -98,6 +99,12 @@ namespace smtk
     {
       std::vector<DataT> defaultTuple(1, dvalue);
       return this->setDefaultValue(defaultTuple);
+    }
+//----------------------------------------------------------------------------
+    template<typename DataT>
+    void ValueItemDefinitionTemplate<DataT>::updateDiscreteValue()
+    {
+      this->setDefaultValue(this->m_discreteValues[this->m_defaultDiscreteIndex]);
     }
 //----------------------------------------------------------------------------
     /**\brief Set the default value for an attribute.
