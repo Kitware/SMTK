@@ -89,12 +89,11 @@ public:
   // Key used to put entity UUID in the meta-data associated with a block.
   static vtkInformationStringKey* ENTITYID();
 
-  static void SetDataObjectUUID(vtkDataObject* obj, const smtk::common::UUID& uid);
-  static smtk::common::UUID GetDataObjectUUID(vtkDataObject*);
+  static smtk::common::UUID GetDataObjectUUID(vtkInformation*);
   template<typename T>
-  static T GetDataObjectEntityAs(smtk::model::ManagerPtr mgr, vtkDataObject* obj)
+  static T GetDataObjectEntityAs(smtk::model::ManagerPtr mgr, vtkInformation* info)
     {
-    return T(mgr, vtkModelMultiBlockSource::GetDataObjectUUID(obj));
+    return T(mgr, vtkModelMultiBlockSource::GetDataObjectUUID(info));
     }
 
 protected:

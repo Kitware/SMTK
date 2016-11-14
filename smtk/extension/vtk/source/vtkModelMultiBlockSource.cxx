@@ -187,48 +187,20 @@ void vtkModelMultiBlockSource::Dirty()
   * UUIDs are stored in the vtkInformation object associated with each
   * data object.
   */
-smtk::common::UUID vtkModelMultiBlockSource::GetDataObjectUUID(vtkDataObject* obj)
+smtk::common::UUID vtkModelMultiBlockSource::GetDataObjectUUID(vtkInformation* datainfo)
 {
   smtk::common::UUID uid;
-  if (!obj)
+  if (!datainfo)
     {
     return uid;
     }
 
-  const char* uuidChar = obj->GetInformation()->Get(vtkModelMultiBlockSource::ENTITYID());
-  if (!uuidChar)
-    { // We have not assigned a UUID yet. Do so now.
-    uid = vtkModelMultiBlockSource::UUIDGenerator.random();
-    obj->GetInformation()->Set(vtkModelMultiBlockSource::ENTITYID(), uid.toString().c_str());
-    }
-  else
+  const char* uuidChar = datainfo->Get(vtkModelMultiBlockSource::ENTITYID());
+  if (uuidChar)
     {
     uid = smtk::common::UUID(uuidChar);
     }
   return uid;
-}
-
-/**\brief Set a data object's UUID to a specific value (\a uid).
-  *
-  * This should be used when restoring data (as from a file) before the
-  * first call to GetDataObjectUUID, which will assign a random UUID if
-  * none has previously been set.
-  */
-void vtkModelMultiBlockSource::SetDataObjectUUID(vtkDataObject* obj, const smtk::common::UUID& uid)
-{
-  if (!obj)
-    {
-    return;
-    }
-
-  if (!uid)
-    { // A null UUID is none at all... remove the UUID key.
-    obj->GetInformation()->Remove(vtkModelMultiBlockSource::ENTITYID());
-    }
-  else
-    {
-    obj->GetInformation()->Set(vtkModelMultiBlockSource::ENTITYID(), uid.toString().c_str());
-    }
 }
 
 /*! \fn vtkModelMultiBlockSource::GetDefaultColor()
@@ -721,7 +693,8 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
             {
             topBlocks[bb]->SetBlock(lb, blockDatasets[bb][lb].GetPointer());
             topBlocks[bb]->GetMetaData(lb)->Set(vtkCompositeDataSet::NAME(), blockEntities[bb][lb].name().c_str());
-            this->SetDataObjectUUID(blockDatasets[bb][lb].GetPointer(), blockEntities[bb][lb].entity());
+            topBlocks[bb]->GetMetaData(lb)->Set(vtkModelMultiBlockSource::ENTITYID(),
+              blockEntities[bb][lb].entity().toString().c_str());
             /*
             topBlocks[bb]->GetMetaData(lb)->Set(
               vtkModelMultiBlockSource::ENTITYID(), blockEntities[lb].entity().toString().c_str());
@@ -734,7 +707,10 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
         vtkDataObjectTreeIterator* miter = mbds->NewTreeIterator();
         for (miter->GoToFirstItem(); !miter->IsDoneWithTraversal(); miter->GoToNextItem())
           {
-          smtk::model::EntityRef ent = this->GetDataObjectEntityAs<smtk::model::EntityRef>(manager, miter->GetCurrentDataObject());
+          if(!miter->HasCurrentMetaData())
+            continue;
+          smtk::model::EntityRef ent = this->GetDataObjectEntityAs<smtk::model::EntityRef>(
+            manager, miter->GetCurrentMetaData());
           if (ent.isValid())
             {
             addBlockInfo(
@@ -768,8 +744,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
       smtk::model::EntityRef entityref(manager, it->first);
       // Set the block name to the entity UUID.
       mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), entityref.name().c_str());
-      this->SetDataObjectUUID(poly.GetPointer(), entityref.entity());
-//      mbds->GetMetaData(i)->Set(vtkModelMultiBlockSource::ENTITYID(), entityref.entity().toString().c_str());
+      mbds->GetMetaData(i)->Set(vtkModelMultiBlockSource::ENTITYID(), entityref.entity().toString().c_str());
       this->GenerateRepresentationFromModel(poly.GetPointer(), entityref, this->AllowNormalGeneration);
 
       // as a convenient method to get the flat block_index in multiblock
