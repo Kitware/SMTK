@@ -81,7 +81,7 @@ void ArcPicker::doPick(pqRenderView *view, pqPolygonArc *arc, PickInfo& arcinfo)
   if(view)
     {
     this->Selecter = new pqRenderViewSelectionReaction(this,view,
-                          pqRenderViewSelectionReaction::SELECT_BLOCKS);
+                          pqRenderViewSelectionReaction::SELECT_SURFACE_CELLS);
 
     // we only want selection on one representation.
     view->setUseMultipleRepresentationSelection(false);
@@ -137,41 +137,35 @@ void ArcPicker::selectedInfo(pqOutputPort* port)
 
   if(port && this->Arc->edgeOperator())
     {
-    vtkNew<vtkPVSelectionInformation> selInfo;
-    if(vtkSelectionNode* selnode =
-      this->gatherSelectionNode(port->getSource(), selInfo.GetPointer()))
+    // get the selected point id
+    // This "IDs" only have three components [composite_index, processId, Index]
+    // because the arc source is a block in a Composite Dataset
+    vtkSMSourceProxy* selSource = port->getSelectionInput();
+    // [composite_index, process_id, index]
+    vtkSMPropertyHelper selIDs(selSource, "IDs");
+    unsigned int count = selIDs.GetNumberOfElements();
+    bool readytoOp = false;
+    if(count > 2)
       {
-      unsigned int block_idx;
-      vtkUnsignedIntArray* blockIds = selnode->GetSelectionList() ?
-        vtkUnsignedIntArray::SafeDownCast(selnode->GetSelectionList()) : NULL;
-      if(blockIds)
+      // get first selected point
+      vtkIdType flatIdx = selIDs.GetAsInt(0);
+      vtkNew<vtkPolygonArcInfo> arcInfo;
+      //collect the information from the server model source
+      vtkSMProxy *proxy = port->getSource()->getProxy();
+      arcInfo->SetBlockIndex(flatIdx - 1);
+      proxy->GatherInformation(arcInfo.GetPointer());
+      if(arcInfo->GetModelEntityID())
         {
-        vtkNew<vtkPolygonArcInfo> arcInfo;
-        //collect the information from the server model source
-        vtkSMProxy *proxy = port->getSource()->getProxy();
-
-        for(vtkIdType ui=0;ui<blockIds->GetNumberOfTuples();ui++)
+        smtk::common::UUID edgeId(arcInfo->GetModelEntityID());
+        smtk::model::Edge edge(this->Arc->edgeOperator()->manager(), edgeId);
+        if(edge.isValid())
           {
-          // blockId is child index, which is one less of flat_index
-          block_idx = blockIds->GetValue(ui) - 1;
-          arcInfo->SetBlockIndex(block_idx);
-          proxy->GatherInformation(arcInfo.GetPointer());
-          if(arcInfo->GetModelEntityID())
-            {
-            smtk::common::UUID edgeId(arcInfo->GetModelEntityID());
-            // if this is an edge, we are done
-            smtk::model::Edge edge(this->Arc->edgeOperator()->manager(), edgeId);
-            if(edge.isValid())
-              {
-              this->Info->EdgeId = edgeId;
-              this->Info->BlockIndex = block_idx;
-              this->Arc->setSource(port->getSource());
-              // once find the edge needed, turn off the selection for model source
-              port->setSelectionInput(NULL, 0);
-              this->View->render();
-              break;
-              }
-            }
+          this->Info->EdgeId = edgeId;
+          this->Info->BlockIndex = flatIdx - 1;
+          this->Arc->setSource(port->getSource());
+          // once find the edge needed, turn off the selection for model source
+          port->setSelectionInput(NULL, 0);
+          this->View->render();
           }
         }
       }
