@@ -117,6 +117,17 @@ OperatorResult ExportSMTKModel::operateInternal()
           modit->setStringProperty("url", url.string());
           }
         }
+
+      // After a collection is written out successfully or not,
+      // we want to clear the writeLocation so that it won't be re-written
+      // unless explicitly set again.
+      std::vector<smtk::mesh::CollectionPtr> collections =
+        this->manager()->meshes()->associatedCollections(*modit);
+      std::vector<smtk::mesh::CollectionPtr>::const_iterator cit;
+      for(cit = collections.begin(); cit != collections.end(); ++cit)
+        {
+        (*cit)->writeLocation(std::string());
+        }
       }
     }
 
