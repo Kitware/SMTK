@@ -20,6 +20,8 @@
 #include "vtkPoints.h"
 #include "vtkPolyData.h"
 #include "vtkObjectFactory.h"
+#include "vtkBoundingBox.h"
+#include <vector>
 
 vtkStandardNewMacro(vtkPolygonContourOperator);
 
@@ -27,6 +29,8 @@ vtkStandardNewMacro(vtkPolygonContourOperator);
 vtkPolygonContourOperator::vtkPolygonContourOperator()
 {
   this->ContourInput = NULL;
+  this->ImageBounds[0] = this->ImageBounds[2] = this->ImageBounds[4] = 0.0;
+  this->ImageBounds[1] = this->ImageBounds[3] = this->ImageBounds[5] = -1.0;
 }
 
 //----------------------------------------------------------------------------
@@ -74,6 +78,14 @@ smtk::model::OperatorResult vtkPolygonContourOperator::Operate()
   smtk::attribute::IntItem::Ptr numCoords = spec->findAs<smtk::attribute::IntItem>(
               "coordinates", smtk::attribute::ALL_CHILDREN);
   numCoords->setValue(3); // number of elements in coordinates
+  smtk::attribute::DoubleItem::Ptr boundsItem = spec->findAs<smtk::attribute::DoubleItem>(
+              "image bounds", smtk::attribute::ALL_CHILDREN);
+  vtkBoundingBox imgbox(this->ImageBounds);
+  if(imgbox.IsValid() && boundsItem)
+    {
+    std::vector<double> vec (this->ImageBounds, this->ImageBounds + 6);
+    boundsItem->setValues(vec.begin(), vec.end());
+    }
 
   double p[3];
   int numPoints = 0;

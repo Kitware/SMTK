@@ -65,6 +65,9 @@ public:
   StringList operatorNames() const;
 
   void assignDefaultNames();
+
+  EntityRefs entitiesWithTessellation() const;
+
 };
 
 /// Return the top-level (free) cells of this model in a container of the template type.

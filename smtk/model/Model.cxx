@@ -259,5 +259,24 @@ void Model::assignDefaultNames()
   this->manager()->assignDefaultNamesToModelChildren(this->entity());
 }
 
+/**\brief A convenient method for finding all entities with tessellations owned by this model.
+  *
+  * Note that this method will include both cells and groups that have tessellations.
+  *
+  */
+EntityRefs Model::entitiesWithTessellation() const
+{
+  std::map<EntityRef, EntityRef> entityrefMap;
+  EntityRefs touched;
+  this->findEntitiesWithTessellation(entityrefMap, touched);
+  EntityRefs result;
+  for(std::map<EntityRef,EntityRef>::iterator it = entityrefMap.begin();
+      it != entityrefMap.end(); ++it)
+    {
+    result.insert(it->first);
+    }
+  return result;
+}
+
   } // namespace model
 } // namespace smtk
