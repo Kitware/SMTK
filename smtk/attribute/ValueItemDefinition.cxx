@@ -163,6 +163,7 @@ ValueItemDefinition::buildChildrenItems(ValueItem *vitem) const
 void ValueItemDefinition::setDefaultDiscreteIndex(int discreteIndex)
 {
   this->m_defaultDiscreteIndex = discreteIndex;
+  this->updateDiscreteValue();
   this->m_hasDefault = true;
 }
 //----------------------------------------------------------------------------

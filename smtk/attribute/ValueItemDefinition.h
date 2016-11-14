@@ -174,6 +174,7 @@ namespace smtk
       void copyTo(ValueItemDefinitionPtr def,
                   smtk::attribute::ItemDefinition::CopyInfo& info) const;
 
+      virtual void updateDiscreteValue() = 0;
       bool m_hasDefault;
       bool m_useCommonLabel;
       std::vector<std::string> m_valueLabels;
