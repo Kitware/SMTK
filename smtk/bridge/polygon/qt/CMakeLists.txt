@@ -1,12 +1,21 @@
 include(${QT_USE_FILE})
 
-find_package( VTK REQUIRED )
-include_directories(${VTK_INCLUDE_DIRS})
+set(OpenCVOperatorsHeaders)
+set(OpenCVOperatorsSrcs)
+set(OpenCVOperatorsUI)
+if(SMTK_ENABLE_OPENCV)
+  find_package( VTK REQUIRED )
+  include_directories(${VTK_INCLUDE_DIRS})
+
+  set(OpenCVOperatorsHeaders imageFeatureExtractorWidget.h)
+  set(OpenCVOperatorsSrcs imageFeatureExtractorWidget.cxx)
+  set(OpenCVOperatorsUI imageFeatureExtractor.ui)
+endif()
 
 
 # set up sources to build
 set(PQWidgetsSrcs
-  imageFeatureExtractorWidget.cxx
+  ${OpenCVOperatorsSrcs}
   pqArcWidgetManager.cxx
   pqArcWidgetPanel.cxx
   pqPolygonArc.cxx
@@ -15,11 +24,11 @@ set(PQWidgetsSrcs
 
 set(PQWidgetsUIs
   qtArcWidgetPanel.ui
-  imageFeatureExtractor.ui
+  ${OpenCVOperatorsUI}
 )
 
 set(PQWidgetsMocHeaders
-  imageFeatureExtractorWidget.h
+  ${OpenCVOperatorsHeaders}
   pqArcWidgetManager.h
   pqArcWidgetPanel.h
   pqPolygonArc.h
