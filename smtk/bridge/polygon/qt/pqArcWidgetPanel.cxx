@@ -144,7 +144,6 @@ void ArcPicker::selectedInfo(pqOutputPort* port)
     // [composite_index, process_id, index]
     vtkSMPropertyHelper selIDs(selSource, "IDs");
     unsigned int count = selIDs.GetNumberOfElements();
-    bool readytoOp = false;
     if(count > 2)
       {
       // get first selected point
