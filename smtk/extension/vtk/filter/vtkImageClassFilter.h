@@ -27,11 +27,11 @@ public:
   vtkSetMacro(BackgroundValue,int);
   vtkGetMacro(BackgroundValue,int);
 
-  vtkSetMacro(MinFGSize,int);
-  vtkGetMacro(MinFGSize,int);
+  vtkSetMacro(MinFGSize,double);
+  vtkGetMacro(MinFGSize,double);
 
-  vtkSetMacro(MinBGSize,int);
-  vtkGetMacro(MinBGSize,int);
+  vtkSetMacro(MinBGSize,double);
+  vtkGetMacro(MinBGSize,double);
 
   ~vtkImageClassFilter() override;
 
@@ -40,8 +40,8 @@ protected:
   int ForegroundValue;
   int BackgroundValue;
 
-  int MinFGSize;
-  int MinBGSize;
+  double MinFGSize;
+  double MinBGSize;
 
   vtkImageClassFilter();
 

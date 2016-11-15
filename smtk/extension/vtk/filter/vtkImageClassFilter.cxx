@@ -29,8 +29,8 @@ vtkStandardNewMacro(vtkImageClassFilter);
 vtkImageClassFilter::vtkImageClassFilter()
 : ForegroundValue(0),
   BackgroundValue(125),
-  MinFGSize(0),
-  MinBGSize(0)
+  MinFGSize(0.0),
+  MinBGSize(0.0)
 {
 }
 
@@ -59,6 +59,9 @@ int vtkImageClassFilter::RequestData(vtkInformation *vtkNotUsed(request),
   cv::Mat BG  = imageCV == BackgroundValue;
   cv::Mat FG  = imageCV == ForegroundValue;
 
+  double spacing[2] = {std::abs(image->GetSpacing()[0]),
+                       std::abs(image->GetSpacing()[1])};
+
   if(MinFGSize != 0)
   {
     cv::Mat l, stats, centroids;
@@ -66,7 +69,7 @@ int vtkImageClassFilter::RequestData(vtkInformation *vtkNotUsed(request),
 
     for (int i = 0; i < num; ++i)
     {
-      int area = stats.at<int>(i,cv::CC_STAT_AREA);
+      double area = stats.at<int>(i,cv::CC_STAT_AREA)  * spacing[0] * spacing[1];
       if(area >= MinFGSize)
       {
         continue;
@@ -87,7 +90,7 @@ int vtkImageClassFilter::RequestData(vtkInformation *vtkNotUsed(request),
 
     for (int i = 0; i < num; ++i)
     {
-      int area = stats.at<int>(i,cv::CC_STAT_AREA);
+      double area = stats.at<int>(i,cv::CC_STAT_AREA) * spacing[0] * spacing[1];
       if(area >= MinBGSize)
       {
         continue;

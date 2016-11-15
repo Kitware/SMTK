@@ -15,12 +15,12 @@
 #include <vtkImageData.h>
 #include <vtkPolyData.h>
 
-#include <QMainWindow>
+#include <QDialog>
 
 // Forward Qt class declarations
 class Ui_imageFeatureExtractor;
 
-class imageFeatureExtractorWidget : public QMainWindow
+class imageFeatureExtractorWidget : public QDialog
 {
   Q_OBJECT
 public:
@@ -31,14 +31,15 @@ public:
   imageFeatureExtractorWidget();
   ~imageFeatureExtractorWidget() override;
 
-  void setImage(vtkSmartPointer<vtkImageData> inputImage);
+  void setImage(std::string inputImage);
+  vtkSmartPointer<vtkPolyData> getPolydata();
 
-public slots:
+//public slots:
 
-  virtual void slotExit();
+//  virtual void slotExit();
 
-signals:
-  void send(vtkSmartPointer<vtkPolyData>);
+//signals:
+//  void send(vtkSmartPointer<vtkPolyData>);
 
 protected slots:
   void saveMask();
@@ -52,9 +53,9 @@ protected slots:
   void setTransparency(int t);
   void setDrawMode(int m);
   void setAlgorithm(int a);
-  void setFGFilterSize(int f);
-  void setBGFilterSize(int b);
-  void accept();
+  void setFGFilterSize(QString const& f);
+  void setBGFilterSize(QString const& b);
+  //void accept();
 
 private:
 

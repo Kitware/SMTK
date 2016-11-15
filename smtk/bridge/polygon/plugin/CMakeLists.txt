@@ -10,10 +10,12 @@ list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 IF (PARAVIEW_QT_VERSION VERSION_GREATER "4")
   QT5_WRAP_CPP(MOC_SRCS qtPolygonEdgeOperationView.h)
   QT5_WRAP_CPP(MOC_SRCS qtExtractContoursView.h)
+  QT5_WRAP_CPP(MOC_SRCS qtSurfaceExtractorView.h)
 #    QT5_WRAP_UI(UI_SRCS qtPolygonEdgeOperationView.ui)
 ELSE ()
   QT4_WRAP_CPP(MOC_SRCS qtPolygonEdgeOperationView.h)
   QT4_WRAP_CPP(MOC_SRCS qtExtractContoursView.h)
+  QT4_WRAP_CPP(MOC_SRCS qtSurfaceExtractorView.h)
 #    QT4_WRAP_UI(UI_SRCS qtPolygonEdgeOperationView.ui)
 ENDIF ()
 
@@ -29,6 +31,12 @@ ADD_SMTK_UI_VIEW(
   CLASS_NAME qtExtractContoursView
   VIEW_NAME smtkPolygonContourView
   )
+ADD_SMTK_UI_VIEW(
+  OUTIFACES
+  OUTSRCS
+  CLASS_NAME qtSurfaceExtractorView
+  VIEW_NAME smtkSurfaceExtractorView
+  )
 
 add_paraview_plugin(
   smtkPolygonSessionPlugin "1.0"
@@ -38,6 +46,7 @@ add_paraview_plugin(
   GUI_SOURCES ${OUTSRCS} ${OUTSRCS1} ${MOC_SRCS} ${UI_SRCS}
               qtPolygonEdgeOperationView.cxx
               qtExtractContoursView.cxx
+              qtSurfaceExtractorView.cxx
   CS_KITS
     vtkSMTKWidgetsExt
     vtkPolygonOperatorsExt

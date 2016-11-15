@@ -1,5 +1,9 @@
 include(${QT_USE_FILE})
 
+find_package( VTK REQUIRED )
+include_directories(${VTK_INCLUDE_DIRS})
+
+
 # set up sources to build
 set(PQWidgetsSrcs
   imageFeatureExtractorWidget.cxx
@@ -54,7 +58,8 @@ target_link_libraries(smtkPolygonQtExt LINK_PUBLIC
   vtkSMTKSourceExt
   vtkDomainsChemistryOpenGL2
   vtkSMTKFilterExt
-${VTK_LIBRARIES}
+LINK_PRIVATE
+  ${VTK_LIBRARIES}
 )
 
 smtk_export_header(smtkPolygonQtExt Exports.h)

@@ -23,6 +23,7 @@ set(polygonSrcs
   operators/TweakEdge.cxx
   operators/ImportImage.cxx
   operators/ExtractContours.cxx
+  operators/SurfaceExtractContours.cxx
 )
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND
@@ -57,6 +58,7 @@ set(polygonHeaders
   operators/TweakEdge.h
   operators/ImportImage.h
   operators/ExtractContours.h
+  operators/SurfaceExtractContours.h
 )
 
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" polygonSessionJSON)
@@ -74,6 +76,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitEdge.sbt" polygonO
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/TweakEdge.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ImportImage.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExtractContours.sbt" polygonOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SurfaceExtractContours.sbt" polygonOperatorXML)
 
 set(import_vtk_depends)
 

@@ -43,12 +43,16 @@
 #include <vtkTransformPolyDataFilter.h>
 #include <vtkTransform.h>
 
+#include <vtkGDALRasterReader.h>
+#include <vtkXMLImageDataReader.h>
+
 #include <vtkXMLImageDataWriter.h>
 #include <vtkXMLImageDataReader.h>
 
 #include "smtk/extension/vtk/filter/vtkGrabCutFilter.h"
 #include "smtk/extension/vtk/filter/vtkWatershedFilter.h"
 #include "smtk/extension/vtk/filter/vtkImageClassFilter.h"
+#include "smtk/extension/vtk/filter/vtkCleanPolylines.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -154,6 +158,8 @@ public:
     lineMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
     lineActor = vtkSmartPointer<vtkActor>::New();
     lineActor->GetProperty()->SetColor(1.0, 1.0, 0.0);
+    lineActor->GetProperty()->SetEdgeColor(1.0, 1.0, 0.0);
+    lineMapper->ScalarVisibilityOff();
     lineActor->SetMapper(lineMapper);
 
     imageViewer->GetRenderer()->AddActor(lineActor);
@@ -175,11 +181,15 @@ public:
     contFilter->ComputeGradientsOn();
     contFilter->ComputeScalarsOff();
 
+    cleanPolyLines = vtkSmartPointer<vtkCleanPolylines>::New();
+    cleanPolyLines->SetMinimumLineLength(0);
+    cleanPolyLines->SetInputConnection(contFilter->GetOutputPort());
+
     vtkSmartPointer<vtkTransform> translation = vtkSmartPointer<vtkTransform>::New();
     translation->Translate(0.0, 0.0, 0.001);
 
     transformFilter = vtkSmartPointer<vtkTransformPolyDataFilter>::New();
-    transformFilter->SetInputConnection(contFilter->GetOutputPort());
+    transformFilter->SetInputConnection(cleanPolyLines->GetOutputPort());
     transformFilter->SetTransform(translation);
   }
 
@@ -202,6 +212,7 @@ public:
   vtkSmartPointer<vtkContourFilter> contFilter;
   vtkSmartPointer<vtkTransformPolyDataFilter> transformFilter;
   vtkSmartPointer<vtkImageClassFilter> imageClassFilter;
+  vtkSmartPointer<vtkCleanPolylines> cleanPolyLines;
 
   bool leftMousePressed;
   bool shiftButtonPressed;
@@ -544,6 +555,7 @@ imageFeatureExtractorWidget::imageFeatureExtractorWidget()
   this->ui->setupUi(this);
   //connect(this->ui->actionExit, SIGNAL(triggered()), this, SLOT(slotExit()));
   connect(this->ui->Accept, SIGNAL(clicked()), this, SLOT(accept()));
+  connect(this->ui->Cancel, SIGNAL(clicked()), this, SLOT(reject()));
   connect(this->ui->SaveMask, SIGNAL(clicked()), this, SLOT(saveMask()));
   connect(this->ui->clear, SIGNAL(clicked()), this, SLOT(clear()));
   connect(this->ui->Run, SIGNAL(clicked()), this, SLOT(run()));
@@ -551,8 +563,12 @@ imageFeatureExtractorWidget::imageFeatureExtractorWidget()
   connect(this->ui->NumberOfIter, SIGNAL(valueChanged(int)), this, SLOT(numberOfIterations(int)));
   connect(this->ui->DrawSize, SIGNAL(valueChanged(int)), this, SLOT(pointSize(int)));
 
-  connect(this->ui->MinLandSize, SIGNAL(valueChanged(int)), this, SLOT(setBGFilterSize(int)));
-  connect(this->ui->MinWaterSize, SIGNAL(valueChanged(int)), this, SLOT(setFGFilterSize(int)));
+  connect(this->ui->MinLandSize, SIGNAL(textChanged(const QString &)),
+          this,                  SLOT(setBGFilterSize(const QString &)));
+  connect(this->ui->MinWaterSize, SIGNAL(textChanged(const QString &)),
+          this,                   SLOT(setFGFilterSize(const QString &)));
+  this->ui->MinLandSize->setValidator(new QDoubleValidator(0, 1e50, 7, this->ui->MinLandSize));
+  this->ui->MinWaterSize->setValidator(new QDoubleValidator(0, 1e50, 7, this->ui->MinWaterSize));
 
   connect(this->ui->DrawMode, SIGNAL(currentIndexChanged(int)), this, SLOT(setDrawMode(int)));
   connect(this->ui->Algorithm, SIGNAL(currentIndexChanged(int)), this, SLOT(setAlgorithm(int)));
@@ -593,20 +609,45 @@ imageFeatureExtractorWidget::~imageFeatureExtractorWidget()
   delete ui;
 }
 
-void imageFeatureExtractorWidget::slotExit()
+vtkSmartPointer<vtkPolyData> imageFeatureExtractorWidget::getPolydata()
 {
-  //qApp->exit();
+  return internal->cleanPolyLines->GetOutput();
 }
 
-void imageFeatureExtractorWidget::accept()
-{
-  vtkSmartPointer<vtkPolyData> poly = internal->contFilter->GetOutput();
-  emit send(poly);
-}
+//void imageFeatureExtractorWidget::slotExit()
+//{
+  //qApp->exit();
+//}
+
+//void imageFeatureExtractorWidget::accept()
+//{
+//  vtkSmartPointer<vtkPolyData> poly = internal->contFilter->GetOutput();
+//  emit send(poly);
+//}
 
 void imageFeatureExtractorWidget
-::setImage(vtkSmartPointer<vtkImageData> inputImage)
+::setImage(std::string imagefile)
 {
+  vtkSmartPointer<vtkImageData> inputImage;
+
+  QFileInfo finfo(imagefile.c_str());
+  if (finfo.completeSuffix().toLower() == "tif" ||
+      finfo.completeSuffix().toLower() == "tiff" ||
+      finfo.completeSuffix().toLower() == "dem")
+  {
+    vtkSmartPointer<vtkGDALRasterReader> source = vtkSmartPointer<vtkGDALRasterReader>::New();
+    source->SetFileName(imagefile.c_str());
+    source->Update();
+    inputImage = source->GetOutput();
+  }
+  else
+  {
+    vtkSmartPointer<vtkXMLImageDataReader> source = vtkSmartPointer<vtkXMLImageDataReader>::New();
+    source->SetFileName(imagefile.c_str());
+    source->Update();
+    inputImage = source->GetOutput();
+  }
+
   if(!inputImage)
   {
     return;
@@ -635,6 +676,7 @@ void imageFeatureExtractorWidget
   internal->imageViewer->GetRenderer()->ResetCamera();
 
   vtkRenderWindowInteractor *interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
+  this->internal->contFilter->Update();
   interactor->Render();
 }
 
@@ -666,6 +708,7 @@ void imageFeatureExtractorWidget::run()
   internal->imageClassFilter->SetInputData(internal->filter->GetOutput(0));
   internal->imageClassFilter->Update();
   internal->contFilter->Update();
+  internal->cleanPolyLines->Update();
   internal->transformFilter->Update();
   internal->lineMapper->SetInputData(internal->transformFilter->GetOutput());
   vtkImageData* updateMask = internal->filter->GetOutput(1);
@@ -768,23 +811,25 @@ void imageFeatureExtractorWidget::setTransparency(int t)
   }
 }
 
-void imageFeatureExtractorWidget::setFGFilterSize(int f)
+void imageFeatureExtractorWidget::setFGFilterSize(QString const& f)
 {
 
-  internal->imageClassFilter->SetMinFGSize(f);
+  internal->imageClassFilter->SetMinFGSize(f.toDouble());
   internal->imageClassFilter->Update();
   internal->contFilter->Update();
+  internal->cleanPolyLines->Update();
   internal->transformFilter->Update();
   internal->lineMapper->SetInputData(internal->transformFilter->GetOutput());
   vtkRenderWindowInteractor *interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
   interactor->Render();
 }
 
-void imageFeatureExtractorWidget::setBGFilterSize(int b)
+void imageFeatureExtractorWidget::setBGFilterSize(QString const& b)
 {
-  internal->imageClassFilter->SetMinBGSize(b);
+  internal->imageClassFilter->SetMinBGSize(b.toDouble());
   internal->imageClassFilter->Update();
   internal->contFilter->Update();
+  internal->cleanPolyLines->Update();
   internal->transformFilter->Update();
   internal->lineMapper->SetInputData(internal->transformFilter->GetOutput());
   vtkRenderWindowInteractor *interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
