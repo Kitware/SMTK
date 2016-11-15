@@ -260,8 +260,20 @@ bool Group::meetsMembershipConstraintsInternal(
   // and one allowed dimension bit.
   BitFlags memberFlags = prospectiveMember.entityFlags();
   BitFlags memberTest = (memberFlags & memberMask);
-  if (!(memberTest & ANY_DIMENSION) && (memberMask & ANY_DIMENSION)) return false;
-  if (!(memberTest & ENTITY_MASK) && (memberMask & ENTITY_MASK)) return false;
+  if (
+    // The entity has no dimension bits in common with the mask:
+    !(memberTest & ANY_DIMENSION) &&
+    // The mask has some, but not all dimension bits set:
+    ((memberMask & ANY_DIMENSION) != ANY_DIMENSION) &&
+    (memberMask & ANY_DIMENSION))
+    { // The entity cannot be a member (it is not of the proper dimension)
+    return false;
+    }
+  // If the prospective member has no entity-type bits in common with the mask and the mask has any entity bits set:
+  if (!(memberTest & ENTITY_MASK) && (memberMask & ENTITY_MASK))
+    { // The entity cannot be a member (it is not of the proper type)
+    return false;
+    }
 
   // If the prospectiveMember is a group, we must now also test its members.
   // If it is not a group, maybe we should update the typemask.
