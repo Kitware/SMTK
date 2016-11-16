@@ -469,7 +469,7 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
   bool genNormals)
 {
   (void)genNormals;
-  smtkErrorMacro(auxGeom.manager()->log(),
+  smtkDebugMacro(auxGeom.manager()->log(),
     "Need to load " << auxGeom.url() << " for " << auxGeom.name());
   std::string fileType;
   if (auxGeom.hasStringProperty("type"))

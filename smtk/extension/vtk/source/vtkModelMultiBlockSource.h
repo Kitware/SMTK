@@ -128,11 +128,6 @@ protected:
 
   void SetCachedOutput(vtkMultiBlockDataSet*);
 
-  void FindEntitiesWithTessellation(
-    const smtk::model::EntityRef& root,
-    std::map<smtk::model::EntityRef, smtk::model::EntityRef>& entityrefMap,
-    std::set<smtk::model::EntityRef>& touched);
-
   static std::string InferFileTypeFromFileName(const std::string& fname);
 
   smtk::model::ManagerPtr ModelMgr;
