@@ -39,6 +39,7 @@
 #endif
 
 #include <algorithm>
+#include <cctype>
 
 namespace smtk {
   namespace bridge {
