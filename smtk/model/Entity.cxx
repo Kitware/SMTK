@@ -71,7 +71,7 @@ static const char* entityTypeNames[] = {
   "model",
   "instance",
   "session",
-  "auxiliary geometry",
+  "aux_geom",
   "concept"
 };
 
