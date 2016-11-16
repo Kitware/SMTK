@@ -131,14 +131,20 @@ namespace {
     }
   cJSON* cJSON_CreateLongArray(const long* ints, unsigned count)
     {
+    // FIXME: This uses a hack to speed up creation of arrays with many entries
+    // cJSON should provide a method to append given last element in array and
+    // its append method should return each newly-created element.
+
     cJSON* a = cJSON_CreateArray();
+    cJSON** loc = &a->child;
     for (unsigned i = 0; i < count; ++i)
       {
       if (ints[i] > 9007199254740991.0) //== 2^53 - 1, max integer-accurate double
         {
         std::cerr << "Error exporting array: integer value " << i << " (" << ints[i] << ") out of range for cJSON\n";
         }
-      cJSON_AddItemToArray(a, cJSON_CreateNumber(ints[i]));
+      *loc = cJSON_CreateNumber(ints[i]);
+      loc = &((*loc)->next); // fast way to append to cJSON array
       }
     return a;
     }
