@@ -42,7 +42,14 @@ void Session::consistentInternalDelete(T& container, U& modified, V& expunged, b
     {
     if (!it->isCellEntity())
       {
-      smtkWarningMacro(this->log(), "Trying to delete polygon storage for " << it->name() << " (" << it->flagSummary() << ")");
+      if (!it->isAuxiliaryGeometry())
+        {
+        smtkWarningMacro(this->log(), "Trying to delete polygon storage for " << it->name() << " (" << it->flagSummary() << ")");
+        }
+      if (!mgr)
+        {
+        mgr = it->manager();
+        }
       continue;
       }
     if (!mgr)

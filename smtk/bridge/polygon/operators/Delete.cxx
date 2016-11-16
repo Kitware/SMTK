@@ -53,8 +53,8 @@ namespace smtk {
   * when both \a deleteDependents is false **and** any cell
   * in \a entities had a dependent cell.
   */
-template<typename U, typename V, typename W>
-bool Delete::addDependents(const smtk::model::EntityRef& ent, bool deleteDependents, U& verts, V& edges, W& faces)
+template<typename U, typename V, typename W, typename X>
+bool Delete::addDependents(const smtk::model::EntityRef& ent, bool deleteDependents, U& verts, V& edges, W& faces, X& other)
 {
   bool ok = true;
   if (ent.isVertex())
@@ -71,7 +71,7 @@ bool Delete::addDependents(const smtk::model::EntityRef& ent, bool deleteDepende
         {
         for (it = ev.begin(); it != ev.end(); ++it)
           {
-          this->addDependents(*it, deleteDependents, verts, edges, faces);
+          this->addDependents(*it, deleteDependents, verts, edges, faces, other);
           }
         }
       else
@@ -113,7 +113,7 @@ bool Delete::addDependents(const smtk::model::EntityRef& ent, bool deleteDepende
         {
         for (it = fe.begin(); it != fe.end(); ++it)
           {
-          this->addDependents(*it, deleteDependents, verts, edges, faces);
+          this->addDependents(*it, deleteDependents, verts, edges, faces, other);
           }
         }
       else
@@ -146,6 +146,46 @@ bool Delete::addDependents(const smtk::model::EntityRef& ent, bool deleteDepende
     faces.insert(ff);
     // No volumes in polygonal models... we're done.
     }
+  else if (ent.isAuxiliaryGeometry())
+    {
+    other.insert(ent);
+    smtk::model::AuxiliaryGeometries children =
+      ent.as<smtk::model::AuxiliaryGeometry>().embeddedEntities<smtk::model::AuxiliaryGeometries>();
+    if (!children.empty())
+      {
+      ++this->m_numInUse;
+      smtk::model::AuxiliaryGeometries::iterator it;
+      if (deleteDependents)
+        {
+        for (it = children.begin(); it != children.end(); ++it)
+          {
+          this->addDependents(*it, deleteDependents, verts, edges, faces, other);
+          }
+        }
+      else
+        {
+        ok = false;
+        if (this->m_numWarnings < MAX_WARNINGS)
+          {
+          std::ostringstream msg;
+          msg << "Auxiliary geometry " << ent.name() << " is used by ";
+          if (children.size() > 5)
+            {
+            msg << children.size() << " cells.";
+            }
+          else
+            {
+            for (it = children.begin(); it != children.end(); ++it)
+              {
+              msg << "  " << it->name() << "\n";
+              }
+            }
+          smtkErrorMacro(this->log(), msg.str());
+          }
+        ++this->m_numWarnings;
+        }
+      }
+    }
   else
     {
     smtkWarningMacro(this->log(), "Cannot delete non-cell entity " << ent.name() << ". Skipping.");
@@ -166,6 +206,7 @@ smtk::model::OperatorResult Delete::operateInternal()
   smtk::model::VertexSet verts = this->associatedEntitiesAs<smtk::model::VertexSet>();
   smtk::model::EdgeSet edges = this->associatedEntitiesAs<smtk::model::EdgeSet>();
   smtk::model::FaceSet faces = this->associatedEntitiesAs<smtk::model::FaceSet>();
+  smtk::model::EntityRefs other;
 
   smtk::model::Manager::Ptr mgr = this->session()->manager();
 
@@ -175,7 +216,7 @@ smtk::model::OperatorResult Delete::operateInternal()
   smtk::model::EntityRefs::iterator eit;
   for (eit = entities.begin(); eit != entities.end(); ++eit)
     {
-    ok &= this->addDependents(*eit, deleteDependents, verts, edges, faces);
+    ok &= this->addDependents(*eit, deleteDependents, verts, edges, faces, other);
     }
 
   if (!ok)
@@ -191,13 +232,15 @@ smtk::model::OperatorResult Delete::operateInternal()
   smtkOpDebug("Given "
     << entities.size() << ", found "
     << faces.size() << " faces, "
-    << edges.size() << " edges, and "
-    << verts.size() << " verts"
+    << edges.size() << " edges, "
+    << verts.size() << " verts, and "
+    << other.size() << " others "
     << (deleteDependents ? " (including dependents)." : "."));
 
   this->polygonSession()->consistentInternalDelete(faces, this->m_modified, this->m_expunged, this->m_debugLevel > 0);
   this->polygonSession()->consistentInternalDelete(edges, this->m_modified, this->m_expunged, this->m_debugLevel > 0);
   this->polygonSession()->consistentInternalDelete(verts, this->m_modified, this->m_expunged, this->m_debugLevel > 0);
+  this->polygonSession()->consistentInternalDelete(other, this->m_modified, this->m_expunged, this->m_debugLevel > 0);
 
   smtk::model::OperatorResult result =
     this->createResult(smtk::model::OPERATION_SUCCEEDED);

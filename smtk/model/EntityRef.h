@@ -250,6 +250,7 @@ public:
   EntityRef embeddedIn() const;
   bool unembedEntity(const EntityRef& thingToUnembed);
   template<typename T> EntityRef& unembedEntities(const T& container);
+  template<typename T> T embeddedEntities() const;
 
   template<typename T> T instances() const;
 
