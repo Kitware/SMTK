@@ -4,7 +4,7 @@
   <Definitions>
     <!-- Operator -->
     <AttDef Type="add auxiliary geometry" BaseType="operator" Label=" Model - Add Auxiliary Geometry">
-      <AssociationsDef Name="Entities" NumberOfRequiredValues="1">
+      <AssociationsDef Name="entities" NumberOfRequiredValues="1">
         <MembershipMask>model|aux_geom</MembershipMask>
       </AssociationsDef>
       <BriefDescription>
@@ -41,8 +41,8 @@
           <DetailedDescription>
             The dimension of the geometric point locus related to this entity.
 
-            If negative, then the dimension is assumed to be either unknown or the geometry
-            consists of multiple geometric primitives of different dimension.
+            If negative, then the dimension is unspecified and assumed either
+            to be unknown or to consist of multiple geometric primitives of different dimension.
             The dimension affects the order in which rendering occurs (so that edges are drawn
             on top of coincident faces and so forth).
           </DetailedDescription>
@@ -55,9 +55,18 @@
           </DiscreteInfo>
         </Int>
 
-        <Void Name="DisplayAsSeparateRepresentation" Label="Display as separate representation from model" AdvanceLevel="1" Optional="true" IsEnabledByDefault="true">
-          <BriefDescription>Should the auxiliary geometry representation be displayed as separate representation from mode representation?.</BriefDescription>
-          <DetailedDescription>Should the auxiliary geometry representation be displayed as separate representation from model? If yes, a separate rendering pipeline will be created for auxiliary geometry and its representation will be controlled with its own set of display properties; if no, the geometry will be shown and controlled as sub-blocks in the model, which may be less flexible.</DetailedDescription>
+        <Void Name="separate representation" AdvanceLevel="1" Optional="true" IsEnabledByDefault="true"
+          Label="Display as separate representation from model">
+          <BriefDescription>
+            Should the auxiliary geometry's representation be separate from its owning model's?
+          </BriefDescription>
+          <DetailedDescription>
+            Should the auxiliary geometry's representation be separate from its owning model's?
+            If yes, a separate rendering pipeline will be created for auxiliary geometry and
+            its representation will be controlled with its own set of display properties;
+            if no, the geometry will be shown and controlled as sub-blocks in the model's multiblock dataset,
+            which may be less flexible.
+          </DetailedDescription>
         </Void>
 
       </ItemDefinitions>

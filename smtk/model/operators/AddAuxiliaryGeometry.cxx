@@ -44,7 +44,7 @@ smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
   int dim = dimItem->value(0);
 
   smtk::attribute::VoidItem::Ptr separateRepOption =
-    this->findVoid("DisplayAsSeparateRepresentation");
+    this->findVoid("separate representation");
   bool bSeparateRep = separateRepOption->isEnabled();
 
   AuxiliaryGeometry auxGeom;
