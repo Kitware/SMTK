@@ -95,6 +95,10 @@ public:
     {
     return T(mgr, vtkModelMultiBlockSource::GetDataObjectUUID(info));
     }
+  static vtkSmartPointer<vtkDataObject> GenerateRepresentationFromURL(
+    const smtk::model::AuxiliaryGeometry& auxGeom,
+    bool genNormals);
+  static std::string GetAuxiliaryFileType(const smtk::model::AuxiliaryGeometry&);
 
 protected:
   vtkModelMultiBlockSource();
@@ -106,9 +110,6 @@ protected:
   vtkSmartPointer<vtkPolyData> GenerateRepresentationFromTessellation(
     const smtk::model::EntityRef& entity,
     const smtk::model::Tessellation* tess,
-    bool genNormals);
-  vtkSmartPointer<vtkDataObject> GenerateRepresentationFromURL(
-    const smtk::model::AuxiliaryGeometry& auxGeom,
     bool genNormals);
 
   void GenerateRepresentationFromModel(

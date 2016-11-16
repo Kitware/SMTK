@@ -24,10 +24,12 @@
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/UseEntity.h"
 #include "smtk/model/Volume.h"
+#include "smtk/extension/vtk/filter/vtkImageSpacingFlip.h"
 
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkDataObjectTreeIterator.h"
+#include "vtkGDALRasterReader.h"
 #include "vtkIdTypeArray.h"
 #include "vtkInformation.h"
 #include "vtkInformationStringKey.h"
@@ -463,14 +465,9 @@ vtkSmartPointer<T> ReadData(const smtk::model::AuxiliaryGeometry& auxGeom)
   return data;
 }
 
-/// Create a reader and copy its output into a new data object to serve as the representation for auxiliary geometry.
-vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationFromURL(
-  const smtk::model::AuxiliaryGeometry& auxGeom,
-  bool genNormals)
+std::string vtkModelMultiBlockSource::GetAuxiliaryFileType(
+  const smtk::model::AuxiliaryGeometry& auxGeom)
 {
-  (void)genNormals;
-  smtkDebugMacro(auxGeom.manager()->log(),
-    "Need to load " << auxGeom.url() << " for " << auxGeom.name());
   std::string fileType;
   if (auxGeom.hasStringProperty("type"))
     {
@@ -484,11 +481,37 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
     {
     fileType = vtkModelMultiBlockSource::InferFileTypeFromFileName(auxGeom.url());
     }
+  return fileType;
+}
+
+/// Create a reader and copy its output into a new data object to serve as the representation for auxiliary geometry.
+vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationFromURL(
+  const smtk::model::AuxiliaryGeometry& auxGeom,
+  bool genNormals)
+{
+  (void)genNormals;
+  smtkDebugMacro(auxGeom.manager()->log(),
+    "Need to load " << auxGeom.url() << " for " << auxGeom.name());
+  std::string fileType = vtkModelMultiBlockSource::GetAuxiliaryFileType(
+                       auxGeom);
   if (fileType == "vtp") { return ReadData<vtkPolyData, vtkXMLPolyDataReader>(auxGeom); }
   else if (fileType == "vtu") { return ReadData<vtkUnstructuredGrid, vtkXMLUnstructuredGridReader>(auxGeom); }
   else if (fileType == "vti") { return ReadData<vtkImageData, vtkXMLImageDataReader>(auxGeom); }
   else if (fileType == "vtm") { return ReadData<vtkMultiBlockDataSet, vtkXMLMultiBlockDataReader>(auxGeom); }
   else if (fileType == "obj") { return ReadData<vtkPolyData, vtkOBJReader>(auxGeom); }
+  else if (fileType == "dem" || fileType == "tif" || fileType == "tiff")
+  {
+    vtkSmartPointer<vtkImageData> outImage = ReadData<vtkImageData, vtkGDALRasterReader>(auxGeom);
+    if(outImage.GetPointer())
+    {
+      vtkNew<vtkImageSpacingFlip> flipImage;
+      flipImage->SetInputData(outImage);
+      flipImage->Update();
+      vtkSmartPointer<vtkImageData> data = vtkSmartPointer<vtkImageData>::New();
+      data->ShallowCopy(flipImage->GetOutput());
+      return data;
+    }   
+  }
 
   return vtkSmartPointer<vtkDataObject>();
 }

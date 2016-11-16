@@ -12,9 +12,8 @@
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/extension/vtk/filter/vtkImageSpacingFlip.h"
+#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
-#include "vtkGDALRasterReader.h"
 #include "vtkImageData.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
@@ -27,10 +26,6 @@
 #include "vtkUnstructuredGrid.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
-#include "vtkXMLPolyDataReader.h"
-#include "vtkXMLUnstructuredGridReader.h"
-#include "vtkXMLImageDataReader.h"
-#include "vtkXMLMultiBlockDataReader.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
@@ -100,7 +95,7 @@ vtkSmartPointer<vtkDataObject> vtkModelAuxiliaryGeometry::GenerateRepresentation
   std::string url;
   if (aux.isValid() && !(url = aux.url()).empty())
     {
-    return this->GenerateRepresentationFromURL(aux, genNormals);
+    return vtkModelMultiBlockSource::GenerateRepresentationFromURL(aux, genNormals);
     }
   return vtkSmartPointer<vtkDataObject>();
 }
@@ -114,58 +109,6 @@ vtkSmartPointer<T> ReadData(const smtk::model::AuxiliaryGeometry& auxGeom)
   vtkSmartPointer<T> data = vtkSmartPointer<T>::New();
   data->ShallowCopy(rdr->GetOutput());
   return data;
-}
-std::string vtkModelAuxiliaryGeometry::GetAuxiliaryFileType(
-  const smtk::model::AuxiliaryGeometry& auxGeom)
-{
-  std::string fileType;
-  if (auxGeom.hasStringProperty("type"))
-    {
-    const StringList& prop(auxGeom.stringProperty("type"));
-    if (!prop.empty())
-      {
-      fileType = prop[0];
-      }
-    }
-  if (fileType.empty())
-    {
-    fileType = vtkModelAuxiliaryGeometry::InferFileTypeFromFileName(auxGeom.url());
-    }
-  return fileType;
-}
-/// Create a reader and copy its output into a new data object to serve as the representation for auxiliary geometry.
-vtkSmartPointer<vtkDataObject> vtkModelAuxiliaryGeometry::GenerateRepresentationFromURL(
-  const smtk::model::AuxiliaryGeometry& auxGeom,
-  bool genNormals)
-{
-  (void)genNormals;
-  std::string fileType = vtkModelAuxiliaryGeometry::GetAuxiliaryFileType(auxGeom);
-  if (fileType == "vtp") { return ReadData<vtkPolyData, vtkXMLPolyDataReader>(auxGeom); }
-  else if (fileType == "vtu") { return ReadData<vtkUnstructuredGrid, vtkXMLUnstructuredGridReader>(auxGeom); }
-  else if (fileType == "vti") { return ReadData<vtkImageData, vtkXMLImageDataReader>(auxGeom); }
-  else if (fileType == "vtm") { return ReadData<vtkMultiBlockDataSet, vtkXMLMultiBlockDataReader>(auxGeom); }
-  else if (fileType == "obj") { return ReadData<vtkPolyData, vtkOBJReader>(auxGeom); }
-  else if (fileType == "dem" || fileType == "tif" || fileType == "tiff")
-  {
-    vtkSmartPointer<vtkImageData> outImage = ReadData<vtkImageData, vtkGDALRasterReader>(auxGeom);
-    if(outImage.GetPointer())
-    {
-      vtkNew<vtkImageSpacingFlip> flipImage;
-      flipImage->SetInputData(outImage);
-      flipImage->Update();
-      vtkSmartPointer<vtkImageData> data = vtkSmartPointer<vtkImageData>::New();
-      data->ShallowCopy(flipImage->GetOutput());
-      return data;
-    }   
-  }
-
-  return vtkSmartPointer<vtkDataObject>();
-}
-
-std::string vtkModelAuxiliaryGeometry::InferFileTypeFromFileName(const std::string& fname)
-{
-  ::boost::filesystem::path fp(fname);
-  return fp.extension().string().substr(1);
 }
 
 //----------------------------------------------------------------------------
@@ -185,7 +128,7 @@ int vtkModelAuxiliaryGeometry::RequestInformation (
   smtk::model::AuxiliaryGeometry auxGeoEntity(this->ModelMgr, uid);
   if(auxGeoEntity.isValid() && auxGeoEntity.hasUrl())
   {
-    std::string fileType = vtkModelAuxiliaryGeometry::GetAuxiliaryFileType(
+    std::string fileType = vtkModelMultiBlockSource::GetAuxiliaryFileType(
                            auxGeoEntity);
     if (fileType == "vti" || fileType == "dem"
         || fileType == "tif" || fileType == "tiff")

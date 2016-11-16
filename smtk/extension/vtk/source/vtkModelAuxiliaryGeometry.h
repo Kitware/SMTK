@@ -50,10 +50,6 @@ protected:
   vtkModelAuxiliaryGeometry();
   ~vtkModelAuxiliaryGeometry() override;
 
-  vtkSmartPointer<vtkDataObject> GenerateRepresentationFromURL(
-    const smtk::model::AuxiliaryGeometry& auxGeom,
-    bool genNormals);
-
   vtkSmartPointer<vtkDataObject> GenerateRepresentationFromModel(
     const smtk::model::AuxiliaryGeometry& entity,
     bool genNormals);
@@ -69,9 +65,6 @@ protected:
     vtkInformationVector* outInfo) override;
 
   void SetCachedOutput(vtkMultiBlockDataSet*);
-
-  static std::string GetAuxiliaryFileType(const smtk::model::AuxiliaryGeometry&);
-  static std::string InferFileTypeFromFileName(const std::string& fname);
 
   smtk::model::ManagerPtr ModelMgr;
   vtkMultiBlockDataSet* CachedOutput;
