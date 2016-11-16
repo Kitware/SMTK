@@ -48,6 +48,7 @@
   <suppress-warning text="skipping function 'smtk::model::Model::addGroups', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Group::members', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityRef::embedEntities', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::EntityRef::embeddedEntities', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityRef::instances', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityRef::removeMemberEntities', unmatched parameter type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityRef::addMemberEntities', unmatched parameter type 'T'"/>
