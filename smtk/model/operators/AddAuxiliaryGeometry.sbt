@@ -22,7 +22,8 @@
         scene as if they were a single file.
       </DetailedDescription>
       <ItemDefinitions>
-        <File Name="url" Optional="true" NumberOfRequiredValues="1" IsEnabledByDefault="true" ShouldExist="true">
+        <File Name="url" Optional="true" NumberOfRequiredValues="1" IsEnabledByDefault="true" ShouldExist="true"
+          FileFilters="Image files (*.tif *.tiff *.dem);;VTK data (*.vti *.vtp *.vtu *.vtm);;Object files (*.obj);;All files (*.*)">>
           <BriefDescription>The file containing the auxiliary scene geometry.</BriefDescription>
         </File>
         <String Name="type" NumberOfRequiredValues="1" AdvanceLevel="1">
