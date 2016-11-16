@@ -89,6 +89,8 @@ public:
   bool IndexFromEntityInstancedBy(int& relationIdx) const;
   bool IndexFromEntitySupersetOf(int& relationIdx) const;
   bool IndexFromEntitySubsetOf(int& relationIdx) const;
+  bool IndexFromAuxiliaryGeometryEmbeddedInEntity(int& relationIdx) const;
+  bool IndexFromAuxiliaryGeometryIncludesEntity(int& relationIdx) const;
 
   static Arrangement SimpleIndex(int relationIdx);
   bool IndexFromSimple(int& relationIdx) const;
@@ -234,6 +236,8 @@ public:
   typedef IndexHelper<&Arrangement::IndexFromEntityInstancedBy> InstanceInstancedByRelationHelper;
   typedef IndexHelper<&Arrangement::IndexFromEntitySupersetOf> EntitySupersetOfRelationHelper;
   typedef IndexHelper<&Arrangement::IndexFromEntitySubsetOf> EntitySubsetOfRelationHelper;
+  typedef IndexHelper<&Arrangement::IndexFromAuxiliaryGeometryEmbeddedInEntity> AuxiliaryGeometryEmbeddedInEntityRelationHelper;
+  typedef IndexHelper<&Arrangement::IndexFromAuxiliaryGeometryIncludesEntity> AuxiliaryGeometryIncludesEntityRelationHelper;
 
 
 protected:

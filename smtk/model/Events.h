@@ -92,6 +92,7 @@ enum ManagerEventRelationType
   MODEL_INCLUDES_FREE_CELL,     //!< The entity is a model with a free cell.
   MODEL_INCLUDES_FREE_USE,      //!< The entity is a model with a free use (not really sensical?).
   MODEL_INCLUDES_FREE_SHELL,    //!< The entity is a model with a free shell (not really sensical?).
+  MODEL_INCLUDES_FREE_AUX_GEOM, //!< The entity is a model with a free (top-level) auxiliary geometry.
   MODEL_INCLUDES_MODEL,         //!< The entity is a model that has child model(s), i.e., an assembly.
   MODEL_INCLUDES_GROUP,         //!< The entity is a model that has child group(s).
 
@@ -105,6 +106,8 @@ enum ManagerEventRelationType
   MODEL_SUPERSET_OF_MODEL,      //!< The entity is a model whose set of child models is being modified.
   MODEL_SUPERSET_OF_GROUP,      //!< The entity is a model whose set of child groups is being modified.
   SESSION_SUPERSET_OF_MODEL,    //!< The entity is a session whose set of child models is being modified.
+
+  AUX_GEOM_INCLUDES_AUX_GEOM,   //!< The entity is one auxiliary geometry being nested inside another.
 
   INSTANCE_OF_ENTITY,           //!< The entity is an instance being inserted, removed, or modified (retargeting what it instances).
 

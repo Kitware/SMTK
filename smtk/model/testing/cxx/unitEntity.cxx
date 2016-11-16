@@ -51,6 +51,12 @@ static const char* correct =
 "0x02000900  domain group (cells)\n"
 "0x01000902  boundary group (1-d cells)\n"
 "0x00002e04  group (2-d uses, shells, instances)\n"
+"0x00008001  auxiliary point\n"
+"0x00008002  auxiliary curve\n"
+"0x00008004  auxiliary surface\n"
+"0x00008008  auxiliary volume\n"
+"0x00008010  auxiliary spacetime\n"
+"0x00008000  mixed-dimension auxiliary geometry\n"
 "0x00000101  vertices\n"
 "0x00000102  edges\n"
 "0x00000104  faces\n"
@@ -77,6 +83,12 @@ static const char* correct =
 "0x02000900  domain groups (cells)\n"
 "0x01000902  boundary groups (1-d cells)\n"
 "0x00002e04  groups (2-d uses, shells, instances)\n"
+"0x00008001  auxiliary points\n"
+"0x00008002  auxiliary curves\n"
+"0x00008004  auxiliary surfaces\n"
+"0x00008008  auxiliary volumes\n"
+"0x00008010  auxiliary spacetimes\n"
+"0x00008000  mixed-dimension auxiliary geometries\n"
 "0x00000101  vertex 0\n"
 "0x00000102  edge 0\n"
 "0x00000104  face 0\n"
@@ -138,6 +150,12 @@ void EntityNamesForForm(std::ostringstream& summaries, int form)
     << "  " << Entity::flagSummary(GROUP_ENTITY | MODEL_BOUNDARY | CELL_ENTITY | DIMENSION_1, form) << "\n"
     << "0x" << hexconst(GROUP_ENTITY | USE_ENTITY | SHELL_ENTITY | INSTANCE_ENTITY | DIMENSION_2)
     << "  " << Entity::flagSummary(GROUP_ENTITY | USE_ENTITY | SHELL_ENTITY | INSTANCE_ENTITY | DIMENSION_2, form) << "\n"
+    << "0x" << hexconst(AUX_GEOM_ENTITY | DIMENSION_0) << "  " << Entity::flagSummary(AUX_GEOM_ENTITY | DIMENSION_0, form) << "\n"
+    << "0x" << hexconst(AUX_GEOM_ENTITY | DIMENSION_1) << "  " << Entity::flagSummary(AUX_GEOM_ENTITY | DIMENSION_1, form) << "\n"
+    << "0x" << hexconst(AUX_GEOM_ENTITY | DIMENSION_2) << "  " << Entity::flagSummary(AUX_GEOM_ENTITY | DIMENSION_2, form) << "\n"
+    << "0x" << hexconst(AUX_GEOM_ENTITY | DIMENSION_3) << "  " << Entity::flagSummary(AUX_GEOM_ENTITY | DIMENSION_3, form) << "\n"
+    << "0x" << hexconst(AUX_GEOM_ENTITY | DIMENSION_4) << "  " << Entity::flagSummary(AUX_GEOM_ENTITY | DIMENSION_4, form) << "\n"
+    << "0x" << hexconst(AUX_GEOM_ENTITY) << "  " << Entity::flagSummary(AUX_GEOM_ENTITY, form) << "\n"
     ;
 }
 
@@ -251,6 +269,7 @@ int TestEntityIOSpecs()
     // Test all of the keywords to ensure ordering is proper.
     { "any",        smtk::model::ANY_ENTITY },
     { "anydim",     smtk::model::ANY_DIMENSION },
+    { "aux_geom",   smtk::model::AUX_GEOM_ENTITY },
     { "b",          smtk::model::SESSION },
     { "bdy",        smtk::model::MODEL_BOUNDARY },
     { "session",    smtk::model::SESSION },
@@ -370,6 +389,7 @@ int TestEntityIOSpecs()
     { "none|014",              smtk::model::DIMENSION_0 | smtk::model::DIMENSION_1 | smtk::model::DIMENSION_4 },
     { "cell|open|0",           smtk::model::VERTEX | smtk::model::OPEN },
     { "cell|model|nodim",      smtk::model::MODEL_ENTITY | smtk::model::CELL_ENTITY }, // > 1 entity type (e.g., membership mask)
+    { "aux_geom|0",            smtk::model::AUX_GEOM_ENTITY | smtk::model::DIMENSION_0 }, // auxiliary point
   };
   static int numTestToSpecValues = sizeof(testToSpecValues) / sizeof(testToSpecValues[0]);
   std::cout << "\nTesting Entity::flagToSpecifierString()\n\n";

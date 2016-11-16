@@ -119,7 +119,6 @@ bool Manager::deleteEntities(T& entities, U& modified, V& expunged, bool debugLo
       hadSomeEffect = (mgr->erase(*eit) != 0);
       if (hadSomeEffect && isCell)
         { // Remove uses and loops "owned" by the cell
-        expunged.push_back(*eit);
         if (debugLog) { smtkDebugMacro(this->log(), "Processing cell with " << bdys.size() << " bdys"); }
         for (smtk::model::EntityRefs::iterator bit = bdys.begin(); bit != bdys.end(); ++bit)
           {
@@ -196,6 +195,7 @@ bool Manager::deleteEntities(T& entities, U& modified, V& expunged, bool debugLo
       }
     if (hadSomeEffect)
       { // Check the boundary cells of the just-removed entity and see if they are now free cells:
+      expunged.push_back(*eit);
       for (smtk::model::EntityRefs::iterator bit = newFreeCells.begin(); bit != newFreeCells.end(); ++bit)
         {
         if (debugLog) { smtkDebugMacro(this->log(), "  Adding free cell " << bit->name() << " (" << mod.cells().size() << ")"); }

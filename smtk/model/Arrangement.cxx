@@ -341,14 +341,26 @@ bool Arrangement::IndexSenseAndOrientationFromCellHasUse(
   return true;
 }
 
-/// Obtain the index of an included entity from a cell EMBEDDED_IN arrangement.
+/// Obtain the index of the including entity from a cell EMBEDDED_IN arrangement.
 bool Arrangement::IndexFromCellEmbeddedInEntity(int& relationIdx) const
 {
   return this->IndexFromSimple(relationIdx);
 }
 
-/// Obtain the index of an included entity from a cell INCLUDES arrangement.
+/// Obtain the index of an embedded entity from a cell INCLUDES arrangement.
 bool Arrangement::IndexFromCellIncludesEntity(int& relationIdx) const
+{
+  return this->IndexFromSimple(relationIdx);
+}
+
+/// Obtain the index of the including entity from an auxiliary geometry EMBEDDED_IN arrangement.
+bool Arrangement::IndexFromAuxiliaryGeometryEmbeddedInEntity(int& relationIdx) const
+{
+  return this->IndexFromSimple(relationIdx);
+}
+
+/// Obtain the index of an embedded entity from an auxiliary geometry INCLUDES arrangement.
+bool Arrangement::IndexFromAuxiliaryGeometryIncludesEntity(int& relationIdx) const
 {
   return this->IndexFromSimple(relationIdx);
 }
@@ -544,6 +556,15 @@ bool Arrangement::relations(smtk::common::UUIDArray& relsOut, const Entity* ent,
       case SUBSET_OF: return EntitySubsetOfRelationHelper()(relsOut, ent, *this);
 
       case INSTANCED_BY: return InstanceInstancedByRelationHelper()(relsOut, ent, *this);
+      default:
+        break;
+        }
+      break;
+    case AUX_GEOM_ENTITY:
+      switch (k)
+        {
+      case EMBEDDED_IN: return AuxiliaryGeometryEmbeddedInEntityRelationHelper()(relsOut, ent, *this);
+      case INCLUDES: return AuxiliaryGeometryIncludesEntityRelationHelper()(relsOut, ent, *this);
       default:
         break;
         }

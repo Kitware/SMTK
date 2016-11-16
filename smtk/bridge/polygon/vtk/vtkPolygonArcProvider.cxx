@@ -11,6 +11,7 @@
 
 #include "vtkCellArray.h"
 #include "vtkCompositeDataIterator.h"
+#include "vtkDataObjectTreeIterator.h"
 #include "vtkIdList.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
@@ -61,23 +62,13 @@ int vtkPolygonArcProvider::RequestData(vtkInformation *,
     return 0;
     }
 
-  // Add a call to multiblockdataset at some point, but for now, just do here
   vtkCompositeDataIterator* iter = input->NewIterator();
-  // maybe we should skip empty leaves?
-  //iter->SkipEmptyNodesOn();
-
-  int numberOfLeaves = 0;
-  for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem())
-    {
-    numberOfLeaves++;
-    }
-
-  if (numberOfLeaves <= this->BlockIndex)
-    {
-    iter->Delete();
-    vtkErrorMacro("Specified Index is too large!");
-    return 0;
-    }
+  iter->SetSkipEmptyNodes(false);
+  vtkDataObjectTreeIterator* treeIter = vtkDataObjectTreeIterator::SafeDownCast(iter);
+  if(treeIter)
+  {
+    treeIter->VisitOnlyLeavesOff();
+  }
 
   // Copy selected block over to the output.
   vtkNew<vtkPolyData> linePoly;

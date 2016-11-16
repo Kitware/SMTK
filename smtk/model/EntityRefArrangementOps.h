@@ -200,6 +200,13 @@ public:
 // What follows are methods of EntityRef that require EntityRefArrangementOps.
 // This breaks an include-dependency cycle.
 
+template<typename T> T EntityRef::embeddedEntities() const
+{
+  T result;
+  EntityRefArrangementOps::appendAllRelations(*this, INCLUDES, result);
+  return result;
+}
+
 template<typename T> T EntityRef::instances() const
 {
   T result;

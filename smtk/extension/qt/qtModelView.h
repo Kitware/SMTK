@@ -81,7 +81,6 @@ namespace smtk{
   public slots:
     void selectItems(const smtk::common::UUIDs& selEntities,
 		     const smtk::mesh::MeshSets& selMeshes,
-         const std::map<std::string, smtk::common::UUIDs>& property2Entities,
 		     bool blocksignal);
     void selectEntityItems(const smtk::common::UUIDs& selEntityRefs,
 			   bool blocksignal);
@@ -91,10 +90,6 @@ namespace smtk{
 			 bool blocksignal);
     void selectMeshes(const smtk::mesh::MeshSets& selMeshes)
     { this->selectMeshItems(selMeshes, false); }
-    void selectPropertyItems(const std::map<std::string, smtk::common::UUIDs>& propertyToEntities,
-         bool blocksignal);
-    void selectProperties(const std::map<std::string, smtk::common::UUIDs>& propertyToEntities)
-    { this->selectPropertyItems(propertyToEntities, false); }
 
     void showContextMenu(const QPoint &p);
     void showContextMenu(const QModelIndex &idx, const QPoint &p = QPoint());
@@ -173,7 +168,6 @@ namespace smtk{
 				 const QModelIndex& parent,
 				 const smtk::common::UUIDs& selEntities,
 				 const smtk::mesh::MeshSets& selMeshes,
-         const std::map<std::string, smtk::common::UUIDs>& property2Entities,
 				 QItemSelection& selItems);
     void expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx);
     void recursiveSelect (const smtk::model::DescriptivePhrasePtr& dPhrase,

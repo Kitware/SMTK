@@ -12,7 +12,9 @@
 #include "vtkAlgorithmOutput.h"
 #include "vtkCellArray.h"
 #include "vtkClientServerStream.h"
+#include "vtkCompositeDataIterator.h"
 #include "vtkDataObject.h"
+#include "vtkDataObjectTreeIterator.h"
 #include "vtkObjectFactory.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkPolyData.h"
@@ -76,24 +78,48 @@ void vtkPolygonArcInfo::CopyFromObject(vtkObject* obj)
   this->SetModelEntityID(modelsource->GetModelEntityID());
 */
   vtkMultiBlockDataSet *mbds = filterAlg->GetOutput();
-  if (!mbds || this->BlockIndex < 0
-      || this->BlockIndex >= mbds->GetNumberOfBlocks())
+  if (!mbds || this->BlockIndex < 0)
     {
     return;
     }
-  vtkPolyData* edgePoly = vtkPolyData::SafeDownCast(mbds->GetBlock(this->BlockIndex));
+  vtkCompositeDataIterator* iter = mbds->NewIterator();
+  iter->SetSkipEmptyNodes(false);
+  vtkDataObjectTreeIterator* treeIter = vtkDataObjectTreeIterator::SafeDownCast(iter);
+  if(treeIter)
+  {
+    treeIter->VisitOnlyLeavesOff();
+  }
+  int index = 0;
+  vtkPolyData* edgePoly = NULL;
+  vtkInformation* metaInfo = NULL;
+  for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem(), index++)
+    {
+    if (index == this->BlockIndex)
+      {
+      edgePoly = vtkPolyData::SafeDownCast( iter->GetCurrentDataObject());
+      if(iter->HasCurrentMetaData())
+        metaInfo = iter->GetCurrentMetaData();
+      break;
+      }
+    }
+  iter->Delete();
+
   if(!edgePoly || edgePoly->GetNumberOfPoints() <= 1
      || !edgePoly->GetNumberOfCells()
      || !edgePoly->GetLines())
     {
+    vtkErrorMacro("The selected edge does not have valid geometry!");
     return;
     }
-
-  if(mbds->HasMetaData(this->BlockIndex))
+  smtk::common::UUID edgeId = vtkModelMultiBlockSource::GetDataObjectUUID(metaInfo);
+  if(!edgeId.isNull())
     {
-    vtkInformation* cinfo = mbds->GetMetaData(this->BlockIndex);
-    if(cinfo->Has(vtkModelMultiBlockSource::ENTITYID()))
-      this->SetModelEntityID(cinfo->Get(vtkModelMultiBlockSource::ENTITYID()));
+    this->SetModelEntityID(edgeId.toString().c_str());
+    }
+  else
+    {
+    vtkErrorMacro("Invalid edge UUID in block meta data information object!");
+    return;
     }
 
   // figure out whether the polyline is a closed loop.

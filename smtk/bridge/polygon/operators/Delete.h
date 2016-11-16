@@ -44,8 +44,8 @@ public:
 protected:
   virtual smtk::model::OperatorResult operateInternal();
 
-  template<typename U, typename V, typename W>
-  bool addDependents(const smtk::model::EntityRef& ent, bool deleteDependents, U& verts, V& edges, W& faces);
+  template<typename U, typename V, typename W, typename X>
+  bool addDependents(const smtk::model::EntityRef& ent, bool deleteDependents, U& verts, V& edges, W& faces, X& other);
 
   int m_numInUse;
   int m_numWarnings;

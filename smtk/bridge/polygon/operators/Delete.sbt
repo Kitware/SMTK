@@ -3,13 +3,13 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="delete" BaseType="operator">
+    <AttDef Type="delete" BaseType="operator" Label="Delete - Model Entities">
       <BriefDescription>Delete model entities.</BriefDescription>
       <DetailedDescription>
         Permanently remove model entities (vertices, edges, faces) from a model.
       </DetailedDescription>
       <AssociationsDef Name="entities" NumberOfRequiredValues="1" Extensible="yes">
-        <MembershipMask>cell</MembershipMask>
+        <MembershipMask>cell|aux_geom</MembershipMask>
         <BriefDescription>Model entities to delete.</BriefDescription>
         <DetailedDescription>
           Permanently delete all of these entities (and optionally all of

@@ -77,6 +77,7 @@ int main(int argc, char* argv[])
     vtkNew<vtkRenderer> ren;
     vtkNew<vtkRenderWindow> win;
     src->SetModelManager(sm);
+    src->SetModelEntityID(sm->entitiesMatchingFlagsAs<Models>(MODEL_ENTITY)[0].entity().toString().c_str());
     if (debug)
       win->SetMultiSamples(16);
     if (debug && argv[2][0] != '0')

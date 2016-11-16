@@ -330,28 +330,29 @@ void qtExtractContoursView::operationSelected(const smtk::model::OperatorPtr& op
 
   smtk::attribute::AttributePtr spec = op->specification();
   smtk::attribute::ModelEntityItem::Ptr modelItem = spec->associations();
-  smtk::model::Model model(modelItem->value(0));
-  if (!model.isValid())
+  smtk::model::AuxiliaryGeometry aux(modelItem->value(0));
+  if (!aux.isValid())
     {
-    qCritical() << "No model is associated with the operator.\n";
+    qCritical() << "No AuxiliaryGeometry is associated with the operator.\n";
     return;
     }
-  smtk::model::StringList const& urlprop(model.stringProperty("image_url"));
-  if (urlprop.empty())
+  std::string imagefile = aux.url();
+  if (imagefile.empty())
     {
-    qCritical() << "No image is associated with the model, use \"import image\" operator first.\n";
+    qCritical() << "No image file is associated with AuxiliaryGeometry, use \"add auxiliary geometry\" operator first.\n";
     return;
     }
-  std::string imagefile = urlprop[0];
   if(pqPipelineSource* source = internal_createImageSource(imagefile))
     {
-    bool scalarColoring = false;
-    if(model.hasIntegerProperty("UseScalarColoring"))
+    this->Internals->CurrentImage = source;
+    QFileInfo fInfo(imagefile.c_str());
+    QString lastExt = fInfo.suffix().toLower();
+    bool scalarColoring = (lastExt == "vti" || lastExt== "dem");
+    if(aux.hasIntegerProperty("UseScalarColoring"))
       {
-      const smtk::model::IntegerList& uprop(model.integerProperty("UseScalarColoring"));
+      const smtk::model::IntegerList& uprop(aux.integerProperty("UseScalarColoring"));
       scalarColoring = !uprop.empty() ? (uprop[0] != 0) : scalarColoring;
       }
-    this->Internals->CurrentImage = source;
     this->Internals->ContoursDialog = new pqGenerateContoursDialog(
       source, scalarColoring, this->parentWidget());
     QObject::connect(this->Internals->ContoursDialog,

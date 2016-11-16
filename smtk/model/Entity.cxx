@@ -45,6 +45,24 @@ static const char* cellNamesByDimensionPlural[] = {
   "mixed-dimension cells"
 };
 
+static const char* auxGeomNamesByDimensionSingular[] = {
+  "auxiliary point",
+  "auxiliary curve",
+  "auxiliary surface",
+  "auxiliary volume",
+  "auxiliary spacetime",
+  "mixed-dimension auxiliary geometry"
+};
+
+static const char* auxGeomNamesByDimensionPlural[] = {
+  "auxiliary points",
+  "auxiliary curves",
+  "auxiliary surfaces",
+  "auxiliary volumes",
+  "auxiliary spacetimes",
+  "mixed-dimension auxiliary geometries"
+};
+
 static const char* entityTypeNames[] = {
   "cell",
   "use",
@@ -52,7 +70,9 @@ static const char* entityTypeNames[] = {
   "group",
   "model",
   "instance",
-  "session"
+  "session",
+  "aux_geom",
+  "concept"
 };
 
 /**\class smtk::model::Entity
@@ -335,6 +355,28 @@ std::string Entity::flagSummaryHelper(BitFlags flags, int form)
       result = form ? cellNamesByDimensionPlural[5] : cellNamesByDimensionSingular[5];
       }
     break;
+  case AUX_GEOM_ENTITY:
+    switch (flags & ANY_DIMENSION)
+      {
+    case DIMENSION_0:
+      result = form ? auxGeomNamesByDimensionPlural[0] : auxGeomNamesByDimensionSingular[0];
+      break;
+    case DIMENSION_1:
+      result = form ? auxGeomNamesByDimensionPlural[1] : auxGeomNamesByDimensionSingular[1];
+      break;
+    case DIMENSION_2:
+      result = form ? auxGeomNamesByDimensionPlural[2] : auxGeomNamesByDimensionSingular[2];
+      break;
+    case DIMENSION_3:
+      result = form ? auxGeomNamesByDimensionPlural[3] : auxGeomNamesByDimensionSingular[3];
+      break;
+    case DIMENSION_4:
+      result = form ? auxGeomNamesByDimensionPlural[4] : auxGeomNamesByDimensionSingular[4];
+      break;
+    default:
+      result = form ? auxGeomNamesByDimensionPlural[5] : auxGeomNamesByDimensionSingular[5];
+      }
+    break;
   case USE_ENTITY:
     switch (flags & ANY_DIMENSION)
       {
@@ -483,6 +525,7 @@ std::string Entity::flagSummary(BitFlags flags, int form)
         case MODEL_ENTITY: result += "models"; break;
         case INSTANCE_ENTITY: result += "instances"; break;
         case SESSION: result += "sessions"; break;
+        case AUX_GEOM_ENTITY: result += "auxiliary geometries"; break;
         default: break;
           }
         }
@@ -589,6 +632,7 @@ std::string Entity::defaultNameFromCounters(BitFlags flags, IntegerList& counter
     break;
   case INSTANCE_ENTITY:
   case SESSION:
+  case AUX_GEOM_ENTITY:
   default:
     name << counters[0]++;
     break;
@@ -650,6 +694,7 @@ std::string Entity::flagToSpecifierString(BitFlags val, bool textual)
       if (isModel(val))    { if (haveType) spec << "|"; else haveType = true; spec << "model"; }
       if (isInstance(val)) { if (haveType) spec << "|"; else haveType = true; spec << "instance"; }
       if (isSessionRef(val))  { if (haveType) spec << "|"; else haveType = true; spec << "session"; }
+      if (isAuxiliaryGeometry(val)) { if (haveType) spec << "|"; else haveType = true; spec << "aux_geom"; }
 
       // It is possible to get here with a non-zero value but no text in spec yet.
       // This happens with group/attribute-association membership masks. Check for
@@ -721,6 +766,7 @@ static struct {
   { "4",          smtk::model::DIMENSION_4 },
   { "any",        smtk::model::ANY_ENTITY },
   { "anydim",     smtk::model::ANY_DIMENSION },
+  { "aux_geom",   smtk::model::AUX_GEOM_ENTITY },
   { "b",          smtk::model::SESSION },
   { "bdy",        smtk::model::MODEL_BOUNDARY },
   { "cell",       smtk::model::CELL_ENTITY },

@@ -21,7 +21,6 @@ set(polygonSrcs
   operators/ForceCreateFace.cxx
   operators/SplitEdge.cxx
   operators/TweakEdge.cxx
-  operators/ImportImage.cxx
   operators/ExtractContours.cxx
 )
 
@@ -55,7 +54,6 @@ set(polygonHeaders
   operators/ForceCreateFace.h
   operators/SplitEdge.h
   operators/TweakEdge.h
-  operators/ImportImage.h
   operators/ExtractContours.h
 )
 
@@ -72,7 +70,6 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/DemoteVertex.sbt" polyg
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ForceCreateFace.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitEdge.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/TweakEdge.sbt" polygonOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ImportImage.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExtractContours.sbt" polygonOperatorXML)
 
 set(import_vtk_depends)

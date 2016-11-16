@@ -14,9 +14,11 @@
 #include "smtk/model/CellEntity.h" // for CellEntities
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"
+#include "smtk/common/UUIDGenerator.h"
 
 #include "vtkMultiBlockDataSetAlgorithm.h"
 #include "vtkNew.h"
+#include "vtkSmartPointer.h"
 
 #include <map>
 
@@ -35,6 +37,21 @@ public:
   static vtkModelMultiBlockSource* New();
   virtual void PrintSelf(ostream& os, vtkIndent indent);
   vtkTypeMacro(vtkModelMultiBlockSource,vtkMultiBlockDataSetAlgorithm);
+
+  enum ToplevelBlockType
+    {
+    AUXILIARY_VOLUMES,
+    AUXILIARY_SURFACES,
+    AUXILIARY_CURVES,
+    AUXILIARY_POINTS,
+    AUXILIARY_MIXED,
+    GROUPS,
+    VOLUMES,
+    FACES,
+    EDGES,
+    VERTICES,
+    NUMBER_OF_BLOCK_TYPES
+    };
 
   vtkGetObjectMacro(CachedOutput,vtkMultiBlockDataSet);
 
@@ -72,9 +89,28 @@ public:
   // Key used to put entity UUID in the meta-data associated with a block.
   static vtkInformationStringKey* ENTITYID();
 
+  static smtk::common::UUID GetDataObjectUUID(vtkInformation*);
+  template<typename T>
+  static T GetDataObjectEntityAs(smtk::model::ManagerPtr mgr, vtkInformation* info)
+    {
+    return T(mgr, vtkModelMultiBlockSource::GetDataObjectUUID(info));
+    }
+  static vtkSmartPointer<vtkDataObject> GenerateRepresentationFromURL(
+    const smtk::model::AuxiliaryGeometry& auxGeom,
+    bool genNormals);
+  static std::string GetAuxiliaryFileType(const smtk::model::AuxiliaryGeometry&);
+
 protected:
   vtkModelMultiBlockSource();
   virtual ~vtkModelMultiBlockSource();
+
+  vtkSmartPointer<vtkDataObject> GenerateRepresentationFromModel(
+    const smtk::model::EntityRef& entity,
+    bool genNormals);
+  vtkSmartPointer<vtkPolyData> GenerateRepresentationFromTessellation(
+    const smtk::model::EntityRef& entity,
+    const smtk::model::Tessellation* tess,
+    bool genNormals);
 
   void GenerateRepresentationFromModel(
     vtkPolyData* poly,
@@ -93,21 +129,18 @@ protected:
 
   void SetCachedOutput(vtkMultiBlockDataSet*);
 
-  void FindEntitiesWithTessellation(
-    const smtk::model::EntityRef& root,
-    std::map<smtk::model::EntityRef, smtk::model::EntityRef>& entityrefMap,
-    std::set<smtk::model::EntityRef>& touched);
+  static std::string InferFileTypeFromFileName(const std::string& fname);
 
   smtk::model::ManagerPtr ModelMgr;
   vtkMultiBlockDataSet* CachedOutput;
   double DefaultColor[4];
-
-  std::map<smtk::common::UUID, unsigned int> UUID2BlockIdMap; // UUIDs to block index map
   char* ModelEntityID; // Model Entity UUID
-
   int AllowNormalGeneration;
   int ShowAnalysisTessellation;
   vtkNew<vtkPolyDataNormals> NormalGenerator;
+  std::map<smtk::common::UUID, unsigned int> UUID2BlockIdMap; // UUIDs to block index map
+
+  static smtk::common::UUIDGenerator UUIDGenerator;
 
 private:
   vtkModelMultiBlockSource(const vtkModelMultiBlockSource&); // Not implemented.

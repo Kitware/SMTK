@@ -7,39 +7,27 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#ifndef __smtk_model_AddAuxiliaryGeometry_h
+#define __smtk_model_AddAuxiliaryGeometry_h
 
-#ifndef __smtk_session_polygon_ImportImage_h
-#define __smtk_session_polygon_ImportImage_h
-
-#include "smtk/bridge/polygon/Operator.h"
+#include "smtk/model/Operator.h"
 
 namespace smtk {
-  namespace bridge {
-    namespace polygon {
+  namespace model {
 
-/**\brief Import an image file to a polygon model.
-  *
-  * The supported file extensions currently:
-  *    "Image files (*.vti *.tif *tiff);;DEM(*.dem)
-  */
-class SMTKPOLYGONSESSION_EXPORT ImportImage : public Operator
+class SMTKCORE_EXPORT AddAuxiliaryGeometry : public Operator
 {
 public:
-  smtkTypeMacro(ImportImage);
-  smtkCreateMacro(ImportImage);
+  smtkTypeMacro(AddAuxiliaryGeometry);
+  smtkCreateMacro(AddAuxiliaryGeometry);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
-  virtual bool ableToOperate();
-
 protected:
-  ImportImage();
   virtual smtk::model::OperatorResult operateInternal();
-
 };
 
-    } // namespace polygon
-  } // namespace bridge
+  } //namespace model
 } // namespace smtk
 
-#endif // __smtk_session_polygon_ImportImage_h
+#endif // __smtk_model_AddAuxiliaryGeometry_h

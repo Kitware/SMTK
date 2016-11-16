@@ -109,7 +109,7 @@ enum EntityTypeBits
   MODEL_ENTITY         = 0x00001000, //!< A bit indicating a (sub)model.
   INSTANCE_ENTITY      = 0x00002000, //!< A bit indicating an instance of model.
   SESSION              = 0x00004000, //!< A bit indicating a session.
-  PREVIEW_ENTITY       = 0x00008000, //!< A bit indicating a geometric preview or construction entity.
+  AUX_GEOM_ENTITY      = 0x00008000, //!< A bit indicating auxiliary geometry (scene, preview, or construction) entity.
   CONCEPT_ENTITY       = 0x00010000, //!< A bit indicating the entity is a conceptual entity (a class of objects that are abstract)
   SURFACE_ENTITY       = 0x00020000, //!< An algebraically-modeled geometric point locus
   // Inherent property bits (arguably inappropriate as they could be hard to maintain):
@@ -123,8 +123,8 @@ enum EntityTypeBits
   NO_SUBGROUPS         = 0x08000000, //!< The group is not allowed to contain other groups if this flag is set.
   // Specific bit-combinations of interest (just combinations of the above):
   ANY_DIMENSION        = 0x000000ff, //!< Mask to extract the dimensionality of an entity.
-  ENTITY_MASK          = 0x00007f00, //!< Mask to extract the type of an entity. Exactly one bit should be set for any valid entity.
-  ANY_ENTITY           = 0x00007fff, //!< Mask to extract the type and dimension of an entity.
+  ENTITY_MASK          = 0x0001ff00, //!< Mask to extract the type of an entity. Exactly one bit should be set for any valid entity.
+  ANY_ENTITY           = 0x0001ffff, //!< Mask to extract the type and dimension of an entity.
   VERTEX               = 0x00000101, //!< A cell of dimension 0 (i.e., a vertex)
   EDGE                 = 0x00000102, //!< A cell of dimension 1 (i.e., an edge)
   FACE                 = 0x00000104, //!< A cell of dimension 2 (i.e., a face)
@@ -185,6 +185,8 @@ inline bool isShell(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) ==
 inline bool isGroup(BitFlags entityFlags)    { return (entityFlags & GROUP_ENTITY) == GROUP_ENTITY; }
 inline bool isModel(BitFlags entityFlags)    { return (entityFlags & ENTITY_MASK) == MODEL_ENTITY; }
 inline bool isInstance(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == INSTANCE_ENTITY; }
+inline bool isAuxiliaryGeometry(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == AUX_GEOM_ENTITY; }
+inline bool isConcept(BitFlags entityFlags)  { return (entityFlags & ENTITY_MASK) == CONCEPT_ENTITY; }
 
 inline bool isSessionRef(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == SESSION; }
 
