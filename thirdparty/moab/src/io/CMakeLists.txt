@@ -84,7 +84,7 @@ if( MOAB_HAVE_HDF5 )
           ReadHDF5VarLen.hpp ReadHDF5VarLen.cpp
           WriteHDF5.cpp WriteHDF5.hpp )
   set( MDHF_OBJ $<TARGET_OBJECTS:mhdf> PARENT_SCOPE )
-  set( MOABIO_LIBS ${MOABIO_LIBS} ${HDF5_LIBRARIES} )
+  set( MOABIO_LIBS ${MOABIO_LIBS} ${HDF5_C_LIBRARIES} )
   include_directories(${HDF5_INCLUDES})
   check_function_exists( H5Pset_fapl_mpio MOAB_HDF_HAVE_PARALLEL )
 endif()
