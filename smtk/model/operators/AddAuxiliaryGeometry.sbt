@@ -54,7 +54,7 @@
           </DiscreteInfo>
         </Int>
 
-        <Void Name="DisplayAsSeparateRepresentation" Label="Shown as separate representation from model" Optional="true">
+        <Void Name="DisplayAsSeparateRepresentation" Label="Display as separate representation from model" AdvanceLevel="1" Optional="true" IsEnabledByDefault="true">
           <BriefDescription>Should the auxiliary geometry representation be displayed as separate representation from mode representation?.</BriefDescription>
           <DetailedDescription>Should the auxiliary geometry representation be displayed as separate representation from model? If yes, a separate rendering pipeline will be created for auxiliary geometry and its representation will be controlled with its own set of display properties; if no, the geometry will be shown and controlled as sub-blocks in the model, which may be less flexible.</DetailedDescription>
         </Void>
