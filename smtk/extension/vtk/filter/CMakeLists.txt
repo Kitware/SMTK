@@ -1,4 +1,4 @@
-option(SMTK_ENABLE_OPENCV "Enable OpenCV" ON)
+option(SMTK_ENABLE_OPENCV "Enable OpenCV" OFF)
 
 set( openCVFilterSource )
 set( openCVFilterHeader )
