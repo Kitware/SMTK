@@ -241,6 +241,8 @@ inline void internal_findEntities(
     children.insert(children.end(), tmp.begin(), tmp.end());
     tmp = root.as<Model>().groupsAs<EntityRefArray>();
     children.insert(children.end(), tmp.begin(), tmp.end());
+    AuxiliaryGeometries freeAuxGeom = root.as<Model>().auxiliaryGeometry();
+    children.insert(children.end(), freeAuxGeom.begin(), freeAuxGeom.end());
     }
   for (EntityRefArray::const_iterator it = children.begin(); it != children.end(); ++it)
     {
