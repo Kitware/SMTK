@@ -687,6 +687,10 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
             default: bb = AUXILIARY_MIXED; break;
               }
             }
+          else if (smtk::model::isModel(etype) && !eit->hasTessellation())
+            {
+            continue; // silently ignore models without tessellation
+            }
           else
             { // skip anything not listed above... we don't know where to put it.
             smtkWarningMacro(manager->log(),
