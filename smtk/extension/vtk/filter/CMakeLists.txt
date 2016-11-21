@@ -1,3 +1,21 @@
+option(SMTK_ENABLE_OPENCV "Enable OpenCV" OFF)
+
+set( openCVFilterSource )
+set( openCVFilterHeader )
+
+if(SMTK_ENABLE_OPENCV)
+  find_package(OpenCV REQUIRED)
+
+  set( openCVFilterSource
+        vtkGrabCutFilter.cxx
+        vtkImageClassFilter.cxx
+        vtkWatershedFilter.cxx )
+  set( openCVFilterHeader
+        vtkGrabCutFilter.h
+        vtkImageClassFilter.h
+        vtkOpenCVHelper.h
+        vtkWatershedFilter.h )
+endif()
 
 set(srcs
    vtkCMBApplyBathymetryFilter.cxx
@@ -7,6 +25,7 @@ set(srcs
    vtkExtractLine.cxx
    vtkImageSpacingFlip.cxx
    vtkPolyDataStatsFilter.cxx
+   ${openCVFilterSource}
   )
 
 set(headers
@@ -17,6 +36,7 @@ set(headers
    vtkExtractLine.h
    vtkImageSpacingFlip.h
    vtkPolyDataStatsFilter.h
+   ${openCVFilterHeader}
 )
 
 set(${vtk-module}_NO_HeaderTest 1)
@@ -40,6 +60,9 @@ if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   smtk_install_library(${vtk-module}CS)
 endif ()
 
+if(SMTK_ENABLE_OPENCV)
+  target_link_libraries(${vtk-module} LINK_PRIVATE vtkIOImage ${OpenCV_LIBS})
+endif()
 smtk_public_headers(${headers})
 
 if (SMTK_ENABLE_TESTING)

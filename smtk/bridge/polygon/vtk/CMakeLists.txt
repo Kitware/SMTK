@@ -2,12 +2,14 @@ set(srcs
   vtkPolygonArcOperator.cxx
   vtkPolygonArcProvider.cxx
   vtkPolygonContourOperator.cxx
+  vtkSurfaceExtractorOperator.cxx
   )
 
 set(headers
   vtkPolygonArcOperator.h
   vtkPolygonArcProvider.h
   vtkPolygonContourOperator.h
+  vtkSurfaceExtractorOperator.h
 )
 
 set(${vtk-module}_NO_HeaderTest 1)

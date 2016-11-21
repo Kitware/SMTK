@@ -1,3 +1,10 @@
+set(OpenCVOperatorsHeaders)
+set(OpenCVOperatorsSrcs)
+if(SMTK_ENABLE_OPENCV)
+  set(OpenCVOperatorsHeaders operators/SurfaceExtractContours.h)
+  set(OpenCVOperatorsSrcs operators/SurfaceExtractContours.cxx)
+endif()
+
 set(polygonSrcs
   Session.cxx
   SessionIOJSON.cxx
@@ -22,6 +29,7 @@ set(polygonSrcs
   operators/SplitEdge.cxx
   operators/TweakEdge.cxx
   operators/ExtractContours.cxx
+  ${OpenCVOperatorsSrcs}
 )
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND
@@ -55,6 +63,7 @@ set(polygonHeaders
   operators/SplitEdge.h
   operators/TweakEdge.h
   operators/ExtractContours.h
+  ${OpenCVOperatorsHeaders}
 )
 
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" polygonSessionJSON)
@@ -71,6 +80,9 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ForceCreateFace.sbt" po
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitEdge.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/TweakEdge.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExtractContours.sbt" polygonOperatorXML)
+if(SMTK_ENABLE_OPENCV)
+  smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SurfaceExtractContours.sbt" polygonOperatorXML)
+endif()
 
 set(import_vtk_depends)
 

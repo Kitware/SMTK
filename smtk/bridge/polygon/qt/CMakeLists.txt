@@ -1,7 +1,21 @@
 include(${QT_USE_FILE})
 
+set(OpenCVOperatorsHeaders)
+set(OpenCVOperatorsSrcs)
+set(OpenCVOperatorsUI)
+if(SMTK_ENABLE_OPENCV)
+  find_package( VTK REQUIRED )
+  include_directories(${VTK_INCLUDE_DIRS})
+
+  set(OpenCVOperatorsHeaders imageFeatureExtractorWidget.h)
+  set(OpenCVOperatorsSrcs imageFeatureExtractorWidget.cxx)
+  set(OpenCVOperatorsUI imageFeatureExtractor.ui)
+endif()
+
+
 # set up sources to build
 set(PQWidgetsSrcs
+  ${OpenCVOperatorsSrcs}
   pqArcWidgetManager.cxx
   pqArcWidgetPanel.cxx
   pqPolygonArc.cxx
@@ -10,9 +24,11 @@ set(PQWidgetsSrcs
 
 set(PQWidgetsUIs
   qtArcWidgetPanel.ui
+  ${OpenCVOperatorsUI}
 )
 
 set(PQWidgetsMocHeaders
+  ${OpenCVOperatorsHeaders}
   pqArcWidgetManager.h
   pqArcWidgetPanel.h
   pqPolygonArc.h
@@ -50,6 +66,9 @@ target_link_libraries(smtkPolygonQtExt LINK_PUBLIC
   vtkPolygonOperatorsExt
   vtkSMTKSourceExt
   vtkDomainsChemistryOpenGL2
+  vtkSMTKFilterExt
+LINK_PRIVATE
+  ${VTK_LIBRARIES}
 )
 
 smtk_export_header(smtkPolygonQtExt Exports.h)
