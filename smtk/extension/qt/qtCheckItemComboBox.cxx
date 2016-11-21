@@ -111,7 +111,10 @@ qtModelEntityItemCombo::qtModelEntityItemCombo(
   qtModelEntityItem *entitem, QWidget * inParent, const QString& displayExt)
 : qtCheckItemComboBox(inParent, displayExt), m_ModelEntityItem(entitem)
 {
+  // Q_D(QComboBox);
   this->setMinimumWidth(80);
+  this->view()->parentWidget()->setObjectName("privateEntityComboViewContainer");
+  //this->viewContainer()
 }
 
 //----------------------------------------------------------------------------
