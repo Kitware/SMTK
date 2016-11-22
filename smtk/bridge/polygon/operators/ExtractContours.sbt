@@ -75,7 +75,7 @@
         VIEW_NAME smtkPolygonContourView
         )
       -->
-    <View Type="smtkPolygonContourView" Title="Extract Polygon Edges">
+    <View Type="smtkPolygonContourView" Title="Extract Contour Edges">
       <AttributeTypes>
         <Att Type="extract contours" />
       </AttributeTypes>
