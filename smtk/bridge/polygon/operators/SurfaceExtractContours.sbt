@@ -63,7 +63,7 @@
         VIEW_NAME smtkPolygonContourView
         )
       -->
-    <View Type="smtkSurfaceExtractorView" Title="Extract Polygon Edges">
+    <View Type="smtkSurfaceExtractorView" Title="Extract Surface Edges">
       <AttributeTypes>
         <Att Type="extract surface contours" />
       </AttributeTypes>

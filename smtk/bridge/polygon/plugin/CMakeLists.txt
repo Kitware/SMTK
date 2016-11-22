@@ -39,8 +39,8 @@ ADD_SMTK_UI_VIEW(
 set(OpenCVSrc)
 if(SMTK_ENABLE_OPENCV)
   ADD_SMTK_UI_VIEW(
-    OUTIFACES
-    OUTSRCS
+    OUTIFACES2
+    OUTSRCS2
     CLASS_NAME qtSurfaceExtractorView
     VIEW_NAME smtkSurfaceExtractorView
     )
@@ -53,8 +53,8 @@ add_paraview_plugin(
   smtkPolygonSessionPlugin "1.0"
   SERVER_MANAGER_XML smconfig.xml
   SERVER_SOURCES sessionInit.cxx
-  GUI_INTERFACES ${OUTIFACES} ${OUTIFACES1}
-  GUI_SOURCES ${OUTSRCS} ${OUTSRCS1} ${MOC_SRCS} ${UI_SRCS}
+  GUI_INTERFACES ${OUTIFACES} ${OUTIFACES1} ${OUTIFACES2}
+  GUI_SOURCES ${OUTSRCS} ${OUTSRCS1} ${OUTSRCS2} ${MOC_SRCS} ${UI_SRCS}
               qtPolygonEdgeOperationView.cxx
               qtExtractContoursView.cxx
               ${OpenCVSrc}
