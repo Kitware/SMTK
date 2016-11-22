@@ -48,14 +48,14 @@ bool SurfaceExtractContours::ableToOperate()
     return false;
     }
 
-  smtk::model::Model model = this->specification()->associations()
-    ->value().as<smtk::model::Model>();
-  if (!model.isValid())
+  smtk::model::AuxiliaryGeometry aux = this->specification()->associations()
+    ->value().as<smtk::model::AuxiliaryGeometry>();
+  if (!aux.isValid())
     {
     return false;
     }
-  smtk::model::StringList const& urlprop(model.stringProperty("image_url"));
-  if (urlprop.empty())
+  std::string url = aux.url();
+  if (url.empty())
     {
     return false;
     }
@@ -103,10 +103,11 @@ OperatorResult SurfaceExtractContours::operateInternal()
 {
 
   Session* opsession = this->polygonSession();
-  // ableToOperate should have verified that model is valid
-  smtk::model::Model model = this->specification()->associations()
-    ->value().as<smtk::model::Model>();
-
+  // ableToOperate should have verified that aux is valid
+  smtk::model::AuxiliaryGeometry aux = this->specification()->associations()
+    ->value().as<smtk::model::AuxiliaryGeometry>();
+  smtk::model::Model model = aux.owningModel();
+  
   smtk::model::EntityRefArray newEdges;
 
   smtk::attribute::DoubleItem::Ptr pointsItem =

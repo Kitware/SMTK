@@ -289,19 +289,13 @@ void qtSurfaceExtractorView::operationSelected(const smtk::model::OperatorPtr& o
 
   smtk::attribute::AttributePtr spec = op->specification();
   smtk::attribute::ModelEntityItem::Ptr modelItem = spec->associations();
-  smtk::model::Model model(modelItem->value(0));
-  if (!model.isValid())
+  smtk::model::AuxiliaryGeometry aux(modelItem->value(0));
+  if (!aux.isValid())
     {
-    qCritical() << "No model is associated with the operator.\n";
+    qCritical() << "No AuxiliaryGeometry is associated with the operator.\n";
     return;
     }
-  smtk::model::StringList const& urlprop(model.stringProperty("image_url"));
-  if (urlprop.empty())
-    {
-    qCritical() << "No image is associated with the model, use \"import image\" operator first.\n";
-    return;
-    }
-  std::string imagefile = urlprop[0];
+  std::string imagefile = aux.url();
 
   this->Internals->ExtractorWidget->setImage(imagefile);
 
