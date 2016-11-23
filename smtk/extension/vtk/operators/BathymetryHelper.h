@@ -11,21 +11,23 @@
 #define __smtk_model_BathymetryHelper_h
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/bridge/discrete/Exports.h" // for SMTKDISCRETESESSION_EXPORT
+#include "smtk/extension/vtk/operators/Exports.h" // for VTKSMTKOPERATORSEXT_EXPORT
 #include "smtk/SharedFromThis.h" // for smtkTypeMacro
 #include "smtk/mesh/ForEachTypes.h"
 
 #include "vtkSmartPointer.h"
 #include <map>
 #include <vector>
+#include <iostream>
 
 class vtkDataSet;
 class vtkPolyData;
 class vtkPoints;
 
 namespace smtk {
-  namespace bridge {
-    namespace discrete {
+  namespace model {
+
+static const std::string BO_elevation("bathymetry original elevations");
 
 class Session;
 
@@ -34,7 +36,7 @@ class Session;
   * This class will read the following files and cache their output:
   * "LIDAR (*.pts *.bin *.bin.pts);;LAS (*.las);;DEM (*.hdr *.FLT *.ftw);;VTK files (*.vtk)"
   */
-class SMTKDISCRETESESSION_EXPORT BathymetryHelper
+class VTKSMTKOPERATORSEXT_EXPORT BathymetryHelper
 {
 public:
   smtkTypeMacro(BathymetryHelper);
@@ -46,35 +48,28 @@ public:
   void loadedBathymetryFiles(
     std::vector<std::string> &result) const;
 
-  void addModelBathymetry(const smtk::common::UUID& modelId,
-                          const std::string& bathyfile);
-  void removeModelBathymetry(const smtk::common::UUID& modelId);
-  bool hasModelBathymetry(const smtk::common::UUID& modelId);
-  vtkPolyData* findOrShallowCopyModelPoly(
-    const smtk::common::UUID& modelId,
-    Session* session);
-
-  const std::vector<double>& cachedMeshPointsZ(const smtk::common::UUID& collectionId) const;
   bool storeMeshPointsZ(smtk::mesh::CollectionPtr collection);
   bool resetMeshPointsZ(smtk::mesh::CollectionPtr collection);
   void clear();
 
   bool computeBathymetryPoints(vtkDataSet* input, vtkPoints* output);
 
+  vtkIdType GenerateRepresentationFromModel(
+      vtkPoints* pts, const smtk::model::EntityRef& entityref);
+
+  void CopyCoordinatesToTessellation(
+      vtkPoints* pts, const smtk::model::EntityRef& entityref,
+      const vtkIdType startingIndex);
+
+  void GetZValuesFromMasterModelPts(vtkPoints *pts, std::vector<double> & zValues);
+  bool SetZValuesIntoMasterModelPts(vtkPoints *pts, const std::vector<double>* zValues);
+
 protected:
   friend class Session;
   friend class BathymetryOperator;
   BathymetryHelper();
 
-  typedef std::map<smtk::common::UUID,vtkSmartPointer<vtkPolyData> > ModelIdToMasterPolyMap;
-  typedef std::map<smtk::common::UUID,std::string> ModelIdToBathymetryMap;
-  typedef std::map<smtk::common::UUID,std::vector<double> > MeshIdToPointsMap;
-
   std::map<std::string, vtkSmartPointer<vtkDataSet> > m_filesToSources;
-  ModelIdToMasterPolyMap m_modelIdsToMasterPolys;
-  ModelIdToBathymetryMap m_modelIdsToBathymetrys;
-
-  MeshIdToPointsMap m_meshIdsToPoints;
 
 private:
   BathymetryHelper(const BathymetryHelper& other); // Not implemented.
@@ -126,8 +121,7 @@ public:
   }
 };
 
-    } // namespace discrete
-  } // namespace bridge
+  } // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_BathymetryHelper_h

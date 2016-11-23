@@ -1,11 +1,23 @@
 
 set(srcs
   vtkSMTKOperator.cxx
+  BathymetryHelper.cxx
+  BathymetryOperator.cxx
   )
 
 set(headers
   vtkSMTKOperator.h
+  BathymetryHelper.h
+  BathymetryOperator.h
 )
+
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/BathymetryOperator.sbt" smtkVTKOperatorXML)
+
+set_source_files_properties(
+  BathymetryHelper.cxx
+  BathymetryOperator.cxx
+  PROPERTIES
+    WRAP_EXCLUDE 1)
 
 set(${vtk-module}_NO_HeaderTest 1)
 set(VTK_INSTALL_NO_HEADERS 1)
@@ -28,8 +40,12 @@ if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   smtk_install_library(${vtk-module}CS)
 endif ()
 
+add_subdirectory(plugin)
 smtk_public_headers(${headers})
 
+if (SMTK_ENABLE_TESTING)
+  add_subdirectory(testing)
+endif()
 # Potentially wrap in Python using VTK's wrapping methods, not shiboken.
 # This makes the filters available for use with other VTK-wrapped filters.
 #if (SMTK_ENABLE_PYTHON_WRAPPING AND VTK_WRAP_PYTHON)

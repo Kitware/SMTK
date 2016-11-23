@@ -10,6 +10,7 @@
 
 #include "smtk/mesh/moab/PointLocatorImpl.h"
 #include "smtk/mesh/moab/Interface.h"
+#include "moab/FileOptions.hpp"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "moab/AdaptiveKDTree.hpp"
@@ -17,7 +18,6 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <algorithm>
-
 
 //----------------------------------------------------------------------------
 namespace {
@@ -100,7 +100,9 @@ m_tree(interface)
 {
   smtk::mesh::HandleRange points;
   m_meshOwningPoints = create_point_mesh(interface, xyzs, numPoints, ignoreZValues, points);
-  m_tree.build_tree(points);
+  // hacker solution to speed up the bathymetry Operator
+  ::moab::FileOptions treeOptions("MAX_DEPTH=13");
+  m_tree.build_tree(points,NULL,&treeOptions);
 }
 
 //----------------------------------------------------------------------------
@@ -115,7 +117,9 @@ m_tree(interface)
 {
   smtk::mesh::HandleRange points;
   m_meshOwningPoints = create_point_mesh(interface, xyzs, numPoints, ignoreZValues, points);
-  m_tree.build_tree(points);
+  // hacker solution to speed up the bathymetry Operator
+  ::moab::FileOptions treeOptions("MAX_DEPTH=13");
+  m_tree.build_tree(points,NULL,&treeOptions);
 }
 
 //----------------------------------------------------------------------------

@@ -8,21 +8,20 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_session_discrete_BathymetryOperator_h
-#define __smtk_session_discrete_BathymetryOperator_h
+#ifndef __smtk_model_BathymetryOperator_h
+#define __smtk_model_BathymetryOperator_h
 
 #include "smtk/model/Operator.h"
-#include "smtk/bridge/discrete/Exports.h"
-#include "smtk/bridge/discrete/operation/vtkCMBModelPointsOperator.h"
+#include "smtk/extension/vtk/operators/Exports.h" // For export macro
 #include "vtkNew.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace discrete {
+class vtkPolyData;
+namespace smtk{
+  namespace model{
 
-class Session;
+class BathymetryHelper;
 
-class SMTKDISCRETESESSION_EXPORT BathymetryOperator : public smtk::model::Operator
+class VTKSMTKOPERATORSEXT_EXPORT BathymetryOperator : public smtk::model::Operator
 {
 public:
   smtkTypeMacro(BathymetryOperator);
@@ -31,17 +30,16 @@ public:
   smtkDeclareModelOperator();
 
   virtual bool ableToOperate();
+  virtual ~BathymetryOperator();
 
 protected:
   BathymetryOperator();
   virtual smtk::model::OperatorResult operateInternal();
-  Session* discreteSession() const;
+  BathymetryHelper* bathyHelper;
 
-  vtkNew<vtkCMBModelPointsOperator> m_op;
 };
 
-    } // namespace discrete
-  } // namespace bridge
+  } // namespace model
 } // namespace smtk
 
-#endif // __smtk_session_discrete_BathymetryOperator_h
+#endif // __smtk_model_BathymetryOperator_h

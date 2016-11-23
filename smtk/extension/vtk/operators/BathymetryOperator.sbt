@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the CMB Discrete Model "edit bathymetry" Operator -->
+<!-- Description of the CMB Model "apply bathymetry" Operator -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="edit bathymetry" BaseType="operator">
+    <AttDef Type="apply bathymetry" BaseType="operator">
       <ItemDefinitions>
         <ModelEntity Name="model" NumberOfRequiredValues="1">
           <MembershipMask>model</MembershipMask>
@@ -28,7 +28,7 @@
             <Double Name="set lowest elevation" Label="Set Lowest Elevation:" Version="0" NumberOfRequiredValues="1" Optional="true">
               <DefaultValue>0.0</DefaultValue>
             </Double>
-
+            
             <Void Name="applyonlytovisiblemesh" Label="Apply only to the visible meshes on the model" Version="0" AdvanceLevel="0" NumberOfRequiredValues="0"
             Optional="true" IsEnabledByDefault="false">
             </Void>
@@ -36,7 +36,37 @@
           </ChildrenDefinitions>
           <DiscreteInfo DefaultIndex="0">
             <Structure>
-              <Value Enum="Apply Bathymetry">Apply Bathymetry</Value>
+              <Value Enum="Apply Bathymetry (Auto)">Apply Bathymetry (Auto)</Value>
+              <Items>
+                <Item>bathymetryfile</Item>
+                <Item>averaging elevation radius</Item>
+                <Item>set highest elevation</Item>
+                <Item>set lowest elevation</Item>
+<!--                <Item>applyonlytovisiblemesh</Item>  -->
+              </Items>
+            </Structure>
+            <Structure>
+              <Value Enum="Apply Bathymetry (Model&Mesh)">Apply Bathymetry (Model&Mesh)</Value>
+              <Items>
+                <Item>bathymetryfile</Item>
+                <Item>averaging elevation radius</Item>
+                <Item>set highest elevation</Item>
+                <Item>set lowest elevation</Item>
+<!--                <Item>applyonlytovisiblemesh</Item>  -->
+              </Items>
+            </Structure>
+            <Structure>
+              <Value Enum="Apply Bathymetry (Model Only)">Apply Bathymetry (Model Only)</Value>
+              <Items>
+                <Item>bathymetryfile</Item>
+                <Item>averaging elevation radius</Item>
+                <Item>set highest elevation</Item>
+                <Item>set lowest elevation</Item>
+<!--                <Item>applyonlytovisiblemesh</Item>  -->
+              </Items>
+            </Structure>
+            <Structure>
+              <Value Enum="Apply Bathymetry (Mesh only)">Apply Bathymetry (Mesh Only)</Value>
               <Items>
                 <Item>bathymetryfile</Item>
                 <Item>averaging elevation radius</Item>
@@ -54,7 +84,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
-    <AttDef Type="result(edit bathymetry)" BaseType="result">
+    <AttDef Type="result(apply bathymetry)" BaseType="result">
       <ItemDefinitions>
         <ModelEntity Name="tess_changed" NumberOfRequiredValues="1"/>
         <!-- The modified entities are stored in the base result's "modified" item. -->

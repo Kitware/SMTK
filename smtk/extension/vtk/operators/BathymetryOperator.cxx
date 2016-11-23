@@ -10,8 +10,7 @@
 
 #include "BathymetryOperator.h"
 
-#include "smtk/bridge/discrete/Session.h"
-#include "smtk/bridge/discrete/BathymetryHelper.h"
+#include "BathymetryHelper.h"
 #include "smtk/extension/vtk/filter/vtkCMBApplyBathymetryFilter.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -32,10 +31,6 @@
 #include "smtk/mesh/Manager.h"
 #include "smtk/mesh/PointSet.h"
 
-#include "vtkModelItem.h"
-#include "vtkModel.h"
-#include "vtkDiscreteModel.h"
-#include "vtkDiscreteModelWrapper.h"
 #include "vtkDoubleArray.h"
 #include "vtkFloatArray.h"
 #include "vtkPolyData.h"
@@ -46,12 +41,11 @@
 using namespace smtk::model;
 
 namespace smtk {
-  namespace bridge {
-  namespace discrete {
+  namespace model {
 
 bool internal_bathyToAssociatedMeshes(
   BathymetryHelper* bathyHelper, vtkDataSet* bathyData,
-  const smtk::model::Model& srcModel, const bool &removing,
+  const Model& srcModel, const bool &removing,
   const double &radius, const bool &useHighLimit,
   const double &eleHigh, const bool &useLowLimit, const double &eleLow,
   smtk::mesh::ManagerPtr meshMgr, smtk::mesh::MeshSets& modifiedMeshes)
@@ -131,17 +125,21 @@ bool internal_bathyToAssociatedMeshes(
 
 BathymetryOperator::BathymetryOperator()
 {
+  this->bathyHelper = new smtk::model::BathymetryHelper();
+}
+
+BathymetryOperator::~BathymetryOperator()
+{
+  delete this->bathyHelper;
 }
 
 bool BathymetryOperator::ableToOperate()
 {
-  smtk::model::Model model;
+  Model model;
   bool isModelValid =
     // The SMTK model must be valid
-    (model = this->specification()->findModelEntity("model")->value().as<smtk::model::Model>()).isValid() &&
+    (model = this->specification()->findModelEntity("model")->value().as<Model>()).isValid();
     // The CMB discrete model must exist:
-    this->discreteSession()->findModelEntity(model.entity());
-
   smtk::attribute::StringItem::Ptr optypeItem =
     this->specification()->findString("operation");
   std::string optype = optypeItem->value();
@@ -155,32 +153,39 @@ bool BathymetryOperator::ableToOperate()
 
 OperatorResult BathymetryOperator::operateInternal()
 {
-  Session* opsession = this->discreteSession();
+  // Set up the common info for model and mesh
 
-  smtk::model::EntityRef inModel =
-    this->specification()->findModelEntity("model")->value();
+  smtk::attribute::StringItem::Ptr optypeItem =
+    this->specification()->findString("operation");
+  std::string optype = optypeItem->value();
+  std::string opsessionName = this->session()->name(); 
 
-  vtkDiscreteModelWrapper* modelWrapper =
-    opsession->findModelEntity(inModel.entity());
-  if (!modelWrapper)
-    {
-    return this->createResult(OPERATION_FAILED);
-    }
+  // decide whether we want to apply to mesh or model or both.
+  bool ApplyToModel(0), ApplyToMesh(0);
+  if (optype == "Apply Bathymetry (Auto)")
+  {
+    ApplyToModel = (opsessionName == "discrete" ? 1 : 0);
+    ApplyToMesh = 1;
+  }
+  else if (optype =="Apply Bathymetry (Model&Mesh)")
+  {
+    ApplyToModel = 1;
+    ApplyToMesh = 1;
+  }
+  else if (optype == "Apply Bathymetry (Model Only)")
+  {
+    ApplyToModel = 1;
+  }
+  else if (optype == "Apply Bathymetry (Mesh Only)")
+  {
+    ApplyToMesh = 1;
+  }
 
-  BathymetryHelper* bathyHelper = opsession->bathymetryHelper();
-  vtkPolyData* masterModelPoly = bathyHelper->findOrShallowCopyModelPoly(
-    inModel.entity(), opsession);
-  if (!masterModelPoly)
-    {
-    return this->createResult(OPERATION_FAILED);
-    }
-
+  // gather info for bathymetry filter
   bool ok = false;
   std::string filename;
   vtkNew<vtkPolyData> newModelPoints;
   vtkDataSet* bathyPoints = NULL;
-  smtk::attribute::StringItem::Ptr optypeItem =
-    this->specification()->findString("operation");
   smtk::attribute::DoubleItemPtr aveRItem =
     this->specification()->findDouble("averaging elevation radius");
   smtk::attribute::DoubleItemPtr highZItem =
@@ -191,22 +196,80 @@ OperatorResult BathymetryOperator::operateInternal()
   double highElevation = highZItem ? highZItem->value() : 0.0;
   double lowElevation = lowZItem ? lowZItem->value() : 0.0;
 
-  std::string optype = optypeItem->value();
-  if(optype == "Remove Bathymetry")
-    {
-    if(!bathyHelper->hasModelBathymetry(inModel.entity()))
-      // nothing to do, return success
-      return this->createResult(OPERATION_SUCCEEDED);
+  // Apply BO to model
+  EntityRef inModel =
+    this->specification()->findModelEntity("model")->value();
 
-    newModelPoints->ShallowCopy(masterModelPoly);
+  // masterModelPts holds all points from vertices, edges and faces
+  vtkNew<vtkPoints> masterModelPts;
+  masterModelPts->SetDataTypeToDouble();
+  vtkNew<vtkPolyData> masterModelPoly;
+  masterModelPoly->SetPoints(masterModelPts.GetPointer());
+
+  if (!masterModelPoly.GetPointer())
+  {
+    return this->createResult(OPERATION_FAILED);
+  }
+
+  // a list to hold all the length  of entities
+  std::vector<vtkIdType> entityLenthList;
+  std::vector<double> zValues; // for remove bathymetry usage
+
+  // create an entityrefMap to get all the entities with tessellation
+  std::map<smtk::model::EntityRef, smtk::model::EntityRef> entityrefMap;
+  if (1)
+    {
+    std::set<smtk::model::EntityRef> touched; // make this go out of scope soon.
+    inModel.findEntitiesWithTessellation(entityrefMap,touched);
     }
-  else// if(optype == "Apply Bathymetry")
-    {
 
-    filename = this->specification()->findFile("bathymetryfile")->value();
-    if(!filename.empty() && bathyHelper->loadBathymetryFile(filename) &&
-       (bathyPoints = bathyHelper->bathymetryData(filename)))
+  // loop through each entity and get all points
+  std::map<smtk::model::EntityRef, smtk::model::EntityRef>::iterator cit;
+  for (cit = entityrefMap.begin(); cit != entityrefMap.end(); ++cit)
+    {
+    vtkIdType npts = this->bathyHelper->GenerateRepresentationFromModel(masterModelPts.GetPointer(), cit->first);
+    entityLenthList.push_back(npts);
+    }
+
+  // get points' z value as a vector from masterModelPts
+  bathyHelper->GetZValuesFromMasterModelPts(masterModelPts.GetPointer(), zValues);
+
+  if(optype == "Remove Bathymetry")
+  {
+    if(!inModel.hasFloatProperty(BO_elevation))
+    {
+      ok = true;
+    }
+    else
+    {
+      // set data for newModelPoints from your map!
+      std::vector<double>* zPtr;
+      zPtr = &inModel.floatProperty(BO_elevation);
+
+      // update the z value in masterModelPoly then do a shallow copy
+      ok = this->bathyHelper->SetZValuesIntoMasterModelPts(masterModelPts.GetPointer(),
+                                                      zPtr);
+      newModelPoints->ShallowCopy(masterModelPoly.GetPointer());
+      // Sending the point back to Tessellation
+      vtkIdType startingIndex(0);
+      vtkPoints* points = newModelPoints->GetPoints();
+
+      std::vector<vtkIdType>::iterator indexList = entityLenthList.begin();
+      for (cit = entityrefMap.begin(); cit != entityrefMap.end(); ++cit, ++indexList)
       {
+        //set the points back
+        this->bathyHelper->CopyCoordinatesToTessellation(points, cit->first, startingIndex);
+        startingIndex += *indexList;
+      }
+    }
+  }
+  else if(ApplyToModel) // check if we want to apply to model
+  {
+    ok = true;
+    filename = this->specification()->findFile("bathymetryfile")->value();
+    if(!filename.empty() && this->bathyHelper->loadBathymetryFile(filename) &&
+       (bathyPoints = this->bathyHelper->bathymetryData(filename)))
+    {
       vtkNew<vtkCMBApplyBathymetryFilter> filter;
 
       filter->SetElevationRadius(aveEleRadius);
@@ -215,42 +278,73 @@ OperatorResult BathymetryOperator::operateInternal()
       filter->SetUseHighestZValue(highZItem->isEnabled());
       filter->SetUseLowestZValue(lowZItem->isEnabled());
 
-      filter->SetInputData(0, masterModelPoly);
+      filter->SetInputData(0, masterModelPoly.GetPointer());
       filter->SetInputData(1, bathyPoints );
       filter->SetNoOP(false);
       filter->Update();
       newModelPoints->ShallowCopy(filter->GetOutputDataObject(0));
+      // Sending the point back to Tessellation
+      vtkIdType startingIndex(0);
+      vtkPoints* points = newModelPoints->GetPoints();
+
+      std::vector<vtkIdType>::iterator indexList = entityLenthList.begin();
+      for (cit = entityrefMap.begin(); cit != entityrefMap.end(); ++cit, ++indexList)
+      {
+        //set the points back
+        this->bathyHelper->CopyCoordinatesToTessellation(points, cit->first, startingIndex);
+        startingIndex += *indexList;
       }
+    }
     else
       return this->createResult(OPERATION_FAILED);
-    }
+  }
 
-  this->m_op->SetModelPoints(newModelPoints.GetPointer());
-  this->m_op->Operate(modelWrapper);
-  ok = this->m_op->GetOperateSucceeded();
+  // update the value of ok for model.
+  if (ApplyToMesh && !ApplyToModel || optype == "Remove Bathymetry")
+    ok = true;// only to mesh case
   OperatorResult result =
     this->createResult(
       ok ?  OPERATION_SUCCEEDED : OPERATION_FAILED);
+  result->findModelEntity("tess_changed")->setValue(inModel);
   if(ok)
-    {
+  {
     if(optype == "Remove Bathymetry")
-      bathyHelper->removeModelBathymetry(inModel.entity());
-    else if(optype == "Apply Bathymetry")
-      bathyHelper->addModelBathymetry(inModel.entity(), filename);
+    {
+      inModel.removeFloatProperty(BO_elevation);
+    }
+    else if(ApplyToModel)
+    {
+      // check existance, so we only add it once.
+      if (!inModel.hasFloatProperty(BO_elevation))
+      {
+        inModel.setFloatProperty(BO_elevation, zValues);
+      }
 
-    opsession->retranscribeModel(inModel);
+    }
+  }
 
+  // Apply BO to mesh
+  if (ApplyToMesh || optype == "Remove Bathymetry")
+  {
+    if (bathyPoints == NULL && ApplyToMesh) // get bathy points if we only apply to mesh
+    {
+      filename = this->specification()->findFile("bathymetryfile")->value();
+      if(!(!filename.empty() && this->bathyHelper->loadBathymetryFile(filename) && (bathyPoints = this->bathyHelper->bathymetryData(filename))))
+      {
+        return this->createResult(OPERATION_FAILED);
+      }
+    }
     smtk::mesh::MeshSets modifiedMeshes;
     // update associated meshes
     if(!internal_bathyToAssociatedMeshes(
-       bathyHelper, bathyPoints,
-       inModel.as<smtk::model::Model>(),
+       this->bathyHelper, bathyPoints,
+       inModel.as<Model>(),
        optype == "Remove Bathymetry",
        aveEleRadius, highZItem ? highZItem->isEnabled() : false, highElevation,
        lowZItem ? lowZItem->isEnabled() : false, lowElevation,
        this->manager()->meshes(), modifiedMeshes))
       {
-      std::cout << "ERROR: Failed to apply bathymetry to associated meshes." << std::endl;
+      std::cerr << "ERROR: Failed to apply bathymetry to associated meshes." << std::endl;
       }
 
     this->addEntityToResult(result, inModel, MODIFIED);
@@ -263,26 +357,20 @@ OperatorResult BathymetryOperator::operateInternal()
       if(resultMeshes)
         resultMeshes->appendValues(modifiedMeshes);
       }
+  }
 
-    }
 
   return result;
 }
 
-Session* BathymetryOperator::discreteSession() const
-{
-  return dynamic_cast<Session*>(this->session());
-}
-
-    } // namespace discrete
-  } // namespace bridge
-
+  } // namespace model
 } // namespace smtk
 
+
 smtkImplementsModelOperator(
-  SMTKDISCRETESESSION_EXPORT,
-  smtk::bridge::discrete::BathymetryOperator,
-  discrete_edit_bathymetry,
-  "edit bathymetry",
+  VTKSMTKOPERATORSEXT_EXPORT,
+  smtk::model::BathymetryOperator,
+  apply_bathymetry,
+  "apply bathymetry",
   BathymetryOperator_xml,
-  smtk::bridge::discrete::Session);
+  smtk::model::Session);
