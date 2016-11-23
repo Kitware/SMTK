@@ -22,6 +22,9 @@ set_source_files_properties(
 set(${vtk-module}_NO_HeaderTest 1)
 set(VTK_INSTALL_NO_HEADERS 1)
 vtk_module_library(${vtk-module} ${srcs})
+target_link_libraries(${vtk-module}
+      LINK_PUBLIC smtkCore vtksys)
+
 target_include_directories(${vtk-module}
   PUBLIC
     $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}>
