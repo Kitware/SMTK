@@ -358,6 +358,7 @@
   <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'int *' in function 'smtk::model::Tessellation::numberOfCellVertices(int offset, int * cellTypeOut) const'."/>
   <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'double *' in function 'smtk::model::Tessellation::addQuad(double * a, double * b, double * c, double * d)'."/>
   <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'const smtk::mesh::Handle *' in function 'smtk::mesh::CellForEach::pointIds(const smtk::mesh::Handle * ptIds)'"/>
+  <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'const double *' in function 'smtk::model::Tessellation::setPoint(std::size_t id, const double * points)'"/>
   <suppress-warning text="skipping function 'smtk::common::distance2', unmatched parameter type 'T const*'"/>
 
   <!-- ignore shared_from_this base class-->
