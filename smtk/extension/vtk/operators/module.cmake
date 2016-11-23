@@ -10,6 +10,7 @@ vtk_module(vtkSMTKOperatorsExt
     vtkIOGDAL
     vtkIOXML
     vtkSMTKFilterExt
+    vtkSMTKReaderExt
     ${__dependencies}
   TEST_DEPENDS
   EXCLUDE_FROM_WRAP_HIERARCHY
