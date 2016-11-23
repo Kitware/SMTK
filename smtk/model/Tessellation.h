@@ -121,7 +121,7 @@ public:
   Tessellation& addTriangle(int ai, int bi, int ci);
   Tessellation& addQuad(int ai, int bi, int ci, int di);
 
-  void setPoint(std::size_t id, const double * points);
+  void setPoint(std::size_t id, const double* points);
 
   Tessellation& reset();
 

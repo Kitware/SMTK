@@ -300,7 +300,7 @@ OperatorResult BathymetryOperator::operateInternal()
   }
 
   // update the value of ok for model.
-  if (ApplyToMesh && !ApplyToModel || optype == "Remove Bathymetry")
+  if ( (ApplyToMesh && !ApplyToModel) || optype == "Remove Bathymetry")
     ok = true;// only to mesh case
   OperatorResult result =
     this->createResult(
