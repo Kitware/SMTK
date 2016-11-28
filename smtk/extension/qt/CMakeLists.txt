@@ -40,6 +40,7 @@ set(QAttrLibSrcs
   qtModelEntityItem.cxx
   qtModelOperationWidget.cxx
   qtOperatorDockWidget.cxx
+  qtTimeZoneSelectWidget.cxx
   qtViewInterface.cxx
   qtSMTKUtilities.cxx
   qtDateTimeItem.cxx
@@ -50,6 +51,7 @@ set(QAttrLibUIs
   qtCollapsibleGroupWidgetInternals.ui
   qtModelPanel.ui
   qtNewAttributeWidget.ui
+  qtTimeZoneSelectWidget.ui
 )
 
 
@@ -92,6 +94,7 @@ set(QAttrLibMocHeaders
   qtModelOperationWidget.h
   qtOperatorDockWidget.h
   qtDateTimeItem.h
+  qtTimeZoneSelectWidget.h
 )
 
 set(QAttrLibHeaders

@@ -47,6 +47,7 @@ namespace smtk
       virtual void onChildWidgetSizeChanged();
       //virtual void onAddNewValue();
       //virtual void onRemoveValue();
+      void onTimeZoneComboChanged(int index);
 
     protected:
       virtual void createWidget();

@@ -13,6 +13,7 @@
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtOverlay.h"
+#include "smtk/extension/qt/qtTimeZoneSelectWidget.h"
 
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
@@ -26,6 +27,8 @@
 #include <QDateTime>
 #include <QDateTimeEdit>
 #include <QDebug>
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -51,6 +54,9 @@ public:
   QPointer<QLabel> theLabel;
   Qt::Orientation VectorItemOrient;
 
+  QDialog *TimeZoneDialog;
+  qtTimeZoneSelectWidget *TimeZoneWidget;
+
   // for discrete items that with potential child widget
   // <Enum-Combo, child-layout >
   QMap<QWidget*, QPointer<QLayout> >ChildrenMap;
@@ -67,6 +73,24 @@ qtDateTimeItem::qtDateTimeItem(
    Qt::Orientation enVectorItemOrient) : qtItem(dataObj, p, bview)
 {
   this->Internals = new qtDateTimeItemInternals;
+
+  this->Internals->TimeZoneDialog = new QDialog;
+  QVBoxLayout *dialogLayout = new QVBoxLayout();
+  this->Internals->TimeZoneWidget = new qtTimeZoneSelectWidget;
+  dialogLayout->addWidget(this->Internals->TimeZoneWidget);
+  QDialogButtonBox *buttonBox = new QDialogButtonBox(
+    QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+    Qt::Horizontal,
+    this->Internals->TimeZoneDialog);
+  QObject::connect(
+    buttonBox, SIGNAL(accepted()),
+    this->Internals->TimeZoneDialog, SLOT(accept()));
+  QObject::connect(
+    buttonBox, SIGNAL(rejected()),
+    this->Internals->TimeZoneDialog, SLOT(reject()));
+  dialogLayout->addWidget(buttonBox);
+  this->Internals->TimeZoneDialog->setLayout(dialogLayout);
+
   this->Internals->VectorItemOrient = enVectorItemOrient;
   this->createWidget();
 }
@@ -140,11 +164,14 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
   if (def->useTimeZone())
     {
     QComboBox *timeZoneChoice = new QComboBox(frame);
-    timeZoneChoice->addItem("Set Time Zone...");
+    timeZoneChoice->addItem("No Time Zone");
     timeZoneChoice->addItem("UTC");
     timeZoneChoice->addItem("Select Region...");
     layout->addWidget(timeZoneChoice);
     // Todo initialize timezone
+    QObject::connect(
+      timeZoneChoice, SIGNAL(currentIndexChanged(int)),
+      this, SLOT(onTimeZoneComboChanged(int)));
     }
   else
     {
@@ -179,6 +206,16 @@ void qtDateTimeItem::onDateTimeChanged(const QDateTime& newDateTime)
 //----------------------------------------------------------------------------
 void qtDateTimeItem::onChildWidgetSizeChanged()
 {
+}
+
+//----------------------------------------------------------------------------
+void qtDateTimeItem::onTimeZoneComboChanged(int index)
+{
+  qDebug() << "Combo" << index;
+  if (index == 2)
+    {
+    int result = this->Internals->TimeZoneDialog->exec();
+    }
 }
 
 //----------------------------------------------------------------------------
