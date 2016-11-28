@@ -19,6 +19,7 @@
 #include "smtk/extension/qt/Exports.h"
 
 class qtDateTimeItemInternals;
+class QAction;
 class QDateTime;
 
 namespace smtk
@@ -47,7 +48,11 @@ namespace smtk
       virtual void onChildWidgetSizeChanged();
       //virtual void onAddNewValue();
       //virtual void onRemoveValue();
-      void onTimeZoneComboChanged(int index);
+
+      // Time zone menu actions
+      void onTimeZoneUnset();
+      void onTimeZoneUTC();
+      void onTimeZoneRegion();
 
     protected:
       virtual void createWidget();
@@ -57,6 +62,7 @@ namespace smtk
       virtual void addInputEditor(int i);
       virtual void updateExtensibleState();
       virtual void clearChildWidgets();
+      void updateTimeZoneMenu(QAction *selectedAction = NULL);
 
     private:
       qtDateTimeItemInternals *Internals;

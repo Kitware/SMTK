@@ -21,8 +21,8 @@
 #include "smtk/common/DateTimeZonePair.h"
 #include "smtk/common/TimeZone.h"
 
+#include <QAction>
 #include <QCheckBox>
-#include <QComboBox>
 #include <QDate>
 #include <QDateTime>
 #include <QDateTimeEdit>
@@ -35,7 +35,9 @@
 #include <QLayout>
 #include <QList>
 #include <QMap>
+#include <QMenu>
 #include <QPointer>
+#include <QSizePolicy>
 #include <QTime>
 #include <QToolButton>
 #include <QWidget>
@@ -57,6 +59,9 @@ public:
   QDialog *TimeZoneDialog;
   qtTimeZoneSelectWidget *TimeZoneWidget;
 
+  QToolButton *TimeZoneButton;
+  QMenu *TimeZoneMenu;
+
   // for discrete items that with potential child widget
   // <Enum-Combo, child-layout >
   QMap<QWidget*, QPointer<QLayout> >ChildrenMap;
@@ -73,6 +78,9 @@ qtDateTimeItem::qtDateTimeItem(
    Qt::Orientation enVectorItemOrient) : qtItem(dataObj, p, bview)
 {
   this->Internals = new qtDateTimeItemInternals;
+
+  this->Internals->TimeZoneButton = NULL;
+  this->Internals->TimeZoneMenu = NULL;
 
   this->Internals->TimeZoneDialog = new QDialog;
   QVBoxLayout *dialogLayout = new QVBoxLayout();
@@ -163,15 +171,26 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
 
   if (def->useTimeZone())
     {
-    QComboBox *timeZoneChoice = new QComboBox(frame);
-    timeZoneChoice->addItem("No Time Zone");
-    timeZoneChoice->addItem("UTC");
-    timeZoneChoice->addItem("Select Region...");
-    layout->addWidget(timeZoneChoice);
-    // Todo initialize timezone
-    QObject::connect(
-      timeZoneChoice, SIGNAL(currentIndexChanged(int)),
-      this, SLOT(onTimeZoneComboChanged(int)));
+    this->Internals->TimeZoneButton = new QToolButton(frame);
+    this->Internals->TimeZoneButton->setSizePolicy(
+      QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
+    this->Internals->TimeZoneButton->setText("No TimeZone Selected");
+    this->Internals->TimeZoneButton->setPopupMode(QToolButton::MenuButtonPopup);
+    this->Internals->TimeZoneMenu = new QMenu(this->Internals->TimeZoneButton);
+    this->Internals->TimeZoneMenu->addAction(
+      "Unset TimeZone", this, SLOT(onTimeZoneUnset()));
+    this->Internals->TimeZoneMenu->addAction(
+      "UTC", this, SLOT(onTimeZoneUTC()));
+    this->Internals->TimeZoneMenu->addAction(
+      "Select Region...", this, SLOT(onTimeZoneRegion()));
+
+    this->Internals->TimeZoneButton->setMenu(this->Internals->TimeZoneMenu);
+    //this->Internals->TimeZoneButton->setStyleSheet("background-color: white;");
+    //this->Internals->TimeZoneButton->setEnabled(false);
+
+    // Todo set initial timezone text and menu item
+
+    layout->addWidget(this->Internals->TimeZoneButton);
     }
   else
     {
@@ -209,13 +228,31 @@ void qtDateTimeItem::onChildWidgetSizeChanged()
 }
 
 //----------------------------------------------------------------------------
-void qtDateTimeItem::onTimeZoneComboChanged(int index)
+void qtDateTimeItem::onTimeZoneUnset()
 {
-  qDebug() << "Combo" << index;
-  if (index == 2)
+  this->Internals->TimeZoneButton->setText("No TimeZoneSelected");
+  QAction *action = dynamic_cast<QAction*>(this->sender());
+  //qDebug() << "onTimeZoneUnset" << action;
+  this->updateTimeZoneMenu(action);
+}
+
+//----------------------------------------------------------------------------
+void qtDateTimeItem::onTimeZoneUTC()
+{
+  this->Internals->TimeZoneButton->setText("UTC");
+  QAction *action = dynamic_cast<QAction*>(this->sender());
+  this->updateTimeZoneMenu(action);
+}
+
+//----------------------------------------------------------------------------
+void qtDateTimeItem::onTimeZoneRegion()
+{
+  if (this->Internals->TimeZoneDialog->exec() == QDialog::Accepted)
     {
-    int result = this->Internals->TimeZoneDialog->exec();
+    qDebug() << "Accepted";
+    // Todo update display and item
     }
+  this->updateTimeZoneMenu();
 }
 
 //----------------------------------------------------------------------------
@@ -514,6 +551,16 @@ void qtDateTimeItem::clearChildWidgets()
   //   delete cwidget;
   //   }
   // this->Internals->ChildrenMap.clear();
+}
+
+//----------------------------------------------------------------------------
+void qtDateTimeItem::updateTimeZoneMenu(QAction *selectedAction)
+{
+  foreach (QAction *action, this->Internals->TimeZoneMenu->actions())
+    {
+    bool enabled = action != selectedAction;
+    action->setEnabled(enabled);
+    }
 }
 
 //----------------------------------------------------------------------------
