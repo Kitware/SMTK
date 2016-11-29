@@ -46,7 +46,7 @@ using namespace smtk::attribute;
 using namespace smtk::extension;
 
 //----------------------------------------------------------------------------
-class qtDateTimeItemInternals
+class qtDateTimeItem::qtDateTimeItemInternals
 {
 public:
   qtDateTimeItemInternals() {}
@@ -56,9 +56,9 @@ public:
   QPointer<QLabel> theLabel;
   Qt::Orientation VectorItemOrient;
 
+  // Components for time zone UI
   QDialog *TimeZoneDialog;
   qtTimeZoneSelectWidget *TimeZoneWidget;
-
   QToolButton *TimeZoneButton;
   QMenu *TimeZoneMenu;
 
@@ -74,30 +74,39 @@ public:
 
 //----------------------------------------------------------------------------
 qtDateTimeItem::qtDateTimeItem(
-  smtk::attribute::DateTimeItemPtr dataObj, QWidget* p, qtBaseView* bview,
-   Qt::Orientation enVectorItemOrient) : qtItem(dataObj, p, bview)
+  smtk::attribute::DateTimeItemPtr item, QWidget* p, qtBaseView* bview,
+   Qt::Orientation enVectorItemOrient) : qtItem(item, p, bview)
 {
   this->Internals = new qtDateTimeItemInternals;
 
+  this->Internals->TimeZoneDialog = NULL;
+  this->Internals->TimeZoneWidget = NULL;
   this->Internals->TimeZoneButton = NULL;
   this->Internals->TimeZoneMenu = NULL;
 
-  this->Internals->TimeZoneDialog = new QDialog;
-  QVBoxLayout *dialogLayout = new QVBoxLayout();
-  this->Internals->TimeZoneWidget = new qtTimeZoneSelectWidget;
-  dialogLayout->addWidget(this->Internals->TimeZoneWidget);
-  QDialogButtonBox *buttonBox = new QDialogButtonBox(
-    QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
-    Qt::Horizontal,
-    this->Internals->TimeZoneDialog);
-  QObject::connect(
-    buttonBox, SIGNAL(accepted()),
-    this->Internals->TimeZoneDialog, SLOT(accept()));
-  QObject::connect(
-    buttonBox, SIGNAL(rejected()),
-    this->Internals->TimeZoneDialog, SLOT(reject()));
-  dialogLayout->addWidget(buttonBox);
-  this->Internals->TimeZoneDialog->setLayout(dialogLayout);
+  smtk::attribute::ConstDateTimeItemDefinitionPtr def =
+    smtk::dynamic_pointer_cast<const smtk::attribute::DateTimeItemDefinition>(
+      item->definition());
+  if (def->useTimeZone())
+    {
+    this->Internals->TimeZoneDialog = new QDialog;
+    QVBoxLayout *dialogLayout = new QVBoxLayout();
+    this->Internals->TimeZoneWidget = new qtTimeZoneSelectWidget;
+
+    dialogLayout->addWidget(this->Internals->TimeZoneWidget);
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(
+      QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+      Qt::Horizontal,
+      this->Internals->TimeZoneDialog);
+    QObject::connect(
+      buttonBox, SIGNAL(accepted()),
+      this->Internals->TimeZoneDialog, SLOT(accept()));
+    QObject::connect(
+      buttonBox, SIGNAL(rejected()),
+      this->Internals->TimeZoneDialog, SLOT(reject()));
+    dialogLayout->addWidget(buttonBox);
+    this->Internals->TimeZoneDialog->setLayout(dialogLayout);
+    }
 
   this->Internals->VectorItemOrient = enVectorItemOrient;
   this->createWidget();

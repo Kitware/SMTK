@@ -8,8 +8,10 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/qt/qtTimeZoneSelectWidget.h"
-
 #include "ui_qtTimeZoneSelectWidget.h"
+#include "qtTimeZoneRegionModel.h"
+
+#include <QModelIndex>
 
 // -----------------------------------------------------------------------------
 namespace smtk {
@@ -22,6 +24,16 @@ qtTimeZoneSelectWidget::qtTimeZoneSelectWidget(QWidget* parent)
 {
   this->UI = new Ui_qtTimeZoneSelectWidget;
   this->UI->setupUi(this);
+
+  qtTimeZoneRegionModel *model = new qtTimeZoneRegionModel(this);
+  model->initialize();
+  this->UI->ContinentView->setModel(model);
+  QModelIndex rootIndex = model->index(0, 0);
+  this->UI->ContinentView->setRootIndex(rootIndex);
+
+  this->UI->RegionView->setModel(model);
+  QModelIndex testIndex = model->index(1, 0, rootIndex);
+  this->UI->RegionView->setRootIndex(testIndex);
 }
 
 //-----------------------------------------------------------------------------

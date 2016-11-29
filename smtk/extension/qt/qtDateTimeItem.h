@@ -18,7 +18,6 @@
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/Exports.h"
 
-class qtDateTimeItemInternals;
 class QAction;
 class QDateTime;
 
@@ -65,6 +64,7 @@ namespace smtk
       void updateTimeZoneMenu(QAction *selectedAction = NULL);
 
     private:
+      class qtDateTimeItemInternals;
       qtDateTimeItemInternals *Internals;
     }; // class qDateTimeItem
   }; // namespace attribute

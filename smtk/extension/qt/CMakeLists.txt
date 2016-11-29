@@ -40,6 +40,7 @@ set(QAttrLibSrcs
   qtModelEntityItem.cxx
   qtModelOperationWidget.cxx
   qtOperatorDockWidget.cxx
+  qtTimeZoneRegionModel.cxx
   qtTimeZoneSelectWidget.cxx
   qtViewInterface.cxx
   qtSMTKUtilities.cxx
@@ -94,6 +95,7 @@ set(QAttrLibMocHeaders
   qtModelOperationWidget.h
   qtOperatorDockWidget.h
   qtDateTimeItem.h
+  qtTimeZoneRegionModel.h
   qtTimeZoneSelectWidget.h
 )
 
