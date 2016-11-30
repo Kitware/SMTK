@@ -224,6 +224,7 @@ public:
   template<typename T> T associatedEntitiesAs() const;
 
   OperatorResult createResult(OperatorOutcome outcome = UNABLE_TO_OPERATE);
+  void setResultOutcome(OperatorResult res, OperatorOutcome outcome);
   void eraseResult(OperatorResult res);
 
 #ifndef SHIBOKEN_SKIP
