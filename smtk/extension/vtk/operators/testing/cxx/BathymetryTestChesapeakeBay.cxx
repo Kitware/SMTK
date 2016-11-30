@@ -48,10 +48,6 @@
 
 #include "vtkRegressionTestImage.h"
 
-#include <dlfcn.h>
-#include <fstream>
-
-
 using namespace smtk::model;
 
 int main(int argc, char* argv[])
