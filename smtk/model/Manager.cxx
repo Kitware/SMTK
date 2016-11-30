@@ -1362,11 +1362,7 @@ UUID Manager::modelOwningEntity(const UUID& ent) const
         // Although const_pointer_cast is evil, changing the entityref classes
         // to accept any type of shared_ptr<X/X const> is more evil.
         ManagerPtr self = smtk::const_pointer_cast<Manager>(shared_from_this());
-        Models parents;
-        EntityRefArrangementOps::appendAllRelations(Model(self,ent), EMBEDDED_IN, parents);
-        if (!parents.empty())
-          return parents[0].entity();
-        return UUID::null();
+        return Model(self, ent).parent().entity();
         }
       break;
     // Remaining types should all have a direct relationship with a model if they are free:
