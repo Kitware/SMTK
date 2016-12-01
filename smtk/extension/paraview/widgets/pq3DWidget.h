@@ -11,25 +11,27 @@
 #define __smtk_pq_3DWidget_h
 
 #include "smtk/extension/paraview/widgets/Exports.h"
-#include "pqProxyPanel.h"
+#include <QWidget>
 
 class pq3DWidgetInternal;
 class pqPipelineSource;
 class pqProxy;
 class pqRenderViewBase;
+class pqView;
 class QKeySequence;
 class vtkObject;
 class vtkPVXMLElement;
 class vtkSMNewWidgetRepresentationProxy;
 class vtkSMProperty;
+class vtkSMProxy;
 
 /// pq3DWidget is the abstract superclass for all 3D widgets.
 /// This class represents a 3D Widget proxy as well as the GUI for the
 /// widget.
-class SMTKPQWIDGETSEXT_EXPORT pq3DWidget : public pqProxyPanel
+class SMTKPQWIDGETSEXT_EXPORT pq3DWidget : public QWidget
 {
   Q_OBJECT
-  typedef pqProxyPanel Superclass;
+  typedef QWidget Superclass;
 public:
   pq3DWidget(vtkSMProxy* referenceProxy, vtkSMProxy* proxy, QWidget* parent=0);
   virtual ~pq3DWidget();
@@ -76,6 +78,21 @@ public:
   /// with reference proxy bounds.
   virtual void resetBounds(double bounds[6])=0;
 
+  /**
+  * get the proxy for which properties are displayed
+  */
+  vtkSMProxy* proxy() const;
+
+  /**
+  * get the view that this object panel works with.
+  */
+  pqView* view() const;
+
+  /**
+  * size hint for this widget
+  */
+  QSize sizeHint() const;
+
 signals:
   /// Notifies observers that widget visibility has changed
   void widgetVisibilityChanged(bool);
@@ -88,6 +105,10 @@ signals:
 
   /// Notifies observers that the user is dragging the 3D widget
   void widgetInteraction();
+
+  /// Basic signals
+  void modified();
+  void viewChanged(pqView*);
 
 public slots:
   /// Sets 3D widget visibility
@@ -140,6 +161,10 @@ public slots:
     { this->UseSelectionDataBounds = use; }
   bool useSelectionDataBounds()
     {return this->UseSelectionDataBounds; }
+  /**
+  * Fires modified
+  */
+  virtual void setModified();
 
 protected slots:
   /// Called to request a render.
@@ -160,6 +185,27 @@ protected slots:
   /// Handle custom user notification to show/hide corresponding widget
   void handleReferenceProxyUserEvent(vtkObject*, unsigned long, void*);
 
+  /**
+  * This method gets called to referesh all domains
+  * and information properties. Subclassess can override
+  * this to update any domain related entities.
+  * Since this is not a particularly fast operation, we update
+  * the information and domains only when the panel is selected
+  * or an already active panel is accepted.
+  */
+  virtual void updateInformationAndDomains();
+
+  /**
+  * Called after the algorithm executes.
+  */
+  void dataUpdated();
+
+  /**
+  * Called when the vtkSMProxy fires ModifiedEvent.
+  * It implies that the proxy information properties (and domains
+  * depending on those) may now be obsolete.
+  */
+  void proxyModifiedEvent();
 protected:
  
   // Return true if picking is on mesh point only
@@ -198,9 +244,12 @@ protected:
   /// updates the enable state of the picking shortcut.
   virtual void updatePickShortcut();
   virtual void updatePickShortcut(bool pickable);
-  
+
+  bool event(QEvent* e);
+
 private:
   void setControlledProxy(vtkSMProxy*);
+  void setInternalView(pqView*);
 
   pq3DWidgetInternal* const Internal;
 

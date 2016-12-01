@@ -17,6 +17,7 @@
 #include "vtkPVXMLElement.h"
 #include "vtkRenderWindowInteractor.h"
 #include "vtkSmartPointer.h"
+#include "vtkSMDocumentation.h"
 #include "vtkSMInputProperty.h"
 #include "vtkSMIntVectorProperty.h"
 #include "vtkSMNewWidgetRepresentationProxy.h"
@@ -34,29 +35,25 @@
 #include <QtDebug>
 #include <QPointer>
 #include <QShortcut>
+#include <QApplication>
+#include <QHelpEvent>
+#include <QStyle>
+#include <QStyleOption>
+#include <QToolTip>
 
 // ParaView GUI includes.
 #include "pq3DWidgetFactory.h"
 #include "pq3DWidgetInterface.h"
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
-//#include "pqBoxWidget.h"
 #include "pqCoreUtilities.h"
-//#include "pqDistanceWidget.h"
-//#include "pqImplicitCylinderWidget.h"
-//#include "pqImplicitPlaneWidget.h"
 #include "pqInterfaceTracker.h"
-//#include "pqLineSourceWidget.h"
 #include "pqLineWidget.h"
 #include "pqPipelineFilter.h"
 #include "pqPipelineSource.h"
-//#include "pqPointSourceWidget.h"
-//#include "pqPolyLineWidget.h"
 #include "pqRenderView.h"
 #include "pqServer.h"
 #include "pqSMAdaptor.h"
-//#include "pqSphereWidget.h"
-//#include "pqSplineWidget.h"
 
 namespace
 {
@@ -131,16 +128,20 @@ public:
 class pq3DWidgetInternal
 {
 public:
-  pq3DWidgetInternal() :
+  pq3DWidgetInternal(vtkSMProxy* pxy) :
     IgnorePropertyChange(false),
     WidgetVisible(true),
     Selected(false),
     LastWidgetVisibilityGoal(true),
     InDeleteCall(false),
-    PickOnMeshPoint(false)
+    PickOnMeshPoint(false),
+    Proxy(pxy)
   {
   this->VTKConnect = vtkSmartPointer<vtkEventQtSlotConnect>::New();
   this->IsMaster = pqApplicationCore::instance()->getActiveServer()->isMaster();
+  this->BaseVTKConnect = vtkSmartPointer<vtkEventQtSlotConnect>::New();
+  this->InformationObsolete = true;
+  this->Selected = false;
   }
 
   vtkSmartPointer<vtkSMProxy> ReferenceProxy;
@@ -164,13 +165,37 @@ public:
   bool LastWidgetVisibilityGoal;
   bool InDeleteCall;
   bool PickOnMeshPoint;
+
+  ///////////////////////////////////////////////////////////////////
+  vtkSmartPointer<vtkSMProxy> Proxy;
+  vtkSmartPointer<vtkEventQtSlotConnect> BaseVTKConnect;
+  QPointer<pqView> View;
+
+  // Flag indicating to the best of our knowledge, the information properties
+  // and domains are not up-to-date since the proxy was modified since the last
+  // time we updated the properties and their domains. This is just a guess,
+  // to reduce number of updates information calls.
+  bool InformationObsolete;
+
 };
 
 //-----------------------------------------------------------------------------
 pq3DWidget::pq3DWidget(vtkSMProxy* refProxy, vtkSMProxy* pxy, QWidget* _p) :
-  pqProxyPanel(pxy, _p),
-  Internal(new pq3DWidgetInternal())
+  QWidget(_p),
+  Internal(new pq3DWidgetInternal(pxy))
 {
+  //////////////////////////////////////////////////
+  // Just make sure that the proxy is setup properly.
+  this->Internal->Proxy->UpdateVTKObjects();
+  this->updateInformationAndDomains();
+
+  this->Internal->BaseVTKConnect->Connect(
+    this->Internal->Proxy, vtkCommand::ModifiedEvent, this, SLOT(proxyModifiedEvent()));
+
+  this->Internal->BaseVTKConnect->Connect(
+    this->Internal->Proxy, vtkCommand::UpdateDataEvent, this, SLOT(dataUpdated()));
+  //////////////////////////////////////////////////
+
   this->UseSelectionDataBounds = false;
   this->Internal->ReferenceProxy = refProxy;
 
@@ -270,7 +295,7 @@ void pq3DWidget::setView(pqView* pqview)
   pqRenderViewBase* rview = this->renderView();
   if (pqview == rview)
     {
-    this->Superclass::setView(pqview);
+    this->setInternalView(pqview);
     return;
     }
 
@@ -303,7 +328,7 @@ void pq3DWidget::setView(pqView* pqview)
     rview->getProxy()->UpdateVTKObjects();
     }
 
-  this->Superclass::setView(pqview);
+  this->setInternalView(pqview);
 
   rview = this->renderView();
   if (rview && !this->Internal->PickSequence.isEmpty())
@@ -787,4 +812,140 @@ void pq3DWidget::handleReferenceProxyUserEvent(
     {
     this->showWidget();
     }
+}
+
+//-----------------------------------------------------------------------------
+vtkSMProxy* pq3DWidget::proxy() const
+{
+  return this->Internal->Proxy;
+}
+
+//-----------------------------------------------------------------------------
+pqView* pq3DWidget::view() const
+{
+  return this->Internal->View;
+}
+
+//-----------------------------------------------------------------------------
+void pq3DWidget::dataUpdated()
+{
+  this->Internal->InformationObsolete = true;
+  if (this->Internal->Selected)
+  {
+    this->updateInformationAndDomains();
+  }
+}
+
+//-----------------------------------------------------------------------------
+QSize pq3DWidget::sizeHint() const
+{
+  // return a size hint that would reasonably fit several properties
+  ensurePolished();
+  QFontMetrics fm(font());
+  int h = qMax(fm.lineSpacing(), 14);
+  int w = fm.width('x') * 25;
+  QStyleOptionFrame opt;
+  opt.rect = rect();
+  opt.palette = palette();
+  opt.state = QStyle::State_None;
+  return (style()->sizeFromContents(
+    QStyle::CT_LineEdit, &opt, QSize(w, h).expandedTo(QApplication::globalStrut()), this));
+}
+
+//-----------------------------------------------------------------------------
+void pq3DWidget::setInternalView(pqView* rm)
+{
+  if (this->Internal->View == rm)
+  {
+    return;
+  }
+
+  this->Internal->View = rm;
+  emit this->viewChanged(this->Internal->View);
+}
+
+//-----------------------------------------------------------------------------
+// Called when vtkSMProxy fires vtkCommand::ModifiedEvent which implies that
+// the proxy was modified. If that's the case,  the information properties
+// need to be updated. We mark them as obsolete so that next
+// time the panel becomes active (or is accepted when it is active),
+// we'll refresh the information properties and domains.
+// Note thate vtkCommand::ModifiedEvent is fired by a proxy when it is
+// updated or anyone upstream for it is updated.
+void pq3DWidget::proxyModifiedEvent()
+{
+  this->Internal->InformationObsolete = true;
+}
+
+//-----------------------------------------------------------------------------
+// Update information properties and domains. Since this is not a
+// particularly fast operation, we update the information and domains
+// only when the panel is selected or an already active panel is
+// accepted.
+void pq3DWidget::updateInformationAndDomains()
+{
+  if (this->Internal->InformationObsolete)
+  {
+    vtkSMSourceProxy* sp;
+    sp = vtkSMSourceProxy::SafeDownCast(this->Internal->Proxy);
+    if (sp)
+    {
+      sp->UpdatePipelineInformation();
+    }
+    else
+    {
+      this->Internal->Proxy->UpdatePropertyInformation();
+    }
+    this->Internal->InformationObsolete = false;
+  }
+}
+
+//-----------------------------------------------------------------------------
+void pq3DWidget::setModified()
+{
+  emit this->modified();
+}
+
+bool pq3DWidget::event(QEvent* e)
+{
+  bool ret = QWidget::event(e);
+
+  //  show tooltips for any server manager property
+  //  doing it this way does not depend on the panel being created
+  //  with tooltips set (auto panel or not)
+  //  if a custom panel doesn't name its widgets to match the SM property,
+  //  no tooltip will be shown
+  if (!e->isAccepted() && e->type() == QEvent::ToolTip)
+  {
+    QHelpEvent* he = static_cast<QHelpEvent*>(e);
+    // find the sm property this mouse is over
+    QWidget* w = QApplication::widgetAt(he->globalPos());
+    if (this->isAncestorOf(w))
+    {
+      vtkSMProperty* smProperty = NULL;
+      for (; !smProperty && w != this; w = w->parentWidget())
+      {
+        QString name = w->objectName();
+        int trimIndex = name.lastIndexOf(QRegExp("_[0-9]*$"));
+        if (trimIndex != -1)
+        {
+          name = name.left(trimIndex);
+        }
+        smProperty = this->Internal->Proxy->GetProperty(name.toLatin1().data());
+      }
+
+      if (smProperty)
+      {
+        vtkSMDocumentation* doc = smProperty->GetDocumentation();
+        if (doc)
+        {
+          QToolTip::showText(
+            he->globalPos(), QString("<p>%1</p>").arg(doc->GetDescription()), this);
+          ret = true;
+          e->setAccepted(true);
+        }
+      }
+    }
+  }
+  return ret;
 }
