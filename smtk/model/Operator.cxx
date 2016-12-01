@@ -463,6 +463,18 @@ OperatorResult Operator::createResult(OperatorOutcome outcome)
   return result;
 }
 
+/**\brief Set the outcome of the given result.
+  *
+  * This is a convenience method.
+  */
+void Operator::setResultOutcome(OperatorResult res, OperatorOutcome outcome)
+{
+  IntItemPtr outcomeItem =
+    smtk::dynamic_pointer_cast<IntItem>(
+      res->find("outcome"));
+  outcomeItem->setValue(outcome);
+}
+
 /**\brief Remove an attribute from the operator's manager.
   *
   * This is a convenience method to remove an operator's result

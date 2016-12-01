@@ -820,7 +820,42 @@ int ImportJSON::ofLocalSession(
     opsObj->type != cJSON_String ||
     !opsObj->valuestring ||
     !opsObj->valuestring[0])
+    {
     return status;
+    }
+
+  // See if the session node has any "static-options".
+  // If so, then we must call the session's staticSetup function
+  // on each entry before creating an instance of the session.
+  cJSON* staticOptions = cJSON_GetObjectItem(node, "static-options");
+  if (staticOptions && staticOptions->type == cJSON_Object)
+    { // Turn every string-valued entry in the object into a setting.
+    SessionStaticSetup sessionSetup =
+      SessionRegistrar::sessionStaticSetup(nameObj->valuestring);
+    if (sessionSetup)
+      {
+      for (cJSON* entry = staticOptions->child; entry; entry = entry->next)
+        {
+        if (!entry->string || !entry->string[0])
+          { // Skip dictionary entries with invalid keys.
+          continue;
+          }
+        StringList optVal;
+        if (entry->type == cJSON_String && entry->valuestring && entry->valuestring[0])
+          {
+          optVal.push_back(entry->valuestring);
+          }
+        else if (entry->type == cJSON_Array)
+          {
+          ImportJSON::getStringArrayFromJSON(entry, optVal);
+          }
+        if (!optVal.empty())
+          {
+          sessionSetup(entry->string, optVal);
+          }
+        }
+      }
+    }
 
   SessionRef sref(context, smtk::common::UUID(node->string));
   sref =
