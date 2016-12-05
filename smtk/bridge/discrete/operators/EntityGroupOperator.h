@@ -12,7 +12,7 @@
 #define __smtk_session_discrete_EntityGroupOperator_h
 
 #include "smtk/bridge/discrete/Exports.h"
-#include "smtk/model/Operator.h"
+#include "smtk/model/operators/EntityGroupOperator.h"
 #include "vtkModelEntityGroupOperator.h"
 #include "vtkMaterialOperator.h"
 #include "vtkNew.h"
@@ -30,12 +30,12 @@ class Session;
   * 2. Destroy, which will remove a entity group with given entity Id;
   * 3. Modify/Operate, which will add or remove entities from the given group.
   */
-class SMTKDISCRETESESSION_EXPORT EntityGroupOperator : public smtk::model::Operator
+class SMTKDISCRETESESSION_EXPORT EntityGroupOperator : public smtk::model::EntityGroupOperator
 {
 public:
-  smtkTypeMacro(EntityGroupOperator);
-  smtkCreateMacro(EntityGroupOperator);
-  smtkSharedFromThisMacro(Operator);
+  smtkTypeMacro(smtk::bridge::discrete::EntityGroupOperator);
+  smtkCreateMacro(smtk::bridge::discrete::EntityGroupOperator);
+  smtkSharedFromThisMacro(smtk::model::EntityGroupOperator);
   smtkDeclareModelOperator();
 
   virtual bool ableToOperate();

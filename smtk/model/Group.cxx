@@ -44,11 +44,14 @@ EntityRef Group::parent() const
 Group& Group::addEntity(const EntityRef& thing)
 {
   ManagerPtr mgr = this->manager();
+  if (this->meetsMembershipConstraints(thing))
+  {
   mgr->findOrAddEntityToGroup(this->entity(), thing.entity());
   mgr->trigger(
     std::make_pair(ADD_EVENT,GROUP_SUPERSET_OF_ENTITY),
     *this,
     EntityRef(mgr, thing.entity()));
+  }
 
   return *this;
 }
