@@ -666,6 +666,12 @@ void imageFeatureExtractorWidget
   internal->drawing->SetOrigin(inputImage->GetOrigin());
   internal->drawing->SetSpacing(inputImage->GetSpacing());
 
+  {
+    double * s = inputImage->GetSpacing();
+    this->ui->extentX->setText(QString::number(s[0]));
+    this->ui->extentY->setText(QString::number(s[1]));
+  }
+
   double currentColor[4];
   internal->drawing->GetDrawColor(currentColor);
   internal->drawing->SetDrawColor(internal->PotentialBG, internal->PotentialBG,
