@@ -160,6 +160,10 @@ void vtkCleanPolylines::StripLines(vtkPolyData *input, vtkPolyData *result,
   //Create a visited mask for all point ids - we need this in the case
   // there are any closed loops that are not connected to any other line
   vtkPoints *pnts = input->GetPoints();
+  if(pnts == NULL)
+  {
+    return;
+  }
   vtkIdType numPts = pnts->GetNumberOfPoints();
   unsigned char *marks = new unsigned char[numPts];
   // Mark all points as not being visited
