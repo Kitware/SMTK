@@ -80,12 +80,6 @@ pqArcWidget::pqArcWidget(
   finishButton->setPalette(applyPalette);
   finishButton->setDefault(true);
 
-  QObject::connect(this->Internals->buttonRectArc, SIGNAL(clicked()),
-    this, SLOT(generateRectangleArc()));
-
-  QObject::connect(this->Internals->ArcStraightenButton, SIGNAL(released()),
-    this, SLOT(onStraightenArc()));
-
   pqServerManagerModel* smmodel =
     pqApplicationCore::instance()->getServerManagerModel();
   this->createWidget(smmodel->findServer(_smproxy->GetSession()));
@@ -281,32 +275,6 @@ void pqArcWidget::finishContour( )
   emit this->contourDone();
 }
 
-//-----------------------------------------------------------------------------
-void pqArcWidget::generateRectangleArc( )
-{
-  vtkSMNewWidgetRepresentationProxy* widget = this->getWidgetProxy();
-  if (widget)
-    {
-    widget->InvokeCommand("Rectangularize");
-    this->setModified();
-    this->render();
-    }
-  emit this->contourDone();
-}
-
-//-----------------------------------------------------------------------------
-void pqArcWidget::onStraightenArc()
-{
-  vtkSMNewWidgetRepresentationProxy* widget = this->getWidgetProxy();
-  if (widget)
-    {
-    widget->InvokeCommand("Straighten");
-    this->setModified();
-    this->render();
-    }
-  emit this->contourDone();
-}
-
 //----------------------------------------------------------------------------
 void pqArcWidget::setPointPlacer(vtkSMProxy* placerProxy)
 {
@@ -370,7 +338,6 @@ void pqArcWidget::updateRepProperty(
 //-----------------------------------------------------------------------------
 void pqArcWidget::useArcEditingUI(bool isWholeArc)
 {
-  this->Internals->buttonRectArc->setVisible(isWholeArc);
   this->Internals->Delete->setVisible(false);
   this->Internals->Closed->setEnabled(isWholeArc);
 }

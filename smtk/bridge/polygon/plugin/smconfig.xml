@@ -152,16 +152,6 @@
         <BooleanDomain name="bool" />
       </IntVectorProperty>
 
-      <Property
-        name="Rectangularize"
-        command="Rectangularize">
-      </Property>
-
-      <Property
-        name="Straighten"
-        command="Straighten">
-      </Property>
-
       <Hints>
         <!-- View can be used to specify the way to get the poly data for the representation -->
         <Output />
@@ -207,8 +197,6 @@
           <Property name="ShowSelectedNodes" />
           <Property name="SelectNodes" />
           <Property name="ClosedLoop" />
-          <Property name="Rectangularize"/>
-          <Property name="Straighten" />
         </ExposedProperties>
       </SubProxy>
 
