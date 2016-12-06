@@ -79,10 +79,6 @@ public slots:
   /// Finish editing the contour
   void finishContour( );
 
-  /// Generate a rectangle arc if possible from available
-  /// points in the contour
-  void generateRectangleArc( );
-
   /// Resets pending changes. Default implementation
   /// pushes the property values of the controlled widget to the
   /// 3D widget properties.
@@ -102,8 +98,6 @@ protected:
 
 protected slots:
   void deleteAllNodes();
-  // clear all the internal nodes of the selected the arc.
-  void onStraightenArc();
 
 private:
   pqArcWidget(const pqArcWidget&); // Not implemented.

@@ -99,17 +99,6 @@ public:
   vtkBooleanMacro( CanEdit, int );
 
   //Description:
-  // Generate a closed rectangle arc with four points, based on the
-  // points on the contour. Initially, the new rectangle is just
-  // the bounding box of all available points.
-  void Rectangularize();
-
-  //Description:
-  // This will make the representation a straight line containing only the
-  // start and end points of the original arc.
-  void Straighten();
-
-  //Description:
   // Expose method in superClass
   void InitializeContour( vtkPolyData * poly, vtkIdList *)
   {
