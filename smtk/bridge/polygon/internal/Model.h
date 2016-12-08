@@ -92,7 +92,8 @@ public:
     T end,
     bool addToModel,
     const U& splitEdgeFaces,
-    bool headIsNewVertex);
+    bool headIsNewVertex,
+    smtk::model::VertexSet& newVerts);
 
   template<typename T>
   model::Edge createModelEdgeFromPoints(smtk::model::ManagerPtr mgr, T begin, T end, bool isFreeCell);

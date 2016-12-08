@@ -46,11 +46,13 @@ namespace smtk {
   * endpoint vertices, since the only time face-adjacencies should be provided is during surgery
   * to remove an edge and replace it with a different edge which preserves the old edge's adjacencies.
   *
-  * Finally \a headIsNewVertex indicates whether, when \a splitEdgeFaces is not empty, the
+  * The \a headIsNewVertex indicates whether, when \a splitEdgeFaces is not empty, the
   * head of the segments is a model vertex that has no other incident edges yet. When true,
   * the face-adjacency information is only updated on the edge being inserted at the head vertex
   * and not on other incident edges (since none exist at this point, it would overwrite the
   * adjacency information on the new edge with the wrong value).
+  *
+  * Finally \a newVerts will be populated with any vertices created when creating the edge.
   */
 template<typename T, typename U>
 model::Edge pmodel::createModelEdgeFromSegments(
@@ -59,7 +61,8 @@ model::Edge pmodel::createModelEdgeFromSegments(
   T end,
   bool addToModel,
   const U& splitEdgeFaces,
-  bool headIsNewVertex)
+  bool headIsNewVertex,
+  smtk::model::VertexSet& newVerts)
 {
   if (!mgr || begin == end)
     return smtk::model::Edge();
@@ -135,6 +138,7 @@ model::Edge pmodel::createModelEdgeFromSegments(
     created.findOrAddRawRelation(vert);
     vert.findOrAddRawRelation(created);
     vInitStorage->setInsideSplit(false);
+    newVerts.insert(vert);
     }
   if (vFiniStorage)
     {
@@ -149,6 +153,7 @@ model::Edge pmodel::createModelEdgeFromSegments(
     created.findOrAddRawRelation(vert);
     vert.findOrAddRawRelation(created);
     vFiniStorage->setInsideSplit(false);
+    newVerts.insert(vert);
     }
   // Add tesselation to created edge using storage to lift point coordinates:
   this->addEdgeTessellation(created, storage);

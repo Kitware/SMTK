@@ -281,6 +281,7 @@ smtk::model::OperatorResult CreateEdgeFromPoints::process(std::vector<double> &p
     // first segment is now guaranteed to start with a model
     // vertex (and thus the last segment will end with one).
 
+    smtk::model::VertexSet newVerts;
     segStart = result.begin();
     for (SegmentSplitsT::iterator sit = result.begin(); sit != result.end(); )
       {
@@ -290,7 +291,7 @@ smtk::model::OperatorResult CreateEdgeFromPoints::process(std::vector<double> &p
       if (generateEdge)
         { // Generate an edge. segStart->second.low() is guaranteed to be a model vertex.
           smtk::model::Edge edge = storage->createModelEdgeFromSegments(
-            mgr, segStart, sit, true, std::pair<UUID,UUID>(), false);
+            mgr, segStart, sit, true, std::pair<UUID,UUID>(), false, newVerts);
           if (edge.isValid())
             {
             created.push_back(edge);
@@ -302,9 +303,11 @@ smtk::model::OperatorResult CreateEdgeFromPoints::process(std::vector<double> &p
     if (segStart != result.end())
       {
       smtk::model::Edge edge = storage->createModelEdgeFromSegments(
-        mgr, segStart, result.end(), true, std::pair<UUID,UUID>(), false);
+        mgr, segStart, result.end(), true, std::pair<UUID,UUID>(), false, newVerts);
       created.push_back(edge);
       }
+
+    created.insert(created.end(), newVerts.begin(), newVerts.end());
     }
 
   // Remove all non-free vertices from the model and mark the model as modified

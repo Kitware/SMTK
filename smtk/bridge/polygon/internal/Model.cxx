@@ -519,10 +519,10 @@ bool pmodel::demoteModelVertex(
         addSegmentsForEdge(segs, ie1, /*reverse?*/ false);
         addSegmentsForEdge(segs, ie2, !e2OutgoingFromDemotedVert);
         }
-
+      smtk::model::VertexSet newVerts;
       // Now we can create the new model edge.
       smtk::model::Edge eout = this->createModelEdgeFromSegments(
-        mgr, segs.begin(), segs.end(), /*addToModel:*/ false, adjacentFaces1, false);
+        mgr, segs.begin(), segs.end(), /*addToModel:*/ false, adjacentFaces1, false, newVerts);
       // FIXME: URHERE: Make sure ve1other and ve2other have face-adjacency recorded properly after eout is created.
       eout.findOrAddRawRelation(ve1other);
       if (ve2other != ve1other)
@@ -861,10 +861,12 @@ bool pmodel::splitModelEdgeAtModelVertices(
     segSplits.push_back(segs.end());
     }
 
+  smtk::model::VertexSet newVerts;
   std::vector<SegmentSplitsT::iterator>::iterator sgit = segSplits.begin();
   do
     {
-    eout = this->createModelEdgeFromSegments(mgr, last, *sgit, /*addToModel:*/ false, adjacentFaces, *sgit != segs.end());
+    eout = this->createModelEdgeFromSegments(mgr, last, *sgit, /*addToModel:*/ false,
+      adjacentFaces, *sgit != segs.end(), newVerts);
     // Tie edge to model (if edge is not "owned" by a face).
     if (isFreeCell)
       {
