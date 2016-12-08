@@ -32,10 +32,6 @@ public:
       return false;
     }
     cv::Mat src_c = src.clone();
-    if(spacing[1] > 0)
-    {
-      cv::flip(src_c, src_c, 0);
-    }
     vtkSmartPointer<vtkImageImport> importer = vtkSmartPointer<vtkImageImport>::New();
     if ( !dest )
     {
@@ -77,10 +73,6 @@ public:
       }
     }
 
-    if(src->GetSpacing()[1] > 0)
-    {
-      cv::flip(dest, dest, 0);
-    }
     return true;
   }
 
