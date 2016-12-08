@@ -188,14 +188,12 @@ public:
     imageClassFilter->SetBackgroundValue(Background);
 
     contFilter = vtkSmartPointer<vtkContourFilter>::New();
-    contFilter->SetInputConnection(imageClassFilter->GetOutputPort());
     contFilter->SetValue(0,127.5);
     contFilter->ComputeGradientsOn();
     contFilter->ComputeScalarsOff();
 
     cleanPolyLines = vtkSmartPointer<vtkCleanPolylines>::New();
     cleanPolyLines->SetMinimumLineLength(0);
-    cleanPolyLines->SetInputConnection(contFilter->GetOutputPort());
   }
 
   int Alpha;
@@ -674,7 +672,10 @@ void imageFeatureExtractorWidget
   internal->imageViewer->GetRenderer()->ResetCamera();
 
   vtkRenderWindowInteractor *interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
+  this->internal->contFilter->SetInputData(this->internal->imageClassFilter->GetOutput(0));
   this->internal->contFilter->Update();
+  this->internal->cleanPolyLines->SetInputData(this->internal->contFilter->GetOutput());
+  this->internal->cleanPolyLines->Update();
   interactor->Render();
 }
 
@@ -705,7 +706,9 @@ void imageFeatureExtractorWidget::run()
 
   internal->imageClassFilter->SetInputData(internal->filter->GetOutput(0));
   internal->imageClassFilter->Update();
+  internal->contFilter->SetInputData(this->internal->imageClassFilter->GetOutput());
   internal->contFilter->Update();
+  internal->cleanPolyLines->SetInputData(this->internal->contFilter->GetOutput());
   internal->cleanPolyLines->Update();
   internal->lineMapper->SetInputData(internal->cleanPolyLines->GetOutput());
   vtkImageData* updateMask = internal->filter->GetOutput(1);
@@ -812,7 +815,9 @@ void imageFeatureExtractorWidget::setFGFilterSize(QString const& f)
 {
   internal->imageClassFilter->SetMinFGSize(f.toDouble());
   internal->imageClassFilter->Update();
+  internal->contFilter->SetInputData(this->internal->imageClassFilter->GetOutput());
   internal->contFilter->Update();
+  internal->cleanPolyLines->SetInputData(this->internal->contFilter->GetOutput());
   internal->cleanPolyLines->Update();
   internal->lineMapper->SetInputData(internal->cleanPolyLines->GetOutput());
   vtkRenderWindowInteractor *interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
@@ -823,7 +828,9 @@ void imageFeatureExtractorWidget::setBGFilterSize(QString const& b)
 {
   internal->imageClassFilter->SetMinBGSize(b.toDouble());
   internal->imageClassFilter->Update();
+  internal->contFilter->SetInputData(this->internal->imageClassFilter->GetOutput());
   internal->contFilter->Update();
+  internal->cleanPolyLines->SetInputData(this->internal->contFilter->GetOutput());
   internal->cleanPolyLines->Update();
   internal->lineMapper->SetInputData(internal->cleanPolyLines->GetOutput());
   vtkRenderWindowInteractor *interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
