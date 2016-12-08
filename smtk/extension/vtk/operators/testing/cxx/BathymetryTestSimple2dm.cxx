@@ -90,6 +90,37 @@ int main(int argc, char* argv[])
     std::cerr << "Read operator failed\n";
     return 1;
     }
+  // assign model value
+  smtk::model::Model model2dm = opresult->findModelEntity("created")->value();
+  manager->assignDefaultNames(); // should force transcription of every entity, but doesn't yet.
+
+  if (!model2dm.isValid())
+  {
+    std::cerr << "Reading model new river file failed!\n";
+    return 1;
+  }
+
+  // add auxiliary geometry
+  smtk::model::OperatorPtr aux_geOp = session->op("add auxiliary geometry");
+  std::cout << "The url for auxiliary geometry is: " << argv[2] << std::endl;
+  aux_geOp->specification()->findFile("url")->setValue(std::string(argv[2]));
+  aux_geOp->associateEntity(model2dm);
+  smtk::model::OperatorResult aux_geOpresult = aux_geOp->operate();
+  if (
+    aux_geOpresult->findInt("outcome")->value() !=
+        smtk::model::OPERATION_SUCCEEDED)
+  {
+    std::cerr << "Add auxiliary geometry failed!\n";
+    return 1;
+  }
+
+  smtk::model::AuxiliaryGeometry auxGo2dm = aux_geOpresult->findModelEntity("created")->value();
+  std::cout << "After aux_geo op, the url inside is: "<<auxGo2dm.url()<<std::endl;
+  if (!auxGo2dm.isValid())
+  {
+    std::cerr<< "Auxiliary geometry is not valid!\n";
+    return 1;
+  }
 
   // create the bathymetry operator
   std::cout <<  "Creating apply bathymetry operator\n";
@@ -103,20 +134,8 @@ int main(int argc, char* argv[])
 
   std::cout<<"optypeItem initial value is: "<< bathyOperator->specification()->findString("operation")->value() << std::endl;
 
-  // assign model value
-  smtk::model::Model modelChesaBay = opresult->findModelEntity("created")->value();
-  manager->assignDefaultNames(); // should force transcription of every entity, but doesn't yet.
-
-  if (!modelChesaBay.isValid())
-  {
-    std::cerr << "Reading bay contour file failed!\n";
-    return 1;
-  }
-
   // set input values for bathymetry filter
-  bathyOperator->specification()->findModelEntity("model")->setValue(modelChesaBay);
-  std ::cout << "bathymetry file is: " << argv[2] << std::endl;
-  bathyOperator->specification()->findFile("bathymetryfile")->setValue(std::string(argv[2]));
+  bathyOperator->specification()->findModelEntity("auxiliary geometry")->setValue(auxGo2dm);
   bathyOperator->specification()->findDouble("averaging elevation radius")->setValue(0.05);
 
   smtk::model::OperatorResult bathyResult = bathyOperator->operate();
@@ -130,7 +149,7 @@ int main(int argc, char* argv[])
   // Remove the bathymetry operator test
   // enable them when we fix set dafault index for discrete  sessioni
   bathyOperator->specification()->findString("operation")->setValue("Remove Bathymetry");
-  std::cout<<"optypeItem value in RB is: "<< bathyOperator->specification()->findString("operation")->value() << std::endl;
+  bathyOperator->specification()->findModelEntity("model")->setValue(model2dm);  std::cout<<"optypeItem value in RB is: "<< bathyOperator->specification()->findString("operation")->value() << std::endl;
   smtk::model::OperatorResult RmBathyResult = bathyOperator->operate();
 
   if (RmBathyResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)

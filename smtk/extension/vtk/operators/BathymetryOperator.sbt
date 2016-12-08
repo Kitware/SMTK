@@ -5,17 +5,22 @@
     <!-- Operator -->
     <AttDef Type="apply bathymetry" BaseType="operator">
       <ItemDefinitions>
-        <ModelEntity Name="model" NumberOfRequiredValues="1">
-          <MembershipMask>model</MembershipMask>
-        </ModelEntity>
 
         <String Name="operation" Label="Operation" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
 
           <ChildrenDefinitions>
-           <File Name="bathymetryfile" Label="Load File:" Version="0"  NumberOfRequiredValues="1"
-                   ShouldExist="true"
-                   FileFilters="Supported files (*.pts *.bin *.bin.pts *.las *.dem *.vtk *.vtp *.vti *.2dm *.3dm *.obj *.tin *.poly *.smesh *.fac);;LIDAR (*.pts *.bin *.bin.pts);;LAS (*.las);;DEM (*.dem);;VTK files (*.vtk *.vtp *.vti);;CMB Geometry files(*.2dm *.3dm *.obj *.tin *.poly *.smesh *.fac);;All (*.*)">
-            </File>
+            <ModelEntity Name="auxiliary geometry" Label = "auxiliary geometry" NumberOfRequiredValues="1">
+              <MembershipMask>aux_geom</MembershipMask>
+              <BriefDescription>
+              Add auxiliary geometry first then apply bathymetry.
+            </BriefDescription>
+            </ModelEntity>
+            <ModelEntity Name="model" Label = "model" NumberOfRequiredValues="1">
+              <MembershipMask>model</MembershipMask>
+            </ModelEntity>
+            <MeshEntity Name="mesh" NumberOfRequiredValues="0" Extensible = "1">
+              <MembershipMask>mesh</MembershipMask>
+            </MeshEntity>
 
             <Double Name="averaging elevation radius" Label="Radius for Averaging Elevation:" Version="0" NumberOfRequiredValues="1">
               <DefaultValue>1.0</DefaultValue>
@@ -38,7 +43,7 @@
             <Structure>
               <Value Enum="Apply Bathymetry (Auto)">Apply Bathymetry (Auto)</Value>
               <Items>
-                <Item>bathymetryfile</Item>
+                <Item>auxiliary geometry</Item>
                 <Item>averaging elevation radius</Item>
                 <Item>set highest elevation</Item>
                 <Item>set lowest elevation</Item>
@@ -48,17 +53,18 @@
             <Structure>
               <Value Enum="Apply Bathymetry (Model&Mesh)">Apply Bathymetry (Model&Mesh)</Value>
               <Items>
-                <Item>bathymetryfile</Item>
+                <Item>auxiliary geometry</Item>
                 <Item>averaging elevation radius</Item>
                 <Item>set highest elevation</Item>
                 <Item>set lowest elevation</Item>
+                <Item>mesh</Item>
 <!--                <Item>applyonlytovisiblemesh</Item>  -->
               </Items>
             </Structure>
             <Structure>
               <Value Enum="Apply Bathymetry (Model Only)">Apply Bathymetry (Model Only)</Value>
               <Items>
-                <Item>bathymetryfile</Item>
+                <Item>auxiliary geometry</Item>
                 <Item>averaging elevation radius</Item>
                 <Item>set highest elevation</Item>
                 <Item>set lowest elevation</Item>
@@ -68,15 +74,19 @@
             <Structure>
               <Value Enum="Apply Bathymetry (Mesh only)">Apply Bathymetry (Mesh Only)</Value>
               <Items>
-                <Item>bathymetryfile</Item>
+                <Item>auxiliary geometry</Item>
                 <Item>averaging elevation radius</Item>
                 <Item>set highest elevation</Item>
                 <Item>set lowest elevation</Item>
+                <Item>mesh</Item>
 <!--                <Item>applyonlytovisiblemesh</Item>  -->
               </Items>
             </Structure>
             <Structure>
               <Value Enum="Remove Bathymetry">Remove Bathymetry</Value>
+              <Items>
+                <Item>model</Item>
+              </Items>
             </Structure>
           </DiscreteInfo>
 
