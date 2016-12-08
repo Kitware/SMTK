@@ -42,6 +42,7 @@
 #include <vtkContourFilter.h>
 #include <vtkTransformPolyDataFilter.h>
 #include <vtkTransform.h>
+#include <vtkImageChangeInformation.h>
 
 #include <vtkGDALRasterReader.h>
 #include <vtkXMLImageDataReader.h>
@@ -138,8 +139,15 @@ public:
     imageViewer->SetInputData(image);
     imageViewer->GetRenderer()->ResetCamera();
     imageViewer->GetRenderer()->SetBackground(0,0,0);
+    vtkCamera* camera = imageViewer->GetRenderer()->GetActiveCamera();
 
-    imageViewer->GetRenderer()->AddActor(maskActor);
+    vtkSmartPointer<vtkRenderer> maskRender = vtkSmartPointer<vtkRenderer>::New();
+    maskRender->SetLayer(1);
+    maskRender->AddActor(maskActor);
+    maskRender->SetActiveCamera(camera);
+    imageViewer->GetRenderWindow()->AddRenderer(maskRender);
+
+    imageViewer->GetRenderWindow()->SetNumberOfLayers(3);
 
     filterWaterShed->SetInputData(0, image);
     filterWaterShed->SetInputConnection(1, drawing->GetOutputPort());
@@ -162,7 +170,11 @@ public:
     lineMapper->ScalarVisibilityOff();
     lineActor->SetMapper(lineMapper);
 
-    imageViewer->GetRenderer()->AddActor(lineActor);
+    vtkSmartPointer<vtkRenderer> lineRender = vtkSmartPointer<vtkRenderer>::New();
+    lineRender->SetLayer(2);
+    lineRender->AddActor(lineActor);
+    lineRender->SetActiveCamera(camera);
+    imageViewer->GetRenderWindow()->AddRenderer(lineRender);
 
     maskActor->GetMapper()->SetInputConnection(drawing->GetOutputPort());
 
@@ -184,13 +196,6 @@ public:
     cleanPolyLines = vtkSmartPointer<vtkCleanPolylines>::New();
     cleanPolyLines->SetMinimumLineLength(0);
     cleanPolyLines->SetInputConnection(contFilter->GetOutputPort());
-
-    vtkSmartPointer<vtkTransform> translation = vtkSmartPointer<vtkTransform>::New();
-    translation->Translate(0.0, 0.0, 0.001);
-
-    transformFilter = vtkSmartPointer<vtkTransformPolyDataFilter>::New();
-    transformFilter->SetInputConnection(cleanPolyLines->GetOutputPort());
-    transformFilter->SetTransform(translation);
   }
 
   int Alpha;
@@ -210,7 +215,6 @@ public:
   vtkSmartPointer<vtkImageViewer2> imageViewer;
   vtkSmartPointer<vtkPropPicker> propPicker;
   vtkSmartPointer<vtkContourFilter> contFilter;
-  vtkSmartPointer<vtkTransformPolyDataFilter> transformFilter;
   vtkSmartPointer<vtkImageClassFilter> imageClassFilter;
   vtkSmartPointer<vtkCleanPolylines> cleanPolyLines;
 
@@ -553,7 +557,6 @@ imageFeatureExtractorWidget::imageFeatureExtractorWidget()
 {
   this->ui = new Ui_imageFeatureExtractor;
   this->ui->setupUi(this);
-  //connect(this->ui->actionExit, SIGNAL(triggered()), this, SLOT(slotExit()));
   connect(this->ui->Accept, SIGNAL(clicked()), this, SLOT(accept()));
   connect(this->ui->Cancel, SIGNAL(clicked()), this, SLOT(reject()));
   connect(this->ui->SaveMask, SIGNAL(clicked()), this, SLOT(saveMask()));
@@ -613,17 +616,6 @@ vtkSmartPointer<vtkPolyData> imageFeatureExtractorWidget::getPolydata()
 {
   return internal->cleanPolyLines->GetOutput();
 }
-
-//void imageFeatureExtractorWidget::slotExit()
-//{
-  //qApp->exit();
-//}
-
-//void imageFeatureExtractorWidget::accept()
-//{
-//  vtkSmartPointer<vtkPolyData> poly = internal->contFilter->GetOutput();
-//  emit send(poly);
-//}
 
 void imageFeatureExtractorWidget
 ::setImage(std::string imagefile)
@@ -715,8 +707,7 @@ void imageFeatureExtractorWidget::run()
   internal->imageClassFilter->Update();
   internal->contFilter->Update();
   internal->cleanPolyLines->Update();
-  internal->transformFilter->Update();
-  internal->lineMapper->SetInputData(internal->transformFilter->GetOutput());
+  internal->lineMapper->SetInputData(internal->cleanPolyLines->GetOutput());
   vtkImageData* updateMask = internal->filter->GetOutput(1);
   vtkImageData* currentMask = internal->drawing->GetOutput();
 
@@ -729,9 +720,9 @@ void imageFeatureExtractorWidget::run()
     {
       for (int x = 0; x < dims[0]; x++)
       {
-        double tmpC[] = {updateMask->GetScalarComponentAsFloat( x, y, z, 0),
-                         updateMask->GetScalarComponentAsFloat( x, y, z, 0),
-                         updateMask->GetScalarComponentAsFloat( x, y, z, 0),
+        double tmpC[] = {updateMask->GetScalarComponentAsFloat(  x, y, z, 0),
+                         updateMask->GetScalarComponentAsFloat(  x, y, z, 0),
+                         updateMask->GetScalarComponentAsFloat(  x, y, z, 0),
                          currentMask->GetScalarComponentAsFloat( x, y, z, 3) };
         internal->drawing->SetDrawColor(tmpC);
         internal->drawing->DrawPoint(x,y);
@@ -819,13 +810,11 @@ void imageFeatureExtractorWidget::setTransparency(int t)
 
 void imageFeatureExtractorWidget::setFGFilterSize(QString const& f)
 {
-
   internal->imageClassFilter->SetMinFGSize(f.toDouble());
   internal->imageClassFilter->Update();
   internal->contFilter->Update();
   internal->cleanPolyLines->Update();
-  internal->transformFilter->Update();
-  internal->lineMapper->SetInputData(internal->transformFilter->GetOutput());
+  internal->lineMapper->SetInputData(internal->cleanPolyLines->GetOutput());
   vtkRenderWindowInteractor *interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
   interactor->Render();
 }
@@ -836,8 +825,7 @@ void imageFeatureExtractorWidget::setBGFilterSize(QString const& b)
   internal->imageClassFilter->Update();
   internal->contFilter->Update();
   internal->cleanPolyLines->Update();
-  internal->transformFilter->Update();
-  internal->lineMapper->SetInputData(internal->transformFilter->GetOutput());
+  internal->lineMapper->SetInputData(internal->cleanPolyLines->GetOutput());
   vtkRenderWindowInteractor *interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
   interactor->Render();
 }
