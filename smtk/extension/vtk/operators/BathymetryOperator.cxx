@@ -22,6 +22,7 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 
+#include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
@@ -48,15 +49,30 @@ bool internal_bathyToAssociatedMeshes(
   const Model& srcModel, const bool &removing,
   const double &radius, const bool &useHighLimit,
   const double &eleHigh, const bool &useLowLimit, const double &eleLow,
-  smtk::mesh::ManagerPtr meshMgr, smtk::mesh::MeshSets& modifiedMeshes)
+  smtk::mesh::ManagerPtr meshMgr, smtk::mesh::MeshSets& modifiedMeshes,
+    smtk::attribute::MeshItem::Ptr meshItem)
 {
   bool ok = true;
+  std::vector<smtk::mesh::CollectionPtr> meshCollections;
   if(!bathyHelper || !meshMgr )
     {
     return ok;
     }
-  std::vector<smtk::mesh::CollectionPtr> meshCollections =
+  // decide we work on selected mesh or all meshes
+  if (meshItem ==nullptr)
+    {
+    meshCollections =
     meshMgr->associatedCollections(srcModel);
+    }
+  else
+    {
+    // convert meshItem into meshCollections
+    for (attribute::MeshItem::const_mesh_it mit = meshItem->begin();
+         mit != meshItem->end(); ++mit)
+      {
+      meshCollections.push_back(mit->collection());
+      }
+    }
   if(meshCollections.size() == 0)
     {
     return ok;
@@ -135,26 +151,41 @@ BathymetryOperator::~BathymetryOperator()
 
 bool BathymetryOperator::ableToOperate()
 {
-  Model model;
-  bool isModelValid =
-    // The SMTK model must be valid
-    (model = this->specification()->findModelEntity("model")->value().as<Model>()).isValid();
-    // The CMB discrete model must exist:
+
   smtk::attribute::StringItem::Ptr optypeItem =
     this->specification()->findString("operation");
   std::string optype = optypeItem->value();
-  if(optype == "Apply Bathymetry")
+  // The auxiliary geometry and corresponding model must be valid
+  if (optype != "Remove Bathymetry")
+  {
+    smtk::model::AuxiliaryGeometry auxGeo = this->specification()->findModelEntity("auxiliary geometry")->value();
+
+    Model model = auxGeo.owningModel();
+    bool isModelValid = model.isValid(),isAuxValid;
+    if (!isModelValid)
     {
-    std::string filename = this->specification()->findFile("bathymetryfile")->value();
-    isModelValid = !filename.empty();
+      smtkErrorMacro(this->log(), "No model specified!");
+      return false;
     }
-  return isModelValid;
+    isAuxValid = auxGeo.isValid();
+    return isModelValid && isAuxValid;
+  }
+  // valid model for remove bathymetry
+  else
+  {
+    Model model  = this->specification()->findModelEntity("model")->value().as<Model>();
+    if (!model.isValid())
+    {
+      smtkErrorMacro(this->log(), "No model specified to remove!");
+      return false;
+    }
+    return true;
+  }
 }
 
 OperatorResult BathymetryOperator::operateInternal()
 {
   // Set up the common info for model and mesh
-
   smtk::attribute::StringItem::Ptr optypeItem =
     this->specification()->findString("operation");
   std::string optype = optypeItem->value();
@@ -192,14 +223,24 @@ OperatorResult BathymetryOperator::operateInternal()
     this->specification()->findDouble("set highest elevation");
   smtk::attribute::DoubleItemPtr lowZItem =
     this->specification()->findDouble("set lowest elevation");
+  smtk::attribute::MeshItem::Ptr meshItem = this->specification()->findMesh("mesh");
   double aveEleRadius = aveRItem ? aveRItem->value() : 0.0;
   double highElevation = highZItem ? highZItem->value() : 0.0;
   double lowElevation = lowZItem ? lowZItem->value() : 0.0;
+  EntityRef inModel;
+  smtk::model::AuxiliaryGeometry auxGeo;
 
   // Apply BO to model
-  EntityRef inModel =
-    this->specification()->findModelEntity("model")->value();
-
+  if (optype != "Remove Bathymetry")
+  {
+    auxGeo = this->specification()->
+      findModelEntity("auxiliary geometry")->value();
+    inModel = auxGeo.owningModel();
+  }
+  else
+  {
+    inModel = this->findModelEntity("model")->value();
+  }
   // masterModelPts holds all points from vertices, edges and faces
   vtkNew<vtkPoints> masterModelPts;
   masterModelPts->SetDataTypeToDouble();
@@ -266,7 +307,7 @@ OperatorResult BathymetryOperator::operateInternal()
   else if(ApplyToModel) // check if we want to apply to model
   {
     ok = true;
-    filename = this->specification()->findFile("bathymetryfile")->value();
+    filename = auxGeo.url();
     if(!filename.empty() && this->bathyHelper->loadBathymetryFile(filename) &&
        (bathyPoints = this->bathyHelper->bathymetryData(filename)))
     {
@@ -328,7 +369,7 @@ OperatorResult BathymetryOperator::operateInternal()
   {
     if (bathyPoints == NULL && ApplyToMesh) // get bathy points if we only apply to mesh
     {
-      filename = this->specification()->findFile("bathymetryfile")->value();
+      filename = auxGeo.url();
       if(!(!filename.empty() && this->bathyHelper->loadBathymetryFile(filename) && (bathyPoints = this->bathyHelper->bathymetryData(filename))))
       {
         return this->createResult(OPERATION_FAILED);
@@ -342,7 +383,7 @@ OperatorResult BathymetryOperator::operateInternal()
        optype == "Remove Bathymetry",
        aveEleRadius, highZItem ? highZItem->isEnabled() : false, highElevation,
        lowZItem ? lowZItem->isEnabled() : false, lowElevation,
-       this->manager()->meshes(), modifiedMeshes))
+       this->manager()->meshes(), modifiedMeshes, meshItem))
       {
       std::cerr << "ERROR: Failed to apply bathymetry to associated meshes." << std::endl;
       }

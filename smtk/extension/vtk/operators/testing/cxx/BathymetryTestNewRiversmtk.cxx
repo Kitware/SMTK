@@ -26,6 +26,7 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
 #include "smtk/model/Tessellation.h"
+#include "smtk/model/operators/AddAuxiliaryGeometry.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -66,7 +67,7 @@ int main(int argc, char* argv[])
   smtk::bridge::polygon::Session::Ptr session = smtk::bridge::polygon::Session::create();
   manager->registerSession(session);
 
-  std::cout << "Available cmb operators in discrete session\n";
+  std::cout << "Available cmb operators in polygon session\n";
   StringList opnames = session->operatorNames();
   for (StringList::iterator it = opnames.begin(); it != opnames.end(); ++it)
     std::cout << "  " << *it << "\n";
@@ -82,14 +83,45 @@ int main(int argc, char* argv[])
 
   readOp->specification()->findFile("filename")->setValue(std::string(argv[1]));
   std::cout << "Importing " << argv[1] << "\n";
-  smtk::model::OperatorResult opresult = readOp->operate();
+  smtk::model::OperatorResult ismopResult = readOp->operate();
   if (
-    opresult->findInt("outcome")->value() !=
+    ismopResult->findInt("outcome")->value() !=
     smtk::model::OPERATION_SUCCEEDED)
     {
     std::cerr << "Read operator failed\n";
     return 1;
     }
+  // assign model value
+  smtk::model::Model modelNewRiver = ismopResult->findModelEntity("created")->value();
+  manager->assignDefaultNames(); // should force transcription of every entity, but doesn't yet.
+
+  if (!modelNewRiver.isValid())
+  {
+    std::cerr << "Reading model new river file failed!\n";
+    return 1;
+  }
+
+  // add auxiliary geometry
+  smtk::model::OperatorPtr aux_geOp = session->op("add auxiliary geometry");
+  std::cout << "The url for auxiliary geometry is: " << argv[2] << std::endl;
+  aux_geOp->specification()->findFile("url")->setValue(std::string(argv[2]));
+  aux_geOp->associateEntity(modelNewRiver);
+  smtk::model::OperatorResult aux_geOpresult = aux_geOp->operate();
+  if (
+    aux_geOpresult->findInt("outcome")->value() !=
+        smtk::model::OPERATION_SUCCEEDED)
+  {
+    std::cerr << "Add auxiliary geometry failed!\n";
+    return 1;
+  }
+
+  smtk::model::AuxiliaryGeometry auxGoNewRiver = aux_geOpresult->findModelEntity("created")->value();
+  std::cout << "After aux_geo op, the url inside is: "<<auxGoNewRiver.url()<<std::endl;
+  if (!auxGoNewRiver.isValid())
+  {
+    std::cerr<< "Auxiliary geometry is not valid!\n";
+    return 1;
+  }
 
   // create the bathymetry operator
   std::cout <<  "Creating apply bathymetry operator\n";
@@ -103,20 +135,9 @@ int main(int argc, char* argv[])
 
   std::cout<<"optypeItem initial value is: "<< bathyOperator->specification()->findString("operation")->value() << std::endl;
 
-  // assign model value
-  smtk::model::Model modelChesaBay = opresult->findModelEntity("created")->value();
-  manager->assignDefaultNames(); // should force transcription of every entity, but doesn't yet.
-
-  if (!modelChesaBay.isValid())
-  {
-    std::cerr << "Reading bay contour file failed!\n";
-    return 1;
-  }
 
   // set input values for bathymetry filter
-  bathyOperator->specification()->findModelEntity("model")->setValue(modelChesaBay);
-  std ::cout << "bathymetry file is: " << argv[2] << std::endl;
-  bathyOperator->specification()->findFile("bathymetryfile")->setValue(std::string(argv[2]));
+  bathyOperator->specification()->findModelEntity("auxiliary geometry")->setValue(auxGoNewRiver);
   bathyOperator->specification()->findDouble("averaging elevation radius")->setValue(0.05);
 
   smtk::model::OperatorResult bathyResult = bathyOperator->operate();
@@ -131,6 +152,7 @@ int main(int argc, char* argv[])
   // enable them when we fix set dafault index for discrete  sessioni
   bathyOperator->specification()->findString("operation")->setValue("Remove Bathymetry");
   std::cout<<"optypeItem value in RB is: "<< bathyOperator->specification()->findString("operation")->value() << std::endl;
+  bathyOperator->specification()->findModelEntity("model")->setValue(modelNewRiver);
   smtk::model::OperatorResult RmBathyResult = bathyOperator->operate();
 
   if (RmBathyResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)

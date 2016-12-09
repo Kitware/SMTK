@@ -209,8 +209,14 @@ bool BathymetryHelper::resetMeshPointsZ(smtk::mesh::CollectionPtr collection)
     std::cout << "collection is invalid!\n";
     return false;
     }
-  // if removing, and we don't have a cached Z-value array, we did not apply bathy yet
+  // if removing, and we don't have a cached Z-value array, we did not apply bathy yet.
+  if(!collection->hasFloatProperty(collection->meshes(),BO_elevation))
+    {
+    std::cout << "original Z value cache does not exist!\n";
+    return true;
+    }
   std::vector<double> originalZs(collection->floatProperty(collection->meshes(),BO_elevation));
+  // Check whether the originalZ is empty
   if(originalZs.size() == 0)
     {
     std::cout << "original Z value cache is empty!\n";
@@ -218,6 +224,7 @@ bool BathymetryHelper::resetMeshPointsZ(smtk::mesh::CollectionPtr collection)
     }
   smtk::mesh::MeshSet meshes = collection->meshes();
   meshes.points().set(originalZs);
+  collection->removeFloatProperty(collection->meshes(),BO_elevation);
   return true;
 }
 
