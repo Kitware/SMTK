@@ -44,7 +44,7 @@ friend SMTKCORE_EXPORT void extractField( const smtk::mesh::MeshSet&,
 class SMTKCORE_EXPORT Field
 {
 public:
-  Field();
+  Field() {}
 
   //This class self allocates all the memory needed to extract tessellation
   //and auto extract the tessellation based on the MeshSet you pass in
