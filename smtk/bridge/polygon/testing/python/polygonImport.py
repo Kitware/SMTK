@@ -13,6 +13,8 @@ import os
 #
 #=============================================================================
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    import smtk.bridge.polygon
 from smtk.simple import *
 import smtk.testing
 

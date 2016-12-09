@@ -12,6 +12,9 @@ import sys
 #
 #=============================================================================
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    import smtk.bridge.cgm
+    import smtk.model
 import smtk.testing
 
 class TestCGMSolidModeling(smtk.testing.TestCase):

@@ -17,6 +17,8 @@ Requires smtkCorePython.so to be in module path
 """
 
 import smtk
+from smtk import attribute
+from smtk import model
 
 itemNames = ["IntComp1", "IntComp2", "DoubleComp1",
              "DoubleComp2", "StringComp1", "StringComp2",
@@ -24,6 +26,7 @@ itemNames = ["IntComp1", "IntComp2", "DoubleComp1",
 
 if __name__ == '__main__':
     import sys
+    import os
 
     status = 0
 
@@ -63,12 +66,12 @@ if __name__ == '__main__':
     def3 = system.createDefinition('Derived3', 'Derived1')
     # Lets add some item definitions
     scompdef = smtk.attribute.ModelEntityItemDefinition.New(itemNames[6])
-    scompdef.setMembershipMask(smtk.model.FACE)
+    scompdef.setMembershipMask(int(smtk.model.FACE))
     scompdef.setIsExtensible(True) # Need to set this or numberOfRequiredValues
     itemdef = smtk.attribute.ModelEntityItemDefinition.ToItemDefinition(scompdef)
     def3.addItemDefinition(itemdef)
     scompdef3 = smtk.attribute.ModelEntityItemDefinition.New(itemNames[7])
-    scompdef3.setMembershipMask(smtk.model.CELL_ENTITY | smtk.model.GROUP_ENTITY | smtk.model.HOMOGENOUS_GROUP)
+    scompdef3.setMembershipMask(int(smtk.model.CELL_ENTITY | smtk.model.GROUP_ENTITY | smtk.model.HOMOGENOUS_GROUP))
     scompdef3.setIsExtensible(True) # Need to set this or numberOfRequiredValues
     itemdef3 = smtk.attribute.ModelEntityItemDefinition.ToItemDefinition(scompdef3)
     def3.addItemDefinition(itemdef3)
@@ -86,7 +89,8 @@ if __name__ == '__main__':
       status = -1
 
     # Lets add a  component to the base def and verify that positions are reordered
-    base.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "InsertStringItem")
+    stringItemDefinition = smtk.attribute.StringItemDefinition.New("InsertStringItem")
+    base.addItemDefinition(stringItemDefinition)
     pstatus = 0
     for j in range(2,6):
       if def2.findItemPosition(itemNames[j]) != (j+1):
@@ -157,7 +161,10 @@ if __name__ == '__main__':
     # III. Find the face-only attribute item and try fuzzing its arguments a bit
     comp = att.find("ModelComp1_FACE")
     if not comp is None:
+       print comp
        fcomp = smtk.attribute.ModelEntityItem.CastTo(comp)
+       print fcomp
+       print dir(fcomp)
        if fcomp.appendValue(edg):
          print 'ERROR: Face-only attribute value accepted an edge'
          status = -1

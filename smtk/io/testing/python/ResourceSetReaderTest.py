@@ -12,6 +12,9 @@ import sys
 #
 #=============================================================================
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    import smtk.common
+    import smtk.io
 from smtk.simple import *
 
 class TestResourceSetReader():
@@ -28,6 +31,7 @@ class TestResourceSetReader():
         self.status = 0  # return value
 
         self.resources = smtk.common.ResourceSet()
+        print 'resources', self.resources
         self.reader = smtk.io.ResourceSetReader()
         self.logger = smtk.io.Logger()
 
@@ -68,6 +72,12 @@ class TestResourceSetReader():
                 resourceIds = self.resources.resourceIds()
                 for id in resourceIds:
                     print id
+
+        #print ('dir'), dir(self.resources)
+        #print help(self.resources.get)
+        res0 = self.resources.get('att0')
+        print 'type', res0.resourceType()
+        #print dir(res0)
 
         return self.status
 

@@ -13,6 +13,9 @@
 
 import os
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    import smtk.io
+    import smtk.mesh
 import smtk.testing
 import sys
 
@@ -30,7 +33,7 @@ class CellVisitor(smtk.mesh.CellForEach) :
         smtk.mesh.CellForEach.__init__(self, True)
         self.count = 0
 
-    def forCell(self, cellType, numPoints):
+    def forCell(self, cellId, cellType, numPoints):
         self.count += 1
 
         #show how to access the point ids of the cell
@@ -51,7 +54,7 @@ class PointVisitor(smtk.mesh.PointForEach) :
         smtk.mesh.PointForEach.__init__(self)
         self.count = 0
 
-    def forPoint(self, pointIds, xyz, doModify):
+    def forPoints(self, pointIds, xyz, doModify):
         self.count += pointIds.size()
         #x,y,z is the physical location of the point
         pass
@@ -62,8 +65,8 @@ def test_file_load():
 
     # Load the mesh file
     print 'data_dir', smtk.testing.DATA_DIR
-    mesh_path = os.path.join(smtk.testing.DATA_DIR, 'mesh', 'sixth_hexflatcore.h5m')
-    c = smtk.io.ImportMesh.entireFile(mesh_path,m)
+    mesh_path = os.path.join(smtk.testing.DATA_DIR, 'mesh', '3d/sixth_hexflatcore.h5m')
+    c = smtk.io.importMesh(mesh_path,m)
     if not c.isValid():
         raise RuntimeError("Failed to read valid mesh")
 

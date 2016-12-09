@@ -15,6 +15,8 @@ Demonstrate model construction from within Python.
 
 import os
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    import smtk.model
 
 if __name__ == '__main__':
   import sys
@@ -28,11 +30,11 @@ if __name__ == '__main__':
     # Add a group
     group = store.addGroup(0, 'Test Group')
     # Add a volume and 4 faces the hard way:
-    volume = smtk.model.Entity(smtk.model.CELL_ENTITY, 3)
-    f1 = smtk.model.Entity(smtk.model.CELL_ENTITY, 2)
-    f2 = smtk.model.Entity(smtk.model.CELL_ENTITY, 2)
-    f3 = smtk.model.Entity(smtk.model.CELL_ENTITY, 2)
-    f4 = smtk.model.Entity(smtk.model.CELL_ENTITY, 2)
+    volume = smtk.model.Entity(int(smtk.model.CELL_ENTITY), 3)
+    f1 = smtk.model.Entity(int(smtk.model.CELL_ENTITY), 2)
+    f2 = smtk.model.Entity(int(smtk.model.CELL_ENTITY), 2)
+    f3 = smtk.model.Entity(int(smtk.model.CELL_ENTITY), 2)
+    f4 = smtk.model.Entity(int(smtk.model.CELL_ENTITY), 2)
     u01 = store.addEntity(f1)
     u02 = store.addEntity(f2)
     u03 = store.addEntity(f3)
@@ -42,6 +44,7 @@ if __name__ == '__main__':
       pushRelation(u03).\
       pushRelation(u04).\
       pushRelation(model.entity())
+
     u00 = store.addEntity(volume)
     # Now verify that the faces refer back to the volume:
     status = False if store.findEntity(u01, True).relations()[0] == u00 else True

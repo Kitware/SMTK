@@ -14,9 +14,12 @@ Tests Attribute::associateEntity()
 """
 
 import smtk
+from smtk import attribute
+from smtk import model
 
 if __name__ == '__main__':
     import sys
+    import os
 
     status = 0
 
@@ -27,9 +30,9 @@ if __name__ == '__main__':
 
     # Create attribute system with 1 def
     system = smtk.attribute.System()
-    system.setRefModelManager(mmgr)
     defn = system.createDefinition('testdef')
-    defn.setAssociationMask(mask)
+    system.setRefModelManager(mmgr)
+    defn.setAssociationMask(int(mask))
 
     # Create attribute and associate to group item
     att = system.createAttribute('testatt', defn)

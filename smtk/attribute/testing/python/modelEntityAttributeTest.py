@@ -17,6 +17,8 @@ model entities of a specific type.
 """
 
 import smtk
+from smtk import attribute
+from smtk import model
 
 if __name__ == '__main__':
     import sys

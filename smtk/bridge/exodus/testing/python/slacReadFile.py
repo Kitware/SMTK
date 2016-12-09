@@ -10,6 +10,8 @@
 #
 #=============================================================================
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    import smtk.bridge.exodus
 import smtk.testing
 from smtk.simple import *
 import sys
@@ -58,7 +60,6 @@ class TestExodusSession(smtk.testing.TestCase):
     }
     self.assertTrue(all([x.name() in nameset for x in allgroups]),
         'Not all group names recognized.')
-
     # Verify that no groups which are not in the list above are present.
     groupnames = [x.name() for x in allgroups]
     self.assertTrue(all([x in groupnames for x in nameset]),

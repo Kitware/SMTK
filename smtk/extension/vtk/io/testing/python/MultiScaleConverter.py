@@ -14,6 +14,9 @@
 import math
 import os
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    import smtk.io.vtk
+    import smtk.mesh
 import sys
 import smtk.testing
 import vtk
@@ -153,7 +156,10 @@ def breakMaterialsByCellType(c):
         c.removeMeshes(domainMeshes)
 
 def convert(inputFile, manager, material):
-    cnvrt = smtk.extension.vtk.io.ImportVTKData();
+    if smtk.wrappingProtocol() == 'pybind11':
+        cnvrt = smtk.io.vtk.ImportVTKData();
+    else:
+        cnvrt = smtk.extension.vtk.io.ImportVTKData();
     collection = cnvrt( inputFile, manager, material );
     return collection
 

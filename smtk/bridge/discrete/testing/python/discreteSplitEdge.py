@@ -10,9 +10,10 @@
 #  PURPOSE.  See the above copyright notice for more information.
 #
 #=============================================================================
-import os
 import sys
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    import smtk.bridge.discrete
 import smtk.testing
 from smtk.simple import *
 
@@ -139,7 +140,10 @@ class TestDiscreteSplitEdge(smtk.testing.TestCase):
     SetVectorValue(spl.findAsModelEntity('model'), [mod,])
     sel = spl.specification().findMeshSelection('selection')
     sel.setModifyMode(smtk.attribute.ACCEPT)
-    [sel.setValues(ent, tess) for (ent, tess) in splits]
+    if smtk.wrappingProtocol() == 'pybind11':
+      [sel.setValues(ent, set(tess)) for (ent, tess) in splits]
+    else:
+      [sel.setValues(ent, tess) for (ent, tess) in splits]
     res = spl.operate()
     self.assertEqual(res.findInt('outcome').value(0), smtk.model.OPERATION_SUCCEEDED,
         'Split failed.')

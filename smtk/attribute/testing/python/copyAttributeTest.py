@@ -22,6 +22,10 @@ import uuid
 
 try:
     import smtk
+    if smtk.wrappingProtocol() == 'pybind11':
+        from smtk import attribute
+        from smtk import io
+        from smtk import model
 except ImportError:
     print
     print 'Not able to import smtk library. You might need to:'
@@ -92,7 +96,7 @@ if __name__ == '__main__':
   # Add model associations, using known UUID values (see test2D.xref)
   att_list = input_system.findAttributes('FirstConcrete')
   if not att_list:
-    logging.error("Unabled to find FirstConcrete attribute")
+    logging.error("Unable to find FirstConcrete attribute")
     sys.exit(-2)
   first_concrete = att_list[0]
 
@@ -100,10 +104,9 @@ if __name__ == '__main__':
   vertex_id = uuid.UUID(vertex09)
   first_concrete.associateEntity(vertex_id)
 
-
   att_list = input_system.findAttributes('SecondConcrete')
   if not att_list:
-    logging.error("Unabled to find SecondConcrete attribute")
+    logging.error("Unable to find SecondConcrete attribute")
     sys.exit(-2)
   second_concrete = att_list[0]
 
@@ -129,14 +132,19 @@ if __name__ == '__main__':
   # Instantiate 2nd/test system
   #
   test_system = smtk.attribute.System()
-  test_system.setRefModelManager(model_manager)
+  if smtk.wrappingProtocol() == 'pybind11':
+    test_system.setRefModelManager(model_manager)
+    options = smtk.attribute.System.CopyOptions.COPY_ASSOCIATIONS
+    test_system.copyAttribute(second_concrete, True)
+  else:
+    test_system.setRefModelManager(model_manager)
 
-  # Copy SecondConcrete attribute
-  # Note: shiboken refuses to wrap smtk::attribute::System::CopyOptions enum, saying:
-  #   enum 'smtk::model::Manager::CopyOptions' is specified in typesystem, but not declared
-  # Rather than trying to reason with shiboken, the options are specified numerically
-  options = 0x00000001  # should be smtk.attribute.System.CopyOptions.COPY_ASSOCIATIONS
-  test_system.copyAttribute(second_concrete, options)
+    # Copy SecondConcrete attribute
+    # Note: shiboken refuses to wrap smtk::attribute::System::CopyOptions enum, saying:
+    #   enum 'smtk::model::Manager::CopyOptions' is specified in typesystem, but not declared
+    # Rather than trying to reason with shiboken, the options are specified numerically
+    options = 0x00000001  # should be smtk.attribute.System.CopyOptions.COPY_ASSOCIATIONS
+    test_system.copyAttribute(second_concrete, options)
   expected_deftypes = [
     'SecondConcrete', 'AnotherAbstractBase', 'CommonBase',
     'FirstConcrete', 'PolyLinearFunction'

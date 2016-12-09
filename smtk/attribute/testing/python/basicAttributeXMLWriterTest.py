@@ -17,6 +17,12 @@ Requires smtkCorePython.so to be in module path
 """
 
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    from smtk import attribute
+    from smtk import io
+    from smtk import model
+
+#print(dir(smtk.io))
 
 if __name__ == '__main__':
     import sys
@@ -34,36 +40,50 @@ if __name__ == '__main__':
     analysis.add('Flow')
     analysis.add('General')
     analysis.add('Time')
-    # Note pass analysis in as list, not set
-    system.defineAnalysis('CFD Flow', list(analysis))
+    if smtk.wrappingProtocol() == 'pybind11':
+        system.defineAnalysis('CFD Flow', analysis)
+    else:
+        # Note pass analysis in as list, not set
+        system.defineAnalysis('CFD Flow', list(analysis))
     analysis.clear()
 
     analysis.add('Flow')
     analysis.add('Heat')
     analysis.add('General')
     analysis.add('Time')
-    system.defineAnalysis('CFD Flow with Heat Transfer', list(analysis))
+    if smtk.wrappingProtocol() == 'pybind11':
+        system.defineAnalysis('CFD Flow with Heat Transfer', analysis)
+    else:
+        system.defineAnalysis('CFD Flow with Heat Transfer', list(analysis))
     analysis.clear()
 
     analysis.add('Constituent')
     analysis.add('General')
     analysis.add('Time')
-    system.defineAnalysis('Constituent Transport', list(analysis))
+    if smtk.wrappingProtocol() == 'pybind11':
+        system.defineAnalysis('Constituent Transport', analysis)
+    else:
+        system.defineAnalysis('Constituent Transport', list(analysis))
     analysis.clear()
 
     # Lets create an attribute to represent an expression
     expDef = system.createDefinition('ExpDef')
     expDef.setBriefDescription('Sample Expression')
     expDef.setDetailedDescription('Sample Expression for testing\nThere is not much here!')
-    eitemdef = expDef.addItemDefinitionStr( smtk.attribute.StringItemDefinition, 'Expression String')
-    eitemdef2 = expDef.addItemDefinitionStr( smtk.attribute.StringItemDefinition, 'Aux String')
+    eitemdef = smtk.attribute.StringItemDefinition.New('Expression String')
+    expDef.addItemDefinition(eitemdef)
+    eitemdef2 = smtk.attribute.StringItemDefinition.New('Aux String')
+    expDef.addItemDefinition(eitemdef2)
     eitemdef.setDefaultValue('sample')
-    eitemdef3 = expDef.addItemDefinitionStr( smtk.attribute.ModelEntityItemDefinition, 'Model Expression')
-    eitemdef4 = expDef.addItemDefinitionStr( smtk.attribute.ModelEntityItemDefinition, 'Aux String')
+    eitemdef3 = smtk.attribute.ModelEntityItemDefinition.New('Model Expression')
+    expDef.addItemDefinition(eitemdef3)
+    eitemdef4 = smtk.attribute.ModelEntityItemDefinition.New('Aux String')
+    expDef.addItemDefinition(eitemdef4)
 
     base = system.createDefinition('BaseDef')
     # Lets add some item definitions
-    iitemdef = base.addItemDefinitionStr(smtk.attribute.IntItemDefinition, 'TEMPORAL')
+    iitemdef = smtk.attribute.IntItemDefinition.New('TEMPORAL')
+    base.addItemDefinition(iitemdef)
     iitemdef.setCommonValueLabel('Time')
     iitemdef.addDiscreteValue(0, 'Seconds')
     iitemdef.addDiscreteValue(1, 'Minutes')
@@ -71,14 +91,16 @@ if __name__ == '__main__':
     iitemdef.addDiscreteValue(3, 'Days')
     iitemdef.setDefaultDiscreteIndex(0)
     iitemdef.addCategory('Time')
-    iitemdef = base.addItemDefinitionStr(smtk.attribute.IntItemDefinition, 'IntItem2')
+    iitemdef = smtk.attribute.IntItemDefinition.New('IntItem2')
+    base.addItemDefinition(iitemdef)
     iitemdef.setDefaultValue(10);
     iitemdef.addCategory('Heat');
 
     def1 = system.createDefinition('Derived1', 'BaseDef')
-    def1.setAssociationMask(smtk.model.MODEL_DOMAIN) # belongs on model
+    def1.setAssociationMask(int(smtk.model.MODEL_DOMAIN)) # belongs on model
     # Lets add some item definitions
-    ditemdef = def1.addItemDefinitionStr(smtk.attribute.DoubleItemDefinition, 'DoubleItem1')
+    ditemdef = smtk.attribute.DoubleItemDefinition.New('DoubleItem1')
+    def1.addItemDefinition(ditemdef)
     # Allow this one to hold an expression
     ditemdef.addCategory('Veg')
     ditemdef.setExpressionDefinition(expDef)
@@ -86,46 +108,59 @@ if __name__ == '__main__':
     if not ditemdef.allowsExpressions():
       print 'ERROR - Item Def does not allow expressions'
       status = -1
-    ditemdef = def1.addItemDefinitionStr(smtk.attribute.DoubleItemDefinition, 'DoubleItem2')
+    ditemdef = smtk.attribute.DoubleItemDefinition.New('DoubleItem2')
+    def1.addItemDefinition(ditemdef)
     ditemdef.setDefaultValue(-35.2)
     ditemdef.setMinRange(-100, True)
     ditemdef.setMaxRange(125.0, False)
     ditemdef.addCategory('Constituent')
-    vdef = def1.addItemDefinitionStr(smtk.attribute.VoidItemDefinition, 'VoidItem')
+    vdef = smtk.attribute.VoidItemDefinition.New('VoidItem')
+    def1.addItemDefinition(vdef)
     vdef.setIsOptional(True)
     vdef.setLabel('Option 1')
 
     def2 = system.createDefinition('Derived2', 'Derived1')
-    def2.setAssociationMask(smtk.model.VOLUME)
+    def2.setAssociationMask(int(smtk.model.VOLUME))
     # Lets add some item definitions
-    sitemdef = def2.addItemDefinitionStr( smtk.attribute.StringItemDefinition, 'StringItem1' )
+    sitemdef = smtk.attribute.StringItemDefinition.New('StringItem1')
+    def2.addItemDefinition(sitemdef)
     sitemdef.setIsMultiline(True)
     sitemdef.addCategory('Flow')
-    sitemdef = def2.addItemDefinitionStr( smtk.attribute.StringItemDefinition, 'StringItem2' )
+    sitemdef = smtk.attribute.StringItemDefinition.New('StringItem2')
+    def2.addItemDefinition(sitemdef)
     sitemdef.setDefaultValue('Default')
     sitemdef.addCategory('General')
-    uitemdef = def2.addItemDefinitionStr( smtk.attribute.ModelEntityItemDefinition, 'ModelEntityItem1' )
+    uitemdef = smtk.attribute.ModelEntityItemDefinition.New('ModelEntityItem1')
+    def2.addItemDefinition(uitemdef)
     uitemdef.addCategory('Flow')
-    uitemdef.setMembershipMask(smtk.model.FACE);
-    uitemdef = def2.addItemDefinitionStr( smtk.attribute.ModelEntityItemDefinition, 'ModelEntityItem2' )
+    uitemdef.setMembershipMask(int(smtk.model.FACE))
+    uitemdef = smtk.attribute.ModelEntityItemDefinition.New('ModelEntityItem2')
+    def2.addItemDefinition(uitemdef)
     uitemdef.addCategory('General')
-    uitemdef.setMembershipMask(smtk.model.GROUP_ENTITY | smtk.model.HOMOGENOUS_GROUP);
-    dirdef = def2.addItemDefinitionStr( smtk.attribute.DirectoryItemDefinition, 'DirectoryItem')
+    uitemdef.setMembershipMask(int(smtk.model.GROUP_ENTITY | smtk.model.HOMOGENOUS_GROUP))
+    dirdef = smtk.attribute.DirectoryItemDefinition.New('DirectoryItem')
+    def2.addItemDefinition(dirdef)
     dirdef.setShouldExist(True)
     dirdef.setShouldBeRelative(True)
-    fdef = def2.addItemDefinitionStr( smtk.attribute.FileItemDefinition, 'FileItem' )
+    fdef = smtk.attribute.FileItemDefinition.New('FileItem')
+    def2.addItemDefinition(fdef)
     fdef.setShouldBeRelative(True);
-    gdef = def2.addItemDefinitionStr( smtk.attribute.GroupItemDefinition, 'GroupItem' )
-    gdef.addItemDefinitionStr( smtk.attribute.FileItemDefinition, 'File1' )
-    gdef1 = gdef.addItemDefinitionStr( smtk.attribute.GroupItemDefinition, 'SubGroup')
-    sitemdef = gdef1.addItemDefinitionStr( smtk.attribute.StringItemDefinition, 'GroupString')
+    gdef = smtk.attribute.GroupItemDefinition.New('GroupItem')
+    def2.addItemDefinition(gdef)
+    fdef2 =  smtk.attribute.FileItemDefinition.New('File1')
+    gdef.addItemDefinition(fdef2)
+    gdef1 =  smtk.attribute.GroupItemDefinition.New('SubGroup')
+    gdef.addItemDefinition(gdef1)
+    sitemdef = smtk.attribute.StringItemDefinition.New('GroupString')
+    gdef1.addItemDefinition(sitemdef)
     sitemdef.setDefaultValue('Something Cool')
     sitemdef.addCategory('General')
     sitemdef.addCategory('Flow')
 
     # Add in a Attribute definition with a reference to another attribute
     attrefdef = system.createDefinition('AttributeReferenceDef')
-    aritemdef = attrefdef.addItemDefinitionStr( smtk.attribute.RefItemDefinition, 'BaseDefItem' )
+    aritemdef = smtk.attribute.RefItemDefinition.New('BaseDefItem')
+    attrefdef.addItemDefinition(aritemdef)
     aritemdef.setCommonValueLabel('A reference to another attribute')
     aritemdef.setAttributeDefinition(base)
 

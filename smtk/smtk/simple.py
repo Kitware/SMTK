@@ -39,6 +39,7 @@ will use its operators. ::
   Translate(b1, [5,0,0])
   b2 = CreateBrick(depth=2)
 """
+import os
 import smtk
 
 activeSession = None

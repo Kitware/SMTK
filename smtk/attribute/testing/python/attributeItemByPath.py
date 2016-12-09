@@ -12,6 +12,9 @@ import sys
 #
 #=============================================================================
 import smtk
+from smtk import attribute
+from smtk import io
+
 from smtk.simple import *
 import smtk.testing
 import os
