@@ -241,8 +241,8 @@ void qtSurfaceExtractorView::acceptContours(vtkSmartPointer<vtkPolyData> contour
   // Now set the GlobalId of smPolyEdgeOp proxy to the edge op, and later
   // on the GlobalId will be used to find the proxy
     // for Create and Edit operation, we need arc source
-  opProxyIdItem->setValue(smPolyEdgeOp->GetGlobalID());
-  this->requestOperation(this->Internals->CurrentOp.lock());*/
+  opProxyIdItem->setValue(contourSource);*/
+  this->requestOperation(this->Internals->CurrentOp.lock());
 }
 
 /*
@@ -338,6 +338,7 @@ void qtSurfaceExtractorView::operationSelected(const smtk::model::OperatorPtr& o
     }
     
     offsetsItem->setValues(offsets.begin(), offsets.end());
+    acceptContours(pd);
     //edgeResult = this->m_smtkOp.lock()->operate();
   }
 
