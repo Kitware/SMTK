@@ -13,6 +13,12 @@
 
 @FUNCTION_TYPE_HEADERS@
 
+#if defined(_MSC_VER) && _MSC_VER >= 1800
+#define SMTK_FUNCTION_INIT nullptr
+#else
+#define SMTK_FUNCTION_INIT NULL
+#endif
+
 /**! \file Function.h
   * \brief Aliases to make function, bind, bind2nd, and placeholders platform-independent.
   *

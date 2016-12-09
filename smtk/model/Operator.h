@@ -13,6 +13,7 @@
 
 //#include "smtk/Function.h" // for smtk::function<>
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/Function.h"
 #include "smtk/SharedFromThis.h"
 #include "smtk/CoreExports.h"
 #include "smtk/AutoInit.h"
@@ -99,8 +100,8 @@ enum OperatorOutcome
   void ExportSym smtk_##Comp##_operator_AutoInit_Destruct() { \
     Brdg ::registerStaticOperator( \
       Cls ::operatorName, \
-      NULL, \
-      NULL); \
+      SMTK_FUNCTION_INIT, \
+      SMTK_FUNCTION_INIT); \
   } \
   /* Declare the component name */ \
   std::string Cls ::operatorName( Nick ); \
@@ -239,11 +240,12 @@ public:
     UNKNOWN   //!< The entities in question may be pre-existing or newly-created. Infer as possible.
     };
 
+  virtual ~Operator();
+
 protected:
   friend class DefaultSession;
 
   Operator();
-  virtual ~Operator();
 
   virtual OperatorResult operateInternal() = 0;
   virtual void generateSummary(OperatorResult& res);

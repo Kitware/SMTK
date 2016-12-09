@@ -25,14 +25,14 @@ namespace smtk {
 /// A map of all the sessions which may be instantiated (indexed by name).
 SessionConstructors* SessionRegistrar::s_sessions(bool del)
 {
-  static SessionConstructors* sessions = NULL;
+  static SessionConstructors* sessions = SMTK_FUNCTION_INIT;
   if (del)
     {
     if (sessions)
       {
       //std::cout << "Deleting session list " << sessions << " (" << &sessions << ")" << "\n";
       delete sessions;
-      sessions = NULL;
+      sessions = SMTK_FUNCTION_INIT;
       }
     }
   else
