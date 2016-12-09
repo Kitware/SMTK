@@ -27,6 +27,8 @@ namespace smtk
     class SMTKCORE_EXPORT Resource
     {
     public:
+      virtual ~Resource();
+
       /// Identifies resource type
       enum Type
       {
@@ -43,7 +45,6 @@ namespace smtk
 
     protected:
       Resource();
-      virtual ~Resource();
     };
   }
 }
