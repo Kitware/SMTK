@@ -61,6 +61,7 @@ namespace smtk
       smtk::attribute::AttributePtr findAttribute(const std::string &name) const;
       smtk::attribute::AttributePtr findAttribute(const smtk::common::UUID &id) const;
       void findAttributes(const std::string &type, std::vector<smtk::attribute::AttributePtr> &result) const;
+      std::vector<smtk::attribute::AttributePtr> findAttributes(const std::string &type) const;
       void findAttributes(smtk::attribute::DefinitionPtr def, std::vector<smtk::attribute::AttributePtr> &result) const;
       smtk::attribute::DefinitionPtr findDefinition(const std::string &type) const;
 
@@ -228,6 +229,14 @@ namespace smtk
         {
         this->internalFindAttributes(def, result);
         }
+    }
+//----------------------------------------------------------------------------
+    inline std::vector<smtk::attribute::AttributePtr>
+    System::findAttributes(const std::string &type) const
+    {
+      std::vector<smtk::attribute::AttributePtr> result;
+      this->findAttributes(type, result);
+      return result;
     }
 //----------------------------------------------------------------------------
   inline std::set<std::string> System::
