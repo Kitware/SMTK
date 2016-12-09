@@ -283,3 +283,6 @@ def to_concrete(instance):
   print 'module', instance.__class__.__module__
   print 'class', instance.__class__
   return None
+
+def wrappingProtocol():
+  return 'shiboken'
