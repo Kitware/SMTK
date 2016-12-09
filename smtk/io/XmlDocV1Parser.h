@@ -63,6 +63,8 @@ namespace smtk
       virtual ~XmlDocV1Parser();
       virtual void process(pugi::xml_document &doc);
       virtual void process(pugi::xml_node &rootNode);
+
+      // This function has no implementation!
       static void convertStringToXML(std::string &str);
       const smtk::io::Logger &messageLog() const
       {return this->m_logger;}

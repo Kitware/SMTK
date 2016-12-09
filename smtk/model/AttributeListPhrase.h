@@ -31,6 +31,7 @@ class SMTKCORE_EXPORT AttributeListPhrase : public DescriptivePhrase
 public:
   smtkTypeMacro(AttributeListPhrase);
   smtkSharedPtrCreateMacro(DescriptivePhrase);
+  // This method has no implementation!
   Ptr setup(const EntityRef& ent, DescriptivePhrasePtr parent);
   Ptr setup(const EntityRef& ent, const AttributeSet& subset, DescriptivePhrasePtr parent);
 
