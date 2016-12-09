@@ -1,5 +1,3 @@
-project(SMTK_Attribute)
-
 set(attributeHeaders
   Attribute.h
   Definition.h
@@ -74,6 +72,9 @@ set(attributeSrcs
 #install the headers
 smtk_public_headers(${attributeHeaders})
 
+if (SMTK_USE_PYBIND11)
+  add_subdirectory(pybind11)
+endif()
 
 if(SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
