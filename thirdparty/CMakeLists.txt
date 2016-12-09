@@ -1,4 +1,9 @@
 add_subdirectory(cJSON)
+
+if(SMTK_USE_PYBIND11)
+  add_subdirectory(pybind11)
+endif()
+
 if (NOT SMTK_USE_SYSTEM_MOAB)
   #guard against MOAB polluting the cmake C/CXX/Fortran flags
   set(save_CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
