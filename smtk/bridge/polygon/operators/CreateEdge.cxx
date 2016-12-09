@@ -335,6 +335,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
       // first segment is now guaranteed to start with a model
       // vertex (and thus the last segment will end with one).
 
+      smtk::model::VertexSet newVerts;
       segStart = result.begin();
       for (SegmentSplitsT::iterator sit = result.begin(); sit != result.end(); )
         {
@@ -342,9 +343,10 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
         ++sit;
         // Does the current segment end with a model vertex?
         if (generateEdge)
-          { // Generate an edge. segStart->second.low() is guaranteed to be a model vertex.
+          { 
+          // Generate an edge. segStart->second.low() is guaranteed to be a model vertex.
           smtk::model::Edge edge = storage->createModelEdgeFromSegments(
-            mgr, segStart, sit, true, std::pair<UUID,UUID>(), false);
+            mgr, segStart, sit, true, std::pair<UUID,UUID>(), false, newVerts);
           if (edge.isValid())
             created.push_back(edge);
           segStart = sit;
@@ -354,9 +356,10 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
       if (segStart != result.end())
         {
         smtk::model::Edge edge = storage->createModelEdgeFromSegments(
-          mgr, segStart, result.end(), true, std::pair<UUID,UUID>(), false);
+          mgr, segStart, result.end(), true, std::pair<UUID,UUID>(), false, newVerts);
         created.push_back(edge);
         }
+      created.insert(created.end(), newVerts.begin(), newVerts.end());
       }
     }
 

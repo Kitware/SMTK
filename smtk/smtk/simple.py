@@ -574,9 +574,13 @@ def CreateEdge(verts, curve_type = CurveType.LINE, **kwargs):
   res = cre.operate()
   SetLastResult(res)
   PrintResultLog(res)
-  edgeList = res.findModelEntity('created')
-  numEdges = edgeList.numberOfValues()
-  return edgeList.value(0) if numEdges == 1 else [edgeList.value(i) for i in range(numEdges)]
+  entList = res.findModelEntity('created')
+  numNewEnts = entList.numberOfValues()
+  edgeList = []
+  for i in range(numNewEnts):
+    if entList.value(i).isEdge():
+      edgeList.append(entList.value(i))
+  return edgeList[0] if len(edgeList) == 1 else edgeList
 
 def TweakEdge(edge, newPts, **kwargs):
   """Tweak an edge by providing a new set of points along it.

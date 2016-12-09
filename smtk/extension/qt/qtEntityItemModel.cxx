@@ -962,19 +962,28 @@ void QEntityItemModel::removeChildPhrases(
 
     this->endRemoveRows();
     }
+
+  if(lphrase && lphrase->relatedEntities().size() == 0)
+    {
+    QModelIndex parentIdx = qidx.parent();
+
+    int parId = lphrase->indexInParent();
+    this->beginRemoveRows(parentIdx, parId, parId);
+    lphrase->parent()->subphrases().erase(
+      lphrase->parent()->subphrases().begin() + parId);
+    this->endRemoveRows();
+    emit dataChanged(parentIdx, parentIdx);
+    }
+  else
+    {
+    emit dataChanged(qidx, qidx);
+    }
 /* TODO: We need to handle the case where the parent is a Entity_List
 // and removing the children could make the entity_list being removed too.
   if(parntDp->phraseType == ENTITY_LIST &&
      subs.size() < parntDp->findDelegate()->directLimit())
     {
     // move parnt's children up as parnt sibling, and remove parnt
-    QModelIndex parentIdx = qidx.parent();
-
-    int parId = parnt->indexInParent();
-    this->beginRemoveRows(parentIdx, parId, parId);
-    parnt->parent()->subphrases().erase(
-      parnt->parent()->subphrases().begin() + parId);
-    this->endRemoveRows();
 
     int startIdx = parId;
     for (smtk::model::DescriptivePhrases::iterator it = subs.begin();
@@ -988,8 +997,8 @@ void QEntityItemModel::removeChildPhrases(
 
     }
   else
-  */
     emit dataChanged(qidx, qidx);
+  */
 }
 
 void QEntityItemModel::updateChildPhrases(
