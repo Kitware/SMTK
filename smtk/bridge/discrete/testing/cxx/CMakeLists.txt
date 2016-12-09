@@ -59,4 +59,21 @@ if(SMTK_DATA_DIR)
       -T "${CMAKE_CURRENT_BINARY_DIR}"
   )
 
+  add_executable(entityGroup2dmTest entityGroup2dm.cxx)
+  target_link_libraries(entityGroup2dmTest
+    smtkCore
+    smtkDiscreteSession
+    vtkSMTKOperatorsExt
+    vtkSMTKSourceExt
+    vtkRenderingGL2PSOpenGL2
+    vtkTestingRendering
+    )
+  add_test(
+    NAME entityGroup2dmTest
+    COMMAND 
+      $<TARGET_FILE:entityGroup2dmTest>
+      "${SMTK_DATA_DIR}/mesh/2d/test2D.2dm"
+  )
+
+
 endif()
