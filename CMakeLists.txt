@@ -434,7 +434,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     string(REPLACE ";" "\;" smtk_pythonpath_env "${smtk_pythonpath_env}")
     string(REPLACE ";" "\;" smtk_libpath_env "${smtk_libpath_env}")
     set(smtk_python_test_environment
-      "PYTHONPATH=${smtk_pythonpath_env}:${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+      "PYTHONPATH=${smtk_pythonpath_env}${envsep}${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
       "${libpath_envvar}=${smtk_libpath_env}")
 
     function (smtk_add_test_python name file)

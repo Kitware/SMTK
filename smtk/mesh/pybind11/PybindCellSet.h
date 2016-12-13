@@ -23,8 +23,8 @@ PySharedPtrClass< smtk::mesh::CellSet > pybind11_init_smtk_mesh_CellSet(py::modu
   instance
     .def(py::init<::smtk::mesh::CollectionPtr const &, ::smtk::mesh::HandleRange const &>())
     .def(py::init<::smtk::mesh::ConstCollectionPtr const &, ::smtk::mesh::HandleRange const &>())
-    .def(py::init<::smtk::mesh::CollectionPtr const &, ::std::vector<unsigned long, std::allocator<unsigned long> > const &>())
-    .def(py::init<::smtk::mesh::CollectionPtr const &, ::std::set<unsigned long, std::less<unsigned long>, std::allocator<unsigned long> > const &>())
+    .def(py::init<::smtk::mesh::CollectionPtr const &, ::std::vector<smtk::mesh::Handle, std::allocator<smtk::mesh::Handle> > const &>())
+    .def(py::init<::smtk::mesh::CollectionPtr const &, ::std::set<smtk::mesh::Handle, std::less<smtk::mesh::Handle>, std::allocator<smtk::mesh::Handle> > const &>())
     .def(py::init<::smtk::mesh::CellSet const &>())
     .def("__ne__", (bool (smtk::mesh::CellSet::*)(::smtk::mesh::CellSet const &) const) &smtk::mesh::CellSet::operator!=)
     .def("deepcopy", (smtk::mesh::CellSet & (smtk::mesh::CellSet::*)(::smtk::mesh::CellSet const &)) &smtk::mesh::CellSet::operator=)

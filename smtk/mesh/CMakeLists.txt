@@ -13,6 +13,7 @@ set(meshSrcs
   PointConnectivity.cxx
   PointLocator.cxx
   PointSet.cxx
+  QueryTypes.cxx
   Reclassify.cxx
   TypeSet.cxx
 

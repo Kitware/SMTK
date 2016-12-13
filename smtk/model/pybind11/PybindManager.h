@@ -221,7 +221,7 @@ PySharedPtrClass< smtk::model::Manager > pybind11_init_smtk_model_Manager(py::mo
     .def("setShell", (smtk::model::Shell (smtk::model::Manager::*)(::smtk::common::UUID const &, ::smtk::model::Shell const &)) &smtk::model::Manager::setShell, py::arg("uid"), py::arg("parent"))
     .def("setStringProperty", (void (smtk::model::Manager::*)(::smtk::common::UUID const &, ::std::string const &, ::smtk::model::String const &)) &smtk::model::Manager::setStringProperty, py::arg("entity"), py::arg("propName"), py::arg("propValue"))
     .def("setStringProperty", (void (smtk::model::Manager::*)(::smtk::common::UUID const &, ::std::string const &, ::smtk::model::StringList const &)) &smtk::model::Manager::setStringProperty, py::arg("entity"), py::arg("propName"), py::arg("propValue"))
-    .def("setTessellation", &smtk::model::Manager::setTessellation, py::arg("cellId"), py::arg("geom"), py::arg("analysis") = 0, py::arg("gen") = __null)
+    .def("setTessellation", &smtk::model::Manager::setTessellation, py::arg("cellId"), py::arg("geom"), py::arg("analysis") = 0, py::arg("gen") = nullptr)
     .def("setVertexUse", &smtk::model::Manager::setVertexUse, py::arg("uid"), py::arg("src"), py::arg("sense"))
     .def("setVolumeUse", &smtk::model::Manager::setVolumeUse, py::arg("uid"), py::arg("src"))
     .def_static("shortUUIDName", &smtk::model::Manager::shortUUIDName, py::arg("uid"), py::arg("entityFlags"))
