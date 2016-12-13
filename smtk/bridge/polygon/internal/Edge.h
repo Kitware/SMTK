@@ -17,9 +17,11 @@
 #ifndef _WIN32
 #  include <sys/types.h> // for ssize_t
 #else
-# include <BaseTsd.h>
+#  include <BaseTsd.h>
 typedef SSIZE_T ssize_t;
+#  if defined (_MSC_VER) && _MSC_VER < 1900
 typedef SIZE_T size_t;
+#  endif
 #endif  // _WIN32
 
 namespace smtk {

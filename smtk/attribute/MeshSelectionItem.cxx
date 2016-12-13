@@ -12,6 +12,7 @@
 #include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
 #include <iostream>
+#include <iterator>
 #include <stdio.h>
 #include <algorithm>    // std::set_difference
 
