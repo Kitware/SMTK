@@ -15,7 +15,7 @@ import smtk
 import smtk.testing
 from smtk.simple import *
 
-class IntegrationMultiSessionDescriptivePhrase(unittest.TestCase):
+class MultiSessionDescriptivePhrase(unittest.TestCase):
 
     def setUp(self):
         self.session_files = {
