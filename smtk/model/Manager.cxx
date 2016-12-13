@@ -36,6 +36,7 @@
 #include "smtk/mesh/Manager.h"
 
 #include <algorithm>
+#include <iterator>
 #include <set>
 #include <map>
 #include <vector>
