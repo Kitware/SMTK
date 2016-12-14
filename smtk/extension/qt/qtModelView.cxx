@@ -1541,6 +1541,16 @@ void qtModelView::updateWithOperatorResult(
       qmodel->updateWithOperatorResult(sessIdx, result);
       this->setExpanded(sessIdx, true);
 
+      // if entities get 
+      smtk::attribute::ModelEntityItem::Ptr remEnts =
+        result->findModelEntity("expunged");
+      if(remEnts && remEnts->numberOfValues() > 0)
+        {
+        smtk::model::EntityRefs expungedEnts;
+        expungedEnts.insert(remEnts->begin(), remEnts->end());
+        this->onEntitiesExpunged(expungedEnts);
+        }
+
       // find and expand the new model
       smtk::attribute::ModelEntityItem::Ptr newEntities =
         result->findModelEntity("created");
@@ -1556,6 +1566,7 @@ void qtModelView::updateWithOperatorResult(
           this->setExpanded(modelIdx, true);
           }
         }
+
       return;
       }
     }
