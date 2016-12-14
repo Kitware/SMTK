@@ -17,7 +17,7 @@ set(smtkModelPythonDataTests
 if (SMTK_ENABLE_EXODUS_SESSION AND SMTK_ENABLE_DISCRETE_SESSION AND SMTK_ENABLE_CGM_SESSION)
   set(smtkModelPythonDataTests
     ${smtkModelPythonDataTests}
-    integrationMultiSessionDescriptivePhrase
+    multiSessionDescriptivePhrase
   )
 endif()
 
