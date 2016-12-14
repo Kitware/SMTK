@@ -200,7 +200,7 @@ bool ModelEntityItem::removeValue(std::size_t i)
     static_cast<const ModelEntityItemDefinition *>(this->definition().get());
   if (!def->isExtensible())
     {
-    return false; // The number of values is fixed
+    return this->setValue(i, smtk::model::EntityRef()); // The number of values is fixed
     }
 
   this->m_values.erase(this->m_values.begin()+i);
