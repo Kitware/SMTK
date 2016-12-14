@@ -17,9 +17,11 @@
   """
 
 import smtk
+from smtk import attribute
 
 if __name__ == '__main__':
   import sys
+  import os
 
   status = 0
 
@@ -28,32 +30,40 @@ if __name__ == '__main__':
 
   # Lets create an attribute to represent an expression
   expDef = system.createDefinition("ExpDef")
-  eitemdef = expDef.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "Expression String")
-  eitemdef2 = expDef.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "Aux String")
+  eitemdef = smtk.attribute.StringItemDefinition.New("Expression String")
+  expDef.addItemDefinition(eitemdef)
+  eitemdef2 = smtk.attribute.StringItemDefinition.New("Aux String")
+  expDef.addItemDefinition(eitemdef2)
   eitemdef.setDefaultValue("sample")
 
   base = system.createDefinition("BaseDef")
   #Lets add some item definitions
-  iitemdef = base.addItemDefinitionStr( smtk.attribute.IntItemDefinition, "IntItem1")
-  iitemdef = base.addItemDefinitionStr( smtk.attribute.IntItemDefinition, "IntItem2")
+  iitemdef = smtk.attribute.IntItemDefinition.New("IntItem1")
+  base.addItemDefinition(iitemdef)
+  iitemdef = smtk.attribute.IntItemDefinition.New("IntItem2")
+  base.addItemDefinition(iitemdef)
   iitemdef.setDefaultValue(10)
 
   def1 = system.createDefinition("Derived1", "BaseDef")
   # add some item definitions
-  ditemdef = def1.addItemDefinitionStr(smtk.attribute.DoubleItemDefinition, "DoubleItem1")
+  ditemdef = smtk.attribute.DoubleItemDefinition.New("DoubleItem1")
+  def1.addItemDefinition(ditemdef)
   # Allow this one to hold an expression
   ditemdef.setExpressionDefinition(expDef)
   # Check to make sure we can use expressions
   if not ditemdef.allowsExpressions():
     print  "ERROR - Item Def does not allow expressions"
     status = -1
-  ditemdef = def1.addItemDefinitionStr(smtk.attribute.DoubleItemDefinition, "DoubleItem2")
+  ditemdef = smtk.attribute.DoubleItemDefinition.New("DoubleItem2")
+  def1.addItemDefinition(ditemdef)
   ditemdef.setDefaultValue(-35.2)
 
   def2 = system.createDefinition("Derived2", "Derived1")
   # Lets add some item definitions
-  sitemdef = def2.addItemDefinitionStr( smtk.attribute.StringItemDefinition, "StringItem1")
-  sitemdef = def2.addItemDefinitionStr( smtk.attribute.StringItemDefinition, "StringItem2")
+  sitemdef = smtk.attribute.StringItemDefinition.New("StringItem1")
+  def2.addItemDefinition(sitemdef)
+  sitemdef = smtk.attribute.StringItemDefinition.New("StringItem2")
+  def2.addItemDefinition(sitemdef)
   sitemdef.setDefaultValue("Default")
 
   # Lets test creating an attribute by passing in the expression definition explicitly

@@ -17,9 +17,11 @@ Requires smtkCorePython.so to be in module path
 """
 
 import smtk
+from smtk import attribute
 
 if __name__ == '__main__':
     import sys
+    import os
 
     status = 0
 
@@ -28,8 +30,10 @@ if __name__ == '__main__':
 
     #Lets create an attribute to represent an expression
     expDef = system.createDefinition("ExpDef")
-    eitemdef =  expDef.addItemDefinitionStr(smtk.attribute.StringItemDefinition,"Expression String")
-    eitemdef2 = expDef.addItemDefinitionStr(smtk.attribute.StringItemDefinition,"Aux String")
+    eitemdef = smtk.attribute.StringItemDefinition.New("Expression String")
+    expDef.addItemDefinition(eitemdef)
+    eitemdef2 = smtk.attribute.StringItemDefinition.New("Aux String")
+    expDef.addItemDefinition(eitemdef2)
     eitemdef.setDefaultValue("sample");
     print eitemdef.name()
     print eitemdef2.name()
@@ -37,9 +41,10 @@ if __name__ == '__main__':
     base = system.createDefinition("BaseDef");
 
     #Lets add some item definitions
-    ditemdef = base.addItemDefinitionStr(smtk.attribute.DoubleItemDefinition, "DoubleItem1");
+    ditemdef = smtk.attribute.DoubleItemDefinition.New("DoubleItem1")
+    base.addItemDefinition(ditemdef)
     # Allow this one to hold an expression
-    ditemdef.setExpressionDefinition(expDef);
+    ditemdef.setExpressionDefinition(expDef)
 
     # Lets test creating an attribute by passing in the expression definition explicitly
     expAtt1 = system.createAttribute("Exp1", expDef);

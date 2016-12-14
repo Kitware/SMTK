@@ -14,7 +14,11 @@ Verify that vector-valued defaults for value items are written and read
 properly to and from XML files.
 """
 import smtk
+from smtk import attribute
+from smtk import io
+
 import sys
+import os
 err = 0
 
 # Force a non-comma separator:

@@ -80,12 +80,12 @@ public:
     {
     }
 
-  static int size() { return S; }
+  inline static int size() { return S; }
 
   const unsigned char* value() const { return &m_value[0]; }
 
   //custom operators to make comparing tags easy
-  bool operator < (const OpaqueTag& other) const
+  inline bool operator < (const OpaqueTag& other) const
     {
     for (int i = 0; i < S; ++i)
       if (this->m_value < other.m_value)
@@ -94,14 +94,14 @@ public:
         return false;
     return false;
     }
-  bool operator == (const OpaqueTag& other) const
+  inline bool operator == (const OpaqueTag& other) const
     {
     for (int i = 0; i < S; ++i)
       if (this->m_value != other.m_value)
         return false;
     return true;
     }
-  bool operator != (const OpaqueTag& other) const
+  inline bool operator != (const OpaqueTag& other) const
     {
     for (int i = 0; i < S; ++i)
       if (this->m_value != other.m_value)

@@ -10,9 +10,12 @@
 #
 #=============================================================================
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    import smtk.attribute
+    import smtk.bridge.exodus
+    import smtk.model
 from smtk.simple import *
 import smtk.testing
-import os
 import sys
 import tempfile
 
@@ -26,8 +29,8 @@ class TestExportImport(smtk.testing.TestCase):
     self.assertEqual(len(original), len(imported), 'Expected number of models to match')
 
     for i in range(len(original)):
-      print '    Model {:1}: {:2}'.format(original[i].name(), original[i].entity())
-      self.assertEqual(original[i].entity(), imported[i].entity(), \
+     print '    Model {:1}: {:2}'.format(original[i].name(), original[i].entity())
+     self.assertEqual(original[i].entity(), imported[i].entity(), \
         'Entity IDs {:1} and {:2} differ'.format(original[i].entity(), imported[i].entity()))
 
     return True

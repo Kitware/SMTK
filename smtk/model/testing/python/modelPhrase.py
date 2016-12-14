@@ -16,6 +16,9 @@ Test methods on descriptive phrases and subphrase generators.
 import os
 import sys
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    import smtk.io
+    import smtk.model
 import smtk.testing
 from smtk.simple import *
 from uuid import uuid4, UUID
@@ -40,7 +43,9 @@ class TestModelPhrases(unittest.TestCase):
 
     self.mgr.assignDefaultNames()
 
-    self.models = self.mgr.findEntitiesOfType(smtk.model.MODEL_ENTITY, True)
+    self.models = self.mgr.findEntitiesOfType(int(smtk.model.MODEL_ENTITY), True)
+    print(type(self.models))
+    print(self.models)
     # Assign imported models to current session so they have operators
     [smtk.model.Model(x).setSession(session) for x in self.models]
 
@@ -85,6 +90,8 @@ class TestModelPhrases(unittest.TestCase):
     s3 = s2[0].subphrases()
     self.assertEqual([x.title() for x in s3], ['5 faces',], 'Expected a summary phrase.')
     self.assertTrue(s2[0].areSubphrasesBuilt(), 'Expected subphrases have been built.')
+
+
 
     # Test that marking a phrase dirty forces its children to be rebuilt
     s2[0].markDirty(True)

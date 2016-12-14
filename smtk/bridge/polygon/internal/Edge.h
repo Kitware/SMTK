@@ -14,7 +14,7 @@
 #include "smtk/SharedPtr.h"
 
 
-#ifndef _WIN32
+#ifndef _WIN32 
 #  include <sys/types.h> // for ssize_t
 #else
 #  include <BaseTsd.h>

@@ -570,7 +570,7 @@ namespace smtk
       // Cast input pointer to ValueItemTemplate
       const ValueItemTemplate<DataT> *sourceValueItemTemplate =
         dynamic_cast<const ValueItemTemplate<DataT> *>(sourceItem.get());
-      
+
       if (!sourceValueItemTemplate)
         {
         return false; // Source is not the right type of item

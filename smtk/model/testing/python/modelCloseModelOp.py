@@ -16,6 +16,10 @@ Try running a "universal" operator (close model) on imported models.
 import os
 import sys
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    import smtk.bridge
+    import smtk.io
+    import smtk.model
 from smtk.simple import *
 import smtk.testing
 from uuid import uuid4
@@ -40,7 +44,7 @@ class TestModelCloseModelOp(unittest.TestCase):
       self.assertTrue(smtk.io.ImportJSON.intoModelManager(json, actMgr), 'Unable to parse JSON input file')
 
       actMgr.assignDefaultNames()
-      models = actMgr.findEntitiesOfType(smtk.model.MODEL_ENTITY, True)
+      models = actMgr.findEntitiesOfType(int(smtk.model.MODEL_ENTITY), True)
       # Assign imported models to current session so they have operators
       [smtk.model.Model(x).setSession(actSession) for x in models]
     else:

@@ -1,5 +1,3 @@
-PROJECT(smtkDiscreteSession)
-
 if(SMTK_ENABLE_VTK_SUPPORT AND SMTK_ENABLE_PARAVIEW_SUPPORT)
   #if using paraview we need to explicitly look for vtkIOGDAL
   find_package(ParaView COMPONENTS vtkIOGDAL REQUIRED)
@@ -281,6 +279,10 @@ endif()
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT AND SMTK_ENABLE_DISCRETE_SESSION)
   add_subdirectory(plugin)
+endif()
+
+if (SMTK_USE_PYBIND11)
+  add_subdirectory(pybind11)
 endif()
 
 if (SMTK_ENABLE_TESTING)

@@ -21,6 +21,8 @@ import sys
 
 try:
     import smtk
+    from smtk import attribute
+    from smtk import io
 except ImportError:
     print
     print 'Not able to import smtk library. You might need to:'

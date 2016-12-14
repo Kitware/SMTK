@@ -16,6 +16,7 @@
 
 #include "smtk/SharedPtr.h"
 #include "smtk/SystemConfig.h"
+#include <functional>
 #include <map>
 #include <set>
 #include <vector>
@@ -253,7 +254,7 @@ namespace smtk
     typedef std::set< smtk::model::OperatorPtr >                   Operators;
     typedef smtk::shared_ptr< smtk::model::RemoteOperator >        RemoteOperatorPtr;
 #ifndef SHIBOKEN_SKIP
-    typedef smtk::model::OperatorPtr                             (*OperatorConstructor)();
+    typedef std::function<smtk::model::OperatorPtr()>              OperatorConstructor;
     typedef std::pair<std::string,OperatorConstructor>             StaticOperatorInfo;
     typedef std::map<std::string,StaticOperatorInfo>               OperatorConstructors;
 #endif

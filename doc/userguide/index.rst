@@ -56,6 +56,7 @@ prepare and submit changes to SMTK.
    attribute/index.rst
    model/index.rst
    mesh/index.rst
+   bindings/index.rst
    administration.rst
    contributing.rst
 

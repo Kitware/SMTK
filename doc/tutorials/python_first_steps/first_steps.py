@@ -6,6 +6,10 @@ modelFileName = sys.argv[-1]
 #    and creating managers.
 # ++ 1 ++
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    from smtk import attribute
+    from smtk import io
+    from smtk import model
 
 asys = smtk.attribute.System()
 mmgr = smtk.model.Manager.create()

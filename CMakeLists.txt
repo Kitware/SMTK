@@ -83,7 +83,12 @@ option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" O
 # Option to build Qt ui compoments for attributes
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
 option(SMTK_ENABLE_EXAMPLES "Enable Examples" OFF)
-option(SMTK_ENABLE_PYTHON_WRAPPING "Build Python Wrappings using Shiboken" OFF)
+option(SMTK_ENABLE_PYTHON_WRAPPING "Build Python Wrappings" OFF)
+cmake_dependent_option(
+  SMTK_USE_PYBIND11
+  "Build Python Wrappings using Pybind11 instead of Shiboken"
+  OFF
+  SMTK_ENABLE_PYTHON_WRAPPING OFF)
 # Provide system packagers with the ability to install SMTK
 # to the system's Python site package directory. The default
 # is off so that people building relocatable bundles (such as
@@ -279,24 +284,40 @@ else()
 endif()
 
 ################################################################################
+# Build third party libraries
+################################################################################
+
+add_subdirectory(thirdparty)
+
+################################################################################
 # Wrapping Related Settings
 ################################################################################
 if(SMTK_ENABLE_PYTHON_WRAPPING)
-  include(UseShiboken)
+  if(SMTK_USE_PYBIND11)
+    find_package(PythonLibs REQUIRED)
+  else()
+    include(UseShiboken)
+  endif()
+
   find_package(PythonInterp 2.7 REQUIRED)
+
   # Set up environment variables needed to import the python modules for tests.
   if (PYTHONINTERP_FOUND AND SMTK_ENABLE_TESTING)
-    set(required_python_modules
-      shiboken)
-    set(shiboken_PYTHONPATH
-      "${SHIBOKEN_PYTHONPATH}")
-    if (WIN32)
-      get_filename_component(shiboken_runtime_dir "${SHIBOKEN_BINARY}" PATH)
-    else ()
-      get_filename_component(shiboken_runtime_dir "${SHIBOKEN_LIBRARY}" PATH)
-    endif ()
-    set(shiboken_libpath
-      "${shiboken_runtime_dir}")
+    set(required_python_modules)
+
+    if (NOT SMTK_USE_PYBIND11)
+      list(APPEND required_python_modules
+	shiboken)
+      set(shiboken_PYTHONPATH
+	"${SHIBOKEN_PYTHONPATH}")
+      if (WIN32)
+	get_filename_component(shiboken_runtime_dir "${SHIBOKEN_BINARY}" PATH)
+      else ()
+	get_filename_component(shiboken_runtime_dir "${SHIBOKEN_LIBRARY}" PATH)
+      endif ()
+      set(shiboken_libpath
+	"${shiboken_runtime_dir}")
+    endif()
 
     if (SMTK_ENABLE_PARAVIEW_SUPPORT)
       list(APPEND required_python_modules
@@ -395,7 +416,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
 
     # Add the path to the build tree's compiled modules.
     list(APPEND smtk_pythonpaths
-      "${CMAKE_BINARY_DIR}")
+      "${CMAKE_BINARY_DIR}${envsep}${CMAKE_BINARY_DIR}/lib")
     if (CMAKE_RUNTIME_OUTPUT_DIRECTORY)
       list(APPEND smtk_libpaths
         "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
@@ -413,7 +434,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     string(REPLACE ";" "\;" smtk_pythonpath_env "${smtk_pythonpath_env}")
     string(REPLACE ";" "\;" smtk_libpath_env "${smtk_libpath_env}")
     set(smtk_python_test_environment
-      "PYTHONPATH=${smtk_pythonpath_env}"
+      "PYTHONPATH=${smtk_pythonpath_env}${envsep}${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
       "${libpath_envvar}=${smtk_libpath_env}")
 
     function (smtk_add_test_python name file)
@@ -498,12 +519,6 @@ install(
   DESTINATION
     ${CMAKE_INSTALL_LIBDIR}/cmake/SMTK
 )
-
-################################################################################
-# Build third party libraries
-################################################################################
-
-add_subdirectory(thirdparty)
 
 ################################################################################
 # Include Dirs Settings

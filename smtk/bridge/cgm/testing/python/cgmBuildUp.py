@@ -11,6 +11,9 @@
 #
 #=============================================================================
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    import smtk.bridge.cgm
+    import smtk.io
 from smtk.simple import *
 
 #def SetVectorValue(x,v):

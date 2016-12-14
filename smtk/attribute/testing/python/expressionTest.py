@@ -17,9 +17,11 @@
     """
 
 import smtk
+from smtk import attribute
 
 if __name__ == '__main__':
     import sys
+    import os
 
     status = 0
 
@@ -27,31 +29,38 @@ if __name__ == '__main__':
     print 'System created'
     # Lets create an attribute to represent an expression
     expDef = system.createDefinition("ExpDef")
-    eitemdef = expDef.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "Expression String")
+    eitemdef = smtk.attribute.StringItemDefinition.New("Expression String")
+    expDef.addItemDefinition(eitemdef)
 
     base = system.createDefinition("BaseDef");
     # Lets add some item definitions
-    iitemdef = base.addItemDefinitionStr(smtk.attribute.IntItemDefinition, "IntItem1")
-    iitemdef2 = base.addItemDefinitionStr(smtk.attribute.IntItemDefinition, "IntItem2")
+    iitemdef = smtk.attribute.IntItemDefinition.New("IntItem1")
+    base.addItemDefinition(iitemdef)
+    iitemdef2 = smtk.attribute.IntItemDefinition.New("IntItem2")
+    base.addItemDefinition(iitemdef2)
     iitemdef2.setDefaultValue(10)
 
     def1 = system.createDefinition("Derived1", "BaseDef");
     # Lets add some item definitions
-    ditemdef = def1.addItemDefinitionStr(smtk.attribute.DoubleItemDefinition, "DoubleItem1");
+    ditemdef = smtk.attribute.DoubleItemDefinition.New("DoubleItem1")
+    def1.addItemDefinition(ditemdef)
     # Allow this one to hold an expression
-    ditemdef.setExpressionDefinition(expDef);
+    ditemdef.setExpressionDefinition(expDef)
     # Check to make sure we can use expressions
     if not ditemdef.allowsExpressions():
         print "ERROR - Item Def does not allow expressions"
         status = -1;
-    ditemdef2 = def1.addItemDefinitionStr(smtk.attribute.DoubleItemDefinition, "DoubleItem2");
-    ditemdef2.setDefaultValue(-35.2);
+    ditemdef2 = smtk.attribute.DoubleItemDefinition.New("DoubleItem2")
+    def1.addItemDefinition(ditemdef2)
+    ditemdef2.setDefaultValue(-35.2)
 
     def2 = system.createDefinition("Derived2", "Derived1");
     # Lets add some item definitions
-    sitemdef = def1.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "StringItem1")
-    sitemdef2 = def1.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "StringItem2");
-    sitemdef2.setDefaultValue("Default");
+    sitemdef = smtk.attribute.StringItemDefinition.New("StringItem1")
+    def1.addItemDefinition(sitemdef)
+    sitemdef2 = smtk.attribute.StringItemDefinition.New("StringItem2")
+    def1.addItemDefinition(sitemdef2)
+    sitemdef2.setDefaultValue("Default")
 
     #Lets test creating an attribute by passing in the expression definition explicitly
     expAtt = system.createAttribute("Exp1", expDef);

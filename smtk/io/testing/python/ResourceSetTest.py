@@ -11,9 +11,11 @@ import sys
 #  PURPOSE.  See the above copyright notice for more information.
 #
 #=============================================================================
-import os
 from pprint import pprint
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    import smtk.attribute
+    import smtk.common
 from smtk.simple import *
 
 def RSTest():
@@ -28,6 +30,8 @@ def RSTest():
     resourceSet = smtk.common.ResourceSet()
 
     system1 = smtk.attribute.System.New()
+    print system1
+    print system1.resourceType()
     result = resourceSet.addResource(system1, "system1", "", smtk.common.ResourceSet.TEMPLATE);
 
     n = resourceSet.numberOfResources()
@@ -39,7 +43,7 @@ def RSTest():
         status = status + 1
 
 
-    
+
     system2 = smtk.attribute.System.New()
     result = resourceSet.addResource(system2, "system2", "path2", smtk.common.ResourceSet.INSTANCE);
 
@@ -106,4 +110,3 @@ def test():
 
 if __name__ == '__main__':
     sys.exit(test())
-

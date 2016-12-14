@@ -170,6 +170,10 @@ if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(plugin)
 endif()
 
+if (SMTK_USE_PYBIND11)
+  add_subdirectory(pybind11)
+endif()
+
 if (SMTK_ENABLE_TESTING)
   # ... and make header compilation tests link properly:
   target_link_libraries(TestBuild_smtk_bridge_cgm LINK_PRIVATE ${CGM_LIBRARIES})

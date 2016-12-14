@@ -16,6 +16,9 @@ Try running a "universal" operator on an imported model.
 import os
 import sys
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    import smtk.io
+    import smtk.model
 import smtk.testing
 from uuid import uuid4
 import unittest
@@ -37,7 +40,7 @@ class TestModelSetPropertyOp(unittest.TestCase):
     self.assertTrue(smtk.io.ImportJSON.intoModelManager(json, mgr), 'Unable to parse JSON input file')
 
     mgr.assignDefaultNames()
-    models = mgr.findEntitiesOfType(smtk.model.MODEL_ENTITY, True)
+    models = mgr.findEntitiesOfType(int(smtk.model.MODEL_ENTITY), True)
     # Assign imported models to current session so they have operators
     [smtk.model.Model(x).setSession(session) for x in models]
     print 'Applying operator to %d model(s)' % len(models)
@@ -53,7 +56,7 @@ class TestModelSetPropertyOp(unittest.TestCase):
         smtk.model.OPERATION_SUCCEEDED,
         'Set property operator failed')
     print 'Checking properties'
-    for x in mgr.findEntitiesOfType(smtk.model.ANY_ENTITY, False):
+    for x in mgr.findEntitiesOfType(int(smtk.model.ANY_ENTITY), False):
       sdness = x.integerProperty('superduperness')
       if not (not x.isModel()) ^ (len(sdness) == 1 and sdness[0] == 42):
         print x.name(), ' has unexpected superduperness of ', sdness

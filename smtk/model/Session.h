@@ -343,13 +343,14 @@ public:
   smtk::mesh::ManagerPtr meshManager() const;
   smtk::io::Logger& log();
 
+  virtual ~Session();
+
 protected:
   friend class io::ExportJSON;
   friend class io::ImportJSON;
   friend class Manager;
 
   Session();
-  virtual ~Session();
 
   virtual SessionInfoBits transcribeInternal(const EntityRef& entity, SessionInfoBits flags, int depth = -1);
 

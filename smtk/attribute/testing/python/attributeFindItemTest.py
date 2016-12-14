@@ -15,6 +15,7 @@ Demonstrates bug that reappeared Oct 2103
 
 import os
 import smtk
+from smtk import attribute
 
 if __name__ == '__main__':
     import sys

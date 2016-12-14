@@ -12,6 +12,9 @@ import sys
 #
 #=============================================================================
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    import smtk.bridge.polygon
+    import smtk.io
 from smtk.simple import *
 import smtk.testing
 
@@ -166,7 +169,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
       self.startRenderTest()
 
       mod = smtk.model.Model(mod)
-      [mod.addCell(x) for x in self.mgr.findEntitiesOfType(smtk.model.CELL_ENTITY, False)]
+      [mod.addCell(x) for x in self.mgr.findEntitiesOfType(int(smtk.model.CELL_ENTITY), False)]
       ms, vs, mp, ac = self.addModelToScene(mod)
       ac.GetProperty().SetLineWidth(2)
       ac.GetProperty().SetPointSize(6)

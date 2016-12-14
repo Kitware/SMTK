@@ -17,6 +17,7 @@ Requires smtkCorePython.so to be in module path
 """
 
 import smtk
+from smtk import attribute
 
 if __name__ == '__main__':
     import sys

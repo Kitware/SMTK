@@ -9,7 +9,10 @@
 #  PURPOSE.  See the above copyright notice for more information.
 #
 #=============================================================================
+import os
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    import smtk.bridge.exodus
 import smtk.testing
 from smtk.simple import *
 import sys
@@ -61,14 +64,14 @@ class TestExodusSession(smtk.testing.TestCase):
         'Unnamed set ID: 7':              '#ff6700'
     }
     self.assertTrue(all([x.name() in nameset for x in allgroups]),
-        'Not all group names recognized.')
+      'Not all group names recognized.')
 
     someGroup = allgroups[0]
     self.assertEqual(someGroup.attributes(), set([]),
         'Group should not have any attribute associations.')
     asys = smtk.attribute.System()
     adef = asys.createDefinition('testDef')
-    adef.setAssociationMask(smtk.model.GROUP_ENTITY)
+    adef.setAssociationMask(int(smtk.model.GROUP_ENTITY))
     attr = asys.createAttribute(adef.type())
     self.assertTrue(attr.associateEntity(someGroup),
         'Could not associate group to attribute');
@@ -98,12 +101,12 @@ class TestExodusSession(smtk.testing.TestCase):
 
         # Render groups with colors:
         for grp in allgroups:
-            color = self.hex2rgb(nameset[grp.name()])
-            SetEntityProperty(grp, 'color', as_float=color)
+          color = self.hex2rgb(nameset[grp.name()])
+          SetEntityProperty(grp, 'color', as_float=color)
             # The element block should not be shown as it is coincident with some
             # of the side sets and throws off baseline images. Remove its tessellation.
-            if grp.name() ==  'Unnamed block ID: 1 Type: HEX8':
-                grp.setTessellation(smtk.model.Tessellation())
+          if grp.name() ==  'Unnamed block ID: 1 Type: HEX8':
+            grp.setTessellation(smtk.model.Tessellation())
 
         self.startRenderTest()
         mbs, filt, mapper, actor = self.addModelToScene(self.model)

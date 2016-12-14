@@ -24,6 +24,9 @@ entries with externally-provided UUIDs.
 
 import os
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    import smtk.io
+    import smtk.model
 
 if __name__ == '__main__':
   import sys

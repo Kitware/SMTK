@@ -17,9 +17,11 @@ Requires smtkCorePython.so to be in module path
 """
 
 import smtk
+from smtk import attribute
 
 if __name__ == '__main__':
     import sys
+    import os
 
     status = 0
 
@@ -72,8 +74,8 @@ if __name__ == '__main__':
        print "Should not have associated entities.\n"
        status = -1
     if att.appliesToBoundaryNodes():
-       print "Should not be applies to boundry node.\n"
-       status = -1
+        print "Should not be applies to boundry node.\n"
+        status = -1
     att.setAppliesToBoundaryNodes(True)
     if not att.appliesToBoundaryNodes():
        print "Should be applies to boundry node.\n"

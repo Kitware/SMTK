@@ -115,6 +115,10 @@ if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
   #target_include_directories(smtkRemoteSessionPython PRIVATE ${CGM_INCLUDE_DIRS})
 endif()
 
+if (SMTK_USE_PYBIND11)
+  add_subdirectory(pybind11)
+endif()
+
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(plugin)
 endif()
