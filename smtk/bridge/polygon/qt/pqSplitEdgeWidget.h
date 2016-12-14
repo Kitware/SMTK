@@ -54,6 +54,7 @@ explicit pqSplitEdgeWidget(QWidget *parent = 0);
 
   virtual void setView(pqRenderView* view);
   void setEdgeOperator(smtk::model::OperatorPtr edgeOp);
+  smtk::shared_ptr<smtk::model::Operator> edgeOperator();
   bool isActive();
 
 signals:

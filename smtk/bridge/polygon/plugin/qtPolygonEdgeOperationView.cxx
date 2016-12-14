@@ -435,6 +435,15 @@ void qtPolygonEdgeOperationView::operationSelected(const smtk::model::OperatorPt
     // * split edge: // this need a special
     if(op->name() == "split edge") // otherwise, only handle split edge custom ui
       {
+      // If this is the same operator the SplitEdgeWidget is actively working with,
+      // then nothing to do here
+      if(this->Internals->SplitEdgeWidget &&
+         this->Internals->SplitEdgeWidget->isActive() &&
+         this->Internals->SplitEdgeWidget->edgeOperator() == op)
+        {
+        return;
+        }
+
       if(!this->Internals->SplitEdgeWidget)
         {
         this->Internals->SplitEdgeWidget = new pqSplitEdgeWidget(this->Widget);
