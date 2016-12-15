@@ -1227,10 +1227,12 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
       cJSON_GetStringValue(collecNameNode, collectionName);
       collection->name(collectionName);
 
-      //ask the manager to generate a unique name for the collection, if it
-      //doesn't already have a unique name. This occurs when meshes have
-      //no name, or a name that has already been used
-      collection->assignUniqueNameIfNotAlready();
+      //ask the manager to generate a unique name for the collection, this
+      //occurs when meshes have no name.
+      if (collection->name().empty())
+        {
+        collection->assignUniqueNameIfNotAlready();
+        }
 
       //set the collections model manager so that we can do model based
       //queries properly
