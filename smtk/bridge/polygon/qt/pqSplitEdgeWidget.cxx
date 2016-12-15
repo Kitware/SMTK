@@ -190,6 +190,10 @@ void pqSplitEdgeWidget::setEdgeOperator(smtk::model::OperatorPtr edgeOp)
   else
     this->m_edgeOp = smtk::model::Operator::Ptr();
 }
+smtk::shared_ptr<smtk::model::Operator> pqSplitEdgeWidget::edgeOperator()
+{
+  return this->m_edgeOp.lock();
+}
 
 //-----------------------------------------------------------------------------
 void pqSplitEdgeWidget::splitEdgeOperation(bool start)

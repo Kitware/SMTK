@@ -431,16 +431,22 @@ void qtModelOperationWidget::expungeEntities(
   while(it.hasNext())
     {
     it.next();
+    bool associationChanged = false;
     if(it.value().opPtr && it.value().opPtr->specification())
       {
       for (EntityRefs::const_iterator bit = expungedEnts.begin();
         bit != expungedEnts.end(); ++bit)
         {
-        //std::cout << "expunge from op " << bit->flagSummary(0) << " " << bit->entity() << "\n";
-        it.value().opPtr->specification()->disassociateEntity(*bit);
+        if(it.value().opPtr->specification()->isEntityAssociated(*bit))
+          {
+          //std::cout << "expunge from op " << bit->flagSummary(0) << " " << bit->entity() << "\n";
+          it.value().opPtr->specification()->disassociateEntity(*bit);
+          associationChanged = true;
+          }
         }
       }
-    it.value().opUiView->updateUI();
+    if(associationChanged)
+      it.value().opUiView->updateUI();
     }
 }
 
