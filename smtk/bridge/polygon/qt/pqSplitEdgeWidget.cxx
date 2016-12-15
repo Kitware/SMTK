@@ -41,6 +41,7 @@
 #include "vtkSMSession.h"
 #include "vtkSMSourceProxy.h"
 #include "vtkSMVectorProperty.h"
+#include "vtkSMInteractiveSelectionPipeline.h"
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/Manager.h"
@@ -98,6 +99,8 @@ void EdgePointPicker::donePicking(pqRenderView* view)
   //we want the connection to stop so remove the connection
   if(this->Selecter)
     {
+    vtkSMInteractiveSelectionPipeline::GetInstance()->Hide(
+      vtkSMRenderViewProxy::SafeDownCast(view->getViewProxy()));
     this->Selecter->disconnect();
     delete this->Selecter;
     this->Selecter = NULL;
