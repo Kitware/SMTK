@@ -34,25 +34,27 @@
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-inline void init_Att_Names_and_NEW(QList<QString>& attNames,
-  const RefItemDefinition *itemDef)
-{
-  smtk::attribute::DefinitionPtr attDef = itemDef->attributeDefinition();
-  if(!attDef)
-    {
-    return;
-    }
-  attNames.push_back("None");
-  std::vector<smtk::attribute::AttributePtr> result;
-  System *attSystem = attDef->system();
-  attSystem->findAttributes(attDef, result);
-  std::vector<smtk::attribute::AttributePtr>::iterator it;
-  for (it=result.begin(); it!=result.end(); ++it)
-    {
-    attNames.push_back((*it)->name().c_str());
-    }
-  attNames.push_back("New");
-}
+namespace qtAttRefComboInternal {
+   void init_Att_Names_and_NEW(QList<QString>& attNames,
+    const RefItemDefinition *itemDef)
+  {
+    smtk::attribute::DefinitionPtr attDef = itemDef->attributeDefinition();
+    if(!attDef)
+      {
+      return;
+      }
+    attNames.push_back("None");
+    std::vector<smtk::attribute::AttributePtr> result;
+    System *attSystem = attDef->system();
+    attSystem->findAttributes(attDef, result);
+    std::vector<smtk::attribute::AttributePtr>::iterator it;
+    for (it=result.begin(); it!=result.end(); ++it)
+      {
+      attNames.push_back((*it)->name().c_str());
+      }
+    attNames.push_back("New");
+  }
+};
 
 //-----------------------------------------------------------------------------
 qtAttRefCombo::qtAttRefCombo(smtk::attribute::ItemPtr refitem, QWidget * inParent)
@@ -80,7 +82,7 @@ void qtAttRefCombo::showPopup()
   const RefItemDefinition *itemDef =
     dynamic_cast<const RefItemDefinition*>(
     this->m_RefItem.lock()->definition().get());
-  init_Att_Names_and_NEW(attNames, itemDef);
+  qtAttRefComboInternal::init_Att_Names_and_NEW(attNames, itemDef);
   this->blockSignals(true);
 
   RefItemPtr refitem =
@@ -421,7 +423,7 @@ void qtAttributeRefItem::updateItemData()
     return;
     }
   QList<QString> attNames;
-  init_Att_Names_and_NEW(attNames, itemDef);
+  qtAttRefComboInternal::init_Att_Names_and_NEW(attNames, itemDef);
 
   foreach(QComboBox* combo, this->Internals->comboBoxes)
     {

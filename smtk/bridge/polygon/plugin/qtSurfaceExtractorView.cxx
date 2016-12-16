@@ -55,6 +55,26 @@ public:
   ~qtSurfaceExtractorViewInternals()
     {
     }
+
+  qtAttribute* createAttUI(smtk::attribute::AttributePtr att, QWidget* pw, qtBaseView* view)
+  {
+    if(att && att->numberOfItems()>0)
+    {
+      qtAttribute* attInstance = new qtAttribute(att, pw, view);
+      if(attInstance && attInstance->widget())
+      {
+        //Without any additional info lets use a basic layout with model associations
+        // if any exists
+        attInstance->createBasicLayout(true);
+        attInstance->widget()->setObjectName("polygonContourOpEditor");
+        QVBoxLayout* parentlayout = static_cast<QVBoxLayout*> (pw->layout());
+        parentlayout->insertWidget(0, attInstance->widget());
+      }
+      return attInstance;
+    }
+    return NULL;
+  }
+
   QPointer<qtAttribute> CurrentAtt;
   smtk::weak_ptr<smtk::model::Operator> CurrentOp;
   imageFeatureExtractorWidget * ExtractorWidget;
@@ -121,26 +141,6 @@ void qtSurfaceExtractorView::createWidget( )
   layout->addWidget(contourButton);
 }
 
-inline qtAttribute*
-internal_createAttUI(smtk::attribute::AttributePtr att, QWidget* pw, qtBaseView* view)
-{
-  if(att && att->numberOfItems()>0)
-  {
-    qtAttribute* attInstance = new qtAttribute(att, pw, view);
-    if(attInstance && attInstance->widget())
-    {
-      //Without any additional info lets use a basic layout with model associations
-      // if any exists
-      attInstance->createBasicLayout(true);
-      attInstance->widget()->setObjectName("polygonContourOpEditor");
-      QVBoxLayout* parentlayout = static_cast<QVBoxLayout*> (pw->layout());
-      parentlayout->insertWidget(0, attInstance->widget());
-    }
-    return attInstance;
-  }
-  return NULL;
-}
-
 //----------------------------------------------------------------------------
 void qtSurfaceExtractorView::updateAttributeData()
 {
@@ -190,7 +190,7 @@ void qtSurfaceExtractorView::updateAttributeData()
   this->Internals->CurrentOp = edgeOp;
   // expecting only 1 instance of the op?
   smtk::attribute::AttributePtr att = edgeOp->specification();
-  this->Internals->CurrentAtt = internal_createAttUI(att, this->Widget, this);
+  this->Internals->CurrentAtt = this->Internals->createAttUI(att, this->Widget, this);
 }
 
 //----------------------------------------------------------------------------

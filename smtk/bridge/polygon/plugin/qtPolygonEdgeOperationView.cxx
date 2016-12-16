@@ -56,6 +56,49 @@ public:
       delete CurrentAtt;
     }
 
+  bool needArc(const smtk::model::OperatorPtr& op)
+  {
+    bool able2Op = op
+                   && (op->name() == "tweak edge"
+                      || op->name() == "create edge")
+                   && op->ensureSpecification()
+                   ;
+    if(!able2Op)
+      {
+      return able2Op;
+      }
+
+    // for create-edge operation, we only handle "interactive widget" case
+    if(op->name() == "create edge")
+      {
+      smtk::attribute::IntItem::Ptr optypeItem =
+        op->specification()->findInt("construction method");
+      able2Op = optypeItem && (optypeItem->discreteIndex(0) == 2);
+      }
+
+    return able2Op;
+  }
+
+  qtAttribute* createAttUI(
+    smtk::attribute::AttributePtr att, QWidget* pw, qtBaseView* view)
+  {
+    if(att && att->numberOfItems()>0)
+      {
+      qtAttribute* attInstance = new qtAttribute(att, pw, view);
+      if(attInstance && attInstance->widget())
+        {
+        //Without any additional info lets use a basic layout with model associations
+        // if any exists
+        attInstance->createBasicLayout(true);
+        attInstance->widget()->setObjectName("polygonEdgeOpEditor");
+        QVBoxLayout* parentlayout = static_cast<QVBoxLayout*> (pw->layout());
+        parentlayout->insertWidget(0, attInstance->widget());
+        }
+      return attInstance;
+      }
+    return NULL;
+  }
+
   QPointer<pqArcWidgetManager> ArcManager;
   QPointer<qtAttribute> CurrentAtt;
   QPointer<QVBoxLayout> EditorLayout;
@@ -125,49 +168,6 @@ void qtPolygonEdgeOperationView::createWidget( )
     this, SLOT(cancelOperation(const smtk::model::OperatorPtr&)));
 }
 
-inline bool internal_needArc(const smtk::model::OperatorPtr& op)
-{
-  bool able2Op = op
-                 && (op->name() == "tweak edge"
-                    || op->name() == "create edge")
-                 && op->ensureSpecification()
-                 ;
-  if(!able2Op)
-    {
-    return able2Op;
-    }
-
-  // for create-edge operation, we only handle "interactive widget" case
-  if(op->name() == "create edge")
-    {
-    smtk::attribute::IntItem::Ptr optypeItem =
-      op->specification()->findInt("construction method");
-    able2Op = optypeItem && (optypeItem->discreteIndex(0) == 2);
-    }
-
-  return able2Op;
-}
-
-inline qtAttribute* internal_createAttUI(
-  smtk::attribute::AttributePtr att, QWidget* pw, qtBaseView* view)
-{
-  if(att && att->numberOfItems()>0)
-    {
-    qtAttribute* attInstance = new qtAttribute(att, pw, view);
-    if(attInstance && attInstance->widget())
-      {
-      //Without any additional info lets use a basic layout with model associations
-      // if any exists
-      attInstance->createBasicLayout(true);
-      attInstance->widget()->setObjectName("polygonEdgeOpEditor");
-      QVBoxLayout* parentlayout = static_cast<QVBoxLayout*> (pw->layout());
-      parentlayout->insertWidget(0, attInstance->widget());
-      }
-    return attInstance;
-    }
-  return NULL;
-}
-
 //----------------------------------------------------------------------------
 void qtPolygonEdgeOperationView::updateAttributeData()
 {
@@ -217,12 +217,12 @@ void qtPolygonEdgeOperationView::updateAttributeData()
   this->Internals->CurrentOp = edgeOp;
   // expecting only 1 instance of the op?
   smtk::attribute::AttributePtr att = edgeOp->specification();
-  this->Internals->CurrentAtt = internal_createAttUI(att, this->Widget, this);
+  this->Internals->CurrentAtt = this->Internals->createAttUI(att, this->Widget, this);
 
   // The arc widget interaction is only needed for:
   // * create edge op : with "construction method" set to "interactive widget"
   // * tweak edge
-  if(internal_needArc(edgeOp))
+  if(this->Internals->needArc(edgeOp))
     {
     pqRenderView* renView = qobject_cast<pqRenderView*>(pqActiveObjects::instance().activeView());
     pqServer* server = pqApplicationCore::instance()->getActiveServer();
@@ -323,7 +323,7 @@ void qtPolygonEdgeOperationView::operationSelected(const smtk::model::OperatorPt
     return;
 
   // Based on which type of operations, we update UI panel
-  if(internal_needArc(op) && this->Internals->ArcManager)
+  if(this->Internals->needArc(op) && this->Internals->ArcManager)
     {
     if(this->Internals->SplitEdgeWidget)
       {
