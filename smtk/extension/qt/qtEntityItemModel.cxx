@@ -692,29 +692,8 @@ void QEntityItemModel::rebuildSubphrases(const QModelIndex& qidx)
   emit dataChanged(qidx, qidx);
 }
 
-/*
-inline QModelIndex _internal_getPhraseIndex(
-  smtk::extension::QEntityItemModel* qmodel,
-  const smtk::model::EntityRef& entRef,
-  const QModelIndex& top, bool recursive = false)
+namespace QEntityItemModelInternal
 {
-  for (int row = 0; row < qmodel->rowCount(top); ++row)
-    {
-    QModelIndex cIdx(qmodel->index(row, 0, top));
-    DescriptivePhrasePtr dp = qmodel->getItem(cIdx);
-    if(dp && (dp->relatedEntity() == entRef))
-      return cIdx;
-    if(recursive)
-      {
-      QModelIndex recurIdx(_internal_getPhraseIndex(qmodel, entRef, cIdx, recursive));
-      if(recurIdx.isValid())
-        return recurIdx;
-      }
-    }
-  return QModelIndex();
-}
-*/
-
 inline QModelIndex _internal_getPhraseIndex(
   smtk::extension::QEntityItemModel* qmodel,
   const DescriptivePhrasePtr& phrase,
@@ -827,6 +806,7 @@ inline void _internal_updateAllMeshCollectionPhrases(
       }
     }
 }
+};
 
 void QEntityItemModel::addChildPhrases(
     const DescriptivePhrasePtr& parntDp,
@@ -836,7 +816,7 @@ void QEntityItemModel::addChildPhrases(
   QModelIndex qidx;
   if(parntDp != this->m_root)
     {
-    qidx = (_internal_getPhraseIndex(
+    qidx = (QEntityItemModelInternal::_internal_getPhraseIndex(
       this, parntDp, topIndex, descend));
     if(!qidx.isValid())
       {
@@ -929,7 +909,7 @@ void QEntityItemModel::removeChildPhrases(
     const std::vector< std::pair<DescriptivePhrasePtr, int> > & remDphrs,
     const QModelIndex& topIndex)
 {
-  QModelIndex qidx(_internal_getPhraseIndex(
+  QModelIndex qidx(QEntityItemModelInternal::_internal_getPhraseIndex(
     this, parntDp, topIndex, true));
   if(!qidx.isValid())
     {
@@ -1088,7 +1068,7 @@ void QEntityItemModel::updateChildPhrases(
   // subphrases did not change, just emit dataChanged signal
   if(remDphrs.size() == 0 && newDphrs.size() == 0 && emitEvenNoChanges)
     {
-    QModelIndex qidx(_internal_getPhraseIndex(
+    QModelIndex qidx(QEntityItemModelInternal::_internal_getPhraseIndex(
       this, phrase, topIndex, true));
     if(!qidx.isValid())
       {
@@ -1288,7 +1268,7 @@ void QEntityItemModel::updateMeshPhrases(
 {
   DescriptivePhrases meshPhrasesNeedUpdate;
   DescriptivePhrases collectionPhrases;
-  _internal_updateAllMeshCollectionPhrases(startDp, relatedCollections,
+  QEntityItemModelInternal::_internal_updateAllMeshCollectionPhrases(startDp, relatedCollections,
     meshPhrasesNeedUpdate, collectionPhrases, meshMgr);
   smtk::model::DescriptivePhrases::iterator mit;
   for(mit = meshPhrasesNeedUpdate.begin(); mit != meshPhrasesNeedUpdate.end(); ++mit)
@@ -1297,7 +1277,7 @@ void QEntityItemModel::updateMeshPhrases(
   // emit DataChanged signal for collection index
   for(mit = collectionPhrases.begin(); mit != collectionPhrases.end(); ++mit)
     {
-    QModelIndex qidx(_internal_getPhraseIndex(this, *mit, topIndex, true));
+    QModelIndex qidx(QEntityItemModelInternal::_internal_getPhraseIndex(this, *mit, topIndex, true));
     if(qidx.isValid())
       emit this->dataChanged(qidx, qidx);
     }
@@ -1359,7 +1339,7 @@ void QEntityItemModel::updateWithOperatorResult(
     result->findModelEntity("modified");
   if(modEnts && modEnts->numberOfValues() > 0)
     {
-    _internal_findAllExistingPhrases(startPhr, modEnts, modifiedPhrases);
+    QEntityItemModelInternal::_internal_findAllExistingPhrases(startPhr, modEnts, modifiedPhrases);
     smtk::model::DescriptivePhrases::iterator mit;
     for(mit = modifiedPhrases.begin(); mit != modifiedPhrases.end(); ++mit)
       this->updateChildPhrases(*mit, sessIndex);
@@ -1382,12 +1362,12 @@ void QEntityItemModel::updateWithOperatorResult(
     if(relatedCollections.size() > 0)
       this->updateMeshPhrases(relatedCollections, startPhr, sessIndex, this->manager()->meshes());
 
-    _internal_findAllExistingMeshPhrases(startPhr, modifiedMeshes, modifiedMeshPhrases);
+    QEntityItemModelInternal::_internal_findAllExistingMeshPhrases(startPhr, modifiedMeshes, modifiedMeshPhrases);
 
     smtk::model::DescriptivePhrases::iterator mit;
     for(mit = modifiedMeshPhrases.begin(); mit != modifiedMeshPhrases.end(); ++mit)
       {
-      QModelIndex qidx(_internal_getPhraseIndex(
+      QModelIndex qidx(QEntityItemModelInternal::_internal_getPhraseIndex(
         this, *mit, sessIndex, true));
       if(!qidx.isValid())
         {

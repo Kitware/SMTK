@@ -63,6 +63,50 @@ public:
       delete this->ContoursDialog;
       }
     }
+  qtAttribute* createAttUI(
+    smtk::attribute::AttributePtr att, QWidget* pw, qtBaseView* view)
+  {
+    if(att && att->numberOfItems()>0)
+      {
+      qtAttribute* attInstance = new qtAttribute(att, pw, view);
+      if(attInstance && attInstance->widget())
+        {
+        //Without any additional info lets use a basic layout with model associations
+        // if any exists
+        attInstance->createBasicLayout(true);
+        attInstance->widget()->setObjectName("polygonContourOpEditor");
+        QVBoxLayout* parentlayout = static_cast<QVBoxLayout*> (pw->layout());
+        parentlayout->insertWidget(0, attInstance->widget());
+        }
+      return attInstance;
+      }
+    return NULL;
+  }
+
+  vtkSMProxy* createVTKContourOperator(
+    vtkSMProxy *sourceProxy)
+  {
+    vtkSMProxy* smPolyEdgeOp = vtkSMProxyManager::GetProxyManager()->NewProxy(
+      "polygon_operators", "PolygonContourOperator");
+    if(!smPolyEdgeOp)
+      return NULL;
+    smPolyEdgeOp->UpdateVTKObjects();
+    sourceProxy->UpdateVTKObjects();
+
+    vtkClientServerStream stream;
+    stream  << vtkClientServerStream::Invoke
+            << VTKOBJECT(sourceProxy) << "GetOutputDataObject"
+            << 0
+            << vtkClientServerStream::End;
+    smPolyEdgeOp->GetSession()->ExecuteStream(smPolyEdgeOp->GetLocation(), stream);
+
+    stream  << vtkClientServerStream::Invoke
+            << VTKOBJECT(smPolyEdgeOp) << "SetContourInput"
+            << smPolyEdgeOp->GetSession()->GetLastResult(vtkProcessModule::DATA_SERVER_ROOT).GetArgument(0,0)
+            << vtkClientServerStream::End;
+    smPolyEdgeOp->GetSession()->ExecuteStream(smPolyEdgeOp->GetLocation(), stream);
+    return smPolyEdgeOp;
+  }
 
   QPointer<pqGenerateContoursDialog> ContoursDialog;
   QPointer<qtAttribute> CurrentAtt;
@@ -132,51 +176,6 @@ void qtExtractContoursView::createWidget( )
   layout->addWidget(contourButton);
 }
 
-inline qtAttribute* internal_createAttUI(
-  smtk::attribute::AttributePtr att, QWidget* pw, qtBaseView* view)
-{
-  if(att && att->numberOfItems()>0)
-    {
-    qtAttribute* attInstance = new qtAttribute(att, pw, view);
-    if(attInstance && attInstance->widget())
-      {
-      //Without any additional info lets use a basic layout with model associations
-      // if any exists
-      attInstance->createBasicLayout(true);
-      attInstance->widget()->setObjectName("polygonContourOpEditor");
-      QVBoxLayout* parentlayout = static_cast<QVBoxLayout*> (pw->layout());
-      parentlayout->insertWidget(0, attInstance->widget());
-      }
-    return attInstance;
-    }
-  return NULL;
-}
-
-inline vtkSMProxy* internal_createVTKContourOperator(
-  vtkSMProxy *sourceProxy)
-{
-  vtkSMProxy* smPolyEdgeOp = vtkSMProxyManager::GetProxyManager()->NewProxy(
-    "polygon_operators", "PolygonContourOperator");
-  if(!smPolyEdgeOp)
-    return NULL;
-  smPolyEdgeOp->UpdateVTKObjects();
-  sourceProxy->UpdateVTKObjects();
-
-  vtkClientServerStream stream;
-  stream  << vtkClientServerStream::Invoke
-          << VTKOBJECT(sourceProxy) << "GetOutputDataObject"
-          << 0
-          << vtkClientServerStream::End;
-  smPolyEdgeOp->GetSession()->ExecuteStream(smPolyEdgeOp->GetLocation(), stream);
-
-  stream  << vtkClientServerStream::Invoke
-          << VTKOBJECT(smPolyEdgeOp) << "SetContourInput"
-          << smPolyEdgeOp->GetSession()->GetLastResult(vtkProcessModule::DATA_SERVER_ROOT).GetArgument(0,0)
-          << vtkClientServerStream::End;
-  smPolyEdgeOp->GetSession()->ExecuteStream(smPolyEdgeOp->GetLocation(), stream);
-  return smPolyEdgeOp;
-}
-
 //----------------------------------------------------------------------------
 void qtExtractContoursView::updateAttributeData()
 {
@@ -226,7 +225,7 @@ void qtExtractContoursView::updateAttributeData()
   this->Internals->CurrentOp = edgeOp;
   // expecting only 1 instance of the op?
   smtk::attribute::AttributePtr att = edgeOp->specification();
-  this->Internals->CurrentAtt = internal_createAttUI(att, this->Widget, this);
+  this->Internals->CurrentAtt = this->Internals->createAttUI(att, this->Widget, this);
 
 }
 //----------------------------------------------------------------------------
@@ -271,7 +270,7 @@ void qtExtractContoursView::acceptContours(pqPipelineSource* contourSource)
   smtk::attribute::IntItem::Ptr opProxyIdItem = spec->findInt("HelperGlobalID");
   if(!opProxyIdItem)
     return;
-  vtkSMProxy* smPolyEdgeOp = internal_createVTKContourOperator(contourSource->getProxy());
+  vtkSMProxy* smPolyEdgeOp = this->Internals->createVTKContourOperator(contourSource->getProxy());
   if(!smPolyEdgeOp)
     return;
   if(this->Internals->CurrentImage)
