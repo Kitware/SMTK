@@ -228,6 +228,13 @@ smtk::model::OperatorResult ReadOperator::readExodus()
   vtkMultiBlockDataSet* elemBlocks =
     vtkMultiBlockDataSet::SafeDownCast(
       modelOut->GetBlock(0));
+
+  if (!elemBlocks)
+  {
+    smtkErrorMacro(this->log(), "Error:Associated file " << filename << " is not valid!");
+    return this->createResult(OPERATION_FAILED);
+  }
+
   MarkExodusMeshWithChildren(
     elemBlocks, dim,
     modelOut->GetMetaData(0u)->Get(vtkCompositeDataSet::NAME()),
