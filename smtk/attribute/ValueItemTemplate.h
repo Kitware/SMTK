@@ -576,6 +576,7 @@ namespace smtk
         return false; // Source is not the right type of item
         }
       // Update values
+      this->setNumberOfValues(sourceValueItemTemplate->numberOfValues());
       for (std::size_t i=0; i<sourceValueItemTemplate->numberOfValues(); ++i)
         {
         if (sourceValueItemTemplate->isSet(i) &&

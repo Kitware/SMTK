@@ -10,6 +10,7 @@ set(attributeTests
   discreteStringsWithDefaultTest
   expressionTest
   expressionTest2
+  extensibleAttributeCopyTest
   attributeAssociationTest
   attributeAutoNamingTest
   attributeReferencingTest
