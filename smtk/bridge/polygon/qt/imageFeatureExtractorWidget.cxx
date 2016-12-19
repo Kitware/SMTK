@@ -658,8 +658,10 @@ void imageFeatureExtractorWidget
 
   {
     double * s = inputImage->GetSpacing();
-    this->ui->extentX->setText(QString::number(s[0]));
-    this->ui->extentY->setText(QString::number(s[1]));
+    int dims[3];
+    inputImage->GetDimensions(dims);
+    this->ui->extentX->setText(QString::number(std::abs(s[0]*dims[0])));
+    this->ui->extentY->setText(QString::number(std::abs(s[1]*dims[1])));
   }
 
   double currentColor[4];
