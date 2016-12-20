@@ -143,7 +143,7 @@ smtk::attribute::AttributePtr System::createAttribute(const std::string &typeNam
     {
     return smtk::attribute::AttributePtr();
     }
-    
+
   smtk::attribute::AttributePtr att =
     this->createAttribute(this->createUniqueName(def->rootName()), def);
   return att;
@@ -760,7 +760,7 @@ System::copyAttribute(const smtk::attribute::AttributePtr sourceAtt,
       //TODO Should make sure the definition we found matches the structure of the definition
       // used by the Source Attribute if they don't then error out
       }
-    
+
     std::string name =  sourceAtt->name();
     if (this->findAttribute(name))
       {

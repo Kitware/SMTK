@@ -375,6 +375,7 @@ bool FileSystemItem::assign(ConstItemPtr &sourceItem, unsigned int options)
     return false; // Source is not a directory item!
     }
 
+  this->setNumberOfValues(sourceDirItem->numberOfValues());
   for (std::size_t i=0; i<sourceDirItem->numberOfValues(); ++i)
     {
     if (sourceDirItem->isSet(i))
