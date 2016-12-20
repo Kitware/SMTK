@@ -362,6 +362,24 @@ def parse_free_function(func, overloaded, stream):
     stream("}")
     return init_function_name
 
+def has_static(class_):
+    for member in class_.public_members:
+        if member.parent.name != class_.name:
+            continue
+        if member.__class__.__name__ != "member_function_t":
+            continue
+        if member.has_static:
+            return True
+
+    for variable in class_.variables(allow_empty = True):
+        if variable.parent.name != class_.name:
+            continue
+        if variable.access_type == "public" \
+          and variable.type_qualifiers.has_static:
+            return True
+
+    return False
+
 def parse_class(class_, stream, top_level = True):
     """
     Write bindings for a class
@@ -371,18 +389,24 @@ def parse_class(class_, stream, top_level = True):
 
     init_function_name = "pybind11_init_" + mangled_name(class_)
 
+    metaclass = ""
+    if has_static(class_):
+        metaclass = ", py::metaclass()"
+
     if top_level:
         stream("%s %s(py::module &m)" % (bind_class_name(class_),
-                                         init_function_name))
+                                           init_function_name))
         stream("{")
-        stream("  %s instance(m, \"%s\");" % \
+        stream("  %s instance(m, \"%s\"%s);" % \
                (bind_class_name(class_),
-               class_.name.replace('<','_').replace('>','_').replace('::','_')))
+                class_.name.replace('<','_').replace('>','_').replace('::','_'),
+                metaclass))
         stream("  instance")
     else:
-        stream("  %s(instance, \"%s\")" % \
+        stream("  %s(instance, \"%s\"%s)" % \
               (bind_class_name(class_),
-               class_.name.replace('<','_').replace('>','_').replace('::','_')))
+               class_.name.replace('<','_').replace('>','_').replace('::','_'),
+               metaclass))
 
     if not class_.is_abstract:
         for constructor in class_.constructors():

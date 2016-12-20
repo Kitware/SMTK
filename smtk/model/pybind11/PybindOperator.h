@@ -13,6 +13,8 @@
 
 #include <pybind11/pybind11.h>
 
+#include <type_traits>
+
 #include "smtk/model/Operator.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -50,6 +52,8 @@ void pybind11_init_smtk_model_OperatorOutcome(py::module &m)
 
 PySharedPtrClass< smtk::model::Operator > pybind11_init_smtk_model_Operator(py::module &m)
 {
+  typedef std::underlying_type<::smtk::attribute::SearchStyle>::type SearchStyleType;
+
   PySharedPtrClass< smtk::model::Operator > instance(m, "Operator");
   instance
     .def("__lt__", (bool (smtk::model::Operator::*)(::smtk::model::Operator const &) const) &smtk::model::Operator::operator<)
@@ -63,17 +67,28 @@ PySharedPtrClass< smtk::model::Operator > pybind11_init_smtk_model_Operator(py::
     .def("disassociateEntity", &smtk::model::Operator::disassociateEntity, py::arg("entity"))
     .def("ensureSpecification", &smtk::model::Operator::ensureSpecification)
     .def("eraseResult", &smtk::model::Operator::eraseResult, py::arg("res"))
-    .def("findDirectory", &smtk::model::Operator::findDirectory, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::ALL_CHILDREN)
-    .def("findDouble", &smtk::model::Operator::findDouble, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::ALL_CHILDREN)
-    .def("findFile", &smtk::model::Operator::findFile, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::ALL_CHILDREN)
-    .def("findGroup", &smtk::model::Operator::findGroup, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::ALL_CHILDREN)
-    .def("findInt", &smtk::model::Operator::findInt, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::ALL_CHILDREN)
-    .def("findMesh", &smtk::model::Operator::findMesh, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::ALL_CHILDREN)
-    .def("findMeshSelection", &smtk::model::Operator::findMeshSelection, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::ALL_CHILDREN)
-    .def("findModelEntity", &smtk::model::Operator::findModelEntity, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::ALL_CHILDREN)
-    .def("findRef", &smtk::model::Operator::findRef, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::ALL_CHILDREN)
-    .def("findString", &smtk::model::Operator::findString, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::ALL_CHILDREN)
-    .def("findVoid", &smtk::model::Operator::findVoid, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::ALL_CHILDREN)
+    .def("findDirectory", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findDirectory(s, ::smtk::attribute::SearchStyle(i)); },
+         py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
+    .def("findDouble", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findDouble(s, ::smtk::attribute::SearchStyle(i)); },
+         py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
+    .def("findFile", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findFile(s, ::smtk::attribute::SearchStyle(i)); },
+         py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
+    .def("findGroup", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findGroup(s, ::smtk::attribute::SearchStyle(i)); },
+         py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
+    .def("findInt", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findInt(s, ::smtk::attribute::SearchStyle(i)); },
+         py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
+    .def("findMesh", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findMesh(s, ::smtk::attribute::SearchStyle(i)); },
+         py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
+    .def("findMeshSelection", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findMeshSelection(s, ::smtk::attribute::SearchStyle(i)); },
+         py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
+    .def("findModelEntity", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findModelEntity(s, ::smtk::attribute::SearchStyle(i)); },
+         py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
+    .def("findRef", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findRef(s, ::smtk::attribute::SearchStyle(i)); },
+         py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
+    .def("findString", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findString(s, ::smtk::attribute::SearchStyle(i)); },
+         py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
+    .def("findVoid", [](smtk::model::Operator& o, const std::string& s, SearchStyleType i) { return o.findVoid(s, ::smtk::attribute::SearchStyle(i)); },
+         py::arg("name"), py::arg("style") = static_cast<SearchStyleType>(::smtk::attribute::SearchStyle::ALL_CHILDREN))
     .def("log", &smtk::model::Operator::log)
     .def("manager", &smtk::model::Operator::manager)
     .def("meshManager", &smtk::model::Operator::meshManager)
@@ -94,21 +109,21 @@ PySharedPtrClass< smtk::model::Operator > pybind11_init_smtk_model_Operator(py::
     .def("unobserve", (void (smtk::model::Operator::*)(::smtk::model::OperatorEventType, ::smtk::model::BareOperatorCallback, void *)) &smtk::model::Operator::unobserve, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
     .def("unobserve", (void (smtk::model::Operator::*)(::smtk::model::OperatorEventType, ::smtk::model::OperatorWithResultCallback, void *)) &smtk::model::Operator::unobserve, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
     .def("findAsInt", [](const smtk::model::Operator& o, const std::string& s) {
-        return o.specification()->findAs<smtk::attribute::IntItem>(s, smtk::attribute::ALL_CHILDREN); })
+        return o.specification()->findAs<smtk::attribute::IntItem>(s, smtk::attribute::SearchStyle::ALL_CHILDREN); })
     .def("findAsDouble", [](const smtk::model::Operator& o, const std::string& s) {
-        return o.specification()->findAs<smtk::attribute::DoubleItem>(s, smtk::attribute::ALL_CHILDREN); })
+        return o.specification()->findAs<smtk::attribute::DoubleItem>(s, smtk::attribute::SearchStyle::ALL_CHILDREN); })
     .def("findAsString", [](const smtk::model::Operator& o, const std::string& s) {
-        return o.specification()->findAs<smtk::attribute::StringItem>(s, smtk::attribute::ALL_CHILDREN); })
+        return o.specification()->findAs<smtk::attribute::StringItem>(s, smtk::attribute::SearchStyle::ALL_CHILDREN); })
     .def("findAsFile", [](const smtk::model::Operator& o, const std::string& s) {
-        return o.specification()->findAs<smtk::attribute::FileItem>(s, smtk::attribute::ALL_CHILDREN); })
+        return o.specification()->findAs<smtk::attribute::FileItem>(s, smtk::attribute::SearchStyle::ALL_CHILDREN); })
     .def("findAsDirectory", [](const smtk::model::Operator& o, const std::string& s) {
-        return o.specification()->findAs<smtk::attribute::DirectoryItem>(s, smtk::attribute::ALL_CHILDREN); })
+        return o.specification()->findAs<smtk::attribute::DirectoryItem>(s, smtk::attribute::SearchStyle::ALL_CHILDREN); })
     .def("findAsGroup", [](const smtk::model::Operator& o, const std::string& s) {
-        return o.specification()->findAs<smtk::attribute::GroupItem>(s, smtk::attribute::ALL_CHILDREN); })
+        return o.specification()->findAs<smtk::attribute::GroupItem>(s, smtk::attribute::SearchStyle::ALL_CHILDREN); })
     .def("findAsRef", [](const smtk::model::Operator& o, const std::string& s) {
-        return o.specification()->findAs<smtk::attribute::RefItem>(s, smtk::attribute::ALL_CHILDREN); })
+        return o.specification()->findAs<smtk::attribute::RefItem>(s, smtk::attribute::SearchStyle::ALL_CHILDREN); })
     .def("findAsModelEntity", [](const smtk::model::Operator& o, const std::string& s) {
-        return o.specification()->findAs<smtk::attribute::ModelEntityItem>(s, smtk::attribute::ALL_CHILDREN); })
+        return o.specification()->findAs<smtk::attribute::ModelEntityItem>(s, smtk::attribute::SearchStyle::ALL_CHILDREN); })
     ;
   py::enum_<smtk::model::Operator::ResultEntityOrigin>(instance, "ResultEntityOrigin")
     .value("CREATED", smtk::model::Operator::ResultEntityOrigin::CREATED)

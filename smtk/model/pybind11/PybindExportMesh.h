@@ -21,7 +21,7 @@ namespace py = pybind11;
 
 PySharedPtrClass< smtk::model::ExportMesh, smtk::model::Operator > pybind11_init_smtk_model_ExportMesh(py::module &m)
 {
-  PySharedPtrClass< smtk::model::ExportMesh, smtk::model::Operator > instance(m, "ExportMesh");
+  PySharedPtrClass< smtk::model::ExportMesh, smtk::model::Operator > instance(m, "ExportMesh", py::metaclass());
   instance
     .def(py::init<>())
     .def(py::init<::smtk::model::ExportMesh const &>())
