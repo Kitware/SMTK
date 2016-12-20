@@ -17,7 +17,7 @@ if smtk.wrappingProtocol() == 'pybind11':
 from smtk.simple import *
 import smtk.testing
 import sys
-import tempfile
+import uuid
 
 class TestExportImport(smtk.testing.TestCase):
 
@@ -51,8 +51,7 @@ class TestExportImport(smtk.testing.TestCase):
     self.assertGreater(numModels, 0, 'Must read at least one model to test.')
 
     # Export and then import
-    #   Generate a temporary filename
-    ftmp = os.path.join(tempfile.mkdtemp(), 'test.json')
+    ftmp = os.path.join(smtk.testing.TEMP_DIR, str(uuid.uuid4()) + '.json')
     #   Export to ftmp
     exp = sess.op('export smtk model')
     SetVectorValue(exp.findFile('filename', smtk.attribute.ACTIVE_CHILDREN), [ftmp,])
@@ -89,6 +88,8 @@ class TestExportImport(smtk.testing.TestCase):
       self.renderWindow.Render()
       self.assertImageMatchIfFileExists(kwargs['baseline'])
       self.interact()
+
+    os.remove(ftmp)
 
   def testImportExport(self):
     sequence = [ \

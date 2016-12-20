@@ -17,6 +17,7 @@ endforeach()
 if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
   foreach (test ${smtkDiscreteSessionPythonDataTests})
     smtk_add_test_python(${test}Py ${test}.py
-      --data-dir=${SMTK_DATA_DIR})
+      --data-dir=${SMTK_DATA_DIR}
+      --temp-dir=${CMAKE_BINARY_DIR}/Testing/Temporary)
   endforeach()
 endif()

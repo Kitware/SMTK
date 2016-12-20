@@ -22,12 +22,13 @@ if (SMTK_ENABLE_EXODUS_SESSION AND SMTK_ENABLE_DISCRETE_SESSION AND SMTK_ENABLE_
 endif()
 
 foreach (test ${smtkModelPythonTests})
-  smtk_add_test_python(${test}Py ${test}.py)
+  smtk_add_test_python(${test}Py ${test}.py --temp-dir=${CMAKE_BINARY_DIR}/Testing/Temporary)
 endforeach()
 
 if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
   foreach (test ${smtkModelPythonDataTests})
     smtk_add_test_python(${test}Py ${test}.py
-      --data-dir=${SMTK_DATA_DIR})
+      --data-dir=${SMTK_DATA_DIR}
+      --temp-dir=${CMAKE_BINARY_DIR}/Testing/Temporary)
   endforeach()
 endif()

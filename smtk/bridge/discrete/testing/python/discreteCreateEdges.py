@@ -98,9 +98,11 @@ class TestDiscreteCreateEdges(smtk.testing.TestCase):
       self.verifyCreateEdges(test['filename'], test['validator'])
 
     if self.shouldSave:
-      out = file('testcreateedges.json', 'w')
+      ftmp = os.path.join(smtk.testing.TEMP_DIR,'testcreateedges.json')
+      out = file(ftmp, 'w')
       print >>out, smtk.io.ExportJSON.fromModelManager(self.mgr)
       out.close()
+      os.remove(ftmp)
 
 if __name__ == '__main__':
   smtk.testing.process_arguments()
