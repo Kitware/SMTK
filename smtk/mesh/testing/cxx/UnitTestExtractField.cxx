@@ -61,7 +61,7 @@ class ValidateCells : public smtk::mesh::CellForEach
 public:
   ValidateCells(const std::vector<smtk::mesh::CellSet>& cellsByDomain,
                 const std::vector<smtk::mesh::Domain>& domains,
-                const boost::int64_t* domainAssignments,
+                const std::int64_t* domainAssignments,
                 const smtk::mesh::HandleRange cellRange) :
     smtk::mesh::CellForEach(),
     m_cellsByDomain(cellsByDomain),
@@ -76,7 +76,7 @@ public:
                smtk::mesh::CellType, int)
   {
     // default to the value for unlabeled domains
-    boost::int64_t domainValue = -1;
+    std::int64_t domainValue = -1;
 
     for (std::size_t i = 0; i < this->m_cellsByDomain.size(); ++i)
       {
@@ -93,7 +93,7 @@ public:
 
   const std::vector<smtk::mesh::CellSet>& m_cellsByDomain;
   const std::vector<smtk::mesh::Domain>& m_domains;
-  const boost::int64_t* m_domainAssignments;
+  const std::int64_t* m_domainAssignments;
   const smtk::mesh::HandleRange m_cellRange;
   std::size_t m_index;
 };
@@ -104,7 +104,7 @@ class ValidatePoints : public smtk::mesh::PointForEach
 public:
   ValidatePoints(const std::vector<smtk::mesh::PointSet>& pointsByDomain,
                  const std::vector<smtk::mesh::Domain>& domains,
-                 const boost::int64_t* domainAssignments,
+                 const std::int64_t* domainAssignments,
                  const smtk::mesh::HandleRange pointRange) :
     smtk::mesh::PointForEach(),
     m_pointsByDomain(pointsByDomain),
@@ -121,7 +121,7 @@ public:
     for (auto point = pointIds.begin(); point != pointIds.end(); ++point)
       {
       // default to the value for unlabeled domains
-      boost::int64_t domainValue = -1;
+      std::int64_t domainValue = -1;
 
       for (std::size_t i = 0; i < this->m_pointsByDomain.size(); ++i)
         {
@@ -138,7 +138,7 @@ public:
 
   const std::vector<smtk::mesh::PointSet>& m_pointsByDomain;
   const std::vector<smtk::mesh::Domain>& m_domains;
-  const boost::int64_t* m_domainAssignments;
+  const std::int64_t* m_domainAssignments;
   const smtk::mesh::HandleRange m_pointRange;
   std::size_t m_index;
 };
@@ -162,15 +162,15 @@ void verify_extract_domain()
   SubdivideMesh subdivideMesh(order);
   smtk::mesh::for_each( meshes, subdivideMesh );
 
-  boost::int64_t numberOfCells;
-  boost::int64_t numberOfPoints;
+  std::int64_t numberOfCells;
+  std::int64_t numberOfPoints;
 
   smtk::mesh::PreAllocatedField::determineAllocationLengths(meshes,
                                                             numberOfCells,
                                                             numberOfPoints);
 
-  boost::int64_t* cells = new boost::int64_t[numberOfCells];
-  boost::int64_t* points = new boost::int64_t[numberOfPoints];
+  std::int64_t* cells = new std::int64_t[numberOfCells];
+  std::int64_t* points = new std::int64_t[numberOfPoints];
 
   smtk::mesh::PreAllocatedField field(cells, points);
   smtk::mesh::extractDomainField(meshes, field);

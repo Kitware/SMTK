@@ -90,7 +90,7 @@ std::size_t smtkToVTKLocation(const std::size_t& location, int numPts)
 }
 
 inline
-std::size_t smtkToSMTKConn(boost::int64_t&, std::size_t index, int)
+std::size_t smtkToSMTKConn(std::int64_t&, std::size_t index, int)
 {
   //do nothing as we aren't storing the length of each cell in the connectivity
   //array
@@ -98,7 +98,7 @@ std::size_t smtkToSMTKConn(boost::int64_t&, std::size_t index, int)
 }
 
 inline
-std::size_t smtkToVTKConn(boost::int64_t& conn, std::size_t index, int numPts)
+std::size_t smtkToVTKConn(std::int64_t& conn, std::size_t index, int numPts)
 {
   //store the length of the cell in the connectivity array
   conn = numPts;
@@ -109,9 +109,9 @@ std::size_t smtkToVTKConn(boost::int64_t& conn, std::size_t index, int numPts)
 
 //----------------------------------------------------------------------------
 void PreAllocatedTessellation::determineAllocationLengths(const smtk::mesh::MeshSet& ms,
-                                                          boost::int64_t& connectivityLength,
-                                                          boost::int64_t& numberOfCells,
-                                                          boost::int64_t& numberOfPoints)
+                                                          std::int64_t& connectivityLength,
+                                                          std::int64_t& numberOfCells,
+                                                          std::int64_t& numberOfPoints)
 
 {
   determineAllocationLengths(ms.cells(),
@@ -122,9 +122,9 @@ void PreAllocatedTessellation::determineAllocationLengths(const smtk::mesh::Mesh
 
 //----------------------------------------------------------------------------
 void PreAllocatedTessellation::determineAllocationLengths(const smtk::mesh::CellSet& cs,
-                                                          boost::int64_t& connectivityLength,
-                                                          boost::int64_t& numberOfCells,
-                                                          boost::int64_t& numberOfPoints)
+                                                          std::int64_t& connectivityLength,
+                                                          std::int64_t& numberOfCells,
+                                                          std::int64_t& numberOfPoints)
 
 {
   connectivityLength = cs.pointConnectivity().size();
@@ -135,9 +135,9 @@ void PreAllocatedTessellation::determineAllocationLengths(const smtk::mesh::Cell
 //----------------------------------------------------------------------------
 void PreAllocatedTessellation::determineAllocationLengths(const smtk::model::EntityRef& eRef,
                                                           const smtk::mesh::CollectionPtr& c,
-                                                          boost::int64_t& connectivityLength,
-                                                          boost::int64_t& numberOfCells,
-                                                          boost::int64_t& numberOfPoints)
+                                                          std::int64_t& connectivityLength,
+                                                          std::int64_t& numberOfCells,
+                                                          std::int64_t& numberOfPoints)
 
 {
   determineAllocationLengths(c->findAssociatedCells(eRef),
@@ -149,9 +149,9 @@ void PreAllocatedTessellation::determineAllocationLengths(const smtk::model::Ent
 //----------------------------------------------------------------------------
 void PreAllocatedTessellation::determineAllocationLengths(const smtk::model::Loop& loop,
                                                           const smtk::mesh::CollectionPtr& c,
-                                                          boost::int64_t& connectivityLength,
-                                                          boost::int64_t& numberOfCells,
-                                                          boost::int64_t& numberOfPoints)
+                                                          std::int64_t& connectivityLength,
+                                                          std::int64_t& numberOfCells,
+                                                          std::int64_t& numberOfPoints)
 
 {
   smtk::mesh::HandleRange cellRange;
@@ -174,7 +174,7 @@ void PreAllocatedTessellation::determineAllocationLengths(const smtk::model::Loo
 }
 
 //----------------------------------------------------------------------------
-PreAllocatedTessellation::PreAllocatedTessellation( boost::int64_t* connectivity ):
+PreAllocatedTessellation::PreAllocatedTessellation( std::int64_t* connectivity ):
   m_connectivity(connectivity),
   m_cellLocations(NULL),
   m_cellTypes(NULL),
@@ -187,7 +187,7 @@ PreAllocatedTessellation::PreAllocatedTessellation( boost::int64_t* connectivity
 }
 
 //----------------------------------------------------------------------------
-PreAllocatedTessellation::PreAllocatedTessellation(boost::int64_t* connectivity,
+PreAllocatedTessellation::PreAllocatedTessellation(std::int64_t* connectivity,
                                                    float* points):
   m_connectivity(connectivity),
   m_cellLocations(NULL),
@@ -201,7 +201,7 @@ PreAllocatedTessellation::PreAllocatedTessellation(boost::int64_t* connectivity,
 }
 
 //----------------------------------------------------------------------------
-PreAllocatedTessellation::PreAllocatedTessellation(boost::int64_t* connectivity,
+PreAllocatedTessellation::PreAllocatedTessellation(std::int64_t* connectivity,
                                                    double* points):
   m_connectivity(connectivity),
   m_cellLocations(NULL),
@@ -215,8 +215,8 @@ PreAllocatedTessellation::PreAllocatedTessellation(boost::int64_t* connectivity,
 }
 
 //----------------------------------------------------------------------------
-PreAllocatedTessellation::PreAllocatedTessellation(boost::int64_t* connectivity,
-                                                   boost::int64_t* cellLocations,
+PreAllocatedTessellation::PreAllocatedTessellation(std::int64_t* connectivity,
+                                                   std::int64_t* cellLocations,
                                                    unsigned char* cellTypes):
   m_connectivity(connectivity),
   m_cellLocations(cellLocations),
@@ -230,8 +230,8 @@ PreAllocatedTessellation::PreAllocatedTessellation(boost::int64_t* connectivity,
 }
 
 //----------------------------------------------------------------------------
-PreAllocatedTessellation::PreAllocatedTessellation(boost::int64_t* connectivity,
-                                                   boost::int64_t* cellLocations,
+PreAllocatedTessellation::PreAllocatedTessellation(std::int64_t* connectivity,
+                                                   std::int64_t* cellLocations,
                                                    unsigned char* cellTypes,
                                                    float* points):
   m_connectivity(connectivity),
@@ -246,8 +246,8 @@ PreAllocatedTessellation::PreAllocatedTessellation(boost::int64_t* connectivity,
 }
 
 //----------------------------------------------------------------------------
-PreAllocatedTessellation::PreAllocatedTessellation(boost::int64_t* connectivity,
-                                                   boost::int64_t* cellLocations,
+PreAllocatedTessellation::PreAllocatedTessellation(std::int64_t* connectivity,
+                                                   std::int64_t* cellLocations,
                                                    unsigned char* cellTypes,
                                                    double* points):
   m_connectivity(connectivity),
@@ -310,9 +310,9 @@ void Tessellation::extract( const smtk::mesh::CellSet& cs,
                             const smtk::mesh::PointSet& ps )
 {
   //determine the lengths
-  boost::int64_t connectivityLength= -1;
-  boost::int64_t numberOfCells = -1;
-  boost::int64_t numberOfPoints = -1;
+  std::int64_t connectivityLength= -1;
+  std::int64_t numberOfCells = -1;
+  std::int64_t numberOfPoints = -1;
 
   PreAllocatedTessellation::determineAllocationLengths(cs,
                                                        connectivityLength,
@@ -404,7 +404,7 @@ void extractTessellationInternal( PointConnectivity& pc,
   //we are using VTK style connectivity or a compacted connectivity format.
 
   //determine the function pointer to use for the connectivity array
-  std::size_t (*addCellLen)(boost::int64_t& conn, std::size_t index, int numPts) = detail::smtkToSMTKConn;
+  std::size_t (*addCellLen)(std::int64_t& conn, std::size_t index, int numPts) = detail::smtkToSMTKConn;
   if(tess.m_useVTKConnectivity)
     {
     addCellLen = detail::smtkToVTKConn;

@@ -162,15 +162,15 @@ int UnitTestExtractOrderedTessellation(int, char** const)
 
   smtk::model::Loop exteriorLoop = exteriorLoops[0];
 
-  boost::int64_t connectivityLength= -1;
-  boost::int64_t numberOfCells = -1;
-  boost::int64_t numberOfPoints = -1;
+  std::int64_t connectivityLength= -1;
+  std::int64_t numberOfCells = -1;
+  std::int64_t numberOfPoints = -1;
 
   //query for all cells
   smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(
     exteriorLoop, c, connectivityLength, numberOfCells, numberOfPoints);
 
-  std::vector<boost::int64_t> conn( connectivityLength );
+  std::vector<std::int64_t> conn( connectivityLength );
   std::vector<float> fpoints(numberOfPoints * 3);
 
   smtk::mesh::PreAllocatedTessellation ftess(&conn[0], &fpoints[0]);
@@ -186,15 +186,15 @@ int UnitTestExtractOrderedTessellation(int, char** const)
 
   for (auto& edge : edges)
     {
-    boost::int64_t connectivityLength= -1;
-    boost::int64_t numberOfCells = -1;
-    boost::int64_t numberOfPoints = -1;
+    std::int64_t connectivityLength= -1;
+    std::int64_t numberOfCells = -1;
+    std::int64_t numberOfPoints = -1;
 
     //query for all cells
     smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(
       edge, c, connectivityLength, numberOfCells, numberOfPoints);
 
-    std::vector<boost::int64_t> conn( connectivityLength );
+    std::vector<std::int64_t> conn( connectivityLength );
     std::vector<float> fpoints(numberOfPoints * 3);
 
     smtk::mesh::PreAllocatedTessellation ftess(&conn[0], &fpoints[0]);

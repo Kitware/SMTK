@@ -24,19 +24,19 @@ class VerifyCells : public smtk::mesh::CellForEach
 {
   smtk::mesh::HandleRange m_cells;
   smtk::mesh::PointSet m_points;
-  const std::vector<boost::int64_t>& m_conn;
-  const std::vector<boost::int64_t>& m_locations;
+  const std::vector<std::int64_t>& m_conn;
+  const std::vector<std::int64_t>& m_locations;
   const std::vector<unsigned char>& m_types;
 
   std::size_t m_currentIndex;
-  boost::int64_t m_currentLocation;
+  std::int64_t m_currentLocation;
 
   bool m_is_vtk;
 public:
 //--------------------------------------------------------------------------
 VerifyCells( const smtk::mesh::CellSet& cells,
-             const std::vector<boost::int64_t>& conn,
-             const std::vector<boost::int64_t>& locations,
+             const std::vector<std::int64_t>& conn,
+             const std::vector<std::int64_t>& locations,
              const std::vector<unsigned char>& types,
              bool is_vtk_conn):
   smtk::mesh::CellForEach(),
@@ -58,7 +58,7 @@ void forCell(const smtk::mesh::Handle& cellId,
 {
   this->m_cells.insert(cellId);
   //verify the offset is in the correct location
-  boost::int64_t offset = this->m_locations[this->m_currentIndex];
+  std::int64_t offset = this->m_locations[this->m_currentIndex];
   test(offset == this->m_currentLocation);
   if(m_is_vtk)
     {
@@ -151,7 +151,7 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
 
   //construct tessellation object that only wants connectivity info
   {
-    std::vector<boost::int64_t> conn( 1 ); //size doesn't matter right now
+    std::vector<std::int64_t> conn( 1 ); //size doesn't matter right now
 
     smtk::mesh::PreAllocatedTessellation tess(&conn[0]);
 
@@ -173,7 +173,7 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
 
   //construct tessellation object that only wants connectivity info and points
   {
-    std::vector<boost::int64_t> conn( 1 ); //size doesn't matter right now
+    std::vector<std::int64_t> conn( 1 ); //size doesn't matter right now
     std::vector<float> fpoints(1);   //size doesn't matter right now
 
     smtk::mesh::PreAllocatedTessellation ftess(&conn[0], &fpoints[0]);
@@ -202,8 +202,8 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
   //construct tessellation object that only wants connectivity info, cell types
   //and cell locations bust doesnt want points
   {
-    std::vector<boost::int64_t> conn( 1 ); //size doesn't matter right now
-    std::vector<boost::int64_t> locations( 1 ); //size doesn't matter right now
+    std::vector<std::int64_t> conn( 1 ); //size doesn't matter right now
+    std::vector<std::int64_t> locations( 1 ); //size doesn't matter right now
     std::vector<unsigned char> types( 1 ); //size doesn't matter right now
 
     smtk::mesh::PreAllocatedTessellation tess(&conn[0],
@@ -221,8 +221,8 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
 
   //construct tessellation object that wants everything
   {
-    std::vector<boost::int64_t> conn( 1 ); //size doesn't matter right now
-    std::vector<boost::int64_t> locations( 1 ); //size doesn't matter right now
+    std::vector<std::int64_t> conn( 1 ); //size doesn't matter right now
+    std::vector<std::int64_t> locations( 1 ); //size doesn't matter right now
     std::vector<unsigned char> types( 1 ); //size doesn't matter right now
     std::vector<float> fpoints(1);   //size doesn't matter right now
 
@@ -265,9 +265,9 @@ void verify_alloc_lengths_meshset(const smtk::mesh::CollectionPtr& c)
   smtk::mesh::MeshSet mesh2d = c->meshes(  smtk::mesh::Dims2 );
 
 
-  boost::int64_t connectivityLength= -1;
-  boost::int64_t numberOfCells = -1;
-  boost::int64_t numberOfPoints = -1;
+  std::int64_t connectivityLength= -1;
+  std::int64_t numberOfCells = -1;
+  std::int64_t numberOfPoints = -1;
 
   //query for all cells
   smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(all_meshes,
@@ -320,9 +320,9 @@ void verify_alloc_lengths_cellset(const smtk::mesh::CollectionPtr& c)
   smtk::mesh::CellSet cells2d = c->cells(  smtk::mesh::Dims2 );
 
 
-  boost::int64_t connectivityLength= -1;
-  boost::int64_t numberOfCells = -1;
-  boost::int64_t numberOfPoints = -1;
+  std::int64_t connectivityLength= -1;
+  std::int64_t numberOfCells = -1;
+  std::int64_t numberOfPoints = -1;
 
   //query for all cells
   smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(all_cells,
@@ -375,9 +375,9 @@ void verify_extract_packed_single_type(const smtk::mesh::CollectionPtr& c)
   smtk::mesh::MeshSet all_meshes = c->meshes( );
   smtk::mesh::CellSet quads = c->cells( smtk::mesh::Quad );
 
-  boost::int64_t connectivityLength= -1;
-  boost::int64_t numberOfCells = -1;
-  boost::int64_t numberOfPoints = -1;
+  std::int64_t connectivityLength= -1;
+  std::int64_t numberOfCells = -1;
+  std::int64_t numberOfPoints = -1;
 
   //query for all cells
   smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(quads,
@@ -385,7 +385,7 @@ void verify_extract_packed_single_type(const smtk::mesh::CollectionPtr& c)
                                                                    numberOfCells,
                                                                    numberOfPoints);
 
-  std::vector<boost::int64_t> conn( connectivityLength );
+  std::vector<std::int64_t> conn( connectivityLength );
   std::vector<float> fpoints(numberOfPoints * 3);
 
   smtk::mesh::PreAllocatedTessellation ftess(&conn[0], &fpoints[0]);
@@ -404,9 +404,9 @@ void verify_extract_only_connectivity_and_types(const smtk::mesh::CollectionPtr&
 {
   smtk::mesh::CellSet cells3d = c->cells( smtk::mesh::Dims3 );
 
-  boost::int64_t connectivityLength= -1;
-  boost::int64_t numberOfCells = -1;
-  boost::int64_t numberOfPoints = -1;
+  std::int64_t connectivityLength= -1;
+  std::int64_t numberOfCells = -1;
+  std::int64_t numberOfPoints = -1;
 
   //query for all cells
   smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(cells3d,
@@ -414,8 +414,8 @@ void verify_extract_only_connectivity_and_types(const smtk::mesh::CollectionPtr&
                                                                    numberOfCells,
                                                                    numberOfPoints);
 
-  std::vector<boost::int64_t> conn( connectivityLength );
-  std::vector<boost::int64_t> locations( numberOfCells );
+  std::vector<std::int64_t> conn( connectivityLength );
+  std::vector<std::int64_t> locations( numberOfCells );
   std::vector<unsigned char> types( numberOfCells );
 
   smtk::mesh::PreAllocatedTessellation tess(&conn[0],&locations[0],&types[0]);
@@ -436,9 +436,9 @@ void verify_extract_all_to_vtk(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::CellSet cells3d = c->cells( smtk::mesh::Dims3 );
 
-  boost::int64_t connectivityLength= -1;
-  boost::int64_t numberOfCells = -1;
-  boost::int64_t numberOfPoints = -1;
+  std::int64_t connectivityLength= -1;
+  std::int64_t numberOfCells = -1;
+  std::int64_t numberOfPoints = -1;
 
   //query for all cells
   smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(cells3d,
@@ -446,8 +446,8 @@ void verify_extract_all_to_vtk(const smtk::mesh::CollectionPtr& c)
                                                                    numberOfCells,
                                                                    numberOfPoints);
 
-  std::vector<boost::int64_t> conn( connectivityLength + numberOfCells );
-  std::vector<boost::int64_t> locations( numberOfCells );
+  std::vector<std::int64_t> conn( connectivityLength + numberOfCells );
+  std::vector<std::int64_t> locations( numberOfCells );
   std::vector<unsigned char> types( numberOfCells );
   std::vector<double> dpoints( numberOfPoints * 3 );
 
@@ -474,9 +474,9 @@ void verify_extract_only_connectivity_to_vtk(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::CellSet cells2d = c->cells( smtk::mesh::Dims2 );
 
-  boost::int64_t connectivityLength= -1;
-  boost::int64_t numberOfCells = -1;
-  boost::int64_t numberOfPoints = -1;
+  std::int64_t connectivityLength= -1;
+  std::int64_t numberOfCells = -1;
+  std::int64_t numberOfPoints = -1;
 
   //query for all cells
   smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(cells2d,
@@ -484,8 +484,8 @@ void verify_extract_only_connectivity_to_vtk(const smtk::mesh::CollectionPtr& c)
                                                                    numberOfCells,
                                                                    numberOfPoints);
 
-  std::vector<boost::int64_t> conn( connectivityLength + numberOfCells );
-  std::vector<boost::int64_t> locations( numberOfCells );
+  std::vector<std::int64_t> conn( connectivityLength + numberOfCells );
+  std::vector<std::int64_t> locations( numberOfCells );
   std::vector<unsigned char> types( numberOfCells );
 
   smtk::mesh::PreAllocatedTessellation tess(&conn[0],
@@ -507,9 +507,9 @@ void verify_extract_volume_meshes_by_global_points_to_vtk(const smtk::mesh::Coll
   smtk::mesh::CellSet cells = c->cells( smtk::mesh::Dims1 );
   cells.append( c->cells( smtk::mesh::Dims2 ) );
 
-  boost::int64_t connectivityLength= -1;
-  boost::int64_t numberOfCells = -1;
-  boost::int64_t numberOfPoints = -1;
+  std::int64_t connectivityLength= -1;
+  std::int64_t numberOfCells = -1;
+  std::int64_t numberOfPoints = -1;
 
   //query for all cells
   smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(cells,
@@ -517,8 +517,8 @@ void verify_extract_volume_meshes_by_global_points_to_vtk(const smtk::mesh::Coll
                                                                    numberOfCells,
                                                                    numberOfPoints);
 
-  std::vector<boost::int64_t> conn( connectivityLength + numberOfCells );
-  std::vector<boost::int64_t> locations( numberOfCells );
+  std::vector<std::int64_t> conn( connectivityLength + numberOfCells );
+  std::vector<std::int64_t> locations( numberOfCells );
   std::vector<unsigned char> types( numberOfCells );
 
   smtk::mesh::PreAllocatedTessellation tess(&conn[0],

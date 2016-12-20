@@ -11,7 +11,7 @@
 #ifndef __smtk_mesh_ExtractField_h
 #define __smtk_mesh_ExtractField_h
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 #include "smtk/mesh/CellSet.h"
 #include "smtk/mesh/MeshSet.h"
@@ -25,11 +25,11 @@ class SMTKCORE_EXPORT PreAllocatedField
 
 public:
   static void determineAllocationLengths(const smtk::mesh::MeshSet& ms,
-                                         boost::int64_t& numberOfCells,
-                                         boost::int64_t& numberOfPoints);
+                                         std::int64_t& numberOfCells,
+                                         std::int64_t& numberOfPoints);
 
-  PreAllocatedField( boost::int64_t* cellField,
-                     boost::int64_t* pointField );
+  PreAllocatedField( std::int64_t* cellField,
+                     std::int64_t* pointField );
 
 private:
 template <typename QueryTag>
@@ -37,8 +37,8 @@ friend SMTKCORE_EXPORT void extractField( const smtk::mesh::MeshSet&,
                                           const smtk::mesh::PointSet&,
                                           PreAllocatedField& );
 
-  boost::int64_t* m_cellField;
-  boost::int64_t* m_pointField;
+  std::int64_t* m_cellField;
+  std::int64_t* m_pointField;
 };
 
 class SMTKCORE_EXPORT Field
@@ -60,9 +60,9 @@ public:
                       const smtk::mesh::PointSet& ps );
 
   //use these methods to gain access to the field after extraction
-  const std::vector<boost::int64_t>& cellData() const
+  const std::vector<std::int64_t>& cellData() const
   { return this->m_cellData; }
-  const std::vector<boost::int64_t>& pointData() const
+  const std::vector<std::int64_t>& pointData() const
   { return this->m_pointData; }
 
 private:
@@ -70,8 +70,8 @@ private:
     void extract( const smtk::mesh::MeshSet& ms,
                   const smtk::mesh::PointSet& ps );
 
-  std::vector<boost::int64_t> m_cellData;
-  std::vector<boost::int64_t> m_pointData;
+  std::vector<std::int64_t> m_cellData;
+  std::vector<std::int64_t> m_pointData;
 };
 
 //Don't wrap these for python, instead python should use the Field class and

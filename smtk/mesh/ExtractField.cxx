@@ -33,10 +33,10 @@ namespace mesh {
 //----------------------------------------------------------------------------
 void PreAllocatedField::determineAllocationLengths(
   const smtk::mesh::MeshSet& ms,
-  boost::int64_t& numberOfCells,
-  boost::int64_t& numberOfPoints)
+  std::int64_t& numberOfCells,
+  std::int64_t& numberOfPoints)
 {
-  boost::int64_t connectivityLength;
+  std::int64_t connectivityLength;
   PreAllocatedTessellation::determineAllocationLengths(ms.cells(),
                                                        connectivityLength,
                                                        numberOfCells,
@@ -44,8 +44,8 @@ void PreAllocatedField::determineAllocationLengths(
 }
 
 //----------------------------------------------------------------------------
-PreAllocatedField::PreAllocatedField(boost::int64_t* cellField,
-                                     boost::int64_t* pointField):
+PreAllocatedField::PreAllocatedField(std::int64_t* cellField,
+                                     std::int64_t* pointField):
   m_cellField(cellField),
   m_pointField(pointField)
 {
@@ -58,8 +58,8 @@ void Field::extract( const smtk::mesh::MeshSet& ms,
                      const smtk::mesh::PointSet& ps )
 {
   //determine the lengths
-  boost::int64_t numberOfCells = -1;
-  boost::int64_t numberOfPoints = -1;
+  std::int64_t numberOfCells = -1;
+  std::int64_t numberOfPoints = -1;
 
   PreAllocatedField::determineAllocationLengths(ms,
                                                 numberOfCells,
