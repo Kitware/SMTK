@@ -11,7 +11,7 @@
 #ifndef __smtk_mesh_ExtractTessellation_h
 #define __smtk_mesh_ExtractTessellation_h
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 #include "smtk/mesh/CellSet.h"
 #include "smtk/mesh/MeshSet.h"
@@ -22,61 +22,60 @@ namespace mesh {
 
 class SMTKCORE_EXPORT PreAllocatedTessellation
 {
-
 public:
-  // Todo: Document that connectivityLength is just pure lenght of connectivity
+  // Todo: Document that connectivityLength is just pure length of connectivity
   // if you are enabling vtk length you need to allocate for connectivityLength
   // + numberOfCells
   static void determineAllocationLengths(const smtk::mesh::MeshSet& ms,
-                                         boost::int64_t& connectivityLength,
-                                         boost::int64_t& numberOfCells,
-                                         boost::int64_t& numberOfPoints);
+                                         std::int64_t& connectivityLength,
+                                         std::int64_t& numberOfCells,
+                                         std::int64_t& numberOfPoints);
 
   static void determineAllocationLengths(const smtk::mesh::CellSet& cs,
-                                         boost::int64_t& connectivityLength,
-                                         boost::int64_t& numberOfCells,
-                                         boost::int64_t& numberOfPoints);
+                                         std::int64_t& connectivityLength,
+                                         std::int64_t& numberOfCells,
+                                         std::int64_t& numberOfPoints);
 
   static void determineAllocationLengths(const smtk::model::EntityRef& eRef,
                                          const smtk::mesh::CollectionPtr& c,
-                                         boost::int64_t& connectivityLength,
-                                         boost::int64_t& numberOfCells,
-                                         boost::int64_t& numberOfPoints);
+                                         std::int64_t& connectivityLength,
+                                         std::int64_t& numberOfCells,
+                                         std::int64_t& numberOfPoints);
 
   static void determineAllocationLengths(const smtk::model::Loop& loop,
                                          const smtk::mesh::CollectionPtr& c,
-                                         boost::int64_t& connectivityLength,
-                                         boost::int64_t& numberOfCells,
-                                         boost::int64_t& numberOfPoints);
+                                         std::int64_t& connectivityLength,
+                                         std::int64_t& numberOfCells,
+                                         std::int64_t& numberOfPoints);
 
   //Only converts connectivity. The following properties will not be
   //converted: cellLocations, cellTypes, and Points
-  PreAllocatedTessellation(  boost::int64_t* connectivity );
+  PreAllocatedTessellation(  std::int64_t* connectivity );
 
   //Converts connectivity and store the points as floats. The following properties will not be
   //converted: cellLocations, and cellTypes.
-  PreAllocatedTessellation(  boost::int64_t* connectivity,
+  PreAllocatedTessellation(  std::int64_t* connectivity,
                              float* points);
 
   //Converts connectivityand store the points as doubles. The following properties will not be
   //converted: cellLocations, and cellTypes.
-  PreAllocatedTessellation(  boost::int64_t* connectivity,
+  PreAllocatedTessellation(  std::int64_t* connectivity,
                              double* points);
 
   //Converts everything but Points.
-  PreAllocatedTessellation(  boost::int64_t* connectivity,
-                             boost::int64_t* cellLocations,
+  PreAllocatedTessellation(  std::int64_t* connectivity,
+                             std::int64_t* cellLocations,
                              unsigned char* cellTypes);
 
   //Converts everything and stores the points as floats
-  PreAllocatedTessellation(  boost::int64_t* connectivity,
-                             boost::int64_t* cellLocations,
+  PreAllocatedTessellation(  std::int64_t* connectivity,
+                             std::int64_t* cellLocations,
                              unsigned char* cellTypes,
                              float* points);
 
   //Converts everything and stores the points as doubles
-  PreAllocatedTessellation(  boost::int64_t* connectivity,
-                             boost::int64_t* cellLocations,
+  PreAllocatedTessellation(  std::int64_t* connectivity,
+                             std::int64_t* cellLocations,
                              unsigned char* cellTypes,
                              double* points);
 
@@ -107,8 +106,8 @@ private:
     extractTessellationInternal( PointConnectivity&,
                                  const smtk::mesh::PointSet&,
                                  PreAllocatedTessellation& );
-  boost::int64_t* m_connectivity;
-  boost::int64_t* m_cellLocations;
+  std::int64_t* m_connectivity;
+  std::int64_t* m_cellLocations;
   unsigned char* m_cellTypes;
 
   double* m_dpoints;
@@ -140,14 +139,14 @@ public:
   void extract( const smtk::mesh::CellSet& cs, const smtk::mesh::PointSet& ps );
 
   //use these methods to gain access to the tessellation after
-  const std::vector<boost::int64_t>& connectivity() const {return this->m_connectivity;}
-  const std::vector<boost::int64_t>& cellLocations() const {return this->m_cellLocations;}
+  const std::vector<std::int64_t>& connectivity() const {return this->m_connectivity;}
+  const std::vector<std::int64_t>& cellLocations() const {return this->m_cellLocations;}
   const std::vector<unsigned char>& cellTypes() const {return this->m_cellTypes;}
   const std::vector<double>& points() const {return this->m_points;}
 
 private:
-  std::vector<boost::int64_t> m_connectivity;
-  std::vector<boost::int64_t> m_cellLocations;
+  std::vector<std::int64_t> m_connectivity;
+  std::vector<std::int64_t> m_cellLocations;
   std::vector<unsigned char> m_cellTypes;
 
   std::vector<double> m_points;

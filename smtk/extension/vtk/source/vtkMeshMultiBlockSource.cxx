@@ -189,9 +189,9 @@ static void internal_AddBlockInfo(
 static void convert_smtkMesh_singleDimCells_to_vtkPolyData(const smtk::mesh::CellSet& cells,
   vtkPoints* pts, vtkPolyData* pd)
 {
-  boost::int64_t connectivityLength= -1;
-  boost::int64_t numberOfCells = -1;
-  boost::int64_t numberOfPoints = -1;
+  std::int64_t connectivityLength= -1;
+  std::int64_t numberOfCells = -1;
+  std::int64_t numberOfPoints = -1;
 
   //query for all cells
   smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(cells,
@@ -199,8 +199,8 @@ static void convert_smtkMesh_singleDimCells_to_vtkPolyData(const smtk::mesh::Cel
                                                                    numberOfCells,
                                                                    numberOfPoints);
 
-//  std::vector<boost::int64_t> conn( connectivityLength + numberOfCells );
-//  std::vector<boost::int64_t> locations( numberOfCells );
+//  std::vector<std::int64_t> conn( connectivityLength + numberOfCells );
+//  std::vector<std::int64_t> locations( numberOfCells );
 //  std::vector<unsigned char> types( numberOfCells );
 //  std::vector<double> dpoints( numberOfPoints * 3 );
 
@@ -226,7 +226,7 @@ static void convert_smtkMesh_singleDimCells_to_vtkPolyData(const smtk::mesh::Cel
     double *rawPoints = static_cast<double*>(pts->GetVoidPointer(0));
 
     cellarray->Allocate(connectivityLength + numberOfCells);
-    boost::int64_t* cellconn = reinterpret_cast<boost::int64_t *>(
+    std::int64_t* cellconn = reinterpret_cast<std::int64_t *>(
                 cellarray->WritePointer(numberOfCells, connectivityLength + numberOfCells));
     smtk::mesh::PreAllocatedTessellation tess(cellconn,
                                               rawPoints);
@@ -342,7 +342,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationForSingleMesh(
     toRender.append(twoD);
     toRender.append(oneD);
     toRender.append(zeroD);
-        
+
     convert_smtkMesh_to_vtkPolyData(toRender, pts.GetPointer(), pd);
     // std::cout << "Number of points: " << pd->GetNumberOfPoints() << std::endl;
     this->GenerateNormals(pd, entityref, genNormals);

@@ -626,7 +626,7 @@
   <primitive-type name="std::size_t"/>
   <primitive-type name="std::ptrdiff_t"/>
   <primitive-type name="std::string"/>
-  <primitive-type name="boost::int64_t"/>
+  <primitive-type name="std::int64_t"/>
   <primitive-type name="smtk::common::UUID" target-lang-api-name="PyObject">
     <include file-name="smtk/common/UUID.h" location="global"/>
 

@@ -18,7 +18,7 @@
 #include "smtk/mesh/moab/Allocator.h"
 #include "smtk/mesh/moab/Interface.h"
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 #include <cassert>
 
@@ -65,14 +65,14 @@ private:
   template <typename IntegerType>
   bool addCell(smtk::mesh::CellType ctype,
                IntegerType* pointIds,
-               boost::int64_t nCoordinates);
+               std::int64_t nCoordinates);
 
   ::moab::EntityHandle m_firstCoordinate;
   std::size_t m_nCoordinates;
   std::vector<double*> m_coordinateMemory;
   smtk::mesh::CellType m_activeCellType;
   int m_nCoords;
-  std::vector<boost::int64_t> m_localConnectivity;
+  std::vector<std::int64_t> m_localConnectivity;
   ::moab::Range m_cells;
 };
 
@@ -80,7 +80,7 @@ private:
 template <typename IntegerType>
 bool BufferedCellAllocator::addCell(smtk::mesh::CellType ctype,
                                     IntegerType* pointIds,
-                                    boost::int64_t nCoordinates)
+                                    std::int64_t nCoordinates)
 {
   if (!this->m_validState) { return false; }
 
@@ -96,7 +96,7 @@ bool BufferedCellAllocator::addCell(smtk::mesh::CellType ctype,
   assert(this->m_activeCellType != smtk::mesh::CellType_MAX);
   assert(this->m_nCoords > 0);
 
-  for (boost::int64_t i = 0; i < this->m_nCoords; i++)
+  for (std::int64_t i = 0; i < this->m_nCoords; i++)
     {
     this->m_localConnectivity.push_back(pointIds[i]);
     }

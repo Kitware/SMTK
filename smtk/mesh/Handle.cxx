@@ -11,7 +11,7 @@
 #include "smtk/mesh/Handle.h"
 #include "cJSON.h"
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 #include <iostream>
 #include <sstream>
 

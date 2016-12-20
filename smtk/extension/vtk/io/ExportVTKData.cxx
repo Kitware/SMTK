@@ -96,8 +96,8 @@ namespace
 {
 
 // functions to shunt past data transfer if input and output types match
-void constructNewArrayIfNecessary(vtkIdType*&, vtkIdType*&, boost::int64_t) {}
-void transferDataIfNecessary(vtkIdType*& in, vtkIdType*& out, boost::int64_t)
+void constructNewArrayIfNecessary(vtkIdType*&, vtkIdType*&, std::int64_t) {}
+void transferDataIfNecessary(vtkIdType*& in, vtkIdType*& out, std::int64_t)
 {
   out = in;
 }
@@ -106,15 +106,15 @@ void deleteOldArrayIfNecessary(vtkIdType*&, vtkIdType*&) {}
 // functions for allocation, transfer and deallocation when there is a type
 // mismatch
 template <typename T>
-void constructNewArrayIfNecessary(T*&, vtkIdType*& out, boost::int64_t len)
+void constructNewArrayIfNecessary(T*&, vtkIdType*& out, std::int64_t len)
 {
   out = new vtkIdType[len];
 }
 
 template <typename T>
-void transferDataIfNecessary(T*& in, vtkIdType*& out, boost::int64_t len)
+void transferDataIfNecessary(T*& in, vtkIdType*& out, std::int64_t len)
 {
-  for (boost::int64_t i=0;i<len;i++)
+  for (std::int64_t i=0;i<len;i++)
     {
     out[i] = in[i];
     }
@@ -151,9 +151,9 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
   smtk::mesh::CellSet cellset =
     meshset.cells(static_cast<smtk::mesh::DimensionType>(dimension));
 
-  boost::int64_t connectivityLength= -1;
-  boost::int64_t numberOfCells = -1;
-  boost::int64_t numberOfPoints = -1;
+  std::int64_t connectivityLength= -1;
+  std::int64_t numberOfCells = -1;
+  std::int64_t numberOfPoints = -1;
 
   //determine the allocation lengths
   smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(
@@ -166,8 +166,8 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
   //create raw data buffers to hold our data
   double* pointsData = new double[3*numberOfPoints];
   unsigned char* cellTypesData = new unsigned char[numberOfCells];
-  boost::int64_t* cellLocationsData_ = new boost::int64_t[numberOfCells];
-  boost::int64_t* connectivityData_ = new boost::int64_t[connectivityLength];
+  std::int64_t* cellLocationsData_ = new std::int64_t[numberOfCells];
+  std::int64_t* connectivityData_ = new std::int64_t[connectivityLength];
 
   //extract tessellation information
   smtk::mesh::PreAllocatedTessellation tess(connectivityData_,
@@ -232,8 +232,8 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
 
   if (!domainPropertyName.empty())
     {
-    boost::int64_t* cellData_ = new boost::int64_t[numberOfCells];
-    boost::int64_t* pointData_ = new boost::int64_t[numberOfPoints];
+    std::int64_t* cellData_ = new std::int64_t[numberOfCells];
+    std::int64_t* pointData_ = new std::int64_t[numberOfPoints];
 
     //extract field information
     smtk::mesh::PreAllocatedField field(cellData_, pointData_);
@@ -272,9 +272,9 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
                                vtkUnstructuredGrid* ug,
                                std::string domainPropertyName) const
 {
-  boost::int64_t connectivityLength= -1;
-  boost::int64_t numberOfCells = -1;
-  boost::int64_t numberOfPoints = -1;
+  std::int64_t connectivityLength= -1;
+  std::int64_t numberOfCells = -1;
+  std::int64_t numberOfPoints = -1;
 
   //determine the allocation lengths
   smtk::mesh::PreAllocatedTessellation::determineAllocationLengths(
@@ -287,8 +287,8 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
   //create raw data buffers to hold our data
   double* pointsData = new double[3*numberOfPoints];
   unsigned char* cellTypesData = new unsigned char[numberOfCells];
-  boost::int64_t* cellLocationsData_ = new boost::int64_t[numberOfCells];
-  boost::int64_t* connectivityData_ = new boost::int64_t[connectivityLength];
+  std::int64_t* cellLocationsData_ = new std::int64_t[numberOfCells];
+  std::int64_t* connectivityData_ = new std::int64_t[connectivityLength];
 
   //extract tessellation information
   smtk::mesh::PreAllocatedTessellation tess(connectivityData_,
@@ -343,8 +343,8 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
 
   if (!domainPropertyName.empty())
     {
-    boost::int64_t* cellData_ = new boost::int64_t[numberOfCells];
-    boost::int64_t* pointData_ = new boost::int64_t[numberOfPoints];
+    std::int64_t* cellData_ = new std::int64_t[numberOfCells];
+    std::int64_t* pointData_ = new std::int64_t[numberOfPoints];
 
     //extract field information
     smtk::mesh::PreAllocatedField field(cellData_, pointData_);

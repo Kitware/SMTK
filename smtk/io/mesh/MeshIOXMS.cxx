@@ -213,8 +213,8 @@ public:
     //Use the extractTessellation helpers to convert the connectivity
     //to map properly to the PointSet that represents ALL points we are
     //using, not just the points these cells are using
-    boost::int64_t connectivityLen = cells.pointConnectivity().size();
-    std::vector<boost::int64_t> conn(connectivityLen);
+    std::int64_t connectivityLen = cells.pointConnectivity().size();
+    std::vector<std::int64_t> conn(connectivityLen);
 
     smtk::mesh::PreAllocatedTessellation connectivityInfo(&conn[0]);
     connectivityInfo.disableVTKStyleConnectivity(true);
@@ -242,10 +242,10 @@ public:
     //Use the extractTessellation helpers to convert the connectivity
     //to map properly to the PointSet that represents ALL points we are
     //using, not just the points these cells are using
-    boost::int64_t connectivityLen = cells.pointConnectivity().size();
-    boost::int64_t pointLen = this->m_PointSet.size() * 3;
+    std::int64_t connectivityLen = cells.pointConnectivity().size();
+    std::int64_t pointLen = this->m_PointSet.size() * 3;
 
-    std::vector<boost::int64_t> conn(connectivityLen);
+    std::vector<std::int64_t> conn(connectivityLen);
     std::vector<double> points(pointLen);
 
     smtk::mesh::PreAllocatedTessellation connectivityInfo(&conn[0], &points[0]);
