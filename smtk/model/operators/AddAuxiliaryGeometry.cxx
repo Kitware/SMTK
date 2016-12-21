@@ -21,6 +21,11 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/VoidItem.h"
 
+SMTK_THIRDPARTY_PRE_INCLUDE
+#include "boost/filesystem.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
+
+using namespace boost::filesystem;
 using namespace smtk::model;
 using smtk::attribute::FileItem;
 using smtk::attribute::StringItem;
@@ -41,7 +46,7 @@ smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
   smtk::attribute::FileItemPtr urlItem = this->findFile("url");
   smtk::attribute::StringItemPtr dtypeItem = this->findString("type");
   smtk::attribute::IntItemPtr dimItem = this->findInt("dimension");
-  int dim = dimItem->value(0);
+  int dim = dimItem != nullptr ? dimItem->value(0) : -1;
 
   smtk::attribute::VoidItem::Ptr separateRepOption =
     this->findVoid("separate representation");
@@ -59,11 +64,15 @@ smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
   auxGeom.assignDefaultName();
   auxGeom.setIntegerProperty("display as separate representation", bSeparateRep ? 1 : 0);
 
-  if (urlItem->numberOfValues() > 0 && !urlItem->value(0).empty())
+  if (!urlItem->value().empty())
     {
-    auxGeom.setUrl(urlItem->value(0));
+    path filePath(urlItem->value());
+    auxGeom.setUrl(filePath.string());
+    // Grab the file name as the name for the aux geometry
+    auxGeom.setName(filePath.filename().string());
     }
-  if (!dtypeItem->value(0).empty())
+  // nullptr check for AddImage operator
+  if (dtypeItem != nullptr && !dtypeItem->value(0).empty())
     {
     auxGeom.setStringProperty("type", dtypeItem->value(0));
     }
