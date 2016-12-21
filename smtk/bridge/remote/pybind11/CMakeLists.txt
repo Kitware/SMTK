@@ -13,6 +13,7 @@ target_link_libraries(smtkPybindRemoteSession LINK_PUBLIC
 set_target_properties(smtkPybindRemoteSession
   PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib"
+    COMPILE_FLAGS "-Wno-shadow"
 )
 install(TARGETS smtkPybindRemoteSession DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 

@@ -18,6 +18,7 @@ target_link_libraries(smtkPybindExodusSession LINK_PUBLIC smtkCore smtkExodusSes
 set_target_properties(smtkPybindExodusSession
   PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib"
+    COMPILE_FLAGS "-Wno-shadow"
 )
 install(TARGETS smtkPybindExodusSession DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
