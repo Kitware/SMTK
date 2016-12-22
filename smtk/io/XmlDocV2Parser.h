@@ -37,6 +37,8 @@ namespace smtk
     protected:
       virtual void processDefinition(pugi::xml_node &defNode,
                                      smtk::attribute::DefinitionPtr def);
+      virtual void processDirectoryItem(pugi::xml_node &node,
+                                        smtk::attribute::DirectoryItemPtr item);
       virtual void processDirectoryDef(pugi::xml_node &node,
                                smtk::attribute::DirectoryItemDefinitionPtr idef);
       virtual void processFileItem(pugi::xml_node &node,
@@ -59,7 +61,7 @@ namespace smtk
       virtual void processViews(pugi::xml_node &root);
       virtual void processViewComponent(smtk::common::View::Component &comp,
                                         pugi::xml_node &node, bool isTopComp);
-      
+
       virtual smtk::common::UUID getAttributeID(pugi::xml_node &attNode);
     private:
 

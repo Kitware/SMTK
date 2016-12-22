@@ -224,18 +224,131 @@ smtk::common::UUID XmlDocV2Parser::getAttributeID(xml_node &attNode)
 void XmlDocV2Parser::processFileItem(pugi::xml_node &node,
                                         attribute::FileItemPtr item)
 {
-  // still process FileItem as V1Parser, but add the recentValues after
-  this->XmlDocV1Parser::processFileItem(node, item);
+  std::size_t i=0, n = item->numberOfValues();
+  std::size_t  numRequiredVals = item->numberOfRequiredValues();
+  xml_attribute xatt;
+  xml_node valsNode;
+  xml_node val;
+  if (item->isExtensible())
+    {
+    // The node should have an attribute indicating how many values are
+    // associated with the item
+    xatt = node.attribute("NumberOfValues");
+    if (!xatt)
+      {
+      smtkErrorMacro(this->m_logger,
+                     "XML Attribute NumberOfValues is missing for Item: "
+                     << item->name());
+      return;
+      }
+    n = xatt.as_uint();
+    item->setNumberOfValues(n);
+    }
 
-  xml_node valsNode = node.child("RecentValues");
+  if (!n)
+    {
+    return;
+    }
+  valsNode = node.child("Values");
+  if (valsNode)
+    {
+    for (val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
+      {
+      xatt = val.attribute("Ith");
+      if (!xatt)
+        {
+        smtkErrorMacro(this->m_logger,
+                       "XML Attribute Ith is missing for Item: " << item->name());
+        continue;
+        }
+      i = xatt.as_uint();
+      if (i >= n)
+        {
+        smtkErrorMacro(this->m_logger, "XML Attribute Ith = " << i
+                       << " is out of range for Item: " << item->name());
+        continue;
+        }
+      item->setValue(static_cast<int>(i), val.text().get());
+      }
+    }
+  else if (numRequiredVals == 1)
+    {
+    item->setValue(node.text().get());
+    }
+  else
+    {
+    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
+    }
+
+  valsNode = node.child("RecentValues");
 
   if (valsNode)
     {
-    xml_node val;
     for (val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
       {
       item->addRecentValue(val.text().get());
       }
+    }
+}
+
+//----------------------------------------------------------------------------
+void XmlDocV2Parser::processDirectoryItem(pugi::xml_node &node,
+                                          attribute::DirectoryItemPtr item)
+{
+  std::size_t i=0, n = item->numberOfValues();
+  std::size_t  numRequiredVals = item->numberOfRequiredValues();
+  xml_attribute xatt;
+  xml_node valsNode;
+  xml_node val;
+  if (item->isExtensible())
+    {
+    // The node should have an attribute indicating how many values are
+    // associated with the item
+    xatt = node.attribute("NumberOfValues");
+    if (!xatt)
+      {
+      smtkErrorMacro(this->m_logger,
+                     "XML Attribute NumberOfValues is missing for Item: "
+                     << item->name());
+      return;
+      }
+    n = xatt.as_uint();
+    item->setNumberOfValues(n);
+    }
+
+  if (!n)
+    {
+    return;
+    }
+  valsNode = node.child("Values");
+  if (valsNode)
+    {
+    for (val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
+      {
+      xatt = val.attribute("Ith");
+      if (!xatt)
+        {
+        smtkErrorMacro(this->m_logger,
+                       "XML Attribute Ith is missing for Item: " << item->name());
+        continue;
+        }
+      i = xatt.as_uint();
+      if (i >= n)
+        {
+        smtkErrorMacro(this->m_logger, "XML Attribute Ith = " << i
+                       << " is out of range for Item: " << item->name());
+        continue;
+        }
+      item->setValue(static_cast<int>(i), val.text().get());
+      }
+    }
+  else if (numRequiredVals == 1)
+    {
+    item->setValue(node.text().get());
+    }
+  else
+    {
+    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
     }
 }
 
@@ -400,7 +513,7 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node &node,
                        << " is out of range for Item: " << item->name());
         break;
         }
-      cid = smtk::common::UUID(xatt.value());    
+      cid = smtk::common::UUID(xatt.value());
 
       //convert back to a handle
       cJSON* jshandle = cJSON_Parse(val.text().get());
@@ -414,7 +527,7 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node &node,
         continue;
         }
       smtk::mesh::InterfacePtr interface =c->interface();
-      
+
       if(!interface)
         {
         std::cerr << "Expecting a valid mesh interface for mesh item: "
@@ -520,7 +633,7 @@ void XmlDocV2Parser::processViews(xml_node &root)
                    "Could not find View's Title - skipping it!");
       continue;
       }
-    
+
     xatt = child.attribute("Type");
     if (xatt)
       {
@@ -552,7 +665,7 @@ void XmlDocV2Parser::processViewComponent(smtk::common::View::Component &comp,
   // Add the attributes of the node to the component
   xml_attribute xatt;
   std::string name;
-  
+
   for (xatt = node.first_attribute(); xatt; xatt = xatt.next_attribute())
     {
     // If this is the top View comp then skip Title and Type Attributes
