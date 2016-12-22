@@ -298,7 +298,7 @@ def Delete(ents, **kwargs):
   op = sess.op('delete')
   SetVectorValue(op.specification().associations(), ents)
   if 'delete_dependents' in kwargs and kwargs['delete_dependents']:
-    op.findVoid('delete dependents', smtk.attribute.ALL_CHILDREN).setIsEnabled()
+    op.findVoid('delete dependents', int(smtk.attribute.ALL_CHILDREN)).setIsEnabled()
   res = op.operate()
   SetLastResult(res)
   PrintResultLog(res)
@@ -310,7 +310,7 @@ def ImportSMTKModel(filename):
   """Import an SMTK model into the active session."""
   sess = GetActiveSession()
   op = sess.op('import smtk model')
-  fname = op.findFile('filename', smtk.attribute.ALL_CHILDREN)
+  fname = op.findFile('filename', int(smtk.attribute.ALL_CHILDREN))
   fname.setValue(filename)
   res = op.operate()
   SetLastResult(res)
@@ -391,7 +391,7 @@ def Subtract(workpiece, tool, **args):
   # Convert tool to a list
   if type(tool) != type([]):
     tool = [tool,]
-  SetVectorValue(op.findModelEntity('tools',smtk.attribute.ALL_CHILDREN), tool)
+  SetVectorValue(op.findModelEntity('tools',int(smtk.attribute.ALL_CHILDREN)), tool)
 
   res = op.operate()
   SetLastResult(res)

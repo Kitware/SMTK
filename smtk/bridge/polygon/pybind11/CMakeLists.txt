@@ -21,6 +21,7 @@ target_link_libraries(smtkPybindPolygonSession LINK_PUBLIC smtkCore smtkPolygonS
 set_target_properties(smtkPybindPolygonSession
   PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib"
+    COMPILE_FLAGS "-Wno-shadow"
 )
 install(TARGETS smtkPybindPolygonSession DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 

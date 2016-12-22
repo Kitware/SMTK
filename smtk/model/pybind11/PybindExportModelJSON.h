@@ -21,7 +21,7 @@ namespace py = pybind11;
 
 PySharedPtrClass< smtk::model::ExportModelJSON, smtk::model::Operator > pybind11_init_smtk_model_ExportModelJSON(py::module &m)
 {
-  PySharedPtrClass< smtk::model::ExportModelJSON, smtk::model::Operator > instance(m, "ExportModelJSON");
+  PySharedPtrClass< smtk::model::ExportModelJSON, smtk::model::Operator > instance(m, "ExportModelJSON", py::metaclass());
   instance
     .def(py::init<>())
     .def(py::init<::smtk::model::ExportModelJSON const &>())

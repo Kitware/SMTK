@@ -3,9 +3,12 @@
 # tests that require SMTK_DATA_DIR
 set(smtkMeshPythonDataTests
   extractTessellation
-  iterateMesh
   simple
 )
+
+if (SMTK_USE_PYBIND11)
+  list(APPEND smtkMeshPythonDataTests iterateMesh)
+endif()
 
 #only run these tests if we have a valid data directory and we have a moab
 #built with hdf5

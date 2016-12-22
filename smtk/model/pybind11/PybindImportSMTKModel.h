@@ -21,7 +21,7 @@ namespace py = pybind11;
 
 PySharedPtrClass< smtk::model::ImportSMTKModel, smtk::model::Operator > pybind11_init_smtk_model_ImportSMTKModel(py::module &m)
 {
-  PySharedPtrClass< smtk::model::ImportSMTKModel, smtk::model::Operator > instance(m, "ImportSMTKModel");
+  PySharedPtrClass< smtk::model::ImportSMTKModel, smtk::model::Operator > instance(m, "ImportSMTKModel", py::metaclass());
   instance
     .def(py::init<>())
     .def(py::init<::smtk::model::ImportSMTKModel const &>())

@@ -21,7 +21,7 @@ namespace py = pybind11;
 
 PySharedPtrClass< smtk::model::AddAuxiliaryGeometry, smtk::model::Operator > pybind11_init_smtk_model_AddAuxiliaryGeometry(py::module &m)
 {
-  PySharedPtrClass< smtk::model::AddAuxiliaryGeometry, smtk::model::Operator > instance(m, "AddAuxiliaryGeometry");
+  PySharedPtrClass< smtk::model::AddAuxiliaryGeometry, smtk::model::Operator > instance(m, "AddAuxiliaryGeometry", py::metaclass());
   instance
     .def(py::init<>())
     .def(py::init<::smtk::model::AddAuxiliaryGeometry const &>())
