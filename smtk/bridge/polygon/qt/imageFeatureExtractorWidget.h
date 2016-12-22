@@ -11,6 +11,7 @@
 #ifndef imageFeatureExtractorWidget_h
 #define imageFeatureExtractorWidget_h
 
+#include "smtk/bridge/polygon/qt/Exports.h"
 #include <vtkSmartPointer.h>
 #include <vtkImageData.h>
 #include <vtkPolyData.h>
@@ -20,7 +21,7 @@
 // Forward Qt class declarations
 class Ui_imageFeatureExtractor;
 
-class imageFeatureExtractorWidget : public QDialog
+class SMTKPOLYGONQTEXT_EXPORT imageFeatureExtractorWidget : public QDialog
 {
   Q_OBJECT
 public:
