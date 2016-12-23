@@ -99,7 +99,7 @@ bool RefItem::isValid() const
       return false;
       }
     }
-  
+
  return true;
 }
 //----------------------------------------------------------------------------
@@ -120,6 +120,7 @@ bool RefItem::setValue(std::size_t element, smtk::attribute::AttributePtr att)
     static_cast<const RefItemDefinition *>(this->definition().get());
   if (def->isValueValid(att))
     {
+    assert(this->m_values.size() > element);
     Attribute *attPtr = this->m_values[element].lock().get();
     if (attPtr != NULL)
       {
@@ -138,6 +139,7 @@ RefItem::valueAsString(std::size_t element,
 {
   // For the initial design we will use sprintf and force a limit of 300 char
   char dummy[300];
+  assert(this->m_values.size() > element);
   if (format != "")
     {
     sprintf(dummy, format.c_str(), this->m_values[element].lock()->name().c_str());
@@ -197,6 +199,7 @@ RefItem::removeValue(std::size_t element)
     return false; // The number of values is fixed
     }
   // Tell the attribute we are no longer referencing it (if needed)
+  assert(this->m_values.size() > element);
   Attribute *att = this->m_values[element].lock().get();
   if (att != NULL)
     {
@@ -227,6 +230,7 @@ RefItem::setNumberOfValues(std::size_t newSize)
     {
     std::size_t i;
     Attribute *att;
+    assert(this->m_values.size() >= n);
     for (i = newSize; i < n; i++)
       {
       att = this->m_values[i].lock().get();
@@ -243,6 +247,7 @@ RefItem::setNumberOfValues(std::size_t newSize)
 void
 RefItem::unset(std::size_t element)
 {
+  assert(this->m_values.size() > element);
   Attribute *att = this->m_values[element].lock().get();
   if (att == NULL)
     {
@@ -292,7 +297,7 @@ bool RefItem::assign(ConstItemPtr &sourceItem, unsigned int options)
     {
     return Item::assign(sourceItem, options);
     }
-  
+
   // Get reference to attribute system
   System *system = this->attribute()->system();
 
@@ -323,7 +328,7 @@ bool RefItem::assign(ConstItemPtr &sourceItem, unsigned int options)
       this->unset(i);
       }
     }
-  
+
   return Item::assign(sourceItem, options);
 }
 //----------------------------------------------------------------------------

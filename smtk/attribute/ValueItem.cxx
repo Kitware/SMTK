@@ -87,7 +87,7 @@ bool ValueItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef)
 ValueItem::~ValueItem()
 {
   // we need to detach all items that are owned by this. i.e. the expression items
-  std::size_t i, n = m_expressions.size();
+  std::size_t i, n = this->m_expressions.size();
   for (i = 0; i < n; i++)
     {
     this->m_expressions[i]->detachOwningItem();
@@ -102,6 +102,7 @@ bool ValueItem::isValid() const
     {
     return true;
     }
+  assert(!this->allowsExpressions() || this->m_expressions.size() >= this->m_isSet.size());
   for (std::size_t i = 0; i < this->m_isSet.size(); ++i)
     {
     if (!this->m_isSet[i])
@@ -110,7 +111,7 @@ bool ValueItem::isValid() const
       }
     // Is this using an expression?
     if (this->allowsExpressions() && (this->m_expressions[i]->value()!= nullptr))
-      { 
+      {
       if (!this->m_expressions[i]->isValid())
         {
          return false;
@@ -118,7 +119,7 @@ bool ValueItem::isValid() const
       }
     }
   // Now we need to check the active items
-    for (auto it = this->m_activeChildrenItems.begin(); 
+    for (auto it = this->m_activeChildrenItems.begin();
          it != this->m_activeChildrenItems.end(); ++it)
     {
     if (!(*it)->isValid())
@@ -198,12 +199,14 @@ bool ValueItem::allowsExpressions() const
 //----------------------------------------------------------------------------
 smtk::attribute::AttributePtr ValueItem::expression(std::size_t element) const
 {
+  assert(this->m_isSet.size() > element);
   if (this->m_isSet[element])
     {
     const ValueItemDefinition *def =
       static_cast<const ValueItemDefinition*>(this->m_definition.get());
     if (def->allowsExpressions())
       {
+      assert(this->m_expressions.size() > element);
       return this->m_expressions[element]->value();
       }
     }
@@ -219,8 +222,10 @@ bool ValueItem::setExpression(std::size_t element,
     {
     if (!exp)
       {
+      assert(this->m_expressions.size() > element);
       if (this->m_expressions[element]->value())
         {
+        assert(this->m_isSet.size() > element);
         this->m_isSet[element] = false;
         this->m_expressions[element]->unset();
         }
@@ -228,7 +233,9 @@ bool ValueItem::setExpression(std::size_t element,
       }
     if (def->isValidExpression(exp))
       {
+      assert(this->m_isSet.size() > element);
       this->m_isSet[element] = true;
+      assert(this->m_expressions.size() > element);
       this->m_expressions[element]->setValue(exp);
       return true;
       }
@@ -288,6 +295,8 @@ bool ValueItem::setDiscreteIndex(std::size_t element, int index)
   if (def->isDiscreteIndexValid(index))
     {
     // Is this a different value then what is set already?
+    assert(this->m_isSet.size() > element);
+    assert(this->m_discreteIndices.size() > element);
     if (this->m_isSet[element] && (this->m_discreteIndices[element] == index))
       {
       // Nothing is changed
@@ -296,6 +305,7 @@ bool ValueItem::setDiscreteIndex(std::size_t element, int index)
     this->m_discreteIndices[element] = index;
     if (def->allowsExpressions())
       {
+      assert(this->m_expressions.size() > element);
       this->m_expressions[element]->unset();
       }
     this->m_isSet[element] = true;
@@ -322,6 +332,7 @@ void ValueItem::updateActiveChildrenItems()
   // Check to see if the index is valid
   const ValueItemDefinition *def =
     static_cast<const ValueItemDefinition*>(this->m_definition.get());
+  assert(!this->m_discreteIndices.empty());
   if (!def->isDiscreteIndexValid(this->m_discreteIndices[0]))
     {
     return;
@@ -344,12 +355,12 @@ bool ValueItem::assign(ConstItemPtr &sourceItem, unsigned int options)
   // Cast input pointer to ValueItem
   smtk::shared_ptr<const ValueItem > sourceValueItem =
     smtk::dynamic_pointer_cast<const ValueItem>(sourceItem);
-  
+
   if (!sourceValueItem)
     {
     return false; //Source is not a value item!
     }
-  
+
   this->setNumberOfValues(sourceValueItem->numberOfValues());
 
   // Get reference to attribute system
@@ -394,7 +405,7 @@ bool ValueItem::assign(ConstItemPtr &sourceItem, unsigned int options)
       this->setDiscreteIndex(i, sourceValueItem->discreteIndex(i));
       }
     } // for
-  
+
   // Update children items
   std::map<std::string, smtk::attribute::ItemPtr>::const_iterator sourceIter =
     sourceValueItem->m_childrenItems.begin();

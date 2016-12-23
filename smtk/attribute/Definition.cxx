@@ -17,6 +17,7 @@
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/System.h"
 
+#include <cassert>
 #include <iostream>
 #include <sstream>
 
@@ -324,6 +325,7 @@ smtk::attribute::ItemDefinitionPtr Definition::itemDefinition(int ith) const
   // Is the item in this defintion?
   if (ith >= static_cast<int>(this->m_baseItemOffset))
     {
+    assert(this->m_itemDefs.size() > static_cast<std::size_t>(ith-this->m_baseItemOffset));
     return this->m_itemDefs[static_cast<std::size_t>(ith-this->m_baseItemOffset)];
     }
   else if (this->m_baseDefinition)

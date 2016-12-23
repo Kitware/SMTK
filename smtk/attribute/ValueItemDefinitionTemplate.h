@@ -15,6 +15,7 @@
 #define __smtk_attribute_ValueItemDefinitionTemplate_h
 
 #include "smtk/attribute/ValueItemDefinition.h"
+#include <cassert>
 #include <iostream>
 #include <sstream>
 
@@ -104,6 +105,7 @@ namespace smtk
     template<typename DataT>
     void ValueItemDefinitionTemplate<DataT>::updateDiscreteValue()
     {
+      assert(this->m_discreteValues.size() > this->m_defaultDiscreteIndex);
       this->setDefaultValue(this->m_discreteValues[this->m_defaultDiscreteIndex]);
     }
 //----------------------------------------------------------------------------
@@ -281,6 +283,7 @@ namespace smtk
     const DataT& ValueItemDefinitionTemplate<DataT>::defaultValue(std::size_t element) const
     {
       bool vectorDefault = this->m_defaultValue.size() == this->numberOfRequiredValues();
+      assert(!vectorDefault || this->m_defaultValue.size() > element);
       return this->m_defaultValue.empty() ? this->m_dummy : this->m_defaultValue[vectorDefault ? element : 0];
     }
 
@@ -324,13 +327,14 @@ namespace smtk
       // Copy values & labels
       DataT value;
       std::string labelStr;
-      for (std::size_t i=0; i<m_discreteValues.size(); ++i)
+      assert(this->m_discreteValueEnums.size() >= this->m_discreteValues.size());
+      for (std::size_t i=0; i < this->m_discreteValues.size(); ++i)
         {
-        value = m_discreteValues[i];
-        labelStr = m_discreteValueEnums[i];
+        value = this->m_discreteValues[i];
+        labelStr = this->m_discreteValueEnums[i];
         vdef->addDiscreteValue(value, labelStr);
         }
-      vdef->setDefaultDiscreteIndex(m_defaultDiscreteIndex);
+      vdef->setDefaultDiscreteIndex(this->m_defaultDiscreteIndex);
       }
 
     // Copy superclass *after* our stuff, so that discrete values are set up

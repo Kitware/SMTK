@@ -17,6 +17,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Item.h"
+#include <cassert>
 #include <vector>
 
 namespace smtk
@@ -36,10 +37,10 @@ namespace smtk
       smtkTypeMacro(RefItem);
       virtual ~RefItem();
       virtual Item::Type type() const;
-      // A RefItem is valid if it is either no enabled or if all of 
+      // A RefItem is valid if it is either no enabled or if all of
       // its values are set and the attributes it references exist
-      // It does NOT check to see if the attribute(s) it refers to are 
-      // valid - the reason for this is to avoid infinite loops if 2 
+      // It does NOT check to see if the attribute(s) it refers to are
+      // valid - the reason for this is to avoid infinite loops if 2
       // attributes contain items that reference each other.
       virtual bool isValid() const;
 
@@ -48,7 +49,10 @@ namespace smtk
       bool  setNumberOfValues(std::size_t newSize);
       std::size_t numberOfRequiredValues() const;
       smtk::attribute::AttributePtr value(std::size_t element=0) const
-      {return this->m_values[element].lock();}
+      {
+        assert(this->m_values.size() > element);
+        return this->m_values[element].lock();
+      }
       bool setValue( smtk::attribute::AttributePtr val)
       {return this->setValue(0, val);}
       bool setValue(std::size_t element, smtk::attribute::AttributePtr val);
@@ -59,7 +63,10 @@ namespace smtk
       {return this->valueAsString(0, format);}
       virtual std::string valueAsString(std::size_t element, const std::string &format="") const;
       virtual bool isSet(std::size_t element=0) const
-      {return this->m_values[element].lock().get() != NULL;}
+      {
+        assert(this->m_values.size() > element);
+        return this->m_values[element].lock().get() != NULL;
+      }
       virtual void unset(std::size_t element=0);
 
       // Iterator-style access to values:

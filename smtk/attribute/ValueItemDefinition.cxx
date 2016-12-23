@@ -84,6 +84,7 @@ void ValueItemDefinition::setValueLabel(std::size_t element, const std::string &
     this->m_valueLabels.resize(this->m_numberOfRequiredValues);
     }
   this->m_useCommonLabel = false;
+  assert(this->m_valueLabels.size() > element);
   this->m_valueLabels[element] = elabel;
 }
 //----------------------------------------------------------------------------
@@ -94,6 +95,7 @@ void ValueItemDefinition::setCommonValueLabel(const std::string &elabel)
     this->m_valueLabels.resize(1);
     }
   this->m_useCommonLabel = true;
+  assert(!this->m_valueLabels.empty());
   this->m_valueLabels[0] = elabel;
 }
 
@@ -102,6 +104,7 @@ std::string ValueItemDefinition::valueLabel(std::size_t element) const
 {
   if (this->m_useCommonLabel)
     {
+    assert(!this->m_valueLabels.empty());
     return this->m_valueLabels[0];
     }
   if (element < this->m_valueLabels.size())
@@ -144,6 +147,7 @@ ValueItemDefinition::buildExpressionItem(ValueItem *vitem, int position) const
     smtk::dynamic_pointer_cast<smtk::attribute::RefItem>
     (this->m_expressionDefinition->buildItem(vitem, position, -1));
   aref->setDefinition(this->m_expressionDefinition);
+  assert(vitem->m_expressions.size() > static_cast<size_t>(position));
   vitem->m_expressions[static_cast<size_t>(position)] = aref;
 }
 //----------------------------------------------------------------------------
@@ -254,9 +258,9 @@ copyTo(ValueItemDefinitionPtr def,
 
   ItemDefinition::copyTo(def);
 
-  if (m_units != "")
+  if (this->m_units != "")
     {
-    def->setUnits(m_units);
+    def->setUnits(this->m_units);
     }
 
   if (this->allowsExpressions())
@@ -278,29 +282,30 @@ copyTo(ValueItemDefinitionPtr def,
       }
     }
 
-  def->setNumberOfRequiredValues(m_numberOfRequiredValues);
-  def->setMaxNumberOfValues(m_maxNumberOfValues);
-  def->setIsExtensible(m_isExtensible);
+  def->setNumberOfRequiredValues(this->m_numberOfRequiredValues);
+  def->setMaxNumberOfValues(this->m_maxNumberOfValues);
+  def->setIsExtensible(this->m_isExtensible);
 
   // Add label(s)
-  if (m_useCommonLabel)
+  if (this->m_useCommonLabel)
     {
-    def->setCommonValueLabel(m_valueLabels[0]);
+    assert(!this->m_valueLabels.empty());
+    def->setCommonValueLabel(this->m_valueLabels[0]);
     }
   else if (this->hasValueLabels())
     {
-    for (i=0; i<m_valueLabels.size(); ++i)
+    for (i=0; i<this->m_valueLabels.size(); ++i)
       {
-      def->setValueLabel(i, m_valueLabels[i]);
+      def->setValueLabel(i, this->m_valueLabels[i]);
       }
     }
 
   // Add children item definitions
-  if (m_itemDefs.size() > 0)
+  if (this->m_itemDefs.size() > 0)
     {
     std::map<std::string, smtk::attribute::ItemDefinitionPtr>::const_iterator
-      itemDefMapIter = m_itemDefs.begin();
-    for (; itemDefMapIter != m_itemDefs.end(); itemDefMapIter++)
+      itemDefMapIter = this->m_itemDefs.begin();
+    for (; itemDefMapIter != this->m_itemDefs.end(); itemDefMapIter++)
       {
       smtk::attribute::ItemDefinitionPtr itemDef =
         itemDefMapIter->second->createCopy(info);
@@ -309,13 +314,13 @@ copyTo(ValueItemDefinitionPtr def,
     }
 
   // Add condition items
-  if (m_valueToItemAssociations.size() > 0)
+  if (this->m_valueToItemAssociations.size() > 0)
     {
     std::map<std::string, std::vector<std::string> >::const_iterator mapIter =
-      m_valueToItemAssociations.begin();
+      this->m_valueToItemAssociations.begin();
     std::string value;
     std::vector<std::string>::const_iterator itemIter;
-    for (; mapIter != m_valueToItemAssociations.end(); mapIter++)
+    for (; mapIter != this->m_valueToItemAssociations.end(); mapIter++)
       {
       value = mapIter->first;
       itemIter = mapIter->second.begin();

@@ -13,6 +13,8 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileSystemItem.h"
 
+#include <cassert>
+
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
@@ -88,6 +90,7 @@ void FileSystemItemDefinition::setValueLabel(std::size_t element, const std::str
     this->m_valueLabels.resize(this->m_numberOfRequiredValues);
     }
   this->m_useCommonLabel = false;
+  assert(this->m_valueLabels.size() > element);
   this->m_valueLabels[element] = elabel;
 }
 //----------------------------------------------------------------------------
@@ -106,10 +109,12 @@ std::string FileSystemItemDefinition::valueLabel(std::size_t element) const
 {
   if (this->m_useCommonLabel)
     {
+    assert(this->m_valueLabels.size() > 0);
     return this->m_valueLabels[0];
     }
   if (this->m_valueLabels.size())
     {
+    assert(this->m_valueLabels.size() > element);
     return this->m_valueLabels[element];
     }
   return ""; // If we threw execeptions this method could return const string &
