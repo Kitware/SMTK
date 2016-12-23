@@ -1308,7 +1308,13 @@ int ImportJSON::ofMeshProperties(cJSON* node,
           }
         StringList propVal;
         cJSON_GetStringArray(stringProp, propVal);
-        collection->setStringProperty(mesh, stringProp->string, propVal);
+        // update the mesh name if needed
+        std::string stringProString(stringProp->string);
+        if (stringProString == "name")
+          {
+          collection->name(propVal[0]);
+          }
+          collection->setStringProperty(mesh, stringProp->string, propVal);
         }
       }
     // integer properties
