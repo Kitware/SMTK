@@ -219,6 +219,7 @@ bool GroupItem::removeGroup(std::size_t element)
     return false; // min number of groups reached
     }
 
+  assert(this->m_items.size() > element);
   std::vector<smtk::attribute::ItemPtr> &items = this->m_items[element];
   std::size_t j, m = items.size();
   for(j = 0; j < m; j++)
@@ -288,6 +289,8 @@ smtk::attribute::ItemPtr GroupItem::find(std::size_t element, const std::string 
   const GroupItemDefinition *def =
     static_cast<const GroupItemDefinition *>(this->definition().get());
   int i = def->findItemPosition(inName);
+  assert(this->m_items.size() > element);
+  assert(this->m_items[element].size() > static_cast<std::size_t>(i));
   return (i < 0) ? smtk::attribute::ItemPtr() : this->m_items[element][static_cast<std::size_t>(i)];
 }
 //----------------------------------------------------------------------------
@@ -300,6 +303,8 @@ smtk::attribute::ConstItemPtr GroupItem::find(std::size_t element, const std::st
     {
     return smtk::attribute::ConstItemPtr();
     }
+  assert(this->m_items.size() > element);
+  assert(this->m_items[element].size() > static_cast<std::size_t>(i));
   return this->m_items[element][static_cast<std::size_t>(i)];
 }
 //----------------------------------------------------------------------------

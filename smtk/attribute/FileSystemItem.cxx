@@ -12,6 +12,7 @@
 #include "smtk/attribute/FileSystemItem.h"
 #include "smtk/attribute/FileSystemItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
+#include <cassert>
 #include <iostream>
 #include <stdio.h>
 
@@ -152,6 +153,8 @@ bool FileSystemItem::setValue(std::size_t element, const std::string &val)
     static_cast<const FileSystemItemDefinition *>(this->definition().get());
   if ((def == NULL) || (def->isValueValid(val)))
     {
+    assert(this->m_values.size() > element);
+    assert(this->m_isSet.size() > element);
     this->m_values[element] = val;
     this->m_isSet[element] = true;
     return true;
@@ -165,6 +168,7 @@ FileSystemItem::valueAsString(std::size_t element,
 {
   // For the initial design we will use sprintf and force a limit of 300 char
   char dummy[300];
+  assert(this->m_values.size() > element);
   if (format != "")
     {
     sprintf(dummy, format.c_str(), this->m_values[element].c_str());
@@ -305,6 +309,8 @@ bool FileSystemItem::isUsingDefault() const
 
   std::size_t i, n = this->numberOfValues();
   std::string dval = def->defaultValue();
+  assert(this->m_isSet.size() >= n);
+  assert(this->m_values.size() >= n);
   for (i = 0; i < n; i++)
     {
     if (!(this->m_isSet[i] && (this->m_values[i] == dval)))
@@ -318,6 +324,8 @@ bool FileSystemItem::isUsingDefault() const
  bool FileSystemItem::isUsingDefault(std::size_t element) const
 {
   auto def = static_cast<const FileSystemItemDefinition *>(this->definition().get());
+  assert(this->m_isSet.size() > element);
+  assert(this->m_values.size() > element);
   if (def->hasDefault() && this->m_isSet[element] &&
       this->m_values[element] == def->defaultValue())
     {

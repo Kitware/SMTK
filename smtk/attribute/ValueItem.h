@@ -19,6 +19,8 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/CoreExports.h"
 
+#include <cassert>
+
 namespace smtk
 {
   namespace attribute
@@ -52,7 +54,10 @@ namespace smtk
       virtual bool setNumberOfValues(std::size_t newSize) = 0;
 
       int discreteIndex(std::size_t elementIndex=0) const
-      {return this->m_discreteIndices[elementIndex];}
+      {
+        assert(this->m_discreteIndices.size() > elementIndex);
+        return this->m_discreteIndices[elementIndex];
+      }
       bool isDiscrete() const;
       bool isDiscreteIndexValid(int value) const;
       bool setDiscreteIndex(int value)
@@ -78,11 +83,17 @@ namespace smtk
 
       virtual std::string valueAsString(std::size_t elementIndex) const = 0;
       virtual bool isSet(std::size_t elementIndex = 0) const
-      {return this->m_isSet[elementIndex];}
+      {
+        assert(this->m_isSet.size() > elementIndex);
+        return this->m_isSet[elementIndex];
+      }
       virtual void unset(std::size_t elementIndex=0)
       {this->m_isSet[elementIndex] = false;}
       smtk::attribute::RefItemPtr expressionReference(std::size_t elementIndex=0) const
-      {return this->m_expressions[elementIndex];}
+      {
+        assert(this->m_expressions.size() > elementIndex);
+        return this->m_expressions[elementIndex];
+      }
 
       // Interface for getting discrete-value based children items
       std::size_t numberOfChildrenItems() const

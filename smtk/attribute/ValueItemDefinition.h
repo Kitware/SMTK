@@ -20,6 +20,7 @@
 #ifndef __smtk_attribute_ValueItemDefinition_h
 #define __smtk_attribute_ValueItemDefinition_h
 
+#include <cassert>
 #include <string>
 #include <set>
 #include <map>
@@ -58,7 +59,10 @@ namespace smtk
       std::size_t numberOfDiscreteValues() const
       {return this->m_discreteValueEnums.size();}
       const std::string &discreteEnum(std::size_t ith) const
-      {return this->m_discreteValueEnums[ith];}
+      {
+        assert(this->m_discreteValueEnums.size() > ith);
+        return this->m_discreteValueEnums[ith];
+      }
       int defaultDiscreteIndex() const
       {return this->m_defaultDiscreteIndex;}
       void setDefaultDiscreteIndex(int discreteIndex);

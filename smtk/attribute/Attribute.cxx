@@ -37,6 +37,7 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/algorithm/string.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
 
+#include <cassert>
 #include <iostream>
 
 using namespace smtk::attribute;
@@ -473,6 +474,7 @@ smtk::attribute::ItemPtr Attribute::find(
       }
     i = -1; // Nothing found.
     }
+  assert(i < 0 || this->m_items.size() > static_cast<std::size_t>(i));
   return (i < 0) ?
     smtk::attribute::ItemPtr() :
     this->m_items[static_cast<std::size_t>(i)];
@@ -499,6 +501,7 @@ smtk::attribute::ConstItemPtr Attribute::find(
       }
     i = -1; // Nothing found.
     }
+  assert(i < 0 || this->m_items.size() > static_cast<std::size_t>(i));
   return (i < 0) ?
     smtk::attribute::ConstItemPtr() :
     smtk::const_pointer_cast<const Item>(this->m_items[static_cast<std::size_t>(i)]);

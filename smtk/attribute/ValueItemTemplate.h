@@ -17,6 +17,7 @@
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinitionTemplate.h"
+#include <cassert>
 #include <vector>
 #include <stdio.h>
 #include <sstream>
@@ -160,6 +161,7 @@ namespace smtk
         {
         int index = def->findDiscreteIndex(val);
         // Is this the current value?
+        assert(this->m_discreteIndices.size() > element);
         if (index == this->m_discreteIndices[element] )
           {
           return true;
@@ -168,11 +170,14 @@ namespace smtk
         if (index != -1)
           {
           this->m_discreteIndices[element] = index;
+          assert(this->m_values.size() > element);
           this->m_values[element] = val;
           if (def->allowsExpressions())
             {
+            assert(this->m_expressions.size() > element);
             this->m_expressions[element]->unset();
             }
+          assert(this->m_isSet.size() > element);
           this->m_isSet[element] = true;
           // Update active children if needed - note that
           // we currently only support active children based on the
@@ -187,10 +192,13 @@ namespace smtk
         }
       if (def->isValueValid(val))
         {
+        assert(this->m_values.size() > element);
         this->m_values[element] = val;
+        assert(this->m_isSet.size() > element);
         this->m_isSet[element] = true;
         if (def->allowsExpressions())
           {
+          assert(this->m_expressions.size() > element);
           this->m_expressions[element]->unset();
           }
         return true;
@@ -210,6 +218,7 @@ namespace smtk
     std::string
     ValueItemTemplate<DataT>::valueAsString(std::size_t element) const
     {
+      assert(this->m_isSet.size() > element);
       if (this->m_isSet[element])
         {
         if (this->isExpression(element))
@@ -219,6 +228,7 @@ namespace smtk
         else
           {
           std::stringstream buffer;
+          assert(this->m_values.size() > element);
           buffer << this->m_values[element];
           return buffer.str();
           }
@@ -312,6 +322,7 @@ namespace smtk
         if (def->allowsExpressions())
           {
           std::size_t i;
+          assert(this->m_expressions.size() >= n);
           for (i = newSize; i < n; i++)
             {
             this->m_expressions[i]->detachOwningItem();
@@ -375,6 +386,7 @@ namespace smtk
         }
       if (def->allowsExpressions())
         {
+        assert(this->m_expressions.size() > element);
         this->m_expressions[element]->detachOwningItem();
         this->m_expressions.erase(this->m_expressions.begin()+element);
         }
@@ -403,6 +415,7 @@ namespace smtk
         }
       else
         {
+        assert(def->defaultValues().size() > element);
         this->setValue(element,
           def->defaultValues().size() > 1 ?
           def->defaultValues()[element] :
@@ -427,6 +440,8 @@ namespace smtk
       bool vectorDefault = (dvals.size() == n);
       for (i = 0; i < n; i++)
         {
+        assert(this->m_isSet.size() > i);
+        assert(this->m_values.size() > i);
         if (!(this->m_isSet[i] && (vectorDefault ? this->m_values[i] == dvals[i] : this->m_values[i] == dval)))
           {
           return false;
@@ -440,6 +455,7 @@ namespace smtk
     ValueItemTemplate<DataT>::isUsingDefault(std::size_t element) const
     {
       const DefType *def = static_cast<const DefType *>(this->definition().get());
+      assert(this->m_isSet.size() > element);
       if (!(def->hasDefault() && this->m_isSet[element]))
         {
         return false; // Doesn't have a default value
@@ -448,6 +464,7 @@ namespace smtk
       DataT dval = def->defaultValue();
       const std::vector<DataT>& dvals = def->defaultValues();
       bool vectorDefault = (dvals.size() == def->numberOfRequiredValues());
+      assert(this->m_values.size() > element);
       return (vectorDefault ?
         this->m_values[element] == dvals[element] :
         this->m_values[element] == dval);
@@ -507,6 +524,7 @@ namespace smtk
       // If we can have expressions then clear them
       if (def->allowsExpressions())
         {
+        assert(this->m_expressions.size() >= n);
         for (i = 0; i < n; i++)
           {
           this->m_expressions[i]->unset();

@@ -16,6 +16,7 @@
 
 #include "smtk/CoreExports.h"
 #include "smtk/attribute/Item.h"
+#include <cassert>
 #include <vector>
 namespace smtk
 {
@@ -47,7 +48,11 @@ namespace smtk
       smtk::attribute::ItemPtr item(std::size_t ith) const
       {return this->item(0, ith);}
       smtk::attribute::ItemPtr item(std::size_t element, std::size_t ith) const
-        {return this->m_items[element][ith];}
+        {
+          assert(this->m_items.size() > element);
+          assert(this->m_items[element].size() > ith);
+          return this->m_items[element][ith];
+        }
 
       smtk::attribute::ItemPtr find(const std::string &inName)
         {return this->find(0, inName);}

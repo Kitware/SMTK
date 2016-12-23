@@ -18,6 +18,8 @@
 #include "smtk/model/Manager.h"
 #include "smtk/common/UUID.h"
 
+#include <cassert>
+
 using namespace smtk::attribute;
 
 /// Construct an item definition given a name. Names should be unique and non-empty.
@@ -177,10 +179,12 @@ std::string ModelEntityItemDefinition::valueLabel(std::size_t i) const
 {
   if (this->m_useCommonLabel)
     {
+    assert(!this->m_valueLabels.empty());
     return this->m_valueLabels[0];
     }
   if (this->m_valueLabels.size())
     {
+    assert(this->m_valueLabels.size() > i);
     return this->m_valueLabels[i];
     }
   return "";
