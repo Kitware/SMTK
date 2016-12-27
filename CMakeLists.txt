@@ -295,6 +295,13 @@ add_subdirectory(thirdparty)
 if(SMTK_ENABLE_PYTHON_WRAPPING)
   if(SMTK_USE_PYBIND11)
     find_package(PythonLibs REQUIRED)
+ 
+    set(SMTK_PYBIND11_FLAGS " ")
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR
+       CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR
+       CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+      set(SMTK_PYBIND11_FLAGS "${SMTK_PYBIND11_FLAGS} -Wno-shadow")
+    endif()
   else()
     include(UseShiboken)
   endif()
