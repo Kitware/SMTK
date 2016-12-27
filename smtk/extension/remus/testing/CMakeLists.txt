@@ -1,3 +1,3 @@
-if(SMTK_ENABLE_PYTHON_WRAPPING AND Shiboken_FOUND)
+if(SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(python)
 endif()
