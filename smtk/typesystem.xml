@@ -15,11 +15,13 @@
   <suppress-warning text="namespace 'smtk::bridge::remote' does not have a type entry"/>
   <suppress-warning text="namespace 'smtk::extension' does not have a type entry"/>
   <suppress-warning text="namespace 'smtk::internal' does not have a type entry"/>
+  <suppress-warning text="namespace 'smtk::placeholders' does not have a type entry"/>
   <suppress-warning text="namespace 'smtk::mesh::json' does not have a type entry"/>
   <suppress-warning text="namespace 'smtk::mesh::moab' does not have a type entry"/>
   <suppress-warning text="namespace 'vtk' does not have a type entry"/>
   <suppress-warning text="namespace 'vtk_detail' does not have a type entry"/>
   <suppress-warning text="namespace 'std' does not have a type entry"/>
+
 
   <!-- Suppressed because they are memory variables-->
   <suppress-warning text="skipping field 'System::m_refModelMgr' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Manager&gt;'"/>
