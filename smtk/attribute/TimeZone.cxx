@@ -24,7 +24,7 @@ bool TimeZone::s_databaseLoaded = false;
 
 //----------------------------------------------------------------------------
 TimeZone::TimeZone()
-  : m_isUTC(false), m_boostTimeZone(0)
+  : m_boostTimeZone(0),  m_isUTC(false)
 {
 }
 
