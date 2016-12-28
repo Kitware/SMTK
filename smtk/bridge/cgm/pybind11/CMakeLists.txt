@@ -6,7 +6,7 @@ target_link_libraries(smtkPybindCGMSession LINK_PUBLIC smtkCore smtkCGMSession L
 set_target_properties(smtkPybindCGMSession
   PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib"
-    COMPILE_FLAGS "-Wno-shadow"
+    COMPILE_FLAGS ${SMTK_PYBIND11_FLAGS}
 )
 install(TARGETS smtkPybindCGMSession DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 

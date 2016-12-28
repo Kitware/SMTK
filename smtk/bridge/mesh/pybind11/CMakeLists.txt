@@ -6,7 +6,7 @@ target_link_libraries(smtkPybindMeshSession LINK_PUBLIC smtkCore smtkMeshSession
 set_target_properties(smtkPybindMeshSession
   PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib"
-    COMPILE_FLAGS "-Wno-shadow"
+    COMPILE_FLAGS ${SMTK_PYBIND11_FLAGS}
 )
 install(TARGETS smtkPybindMeshSession DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 

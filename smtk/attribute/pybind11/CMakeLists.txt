@@ -6,7 +6,7 @@ target_link_libraries(smtkPybindAttribute LINK_PUBLIC smtkCore)
 set_target_properties(smtkPybindAttribute
   PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib"
-    COMPILE_FLAGS "-Wno-shadow"
+    COMPILE_FLAGS ${SMTK_PYBIND11_FLAGS}
 )
 install(TARGETS smtkPybindAttribute DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 

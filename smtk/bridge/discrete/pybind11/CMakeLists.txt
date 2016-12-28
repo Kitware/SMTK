@@ -21,7 +21,7 @@ target_link_libraries(smtkPybindDiscreteSession LINK_PUBLIC smtkCore smtkDiscret
 set_target_properties(smtkPybindDiscreteSession
   PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib"
-    COMPILE_FLAGS "-Wno-shadow"
+    COMPILE_FLAGS ${SMTK_PYBIND11_FLAGS}
 )
 install(TARGETS smtkPybindDiscreteSession DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
