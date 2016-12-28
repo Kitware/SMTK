@@ -24,14 +24,30 @@ bool TimeZone::s_databaseLoaded = false;
 
 //----------------------------------------------------------------------------
 TimeZone::TimeZone()
-  : m_boostTimeZone(0)
+  : m_isUTC(false), m_boostTimeZone(0)
 {
 }
 
 //----------------------------------------------------------------------------
 bool TimeZone::isSet() const
 {
-  return !!m_boostTimeZone;
+  return this->m_isUTC || (!!this->m_boostTimeZone);
+}
+
+//----------------------------------------------------------------------------
+void TimeZone::setUTC()
+{
+  // Clear boost pointer and region string
+  boost::local_time::time_zone_ptr tzNull(0);
+  this->m_boostTimeZone = tzNull;
+  this->m_region.clear();
+  this->m_isUTC = true;
+}
+
+//----------------------------------------------------------------------------
+bool TimeZone::isUTC() const
+{
+  return this->m_isUTC;
 }
 
 //----------------------------------------------------------------------------
@@ -58,6 +74,7 @@ bool TimeZone::setRegion(const std::string& region)
     }
 
   // else
+  this->m_isUTC = false;
   this->m_region = region;
   return true;
 }
@@ -82,12 +99,12 @@ bool TimeZone::setPosixString(const std::string& posixTimeZoneString)
 #ifndef NDEBUG
     std::cerr << "exception: " << e.what() << std::endl;
 #endif
-    boost::local_time::time_zone_ptr tzNull(
-      new boost::local_time::posix_time_zone(""));
+    boost::local_time::time_zone_ptr tzNull(0);
     this->m_boostTimeZone = tzNull;
     return false;
     }
 
+  this->m_isUTC = false;
   this->m_region.clear();
   return this->isSet();
 }
@@ -95,6 +112,10 @@ bool TimeZone::setPosixString(const std::string& posixTimeZoneString)
 //----------------------------------------------------------------------------
 std::string TimeZone::posixString() const
 {
+  if (this->m_isUTC)
+    {
+    return "UTC+0";
+    }
   return this->m_boostTimeZone->to_posix_string();
 }
 

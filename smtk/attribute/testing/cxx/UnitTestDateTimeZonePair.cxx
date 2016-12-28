@@ -21,6 +21,7 @@ namespace {
 //----------------------------------------------------------------------------
 void   verifyNotSet()
 {
+  std::cout << "verifyNotSet()" << std::endl;
   sa::DateTimeZonePair dtzOut;
   std::stringstream ss;
   ss << dtzOut;
@@ -39,6 +40,7 @@ void   verifyNotSet()
 //----------------------------------------------------------------------------
 void   verifyNoTimeZone()
 {
+  std::cout << "verifyNoTimeZone()" << std::endl;
   sa::DateTimeZonePair dtzOut;
 
   sa::DateTime dt;
@@ -67,6 +69,7 @@ void   verifyNoTimeZone()
 //----------------------------------------------------------------------------
 void   verifyTimeZoneOnly()
 {
+  std::cout << "verifyTimeZoneOnly()" << std::endl;
   sa::DateTimeZonePair dtzOut;
 
   sa::TimeZone tz;
@@ -88,8 +91,43 @@ void   verifyTimeZoneOnly()
 }
 
 //----------------------------------------------------------------------------
+void   verifyUTC()
+{
+  std::cout << "verifyUTC()" << std::endl;
+  sa::DateTimeZonePair dtzOut;
+
+  sa::DateTime dt;
+  dt.setComponents(1999, 12, 31, 23, 59, 59, 999);
+  dtzOut.setDateTime(dt);
+
+  sa::TimeZone tz;
+  tz.setUTC();
+  dtzOut.setTimeZone(tz);
+
+  std::stringstream ss;
+  ss << dtzOut;
+  std::cout << "UTC TimeZone:" << ss.str() << std::endl;
+
+  sa::DateTimeZonePair dtzIn1;
+  ss.seekg(0);
+  ss >> dtzIn1;
+  sa::DateTime dtIn1 = dtzIn1.dateTime();
+
+  int yr, month, day, hr, minute, sec, msec;
+  dtIn1.components(yr, month, day, hr, minute, sec, msec);
+  bool match1 = (yr == 1999) && (month == 12) && (day == 31) &&
+    (hr == 23) && (minute == 59) && (sec == 59) && (msec == 999);
+  test(match1, "Failed to set DateTime when UTC specified");
+
+  sa::TimeZone tzIn1 = dtzIn1.timeZone();
+  test(!!tzIn1.isSet(), "Failed to show UTC timezone as set()");
+  test(!!tzIn1.isUTC(), "Failed to return true for isUTC()");
+}
+
+//----------------------------------------------------------------------------
 void   verifyRegionTimeZone()
 {
+  std::cout << "verifyRegionTimeZone()" << std::endl;
   sa::DateTimeZonePair dtzOut;
 
   sa::DateTime dt;
@@ -126,6 +164,7 @@ void   verifyRegionTimeZone()
 //----------------------------------------------------------------------------
 void   verifyPosixTimeZone()
 {
+  std::cout << "verifyPosixTimeZone()" << std::endl;
   sa::DateTimeZonePair dtzOut;
 
   sa::DateTime dt;
@@ -170,6 +209,7 @@ int UnitTestDateTimeZonePair(int, char** const)
   verifyNotSet();
   verifyTimeZoneOnly();
   verifyNoTimeZone();
+  verifyUTC();
   verifyRegionTimeZone();
   verifyPosixTimeZone();
   return 0;

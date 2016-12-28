@@ -125,7 +125,7 @@ void verifySerialize()
   sa::DateTime dt2;
   dt2.deserialize("19690720T201800");
   sa::TimeZone tz2;
-  tz2.setPosixString("UTC+0");
+  tz2.setUTC();
   sa::DateTimeZonePair dtz2;
   dtz2.setDateTime(dt2);
   dtz2.setTimeZone(tz2);
@@ -213,9 +213,7 @@ void verifySerialize()
   test(
     tz2Input.region().empty(),
     "Failed to clear region value for 2nd item's TimeZone");
-  test(
-    tz2Input.posixString() == "UTC+00",
-    "Wrong posix string for 2nd item's TimeZone");
+  test(tz2Input.isUTC(), "Failed to set TimeZone to UTC");
 }
 
 }  // end namespace

@@ -35,7 +35,9 @@ class SMTKCORE_EXPORT TimeZone
 
   bool isSet() const;
 
-  // static std::vector<std::string> regions();
+  //// Set timezone to represent Coordinated Universal Time (UTC)
+  void setUTC();
+  bool isUTC() const;
 
   /// Set timezone via region name (table lookup)
   bool setRegion(const std::string& region);
@@ -60,6 +62,7 @@ class SMTKCORE_EXPORT TimeZone
 #endif
  protected:
   boost::local_time::time_zone_ptr m_boostTimeZone;
+  bool m_isUTC;
   std::string m_region;
 
   // Static timezone database

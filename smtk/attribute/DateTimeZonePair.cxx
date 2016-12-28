@@ -51,19 +51,24 @@ std::string DateTimeZonePair::serialize() const
 
   // Add "datetime" value (string)
   std::string dtString = m_datetime.serialize();
-  std::cout << "datetime " << dtString << std::endl;
+  //std::cout << "datetime " << dtString << std::endl;
   cJSON *dtJson = cJSON_CreateString(dtString.c_str());
   cJSON_AddItemToObject(outputJson, "datetime", dtJson);
 
   // Add optional "timezone" value (object)
   if (m_timezone.isSet())
     {
-    std::cout << "timezone region \"" << m_timezone.region() << "\""
-              << ", posix: " << m_timezone.posixString() << std::endl;
+    // std::cout << "timezone region \"" << m_timezone.region() << "\""
+    //           << ", posix: " << m_timezone.posixString() << std::endl;
 
-    // Region string takes precedence over posix
+    // Check UTC then region then posix string
     std::string regionString = m_timezone.region();
-    if (!regionString.empty())
+    if (this->m_timezone.isUTC())
+      {
+      cJSON *utcJson = cJSON_CreateTrue();
+      cJSON_AddItemToObject(outputJson, "timezone-utc", utcJson);
+      }
+    else if (!regionString.empty())
       {
       cJSON *regionJson = cJSON_CreateString(regionString.c_str());
       cJSON_AddItemToObject(outputJson, "timezone-region", regionJson);
@@ -73,8 +78,7 @@ std::string DateTimeZonePair::serialize() const
       cJSON *posixJson = cJSON_CreateString(m_timezone.posixString().c_str());
       cJSON_AddItemToObject(outputJson, "timezone-posix", posixJson);
       }
-
-    }
+    }  // if (timezone is set)
 
   // Convert to string
   std::string outputString = cJSON_PrintUnformatted(outputJson);
@@ -112,11 +116,14 @@ bool DateTimeZonePair::deserialize(const std::string& content)
     }
 
   // Extract optional timezone objects
+  cJSON *utcJson = cJSON_GetObjectItem(inputJson, "timezone-utc");
   cJSON *regionJson = cJSON_GetObjectItem(inputJson, "timezone-region");
   cJSON *ptzJson = cJSON_GetObjectItem(inputJson, "timezone-posix");
-
-  // First check for "region" item
-  if (regionJson && regionJson->type == cJSON_String)
+  if (utcJson && utcJson->type == cJSON_True)
+    {
+    this->m_timezone.setUTC();
+    }
+  else if (regionJson && regionJson->type == cJSON_String)
     {
     std::string regionString = regionJson->valuestring;
     m_timezone.setRegion(regionString);
