@@ -250,7 +250,7 @@ PySharedPtrClass< smtk::model::Manager > pybind11_init_smtk_model_Manager(py::mo
     .def("useOrShellIncludesShells", &smtk::model::Manager::useOrShellIncludesShells, py::arg("cellUseOrShell"))
     .def("pointerAsString", [](smtk::model::Manager &m){
         std::ostringstream result;
-        result << &m;
+        result << std::hex << &m;
         return result.str();
       })
     ;

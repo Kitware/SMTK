@@ -114,10 +114,9 @@ void vtkModelMultiBlockSource::SetModelManager(const char* pointerAsString)
     }
   else
     {
-    int base = 10;
+    int base = 16;
     if (pointerAsString[0] == '0' && pointerAsString[1] == 'x')
       {
-      base = 16;
       pointerAsString += 2;
       }
     char* endPtr;

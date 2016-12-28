@@ -424,6 +424,8 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     # Add the path to the build tree's compiled modules.
     list(APPEND smtk_pythonpaths
       "${CMAKE_BINARY_DIR}${envsep}${CMAKE_BINARY_DIR}/lib")
+    list(APPEND smtk_libpaths
+      "${CMAKE_BINARY_DIR}/lib")
     if (CMAKE_RUNTIME_OUTPUT_DIRECTORY)
       list(APPEND smtk_libpaths
         "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
