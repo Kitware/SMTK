@@ -15,6 +15,7 @@
 #define __smtk_extension_qtCollapsibleGroupWidget_h
 
 #include <QWidget>
+#include "smtk/extension/qt/Exports.h"
 
 class QFrame;
 namespace smtk
@@ -22,15 +23,15 @@ namespace smtk
   namespace extension
   {
     class qtCollapsibleGroupWidgetInternals;
-  
-    class qtCollapsibleGroupWidget: public QWidget
+
+    class SMTKQTEXT_EXPORT qtCollapsibleGroupWidget: public QWidget
     {
       Q_OBJECT
 
     public:
       qtCollapsibleGroupWidget(QWidget *parent);
       virtual ~qtCollapsibleGroupWidget();
-    
+
       QLayout *contentsLayout() const;
       void setContentsLayout(QLayout *newLayout);
       QFrame *contents() const;
