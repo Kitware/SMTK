@@ -1355,12 +1355,12 @@ void XmlV2StringWriter::processFileSystemItem(
 
   // If the item can have variable number of values then store how many
   // values it has
-  if (!numRequiredVals)
+  if (item->isExtensible())
     {
     node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
     }
 
-  if (numRequiredVals == 1) // Special Common Case
+  if (numRequiredVals == 1 && !item->isExtensible()) // Special Common Case
     {
     if (item->isSet())
       {
@@ -1437,7 +1437,7 @@ void XmlV2StringWriter::processViews()
   // First write toplevel views and then write out the non-toplevel - note that the
   // attribute or view system do care about this - the assumption is that the designer would
   // probably like all the toplevel views clustered together
-  
+
   xml_node views = this->m_pugi->root.append_child("Views");
   std::map<std::string, smtk::common::ViewPtr>::const_iterator iter;
   bool isTop;
@@ -1449,7 +1449,7 @@ void XmlV2StringWriter::processViews()
       }
     xml_node node;
     node = views.append_child("View");
-            
+
     node.append_attribute("Type").set_value(iter->second->type().c_str());
     node.append_attribute("Title").set_value(iter->second->title().c_str());
     if (iter->second->iconName() != "")
@@ -1466,7 +1466,7 @@ void XmlV2StringWriter::processViews()
       }
     xml_node node;
     node = views.append_child("View");
-            
+
     node.append_attribute("Type").set_value(iter->second->type().c_str());
     node.append_attribute("Title").set_value(iter->second->title().c_str());
     if (iter->second->iconName() != "")

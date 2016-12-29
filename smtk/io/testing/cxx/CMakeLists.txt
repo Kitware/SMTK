@@ -1,4 +1,5 @@
 set(ioTests
+  extensibleAttributeIOTest
   loggerTest
   ResourceSetTest
   unitImportExportJSON
@@ -6,8 +7,9 @@ set(ioTests
 
 foreach (test ${ioTests})
   add_executable(${test}  ${test}.cxx)
-  target_link_libraries(${test} smtkCore smtkCoreModelTesting)
+  target_link_libraries(${test} smtkCore smtkCoreModelTesting ${Boost_LIBRARIES})
   add_test(NAME ${test} COMMAND ${test})
+  target_compile_definitions(${test} PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
 endforeach()
 
 
