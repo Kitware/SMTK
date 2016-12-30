@@ -44,6 +44,8 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
+#include "smtk/common/DateTimeZonePair.h"
+
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Group.h"
@@ -79,7 +81,7 @@ namespace {
   }
 
 //----------------------------------------------------------------------------
-  const char *getValueForXMLElement(const smtk::attribute::DateTimeZonePair& v)
+  const char *getValueForXMLElement(const smtk::common::DateTimeZonePair& v)
   {
     return v.serialize().c_str();
   }

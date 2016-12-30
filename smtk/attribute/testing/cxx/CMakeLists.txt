@@ -53,8 +53,6 @@ endif()
 ################################################################################
 
 set(unit_tests
-  UnitTestDateTime.cxx
-  UnitTestDateTimeZonePair.cxx
   UnitTestDateTimeItem.cxx
 )
 

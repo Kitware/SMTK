@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_attribute_TimeZone_h
-#define __smtk_attribute_TimeZone_h
+#ifndef __smtk_common_TimeZone_h
+#define __smtk_common_TimeZone_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h"
@@ -23,7 +23,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 #include <string>
 
 namespace smtk {
-  namespace attribute {
+  namespace common {
 
 //.NAME TimeZone - Representation for time zones
 //.SECTION Description
@@ -70,7 +70,7 @@ class SMTKCORE_EXPORT TimeZone
   static bool s_databaseLoaded;
 };
 
-  } // namespace attribute
+  } // namespace common
 } // namespace smtk
 
-#endif // __smtk_attribute_TimeZone_h
+#endif // __smtk_common_TimeZone_h

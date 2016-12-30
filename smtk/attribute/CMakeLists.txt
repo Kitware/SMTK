@@ -1,10 +1,8 @@
 set(attributeHeaders
   Attribute.h
   Definition.h
-  DateTime.h
   DateTimeItem.h
   DateTimeItemDefinition.h
-  DateTimeZonePair.h
   DirectoryItem.h
   DirectoryItemDefinition.h
   DoubleItem.h
@@ -31,7 +29,6 @@ set(attributeHeaders
   SearchStyle.h
   StringItem.h
   StringItemDefinition.h
-  TimeZone.h
   ValueItem.h
   ValueItemDefinition.h
   ValueItemDefinitionTemplate.h
@@ -42,10 +39,8 @@ set(attributeHeaders
 
 set(attributeSrcs
   Attribute.cxx
-  DateTime.cxx
   DateTimeItem.cxx
   DateTimeItemDefinition.cxx
-  DateTimeZonePair.cxx
   Definition.cxx
   DirectoryItem.cxx
   DirectoryItemDefinition.cxx
@@ -72,7 +67,6 @@ set(attributeSrcs
   RefItemDefinition.cxx
   StringItem.cxx
   StringItemDefinition.cxx
-  TimeZone.cxx
   ValueItem.cxx
   ValueItemDefinition.cxx
   VoidItem.cxx

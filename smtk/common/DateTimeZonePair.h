@@ -7,16 +7,16 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_attribute_DateTimeZonePair_h
-#define __smtk_attribute_DateTimeZonePair_h
+#ifndef __smtk_common_DateTimeZonePair_h
+#define __smtk_common_DateTimeZonePair_h
 
-#include "smtk/attribute/DateTime.h"
-#include "smtk/attribute/TimeZone.h"
+#include "smtk/common/DateTime.h"
+#include "smtk/common/TimeZone.h"
 #include <iostream>
 #include <string>
 
 namespace smtk {
-  namespace attribute {
+  namespace common {
 
 //.NAME DateTimeZonePair - simple container for DateTime & TimeZone objects
 class SMTKCORE_EXPORT DateTimeZonePair
@@ -46,7 +46,7 @@ class SMTKCORE_EXPORT DateTimeZonePair
 SMTKCORE_EXPORT std::ostream& operator<<(std::ostream& os, const DateTimeZonePair& dtz);
 SMTKCORE_EXPORT std::istream& operator>>(std::istream& is, DateTimeZonePair& dtz);
 
-  } // namespace attribute
+  } // namespace common
 } // namespace smtk
 
-#endif  // __smtk_attribute_DateTimeZonePair_h
+#endif  // __smtk_common_DateTimeZonePair_h

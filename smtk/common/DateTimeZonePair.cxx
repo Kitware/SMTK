@@ -8,11 +8,11 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/attribute/DateTimeZonePair.h"
+#include "smtk/common/DateTimeZonePair.h"
 #include "cJSON.h"
 
 namespace smtk {
-  namespace attribute {
+  namespace common {
 
 //----------------------------------------------------------------------------
 DateTimeZonePair::DateTimeZonePair() : m_datetime(), m_timezone()
@@ -179,5 +179,5 @@ std::istream& operator>>(std::istream& is, DateTimeZonePair& dtz)
 
 //----------------------------------------------------------------------------
 
-  } // namespace attribute
+  } // namespace common
 } // namespace smtk

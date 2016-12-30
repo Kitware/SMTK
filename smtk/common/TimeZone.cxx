@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/attribute/TimeZone.h"
-#include "smtk/attribute/timezonespec.h"
+#include "smtk/common/TimeZone.h"
+#include "smtk/common/timezonespec.h"
 
 #include <boost/date_time/local_time/local_time.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -17,7 +17,7 @@
 #include <sstream>
 
 namespace smtk {
-  namespace attribute {
+  namespace common {
 
 boost::local_time::tz_database TimeZone::s_database;
 bool TimeZone::s_databaseLoaded = false;
@@ -213,6 +213,6 @@ const boost::local_time::time_zone_ptr TimeZone::boostPointer() const
 
 //----------------------------------------------------------------------------
 
-  } // namespace attribute
+  } // namespace common
 } // namespace smtk
 

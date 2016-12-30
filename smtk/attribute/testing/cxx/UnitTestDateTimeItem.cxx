@@ -12,10 +12,11 @@
 #include "smtk/attribute/DateTimeItemDefinition.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/DateTime.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/System.h"
+#include "smtk/common/DateTime.h"
+#include "smtk/common/DateTimeZonePair.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
@@ -23,6 +24,7 @@
 #include "smtk/common/testing/cxx/helpers.h"
 
 namespace sa = smtk::attribute;
+namespace sc = smtk::common;
 namespace {
 
 //----------------------------------------------------------------------------
@@ -53,13 +55,13 @@ void verifyDefault()
   test(!dtItem->isSet(), "isSet() failed to return false for default item");
 
   // Set default value
-  sa::DateTimeZonePair dtz;
+  smtk::common::DateTimeZonePair dtz;
 
-  sa::DateTime dt;
+  smtk::common::DateTime dt;
   dt.setComponents(2016, 11, 5, 13, 41, 33, 555);
   dtz.setDateTime(dt);
 
-  sa::TimeZone tz;
+  smtk::common::TimeZone tz;
   tz.setRegion("America/New_York");
   dtz.setTimeZone(tz);
 
@@ -69,9 +71,9 @@ void verifyDefault()
   // Must explicitly set to default
   dtItemSet->setToDefault(0);
   test(dtItem->isSet(), "isSet() failed to return true for default item");
-  sa::DateTimeZonePair dtzSet = dtItemSet->value(0);
+  smtk::common::DateTimeZonePair dtzSet = dtItemSet->value(0);
   //std::cout << dtzSet << std::endl;
-  sa::DateTime dtSet = dtzSet.dateTime();
+  smtk::common::DateTime dtSet = dtzSet.dateTime();
   int yr=-1, month=-1, day=-1, hr=-1, minute=-1, sec=-1, msec=-1;
   dtSet.components(yr, month, day, hr, minute, sec, msec);
   bool match = (2016 == yr) && (11 == month) && (5 == day) &&
@@ -98,11 +100,11 @@ void verifySerialize()
   dt1Def->setEnableCalendarPopup(false);
 
   // Set default value
-  sa::DateTimeZonePair dtz;
-  sa::DateTime dt;
+  smtk::common::DateTimeZonePair dtz;
+  smtk::common::DateTime dt;
   dt.setComponents(2016, 11, 10, 14, 18, 0, 0);
   dtz.setDateTime(dt);
-  sa::TimeZone tz;
+  smtk::common::TimeZone tz;
   tz.setRegion("America/Chicago");
   dtz.setTimeZone(tz);
   dt1Def->setDefaultValue(dtz);
@@ -122,11 +124,11 @@ void verifySerialize()
 
   // Set contents of 2nd item
   sa::DateTimeItemPtr dt2Item = att->findDateTime("dt2");
-  sa::DateTime dt2;
+  smtk::common::DateTime dt2;
   dt2.deserialize("19690720T201800");
-  sa::TimeZone tz2;
+  smtk::common::TimeZone tz2;
   tz2.setUTC();
-  sa::DateTimeZonePair dtz2;
+  smtk::common::DateTimeZonePair dtz2;
   dtz2.setDateTime(dt2);
   dtz2.setTimeZone(tz2);
   dt2Item->setValue(dtz2);
@@ -183,33 +185,33 @@ void verifySerialize()
   test(!!dt1ItemInput, "Failed to find datetime item");
   test(dt1ItemInput->isSet(), "Failed to read back that default value is set");
 
-  sa::DateTimeZonePair dtz1Input = dt1ItemInput->value(0);
+  smtk::common::DateTimeZonePair dtz1Input = dt1ItemInput->value(0);
   //std::cout << dtz1Input << std::endl;
 
-  sa::DateTime dt1Input = dtz1Input.dateTime();
+  smtk::common::DateTime dt1Input = dtz1Input.dateTime();
   int yr=-1, month=-1, day=-1, hr=-1, minute=-1, sec=-1, msec=-1;
   dt1Input.components(yr, month, day, hr, minute, sec, msec);
   bool match1 = (2016 == yr) && (11 == month) && (10 == day) &&
     (14 == hr) && (18 == minute) && (0 == sec) && (0 == msec);
   test(match1, "Failed to set 1st item's DateTime");
 
-  sa::TimeZone tz1Input = dtz1Input.timeZone();
+  smtk::common::TimeZone tz1Input = dtz1Input.timeZone();
   test(
     tz1Input.region() == "America/Chicago",
     "Failed to set attribute item TimeZone");
 
   // Check 2nd DateTimeItem
   sa::DateTimeItemPtr dt2ItemInput = inputAtt->findDateTime("dt2");
-  sa::DateTimeZonePair dtz2Input = dt2ItemInput->value(0);
+  smtk::common::DateTimeZonePair dtz2Input = dt2ItemInput->value(0);
 
-  sa::DateTime dt2Input = dtz2Input.dateTime();
+  smtk::common::DateTime dt2Input = dtz2Input.dateTime();
   yr=-1, month=-1, day=-1, hr=-1, minute=-1, sec=-1, msec=-1;
   dt2Input.components(yr, month, day, hr, minute, sec, msec);
   bool match2 = (1969 == yr) && (7 == month) && (20 == day) &&
     (20 == hr) && (18 == minute) && (0 == sec) && (0 == msec);
   test(match2, "Failed to set 2nd item's DateTime");
 
-  sa::TimeZone tz2Input = dtz2Input.timeZone();
+  smtk::common::TimeZone tz2Input = dtz2Input.timeZone();
   test(
     tz2Input.region().empty(),
     "Failed to clear region value for 2nd item's TimeZone");

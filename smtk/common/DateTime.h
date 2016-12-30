@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_attribute_DateTime_h
-#define __smtk_attribute_DateTime_h
+#ifndef __smtk_common_DateTime_h
+#define __smtk_common_DateTime_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h"
@@ -24,7 +24,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 #include <string>
 
 namespace smtk {
-  namespace attribute {
+  namespace common {
 
 class TimeZone;
 
@@ -82,7 +82,7 @@ protected:
   boost::posix_time::ptime m_ptime;
 };
 
-  } // namespace attribute
+  } // namespace common
 } // namespace smtk
 
-#endif // __smtk_attribute_DateTime_h
+#endif // __smtk_common_DateTime_h

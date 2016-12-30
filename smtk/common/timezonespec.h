@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_attribute_timezonespec_h
-#define __smtk_attribute_timezonespec_h
+#ifndef __smtk_common_timezonespec_h
+#define __smtk_common_timezonespec_h
 
 // This file is a hexdump of the boost data_time_zonespec.csv file,
 // which is a database of 380+ time zone names, offsets, DST adjustments, etc.
@@ -17,7 +17,7 @@
 // The date_time_zonespec.csv file is in the boost folder libs/date_time/data
 
 namespace smtk {
-  namespace attribute {
+  namespace common {
 
 // From boost 1.60:
 char timezonespec_csv[] = {
@@ -3012,7 +3012,7 @@ char timezonespec_csv[] = {
 };
 unsigned int timezonespec_csv_len = 35855;
 
-  }  // namespace attribute
+  }  // namespace common
 }  // namespace smtk
 
-#endif  // __smtk_attribute_timezonespec_h
+#endif  // __smtk_common_timezonespec_h

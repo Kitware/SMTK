@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/attribute/DateTime.h"
-#include "smtk/attribute/TimeZone.h"
+#include "smtk/common/DateTime.h"
+#include "smtk/common/TimeZone.h"
 
 #include "boost/date_time/gregorian/gregorian.hpp"
 #include <boost/date_time/local_time/local_time.hpp>
@@ -17,7 +17,7 @@
 #include <exception>
 
 namespace smtk {
-  namespace attribute {
+  namespace common {
 
 //----------------------------------------------------------------------------
 /// Default constructor creates invalid ptime
@@ -194,5 +194,5 @@ bool DateTime::operator>(const DateTime& dt) const
   return this->m_ptime > dt.m_ptime;
 }
 
-  }  // namespace attribute
+  }  // namespace common
 }  // namespace smtk

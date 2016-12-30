@@ -11,11 +11,13 @@
 
 #include "smtk/attribute/DateTimeItemDefinition.h"
 #include "smtk/attribute/DateTimeItem.h"
+
+namespace sc = smtk::common;
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
 DateTimeItemDefinition::DateTimeItemDefinition(const std::string &myName):
-  ValueItemDefinitionTemplate<DateTimeZonePair>(myName),
+  ValueItemDefinitionTemplate<sc::DateTimeZonePair>(myName),
   m_useTimeZone(true), m_useCalendarPopup(true)
 {
 }
@@ -58,7 +60,7 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
   smtk::attribute::DateTimeItemDefinitionPtr newDef =
     smtk::attribute::DateTimeItemDefinition::New(this->name());
 
-  ValueItemDefinitionTemplate<DateTimeZonePair>::copyTo(newDef, info);
+  ValueItemDefinitionTemplate<sc::DateTimeZonePair>::copyTo(newDef, info);
   return newDef;
 }
 //----------------------------------------------------------------------------

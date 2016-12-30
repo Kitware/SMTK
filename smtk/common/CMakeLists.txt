@@ -1,11 +1,14 @@
 # set up sources to build
 set(commonSrcs
+  DateTime.cxx
+  DateTimeZonePair.cxx
   Environment.cxx
   FileLocation.cxx
   Paths.cxx
   Resource.cxx
   ResourceSet.cxx
   StringUtil.cxx
+  TimeZone.cxx
   UUID.cxx
   UUIDGenerator.cxx
   View.cxx
@@ -13,6 +16,8 @@ set(commonSrcs
 
 set(commonHeaders
   CompilerInformation.h
+  DateTime.h
+  DateTimeZonePair.h
   Environment.h
   FileLocation.h
   GeometryUtilities.h
@@ -21,6 +26,7 @@ set(commonHeaders
   Resource.h
   ResourceSet.h
   StringUtil.h
+  TimeZone.h
   UUID.h
   UUIDGenerator.h
   View.h

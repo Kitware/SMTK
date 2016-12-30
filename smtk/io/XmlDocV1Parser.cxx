@@ -19,7 +19,7 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
-#include "smtk/attribute/DateTimeZonePair.h"
+#include "smtk/common/DateTimeZonePair.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/DirectoryItem.h"
@@ -83,10 +83,10 @@ namespace {
   }
 
 //----------------------------------------------------------------------------
-  attribute::DateTimeZonePair getValueFromXMLElement(
-    xml_node &node, attribute::DateTimeZonePair)
+  DateTimeZonePair getValueFromXMLElement(
+    xml_node &node, smtk::common::DateTimeZonePair)
   {
-    attribute::DateTimeZonePair dtz;
+    DateTimeZonePair dtz;
     std::string content = node.text().get();
     dtz.deserialize(content);
     return dtz;
@@ -139,13 +139,13 @@ namespace {
   }
 
 //----------------------------------------------------------------------------
-  std::vector<attribute::DateTimeZonePair> getValueFromXMLElement(
-    xml_node &node, const std::string& sep, std::vector<attribute::DateTimeZonePair>)
+  std::vector<DateTimeZonePair> getValueFromXMLElement(
+    xml_node &node, const std::string& sep, std::vector<smtk::common::DateTimeZonePair>)
   {
-    std::vector<attribute::DateTimeZonePair> result;
+    std::vector<DateTimeZonePair> result;
     std::vector<std::string> vals;
     std::stringstream convert;
-    attribute::DateTimeZonePair val;
+    DateTimeZonePair val;
     vals = smtk::common::StringUtil::split(node.text().get(), sep, false, true);
     std::vector<std::string>::iterator it;
     for (it = vals.begin(); it != vals.end(); ++it)
@@ -1098,7 +1098,7 @@ void XmlDocV1Parser::processDateTimeDef(
 {
   // Process the common value item def stuff
   this->processValueDef(node, idef);
-  processDerivedValueDef<attribute::DateTimeItemDefinitionPtr, attribute::DateTimeZonePair>
+  processDerivedValueDef<attribute::DateTimeItemDefinitionPtr, DateTimeZonePair>
     (node, idef, this->m_logger);
 
 }
@@ -2306,7 +2306,7 @@ void XmlDocV1Parser::processDateTimeItem(
 {
   this->processValueItem(
     node, dynamic_pointer_cast<attribute::ValueItem>(item));
-  processDerivedValue<attribute::DateTimeItemPtr, attribute::DateTimeZonePair>
+  processDerivedValue<attribute::DateTimeItemPtr, DateTimeZonePair>
     (node, item, this->m_system, this->m_itemExpressionInfo, this->m_logger);
 }
 

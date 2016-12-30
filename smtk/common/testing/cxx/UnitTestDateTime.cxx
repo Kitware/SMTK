@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/attribute/DateTime.h"
-#include "smtk/attribute/TimeZone.h"
+#include "smtk/common/DateTime.h"
+#include "smtk/common/TimeZone.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 
@@ -18,7 +18,7 @@ namespace {
 //----------------------------------------------------------------------------
 void verifyTimeZones()
 {
-  smtk::attribute::TimeZone tz;
+  smtk::common::TimeZone tz;
   test(!tz.isSet(), "Failed to recognize unset TimeZone");
   test(tz.setRegion("America/New_York"), "Failed to set TimeZone region");
   test(!tz.setRegion("Invalid"), "Failed to recognize invalid TimeZone region");
@@ -27,7 +27,7 @@ void verifyTimeZones()
 //----------------------------------------------------------------------------
 void verifyConstructors()
 {
-  smtk::attribute::DateTime dtEmpty;
+  smtk::common::DateTime dtEmpty;
   test(!dtEmpty.isSet(), "Failed to recognize invalid state");
 }
 
@@ -35,12 +35,12 @@ void verifyConstructors()
 void verifyParsers()
 {
   // Using DateTime::deserialize():
-  smtk::attribute::DateTime dtInvalid;
+  smtk::common::DateTime dtInvalid;
   dtInvalid.deserialize("");
   test(!dtInvalid.isSet(), "Failed to detect empty (invalid) iso string");
   test(!dtInvalid.deserialize("20160231"), "failed to detect invalid date");
 
-  smtk::attribute::DateTime dtValid;
+  smtk::common::DateTime dtValid;
   const char *validCases[] = {
     "20161026T141559", "Failed to parse iso string",
     "20161026T141559.123456+0200", "Failed to parse iso string with tz offset",
@@ -52,14 +52,14 @@ void verifyParsers()
     test(!!dtValid.isSet(), "Failed to return true for isSet()");
     }
 
-  smtk::attribute::DateTime dtNotSet;
+  smtk::common::DateTime dtNotSet;
   test(
     dtNotSet.deserialize("not-a-date-time"),
     "Failed to parse not-a-date-time");
   test(!dtNotSet.isSet(), "Failed to return isSet() false");
 
   // Using DateTime::parseBoostFormat():
-  smtk::attribute::DateTime dt;
+  smtk::common::DateTime dt;
   dt.parseBoostFormat("2002-01-20 23:59:59.000");
   test(!!dt.isSet(), "Failed to parse basic string");
   dt.parseBoostFormat("2002-01-20 23:59:59.000-02:00");
@@ -74,7 +74,7 @@ void verifyParsers()
 void verifySetGets()
 {
   // Initialize
-  smtk::attribute::DateTime dt;
+  smtk::common::DateTime dt;
   dt.deserialize("20161028T145400.123456");
 
   int yr, month, day, hr, minute, sec, msec;
@@ -112,7 +112,7 @@ void verifySetGets()
   test(msec == msec2, "Failed to get millisecond component");
 
   // Set with time zone
-  smtk::attribute::TimeZone tzCST;
+  smtk::common::TimeZone tzCST;
   tzCST.setPosixString("CST-6");
   test(
     dt.setComponents(yr2, month2, day2, hr2, minute2, sec2, msec2, &tzCST),
@@ -122,7 +122,7 @@ void verifySetGets()
   test(hr == hr2 + 6, "Failed to get hour component for tzCST (set)");
 
   // Get with time zone
-  smtk::attribute::TimeZone tzPST;
+  smtk::common::TimeZone tzPST;
   tzPST.setPosixString("PST-8");
   test(
     dt.components(yr, month, day, hr, minute, sec, msec, &tzPST),
