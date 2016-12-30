@@ -277,7 +277,9 @@ endif(ENABLE_CGNS)
 ################################################################################
 add_subdirectory( src )
 add_subdirectory( itaps )
+if (FALSE)
 add_subdirectory( tools )
+endif ()
 
 ################################################################################
 # Testing Related Settings
