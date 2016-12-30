@@ -10,12 +10,13 @@
 
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 
-#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtAttribute.h"
+#include "smtk/extension/qt/qtCollapsibleGroupWidget.h"
 #include "smtk/extension/qt/qtInstancedView.h"
 #include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtModelView.h"
-#include "smtk/extension/qt/qtCollapsibleGroupWidget.h"
+#include "smtk/extension/qt/qtOperatorView.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -33,7 +34,6 @@
 #include "smtk/io/Logger.h"
 
 #include <QStackedLayout>
-#include <QPushButton>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QFrame>
@@ -67,8 +67,6 @@ public:
   QVBoxLayout* WidgetLayout;
   QPointer<QComboBox> OperationCombo;
   QStackedLayout* OperationsLayout;
-  QPointer<QPushButton> OperateButton;
-  // <operator-name, <opPtr, opUI-parent> >
   QMap<std::string, OperatorInfo > OperatorMap;
   QPointer<qtModelView> ModelView;
   QTextEdit* ResultLog;
@@ -117,21 +115,11 @@ void qtModelOperationWidget::initWidget( )
   this->Internals->OperationCombo = new QComboBox(this);
   this->Internals->OperationCombo->setToolTip("Select an operator");
   this->Internals->OperationsLayout = new QStackedLayout();
-  this->Internals->OperateButton = new QPushButton(this);
-  this->Internals->OperateButton->setText("Apply");
-  QPalette applyPalette = this->Internals->OperateButton->palette();
-  applyPalette.setColor(QPalette::Active, QPalette::Button, QColor(161, 213, 135));
-  applyPalette.setColor(QPalette::Inactive, QPalette::Button, QColor(161, 213, 135));
-  this->Internals->OperateButton->setPalette(applyPalette);
-  this->Internals->OperateButton->setDefault(true);
 
   QHBoxLayout* operatorLayout = new QHBoxLayout();
   operatorLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   this->Internals->OperationCombo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-  this->Internals->OperateButton->setMinimumHeight(32);
-  this->Internals->OperateButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-  operatorLayout->addWidget(this->Internals->OperateButton);
   operatorLayout->addWidget(this->Internals->OperationCombo);
   this->Internals->WidgetLayout->addLayout(operatorLayout);
   this->Internals->WidgetLayout->addLayout(this->Internals->OperationsLayout);
@@ -156,9 +144,6 @@ void qtModelOperationWidget::initWidget( )
   // signals/slots
   QObject::connect(this->Internals->OperationCombo,
     SIGNAL(currentIndexChanged(int)), this, SLOT(onOperationSelected()));
-  QObject::connect(this->Internals->OperateButton,
-    SIGNAL(clicked()), this, SLOT(onOperate()));
-
 }
 
 //-----------------------------------------------------------------------------
@@ -315,7 +300,7 @@ bool qtModelOperationWidget::initOperatorUI(
   // find out what view to use to construct the UI, if none is specified for this op
   // ( meaning if there is no "AttributeTypes" specified in view components' children,
   // or the att->type() is not included in any view "AttributeTypes" ),
-  // use "Instanced" view by default
+  // use "Operator" view by default
   smtk::common::ViewPtr opView;
 
   std::map<std::string, smtk::common::ViewPtr>::const_iterator it;
@@ -343,8 +328,7 @@ bool qtModelOperationWidget::initOperatorUI(
   if(!opView || !uiManager->hasViewConstructor(opView->type()))
     {
     //Lets create a default view for the operator itself
-    opView = smtk::common::View::New("Instanced", brOp->name());
-
+    opView = smtk::common::View::New("Operator", brOp->name());
     smtk::common::View::Component &comp =
       opView->details().addChild("InstancedAttributes").addChild("Att");
     comp.setAttribute("Type", att->type()).setAttribute("Name", att->name());
@@ -368,7 +352,15 @@ bool qtModelOperationWidget::initOperatorUI(
   opInfo.opUiManager = uiManager;
   this->Internals->OperatorMap[opName] = opInfo;
 
-  qtBaseView* theView = uiManager->setSMTKView(opView, opParent, false);
+  OperatorViewInfo opViewInfo(opView, brOp, opParent, uiManager);
+  qtBaseView* theView = uiManager->setSMTKView(opViewInfo, false);
+  auto opViewWidget = dynamic_cast<qtOperatorView *>(theView);
+  if (opViewWidget)
+    {
+    QObject::connect(opViewWidget, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)),
+		     this, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)));
+    }
+
   theView->requestModelEntityAssociation();
 
   this->Internals->OperatorMap[opName].opUiView = theView;

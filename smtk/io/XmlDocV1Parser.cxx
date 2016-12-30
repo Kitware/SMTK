@@ -978,7 +978,6 @@ void XmlDocV1Parser::processModelEntityDef(pugi::xml_node &node,
   xml_attribute xatt;
   int i;
   this->processItemDef(node, idef);
-
   mmask = node.child("MembershipMask");
   if (mmask)
     {

@@ -165,32 +165,45 @@ bool ModelEntityItem::setValue(std::size_t i, const smtk::model::EntityRef& val)
 
 bool ModelEntityItem::appendValue(const smtk::model::EntityRef& val)
 {
-  // First - are there unset values waiting to be set?
-  std::size_t n = this->numberOfValues();
-  for (std::size_t i = 0; i < n; ++i)
-    {
-    if (!this->isSet(i))
-      {
-      return this->setValue(i, val);
-      }
-    }
-  // Second - are we allowed to change the number of values?
+  // First - is this value valid?
   const ModelEntityItemDefinition* def =
     static_cast<const ModelEntityItemDefinition *>(this->definition().get());
+  if (!def->isValueValid(val))
+    {
+    return false;
+    }
+
+  // Second - is the value already in the item?
+  std::size_t emptyIndex, n = this->numberOfValues();
+  bool foundEmpty = false;
+  for (std::size_t i = 0; i < n; ++i)
+    {
+      if (this->isSet(i) && (this->value(i).entity() == val.entity()))
+	{
+	  return true;
+	}
+      if (!this->isSet(i))
+      {
+	foundEmpty = true;
+	emptyIndex = i;
+      }
+    }
+  // If not, was there a space available?
+  if (foundEmpty)
+    {
+      return this->setValue(emptyIndex, val);
+    }
+  // Finally - are we allowed to change the number of values?
   if (
     (def->isExtensible() && def->maxNumberOfValues() && this->m_values.size() >= def->maxNumberOfValues()) ||
     (!def->isExtensible() && this->m_values.size() >= def->numberOfRequiredValues()))
     {
-    // The maximum number of values is fixed
+    // The number of values is fixed or we reached the max number of items
     return false;
     }
 
-  if (def->isValueValid(val))
-    {
-    this->m_values.push_back(val);
-    return true;
-    }
-  return false;
+  this->m_values.push_back(val);
+  return true;
 }
 
 bool ModelEntityItem::removeValue(std::size_t i)

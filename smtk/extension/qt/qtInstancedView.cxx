@@ -179,6 +179,7 @@ void qtInstancedView::updateAttributeData()
           {
           this->Widget->layout()->addWidget(attInstance->widget());
           }
+	QObject::connect(attInstance, SIGNAL(modified()), this, SIGNAL(modified()));
         }
       }
     }
@@ -194,6 +195,19 @@ void qtInstancedView::showAdvanceLevelOverlay(bool show)
       }
     }
   this->qtBaseView::showAdvanceLevelOverlay(show);
+}
+
+//----------------------------------------------------------------------------
+bool qtInstancedView::isValid() const
+{
+  foreach(qtAttribute* att, this->Internals->AttInstances)
+    {
+      if(!att->attribute()->isValid())
+      {
+      return false;
+      }
+    }
+  return true;
 }
 
 //----------------------------------------------------------------------------

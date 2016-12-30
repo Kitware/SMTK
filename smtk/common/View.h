@@ -50,6 +50,7 @@ namespace smtk
         Component &setContents(const std::string &c);
 
         Component &setAttribute(const std::string &attname, const std::string &value);
+        Component &unsetAttribute(const std::string &attname);
 
         //Description:
         // Returns true if the component has an attribute called name and will
@@ -70,6 +71,8 @@ namespace smtk
         {return this->m_attributes;}
 
         Component &addChild(const std::string &childName);
+
+        void copyContents(const Component &comp);
 
         std::size_t numberOfChildren() const
         { return this->m_children.size();}
@@ -95,6 +98,11 @@ namespace smtk
 
       ~View();
 
+      // Copy the contents of one View into another - this View will be the same as
+      // v with the exception of its title and type
+      #ifndef SHIBOKEN_SKIP
+      void copyContents(const View &v);
+      #endif
       const std::string &title() const
       {return this->m_title;}
 

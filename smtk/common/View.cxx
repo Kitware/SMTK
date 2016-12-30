@@ -118,6 +118,13 @@ namespace smtk {
           return *this;
         }
 //----------------------------------------------------------------------------
+    View::Component &
+    View::Component::unsetAttribute(const std::string &attname)
+        {
+          this->m_attributes.erase(attname);
+          return *this;
+        }
+//----------------------------------------------------------------------------
     View::Component &View::Component::addChild(const std::string &childName)
     {
       this->m_children.push_back(Component(childName));
@@ -138,6 +145,18 @@ namespace smtk {
     }
 
 //----------------------------------------------------------------------------
+    void View::Component::copyContents(const Component &comp)
+    {
+      this->m_name = comp.m_name;
+      this->m_attributes = comp.m_attributes;
+      this->m_contents = comp.m_contents;
+      for (const Component& child : comp.m_children)
+	{
+	Component &myChild = this->addChild(child.name());
+	myChild.copyContents(child);
+	}
+    }
+//----------------------------------------------------------------------------
     View::View(const std::string &myType, const std::string &myTitle):
       m_title(myTitle), m_type(myType), m_details("Details")
     {
@@ -146,6 +165,13 @@ namespace smtk {
 //----------------------------------------------------------------------------
     View::~View()
     {
+    }
+
+//----------------------------------------------------------------------------
+    void View::copyContents(const View &view)
+    {
+      this->m_iconName = view.m_iconName;
+      this->m_details.copyContents(view.m_details);
     }
 
 //----------------------------------------------------------------------------

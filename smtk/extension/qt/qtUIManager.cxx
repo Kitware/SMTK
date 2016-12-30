@@ -19,6 +19,7 @@
 #include "smtk/extension/qt/qtInputsItem.h"
 #include "smtk/extension/qt/qtAttributeView.h"
 #include "smtk/extension/qt/qtInstancedView.h"
+#include "smtk/extension/qt/qtOperatorView.h"
 #include "smtk/extension/qt/qtSimpleExpressionView.h"
 #include "smtk/extension/qt/qtSMTKUtilities.h"
 #include "smtk/extension/qt/qtModelView.h"
@@ -101,6 +102,7 @@ qtUIManager::qtUIManager(smtk::attribute::System &system) :
   this->registerViewConstructor("Attribute", qtAttributeView::createViewWidget);
   this->registerViewConstructor("Group", qtGroupView::createViewWidget);
   this->registerViewConstructor("Instanced", qtInstancedView::createViewWidget);
+  this->registerViewConstructor("Operator", qtOperatorView::createViewWidget);
   this->registerViewConstructor("SimpleExpression", qtSimpleExpressionView::createViewWidget);
 
   // register view constructors coming from plugins.
@@ -140,6 +142,44 @@ void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
     }
 }
 
+//----------------------------------------------------------------------------
+void qtUIManager::initializeUI(const smtk::extension::ViewInfo &viewInfo,
+			       bool useInternalFileBrowser)
+{
+  this->m_useInternalFileBrowser = useInternalFileBrowser;
+  this->m_parentWidget = viewInfo.m_parent;
+  if(this->m_topView)
+    {
+    delete this->m_topView;
+    this->m_topView = NULL;
+    }
+
+  if(!this->m_smtkView)
+    {
+    return;
+    }
+  this->internalInitialize();
+
+  this->m_topView = this->createView(viewInfo);
+  if (this->m_topView)
+    {
+    this->m_topView->showAdvanceLevel(this->m_currentAdvLevel);
+    }
+}
+
+//----------------------------------------------------------------------------
+qtBaseView *qtUIManager::setSMTKView(const smtk::extension::ViewInfo &viewInfo,
+                                     bool useInternalFileBrowser)
+{
+  if ((this->m_smtkView == viewInfo.m_view) && (this->m_parentWidget == viewInfo.m_parent) &&
+      (this->m_useInternalFileBrowser == useInternalFileBrowser))
+    {
+    return this->m_topView;
+    }
+  this->m_smtkView = viewInfo.m_view;
+  this->initializeUI(viewInfo, this->m_useInternalFileBrowser);
+  return this->m_topView;
+}
 //----------------------------------------------------------------------------
 qtBaseView *qtUIManager::setSMTKView(smtk::common::ViewPtr v)
 {
