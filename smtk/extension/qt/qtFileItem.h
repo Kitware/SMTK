@@ -20,6 +20,7 @@
 
 class qtFileItemInternals;
 class QBoxLayout;
+class QWidget;
 
 namespace smtk
 {
@@ -52,6 +53,7 @@ namespace smtk
       virtual void updateItemData();
       virtual void onAddNewValue();
       virtual void onRemoveValue();
+      virtual void setActiveField(QWidget*);
 
     protected:
       virtual void createWidget();
