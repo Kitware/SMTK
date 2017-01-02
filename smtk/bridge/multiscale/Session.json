@@ -1,0 +1,12 @@
+{
+  "kernel": "multiscale",
+  "engines": [
+    {
+      "name": "default",
+      "filetypes": [
+	".rst,RST (DEFORM-2D V6.0+ Point Tracking Output Data)",
+	".dat,DAT (DEFORM-2D V6.0+ Step File)"
+      ]
+    }
+  ]
+}

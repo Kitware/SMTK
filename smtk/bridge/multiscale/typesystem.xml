@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<typesystem package="@TYPESYSTEM_NAME@">
+
+  @EXTRA_TYPESYSTEMS@
+
+  <!-- Ignore Shiboken notice that Multiscale lives inside SMTK namespace -->
+  <suppress-warning text="Duplicate type entry: 'smtk'"/>
+  <suppress-warning text="namespace 'detail' does not have a type entry"/>
+
+  <!-- Ignore methods that refer directly to internal storage -->
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::SMTK_GROUP_TYPE', unmatched return type 'vtkInformationIntegerKey*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::SMTK_VISIBILITY', unmatched return type 'vtkInformationIntegerKey*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::parentIndex', unmatched parameter type 'vtkDataObject*'"/>
+  <suppress-warning text="skipping field 'Session::m_cpMap' with unmatched type 'std::map&lt;vtkDataObject*,smtk::bridge::multiscale::Session::ParentAndIndex_t&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::EntityHandle::childrenAs', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::EntityHandle::EntityHandle', unmatched parameter type 'vtkDataObject*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::SMTK_PEDIGREE', unmatched return type 'vtkInformationIntegerKey*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::EntityHandle::object', unmatched return type 'T*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::createIODelegate', unmatched return type 'smtk::model::SessionIOPtr'"/>
+  <suppress-warning text="skipping field 'EntityHandle::m_object' with unmatched type 'vtkSmartPointer&lt;vtkDataObject&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::modelOfHandle', unmatched return type 'vtkMultiBlockDataSet*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::parent', unmatched return type 'vtkMultiBlockDataSet*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::EntityHandle::appendChildrenTo', unmatched parameter type 'T&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::SMTK_DIMENSION', unmatched return type 'vtkInformationIntegerKey*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::numberOfModels', unmatched return type 'size_t'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::ensureChildParentMapEntry', unmatched parameter type 'vtkDataObject*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::parentAs', unmatched return type 'T*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::modelOfHandleAs', unmatched return type 'T*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::modelOfHandle', unmatched return type 'vtkDataObject*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::SMTK_CHILDREN', unmatched return type 'vtkInformationObjectBaseVectorKey*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::SMTK_LABEL_VALUE', unmatched return type 'vtkInformationDoubleKey*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::SMTK_OUTER_LABEL', unmatched return type 'vtkInformationIntegerKey*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::parent', unmatched return type 'vtkDataObject*'"/>
+
+  <!-- Ignore Multiscale-specific enums -->
+
+  <!-- Ignore Multiscale-specific enums -->
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::EntityHandle::EntityHandle', unmatched parameter type 'vtkIdType'"/>
+  <suppress-warning text="skipping field 'EntityHandle::entityId' with unmatched type 'vtkIdType'"/>
+  <suppress-warning text="skipping field 'Session::m_models' with unmatched type 'std::vector&lt;vtkSmartPointer&lt;vtkMultiBlockDataSet&gt;&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::create', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::multiscale::Session::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::toBlock', unmatched return type 'T*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::bridge::multiscale::Session::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::multiscale::Session::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::addModel', unmatched parameter type 'vtkSmartPointer&lt;vtkMultiBlockDataSet&gt;&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::multiscale::Session::SMTK_UUID_KEY', unmatched return type 'vtkInformationStringKey*'"/>
+
+
+  <!-- Additional objects to be wrapped when building with Multiscale -->
+  <namespace-type name="smtk" generate = "no">
+    <namespace-type name="bridge" generate = "no">
+      <namespace-type name="multiscale" generate = "yes">
+
+        <object-type name="Session">
+          <include file-name="smtk/bridge/multiscale/Session.h" location="local"/>
+        </object-type>
+
+      </namespace-type>
+    </namespace-type>
+  </namespace-type>
+
+  <value-type template="smtk::shared_ptr" args="smtk::bridge::multiscale::Session">
+  </value-type>
+
+  <!-- Don't wrap methods that take pointers to Multiscale classes.
+       Shiboken improperly scopes classnames in argument
+       lists (e.g., it assumes smtk::model::Shell when ::Shell is
+       specified), making it not only undesirable but impossible
+       to wrap Multiscale pointers.
+  <rejection class="smtk::bridge::multiscale::Session" function-name="addBodyToManager"/>
+    -->
+
+  @EXTRA_OBJECTS@
+
+</typesystem>
