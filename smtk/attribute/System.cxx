@@ -640,7 +640,7 @@ System::copyDefinition(const smtk::attribute::DefinitionPtr sourceDef,
   return newDef;
 }
 //----------------------------------------------------------------------------
-// Copies attribute defintion into this system, returning true if successful
+// Copies attribute definition into this system, returning true if successful
 bool System::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef,
                                  smtk::attribute::ItemDefinition::CopyInfo& info)
 {
@@ -694,6 +694,10 @@ bool System::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef,
   if (sourceDef->isDefaultColorSet())
     {
     newDef->setDefaultColor(sourceDef->defaultColor());
+    }
+  if (sourceDef->associationRule())
+    {
+    newDef->setAssociationRule(sourceDef->associationRule());
     }
   newDef->setAssociationMask(sourceDef->associationMask());
 
