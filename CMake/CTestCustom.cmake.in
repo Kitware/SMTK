@@ -16,6 +16,8 @@ set (CTEST_CUSTOM_WARNING_EXCEPTION
   # is wrong. This confuses shiboken, so we ignore this warning when it comes
   # from shiboken's code generation.
   "WARNING scope not found for symbol:KWIML"
+  # This is to squash an "unused parameter" warning in moab.
+  "VALGRIND_MAKE_VEC_UNDEFINED"
 )
 
 ##------------------------------------------------------------------------------
