@@ -14,12 +14,15 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRefArrangementOps.h"
 #include "smtk/model/Events.h"
+#include "smtk/model/Face.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Tessellation.h"
+#include "smtk/model/Volume.h"
 
 #include <boost/functional/hash.hpp>
+#include <float.h>
 
 #include <algorithm>
 
@@ -445,6 +448,108 @@ EntityRefs EntityRef::boundaryEntities(int ofDimension) const
   return result;
 }
 
+std::vector<double> EntityRef::boundingBox() const
+{
+  std::vector<double> bBox, dummy;
+  // initialize the BBox, following VTK's rule
+  for (int i = 0; i < 6;  i++)
+  {
+    double tmp = (i%2 == 1) ? -DBL_MAX : DBL_MAX;
+    bBox.push_back(tmp);
+    dummy.push_back(tmp);
+  }
+
+  if (this->isCellEntity())
+  {
+    // assume that only volume do not have boundingBox as float property
+    if (this->hasFloatProperty(SMTK_BOUNDING_BOX_PROP)) // vertex/edge/face
+    {
+      smtk::model::FloatList currentBBox(this->floatProperty(SMTK_BOUNDING_BOX_PROP));
+      bBox = this->unionBoundingBox(bBox,currentBBox);
+      return bBox;
+    }
+    else
+    {
+      // loop over children and set bbox
+      EntityRefs children = this->boundaryEntities(this->dimension()-1);
+      for (EntityRefs::iterator child =  children.begin();
+           child != children.end(); ++child)
+      {
+        if (child->hasFloatProperty(SMTK_BOUNDING_BOX_PROP))
+          {bBox = this->unionBoundingBox(bBox,
+                        child->floatProperty(SMTK_BOUNDING_BOX_PROP));}
+      }
+      return bBox;
+    }
+  }
+  else if(this->isModel())
+  {
+    smtk::model::Model model = this->as<Model>();
+    if (!model.isValid())
+      {return bBox;}
+
+    // loop over cells and set bbox
+    CellEntities cellEnts = model.cells();
+    for (CellEntities::iterator cellEnt = cellEnts.begin(); cellEnt !=
+         cellEnts.end(); ++cellEnt)
+    {
+      if(cellEnt->isValid())
+        {bBox = this->unionBoundingBox(bBox, cellEnt->boundingBox());}
+    }
+    // loop over submodels and set bbox
+    Models submodels = model.submodels();
+    for  (Models::iterator subModel = submodels.begin(); subModel != submodels.end();
+          ++subModel)
+    {
+      if (subModel->isValid())
+        {bBox = this->unionBoundingBox(bBox, subModel->boundingBox());}
+    }
+    return bBox;
+
+  }
+  else if(this->isGroup())
+  {
+
+
+    if (this->hasFloatProperty(SMTK_BOUNDING_BOX_PROP)) // exodus session
+    {
+      smtk::model::FloatList currentBBox(this->floatProperty(SMTK_BOUNDING_BOX_PROP));
+      bBox = this->unionBoundingBox(bBox,currentBBox);
+      return bBox;
+    }
+
+    smtk::model::Group group = this->as<Group>();
+    EntityRefs members = group.members<EntityRefs>();
+    for (EntityRefs::iterator member = members.begin(); member != members.end()
+         ; ++member)
+    {
+      if (member->isValid())
+      {
+        bBox = this->unionBoundingBox(bBox, member->boundingBox());
+      }
+    }
+    return bBox;
+  }
+  else
+  {
+    return dummy;
+  }
+
+}
+
+std::vector<double> EntityRef::unionBoundingBox(const std::vector<double> &b1,
+                                                const std::vector<double> &b2) const
+{
+  std::vector<double> resultBBox;
+  resultBBox.push_back(std::min(b1[0],b2[0]));
+  resultBBox.push_back(std::max(b1[1],b2[1]));
+  resultBBox.push_back(std::min(b1[2],b2[2]));
+  resultBBox.push_back(std::max(b1[3],b2[3]));
+  resultBBox.push_back(std::min(b1[4],b2[4]));
+  resultBBox.push_back(std::max(b1[5],b2[5]));
+  return resultBBox;
+
+}
 EntityRefs EntityRef::lowerDimensionalBoundaries(int lowerDimension)
 {
   EntityRefs result;
@@ -641,7 +746,7 @@ int EntityRef::setTessellation(const Tessellation* tess, int analysisMesh)
     {
     int gen;
     try {
-      mgr->setTessellation(this->m_entity, *tess, analysisMesh, &gen);
+      mgr->setTessellationAndBoundingBox(this->m_entity, *tess, analysisMesh, &gen);
     } catch (std::string& badIdMsg) {
       (void)badIdMsg;
       return -1;

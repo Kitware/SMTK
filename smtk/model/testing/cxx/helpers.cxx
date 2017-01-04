@@ -114,7 +114,7 @@ UUIDArray createTet(smtk::model::ManagerPtr sm)
     .pushRelation(uc19)
     .pushRelation(uc20))->first;
 
-  sm->setTessellation(uc21, Tessellation()
+  sm->setTessellationAndBoundingBox(uc21, Tessellation()
     .addCoords(x[0][0], x[0][1], x[0][2])
     .addCoords(x[1][0], x[1][1], x[1][2])
     .addCoords(x[2][0], x[2][1], x[2][2])
@@ -160,7 +160,7 @@ UUIDArray createTet(smtk::model::ManagerPtr sm)
   // Add point coordinates
   for (int i = 0; i < 7; ++i)
     {
-    sm->setTessellation(uids[i],Tessellation().addCoords(x[i][0], x[i][1], x[i][2]));
+    sm->setTessellationAndBoundingBox(uids[i],Tessellation().addCoords(x[i][0], x[i][1], x[i][2]));
     }
 
   // Create vertex-uses

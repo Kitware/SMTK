@@ -1245,7 +1245,7 @@ void pmodel::addFaceTessellation(smtk::model::Face& faceRec)
   smtk::model::Loops outerLoops = faceRec.positiveUse().loops();
   smtk::model::Tessellation blank;
   smtk::model::UUIDsToTessellations::iterator smtkTess =
-    faceRec.manager()->setTessellation(faceRec.entity(), blank);
+    faceRec.manager()->setTessellationAndBoundingBox(faceRec.entity(), blank);
   //std::cout << "Tessellate " << faceRec.name() << "\n";
   for (smtk::model::Loops::iterator lit = outerLoops.begin(); lit != outerLoops.end(); ++lit)
     {
@@ -1407,7 +1407,7 @@ void pmodel::addEdgeTessellation(smtk::model::Edge& edgeRec, internal::edge::Ptr
   smtk::model::Manager::Ptr mgr = edgeRec.manager();
   smtk::model::Tessellation empty;
   UUIDsToTessellations::iterator tessIt =
-    mgr->setTessellation(edgeRec.entity(), empty);
+    mgr->setTessellationAndBoundingBox(edgeRec.entity(), empty);
 
   // Now populate the tessellation in place.
   PointSeq::const_iterator ptIt;

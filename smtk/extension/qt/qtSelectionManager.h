@@ -17,7 +17,6 @@
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtItem.h"
-//#include "smtk/extension/qt/qtEntityItemModel.h"
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"
@@ -44,7 +43,7 @@ class SMTKQTEXT_EXPORT qtSelectionManager : public QObject
     // Broadcast selection to model tree
     // If you do not block signal, both tree and view would be updated
     void broadcastToModelTree(const smtk::common::UUIDs &
-       selEntities, const smtk::mesh::MeshSets &selMeshes, bool blocksignals) const;
+   selEntities, const smtk::mesh::MeshSets &selMeshes, bool blocksignals) const;
 
     // Description
     // Broadcast selection to render view
