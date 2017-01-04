@@ -551,7 +551,7 @@ if __name__ == '__main__':
                             default="")
 
     arg_parser.add_argument('-d','--declaration-name',
-                            help='<Required> names of C++ classes and functions',
+                            help='names of C++ classes and functions',
                             default="")
 
     arg_parser.add_argument('-i','--input',
