@@ -10,4 +10,4 @@
 #
 #=============================================================================
 
-from smtkPybindIOVTK import *
+from smtkPybindModelRemus import *

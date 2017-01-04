@@ -12,6 +12,10 @@
 import os, sys
 import unittest
 import smtk
+if smtk.wrappingProtocol() == 'pybind11':
+    import smtk.model
+    import smtk.model.remus
+    import smtk.bridge.discrete
 import smtk.testing
 from smtk.simple import *
 
