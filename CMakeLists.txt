@@ -295,7 +295,7 @@ add_subdirectory(thirdparty)
 if(SMTK_ENABLE_PYTHON_WRAPPING)
   if(SMTK_USE_PYBIND11)
     find_package(PythonLibs REQUIRED)
- 
+
     set(SMTK_PYBIND11_FLAGS " ")
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR
        CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR
@@ -423,9 +423,9 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
 
     # Add the path to the build tree's compiled modules.
     list(APPEND smtk_pythonpaths
-      "${CMAKE_BINARY_DIR}${envsep}${CMAKE_BINARY_DIR}/lib")
+      "${PROJECT_BINARY_DIR}${envsep}${PROJECT_BINARY_DIR}/lib")
     list(APPEND smtk_libpaths
-      "${CMAKE_BINARY_DIR}/lib")
+      "${PROJECT_BINARY_DIR}/lib")
     if (CMAKE_RUNTIME_OUTPUT_DIRECTORY)
       list(APPEND smtk_libpaths
         "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
