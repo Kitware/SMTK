@@ -29,6 +29,7 @@
 #include <QTextEdit>
 #include <QComboBox>
 #include <QToolButton>
+#include <QSignalMapper>
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DirectoryItem.h"
@@ -65,6 +66,7 @@ public:
 
   // for extensible items
   QMap<QToolButton*, QPair<QPointer<QLayout>, QPointer<QWidget> > > ExtensibleMap;
+  QPointer<QSignalMapper> SignalMapper;
   QList<QToolButton*> MinusButtonIndices;
   QPointer<QToolButton> AddItemButton;
 };
@@ -77,6 +79,7 @@ qtFileItem::qtFileItem(
   this->Internals = new qtFileItemInternals;
   this->Internals->IsDirectory =
     (dataObj->type() == smtk::attribute::Item::DIRECTORY);
+  this->Internals->SignalMapper = new QSignalMapper();
   this->IsLeafItem = true;
   this->Internals->VectorItemOrient = enVectorItemOrient;
   this->createWidget();
@@ -181,9 +184,9 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   QVariant vdata;
   vdata.setValue(static_cast<void*>(fileTextWidget));
   this->setProperty("DataItem", vdata);
-
   QVariant vdata1(elementIdx);
   fileTextWidget->setProperty("ElementIndex", vdata1);
+
   this->updateFileComboList(valText);
 
   if(fileCombo)
@@ -191,18 +194,50 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   else if(lineEdit)
     lineEdit->setText(valText);
 
+  QObject::connect(fileBrowserButton, SIGNAL(clicked()),
+                   this->Internals->SignalMapper, SLOT(map()));
+  this->Internals->SignalMapper->setMapping(fileBrowserButton,
+                                            fileBrowserButton);
+
+  // We use a QSignalMapper here to connect our signal, which comes from one of
+  // potentially several lineEdits, fileCombos or fileBrowserButtons, to our
+  // slot, which is the method setActiveField(QWidget*). This way,
+  // setActiveField can tag the appropriate field to be used within
+  // onInputValueChanged(). When we depricate Qt4 in favor of Qt5, this may be
+  // handled more elegantly using lambda expressions as slots.
+
   if(lineEdit)
+    {
+    QObject::connect(lineEdit, SIGNAL(textChanged(const QString &)),
+                     this->Internals->SignalMapper, SLOT(map()));
+    this->Internals->SignalMapper->setMapping(lineEdit, lineEdit);
+    QObject::connect(this->Internals->SignalMapper, SIGNAL(mapped(QWidget*)),
+                     this, SLOT(setActiveField(QWidget*)));
     QObject::connect(lineEdit, SIGNAL(textChanged(const QString &)),
       this, SLOT(onInputValueChanged()));
+    this->Internals->SignalMapper->setMapping(fileBrowserButton, lineEdit);
+    }
   else if(fileCombo)
     {
+    QObject::connect(fileCombo, SIGNAL(textChanged(const QString &)),
+                     this->Internals->SignalMapper, SLOT(map()));
+    QObject::connect(fileCombo, SIGNAL(currentIndexChanged(int)),
+                     this->Internals->SignalMapper, SLOT(map()));
+    this->Internals->SignalMapper->setMapping(fileCombo, fileCombo);
+    QObject::connect(this->Internals->SignalMapper, SIGNAL(mapped(QWidget*)),
+                     this, SLOT(setActiveField(QWidget*)));
+
     QObject::connect(fileCombo, SIGNAL(editTextChanged(const QString &)),
       this, SLOT(onInputValueChanged()));
     QObject::connect(fileCombo, SIGNAL(currentIndexChanged(int)),
       this, SLOT(onInputValueChanged()));
+    this->Internals->SignalMapper->setMapping(fileBrowserButton, fileCombo);
     }
+
+  QObject::connect(this->Internals->SignalMapper, SIGNAL(mapped(QWidget*)),
+                   this, SLOT(setActiveField(QWidget*)));
   QObject::connect(fileBrowserButton, SIGNAL(clicked()),
-    this, SLOT(onLaunchFileBrowser()));
+                   this, SLOT(onLaunchFileBrowser()));
 
   return frame;
 }
@@ -651,7 +686,7 @@ void qtFileItem::onAddNewValue()
 //      this->Internals->EntryFrame->layout());
     this->addInputEditor(static_cast<int>(item->numberOfValues()) - 1);
     emit this->modified();
- 
+
     }
 }
 
@@ -692,8 +727,16 @@ void qtFileItem::onRemoveValue()
 
   item->removeValue(gIdx);
   emit this->modified();
- 
+
   this->updateExtensibleState();
+}
+
+//----------------------------------------------------------------------------
+void qtFileItem::setActiveField(QWidget* activeField)
+{
+  QVariant vdata;
+  vdata.setValue(static_cast<void*>(activeField));
+  this->setProperty("DataItem", vdata);
 }
 
 //----------------------------------------------------------------------------
