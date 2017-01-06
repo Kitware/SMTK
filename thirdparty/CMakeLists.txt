@@ -1,6 +1,11 @@
 add_subdirectory(cJSON)
 
 if(SMTK_USE_PYBIND11)
+  # by including the correct python cmake scripts before adding pybind11, we
+  # work around pybind11's custom python cmake scripts without having to patch
+  # pybind11.
+  find_package(PythonInterp REQUIRED)
+  find_package(PythonLibs REQUIRED)
   add_subdirectory(pybind11)
 endif()
 
