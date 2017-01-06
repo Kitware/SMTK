@@ -96,6 +96,7 @@ namespace moab {
 
 template <typename T> inline 
 void VALGRIND_MAKE_VEC_UNDEFINED(std::vector<T>& v) {
+  (void)v;
   (void)VALGRIND_MAKE_MEM_UNDEFINED(&v[0], v.size() * sizeof(T));
 }
 
