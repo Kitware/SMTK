@@ -17,6 +17,9 @@
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/DateTimeItem.h"
+#include "smtk/attribute/DateTimeItemDefinition.h"
+#include "smtk/common/DateTimeZonePair.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/DirectoryItem.h"
@@ -80,6 +83,16 @@ namespace {
   }
 
 //----------------------------------------------------------------------------
+  DateTimeZonePair getValueFromXMLElement(
+    xml_node &node, smtk::common::DateTimeZonePair)
+  {
+    DateTimeZonePair dtz;
+    std::string content = node.text().get();
+    dtz.deserialize(content);
+    return dtz;
+  }
+
+//----------------------------------------------------------------------------
   std::vector<int> getValueFromXMLElement(xml_node &node, const std::string& sep, std::vector<int>)
   {
     std::vector<int> result;
@@ -123,6 +136,26 @@ namespace {
     std::vector<std::string> vals;
     vals = smtk::common::StringUtil::split(node.text().get(), sep, false, false);
     return vals;
+  }
+
+//----------------------------------------------------------------------------
+  std::vector<DateTimeZonePair> getValueFromXMLElement(
+    xml_node &node, const std::string& sep, std::vector<smtk::common::DateTimeZonePair>)
+  {
+    std::vector<DateTimeZonePair> result;
+    std::vector<std::string> vals;
+    std::stringstream convert;
+    DateTimeZonePair val;
+    vals = smtk::common::StringUtil::split(node.text().get(), sep, false, true);
+    std::vector<std::string>::iterator it;
+    for (it = vals.begin(); it != vals.end(); ++it)
+      {
+      convert.str(*it);
+      convert >> val;
+      result.push_back(val);
+      convert.clear();
+      }
+    return result;
   }
 
 //----------------------------------------------------------------------------
@@ -861,6 +894,12 @@ void XmlDocV1Parser::createDefinition(xml_node &defNode)
         idef = def->addItemDefinition<smtk::attribute::MeshItemDefinition>(itemName);
         this->processMeshEntityDef(node, smtk::dynamic_pointer_cast<smtk::attribute::MeshItemDefinition>(idef));
         break;
+      case smtk::attribute::Item::DATE_TIME:
+        idef = def->addItemDefinition<smtk::attribute::DateTimeItemDefinition>(itemName);
+        this->processDateTimeDef(
+          node, smtk::dynamic_pointer_cast<smtk::attribute::DateTimeItemDefinition>(idef));
+        break;
+
     default:
       smtkErrorMacro(this->m_logger, "Unsupported Item definition Type: "
                      << node.name()
@@ -1051,6 +1090,17 @@ void XmlDocV1Parser::processMeshEntityDef(pugi::xml_node &node,
   smtkWarningMacro(this->m_logger,
                  "The Mesh Entity defs should only be availabe starting Attribute Version 2 Format"
                  << idef->name());
+}
+//----------------------------------------------------------------------------
+void XmlDocV1Parser::processDateTimeDef(
+  pugi::xml_node &node,
+  attribute::DateTimeItemDefinitionPtr idef)
+{
+  // Process the common value item def stuff
+  this->processValueDef(node, idef);
+  processDerivedValueDef<attribute::DateTimeItemDefinitionPtr, DateTimeZonePair>
+    (node, idef, this->m_logger);
+
 }
 
 //----------------------------------------------------------------------------
@@ -1902,6 +1952,10 @@ void XmlDocV1Parser::processItem(xml_node &node,
     case smtk::attribute::Item::MESH_ENTITY:
       this->processMeshEntityItem(node, smtk::dynamic_pointer_cast<smtk::attribute::MeshItem>(item));
       break;
+    case smtk::attribute::Item::DATE_TIME:
+      this->processDateTimeItem(
+        node, smtk::dynamic_pointer_cast<smtk::attribute::DateTimeItem>(item));
+      break;
     case smtk::attribute::Item::VOID:
       // Nothing to do!
       break;
@@ -2245,6 +2299,15 @@ void XmlDocV1Parser::processMeshEntityItem(pugi::xml_node &node,
   smtkWarningMacro(this->m_logger,
                  "All Mesh Entity Items will be ignored for Attribute Version 1 Format"
                  << item->name());
+}
+//----------------------------------------------------------------------------
+void XmlDocV1Parser::processDateTimeItem(
+  pugi::xml_node &node, attribute::DateTimeItemPtr item)
+{
+  this->processValueItem(
+    node, dynamic_pointer_cast<attribute::ValueItem>(item));
+  processDerivedValue<attribute::DateTimeItemPtr, DateTimeZonePair>
+    (node, item, this->m_system, this->m_itemExpressionInfo, this->m_logger);
 }
 
 //----------------------------------------------------------------------------

@@ -148,6 +148,11 @@ namespace smtk
       VoidItemPtr findVoid(const std::string& name);
       ConstVoidItemPtr findVoid(const std::string& name) const;
 
+#ifndef SHIBOKEN_SKIP
+      DateTimeItemPtr findDateTime(const std::string& name);
+      ConstDateTimeItemPtr findDateTime(const std::string& name) const;
+#endif
+
       void references(std::vector<smtk::attribute::ItemPtr> &list) const;
 
       ConstModelEntityItemPtr associations() const { return this->m_associations; }

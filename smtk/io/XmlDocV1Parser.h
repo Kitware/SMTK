@@ -129,6 +129,12 @@ namespace smtk
                           attribute::MeshSelectionItemPtr item);
       virtual void processMeshSelectionDef(pugi::xml_node &node,
                             smtk::attribute::MeshSelectionItemDefinitionPtr idef);
+      virtual void processDateTimeItem(
+        pugi::xml_node &node,
+        smtk::attribute::DateTimeItemPtr item);
+      virtual void processDateTimeDef(
+        pugi::xml_node &node,
+        smtk::attribute::DateTimeItemDefinitionPtr idef);
       void processValueItem(pugi::xml_node &node,
                              smtk::attribute::ValueItemPtr item);
       void processValueDef(pugi::xml_node &node,

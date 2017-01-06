@@ -12,6 +12,7 @@
 #include "smtk/io/Logger.h"
 #include "smtk/io/XmlDocV1Parser.h"
 #include "smtk/io/XmlDocV2Parser.h"
+#include "smtk/io/XmlDocV3Parser.h"
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
 #include <algorithm>
@@ -39,6 +40,12 @@ pugi::xml_node Internal_getRootNode(pugi::xml_document &doc)
     {
     return XmlDocV2Parser::getRootNode(doc);
     }
+
+  if (XmlDocV3Parser::canParse(doc))
+    {
+    return XmlDocV3Parser::getRootNode(doc);
+    }
+
   pugi::xml_node temp; // no node found
   return temp;
 }
@@ -157,6 +164,13 @@ void Internal_parseXml(smtk::attribute::System &system,
   else if (XmlDocV2Parser::canParse(root))
     {
     XmlDocV2Parser theReader(system);
+    theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
+    theReader.process(root);
+    logger.append(theReader.messageLog());
+    }
+  else if (XmlDocV3Parser::canParse(root))
+    {
+    XmlDocV3Parser theReader(system);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
     theReader.process(root);
     logger.append(theReader.messageLog());

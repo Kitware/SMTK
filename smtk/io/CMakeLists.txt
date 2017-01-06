@@ -11,7 +11,8 @@ set(ioSrcs
   ResourceSetWriter.cxx
   XmlDocV1Parser.cxx
   XmlDocV2Parser.cxx
-  XmlV2StringWriter.cxx
+  XmlDocV3Parser.cxx
+  XmlV3StringWriter.cxx
 )
 
 set(ioHeaders
@@ -26,7 +27,7 @@ set(ioHeaders
   ResourceSetWriter.h
   #XmlDocV1Parser.h
   XmlDocV2Parser.h
-  XmlV2StringWriter.h
+  XmlV3StringWriter.h
 )
 
 # mesh-related I/O

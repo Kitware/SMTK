@@ -47,3 +47,17 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
     add_test(NAME ${tst} COMMAND ${tst} ${${tst}_ARGS})
   endforeach()
 endif()
+
+################################################################################
+# New tests using smtk test harness
+################################################################################
+
+set(unit_tests
+  UnitTestDateTimeItem.cxx
+)
+
+smtk_unit_tests(
+  Label "Attribute"
+  SOURCES ${unit_tests}
+  LIBRARIES smtkCore ${Boost_LIBRARIES}
+)
