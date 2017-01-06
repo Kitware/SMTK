@@ -123,10 +123,6 @@ ModelEntityItemDefinitionPtr Definition::associationRule() const
     Definition* self = const_cast<Definition*>(this);
     self->m_associationRule = ModelEntityItemDefinition::New(assocName.str());
     self->m_associationRule->setMembershipMask(0); // nothing allowed by default.
-    // By default, create associations so that once the mask is set
-    // there is no limit on the number of entities that may be associated:
-    self->m_associationRule->setIsExtensible(true);
-    self->m_associationRule->setMaxNumberOfValues(0);
     }
   return this->m_associationRule;
 }

@@ -31,8 +31,9 @@ namespace smtk
     class qtItem;
 
     // This struct is used to initialize qtView-based classes
-    struct SMTKQTEXT_EXPORT ViewInfo
+    class SMTKQTEXT_EXPORT ViewInfo
     {
+    public:
       ViewInfo(smtk::common::ViewPtr view, QWidget* parent, qtUIManager* uiman):
         m_view(view), m_parent(parent), m_UIManager(uiman){}
       
@@ -41,6 +42,7 @@ namespace smtk
         m_view(view), m_parent(parent), m_UIManager(uiman), m_layoutDict(layoutDict){}
       
       ViewInfo() {}
+      virtual ~ViewInfo() {}
       
       smtk::common::ViewPtr m_view; // View Definition
       QWidget *m_parent; // Parent Widget of the View

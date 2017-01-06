@@ -1252,7 +1252,7 @@ QColor internal_convertColor(const FloatList& rgba)
   // alpha can't be zero
   alpha = alpha == 0. ? 1.0 : alpha;
   return ncomp >= 3 ?
-    QColor::fromRgbF(rgba[0], rgba[1], rgba[2], alpha) : QColor(); 
+    QColor::fromRgbF(rgba[0], rgba[1], rgba[2], alpha) : QColor();
 }
 
 //----------------------------------------------------------------------------
@@ -1541,7 +1541,7 @@ void qtModelView::updateWithOperatorResult(
       qmodel->updateWithOperatorResult(sessIdx, result);
       this->setExpanded(sessIdx, true);
 
-      // if entities get 
+      // if entities get
       smtk::attribute::ModelEntityItem::Ptr remEnts =
         result->findModelEntity("expunged");
       if(remEnts && remEnts->numberOfValues() > 0)

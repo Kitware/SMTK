@@ -53,8 +53,12 @@ namespace smtk
       virtual ~qtUIManager();
 
       void initializeUI(QWidget* pWidget, bool useInternalFileBrowser=false);
+      void initializeUI(const smtk::extension::ViewInfo &v,
+			bool useInternalFileBrowser=false);
       qtBaseView *setSMTKView(smtk::common::ViewPtr v);
       qtBaseView *setSMTKView(smtk::common::ViewPtr v, QWidget* pWidget,
+                              bool useInternalFileBrowser=false);
+      qtBaseView *setSMTKView(const smtk::extension::ViewInfo &v,
                               bool useInternalFileBrowser=false);
       smtk::common::ViewPtr smtkView() const
       {return this->m_smtkView;}

@@ -72,7 +72,10 @@ class TestExodusSession(smtk.testing.TestCase):
     asys = smtk.attribute.System()
     adef = asys.createDefinition('testDef')
     adef.setAssociationMask(int(smtk.model.GROUP_ENTITY))
+    adef.associationRule().setNumberOfRequiredValues(1)
+    self.assertEqual(adef.associationRule().numberOfRequiredValues(), 1)
     attr = asys.createAttribute(adef.type())
+
     self.assertTrue(attr.associateEntity(someGroup),
         'Could not associate group to attribute');
     self.assertEqual(someGroup.attributes(), set([attr.id()]),

@@ -15,6 +15,7 @@ set(QAttrLibSrcs
   qtGroupView.cxx
   qtAttributeView.cxx
   qtInstancedView.cxx
+  qtOperatorView.cxx
   #qtModelView.cxx
   qtSimpleExpressionView.cxx
   qtFileItem.cxx
@@ -63,6 +64,7 @@ set(QAttrLibMocHeaders
   qtGroupView.h
   qtAttributeView.h
   qtInstancedView.h
+  qtOperatorView.h
   #qtModelView.h
   qtSimpleExpressionView.h
   qtFileItem.h

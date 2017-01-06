@@ -34,12 +34,18 @@ namespace smtk
 
       qtInstancedView(const ViewInfo &info);
       virtual ~qtInstancedView();
+      // Returns true if all attributes in the view are valid
+      bool isValid() const;
 
     public slots:
       virtual void showAdvanceLevelOverlay(bool show);
       virtual void requestModelEntityAssociation();
       virtual void onShowCategory()
        { this->updateAttributeData(); }
+
+    signals:
+      // emitted when an attribute is modified
+      void modified();
 
     protected:
       virtual void updateAttributeData();
