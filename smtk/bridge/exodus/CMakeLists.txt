@@ -51,6 +51,7 @@ set(import_vtk_depends
 target_link_libraries(smtkExodusSession
   LINK_PUBLIC
     smtkCore
+    smtkIOVTK
     vtkCommonDataModel
   LINK_PRIVATE
     ${import_vtk_depends}
