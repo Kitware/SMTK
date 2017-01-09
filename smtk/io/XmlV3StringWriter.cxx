@@ -83,7 +83,10 @@ namespace {
 //----------------------------------------------------------------------------
   const char *getValueForXMLElement(const smtk::common::DateTimeZonePair& v)
   {
-    return v.serialize().c_str();
+    // Use static string to preserve value when this function goes out of scope
+    static std::string result;
+    result = v.serialize();
+    return result.c_str();
   }
 
 //----------------------------------------------------------------------------
