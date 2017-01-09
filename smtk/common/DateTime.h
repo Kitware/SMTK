@@ -79,7 +79,9 @@ public:
   bool operator>(const DateTime& dt) const;
 
 protected:
+#ifndef SHIBOKEN_SKIP
   boost::posix_time::ptime m_ptime;
+#endif
 };
 
   } // namespace common
