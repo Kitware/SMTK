@@ -24,6 +24,7 @@ set(meshSrcs
   moab/Allocator.cxx
   moab/CellTypeToType.cxx
   moab/BufferedCellAllocator.cxx
+  moab/IncrementalAllocator.cxx
   moab/Interface.cxx
   moab/ConnectivityStorage.cxx
   moab/MergeMeshVertices.cxx

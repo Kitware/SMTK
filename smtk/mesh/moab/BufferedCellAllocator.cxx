@@ -61,7 +61,7 @@ bool BufferedCellAllocator::reserveNumberOfCoordinates(std::size_t nCoordinates)
 }
 
 //----------------------------------------------------------------------------
-bool BufferedCellAllocator::addCoordinate(std::size_t coord, double* xyz)
+bool BufferedCellAllocator::setCoordinate(std::size_t coord, double* xyz)
 {
   if (!this->m_validState) { return false; }
   assert(coord < this->m_nCoordinates);

@@ -34,7 +34,7 @@ namespace moab {
 //----------------------------------------------------------------------------
 class SMTKCORE_EXPORT BufferedCellAllocator :
     public smtk::mesh::BufferedCellAllocator,
-    private smtk::mesh::moab::Allocator
+    protected smtk::mesh::moab::Allocator
 {
 public:
   BufferedCellAllocator( ::moab::Interface* interface );
@@ -42,7 +42,7 @@ public:
   virtual ~BufferedCellAllocator();
 
   bool reserveNumberOfCoordinates(std::size_t nCoordinates);
-  bool addCoordinate(std::size_t coord, double* xyz);
+  bool setCoordinate(std::size_t coord, double* xyz);
 
   bool addCell(smtk::mesh::CellType ctype, long long int* pointIds,
                std::size_t nCoordinates = 0)
@@ -58,10 +58,7 @@ public:
 
   smtk::mesh::HandleRange cells() { return this->m_cells; }
 
-private:
-  BufferedCellAllocator( const BufferedCellAllocator& other ); //blank since we are used by shared_ptr
-  BufferedCellAllocator& operator=( const BufferedCellAllocator& other ); //blank since we are used by shared_ptr
-
+  protected:
   template <typename IntegerType>
   bool addCell(smtk::mesh::CellType ctype,
                IntegerType* pointIds,
@@ -74,6 +71,11 @@ private:
   int m_nCoords;
   std::vector<std::int64_t> m_localConnectivity;
   ::moab::Range m_cells;
+
+private:
+  BufferedCellAllocator( const BufferedCellAllocator& other ); //blank since we are used by shared_ptr
+  BufferedCellAllocator& operator=( const BufferedCellAllocator& other ); //blank since we are used by shared_ptr
+
 };
 
 //----------------------------------------------------------------------------

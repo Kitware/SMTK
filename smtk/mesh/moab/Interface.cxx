@@ -20,6 +20,7 @@
 #include "smtk/mesh/moab/Allocator.h"
 #include "smtk/mesh/moab/BufferedCellAllocator.h"
 #include "smtk/mesh/moab/ConnectivityStorage.h"
+#include "smtk/mesh/moab/IncrementalAllocator.h"
 #include "smtk/mesh/moab/MergeMeshVertices.h"
 #include "smtk/mesh/moab/PointLocatorImpl.h"
 
@@ -271,6 +272,7 @@ Interface::Interface():
 {
   this->m_alloc.reset( new smtk::mesh::moab::Allocator( this->m_iface.get() ) );
   this->m_bcAlloc.reset( new smtk::mesh::moab::BufferedCellAllocator( this->m_iface.get() ) );
+  this->m_iAlloc.reset( new smtk::mesh::moab::IncrementalAllocator( this->m_iface.get() ) );
 }
 
 //----------------------------------------------------------------------------
@@ -299,6 +301,14 @@ smtk::mesh::BufferedCellAllocatorPtr Interface::bufferedCellAllocator()
   //mark us as modified as the caller is going to add something to the database
   this->m_modified = true;
   return this->m_bcAlloc;
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::IncrementalAllocatorPtr Interface::incrementalAllocator()
+{
+  //mark us as modified as the caller is going to add something to the database
+  this->m_modified = true;
+  return this->m_iAlloc;
 }
 
 //----------------------------------------------------------------------------

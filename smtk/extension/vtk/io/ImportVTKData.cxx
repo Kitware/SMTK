@@ -110,7 +110,7 @@ smtk::mesh::HandleRange convertVTKDataSet(
   for (vtkIdType i = 0; i< dataset->GetPoints()->GetNumberOfPoints(); ++i)
     {
     dataset->GetPoints()->GetPoint(i, point);
-    alloc->addCoordinate(i, point);
+    alloc->setCoordinate(i, point);
     }
 
   vtkIdType npts, *pts;
