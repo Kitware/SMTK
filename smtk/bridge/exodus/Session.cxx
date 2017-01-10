@@ -601,7 +601,8 @@ bool Session::addTessellation(
     entityref.manager()->setTessellation(entityref.entity(), tess);
 
   smtk::mesh::CollectionPtr collection =
-    this->manager()->meshes()->collection(entityref.owningModel().entity());
+    this->manager()->meshes()->
+    collection(this->uuidOfHandleObject(this->modelOfHandle(handle)));
   if (collection && collection->isValid())
     {
     smtk::mesh::MeshSet modified = collection->findAssociatedMeshes(entityref);
