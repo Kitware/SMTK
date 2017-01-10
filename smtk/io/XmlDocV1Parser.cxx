@@ -788,7 +788,8 @@ void XmlDocV1Parser::createDefinition(xml_node &defNode)
     def->setIsNodal(xatt.as_bool());
     }
 
-  // Read old-style association mask first.
+  // Read old-style association mask first.  Note that the association is set
+  // as extensible.
   // It will be overwritten if a new-style AssociationsDef
   // is also provided.
   xatt = defNode.attribute("Associations");
@@ -797,6 +798,7 @@ void XmlDocV1Parser::createDefinition(xml_node &defNode)
     model::BitFlags mask =
       this->decodeModelEntityMask(xatt.value());
     def->setAssociationMask(mask);
+    def->associationRule()->setIsExtensible(true);
     }
 
   double color[4];
