@@ -1164,6 +1164,8 @@
   <value-type template="smtk::shared_ptr" args="smtk::attribute::Item" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::ItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::ValueItem" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::DateTimeItem" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::DateTimeItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::ValueItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::DirectoryItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::DirectoryItemDefinition" />
@@ -1285,23 +1287,16 @@
         </modify-function>
       </object-type>
 
-      <object-type name="DateTime">
+      <value-type name="DateTime">
         <include file-name="smtk/common/DateTime.h" location="local" />
-        <!-- For components() method, replace reference args with return tuple (or None) -->
-        <modify-function signature="components(int&amp;,int&amp;,int&amp;,int&amp;,int&amp;,int&amp;,int&amp;,smtk::common::TimeZone*) const" >
-          <modify-argument index="return">
-            <replace-type modified-type="PyTuple" />
-          </modify-argument>
-          <modify-argument index="1"><remove-argument /></modify-argument>
-          <modify-argument index="2"><remove-argument /></modify-argument>
-          <modify-argument index="3"><remove-argument /></modify-argument>
-          <modify-argument index="4"><remove-argument /></modify-argument>
-          <modify-argument index="5"><remove-argument /></modify-argument>
-          <modify-argument index="6"><remove-argument /></modify-argument>
-          <modify-argument index="7"><remove-argument /></modify-argument>
-          <inject-code class="target" position="beginning">
+        <!-- Add pythonic versions of components() and setComponents() methods -->
+        <add-function
+          signature="components(smtk::common::TimeZone) const"
+          static="no">
+          return-type="PyTuple">
+          <inject-code>
             int year, month, day, hour, minute, second, millisecond;
-            bool result = %CPPSELF->components(year, month, day, hour, minute, second, millisecond, %8);
+            bool result = %CPPSELF->components(year, month, day, hour, minute, second, millisecond, &amp;%1);
             if (result)
               {
               PyObject* out = PyTuple_New(7);
@@ -1317,15 +1312,24 @@
               // (else)
               return Py_None;
           </inject-code>
-      </modify-function>
+        </add-function>
+        <add-function
+          signature="setComponents(int,int,int,int,int,int,int,smtk::common::TimeZone)"
+          static="no"
+          return-type="bool">
+          <inject-code>
+            bool result = %CPPSELF->setComponents(%1,%2,%3,%4,%5,%6,%7,&amp;%8);
+            %PYARG_0 = %CONVERTTOPYTHON[bool](result);
+          </inject-code>
+        </add-function>
+      </value-type>
 
-      </object-type>
-      <object-type name="TimeZone">
+      <value-type name="TimeZone">
         <include file-name="smtk/common/TimeZone.h" location="local" />
-      </object-type>
-      <object-type name="DateTimeZonePair">
+      </value-type>
+      <value-type name="DateTimeZonePair">
         <include file-name="smtk/common/DateTimeZonePair.h" location="local" />
-      </object-type>
+      </value-type>
 
       <object-type name="UUIDGenerator">
         <include file-name="smtk/common/UUIDGenerator.h" location="local"/>
@@ -1878,6 +1882,16 @@
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
+      </object-type>
+
+      <object-type name="DateTimeItem">
+        <include file-name="smtk/attribute/DateTimeItem.h" location="local" />
+      </object-type>
+      <object-type name="DateTimeItemDefinition">
+        <include file-name="smtk/attribute/DateTimeItemDefinition.h" location="local" />
+        <modify-function signature="addDiscreteValue(smtk::common::DateTimeZonePair)" remove="all" />
+        <modify-function signature="addDiscreteValue(smtk::common::DateTimeZonePair, std::string)" remove="all" />
+        <modify-function signature="findDiscreteIndex(smtk::common::DateTimeZonePair) const" remove="all" />
       </object-type>
 
       <object-type name="Definition">

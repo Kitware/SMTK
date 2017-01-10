@@ -298,8 +298,8 @@ def DateTimeZonePair_to_python(self, utc=False):
   If the SMTK DateTime is not set, returns None.
   If utc is True but TimeZone not set, returns None.
   '''
-  smtk_dt = self.dateTime  # shiboken created property (don't know why)
-  smtk_tz = self.timeZone  # ditto
+  smtk_dt = self.dateTime()
+  smtk_tz = self.timeZone()
 
   if not smtk_dt.isSet():
     return None
@@ -309,7 +309,7 @@ def DateTimeZonePair_to_python(self, utc=False):
 
   # (else)
   if (utc):
-    smtk_tz = None
+    smtk_tz = common.TimeZone()  # unset TimeZone instance
   smtk_comps = smtk_dt.components(smtk_tz)
 
   python_comps = list(smtk_comps)

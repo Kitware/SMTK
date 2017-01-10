@@ -36,6 +36,9 @@ class SMTKCORE_EXPORT DateTime
 public:
   DateTime();
 
+#ifndef SHIBOKEN_SKIP
+  // Reimplemented in Shiboken typesystem
+
   /// Explicitly sets each component, with optional time zone conversion
   bool setComponents(
     int year,
@@ -57,6 +60,7 @@ public:
     int& second,
     int& millisecond,
     TimeZone *timeZone = NULL) const;
+#endif
 
   /// Indicates if instance represents valid datetime value
   bool isSet() const;

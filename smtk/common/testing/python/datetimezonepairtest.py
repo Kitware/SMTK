@@ -29,8 +29,8 @@ if __name__ == '__main__':
 
   # SMTK DateTimeZonePair
   sp = smtk.common.DateTimeZonePair()
-  sp.dateTime = smtk_dt
-  sp.timeZone = smtk_zone
+  sp.setDateTime(smtk_dt)
+  sp.setTimeZone(smtk_zone)
 
   # Convert to python datetime - should be "None"
   dt1 = sp.to_python_datetime()
@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
   # Set datetime with time zone
   smtk_dt.setComponents(2016, 11, 16, 16, 46, 22, 33, smtk_zone)
-  sp.dateTime = smtk_dt
+  sp.setDateTime(smtk_dt)
 
   # Check python datetime
   dt2 = sp.to_python_datetime()
