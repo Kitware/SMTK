@@ -39,7 +39,7 @@ if __name__ == '__main__':
   tz.setRegion('Europe/Zurich')
   dtz.setTimeZone(tz)
   dt = smtk.common.DateTime()
-  dt.setComponents(1991, 8, 6, 12, 0, 0, 0, tz)
+  dt.setComponents(tz, 1991, 8, 6, 12, 0, 0, 0)
   dtz.setDateTime (dt)
   itemdef2.setDefaultValue(dtz)
   attdef.addItemDefinition(itemdef2)

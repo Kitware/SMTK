@@ -39,7 +39,7 @@ if __name__ == '__main__':
     errcode = -1
 
   # Set datetime with time zone
-  smtk_dt.setComponents(2016, 11, 16, 16, 46, 22, 33, smtk_zone)
+  smtk_dt.setComponents(smtk_zone, 2016, 11, 16, 16, 46, 22, 33)
   sp.setDateTime(smtk_dt)
 
   # Check python datetime

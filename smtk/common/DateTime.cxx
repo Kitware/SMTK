@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/common/DateTime.h"
-#include "smtk/common/TimeZone.h"
 
 #include "boost/date_time/gregorian/gregorian.hpp"
 #include <boost/date_time/local_time/local_time.hpp>

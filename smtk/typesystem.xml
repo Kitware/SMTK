@@ -606,6 +606,7 @@
   <suppress-warning text="skipping function 'smtk::model::Operator::findMesh', unmatched return type 'smtk::attribute::MeshItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::MeshItem::end', unmatched return type 'smtk::attribute::MeshItem::const_mesh_it'"/>
   <suppress-warning text="skipping function 'smtk::attribute::MeshItem::begin', unmatched return type 'smtk::attribute::MeshItem::const_mesh_it'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::findDateTime', unmatched return type 'smtk::attribute::ConstDateTimeItemPtr'" />
 
   @EXTRA_TYPESYSTEMS@
 
@@ -1289,14 +1290,14 @@
 
       <value-type name="DateTime">
         <include file-name="smtk/common/DateTime.h" location="local" />
-        <!-- Add pythonic versions of components() and setComponents() methods -->
+        <!-- Add pythonic versions of components() methods -->
         <add-function
-          signature="components(smtk::common::TimeZone) const"
+          signature="components(smtk::common::TimeZone)"
           static="no">
           return-type="PyTuple">
           <inject-code>
             int year, month, day, hour, minute, second, millisecond;
-            bool result = %CPPSELF->components(year, month, day, hour, minute, second, millisecond, &amp;%1);
+            bool result = %CPPSELF->components(%1, year, month, day, hour, minute, second, millisecond);
             if (result)
               {
               PyObject* out = PyTuple_New(7);
@@ -1314,6 +1315,29 @@
           </inject-code>
         </add-function>
         <add-function
+          signature="components()"
+          static="no">
+          return-type="PyTuple">
+          <inject-code>
+            int year, month, day, hour, minute, second, millisecond;
+            bool result = %CPPSELF->components(year, month, day, hour, minute, second, millisecond);
+            if (result)
+              {
+              PyObject* out = PyTuple_New(7);
+              PyTuple_SET_ITEM(out, 0, %CONVERTTOPYTHON[int](year));
+              PyTuple_SET_ITEM(out, 1, %CONVERTTOPYTHON[int](month));
+              PyTuple_SET_ITEM(out, 2, %CONVERTTOPYTHON[int](day));
+              PyTuple_SET_ITEM(out, 3, %CONVERTTOPYTHON[int](hour));
+              PyTuple_SET_ITEM(out, 4, %CONVERTTOPYTHON[int](minute));
+              PyTuple_SET_ITEM(out, 5, %CONVERTTOPYTHON[int](second));
+              PyTuple_SET_ITEM(out, 6, %CONVERTTOPYTHON[int](millisecond));
+              return out;
+              }
+              // (else)
+              return Py_None;
+          </inject-code>
+        </add-function>
+<!--         <add-function
           signature="setComponents(int,int,int,int,int,int,int,smtk::common::TimeZone)"
           static="no"
           return-type="bool">
@@ -1321,7 +1345,7 @@
             bool result = %CPPSELF->setComponents(%1,%2,%3,%4,%5,%6,%7,&amp;%8);
             %PYARG_0 = %CONVERTTOPYTHON[bool](result);
           </inject-code>
-        </add-function>
+        </add-function> -->
       </value-type>
 
       <value-type name="TimeZone">
