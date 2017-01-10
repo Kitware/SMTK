@@ -85,6 +85,8 @@ public slots:
   /// The correspondence is determined from the <Hints />
   /// associated with the controlled proxy.
   virtual void reset();
+  // enable/disable the apply button of the widget
+  void enableApplyButton(bool);
 
 protected:
   /// Internal method to create the widget.
