@@ -21,7 +21,7 @@ namespace smtk {
 //----------------------------------------------------------------------------
 /// Default constructor creates invalid ptime
 DateTime::DateTime()
-  : m_ptime()
+  : m_ptime(boost::posix_time::not_a_date_time)
 {
 }
 

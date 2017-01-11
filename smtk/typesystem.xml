@@ -607,6 +607,7 @@
   <suppress-warning text="skipping function 'smtk::attribute::MeshItem::end', unmatched return type 'smtk::attribute::MeshItem::const_mesh_it'"/>
   <suppress-warning text="skipping function 'smtk::attribute::MeshItem::begin', unmatched return type 'smtk::attribute::MeshItem::const_mesh_it'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findDateTime', unmatched return type 'smtk::attribute::ConstDateTimeItemPtr'" />
+  <suppress-warning text="Shadowing: ValueItemDefinition::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const and DateTimeItemDefinition::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const" />
 
   @EXTRA_TYPESYSTEMS@
 

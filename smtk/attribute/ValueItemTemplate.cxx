@@ -10,6 +10,7 @@
 
 
 #include "smtk/attribute/ValueItemTemplate.h"
+#include "smtk/common/DateTimeZonePair.h"
 
 namespace smtk
 {
@@ -22,5 +23,6 @@ namespace smtk
     template class ValueItemTemplate<int>;
     template class ValueItemTemplate<double>;
     template class ValueItemTemplate<std::string>;
+    template class ValueItemTemplate<::smtk::common::DateTimeZonePair>;
   }
 }

@@ -12,6 +12,7 @@
 import os, sys
 import unittest
 import smtk
+from smtk import common
 import smtk.testing
 from smtk.simple import *
 

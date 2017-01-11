@@ -11,7 +11,7 @@
 #=============================================================================
 
 import smtk
-from smtk import attribute
+from smtk import common, attribute
 
 if __name__ == '__main__':
   import datetime

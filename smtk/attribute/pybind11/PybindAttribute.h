@@ -8,14 +8,15 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef pybind_smtk_attribute_Attribute_h
-#define pybind_smtk_attribute_Attribute_h
+#ifndef pybind___smtk_attribute_Attribute_h
+#define pybind___smtk_attribute_Attribute_h
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
 #include "smtk/attribute/Attribute.h"
 
+#include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -41,7 +42,7 @@ namespace py = pybind11;
 
 PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribute_Attribute(py::module &m)
 {
-  PySharedPtrClass< smtk::attribute::Attribute > instance(m, "Attribute");
+  PySharedPtrClass< smtk::attribute::Attribute > instance(m, "Attribute", py::metaclass());
   instance
     .def(py::init<::smtk::attribute::Attribute const &>())
     .def("deepcopy", (smtk::attribute::Attribute & (smtk::attribute::Attribute::*)(::smtk::attribute::Attribute const &)) &smtk::attribute::Attribute::operator=)
@@ -62,6 +63,8 @@ PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribute_Attr
     .def("disassociateEntity", (void (smtk::attribute::Attribute::*)(::smtk::model::EntityRef const &, bool)) &smtk::attribute::Attribute::disassociateEntity, py::arg("entity"), py::arg("reverse") = true)
     .def("find", (smtk::attribute::ItemPtr (smtk::attribute::Attribute::*)(::std::string const &, ::smtk::attribute::SearchStyle)) &smtk::attribute::Attribute::find, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::ACTIVE_CHILDREN)
     .def("find", (smtk::attribute::ConstItemPtr (smtk::attribute::Attribute::*)(::std::string const &, ::smtk::attribute::SearchStyle) const) &smtk::attribute::Attribute::find, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::ACTIVE_CHILDREN)
+    .def("findDateTime", (smtk::attribute::DateTimeItemPtr (smtk::attribute::Attribute::*)(::std::string const &)) &smtk::attribute::Attribute::findDateTime, py::arg("name"))
+    .def("findDateTime", (smtk::attribute::ConstDateTimeItemPtr (smtk::attribute::Attribute::*)(::std::string const &) const) &smtk::attribute::Attribute::findDateTime, py::arg("name"))
     .def("findDirectory", (smtk::attribute::DirectoryItemPtr (smtk::attribute::Attribute::*)(::std::string const &)) &smtk::attribute::Attribute::findDirectory, py::arg("name"))
     .def("findDirectory", (smtk::attribute::ConstDirectoryItemPtr (smtk::attribute::Attribute::*)(::std::string const &) const) &smtk::attribute::Attribute::findDirectory, py::arg("name"))
     .def("findDouble", (smtk::attribute::DoubleItemPtr (smtk::attribute::Attribute::*)(::std::string const &)) &smtk::attribute::Attribute::findDouble, py::arg("name"))

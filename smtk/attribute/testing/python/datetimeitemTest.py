@@ -40,7 +40,7 @@ if __name__ == '__main__':
   dtz.setTimeZone(tz)
   dt = smtk.common.DateTime()
   dt.setComponents(tz, 1991, 8, 6, 12, 0, 0, 0)
-  dtz.setDateTime (dt)
+  dtz.setDateTime(dt)
   itemdef2.setDefaultValue(dtz)
   attdef.addItemDefinition(itemdef2)
 
