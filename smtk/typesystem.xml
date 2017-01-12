@@ -606,6 +606,8 @@
   <suppress-warning text="skipping function 'smtk::model::Operator::findMesh', unmatched return type 'smtk::attribute::MeshItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::MeshItem::end', unmatched return type 'smtk::attribute::MeshItem::const_mesh_it'"/>
   <suppress-warning text="skipping function 'smtk::attribute::MeshItem::begin', unmatched return type 'smtk::attribute::MeshItem::const_mesh_it'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::findDateTime', unmatched return type 'smtk::attribute::ConstDateTimeItemPtr'" />
+  <suppress-warning text="Shadowing: ValueItemDefinition::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const and DateTimeItemDefinition::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const" />
 
   @EXTRA_TYPESYSTEMS@
 
@@ -1164,6 +1166,8 @@
   <value-type template="smtk::shared_ptr" args="smtk::attribute::Item" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::ItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::ValueItem" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::DateTimeItem" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::DateTimeItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::ValueItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::DirectoryItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::DirectoryItemDefinition" />
@@ -1285,6 +1289,72 @@
         </modify-function>
       </object-type>
 
+      <value-type name="DateTime">
+        <include file-name="smtk/common/DateTime.h" location="local" />
+        <!-- Add pythonic versions of components() methods -->
+        <add-function
+          signature="components(smtk::common::TimeZone)"
+          static="no">
+          return-type="PyTuple">
+          <inject-code>
+            int year, month, day, hour, minute, second, millisecond;
+            bool result = %CPPSELF->components(%1, year, month, day, hour, minute, second, millisecond);
+            if (result)
+              {
+              PyObject* out = PyTuple_New(7);
+              PyTuple_SET_ITEM(out, 0, %CONVERTTOPYTHON[int](year));
+              PyTuple_SET_ITEM(out, 1, %CONVERTTOPYTHON[int](month));
+              PyTuple_SET_ITEM(out, 2, %CONVERTTOPYTHON[int](day));
+              PyTuple_SET_ITEM(out, 3, %CONVERTTOPYTHON[int](hour));
+              PyTuple_SET_ITEM(out, 4, %CONVERTTOPYTHON[int](minute));
+              PyTuple_SET_ITEM(out, 5, %CONVERTTOPYTHON[int](second));
+              PyTuple_SET_ITEM(out, 6, %CONVERTTOPYTHON[int](millisecond));
+              return out;
+              }
+              // (else)
+              return Py_None;
+          </inject-code>
+        </add-function>
+        <add-function
+          signature="components()"
+          static="no">
+          return-type="PyTuple">
+          <inject-code>
+            int year, month, day, hour, minute, second, millisecond;
+            bool result = %CPPSELF->components(year, month, day, hour, minute, second, millisecond);
+            if (result)
+              {
+              PyObject* out = PyTuple_New(7);
+              PyTuple_SET_ITEM(out, 0, %CONVERTTOPYTHON[int](year));
+              PyTuple_SET_ITEM(out, 1, %CONVERTTOPYTHON[int](month));
+              PyTuple_SET_ITEM(out, 2, %CONVERTTOPYTHON[int](day));
+              PyTuple_SET_ITEM(out, 3, %CONVERTTOPYTHON[int](hour));
+              PyTuple_SET_ITEM(out, 4, %CONVERTTOPYTHON[int](minute));
+              PyTuple_SET_ITEM(out, 5, %CONVERTTOPYTHON[int](second));
+              PyTuple_SET_ITEM(out, 6, %CONVERTTOPYTHON[int](millisecond));
+              return out;
+              }
+              // (else)
+              return Py_None;
+          </inject-code>
+        </add-function>
+<!--         <add-function
+          signature="setComponents(int,int,int,int,int,int,int,smtk::common::TimeZone)"
+          static="no"
+          return-type="bool">
+          <inject-code>
+            bool result = %CPPSELF->setComponents(%1,%2,%3,%4,%5,%6,%7,&amp;%8);
+            %PYARG_0 = %CONVERTTOPYTHON[bool](result);
+          </inject-code>
+        </add-function> -->
+      </value-type>
+
+      <value-type name="TimeZone">
+        <include file-name="smtk/common/TimeZone.h" location="local" />
+      </value-type>
+      <value-type name="DateTimeZonePair">
+        <include file-name="smtk/common/DateTimeZonePair.h" location="local" />
+      </value-type>
 
       <object-type name="UUIDGenerator">
         <include file-name="smtk/common/UUIDGenerator.h" location="local"/>
@@ -1837,6 +1907,16 @@
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
+      </object-type>
+
+      <object-type name="DateTimeItem">
+        <include file-name="smtk/attribute/DateTimeItem.h" location="local" />
+      </object-type>
+      <object-type name="DateTimeItemDefinition">
+        <include file-name="smtk/attribute/DateTimeItemDefinition.h" location="local" />
+        <modify-function signature="addDiscreteValue(smtk::common::DateTimeZonePair)" remove="all" />
+        <modify-function signature="addDiscreteValue(smtk::common::DateTimeZonePair, std::string)" remove="all" />
+        <modify-function signature="findDiscreteIndex(smtk::common::DateTimeZonePair) const" remove="all" />
       </object-type>
 
       <object-type name="Definition">

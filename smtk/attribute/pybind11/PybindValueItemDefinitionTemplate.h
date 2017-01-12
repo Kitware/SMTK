@@ -15,6 +15,7 @@
 
 #include "smtk/attribute/ValueItemDefinitionTemplate.h"
 #include "smtk/attribute/ValueItemDefinition.h"
+#include "smtk/common/DateTimeZonePair.h"
 
 namespace py = pybind11;
 
@@ -98,6 +99,34 @@ PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<std::string>, smtk
     .def("minRangeInclusive", &smtk::attribute::ValueItemDefinitionTemplate<std::string>::minRangeInclusive)
     .def("setDefaultValue", (bool (smtk::attribute::ValueItemDefinitionTemplate<std::string>::*)(::std::basic_string<char, std::char_traits<char>, std::allocator<char> > const &)) &smtk::attribute::ValueItemDefinitionTemplate<std::string>::setDefaultValue)
     .def("setDefaultValue", (bool (smtk::attribute::ValueItemDefinitionTemplate<std::string>::*)(::std::vector<std::basic_string<char>, std::allocator<std::string> > const &)) &smtk::attribute::ValueItemDefinitionTemplate<std::string>::setDefaultValue)
+    ;
+  return instance;
+}
+
+PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>, smtk::attribute::ValueItemDefinition> pybind11_init_smtk_attribute_ValueItemDefinitionTemplate_datetime_(py::module &m)
+{
+  PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>, smtk::attribute::ValueItemDefinition> instance(m, "ValueItemDefinitionTemplate_datetime_");
+  instance
+    .def("maxRange", &smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::maxRange)
+    .def("minRange", &smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::minRange)
+    .def("setMaxRange", &smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::setMaxRange)
+    .def("setMinRange", &smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::setMinRange)
+    .def("addDiscreteValue", (void (smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::*)(smtk::common::DateTimeZonePair const &)) &smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::addDiscreteValue)
+    .def("addDiscreteValue", (void (smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::*)(smtk::common::DateTimeZonePair const &, ::std::string const &)) &smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::addDiscreteValue)
+    .def("clearRange", &smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::clearRange)
+    .def("defaultValue", (smtk::common::DateTimeZonePair const & (smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::*)() const) &smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::defaultValue)
+    .def("defaultValue", (smtk::common::DateTimeZonePair const & (smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::*)(::size_t) const) &smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::defaultValue)
+    .def("defaultValues", &smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::defaultValues)
+    .def("discreteValue", &smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::discreteValue, py::arg("element"))
+    .def("findDiscreteIndex", &smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::findDiscreteIndex, py::arg("val"))
+    .def("hasMaxRange", &smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::hasMaxRange)
+    .def("hasMinRange", &smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::hasMinRange)
+    .def("hasRange", &smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::hasRange)
+    .def("isValueValid", &smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::isValueValid, py::arg("val"))
+    .def("maxRangeInclusive", &smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::maxRangeInclusive)
+    .def("minRangeInclusive", &smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::minRangeInclusive)
+    .def("setDefaultValue", (bool (smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::*)(smtk::common::DateTimeZonePair const &)) &smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::setDefaultValue)
+    .def("setDefaultValue", (bool (smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::*)(::std::vector<smtk::common::DateTimeZonePair, std::allocator<::smtk::common::DateTimeZonePair> > const &)) &smtk::attribute::ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>::setDefaultValue)
     ;
   return instance;
 }

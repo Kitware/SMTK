@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/common/DateTime.h"
-#include "smtk/common/TimeZone.h"
 
 #include "boost/date_time/gregorian/gregorian.hpp"
 #include <boost/date_time/local_time/local_time.hpp>
@@ -22,7 +21,7 @@ namespace smtk {
 //----------------------------------------------------------------------------
 /// Default constructor creates invalid ptime
 DateTime::DateTime()
-  : m_ptime()
+  : m_ptime(boost::posix_time::not_a_date_time)
 {
 }
 
