@@ -12,9 +12,9 @@ if (SMTK_IGNORE_CJSON_WARNINGS)
 
    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     # disables: warning C4267: '=' : conversion from 'size_t' to 'int', possible loss of data
-    set(ignore_rules_for_cjson "${ignore_rules_for_cjson}  /wd4267")
+    set(ignore_rules_for_cjson "${ignore_rules_for_cjson} /wd4267")
     # disables: warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead.
-    set(ignore_rules_for_cjson "${ignore_rules_for_cjson}  /wd4996")
+    set(ignore_rules_for_cjson "${ignore_rules_for_cjson} /wd4996")
   endif()
 
   set_property(TARGET cJSON APPEND_STRING PROPERTY COMPILE_FLAGS ${ignore_rules_for_cjson})
@@ -62,35 +62,46 @@ if (NOT SMTK_USE_SYSTEM_MOAB)
 
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
       # disables: warning C4138: '*/' found outside of comment
-      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4138")
-      # disables: warning C4146: unary minus operator applied to unsigned type, result still unsigned
-      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4146")
-      # disables: warning C4244: '=' : conversion from 'hsize_t' to 'long', possible loss of data
-      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4244")
-      # disables: warning C4251: 'moab::Range::mHead' : struct 'moab::Range::PairNode' needs to have dll-interface to be used by clients of class 'moab::Range
-      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4251")
-      # disables: warning C4267: '=' : conversion from 'size_t' to 'int', possible loss of data
-      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4267")
-      # disables: warning C4275: non dll-interface class 'moab::ReaderIface' used as base for dll-interface class 'moab::ReadNCDF'
-      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4275")
+      set(ignore_rules_for_moab "${ignore_rules_for_moab} /wd4138")
+      # disables: warning C4146: unary minus operator applied to unsigned type,
+      # result still unsigned
+      set(ignore_rules_for_moab "${ignore_rules_for_moab} /wd4146")
+      # disables: warning C4244: '=' : conversion from 'hsize_t' to 'long',
+      # possible loss of data
+      set(ignore_rules_for_moab "${ignore_rules_for_moab} /wd4244")
+      # disables: warning C4251: 'moab::Range::mHead' : struct
+      # 'moab::Range::PairNode' needs to have dll-interface to be used by
+      # clients of class 'moab::Range
+      set(ignore_rules_for_moab "${ignore_rules_for_moab} /wd4251")
+      # disables: warning C4267: '=' : conversion from 'size_t' to 'int',
+      # possible loss of data
+      set(ignore_rules_for_moab "${ignore_rules_for_moab} /wd4267")
+      # disables: warning C4275: non dll-interface class 'moab::ReaderIface'
+      # used as base for dll-interface class 'moab::ReadNCDF'
+      set(ignore_rules_for_moab "${ignore_rules_for_moab} /wd4275")
       # disables: warning C4305: 'return' : truncation from 'double' to 'float'
-      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4305")
-      # disables: warning C4373: 'moab::Core::tag_get_data': virtual function overrides 'moab::Interface::tag_get_data', previous versions of the compiler did not override when parameters only differed by const/volatile qualifiers
-      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4373")
-      # disables: warning C4717: 'moab::DenseTag::get_array' : recursive on all control paths, function will cause runtime stack overflow
-      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4717")
-      # disables: warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4800")
-      # disables: warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead.
-      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4996")
+      set(ignore_rules_for_moab "${ignore_rules_for_moab} /wd4305")
+      # disables: warning C4373: 'moab::Core::tag_get_data': virtual function
+      # overrides 'moab::Interface::tag_get_data', previous versions of the
+      # compiler did not override when parameters only differed by
+      # const/volatile qualifiers
+      set(ignore_rules_for_moab "${ignore_rules_for_moab} /wd4373")
+      # disables: warning C4800: 'int' : forcing value to bool 'true' or 'false'
+      # (performance warning)
+      set(ignore_rules_for_moab "${ignore_rules_for_moab} /wd4800")
+      # disables: warning C4996: 'strncpy': This function or variable may be
+      # unsafe. Consider using strncpy_s instead.
+      set(ignore_rules_for_moab "${ignore_rules_for_moab} /wd4996")
     elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR
 	   CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR
 	   CMAKE_CXX_COMPILER_ID MATCHES "Intel")
       # disables: warning: unused variable '####'
-      set(ignore_rules_for_moab "${ignore_rules_for_moab}  -Wno-unused-const-variable")
+      set(ignore_rules_for_moab
+	"${ignore_rules_for_moab} -Wno-unused-const-variable")
       if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	# disables: warning: private field '####' is not used
-	set(ignore_rules_for_moab "${ignore_rules_for_moab}  -Wno-unused-private-field")
+	set(ignore_rules_for_moab
+	  "${ignore_rules_for_moab} -Wno-unused-private-field")
       endif()
     endif()
 
