@@ -1,5 +1,25 @@
 add_subdirectory(cJSON)
 
+# disable warning flags for cJSON. This is optional because we should be
+# continually pushing updates to cJSON, rather than just using it. For the
+# sanity of our own dashboards, though, it is nice to be able to distinguish
+# between cJSON's warnings and our own.
+option(SMTK_IGNORE_CJSON_WARNINGS "disable warning flags for cJSON" ON)
+mark_as_advanced(SMTK_IGNORE_CJSON_WARNINGS)
+
+if (SMTK_IGNORE_CJSON_WARNINGS)
+  set(ignore_rules_for_cjson "")
+
+   if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    # disables: warning C4267: '=' : conversion from 'size_t' to 'int', possible loss of data
+    set(ignore_rules_for_cjson "${ignore_rules_for_cjson}  /wd4267")
+    # disables: warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead.
+    set(ignore_rules_for_cjson "${ignore_rules_for_cjson}  /wd4996")
+  endif()
+
+  set_property(TARGET cJSON APPEND_STRING PROPERTY COMPILE_FLAGS ${ignore_rules_for_cjson})
+endif()
+
 if(SMTK_USE_PYBIND11)
   # by including the correct python cmake scripts before adding pybind11, we
   # work around pybind11's custom python cmake scripts without having to patch
@@ -30,18 +50,44 @@ if (NOT SMTK_USE_SYSTEM_MOAB)
       PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
   endif()
 
-  # disable all warning flags for MOAB. This is optional because we should
-  # be continually pushing updates to MOAB, rather than just using it. For the
+  # disable warning flags for MOAB. This is optional because we should be
+  # continually pushing updates to MOAB, rather than just using it. For the
   # sanity of our own dashboards, though, it is nice to be able to distinguish
   # between MOAB's warnings and our own.
-  option(MOAB_IGNORE_ALL_WARNINGS "disable all warning flags for MOAB" ON)
-  mark_as_advanced(MOAB_IGNORE_ALL_WARNINGS)
-  if (MOAB_IGNORE_ALL_WARNINGS)
-    if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
-      set_property( TARGET MOAB APPEND_STRING PROPERTY COMPILE_FLAGS " /w" )
-    else()
-      set_property( TARGET MOAB APPEND_STRING PROPERTY COMPILE_FLAGS " -w" )
+  option(SMTK_IGNORE_MOAB_WARNINGS "disable all warning flags for MOAB" ON)
+  mark_as_advanced(SMTK_IGNORE_MOAB_WARNINGS)
+
+  if (SMTK_IGNORE_MOAB_WARNINGS)
+    set(ignore_rules_for_moab "")
+
+    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+      # disables: warning C4138: '*/' found outside of comment
+      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4138")
+      # disables: warning C4146: unary minus operator applied to unsigned type, result still unsigned
+      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4146")
+      # disables: warning C4244: '=' : conversion from 'hsize_t' to 'long', possible loss of data
+      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4244")
+      # disables: warning C4251: 'moab::Range::mHead' : struct 'moab::Range::PairNode' needs to have dll-interface to be used by clients of class 'moab::Range
+      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4251")
+      # disables: warning C4267: '=' : conversion from 'size_t' to 'int', possible loss of data
+      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4267")
+      # disables: warning C4275: non dll-interface class 'moab::ReaderIface' used as base for dll-interface class 'moab::ReadNCDF'
+      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4275")
+      # disables: warning C4305: 'return' : truncation from 'double' to 'float'
+      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4305")
+      # disables: warning C4373: 'moab::Core::tag_get_data': virtual function overrides 'moab::Interface::tag_get_data', previous versions of the compiler did not override when parameters only differed by const/volatile qualifiers
+      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4373")
+      # disables: warning C4717: 'moab::DenseTag::get_array' : recursive on all control paths, function will cause runtime stack overflow
+      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4717")
+      # disables: warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4800")
+      # disables: warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead.
+      set(ignore_rules_for_moab "${ignore_rules_for_moab}  /wd4996")
     endif()
+
+    foreach(moab_target MOAB moabio moab_loc_discr moabverdict mhdf)
+      set_property(TARGET ${moab_target} APPEND_STRING PROPERTY COMPILE_FLAGS ${ignore_rules_for_moab})
+    endforeach()
   endif()
 
   set(CMAKE_C_FLAGS "${save_CMAKE_C_FLAGS}" CACHE STRING "" FORCE)
