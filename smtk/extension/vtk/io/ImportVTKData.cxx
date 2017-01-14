@@ -110,7 +110,7 @@ smtk::mesh::HandleRange convertVTKDataSet(
   for (vtkIdType i = 0; i< dataset->GetPoints()->GetNumberOfPoints(); ++i)
     {
     dataset->GetPoints()->GetPoint(i, point);
-    alloc->addCoordinate(i, point);
+    alloc->setCoordinate(i, point);
     }
 
   vtkIdType npts, *pts;
@@ -220,7 +220,6 @@ bool ImportVTKData::operator()(const std::string& filename,
 
   // Dispatch based on the file extension
   vtkDataSet* data;
-  smtk::mesh::CollectionPtr c;
   if (extension == ".vtu")
    {
    data = readXMLFile<vtkXMLUnstructuredGridReader> (filename);

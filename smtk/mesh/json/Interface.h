@@ -89,6 +89,19 @@ public:
   smtk::mesh::BufferedCellAllocatorPtr bufferedCellAllocator();
 
   //----------------------------------------------------------------------------
+  //get back a lightweight interface around incrementally allocating memory into
+  //the given interface. This is generally used to create new coordinates or
+  //cells that are than assigned to an existing mesh or new mesh.
+  //
+  //If the current interface is read-only, the IncrementalAllocatorPtr that is
+  //returned will be NULL.
+  //
+  //Note: Merely fetching a valid allocator will mark the collection as
+  //modified. This is done instead of on a per-allocation basis so that
+  //modification state changes don't impact performance.
+  smtk::mesh::IncrementalAllocatorPtr incrementalAllocator();
+
+  //----------------------------------------------------------------------------
   //get back an efficient storage mechanism for a range of cells point
   //connectivity. This allows for efficient iteration of cell connectivity, and
   //conversion to other formats

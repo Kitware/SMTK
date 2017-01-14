@@ -103,16 +103,14 @@ void ArrangementHelper::doneAddingEntities(
   // I. Finish processing visited entities
   Session::Ptr sess = smtk::dynamic_pointer_cast<Session>(baseSession);
   smtk::model::EntityRefs::const_iterator eit;
-  for (eit = this->m_marked.begin(); eit != this->m_marked.end(); ++eit)
+  if (flags & smtk::model::SESSION_PROPERTIES)
     {
-    smtk::model::EntityRef mutableRef(*eit);
-    vtkModelItem* dscEntity = sess->entityForUUID(eit->entity());
-    vtkModelGeometricEntity* dscGeom = dynamic_cast<vtkModelGeometricEntity*>(dscEntity);
-
-    if (flags & smtk::model::SESSION_PROPERTIES)
+    for (eit = this->m_marked.begin(); eit != this->m_marked.end(); ++eit)
+      {
+      smtk::model::EntityRef mutableRef(*eit);
+      vtkModelItem* dscEntity = sess->entityForUUID(eit->entity());
       sess->addProperties(mutableRef, dscEntity);
-    if (dscGeom && (flags & smtk::model::SESSION_TESSELLATION))
-      sess->addTessellation(mutableRef, dscGeom);
+      }
     }
 
   // II. sort the specification based on IterationOrder. We use a set of
@@ -163,6 +161,22 @@ void ArrangementHelper::doneAddingEntities(
       git->first.manager()->addDualArrangement(
         owner.entity(), git->first.entity(), smtk::model::SUPERSET_OF,
         -1, smtk::model::UNDEFINED);
+
+  // IV. Add tessellations for the entities.
+  if (flags & smtk::model::SESSION_TESSELLATION)
+    {
+    for (eit = this->m_marked.begin(); eit != this->m_marked.end(); ++eit)
+      {
+      smtk::model::EntityRef mutableRef(*eit);
+      vtkModelItem* dscEntity = sess->entityForUUID(eit->entity());
+      vtkModelGeometricEntity* dscGeom =
+        dynamic_cast<vtkModelGeometricEntity*>(dscEntity);
+      if (dscGeom)
+        {
+        sess->addTessellation(mutableRef, dscGeom);
+        }
+      }
+    }
 }
 
 int ArrangementHelper::findOrAssignSense(vtkModelEdgeUse* eu1)

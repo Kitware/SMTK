@@ -66,6 +66,8 @@ signals:
 public slots:
   void updateActiveView( pqRenderView *view ){ View=view;}
   void updateActiveServer( pqServer *server ){ Server=server;}
+  // Enables the apply button of the Arc Widget
+  void enableApplyButton(bool);
 
 protected slots:
   // called when a whole arc is done creating or modifying.
@@ -91,6 +93,7 @@ protected:
   pqRenderView *View;
   pqServer *Server;
   QPointer<QWidget> ActiveWidget;
+  bool EnableWidgetApplyButton;
 };
 
 #endif /* __smtk_polygon_pq_ArcWidgetManager_h */

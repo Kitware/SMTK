@@ -143,10 +143,10 @@
         </size>
        </property>
        <property name="text">
-        <string>Finished</string>
+        <string>Apply</string>
        </property>
        <property name="shortcut">
-        <string>Alt+F</string>
+        <string>Alt+A</string>
        </property>
       </widget>
      </item>

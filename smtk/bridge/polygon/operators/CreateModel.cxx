@@ -20,6 +20,9 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
+
 #include "smtk/bridge/polygon/CreateModel_xml.h"
 
 namespace smtk {
@@ -114,8 +117,14 @@ smtk::model::OperatorResult CreateModel::operateInternal()
       model.setFloatProperty("feature size", storage->featureSize());
       model.setFloatProperty("model scale", storage->modelScale());
       model.setIntegerProperty(SMTK_GEOM_STYLE_PROP, smtk::model::DISCRETE);
+
+      if (result)
+        {
+        sess->manager()->meshes()->makeCollection(model.entity());
+        }
       }
     }
+
   if (!result)
     {
     result = this->createResult(smtk::model::OPERATION_FAILED);

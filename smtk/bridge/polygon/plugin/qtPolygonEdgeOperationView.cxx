@@ -117,6 +117,12 @@ qtPolygonEdgeOperationView::createViewWidget(const ViewInfo &info)
 }
 
 //----------------------------------------------------------------------------
+void qtPolygonEdgeOperationView::attributeModified()
+{
+  this->Internals->ArcManager->
+    enableApplyButton(this->Internals->CurrentAtt->attribute()->isValid());
+}
+//----------------------------------------------------------------------------
 qtPolygonEdgeOperationView::
 qtPolygonEdgeOperationView(const ViewInfo &info) :
   qtBaseView(info)
@@ -218,7 +224,6 @@ void qtPolygonEdgeOperationView::updateAttributeData()
   // expecting only 1 instance of the op?
   smtk::attribute::AttributePtr att = edgeOp->specification();
   this->Internals->CurrentAtt = this->Internals->createAttUI(att, this->Widget, this);
-
   // The arc widget interaction is only needed for:
   // * create edge op : with "construction method" set to "interactive widget"
   // * tweak edge
@@ -240,6 +245,13 @@ void qtPolygonEdgeOperationView::updateAttributeData()
       this->Internals->ArcManager->updateActiveView(renView);
       this->Internals->ArcManager->updateActiveServer(server);
       }
+
+  if (this->Internals->CurrentAtt)
+    {
+      QObject::connect(this->Internals->CurrentAtt,SIGNAL(modified()),
+        this,SLOT(attributeModified()));
+      this->Internals->ArcManager->enableApplyButton(att->isValid());
+    }
 
     pqPolygonArc *objArc = new pqPolygonArc;
     objArc->setEdgeOperator(edgeOp);

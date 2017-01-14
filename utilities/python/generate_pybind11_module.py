@@ -111,8 +111,8 @@ if __name__ == '__main__':
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 """)
-        stream("#include <utility>")
         stream("#include <pybind11/pybind11.h>")
+        stream("#include <utility>")
         stream("")
         stream("namespace py = pybind11;")
         stream("")

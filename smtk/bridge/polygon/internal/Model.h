@@ -139,6 +139,10 @@ public:
   void addEdgeTessellation(smtk::model::Edge& edgeRec, internal::EdgePtr edgeData);
   void addVertTessellation(smtk::model::Vertex& vertRec, internal::VertexPtr vertData);
 
+  void addFaceMeshTessellation(smtk::model::Face& faceRec);
+  void addEdgeMeshTessellation(smtk::model::Edge& edgeRec, internal::EdgePtr edgeData);
+  void addVertMeshTessellation(smtk::model::Vertex& vertRec, internal::VertexPtr vertData);
+
   double* origin() { return this->m_origin; }
   const double* origin() const { return this->m_origin; }
 

@@ -12,11 +12,16 @@
 #include "smtk/bridge/exodus/Session.h"
 #include "smtk/bridge/exodus/SessionExodusIOJSON.h"
 
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
+
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Tessellation.h"
+
+#include "smtk/extension/vtk/io/ImportVTKData.h"
 
 #include "vtkCellArray.h"
 #include "vtkGeometryFilter.h"
@@ -213,6 +218,7 @@ smtk::model::Model Session::addModel(
   this->m_models.push_back(model);
   smtk::model::Model result = this->toEntityRef(handle);
   this->m_revIdMap[result] = handle;
+  this->manager()->meshes()->makeCollection(result.entity());
   this->transcribe(result, smtk::model::SESSION_EVERYTHING, false);
   result.setSession(
     smtk::model::SessionRef(
@@ -593,6 +599,25 @@ bool Session::addTessellation(
     }
   if (!tess.coords().empty())
     entityref.manager()->setTessellation(entityref.entity(), tess);
+
+  smtk::mesh::CollectionPtr collection =
+    this->manager()->meshes()->
+    collection(this->uuidOfHandleObject(this->modelOfHandle(handle)));
+  if (collection && collection->isValid())
+    {
+    smtk::mesh::MeshSet modified = collection->findAssociatedMeshes(entityref);
+    if (!modified.is_empty())
+      {
+      collection->removeMeshes(modified);
+      }
+
+    smtk::extension::vtk::io::ImportVTKData importVTKData;
+    smtk::mesh::MeshSet meshForEntity = importVTKData(bdy, collection);
+    if (!meshForEntity.is_empty())
+      {
+      meshForEntity.setModelEntity(entityref);
+      }
+    }
 
   return true;
 }

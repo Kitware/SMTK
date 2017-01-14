@@ -205,6 +205,7 @@ endif()
 target_link_libraries(smtkDiscreteSession
   LINK_PUBLIC
     smtkCore
+    smtkIOVTK
   LINK_PRIVATE
     vtkCommonExecutionModel
     vtkFiltersCore

@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include <utility>
 #include <pybind11/pybind11.h>
+#include <utility>
 
 namespace py = pybind11;
 
@@ -18,6 +18,8 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "PybindAttribute.h"
 #include "PybindDefinition.h"
+#include "PybindDateTimeItem.h"
+#include "PybindDateTimeItemDefinition.h"
 #include "PybindDirectoryItem.h"
 #include "PybindDirectoryItemDefinition.h"
 #include "PybindDoubleItem.h"
@@ -98,6 +100,11 @@ PYBIND11_PLUGIN(smtkPybindAttribute)
   PySharedPtrClass< smtk::attribute::StringItem, smtk::attribute::ValueItemTemplate<std::basic_string<char> > > smtk_attribute_StringItem = pybind11_init_smtk_attribute_StringItem(attribute);
   PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<std::basic_string<char> >, smtk::attribute::ValueItemDefinition > smtk_attribute_ValueItemDefinitionTemplate_string_ = pybind11_init_smtk_attribute_ValueItemDefinitionTemplate_string_(attribute);
   PySharedPtrClass< smtk::attribute::StringItemDefinition, smtk::attribute::ValueItemDefinitionTemplate<std::basic_string<char> > > smtk_attribute_StringItemDefinition = pybind11_init_smtk_attribute_StringItemDefinition(attribute);
+
+  PySharedPtrClass<smtk::attribute::ValueItemTemplate<smtk::common::DateTimeZonePair>, smtk::attribute::ValueItem > smtk_attribute_ValueItemTemplate_datetime_ = pybind11_init_smtk_attribute_ValueItemTemplate_datetime_(attribute);
+  PySharedPtrClass< smtk::attribute::DateTimeItem, smtk::attribute::ValueItemTemplate<smtk::common::DateTimeZonePair> > smtk_attribute_DateTimeItem = pybind11_init_smtk_attribute_DateTimeItem(attribute);
+  PySharedPtrClass<smtk::attribute::ValueItemDefinitionTemplate<smtk::common::DateTimeZonePair>, smtk::attribute::ValueItemDefinition > smtk_attribute_ValueItemDefinitionTemplate_DateTime_ = pybind11_init_smtk_attribute_ValueItemDefinitionTemplate_datetime_(attribute);
+  PySharedPtrClass< smtk::attribute::DateTimeItemDefinition, smtk::attribute::ValueItemDefinitionTemplate<smtk::common::DateTimeZonePair> > smtk_attribute_DateTimeItemDefinition = pybind11_init_smtk_attribute_DateTimeItemDefinition(attribute);
 
   return attribute.ptr();
 }

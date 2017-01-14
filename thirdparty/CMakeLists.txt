@@ -6,6 +6,12 @@ if(SMTK_USE_PYBIND11)
   # pybind11.
   find_package(PythonInterp REQUIRED)
   find_package(PythonLibs REQUIRED)
+  if(MSVC)
+    set(PYTHON_MODULE_EXTENSION ".pyd")
+  else()
+    set(PYTHON_MODULE_EXTENSION ".so")
+  endif()
+  set(PYTHON_MODULE_PREFIX "")
   add_subdirectory(pybind11)
 endif()
 

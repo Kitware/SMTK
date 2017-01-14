@@ -29,6 +29,10 @@
 
 #include "smtk/common/UUID.h"
 
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/MeshSet.h"
+
 #include "cJSON.h"
 
 #include <sstream>
@@ -139,6 +143,26 @@ OperatorResult Operator::operate()
       }
     // Inform observers that the operation completed.
     this->trigger(DID_OPERATE, result);
+
+    smtk::attribute::ModelEntityItem::Ptr tess_changed =
+      result->findModelEntity("tess_changed");
+    if (tess_changed)
+      {
+      for (auto it = tess_changed->begin(); it != tess_changed->end(); ++it)
+        {
+        smtk::mesh::CollectionPtr collection =
+          it->owningSession().manager()->meshes()->
+          collection(it->owningModel().entity());
+        if (collection && collection->isValid())
+          {
+          smtk::mesh::MeshSet modified = collection->findAssociatedMeshes(*it);
+          if (!modified.is_empty())
+            {
+            collection->removeMeshes(modified);
+            }
+          }
+        }
+      }
     }
   else
     {

@@ -80,7 +80,7 @@ public:
   virtual ~BufferedCellAllocator() {}
 
   virtual bool reserveNumberOfCoordinates(std::size_t nCoordinates) = 0;
-  virtual bool addCoordinate(std::size_t coord, double* xyz) = 0;
+  virtual bool setCoordinate(std::size_t coord, double* xyz) = 0;
 
   virtual bool addCell(smtk::mesh::CellType ctype, long long int* pointIds,
                        std::size_t nCoordinates = 0) = 0;
@@ -93,17 +93,60 @@ public:
 
   virtual smtk::mesh::HandleRange cells() = 0;
 
-  bool addCoordinate(std::size_t coord, double x, double y, double z)
-  { double xyz[3] = {x,y,z}; return this->addCoordinate(coord, xyz); }
-  bool addCoordinate(std::size_t coord, float* xyz)
-  { return this->addCoordinate(coord, xyz[0], xyz[1], xyz[2]); }
-  bool addCoordinate(std::size_t coord, float x, float y, float z)
-  { double xyz[3] = {x,y,z}; return this->addCoordinate(coord, xyz); }
+  bool setCoordinate(std::size_t coord, double x, double y, double z)
+  { double xyz[3] = {x,y,z}; return this->setCoordinate(coord, xyz); }
+  bool setCoordinate(std::size_t coord, float* xyz)
+  { return this->setCoordinate(coord, xyz[0], xyz[1], xyz[2]); }
+  bool setCoordinate(std::size_t coord, float x, float y, float z)
+  { double xyz[3] = {x,y,z}; return this->setCoordinate(coord, xyz); }
 
   bool isValid() const { return this->m_validState; }
 
  protected:
   bool m_validState;
+};
+
+//----------------------------------------------------------------------------
+// IncrementalAllocator allows for the allocation of meshes by incrementally
+// filling your points and cell connectivities by point index. This allocator is
+// the least efficient for storage and data retrieval, but provides the most
+// flexible API.
+class SMTKCORE_EXPORT IncrementalAllocator
+{
+public:
+  IncrementalAllocator() {}
+
+  virtual ~IncrementalAllocator() {}
+
+  virtual std::size_t addCoordinate(double* xyz) = 0;
+  virtual bool setCoordinate(std::size_t coord, double* xyz) = 0;
+
+  virtual bool addCell(smtk::mesh::CellType ctype, long long int* pointIds,
+                       std::size_t nCoordinates = 0) = 0;
+  virtual bool addCell(smtk::mesh::CellType ctype, long int* pointIds,
+                       std::size_t nCoordinates = 0) = 0;
+  virtual bool addCell(smtk::mesh::CellType ctype, int* pointIds,
+                       std::size_t nCoordinates = 0) = 0;
+
+  virtual bool flush() = 0;
+
+  virtual smtk::mesh::HandleRange cells() = 0;
+
+  std::size_t addCoordinate(double x, double y, double z)
+  { double xyz[3] = {x,y,z}; return this->addCoordinate(xyz); }
+  std::size_t addCoordinate(float* xyz)
+  { return this->addCoordinate(xyz[0], xyz[1], xyz[2]); }
+  std::size_t addCoordinate(float x, float y, float z)
+  { double xyz[3] = {x,y,z}; return this->addCoordinate(xyz); }
+
+  bool setCoordinate(std::size_t coord, double x, double y, double z)
+  { double xyz[3] = {x,y,z}; return this->setCoordinate(coord, xyz); }
+  bool setCoordinate(std::size_t coord, float* xyz)
+  { return this->setCoordinate(coord, xyz[0], xyz[1], xyz[2]); }
+  bool setCoordinate(std::size_t coord, float x, float y, float z)
+  { double xyz[3] = {x,y,z}; return this->setCoordinate(coord, xyz); }
+
+  virtual bool isValid() const = 0;
 };
 
 //----------------------------------------------------------------------------
@@ -220,6 +263,19 @@ public:
   //modified. This is done instead of on a per-allocation basis so that
   //modification state changes don't impact performance.
   virtual smtk::mesh::BufferedCellAllocatorPtr bufferedCellAllocator() = 0;
+
+  //----------------------------------------------------------------------------
+  //get back a lightweight interface around incrementally allocating memory into
+  //the given interface. This is generally used to create new coordinates or
+  //cells that are than assigned to an existing mesh or new mesh.
+  //
+  //If the current interface is read-only, the IncrementalAllocatorPtr that is
+  //returned will be NULL.
+  //
+  //Note: Merely fetching a valid allocator will mark the collection as
+  //modified. This is done instead of on a per-allocation basis so that
+  //modification state changes don't impact performance.
+  virtual smtk::mesh::IncrementalAllocatorPtr incrementalAllocator() = 0;
 
   //----------------------------------------------------------------------------
   //get back an efficient storage mechanism for a range of cells point

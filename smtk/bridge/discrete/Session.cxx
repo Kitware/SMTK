@@ -14,6 +14,10 @@
 #include "smtk/common/UUID.h"
 #include "smtk/AutoInit.h"
 
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/MeshSet.h"
+
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Model.h"
@@ -30,6 +34,8 @@
 #include "smtk/model/Chain.h"
 #include "smtk/model/Loop.h"
 #include "smtk/model/Instance.h"
+
+#include "smtk/extension/vtk/io/ImportVTKData.h"
 
 #include "vtkCMBModelReadOperator.h"
 #include "vtkCMBModelWriterV5.h"
@@ -1133,6 +1139,9 @@ smtk::common::UUID Session::trackModel(
     smtk::model::SessionRef(
       mgr, this->sessionId()));
 
+  // Create a collection associated with the model id
+  this->manager()->meshes()->makeCollection(mid);
+
   // Now add the record to manager and assign the URL to
   // the model as a string property.
   //smtk::model::EntityRef c = this->addCMBEntityToManager(mid, dmod, mgr, 8);
@@ -1587,6 +1596,26 @@ bool Session::addTessellation(const smtk::model::EntityRef& cellOut, vtkModelGeo
       }
     if (!vertMap.empty())
       cellOut.manager()->setTessellation(cellOut.entity(), tess);
+
+    smtk::mesh::CollectionPtr collection =
+      this->manager()->meshes()->collection(cellOut.owningModel().entity());
+    if (collection && collection->isValid())
+      {
+      smtk::mesh::MeshSet modified = collection->findAssociatedMeshes(cellOut);
+      if (!modified.is_empty())
+        {
+        collection->removeMeshes(modified);
+        }
+
+      smtk::extension::vtk::io::ImportVTKData importVTKData;
+      smtk::mesh::MeshSet meshForEntity = importVTKData(poly, collection);
+      if (meshForEntity.is_empty())
+        {
+        return false;
+        }
+      meshForEntity.setModelEntity(cellOut);
+      hasTess = true;
+      }
     }
   return hasTess;
 }

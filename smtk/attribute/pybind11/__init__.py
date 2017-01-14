@@ -37,7 +37,9 @@ type_dict = \
     Item.MESH_ENTITY: \
       (MeshItem, MeshItemDefinition), \
     Item.MESH_SELECTION: \
-      (MeshSelectionItem, MeshSelectionItemDefinition) \
+      (MeshSelectionItem, MeshSelectionItemDefinition), \
+    Item.DATE_TIME: \
+      (DateTimeItem, DateTimeItemDefinition) \
   }
 
 def to_concrete(item):
