@@ -108,6 +108,14 @@ namespace
 using namespace CmbFaceMesherClasses;
 
 //----------------------------------------------------------------------------
+meshVertex::meshVertex():
+x(0),
+y(0),
+modelId(-1),
+modelEntityType(vtkModelTypeCOPY)
+{}
+
+//----------------------------------------------------------------------------
 meshVertex::meshVertex(const double& a, const double& b):
 x(a),
 y(b),
@@ -125,6 +133,13 @@ modelEntityType(type)
 {}
 
 //----------------------------------------------------------------------------
+bool meshVertex::operator ==(const meshVertex &p) const
+{
+  return  ((this->x == p.x) &&
+          (this->x == p.x && this->y && p.y));
+}
+
+//----------------------------------------------------------------------------
 bool meshVertex::operator <(const meshVertex &p) const
 {
   return  ((this->x < p.x) ||
@@ -132,11 +147,19 @@ bool meshVertex::operator <(const meshVertex &p) const
 }
 
 //----------------------------------------------------------------------------
+meshEdge::meshEdge():
+First(-1),
+Second(-1),
+ModelId(-1)
+{}
+
+//----------------------------------------------------------------------------
 meshEdge::meshEdge(const vtkIdType& f, const vtkIdType& s):
 First(f),
 Second(s),
 ModelId(-1)
 {}
+
 //----------------------------------------------------------------------------
 meshEdge::meshEdge(const vtkIdType& f, const vtkIdType& s,
                          const vtkIdType& id):
@@ -144,6 +167,13 @@ First(f),
 Second(s),
 ModelId(id)
 {}
+
+//----------------------------------------------------------------------------
+bool meshEdge::operator==(const meshEdge &p) const
+{
+  return ((this->First == p.First) &&
+         (this->First == p.First && this->Second == p.Second));
+}
 
 //----------------------------------------------------------------------------
 bool meshEdge::operator<(const meshEdge &p) const
@@ -234,6 +264,23 @@ void ModelEdgeRep::updateModelRealtionships()
 int ModelEdgeRep::numberOfEdges() const
 {
   return static_cast<int>(this->Segments.size());
+}
+
+//----------------------------------------------------------------------------
+bool ModelLoopRep::operator==(const ModelLoopRep& lr) const
+{
+  return (this->Id == lr.Id &&
+          this->IsOuterLoop == lr.IsOuterLoop &&
+          this->ModelEdges == lr.ModelEdges &&
+          this->Segments == lr.Segments &&
+          this->PointsToIds == lr.PointsToIds &&
+          this->IdsToPoints == lr.IdsToPoints);
+}
+
+//----------------------------------------------------------------------------
+bool ModelLoopRep::operator<(const ModelLoopRep& lr) const
+{
+  return (this->Id < lr.Id);
 }
 
 //----------------------------------------------------------------------------

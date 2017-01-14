@@ -15,13 +15,13 @@
 #ifndef __smtk_vtk_cmbFaceMeshHelper_h
 #define __smtk_vtk_cmbFaceMeshHelper_h
 
+#include "smtk/common/CompilerInformation.h"
 #include "smtk/extension/vtk/meshing/Exports.h" // For export macro
 #include <map> // Needed for STL map.
 #include <set> // Needed for STL set.
 #include <list> // Needed for STL list.
 #include "vtkType.h"
 #include "vtkABI.h"
-
 
 class vtkPolyData;
 class cmbFaceMesherInterface;
@@ -32,6 +32,7 @@ namespace CmbFaceMesherClasses
 class VTKSMTKMESHINGEXT_EXPORT meshVertex
 {
 public:
+  meshVertex();
   meshVertex(const double& a, const double& b);
   meshVertex(const double& a, const double& b,
       const vtkIdType& ModelId, const int& ModelEntityType);
@@ -41,6 +42,9 @@ public:
   vtkIdType modelId;
   int modelEntityType;
 
+  //equality operator needed for map storage
+  bool operator==(const meshVertex &p) const;
+
   //comparison operator needed for map storage
   bool operator<(const meshVertex &p) const;
 };
@@ -48,8 +52,12 @@ public:
 class VTKSMTKMESHINGEXT_EXPORT meshEdge
 {
 public:
+  meshEdge();
   meshEdge(const vtkIdType& f, const vtkIdType& s);
   meshEdge(const vtkIdType& f, const vtkIdType& s, const vtkIdType& id);
+
+  //equality operator needed for list storage
+  bool operator==(const meshEdge &es) const;
 
   //comparison operator needed for map storage
   bool operator<(const meshEdge &es) const;
@@ -67,6 +75,16 @@ protected:
   vtkIdType Second;
   vtkIdType ModelId;
 };
+
+#ifdef SMTK_MSVC
+  template class VTKSMTKMESHINGEXT_EXPORT std::list<meshEdge>;
+  template class VTKSMTKMESHINGEXT_EXPORT std::map<vtkIdType,meshVertex>;
+  template class VTKSMTKMESHINGEXT_EXPORT std::set<meshVertex>;
+  template class VTKSMTKMESHINGEXT_EXPORT std::map<vtkIdType, int>;
+  template class VTKSMTKMESHINGEXT_EXPORT std::set<meshEdge>;
+  template class VTKSMTKMESHINGEXT_EXPORT std::map<meshVertex,vtkIdType>;
+  template class VTKSMTKMESHINGEXT_EXPORT std::map<vtkIdType,meshVertex>;
+#endif
 
 class VTKSMTKMESHINGEXT_EXPORT ModelEdgeRep
 {
@@ -104,8 +122,15 @@ protected:
 class VTKSMTKMESHINGEXT_EXPORT ModelLoopRep
 {
 public:
+  ModelLoopRep():Id(-1), IsOuterLoop(true) {}
   ModelLoopRep(const vtkIdType &id, const bool &isInternal)
     :Id(id), IsOuterLoop(!isInternal){}
+
+  //equality operator needed for list storage
+  bool operator==(const ModelLoopRep &lr) const;
+
+  //comparison operator needed for list storage
+  bool operator<(const ModelLoopRep &lr) const;
 
   //returns true if an edge with the sameUniquePersistentId has already be added
   bool edgeExists(const vtkIdType &e) const;
@@ -266,6 +291,10 @@ protected:
   std::map<meshVertex,vtkIdType> PointsToIds;
   std::map<vtkIdType,meshVertex> IdsToPoints;
 };
+
+#ifdef SMTK_MSVC
+  template class VTKSMTKMESHINGEXT_EXPORT std::list<ModelLoopRep>;
+#endif
 
 class VTKSMTKMESHINGEXT_EXPORT ModelFaceRep
 {
