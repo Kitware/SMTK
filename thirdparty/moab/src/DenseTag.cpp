@@ -102,7 +102,10 @@ ErrorCode DenseTag::get_array(const SequenceManager* seqman,
                               const unsigned char* const& ptr,
                               size_t& count) const
 {
-  return get_array(seqman, NULL, h, ptr, count);
+  //  cast away the const-ness; do we really want to do this?
+  // probably we are not calling this anywhere;
+  // clang compiler found this
+  return get_array(seqman, NULL, h, const_cast<unsigned char *> ( ptr ), count);
 }
 
 ErrorCode DenseTag::get_array(const SequenceManager* seqman,
@@ -138,7 +141,9 @@ ErrorCode DenseTag::get_array(const SequenceManager* seqman,
 ErrorCode DenseTag::get_array(const EntitySequence* seq,
                               const unsigned char* const & ptr) const
 {
-  return get_array(seq, ptr);
+  // cast away the constness; otherwise it would be infinite recursion
+  // probably we are not calling this anywhere
+  return get_array(seq, const_cast<unsigned char *> ( ptr ));
 }
 
 ErrorCode DenseTag::get_array(const EntitySequence* seq,

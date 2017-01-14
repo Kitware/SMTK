@@ -93,6 +93,11 @@ pqArcWidget::~pqArcWidget()
 }
 
 //-----------------------------------------------------------------------------
+void pqArcWidget::enableApplyButton(bool state)
+{
+  this->Internals->Finished->setEnabled(state);
+}
+//-----------------------------------------------------------------------------
 void pqArcWidget::createWidget(pqServer* server)
 {
   vtkSMNewWidgetRepresentationProxy* widget = NULL;

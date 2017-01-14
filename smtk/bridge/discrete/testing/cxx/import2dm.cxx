@@ -83,9 +83,17 @@ int main(int argc, char* argv[])
       smtk::mesh::ManagerPtr meshmgr = mgr->meshes();
         typedef std::vector< smtk::mesh::CollectionPtr > AssocCollections;
       AssocCollections assocCollections = meshmgr->collectionsWithAssociations();
-      test(assocCollections.size() == 1, "expecting 1 mesh collection");
+      test(assocCollections.size() == 2, "expecting 2 mesh collections");
 
       smtk::mesh::CollectionPtr mc = assocCollections[0];
+      if (mc->entity() == model2dm.entity())
+	{
+	// this collection has the same entity id as the model. It holds the
+	// tessellation meshes for each model entity. We are looking for the
+	// mesh that is affiliated with the model, not the one that represents
+	// its tessellation.
+	mc = assocCollections[1];
+	}
       test((mc->meshes(smtk::mesh::Dims2)).size() == 4, "Expecting 4 face mesh");
       test((mc->meshes(smtk::mesh::Dims1)).size() == 10, "Expecting 10 edge mesh");
       test((mc->meshes(smtk::mesh::Dims0)).size() == 7, "Expecting 7 vertex mesh");

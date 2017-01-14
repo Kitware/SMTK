@@ -47,6 +47,9 @@ protected slots:
   virtual void cancelOperation(const smtk::model::OperatorPtr&);
   virtual void clearSelection();
   virtual void arcOperationDone();
+  // This slot is used to indicate that the underlying attribute
+  // for the operation should be checked for validity
+  virtual void attributeModified();
 
 protected:
   virtual void updateAttributeData();

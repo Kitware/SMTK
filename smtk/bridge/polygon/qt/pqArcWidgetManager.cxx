@@ -51,6 +51,7 @@ pqArcWidgetManager::pqArcWidgetManager(pqServer *server, pqRenderView *view)
 
   this->EditWidget = NULL;
   this->ActiveWidget = NULL;
+  this->EnableWidgetApplyButton = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -141,7 +142,7 @@ int pqArcWidgetManager::create()
   this->ArcWidget->select();
   this->Arc->setPlaneProjectionNormal(normal);
   this->Arc->setPlaneProjectionPosition(planepos);
-
+  this->ArcWidget->enableApplyButton(this->EnableWidgetApplyButton);
   this->ActiveWidget = this->ArcWidget;
   return 1;
 }
@@ -208,6 +209,15 @@ void pqArcWidgetManager::cancelOperation(const smtk::model::OperatorPtr& op)
   emit this->operationCancelled();
 }
 
+//-----------------------------------------------------------------------------
+void pqArcWidgetManager::enableApplyButton(bool state)
+{
+  this->EnableWidgetApplyButton = state;
+  if (this->ArcWidget)
+    {
+    this->ArcWidget->enableApplyButton(state);
+    }
+}
 //-----------------------------------------------------------------------------
 void pqArcWidgetManager::createEdge()
 {

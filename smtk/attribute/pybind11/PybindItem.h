@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef pybind_smtk_attribute_Item_h
-#define pybind_smtk_attribute_Item_h
+#ifndef pybind___smtk_attribute_Item_h
+#define pybind___smtk_attribute_Item_h
 
 #include <pybind11/pybind11.h>
 
@@ -22,7 +22,7 @@ namespace py = pybind11;
 
 PySharedPtrClass< smtk::attribute::Item > pybind11_init_smtk_attribute_Item(py::module &m)
 {
-  PySharedPtrClass< smtk::attribute::Item > instance(m, "Item");
+  PySharedPtrClass< smtk::attribute::Item > instance(m, "Item", py::metaclass());
   instance
     .def("deepcopy", (smtk::attribute::Item & (smtk::attribute::Item::*)(::smtk::attribute::Item const &)) &smtk::attribute::Item::operator=)
     .def("classname", &smtk::attribute::Item::classname)
@@ -68,6 +68,7 @@ PySharedPtrClass< smtk::attribute::Item > pybind11_init_smtk_attribute_Item(py::
     .value("MODEL_ENTITY", smtk::attribute::Item::Type::MODEL_ENTITY)
     .value("MESH_SELECTION", smtk::attribute::Item::Type::MESH_SELECTION)
     .value("MESH_ENTITY", smtk::attribute::Item::Type::MESH_ENTITY)
+    .value("DATE_TIME", smtk::attribute::Item::Type::DATE_TIME)
     .value("NUMBER_OF_TYPES", smtk::attribute::Item::Type::NUMBER_OF_TYPES)
     .export_values();
   py::enum_<smtk::attribute::Item::AssignmentOptions>(instance, "AssignmentOptions")

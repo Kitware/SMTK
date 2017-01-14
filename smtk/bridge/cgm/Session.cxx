@@ -30,6 +30,10 @@
 
 #include "smtk/common/UUID.h"
 
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/MeshSet.h"
+
 #include "smtk/Options.h"
 #include "smtk/AutoInit.h"
 
@@ -341,6 +345,9 @@ smtk::model::SessionInfoBits Session::addBodyToManager(
       /* embedding dim */ 3,
       body->entity_name().c_str());
     actual |= smtk::model::SESSION_ENTITY_TYPE;
+
+    // Create a collection associated with the model id
+    this->manager()->meshes()->makeCollection(entityref.entity());
 
     if (requestedInfo & (smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS))
       {
@@ -800,6 +807,26 @@ void Session::addRelations(
     }
 }
 
+namespace
+{
+smtk::mesh::CellType cgmToSMTKCell(int i)
+{
+  switch (i)
+    {
+  case 1:
+    return smtk::mesh::Vertex;
+  case 2:
+    return smtk::mesh::Line;
+  case 3:
+    return smtk::mesh::Triangle;
+  case 4:
+    return smtk::mesh::Quad;
+  default:
+    return smtk::mesh::CellType_MAX;
+    }
+}
+}
+
 template<typename E>
 bool SessionAddTessellation(const EntityRef& entityref, E* cgmEnt, double chordErr, double angleErr)
 {
@@ -870,6 +897,65 @@ bool SessionAddTessellation(const EntityRef& entityref, E* cgmEnt, double chordE
       it->second.conn().push_back(k);
       }
     }
+
+  smtk::mesh::CollectionPtr collection =
+    entityref.owningSession().manager()->meshes()->
+    collection(entityref.owningModel().entity());
+  if (collection && collection->isValid())
+    {
+    smtk::mesh::MeshSet modified = collection->findAssociatedMeshes(entityref);
+    if (!modified.is_empty())
+      {
+      collection->removeMeshes(modified);
+      }
+
+    smtk::mesh::BufferedCellAllocatorPtr ialloc =
+      collection->interface()->bufferedCellAllocator();
+
+    if (!ialloc->reserveNumberOfCoordinates(npts))
+      {
+      return false;
+      }
+
+    GPoint* inPts = primitives.point_list();
+    for (int j = 0; j < npts; ++j, ++inPts)
+      {
+      ialloc->setCoordinate(j, inPts->x, inPts->y, inPts->z);
+      }
+
+    if (cgmEnt->dimension() > 1)
+      {
+      int* inConn = primitives.facet_list();
+      int ptsPerPrim = 0;
+      for (int k = 0; k < connCount; k += (ptsPerPrim + 1),
+             inConn += (ptsPerPrim + 1))
+        {
+        ptsPerPrim = *inConn;
+        int* pConn = inConn + 1;
+        ialloc->addCell(cgmToSMTKCell(ptsPerPrim), pConn, ptsPerPrim);
+        }
+      }
+    else
+      {
+      long long pts[2];
+      for (int k = 0; k < npts-1; ++k)
+        {
+        pts[0] = k;
+        pts[1] = k+1;
+        ialloc->addCell(smtk::mesh::Line, pts, 2);
+        }
+      }
+    if (ialloc->flush())
+      {
+        smtk::mesh::MeshSet meshForEntity = collection->createMesh(
+          smtk::mesh::CellSet(collection, ialloc->cells()));
+      if (!meshForEntity.is_empty())
+        {
+        meshForEntity.setModelEntity(entityref);
+        }
+      }
+    }
+
   return true;
 }
 

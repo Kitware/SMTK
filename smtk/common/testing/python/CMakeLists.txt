@@ -1,6 +1,7 @@
 set(smtkCommonPythonTests
   version
   uuidGenerator
+  datetimezonepairtest
 )
 
 foreach (test ${smtkCommonPythonTests})

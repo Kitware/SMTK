@@ -178,7 +178,7 @@ void verify_tri_polydata()
 
   vtkSmartPointer< vtkPolyData > pd = make_TrianglePolyData();
   smtk::mesh::CollectionPtr c = imprt( pd, manager );
-  test( c->isValid(), "collection should valid");
+  test( c && c->isValid(), "collection should be valid");
   test( c->numberOfMeshes() == 1, "collection should only have a single mesh");
   test( c->cells().size() == static_cast<std::size_t>(pd->GetNumberOfCells()));
 
@@ -205,7 +205,7 @@ void verify_tri_ugrid()
 
   vtkSmartPointer< vtkUnstructuredGrid > ug = make_TriangleUGrid();
   smtk::mesh::CollectionPtr c = imprt( ug, manager );
-  test( c->isValid(), "collection should valid");
+  test( c && c->isValid(), "collection should be valid");
   test( c->numberOfMeshes() == 1, "collection should only have a single mesh");
   test( c->cells().size() == static_cast<std::size_t>(ug->GetNumberOfCells()));
 
@@ -236,7 +236,7 @@ void verify_mixed_cell_ugrid()
   std::cout << "number of cells: " << c->cells().size() << std::endl;
   std::cout << "number of cells ug: " <<ug->GetNumberOfCells() << std::endl;
 
-  test( c->isValid(), "collection should valid");
+  test( c && c->isValid(), "collection should be valid");
   test( c->numberOfMeshes() == 1, "collection should only have a single mesh");
   test( c->cells().size() == static_cast<std::size_t>(ug->GetNumberOfCells()),
         "number of cells in mesh don't match");

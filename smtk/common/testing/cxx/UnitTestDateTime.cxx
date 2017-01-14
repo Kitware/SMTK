@@ -115,7 +115,7 @@ void verifySetGets()
   smtk::common::TimeZone tzCST;
   tzCST.setPosixString("CST-6");
   test(
-    dt.setComponents(yr2, month2, day2, hr2, minute2, sec2, msec2, &tzCST),
+    dt.setComponents(tzCST, yr2, month2, day2, hr2, minute2, sec2, msec2),
     "Failed to setComponents() with time zone");
   dt.components(yr, month, day, hr, minute, sec, msec),
   // Returned hour should be ahead by 6
@@ -125,7 +125,7 @@ void verifySetGets()
   smtk::common::TimeZone tzPST;
   tzPST.setPosixString("PST-8");
   test(
-    dt.components(yr, month, day, hr, minute, sec, msec, &tzPST),
+    dt.components(tzPST, yr, month, day, hr, minute, sec, msec),
     "Failed components() with time zone");
   std::cout << "hr: " << hr << ",  hr2: " << hr2 << std::endl;
   // Returned hour should be behind by 2 (plus 6 minus 8)

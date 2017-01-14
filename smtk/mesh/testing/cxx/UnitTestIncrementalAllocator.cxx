@@ -37,7 +37,7 @@ namespace
                               tetrahedron, pyramid, wedge, hexahedron};
 
 //----------------------------------------------------------------------------
-void verify_moab_buffered_cell_allocator_creation()
+void verify_moab_incremental_allocator_creation()
 {
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
   smtk::mesh::InterfacePtr iface = smtk::mesh::moab::make_interface();
@@ -48,8 +48,8 @@ void verify_moab_buffered_cell_allocator_creation()
 
   //at this point extract the allocator from json and verify that it
   //is NOT null
-  smtk::mesh::BufferedCellAllocatorPtr allocator =
-    collection->interface()->bufferedCellAllocator();
+  smtk::mesh::IncrementalAllocatorPtr allocator =
+    collection->interface()->incrementalAllocator();
   test( !!allocator, "moab buffered cell allocator should be valid");
 
   //verify that is modified is true
@@ -57,7 +57,7 @@ void verify_moab_buffered_cell_allocator_creation()
 }
 
 //----------------------------------------------------------------------------
-void verify_json_buffered_cell_allocator_creation()
+void verify_json_incremental_allocator_creation()
 {
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
   smtk::mesh::InterfacePtr iface = smtk::mesh::json::make_interface();
@@ -68,8 +68,8 @@ void verify_json_buffered_cell_allocator_creation()
 
   //at this point extract the allocator from json and verify that it
   //is null
-  smtk::mesh::BufferedCellAllocatorPtr allocator =
-    collection->interface()->bufferedCellAllocator();
+  smtk::mesh::IncrementalAllocatorPtr allocator =
+    collection->interface()->incrementalAllocator();
   test( !allocator, "json incremental allocator should be NULL");
 
   //verify that is modified is true
@@ -78,7 +78,7 @@ void verify_json_buffered_cell_allocator_creation()
 }
 
 //----------------------------------------------------------------------------
-void verify_moab_buffered_cell_allocator_cell(smtk::mesh::CellType cellType)
+void verify_moab_incremental_allocator_cell(smtk::mesh::CellType cellType)
 {
   // Allocate a cell of type <cellType>.
 
@@ -89,17 +89,12 @@ void verify_moab_buffered_cell_allocator_cell(smtk::mesh::CellType cellType)
   test( collection->isValid(), "collection should be valid");
   test( !collection->isModified(), "collection shouldn't be modified");
 
-  smtk::mesh::BufferedCellAllocatorPtr allocator =
-    collection->interface()->bufferedCellAllocator();
+  smtk::mesh::IncrementalAllocatorPtr allocator =
+    collection->interface()->incrementalAllocator();
 
   // Grab the number of vertices for the cell type being tested
   std::size_t nVerticesPerCell = (cellType == smtk::mesh::Polygon ? 5 :
                                   smtk::mesh::verticesPerCell(cellType));
-
-  test(allocator->isValid() == false);
-
-  // Reserve the vertices
-  test(allocator->reserveNumberOfCoordinates(nVerticesPerCell));
 
   test(allocator->isValid() == true);
 
@@ -107,8 +102,8 @@ void verify_moab_buffered_cell_allocator_cell(smtk::mesh::CellType cellType)
   // fill the vertices and remember the connectivity
   for (std::size_t i = 0; i < nVerticesPerCell; i++)
     {
-    test(allocator->setCoordinate(i, cellPoints[cellType][i]));
-    connectivity[i] = i;
+    connectivity[i] = allocator->addCoordinate(cellPoints[cellType][i]);
+    test(allocator->isValid());
     }
 
   // Add a cell using the cell type and connectivity
@@ -126,7 +121,7 @@ void verify_moab_buffered_cell_allocator_cell(smtk::mesh::CellType cellType)
 }
 
 //----------------------------------------------------------------------------
-void verify_moab_buffered_cell_allocator_validity(smtk::mesh::CellType cellType)
+void verify_moab_incremental_allocator_validity(smtk::mesh::CellType cellType)
 {
   // Allocate a cell of type <cellType>, ensuring that the allocator returns the
   // proper success and validity variables along the way.
@@ -138,62 +133,40 @@ void verify_moab_buffered_cell_allocator_validity(smtk::mesh::CellType cellType)
   test( collection->isValid(), "collection should be valid");
   test( !collection->isModified(), "collection shouldn't be modified");
 
-  smtk::mesh::BufferedCellAllocatorPtr allocator =
-    collection->interface()->bufferedCellAllocator();
-  test(allocator->isValid() == false);
+  smtk::mesh::IncrementalAllocatorPtr allocator =
+    collection->interface()->incrementalAllocator();
+  test(allocator->isValid() == true);
   test(allocator->cells().size() == 0);
-
-  // Try to add a coordinate before allocating for it (should fail)
-  test(allocator->setCoordinate(0, cellPoints[cellType][0]) == false);
-  test(allocator->isValid() == false);
-
-  // Flush before initializing anything (should fail)
-  test(allocator->flush() == false);
-  test(allocator->isValid() == false);
 
   // Grab the number of vertices for the cell type being tested
   std::size_t nVerticesPerCell = (cellType == smtk::mesh::Polygon ? 5 :
                                   smtk::mesh::verticesPerCell(cellType));
 
-  // Try to add a cell before allocating vertices (should fail)
+  // Try to add a cell before allocating vertices (should succeed)
   std::vector<int> connectivity(nVerticesPerCell);
   for (std::size_t i = 0; i < nVerticesPerCell; i++)
     {
-    connectivity[i] = i;
+    connectivity[i] = static_cast<int>(i);
     }
   test(allocator->addCell(cellType, &connectivity[0],
-                          nVerticesPerCell) == false);
-  test(allocator->isValid() == false);
-
-  // Reserve the coordinates (should succeed)
-  test(allocator->reserveNumberOfCoordinates(nVerticesPerCell) == true);
-  test(allocator->isValid() == true);
-
-  // Reserve coordinates again (should fail but not alter the validity of the
-  // allocator)
-  test(allocator->reserveNumberOfCoordinates(nVerticesPerCell + 1) == false);
+                          nVerticesPerCell) == true);
   test(allocator->isValid() == true);
 
   // Flush with coordinates allocated but no cells added (should succeed)
   test(allocator->flush() == true);
   test(allocator->isValid() == true);
 
-  // Add a cell before defining vertices (should succeed but not add anything
-  // until the allocator is flushed)
-  test(allocator->addCell(cellType, &connectivity[0], nVerticesPerCell));
-  test(allocator->cells().size() == 0);
-
   // fill the vertices and remember the connectivity (should succeed)
   for (std::size_t i = 0; i < nVerticesPerCell; i++)
     {
-    test(allocator->setCoordinate(i, cellPoints[cellType][i]));
+    test(static_cast<std::size_t>(connectivity[i]) ==
+         allocator->addCoordinate(cellPoints[cellType][i]));
     }
 
   // Finalize the addition of cells (should succeed)
   test(allocator->flush());
-  test(allocator->isValid() == true);
-
   test(allocator->cells().size() == 1);
+  test(allocator->isValid() == true);
 
   smtk::mesh::MeshSet mesh =
     collection->createMesh(smtk::mesh::CellSet(collection, allocator->cells()));
@@ -202,7 +175,7 @@ void verify_moab_buffered_cell_allocator_validity(smtk::mesh::CellType cellType)
 }
 
 //----------------------------------------------------------------------------
-void verify_moab_buffered_cell_allocator_cells()
+void verify_moab_incremental_allocator_cells()
 {
   // Allocate one of each type of cell.
 
@@ -213,8 +186,8 @@ void verify_moab_buffered_cell_allocator_cells()
   test( collection->isValid(), "collection should be valid");
   test( !collection->isModified(), "collection shouldn't be modified");
 
-  smtk::mesh::BufferedCellAllocatorPtr allocator =
-    collection->interface()->bufferedCellAllocator();
+  smtk::mesh::IncrementalAllocatorPtr allocator =
+    collection->interface()->incrementalAllocator();
 
   // First, we must allocate the number of points needed for all of the cells.
   std::size_t nVertices = 0;
@@ -229,13 +202,10 @@ void verify_moab_buffered_cell_allocator_cells()
     nVertices += nVerticesPerCell;
     }
 
-  test(allocator->reserveNumberOfCoordinates(nVertices));
+  // We incrementally add cells and points in any order we want. Note that it
+  // is definitely preferable to allocate like cells in sequence, however.
 
-  // Now that all of the points are allocated, we can incrementally add cells
-  // and fill the point values in any order we want. Note that it is definitely
-  // preferable to allocate like cells in sequence, however.
-
-  std::size_t pointCounter = 0;
+  int pointCounter = 0;
 
   for (int cellType = smtk::mesh::Vertex; cellType != smtk::mesh::CellType_MAX;
        ++cellType)
@@ -255,8 +225,9 @@ void verify_moab_buffered_cell_allocator_cells()
         xyz[j] = cellPoints[cellType][i][j];
         }
       xyz[0] += 2.*cellType;
-      test(allocator->setCoordinate(pointCounter, xyz));
-      connectivity[i] = pointCounter++;
+      connectivity[i] = allocator->addCoordinate(xyz);
+      test(pointCounter == connectivity[i]);
+      pointCounter++;
       }
     test(allocator->addCell(smtk::mesh::CellType(cellType), &connectivity[0],
                             nVerticesPerCell));
@@ -275,20 +246,21 @@ void verify_moab_buffered_cell_allocator_cells()
 }
 
 //----------------------------------------------------------------------------
-int UnitTestBufferedCellAllocator(int, char** const)
+int UnitTestIncrementalAllocator(int, char** const)
 {
-  verify_moab_buffered_cell_allocator_creation();
-  verify_json_buffered_cell_allocator_creation();
+  verify_moab_incremental_allocator_creation();
+  verify_json_incremental_allocator_creation();
 
   for (int cellType = smtk::mesh::Vertex; cellType != smtk::mesh::CellType_MAX;
        ++cellType)
     {
     smtk::mesh::CellType ct = smtk::mesh::CellType(cellType);
-    verify_moab_buffered_cell_allocator_validity(ct);
-    verify_moab_buffered_cell_allocator_cell(ct);
+    verify_moab_incremental_allocator_validity(ct);
+    verify_moab_incremental_allocator_cell(ct);
+    break;
     }
 
-  verify_moab_buffered_cell_allocator_cells();
+  verify_moab_incremental_allocator_cells();
 
   return 0;
 }

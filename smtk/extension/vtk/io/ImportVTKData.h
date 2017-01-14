@@ -35,8 +35,6 @@ namespace io {
 
 //Import a VTK data set to a smtk::mesh::collection.
 //Currently we only support creating a new database from a vtk data set.
-//
-//TODO: Allow insertion of a vtk dataset into an existing collection
 class SMTKIOVTK_EXPORT ImportVTKData
 {
 public:
@@ -49,8 +47,8 @@ public:
                                        smtk::mesh::ManagerPtr& manager,
                                        std::string domainPropertyName) const;
 
-  //Import a VTK xml polydata or xml unstructured grid file as a collection.
-  //Optionally specify the cell property name to be used to split
+  //Import a VTK xml polydata or xml unstructured grid file into an existing
+  //collection. Optionally specify the cell property name to be used to split
   //the mesh into muliple domains.
   bool operator()(const std::string& filename,
                   smtk::mesh::CollectionPtr collection,
@@ -61,28 +59,27 @@ public:
   smtk::mesh::MeshSet operator()(
     vtkPolyData* polydata, smtk::mesh::CollectionPtr collection) const;
 
-  //Import a VTK polydata as a collection.
-  //Optionally specify the cell property name to be used to split
-  //the mesh into muliple domains.
+  //Import a VTK polydata into an existing collection and specify the
+  //cell property name to be used to split the mesh into muliple domains.
   bool operator()(vtkPolyData* polydata,
                   smtk::mesh::CollectionPtr collection,
-                  std::string domainPropertyName = std::string()) const;
+                  std::string domainPropertyName) const;
 
-  //Import a VTK polydata to a collection.
+  //Import a VTK polydata as a collection.
   //Optionally specify the cell property name to be used to split
   //the mesh into muliple domains.
   smtk::mesh::CollectionPtr operator()(vtkPolyData* polydata,
                                        smtk::mesh::ManagerPtr& manager,
                                        std::string domainPropertyName = std::string()) const;
 
-  //Import a VTK unstructured grid to a collection.
-  //Optionally specify the cell property name to be used to split
-  //the mesh into muliple domains.
+  //Import a VTK unstructured grid into an existing collection. Optionally
+  //specify the cell property name to be used to split the mesh into muliple
+  //domains.
   bool operator()(vtkUnstructuredGrid* ugrid,
                   smtk::mesh::CollectionPtr collection,
                   std::string domainPropertyName = std::string()) const;
 
-  //Import a VTK unstructured grid to a collection.
+  //Import a VTK unstructured grid as a collection.
   //Optionally specify the cell property name to be used to split
   //the mesh into muliple domains.
   smtk::mesh::CollectionPtr operator()(vtkUnstructuredGrid* ugrid,
