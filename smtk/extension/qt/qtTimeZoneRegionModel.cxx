@@ -9,7 +9,7 @@
 //=========================================================================
 
 #include "qtTimeZoneRegionModel.h"
-#include "smtk/attribute/timezonespec.h"
+#include "smtk/common/timezonespec.h"
 
 #include <QDebug>
 #include <QList>
@@ -83,7 +83,7 @@ void qtTimeZoneRegionModel::initialize()
   // And "ID" == "Continent/Region"
 
   QSet<QString> continentSet;
-  QString tzSpec(smtk::attribute::timezonespec_csv);
+  QString tzSpec(smtk::common::timezonespec_csv);
   QTextStream tzStream(&tzSpec);
   int continentId = 0;
   int regionId = 0;

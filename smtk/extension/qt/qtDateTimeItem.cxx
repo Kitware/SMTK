@@ -90,6 +90,7 @@ qtDateTimeItem::qtDateTimeItem(
   if (def->useTimeZone())
     {
     this->Internals->TimeZoneDialog = new QDialog;
+    this->Internals->TimeZoneDialog->setSizeGripEnabled(true);
     QVBoxLayout *dialogLayout = new QVBoxLayout();
     this->Internals->TimeZoneWidget = new qtTimeZoneSelectWidget;
 
@@ -106,6 +107,9 @@ qtDateTimeItem::qtDateTimeItem(
       this->Internals->TimeZoneDialog, SLOT(reject()));
     dialogLayout->addWidget(buttonBox);
     this->Internals->TimeZoneDialog->setLayout(dialogLayout);
+
+    this->Internals->TimeZoneDialog->setWindowTitle("Select Time Zone");
+    this->Internals->TimeZoneDialog->resize(800, 480);
     }
 
   this->Internals->VectorItemOrient = enVectorItemOrient;

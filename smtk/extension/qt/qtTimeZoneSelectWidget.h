@@ -15,7 +15,10 @@
 #define __smtk_extension_qtTimeZoneSelectWidget_h
 
 #include "smtk/extension/qt/Exports.h"
+#include <QItemSelection>
+#include <QModelIndex>
 #include <QWidget>
+
 class Ui_qtTimeZoneSelectWidget;
 
 namespace smtk {
@@ -29,14 +32,24 @@ class SMTKQTEXT_EXPORT qtTimeZoneSelectWidget : public QWidget
   qtTimeZoneSelectWidget(QWidget* parent = NULL);
   ~qtTimeZoneSelectWidget();
 
+  void setContinent(const QModelIndex index);
+
  public slots:
 
  signals:
 
  protected slots:
+  void onContinentChanged(
+    const QItemSelection& selected, const QItemSelection& deselected);
+  void onRegionChanged(
+    const QItemSelection& selected, const QItemSelection& deselected);
 
  protected:
   Ui_qtTimeZoneSelectWidget *UI;
+
+ private:
+  class qtTimeZoneSelectWidgetInternal;
+  qtTimeZoneSelectWidgetInternal *Internal;
 };
 
   } // namespace model
