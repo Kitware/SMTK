@@ -42,6 +42,7 @@ set(QAttrLibSrcs
   qtOperatorDockWidget.cxx
   qtViewInterface.cxx
   qtSMTKUtilities.cxx
+  qtDateTimeItem.cxx
   )
 
 set(QAttrLibUIs
@@ -90,6 +91,7 @@ set(QAttrLibMocHeaders
   qtModelEntityItem.h
   qtModelOperationWidget.h
   qtOperatorDockWidget.h
+  qtDateTimeItem.h
 )
 
 set(QAttrLibHeaders

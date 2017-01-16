@@ -11,7 +11,7 @@
 
 #include "smtk/extension/qt/qtAttributeRefItem.h"
 #include "smtk/extension/qt/qtInputsItem.h"
-#include "smtk/extension/qt/qtFileItem.h"
+#include "smtk/extension/qt/qtDateTimeItem.h"
 #include "smtk/extension/qt/qtFileItem.h"
 #include "smtk/extension/qt/qtGroupItem.h"
 #include "smtk/extension/qt/qtVoidItem.h"
@@ -21,6 +21,7 @@
 
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/GroupItem.h"
+#include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/MeshItem.h"
@@ -119,4 +120,13 @@ qtItem* qtAttributeItemWidgetFactory::createMeshItemWidget(
 {
   return new qtMeshItem(
     smtk::dynamic_pointer_cast<MeshItem>(item), p, bview, orient);
+}
+
+/**\brief Create a widget that illustrates an item whose value is a date-time
+  *
+  */
+qtItem* qtAttributeItemWidgetFactory::createDateTimeItemWidget(
+  DateTimeItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient)
+{
+  return new qtDateTimeItem(smtk::dynamic_pointer_cast<DateTimeItem>(item), p, bview, orient);
 }

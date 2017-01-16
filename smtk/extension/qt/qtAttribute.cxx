@@ -15,6 +15,7 @@
 #include "smtk/extension/qt/qtModelEntityItem.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/FileItem.h"
@@ -270,6 +271,9 @@ qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW,
       aItem = qtAttribute::s_factory->createMeshItemWidget(
         smtk::dynamic_pointer_cast<MeshItem>(item), pW, bview, enVectorItemOrient);
       break;
+    case smtk::attribute::Item::DATE_TIME:
+      aItem = qtAttribute::s_factory->createDateTimeItemWidget(
+        smtk::dynamic_pointer_cast<DateTimeItem>(item), pW, bview, enVectorItemOrient);
     default:
       //this->m_errorStatus << "Error: Unsupported Item Type: " <<
       // smtk::attribute::Item::type2String(item->type()) << "\n";
