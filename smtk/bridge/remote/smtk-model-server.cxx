@@ -7,7 +7,17 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+
+#ifdef _MSC_VER
+// Not supporting anything prior to Windows XP
+#define _WIN32_WINNT 0x0501
+
+// disable conversion from 'size_t' to 'int' warning coming from clpp
+#pragma warning (disable : 4267)
+#endif
+
 #ifndef SHIBOKEN_SKIP
+
 #include "smtk/Options.h"
 #include "smtk/SharedPtr.h"
 

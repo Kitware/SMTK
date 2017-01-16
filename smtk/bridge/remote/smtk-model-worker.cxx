@@ -8,7 +8,17 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 // Implement an SMTK remote model worker.
+
+#ifdef _MSC_VER
+// Not supporting anything prior to Windows XP
+#define _WIN32_WINNT 0x0501
+
+// disable conversion from 'size_t' to 'int' warning coming from clpp
+#pragma warning (disable : 4267)
+#endif
+
 // Steal code from CMB's vtkModelManagerWrapper.
+
 #ifndef SHIBOKEN_SKIP
 #include "smtk/bridge/remote/Session.h"
 #include "smtk/bridge/remote/RemusRPCWorker.h"
