@@ -170,10 +170,17 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
     ::smtk::common::TimeZone tz = dtz.timeZone();
     if (tz.isSet())
       {
-      QString tzRegion = QString::fromStdString(tz.region());
-      this->Internals->TimeZoneWidget->setRegion(tzRegion);
-      timeZoneText = tzRegion.isEmpty() ? "UCT" : tzRegion;
-      }
+      if (tz.isUTC())
+        {
+        timeZoneText = "UTC";
+        }
+      else
+        {
+        QString tzRegion = QString::fromStdString(tz.region());
+        this->Internals->TimeZoneWidget->setRegion(tzRegion);
+        timeZoneText = tzRegion;
+        }  // else (not UTC)
+      }  // if (timezone set)
     }
 
   QFrame *frame = new QFrame(this->parentWidget());
@@ -264,7 +271,7 @@ void qtDateTimeItem::onRegionSelected()
 void qtDateTimeItem::onTimeZoneUnset()
 {
   this->Internals->TimeZoneButton->setText("No TimeZoneSelected");
-  int element = 0;
+  std::size_t element = 0;
   this->setTimeZone(element, "");
 
   QAction *action = dynamic_cast<QAction*>(this->sender());
@@ -275,6 +282,8 @@ void qtDateTimeItem::onTimeZoneUnset()
 void qtDateTimeItem::onTimeZoneUTC()
 {
   this->Internals->TimeZoneButton->setText("UTC");
+  std::size_t element = 0;
+  this->setTimeZoneToUTC(element);
   QAction *action = dynamic_cast<QAction*>(this->sender());
   this->updateTimeZoneMenu(action);
 }
@@ -613,6 +622,19 @@ void qtDateTimeItem::setTimeZone(std::size_t element, const QString& region)
   ::smtk::common::DateTimeZonePair tzPair = item->value(element);
   ::smtk::common::TimeZone tz = tzPair.timeZone();
   tz.setRegion(region.toStdString());
+  tzPair.setTimeZone(tz);
+  item->setValue(element, tzPair);
+}
+
+//----------------------------------------------------------------------------
+void qtDateTimeItem::setTimeZoneToUTC(std::size_t element)
+{
+  smtk::attribute::DateTimeItemPtr item =
+    dynamic_pointer_cast<DateTimeItem>(this->getObject());
+
+  smtk::common::DateTimeZonePair tzPair = item->value(element);
+  smtk::common::TimeZone tz = tzPair.timeZone();
+  tz.setUTC();
   tzPair.setTimeZone(tz);
   item->setValue(element, tzPair);
 }

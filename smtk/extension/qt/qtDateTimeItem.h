@@ -68,6 +68,7 @@ namespace smtk
       void updateTimeZoneMenu(QAction *selectedAction = NULL);
 
       void setTimeZone(std::size_t element, const QString& region);
+      void setTimeZoneToUTC(std::size_t element);
 
     private:
       class qtDateTimeItemInternals;
