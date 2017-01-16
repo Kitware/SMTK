@@ -98,6 +98,8 @@ bool TimeZone::setPosixString(const std::string& posixTimeZoneString)
     {
 #ifndef NDEBUG
     std::cerr << "exception: " << e.what() << std::endl;
+#else
+    (void)e;;
 #endif
     boost::local_time::time_zone_ptr tzNull(0);
     this->m_boostTimeZone = tzNull;

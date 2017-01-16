@@ -102,7 +102,8 @@ void verify_moab_incremental_allocator_cell(smtk::mesh::CellType cellType)
   // fill the vertices and remember the connectivity
   for (std::size_t i = 0; i < nVerticesPerCell; i++)
     {
-    connectivity[i] = allocator->addCoordinate(cellPoints[cellType][i]);
+    connectivity[i] =
+      static_cast<int>(allocator->addCoordinate(cellPoints[cellType][i]));
     test(allocator->isValid());
     }
 
@@ -225,7 +226,7 @@ void verify_moab_incremental_allocator_cells()
         xyz[j] = cellPoints[cellType][i][j];
         }
       xyz[0] += 2.*cellType;
-      connectivity[i] = allocator->addCoordinate(xyz);
+      connectivity[i] = static_cast<int>(allocator->addCoordinate(xyz));
       test(pointCounter == connectivity[i]);
       pointCounter++;
       }

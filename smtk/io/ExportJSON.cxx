@@ -61,7 +61,8 @@ namespace {
       smtk::attribute::System tmpSys;
       tmpSys.setRefModelManager(spec->modelManager());
       tmpSys.copyAttribute(
-        spec, smtk::attribute::System::FORCE_COPY_ASSOCIATIONS);
+        spec,
+        static_cast<bool>(smtk::attribute::System::FORCE_COPY_ASSOCIATIONS));
       smtk::io::Logger log;
       smtk::io::AttributeWriter wri;
       wri.includeDefinitions(false);
@@ -908,7 +909,9 @@ void writeUUIDValues( cJSON* parent,
                 std::string name )
 {
   cJSON_AddItemToObject(parent, name.c_str(),
-                        cJSON_CreateUUIDArray(&values[0], values.size()) );
+                        cJSON_CreateUUIDArray(
+                          &values[0], static_cast<unsigned int>(
+                            values.size())));
 }
 
 class ForMeshset : public smtk::mesh::MeshForEach

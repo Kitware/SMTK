@@ -88,7 +88,7 @@ OperatorResult CreateEdgesOperator::operateInternal()
 
   this->m_op->SetShowEdges(1);
   this->m_op->Operate(modelWrapper);
-  bool ok = this->m_op->GetOperateSucceeded();
+  bool ok = this->m_op->GetOperateSucceeded() != 0;
   OperatorResult result =
     this->createResult(
       ok ?  OPERATION_SUCCEEDED : OPERATION_FAILED);

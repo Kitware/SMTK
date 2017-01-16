@@ -29,7 +29,11 @@
 
 #include "smtk/common/testing/cxx/helpers.h"
 
+#include "smtk/common/CompilerInformation.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "clpp/parser.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <algorithm>
 #include <fstream>

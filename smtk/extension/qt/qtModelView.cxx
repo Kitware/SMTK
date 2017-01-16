@@ -1233,7 +1233,7 @@ bool qtModelView::setEntityVisibility(
     if(meshItem)
       {
       meshItem->appendValues(selmeshes);
-      numChangingEnts += selmeshes.size();
+      numChangingEnts += static_cast<int>(selmeshes.size());
       }
     }
 
@@ -1383,7 +1383,7 @@ bool qtModelView::setEntityColor(
     if(meshItem)
       {
       meshItem->appendValues(selmeshes);
-      numChangingEnts += selmeshes.size();
+      numChangingEnts += static_cast<int>(selmeshes.size());
       }
     }
 

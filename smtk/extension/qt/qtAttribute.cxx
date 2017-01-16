@@ -119,7 +119,7 @@ void qtAttribute::createWidget()
     }
   else // show everything
     {
-    numShowItems = att->associations() ? n + 1 : n;
+    numShowItems = static_cast<int>(att->associations() ? n + 1 : n);
     }
   if(numShowItems == 0)
     {

@@ -33,8 +33,10 @@ std::pair<FragmentId, FragmentId> ActiveFragmentTree::boundingFragments(const in
   for (it = this->begin(); it != this->end(); ++it)
     {
     const EdgeFragment& frag(this->fragment(*it));
-    internal::HighPrecisionCoord dlx = frag.hi().x() - frag.lo().x();
-    internal::HighPrecisionCoord dly = frag.hi().y() - frag.lo().y();
+    internal::HighPrecisionCoord dlx =
+      static_cast<smtk::bridge::polygon::internal::HighPrecisionCoord>(frag.hi().x() - frag.lo().x());
+    internal::HighPrecisionCoord dly =
+      static_cast<smtk::bridge::polygon::internal::HighPrecisionCoord>(frag.hi().y() - frag.lo().y());
 
     internal::HighPrecisionCoord dst = dly * pt.x() - dlx * pt.y() - dly * frag.lo().x() + dlx * frag.lo().y();
     if (dst == 0 && !strict)

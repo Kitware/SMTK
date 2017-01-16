@@ -104,8 +104,10 @@ bool EdgeFragmentComparator::operator() (FragmentId a, FragmentId b) const
     return false;
     }
 
-  internal::HighPrecisionCoord dxA = lineA.hi().x() - lineA.lo().x();
-  internal::HighPrecisionCoord dxB = lineB.hi().x() - lineB.lo().x();
+  internal::HighPrecisionCoord dxA =
+    static_cast<smtk::bridge::polygon::internal::HighPrecisionCoord>(lineA.hi().x() - lineA.lo().x());
+  internal::HighPrecisionCoord dxB =
+    static_cast<smtk::bridge::polygon::internal::HighPrecisionCoord>(lineB.hi().x() - lineB.lo().x());
 
   if (dxA == 0)
     {
@@ -118,9 +120,11 @@ bool EdgeFragmentComparator::operator() (FragmentId a, FragmentId b) const
     // Count a as below b when b@x* is below the sweep point (x*,y*) on the theory that a intersects
     // the sweep point exactly. Immediately to the right of the sweep point, a is vertical while b
     // is not, so a > b.
-    internal::HighPrecisionCoord dxBs = this->m_sweepPoint->position().x() - lineB.lo().x();
+    internal::HighPrecisionCoord dxBs =
+      static_cast<smtk::bridge::polygon::internal::HighPrecisionCoord>(this->m_sweepPoint->position().x() - lineB.lo().x());
     // FIXME: Be more careful about precision here:
-    internal::HighPrecisionCoord ybs = lineB.lo().y() + (dxBs / dxB) * (lineB.hi().y() - lineB.lo().y());
+    internal::HighPrecisionCoord ybs =
+      static_cast<smtk::bridge::polygon::internal::HighPrecisionCoord>(lineB.lo().y() + (dxBs / dxB) * (lineB.hi().y() - lineB.lo().y()));
     //std::cout << ": " << ybs << " > " << this->m_sweepPoint->position().y() << "  3\n";
     return ybs > this->m_sweepPoint->position().y();
     }
@@ -132,19 +136,25 @@ bool EdgeFragmentComparator::operator() (FragmentId a, FragmentId b) const
     // the sweep point exactly. Immediately to the right of the sweep point, b is vertical while a
     // is not, so a < b.
     //
-    internal::HighPrecisionCoord dxAs = this->m_sweepPoint->position().x() - lineA.lo().x();
+    internal::HighPrecisionCoord dxAs =
+      static_cast<smtk::bridge::polygon::internal::HighPrecisionCoord>(this->m_sweepPoint->position().x() - lineA.lo().x());
     // FIXME: Be more careful about precision here:
-    internal::HighPrecisionCoord yas = lineA.lo().y() + (dxAs / dxA) * (lineA.hi().y() - lineA.lo().y());
+    internal::HighPrecisionCoord yas =
+      static_cast<smtk::bridge::polygon::internal::HighPrecisionCoord>(lineA.lo().y() + (dxAs / dxA) * (lineA.hi().y() - lineA.lo().y()));
     //std::cout << ": " << yas << " <= " << this->m_sweepPoint->position().y() << "  4\n";
     return yas <= this->m_sweepPoint->position().y();
     }
 
   // Neither a nor b are vertical.
   // See how they behave at or just up/right of the sweep point.
-  internal::HighPrecisionCoord dxAs = this->m_sweepPoint->position().x() - lineA.lo().x();
-  internal::HighPrecisionCoord yas = lineA.lo().y() + (dxAs / dxA) * (lineA.hi().y() - lineA.lo().y());
-  internal::HighPrecisionCoord dxBs = this->m_sweepPoint->position().x() - lineB.lo().x();
-  internal::HighPrecisionCoord ybs = lineB.lo().y() + (dxBs / dxB) * (lineB.hi().y() - lineB.lo().y());
+  internal::HighPrecisionCoord dxAs =
+    static_cast<smtk::bridge::polygon::internal::HighPrecisionCoord>(this->m_sweepPoint->position().x() - lineA.lo().x());
+  internal::HighPrecisionCoord yas =
+     static_cast<smtk::bridge::polygon::internal::HighPrecisionCoord>(lineA.lo().y() + (dxAs / dxA) * (lineA.hi().y() - lineA.lo().y()));
+  internal::HighPrecisionCoord dxBs =
+    static_cast<smtk::bridge::polygon::internal::HighPrecisionCoord>(this->m_sweepPoint->position().x() - lineB.lo().x());
+  internal::HighPrecisionCoord ybs =
+    static_cast<smtk::bridge::polygon::internal::HighPrecisionCoord>(lineB.lo().y() + (dxBs / dxB) * (lineB.hi().y() - lineB.lo().y()));
   if (yas != ybs)
     {
     //std::cout << ": " << yas << " < " << ybs << "  5\n";

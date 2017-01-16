@@ -133,7 +133,7 @@ namespace smtk {
 //----------------------------------------------------------------------------
     int View::Component::findChild(const std::string &compName) const
     {
-      std::size_t i, n = this->m_children.size();
+      int i, n = static_cast<int>(this->m_children.size());
       for (i = 0; i < n; i++)
         {
         if (this->m_children[i].name() == compName)

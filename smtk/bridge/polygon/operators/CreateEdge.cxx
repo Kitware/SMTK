@@ -96,7 +96,7 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
     this->findStorage<internal::pmodel>(
       parentModel.entity());
   bool ok = true;
-  int numEdges = offsetsItem->numberOfValues();
+  int numEdges = static_cast<int>(offsetsItem->numberOfValues());
   int numCoordsPerPt = coordinatesItem->value(0);
   if ((method == 0 || method == 2) && numCoordsPerPt == 0)
     {
@@ -266,12 +266,12 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
         //printSegment(storage, "Seg ", sit->second);
         internal::HighPrecisionPoint deltaSrc =
           internal::HighPrecisionPoint(
-            edgeIt->high().x() - edgeIt->low().x(),
-            edgeIt->high().y() - edgeIt->low().y());
+            static_cast<internal::HighPrecisionPoint::coordinate_type>(edgeIt->high().x() - edgeIt->low().x()),
+            static_cast<internal::HighPrecisionPoint::coordinate_type>(edgeIt->high().y() - edgeIt->low().y()));
         internal::HighPrecisionPoint deltaDst =
           internal::HighPrecisionPoint(
-            sit->second.high().x() - sit->second.low().x(),
-            sit->second.high().y() - sit->second.low().y());
+            static_cast<internal::HighPrecisionPoint::coordinate_type>(sit->second.high().x() - sit->second.low().x()),
+            static_cast<internal::HighPrecisionPoint::coordinate_type>(sit->second.high().y() - sit->second.low().y()));
         // Whether the segments are reversed or not, determine which
         // output segments correspond to a single input segment:
         if (deltaDst.x() * deltaSrc.x() < 0 || deltaDst.y() * deltaSrc.y() < 0)

@@ -378,8 +378,8 @@ void qtAttributeRefItem::createWidget()
     QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
       this, SLOT(onInputValueChanged()), Qt::QueuedConnection);
 
-    thisLayout->addWidget(combo, 2*i, 1);
-    thisLayout->addLayout(childLayout, 2*i+1, 0, 1, 2);
+    thisLayout->addWidget(combo, 2*static_cast<int>(i), 1);
+    thisLayout->addLayout(childLayout, 2*static_cast<int>(i)+1, 0, 1, 2);
     }
 
    this->updateItemData();

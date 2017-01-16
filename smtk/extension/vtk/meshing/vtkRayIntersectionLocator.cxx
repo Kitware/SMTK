@@ -157,7 +157,7 @@ int vtkRayIntersectionLocator::AllIntersectionsAlongSegment(
       }
     }
 
-  return cellIds.size();
+  return static_cast<int>(cellIds.size());
 }
 
 int vtkRayIntersectionLocator::IntersectWithLine(

@@ -1250,7 +1250,7 @@ void pmodel::addFaceTessellation(smtk::model::Face& faceRec)
   for (smtk::model::Loops::iterator lit = outerLoops.begin(); lit != outerLoops.end(); ++lit)
     {
     smtk::model::Loops innerLoops = lit->containedLoops();
-    int npp = 1 + innerLoops.size();
+    int npp = 1 + static_cast<int>(innerLoops.size());
     std::vector<std::vector<internal::Point> > pp2(npp);
     int ll = 0;
     //std::cout << "  Loop " << lit->name() << "\n";
@@ -1333,7 +1333,7 @@ void pmodel::addFaceMeshTessellation(smtk::model::Face& faceRec)
     for (smtk::model::Loops::iterator lit = outerLoops.begin(); lit != outerLoops.end(); ++lit)
       {
       smtk::model::Loops innerLoops = lit->containedLoops();
-      int npp = 1 + innerLoops.size();
+      int npp = 1 + static_cast<int>(innerLoops.size());
       std::vector<std::vector<internal::Point> > pp2(npp);
       int ll = 0;
       //std::cout << "  Loop " << lit->name() << "\n";
@@ -1364,16 +1364,16 @@ void pmodel::addFaceMeshTessellation(smtk::model::Face& faceRec)
         {
         poly::polygon_data<internal::Coord>::iterator_type pcit;
         pcit = poly::begin_points(*pit);
-        std::vector<int> triConn;
+        std::vector<long long int> triConn;
         triConn.resize(3);
         ipt = !denom ? *pcit : internal::Point(pcit->x() * denx, pcit->y() * deny);
         this->liftPoint(ipt, &smtkPt[0]);
-        triConn[0] = ialloc->addCoordinate(smtkPt);
+        triConn[0] = static_cast<long long int>(ialloc->addCoordinate(smtkPt));
         ++pcit;
         ipt = !denom ? *pcit : internal::Point(pcit->x() * denx,
                                                pcit->y() * deny);
         this->liftPoint(ipt, &smtkPt[0]);
-        triConn[2] = ialloc->addCoordinate(smtkPt);
+        triConn[2] = static_cast<long long int>(ialloc->addCoordinate(smtkPt));
         ++pcit;
         for (; pcit != poly::end_points(*pit); ++pcit)
           {
@@ -1381,7 +1381,7 @@ void pmodel::addFaceMeshTessellation(smtk::model::Face& faceRec)
           ipt = !denom ? *pcit : internal::Point(pcit->x() * denx,
                                                  pcit->y() * deny);
           this->liftPoint(ipt, &smtkPt[0]);
-          triConn[2] = ialloc->addCoordinate(smtkPt);
+          triConn[2] = static_cast<long long int>(ialloc->addCoordinate(smtkPt));
           ialloc->addCell(smtk::mesh::Triangle, &triConn[0]);
           }
         }
@@ -1454,11 +1454,11 @@ void pmodel::addEdgeMeshTessellation(smtk::model::Edge& edgeRec,
       this->liftPoint(*ptIt, coords.begin());
       if (ptIt == edgeData->pointsBegin())
         {
-        connectivity[0] = ialloc->addCoordinate(&coords[0]);
+        connectivity[0] = static_cast<int>(ialloc->addCoordinate(&coords[0]));
         }
       else
         {
-        connectivity[1] = ialloc->addCoordinate(&coords[0]);
+        connectivity[1] = static_cast<int>(ialloc->addCoordinate(&coords[0]));
         ialloc->addCell(smtk::mesh::Line, connectivity);
         connectivity[0] = connectivity[1];
         }
@@ -1509,7 +1509,7 @@ void pmodel::addVertMeshTessellation(smtk::model::Vertex& vertRec,
     smtk::mesh::IncrementalAllocatorPtr ialloc =
       collection->interface()->incrementalAllocator();
 
-    long conn = ialloc->addCoordinate(snappedPt);
+    long long int conn = static_cast<long long int>(ialloc->addCoordinate(snappedPt));
     ialloc->addCell(smtk::mesh::Vertex, &conn);
 
     if (ialloc->flush())

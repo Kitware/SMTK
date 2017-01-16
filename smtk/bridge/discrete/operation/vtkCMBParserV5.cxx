@@ -371,7 +371,7 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
       vtkModelMaterial* Material = vtkModelMaterial::SafeDownCast(
         Model->GetModelEntity(vtkModelMaterialType, RegionMaterials->GetValue(i)));
       vtkDiscreteModelRegion* region = vtkDiscreteModelRegion::SafeDownCast(
-        Model->BuildModelRegion(static_cast<vtkIdType>(numFaces), &Faces[0],
+        Model->BuildModelRegion(static_cast<int>(numFaces), &Faces[0],
                                 &FaceSides[0], Material));
       // if the pointInsideValidity array exists, then value must equal 1 for
       // this region to add the point

@@ -707,7 +707,7 @@ bool System::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef,
        ++i)
     {
     smtk::attribute::ItemDefinitionPtr sourceItemDef =
-      sourceDef->itemDefinition(i);
+      sourceDef->itemDefinition(static_cast<int>(i));
     smtk::attribute::ItemDefinitionPtr newItemDef =
       sourceItemDef->createCopy(info);
     if (newItemDef)
@@ -787,8 +787,8 @@ System::copyAttribute(const smtk::attribute::AttributePtr sourceAtt,
   for (std::size_t i=0; i<sourceAtt->numberOfItems(); ++i)
     {
     smtk::attribute::ConstItemPtr sourceItem =
-      smtk::const_pointer_cast<const Item>(sourceAtt->item(i));
-    smtk::attribute::ItemPtr newItem = newAtt->item(i);
+      smtk::const_pointer_cast<const Item>(sourceAtt->item(static_cast<int>(i)));
+    smtk::attribute::ItemPtr newItem = newAtt->item(static_cast<int>(i));
     if (!newItem->assign(sourceItem, itemCopyOptions))
       {
       std::cerr << "ERROR:Could not copy Attribute: " << sourceAtt->name() << "\n";

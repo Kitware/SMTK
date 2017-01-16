@@ -29,16 +29,12 @@ using namespace remus::proto;
 
 #include "smtk/Options.h"
 
-#include "cJSON.h"
+#include "smtk/common/CompilerInformation.h"
 
-#ifndef _MSC_VER
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored"-Wshadow"
-#endif
+SMTK_THIRDPARTY_PRE_INCLUDE
+#include "cJSON.h"
 #include "clpp/parser.hpp"
-#ifndef _MSC_VER
-#  pragma GCC diagnostic pop
-#endif
+SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <fstream>
 

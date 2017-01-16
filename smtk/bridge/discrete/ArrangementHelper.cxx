@@ -199,7 +199,7 @@ int ArrangementHelper::findOrAssignSense(vtkModelEdgeUse* eu1)
   EdgeUseToSenseMap::iterator sit = eit->second.find(eu1);
   if (sit == eit->second.end())
     {
-    int nextSense = eit->second.size() / 2;
+    int nextSense = static_cast<int>(eit->second.size() / 2);
     eit->second[eu1] = nextSense;
     eit->second[eu2] = nextSense;
     return nextSense;

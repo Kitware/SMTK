@@ -67,7 +67,7 @@ smtk::mesh::HandleRange MeshInfo::cells(smtk::mesh::CellType cellType) const
 smtk::mesh::HandleRange MeshInfo::cells(const smtk::mesh::CellTypes& cellTypes) const
 {
   smtk::mesh::HandleRange entitiesCells;
-  for(int i = (cellTypes.size() -1); i >= 0; --i )
+  for(int i = static_cast<int>(cellTypes.size() -1); i >= 0; --i )
     {
     //skip all cell types we don't have
     if( !cellTypes[i] )

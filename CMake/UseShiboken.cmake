@@ -312,6 +312,20 @@ function(sbk_wrap_library NAME)
       -Wno-unused-function
       -Wno-unused-parameter
       -Wno-overloaded-virtual)
+  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    set(ignore_rules_for_shiboken "")
+    # disables: warning C4244: conversion from '__int64' to 'char'
+    set(ignore_rules_for_shiboken "${ignore_rules_for_shiboken} /wd4244")
+    # disables: warning C4267: conversion from 'size_t' to 'long'
+    set(ignore_rules_for_shiboken "${ignore_rules_for_shiboken} /wd4267")
+    # disables: warning C4273: inconsistent dll linkage
+    set(ignore_rules_for_shiboken "${ignore_rules_for_shiboken} /wd4273")
+    # disables: warning C4522: multiple assignment operators specified
+    set(ignore_rules_for_shiboken "${ignore_rules_for_shiboken} /wd4522")
+    # disables: warning C4800: 'long' : forcing value to bool 'true' or 'false'
+    set(ignore_rules_for_shiboken "${ignore_rules_for_shiboken} /wd4800")
+    set_property(TARGET ${_pyname} APPEND_STRING PROPERTY COMPILE_FLAGS
+                 ${ignore_rules_for_shiboken})
   endif()
 
   if (PYTHON_INSTALL_DIR)

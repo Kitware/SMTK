@@ -327,7 +327,7 @@ cJSON* SessionIOJSON::serializeModel(internal::pmodel::Ptr model, const smtk::mo
   cJSON_AddItemToObject(result, "feature size", cJSON_CreateNumber(model->featureSize()));
   // Encode model scale carefully since cJSON cannot store large integers faithfully:
   int modelScaleBytes[8];
-  long long mscale = model->modelScale();
+  long long mscale = static_cast<long long>(model->modelScale());
   for (int i = 0; i < 8; ++i)
     {
     modelScaleBytes[7 - i] = mscale & 0xff;
@@ -518,11 +518,11 @@ internal::EdgePtr SessionIOJSON::deserializeEdge(cJSON* record, const smtk::mode
         unsigned long long& uc(*reinterpret_cast<unsigned long long*>(&xy[j]));
         uc = *cit;
         ++cit;
-        uc |= ((*cit) << 16);
+        uc |= (static_cast<unsigned long long>(*cit) << 16);
         ++cit;
-        uc |= ((*cit) << 32);
+        uc |= (static_cast<unsigned long long>(*cit) << 32);
         ++cit;
-        uc |= ((*cit) << 48);
+        uc |= (static_cast<unsigned long long>(*cit) << 48);
         ++cit;
         }
       result->points().insert(result->pointsEnd(), internal::Point(xy[0], xy[1]));
@@ -564,11 +564,11 @@ internal::VertexPtr SessionIOJSON::deserializeVertex(cJSON* record, const smtk::
         unsigned long long& uc(*reinterpret_cast<unsigned long long*>(&xy[j]));
         uc = *cit;
         ++cit;
-        uc |= ((*cit) << 16);
+        uc |= (static_cast<unsigned long long>(*cit) << 16);
         ++cit;
-        uc |= ((*cit) << 32);
+        uc |= (static_cast<unsigned long long>(*cit) << 32);
         ++cit;
-        uc |= ((*cit) << 48);
+        uc |= (static_cast<unsigned long long>(*cit) << 48);
         ++cit;
         }
       result->point() = internal::Point(xy[0], xy[1]);

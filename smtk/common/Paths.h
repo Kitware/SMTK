@@ -13,6 +13,12 @@
 #define __smtk_common_Paths_h
 
 #include "smtk/CoreExports.h"
+#include "smtk/common/CompilerInformation.h"
+
+#ifdef SMTK_MSVC
+// Ignore symbol exposure warnings for STL classes.
+#pragma warning (disable : 4251)
+#endif
 
 #include <string>
 #include <vector>

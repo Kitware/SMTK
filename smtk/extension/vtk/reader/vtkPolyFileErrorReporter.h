@@ -71,7 +71,7 @@ public:
       if (lineStart <= posn && (static_cast<size_t>(lineStart) + context.size()) >= static_cast<size_t>(posn))
         {
         std::cout << static_cast<int>(lineStart) << ":-";
-        for (int k = posn - lineStart; k > 0; --k)
+        for (int k = posn - static_cast<int>(lineStart); k > 0; --k)
           {
           std::cout << "-";
           }
@@ -84,7 +84,7 @@ public:
 
   bool Report(std::istream& stream, const std::string& err)
     {
-    int posn = stream.tellg();
+    int posn = static_cast<int>(stream.tellg());
     return this->Report(stream, posn, posn, err);
     }
 

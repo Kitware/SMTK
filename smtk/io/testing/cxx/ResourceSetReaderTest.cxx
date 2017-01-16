@@ -63,7 +63,8 @@ int main(int argc, const char* argv[])
       }
     else
       {
-      unsigned numResources =  resources.numberOfResources();
+      unsigned numResources =
+        static_cast<unsigned>(resources.numberOfResources());
       if (numResources != expectedNumber)
         {
         std::cerr << "ERROR: Expecting " << expectedNumber

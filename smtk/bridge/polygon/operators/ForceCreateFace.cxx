@@ -77,7 +77,7 @@ bool ForceCreateFace::ableToOperate()
   //       matches the number of points or edges provided:
   int method = this->findInt("construction method")->discreteIndex();
   smtk::attribute::IntItem::Ptr edgeDirItem = this->findInt("orientations");
-  int numOrient = edgeDirItem->numberOfValues();
+  int numOrient = static_cast<int>(edgeDirItem->numberOfValues());
   return this->Superclass::ableToOperate() &&
     (method == ForceCreateFace::POINTS ||
      (method == ForceCreateFace::EDGES &&
@@ -160,9 +160,9 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
     {
     // If given default value, create a simple and valid "counts" array to iterator over:
     tmpCount.push_back(
-      method == ForceCreateFace::POINTS ?
-      pointsItem->numberOfValues() / numCoordsPerPt :
-      modelItem->numberOfValues());
+      static_cast<int>(method == ForceCreateFace::POINTS ?
+                       pointsItem->numberOfValues() / numCoordsPerPt :
+                       modelItem->numberOfValues()));
     tmpCount.push_back(0);
     countIt = tmpCount.begin();
     endCount = tmpCount.end();

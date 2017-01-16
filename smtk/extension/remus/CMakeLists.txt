@@ -23,6 +23,14 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
     ${PYTHON_LIBRARIES}
   )
   set_target_properties(smtkRemusExtPy PROPERTIES PREFIX "")
+
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    set(ignore_rules_for_python "")
+    # disables: warning C4273: inconsistent dll linkage
+    set(ignore_rules_for_python "${ignore_rules_for_python} /wd4273")
+    set_property(TARGET smtkRemusExtPy APPEND_STRING PROPERTY COMPILE_FLAGS
+                 ${ignore_rules_for_python})
+  endif()
 endif()
 
 

@@ -149,7 +149,7 @@ smtk::model::OperatorResult Session::operateDelegate(
     {
     // Any operator that returns a special "model" item in its result
     // will have those UUIDs added to its dangling entities.
-    int numModels = models->numberOfValues();
+    int numModels = static_cast<int>(models->numberOfValues());
     std::cout << "Result has " << numModels << " models\n";
     for (int i = 0; i < numModels; ++i)
       {

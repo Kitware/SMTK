@@ -601,7 +601,7 @@ int checkSystem(smtk::attribute::System& system)
     return -2;
     }
 
-  int i, n = def->numberOfItemDefinitions();
+  int i, n = static_cast<int>(def->numberOfItemDefinitions());
   if (n != 13)
     {
     std::cerr << "Derived 2 has incorrect number of items! Reported:"
@@ -770,7 +770,7 @@ int checkSystem(smtk::attribute::System& system)
     return -2;
     }
 
-  n = def->numberOfItemDefinitions();
+  n = static_cast<int>(def->numberOfItemDefinitions());
   if (n != 7)
     {
     std::cerr << "Derived 3 has incorrect number of items! - ERROR\n";

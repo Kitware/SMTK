@@ -54,7 +54,7 @@ smtk::model::OperatorResult CreateVertices::operateInternal()
       this->findStorage<internal::pmodel>(
         model.entity());
     std::vector<double> pcoords;
-    int npnts = pointsInfo->numberOfGroups();
+    int npnts = static_cast<int>(pointsInfo->numberOfGroups());
     pcoords.reserve(npnts * numCoordsPerPt);
 
     // Save the points into the vector to be processed by create vertex method

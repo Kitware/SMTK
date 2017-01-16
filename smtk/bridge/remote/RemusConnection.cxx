@@ -498,7 +498,7 @@ smtk::model::OperatorResult RemusConnection::readFile(
     result->findModelEntity("model");
   if (models)
     {
-    int numModels = models->numberOfValues();
+    int numModels = static_cast<int>(models->numberOfValues());
     for (int i = 0; i < numModels; ++i)
       this->fetchWholeModel(models->value(i).entity());
     }

@@ -312,7 +312,8 @@ bool RefItem::assign(ConstItemPtr &sourceItem, unsigned int options)
       if (!att)
         {
         att = system->copyAttribute(sourceRefItem->value(),
-                                    options & Item::COPY_MODEL_ASSOCIATIONS, options);
+                                    (options & Item::COPY_MODEL_ASSOCIATIONS) != 0,
+                                    options);
         if (!att)
           {
           std::cerr << "ERROR: Could not copy Attribute:"

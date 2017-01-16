@@ -226,7 +226,8 @@ void Session::assignUUIDs(const std::vector<vtkModelItem*>& ents, vtkAbstractArr
       smtk::common::UUID::const_iterator raw =
         reinterpret_cast<smtk::common::UUID::const_iterator>(vuid->GetPointer(0));
       int i;
-      for (i = 0, it = ents.begin(); it != ents.end(); ++it, i += smtk::common::UUID::size())
+      for (i = 0, it = ents.begin(); it != ents.end();
+           ++it, i += static_cast<int>(smtk::common::UUID::size()))
         {
         smtk::common::UUID eid(raw + i, raw + i + smtk::common::UUID::size());
         if (!eid.isNull())
@@ -268,7 +269,7 @@ vtkUnsignedIntArray* Session::retrieveUUIDs(
     return NULL;
 
   vtkUnsignedIntArray* vuid = vtkUnsignedIntArray::New();
-  vuid->SetNumberOfComponents(smtk::common::UUID::size() / sizeof(unsigned int));
+  vuid->SetNumberOfComponents(static_cast<int>(smtk::common::UUID::size() / sizeof(unsigned int)));
   vuid->SetNumberOfTuples(static_cast<vtkIdType>(ents.size()));
   int* ptr = reinterpret_cast<int*>(vuid->GetPointer(0));
   smtk::common::UUID::iterator uptr =
@@ -2307,7 +2308,7 @@ bool Session::removeModelEntity(const smtk::model::EntityRef& modRef)
       }
     }
 
-  return this->manager()->eraseModel(modRef);
+  return this->manager()->eraseModel(modRef) != 0;
 }
 
 void Session::retranscribeModel(const smtk::model::Model& inModel)

@@ -205,7 +205,7 @@ class WalkableLoop
           }
         return true;
         }
-      numEdges = order1.size();
+      numEdges = static_cast<int>(order1.size());
       edge_arr = new vtkModelEdge*[numEdges];
       edge_dir_arr = new int[numEdges];
       int curr_insert_pos = 0; //keep track of where in the array we are inserting

@@ -356,7 +356,7 @@ bool EdgeOperator::splitSelectedEdgeNodes(
     splitOp->SetEdgeId(selEdgeId);
     splitOp->SetPointId(pointId);
     splitOp->Operate(modelWrapper);
-    success = splitOp->GetOperateSucceeded();
+    success = splitOp->GetOperateSucceeded() != 0;
     if(success)
       {
       smtk::common::UUID modelid = opsession->findOrSetEntityUUID(modelWrapper->GetModel());
@@ -466,7 +466,7 @@ bool EdgeOperator::convertSelectedEndNodes(
     mergOp->SetSourceId(fromEdgeId);
     mergOp->AddLowerDimensionalId(vtxId);
     mergOp->Operate(modelWrapper);
-    success = mergOp->GetOperateSucceeded();
+    success = mergOp->GetOperateSucceeded() != 0;
     if(success)
       {
       // add the removed vertex to the list

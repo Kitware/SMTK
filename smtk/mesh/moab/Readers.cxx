@@ -87,7 +87,7 @@ namespace
       }
 
     tag_values_ptr = &tag_values[0];
-    num_tag_values = tag_values.size();
+    num_tag_values = static_cast<int>(tag_values.size());
     }
 
   ::moab::ErrorCode err = m_iface->load_file( path.c_str(),

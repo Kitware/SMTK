@@ -36,9 +36,9 @@ namespace
     T operator()(T value,  double c_min, double c_max) const
     {
       if(c_min > value)
-        { return c_min; }
+        { return static_cast<T>(c_min); }
       if(c_max < value)
-        { return c_max; }
+        { return static_cast<T>(c_max); }
       return value;
     }
   };
@@ -49,7 +49,7 @@ namespace
     T operator()(T value,  double c_min, double) const
     {
       if (c_min > value)
-        { return c_min; }
+        { return static_cast<T>(c_min); }
       return value;
     }
   };
@@ -60,7 +60,7 @@ namespace
     T operator()(T value,  double, double c_max) const
     {
       if(c_max < value)
-        { return c_max; }
+        { return static_cast<T>(c_max); }
       return value;
     }
   };
@@ -118,7 +118,7 @@ namespace
     smtk::mesh::PointLocator::LocatorResults results;
 
     typedef smtk::mesh::HandleRange::const_iterator c_it;
-    std::size_t offset = 0.0;
+    std::size_t offset = 0;
     for(c_it i = pointIds.begin(); i != pointIds.end(); ++i, offset+=3)
       {
       m_locator.find( xyz[offset], xyz[offset+1], 0.0, m_radius, results);

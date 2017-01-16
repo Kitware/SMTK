@@ -60,7 +60,8 @@ ConnectivityStorage::ConnectivityStorage(
     smtk::mesh::HandleRange::iterator verts_end = cells_current.end_of_block();
 
     const int numVertsPerCell=1;
-    const int numCellsInSubRange = std::distance(verts_start,verts_end+1);
+    const int numCellsInSubRange =
+      static_cast<int>(std::distance(verts_start,verts_end+1));
 
     //add to the VertConnectivityStorage the ids of the vertices in this
     //range

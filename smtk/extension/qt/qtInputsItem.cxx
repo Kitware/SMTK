@@ -43,9 +43,11 @@
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/ValueItemTemplate.h"
 
+#include "smtk/common/CompilerInformation.h"
+
 #include <math.h>
 
-#if defined(_WIN32) //VS2008 is not c99 complient.
+#if defined(SMTK_MSVC) && _MSC_VER <= 1500
 #include <float.h>
 double nextafter(double x, double y)
 {

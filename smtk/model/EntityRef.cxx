@@ -1085,7 +1085,7 @@ EntityRef EntityRef::relationFromArrangement(
 bool EntityRef::removeArrangement(ArrangementKind k, int index)
 {
   ManagerPtr mgr = this->m_manager.lock();
-  return mgr ? mgr->unarrangeEntity(this->m_entity, k, index < 0 ? 0 : index) : false;
+  return mgr ? mgr->unarrangeEntity(this->m_entity, k, index < 0 ? 0 : index) != 0 : false;
 }
 
 /**\brief Embed the specified \a thingToEmbed as an inclusion into this entityref's entity.

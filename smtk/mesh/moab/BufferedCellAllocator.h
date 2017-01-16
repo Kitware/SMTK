@@ -92,7 +92,7 @@ bool BufferedCellAllocator::addCell(smtk::mesh::CellType ctype,
     this->m_validState = this->flush();
     this->m_activeCellType = ctype;
     this->m_nCoords = ctype != smtk::mesh::Polygon ?
-      smtk::mesh::verticesPerCell(ctype) : nCoordinates;
+      smtk::mesh::verticesPerCell(ctype) : static_cast<int>(nCoordinates);
     }
 
   assert(this->m_activeCellType != smtk::mesh::CellType_MAX);

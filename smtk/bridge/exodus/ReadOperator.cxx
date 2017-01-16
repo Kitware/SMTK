@@ -404,7 +404,7 @@ int DiscoverLabels(vtkDataSet* obj, std::string& labelname, std::set<double>& la
     {
     labelSet.insert(labelArray->GetTuple1(i));
     }
-  return labelSet.size();
+  return static_cast<int>(labelSet.size());
 }
 
 smtk::model::OperatorResult ReadOperator::readLabelMap()

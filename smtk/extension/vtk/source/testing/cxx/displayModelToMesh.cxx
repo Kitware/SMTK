@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
     ManagerPtr sm = Manager::create();
 
     int status = ImportJSON::intoModelManager(data.c_str(), sm);
-    int numModels = sm->entitiesMatchingFlagsAs<Models>(smtk::model::MODEL_ENTITY).size();
+    int numModels = static_cast<int>(sm->entitiesMatchingFlagsAs<Models>(smtk::model::MODEL_ENTITY).size());
     std::cout << "Imported models into manager: " << numModels << std::endl;
     if (numModels > 0)
       {

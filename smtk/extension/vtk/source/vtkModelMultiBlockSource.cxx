@@ -762,7 +762,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
     {
     vtkGenericWarningMacro(<< "A valid model entity id was not set, so all tessellations are used.");
 
-    mbds->SetNumberOfBlocks(manager->tessellations().size());
+    mbds->SetNumberOfBlocks(static_cast<unsigned>(manager->tessellations().size()));
     vtkIdType i;
     smtk::model::UUIDWithTessellation it;
     for (i = 0, it = manager->tessellations().begin(); it != manager->tessellations().end(); ++it, ++i)
@@ -773,7 +773,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
       // Set the block name to the entity UUID.
       mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), entityref.name().c_str());
       mbds->GetMetaData(i)->Set(vtkModelMultiBlockSource::ENTITYID(), entityref.entity().toString().c_str());
-      this->GenerateRepresentationFromModel(poly.GetPointer(), entityref, this->AllowNormalGeneration);
+      this->GenerateRepresentationFromModel(poly.GetPointer(), entityref, this->AllowNormalGeneration != 0);
 
       // as a convenient method to get the flat block_index in multiblock
       addBlockInfo(manager, entityref, smtk::model::EntityRef(), i, poly.GetPointer(), this->UUID2BlockIdMap);

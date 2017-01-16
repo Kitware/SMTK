@@ -27,7 +27,7 @@ int main(int /* argc */, const char* /* argv */[])
   smtk::attribute::SystemPtr system1(new  smtk::attribute::System());
   result = resourceSet.addResource(system1, "system1", "",
                                    smtk::common::ResourceSet::TEMPLATE);
-  n = resourceSet.numberOfResources();
+  n = static_cast<unsigned>(resourceSet.numberOfResources());
   if (!result)
     {
     std::cerr << "addResource() call failed" << std::endl;
@@ -44,7 +44,7 @@ int main(int /* argc */, const char* /* argv */[])
   smtk::attribute::SystemPtr system2(new  smtk::attribute::System());
   result = resourceSet.addResource(system2, "system2", "path2",
                                    smtk::common::ResourceSet::INSTANCE);
-  n = resourceSet.numberOfResources();
+  n = static_cast<unsigned>(resourceSet.numberOfResources());
   if (!result)
     {
     std::cerr << "addResource() call failed" << std::endl;
@@ -60,7 +60,7 @@ int main(int /* argc */, const char* /* argv */[])
   // Add 1st system w/different id and role
   result = resourceSet.addResource(system1, "system1-different-id", "",
                                    smtk::common::ResourceSet::SCENARIO);
-  n = resourceSet.numberOfResources();
+  n = static_cast<unsigned>(resourceSet.numberOfResources());
   if (!result)
     {
     std::cerr << "addResource() call failed" << std::endl;
@@ -75,7 +75,7 @@ int main(int /* argc */, const char* /* argv */[])
 
   // Try using same id twice
   result = resourceSet.addResource(system2, "system2");
-  n = resourceSet.numberOfResources();
+  n = static_cast<unsigned>(resourceSet.numberOfResources());
   if (result)
     {
     std::cerr << "addResource() call didn't fail" << std::endl;
