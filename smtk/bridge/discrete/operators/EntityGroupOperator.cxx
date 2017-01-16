@@ -172,20 +172,21 @@ OperatorResult EntityGroupOperator::operateInternal()
       this->specification()->findModelEntity("remove cell group");
     for(std::size_t idx=0; idx<remgrpItem->numberOfValues(); idx++)
       {
-      vtkModelEntity* modEntity = this->fetchCMBCell(remgrpItem, idx);
+      vtkModelEntity* modEntity = this->fetchCMBCell(remgrpItem,
+                                                     static_cast<int>(idx));
       if(!modEntity)
         continue;
       if(modEntity->GetType() == vtkModelMaterialType)
         {
         this->m_opDomain->SetId(modEntity->GetUniquePersistentId());
         this->m_opDomain->Destroy(modelWrapper);
-        ok = this->m_opDomain->GetDestroySucceeded();
+        ok = this->m_opDomain->GetDestroySucceeded() != 0;
         }
       else if(modEntity->GetType() == vtkDiscreteModelEntityGroupType)
         {
         this->m_opBoundary->SetId(modEntity->GetUniquePersistentId());
         this->m_opBoundary->Destroy(modelWrapper);
-        ok = this->m_opBoundary->GetDestroySucceeded();
+        ok = this->m_opBoundary->GetDestroySucceeded() != 0;
         }
       if(ok)
         {
@@ -325,8 +326,9 @@ bool EntityGroupOperator::modifyGroup(vtkDiscreteModelWrapper* modelWrapper,
       {
       for(std::size_t idx=0; idx<entItem->numberOfValues(); idx++)
         {
-        vtkModelEntity* modEntity = this->fetchCMBCell(entItem, idx);
-        if(!modEntity)
+        vtkModelEntity* modEntity = this->fetchCMBCell(entItem,
+                                                       static_cast<int>(idx));
+        if(modEntity == nullptr)
           continue;
         if(grpDS)
           this->m_opDomain->AddModelGeometricEntity(modEntity->GetUniquePersistentId());
@@ -340,7 +342,8 @@ bool EntityGroupOperator::modifyGroup(vtkDiscreteModelWrapper* modelWrapper,
       {      
        for(std::size_t idx=0; idx<entItem->numberOfValues(); idx++)
         {
-        vtkModelEntity* modEntity = this->fetchCMBCell(entItem, idx);
+        vtkModelEntity* modEntity = this->fetchCMBCell(entItem,
+                                                       static_cast<int>(idx));
         if(!modEntity)
           continue;
         if(grpDS)
@@ -353,7 +356,7 @@ bool EntityGroupOperator::modifyGroup(vtkDiscreteModelWrapper* modelWrapper,
     if(grpDS)
       {
       this->m_opDomain->Operate(modelWrapper);
-      ok = this->m_opDomain->GetOperateSucceeded();
+      ok = this->m_opDomain->GetOperateSucceeded() != 0;
 
       // if we are dealing with domain set, the entities can only belong
       // to one vtkModelMaterial, and the vtkMaterialOperator will remove
@@ -397,7 +400,7 @@ bool EntityGroupOperator::modifyGroup(vtkDiscreteModelWrapper* modelWrapper,
     else if(grpBC)
       {
       this->m_opBoundary->Operate(modelWrapper);
-      ok = this->m_opBoundary->GetOperateSucceeded();
+      ok = this->m_opBoundary->GetOperateSucceeded() != 0;
       }
     }
 

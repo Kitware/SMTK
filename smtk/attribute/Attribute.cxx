@@ -463,8 +463,8 @@ smtk::attribute::ItemPtr Attribute::find(
   int i = this->m_definition->findItemPosition(inName);
   if (i < 0 && style != NO_CHILDREN)
     { // try to find child items that match the name and type.
-    int numItems = this->numberOfItems();
-    for (i = 0; i < numItems; ++i)
+    std::size_t numItems = this->numberOfItems();
+    for (i = 0; i < static_cast<int>(numItems); ++i)
       {
       ValueItem::Ptr vitem = dynamic_pointer_cast<ValueItem>(this->item(i));
       Item::Ptr match;
@@ -490,8 +490,8 @@ smtk::attribute::ConstItemPtr Attribute::find(
   int i = this->m_definition->findItemPosition(inName);
   if (i < 0 && style != NO_CHILDREN)
     { // try to find child items that match the name and type.
-    int numItems = this->numberOfItems();
-    for (i = 0; i < numItems; ++i)
+    std::size_t numItems = this->numberOfItems();
+    for (i = 0; i < static_cast<int>(numItems); ++i)
       {
       ConstValueItemPtr vitem = dynamic_pointer_cast<const ValueItem>(this->item(i));
       ConstItemPtr match;

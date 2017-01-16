@@ -287,7 +287,8 @@ Point pmodel::projectPoint(T coordBegin, T coordEnd)
     py += xyz[i] * this->m_yAxis[i];
     }
   // Scale point and round to integer
-  Point result(px * this->m_scale, py * this->m_scale);
+  Point result(static_cast<Point::coordinate_type>(px * this->m_scale),
+               static_cast<Point::coordinate_type>(py * this->m_scale));
   return result;
 }
 

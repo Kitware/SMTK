@@ -162,7 +162,7 @@ public:
   const double* jAxis() const { return this->m_jAxis; }
 
   double featureSize() const { return this->m_featureSize; }
-  double modelScale() const { return this->m_scale; }
+  double modelScale() const { return static_cast<double>(this->m_scale); }
 
   const Session* session() const { return this->m_session; }
   Session* session() { return this->m_session; }

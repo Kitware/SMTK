@@ -430,7 +430,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(
       std::set<smtk::model::EntityRef> touched; // make this go out of scope soon.
       this->FindEntitiesWithMesh(meshcollect, modelEntity, entityrefMap, touched);
 
-      mbds->SetNumberOfBlocks(entityrefMap.size());
+      mbds->SetNumberOfBlocks(static_cast<unsigned>(entityrefMap.size()));
       vtkIdType i;
       std::map<smtk::model::EntityRef,
                std::pair<smtk::model::EntityRef, smtk::mesh::MeshSet> >::iterator cit;
@@ -463,7 +463,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(
                 << ", use all meshes from mesh collection: " << this->MeshCollectionID << std::endl;
 
       smtk::mesh::MeshSet allMeshes = meshcollect->meshes( );
-      mbds->SetNumberOfBlocks(allMeshes.size());
+      mbds->SetNumberOfBlocks(static_cast<unsigned>(allMeshes.size()));
 
       for(std::size_t i=0; i<allMeshes.size(); ++i)
         {
@@ -478,10 +478,10 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(
                                defaultName.str();
         // Set the block name to a mesh name if it has one.
         // for now, use "mesh (<cell type>) <index>" for name
-        mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), meshName.c_str());
+        mbds->GetMetaData(static_cast<unsigned>(i))->Set(vtkCompositeDataSet::NAME(), meshName.c_str());
         this->GenerateRepresentationForSingleMesh(
           singleMesh, poly.GetPointer(), smtk::model::EntityRef(), modelRequiresNormals);
-        mbds->SetBlock(i, poly.GetPointer());
+        mbds->SetBlock(static_cast<unsigned>(i), poly.GetPointer());
         smtk::model::EntityRefArray ents = singleMesh.modelEntities();
         if( ents.size() > 0 )
           {

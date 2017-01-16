@@ -11,9 +11,11 @@
 #include "smtk/Options.h"
 #include "smtk/SharedPtr.h"
 
-#include "smtk/model/StringData.h"
+#include "smtk/common/CompilerInformation.h"
 
 #include "smtk/common/Paths.h"
+
+#include "smtk/model/StringData.h"
 
 #ifndef _MSC_VER
 #  pragma GCC diagnostic push
@@ -26,7 +28,9 @@
 #  pragma GCC diagnostic pop
 #endif
 
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "clpp/parser.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <iostream>
 

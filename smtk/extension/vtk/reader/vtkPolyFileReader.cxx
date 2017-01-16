@@ -292,7 +292,7 @@ typename Converter::type readValue(std::istream& in, bool& ok, ErrorReporter& er
       if (!ok)
         {
         int errEnd = in.tellg();
-        int errBeg = errEnd - token.size();
+        int errBeg = errEnd - static_cast<int>(token.size());
         if (err.Report(in, errBeg, errEnd, VTK_POLYFILE_BAD_TOKEN))
           {
           return result;

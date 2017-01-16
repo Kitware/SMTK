@@ -95,7 +95,7 @@ int internal_createEdge(smtk::model::Operator::Ptr edgeOp,
     }
   smtk::attribute::ModelEntityItem::Ptr newEdges = edgeResult->findModelEntity("created");
   createdEds.insert(createdEds.end(), newEdges->begin(), newEdges->end());
-  return createdEds.size();
+  return static_cast<int>(createdEds.size());
 }
 }
 

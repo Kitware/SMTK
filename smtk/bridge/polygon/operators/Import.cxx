@@ -86,8 +86,7 @@ int polyLines2modelEdges(vtkPolyData *mesh,
     }
   smtk::attribute::ModelEntityItem::Ptr newEdges = edgeResult->findModelEntity("created");
   createdEds.insert(createdEds.end(), newEdges->begin(), newEdges->end());
-  return newEdges->numberOfValues();
-
+  return static_cast<int>(newEdges->numberOfValues());
 }
 
 //----------------------------------------------------------------------------
@@ -126,7 +125,7 @@ int Import::taggedPolyData2PolygonModelEntities(vtkIdTypeArray *tagInfo,
       }
     smtk::model::Vertices gVerts =
       storage->findOrAddModelVertices(mgr, pcoords, 3);
-    numEnts += gVerts.size();
+    numEnts += static_cast<int>(gVerts.size());
     i = 0;
     for (auto gVert : gVerts)
       { // Add raw relationships from model to/from vertex:

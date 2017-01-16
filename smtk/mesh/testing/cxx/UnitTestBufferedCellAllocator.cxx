@@ -108,7 +108,7 @@ void verify_moab_buffered_cell_allocator_cell(smtk::mesh::CellType cellType)
   for (std::size_t i = 0; i < nVerticesPerCell; i++)
     {
     test(allocator->setCoordinate(i, cellPoints[cellType][i]));
-    connectivity[i] = i;
+    connectivity[i] = static_cast<int>(i);
     }
 
   // Add a cell using the cell type and connectivity
@@ -159,7 +159,7 @@ void verify_moab_buffered_cell_allocator_validity(smtk::mesh::CellType cellType)
   std::vector<int> connectivity(nVerticesPerCell);
   for (std::size_t i = 0; i < nVerticesPerCell; i++)
     {
-    connectivity[i] = i;
+    connectivity[i] = static_cast<int>(i);
     }
   test(allocator->addCell(cellType, &connectivity[0],
                           nVerticesPerCell) == false);
@@ -256,7 +256,8 @@ void verify_moab_buffered_cell_allocator_cells()
         }
       xyz[0] += 2.*cellType;
       test(allocator->setCoordinate(pointCounter, xyz));
-      connectivity[i] = pointCounter++;
+      connectivity[i] = static_cast<int>(pointCounter);
+      pointCounter++;
       }
     test(allocator->addCell(smtk::mesh::CellType(cellType), &connectivity[0],
                             nVerticesPerCell));

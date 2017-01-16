@@ -589,7 +589,7 @@ int vtkLIDARReader::GetPointInfo(ifstream &fin)
   if (this->FileType == VTK_ASCII && this->ValuesPerLine <=0)
     {
     fin.getline(buffer, 2048);
-    this->BytesPerPoint = strlen(buffer);
+    this->BytesPerPoint = static_cast<int>(strlen(buffer));
     this->ValuesPerLine =
       sscanf(buffer, "%lf %lf %lf %f %lf %lf %lf", pt, pt+1, pt+2,
       &jnk, rgb, rgb+1, rgb+2);
@@ -838,7 +838,7 @@ int vtkLIDARReader::MoveToStartOfPiece(ifstream &fin, int pieceIndex)
   if (this->LIDARPieces.size() > 0)
     {
     fin.seekg( this->LIDARPieces.back().PiecePointsOffset, ios::beg );
-    currentPieceIndex = this->LIDARPieces.size() - 1;
+    currentPieceIndex = static_cast<int>(this->LIDARPieces.size()) - 1;
     numPts = this->LIDARPieces.back().NumPoints;
     }
 
@@ -883,7 +883,7 @@ int vtkLIDARReader::MoveToStartOfPiece(ifstream &fin, int pieceIndex)
       this->ValuesPerLine =
         sscanf(buffer, "%lf %lf %lf %f %lf %lf %lf", pt, pt+1, pt+2,
         &jnk, rgb, rgb+1, rgb+2);
-      this->BytesPerPoint = strlen(buffer);
+      this->BytesPerPoint = static_cast<int>(strlen(buffer));
       fin.seekg( this->LIDARPieces.back().PiecePointsOffset, ios::beg );
       }
 

@@ -704,7 +704,8 @@ void extractOrderedTessellation( const OneDimensionalEntities& oneDimEntities,
     // periodically during insertion.
     if (pc.numberOfCells() > 20)
       {
-      orderedEdge.MergeLimit = std::sqrt(pc.numberOfCells());
+      orderedEdge.MergeLimit = static_cast<std::size_t>(
+        std::sqrt(pc.numberOfCells()));
       }
     // For each line segment in our edge...
     for (pc.initCellTraversal(); pc.fetchNextCell(numPts, pointIds);)

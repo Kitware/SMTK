@@ -192,9 +192,9 @@ MergeMeshVertices::~MergeMeshVertices()
     if (MB_SUCCESS != result)
       return result;
     Range::iterator rit;
-    unsigned int i;
+    std::size_t i;
     bool inleaf_merged, outleaf_merged = false;
-    unsigned int lr_size = leaf_range.size();
+    std::size_t lr_size = leaf_range.size();
 
     for (i = 0, rit = leaf_range.begin(); i != lr_size; rit++, i++)
     {
@@ -235,7 +235,7 @@ MergeMeshVertices::~MergeMeshVertices()
       }
 
       // check other verts in this leaf
-      for (unsigned int j = i + 1; j < merge_tag_val.size(); j++)
+      for (std::size_t j = i + 1; j < merge_tag_val.size(); j++)
       {
         EntityHandle to_ent =
             j >= lr_size ? leaf_range2[j - lr_size] : leaf_range[j];
@@ -310,7 +310,7 @@ MergeMeshVertices::~MergeMeshVertices()
 
   //first build up the mapping from dead to new vertices
   Range::iterator rit;
-  unsigned int i;
+  std::size_t i;
   for (rit = deadEnts.begin(), i = 0; rit != deadEnts.end(); rit++, i++)
   {
     assert(merge_tag_val[i]);

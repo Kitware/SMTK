@@ -142,7 +142,7 @@ void convert_fixed_size_cell(std::vector<int>& cell_conn,
                          std::size_t global_coordinate_offset
                          )
 {
-  int idx = numCellsOfType[cellType]++;
+  std::size_t idx = numCellsOfType[cellType]++;
 
   smtk::mesh::Handle* currentConnLoc = cellMBConn[cellType].second + numVerts * idx;
   for (int j=0; j < numVerts; ++j)
@@ -190,7 +190,7 @@ void convert_poly_line(std::vector<int>& cell_conn,
 {
   //numVerts represents the number of verts in the tessellation, not
   //the number of verts in the mesh cell
-  int previous_id = numCellsOfType[cellType];
+  int previous_id = static_cast<int>(numCellsOfType[cellType]);
   numCellsOfType[cellType] += numCellsInPolyCell;
 
   int numVertsPerCell = smtk::mesh::verticesPerCell(cellType);

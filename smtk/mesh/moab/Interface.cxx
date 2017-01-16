@@ -628,7 +628,7 @@ smtk::mesh::HandleRange Interface::getCells(const smtk::mesh::HandleRange& meshs
   //to the range. The reason for this is that ranges perform best when inserting
   //from high to low values
   smtk::mesh::HandleRange entitiesCells;
-  for(int i = (cellTypes.size() -1); i >= 0; --i )
+  for(int i = static_cast<int>((cellTypes.size() -1)); i >= 0; --i )
     {
     //skip all cell types we don't have
     if( !cellTypes[i] )

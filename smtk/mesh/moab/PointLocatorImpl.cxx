@@ -35,7 +35,7 @@ smtk::mesh::Handle create_point_mesh(::moab::Interface* iface,
   smtk::mesh::Handle firstId;
   std::vector<double* > coords;
   alloc->get_node_coords(3, //x,y,z
-                         numPoints,
+                         static_cast<int>(numPoints),
                          0, //preferred_start_id
                          firstId,
                          coords);
@@ -99,7 +99,9 @@ m_deletePoints( true ),
 m_tree(interface)
 {
   smtk::mesh::HandleRange points;
-  m_meshOwningPoints = create_point_mesh(interface, xyzs, numPoints, ignoreZValues, points);
+  m_meshOwningPoints = create_point_mesh(interface, xyzs,
+                                         static_cast<int>(numPoints),
+                                         ignoreZValues, points);
   // hacker solution to speed up the bathymetry Operator
   ::moab::FileOptions treeOptions("MAX_DEPTH=13");
   m_tree.build_tree(points,NULL,&treeOptions);

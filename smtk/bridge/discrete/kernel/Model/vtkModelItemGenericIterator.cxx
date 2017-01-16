@@ -115,6 +115,6 @@ void vtkModelItemGenericIterator::RemoveAllModelItems()
 //---------------------------------------------------------------------------
 int vtkModelItemGenericIterator::Size()
 {
-  return this->Internal->Objects.size();
+  return static_cast<int>(this->Internal->Objects.size());
 }
 //---------------------------------------------------------------------------

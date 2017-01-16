@@ -112,7 +112,7 @@ static void printParams(smtk::attribute::AttributePtr attr, const std::string& m
   for (std::size_t i = 0; i < ni; ++i)
     {
     std::cout << "  ";
-    smtk::attribute::ItemPtr item = attr->item(i);
+    smtk::attribute::ItemPtr item = attr->item(static_cast<int>(i));
     switch (item->type())
       {
       smtkAttributeItemTypeSwitch(printItem<ItemTType>(typedItem, enumName));

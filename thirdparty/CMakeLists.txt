@@ -61,6 +61,8 @@ if (NOT SMTK_USE_SYSTEM_MOAB)
     set(ignore_rules_for_moab "")
 
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+      # disables: warning C4101: unreferenced local variable
+      set(ignore_rules_for_moab "${ignore_rules_for_moab} /wd4101")
       # disables: warning C4138: '*/' found outside of comment
       set(ignore_rules_for_moab "${ignore_rules_for_moab} /wd4138")
       # disables: warning C4146: unary minus operator applied to unsigned type,

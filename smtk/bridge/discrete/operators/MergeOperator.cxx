@@ -87,12 +87,12 @@ OperatorResult MergeOperator::operateInternal()
     this->specification()->findModelEntity("source cell");
   for(std::size_t idx=0; idx<sourceItem->numberOfValues(); idx++)
     {
-    int srcid = this->fetchCMBCellId(sourceItem, idx);
+    int srcid = this->fetchCMBCellId(sourceItem, static_cast<int>(idx));
     if(srcid >= 0 && srcid != tgtid)
       {
       this->m_op->SetSourceId(srcid);
       this->m_op->Operate(modelWrapper);
-      ok = this->m_op->GetOperateSucceeded();
+      ok = this->m_op->GetOperateSucceeded() != 0;
       if(ok)
         {
         smtk::model::EntityRef srcEnt = sourceItem->value(idx);

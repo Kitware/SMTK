@@ -124,7 +124,7 @@ addResourceInfo(const std::string id,
 }
 
 //----------------------------------------------------------------------------
-unsigned int
+std::size_t
 ResourceSet::
 numberOfResources() const
 {

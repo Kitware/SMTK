@@ -387,8 +387,9 @@ bool ValueItem::assign(ConstItemPtr &sourceItem, unsigned int options)
         if (!att)
           {
           att = system->copyAttribute(sourceValueItem->expression(i),
-                                      options & Item::COPY_MODEL_ASSOCIATIONS, options);
-          if (!att)
+                                      (options & Item::COPY_MODEL_ASSOCIATIONS) != 0,
+                                      options);
+          if (att == nullptr)
             {
             std::cerr << "ERROR: Could not copy Attribute:"
                       << sourceValueItem->expression(i)->name()

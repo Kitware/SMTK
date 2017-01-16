@@ -12,10 +12,16 @@
 #define __smtk_io_Formats_h
 
 #include "smtk/CoreExports.h" // For SMTKCORE_EXPORT macro.
+#include "smtk/common/CompilerInformation.h"
 
 #include <bitset>
 #include <string>
 #include <vector>
+
+#ifdef SMTK_MSVC
+// Ignore symbol exposure warnings for STL classes.
+#pragma warning (disable : 4251)
+#endif
 
 /**\brief Mesh IO formats
   *

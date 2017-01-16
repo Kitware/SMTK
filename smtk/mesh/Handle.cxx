@@ -61,8 +61,8 @@ namespace detail
     ::moab::EntityID start = to_id(i->first);
     ::moab::EntityID end = to_id(i->second);
 
-    cJSON_AddItemToArray(array, cJSON_CreateNumber(start));
-    cJSON_AddItemToArray(array, cJSON_CreateNumber(end));
+    cJSON_AddItemToArray(array, cJSON_CreateNumber(static_cast<double>(start)));
+    cJSON_AddItemToArray(array, cJSON_CreateNumber(static_cast<double>(end)));
     }
 
   return array;
@@ -77,8 +77,10 @@ namespace detail
   cJSON* n = array->child;
   while(n)
     {
-    ::moab::EntityID start = to_handle(et, n->valuedouble);
-    ::moab::EntityID end = to_handle(et, n->next->valuedouble);
+    ::moab::EntityID start =
+     to_handle(et, static_cast<::moab::EntityID>(n->valuedouble));
+    ::moab::EntityID end =
+     to_handle(et, static_cast<::moab::EntityID>(n->next->valuedouble));
     result.insert(start,end);
 
     //since we are reading two nodes at a time

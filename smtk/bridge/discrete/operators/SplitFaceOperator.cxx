@@ -80,12 +80,12 @@ OperatorResult SplitFaceOperator::operateInternal()
     this->specification()->findModelEntity("face to split");
   for(std::size_t idx=0; idx<sourceItem->numberOfValues(); idx++)
     {
-    int srcid = this->fetchCMBCellId(sourceItem, idx);
+    int srcid = this->fetchCMBCellId(sourceItem, static_cast<int>(idx));
     if(srcid >= 0)
       {
       this->m_op->SetId(srcid); // "face to split"
       this->m_op->Operate(modelWrapper);
-      ok = this->m_op->GetOperateSucceeded();
+      ok = this->m_op->GetOperateSucceeded() != 0;
       if(ok)
         {
         smtk::model::EntityRef inFace = sourceItem->value(idx);

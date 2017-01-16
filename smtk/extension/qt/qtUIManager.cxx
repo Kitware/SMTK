@@ -683,7 +683,7 @@ void qtUIManager::findDefinitionLongLabel(
   smtk::attribute::DefinitionPtr def, std::string &labelText)
 {
   QList<smtk::attribute::ItemDefinitionPtr> itemDefs;
-  int i, n = def->numberOfItemDefinitions();
+  int i, n = static_cast<int>(def->numberOfItemDefinitions());
   for (i = 0; i < n; i++)
     {
     itemDefs.push_back(def->itemDefinition(i));

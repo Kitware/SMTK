@@ -17,6 +17,7 @@
 #define __smtk_vtk_vtkCMBUniquePointSet_
 
 #include "smtk/extension/vtk/meshing/Exports.h" // For export macro
+#include "smtk/common/CompilerInformation.h" //needed for SMTK_MSVC flag
 
 #include <map>
 #include <vector>
@@ -25,18 +26,28 @@
 #include "vtkType.h"
 #include "vtkABI.h"
 
+struct vtkCMBUniquePointSet_InternalPt
+  {
+  vtkCMBUniquePointSet_InternalPt():x(0.),y(0.){}
+  vtkCMBUniquePointSet_InternalPt(double _x, double _y):x(_x),y(_y){}
+  bool operator<(const vtkCMBUniquePointSet_InternalPt& r) const
+    {
+    return this->x != r.x ? (this->x < r.x) : (this->y < r.y);
+    }
+  double x,y;
+  };
+
+#ifdef SMTK_MSVC
+  template class VTKSMTKMESHINGEXT_EXPORT std::map<
+    vtkCMBUniquePointSet_InternalPt, vtkIdType>;
+  template class VTKSMTKMESHINGEXT_EXPORT std::vector<
+    vtkCMBUniquePointSet_InternalPt>;
+#endif
+
 class VTKSMTKMESHINGEXT_EXPORT vtkCMBUniquePointSet
   {
   public:
-    struct InternalPt
-      {
-      InternalPt(double _x, double _y):x(_x),y(_y){}
-      bool operator<(const InternalPt& r) const
-        {
-        return this->x != r.x ? (this->x < r.x) : (this->y < r.y);
-        }
-      double x,y;
-      };
+    typedef vtkCMBUniquePointSet_InternalPt InternalPt;
 
     vtkCMBUniquePointSet():numPts(0){}
 

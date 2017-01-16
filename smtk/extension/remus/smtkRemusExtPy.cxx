@@ -9,7 +9,11 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
+#include "smtk/common/CompilerInformation.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include <Python.h>
+SMTK_THIRDPARTY_POST_INCLUDE
 
 #include "smtk/AutoInit.h"
 

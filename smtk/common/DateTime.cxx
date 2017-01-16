@@ -91,8 +91,9 @@ bool DateTime::components(
     std::cout << "workingTime " << workingTime << std::endl;
     hr = workingTime.hours();
     min = workingTime.minutes();
-    sec = workingTime.seconds();
-    msec = workingTime.total_milliseconds() - 1000*workingTime.total_seconds();
+    sec = static_cast<int>(workingTime.seconds());
+    msec = static_cast<int>(workingTime.total_milliseconds() -
+                            1000*workingTime.total_seconds());
 
     return true;
     }
@@ -108,8 +109,9 @@ bool DateTime::components(
   std::cout << "ptimeTime " << ptimeTime << std::endl;
   hr = ptimeTime.hours();
   min = ptimeTime.minutes();
-  sec = ptimeTime.seconds();
-  msec = ptimeTime.total_milliseconds() - 1000*ptimeTime.total_seconds();
+  sec = static_cast<int>(ptimeTime.seconds());
+  msec = static_cast<int>(ptimeTime.total_milliseconds() -
+                          1000*ptimeTime.total_seconds());
 
   return true;
 }
@@ -140,6 +142,8 @@ bool DateTime::deserialize(const std::string& ts)
     {
 #ifndef NDEBUG
     std::cerr << "exception: " << e.what() << std::endl;
+#else
+    (void)e;;
 #endif
     this->m_ptime = boost::posix_time::not_a_date_time;
     return false;
@@ -167,6 +171,8 @@ bool DateTime::parseBoostFormat(const std::string& ts)
     {
 #ifndef NDEBUG
     std::cerr << "exception: " << e.what() << std::endl;
+#else
+    (void)e;;
 #endif
     this->m_ptime = boost::posix_time::not_a_date_time;
     return false;

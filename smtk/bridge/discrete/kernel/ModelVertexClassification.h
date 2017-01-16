@@ -17,12 +17,24 @@
 #define __smtkdiscrete_ModelVertexClassification_H
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
+#include "smtk/common/CompilerInformation.h" //needed for SMTK_MSVC flag
 #include "vtkType.h" //needed for vtkIdType
 #include <map> //need to store the set of point ids
 
 
 class vtkDiscreteModel;
 class vtkDiscreteModelVertex;
+
+#ifdef SMTK_MSVC
+// ignore warning about declarations:
+// type name first seen using 'struct' now seen using 'class'
+# pragma warning (disable : 4099)
+
+  template class VTKSMTKDISCRETEMODEL_EXPORT std::pair<vtkIdType,
+                                                       vtkDiscreteModelVertex*>;
+  template class VTKSMTKDISCRETEMODEL_EXPORT std::map<vtkIdType,
+                                 std::pair<vtkIdType,vtkDiscreteModelVertex*> >;
+#endif
 
 class VTKSMTKDISCRETEMODEL_EXPORT ModelVertexClassification
 {

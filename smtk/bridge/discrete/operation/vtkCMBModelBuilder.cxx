@@ -386,7 +386,7 @@ void vtkCMBModelBuilder::Operate(
         ++regionIterator)
       {
       vtkIdType regionId = *regionIterator;
-      int numFaces = RegionInfo[regionId].first.size();
+      int numFaces = static_cast<int>(RegionInfo[regionId].first.size());
 
       if(regionId < 0)
         {

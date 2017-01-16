@@ -397,7 +397,7 @@ void qtMeshSelectionItem::updateInputSelection(
   int totalVals = 0;
   smtk::attribute::MeshSelectionItem::const_sel_map_it mapIt;
   for(mapIt = selectionValues.begin(); mapIt != selectionValues.end(); ++mapIt)
-    totalVals += mapIt->second.size();
+    totalVals += static_cast<int>(mapIt->second.size());
 
   MeshModifyMode opType = meshSelectionItem->modifyMode();
   for(mapIt = selectionValues.begin(); mapIt != selectionValues.end(); ++mapIt)

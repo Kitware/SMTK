@@ -46,7 +46,7 @@ public:
     std::size_t i = this->m_index++ % this->m_order.size();
     if (i != 0)
       {
-      mesh.setDomain(smtk::mesh::Domain(i));
+      mesh.setDomain(smtk::mesh::Domain(static_cast<int>(i)));
       }
   }
 

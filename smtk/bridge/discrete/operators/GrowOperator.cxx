@@ -288,7 +288,7 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
   smtk::attribute::MeshSelectionItem::Ptr inSelectionItem =
      this->specification()->findMeshSelection("selection");
   MeshModifyMode opType = inSelectionItem->modifyMode();
-  int numSelValues = inSelectionItem->numberOfValues();
+  int numSelValues = static_cast<int>(inSelectionItem->numberOfValues());
 
   switch(opType)
   {
@@ -298,7 +298,7 @@ smtk::model::OperatorResult GrowOperator::operateInternal()
           inSelectionItem, m_growSelection.GetPointer(), opsession);
       // Use current selection to split faces if necessary
       this->m_splitOp->Operate(modelWrapper, this->m_growSelection.GetPointer());
-      ok = this->m_splitOp->GetOperateSucceeded();
+      ok = this->m_splitOp->GetOperateSucceeded() != 0;
       break;
     case RESET:
     case MERGE:

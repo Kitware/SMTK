@@ -496,8 +496,8 @@ vtkModelRegion* vtkXMLModelReader::ConstructModelRegion(int id)
     faceSides[j] = (faces[j]->GetModelFaceUse(0) == faceUse) ? 0 : 1;
     }
 
-  region = this->Model->BuildModelRegion(numFaces, &faces[0], &faceSides[0],
-                                         id, material);
+  region = this->Model->BuildModelRegion(static_cast<int>(numFaces), &faces[0],
+                                         &faceSides[0], id, material);
   vtkModelItemIterator* shellUses = region->NewModelShellUseIterator();
   int counter = 0;
   for(shellUses->Begin();!shellUses->IsAtEnd();shellUses->Next(),counter++)
@@ -683,7 +683,7 @@ vtkDiscreteModelEntityGroup* vtkXMLModelReader::ConstructModelEntityGroup(int id
     std::map<int, std::vector<vtkIdType> >::iterator it=
       associations.begin();
     int type = it->first;
-    int numberOfEntities = it->second.size();
+    int numberOfEntities = static_cast<int>(it->second.size());
     std::vector<vtkDiscreteModelEntity*> entities(numberOfEntities);
     for(int j=0;j<numberOfEntities;j++)
       {

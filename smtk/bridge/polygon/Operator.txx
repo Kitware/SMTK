@@ -80,7 +80,7 @@ void Operator::pointsForLoop(
       std::cerr << "Skipping missing edge record " << curEdge->name() << "\n";
       continue;
       }
-    outerLoopEdges.push_back(std::make_pair(*curEdge, *curEdgeDir));
+    outerLoopEdges.push_back(std::make_pair(*curEdge, *curEdgeDir != 0));
     if (*curEdgeDir < 0)
       {
       polypts.insert(polypts.end(), edgeRec->pointsRBegin(), edgeRec->pointsREnd());

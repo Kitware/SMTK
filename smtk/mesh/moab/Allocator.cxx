@@ -49,7 +49,7 @@ bool Allocator::allocatePoints( std::size_t numPointsToAlloc,
   if(this->m_rface == NULL) { return false; }
   ::moab::ErrorCode err;
   err = this->m_rface->get_node_coords(3, //x,y,z
-                                       numPointsToAlloc,
+                                       static_cast<int>(numPointsToAlloc),
                                        0, //preferred_start_id
                                        firstVertexHandle,
                                        coordinateMemory);
@@ -69,7 +69,7 @@ bool Allocator::allocateCells(smtk::mesh::CellType cellType,
 
   const int moabCellType = smtk::mesh::moab::smtkToMOABCell( cellType );
 
-  err = this->m_rface->get_element_connect(numCellsToAlloc,
+  err = this->m_rface->get_element_connect(static_cast<int>(numCellsToAlloc),
                                            numVertsPerCell,
                                            static_cast< ::moab::EntityType >(moabCellType),
                                            0, //preferred_start_id
@@ -92,7 +92,7 @@ bool Allocator::connectivityModified( const smtk::mesh::HandleRange& cellsToUpda
   const smtk::mesh::Handle& startHandle = cellsToUpdate.front();
   ::moab::ErrorCode err;
   err = this->m_rface->update_adjacencies(startHandle,
-                                          cellsToUpdate.size(),
+                                          static_cast<int>(cellsToUpdate.size()),
                                           numVertsPerCell,
                                           connectivityArray);
   return err == ::moab::MB_SUCCESS;

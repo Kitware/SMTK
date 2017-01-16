@@ -478,7 +478,7 @@ void Neighborhood::queueActiveEdge(FragmentId fragId, EdgeFragment& frag)
 
 void Neighborhood::removeActiveEdge(FragmentId fragId)
 {
-  bool did = this->m_activeEdges->erase(fragId);
+  bool did = this->m_activeEdges->erase(fragId) != 0;
   if (this->m_debugLevel > 2)
     {
     std::cout << "Removing active edge " << fragId << ". Did? " << (did ? "Y" : "N") << "\n";
@@ -612,7 +612,7 @@ void Neighborhood::processNeighbors()
       std::cout << "Inserting active edge " << *it << ". Did? " << (result.second ? "Y" : "N") << "\n";
       }
     EdgeFragment& frag((*this->m_fragments)[*it]);
-    this->m_eventQueue->insert(SweepEvent::SegmentEnd(frag.m_hi, *it));
+    this->m_eventQueue->insert(SweepEvent::SegmentEnd(frag.m_hi, static_cast<int>(*it)));
     // TODO: Check for neighbor intersections; remove them then check for neighbor intersections with *it and add them.
     }
   this->m_fragmentsToQueue.clear();
@@ -646,7 +646,7 @@ void Neighborhood::removeDeactivatedEdges()
   while (!this->m_fragmentsToDeactivate.empty())
     {
     std::set<FragmentId>::iterator fragIt = this->m_fragmentsToDeactivate.begin();
-    bool did = this->m_activeEdges->erase(*fragIt);
+    bool did = this->m_activeEdges->erase(*fragIt) != 0;
     if (this->m_debugLevel > 2)
       {
       std::cout << "*Deactivating frag " << *fragIt << " did? " << (did ? "Y" : "N") << "\n";

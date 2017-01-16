@@ -20,9 +20,14 @@
 #ifndef __smtk_common_FileLocation_h
 #define __smtk_common_FileLocation_h
 
-
 #include "smtk/CoreExports.h"
+#include "smtk/common/CompilerInformation.h"
 #include <string>
+
+#ifdef SMTK_MSVC
+// Ignore symbol exposure warnings for STL classes.
+#pragma warning (disable : 4251)
+#endif
 
 namespace smtk
 {
