@@ -37,6 +37,7 @@
 #include <QMap>
 #include <QMenu>
 #include <QPointer>
+#include <QPushButton>
 #include <QSizePolicy>
 #include <QTime>
 #include <QToolButton>
@@ -58,6 +59,7 @@ public:
 
   // Components for time zone UI
   QDialog *TimeZoneDialog;
+  QPushButton *TimeZoneDialogAcceptButton;
   qtTimeZoneSelectWidget *TimeZoneWidget;
   QToolButton *TimeZoneButton;
   QMenu *TimeZoneMenu;
@@ -80,6 +82,7 @@ qtDateTimeItem::qtDateTimeItem(
   this->Internals = new qtDateTimeItemInternals;
 
   this->Internals->TimeZoneDialog = NULL;
+  this->Internals->TimeZoneDialogAcceptButton = NULL;
   this->Internals->TimeZoneWidget = NULL;
   this->Internals->TimeZoneButton = NULL;
   this->Internals->TimeZoneMenu = NULL;
@@ -99,6 +102,14 @@ qtDateTimeItem::qtDateTimeItem(
       QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
       Qt::Horizontal,
       this->Internals->TimeZoneDialog);
+    this->Internals->TimeZoneDialogAcceptButton = buttonBox->button(
+      QDialogButtonBox::Ok);
+    this->Internals->TimeZoneDialogAcceptButton->setEnabled(false);
+
+    QObject::connect(
+      this->Internals->TimeZoneWidget, SIGNAL(regionSelected(QString)),
+      this, SLOT(onRegionSelected()));
+
     QObject::connect(
       buttonBox, SIGNAL(accepted()),
       this->Internals->TimeZoneDialog, SLOT(accept()));
@@ -139,6 +150,7 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
   QDate qdate;
   QTime qtime;
   QDateTime qdatetime;
+  QString timeZoneText("No TimeZone Selected");
   if (item->isSet())
     {
     ::smtk::common::DateTimeZonePair dtz = item->value(elementIdx);
@@ -158,7 +170,9 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
     ::smtk::common::TimeZone tz = dtz.timeZone();
     if (tz.isSet())
       {
-      // Todo initialize timezone
+      QString tzRegion = QString::fromStdString(tz.region());
+      this->Internals->TimeZoneWidget->setRegion(tzRegion);
+      timeZoneText = tzRegion.isEmpty() ? "UCT" : tzRegion;
       }
     }
 
@@ -187,7 +201,7 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
     this->Internals->TimeZoneButton = new QToolButton(frame);
     this->Internals->TimeZoneButton->setSizePolicy(
       QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
-    this->Internals->TimeZoneButton->setText("No TimeZone Selected");
+    this->Internals->TimeZoneButton->setText(timeZoneText);
     this->Internals->TimeZoneButton->setPopupMode(QToolButton::MenuButtonPopup);
     this->Internals->TimeZoneMenu = new QMenu(this->Internals->TimeZoneButton);
     this->Internals->TimeZoneMenu->addAction(
@@ -241,14 +255,22 @@ void qtDateTimeItem::onChildWidgetSizeChanged()
 }
 
 //----------------------------------------------------------------------------
+void qtDateTimeItem::onRegionSelected()
+{
+  this->Internals->TimeZoneDialogAcceptButton->setEnabled(true);
+}
+
+//----------------------------------------------------------------------------
 void qtDateTimeItem::onTimeZoneUnset()
 {
   this->Internals->TimeZoneButton->setText("No TimeZoneSelected");
+  int element = 0;
+  this->setTimeZone(element, "");
+
   QAction *action = dynamic_cast<QAction*>(this->sender());
   //qDebug() << "onTimeZoneUnset" << action;
   this->updateTimeZoneMenu(action);
 }
-
 //----------------------------------------------------------------------------
 void qtDateTimeItem::onTimeZoneUTC()
 {
@@ -262,8 +284,14 @@ void qtDateTimeItem::onTimeZoneRegion()
 {
   if (this->Internals->TimeZoneDialog->exec() == QDialog::Accepted)
     {
-    qDebug() << "Accepted";
-    // Todo update display and item
+    // Update UI
+    QString regionId = this->Internals->TimeZoneWidget->selectedRegion();
+    qDebug() << "Accepted" << regionId;
+    this->Internals->TimeZoneButton->setText(regionId);
+
+    // Update item
+    std::size_t element = 0;  // how do we know which element?
+    this->setTimeZone(element, regionId);
     }
   this->updateTimeZoneMenu();
 }
@@ -574,6 +602,19 @@ void qtDateTimeItem::updateTimeZoneMenu(QAction *selectedAction)
     bool enabled = action != selectedAction;
     action->setEnabled(enabled);
     }
+}
+
+//----------------------------------------------------------------------------
+void qtDateTimeItem::setTimeZone(std::size_t element, const QString& region)
+{
+  smtk::attribute::DateTimeItemPtr item =
+    dynamic_pointer_cast<DateTimeItem>(this->getObject());
+
+  ::smtk::common::DateTimeZonePair tzPair = item->value(element);
+  ::smtk::common::TimeZone tz = tzPair.timeZone();
+  tz.setRegion(region.toStdString());
+  tzPair.setTimeZone(tz);
+  item->setValue(element, tzPair);
 }
 
 //----------------------------------------------------------------------------

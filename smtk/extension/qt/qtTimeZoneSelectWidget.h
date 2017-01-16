@@ -17,6 +17,7 @@
 #include "smtk/extension/qt/Exports.h"
 #include <QItemSelection>
 #include <QModelIndex>
+#include <QString>
 #include <QWidget>
 
 class Ui_qtTimeZoneSelectWidget;
@@ -32,11 +33,16 @@ class SMTKQTEXT_EXPORT qtTimeZoneSelectWidget : public QWidget
   qtTimeZoneSelectWidget(QWidget* parent = NULL);
   ~qtTimeZoneSelectWidget();
 
-  void setContinent(const QModelIndex index);
+  // Used to initialize model
+  void setRegion(const QString& index);
+
+  // Returns continent/region or empty string
+  QString selectedRegion() const;
 
  public slots:
 
  signals:
+  void regionSelected(QString id);
 
  protected slots:
   void onContinentChanged(
@@ -47,6 +53,7 @@ class SMTKQTEXT_EXPORT qtTimeZoneSelectWidget : public QWidget
  protected:
   Ui_qtTimeZoneSelectWidget *UI;
 
+  void setContinent(const QModelIndex index);
  private:
   class qtTimeZoneSelectWidgetInternal;
   qtTimeZoneSelectWidgetInternal *Internal;

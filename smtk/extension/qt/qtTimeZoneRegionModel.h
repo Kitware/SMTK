@@ -21,6 +21,7 @@
 #include "smtk/extension/qt/Exports.h"
 #include <QAbstractItemModel>
 #include <QModelIndex>
+#include <QString>
 #include <QVariant>
 
 namespace smtk
@@ -32,7 +33,7 @@ namespace smtk
       Q_OBJECT
 
     public:
-      qtTimeZoneRegionModel(QObject *parent);
+      qtTimeZoneRegionModel(QObject *parent = NULL);
       virtual ~qtTimeZoneRegionModel();
       void initialize();
 
@@ -47,6 +48,8 @@ namespace smtk
       virtual QVariant headerData(
         int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
+      QString regionId(const QModelIndex& index) const;
+      QModelIndex findModelIndex(const QString& region) const;
     private:
       class TimeZoneRegionModelInternal;
       TimeZoneRegionModelInternal *Internal;

@@ -17,6 +17,7 @@
 
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/Exports.h"
+#include <QString>
 
 class QAction;
 class QDateTime;
@@ -53,6 +54,9 @@ namespace smtk
       void onTimeZoneUTC();
       void onTimeZoneRegion();
 
+      // Time zone dialog actions
+      void onRegionSelected();
+
     protected:
       virtual void createWidget();
       QWidget *createDateTimeWidget(int elementIdx);
@@ -62,6 +66,8 @@ namespace smtk
       virtual void updateExtensibleState();
       virtual void clearChildWidgets();
       void updateTimeZoneMenu(QAction *selectedAction = NULL);
+
+      void setTimeZone(std::size_t element, const QString& region);
 
     private:
       class qtDateTimeItemInternals;

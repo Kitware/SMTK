@@ -15,12 +15,12 @@
 #include <QList>
 #include <QMap>
 #include <QSet>
-#include <QString>
 #include <QStringList>
 #include <QTextStream>
 #include <QtGlobal>
 #include <QVector>
 
+#include <cassert>
 #include <sstream>
 
 // This a read-only model of a two-level tree.
@@ -36,6 +36,7 @@ using namespace smtk::extension;
 namespace {
   struct TimeZoneEntry
   {
+    int InternalId;
     QString ID;
     QString Continent;
     QString Region;
@@ -118,6 +119,7 @@ void qtTimeZoneRegionModel::initialize()
     this->Internal->ZoneCountList[row] += 1;
 
     TimeZoneEntry entry;
+    entry.InternalId = regionId;
     entry.ID = parts[0];
     entry.Continent = idParts[0];
     entry.Region = idParts[1];
@@ -130,6 +132,7 @@ void qtTimeZoneRegionModel::initialize()
     }
   qDebug() << "Continent List size" << this->Internal->ContinentList.size();
   qDebug() << "Zone Map size" << this->Internal->ZoneMap.size();
+
 }
 
 //----------------------------------------------------------------------------
@@ -224,18 +227,28 @@ int qtTimeZoneRegionModel::columnCount(const QModelIndex& parent) const
 //----------------------------------------------------------------------------
 QVariant qtTimeZoneRegionModel::data(const QModelIndex& index, int role) const
 {
+  if (!index.isValid())
+    {
+    qWarning() << "Invalid Index";
+    return QVariant();
+    }
+
+  QString result;
+  int internalId = index.internalId();
+
+  // Special case for centering offset/dst column for regions
+  if ((Qt::TextAlignmentRole == role) &&
+      (internalId > 1000) &&
+      (1 == index.column()))
+    {
+    return QVariant(Qt::AlignHCenter);
+    }
+
   if (Qt::DisplayRole != role)
     {
     return QVariant();
     }
 
-  if (!index.isValid())
-    {
-    return "Invalid Index";
-    }
-
-  QString result;
-  int internalId = index.internalId();
   if (0 == internalId)
     {
     return "Root";
@@ -254,18 +267,12 @@ QVariant qtTimeZoneRegionModel::data(const QModelIndex& index, int role) const
     }
 
   // (else) Zone has 3 columns
-#ifndef NDEBUG
-  if (!this->Internal->ZoneMap.contains(internalId))
-    {
-    qWarning() << "Invalid ZoneMap Id" << internalId;
-    return "Error";
-    }
-#endif
+  assert(this->Internal->ZoneMap.contains(internalId));
   TimeZoneEntry entry = this->Internal->ZoneMap.value(internalId);
   switch (index.column())
     {
     case 0:
-      result = entry.ID;
+      result = entry.Region;
       break;
 
     case 1:
@@ -299,7 +306,7 @@ QVariant qtTimeZoneRegionModel::headerData(
 {
   if ((Qt::Horizontal == orientation) && (Qt::DisplayRole == role))
     {
-    return "Continent";
+    return "Region";
     }
 
   // (else)
@@ -307,3 +314,64 @@ QVariant qtTimeZoneRegionModel::headerData(
 }
 
 //----------------------------------------------------------------------------
+QString qtTimeZoneRegionModel::regionId(const QModelIndex& index) const
+{
+  if (!index.isValid())
+    {
+    return QString();
+    }
+
+  int internalId = index.internalId();
+  const TimeZoneEntry entry = this->Internal->ZoneMap.value(internalId);
+  return entry.ID;
+}
+
+//----------------------------------------------------------------------------
+QModelIndex qtTimeZoneRegionModel::findModelIndex(const QString& regionId) const
+{
+  if (regionId.isEmpty())
+    {
+    return QModelIndex();  // safety first
+    }
+
+  QStringList parts = regionId.split('/');
+  QString continent = parts[0];
+  QString region = parts[1];
+  QModelIndex rootIndex = this->createIndex(0, 0, 0);
+
+  // Find continent index by brute force
+  int contRow = 0;
+  foreach(QString name, this->Internal->ContinentList)
+    {
+    if (name == continent)
+      {
+      break;
+      }
+    ++contRow;
+    }
+
+  if (contRow >= this->Internal->ContinentList.size())
+    {
+    qWarning() << "Did not find continent: " << continent;
+    return QModelIndex();
+    }
+  QModelIndex contIndex = this->index(contRow, 0, rootIndex);
+  qDebug() << "contRow" << contRow <<  "contIndex" << contIndex;
+
+  // Find zone by brute force
+  QMap<int, TimeZoneEntry>::const_iterator regionIter =
+    this->Internal->ZoneMap.constBegin();
+  for (; regionIter != this->Internal->ZoneMap.constEnd(); ++regionIter)
+    {
+    TimeZoneEntry entry = regionIter.value();
+    if (entry.Region == region)
+      {
+      int regionRow = (entry.InternalId % 1000) - 1;
+      QModelIndex regionIndex = this->index(regionRow, 0, contIndex);
+      return regionIndex;
+      }
+    }
+
+  qWarning() << "Did not find continent/region" << continent << region;
+  return QModelIndex();
+}
