@@ -73,7 +73,8 @@
  __pragma(warning(disable:4996))  /*using non checked iterators*/ \
  __pragma(warning(disable:4267))  /*from size_t to type*/ \
  __pragma(warning(disable:4251))  /*missing DLL-interface*/ \
- __pragma(warning(disable:4267))  /*unreferenced inline function*/
+ __pragma(warning(disable:4267))  /*unreferenced inline function*/ \
+ __pragma(warning(disable:4996))  /*strncpy unsafe; use strncpy_s instead*/
 #define SMTK_THIRDPARTY_POST_INCLUDE \
  __pragma(warning(pop))
 

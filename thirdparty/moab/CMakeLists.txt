@@ -138,7 +138,8 @@ mark_as_advanced(
 if ( ENABLE_IMESH OR ENABLE_IGEOM )
   include (${CMAKE_ROOT}/Modules/CMakeDetermineFortranCompiler.cmake)
 endif ()
-include (config/CheckCompilerFlags.cmake)
+# Do not let Moab set compiler flags.
+#include (config/CheckCompilerFlags.cmake)
 
 ################################################################################
 # Check for system include files
