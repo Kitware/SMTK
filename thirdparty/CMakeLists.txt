@@ -99,11 +99,14 @@ if (NOT SMTK_USE_SYSTEM_MOAB)
 	         CMAKE_CXX_COMPILER_ID MATCHES "Intel")
       # disables: warning: unused variable '####'
       set(ignore_rules_for_moab
-	        "${ignore_rules_for_moab} -Wno-unused-const-variable")
+          "${ignore_rules_for_moab} -Wno-unused-const-variable")
+      # disables: warning: ignoring attributes on template argument '####'
+      set(ignore_rules_for_moab
+          "${ignore_rules_for_moab} -Wno-ignored-attributes")
       if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-	      # disables: warning: private field '####' is not used
-	      set(ignore_rules_for_moab
-	          "${ignore_rules_for_moab} -Wno-unused-private-field")
+        # disables: warning: private field '####' is not used
+        set(ignore_rules_for_moab
+            "${ignore_rules_for_moab} -Wno-unused-private-field")
       endif()
     endif()
 
