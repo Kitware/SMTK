@@ -49,7 +49,7 @@
 ########################################################################
 git_archive () {
     git archive --worktree-attributes --prefix="$name-reduced/" HEAD -- $paths | \
-        tar -C "$extractdir" -xv
+        tar -C "$extractdir" -x
 }
 
 die () {
@@ -65,6 +65,9 @@ readonly regex_date='20[0-9][0-9]-[0-9][0-9]-[0-9][0-9]'
 readonly basehash_regex="$name $regex_date ([0-9a-f]*)"
 readonly basehash="$( git rev-list --author="$ownership" --grep="$basehash_regex" -n 1 HEAD )"
 readonly upstream_old_short="$( git cat-file commit "$basehash" | sed -n '/'"$basehash_regex"'/ {s/.*(//;s/)//;p}' | egrep '^[0-9a-f]+$' )"
+readonly toplevel_dir="$( git rev-parse --show-toplevel )"
+
+cd "$toplevel_dir"
 
 ########################################################################
 # Sanity checking
@@ -155,8 +158,14 @@ popd
 if [ -n "$basehash" ]; then
     git merge --log -s recursive "-Xsubtree=$subtree/" --no-commit "upstream-$name"
 else
+    unrelated_histories_flag=""
+    if git merge --help | grep -q -e allow-unrelated-histories; then
+        unrelated_histories_flag="--allow-unrelated-histories "
+    fi
+    readonly unrelated_histories_flag
+
     git fetch "$extractdir" "upstream-$name:upstream-$name"
-    git merge --log -s ours --no-commit "upstream-$name"
+    git merge --log -s ours --no-commit $unrelated_histories_flag "upstream-$name"
     git read-tree -u --prefix="$subtree/" "upstream-$name"
 fi
 git commit --no-edit
