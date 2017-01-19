@@ -1,8 +1,0 @@
-  <ParaViewReaders>
-    <Reader name="vtkMoabReader" extensions=".h5m cub ccmg"
-            file_description="MOAB files">
-    </Reader>
-    <Reader name="vtkMoabTimeSeriesReader" extensions=".h5m cub ccmg"
-            file_description="MOAB time series files">
-    </Reader>
-  </ParaViewReaders>
