@@ -13,7 +13,7 @@
  * 
  */
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #ifdef _DEBUG
 // turn off warnings that say they debugging identifier has been truncated
 // this warning comes up when using some STL containers
@@ -33,8 +33,8 @@ namespace moab {
 
 #define RR if (MB_SUCCESS != result) return result
 
-ReadUtil::ReadUtil(Core* mdb, Error* error_handler)
-  : ReadUtilIface(), mMB(mdb), mError(error_handler)
+ReadUtil::ReadUtil(Core* mdb, Error* /*error_handler*/)
+  : ReadUtilIface(), mMB(mdb)
 {
 }
 
@@ -270,11 +270,11 @@ ErrorCode ReadUtil::get_ordered_vertices(EntityHandle *bound_ents,
   // Get dimension of bounding entities
   int bound_dim = CN::Dimension(TYPE_FROM_HANDLE(bound_ents[0]));
   int indices[MAX_SUB_ENTITY_VERTICES];
-  const EntityHandle *connect;
+  const EntityHandle *connect = NULL;
   std::vector<EntityHandle> tmp_connect;
 
   // Find the right entity type based on # bounding ents
-  int numv = 0, num_connect;
+  int numv = 0, num_connect = 0;
   ErrorCode result;
   for (EntityType t = MBEDGE; t < MBENTITYSET; t++) {
     int nindex = CN::NumSubEntities(t, bound_dim);

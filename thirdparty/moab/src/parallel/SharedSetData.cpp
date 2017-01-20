@@ -12,7 +12,7 @@
 namespace moab {
 
 SharedSetData::SharedSetData(Interface& moab, unsigned rank)
-  : mb(moab), myRank(rank), sharedSetTag(0)
+  : mb(moab), sharedSetTag(0)
 {
   SharedSetTagData zero;
 

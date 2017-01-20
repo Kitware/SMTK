@@ -21,7 +21,7 @@
 #error "VarLenSparseTag.hpp isn't supposed to be included into an application"
 #endif
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #pragma warning(disable : 4786)
 #endif
 

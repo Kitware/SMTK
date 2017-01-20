@@ -79,6 +79,10 @@ FileOptions::FileOptions( const FileOptions& copy ) :
 
 FileOptions& FileOptions::operator=( const FileOptions& copy )
 {
+  // Check for self-assignment
+  if (this == &copy)
+    return *this;
+
   free( mData );
   mData = 0;
   mOptions.resize( copy.mOptions.size() );

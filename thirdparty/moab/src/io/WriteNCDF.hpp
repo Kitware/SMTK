@@ -122,8 +122,11 @@ protected:
     unsigned int num_nodes;
     unsigned int num_elements;
     unsigned int num_elementblocks;
+    unsigned int num_polyhedra_blocks;
     std::vector<std::string> qaRecords;
     Range nodes;
+    Range polyhedronFaces; // they will accumulate, like nodes
+    // they will be written before any other face blocks, and before polyhedra blocks
   };
   
 private:
@@ -151,6 +154,8 @@ private:
   Tag mQaRecordTag;
 
   Tag mEntityMark;   //used to say whether an entity will be exported
+
+  int repeat_face_blocks; // only to make paraview and visit happy
 
   ErrorCode gather_mesh_information(ExodusMeshInfo &mesh_info,
                                        std::vector<MaterialSetData> &block_info,
@@ -182,7 +187,8 @@ private:
 
   ErrorCode write_nodes(int num_nodes, Range& nodes, int dimension );
 
-  ErrorCode write_elementblocks(std::vector<MaterialSetData> &block_data );
+  ErrorCode write_poly_faces(ExodusMeshInfo& mesh_info);
+  ErrorCode write_elementblocks(ExodusMeshInfo& mesh_info, std::vector<MaterialSetData> &block_data );
 
   ErrorCode write_exodus_integer_variable(const char* variable_name,
                                                       int *variable_array,

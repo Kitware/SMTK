@@ -213,7 +213,7 @@ void gs_data::nonlocal_info::initialize(uint np, uint count,
   _slabels = (slong*) malloc(((nlabels-1)*count)*sizeof(slong));
   else
   _slabels = NULL;
-  _ulabels = (ulong*) malloc((nulabels*count)*sizeof(ulong));
+  _ulabels = (Ulong*) malloc((nulabels*count)*sizeof(Ulong));
   _reqs = (MPI_Request*) malloc(2*np*sizeof(MPI_Request));
   _buf = (realType*) malloc((2*count*maxv)*sizeof(realType));
   _maxv = maxv;
@@ -255,13 +255,13 @@ void gs_data::nonlocal_info::nonlocal(realType *u, int op, MPI_Comm comm)
     start = buf;
     for (;c;--c)
       *buf++ = u[*sh_ind++];
-    MPI_Isend(start,nshared[i]*sizeof(realType),
+    MPI_Isend((void*)start,nshared[i]*sizeof(realType),
         MPI_UNSIGNED_CHAR, targ[i],id,comm,reqs++);
   }
   start = buf;
   for(i=0; i<np; ++i)
   {
-    MPI_Irecv(start,nshared[i]*sizeof(realType),MPI_UNSIGNED_CHAR,
+    MPI_Irecv((void*)start,nshared[i]*sizeof(realType),MPI_UNSIGNED_CHAR,
         targ[i],targ[i],comm,reqs++);
     start+=nshared[i];
   }
@@ -315,13 +315,13 @@ void gs_data::nonlocal_info::nonlocal_vec(realType *u, uint n,
       memcpy(buf,u+n*(*sh_ind++),size);
       buf+=n;
     }
-    MPI_Isend(start,ns*size,MPI_UNSIGNED_CHAR,targ[i],id,comm,reqs++);
+    MPI_Isend((void*)start,ns*size,MPI_UNSIGNED_CHAR,targ[i],id,comm,reqs++);
   }
   start = buf;
   for (i=0; i<np; ++i)
   {
     int nsn=n*nshared[i];
-    MPI_Irecv(start,nsn*size,MPI_UNSIGNED_CHAR,targ[i],targ[i],comm,reqs++);
+    MPI_Irecv((void*)start,nsn*size,MPI_UNSIGNED_CHAR,targ[i],targ[i],comm,reqs++);
     start+=nsn;
   }
   for (reqs=this->_reqs,i=np*2;i;--i)
@@ -379,13 +379,13 @@ void gs_data::nonlocal_info::nonlocal_many(realType **u, uint n, int op,
         *buf++=uu[sh_ind[c]];
     }
     sh_ind+=ns;
-    MPI_Isend(start,n*ns*sizeof(realType),MPI_UNSIGNED_CHAR,targ[i],id,comm,reqs++);
+    MPI_Isend((void*)start,n*ns*sizeof(realType),MPI_UNSIGNED_CHAR,targ[i],id,comm,reqs++);
   }
   start = buf;
   for (i=0; i<np; ++i)
   {
     int nsn = n*nshared[i];
-    MPI_Irecv(start,nsn*sizeof(realType),MPI_UNSIGNED_CHAR,
+    MPI_Irecv((void*)start,nsn*sizeof(realType),MPI_UNSIGNED_CHAR,
         targ[i],targ[i],comm,reqs++);
     start+=nsn;
   }
@@ -491,10 +491,10 @@ void gs_data::crystal_data::send_(uint target, int recvn)
   int i;
 
   (void)VALGRIND_CHECK_MEM_IS_DEFINED( &send->n, sizeof(uint) );
-  MPI_Isend(&send->n,sizeof(uint),MPI_UNSIGNED_CHAR,
+  MPI_Isend((void*)&send->n,sizeof(uint),MPI_UNSIGNED_CHAR,
       target ,_id ,_comm,&req[ 0]);
   for (i=0; i<recvn; ++i)
-    MPI_Irecv(&count[i] ,sizeof(uint),MPI_UNSIGNED_CHAR,
+    MPI_Irecv((void*)&count[i] ,sizeof(uint),MPI_UNSIGNED_CHAR,
       target+i,target+i,_comm,&req[i+1]);
   MPI_Waitall(recvn+1,req,status);
   sum = keep->n;
@@ -507,14 +507,14 @@ void gs_data::crystal_data::send_(uint target, int recvn)
   keep->n=sum;
 
   (void)VALGRIND_CHECK_MEM_IS_DEFINED( send->buf.ptr,send->n*sizeof(uint) );
-  MPI_Isend(send->buf.ptr,send->n*sizeof(uint),
+  MPI_Isend((void*)send->buf.ptr,send->n*sizeof(uint),
       MPI_UNSIGNED_CHAR,target,_id,_comm,&req[0]);
   if (recvn)
   {
-    MPI_Irecv(recv[0],count[0]*sizeof(uint),MPI_UNSIGNED_CHAR,
+    MPI_Irecv((void*)recv[0],count[0]*sizeof(uint),MPI_UNSIGNED_CHAR,
         target,target,_comm,&req[1]);
     if (recvn==2)
-      MPI_Irecv(recv[1],count[1]*sizeof(uint),MPI_UNSIGNED_CHAR,
+      MPI_Irecv((void*)recv[1],count[1]*sizeof(uint),MPI_UNSIGNED_CHAR,
         target+1,target+1,_comm,&req[2]);
   }
   MPI_Waitall(recvn+1,req,status);
@@ -559,6 +559,7 @@ void gs_data::crystal_data::crystal_router()
 #define UINT_PER_X(X) ((sizeof(X)+sizeof(uint)-1)/sizeof(uint))
 #define UINT_PER_REAL UINT_PER_X(realType)
 #define UINT_PER_LONG UINT_PER_X(slong)
+#define UINT_PER_ULONG UINT_PER_X(Ulong)
 
 /*-------------------------------------------------------------------------
  Transfer
@@ -570,12 +571,12 @@ ErrorCode gs_data::crystal_data::gs_transfer(int dynamic,
   unsigned mi,ml,mul,mr;
   tl.getTupleSize(mi, ml, mul, mr);
 
-  const unsigned tsize = (mi-1) + ml*UINT_PER_LONG + mul*UINT_PER_LONG +
+  const unsigned tsize = (mi-1) + ml*UINT_PER_LONG + mul*UINT_PER_ULONG +
       mr*UINT_PER_REAL;
   sint p, lp = -1;
   sint *ri;
   slong *rl;
-  ulong *rul;
+  Ulong *rul;
   realType *rr;
   uint i, j, *buf, *len=0, *buf_end;
 
@@ -620,8 +621,8 @@ ErrorCode gs_data::crystal_data::gs_transfer(int dynamic,
     }
     for (j=mul;j;--j,++rul)
     {
-      memcpy(buf,rul,sizeof(ulong));
-      buf+=UINT_PER_LONG;
+      memcpy(buf,rul,sizeof(Ulong));
+      buf+=UINT_PER_ULONG;
     }
     for (j=mr;j;--j,++rr)
     {
@@ -682,8 +683,8 @@ ErrorCode gs_data::crystal_data::gs_transfer(int dynamic,
         buf+=UINT_PER_LONG;
       }
       for (j=mul;j;--j) {
-        memcpy(rul++,buf,sizeof(ulong));
-        buf+=UINT_PER_LONG;
+        memcpy(rul++,buf,sizeof(Ulong));
+        buf+=UINT_PER_ULONG;
       }
       for (j=mr;j;--j) {
         memcpy(rr++,buf,sizeof(realType ));
@@ -750,7 +751,7 @@ void gs_data::gs_data_op_many(realType **u, uint n, int op)
  Setup
  --------------------------------------------------------------------------*/
 
-ErrorCode gs_data::initialize(uint n, const long *label, const ulong *ulabel,
+ErrorCode gs_data::initialize(uint n, const long *label, const Ulong *ulabel,
     uint maxv, const unsigned int nlabels, const unsigned int nulabels,
     crystal_data *crystal)
 {
@@ -764,7 +765,7 @@ ErrorCode gs_data::initialize(uint n, const long *label, const ulong *ulabel,
   moab::TupleList::buffer buf;
 #endif
   (void)VALGRIND_CHECK_MEM_IS_DEFINED(label, nlabels * sizeof(long));
-  (void)VALGRIND_CHECK_MEM_IS_DEFINED(ulabel, nlabels * sizeof(ulong));
+  (void)VALGRIND_CHECK_MEM_IS_DEFINED(ulabel, nlabels * sizeof(Ulong));
 #ifdef MOAB_HAVE_MPI
   MPI_Comm_dup(crystal->_comm,&this->_comm);
 #else
@@ -778,7 +779,7 @@ ErrorCode gs_data::initialize(uint n, const long *label, const ulong *ulabel,
     uint i;
     sint *nzi;
     long *nzl;
-    unsigned long *nzul;
+    Ulong *nzul;
     nzi = nonzero.vi_wr;
     nzl = nonzero.vl_wr;
     nzul = nonzero.vul_wr;
@@ -813,7 +814,7 @@ ErrorCode gs_data::initialize(uint n, const long *label, const ulong *ulabel,
     uint i;
     sint *nzi = nonzero.vi_wr, *pi = primary.vi_wr;
     slong *nzl = nonzero.vl_wr, *pl = primary.vl_wr;
-    ulong *nzul = nonzero.vul_wr, *pul = primary.vul_wr;
+    Ulong *nzul = nonzero.vul_wr, *pul = primary.vul_wr;
     slong last = -1;
     for (i = 0; i < nonzero.get_n();
           ++i, nzi += 1, nzl += nlabels, nzul += nulabels)
@@ -902,12 +903,12 @@ ErrorCode gs_data::initialize(uint n, const long *label, const ulong *ulabel,
   {
     sint *pi1=primary.vi_wr, *si=shared.vi_wr;
     slong lbl, *pl1=primary.vl_wr, *sl=shared.vl_wr;
-    ulong *pul1=primary.vul_wr, *sul=shared.vul_wr;
+    Ulong *pul1=primary.vul_wr, *sul=shared.vul_wr;
     for (  ;(lbl=pl1[0])!=-1;  pi1+=3, pl1+=nlabels, pul1+=nulabels)
     {
       sint *pi2=pi1+3;
       slong *pl2=pl1+nlabels;
-      ulong *pul2=pul1+nulabels;
+      Ulong *pul2=pul1+nulabels;
       for (  ;pl2[0]==lbl;  pi2+=3, pl2+=nlabels, pul2+=nulabels)
       {
         if (shared.get_n()+2 > shared.get_max())
@@ -969,12 +970,12 @@ ErrorCode gs_data::initialize(uint n, const long *label, const ulong *ulabel,
     uint i;
     sint proc=-1,*si=shared.vi_wr;
     slong *sl = shared.vl_wr;
-    ulong *ul = shared.vul_wr;
+    Ulong *ul = shared.vul_wr;
     uint *target = this->nlinfo->_target;
     uint *nshared = this->nlinfo->_nshared;
     uint *sh_ind = this->nlinfo->_sh_ind;
     slong *slabels = this->nlinfo->_slabels;
-    ulong *ulabels = this->nlinfo->_ulabels;
+    Ulong *ulabels = this->nlinfo->_ulabels;
     for (i=shared.get_n(); i; --i,si+=3)
     {
       if (si[1]!=proc)

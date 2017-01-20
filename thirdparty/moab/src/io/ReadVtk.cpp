@@ -30,14 +30,17 @@
 #include "moab/ReadUtilIface.hpp"
 #include "moab/FileOptions.hpp"
 #include "FileTokenizer.hpp"
-#include "VtkUtil.hpp"
-
-#define MB_VTK_MATERIAL_SETS
-#ifdef MB_VTK_MATERIAL_SETS
+#include "moab/VtkUtil.hpp"
 #include "MBTagConventions.hpp"
+
+// #define MB_VTK_MATERIAL_SETS
+#ifdef MB_VTK_MATERIAL_SETS
 #include <map>
+#endif
 
 namespace moab {
+
+#ifdef MB_VTK_MATERIAL_SETS
 
 class Hash
 {
@@ -90,21 +93,27 @@ public:
 class Modulator : public std::map<Hash, EntityHandle>
 {
 public:
-  Modulator(Interface* iface, std::string tag_name, DataType mb_type, size_t sz, size_t per_elem)
+  Modulator(Interface* iface) : mesh(iface)
+  { }
+
+  ErrorCode initialize(std::string tag_name, DataType mb_type, size_t sz, size_t per_elem)
   {
-    this->mesh = iface;
     std::vector<unsigned char> default_val;
     default_val.resize(sz * per_elem);
-    this->mesh->tag_get_handle(tag_name.c_str(), per_elem, mb_type, this->tag,
-                               MB_TAG_SPARSE | MB_TAG_BYTES | MB_TAG_CREAT,
-                               &default_val[0]);
+    ErrorCode rval = this->mesh->tag_get_handle(
+        tag_name.c_str(), per_elem, mb_type, this->tag,
+        MB_TAG_SPARSE | MB_TAG_BYTES | MB_TAG_CREAT,
+        &default_val[0]
+        );
+    return rval;
   }
 
   void add_entity(EntityHandle ent, const unsigned char* bytes, size_t len)
   {
     Hash h(bytes, len);
     EntityHandle mset = this->congruence_class(h, bytes);
-    this->mesh->add_entities(mset, &ent, 1);
+    ErrorCode rval;
+    rval = this->mesh->add_entities(mset, &ent, 1);MB_CHK_SET_ERR_RET(rval, "Failed to add entities to mesh");
   }
 
   void add_entities(Range& range, const unsigned char* bytes, size_t bytes_per_ent)
@@ -112,7 +121,8 @@ public:
     for (Range::iterator it = range.begin(); it != range.end(); ++it, bytes += bytes_per_ent) {
       Hash h(bytes, bytes_per_ent);
       EntityHandle mset = this->congruence_class(h, bytes);
-      this->mesh->add_entities(mset, &*it, 1);
+      ErrorCode rval;
+      rval = this->mesh->add_entities(mset, &*it, 1);MB_CHK_SET_ERR_RET(rval, "Failed to add entities to mesh");
     }
   }
 
@@ -122,13 +132,14 @@ public:
     if (it == this->end()) {
       EntityHandle mset;
       Range preexist;
-      this->mesh->get_entities_by_type_and_tag(0, MBENTITYSET, &this->tag, &tag_data, 1, preexist);
+      ErrorCode rval;
+      rval = this->mesh->get_entities_by_type_and_tag(0, MBENTITYSET, &this->tag, &tag_data, 1, preexist);MB_CHK_SET_ERR_RET_VAL(rval, "Failed to get entities by type and tag", (EntityHandle) 0);
       if (preexist.size()) {
         mset = *preexist.begin();
       }
       else {
-        this->mesh->create_meshset(MESHSET_SET, mset);
-        this->mesh->tag_set_data(this->tag, &mset, 1, tag_data);
+        rval = this->mesh->create_meshset(MESHSET_SET, mset);MB_CHK_SET_ERR_RET_VAL(rval, "Failed to create mesh set", (EntityHandle) 0);
+        rval = this->mesh->tag_set_data(this->tag, &mset, 1, tag_data);MB_CHK_SET_ERR_RET_VAL(rval, "Failed to set tag data", (EntityHandle) 0);
       }
       (*this)[h] = mset;
       return mset;
@@ -147,7 +158,7 @@ ReaderIface* ReadVtk::factory(Interface* iface)
 }
 
 ReadVtk::ReadVtk(Interface* impl)
-  : mdbImpl(impl), mCurrentMeshHandle(0), mPartitionTagName(MATERIAL_SET_TAG_NAME)
+  : mdbImpl(impl), mPartitionTagName(MATERIAL_SET_TAG_NAME)
 {
   mdbImpl->query_interface(readMeshIface);
 }
@@ -551,7 +562,6 @@ ErrorCode ReadVtk::vtk_read_polydata(FileTokenizer& tokens,
 {
   ErrorCode result;
   long num_verts;
-  std::vector<int> connectivity;
   const char* const poly_data_names[] = {"VERTICES",
                                          "LINES",
                                          "POLYGONS",
@@ -733,18 +743,40 @@ ErrorCode ReadVtk::vtk_read_unstructured_grid(FileTokenizer& tokens,
     }
 
     int num_vtx = *conn_iter;
-    if (type != MBPOLYGON && num_vtx != (int)VtkUtil::vtkElemTypes[vtk_type].num_nodes) {
+    if ( type != MBPOLYGON && type != MBPOLYHEDRON && num_vtx != (int)VtkUtil::vtkElemTypes[vtk_type].num_nodes) {
       MB_SET_ERR(MB_FAILURE, "Cell " << id << " is of type '" << VtkUtil::vtkElemTypes[vtk_type].name << "' but has " << num_vtx << " vertices");
     }
 
+
+
     // Find any subsequent elements of the same type
+    // if polyhedra, need to look at the number of faces to put in the same range
     std::vector<long>::iterator conn_iter2 = conn_iter + num_vtx + 1;
     long end_id = id + 1; 
-    while (end_id < num_elems[0] &&
-           (unsigned)types[end_id] == vtk_type &&
-           *conn_iter2 == num_vtx) {
-      ++end_id;
-      conn_iter2 += num_vtx + 1;
+    if (MBPOLYHEDRON != type)
+    {
+      while (end_id < num_elems[0] &&
+             (unsigned)types[end_id] == vtk_type &&
+             *conn_iter2 == num_vtx) {
+        ++end_id;
+        conn_iter2 += num_vtx + 1;
+      }
+    }
+    else
+    {
+      // advance only if next is polyhedron too, and if number of faces is the same
+      int num_faces = conn_iter[1];
+      while (end_id < num_elems[0] &&
+             (unsigned)types[end_id] == vtk_type &&
+             conn_iter2[1] == num_faces) {
+        ++end_id;
+        conn_iter2 += num_vtx + 1;
+      }
+      // num_vtx becomes in this case num_faces
+      num_vtx = num_faces; // for polyhedra, this is what we want
+      // trigger vertex adjacency call
+      Range firstFaces;
+      mdbImpl->get_adjacencies(&first_vertex, 1, 2, false, firstFaces);
     }
 
     // Allocate element block
@@ -768,34 +800,87 @@ ErrorCode ReadVtk::vtk_read_unstructured_grid(FileTokenizer& tokens,
     EntityHandle *conn_sav = conn_array;
 
     // Store element connectivity
-    for ( ; id < end_id; ++id) {
-      if (conn_iter == connectivity.end()) {
-        MB_SET_ERR(MB_FAILURE, "Connectivity data truncated at cell " << id);
-      }
-
-      // Make sure connectivity length is correct.
-      if (*conn_iter != num_vtx) {
-        MB_SET_ERR(MB_FAILURE, "Cell " << id << " is of type '" << VtkUtil::vtkElemTypes[vtk_type].name << "' but has " << num_vtx << " vertices");
-      }
-      ++conn_iter;
-
-      for (i = 0; i < num_vtx; ++i, ++conn_iter) {
+    if (type != MBPOLYHEDRON)
+    {
+      for ( ; id < end_id; ++id) {
         if (conn_iter == connectivity.end()) {
           MB_SET_ERR(MB_FAILURE, "Connectivity data truncated at cell " << id);
         }
+        // Make sure connectivity length is correct.
+        if (*conn_iter != num_vtx) {
+          MB_SET_ERR(MB_FAILURE, "Cell " << id << " is of type '" << VtkUtil::vtkElemTypes[vtk_type].name << "' but has " << num_vtx << " vertices");
+        }
+        ++conn_iter;
 
-        conn_array[i] = *conn_iter + first_vertex;
+        for (i = 0; i < num_vtx; ++i, ++conn_iter) {
+          if (conn_iter == connectivity.end()) {
+            MB_SET_ERR(MB_FAILURE, "Connectivity data truncated at cell " << id);
+          }
+
+          conn_array[i] = *conn_iter + first_vertex;
+        }
+
+        const unsigned* order = VtkUtil::vtkElemTypes[vtk_type].node_order;
+        if (order) {
+          assert(num_vtx * sizeof(EntityHandle) <= sizeof(tmp_conn_list));
+          memcpy(tmp_conn_list, conn_array, num_vtx * sizeof(EntityHandle));
+          for (int j = 0; j < num_vtx; ++j)
+            conn_array[order[j]] = tmp_conn_list[j];
+        }
+
+        conn_array += num_vtx;
+      }
+    }
+    else // type == MBPOLYHEDRON
+    {
+      // in some cases, we may need to create new elements; will it screw the tags?
+      // not if the file was not from moab
+      ErrorCode rv = MB_SUCCESS;
+      for ( ; id < end_id; ++id) {
+        if (conn_iter == connectivity.end()) {
+          MB_SET_ERR(MB_FAILURE, "Connectivity data truncated at polyhedra cell " << id);
+        }
+        ++conn_iter;
+        // iterator is now at number of faces
+        // we should check it is indeed num_vtx
+        int num_faces = *conn_iter;
+        if (num_faces != num_vtx)
+          MB_SET_ERR(MB_FAILURE, "Connectivity data wrong at polyhedra cell " << id);
+
+        EntityHandle connec[20]; // we bet we will have only 20 vertices at most, in a face in a polyhedra
+        for (int j=0; j<num_faces; j++)
+        {
+          conn_iter++;
+          int numverticesInFace = (int) *conn_iter;
+          if (numverticesInFace>20)
+            MB_SET_ERR(MB_FAILURE, "too many vertices in face index " << j << " for polyhedra cell " << id);
+          // need to find the face, but first fill with vertices
+          for (int k=0; k<numverticesInFace; k++)
+          {
+            connec[k] = first_vertex + *(++conn_iter); //
+          }
+          Range adjFaces;
+          // find a face with these vertices; if not, we need to create one, on the fly :(
+          rv = mdbImpl->get_adjacencies(connec, numverticesInFace, 2, false, adjFaces); MB_CHK_ERR(rv);
+          if (adjFaces.size() >=1)
+          {
+            conn_array[j] = adjFaces[0]; // get the first face found
+          }
+          else
+          {
+            // create the face; tri, quad or polygon
+            EntityType etype = MBTRI;
+            if (4 == numverticesInFace) etype = MBQUAD;
+            if (4 < numverticesInFace) etype = MBPOLYGON;
+
+            rv = mdbImpl->create_element(etype, connec, numverticesInFace,  conn_array[j]); MB_CHK_ERR(rv);
+          }
+        }
+
+        conn_array += num_vtx; // advance for next polyhedra
+        conn_iter++; // advance to the next field
       }
 
-      const unsigned* order = VtkUtil::vtkElemTypes[vtk_type].node_order;
-      if (order) {
-        assert(num_vtx * sizeof(EntityHandle) <= sizeof(tmp_conn_list));
-        memcpy(tmp_conn_list, conn_array, num_vtx * sizeof(EntityHandle));
-        for (int j = 0; j < num_vtx; ++j)
-          conn_array[order[j]] = tmp_conn_list[j];
-      }
-
-      conn_array += num_vtx;
     }
 
     // Notify MOAB of the new elements
@@ -951,28 +1036,37 @@ ErrorCode ReadVtk::vtk_read_tag_data(FileTokenizer& tokens,
 {
   ErrorCode result;
   DataType mb_type;
-  size_t size;
   if (type == 1) {
     mb_type = MB_TYPE_BIT;
-    size = sizeof(bool);
   }
   else if (type >= 2 && type <= 9) {
     mb_type = MB_TYPE_INTEGER;
-    size = sizeof(int);
   }
   else if (type == 10 || type == 11) {
     mb_type = MB_TYPE_DOUBLE;
-    size = sizeof(double);
   }
   else if (type == 12) {
     mb_type = MB_TYPE_INTEGER;
-    size = 4; // Could be 4 or 8, but we don't know. Hope it's 4 because MOAB doesn't support 64-bit ints.
   }
   else
     return MB_FAILURE;
 
 #ifdef MB_VTK_MATERIAL_SETS
-  Modulator materialMap(this->mdbImpl, this->mPartitionTagName, mb_type, size, per_elem);
+  size_t size;
+  if (type == 1) {
+    size = sizeof(bool);
+  }
+  else if (type >= 2 && type <= 9) {
+    size = sizeof(int);
+  }
+  else if (type == 10 || type == 11) {
+    size = sizeof(double);
+  }
+  else /* (type == 12) */ {
+    size = 4; // Could be 4 or 8, but we don't know. Hope it's 4 because MOAB doesn't support 64-bit ints.
+  }
+  Modulator materialMap(this->mdbImpl);
+  result = materialMap.initialize(this->mPartitionTagName, mb_type, size, per_elem);MB_CHK_SET_ERR(result, "MaterialMap tag (" << this->mPartitionTagName << ") creation failed.");
   bool isMaterial =
     size * per_elem <= 4 &&                          // Must have int-sized values (ParallelComm requires it)
     ! this->mPartitionTagName.empty() &&             // Must have a non-empty field name...
@@ -984,11 +1078,7 @@ ErrorCode ReadVtk::vtk_read_tag_data(FileTokenizer& tokens,
   result = mdbImpl->tag_get_handle(name, per_elem, mb_type, handle,
                                    MB_TAG_DENSE | MB_TAG_CREAT);MB_CHK_SET_ERR(result, "Tag name conflict for attribute \"" << name << "\" at line " << tokens.line_number());
 
-  // Count number of entities
-  long count = 0;
   std::vector<Range>::iterator iter;
-  for (iter = entities.begin(); iter != entities.end(); ++iter)
-    count += iter->size();
 
   if (type == 1) {
     for (iter = entities.begin(); iter != entities.end(); ++iter) {
@@ -1047,8 +1137,6 @@ ErrorCode ReadVtk::vtk_read_tag_data(FileTokenizer& tokens,
         return result;
     }
   }
-  else
-    return MB_FAILURE;
 
   return MB_SUCCESS;
 }

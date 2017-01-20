@@ -139,16 +139,16 @@ static const char * nameType[MBMAXTYPE] =
 };
 
 ErrorCode VerdictWrapper::quality_measure(EntityHandle eh, QualityType q, double & quality,
-    int num_nodes, double * coords)
+    int num_nodes, EntityType etype, double * coords)
 {
-  EntityType etype= TYPE_FROM_HANDLE(eh);
-  if (possibleQuality[etype][q]==0)
-    return MB_NOT_IMPLEMENTED;
-
   double coordinates[27][3]; // at most 27 nodes per element
 
   if (0==num_nodes && NULL==coords)
   {
+    etype= TYPE_FROM_HANDLE(eh);
+    if (possibleQuality[etype][q]==0)
+      return MB_NOT_IMPLEMENTED;
+
     // get coordinates of points, if not passed already
     const EntityHandle * conn = NULL;
     //int num_nodes;

@@ -40,7 +40,7 @@
  *      CCMIOGetProstarSet, CCMIOWriteOpt1i,
  */
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #ifdef _DEBUG
 // turn off warnings that say they debugging identifier has been truncated
 // this warning comes up when using some STL containers
@@ -187,7 +187,7 @@ namespace moab {
 
     mDimension = 3;
 
-    std::vector<EntityHandle> matsets, dirsets, neusets, partsets, entities;
+    std::vector<EntityHandle> matsets, dirsets, neusets, partsets;
 
     // Separate into material, dirichlet, neumann, partition sets
     result = get_sets(ent_handles, num_sets, matsets, 
@@ -655,7 +655,6 @@ namespace moab {
   {
     ErrorCode result;
 
-    std::vector<unsigned char> marks;
     neuset_info.resize(neusets.size());
     for (unsigned int i = 0; i < neusets.size(); i++) {
       EntityHandle this_set = neuset_info[i].setHandle = neusets[i];
@@ -733,6 +732,7 @@ namespace moab {
     // Get the vertex locations
     double *coords = new double[3*num_verts];
     std::vector<double*> coord_arrays(3);
+    // Cppcheck warning (false positive): variable coord_arrays is assigned a value that is never used
     coord_arrays[0] = coords;
     coord_arrays[1] = coords + num_verts;
     coord_arrays[2] = (dimension == 3 ? coords + 2*num_verts : NULL);
@@ -1016,7 +1016,7 @@ namespace moab {
           // Switch cells so that *rit is always 1st (face connectivity is always written such
           // that that one is with forward sense)
           //.................
-          int side_num, sense, offset;
+          int side_num = 0, sense = 0, offset = 0;
           if (!is_polyh && tmp_face_cells[0] != *rit) {
             EntityHandle tmph = tmp_face_cells[0];
             tmp_face_cells[0] = tmp_face_cells[1];

@@ -35,8 +35,6 @@ ReadNC::~ReadNC()
 ErrorCode ReadNC::load_file(const char* file_name, const EntityHandle* file_set, const FileOptions& opts,
                             const ReaderIface::SubsetList* /*subset_list*/, const Tag* file_id_tag)
 {
-  ErrorCode rval = MB_SUCCESS;
-
   // See if opts has variable(s) specified
   std::vector<std::string> var_names;
   std::vector<int> tstep_nums;
@@ -44,7 +42,7 @@ ErrorCode ReadNC::load_file(const char* file_name, const EntityHandle* file_set,
 
   // Get and cache predefined tag handles
   int dum_val = 0;
-  rval = mbImpl->tag_get_handle(GLOBAL_ID_TAG_NAME, 1, MB_TYPE_INTEGER, mGlobalIdTag, MB_TAG_DENSE | MB_TAG_CREAT,
+  ErrorCode rval = mbImpl->tag_get_handle(GLOBAL_ID_TAG_NAME, 1, MB_TYPE_INTEGER, mGlobalIdTag, MB_TAG_DENSE | MB_TAG_CREAT,
                                 &dum_val);MB_CHK_SET_ERR(rval, "Trouble getting global ID tag");
 
   // Store the pointer to the tag; if not null, set when global id tag

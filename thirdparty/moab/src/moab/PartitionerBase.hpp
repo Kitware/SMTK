@@ -17,20 +17,24 @@
 #define __partitioner_base_hpp__
 
 #include <stdlib.h>
-#include "moab_mpi.h"
-#include "moab/Range.hpp"
 #include <vector>
+
+#include "moab/MOABConfig.h"
+#include "moab/Range.hpp"
 #include "moab/Types.hpp"
 
+#ifdef MOAB_HAVE_MPI
+#include "moab_mpi.h"
 #include "moab/ParallelComm.hpp"
+#endif
 namespace moab {
 
   class Interface;
-  class Range;
 }
 
 using namespace moab;
 
+  template <typename T>
   class PartitionerBase 
   {
 
@@ -41,7 +45,7 @@ using namespace moab;
     virtual ~PartitionerBase();
 
     virtual ErrorCode partition_mesh_and_geometry(const double part_geom_mesh_size,
-                                                  const int nparts,
+                                                  const T nparts,
                                                   const char *zmethod,
                                                   const char *other_method,
                                                   double imbal_tol,
@@ -55,7 +59,7 @@ using namespace moab;
                                                   const bool spherical_coords = false,
                                                   const bool print_time = false) = 0;
 
-    virtual ErrorCode partition_mesh( const int nparts,
+    virtual ErrorCode partition_mesh( const T nparts,
                                       const char *method,
                                       const int part_dim = 3, 
                                       const bool write_as_sets = true,
@@ -65,8 +69,8 @@ using namespace moab;
                                       const char *aggregating_tag = NULL,
                                       const bool print_time = false) = 0;
 
-    virtual ErrorCode write_partition(const int nparts, Range &elems, 
-                                const int *assignment,
+    virtual ErrorCode write_partition(const T nparts, Range &elems, 
+                                const T *assignment,
                                 const bool write_as_sets,
                                 const bool write_as_tags) = 0;
 
@@ -80,9 +84,9 @@ using namespace moab;
   protected:
 
     Interface *mbImpl;
-
+#ifdef MOAB_HAVE_MPI
     ParallelComm *mbpc;
-    
+#endif
     bool write_output;
     bool useCoords;
     bool newComm;
@@ -91,24 +95,29 @@ using namespace moab;
 
   };
 
+template <typename T>
 inline
-PartitionerBase::PartitionerBase(Interface *impl,
+PartitionerBase<T>::PartitionerBase(Interface *impl,
                                   const bool use_coords)
     : mbImpl(impl), useCoords(use_coords), newComm(false)
 {
+#ifdef MOAB_HAVE_MPI
   mbpc = ParallelComm::get_pcomm(mbImpl, 0);
   if (!mbpc) {
     mbpc = new ParallelComm(impl, MPI_COMM_WORLD, 0);
     newComm = true;
   }
+#endif
 }
 
+template <typename T>
 inline
-PartitionerBase::~PartitionerBase()
+PartitionerBase<T>::~PartitionerBase()
 {
+#ifdef MOAB_HAVE_MPI
   if (newComm)
     delete mbpc;
-
+#endif
   mbImpl = NULL;
 }
 

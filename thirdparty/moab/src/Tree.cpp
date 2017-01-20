@@ -50,7 +50,7 @@ namespace moab
       std::vector<BoundBox> boxes(results.size());
       rval = moab()->tag_get_data(tag, results, &boxes[0]);
       if (MB_SUCCESS != rval) return rval;
-      for (std::vector<BoundBox>::iterator vit = boxes.begin(); vit != boxes.end(); vit++)
+      for (std::vector<BoundBox>::iterator vit = boxes.begin(); vit != boxes.end(); ++vit)
         boundBox.update(*vit);
 
       if (results.size() == 1) myRoot = *results.begin();

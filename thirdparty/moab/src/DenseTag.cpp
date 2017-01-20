@@ -16,34 +16,36 @@
 
 namespace moab {
 
-static ErrorCode not_found(const std::string& name, EntityHandle h)
+inline
+static ErrorCode not_found(const std::string& /*name*/, EntityHandle /*h*/)
 {
   // MB_TAG_NOT_FOUND could be a non-error condition, do not call MB_SET_ERR on it
-  // Print warning messages for debugging only
-  bool mydebug = false;
-  if (mydebug) {
-    if (h)
-      fprintf(stderr, "[Warning]: No dense tag %s value for %s %ld\n",
-                      name.c_str(),
-                      CN::EntityTypeName(TYPE_FROM_HANDLE(h)),
-                      (unsigned long)ID_FROM_HANDLE(h));
-    else
-      fprintf(stderr, "[Warning]: No dense tag %s value for root set\n", name.c_str());
-  }
+#if 0
+  if (h)
+    fprintf(stderr, "[Warning]: No dense tag %s value for %s %ld\n",
+        name.c_str(),
+        CN::EntityTypeName(TYPE_FROM_HANDLE(h)),
+        (unsigned long)ID_FROM_HANDLE(h));
+  else
+    fprintf(stderr, "[Warning]: No dense tag %s value for root set\n", name.c_str());
+#endif
 
   return MB_TAG_NOT_FOUND;
 }
 
-static ErrorCode ent_not_found(const std::string& name, EntityHandle h)
+inline
+static ErrorCode ent_not_found(const std::string& /*name*/, EntityHandle /*h*/)
 {
   // MB_ENTITY_NOT_FOUND could be a non-error condition, do not call MB_SET_ERR on it
-  bool mydebug = false;
-  if (mydebug) {
-    fprintf(stderr, "[Warning]: Invalid entity handle setting tag %s: %s %ld\n",
-                    name.c_str(),
-                    CN::EntityTypeName(TYPE_FROM_HANDLE(h)),
-                    (unsigned long)ID_FROM_HANDLE(h));
-  }
+#if 0
+  fprintf(
+      stderr,
+      "[Warning]: Invalid entity handle setting tag %s: %s %ld\n",
+      name.c_str(),
+      CN::EntityTypeName(TYPE_FROM_HANDLE(h)),
+      (unsigned long)ID_FROM_HANDLE(h)
+      );
+#endif
 
   return MB_ENTITY_NOT_FOUND;
 }
@@ -603,7 +605,7 @@ ErrorCode DenseTag::find_entities_with_value(const SequenceManager* seqman,
   if (!intersect_entities) {
     std::pair<EntityType,EntityType> range = type_range(type);
     TypeSequenceManager::const_iterator i;
-    for (EntityType t = range.first; t != range.second; ++i) {
+    for (EntityType t = range.first; t != range.second; ++t) {
       const TypeSequenceManager& map = seqman->entity_map(t);
       for (i = map.begin(); i != map.end(); ++i) {
         const void* data = (*i)->data()->get_tag_data(mySequenceArray);

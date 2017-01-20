@@ -1,39 +1,29 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required( VERSION 2.8.12 )
 SET(PACKAGE_NAME "MOAB")
-SET(PACKAGE_VERSION "4.8.3pre")
+SET(PACKAGE_VERSION "4.9.1pre")
 
-# if (NOT WIN32)
-#   #This all breaks on windows.
-#   if ( MPI_DIR )
-#     message ("Checking for MPI compilers in ${MPI_DIR}/bin")
-#     SET(CMAKE_USER_CXX_COMPILER_PATH ${MPI_DIR}/bin ${MPI_DIR})
-#     SET(CMAKE_GENERATOR_CC ${CC} mpicc mpixlc_r mpixlc hcc mpxlc_r mpxlc sxmpicc mpifcc mpgcc mpcc cmpicc)
-#     SET(CMAKE_GENERATOR_CXX ${CXX} mpicxx mpic++ mpiCC sxmpic++ hcp mpxlC_r mpxlC mpixlcxx_r mpixlcxx mpg++ mpc++ mpCC cmpic++ mpiFCC)
-#     SET(CMAKE_GENERATOR_FC ${FC} ${F90} mpif95 mpxlf95_r mpxlf95 ftn mpif90 mpxlf90_r mpxlf90 mpf90 cmpif90c sxmpif90)
-#   else ( MPI_DIR )
-#     message ("Checking for non-MPI native compilers")
-#     SET(CMAKE_GENERATOR_CC ${CC} gcc icc pgcc cc)
-#     SET(CMAKE_GENERATOR_CXX ${CXX} CCicpc pgCC pathCC sxc++ xlC_r xlC bgxlC_r bgxlC openCC sunCC crayCC icpc g++ c++ gpp aCC CC cxx cc++ cl.exe FCC KCC RCC)
-#     SET(CMAKE_GENERATOR_FC ${FC} ${F90} pathf95 ifort gfortran g95 f95 fort ifc efc openf95 sunf95 crayftn lf95 ftn xlf90 f90 pgf90 pghpf pathf90 epcf90 sxf90 openf90 sunf90)
-#   endif ( MPI_DIR )
-#   SET(CMAKE_Fortran_COMPILER_INIT ${CMAKE_GENERATOR_FC})
-#   SET(CMAKE_CXX_FLAGS_INIT "-fPIC -DPIC")
-#   SET(CMAKE_CXX_FLAGS_DEBUG_INIT "-O0 -g")
-#   SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT "-O2 -g")
-#   SET(CMAKE_CXX_FLAGS_RELEASE_INIT "-O2 -DNDEBUG")
-#   SET(CMAKE_C_FLAGS_INIT "-fPIC -DPIC")
-#   SET(CMAKE_C_FLAGS_DEBUG_INIT "-O0 -g")
-#   SET(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT "-O2 -g")
-#   SET(CMAKE_C_FLAGS_RELEASE_INIT "-O2 -DNDEBUG")
-#   SET(CMAKE_Fortran_FLAGS_INIT "-fPIC")
-#   SET(CMAKE_Fortran_FLAGS_DEBUG_INIT "-O0 -g")
-#   SET(CMAKE_Fortran_FLAGS_RELWITHDEBINFO_INIT "-O2 -g")
-#   SET(CMAKE_Fortran_FLAGS_RELEASE_INIT "-O2")
-#   SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_INIT "")
-#   SET(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS_INIT "")
-# endif()
+if (NOT WIN32 AND FALSE)
+  #This all breaks on windows.
+  SET(CMAKE_Fortran_COMPILER_INIT ${CMAKE_GENERATOR_FC})
+  SET(CMAKE_CXX_FLAGS_INIT "-fPIC -DPIC")
+  SET(CMAKE_CXX_FLAGS_DEBUG_INIT "-O0 -g")
+  SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT "-O2 -g")
+  SET(CMAKE_CXX_FLAGS_RELEASE_INIT "-O2 -DNDEBUG")
+  SET(CMAKE_C_FLAGS_INIT "-fPIC -DPIC")
+  SET(CMAKE_C_FLAGS_DEBUG_INIT "-O0 -g")
+  SET(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT "-O2 -g")
+  SET(CMAKE_C_FLAGS_RELEASE_INIT "-O2 -DNDEBUG")
+  SET(CMAKE_Fortran_FLAGS_INIT "-fPIC")
+  SET(CMAKE_Fortran_FLAGS_DEBUG_INIT "-O0 -g")
+  SET(CMAKE_Fortran_FLAGS_RELWITHDEBINFO_INIT "-O2 -g")
+  SET(CMAKE_Fortran_FLAGS_RELEASE_INIT "-O2")
+  SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_INIT "")
+  SET(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS_INIT "")
+endif()
 
 project( MOAB )
+
+include(GNUInstallDirs)
 
 #Add our Cmake directory to the module search path
 set(CMAKE_MODULE_PATH ${MOAB_SOURCE_DIR}/config ${CMAKE_MODULE_PATH})
@@ -79,21 +69,13 @@ execute_process( COMMAND dirname ${MOAB_ABSSRC_DIR2}
 
 ## Set the directory where the binaries will be stored
 set( EXECUTABLE_OUTPUT_PATH
-  ${PROJECT_BINARY_DIR}/bin
-  CACHE PATH
-  "Directory where all executable will be stored"
-)
+  ${PROJECT_BINARY_DIR}/bin)
 
 ## Set the directory where the libraries will be stored
 set( LIBRARY_OUTPUT_PATH
-  ${PROJECT_BINARY_DIR}/lib
-  CACHE PATH
-  "Directory where all the libraries will be stored"
-)
+  ${PROJECT_BINARY_DIR}/lib)
 mark_as_advanced(
-  MOAB_ABSSRC_DIR
-  EXECUTABLE_OUTPUT_PATH
-  LIBRARY_OUTPUT_PATH)
+  MOAB_ABSSRC_DIR)
 
 include ( CheckIncludeFile )
 include ( CheckFunctionExists )
@@ -123,23 +105,22 @@ option ( ENABLE_NETCDF     "Include NetCDF support (ExodusII) interfaces in the 
 option ( ENABLE_PNETCDF    "Include parallel NetCDF support (ExodusII) interfaces in the build?" OFF )
 option ( ENABLE_ZOLTAN     "Include Zoltan support for partitioning algorithms?" OFF )
 option ( ENABLE_VTK        "Include VTK I/O interfaces in the build?" OFF )
-option ( ENABLE_TESTING "Enable Testing"                                  OFF  )
+option ( ENABLE_TESTING "Enable Testing"                                  ON  )
 option ( MOAB_FORCE_64_BIT_HANDLES "Force MBEntityHandle to be 64 bits (uint64_t)" OFF )
 option ( MOAB_FORCE_32_BIT_HANDLES "Force MBEntityHandle to be 32 bits (uint32_t)" OFF )
 
 option ( ENABLE_IMESH        "Should build IMESH?"       ON )
-option ( ENABLE_IGEOM        "Should build IGEOM?"       OFF )
+option ( ENABLE_FBIGEOM      "Should build FBIGEOM?"     OFF )
+option ( ENABLE_IREL         "Should build IREL?"        OFF )
 
 mark_as_advanced(
   MOAB_FORCE_64_BIT_HANDLES
   MOAB_FORCE_32_BIT_HANDLES
 )
 
-if ( ENABLE_IMESH OR ENABLE_IGEOM )
+if ( ENABLE_IMESH OR ENABLE_FBIGEOM )
   include (${CMAKE_ROOT}/Modules/CMakeDetermineFortranCompiler.cmake)
 endif ()
-# Do not let Moab set compiler flags.
-#include (config/CheckCompilerFlags.cmake)
 
 ################################################################################
 # Check for system include files
@@ -156,6 +137,8 @@ set( HAVE_INTTYPES_H    ${MOAB_HAVE_INTTYPES_H} )
 set( HAVE_STDLIB_H    ${MOAB_HAVE_STDLIB_H} )
 check_include_file( memory.h     MOAB_HAVE_MEMORY_H )
 
+#INCLUDE(TestBigEndian)
+#TEST_BIG_ENDIAN(WORDS_BIGENDIAN)
 ################################################################################
 # Integer size Related Settings
 ################################################################################
@@ -180,9 +163,10 @@ if ( NOT MOAB_FORCE_64_BIT_HANDLES AND NOT MOAB_FORCE_32_BIT_HANDLES )
 endif ( NOT MOAB_FORCE_64_BIT_HANDLES AND NOT MOAB_FORCE_32_BIT_HANDLES )
 
 # Check of presence of finite or isfinite macros
-include(CheckCXXSymbolExists)
-CHECK_CXX_SYMBOL_EXISTS(isfinite "cmath" MOAB_HAVE_ISFINITE)
-CHECK_CXX_SYMBOL_EXISTS(finite "math.h" MOAB_HAVE_FINITE)
+include (CheckFunctionExists)
+CHECK_FUNCTION_EXISTS(std::isfinite MOAB_HAVE_STDISFINITE)
+CHECK_FUNCTION_EXISTS(isfinite MOAB_HAVE_ISFINITE)
+CHECK_FUNCTION_EXISTS(finite MOAB_HAVE_FINITE)
 
 ################################################################################
 # Find packages
@@ -200,6 +184,9 @@ find_package( verdict REQUIRED )
 # check for MPI package
 set (MOAB_HAVE_MPI 0 CACHE INTERNAL "Found necessary MPI components. Configure MOAB with it." )
 if ( ENABLE_MPI )
+  set (MPI_C_COMPILER ${CC} )
+  set (MPI_CXX_COMPILER ${CXX} )
+  set (MPI_Fortran_COMPILER ${FC} )
   find_package( MPI REQUIRED )
   # CMake FindMPI script is sorely lacking:
   if ( MPI_LIBRARY AND MPI_INCLUDE_PATH )
@@ -214,6 +201,7 @@ if ( ENABLE_MPI )
     set( MOAB_HAVE_MPI 1 )
   endif ( MPI_FOUND )
 endif ( ENABLE_MPI )
+#include (config/CheckCompilerFlags.cmake)
 
 #set (MOAB_HAVE_ZLIB 0 CACHE INTERNAL "Found necessary Zlib components. Configure MOAB with it." )
 if ( ENABLE_ZLIB )
@@ -221,18 +209,20 @@ if ( ENABLE_ZLIB )
   set (MOAB_HAVE_ZLIB 1)
 endif (ENABLE_ZLIB)
 
+find_package( CURL )
+
 #set (MOAB_HAVE_HDF5 0 CACHE INTERNAL "Found necessary HDF5 components. Configure MOAB with it." )
 #set (MOAB_HAVE_HDF5_PARALLEL 0 CACHE INTERNAL "Found necessary parallel HDF5 components. Configure MOAB with it." )
 if ( ENABLE_HDF5 )
   find_package( HDF5 COMPONENTS C REQUIRED )
-  #set( MOAB_DEFINES "-DHDF5_FILE ${MOAB_DEFINES}" )
   set (MOAB_HAVE_HDF5 1)
-  # if ( HDF5_IS_PARALLEL AND MOAB_HAVE_MPI )
-  if ( MOAB_HAVE_MPI )
-    #set( MOAB_DEFINES "-DHDF5_PARALLEL ${MOAB_DEFINES}" )
+  if ( HDF5_IS_PARALLEL AND MOAB_HAVE_MPI )
     set (MOAB_HAVE_HDF5_PARALLEL 1)
   endif ( )
-  set( MOAB_LIBS ${MOAB_LIBS} ${HDF5_C_LIBRARIES} )
+  if ( CURL_FOUND )
+    set( HDF5_LIBRARIES ${HDF5_C_LIBRARIES} ${CURL_LIBRARIES} )
+  endif ( CURL_FOUND )
+  set( MOAB_LIBS ${HDF5_LIBRARIES} ${MOAB_LIBS} )
   include_directories( ${HDF5_INCLUDE_DIR} src/io/mhdf/include )
 endif ( ENABLE_HDF5 )
 
@@ -242,17 +232,27 @@ if ( ENABLE_NETCDF )
   find_package( NetCDF REQUIRED )
   # set( MOAB_DEFINES "-DNETCDF_FILE ${MOAB_DEFINES}" )
   set (MOAB_HAVE_NETCDF 1)
+  set (MOAB_HAVE_NETCDF_H 1)
   include_directories( ${NETCDF_INCLUDES} )
-  set( MOAB_LIBS ${MOAB_LIBS} ${NETCDF_LIBRARIES} )
+  set( MOAB_LIBS ${NETCDF_LIBRARIES} ${MOAB_LIBS} )
   #
   if ( PNETCDF_FOUND )
     # find_package( PNetCDF REQUIRED )
-    # set( MOAB_DEFINES "-DNETCDF_FILE ${MOAB_DEFINES}" )
     set (MOAB_HAVE_PNETCDF 1)
     include_directories( ${PNETCDF_INCLUDES} )
-    set( MOAB_LIBS ${MOAB_LIBS} ${PNETCDF_LIBRARIES} )
+    set( MOAB_LIBS ${PNETCDF_LIBRARIES} ${MOAB_LIBS} )
   endif ( PNETCDF_FOUND )
 endif ( ENABLE_NETCDF )
+
+if ( ENABLE_METIS )
+  find_package( Metis REQUIRED )
+  set (MOAB_HAVE_METIS 1)
+endif (ENABLE_METIS )
+
+if ( ENABLE_PARMETIS AND ENABLE_METIS AND METIS_FOUND )
+  find_package( ParMetis REQUIRED )
+  set (MOAB_HAVE_PARMETIS 1)
+endif ( ENABLE_PARMETIS AND ENABLE_METIS AND METIS_FOUND )
 
 #set (MOAB_HAVE_ZOLTAN 0 CACHE INTERNAL "Found necessary Zoltan components. Configure MOAB with it." )
 if ( ENABLE_ZOLTAN )
@@ -267,7 +267,6 @@ if ( ENABLE_CGM )
    set (MOAB_HAVE_CGM 1)
 endif (ENABLE_CGM)
 
-#set (MOAB_HAVE_CGNS 0)
 if (ENABLE_CGNS)
   set( MOABIO_LIBS ${MOABIO_LIBS} ${CGNS_LIBRARIES} )
   set (MOAB_HAVE_CGNS 1)
@@ -278,9 +277,7 @@ endif(ENABLE_CGNS)
 ################################################################################
 add_subdirectory( src )
 add_subdirectory( itaps )
-if (FALSE)
-add_subdirectory( tools )
-endif ()
+# add_subdirectory( tools )
 
 ################################################################################
 # Testing Related Settings
@@ -294,11 +291,14 @@ endif ()
 ###############################################################################
 #
 ###############################################################################
-# Not needed to install/export as the targets are now part of the SMTK
-# export set.
-# export(TARGETS ${MOAB_INSTALL_TARGETS}
-#               FILE "$SMTK_BINARY_DIR}/SMTKTargets.cmake")
-# install(EXPORT SMTK DESTINATION lib/cmake/MOAB)
+#export(
+#  TARGETS ${MOAB_INSTALL_TARGETS}
+#  FILE "${PROJECT_BINARY_DIR}/MOABTargets.cmake"
+#  )
+#install(
+#  EXPORT MOABTargets
+#  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/MOAB/
+#  )
 
 # Create some custom command
 
@@ -329,28 +329,75 @@ ENDIF (CMAKE_BUILD_TYPE MATCHES "Debug")
 
 # CMake does not define uninstall target. Look at install manifest and remove
 # all the files recursively.
-# CONFIGURE_FILE(
-#     "${CMAKE_CURRENT_SOURCE_DIR}/config/cmake_uninstall.cmake.in"
-#     "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-#     IMMEDIATE @ONLY)
+CONFIGURE_FILE(
+    "${CMAKE_CURRENT_SOURCE_DIR}/config/cmake_uninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+    IMMEDIATE @ONLY
+    )
 
+#if ( ENABLE_IMESH OR ENABLE_FBIGEOM )
+#  enable_language(Fortran)
+#
+#  # Include CMake's Fortran mangling evaluation macros
+#  include(FortranCInterface)
+#
+#  if ("${FortranCInterface_GLOBAL_CASE}" MATCHES "UPPER")
+#    set(FC_CASE "NAME")
+#  else ("${FortranCInterface_GLOBAL_CASE}" MATCHES "UPPER")
+#    set(FC_CASE "name")
+#  endif ("${FortranCInterface_GLOBAL_CASE}" MATCHES "UPPER")
+#  if (NOT "${FortranCInterface_GLOBAL_SUFFIX}" STREQUAL "")
+#    set(FortranCInterface_GLOBAL_SUFFIX "## ${FortranCInterface_GLOBAL_SUFFIX}")
+#  endif (NOT "${FortranCInterface_GLOBAL_SUFFIX}" STREQUAL "")
+#  if (NOT "${FortranCInterface_GLOBAL__SUFFIX}" STREQUAL "")
+#    set(FortranCInterface_GLOBAL__SUFFIX "## ${FortranCInterface_GLOBAL__SUFFIX}")
+#  endif (NOT "${FortranCInterface_GLOBAL__SUFFIX}" STREQUAL "")
+#
+#  set(MOAB_F77_FUNC  "${FortranCInterface_GLOBAL_PREFIX} ${FC_CASE} ${FortranCInterface_GLOBAL_SUFFIX}")
+#  set(MOAB_F77_FUNC_ "${FortranCInterface_GLOBAL__PREFIX} ${FC_CASE} ${FortranCInterface_GLOBAL__SUFFIX}")
+#  set(MOAB_FC_FUNC   "${FortranCInterface_GLOBAL_PREFIX} ${FC_CASE} ${FortranCInterface_GLOBAL_SUFFIX}")
+#  set(MOAB_FC_FUNC_  "${FortranCInterface_GLOBAL__PREFIX} ${FC_CASE} ${FortranCInterface_GLOBAL__SUFFIX}")
+#
+#endif ( ENABLE_IMESH OR ENABLE_FBIGEOM )
 # Generate the CMake input header file and then pass it through configuration
-#execute_process( COMMAND cat MOABConfig.h.in COMMAND sed -e "s/#undef /#cmakedefine MOAB_/g"
+## execute_process( COMMAND cat MOABConfig.h.in COMMAND sed -e "s/#undef /#cmakedefine MOAB_/g"
+#execute_process( COMMAND cat MOABConfig.h.in COMMAND sed -r "s/#undef ([A-Z].*)/#cmakedefine MOAB_\\1 @MOAB_\\1@/"
 #  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/config
-#  OUTPUT_FILE MOABConfig.cmake.h.in
+#  OUTPUT_FILE MOABConfig.cmake2.h.in
 #  OUTPUT_STRIP_TRAILING_WHITESPACE
 #  )
 CONFIGURE_FILE(config/MOABConfig.cmake.h.in "${PROJECT_BINARY_DIR}/src/moab/MOABConfig.h" @ONLY)
-INSTALL( FILES "${PROJECT_BINARY_DIR}/src/moab/MOABConfig.h" DESTINATION include )
+# INSTALL(
+#   FILES "${PROJECT_BINARY_DIR}/src/moab/MOABConfig.h"
+#   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+#   )
 
 CONFIGURE_FILE(MOABConfig.new.cmake.in "${PROJECT_BINARY_DIR}/MOABConfig.cmake" @ONLY)
-# CONFIGURE_FILE(moab.make.in "${PROJECT_BINARY_DIR}/lib/moab.make" @ONLY)
+#CONFIGURE_FILE(moab.make.in "${PROJECT_BINARY_DIR}/lib/moab.make" @ONLY)
+if ( MOAB_HAVE_FBIGEOM )
+  CONFIGURE_FILE(itaps/fbigeom/FBiGeom-Defs.inc.in "${PROJECT_BINARY_DIR}/lib/FBiGeom-Defs.inc" @ONLY)
+  install(
+    FILES "${PROJECT_BINARY_DIR}/lib/FBiGeom-Defs.inc"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
+endif ( MOAB_HAVE_FBIGEOM )
 
-# Not needed to install as we bundle this as part of SMTK
-# INSTALL( FILES "${PROJECT_BINARY_DIR}/lib/moab.make" DESTINATION lib )
-INSTALL( FILES "${PROJECT_BINARY_DIR}/MOABConfig.cmake" DESTINATION lib/cmake/MOAB )
+if ( MOAB_HAVE_IMESH )
+  CONFIGURE_FILE(itaps/imesh/iMesh-Defs.inc.in "${PROJECT_BINARY_DIR}/lib/iMesh-Defs.inc" @ONLY)
+  INSTALL(
+    FILES "${PROJECT_BINARY_DIR}/lib/iMesh-Defs.inc"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
+endif ( MOAB_HAVE_IMESH )
+INSTALL(
+  FILES "${PROJECT_BINARY_DIR}/MOABConfig.cmake"
+#  "${PROJECT_BINARY_DIR}/lib/moab.make"
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/MOAB/
+  )
 
-# ADD_CUSTOM_TARGET(uninstall
-#     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+#ADD_CUSTOM_TARGET(
+#  uninstall
+#  COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
+#  )
 
 # All done.

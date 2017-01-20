@@ -43,8 +43,10 @@ private:
                                                 std::vector<int>& tstep_nums);
 #endif
 
+#ifdef MOAB_HAVE_MPI
   //! Redistribute local cells after trivial partition (e.g. Zoltan partition, if applicable)
   ErrorCode redistribute_local_cells(int start_cell_index);
+#endif
 
   //! Create local vertices
   ErrorCode create_local_vertices(const std::vector<int>& vertices_on_local_cells, EntityHandle& start_vertex);

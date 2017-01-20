@@ -39,10 +39,12 @@ public:
 
   //- perform the actual merge
   ErrorCode perform_merge(Tag merged_to);
+
+  // new method, for overlapped meshes
+  // meshset could be the whole mesh, represented by root set 0;
+  ErrorCode merge_all(EntityHandle meshset, const double merge_tol);
 private:
   //iMesh_Instance imeshImpl;
-
-  double mergeTol, mergeTolSq;
 
   //- given a kdtree, set tag on vertices in leaf nodes with vertices
   //- to which they should be merged
@@ -54,6 +56,8 @@ private:
   //- the tag pointing to the entity to which an entity will be merged
   Tag mbMergeTag;
 
+  double mergeTol, mergeTolSq;
+
   //- entities which will go away after the merge
   Range deadEnts;
 
@@ -63,17 +67,6 @@ private:
   //Allow a warning to be suppressed when no merging is done
   bool printError;
 };
-
-inline MergeMesh::MergeMesh(Interface *impl, bool printErrorIn) :
-    mbImpl(impl), printError(printErrorIn)
-{
-}
-
-inline MergeMesh::~MergeMesh()
-{
-  if (mbMergeTag)
-    mbImpl->tag_delete(mbMergeTag);
-}
 
 }
 

@@ -53,7 +53,6 @@ ErrorCode ReadDamsel::parse_options(const FileOptions &opts,
                                     bool &parallel)
 {
   // Handle parallel options
-  std::string junk;
   bool use_mpio = (MB_SUCCESS == opts.get_null_option("USE_MPIO"));
   ErrorCode rval = opts.match_option("PARALLEL", "READ_PART");
   parallel = (rval != MB_ENTITY_NOT_FOUND);
@@ -415,7 +414,7 @@ ErrorCode ReadDamsel::get_contents(damsel_model m, damsel_container c, Range &en
         unsigned long num = std::min(count - diff, (size_t)(*beg).count);
         ents.insert((*beg).begin + diff, (*beg).begin + diff + num - 1);
         count -= (diff + num);
-        beg++;
+        ++beg;
       }
     }
     else {
@@ -467,7 +466,7 @@ ErrorCode ReadDamsel::get_contents(damsel_model m, damsel_container c, EntityHan
         for (EntityHandle hdl = (*beg).begin + diff; hdl <= (int)(*beg).begin + diff + num - 1; hdl++)
           ents[ind++] = hdl;
         count -= (diff + num);
-        beg++;
+        ++beg;
       }
     }
     else {

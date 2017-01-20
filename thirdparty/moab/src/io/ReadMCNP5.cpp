@@ -26,8 +26,8 @@
 #include <fstream>
 #include <vector>
 #include <cstdlib>
-#include "assert.h"
-#include "math.h"
+#include <cmath>
+#include <cassert>
 
 namespace moab {
 
@@ -235,7 +235,12 @@ ErrorCode ReadMCNP5::load_one_file(const char *fname,
 
     // Blank line
     file.getline(line, 10000);
-
+    std::string l = line;
+    // if this string is present then skip the following blank line
+    if(std::string::npos != l.find("This mesh tally is modified by a dose response function.")) {
+      file.getline(line, 10000);
+    }
+    
     // Read mesh planes
     result = read_mesh_planes(file,
                               debug,
@@ -878,6 +883,7 @@ ErrorCode ReadMCNP5::create_vertices(std::vector<double> planes[3],
         if (MB_SUCCESS != result)
           return result;
 
+        // Cppcheck warning (false positive): variable coord_arrays is assigned a value that is never used
         coord_arrays[0][idx] = out[0];
         coord_arrays[1][idx] = out[1];
         coord_arrays[2][idx] = out[2];
@@ -1053,25 +1059,40 @@ ErrorCode ReadMCNP5::average_with_existing_tally(bool debug,
   double *values0 = new double [existing_elements.size()];
   double *errors0 = new double [existing_elements.size()];
   result = MBI->tag_get_data(tally_tag, existing_elements, values0);
-  if (MB_SUCCESS != result)
+  if (MB_SUCCESS != result) {
+    delete[] values0;
+    delete[] errors0;
     return result;
+  }
   result = MBI->tag_get_data(error_tag, existing_elements, errors0);
-  if (MB_SUCCESS != result)
+  if (MB_SUCCESS != result) {
+    delete[] values0;
+    delete[] errors0;
     return result;
+  }
 
   // Average the values and errors
   result = average_tally_values(nps0, nps1, values0, values1,
                                  errors0, errors1, n_elements);
-  if (MB_SUCCESS != result)
+  if (MB_SUCCESS != result) {
+    delete[] values0;
+    delete[] errors0;
     return result;
+  }
 
   // Set the averaged information back onto the existing elements
   result = MBI->tag_set_data(tally_tag, existing_elements, values0);
-  if (MB_SUCCESS != result)
+  if (MB_SUCCESS != result) {
+    delete[] values0;
+    delete[] errors0;
     return result;
+  }
   result = MBI->tag_set_data(error_tag, existing_elements, errors0);
-  if (MB_SUCCESS != result)
+  if (MB_SUCCESS != result) {
+    delete[] values0;
+    delete[] errors0;
     return result;
+  }
 
   // Cleanup
   delete[] values0;

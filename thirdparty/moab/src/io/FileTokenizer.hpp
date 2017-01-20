@@ -219,10 +219,7 @@ class FileTokenizer
   
       /** Pointer to standard C FILE struct */
     std::FILE* filePtr;
-    
-      /** Pointer to MOAB ReadUtil Interface */
-    ReadUtilIface* readUtilPtr;
-    
+       
       /** Input buffer */
     char buffer[512];
     

@@ -31,19 +31,17 @@ namespace moab {
 
 using namespace moab;
 
-  class MetisPartitioner : public PartitionerBase
+  class MetisPartitioner : public PartitionerBase<idx_t>
   {
 
   public:
     MetisPartitioner( Interface *impl = NULL,
-                          const bool use_coords = false,
-                          int argc = 0, 
-                          char **argv = NULL);
+                          const bool use_coords = false);
     
     virtual ~MetisPartitioner();
 
     virtual ErrorCode partition_mesh_and_geometry(const double part_geom_mesh_size,
-                                                  const int nparts,
+                                                  const idx_t nparts,
                                                   const char *zmethod,
                                                   const char *other_method,
                                                   double imbal_tol,
@@ -57,7 +55,7 @@ using namespace moab;
                                                   const bool spherical_coords = false,
                                                   const bool print_time = false);
 
-    virtual ErrorCode partition_mesh( const int nparts,
+    virtual ErrorCode partition_mesh( const idx_t nparts,
                                       const char *method,
                                       const int part_dim = 3, 
                                       const bool write_as_sets = true,
@@ -67,13 +65,13 @@ using namespace moab;
                                       const char *aggregating_tag = NULL,
                                       const bool print_time=false);
 
-    virtual ErrorCode write_partition(const int nparts, Range &elems, 
-                                const int *assignment,
+    virtual ErrorCode write_partition(const idx_t nparts, Range &elems, 
+                                const idx_t *assignment,
                                 const bool write_as_sets,
                                 const bool write_as_tags);
     
-    ErrorCode write_aggregationtag_partition(const int nparts, Range &elems, 
-                                             const int *assignment,
+    ErrorCode write_aggregationtag_partition(const idx_t nparts, Range &elems, 
+                                             const idx_t *assignment,
                                              const bool write_as_sets,
                                              const bool write_as_tags);
 
@@ -84,30 +82,26 @@ using namespace moab;
   
   private:
 
-    int argcArg;
-    
-    char **argvArg;
-
     ErrorCode assemble_graph(const int dimension, 
                              std::vector<double> &coords,
-                             std::vector<int> &moab_ids,
-                             std::vector<int> &adjacencies, 
-                             std::vector<int> &length,
+                             std::vector<idx_t> &moab_ids,
+                             std::vector<idx_t> &adjacencies, 
+                             std::vector<idx_t> &length,
                              Range &elems);
     
     ErrorCode assemble_taggedsets_graph(const int dimension, 
                                         std::vector<double> &coords,
-                                        std::vector<int> &moab_ids,
-                                        std::vector<int> &adjacencies, 
-                                        std::vector<int> &length,
+                                        std::vector<idx_t> &moab_ids,
+                                        std::vector<idx_t> &adjacencies, 
+                                        std::vector<idx_t> &length,
                                         Range &elems,
                                         const char *aggregating_tag);
     
     ErrorCode assemble_taggedents_graph(const int dimension, 
                                         std::vector<double> &coords,
-                                        std::vector<int> &moab_ids,
-                                        std::vector<int> &adjacencies, 
-                                        std::vector<int> &length,
+                                        std::vector<idx_t> &moab_ids,
+                                        std::vector<idx_t> &adjacencies, 
+                                        std::vector<idx_t> &length,
                                         Range &elems,
                                         const char *aggregating_tag);
   };
@@ -116,7 +110,7 @@ using namespace moab;
 
 inline
 ErrorCode MetisPartitioner::partition_mesh_and_geometry(const double ,
-                                                  const int nparts,
+                                                  const idx_t nparts,
                                                   const char *zmethod,
                                                   const char *,
                                                   double ,

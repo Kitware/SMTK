@@ -373,7 +373,7 @@ private:
     
   ErrorCode get_set_by_name(EntityHandle parent_set,
                             int ABQ_set_type,
-                            std::string set_name,
+                            const std::string &set_name,
                             EntityHandle &set_handle);
 
   ErrorCode get_set_elements(EntityHandle set_handle,
@@ -381,23 +381,23 @@ private:
 
   ErrorCode get_set_elements_by_name(EntityHandle parent_set,
                                      int ABQ_set_type,
-                                     std::string set_name,
+                                     const std::string &set_name,
                                      Range &element_range);
 
   ErrorCode get_set_nodes(EntityHandle parent_set,
                           int ABQ_set_type,
-                          std::string set_name,
+                          const std::string &set_name,
                           Range &node_range);
 
   ErrorCode add_entity_set(EntityHandle parent_set,
                            int ABQ_set_type,
-                           std::string set_name,
+                           const std::string &set_name,
                            EntityHandle &entity_set);
 
   ErrorCode create_instance_of_part(const EntityHandle file_set,
                                     const EntityHandle parent_set,
-                                    const std::string part_name,
-                                    const std::string instance_name,
+                                    const std::string &part_name,
+                                    const std::string &instance_name,
                                     EntityHandle &entity_set,
                                     const std::vector<double> &translation,
                                     const std::vector<double> &rotation);
@@ -416,9 +416,9 @@ private:
   std::string match(const std::string &token,
                     std::map<std::string,T> &tokenList);
 
-  void stringToUpper(std::string toBeConverted,std::string& converted);
+  void stringToUpper(const std::string& toBeConverted,std::string& converted);
 
-  void extract_keyword_parameters(std::vector<std::string> tokens,
+  void extract_keyword_parameters(const std::vector<std::string>& tokens,
                                   std::map<std::string, std::string>& params);
 
   //! Interface instance

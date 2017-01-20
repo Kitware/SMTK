@@ -13,7 +13,7 @@
  * 
  */
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #ifdef _DEBUG
 // turn off warnings that say they debugging identifier has been truncated
 // this warning comes up when using some STL containers
@@ -52,7 +52,7 @@ WriterIface* WriteTemplate::factory(Interface* iface)
 }
 
 WriteTemplate::WriteTemplate(Interface* impl)
-  : mbImpl(impl), mCurrentMeshHandle(0)
+  : mbImpl(impl)
 {
   assert(impl != NULL);
 
@@ -108,7 +108,7 @@ ErrorCode WriteTemplate::write_file(const char *file_name,
   if (NULL == strstr(file_name, ".template"))
     return MB_FAILURE;
 
-  std::vector<EntityHandle> matsets, dirsets, neusets, entities;
+  std::vector<EntityHandle> matsets, dirsets, neusets;
 
   fileName = file_name;
 
@@ -222,8 +222,7 @@ ErrorCode WriteTemplate::gather_mesh_information(MeshInfo &mesh_info,
 
     // Find the dimension of the last entity in this range
     Range::iterator entity_iter = dummy_range.end();
-    entity_iter = dummy_range.end();
-    entity_iter--;
+    --entity_iter;
     int this_dim = CN::Dimension(TYPE_FROM_HANDLE(*entity_iter));
     entity_iter = dummy_range.begin();
     while (entity_iter != dummy_range.end() &&
@@ -252,7 +251,7 @@ ErrorCode WriteTemplate::gather_mesh_information(MeshInfo &mesh_info,
     // Get the entity type for this matset, verifying that it's the same for all elements
     // THIS ASSUMES HANDLES SORT BY TYPE!!!
     EntityType entity_type = TYPE_FROM_HANDLE(*elem_range_iter);
-    end_elem_range_iter--;
+    --end_elem_range_iter;
     if (entity_type != TYPE_FROM_HANDLE(*(end_elem_range_iter++))) {
       MB_SET_ERR(MB_FAILURE, "Entities in matset " << id << " not of common type");
     }

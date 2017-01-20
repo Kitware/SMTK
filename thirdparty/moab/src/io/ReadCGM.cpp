@@ -12,11 +12,11 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  */
-#ifdef _MSC_VER
+#ifdef _WIN32
 #pragma warning(disable:4786)
 #endif
 
-#include "cgm_version.h"
+#include "CGMConfig.h"
 #include "GeometryQueryTool.hpp"
 #include "ModelQueryEngine.hpp"
 #include "RefEntityName.hpp"
@@ -47,6 +47,7 @@
 #include <stdio.h>
 #include <algorithm>
 #include <assert.h>
+#include <iostream>
 
 #include "ReadCGM.hpp"
 #include "moab/ReadUtilIface.hpp"
@@ -56,9 +57,8 @@ namespace moab {
 #define GF_CUBIT_FILE_TYPE    "CUBIT"
 #define GF_STEP_FILE_TYPE     "STEP"
 #define GF_IGES_FILE_TYPE     "IGES"
-#define GF_ACIS_TXT_FILE_TYPE "ACIS_SAT"
-#define GF_ACIS_BIN_FILE_TYPE "ACIS_SAB"
 #define GF_OCC_BREP_FILE_TYPE "OCC"
+#define GF_FACET_FILE_TYPE    "FACET"
 
 ReaderIface* ReadCGM::factory(Interface* iface)
 {
@@ -684,11 +684,12 @@ ErrorCode ReadCGM::create_surface_facets(std::map<RefEntity*, EntityHandle>& sur
   ErrorCode rval;
   std::map<RefEntity*, EntityHandle>::iterator ci;
   CubitStatus s;
-#if  ( (CGM_MAJOR_VERSION == 14 && CGM_MINOR_VERSION > 2) || CGM_MAJOR_VERSION >= 15 )
+#if  ( (CGM_MAJOR_VERSION == 14 && CGM_MINOR_VERSION > 2) || CGM_MAJOR_VERSION == 15 )
   DLIList<TopologyEntity*> me_list;
 #else
   DLIList<ModelEntity*> me_list;
 #endif
+
   GMem data;
   // Create geometry for all surfaces
   for (ci = surface_map.begin(); ci != surface_map.end(); ++ci) {
@@ -973,9 +974,8 @@ const char* ReadCGM::get_geom_fptr_type(FILE* file)
   static const char* CUBIT_NAME = GF_CUBIT_FILE_TYPE;
   static const char*  STEP_NAME = GF_STEP_FILE_TYPE;
   static const char*  IGES_NAME = GF_IGES_FILE_TYPE;
-  static const char*   SAT_NAME = GF_ACIS_TXT_FILE_TYPE;
-  static const char*   SAB_NAME = GF_ACIS_BIN_FILE_TYPE;
   static const char*  BREP_NAME = GF_OCC_BREP_FILE_TYPE;
+  static const char* FACET_NAME = GF_FACET_FILE_TYPE;
 
   if (is_cubit_file(file))
     return CUBIT_NAME;
@@ -983,12 +983,10 @@ const char* ReadCGM::get_geom_fptr_type(FILE* file)
     return STEP_NAME;
   else if (is_iges_file(file))
     return IGES_NAME;
-  else if (is_acis_bin_file(file))
-    return SAB_NAME;
-  else if (is_acis_txt_file(file))
-    return SAT_NAME;
   else if (is_occ_brep_file(file))
     return BREP_NAME;
+  else if (is_facet_file(file))
+    return FACET_NAME;
   else
     return NULL;
 }
@@ -1017,43 +1015,19 @@ int ReadCGM::is_iges_file(FILE* file)
          !memcmp(buffer, "S      1", 8);
 }
 
-int ReadCGM::is_acis_bin_file(FILE* file)
-{
-  char buffer[15];
-  return !fseek(file, 0, SEEK_SET) &&
-         fread(buffer, 15, 1, file) &&
-         !memcmp(buffer, "ACIS BinaryFile", 9);
-}
-
-int ReadCGM::is_acis_txt_file(FILE* file)
-{
-  char buffer[5];
-  int version, length;
-
-  if (fseek(file, 0, SEEK_SET) ||
-      2 != fscanf(file, "%d %*d %*d %*d %d ", &version, &length))
-    return 0;
-
-  if (version < 1 || version > 0xFFFF)
-    return 0;
-
-  // Skip application name
-  if (fseek(file, length, SEEK_CUR))
-    return 0;
-
-  // Read length of version string followed by first 5 characters
-  if (2 != fscanf(file, "%d %4s", &length, buffer))
-    return 0;
-
-  return !strcmp(buffer, "ACIS");
-}
-
 int ReadCGM::is_occ_brep_file(FILE* file)
 {
   unsigned char buffer[6];
   return !fseek(file, 0, SEEK_SET) &&
          fread(buffer, 6, 1, file) &&
          !memcmp(buffer, "DBRep_", 6);
+}
+int ReadCGM::is_facet_file(FILE* file)
+{
+  unsigned char buffer[10];
+  return !fseek(file, 0, SEEK_SET) &&
+         fread(buffer, 10, 1, file) &&
+         !memcmp(buffer, "MESH_BASED", 10);
 }
 
 void ReadCGM::tokenize(const std::string& str,

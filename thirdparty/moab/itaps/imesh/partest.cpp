@@ -53,6 +53,8 @@ int main(int argc, char* argv[]){
   IMESH_ASSERT(ierr);
   printf("There's %d entity sets here\n", num_sets);
 
+  iMesh_dtor(imesh, &ierr);
+  IMESH_ASSERT(ierr);
 
   printf("Done\n");
   MPI_Finalize(); //probably the 4th time this is called.. no big deal

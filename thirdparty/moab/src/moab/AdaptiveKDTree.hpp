@@ -331,7 +331,7 @@ namespace moab {
     };
                     
 
-//! Iterate over leaves of an adapative kD-tree
+//! Iterate over leaves of an adaptive kD-tree
     class MOAB_EXPORT AdaptiveKDTreeIter
     {
   public:
@@ -342,7 +342,7 @@ namespace moab {
   
       struct StackObj {
         StackObj( EntityHandle e, double c ) : entity(e), coord(c) {}
-        StackObj() {}
+        StackObj() : entity(0), coord(0.0) {}
         EntityHandle entity; //!< handle for tree node
         double coord;          //!< box coordinate of parent
       };
@@ -352,7 +352,7 @@ namespace moab {
       CartVect mBox[2];                //!< min and max corners of bounding box
       AdaptiveKDTree* treeTool;       //!< tool for tree
       std::vector<StackObj> mStack;     //!< stack storing path through tree
-      mutable std::vector<EntityHandle> childVect; //!< tempory storage of child handles
+      mutable std::vector<EntityHandle> childVect; //!< temporary storage of child handles
   
         //! Descend tree to left most leaf from current position
         //! No-op if at leaf.
@@ -443,7 +443,7 @@ namespace moab {
         //!
         //!\param norm  Normal vector for box side (X, Y, or Z)
         //!\param neg   Which of two planes with norm (true->smaller coord, 
-        //!             false->larget coord)
+        //!             false->larger coord)
         //!\param results List to which to append results.  This function does
         //!             *not* clear existing values in list.
         //!\param epsilon Tolerance on overlap.  A positive value E will

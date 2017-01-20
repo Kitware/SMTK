@@ -1533,7 +1533,7 @@ C_FUNC_DEF double v_hex_scaled_jacobian( int /*num_nodes*/, double coordinates[]
 {
 
   double jacobi, min_norm_jac = VERDICT_DBL_MAX;  
-  double min_jacobi = VERDICT_DBL_MAX;
+  //double min_jacobi = VERDICT_DBL_MAX;
   double temp_norm_jac, lengths;
   double len1_sq, len2_sq, len3_sq; 
   VerdictVector xxi, xet, xze;
@@ -1546,7 +1546,7 @@ C_FUNC_DEF double v_hex_scaled_jacobian( int /*num_nodes*/, double coordinates[]
   xze = calc_hex_efg(3, node_pos );
 
   jacobi = xxi % ( xet * xze );
-  if( jacobi < min_jacobi) { min_jacobi = jacobi; }
+  //if( jacobi < min_jacobi) { min_jacobi = jacobi; }
 
   len1_sq = xxi.length_squared();
   len2_sq = xet.length_squared();
@@ -1571,7 +1571,7 @@ C_FUNC_DEF double v_hex_scaled_jacobian( int /*num_nodes*/, double coordinates[]
   xze = node_pos[4] - node_pos[0];
 
   jacobi = xxi % ( xet * xze );
-  if( jacobi < min_jacobi ) { min_jacobi = jacobi; }
+  //if( jacobi < min_jacobi ) { min_jacobi = jacobi; }
 
   len1_sq = xxi.length_squared();
   len2_sq = xet.length_squared();
@@ -1596,7 +1596,7 @@ C_FUNC_DEF double v_hex_scaled_jacobian( int /*num_nodes*/, double coordinates[]
   xze = node_pos[5] - node_pos[1];
 
   jacobi = xxi % ( xet * xze );
-  if( jacobi < min_jacobi ) { min_jacobi = jacobi; }
+  //if( jacobi < min_jacobi ) { min_jacobi = jacobi; }
   
   len1_sq = xxi.length_squared();
   len2_sq = xet.length_squared();
@@ -1620,7 +1620,7 @@ C_FUNC_DEF double v_hex_scaled_jacobian( int /*num_nodes*/, double coordinates[]
   xze = node_pos[6] - node_pos[2];
 
   jacobi = xxi % ( xet * xze );
-  if( jacobi < min_jacobi ) { min_jacobi = jacobi; }
+  //if( jacobi < min_jacobi ) { min_jacobi = jacobi; }
   
   len1_sq = xxi.length_squared();
   len2_sq = xet.length_squared();
@@ -1644,7 +1644,7 @@ C_FUNC_DEF double v_hex_scaled_jacobian( int /*num_nodes*/, double coordinates[]
   xze = node_pos[7] - node_pos[3];
 
   jacobi = xxi % ( xet * xze );
-  if( jacobi < min_jacobi ) { min_jacobi = jacobi; }
+  //if( jacobi < min_jacobi ) { min_jacobi = jacobi; }
   
   len1_sq = xxi.length_squared();
   len2_sq = xet.length_squared();
@@ -1668,7 +1668,7 @@ C_FUNC_DEF double v_hex_scaled_jacobian( int /*num_nodes*/, double coordinates[]
   xze = node_pos[0] - node_pos[4];
 
   jacobi = xxi % ( xet * xze );
-  if( jacobi < min_jacobi ) { min_jacobi = jacobi; }
+  //if( jacobi < min_jacobi ) { min_jacobi = jacobi; }
   
   len1_sq = xxi.length_squared();
   len2_sq = xet.length_squared();
@@ -1692,7 +1692,7 @@ C_FUNC_DEF double v_hex_scaled_jacobian( int /*num_nodes*/, double coordinates[]
   xze = node_pos[1] - node_pos[5];
 
   jacobi = xxi % ( xet * xze );
-  if( jacobi < min_jacobi ) { min_jacobi = jacobi; }
+  //if( jacobi < min_jacobi ) { min_jacobi = jacobi; }
   
   len1_sq = xxi.length_squared();
   len2_sq = xet.length_squared();
@@ -1716,7 +1716,7 @@ C_FUNC_DEF double v_hex_scaled_jacobian( int /*num_nodes*/, double coordinates[]
   xze = node_pos[2] - node_pos[6];
 
   jacobi = xxi % ( xet * xze );
-  if( jacobi < min_jacobi ) { min_jacobi = jacobi; }
+  //if( jacobi < min_jacobi ) { min_jacobi = jacobi; }
   
   len1_sq = xxi.length_squared();
   len2_sq = xet.length_squared();
@@ -1740,7 +1740,7 @@ C_FUNC_DEF double v_hex_scaled_jacobian( int /*num_nodes*/, double coordinates[]
   xze = node_pos[3] - node_pos[7];
 
   jacobi = xxi % ( xet * xze );
-  if( jacobi < min_jacobi ) { min_jacobi = jacobi; }
+  //if( jacobi < min_jacobi ) { min_jacobi = jacobi; }
   
   len1_sq = xxi.length_squared();
   len2_sq = xet.length_squared();
@@ -1754,8 +1754,8 @@ C_FUNC_DEF double v_hex_scaled_jacobian( int /*num_nodes*/, double coordinates[]
   temp_norm_jac = jacobi / lengths;
   if( temp_norm_jac < min_norm_jac)
     min_norm_jac = temp_norm_jac;  
-  else 
-    temp_norm_jac = jacobi;
+  //else
+    //temp_norm_jac = jacobi;
 
   if( min_norm_jac> 0 )
     return (double) VERDICT_MIN( min_norm_jac, VERDICT_DBL_MAX );

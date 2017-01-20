@@ -32,7 +32,6 @@ class ReadUtil : public ReadUtilIface
 private:
   //! Pointer to the Core
   Core* mMB;
-  Error* mError;
 
 public:
   //! Constructor takes Core pointer

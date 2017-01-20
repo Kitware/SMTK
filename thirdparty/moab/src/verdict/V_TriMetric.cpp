@@ -881,7 +881,7 @@ C_FUNC_DEF void v_tri_quality( int num_nodes, double coordinates[][3],
 
              2
              ++
-            /  \ 
+            /  \
          2 /    \ 1
           /      \
          /        \

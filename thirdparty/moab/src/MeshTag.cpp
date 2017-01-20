@@ -12,12 +12,20 @@
 
 namespace moab {
 
-static ErrorCode not_root_set(const std::string& name, EntityHandle h)
+inline
+static ErrorCode not_root_set(const std::string& /*name*/, EntityHandle /*h*/)
 {
+  // MB_TAG_NOT_FOUND could be a non-error condition, do not call MB_SET_ERR on it
+  // Print warning messages for debugging only
+#if 0
   MB_SET_ERR(MB_VARIABLE_DATA_LENGTH, "Cannot get/set mesh/global tag " << name << " on non-root-set " << CN::EntityTypeName(TYPE_FROM_HANDLE(h)) << " " << (unsigned long)ID_FROM_HANDLE(h));
+#endif
+
+  return MB_TAG_NOT_FOUND;
 }
 
-static inline bool all_root_set(std::string name, const EntityHandle* array, size_t len)
+inline
+static bool all_root_set(std::string name, const EntityHandle* array, size_t len)
 {
   for (size_t i = 0; i < len; ++i) {
     if (array[i]) {
@@ -29,14 +37,13 @@ static inline bool all_root_set(std::string name, const EntityHandle* array, siz
   return true;
 }
 
-static ErrorCode not_found(const std::string& name)
+inline
+static ErrorCode not_found(const std::string& /*name*/)
 {
   // MB_TAG_NOT_FOUND could be a non-error condition, do not call MB_SET_ERR on it
-  // Print warning messages for debugging only
-  bool mydebug = false;
-  if (mydebug) {
-    fprintf(stderr, "[Warning]: No mesh tag %s value for global/mesh tag\n", name.c_str());
-  }
+#if 0
+  fprintf(stderr, "[Warning]: No mesh tag %s value for global/mesh tag\n", name.c_str());
+#endif
 
   return MB_TAG_NOT_FOUND;
 }

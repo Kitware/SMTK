@@ -42,7 +42,7 @@ ScdInterface::~ScdInterface()
   std::vector<ScdBox*> tmp_boxes;
   tmp_boxes.swap(scdBoxes);
 
-  for (std::vector<ScdBox*>::iterator rit = tmp_boxes.begin(); rit != tmp_boxes.end(); rit++)
+  for (std::vector<ScdBox*>::iterator rit = tmp_boxes.begin(); rit != tmp_boxes.end(); ++rit)
     delete *rit;
 
   if (box_set_tag(false)) 
@@ -61,7 +61,7 @@ ErrorCode ScdInterface::find_boxes(std::vector<ScdBox*> &scd_boxes)
   ErrorCode rval = find_boxes(tmp_boxes);
   if (MB_SUCCESS != rval) return rval;
 
-  for (Range::iterator rit = tmp_boxes.begin(); rit != tmp_boxes.end(); rit++) {
+  for (Range::iterator rit = tmp_boxes.begin(); rit != tmp_boxes.end(); ++rit) {
     ScdBox *tmp_box = get_scd_box(*rit);
     if (tmp_box) scd_boxes.push_back(tmp_box);
     else rval = MB_FAILURE;
@@ -87,7 +87,7 @@ ErrorCode ScdInterface::find_boxes(Range &scd_boxes)
     }
   }
 
-  for (std::vector<ScdBox*>::iterator vit = scdBoxes.begin(); vit != scdBoxes.end(); vit++)
+  for (std::vector<ScdBox*>::iterator vit = scdBoxes.begin(); vit != scdBoxes.end(); ++vit)
     scd_boxes.insert((*vit)->box_set());
 
   return rval;
@@ -266,7 +266,7 @@ ErrorCode ScdInterface::assign_global_ids(ScdBox *box)
   return MB_SUCCESS;
 }
 
-ErrorCode ScdInterface::create_scd_sequence(HomCoord low, HomCoord high, EntityType tp,
+ErrorCode ScdInterface::create_scd_sequence(const HomCoord &low, const HomCoord &high, EntityType tp,
                                             int starting_id, ScdBox *&new_box,
                                             int *is_periodic)
 {
@@ -277,6 +277,7 @@ ErrorCode ScdInterface::create_scd_sequence(HomCoord low, HomCoord high, EntityT
     return MB_TYPE_OUT_OF_RANGE;
 
   Core *mbcore = dynamic_cast<Core*>(mbImpl);
+  assert(mbcore != NULL);
   SequenceManager *seq_mgr = mbcore->sequence_manager();
 
   EntitySequence *tmp_seq;
@@ -315,7 +316,7 @@ ErrorCode ScdInterface::create_scd_sequence(HomCoord low, HomCoord high, EntityT
   return MB_SUCCESS;
 }
 
-ErrorCode ScdInterface::create_box_set(const HomCoord low, const HomCoord high,
+ErrorCode ScdInterface::create_box_set(const HomCoord &low, const HomCoord &high,
                                        EntityHandle &scd_set, int *is_periodic) 
 {
     // create the set and put the entities in it
@@ -519,6 +520,7 @@ ScdBox::~ScdBox()
   if (boxSet) {
     // It is possible that the box set entity has been deleted (e.g. by Core::clean_up_failed_read)
     Core* mbcore = dynamic_cast<Core*>(scImpl->mbImpl);
+    assert(mbcore != NULL);
     if (mbcore->is_valid(boxSet)) {
       ScdBox* tmp_ptr = NULL;
       scImpl->mbImpl->tag_set_data(scImpl->box_set_tag(), &boxSet, 1, &tmp_ptr);
@@ -715,7 +717,7 @@ ErrorCode ScdInterface::tag_shared_vertices(ParallelComm *pcomm, ScdBox *box)
       send_reqs(procs.size(), MPI_REQUEST_NULL);
   std::vector<EntityHandle> rhandles(4*procs.size()), shandles(4);
   for (unsigned int i = 0; i < procs.size(); i++) {
-    int success = MPI_Irecv(&rhandles[4*i], 4*sizeof(EntityHandle),
+    int success = MPI_Irecv((void*)&rhandles[4*i], 4*sizeof(EntityHandle),
                             MPI_UNSIGNED_CHAR, procs[i],
                             1, pcomm->proc_config().proc_comm(), 
                             &recv_reqs[i]);
@@ -738,7 +740,7 @@ ErrorCode ScdInterface::tag_shared_vertices(ParallelComm *pcomm, ScdBox *box)
     shandles[3] = box->start_element();
   }
   for (unsigned int i = 0; i < procs.size(); i++) {
-    int success = MPI_Isend(&shandles[0], 4*sizeof(EntityHandle), MPI_UNSIGNED_CHAR, procs[i], 
+    int success = MPI_Isend((void*)&shandles[0], 4*sizeof(EntityHandle), MPI_UNSIGNED_CHAR, procs[i],
                             1, pcomm->proc_config().proc_comm(), &send_reqs[i]);
     if (success != MPI_SUCCESS) return MB_FAILURE;
   }
@@ -767,6 +769,12 @@ ErrorCode ScdInterface::tag_shared_vertices(ParallelComm *pcomm, ScdBox *box)
     incoming--;
   }
 
+  // still need to wait for the send requests
+  std::vector<MPI_Status> mult_status(procs.size());
+  int success = MPI_Waitall(procs.size(), &send_reqs[0], &mult_status[0]);
+  if (MPI_SUCCESS != success) {
+    MB_SET_ERR(MB_FAILURE, "Failed in waitall in ScdInterface::tag_shared_vertices");
+  }
     // sort by local handle
   TupleList::buffer sort_buffer;
   sort_buffer.buffer_init(shared_indices.size()/2);
@@ -787,7 +795,7 @@ ErrorCode ScdInterface::tag_shared_vertices(ParallelComm *pcomm, ScdBox *box)
   pcomm->partition_sets().insert(box->box_set());
 
     // make sure buffers are allocated for communicating procs
-  for (std::vector<int>::iterator pit = procs.begin(); pit != procs.end(); pit++)
+  for (std::vector<int>::iterator pit = procs.begin(); pit != procs.end(); ++pit)
     pcomm->get_buffers(*pit);
 
   if (pcomm->get_debug_verbosity() > 1) pcomm->list_entities(NULL, 1);

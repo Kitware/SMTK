@@ -80,7 +80,7 @@ public:
    */
   virtual ErrorCode get_node_coords(const int which_array,
                                     Range::const_iterator begin,
-                                    const Range::const_iterator end,
+                                    const Range::const_iterator& end,
                                     const size_t output_size,
                                     double* const output_array) = 0;
 
@@ -134,7 +134,7 @@ public:
    *\author Jason Kraftcheck
    */
   virtual ErrorCode get_element_connect(Range::const_iterator begin,
-                                        const Range::const_iterator end,
+                                        const Range::const_iterator& end,
                                         const int vertices_per_elem,
                                         Tag node_id_tag,
                                         const size_t array_size,
@@ -167,7 +167,7 @@ public:
    *\author Jason Kraftcheck
    */
   virtual ErrorCode get_element_connect(Range::const_iterator begin,
-                                        const Range::const_iterator end,
+                                        const Range::const_iterator& end,
                                         const int vertices_per_elem,
                                         const size_t array_size,
                                         EntityHandle *const element_array) = 0;
@@ -175,12 +175,12 @@ public:
   /** Get poly (polygon or polyhedron) connectivity size
    *\param begin  First iterator in range of poly
    *\param end    One past last in range of poly.
-   *\param connectivity_size  The lenght of the connectivity list
+   *\param connectivity_size  The length of the connectivity list
    *              For the specified range of polyhedra.
    *\author Jason Kraftcheck
    */
   virtual ErrorCode get_poly_connect_size(Range::const_iterator begin,
-                                          const Range::const_iterator end,
+                                          const Range::const_iterator& end,
                                           int& connectivity_size) = 0;
 
   /** Get poly (polygon or polyhedron) connectivity.
@@ -224,7 +224,7 @@ public:
    *\author Jason Kraftcheck
    */
   virtual ErrorCode get_poly_connect(Range::const_iterator& iter,
-                                     const Range::const_iterator end,
+                                     const Range::const_iterator& end,
                                      const Tag node_id_tag,
                                      size_t& element_array_len,
                                      int *const element_array,

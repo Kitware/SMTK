@@ -5,6 +5,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     io io/mhdf
                     ${MOAB_BINARY_DIR}/src/parallel )
 
+add_subdirectory(verdict)
 if(MOAB_HAVE_MPI AND MPI_FOUND)
   add_subdirectory(parallel)
   set( MOAB_MPI moabpar )
@@ -12,38 +13,17 @@ if(MOAB_HAVE_MPI AND MPI_FOUND)
   set( MPI_LIBRARIES ${MPI_LIBRARY} ${MPI_EXTRA_LIBRARY} )
 endif()
 
-add_subdirectory(verdict)
-
-#create the FCDefs.h and src/MOAB_FCDefs.h files
-configure_file(FCDefs.h.in "${CMAKE_CURRENT_BINARY_DIR}/FCDefs.h" @ONLY)
-#sed -e "s/FC_FUNC/MOAB_FC_FUNC/" src/FCDefs.h >src/MOAB_FCDefs.h
-file(READ ${CMAKE_CURRENT_BINARY_DIR}/FCDefs.h infile)
-string( REGEX REPLACE "FC_FUNC" "MOAB_FC_FUNC" outstring "${infile}" )
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/MOAB_FCDefs.h" "${outstring}")
-
 #Create the moab/EntityHandle.hpp file
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/moab/EntityHandle.hpp.in infile2)
 string( REGEX REPLACE "#undef" "#cmakedefine" outstring2 "${infile2}" )
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/moab/EntityHandle.hpp.in" "${outstring2}")
 configure_file(${CMAKE_CURRENT_BINARY_DIR}/moab/EntityHandle.hpp.in ${CMAKE_CURRENT_BINARY_DIR}/moab/EntityHandle.hpp)
 
-#generate the Version.h file
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/moab/Version.h.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/moab/Version.h" @ONLY)
-
 set(moab_link_lib)
 add_subdirectory(io)
+add_subdirectory(RefineMesh)
 add_subdirectory(LocalDiscretization)
 # add_subdirectory(oldinc)
-
-ADD_CUSTOM_COMMAND(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/MBCN_protos.h
-  COMMAND ${CMAKE_COMMAND}
-          -DDEF:STRING=MOAB
-          -Dinput_file:STRING=${CMAKE_CURRENT_SOURCE_DIR}/MBCN.h
-          -Doutput_file:STRING=${CMAKE_CURRENT_BINARY_DIR}/MBCN_protos.h
-          -Dprefix:STRING=MBCN
-          -P ${MOAB_SOURCE_DIR}/config/ITAPSFortranMangling.cmake
-  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/MBCN.h )
 
 if( MOAB_HAVE_HDF5 )
   include_directories(${HDF5_INCLUDES})
@@ -84,16 +64,19 @@ set(MOAB_LIB_SOURCES
         FileOptions.cpp
         GeomUtil.cpp
         GeomTopoTool.cpp
+        HalfFacetRep.cpp
         HigherOrderFactory.cpp
         HomXform.cpp
+        iMOAB.cpp
         Internals.hpp
+        LloydSmoother.cpp
         MBCNArrays.hpp
         MergeMesh.cpp
         MeshSet.hpp         MeshSet.cpp
         MeshSetSequence.hpp MeshSetSequence.cpp
         MeshTag.hpp         MeshTag.cpp
         MeshTopoUtil.cpp
-        OrientedBox.hpp     OrientedBox.cpp
+        OrientedBox.cpp
         OrientedBoxTreeTool.cpp
         lotte/poly.c
         lotte/findpt.c
@@ -152,6 +135,7 @@ set( MOAB_INSTALL_HEADERS
         moab/DualTool.hpp
         moab/Error.hpp
         moab/GeomTopoTool.hpp
+        moab/HalfFacetRep.hpp
         moab/HigherOrderFactory.hpp
         moab/HomXform.hpp
         moab/EntityType.hpp
@@ -161,7 +145,9 @@ set( MOAB_INSTALL_HEADERS
         moab/FindPtFuncs.h
         moab/Forward.hpp
         moab/GeomUtil.hpp
+        moab/iMOAB.h
         moab/Interface.hpp
+        moab/LloydSmoother.hpp
         moab/point_locater/tree/common_tree.hpp
         moab/point_locater/tree/element_tree.hpp
         moab/point_locater/tree/bvh_tree.hpp
@@ -175,6 +161,7 @@ set( MOAB_INSTALL_HEADERS
         moab/Matrix3.hpp
         moab/MergeMesh.hpp
         moab/MeshTopoUtil.hpp
+        moab/OrientedBox.hpp
         moab/OrientedBoxTreeTool.hpp
         moab/ProgOptions.hpp
         moab/Range.hpp
@@ -192,23 +179,24 @@ set( MOAB_INSTALL_HEADERS
         moab/TreeStats.hpp
         moab/TupleList.hpp
         moab/Types.hpp
+        moab/mhdf_public.h
         moab/UnknownInterface.hpp
         moab/Util.hpp
         moab/WriteUtilIface.hpp
         moab/WriterIface.hpp
         MBEntityType.h
         MBCN.h
+        MBCN_protos.h
         MBTagConventions.hpp )
 
 set( MOAB_GENERATED_INSTALL_HEADERS
-     ${CMAKE_CURRENT_BINARY_DIR}/MOAB_FCDefs.h
-     ${CMAKE_CURRENT_BINARY_DIR}/MBCN_protos.h
      ${CMAKE_CURRENT_BINARY_DIR}/moab/EntityHandle.hpp
      ${CMAKE_CURRENT_BINARY_DIR}/moab/MOABConfig.h
   )
 
 if( MOAB_HAVE_CGM )
   set( MOAB_CGM_LIBS ${CGM_LIBRARIES} )
+  include_directories(${CGM_INCLUDE_DIRS})
 endif()
 
 if (MOAB_HAVE_ZOLTAN)
@@ -219,37 +207,74 @@ if (MOAB_HAVE_ZOLTAN)
   include_directories( ${ZOLTAN_INCLUDES} )
   list(APPEND MOAB_DEP_LIBRARIES ${ZOLTAN_LIBRARIES})
 endif()
-add_library( MOAB ${MOAB_LIB_SOURCES} ${MOAB_INSTALL_HEADERS} ${MOAB_GENERATED_INSTALL_HEADERS}
-                  $<TARGET_OBJECTS:moabio>
-                  $<TARGET_OBJECTS:moab_loc_discr>
-                  $<TARGET_OBJECTS:moabverdict>
-                  ${MOABPAR_OBJECTS}
-                  ${MDHF_OBJ} )
 
-set_target_properties( MOAB PROPERTIES DEFINE_SYMBOL "IS_BUILDING_MB_SHARED")
+if (MOAB_HAVE_METIS)
+  set( MOAB_LIB_SOURCES ${MOAB_LIB_SOURCES}
+        MetisPartitioner.cpp )
+  set( MOAB_INSTALL_HEADERS ${MOAB_INSTALL_HEADERS}
+        moab/MetisPartitioner.hpp )
+  include_directories( ${METIS_INCLUDES} )
+  list(APPEND MOAB_DEP_LIBRARIES ${METIS_LIBRARIES})
+endif()
+
+add_library(
+  MOAB
+  ${MOAB_LIB_SOURCES} ${MOAB_INSTALL_HEADERS} ${MOAB_GENERATED_INSTALL_HEADERS}
+  $<TARGET_OBJECTS:moabio>
+  $<TARGET_OBJECTS:moab_loc_discr>
+  $<TARGET_OBJECTS:moab_refine_mesh>
+  $<TARGET_OBJECTS:moabverdict>
+  ${MOABPAR_OBJECTS}
+  ${MDHF_OBJ}
+  )
+
+target_link_libraries(
+  MOAB
+  LINK_PUBLIC
+  ${MOAB_DEP_LIBRARIES} ${MOAB_LIBS} ${MOAB_CGM_LIBS} ${MPI_LIBRARIES}
+  )
+set_target_properties(
+  MOAB
+  PROPERTIES
+  COMPILE_FLAGS "-DIS_BUILDING_MB ${MOAB_DEFINES}"
+  VERSION ${MOAB_VERSION}
+  SOVERSION ${MOAB_VERSION_MAJOR}
+  DEFINE_SYMBOL "IS_BUILDING_MB_SHARED"
+  )
 include(GenerateExportHeader)
 generate_export_header(MOAB)
 list(APPEND MOAB_GENERATED_INSTALL_HEADERS
   ${CMAKE_CURRENT_BINARY_DIR}/moab_export.h)
 
-target_link_libraries( MOAB LINK_PUBLIC ${MOAB_DEP_LIBRARIES} ${MOAB_LIBS} ${MOABIO_LIBS} ${MOAB_CGM_LIBS} ${MPI_LIBRARIES} )
-set_target_properties( MOAB PROPERTIES COMPILE_FLAGS "-DIS_BUILDING_MB ${MOAB_DEFINES}")
-
+# On OS X, set the directory included as part of the installed library's path.
+# We only do this to libraries we plan on installing.
+if (BUILD_SHARED_LIBS)
+  set_target_properties(MOAB
+    PROPERTIES
+    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib"
+    )
+endif ()
 
 target_include_directories(MOAB PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>"
   "$<INSTALL_INTERFACE:include>")
 
-install(TARGETS MOAB EXPORT SMTK
-                     RUNTIME DESTINATION bin
-                     LIBRARY DESTINATION lib
-                     ARCHIVE DESTINATION lib )
-set( MOAB_INSTALL_TARGETS ${MOAB_INSTALL_TARGETS} MOAB)
+install(
+  TARGETS MOAB
+  EXPORT SMTK
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  )
+list(APPEND MOAB_INSTALL_TARGETS  MOAB)
 include(AutoconfHeader)
 moab_install_headers(${MOAB_INSTALL_HEADERS})
 foreach (header ${MOAB_GENERATED_INSTALL_HEADERS})
     STRING(REGEX REPLACE "^${CMAKE_CURRENT_BINARY_DIR}/" "" relative ${header})
     string(REGEX MATCH "(.*)/" DIR ${relative})
-    install(FILES ${header} DESTINATION include/${DIR})
+    install(
+      FILES ${header}
+      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${DIR}
+      )
 endforeach()

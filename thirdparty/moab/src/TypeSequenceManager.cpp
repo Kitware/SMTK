@@ -588,11 +588,14 @@ ErrorCode TypeSequenceManager::check_valid_handles(Error* /* error_handler */,
 {
   const_iterator i = lower_bound(first);
   if (i == end() || (*i)->start_handle() > first) {
-    // MB_ENTITY_NOT_FOUND could be a non-error condition, do not call MB_SET_ERR on it
-    bool mydebug = false;
-    if (mydebug) {
-      fprintf(stderr, "[Warning]: Invalid entity handle: 0x%lx\n", (unsigned long)first);
-    }
+#if 0
+    // MB_ENTITY_NOT_FOUND could be a non-error condition, do not call
+    // MB_SET_ERR on it
+    fprintf(
+      stderr,
+      "[Warning]: Invalid entity handle: 0x%lx\n", (unsigned long)first
+      );
+#endif
     return MB_ENTITY_NOT_FOUND;
   }
 
@@ -610,11 +613,14 @@ ErrorCode TypeSequenceManager::erase(Error* /* error_handler */, EntityHandle h)
 {
   EntitySequence* seq = find(h);
   if (!seq) {
-    // MB_ENTITY_NOT_FOUND could be a non-error condition, do not call MB_SET_ERR on it
-    bool mydebug = false;
-    if (mydebug) {
-      fprintf(stderr, "[Warning]: Invalid entity handle: 0x%lx\n", (unsigned long)h);
-    }
+#if 0
+    // MB_ENTITY_NOT_FOUND could be a non-error condition, do not call
+    // MB_SET_ERR on it
+    fprintf(
+      stderr,
+      "[Warning]: Invalid entity handle: 0x%lx\n", (unsigned long)h
+      );
+#endif
     return MB_ENTITY_NOT_FOUND;
   }
 
@@ -859,6 +865,7 @@ void TypeSequenceManager::append_memory_use(EntityHandle first,
                       allocated_count * bytes_per_ent;
 
   // Watch for overflow
+  assert(entity_count > 0 && occupied_count > 0 && allocated_count > 0);
   if (std::numeric_limits<unsigned long>::max() / entity_count <= sum) {
     total_storage  += sum * (entity_count /  occupied_count) + other_ent_mem;
     entity_storage += sum * (entity_count / allocated_count) + other_ent_mem; 

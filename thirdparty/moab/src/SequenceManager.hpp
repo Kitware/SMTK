@@ -16,6 +16,9 @@ class MOAB_EXPORT SequenceManager
 {
   public:
     
+    SequenceManager(double default_seq_multiplier = 1.0) : sequence_multiplier(default_seq_multiplier)
+    { }
+
     ~SequenceManager();
     
       /** Delete all contained data */
@@ -274,6 +277,28 @@ class MOAB_EXPORT SequenceManager
     EntityID new_sequence_size( EntityHandle start_handle, 
                                 EntityID requested_size,
                                 int sequence_size) const;
+
+    /** \brief Interface to control memory allocation for sequences
+     * Provide a factor that controls the size of the sequence that gets allocated.
+     * This is typically useful in the parallel setting when a-priori, the number of ghost entities
+     * and the memory required for them within the same sequence as the owned entities are unknown.
+     * The default factor is 1.0 but this can be appropriately updated at runtime so that we do not
+     * have broken sequences.
+     */
+    double get_sequence_multiplier() const
+    { return sequence_multiplier; }
+
+    /** \brief Interface to control memory allocation for sequences
+     * Provide a factor that controls the size of the sequence that gets allocated.
+     * This is typically useful in the parallel setting when a-priori, the number of ghost entities
+     * and the memory required for them within the same sequence as the owned entities are unknown.
+     * The default factor is 1.0 but this can be appropriately updated at runtime so that we do not
+     * have broken sequences.
+     *
+     * \param meshset User specified multiplier (should be greater than 1.0)
+     */
+    void set_sequence_multiplier(double factor)
+    { sequence_multiplier = factor; }
   
     /**\brief Default allocation size for vertices */
   static const EntityID DEFAULT_VERTEX_SEQUENCE_SIZE;
@@ -322,6 +347,9 @@ class MOAB_EXPORT SequenceManager
     TypeSequenceManager typeData[MBMAXTYPE];
     
     std::vector<int> tagSizes;
+
+     /**\brief The over-allocation factor for entities in a sequence (strictly >= 1.0) */
+    double sequence_multiplier;
 
 };
 

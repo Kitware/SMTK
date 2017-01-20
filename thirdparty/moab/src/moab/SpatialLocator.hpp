@@ -189,9 +189,11 @@ namespace moab {
          */
       inline ErrorCode get_point_ijk(const CartVect &point, const double abs_iter_tol, int *ijk) const;
 
+#if 0
         /* given an ijk location in the intermediate partition, return the proc rank for that location 
          */
       inline int proc_from_ijk(const int *ijk) const;
+#endif
 
         /* given a point in space, return the proc responsible for that point from the intermediate decomp; no tolerances
          * applied here, so first proc in lexicographic ijk ordering is returned
@@ -314,11 +316,13 @@ namespace moab {
       return (ijk[0] >= 0 && ijk[1] >= 0 && ijk[2] >= 0 ? MB_SUCCESS : MB_FAILURE);;
     }
 
+#if 0
     inline int SpatialLocator::proc_from_ijk(const int *ijk) const
     {
       return ijk[2] * regNums[0]*regNums[1] + ijk[1] * regNums[0] + ijk[0];
     }
-    
+#endif
+
     inline int SpatialLocator::proc_from_point(const double *pos, const double abs_iter_tol) const
     {
       int ijk[3];

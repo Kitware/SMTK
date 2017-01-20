@@ -25,9 +25,9 @@
  * MOAB's API is documented in the moab::Interface class.  Questions and comments should be sent to moab-dev
  * _at_ mcs.anl.gov.
  *
- * \ref userguide "User's Guide (MOAB 4.7)"
+ * \ref userguide "User's Guide"
  *
- * \ref developerguide "Developer's Guide (MOAB 4.7)"
+ * \ref developerguide "Developer's Guide"
  *
  * \ref metadata "I/O and Meta-Data Storage Conventions in MOAB"
  *
@@ -64,9 +64,9 @@
 
 #define MBINTERFACE_IID_STR "f728830e-1dd1-11b2-9598-fb9f414f2465"
 
-{0xf728830e, 0x1dd1, 0x11b2, \
-  { 0x95, 0x98, 0xfb, 0x9f, 0x4
-#define MBINTERFACE_IID \1, 0x4f, 0x24, 0x65 }}
+#define MBINTERFACE_IID \
+  {0xf728830e, 0x1dd1, 0x11b2, \
+    { 0x95, 0x98, 0xfb, 0x9f, 0x41, 0x4f, 0x24, 0x65 }}
 
 #endif
 
@@ -1984,6 +1984,37 @@ public:
                                         bool check_valid,
                                         SetIterator *&set_iter) = 0;
     /**@}*/
+
+
+  // ************************  Interface options controllable by user  *************** 
+
+  /** \name Sequence Option controllers */
+
+    /**@{*/
+
+    /** \brief Interface to control memory allocation for sequences
+     * Provide a factor that controls the size of the sequence that gets allocated.
+     * This is typically useful in the parallel setting when a-priori, the number of ghost entities
+     * and the memory required for them within the same sequence as the owned entities are unknown.
+     * The default factor is 1.0 but this can be appropriately updated at runtime so that we do not
+     * have broken sequences.
+     */
+    virtual double get_sequence_multiplier() const = 0;
+
+    /** \brief Interface to control memory allocation for sequences
+     * Provide a factor that controls the size of the sequence that gets allocated.
+     * This is typically useful in the parallel setting when a-priori, the number of ghost entities
+     * and the memory required for them within the same sequence as the owned entities are unknown.
+     * The default factor is 1.0 but this can be appropriately updated at runtime so that we do not
+     * have broken sequences.
+     *
+     * \param meshset User specified multiplier (should be greater than 1.0)
+     */
+    virtual void set_sequence_multiplier(double factor) = 0;
+
+
+  /**@}*/
+
 
 };
 

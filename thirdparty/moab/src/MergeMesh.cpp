@@ -18,6 +18,19 @@
 
 namespace moab {
 
+MergeMesh::MergeMesh(Interface *impl, bool printErrorIn) :
+    mbImpl(impl), mbMergeTag(0), mergeTol(0.001), mergeTolSq(0.000001), printError(printErrorIn)
+{
+}
+
+MergeMesh::~MergeMesh()
+{
+  if (mbMergeTag)
+    mbImpl->tag_delete(mbMergeTag);
+  mbMergeTag=NULL;
+}
+
+
 ErrorCode MergeMesh::merge_entities(EntityHandle *elems,
     int elems_size, const double merge_tol, const int do_merge,
     const int update_sets, Tag merge_tag, bool do_higher_dim)
@@ -104,6 +117,46 @@ ErrorCode MergeMesh::merge_entities(Range &elems,
   return MB_SUCCESS;
 }
 
+ErrorCode MergeMesh::merge_all(EntityHandle meshset, const double merge_tol)
+{
+  ErrorCode rval;
+  if (0 == mbMergeTag)
+  {
+    EntityHandle def_val = 0;
+    rval = mbImpl->tag_get_handle("__merge_tag", 1, MB_TYPE_HANDLE,
+        mbMergeTag, MB_TAG_DENSE | MB_TAG_EXCL, &def_val);MB_CHK_ERR(rval);
+  }
+  // get all entities;
+  // get all vertices connected
+  // build a kdtree
+  // find merged to
+  mergeTol = merge_tol;
+  mergeTolSq = merge_tol * merge_tol;
+
+  // get all vertices
+  Range entities;
+  rval = mbImpl->get_entities_by_handle(meshset, entities, /*recursive*/ true);MB_CHK_ERR(rval);
+  Range sets= entities.subset_by_type(MBENTITYSET);
+  entities=subtract(entities, sets);
+  Range verts;
+  rval = mbImpl->get_connectivity(entities, verts); MB_CHK_ERR(rval);
+
+  // build a kd tree with the vertices
+  AdaptiveKDTree kd(mbImpl);
+  EntityHandle tree_root;
+  rval = kd.build_tree(verts, &tree_root);MB_CHK_ERR(rval);
+
+  // find matching vertices, mark them
+  rval = find_merged_to(tree_root, kd, mbMergeTag); MB_CHK_ERR(rval);
+
+  rval = perform_merge(mbMergeTag); MB_CHK_ERR(rval);
+
+  if ( deadEnts.size() != 0)
+  {
+    rval = merge_higher_dimensions(entities);MB_CHK_ERR(rval);
+  }
+  return MB_SUCCESS;
+}
 ErrorCode MergeMesh::perform_merge(Tag merge_tag)
 {
   // we start with an empty range of vertices that are "merged to"
@@ -127,7 +180,7 @@ ErrorCode MergeMesh::perform_merge(Tag merge_tag)
 
   Range::iterator rit;
   unsigned int i;
-  for (rit = deadEnts.begin(), i = 0; rit != deadEnts.end(); rit++, i++)
+  for (rit = deadEnts.begin(), i = 0; rit != deadEnts.end(); ++rit, i++)
   {
     assert(merge_tag_val[i]);
     if (MBVERTEX==TYPE_FROM_HANDLE(merge_tag_val[i]) )
@@ -188,7 +241,7 @@ ErrorCode MergeMesh::merge_using_integer_tag(Range & verts, Tag user_tag, Tag me
 
   std::vector<handle_id>  handles(verts.size());
   int i=0;
-  for (Range::iterator vit = verts.begin(); vit!= verts.end(); vit++ )
+  for (Range::iterator vit = verts.begin(); vit!= verts.end(); ++vit)
   {
     handles[i].eh=*vit;
     handles[i].val = vals[i];
@@ -260,7 +313,7 @@ ErrorCode MergeMesh::find_merged_to(EntityHandle &tree_root,
     bool inleaf_merged, outleaf_merged = false;
     unsigned int lr_size = leaf_range.size();
 
-    for (i = 0, rit = leaf_range.begin(); i != lr_size; rit++, i++)
+    for (i = 0, rit = leaf_range.begin(); i != lr_size; ++rit, i++)
     {
       if (0 != merge_tag_val[i])
         continue;
@@ -273,7 +326,7 @@ ErrorCode MergeMesh::find_merged_to(EntityHandle &tree_root,
           mergeTol, 1.0e-6, NULL, NULL, &tree_root);
       leaf_range2.clear();
       for (std::vector<EntityHandle>::iterator vit = leaves_out.begin();
-          vit != leaves_out.end(); vit++)
+          vit != leaves_out.end(); ++vit)
       {
         if (*vit > *it)
         { // if we haven't visited this leaf yet in the outer loop
@@ -371,7 +424,7 @@ ErrorCode MergeMesh::merge_higher_dimensions(Range &elems)
       return result;
     //Go through each possible entity and see if it shares vertices with another entity of same dimension
     for (Range::iterator pit = possibleEntsToMerge.begin();
-        pit != possibleEntsToMerge.end(); pit++)
+        pit != possibleEntsToMerge.end(); ++pit)
     {
       EntityHandle eh=*pit;//possible entity to be matched
       conn.clear();
@@ -389,7 +442,7 @@ ErrorCode MergeMesh::merge_higher_dimensions(Range &elems)
       if (matches.size() > 1)
       {
         for (Range::iterator matchIt = matches.begin();
-            matchIt != matches.end(); matchIt++)
+            matchIt != matches.end(); ++matchIt)
         {
           EntityHandle to_remove=*matchIt;
           if (to_remove != eh)
@@ -422,7 +475,7 @@ ErrorCode MergeMesh::merge_higher_dimensions(Range &elems)
     result = skinner.find_skin(0, elems, dim, skinEnts, false, false);
     //Go through each skin entity and see if it shares adjacancies with another entity
     for (Range::iterator skinIt = skinEnts.begin();
-        skinIt != skinEnts.end(); skinIt++)
+        skinIt != skinEnts.end(); ++skinIt)
     {
       adj.clear();
       //Get the adjacencies 1 dimension lower
@@ -439,7 +492,7 @@ ErrorCode MergeMesh::merge_higher_dimensions(Range &elems)
       if (matches.size() > 1)
       {
         for (Range::iterator matchIt = matches.begin();
-            matchIt != matches.end(); matchIt++)
+            matchIt != matches.end(); ++matchIt)
         {
           if (*matchIt != *skinIt)
           {

@@ -712,7 +712,7 @@ int entity_sets_subtest(iMesh_Instance mesh, int is_list,
                          int /*num_iter*/)
 {
   int i, num_type = iBase_ALL_TYPES - iBase_VERTEX;
-  int num_all_entities_super = 0;
+  //int num_all_entities_super = 0;
   iBase_EntitySetHandle es_array[iBase_ALL_TYPES - iBase_VERTEX];
   int number_array[iBase_ALL_TYPES - iBase_VERTEX];
   int ent_type = iBase_VERTEX;
@@ -808,7 +808,7 @@ int entity_sets_subtest(iMesh_Instance mesh, int is_list,
     }
 
       /* add to number of all entities in super set */
-    num_all_entities_super += entities_size;
+    //num_all_entities_super += entities_size;
 
     free(entities);
   }
@@ -1373,7 +1373,7 @@ int entity_sets_subtest(iMesh_Instance mesh, int is_list,
     /*    return FALSE; */
     /*  } */
 
-    /* test add, remove and get all entitiy sets using super set */
+    /* test add, remove and get all entity sets using super set */
     /* check GetAllEntitySets works recursively and dosen't return */
     /* multi sets */
   for (k = 0; k < num_super; k++) {

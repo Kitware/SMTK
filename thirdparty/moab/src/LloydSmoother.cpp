@@ -114,7 +114,7 @@ ErrorCode LloydSmoother::perform_smooth()
     resid = 0.0;
     
     // 2a. foreach elem: centroid = sum(vertex centroids)/num_verts_in_cell
-    for (eit = myElems.begin(), e = 0; eit != myElems.end(); eit++, e++) {
+    for (eit = myElems.begin(), e = 0; eit != myElems.end(); ++eit, e++) {
         // get verts for this elem
       rval = mbImpl->get_connectivity(*eit, conn, nconn);MB_CHK_SET_ERR(rval, "Failed to get connectivity");
         // get centroid tags for those verts
@@ -130,7 +130,7 @@ ErrorCode LloydSmoother::perform_smooth()
     rval = mbImpl->tag_set_data(centroid, myElems, &fcentroids[0]);MB_CHK_SET_ERR(rval, "Failed to set elem centroid");
 
       // 2b. foreach owned vertex: 
-    for (vit = owned_verts.begin(), v = 0; vit != owned_verts.end(); vit++, v++) {
+    for (vit = owned_verts.begin(), v = 0; vit != owned_verts.end(); ++vit, v++) {
         // if !fixed
       if (fix_tag[v]) continue;
         // vertex centroid = sum(cell centroids)/ncells

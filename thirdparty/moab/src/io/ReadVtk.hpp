@@ -151,9 +151,6 @@ private:
     //! interface instance
   Interface* mdbImpl;
 
-    //! Meshset Handle for the mesh that is currently being read
-  EntityHandle mCurrentMeshHandle;
-
     //! A field which, if present and having a single integer for storage, should be used to partition the mesh by range. Defaults to MATERIAL_SET_TAG_NAME
   std::string mPartitionTagName;
 };

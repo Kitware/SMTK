@@ -144,9 +144,6 @@ private:
   std::string fileName;
   int ncFile;
 
-    //! Meshset Handle for the mesh that is currently being read
-  EntityHandle mCurrentMeshHandle;
-
   //! Cached tags for reading.  Note that all these tags are defined when the
   //! core is initialized.
   Tag mMaterialSetTag;

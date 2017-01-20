@@ -257,7 +257,6 @@ ErrorCode ReadTetGen::read_node_file(std::istream& file,
                                      std::vector<EntityHandle>& nodes)
 {
   int lineno = 0;
-  std::string line;
   ErrorCode rval;
 
   double header_vals[4];
@@ -323,6 +322,7 @@ ErrorCode ReadTetGen::read_node_file(std::istream& file,
     nodes[ids[i]] = start_handle + i;
 
     // Get coordinates
+    // Cppcheck warning (false positive): variable coords is assigned a value that is never used
     for (int j = 0; j < dim; ++j)
       coords[j][i] = data[j + 1];
 
@@ -360,7 +360,6 @@ ErrorCode ReadTetGen::read_elem_file(EntityType type,
                                      Range& elems)
 {
   int lineno = 0;
-  std::string line;
   ErrorCode rval;
 
   int node_per_elem, have_group_id, dim;

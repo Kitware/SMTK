@@ -14,7 +14,7 @@
  */
 
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #ifdef _DEBUG
 // turn off warnings that say they debugging identifier has been truncated
 // this warning comes up when using some STL containers
@@ -54,7 +54,7 @@ WriterIface* WriteGMV::factory( Interface* iface )
   { return new WriteGMV( iface ); }
 
 WriteGMV::WriteGMV(Interface *impl) 
-    : mbImpl(impl), mCurrentMeshHandle(0)
+    : mbImpl(impl)
 {
   assert(impl != NULL);
 
@@ -299,7 +299,7 @@ ErrorCode WriteGMV::local_write_mesh(const char *file_name,
 
     ofile << "faces " << polygons.size() << " " << polyhedra.size() << std::endl;
 
-    for (Range::iterator rit = polygons.begin(); rit != polygons.end(); rit++) {
+    for (Range::iterator rit = polygons.begin(); rit != polygons.end(); ++rit) {
         // get the vertices
       connecth.clear();
       result = mbImpl->get_connectivity(&(*rit), 1, connecth, true);

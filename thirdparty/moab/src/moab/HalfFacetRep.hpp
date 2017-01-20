@@ -21,7 +21,8 @@
 #include "moab/Range.hpp"
 #include "moab/CN.hpp"
 
-namespace moab {
+namespace moab
+{
 
 /*! 
  *  \brief   HalfFacetRep class implements the Array-Based Half-Facet(AHF) Mesh data structure on top of MOAB.
@@ -46,7 +47,9 @@ namespace moab {
  *  \
  */ 
 
-const int MAXSIZE = 150;
+ typedef EntityHandle HFacet;
+
+const int MAXSIZE = 200;
 
 //! ENUM for the type of input mesh.
 enum MESHTYPE{
@@ -68,29 +71,27 @@ enum {
 };
 
 class Core;
-
+class ParallelComm;
 class HalfFacetRep{
 
 public:
 
-  HalfFacetRep(Core *impl);
-    
+  HalfFacetRep(Core *impl,  ParallelComm *comm=0, moab::EntityHandle rset=0);
+
   ~HalfFacetRep();
 
   bool check_mixed_entity_type();
 
   // User interface functions
 
-  //! Creates all the necessary tags to store the maps. Constructs the sibling-half-facet and vertex-to-incident-half-facet maps for each dimension present in the input.
-
+  //! Constructs the sibling-half-facet and vertex-to-incident-half-facet maps for each dimension present in the input. This routine should be called before any calls for adjacency is made.
   ErrorCode initialize();
 
-  //! Deletes all the created tags.
-
+  //! Deinitialize
   ErrorCode deinitialize();
 
   //! Prints the tag values.
-  ErrorCode print_tags();
+  ErrorCode print_tags(int dim);
 
   //! Get the adjacencies associated with an entity.
   /** Given an entity of dimension <em>d</em>, gather all the adjacent <em>D</em> dimensional entities where <em>D >, = , < d </em>.
@@ -152,7 +153,7 @@ public:
      * \param edges Range of edges.
     */
 
-  ErrorCode determine_sibling_halfverts(Range &edges);
+  ErrorCode determine_sibling_halfverts(Range &verts, Range &edges);
 
   //! Given a range of edges, determines the map for incident half-verts and stores them into V2HV_EID, V2HV_LVID tags.
   /** Compute a map between a vertex and an incident half-vertex. This map is not always required, but is
@@ -276,6 +277,8 @@ public:
 
   int find_total_edges_2d(Range &faces);
 
+  ErrorCode get_face_edges(EntityHandle fid, std::vector<EntityHandle> &edges);
+
   // 3D Maps and queries
 
   //! Given a range of cells, determines the sibling half-faces and stores them into SIBHFS_CID, SIBHFS_LFID tags.
@@ -347,6 +350,12 @@ public:
                                       int leid, std::vector<EntityHandle> &adjents,
                                       std::vector<int> * leids = NULL, std::vector<int> *adj_orients = NULL);
 
+ ErrorCode get_up_adjacencies_edg_3d_comp( EntityHandle cid,
+                                                       int leid,
+                                                       std::vector<EntityHandle> &adjents,
+                                                       std::vector<int> *leids = NULL,
+                                                       std::vector<int> *adj_orients = NULL);
+
   //! Given an face, finds the cells incident on it.
   /** Given an face, it first finds a matching half-face in a cell corresponding to face, and then
      * collects all the incident cells via the sibhfs map.
@@ -412,65 +421,114 @@ public:
 
   ErrorCode count_subentities(Range &edges, Range &faces, Range &cells, int *nedges, int *nfaces);
 
+  void get_memory_use(unsigned long long& entity_total, unsigned long long& memory_total);
+
+  ErrorCode get_half_facet_in_comp(EntityHandle cid, int leid, std::vector<EntityHandle> &ents, std::vector<int> &lids,  std::vector<int> &lfids);
+
 
   /**************************
-     *  Interface to AHF tags   *
+     *  Interface to AHF maps   *
      **************************/
+  HFacet create_halffacet(EntityHandle handle, int lid);
 
-  ErrorCode get_sibling_tag(EntityType type, EntityHandle ent, EntityHandle *sib_entids, int *sib_lids);
+  EntityHandle fid_from_halfacet(const HFacet facet, EntityType type);
 
-  ErrorCode set_sibling_tag(EntityType type, EntityHandle ent, EntityHandle *set_entids, int *set_lids);
+  int lid_from_halffacet(const HFacet facet);
 
-  ErrorCode get_incident_tag(EntityType type, EntityHandle vid, EntityHandle *inci_entid, int *inci_lid);
+  ErrorCode update_entity_ranges(EntityHandle fileset);
 
-  ErrorCode set_incident_tag(EntityType type, EntityHandle vid, EntityHandle *set_entid, int *set_lid);
+  ErrorCode resize_hf_maps(EntityHandle start_vert, int nverts, EntityHandle start_edge, int nedges, EntityHandle start_face, int nfaces, EntityHandle start_cell, int ncells);
 
-  // 2D and 3D local maps
-  int local_maps_2d(EntityHandle face);
-  ErrorCode local_maps_2d(int nepf, int *next, int *prev);
-  struct LocalMaps3D{
-    short int num_verts_in_cell; // Number of vertices per cell
-    short int num_edges_in_cell; // Number of edges per cell
-    short int num_faces_in_cell; // Number of faces per cell
+  ErrorCode get_sibling_map(EntityType type, EntityHandle ent, EntityHandle *sib_entids, int *sib_lids, int num_halffacets);
 
-    int hf2v_num[MAX_FACES]; //
-    int hf2v[MAX_FACES][MAX_VERTS_HF];
+  ErrorCode get_sibling_map(EntityType type, EntityHandle ent, int lid, EntityHandle &sib_entid, int &sib_lid);
 
-    int v2hf_num[MAX_VERTICES];
-    int v2hf[MAX_VERTICES][MAX_INCIDENT_HF];
+  ErrorCode set_sibling_map(EntityType type, EntityHandle ent,  EntityHandle *set_entids, int *set_lids, int num_halffacets);
 
-    int e2v[MAX_EDGES][2];
-    int e2hf[MAX_EDGES][2];
-    int f2leid[MAX_FACES][MAX_VERTS_HF];
-    int lookup_leids[MAX_VERTICES][MAX_VERTICES];
+  ErrorCode set_sibling_map(EntityType type, EntityHandle ent, int lid, EntityHandle &set_entid, int &set_lid);
+
+  ErrorCode get_incident_map(EntityType type, EntityHandle vid, std::vector<EntityHandle> &inci_entid, std::vector<int> &inci_lid);
+
+  ErrorCode set_incident_map(EntityType type, EntityHandle vid, std::vector<EntityHandle> &set_entid, std::vector<int> &set_lid);
+
+  bool check_nonmanifold_vertices(EntityType type, EntityHandle vid);
+
+  /**********************
+   *         Local Maps
+   * ********************/
+  //! 2D local maps
+  struct LocalMaps2D{
+    //! Number of vertices in a face
+    short int num_verts_in_face;
+    //! Local ids of the next half-edge
+    int next[MAX_INCIDENT_HF];
+    //! Local ids of the previous half-edge
+    int prev[MAX_INCIDENT_HF];
   };
+  static const LocalMaps2D lConnMap2D[2];
 
+//! 3D local maps
+  struct LocalMaps3D{
+    //! Number of vertices in cell
+    short int num_verts_in_cell;
+    //! Number of edges in cell
+    short int num_edges_in_cell;
+    // Number of faces in cell
+    short int num_faces_in_cell;
+    //! Number of vertices in each half-face
+    int hf2v_num[MAX_FACES];
+    //! Map: Half-face to local vertex ids
+    int hf2v[MAX_FACES][MAX_VERTS_HF];
+    //! Number of incident half-faces on each vertex
+    int v2hf_num[MAX_VERTICES];
+    //! Map: Local vertices to incident half-facets
+    int v2hf[MAX_VERTICES][MAX_INCIDENT_HF];
+    //!  Map: Local edges to local vertices
+    int e2v[MAX_EDGES][2];
+    //! Map: Local edges to incident half-faces
+    int e2hf[MAX_EDGES][2];
+    //! Map: Half-faces to local edges
+    int f2leid[MAX_FACES][MAX_VERTS_HF];
+    //! Map: local vertices to local edges
+    int lookup_leids[MAX_VERTICES][MAX_VERTICES];
+    //! Search edge verts:
+    int search_everts[5];
+    int search_fverts[2];
+    int v2le[4][5];
+  };
   static const LocalMaps3D lConnMap3D[4];
   MESHTYPE thismeshtype;
-  int get_index_from_type(EntityHandle cid);
+
+   std::map<EntityType, int> cell_index;
+
+  int get_index_in_lmap(EntityHandle cid);
   ErrorCode get_entity_ranges(Range &verts, Range &edges, Range &faces, Range &cells);
+  MESHTYPE get_mesh_type(int nverts, int nedges, int nfaces, int ncells);
+
+  EntityHandle *get_rset() { return &_rset; }
 
 protected:
 
-  Core * mb;
-
   HalfFacetRep();
 
+  Core *mb;
+  ParallelComm *pcomm;
   bool mInitAHFmaps;
-
+  EntityHandle _rset;
   Range _verts, _edges, _faces, _cells;
-  Tag sibhvs_eid, sibhvs_lvid, v2hv_eid, v2hv_lvid;
-  Tag sibhes_fid, sibhes_leid, v2he_fid, v2he_leid;
-  Tag sibhfs_cid, sibhfs_lfid, v2hf_cid, v2hf_lfid;
 
+  //AHF map storage containers for 1D, 2D, 3D
+  std::vector<HFacet> sibhvs, v2hv;
+  std::vector<HFacet> sibhes, v2he;
+  std::vector<HFacet> sibhfs, v2hf;
 
+  //AHF maps for non-manifold vertices 2D, 3D
+  std::multimap<EntityHandle, HFacet> v2hes, v2hfs;
+
+  //Auxiliary storage for local searches.
   EntityHandle queue_fid[MAXSIZE], Stkcells[MAXSIZE], cellq[MAXSIZE];
   EntityHandle trackfaces[MAXSIZE], trackcells[MAXSIZE];
- // std::vector<int> queue_lid;
   int queue_lid[MAXSIZE];
-
-  //MESHTYPE thismeshtype;
-  MESHTYPE get_mesh_type(int nverts, int nedges, int nfaces, int ncells);
 
   struct adj_matrix{
     int val[4][4];
@@ -487,19 +545,12 @@ protected:
   ErrorCode init_surface();
   ErrorCode init_volume();
 
-  ErrorCode deinit_curve();
-  ErrorCode deinit_surface();
-  ErrorCode deinit_volume();
-
-
   //! Contains the local information for 2D entities
   /** Given a face, find the face type specific information
      *
      * \param face EntityHandle. Used to gather info about the type of face for which local info is required
      * \param nepf: Returns the number of vertices/edges for given face type.
     */
-
-  // int local_maps_2d(EntityHandle face);
 
   //! Contains the local information for 2D entities
   /** Given number of edges, returns local indices of next and previous local edges.
@@ -517,8 +568,6 @@ protected:
         v0  e0  v1     v0  e0  v1
     */
 
-
-   // ErrorCode local_maps_2d(int nepf, int *next, int *prev);
 
     //! Given a half-edge as <he_fid,he_lid> , finds the half-edges incident on it and adds them
     //  to an input queue if it not already added.
@@ -567,70 +616,21 @@ protected:
                                 EntityHandle *he2_fid,
                                 int *he2_lid);
 
+    ErrorCode mark_halfedges(EntityHandle vid, EntityHandle he_fid, int he_lid, Range &faces, std::vector<char> &markHEdgs, HFacet &bnd_hf);
+
     //! Collect and compare to find a matching half-edge with the given edge connectivity.
     /** Given edge connectivity, compare to an input list of half-edges to find a matching half-edge
      * and add a list of half-edges belonging to the one-ring neighborhood to a queue till it finds a match.
     */
 
-    bool collect_and_compare(std::vector<EntityHandle> &edg_vert,
+    bool collect_and_compare(const EntityHandle vid, const EntityHandle* edg_vert,
                              int *qsize, int *count,
                              EntityHandle *he_fid,
                              int *he_lid);
 
 
-    //! The local maps for 3D entities.
-    /** Types of 3D entities supported: tets, pyramid, prism, hex
-        Determines the type from input "cell"
-
-	_3d_numels:
-	nvpc: Number of vertices per cell
-	nepc: Number of edges per cell
-	nfpc: Number of faces per cell
-
-	_3d_numels:
-	nvmax: The maximum number of vertices of all half-faces of the cell
-
-	_3d_hf2v: Map half-face to vertices
-	hf2v_num: Array storing number of vertices per half-face
-	hf2v_map: Local ids of vertices of each half-face, stored in an array
-	hf2v_idx: Starting index for each half-face to access vertices
-
-	_3d_v2hf: Map vertex to half-face
-	v2hf_num: Array storing number of incident half-faces per vertex
-	v2hf_map: Local ids of incident half-faces, stored in an array
-	v2hf_idx: Starting index for each vertex to access incident half-faces
-
-	_3d_edges: Maps for edges
-	e2v: Local edge to local vertices
-	e2hf: Local edge to incident half-faces
-	f2leid: Local edges for each half-faces
-
-	_3d_lookup_leid:
-	nvpc: Is an input #vertices per cell
-	lookup_leid: Map between local vertex v0 to local vertex v1 storing the local edge id e = <v0,v1>
-    */
-
-/*
-    struct LocalMaps3D{
-      short int num_verts_in_cell; // Number of vertices per cell
-      short int num_edges_in_cell; // Number of edges per cell
-      short int num_faces_in_cell; // Number of faces per cell
-
-      int hf2v_num[MAX_FACES]; //
-      int hf2v[MAX_FACES][MAX_VERTS_HF];
-
-      int v2hf_num[MAX_VERTICES];
-      int v2hf[MAX_VERTICES][MAX_INCIDENT_HF];
-
-      int e2v[MAX_EDGES][2];
-      int e2hf[MAX_EDGES][2];
-      int f2leid[MAX_FACES][MAX_VERTS_HF];
-      int lookup_leids[MAX_VERTICES][MAX_VERTICES];
-    }; */
-
-   // static const LocalMaps3D lConnMap3D[4];
-
-   // int get_index_from_type(EntityHandle cid);
+    ErrorCode add_cells_of_single_component(EntityHandle vid, EntityHandle curcid, int curlid, std::multimap<EntityHandle, EntityHandle> &comps, HFacet &hf);
+    bool find_cell_in_component(EntityHandle vid, EntityHandle cell, std::multimap<EntityHandle, EntityHandle> &comps);
 
     //! Given an edge, finds a matching local edge in an incident cell.
     /** Find a local edge with the same connectivity as the input edge, belonging to an incident cell.
@@ -640,9 +640,9 @@ protected:
      * \param leid Returns the local id of the edge corresponding to the input edge w.r.t the incident cell.
     */
 
-    bool find_matching_implicit_edge_in_cell( EntityHandle eid,
-                                              EntityHandle *cid,
-                                              int *leid);
+    bool find_matching_implicit_edge_in_cell(EntityHandle eid,
+                                              std::vector<EntityHandle> &cid,
+                                              std::vector<int> &leid);
 
     //! Given a face, finds a matching local face in an incident cell.
     /** Find a local face with the same connectivity as the input face, belonging to an incident cell.

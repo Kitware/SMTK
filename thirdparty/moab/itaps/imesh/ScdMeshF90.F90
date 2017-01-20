@@ -29,7 +29,7 @@ iBase_EntityHandle :: root_set
 iBase_EntityArrIterator :: iter
 iBase_TagHandle :: tagh
 integer :: local_dims(6),global_dims(6)
-integer :: geom_dim,num_regions, num_verts, count, i, num_quads, rsum
+integer :: geom_dim, num_verts, count, i, num_quads, rsum
 real xm
 pointer (rpxm1, xm(*))
 real reinterpret_ptr
@@ -62,7 +62,7 @@ call iMesh_getRootSet(%VAL(mesh), root_set, ier); ERROR(ier);
 
 call iMesh_getGeometricDimension(%VAL(mesh), geom_dim, ier); ERROR(ier);
 
-call iMesh_getNumOfType(%VAL(mesh), %VAL(root_set), %VAL(iBase_FACE), num_regions, ier); ERROR(ier);
+call iMesh_getNumOfType(%VAL(mesh), %VAL(root_set), %VAL(iBase_FACE), num_quads, ier); ERROR(ier);
 
 call iMesh_getNumOfType(%VAL(mesh), %VAL(root_set), %VAL(iBase_VERTEX), num_verts, ier); ERROR(ier);
 
@@ -74,11 +74,15 @@ call iMesh_createTagWithOptions(%VAL(mesh), "XM1", "moab:TAG_STORAGE_TYPE=DENSE;
 
 call iMesh_tagIterate(%VAL(mesh), %VAL(tagh), %VAL(iter), rpxm1, count, ier); ERROR(ier);
 
+call iMesh_endEntArrIter(%VAL(mesh), %VAL(iter), ier); ERROR(ier);
+
 do i = 1, 5*64*64
   xm(i) = 1.0
 end do
 
 rsum = reinterpret_ptr(xm, 5, 64, 64)
+
+call iMesh_dtor(%VAL(mesh), ier); ERROR(ier);
 
 if (rsum .ne. 5*64*64) call exit(1)
       

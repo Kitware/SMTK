@@ -501,16 +501,10 @@ ErrorCode BitTag::get_entities_with_bits(const Range &range,
   EntityID count;
   size_t page;
   int offset, per_page = ents_per_page();
-  Range::const_iterator j, i, end;
-  if (MBMAXTYPE == in_type) {
-    i = range.begin();
-    end = range.end();
-  }
-  else {
-    std::pair<Range::iterator, Range::iterator> r = range.equal_range(in_type);
-    i = r.first;
-    end = r.second;
-  }
+  Range::const_iterator i, end;
+  std::pair<Range::iterator, Range::iterator> r = range.equal_range(in_type);
+  i = r.first;
+  end = r.second;
   EntityHandle h;
   while (i != end) {
     h = *i;

@@ -70,12 +70,12 @@ protected:
   
     //! Write list of triangles to an STL file.  
   ErrorCode ascii_write_triangles( FILE* file,
-                                     const char header[82],
+                                     const char header[81],
                                      const Range& triangles,
                                      int precision );
     //! Write list of triangles to an STL file.  
   ErrorCode binary_write_triangles( FILE* file,
-                                      const char header[82],
+                                      const char header[81],
                                       ByteOrder byte_order,
                                       const Range& triangles );
 
@@ -102,7 +102,7 @@ private:
 
     //! Construct 80-byte, null-terminated description string from
     //! qa_list.  Unused space in header will be null-char padded.
-  ErrorCode make_header( char header[82], const std::vector<std::string>& qa_list );
+  ErrorCode make_header( char header[81], const std::vector<std::string>& qa_list );
   
     //! Get triangles to write from input array of entity sets.  If
     //! no sets, gets all triangles.

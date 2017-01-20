@@ -30,6 +30,8 @@ namespace moab
         rval = myTree->get_bounding_box(localBox);
         if (MB_SUCCESS != rval) throw rval;
       }
+
+      regNums[0] = regNums[1] = regNums[2] = 0;
     }
 
     void SpatialLocator::create_tree() 
@@ -244,7 +246,7 @@ namespace moab
         CartVect tmp_pnt(TLquery_o.vr_rd+3*i);
 
           //compare coordinates to list of bounding boxes
-        for (std::map<int, BoundBox>::iterator mit = srcProcBoxes.begin(); mit != srcProcBoxes.end(); mit++) {
+        for (std::map<int, BoundBox>::iterator mit = srcProcBoxes.begin(); mit != srcProcBoxes.end(); ++mit) {
           if ((*mit).second.contains_point(tmp_pnt.array(), abs_iter_tol)) {
             iargs[0] = (*mit).first;
             TLforward_o.push_back(iargs, NULL, NULL, tmp_pnt.array());
@@ -295,7 +297,7 @@ namespace moab
           iargs[1] = TLforward_o.vi_rd[3*i+2];
           iargs[2] = locTable.get_n();
           TLsearch_results_o.push_back(iargs, NULL, NULL, NULL);
-          ulong ent_ulong=(ulong)ents[i];
+          Ulong ent_ulong=(Ulong)ents[i];
           sint forward= (sint)TLforward_o.vi_rd[3*i+1];
           locTable.push_back(&forward, NULL, &ent_ulong, &params[3*i]);
         }
@@ -417,7 +419,7 @@ namespace moab
 
     ErrorCode SpatialLocator::locate_points(const double *pos, int num_points,
                                             EntityHandle *ents, double *params, int *is_inside,
-                                            const double rel_iter_tol, const double abs_iter_tol, 
+                                            const double /* rel_iter_tol */, const double abs_iter_tol,
                                             const double inside_tol)
     {
       bool i_initialized = false;
@@ -427,11 +429,13 @@ namespace moab
         i_initialized = true;
       }
 
+      /*
       double tmp_abs_iter_tol = abs_iter_tol;
       if (rel_iter_tol && !tmp_abs_iter_tol) {
           // relative epsilon given, translate to absolute epsilon using box dimensions
         tmp_abs_iter_tol = rel_iter_tol * localBox.diagonal_length();
       }
+      */
 
       if (elemEval && myTree->get_eval() != elemEval)
         myTree->set_eval(elemEval);
@@ -470,7 +474,7 @@ namespace moab
     {
       int num_located = locTable.get_n() - std::count(locTable.vul_rd, locTable.vul_rd+locTable.get_n(), 0);
       if (num_located != (int)locTable.get_n()) {
-        unsigned long *nl = std::find(locTable.vul_rd, locTable.vul_rd+locTable.get_n(), 0);
+        Ulong *nl = std::find(locTable.vul_rd, locTable.vul_rd+locTable.get_n(), 0);
         if (nl) {
           int idx = nl - locTable.vul_rd;
           if (idx) {}

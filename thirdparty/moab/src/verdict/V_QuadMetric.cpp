@@ -1338,7 +1338,7 @@ C_FUNC_DEF double v_quad_distortion( int num_nodes, double coordinates[][3] )
           }
 
         normal_at_point = aa*bb;
-        jacobian = normal_at_point.length();
+        //jacobian = normal_at_point.length();
         distrt = cc%normal_at_point;
         if (distrt < distortion) distortion = distrt;
         }

@@ -97,7 +97,7 @@ CartVect SpectralHex::evaluate( const CartVect& params ) const
 }
 Matrix3  SpectralHex::jacobian(const CartVect& params) const
 {
-  double x_i[3];
+  real x_i[3];
   params.get(x_i);
     // set the positions of GL nodes, before evaluations
   _data.elx[0]=_xyz[0];
@@ -138,7 +138,7 @@ void SpectralHex::integrate_vector(const double *field_values, int num_tuples, d
   _data.elx[0]=_xyz[0];
   _data.elx[1]=_xyz[1];
   _data.elx[2]=_xyz[2];
-  double params[3];
+  real params[3];
     //triple loop; the most inner loop is in r direction, then s, then t
   for (int l = 0; l < num_tuples; l++) integral[l] = 0.0;
     //double volume = 0;

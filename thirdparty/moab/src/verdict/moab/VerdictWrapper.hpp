@@ -55,6 +55,78 @@ enum QualityType {
 
 };
 
+inline
+std::string QualityType_ToString(QualityType qtype)
+{
+  switch(qtype)
+  {
+    case MB_UNDEFINED_QUALITY:
+      return "MB_UNDEFINED_QUALITY";
+    case MB_EDGE_RATIO:
+      return "MB_EDGE_RATIO";
+    case MB_MAX_EDGE_RATIO:
+      return "MB_MAX_EDGE_RATIO";
+    case MB_SKEW:
+      return "MB_SKEW";
+    case MB_TAPER:
+      return "MB_TAPER";
+    case MB_VOLUME:
+      return "MB_VOLUME";
+    case MB_STRETCH:
+      return "MB_STRETCH";
+    case MB_DIAGONAL:
+      return "MB_DIAGONAL";
+    case MB_DIMENSION:
+      return "MB_DIMENSION";
+    case MB_ODDY:
+      return "MB_ODDY";
+    case MB_MED_ASPECT_FROBENIUS:
+      return "MB_MED_ASPECT_FROBENIUS";
+    case MB_MAX_ASPECT_FROBENIUS:
+      return "MB_MAX_ASPECT_FROBENIUS";
+    case MB_CONDITION:
+      return "MB_CONDITION";
+    case MB_JACOBIAN:
+      return "MB_JACOBIAN";
+    case MB_SCALED_JACOBIAN:
+      return "MB_SCALED_JACOBIAN";
+    case MB_SHEAR:
+      return "MB_SHEAR";
+    case MB_SHAPE:
+      return "MB_SHAPE";
+    case MB_RELATIVE_SIZE_SQUARED:
+      return "MB_RELATIVE_SIZE_SQUARED";
+    case MB_SHAPE_AND_SIZE:
+      return "MB_SHAPE_AND_SIZE";
+    case MB_SHEAR_AND_SIZE:
+      return "MB_SHEAR_AND_SIZE";
+    case MB_DISTORTION:
+      return "MB_DISTORTION";
+    case MB_LENGTH:
+      return "MB_LENGTH";
+    case MB_RADIUS_RATIO:
+      return "MB_RADIUS_RATIO";
+    case MB_ASPECT_BETA:
+      return "MB_ASPECT_BETA";
+    case MB_ASPECT_RATIO:
+      return "MB_ASPECT_RATIO";
+    case MB_ASPECT_GAMMA:
+      return "MB_ASPECT_GAMMA";
+    case MB_MINIMUM_ANGLE:
+      return "MB_MINIMUM_ANGLE";
+    case MB_COLLAPSE_RATIO:
+      return "MB_COLLAPSE_RATIO";
+    case MB_WARPAGE:
+      return "MB_WARPAGE";
+    case MB_AREA:
+      return "MB_AREA";
+    case MB_MAXIMUM_ANGLE:
+      return "MB_MAXIMUM_ANGLE";
+    default:
+      return "MB_QUALITY_COUNT";
+  }
+}
+
 class VerdictWrapper {
 public:
   VerdictWrapper(Interface * mb);
@@ -74,7 +146,7 @@ public:
   rval = quality_measure(hex, MB_JACOBIAN, jac); \endcode
   */
   ErrorCode quality_measure(EntityHandle eh, QualityType q, double & quality,
-      int num_nodes=0, double *coords=NULL);
+      int num_nodes=0, EntityType etype=MBMAXTYPE, double *coords=NULL);
   //! return a quality name
     /** return quality name (convert an enum QualityType to a string)
     \param  q quality type

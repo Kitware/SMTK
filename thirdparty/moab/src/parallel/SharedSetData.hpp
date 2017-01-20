@@ -84,7 +84,6 @@ public:
 private:
   
   Interface& mb;
-  unsigned myRank;
 
   /**\brief per-set tag data */
   struct SharedSetTagData 

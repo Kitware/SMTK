@@ -6,7 +6,7 @@ include_directories( ${MOAB_BINARY_DIR}/src
                     )
 set( MOABIO_LIBS )
 set( MOABIO_DEFINES "-DIS_BUILDING_MB" )
-set( MOABIO_INSTALL_HEADERS moab/ExoIIInterface.hpp )
+set( MOABIO_INSTALL_HEADERS moab/ExoIIInterface.hpp  moab/VtkUtil.hpp)
 set( MOABIO_LIB_SRCS
         exodus_order.h
         patran_order.h
@@ -19,16 +19,17 @@ set( MOABIO_LIB_SRCS
         ReadIDEAS.hpp     ReadIDEAS.cpp
         ReadMCNP5.hpp     ReadMCNP5.cpp
         ReadNASTRAN.hpp   ReadNASTRAN.cpp
+        ReadRTT.hpp       ReadRTT.cpp
+        ReadOBJ.hpp       ReadOBJ.cpp
         ReadSmf.hpp       ReadSmf.cpp
         ReadSms.hpp       ReadSms.cpp
         ReadSTL.hpp       ReadSTL.cpp
         ReadTemplate.hpp  ReadTemplate.cpp
         ReadTetGen.hpp    ReadTetGen.cpp
-        ReadTxt.hpp       ReadTxt.cpp
         ReadVtk.hpp       ReadVtk.cpp
         SMF_State.hpp     SMF_State.cpp
         Tqdcfr.hpp        Tqdcfr.cpp
-        VtkUtil.hpp       VtkUtil.cpp
+                          VtkUtil.cpp
         WriteAns.hpp      WriteAns.cpp
         WriteGMV.hpp      WriteGMV.cpp
         WriteGmsh.hpp     WriteGmsh.cpp
@@ -111,13 +112,15 @@ add_library( moabio OBJECT ${MOABIO_LIB_SRCS} ${MOAB_NETCDF_SRCS}
                            ${MOAB_CGNS_SRCS}  ${MOAB_HDF5_SRCS}
                            ${MOAB_CCMIO_SRCS} ${MOAB_DAMSEL_SRCS}
                            ${MOAB_CGM_SRCS}   ${MOABIO_INSTALL_HEADERS} )
+
 # Set position-independent flag so that the object files are embedded properly.
-set_target_properties(moabio PROPERTIES POSITION_INDEPENDENT_CODE True)
+set_target_properties(moabio PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 
 set(MOABIO_LIBS "${MOABIO_LIBS}" PARENT_SCOPE)
 if (BUILD_SHARED_LIBS)
   set( shared_define "-DIS_BUILDING_MB_SHARED" )
 endif ()
+set_target_properties(moabio PROPERTIES POSITION_INDEPENDENT_CODE True)
 set_target_properties( moabio PROPERTIES COMPILE_FLAGS "${shared_define} ${MOABIO_DEFINES} ${MOAB_DEFINES}")
 include(AutoconfHeader)
 moab_install_headers(${MOABIO_INSTALL_HEADERS})

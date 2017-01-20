@@ -26,24 +26,6 @@
 
 namespace moab {
 
-static ErrorCode not_found(std::string name, EntityHandle h)
-{
-  // MB_TAG_NOT_FOUND could be a non-error condition, do not call MB_SET_ERR on it
-  // Print warning messages for debugging only
-  bool mydebug = false;
-  if (mydebug) {
-    if (h)
-      fprintf(stderr, "[Warning]: No variable-length sparse tag %s value for %s %lu\n",
-                      name.c_str(),
-                      CN::EntityTypeName(TYPE_FROM_HANDLE(h)),
-                      (unsigned long)ID_FROM_HANDLE(h));
-    else
-      fprintf(stderr, "[Warning]: No variable-length sparse tag %s value for root set\n", name.c_str());
-  }
-
-  return MB_TAG_NOT_FOUND;
-}
-
 VarLenSparseTag::VarLenSparseTag(const char* name,
                                  DataType type,
                                  const void* default_value,
@@ -83,7 +65,7 @@ ErrorCode VarLenSparseTag::get_data_ptr(Error* /* error */,
     length = get_default_value_size();
   }
   else
-    return not_found(get_name(), entity_handle);
+    return MB_TAG_NOT_FOUND;
 
   return MB_SUCCESS;
 }
@@ -118,7 +100,8 @@ ErrorCode VarLenSparseTag::get_data(const SequenceManager*,
 
   ErrorCode rval;
   for (size_t i = 0; i < num_entities; ++i) {
-    rval = get_data_ptr(NULL, entities[i], pointers[i], lengths[i]);MB_CHK_ERR(rval);
+    rval = get_data_ptr(NULL, entities[i], pointers[i], lengths[i]);
+    if (rval != MB_SUCCESS) return rval;
   }
 
   return MB_SUCCESS;
@@ -137,7 +120,8 @@ ErrorCode VarLenSparseTag::get_data(const SequenceManager*,
   ErrorCode rval;
   Range::const_iterator i;
   for (i = entities.begin(); i != entities.end(); ++i, ++pointers, ++lengths) {
-    rval = get_data_ptr(NULL, *i, *pointers, *lengths);MB_CHK_ERR(rval);
+    rval = get_data_ptr(NULL, *i, *pointers, *lengths);
+    if (rval != MB_SUCCESS) return rval;
   }
 
   return MB_SUCCESS;
@@ -265,7 +249,7 @@ ErrorCode VarLenSparseTag::remove_data(SequenceManager*,
   for (size_t i = 0; i < num_entities; ++i) {
     MapType::iterator p = mData.find(entities[i]);
     if (p == mData.end())
-      result = not_found(get_name(), entities[i]);
+      return MB_TAG_NOT_FOUND;
     else {
       p->second.clear();
       mData.erase(p);
@@ -283,7 +267,7 @@ ErrorCode VarLenSparseTag::remove_data(SequenceManager*,
   for (Range::iterator i = entities.begin(); i != entities.end(); ++i) {
     MapType::iterator p = mData.find(*i);
     if (p == mData.end())
-      result = not_found(get_name(), *i);
+      return MB_TAG_NOT_FOUND;
     else {
       p->second.clear();
       mData.erase(p);
@@ -334,7 +318,6 @@ void get_tagged(const VarLenSparseTag::MapType& mData,
                 Range::const_iterator end,
                 Container& output_range)
 {
-  VarLenSparseTag::MapType::const_iterator iter;
   typename Container::iterator hint = output_range.begin();
   for (Range::const_iterator i = begin; i != end; ++i)
     if (mData.find(*i) != mData.end())
@@ -462,7 +445,7 @@ ErrorCode VarLenSparseTag::get_memory_use(const SequenceManager*,
   total = mData.size() * (3*sizeof(void*) + sizeof(VarLenTag));
   for (MapType::const_iterator i = mData.begin(); i != mData.end(); ++i)
     total += i->second.mem();
-  if (mData.size())
+  if (!mData.empty())
     per_entity = total / mData.size();
   total += sizeof(*this) + TagInfo::get_memory_use();
 

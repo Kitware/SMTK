@@ -204,7 +204,7 @@ ErrorCode ReadNASTRAN::load_file(const char *filename,
    large field: 1x8, 4x16, 1x8. Field 1 must have an asterisk following the character string
    free field: each line entry must be separated by a comma
    Implementation tries to avoid more searches than necessary. */
-ErrorCode ReadNASTRAN::determine_line_format(const std::string line,
+ErrorCode ReadNASTRAN::determine_line_format(const std::string &line,
                                              line_format &format)
 {
   std::string::size_type found_asterisk = line.find("*");
@@ -226,7 +226,7 @@ ErrorCode ReadNASTRAN::determine_line_format(const std::string line,
 }
 
 /* Tokenize the line. Continue-lines have not been implemented. */
-ErrorCode ReadNASTRAN::tokenize_line(const std::string line, const line_format format,
+ErrorCode ReadNASTRAN::tokenize_line(const std::string &line, const line_format format,
                                      std::vector<std::string> &tokens)
 {
   size_t line_size = line.size();
@@ -252,7 +252,7 @@ ErrorCode ReadNASTRAN::tokenize_line(const std::string line, const line_format f
   return MB_SUCCESS;
 }
 
-ErrorCode ReadNASTRAN::determine_entity_type(const std::string first_token,
+ErrorCode ReadNASTRAN::determine_entity_type(const std::string &first_token,
                                              EntityType &type)
 {
   if (0 == first_token.compare("GRID    "))
@@ -284,7 +284,7 @@ ErrorCode ReadNASTRAN::determine_entity_type(const std::string first_token,
    has the coordinates: ( 3.980454, 6.9052e-1, 5.6008e-1 )
    GRID      200005       04.004752-3.985-15.4955-1  
    has the coordinates: ( 4.004752, -3.985e-1, 5.4955e-1 ) */
-ErrorCode ReadNASTRAN::get_real(const std::string token, double &real)
+ErrorCode ReadNASTRAN::get_real(const std::string &token, double &real)
 {
   std::string significand = token;
   std::string exponent = "0";
@@ -343,7 +343,7 @@ ErrorCode ReadNASTRAN::get_real(const std::string token, double &real)
 
 /* It has been determined that this line is a vertex. Read the rest of
    the line and create the vertex. */
-ErrorCode ReadNASTRAN::read_node(const std::vector<std::string> tokens,
+ErrorCode ReadNASTRAN::read_node(const std::vector<std::string> &tokens,
                                  const bool debug,
                                  double* coords[3],
                                  int& id)
@@ -376,7 +376,7 @@ ErrorCode ReadNASTRAN::read_node(const std::vector<std::string> tokens,
 /* The type of element has already been identified. Read the rest of the
    line and create the element. Assume that all of the nodes have already
    been created. */
-ErrorCode ReadNASTRAN::read_element(const std::vector<std::string> tokens,
+ErrorCode ReadNASTRAN::read_element(const std::vector<std::string> &tokens,
                                     std::vector<Range> &materials,
                                     const EntityType element_type,
                                     const bool /*debug*/)
@@ -471,7 +471,6 @@ ErrorCode ReadNASTRAN::assign_ids(const Tag* file_id_tag)
     return result;
 
   RangeMap<int, EntityHandle>::iterator i;
-  std::vector<int> ids;
   for (int t = 0; t < 2; ++t) {
     RangeMap<int, EntityHandle>& fileIdMap = t ? elemIdMap : nodeIdMap;
     for (i = fileIdMap.begin(); i != fileIdMap.end(); ++i) {

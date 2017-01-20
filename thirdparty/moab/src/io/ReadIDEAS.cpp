@@ -68,10 +68,8 @@ ErrorCode ReadIDEAS::load_file(const char* fname,
       return MB_FAILURE;
 
   EntityHandle first_vertex = 0;
-  std::string s;
   while (!file.eof()) {
     file.getline(line, 10000);
-    s = line;
     unsigned int header_id = (unsigned int) strtol(line, NULL, 10);
 
     // Create vertices
@@ -79,7 +77,7 @@ ErrorCode ReadIDEAS::load_file(const char* fname,
         DOUBLE_PRECISION_NODES1 == header_id) {
         if (first_vertex) // multiple vertex blocks?
           return MB_FAILURE;
-        rval = create_vertices(first_vertex, file_id_tag);
+        rval = create_vertices(first_vertex, file_id_tag);MB_CHK_SET_ERR(rval, "Failed to read vertices");
     }
     // Create elements
     else if (ELEMENTS0==header_id ||
@@ -87,7 +85,7 @@ ErrorCode ReadIDEAS::load_file(const char* fname,
              ELEMENTS2==header_id) {
         if (!first_vertex) // Need to read vertices first
           return MB_FAILURE;
-        rval = create_elements(first_vertex, file_id_tag);
+        rval = create_elements(first_vertex, file_id_tag);MB_CHK_SET_ERR(rval, "Failed to read elements");
     }
     // Skip everything else
     else {
@@ -138,7 +136,7 @@ ErrorCode ReadIDEAS::create_vertices(EntityHandle& first_vertex,
 
   ErrorCode rval;
 
-  int top_of_block = file.tellg();
+  std::streampos top_of_block = file.tellg();
   unsigned int num_verts = 0;
 
   for (;;) {
@@ -192,7 +190,7 @@ ErrorCode ReadIDEAS::create_vertices(EntityHandle& first_vertex,
     // Get the id out of the 1st line. Check the assumption that node ids are
     // sequential and begin with 1.
     if (node_id != std::strtol(line1, &ctmp1, 10))
-      return MB_NOT_IMPLEMENTED;
+      MB_SET_ERR(MB_FAILURE, "node_id " << node_id <<" line2:" << line2 << " ctmp1:"<<ctmp1);
     else
       ++node_id;
 
@@ -203,18 +201,16 @@ ErrorCode ReadIDEAS::create_vertices(EntityHandle& first_vertex,
   }
 
   if (!file.getline(line1, 10000))
-    return MB_FAILURE;
+    MB_SET_ERR(MB_FAILURE, " expect more lines");
   if (!file.getline(line2, 10000))
-    return MB_FAILURE;
+    MB_SET_ERR(MB_FAILURE, " expect more lines 2");
 
   // Tag the nodes with ids
   rval = readMeshIface->assign_ids(id_tag, verts, beginning_node_id);
-  if (MB_SUCCESS != rval)
-    return rval;
+  MB_CHK_SET_ERR(rval, "Failed to assign IDs");
   if (file_id_tag) {
     rval = readMeshIface->assign_ids(*file_id_tag, verts, beginning_node_id);
-    if (MB_SUCCESS != rval)
-      return rval;
+    MB_CHK_SET_ERR(rval, "Failed to assign file IDs");
   }
 
   return MB_SUCCESS;
@@ -287,8 +283,7 @@ ErrorCode ReadIDEAS::create_elements(EntityHandle vstart,
     // Make the element. According to the Gmsh 2.2.3 source code, the IDEAS
     // canonical numbering is the same as MBCN.
     rval = MBI->create_element(mb_type, conn, n_conn, handle);
-    if (MB_SUCCESS != rval)
-      return rval;
+    MB_CHK_SET_ERR(rval, "can't create elements of type " << mb_type);
 
     // If the phys set does not already exist, create it.
     Range phys_sets;
@@ -296,15 +291,12 @@ ErrorCode ReadIDEAS::create_elements(EntityHandle vstart,
     const void* const phys_set_id_val[] = {&phys_table};
     rval = MBI->get_entities_by_type_and_tag(0, MBENTITYSET, &phys_tag,
                                              phys_set_id_val, 1, phys_sets);
-    if (MB_SUCCESS != rval)
-      return rval;
+    MB_CHK_SET_ERR(rval, "can't get phys sets");
     if (phys_sets.empty()) {
       rval = MBI->create_meshset(MESHSET_SET, phys_set);
-      if (MB_SUCCESS != rval)
-        return rval;
+      MB_CHK_SET_ERR(rval, "can't create phys set");
       rval = MBI->tag_set_data(phys_tag, &phys_set, 1, &phys_table);
-      if (MB_SUCCESS != rval)
-        return rval;
+      MB_CHK_SET_ERR(rval, "can't set tag to phys set");
     }
     else if (1 == phys_sets.size()) {
       phys_set = phys_sets.front();
@@ -313,8 +305,7 @@ ErrorCode ReadIDEAS::create_elements(EntityHandle vstart,
       return MB_MULTIPLE_ENTITIES_FOUND;
     }
     rval = MBI->add_entities(phys_set, &handle, 1);
-    if (MB_SUCCESS != rval)
-      return rval;
+    MB_CHK_SET_ERR(rval, "can't add entities to phys set");
 
     // If the material set does not already exist, create it.
     Range mat_sets;
@@ -344,12 +335,10 @@ ErrorCode ReadIDEAS::create_elements(EntityHandle vstart,
 
     // Tag the element with its id
     rval = MBI->tag_set_data(id_tag, &handle, 1, &element_id);
-    if (MB_SUCCESS != rval)
-      return rval;
+    MB_CHK_SET_ERR(rval, "Failed to assign IDs");
     if (file_id_tag) {
       rval = MBI->tag_set_data(*file_id_tag, &handle, 1, &element_id);
-      if (MB_SUCCESS != rval)
-        return rval;
+      MB_CHK_SET_ERR(rval, "Failed to assign file IDs");
     }
   }
 

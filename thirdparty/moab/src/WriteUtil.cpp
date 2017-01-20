@@ -13,7 +13,7 @@
  * 
  */
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #pragma warning(disable : 4786)
 #endif
 
@@ -42,8 +42,8 @@
 
 namespace moab {
 
-WriteUtil::WriteUtil(Core* mdb, Error* error_handler)
-  : WriteUtilIface(), mMB(mdb), mError(error_handler)
+WriteUtil::WriteUtil(Core* mdb)
+  : WriteUtilIface(), mMB(mdb)
 {
 }
 
@@ -139,7 +139,7 @@ ErrorCode WriteUtil::get_node_coords(const int num_arrays,
 
 ErrorCode WriteUtil::get_node_coords(const int which_array, /* 0->X, 1->Y, 2->Z, -1->all */
                                      Range::const_iterator iter,
-                                     const Range::const_iterator end,
+                                     const Range::const_iterator& end,
                                      const size_t output_array_len,
                                      double* const output_array)
 {
@@ -245,7 +245,7 @@ ErrorCode WriteUtil::get_element_connect(const int num_elements,
 
   // Let's find the entity sequence which holds the first entity
   TypeSequenceManager::iterator seq_iter_lookahead = seq_iter;
-  seq_iter_lookahead++;
+  ++seq_iter_lookahead;
   for ( ; seq_iter_lookahead != seq_iter_end &&
        (*seq_iter_lookahead)->start_handle() < *range_iter; ) {
     ++seq_iter;
@@ -270,7 +270,7 @@ ErrorCode WriteUtil::get_element_connect(const int num_elements,
 
       // Let's find the entity sequence which holds the first entity of this type
       TypeSequenceManager::const_iterator seq_iter_lookahead2 = seq_iter;
-      seq_iter_lookahead2++;
+      ++seq_iter_lookahead2;
       for ( ; seq_iter_lookahead2 != seq_iter_end &&
            (*seq_iter_lookahead2)->start_handle() < *range_iter; ) {
         ++seq_iter;
@@ -314,7 +314,7 @@ ErrorCode WriteUtil::get_element_connect(const int num_elements,
 }
 
 ErrorCode WriteUtil::get_element_connect(Range::const_iterator iter,
-                                         const Range::const_iterator end,
+                                         const Range::const_iterator& end,
                                          const int vertices_per_elem,
                                          Tag node_id_tag,
                                          const size_t elem_array_size,
@@ -420,7 +420,7 @@ ErrorCode WriteUtil::get_element_connect(Range::const_iterator iter,
 }
 
 ErrorCode WriteUtil::get_element_connect(Range::const_iterator iter,
-                                         const Range::const_iterator end,
+                                         const Range::const_iterator& end,
                                          const int vertices_per_elem,
                                          const size_t elem_array_size,
                                          EntityHandle *const element_array)
@@ -511,14 +511,14 @@ ErrorCode WriteUtil::get_element_connect(Range::const_iterator iter,
 }
 
 ErrorCode WriteUtil::get_poly_connect_size(Range::const_iterator /* begin */,
-                                           const Range::const_iterator /* end */ ,
+                                           const Range::const_iterator& /* end */ ,
                                            int& /* connectivity_size */)
 {
   return MB_NOT_IMPLEMENTED;
 }
 
 ErrorCode WriteUtil::get_poly_connect(Range::const_iterator& /* iter */,
-                                      const Range::const_iterator /* end */ ,
+                                      const Range::const_iterator& /* end */ ,
                                       const Tag /* node_id_tag */ ,
                                       size_t& /* handle_array_len */,
                                       int *const /* handle_array */,
@@ -608,8 +608,8 @@ ErrorCode WriteUtil::gather_nodes_from_elements(const Range& elements,
 
       // For each node
       for (int j = 0; j < num_face; j++) {
-        const EntityHandle *face_conn;
-        int face_num_conn;
+        const EntityHandle *face_conn = NULL;
+        int face_num_conn = 0;
         rval = mMB->get_connectivity(conn_array[j], face_conn, face_num_conn, false);
         if (MB_SUCCESS != rval)
           return rval;
@@ -922,10 +922,8 @@ ErrorCode WriteUtil::get_entity_list_pointers(EntityHandle const* entities,
       return MB_TYPE_OUT_OF_RANGE;
     }
   }
-  if (MB_FAILURE == rval)
-    return MB_SUCCESS; // At end of list
-  else
-    return rval;
+
+  return MB_SUCCESS;
 }
 
 } // namespace moab

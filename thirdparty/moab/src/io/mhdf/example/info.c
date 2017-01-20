@@ -26,7 +26,7 @@ int main( int argc, char* argv[] )
     return 1;
   }
   
-  data = mhdf_getFileSummary( file, H5T_NATIVE_ULONG, &status );
+  data = mhdf_getFileSummary( file, H5T_NATIVE_ULONG, &status, 0 ); /* no extra set info here*/
   if (mhdf_isError( &status )) {
     fprintf( stderr,"%s: %s\n", argv[1], mhdf_message( &status ) );
     return 1;

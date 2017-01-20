@@ -262,7 +262,6 @@ public:
 
   enum {aBODY, LUMP, SHELL, FACE, LOOP, COEDGE, aEDGE, aVERTEX, ATTRIB, UNKNOWN};
   
-  const unsigned int *ACIS_DIMS;
   
   struct AcisRecord 
   {

@@ -24,7 +24,7 @@
 #include "moab_export.h"
 
 #include "moab/Forward.hpp"
-
+#include "moab/OrientedBox.hpp"
 #include <iosfwd>
 #include <list>
 #include <vector>

@@ -585,12 +585,16 @@ ErrorCode ReorderTool::reorder_tag_data( EntityType etype, Tag new_handles, Tag 
       buffer.swap(buffer2);
   }
   
-    // store re-orederd tag data
+    // store re-ordered tag data
   if (-1 == tagsize) {
     rval = mMB->tag_set_by_ptr( tag, &newhandles[0], newhandles.size(), &pointers[0], &sizes[0] );
+    pointers.clear();
+    sizes.clear();
+    buffer.clear();
   }
   else {
     rval = mMB->tag_set_data( tag, &newhandles[0], newhandles.size(), &buffer[0] );
+    buffer.clear();
   }
   CHKERR;
   

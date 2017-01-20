@@ -131,6 +131,7 @@ namespace moab {
          * \param tagged_ent_dim Dimension of entities to be tagged to cache on the evaluator
          */
       ElemEvaluator(Interface *impl, EntityHandle ent = 0, Tag tag = 0, int tagged_ent_dim = -1);
+      ~ElemEvaluator();
 
         /** \brief Evaluate cached tag at a given parametric location within the cached entity 
          * If evaluating coordinates, call set_tag(0, 0), which indicates coords instead of a tag.
@@ -340,7 +341,13 @@ namespace moab {
       if (ent) set_ent_handle(ent);
       if (tag) set_tag_handle(tag, tagged_ent_dim);
     }
-    
+
+    inline ElemEvaluator::~ElemEvaluator()
+    {
+      if (workSpace)
+        delete [] workSpace;
+    }
+
     inline ErrorCode ElemEvaluator::set_ent_handle(EntityHandle ent) 
     {
       entHandle = ent;

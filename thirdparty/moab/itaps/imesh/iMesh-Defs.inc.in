@@ -1,13 +1,12 @@
 IMESH_CXXFLAGS = @CXXFLAGS@ 
 IMESH_CFLAGS = @CFLAGS@
-IMESH_LDFLAGS = @EXPORT_LDFLAGS@
-
+IMESH_LDFLAGS = @EXPORT_LDFLAGS@ @LDFLAGS@
 IMESH_FC = @FC@
 IMESH_FCFLAGS = @FCFLAGS@
+FC_DEFINE = @FC_DEFINE@
+IMESH_FCDEFS = @FCDEFS@
 
-IMESH_FCDEFS = @DEFS@
-
-IMESH_CPPFLAGS = @CPPFLAGS@ @AM_CPPFLAGS@ -I$(IMESH_INCLUDEDIR) $(IMESH_INCLUDEDIR2)
+IMESH_CPPFLAGS = @CPPFLAGS@ -I$(IMESH_INCLUDEDIR) $(IMESH_INCLUDEDIR2)
 
 # This definition is deprecated; use IMESH_CPPFLAGS instead
 IMESH_INCLUDES = $(IMESH_CPPFLAGS)
@@ -19,6 +18,6 @@ IMESH_LIBS = $(IMESH_LDFLAGS) -L$(MOAB_LIBDIR) \
              @FCLIBS@ @LIBS@
 
 IMESH_INCLUDEDIR = @abs_srcdir@
-IMESH_INCLUDEDIR2 = -I@abs_builddir@ -I@abs_srcdir@/.. -I@abs_builddir@/.. -I@abs_top_builddir@/src
+IMESH_INCLUDEDIR2 = -I@abs_builddir@ -I@abs_srcdir@/.. -I@abs_builddir@/.. -I@abs_top_builddir@/src -I@abs_srcdir@/../../src
 IMESH_LIBDIR = @abs_builddir@/.libs
 MOAB_LIBDIR = @abs_top_builddir@/src/.libs

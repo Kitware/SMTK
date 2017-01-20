@@ -9,6 +9,24 @@
 /======================================================
 */
 
+#define MOAB_POLY_EPS (128*DBL_EPSILON)
+#define MOAB_POLY_PI  3.1415926535897932384626433832795028841971693993751058209749445923
+
+#define mbsqrt sqrt
+#define mbabs fabs
+#define mbcos cos
+#define mbsin sin
+#define mbfloor floor
+#define mbceil ceil
+
+#ifdef INTEGER
+#undef INTEGER
+#endif
+
+#ifdef real
+#undef real
+#endif
+
 /* integer type to use for everything */
 #if   defined(USE_LONG)
 #  define INTEGER long
@@ -31,35 +49,11 @@
 
 /* floating point type to use for everything */
 #if   defined(USE_FLOAT)
-   typedef float real;
-#  define floorr floorf
-#  define ceilr  ceilf
-#  define sqrtr  sqrtf
-#  define fabsr  fabsf
-#  define cosr   cosf
-#  define sinr   sinf
-#  define EPS   (128*FLT_EPSILON)
-#  define PI 3.1415926535897932384626433832795028841971693993751058209749445923F
+   typedef float realType;
 #elif defined(USE_LONG_DOUBLE)
-   typedef long double real;
-#  define floorr floorl
-#  define ceilr  ceill
-#  define sqrtr  sqrtl
-#  define fabsr  fabsl
-#  define cosr   cosl
-#  define sinr   sinl
-#  define EPS   (128*LDBL_EPSILON)
-#  define PI 3.1415926535897932384626433832795028841971693993751058209749445923L
+   typedef long double realType;
 #else
-   typedef double real;
-#  define floorr floor
-#  define ceilr  ceil
-#  define sqrtr  sqrt
-#  define fabsr  fabs
-#  define cosr   cos
-#  define sinr   sin
-#  define EPS   (128*DBL_EPSILON)
-#  define PI 3.1415926535897932384626433832795028841971693993751058209749445923
+   typedef double realType;
 #endif
 
 /* apparently uint and ulong can be defined already in standard headers */
@@ -113,18 +107,18 @@ typedef unsigned INTEGER uint;
    inner index is x index (0 ... m-1);
    outer index is Legendre polynomial number (0 ... n)
  */
-void legendre_matrix(const real *x, int m, real *P, int n);
+void legendre_matrix(const realType *x, int m, realType *P, int n);
 
 /* precondition: n >= 1
    inner index is Legendre polynomial number (0 ... n)
    outer index is x index (0 ... m-1);
  */
-void legendre_matrix_t(const real *x, int m, real *P, int n);
+void legendre_matrix_t(const realType *x, int m, realType *P, int n);
 
 /* precondition: n >= 1
    compute P_i(x) with i = 0 ... n
  */
-void legendre_row(real x, real *P, int n);
+void legendre_row(realType x, realType *P, int n);
 
 
 /*--------------------------------------------------------------------------
@@ -133,11 +127,11 @@ void legendre_row(real x, real *P, int n);
    call the _nodes function before calling the _weights function
   --------------------------------------------------------------------------*/
 
-void gauss_nodes(real *z, int n);   /* n nodes (order = 2n-1) */
-void lobatto_nodes(real *z, int n); /* n nodes (order = 2n-3) */
+void gauss_nodes(realType *z, int n);   /* n nodes (order = 2n-1) */
+void lobatto_nodes(realType *z, int n); /* n nodes (order = 2n-3) */
 
-void gauss_weights(const real *z, real *w, int n);
-void lobatto_weights(const real *z, real *w, int n);
+void gauss_weights(const realType *z, realType *w, int n);
+void lobatto_weights(const realType *z, realType *w, int n);
 
 /*--------------------------------------------------------------------------
    Lagrangian to Legendre Change-of-basis Matrix
@@ -154,13 +148,13 @@ void lobatto_weights(const real *z, real *w, int n);
              
    in column major format (inner index is i, the Legendre index)
  */
-void gauss_to_legendre(const real *z, const real *w, int n, real *J);
+void gauss_to_legendre(const realType *z, const realType *w, int n, realType *J);
 
 /* precondition: n >= 2
    same as above, but
    in row major format (inner index is j, the Gauss index)
  */
-void gauss_to_legendre_t(const real *z, const real *w, int n, real *J);
+void gauss_to_legendre_t(const realType *z, const realType *w, int n, realType *J);
 
 /* precondition: n >= 3
    given the Lobatto quadrature rule (z,w,n), compute the square matrix J
@@ -170,7 +164,7 @@ void gauss_to_legendre_t(const real *z, const real *w, int n, real *J);
 
    in column major format (inner index is i, the Legendre index)
  */
-void lobatto_to_legendre(const real *z, const real *w, int n, real *J);
+void lobatto_to_legendre(const realType *z, const realType *w, int n, realType *J);
 
 /*--------------------------------------------------------------------------
    Lagrangian basis function evaluation
@@ -182,9 +176,9 @@ void lobatto_to_legendre(const real *z, const real *w, int n, real *J);
    inner index of output J is the basis function index (row-major format)
    provide work array with space for 4*n doubles
  */
-void lagrange_weights(const real *z, unsigned n,
-                      const real *x, unsigned m,
-                      real *J, real *work);
+void lagrange_weights(const realType *z, unsigned n,
+                      const realType *x, unsigned m,
+                      realType *J, realType *work);
 
 /* given the Lagrangian nodes (z,n) and evaluation points (x,m)
    evaluate all Lagrangian basis functions and their derivatives
@@ -192,9 +186,9 @@ void lagrange_weights(const real *z, unsigned n,
    inner index of outputs J,D is the basis function index (row-major format)
    provide work array with space for 6*n doubles
  */
-void lagrange_weights_deriv(const real *z, unsigned n,
-                            const real *x, unsigned m,
-                            real *J, real *D, real *work);
+void lagrange_weights_deriv(const realType *z, unsigned n,
+                            const realType *x, unsigned m,
+                            realType *J, realType *D, realType *work);
 
 /*--------------------------------------------------------------------------
    Speedy Lagrangian Interpolation
@@ -223,19 +217,19 @@ void lagrange_weights_deriv(const real *z, unsigned n,
 
 typedef struct {
   unsigned n;                /* number of Lagrange nodes            */
-  const real *z;             /* Lagrange nodes (user-supplied)      */
-  real *J, *D, *D2;          /* weights for 0th,1st,2nd derivatives */
-  real *J_z0, *D_z0, *D2_z0; /* ditto at z[0]   (computed at setup) */
-  real *J_zn, *D_zn, *D2_zn; /* ditto at z[n-1] (computed at setup) */
-  real *w, *d, *u0, *v0, *u1, *v1, *u2, *v2; /* work data           */
+  const realType *z;             /* Lagrange nodes (user-supplied)      */
+  realType *J, *D, *D2;          /* weights for 0th,1st,2nd derivatives */
+  realType *J_z0, *D_z0, *D2_z0; /* ditto at z[0]   (computed at setup) */
+  realType *J_zn, *D_zn, *D2_zn; /* ditto at z[n-1] (computed at setup) */
+  realType *w, *d, *u0, *v0, *u1, *v1, *u2, *v2; /* work data           */
 } lagrange_data;
 
-void lagrange_setup(lagrange_data *p, const real *z, unsigned n);
+void lagrange_setup(lagrange_data *p, const realType *z, unsigned n);
 void lagrange_free(lagrange_data *p);
 
-void lagrange_0(lagrange_data *p, real x) ;
-void lagrange_1(lagrange_data *p, real x) ;
-void lagrange_2(lagrange_data *p, real x) ;
+void lagrange_0(lagrange_data *p, realType x) ;
+void lagrange_1(lagrange_data *p, realType x) ;
+void lagrange_2(lagrange_data *p, realType x) ;
 void lagrange_2u(lagrange_data *p) ;
 
 /*======================================================
@@ -255,29 +249,29 @@ void lagrange_2u(lagrange_data *p) ;
      v is mr x ms x mt in column-major format (inner index is r)
   --------------------------------------------------------------------------*/
 
-void tensor_c1(const real *R, unsigned mr, unsigned nr, 
-               const real *u, real *v);
-void tensor_r1(const real *R, unsigned mr, unsigned nr, 
-               const real *u, real *v);
+void tensor_c1(const realType *R, unsigned mr, unsigned nr, 
+               const realType *u, realType *v);
+void tensor_r1(const realType *R, unsigned mr, unsigned nr, 
+               const realType *u, realType *v);
 
-/* work holds mr*ns reals */
-void tensor_c2(const real *R, unsigned mr, unsigned nr,
-               const real *S, unsigned ms, unsigned ns,
-               const real *u, real *v, real *work);
-void tensor_r2(const real *R, unsigned mr, unsigned nr,
-               const real *S, unsigned ms, unsigned ns,
-               const real *u, real *v, real *work);
+/* work holds mr*ns realTypes */
+void tensor_c2(const realType *R, unsigned mr, unsigned nr,
+               const realType *S, unsigned ms, unsigned ns,
+               const realType *u, realType *v, realType *work);
+void tensor_r2(const realType *R, unsigned mr, unsigned nr,
+               const realType *S, unsigned ms, unsigned ns,
+               const realType *u, realType *v, realType *work);
 
-/* work1 holds mr*ns*nt reals,
-   work2 holds mr*ms*nt reals */
-void tensor_c3(const real *R, unsigned mr, unsigned nr,
-               const real *S, unsigned ms, unsigned ns,
-               const real *T, unsigned mt, unsigned nt,
-               const real *u, real *v, real *work1, real *work2);
-void tensor_r3(const real *R, unsigned mr, unsigned nr,
-               const real *S, unsigned ms, unsigned ns,
-               const real *T, unsigned mt, unsigned nt,
-               const real *u, real *v, real *work1, real *work2);
+/* work1 holds mr*ns*nt realTypes,
+   work2 holds mr*ms*nt realTypes */
+void tensor_c3(const realType *R, unsigned mr, unsigned nr,
+               const realType *S, unsigned ms, unsigned ns,
+               const realType *T, unsigned mt, unsigned nt,
+               const realType *u, realType *v, realType *work1, realType *work2);
+void tensor_r3(const realType *R, unsigned mr, unsigned nr,
+               const realType *S, unsigned ms, unsigned ns,
+               const realType *T, unsigned mt, unsigned nt,
+               const realType *u, realType *v, realType *work1, realType *work2);
 
 /*--------------------------------------------------------------------------
    1-,2-,3-d Tensor Application of Row Vectors (for Interpolation)
@@ -291,18 +285,18 @@ void tensor_r3(const real *R, unsigned mr, unsigned nr,
      v is a scalar
   --------------------------------------------------------------------------*/
 
-real tensor_i1(const real *Jr, unsigned nr, const real *u);
+realType tensor_i1(const realType *Jr, unsigned nr, const realType *u);
 
-/* work holds ns reals */
-real tensor_i2(const real *Jr, unsigned nr,
-               const real *Js, unsigned ns,
-               const real *u, real *work);
+/* work holds ns realTypes */
+realType tensor_i2(const realType *Jr, unsigned nr,
+               const realType *Js, unsigned ns,
+               const realType *u, realType *work);
 
-/* work holds ns*nt + nt reals */
-real tensor_i3(const real *Jr, unsigned nr,
-               const real *Js, unsigned ns,
-               const real *Jt, unsigned nt,
-               const real *u, real *work);
+/* work holds ns*nt + nt realTypes */
+realType tensor_i3(const realType *Jr, unsigned nr,
+               const realType *Js, unsigned ns,
+               const realType *Jt, unsigned nt,
+               const realType *u, realType *work);
 
 /*--------------------------------------------------------------------------
    1-,2-,3-d Tensor Application of Row Vectors
@@ -317,22 +311,22 @@ real tensor_i3(const real *Jr, unsigned nr,
      where Jr,Dr,Js,Ds,Jt,Dt are row vectors
        (interpolation & derivative weights)
      u is nr x ns x nt in column-major format (inner index is r)
-     v is a scalar, g is an array of 3 reals
+     v is a scalar, g is an array of 3 realTypes
   --------------------------------------------------------------------------*/
 
-real tensor_ig1(const real *Jr, const real *Dr, unsigned nr,
-                const real *u, real *g);
+realType tensor_ig1(const realType *Jr, const realType *Dr, unsigned nr,
+                const realType *u, realType *g);
 
-/* work holds 2*ns reals */
-real tensor_ig2(const real *Jr, const real *Dr, unsigned nr,
-                const real *Js, const real *Ds, unsigned ns,
-                const real *u, real *g, real *work);
+/* work holds 2*ns realTypes */
+realType tensor_ig2(const realType *Jr, const realType *Dr, unsigned nr,
+                const realType *Js, const realType *Ds, unsigned ns,
+                const realType *u, realType *g, realType *work);
 
-/* work holds 2*ns*nt + 3*ns reals */
-real tensor_ig3(const real *Jr, const real *Dr, unsigned nr,
-                const real *Js, const real *Ds, unsigned ns,
-                const real *Jt, const real *Dt, unsigned nt,
-                const real *u, real *g, real *work);
+/* work holds 2*ns*nt + 3*ns realTypes */
+realType tensor_ig3(const realType *Jr, const realType *Dr, unsigned nr,
+                const realType *Js, const realType *Ds, unsigned ns,
+                const realType *Jt, const realType *Dt, unsigned nt,
+                const realType *u, realType *g, realType *work);
 
 /*======================================================
 / from findpt.h
@@ -340,17 +334,17 @@ real tensor_ig3(const real *Jr, const real *Dr, unsigned nr,
 */
 
 typedef struct {
-  real x[2], A[4], axis_bnd[4];
+  realType x[2], A[4], axis_bnd[4];
 } obbox_2;
 
 typedef struct {
-  real x[3], A[9], axis_bnd[6];
+  realType x[3], A[9], axis_bnd[6];
 } obbox_3;
 
 typedef struct {
   unsigned hash_n;
-  real bnd[4]; /* bounds for all elements */
-  real fac[2]; /* fac[i] = hash_n / (bnd[2*i+1]-bnd[2*i]) */
+  realType bnd[4]; /* bounds for all elements */
+  realType fac[2]; /* fac[i] = hash_n / (bnd[2*i+1]-bnd[2*i]) */
   obbox_2 *obb; /* obb[nel] -- bounding box info for each element */
   uint *offset; /* hash table -- for cell i,j:
                          uint index = j*hash_n+i,
@@ -363,8 +357,8 @@ typedef struct {
 
 typedef struct {
   unsigned hash_n;
-  real bnd[6]; /* bounds for all elements */
-  real fac[3]; /* fac[i] = hash_n / (bnd[2*i+1]-bnd[2*i]) */
+  realType bnd[6]; /* bounds for all elements */
+  realType fac[3]; /* fac[i] = hash_n / (bnd[2*i+1]-bnd[2*i]) */
   obbox_3 *obb; /* obb[nel] -- bounding box info for each element */
   uint *offset; /* hash table -- for cell i,j,k:
                          uint index = (k*hash_n+j)*hash_n+i,
@@ -377,34 +371,34 @@ typedef struct {
 
 typedef struct {
   uint el;
-  real r[3];
-  real dist;
+  realType r[3];
+  realType dist;
 } findpt_listel;
 
 typedef struct {
   unsigned constraints;
   unsigned de, d1;
-  real *x[2], *fd1[2];
+  realType *x[2], *fd1[2];
 } opt_edge_data_2;
 
 typedef struct {
   unsigned constraints;
-  real x[2], jac[4];
+  realType x[2], jac[4];
 } opt_point_data_2;
 
 typedef struct {
   lagrange_data *ld;
   unsigned size[3];
-  const real *elx[2];
+  const realType *elx[2];
   opt_edge_data_2 ed;
   opt_point_data_2 pd;
-  real *work;
-  real x[2], jac[4];
+  realType *work;
+  realType x[2], jac[4];
 } opt_data_2;
 
 typedef struct {
-  const real *xw[2];   /* geometry data */
-  real *z[2];          /* lobatto nodes */
+  const realType *xw[2];   /* geometry data */
+  realType *z[2];          /* lobatto nodes */
   lagrange_data ld[2]; /* interpolation, derivative weights & data */
   unsigned nptel;      /* nodes per element */
   hash_data_2 *hash;   /* geometric hashing data */
@@ -414,40 +408,40 @@ typedef struct {
                                            pre-allocated list of pointers into
                                            the first list for sorting */
   opt_data_2 *od; /* data for the optimization algorithm */
-  real *od_work;
+  realType *od_work;
 } findpt_data_2;
 
 typedef struct {
   unsigned constraints;
   unsigned dn, d1, d2;
-  real *x[3], *fdn[3];
+  realType *x[3], *fdn[3];
 } opt_face_data_3;
 
 typedef struct {
   unsigned constraints;
   unsigned de, d1, d2;
-  real *x[3], *fd1[3], *fd2[3];
+  realType *x[3], *fd1[3], *fd2[3];
 } opt_edge_data_3;
 
 typedef struct {
   unsigned constraints;
-  real x[3], jac[9];
+  realType x[3], jac[9];
 } opt_point_data_3;
 
 typedef struct {
   lagrange_data *ld;
   unsigned size[4];
-  const real *elx[3];
+  const realType *elx[3];
   opt_face_data_3 fd;
   opt_edge_data_3 ed;
   opt_point_data_3 pd;
-  real *work;
-  real x[3], jac[9];
+  realType *work;
+  realType x[3], jac[9];
 } opt_data_3;
 
 typedef struct {
-  const real *xw[3];   /* geometry data */
-  real *z[3];          /* lobatto nodes */
+  const realType *xw[3];   /* geometry data */
+  realType *z[3];          /* lobatto nodes */
   lagrange_data ld[3]; /* interpolation, derivative weights & data */
   unsigned nptel;      /* nodes per element */
   hash_data_3 *hash;   /* geometric hashing data */
@@ -457,35 +451,35 @@ typedef struct {
                                            pre-allocated list of pointers into
                                            the first list for sorting */
   opt_data_3 *od; /* data for the optimization algorithm */
-  real *od_work;
+  realType *od_work;
 } findpt_data_3;
 
 findpt_data_2 *findpt_setup_2(
-          const real *const xw[2], const unsigned n[2], uint nel,
-          uint max_hash_size, real bbox_tol);
+          const realType *const xw[2], const unsigned n[2], uint nel,
+          uint max_hash_size, realType bbox_tol);
 findpt_data_3 *findpt_setup_3(
-          const real *const xw[3], const unsigned n[3], uint nel,
-          uint max_hash_size, real bbox_tol);
+          const realType *const xw[3], const unsigned n[3], uint nel,
+          uint max_hash_size, realType bbox_tol);
 
 void findpt_free_2(findpt_data_2 *p);
 void findpt_free_3(findpt_data_3 *p);
 
-const real *findpt_allbnd_2(const findpt_data_2 *p);
-const real *findpt_allbnd_3(const findpt_data_3 *p);
+const realType *findpt_allbnd_2(const findpt_data_2 *p);
+const realType *findpt_allbnd_3(const findpt_data_3 *p);
 
-typedef int (*findpt_func)(void *, const real *, int, uint *, real *, real *);
-int findpt_2(findpt_data_2 *p, const real x[2], int guess,
-             uint *el, real r[2], real *dist);
-int findpt_3(findpt_data_3 *p, const real x[3], int guess,
-             uint *el, real r[3], real *dist);
+typedef int (*findpt_func)(void *, const realType *, int, uint *, realType *, realType *);
+int findpt_2(findpt_data_2 *p, const realType x[2], int guess,
+             uint *el, realType r[2], realType *dist);
+int findpt_3(findpt_data_3 *p, const realType x[3], int guess,
+             uint *el, realType r[3], realType *dist);
 
-void findpt_weights_2(findpt_data_2 *p, const real r[2]);
+void findpt_weights_2(findpt_data_2 *p, const realType r[2]);
 
-void findpt_weights_3(findpt_data_3 *p, const real r[3]);
+void findpt_weights_3(findpt_data_3 *p, const realType r[3]);
 
-double findpt_eval_2(findpt_data_2 *p, const real *u);
+double findpt_eval_2(findpt_data_2 *p, const realType *u);
 
-double findpt_eval_3(findpt_data_3 *p, const real *u);
+double findpt_eval_3(findpt_data_3 *p, const realType *u);
 
 /*======================================================
 / from extrafindpt.h
@@ -494,9 +488,9 @@ double findpt_eval_3(findpt_data_3 *p, const real *u);
 
 void opt_alloc_3(opt_data_3 *p, lagrange_data *ld);
 void opt_free_3(opt_data_3 *p);
-double opt_findpt_3(opt_data_3 *p, const real *const elx[3],
-                           const real xstar[3], real r[3], unsigned *constr);
-void opt_vol_set_intp_3(opt_data_3 *p, const real r[3]);
+double opt_findpt_3(opt_data_3 *p, const realType *const elx[3],
+                           const realType xstar[3], realType r[3], unsigned *constr);
+void opt_vol_set_intp_3(opt_data_3 *p, const realType r[3]);
 
 /* for 2d spectralQuad */
 /*--------------------------------------------------------------------------
@@ -507,8 +501,8 @@ void opt_vol_set_intp_3(opt_data_3 *p, const real r[3]);
 
 void opt_alloc_2(opt_data_2 *p, lagrange_data *ld);
 void opt_free_2(opt_data_2 *p);
-double opt_findpt_2(opt_data_2 *p, const real *const elx[2],
-                           const real xstar[2], real r[2], unsigned *constr);
+double opt_findpt_2(opt_data_2 *p, const realType *const elx[2],
+                           const realType xstar[2], realType r[2], unsigned *constr);
 
 extern const unsigned opt_no_constraints_2;
 extern const unsigned opt_no_constraints_3;
@@ -648,32 +642,32 @@ static void buffer_free(buffer *b) { free(b->ptr); }
 
 DECLMINMAX(int, i)
 DECLMINMAX(unsigned, u)
-DECLMINMAX(real, r)
+DECLMINMAX(realType, r)
 #undef DECLMINMAX
 
-static real r1norm_1(real a) MAYBE_UNUSED;
-static real r1norm_1(real a) {
-  return fabsr(a);
+static realType r1norm_1(realType a) MAYBE_UNUSED;
+static realType r1norm_1(realType a) {
+  return mbabs(a);
 }
-static real r1norm_2(real a, real b) MAYBE_UNUSED;
-static real r1norm_2(real a, real b) {
-  return fabsr(a)+fabsr(b);
+static realType r1norm_2(realType a, realType b) MAYBE_UNUSED;
+static realType r1norm_2(realType a, realType b) {
+  return mbabs(a)+mbabs(b);
 }
-static real r1norm_3(real a, real b, real c) MAYBE_UNUSED;
-static real r1norm_3(real a, real b, real c) {
-  return fabsr(a)+fabsr(b)+fabsr(c);
+static realType r1norm_3(realType a, realType b, realType c) MAYBE_UNUSED;
+static realType r1norm_3(realType a, realType b, realType c) {
+  return mbabs(a)+mbabs(b)+mbabs(c);
 }
-static real r2norm_1(real a) MAYBE_UNUSED;
-static real r2norm_1(real a) {
-  return sqrtr(a*a);
+static realType r2norm_1(realType a) MAYBE_UNUSED;
+static realType r2norm_1(realType a) {
+  return mbsqrt(a*a);
 }
-static real r2norm_2(real a, real b) MAYBE_UNUSED;
-static real r2norm_2(real a, real b) {
-  return sqrtr(a*a+b*b);
+static realType r2norm_2(realType a, realType b) MAYBE_UNUSED;
+static realType r2norm_2(realType a, realType b) {
+  return mbsqrt(a*a+b*b);
 }
-static real r2norm_3(real a, real b, real c) MAYBE_UNUSED;
-static real r2norm_3(real a, real b, real c) {
-  return sqrtr(a*a+b*b+c*c);
+static realType r2norm_3(realType a, realType b, realType c) MAYBE_UNUSED;
+static realType r2norm_3(realType a, realType b, realType c) {
+  return mbsqrt(a*a+b*b+c*c);
 }
 
 #endif

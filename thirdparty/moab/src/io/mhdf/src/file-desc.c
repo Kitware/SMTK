@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <H5Tpublic.h>
+#include <H5Dpublic.h>
+#include <H5Ppublic.h>
 
 static struct mhdf_FileDesc* alloc_file_desc( mhdf_Status* status );
 static void* realloc_data( struct mhdf_FileDesc** data, size_t append_bytes, mhdf_Status* status );
@@ -75,6 +77,16 @@ mhdf_fixFileDesc( struct mhdf_FileDesc* copy_ptr, const struct mhdf_FileDesc* or
   FIX_OFFSET( int*, sets.dense_tag_indices );
   FIX_OFFSET( struct mhdf_ElemDesc*, elems );
   FIX_OFFSET( struct mhdf_TagDesc*, tags );
+
+  FIX_OFFSET( int*, numEntSets );
+  FIX_OFFSET( int**, defTagsEntSets);
+  FIX_OFFSET( int**, defTagsVals);
+
+  for (i=0; i<5; i++)
+  {
+    if (copy_ptr->defTagsEntSets) FIX_OFFSET( int*, defTagsEntSets[i]);
+    if (copy_ptr->defTagsVals)    FIX_OFFSET( int*, defTagsVals[i]);
+  }
   
   if (copy_ptr->elems != NULL) {
     for (i = 0; i < copy_ptr->num_elem_desc; ++i) {
@@ -373,15 +385,23 @@ static void free_string_list( char** list, int count )
 struct mhdf_FileDesc* 
 mhdf_getFileSummary( mhdf_FileHandle file_handle, 
                      hid_t file_id_type,
-                     mhdf_Status* status )
+                     mhdf_Status* status , int extraSetInfo)
 {
   struct mhdf_FileDesc* result;
   hid_t table_id;
-  int i, j, k, size, *indices, have, num_tag_names = 0;
+  int i, i1, numtags, j, k, size, *indices, have, num_tag_names = 0;
   unsigned int ui;
   void* ptr;
   char **elem_handles = 0, **tag_names = 0;
   unsigned char *array, *matrix;
+  const char * pname [5] = { "PARALLEL_PARTITION", "MATERIAL_SET",
+                              "NEUMANN_SET", "DIRICHLET_SET", "GEOM_DIMENSION"};
+
+  long * id_list;
+  struct mhdf_TagDesc * tag_desc;
+  long int nval, junk;
+  hid_t table[3];
+  hid_t data_type;
   
   API_BEGIN;
   
@@ -591,6 +611,173 @@ mhdf_getFileSummary( mhdf_FileHandle file_handle,
     result->tags[j].dense_elem_indices = indices;
   }
   
+  if (extraSetInfo)
+  {
+    /* open the table for parallel partitions, material sets, neumann sets,
+     * dirichlet sets
+     *  to determine number of parts, etc
+     *   this is needed for iMOAB and VisIt plugin */
+    ptr = realloc_data( &result, 5*sizeof(int), status );
+    if (NULL==ptr || mhdf_isError( status )) {
+      free( array );
+      return NULL;
+    }
+    result ->numEntSets = ptr;
+
+    ptr = realloc_data( &result, 5*sizeof(int*), status );
+    if (NULL==ptr || mhdf_isError( status )) {
+      free( array );
+      return NULL;
+    }
+    result -> defTagsEntSets = ptr;
+
+    ptr = realloc_data( &result, 5*sizeof(int*), status );
+    if (NULL==ptr || mhdf_isError( status )) {
+      free( array );
+      return NULL;
+    }
+    result -> defTagsVals = ptr;
+    numtags = result->num_tag_desc;
+
+    for (i=0; i<numtags; i++)
+    {
+      tag_desc = &(result->tags[i]);
+      for (k=0; k<5; k++)  /* number of default tags to consider */
+      {
+        if (strcmp(pname[k],tag_desc->name)==0)
+        {
+          if (tag_desc->have_sparse) {
+            mhdf_openSparseTagData(file_handle, pname[k], &nval, &junk, table, status);
+            if (mhdf_isError( status )) {
+              free( array );
+              return NULL;
+            }
+            /* for sparse tags, read */
+            result ->numEntSets[k] = nval;
+            if (nval <= 0 )
+              continue; /* do not do anything */
+
+            ptr = realloc_data( &result, nval*sizeof(int), status );
+            if (NULL==ptr || mhdf_isError( status )) {
+              free( array );
+              return NULL;
+            }
+            memset( ptr, 0, nval*sizeof(int) );
+            result -> defTagsEntSets[k] = ptr;
+            tag_desc = &(result->tags[i]);
+
+            ptr = realloc_data( &result, nval*sizeof(int), status );
+            if (NULL==ptr || mhdf_isError( status ) ) {
+              free( array );
+              return NULL;
+            }
+            memset( ptr, 0, nval*sizeof(int) );
+            result -> defTagsVals[k] =ptr;
+            tag_desc = &(result->tags[i]); /* this is because the tag might point to something else*/
+
+            /* make room for the long array type
+              is it long or something else? */
+            id_list = mhdf_malloc( nval* sizeof(long), status );
+            /* fill the id with values, then convert to int type (-set start)
+
+             mhdf_read_data( table_id, offset, count, int_type, id_list, H5P_DEFAULT, status );*/
+
+            data_type = H5Dget_type(table[0]);
+
+            mhdf_read_data(table[0], 0, nval, data_type, id_list, H5P_DEFAULT, status );
+            if (mhdf_isError( status )) {
+              free( array );
+              return NULL;
+            }
+            H5Tclose( data_type );
+
+            for (i1=0; i1<nval; i1++)
+              result -> defTagsEntSets[k][i1] = (int) (id_list[i1] - result->sets.start_id +1);
+            /* now read values, integer type */
+            data_type = H5Dget_type(table[1]);
+            mhdf_read_data(table[1], 0, nval, data_type, result -> defTagsVals[k], H5P_DEFAULT, status );
+            if (mhdf_isError(status)) {
+              free(array);
+              return NULL;
+            }
+            H5Tclose( data_type );
+            mhdf_closeData( file_handle, table[0], status );
+            if (mhdf_isError( status )) {
+              free( array );
+              return NULL;
+            }
+            mhdf_closeData( file_handle, table[1], status );
+            if (mhdf_isError( status )) {
+              free( array );
+              return NULL;
+            }
+            free (id_list);
+          }
+          else if (0==k || 1==k){ /* parallel partition or material sets should still work if dense
+             could be dense tags on sets */
+            if (!mhdf_haveDenseTag( file_handle,  pname[k], mhdf_set_type_handle(), status ))
+              continue;
+            table[0] = mhdf_openDenseTagData(file_handle, pname[k],
+                mhdf_set_type_handle(), &nval, status);
+            if (mhdf_isError(status)) {
+              continue; /* do not error out if not a dense tag either */
+            }
+            result ->numEntSets[k] = nval;
+            if (nval <= 0 )
+              continue; /* do not do anything */
+
+            /*
+             * if dense parallel partition or material set, we know what to expect
+             */
+            result ->numEntSets[k] = nval; /* k could be 0 or 1 */
+            if (nval <= 0 )
+              continue; /* do not do anything */
+
+            ptr = realloc_data( &result, nval*sizeof(int), status );
+            if (NULL==ptr || mhdf_isError( status )) {
+              free( array );
+              return NULL;
+            }
+            memset( ptr, 0, nval*sizeof(int) );
+            result -> defTagsEntSets[k] = ptr;
+            tag_desc = &(result->tags[i]);
+
+            ptr = realloc_data( &result, nval*sizeof(int), status );
+            if (NULL==ptr || mhdf_isError( status ) ) {
+              free( array );
+              return NULL;
+            }
+            memset( ptr, 0, nval*sizeof(int) );
+            result -> defTagsVals[k] =ptr;
+            tag_desc = &(result->tags[i]); /* this is because the tag might point to something else*/
+
+
+            for (i1=0; i1<nval; i1++)
+            {
+              result -> defTagsEntSets[k][i1] = i1+1;
+              /*result -> defTagsVals[k][i1] = i1; we know how the partition looks like  */
+            }
+            /* fill in the data with the dense tag values
+              because dense, sets will be in order
+
+              we know it has to be integer */
+            mhdf_readTagValues( table[0], 0, nval, H5T_NATIVE_INT, result -> defTagsVals[k], status );
+            if (mhdf_isError(status)) {
+              free(array);
+              return NULL;
+            }
+            mhdf_closeData(file_handle, table[0], status);
+            if (mhdf_isError(status)) {
+              free(array);
+              return NULL;
+            }
+          }
+
+        }
+
+      }
+    }
+  }
     /* Compact memory and return */
   free( array );
   result->total_size = result->offset - (unsigned char*)result;

@@ -35,6 +35,7 @@
 #include "moab/CN.hpp"
 
 #ifdef MOAB_HAVE_CGM
+#include "CGMConfig.h"
 #include <limits>
 #include "RefEntity.hpp"
 #include "RefFace.hpp"
@@ -235,7 +236,6 @@ ErrorCode  ZoltanPartitioner::repartition(std::vector<double> & x,std::vector<do
     const char * zmethod, Range & localGIDs)
 {
   //
-  std::vector<int> sendToProcs;
   int nprocs=mbpc->proc_config().proc_size();
   int rank = mbpc->proc_config().proc_rank();
   clock_t t = clock();
@@ -335,6 +335,13 @@ ErrorCode  ZoltanPartitioner::repartition(std::vector<double> & x,std::vector<do
   std::copy(export_global_ids, export_global_ids+num_export, range_inserter(exported));
   localGIDs=subtract(iniGids, exported);
   localGIDs=unite(localGIDs, imported);
+  // Free data structures allocated by Zoltan::LB_Partition
+  retval = myZZ-> LB_Free_Part(&import_global_ids, &import_local_ids,
+           &import_procs, &import_to_part);
+  if (ZOLTAN_OK != retval) return MB_FAILURE;
+  retval = myZZ-> LB_Free_Part(&export_global_ids, &export_local_ids,
+           &assign_procs, &assign_parts);
+  if (ZOLTAN_OK != retval) return MB_FAILURE;
 
   return MB_SUCCESS;
 }
@@ -617,7 +624,7 @@ ErrorCode ZoltanPartitioner::include_closure()
   Range adjs;
   std::cout << "Adding closure..." << std::endl;
   
-  for (Range::iterator rit = partSets.begin(); rit != partSets.end(); rit++) {
+  for (Range::iterator rit = partSets.begin(); rit != partSets.end(); ++rit) {
     
       // get the top-dimensional entities in the part
     result = mbImpl->get_entities_by_handle(*rit, ents, true); RR;
@@ -642,7 +649,7 @@ ErrorCode ZoltanPartitioner::include_closure()
     // now go over non-part entity sets, looking for contained entities
   Range sets, part_ents;
   result = mbImpl->get_entities_by_type(0, MBENTITYSET, sets); RR;
-  for (Range::iterator rit = sets.begin(); rit != sets.end(); rit++) {
+  for (Range::iterator rit = sets.begin(); rit != sets.end(); ++rit) {
       // skip parts
     if (partSets.find(*rit) != partSets.end()) continue;
 
@@ -651,7 +658,7 @@ ErrorCode ZoltanPartitioner::include_closure()
     result = mbImpl->get_entities_by_handle(*rit, ents, true); RR;
     
       // now check over all parts
-    for (Range::iterator rit2 = partSets.begin(); rit2 != partSets.end(); rit2++) {
+    for (Range::iterator rit2 = partSets.begin(); rit2 != partSets.end(); ++rit2) {
       part_ents.clear();
       result = mbImpl->get_entities_by_handle(*rit2, part_ents, false); RR;
       Range int_range = intersect(ents, part_ents);
@@ -700,13 +707,13 @@ ErrorCode ZoltanPartitioner::assemble_graph(const int dimension,
   double avg_position[3];
   int moab_id;
   
-    // get the global id tag hanlde
+    // get the global id tag handle
   Tag gid;
   result = mbImpl->tag_get_handle(GLOBAL_ID_TAG_NAME, 1, MB_TYPE_INTEGER,
                                   gid, MB_TAG_DENSE|MB_TAG_CREAT);
   if (MB_SUCCESS != result) return result;
   
-  for (Range::iterator rit = elems.begin(); rit != elems.end(); rit++) {
+  for (Range::iterator rit = elems.begin(); rit != elems.end(); ++rit) {
 
 
     if (!part_geom)
@@ -936,10 +943,23 @@ double ZoltanPartitioner::estimate_face_mesh_load(RefEntity* face, const double 
 double ZoltanPartitioner::estimate_face_comm_load(RefEntity* face, const double h)
 {
   double peri = 0.;
+#if ((CGM_MAJOR_VERSION == 14 && CGM_MINOR_VERSION > 2) || CGM_MAJOR_VERSION == 15)
+  DLIList<DLIList<RefEdge*> > ref_edge_loops;
+#else
   DLIList<DLIList<RefEdge*>*> ref_edge_loops;
+#endif
   CAST_TO(face, RefFace)->ref_edge_loops(ref_edge_loops);
   ref_edge_loops.reset();
 
+#if ((CGM_MAJOR_VERSION == 14 && CGM_MINOR_VERSION > 2) || CGM_MAJOR_VERSION == 15)
+  for (int i = 0; i < ref_edge_loops.size(); i++) {
+    DLIList<RefEdge*> eloop = ref_edge_loops.get_and_step();
+    eloop.reset();
+    for (int j = 0; j < eloop.size(); j++) {
+      peri += eloop.get_and_step()->measure();
+    }
+  }
+#else
   for (int i = 0; i < ref_edge_loops.size(); i++) {
     DLIList<RefEdge*>* eloop = ref_edge_loops.get_and_step();
     eloop->reset();
@@ -947,6 +967,7 @@ double ZoltanPartitioner::estimate_face_comm_load(RefEntity* face, const double 
       peri += eloop->get_and_step()->measure();
     }
   }
+#endif
   
   //return 104*face->measure()/sqrt(3)/h/h + 56/3*peri/h;
   return (104*face->measure()/sqrt(3)/h/h + 56/3*peri/h)/700000.;
@@ -1399,7 +1420,7 @@ ErrorCode ZoltanPartitioner::partition_child_entities(const int dim,
       double min_load = std::numeric_limits<double>::max();
       std::set<int>::iterator iter = s_proc.begin();
       std::set<int>::iterator end_iter = s_proc.end();
-      for (; iter != end_iter; iter++) {
+      for (; iter != end_iter; ++iter) {
         if (loads[*iter] < min_load) {
           min_load = loads[*iter];
           min_proc = *iter;
@@ -1411,7 +1432,7 @@ ErrorCode ZoltanPartitioner::partition_child_entities(const int dim,
       shared_procs.append(min_proc);
       iter = s_proc.begin();
       end_iter = s_proc.end();
-      for (; iter != end_iter; iter++) {
+      for (; iter != end_iter; ++iter) {
         if (*iter != min_proc) {
           shared_procs.append(*iter);
         }
@@ -1499,20 +1520,23 @@ ErrorCode ZoltanPartitioner::write_partition(const int nparts,
     for (i = 0; i < nparts; i++) dum_ids[i] = i;
   
     result = mbImpl->tag_set_data(part_set_tag, partSets, dum_ids); RR;
+    // found out by valgrind when we run mbpart 
+    delete [] dum_ids;
+    dum_ids = NULL;
 
     // assign entities to the relevant sets
     std::vector<EntityHandle> tmp_part_sets;
     //int N = (int)elems.size();
     std::copy(partSets.begin(), partSets.end(), std::back_inserter(tmp_part_sets));
     /*Range::reverse_iterator riter;
-    for (i = N-1, riter = elems.rbegin(); riter != elems.rend(); riter++, i--) {
+    for (i = N-1, riter = elems.rbegin(); riter != elems.rend(); ++riter, i--) {
       int assigned_part = assignment[i];
       part_ranges[assigned_part].insert(*riter);
       //result = mbImpl->add_entities(tmp_part_sets[assignment[i]], &(*rit), 1); RR;
     }*/
 
     Range::iterator rit;
-    for (i = 0, rit = elems.begin(); rit != elems.end(); rit++, i++) {
+    for (i = 0, rit = elems.begin(); rit != elems.end(); ++rit, i++) {
       result = mbImpl->add_entities(tmp_part_sets[assignment[i]], &(*rit), 1); RR;
     }
     /*for (i=0; i<nparts; i++)
@@ -1522,14 +1546,14 @@ ErrorCode ZoltanPartitioner::write_partition(const int nparts,
     delete [] part_ranges;*/
       // check for empty sets, warn if there are any
     Range empty_sets;
-    for (rit = partSets.begin(); rit != partSets.end(); rit++) {
+    for (rit = partSets.begin(); rit != partSets.end(); ++rit) {
       int num_ents = 0;
       result = mbImpl->get_number_entities_by_handle(*rit, num_ents);
       if (MB_SUCCESS != result || !num_ents) empty_sets.insert(*rit);
     }
     if (!empty_sets.empty()) {
       std::cout << "WARNING: " << empty_sets.size() << " empty sets in partition: ";
-      for (rit = empty_sets.begin(); rit != empty_sets.end(); rit++)
+      for (rit = empty_sets.begin(); rit != empty_sets.end(); ++rit)
         std::cout << *rit << " ";
       std::cout << std::endl;
     }
@@ -1822,7 +1846,7 @@ void ZoltanPartitioner::mbPrintGlobalResult(const char *s,
   if (mbpc->proc_config().proc_rank() == 0) {
     fprintf(stdout, "======%s======\n", s);
     for (i = 0, v = v2; i < mbpc->proc_config().proc_size(); i++, v += 4) {
-      fprintf(stdout,"%d: originally had %d, import %d, exp %d, %s\n",
+      fprintf(stdout,"%u: originally had %d, import %d, exp %d, %s\n",
         i, v[0], v[1], v[2],
         v[3] ? "a change of partitioning" : "no change");
     }

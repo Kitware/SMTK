@@ -234,7 +234,6 @@ ErrorCode ReadCCMIO::load_matset_data(CCMIOID problemID)
   // ... walk through each cell type
   CCMIOSize_t i = CCMIOSIZEC(0);
   CCMIOID next;
-  std::string opt_string;
   CCMIOError error = kCCMIONoErr;
 
   while (CCMIONextEntity(NULL, problemID, kCCMIOCellType, &i, &next)
@@ -483,7 +482,6 @@ ErrorCode ReadCCMIO::read_topology_types(CCMIOID &topologyID,
   std::vector<int> topo_types(num_cells);
   CCMIOReadOpt1i(&error, cellID, "CellTopologyType", &topo_types[0],
                  CCMIOINDEXC(kCCMIOStart), CCMIOINDEXC(kCCMIOEnd));CHK_SET_CCMERR(error, "Failed to get cell topo types");
-  std::map<int, int>::iterator mit;
   for (i = 0; i < num_cells; i++)
     cell_topo_types[dum_ints[i]] = topo_types[i];
 
@@ -748,8 +746,8 @@ ErrorCode ReadCCMIO::create_cell_from_faces(std::vector<EntityHandle> &facehs,
 
     // Get verts in q1 opposite from v[1] and v[0] in q0
     EntityHandle v0 = 0, v1 = 0;
-    rval = mtu.opposite_entity(q1, verts[1], v0);
-    rval = mtu.opposite_entity(q1, verts[0], v1);
+    rval = mtu.opposite_entity(q1, verts[1], v0);MB_CHK_SET_ERR(rval, "Couldn't get the opposite side entity");
+    rval = mtu.opposite_entity(q1, verts[0], v1);MB_CHK_SET_ERR(rval, "Couldn't get the opposite side entity");
     if (v0 && v1) {
       // Offset of v0 in q2, then rotate and flip
       unsigned int ioff = std::find(storage.begin(), storage.end(), v0) - storage.begin();
@@ -803,8 +801,8 @@ ErrorCode ReadCCMIO::create_cell_from_faces(std::vector<EntityHandle> &facehs,
 
       // Get verts in q1 opposite from v[1] and v[0] in q0
       EntityHandle v0 = 0, v1 = 0;
-      rval = mtu.opposite_entity(q1, verts[1], v0);
-      rval = mtu.opposite_entity(q1, verts[0], v1);
+      rval = mtu.opposite_entity(q1, verts[1], v0);MB_CHK_SET_ERR(rval, "Couldn't get the opposite side entity");
+      rval = mtu.opposite_entity(q1, verts[0], v1);MB_CHK_SET_ERR(rval, "Couldn't get the opposite side entity");
       if (v0 && v1) {
         // Offset of v0 in t2, then rotate and flip
         storage.clear();
@@ -874,23 +872,26 @@ ErrorCode ReadCCMIO::read_all_faces(CCMIOID topologyID, TupleList &vert_map,
 #endif
                                     Range *new_faces)
 {
-  CCMIOSize_t index = CCMIOSIZEC(0);
+  CCMIOSize_t index;
   CCMIOID faceID;
   ErrorCode rval;
+  CCMIOError error=kCCMIONoErr;
 
   // Get total # internal/bdy faces, size the face map accordingly
-  int nint_faces = 0, nbdy_faces = 0;
+#ifdef TUPLE_LIST
+  index = CCMIOSIZEC(0);
+  int nbdy_faces = 0;
   CCMIOSize_t nf;
-  CCMIOError error = kCCMIONoErr;
+  error = kCCMIONoErr;
   while (kCCMIONoErr == CCMIONextEntity(NULL, topologyID, kCCMIOBoundaryFaces, &index,
                                         &faceID)) {
     CCMIOEntitySize(&error, faceID, &nf, NULL);
-    nbdy_faces = nbdy_faces + nf;
+    nbdy_faces += nf;
   }
   CCMIOGetEntity(&error, topologyID, kCCMIOInternalFaces, 0, &faceID);
   CCMIOEntitySize(&error, faceID, &nf, NULL);
-  nint_faces = nint_faces + nf;
-#ifdef TUPLE_LIST
+
+  int nint_faces = nf;
   face_map.resize(2*nint_faces + nbdy_faces);
 #endif
 
@@ -906,7 +907,7 @@ ErrorCode ReadCCMIO::read_all_faces(CCMIOID topologyID, TupleList &vert_map,
   }
 
   // Now get internal faces
-  CCMIOGetEntity(&error, topologyID, kCCMIOInternalFaces, 0, &faceID);
+  CCMIOGetEntity(&error, topologyID, kCCMIOInternalFaces, 0, &faceID);CHK_SET_CCMERR(error, "Couldn't get internal faces");
 
   rval = read_faces(faceID, kCCMIOInternalFaces, vert_map, face_map,
 #ifndef TUPLE_LIST

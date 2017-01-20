@@ -20,9 +20,13 @@ WriterIface *WriteCGNS::factory( Interface* iface )
   { return new WriteCGNS( iface ); }
 
 WriteCGNS::WriteCGNS(Interface *impl)
-    : mbImpl(impl), VrtSize(0), EdgeSize(0), FaceSize(0), CellSize(0)
+    : mbImpl(impl), fileName(NULL), IndexFile(0), BaseName(NULL), IndexBase(0),
+      ZoneName(NULL), IndexZone(0), IndexSection(0), celldim(0), physdim(0),
+      VrtSize(0), EdgeSize(0), FaceSize(0), CellSize(0)
 {
   impl->query_interface(mWriteIface);
+  IndexCoord[0] = IndexCoord[1] = IndexCoord[2] = 0;
+  isize[0] = isize[1] = isize[2] = 0;
 }
 
 WriteCGNS::~WriteCGNS()
@@ -590,7 +594,7 @@ ErrorCode WriteCGNS::get_cgns_type ( int i, std::vector<WriteCGNS::SetStruct> &S
   else if ( Sum==1 ){ 
     int j=0;
     std::cout << "Homogeneous Type\n";
-    while ( Sets[i].NbEntities[j] != 1 && j<(int)Sets[i].NbEntities.size() ){ ++j; }
+    while (j < (int)Sets[i].NbEntities.size() && Sets[i].NbEntities[j] != 1){ ++j; }
     switch ( j ){
       case 0 :
         Sets[i].CGNSType = BAR_2;

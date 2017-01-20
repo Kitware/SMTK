@@ -28,8 +28,9 @@ public:
    * Define less-than comparison for EntitySequence pointers as a comparison
    * of the entity handles in the pointed-to EntitySequences.
    */
+  template<class T>
   class SequenceCompare {
-    public: bool operator()( const EntitySequence* a, const EntitySequence* b ) const
+    public: inline bool operator()( const T* a, const T* b ) const
       { return a->end_handle() < b->start_handle(); }
   };
   /**\brief Dummy EntitySequence for use in querying set container */
@@ -50,16 +51,16 @@ public:
   };
 
   /**\brief Type of container for organizing EntitySequence instances */
-  typedef std::set<EntitySequence*,SequenceCompare> set_type;
+  typedef std::set<EntitySequence*,SequenceCompare<EntitySequence> > set_type;
   /**\brief Iterator for set_type */
   typedef set_type::iterator iterator;
   /**\brief Iterator for set_type */
   typedef set_type::const_iterator const_iterator;
   /**\brief Type of container for organizing SequenceData instaces */
-  typedef std::set<SequenceData*> data_set_type;
+  typedef std::set<SequenceData*,SequenceCompare<SequenceData> > data_set_type;
   /**\brief iterator type for data_set_type */
   typedef data_set_type::iterator data_iterator;
-  
+
   struct SequenceDataPtr {
     private:
     friend class TypeSequenceManager;

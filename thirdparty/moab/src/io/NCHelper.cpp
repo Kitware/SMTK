@@ -137,6 +137,10 @@ ErrorCode NCHelper::create_conventional_tags(const std::vector<int>& tstep_nums)
   // __<dim_name>_LOC_MINMAX (for time)
   for (unsigned int i = 0; i != dimNamesSz; i++) {
     if (dimNames[i] == "time" || dimNames[i] == "Time" || dimNames[i] == "t") {
+      // some files might have Time dimension as 0, it will not appear in any
+      // variables, so skip it
+      if (nTimeSteps==0)
+        continue;
       std::stringstream ss_tag_name;
       ss_tag_name << "__" << dimNames[i] << "_LOC_MINMAX";
       tag_name = ss_tag_name.str();
@@ -158,6 +162,10 @@ ErrorCode NCHelper::create_conventional_tags(const std::vector<int>& tstep_nums)
       if (!tstep_nums.empty())
         val = tstep_nums;
       else {
+        // some files might have Time dimension as 0, it will not appear in any
+        // variables, so skip it
+        if (tVals.empty())
+          continue;
         val.resize(tVals.size());
         for (unsigned int j = 0; j != tVals.size(); j++)
           val[j] = j;
@@ -976,13 +984,11 @@ ErrorCode ScdNCHelper::read_scd_variables_to_nonset_allocate(std::vector<ReadNC:
   std::vector<int>& dimLens = _readNC->dimLens;
   DebugOutput& dbgOut = _readNC->dbgOut;
 
-  ErrorCode rval = MB_SUCCESS;
-
   Range* range = NULL;
 
   // Get vertices
   Range verts;
-  rval = mbImpl->get_entities_by_dimension(_fileSet, 0, verts);MB_CHK_SET_ERR(rval, "Trouble getting vertices in current file set");
+  ErrorCode rval = mbImpl->get_entities_by_dimension(_fileSet, 0, verts);MB_CHK_SET_ERR(rval, "Trouble getting vertices in current file set");
   assert("Should only have a single vertex subrange, since they were read in one shot" &&
       verts.psize() == 1);
 

@@ -111,7 +111,7 @@ ErrorCode NCHelperMPAS::init_mesh_vals()
   if ((vit = std::find(dimNames.begin(), dimNames.end(), "nVertLevels")) != dimNames.end())
     idx = vit - dimNames.begin();
   else {
-    MB_SET_ERR(MB_FAILURE, "Couldn't find 'nVertLevels' dimension");
+    std::cerr << "Warning: dimension nVertLevels not found in header.\nThe file may contain just the mesh" << std::endl;  
   }
   levDim = idx;
   nLevels = dimLens[idx];
@@ -278,29 +278,28 @@ ErrorCode NCHelperMPAS::check_existing_mesh()
 ErrorCode NCHelperMPAS::create_mesh(Range& faces)
 {
   Interface*& mbImpl = _readNC->mbImpl;
-  int& gatherSetRank = _readNC->gatherSetRank;
-  int& trivialPartitionShift = _readNC->trivialPartitionShift;
   bool& noMixedElements = _readNC->noMixedElements;
   bool& noEdges = _readNC->noEdges;
+  DebugOutput& dbgOut = _readNC->dbgOut;
 
+#ifdef MOAB_HAVE_MPI
   int rank = 0;
   int procs = 1;
-#ifdef MOAB_HAVE_MPI
   bool& isParallel = _readNC->isParallel;
   if (isParallel) {
     ParallelComm*& myPcomm = _readNC->myPcomm;
     rank = myPcomm->proc_config().proc_rank();
     procs = myPcomm->proc_config().proc_size();
   }
-#endif
 
   // Need to know whether we'll be creating gather mesh
-  if (rank == gatherSetRank)
+  if (rank == _readNC->gatherSetRank)
     createGatherSet = true;
 
   if (procs >= 2) {
     // Shift rank to obtain a rotated trivial partition
     int shifted_rank = rank;
+    int& trivialPartitionShift = _readNC->trivialPartitionShift;
     if (trivialPartitionShift > 0)
       shifted_rank = (rank + trivialPartitionShift) % procs;
 
@@ -327,6 +326,12 @@ ErrorCode NCHelperMPAS::create_mesh(Range& faces)
     nLocalCells = nCells;
     localGidCells.insert(1, nLocalCells);
   }
+#else
+  nLocalCells = nCells;
+  localGidCells.insert(1, nLocalCells);
+#endif
+  dbgOut.tprintf(1, " localGidCells.psize() = %d\n", (int)localGidCells.psize());
+  dbgOut.tprintf(1, " localGidCells.size() = %d\n", (int)localGidCells.size());
 
   // Read number of edges on each local cell, to calculate actual maxEdgesPerCell
   int nEdgesOnCellVarId;
@@ -377,16 +382,14 @@ ErrorCode NCHelperMPAS::create_mesh(Range& faces)
 
   // If parallel, do a MPI_Allreduce to get global maxEdgesPerCell across all procs
 #ifdef MOAB_HAVE_MPI
-  if (procs > 1) {
+  if (procs >= 2) {
     int global_max_edges_per_cell;
     ParallelComm*& myPcomm = _readNC->myPcomm;
-    MPI_Allreduce(&local_max_edges_per_cell, &global_max_edges_per_cell, 1, MPI_INTEGER, MPI_MAX, myPcomm->proc_config().proc_comm());
+    MPI_Allreduce(&local_max_edges_per_cell, &global_max_edges_per_cell, 1, MPI_INT, MPI_MAX, myPcomm->proc_config().proc_comm());
     assert(local_max_edges_per_cell <= global_max_edges_per_cell);
     maxEdgesPerCell = global_max_edges_per_cell;
-    if (0 == rank) {
-      DebugOutput& dbgOut = _readNC->dbgOut;
+    if (0 == rank)
       dbgOut.tprintf(1, "  global_max_edges_per_cell = %d\n", global_max_edges_per_cell);
-    }
   }
 #endif
 
@@ -497,13 +500,11 @@ ErrorCode NCHelperMPAS::read_ucd_variables_to_nonset_allocate(std::vector<ReadNC
   bool& noEdges = _readNC->noEdges;
   DebugOutput& dbgOut = _readNC->dbgOut;
 
-  ErrorCode rval = MB_SUCCESS;
-
   Range* range = NULL;
 
   // Get vertices
   Range verts;
-  rval = mbImpl->get_entities_by_dimension(_fileSet, 0, verts);MB_CHK_SET_ERR(rval, "Trouble getting vertices in current file set");
+  ErrorCode rval = mbImpl->get_entities_by_dimension(_fileSet, 0, verts);MB_CHK_SET_ERR(rval, "Trouble getting vertices in current file set");
   assert("Should only have a single vertex subrange, since they were read in one shot" && verts.psize() == 1);
 
   // Get edges
@@ -862,11 +863,12 @@ ErrorCode NCHelperMPAS::read_ucd_variables_to_nonset(std::vector<ReadNC::VarData
 }
 #endif
 
+#ifdef MOAB_HAVE_MPI
 ErrorCode NCHelperMPAS::redistribute_local_cells(int start_cell_idx)
 {
   // If possible, apply Zoltan partition
-  if (_readNC->partMethod == ScdParData::RCBZOLTAN) {
-#if defined(MOAB_HAVE_MPI) && defined(MOAB_HAVE_ZOLTAN)
+#ifdef MOAB_HAVE_ZOLTAN
+  if (ScdParData::RCBZOLTAN == _readNC->partMethod) {
     // Read x coordinates of cell centers
     int xCellVarId;
     int success = NCFUNC(inq_varid)(_fileId, "xCell", &xCellVarId);
@@ -914,14 +916,15 @@ ErrorCode NCHelperMPAS::redistribute_local_cells(int start_cell_idx)
     nLocalCells = localGidCells.size();
 
     return MB_SUCCESS;
-#endif
   }
+#endif
 
   // By default, apply trivial partition
   localGidCells.insert(start_cell_idx, start_cell_idx + nLocalCells - 1);
 
   return MB_SUCCESS;
 }
+#endif
 
 ErrorCode NCHelperMPAS::create_local_vertices(const std::vector<int>& vertices_on_local_cells, EntityHandle& start_vertex)
 {

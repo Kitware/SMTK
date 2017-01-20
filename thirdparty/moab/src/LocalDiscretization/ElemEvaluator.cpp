@@ -61,7 +61,7 @@ namespace moab {
         }
 
           // new params tries to eliminate residual
-        *cvparams -= J.inverse(1.0/det) * res;
+        *cvparams -= J.inverse() * res;
 
           // get the new forward-evaluated position, and its difference from the target pt
         rval = (*eval)(params, verts, ndim, 
@@ -122,7 +122,7 @@ namespace moab {
       ErrorCode rval = MB_SUCCESS;
       unsigned int nevals = 0;
       Range::iterator i;
-      for(i = entities.begin(); i != entities.end(); i++) {
+      for(i = entities.begin(); i != entities.end(); ++i) {
         nevals++;
         set_ent_handle(*i);
         rval = reverse_eval(point, iter_tol, inside_tol, params, &is_inside);

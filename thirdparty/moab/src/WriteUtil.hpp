@@ -25,18 +25,16 @@
 namespace moab {
 
 class Core;
-class Error;
 
 class WriteUtil : public WriteUtilIface
 {
 private:
   //! Pointer to the Core
   Core* mMB;
-  Error* mError;
 public:
 
   //! Constructor takes Core pointer
-  WriteUtil(Core* mdb, Error* error_handler);
+  WriteUtil(Core* mdb);
 
   //! Destructor
   ~WriteUtil(){}
@@ -79,7 +77,7 @@ public:
    */
   ErrorCode get_node_coords(const int which_array,
                             Range::const_iterator begin,
-                            const Range::const_iterator end,
+                            const Range::const_iterator& end,
                             const size_t output_size,
                             double* const output_array);
 
@@ -134,7 +132,7 @@ public:
    *\author Jason Kraftcheck
    */
   ErrorCode get_element_connect(Range::const_iterator begin,
-                                const Range::const_iterator end,
+                                const Range::const_iterator& end,
                                 const int vertices_per_elem,
                                 Tag node_id_tag,
                                 const size_t array_size,
@@ -167,7 +165,7 @@ public:
    *\author Jason Kraftcheck
    */
   virtual ErrorCode get_element_connect(Range::const_iterator begin,
-                                        const Range::const_iterator end,
+                                        const Range::const_iterator& end,
                                         const int vertices_per_elem,
                                         const size_t array_size,
                                         EntityHandle *const element_array);
@@ -180,7 +178,7 @@ public:
    *\author Jason Kraftcheck
    */
   virtual ErrorCode get_poly_connect_size(Range::const_iterator begin,
-                                          const Range::const_iterator end,
+                                          const Range::const_iterator& end,
                                           int& connectivity_size);
 
   /** Get poly (polygon or polyhedron) connectivity.
@@ -211,7 +209,7 @@ public:
    *\author Jason Kraftcheck
    */
   virtual ErrorCode get_poly_connect(Range::const_iterator& iter,
-                                     const Range::const_iterator end,
+                                     const Range::const_iterator& end,
                                      const Tag node_id_tag,
                                      size_t& handle_array_len,
                                      int *const handle_array,

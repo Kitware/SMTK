@@ -226,29 +226,27 @@ ErrorCode NCHelperGCRM::check_existing_mesh()
 
 ErrorCode NCHelperGCRM::create_mesh(Range& faces)
 {
-  int& gatherSetRank = _readNC->gatherSetRank;
-  int& trivialPartitionShift = _readNC->trivialPartitionShift;
   bool& noEdges = _readNC->noEdges;
   DebugOutput& dbgOut = _readNC->dbgOut;
 
+#ifdef MOAB_HAVE_MPI
   int rank = 0;
   int procs = 1;
-#ifdef MOAB_HAVE_MPI
   bool& isParallel = _readNC->isParallel;
   if (isParallel) {
     ParallelComm*& myPcomm = _readNC->myPcomm;
     rank = myPcomm->proc_config().proc_rank();
     procs = myPcomm->proc_config().proc_size();
   }
-#endif
 
   // Need to know whether we'll be creating gather mesh
-  if (rank == gatherSetRank)
+  if (rank == _readNC->gatherSetRank)
     createGatherSet = true;
 
   if (procs >= 2) {
     // Shift rank to obtain a rotated trivial partition
     int shifted_rank = rank;
+    int& trivialPartitionShift = _readNC->trivialPartitionShift;
     if (trivialPartitionShift > 0)
       shifted_rank = (rank + trivialPartitionShift) % procs;
 
@@ -275,6 +273,10 @@ ErrorCode NCHelperGCRM::create_mesh(Range& faces)
     nLocalCells = nCells;
     localGidCells.insert(1, nLocalCells);
   }
+#else
+  nLocalCells = nCells;
+  localGidCells.insert(1, nLocalCells);
+#endif
   dbgOut.tprintf(1, " localGidCells.psize() = %d\n", (int)localGidCells.psize());
   dbgOut.tprintf(1, " localGidCells.size() = %d\n", (int)localGidCells.size());
 
@@ -384,13 +386,11 @@ ErrorCode NCHelperGCRM::read_ucd_variables_to_nonset_allocate(std::vector<ReadNC
   bool& noEdges = _readNC->noEdges;
   DebugOutput& dbgOut = _readNC->dbgOut;
 
-  ErrorCode rval = MB_SUCCESS;
-
   Range* range = NULL;
 
   // Get vertices
   Range verts;
-  rval = mbImpl->get_entities_by_dimension(_fileSet, 0, verts);MB_CHK_SET_ERR(rval, "Trouble getting vertices in current file set");
+  ErrorCode rval = mbImpl->get_entities_by_dimension(_fileSet, 0, verts);MB_CHK_SET_ERR(rval, "Trouble getting vertices in current file set");
   assert("Should only have a single vertex subrange, since they were read in one shot" && verts.psize() == 1);
 
   // Get edges
@@ -697,11 +697,12 @@ ErrorCode NCHelperGCRM::read_ucd_variables_to_nonset(std::vector<ReadNC::VarData
 }
 #endif
 
+#ifdef MOAB_HAVE_MPI
 ErrorCode NCHelperGCRM::redistribute_local_cells(int start_cell_idx)
 {
   // If possible, apply Zoltan partition
+#ifdef MOAB_HAVE_ZOLTAN
   if (_readNC->partMethod == ScdParData::RCBZOLTAN) {
-#if defined(MOAB_HAVE_MPI) && defined(MOAB_HAVE_ZOLTAN)
     // Read lat/lon coordinates of cell centers, then convert spherical to
     // Cartesian, and use them as input to Zoltan partition
     int xCellVarId;
@@ -753,14 +754,15 @@ ErrorCode NCHelperGCRM::redistribute_local_cells(int start_cell_idx)
     nLocalCells = localGidCells.size();
 
     return MB_SUCCESS;
-#endif
   }
+#endif
 
   // By default, apply trivial partition
   localGidCells.insert(start_cell_idx, start_cell_idx + nLocalCells - 1);
 
   return MB_SUCCESS;
 }
+#endif
 
 ErrorCode NCHelperGCRM::create_local_vertices(const std::vector<int>& vertices_on_local_cells, EntityHandle& start_vertex)
 {

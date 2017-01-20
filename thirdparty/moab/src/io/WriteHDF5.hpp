@@ -77,9 +77,10 @@ public:
    * NOTE:  If this is changed, the value of id_type 
    *        MUST be changed accordingly.
    */
-  typedef EntityHandle id_t;
+  typedef EntityHandle wid_t; // change the name,
+  //  to avoid conflicts to /usr/include/x86_64-linux-gnu/bits/types.h : id_t , which is unsigned int
   
-  /** HDF5 type corresponding to type of id_t */
+  /** HDF5 type corresponding to type of wid_t */
   static const hid_t id_type;
 
   struct ExportType
@@ -106,7 +107,7 @@ public:
     //! The range of entities.
     Range range;
     //! The first Id allocated by the mhdf library.  Entities in range have sequential IDs.
-    id_t first_id;
+    wid_t first_id;
     //! The offset at which to begin writing this processor's data.
     //! Always zero except for parallel IO.
     long offset;
@@ -146,11 +147,11 @@ public:
     Tag tag_id;
     //! The offset at which to begin writting this processor's data.
     //! Always zero except for parallel IO. 
-    id_t sparse_offset;
+    wid_t sparse_offset;
     //! For variable-length tags, a second offset for the tag data table,
     //! separate from the offset used for the ID and Index tables.
     //! Always zero except for parallel IO. 
-    id_t var_data_offset;
+    wid_t var_data_offset;
     //! Write sparse tag data (for serial, is always equal to !range.empty())
     bool write_sparse;
     //! If doing parallel IO, largest number, over all processes, of entities
@@ -232,7 +233,7 @@ protected:
    * Calculate the sum of the number of non-set adjacencies
    * of all entities in the passed range.
    */
-  ErrorCode count_adjacencies( const Range& elements, id_t& result );
+  ErrorCode count_adjacencies( const Range& elements, wid_t& result );
   
 public: // make these public so helper classes in WriteHDF5Parallel can use them
 
@@ -299,7 +300,7 @@ protected:
   mhdf_FileHandle filePtr;
   
   //! Map from entity handles to file IDs
-  RangeMap<EntityHandle,id_t> idMap;
+  RangeMap<EntityHandle,wid_t> idMap;
   
   //! The list elements to export.
   std::list<ExportSet> exportList;
@@ -342,9 +343,9 @@ protected:
   struct SpecialSetData {
     EntityHandle setHandle;
     unsigned setFlags;
-    std::vector<id_t> contentIds;
-    std::vector<id_t> childIds;
-    std::vector<id_t> parentIds;
+    std::vector<wid_t> contentIds;
+    std::vector<wid_t> childIds;
+    std::vector<wid_t> parentIds;
   };
   struct SpecSetLess {
     bool operator() (const SpecialSetData& a, SpecialSetData b) const
@@ -398,7 +399,7 @@ protected:
                         unsigned long var_len_total );
   
   /**\brief add entities to idMap */
-  ErrorCode assign_ids( const Range& entities, id_t first_id );
+  ErrorCode assign_ids( const Range& entities, wid_t first_id );
   
   /** Get possibly compacted list of IDs for passed entities
    *
@@ -415,7 +416,7 @@ protected:
    * Otherwise it will be 'false'.
    */
   ErrorCode range_to_blocked_list( const Range& input_range,
-                                   std::vector<id_t>& output_id_list , 
+                                   std::vector<wid_t>& output_id_list ,
                                    bool& ranged_list );
   
   /** Get possibly compacted list of IDs for passed entities
@@ -434,24 +435,24 @@ protected:
    */
   ErrorCode range_to_blocked_list( const EntityHandle* input_ranges,
                                    size_t num_input_ranges,
-                                   std::vector<id_t>& output_id_list , 
+                                   std::vector<wid_t>& output_id_list ,
                                    bool& ranged_list );
   
 
   ErrorCode range_to_id_list( const Range& input_range,
-                                id_t* array );
+                                wid_t* array );
   //! Get IDs for entities 
   ErrorCode vector_to_id_list( const std::vector<EntityHandle>& input,
-                               std::vector<id_t>& output, 
+                               std::vector<wid_t>& output,
                                bool remove_non_written = false );
   //! Get IDs for entities 
   ErrorCode vector_to_id_list( const EntityHandle* input,
-                               id_t* output,
+                               wid_t* output,
                                size_t num_entities );
   //! Get IDs for entities 
   ErrorCode vector_to_id_list( const EntityHandle* input,
                                size_t input_len,
-                               id_t* output,
+                               wid_t* output,
                                size_t& output_len,
                                bool remove_non_written );
 
@@ -479,7 +480,7 @@ protected:
    * adjacent entity is to be exported (ID is not zero), append
    * the ID to the passed list.
    */
-  ErrorCode get_adjacencies( EntityHandle entity, std::vector<id_t>& adj );
+  ErrorCode get_adjacencies( EntityHandle entity, std::vector<wid_t>& adj );
                                 
   //! get sum of lengths of tag values (as number of type) for 
   //! variable length tag data.
@@ -595,7 +596,7 @@ private:
   ErrorCode get_connectivity( Range::const_iterator begin,
                               Range::const_iterator end,
                               int nodes_per_element,
-                              id_t* id_data_out );
+                              wid_t* id_data_out );
                                    
   //! Get size data for tag
   //!\param tag       MOAB tag ID

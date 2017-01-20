@@ -2,7 +2,7 @@
 #define IMESHP_REC_CBIND_H__
 
 #include "iMeshP.h"
-#include "iMeshP_extensions_protos.h"
+#include "iMeshP_protos.h"
 #include "moab_mpi.h"
 
 #ifdef __cplusplus

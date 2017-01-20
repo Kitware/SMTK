@@ -10,8 +10,8 @@ namespace moab
       bMax = CartVect(-HUGE_VAL);
       
       CartVect coords;
-      EntityHandle const *conn, *conn2;
-      int len, len2;
+      EntityHandle const *conn = NULL, *conn2 = NULL;
+      int len = 0, len2 = 0;
       Range::const_iterator i;
   
         // vertices

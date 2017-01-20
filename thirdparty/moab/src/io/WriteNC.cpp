@@ -420,7 +420,6 @@ ErrorCode WriteNC::process_conventional_tags(EntityHandle fileSet)
   Tag globalAttTag = 0;
   rval = mbImpl->tag_get_handle(tag_name.c_str(), 0, MB_TYPE_OPAQUE, globalAttTag,
                                 MB_TAG_SPARSE | MB_TAG_VARLEN);MB_CHK_SET_ERR(rval, "Trouble getting conventional tag " << tag_name);
-  std::string gattVal;
   std::vector<int> gattLen;
 
   const void* gattptr = NULL;

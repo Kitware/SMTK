@@ -15,16 +15,17 @@
 !    NOTE: not integer*4 (see meaning of _LP64 in GNU docs)
 #    define IBASE_HANDLE_T integer
 #  endif
-#elif defined(__INTEL_COMPILER)
+#elif defined(__INTEL_COMPILER) || defined(__PGI)
 #  ifdef __x86_64
 #    define IBASE_HANDLE_T integer*8
 #  else
 #    define IBASE_HANDLE_T integer*4
 #  endif
-#elif defined(__XLCPP__) || defined(__bgp__) || defined(__bgq__)
+#elif defined(__XLCPP__) || defined(__bg__) || defined(__bgp__) || defined(__bgq__)
 !  __XLCPP__ doesn't work for IBM.  AT least make things work for BGP and BGQ
-        USE, INTRINSIC :: ISO_C_BINDING
-#  define IBASE_HANDLE_T C_PTR
+!        USE, INTRINSIC :: ISO_C_BINDING
+!#  define IBASE_HANDLE_T TYPE(C_PTR)
+#  define IBASE_HANDLE_T integer*8
 #else
 #  WARNING "Unknown compiler; using SIZEOF_VOID_P."
 #  define IBASE_HANDLE_T integer*@SIZEOF_VOID_P@  

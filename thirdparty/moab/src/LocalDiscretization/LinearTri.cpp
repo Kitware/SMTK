@@ -31,7 +31,7 @@ namespace moab
       
       *Tinv = T->inverse();
       *detT = T->determinant();
-      *detTinv = (0.0 == *detT ? HUGE : 1.0 / *detT);
+      *detTinv = (*detT < 1e-12 ? std::numeric_limits<double>::max() : 1.0 / *detT);
 
       return MB_SUCCESS;
     }
@@ -101,7 +101,7 @@ namespace moab
 
         // find best initial guess to improve convergence
       CartVect tmp_params[] = {CartVect(-1,-1,-1), CartVect(1,-1,-1), CartVect(-1,1,-1)};
-      double resl = HUGE;
+      double resl = std::numeric_limits<double>::max();
       CartVect new_pos, tmp_pos;
       ErrorCode rval;
       for (unsigned int i = 0; i < 3; i++) {
@@ -119,9 +119,11 @@ namespace moab
       CartVect res = new_pos - *cvposn;
       Matrix3 J;
       rval = (*jacob)(cvparams->array(), verts, nverts, ndim, work, J[0]);
+#ifndef NDEBUG
       double det = J.determinant();
       assert(det > std::numeric_limits<double>::epsilon());
-      Matrix3 Ji = J.inverse(1.0/det);
+#endif
+      Matrix3 Ji = J.inverse();
 
       int iters=0;
         // while |res| larger than tol

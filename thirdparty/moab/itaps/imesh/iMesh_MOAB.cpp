@@ -289,18 +289,20 @@ extern "C" {
 
           // mpi not initialized yet - initialize here
         retval = MPI_Init(&argc, &argv);
+        assert(MPI_SUCCESS == retval);
       }
-      *mbi = new MBiMesh(NULL);
+      *mbi = new (std::nothrow) MBiMesh(NULL);
 #else
         //mError->set_last_error( "PARALLEL option not valid, this instance"
         //                        " compiled for serial execution.\n" );
+      *mbi = new (std::nothrow) MBiMesh(NULL);
       *err = (*mbi)->set_last_error(MB_NOT_IMPLEMENTED,
                                     "Not configured with parallel support");
       return;
 #endif
     }
     else {
-      *mbi = new MBiMesh(NULL);
+      *mbi = new (std::nothrow) MBiMesh(NULL);
     }
     if (NULL == *mbi) {
       *err = iBase_FAILURE;
@@ -718,10 +720,13 @@ extern "C" {
           array_alloc = entity_handles_size * num_connect;
         else
           array_alloc = std::max(array_alloc*2, prev_off+num_connect);
-        array = (EntityHandle*)realloc( array, array_alloc*sizeof(EntityHandle) );
-        if (!array) {
+        EntityHandle* new_array = (EntityHandle*)realloc( array, array_alloc*sizeof(EntityHandle) );
+        if (!new_array) {
+          free(array);
           RETURN(iBase_MEMORY_ALLOCATION_FAILED);
         }
+        else
+          array = new_array;
         std::copy(connect, connect+num_connect, array+prev_off);
       }
       // else do nothing.  Will catch error later when comparing
@@ -734,6 +739,8 @@ extern "C" {
     *adjacentEntityHandles_size = prev_off;
 
     if (*adjacentEntityHandles_size > array_alloc) {
+      if (allocated_array)
+        free(array);
       RETURN(iBase_BAD_ARRAY_SIZE);
     }
     else if (allocated_array) {
@@ -2399,7 +2406,7 @@ extern "C" {
     EntityHandle set1 = ENTITY_HANDLE(entity_set_1),
       set2 = ENTITY_HANDLE(entity_set_2);
 
-    int isList1, isList2;
+    int isList1=0, isList2=0;
     iMesh_isList(instance, entity_set_1, &isList1, err);
     if (*err != iBase_SUCCESS) return;
     iMesh_isList(instance, entity_set_2, &isList2, err);
@@ -2448,7 +2455,7 @@ extern "C" {
     EntityHandle set1 = ENTITY_HANDLE(entity_set_1),
       set2 = ENTITY_HANDLE(entity_set_2);
 
-    int isList1, isList2;
+    int isList1=0, isList2=0;
     iMesh_isList(instance, entity_set_1, &isList1, err);
     if (*err != iBase_SUCCESS) return;
     iMesh_isList(instance, entity_set_2, &isList2, err);
@@ -2554,7 +2561,7 @@ extern "C" {
     EntityHandle set1 = ENTITY_HANDLE(entity_set_1),
       set2 = ENTITY_HANDLE(entity_set_2);
 
-    int isList1, isList2;
+    int isList1=0, isList2=0;
     iMesh_isList(instance, entity_set_1, &isList1, err);
     if (*err != iBase_SUCCESS) return;
     iMesh_isList(instance, entity_set_2, &isList2, err);
@@ -2662,7 +2669,7 @@ extern "C" {
     int k = 0;
 
       // filter out entity sets here
-    for (iter = out_entities.begin(); iter != out_entities.end(); iter++)
+    for (iter = out_entities.begin(); iter != out_entities.end(); ++iter)
       (*entity_handles)[k++] = (iBase_EntityHandle)*iter;
 
       // now it's safe to set the size; set it to k, not out_entities.size(), to
@@ -2761,10 +2768,6 @@ extern "C" {
           (ENTITY_HANDLE(entity_set_handle), MBENTITYSET, num_sets, recursive);
         *num_topo -= num_sets;
       }
-    }
-    else if (iMesh_SEPTAHEDRON == entity_topology) {
-      result = MB_SUCCESS;
-      *num_topo = 0;
     }
     else {
       result = MOABI->get_number_entities_by_type(ENTITY_HANDLE(entity_set_handle),
@@ -2876,11 +2879,11 @@ extern "C" {
 
       // filter out entity sets here
     if (iBase_ALL_TYPES == entity_type && iMesh_ALL_TOPOLOGIES == entity_topology) {
-      for (; iter != end_iter && MOABI->type_from_handle(*iter) != MBENTITYSET; iter++)
+      for (; iter != end_iter && MOABI->type_from_handle(*iter) != MBENTITYSET; ++iter)
         (*entity_handles)[k++] = (iBase_EntityHandle)*iter;
     }
     else {
-      for (; iter != end_iter; iter++)
+      for (; iter != end_iter; ++iter)
         (*entity_handles)[k++] = (iBase_EntityHandle)*iter;
     }
 

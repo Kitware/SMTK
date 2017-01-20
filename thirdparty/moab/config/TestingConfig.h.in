@@ -1,0 +1,3 @@
+#ifndef TEST_DIR
+#  define TEST_DIR "@MOAB_SOURCE_DIR@/test"
+#endif /* TEST_DIR */

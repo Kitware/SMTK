@@ -157,7 +157,7 @@ short int CN::AdjacentSubEntities(const EntityType this_type,
   std::vector<int> tmp_indices;
   const int* it1 = source_indices;
 
-  assert(source_dim >= 0 && source_dim <= 3 &&
+  assert(source_dim <= 3 &&
          target_dim >= 0 && target_dim <= 3 &&
            // make sure we're not stepping off the end of the array; 
          ((source_dim > 0 && 

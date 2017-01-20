@@ -26,9 +26,8 @@ namespace moab {
 
 using namespace std;
 
-FileTokenizer::FileTokenizer(FILE* file_ptr, ReadUtilIface* rif_ptr)
+FileTokenizer::FileTokenizer(FILE* file_ptr, ReadUtilIface* )
   : filePtr(file_ptr),
-    readUtilPtr(rif_ptr),
     nextToken(buffer),
     bufferEnd(buffer),
     lineNumber(1),

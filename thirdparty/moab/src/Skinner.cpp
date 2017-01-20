@@ -102,7 +102,7 @@ ErrorCode Skinner::deinitialize()
     MB_CHK_ERR(result);
   }
 
-  // remove the adjaceny tag
+  // remove the adjacency tag
   std::vector< std::vector<EntityHandle>* > adj_arr;
   std::vector< std::vector<EntityHandle>* >::iterator i;
   if (0 != mAdjTag) {
@@ -212,7 +212,7 @@ ErrorCode Skinner::find_geometric_skin(const EntityHandle meshset, Range &forwar
   Range skin_sets;
   if (debug) std::cout << "Found " << face_sets.size() << " face sets total..." << std::endl;
   
-  for (it = face_sets.begin(); it != face_sets.end(); it++) {
+  for (it = face_sets.begin(); it != face_sets.end(); ++it) {
     int num_parents;
     result = thisMB->num_parent_meshsets(*it, &num_parents);
     if (MB_SUCCESS != result)
@@ -227,7 +227,7 @@ ErrorCode Skinner::find_geometric_skin(const EntityHandle meshset, Range &forwar
     return MB_FAILURE;
       
     // ok, we have the shell; gather up the elements, putting them all in forward for now
-  for (it = skin_sets.begin(); it != skin_sets.end(); it++) {
+  for (it = skin_sets.begin(); it != skin_sets.end(); ++it) {
     result = thisMB->get_entities_by_handle(*it, forward_target_entities, true);
     if (MB_SUCCESS != result)
       return result;
@@ -248,9 +248,8 @@ ErrorCode Skinner::find_skin( const EntityHandle meshset,
   if (source_entities.empty())
     return MB_SUCCESS;
 
-  ErrorCode rval;
   if (look_for_scd) {
-    rval = find_skin_scd(source_entities, get_vertices, output_handles, create_skin_elements);
+    ErrorCode rval = find_skin_scd(source_entities, get_vertices, output_handles, create_skin_elements);
       // if it returns success, it's all scd, and we don't need to do anything more
     if (MB_SUCCESS == rval) return rval;
   }
@@ -285,7 +284,7 @@ ErrorCode Skinner::find_skin_scd(const Range& source_entities,
   Range myrange;
   rval = scdi->find_boxes(boxes);
   if (MB_SUCCESS != rval) return rval;
-  for (std::vector<ScdBox*>::iterator bit = boxes.begin(); bit != boxes.end(); bit++) {
+  for (std::vector<ScdBox*>::iterator bit = boxes.begin(); bit != boxes.end(); ++bit) {
     Range belems((*bit)->start_element(), (*bit)->start_element() + (*bit)->num_elements()-1);
     if (source_entities.contains(belems)) {
       myboxes.push_back(*bit);
@@ -295,7 +294,7 @@ ErrorCode Skinner::find_skin_scd(const Range& source_entities,
   if (myboxes.empty() || myrange.size() != source_entities.size()) return MB_FAILURE;
 
     // ok, we're all structured; get the skin for each box
-  for (std::vector<ScdBox*>::iterator bit = boxes.begin(); bit != boxes.end(); bit++) {
+  for (std::vector<ScdBox*>::iterator bit = boxes.begin(); bit != boxes.end(); ++bit) {
     rval = skin_box(*bit, get_vertices, output_handles, create_skin_elements);
     if (MB_SUCCESS != rval) return rval;
   }
@@ -735,7 +734,7 @@ ErrorCode Skinner::classify_2d_boundary( const Range &boundary,
   initialize();
 
   // additional initialization for this routine
-  // define a tag for MBEDGE which counts the occurances of the edge below
+  // define a tag for MBEDGE which counts the occurrences of the edge below
   // default should be 0 for existing edges, if any
 
   Tag count_tag;
@@ -868,7 +867,7 @@ ErrorCode Skinner::classify_2d_boundary( const Range &boundary,
   Range::iterator edge_iter, edge_end_iter;
   edge_end_iter = edge_list.end();
   int count;
-  for(edge_iter = edge_list.begin(); edge_iter != edge_end_iter; edge_iter++)
+  for(edge_iter = edge_list.begin(); edge_iter != edge_end_iter; ++edge_iter)
   {
     // check the count_tag
     result = thisMB->tag_get_data(count_tag, &(*edge_iter), 1, &count);
@@ -1423,7 +1422,7 @@ bool AdjSides<4>::Side::operator==( const Side& other ) const
 }
 
 
-// Utiltiy function used by find_skin_vertices_2D and
+// Utility function used by find_skin_vertices_2D and
 // find_skin_vertices_3D to create elements representing
 // the skin side of a higher-dimension element if one
 // does not already exist.  
@@ -2056,7 +2055,7 @@ ErrorCode Skinner::find_skin_vertices_3D(const EntityHandle this_set, Tag tag,
     if (!create_faces)
       continue;
 
-      // Polyhedra always have explictly defined faces, so
+      // Polyhedra always have explicitly defined faces, so
       // there is no way we could need to create such a face.
     assert(0 == adj_poly.num_skin());
     

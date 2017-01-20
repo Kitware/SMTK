@@ -51,7 +51,7 @@ protected:
 public:
   //! constructor, takes mdb instance
   Skinner(Interface* mdb) 
-    : thisMB(mdb), mDeletableMBTag(0), mAdjTag(0){}
+    : thisMB(mdb), mDeletableMBTag(0), mAdjTag(0), mTargetDim(0) {}
 
   //! destructor
   ~Skinner();

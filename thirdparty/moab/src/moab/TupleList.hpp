@@ -3,8 +3,8 @@
   Tuple list definition and utilities
 
   Conceptually, a tuple list is a list of n records or tuples,
-  each with mi integers, ml longs, mul ulongs, and mr reals
-  (these types are defined in "types.h" as sint, slong, sulong, real;
+  each with mi integers, ml longs, mul Ulongs, and mr reals
+  (these types are defined in "types.h" as sint, slong, moab::EntityHandle, real;
   it may be that sint==slong)
 
   There are four arrays, one for each type (vi,vl,vul,vr),
@@ -47,39 +47,15 @@
 /* floating point type to use for everything */
 #if   defined(USE_FLOAT)
 typedef float realType;
-#  define floorr floorf
-#  define ceilr  ceilf
-#  define sqrtr  sqrtf
-#  define fabsr  fabsf
-#  define cosr   cosf
-#  define sinr   sinf
-#  define EPS   (128*FLT_EPSILON)
-#  define PI 3.1415926535897932384626433832795028841971693993751058209749445923F
 #elif defined(USE_LONG_DOUBLE)
 typedef long double realType;
-#  define floorr floorl
-#  define ceilr  ceill
-#  define sqrtr  sqrtl
-#  define fabsr  fabsl
-#  define cosr   cosl
-#  define sinr   sinl
-#  define EPS   (128*LDBL_EPSILON)
-#  define PI 3.1415926535897932384626433832795028841971693993751058209749445923L
 #else
 typedef double realType;
-#  define floorr floor
-#  define ceilr  ceil
-#  define sqrtr  sqrt
-#  define fabsr  fabs
-#  define cosr   cos
-#  define sinr   sin
-#  define EPS   (128*DBL_EPSILON)
-#  define PI 3.1415926535897932384626433832795028841971693993751058209749445923
 #endif
 
 /* apparently uint and ulong can be defined already in standard headers */
 #define uint uint_
-#define ulong ulong_
+//#define ulong ulong_
 #define sint sint_
 #define slong slong_
 
@@ -89,12 +65,13 @@ typedef unsigned INTEGER uint;
 
 #ifdef GLOBAL_INT
 typedef   signed GLOBAL_INT slong;
-typedef unsigned GLOBAL_INT ulong;
+//typedef unsigned GLOBAL_INT ulong;
 #else
 typedef sint slong;
-typedef uint ulong;
+// typedef uint ulong;
 #endif
 
+typedef moab::EntityHandle Ulong;
 
 
 namespace moab 
@@ -227,7 +204,7 @@ namespace moab
      */
     int find(unsigned int key_num, sint value);
     int find(unsigned int key_num, slong value);
-    int find(unsigned int key_num, ulong value);
+    int find(unsigned int key_num, Ulong value);
     int find(unsigned int key_num, realType value);
 
     /**get the mth number of return type in the index'th tuple
@@ -239,7 +216,7 @@ namespace moab
      */
     sint get_sint(unsigned int index, unsigned int m);
     slong get_int(unsigned int index, unsigned int m);
-    ulong get_ulong(unsigned int index, unsigned int m);
+    Ulong get_ulong(unsigned int index, unsigned int m);
     realType get_double(unsigned int index, unsigned int m);
 
     /**get pointers to the data for the index'th tuple; ptr is
@@ -249,7 +226,7 @@ namespace moab
      * param *&sp, *&ip, *&lp, *&dp   pointers to each piece of the tuple
      */
     ErrorCode get(unsigned int index, const sint *&sp, 
-		  const slong *&ip, const ulong *&lp, const realType *&dp);
+		  const slong *&ip, const Ulong *&lp, const realType *&dp);
 
     /**push back a new tuple on the TupleList;
      *
@@ -260,7 +237,7 @@ namespace moab
      * return index of that tuple
      */
     unsigned int push_back(sint *sp, slong *ip,
-			   ulong *lp, realType *dp);
+			   Ulong *lp, realType *dp);
 
     /*Enable or disable direct write access to arrays
       This is important so that we know whether or not
@@ -302,10 +279,10 @@ namespace moab
     void print(const char *) const;
 
     //Variables to allow for direct write access
-    sint *vi_wr; slong *vl_wr; ulong *vul_wr; realType *vr_wr;
+    sint *vi_wr; slong *vl_wr; Ulong *vul_wr; realType *vr_wr;
 
     //Variables to allow for direct read access
-    const sint *vi_rd; slong *vl_rd; ulong *vul_rd; realType *vr_rd;
+    const sint *vi_rd; slong *vl_rd; Ulong *vul_rd; realType *vr_rd;
     
   private:
     /* storage layed out as: vi[max][mi], vl[max][ml], vul[max][mul], 
@@ -314,7 +291,7 @@ namespace moab
      * only the first n tuples are in use */
     uint mi,ml,mul,mr;
     uint n, max;
-    sint *vi; slong *vl; ulong *vul; realType *vr;
+    sint *vi; slong *vl; Ulong *vul; realType *vr;
 
     // Used by sort:  see .cpp for more details
     //void sort_bits(uint *work, uint key);

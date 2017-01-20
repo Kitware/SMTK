@@ -30,7 +30,7 @@
 #include <algorithm>
 #include <limits>
 
-#if defined(HAVE_IEEEFP_H)
+#if defined(MOAB_HAVE_IEEEFP_H)
 #  include <ieeefp.h>
 #endif
 
@@ -396,7 +396,7 @@ ErrorCode BSPTree::merge_leaf( BSPTreeIter& iter )
       return rval;
     
     iter.childVect.clear();
-    moab()->get_child_meshsets( h, iter.childVect );
+    rval = moab()->get_child_meshsets( h, iter.childVect );MB_CHK_ERR(rval);
     if (!iter.childVect.empty()) {
      moab()->remove_child_meshset( h, iter.childVect[0] );
      moab()->remove_child_meshset( h, iter.childVect[1] );
@@ -606,7 +606,7 @@ ErrorCode BSPTreeBoxIter::initialize( BSPTree* tool_ptr,
   if (MB_SUCCESS != rval)
     return rval;
   
-  tool()->get_tree_box( root, leafCoords );
+  rval = tool()->get_tree_box( root, leafCoords );
   if (MB_SUCCESS != rval)
     return rval;
 

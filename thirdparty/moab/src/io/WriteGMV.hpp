@@ -75,9 +75,6 @@ private:
   Interface *mbImpl;
   WriteUtilIface* mWriteIface;
   
-    //! Meshset Handle for the mesh that is currently being written
-  EntityHandle mCurrentMeshHandle;
-
   //! Cached tags for reading.  Note that all these tags are defined when the
   //! core is initialized.
   Tag mMaterialSetTag;

@@ -42,6 +42,9 @@ SequenceManager::~SequenceManager()
 
 void SequenceManager::clear()
 {
+  // reset sequence multiplier
+  sequence_multiplier = 1.0;
+
   // Destroy all TypeSequenceManager instances
   for (EntityType t = MBVERTEX; t < MBMAXTYPE; ++t)
     typeData[t].~TypeSequenceManager();
@@ -114,11 +117,9 @@ ErrorCode SequenceManager::check_valid_entities(Error* /* error_handler */,
     if (MB_SUCCESS != rval && !(root_set_okay && !*entities)) {
       if (MB_ENTITY_NOT_FOUND == rval) {
         // MB_ENTITY_NOT_FOUND could be a non-error condition, do not call MB_SET_ERR on it
-        // Print warning messages for debugging only
-        bool mydebug = false;
-        if (mydebug) {
-          fprintf(stderr, "[Warning]: Invalid entity handle: 0x%lx\n", (unsigned long)*entities);
-        }
+#       if 0
+        fprintf(stderr, "[Warning]: Invalid entity handle: 0x%lx\n", (unsigned long)*entities);
+#       endif
       }
       return rval;
     }
@@ -417,11 +418,8 @@ EntityID SequenceManager::new_sequence_size(EntityHandle start,
                                             EntityID requested_size,
                                             int sequence_size) const
 {
-#ifdef MOAB_HAVE_MPI
-  // If we're compiled parallel, increase requested size by a factor of 1.5, to allow
-  // for ghosts; if non-default value used for sequence_size that'll take precedent anyway
-  requested_size *= 1.5;
-#endif
+
+  requested_size = (EntityID) (this->sequence_multiplier*requested_size);
 
   if (sequence_size < (int)requested_size)
     return requested_size;
@@ -839,11 +837,9 @@ ErrorCode SequenceManager::release_tag_array(Error* /* error_handler */,
 {
   if ((unsigned)index >= tagSizes.size() || UNUSED_SIZE == tagSizes[index]) {
     // MB_TAG_NOT_FOUND could be a non-error condition, do not call MB_SET_ERR on it
-    // Print warning messages for debugging only
-    bool mydebug = false;
-    if (mydebug) {
-      fprintf(stderr, "[Warning]: Invalid dense tag index: %d\n", index);
-    }
+#if 0
+    fprintf(stderr, "[Warning]: Invalid dense tag index: %d\n", index);
+#endif
     return MB_TAG_NOT_FOUND;
   }
 

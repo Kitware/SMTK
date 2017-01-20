@@ -4,6 +4,8 @@
 #include "moab/Core.hpp"
 #include <algorithm>
 
+iMesh_Instance create_mesh();
+
 void test_getEntArrAdj_conn();
 void test_getEntArrAdj_vertex();
 void test_getEntArrAdj_up();
@@ -12,6 +14,7 @@ void test_getEntArrAdj_invalid_size();
 void test_getEntArrAdj_none();
 void test_existinterface();
 void test_tags_retrieval();
+void test_invalid_parallel_option();
 
 int main( int argc, char* argv[] )
 {
@@ -25,7 +28,18 @@ int main( int argc, char* argv[] )
 #ifdef  MOAB_HAVE_HDF5
   REGISTER_TEST( test_tags_retrieval );
 #endif
-  return RUN_TESTS( argc, argv ); 
+#ifndef MOAB_HAVE_MPI
+  REGISTER_TEST( test_invalid_parallel_option );
+#endif
+  int result = RUN_TESTS( argc, argv );
+
+  // Delete the static iMesh instance defined in create_mesh()
+  iMesh_Instance mesh = create_mesh();
+  int err;
+  iMesh_dtor(mesh, &err);
+  CHECK_EQUAL(iBase_SUCCESS, err);
+
+  return result;
 }
 
 // INTERVAL x INTERVAL x INTERVAL regular hex mesh with skin faces.
@@ -295,6 +309,8 @@ void test_getEntArrAdj_down()
   CHECK_ARRAYS_EQUAL( exp2, 3, act, 3 );
   
     // all middle hexes should have two adjacent faces
+  // FixME: This loop is never executed (INTERVALS is 2)
+  /*
   for (int i = 1; i < INTERVALS-1; ++i) {
     iBase_EntityHandle e1, e2, a1, a2;
     e1 = FACES[0][0][i];
@@ -309,6 +325,7 @@ void test_getEntArrAdj_down()
     CHECK_EQUAL( e1, a1 );
     CHECK_EQUAL( e2, a2 );
   }
+  */
   
   free(adj);
   free(off);
@@ -464,6 +481,20 @@ void test_tags_retrieval()
   }
   free (contained_set_handles);
 
+  // Delete the iMesh instance
+  iMesh_dtor(mesh, &err);
+  CHECK_EQUAL(iBase_SUCCESS, err);
+
   return;
 }
 
+void test_invalid_parallel_option()
+{
+  iMesh_Instance mesh;
+  int err;
+  iMesh_newMesh("moab:PARALLEL", &mesh, &err, 13);
+  CHECK_EQUAL(iBase_NOT_SUPPORTED, err);
+
+  iMesh_dtor(mesh, &err);
+  CHECK_EQUAL(iBase_SUCCESS, err);
+}

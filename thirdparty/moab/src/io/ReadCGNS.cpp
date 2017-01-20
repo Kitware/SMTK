@@ -80,7 +80,7 @@ ErrorCode ReadCGNS::load_file(const char* filename,
   if (MB_SUCCESS != result)
     return result;
 
-  // Create set for more convienient check for material set ids
+  // Create set for more convenient check for material set ids
   std::set<int> blocks;
   for (const int* mat_set_end = material_set_list + num_material_sets;
        material_set_list != mat_set_end; ++material_set_list)
@@ -518,7 +518,6 @@ ErrorCode ReadCGNS::create_sets(char *sectionName,
       return result;
   }
 
-  result = MB_SUCCESS;
   EntityHandle set_handle;
 
   Tag tag_handle;

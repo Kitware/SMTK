@@ -23,7 +23,7 @@ namespace moab {
       uint *_nshared;     /* nshared[i] = number of points shared w/ target[i] */
       uint *_sh_ind;      /* list of shared point indices                      */
       slong *_slabels;    /* list of signed long labels (not including gid)    */
-      ulong *_ulabels;    /* list of unsigned long labels                      */
+      Ulong *_ulabels;    /* list of unsigned long labels                      */
       MPI_Request *_reqs; /* pre-allocated for MPI calls                       */
       realType *_buf;         /* pre-allocated buffer to receive data              */
       uint _maxv;         /* maximum vector size                               */
@@ -183,7 +183,7 @@ namespace moab {
      * param crystal   moab_crystal_data contains MPI_Comm and is used for 
      *                 message passing
      */
-    gs_data (uint n, const long *label, const ulong *ulabel,
+    gs_data (uint n, const long *label, const Ulong *ulabel,
 	     uint maxv, const unsigned int nlabels,
 	     const unsigned int nulabels,
 	     crystal_data *crystal, ErrorCode &Init_Result) {
@@ -202,7 +202,7 @@ namespace moab {
 
     /**Sets up the moab_gs_data; see constructor for parameter documentation
      */
-    ErrorCode initialize (uint n, const long *label, const ulong *ulabel,
+    ErrorCode initialize (uint n, const long *label, const Ulong *ulabel,
 			    uint maxv, const unsigned int nlabels,
 			    const unsigned int nulabels,
 			    crystal_data *crystal);

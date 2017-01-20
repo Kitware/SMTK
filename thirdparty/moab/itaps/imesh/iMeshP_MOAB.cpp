@@ -1566,7 +1566,7 @@ void iMeshP_exchEntArrToPartsAll( iMesh_Instance instance,
 
   // delete exchange list
   std::vector<Range*>::iterator vit;
-  for (vit = exchange_ents.begin(); vit != exchange_ents.end(); vit++)
+  for (vit = exchange_ents.begin(); vit != exchange_ents.end(); ++vit)
     delete (*vit);
 
   RETURN (iBase_SUCCESS);
@@ -1864,7 +1864,7 @@ void iMeshP_saveAll( iMesh_Instance instance,
     Range::iterator rit;
     int i;
     for (i = 0, rit = pc->partition_sets().begin();
-         rit != pc->partition_sets().end(); rit++, i++)
+         rit != pc->partition_sets().end(); ++rit, i++)
       (*part_handles)[i] = itaps_cast<iMeshP_PartHandle>(*rit);
 
     RETURN(iBase_SUCCESS);

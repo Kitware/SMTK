@@ -16,7 +16,7 @@
 //-------------------------------------------------------------------------
 // Filename      : ReadCGM.hpp
 //
-// Purpose       : .sat, .step and .brep file reader
+// Purpose       :  .step and .brep and .facet file reader
 //
 // Special Notes : Lots of code taken from cgm2moab implementation
 //
@@ -144,10 +144,8 @@ private:
   int is_cubit_file( FILE* file );
   int is_step_file( FILE* file );
   int is_iges_file( FILE* file );
-  int is_acis_txt_file( FILE* file );
-  int is_acis_bin_file( FILE* file );
   int is_occ_brep_file( FILE* file );
-
+  int is_facet_file( FILE* file );
 
   //------------member variables ------------//
 

@@ -1093,7 +1093,7 @@ public:
   virtual ErrorCode remove_child_meshset(EntityHandle meshset, 
                                             const EntityHandle child_meshset);
 
-  // ************************  error condition information *************** 
+  // ************************  tag  information *************** 
 
     //! return various specific tag handles
   Tag material_tag();
@@ -1109,6 +1109,8 @@ public:
     //! get/set the number of elements
     //int total_num_elements() const;
     //void total_num_elements(const int val);
+
+  // ************************  structured sequence  information *************** 
 
     //! return a reference to the sequence manager
   SequenceManager* sequence_manager() { return sequenceManager; }
@@ -1291,6 +1293,33 @@ public:
                                      
 
   void print_database() const;
+
+  /** \name Sequence Option controllers */
+
+    /**@{*/
+
+    /** \brief Interface to control memory allocation for sequences
+     * Provide a factor that controls the size of the sequence that gets allocated.
+     * This is typically useful in the parallel setting when a-priori, the number of ghost entities
+     * and the memory required for them within the same sequence as the owned entities are unknown.
+     * The default factor is 1.0 but this can be appropriately updated at runtime so that we do not
+     * have broken sequences.
+     */
+    virtual double get_sequence_multiplier() const;
+
+    /** \brief Interface to control memory allocation for sequences
+     * Provide a factor that controls the size of the sequence that gets allocated.
+     * This is typically useful in the parallel setting when a-priori, the number of ghost entities
+     * and the memory required for them within the same sequence as the owned entities are unknown.
+     * The default factor is 1.0 but this can be appropriately updated at runtime so that we do not
+     * have broken sequences.
+     *
+     * \param meshset User specified multiplier (should be greater than 1.0)
+     */
+    virtual void set_sequence_multiplier(double factor);
+
+
+  /**@}*/
 
 private:
 

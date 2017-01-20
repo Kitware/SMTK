@@ -150,7 +150,7 @@ int main( int argc, char* argv[] )
     return 1;
   }
   
-  desc = mhdf_getFileSummary( file, H5T_NATIVE_LONG, &status );
+  desc = mhdf_getFileSummary( file, H5T_NATIVE_LONG, &status, 0 ); /*no extra set info*/
   if (mhdf_isError( &status )) {
     fprintf( stderr,"%s: %s\n", argv[1], mhdf_message( &status ) );
     return 1;
@@ -223,7 +223,9 @@ int check_valid_file_ids( struct mhdf_FileDesc* desc )
 
 int check_file_contains_holes( const char* filename )
 {
+#ifndef _MSC_VER
   const int blocksize = 512;
+#endif
   int errorcode;
   struct stat buf;
   

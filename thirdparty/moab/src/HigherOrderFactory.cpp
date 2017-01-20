@@ -14,7 +14,7 @@
  */
 
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #ifdef _DEBUG
 // turn off warnings that say they debugging identifier has been truncated
 // this warning comes up when using some STL containers
@@ -933,7 +933,8 @@ HigherOrderFactory::tag_for_deletion( EntityHandle parent_handle,
 
       //just get corner nodes of target_entity
       connectivity.clear();
-      mMB->get_connectivity(&( target_entity), 1, connectivity, true  );
+      ErrorCode rval;
+      rval = mMB->get_connectivity(&( target_entity), 1, connectivity, true );MB_CHK_ERR(rval);
 
       //for each node, get all common adjacencies of nodes in 'parent_handle' 
       std::vector<EntityHandle> adj_list_1, adj_list_2, adj_entities;

@@ -1,14 +1,12 @@
 #undef DEBUG
 #undef TIME_DEBUG
 
-#include <stdio.h>
 #include <stdarg.h>
-
-#include <stdio.h>
 #include <time.h>
-
 #include <stdlib.h>
+
 #include <string.h>
+#include <assert.h>
 
 #include <vector>
 #include <set>
@@ -16,6 +14,7 @@
 #include <utility>
 #include <iostream>
 #include <sstream>
+#include <string>
 
 #include "moab/Interface.hpp"
 #include "Internals.hpp"
@@ -24,6 +23,7 @@
 #include "moab/ParallelComm.hpp"
 #include "moab/CN.hpp"
 #include "moab/Range.hpp"
+#include "moab/CpuTimer.hpp"
 
 #include "WriteHDF5Parallel.hpp"
 
@@ -57,7 +57,7 @@ namespace moab {
 STATIC_ASSERT(sizeof(unsigned long) >= sizeof(EntityHandle));
 
 // Need an MPI type that we can put file IDs in
-STATIC_ASSERT(sizeof(unsigned long) >= sizeof(id_t));
+STATIC_ASSERT(sizeof(unsigned long) >= sizeof(WriteHDF5::wid_t));
 
 // This function doesn't do anything useful. It's just a nice
 // place to set a break point to determine why the reader fails.
@@ -120,6 +120,13 @@ const char* mpi_err_str(int errorcode) {
 
 #ifdef VALGRIND
   #include <valgrind/memcheck.h>
+
+template <typename T> inline
+void VALGRIND_MAKE_VEC_UNDEFINED(std::vector<T>& v) {
+  if (v.size()) {}
+    (void)VALGRIND_MAKE_MEM_UNDEFINED(&v[0], v.size() * sizeof(T));
+}
+
 #else
   #ifndef VALGRIND_CHECK_MEM_IS_DEFINED
     #define VALGRIND_CHECK_MEM_IS_DEFINED(a, b) ((void)0)
@@ -130,15 +137,15 @@ const char* mpi_err_str(int errorcode) {
   #ifndef VALGRIND_MAKE_MEM_UNDEFINED
     #define VALGRIND_MAKE_MEM_UNDEFINED(a, b) ((void)0)
   #endif
-#endif
 
-template <typename T> inline 
-void VALGRIND_MAKE_VEC_UNDEFINED(std::vector<T>& v) {
-  if (v.size()) {}
-    (void)VALGRIND_MAKE_MEM_UNDEFINED(&v[0], v.size() * sizeof(T));
+template <typename T> inline
+void VALGRIND_MAKE_VEC_UNDEFINED(std::vector<T>& ) {
+  /* Nothing to do */
 }
 
-#ifdef DEBUG
+#endif
+
+#ifndef NDEBUG
   #define START_SERIAL \
      for (unsigned _x = 0; _x < myPcomm->proc_config().proc_size(); ++_x) { \
        MPI_Barrier(myPcomm->proc_config().proc_comm()); \
@@ -151,33 +158,6 @@ void VALGRIND_MAKE_VEC_UNDEFINED(std::vector<T>& v) {
   #define START_SERIAL
   #define END_SERIAL
 #endif
-
-#ifdef NDEBUG
-  #undef assert
-  #define assert
-#else
-  #undef assert
-  #define assert(A) \
-    if (!(A)) \
-      do_assert(__FILE__, __LINE__, #A)
-   static void do_assert(const char* file, int line, const char* condstr)
-   {
-     int rank;
-     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-     fprintf(stderr, "[%d] Assert(%s) failed at %s:%d\n", rank, condstr, file, line);
-     fflush(stderr);
-     abort();
-   }
-#endif
-
-class CpuTimer {
-private:
-  double atBirth, atLast;
-public:
-  CpuTimer() : atBirth(MPI_Wtime()), atLast(MPI_Wtime()) {}
-  double since_birth() { return (atLast = MPI_Wtime()) - atBirth; };
-  double elapsed() { double tmp = atLast; return (atLast = MPI_Wtime()) - tmp; }
-};
 
 static int my_Gatherv(void* sendbuf,
                       int sendcount,
@@ -278,7 +258,7 @@ WriteHDF5Parallel::WriteHDF5Parallel(Interface* iface)
 
 WriteHDF5Parallel::~WriteHDF5Parallel()
 {
-  if (pcommAllocated && myPcomm) 
+  if (pcommAllocated && myPcomm)
     delete myPcomm;
 }
 
@@ -409,7 +389,7 @@ ErrorCode WriteHDF5Parallel::parallel_create_file(const char* filename,
   if (MB_SUCCESS != rval)
     return error(rval);
   if (times)
-    times[CREATE_NODE_TIME] = timer.elapsed();
+    times[CREATE_NODE_TIME] = timer.time_elapsed();
 
   /**************** Create element tables ***************/
 
@@ -421,7 +401,7 @@ ErrorCode WriteHDF5Parallel::parallel_create_file(const char* filename,
   if (MB_SUCCESS != rval)
     return error(rval);
   if (times)
-    times[NEGOTIATE_TYPES_TIME] = timer.elapsed();
+    times[NEGOTIATE_TYPES_TIME] = timer.time_elapsed();
   dbgOut.tprint(1, "creating element table\n");
   topState.start("creating element tables");
   rval = create_element_tables();
@@ -429,7 +409,7 @@ ErrorCode WriteHDF5Parallel::parallel_create_file(const char* filename,
   if (MB_SUCCESS != rval)
     return error(rval);
   if (times)
-    times[CREATE_ELEM_TIME] = timer.elapsed();
+    times[CREATE_ELEM_TIME] = timer.time_elapsed();
 
   /*************** Exchange file IDs *****************/
 
@@ -441,7 +421,7 @@ ErrorCode WriteHDF5Parallel::parallel_create_file(const char* filename,
   if (MB_SUCCESS != rval)
     return error(rval);
   if (times)
-    times[FILEID_EXCHANGE_TIME] = timer.elapsed();
+    times[FILEID_EXCHANGE_TIME] = timer.time_elapsed();
 
   /**************** Create meshset tables *********************/
 
@@ -453,7 +433,7 @@ ErrorCode WriteHDF5Parallel::parallel_create_file(const char* filename,
   if (MB_SUCCESS != rval)
     return error(rval);
   if (times)
-    times[CREATE_SET_TIME] = timer.elapsed();
+    times[CREATE_SET_TIME] = timer.time_elapsed();
 
   /**************** Create adjacency tables *********************/
 
@@ -465,7 +445,7 @@ ErrorCode WriteHDF5Parallel::parallel_create_file(const char* filename,
   if (MB_SUCCESS != rval)
     return error(rval);
   if (times)
-    times[CREATE_ADJ_TIME] = timer.elapsed();
+    times[CREATE_ADJ_TIME] = timer.time_elapsed();
 
   /**************** Create tag data *********************/
 
@@ -480,7 +460,7 @@ ErrorCode WriteHDF5Parallel::parallel_create_file(const char* filename,
   if (MB_SUCCESS != rval)
     return error(rval);
   if (times)
-    times[CREATE_TAG_TIME] = timer.elapsed();
+    times[CREATE_TAG_TIME] = timer.time_elapsed();
 
   /************** Close serial file and reopen parallel *****************/
 
@@ -663,7 +643,7 @@ ErrorCode WriteHDF5Parallel::check_serial_tag_data(const std::vector<unsigned ch
     if (tag_iter == tagList.end() || n != name) { // New tag
       TagDesc newtag;
 
-      if (ptr->size == MB_VARIABLE_LENGTH) 
+      if (ptr->size == MB_VARIABLE_LENGTH)
         rval = iFace->tag_get_handle(name.c_str(), ptr->def_val_len, ptr->type, newtag.tag_id, MB_TAG_VARLEN|MB_TAG_CREAT|ptr->storage, ptr->default_value());
       else
         rval = iFace->tag_get_handle(name.c_str(), ptr->size, ptr->type, newtag.tag_id, MB_TAG_CREAT|ptr->storage, ptr->default_value());
@@ -710,7 +690,7 @@ ErrorCode WriteHDF5Parallel::check_serial_tag_data(const std::vector<unsigned ch
 
   // Be careful to populate newlist in the same, sorted, order as tagList
   if (newlist) {
-    for (tag_iter = tagList.begin(); tag_iter != tagList.end(); ++tag_iter) 
+    for (tag_iter = tagList.begin(); tag_iter != tagList.end(); ++tag_iter)
       if (newset.find(&*tag_iter) != newset.end())
         newlist->push_back(&*tag_iter);
   }
@@ -953,14 +933,14 @@ ErrorCode WriteHDF5Parallel::create_tag_tables()
   // Copy values into local structs and if root then create tables
   size_t idx = 0;
   for (tag_iter = tagList.begin(); tag_iter != tagList.end(); ++tag_iter, ++idx) {
-    assert(idx < counts.size());
+    assert( idx < counts.size() );
     tag_iter->sparse_offset = offsets[idx];
     tag_iter->max_num_ents = maxima[idx];
     tag_iter->write_sparse = (0 != totals[idx]);
     int s;
     if (MB_VARIABLE_DATA_LENGTH == iFace->tag_get_length(tag_iter->tag_id, s)) {
       ++idx;
-      assert(idx < counts.size());
+      assert( idx < counts.size() );
       tag_iter->var_data_offset = offsets[idx];
       tag_iter->max_num_vals = maxima[idx];
     }
@@ -976,13 +956,13 @@ ErrorCode WriteHDF5Parallel::create_tag_tables()
   if (0 == myPcomm->proc_config().proc_rank()) {
     size_t iidx = 0;
     for (tag_iter = tagList.begin(); tag_iter != tagList.end(); ++tag_iter, ++iidx) {
-      assert(iidx < totals.size());
+      assert( iidx < totals.size() );
       unsigned long num_ents = totals[iidx];
       unsigned long num_val = 0;
       int s;
       if (MB_VARIABLE_DATA_LENGTH == iFace->tag_get_length(tag_iter->tag_id, s)) {
         ++iidx;
-        assert(iidx < totals.size());
+        assert( iidx < totals.size() );
         num_val = totals[iidx];
       }
       dbgOut.printf(2, "Writing tag description for tag 0x%lx with %lu values\n",
@@ -1019,7 +999,7 @@ struct DatasetVals {
   long max_count;
   long total;
 };
-STATIC_ASSERT(sizeof(DatasetVals) == 3 * sizeof(long));
+STATIC_ASSERT( (sizeof(DatasetVals) == 3 * sizeof(long)));
 
 ErrorCode WriteHDF5Parallel::create_dataset(int num_datasets,
                                             const long* num_owned,
@@ -1028,7 +1008,7 @@ ErrorCode WriteHDF5Parallel::create_dataset(int num_datasets,
                                             long* total_entities,
                                             const DataSetCreator& creator,
                                             ExportSet* groups[],
-                                            id_t* first_ids_out)
+                                            wid_t* first_ids_out)
 {
   int result;
   ErrorCode rval;
@@ -1068,10 +1048,10 @@ ErrorCode WriteHDF5Parallel::create_dataset(int num_datasets,
   }
 
   // Send id offset to every proc
-  result = MPI_Bcast(&cumulative[0], 3 * num_datasets, MPI_LONG, 0, comm);CHECK_MPI(result);
+  result = MPI_Bcast((void*)&cumulative[0], 3 * num_datasets, MPI_LONG, 0, comm);CHECK_MPI(result);
   for (int index = 0; index < num_datasets; ++index) {
     if (first_ids_out)
-      first_ids_out[index] = (id_t)cumulative[index].start_id;
+      first_ids_out[index] = (wid_t)cumulative[index].start_id;
     max_proc_entities[index] = cumulative[index].max_count;
     total_entities[index] = cumulative[index].total;
   }
@@ -1115,7 +1095,7 @@ ErrorCode WriteHDF5Parallel::create_node_table(int dimension)
   nodeSet.num_nodes = dimension; // Put it here so NodeSetCreator can access it
   struct NodeSetCreator : public DataSetCreator {
     ErrorCode operator()(WriteHDF5* file, long count, const ExportSet* group, long& start_id) const
-    { 
+    {
       mhdf_Status status;
       hid_t handle = mhdf_createNodeCoords(file->file_ptr(), group->num_nodes, count, &start_id, &status);CHECK_HDFN(status);
       mhdf_closeData(file->file_ptr(), handle, &status);CHECK_HDFN(status);
@@ -1178,7 +1158,7 @@ ErrorCode WriteHDF5Parallel::negotiate_type_list()
   for (std::list<ExportSet>::iterator eiter = exportList.begin();
        eiter != exportList.end(); ++eiter) {
     viter->first = eiter->type;
-    viter->second = eiter->num_nodes; 
+    viter->second = eiter->num_nodes;
     ++viter;
   }
 
@@ -1196,7 +1176,7 @@ ErrorCode WriteHDF5Parallel::negotiate_type_list()
   typelist root_types(num_types0);
   if (0 == myPcomm->proc_config().proc_rank())
     root_types = my_types;
-  result = MPI_Bcast(&root_types[0], 2 * num_types0, MPI_INT, 0, comm);CHECK_MPI(result);
+  result = MPI_Bcast((void*)&root_types[0], 2 * num_types0, MPI_INT, 0, comm);CHECK_MPI(result);
 
   // Build local list of any types that root did not know about
   typelist non_root_types;
@@ -1228,8 +1208,8 @@ ErrorCode WriteHDF5Parallel::negotiate_type_list()
     typelist alltypes(total/2);
     (void)VALGRIND_MAKE_VEC_UNDEFINED(alltypes);
     (void)VALGRIND_CHECK_MEM_IS_DEFINED(&non_root_types[0], non_root_types.size()*sizeof(int));
-    result = MPI_Gatherv(&non_root_types[0], 2 * non_root_count, MPI_INT,
-                         &alltypes[0], &counts[0], &displs[0], MPI_INT, 0, comm);CHECK_MPI(result);
+    result = MPI_Gatherv((void*)&non_root_types[0], 2 * non_root_count, MPI_INT,
+                         (int*)&alltypes[0], &counts[0], &displs[0], MPI_INT, 0, comm);CHECK_MPI(result);
 
     // Merge type lists.
     // Prefer O(n) insertions with O(ln n) search time because
@@ -1253,7 +1233,7 @@ ErrorCode WriteHDF5Parallel::negotiate_type_list()
 
     // Send list of types to each processor
     my_types.resize(total);
-    result = MPI_Bcast(&my_types[0], 2 * total, MPI_INT, 0, comm);CHECK_MPI(result);
+    result = MPI_Bcast((void*)&my_types[0], 2 * total, MPI_INT, 0, comm);CHECK_MPI(result);
   }
   else {
     // Special case: if root had types but some subset of procs did not
@@ -1294,7 +1274,7 @@ ErrorCode WriteHDF5Parallel::create_element_tables()
   const int numtypes = exportList.size();
   std::vector<ExportSet*> groups(numtypes);
   std::vector<long> counts(numtypes), offsets(numtypes), max_ents(numtypes), total_ents(numtypes);
-  std::vector<id_t> start_ids(numtypes);
+  std::vector<wid_t> start_ids(numtypes);
 
   size_t idx = 0;
   std::list<ExportSet>::iterator ex_iter;
@@ -1353,7 +1333,7 @@ ErrorCode WriteHDF5Parallel::create_adjacency_tables()
   std::vector<long> max_ents(numtypes);
   std::vector<long> totals(numtypes);
   for (int i = 0; i < numtypes; ++i) {
-    id_t count;
+    wid_t count;
     rval = count_adjacencies(groups[i]->range, count);CHECK_MB(rval);
     counts[i] = count;
   }
@@ -1366,6 +1346,7 @@ ErrorCode WriteHDF5Parallel::create_adjacency_tables()
                         AdjSetCreator(),
                         &groups[0]);CHECK_MB(rval);
 
+  // Cppcheck warning (false positive): variable groups is assigned a value that is never used
   for (int i = 0; i < numtypes; ++i) {
     groups[i]->max_num_adjs = max_ents[i];
     groups[i]->adj_offset = offsets[i];
@@ -1383,7 +1364,7 @@ void WriteHDF5Parallel::print_set_sharing_data(const Range& range, const char* l
     iFace->tag_get_data(idt, &*it, 1, &id);
     EntityHandle handle = 0;
     unsigned owner = 0;
-    id_t file_id = 0;
+    wid_t file_id = 0;
     myPcomm->get_entityset_owner(*it, owner, &handle);
     if (!idMap.find(*it, file_id))
       file_id = 0;
@@ -1437,7 +1418,7 @@ ErrorCode WriteHDF5Parallel::communicate_shared_set_ids(const Range& owned,
 {
   ErrorCode rval;
   int mperr;
-  const int TAG = 0xDEADF00;
+  const int TAG = 0xD0E;
   //const unsigned rank = myPcomm->proc_config().proc_rank();
   const MPI_Comm comm = myPcomm->proc_config().proc_comm();
 
@@ -1470,7 +1451,7 @@ ErrorCode WriteHDF5Parallel::communicate_shared_set_ids(const Range& owned,
           unsigned r;
           EntityHandle h;
           myPcomm->get_entityset_owner(*j, r, &h);
-          assert(r == procs[i]);
+          assert( r == procs[i] );
           remote_handles.insert(h);
         }
         dbgOut.print(6, remote_handles);
@@ -1496,7 +1477,7 @@ ErrorCode WriteHDF5Parallel::communicate_shared_set_ids(const Range& owned,
       if (set_procs[j] != myPcomm->proc_config().proc_rank())
         send_sets[set_procs[j]].insert(*i);
   }
-  assert(send_sets.find(myPcomm->proc_config().proc_rank()) == send_sets.end());
+  assert( send_sets.find(myPcomm->proc_config().proc_rank()) == send_sets.end() );
 
   // Now send the data
   std::vector< std::vector<unsigned long> > send_buf(send_sets.size());
@@ -1524,8 +1505,8 @@ ErrorCode WriteHDF5Parallel::communicate_shared_set_ids(const Range& owned,
   while (recv_count--) {
     mperr = MPI_Waitany(recv_req.size(), &recv_req[0], &idx, &status);CHECK_MPI(mperr);
 
-    assert((unsigned)status.MPI_SOURCE == procs[idx]);
-    assert(2*recv_buf[idx].front() + 1 == recv_buf[idx].size());
+    assert( (unsigned)status.MPI_SOURCE == procs[idx] );
+    assert( 2*recv_buf[idx].front() + 1 == recv_buf[idx].size() );
     const size_t n = std::min<size_t>(recv_buf[idx].front(), (recv_buf[idx].size() - 1) / 2);
     dbgOut.printf(5, "Received buffer of size %lu from proc %d\n",
                      (unsigned long)(2*n + 1), (int)status.MPI_SOURCE);
@@ -1533,15 +1514,15 @@ ErrorCode WriteHDF5Parallel::communicate_shared_set_ids(const Range& owned,
     for (size_t i = 0; i < n; ++i) {
       EntityHandle handle = 0;
       rval = myPcomm->get_entityset_local_handle(procs[idx], recv_buf[idx][2*i + 1], handle);CHECK_MB(rval);
-      assert(handle != 0);
+      assert( handle != 0 );
       if (!idMap.insert(handle, recv_buf[idx][2*i + 2], 1).second)
         error(MB_FAILURE); // Conflicting IDs??????
     }
 
     recv_req[idx] = MPI_REQUEST_NULL;
   }
-  assert(MPI_SUCCESS == MPI_Waitany(recv_req.size(), &recv_req[0], &idx, &status)
-      && MPI_UNDEFINED == idx); // Check that we got them all
+  assert( MPI_SUCCESS == MPI_Waitany(recv_req.size(), &recv_req[0], &idx, &status)
+      && MPI_UNDEFINED == idx ); // Check that we got them all
 
   // Wait for all sends to complete before we release send
   // buffers (implicitly releases when we return from this function)
@@ -1552,7 +1533,7 @@ ErrorCode WriteHDF5Parallel::communicate_shared_set_ids(const Range& owned,
   if (dbgOut.get_verbosity() >= SSVB)
     print_shared_sets();
 
-  return MB_SUCCESS;  
+  return MB_SUCCESS;
 }
 
 //void get_global_ids(Interface* iFace, const unsigned long* ptr,
@@ -1587,7 +1568,7 @@ ErrorCode WriteHDF5Parallel::pack_set(Range::const_iterator it,
   const EntityHandle* ptr;
   int len;
   unsigned char flags;
-  std::vector<id_t> tmp;
+  std::vector<wid_t> tmp;
   size_t newlen;
 
   // Buffer must always contain at least flags and desired sizes
@@ -1611,7 +1592,7 @@ ErrorCode WriteHDF5Parallel::pack_set(Range::const_iterator it,
   if (len && !(flags & MESHSET_ORDERED)) {
     tmp.clear();
     bool blocked = false;
-    assert(0 == len % 2);
+    assert((0 == len % 2));
     rval = range_to_blocked_list(ptr, len / 2, tmp, blocked);CHECK_MB(rval);
     if (blocked)
       flags |= mhdf_SET_RANGE_BIT;
@@ -1649,7 +1630,7 @@ ErrorCode WriteHDF5Parallel::pack_set(Range::const_iterator it,
 template<typename TYPE>
 static void convert_to_ranged_ids(const TYPE* buffer,
                                   size_t len,
-                                  std::vector<WriteHDF5::id_t>& result)
+                                  std::vector<WriteHDF5::wid_t>& result)
 {
   if (!len) {
     result.clear();
@@ -1671,22 +1652,22 @@ static void convert_to_ranged_ids(const TYPE* buffer,
 
 static void merge_ranged_ids(const unsigned long* range_list,
                              size_t len,
-                             std::vector<WriteHDF5::id_t>& result)
+                             std::vector<WriteHDF5::wid_t>& result)
 {
-  typedef WriteHDF5::id_t id_t;
-  assert(0 == len%2);
-  assert(0 == result.size()%2);
-  STATIC_ASSERT(sizeof(std::pair<id_t, id_t>) == 2 * sizeof(id_t));
+  typedef WriteHDF5::wid_t wid_t;
+  assert( 0 == len%2 );
+  assert( 0 == result.size()%2 );
+  STATIC_ASSERT(sizeof(std::pair<wid_t, wid_t>) == 2 * sizeof(wid_t));
 
   result.insert(result.end(), range_list, range_list + len);
   size_t plen = result.size() / 2;
   Range tmp;
   for (size_t i = 0; i < plen; i++) {
     EntityHandle starth = (EntityHandle)result[2 * i];
-    EntityHandle endh = (EntityHandle)result[2 * i] + (id_t)result[2*i + 1] - 1; // id + count - 1
+    EntityHandle endh = (EntityHandle)result[2 * i] + (wid_t)result[2*i + 1] - 1; // id + count - 1
     tmp.insert(starth, endh);
   }
-  // Now convert back to std::vector<WriteHDF5::id_t>, compressed range format
+  // Now convert back to std::vector<WriteHDF5::wid_t>, compressed range format
   result.resize(tmp.psize() * 2);
   int j = 0;
   for (Range::const_pair_iterator pit = tmp.const_pair_begin();
@@ -1698,7 +1679,7 @@ static void merge_ranged_ids(const unsigned long* range_list,
 
 static void merge_vector_ids(const unsigned long* list,
                              size_t len,
-                             std::vector<WriteHDF5::id_t>& result)
+                             std::vector<WriteHDF5::wid_t>& result)
 {
   result.insert(result.end(), list, list + len);
 }
@@ -1708,8 +1689,8 @@ ErrorCode WriteHDF5Parallel::unpack_set(EntityHandle set,
                                         size_t buffer_size)
 {
   // Use local variables for readability
-  assert(buffer_size >= 4);
-  assert(buffer[1] + buffer[2] + buffer[3] <= buffer_size);
+  assert( buffer_size >= 4 );
+  assert( buffer[1] + buffer[2] + buffer[3] <= buffer_size );
   const unsigned long flags = buffer[0];
   unsigned long num_content = buffer[1];
   const unsigned long num_child  = buffer[2];
@@ -1719,7 +1700,7 @@ ErrorCode WriteHDF5Parallel::unpack_set(EntityHandle set,
   const unsigned long* parents  = children + num_child;
 
   SpecialSetData* data = find_set_data(set);
-  assert(NULL != data);
+  assert( NULL != data );
   if (NULL == data)
     return MB_FAILURE;
 
@@ -1732,7 +1713,7 @@ ErrorCode WriteHDF5Parallel::unpack_set(EntityHandle set,
   // If either the current data or the new data is in ranged format,
   // then change the other to ranged format if it isn't already
   // in both cases when they differ, the data will end up "compressed range"
-  std::vector<id_t> tmp;
+  std::vector<wid_t> tmp;
   if ((flags & mhdf_SET_RANGE_BIT) != (data->setFlags & mhdf_SET_RANGE_BIT)) {
     if (flags & mhdf_SET_RANGE_BIT) {
       tmp = data->contentIds;
@@ -1743,15 +1724,15 @@ ErrorCode WriteHDF5Parallel::unpack_set(EntityHandle set,
       tmp.clear();
       convert_to_ranged_ids(contents, num_content, tmp);
       num_content = tmp.size();
-      if (sizeof(id_t) < sizeof(long)) {
+      if (sizeof(wid_t) < sizeof(long)) {
         size_t old_size = tmp.size();
-        tmp.resize(sizeof(long) * old_size / sizeof(id_t));
+        tmp.resize(sizeof(long) * old_size / sizeof(wid_t));
         unsigned long* array = reinterpret_cast<unsigned long*>(&tmp[0]);
         for (long i = ((long)old_size) - 1; i >= 0; --i)
           array[i] = tmp[i];
         contents = array;
       }
-      else if (sizeof(id_t) > sizeof(long)) {
+      else if (sizeof(wid_t) > sizeof(long)) {
         unsigned long* array = reinterpret_cast<unsigned long*>(&tmp[0]);
         std::copy(tmp.begin(), tmp.end(), array);
       }
@@ -1788,7 +1769,7 @@ ErrorCode WriteHDF5Parallel::communicate_shared_set_data(const Range& owned,
   for (Range::iterator i = shared.begin(); i != shared.end(); ++i) {
     procs.clear();
     rval = myPcomm->get_entityset_procs(*i, procs);CHECK_MB(rval);
-    nummess += procs.size(); 
+    nummess += procs.size();
   }
 
   // Choose a receive buffer size. We need 4*sizeof(long) minimum,
@@ -1858,7 +1839,7 @@ ErrorCode WriteHDF5Parallel::communicate_shared_set_data(const Range& owned,
     rval = myPcomm->get_entityset_owner(*i, owner, &remote_handle);CHECK_MB(rval);
 
     int tag = ID_FROM_HANDLE(remote_handle);
-    assert(remote_handle == CREATE_HANDLE(MBENTITYSET, tag));
+    assert( remote_handle == CREATE_HANDLE(MBENTITYSET, tag));
     dbgOut.printf(5, "Sending %lu values for set %d to proc %u\n",
                      send_buf[idx][1] + send_buf[idx][2] + send_buf[idx][3] + 4, tag, owner);
     mperr = MPI_Isend(&send_buf[idx][0], init_buff_size, MPI_UNSIGNED_LONG,
@@ -1939,7 +1920,7 @@ ErrorCode WriteHDF5Parallel::communicate_shared_set_data(const Range& owned,
       mperr = MPI_Irecv(&buff[0], size, MPI_UNSIGNED_LONG, status.MPI_SOURCE,
                         status.MPI_TAG, comm, &lrecv_req[idx]);CHECK_MPI(mperr);
       ++numrecv;
-    } 
+    }
     recv_req[idx] = MPI_REQUEST_NULL;
   }
 
@@ -1961,7 +1942,7 @@ ErrorCode WriteHDF5Parallel::communicate_shared_set_data(const Range& owned,
     rval = myPcomm->get_entityset_owner(*i, owner, &remote_handle);CHECK_MB(rval);
 
     int tag = ID_FROM_HANDLE(remote_handle);
-    assert(remote_handle == CREATE_HANDLE(MBENTITYSET, tag));
+    assert( remote_handle == CREATE_HANDLE(MBENTITYSET, tag) );
     dbgOut.printf(5, "Sending %lu values for set %d to proc %u\n",
                      (unsigned long)size, tag, owner);
     mperr = MPI_Isend(&buff[0], size, MPI_UNSIGNED_LONG,
@@ -1992,7 +1973,6 @@ ErrorCode WriteHDF5Parallel::communicate_shared_set_data(const Range& owned,
 
 ErrorCode WriteHDF5Parallel::create_meshset_tables(double* times)
 {
-  ErrorCode rval = MB_SUCCESS;
   Range::const_iterator riter;
   const unsigned rank = myPcomm->proc_config().proc_rank();
 
@@ -2003,7 +1983,7 @@ ErrorCode WriteHDF5Parallel::create_meshset_tables(double* times)
 
   // Remove remote sets from setSets
   Range shared, owned, remote;
-  rval = myPcomm->get_shared_sets(shared);CHECK_MB(rval);
+  ErrorCode rval = myPcomm->get_shared_sets(shared);CHECK_MB(rval);
   shared = intersect(shared, setSet.range);
   rval = myPcomm->get_owned_sets(rank, owned);CHECK_MB(rval);
   owned = intersect(owned, setSet.range);
@@ -2026,23 +2006,23 @@ ErrorCode WriteHDF5Parallel::create_meshset_tables(double* times)
 
   rval = assign_ids(setSet.range, setSet.first_id + setSet.offset);CHECK_MB(rval);
   if (times)
-    times[SET_OFFSET_TIME] = timer.elapsed();
+    times[SET_OFFSET_TIME] = timer.time_elapsed();
 
   // Exchange file IDS for sets between all procs
   rval = communicate_shared_set_ids(owned, remote);CHECK_MB(rval);
   if (times)
-    times[SHARED_SET_IDS] = timer.elapsed();
+    times[SHARED_SET_IDS] = timer.time_elapsed();
 
   // Communicate remote set contents, children, etc.
   rval = communicate_shared_set_data(owned, remote);CHECK_MB(rval);
   if (times)
-    times[SHARED_SET_CONTENTS] = timer.elapsed();
+    times[SHARED_SET_CONTENTS] = timer.time_elapsed();
 
   // Communicate counts for owned sets
   long data_counts[3]; // { #contents, #children, #parents }
   rval = count_set_size(setSet.range, data_counts[0], data_counts[1], data_counts[2]);CHECK_MB(rval);
   if (times)
-    times[SET_OFFSET_TIME] += timer.elapsed();
+    times[SET_OFFSET_TIME] += timer.time_elapsed();
 
   long offsets[3], max_counts[3], totals[3];
   rval = create_dataset(3, data_counts, offsets, max_counts, totals);CHECK_MB(rval);

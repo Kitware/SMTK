@@ -1,24 +1,23 @@
 /**
  * MOAB, a Mesh-Oriented datABase, is a software component for creating,
  * storing and accessing finite element mesh data.
- * 
+ *
  * Copyright 2004 Sandia Corporation.  Under the terms of Contract
  * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government
  * retains certain rights in this software.
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  */
 
 #ifndef MHDF_H
 #define MHDF_H
 
 #include "moab_export.h"
-
-#include <H5Ipublic.h>
+#include "moab/mhdf_public.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,14 +27,14 @@ extern "C" {
  *
  *\section Intro   Introduction
  *
- * MOAB's native file format is based on the HDF5 file format.  
+ * MOAB's native file format is based on the HDF5 file format.
  * The most common file extension used for such files is .h5m.
  * A .h5m file can be identified by the top-level \c tstt group
  * in the HDF5 file.
  *
  * The API implemented by this library is a wrapper on top of the
  * underlying HDF5 library.  It provides the following features:
- * - Enforces and hides MOAB's expected file layout 
+ * - Enforces and hides MOAB's expected file layout
  * - Provides a slightly higher-level API
  * - Provides some backwards compatibility for file layout changes
  *
@@ -46,32 +45,32 @@ extern "C" {
  * all vertices, elements, and entity sets stored in the file.  This
  * ID space is defined by the application.  IDs must be unique over all
  * entity types (a vertex and an entity set may not have the same ID.)
- * The IDs must be positive (non-zero) integer values.  
+ * The IDs must be positive (non-zero) integer values.
  * There are no other requirements imposed by the format on the ID space.
  *
- * Elements, with the exception of polyhedra, are defined by a list of 
- * vertex IDs.  Polyhedra are defined by a list of face IDs.  Entity sets 
- * have a list of contained entity IDs, and lists of parent and child 
+ * Elements, with the exception of polyhedra, are defined by a list of
+ * vertex IDs.  Polyhedra are defined by a list of face IDs.  Entity sets
+ * have a list of contained entity IDs, and lists of parent and child
  * entity set IDs.  The set contents may include any valid entity ID,
  * including other sets.  The parent and child lists are expected to
  * contain only entity IDs corresponding to other entity sets.  A zero
  * entity ID may be used in some contexts (tag data with the mhdf_ENTITY_ID
  * property) to indicate a 'null' value,
  *
- * Element types are defined by the combination of a topology identifier (e.g. 
- * hexahedral topology) and the number of nodes in the element.  
+ * Element types are defined by the combination of a topology identifier (e.g.
+ * hexahedral topology) and the number of nodes in the element.
  *
  *
  *\section Root   The tstt Group
  *
  * All file data is stored in the \c tstt group in the HDF5 root group.
- * The \c tstt group may have an optional scalar integer attribute 
+ * The \c tstt group may have an optional scalar integer attribute
  * named \c max_id .  This attribute, if present, should contain the
  * value of the largest entity ID used internally to the file.  It can
  * be used to verify that the code reading the file is using an integer
  * type of sufficient size to accommodate the entity IDs.
  *
- * The \c tstt group contains four sub-groups, a datatype object, and a 
+ * The \c tstt group contains four sub-groups, a datatype object, and a
  * dataset object.  The four sub-groups are: \c nodes, \c elements,
  * \c sets, and \c tags.  The dataset is named \c history .
  *
@@ -87,19 +86,19 @@ extern "C" {
  * - \c Knife
  * - \c Hex
  * - \c Polyhedron
- * 
+ *
  *
  *\section History   The history DataSet
  *
  * The \c history DataSet is a list of variable-length strings with
- * application-defined meaning.  
+ * application-defined meaning.
  *
  *\section Nodes   The nodes Group
  *
  *
  * The \c nodes group contains a single DataSet and an optional
- * subgroup.  The \c tags subgroup is described in the 
- * \ref Dense "section on dense tag storage".  
+ * subgroup.  The \c tags subgroup is described in the
+ * \ref Dense "section on dense tag storage".
  *
  * The \c coordinates
  * DataSet contains the coordinates of all vertices in the mesh.
@@ -115,29 +114,29 @@ extern "C" {
  *
  *\section Elements   The elements Group
  *
- * The \c elements group contains an application-defined number of 
+ * The \c elements group contains an application-defined number of
  * subgroups.  Each subgroup defines one or more mesh elements that
  * have the same topology and length of connectivity (number of nodes
  * for any topology other than \c Polyhedron.)  The names of the subgroups
  * are application defined.  MOAB uses a combination of the element
- * topology name and connectivity length (e.g. "Hex8".).  
+ * topology name and connectivity length (e.g. "Hex8".).
  *
- * Each subgroup must have an attribute named \c element_type that 
- * contains one of the enumerated element topology values defined 
+ * Each subgroup must have an attribute named \c element_type that
+ * contains one of the enumerated element topology values defined
  * in the \c elemtypes datatype described in a \ref Root "previous section".
  *
- * Each subgroup contains a single DataSet named \c connectivity and an 
- * optional subgroup named \c tags.  The \c tags subgroup is described in the 
- * \ref Dense "section on dense tag storage". 
+ * Each subgroup contains a single DataSet named \c connectivity and an
+ * optional subgroup named \c tags.  The \c tags subgroup is described in the
+ * \ref Dense "section on dense tag storage".
  *
  * The \c connectivity DataSet is an \f$ n \times m \f$ array of integer
  * values.  The DataSet contains one row for each of the \c n contained
  * elements, where the connectivity of each element contains \c m IDs.  For
  * all element types supported by MOAB, with the exception of polyhedra,
- * the element connectivity list is expected to contain only IDs 
- * corresponding to nodes.  
+ * the element connectivity list is expected to contain only IDs
+ * corresponding to nodes.
  *
- * Each element \c connectivity DataSet must have an integer attribute 
+ * Each element \c connectivity DataSet must have an integer attribute
  * named \c start_id .  The elements defined in the connectivity table
  * are defined to have IDs beginning with this value and increasing
  * sequentially in the order that they are defined in the table.
@@ -146,23 +145,23 @@ extern "C" {
  *\section Sets   The sets Group
  *
  * The \c sets group contains the definitions of any entity sets stored
- * in the file.  It contains 1 to 4 DataSets and the optional \c tags 
+ * in the file.  It contains 1 to 4 DataSets and the optional \c tags
  * subgroup.  The \c contents, \c parents, and \c children data sets
  * are one dimensional arrays containing the concatenation of the
  * corresponding lists for all of the sets represented in the file.
  *
  * The \c lists DataSet is a \f$ n \times 4 \f$ table, having one
  * row of four integer values for each set.  The first three values
- * for each set are the indices into the \c contents, \c children, 
+ * for each set are the indices into the \c contents, \c children,
  * and \c parents DataSets, respectively, at which the \em last value
  * for set is stored.  The contents, child, and parent lists for
  * sets are stored in the corresponding datasets in the same order as
  * the sets are listed in the \c lists DataSet, such that the index of
- * the first value in one of those tables is one greater than the 
+ * the first value in one of those tables is one greater than the
  * corresponding end index in the \em previous row of the table.  The
  * number of content entries, parents, or children for a given set can
  * be calculated as the difference between the corresponding end index
- * entry for the current set and the same entry in the previous row 
+ * entry for the current set and the same entry in the previous row
  * of the table.  If the first set in the \c lists DataSet had no parent
  * sets, then the corresponding index in the third column of the table
  * would be \c -1.  If it had one parent, the index would be \c 0.  If it
@@ -178,40 +177,40 @@ extern "C" {
  *  - 0x4 ordered
  *  - 0x8 range compressed
  *
- * The fourth (most significant) bit indicates that, in the \c contents 
+ * The fourth (most significant) bit indicates that, in the \c contents
  * data set, that the contents list for the corresponding set is stored
  * using a single range compression.  Rather than storing the IDs of the
- * contained entities individually, each ID \c i is followed by a count 
+ * contained entities individually, each ID \c i is followed by a count
  * \c n indicating that the set contains the contiguous range of IDs
  * \f$ [i, i+n-1] \f$.
  *
  * The three least significant bits specify intended properties of the
  * set and are unrelated to how the set data is stored in the file.  These
- * properties, described briefly from least significant bit to most 
+ * properties, described briefly from least significant bit to most
  * significant are: contained entities should track set membership;
  * the set should contain each entity only once (strict set); and
- * that the order of the entries in the set should be preserved.  
+ * that the order of the entries in the set should be preserved.
  *
  * Similar to the \c nodes/coordinates and \c elements/.../connectivity
- * DataSets, the \c lists DataSet must have an integer attribute 
+ * DataSets, the \c lists DataSet must have an integer attribute
  * named \c start_id .  IDs are assigned to to sets in the order that
  * they occur in the \c lists table, beginning with the attribute value.
  *
- * The \c sets group may contain a subgroup names \c tags.  The \c tags 
- * subgroup is described in the \ref Dense "section on dense tag storage". 
+ * The \c sets group may contain a subgroup names \c tags.  The \c tags
+ * subgroup is described in the \ref Dense "section on dense tag storage".
  *
- * 
+ *
  * \section Tags   The tags Group
  *
  * The \c tags group contains a sub-group for each tag defined
  * in the file.  These sub-groups contain the definition of the
  * tag and may contain some or all of the tag values associated with
  * entities in the file.  However, it should be noted that tag values
- * may also be stored in the "dense" format as described in the 
+ * may also be stored in the "dense" format as described in the
  * \ref Dense "section on dense tag storage".
  *
  * Each sub-group of the \c tags group contains the definition for
- * a single tag.  The name of each sub-group is the name of the 
+ * a single tag.  The name of each sub-group is the name of the
  * corresponding tag.  Non-printable characters, characters
  * prohibited in group names in the HDF5 file format, and the
  * backslash ('\') character are encoded
@@ -222,7 +221,7 @@ extern "C" {
  * unencoded tag name.
  *
  * The tag sub-group may have any or all of the following four attributes:
- * \c default, \c global, \c is_handle, and \c variable_length.  
+ * \c default, \c global, \c is_handle, and \c variable_length.
  * The \c default attribute, if present,
  * must contain a single tag value that is to be considered the 'default'
  * value of the tag.  The \c global attribute, if present, must contain a
@@ -232,7 +231,7 @@ extern "C" {
  * that the tag values are to be considered entity IDs.  After reading the
  * file, the reader should map any such tag values to whatever mechanism
  * it uses to reference the corresponding entities read from the file.
- * The presence of the \c variable_length attribute indicates that each 
+ * The presence of the \c variable_length attribute indicates that each
  * tag value is a variable-length array.  The reader should rely on the
  * presence of this attribute rather than the presence of the \c var_indices
  * DataSet discussed below because the file may contain the definition of
@@ -258,55 +257,55 @@ extern "C" {
  *
  * For fixed-length tags, the tag sub-group may contain 'sparse' formatted
  * tag data, which is comprised of two data sets: \c id_list and \c values.
- * Both data sets must be 1-dimensional arrays of the same length.  The 
- * \c id_list data set contains a list of entity IDs and the \c values 
+ * Both data sets must be 1-dimensional arrays of the same length.  The
+ * \c id_list data set contains a list of entity IDs and the \c values
  * data set contains a list of corresponding tag values.  The data stored in
  * the \c values table must be of type \c type.  Fixed-length tag values
- * may also be stored in the "dense" format as described in the 
+ * may also be stored in the "dense" format as described in the
  * \ref Dense "section on dense tag storage".  A mixture of both sparse-
  * and dense-formatted tag values may be present for a single tag.
  *
  * For variable-length tags the tag values, if any, are always stored
  * in the tag sub-group of the \c tags group and are represented by
- * three one-dimensional data sets: \c id_list, \c var_indices, and \c values.  
+ * three one-dimensional data sets: \c id_list, \c var_indices, and \c values.
  * Similar to the fixed-length sparse-formatted tag data, the \c id_list
  * contains the IDs of the entities for which tag values are defined.
  * The \c values dataset contains the concatenation of the tag values
- * for each of the entities referenced by ID in the \c id_list table, 
+ * for each of the entities referenced by ID in the \c id_list table,
  * in the order that the entities are referenced in the \c id_list table.
  * The \c var_indices table contains an index into the \c values data set
  * for each entity in \c id_list.  The index indicates the position of
  * the \em last tag value for the entity in \c values.  The index of
- * the first value is one greater than the 
+ * the first value is one greater than the
  * corresponding end index for the \em entry in \c var_indices.  The
  * number of tag values for a given entity can
  * be calculated as the difference between the corresponding end index
  * entry for the current entity and the previous value in the \c var_indices
- * dataset.  
+ * dataset.
  *
  *
  * \section Dense   The tags Sub-Groups
  *
  * Data for fixed-length tags may also be stored in the \c tags sub-group
- * of the \c nodes, \c sets, and subgroups of the \c elements group.  
+ * of the \c nodes, \c sets, and subgroups of the \c elements group.
  * Values for given tag are stored in a dataset within the \c tags sub-group
  * that has the following properties:
- *  - The name must be the same as that of the tag definition in the main 
+ *  - The name must be the same as that of the tag definition in the main
  *      \c tags group
  *  - The type of the data set must be the committed type object stored
  *      as \c /tstt/tags/<tagname>/type .
  *  - The data set must have the same length as the data set in the
- *    parent group with the \c start_id attribute.  
+ *    parent group with the \c start_id attribute.
  *
  * If dense-formatted data is specified for any entity in the group, then
- * it must be specified for every entity in the group.  The table is 
- * expected to contain one value for each entity in the corresponding 
- * primary definition table (\c /tstt/nodes/coordinates , 
+ * it must be specified for every entity in the group.  The table is
+ * expected to contain one value for each entity in the corresponding
+ * primary definition table (\c /tstt/nodes/coordinates ,
  * \c /tstt/elements/<name>/connectivity , or \c /tstt/sets/list), in the
  * same order as the entities in that primary definition table.
- * 
+ *
  */
- 
+
 /**
  *\defgroup mhdf MHDF API for reading/writing MOAB-format HDF5 mesh files.
  */
@@ -318,85 +317,18 @@ extern "C" {
  */
 /*@{*/
 
-#define MHDF_MESSAGE_BUFFER_LEN 160
-
-/** \brief Struct used to return error status. */
-typedef struct struct_mhdf_Status { char message[MHDF_MESSAGE_BUFFER_LEN]; } mhdf_Status;
-
-/** \brief Return 1 if passed status object indicates an error.  Zero otherwise. */
-MOAB_EXPORT
-int 
-mhdf_isError( mhdf_Status const* );
-
-/** \brief Get the error message given a status object.  */
-MOAB_EXPORT
-const char*
-mhdf_message( mhdf_Status const* );
-
-/*@}*/
-
-/**
- *\defgroup mhdf_type Common element type names.
- */
-/*@{*/
-
-/** \brief Name to use for edge element */
-#define mhdf_EDGE_TYPE_NAME        "Edge"
-/** \brief Name to use for triangle element */
-#define mhdf_TRI_TYPE_NAME         "Tri"     
-/** \brief Name to use for quadrilateral element */
-#define mhdf_QUAD_TYPE_NAME        "Quad"    
-/** \brief Name to use for general polygon element */
-#define mhdf_POLYGON_TYPE_NAME     "Polygon" 
-/** \brief Name to use for tetrahedral element */
-#define mhdf_TET_TYPE_NAME         "Tet"     
-/** \brief Name to use for quad-based pyramid element */
-#define mhdf_PYRAMID_TYPE_NAME     "Pyramid" 
-/** \brief Name to use for triangular prism element */
-#define mhdf_PRISM_TYPE_NAME       "Prism"   
-/** \brief Name to use for knife element */
-#define mdhf_KNIFE_TYPE_NAME       "Knife"   
-/** \brief Name to use for quad-sided hexahedral element */
-#define mdhf_HEX_TYPE_NAME         "Hex"     
-/** \brief Name to use for general polyhedron specified as a arbitrary-length list of faces */
-#define mhdf_POLYHEDRON_TYPE_NAME  "Polyhedron" 
-/** \brief Name to use for hexagonal-based pyramid */
-#define mhdf_SEPTAHEDRON_TYPE_NAME "Septahedron" 
-
-/*@}*/
-
-/** \brief Enum for tag data type class
- *
- * Enumerates known types for tag data
- */
-enum mhdf_TagDataType {
-  mhdf_OPAQUE = 0, /**< Opaque/unknown type */
-  mhdf_INTEGER,    /**< Integer type */
-  mhdf_FLOAT,      /**< Floating point value */
-  mhdf_BITFIELD,   /**< Bit field */
-  mhdf_BOOLEAN,    /**< Boolean values stored as one byte each */
-  mhdf_ENTITY_ID   /**< Global ID referencing another entity in file */
-};
-
-/**\brief Type used when creating index tables
- *
- * The data type used by mhdf_create* functions that create tables
- * if indices (e.g. mhdf_createSetMeta, mhdf_createVarLenTag, etc.).
- */
-typedef long mhdf_index_t;
-#define MHDF_INDEX_TYPE H5T_NATIVE_LONG
-
 /**
  *\defgroup mhdf_group Element group handle
  */
 /*@{*/
 
 
-/** \brief Get an mhdf_ElemHandle object for the node data.  
+/** \brief Get an mhdf_ElemHandle object for the node data.
  *
  * \return A special element group handle used when specifying adjacency or
- * tag data for nodes. 
+ * tag data for nodes.
  */
+MOAB_EXPORT
 const char*
 mhdf_node_type_handle(void);
 
@@ -410,191 +342,9 @@ MOAB_EXPORT
 const char*
 mhdf_set_type_handle(void);
 
-/*@}*/
+#define MHDF_INDEX_TYPE H5T_NATIVE_LONG
 
-/**
- *\defgroup mhdf_file File operations
- */
-/*@{*/
-
-/** \brief Opaque handle to an open file */
-typedef void* mhdf_FileHandle;
-
-
-
-/* Top level file operations */
-
-/** \brief Create a new file.
- *
- * Create a new HDF mesh file.  This handle must be closed with
- * <code>mhdf_closeFile</code> to avoid resource loss.
- *
- * \param filename   The path and name of the file to create
- * \param overwrite  If zero, will fail if the specified file
- *                   already exists.  If non-zero, will overwrite
- *                   an existing file.
- * \param elem_type_list The list of element types that will be stored
- *                   in the file.  If the element name exits as a pre-
- *                   defined constant (\ref mhdf_type), that constant
- *                   should be used.  If a constant does not exist for
- *                   the type, a similar naming pattern should be used
- *                   (accepted name for type, first character uppercase,
- *                   subsequent characters lowercase.)  The element type
- *                   index passed to \ref mhdf_addElement is then an
- *                   index into this list.  The array may contain
- *                   null entries to allow the caller some control over
- *                   the assigned indices without creating dummy types
- *                   which may confuse readers.
- * \param elem_type_list_len The length of <code>elem_type_list</code>.
- * \param id_type    Type to use when creating datasets containing file IDs
- * \param status     Passed back status of API call.
- * \return An opaque handle to the file.
- */
-MOAB_EXPORT
-mhdf_FileHandle
-mhdf_createFile( const char* filename,
-                 int overwrite,
-                 const char** elem_type_list,
-                 size_t elem_type_list_len,
-                 hid_t id_type,
-                 mhdf_Status* status );
-
-/** \brief Open an existing file. 
- *
- * Open an existing HDF mesh file.  This handle must be closed with
- * <code>mhdf_closeFile</code> to avoid resource loss.
- *
- * \param filename   The path and name of the file to open
- * \param writable  If non-zero, open read-write.  Otherwise read-only.
- * \param status     Passed back status of API call.
- * \param max_id     Used to pass back the maximum global ID used in the
- *                   file.  Provided as an indication to the caller of the
- *                   size of the mesh.  This parameter is optional.  NULL
- *                   may be passed.
- * \param id_type    Type to use when creating datasets containing file IDs
- * \return An opaque handle to the file.
- */
-MOAB_EXPORT
-mhdf_FileHandle
-mhdf_openFile( const char* filename,
-               int writable,
-               unsigned long* max_id,
-               hid_t id_type,
-               mhdf_Status* status );
-
-/** \brief Open an existing file with options.
- *
- * Open an existing HDF mesh file.  This handle must be closed with
- * <code>mhdf_closeFile</code> to avoid resource loss.  This function
- * allows the calling application to specify the HDF5 access property
- * list that is passed to the HDF5 H5Fopen API.  If this is passed as
- * H5P_DEFAULT, the behavior is the same as \ref mhdf_openFile .
- * This argument is typically used to specify a parallel context for
- * for writing the file in parallel.
- *
- * \param filename   The path and name of the file to open
- * \param writable  If non-zero, open read-write.  Otherwise read-only.
- * \param status     Passed back status of API call.
- * \param max_id     Used to pass back the maximum global ID used in the
- *                   file.  Provided as an indication to the caller of the
- *                   size of the mesh.  This parameter is optional.  NULL
- *                   may be passed.
- * \param options    The HDF5 access property list to use when opening
- *                   the file.  See the HDF5 documentation for H5Fopen.
- * \param id_type    Type to use when creating datasets containing file IDs
- * \return An opaque handle to the file.
- */
-MOAB_EXPORT
-mhdf_FileHandle
-mhdf_openFileWithOpt( const char* filename,
-                      int writable,
-                      unsigned long* max_id,
-                      hid_t id_type,
-                      hid_t options,
-                      mhdf_Status* status );
-
-/**\brief Get number of open HDF5 objects from file */
-MOAB_EXPORT
-int
-mhdf_countOpenHandles( mhdf_FileHandle h );
-
-/** Data common to sets, nodes, and each element type */
-struct mhdf_EntDesc {
-  long start_id;           /**< First file ID for table of data */
-  long count;              /**< Number of entities in table */
-  int vals_per_ent;        /**< Connectivity length for elems, dimension for verts, unused for sets, -1 for variable length poly* data */
-  int* dense_tag_indices;  /**< Indices into mhdf_FileDesc::tags for each tag for which dense data is present for these entities */
-  int num_dense_tags;      /**< Length of dense_tag_indices */
-};
-/** Struct describing a tag */
-struct mhdf_TagDesc {
-  const char* name;           /**< Tag name */
-  enum mhdf_TagDataType type; /**< Data type */
-  int size;                   /**< Tag size (num of data type) */
-  int bytes;                  /**< Tag size (number of bytes) */
-  int storage;                /**< MOAB tag type (dense or sparse) */
-  int have_sparse;            /**< Have sparse id/data pairs in file */
-  void* default_value;        /**< Default value, NULL if none. */
-  int default_value_size; 
-  void* global_value;         /**< Global value, NULL if none. */
-  int global_value_size;
-  int* dense_elem_indices;    /**< Array of indices indicating element types for which dense 
-                                   data is stored.  -2 for sets, -1 for nodes. */
-  int num_dense_indices;
-};
-struct mhdf_ElemDesc {
-  const char* handle;       /**< String table identifier */
-  const char* type;         /**< String type designator */
-  int have_adj;             /**< File contains adjacency data for this element group */
-  struct mhdf_EntDesc desc;
-};
-struct mhdf_FileDesc {
-  struct mhdf_EntDesc nodes;
-  struct mhdf_EntDesc sets;
-  int have_set_contents;
-  int have_set_children;
-  int have_set_parents;
-  struct mhdf_ElemDesc* elems; /**< Array of element table descriptions */
-  int num_elem_desc;
-  struct mhdf_TagDesc* tags;   /**< Array of tag descriptions */
-  int num_tag_desc;
-  size_t total_size;           /**< Size of memory block containing all struct data */
-  unsigned char* offset;       /**< Unused, may be used by application */
-};
-  
-/** \brief Get summary of data tables contained within file.
- *
- * Returned struct, including all pointed-to data, is allocated in a
- * single contiguous block of memory with a size equal to 'total_size'.
- * Caller is responsible for freeing the returned struct FileDesc pointer
- * (and *only* that pointer, not pointers nexted within the struct!). 
- * Caller may copy (e.g. MPI_BCast) entire struct as one contiguous block,
- * assuming all nested pointers in the copy are updated to the correct
- * relative offset from the beginning of the struct.
- */
-MOAB_EXPORT
-struct mhdf_FileDesc*
-mhdf_getFileSummary( mhdf_FileHandle file_handle, 
-                     hid_t file_id_type,
-                     mhdf_Status* status );
-
-/**\brief Fix nested pointers for copied/moved FileDesc struct
- *
- * This is a utility method to facility copying/moving/communicating
- * struct FileDesc instances.  The structure and all data it references
- * are allocated in a single contiguous block of memory of size 
- * FileDesc::total_size.  As such, the struct can be copied with a single
- * memcpy, packed into a single network packet, communicated with a single
- * MPI call, etc.  However, the pointers contained within the struct will
- * not be valid in the copied instance (they will still point into the
- * original instance.)  Given a pointer to the copied struct and the address
- * of the original struct, this function will updated all contained pointers.
- */
-MOAB_EXPORT
-void
-mhdf_fixFileDesc( struct mhdf_FileDesc* copy_ptr, const struct mhdf_FileDesc* orig_addr );
-
-/** \brief Given an element type Id, get the name. 
+/** \brief Given an element type Id, get the name.
  * Fails if buffer is not of sufficient size.
  * \param file_handle The file.
  * \param type_index The type index.  Corresponds to indices into
@@ -607,20 +357,9 @@ MOAB_EXPORT
 void
 mhdf_getElemName( mhdf_FileHandle file_handle,
                   unsigned int type_index,
-                  char* buffer, size_t buffer_size, 
+                  char* buffer, size_t buffer_size,
                   mhdf_Status* status );
 
-/** \brief Close the file
- * \param handle     The file to close.
- * \param status     Passed back status of API call.
- */
-MOAB_EXPORT
-void
-mhdf_closeFile( mhdf_FileHandle handle,
-                mhdf_Status* status );
-
-/**\brief Check for open handles in file
- **/
 MOAB_EXPORT
 int
 mhdf_checkOpenHandles( mhdf_FileHandle handle, mhdf_Status* status );
@@ -645,7 +384,7 @@ mhdf_closeData( mhdf_FileHandle file,
 /**\brief Get start ID that will be assigned to next created dataset
  *
  * Get the first_id parameter that will be returned from the next
- * call to any of mhdf_createNodeCoords, mhdf_createConnectivity, 
+ * call to any of mhdf_createNodeCoords, mhdf_createConnectivity,
  * mhdf_createPolyConnectivity, or mhdf_createSetMeta
  */
 MOAB_EXPORT
@@ -666,9 +405,9 @@ mhdf_getNextStartId( mhdf_FileHandle file,
  */
 MOAB_EXPORT
 void
-mhdf_writeHistory( mhdf_FileHandle file, 
-                   const char** strings, 
-                   int num_strings, 
+mhdf_writeHistory( mhdf_FileHandle file,
+                   const char** strings,
+                   int num_strings,
                    mhdf_Status* status );
 
 /** \brief Read the file history as a list of strings.
@@ -687,7 +426,7 @@ mhdf_writeHistory( mhdf_FileHandle file,
 MOAB_EXPORT
 char**
 mhdf_readHistory( mhdf_FileHandle file,
-                  int* num_records_out, 
+                  int* num_records_out,
                   mhdf_Status* status );
 /*@}*/
 /**
@@ -700,9 +439,9 @@ mhdf_readHistory( mhdf_FileHandle file,
 MOAB_EXPORT
 int
 mhdf_haveNodes( mhdf_FileHandle file_handle, mhdf_Status* status );
-                
 
-/** \brief Create new table for node coordinate data 
+
+/** \brief Create new table for node coordinate data
  *
  * \param file_handle  The file.
  * \param dimension    Number of coordinate values per node.
@@ -721,7 +460,7 @@ mhdf_createNodeCoords( mhdf_FileHandle file_handle,
                        long* first_node_id_out,
                        mhdf_Status* status );
 
-/** \brief Open table containing node coordinate data 
+/** \brief Open table containing node coordinate data
  *
  * \param file_handle       The file.
  * \param dimension_out    Number of coordinate values per node.
@@ -773,7 +512,7 @@ mhdf_writeNodeCoordsWithOpt( hid_t data_handle,
 
 /** \brief Write node coordinate data
  *
- * Write a single coordinate value (e.g. the 'x' coordinate) for a 
+ * Write a single coordinate value (e.g. the 'x' coordinate) for a
  * block of nodes.
  *
  * \param data_handle  Handle returned from <code>mhdf_createNodeCoords</code>
@@ -832,7 +571,7 @@ mhdf_readNodeCoordsWithOpt( hid_t data_handle,
 
 /** \brief Read node coordinate data
  *
- * Read a single coordinate value (e.g. the 'x' coordinate) for a 
+ * Read a single coordinate value (e.g. the 'x' coordinate) for a
  * block of nodes.
  *
  * \param data_handle  Handle returned from <code>mhdf_createNodeCoords</code>
@@ -871,8 +610,8 @@ mhdf_readNodeCoordWithOpt( hid_t data_handle,
 
 /** \brief Add a new table of element data to the file.
  *
- * Add a element group to the file. 
- * An element group is the data for a block of elements with the same 
+ * Add a element group to the file.
+ * An element group is the data for a block of elements with the same
  * TSTT type and same number of nodes in their connectivity data.
  * (e.g. all the MBHEX20 elements).  This function is also
  * used to create the groups for general polygon data and
@@ -884,7 +623,7 @@ mhdf_readNodeCoordWithOpt( hid_t data_handle,
  * \param elem_handle  The name to use for the element data.  This
  *                     name is used as an identifier to reference the
  *                     data for this element type later.  The selected
- *                     name also appears explicitly in the file and 
+ *                     name also appears explicitly in the file and
  *                     therefore should be something
  *                     descriptive of the element type such as the
  *                     'base type' and number of nodes (e.g. "Hex20").
@@ -902,7 +641,7 @@ mhdf_addElement( mhdf_FileHandle file_handle,
 /** \brief Get the list of element groups in the file.
  *
  * Get the list of element groups in the file.
- * An element group is the data for a block of elements with the same 
+ * An element group is the data for a block of elements with the same
  * TSTT type and same number of nodes in their connectivity data.
  * (e.g. all the MBHEX20 elements).  This function is also
  * used to retrieve the groups for general polygon data and
@@ -915,7 +654,7 @@ mhdf_addElement( mhdf_FileHandle file_handle,
  *                       length of the returned array.
  * \param  status        Passed back status of API call.
  * \return               An array of pointers to element group
- *                       names.  This array is allocated as a 
+ *                       names.  This array is allocated as a
  *                       single memory block and should be freed
  *                       with <em>one</em> call to free().
  */
@@ -925,13 +664,13 @@ mhdf_getElemHandles( mhdf_FileHandle file_handle,
                      unsigned int* count_out,
                      mhdf_Status* status );
 
-/** 
+/**
  * \brief Get the element type name for a given element group handle.
  *
  * Fails if name is longer than <code>buf_len</code>.
  *
  * \param file_handle The file.
- * \param elem_handle One of the group names passed back from 
+ * \param elem_handle One of the group names passed back from
  *                    \ref mhdf_getElemHandles
  * \param buffer      A buffer to copy the name into.
  * \param buf_len     The length of <code>buffer</code>.
@@ -947,7 +686,7 @@ mhdf_getElemTypeName( mhdf_FileHandle file_handle,
 /** \brief Check if an element group contains polygon or polyhedron
  *
  * Check if an element group contains general polygon or polyhedrons
- * rather than typically fixed-connectivity elements.  
+ * rather than typically fixed-connectivity elements.
  *
  * \param file_handle The file.
  * \param elem_handle The element group.
@@ -962,7 +701,7 @@ mhdf_isPolyElement( mhdf_FileHandle file_handle,
                     mhdf_Status* status );
 
 /** \brief Create connectivity table for an element group
- * 
+ *
  * Create fixed-connectivity data for an element group.
  * Do NOT use this function for poly(gon/hedron) data.
  *
@@ -971,9 +710,9 @@ mhdf_isPolyElement( mhdf_FileHandle file_handle,
  * \param num_nodes_per_elem The number of nodes in the connectivity data
  *                     for each element.
  * \param num_elements The number of elements to be written to the table.
- * \param first_elem_id_out Elements are assigned global IDs in 
+ * \param first_elem_id_out Elements are assigned global IDs in
  *                     sequential blocks where the block is the table in
- *                     which their connectivity data is written and the 
+ *                     which their connectivity data is written and the
  *                     sequence is the sequence in which they are written
  *                     in that table.  The global ID for the first element
  *                     in this group is passed back at this address.  The
@@ -984,7 +723,7 @@ mhdf_isPolyElement( mhdf_FileHandle file_handle,
  * \return The HDF5 handle to the connectivity data.
  */
 MOAB_EXPORT
-hid_t 
+hid_t
 mhdf_createConnectivity( mhdf_FileHandle file_handle,
                          const char* elem_handle,
                          int num_nodes_per_elem,
@@ -994,7 +733,7 @@ mhdf_createConnectivity( mhdf_FileHandle file_handle,
 
 
 /** \brief Open connectivity table for an element group
- * 
+ *
  * Open fixed-connectivity data for an element group.
  * Do NOT use this function for poly(gon/hedron) data.  Use
  * <code>mhdf_isPolyElement</code> or <code>mhdf_getTsttElemType</code>
@@ -1006,9 +745,9 @@ mhdf_createConnectivity( mhdf_FileHandle file_handle,
  * \param num_nodes_per_elem_out Used to pass back the number of nodes
  *                     in each element.
  * \param num_elements_out Pass back the number of elements in the table.
- * \param first_elem_id_out Elements are assigned global IDs in 
+ * \param first_elem_id_out Elements are assigned global IDs in
  *                     sequential blocks where the block is the table in
- *                     which their connectivity data is written and the 
+ *                     which their connectivity data is written and the
  *                     sequence is the sequence in which they are written
  *                     in that table.  The global ID for the first element
  *                     in this group is passed back at this address.  The
@@ -1029,15 +768,15 @@ mhdf_openConnectivity( mhdf_FileHandle file_handle,
 
 MOAB_EXPORT
 hid_t
-mhdf_openConnectivitySimple( mhdf_FileHandle file_handle, 
+mhdf_openConnectivitySimple( mhdf_FileHandle file_handle,
                              const char* elem_handle,
                              mhdf_Status* status );
-                             
+
 
 /** \brief Write element coordinate data
  *
  * Write interleaved fixed-connectivity element data for a block of elements.
- * Note: Do not use this for polygon or polyhedron data. 
+ * Note: Do not use this for polygon or polyhedron data.
  *
  * \param data_handle  Handle returned from <code>mhdf_createConnectivity</code>
  *                     or <code>mhdf_openConnectivity</code>.
@@ -1071,7 +810,7 @@ mhdf_writeConnectivityWithOpt( hid_t data_handle,
 /** \brief Read element coordinate data
  *
  * Read interleaved fixed-connectivity element data for a block of elements.
- * Note: Do not use this for polygon or polyhedron data. 
+ * Note: Do not use this for polygon or polyhedron data.
  *
  * \param data_handle  Handle returned from <code>mhdf_createConnectivity</code>
  *                     or <code>mhdf_openConnectivity</code>.
@@ -1086,7 +825,7 @@ mhdf_writeConnectivityWithOpt( hid_t data_handle,
  * \param status       Passed back status of API call.
  */
 MOAB_EXPORT
-void 
+void
 mhdf_readConnectivity( hid_t data_handle,
                        long offset,
                        long count,
@@ -1094,7 +833,7 @@ mhdf_readConnectivity( hid_t data_handle,
                        void* node_id_list,
                        mhdf_Status* status );
 MOAB_EXPORT
-void 
+void
 mhdf_readConnectivityWithOpt( hid_t data_handle,
                        long offset,
                        long count,
@@ -1124,9 +863,9 @@ mhdf_readConnectivityWithOpt( hid_t data_handle,
  * \param data_list_length The total number of values to be written to the
  *                     table (the number of polys plus the sum of the number
  *                     of entities in each poly's connectivity data.)
- * \param first_id_out Elements are assigned global IDs in 
+ * \param first_id_out Elements are assigned global IDs in
  *                     sequential blocks where the block is the table in
- *                     which their connectivity data is written and the 
+ *                     which their connectivity data is written and the
  *                     sequence is the sequence in which they are written
  *                     in that table.  The global ID for the first element
  *                     in this group is passed back at this address.  The
@@ -1165,9 +904,9 @@ mhdf_createPolyConnectivity( mhdf_FileHandle file_handle,
  * \param data_list_length_out The total number of values to be written to the
  *                     table (the number of polys plus the sum of the number
  *                     of entities in each poly's connectivity data.)
- * \param first_id_out Elements are assigned global IDs in 
+ * \param first_id_out Elements are assigned global IDs in
  *                     sequential blocks where the block is the table in
- *                     which their connectivity data is written and the 
+ *                     which their connectivity data is written and the
  *                     sequence is the sequence in which they are written
  *                     in that table.  The global ID for the first element
  *                     in this group is passed back at this address.  The
@@ -1201,7 +940,7 @@ mhdf_openPolyConnectivity( mhdf_FileHandle file_handle,
  *
  * This function writes the index list.
  *
- * \param poly_handle  The handle returned from 
+ * \param poly_handle  The handle returned from
  *                     <code>mhdf_createPolyConnectivity</code> or
  *                     <code>mhdf_openPolyConnectivity</code>.
  * \param offset       The offset in the table at which to write.  The
@@ -1246,7 +985,7 @@ mhdf_writePolyConnIndicesWithOpt( hid_t poly_handle,
  *
  * This function writes the connectivity/ID list.
  *
- * \param poly_handle  The handle returned from 
+ * \param poly_handle  The handle returned from
  *                     <code>mhdf_createPolyConnectivity</code> or
  *                     <code>mhdf_openPolyConnectivity</code>.
  * \param offset       The offset in the table at which to write.  The
@@ -1257,7 +996,7 @@ mhdf_writePolyConnIndicesWithOpt( hid_t poly_handle,
  *                     Typically <code>H5T_NATIVE_INT</code> or
  *                     <code>N5T_NATIVE_LONG</code> as defined in <i>H5Tpublic.h</i>.
  *                     The HDF class of this type object <em>must</em> be H5T_INTEGER
- * \param id_list      The count/global ID list specifying the connectivity 
+ * \param id_list      The count/global ID list specifying the connectivity
  *                     of the polys.
  * \param status       Passed back status of API call.
  */
@@ -1290,7 +1029,7 @@ mhdf_writePolyConnIDsWithOpt( hid_t poly_handle,
  * contains the global IDs of faces (either polygons or 2D fixed-connectivity
  * elements.)
  *
- * \param poly_handle  The handle returned from 
+ * \param poly_handle  The handle returned from
  *                     <code>mhdf_createPolyConnectivity</code> or
  *                     <code>mhdf_openPolyConnectivity</code>.
  * \param offset       The offset in the table at which to read.  The
@@ -1305,7 +1044,7 @@ mhdf_writePolyConnIDsWithOpt( hid_t poly_handle,
  * \param status       Passed back status of API call.
  */
 MOAB_EXPORT
-void 
+void
 mhdf_readPolyConnIndices( hid_t poly_handle,
                           long offset,
                           long count,
@@ -1313,7 +1052,7 @@ mhdf_readPolyConnIndices( hid_t poly_handle,
                           void* index_list,
                           mhdf_Status* status );
 MOAB_EXPORT
-void 
+void
 mhdf_readPolyConnIndicesWithOpt( hid_t poly_handle,
                           long offset,
                           long count,
@@ -1333,7 +1072,7 @@ mhdf_readPolyConnIndicesWithOpt( hid_t poly_handle,
  * contains the global IDs of faces (either polygons or 2D fixed-connectivity
  * elements.)
  *
- * \param poly_handle  The handle returned from 
+ * \param poly_handle  The handle returned from
  *                     <code>mhdf_createPolyConnectivity</code> or
  *                     <code>mhdf_openPolyConnectivity</code>.
  * \param offset       The offset in the table at which to read.  The
@@ -1348,7 +1087,7 @@ mhdf_readPolyConnIndicesWithOpt( hid_t poly_handle,
  * \param status       Passed back status of API call.
  */
 MOAB_EXPORT
-void 
+void
 mhdf_readPolyConnIDs( hid_t poly_handle,
                       long offset,
                       long count,
@@ -1356,7 +1095,7 @@ mhdf_readPolyConnIDs( hid_t poly_handle,
                       void* id_list,
                       mhdf_Status* status );
 MOAB_EXPORT
-void 
+void
 mhdf_readPolyConnIDsWithOpt( hid_t poly_handle,
                       long offset,
                       long count,
@@ -1375,10 +1114,10 @@ mhdf_readPolyConnIDsWithOpt( hid_t poly_handle,
  * IDs of the adjacent entities.
  */
 /*@{*/
-                     
 
-/** \brief Create adjacency data table for nodes, elements, polys, etc. 
- * 
+
+/** \brief Create adjacency data table for nodes, elements, polys, etc.
+ *
  * Create file object for adjacency data for a nodes or a specified
  * element group.
  *
@@ -1408,7 +1147,7 @@ mhdf_createAdjacency( mhdf_FileHandle file_handle,
  *  element group.
  *
  * \param file         The file.
- * \param elem_handle  A handle to an element group.  
+ * \param elem_handle  A handle to an element group.
  * \param status       Passed back status of API call.
  */
 MOAB_EXPORT
@@ -1417,8 +1156,8 @@ mhdf_haveAdjacency( mhdf_FileHandle file,
                     const char* elem_handle,
                     mhdf_Status* status );
 
-/** \brief Open adjacency data table for nodes, elements, polys, etc. 
- * 
+/** \brief Open adjacency data table for nodes, elements, polys, etc.
+ *
  * Open the file object containing adjacency data for a nodes or a specified
  * element group.
  *
@@ -1537,7 +1276,7 @@ mhdf_readAdjacencyWithOpt( hid_t data_handle,
  * the set contents table and the set children table.  Each is written and read independently.
  *
  * The set list table contains one row for each set.  Each row contains four values:
- * {content list end index, child list end index, parent list end index, and flags}.  The flags 
+ * {content list end index, child list end index, parent list end index, and flags}.  The flags
  * value is a collection of bits with
  * values defined in \ref mhdf_set_flag .  The all the flags except \ref mhdf_SET_RANGE_BIT are
  * saved properties of the mesh data and are not relevant to the actual file in any way.  The
@@ -1555,8 +1294,8 @@ mhdf_readAdjacencyWithOpt( hid_t data_handle,
  * data for all of the mesh sets.  The values are stored corresponding to the order of the sets
  * in the set list table.  Depending on the value of \ref mhdf_SET_RANGE_BIT in the flags field of
  * the set list table, the contents for a specific set may be stored in one of two formats.  If the
- * flag is set, the contents list is a list of pairs where each pair is a starting global Id and a 
- * count.  For each pair, the set contains the range of global Ids beginning at the start value. 
+ * flag is set, the contents list is a list of pairs where each pair is a starting global Id and a
+ * count.  For each pair, the set contains the range of global Ids beginning at the start value.
  * If the \ref mhdf_SET_RANGE_BIT flag is not set, the meshset contents are a simple list of global Ids.
  *
  * The meshset child table is a vector of integer global IDs.  It is a concatenation of the child
@@ -1572,15 +1311,15 @@ mhdf_readAdjacencyWithOpt( hid_t data_handle,
 /*@{*/
 
 /** \brief Make entities in set aware of owning set (MOAB-specific?)*/
-#define mhdf_SET_OWNER_BIT 0x1  
-/** \brief Set cannot contain duplicates */ 
-#define mhdf_SET_UNIQUE_BIT 0x2  
+#define mhdf_SET_OWNER_BIT 0x1
+/** \brief Set cannot contain duplicates */
+#define mhdf_SET_UNIQUE_BIT 0x2
 /** \brief Set order is preserved */
-#define mhdf_SET_ORDER_BIT 0x4  
+#define mhdf_SET_ORDER_BIT 0x4
 
 /** \brief The bit specifying set storage format.
  *
- * If this bit is set, then the contents of a set (not the children) 
+ * If this bit is set, then the contents of a set (not the children)
  * is written as set of ranges, where each range is of the form
  * {global start id, count}.  For such a range, the set contains the
  * <code>count</code> entities with sequential global IDs beginning
@@ -1592,12 +1331,12 @@ mhdf_readAdjacencyWithOpt( hid_t data_handle,
 /*@}*/
 
 /** \brief Create table holding list of meshsets and their properties.
- * 
+ *
  * The set table contains description of sets, but not contents or
- * children.  The table is a <code>n x 4</code> matrix of values.  
+ * children.  The table is a <code>n x 4</code> matrix of values.
  * One row for each of <code>n</code> sets.  Each row contains the end index
  * for the set in the contents table, the end index for the set in the children
- * table, the end index for the set in the parents table, and the set flags, 
+ * table, the end index for the set in the parents table, and the set flags,
  * respectively. The \ref mhdf_SET_RANGE_BIT
  * bit in the flags specifies the format of the contents list for each set.
  * See a description of the \ref mhdf_SET_RANGE_BIT flag for a description
@@ -1605,10 +1344,10 @@ mhdf_readAdjacencyWithOpt( hid_t data_handle,
  * of the table are the index of the <em>last</em> value for the set in the corresponding
  * contents and children lists.  The first index is always one greater than the last index
  * for the previous set in the table.  The first index of the first set in the table is
- * implicitly zero.  A special value of -1 in the appropriate column should be used to 
+ * implicitly zero.  A special value of -1 in the appropriate column should be used to
  * indicate that the first set contains no contents or has no children.  For any other set,
  * if the last index for the set is the same as that of the previous set, it has no data
- * in the corresponding list. 
+ * in the corresponding list.
  *
  *\param file_handle  The file.
  *\param num_sets     The number of sets in the table.
@@ -1616,7 +1355,7 @@ mhdf_readAdjacencyWithOpt( hid_t data_handle,
  *                    set in the table.  All subsequent sets in the table
  *                    will be assigned sequential global IDs.
  * \param status       Passed back status of API call.
- *\return The handle to the set meta-data table.  
+ *\return The handle to the set meta-data table.
  */
 MOAB_EXPORT
 hid_t
@@ -1646,8 +1385,8 @@ mhdf_haveSets( mhdf_FileHandle file,
                mhdf_Status* status );
 
 /** \brief Open table holding list of meshsets and their properties.
- * 
- * Open set list.  
+ *
+ * Open set list.
  * See \ref mhdf_createSetMeta or \ref mhdf_set for a description of this data.
  *
  *\param file_handle  The file.
@@ -1656,7 +1395,7 @@ mhdf_haveSets( mhdf_FileHandle file,
  *                    set in the table.  All subsequent sets in the table
  *                    have sequential global IDs.
  * \param status       Passed back status of API call.
- *\return The handle to the set meta-data table.  
+ *\return The handle to the set meta-data table.
  */
 MOAB_EXPORT
 hid_t
@@ -1671,7 +1410,7 @@ mhdf_openSetMetaSimple( mhdf_FileHandle file_handle, mhdf_Status* status );
 
 /** \brief Read list of sets and meta-information about sets.
  *
- * Read set descriptions.  See \ref mhdf_createSetMeta or \ref mhdf_set 
+ * Read set descriptions.  See \ref mhdf_createSetMeta or \ref mhdf_set
  * for a description of this data.
  *
  *\param data_handle The handle returned from \ref mhdf_createSetMeta or
@@ -1691,7 +1430,7 @@ mhdf_readSetMeta( hid_t data_handle,
                   long offset,
                   long count,
                   hid_t hdf_integer_type,
-                  void* set_desc_data,  
+                  void* set_desc_data,
                   mhdf_Status* status );
 MOAB_EXPORT
 void
@@ -1699,7 +1438,7 @@ mhdf_readSetMetaWithOpt( hid_t data_handle,
                   long offset,
                   long count,
                   hid_t hdf_integer_type,
-                  void* set_desc_data,  
+                  void* set_desc_data,
                   hid_t read_prop,
                   mhdf_Status* status );
 
@@ -1736,11 +1475,11 @@ mhdf_readSetFlagsWithOpt( hid_t data_handle,
 /** \brief Read only the content end indices portion of the set description table
  *
  * For each set, read the last index of that set's data in the set
- * contents table. 
+ * contents table.
  *
  * NOTE: This is a signed value.  Any sets w/out contents that occur
  *       first in the list will have an end index of -1.
- * 
+ *
  *\param data_handle The handle returned from mdhf_createSetMeta or mhdf_openSetMeta
  *\param offset      The offset (set index) at which to begin reading.
  *\param count       The number of values (number of sets) to read.
@@ -1769,11 +1508,11 @@ mhdf_readSetContentEndIndicesWithOpt( hid_t data_handle,
 /** \brief Read only the child end indices portion of the set description table
  *
  * For each set, read the last index of that set's data in the set
- * children table. 
+ * children table.
  *
  * NOTE: This is a signed value.  Any sets w/out contents that occur
  *       first in the list will have an end index of -1.
- * 
+ *
  *\param data_handle The handle returned from mdhf_createSetMeta or mhdf_openSetMeta
  *\param offset      The offset (set index) at which to begin reading.
  *\param count       The number of values (number of sets) to read.
@@ -1802,11 +1541,11 @@ mhdf_readSetChildEndIndicesWithOpt( hid_t data_handle,
 /** \brief Read only the parent end indices portion of the set description table
  *
  * For each set, read the last index of that set's data in the set
- * parents table. 
+ * parents table.
  *
  * NOTE: This is a signed value.  Any sets w/out contents that occur
  *       first in the list will have an end index of -1.
- * 
+ *
  *\param data_handle The handle returned from mdhf_createSetMeta or mhdf_openSetMeta
  *\param offset      The offset (set index) at which to begin reading.
  *\param count       The number of values (number of sets) to read.
@@ -1835,7 +1574,7 @@ mhdf_readSetParentEndIndicesWithOpt( hid_t data_handle,
 
 /** \brief Write list of sets and meta-information about sets.
  *
- * Write set descriptions.  See \ref mhdf_createSetMeta or \ref mhdf_set for a 
+ * Write set descriptions.  See \ref mhdf_createSetMeta or \ref mhdf_set for a
  * description of the data format.
  *
  *\param data_handle The handle returned from \ref mhdf_createSetMeta or
@@ -1855,7 +1594,7 @@ mhdf_writeSetMeta( hid_t data_handle,
                    long offset,
                    long count,
                    hid_t hdf_integer_type,
-                   const void* set_desc_data,  
+                   const void* set_desc_data,
                    mhdf_Status* status );
 MOAB_EXPORT
 void
@@ -1863,17 +1602,17 @@ mhdf_writeSetMetaWithOpt( hid_t data_handle,
                    long offset,
                    long count,
                    hid_t hdf_integer_type,
-                   const void* set_desc_data,  
+                   const void* set_desc_data,
                    hid_t write_prop,
                    mhdf_Status* status );
 
-/** \brief Create file object to hold list of meshset contents. 
+/** \brief Create file object to hold list of meshset contents.
  *
  * Create set contents data object.
  * The format of this data is a vector of integer values which is the
  * concatenation of the contents list for all the meshsets.  The length
  * and format of the data for each set is stored in the set meta table.
- * See \ref mhdf_createSetMeta and \ref mhdf_SET_RANGE_BIT for a 
+ * See \ref mhdf_createSetMeta and \ref mhdf_SET_RANGE_BIT for a
  * description of that data.
  *
  *\param file_handle The file.
@@ -1888,13 +1627,13 @@ mhdf_createSetData( mhdf_FileHandle file_handle,
                     long data_list_size,
                     mhdf_Status* status );
 
-/** \brief Open the file object for the meshset contents. 
+/** \brief Open the file object for the meshset contents.
  *
  * Open set contents data object.
  * The format of this data is a vector of integer values which is the
  * concatenation of the contents list for all the meshsets.  The length
  * and format of the data for each set is stored in the set meta table.
- * See \ref mhdf_createSetMeta and \ref mhdf_SET_RANGE_BIT for a 
+ * See \ref mhdf_createSetMeta and \ref mhdf_SET_RANGE_BIT for a
  * description of that data.
  *
  *\param file_handle        The file.
@@ -1914,7 +1653,7 @@ mhdf_openSetData( mhdf_FileHandle file_handle,
  * The format of this data is a vector of integer values which is the
  * concatenation of the contents list for all the meshsets.  The length
  * and format of the data for each set is stored in the set meta table.
- * See \ref mhdf_createSetMeta and \ref mhdf_SET_RANGE_BIT for a 
+ * See \ref mhdf_createSetMeta and \ref mhdf_SET_RANGE_BIT for a
  * description of that data.
  *
  *\param set_handle   The handle returned from \ref mhdf_createSetData
@@ -1952,7 +1691,7 @@ mhdf_writeSetDataWithOpt( hid_t set_handle,
  * The format of this data is a vector of integer values which is the
  * concatenation of the contents list for all the meshsets.  The length
  * and format of the data for each set is stored in the set meta table.
- * See \ref mhdf_createSetMeta and \ref mhdf_SET_RANGE_BIT for a 
+ * See \ref mhdf_createSetMeta and \ref mhdf_SET_RANGE_BIT for a
  * description of that data.
  *
  *\param set_handle   The handle returned from \ref mhdf_createSetData
@@ -1984,16 +1723,16 @@ mhdf_readSetDataWithOpt( hid_t set_handle,
                   hid_t read_prop,
                   mhdf_Status* status );
 
-/** \brief Create file object for storing the set child list 
+/** \brief Create file object for storing the set child list
  *
- * Create a data group for the list of set children.  
+ * Create a data group for the list of set children.
  * The format of this data is the concatenation of the lists of
  * global IDs of child sets for each set.  The order of the sets and
  * the number of children for each set is contained in the set meta table.
  * (See \ref mhdf_createSetMeta ).
  *
  *\param file_handle      The file
- *\param child_list_size  The total length of the data (the sum of the 
+ *\param child_list_size  The total length of the data (the sum of the
  *                        number of children for each set.)
  *\param status           Passed back status of API call.
  *\return A handle to the data object in the file.
@@ -2004,14 +1743,14 @@ mhdf_createSetChildren( mhdf_FileHandle file_handle,
                         long child_list_size,
                         mhdf_Status* status );
 
-/** \brief Open the file object containing the set child list 
+/** \brief Open the file object containing the set child list
  *
- * Open the data group containing the list of set children.  
- * See \ref mhdf_createSetChildren and \ref mhdf_createSetMeta for 
+ * Open the data group containing the list of set children.
+ * See \ref mhdf_createSetChildren and \ref mhdf_createSetMeta for
  * a description of this data.
  *
  *\param file_handle      The file
- *\param child_list_size  The total length of the data (the sum of the 
+ *\param child_list_size  The total length of the data (the sum of the
  *                        number of children for each set.)
  *\param status           Passed back status of API call.
  *\return A handle to the data object in the file.
@@ -2022,16 +1761,16 @@ mhdf_openSetChildren( mhdf_FileHandle file_handle,
                       long* child_list_size,
                       mhdf_Status* status );
 
-/** \brief Create file object for storing the set parent list 
+/** \brief Create file object for storing the set parent list
  *
- * Create a data group for the list of set parents.  
+ * Create a data group for the list of set parents.
  * The format of this data is the concatenation of the lists of
  * global IDs of parent sets for each set.  The order of the sets and
  * the number of parents for each set is contained in the set meta table.
  * (See \ref mhdf_createSetMeta ).
  *
  *\param file_handle       The file
- *\param parent_list_size  The total length of the data (the sum of the 
+ *\param parent_list_size  The total length of the data (the sum of the
  *                         number of parents for each set.)
  *\param status            Passed back status of API call.
  *\return A handle to the data object in the file.
@@ -2042,14 +1781,14 @@ mhdf_createSetParents( mhdf_FileHandle file_handle,
                        long parent_list_size,
                        mhdf_Status* status );
 
-/** \brief Open the file object containing the set parent list 
+/** \brief Open the file object containing the set parent list
  *
- * Open the data group containing the list of set parents.  
- * See \ref mhdf_createSetParents and \ref mhdf_createSetMeta for 
+ * Open the data group containing the list of set parents.
+ * See \ref mhdf_createSetParents and \ref mhdf_createSetMeta for
  * a description of this data.
  *
  *\param file_handle       The file
- *\param parent_list_size  The total length of the data (the sum of the 
+ *\param parent_list_size  The total length of the data (the sum of the
  *                         number of parents for each set.)
  *\param status            Passed back status of API call.
  *\return A handle to the data object in the file.
@@ -2063,9 +1802,9 @@ mhdf_openSetParents( mhdf_FileHandle file_handle,
 /** \brief Write set parent/child list
  *
  * Write the list of parent or child IDs for sets.
- * See \ref mhdf_createSetChildren and \ref mhdf_createSetMeta for 
+ * See \ref mhdf_createSetChildren and \ref mhdf_createSetMeta for
  * a description of this data.
- * 
+ *
  *\param data_handle The value returned from \ref mhdf_createSetChildren
  *                   or \ref mhdf_openSetChildren.
  *\param offset      The offset into the list of global IDs.
@@ -2098,9 +1837,9 @@ mhdf_writeSetParentsChildrenWithOpt( hid_t data_handle,
 /** \brief Read set parent/child list
  *
  * Read from the list of parent or child IDs for sets.
- * See \ref mhdf_createSetChildren and \ref mhdf_createSetMeta for 
+ * See \ref mhdf_createSetChildren and \ref mhdf_createSetMeta for
  * a description of this data.
- * 
+ *
  *\param data_handle The value returned from \ref mhdf_createSetChildren
  *                   or \ref mhdf_openSetChildren.
  *\param offset      The offset into the list of global IDs.
@@ -2136,14 +1875,14 @@ mhdf_readSetParentsChildrenWithOpt( hid_t data_handle,
  *\defgroup mhdf_tag Tag data.
  *
  * The data for each tag can be stored in two places/formats:  sparse and/or
- * dense.  The data may be stored in both, but there should not be redundant 
- * values for the same entity.  
+ * dense.  The data may be stored in both, but there should not be redundant
+ * values for the same entity.
  *
  * Dense tag data is stored as multiple tables of tag values, one for each
  * element group.  (Note:  special \ref mhdf_ElemHandle values are available
  * for accessing dense tag data on nodes or meshsets via the \ref mhdf_node_type_handle
  * and \ref mhdf_set_type_handle functions.)  Each dense tag table should contain
- * the same number of entries as the element connectivity table.  The tag values 
+ * the same number of entries as the element connectivity table.  The tag values
  * are associated with the corresponding element in the connectivity table.
  *
  * Sparse tag data is stored as a global table pair for each tag type.  The first
@@ -2159,13 +1898,13 @@ mhdf_readSetParentsChildrenWithOpt( hid_t data_handle,
 /*@{*/
 
 /** \brief Was dense tag data in mesh database */
-#define mhdf_DENSE_TYPE   2 
+#define mhdf_DENSE_TYPE   2
 /** \brief Was sparse tag data in mesh database */
-#define mhdf_SPARSE_TYPE  1 
+#define mhdf_SPARSE_TYPE  1
 /** \brief Was bit-field tag data in mesh database */
-#define mhdf_BIT_TYPE     0 
+#define mhdf_BIT_TYPE     0
 /** \brief Unused */
-#define mhdf_MESH_TYPE    3 
+#define mhdf_MESH_TYPE    3
 
 /*@}*/
 
@@ -2173,10 +1912,10 @@ mhdf_readSetParentsChildrenWithOpt( hid_t data_handle,
  *
  * Given an atomic HDF5 data type, return the built-in type
  * that matches the class of the passed type and is the specified
- * size. 
+ * size.
  *
  * This function is provided to allow converting the stored tag
- * type in a file to the preferred type for it's representation 
+ * type in a file to the preferred type for it's representation
  * in memory when reading tag values.
  *
  * This function works only for atomic types.  The returned type
@@ -2216,10 +1955,10 @@ mhdf_getNativeType( hid_t input_type,
  *                      mhdf_OPAQUE.
  *\param hdf_base_type  Ignored if hdf_type is non-zero.  If hdf_type is
  *                      zero and this type is non-zero, it is used either
- *                      as the type or as the base type for an array type for 
+ *                      as the type or as the base type for an array type for
  *                      default_value and global_value, respectively.  Typically
  *                      used to specify the input data type for mhdf_ENTITY_ID
- *                      tags.  
+ *                      tags.
  */
 MOAB_EXPORT
 void
@@ -2237,8 +1976,8 @@ mhdf_createTag( mhdf_FileHandle file_handle,
 /**\brief Get handle to HDF5 type object for tag data */
 MOAB_EXPORT
 hid_t
-mhdf_getTagDataType( mhdf_FileHandle file_handle, 
-                     const char* tag_name, 
+mhdf_getTagDataType( mhdf_FileHandle file_handle,
+                     const char* tag_name,
                      mhdf_Status* status );
 
 
@@ -2262,10 +2001,10 @@ mhdf_getTagDataType( mhdf_FileHandle file_handle,
  *                      mhdf_OPAQUE.
  *\param hdf_base_type  Ignored if hdf_type is non-zero.  If hdf_type is
  *                      zero and this type is non-zero, it is used either
- *                      as the type or as the base type for an array type for 
+ *                      as the type or as the base type for an array type for
  *                      default_value and global_value, respectively.  Typically
  *                      used to specify the input data type for mhdf_ENTITY_ID
- *                      tags.  
+ *                      tags.
  */
 MOAB_EXPORT
 void
@@ -2280,7 +2019,7 @@ mhdf_createVarLenTag( mhdf_FileHandle file_handle,
                       hid_t hdf_type,
                       hid_t hdf_base_type,
                       mhdf_Status* status );
-                
+
 
 /** \brief Get the number of tags in the file.
  *
@@ -2300,9 +2039,9 @@ mhdf_getNumberTags( mhdf_FileHandle file_handle,
  *\param status        Passed back status of API call.
  *\return An array of null-terminated strings.  The array
  *        and each string is allocated with <code>malloc</code>.
- *        The caller should release this memory by calling 
+ *        The caller should release this memory by calling
  *        <code>free</code> for each string and the array.
- */                 
+ */
 MOAB_EXPORT
 char**
 mhdf_getTagNames( mhdf_FileHandle file_handle,
@@ -2323,7 +2062,7 @@ mhdf_getTagNames( mhdf_FileHandle file_handle,
  *                        - if data is single value, 1
  *                        - if data is a variable-length array, -1
  *\param tstt_storage_out The value of the TSTT enum for storage (dense, sparse, etc.)
- *\param have_default_out Non-zero if file contains a default value for the tag. 
+ *\param have_default_out Non-zero if file contains a default value for the tag.
  *                        Length of default value if variable-lenth tag.
  *\param have_global_out  Non-zero if the file contains a global/mesh value for the tag.
  *\param have_sparse_out  Non-zero if the file contains a sparse data table for this tag.
@@ -2339,7 +2078,7 @@ mhdf_getTagInfo( mhdf_FileHandle file_handle,
                  int* have_global_out,
                  int* have_sparse_out,
                  mhdf_Status* status );
-                 
+
 
 
 /** \brief Get the default and global values of the tag.
@@ -2347,7 +2086,7 @@ mhdf_getTagInfo( mhdf_FileHandle file_handle,
  *\param file_handle      The file.
  *\param tag_name         The tag name.
  *\param output_data_type The HDF5 type for the memory into which the
- *                        tag data is to be written.  If zero, then 
+ *                        tag data is to be written.  If zero, then
  *                        the value(s) will be read as opaque data.
  *\param default_value    Memory location at which to write the default
  *                        value of the tag.
@@ -2367,7 +2106,7 @@ mhdf_getTagValues( mhdf_FileHandle file_handle,
 /** \brief Check if the file contains dense tag data for the specified tag and element group.
  *
  * Check if there is dense tag data for a given element type for the specified
- * tag.  
+ * tag.
  *
  *\param file_handle  The file.
  *\param tag_name     The tag.
@@ -2392,7 +2131,7 @@ mhdf_haveDenseTag( mhdf_FileHandle file_handle,
  *                    \ref mhdf_node_type_handle or \ref mhdf_set_type_handle
  *                    for nodes or sets respectively.
  *\param num_values   The number of tag values to be written.  Must be
- *                    The same as the number of elements in the group. 
+ *                    The same as the number of elements in the group.
  *                    Specified here to allow tag values to be written
  *                    before node coordinates, element connectivity or meshsets.
  *\param status       Passed back status of API call.
@@ -2414,7 +2153,7 @@ mhdf_createDenseTagData( mhdf_FileHandle file_handle,
  *                      \ref mhdf_node_type_handle or \ref mhdf_set_type_handle
  *                      for nodes or sets respectively.
  *\param num_values_out The number of tag values to be written.  Must be
- *                      The same as the number of elements in the group. 
+ *                      The same as the number of elements in the group.
  *\param status         Passed back status of API call.
  *\return               Handle to data object in file.
  */
@@ -2426,9 +2165,9 @@ mhdf_openDenseTagData( mhdf_FileHandle file_handle,
                        long* num_values_out,
                        mhdf_Status* status );
 
-/** \brief Create file objects to store sparse tag data 
+/** \brief Create file objects to store sparse tag data
  *
- * Create the file objects to store all sparse data for a given tag in.  The 
+ * Create the file objects to store all sparse data for a given tag in.  The
  * sparse data is stored in a pair of objects.  The first is a vector of
  * global IDs.  The second is a vector of tag values for each entity specified
  * in the list of global IDs.
@@ -2438,7 +2177,7 @@ mhdf_openDenseTagData( mhdf_FileHandle file_handle,
  *\param num_values     The number of tag values to be written.
  *\param entities_and_values_out The handles to the file objects.
  *                      The first is the vector of global IDs.  The second
- *                      is the list of corresponding tag values.  
+ *                      is the list of corresponding tag values.
  *\param status         Passed back status of API call.
  */
 MOAB_EXPORT
@@ -2449,9 +2188,9 @@ mhdf_createSparseTagData( mhdf_FileHandle file_handle,
                           hid_t entities_and_values_out[2],
                           mhdf_Status* status );
 
-/** \brief Create file objects to store (sparse) variable-length tag data 
+/** \brief Create file objects to store (sparse) variable-length tag data
  *
- * Create the file objects to store all sparse data for a given tag in.  The 
+ * Create the file objects to store all sparse data for a given tag in.  The
  * sparse data is stored in a pair of objects.  The first is a vector of
  * global IDs.  The second is a vector of tag values for each entity specified
  * in the list of global IDs.
@@ -2477,9 +2216,9 @@ mhdf_createVarLenTagData( mhdf_FileHandle file_handle,
                           hid_t entities_and_values_out[3],
                           mhdf_Status* status );
 
-/** \brief Create file objects to read sparse tag data 
+/** \brief Create file objects to read sparse tag data
  *
- * Open the file objects containing all sparse data for a given tag in.  The 
+ * Open the file objects containing all sparse data for a given tag in.  The
  * sparse data is stored in a pair of objects.  The first is a vector of
  * global IDs.  The second is a vector of tag values for each entity specified
  * in the list of global IDs.  For variable-length tags, a third table
@@ -2496,7 +2235,7 @@ mhdf_createVarLenTagData( mhdf_FileHandle file_handle,
  *\param entities_and_values_out The handles to the pair of file objects.
  *                      The first is the vector of global IDs.  The second
  *                      is the list of corresponding tag values.  The third
- *                      is the handle to the index table, iff the tag is 
+ *                      is the handle to the index table, iff the tag is
  *                      variable-length.  If the tag is fixed-length, this
  *                      value is not set.
  *\param status         Passed back status of API call.
@@ -2513,7 +2252,7 @@ mhdf_openSparseTagData( mhdf_FileHandle file_handle,
 /** \brief Write Global ID list for sparse tag data
  *
  *\param id_handle   The first handle passed back from either
- *                   \ref mhdf_createSparseTagData or 
+ *                   \ref mhdf_createSparseTagData or
  *                   \ref mhdf_openSparseTagData.
  *\param offset      The offset at which to begin writing.
  *\param count       The number of global IDs to write.
@@ -2547,16 +2286,16 @@ mhdf_writeSparseTagEntitiesWithOpt( hid_t id_handle,
 /** \brief Write tag values
  *
  *\param value_handle  The second handle passed back from either
- *                     \ref mhdf_createSparseTagData or 
+ *                     \ref mhdf_createSparseTagData or
  *                     \ref mhdf_openSparseTagData; or the handle
  *                     returned by \ref mhdf_createDenseTagData or
  *                     \ref mhdf_openDenseTagData.
  *\param offset        The offset at which to begin writing.
  *\param count         The number of tag values to write.
- *\param hdf_tag_data_type The type of the data in memory.  
+ *\param hdf_tag_data_type The type of the data in memory.
  *                     It must be possible for the HDF library to convert
  *                     between this type and the type the tag data is stored
- *                     as.  
+ *                     as.
  *\param tag_data      The list of tag values to write.
  *\param status        Passed back status of API call.
  */
@@ -2587,13 +2326,13 @@ mhdf_writeTagValuesWithOpt( hid_t value_handle,
  *\param tag_handle   handle to the data object to write to.
  *\param offset       The offset into the table at which to begin writting
  *\param count        The number of values to write.
- *\param hdf_integer_type  The type of the values pointed to by end_indices 
+ *\param hdf_integer_type  The type of the values pointed to by end_indices
  *                    (must be an integer type).
  *\param end_indices  The values to store in the table.
  *\param status       Output: API result.
  */
 MOAB_EXPORT
-void 
+void
 mhdf_writeSparseTagIndices( hid_t tag_handle,
                             long offset,
                             long count,
@@ -2601,7 +2340,7 @@ mhdf_writeSparseTagIndices( hid_t tag_handle,
                             const void* end_indices,
                             mhdf_Status* status );
 MOAB_EXPORT
-void 
+void
 mhdf_writeSparseTagIndicesWithOpt( hid_t tag_handle,
                             long offset,
                             long count,
@@ -2613,7 +2352,7 @@ mhdf_writeSparseTagIndicesWithOpt( hid_t tag_handle,
 /** \brief Read Global ID list for sparse tag data
  *
  *\param id_handle  The first handle passed back from either
- *                  \ref mhdf_createSparseTagData or 
+ *                  \ref mhdf_createSparseTagData or
  *                  \ref mhdf_openSparseTagData.
  *\param offset     The offset at which to begin reading.
  *\param count      The number of global IDs to read.
@@ -2645,7 +2384,7 @@ mhdf_readSparseTagEntitiesWithOpt( hid_t id_handle,
 /** \brief Read tag values
  *
  *\param value_handle  The second handle passed back from either
- *                     \ref mhdf_createSparseTagData or 
+ *                     \ref mhdf_createSparseTagData or
  *                     \ref mhdf_openSparseTagData; or the handle
  *                     returned by \ref mhdf_createDenseTagData or
  *                     \ref mhdf_openDenseTagData.
@@ -2686,13 +2425,13 @@ mhdf_readTagValuesWithOpt( hid_t value_handle,
  *\param tag_handle   handle to the data object to read from.
  *\param offset       The offset into the table at which to begin reading
  *\param count        The number of values to read.
- *\param hdf_integer_type  The type of the values pointed to by end_indices 
+ *\param hdf_integer_type  The type of the values pointed to by end_indices
  *                    (must be an integer type).
  *\param end_indices  Memory in which to store the data read from the table.
  *\param status       Output: API result.
  */
 MOAB_EXPORT
-void 
+void
 mhdf_readSparseTagIndices( hid_t tag_handle,
                            long offset,
                            long count,
@@ -2700,7 +2439,7 @@ mhdf_readSparseTagIndices( hid_t tag_handle,
                            void* end_indices,
                            mhdf_Status* status );
 MOAB_EXPORT
-void 
+void
 mhdf_readSparseTagIndicesWithOpt( hid_t tag_handle,
                            long offset,
                            long count,
