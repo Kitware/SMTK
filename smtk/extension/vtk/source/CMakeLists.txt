@@ -86,34 +86,8 @@ endif ()
 # Potentially wrap in Python using VTK's wrapping methods, not shiboken.
 # This makes the filters available for use with other VTK-wrapped filters.
 if (SMTK_ENABLE_PYTHON_WRAPPING AND VTK_WRAP_PYTHON)
-  vtk_wrap_python3(${vtk-module}Python SMTKVTKPY_SRCS "${VTKLibHeaders}")
-  add_library(${vtk-module}PythonD ${SMTKVTKPY_SRCS} ${SMTKVTKPY_EXTRA_SRCS})
-  python_add_module(${vtk-module}Python
-    ${vtk-module}PythonInit.cxx
-    ${vtk-module}PythonInitImpl.cxx
-  )
-  target_link_libraries(${vtk-module}PythonD
-    PUBLIC
-      ${vtk-module}
-      vtkWrappingPythonCore
-      vtkCommonExecutionModelPythonD
-      vtkViewsInfovisPythonD
-  )
-  target_include_directories(${vtk-module}PythonD
-    PRIVATE
-    ${vtkPython_INCLUDE_DIRS}
-    ${vtkWrappingPythonCore_INCLUDE_DIRS}
-    )
-  target_link_libraries(${vtk-module}Python
-    PUBLIC
-      vtkSMTKSourceExtPythonD
-      ${PYTHON_LIBRARY}
-      )
-  target_include_directories(${vtk-module}Python
-    PRIVATE
-    ${vtkPython_INCLUDE_DIRS}
-    ${vtkWrappingPythonCore_INCLUDE_DIRS}
-    )
+  vtk_add_python_wrapping(${vtk-module} VTKLibSrcs)
+  vtk_add_python_wrapping_library(${vtk-module} VTKLibSrcs ${vtk-module})
 endif()
 
 if (SMTK_ENABLE_TESTING)
