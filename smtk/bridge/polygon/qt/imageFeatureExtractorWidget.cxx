@@ -570,6 +570,8 @@ imageFeatureExtractorWidget::imageFeatureExtractorWidget()
           this,                   SLOT(setFGFilterSize(const QString &)));
   this->ui->MinLandSize->setValidator(new QDoubleValidator(0, 1e50, 7, this->ui->MinLandSize));
   this->ui->MinWaterSize->setValidator(new QDoubleValidator(0, 1e50, 7, this->ui->MinWaterSize));
+  this->ui->MinLandSize->setEnabled(false);
+  this->ui->MinWaterSize->setEnabled(false);
 
   connect(this->ui->DrawMode, SIGNAL(currentIndexChanged(int)), this, SLOT(setDrawMode(int)));
   connect(this->ui->Algorithm, SIGNAL(currentIndexChanged(int)), this, SLOT(setAlgorithm(int)));
@@ -734,6 +736,8 @@ void imageFeatureExtractorWidget::run()
       }
     }
   }
+  this->ui->MinLandSize->setEnabled(true);
+  this->ui->MinWaterSize->setEnabled(true);
   internal->drawing->SetDrawColor(color);
   vtkRenderWindowInteractor *interactor = this->internal->imageViewer->GetRenderWindow()->GetInteractor();
   interactor->Render();
@@ -756,6 +760,11 @@ void imageFeatureExtractorWidget::clear()
   internal->drawing->SetDrawColor(currentColor);
 
   internal->lineMapper->SetInputData(NULL);
+
+  this->ui->MinLandSize->setText("0");
+  this->ui->MinWaterSize->setText("0");
+  this->ui->MinLandSize->setEnabled(false);
+  this->ui->MinWaterSize->setEnabled(false);
 
   vtkRenderWindowInteractor *interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
   interactor->Render();
