@@ -1,4 +1,6 @@
-include(${QT_USE_FILE})
+smtk_find_package_qt(qt_targets REQUIRED
+  QT4_COMPONENTS QtCore
+  QT5_COMPONENTS Core)
 
 # set up sources to build
 set(PQComponentsSrcs
@@ -12,7 +14,7 @@ set(PQComponentsHeaders
 #install the headers
 smtk_public_headers(${PQComponentsHeaders})
 
-qt4_wrap_cpp(MOC_BUILT_SOURCES ${PQComponentsHeaders})
+smtk_qt_wrap_cpp(MOC_BUILT_SOURCES ${PQComponentsHeaders})
 
 source_group("Qt_Source" FILES ${PQComponentsSrcs} )
 source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} )
@@ -25,13 +27,12 @@ add_library(smtkPQComponentsExt
 
 #we need to add the location of the moc files to the include dir for smtkPWWidgetExt
 target_include_directories(smtkPQComponentsExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-#qt4_use_modules(smtkPQComponentsExt LINK_PUBLIC Core Gui)
 
 #set smtkPQComponentsExt to publicly link to smtkCore
 target_link_libraries(smtkPQComponentsExt LINK_PUBLIC
   pqApplicationComponents
   smtkQtExt
-  ${QT_QTCORE_LIBRARY}
+  ${qt_targets}
 )
 
 if (SMTK_ENABLE_TESTING)

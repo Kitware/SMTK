@@ -1,7 +1,7 @@
 ##
 ## Create browseModel to test browsing model entity tree:
 
-qt4_wrap_ui(browseModel_UI_BUILT_SOURCES ModelBrowser.ui)
+smtk_qt_wrap_ui(browseModel_UI_BUILT_SOURCES ModelBrowser.ui)
 
 add_executable(browseModel MACOSX_BUNDLE
   browseModel.cxx
@@ -16,8 +16,6 @@ target_link_libraries(browseModel
 set_target_properties(
   browseModel PROPERTIES AUTOMOC TRUE
   INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/bin")
-
-#qt4_use_modules(browseModel Core Gui)
 
 ##
 ## Create an application to test attribute editing
@@ -62,7 +60,5 @@ add_executable(browseMesh MACOSX_BUNDLE
 set_target_properties(
   browseMesh PROPERTIES AUTOMOC TRUE
   INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/bin")
-
-# qt4_use_modules(browseMesh Core Gui)
 
 target_link_libraries(browseMesh smtkCore smtkCoreModelTesting smtkQtExt)

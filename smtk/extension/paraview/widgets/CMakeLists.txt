@@ -1,4 +1,6 @@
-include(${QT_USE_FILE})
+smtk_find_package_qt(qt_targets REQUIRED
+  QT4_COMPONENTS QtCore QtGui
+  QT5_COMPONENTS Core Widgets)
 
 # set up sources to build
 set(PQWidgetsSrcs
@@ -28,9 +30,9 @@ set(PQWidgetsHeaders
 #install the headers
 smtk_public_headers(${PQWidgetsHeaders})
 
-qt4_wrap_cpp(MOC_BUILT_SOURCES ${PQWidgetsMocHeaders})
-qt4_wrap_ui(UI_BUILT_SOURCES ${PQWidgetsUIs})
-qt4_add_resources(RCS_RESOURCES qtWidgetsIcons.qrc)
+smtk_qt_wrap_cpp(MOC_BUILT_SOURCES ${PQWidgetsMocHeaders})
+smtk_qt_wrap_ui(UI_BUILT_SOURCES ${PQWidgetsUIs})
+smtk_qt_add_resources(RCS_RESOURCES qtWidgetsIcons.qrc)
 
 source_group("Qt_Source" FILES ${PQWidgetsSrcs} ${PQWidgetsUIs})
 source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${UI_BUILT_SOURCES} ${RCS_RESOURCES})
@@ -45,15 +47,13 @@ add_library(smtkPQWidgetsExt
 
 #we need to add the location of the moc files to the include dir for smtkPWWidgetExt
 target_include_directories(smtkPQWidgetsExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-#qt4_use_modules(smtkPQWidgetsExt LINK_PUBLIC Core Gui)
 
 #set smtkPQWidgetsExt to publicly link to smtkCore
 target_link_libraries(smtkPQWidgetsExt LINK_PUBLIC
   pqApplicationComponents
   vtkPVServerManagerRendering
   smtkCore
-  ${QT_QTGUI_LIBRARY}
-  ${QT_QTCORE_LIBRARY}
+  ${qt_targets}
   )
 
 if (SMTK_ENABLE_TESTING)

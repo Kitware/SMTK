@@ -32,7 +32,7 @@ set(Plugin_Src_Files
 # more magic needs to happen for client-server mode to work
 
 #required can't use automoc here since plugin macros will attempt moccing too
-qt4_wrap_cpp(MOC_SRCS pqCMBModelPluginStarter.h)
+smtk_qt_wrap_cpp(MOC_SRCS pqCMBModelPluginStarter.h)
 add_paraview_auto_start(IFACES IFACE_SRCS CLASS_NAME pqCMBModelPluginStarter
                         STARTUP onStartup
                         SHUTDOWN onShutdown)
