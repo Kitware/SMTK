@@ -67,6 +67,7 @@ public:
   // for discrete items that with potential child widget
   // <Enum-Combo, child-layout >
   QMap<QWidget*, QPointer<QLayout> >ChildrenMap;
+  QMap<QWidget*, int> ElementIndexMap;
 
   // for extensible items
   QMap<QToolButton*, QPair<QPointer<QLayout>, QPointer<QWidget> > > ExtensibleMap;
@@ -187,6 +188,7 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
   //frame->setStyleSheet("QFrame { background-color: yellow; }");
 
   QDateTimeEdit *dtEdit = new QDateTimeEdit(qdatetime, frame);
+  this->Internals->ElementIndexMap.insert(dtEdit, elementIdx);
   dtEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   std::string format = def->displayFormat();
   if (!format.empty())
@@ -197,6 +199,34 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
   QObject::connect(
     dtEdit, SIGNAL(dateTimeChanged(const QDateTime&)),
     this, SLOT(onDateTimeChanged(const QDateTime&)));
+
+  // Use tooltip for min/max values
+  // For now use unformatted json
+  // Todo consider using display format
+  QString tooltip;
+  if (def->hasMinRange())
+    {
+    ::smtk::common::DateTimeZonePair minDtz = def->minRange();
+    QString inclusive = def->minRangeInclusive() ? "Inclusive" : "Not Inclusive";
+    QString minString = QString::fromStdString(minDtz.serialize());
+    tooltip.append("Min (").append(inclusive).append("): ").append(minString);
+    }
+  if (def->hasMaxRange())
+    {
+    ::smtk::common::DateTimeZonePair maxDtz = def->maxRange();
+    QString inclusive = def->maxRangeInclusive() ? "Inclusive" : "Not Inclusive";
+    QString maxString = QString::fromStdString(maxDtz.serialize());
+    if (!tooltip.isEmpty())
+      {
+      tooltip.append("\n");
+      }
+    tooltip.append("Max (").append(inclusive).append("): ").append(maxString);
+    }
+
+  if (!tooltip.isEmpty())
+    {
+    dtEdit->setToolTip(tooltip);
+    }
 
   frame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   QHBoxLayout* layout = new QHBoxLayout(frame);
@@ -217,13 +247,14 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
       "UTC", this, SLOT(onTimeZoneUTC()));
     this->Internals->TimeZoneMenu->addAction(
       "Select Region...", this, SLOT(onTimeZoneRegion()));
+    // Set element index on all actions
+    foreach (QAction *action, this->Internals->TimeZoneMenu->actions())
+      {
+      action->setData(elementIdx);
+      }
 
     this->Internals->TimeZoneButton->setMenu(this->Internals->TimeZoneMenu);
     //this->Internals->TimeZoneButton->setStyleSheet("background-color: white;");
-    //this->Internals->TimeZoneButton->setEnabled(false);
-
-    // Todo set initial timezone text and menu item
-
     layout->addWidget(this->Internals->TimeZoneButton);
     }
   else
@@ -232,6 +263,7 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
     }
 
   layout->setAlignment(Qt::AlignLeft);
+  this->updateBackground(dtEdit, item->isValid());
   return frame;
 }
 
@@ -248,17 +280,37 @@ void qtDateTimeItem::updateItemData()
 }
 
 //----------------------------------------------------------------------------
-void qtDateTimeItem::onDateTimeChanged(const QDateTime& newDateTime)
+void qtDateTimeItem::onChildWidgetSizeChanged()
 {
-  qDebug() << "onDateTimeChanged():" << newDateTime;
-  if (newDateTime.isNull())
-    {
-    }
 }
 
 //----------------------------------------------------------------------------
-void qtDateTimeItem::onChildWidgetSizeChanged()
+void qtDateTimeItem::onDateTimeChanged(const QDateTime& qdatetime)
 {
+  smtk::attribute::DateTimeItemPtr item =
+    dynamic_pointer_cast<attribute::DateTimeItem>(this->getObject());
+  QDateTimeEdit *dtEdit = dynamic_cast<QDateTimeEdit*>(this->sender());
+  std::size_t element = this->Internals->ElementIndexMap.value(dtEdit);
+  qDebug() << "onDateTimeChanged()" << qdatetime << element;
+
+  // Convert QDateTime to smtk::attribute::DateTime
+  QDate qdate = qdatetime.date();
+  int year=-1, month=-1, day=-1;
+  qdate.getDate(&year, &month, &day);
+
+  QTime qtime = qdatetime.time();
+  int hour=-1, minute=-1, second=-1, msec=-1;
+  hour = qtime.hour();
+  minute = qtime.minute();
+  second = qtime.second();
+  msec = qtime.msec();
+
+  smtk::common::DateTimeZonePair dtz = item->value(element);
+  smtk::common::DateTime dt = dtz.dateTime();
+  dt.setComponents(year, month, day, hour, minute, second, msec);
+  dtz.setDateTime(dt);
+  bool valid = item->setValue(element, dtz);
+  this->updateBackground(dtEdit, valid);
 }
 
 //----------------------------------------------------------------------------
@@ -270,27 +322,31 @@ void qtDateTimeItem::onRegionSelected()
 //----------------------------------------------------------------------------
 void qtDateTimeItem::onTimeZoneUnset()
 {
+  QAction *action = dynamic_cast<QAction*>(this->sender());
+  std::size_t element = action->data().toInt();
+
   this->Internals->TimeZoneButton->setText("No TimeZoneSelected");
-  std::size_t element = 0;
   this->setTimeZone(element, "");
 
-  QAction *action = dynamic_cast<QAction*>(this->sender());
-  //qDebug() << "onTimeZoneUnset" << action;
   this->updateTimeZoneMenu(action);
 }
 //----------------------------------------------------------------------------
 void qtDateTimeItem::onTimeZoneUTC()
 {
-  this->Internals->TimeZoneButton->setText("UTC");
-  std::size_t element = 0;
-  this->setTimeZoneToUTC(element);
   QAction *action = dynamic_cast<QAction*>(this->sender());
+  std::size_t element = action->data().toInt();
+
+  this->Internals->TimeZoneButton->setText("UTC");
+  this->setTimeZoneToUTC(element);
   this->updateTimeZoneMenu(action);
 }
 
 //----------------------------------------------------------------------------
 void qtDateTimeItem::onTimeZoneRegion()
 {
+  QAction *action = dynamic_cast<QAction*>(this->sender());
+  std::size_t element = action->data().toInt();
+
   if (this->Internals->TimeZoneDialog->exec() == QDialog::Accepted)
     {
     // Update UI
@@ -299,10 +355,9 @@ void qtDateTimeItem::onTimeZoneRegion()
     this->Internals->TimeZoneButton->setText(regionId);
 
     // Update item
-    std::size_t element = 0;  // how do we know which element?
     this->setTimeZone(element, regionId);
     }
-  this->updateTimeZoneMenu();
+  this->updateTimeZoneMenu(action);
 }
 
 //----------------------------------------------------------------------------
@@ -601,6 +656,37 @@ void qtDateTimeItem::clearChildWidgets()
   //   delete cwidget;
   //   }
   // this->Internals->ChildrenMap.clear();
+}
+
+//----------------------------------------------------------------------------
+void qtDateTimeItem::updateBackground(QDateTimeEdit *dtEdit, bool valid)
+{
+  smtk::attribute::DateTimeItemPtr item =
+    dynamic_pointer_cast<attribute::DateTimeItem>(this->getObject());
+  std::size_t element = this->Internals->ElementIndexMap.value(dtEdit);
+  smtk::common::DateTimeZonePair dtz = item->value(element);
+
+  // Set background coloring
+  QColor color;
+  if (!valid)
+    {
+    color = this->uiManager()->invalidValueColor();
+    }
+  else if (item->isUsingDefault(element))
+    {
+    //qDebug() << element <<  " -- Default DateTimeZonePair" << def->hasDefault();
+    color = this->uiManager()->defaultValueColor();
+    }
+  else
+    {
+    //qDebug() << element <<  " -- Normal DateTimeZonePair";
+    color = Qt::white;
+    }
+  // QPalette does not work with QDateTimeEdit (?)
+  // so using stylesheet instead
+  QString ss = QString("background-color:rgb(%1,%2,%3)").
+    arg(color.red()).arg(color.green()).arg(color.blue());
+  dtEdit->setStyleSheet(ss);
 }
 
 //----------------------------------------------------------------------------

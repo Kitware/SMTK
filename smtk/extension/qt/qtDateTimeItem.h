@@ -21,6 +21,7 @@
 
 class QAction;
 class QDateTime;
+class QDateTimeEdit;
 
 namespace smtk
 {
@@ -32,7 +33,7 @@ namespace smtk
 
     public:
       qtDateTimeItem(smtk::attribute::DateTimeItemPtr, QWidget* p,
-        qtBaseView* bview, Qt::Orientation enumOrient = Qt::Vertical);
+        qtBaseView* bview, Qt::Orientation enumOrient = Qt::Horizontal);
       virtual ~qtDateTimeItem();
       virtual void setLabelVisible(bool);
 
@@ -43,11 +44,12 @@ namespace smtk
 
     protected slots:
       virtual void updateItemData();
-      virtual void onDateTimeChanged(const QDateTime&);
       //virtual void onAdvanceLevelChanged(int levelIdx);
       virtual void onChildWidgetSizeChanged();
       //virtual void onAddNewValue();
       //virtual void onRemoveValue();
+
+      void onDateTimeChanged(const QDateTime& newValue);
 
       // Time zone menu actions
       void onTimeZoneUnset();
@@ -65,6 +67,7 @@ namespace smtk
       virtual void addInputEditor(int i);
       virtual void updateExtensibleState();
       virtual void clearChildWidgets();
+      void updateBackground(QDateTimeEdit *dtEdit, bool valid);
       void updateTimeZoneMenu(QAction *selectedAction = NULL);
 
       void setTimeZone(std::size_t element, const QString& region);
