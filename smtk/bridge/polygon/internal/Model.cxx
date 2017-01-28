@@ -1417,10 +1417,17 @@ void pmodel::addEdgeTessellation(smtk::model::Edge& edgeRec, internal::edge::Ptr
   conn.reserve(numPts + 2);
   conn.push_back(smtk::model::TESS_POLYLINE);
   conn.push_back(static_cast<int>(numPts));
-  for (ptIt = edgeData->pointsBegin(); ptIt != edgeData->pointsEnd(); ++ptIt)
+  bool isPeriodic = (*edgeData->pointsBegin() == *edgeData->pointsRBegin());
+  std::size_t numUniquePts = isPeriodic ? numPts - 1 : numPts;
+  std::size_t ii;
+  for (ptIt = edgeData->pointsBegin(), ii = 0; ii < numUniquePts; ++ptIt, ++ii)
+      {
+      this->liftPoint(*ptIt, coords.begin());
+      conn.push_back(tessIt->second.addCoords(&coords[0]));
+      }
+  if (isPeriodic)
     {
-    this->liftPoint(*ptIt, coords.begin());
-    conn.push_back(tessIt->second.addCoords(&coords[0]));
+    conn.push_back(0); // repeat initial point instead of adding a duplicate.
     }
   tessIt->second.insertCell(0, conn);
 }
