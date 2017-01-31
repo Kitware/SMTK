@@ -114,7 +114,7 @@ void add_model_edge_and_vert(smtk::model::ManagerPtr modelManager,
       smtk::model::Tessellation vertTess;
       vertTess.addCoords(0, 2, 0);
       vertTess.addPoint(0);
-      modelManager->setTessellation(nv.entity(), vertTess);
+      modelManager->setTessellationAndBoundingBox(nv.entity(), vertTess);
 
 
       ne = modelManager->addEdge();
@@ -127,7 +127,7 @@ void add_model_edge_and_vert(smtk::model::ManagerPtr modelManager,
       edgeTess.addCoords(3, 0, 0);
       edgeTess.addLine(0, 1);
       edgeTess.addLine(1, 2);
-      modelManager->setTessellation(ne.entity(), edgeTess);
+      modelManager->setTessellationAndBoundingBox(ne.entity(), edgeTess);
 
       break;
       }

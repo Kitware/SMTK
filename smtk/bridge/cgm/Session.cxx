@@ -833,6 +833,16 @@ bool SessionAddTessellation(const EntityRef& entityref, E* cgmEnt, double chordE
   if (!cgmEnt || !entityref.manager() || !entityref.entity())
     return false;
 
+  //calculate and store the bounding box
+  std::vector<double> bBox;
+  bBox.push_back(cgmEnt->bounding_box().min_x());
+  bBox.push_back(cgmEnt->bounding_box().max_x());
+  bBox.push_back(cgmEnt->bounding_box().min_y());
+  bBox.push_back(cgmEnt->bounding_box().max_y());
+  bBox.push_back(cgmEnt->bounding_box().min_z());
+  bBox.push_back(cgmEnt->bounding_box().max_z());
+  entityref.manager()->setBoundingBox(entityref.entity(),bBox ,true);
+
   GMem primitives;
   double measure = cgmEnt->measure();
   double maxErr = pow(measure, 1./cgmEnt->dimension()) * chordErr;
@@ -844,23 +854,25 @@ bool SessionAddTessellation(const EntityRef& entityref, E* cgmEnt, double chordE
     {
     return false;
     }
+
+  // addTessellation to the manager
   smtk::model::Tessellation blank;
-  smtk::model::UUIDsToTessellations& tess(entityref.manager()->tessellations());
-  smtk::model::UUIDsToTessellations::iterator it =
-    tess.insert(std::pair<smtk::common::UUID,smtk::model::Tessellation>(entityref.entity(), blank)).first;
-  it->second.reset();
+  entityref.manager()->setTessellation(entityref.entity(), blank);
+
+  smtk::model::Tessellation *tess = const_cast<smtk::model::Tessellation*>(entityref.hasTessellation());
+
   // Now add data to the Tessellation "in situ" to avoid a copy.
   // First, copy point coordinates:
-  it->second.coords().reserve(3 * npts);
+  tess->coords().reserve(3 * npts);
   GPoint* inPts = primitives.point_list();
   for (int j = 0; j < npts; ++j, ++inPts)
     {
-    it->second.addCoords(inPts->x, inPts->y, inPts->z);
+    tess->addCoords(inPts->x, inPts->y, inPts->z);
     }
   // Now translate the connectivity:
   if (cgmEnt->dimension() > 1)
     {
-    it->second.conn().reserve(connCount);
+    tess->conn().reserve(connCount);
     int* inConn = primitives.facet_list();
     int ptsPerPrim = 0;
     for (int k = 0; k < connCount; k += (ptsPerPrim + 1), inConn += (ptsPerPrim + 1))
@@ -871,16 +883,16 @@ bool SessionAddTessellation(const EntityRef& entityref, E* cgmEnt, double chordE
         {
       case 1:
         // This is a vertex
-        it->second.addPoint(pConn[0]);
+        tess->addPoint(pConn[0]);
         break;
       case 2:
-        it->second.addLine(pConn[0], pConn[1]);
+        tess->addLine(pConn[0], pConn[1]);
         break;
       case 3:
-        it->second.addTriangle(pConn[0], pConn[1], pConn[2]);
+        tess->addTriangle(pConn[0], pConn[1], pConn[2]);
         break;
       case 4:
-        it->second.addQuad(pConn[0], pConn[1], pConn[2], pConn[3]);
+        tess->addQuad(pConn[0], pConn[1], pConn[2], pConn[3]);
       default:
         std::cerr << "Unknown primitive has " << ptsPerPrim << " conn entries\n";
         break;
@@ -889,12 +901,12 @@ bool SessionAddTessellation(const EntityRef& entityref, E* cgmEnt, double chordE
     }
   else
     {
-    it->second.conn().reserve(npts + 2);
-    it->second.conn().push_back(smtk::model::TESS_POLYLINE);
-    it->second.conn().push_back(npts);
+    tess->conn().reserve(npts + 2);
+    tess->conn().push_back(smtk::model::TESS_POLYLINE);
+    tess->conn().push_back(npts);
     for (int k = 0; k < npts; ++k)
       {
-      it->second.conn().push_back(k);
+      tess->conn().push_back(k);
       }
     }
 
@@ -969,18 +981,31 @@ bool SessionAddTessellation(const EntityRef& entityref, RefVertex* cgmEnt, doubl
   cellConn.push_back(smtk::model::TESS_VERTEX);
   cellConn.push_back(0);
 
+  //calculate and store the bounding box
+  std::vector<double> bBox;
+  bBox.push_back(cgmEnt->bounding_box().min_x());
+  bBox.push_back(cgmEnt->bounding_box().max_x());
+  bBox.push_back(cgmEnt->bounding_box().min_y());
+  bBox.push_back(cgmEnt->bounding_box().max_y());
+  bBox.push_back(cgmEnt->bounding_box().min_z());
+  bBox.push_back(cgmEnt->bounding_box().max_z());
+  entityref.manager()->setBoundingBox(entityref.entity(),bBox ,true);
+
   CubitVector coords = cgmEnt->coordinates();
+
+  // addTessellation to the manager
   smtk::model::Tessellation blank;
-  smtk::model::UUIDsToTessellations& tess(entityref.manager()->tessellations());
-  smtk::model::UUIDsToTessellations::iterator it =
-    tess.insert(
-      std::pair<smtk::common::UUID,smtk::model::Tessellation>(
-        entityref.entity(), blank)).first;
+  entityref.manager()->setTessellation(entityref.entity(), blank);
+
+  smtk::model::Tessellation *tess = const_cast<smtk::model::Tessellation*>(entityref.hasTessellation());
+
+  // Now add data to the Tessellation "in situ" to avoid a copy.
+
   // Now add data to the Tessellation "in situ" to avoid a copy.
   // First, copy point coordinates:
-  it->second.coords().resize(3);
-  coords.get_xyz(&it->second.coords()[0]);
-  it->second.insertNextCell(cellConn);
+  tess->coords().resize(3);
+  coords.get_xyz(&tess->coords()[0]);
+  tess->insertNextCell(cellConn);
   return true;
 }
 

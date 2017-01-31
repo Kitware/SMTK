@@ -271,7 +271,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
     std::vector<poly::polygon_data<internal::Coord> >::const_iterator pit;
     smtk::model::Tessellation blank;
     smtk::model::UUIDsToTessellations::iterator smtkTess =
-      mgr->setTessellation(modelFaceId, blank);
+      mgr->setTessellationAndBoundingBox(modelFaceId, blank);
     double smtkPt[3];
     for (pit = tess.begin(); pit != tess.end(); ++pit)
       {

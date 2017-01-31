@@ -103,6 +103,7 @@
   <suppress-warning text="skipping function 'smtk::model::Item::endAssociatedAttributes', unmatched return type 'smtk::model::Item::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::associatedEntities', unmatched return type 'std::set&lt;smtk::model::ItemPtr&gt;::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::setTessellation', unmatched return type 'smtk::model::Manager::tess_iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::setTessellationAndBoundingBox', unmatched return type 'smtk::model::Manager::tess_iter_type'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::insertEntity', unmatched return type 'smtk::model::Manager::iter_type'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::insertEntityOfTypeAndDimension', unmatched return type 'smtk::model::Manager::iter_type'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::setEntity', unmatched return type 'smtk::model::Manager::iter_type'"/>
@@ -1026,6 +1027,15 @@
         %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
       </inject-code>
     </add-function>
+    <add-function signature="setTessellationAndBoundingBox(smtk::common::UUID&amp;,smtk::model::Tessellation&amp;)"
+      static="NO"
+      return-type="std::pair&lt;smtk::common::UUID,smtk::model::Tessellation&gt;">
+      <inject-code>
+        smtk::model::Manager::tess_iter_type i = %CPPSELF-&gt;get()-&gt;setTessellationAndBoundingBox(%1, %2);
+        %RETURN_TYPE %0 = *i;
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+      </inject-code>
+    </add-function>
     <!--
     <add-function signature="topology()"
       return-type="google::sparse_hash_map&lt;smtk::common::UUID,smtk::model::Entity&gt;">
@@ -1700,6 +1710,15 @@
           return-type="std::pair&lt;smtk::common::UUID,smtk::model::Tessellation&gt;">
           <inject-code>
             smtk::model::Manager::tess_iter_type i = %CPPSELF-&gt;setTessellation(%1, %2);
+            %RETURN_TYPE %0 = *i;
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="setTessellationAndBoundingBox(smtk::common::UUID&amp;,smtk::model::Tessellation&amp;)"
+          static="NO"
+          return-type="std::pair&lt;smtk::common::UUID,smtk::model::Tessellation&gt;">
+          <inject-code>
+            smtk::model::Manager::tess_iter_type i = %CPPSELF-&gt;setTessellationAndBoundingBox(%1, %2);
             %RETURN_TYPE %0 = *i;
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>

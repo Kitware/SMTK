@@ -34,6 +34,7 @@
 #include "smtk/model/VolumeUse.h"
 
 #include "smtk/mesh/Manager.h"
+#include <float.h>
 
 #include <algorithm>
 #include <iterator>
@@ -1980,7 +1981,7 @@ EntityRefArray Manager::findEntitiesOfType(BitFlags flags, bool exactMatch)
   return this->entitiesMatchingFlagsAs<EntityRefArray>(flags, exactMatch);
 }
 
-/**\brief Set the tessellation information for a given \a cellId.
+/**\brief Set the tessellation information and for a given \a cellId.
   *
   * If \a analysis is non-zero (zero is the default), then the
   * Tessellation is treated as an analysis mesh, not a display
@@ -2032,6 +2033,101 @@ Manager::tess_iter_type Manager::setTessellation(
     *generation = gen[0];
 
   return result;
+}
+
+/**\brief Set the tessellation information and bounding box for a given \a cellId.
+  *
+  * If \a analysis is non-zero (zero is the default), then the
+  * Tessellation is treated as an analysis mesh, not a display
+  * tessellation.
+  *
+  * Note that calling this method automatically sets or increments
+  * the integer-valued "_tessgen" property on \a cellId.
+  * This property enables fast display updates when only a few
+  * entity tessellations have changed.
+  * If \a generation is a non-NULL pointer (NULL is the default),
+  * then the new generation number of the Tessellation is stored at
+  * the address provided.
+  */
+Manager::tess_iter_type Manager::setTessellationAndBoundingBox(
+  const UUID& cellId, const Tessellation& geom, int analysis, int* generation)
+{
+  if (cellId.isNull())
+    throw std::string("Nil cell ID");
+
+  smtk::shared_ptr<UUIDsToTessellations> storage;
+  const char* genProp;
+  if (!analysis)
+    { // store as display tessellation
+    storage = this->m_tessellations;
+    genProp = SMTK_TESS_GEN_PROP;
+    }
+  else
+    { // store as analysis mesh
+    storage = this->m_analysisMesh;
+    genProp = SMTK_MESH_GEN_PROP;
+    }
+
+  tess_iter_type result = storage->find(cellId);
+  if (result == storage->end())
+    {
+    std::pair<UUID,Tessellation> blank;
+    blank.first = cellId;
+    result = storage->insert(blank).first;
+    }
+  result->second = geom;
+
+  // Now set or increment the generation number.
+  IntegerList& gen(this->integerProperty(cellId, genProp));
+  if (gen.empty())
+    gen.push_back(0);
+  else
+    ++gen[0];
+  if (generation)
+    *generation = gen[0];
+
+  // Set/upate the bBox
+  this->setBoundingBox(cellId, geom.coords());
+  return result;
+}
+
+/**\brief set the bounding box of a model entity given \a entityId and \a coords.
+  *
+  * if provided bBox, we would just use the coords as bBox
+  *
+  * Returns true when a real bBox is set and false otherwise.
+  */
+bool Manager::setBoundingBox(const UUID &cellId, const std::vector<double> &coords, int providedbBox)
+{
+  smtk::model::FloatList bBox;
+  if (providedbBox)
+  {
+    this->setFloatProperty(cellId, SMTK_BOUNDING_BOX_PROP, coords);
+    return true;
+  }
+  else // calculate boundingBox
+  {
+    if  (coords.size() == 0)
+      {return false;} // nothing to set
+    // initialize the bBox
+    for (int i = 0; i < 6;  i++)
+    {
+      double tmp = (i%2 == 1) ? -DBL_MAX : DBL_MAX;
+      bBox.push_back(tmp);
+    }
+    std::vector<double>::size_type pointSize = coords.size()/3;
+    for (size_t i = 0; i < pointSize ; ++i)
+    {
+      bBox[0] = std::min(bBox[0], coords[3*i]);
+      bBox[1] = std::max(bBox[1], coords[3*i]);
+      bBox[2] = std::min(bBox[2], coords[3*i + 1]);
+      bBox[3] = std::max(bBox[3], coords[3*i + 1]);
+      bBox[4] = std::min(bBox[4], coords[3*i + 2]);
+      bBox[5] = std::max(bBox[5], coords[3*i + 2]);
+    }
+    this->setFloatProperty(cellId, SMTK_BOUNDING_BOX_PROP, bBox);
+    return true;
+  }
 }
 
 /**\brief Remove the tessellation of the given \a entityId.

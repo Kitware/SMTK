@@ -598,7 +598,7 @@ bool Session::addTessellation(
     std::cerr << "Warning: Triangle strips in discrete cells are unsupported. Ignoring.\n";
     }
   if (!tess.coords().empty())
-    entityref.manager()->setTessellation(entityref.entity(), tess);
+    entityref.manager()->setTessellationAndBoundingBox(entityref.entity(), tess);
 
   smtk::mesh::CollectionPtr collection =
     this->manager()->meshes()->

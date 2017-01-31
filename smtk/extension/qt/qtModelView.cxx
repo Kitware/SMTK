@@ -382,6 +382,7 @@ void qtModelView::selectionChanged (
     AUX_GEOM_ENTITY | INSTANCE_ENTITY,
     selproperties, false, &selmeshes);
 
+  // update selection manager
   emit this->selectionChanged(selentityrefs, selmeshes, selproperties);
 }
 

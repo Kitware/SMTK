@@ -574,7 +574,7 @@ void CreateFaces::addTessellations()
     std::vector<poly::polygon_data<internal::Coord> >::const_iterator pit;
     smtk::model::Tessellation blank;
     smtk::model::UUIDsToTessellations::iterator smtkTess =
-      this->manager()->setTessellation(modelFace.entity(), blank);
+      this->manager()->setTessellationAndBoundingBox(modelFace.entity(), blank);
     double smtkPt[3];
     for (pit = tess.begin(); pit != tess.end(); ++pit)
       {
