@@ -57,6 +57,7 @@
 
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QCoreApplication>
 
 class vtkDEMImageCanvasSource2D : public vtkImageCanvasSource2D
 {
@@ -700,6 +701,9 @@ void imageFeatureExtractorWidget::saveMask()
 
 void imageFeatureExtractorWidget::run()
 {
+  this->ui->Run->setText("...Running...");
+  QCoreApplication::processEvents();
+  this->ui->Run->repaint();
   if(internal->filter == internal->filterGrabCuts.GetPointer())
   {
     internal->filterGrabCuts->DoGrabCut();
@@ -737,6 +741,7 @@ void imageFeatureExtractorWidget::run()
   internal->drawing->SetDrawColor(color);
   vtkRenderWindowInteractor *interactor = this->internal->imageViewer->GetRenderWindow()->GetInteractor();
   interactor->Render();
+  this->ui->Run->setText("Run");
 }
 
 void imageFeatureExtractorWidget::clear()
