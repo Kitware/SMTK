@@ -121,7 +121,7 @@ void qtModelPanel::resetView(qtModelPanel::enumTreeView enType,
 
   spg->setDirectLimit(-1);
   spg->setSkipAttributes(true);
-  spg->setSkipProperties(false);
+  spg->setSkipProperties(true);
 
   qtModelView* modelview = this->getModelView();
   QPointer<smtk::extension::QEntityItemModel> qmodel = modelview->getModel();
