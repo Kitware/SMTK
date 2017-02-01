@@ -165,6 +165,10 @@ public:
   EntityRefs bordantEntities(int ofDimension = -2) const;
   EntityRefs boundaryEntities(int ofDimension = -2) const;
 
+  std::vector<double> boundingBox() const;
+  std::vector<double> unionBoundingBox(const std::vector<double> &b1,
+                                       const std::vector<double> &b2) const;
+
   EntityRefs lowerDimensionalBoundaries(int lowerDimension);
   EntityRefs higherDimensionalBordants(int higherDimension);
   EntityRefs adjacentEntities(int ofDimension);

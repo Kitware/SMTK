@@ -49,6 +49,8 @@ py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::modu
     .def("attributes", &smtk::model::EntityRef::attributes)
     .def("bordantEntities", &smtk::model::EntityRef::bordantEntities, py::arg("ofDimension") = -2)
     .def("boundaryEntities", &smtk::model::EntityRef::boundaryEntities, py::arg("ofDimension") = -2)
+    .def("boundingBox", &smtk::model::EntityRef::boundingBox)
+    .def("unionBoundingBox", &smtk::model::EntityRef::unionBoundingBox, py::arg("b1"), py::arg("b2"))
     // .def("checkForArrangements", &smtk::model::EntityRef::checkForArrangements, py::arg("k"), py::arg("entry"), py::arg("arr"))
     .def("classname", &smtk::model::EntityRef::classname)
     .def("clearArrangements", &smtk::model::EntityRef::clearArrangements)

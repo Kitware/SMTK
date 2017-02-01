@@ -75,5 +75,18 @@ if(SMTK_DATA_DIR)
       "${SMTK_DATA_DIR}/mesh/2d/test2D.2dm"
   )
 
+  add_executable(boundingBox2dmTest boundingBox2dm.cxx)
+  target_link_libraries(boundingBox2dmTest
+    smtkCore
+    smtkDiscreteSession
+    vtkSMTKOperatorsExt
+    vtkSMTKSourceExt
+    )
+  add_test(
+    NAME boundingBox2dmTest
+    COMMAND 
+      $<TARGET_FILE:boundingBox2dmTest>
+      "${SMTK_DATA_DIR}/mesh/2d/test2D.2dm"
+  )
 
 endif()

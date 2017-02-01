@@ -63,7 +63,7 @@
 
 /**\brief The name of an integer property used to store mesh Tessellation generation numbers.
   *
-  * \sa SMTK_TESS_GEN_PROP
+  * \sa SMTK_MESH_GEN_PROP
   */
 #define SMTK_MESH_GEN_PROP "_meshgen"
 
@@ -72,6 +72,12 @@
   * \sa ModelGeometryStyle
   */
 #define SMTK_GEOM_STYLE_PROP "_geomstyle"
+
+/**\brief The name of an float property used to store the bounding box of a model entity
+  *
+  * \sa  SMTK_BOUNDING_BOX_PROP
+  */
+#define SMTK_BOUNDING_BOX_PROP "_boundingBox"
 
 namespace smtk {
   namespace model {
@@ -256,6 +262,16 @@ public:
     const Tessellation& geom,
     int analysis = 0,
     int* gen = NULL);
+
+  tess_iter_type setTessellationAndBoundingBox(
+    const smtk::common::UUID& cellId,
+    const Tessellation& geom,
+    int analysis = 0,
+    int* gen = NULL);
+  // if BBox is provided, just replace corrds with BBox else we would loop through coords
+  // BBox format: [xmin, xmax, ymin, ymax, zmin, zmax]
+  bool setBoundingBox(const smtk::common::UUID& cellId,
+                     const std::vector<double> & coords, int providedBBox = 0);
   bool removeTessellation(const smtk::common::UUID& cellId, bool removeGen = false);
 
   int arrangeEntity(const smtk::common::UUID& entityId, ArrangementKind, const Arrangement& arr, int index = -1);

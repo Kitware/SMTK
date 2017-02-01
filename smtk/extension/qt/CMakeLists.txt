@@ -3,6 +3,7 @@ include(${QT_USE_FILE})
 # set up sources to build
 set(QAttrLibSrcs
   qtUIManager.cxx
+  qtSelectionManager.cxx
   qtAttribute.cxx
   qtAttributeDisplay.cxx
   qtAttributeItemWidgetFactory.cxx
@@ -53,6 +54,7 @@ set(QAttrLibUIs
 
 set(QAttrLibMocHeaders
   qtUIManager.h
+  qtSelectionManager.h
   qtAttribute.h
   qtAttributeDisplay.h
   qtBaseView.h
