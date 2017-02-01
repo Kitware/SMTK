@@ -172,9 +172,9 @@ smtk::model::OperatorResult ExportEdgesToVTK::operateInternal()
 #include "smtk/extension/vtk/operators/ExportEdgesToVTK_xml.h"
 
 smtkImplementsModelOperator(
-  SMTKCORE_EXPORT,
+  VTKSMTKOPERATORSEXT_EXPORT,
   smtk::model::ExportEdgesToVTK,
-  export_model_json,
+  export_edges_to_vtk,
   "export edges to vtk",
   ExportEdgesToVTK_xml,
   smtk::model::Session);

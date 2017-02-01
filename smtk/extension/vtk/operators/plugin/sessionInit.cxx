@@ -12,3 +12,4 @@
 #include "smtk/AutoInit.h"
 
 smtkComponentInitMacro(smtk_apply_bathymetry_operator);
+smtkComponentInitMacro(smtk_export_edges_to_vtk_operator);
