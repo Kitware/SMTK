@@ -44,10 +44,9 @@ namespace smtk
 
     protected slots:
       virtual void updateItemData();
-      //virtual void onAdvanceLevelChanged(int levelIdx);
       virtual void onChildWidgetSizeChanged();
-      //virtual void onAddNewValue();
-      //virtual void onRemoveValue();
+      virtual void onAddNewValue();
+      virtual void onRemoveValue();
 
       void onDateTimeChanged(const QDateTime& newValue);
 
@@ -60,6 +59,7 @@ namespace smtk
       void onRegionSelected();
 
     protected:
+      smtk::attribute::DateTimeItemPtr datetimeItem();
       virtual void createWidget();
       QWidget *createDateTimeWidget(int elementIdx);
       virtual void loadInputValues();

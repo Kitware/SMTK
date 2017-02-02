@@ -37,7 +37,8 @@ namespace {
     const char *regionHeaders[] = {"TimeZone", "Offset/DST", "Abbrev."};
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
       {
-      if (section < sizeof(regionHeaders)/sizeof(const char *))
+      std::size_t numRegionHeaders = sizeof(regionHeaders)/sizeof(const char *);
+      if (section < static_cast<int>(numRegionHeaders))
         {
         return regionHeaders[section];
         }
@@ -151,6 +152,8 @@ QString qtTimeZoneSelectWidget::selectedRegion() const
 void qtTimeZoneSelectWidget::onContinentChanged(
   const QItemSelection& selected, const QItemSelection& deselected)
 {
+  (void)deselected;
+
   //qDebug() << "onContinentChanged";
   if (selected.size() == 0)
     {
@@ -179,6 +182,8 @@ void qtTimeZoneSelectWidget::onContinentChanged(
 void qtTimeZoneSelectWidget::onRegionChanged(
   const QItemSelection& selected, const QItemSelection& deselected)
 {
+  (void)deselected;
+
   if (selected.size() != 1)
     {
     qWarning() << "Unexpected selection size:" << selected.size();
