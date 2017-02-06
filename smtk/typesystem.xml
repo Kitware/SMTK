@@ -609,7 +609,6 @@
   <suppress-warning text="skipping function 'smtk::attribute::MeshItem::end', unmatched return type 'smtk::attribute::MeshItem::const_mesh_it'"/>
   <suppress-warning text="skipping function 'smtk::attribute::MeshItem::begin', unmatched return type 'smtk::attribute::MeshItem::const_mesh_it'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findDateTime', unmatched return type 'smtk::attribute::ConstDateTimeItemPtr'" />
-  <suppress-warning text="Shadowing: ValueItemDefinition::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const and DateTimeItemDefinition::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const" />
 
   @EXTRA_TYPESYSTEMS@
 
@@ -1934,9 +1933,6 @@
       </object-type>
       <object-type name="DateTimeItemDefinition">
         <include file-name="smtk/attribute/DateTimeItemDefinition.h" location="local" />
-        <modify-function signature="addDiscreteValue(smtk::common::DateTimeZonePair)" remove="all" />
-        <modify-function signature="addDiscreteValue(smtk::common::DateTimeZonePair, std::string)" remove="all" />
-        <modify-function signature="findDiscreteIndex(smtk::common::DateTimeZonePair) const" remove="all" />
       </object-type>
 
       <object-type name="Definition">

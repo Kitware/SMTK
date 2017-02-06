@@ -202,30 +202,30 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
   // Use tooltip for min/max values
   // For now use unformatted json
   // Todo consider using display format
-  QString tooltip;
-  if (def->hasMinRange())
-    {
-    ::smtk::common::DateTimeZonePair minDtz = def->minRange();
-    QString inclusive = def->minRangeInclusive() ? "Inclusive" : "Not Inclusive";
-    QString minString = QString::fromStdString(minDtz.serialize());
-    tooltip.append("Min (").append(inclusive).append("): ").append(minString);
-    }
-  if (def->hasMaxRange())
-    {
-    ::smtk::common::DateTimeZonePair maxDtz = def->maxRange();
-    QString inclusive = def->maxRangeInclusive() ? "Inclusive" : "Not Inclusive";
-    QString maxString = QString::fromStdString(maxDtz.serialize());
-    if (!tooltip.isEmpty())
-      {
-      tooltip.append("\n");
-      }
-    tooltip.append("Max (").append(inclusive).append("): ").append(maxString);
-    }
+  // QString tooltip;
+  // if (def->hasMinRange())
+  //   {
+  //   ::smtk::common::DateTimeZonePair minDtz = def->minRange();
+  //   QString inclusive = def->minRangeInclusive() ? "Inclusive" : "Not Inclusive";
+  //   QString minString = QString::fromStdString(minDtz.serialize());
+  //   tooltip.append("Min (").append(inclusive).append("): ").append(minString);
+  //   }
+  // if (def->hasMaxRange())
+  //   {
+  //   ::smtk::common::DateTimeZonePair maxDtz = def->maxRange();
+  //   QString inclusive = def->maxRangeInclusive() ? "Inclusive" : "Not Inclusive";
+  //   QString maxString = QString::fromStdString(maxDtz.serialize());
+  //   if (!tooltip.isEmpty())
+  //     {
+  //     tooltip.append("\n");
+  //     }
+  //   tooltip.append("Max (").append(inclusive).append("): ").append(maxString);
+  //   }
 
-  if (!tooltip.isEmpty())
-    {
-    dtEdit->setToolTip(tooltip);
-    }
+  // if (!tooltip.isEmpty())
+  //   {
+  //   dtEdit->setToolTip(tooltip);
+  //   }
 
   frame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   QHBoxLayout* layout = new QHBoxLayout(frame);
@@ -274,17 +274,17 @@ void qtDateTimeItem::setOutputOptional(int state)
     return;
     }
   bool enable = state ? true : false;
-  if(item->isExtensible())
-    {
-    if(this->Internals->AddItemButton)
-      {
-      this->Internals->AddItemButton->setVisible(enable);
-      }
-    foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
-      {
-      tButton->setVisible(enable);
-      }
-   }
+  // if(item->isExtensible())
+  //   {
+  //   if(this->Internals->AddItemButton)
+  //     {
+  //     this->Internals->AddItemButton->setVisible(enable);
+  //     }
+  //   foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
+  //     {
+  //     tButton->setVisible(enable);
+  //     }
+  //  }
 
   foreach(QWidget* cwidget, this->Internals->ChildrenMap.keys())
     {
@@ -321,61 +321,61 @@ void qtDateTimeItem::onChildWidgetSizeChanged()
 }
 
 //----------------------------------------------------------------------------
-void qtDateTimeItem::onAddNewValue()
-{
-  smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
-  if(!item)
-    {
-    return;
-    }
-  if(item->setNumberOfValues(item->numberOfValues() + 1))
-    {
-//    QBoxLayout* entryLayout = qobject_cast<QBoxLayout*>(
-//      this->Internals->EntryFrame->layout());
-    this->addInputEditor(static_cast<int>(item->numberOfValues()) - 1);
-    emit this->modified();
-    }
-}
+// void qtDateTimeItem::onAddNewValue()
+// {
+//   smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
+//   if(!item)
+//     {
+//     return;
+//     }
+//   if(item->setNumberOfValues(item->numberOfValues() + 1))
+//     {
+// //    QBoxLayout* entryLayout = qobject_cast<QBoxLayout*>(
+// //      this->Internals->EntryFrame->layout());
+//     this->addInputEditor(static_cast<int>(item->numberOfValues()) - 1);
+//     emit this->modified();
+//     }
+// }
 
 //----------------------------------------------------------------------------
-void qtDateTimeItem::onRemoveValue()
-{
-  QToolButton* const minusButton = qobject_cast<QToolButton*>(
-    QObject::sender());
-  if(!minusButton || !this->Internals->ExtensibleMap.contains(minusButton))
-    {
-    return;
-    }
+// void qtDateTimeItem::onRemoveValue()
+// {
+//   QToolButton* const minusButton = qobject_cast<QToolButton*>(
+//     QObject::sender());
+//   if(!minusButton || !this->Internals->ExtensibleMap.contains(minusButton))
+//     {
+//     return;
+//     }
 
-  int gIdx = this->Internals->MinusButtonIndices.indexOf(minusButton);//minusButton->property("SubgroupIndex").toInt();
-  smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
-  if(!item || gIdx < 0 || gIdx >= static_cast<int>(item->numberOfValues()))
-    {
-    return;
-    }
+//   int gIdx = this->Internals->MinusButtonIndices.indexOf(minusButton);//minusButton->property("SubgroupIndex").toInt();
+//   smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
+//   if(!item || gIdx < 0 || gIdx >= static_cast<int>(item->numberOfValues()))
+//     {
+//     return;
+//     }
 
-  QWidget* childwidget = this->Internals->ExtensibleMap.value(minusButton).second;
-  QLayout* childLayout = this->Internals->ChildrenMap.value(childwidget);
-  if(childLayout)
-    {
-    QLayoutItem *child;
-    while ((child = childLayout->takeAt(0)) != 0)
-      {
-      delete child;
-      }
-    delete childLayout;
-    }
-  delete childwidget;
-  delete this->Internals->ExtensibleMap.value(minusButton).first;
-  this->Internals->ExtensibleMap.remove(minusButton);
-  this->Internals->MinusButtonIndices.removeOne(minusButton);
-  delete minusButton;
+//   QWidget* childwidget = this->Internals->ExtensibleMap.value(minusButton).second;
+//   QLayout* childLayout = this->Internals->ChildrenMap.value(childwidget);
+//   if(childLayout)
+//     {
+//     QLayoutItem *child;
+//     while ((child = childLayout->takeAt(0)) != 0)
+//       {
+//       delete child;
+//       }
+//     delete childLayout;
+//     }
+//   delete childwidget;
+//   delete this->Internals->ExtensibleMap.value(minusButton).first;
+//   this->Internals->ExtensibleMap.remove(minusButton);
+//   this->Internals->MinusButtonIndices.removeOne(minusButton);
+//   delete minusButton;
 
-  item->removeValue(gIdx);
-  emit this->modified();
+//   item->removeValue(gIdx);
+//   emit this->modified();
 
-  this->updateExtensibleState();
-}
+//   this->updateExtensibleState();
+// }
 
 //----------------------------------------------------------------------------
 void qtDateTimeItem::onDateTimeChanged(const QDateTime& qdatetime)
@@ -483,24 +483,24 @@ void qtDateTimeItem::loadInputValues()
     }
 
   int n = static_cast<int>(item->numberOfValues());
-  if(item->isExtensible())
-    {
-    if(!this->Internals->AddItemButton)
-      {
-      QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-      this->Internals->AddItemButton = new QToolButton(this->Widget);
-      QString iconName(":/icons/attribute/plus.png");
-      this->Internals->AddItemButton->setText("Add New Value");
-      this->Internals->AddItemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+//   if(item->isExtensible())
+//     {
+//     if(!this->Internals->AddItemButton)
+//       {
+//       QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+//       this->Internals->AddItemButton = new QToolButton(this->Widget);
+//       QString iconName(":/icons/attribute/plus.png");
+//       this->Internals->AddItemButton->setText("Add New Value");
+//       this->Internals->AddItemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
-//      this->Internals->AddItemButton->setFixedSize(QSize(12, 12));
-      this->Internals->AddItemButton->setIcon(QIcon(iconName));
-      this->Internals->AddItemButton->setSizePolicy(sizeFixedPolicy);
-      connect(this->Internals->AddItemButton, SIGNAL(clicked()),
-        this, SLOT(onAddNewValue()));
-      this->Internals->EntryLayout->addWidget(this->Internals->AddItemButton, 0, 1);
-      }
-    }
+// //      this->Internals->AddItemButton->setFixedSize(QSize(12, 12));
+//       this->Internals->AddItemButton->setIcon(QIcon(iconName));
+//       this->Internals->AddItemButton->setSizePolicy(sizeFixedPolicy);
+//       connect(this->Internals->AddItemButton, SIGNAL(clicked()),
+//         this, SLOT(onAddNewValue()));
+//       this->Internals->EntryLayout->addWidget(this->Internals->AddItemButton, 0, 1);
+//       }
+//     }
 
   for(int i = 0; i < n; i++)
     {
@@ -634,44 +634,45 @@ void qtDateTimeItem::addInputEditor(int i)
   QBoxLayout* editorLayout = new QHBoxLayout;
   editorLayout->setMargin(0);
   editorLayout->setSpacing(3);
-  if(item->isExtensible())
-    {
-    QToolButton* minusButton = new QToolButton(this->Widget);
-    QString iconName(":/icons/attribute/minus.png");
-    minusButton->setFixedSize(QSize(12, 12));
-    minusButton->setIcon(QIcon(iconName));
-    minusButton->setSizePolicy(sizeFixedPolicy);
-    minusButton->setToolTip("Remove value");
-    editorLayout->addWidget(minusButton);
-    connect(minusButton, SIGNAL(clicked()),
-      this, SLOT(onRemoveValue()));
-    QPair<QPointer<QLayout>, QPointer<QWidget> > pair;
-    pair.first = editorLayout;
-    pair.second = editBox;
-    this->Internals->ExtensibleMap[minusButton] = pair;
-    this->Internals->MinusButtonIndices.push_back(minusButton);
-    }
+  // if(item->isExtensible())
+  //   {
+  //   QToolButton* minusButton = new QToolButton(this->Widget);
+  //   QString iconName(":/icons/attribute/minus.png");
+  //   minusButton->setFixedSize(QSize(12, 12));
+  //   minusButton->setIcon(QIcon(iconName));
+  //   minusButton->setSizePolicy(sizeFixedPolicy);
+  //   minusButton->setToolTip("Remove value");
+  //   editorLayout->addWidget(minusButton);
+  //   connect(minusButton, SIGNAL(clicked()),
+  //     this, SLOT(onRemoveValue()));
+  //   QPair<QPointer<QLayout>, QPointer<QWidget> > pair;
+  //   pair.first = editorLayout;
+  //   pair.second = editBox;
+  //   this->Internals->ExtensibleMap[minusButton] = pair;
+  //   this->Internals->MinusButtonIndices.push_back(minusButton);
+  //   }
 
-  if(n!=1 && itemDef->hasValueLabels())
-    {
-    std::string componentLabel = itemDef->valueLabel(i);
-    if(!componentLabel.empty())
-      {
-      // acbauer -- this should probably be improved to look nicer
-      QString labelText = componentLabel.c_str();
-      QLabel* label = new QLabel(labelText, editBox);
-      label->setSizePolicy(sizeFixedPolicy);
-      editorLayout->addWidget(label);
-      }
-    }
+  // if(n!=1 && itemDef->hasValueLabels())
+  //   {
+  //   std::string componentLabel = itemDef->valueLabel(i);
+  //   if(!componentLabel.empty())
+  //     {
+  //     // acbauer -- this should probably be improved to look nicer
+  //     QString labelText = componentLabel.c_str();
+  //     QLabel* label = new QLabel(labelText, editBox);
+  //     label->setSizePolicy(sizeFixedPolicy);
+  //     editorLayout->addWidget(label);
+  //     }
+  //   }
   editorLayout->addWidget(editBox);
 
   // always going vertical for discrete and extensible items
-  if(this->Internals->VectorItemOrient == Qt::Vertical || item->isExtensible())
+  //if(this->Internals->VectorItemOrient == Qt::Vertical || item->isExtensible())
+  if(this->Internals->VectorItemOrient == Qt::Vertical)
     {
     int row = 2*i;
     // The "Add New Value" button is in first row, so take that into account
-    row = item->isExtensible() ? row+1 : row;
+    //row = item->isExtensible() ? row+1 : row;
     this->Internals->EntryLayout->addLayout(editorLayout, row, 1);
 
     // there could be conditional children, so we need another layout
@@ -688,29 +689,29 @@ void qtDateTimeItem::addInputEditor(int i)
     }
 
   this->Internals->ChildrenMap[editBox] = childLayout;
-  this->updateExtensibleState();
+  //this->updateExtensibleState();
 }
 
 //----------------------------------------------------------------------------
-void qtDateTimeItem::updateExtensibleState()
-{
-  smtk::attribute::DateTimeItemPtr item =
-    dynamic_pointer_cast<DateTimeItem>(this->getObject());
-  if(!item || !item->isExtensible())
-    {
-    return;
-    }
-  bool maxReached = (item->maxNumberOfValues() > 0) &&
-    (item->maxNumberOfValues() == item->numberOfValues());
-  this->Internals->AddItemButton->setEnabled(!maxReached);
+// void qtDateTimeItem::updateExtensibleState()
+// {
+//   smtk::attribute::DateTimeItemPtr item =
+//     dynamic_pointer_cast<DateTimeItem>(this->getObject());
+//   if(!item || !item->isExtensible())
+//     {
+//     return;
+//     }
+//   bool maxReached = (item->maxNumberOfValues() > 0) &&
+//     (item->maxNumberOfValues() == item->numberOfValues());
+//   this->Internals->AddItemButton->setEnabled(!maxReached);
 
-  bool minReached = (item->numberOfRequiredValues() > 0) &&
-    (item->numberOfRequiredValues() == item->numberOfValues());
-  foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
-    {
-    tButton->setEnabled(!minReached);
-    }
-}
+//   bool minReached = (item->numberOfRequiredValues() > 0) &&
+//     (item->numberOfRequiredValues() == item->numberOfValues());
+//   foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
+//     {
+//     tButton->setEnabled(!minReached);
+//     }
+// }
 
 //----------------------------------------------------------------------------
 void qtDateTimeItem::clearChildWidgets()
@@ -721,19 +722,19 @@ void qtDateTimeItem::clearChildWidgets()
     return;
     }
 
-  if(item->isExtensible())
-    {
-    //clear mapping
-    foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
-      {
-// will delete later from this->Internals->ChildrenMap
-//      delete this->Internals->ExtensibleMap.value(tButton).second;
-      delete this->Internals->ExtensibleMap.value(tButton).first;
-      delete tButton;
-      }
-    this->Internals->ExtensibleMap.clear();
-    this->Internals->MinusButtonIndices.clear();
-    }
+//   if(item->isExtensible())
+//     {
+//     //clear mapping
+//     foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
+//       {
+// // will delete later from this->Internals->ChildrenMap
+// //      delete this->Internals->ExtensibleMap.value(tButton).second;
+//       delete this->Internals->ExtensibleMap.value(tButton).first;
+//       delete tButton;
+//       }
+//     this->Internals->ExtensibleMap.clear();
+//     this->Internals->MinusButtonIndices.clear();
+//     }
 
   foreach(QWidget* cwidget, this->Internals->ChildrenMap.keys())
     {

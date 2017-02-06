@@ -45,8 +45,8 @@ namespace smtk
     protected slots:
       virtual void updateItemData();
       virtual void onChildWidgetSizeChanged();
-      virtual void onAddNewValue();
-      virtual void onRemoveValue();
+      /* virtual void onAddNewValue(); */
+      /* virtual void onRemoveValue(); */
 
       void onDateTimeChanged(const QDateTime& newValue);
 
@@ -65,7 +65,7 @@ namespace smtk
       virtual void loadInputValues();
       virtual void updateUI();
       virtual void addInputEditor(int i);
-      virtual void updateExtensibleState();
+      /* virtual void updateExtensibleState(); */
       virtual void clearChildWidgets();
       void updateBackground(QDateTimeEdit *dtEdit, bool valid);
       void updateTimeZoneMenu(QAction *selectedAction = NULL);

@@ -17,7 +17,8 @@ using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
 DateTimeItemDefinition::DateTimeItemDefinition(const std::string &myName):
-  ValueItemDefinitionTemplate<sc::DateTimeZonePair>(myName),
+  ItemDefinition(myName),
+  m_hasDefault(false), m_numberOfRequiredValues(1),
   m_useTimeZone(true), m_useCalendarPopup(true)
 {
 }
@@ -31,6 +32,28 @@ DateTimeItemDefinition::~DateTimeItemDefinition()
 Item::Type DateTimeItemDefinition::type() const
 {
   return Item::DATE_TIME;
+}
+
+//----------------------------------------------------------------------------
+bool DateTimeItemDefinition::setDefaultValue(const sc::DateTimeZonePair& value)
+{
+  this->m_defaultValue = value;
+  this->m_hasDefault = true;
+}
+
+//----------------------------------------------------------------------------
+bool DateTimeItemDefinition::setNumberOfRequiredValues(std::size_t esize)
+{
+  this->m_numberOfRequiredValues = esize;
+  return true;
+}
+
+//----------------------------------------------------------------------------
+bool DateTimeItemDefinition::isValueValid(const sc::DateTimeZonePair& value) const
+{
+  // Currently, all values are valid
+  // Later might have range checking
+  return true;
 }
 
 //----------------------------------------------------------------------------
@@ -53,14 +76,23 @@ DateTimeItemDefinition::buildItem(Item *owningItem,
 }
 
 //----------------------------------------------------------------------------
-smtk::attribute::ItemDefinitionPtr
-smtk::attribute::DateTimeItemDefinition::
-createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
+ItemDefinitionPtr DateTimeItemDefinition::createCopy(
+  ItemDefinition::CopyInfo& info) const
 {
-  smtk::attribute::DateTimeItemDefinitionPtr newDef =
-    smtk::attribute::DateTimeItemDefinition::New(this->name());
+  (void)info;
 
-  ValueItemDefinitionTemplate<sc::DateTimeZonePair>::copyTo(newDef, info);
+  DateTimeItemDefinitionPtr newDef = DateTimeItemDefinition::New(this->name());
+  ItemDefinition::copyTo(newDef);
+
+  if (m_hasDefault)
+    {
+    newDef->setDefaultValue(m_defaultValue);
+    }
+  newDef->setNumberOfRequiredValues(m_numberOfRequiredValues);
+  newDef->setDisplayFormat(m_displayFormat);
+  newDef->setUseTimeZone(m_useTimeZone);
+  newDef->setEnableCalendarPopup(m_useCalendarPopup);
+
   return newDef;
 }
 //----------------------------------------------------------------------------
