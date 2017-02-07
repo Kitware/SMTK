@@ -105,7 +105,7 @@ namespace smtk
     template<typename DataT>
     void ValueItemDefinitionTemplate<DataT>::updateDiscreteValue()
     {
-      assert(this->m_discreteValues.size() > this->m_defaultDiscreteIndex);
+      assert(static_cast<int>(this->m_discreteValues.size()) > this->m_defaultDiscreteIndex);
       this->setDefaultValue(this->m_discreteValues[this->m_defaultDiscreteIndex]);
     }
 //----------------------------------------------------------------------------
