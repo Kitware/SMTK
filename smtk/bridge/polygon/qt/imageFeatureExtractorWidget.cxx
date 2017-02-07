@@ -704,6 +704,7 @@ void imageFeatureExtractorWidget::saveMask()
 void imageFeatureExtractorWidget::run()
 {
   this->ui->Run->setText("...Running...");
+  this->ui->Run->setEnabled(false);
   QCoreApplication::processEvents();
   this->ui->Run->repaint();
   if(internal->filter == internal->filterGrabCuts.GetPointer())
@@ -746,6 +747,7 @@ void imageFeatureExtractorWidget::run()
   vtkRenderWindowInteractor *interactor = this->internal->imageViewer->GetRenderWindow()->GetInteractor();
   interactor->Render();
   this->ui->Run->setText("Run");
+  this->ui->Run->setEnabled(true);
 }
 
 void imageFeatureExtractorWidget::clear()
