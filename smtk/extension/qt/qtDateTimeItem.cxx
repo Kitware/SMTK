@@ -628,8 +628,6 @@ void qtDateTimeItem::addInputEditor(int i)
     return;
     }
 
-  const DateTimeItemDefinition *itemDef =
-    dynamic_cast<const DateTimeItemDefinition*>(item->definition().get());
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QBoxLayout* editorLayout = new QHBoxLayout;
   editorLayout->setMargin(0);
@@ -652,6 +650,8 @@ void qtDateTimeItem::addInputEditor(int i)
   //   this->Internals->MinusButtonIndices.push_back(minusButton);
   //   }
 
+  // const DateTimeItemDefinition *itemDef =
+  //   dynamic_cast<const DateTimeItemDefinition*>(item->definition().get());
   // if(n!=1 && itemDef->hasValueLabels())
   //   {
   //   std::string componentLabel = itemDef->valueLabel(i);

@@ -178,7 +178,7 @@ bool DateTimeItem::isUsingDefault(std::size_t element) const
 bool DateTimeItem::isUsingDefault() const
 {
   ConstDateTimeItemDefinitionPtr def = itemDefinition();
-  if (!def)
+  if (!def->hasDefault())
     {
     return false;
     }

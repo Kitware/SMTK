@@ -39,6 +39,7 @@ bool DateTimeItemDefinition::setDefaultValue(const sc::DateTimeZonePair& value)
 {
   this->m_defaultValue = value;
   this->m_hasDefault = true;
+  return true;
 }
 
 //----------------------------------------------------------------------------
@@ -49,7 +50,7 @@ bool DateTimeItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 }
 
 //----------------------------------------------------------------------------
-bool DateTimeItemDefinition::isValueValid(const sc::DateTimeZonePair& value) const
+bool DateTimeItemDefinition::isValueValid(const sc::DateTimeZonePair& /*value*/) const
 {
   // Currently, all values are valid
   // Later might have range checking

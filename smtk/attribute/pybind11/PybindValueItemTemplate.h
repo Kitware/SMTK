@@ -15,7 +15,6 @@
 
 #include "smtk/attribute/ValueItemTemplate.h"
 #include "smtk/attribute/ValueItem.h"
-#include "smtk/common/DateTimeZonePair.h"
 
 namespace py = pybind11;
 
@@ -99,33 +98,6 @@ PySharedPtrClass<smtk::attribute::ValueItemTemplate<std::string>, smtk::attribut
     ;
   return instance;
 
-}
-
-PySharedPtrClass<smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>, smtk::attribute::ValueItem > pybind11_init_smtk_attribute_ValueItemTemplate_datetime_(py::module &m)
-{
-  PySharedPtrClass<smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>, smtk::attribute::ValueItem > instance(m, "ValueItemTemplate_datetime_");
-  instance
-    .def("appendExpression", &smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::appendExpression, py::arg("exp"))
-    .def("appendValue", &smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::appendValue, py::arg("val"))
-    .def("assign", &smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::assign, py::arg("sourceItem"), py::arg("options") = 0)
-    .def("begin", &smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::begin)
-    .def("concreteDefinition", &smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::concreteDefinition)
-    .def("defaultValue", &smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::defaultValue)
-    .def("defaultValues", &smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::defaultValues)
-    .def("end", &smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::end)
-    .def("isUsingDefault", (bool (smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::*)(::size_t) const) &smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::isUsingDefault)
-    .def("isUsingDefault", (bool (smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::*)() const) &smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::isUsingDefault)
-    .def("removeValue", &smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::removeValue, py::arg("element"))
-    .def("reset", &smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::reset)
-    .def("setNumberOfValues", &smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::setNumberOfValues, py::arg("newSize"))
-    .def("setToDefault", &smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::setToDefault, py::arg("element") = 0)
-    .def("setValue", (bool (smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::*)(smtk::common::DateTimeZonePair const &)) &smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::setValue)
-    .def("setValue", (bool (smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::*)(::size_t, smtk::common::DateTimeZonePair const &)) &smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::setValue)
-    .def("value", &smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::value, py::arg("element") = 0)
-    .def("valueAsString", (std::string (smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::*)() const) &smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::valueAsString)
-    .def("valueAsString", (std::string (smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::*)(::size_t) const) &smtk::attribute::ValueItemTemplate<::smtk::common::DateTimeZonePair>::valueAsString)
-    ;
-  return instance;
 }
 
 #endif
