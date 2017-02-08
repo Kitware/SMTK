@@ -10,6 +10,7 @@
 
 
 #include "smtk/io/AttributeWriter.h"
+#include "smtk/io/XmlV2StringWriter.h"
 #include "smtk/io/XmlV3StringWriter.h"
 #include "smtk/io/Logger.h"
 #include <fstream>
@@ -29,7 +30,7 @@ bool AttributeWriter::write(const smtk::attribute::System &system,
                             Logger &logger)
 {
   logger.reset();
-  XmlV3StringWriter theWriter(system);
+  XmlV2StringWriter theWriter(system);
   theWriter.includeDefinitions(this->m_includeDefinitions);
   theWriter.includeInstances(this->m_includeInstances);
   theWriter.includeModelInformation(this->m_includeModelInformation);
@@ -60,7 +61,7 @@ bool AttributeWriter::writeContents(const smtk::attribute::System &system,
                                     bool no_declaration)
 {
   logger.reset();
-  XmlV3StringWriter theWriter(system);
+  XmlV2StringWriter theWriter(system);
   theWriter.includeDefinitions(this->m_includeDefinitions);
   theWriter.includeInstances(this->m_includeInstances);
   theWriter.includeModelInformation(this->m_includeModelInformation);
