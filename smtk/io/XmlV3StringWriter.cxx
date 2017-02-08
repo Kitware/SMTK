@@ -1220,7 +1220,7 @@ void XmlV3StringWriter::processModelEntityItem(pugi::xml_node &node,
     return;
     }
 
-  if (numRequiredVals == 1)
+  if (numRequiredVals == 1 && !item->isExtensible())
     {
     if (item->isSet())
       {
