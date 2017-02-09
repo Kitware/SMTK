@@ -13,12 +13,12 @@
         <BriefDescription>Model entities to delete.</BriefDescription>
         <DetailedDescription>
           Permanently delete all of these entities (and optionally all of
-          the higher-dimensional entities they bound).
+          the higher-dimensional and lower-dimensional entities they bound).
         </DetailedDescription>
       </AssociationsDef>
       <ItemDefinitions>
-        <Void Name="delete dependents" Optional="true">
-          <BriefDescription>Should all dependent entities also be deleted?</BriefDescription>
+        <Void Name="delete higher-dimensional neighbors" Optional="true">
+          <BriefDescription>Should all bounding entities also be deleted?</BriefDescription>
           <DetailedDescription>
             When disabled (the default), if any associated model entity is
             related to a higher-dimensional model entity (i.e., as a part of its boundary),
@@ -27,6 +27,15 @@
             When enabled, all higher-dimensional model entities bounded
             by any of the associated model entities will also be deleted.
             Thus, deleting a vertex will also delete any edges and faces attached to it.
+          </DetailedDescription>
+        </Void>
+        <Void Name="delete lower-dimensional neighbors" Optional="true">
+          <BriefDescription>Should all boundary entities also be deleted?</BriefDescription>
+          <DetailedDescription>
+            When disabled (the default), associated model entity's lower-dimensional model entities will not be deleted (i.e., as face's edges and vertices)
+
+            When enabled, all associated model entities' lower-dimensional model entities will also be deleted.
+            Thus, deleting a face will also delete any edges and vertices attached to it if they are not used by other cells.
           </DetailedDescription>
         </Void>
       </ItemDefinitions>

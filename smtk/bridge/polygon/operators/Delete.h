@@ -45,7 +45,11 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 
   template<typename U, typename V, typename W, typename X>
-  bool addDependents(const smtk::model::EntityRef& ent, bool deleteDependents, U& verts, V& edges, W& faces, X& other);
+  bool checkAndAddBoundingCells(const smtk::model::EntityRef& ent, bool
+                  deleteBoundingCells, U& verts, V& edges, W& faces, X& other);
+  template<typename U, typename V, typename W, typename X>
+  void addBoundaryCells(const smtk::model::EntityRef& ent, U& verts, V& edges,
+                        W& faces, X& other);
 
   int m_numInUse;
   int m_numWarnings;
