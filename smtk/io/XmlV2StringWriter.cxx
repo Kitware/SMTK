@@ -557,6 +557,14 @@ void
 XmlV2StringWriter::processItemDefinition(xml_node &node,
                                          smtk::attribute::ItemDefinitionPtr idef)
 {
+  this->processItemDefinitionAttributes(node, idef);
+  this->processItemDefinitionType(node, idef);
+}
+
+//----------------------------------------------------------------------------
+void XmlV2StringWriter::processItemDefinitionAttributes(
+  xml_node &node, smtk::attribute::ItemDefinitionPtr idef)
+{
   xml_node child;
   node.append_attribute("Name").set_value(idef->name().c_str());
   if (idef->label() != "")
@@ -607,6 +615,12 @@ XmlV2StringWriter::processItemDefinition(xml_node &node,
     {
     node.append_child("DetailedDescription").text().set(idef->detailedDescription().c_str());
     }
+}
+
+//----------------------------------------------------------------------------
+void XmlV2StringWriter::processItemDefinitionType(
+  xml_node &node, smtk::attribute::ItemDefinitionPtr idef)
+{
   switch (idef->type())
     {
     case Item::ATTRIBUTE_REF:
@@ -1021,6 +1035,14 @@ void XmlV2StringWriter::processAttribute(xml_node &attributes,
 void XmlV2StringWriter::processItem(xml_node &node,
                                     smtk::attribute::ItemPtr item)
 {
+  this->processItemAttributes(node, item);
+  this->processItemType(node, item);
+}
+
+//----------------------------------------------------------------------------
+void XmlV2StringWriter::processItemAttributes(
+  xml_node &node, smtk::attribute::ItemPtr item)
+{
   node.append_attribute("Name").set_value(item->name().c_str());
   if (item->isOptional())
     {
@@ -1037,7 +1059,12 @@ void XmlV2StringWriter::processItem(xml_node &node,
     {
     node.append_attribute("AdvanceWriteLevel") = item->advanceLevel(1);
     }
+}
 
+//----------------------------------------------------------------------------
+void XmlV2StringWriter::processItemType(
+  xml_node &node, smtk::attribute::ItemPtr item)
+{
   switch (item->type())
     {
     case Item::ATTRIBUTE_REF:

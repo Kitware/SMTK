@@ -76,10 +76,21 @@ namespace smtk
                              smtk::attribute::DefinitionPtr def);
       void processAttribute(pugi::xml_node &attributes,
                             smtk::attribute::AttributePtr att);
-      void processItem(pugi::xml_node &node,
-                       smtk::attribute::ItemPtr item);
-      void processItemDefinition(pugi::xml_node &node,
-                                 smtk::attribute::ItemDefinitionPtr idef);
+
+      void processItem(
+        pugi::xml_node &node, smtk::attribute::ItemPtr item);
+      virtual void processItemAttributes(
+        pugi::xml_node &node, smtk::attribute::ItemPtr item);
+      virtual void processItemType(
+        pugi::xml_node &node, smtk::attribute::ItemPtr item);
+
+      void processItemDefinition(
+        pugi::xml_node &node, smtk::attribute::ItemDefinitionPtr idef);
+      virtual void processItemDefinitionAttributes(
+        pugi::xml_node &node, smtk::attribute::ItemDefinitionPtr idef);
+      virtual void processItemDefinitionType(
+        pugi::xml_node &node, smtk::attribute::ItemDefinitionPtr idef);
+
       void processRefItem(pugi::xml_node &node,
                                    smtk::attribute::RefItemPtr item);
       void processRefDef(pugi::xml_node &node,
