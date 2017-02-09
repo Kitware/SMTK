@@ -28,6 +28,7 @@ set(ioHeaders
   ResourceSetWriter.h
   #XmlDocV1Parser.h
   XmlDocV2Parser.h
+  XmlStringWriter.h
   XmlV2StringWriter.h
   XmlV3StringWriter.h
 )

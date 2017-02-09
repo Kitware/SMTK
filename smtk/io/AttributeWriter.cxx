@@ -10,6 +10,7 @@
 
 
 #include "smtk/io/AttributeWriter.h"
+#include "smtk/io/XmlStringWriter.h"
 #include "smtk/io/XmlV2StringWriter.h"
 #include "smtk/io/XmlV3StringWriter.h"
 #include "smtk/io/Logger.h"
@@ -58,7 +59,7 @@ bool AttributeWriter::write(const smtk::attribute::System &system,
                             Logger &logger)
 {
   logger.reset();
-  XmlV2StringWriter *theWriter = this->newXmlStringWriter(system);
+  XmlStringWriter *theWriter = this->newXmlStringWriter(system);
   theWriter->includeDefinitions(this->m_includeDefinitions);
   theWriter->includeInstances(this->m_includeInstances);
   theWriter->includeModelInformation(this->m_includeModelInformation);
@@ -90,7 +91,7 @@ bool AttributeWriter::writeContents(const smtk::attribute::System &system,
                                     bool no_declaration)
 {
   logger.reset();
-  XmlV2StringWriter *theWriter = this->newXmlStringWriter(system);
+  XmlStringWriter *theWriter = this->newXmlStringWriter(system);
   theWriter->includeDefinitions(this->m_includeDefinitions);
   theWriter->includeInstances(this->m_includeInstances);
   theWriter->includeModelInformation(this->m_includeModelInformation);
@@ -101,10 +102,10 @@ bool AttributeWriter::writeContents(const smtk::attribute::System &system,
 }
 
 //----------------------------------------------------------------------------
-XmlV2StringWriter *AttributeWriter::newXmlStringWriter(
+XmlStringWriter *AttributeWriter::newXmlStringWriter(
   const smtk::attribute::System& system) const
 {
-  XmlV2StringWriter *writer = NULL;
+  XmlStringWriter *writer = NULL;
   switch (this->m_fileVersion)
     {
     case 2:

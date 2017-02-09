@@ -11,7 +11,7 @@
 #include "smtk/io/ResourceSetWriter.h"
 
 #include "smtk/io/AttributeWriter.h"
-#include "smtk/io/XmlV2StringWriter.h"
+#include "smtk/io/XmlStringWriter.h"
 
 #include "smtk/attribute/System.h"
 
@@ -95,13 +95,18 @@ writeString(std::string& content,
     if ((("" == link) || (EXPAND_LINKED_FILES == option)) &&
         ResourceSet::LOADED == state)
       {
-      // Use XmlV2StringWriter to generate xml for this attribute system
+      // Use XmlStringWriter to generate xml for this attribute system
       smtk::common::ResourcePtr resource;
       ok = resources.get(id, resource);
       smtk::attribute::System *system =
         dynamic_cast<smtk::attribute::System *>(resource.get());
-      XmlV2StringWriter xmlWriter(*system);
-      xmlWriter.generateXml(resourceElement, logger);
+
+      AttributeWriter attWriter;
+      // Get the default string writer instance
+      // Could consider allowing application to assign version number
+      XmlStringWriter *xmlWriter = attWriter.newXmlStringWriter(*system);
+      xmlWriter->generateXml(resourceElement, logger);
+      delete xmlWriter;
       }
     else if (link != "")
       {

@@ -289,9 +289,8 @@ struct XmlV2StringWriter::PugiPrivate
 };
 
 //----------------------------------------------------------------------------
-XmlV2StringWriter::XmlV2StringWriter(const attribute::System &mySystem):
-m_system(mySystem), m_includeDefinitions(true), m_includeInstances(true),
-m_includeModelInformation(true), m_includeViews(true), m_pugi(0)
+XmlV2StringWriter::XmlV2StringWriter(const attribute::System &mySystem)
+  : XmlStringWriter(mySystem)
 {
 }
 

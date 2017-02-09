@@ -13,6 +13,7 @@
 
 #ifndef __smtk_io_XmlV2StringWriter_h
 #define __smtk_io_XmlV2StringWriter_h
+#include "smtk/io/XmlStringWriter.h"  // base
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
@@ -35,36 +36,18 @@ namespace smtk
 {
   namespace io
   {
-    class SMTKCORE_EXPORT XmlV2StringWriter
+    class SMTKCORE_EXPORT XmlV2StringWriter : public XmlStringWriter
     {
     public:
       XmlV2StringWriter(const smtk::attribute::System &system);
       virtual ~XmlV2StringWriter();
-      std::string convertToString(smtk::io::Logger &logger,
-                                  bool no_declaration = false);
+      virtual std::string convertToString(
+        smtk::io::Logger &logger, bool no_declaration = false);
       void generateXml(pugi::xml_node& parent_node,
                        smtk::io::Logger &logger,
                        bool createRoot = true);
       const smtk::io::Logger &messageLog() const
       {return this->m_logger;}
-
-      //Control which sections of the attribute system should be writtern out
-      // By Default all sections are processed.  These are advance options!!
-      // If val is false then defintions will not be saved
-      void includeDefinitions(bool val)
-      {this->m_includeDefinitions = val;}
-
-      // If val is false then instances will not be saved
-      void includeInstances(bool val)
-      {this->m_includeInstances = val;}
-
-      // If val is false then model information will not be saved
-      void includeModelInformation(bool val)
-      {this->m_includeModelInformation = val;}
-
-      // If val is false then views will not be saved
-      void includeViews(bool val)
-      {this->m_includeViews = val;}
 
     protected:
       // Two virtual methods for writing contents
@@ -156,17 +139,10 @@ namespace smtk
       static std::string encodeModelEntityMask(smtk::model::BitFlags m);
       static std::string encodeColor(const double *color);
 
-      const smtk::attribute::System &m_system;
-      bool m_includeDefinitions;
-      bool m_includeInstances;
-      bool m_includeModelInformation;
-      bool m_includeViews;
-
       // Keep pugi headers out of public headers:
       struct PugiPrivate;
       PugiPrivate *m_pugi;
 
-      smtk::io::Logger  m_logger;
     private:
 
     };

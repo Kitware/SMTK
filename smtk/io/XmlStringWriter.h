@@ -7,51 +7,52 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME AttributeWriter.h -
-// .SECTION Description
+// .NAME XmlStringWriter.h - Abstract base class for internal attribute writers
+// .SECTION Description - Header file only
 // .SECTION See Also
 
-#ifndef __smtk_io_AttributeWriter_h
-#define __smtk_io_AttributeWriter_h
-
+#ifndef __smtk_io_XmlStringWriter_h
+#define __smtk_io_XmlStringWriter_h
 #include "smtk/CoreExports.h"
-#include "smtk/SystemConfig.h"
+#include "smtk/PublicPointerDefs.h"
+
+#include "smtk/attribute/System.h"
+#include "smtk/io/Logger.h"
+
 #include <string>
+
+namespace pugi {
+  class xml_node;
+}
 
 namespace smtk
 {
-  namespace attribute
-  {
-    class System;
-  }
-
   namespace io
   {
-    class Logger;
-    class ResourceSetWriter;
-    class XmlStringWriter;
-    class SMTKCORE_EXPORT AttributeWriter
+    class SMTKCORE_EXPORT XmlStringWriter
     {
-      // Make ResourceSetWriter friend so it can call newXmlStringWriter()
-      friend class ResourceSetWriter;
-
     public:
-      AttributeWriter();
+      XmlStringWriter(const smtk::attribute::System &system)
+      : m_system(system), m_includeDefinitions(true), m_includeInstances(true),
+      m_includeModelInformation(true), m_includeViews(true)
+      {}
 
-      // Set an explicit file version - for stable builds
-      bool setFileVersion(unsigned int version);
-      // Set the latest file version - for development
-      void setMaxFileVersion();
-      unsigned int fileVersion() const;
+      virtual ~XmlStringWriter()
+      {}
 
-      // Returns true if there was a problem with writing the file
-      bool write(const smtk::attribute::System &system,
-                 const std::string &filename,
-                 smtk::io::Logger &logger);
-      bool writeContents(const smtk::attribute::System &system,
-                         std::string &filecontents,
-                         smtk::io::Logger &logger,
-                         bool no_declaration = false);
+      // Subclass methods
+      virtual std::string className() const = 0;
+      virtual unsigned int fileVersion() const = 0;
+
+      virtual std::string convertToString(
+        smtk::io::Logger &logger, bool no_declaration = false) = 0;
+
+      virtual void generateXml(
+        pugi::xml_node& parent_node,
+        smtk::io::Logger &logger,
+        bool createRoot = true) = 0;
+
+
       //Control which sections of the attribute system should be writtern out
       // By Default all sections are processed.  These are advance options!!
       // If val is false then defintions will not be saved
@@ -71,21 +72,16 @@ namespace smtk
       {this->m_includeViews = val;}
 
     protected:
-#ifndef SHIBOKEN_SKIP
-      // Instantiates internal writer
-      // Caller is responsible for deleting the instance
-      XmlStringWriter *newXmlStringWriter(
-        const smtk::attribute::System& system) const;
-#endif
-    private:
-      unsigned int m_fileVersion;
+      const smtk::attribute::System &m_system;
       bool m_includeDefinitions;
       bool m_includeInstances;
       bool m_includeModelInformation;
       bool m_includeViews;
+
+      smtk::io::Logger  m_logger;
     };
-  }
-}
+  }  // namespace io
+}  // namespace smtk
 
 
-#endif /* __smtk_io_AttributeWriter_h */
+#endif // __smtk_io_XmlStringWriter_h
