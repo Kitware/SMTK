@@ -35,6 +35,10 @@ namespace smtk
 
     protected:
       // Override methods
+      // Two virtual methods for writing contents
+      virtual std::string className() const;
+      virtual unsigned int fileVersion() const;
+
       virtual void processItemDefinitionType(
         pugi::xml_node &node, smtk::attribute::ItemDefinitionPtr idef);
       virtual void processItemType(

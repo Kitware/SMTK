@@ -301,20 +301,33 @@ XmlV2StringWriter::~XmlV2StringWriter()
   delete m_pugi;
 }
 //----------------------------------------------------------------------------
+std::string XmlV2StringWriter::className() const
+{
+  return std::string("XmlV2StringWriter");
+}
+//----------------------------------------------------------------------------
+unsigned int XmlV2StringWriter::fileVersion() const
+{
+  return 2;
+}
+//----------------------------------------------------------------------------
 std::string XmlV2StringWriter::convertToString(Logger &logger,
                                                bool no_declaration)
 {
   // Initialize the xml document
   xml_document doc;
-  doc.append_child(node_comment).set_value("Created by XmlV2StringWriter");
+  std::stringstream oss;
+  oss << "Created by " << this->className();
+  doc.append_child(node_comment).set_value(oss.str().c_str());
   xml_node root = doc.append_child("SMTK_AttributeSystem");
-  root.append_attribute("Version").set_value(2);
+  root.append_attribute("Version").set_value(this->fileVersion());
 
   // Generate the element tree
   this->generateXml(root, logger, false);
 
   // Serialize the result
-  std::stringstream oss;
+  oss.clear();
+  oss.str("");
   unsigned int flags = pugi::format_indent;
   if (no_declaration)
     {

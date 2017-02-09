@@ -12,7 +12,9 @@
 #include "smtk/io/XmlDocV3Parser.h"
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
+#include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
+#include "smtk/common/DateTimeZonePair.h"
 
 using namespace pugi;
 using namespace smtk::io;
@@ -107,7 +109,17 @@ void XmlDocV3Parser::processDateTimeDef(
   pugi::xml_node &node,
   attribute::DateTimeItemDefinitionPtr idef)
 {
+  // Process the common value item def stuff
+  this->processItemDef(node, idef);
+
   xml_attribute xatt;
+  xatt = node.attribute("NumberOfRequiredValues");
+  std::size_t numberOfComponents = 0;
+  if (xatt)
+    {
+    numberOfComponents = xatt.as_uint();
+    idef->setNumberOfRequiredValues(numberOfComponents);
+    }
 
   xatt = node.attribute("DisplayFormat");
   if (xatt)
@@ -127,15 +139,76 @@ void XmlDocV3Parser::processDateTimeDef(
     idef->setEnableCalendarPopup(xatt.as_bool());
     }
 
-  // Process common value definition content in base class
-  XmlDocV1Parser::processDateTimeDef(node, idef);
+  xml_node dnode = node.child("DefaultValue");
+  if (dnode)
+    {
+    ::smtk::common::DateTimeZonePair dtz;
+    std::string content = dnode.text().get();
+    dtz.deserialize(content);
+    idef->setDefaultValue(dtz);
+    }
 }
 
 //----------------------------------------------------------------------------
 void XmlDocV3Parser::processDateTimeItem(
-  pugi::xml_node &node, attribute::DateTimeItemPtr idef)
+  pugi::xml_node &node, attribute::DateTimeItemPtr item)
 {
-  // Since DateTimeItem is a ValueItem subclass, all work is
-  // done in XmlDocV1Parser
-  XmlDocV1Parser::processDateTimeItem(node, idef);
+  xml_attribute natt = node.attribute("NumberOfValues");
+  if (!natt)
+    {
+    // Single value
+    item->setNumberOfValues(1);
+    xml_node noVal = node.child("UnsetVal");
+    if (!noVal)
+      {
+      ::smtk::common::DateTimeZonePair dtz;
+      std::string content = node.text().get();
+      dtz.deserialize(content);
+      item->setValue(dtz);
+      }
+    }
+  else
+    {
+    // Multiple values
+    std::size_t n = natt.as_uint();
+    item->setNumberOfValues(n);
+    xml_node valsNode = node.child("Values");
+    if (valsNode)
+      {
+      for (xml_node val = valsNode.first_child(); val; val = val.next_sibling())
+        {
+        std::string nodeName = val.name();
+        if (nodeName == "UnsetVal")
+          {
+          continue;
+          }
+        xml_attribute ixatt = val.attribute("Ith");
+        if (!ixatt)
+          {
+          smtkErrorMacro(this->m_logger,
+                         "XML Attribute Ith is missing for Item: " << item->name());
+          continue;
+          }
+        unsigned int i = ixatt.as_uint();
+        if (i >= n)
+          {
+          smtkErrorMacro(this->m_logger, "XML Attribute Ith = " << i
+                         << " is out of range for Item: " << item->name());
+          continue;
+          }
+        if (nodeName == "Val")
+          {
+          ::smtk::common::DateTimeZonePair dtz;
+          std::string content = val.text().get();
+          dtz.deserialize(content);
+          item->setValue(static_cast<int>(i), dtz);
+          }
+        else
+          {
+          smtkErrorMacro(this->m_logger, "Unsupported Value Node Type  Item: "
+                         << item->name());
+          }  // else
+        }  // for (val)
+      }  // if (valsNode)
+    }  // else
 }

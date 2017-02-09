@@ -28,10 +28,18 @@ namespace smtk
   namespace io
   {
     class Logger;
+    class XmlV2StringWriter;
     class SMTKCORE_EXPORT AttributeWriter
     {
     public:
       AttributeWriter();
+
+      // Set an explicit file version - for stable builds
+      bool setFileVersion(unsigned int version);
+      // Set the latest file version - for development
+      void setMaxFileVersion();
+      unsigned int fileVersion() const;
+
       // Returns true if there was a problem with writing the file
       bool write(const smtk::attribute::System &system,
                  const std::string &filename,
@@ -59,7 +67,14 @@ namespace smtk
       {this->m_includeViews = val;}
 
     protected:
+#ifndef SHIBOKEN_SKIP
+      // Instantiates internal writer
+      // Caller is responsible for deleting the instance
+      XmlV2StringWriter *newXmlStringWriter(
+        const smtk::attribute::System& system) const;
+#endif
     private:
+      unsigned int m_fileVersion;
       bool m_includeDefinitions;
       bool m_includeInstances;
       bool m_includeModelInformation;

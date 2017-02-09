@@ -67,6 +67,10 @@ namespace smtk
       {this->m_includeViews = val;}
 
     protected:
+      // Two virtual methods for writing contents
+      virtual std::string className() const;
+      virtual unsigned int fileVersion() const;
+
       void processAttributeInformation();
       void processViews();
       void processModelInfo();

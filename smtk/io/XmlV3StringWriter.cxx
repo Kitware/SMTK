@@ -38,6 +38,18 @@ XmlV3StringWriter::~XmlV3StringWriter()
 }
 
 //----------------------------------------------------------------------------
+std::string XmlV3StringWriter::className() const
+{
+  return std::string("XmlV3StringWriter");
+}
+
+//----------------------------------------------------------------------------
+unsigned int XmlV3StringWriter::fileVersion() const
+{
+  return 3;
+}
+
+//----------------------------------------------------------------------------
 void XmlV3StringWriter::processItemDefinitionType(
   xml_node &node, smtk::attribute::ItemDefinitionPtr idef)
 {
