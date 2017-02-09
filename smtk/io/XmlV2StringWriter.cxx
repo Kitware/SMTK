@@ -1183,7 +1183,7 @@ void XmlV2StringWriter::processModelEntityItem(pugi::xml_node &node,
     return;
     }
 
-  if (n == 1)
+  if ((numRequiredVals == 1) && (!item->isExtensible()))
     {
     if (item->isSet())
       {
@@ -1348,9 +1348,9 @@ void XmlV2StringWriter::processFileSystemItem(
 {
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   size_t i, n = item->numberOfValues();
+  node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
   if (!n)
     {
-    node.append_attribute("NumberOfValues").set_value(0);
     return;
     }
 
@@ -1361,15 +1361,17 @@ void XmlV2StringWriter::processFileSystemItem(
     node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
     }
 
-  if (numRequiredVals == 1) // Special Common Case
+  xml_node val;
+  if ((numRequiredVals == 1) && (!item->isExtensible()))
     {
     if (item->isSet())
       {
-      node.text().set(item->value().c_str());
+      val = node.append_child("Val");
+      val.text().set(item->value().c_str());
       }
     return;
     }
-  xml_node val, values = node.append_child("Values");
+  xml_node values = node.append_child("Values");
   for(i = 0; i < n; i++)
     {
     if (item->isSet(i))
