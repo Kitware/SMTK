@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef pybind_smtk_model_EntityRef_h
-#define pybind_smtk_model_EntityRef_h
+#ifndef pybind__Stage_Source_cmb_v4_ThirdParty_SMTK_smtk_model_EntityRef_h
+#define pybind__Stage_Source_cmb_v4_ThirdParty_SMTK_smtk_model_EntityRef_h
 
 #include <pybind11/pybind11.h>
 
@@ -50,7 +50,6 @@ py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::modu
     .def("bordantEntities", &smtk::model::EntityRef::bordantEntities, py::arg("ofDimension") = -2)
     .def("boundaryEntities", &smtk::model::EntityRef::boundaryEntities, py::arg("ofDimension") = -2)
     .def("boundingBox", &smtk::model::EntityRef::boundingBox)
-    .def("unionBoundingBox", &smtk::model::EntityRef::unionBoundingBox, py::arg("b1"), py::arg("b2"))
     // .def("checkForArrangements", &smtk::model::EntityRef::checkForArrangements, py::arg("k"), py::arg("entry"), py::arg("arr"))
     .def("classname", &smtk::model::EntityRef::classname)
     .def("clearArrangements", &smtk::model::EntityRef::clearArrangements)
@@ -134,6 +133,8 @@ py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::modu
     .def("removeIntegerProperty", &smtk::model::EntityRef::removeIntegerProperty, py::arg("propName"))
     .def("removeStringProperty", &smtk::model::EntityRef::removeStringProperty, py::arg("propName"))
     .def("removeTessellation", &smtk::model::EntityRef::removeTessellation, py::arg("removeGen") = false)
+    .def("resetTessellation", &smtk::model::EntityRef::resetTessellation, py::return_value_policy::reference)
+    .def("setBoundingBox", &smtk::model::EntityRef::setBoundingBox, py::arg("bbox"))
     .def("setColor", (void (smtk::model::EntityRef::*)(::smtk::model::FloatList const &)) &smtk::model::EntityRef::setColor, py::arg("rgba"))
     .def("setColor", (void (smtk::model::EntityRef::*)(double, double, double, double)) &smtk::model::EntityRef::setColor, py::arg("r"), py::arg("g"), py::arg("b"), py::arg("a") = 1.)
     .def("setDimensionBits", &smtk::model::EntityRef::setDimensionBits, py::arg("dim"))
@@ -146,22 +147,20 @@ py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::modu
     .def("setName", &smtk::model::EntityRef::setName, py::arg("n"))
     .def("setStringProperty", (void (smtk::model::EntityRef::*)(::std::string const &, ::smtk::model::String const &)) &smtk::model::EntityRef::setStringProperty, py::arg("propName"), py::arg("propValue"))
     .def("setStringProperty", (void (smtk::model::EntityRef::*)(::std::string const &, ::smtk::model::StringList const &)) &smtk::model::EntityRef::setStringProperty, py::arg("propName"), py::arg("propValue"))
-    .def("setTessellation", &smtk::model::EntityRef::setTessellation, py::arg("tess"), py::arg("analysisMesh") = 0)
+    .def("setTessellation", &smtk::model::EntityRef::setTessellation, py::arg("tess"), py::arg("analysisMesh") = 0, py::arg("updateBBox") = false)
+    .def("setTessellationAndBoundingBox", &smtk::model::EntityRef::setTessellationAndBoundingBox, py::arg("tess"), py::arg("analysisMesh") = 0)
     .def("setVisible", &smtk::model::EntityRef::setVisible, py::arg("vis"))
     .def("stringProperties", (smtk::model::StringData & (smtk::model::EntityRef::*)()) &smtk::model::EntityRef::stringProperties)
     .def("stringProperties", (smtk::model::StringData const & (smtk::model::EntityRef::*)() const) &smtk::model::EntityRef::stringProperties)
     .def("stringProperty", (smtk::model::StringList const & (smtk::model::EntityRef::*)(::std::string const &) const) &smtk::model::EntityRef::stringProperty, py::arg("propName"))
     .def("stringProperty", (smtk::model::StringList & (smtk::model::EntityRef::*)(::std::string const &)) &smtk::model::EntityRef::stringProperty, py::arg("propName"))
     .def("stringPropertyNames", &smtk::model::EntityRef::stringPropertyNames)
+    .def("tessellationGeneration", &smtk::model::EntityRef::tessellationGeneration)
     .def("unembedEntity", &smtk::model::EntityRef::unembedEntity, py::arg("thingToUnembed"))
+    .def("unionBoundingBox", &smtk::model::EntityRef::unionBoundingBox, py::arg("b1"), py::arg("b2"))
     .def("visible", &smtk::model::EntityRef::visible)
     ;
   return instance;
-}
-
-void pybind11_init_smtk_model_entityrefHash(py::module &m)
-{
-  m.def("entityrefHash", &smtk::model::entityrefHash, "", py::arg("c"));
 }
 
 #endif

@@ -179,14 +179,21 @@ public:
   EntityRef& findOrAddRawRelation(const EntityRef& ent);
   EntityRef& elideRawRelation(const EntityRef& ent);
 
+  Tessellation* resetTessellation();
   const Tessellation* hasTessellation() const;
   const Tessellation* hasAnalysisMesh() const;
   const Tessellation* gotMesh() const; //prefers the analaysis over the display
-  int setTessellation(const Tessellation* tess, int analysisMesh = 0);
+  int setTessellation(const Tessellation* tess, int analysisMesh = 0, bool updateBBox = false);
+  int setTessellationAndBoundingBox(const Tessellation* tess, int analysisMesh = 0)
+    { return this->setTessellation(tess, analysisMesh, true); }
   bool removeTessellation(bool removeGen = false);
   void findEntitiesWithTessellation(
     std::map<smtk::model::EntityRef, smtk::model::EntityRef>& entityrefMap,
     std::set<smtk::model::EntityRef>& touched) const;
+  int tessellationGeneration() const;
+#ifndef SHIBOKEN_SKIP
+  void setBoundingBox(const double bbox[6]);
+#endif
 
   bool hasAttributes() const;
   bool hasAttribute(const smtk::common::UUID &attribId) const;

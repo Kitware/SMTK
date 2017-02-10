@@ -45,8 +45,8 @@ class TestDisplayAnalysisMesh(smtk.testing.TestCase):
       [dtess.addTriangle(ii[0], ii[1], ii[2]) for ii in [(0,1,2), (0,2,3)]]
       [amesh.addCoords(x[0], x[1], x[2]) for x in [(0,0,0), (1,0.5,0),  (2,0,0), (2,2,0), (1,1.5,0), (0,2,0)]]
       [amesh.addTriangle(ii[0], ii[1], ii[2]) for ii in [(0,1,4), (0,4,5), (1,2,3), (1,3,4)]]
-      dtessGen = self.face.setTessellation(dtess, 0)
-      ameshGen = self.face.setTessellation(amesh, 1)
+      dtessGen = self.face.setTessellationAndBoundingBox(dtess, 0)
+      ameshGen = self.face.setTessellationAndBoundingBox(amesh, 1)
       self.assertEqual(dtessGen, dgen, 'Unexpected display tessellation generation {dg}'.format(dg=dtessGen))
       self.assertEqual(ameshGen, agen, 'Unexpected analyis mesh generation {ag}'.format(ag=ameshGen))
 

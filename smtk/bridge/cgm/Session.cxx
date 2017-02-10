@@ -841,7 +841,7 @@ bool SessionAddTessellation(const EntityRef& entityref, E* cgmEnt, double chordE
   bBox.push_back(cgmEnt->bounding_box().max_y());
   bBox.push_back(cgmEnt->bounding_box().min_z());
   bBox.push_back(cgmEnt->bounding_box().max_z());
-  entityref.manager()->setBoundingBox(entityref.entity(),bBox ,true);
+  entityref.setBoundingBox(bBox);
 
   GMem primitives;
   double measure = cgmEnt->measure();
@@ -857,7 +857,7 @@ bool SessionAddTessellation(const EntityRef& entityref, E* cgmEnt, double chordE
 
   // addTessellation to the manager
   smtk::model::Tessellation blank;
-  entityref.manager()->setTessellation(entityref.entity(), blank);
+  entityref.setTessellation(blank);
 
   smtk::model::Tessellation *tess = const_cast<smtk::model::Tessellation*>(entityref.hasTessellation());
 
@@ -989,17 +989,15 @@ bool SessionAddTessellation(const EntityRef& entityref, RefVertex* cgmEnt, doubl
   bBox.push_back(cgmEnt->bounding_box().max_y());
   bBox.push_back(cgmEnt->bounding_box().min_z());
   bBox.push_back(cgmEnt->bounding_box().max_z());
-  entityref.manager()->setBoundingBox(entityref.entity(),bBox ,true);
+  entityref.setBoundingBox(bBox);
 
   CubitVector coords = cgmEnt->coordinates();
 
   // addTessellation to the manager
   smtk::model::Tessellation blank;
-  entityref.manager()->setTessellation(entityref.entity(), blank);
+  entityref.setTessellation(blank);
 
   smtk::model::Tessellation *tess = const_cast<smtk::model::Tessellation*>(entityref.hasTessellation());
-
-  // Now add data to the Tessellation "in situ" to avoid a copy.
 
   // Now add data to the Tessellation "in situ" to avoid a copy.
   // First, copy point coordinates:

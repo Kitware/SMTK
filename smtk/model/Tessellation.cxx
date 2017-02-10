@@ -9,6 +9,8 @@
 //=========================================================================
 #include "smtk/model/Tessellation.h"
 
+#include <float.h>
+
 namespace smtk {
   namespace model {
 
@@ -407,6 +409,68 @@ int Tessellation::numVertexPropsFromType(size_type ctype)
   if (ctype & TESS_FACE_VERTEX_NORMAL) ++num_vert_props;
   if (ctype & TESS_FACE_VERTEX_COLOR)  ++num_vert_props;
   return num_vert_props;
+}
+
+/**\brief Fill \a bbox with standard "invalid" bounds.
+  *
+  */
+void Tessellation::invalidBoundingBox(double bbox[6])
+{
+  for (int cc = 0; cc < 3; ++cc)
+    {
+    bbox[2 * cc] = DBL_MAX;
+    bbox[2 * cc + 1] = -DBL_MAX;
+    }
+}
+
+/**\brief Compute the bounding box of the tessellation.
+  *
+  * This computes the per-axis bounds of all the point coordinates,
+  * whether they are referenced by connectivity entries or not.
+  * The return value is true when the tessellation has at least 1
+  * point and false otherwise.
+  * If false is returned, \a bbox is unmodified so that multiple
+  * calls to getBoundingBox will only increase and never reset bounds;
+  * this way the bbox for a collection can be obtained by calling
+  * getBoundingBox() on each tessellation -- whether it is empty or not.
+  */
+bool Tessellation::getBoundingBox(double bbox[6]) const
+{
+  if (this->m_coords.empty())
+    {
+    return false;
+    }
+
+  std::vector<double>::const_iterator cit;
+  int cc; // component being considered (x, y, z)
+
+  // If the current bounds are invalid, set both min and max to the first point:
+  if (bbox[0] > bbox[1])
+    {
+    for (cc = 0, cit = this->m_coords.begin(); cc < 3 && cit != this->m_coords.end(); ++cit, ++cc)
+      {
+      bbox[2 * cc] = *cit;
+      bbox[2 * cc + 1] = *cit;
+      }
+    // If we only had 2 coordinates, the 3rd is assumed to be 0:
+    for (; cc < 3; ++cc)
+      {
+      bbox[2 * cc] = bbox[2 * cc + 1] = 0.0;
+      }
+    }
+  // Now update the bounds using all the coordinates we have:
+  for (cc = 0, cit = this->m_coords.begin(); cit != this->m_coords.end(); ++cit, ++cc)
+    {
+    if (*cit < bbox[2 * (cc % 3)])
+      { // Update min
+      bbox[2 * (cc % 3)] = *cit;
+      }
+    else if (*cit > bbox[2 * (cc % 3) + 1])
+      { // Update max
+      bbox[2 * (cc % 3) + 1] = *cit;
+      }
+    }
+  return true;
 }
 
   } // model namespace

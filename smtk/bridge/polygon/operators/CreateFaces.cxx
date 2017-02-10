@@ -607,6 +607,11 @@ void CreateFaces::addTessellations()
       //std::cout << "\n";
       //modelFace.setColor(1., 1., 1., 1.);
       }
+    // Now update the bounding box:
+    std::vector<double> bbox(6);
+    smtk::model::Tessellation::invalidBoundingBox(&bbox[0]);
+    smtkTess->second.getBoundingBox(&bbox[0]);
+    modelFace.setBoundingBox(&bbox[0]);
     }
 }
 
