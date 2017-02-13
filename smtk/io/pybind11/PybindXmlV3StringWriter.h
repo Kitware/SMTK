@@ -15,21 +15,17 @@
 
 #include "smtk/io/XmlV3StringWriter.h"
 
+#include "smtk/attribute/System.h"
+#include "smtk/io/XmlV2StringWriter.h"
+
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::io::XmlV3StringWriter > pybind11_init_smtk_io_XmlV3StringWriter(py::module &m)
+PySharedPtrClass< smtk::io::XmlV3StringWriter, smtk::io::XmlV2StringWriter > pybind11_init_smtk_io_XmlV3StringWriter(py::module &m)
 {
-  PySharedPtrClass< smtk::io::XmlV3StringWriter > instance(m, "XmlV3StringWriter");
+  PySharedPtrClass< smtk::io::XmlV3StringWriter, smtk::io::XmlV2StringWriter > instance(m, "XmlV3StringWriter");
   instance
     .def(py::init<::smtk::io::XmlV3StringWriter const &>())
     .def(py::init<::smtk::attribute::System const &>())
-    .def("convertToString", &smtk::io::XmlV3StringWriter::convertToString, py::arg("logger"), py::arg("no_declaration") = false)
-    .def("generateXml", &smtk::io::XmlV3StringWriter::generateXml, py::arg("parent_node"), py::arg("logger"), py::arg("createRoot") = true)
-    .def("includeDefinitions", &smtk::io::XmlV3StringWriter::includeDefinitions, py::arg("val"))
-    .def("includeInstances", &smtk::io::XmlV3StringWriter::includeInstances, py::arg("val"))
-    .def("includeModelInformation", &smtk::io::XmlV3StringWriter::includeModelInformation, py::arg("val"))
-    .def("includeViews", &smtk::io::XmlV3StringWriter::includeViews, py::arg("val"))
-    .def("messageLog", &smtk::io::XmlV3StringWriter::messageLog)
     ;
   return instance;
 }

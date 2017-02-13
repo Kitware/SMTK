@@ -36,6 +36,8 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindWriteMesh.h"
 #include "PybindXmlDocV1Parser.h"
 #include "PybindXmlDocV2Parser.h"
+#include "PybindXmlStringWriter.h"
+#include "PybindXmlV2StringWriter.h"
 #include "PybindXmlV3StringWriter.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
@@ -70,7 +72,10 @@ PYBIND11_PLUGIN(smtkPybindIO)
   PySharedPtrClass< smtk::io::ResourceSetWriter > smtk_io_ResourceSetWriter = pybind11_init_smtk_io_ResourceSetWriter(io);
   PySharedPtrClass< smtk::io::WriteMesh > smtk_io_WriteMesh = pybind11_init_smtk_io_WriteMesh(io);
   PySharedPtrClass< smtk::io::XmlDocV1Parser > smtk_io_XmlDocV1Parser = pybind11_init_smtk_io_XmlDocV1Parser(io);
+  PySharedPtrClass< smtk::io::XmlStringWriter > smtk_io_XmlStringWriter = pybind11_init_smtk_io_XmlStringWriter(io);
+  PySharedPtrClass< smtk::io::XmlV2StringWriter > smtk_io_XmlV2StringWriter = pybind11_init_smtk_io_XmlV2StringWriter(io);
   PySharedPtrClass< smtk::io::XmlV3StringWriter > smtk_io_XmlV3StringWriter = pybind11_init_smtk_io_XmlV3StringWriter(io);
+
   pybind11_init__ZN4smtk2io10exportMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10CollectionEEE(io);
   pybind11_init__ZN4smtk2io10exportMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10CollectionEEENSA_INS_5model7ManagerEEES9_(io);
   pybind11_init__ZN4smtk2io10importMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7ManagerEEE(io);
