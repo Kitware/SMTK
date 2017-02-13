@@ -834,6 +834,7 @@ bool SessionAddTessellation(const EntityRef& entityref, E* cgmEnt, double chordE
     return false;
 
   //calculate and store the bounding box
+  EntityRef mutableEnt(entityref);
   std::vector<double> bBox;
   bBox.push_back(cgmEnt->bounding_box().min_x());
   bBox.push_back(cgmEnt->bounding_box().max_x());
@@ -841,7 +842,7 @@ bool SessionAddTessellation(const EntityRef& entityref, E* cgmEnt, double chordE
   bBox.push_back(cgmEnt->bounding_box().max_y());
   bBox.push_back(cgmEnt->bounding_box().min_z());
   bBox.push_back(cgmEnt->bounding_box().max_z());
-  entityref.setBoundingBox(bBox);
+  mutableEnt.setBoundingBox(&bBox[0]);
 
   GMem primitives;
   double measure = cgmEnt->measure();
@@ -855,11 +856,8 @@ bool SessionAddTessellation(const EntityRef& entityref, E* cgmEnt, double chordE
     return false;
     }
 
-  // addTessellation to the manager
-  smtk::model::Tessellation blank;
-  entityref.setTessellation(blank);
-
-  smtk::model::Tessellation *tess = const_cast<smtk::model::Tessellation*>(entityref.hasTessellation());
+  // Reset tessellation in the manager
+  smtk::model::Tessellation* tess = mutableEnt.resetTessellation();
 
   // Now add data to the Tessellation "in situ" to avoid a copy.
   // First, copy point coordinates:
@@ -929,7 +927,7 @@ bool SessionAddTessellation(const EntityRef& entityref, E* cgmEnt, double chordE
       return false;
       }
 
-    GPoint* inPts = primitives.point_list();
+    inPts = primitives.point_list();
     for (int j = 0; j < npts; ++j, ++inPts)
       {
       ialloc->setCoordinate(j, inPts->x, inPts->y, inPts->z);
@@ -989,15 +987,13 @@ bool SessionAddTessellation(const EntityRef& entityref, RefVertex* cgmEnt, doubl
   bBox.push_back(cgmEnt->bounding_box().max_y());
   bBox.push_back(cgmEnt->bounding_box().min_z());
   bBox.push_back(cgmEnt->bounding_box().max_z());
-  entityref.setBoundingBox(bBox);
+  EntityRef mutableEnt(entityref);
+  mutableEnt.setBoundingBox(&bBox[0]);
 
   CubitVector coords = cgmEnt->coordinates();
 
   // addTessellation to the manager
-  smtk::model::Tessellation blank;
-  entityref.setTessellation(blank);
-
-  smtk::model::Tessellation *tess = const_cast<smtk::model::Tessellation*>(entityref.hasTessellation());
+  smtk::model::Tessellation* tess = mutableEnt.resetTessellation();
 
   // Now add data to the Tessellation "in situ" to avoid a copy.
   // First, copy point coordinates:
