@@ -31,6 +31,7 @@ public:
   virtual ~qtPolygonEdgeOperationView();
 
 public slots:
+  virtual void updateUI() { } // NB: Subclass implementation causes crashes.
   virtual void showAdvanceLevelOverlay(bool show);
   virtual void requestModelEntityAssociation();
   virtual void onShowCategory()
