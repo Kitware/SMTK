@@ -5,7 +5,7 @@
     <!-- Operator -->
     <AttDef Type="add image" BaseType="operator" Label=" Model - Add Image">
       <AssociationsDef Name="entities" NumberOfRequiredValues="1">
-        <MembershipMask>model|aux_geom</MembershipMask>
+        <MembershipMask>model</MembershipMask>
       </AssociationsDef>
       <BriefDescription>
         Add am image as  auxiliary geometry (scene geometry not part of the model domain)
