@@ -86,6 +86,7 @@ void verifySerialize()
 {
   // Instantiate writer
   smtk::io::AttributeWriter writer;
+  writer.setMaxFileVersion();  // (need version 3 or later)
   smtk::io::Logger logger;
   std::string contents;
 

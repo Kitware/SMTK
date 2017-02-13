@@ -19,7 +19,7 @@
 #include "smtk/attribute/StringItemDefinition.h"
 
 #include "smtk/io/Logger.h"
-#include "smtk/io/XmlV3StringWriter.h"
+#include "smtk/io/AttributeWriter.h"
 
 #include <iostream>
 
@@ -160,8 +160,9 @@ int main()
       }
     }
   smtk::io::Logger logger;
-  smtk::io::XmlV3StringWriter writer(system);
-  std::cout << writer.convertToString(logger) << std::endl;
+  std::string contents;
+  smtk::io::AttributeWriter writer;
+  writer.writeContents(system, contents, logger);
   if (logger.hasErrors())
     {
     std::cerr <<  "Errors encountered creating Attribute String:\n";

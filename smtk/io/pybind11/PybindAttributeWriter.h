@@ -15,6 +15,9 @@
 
 #include "smtk/io/AttributeWriter.h"
 
+#include "smtk/attribute/System.h"
+#include "smtk/io/Logger.h"
+
 namespace py = pybind11;
 
 PySharedPtrClass< smtk::io::AttributeWriter > pybind11_init_smtk_io_AttributeWriter(py::module &m)
@@ -24,6 +27,9 @@ PySharedPtrClass< smtk::io::AttributeWriter > pybind11_init_smtk_io_AttributeWri
     .def(py::init<>())
     .def(py::init<::smtk::io::AttributeWriter const &>())
     .def("deepcopy", (smtk::io::AttributeWriter & (smtk::io::AttributeWriter::*)(::smtk::io::AttributeWriter const &)) &smtk::io::AttributeWriter::operator=)
+    .def("setFileVersion", &smtk::io::AttributeWriter::setFileVersion, py::arg("version"))
+    .def("setMaxFileVersion", &smtk::io::AttributeWriter::setMaxFileVersion)
+    .def("fileVersion", &smtk::io::AttributeWriter::fileVersion)
     .def("write", &smtk::io::AttributeWriter::write, py::arg("system"), py::arg("filename"), py::arg("logger"))
     .def("writeContents", &smtk::io::AttributeWriter::writeContents, py::arg("system"), py::arg("filecontents"), py::arg("logger"), py::arg("no_declaration") = false)
     .def("includeDefinitions", &smtk::io::AttributeWriter::includeDefinitions, py::arg("val"))

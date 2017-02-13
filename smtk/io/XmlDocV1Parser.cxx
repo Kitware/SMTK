@@ -83,16 +83,6 @@ namespace {
   }
 
 //----------------------------------------------------------------------------
-  DateTimeZonePair getValueFromXMLElement(
-    xml_node &node, smtk::common::DateTimeZonePair)
-  {
-    DateTimeZonePair dtz;
-    std::string content = node.text().get();
-    dtz.deserialize(content);
-    return dtz;
-  }
-
-//----------------------------------------------------------------------------
   std::vector<int> getValueFromXMLElement(xml_node &node, const std::string& sep, std::vector<int>)
   {
     std::vector<int> result;
@@ -136,26 +126,6 @@ namespace {
     std::vector<std::string> vals;
     vals = smtk::common::StringUtil::split(node.text().get(), sep, false, false);
     return vals;
-  }
-
-//----------------------------------------------------------------------------
-  std::vector<DateTimeZonePair> getValueFromXMLElement(
-    xml_node &node, const std::string& sep, std::vector<smtk::common::DateTimeZonePair>)
-  {
-    std::vector<DateTimeZonePair> result;
-    std::vector<std::string> vals;
-    std::stringstream convert;
-    DateTimeZonePair val;
-    vals = smtk::common::StringUtil::split(node.text().get(), sep, false, true);
-    std::vector<std::string>::iterator it;
-    for (it = vals.begin(); it != vals.end(); ++it)
-      {
-      convert.str(*it);
-      convert >> val;
-      result.push_back(val);
-      convert.clear();
-      }
-    return result;
   }
 
 //----------------------------------------------------------------------------
@@ -1098,11 +1068,10 @@ void XmlDocV1Parser::processDateTimeDef(
   pugi::xml_node &node,
   attribute::DateTimeItemDefinitionPtr idef)
 {
-  // Process the common value item def stuff
-  this->processValueDef(node, idef);
-  processDerivedValueDef<attribute::DateTimeItemDefinitionPtr, DateTimeZonePair>
-    (node, idef, this->m_logger);
-
+  (void)node;
+  smtkWarningMacro(this->m_logger,
+                 "DateTime item defs only supported starting Attribute Version 3 Format"
+                 << idef->name());
 }
 
 //----------------------------------------------------------------------------
@@ -2306,10 +2275,10 @@ void XmlDocV1Parser::processMeshEntityItem(pugi::xml_node &node,
 void XmlDocV1Parser::processDateTimeItem(
   pugi::xml_node &node, attribute::DateTimeItemPtr item)
 {
-  this->processValueItem(
-    node, dynamic_pointer_cast<attribute::ValueItem>(item));
-  processDerivedValue<attribute::DateTimeItemPtr, DateTimeZonePair>
-    (node, item, this->m_system, this->m_itemExpressionInfo, this->m_logger);
+  (void)node;
+  smtkWarningMacro(this->m_logger,
+                 "DateTime items only supported starting Attribute Version 3 Format"
+                 << item->name());
 }
 
 //----------------------------------------------------------------------------
