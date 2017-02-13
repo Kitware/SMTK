@@ -184,6 +184,9 @@ public:
   template<typename T>
   void liftPoint(const Point& ix, T coordBegin);
 
+  template<typename T>
+  bool tweakEdge(smtk::model::Edge edge, int numCoordsPerPt, T coordBegin, T coordEnd, smtk::model::EntityRefArray& modified);
+
   bool tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn, smtk::model::EntityRefs& modifiedEdgesAndFaces);
 
   void addVertexIndex(VertexPtr vert);

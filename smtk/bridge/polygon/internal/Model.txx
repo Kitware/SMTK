@@ -11,6 +11,7 @@
 #define __smtk_bridge_polygon_internal_model_txx
 
 #include "smtk/model/Edge.h"
+#include "smtk/model/Face.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Vertex.h"
@@ -303,6 +304,75 @@ void pmodel::liftPoint(const Point& ix, T coordBegin)
       ix.x() * this->m_iAxis[i] +
       ix.y() * this->m_jAxis[i];
     }
+}
+
+template<typename T>
+bool pmodel::tweakEdge(smtk::model::Edge edge, int numCoordsPerPt, T coordBegin, T coordEnd, smtk::model::EntityRefArray& modified)
+{
+  edge::Ptr storage = this->m_session->findStorage<internal::edge>(edge.entity());
+  if (!storage)
+    {
+    return false;
+    }
+
+  // Determine whether the original edge was periodic
+  internal::PointSeq& epts(storage->points());
+  bool isPeriodic = (*epts.begin()) == (*(++epts.rbegin()).base());
+
+  // See which model vertex (if any) matches the existing begin
+  smtk::model::Vertices verts = edge.vertices();
+  bool isFirstVertStart;
+  if (!verts.empty())
+    {
+    internal::vertex::Ptr firstVert = this->m_session->findStorage<internal::vertex>(verts.begin()->entity());
+    isFirstVertStart = (firstVert->point() == *epts.begin());
+    }
+  // Now erase the existing edge points and rewrite them:
+  epts.clear();
+  std::vector<double>::const_iterator coordit = coordBegin;
+  for (std::size_t p = 0; coordit != coordEnd; ++p)
+    {
+    internal::Point proj = this->projectPoint(coordit, coordit + numCoordsPerPt);
+    epts.insert(epts.end(), proj);
+    coordit += numCoordsPerPt;
+    }
+  if (isPeriodic && (*epts.begin()) != (*(++epts.rbegin()).base()))
+    { // It was periodic but isn't any more. Close the loop naively.
+    smtkDebugMacro(this->m_session->log(), "Closing non-periodic tweak to preserve topology.");
+    epts.insert(epts.end(), *epts.begin());
+    }
+  // Lift the integer points into world coordinates:
+  this->addEdgeTessellation(edge, storage);
+  modified.push_back(edge);
+
+  smtk::model::EntityRefs modEdgesAndFaces;
+  for (smtk::model::Vertices::iterator vit = verts.begin(); vit != verts.end(); ++vit)
+    {
+    internal::Point locn = ((vit == verts.begin()) != !isFirstVertStart) ? *epts.begin() :  *(++epts.rbegin()).base();
+    smtkDebugMacro(this->m_session->log(), "Tweaking vertex " << vit->name() << ".");
+    if (this->tweakVertex(*vit, locn, modEdgesAndFaces))
+      {
+      modified.push_back(*vit);
+      }
+    }
+  modified.insert(modified.end(), modEdgesAndFaces.begin(), modEdgesAndFaces.end());
+  // If the edge had no model vertices, then we must see if any faces are attached to it
+  // and update their tessellations. (If it did have verts, tweakVertex will have updated them.)
+  if (verts.empty())
+    {
+    smtk::model::Faces facesOnEdge = edge.faces();
+    for (smtk::model::Faces::iterator fit = facesOnEdge.begin(); fit != facesOnEdge.end(); ++fit)
+      {
+      // If we have a face attached, re-tessellate it and add to modEdgesAndFaces
+      if (modEdgesAndFaces.find(*fit) == modEdgesAndFaces.end())
+        {
+        smtkDebugMacro(this->m_session->log(), "Retessellating face " << fit->name() << ".");
+        this->addFaceTessellation(*fit);
+        modEdgesAndFaces.insert(*fit);
+        }
+      }
+    }
+  return true;
 }
 
       } // namespace internal

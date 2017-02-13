@@ -106,71 +106,16 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
       }
     }
 
-  // Determine whether the original edge was periodic
-  internal::PointSeq& epts(storage->points());
-  bool isPeriodic = (*epts.begin()) == (*(++epts.rbegin()).base());
 
   smtk::model::EntityRefArray modified; // includes edge and perhaps eventually faces.
   smtk::model::Edges created;
 
   // Done checking input. Perform operation.
-  // See which model vertex (if any) matches the existing begin
-  smtk::model::Vertices verts = src.vertices();
-  bool isFirstVertStart;
-  if (!verts.empty())
-    {
-    internal::vertex::Ptr firstVert = this->findStorage<internal::vertex>(verts.begin()->entity());
-    isFirstVertStart = (firstVert->point() == *epts.begin());
-    }
-  // Now erase the existing edge points and rewrite them:
-  epts.clear();
-  std::vector<double>::const_iterator coordit = pointsItem->begin();
-  for (std::size_t p = 0; p < npts; ++p)
-    {
-    internal::Point proj = pmod->projectPoint(coordit, coordit + numCoordsPerPt);
-    epts.insert(epts.end(), proj);
-    coordit += numCoordsPerPt;
-    }
-  if (isPeriodic && (*epts.begin()) != (*(++epts.rbegin()).base()))
-    { // It was periodic but isn't any more. Close the loop naively.
-    smtkOpDebug("Closing non-periodic tweak to preserve topology.");
-    epts.insert(epts.end(), *epts.begin());
-    }
-  // Lift the integer points into world coordinates:
-  pmod->addEdgeTessellation(src, storage);
-  modified.push_back(src);
-
-  smtk::model::EntityRefs modEdgesAndFaces;
-  for (smtk::model::Vertices::iterator vit = verts.begin(); vit != verts.end(); ++vit)
-    {
-    internal::Point locn = ((vit == verts.begin()) != !isFirstVertStart) ? *epts.begin() :  *(++epts.rbegin()).base();
-    smtkOpDebug("Tweaking vertex " << vit->name() << ".");
-    if (pmod->tweakVertex(*vit, locn, modEdgesAndFaces))
-      {
-      modified.push_back(*vit);
-      }
-    }
-  modified.insert(modified.end(), modEdgesAndFaces.begin(), modEdgesAndFaces.end());
-  // If the edge had no model vertices, then we must see if any faces are attached to it
-  // and update their tessellations. (If it did have verts, tweakVertex will have updated them.)
-  if (verts.empty())
-    {
-    smtk::model::Faces facesOnEdge = src.faces();
-    for (smtk::model::Faces::iterator fit = facesOnEdge.begin(); fit != facesOnEdge.end(); ++fit)
-      {
-      // If we have a face attached, re-tessellate it and add to modEdgesAndFaces
-      if (modEdgesAndFaces.find(*fit) == modEdgesAndFaces.end())
-        {
-        smtkOpDebug("Retessellating face " << fit->name() << ".");
-        pmod->addFaceTessellation(*fit);
-        modEdgesAndFaces.insert(*fit);
-        }
-      }
-    }
-
+  ok &= pmod->tweakEdge(src, numCoordsPerPt, pointsItem->begin(), pointsItem->end(), modified);
   // Split the edge as requested by the user:
   std::vector<internal::vertex::Ptr> promotedVerts;
   std::vector<internal::PointSeq::const_iterator> splitLocs;
+  internal::PointSeq& epts(storage->points());
   internal::PointSeq::const_iterator ptit = epts.begin();
   int last = 0;
   for (std::set<int>::iterator promit = splits.begin(); promit != splits.end(); ++promit)
