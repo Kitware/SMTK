@@ -1596,7 +1596,10 @@ bool Session::addTessellation(const smtk::model::EntityRef& cellOut, vtkModelGeo
       std::cerr << "Warning: Triangle strips in discrete cells are unsupported. Ignoring.\n";
       }
     if (!vertMap.empty())
-      cellOut.manager()->setTessellationAndBoundingBox(cellOut.entity(), tess);
+      {
+      smtk::model::EntityRef mutableCell(cellOut);
+      mutableCell.setTessellationAndBoundingBox(&tess);
+      }
 
     smtk::mesh::CollectionPtr collection =
       this->manager()->meshes()->collection(cellOut.owningModel().entity());

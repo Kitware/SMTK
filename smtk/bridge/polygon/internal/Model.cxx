@@ -1243,9 +1243,7 @@ void pmodel::addFaceTessellation(smtk::model::Face& faceRec)
   poly::polygon_set_data<internal::Coord> polys;
   poly::polygon_data<internal::Coord> pface;
   smtk::model::Loops outerLoops = faceRec.positiveUse().loops();
-  smtk::model::Tessellation blank;
-  smtk::model::UUIDsToTessellations::iterator smtkTess =
-    faceRec.manager()->setTessellationAndBoundingBox(faceRec.entity(), blank);
+  smtk::model::Tessellation* smtkTess = faceRec.resetTessellation();
   //std::cout << "Tessellate " << faceRec.name() << "\n";
   for (smtk::model::Loops::iterator lit = outerLoops.begin(); lit != outerLoops.end(); ++lit)
     {
@@ -1286,12 +1284,12 @@ void pmodel::addFaceTessellation(smtk::model::Face& faceRec)
       triConn[0] = smtk::model::TESS_TRIANGLE;
       ipt = !denom ? *pcit : internal::Point(pcit->x() * denx, pcit->y() * deny);
       this->liftPoint(ipt, &smtkPt[0]);
-      triConn[1] = smtkTess->second.addCoords(&smtkPt[0]);
+      triConn[1] = smtkTess->addCoords(&smtkPt[0]);
       //std::cout << "  " << triConn[1] << "  " << smtkPt[0] << " " << smtkPt[1] << " " << smtkPt[2] << "\n";
       ++pcit;
       ipt = !denom ? *pcit : internal::Point(pcit->x() * denx, pcit->y() * deny);
       this->liftPoint(ipt, &smtkPt[0]);
-      triConn[3] = smtkTess->second.addCoords(&smtkPt[0]);
+      triConn[3] = smtkTess->addCoords(&smtkPt[0]);
       ++pcit;
       //std::cout << "  " << triConn[3] << "  " << smtkPt[0] << " " << smtkPt[1] << " " << smtkPt[2] << "\n";
       for (; pcit != poly::end_points(*pit); ++pcit)
@@ -1299,14 +1297,19 @@ void pmodel::addFaceTessellation(smtk::model::Face& faceRec)
         triConn[2] = triConn[3];
         ipt = !denom ? *pcit : internal::Point(pcit->x() * denx, pcit->y() * deny);
         this->liftPoint(ipt, &smtkPt[0]);
-        triConn[3] = smtkTess->second.addCoords(&smtkPt[0]);
+        triConn[3] = smtkTess->addCoords(&smtkPt[0]);
         //std::cout << "  " << triConn[3] << "  " << smtkPt[0] << " " << smtkPt[1] << " " << smtkPt[2] << "\n";
-        smtkTess->second.insertNextCell(triConn);
+        smtkTess->insertNextCell(triConn);
         }
       //std::cout << "\n";
       //faceRec.setColor(1., 1., 1., 1.);
       }
     }
+  // Now update the bounding box:
+  std::vector<double> bbox(6);
+  smtk::model::Tessellation::invalidBoundingBox(&bbox[0]);
+  smtkTess->getBoundingBox(&bbox[0]);
+  faceRec.setBoundingBox(&bbox[0]);
 }
 
 void pmodel::addFaceMeshTessellation(smtk::model::Face& faceRec)
@@ -1405,9 +1408,7 @@ void pmodel::addEdgeTessellation(smtk::model::Edge& edgeRec, internal::edge::Ptr
     return;
 
   smtk::model::Manager::Ptr mgr = edgeRec.manager();
-  smtk::model::Tessellation empty;
-  UUIDsToTessellations::iterator tessIt =
-    mgr->setTessellationAndBoundingBox(edgeRec.entity(), empty);
+  Tessellation* smtkTess = edgeRec.resetTessellation();
 
   // Now populate the tessellation in place.
   PointSeq::const_iterator ptIt;
@@ -1423,13 +1424,19 @@ void pmodel::addEdgeTessellation(smtk::model::Edge& edgeRec, internal::edge::Ptr
   for (ptIt = edgeData->pointsBegin(), ii = 0; ii < numUniquePts; ++ptIt, ++ii)
       {
       this->liftPoint(*ptIt, coords.begin());
-      conn.push_back(tessIt->second.addCoords(&coords[0]));
+      conn.push_back(smtkTess->addCoords(&coords[0]));
       }
   if (isPeriodic)
     {
     conn.push_back(0); // repeat initial point instead of adding a duplicate.
     }
-  tessIt->second.insertCell(0, conn);
+  smtkTess->insertCell(0, conn);
+
+  // Now update the bounding box:
+  std::vector<double> bbox(6);
+  smtk::model::Tessellation::invalidBoundingBox(&bbox[0]);
+  smtkTess->getBoundingBox(&bbox[0]);
+  edgeRec.setBoundingBox(&bbox[0]);
 }
 
 void pmodel::addEdgeMeshTessellation(smtk::model::Edge& edgeRec,
@@ -1492,7 +1499,7 @@ void pmodel::addVertTessellation(smtk::model::Vertex& vertRec, internal::vertex:
   this->liftPoint(vertData->point(), snappedPt);
   smtk::model::Tessellation tess;
   tess.addPoint(snappedPt);
-  vertRec.setTessellation(&tess);
+  vertRec.setTessellationAndBoundingBox(&tess);
 }
 
 void pmodel::addVertMeshTessellation(smtk::model::Vertex& vertRec,

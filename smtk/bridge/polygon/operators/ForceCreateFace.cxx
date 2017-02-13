@@ -269,9 +269,7 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
     polys.insert(pface);
     polys.get_trapezoids(tess);
     std::vector<poly::polygon_data<internal::Coord> >::const_iterator pit;
-    smtk::model::Tessellation blank;
-    smtk::model::UUIDsToTessellations::iterator smtkTess =
-      mgr->setTessellationAndBoundingBox(modelFaceId, blank);
+    smtk::model::Tessellation* smtkTess = modelFace.resetTessellation();
     double smtkPt[3];
     for (pit = tess.begin(); pit != tess.end(); ++pit)
       {
@@ -282,23 +280,27 @@ smtk::model::OperatorResult ForceCreateFace::operateInternal()
       triConn.resize(4);
       triConn[0] = smtk::model::TESS_TRIANGLE;
       pmodel->liftPoint(*pcit, &smtkPt[0]);
-      triConn[1] = smtkTess->second.addCoords(&smtkPt[0]);
+      triConn[1] = smtkTess->addCoords(&smtkPt[0]);
       //std::cout << "  " << triConn[1] << "  " << smtkPt[0] << " " << smtkPt[1] << " " << smtkPt[2] << "\n";
       ++pcit;
       pmodel->liftPoint(*pcit, &smtkPt[0]);
-      triConn[3] = smtkTess->second.addCoords(&smtkPt[0]);
+      triConn[3] = smtkTess->addCoords(&smtkPt[0]);
       ++pcit;
       //std::cout << "  " << triConn[3] << "  " << smtkPt[0] << " " << smtkPt[1] << " " << smtkPt[2] << "\n";
       for (; pcit != poly::end_points(*pit); ++pcit)
         {
         triConn[2] = triConn[3];
         pmodel->liftPoint(*pcit, &smtkPt[0]);
-        triConn[3] = smtkTess->second.addCoords(&smtkPt[0]);
+        triConn[3] = smtkTess->addCoords(&smtkPt[0]);
         //std::cout << "  " << triConn[3] << "  " << smtkPt[0] << " " << smtkPt[1] << " " << smtkPt[2] << "\n";
-        smtkTess->second.insertNextCell(triConn);
+        smtkTess->insertNextCell(triConn);
         }
       //std::cout << "\n";
       }
+    std::vector<double> bbox(6);
+    smtk::model::Tessellation::invalidBoundingBox(&bbox[0]);
+    smtkTess->getBoundingBox(&bbox[0]);
+    modelFace.setBoundingBox(&bbox[0]);
     }
 
   smtk::model::OperatorResult result =

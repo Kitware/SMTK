@@ -681,6 +681,33 @@ EntityRef& EntityRef::elideRawRelation(const EntityRef& ent)
     }
   return *this;
 }
+/**\brief Return an empty tessellation attached to the entity.
+  *
+  * NB. You are responsible for calling setBoundingBox() on the entity after the
+  *     resulting tessellation has been updated.
+  */
+Tessellation* EntityRef::resetTessellation()
+{
+  ManagerPtr mgr = this->m_manager.lock();
+  if (mgr && !this->m_entity.isNull())
+    {
+    UUIDsToTessellations::iterator it = mgr->tessellations().find(this->m_entity);
+    if (it != mgr->tessellations().end())
+      {
+      // Reset the tessellation and increment the generation number
+      it->second.reset();
+      this->setIntegerProperty(
+        SMTK_TESS_GEN_PROP, this->tessellationGeneration() + 1);
+      return &it->second;
+      }
+    }
+  // No existing tessellation
+  Tessellation blank;
+  UUIDsToTessellations::iterator tessit =
+    mgr->setTessellation(this->m_entity, blank);
+  return &tessit->second;
+}
+
 /**\brief Return the entity's tessellation if one exists or NULL otherwise.
   *
   */
@@ -738,15 +765,24 @@ const Tessellation* EntityRef::gotMesh() const
   * If \a analysisMesh is non-zero (zero is the default), then
   * the tessellation is treated as an analysis mesh rather than
   * a tessellation for display purposes.
+  *
+  * This should not be called outside of an operator.
   */
-int EntityRef::setTessellation(const Tessellation* tess, int analysisMesh)
+int EntityRef::setTessellation(const Tessellation* tess, int analysisMesh, bool updateBBox)
 {
   ManagerPtr mgr = this->m_manager.lock();
   if (mgr && !this->m_entity.isNull())
     {
     int gen;
     try {
-      mgr->setTessellationAndBoundingBox(this->m_entity, *tess, analysisMesh, &gen);
+      if (updateBBox)
+        {
+        mgr->setTessellationAndBoundingBox(this->m_entity, *tess, analysisMesh, &gen);
+        }
+      else
+        {
+        mgr->setTessellation(this->m_entity, *tess, analysisMesh, &gen);
+        }
     } catch (std::string& badIdMsg) {
       (void)badIdMsg;
       return -1;
@@ -771,6 +807,30 @@ bool EntityRef::removeTessellation(bool removeGen)
   if (mgr && !this->m_entity.isNull())
     return mgr->removeTessellation(this->m_entity, removeGen);
   return false;
+}
+
+/**\brief Return the generation number of the current tessellation (or -1 if no tessellation).
+  *
+  */
+int EntityRef::tessellationGeneration() const
+{
+  IntegerData const& iprops(this->integerProperties());
+  IntegerData::const_iterator pit = iprops.find(SMTK_TESS_GEN_PROP);
+  if (pit == iprops.end() || pit->second.empty())
+    {
+    return -1;
+    }
+  return pit->second[0];
+}
+
+/**\brief Set the bounding box of the entity.
+  *
+  * This should not be called outside of an operator.
+  */
+void EntityRef::setBoundingBox(const double bbox[6])
+{
+  std::vector<double> coords(bbox, bbox + 6);
+  this->m_manager.lock()->setBoundingBox(this->m_entity, coords, 1);
 }
 
 /** @name Attribute associations
