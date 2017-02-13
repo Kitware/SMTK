@@ -163,4 +163,9 @@ py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::modu
   return instance;
 }
 
+void pybind11_init_smtk_model_entityrefHash(py::module &m)
+{
+  m.def("entityrefHash", &smtk::model::entityrefHash, "", py::arg("c"));
+}
+
 #endif
