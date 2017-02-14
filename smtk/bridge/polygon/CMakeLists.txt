@@ -16,6 +16,7 @@ set(polygonSrcs
   internal/Region.cxx
   internal/SweepEvent.cxx
   internal/Vertex.cxx
+  operators/CleanGeometry.cxx
   operators/CreateModel.cxx
   operators/CreateVertices.cxx
   operators/CreateEdge.cxx
@@ -50,6 +51,7 @@ set(polygonHeaders
   internal/Neighborhood.txx
   internal/Region.h
   internal/SweepEvent.h
+  operators/CleanGeometry.h
   operators/CreateModel.h
   operators/CreateVertices.h
   operators/CreateEdge.h
@@ -67,6 +69,7 @@ set(polygonHeaders
 )
 
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" polygonSessionJSON)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CleanGeometry.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateModel.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateVertices.sbt" polygonOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdge.sbt" polygonOperatorXML)

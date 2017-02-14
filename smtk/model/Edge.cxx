@@ -122,6 +122,12 @@ smtk::model::Vertices Edge::vertices() const
   return result;
 }
 
+bool Edge::isPeriodic() const
+{
+  Vertices endpts = this->vertices();
+  return (endpts.size() < 2 ? true : false);
+}
+
 /*
 smtk::common::Vector3d Edge::coordinates() const
 {

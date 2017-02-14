@@ -40,6 +40,7 @@ py::class_< smtk::model::Edge, smtk::model::CellEntity > pybind11_init_smtk_mode
     .def("edgeUses", &smtk::model::Edge::edgeUses)
     .def("faces", &smtk::model::Edge::faces)
     .def("findOrAddEdgeUse", &smtk::model::Edge::findOrAddEdgeUse, py::arg("o"), py::arg("sense") = 0)
+    .def("isPeriodic", (bool (smtk::model::Edge::*)() const) &smtk::model::Edge::isPeriodic)
     .def("isValid", (bool (smtk::model::Edge::*)() const) &smtk::model::Edge::isValid)
     // .def("isValid", (bool (smtk::model::Edge::*)(::smtk::model::Entity * *) const) &smtk::model::Edge::isValid, py::arg("entRec"))
     .def("vertices", &smtk::model::Edge::vertices)

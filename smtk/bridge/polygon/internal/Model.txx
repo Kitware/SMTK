@@ -71,6 +71,15 @@ model::Edge pmodel::createModelEdgeFromSegments(
   Id vInit = this->pointId(begin->second.low());
   Id vFini = this->pointId((begin + (end - begin - 1))->second.high());
 
+  /*
+  double x0[3], x1[3];
+  this->liftPoint(begin->second.low(), x0);
+  this->liftPoint((begin + (end - begin - 1))->second.high(), x1);
+  std::cout << "Asked to create segmented edge with endpoints:\n"
+    << "    " << vInit << "  " << x0[0] << " " << x0[1] << "\n"
+    << "    " << vFini << "  " << x1[0] << " " << x1[1] << "\n";
+    */
+
   vertex::Ptr vInitStorage = this->m_session->findStorage<vertex>(vInit);
   vertex::Ptr vFiniStorage = this->m_session->findStorage<vertex>(vFini);
 
@@ -306,73 +315,31 @@ void pmodel::liftPoint(const Point& ix, T coordBegin)
     }
 }
 
+/**\brief Tweak an edge into a new shape, which you promise is valid.
+  *
+  * This variant accepts a sequence of point *coordinates* in the world coordinate
+  * system, with \a numCoordsPerPt specifying the number of coordinates to use for
+  * each point along the edge's new shape.
+  *
+  * The given coordinates are projected onto the plane and transformed into the
+  * model's internal coordinate system.
+  *
+  * If the first and last points are not precisely coincident with the original
+  * edge's, then any model vertices are tweaked as well.
+  * Faces attached to the edge are retessellated.
+  */
 template<typename T>
 bool pmodel::tweakEdge(smtk::model::Edge edge, int numCoordsPerPt, T coordBegin, T coordEnd, smtk::model::EntityRefArray& modified)
 {
-  edge::Ptr storage = this->m_session->findStorage<internal::edge>(edge.entity());
-  if (!storage)
-    {
-    return false;
-    }
-
-  // Determine whether the original edge was periodic
-  internal::PointSeq& epts(storage->points());
-  bool isPeriodic = (*epts.begin()) == (*(++epts.rbegin()).base());
-
-  // See which model vertex (if any) matches the existing begin
-  smtk::model::Vertices verts = edge.vertices();
-  bool isFirstVertStart;
-  if (!verts.empty())
-    {
-    internal::vertex::Ptr firstVert = this->m_session->findStorage<internal::vertex>(verts.begin()->entity());
-    isFirstVertStart = (firstVert->point() == *epts.begin());
-    }
-  // Now erase the existing edge points and rewrite them:
-  epts.clear();
+  internal::PointSeq pseq;
   std::vector<double>::const_iterator coordit = coordBegin;
   for (std::size_t p = 0; coordit != coordEnd; ++p)
     {
     internal::Point proj = this->projectPoint(coordit, coordit + numCoordsPerPt);
-    epts.insert(epts.end(), proj);
+    pseq.push_back(proj);
     coordit += numCoordsPerPt;
     }
-  if (isPeriodic && (*epts.begin()) != (*(++epts.rbegin()).base()))
-    { // It was periodic but isn't any more. Close the loop naively.
-    smtkDebugMacro(this->m_session->log(), "Closing non-periodic tweak to preserve topology.");
-    epts.insert(epts.end(), *epts.begin());
-    }
-  // Lift the integer points into world coordinates:
-  this->addEdgeTessellation(edge, storage);
-  modified.push_back(edge);
-
-  smtk::model::EntityRefs modEdgesAndFaces;
-  for (smtk::model::Vertices::iterator vit = verts.begin(); vit != verts.end(); ++vit)
-    {
-    internal::Point locn = ((vit == verts.begin()) != !isFirstVertStart) ? *epts.begin() :  *(++epts.rbegin()).base();
-    smtkDebugMacro(this->m_session->log(), "Tweaking vertex " << vit->name() << ".");
-    if (this->tweakVertex(*vit, locn, modEdgesAndFaces))
-      {
-      modified.push_back(*vit);
-      }
-    }
-  modified.insert(modified.end(), modEdgesAndFaces.begin(), modEdgesAndFaces.end());
-  // If the edge had no model vertices, then we must see if any faces are attached to it
-  // and update their tessellations. (If it did have verts, tweakVertex will have updated them.)
-  if (verts.empty())
-    {
-    smtk::model::Faces facesOnEdge = edge.faces();
-    for (smtk::model::Faces::iterator fit = facesOnEdge.begin(); fit != facesOnEdge.end(); ++fit)
-      {
-      // If we have a face attached, re-tessellate it and add to modEdgesAndFaces
-      if (modEdgesAndFaces.find(*fit) == modEdgesAndFaces.end())
-        {
-        smtkDebugMacro(this->m_session->log(), "Retessellating face " << fit->name() << ".");
-        this->addFaceTessellation(*fit);
-        modEdgesAndFaces.insert(*fit);
-        }
-      }
-    }
-  return true;
+  return this->tweakEdge(edge, pseq, modified);
 }
 
       } // namespace internal

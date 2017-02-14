@@ -38,6 +38,7 @@ class SMTKPOLYGONSESSION_EXPORT Operator : public smtk::model::Operator
 {
 protected:
   Session* polygonSession();
+  const Session* polygonSession() const;
 
   void addStorage(const smtk::common::UUID& uid, smtk::bridge::polygon::internal::entity::Ptr storage);
   bool removeStorage(const smtk::common::UUID& uid);

@@ -37,6 +37,8 @@ public:
   Faces faces() const;
   Vertices vertices() const;
 
+  bool isPeriodic() const;
+
   EdgeUse findOrAddEdgeUse(Orientation o, int sense = 0);
 };
 

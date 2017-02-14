@@ -562,6 +562,10 @@ std::string Entity::flagDescription(BitFlags flags, int form)
   */
 int Entity::countForType(BitFlags flags, IntegerList& counters, bool incr)
 {
+  if (counters.empty())
+    {
+    return -1;
+    }
   IntegerList::value_type* ptr = NULL;
   switch (flags & ENTITY_MASK)
     {
@@ -570,22 +574,22 @@ int Entity::countForType(BitFlags flags, IntegerList& counters, bool incr)
     switch (flags & ANY_DIMENSION)
       {
     case DIMENSION_0:
-      ptr = &counters[0];
+      ptr = counters.size() > 0 ? &counters[0] : NULL;
       break;
     case DIMENSION_1:
-      ptr = &counters[1];
+      ptr = counters.size() > 1 ? &counters[1] : NULL;
       break;
     case DIMENSION_2:
-      ptr = &counters[2];
+      ptr = counters.size() > 2 ? &counters[2] : NULL;
       break;
     case DIMENSION_3:
-      ptr = &counters[3];
+      ptr = counters.size() > 3 ? &counters[3] : NULL;
       break;
     case DIMENSION_4:
-      ptr = &counters[4];
+      ptr = counters.size() > 4 ? &counters[4] : NULL;
       break;
     default:
-      ptr = &counters[5];
+      ptr = counters.size() > 5 ? &counters[5] : NULL;
       break;
       }
     break;
@@ -593,22 +597,22 @@ int Entity::countForType(BitFlags flags, IntegerList& counters, bool incr)
     switch (flags & ANY_DIMENSION)
       {
     case DIMENSION_0 | DIMENSION_1:
-      ptr = &counters[0];
+      ptr = counters.size() > 0 ? &counters[0] : NULL;
       break;
     case DIMENSION_1 | DIMENSION_2:
-      ptr = &counters[1];
+      ptr = counters.size() > 1 ? &counters[1] : NULL;
       break;
     case DIMENSION_2 | DIMENSION_3:
-      ptr = &counters[2];
+      ptr = counters.size() > 2 ? &counters[2] : NULL;
       break;
     case DIMENSION_3 | DIMENSION_4:
-      ptr = &counters[3];
+      ptr = counters.size() > 3 ? &counters[3] : NULL;
       break;
     case 0:
-      ptr = &counters[4];
+      ptr = counters.size() > 4 ? &counters[4] : NULL;
       break;
     default:
-      ptr = &counters[5];
+      ptr = counters.size() > 5 ? &counters[5] : NULL;
       }
     break;
   case GROUP_ENTITY:
@@ -616,25 +620,25 @@ int Entity::countForType(BitFlags flags, IntegerList& counters, bool incr)
       (((flags & MODEL_BOUNDARY) != 0) ^
        ((flags & MODEL_DOMAIN) != 0)) == 0)
       {
-      ptr = &counters[0];
+      ptr = counters.size() > 0 ? &counters[0] : NULL;
       }
     else if (flags & MODEL_DOMAIN)
       {
-      ptr = &counters[1];
+      ptr = counters.size() > 1 ? &counters[1] : NULL;
       }
     else // if (flags & MODEL_BOUNDARY)
       {
-      ptr = &counters[2];
+      ptr = counters.size() > 2 ? &counters[2] : NULL;
       }
     break;
   case MODEL_ENTITY:
-    ptr = &counters[0];
+    ptr = counters.size() > 0 ? &counters[0] : NULL;
     break;
   case INSTANCE_ENTITY:
   case SESSION:
   case AUX_GEOM_ENTITY:
   default:
-    ptr = &counters[0];
+    ptr = counters.size() > 0 ? &counters[0] : NULL;
     break;
     }
   if (!ptr)

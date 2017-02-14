@@ -106,7 +106,6 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
       }
     }
 
-
   smtk::model::EntityRefArray modified; // includes edge and perhaps eventually faces.
   smtk::model::Edges created;
 
@@ -131,21 +130,21 @@ smtk::model::OperatorResult TweakEdge::operateInternal()
     splitLocs.push_back(ptit);
     std::cout << "  " << ptit->x() << " " << ptit->y() << "\n";
     }
-  smtk::model::EntityRefs eset;
+  smtk::model::EntityRefArray edgesAdded;
   smtk::model::EntityRefArray expunged;
   if (!splitLocs.empty())
     {
     smtkInfoMacro(this->log(), "Splitting tweaked edge into " << (splitLocs.size() + 1) << " pieces.");
-    if (!pmod->splitModelEdgeAtModelVertices(mgr, storage, promotedVerts, splitLocs, eset, this->m_debugLevel))
+    if (!pmod->splitModelEdgeAtModelVertices(mgr, storage, promotedVerts, splitLocs, edgesAdded, this->m_debugLevel))
       {
       smtkErrorMacro(this->log(), "Could not split edge.");
       ok = false;
       }
-    if (!eset.empty())
+    if (!edgesAdded.empty())
       {
       expunged.push_back(src);
       }
-    created.insert(created.end(), eset.begin(), eset.end());
+    created.insert(created.end(), edgesAdded.begin(), edgesAdded.end());
     }
 
   if (this->m_debugLevel > 0)
