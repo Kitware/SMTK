@@ -828,7 +828,7 @@ smtk::mesh::CellType cgmToSMTKCell(int i)
 }
 
 template<typename E>
-bool SessionAddTessellation(const EntityRef& entityref, E* cgmEnt, double chordErr, double angleErr)
+bool SessionAddTessellation(const EntityRef& entityref, Session& session, E* cgmEnt, double chordErr, double angleErr)
 {
   if (!cgmEnt || !entityref.manager() || !entityref.entity())
     return false;
@@ -908,8 +908,7 @@ bool SessionAddTessellation(const EntityRef& entityref, E* cgmEnt, double chordE
       }
     }
 
-  smtk::mesh::CollectionPtr collection =
-    entityref.owningSession().manager()->meshes()->
+  smtk::mesh::CollectionPtr collection = session.manager()->meshes()->
     collection(entityref.owningModel().entity());
   if (collection && collection->isValid())
     {
@@ -970,7 +969,7 @@ bool SessionAddTessellation(const EntityRef& entityref, E* cgmEnt, double chordE
 }
 
 template<>
-bool SessionAddTessellation(const EntityRef& entityref, RefVertex* cgmEnt, double, double)
+bool SessionAddTessellation(const EntityRef& entityref,  Session&, RefVertex* cgmEnt, double, double)
 {
   if (!cgmEnt || !entityref.manager() || !entityref.entity())
     return false;
@@ -1011,17 +1010,17 @@ bool SessionAddTessellation(const EntityRef& entityref, RefVertex* cgmEnt, doubl
 ///@{
 bool Session::addTessellation(const EntityRef& entityref, RefFace* cgmEnt)
 {
-  return SessionAddTessellation(entityref, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
+  return SessionAddTessellation(entityref, *this, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
 }
 
 bool Session::addTessellation(const EntityRef& entityref, RefEdge* cgmEnt)
 {
-  return SessionAddTessellation(entityref, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
+  return SessionAddTessellation(entityref, *this, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
 }
 
 bool Session::addTessellation(const EntityRef& entityref, RefVertex* cgmEnt)
 {
-  return SessionAddTessellation(entityref, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
+  return SessionAddTessellation(entityref, *this, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
 }
 ///@}
 
