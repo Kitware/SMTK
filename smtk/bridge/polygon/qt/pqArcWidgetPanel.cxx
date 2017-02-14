@@ -35,11 +35,11 @@
 #include "vtkSMVectorProperty.h"
 #include "vtkUnsignedIntArray.h"
 
-#include "smtk/extension/vtk/widgets/vtkSMTKArcRepresentation.h"
-#include "smtk/bridge/polygon/qt/pqPolygonArc.h"
 #include "smtk/bridge/polygon/qt/pqArcWidgetManager.h"
+#include "smtk/bridge/polygon/qt/pqPolygonArc.h"
 #include "smtk/bridge/polygon/qt/vtkPolygonArcInfo.h"
-#include "smtk/extension/paraview/widgets/pqArcWidget.h"
+#include "smtk/extension/paraview/widgets/qtArcWidget.h"
+#include "smtk/extension/vtk/widgets/vtkSMTKArcRepresentation.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
@@ -247,16 +247,7 @@ pqArcWidgetPanel::pqArcWidgetPanel(QWidget *parent) :
 
 pqArcWidgetPanel::~pqArcWidgetPanel()
 {
-  if ( this->ArcWidget )
-    {
-    //if a widget is deleted without having an active view it throws errors
-    if ( this->View && !this->ArcWidget->view() )
-      {
-      this->ArcWidget->setView(this->View);
-      }
-    delete this->ArcWidget;
-    }
-  this->ArcWidget = NULL;
+  delete this->ArcWidget;
   delete Internals;
 }
 
@@ -358,11 +349,8 @@ void pqArcWidgetPanel::hideArcWidget()
 {
   if(this->ArcWidget)
     {
-    this->ArcWidget->setWidgetVisible(false);
+    this->ArcWidget->setEnableInteractivity(false);
     this->ArcWidget->setVisible(false);
-    this->ArcWidget->deselect();
-    this->ArcWidget->hideWidget();
-    this->ArcWidget->getWidgetProxy()->UpdatePropertyInformation();
     this->ArcWidget->setView(NULL);
     this->ArcWidget->hide();
     }
@@ -399,51 +387,40 @@ void pqArcWidgetPanel::modifyArc()
     this->ArcWidget->setView(this->View);
     if(arcObj)
       {
-      vtkSMProxyProperty* proxyProp =
-        vtkSMProxyProperty::SafeDownCast(
-        this->ArcWidget->getWidgetProxy()->GetProperty("PointPlacer"));
-      if (proxyProp && proxyProp->GetNumberOfProxies())
-        {
-        vtkSMProxy* pointplacer = proxyProp->GetProxy(0);
+      if (vtkSMProxy *pointplacer = this->ArcWidget->pointPlacer()) {
         vtkSMPropertyHelper(pointplacer, "ProjectionNormal").Set(
           arcObj->getPlaneProjectionNormal());
         vtkSMPropertyHelper(pointplacer, "ProjectionPosition").Set(
           arcObj->getPlaneProjectionPosition());
-        pointplacer->MarkModified(pointplacer);
+        // pointplacer->MarkModified(pointplacer);
         pointplacer->UpdateVTKObjects();
         }
       }
-    vtkSMPropertyHelper(this->ArcWidget->getWidgetProxy(), "Enabled").Set(1);
-    this->ArcWidget->getWidgetProxy()->UpdateVTKObjects();
     }
 
   this->ArcWidget->useArcEditingUI(true);
+  this->ArcWidget->setEnableInteractivity(true);
   this->ArcWidget->show();
-  this->ArcWidget->setEnabled(true);
-  this->ArcWidget->setWidgetVisible(true);
-
   if ( arcObj )
     {
     if (!created)
       {
-      this->ArcWidget->reset();
+      this->ArcWidget->reset(); // FIXME:why even bother reusing? Simply create
+                                // a new widget everytime.
       }
 
     //pass the info from the arc into the widget proxy
     this->updateWidgetRepresentation();
 
-    vtkSMProxy* repProxy = this->ArcWidget->getWidgetProxy()->GetRepresentationProxy();
-    vtkSMPropertyHelper(repProxy, "CanEdit").Set(0);
-    repProxy->UpdateVTKObjects();
+    vtkSMPropertyHelper(this->ArcWidget->widgetProxy(), "CanEdit").Set(0);
+    this->ArcWidget->widgetProxy()->UpdateVTKObjects();
 
     this->ArcWidget->checkContourLoopClosed();
     this->ArcWidget->ModifyMode();
     this->ArcWidget->checkCanBeEdited();
-    this->ArcWidget->setModified();
     }
 
   this->View->forceRender();
-  this->ArcWidget->select();
 }
 
 //-----------------------------------------------------------------------------
@@ -476,7 +453,8 @@ void pqArcWidgetPanel::updateWidgetRepresentation()
   sourceProxy->UpdateVTKObjects();
   sourceProxy->UpdatePipeline();
 
-  vtkSMNewWidgetRepresentationProxy* widgetProxy = this->ArcWidget->getWidgetProxy();
+  vtkSMNewWidgetRepresentationProxy *widgetProxy =
+      this->ArcWidget->widgetProxy();
   vtkSMProxy* repProxy = widgetProxy->GetRepresentationProxy();
   vtkClientServerStream stream;
   stream  << vtkClientServerStream::Invoke

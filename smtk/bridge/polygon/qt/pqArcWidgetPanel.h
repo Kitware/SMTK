@@ -13,15 +13,16 @@
 
 #include "smtk/bridge/polygon/qt/Exports.h"
 #include "smtk/common/UUID.h"
-#include <QWidget>
-#include <QAction> //needed for ArcPicker
 #include "vtkType.h"
+#include <QAction> //needed for ArcPicker
+#include <QPointer>
+#include <QWidget>
 
 class pqOutputPort;
 class pqRenderView;
 class pqRenderViewSelectionReaction;
 class pqPolygonArc;
-class pqArcWidget;
+class qtArcWidget;
 class pqArcWidgetManager;
 class pqPipelineSource;
 class vtkSelectionNode;
@@ -88,7 +89,7 @@ explicit pqArcWidgetPanel(QWidget *parent = 0);
     {this->ArcManager = arcManager;}
 
 signals:
-  void arcModified(pqArcWidget*, const smtk::common::UUID& edgeid);
+  void arcModified(qtArcWidget *, const smtk::common::UUID &edgeid);
   void arcModificationfinished();
   void arcModificationCacelled();
   void startArcEditing();
@@ -137,7 +138,7 @@ private:
   Ui::ArcPicker Picker;
   pqRenderView *View;
   pqPolygonArc *Arc;
-  pqArcWidget* ArcWidget;
+  QPointer<qtArcWidget> ArcWidget;
   pqArcWidgetManager* ArcManager;
 
 };

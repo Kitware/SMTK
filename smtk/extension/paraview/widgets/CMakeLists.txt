@@ -4,9 +4,11 @@ include(${QT_USE_FILE})
 set(PQWidgetsSrcs
   pq3DWidget.cxx
   pq3DWidgetInterface.cxx
-  pqArcWidget.cxx
   pqLineWidget.cxx
   pqGenerateContoursDialog.cxx
+
+  qtInteractionWidget.cxx
+  qtArcWidget.cxx
 )
 
 set(PQWidgetsUIs
@@ -17,9 +19,11 @@ set(PQWidgetsUIs
 
 set(PQWidgetsMocHeaders
   pq3DWidget.h
-  pqArcWidget.h
   pqLineWidget.h
   pqGenerateContoursDialog.h
+
+  qtInteractionWidget.h
+  qtArcWidget.h
 )
 
 set(PQWidgetsHeaders
