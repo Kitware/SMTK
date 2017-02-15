@@ -10,7 +10,6 @@
 #
 #=============================================================================
 
-__all__ = ('common', 'attribute', 'model', 'mesh', 'io', 'bridge', 'simulation')
-
-def wrappingProtocol():
-    return 'pybind11'
+import smtk.attribute
+import smtk.io
+from _smtkPybindSimulation import *
