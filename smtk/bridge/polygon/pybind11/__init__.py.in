@@ -12,4 +12,4 @@
 
 if @SMTK_POLYGON_SESSION_ENABLED@:
   import smtk.model
-  from smtkPybindPolygonSession import *
+  from _smtkPybindPolygonSession import *

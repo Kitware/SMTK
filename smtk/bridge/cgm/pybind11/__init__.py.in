@@ -12,4 +12,4 @@
 
 if @SMTK_CGM_SESSION_ENABLED@:
   import smtk.model
-  from smtkPybindCGMSession import *
+  from _smtkPybindCGMSession import *

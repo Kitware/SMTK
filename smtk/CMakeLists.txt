@@ -146,27 +146,6 @@ if(NOT SMTK_USE_PYBIND11 AND SMTK_ENABLE_PYTHON_WRAPPING)
 
     get_filename_component(SHIBOKEN_LIBRARY_NAME ${SHIBOKEN_LIBRARY} NAME)
 
-    # Store the location where we'll install SMTK's Python source
-    # in the SMTK_PYTHON_MODULEFILES variable and add an install rule.
-    # Note that SMTK_PYTHON_MODULEDIR may be provided if SMTK is being
-    # built as a submodule or as part of a superbuild.
-    if (NOT DEFINED SMTK_PYTHON_MODULEDIR)
-	if (SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES)
-        execute_process(
-          COMMAND
-          ${PYTHON_EXECUTABLE}
-          -c "import site; print(site.getsitepackages())[-1]"
-          RESULT_VARIABLE SMTK_PYTHON_MODULEDIR
-          )
-	elseif(WIN32)
-        set(SMTK_PYTHON_MODULEDIR
-          "bin/Lib/site-packages")
-	else()
-        set(SMTK_PYTHON_MODULEDIR
-          "${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages")
-	endif()
-    endif()
-
     install(
 	FILES ${SMTK_PYTHON_MODULEFILES}
 	DESTINATION "${SMTK_PYTHON_MODULEDIR}/smtk"

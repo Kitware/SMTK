@@ -24,9 +24,9 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_PLUGIN(smtkPybindIOVTK)
+PYBIND11_PLUGIN(_smtkPybindIOVTK)
 {
-  py::module io("smtkPybindIOVTK", "<description>");
+  py::module io("_smtkPybindIOVTK", "<description>");
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.

@@ -10,4 +10,4 @@
 #
 #=============================================================================
 
-from smtkPybindMesh import *
+from _smtkPybindMesh import *

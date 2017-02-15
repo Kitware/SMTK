@@ -12,4 +12,4 @@
 
 if @SMTK_MESH_SESSION_ENABLED@:
   import smtk.model
-  from smtkPybindMeshSession import *
+  from _smtkPybindMeshSession import *

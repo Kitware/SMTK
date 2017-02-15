@@ -29,9 +29,9 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_PLUGIN(smtkPybindExodusSession)
+PYBIND11_PLUGIN(_smtkPybindExodusSession)
 {
-  py::module exodus("smtkPybindExodusSession", "<description>");
+  py::module exodus("_smtkPybindExodusSession", "<description>");
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.

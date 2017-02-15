@@ -299,9 +299,32 @@ add_subdirectory(thirdparty)
 # Wrapping Related Settings
 ################################################################################
 if(SMTK_ENABLE_PYTHON_WRAPPING)
-  if(SMTK_USE_PYBIND11)
-    find_package(PythonLibs REQUIRED)
+  find_package(PythonLibs REQUIRED)
+  find_package(PythonInterp 2.7 REQUIRED)
 
+  # Initialize SMTK_PYTHON_MODULEDIR.
+  # This stores the location where we'll install SMTK's Python modules.
+  # Note that SMTK_PYTHON_MODULEDIR may be provided if SMTK is being
+  # built as a submodule or as part of a superbuild.
+  if (NOT DEFINED SMTK_PYTHON_MODULEDIR)
+    if (SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES)
+        execute_process(
+          COMMAND
+          ${PYTHON_EXECUTABLE}
+          -c "import site; print(site.getsitepackages())[-1]"
+          RESULT_VARIABLE SMTK_PYTHON_MODULEDIR
+          )
+    elseif(WIN32)
+        set(SMTK_PYTHON_MODULEDIR
+          "bin/Lib/site-packages")
+    else()
+        set(SMTK_PYTHON_MODULEDIR
+          "${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages")
+    endif()
+  endif()
+
+
+  if(SMTK_USE_PYBIND11)
     set(SMTK_PYBIND11_FLAGS " ")
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR
        CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR
@@ -312,7 +335,6 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     include(UseShiboken)
   endif()
 
-  find_package(PythonInterp 2.7 REQUIRED)
 
   # Set up environment variables needed to import the python modules for tests.
   if (PYTHONINTERP_FOUND AND SMTK_ENABLE_TESTING)

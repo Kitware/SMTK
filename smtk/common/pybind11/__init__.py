@@ -10,7 +10,7 @@
 #
 #=============================================================================
 
-from smtkPybindCommon import *
+from _smtkPybindCommon import *
 
 import datetime
 def DateTimeZonePair_to_python(self, utc=False):

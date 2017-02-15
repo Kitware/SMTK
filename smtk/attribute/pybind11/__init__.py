@@ -11,7 +11,7 @@
 #=============================================================================
 
 import smtk.common
-from smtkPybindAttribute import *
+from _smtkPybindAttribute import *
 
 type_dict = \
   { Item.ATTRIBUTE_REF: \
