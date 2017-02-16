@@ -16,23 +16,21 @@ namespace py = pybind11;
 template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
-#include "PybindExportVTKData.h"
-#include "PybindImportVTKData.h"
-#include "PybindMeshIOVTK.h"
-
-#include "smtk/io/mesh/MeshIO.h"
+#include "PybindUserData.h"
+#include "PybindExportSpec.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_PLUGIN(_smtkPybindIOVTK)
+PYBIND11_PLUGIN(_smtkPybindSimulation)
 {
-  py::module io("_smtkPybindIOVTK", "<description>");
+  py::module simulation("_smtkPybindSimulation", "<description>");
+  // py::module smtk = m.def_submodule("smtk", "<description>");
+  // py::module simulation = smtk.def_submodule("simulation", "<description>");
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
-  py::class_< smtk::extension::vtk::io::ExportVTKData > smtk_extension_vtk_io_ExportVTKData = pybind11_init_smtk_extension_vtk_io_ExportVTKData(io);
-  py::class_< smtk::extension::vtk::io::ImportVTKData > smtk_extension_vtk_io_ImportVTKData = pybind11_init_smtk_extension_vtk_io_ImportVTKData(io);
-  py::class_< smtk::extension::vtk::io::MeshIOVTK, smtk::io::mesh::MeshIO > smtk_extension_vtk_io_MeshIOVTK = pybind11_init_smtk_extension_vtk_io_MeshIOVTK(io);
+  py::class_< smtk::simulation::ExportSpec > smtk_simulation_ExportSpec = pybind11_init_smtk_simulation_ExportSpec(simulation);
+  py::class_< smtk::simulation::UserData > smtk_simulation_UserData = pybind11_init_smtk_simulation_UserData(simulation);
 
-  return io.ptr();
+  return simulation.ptr();
 }

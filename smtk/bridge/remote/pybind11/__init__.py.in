@@ -12,4 +12,4 @@
 
 if @SMTK_REMOTE_SESSION_ENABLED@:
   import smtk.model
-  from smtkPybindRemoteSession import *
+  from _smtkPybindRemoteSession import *

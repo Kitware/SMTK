@@ -20,9 +20,9 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_PLUGIN(smtkPybindModelRemus)
+PYBIND11_PLUGIN(_smtkPybindModelRemus)
 {
-  py::module remus("smtkPybindModelRemus", "<description>");
+  py::module remus("_smtkPybindModelRemus", "<description>");
 
   py::class_< smtk::model::MeshOperator, smtk::model::Operator > smtk_extension_remus_MeshOperator = pybind11_init_smtk_extension_remus_MeshOperator(remus);
 

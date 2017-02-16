@@ -11,7 +11,7 @@
 #=============================================================================
 
 from smtk.attribute import SearchStyle
-from smtkPybindModel import *
+from _smtkPybindModel import *
 
 _entity_map = {CELL_ENTITY: CellEntity,
                VERTEX: Vertex,

@@ -1,10 +1,13 @@
+set(module_path "bridge")
+set(build_path "${PROJECT_BINARY_DIR}/smtk/${module_path}")
+set(install_path "${SMTK_PYTHON_MODULEDIR}/smtk/${module_path}")
+
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py.in"
-  "${PROJECT_BINARY_DIR}/smtk/bridge/__init__.py" @ONLY
+  "${build_path}/__init__.py" @ONLY
   )
 
-install(CODE
-  "set(LIBRARY_OUTPUT_PATH \"${CMAKE_INSTALL_PREFIX}/lib\")
-       configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/__init__.py.in
-       ${CMAKE_INSTALL_PREFIX}/${SMTK_PYTHON_MODULEDIR}/smtk/bridge/__init__.py )"
+install(
+  FILES "${build_path}/__init__.py"
+  DESTINATION "${install_path}"
   )

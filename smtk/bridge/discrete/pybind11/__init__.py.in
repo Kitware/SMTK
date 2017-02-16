@@ -13,4 +13,4 @@
 if @SMTK_DISCRETE_SESSION_ENABLED@:
   import smtk.mesh
   import smtk.model
-  from smtkPybindDiscreteSession import *
+  from _smtkPybindDiscreteSession import *

@@ -12,4 +12,4 @@
 
 if @SMTK_EXODUS_SESSION_ENABLED@:
   import smtk.model
-  from smtkPybindExodusSession import *
+  from _smtkPybindExodusSession import *

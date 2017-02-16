@@ -55,9 +55,9 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
-PYBIND11_PLUGIN(smtkPybindAttribute)
+PYBIND11_PLUGIN(_smtkPybindAttribute)
 {
-  py::module attribute("smtkPybindAttribute", "<description>");
+  py::module attribute("_smtkPybindAttribute", "<description>");
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.

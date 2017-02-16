@@ -1,22 +1,30 @@
-pybind11_add_module(smtkPybindCommon PybindCommon.cxx)
-target_include_directories(smtkPybindCommon PUBLIC
+set(library_name "_smtkPybindCommon")
+set(module_path "common")
+set(build_path "${PROJECT_BINARY_DIR}/smtk/${module_path}")
+set(install_path "${SMTK_PYTHON_MODULEDIR}/smtk/${module_path}")
+
+
+pybind11_add_module(${library_name} PybindCommon.cxx)
+target_include_directories(${library_name} PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
   )
-target_link_libraries(smtkPybindCommon LINK_PUBLIC smtkCore)
-set_target_properties(smtkPybindCommon
+target_link_libraries(${library_name} LINK_PUBLIC smtkCore)
+set_target_properties(${library_name}
   PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${build_path}"
     COMPILE_FLAGS ${SMTK_PYBIND11_FLAGS}
-)
-install(TARGETS smtkPybindCommon DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
-
-configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py"
-  "${PROJECT_BINARY_DIR}/smtk/common/__init__.py" @ONLY
   )
 
-install(CODE
-  "set(LIBRARY_OUTPUT_PATH \"${CMAKE_INSTALL_PREFIX}/lib\")
-       configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/__init__.py
-       ${CMAKE_INSTALL_PREFIX}/${SMTK_PYTHON_MODULEDIR}/smtk/common/__init__.py )"
+# Install library
+install(TARGETS ${library_name} DESTINATION "${install_path}")
+
+# Create and install module __init__.py
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py"
+  "${build_path}/__init__.py" @ONLY
+  )
+
+install(
+  FILES "${build_path}/__init__.py"
+  DESTINATION "${install_path}"
   )

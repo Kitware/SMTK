@@ -12,6 +12,10 @@ set(simulationHeaders
 #install the headers
 smtk_public_headers(${simulationHeaders})
 
+if (SMTK_USE_PYBIND11)
+  add_subdirectory(pybind11)
+endif()
+
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
 endif()
