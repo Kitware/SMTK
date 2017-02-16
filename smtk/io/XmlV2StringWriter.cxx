@@ -1387,7 +1387,6 @@ void XmlV2StringWriter::processFileSystemItem(
 {
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   size_t i, n = item->numberOfValues();
-  node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
   if (!n)
     {
     return;
@@ -1395,22 +1394,20 @@ void XmlV2StringWriter::processFileSystemItem(
 
   // If the item can have variable number of values then store how many
   // values it has
-  if (!numRequiredVals)
+  if (item->isExtensible())
     {
     node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
     }
 
-  xml_node val;
-  if ((numRequiredVals == 1) && (!item->isExtensible()))
+  if (numRequiredVals == 1 && !item->isExtensible()) // Special Common Case
     {
     if (item->isSet())
       {
-      val = node.append_child("Val");
-      val.text().set(item->value().c_str());
+      node.text().set(item->value().c_str());
       }
     return;
     }
-  xml_node values = node.append_child("Values");
+  xml_node val, values = node.append_child("Values");
   for(i = 0; i < n; i++)
     {
     if (item->isSet(i))

@@ -25,6 +25,7 @@
 
 #include "smtk/model/EntityTypeBits.h"
 
+#include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
 
@@ -83,6 +84,7 @@ int main(int argc, char *argv[])
   // Lets add some item definitions
   smtk::attribute::IntItemDefinitionPtr iitemdef =
     base->addItemDefinition<smtk::attribute::IntItemDefinitionPtr>("TEMPORAL");
+  iitemdef->setIsExtensible(true);
   iitemdef->setCommonValueLabel("Time");
   iitemdef->addDiscreteValue(0, "Seconds");
   iitemdef->addDiscreteValue(1, "Minutes");
@@ -181,6 +183,17 @@ int main(int argc, char *argv[])
     std::cerr << logger.convertToString();
     status = -1;
     }
+
+  // Sanity check readback
+  smtk::attribute::System inputSystem;
+  smtk::io::AttributeReader reader;
+  if (reader.read(inputSystem, argv[1], logger))
+    {
+    std::cerr << "Errors encountered reading back Attribute File:\n";
+    std::cerr << logger.convertToString();
+    status = -1;
+    }
+
   // Now repeat but only save the instance section
   writer.includeModelInformation(false);
   writer.includeDefinitions(false);
