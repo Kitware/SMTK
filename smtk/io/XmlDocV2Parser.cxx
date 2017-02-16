@@ -250,6 +250,7 @@ void XmlDocV2Parser::processFileItem(pugi::xml_node &node,
     return;
     }
   valsNode = node.child("Values");
+  xml_node singleValNode = node.child("Val");
   if (valsNode)
     {
     for (val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
@@ -270,6 +271,11 @@ void XmlDocV2Parser::processFileItem(pugi::xml_node &node,
         }
       item->setValue(static_cast<int>(i), val.text().get());
       }
+    }
+  else if (singleValNode)
+    {
+    // Workaround for erroneous V2 files
+    item->setValue(singleValNode.text().get());
     }
   else if (numRequiredVals == 1)
     {

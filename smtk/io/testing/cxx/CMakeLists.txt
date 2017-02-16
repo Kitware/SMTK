@@ -1,5 +1,6 @@
 set(ioTests
   extensibleAttributeIOTest
+  fileItemTest
   loggerTest
   ResourceSetTest
   unitImportExportJSON

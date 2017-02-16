@@ -1115,7 +1115,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
     if((numberOfComponents == 1) && !idef->isExtensible())
       {
       smtkErrorMacro(this->m_logger,
-                     "Should not use Labels when NumberOfRequiredValues=1 : "
+                     "Should not use ComponentLabels when NumberOfRequiredValues=1 : "
                      << idef->name());
       }
 
