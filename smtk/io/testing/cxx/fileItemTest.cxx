@@ -63,7 +63,7 @@ int testFileItemSerialization()
   return 0;
 }
 
-int main(int /*argc*/, char* /*argv[]*/)
+int main(int /*argc*/, char* /*argv*/ [])
 {
   testFileItemSerialization();
   return 0;
