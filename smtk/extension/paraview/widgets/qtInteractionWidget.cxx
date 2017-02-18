@@ -12,6 +12,7 @@
 #include "pqActiveObjects.h"
 #include "pqServer.h"
 #include "pqView.h"
+#include "vtkEventQtSlotConnect.h"
 #include "vtkNew.h"
 #include "vtkSMNewWidgetRepresentationProxy.h"
 #include "vtkSMParaViewPipelineController.h"
@@ -24,6 +25,13 @@ qtInteractionWidget::qtInteractionWidget(
     QWidget *parentWdg)
     : Superclass(parentWdg), WidgetProxy(smproxy.Get()), Interactivity(false) {
   Q_ASSERT(smproxy != NULL);
+
+  this->VTKConnect->Connect(smproxy, vtkCommand::StartInteractionEvent, this,
+                            SIGNAL(widgetStartInteraction()));
+  this->VTKConnect->Connect(smproxy, vtkCommand::InteractionEvent, this,
+                            SIGNAL(widgetInteraction()));
+  this->VTKConnect->Connect(smproxy, vtkCommand::EndInteractionEvent, this,
+                            SIGNAL(widgetEndInteraction()));
 }
 
 //-----------------------------------------------------------------------------

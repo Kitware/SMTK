@@ -14,10 +14,12 @@
 
 #include <QPointer>
 #include <QWidget>
+#include <vtkNew.h>
 #include <vtkSmartPointer.h>
 
 class pqView;
 class vtkSMNewWidgetRepresentationProxy;
+class vtkEventQtSlotConnect;
 
 /// qtInteractionWidget is a base class for QWidgets that use a
 /// vtkAbstractWidget/vtkWidgetRepresentation subclasses (via Proxy's of course)
@@ -60,13 +62,24 @@ signals:
   /// fired when interactivity state is changed.
   void enableInteractivityChanged(bool enabled);
 
+  /// Notifies observers that the user is dragging the 3D widget
+  void widgetStartInteraction();
+
+  /// Notifies observers that the user is done dragging the 3D widget
+  void widgetEndInteraction();
+
+  /// Notifies observers that the user is dragging the 3D widget
+  void widgetInteraction();
+
+protected slots:
+  /// call to trigger a render.
+  void render();
+
 protected:
   qtInteractionWidget(
       const vtkSmartPointer<vtkSMNewWidgetRepresentationProxy> &proxy,
       QWidget *parent = nullptr);
 
-  /// call to trigger a render.
-  void render();
 
   /// Convenience method to create a new proxy for the given type.
   static vtkSmartPointer<vtkSMNewWidgetRepresentationProxy>
@@ -77,6 +90,7 @@ private:
   QPointer<pqView> View;
   vtkSmartPointer<vtkSMNewWidgetRepresentationProxy> WidgetProxy;
   bool Interactivity;
+  vtkNew<vtkEventQtSlotConnect> VTKConnect;
 };
 
 #endif

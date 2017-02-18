@@ -37,7 +37,6 @@
 
 // ParaView GUI includes.
 #include "pq3DWidgetFactory.h"
-#include "pq3DWidgetInterface.h"
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
 //#include "pqBoxWidget.h"
@@ -47,7 +46,6 @@
 //#include "pqImplicitPlaneWidget.h"
 #include "pqInterfaceTracker.h"
 //#include "pqLineSourceWidget.h"
-#include "pqLineWidget.h"
 #include "pqPipelineFilter.h"
 #include "pqPipelineSource.h"
 //#include "pqPointSourceWidget.h"
@@ -67,65 +65,6 @@ namespace
     return pxm->GetSelectionModel("ActiveSources");
     }
 }
-
-//-----------------------------------------------------------------------------
-class pq3DWidget::pqStandardWidgets : public pq3DWidgetInterface
-{
-public:
-  pq3DWidget* newWidget(const QString& name,
-    vtkSMProxy* referenceProxy,
-    vtkSMProxy* controlledProxy)
-    {
-    pq3DWidget *widget = 0;
-/*    if (name == "Plane")
-      {
-      widget = new pqImplicitPlaneWidget(referenceProxy, controlledProxy, 0);
-      }
-    else if (name == "Box")
-      {
-      widget = new pqBoxWidget(referenceProxy, controlledProxy, 0);
-      }
-    else if (name == "Handle")
-      {
-      widget = new pqHandleWidget(referenceProxy, controlledProxy, 0);
-      }
-    else if (name == "PointSource")
-      {
-      widget = new pqPointSourceWidget(referenceProxy, controlledProxy, 0);
-      }
-    else if (name == "LineSource")
-      {
-      widget = new pqLineSourceWidget(referenceProxy, controlledProxy, 0);
-      }
-*/  if (name == "Line")
-      {
-      widget = new pqLineWidget(referenceProxy, controlledProxy, 0);
-      }
-/*
-    else if (name == "PolyLineSource")
-      {
-      widget = new pqPolyLineWidget(referenceProxy, controlledProxy, 0);
-      }
-    else if (name == "Distance")
-      {
-      widget = new pqDistanceWidget(referenceProxy, controlledProxy, 0);
-      }
-    else if (name == "Sphere")
-      {
-      widget = new pqSphereWidget(referenceProxy, controlledProxy, 0);
-      }
-    else if (name == "Spline")
-      {
-      widget = new pqSplineWidget(referenceProxy, controlledProxy, 0);
-      }
-    else if (name == "Cylinder")
-      {
-      widget = new pqImplicitCylinderWidget(referenceProxy, controlledProxy, 0);
-      }
-*/
-    return widget;
-    }
-};
 
 //-----------------------------------------------------------------------------
 class pq3DWidgetInternal
@@ -207,49 +146,6 @@ pq3DWidget::~pq3DWidget()
   this->setView(0);
   this->setControlledProxy(0);
   delete this->Internal;
-}
-
-//-----------------------------------------------------------------------------
-QList<pq3DWidget*> pq3DWidget::createWidgets(vtkSMProxy* refProxy, vtkSMProxy* pxy)
-{
-  QList<pq3DWidget*> widgets;
-
-  QList<pq3DWidgetInterface*> interfaces =
-    pqApplicationCore::instance()->interfaceTracker()->interfaces<pq3DWidgetInterface*>();
-
-  vtkPVXMLElement* hints = pxy->GetHints();
-  unsigned int max = hints->GetNumberOfNestedElements();
-  for (unsigned int cc=0; cc < max; cc++)
-    {
-    vtkPVXMLElement* element = hints->GetNestedElement(cc);
-    if (QString("PropertyGroup") == element->GetName())
-      {
-      QString widgetType = element->GetAttribute("type");
-      pq3DWidget *widget = 0;
-
-      // Create the widget from plugins.
-      foreach (pq3DWidgetInterface* iface, interfaces)
-        {
-        widget = iface->newWidget(widgetType, refProxy, pxy);
-        if (widget)
-          {
-          break;
-          }
-        }
-      if (!widget)
-        {
-        // try to create the standard widget if the plugins fail.
-        pqStandardWidgets standardWidgets;
-        widget = standardWidgets.newWidget(widgetType, refProxy, pxy);
-        }
-      if (widget)
-        {
-        widget->setHints(element);
-        widgets.push_back(widget);
-        }
-      }
-    }
-  return widgets;
 }
 
 //-----------------------------------------------------------------------------

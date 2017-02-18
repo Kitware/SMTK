@@ -34,14 +34,6 @@ public:
   pq3DWidget(vtkSMProxy* referenceProxy, vtkSMProxy* proxy, QWidget* parent=0);
   virtual ~pq3DWidget();
 
-  // This method creates widgets using the hints provided by 
-  // the proxy. If a proxy needs more that one
-  // 3D widget, this method will create all the 3D widgets and
-  // return them. There is no parent associated with the newly
-  // created 3D widgets, it's the responsibility of the caller
-  // to do the memory management for the 3D widgets.
-  static QList<pq3DWidget*> createWidgets(vtkSMProxy* refProxy, vtkSMProxy* proxy);
-
   /// Controlled proxy is a proxy which is controlled by the 3D widget.
   /// A controlled proxy must provide "Hints" describing how
   /// the properties of the controlled proxy are controlled by the
@@ -205,8 +197,6 @@ private:
   pq3DWidgetInternal* const Internal;
 
   bool UseSelectionDataBounds;
-
-  class pqStandardWidgets;
 };
 
 #endif
