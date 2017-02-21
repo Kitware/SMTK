@@ -46,7 +46,7 @@ smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
   smtk::attribute::FileItemPtr urlItem = this->findFile("url");
   smtk::attribute::StringItemPtr dtypeItem = this->findString("type");
   smtk::attribute::IntItemPtr dimItem = this->findInt("dimension");
-  int dim = dimItem != nullptr ? dimItem->value(0) : -1;
+  int dim = dimItem != nullptr ? dimItem->value(0) : 2;
 
   smtk::attribute::VoidItem::Ptr separateRepOption =
     this->findVoid("separate representation");

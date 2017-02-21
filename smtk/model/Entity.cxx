@@ -51,7 +51,7 @@ static const char* auxGeomNamesByDimensionSingular[] = {
   "auxiliary surface",
   "auxiliary volume",
   "auxiliary spacetime",
-  "mixed-dimension auxiliary geometry"
+  "auxiliary geometry"
 };
 
 static const char* auxGeomNamesByDimensionPlural[] = {
@@ -60,7 +60,7 @@ static const char* auxGeomNamesByDimensionPlural[] = {
   "auxiliary surfaces",
   "auxiliary volumes",
   "auxiliary spacetimes",
-  "mixed-dimension auxiliary geometries"
+  "auxiliary geometries"
 };
 
 static const char* entityTypeNames[] = {
