@@ -200,7 +200,7 @@ bool Manager::deleteEntities(T& entities, U& modified, V& expunged, bool debugLo
         {
         if (debugLog) { smtkDebugMacro(this->log(), "  Adding free cell " << bit->name() << " (" << mod.cells().size() << ")"); }
         mod.addCell(*bit);
-        modified.insert(mod);
+        modified.insert(modified.end(), mod);
         if (debugLog) { smtkDebugMacro(this->log(), "    -> (" << mod.cells().size() << ")"); }
         }
       }
