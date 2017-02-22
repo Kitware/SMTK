@@ -28,10 +28,31 @@ std::string EntityListPhrase::title()
   message << sz << " ";
 
   this->buildSubphrases(); // This sets the m_{common,union}Flags members.
+  // Check if you have a string property.
+  String typeInfo("");
+  EntityRefArray entityArray = this->relatedEntities();
+  for (EntityRefArray::iterator it = entityArray.begin();
+       it != entityArray.end(); ++it)
+  {
+    if (it->hasStringProperty("_type"))
+    {
+      typeInfo = it->stringProperty("_type")[0];
+      break;
+    }
+  }
+  if (sz != 1)
+    {typeInfo += "s";}
   // Now determine whether all the entityrefs share a common type or dimension.
   if (this->m_commonFlags == this->m_unionFlags)
     { // All the entityrefs have exactly the same flags set.
-    message << Entity::flagSummary(this->m_commonFlags, sz == 1 ? 0 : 1);
+    if (typeInfo.size() > 1)
+    {
+      message << typeInfo;
+    }
+    else
+    {
+      message << Entity::flagSummary(this->m_commonFlags, sz == 1 ? 0 : 1);
+    }
     }
   else
     {
@@ -43,10 +64,18 @@ std::string EntityListPhrase::title()
       Entity::flagDimensionList( edims ?
         edims :
         this->m_unionFlags & ANY_DIMENSION, pluralDims);
+    std::string name;
+    if  (etype)
+    {
+      name = (typeInfo.size() > 1) ? typeInfo :
+                Entity::flagSummary(etype, sz == 1 ? 0 : 1);
+    }
+    else
+    {
+      name = "entities";
+    }
     message
-      << (etype ?
-        Entity::flagSummary(etype, sz == 1 ? 0 : 1) :
-        std::string("entities"))
+      << name
       << " of "
       << (pluralDims ? "dimensions" : "dimension")
       << " "

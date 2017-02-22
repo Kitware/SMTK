@@ -230,7 +230,15 @@ std::string EntityRef::flagSummary(int form) const
             summary << brdg->name() << " ";
           }
         }
+      if (this->hasStringProperty("_type"))
+      {
+        std::string plural = form ? "s" : "";
+        summary << this->stringProperty("_type")[0] << plural;
+      }
+      else
+      {
       summary << ent->flagSummary(form);
+      }
       return summary.str();
       }
     }

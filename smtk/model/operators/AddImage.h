@@ -23,6 +23,8 @@ public:
   smtkSharedFromThisMacro(AddAuxiliaryGeometry);
   smtkDeclareModelOperator();
 
+private:
+  virtual smtk::model::OperatorResult operateInternal();
 };
 
   } //namespace model
