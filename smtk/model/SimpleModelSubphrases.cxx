@@ -135,11 +135,13 @@ DescriptivePhrases SimpleModelSubphrases::subphrases(
   DescriptivePhrase::Ptr src)
 {
   DescriptivePhrases result;
+  bool shouldSort(true);
   switch (src->phraseType())
     {
   case ENTITY_SUMMARY:
     this->childrenOfEntity(
       dynamic_pointer_cast<EntityPhrase>(src), result);
+    shouldSort = false;
     break;
   case ENTITY_LIST:
     this->childrenOfEntityList(
@@ -163,7 +165,10 @@ DescriptivePhrases SimpleModelSubphrases::subphrases(
     }
 
   // Now sort the list
-  std::sort(result.begin(), result.end(), SpecialEntityNameSort);
+  if (shouldSort)
+    {
+      std::sort(result.begin(), result.end(), SpecialEntityNameSort);
+    }
 
   return result;
 }

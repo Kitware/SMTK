@@ -1508,7 +1508,6 @@ void qtModelView::changeEntityName( const QModelIndex& idx)
       }
     else
       {
-      smtk::mesh::ManagerPtr meshMgr = brOp->manager()->meshes();
       smtk::mesh::CollectionPtr c = mphrase->relatedMeshCollection();
       meshkey = c->meshes();
       }
