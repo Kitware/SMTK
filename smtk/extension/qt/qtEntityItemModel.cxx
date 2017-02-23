@@ -426,6 +426,10 @@ bool QEntityItemModel::setData(const QModelIndex& idx, const QVariant& value, in
       {
       std::string sval = value.value<QString>().toStdString();
       didChange = phrase->setTitle(sval);
+
+      // sort the subphrase after change
+      phrase->markDirty();
+      this->rebuildSubphrases(idx.parent());
       // if data did get changed, we need to emit the signal
       if(didChange)
         emit this->phraseTitleChanged(idx);

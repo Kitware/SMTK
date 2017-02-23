@@ -63,7 +63,9 @@ static bool SpecialEntityNameSort(const DescriptivePhrasePtr& a, const Descripti
   DescriptivePhraseType pta = a->phraseType();
   DescriptivePhraseType ptb = b->phraseType();
   if (pta != ptb)
-    return sortOrder[pta] < sortOrder[ptb];
+    {
+      return sortOrder[pta] < sortOrder[ptb];
+    }
 
   // II. Sort by entity type/dimension
   // II.a. Entity type
@@ -135,11 +137,13 @@ DescriptivePhrases EntityTypeSubphrases::subphrases(
   DescriptivePhrase::Ptr src)
 {
   DescriptivePhrases result;
+  bool shouldSort(true);
   switch (src->phraseType())
     {
   case ENTITY_SUMMARY:
     this->childrenOfEntity(
       dynamic_pointer_cast<EntityPhrase>(src), result);
+    shouldSort = false; // use the order when calling internal_createEntityList()
     break;
   case ENTITY_LIST:
     this->childrenOfEntityList(
@@ -163,7 +167,10 @@ DescriptivePhrases EntityTypeSubphrases::subphrases(
     }
 
   // Now sort the list
-  std::sort(result.begin(), result.end(), SpecialEntityNameSort);
+  if (shouldSort)
+    {
+      std::sort(result.begin(), result.end(), SpecialEntityNameSort);
+    }
 
   return result;
 }
