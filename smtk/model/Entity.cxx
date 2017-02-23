@@ -555,14 +555,14 @@ std::string Entity::flagDescription(BitFlags flags, int form)
   return Entity::flagSummary(flags, form);
 }
 
-/**\brief Given a vector of counters, return a numbered name string and advance counters as required.
+/**\brief Return the next pedigree ID for an entity of the given type when given a vector of counters appropriate to the context.
   *
-  * If you change this method, you may also need to change flagSummmary/flagDescription.
+  * This does not increment the counter by default (so that it can be used to assign names),
+  * however if you pass \a incr = true, the counter will be incremented.
   */
-std::string Entity::defaultNameFromCounters(BitFlags flags, IntegerList& counters)
+int Entity::countForType(BitFlags flags, IntegerList& counters, bool incr)
 {
-  std::ostringstream name;
-  name << Entity::flagSummaryHelper(flags, /*singular*/ 0) << " ";
+  IntegerList::value_type* ptr = NULL;
   switch (flags & ENTITY_MASK)
     {
   case CELL_ENTITY:
@@ -570,22 +570,22 @@ std::string Entity::defaultNameFromCounters(BitFlags flags, IntegerList& counter
     switch (flags & ANY_DIMENSION)
       {
     case DIMENSION_0:
-      name << counters[0]++;
+      ptr = &counters[0];
       break;
     case DIMENSION_1:
-      name << counters[1]++;
+      ptr = &counters[1];
       break;
     case DIMENSION_2:
-      name << counters[2]++;
+      ptr = &counters[2];
       break;
     case DIMENSION_3:
-      name << counters[3]++;
+      ptr = &counters[3];
       break;
     case DIMENSION_4:
-      name << counters[4]++;
+      ptr = &counters[4];
       break;
     default:
-      name << counters[5]++;
+      ptr = &counters[5];
       break;
       }
     break;
@@ -593,22 +593,22 @@ std::string Entity::defaultNameFromCounters(BitFlags flags, IntegerList& counter
     switch (flags & ANY_DIMENSION)
       {
     case DIMENSION_0 | DIMENSION_1:
-      name << counters[0]++;
+      ptr = &counters[0];
       break;
     case DIMENSION_1 | DIMENSION_2:
-      name << counters[1]++;
+      ptr = &counters[1];
       break;
     case DIMENSION_2 | DIMENSION_3:
-      name << counters[2]++;
+      ptr = &counters[2];
       break;
     case DIMENSION_3 | DIMENSION_4:
-      name << counters[3]++;
+      ptr = &counters[3];
       break;
     case 0:
-      name << counters[4]++;
+      ptr = &counters[4];
       break;
     default:
-      name << counters[5]++;
+      ptr = &counters[5];
       }
     break;
   case GROUP_ENTITY:
@@ -616,27 +616,52 @@ std::string Entity::defaultNameFromCounters(BitFlags flags, IntegerList& counter
       (((flags & MODEL_BOUNDARY) != 0) ^
        ((flags & MODEL_DOMAIN) != 0)) == 0)
       {
-      name << counters[0]++;
+      ptr = &counters[0];
       }
     else if (flags & MODEL_DOMAIN)
       {
-      name << counters[1]++;
+      ptr = &counters[1];
       }
     else // if (flags & MODEL_BOUNDARY)
       {
-      name << counters[2]++;
+      ptr = &counters[2];
       }
     break;
   case MODEL_ENTITY:
-    name << counters[0]++;
+    ptr = &counters[0];
     break;
   case INSTANCE_ENTITY:
   case SESSION:
   case AUX_GEOM_ENTITY:
   default:
-    name << counters[0]++;
+    ptr = &counters[0];
     break;
     }
+  if (!ptr)
+    {
+    return -1;
+    }
+  int count = *ptr;
+  if (incr)
+    {
+    ++(*ptr);
+    }
+  return count;
+}
+
+/**\brief Given a vector of counters, return a numbered name string and advance counters as required.
+  *
+  * If you change this method, you may also need to change flagSummmary/flagDescription.
+  *
+  * By default, this increments the counter as the name is assigned but the \a incr argument
+  * can be provided to override this behavior.
+  */
+std::string Entity::defaultNameFromCounters(BitFlags flags, IntegerList& counters, bool incr)
+{
+  std::ostringstream name;
+  name
+    << Entity::flagSummaryHelper(flags, /*singular*/ 0) << " "
+    << Entity::countForType(flags, counters, incr);
   return name.str();
 }
 
