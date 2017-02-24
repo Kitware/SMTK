@@ -20,6 +20,7 @@
 #include "smtk/bridge/polygon/internal/Util.h"
 
 #include "smtk/bridge/polygon/Operator.txx"
+#include "smtk/bridge/polygon/Session.txx"
 #include "smtk/bridge/polygon/internal/Neighborhood.txx"
 #include "smtk/bridge/polygon/internal/Model.txx"
 
@@ -469,6 +470,27 @@ void printPts(const std::string& msg, T begin, T end)
     }
 }
 
+void CreateFaces::removeFacesFromResult(const smtk::model::EntityRefs& faces)
+{
+  smtk::attribute::ModelEntityItemPtr cre = this->m_result->findModelEntity("created");
+  smtk::model::EntityRefs cremod(cre->begin(), cre->end());
+  for (smtk::model::EntityRefs::const_iterator fit = faces.begin(); fit != faces.end(); ++fit)
+    {
+    cremod.erase(*fit);
+    }
+  smtkErrorMacro(this->log(),
+    faces.size() << " faces had an empty tessellation; removing them from the model.");
+
+  smtk::model::EntityRefArray modified;
+  smtk::model::EntityRefArray expunged;
+  this->polygonSession()->consistentInternalDelete(faces, modified, expunged, this->m_debugLevel > 0);
+
+  // Rewrite result, excluding the delete faces.
+  smtk::model::EntityRefArray crevec(cremod.begin(), cremod.end());
+  cre->setNumberOfValues(crevec.size());
+  cre->setValues(crevec.begin(), crevec.end());
+}
+
 void CreateFaces::addTessellations()
 {
   // See if we need to prevent boost from overflows and crashes
@@ -489,6 +511,7 @@ void CreateFaces::addTessellations()
   internal::Coord deny = ly > 31 ? (1 << static_cast<int>(std::ceil(ly - 31))) : 1;
   bool denom = denx > 1 || deny > 1;
 
+  smtk::model::EntityRefs emptyFaces; // Faces that should not have been created.
   std::map<RegionId, std::vector<OrientedEdges> >::iterator rit; // Face iterator
   for (rit = this->m_regionLoops.begin(); rit != this->m_regionLoops.end(); ++rit)
     {
@@ -571,6 +594,12 @@ void CreateFaces::addTessellations()
     std::vector<poly::polygon_data<internal::Coord> > tess;
     polys.get_trapezoids(tess);
     //polys.get(tess);
+    if (tess.empty())
+      {
+      emptyFaces.insert(modelFace);
+      continue; // Skip to next face/region.
+      }
+
     std::vector<poly::polygon_data<internal::Coord> >::const_iterator pit;
     smtk::model::Tessellation blank;
     smtk::model::UUIDsToTessellations::iterator smtkTess =
@@ -612,6 +641,11 @@ void CreateFaces::addTessellations()
     smtk::model::Tessellation::invalidBoundingBox(&bbox[0]);
     smtkTess->second.getBoundingBox(&bbox[0]);
     modelFace.setBoundingBox(&bbox[0]);
+    }
+
+  if (!emptyFaces.empty())
+    {
+    this->removeFacesFromResult(emptyFaces);
     }
 }
 
