@@ -391,7 +391,10 @@ def Subtract(workpiece, tool, **args):
   # Convert tool to a list
   if type(tool) != type([]):
     tool = [tool,]
-  SetVectorValue(op.findModelEntity('tools',int(smtk.attribute.ALL_CHILDREN)), tool)
+  if smtk.wrappingProtocol() == 'pybind11':
+    SetVectorValue(op.findModelEntity('tools',int(smtk.attribute.ALL_CHILDREN)), tool)
+  else:
+    SetVectorValue(op.findModelEntity('tools',smtk.attribute.ALL_CHILDREN), tool)
 
   res = op.operate()
   SetLastResult(res)
