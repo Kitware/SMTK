@@ -125,6 +125,8 @@ public:
     PotentialFG = 200;
     shiftButtonPressed = false;
     leftMousePressed = false;
+    ForgroundLabled = false;
+    drawForeground = false;
 
     maskActor   = vtkSmartPointer<vtkImageActor>::New();
     imageViewer = vtkSmartPointer<vtkImageViewer2>::New();
@@ -204,6 +206,7 @@ public:
   int PotentialBG;
   int PotentialFG;
   int Radius;
+  bool ForgroundLabled;
   vtkSmartPointer<vtkImageActor> maskActor;
   vtkSmartPointer<vtkDEMImageCanvasSource2D> drawing;
   vtkImageAlgorithm * filter;
@@ -217,8 +220,11 @@ public:
   vtkSmartPointer<vtkImageClassFilter> imageClassFilter;
   vtkSmartPointer<vtkCleanPolylines> cleanPolyLines;
 
+  QPushButton * Run;
+
   bool leftMousePressed;
   bool shiftButtonPressed;
+  bool drawForeground;
   double LastPt[2];
 
   bool UpdatePotAlpha;
@@ -329,6 +335,10 @@ public:
 
     internal->drawing->FillTube(internal->LastPt[0], internal->LastPt[1],
                                 image_coordinate[0], image_coordinate[1], internal->Radius);
+    if(internal->drawForeground)
+    {
+      internal->Run->setEnabled(true);
+    }
     style->OnLeftButtonUp();
     internal->leftMousePressed = false;
   }
@@ -429,6 +439,10 @@ public:
     interactor->Render();
     internal->drawing->FillTube(internal->LastPt[0], internal->LastPt[1],
                                 image_coordinate[0], image_coordinate[1], internal->Radius);
+    if(internal->drawForeground)
+    {
+      internal->Run->setEnabled(true);
+    }
     internal->LastPt[0] = image_coordinate[0];
     internal->LastPt[1] = image_coordinate[1];
   }
@@ -542,6 +556,11 @@ public:
     this->internal->LastPt[0] = image_coordinate[0];
     this->internal->LastPt[1] = image_coordinate[1];
 
+    if(internal->drawForeground)
+    {
+      internal->Run->setEnabled(true);
+    }
+
     interactor->Render();
     style->OnLeftButtonDown();
   }
@@ -586,6 +605,8 @@ imageFeatureExtractorWidget::imageFeatureExtractorWidget()
   this->ui->SaveLines->setEnabled(false);
   this->ui->LoadLines->setEnabled(false);
   this->ui->SaveMask->setEnabled(false);
+  this->ui->Run->setEnabled(false);
+  this->internal->Run = this->ui->Run;
 
   this->ui->qvtkWidget->SetRenderWindow(this->internal->imageViewer->GetRenderWindow());
   this->internal->imageViewer->SetupInteractor(
@@ -649,6 +670,7 @@ void imageFeatureExtractorWidget
   this->ui->SaveLines->setEnabled(true);
   this->ui->LoadLines->setEnabled(true);
   this->ui->SaveMask->setEnabled(true);
+  this->ui->Run->setEnabled(false);
 
   this->internal->imageViewer->SetInputData(inputImage);
   internal->filterGrabCuts->SetInputData(0, inputImage);
@@ -675,6 +697,7 @@ void imageFeatureExtractorWidget
                              inputImage->GetExtent()[2], inputImage->GetExtent()[3]);
   internal->drawing->SetDrawColor(currentColor);
   internal->imageViewer->GetRenderer()->ResetCamera();
+  internal->drawForeground = true;
 
   vtkRenderWindowInteractor *interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
   this->internal->contFilter->SetInputData(this->internal->imageClassFilter->GetOutput(0));
@@ -773,6 +796,9 @@ void imageFeatureExtractorWidget::clear()
   this->ui->MinLandSize->setEnabled(false);
   this->ui->MinWaterSize->setEnabled(false);
 
+  this->ui->Run->setEnabled(false);
+  this->internal->Run = this->ui->Run;
+
   vtkRenderWindowInteractor *interactor = internal->imageViewer->GetRenderWindow()->GetInteractor();
   interactor->Render();
 }
@@ -862,14 +888,17 @@ void imageFeatureExtractorWidget::setDrawMode(int m)
     case 1:
       internal->drawing->SetDrawColor(internal->Background, internal->Background,
                                       internal->Background, internal->Alpha);
+      internal->drawForeground = false;
       break;
     case 0:
       internal->drawing->SetDrawColor(internal->Forground, internal->Forground,
                                       internal->Forground, internal->Alpha);
+      internal->drawForeground = true;
       break;
     case 2:
       internal->drawing->SetDrawColor(internal->PotentialBG, internal->PotentialBG,
                                       internal->PotentialBG, internal->PotAlpha);
+      internal->drawForeground = false;
       break;
   }
 }
