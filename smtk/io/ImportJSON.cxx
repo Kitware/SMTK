@@ -417,7 +417,20 @@ int ImportJSON::intoModelManager(
 int ImportJSON::ofManager(
   cJSON* dict, ManagerPtr manager)
 {
-  if (!dict || !manager)
+  smtk::model::BitFlags whatToImport = smtk::model::SESSION_EVERYTHING;
+  return ImportJSON::ofManagerEntityData(dict, manager, whatToImport);
+}
+
+/**\brief Create records in the \a manager from a JSON dictionary, \a dict.
+  *
+  * The dictionary must have keys that are valid UUID strings and
+  * values that describe entity, tessellation, arrangement, and/or
+  * properties associated with the UUID.
+  */
+int ImportJSON::ofManagerEntityData(
+  cJSON* dict, ManagerPtr manager, smtk::model::BitFlags whatToImport)
+{
+  if (!dict || !manager || !whatToImport)
     {
     return 0;
     }
@@ -436,13 +449,31 @@ int ImportJSON::ofManager(
       std::cerr << "Skipping malformed UUID: " << curChild->string << "\n";
       continue;
       }
-    status &= ImportJSON::ofManagerEntity(uid, curChild, manager);
-    status &= ImportJSON::ofManagerArrangement(uid, curChild, manager);
-    status &= ImportJSON::ofManagerTessellation(uid, curChild, manager);
-    status &= ImportJSON::ofManagerAnalysis(uid, curChild, manager);
-    status &= ImportJSON::ofManagerFloatProperties(uid, curChild, manager);
-    status &= ImportJSON::ofManagerStringProperties(uid, curChild, manager);
-    status &= ImportJSON::ofManagerIntegerProperties(uid, curChild, manager);
+    if (whatToImport & SESSION_ENTITY_RECORD)
+      {
+      status &= ImportJSON::ofManagerEntity(uid, curChild, manager);
+      }
+    if (whatToImport & SESSION_ARRANGEMENTS)
+      {
+      status &= ImportJSON::ofManagerArrangement(uid, curChild, manager);
+      }
+    if (whatToImport & SESSION_TESSELLATION)
+      {
+      status &= ImportJSON::ofManagerTessellation(uid, curChild, manager);
+      status &= ImportJSON::ofManagerAnalysis(uid, curChild, manager);
+      }
+    if (whatToImport & SESSION_FLOAT_PROPERTIES)
+      {
+      status &= ImportJSON::ofManagerFloatProperties(uid, curChild, manager);
+      }
+    if (whatToImport & SESSION_STRING_PROPERTIES)
+      {
+      status &= ImportJSON::ofManagerStringProperties(uid, curChild, manager);
+      }
+    if (whatToImport & SESSION_INTEGER_PROPERTIES)
+      {
+      status &= ImportJSON::ofManagerIntegerProperties(uid, curChild, manager);
+      }
     }
   return status;
 }

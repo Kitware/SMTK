@@ -122,6 +122,7 @@
   <!-- Use cJSON objects. For now we will ignore these-->
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofDanglingEntities', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManager', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerEntityData', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerArrangement', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerEntity', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerFloatProperties', unmatched parameter type 'cJSON*'"/>
