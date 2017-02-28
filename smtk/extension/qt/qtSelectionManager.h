@@ -46,8 +46,14 @@ class SMTKQTEXT_EXPORT qtSelectionManager : public QObject
    selEntities, const smtk::mesh::MeshSets &selMeshes, bool blocksignals) const;
 
     // Description
-    // Broadcast selection to render view
+    // Broadcast selection to render view by entityRef
     void broadcastToRenderView(const smtk::model::EntityRefs&
+                selEntities, const smtk::mesh::MeshSets &selMeshes,
+                   const smtk::model::DescriptivePhrases &DesPhrases) const;
+
+    // Description
+    // Broadcast selection to render view by UUIDs
+    void broadcastToRenderView(const smtk::common::UUIDs&
                 selEntities, const smtk::mesh::MeshSets &selMeshes,
                    const smtk::model::DescriptivePhrases &DesPhrases) const;
   public slots:

@@ -76,9 +76,11 @@ namespace smtk
     this->clearAllSelections();
     this->m_selEntities.insert(selEntities.begin(), selEntities.end());
     // broadcast to model tree and render view
-    bool blocksignals = false;
-    emit  broadcastToModelTree(this->m_selEntities,this->m_selMeshes,
+    bool blocksignals = true;
+    emit  broadcastToModelTree(this->m_selEntities,smtk::mesh::MeshSets(),
                                blocksignals);
+    emit broadcastToRenderView(selEntities, smtk::mesh::MeshSets(),
+                               smtk::model::DescriptivePhrases());
   }
 
   void qtSelectionManager::clearAllSelections()
