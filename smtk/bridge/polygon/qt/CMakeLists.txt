@@ -68,9 +68,9 @@ target_link_libraries(smtkPolygonQtExt LINK_PUBLIC
   vtkSMTKSourceExt
   vtkDomainsChemistryOpenGL2
   vtkSMTKFilterExt
+  ${qt_targets}
 LINK_PRIVATE
   ${VTK_LIBRARIES}
-  ${qt_targets}
 )
 
 smtk_export_header(smtkPolygonQtExt Exports.h)
@@ -90,6 +90,7 @@ if (SMTK_ENABLE_TESTING)
     vtkInteractionStyle
     vtkRenderingFreeType
     vtkRenderingOpenGL2
+    ${qt_targets}
     )
     if (TARGET ${target})
       list(APPEND SMTK_VTK_TARGET_LIST ${target})

@@ -172,7 +172,7 @@ QModelIndex qtTimeZoneRegionModel::parent(const QModelIndex& index) const
     }
   else if (internalId < 1000)
     {
-    return this->createIndex(0, 0, 0);  // continent's parent is root
+    return this->createIndex(0, 0);  // continent's parent is root
     }
   // (else region)
   int parentId = internalId / 1000;
@@ -337,7 +337,7 @@ QModelIndex qtTimeZoneRegionModel::findModelIndex(const QString& regionId) const
   QStringList parts = regionId.split('/');
   QString continent = parts[0];
   QString region = parts[1];
-  QModelIndex rootIndex = this->createIndex(0, 0, 0);
+  QModelIndex rootIndex = this->createIndex(0, 0);
 
   // Find continent index by brute force
   int contRow = 0;
