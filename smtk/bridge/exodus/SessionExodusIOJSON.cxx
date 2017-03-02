@@ -112,9 +112,9 @@ int SessionIOJSON::importJSON(
   (void)modelMgr;
   (void)session;
   (void)sessionRec;
-  (void)loadNativeModels;
   cJSON* preservedUUIDs = cJSON_GetObjectItem(sessionRec, "preservedUUIDs");
   cJSON* modelFiles = cJSON_GetObjectItem(sessionRec, "modelFiles");
+  cJSON* models = cJSON_GetObjectItem(sessionRec, "models");
 
   common::UUIDArray uids;
   if (preservedUUIDs)
@@ -122,13 +122,23 @@ int SessionIOJSON::importJSON(
     smtk::io::ImportJSON::getUUIDArrayFromJSON(preservedUUIDs->child, uids);
     }
 
+  smtk::model::BitFlags whatToImport;
   if (loadNativeModels)
     {
+    whatToImport = smtk::model::SESSION_EVERYTHING;
     for (cJSON* entry = modelFiles->child; entry; entry = entry->next)
       {
       smtkDebugMacro(modelMgr->log(), "Loading file \"" << entry->valuestring << "\"");
       this->loadExodusFileWithUUIDs(model::SessionRef(modelMgr, session), entry->valuestring, uids);
       }
+    }
+  else
+    {
+    whatToImport = smtk::model::SESSION_PROPERTIES;
+    }
+  for (cJSON* entry = models ? models->child : NULL; entry; entry = entry->next)
+    {
+    smtk::io::ImportJSON::ofManagerEntityData(entry, modelMgr, whatToImport);
     }
 
   return 1;

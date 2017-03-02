@@ -15,6 +15,7 @@
 
 #include "smtk/common/UUID.h"
 
+#include "smtk/model/EntityTypeBits.h"
 #include "smtk/model/StringData.h"
 
 struct cJSON;
@@ -36,6 +37,7 @@ class SMTKCORE_EXPORT ImportJSON
 public:
   static int intoModelManager(const char* json, smtk::model::ManagerPtr manager);
   static int ofManager(cJSON* body, smtk::model::ManagerPtr manager);
+  static int ofManagerEntityData(cJSON* body, smtk::model::ManagerPtr manager, smtk::model::BitFlags whatToImport);
   static int ofManagerEntity(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
   static int ofManagerArrangement(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
   static int ofManagerTessellation(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
