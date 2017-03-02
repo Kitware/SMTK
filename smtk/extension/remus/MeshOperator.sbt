@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="mesh" BaseType="operator">
+    <AttDef Type="mesh" BaseType="operator" AdvanceLevel="11">
       <ItemDefinitions>
         <ModelEntity Name="model" NumberOfRequiredValues="1"/>
         <String Name="endpoint" NumberOfRequiredValues="1"/>
