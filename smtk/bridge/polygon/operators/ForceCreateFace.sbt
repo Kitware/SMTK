@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="force create face" AdvanceLevel="1"  BaseType="operator">
+    <AttDef Type="force create face" AdvanceLevel="11"  BaseType="operator">
       <BriefDescription>Create a model face without sanity checks.</BriefDescription>
       <DetailedDescription>
         Create a model face from a sequence of points holding an outer loop and
