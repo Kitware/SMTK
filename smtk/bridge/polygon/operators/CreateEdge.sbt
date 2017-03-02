@@ -19,7 +19,7 @@
         pre-existing edges in the model).
         Any intersections between different edges are handled when faces are created.
       </DetailedDescription>
-      <AssociationsDef Name="model" NumberOfRequiredValues="1" Extensible="yes">
+      <AssociationsDef Name="model" NumberOfRequiredValues="1">
         <MembershipMask>model</MembershipMask>
         <BriefDescription>Vertices to join into an edge or the model to which edges should be added.</BriefDescription>
         <DetailedDescription>
