@@ -23,7 +23,7 @@ namespace py = pybind11;
 
 PySharedPtrClass< smtk::attribute::DateTimeItemDefinition, smtk::attribute::ValueItemDefinitionTemplate<smtk::common::DateTimeZonePair> > pybind11_init_smtk_attribute_DateTimeItemDefinition(py::module &m)
 {
-  PySharedPtrClass< smtk::attribute::DateTimeItemDefinition, smtk::attribute::ValueItemDefinitionTemplate<smtk::common::DateTimeZonePair> > instance(m, "DateTimeItemDefinition", py::metaclass());
+  PySharedPtrClass< smtk::attribute::DateTimeItemDefinition, smtk::attribute::ValueItemDefinitionTemplate<smtk::common::DateTimeZonePair> > instance(m, "DateTimeItemDefinition");
   instance
     .def(py::init<::smtk::attribute::DateTimeItemDefinition const &>())
     .def_static("New", &smtk::attribute::DateTimeItemDefinition::New, py::arg("myName"))

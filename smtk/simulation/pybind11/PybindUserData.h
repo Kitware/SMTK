@@ -19,7 +19,7 @@ namespace py = pybind11;
 
 py::class_< smtk::simulation::UserData > pybind11_init_smtk_simulation_UserData(py::module &m)
 {
-  py::class_< smtk::simulation::UserData > instance(m, "UserData", py::metaclass());
+  py::class_< smtk::simulation::UserData > instance(m, "UserData");
   instance
     .def(py::init<::smtk::simulation::UserData const &>())
     .def("deepcopy", (smtk::simulation::UserData & (smtk::simulation::UserData::*)(::smtk::simulation::UserData const &)) &smtk::simulation::UserData::operator=)

@@ -21,7 +21,7 @@ namespace py = pybind11;
 
 PySharedPtrClass< smtk::model::CloseModel, smtk::model::Operator > pybind11_init_smtk_model_CloseModel(py::module &m)
 {
-  PySharedPtrClass< smtk::model::CloseModel, smtk::model::Operator > instance(m, "CloseModel", py::metaclass());
+  PySharedPtrClass< smtk::model::CloseModel, smtk::model::Operator > instance(m, "CloseModel");
   instance
     .def(py::init<>())
     .def(py::init<::smtk::model::CloseModel const &>())

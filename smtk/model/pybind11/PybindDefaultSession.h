@@ -24,7 +24,7 @@ namespace py = pybind11;
 
 PySharedPtrClass< smtk::model::DefaultSession, smtk::model::Session > pybind11_init_smtk_model_DefaultSession(py::module &m)
 {
-  PySharedPtrClass< smtk::model::DefaultSession, smtk::model::Session > instance(m, "DefaultSession", py::metaclass());
+  PySharedPtrClass< smtk::model::DefaultSession, smtk::model::Session > instance(m, "DefaultSession");
   instance
     .def(py::init<::smtk::model::DefaultSession const &>())
     .def("deepcopy", (smtk::model::DefaultSession & (smtk::model::DefaultSession::*)(::smtk::model::DefaultSession const &)) &smtk::model::DefaultSession::operator=)

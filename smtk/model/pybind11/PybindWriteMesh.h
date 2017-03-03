@@ -21,7 +21,7 @@ namespace py = pybind11;
 
 PySharedPtrClass< smtk::model::WriteMesh, smtk::model::Operator > pybind11_init_smtk_model_WriteMesh(py::module &m)
 {
-  PySharedPtrClass< smtk::model::WriteMesh, smtk::model::Operator > instance(m, "WriteMesh", py::metaclass());
+  PySharedPtrClass< smtk::model::WriteMesh, smtk::model::Operator > instance(m, "WriteMesh");
   instance
     .def(py::init<>())
     .def(py::init<::smtk::model::WriteMesh const &>())

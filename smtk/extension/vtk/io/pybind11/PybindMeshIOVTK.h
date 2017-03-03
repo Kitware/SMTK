@@ -19,9 +19,9 @@
 
 namespace py = pybind11;
 
-py::class_< smtk::extension::vtk::io::MeshIOVTK, smtk::io::mesh::MeshIO > pybind11_init_smtk_extension_vtk_io_MeshIOVTK(py::module &m)
+PySharedPtrClass< smtk::extension::vtk::io::MeshIOVTK, smtk::io::mesh::MeshIO > pybind11_init_smtk_extension_vtk_io_MeshIOVTK(py::module &m)
 {
-  py::class_< smtk::extension::vtk::io::MeshIOVTK, smtk::io::mesh::MeshIO > instance(m, "MeshIOVTK");
+  PySharedPtrClass< smtk::extension::vtk::io::MeshIOVTK, smtk::io::mesh::MeshIO > instance(m, "MeshIOVTK");
   instance
     .def(py::init<>())
     .def(py::init<::smtk::extension::vtk::io::MeshIOVTK const &>())

@@ -21,7 +21,7 @@ namespace py = pybind11;
 
 PySharedPtrClass< smtk::model::SetProperty, smtk::model::Operator > pybind11_init_smtk_model_SetProperty(py::module &m)
 {
-  PySharedPtrClass< smtk::model::SetProperty, smtk::model::Operator > instance(m, "SetProperty", py::metaclass());
+  PySharedPtrClass< smtk::model::SetProperty, smtk::model::Operator > instance(m, "SetProperty");
   instance
     .def(py::init<>())
     .def(py::init<::smtk::model::SetProperty const &>())

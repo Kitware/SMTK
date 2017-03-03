@@ -389,24 +389,18 @@ def parse_class(class_, stream, top_level = True):
 
     init_function_name = "pybind11_init_" + mangled_name(class_)
 
-    metaclass = ""
-    if has_static(class_):
-        metaclass = ", py::metaclass()"
-
     if top_level:
         stream("%s %s(py::module &m)" % (bind_class_name(class_),
                                            init_function_name))
         stream("{")
-        stream("  %s instance(m, \"%s\"%s);" % \
+        stream("  %s instance(m, \"%s\");" % \
                (bind_class_name(class_),
-                class_.name.replace('<','_').replace('>','_').replace('::','_'),
-                metaclass))
+                class_.name.replace('<','_').replace('>','_').replace('::','_')))
         stream("  instance")
     else:
-        stream("  %s(instance, \"%s\"%s)" % \
+        stream("  %s(instance, \"%s\")" % \
               (bind_class_name(class_),
-               class_.name.replace('<','_').replace('>','_').replace('::','_'),
-               metaclass))
+               class_.name.replace('<','_').replace('>','_').replace('::','_')))
 
     if not class_.is_abstract:
         for constructor in class_.constructors():
