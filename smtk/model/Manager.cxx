@@ -1599,7 +1599,7 @@ void Manager::assignDefaultNamesWithOwner(
     std::string defaultName =
       counts.empty() ?
       this->shortUUIDName(irec->first, irec->second.entityFlags()) :
-      ownersName + ", " + Entity::defaultNameFromCounters(irec->second.entityFlags(), counts);
+      Entity::defaultNameFromCounters(irec->second.entityFlags(), counts);
     this->setStringProperty(irec->first, "name", defaultName);
     }
 
@@ -1677,25 +1677,9 @@ std::string Manager::assignDefaultName(const UUID& uid, BitFlags entityFlags)
       tmpName = this->stringProperty(uid, "name")[0];
     return tmpName;
     }
-  // Otherwise, use the "owning" model as part of the default name
-  // for the entity. First, get the name of the entity's owner:
+  // Not a model or session, get its parent's per-type counters:
   UUID owner(
     this->modelOwningEntity(uid));
-  std::string ownerName;
-  if (owner)
-    {
-    if (this->hasStringProperty(owner, "name"))
-      {
-      ownerName = this->stringProperty(owner, "name")[0];
-      }
-    else
-      {
-      ownerName = this->assignDefaultName(
-        owner, this->findEntity(owner)->entityFlags());
-      }
-    ownerName += ", ";
-    }
-  // Now get the owner's list of per-type counters:
   IntegerList& counts(
     this->entityCounts(
       owner, entityFlags));
@@ -1708,7 +1692,7 @@ std::string Manager::assignDefaultName(const UUID& uid, BitFlags entityFlags)
   std::string defaultName =
     counts.empty() ?
     this->shortUUIDName(uid, entityFlags) :
-    ownerName + Entity::defaultNameFromCounters(entityFlags, counts);
+    Entity::defaultNameFromCounters(entityFlags, counts);
   this->setStringProperty(uid, "name", defaultName);
   return defaultName;
 }
