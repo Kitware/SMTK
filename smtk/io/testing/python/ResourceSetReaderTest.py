@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import os
 import sys
 #=============================================================================
 #
@@ -15,74 +16,73 @@ import smtk
 if smtk.wrappingProtocol() == 'pybind11':
     import smtk.common
     import smtk.io
-from smtk.simple import *
 
-class TestResourceSetReader():
+def TestResourceSetReader(readFromFile):
     """A test for ResourceSetReader
     It is a direct port of the Cxx version"""
 
-    def setUp(self):
-        if len(sys.argv) < 2:
-            print "Reads resource with 1 or more attribute managers"
-            print "Usage: ResourceSetReaderTest resource_file"
-            print "  [expect_number_of_resources]"
-            return 1
+    if len(sys.argv) < 2:
+        print "Reads resource with 1 or more attribute managers"
+        print "Usage: ResourceSetReaderTest resource_file"
+        print "  [expect_number_of_resources]"
+        return 1
 
-        self.status = 0  # return value
+    status = 0  # return value
 
-        self.resources = smtk.common.ResourceSet()
-        print 'resources', self.resources
-        self.reader = smtk.io.ResourceSetReader()
-        self.logger = smtk.io.Logger()
+    resources = smtk.common.ResourceSet()
+    print 'resources', resources
+    reader = smtk.io.ResourceSetReader()
+    logger = smtk.io.Logger()
 
-        input_path = sys.argv[1]
+    input_path = sys.argv[1]
 
-        hasErrors = self.reader.readFile(input_path, self.resources, self.logger)
-        if hasErrors:
-            print "Reader has errors"
-            print self.logger.convertToString()
-            self.status = self.status + 1
+    if readFromFile:
+        hasErrors = reader.readFile(input_path, resources, logger)
+    else:
+        with open(input_path, 'r') as myfile:
+            data = myfile.read().replace('\n', '')
 
+        resources.setLinkStartPath(os.path.dirname(input_path))
+        hasErrors = reader.readString(data, resources, logger, True)
 
-    def testSimpleRead(self):
-        if len(sys.argv) <= 2:
-            return 1
+    if hasErrors:
+        print "Reader has errors"
+        print logger.convertToString()
+        status = status + 1
 
-        expectedNumber = 0
-        convert = sys.argv[2]
+    expectedNumber = 0
+    convert = sys.argv[2]
 
-        try:
-            expectedNumber = int(convert)
-        except:
-            self.status = self.status + 1
-        finally:
-            if expectedNumber < 0:
-                print "ERROR: argv[2] not an unsigned integer"
-                self.status = self.status + 1
+    try:
+        expectedNumber = int(convert)
+    except:
+        status = status + 1
+    finally:
+        if expectedNumber < 0:
+            print "ERROR: argv[2] not an unsigned integer"
+            status = status + 1
+        else:
+            numResources = resources.numberOfResources()
+            if numResources != expectedNumber:
+                print "ERROR: Expecting ", expectedNumber, \
+                " resources, loaded ", numResources
+                status = status + 1
             else:
-                numResources = self.resources.numberOfResources()
-                if numResources != expectedNumber:
-                    print "ERROR: Expecting ", expectedNumber, \
-                    " resources, loaded ", numResources
-                    self.status = self.status + 1
-                else:
-                    print "Number of resources loaded:", numResources
+                print "Number of resources loaded:", numResources
 
-                # dump out resource ids for info only
-                resourceIds = self.resources.resourceIds()
-                for id in resourceIds:
-                    print id
+            # dump out resource ids for info only
+            resourceIds = resources.resourceIds()
+            for id in resourceIds:
+                print id
 
-        #print ('dir'), dir(self.resources)
-        #print help(self.resources.get)
-        res0 = self.resources.get('att0')
-        print 'type', res0.resourceType()
-        #print dir(res0)
+    #print ('dir'), dir(resources)
+    #print help(resources.get)
+    res0 = resources.get('att0')
+    print 'type', res0.resourceType()
+    #print dir(res0)
 
-        return self.status
+    return status
 
 
 if __name__ == '__main__':
-    t = TestResourceSetReader()
-    t.setUp()
-    sys.exit(t.testSimpleRead())
+    sys.exit(TestResourceSetReader(True) + TestResourceSetReader(False))
