@@ -32,7 +32,7 @@ PYBIND11_PLUGIN(_smtkPybindIOVTK)
   // comparing the dependencies of each of the wrapped objects.
   py::class_< smtk::extension::vtk::io::ExportVTKData > smtk_extension_vtk_io_ExportVTKData = pybind11_init_smtk_extension_vtk_io_ExportVTKData(io);
   py::class_< smtk::extension::vtk::io::ImportVTKData > smtk_extension_vtk_io_ImportVTKData = pybind11_init_smtk_extension_vtk_io_ImportVTKData(io);
-  py::class_< smtk::extension::vtk::io::MeshIOVTK, smtk::io::mesh::MeshIO > smtk_extension_vtk_io_MeshIOVTK = pybind11_init_smtk_extension_vtk_io_MeshIOVTK(io);
+  PySharedPtrClass< smtk::extension::vtk::io::MeshIOVTK, smtk::io::mesh::MeshIO > smtk_extension_vtk_io_MeshIOVTK = pybind11_init_smtk_extension_vtk_io_MeshIOVTK(io);
 
   return io.ptr();
 }

@@ -21,7 +21,7 @@ namespace py = pybind11;
 
 PySharedPtrClass< smtk::model::RemoteOperator, smtk::model::Operator > pybind11_init_smtk_model_RemoteOperator(py::module &m)
 {
-  PySharedPtrClass< smtk::model::RemoteOperator, smtk::model::Operator > instance(m, "RemoteOperator", py::metaclass());
+  PySharedPtrClass< smtk::model::RemoteOperator, smtk::model::Operator > instance(m, "RemoteOperator");
   instance
     .def(py::init<>())
     .def(py::init<::smtk::model::RemoteOperator const &>())

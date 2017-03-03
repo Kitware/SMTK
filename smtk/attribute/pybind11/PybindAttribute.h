@@ -42,7 +42,7 @@ namespace py = pybind11;
 
 PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribute_Attribute(py::module &m)
 {
-  PySharedPtrClass< smtk::attribute::Attribute > instance(m, "Attribute", py::metaclass());
+  PySharedPtrClass< smtk::attribute::Attribute > instance(m, "Attribute");
   instance
     .def(py::init<::smtk::attribute::Attribute const &>())
     .def("deepcopy", (smtk::attribute::Attribute & (smtk::attribute::Attribute::*)(::smtk::attribute::Attribute const &)) &smtk::attribute::Attribute::operator=)
