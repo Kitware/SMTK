@@ -345,6 +345,10 @@ public:
 
   virtual ~Session();
 
+  virtual bool removeGeneratedProperties(const EntityRef& ent, SessionInfoBits propFlags);
+  virtual bool splitProperties(const EntityRef& from, const EntityRefs& to) const;
+  virtual bool mergeProperties(const EntityRefs& from, EntityRef& to) const;
+
 protected:
   friend class io::ExportJSON;
   friend class io::ImportJSON;
@@ -356,10 +360,6 @@ protected:
 
   void setSessionId(const smtk::common::UUID& sessId);
   void setManager(Manager* mgr);
-
-  virtual bool removeGeneratedProperties(const EntityRef& ent, SessionInfoBits propFlags);
-  virtual bool splitProperties(const EntityRef& from, const EntityRefs& to);
-  virtual bool mergeProperties(const EntityRefs& from, EntityRef& to);
 
   virtual Entity* addEntityRecord(const EntityRef& entRef);
   virtual ArrangementHelper* createArrangementHelper();

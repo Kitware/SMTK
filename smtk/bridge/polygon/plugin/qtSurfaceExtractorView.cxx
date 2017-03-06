@@ -212,6 +212,7 @@ void qtSurfaceExtractorView::requestOperation(const smtk::model::OperatorPtr& op
 //----------------------------------------------------------------------------
 void qtSurfaceExtractorView::cancelOperation(const smtk::model::OperatorPtr& op)
 {
+  (void) op;
   /*if( !op || !this->Widget || !this->Internals->CurrentAtt )
     return;
   if(this->Internals->ContoursDialog)

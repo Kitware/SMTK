@@ -1591,6 +1591,11 @@ void Manager::assignDefaultNamesWithOwner(
   if (!this->hasStringProperty(irec->first, "name"))
     {
     IntegerList& counts(this->entityCounts(owner, irec->second.entityFlags()));
+    if (!this->hasIntegerProperty(irec->first, "pedigree id"))
+      {
+      int pedigree = Entity::countForType(irec->second.entityFlags(), counts, false);
+      this->setIntegerProperty(irec->first, "pedigree id", pedigree);
+      }
     std::string defaultName =
       counts.empty() ?
       this->shortUUIDName(irec->first, irec->second.entityFlags()) :
@@ -1695,6 +1700,11 @@ std::string Manager::assignDefaultName(const UUID& uid, BitFlags entityFlags)
     this->entityCounts(
       owner, entityFlags));
   // Compose a name from the owner and counters:
+  if (!this->hasIntegerProperty(uid, "pedigree id"))
+    {
+    int pedigree = Entity::countForType(entityFlags, counts, false);
+    this->setIntegerProperty(uid, "pedigree id", pedigree);
+    }
   std::string defaultName =
     counts.empty() ?
     this->shortUUIDName(uid, entityFlags) :

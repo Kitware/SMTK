@@ -11,6 +11,7 @@
 #define __smtk_bridge_polygon_internal_model_txx
 
 #include "smtk/model/Edge.h"
+#include "smtk/model/Face.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Vertex.h"
@@ -69,6 +70,15 @@ model::Edge pmodel::createModelEdgeFromSegments(
 
   Id vInit = this->pointId(begin->second.low());
   Id vFini = this->pointId((begin + (end - begin - 1))->second.high());
+
+  /*
+  double x0[3], x1[3];
+  this->liftPoint(begin->second.low(), x0);
+  this->liftPoint((begin + (end - begin - 1))->second.high(), x1);
+  std::cout << "Asked to create segmented edge with endpoints:\n"
+    << "    " << vInit << "  " << x0[0] << " " << x0[1] << "\n"
+    << "    " << vFini << "  " << x1[0] << " " << x1[1] << "\n";
+    */
 
   vertex::Ptr vInitStorage = this->m_session->findStorage<vertex>(vInit);
   vertex::Ptr vFiniStorage = this->m_session->findStorage<vertex>(vFini);
@@ -303,6 +313,33 @@ void pmodel::liftPoint(const Point& ix, T coordBegin)
       ix.x() * this->m_iAxis[i] +
       ix.y() * this->m_jAxis[i];
     }
+}
+
+/**\brief Tweak an edge into a new shape, which you promise is valid.
+  *
+  * This variant accepts a sequence of point *coordinates* in the world coordinate
+  * system, with \a numCoordsPerPt specifying the number of coordinates to use for
+  * each point along the edge's new shape.
+  *
+  * The given coordinates are projected onto the plane and transformed into the
+  * model's internal coordinate system.
+  *
+  * If the first and last points are not precisely coincident with the original
+  * edge's, then any model vertices are tweaked as well.
+  * Faces attached to the edge are retessellated.
+  */
+template<typename T>
+bool pmodel::tweakEdge(smtk::model::Edge edge, int numCoordsPerPt, T coordBegin, T coordEnd, smtk::model::EntityRefArray& modified)
+{
+  internal::PointSeq pseq;
+  std::vector<double>::const_iterator coordit = coordBegin;
+  for (std::size_t p = 0; coordit != coordEnd; ++p)
+    {
+    internal::Point proj = this->projectPoint(coordit, coordit + numCoordsPerPt);
+    pseq.push_back(proj);
+    coordit += numCoordsPerPt;
+    }
+  return this->tweakEdge(edge, pseq, modified);
 }
 
       } // namespace internal

@@ -60,7 +60,7 @@ smtk::model::OperatorResult SplitEdge::operateInternal()
     }
 
   std::vector<double> point(pointItem->begin(), pointItem->end());
-  smtk::model::EntityRefs created;
+  smtk::model::EntityRefArray created;
   bool ok = mod->splitModelEdgeAtPoint(mgr, edgeToSplit.entity(), point, created, this->m_debugLevel);
   smtk::model::OperatorResult opResult;
   if (ok)
@@ -73,7 +73,7 @@ smtk::model::OperatorResult SplitEdge::operateInternal()
     created2.push_back(v);
 
     opResult = this->createResult(smtk::model::OPERATION_SUCCEEDED);
-    this->addEntitiesToResult(opResult, smtk::model::EntityRefArray(created.begin(), created.end()), CREATED);
+    this->addEntitiesToResult(opResult, created, CREATED);
     this->addEntitiesToResult(opResult, created2, CREATED);
     this->addEntityToResult(opResult, edgeToSplit, EXPUNGED);
     }

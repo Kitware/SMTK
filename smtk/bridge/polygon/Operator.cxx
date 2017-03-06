@@ -22,6 +22,11 @@ Session* Operator::polygonSession()
   return dynamic_cast<smtk::bridge::polygon::Session*>(this->session());
 }
 
+const Session* Operator::polygonSession() const
+{
+  return dynamic_cast<const smtk::bridge::polygon::Session*>(this->session());
+}
+
 void Operator::addStorage(const smtk::common::UUID& uid, smtk::bridge::polygon::internal::entity::Ptr storage)
 {
   this->polygonSession()->addStorage(uid, storage);

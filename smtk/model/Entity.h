@@ -72,7 +72,8 @@ public:
   static std::string flagSummaryHelper(BitFlags entityFlags, int form = 0);
   static std::string flagSummary(BitFlags entityFlags, int form = 0);
   static std::string flagDescription(BitFlags entityFlags, int form = 0);
-  static std::string defaultNameFromCounters(BitFlags entityFlags, IntegerList& counters);
+  static int countForType(BitFlags flags, IntegerList& counters, bool incr = false);
+  static std::string defaultNameFromCounters(BitFlags entityFlags, IntegerList& counters, bool incr = true);
   static std::string flagToSpecifierString(BitFlags flagsOrMask, bool textual = true);
   static BitFlags specifierStringToFlag(const std::string& spec);
   static BitFlags dimensionToDimensionBits(int dim);

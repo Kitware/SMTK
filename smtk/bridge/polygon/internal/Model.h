@@ -72,6 +72,11 @@ public:
     const Point& pt,
     bool addToModel = true);
 
+  smtk::model::Vertex addModelVertex(
+    smtk::model::ManagerPtr mgr,
+    const Point& pt,
+    bool addToModel = true);
+
   bool demoteModelVertex(
     smtk::model::ManagerPtr mgr,
     internal::VertexPtr vert,
@@ -105,27 +110,27 @@ public:
     smtk::model::ManagerPtr mgr,
     const Id& edgeId,
     const std::vector<double>& point,
-    smtk::model::EntityRefs& created,
+    smtk::model::EntityRefArray& created,
     int debugLevel = 0);
   bool splitModelEdgeAtModelVertex(
     smtk::model::ManagerPtr mgr,
     const Id& edgeId,
     const Id& vertexId,
-    smtk::model::EntityRefs& created,
+    smtk::model::EntityRefArray& created,
     int debugLevel = 0);
   bool splitModelEdgeAtModelVertex(
     smtk::model::ManagerPtr mgr,
     EdgePtr edgeToSplit,
     VertexPtr splitPoint,
     PointSeq::const_iterator location,
-    smtk::model::EntityRefs& created,
+    smtk::model::EntityRefArray& created,
     int debugLevel = 0);
   bool splitModelEdgeAtModelVertices(
     smtk::model::ManagerPtr mgr,
     EdgePtr edgeToSplit,
     std::vector<VertexPtr>& splitPoints,
     std::vector<PointSeq::const_iterator>& locations,
-    smtk::model::EntityRefs& created,
+    smtk::model::EntityRefArray& created,
     int debugLevel = 0);
 
   std::pair<Id,Id> removeModelEdgeFromEndpoints(smtk::model::ManagerPtr mgr, EdgePtr edg);
@@ -183,6 +188,18 @@ public:
 
   template<typename T>
   void liftPoint(const Point& ix, T coordBegin);
+
+  template<typename T>
+  bool tweakEdge(
+    smtk::model::Edge edge,
+    int numCoordsPerPt,
+    T coordBegin,
+    T coordEnd,
+    smtk::model::EntityRefArray& modified);
+  bool tweakEdge(
+    smtk::model::Edge edge,
+    internal::PointSeq& replacement,
+    smtk::model::EntityRefArray& modified);
 
   bool tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn, smtk::model::EntityRefs& modifiedEdgesAndFaces);
 

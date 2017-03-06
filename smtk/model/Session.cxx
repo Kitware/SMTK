@@ -394,7 +394,7 @@ bool Session::removeGeneratedProperties(const EntityRef& ent, SessionInfoBits pr
   * The base class implementation simply copies the "pedigree" property
   * to the descendants.
   */
-bool Session::splitProperties(const EntityRef& from, const EntityRefs& to)
+bool Session::splitProperties(const EntityRef& from, const EntityRefs& to) const
 {
   const char* intPropertyNamesToBroadcast[] = {
     "pedigree id"
@@ -450,7 +450,7 @@ bool Session::splitProperties(const EntityRef& from, const EntityRefs& to)
   * The base class implementation simply copies the union of the "pedigree" properties
   * from the ancestors to the descendant.
   */
-bool Session::mergeProperties(const EntityRefs& from, EntityRef& to)
+bool Session::mergeProperties(const EntityRefs& from, EntityRef& to) const
 {
   const char* intPropertyNamesToReduce[] = {
     "pedigree id"
@@ -477,30 +477,44 @@ bool Session::mergeProperties(const EntityRefs& from, EntityRef& to)
         imerged.insert(valueIt->second.begin(), valueIt->second.end());
         }
       }
-    to.setIntegerProperty(intPropertyNamesToReduce[i], IntegerList(imerged.begin(), imerged.end()));
+    // Add values already present on the target:
+    const IntegerData& toVals(to.integerProperties());
+    IntegerData::const_iterator toValIt = toVals.find(intPropertyNamesToReduce[i]);
+    if (toValIt != toVals.end())
+      {
+      imerged.insert(toValIt->second.begin(), toValIt->second.end());
+      }
+    if (!imerged.empty())
+      {
+      to.setIntegerProperty(intPropertyNamesToReduce[i], IntegerList(imerged.begin(), imerged.end()));
+      }
     }
 
   // TODO: It should be possible to use different rules on a case-by-case basis:
-  // Merge rule for strings: choose the first one:
+  // Merge rule for strings: choose the first one, and only if not already present:
   StringList svalue;
   for (unsigned int ii = 0; ii < nps; ++ii)
     {
     bool haveString = false;
     EntityRefs::const_iterator eit;
-    for (eit = from.begin(); eit != from.end(); ++eit)
+    const StringData& toVals(to.stringProperties());
+    if (toVals.find(stringPropertyNamesToReduce[ii]) == toVals.end())
       {
-      const StringData& values(eit->stringProperties());
-      StringData::const_iterator valueIt = values.find(stringPropertyNamesToReduce[ii]);
-      if (valueIt != values.end())
+      for (eit = from.begin(); eit != from.end(); ++eit)
         {
-        haveString = true;
-        svalue.insert(svalue.end(), valueIt->second.begin(), valueIt->second.end());
-        break;
+        const StringData& values(eit->stringProperties());
+        StringData::const_iterator valueIt = values.find(stringPropertyNamesToReduce[ii]);
+        if (valueIt != values.end())
+          {
+          haveString = true;
+          svalue.insert(svalue.end(), valueIt->second.begin(), valueIt->second.end());
+          break;
+          }
         }
-      }
-    if (haveString)
-      {
-      to.setStringProperty(stringPropertyNamesToReduce[ii], StringList(svalue.begin(), svalue.end()));
+      if (haveString)
+        {
+        to.setStringProperty(stringPropertyNamesToReduce[ii], StringList(svalue.begin(), svalue.end()));
+        }
       }
     }
   return true;

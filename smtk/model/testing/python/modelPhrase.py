@@ -88,7 +88,7 @@ class TestModelPhrases(unittest.TestCase):
 
     self.spg.setDirectLimit(2)
     s3 = s2[0].subphrases()
-    self.assertEqual([x.title() for x in s3], ['5 faces',], 'Expected a summary phrase.')
+    self.assertEqual([x.title() for x in s3], ['5 faces', 'pedigree id'], 'Expected a summary phrase.')
     self.assertTrue(s2[0].areSubphrasesBuilt(), 'Expected subphrases have been built.')
 
 
@@ -102,7 +102,7 @@ class TestModelPhrases(unittest.TestCase):
     s3 = s2[0].subphrases()
     self.assertEqual(
         [x.title() for x in s3],
-        ['Model A, face 0', 'Model A, face 1', 'Model A, face 2', 'Model A, face 3', 'Model A, face 4'],
+        ['Model A, face 0', 'Model A, face 1', 'Model A, face 2', 'Model A, face 3', 'Model A, face 4', 'pedigree id'],
         'Expected 5 model-face phrases, got {s}.'.format(s=[x.title() for x in s3]))
 
     print 'Done'
