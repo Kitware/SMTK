@@ -40,6 +40,7 @@ namespace smtk
     public:
       qtAssociationWidget(QWidget* p, qtBaseView* view);
       virtual ~qtAssociationWidget();
+      bool hasSelectedItem();
 
     public slots:
       virtual void showEntityAssociation(smtk::attribute::AttributePtr theAtt);
@@ -48,6 +49,7 @@ namespace smtk
       virtual void showDomainsAssociation(
         std::vector<smtk::model::Group>& theDomains,
         std::vector<smtk::attribute::DefinitionPtr>& attDefs);
+      void updateAvailableListBySelection(const smtk::common::UUIDs& selEntities);
 
     signals:
       void attAssociationChanged();

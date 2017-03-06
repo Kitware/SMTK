@@ -40,6 +40,7 @@ namespace smtk
     class qtModelEntityItem;
     class qtBaseView;
     class qtModelView;
+    class qtSelectionManager;
 
     typedef qtBaseView* (*widgetConstructor)(const ViewInfo &info);
 
@@ -65,6 +66,12 @@ namespace smtk
 
       smtk::attribute::System* attSystem() const
       {return &this->m_AttSystem;}
+
+      // Description:
+      // Set/Get method of qtSelectionManager
+      void setSelectionManager(smtk::extension::qtSelectionManager* SM);
+      smtk::extension::qtSelectionManager* selectionManager() const
+      {return this->m_qtSelectionManager;}
 
       void setActiveModelView(smtk::extension::qtModelView*);
       smtk::extension::qtModelView* activeModelView();
@@ -195,6 +202,7 @@ namespace smtk
 
    private:
       qtBaseView* m_topView;
+      smtk::extension::qtSelectionManager* m_qtSelectionManager;
       smtk::common::ViewPtr m_smtkView;
       QWidget *m_parentWidget;
       qtModelView* m_activeModelView;

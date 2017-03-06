@@ -185,6 +185,48 @@ void qtAssociationWidget::showDomainsAssociation(
 }
 
 //----------------------------------------------------------------------------
+void qtAssociationWidget::updateAvailableListBySelection(const
+       smtk::common::UUIDs& selEntites)
+{
+  smtk::attribute::System *attSystem = this->Internals->View->uiManager()->attSystem();
+  smtk::model::ManagerPtr modelManager;
+  if(attSystem)
+  {
+    modelManager = attSystem->refModelManager();
+  }
+
+  this->Internals->AvailableList->blockSignals(true);
+
+  // unselect all items
+  for(int i = 0; i < this->Internals->AvailableList->count(); i++)
+  {
+    this->Internals->AvailableList->item(i)->setSelected(false);
+  }
+
+  for (const auto &item :selEntites)
+  {
+    // map UUID into QString for search
+    EntityRef selEntity(modelManager, item);
+    QString selEntityName = QString::fromStdString(selEntity.name());
+    QList<QListWidgetItem*> findList = this->Internals->
+        AvailableList->findItems(selEntityName, Qt::MatchExactly);
+
+    // check with current available list item. If included mark as highted
+    foreach(QListWidgetItem* findItem, findList)
+    {
+      findItem->setSelected(true);
+    }
+  }
+  this->Internals->AvailableList->blockSignals(false);
+}
+
+bool qtAssociationWidget::hasSelectedItem()
+{
+  return this->Internals->AvailableList->selectedItems().isEmpty() ?
+        false : true;
+}
+
+//----------------------------------------------------------------------------
 void qtAssociationWidget::showAttributeAssociation(
   smtk::model::EntityRef theEntiy,
   std::vector<smtk::attribute::DefinitionPtr>& attDefs)

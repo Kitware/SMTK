@@ -17,6 +17,7 @@
 #include "smtk/extension/qt/qtAssociationWidget.h"
 #include "smtk/extension/qt/qtCheckItemComboBox.h"
 #include "smtk/extension/qt/qtReferencesWidget.h"
+#include  "smtk/extension/qt/qtSelectionManager.h"
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/qtVoidItem.h"
 
@@ -125,7 +126,24 @@ qtBaseView *
 qtAttributeView::createViewWidget(const ViewInfo &info)
 {
   qtAttributeView *view = new qtAttributeView(info);
+  // connect with selection manager
+  smtk::extension::qtSelectionManager* selMgr;
+  if (view->uiManager()->selectionManager())
+  {
+    selMgr = view->uiManager()->selectionManager();
+    QObject::connect(selMgr, SIGNAL(
+           broadcastToAttributeView(const smtk::common::UUIDs&)), view,
+               SIGNAL(selectionChanged(const smtk::common::UUIDs&)));
   view->buildUI();
+  smtk::common::UUIDs selEntities;
+  selMgr->getSelectedEntities(selEntities);
+  //qt 4 signals are private. Just use the slot for update
+  selMgr->updateSelectedItems(selEntities, smtk::mesh::MeshSets());
+  }
+  else
+  {
+    view->buildUI();
+  }
   return view;
 }
 
@@ -332,6 +350,10 @@ void qtAttributeView::createWidget( )
   QObject::connect(this->Internals->AssociationsWidget,
     SIGNAL(attAssociationChanged()), this, SIGNAL(attAssociationChanged()));
 
+  QObject::connect(this, SIGNAL(selectionChanged(const smtk::common::UUIDs&)),
+    this->Internals->AssociationsWidget, SLOT(updateAvailableListBySelection(
+            const smtk::common::UUIDs&)));
+
   QObject::connect(this->Internals->ViewByCombo,
     SIGNAL(currentIndexChanged(int)), this, SLOT(onViewBy(int)));
 
@@ -467,6 +489,7 @@ void qtAttributeView::onListBoxSelectionChanged()
   this->Internals->ValuesTable->resizeRowsToContents();
   this->Internals->ValuesTable->resizeColumnsToContents();
   this->Internals->ValuesTable->update();
+  this->updateSelectionOfEntities();
 }
 
 //----------------------------------------------------------------------------
@@ -478,6 +501,7 @@ void qtAttributeView::onAttributeNameChanged(QTableWidgetItem* item)
     System *attSystem = aAttribute->definition()->system();
     attSystem->rename(aAttribute, item->text().toStdString());
     //aAttribute->definition()->setLabel(item->text().toAscii().constData());
+    this->updateSelectionOfEntities();
     }
 }
 //----------------------------------------------------------------------------
@@ -487,6 +511,7 @@ void qtAttributeView::onAttributeCellChanged(int row, int col)
     {
     QTableWidgetItem* item = this->Internals->ListTable->item(row, col);
     this->onAttributeNameChanged(item);
+    this->updateSelectionOfEntities();
     }
 }
 //----------------------------------------------------------------------------
@@ -583,6 +608,17 @@ void qtAttributeView::insertTableColumn(QTableWidget* vtWidget, int insertCol,
     {
     vtWidget->horizontalHeaderItem(insertCol)->setFont(this->uiManager()->advancedFont());
     }
+}
+
+//----------------------------------------------------------------------------
+void qtAttributeView::updateSelectionOfEntities()
+{
+  smtk::extension::qtSelectionManager* selMgr = this->uiManager()->
+      selectionManager();
+  smtk::common::UUIDs selEntities;
+  selMgr->getSelectedEntities(selEntities);
+  //qt 4 signals are private. Just use the slot for update
+  selMgr->updateSelectedItems(selEntities, smtk::mesh::MeshSets());
 }
 
 //----------------------------------------------------------------------------
@@ -714,6 +750,7 @@ void qtAttributeView::createNewAttribute(
     this->Internals->ListTable->selectRow(item->row());
     }
   emit this->numOfAttriubtesChanged();
+  this->updateSelectionOfEntities();
 }
 
 //----------------------------------------------------------------------------
@@ -735,6 +772,7 @@ void qtAttributeView::onCopySelected()
       this->Internals->ListTable->selectRow(item->row());
       }
     emit this->numOfAttriubtesChanged();
+    this->updateSelectionOfEntities();
     }
 }
 
@@ -873,7 +911,11 @@ void qtAttributeView::onViewBy(int viewBy)
     {
     if(this->Internals->ListTable->rowCount() && !this->getSelectedItem())
       {
-      this->Internals->ListTable->selectRow(0);
+      // so switch tabs would not reset selection
+      if (!this->Internals->AssociationsWidget->hasSelectedItem())
+        {
+        this->Internals->ListTable->selectRow(0);
+        }
       }
     else
       {

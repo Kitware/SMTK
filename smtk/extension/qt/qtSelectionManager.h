@@ -56,6 +56,10 @@ class SMTKQTEXT_EXPORT qtSelectionManager : public QObject
     void broadcastToRenderView(const smtk::common::UUIDs&
                 selEntities, const smtk::mesh::MeshSets &selMeshes,
                    const smtk::model::DescriptivePhrases &DesPhrases) const;
+    // Description
+    // Broadcast selection to attrite panel
+    void broadcastToAttributeView(const smtk::common::UUIDs &
+   selEntities) const;
   public slots:
 
     // Description
