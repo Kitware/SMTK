@@ -77,6 +77,7 @@ namespace smtk
       void numOfAttriubtesChanged();
       void attColorChanged();
       void attAssociationChanged();
+      void selectionChanged(const smtk::common::UUIDs & selEntities) const;
 
     protected:
       virtual void createWidget( );
@@ -104,6 +105,9 @@ namespace smtk
       void removeComparativeAttribute(smtk::attribute::AttributePtr att);
       void insertTableColumn(QTableWidget* wTable, int insertCol,
         const QString& title, int advancedlevel);
+
+      // update the selection based on qtSelectionManager
+      void updateSelectionOfEntities();
 
     private:
 

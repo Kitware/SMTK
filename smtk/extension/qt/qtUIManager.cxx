@@ -20,6 +20,7 @@
 #include "smtk/extension/qt/qtAttributeView.h"
 #include "smtk/extension/qt/qtInstancedView.h"
 #include "smtk/extension/qt/qtOperatorView.h"
+#include "smtk/extension/qt/qtSelectionManager.h"
 #include "smtk/extension/qt/qtSimpleExpressionView.h"
 #include "smtk/extension/qt/qtSMTKUtilities.h"
 #include "smtk/extension/qt/qtModelView.h"
@@ -89,6 +90,7 @@ qtUIManager::qtUIManager(smtk::attribute::System &system) :
   this->m_activeModelView = NULL;
   this->m_maxValueLabelLength = 200;
   this->m_minValueLabelLength = 50;
+  this->m_qtSelectionManager = NULL;
 
   // default settings
   this->advFont.setBold(true);
@@ -180,6 +182,7 @@ qtBaseView *qtUIManager::setSMTKView(const smtk::extension::ViewInfo &viewInfo,
   this->initializeUI(viewInfo, this->m_useInternalFileBrowser);
   return this->m_topView;
 }
+
 //----------------------------------------------------------------------------
 qtBaseView *qtUIManager::setSMTKView(smtk::common::ViewPtr v)
 {
@@ -190,6 +193,7 @@ qtBaseView *qtUIManager::setSMTKView(smtk::common::ViewPtr v)
     }
   return this->m_topView;
 }
+
 //----------------------------------------------------------------------------
 qtBaseView *qtUIManager::setSMTKView(smtk::common::ViewPtr v, QWidget* pWidget,
                                      bool useInternalFileBrowser)
@@ -202,6 +206,16 @@ qtBaseView *qtUIManager::setSMTKView(smtk::common::ViewPtr v, QWidget* pWidget,
     }
   return this->m_topView;
 }
+
+//----------------------------------------------------------------------------
+void qtUIManager::setSelectionManager(smtk::extension::qtSelectionManager* SM)
+{
+  if (SM)
+  {
+    this->m_qtSelectionManager = SM;
+  }
+}
+
 //----------------------------------------------------------------------------
 void qtUIManager::setActiveModelView(smtk::extension::qtModelView* mv)
 {

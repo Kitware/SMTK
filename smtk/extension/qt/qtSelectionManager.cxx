@@ -41,22 +41,23 @@ namespace smtk
 
   void qtSelectionManager::updateSelectedItems(
   const smtk::common::UUIDs &selEntities, const smtk::mesh::MeshSets &selMeshes)
-  {
+  { // select from render view
     this->clearAllSelections();
-    // update entity and mesh
     this->m_selEntities.insert(selEntities.begin(),selEntities.end());
     this->m_selMeshes.insert(selMeshes.begin(),selMeshes.end());
-    // TBD: broacast to attribute panel
-    bool blocksignals = true;
+
+    bool blocksignals = true; // only update model tree
+
     emit  broadcastToModelTree(this->m_selEntities,this->m_selMeshes,
                                blocksignals);
+    emit broadcastToAttributeView(this->m_selEntities);
   }
 
   void qtSelectionManager::updateSelectedItems(const smtk::model::EntityRefs
           &selEntities, const smtk::mesh::MeshSets &selMeshes,
                    const smtk::model::DescriptivePhrases &DesPhrases)
 
-  {
+  { // select from model tree
     this->clearAllSelections();
     for (smtk::model::EntityRefs::iterator it = selEntities.begin();
       it != selEntities.end(); ++it)
@@ -65,20 +66,23 @@ namespace smtk
     }
     this->m_selMeshes.insert(selMeshes.begin(),selMeshes.end());
     this->m_desPhrases = DesPhrases;
-    // TBD: broacast to attribute panel
+
     emit broadcastToRenderView(selEntities, selMeshes, DesPhrases);
+    emit broadcastToAttributeView(this->m_selEntities);
 
   }
 
   void qtSelectionManager::updateSelectedItems(const smtk::common::UUIDs
                                                &selEntities)
-  {
+  { // select from attribute panel
     this->clearAllSelections();
     this->m_selEntities.insert(selEntities.begin(), selEntities.end());
     // broadcast to model tree and render view
-    bool blocksignals = false;
-    emit  broadcastToModelTree(this->m_selEntities,this->m_selMeshes,
+    bool blocksignals = true;
+    emit  broadcastToModelTree(this->m_selEntities,smtk::mesh::MeshSets(),
                                blocksignals);
+    emit broadcastToRenderView(selEntities, smtk::mesh::MeshSets(),
+                               smtk::model::DescriptivePhrases());
   }
 
   void qtSelectionManager::clearAllSelections()
