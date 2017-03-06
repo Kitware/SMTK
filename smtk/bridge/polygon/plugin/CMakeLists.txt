@@ -7,21 +7,12 @@ include(ParaViewPlugins)
 # not be found.
 list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
-IF (PARAVIEW_QT_VERSION VERSION_GREATER "4")
-  QT5_WRAP_CPP(MOC_SRCS qtPolygonEdgeOperationView.h)
-  QT5_WRAP_CPP(MOC_SRCS qtExtractContoursView.h)
-  if(SMTK_ENABLE_OPENCV)
-    QT5_WRAP_CPP(MOC_SRCS qtSurfaceExtractorView.h)
-  endif()
-#    QT5_WRAP_UI(UI_SRCS qtPolygonEdgeOperationView.ui)
-ELSE ()
-  QT4_WRAP_CPP(MOC_SRCS qtPolygonEdgeOperationView.h)
-  QT4_WRAP_CPP(MOC_SRCS qtExtractContoursView.h)
-  if(SMTK_ENABLE_OPENCV)
-    QT4_WRAP_CPP(MOC_SRCS qtSurfaceExtractorView.h)
-  endif()
-#    QT4_WRAP_UI(UI_SRCS qtPolygonEdgeOperationView.ui)
-ENDIF ()
+smtk_qt_wrap_cpp(MOC_SRCS qtPolygonEdgeOperationView.h)
+smtk_qt_wrap_cpp(MOC_SRCS qtExtractContoursView.h)
+if(SMTK_ENABLE_OPENCV)
+  smtk_qt_wrap_cpp(MOC_SRCS qtSurfaceExtractorView.h)
+endif()
+#smtk_qt_wrap_cpp(UI_SRCS qtPolygonEdgeOperationView.ui)
 
 ADD_SMTK_UI_VIEW(
   OUTIFACES
