@@ -2,7 +2,6 @@ include(${QT_USE_FILE})
 
 # set up sources to build
 set(PQWidgetsSrcs
-  pq3DWidget.cxx
   pqGenerateContoursDialog.cxx
   qtArcWidget.cxx
   qtInteractionWidget.cxx
@@ -16,7 +15,6 @@ set(PQWidgetsUIs
 )
 
 set(PQWidgetsMocHeaders
-  pq3DWidget.h
   pqGenerateContoursDialog.h
   qtArcWidget.h
   qtInteractionWidget.h
