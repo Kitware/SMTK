@@ -34,12 +34,32 @@
 
 #include "vtkDoubleArray.h"
 #include "vtkFloatArray.h"
+#include "vtkImageData.h"
 #include "vtkPolyData.h"
+#include "vtkUniformGrid.h"
 #include <vtksys/SystemTools.hxx>
 
 #include "BathymetryOperator_xml.h"
 
 using namespace smtk::model;
+
+namespace
+{
+class ElevationStructuredMetadataForVTKData :
+    public smtk::mesh::ElevationStructuredMetadata
+{
+public:
+  bool isBlanked(int i, int j) const
+    {
+      int pos[3] = {i,j,0};
+      return m_uniformGrid->IsPointVisible(
+        vtkStructuredData::ComputePointIdForExtent(m_uniformGrid->GetExtent(),
+                                                   pos));
+    }
+
+  vtkUniformGrid* m_uniformGrid;
+};
+}
 
 namespace smtk {
   namespace model {
@@ -94,40 +114,105 @@ bool internal_bathyToAssociatedMeshes(
       }
     else
       {
-      vtkNew<vtkPoints> bathyPoints;
-      if(!bathyHelper->computeBathymetryPoints(bathyData, bathyPoints.GetPointer()) ||
-         bathyPoints->GetNumberOfPoints() == 0)
-        {
-        std::cerr << "Failed to compuate bathymetry points to use for meshes!\n";
-        return false;
-        }
-
       // cache the original mesh points Z values first
       if(!bathyHelper->storeMeshPointsZ(*it))
         {
         return false;
         }
-      smtk::mesh::ElevationControls clamp(useHighLimit, eleHigh, useLowLimit, eleLow);
-      vtkDataArray* pointCoords = bathyPoints->GetData();
-      if (pointCoords->GetDataType() == VTK_FLOAT)
+
+      if (vtkImageData* imageInput = vtkImageData::SafeDownCast(bathyData))
         {
-        vtkFloatArray *floatArray = static_cast<vtkFloatArray *>(pointCoords);
-        ok &= smtk::mesh::elevate( floatArray->GetPointer(0),
-                             bathyPoints->GetNumberOfPoints(),
-                             meshes.points(),
-                             radius,
-                             clamp);
+        smtk::mesh::ElevationStructuredMetadata metadata;
+        for (int i=0; i<4; i++)
+          {
+          metadata.m_extent[i] = imageInput->GetExtent()[i];
+          metadata.m_bounds[i] = imageInput->GetBounds()[i];
+          }
+        smtk::mesh::ElevationControls clamp(useHighLimit, eleHigh,
+                                            useLowLimit, eleLow);
+
+        if (imageInput->GetScalarType() == VTK_FLOAT)
+          {
+          ok &= smtk::mesh::elevate(
+            metadata,
+            static_cast<float*>(imageInput->GetScalarPointer()),
+            meshes.points(),
+            radius,
+            clamp);
+          }
+        else if (imageInput->GetScalarType() == VTK_DOUBLE)
+          {
+          ok &= smtk::mesh::elevate(
+            metadata,
+            static_cast<double*>(imageInput->GetScalarPointer(0)),
+            meshes.points(),
+            radius,
+            clamp);
+          }
         }
-      else if (pointCoords->GetDataType() == VTK_DOUBLE)
+      else if (vtkUniformGrid* gridInput =
+               vtkUniformGrid::SafeDownCast(bathyData))
         {
-        vtkDoubleArray *doubleArray = static_cast<vtkDoubleArray *>(pointCoords);
-        ok &= smtk::mesh::elevate( doubleArray->GetPointer(0),
+        ElevationStructuredMetadataForVTKData metadata;
+        for (int i=0; i<4; i++)
+          {
+          metadata.m_extent[i] = gridInput->GetExtent()[i];
+          metadata.m_bounds[i] = gridInput->GetBounds()[i];
+          }
+        metadata.m_uniformGrid = gridInput;
+        smtk::mesh::ElevationControls clamp(useHighLimit, eleHigh,
+                                            useLowLimit, eleLow);
+
+        if (gridInput->GetScalarType() == VTK_FLOAT)
+          {
+          ok &= smtk::mesh::elevate(
+            metadata,
+            static_cast<float*>(gridInput->GetScalarPointer()),
+            meshes.points(),
+            radius,
+            clamp);
+          }
+        else if (gridInput->GetScalarType() == VTK_DOUBLE)
+          {
+          ok &= smtk::mesh::elevate(
+            metadata,
+            static_cast<double*>(gridInput->GetScalarPointer(0)),
+            meshes.points(),
+            radius,
+            clamp);
+          }
+        }
+      else
+        {
+        vtkNew<vtkPoints> bathyPoints;
+        if(!bathyHelper->computeBathymetryPoints(bathyData, bathyPoints.GetPointer()) ||
+           bathyPoints->GetNumberOfPoints() == 0)
+          {
+          std::cerr << "Failed to compuate bathymetry points to use for meshes!\n";
+          return false;
+          }
+
+        smtk::mesh::ElevationControls clamp(useHighLimit, eleHigh, useLowLimit, eleLow);
+        vtkDataArray* pointCoords = bathyPoints->GetData();
+        if (pointCoords->GetDataType() == VTK_FLOAT)
+          {
+          vtkFloatArray *floatArray = static_cast<vtkFloatArray *>(pointCoords);
+          ok &= smtk::mesh::elevate( floatArray->GetPointer(0),
                                bathyPoints->GetNumberOfPoints(),
                                meshes.points(),
                                radius,
                                clamp);
+          }
+        else if (pointCoords->GetDataType() == VTK_DOUBLE)
+          {
+          vtkDoubleArray *doubleArray = static_cast<vtkDoubleArray *>(pointCoords);
+          ok &= smtk::mesh::elevate( doubleArray->GetPointer(0),
+                                 bathyPoints->GetNumberOfPoints(),
+                                 meshes.points(),
+                                 radius,
+                                 clamp);
+          }
         }
-
       }
 
     if(ok)
@@ -189,7 +274,7 @@ OperatorResult BathymetryOperator::operateInternal()
   smtk::attribute::StringItem::Ptr optypeItem =
     this->specification()->findString("operation");
   std::string optype = optypeItem->value();
-  std::string opsessionName = this->session()->name(); 
+  std::string opsessionName = this->session()->name();
 
   // decide whether we want to apply to mesh or model or both.
   bool ApplyToModel(0), ApplyToMesh(0);

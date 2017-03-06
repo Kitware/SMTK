@@ -20,8 +20,20 @@ namespace smtk {
   namespace mesh {
 
   //This operation is the mesh mirror for model bathymetry operations.
-  //Given a set of mesh elements, and a point cloud. Displace the mesh
-  //z values using the point cloud as a reference
+  //Given a set of mesh elements and either a point cloud or a structured grid
+  //of elevation points, displace the mesh z values using the input data as a
+  //reference.
+  class ElevationStructuredMetadata
+  {
+  public:
+    // Given indices int othe structured data, determine whether or not the cell
+    // is blanked.
+    virtual bool isBlanked(int, int) const { return false; }
+
+    int m_extent[4]; // indices for xmin, xmax, ymin, ymax
+    double m_bounds[4]; // xmin, xmax, ymin, ymax
+  };
+
   class ElevationControls
   {
     public:
@@ -99,8 +111,36 @@ namespace smtk {
                 const smtk::mesh::PointSet& ps,
                 double radius,
                 ElevationControls controls  = ElevationControls() );
-#endif
 
+  SMTKCORE_EXPORT
+  bool elevate( const smtk::mesh::ElevationStructuredMetadata& metadata,
+                const double* const data,
+                const smtk::mesh::MeshSet& ms,
+                double radius,
+                ElevationControls controls = ElevationControls() );
+
+  SMTKCORE_EXPORT
+  bool elevate( const smtk::mesh::ElevationStructuredMetadata& metadata,
+                const double* const data,
+                const smtk::mesh::PointSet& ps,
+                double radius,
+                ElevationControls controls = ElevationControls() );
+
+  SMTKCORE_EXPORT
+  bool elevate( const smtk::mesh::ElevationStructuredMetadata& metadata,
+                const float* const data,
+                const smtk::mesh::MeshSet& ms,
+                double radius,
+                ElevationControls controls = ElevationControls() );
+
+  SMTKCORE_EXPORT
+  bool elevate( const smtk::mesh::ElevationStructuredMetadata& metadata,
+                const float* const data,
+                const smtk::mesh::PointSet& ps,
+                double radius,
+                ElevationControls controls = ElevationControls() );
+
+#endif
 
   //displace a set of points, given a point cloud. Doesn't flatten like
   //elevate. If multiple points from the cloud are within the radius the
