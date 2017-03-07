@@ -14,6 +14,8 @@
 #include "smtk/mesh/PointLocator.h"
 #include "smtk/mesh/PointSet.h"
 
+#include <cmath>
+
 namespace
 {
   //----------------------------------------------------------------------------
@@ -189,6 +191,187 @@ namespace
   }
 }
 
+//----------------------------------------------------------------------------
+template<bool ClampMin, bool ClampMax>
+class ElevatePointForStructuredInput : public smtk::mesh::PointForEach
+{
+  const smtk::mesh::ElevationStructuredData& m_data;
+  double m_radius2;
+  bool m_useInvalid;
+  double m_invalid;
+  double m_minElev;
+  double m_maxElev;
+  double m_gridSpacing[2];
+  int m_discreteRadius[2];
+
+  typedef std::pair<int,int> Coord;
+
+public:
+  ElevatePointForStructuredInput(
+    const smtk::mesh::ElevationStructuredData& data,
+    double radius,
+    const smtk::mesh::ElevationControls& controls) :
+    m_data(data),
+    m_radius2(radius*radius),
+    m_useInvalid(controls.m_useInvalid),
+    m_invalid(controls.m_invalid),
+    m_minElev(controls.m_minElev),
+    m_maxElev(controls.m_maxElev)
+  {
+    m_gridSpacing[0] = ((m_data.m_bounds[1] - m_data.m_bounds[0]) /
+                        (m_data.m_extent[1] - m_data.m_extent[0]));
+    m_gridSpacing[1] = ((m_data.m_bounds[3] - m_data.m_bounds[2]) /
+                        (m_data.m_extent[3] - m_data.m_extent[2]));
+
+    m_discreteRadius[0] =
+      static_cast<int>(std::round(radius / m_gridSpacing[0]));
+    m_discreteRadius[1] =
+      static_cast<int>(std::round(radius / m_gridSpacing[1]));
+  }
+
+  void find(double x, double y, std::vector<Coord>& results) const
+  {
+    // (ix,iy) represents the closest point in the grid to the query point
+    int ix = static_cast<int>(
+      std::round(m_data.m_extent[0] +
+                 ((x - m_data.m_bounds[0]) /
+                  (m_data.m_bounds[1] - m_data.m_bounds[0])) *
+                 (m_data.m_extent[1] - m_data.m_extent[0])));
+    int iy = static_cast<int>(
+      std::round(m_data.m_extent[2] +
+                 ((y - m_data.m_bounds[2]) /
+                  (m_data.m_bounds[3] - m_data.m_bounds[2])) *
+                 (m_data.m_extent[3] - m_data.m_extent[2])));
+
+    if (m_discreteRadius[0] == 0 || m_discreteRadius[1] == 0)
+      {
+      if (m_data.containsIndex(ix,iy))
+        {
+        results.push_back(std::make_pair(ix,iy));
+        }
+      }
+    else
+      {
+      for (int i = ix - m_discreteRadius[0]; i<ix + m_discreteRadius[0]; i++)
+        {
+        if (i < m_data.m_extent[0] || i > m_data.m_extent[1])
+          {
+          continue;
+	  }
+
+        // We find the extrema in the y dimension. Every point in between the
+        // two extrema will also be in the circle of interest.
+        int jmin = iy - m_discreteRadius[1];
+        int jmax = iy + m_discreteRadius[1];
+        bool extremaFound[2] = {false, false};
+        while ((!extremaFound[0] || !extremaFound[1]) && jmin != jmax)
+          {
+          if (!extremaFound[0])
+            {
+            double x_ = m_data.m_bounds[0] + i*m_gridSpacing[0];
+            double y_ = m_data.m_bounds[2] + jmin*m_gridSpacing[1];
+
+            if (x_ >= m_data.m_bounds[0] && x_ <= m_data.m_bounds[1] &&
+                y_ >= m_data.m_bounds[2] && y_ <= m_data.m_bounds[3])
+              {
+              double r2 = (x-x_)*(x-x_) + (y-y_)*(y-y_);
+              if (r2 < m_radius2)
+                {
+                extremaFound[0] = true;
+                }
+              }
+
+            if (!extremaFound[0])
+              {
+              jmin++;
+              }
+            }
+
+          if (!extremaFound[1])
+            {
+            double x_ = m_data.m_bounds[0] + i*m_gridSpacing[0];
+            double y_ = m_data.m_bounds[2] + jmax*m_gridSpacing[1];
+
+            if (x_ >= m_data.m_bounds[0] && x_ <= m_data.m_bounds[1] &&
+                y_ >= m_data.m_bounds[2] && y_ <= m_data.m_bounds[3])
+              {
+              double r2 = (x-x_)*(x-x_) + (y-y_)*(y-y_);
+              if (r2 < m_radius2)
+                {
+                extremaFound[1] = true;
+                }
+              }
+
+            if (!extremaFound[1])
+              {
+              jmax--;
+              }
+            }
+          }
+        for (int j=jmin; j<jmax; j++)
+          {
+            if (m_data.containsIndex(i,j))
+              {
+              results.push_back(std::make_pair(i,j));
+              }
+          }
+        }
+      }
+  }
+
+  void forPoints(const smtk::mesh::HandleRange& pointIds,
+                 std::vector<double>& xyz,
+                 bool& coordinatesModified)
+  {
+    clamper<ClampMin, ClampMax, double> clamp;
+
+    std::vector<Coord> results;
+
+    typedef smtk::mesh::HandleRange::const_iterator c_it;
+    std::size_t offset = 0;
+    for(c_it i = pointIds.begin(); i != pointIds.end(); ++i, offset+=3)
+      {
+      if (xyz[offset] < m_data.m_bounds[0] ||
+          xyz[offset] > m_data.m_bounds[1] ||
+          xyz[offset+1] < m_data.m_bounds[2] ||
+          xyz[offset+1] > m_data.m_bounds[3])
+        {
+        // this point is outside of our data range
+        if (m_useInvalid)
+          {
+          xyz[offset+2] = m_invalid;
+          }
+        continue;
+        }
+
+      // Grab the indices of the points that are within the radius of the
+      // point
+      find( xyz[offset], xyz[offset+1], results);
+
+      if (results.size() == 0)
+        {
+        if (m_useInvalid)
+          {
+          xyz[offset+2] = m_invalid;
+          }
+        continue;
+        }
+
+      // We perform an unweighted average to maintain parity with the
+      // unstructured grid version of this operator
+      double sum = 0.;
+      for (std::size_t j=0;j<results.size();j++)
+        {
+        sum += clamp(m_data(results[j].first, results[j].second),
+                     m_minElev, m_maxElev);
+        }
+      xyz[offset+2] = static_cast<double>( (sum/results.size()) );
+      results.clear();
+      }
+    coordinatesModified = true; //mark we are going to modify the points
+  }
+};
+
 namespace smtk {
 namespace mesh {
 
@@ -249,6 +432,45 @@ bool elevate( const float* const pointcloud,
               ElevationControls controls )
 {
   return do_elevate(pointcloud, numPoints, ps, radius, controls);
+}
+
+//----------------------------------------------------------------------------
+bool elevate( const smtk::mesh::ElevationStructuredData& data,
+              const smtk::mesh::PointSet& ps,
+              double radius,
+              ElevationControls controls )
+{
+  if (controls.m_clampMin && controls.m_clampMax)
+    {
+    ElevatePointForStructuredInput<true,true> functor(data, radius, controls);
+    smtk::mesh::for_each(ps, functor);
+    }
+  else if (controls.m_clampMin)
+    {
+    ElevatePointForStructuredInput<true,false> functor(data, radius, controls);
+    smtk::mesh::for_each(ps, functor);
+    }
+  else if (controls.m_clampMax)
+    {
+    ElevatePointForStructuredInput<false,true> functor(data, radius, controls);
+    smtk::mesh::for_each(ps, functor);
+    }
+  else
+    {
+    ElevatePointForStructuredInput<false,false> functor(data, radius, controls);
+    smtk::mesh::for_each(ps, functor);
+    }
+
+  return true;
+}
+
+//----------------------------------------------------------------------------
+bool elevate( const smtk::mesh::ElevationStructuredData& data,
+              const smtk::mesh::MeshSet& ms,
+              double radius,
+              ElevationControls controls )
+{
+  return elevate(data, ms.points(), radius, controls);
 }
 
 namespace
