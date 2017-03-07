@@ -12,8 +12,8 @@
 #include "smtk/bridge/cgm/Engines.h"
 
 #include <algorithm>
-#include <cctype>
 #include <iostream>
+#include <locale>
 
 using namespace smtk::bridge::cgm;
 
