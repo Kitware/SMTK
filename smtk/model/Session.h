@@ -100,8 +100,8 @@ enum SessionInformation
 #define smtkDeclareOperatorRegistration() \
 protected: \
   static void cleanupOperators(); \
-  static smtk::model::OperatorConstructors* s_operators; \
 public: \
+  static smtk::model::OperatorConstructors* s_operators; \
   virtual bool registerOperator( \
     const std::string& opName, const char* opDescrXML, \
     smtk::model::OperatorConstructor opCtor); \
@@ -111,7 +111,8 @@ public: \
   virtual std::string findOperatorXML(const std::string& opName) const; \
   virtual smtk::model::OperatorConstructor findOperatorConstructor( \
     const std::string& opName) const; \
-  virtual bool inheritsOperators() const
+  virtual smtk::model::OperatorConstructors* operatorConstructors(); \
+  virtual bool inheritsOperators() const \
 
 /**\brief Implement methods declared by smtkDeclareOperatorRegistration().
   *
@@ -120,6 +121,11 @@ public: \
 #define smtkImplementsOperatorRegistration(Cls, Inherits) \
   /**\brief Declare the map of operator constructors */ \
   smtk::model::OperatorConstructors* Cls ::s_operators = NULL; \
+  /**\brief Override the virtual method returning all operator constructors for this session type. */ \
+  smtk::model::OperatorConstructors* Cls ::operatorConstructors() \
+  { \
+    return Cls ::s_operators; \
+  } \
   /**\brief Virtual method to allow operators to register themselves with us */ \
   bool Cls ::registerOperator( \
     const std::string& opName, const char* opDescrXML, \
@@ -224,6 +230,11 @@ public: \
   * \a Inherits  - Either "true" or "false", depending on whether the session should inherit
   *                operators from its superclass. This is used to keep forwarding sessions
   *                like the Remus remote session from inheriting local operators.
+  * \a OpCons    - A pointer to an OperatorConstructors instance (i.e., a pointer to a map
+  *                from strings (operator names) to StaticOperatorInfo objects, each of
+  *                which holds both the operator's XML description and a function pointer
+  *                for constructing a subclass of smtk::model::Operator to perform the
+  *                operation).
   */
 #define smtkImplementsModelingKernel(ExportSym, Comp, Tags, Setup, Cls, Inherits) \
   /* Adapt create() to return a base-class pointer */ \
@@ -236,12 +247,14 @@ public: \
       #Comp, /* Can't rely on sessionName to be initialized yet */ \
       Tags, \
       Setup, \
-      baseCreate); \
+      baseCreate, \
+      Cls ::s_operators); \
   } \
   void ExportSym smtk_##Comp##_session_AutoInit_Destruct() { \
     smtk::model::SessionRegistrar::registerSession( \
       Cls ::sessionName, \
       std::string(), \
+      SMTK_FUNCTION_INIT, \
       SMTK_FUNCTION_INIT, \
       SMTK_FUNCTION_INIT); \
   } \

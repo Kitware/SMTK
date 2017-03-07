@@ -68,6 +68,7 @@ PySharedPtrClass< smtk::model::Session > pybind11_init_smtk_model_Session(py::mo
     .def("op", &smtk::model::Session::op, py::arg("opName"))
     .def("operatorLabelsMap", &smtk::model::Session::operatorLabelsMap, py::arg("includeAdvanced") = true)
     .def("operatorNames", &smtk::model::Session::operatorNames, py::arg("includeAdvanced") = true)
+    .def("operatorConstructors", &smtk::model::Session::operatorConstructors)
     .def("operatorSystem", (smtk::attribute::System * (smtk::model::Session::*)()) &smtk::model::Session::operatorSystem)
     .def("operatorSystem", (smtk::attribute::System const * (smtk::model::Session::*)() const) &smtk::model::Session::operatorSystem)
     .def("registerOperator", &smtk::model::Session::registerOperator, py::arg("opName"), py::arg("opDescrXML"), py::arg("opCtor"))
@@ -76,6 +77,9 @@ PySharedPtrClass< smtk::model::Session > pybind11_init_smtk_model_Session(py::mo
     .def("setup", &smtk::model::Session::setup, py::arg("optName"), py::arg("optVal"))
     .def_static("staticClassName", &smtk::model::Session::staticClassName)
     .def("transcribe", &smtk::model::Session::transcribe, py::arg("entity"), py::arg("flags"), py::arg("onlyDangling") = true, py::arg("depth") = -1)
+    .def("removeGeneratedProperties", &smtk::model::Session::removeGeneratedProperties, py::arg("entity"), py::arg("propFlags"))
+    .def("splitProperties", &smtk::model::Session::splitProperties, py::arg("from"), py::arg("to"))
+    .def("mergeProperties", &smtk::model::Session::mergeProperties, py::arg("from"), py::arg("to"))
     ;
   return instance;
 }

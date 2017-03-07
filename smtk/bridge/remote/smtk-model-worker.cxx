@@ -435,7 +435,8 @@ int main(int argc, char* argv[])
     return usage(logr, 1, "Unable to obtain constructor for kernel \"" + wkOpts.kernel() + "\"");
     }
   smtk::model::SessionRegistrar::registerSession(
-    wkOpts.workerName(), requirements.tag(), bsetup, bctor);
+    wkOpts.workerName(), requirements.tag(), bsetup, bctor,
+    SessionRegistrar::sessionOperatorConstructors(wkOpts.workerName()));
 
   remus::Worker* w = new remus::Worker(requirements,connection);
   while (true)

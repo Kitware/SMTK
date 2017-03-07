@@ -172,7 +172,7 @@ std::vector<std::string> RemusConnection::sessionTypeNames()
           smtk::model::SessionRegistrar::registerSession(
             binfo.name(), binfo.tags(),
             smtk::bind(&RemusStaticSessionInfo::staticSetup, binfo, _1, _2),
-            binfo);
+            binfo, SessionRegistrar::sessionOperatorConstructors(binfo.name()));
           this->m_remoteSessionNameToType[binfo.name()] = mit->inputType();
           smtkInfoMacro(log(), "Added model worker named \""
             << binfo.name() << "\", type \"" << mit->inputType() << "\".");
