@@ -63,27 +63,10 @@ bool DateTimeItem::isValid() const
 //----------------------------------------------------------------------------
 bool DateTimeItem::setNumberOfValues(std::size_t newSize)
 {
-  // If the current size is the same just return
-  if (this->numberOfValues() == newSize)
+  if (newSize != this->numberOfRequiredValues())
     {
-    return true;
+    return false;
     }
-
-  // Is this size between the required number and the max?
-  if (newSize < this->numberOfRequiredValues())
-    {
-    return false;  // less than min number
-    }
-
-  std::size_t n = this->numberOfValues();
-  // Are we increasing or decreasing?
-  if (newSize < n)
-    {
-    this->m_values.resize(newSize);
-    this->m_isSet.resize(newSize);
-    return true;
-    }
-
 
   ConstDateTimeItemDefinitionPtr def = this->itemDefinition();
   if (def->hasDefault())
