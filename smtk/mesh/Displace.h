@@ -23,12 +23,18 @@ namespace smtk {
   //Given a set of mesh elements and either a point cloud or a structured grid
   //of elevation points, displace the mesh z values using the input data as a
   //reference.
-  class ElevationStructuredMetadata
+  class ElevationStructuredData
   {
   public:
     // Given indices int othe structured data, determine whether or not the cell
     // is blanked.
-    virtual bool isBlanked(int, int) const { return false; }
+    virtual double operator()(int, int) const = 0;
+    virtual bool containsIndex(int ix, int iy) const
+      {
+        return (ix >= m_extent[0] && ix <= m_extent[1] &&
+                iy >= m_extent[2] && iy <= m_extent[3]);
+      }
+
 
     int m_extent[4]; // indices for xmin, xmax, ymin, ymax
     double m_bounds[4]; // xmin, xmax, ymin, ymax
@@ -113,29 +119,13 @@ namespace smtk {
                 ElevationControls controls  = ElevationControls() );
 
   SMTKCORE_EXPORT
-  bool elevate( const smtk::mesh::ElevationStructuredMetadata& metadata,
-                const double* const data,
+  bool elevate( const smtk::mesh::ElevationStructuredData& data,
                 const smtk::mesh::MeshSet& ms,
                 double radius,
                 ElevationControls controls = ElevationControls() );
 
   SMTKCORE_EXPORT
-  bool elevate( const smtk::mesh::ElevationStructuredMetadata& metadata,
-                const double* const data,
-                const smtk::mesh::PointSet& ps,
-                double radius,
-                ElevationControls controls = ElevationControls() );
-
-  SMTKCORE_EXPORT
-  bool elevate( const smtk::mesh::ElevationStructuredMetadata& metadata,
-                const float* const data,
-                const smtk::mesh::MeshSet& ms,
-                double radius,
-                ElevationControls controls = ElevationControls() );
-
-  SMTKCORE_EXPORT
-  bool elevate( const smtk::mesh::ElevationStructuredMetadata& metadata,
-                const float* const data,
+  bool elevate( const smtk::mesh::ElevationStructuredData& data,
                 const smtk::mesh::PointSet& ps,
                 double radius,
                 ElevationControls controls = ElevationControls() );

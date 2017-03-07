@@ -45,19 +45,44 @@ using namespace smtk::model;
 
 namespace
 {
-class ElevationStructuredMetadataForVTKData :
-    public smtk::mesh::ElevationStructuredMetadata
+class ElevationStructuredDataForVTKImageData :
+    public smtk::mesh::ElevationStructuredData
 {
 public:
-  bool isBlanked(int i, int j) const
+  ElevationStructuredDataForVTKImageData(vtkImageData* imageData) :
+    m_imageData(imageData)
     {
-      int pos[3] = {i,j,0};
-      return m_uniformGrid->IsPointVisible(
-        vtkStructuredData::ComputePointIdForExtent(m_uniformGrid->GetExtent(),
-                                                   pos));
+      for (int i=0; i<4; i++)
+        {
+        m_extent[i] = imageData->GetExtent()[i];
+        m_bounds[i] = imageData->GetBounds()[i];
+        }
     }
 
-  vtkUniformGrid* m_uniformGrid;
+  double operator()(int i, int j) const
+    {
+      return m_imageData->GetScalarComponentAsDouble(i,j,0,0);
+    }
+
+  vtkImageData* m_imageData;
+};
+
+class ElevationStructuredDataForVTKUniformGrid :
+    public ElevationStructuredDataForVTKImageData
+{
+public:
+  ElevationStructuredDataForVTKUniformGrid(
+    vtkUniformGrid* uniformGrid) :
+    ElevationStructuredDataForVTKImageData(uniformGrid) { }
+
+  bool containsIndex(int i, int j) const
+    {
+      int pos[3] = {i,j,0};
+      return smtk::mesh::ElevationStructuredData::containsIndex(i,j) &&
+        static_cast<vtkUniformGrid*>(m_imageData)->IsPointVisible(
+          vtkStructuredData::ComputePointIdForExtent(m_imageData->GetExtent(),
+                                                     pos)) != 0;
+    }
 };
 }
 
@@ -122,65 +147,20 @@ bool internal_bathyToAssociatedMeshes(
 
       if (vtkImageData* imageInput = vtkImageData::SafeDownCast(bathyData))
         {
-        smtk::mesh::ElevationStructuredMetadata metadata;
-        for (int i=0; i<4; i++)
-          {
-          metadata.m_extent[i] = imageInput->GetExtent()[i];
-          metadata.m_bounds[i] = imageInput->GetBounds()[i];
-          }
+        ElevationStructuredDataForVTKImageData data(imageInput);
         smtk::mesh::ElevationControls clamp(useHighLimit, eleHigh,
                                             useLowLimit, eleLow);
 
-        if (imageInput->GetScalarType() == VTK_FLOAT)
-          {
-          ok &= smtk::mesh::elevate(
-            metadata,
-            static_cast<float*>(imageInput->GetScalarPointer()),
-            meshes.points(),
-            radius,
-            clamp);
-          }
-        else if (imageInput->GetScalarType() == VTK_DOUBLE)
-          {
-          ok &= smtk::mesh::elevate(
-            metadata,
-            static_cast<double*>(imageInput->GetScalarPointer(0)),
-            meshes.points(),
-            radius,
-            clamp);
-          }
+        ok &= smtk::mesh::elevate(data, meshes.points(), radius, clamp);
         }
       else if (vtkUniformGrid* gridInput =
                vtkUniformGrid::SafeDownCast(bathyData))
         {
-        ElevationStructuredMetadataForVTKData metadata;
-        for (int i=0; i<4; i++)
-          {
-          metadata.m_extent[i] = gridInput->GetExtent()[i];
-          metadata.m_bounds[i] = gridInput->GetBounds()[i];
-          }
-        metadata.m_uniformGrid = gridInput;
+        ElevationStructuredDataForVTKUniformGrid data(gridInput);
         smtk::mesh::ElevationControls clamp(useHighLimit, eleHigh,
                                             useLowLimit, eleLow);
 
-        if (gridInput->GetScalarType() == VTK_FLOAT)
-          {
-          ok &= smtk::mesh::elevate(
-            metadata,
-            static_cast<float*>(gridInput->GetScalarPointer()),
-            meshes.points(),
-            radius,
-            clamp);
-          }
-        else if (gridInput->GetScalarType() == VTK_DOUBLE)
-          {
-          ok &= smtk::mesh::elevate(
-            metadata,
-            static_cast<double*>(gridInput->GetScalarPointer(0)),
-            meshes.points(),
-            radius,
-            clamp);
-          }
+        ok &= smtk::mesh::elevate(data, meshes.points(), radius, clamp);
         }
       else
         {
