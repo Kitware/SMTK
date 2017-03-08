@@ -14,7 +14,7 @@
 #ifndef __smtk_attribute_DateTimeItemDefinition_h
 #define __smtk_attribute_DateTimeItemDefinition_h
 
-#include "smtk/attribute/ValueItemDefinitionTemplate.h"
+#include "smtk/attribute/ItemDefinition.h"
 #include "smtk/common/DateTimeZonePair.h"
 #include <string>
 
@@ -22,8 +22,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class SMTKCORE_EXPORT DateTimeItemDefinition :
-      public ValueItemDefinitionTemplate<::smtk::common::DateTimeZonePair>
+    class SMTKCORE_EXPORT DateTimeItemDefinition : public ItemDefinition
     {
     public:
       smtkTypeMacro(DateTimeItemDefinition);
@@ -32,6 +31,18 @@ namespace smtk
 
       virtual ~DateTimeItemDefinition();
       virtual Item::Type type() const;
+
+      const ::smtk::common::DateTimeZonePair& defaultValue() const
+      {return this->m_defaultValue;}
+      bool setDefaultValue(const ::smtk::common::DateTimeZonePair& value);
+      bool hasDefault() const
+      {return this->m_hasDefault;}
+
+      std::size_t numberOfRequiredValues() const
+      {return this->m_numberOfRequiredValues;}
+      bool setNumberOfRequiredValues(std::size_t esize);
+
+      bool isValueValid(const ::smtk::common::DateTimeZonePair& value) const;
 
       // Returns or sets the display format to use in UI elements.
       // SMTK uses the Qt datetime format expressions documented at
@@ -66,6 +77,10 @@ namespace smtk
         createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const;
     protected:
       DateTimeItemDefinition(const std::string &myName);
+
+      ::smtk::common::DateTimeZonePair m_defaultValue;
+      bool m_hasDefault;
+      std::size_t m_numberOfRequiredValues;
 
       // Specifies format string to use in item UI.
       std::string m_displayFormat;

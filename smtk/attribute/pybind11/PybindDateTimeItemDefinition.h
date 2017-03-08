@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef pybind___smtk_attribute_DateTimeItemDefinition_h
-#define pybind___smtk_attribute_DateTimeItemDefinition_h
+#ifndef pybind_smtk_attribute_DateTimeItemDefinition_h
+#define pybind_smtk_attribute_DateTimeItemDefinition_h
 
 #include <pybind11/pybind11.h>
 
@@ -18,12 +18,13 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
+#include "smtk/common/DateTimeZonePair.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::attribute::DateTimeItemDefinition, smtk::attribute::ValueItemDefinitionTemplate<smtk::common::DateTimeZonePair> > pybind11_init_smtk_attribute_DateTimeItemDefinition(py::module &m)
+PySharedPtrClass< smtk::attribute::DateTimeItemDefinition, smtk::attribute::ItemDefinition > pybind11_init_smtk_attribute_DateTimeItemDefinition(py::module &m)
 {
-  PySharedPtrClass< smtk::attribute::DateTimeItemDefinition, smtk::attribute::ValueItemDefinitionTemplate<smtk::common::DateTimeZonePair> > instance(m, "DateTimeItemDefinition");
+  PySharedPtrClass< smtk::attribute::DateTimeItemDefinition, smtk::attribute::ItemDefinition > instance(m, "DateTimeItemDefinition");
   instance
     .def(py::init<::smtk::attribute::DateTimeItemDefinition const &>())
     .def_static("New", &smtk::attribute::DateTimeItemDefinition::New, py::arg("myName"))
@@ -31,9 +32,15 @@ PySharedPtrClass< smtk::attribute::DateTimeItemDefinition, smtk::attribute::Valu
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::DateTimeItemDefinition::*)(::smtk::attribute::Item *, int, int) const) &smtk::attribute::DateTimeItemDefinition::buildItem, py::arg("owningItem"), py::arg("position"), py::arg("subGroupPosition"))
     .def("classname", &smtk::attribute::DateTimeItemDefinition::classname)
     .def("createCopy", &smtk::attribute::DateTimeItemDefinition::createCopy, py::arg("info"))
+    .def("defaultValue", &smtk::attribute::DateTimeItemDefinition::defaultValue)
     .def("displayFormat", &smtk::attribute::DateTimeItemDefinition::displayFormat)
+    .def("hasDefault", &smtk::attribute::DateTimeItemDefinition::hasDefault)
+    .def("isValueValid", &smtk::attribute::DateTimeItemDefinition::isValueValid, py::arg("value"))
+    .def("numberOfRequiredValues", &smtk::attribute::DateTimeItemDefinition::numberOfRequiredValues)
+    .def("setDefaultValue", &smtk::attribute::DateTimeItemDefinition::setDefaultValue, py::arg("value"))
     .def("setDisplayFormat", &smtk::attribute::DateTimeItemDefinition::setDisplayFormat, py::arg("format"))
     .def("setEnableCalendarPopup", &smtk::attribute::DateTimeItemDefinition::setEnableCalendarPopup, py::arg("mode"))
+    .def("setNumberOfRequiredValues", &smtk::attribute::DateTimeItemDefinition::setNumberOfRequiredValues, py::arg("esize"))
     .def("setUseTimeZone", &smtk::attribute::DateTimeItemDefinition::setUseTimeZone, py::arg("mode"))
     .def("type", &smtk::attribute::DateTimeItemDefinition::type)
     .def("useCalendarPopup", &smtk::attribute::DateTimeItemDefinition::useCalendarPopup)
