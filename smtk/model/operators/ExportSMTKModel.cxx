@@ -13,6 +13,8 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/common/CompilerInformation.h"
 #include "smtk/io/ExportJSON.h"
@@ -41,6 +43,7 @@ OperatorResult ExportSMTKModel::operateInternal()
 {
   smtk::attribute::FileItemPtr filenameItem = this->findFile("filename");
   smtk::attribute::IntItemPtr flagsItem = this->findInt("flags");
+  smtk::attribute::StringItemPtr renameItem = this->findString("rename models");
 
   Models models = this->m_specification->associatedModelEntities<Models>();
   if (models.empty())
@@ -67,12 +70,62 @@ OperatorResult ExportSMTKModel::operateInternal()
   std::string smtkfilepath = path(filename).parent_path().string();
   std::string smtkfilename = path(filename).stem().string();
 
+  smtk::attribute::ValueItemDefinition::ConstPtr renameDef =
+    std::dynamic_pointer_cast<const smtk::attribute::ValueItemDefinition>(
+      renameItem->definition());
+  std::string renamePolicy = renameDef->discreteEnum(renameItem->discreteIndex(0));
+  smtkDebugMacro(this->log(), "Rename policy: " << renamePolicy);
+
   // Add the output smtk model name to the model "smtk_url", so that the individual session can
   // use that name to construct a filename for saving native models of the session.
   Models::iterator modit;
-  for(modit = models.begin(); modit != models.end(); ++modit)
+  bool plural = models.size() > 1;
+  int counter = 0;
+  smtk::model::EntityRefArray modified;
+  for(modit = models.begin(); modit != models.end(); ++modit, ++counter)
     {
     modit->setStringProperty("smtk_url", filename);
+
+    if (renamePolicy != "none")
+      {
+      std::string oldfilename = filename;
+      if (modit->hasStringProperty("url"))
+        {
+        oldfilename = path(modit->stringProperty("url")[0]).stem().string();
+        }
+      std::string oldmodelname = modit->name();
+      bool matchDefault = false;
+      bool matchPrevious = false;
+      const std::string defaultprefix("model ");
+      if (
+        renamePolicy == "all" ||
+        (matchDefault = std::equal(defaultprefix.begin(), defaultprefix.end(), oldmodelname.begin())) ||
+        (matchPrevious = std::equal(oldfilename.begin(), oldfilename.end(), oldmodelname.begin())))
+        {
+        std::ostringstream newname;
+        newname << smtkfilename;
+        std::string suffix;
+        if (matchDefault)
+          {
+          suffix = oldmodelname.substr(defaultprefix.size() - 1); // include space after prefix
+          }
+        else if (matchPrevious)
+          {
+          suffix = oldmodelname.substr(oldfilename.size());
+          }
+        if (!suffix.empty())
+          {
+          newname << suffix;
+          }
+        else if (plural)
+          { // TODO: Use pedigree ID if present? and unique?
+          newname << " " << counter;
+          }
+        smtkDebugMacro(this->log(), "Renaming " << oldmodelname << " to " << newname.str());
+        modit->setName(newname.str());
+        modified.push_back(*modit);
+        }
+      }
 
     // we also want to write out the meshes to new "write_locations"
     std::vector<smtk::mesh::CollectionPtr> collections =
@@ -131,7 +184,9 @@ OperatorResult ExportSMTKModel::operateInternal()
       }
     }
 
-  return this->createResult(OPERATION_SUCCEEDED);
+  auto result = this->createResult(OPERATION_SUCCEEDED);
+  this->addEntitiesToResult(result, modified, MODIFIED);
+  return result;
 }
 
 void ExportSMTKModel::generateSummary(OperatorResult& res)
