@@ -56,11 +56,6 @@ Session::Session()
     {
     attDef->setLabel(" Model - Save");
     }
-  attDef = this->m_operatorSys->findDefinition("close model");
-  if (attDef)
-    {
-    attDef->setLabel(" Model -  Close");
-    }
 }
 
 /// Virtual destructor. Here because Session overrides virtual methods from Session.
