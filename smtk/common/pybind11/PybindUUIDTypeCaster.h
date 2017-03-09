@@ -29,6 +29,18 @@ public:
   bool load(handle src, bool)
   {
     PyObject* uuidBytes = PyObject_GetAttrString(src.ptr(), "bytes");
+    if (uuidBytes == nullptr)
+    {
+      // If uuidBytes is null, then the method PyObject_GetAttrString raises a
+      // python exception about the field "bytes" not existing. We "catch" this
+      // python exception (by simply resetting it) and throw a c++ pybind11
+      // "reference_cast_error". When disambiguating multiple functions with
+      // the same name and different signatures, this c++ exception is caught
+      // and signals the need to try the next function.
+      PyErr_Clear();
+      throw reference_cast_error();
+    }
+
     char* ustr = uuidBytes ? PyString_AsString(uuidBytes) : NULL;
     if (ustr)
     {
