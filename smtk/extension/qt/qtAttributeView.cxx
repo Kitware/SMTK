@@ -615,10 +615,13 @@ void qtAttributeView::updateSelectionOfEntities()
 {
   smtk::extension::qtSelectionManager* selMgr = this->uiManager()->
       selectionManager();
-  smtk::common::UUIDs selEntities;
-  selMgr->getSelectedEntities(selEntities);
-  //qt 4 signals are private. Just use the slot for update
-  selMgr->updateSelectedItems(selEntities, smtk::mesh::MeshSets());
+  if (selMgr)
+    {
+    smtk::common::UUIDs selEntities;
+    selMgr->getSelectedEntities(selEntities);
+    //qt 4 signals are private. Just use the slot for update
+    selMgr->updateSelectedItems(selEntities, smtk::mesh::MeshSets());
+    }
 }
 
 //----------------------------------------------------------------------------
