@@ -95,7 +95,7 @@ macro(vtk_smtk_setup_module_environment _name)
   endif()
 
   include(vtkExternalModuleMacros)
-  if (VTK_WRAP_PYTHON)
+  if (SMTK_ENABLE_PYTHON_WRAPPING AND VTK_WRAP_PYTHON)
     if (NOT PYTHON_MAJOR_VERSION OR NOT PYTHON_MINOR_VERSION)
       # Currently, VTK's FindPythonLibs.cmake sets the above variables, but
       # CMake's FindPythonLibs.cmake does not. An issue has been made for VTK
