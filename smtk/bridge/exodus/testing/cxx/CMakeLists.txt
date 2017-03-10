@@ -6,10 +6,21 @@ if(SMTK_DATA_DIR)
     )
   add_test(
     NAME entityGroupEx2Test
-    COMMAND 
+    COMMAND
       $<TARGET_FILE:entityGroupEx2Test>
       "${SMTK_DATA_DIR}/model/3d/exodus/disk_out_ref.ex2"
   )
 
+  add_executable(smtkReadFileTest smtkReadFile.cxx)
+  target_link_libraries(smtkReadFileTest
+    smtkCore
+    smtkExodusSession
+    )
+  add_test(
+    NAME smtkReadFileTest
+    COMMAND
+      $<TARGET_FILE:smtkReadFileTest>
+      "${SMTK_DATA_DIR}/model/3d/exodus/disk_out_ref.smtk"
+  )
 
 endif()

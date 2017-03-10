@@ -6,6 +6,7 @@ set(smtkExodusSessionPythonTests
 set(smtkExodusSessionPythonDataTests
   exoReadFile
   slacReadFile
+  smtkReadFile
 )
 
 foreach (test ${smtkExodusSessionPythonTests})
