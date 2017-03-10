@@ -1668,13 +1668,32 @@ std::string Manager::assignDefaultName(const UUID& uid, BitFlags entityFlags)
     std::string tmpName;
     if (!this->hasStringProperty(uid,"name"))
       {
-      tmpName =
-        Entity::defaultNameFromCounters(
-          entityFlags, this->m_globalCounters);
+      std::ostringstream nameStream;
+      SessionRef sref(shared_from_this(), uid);
+      Session::Ptr sess = sref.session();
+      if (sess)
+        {
+        // if this is a DefaultSession and there is a remote session name, display that;
+        // otherwise, show the local session name.
+        DefaultSessionPtr defSess = smtk::dynamic_pointer_cast<DefaultSession>(sess);
+        nameStream
+          << (defSess && !defSess->remoteName().empty() ?
+            defSess->remoteName() : sess->name())
+          << " models";
+        }
+      else
+        {
+        nameStream <<
+          Entity::defaultNameFromCounters(
+            entityFlags, this->m_globalCounters);
+        }
+      tmpName = nameStream.str();
       this->setStringProperty(uid, "name", tmpName);
       }
     else
+      {
       tmpName = this->stringProperty(uid, "name")[0];
+      }
     return tmpName;
     }
   // Not a model or session, get its parent's per-type counters:
