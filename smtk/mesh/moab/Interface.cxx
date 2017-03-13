@@ -308,6 +308,8 @@ smtk::mesh::IncrementalAllocatorPtr Interface::incrementalAllocator()
 {
   //mark us as modified as the caller is going to add something to the database
   this->m_modified = true;
+  static_cast<smtk::mesh::moab::IncrementalAllocator*>(this->m_iAlloc.get())->
+    initialize();
   return this->m_iAlloc;
 }
 

@@ -38,7 +38,15 @@ IncrementalAllocator::IncrementalAllocator( ::moab::Interface* interface ):
   smtk::mesh::IncrementalAllocator(), BufferedCellAllocator(interface),
   m_index(0)
 {
-  this->IncrementalAllocator::allocateCoordinates(StartingAllocation);
+}
+
+//----------------------------------------------------------------------------
+void IncrementalAllocator::initialize()
+{
+  if (this->m_nCoordinates == 0)
+    {
+    this->IncrementalAllocator::allocateCoordinates(StartingAllocation);
+    }
 }
 
 //----------------------------------------------------------------------------
