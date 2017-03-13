@@ -11,6 +11,9 @@ if (SMTK_ENABLE_REMUS_SUPPORT)
   add_subdirectory(remus)
 endif()
 
+# Add operators that use Delaunay 2d meshing
+add_subdirectory(delaunay)
+
 # Add VTK library to render SMTK geometry and interact with ParaView-based apps if enabled.
 if(SMTK_ENABLE_VTK_SUPPORT AND SMTK_ENABLE_PARAVIEW_SUPPORT)
   # Only include the ParaView use-file in subdirectories

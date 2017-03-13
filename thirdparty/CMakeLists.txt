@@ -167,3 +167,31 @@ endif()
 if (NOT SMTK_USE_SYSTEM_SPARSEHASH)
   add_subdirectory(sparsehash)
 endif()
+
+if(SMTK_ENABLE_OPENCV)
+  set(Delaunay_USE_OPENCV ON)
+endif()
+#if(SMTK_ENABLE_VTK_SUPPORT)
+#  set(Delaunay_USE_VTK ON)
+#endif()
+
+add_subdirectory(delaunay)
+
+# disable warning flags for delaunay.
+option(SMTK_IGNORE_DELAUNAY_WARNINGS "disable warning flags for delaunay" ON)
+mark_as_advanced(SMTK_IGNORE_DELAUNAY_WARNINGS)
+
+if (SMTK_IGNORE_DELAUNAY_WARNINGS)
+  set(ignore_rules_for_delaunay "")
+
+   if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    # disables: warning C4251: dll-interface warnings involving stl
+    set(ignore_rules_for_delaunay "${ignore_rules_for_delaunay} /wd4251")
+  endif()
+
+  foreach(delaunay_target DelaunayDiscretization DelaunayMesh DelaunayMisc
+      DelaunayShape DelaunayValidation DelaunayVisualization)
+    set_property(TARGET ${delaunay_target} APPEND_STRING
+      PROPERTY COMPILE_FLAGS ${ignore_rules_for_delaunay})
+  endforeach()
+endif()

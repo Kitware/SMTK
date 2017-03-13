@@ -84,6 +84,13 @@ try:
 except:
   pass
 
+try:
+  _tempext = __import__('smtkDelaunayExtPython', globals(), locals(), [], -1)
+  __import_shared_ptrs__()
+  extension = _tempext
+except:
+  pass
+
 # Try loading optional extensions.
 # Do not complain if they are not present.
 try:
