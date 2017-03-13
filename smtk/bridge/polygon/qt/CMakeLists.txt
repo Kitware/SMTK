@@ -94,5 +94,6 @@ if (SMTK_ENABLE_TESTING)
     endif()
   endforeach()
 
-  target_link_libraries(TestBuild_smtk_bridge_polygon_qt PUBLIC ${SMTK_VTK_TARGET_LIST})
+  target_link_libraries(TestBuild_smtk_bridge_polygon_qt PUBLIC ${SMTK_VTK_TARGET_LIST}
+    smtkQtExt)
 endif()
