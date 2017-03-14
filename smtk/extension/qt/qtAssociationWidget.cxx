@@ -690,7 +690,8 @@ void qtAssociationWidget::onRemoveAssigned()
   if(selItem)
     {
     emit this->attAssociationChanged();
-    this->Internals->AvailableList->setCurrentItem(selItem);
+    // highlight selected item in AvailableList
+    this->updateListItemSelectionAfterChange(selItems,this->Internals->AvailableList);
     this->Internals->CurrentList->setCurrentItem(NULL);
     this->Internals->CurrentList->clearSelection();
    }
@@ -755,7 +756,8 @@ void qtAssociationWidget::onAddAvailable()
   if(selItem)
     {
     emit this->attAssociationChanged();
-    this->Internals->CurrentList->setCurrentItem(selItem);
+    // highlight selected item in CurrentList
+    this->updateListItemSelectionAfterChange(selItems,this->Internals->CurrentList);
     this->Internals->AvailableList->setCurrentItem(NULL);
     this->Internals->AvailableList->clearSelection();
     }
@@ -838,16 +840,18 @@ void qtAssociationWidget::onExchange()
 
   this->Internals->CurrentList->blockSignals(false);
   this->Internals->AvailableList->blockSignals(false);
-  if(selCurrentItem || selAvailItem)
+  if(selCurrentItems.count() || selAvailItems.count())
     {
     emit this->attAssociationChanged();
-    if(selCurrentItem)
+    if(selCurrentItems.count())
       {
-      this->Internals->CurrentList->setCurrentItem(selCurrentItem);
+      // highlight selected item in AvailableList
+      this->updateListItemSelectionAfterChange(selCurrentItems,this->Internals->AvailableList);
       }
-    if(selAvailItem)
+    if(selAvailItems.count())
       {
-      this->Internals->AvailableList->setCurrentItem(selAvailItem);
+      // highlight selected item in CurrentList
+      this->updateListItemSelectionAfterChange(selAvailItems,this->Internals->CurrentList);
       }
     }
 
@@ -921,4 +925,20 @@ void qtAssociationWidget::onDomainAssociationChanged()
     QMessageBox::warning(this, tr("Domain Associations"),strMessage);
     combo->setCurrentIndex(-1);
     }
+}
+
+//----------------------------------------------------------------------------
+void qtAssociationWidget::updateListItemSelectionAfterChange(QList<QListWidgetItem*> selItems, QListWidget* list)
+{
+  list->blockSignals(true);
+    foreach(QListWidgetItem* item, selItems)
+    {
+      QList<QListWidgetItem*> findList = list->
+          findItems(item->text(),Qt::MatchExactly);
+      foreach(QListWidgetItem* findItem, findList)
+      {
+        findItem->setSelected(true);
+      }
+    }
+  list->blockSignals(false);
 }
