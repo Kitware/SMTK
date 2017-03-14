@@ -511,6 +511,27 @@ void qtModelView::currentSelectionByMask (
 }
 
 //----------------------------------------------------------------------------
+bool qtModelView::removeSession(const smtk::model::SessionRef& sref)
+{
+  smtk::extension::QEntityItemModel* qmodel =
+    dynamic_cast<smtk::extension::QEntityItemModel*>(this->model());
+  // Sessions are (for now) always at the top level of the model,
+  // so just iterate over entries:
+  QModelIndex parentIdx;
+  for (int row=0; row < qmodel->rowCount(parentIdx); ++row)
+    {
+    QModelIndex idx(qmodel->index(row, 0, parentIdx));
+    DescriptivePhrasePtr dPhrase = qmodel->getItem(idx);
+    if (dPhrase && dPhrase->relatedEntity() == sref)
+      {
+      qmodel->removeRow(row, parentIdx);
+      return true;
+      }
+    }
+  return false;
+}
+
+//----------------------------------------------------------------------------
 void qtModelView::selectItems(
   const smtk::common::UUIDs& selEntities,
   const smtk::mesh::MeshSets& selMeshes,
