@@ -583,6 +583,14 @@ bool Arrangement::relations(smtk::common::UUIDArray& relsOut, const Entity* ent,
         break;
         }
       break;
+    case SESSION:
+      switch (k)
+        {
+      case SUPERSET_OF: return EntitySupersetOfRelationHelper()(relsOut, ent, *this);
+      default:
+        break;
+        }
+      break;
     default:
       break;
     }
@@ -696,6 +704,14 @@ bool Arrangement::relationIndices(std::vector<int>& idxsOut, const Entity* ent, 
       // instance... for now. Infinite recursion could result and would be hard
       // to detect.
       case INSTANCE_OF: return InstanceInstanceOfRelationHelper()(idxsOut, ent, *this);
+      default:
+        break;
+        }
+      break;
+    case SESSION:
+      switch (k)
+        {
+      case SUPERSET_OF: return EntitySupersetOfRelationHelper()(idxsOut, ent, *this);
       default:
         break;
         }
