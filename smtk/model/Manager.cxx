@@ -3774,14 +3774,31 @@ Instance Manager::addInstance(const EntityRef& object)
 /**\brief Unregister a session from the model manager.
   *
   */
-void Manager::closeSession(const SessionRef& sess)
+bool Manager::closeSession(const SessionRef& sref)
 {
-  if (sess.manager().get() == this)
+  if (sref.manager().get() == this)
     {
-    // Exhaustive flag forces session name (and other properties) to be erased:
-    this->erase(sess, SESSION_EXHAUSTIVE);
-    this->unregisterSession(sess.session());
+    UUIDsToSessions::iterator us = this->m_sessions->find(sref.entity());
+    if (us != this->m_sessions->end())
+      {
+      smtkDebugMacro(this->log(), "Deleting session " << sref.name() << " (" << sref.entity() << ")");
+      Models models = sref.models<Models>();
+      for (auto mit = models.begin(); mit != models.end(); ++mit)
+        {
+        this->eraseModel(*mit, SESSION_EVERYTHING);
+        }
+      bool didClose = this->unregisterSession(sref.session(), true);
+      return didClose;
+      }
     }
+  else
+    {
+    smtkErrorMacro(this->log(),
+      "Asked to close session (" << sref.name() << ") " <<
+      "owned by a different manager (" <<
+      sref.manager().get() << " vs " << this << ")!");
+    }
+  return false;
 }
 
 /**\brief Return an array of all the sessions this manager owns.

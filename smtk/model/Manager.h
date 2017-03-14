@@ -227,7 +227,7 @@ public:
   SessionRef createSession(
     const std::string& sname,
     const smtk::model::SessionRef& sessionIdSpecifier);
-  void closeSession(const SessionRef& sess);
+  bool closeSession(const SessionRef& sess);
 
   SessionRef registerSession(SessionPtr session);
   bool unregisterSession(SessionPtr session, bool expungeSession = true);
