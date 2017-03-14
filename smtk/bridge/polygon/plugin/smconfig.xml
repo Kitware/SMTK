@@ -1,4 +1,51 @@
 <ServerManagerConfiguration>
+
+  <ProxyGroup name="smtk_point_placers">
+    <NullProxy name="None"></NullProxy>
+    <Proxy class="vtkFocalPlanePointPlacer" name="FocalPlanePointPlacer" />
+    <Proxy class="vtkBoundedPlanePointPlacer" name="BoundedPlanePointPlacer">
+      <IntVectorProperty command="SetProjectionNormal"
+        default_values="2"
+        name="ProjectionNormal"
+        number_of_elements="1">
+        <EnumerationDomain name="enum">
+          <Entry text="XAxis" value="0" />
+          <Entry text="YAxis" value="1" />
+          <Entry text="ZAxis" value="2" />
+          <Entry text="Oblique" value="3" />
+        </EnumerationDomain>
+      </IntVectorProperty>
+      <DoubleVectorProperty command="SetProjectionPosition"
+        default_values="0.0"
+        name="ProjectionPosition"
+        number_of_elements="1">
+        <DoubleRangeDomain name="range" />
+      </DoubleVectorProperty>
+
+      <ProxyProperty clean_command="RemoveAllBoundingPlanes"
+        command="AddBoundingPlane"
+        name="BoundingPlanes"
+        number_of_elements_per_command="1"
+        repeat_command="1">
+        <ProxyGroupDomain name="groups">
+          <Group name="implicit_functions" />
+        </ProxyGroupDomain>
+      </ProxyProperty>
+    </Proxy>
+
+    <Proxy class="vtkPolygonalSurfacePointPlacer" name="PolygonalSurfacePointPlacer" />
+  </ProxyGroup>
+
+  <ProxyGroup name="smtk_contour_line_interpolators">
+    <NullProxy name="None"></NullProxy>
+    <Proxy class="vtkBezierContourLineInterpolator"
+           name="BezierContourLineInterpolator"></Proxy>
+    <Proxy class="vtkPolyDataContourLineInterpolator"
+           name="PolyDataContourLineInterpolator"></Proxy>
+    <Proxy class="vtkPolygonalSurfaceContourLineInterpolator"
+           name="PolygonalSurfaceContourLineInterpolator"></Proxy>
+  </ProxyGroup>
+
   <ProxyGroup name="props">
 
     <SourceProxy name="ImageSpacingFlip"
@@ -68,17 +115,18 @@
       <ProxyProperty
         name="PointPlacer"
         command="SetPointPlacer">
-        <ProxyGroupDomain name="groups">
-          <Group name="point_placers" />
-        </ProxyGroupDomain>
+        <ProxyListDomain name="proxy_list">
+          <Proxy group="smtk_point_placers" name="BoundedPlanePointPlacer" />
+          <Proxy group="smtk_point_placers" name="None" />
+        </ProxyListDomain>
       </ProxyProperty>
 
       <ProxyProperty
         name="LineInterpolator"
         command="SetLineInterpolator">
-        <ProxyGroupDomain name="groups">
-          <Group name="contour_line_interpolators" />
-        </ProxyGroupDomain>
+        <ProxyListDomain name="proxy_list">
+          <Proxy group="smtk_contour_line_interpolators" name="None" />
+        </ProxyListDomain>
       </ProxyProperty>
 
       <DoubleVectorProperty
@@ -197,6 +245,8 @@
           <Property name="ShowSelectedNodes" />
           <Property name="SelectNodes" />
           <Property name="ClosedLoop" />
+          <Property name="CanEdit" />
+          <Property name="CanEditInfo" />
         </ExposedProperties>
       </SubProxy>
 

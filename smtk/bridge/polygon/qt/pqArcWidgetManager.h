@@ -26,7 +26,7 @@
 #include <QWidget>
 #include "vtkType.h"
 
-class pqArcWidget;
+class qtArcWidget;
 class pqArcWidgetPanel;
 class pqPolygonArc;
 class pqRenderView;
@@ -46,7 +46,7 @@ public:
   int edit();
   void reset();
 
-  pqArcWidget* createDefaultContourWidget(int& normal, double& pos);
+  qtArcWidget *createDefaultContourWidget(int &normal, double &pos);
 
   QWidget* getActiveWidget() { return ActiveWidget; }
   pqPolygonArc* activeArc();
@@ -73,20 +73,20 @@ protected slots:
   // called when a whole arc is done creating or modifying.
   void createEdge();
   // called when a sub arc modification is done
-  void updateEdge(pqArcWidget*, const smtk::common::UUID& edgeid);
+  void updateEdge(qtArcWidget *, const smtk::common::UUID &edgeid);
   // called when the edit widget is closed
   void editingFinished();
 
 protected:
   void getDefaultArcPlane(int& normal, double& pos);
   void resetArcPlane(int normal, double pos);
-  pqArcWidget* createContourWidget( int normal, double position );
+  qtArcWidget *createContourWidget(int normal, double position);
   pqPolygonArc* createLegacyV1Contour(
     const int &normal,const double &position,const int &closedLoop,
     vtkDoubleArray* nodePositions, vtkIdTypeArray* SelIndices);
   void disableArcWidget();
 
-  QPointer<pqArcWidget> ArcWidget;
+  QPointer<qtArcWidget> ArcWidget;
   QPointer<pqArcWidgetPanel> EditWidget;
   QPointer<pqPolygonArc> Arc;
 

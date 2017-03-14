@@ -2,11 +2,10 @@ include(${QT_USE_FILE})
 
 # set up sources to build
 set(PQWidgetsSrcs
-  pq3DWidget.cxx
-  pq3DWidgetInterface.cxx
-  pqArcWidget.cxx
-  pqLineWidget.cxx
   pqGenerateContoursDialog.cxx
+  qtArcWidget.cxx
+  qtInteractionWidget.cxx
+  qtLineWidget.cxx
 )
 
 set(PQWidgetsUIs
@@ -16,15 +15,14 @@ set(PQWidgetsUIs
 )
 
 set(PQWidgetsMocHeaders
-  pq3DWidget.h
-  pqArcWidget.h
-  pqLineWidget.h
   pqGenerateContoursDialog.h
+  qtArcWidget.h
+  qtInteractionWidget.h
+  qtLineWidget.h
 )
 
 set(PQWidgetsHeaders
   ${PQWidgetsMocHeaders}
-  pq3DWidgetInterface.h
 )
 
 #install the headers

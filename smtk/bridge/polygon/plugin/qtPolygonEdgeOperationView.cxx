@@ -17,7 +17,6 @@
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
-#include "smtk/extension/paraview/widgets/pqArcWidget.h"
 #include "smtk/bridge/polygon/qt/pqArcWidgetManager.h"
 #include "smtk/bridge/polygon/qt/pqPolygonArc.h"
 #include "smtk/bridge/polygon/qt/pqSplitEdgeWidget.h"
@@ -344,8 +343,6 @@ void qtPolygonEdgeOperationView::operationSelected(const smtk::model::OperatorPt
 
     // This handles ui panel update when we need an arc-edit widget
     QWidget* prevUiWidget = this->Internals->ArcManager->getActiveWidget();
-    pq3DWidget* prev3dWidget = qobject_cast<pq3DWidget*>(prevUiWidget);
-
     if(op->name() == "create edge")
       {
       this->Internals->ArcManager->create();
@@ -361,18 +358,10 @@ void qtPolygonEdgeOperationView::operationSelected(const smtk::model::OperatorPt
       {
       return;
       }
-    pq3DWidget* sel3dWidget = qobject_cast<pq3DWidget*>(selUiWidget);
     QString widgetName = selUiWidget->objectName();
 
-    // we need to make invisible all 3d widget UI panels
-    QList< pq3DWidget* > user3dWidgets = pWidget->findChildren<pq3DWidget*>();
-    QList< QWidget* > userUiWidgets;
-    // if this is not a 3d widget
-    if(!sel3dWidget)
-      {
-      userUiWidgets = pWidget->findChildren<QWidget*>(widgetName);
-      }
-    userUiWidgets.append(reinterpret_cast< QList<QWidget*>& >(user3dWidgets));
+    QList<QWidget *> userUiWidgets =
+        pWidget->findChildren<QWidget *>(widgetName);
     bool found = false;
     for(int i=0; i<userUiWidgets.count(); i++)
       {
@@ -392,30 +381,16 @@ void qtPolygonEdgeOperationView::operationSelected(const smtk::model::OperatorPt
       }
 
     // turn off previous active widgets if they are not the active one anymore
-    if(prev3dWidget && prev3dWidget != sel3dWidget)
-      {
-      prev3dWidget->deselect();
-      prev3dWidget->setVisible(false);
-      prev3dWidget->setEnabled(false);
-      }
-    else if(prevUiWidget && prevUiWidget != selUiWidget)
-      {
-      prevUiWidget->setVisible(false);
-      prevUiWidget->setEnabled(false);
-      prevUiWidget->hide();
+      if (prevUiWidget && prevUiWidget != selUiWidget) {
+        prevUiWidget->setVisible(false);
+        prevUiWidget->setEnabled(false);
+        prevUiWidget->hide();
       }
 
-    if(sel3dWidget && sel3dWidget->widgetVisible())
-      {
-      sel3dWidget->select();
-      sel3dWidget->setVisible(true);
-      sel3dWidget->setEnabled(true);
-      }
-    else if(!sel3dWidget)
-      {
-      selUiWidget->setVisible(true);
-      selUiWidget->setEnabled(true);
-      selUiWidget->show();
+      if (!selUiWidget) {
+        selUiWidget->setVisible(true);
+        selUiWidget->setEnabled(true);
+        selUiWidget->show();
       }
     }
   else
@@ -425,17 +400,8 @@ void qtPolygonEdgeOperationView::operationSelected(const smtk::model::OperatorPt
     if(this->Internals->ArcManager)
       {
       QWidget* prevUiWidget = this->Internals->ArcManager->getActiveWidget();
-      pq3DWidget* prev3dWidget = qobject_cast<pq3DWidget*>(prevUiWidget);
-
       // turn off previous active widgets if they are not the active one anymore
-      if(prev3dWidget)
-        {
-        prev3dWidget->deselect();
-        prev3dWidget->setVisible(false);
-        prev3dWidget->setEnabled(false);
-        }
-      else if(prevUiWidget)
-        {
+      if (prevUiWidget) {
         prevUiWidget->setVisible(false);
         prevUiWidget->setEnabled(false);
         prevUiWidget->hide();

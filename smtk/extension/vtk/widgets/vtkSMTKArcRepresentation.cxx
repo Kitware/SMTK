@@ -39,6 +39,8 @@
 #include "vtkNew.h"
 #include "vtkBoundingBox.h"
 #include "vtkCellArray.h"
+#include "vtkUnsignedIntArray.h"
+#include "vtkCommand.h"
 
 #include <map>
 
@@ -62,14 +64,27 @@ class vtkSMTKArcRepresentation::vtkInternalMap : public vtkInternalMapBase {};
 //----------------------------------------------------------------------
 vtkSMTKArcRepresentation::vtkSMTKArcRepresentation()
 {
+  this->LinesMapper->SetScalarModeToUseCellData();
+  this->Property->SetLineWidth(2.0);
+  this->Property->SetPointSize(6.0);
+  this->LinesProperty->SetLineWidth(2.0);
+  this->ActiveProperty->SetLineWidth(2.0);
   this->LoggingEnabled = false;
   this->ModifiedPointMap = new vtkSMTKArcRepresentation::vtkInternalMap();
   this->CanEdit = 1;
+  this->PointSelectMode = 0;
+  this->pointId = 0;
+  this->PointSelectCallBack = nullptr;
 }
 
 //----------------------------------------------------------------------
 vtkSMTKArcRepresentation::~vtkSMTKArcRepresentation()
 {
+  if (PointSelectCallBack)
+  {
+    PointSelectCallBack->Delete();
+  }
+  PointSelectCallBack = nullptr;
   if ( this->ModifiedPointMap )
     {
     delete this->ModifiedPointMap;
@@ -150,6 +165,10 @@ int vtkSMTKArcRepresentation::ActivateNode( double displayPos[2] )
 //----------------------------------------------------------------------
 int vtkSMTKArcRepresentation::DeleteNthNode(int n)
 {
+  if(PointSelectMode)
+  {
+    return 0;
+  }
   if (n <= 0)
     {
     //you can't delete this first node ever!
@@ -182,6 +201,7 @@ void vtkSMTKArcRepresentation::UpdateLines(int index)
 {
   this->Superclass::UpdateLines(index);
 }
+
 //-----------------------------------------------------------------------------
 void vtkSMTKArcRepresentation::BuildRepresentation()
 {
@@ -234,9 +254,29 @@ int vtkSMTKArcRepresentation::SetActiveNodeToWorldPosition(double worldPos[3])
   return ret;
 }
 
+void vtkSMTKArcRepresentation::StartWidgetInteraction(double startEventPos[2])
+{
+  if(PointSelectMode)
+  {
+    if( this->GetCurrentOperation() == vtkContourRepresentation::Translate )
+    {
+      this->SetCurrentOperationToInactive();
+    }
+    PointSelectCallBack->Execute(NULL, this->ActiveNode, NULL);
+  }
+  else
+  {
+    this->Superclass::StartWidgetInteraction(startEventPos);
+  }
+}
+
 //----------------------------------------------------------------------
 int vtkSMTKArcRepresentation::AddNodeOnContour(int X, int Y)
 {
+  if(PointSelectMode)
+  {
+    return 0;
+  }
   int idx;
 
   double worldPos[3];
@@ -286,6 +326,8 @@ int vtkSMTKArcRepresentation::AddNodeOnContour(int X, int Y)
   node->WorldPosition[1] = worldPos[1];
   node->WorldPosition[2] = worldPos[2];
   node->Selected = 0;
+  node->PointId = this->pointId;
+  pointId++;
 
   this->GetRendererComputedDisplayPositionFromWorldPosition(
           worldPos, worldOrient, node->NormalizedDisplayPosition );
@@ -311,6 +353,19 @@ int vtkSMTKArcRepresentation::AddNodeOnContour(int X, int Y)
   this->NeedToRender = 1;
 
   return 1;
+}
+
+int vtkSMTKArcRepresentation::AddNodeAtDisplayPosition(int X, int Y)
+{
+  int addNode = GetNumberOfNodes();
+  int r = vtkOrientedGlyphContourRepresentation::AddNodeAtDisplayPosition(X,Y);
+  if(r)
+  {
+    vtkContourRepresentationNode * node = GetNthNode( addNode );
+    node->PointId = this->pointId;
+    pointId++;
+  }
+  return r;
 }
 
 //----------------------------------------------------------------------
@@ -343,15 +398,33 @@ void vtkSMTKArcRepresentation::UpdatePropertyMap(int index, int flags)
 }
 
 //-------------------------------------------------------------------------
-int vtkSMTKArcRepresentation::ComputeInteractionState(
-  int X, int Y, int modified)
+int vtkSMTKArcRepresentation::ComputeInteractionState(int X, int Y, int modified)
 {
   if(this->FocalPoint->GetNumberOfPoints() == 0)
+  {
+    int numPoints = this->GetNumberOfNodes();
+    //Some times the focal point has no data with it.  This results in a
+    //segfault in Superclass::ComputeInteractionState, since when there is
+    //no data, part of FocalPoint is NULL. there is no check on FocalPoint
+    //in the superclass.
+    for ( int i = 0; i < numPoints; i++ )
     {
-    return this->InteractionState;
+      if ( i != this->ActiveNode )
+      {
+        double worldPos[3];
+        double worldOrient[9];
+        this->GetNthNodeWorldPosition( i, worldPos );
+        this->GetNthNodeWorldOrientation( i, worldOrient );
+        this->FocalPoint->InsertNextPoint(worldPos );
+        this->FocalData->GetPointData()->GetNormals()->InsertNextTuple(worldOrient+6);
+      }
     }
-  return this->vtkOrientedGlyphContourRepresentation::
-         ComputeInteractionState(X, Y, modified);
+  }
+  if(this->FocalPoint->GetNumberOfPoints() == 0)
+  {
+    return this->InteractionState; // not pretty sure.
+  }
+  return Superclass::ComputeInteractionState(X,Y,modified);
 }
 
 //-----------------------------------------------------------------------------
@@ -360,6 +433,21 @@ vtkPolyData* vtkSMTKArcRepresentation::GetContourRepresentationAsPolyData()
   // Make sure we are up to date with any changes made in the placer
   this->UpdateContour();
   this->BuildLines();
+
+  vtkSmartPointer<vtkUnsignedIntArray> ids =
+                              vtkSmartPointer<vtkUnsignedIntArray>::New();
+  ids->SetNumberOfComponents(1);
+  ids->SetName ("PointIDs");
+  //std::set<vtkIdType> checker;
+
+  for(int i = 0; i < GetNumberOfNodes(); ++i)
+  {
+    //assert( checker.find(GetNthNode( i )->PointId) == checker.end());
+    //checker.insert(GetNthNode( i )->PointId);
+    ids->InsertNextTuple1(GetNthNode( i )->PointId);
+  }
+
+  this->Lines->GetPointData()->SetScalars(ids);
 
   return Lines;
  }
@@ -375,6 +463,16 @@ int vtkSMTKArcRepresentation::GetNodeModifiedFlags(int n)
     flag = it->second;
     }
    return flag;
+}
+
+//-----------------------------------------------------------------------------
+void vtkSMTKArcRepresentation::SetPointSelectCallBack(vtkCommand * cp)
+{
+  if(this->PointSelectCallBack)
+  {
+    this->PointSelectCallBack->Delete();
+  }
+  this->PointSelectCallBack = cp;
 }
 
 //----------------------------------------------------------------------
@@ -401,6 +499,7 @@ void vtkSMTKArcRepresentation::Initialize( vtkPolyData * pd )
     delete this->Internal->Nodes[i];
     }
   this->Internal->Nodes.clear();
+  pointId = 0;
 
   vtkPolyData *tmpPoints = vtkPolyData::New();
   tmpPoints->DeepCopy(pd);
@@ -412,6 +511,7 @@ void vtkSMTKArcRepresentation::Initialize( vtkPolyData * pd )
 
   //account for the offset if the input has vert cells
   vtkIdList *pointIds = pd->GetCell(pd->GetNumberOfVerts())->GetPointIds();
+  vtkDataArray * vda = pd->GetPointData()->GetScalars();
   vtkIdType numPointsInLineCells = pointIds->GetNumberOfIds();
 
   // Get the worldOrient from the point placer
@@ -450,6 +550,8 @@ void vtkSMTKArcRepresentation::Initialize( vtkPolyData * pd )
     node->WorldPosition[1] = pos[1];
     node->WorldPosition[2] = pos[2];
     node->Selected = 0;
+    node->PointId = vda->GetTuple1(i);
+    pointId = std::max(pointId, static_cast<unsigned int>(node->PointId+1));
 
     node->NormalizedDisplayPosition[0] = displayPos[0];
     node->NormalizedDisplayPosition[1] = displayPos[1];

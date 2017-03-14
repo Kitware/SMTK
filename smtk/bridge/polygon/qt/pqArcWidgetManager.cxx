@@ -16,29 +16,22 @@
 
 #include "smtk/bridge/polygon/qt/pqArcWidgetPanel.h"
 #include "smtk/bridge/polygon/qt/pqPolygonArc.h"
-#include "smtk/extension/paraview/widgets/pqArcWidget.h"
+#include "smtk/extension/paraview/widgets/qtArcWidget.h"
 
-#include "pqApplicationCore.h"
-#include "pqObjectBuilder.h"
-#include "pqDataRepresentation.h"
-#include "pqPipelineSource.h"
 #include "pqRenderView.h"
-#include "pqSMAdaptor.h"
 #include "pqServer.h"
-
+#include "vtkAbstractWidget.h"
+#include "vtkCamera.h"
 #include "vtkCommand.h"
 #include "vtkDoubleArray.h"
 #include "vtkIdTypeArray.h"
+#include "vtkNew.h"
 #include "vtkProcessModule.h"
 #include "vtkSMNewWidgetRepresentationProxy.h"
-#include "vtkSMInputProperty.h"
-#include "vtkSMIntVectorProperty.h"
 #include "vtkSMPropertyHelper.h"
 #include "vtkSMProxyManager.h"
 #include "vtkSMRenderViewProxy.h"
-#include "vtkSMSourceProxy.h"
-#include "vtkAbstractWidget.h"
-#include "vtkNew.h"
+
 #include <QDebug>
 
 //-----------------------------------------------------------------------------
@@ -128,33 +121,24 @@ int pqArcWidgetManager::create()
 
   if ( !created )
     {
-    this->ArcWidget->setView(this->View);
     this->getDefaultArcPlane(normal, planepos);
     this->resetArcPlane(normal, planepos);
     this->ArcWidget->setView(this->View);
-    this->ArcWidget->setWidgetVisible(true);
-
-    vtkSMPropertyHelper(this->ArcWidget->getWidgetProxy(), "Enabled").Set(1);
-    this->ArcWidget->getWidgetProxy()->UpdateVTKObjects();
-    this->ArcWidget->showWidget();
+    this->ArcWidget->setEnableInteractivity(true);
     }
 
-  this->ArcWidget->select();
-  this->Arc->setPlaneProjectionNormal(normal);
-  this->Arc->setPlaneProjectionPosition(planepos);
-  this->ArcWidget->enableApplyButton(this->EnableWidgetApplyButton);
-  this->ActiveWidget = this->ArcWidget;
-  return 1;
+    // this->ArcWidget->select();
+    this->Arc->setPlaneProjectionNormal(normal);
+    this->Arc->setPlaneProjectionPosition(planepos);
+    this->ArcWidget->enableApplyButton(this->EnableWidgetApplyButton);
+    this->ActiveWidget = this->ArcWidget;
+    return 1;
 }
 
 //-----------------------------------------------------------------------------
 int pqArcWidgetManager::edit()
 {
-  if(this->ArcWidget && this->ArcWidget->isVisible())
-    {
-    this->disableArcWidget();
-    this->ActiveWidget = NULL;
-    }
+  delete this->ArcWidget;
 
   emit this->Busy();
   if ( !this->Arc )
@@ -165,9 +149,10 @@ int pqArcWidgetManager::edit()
   if(!this->EditWidget)
     {
     this->EditWidget = new pqArcWidgetPanel();
-    QObject::connect(this->EditWidget,SIGNAL(
-      arcModified(pqArcWidget*, const smtk::common::UUID&)),
-      this,SLOT(updateEdge(pqArcWidget*, const smtk::common::UUID&)));
+    QObject::connect(
+        this->EditWidget,
+        SIGNAL(arcModified(qtArcWidget *, const smtk::common::UUID &)), this,
+        SLOT(updateEdge(qtArcWidget *, const smtk::common::UUID &)));
     QObject::connect(this->EditWidget,SIGNAL(arcModificationfinished()),
       this,SLOT(editingFinished()));
     QObject::connect(this->EditWidget,SIGNAL(startArcEditing()),
@@ -178,13 +163,11 @@ int pqArcWidgetManager::edit()
 
   pqPolygonArc* arcObj = this->Arc;
   this->EditWidget->setView(this->View);
-
   this->EditWidget->setArc(arcObj);
   this->EditWidget->setArcManager(this);
   this->EditWidget->resetWidget();
   this->EditWidget->show();
   this->ActiveWidget = this->EditWidget;
-
   return 1;
 }
 
@@ -200,13 +183,9 @@ void pqArcWidgetManager::cancelOperation(const smtk::model::OperatorPtr& op)
     this->EditWidget->hide();
     }
 
-  if(this->ArcWidget && this->ArcWidget->isVisible())
-    {
-    this->disableArcWidget();
-    }
-
-  this->ActiveWidget = NULL;
-  emit this->operationCancelled();
+    delete this->ArcWidget;
+    this->ActiveWidget = NULL;
+    emit this->operationCancelled();
 }
 
 //-----------------------------------------------------------------------------
@@ -226,16 +205,17 @@ void pqArcWidgetManager::createEdge()
     return;
     }
 
-  //push the polydata from the widget representation to the poly source
+    Q_ASSERT(this->ArcWidget);
 
-  pqPolygonArc* obj = this->Arc;
-  if ( obj )
-    {
-    vtkSMNewWidgetRepresentationProxy *widget = this->ArcWidget->getWidgetProxy();
-    if(!obj->createEdge(widget))
-      {
-      qDebug() << "Can't create an edge with given widget!" << widget;
-      return;
+    // push the polydata from the widget representation to the poly source
+
+    pqPolygonArc *obj = this->Arc;
+    if (obj) {
+      vtkSMNewWidgetRepresentationProxy *widget =
+          this->ArcWidget->widgetProxy();
+      if (!obj->createEdge(widget)) {
+        qDebug() << "Can't create an edge with given widget!" << widget;
+        return;
       }
     }
 
@@ -256,9 +236,8 @@ void pqArcWidgetManager::editingFinished()
 }
 
 //-----------------------------------------------------------------------------
-void pqArcWidgetManager::updateEdge(
-  pqArcWidget* subArcWidget, const smtk::common::UUID& edgeId)
-{
+void pqArcWidgetManager::updateEdge(qtArcWidget *subArcWidget,
+                                    const smtk::common::UUID &edgeId) {
   if ( (!this->Arc) || this->ActiveWidget != this->EditWidget)
     {
     return;
@@ -268,7 +247,7 @@ void pqArcWidgetManager::updateEdge(
   pqPolygonArc* obj = this->Arc;
   if ( obj )
     {
-    vtkSMNewWidgetRepresentationProxy *widget = subArcWidget->getWidgetProxy();
+    vtkSMNewWidgetRepresentationProxy *widget = subArcWidget->widgetProxy();
     obj->editEdge(widget, edgeId);
 /*
     //if the object hasn't been created yet update will call createArc
@@ -319,44 +298,31 @@ void pqArcWidgetManager::updateEdge(
 }
 
 //-----------------------------------------------------------------------------
-pqArcWidget* pqArcWidgetManager::createDefaultContourWidget(
-  int& normal, double& planePos)
-{
+qtArcWidget *pqArcWidgetManager::createDefaultContourWidget(int &normal,
+                                                            double &planePos) {
   this->getDefaultArcPlane(normal, planePos);
   return this->createContourWidget(normal, planePos);
 }
 
 //-----------------------------------------------------------------------------
-pqArcWidget* pqArcWidgetManager::createContourWidget(
-   int normal, double position)
-{
-  vtkSMProxy* pointplacer = vtkSMProxyManager::GetProxyManager()->NewProxy(
-    "point_placers", "BoundedPlanePointPlacer");
-
-  pqArcWidget *widget= new pqArcWidget(
-    pointplacer, pointplacer, NULL);
-
+qtArcWidget *pqArcWidgetManager::createContourWidget(int normal,
+                                                     double position) {
+  qtArcWidget *widget = new qtArcWidget(nullptr);
   widget->setObjectName("smtkArcWidget");
 
+  vtkSMProxy *pointplacer = widget->pointPlacer();
   vtkSMPropertyHelper(pointplacer, "ProjectionNormal").Set(normal);
   vtkSMPropertyHelper(pointplacer, "ProjectionPosition").Set(position);
-  widget->setLineInterpolator(0);
-  widget->setPointPlacer(pointplacer);
   pointplacer->UpdateVTKObjects();
-  pointplacer->Delete();
-
 
   //this block is needed to create the widget in the right order
   //we need to set on the proxy enabled, not the widget
   //than we need to call Initialize
-  widget->setView( this->View );
-  widget->setWidgetVisible( this->View != NULL );
-
-  vtkSMPropertyHelper(widget->getWidgetProxy(), "AlwaysOnTop").Set(1);
-  vtkSMPropertyHelper(widget->getWidgetProxy(), "Enabled").Set(1);
-  widget->getWidgetProxy()->UpdateVTKObjects();
-  widget->showWidget();
-
+  widget->setView(this->View);
+  vtkSMPropertyHelper(widget->widgetProxy(), "AlwaysOnTop").Set(1);
+  widget->widgetProxy()->UpdateVTKObjects();
+  widget->setEnableInteractivity(true);
+  widget->emphasize();
   return widget;
 }
 
@@ -365,37 +331,28 @@ pqPolygonArc* pqArcWidgetManager::createLegacyV1Contour(
   const int &normal,const double &position,const int &closedLoop,
   vtkDoubleArray* nodePositions, vtkIdTypeArray* SelIndices)
 {
-
-  pqArcWidget* contourWidget =
-    this->createContourWidget(normal,position);
-
-  vtkSMNewWidgetRepresentationProxy *widgetProxy =
-    contourWidget->getWidgetProxy();
-
-  if(nodePositions && nodePositions->GetNumberOfTuples() > 0)
-    {
-    QList<QVariant> values;
-    double pointPos[3];
+  qtArcWidget *contourWidget = this->createContourWidget(normal, position);
+  vtkSMNewWidgetRepresentationProxy *widgetProxy = contourWidget->widgetProxy();
+  if (nodePositions && nodePositions->GetNumberOfTuples() > 0) {
+    std::vector<double> points;
     for(vtkIdType i=0; i<nodePositions->GetNumberOfTuples(); i++)
       {
+      double pointPos[3];
       nodePositions->GetTuple(i,pointPos);
-      values << pointPos[0] << pointPos[1] << pointPos[2];
+      points.push_back(pointPos[0]);
+      points.push_back(pointPos[1]);
+      points.push_back(pointPos[2]);
       }
-    pqSMAdaptor::setMultipleElementProperty(
-      widgetProxy->GetRepresentationProxy()->GetProperty("NodePositions"),
-      values);
-    }
-
-  if ( SelIndices && SelIndices->GetNumberOfTuples() > 0 )
-    {
-    QList<QVariant> values;
-    for(vtkIdType i=0; i<SelIndices->GetNumberOfTuples(); i++)
-      {
-      values << SelIndices->GetValue(i);
-      }
-    pqSMAdaptor::setMultipleElementProperty(
-      widgetProxy->GetRepresentationProxy()->GetProperty("SelectNodes"),
-      values);
+      vtkSMPropertyHelper(widgetProxy, "NodePositions")
+          .Set(&points[0], static_cast<unsigned int>(points.size()));
+  } else {
+    vtkSMPropertyHelper(widgetProxy, "NodePositions").SetNumberOfElements(0);
+  }
+  if (SelIndices && SelIndices->GetNumberOfTuples() > 0) {
+    vtkSMPropertyHelper(widgetProxy, "SelectNodes")
+        .Set(SelIndices->GetPointer(0), SelIndices->GetNumberOfTuples());
+  } else {
+    vtkSMPropertyHelper(widgetProxy, "SelectNodes").SetNumberOfElements(0);
     }
 
   //push all the node positions down to the server before
@@ -430,26 +387,30 @@ void pqArcWidgetManager::getDefaultArcPlane(
   (void)position;
   (void)cameraDistance;
   (void)focalPt;
-/*
-  pqCMBCommonMainWindowCore::getViewCameraInfo(
-    this->View, focalPt, position, viewDirection, cameraDistance,
-                      viewUp, parallelScale);
-*/
-  projpos = 0;
-  QList<QVariant> values =
-    pqSMAdaptor::getMultipleElementProperty(
-    this->View->getProxy()->GetProperty("CameraFocalPointInfo"));
-  projpos = values[2].toDouble();
+
+  vtkCamera *camera = this->View->getRenderViewProxy()->GetActiveCamera();
+  Q_ASSERT(camera);
+  camera->GetFocalPoint(focalPt);
+  camera->GetDirectionOfProjection(viewDirection);
+
+  /*
+    pqCMBCommonMainWindowCore::getViewCameraInfo(
+      this->View, focalPt, position, viewDirection, cameraDistance,
+                        viewUp, parallelScale);
+  */
+  /// FIXME: why does this code assume we'll never get an non-axis aligned
+  /// viewing direction?
+  projpos = focalPt[2];
   orthoPlane = 2; // z axis
   if (viewDirection[0] < -.99 || viewDirection[0] > .99)
     {
-    projpos = values[0].toDouble();
+    projpos = focalPt[0];
     orthoPlane = 0; // x axis
     }
   else if (viewDirection[1] < -.99 || viewDirection[1] > .99)
     {
     orthoPlane = 1; // y axis;
-    projpos = values[1].toDouble();
+    projpos = focalPt[1];
     }
 }
 
@@ -457,15 +418,10 @@ void pqArcWidgetManager::getDefaultArcPlane(
 void pqArcWidgetManager::resetArcPlane(
   int normal, double planePos)
 {
-  vtkSMProxyProperty* proxyProp =
-    vtkSMProxyProperty::SafeDownCast(
-    this->ArcWidget->getWidgetProxy()->GetProperty("PointPlacer"));
-  if (proxyProp && proxyProp->GetNumberOfProxies())
-    {
-    vtkSMProxy* pointplacer = proxyProp->GetProxy(0);
+  if (vtkSMProxy *pointplacer = this->ArcWidget->pointPlacer()) {
     vtkSMPropertyHelper(pointplacer, "ProjectionNormal").Set(normal);
     vtkSMPropertyHelper(pointplacer, "ProjectionPosition").Set(planePos);
-    pointplacer->MarkModified(pointplacer);
+    // pointplacer->MarkModified(pointplacer); why was this needed?
     pointplacer->UpdateVTKObjects();
     }
 }
@@ -473,13 +429,14 @@ void pqArcWidgetManager::resetArcPlane(
 //-----------------------------------------------------------------------------
 void pqArcWidgetManager::disableArcWidget()
 {
-  if(this->ArcWidget)
-    {
-    this->ArcWidget->setVisible(false);
-    this->ArcWidget->reset();
-    this->ArcWidget->removeAllNodes();
-    this->ArcWidget->setWidgetVisible(false);
-    this->ArcWidget->getWidgetProxy()->UpdatePropertyInformation();
-    this->ArcWidget->setView(NULL);
-    }
+  delete this->ArcWidget;
+  // if(this->ArcWidget)
+  //  {
+  //  this->ArcWidget->setVisible(false);
+  //  this->ArcWidget->reset();
+  //  this->ArcWidget->removeAllNodes();
+  //  this->ArcWidget->setWidgetVisible(false);
+  //  this->ArcWidget->getWidgetProxy()->UpdatePropertyInformation();
+  //  this->ArcWidget->setView(NULL);
+  //  }
 }
