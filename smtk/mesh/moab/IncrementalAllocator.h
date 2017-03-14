@@ -64,6 +64,9 @@ public:
 protected:
   bool allocateCoordinates(std::size_t nCoordinates);
 
+  friend class Interface;
+  void initialize();
+
 private:
   IncrementalAllocator( const IncrementalAllocator& other ); //blank since we are used by shared_ptr
   IncrementalAllocator& operator=( const IncrementalAllocator& other ); //blank since we are used by shared_ptr
