@@ -3781,7 +3781,7 @@ bool Manager::closeSession(const SessionRef& sref)
     UUIDsToSessions::iterator us = this->m_sessions->find(sref.entity());
     if (us != this->m_sessions->end())
       {
-      smtkDebugMacro(this->log(), "Deleting session " << sref.name() << " (" << sref.entity() << ")");
+      //smtkDebugMacro(this->log(), "Deleting session " << sref.name() << " (" << sref.entity() << ")");
       Models models = sref.models<Models>();
       for (auto mit = models.begin(); mit != models.end(); ++mit)
         {
