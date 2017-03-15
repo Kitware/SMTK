@@ -13,11 +13,11 @@
 #include "jobtablemodel.h"
 #include "cumulusproxy.h"
 
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QMessageBox>
-#include <QtNetwork/QNetworkReply>
-#include <QtCore/QList>
-#include <QtCore/QTimer>
+#include <QDesktopWidget>
+#include <QMessageBox>
+#include <QNetworkReply>
+#include <QList>
+#include <QTimer>
 
 
 namespace cumulus {

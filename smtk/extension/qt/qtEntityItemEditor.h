@@ -12,7 +12,7 @@
 #define __smtk_extension_QEntityItemEditor_h
 
 #include "smtk/extension/qt/Exports.h"
-#include <QtGui/QWidget>
+#include <QWidget>
 
 class QLineEdit;
 

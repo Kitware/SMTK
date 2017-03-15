@@ -16,8 +16,8 @@
 
 #include "logindialog.h"
 
-#include <QtGui/QMainWindow>
-#include <QtNetwork/QNetworkReply>
+#include <QMainWindow>
+#include <QNetworkReply>
 
 class QAction;
 class QIcon;

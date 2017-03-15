@@ -12,10 +12,10 @@
 #include "jobtablemodel.h"
 #include "cumulusproxy.h"
 
-#include <QtGui/QMenu>
-#include <QtGui/QContextMenuEvent>
-#include <QtGui/QMessageBox>
-#include <QtGui/QFileDialog>
+#include <QMenu>
+#include <QContextMenuEvent>
+#include <QMessageBox>
+#include <QFileDialog>
 
 namespace cumulus
 {

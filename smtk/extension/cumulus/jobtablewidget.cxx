@@ -15,7 +15,7 @@
 #include "jobtablemodel.h"
 #include "cumulusproxy.h"
 
-#include <QtGui/QMessageBox>
+#include <QMessageBox>
 
 namespace cumulus
 {

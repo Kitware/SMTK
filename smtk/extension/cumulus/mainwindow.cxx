@@ -11,8 +11,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QStatusBar>
+#include <QDesktopWidget>
+#include <QStatusBar>
 
 namespace cumulus {
 

@@ -22,9 +22,9 @@
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
 
-#include <QtGui/QApplication>
-#include <QtGui/QTreeView>
-#include <QtGui/QHeaderView>
+#include <QApplication>
+#include <QTreeView>
+#include <QHeaderView>
 
 #include <iomanip>
 #include <iostream>
