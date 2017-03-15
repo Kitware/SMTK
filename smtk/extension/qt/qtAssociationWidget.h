@@ -92,6 +92,8 @@ namespace smtk
       QList<smtk::attribute::DefinitionPtr> processDefUniqueness(const smtk::model::EntityRef& theEntity,
                                                                  smtk::attribute::System* attSystem);
 
+      // helper function to update available/current list after selection
+      void updateListItemSelectionAfterChange(QList<QListWidgetItem*> selItems, QListWidget* list);
     private:
       qtAssociationWidgetInternals *Internals;
 
