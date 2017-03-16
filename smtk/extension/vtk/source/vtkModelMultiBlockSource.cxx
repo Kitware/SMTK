@@ -694,8 +694,12 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
             }
           else
             { // skip anything not listed above... we don't know where to put it.
-            smtkWarningMacro(manager->log(),
-              "MultiBlockDataSet: Entity \"" << eit->name() << "\" (" << eit->flagSummary() << ") skipped.");
+            if (eit->hasTessellation())
+              {
+              smtkWarningMacro(manager->log(),
+                "MultiBlockDataSet: Entity \"" << eit->name() << "\" (" << eit->flagSummary() << ")" <<
+                " had a tessellation but was skipped because we don't know what block to put it in.");
+              }
             continue;
             }
 

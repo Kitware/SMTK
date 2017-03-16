@@ -185,11 +185,12 @@ bool SessionRegistrar::registerSession(
   const std::string& bname,
   const std::string& btags,
   SessionStaticSetup bsetup,
-  SessionConstructor bctor)
+  SessionConstructor bctor,
+  OperatorConstructors* sopcons)
 {
   if (!bname.empty() && bctor)
     {
-    StaticSessionInfo entry(bname, btags, bsetup, bctor);
+    StaticSessionInfo entry(bname, btags, bsetup, bctor, sopcons);
     (*s_sessions())[bname] = entry;
     //std::cout << "Adding session " << bname << "\n";
     return true;
@@ -331,6 +332,34 @@ SessionConstructor SessionRegistrar::sessionConstructor(const std::string& bname
   SessionConstructors::const_iterator it = s_sessions()->find(bname);
   if (it != s_sessions()->end())
     result = it->second.Constructor;
+  return result;
+}
+
+OperatorConstructors* SessionRegistrar::sessionOperatorConstructors(const std::string& stype)
+{
+  OperatorConstructors* opcons = NULL;
+  SessionConstructors::const_iterator it = s_sessions()->find(stype);
+  if (it != s_sessions()->end())
+    {
+    opcons = it->second.OpConstructors;
+    }
+  return opcons;
+}
+
+/**\brief Return a set of operator names given a session typename.
+  *
+  */
+std::set<std::string> SessionRegistrar::sessionOperatorNames(const std::string& stype)
+{
+  std::set<std::string> result;
+  OperatorConstructors* opcons = SessionRegistrar::sessionOperatorConstructors(stype);
+  if (opcons)
+    {
+    for (auto opit = opcons->begin(); opit != opcons->end(); ++opit)
+      {
+      result.insert(opit->first);
+      }
+    }
   return result;
 }
 

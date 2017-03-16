@@ -59,7 +59,7 @@ if __name__ == '__main__':
     enames = sorted([x.name() for x in model.cells()])
     print '\n'.join(enames)
     status = status or len(enames) != 5 or \
-      (enames[0] != 'Test Model, face 0')
+      (enames[0] != 'face 0')
     # Does the model contain the group we added?
     status = status or len(model.groups()) != 1 or \
       model.groups()[0].name() != 'Test Group'

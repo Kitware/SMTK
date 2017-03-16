@@ -1599,7 +1599,7 @@ void Manager::assignDefaultNamesWithOwner(
     std::string defaultName =
       counts.empty() ?
       this->shortUUIDName(irec->first, irec->second.entityFlags()) :
-      ownersName + ", " + Entity::defaultNameFromCounters(irec->second.entityFlags(), counts);
+      Entity::defaultNameFromCounters(irec->second.entityFlags(), counts);
     this->setStringProperty(irec->first, "name", defaultName);
     }
 
@@ -1668,34 +1668,37 @@ std::string Manager::assignDefaultName(const UUID& uid, BitFlags entityFlags)
     std::string tmpName;
     if (!this->hasStringProperty(uid,"name"))
       {
-      tmpName =
-        Entity::defaultNameFromCounters(
-          entityFlags, this->m_globalCounters);
+      std::ostringstream nameStream;
+      SessionRef sref(shared_from_this(), uid);
+      Session::Ptr sess = sref.session();
+      if (sess)
+        {
+        // if this is a DefaultSession and there is a remote session name, display that;
+        // otherwise, show the local session name.
+        DefaultSessionPtr defSess = smtk::dynamic_pointer_cast<DefaultSession>(sess);
+        nameStream
+          << (defSess && !defSess->remoteName().empty() ?
+            defSess->remoteName() : sess->name())
+          << " models";
+        }
+      else
+        {
+        nameStream <<
+          Entity::defaultNameFromCounters(
+            entityFlags, this->m_globalCounters);
+        }
+      tmpName = nameStream.str();
       this->setStringProperty(uid, "name", tmpName);
       }
     else
+      {
       tmpName = this->stringProperty(uid, "name")[0];
+      }
     return tmpName;
     }
-  // Otherwise, use the "owning" model as part of the default name
-  // for the entity. First, get the name of the entity's owner:
+  // Not a model or session, get its parent's per-type counters:
   UUID owner(
     this->modelOwningEntity(uid));
-  std::string ownerName;
-  if (owner)
-    {
-    if (this->hasStringProperty(owner, "name"))
-      {
-      ownerName = this->stringProperty(owner, "name")[0];
-      }
-    else
-      {
-      ownerName = this->assignDefaultName(
-        owner, this->findEntity(owner)->entityFlags());
-      }
-    ownerName += ", ";
-    }
-  // Now get the owner's list of per-type counters:
   IntegerList& counts(
     this->entityCounts(
       owner, entityFlags));
@@ -1708,7 +1711,7 @@ std::string Manager::assignDefaultName(const UUID& uid, BitFlags entityFlags)
   std::string defaultName =
     counts.empty() ?
     this->shortUUIDName(uid, entityFlags) :
-    ownerName + Entity::defaultNameFromCounters(entityFlags, counts);
+    Entity::defaultNameFromCounters(entityFlags, counts);
   this->setStringProperty(uid, "name", defaultName);
   return defaultName;
 }
@@ -3771,14 +3774,31 @@ Instance Manager::addInstance(const EntityRef& object)
 /**\brief Unregister a session from the model manager.
   *
   */
-void Manager::closeSession(const SessionRef& sess)
+bool Manager::closeSession(const SessionRef& sref)
 {
-  if (sess.manager().get() == this)
+  if (sref.manager().get() == this)
     {
-    // Exhaustive flag forces session name (and other properties) to be erased:
-    this->erase(sess, SESSION_EXHAUSTIVE);
-    this->unregisterSession(sess.session());
+    UUIDsToSessions::iterator us = this->m_sessions->find(sref.entity());
+    if (us != this->m_sessions->end())
+      {
+      //smtkDebugMacro(this->log(), "Deleting session " << sref.name() << " (" << sref.entity() << ")");
+      Models models = sref.models<Models>();
+      for (auto mit = models.begin(); mit != models.end(); ++mit)
+        {
+        this->eraseModel(*mit, SESSION_EVERYTHING);
+        }
+      bool didClose = this->unregisterSession(sref.session(), true);
+      return didClose;
+      }
     }
+  else
+    {
+    smtkErrorMacro(this->log(),
+      "Asked to close session (" << sref.name() << ") " <<
+      "owned by a different manager (" <<
+      sref.manager().get() << " vs " << this << ")!");
+    }
+  return false;
 }
 
 /**\brief Return an array of all the sessions this manager owns.

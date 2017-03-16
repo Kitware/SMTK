@@ -346,7 +346,16 @@ Entity* Session::addEntityRecord(const smtk::model::EntityRef& entRef)
   vtkModelItem* ent = this->entityForUUID(entRef.entity());
   if (!ent)
     {
-    smtkErrorMacro(this->log(), "Entity " << entRef.entity() << " has no matching CMB model item");
+    // We don't store UUIDs for use and loop-use records, and
+    // most discrete models don't have them, so only consider
+    // the lack of a backing model entity an error if it is
+    // some other type of entity:
+    if (!entRef.isUseEntity() && !entRef.isShellEntity())
+      {
+      smtkErrorMacro(this->log(),
+        "Entity " << entRef.entity() << " " << entRef.name() <<
+        " has no matching CMB model item");
+      }
     return NULL;
     }
 

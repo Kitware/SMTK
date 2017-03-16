@@ -79,6 +79,7 @@ namespace smtk{
     void expandAllModels();
 
   public slots:
+    bool removeSession(const smtk::model::SessionRef& sref);
     void selectItems(const smtk::common::UUIDs& selEntities,
 		     const smtk::mesh::MeshSets& selMeshes,
 		     bool blocksignal);

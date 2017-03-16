@@ -182,7 +182,7 @@ int SessionIOJSON::loadMeshesRecord(ManagerPtr modelMgr,
     {
     // It's okay if we don't have "mesh_collections" entry. Could be a record that
     // did not come from SessionIOJSON;
-    smtkInfoMacro(modelMgr->log(), "Expecting a \"mesh_collections\" entry!");
+    // smtkInfoMacro(modelMgr->log(), "Expecting a \"mesh_collections\" entry!");
     return 1;
     }
   return smtk::io::ImportJSON::ofMeshesOfModel(sessionRec, modelMgr,

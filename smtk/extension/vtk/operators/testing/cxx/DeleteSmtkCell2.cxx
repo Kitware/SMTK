@@ -120,11 +120,9 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  smtk::model::Edge edge0 = manager->findEntitiesByPropertyAs<Edges>("name",
-             "model 0, edge 0")[0];
+  smtk::model::Edge edge0 = manager->findEntitiesByPropertyAs<Edges>("name", "edge 0")[0];
   test(edge0.isValid(), "edge 0 is not valid!\n");
-  smtk::model::Edge edge1 = manager->findEntitiesByPropertyAs<Edges>("name",
-             "model 0, edge 1")[0];
+  smtk::model::Edge edge1 = manager->findEntitiesByPropertyAs<Edges>("name", "edge 1")[0];
   test(edge1.isValid(), "edge 1 is not valid!\n");
 
   bool result(0);
