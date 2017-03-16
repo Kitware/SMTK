@@ -310,7 +310,10 @@ def ImportSMTKModel(filename):
   """Import an SMTK model into the active session."""
   sess = GetActiveSession()
   op = sess.op('import smtk model')
-  fname = op.findFile('filename', int(smtk.attribute.ALL_CHILDREN))
+  if smtk.wrappingProtocol() == 'pybind11':
+    fname = op.findFile('filename', int(smtk.attribute.ALL_CHILDREN))
+  else:
+    fname = op.findFile('filename', smtk.attribute.ALL_CHILDREN)
   fname.setValue(filename)
   res = op.operate()
   SetLastResult(res)

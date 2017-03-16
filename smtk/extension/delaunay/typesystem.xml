@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<typesystem package="@TYPESYSTEM_NAME@">
+
+  @EXTRA_TYPESYSTEMS@
+
+  <suppress-warning text="Duplicate type entry: 'smtk'"/>
+
+  <suppress-warning text="skipping function 'smtk::model::TriangulateFace::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::TriangulateFace::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::TriangulateFace::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::TriangulateFace::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::TriangulateFace::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::TriangulateFace::SelfType&gt;'"/>
+
+  <!-- Additional objects to be wrapped -->
+  <namespace-type name="smtk" generate = "no">
+    <namespace-type name="model" generate = "no">
+      <object-type name="TriangulateFace">
+        <include file-name="smtk/extension/delaunay/TriangulateFace.h" location="local"/>
+      </object-type>
+    </namespace-type>
+  </namespace-type>
+
+  @EXTRA_OBJECTS@
+
+</typesystem>
