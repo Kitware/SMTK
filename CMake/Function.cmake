@@ -11,6 +11,10 @@ function(determineFunctionType found type ptype incType)
     try_compile(FUNCTION_TYPE_FOUND
       ${PROJECT_BINARY_DIR}/CMakeTmp
       ${PROJECT_SOURCE_DIR}/CMake/function.cxx
+      CMAKE_FLAGS
+        -DCMAKE_CXX_STANDARD:STRING=${CMAKE_CXX_STANDARD}
+        -DCMAKE_CXX_STANDARD_REQUIRED:BOOL=${CMAKE_CXX_STANDARD_REQUIRED}
+        -DCMAKE_CXX_EXTENSIONS:BOOL=${CMAKE_CXX_EXTENSIONS}
     )
     if(${FUNCTION_TYPE_FOUND})
       set(RESULT "std")
