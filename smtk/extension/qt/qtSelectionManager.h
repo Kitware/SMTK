@@ -17,6 +17,7 @@
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/model/EntityTypeBits.h"
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"
@@ -35,6 +36,8 @@ class SMTKQTEXT_EXPORT qtSelectionManager : public QObject
   Q_OBJECT
   public:
     qtSelectionManager();
+    void setModelManager(smtk::model::ManagerPtr mgrPtr)
+    {this->m_modelMgr = mgrPtr;}
     void getSelectedEntities(smtk::common::UUIDs &selEntities);
     void getSelectedMeshes(smtk::mesh::MeshSets &selMeshes);
 
@@ -42,6 +45,8 @@ class SMTKQTEXT_EXPORT qtSelectionManager : public QObject
     // Description
     // Broadcast selection to model tree
     // If you do not block signal, both tree and view would be updated
+    // It's preferred to set it to true and emit a seperate signal to update
+    // render view
     void broadcastToModelTree(const smtk::common::UUIDs &
    selEntities, const smtk::mesh::MeshSets &selMeshes, bool blocksignals) const;
 
@@ -77,11 +82,39 @@ class SMTKQTEXT_EXPORT qtSelectionManager : public QObject
     // update selected items from attribute
     void updateSelectedItems(const smtk::common::UUIDs & selEntities);
 
+
+    // Description
+    // update mask for model
+    void filterModels(bool checked);
+
+    // Description
+    // update mask for model
+    void filterVolumes(bool checked);
+
+    // Description
+    // update mask for model
+    void filterFaces(bool checked);
+
+    // Description
+    // update mask for model
+    void filterEdges(bool checked);
+
+    // Description
+    // update mask for model
+    void filterVertices(bool checked);
+
   protected:
     void clearAllSelections();
+    void filterSelectionsByMask();
+    // Description
+    // filter selection to handle mask other than F/E/V
+    void filterRubberBandSelection(smtk::model::EntityRef ent);
+
     smtk::mesh::MeshSets m_selMeshes;
     smtk::common::UUIDs m_selEntities;
     smtk::model::DescriptivePhrases m_desPhrases;
+    smtk::model::BitFlags m_mask;
+    smtk::model::ManagerPtr m_modelMgr;
 
 };
 
