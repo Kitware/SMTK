@@ -180,12 +180,32 @@ class TestCase:
       return [msource, vsource, mp, ac]
 
     def addModelToScene(self, model):
-        import vtkSMTKSourceExtPython
-        mbs = vtkSMTKSourceExtPython.vtkModelMultiBlockSource()
-        mbs.SetModelManager(self.mgr.pointerAsString())
+        import smtk
+        if smtk.wrappingProtocol() == 'pybind11':
+            import smtk.extension.vtk.source
+            mbs = smtk.extension.vtk.source.vtkModelMultiBlockSource()
+            mbs.SetModelManager(self.mgr)
+        else:
+            import vtkSMTKSourceExtPython
+            mbs = vtkSMTKSourceExtPython.vtkModelMultiBlockSource()
+            mbs.SetModelManager(self.mgr.pointerAsString())
         mbs.SetModelEntityID(str(model.entity()))
         #mbs.ShowAnalysisTessellationOff()
         return self.addToScene(mbs)
+
+    def addMeshToScene(self, mesh):
+        import smtk
+        if smtk.wrappingProtocol() == 'pybind11':
+            import vtk
+            import smtk.io.vtk
+            exprt = smtk.io.vtk.ExportVTKData()
+            pd = vtk.vtkPolyData()
+            exprt(mesh, pd)
+            trivialProducer = vtk.vtkTrivialProducer()
+            trivialProducer.SetOutput(pd)
+            return self.addToScene(trivialProducer)
+        else:
+            print "Shiboken does not support vtk/smtk compatibility layer"
 
     def interactive(self):
         """Return false if the test should exit at completion."""

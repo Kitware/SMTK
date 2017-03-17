@@ -56,6 +56,8 @@ elseif(SMTK_ENABLE_VTK_SUPPORT)
   # message("VTK_MODULES_DIR=${VTK_MODULES_DIR}")
 endif()
 
+set(SMTK_VTK_SUPPORT_ENABLED "False")
+
 if (SMTK_ENABLE_VTK_SUPPORT)
   # Don't add the VTK or other subdirectories as they use the
   # vtk_module_library() macro and vtk/module.cmake file.
@@ -64,6 +66,9 @@ if (SMTK_ENABLE_VTK_SUPPORT)
   include (smtkVTKModules)
   vtk_smtk_setup_module_environment("SMTK")
   vtk_smtk_process_modules()
+
+  set(SMTK_VTK_SUPPORT_ENABLED "True")
+  add_subdirectory(vtk)
 
   # These are converters to allow importing of vtk data into smtk mesh system.
   # We keep this out of the common vtk model for 2 primary reasons.
@@ -80,4 +85,8 @@ endif()
 # Add the cumulus UI if Qt support and cumulus enabled
 if(SMTK_ENABLE_QT_SUPPORT AND SMTK_ENABLE_CUMULUS_SUPPORT)
   add_subdirectory(cumulus)
+endif()
+
+if (SMTK_USE_PYBIND11)
+  add_subdirectory(pybind11)
 endif()

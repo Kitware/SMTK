@@ -20,10 +20,11 @@ if smtk.wrappingProtocol() == 'pybind11':
 import smtk.testing
 from smtk.simple import *
 
-class UnitTriangulateFace(unittest.TestCase):
+class UnitTriangulateFace(smtk.testing.TestCase):
 
   def setUp(self):
     self.mgr = smtk.model.Manager.create()
+    self.meshmgr = self.mgr.meshes()
     self.sess = self.mgr.createSession('polygon')
     SetActiveSession(self.sess)
     self.modelFile = os.path.join(smtk.testing.DATA_DIR, 'mesh', '2d', 'boxWithHole.smtk')
@@ -41,6 +42,15 @@ class UnitTriangulateFace(unittest.TestCase):
     triangulatedFace = self.mgr.meshes().associatedCollections(face)[0]
     assert(triangulatedFace.points().size() == 8)
     assert(triangulatedFace.cells().size() == 8)
+
+    if self.interactive() and self.haveVTK() and self.haveVTKExtension():
+      self.startRenderTest()
+      self.addMeshToScene(triangulatedFace.meshes())
+      cam = self.renderer.GetActiveCamera()
+      self.renderer.ResetCamera()
+      self.renderWindow.Render()
+      self.interact()
+
 
 if __name__ == '__main__':
   smtk.testing.process_arguments()
