@@ -16,11 +16,19 @@ namespace py = pybind11;
 template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
+#include "vtkPolyData.h"
+#include "vtkUnstructuredGrid.h"
+
 #include "PybindExportVTKData.h"
 #include "PybindImportVTKData.h"
 #include "PybindMeshIOVTK.h"
 
 #include "smtk/io/mesh/MeshIO.h"
+
+#include "smtk/extension/vtk/pybind11/PybindVTKTypeCaster.h"
+
+PYBIND11_VTK_TYPECASTER(vtkPolyData)
+PYBIND11_VTK_TYPECASTER(vtkUnstructuredGrid)
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 

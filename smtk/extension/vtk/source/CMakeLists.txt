@@ -90,6 +90,10 @@ if (SMTK_ENABLE_PYTHON_WRAPPING AND VTK_WRAP_PYTHON)
   vtk_add_python_wrapping_library(${vtk-module} VTKLibSrcs ${vtk-module})
 endif()
 
+if (SMTK_USE_PYBIND11)
+  add_subdirectory(pybind11)
+endif()
+
 if (SMTK_ENABLE_TESTING)
   target_link_libraries(TestBuild_smtk_extension_vtk_source PUBLIC ${SMTK_VTK_TARGET_LIST})
   add_subdirectory(testing)

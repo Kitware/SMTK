@@ -1,0 +1,20 @@
+#=============================================================================
+#
+#  Copyright (c) Kitware, Inc.
+#  All rights reserved.
+#  See LICENSE.txt for details.
+#
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.  See the above copyright notice for more information.
+#
+#=============================================================================
+
+_sessions = []
+
+if @SMTK_VTK_SUPPORT_ENABLED@:
+  _sessions.append("vtk")
+
+__all__ = (_sessions)
+
+del _sessions
