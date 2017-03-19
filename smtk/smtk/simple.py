@@ -122,6 +122,26 @@ def PrintResultLog(res, always = False):
           tmplog.record(i).message for i in range(tmplog.numberOfRecords())])
     #print '\n'.join([slog.value(i) for i in range(slog.numberOfValues())])
 
+def AssignColors(entities, colors):
+    """Assign colors to entities in a round-robin fashion.
+    Colors must currently be specified using hexadecimal RGB or RGBA notation.
+    If there are fewer colors than entities, colors will be reused.
+
+    Example:
+      AssignColors(faces, ['#fff', '#afbe23', '#bebebe'])
+        -- assign each entity in the "faces" array one of the 3 colors listed.
+    """
+    sess = GetActiveSession()
+    ac = sess.op('assign colors')
+    if ac is None:
+        return
+    SetVectorValue(ac.specification().associations(), ents)
+    SetVectorValue(ac.findString('colors'), colors)
+    res = cm.operate()
+    SetLastResult(res)
+    PrintResultLog(res)
+    return GetVectorValue(res.findModelEntity('modified'))
+
 def CreateModel(**args):
   """Create an empty geometric model.
   """

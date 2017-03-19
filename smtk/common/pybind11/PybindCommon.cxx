@@ -29,6 +29,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #else
 #include "PybindPathsHelperWindows.h"
 #endif
+#include "PybindColor.h"
 #include "PybindDateTime.h"
 #include "PybindDateTimeZonePair.h"
 #include "PybindRangeDetector.h"
@@ -50,6 +51,7 @@ PYBIND11_PLUGIN(_smtkPybindCommon)
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
+  py::class_< smtk::common::Color > smtk_common_Color = pybind11_init_smtk_common_Color(common);
   py::class_< smtk::common::DateTime > smtk_common_DateTime = pybind11_init_smtk_common_DateTime(common);
   py::class_< smtk::common::DateTimeZonePair > smtk_common_DateTimeZonePair = pybind11_init_smtk_common_DateTimeZonePair(common);
   py::class_< smtk::common::Environment > smtk_common_Environment = pybind11_init_smtk_common_Environment(common);
