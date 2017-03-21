@@ -876,14 +876,33 @@ void Session::initializeOperatorSystem(const OperatorConstructors* opList)
       DefinitionPtr otherOperator = other->findDefinition("operator");
       other->derivedDefinitions(otherOperator, tmp);
       for (it = tmp.begin(); it != tmp.end(); ++it)
+        {
         if (!this->m_operatorSys->findDefinition((*it)->type()))
+          {
           this->m_operatorSys->copyDefinition(*it);
+          }
+        }
 
       DefinitionPtr otherResult = other->findDefinition("result");
       other->derivedDefinitions(otherResult, tmp);
       for (it = tmp.begin(); it != tmp.end(); ++it)
+        {
         if (!this->m_operatorSys->findDefinition((*it)->type()))
+          {
           this->m_operatorSys->copyDefinition(*it);
+          }
+        }
+
+      // Copy views that do not already exist
+      const std::map<std::string, smtk::common::ViewPtr>& otherViews(other->views());
+      std::map<std::string, smtk::common::ViewPtr>::const_iterator vit;
+      for (vit = otherViews.begin(); vit != otherViews.end(); ++vit)
+        {
+        if (!this->m_operatorSys->findView(vit->first))
+          {
+          this->m_operatorSys->addView(vit->second);
+          }
+        }
       }
 
     delete other;
