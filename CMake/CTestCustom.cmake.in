@@ -18,6 +18,8 @@ set (CTEST_CUSTOM_WARNING_EXCEPTION
   "WARNING scope not found for symbol:KWIML"
   # This is to squash an "unused parameter" warning in moab.
   "VALGRIND_MAKE_VEC_UNDEFINED"
+  # This is to silence shiboken-related warnings involving vtk.
+  "WARNING scope not found for function definition:vtkBuffer<ScalarT>"
 )
 
 ##------------------------------------------------------------------------------
