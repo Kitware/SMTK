@@ -32,6 +32,7 @@
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
 #include "vtkStructuredGrid.h"
+#include "vtkTIFFReader.h"
 #include "vtkUniformGrid.h"
 #include "vtkXMLImageDataReader.h"
 #include <vtksys/SystemTools.hxx>
@@ -147,6 +148,16 @@ bool BathymetryHelper::loadBathymetryFile(const std::string& filename)
 //    image2struct->SetInputData(readout);
 //    image2struct->Update();
 //    imagepoly->SetPoints(image2struct->GetOutput()->GetPoints());
+    vtkImageData* imgOutput = vtkImageData::New();
+    imgOutput->ShallowCopy( reader->GetOutput() );
+    dataOutput = imgOutput;
+    }
+  else if(ext == ".tiff" || ext == ".tif")
+    {
+    vtkNew<vtkTIFFReader> reader;
+    reader->SetFileName(filename.c_str());
+    reader->Update();
+
     vtkImageData* imgOutput = vtkImageData::New();
     imgOutput->ShallowCopy( reader->GetOutput() );
     dataOutput = imgOutput;
