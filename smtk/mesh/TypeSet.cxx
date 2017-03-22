@@ -10,6 +10,8 @@
 
 #include "smtk/mesh/TypeSet.h"
 
+#include <cassert>
+
 namespace
 {
   smtk::mesh::DimensionTypes make_dim_types(const smtk::mesh::CellTypes& ctypes)
@@ -93,6 +95,7 @@ bool TypeSet::hasDimension( smtk::mesh::DimensionType dt ) const
 //----------------------------------------------------------------------------
 bool TypeSet::hasCell( smtk::mesh::CellType ct ) const
 {
+  assert(ct != smtk::mesh::CellType_MAX);
   return this->m_cellTypes[ ct ];
 }
 
