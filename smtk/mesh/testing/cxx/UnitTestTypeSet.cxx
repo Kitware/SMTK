@@ -26,7 +26,7 @@ void verify_basic_typeset()
   test( t_set.hasCells() == false );
 
   //verify all cell types are zero
-  for(int i=0; i < 10; ++i)
+  for(int i=0; i < smtk::mesh::CellType_MAX; ++i)
     {
     test( t_set.hasCell( static_cast<smtk::mesh::CellType>(i) ) == false );
     }
@@ -51,7 +51,7 @@ void verify_typeset_constructors()
   test( t_set3.hasCells() == true );
 
   //verify all cell types are zero
-  for(int i=0; i < 10; ++i)
+  for(int i=0; i < smtk::mesh::CellType_MAX; ++i)
     {
     test( t_set.hasCell( static_cast<smtk::mesh::CellType>(i) ) == false );
     }
@@ -87,7 +87,7 @@ void verify_typeset_with_cells_and_dims()
   test( t_set.hasCells() == true );
 
   //verify all only 2d cells are valid
-  for(int i=0; i < 10; ++i)
+  for(int i=0; i < smtk::mesh::CellType_MAX; ++i)
     {
     bool expected_result = false;
     smtk::mesh::CellType currentCellType = static_cast<smtk::mesh::CellType>(i);
