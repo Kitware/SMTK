@@ -170,7 +170,7 @@ int main(int argc, char* argv[])
   camera->SetPosition(20,0,20);
   camera->SetFocalPoint(10,10,-10);
   src->SetModelManager(manager);
-  win->SetMultiSamples(16);
+  win->SetMultiSamples(0);
   src->AllowNormalGenerationOn();
   map->SetInputConnection(src->GetOutputPort());
   act->SetMapper(map.GetPointer());

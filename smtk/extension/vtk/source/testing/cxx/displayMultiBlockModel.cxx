@@ -81,9 +81,17 @@ int main(int argc, char* argv[])
     // src->SetModelEntityID(
     //   sm->entitiesMatchingFlagsAs<Models>(MODEL_ENTITY)[0].entity().toString().c_str());
     if (debug)
+      {
       win->SetMultiSamples(16);
+      }
+    else
+      {
+      win->SetMultiSamples(0);
+      }
     if (debug && argv[2][0] != '0')
+      {
       src->AllowNormalGenerationOn();
+      }
     map->SetInputConnection(src->GetOutputPort());
     act->SetMapper(map.GetPointer());
     act->GetProperty()->SetPointSize(5);

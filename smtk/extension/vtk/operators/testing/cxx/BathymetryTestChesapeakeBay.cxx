@@ -164,7 +164,7 @@ int main(int argc, char* argv[])
   vtkNew<vtkRenderer> ren;
   vtkNew<vtkRenderWindow> win;
   src->SetModelManager(manager);
-  win->SetMultiSamples(16);
+  win->SetMultiSamples(0);
   src->AllowNormalGenerationOn();
   map->SetInputConnection(src->GetOutputPort());
   act->SetMapper(map.GetPointer());

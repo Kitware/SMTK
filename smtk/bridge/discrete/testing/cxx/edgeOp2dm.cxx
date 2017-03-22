@@ -266,6 +266,10 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
         win->SetMultiSamples(16);
         src->AllowNormalGenerationOn();
         }
+      else
+	{
+	win->SetMultiSamples(0);
+	}
       map->SetInputConnection(src->GetOutputPort());
 
       act->SetMapper(map.GetPointer());
