@@ -1,7 +1,11 @@
 set(smtkIOPythonTests
   unitOperatorLog
-  ResourceSetTest
 )
+
+# do not add ResourceSetTest if we are running on windows with shiboken
+if (NOT (MSVC AND NOT SMTK_USE_PYBIND11))
+  list(APPEND smtkIOPythonTests ResourceSetTest)
+endif()
 
 # Additional tests that require SMTK_DATA_DIR
 set(smtkIOPythonDataTests
@@ -22,12 +26,15 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/cmb-testing-data.marker)
     ${SMTK_DATA_DIR}/attribute/attribute_system/resourceTest/ShallowWater2D.sbi
     29
     19
-  )
+    )
 
-  set(reader_test ResourceSetReaderTest)
-  smtk_add_test_python(${reader_test}Py ${reader_test}.py
-    ${SMTK_DATA_DIR}/attribute/attribute_system/resourceTest/resources.xml
-    2
-  )
+  # do not add ResourceSetReaderTest if we are running on windows with shiboken
+  if (NOT (MSVC AND NOT SMTK_USE_PYBIND11))
+    set(reader_test ResourceSetReaderTest)
+    smtk_add_test_python(${reader_test}Py ${reader_test}.py
+      ${SMTK_DATA_DIR}/attribute/attribute_system/resourceTest/resources.xml
+      2
+      )
+  endif()
 
 endif()
