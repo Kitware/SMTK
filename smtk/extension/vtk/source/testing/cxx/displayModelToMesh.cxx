@@ -87,6 +87,10 @@ int main(int argc, char* argv[])
         win->SetMultiSamples(16);
         src->AllowNormalGenerationOn();
         }
+      else
+	{
+	win->SetMultiSamples(0);
+	}
       map->SetInputConnection(src->GetOutputPort());
       /*
       map->SetColorModeToMapScalars();

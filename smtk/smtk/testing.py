@@ -159,6 +159,7 @@ class TestCase:
             self.interactor = vtk.vtkRenderWindowInteractor()
             self.renderWindow.AddRenderer(self.renderer)
             self.renderWindow.SetInteractor(self.interactor)
+            self.renderWindow.SetMultiSamples(0);
         except ImportError:
             self.skipTest('VTK is not available')
 
