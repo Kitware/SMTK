@@ -581,7 +581,7 @@ include_directories(
 ################################################################################
 
 # On Mac OS X, set the dir. included as part of the installed library's path:
-if (BUILD_SHARED_LIBS)
+if (BUILD_SHARED_LIBS AND NOT DEFINED CMAKE_INSTALL_NAME_DIR)
   set(CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 endif ()
 
