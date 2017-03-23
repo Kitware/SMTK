@@ -99,6 +99,11 @@ public:
 
 
     // Description
+    // update selected items from qtModelItem/operator dialog
+    void updateSelectedItem(const smtk::common::UUID & selEntity, int
+                             SelectionFlags);
+
+    // Description
     // update mask for model
     void filterModels(bool checked);
 

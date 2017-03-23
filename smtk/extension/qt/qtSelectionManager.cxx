@@ -26,6 +26,8 @@
 #include "smtk/model/SessionRef.h"
 #include "smtk/model/Vertex.h"
 #include "smtk/model/Volume.h"
+#include "smtk/extension/qt/qtModelEntityItem.h"
+#include "smtk/extension/qt/qtMeshItem.h"
 
 namespace smtk
 {
@@ -120,13 +122,37 @@ namespace smtk
   { // select from attribute panel
     this->clearAllSelections();
     this->m_selEntities.insert(selEntities.begin(), selEntities.end());
-    // broadcast to model tree and render view
-    bool blocksignals = true;
 
+    // broadcast to model tree and render view
     emit  broadcastToModelTree(this->m_selEntities,smtk::mesh::MeshSets(),
-                               blocksignals);
-    emit broadcastToRenderView(selEntities, smtk::mesh::MeshSets(),
+                               true);
+    emit broadcastToRenderView(this->m_selEntities, smtk::mesh::MeshSets(),
                                smtk::model::DescriptivePhrases());
+  }
+
+  void qtSelectionManager::updateSelectedItem(const smtk::common::UUID
+                                               &selEntity, int SelectionFlags)
+  {
+    // select from qtModelItem/operator dialog
+    if ( SelectionFlags == smtk::extension::qtModelEntityItem::SelectionFlags::Add)
+    {
+    this->m_selEntities.insert(selEntity);
+    }
+    else if( SelectionFlags == smtk::extension::qtModelEntityItem::SelectionFlags::Remove)
+    {
+      this->m_selEntities.erase(selEntity);
+    }
+    else if( SelectionFlags == smtk::extension::qtModelEntityItem::SelectionFlags::Clear)
+    {
+      this->clearAllSelections();
+    }
+
+    // broadcast to model tree and render view
+    emit  broadcastToModelTree(this->m_selEntities,smtk::mesh::MeshSets(),
+                               true);
+    emit broadcastToRenderView(this->m_selEntities, smtk::mesh::MeshSets(),
+                               smtk::model::DescriptivePhrases());
+    emit broadcastToAttributeView(this->m_selEntities);
   }
 
   void qtSelectionManager::filterModels(bool checked)
