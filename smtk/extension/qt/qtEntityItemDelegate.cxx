@@ -121,7 +121,6 @@ void QEntityItemDelegate::paint(
 
   //subtitleFont.setWeight(subtitleFont.weight() - 2);
   QFontMetrics titleFM(titleFont);
-  QFontMetrics subtitleFM(subtitleFont);
 
   QString titleText = qvariant_cast<QString>(idx.data(QEntityItemModel::TitleTextRole));
   QString subtitleText = qvariant_cast<QString>(idx.data(QEntityItemModel::SubtitleTextRole));
@@ -158,6 +157,7 @@ void QEntityItemDelegate::paint(
     painter->drawRect(colorRect);
     painter->restore();
     }
+
   //painter->drawPixmap(QPoint(iconRect.right()/2,iconRect.top()/2),icon.pixmap(iconsize.width(),iconsize.height()));
   painter->drawPixmap(
     QPoint(

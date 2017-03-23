@@ -13,6 +13,7 @@
 #include "smtk/SharedFromThis.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/mesh/MeshSet.h"
+#include "smtk/model/EntityTypeBits.h"
 
 #include <string>
 #include <vector>
@@ -103,6 +104,7 @@ public:
 
   virtual EntityRef relatedEntity() const                      { return EntityRef(); }
   virtual smtk::common::UUID relatedEntityId() const           { return this->relatedEntity().entity(); }
+  virtual smtk::model::BitFlags relatedBitFlags() const        { return this->relatedEntity().entityFlags();}
   virtual ArrangementKind relatedArrangementKind() const       { return KINDS_OF_ARRANGEMENTS; }
   virtual smtk::common::UUID relatedAttributeId() const        { return smtk::common::UUID::null(); }
   virtual std::string relatedPropertyName() const              { return std::string(); }

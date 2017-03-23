@@ -87,7 +87,8 @@ public:
     this->m_deleteOnRemoval = del;
     }
 
-  static QIcon lookupIconForEntityFlags(smtk::model::BitFlags flags);
+  static QIcon lookupIconForEntityFlags(model::DescriptivePhrasePtr item, int
+                                        lightness);
 
   model::DescriptivePhrasePtr getItem(const QModelIndex& idx) const;
 
