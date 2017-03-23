@@ -19,6 +19,7 @@ qtOperatorDockWidget::qtOperatorDockWidget(QWidget* p)
   : QDockWidget(p)
 {
   this->setObjectName("operatorsDockWidget");
+  this->setWindowTitle("Operator Window");
   this->setFloating(true);
 }
 
