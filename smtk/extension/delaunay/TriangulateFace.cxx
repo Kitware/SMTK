@@ -220,6 +220,7 @@ OperatorResult TriangulateFace::operateInternal()
   }
 
   OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
+  this->addEntityToResult(result, face, MODIFIED);
   result->findModelEntity("mesh_created")->setValue(face);
   return result;
 }

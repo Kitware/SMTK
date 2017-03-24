@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "Mesh" Operator -->
+<!-- Description of the model "Triangulate Face" Operator -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="triangulate face" BaseType="operator" AdvanceLevel="11">
+    <AttDef Type="triangulate face" BaseType="operator">
       <ItemDefinitions>
         <ModelEntity Name="face" NumberOfRequiredValues="1"/>
       </ItemDefinitions>
