@@ -8,14 +8,14 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include <QtCore/QDir>
-#include <QtCore/QSettings>
-#include <QtCore/QStringList>
+#include <QDir>
+#include <QSettings>
+#include <QStringList>
 
-#include <QtGui/QApplication>
-#include <QtGui/QMessageBox>
+#include <QApplication>
+#include <QMessageBox>
 
-#include <QtNetwork/QSslSocket>
+#include <QSslSocket>
 
 #include "mainwindow.h"
 

@@ -20,8 +20,8 @@
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/Manager.h"
 
-#include <QtGui/QPushButton>
-#include <QtGui/QTreeView>
+#include <QPushButton>
+#include <QTreeView>
 
 namespace Ui { class qtAttributeAssociation; }
 

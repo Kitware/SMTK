@@ -16,8 +16,8 @@
 
 #include "job.h"
 
-#include <QtGui/QTableView>
-#include <QtCore/QSet>
+#include <QTableView>
+#include <QSet>
 
 
 namespace cumulus

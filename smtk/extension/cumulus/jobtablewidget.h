@@ -14,7 +14,7 @@
 #ifndef __smtk_extension_cumulus_jobtablewidget_h
 #define __smtk_extension_cumulus_jobtablewidget_h
 
-#include <QtGui/QWidget>
+#include <QWidget>
 class QAbstractItemModel;
 
 namespace Ui {

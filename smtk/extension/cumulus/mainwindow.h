@@ -14,7 +14,7 @@
 #ifndef __smtk_extension_cumulus_mainwindow_h
 #define __smtk_extension_cumulus_mainwindow_h
 
-#include <QtGui/QMainWindow>
+#include <QMainWindow>
 
 class QAction;
 class QIcon;

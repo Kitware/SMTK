@@ -14,7 +14,7 @@
 #ifndef __smtk_extension_cumulus_logindialog_h
 #define __smtk_extension_cumulus_logindialog_h
 
-#include <QtGui/QDialog>
+#include <QDialog>
 
 namespace Ui {
 class LoginDialog;

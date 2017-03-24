@@ -409,7 +409,7 @@ void qtSimpleExpressionView::onFuncNameChanged(QListWidgetItem* item)
   if(func)
     {
     System *attSystem = func->definition()->system();
-    attSystem->rename(func, item->text().toAscii().constData());
+    attSystem->rename(func, item->text().toLatin1().constData());
     }
 }
 

@@ -1,4 +1,6 @@
-include(${QT_USE_FILE})
+smtk_find_package_qt(qt_targets REQUIRED
+  QT4_COMPONENTS QtCore QtGui
+  QT5_COMPONENTS Core Widgets)
 
 set(OpenCVOperatorsHeaders)
 set(OpenCVOperatorsSrcs)
@@ -38,9 +40,9 @@ set(PQWidgetsMocHeaders
 #install the headers
 smtk_public_headers(${PQWidgetsMocHeaders} vtkPolygonArcInfo.h)
 
-qt4_wrap_cpp(MOC_BUILT_SOURCES ${PQWidgetsMocHeaders})
-qt4_wrap_ui(UI_BUILT_SOURCES ${PQWidgetsUIs})
-qt4_add_resources(RCS_RESOURCES qtWidgetsIcons.qrc)
+smtk_qt_wrap_cpp(MOC_BUILT_SOURCES ${PQWidgetsMocHeaders})
+smtk_qt_wrap_ui(UI_BUILT_SOURCES ${PQWidgetsUIs})
+smtk_qt_add_resources(RCS_RESOURCES qtWidgetsIcons.qrc)
 
 source_group("Qt_Source" FILES ${PQWidgetsSrcs} ${PQWidgetsUIs})
 source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${UI_BUILT_SOURCES} ${RCS_RESOURCES})
@@ -56,7 +58,6 @@ add_library(smtkPolygonQtExt
 
 #we need to add the location of the moc files to the include dir for smtkPWWidgetExt
 target_include_directories(smtkPolygonQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-#qt4_use_modules(smtkPolygonQtExt LINK_PUBLIC Core Gui)
 
 #set smtkPolygonQtExt to publicly link to smtkCore
 target_link_libraries(smtkPolygonQtExt LINK_PUBLIC
@@ -67,6 +68,7 @@ target_link_libraries(smtkPolygonQtExt LINK_PUBLIC
   vtkSMTKSourceExt
   vtkDomainsChemistryOpenGL2
   vtkSMTKFilterExt
+  ${qt_targets}
 LINK_PRIVATE
   ${VTK_LIBRARIES}
 )
@@ -88,6 +90,7 @@ if (SMTK_ENABLE_TESTING)
     vtkInteractionStyle
     vtkRenderingFreeType
     vtkRenderingOpenGL2
+    ${qt_targets}
     )
     if (TARGET ${target})
       list(APPEND SMTK_VTK_TARGET_LIST ${target})

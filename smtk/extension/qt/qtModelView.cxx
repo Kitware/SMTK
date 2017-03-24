@@ -75,7 +75,9 @@ qtModelView::qtModelView(QWidget* p)
 {
   QPointer<smtk::extension::QEntityItemModel> qmodel = new smtk::extension::QEntityItemModel;
   QPointer<smtk::extension::QEntityItemDelegate> qdelegate = new smtk::extension::QEntityItemDelegate;
+#if QT_VERSION < 0x050000
   qmodel->setSupportedDragActions(Qt::CopyAction);
+#endif
   this->setModel(qmodel); // must come after qmodel->setRoot()
   this->setItemDelegate(qdelegate);
 
@@ -97,7 +99,11 @@ qtModelView::qtModelView(QWidget* p)
   this->m_OperatorsDock = NULL;
   this->m_OperatorsWidget = NULL;
 
+#if QT_VERSION >= 0x050000
+  this->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+#else
   this->header()->setResizeMode(QHeaderView::ResizeToContents);
+#endif
   QObject::connect(qdelegate,
                    SIGNAL(requestVisibilityChange(const QModelIndex&)),
                    this, SLOT(toggleEntityVisibility(const QModelIndex&)), Qt::QueuedConnection);

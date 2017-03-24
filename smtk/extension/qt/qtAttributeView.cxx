@@ -337,12 +337,21 @@ void qtAttributeView::createWidget( )
   BottomLayout->addWidget(this->Internals->AssociationsWidget);
   BottomLayout->addWidget(this->Internals->ReferencesWidget);
 
+#if QT_VERSION >= 0x050000
+  this->Internals->ListTable->horizontalHeader()->setSectionResizeMode(
+    QHeaderView::ResizeToContents);
+  this->Internals->ValuesTable->horizontalHeader()->setSectionResizeMode(
+    QHeaderView::ResizeToContents);
+  this->Internals->ValuesTable->verticalHeader()->setSectionResizeMode(
+    QHeaderView::ResizeToContents);
+#else
   this->Internals->ListTable->horizontalHeader()->setResizeMode(
     QHeaderView::ResizeToContents);
   this->Internals->ValuesTable->horizontalHeader()->setResizeMode(
     QHeaderView::ResizeToContents);
   this->Internals->ValuesTable->verticalHeader()->setResizeMode(
     QHeaderView::ResizeToContents);
+#endif
   this->Internals->ListTable->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
   this->Internals->ValuesTable->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
 

@@ -13,7 +13,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Group.h"
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 class QTreeView;
 class QModelIndex;

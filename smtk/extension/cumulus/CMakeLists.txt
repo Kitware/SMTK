@@ -1,4 +1,6 @@
-include(${QT_USE_FILE})
+smtk_find_package_qt(qt_targets REQUIRED
+  QT4_COMPONENTS QtCore QtGui QtNetwork)
+
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(ui_files
@@ -8,7 +10,7 @@ set(ui_files
   ui/cumuluswidget.ui
 )
 
-qt4_wrap_ui(ui_srcs ${ui_files})
+smtk_qt_wrap_ui(ui_srcs ${ui_files})
 
 set(src
   jobtablewidget.cxx
@@ -36,7 +38,7 @@ set(mochdrs
   logindialog.h
   mainwindow.h
 )
-qt4_wrap_cpp(moc_srcs ${mochdrs})
+smtk_qt_wrap_cpp(moc_srcs ${mochdrs})
 
 #extension library
 add_library(smtkCumulusExt
@@ -57,9 +59,7 @@ target_include_directories(smtkCumulusExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 #publicly link to smtkCore
 target_link_libraries(smtkCumulusExt LINK_PUBLIC
   smtkCore
-  ${QT_QTNETWORK_LIBRARY}
-  ${QT_QTGUI_LIBRARY}
-  ${QT_QTCORE_LIBRARY}
+  ${qt_targets}
 )
 smtk_export_header(smtkCumulusExt Exports.h)
 
