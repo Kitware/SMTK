@@ -52,7 +52,6 @@
 #include "vtkXMLUnstructuredGridReader.h"
 #include "vtkXMLImageDataReader.h"
 #include "vtkXMLMultiBlockDataReader.h"
-#include "vtkXMLMultiBlockDataWriter.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
@@ -822,10 +821,5 @@ int vtkModelMultiBlockSource::RequestData(
     this->SetCachedOutput(rep.GetPointer());
     }
   output->ShallowCopy(this->CachedOutput);
-
-  vtkNew<vtkXMLMultiBlockDataWriter> wri;
-  wri->SetInputData(output);
-  wri->SetFileName("/tmp/testme.vtm");
-  wri->Write();
   return 1;
 }

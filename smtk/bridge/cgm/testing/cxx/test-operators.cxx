@@ -209,9 +209,6 @@ int main (int argc, char* argv[])
   smtk::attribute::ModelEntityItem::Ptr bodies = result->findModelEntity("modified");
   std::cout << "Created " << bodies->value().flagSummary() << "\n";
   std::cout << "   with " << bodies->value().as<Model>().cells().size() << " cells\n";
-  //std::ofstream json("/tmp/sphere.json");
-  //json << ExportJSON::fromModelManager(mgr);
-  //json.close();
 
   return 0;
 }

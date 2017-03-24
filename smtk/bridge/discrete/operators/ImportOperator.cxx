@@ -313,22 +313,6 @@ OperatorResult ImportOperator::operateInternal()
       }
     }
 
-/*
-//#include "smtk/io/ExportJSON.h"
-//#include "cJSON.h"
-
-  cJSON* json = cJSON_CreateObject();
-  smtk::io::ExportJSON::fromModelManager(json, this->manager());
-  std::cout << "Result " << cJSON_Print(json) << "\n";
-  cJSON_Delete(json);
-  */
-/*
-std::string json = smtk::io::ExportJSON::fromModelManager(this->manager());
-    std::ofstream file("/tmp/import_op_out.json");
-    file << json;
-    file.close();
-*/
-
   modelEntity.as<smtk::model::Model>().setSession(
     smtk::model::SessionRef(
       modelEntity.manager(),

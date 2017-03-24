@@ -29,11 +29,6 @@ class UnitMeshOperator(unittest.TestCase):
     self.models = Read(self.modelFile)
 
   def testMeshing2D(self):
-    #json = smtk.io.ExportJSON.fromModelManager(mgr, smtk.io.JSON_DEFAULT)
-    #jfile = open('/tmp/meshedTess.json', 'w')
-    #print >>jfile, json
-    #jfile.close()
-
     mesher = self.sess.op('mesh')
     # Set mesher attributes here...
     print 'About to operate...'
@@ -41,11 +36,6 @@ class UnitMeshOperator(unittest.TestCase):
     #self.assertEqual(
     #    result.findInt('outcome').value(0),
     #    smtk.model.OPERATION_SUCCEEDED)
-
-    #json = smtk.io.ExportJSON.fromModelManager(mgr, smtk.io.JSON_DEFAULT)
-    #jfile = open('/tmp/meshedTess.json', 'w')
-    #print >>jfile, json
-    #jfile.close()
 
 if __name__ == '__main__':
   smtk.testing.process_arguments()

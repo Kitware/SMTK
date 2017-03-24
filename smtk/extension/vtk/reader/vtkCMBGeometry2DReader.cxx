@@ -197,13 +197,6 @@ int vtkCMBGeometry2DReader::RequestData(
     psa->AddCellDataArray("label");
     psa->Update();
 
-    /*
-    wri->SetInputConnection(psa->GetOutputPort());
-    wri->SetDataModeToAscii();
-    wri->SetFileName("/tmp/gdal.vtp");
-    wri->Write();
-    */
-
     if (this->BoundaryStyle != NONE)
       {
       // ctp will hold a clipping polygon either created manually
@@ -251,13 +244,6 @@ int vtkCMBGeometry2DReader::RequestData(
         ctp->ShallowCopy(ps2->GetOutputDataObject(0));
         cid->SetNumberOfTuples(ctp->GetNumberOfCells());
         cid->FillComponent(0, -1.);
-
-        wri->SetInputConnection(ps2->GetOutputPort());
-        wri->SetDataModeToAscii();
-        wri->SetFileName("/tmp/bdy.vtp");
-        wri->Write();
-        /*
-        */
         }
       else // generate a rectangle, somehow
         {
@@ -316,13 +302,6 @@ int vtkCMBGeometry2DReader::RequestData(
       app->AddInputDataObject(rdp);
       app->AddInputDataObject(ctp.GetPointer());
 
-      /*
-      wri->SetInputConnection(app->GetOutputPort());
-      wri->SetDataModeToAscii();
-      wri->SetFileName("/tmp/append.vtp");
-      wri->Write();
-      */
-
       slf->SetInputConnection(app->GetOutputPort());
       }
     else
@@ -331,46 +310,14 @@ int vtkCMBGeometry2DReader::RequestData(
       }
     slf->Update();
 
-    /*
-    wri->SetInputConnection(slf->GetOutputPort());
-    wri->SetDataModeToAscii();
-    wri->SetFileName("/tmp/splitLines.vtp");
-    wri->Write();
-    */
-
     drg->SetInputConnection(slf->GetOutputPort());
     drg->GenerateRegionInteriorPointsOn();
     drg->Update();
-
-    /*
-    wri->SetInputConnection(drg->GetOutputPort());
-    wri->SetDataModeToAscii();
-    wri->SetFileName("/tmp/discoveredRegions.vtp");
-    wri->Write();
-
-    wri->SetInputConnection(drg->GetOutputPort(2));
-    wri->SetDataModeToAscii();
-    wri->SetFileName("/tmp/regionPoints.vtp");
-    wri->Write();
-    */
 
     rtl->SetInputConnection(drg->GetOutputPort());
     rtl->SetInputConnection(1, drg->GetOutputPort(1));
     rtl->SetInputConnection(2, drg->GetOutputPort(2));
     rtl->Update();
-
-    /*
-    wri->SetInputConnection(rtl->GetOutputPort());
-    wri->SetDataModeToAscii();
-    wri->SetFileName("/tmp/regionsToLoops.vtp");
-    wri->Write();
-
-    vtkTable* containment = vtkTable::SafeDownCast(drg->GetOutputDataObject(1));
-    twr->SetInputConnection(drg->GetOutputPort(1));
-    twr->SetFileTypeToASCII();
-    twr->SetFileName("/tmp/splitLinesContainment.vtk");
-    twr->Write();
-    */
 
     pdn->SetInputConnection(rtl->GetOutputPort());
     pdn->NonManifoldTraversalOn();
@@ -379,13 +326,6 @@ int vtkCMBGeometry2DReader::RequestData(
     pdn->ComputePointNormalsOff();
     pdn->ComputeCellNormalsOn();
     pdn->Update();
-
-    /*
-    wri->SetInputConnection(pdn->GetOutputPort());
-    wri->SetDataModeToAscii();
-    wri->SetFileName("/tmp/pdnormals.vtp");
-    wri->Write();
-    */
 
     output->ShallowCopy(pdn->GetOutput());
     }

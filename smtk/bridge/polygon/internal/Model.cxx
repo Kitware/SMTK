@@ -557,7 +557,6 @@ bool pmodel::demoteModelVertex(
       // Update loops of face(s) attached to edge 1 and 2.
       edgeUseAndLoopRewrite(e1, eout); // Replace uses of e1 with uses of eout
       edgeUseAndLoopRewrite(e2, smtk::model::Edge()); // Invalid edge as last arg => replace uses of e2 with an empty set
-      //smtk::io::ExportJSON::fromModelManagerToFile(mgr, "/tmp/inanity.json");
 
       // Handle property assignments to output edges:
       smtk::model::EntityRefs merged;

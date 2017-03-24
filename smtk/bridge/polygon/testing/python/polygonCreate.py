@@ -146,8 +146,6 @@ class TestPolygonCreation(smtk.testing.TestCase):
 
     arf = SplitEdge(elist, [2, 4])
 
-    #smtk.io.ExportJSON.fromModelManagerToFile(self.mgr, '/tmp/poly.json')
-
   def testCreation(self):
     mod = CreateModel()
     self.checkModel(mod, [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], 1e-6, 231)

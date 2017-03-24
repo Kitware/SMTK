@@ -25,7 +25,6 @@ class FindImageDirective(Image):
   """A directive that finds images in a search path."""
   def run(self):
     """Process a new image."""
-    #farfle = open('/tmp/farfle', 'a')
     env = self.state.document.settings.env
     reference = directives.uri(self.arguments[0])
     if not os.path.isabs(reference):
@@ -68,7 +67,6 @@ class FindImageDirective(Image):
             foundit = False
         if foundit:
           break
-      #print >>farfle, "Reference is %s aref %s found %s" % (self.arguments, aref, foundit)
       if not foundit:
         #print 'MISSING FILE %s' % reference
         return []
@@ -79,14 +77,12 @@ class FindImageDirective(Image):
       #     to find it.
       #print 'REWROTE %s to %s' % (aref, rewr)
       self.arguments[0] = rewr
-    #farfle.close()
     return Image.run(self)
 
 class FindFigureDirective(Figure):
   """A directive that finds figure images in a search path."""
   def run(self):
     """Process a new figure."""
-    #farfle = open('/tmp/farfle', 'a')
     env = self.state.document.settings.env
     reference = directives.uri(self.arguments[0])
     if not os.path.isabs(reference):
@@ -129,7 +125,6 @@ class FindFigureDirective(Figure):
             foundit = False
         if foundit:
           break
-      #print >>farfle, "Reference is %s aref %s found %s" % (self.arguments, aref, foundit)
       if not foundit:
         #print 'MISSING FILE %s' % reference
         return []
@@ -140,7 +135,6 @@ class FindFigureDirective(Figure):
       #     to find it.
       #print 'REWROTE %s to %s rel %s' % (aref, rewr, os.path.abspath(os.path.dirname(env.docname)))
       self.arguments[0] = rewr
-    #farfle.close()
     return Figure.run(self)
 
 
