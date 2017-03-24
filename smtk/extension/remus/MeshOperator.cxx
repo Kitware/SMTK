@@ -133,12 +133,18 @@ OperatorResult MeshOperator::operateInternal()
     {
     smtkInfoMacro(this->log(), "[remus] Querying Status of: " << remus::proto::to_string(job));
     remus::proto::JobStatus currentWorkerStatus = client.jobStatus(job);
-
+    remus::proto::JobProgress lastProgress;
     while( currentWorkerStatus.good() )
       { //we need this to not be a busy wait
         //for now lets call sleep to make this less 'heavy'
       // boost::this_thread::sleep( boost::posix_time::milliseconds(250) );
       currentWorkerStatus = client.jobStatus(job);
+      // Lets see if the progress has changed
+      if (currentWorkerStatus.progress() != lastProgress)
+        {
+        lastProgress = currentWorkerStatus.progress();
+        smtkInfoMacro(this->log(), lastProgress.message());
+        }
       }
     smtkInfoMacro(this->log(), "[remus] Final Status of: "
                   << remus::proto::to_string(job)
