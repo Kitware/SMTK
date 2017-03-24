@@ -268,26 +268,6 @@ void RemusRPCWorker::processJob(
               smtk::io::ExportJSON::forManagerSession(
                 session->sessionId(), sess, this->m_modelMgr);
               cJSON_AddItemToObject(result, "result", sess);
-#if 0
-              // Now redefine our worker to be a new one whose
-              // requirements include a tag for this session.
-              // That way it can be singled out by the client that
-              // initiated the session.
-              r = make_JobRequirements(
-                r.meshTypes(), r.workerName(),
-                r.hasRequirements() ? r.requirements() : "");
-              r.tag(session->sessionId().toString());
-              remus::worker::ServerConnection conn2 =
-                remus::worker::make_ServerConnection(
-                  w->connection().endpoint());
-              conn2.context(w->connection().context());
-              swapWorker = new remus::worker::Worker(r, conn2);
-              smtkDebugMacro(this->manager()->log(), "Redefining worker. "
-                <<"Requirements now tagged with "
-                << session->sessionId().toString() << ".");
-              //cJSON_AddItemToObject(result, "result",
-              //  cJSON_CreateString(session->sessionId().toString().c_str()));
-#endif
               }
             }
           }
@@ -370,15 +350,6 @@ void RemusRPCWorker::processJob(
           else
             {
             this->m_modelMgr->unregisterSession(session);
-#if 0
-            // Remove tag from worker requirements.
-            r = make_JobRequirements(
-              r.meshTypes(), r.workerName(), r.hasRequirements() ? r.requirements() : "");
-            swapWorker = new remus::worker::Worker(r, w->connection());
-            smtkDebugMacro(this->manager()->log(), "Redefining worker. "
-              << "Requirements now untagged, removed "
-              << session->sessionId().toString() << ".");
-#endif // 0
             }
           }
         }

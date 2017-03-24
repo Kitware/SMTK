@@ -198,18 +198,6 @@ public:
       }
     cal->Update();
 
-#if 0
-    vtkNew<vtkXMLPolyDataWriter> mwr;
-    mwr->SetInputConnection(cal->GetOutputPort());
-      {
-      std::ostringstream mfname;
-      mfname << "Region-" << region << ".vtp";
-      mwr->SetFileName(mfname.str().c_str());
-      }
-    mwr->SetDataModeToAscii();
-    mwr->Write();
-#endif // 0
-
     vtkNew<vtkThresholdPoints> th1;
     vtkNew<vtkThresholdPoints> th2;
     vtkNew<vtkAppendPolyData> app;
@@ -242,33 +230,10 @@ public:
     att->SetInputConnection(ped->GetOutputPort());
     att->Update();
 
-#if 0
-    //vtkNew<vtkXMLPolyDataWriter> mwr;
-    mwr->SetInputConnection(app->GetOutputPort());
-      {
-      std::ostringstream mfname;
-      mfname << "FacetHoles-" << region << ".vtp";
-      mwr->SetFileName(mfname.str().c_str());
-      }
-    mwr->SetDataModeToAscii();
-    mwr->Write();
-#endif // 0
     tri->SetInputConnection(cal->GetOutputPort());
     tri->SetInputDataObject(1, att->GetOutput());
     tri->SetModelFaceArrayName("modelfaceids");
     tri->Update();
-
-#if 0
-    //vtkNew<vtkXMLPolyDataWriter> mwr;
-    mwr->SetInputConnection(tri->GetOutputPort());
-      {
-      std::ostringstream mfname;
-      mfname << "Facet-" << region << ".vtp";
-      mwr->SetFileName(mfname.str().c_str());
-      }
-    mwr->SetDataModeToAscii();
-    mwr->Write();
-#endif // 0
 
     // Now add the triangles to the output mesh along with
     // a pedigree ID indicating the generating facet

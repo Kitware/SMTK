@@ -57,21 +57,6 @@ PathsHelperWindows::PathsHelperWindows()
     Paths::s_executableDir != Paths::currentDirectory())
     workerSearch.insert(Paths::s_executableDir);
 
-#if 0 // defined(_WIN32_WINNT_WINXP) && (_WIN32_WINNT_WINXP >= 0x0501)
-  char bundlepath[_MAX_PATH];
-  GetModuleFileName(NULL, bundlepath, _MAX_PATH);
-  if (bundlepath[0])
-    Paths::s_bundleDir = bundlepath;
-  if (!Paths::s_bundleDir.empty())
-    {
-    Paths::s_bundleDir = std::string(bundlepath);
-    std::string::size_type pos = Paths::s_bundleDir.find_last_of( "\\");
-    if (pos != std::string::npos)
-      Paths::s_bundleDir = Paths::s_bundleDir.substr(0, pos);
-    workerSearch.insert(Paths::s_bundleDir);
-    }
-#endif
-
   PathsHelperWindows::AddSplitPaths(
     workerSearch, Environment::getVariable("SMTK_WORKER_SEARCH_PATH"));
 

@@ -29,71 +29,6 @@ namespace smtk {
   * their order in the arrangement).
   */
 ///@{
-#if 0
-/**\brief Construct the "parent" end of a bidirectional arrangement of kind \a k.
-  *
-  * Note that \a sense and \a orientation may be ignored depending on \a k;
-  * in these cases, you may pass any value.
-  */
-Arrangement Arrangement::ConstructParent(EntityTypeBits t, ArrangementKind k, int childIdx, int sense, Orientation orientation)
-{
-  if (Dual(t, k) == KINDS_OF_ARRANGEMENTS)
-    return Arrangement(); // INVALID!
-
-  switch (k)
-    {
-  case HAS_USE:
-    if (t & CELL_ENTITY)
-      return Arrangement::CellHasUseWithIndexSenseAndOrientation(childIdx, sense, orientation);
-    break;
-  case INCLUDES:
-    return (t & CELL_ENTITY) ?
-      Arrangement::CellIncludesEntityWithIndex(childIdx) :
-      Arrangement::UseOrShellIncludesShellWithIndex(childIdx);
-    break;
-  case HAS_SHELL:
-    if (t & CELL_ENTITY)
-      return Arrangement::CellHasShellWithIndex(childIdx);
-    break;
-  case INSTANCED_BY:
-    return Arrangement::EntityInstancedByWithIndex(childIdx);
-    break;
-  case SUPERSET_OF:
-    return Arrangement::EntitySupersetOfWithIndex(childIdx);
-    break;
-    }
-
-  return Arrangement(); // INVALID!
-}
-
-/**\brief Construct the "child" end of a bidirectional arrangement of kind \a k.
-  *
-  * Note that \a sense and \a orientation may be ignored depending on \a k;
-  * in these cases, you may pass any value.
-  *
-  * Note that \a k should **always** be the parent (1-to-many) ArrangementKind
-  * even when calling ConstructChild. A many-to-1 ArrangementKind will fail.
-  */
-Arrangement Arrangement::ConstructChild(EntityTypeBits t, ArrangementKind k, int parentIdx, int sense, Orientation orientation)
-{
-  k = Dual(t, k);
-  if (k == KINDS_OF_ARRANGEMENTS)
-    return Arrangement(); // INVALID!
-
-  switch (k)
-    {
-  case XXX: return Arrangement::CellEmbeddedInEntityWithIndex(parentIdx);
-  case XXX: return Arrangement::UseHasCellWithIndexAndSense(parentIdx, sense);
-  case XXX: return Arrangement::UseHasShellWithIndex(parentIdx);
-  case XXX: return Arrangement::ShellHasCellWithIndex(parentIdx);
-  //case XXX: return Arrangement::ShellHasUseWithIndexRange(relationBegin, relationEnd);
-  case XXX: return Arrangement::ShellEmbeddedInUseOrShellWithIndex(parentIdx);
-  case XXX: return Arrangement::InstanceInstanceOfWithIndex(parentIdx);
-  case XXX: return Arrangement::EntitySubsetOfWithIndex(parentIdx);
-    }
-}
-
-#else
 
 /**\brief Construct the "parent" end of a bidirectional arrangement of kind \a k.
   *
@@ -168,8 +103,6 @@ Arrangement Arrangement::Construct(EntityTypeBits t, ArrangementKind k, int rela
 
   return Arrangement(); // INVALID!
 }
-
-#endif // 0
 
 /**\brief Construct an arrangement record to add to a cell, indicating a use of that cell.
   *

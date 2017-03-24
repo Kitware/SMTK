@@ -57,19 +57,6 @@ namespace smtk {
 
 typedef std::vector<std::pair<smtk::model::Edge,bool> > EdgesWithOrientation;
 
-// Debug utility:
-#if 0
-template<typename T>
-void printPointSeq(const char* msg, T start, T end)
-{
-  std::cout << msg << "\n";
-  for (T it = start; it != end; ++it)
-    {
-    std::cout << "  " << it->x() << " " << it->y() << "\n";
-    }
-}
-#endif // 0
-
 /// Ensure that we are provided the proper edge orientations in addition to the usual checks.
 bool ForceCreateFace::ableToOperate()
 {

@@ -531,12 +531,7 @@ void CreateFaces::addTessellations()
     // Now traverse loops of face to create boost::poly tessellation:
     std::vector<OrientedEdges>::iterator lit; // Loops-of-face iterator
     poly::polygon_set_data<internal::Coord> polys;
-#if 0
-    poly::polygon_with_holes_data<internal::Coord> pface;
-    std::vector<poly::polygon_data<internal::Coord> > holes;
-#else
     poly::polygon_data<internal::Coord> pface;
-#endif
     bool isOuter = true;
     size_t npp = rit->second.end() - rit->second.begin();
     std::vector<std::vector<internal::Point> > pp2(npp);
@@ -579,17 +574,9 @@ void CreateFaces::addTessellations()
           {
           printPts("  Subtract Inner", pp2[ppi].rbegin(), pp2[ppi].rend());
           }
-#if 0
-        holes.push_back(loop);
-#else
         polys -= loop;
-#endif
         }
       }
-#if 0
-    pface.set_holes(holes.begin(), holes.end());
-    polys.insert(pface);
-#endif
 
     std::vector<poly::polygon_data<internal::Coord> > tess;
     polys.get_trapezoids(tess);

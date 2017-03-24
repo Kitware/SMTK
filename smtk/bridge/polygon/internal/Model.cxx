@@ -661,44 +661,6 @@ bool pmodel::splitModelEdgeAtModelVertex(
   return false;
 }
 
-#if 0
-static void DumpSegSplits(
-  const char* msg,
-  SegmentSplitsT::iterator a,
-  SegmentSplitsT::iterator b)
-{
-  if (msg)
-    std::cout << msg << "\n";
-
-  SegmentSplitsT::iterator ii;
-  for (ii = a; ii != b; ++ii)
-    {
-    std::cout << "  " << ii->first
-      << " : " << ii->second.low().x() << " " << ii->second.low().y()
-      << " -- " << ii->second.high().x() << " " << ii->second.high().y()
-      << "\n";
-    }
-}
-
-static void DumpPointSeq(
-  const char* msg,
-  PointSeq::const_iterator a,
-  PointSeq::const_iterator b,
-  PointSeq::const_iterator loc)
-{
-  if (msg)
-    std::cout << msg << "\n";
-
-  PointSeq::const_iterator ii;
-  for (ii = a; ii != b; ++ii)
-    {
-    std::cout
-      << "  " << ii->x() << " " << ii->y()
-      << (ii == loc ? " *\n" : "\n");
-    }
-}
-#endif // 0
-
 /**\brief An internal edge split operation.
   *
   * This variant requires the point along the model vertex to already have been promoted.
