@@ -7,7 +7,8 @@ pybind11_add_module(${library_name} PybindVTKSourceFns.cxx)
 target_include_directories(${library_name} PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
   )
-target_link_libraries(${library_name} LINK_PUBLIC smtkCore ${vtk-module})
+target_link_libraries(${library_name} LINK_PUBLIC smtkCore ${vtk-module}
+  vtkCommonCore vtkWrappingPythonCore)
 set_target_properties(${library_name}
   PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${build_path}"
