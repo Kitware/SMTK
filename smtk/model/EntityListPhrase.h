@@ -31,6 +31,7 @@ public:
   virtual std::string subtitle();
 
   EntityRefArray relatedEntities() const;
+  virtual BitFlags relatedBitFlags() const         {return this->m_commonFlags;}
   EntityRefArray& relatedEntities();
   virtual void setFlags(BitFlags commonFlags, BitFlags unionFlags);
 

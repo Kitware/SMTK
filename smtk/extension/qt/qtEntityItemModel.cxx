@@ -264,9 +264,40 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
         }
       else if (role == EntityIconRole)
         {
+        // get luminance
+        QColor color;
+        FloatList rgba = item->relatedColor();
+        if (rgba.size() >= 4 && rgba[3] < 0)
+        {
+          // make it an invalid color
+          color = QColor(255, 255, 255, 0);
+        }
+        else
+          {
+          // Color may be luminance, luminance+alpha, rgb, or rgba:
+          switch (rgba.size())
+            {
+          case 0:
+            color = QColor(0, 0, 0, 0);
+            break;
+          case 1:
+            color.setHslF(0., 0., rgba[0], 1.);
+            break;
+          case 2:
+            color.setHslF(0., 0., rgba[0], rgba[1]);
+            break;
+          case 3:
+            color.setRgbF(rgba[0], rgba[1], rgba[2], 1.);
+            break;
+          case 4:
+          default:
+            color.setRgbF(rgba[0], rgba[1], rgba[2], rgba[3]);
+            break;
+            }
+          }
         return QVariant(
           this->lookupIconForEntityFlags(
-            item->phraseType()));
+            item, color.lightness()));
         }
       else if (role == EntityVisibilityRole)
         {
@@ -333,7 +364,10 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
         QColor color;
         FloatList rgba = item->relatedColor();
         if (rgba.size() >= 4 && rgba[3] < 0)
-          color = QColor(255, 255, 255, 255);
+        {
+          // assign an invalid color
+          color = QColor(255, 255, 255, 0);
+        }
         else
           {
           // Color may be luminance, luminance+alpha, rgb, or rgba:
@@ -559,8 +593,12 @@ smtk::model::ManagerPtr QEntityItemModel::manager() const
   return store;
 }
 
-QIcon QEntityItemModel::lookupIconForEntityFlags(smtk::model::BitFlags flags)
+QIcon QEntityItemModel::lookupIconForEntityFlags(DescriptivePhrasePtr item,
+                                                 int lightness)
 {
+  // phrase list(0) would use relatedBitFlags
+  smtk::model::BitFlags flags = (item->phraseType()) ? item->relatedEntity().
+                   entityFlags() : item->relatedBitFlags();
   std::ostringstream resourceName;
   resourceName << ":/icons/entityTypes/";
   bool dimBits = true;
@@ -584,12 +622,19 @@ QIcon QEntityItemModel::lookupIconForEntityFlags(smtk::model::BitFlags flags)
   case INSTANCE_ENTITY:
     resourceName << "instance";
     break;
+  case AUX_GEOM_ENTITY:
+    resourceName << "aux_geom";
+    break;
+  case SESSION:
+    resourceName << "model"; //  every session has an model
+    break;
   default:
     resourceName << "invalid";
     dimBits = false;
     break;
     }
-  if (dimBits)
+
+  if (dimBits && ((flags & ENTITY_MASK) == CELL_ENTITY))
     {
     resourceName
       << "_"
@@ -597,11 +642,23 @@ QIcon QEntityItemModel::lookupIconForEntityFlags(smtk::model::BitFlags flags)
       << (flags & ANY_DIMENSION)
       ;
     }
+
+  // lightness controls black/white ico
+  if (lightness >= (255/2+1) && ((flags & ENTITY_MASK) == CELL_ENTITY))
+  {
+    resourceName << "_b";
+  }
+  else if (lightness < (255/2+1) && ((flags & ENTITY_MASK) == CELL_ENTITY))
+  {
+    resourceName << "_w";
+  }
+
   resourceName << ".png";
+
   QFile rsrc(resourceName.str().c_str());
   if (!rsrc.exists())
     { // FIXME: Replace with the path of a "generic entity" or "invalid" icon.
-    return QIcon(":/icons/entityTypes/cell_08.png");
+    return QIcon(":/icons/entityTypes/generic_entity.png");
     }
   return QIcon(resourceName.str().c_str());
 }
