@@ -160,9 +160,9 @@ std::map<std::string, std::string> Session::operatorLabelsMap(bool includeAdvanc
 {
   std::vector<smtk::attribute::DefinitionPtr> ops;
   std::map<std::string, std::string> result;
-    this->m_operatorSys->derivedDefinitions(
+  this->m_operatorSys->derivedDefinitions(
     this->m_operatorSys->findDefinition("operator"), ops);
-    std::cerr << "Getting Map from system " << this->m_operatorSys << ": \n";
+  //std::cerr << "Getting Map from system " << this->m_operatorSys << ": \n";
   std::vector<smtk::attribute::DefinitionPtr>::iterator it;
   for (it = ops.begin(); it != ops.end(); ++it)
     {
@@ -172,7 +172,7 @@ std::map<std::string, std::string> Session::operatorLabelsMap(bool includeAdvanc
       continue;
       }
     result[(*it)->label()] = (*it)->type();
-    std::cerr << "\tType: " << (*it)->type() << " Label: " << (*it)->label() << "\n";
+    //std::cerr << "\tType: " << (*it)->type() << " Label: " << (*it)->label() << "\n";
     }
   return result;
 }
