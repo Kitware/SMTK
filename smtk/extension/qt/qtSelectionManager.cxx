@@ -158,6 +158,11 @@ namespace smtk
         }
       }
 
+      if (ent.entityFlags() & smtk::model::GROUP_CONSTRAINT_MASK)
+      {
+        this->m_selEntities.insert(*uuid);
+      }
+
       // Comment out for now since tessellation for volume and model is not added
       //if (this->m_mask & smtk::model::MODEL_ENTITY)
       //{
