@@ -98,8 +98,7 @@ qtItem* qtAttributeItemWidgetFactory::createVoidItemWidget(
 qtItem* qtAttributeItemWidgetFactory::createModelEntityItemWidget(
   ModelEntityItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient)
 {
-  return new qtModelEntityItem(
-    smtk::dynamic_pointer_cast<ModelEntityItem>(item), p, bview, orient);
+  return new qtModelEntityItem(item, p, bview, orient);
 }
 
 /**\brief Create a widget that illustrates an item whose value is a set of model geometric selections.

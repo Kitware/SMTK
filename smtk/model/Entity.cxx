@@ -716,14 +716,19 @@ std::string Entity::flagToSpecifierString(BitFlags val, bool textual)
       {
       // Put entity type bits first and ensure they are all non-numeric.
       bool haveType = false;
-      if (isCellEntity(val))     {                                 haveType = true; spec << "cell"; }
-      if (isUseEntity(val))      { if (haveType) spec << "|"; else haveType = true; spec << "use"; }
-      if (isShellEntity(val))    { if (haveType) spec << "|"; else haveType = true; spec << "shell"; }
-      if (isGroup(val))    { if (haveType) spec << "|"; else haveType = true; spec << "group"; }
-      if (isModel(val))    { if (haveType) spec << "|"; else haveType = true; spec << "model"; }
-      if (isInstance(val)) { if (haveType) spec << "|"; else haveType = true; spec << "instance"; }
-      if (isSessionRef(val))  { if (haveType) spec << "|"; else haveType = true; spec << "session"; }
-      if (isAuxiliaryGeometry(val)) { if (haveType) spec << "|"; else haveType = true; spec << "aux_geom"; }
+      BitFlags tmp = val & smtk::model::ENTITY_MASK;
+      if ((tmp != 0) && !(tmp & (tmp - 1)))
+        {
+        // If exactly one entity-type bit is set (this is what test on tmp does above), add it:
+        if (isCellEntity(val))     {                                 haveType = true; spec << "cell"; }
+        if (isUseEntity(val))      { if (haveType) spec << "|"; else haveType = true; spec << "use"; }
+        if (isShellEntity(val))    { if (haveType) spec << "|"; else haveType = true; spec << "shell"; }
+        if (isGroup(val))    { if (haveType) spec << "|"; else haveType = true; spec << "group"; }
+        if (isModel(val))    { if (haveType) spec << "|"; else haveType = true; spec << "model"; }
+        if (isInstance(val)) { if (haveType) spec << "|"; else haveType = true; spec << "instance"; }
+        if (isSessionRef(val))  { if (haveType) spec << "|"; else haveType = true; spec << "session"; }
+        if (isAuxiliaryGeometry(val)) { if (haveType) spec << "|"; else haveType = true; spec << "aux_geom"; }
+        }
 
       // It is possible to get here with a non-zero value but no text in spec yet.
       // This happens with group/attribute-association membership masks. Check for

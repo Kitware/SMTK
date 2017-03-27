@@ -1,5 +1,6 @@
 # set up sources to build
 set(commonSrcs
+  Color.cxx
   DateTime.cxx
   DateTimeZonePair.cxx
   Environment.cxx
@@ -15,6 +16,7 @@ set(commonSrcs
 )
 
 set(commonHeaders
+  Color.h
   CompilerInformation.h
   DateTime.h
   DateTimeZonePair.h

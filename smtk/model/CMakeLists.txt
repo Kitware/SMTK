@@ -49,6 +49,7 @@ set(modelSrcs
   VolumeUse.cxx
   operators/AddAuxiliaryGeometry.cxx
   operators/AddImage.cxx
+  operators/AssignColors.cxx
   operators/CloseModel.cxx
   operators/EntityGroupOperator.cxx
   operators/SetProperty.cxx
@@ -117,6 +118,7 @@ set(modelHeaders
   VolumeUse.h
   operators/AddAuxiliaryGeometry.h
   operators/AddImage.h
+  operators/AssignColors.h
   operators/CloseModel.h
   operators/EntityGroupOperator.h
   operators/SetProperty.h
@@ -131,6 +133,7 @@ set(modelHeaders
 smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/DefaultSession.json" defSessionJSON)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/AddImage.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/AddAuxiliaryGeometry.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/AssignColors.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CloseModel.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EntityGroupOperator.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetProperty.sbt" defOpXML)

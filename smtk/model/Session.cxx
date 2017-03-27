@@ -160,9 +160,9 @@ std::map<std::string, std::string> Session::operatorLabelsMap(bool includeAdvanc
 {
   std::vector<smtk::attribute::DefinitionPtr> ops;
   std::map<std::string, std::string> result;
-    this->m_operatorSys->derivedDefinitions(
+  this->m_operatorSys->derivedDefinitions(
     this->m_operatorSys->findDefinition("operator"), ops);
-    std::cerr << "Getting Map from system " << this->m_operatorSys << ": \n";
+  //std::cerr << "Getting Map from system " << this->m_operatorSys << ": \n";
   std::vector<smtk::attribute::DefinitionPtr>::iterator it;
   for (it = ops.begin(); it != ops.end(); ++it)
     {
@@ -172,7 +172,7 @@ std::map<std::string, std::string> Session::operatorLabelsMap(bool includeAdvanc
       continue;
       }
     result[(*it)->label()] = (*it)->type();
-    std::cerr << "\tType: " << (*it)->type() << " Label: " << (*it)->label() << "\n";
+    //std::cerr << "\tType: " << (*it)->type() << " Label: " << (*it)->label() << "\n";
     }
   return result;
 }
@@ -876,14 +876,33 @@ void Session::initializeOperatorSystem(const OperatorConstructors* opList)
       DefinitionPtr otherOperator = other->findDefinition("operator");
       other->derivedDefinitions(otherOperator, tmp);
       for (it = tmp.begin(); it != tmp.end(); ++it)
+        {
         if (!this->m_operatorSys->findDefinition((*it)->type()))
+          {
           this->m_operatorSys->copyDefinition(*it);
+          }
+        }
 
       DefinitionPtr otherResult = other->findDefinition("result");
       other->derivedDefinitions(otherResult, tmp);
       for (it = tmp.begin(); it != tmp.end(); ++it)
+        {
         if (!this->m_operatorSys->findDefinition((*it)->type()))
+          {
           this->m_operatorSys->copyDefinition(*it);
+          }
+        }
+
+      // Copy views that do not already exist
+      const std::map<std::string, smtk::common::ViewPtr>& otherViews(other->views());
+      std::map<std::string, smtk::common::ViewPtr>::const_iterator vit;
+      for (vit = otherViews.begin(); vit != otherViews.end(); ++vit)
+        {
+        if (!this->m_operatorSys->findView(vit->first))
+          {
+          this->m_operatorSys->addView(vit->second);
+          }
+        }
       }
 
     delete other;
