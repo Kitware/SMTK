@@ -20,7 +20,6 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/StringData.h"
-#include "smtk/extension/qt/qtEntityItemDelegate.h"
 #include "smtk/extension/qt/qtEntityItemModel.h"
 #include "smtk/extension/qt/qtModelView.h"
 

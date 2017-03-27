@@ -75,6 +75,9 @@ qtModelView::qtModelView(QWidget* p)
 {
   QPointer<smtk::extension::QEntityItemModel> qmodel = new smtk::extension::QEntityItemModel;
   QPointer<smtk::extension::QEntityItemDelegate> qdelegate = new smtk::extension::QEntityItemDelegate;
+  qdelegate->setDrawSubtitle(false);
+  qdelegate->setTextVerticalPad(6);
+  qdelegate->setTitleFontWeight(1);
 #if QT_VERSION < 0x050000
   qmodel->setSupportedDragActions(Qt::CopyAction);
 #endif

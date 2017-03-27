@@ -22,7 +22,8 @@ namespace smtk {
 QEntityItemDelegate::QEntityItemDelegate(QWidget* owner) :
   QStyledItemDelegate(owner), m_swatchSize(16),
   m_titleFontSize(14), m_subtitleFontSize(10),
-  m_titleFontWeight(2), m_subtitleFontWeight(1)
+  m_titleFontWeight(2), m_subtitleFontWeight(1),
+  m_textVerticalPad(2), m_drawSubtitle(true)
 {
 }
 
@@ -76,6 +77,26 @@ void QEntityItemDelegate::setSubtitleFontWeight(int sfw)
   this->m_subtitleFontWeight = sfw;
 }
 
+int QEntityItemDelegate::textVerticalPad() const
+{
+  return this->m_textVerticalPad;
+}
+
+void QEntityItemDelegate::setTextVerticalPad(int tvp)
+{
+  this->m_textVerticalPad = tvp;
+}
+
+bool QEntityItemDelegate::drawSubtitle() const
+{
+  return this->m_drawSubtitle;
+}
+
+void QEntityItemDelegate::setDrawSubtitle(bool includeSubtitle)
+{
+  this->m_drawSubtitle = includeSubtitle;
+}
+
 QSize QEntityItemDelegate::sizeHint(
   const QStyleOptionViewItem& option,
   const QModelIndex& idx) const
@@ -90,12 +111,15 @@ QSize QEntityItemDelegate::sizeHint(
   subtitleFont.setPixelSize(this->m_subtitleFontSize);
   subtitleFont.setBold(this->subtitleFontWeight() > 1 ? true : false);
   QFontMetrics subtitleFM(subtitleFont);
-  int minHeight = titleFM.height() + 2 /*inter-line spacing*/ + subtitleFM.height();
+  int minHeight = titleFM.height() + 2 * this->m_textVerticalPad;
+  if (this->m_drawSubtitle)
+    {
+    minHeight += subtitleFM.height();
+    }
   if (minHeight < iconsize.height())
     {
     minHeight = iconsize.height();
     }
-  minHeight += 4; // 2-pixel border at top and bottom
 
   return(QSize(iconsize.width() + this->m_swatchSize, minHeight));
 }
@@ -145,9 +169,9 @@ void QEntityItemDelegate::paint(
   iconRect.setTop(iconRect.top() + 1);
   titleRect.setLeft(iconRect.right());
   subtitleRect.setLeft(iconRect.right());
-  titleRect.setTop(titleRect.top() + 1);
-  titleRect.setBottom(titleRect.top() + titleFM.height());
-  subtitleRect.setTop(titleRect.bottom() + 2);
+  titleRect.setTop(titleRect.top() + this->m_textVerticalPad / 2.0);
+  titleRect.setBottom(titleRect.top() + (this->m_drawSubtitle ? titleFM.height() : option.rect.height() - this->m_textVerticalPad));
+  subtitleRect.setTop(titleRect.bottom() + this->m_textVerticalPad);
 
   if(swatchColor.isValid())
     {
@@ -162,7 +186,7 @@ void QEntityItemDelegate::paint(
   painter->drawPixmap(
     QPoint(
       iconRect.left(),
-      iconRect.top() + 7),
+      iconRect.top() + (option.rect.height() - iconsize.height())/2.),
     icon.pixmap(iconsize.width(), iconsize.height()));
 
   if(!visicon.isNull())
@@ -175,10 +199,13 @@ void QEntityItemDelegate::paint(
   if (option.state.testFlag(QStyle::State_Selected))
     painter->setPen(Qt::white);
   painter->setFont(titleFont);
-  painter->drawText(titleRect, titleText);
+  painter->drawText(titleRect, Qt::AlignVCenter, titleText);
 
-  painter->setFont(subtitleFont);
-  painter->drawText(subtitleRect, subtitleText);
+  if (this->m_drawSubtitle)
+    {
+    painter->setFont(subtitleFont);
+    painter->drawText(subtitleRect, subtitleText);
+    }
 
   painter->restore();
 }
