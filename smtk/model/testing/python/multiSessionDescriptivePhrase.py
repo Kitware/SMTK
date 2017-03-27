@@ -88,12 +88,6 @@ class MultiSessionDescriptivePhrase(unittest.TestCase):
         self.printPhrases('', allPhrases)
         self.assertEqual(allPhrases, self.correct, "Phrases mismatched.")
 
-        #Uncomment the lines below to generate a new test baseline.
-        #import json
-        #jsout = open('/tmp/phrase.json', 'w')
-        #print >>jsout, json.dumps(allPhrases)
-        #jsout.close()
-
     def tearDown(self):
       # Release all references to sessions.
       # This should cause a clean shutdown of each session.

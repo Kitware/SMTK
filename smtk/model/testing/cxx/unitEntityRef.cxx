@@ -289,11 +289,6 @@ int main(int argc, char* argv[])
     InstanceEntities ies = model.instances<InstanceEntities>();
     test(ies.size() == 1 && ies[0] == ie, "Prototype should list its instances.");
 
-    std::string json = smtk::io::ExportJSON::fromModelManager(sm);
-    std::ofstream jsonFile("/tmp/entityref.json");
-    jsonFile << json;
-    jsonFile.close();
-
     EntityRef entity(sm, uids[0]);
     test(entity.isValid() == true);
     test(entity.dimension() == 0);

@@ -735,16 +735,6 @@ static void TriangulateFacet(
   // Add arrays to fpoly:
   prepr->FinalizeNewMapInfo();
 
-#if 0
-  vtkNew<vtkXMLPolyDataWriter> wri;
-  wri->SetInputDataObject(fpoly.GetPointer());
-  std::ostringstream fname;
-  fname << "FacetOutline-" << modelFaceId << ".vtp";
-  wri->SetFileName(fname.str().c_str());
-  wri->SetDataModeToAscii();
-  wri->Write();
-#endif // 1
-
   vtkNew<vtkCMBTriangleMesher> msh;
   msh->SetLauncher(lau);
   msh->SetInputDataObject(fpoly.GetPointer());
@@ -753,16 +743,6 @@ static void TriangulateFacet(
   msh->SetPreserveBoundaries(true);
   msh->VerboseOutputOn();
   msh->Update();
-
-#if 0
-  vtkNew<vtkXMLPolyDataWriter> mwr;
-  mwr->SetInputConnection(msh->GetOutputPort());
-  std::ostringstream mfname;
-  mfname << "Facet-" << modelFaceId << ".vtp";
-  mwr->SetFileName(mfname.str().c_str());
-  mwr->SetDataModeToAscii();
-  mwr->Write();
-#endif // 0
 
   // Now add the triangles to the output mesh along with
   // a pedigree ID indicating the generating facet
@@ -790,13 +770,6 @@ static void TriangulateFacet(
       continue;
     for (vtkIdType i = 0; i < npts; ++i)
       {
-#if 0
-      // WARNING WARNING!!!  Triangle is reordering the input point IDs but there
-      //                     is no mapping reported back!!!
-      std::map<vtkIdType,vtkIdType>::iterator pit =
-        bckMap.find(conn[i]);
-      if (pit == bckMap.end())
-#endif
       vtkIdType searchPt;
         {
         // TODO: We REALLY want to avoid this as neighboring model faces
@@ -842,12 +815,6 @@ static void TriangulateFacet(
             */
           }
         }
-#if 0
-      else
-        {
-        searchPt = pit->second;
-        }
-#endif
       /*
       vec3d pin;
       vec3d pout;
@@ -871,15 +838,6 @@ static void TriangulateFacet(
     pedigreeIds->InsertNextValue(modelFaceId);
     }
 
-#if 0
-  vtkNew<vtkXMLPolyDataWriter> fwr;
-  fwr->SetInputDataObject(pdOut);
-  std::ostringstream ffname;
-  ffname << "UpdatedFacet-" << modelFaceId << ".vtp";
-  fwr->SetFileName(ffname.str().c_str());
-  fwr->SetDataModeToAscii();
-  fwr->Write();
-#endif // 0
 }
 
 static void TriangulateFacets(

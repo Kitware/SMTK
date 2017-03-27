@@ -59,8 +59,3 @@ off = top.findAsDouble('offset')
 setAxis(off, [8., 3., 7.])
 r4 = top.operate()
 b4 = r4.findModelEntity('modified').value(0)
-
-json = smtk.io.ExportJSON.fromModelManager(mgr)
-sphFile = open('/tmp/brickly2.json', 'w')
-print >> sphFile, json
-sphFile.close()

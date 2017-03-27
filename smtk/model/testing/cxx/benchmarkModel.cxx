@@ -89,11 +89,6 @@ int main(int argc, char* argv[])
   std::string json = ExportJSON::fromModelManager(sm);
   double jsonTime = t.elapsed();
   t.mark();
-  std::ofstream jsonFile("/tmp/benchmark.json");
-  jsonFile << json;
-  jsonFile.close();
-  deltaT = t.elapsed();
-  std::cout << jsonTime << " seconds to generate JSON, " << deltaT << " seconds to write\n";
 
   // ### Benchmark JSON import ###
     {

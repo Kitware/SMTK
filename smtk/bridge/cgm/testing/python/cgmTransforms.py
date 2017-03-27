@@ -29,11 +29,6 @@ class CGMTransforms(smtk.testing.TestCase):
         brick1 = CreateBrick(width=0.5)
         brick2 = CreateBrick(width=0.5)
 
-        #json = smtk.io.ExportJSON.fromModelManager(self.mgr)
-        #jsonFile = open('/tmp/skirb1.json', 'w')
-        #print >> jsonFile, json
-        #jsonFile.close()
-
         brick3 = Translate(brick2, [0.5, 0.0, 0.0])[0]
         if not brick3 or brick3.entity() != brick2.entity():
           print "Expecting entities to match: %s != %s" % (brick2.entity(), brick3.entity())
@@ -47,11 +42,6 @@ class CGMTransforms(smtk.testing.TestCase):
         brick5 = Union([brick1, brick4])
         print brick5, brick5.name(), brick5.flagSummary(0)
         #brick6 = Scale([brick5], [3.0, 2.0, 1.0])[0]
-
-        #json = smtk.io.ExportJSON.fromModelManager(self.mgr)
-        #jsonFile = open('/tmp/skirb4.json', 'w')
-        #print >> jsonFile, json
-        #jsonFile.close()
 
         print self.haveVTK(), self.haveVTKExtension()
         if self.haveVTK() and self.haveVTKExtension():

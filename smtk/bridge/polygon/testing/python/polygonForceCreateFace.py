@@ -119,9 +119,6 @@ class TestPolygonCreation(smtk.testing.TestCase):
           print '  face: ', created.value(i).name()
           created.value(i).setFloatProperty('color', faceColors[i])
 
-      #self.mgr.assignDefaultNames()
-      #smtk.io.ExportJSON.fromModelManagerToFile(self.mgr, '/tmp/forcepoly.json')
-
       self.renderTestModel(mod, ['baseline', 'smtk', 'polygon', 'forceCreateFaces.png'])
 
   def createEdges(self, mod, point_arrays):
@@ -170,9 +167,6 @@ class TestPolygonCreation(smtk.testing.TestCase):
       for i in range(created.numberOfValues()):
           print '  face: ', created.value(i).name()
           created.value(i).setFloatProperty('color', faceColors[i])
-
-      #self.mgr.assignDefaultNames()
-      #smtk.io.ExportJSON.fromModelManagerToFile(self.mgr, '/tmp/forcepoly2.json')
 
       self.renderTestModel(mod, ['baseline', 'smtk', 'polygon', 'forceCreateFacesFromEdges.png'])
 

@@ -330,14 +330,6 @@ int main(int argc, char* argv[])
 
     status = ! vtkRegressionTestImage(view->GetRenderWindow());
 
-#if 0
-    // Using legacy writer... XML format doesn't deal well with string arrays (UUIDs).
-    vtkNew<vtkPolyDataWriter> wri;
-    wri->SetFileName("/tmp/smtkModel.vtk");
-    wri->SetInputDataObject(src->GetOutput());
-    wri->Write();
-#endif // 0
-
     if (debug)
       {
       sm->assignDefaultNames();

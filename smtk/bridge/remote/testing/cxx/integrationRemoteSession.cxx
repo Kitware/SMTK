@@ -55,8 +55,6 @@ int main(int argc, char* argv[])
   int port(argc > 4 ? atoi(argv[4]) : 50505);
 
   smtk::model::Manager::Ptr mgr = smtk::model::Manager::create();
-  mgr->log().setFlushToStream(
-    new std::ofstream("/tmp/unitRemusSession.log"), true, false);
   RemusConnection::Ptr bconn =
     RemusConnection::create();
   bconn->setModelManager(mgr);

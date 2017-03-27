@@ -186,8 +186,6 @@ class TestPolygonCreation(smtk.testing.TestCase):
     weirdOffsets = [0, 2, 4]
     elist = CreateEdge(weirdVerts, offsets=weirdOffsets, model=mod)
 
-    smtk.io.ExportJSON.fromModelManagerToFile(self.mgr, '/tmp/poly.json')
-
     flist = CreateFaces(mod)
 
   def createModelB(self, mod, origin, x_axis, y_axis, normal, feature_size, model_scale):
@@ -210,8 +208,6 @@ class TestPolygonCreation(smtk.testing.TestCase):
         ]
     weirdOffsets = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44]
     elist = CreateEdge(weirdVerts, offsets=weirdOffsets, model=mod)
-
-    # smtk.io.ExportJSON.fromModelManagerToFile(self.mgr, '/tmp/poly.json')
 
     flist = CreateFaces(mod)
 

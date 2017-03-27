@@ -73,7 +73,6 @@ class TestPolygonCreation(smtk.testing.TestCase):
 
     print 'Created a total of {:1} edges'.format(len(edges))
 
-    #smtk.io.ExportJSON.fromModelManagerToFile(self.mgr, '/tmp/poly.json')
     return edges
 
   def testTweakEdge(self):
@@ -84,7 +83,6 @@ class TestPolygonCreation(smtk.testing.TestCase):
       print '{:1} faces'.format(len(flist))
       for ff in range(len(flist)):
         print 'Face {:1} edges {:2}'.format(ff, ';'.join([x.name() for x in smtk.model.Face(flist[ff]).edges()]))
-      smtk.io.ExportJSON.fromModelManagerToFile(self.mgr, '/tmp/polya.json')
       # Test the easy case: an isolated, non-periodic edge is reshaped:
       print 'Tweaking {:1} {:2}'.format(edges[0].name(), edges[0].entity())
       mods = TweakEdge(edges[0], [[0, 0], [1, 0], [2, 3], [3,3]])
@@ -102,7 +100,6 @@ class TestPolygonCreation(smtk.testing.TestCase):
       print 'Tweaking {:1} {:2}'.format(edges[3].name(), edges[3].entity())
       mods = TweakEdge(edges[3], [[4,1.5], [3, 0], [3.5, -0.25], [4,0], [4,1.5]])
       tinkered += mods
-      smtk.io.ExportJSON.fromModelManagerToFile(self.mgr, '/tmp/polyb.json')
       print 'Tinkered with ', tinkered
       self.imageComparison(mod, tinkered, ['baseline', 'smtk', 'polygon', 'tweakEdge-caseA.png'], False)
 

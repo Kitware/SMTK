@@ -478,11 +478,6 @@ OperatorResult Import::operateInternal()
     result = this->createResult(OPERATION_FAILED);
     }
 
-  /* vtkNew<vtkXMLPolyDataWriter> pdw;
-     pdw->SetFileName("/tmp/testPolygonInputData.vtp");
-     pdw->SetInputDataObject(polyOutput);
-     pdw->Write(); */
-
   smtk::model::Model model = modResult->findModelEntity("created")->value();
   int numEntities;
   // Are we dealing with tagged polydata or polydata with pedigrre info?
@@ -506,22 +501,6 @@ OperatorResult Import::operateInternal()
 
   result = this->createResult(OPERATION_SUCCEEDED);
   this->addEntityToResult(result, model, CREATED);
-
-  /*
-  //#include "smtk/io/ExportJSON.h"
-  //#include "cJSON.h"
-
-  cJSON* json = cJSON_CreateObject();
-  smtk::io::ExportJSON::fromModelManager(json, this->manager());
-  std::cout << "Result " << cJSON_Print(json) << "\n";
-  cJSON_Delete(json);
-  */
-  /*
-    std::string json = smtk::io::ExportJSON::fromModelManager(this->manager());
-    std::ofstream file("/tmp/import_op_out.json");
-    file << json;
-    file.close();
-  */
 
   polyOutput->Delete();
   return result;

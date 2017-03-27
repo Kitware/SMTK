@@ -121,17 +121,6 @@ class TestExodusSession(smtk.testing.TestCase):
         cam.SetViewUp(-0.891963, -0.122107, -0.435306)
         self.renderer.ResetCamera()
         self.renderWindow.Render()
-        import vtk
-        #wri = vtk.vtkCompositeDataWriter()
-        #wri.SetInputData(mbs.GetOutputDataObject(0))
-        #wri.SetFileName('/tmp/foofar.vtk')
-        #wri.Write()
-        ## wri = vtk.vtkXMLDataSetWriter()
-        wri = vtk.vtkXMLMultiBlockDataWriter()
-        wri.SetDataModeToAscii()
-        wri.SetInputData(mbs.GetOutputDataObject(0))
-        wri.SetFileName('/tmp/foofar.vtm')
-        wri.Write()
         try:
           self.assertImageMatch(['baseline', 'smtk', 'exodus', 'disk_out_ref.png'])
         finally:

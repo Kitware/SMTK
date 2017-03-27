@@ -338,7 +338,6 @@ void verify_cell_conversion()
             << " this cell to have mesh " << cellTypeSummary(ct,1);
           std::cout << "    " << msg.str() << "\n";
           test(cellTypes[ct] == expected[ct], msg.str());
-          //smtk::io::WriteMesh::entireCollection("/tmp/mesh.vtk", c);
           }
         }
       }

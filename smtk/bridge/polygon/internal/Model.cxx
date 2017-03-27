@@ -557,7 +557,6 @@ bool pmodel::demoteModelVertex(
       // Update loops of face(s) attached to edge 1 and 2.
       edgeUseAndLoopRewrite(e1, eout); // Replace uses of e1 with uses of eout
       edgeUseAndLoopRewrite(e2, smtk::model::Edge()); // Invalid edge as last arg => replace uses of e2 with an empty set
-      //smtk::io::ExportJSON::fromModelManagerToFile(mgr, "/tmp/inanity.json");
 
       // Handle property assignments to output edges:
       smtk::model::EntityRefs merged;
@@ -661,44 +660,6 @@ bool pmodel::splitModelEdgeAtModelVertex(
   // Edge did not contain model vertex in its sequence.
   return false;
 }
-
-#if 0
-static void DumpSegSplits(
-  const char* msg,
-  SegmentSplitsT::iterator a,
-  SegmentSplitsT::iterator b)
-{
-  if (msg)
-    std::cout << msg << "\n";
-
-  SegmentSplitsT::iterator ii;
-  for (ii = a; ii != b; ++ii)
-    {
-    std::cout << "  " << ii->first
-      << " : " << ii->second.low().x() << " " << ii->second.low().y()
-      << " -- " << ii->second.high().x() << " " << ii->second.high().y()
-      << "\n";
-    }
-}
-
-static void DumpPointSeq(
-  const char* msg,
-  PointSeq::const_iterator a,
-  PointSeq::const_iterator b,
-  PointSeq::const_iterator loc)
-{
-  if (msg)
-    std::cout << msg << "\n";
-
-  PointSeq::const_iterator ii;
-  for (ii = a; ii != b; ++ii)
-    {
-    std::cout
-      << "  " << ii->x() << " " << ii->y()
-      << (ii == loc ? " *\n" : "\n");
-    }
-}
-#endif // 0
 
 /**\brief An internal edge split operation.
   *
