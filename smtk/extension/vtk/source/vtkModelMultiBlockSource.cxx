@@ -498,7 +498,7 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
   else if (fileType == "vti") { return ReadData<vtkImageData, vtkXMLImageDataReader>(auxGeom); }
   else if (fileType == "vtm") { return ReadData<vtkMultiBlockDataSet, vtkXMLMultiBlockDataReader>(auxGeom); }
   else if (fileType == "obj") { return ReadData<vtkPolyData, vtkOBJReader>(auxGeom); }
-  else if (fileType == "pts") { return ReadData<vtkPolyData, vtkPTSReader>(auxGeom); }
+  else if ((fileType == "pts") || (fileType == "xyz")) { return ReadData<vtkPolyData, vtkPTSReader>(auxGeom); }
   else if (fileType == "dem" || fileType == "tif" || fileType == "tiff")
   {
     vtkSmartPointer<vtkImageData> outImage = ReadData<vtkImageData, vtkGDALRasterReader>(auxGeom);
