@@ -10,9 +10,8 @@
 
 // .NAME vtkLIDARReader - Reader for LIDAR point files
 // .SECTION Description
-// Reader for binary and ascii LIDAR files.  If ascii format, the file MAY contain
-// rgb information for each vertex.  The format, ascii or Binary, must be
-// specifed before reading the file.
+// Reader ascii PTS/XYZ Point files.  The file MAY contain
+// rgb information for each vertex.
 //
 // It is possible to only load every nth (OnRatio) point and also, individual pieces
 // can be read and appended as a single dataset.
@@ -31,9 +30,6 @@
 class vtkTransform;
 class vtkGeoSphereTransform;
 class vtkFloatArray;
-
-#define VTK_ASCII 1
-#define VTK_BINARY 2
 
 class VTKSMTKREADEREXT_EXPORT vtkLIDARReader : public vtkPolyDataAlgorithm
 {
@@ -181,14 +177,10 @@ protected:
     vtkUnsignedCharArray *pieceIndexArray);
 
 
-  // Description:
-  // Get file type used to do last read
-  vtkGetMacro(FileType,int);
   int GetPointInfo(ifstream &fin);
   vtkIdType GetEstimatedNumOfOutPoints();
 
   char *FileName;
-  int FileType;
 
   int ValuesPerLine;
   int BytesPerPoint;
