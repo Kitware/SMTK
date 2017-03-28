@@ -15,6 +15,7 @@
 #ifndef smtkAssignColorsView_h
 #define smtkAssignColorsView_h
 
+#include "smtk/extension/paraview/operators/Exports.h"
 #include "smtk/extension/qt/qtBaseView.h"
 #include <vtk_jsoncpp.h> // for Json::Value; must be in header due to VTK mangling
 
@@ -22,7 +23,7 @@ class QColor;
 class QIcon;
 class smtkAssignColorsViewInternals;
 
-class smtkAssignColorsView : public smtk::extension::qtBaseView
+class SMTKPQOPERATORVIEWSEXT_EXPORT smtkAssignColorsView : public smtk::extension::qtBaseView
 {
   Q_OBJECT
 
