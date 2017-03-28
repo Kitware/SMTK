@@ -29,6 +29,8 @@ class SMTKQTEXT_EXPORT QEntityItemDelegate : public QStyledItemDelegate
   Q_PROPERTY(int subtitleFontSize READ subtitleFontSize WRITE setSubtitleFontSize)
   Q_PROPERTY(int titleFontWeight READ titleFontWeight WRITE setTitleFontWeight)
   Q_PROPERTY(int subtitleFontWeight READ subtitleFontWeight WRITE setSubtitleFontWeight)
+  Q_PROPERTY(int textVerticalPad READ textVerticalPad WRITE setTextVerticalPad)
+  Q_PROPERTY(bool drawSubtitle READ drawSubtitle WRITE setDrawSubtitle)
 public:
   QEntityItemDelegate(QWidget* parent = 0);
 
@@ -37,6 +39,8 @@ public:
   int titleFontWeight() const;
   int subtitleFontWeight() const;
   int swatchSize() const;
+  int textVerticalPad() const;
+  bool drawSubtitle() const;
 
 public slots:
   void setTitleFontSize(int tfs);
@@ -44,6 +48,8 @@ public slots:
   void setTitleFontWeight(int tfs);
   void setSubtitleFontWeight(int sfs);
   void setSwatchSize(int sws);
+  void setTextVerticalPad(int tvp);
+  void setDrawSubtitle(bool includeSubtitle);
 
 signals:
   void requestVisibilityChange(const QModelIndex&);
@@ -90,6 +96,8 @@ protected:
   int m_subtitleFontSize;
   int m_titleFontWeight;
   int m_subtitleFontWeight;
+  int m_textVerticalPad;
+  bool m_drawSubtitle;
 };
 
   } // namespace extension
