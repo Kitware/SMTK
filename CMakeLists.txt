@@ -121,7 +121,12 @@ cmake_dependent_option(SMTK_ENABLE_EXODUS_SESSION "Build a session to Exodus-II 
 cmake_dependent_option(SMTK_ENABLE_REMOTE_SESSION "Build a session that allows modeling in a remote process" ON
   SMTK_ENABLE_REMUS_SUPPORT OFF)
 option(SMTK_ENABLE_MESH_SESSION
-  "Build a session that uses smtk::mesh as its backing" OFF)
+  "Build a session that uses smtk::mesh as its backing" ON)
+cmake_dependent_option(SMTK_ENABLE_MULTISCALE_SESSION "Build a session to Multiscale data" OFF
+  "SMTK_ENABLE_VTK_SUPPORT;SMTK_ENABLE_MESH_SESSION" OFF)
+if (SMTK_ENABLE_MULTISCALE_SESSION)
+  set(AFRL_DIR "" CACHE PATH "Path to a directory of AFRL data.")
+endif()
 
 option(SMTK_USE_SYSTEM_MOAB "Use the system-installed moab?" OFF)
 option(SMTK_USE_SYSTEM_SPARSEHASH "Use the system-installed sparsehash?" OFF)

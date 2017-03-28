@@ -10,23 +10,6 @@
 #
 #=============================================================================
 
-_sessions = []
-
-if @SMTK_CGM_SESSION_ENABLED@:
-  _sessions.append("cgm")
-if @SMTK_DISCRETE_SESSION_ENABLED@:
-  _sessions.append("discrete")
-if @SMTK_EXODUS_SESSION_ENABLED@:
-  _sessions.append("exodus")
-if @SMTK_MESH_SESSION_ENABLED@:
-  _sessions.append("mesh")
 if @SMTK_MULTISCALE_SESSION_ENABLED@:
-  _sessions.append("multiscale")
-if @SMTK_REMOTE_SESSION_ENABLED@:
-  _sessions.append("remote")
-if @SMTK_POLYGON_SESSION_ENABLED@:
-  _sessions.append("polygon")
-
-__all__ = (_sessions)
-
-del _sessions
+  import smtk.model
+  from smtkPybindMultiscaleSession import *
