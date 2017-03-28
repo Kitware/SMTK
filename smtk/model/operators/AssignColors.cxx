@@ -17,6 +17,8 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
+#include <cstddef> // for size_t
+
 using smtk::attribute::StringItem;
 
 namespace smtk {
@@ -26,12 +28,12 @@ smtk::model::OperatorResult AssignColors::operateInternal()
 {
   std::vector<FloatList> colors;
   StringItem::Ptr colorSpec = this->findString("colors");
-  int numColors = colorSpec->numberOfValues();
+  size_t numColors = colorSpec->numberOfValues();
 
   if (numColors > 0)
     {
     colors.reserve(numColors);
-    for (int cc = 0; cc < numColors; ++cc)
+    for (size_t cc = 0; cc < numColors; ++cc)
       {
       FloatList rgba;
       if (
@@ -58,8 +60,8 @@ smtk::model::OperatorResult AssignColors::operateInternal()
   EntityRefArray modified;
   if (numColors > 0)
     {
-    int cc = 0;
-    numColors = static_cast<int>(colors.size());
+    size_t cc = 0;
+    numColors = colors.size();
     for (auto ent : entities)
       {
       if (ent.isValid())
