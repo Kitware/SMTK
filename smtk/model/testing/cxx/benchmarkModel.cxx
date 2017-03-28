@@ -82,12 +82,19 @@ int main(int argc, char* argv[])
   deltaT = t.elapsed();
   std::cout
     << numHits << " missed lookups " << deltaT << " seconds "
-    << (numHits / deltaT) << " good lookups/sec\n";
+    << (numHits / deltaT) << " good lookups/sec.\n";
 
   // ### Benchmark JSON export ###
   t.mark();
   std::string json = ExportJSON::fromModelManager(sm);
-  double jsonTime = t.elapsed();
+  deltaT = t.elapsed();
+  std::cout
+    << deltaT << " seconds to export "
+    << sm->topology().size() << " entity records, "
+    << sm->arrangements().size() << " arrangements, "
+    << sm->tessellations().size() << " tessellations, and "
+    << (sm->floatProperties().size() + sm->stringProperties().size() + sm->integerProperties().size())
+    << " properties.\n";
   t.mark();
 
   // ### Benchmark JSON import ###
@@ -97,7 +104,7 @@ int main(int argc, char* argv[])
     ImportJSON::intoModelManager(json.c_str(), sm2);
     deltaT = t.elapsed();
     }
-  std::cout << deltaT << " seconds to ingest JSON\n";
+  std::cout << deltaT << " seconds to ingest JSON.\n";
 
   return 0;
 }
