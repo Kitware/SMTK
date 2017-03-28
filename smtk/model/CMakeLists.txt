@@ -56,6 +56,7 @@ set(modelSrcs
   operators/ExportModelJSON.cxx
   operators/ExportSMTKModel.cxx
   operators/ImportSMTKModel.cxx
+  operators/PackageSMTKModel.cxx
   operators/DeleteMesh.cxx
   operators/ExportMesh.cxx
   operators/WriteMesh.cxx
@@ -125,6 +126,7 @@ set(modelHeaders
   operators/ExportModelJSON.h
   operators/ExportSMTKModel.h
   operators/ImportSMTKModel.h
+  operators/PackageSMTKModel.h
   operators/DeleteMesh.h
   operators/ExportMesh.h
   operators/WriteMesh.h
@@ -140,6 +142,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetProperty.sbt" defOpX
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportModelJSON.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportSMTKModel.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ImportSMTKModel.sbt" defOpXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/PackageSMTKModel.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/DeleteMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportMesh.sbt" defOpXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteMesh.sbt" defOpXML)
