@@ -23,7 +23,7 @@
       </DetailedDescription>
       <ItemDefinitions>
         <File Name="url" Label = "Filename"  Optional="true" NumberOfRequiredValues="1" IsEnabledByDefault="true" ShouldExist="true"
-          FileFilters="Image files (*.tif *.tiff *.dem);;VTK files (*.vti *.vtp *.vtu *.vtm);;Wavefront OBJ files (*.obj);;Point Cloud Files (*.pts);;All files (*.*)">
+          FileFilters="Aux Geom Files (*.tif *.tiff *.dem *.vti *.vtp *.vtu *.vtm *.obj *.pts *.xyz);; Image files (*.tif *.tiff *.dem);;VTK files (*.vti *.vtp *.vtu *.vtm);;Wavefront OBJ files (*.obj);;Point Cloud Files (*.pts *.xyz);;All files (*.*)">
           <BriefDescription>The file containing the auxiliary scene geometry.</BriefDescription>
         </File>
         <String Name="type" NumberOfRequiredValues="1" AdvanceLevel="1">
@@ -32,7 +32,7 @@
             The type of data at the specified URL.
             The default value is an empty string, which indicates that the type
             is to be inferred from the URL.
-            Valid vales are currently: "vtp", "vtu", "vti", "tif", "dem", and "vtm".
+            Valid vales are currently: "pts", "xyz" vtp", "vtu", "vti", "tif", "dem", and "vtm".
           </DetailedDescription>
           <DefaultValue></DefaultValue>
         </String>
