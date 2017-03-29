@@ -32,6 +32,8 @@
 #include <sys/types.h>
 #include <vtksys/SystemTools.hxx>
 
+#include <set>
+
 //Turns on the old map file cell data
 //very inefficient, but easy to debug
 #define WRITE_DEBUG_CELLDATA 1

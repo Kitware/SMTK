@@ -1,6 +1,7 @@
 PROJECT(SMTKVTKExtensionMeshing)
 
 set(srcs
+  cmbUniquePointSet.cxx
   cmbFaceMesherInterface.cxx
   cmbFaceMeshHelper.cxx
   vtkCMBPrepareForTriangleMesher.cxx
@@ -14,7 +15,7 @@ set(srcs
   )
 
 set(headers
-  vtkCMBUniquePointSet.h
+  cmbUniquePointSet.h
   vtkDiscoverRegions.h
   vtkRayIntersectionLocator.h
   vtkSplitPlanarLines.h
@@ -31,6 +32,7 @@ set(headers
 set_source_files_properties(
   cmbFaceMesherInterface.cxx
   cmbFaceMeshHelper.cxx
+  cmbUniquePointSet.cxx
   PROPERTIES
     WRAP_EXCLUDE
     WRAP_EXCLUDE_PYTHON)

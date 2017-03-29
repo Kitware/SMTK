@@ -36,9 +36,9 @@
 
 #include "smtk/extension/vtk/meshing/cmbFaceMeshHelper.h"
 #include "smtk/extension/vtk/meshing/cmbFaceMesherInterface.h"
+#include "smtk/extension/vtk/meshing/cmbUniquePointSet.h"
 #include "smtk/extension/vtk/meshing/vtkCMBMeshServerLauncher.h"
 #include "smtk/extension/vtk/meshing/vtkCMBPrepareForTriangleMesher.h"
-#include "smtk/extension/vtk/meshing/vtkCMBUniquePointSet.h"
 
 vtkCxxSetObjectMacro(vtkCMBTriangleMesher,Launcher,vtkCMBMeshServerLauncher);
 
@@ -120,7 +120,7 @@ void SmartMapAppend(std::list<vtkPolyData*> inputs, vtkPolyData* output,
     }
 
   //Create a unique set for points, verts, lines, and triangles
-  vtkCMBUniquePointSet uniquePoints;
+  cmbUniquePointSet uniquePoints;
   std::set<UniqueCell> uniqueVertexes;
   std::set<UniqueCell> uniqueLines;
   std::set<UniqueCell> uniqueTriangles;
