@@ -33,6 +33,15 @@ namespace smtk
 
 class SMTKQTEXT_EXPORT qtSelectionManager : public QObject
 {
+public:
+  enum class SelectionModifier
+  {
+    SELECTION_DEFAULT = 0,
+    SELECTION_ADDITION = 1,
+    SELECTION_SUBTRACTION = 2
+
+  };
+
   Q_OBJECT
   public:
     qtSelectionManager();
@@ -40,6 +49,12 @@ class SMTKQTEXT_EXPORT qtSelectionManager : public QObject
     {this->m_modelMgr = mgrPtr;}
     void getSelectedEntities(smtk::common::UUIDs &selEntities);
     void getSelectedMeshes(smtk::mesh::MeshSets &selMeshes);
+
+    void setSelectionModifierToAddition()
+      {this->m_selectionModifier = SelectionModifier::SELECTION_ADDITION;}
+
+    void setSelectionModifierToSubtraction()
+      {this->m_selectionModifier = SelectionModifier::SELECTION_SUBTRACTION;}
 
   signals:
     // Description
@@ -105,7 +120,12 @@ class SMTKQTEXT_EXPORT qtSelectionManager : public QObject
 
   protected:
     void clearAllSelections();
-    void filterSelectionsByMask();
+
+    // Description
+    // filter select entitiesa from currentSelEnt and store the result in
+    // filteredSelEnt
+    void filterEntitySelectionsByMask(
+      smtk::common::UUIDs &currentSelEnt, smtk::common::UUIDs &filteredSelEnt);
     // Description
     // filter selection to handle mask other than F/E/V
     void filterRubberBandSelection(smtk::model::EntityRef ent);
@@ -115,6 +135,7 @@ class SMTKQTEXT_EXPORT qtSelectionManager : public QObject
     smtk::model::DescriptivePhrases m_desPhrases;
     smtk::model::BitFlags m_mask;
     smtk::model::ManagerPtr m_modelMgr;
+    SelectionModifier m_selectionModifier;
 
 };
 
