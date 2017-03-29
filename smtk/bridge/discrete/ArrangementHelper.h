@@ -10,9 +10,9 @@
 #ifndef __smtk_bridge_discrete_ArrangementHelper_h
 #define __smtk_bridge_discrete_ArrangementHelper_h
 
-#include "smtk/model/ArrangementHelper.h"
-#include "smtk/bridge/discrete/Exports.h" // for SMTKDISCRETESESSION_EXPORT
 #include "smtk/SharedFromThis.h" // for smtkTypeMacro
+#include "smtk/bridge/discrete/Exports.h" // for SMTKDISCRETESESSION_EXPORT
+#include "smtk/model/ArrangementHelper.h"
 
 #include "smtk/model/ArrangementKind.h"
 #include "smtk/model/EntityRef.h"

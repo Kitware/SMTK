@@ -13,8 +13,8 @@
 
 #include "vtkDiscreteModel.h"
 #
-#include "vtkObjectFactory.h"
 #include "vtkDiscreteModelEdge.h"
+#include "vtkObjectFactory.h"
 
 vtkStandardNewMacro(vtkModelEdgeOperatorBase);
 

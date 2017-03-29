@@ -12,19 +12,19 @@
 #include "smtk/extension/qt/qtInstancedView.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/extension/qt/qtUIManager.h"
-#include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/common/View.h"
+#include "smtk/extension/qt/qtAttribute.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
-#include <QVBoxLayout>
+#include <QLabel>
+#include <QMessageBox>
 #include <QPointer>
 #include <QPushButton>
-#include <QLabel>
-#include <QTableWidget>
 #include <QScrollArea>
-#include <QMessageBox>
+#include <QTableWidget>
+#include <QVBoxLayout>
 #include <memory>
 
 using namespace smtk::attribute;

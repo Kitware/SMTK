@@ -10,25 +10,25 @@
 
 #include "vtkModelBCGridRepresentation.h"
 
-#include <iostream>
-#include <string>
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
 #include "vtkDiscreteModelEntityGroup.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelGeometricEntity.h"
+#include "vtkModelItemIterator.h"
+#include <iostream>
+#include <string>
 #include <vtkIdList.h>
 #include <vtkIdTypeArray.h>
 #include <vtkIntArray.h>
-#include "vtkModelItemIterator.h"
 #include <vtkObjectFactory.h>
 #include <vtksys/SystemTools.hxx>
 
-#include "vtkNew.h"
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
-#include "vtkPolyData.h"
+#include "vtkNew.h"
 #include "vtkPoints.h"
+#include "vtkPolyData.h"
 
 vtkStandardNewMacro(vtkModelBCGridRepresentation);
 

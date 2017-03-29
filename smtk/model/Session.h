@@ -12,17 +12,17 @@
 /*! \file */
 
 #include "smtk/AutoInit.h"
-#include "smtk/SystemConfig.h"
-#include "smtk/SharedPtr.h"
-#include "smtk/SharedFromThis.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/SharedFromThis.h"
+#include "smtk/SharedPtr.h"
+#include "smtk/SystemConfig.h"
 
 #include "smtk/common/UUID.h"
 
 #include "smtk/attribute/System.h"
 
-#include "smtk/model/SessionRegistrar.h"
 #include "smtk/model/EntityRef.h"
+#include "smtk/model/SessionRegistrar.h"
 
 namespace smtk {
   namespace io { class Logger; }

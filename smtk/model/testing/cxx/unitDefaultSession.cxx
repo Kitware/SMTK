@@ -7,30 +7,30 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/Options.h"
 #include "smtk/AutoInit.h"
+#include "smtk/Options.h"
 
 #include "smtk/io/ExportJSON.h"
 #include "smtk/io/ImportJSON.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/DoubleItem.h"
-#include "smtk/attribute/StringItem.h"
-#include "smtk/attribute/GroupItem.h"
-#include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/DirectoryItem.h"
-#include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/DoubleItem.h"
+#include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/GroupItem.h"
+#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/model/Session.h"
-#include "smtk/model/SessionRef.h"
 #include "smtk/model/DefaultSession.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
 #include "smtk/model/RemoteOperator.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Session.h"
+#include "smtk/model/SessionRef.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"

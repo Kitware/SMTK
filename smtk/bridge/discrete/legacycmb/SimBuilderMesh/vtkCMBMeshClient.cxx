@@ -10,9 +10,9 @@
 
 #include "vtkCMBMeshClient.h"
 
+#include "vtkCMBMeshGridRepresentationClient.h"
 #include "vtkCMBModelEdgeMeshClient.h"
 #include "vtkCMBModelFaceMeshClient.h"
-#include "vtkCMBMeshGridRepresentationClient.h"
 #include "vtkCMBModelVertexMesh.h"
 
 #include <vtkCallbackCommand.h>
@@ -31,13 +31,13 @@
 #include <vtkSmartPointer.h>
 #include <vtkSplitEventData.h>
 
+#include "vtkClientServerStream.h"
+#include "vtkProcessModule.h"
+#include "vtkSMProxyProperty.h"
 #include <vtkSMDoubleVectorProperty.h>
 #include <vtkSMIntVectorProperty.h>
 #include <vtkSMProxy.h>
 #include <vtkSMProxyManager.h>
-#include "vtkSMProxyProperty.h"
-#include "vtkClientServerStream.h"
-#include "vtkProcessModule.h"
 
 #include <map>
 

@@ -10,6 +10,7 @@
 
 #include "vtkCMBMeshReader.h"
 
+#include "smtk/extension/vtk/reader/vtkCMBReaderHelperFunctions.h"
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkDoubleArray.h"
@@ -19,15 +20,14 @@
 #include "vtkInformationVector.h"
 #include "vtkIntArray.h"
 #include "vtkObjectFactory.h"
-#include "vtkPoints.h"
 #include "vtkPointData.h"
+#include "vtkPoints.h"
 #include "vtkUnstructuredGrid.h"
-#include "smtk/extension/vtk/reader/vtkCMBReaderHelperFunctions.h"
 
-#include <string>
-#include <vtksys/SystemTools.hxx>
 #include <sstream>
+#include <string>
 #include <sys/stat.h>
+#include <vtksys/SystemTools.hxx>
 
 #define ABORT_FREQ 10000
 

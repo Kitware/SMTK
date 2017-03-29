@@ -14,8 +14,8 @@
 
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/Model.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
 #include "smtk/model/SessionRegistrar.h"
 

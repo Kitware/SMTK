@@ -21,8 +21,8 @@
 #ifndef __vtkADHExporterOperatorClient_h
 #define __vtkADHExporterOperatorClient_h
 
-#include "vtkADHExporterOperatorBase.h"
 #include "cmbSystemConfig.h"
+#include "vtkADHExporterOperatorBase.h"
 
 class vtkSMProxy;
 

@@ -12,8 +12,8 @@
 
 #include "smtk/model/SubphraseGenerator.h"
 
-#include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityListPhrase.h"
+#include "smtk/model/EntityPhrase.h"
 #include "smtk/model/PropertyListPhrase.h"
 
 namespace smtk {

@@ -11,8 +11,8 @@
 #ifndef __smtkdiscrete_vtkCmbMoabReader_h
 #define __smtkdiscrete_vtkCmbMoabReader_h
 
-#include "vtkPolyDataAlgorithm.h"
 #include "smtk/bridge/discrete/moabreader/discreteMoabExports.h"
+#include "vtkPolyDataAlgorithm.h"
 
 class vtkInformation;
 class vtkInformationVector;

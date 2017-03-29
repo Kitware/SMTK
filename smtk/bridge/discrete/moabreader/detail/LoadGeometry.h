@@ -11,15 +11,15 @@
 #ifndef __smoab_detail_LoadGeometry_h
 #define __smoab_detail_LoadGeometry_h
 
-#include "SimpleMoab.h"
 #include "MixedCellConnectivity.h"
+#include "SimpleMoab.h"
 
 #include <vtkCellArray.h>
 #include <vtkIdTypeArray.h>
 #include <vtkNew.h>
 #include <vtkPointData.h>
-#include <vtkPoints.h>
 #include <vtkPointSet.h>
+#include <vtkPoints.h>
 #include <vtkPolyData.h>
 #include <vtkUnsignedCharArray.h>
 #include <vtkUnstructuredGrid.h>

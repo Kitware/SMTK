@@ -14,8 +14,8 @@
 #ifndef __vtkCMBMeshToModelReader_h
 #define __vtkCMBMeshToModelReader_h
 
-#include "vtkXMLDataReader.h"
 #include "cmbSystemConfig.h"
+#include "vtkXMLDataReader.h"
 
 class vtkXMLDataElement;
 class vtkFieldData;

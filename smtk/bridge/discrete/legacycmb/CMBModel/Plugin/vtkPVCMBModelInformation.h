@@ -16,10 +16,10 @@
 #ifndef __vtkPVCMBModelInformation_h
 #define __vtkPVCMBModelInformation_h
 
-#include "vtkPVInformation.h"
 #include "cmbSystemConfig.h"
-#include <string>
+#include "vtkPVInformation.h"
 #include <map>
+#include <string>
 
 class vtkTransform;
 class vtkIntArray;

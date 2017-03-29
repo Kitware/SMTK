@@ -16,8 +16,8 @@
 #ifndef __vtkCMBMeshToModelReadOperator_h
 #define __vtkCMBMeshToModelReadOperator_h
 
-#include "vtkObject.h"
 #include "cmbSystemConfig.h"
+#include "vtkObject.h"
 
 class vtkCMBParserBase;
 class vtkDiscreteModelWrapper;

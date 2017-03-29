@@ -14,10 +14,10 @@
 #ifndef __vtkGeoTransformOperator_h
 #define __vtkGeoTransformOperator_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 #include "vtkSmartPointer.h"
-#include "cmbSystemConfig.h"
 
 class vtkCellLocator;
 class vtkDiscreteModelWrapper;

@@ -13,12 +13,12 @@
 #include "vtkClientServerStream.h"
 #include "vtkCollection.h"
 #include "vtkObjectFactory.h"
-#include "vtkProcessModule.h"
 #include "vtkPVXMLElement.h"
-#include "vtkSmartPointer.h"
+#include "vtkProcessModule.h"
 #include "vtkSMEnumerationDomain.h"
 #include "vtkSMIntVectorProperty.h"
 #include "vtkSMPropertyHelper.h"
+#include "vtkSmartPointer.h"
 
 #include <string>
 

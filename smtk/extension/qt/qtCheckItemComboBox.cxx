@@ -17,18 +17,18 @@
 #include "smtk/attribute/System.h"
 #include "smtk/extension/qt/qtMeshItem.h"
 #include "smtk/extension/qt/qtModelEntityItem.h"
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
 
 #include <QAbstractItemView>
+#include <QMouseEvent>
+#include <QStandardItem>
 #include <QStandardItemModel>
 #include <QStyleOptionButton>
 #include <QStyleOptionViewItem>
-#include <QStandardItem>
-#include <QMouseEvent>
 
 using namespace smtk::attribute;
 using namespace smtk::extension;

@@ -10,9 +10,9 @@
 #ifndef __smtk_bridge_polygon_internal_model_h
 #define __smtk_bridge_polygon_internal_model_h
 
-#include "smtk/bridge/polygon/internal/Entity.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
+#include "smtk/bridge/polygon/internal/Entity.h"
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/Vertex.h"

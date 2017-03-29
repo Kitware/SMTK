@@ -10,8 +10,8 @@
 
 
 #include "smtk/attribute/VoidItem.h"
-#include "smtk/attribute/VoidItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/VoidItemDefinition.h"
 #include <iostream>
 
 using namespace smtk::attribute;

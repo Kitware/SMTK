@@ -21,21 +21,21 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 
-#include "vtkExodusIIReader.h"
-#include "vtkSLACReader.h"
-#include "vtkXMLImageDataReader.h"
 #include "vtkContourFilter.h"
-#include "vtkThreshold.h"
-#include "vtkFieldData.h"
 #include "vtkDataArray.h"
 #include "vtkDataSetAttributes.h"
-#include "vtkPointData.h"
-#include "vtkUnsignedCharArray.h"
+#include "vtkExodusIIReader.h"
+#include "vtkFieldData.h"
 #include "vtkImageData.h"
-#include "vtkStringArray.h"
-#include "vtkTypeInt32Array.h"
 #include "vtkInformation.h"
+#include "vtkPointData.h"
+#include "vtkSLACReader.h"
+#include "vtkStringArray.h"
+#include "vtkThreshold.h"
+#include "vtkTypeInt32Array.h"
+#include "vtkUnsignedCharArray.h"
 #include "vtkUnstructuredGrid.h"
+#include "vtkXMLImageDataReader.h"
 
 #include "smtk/common/CompilerInformation.h"
 
@@ -506,8 +506,8 @@ smtk::model::OperatorResult ReadOperator::readLabelMap()
   } //namespace bridge
 } // namespace smtk
 
-#include "smtk/bridge/exodus/ReadOperator_xml.h"
 #include "smtk/bridge/exodus/Exports.h"
+#include "smtk/bridge/exodus/ReadOperator_xml.h"
 
 smtkImplementsModelOperator(
   SMTKEXODUSSESSION_EXPORT,

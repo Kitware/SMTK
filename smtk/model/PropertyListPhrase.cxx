@@ -11,8 +11,8 @@
 #include "smtk/model/PropertyValuePhrase.h"
 
 #include "smtk/model/FloatData.h"
-#include "smtk/model/StringData.h"
 #include "smtk/model/IntegerData.h"
+#include "smtk/model/StringData.h"
 
 namespace smtk {
   namespace model {

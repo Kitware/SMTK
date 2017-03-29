@@ -14,9 +14,9 @@
 #ifndef __smtk_extension_cumulus_girderrequest_h
 #define __smtk_extension_cumulus_girderrequest_h
 
-#include <QtCore/QObject>
 #include <QtCore/QList>
 #include <QtCore/QMap>
+#include <QtCore/QObject>
 #include <QtNetwork/QNetworkReply>
 
 

@@ -10,17 +10,17 @@
 
 #include "vtkCMBModelSelectionSource.h"
 
-#include "vtkDiscreteModelWrapper.h"
 #include "vtkCompositeDataIterator.h"
+#include "vtkDiscreteModelWrapper.h"
 #include "vtkModelEntity.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
 
-#include "vtkSelection.h"
-#include "vtkSelectionNode.h"
-#include "vtkSelectionSource.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkObjectFactory.h"
+#include "vtkSelection.h"
+#include "vtkSelectionNode.h"
+#include "vtkSelectionSource.h"
 #include <set>
 
 class vtkCMBModelSelectionSource::vtkInternal

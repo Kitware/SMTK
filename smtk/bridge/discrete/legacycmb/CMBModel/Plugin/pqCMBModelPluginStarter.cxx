@@ -10,9 +10,9 @@
 #include "pqCMBModelPluginStarter.h"
 
 // Server Manager Includes.
-#include "vtkProcessModule.h"
 #include "vtkClientServerInterpreter.h"
 #include "vtkClientServerInterpreterInitializer.h"
+#include "vtkProcessModule.h"
 
 // Qt Includes.
 //#include <QtDebug>

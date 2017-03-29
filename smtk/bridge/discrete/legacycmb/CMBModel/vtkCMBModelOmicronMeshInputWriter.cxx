@@ -11,14 +11,14 @@
 
 #include "vtkCMBModelOmicronMeshInputWriter.h"
 
-#include "vtkModelMaterial.h"
+#include "vtkCompositeDataIterator.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelRegion.h"
-#include "vtkModelUserName.h"
-#include "vtkCompositeDataIterator.h"
 #include "vtkDoubleArray.h"
 #include "vtkFieldData.h"
 #include "vtkModelItemIterator.h"
+#include "vtkModelMaterial.h"
+#include "vtkModelUserName.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"

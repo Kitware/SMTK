@@ -17,8 +17,8 @@
 #ifndef __vtkCMBMeshGridRepresentationClient_h
 #define __vtkCMBMeshGridRepresentationClient_h
 
-#include "vtkObject.h"
 #include "cmbSystemConfig.h"
+#include "vtkObject.h"
 
 
 class vtkDiscreteModel;

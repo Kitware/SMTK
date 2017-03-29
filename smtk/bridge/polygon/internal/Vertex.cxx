@@ -8,8 +8,8 @@
 // PURPOSE.  See the above copyright notice for more information.
 //=============================================================================
 #include "smtk/bridge/polygon/internal/Vertex.h"
-#include "smtk/bridge/polygon/internal/Model.h"
 #include "smtk/bridge/polygon/Session.h"
+#include "smtk/bridge/polygon/internal/Model.h"
 
 #include "smtk/io/Logger.h"
 

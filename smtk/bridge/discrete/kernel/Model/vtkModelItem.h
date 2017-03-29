@@ -17,8 +17,8 @@
 #ifndef __smtkdiscrete_vtkModelItem_h
 #define __smtkdiscrete_vtkModelItem_h
 
-#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "../Serialize/vtkSerializableObject.h"
+#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 
 
 struct vtkModelItemInternals;

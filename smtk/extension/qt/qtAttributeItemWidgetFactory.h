@@ -10,8 +10,8 @@
 #ifndef __smtk_extension_qt_qtAttributeItemWidgetFactory_h
 #define __smtk_extension_qt_qtAttributeItemWidgetFactory_h
 
-#include "smtk/extension/qt/Exports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/extension/qt/Exports.h"
 
 #include <QWidget>
 

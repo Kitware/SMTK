@@ -25,10 +25,10 @@
 #include "vtkVector.h"
 #include "vtkXMLPolyDataWriter.h"
 
-#include "vtkObjectFactory.h"
 #include "smtk/extension/vtk/meshing/vtkCMBMeshServerLauncher.h"
 #include "smtk/extension/vtk/meshing/vtkCMBPrepareForTriangleMesher.h"
 #include "smtk/extension/vtk/meshing/vtkCMBTriangleMesher.h"
+#include "vtkObjectFactory.h"
 
 #include <map>
 #include <sstream>

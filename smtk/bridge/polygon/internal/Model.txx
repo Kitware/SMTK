@@ -10,14 +10,14 @@
 #ifndef __smtk_bridge_polygon_internal_model_txx
 #define __smtk_bridge_polygon_internal_model_txx
 
+#include "smtk/bridge/polygon/Session.h"
+#include "smtk/bridge/polygon/internal/Edge.h"
+#include "smtk/bridge/polygon/internal/Vertex.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Vertex.h"
-#include "smtk/bridge/polygon/Session.h"
-#include "smtk/bridge/polygon/internal/Vertex.h"
-#include "smtk/bridge/polygon/internal/Edge.h"
 
 namespace smtk {
   namespace bridge {

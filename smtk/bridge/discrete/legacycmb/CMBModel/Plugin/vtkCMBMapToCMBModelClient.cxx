@@ -13,10 +13,10 @@
 
 #include "vtkDiscreteModel.h"
 #include "vtkObjectFactory.h"
-#include "vtkSmartPointer.h"
 #include "vtkSMIntVectorProperty.h"
 #include "vtkSMOperatorProxy.h"
 #include "vtkSMProxyManager.h"
+#include "vtkSmartPointer.h"
 
 #include "vtkCMBModelBuilderClient.h"
 

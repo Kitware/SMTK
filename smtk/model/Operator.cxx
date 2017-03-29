@@ -15,8 +15,8 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DirectoryItem.h"
+#include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/IntItem.h"

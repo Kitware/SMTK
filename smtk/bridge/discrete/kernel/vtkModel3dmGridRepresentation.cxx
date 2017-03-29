@@ -10,16 +10,16 @@
 
 #include "vtkModel3dmGridRepresentation.h"
 
-#include <vtkCharArray.h>
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
-#include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelEntityGroup.h"
+#include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelGeometricEntity.h"
-#include <vtkIdList.h>
-#include <vtkIdTypeArray.h>
 #include "vtkModelItemIterator.h"
 #include "vtkNew.h"
+#include <vtkCharArray.h>
+#include <vtkIdList.h>
+#include <vtkIdTypeArray.h>
 #include <vtkObjectFactory.h>
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>

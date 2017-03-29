@@ -16,9 +16,9 @@
 #ifndef __vtkModelEdgeOperatorBase_h
 #define __vtkModelEdgeOperatorBase_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkModelEntityOperatorBase.h"
-#include "cmbSystemConfig.h"
 
 class vtkDiscreteModel;
 class vtkDiscreteModelEdge;

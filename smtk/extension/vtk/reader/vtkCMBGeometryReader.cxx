@@ -23,18 +23,18 @@
 #include "vtkInformationVector.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkNew.h"
-#include "vtkObjectFactory.h"
 #include "vtkOBJReader.h"
-#include "vtkPolyData.h"
+#include "vtkObjectFactory.h"
 #include "vtkPointData.h"
-#include "vtkPolyDataReader.h"
+#include "vtkPolyData.h"
 #include "vtkPolyDataNormals.h"
-#include "vtkStringArray.h"
+#include "vtkPolyDataReader.h"
 #include "vtkSmartPointer.h"
+#include "vtkStringArray.h"
 #include "vtkUnstructuredGrid.h"
 #include "vtkXMLPolyDataReader.h"
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <vtksys/SystemTools.hxx>
 
 #include "smtk/Options.h" // for SMTK_ENABLE_REMUS_SUPPORT
@@ -44,10 +44,10 @@
   #include "smtk/extension/vtk/reader/vtkPolyFileReader.h"
 #endif
 
+#include "smtk/extension/vtk/reader/vtkCMBMeshReader.h"
+#include "smtk/extension/vtk/reader/vtkCMBReaderHelperFunctions.h"
 #include "smtk/extension/vtk/reader/vtkCMBSTLReader.h"
 #include "smtk/extension/vtk/reader/vtkCUBITReader.h"
-#include "smtk/extension/vtk/reader/vtkCMBReaderHelperFunctions.h"
-#include "smtk/extension/vtk/reader/vtkCMBMeshReader.h"
 #include "smtk/extension/vtk/reader/vtkExtractRegionEdges.h"
 #include "smtk/extension/vtk/reader/vtkGMSSolidReader.h"
 #include "smtk/extension/vtk/reader/vtkGMSTINReader.h"

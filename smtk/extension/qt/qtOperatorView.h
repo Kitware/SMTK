@@ -15,8 +15,8 @@
 #ifndef __smtk_extension_qtOperatorView_h
 #define __smtk_extension_qtOperatorView_h
 
-#include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/Exports.h"
+#include "smtk/extension/qt/qtBaseView.h"
 
 class qtOperatorViewInternals;
 class QScrollArea;

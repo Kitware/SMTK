@@ -9,9 +9,9 @@
 //=========================================================================
 #include "smtk/extension/qt/qtBaseView.h"
 
-#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/System.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/common/View.h"
 
@@ -19,13 +19,13 @@
 #include <QComboBox>
 #include <QFrame>
 #include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QPointer>
 #include <QLabel>
 #include <QLayout>
+#include <QPointer>
 #include <QScrollArea>
 #include <QTableWidget>
 #include <QToolButton>
+#include <QVBoxLayout>
 #include <QWidget>
 
 using namespace smtk::extension;

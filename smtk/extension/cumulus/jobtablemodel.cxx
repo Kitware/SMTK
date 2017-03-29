@@ -8,9 +8,9 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include <jobtablemodel.h>
-#include "cJSON.h"
 #include "job.h"
+#include "cJSON.h"
+#include <jobtablemodel.h>
 
 #include <QtCore/QDebug>
 

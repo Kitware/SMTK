@@ -16,8 +16,8 @@
 
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkMultiBlockDataSetAlgorithm.h"
-#include <string>
 #include <map>
+#include <string>
 
 class VTKCMBDISCRETEMODEL_EXPORT vtkSMTKJsonModelReader : public vtkMultiBlockDataSetAlgorithm
 {

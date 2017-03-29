@@ -10,8 +10,8 @@
 
 
 #include "smtk/attribute/FileItem.h"
-#include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/FileItemDefinition.h"
 #include <algorithm> // for std::find
 #include <iostream>
 #include <stdio.h>

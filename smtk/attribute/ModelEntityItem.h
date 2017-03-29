@@ -26,9 +26,9 @@
 #ifndef __smtk_attribute_ModelEntityItem_h
 #define __smtk_attribute_ModelEntityItem_h
 
+#include "smtk/CoreExports.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/CoreExports.h"
 
 namespace smtk
 {

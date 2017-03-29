@@ -9,31 +9,31 @@
 //=========================================================================
 #include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
 
+#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
 #include "vtkImageData.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
+#include "vtkMultiBlockDataSet.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkNew.h"
 #include "vtkOBJReader.h"
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
 #include "vtkPolyDataNormals.h"
-#include "vtkUnstructuredGrid.h"
-#include "vtkMultiBlockDataSet.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
+#include "vtkUnstructuredGrid.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
 
+#include <errno.h>
 #include <inttypes.h>
 #include <stdlib.h>
-#include <errno.h>
 
 using namespace smtk::model;
 

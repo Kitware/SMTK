@@ -19,16 +19,16 @@
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Loop.h"
 
-#include "smtk/io/ModelToMesh.h"
 #include "smtk/io/ImportJSON.h"
+#include "smtk/io/ModelToMesh.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 
-#include "smtk/bridge/discrete/Session.h"
 #include "smtk/bridge/discrete/Operator.h"
+#include "smtk/bridge/discrete/Session.h"
 
 #include <fstream>
 

@@ -11,15 +11,14 @@
 
 #include "vtkCMBParserV4.h"
 
+#include "ModelParserHelper.h"
+#include "vtkCellData.h"
 #include "vtkCharArray.h"
-#include "vtkModelMaterial.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
 #include "vtkDiscreteModelEntityGroup.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelRegion.h"
-#include "vtkModelUserName.h"
-#include "vtkCellData.h"
 #include "vtkDoubleArray.h"
 #include "vtkFieldData.h"
 #include "vtkFloatArray.h"
@@ -28,7 +27,9 @@
 #include "vtkIntArray.h"
 #include "vtkModelFaceUse.h"
 #include "vtkModelItemIterator.h"
+#include "vtkModelMaterial.h"
 #include "vtkModelShellUse.h"
+#include "vtkModelUserName.h"
 #include "vtkModelVertex.h"
 #include "vtkObjectFactory.h"
 #include "vtkPointData.h"
@@ -36,12 +37,11 @@
 #include "vtkSmartPointer.h"
 #include "vtkStdString.h"
 #include "vtkStringArray.h"
-#include "ModelParserHelper.h"
 
 #include <map>
-#include <vector>
 #include <stdio.h>
 #include <string.h>
+#include <vector>
 
 vtkStandardNewMacro(vtkCMBParserV4);
 

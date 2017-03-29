@@ -15,9 +15,9 @@
 #ifndef __vtkCMBModelSelectionSource_h
 #define __vtkCMBModelSelectionSource_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkSelectionAlgorithm.h"
-#include "cmbSystemConfig.h"
 
 class vtkSelectionSource;
 class vtkDiscreteModelWrapper;

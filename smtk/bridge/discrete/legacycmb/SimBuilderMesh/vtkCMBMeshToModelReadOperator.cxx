@@ -11,13 +11,13 @@
 
 #include "vtkCMBMeshToModelReadOperator.h"
 
+#include "vtkCMBMeshToModelReader.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkFieldData.h"
 #include "vtkNew.h"
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
-#include "vtkCMBMeshToModelReader.h"
 
 vtkStandardNewMacro(vtkCMBMeshToModelReadOperator);
 

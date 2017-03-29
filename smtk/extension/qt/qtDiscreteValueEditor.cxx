@@ -13,12 +13,12 @@
 #include "smtk/extension/qt/qtInputsItem.h"
 
 #include <QComboBox>
-#include <QHBoxLayout>
+#include <QFont>
+#include <QFontMetrics>
 #include <QFrame>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QPointer>
-#include <QFontMetrics>
-#include <QFont>
 
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"

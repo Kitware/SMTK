@@ -10,8 +10,8 @@
 
 
 #include "smtk/attribute/FileSystemItem.h"
-#include "smtk/attribute/FileSystemItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/FileSystemItemDefinition.h"
 #include <cassert>
 #include <iostream>
 #include <stdio.h>

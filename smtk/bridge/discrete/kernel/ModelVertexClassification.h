@@ -16,8 +16,8 @@
 #ifndef __smtkdiscrete_ModelVertexClassification_H
 #define __smtkdiscrete_ModelVertexClassification_H
 
-#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "smtk/common/CompilerInformation.h" //needed for SMTK_MSVC flag
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkType.h" //needed for vtkIdType
 #include <map> //need to store the set of point ids
 

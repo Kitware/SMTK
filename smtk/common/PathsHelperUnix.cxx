@@ -10,8 +10,8 @@
 //
 //=============================================================================
 #include "smtk/common/PathsHelperUnix.h"
-#include "smtk/common/Paths.h"
 #include "smtk/common/Environment.h"
+#include "smtk/common/Paths.h"
 #include "smtk/common/Version.h"
 
 #include <sstream>

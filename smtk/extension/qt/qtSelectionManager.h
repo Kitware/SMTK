@@ -21,10 +21,10 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"
+#include "smtk/mesh/MeshSet.h"
 #include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/SessionRef.h"
-#include "smtk/mesh/MeshSet.h"
 
 namespace smtk
 {

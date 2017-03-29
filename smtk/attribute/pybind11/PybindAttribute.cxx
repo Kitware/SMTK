@@ -17,9 +17,9 @@ template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "PybindAttribute.h"
-#include "PybindDefinition.h"
 #include "PybindDateTimeItem.h"
 #include "PybindDateTimeItemDefinition.h"
+#include "PybindDefinition.h"
 #include "PybindDirectoryItem.h"
 #include "PybindDirectoryItemDefinition.h"
 #include "PybindDoubleItem.h"

@@ -7,10 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#include "smtk/io/ExportJSON.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
-#include "smtk/io/ExportJSON.h"
 #include "smtk/model/Volume.h"
 
 #include "smtk/common/testing/cxx/helpers.h"

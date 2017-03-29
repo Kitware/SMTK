@@ -13,12 +13,12 @@
 
 #include "smtk/bridge/discrete/Session.h"
 
-#include "vtkDiscreteModel.h"
-#include "vtkCMBParserBase.h"
-#include "vtkDiscreteModelWrapper.h"
 #include "vtkCMBModelWriterV2.h"
 #include "vtkCMBModelWriterV4.h"
 #include "vtkCMBModelWriterV5.h"
+#include "vtkCMBParserBase.h"
+#include "vtkDiscreteModel.h"
+#include "vtkDiscreteModelWrapper.h"
 #include "vtkFieldData.h"
 #include "vtkIntArray.h"
 #include "vtkObjectFactory.h"

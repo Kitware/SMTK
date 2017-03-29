@@ -14,8 +14,8 @@
 #ifndef __smtk_pq_GenerateContoursDialog_h
 #define __smtk_pq_GenerateContoursDialog_h
 
-#include "smtk/extension/paraview/widgets/Exports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/extension/paraview/widgets/Exports.h"
 #include <QDialog>
 #include <QDoubleValidator>
 

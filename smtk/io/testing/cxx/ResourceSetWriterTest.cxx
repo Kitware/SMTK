@@ -9,9 +9,9 @@
 //=========================================================================
 
 
+#include "smtk/io/ResourceSetWriter.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
-#include "smtk/io/ResourceSetWriter.h"
 
 #include "smtk/attribute/System.h"
 

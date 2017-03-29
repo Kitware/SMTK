@@ -10,16 +10,16 @@
 
 #include "smtk/mesh/Displace.h"
 
-#include "smtk/io/ModelToMesh.h"
 #include "smtk/io/ImportJSON.h"
+#include "smtk/io/ModelToMesh.h"
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
-#include <sstream>
 #include <fstream>
+#include <sstream>
 
 namespace
 {

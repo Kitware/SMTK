@@ -13,11 +13,11 @@
 #include "vtkIdTypeArray.h"
 #include "vtkInformation.h"
 #include "vtkIntArray.h"
+#include "vtkObjectFactory.h"
 #include "vtkSerializationHelperMap.h"
 #include "vtkSerializer.h"
-#include "vtkXMLElement.h"
-#include "vtkObjectFactory.h"
 #include "vtkTransform.h"
+#include "vtkXMLElement.h"
 
 vtkStandardNewMacro(vtkCommonSerializationHelper);
 

@@ -14,8 +14,8 @@
 #ifndef __smtk_attribute_DoubleItem_h
 #define __smtk_attribute_DoubleItem_h
 
-#include "smtk/attribute/ValueItemTemplate.h"
 #include "smtk/CoreExports.h"
+#include "smtk/attribute/ValueItemTemplate.h"
 
 namespace smtk
 {

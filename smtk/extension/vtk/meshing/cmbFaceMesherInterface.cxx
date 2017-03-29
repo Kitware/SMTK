@@ -22,8 +22,8 @@
 #include <remus/client/ServerConnection.h>
 
 #include <vtkCellData.h>
-#include <vtkNew.h>
 #include <vtkIdTypeArray.h>
+#include <vtkNew.h>
 #include <vtkPolyData.h>
 
 #include <vector>

@@ -10,27 +10,27 @@
 
 #include "vtkCMBMapReader.h"
 
+#include "smtk/extension/vtk/meshing/vtkCMBPrepareForTriangleMesher.h"
+#include "smtk/extension/vtk/reader/vtkCMBReaderHelperFunctions.h"
 #include "vtkCellArray.h"
-#include "vtkFloatArray.h"
-#include "vtkPointData.h"
-#include "vtkPoints.h"
-#include "vtkLine.h"
 #include "vtkCellData.h"
+#include "vtkErrorCode.h"
+#include "vtkFieldData.h"
+#include "vtkFloatArray.h"
 #include "vtkIdTypeArray.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
+#include "vtkIntArray.h"
+#include "vtkLine.h"
 #include "vtkObjectFactory.h"
+#include "vtkPointData.h"
+#include "vtkPoints.h"
 #include "vtkPolyData.h"
 #include "vtkSmartPointer.h"
-#include "vtkErrorCode.h"
 #include "vtkStringArray.h"
-#include "vtkFieldData.h"
-#include "vtkIntArray.h"
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <vtksys/SystemTools.hxx>
-#include "smtk/extension/vtk/reader/vtkCMBReaderHelperFunctions.h"
-#include "smtk/extension/vtk/meshing/vtkCMBPrepareForTriangleMesher.h"
 
 //Turns on the old map file cell data
 //very inefficient, but easy to debug

@@ -15,8 +15,8 @@
 #ifndef __smtk_extension_qtInputsItem_h
 #define __smtk_extension_qtInputsItem_h
 
-#include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/Exports.h"
+#include "smtk/extension/qt/qtItem.h"
 #include <QDoubleValidator>
 
 class qtInputsItemInternals;

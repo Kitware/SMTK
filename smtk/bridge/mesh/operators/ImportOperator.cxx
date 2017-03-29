@@ -97,8 +97,8 @@ smtk::model::OperatorResult ImportOperator::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-#include "smtk/bridge/mesh/ImportOperator_xml.h"
 #include "smtk/bridge/mesh/Exports.h"
+#include "smtk/bridge/mesh/ImportOperator_xml.h"
 
 smtkImplementsModelOperator(
   SMTKMESHSESSION_EXPORT,

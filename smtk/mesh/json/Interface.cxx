@@ -12,9 +12,9 @@
 #include "smtk/mesh/json/Interface.h"
 
 #include "smtk/mesh/Collection.h"
+#include "smtk/mesh/ContainsFunctors.h"
 #include "smtk/mesh/MeshSet.h"
 #include "smtk/mesh/QueryTypes.h"
-#include "smtk/mesh/ContainsFunctors.h"
 
 #include "smtk/mesh/moab/CellTypeToType.h"
 

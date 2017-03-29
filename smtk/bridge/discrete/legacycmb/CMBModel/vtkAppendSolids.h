@@ -18,9 +18,9 @@
 #ifndef __vtkAppendSolids_h
 #define __vtkAppendSolids_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
-#include "cmbSystemConfig.h"
 
 class vtkPolyData;
 

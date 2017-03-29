@@ -92,8 +92,8 @@ smtk::model::OperatorResult WriteOperator::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-#include "smtk/bridge/mesh/WriteOperator_xml.h"
 #include "smtk/bridge/mesh/Exports.h"
+#include "smtk/bridge/mesh/WriteOperator_xml.h"
 
 smtkImplementsModelOperator(
   SMTKMESHSESSION_EXPORT,

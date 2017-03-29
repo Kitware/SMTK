@@ -10,26 +10,26 @@
 
 #include "smtk/extension/qt/qtMeshItem.h"
 
-#include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/extension/qt/qtUIManager.h"
-#include "smtk/extension/qt/qtAttributeView.h"
-#include "smtk/extension/qt/qtNewAttributeWidget.h"
-#include "smtk/extension/qt/qtCheckItemComboBox.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/MeshItemDefinition.h"
 #include "smtk/attribute/System.h"
 #include "smtk/common/View.h"
+#include "smtk/extension/qt/qtAttribute.h"
+#include "smtk/extension/qt/qtAttributeView.h"
+#include "smtk/extension/qt/qtCheckItemComboBox.h"
+#include "smtk/extension/qt/qtNewAttributeWidget.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
-#include <QVBoxLayout>
+#include <QAbstractItemView>
+#include <QCheckBox>
 #include <QFrame>
+#include <QGridLayout>
 #include <QLabel>
 #include <QPointer>
 #include <QStandardItemModel>
-#include <QCheckBox>
-#include <QGridLayout>
-#include <QAbstractItemView>
+#include <QVBoxLayout>
 
 using namespace smtk::attribute;
 using namespace smtk::extension;

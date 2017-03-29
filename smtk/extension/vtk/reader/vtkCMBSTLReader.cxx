@@ -13,15 +13,15 @@
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 
+#include "smtk/extension/vtk/reader/vtkCMBReaderHelperFunctions.h"
 #include "vtkCell.h"
 #include "vtkCellData.h"
 #include "vtkIdTypeArray.h"
-#include "vtkPolyDataConnectivityFilter.h"
-#include "vtkSTLReader.h"
 #include "vtkObjectFactory.h"
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
-#include "smtk/extension/vtk/reader/vtkCMBReaderHelperFunctions.h"
+#include "vtkPolyDataConnectivityFilter.h"
+#include "vtkSTLReader.h"
 
 vtkStandardNewMacro(vtkCMBSTLReader);
 

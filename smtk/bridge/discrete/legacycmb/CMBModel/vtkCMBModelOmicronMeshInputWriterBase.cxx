@@ -11,9 +11,9 @@
 
 #include "vtkCMBModelOmicronMeshInputWriterBase.h"
 
+#include "vtkCMBModelOmicronMeshInputWriter.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelFace.h"
-#include "vtkCMBModelOmicronMeshInputWriter.h"
 #include "vtkDiscreteModelRegion.h"
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkIdTypeArray.h"

@@ -10,10 +10,10 @@
 
 #include "vtkCMBMeshWrapper.h"
 
-#include <vtkObjectFactory.h>
 #include "vtkCMBMeshServer.h"
 #include <vtkDiscreteModel.h>
 #include <vtkDiscreteModelWrapper.h>
+#include <vtkObjectFactory.h>
 
 #include <sstream>
 

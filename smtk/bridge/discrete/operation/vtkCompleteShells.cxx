@@ -11,6 +11,7 @@
 
 #include "vtkCompleteShells.h"
 
+#include "ModelParserHelper.h"
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkCellLocator.h"
@@ -20,7 +21,6 @@
 #include "vtkObjectFactory.h"
 #include "vtkPlane.h"
 #include "vtkSmartPointer.h"
-#include "ModelParserHelper.h"
 
 #include <map>
 #include <set>

@@ -16,9 +16,9 @@
 #ifndef __vtkModelEntityOperator_h
 #define __vtkModelEntityOperator_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkModelEntityOperatorBase.h"
-#include "cmbSystemConfig.h"
 
 class vtkDiscreteModelWrapper;
 class vtkModelEntity;

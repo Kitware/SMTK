@@ -11,11 +11,11 @@
 #define __smtk_session_cgm_Operator_h
 
 #include "smtk/bridge/cgm/Exports.h"
-#include "smtk/bridge/cgm/TDUUID.h"
 #include "smtk/bridge/cgm/Session.h"
+#include "smtk/bridge/cgm/TDUUID.h"
 
-#include "smtk/model/Operator.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/Operator.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"

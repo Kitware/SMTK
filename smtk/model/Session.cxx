@@ -9,17 +9,17 @@
 //=========================================================================
 #include "smtk/model/Session.h"
 
-#include "smtk/model/SessionIOJSON.h"
+#include "smtk/model/ArrangementHelper.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/RemoteOperator.h"
-#include "smtk/model/ArrangementHelper.h"
+#include "smtk/model/SessionIOJSON.h"
 
-#include "smtk/model/Model.h"
 #include "smtk/model/CellEntity.h"
+#include "smtk/model/Group.h"
+#include "smtk/model/Instance.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/ShellEntity.h"
 #include "smtk/model/UseEntity.h"
-#include "smtk/model/Instance.h"
-#include "smtk/model/Group.h"
 
 #include "smtk/mesh/Manager.h"
 

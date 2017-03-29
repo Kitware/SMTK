@@ -9,8 +9,8 @@
 //=========================================================================
 
 #include "smtk/io/OperatorLog.h"
-#include "smtk/model/Operator.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/model/Operator.h"
 
 using namespace smtk::model;
 

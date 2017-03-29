@@ -21,8 +21,8 @@
 
 #include <map>
 #include <set>
-#include <string>
 #include <sstream>
+#include <string>
 #include <vector>
 
 namespace smtk {

@@ -14,9 +14,9 @@
 #ifndef __vtkCMBMeshServer_h
 #define __vtkCMBMeshServer_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCMBMesh.h"
 #include <vtkSmartPointer.h> // for callback
-#include "cmbSystemConfig.h"
 
 class vtkCallbackCommand;
 class vtkCMBMeshServerInternals;

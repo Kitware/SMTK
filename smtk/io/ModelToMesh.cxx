@@ -10,16 +10,16 @@
 
 #include "smtk/io/ModelToMesh.h"
 
-#include "smtk/mesh/Manager.h"
-#include "smtk/mesh/Interface.h"
 #include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Interface.h"
+#include "smtk/mesh/Manager.h"
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityIterator.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/Volume.h"
 #include "smtk/model/Tessellation.h"
+#include "smtk/model/Volume.h"
 
 #include <algorithm>
 

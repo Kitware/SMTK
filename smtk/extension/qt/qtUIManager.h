@@ -15,16 +15,16 @@
 #ifndef __smtk_extension_qtUIManager_h
 #define __smtk_extension_qtUIManager_h
 
-#include "smtk/extension/qt/qtItem.h"
+#include "smtk/attribute/System.h"
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtBaseView.h" // Needed for ViewInfo definition
-#include "smtk/attribute/System.h"
-#include <map>
-#include <QFont>
+#include "smtk/extension/qt/qtItem.h"
 #include <QColor>
-#include <QTextEdit>
+#include <QFont>
 #include <QMap>
 #include <QPointer>
+#include <QTextEdit>
+#include <map>
 
 class QTableWidget;
 class QTableWidgetItem;

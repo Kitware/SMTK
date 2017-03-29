@@ -13,8 +13,8 @@
 // Convert a vtkModelFace to a triangle input for meshing.
 #include "cmbFaceMeshHelper.h"
 
-#include <algorithm> //Needed for std::max and std::min
-#include <limits> //Needed for int max
+#include "smtk/extension/vtk/meshing/cmbFaceMesherInterface.h"
+#include "smtk/extension/vtk/meshing/vtkCMBPrepareForTriangleMesher.h"
 #include "vtkArrayIteratorIncludes.h" //needed for VTK_TT
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
@@ -25,8 +25,8 @@
 #include "vtkPoints.h"
 #include "vtkPolyData.h"
 #include "vtkSetGet.h" //needed for VTK_TT
-#include "smtk/extension/vtk/meshing/vtkCMBPrepareForTriangleMesher.h"
-#include "smtk/extension/vtk/meshing/cmbFaceMesherInterface.h"
+#include <algorithm> //Needed for std::max and std::min
+#include <limits> //Needed for int max
 
 //#include "vtkModel.h"
 //---FIXME---
@@ -73,9 +73,9 @@ enum ModelEventIdsCOPY {
 //#define DUMP_DEBUG_DATA
 #ifdef DUMP_DEBUG_DATA
 #define DUMP_DEBUG_DATA_DIR "E:/Work/"
-#include <sstream>
 #include "vtkNew.h"
 #include "vtkXMLPolyDataWriter.h"
+#include <sstream>
 #endif
 
 namespace 

@@ -12,8 +12,8 @@
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/System.h"
 #include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/System.h"
 
 #include <queue>
 

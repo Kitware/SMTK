@@ -26,8 +26,8 @@
 
 #include "vtkCellArray.h"
 #include "vtkNew.h"
-#include "vtkPolyData.h"
 #include "vtkPoints.h"
+#include "vtkPolyData.h"
 #include "vtkXMLPolyDataWriter.h"
 
 using namespace smtk::model;

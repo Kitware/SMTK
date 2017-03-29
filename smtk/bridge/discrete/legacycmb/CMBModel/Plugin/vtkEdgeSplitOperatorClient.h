@@ -20,8 +20,8 @@
 #ifndef __vtkEdgeSplitOperatorClient_h
 #define __vtkEdgeSplitOperatorClient_h
 
-#include "vtkEdgeSplitOperatorBase.h"
 #include "cmbSystemConfig.h"
+#include "vtkEdgeSplitOperatorBase.h"
 
 class vtkDiscreteModel;
 class vtkSMProxy;

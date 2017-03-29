@@ -11,15 +11,15 @@
 
 #include "vtkADHExporterOperator.h"
 
-#include <fstream>
-#include <vtkCharArray.h>
-#include "vtkModelGridRepresentation.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
 #include "vtkDiscreteModelEntityGroup.h"
 #include "vtkDiscreteModelGeometricEntity.h"
 #include "vtkDiscreteModelWrapper.h"
+#include "vtkModelGridRepresentation.h"
 #include "vtkModelItemIterator.h"
+#include <fstream>
+#include <vtkCharArray.h>
 #include <vtkIdList.h>
 #include <vtkIdTypeArray.h>
 #include <vtkObjectFactory.h>

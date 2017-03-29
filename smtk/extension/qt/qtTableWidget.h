@@ -22,8 +22,8 @@
 #ifndef __smtk_extension_qtTableWidget_h
 #define __smtk_extension_qtTableWidget_h
 
-#include <QTableWidget>
 #include "smtk/extension/qt/Exports.h"
+#include <QTableWidget>
 
 class QKeyEvent;
 

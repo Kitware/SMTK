@@ -14,8 +14,8 @@
 #include "smtk/model/Manager.h"
 
 #include "CGMApp.hpp"
-#include "CubitCompat.hpp"
 #include "CubitAttribManager.hpp"
+#include "CubitCompat.hpp"
 #include "RefEntity.hpp"
 
 namespace smtk {

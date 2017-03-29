@@ -13,8 +13,8 @@
 #include "smtk/Function.h" // for smtk::bind
 
 #include <algorithm>
-#include <functional>
 #include <cctype>
+#include <functional>
 #include <locale>
 
 using namespace smtk::placeholders;

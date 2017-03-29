@@ -26,10 +26,10 @@
 #include "smtk/model/Vertex.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/VoidItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/VoidItem.h"
 
 #include "smtk/model/Manager.txx"
 

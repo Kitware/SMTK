@@ -14,8 +14,8 @@
 #ifndef __smtk_mesh_moab_CellTypeToType_h
 #define __smtk_mesh_moab_CellTypeToType_h
 
-#include "smtk/mesh/moab/HandleRange.h"
 #include "smtk/mesh/CellTypes.h"
+#include "smtk/mesh/moab/HandleRange.h"
 
 namespace smtk {
 namespace mesh {

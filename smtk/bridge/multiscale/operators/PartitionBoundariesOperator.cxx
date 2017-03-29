@@ -317,8 +317,8 @@ smtk::model::OperatorResult PartitionBoundariesOperator::operateInternal()
   } //namespace bridge
 } // namespace smtk
 
-#include "smtk/bridge/multiscale/PartitionBoundariesOperator_xml.h"
 #include "smtk/bridge/multiscale/Exports.h"
+#include "smtk/bridge/multiscale/PartitionBoundariesOperator_xml.h"
 
 smtkImplementsModelOperator(
   SMTKMULTISCALESESSION_EXPORT,

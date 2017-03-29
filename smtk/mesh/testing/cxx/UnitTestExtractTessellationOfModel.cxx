@@ -15,8 +15,8 @@
 #include "smtk/model/EntityIterator.h"
 #include "smtk/model/EntityRef.h"
 
-#include "smtk/io/ModelToMesh.h"
 #include "smtk/io/ImportJSON.h"
+#include "smtk/io/ModelToMesh.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 

@@ -11,8 +11,8 @@
 #define __smtk_common_UUID_h
 
 #include "smtk/CoreExports.h"
-#include "smtk/SystemConfig.h"
 #include "smtk/HashFunctor.h"
+#include "smtk/SystemConfig.h"
 
 #include "smtk/common/CompilerInformation.h"
 

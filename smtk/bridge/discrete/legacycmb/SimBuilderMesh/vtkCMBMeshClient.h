@@ -20,9 +20,9 @@
 #ifndef __vtkCMBMeshClient_h
 #define __vtkCMBMeshClient_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCMBMesh.h"
 #include <vtkSmartPointer.h> // for callback
-#include "cmbSystemConfig.h"
 
 class vtkCallbackCommand;
 class vtkCMBMeshClientInternals;

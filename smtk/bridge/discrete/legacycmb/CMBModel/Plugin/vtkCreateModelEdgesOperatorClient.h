@@ -16,8 +16,8 @@
 #ifndef __vtkCreateModelEdgesOperatorClient_h
 #define __vtkCreateModelEdgesOperatorClient_h
 
-#include "vtkCreateModelEdgesOperatorBase.h"
 #include "cmbSystemConfig.h"
+#include "vtkCreateModelEdgesOperatorBase.h"
 
 class vtkDiscreteModelWrapper;
 class vtkSMProxy;

@@ -127,8 +127,8 @@
 #define __smtk_vtk_vtkCMBPrepareForTriangleMesher_h
 
 #include "smtk/extension/vtk/meshing/Exports.h" // For export macro
-#include "vtkObject.h"
 #include "smtk/extension/vtk/meshing/cmbFaceMeshHelper.h"
+#include "vtkObject.h"
 
 #include <map>
 #include <vector>

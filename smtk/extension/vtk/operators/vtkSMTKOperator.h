@@ -16,8 +16,8 @@
 #ifndef __smtk_vtk_SMTKOperator_h
 #define __smtk_vtk_SMTKOperator_h
 
-#include "smtk/extension/vtk/operators/Exports.h" // For export macro
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/extension/vtk/operators/Exports.h" // For export macro
 
 #include "vtkObject.h"
 

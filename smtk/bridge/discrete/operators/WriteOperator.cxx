@@ -14,16 +14,16 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
-#include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/StringItem.h"
 
-#include "smtk/model/Operator.h"
-#include "smtk/model/Model.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/Model.h"
+#include "smtk/model/Operator.h"
 
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkModelItem.h"
 #include "vtkModel.h"
+#include "vtkModelItem.h"
 #include <vtksys/SystemTools.hxx>
 
 #include "WriteOperator_xml.h"
@@ -31,8 +31,8 @@
 // #define SMTK_DISCRETE_SESSION_DEBUG
 
 #if defined(SMTK_DISCRETE_SESSION_DEBUG)
-#include "smtk/io/ExportJSON.h"
 #include "cJSON.h"
+#include "smtk/io/ExportJSON.h"
 #endif
 
 using namespace smtk::model;

@@ -11,25 +11,25 @@
 
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
-#include "vtkCleanPolyData.h"
 #include "vtkCellLocator.h"
+#include "vtkCleanPolyData.h"
 #include "vtkDoubleArray.h"
 #include "vtkFloatArray.h"
 #include "vtkGenericCell.h"
+#include "vtkImageData.h"
+#include "vtkIncrementalOctreePointLocator.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkIncrementalOctreePointLocator.h"
 #include "vtkObjectFactory.h"
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
-#include "vtkImageData.h"
-#include "vtkUniformGrid.h"
 #include "vtkSmartPointer.h"
+#include "vtkUniformGrid.h"
 #include "vtkWeakPointer.h"
 
 #include <iostream>
-#include <sstream>
 #include <map>
+#include <sstream>
 
 vtkStandardNewMacro(vtkCMBApplyBathymetryFilter);
 

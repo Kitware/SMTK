@@ -18,9 +18,9 @@
 #ifndef __vtkCMBPolyDataProvider_h
 #define __vtkCMBPolyDataProvider_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
-#include "cmbSystemConfig.h"
 
 class vtkDiscreteModelWrapper;
 class vtkDataSet;

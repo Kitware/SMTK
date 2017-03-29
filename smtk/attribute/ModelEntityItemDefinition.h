@@ -14,8 +14,8 @@
 #ifndef __smtk_attribute_ModelEntityItemDefinition_h
 #define __smtk_attribute_ModelEntityItemDefinition_h
 
-#include "smtk/common/UUID.h"
 #include "smtk/attribute/ItemDefinition.h"
+#include "smtk/common/UUID.h"
 #include "smtk/model/EntityTypeBits.h" // for smtk::model::BitFlags
 
 namespace smtk

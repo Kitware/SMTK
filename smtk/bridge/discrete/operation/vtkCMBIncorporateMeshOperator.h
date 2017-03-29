@@ -17,8 +17,8 @@
 
 #include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkObject.h"
-#include <set>
 #include <map>
+#include <set>
 
 class DiscreteMesh;
 class vtkDiscreteModelWrapper;

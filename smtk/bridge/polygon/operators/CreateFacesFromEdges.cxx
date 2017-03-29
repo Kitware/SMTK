@@ -13,15 +13,15 @@
 #include "smtk/bridge/polygon/internal/ActiveFragmentTree.h"
 #include "smtk/bridge/polygon/internal/Config.h"
 #include "smtk/bridge/polygon/internal/Edge.h"
-#include "smtk/bridge/polygon/internal/Neighborhood.h"
 #include "smtk/bridge/polygon/internal/Model.h"
+#include "smtk/bridge/polygon/internal/Neighborhood.h"
 #include "smtk/bridge/polygon/internal/Region.h"
 #include "smtk/bridge/polygon/internal/SweepEvent.h"
 #include "smtk/bridge/polygon/internal/Util.h"
 
 #include "smtk/bridge/polygon/Operator.txx"
-#include "smtk/bridge/polygon/internal/Neighborhood.txx"
 #include "smtk/bridge/polygon/internal/Model.txx"
+#include "smtk/bridge/polygon/internal/Neighborhood.txx"
 
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"

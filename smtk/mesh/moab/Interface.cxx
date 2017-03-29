@@ -12,13 +12,13 @@
 #include "smtk/mesh/moab/Interface.h"
 
 #include "smtk/mesh/Collection.h"
+#include "smtk/mesh/ContainsFunctors.h"
 #include "smtk/mesh/MeshSet.h"
 #include "smtk/mesh/QueryTypes.h"
-#include "smtk/mesh/ContainsFunctors.h"
 
-#include "smtk/mesh/moab/CellTypeToType.h"
 #include "smtk/mesh/moab/Allocator.h"
 #include "smtk/mesh/moab/BufferedCellAllocator.h"
+#include "smtk/mesh/moab/CellTypeToType.h"
 #include "smtk/mesh/moab/ConnectivityStorage.h"
 #include "smtk/mesh/moab/IncrementalAllocator.h"
 #include "smtk/mesh/moab/MergeMeshVertices.h"

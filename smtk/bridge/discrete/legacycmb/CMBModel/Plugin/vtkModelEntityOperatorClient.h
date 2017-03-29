@@ -16,8 +16,8 @@
 #ifndef __vtkModelEntityOperatorClient_h
 #define __vtkModelEntityOperatorClient_h
 
-#include "vtkModelEntityOperatorBase.h"
 #include "cmbSystemConfig.h"
+#include "vtkModelEntityOperatorBase.h"
 
 class vtkDiscreteModel;
 class vtkModelEntity;

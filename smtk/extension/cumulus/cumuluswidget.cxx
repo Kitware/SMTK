@@ -9,14 +9,14 @@
 //=========================================================================
 
 #include "cumuluswidget.h"
-#include "ui_cumuluswidget.h"
-#include "jobtablemodel.h"
 #include "cumulusproxy.h"
+#include "jobtablemodel.h"
+#include "ui_cumuluswidget.h"
 
 #include <QDesktopWidget>
+#include <QList>
 #include <QMessageBox>
 #include <QNetworkReply>
-#include <QList>
 #include <QTimer>
 
 

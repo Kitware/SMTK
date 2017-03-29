@@ -14,8 +14,8 @@
 #ifndef __smtk_io_XmlDocV2Parser_h
 #define __smtk_io_XmlDocV2Parser_h
 
-#include "smtk/io/XmlDocV1Parser.h"
 #include "smtk/common/View.h"
+#include "smtk/io/XmlDocV1Parser.h"
 
 namespace smtk
 {

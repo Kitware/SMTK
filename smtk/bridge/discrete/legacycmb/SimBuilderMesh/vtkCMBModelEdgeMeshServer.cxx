@@ -10,17 +10,17 @@
 
 #include "vtkCMBModelEdgeMeshServer.h"
 
-#include "vtkCleanPolylines.h"
 #include "vtkCMBMesh.h"
 #include "vtkCMBModelFaceMesh.h"
-#include "vtkDiscreteModelEdge.h"
 #include "vtkCMBModelVertexMesh.h"
-#include <vtkModelUserName.h>
+#include "vtkCleanPolylines.h"
+#include "vtkDiscreteModelEdge.h"
 #include "vtkMeshModelEdgesFilter.h"
 #include <vtkModel.h>
 #include <vtkModelEdge.h>
 #include <vtkModelFace.h>
 #include <vtkModelItemIterator.h>
+#include <vtkModelUserName.h>
 #include <vtkModelVertex.h>
 
 #include "vtkCellData.h"

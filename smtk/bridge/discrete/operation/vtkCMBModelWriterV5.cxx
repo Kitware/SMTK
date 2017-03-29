@@ -13,32 +13,32 @@
 
 #include "vtkCellData.h"
 #include "vtkCharArray.h"
-#include "vtkModel3dmGridRepresentation.h"
 #include "vtkModel3dm2DGridRepresentation.h"
+#include "vtkModel3dmGridRepresentation.h"
 #include "vtkModelBCGridRepresentation.h"
 //#include "vtkCMBMeshGridRepresentationServer.h"
-#include "vtkModelMaterial.h"
+#include "ModelParserHelper.h"
+#include "vtkCMBParserBase.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
 #include "vtkDiscreteModelEntityGroup.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelRegion.h"
-#include "vtkCMBParserBase.h"
 #include "vtkFieldData.h"
-#include <vtkIdList.h>
 #include "vtkIdTypeArray.h"
 #include "vtkIntArray.h"
 #include "vtkModelEdgeUse.h"
 #include "vtkModelFaceUse.h"
 #include "vtkModelItemIterator.h"
 #include "vtkModelLoopUse.h"
+#include "vtkModelMaterial.h"
 #include "vtkModelVertex.h"
 #include "vtkObjectFactory.h"
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
 #include "vtkSmartPointer.h"
+#include <vtkIdList.h>
 #include <vtkStringArray.h>
-#include "ModelParserHelper.h"
 
 vtkStandardNewMacro(vtkCMBModelWriterV5);
 

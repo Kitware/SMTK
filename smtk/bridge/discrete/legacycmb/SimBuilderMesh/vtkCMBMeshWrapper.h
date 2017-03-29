@@ -16,8 +16,8 @@
 #ifndef __vtkCMBMeshWrapper_h
 #define __vtkCMBMeshWrapper_h
 
-#include "vtkObject.h"
 #include "cmbSystemConfig.h"
+#include "vtkObject.h"
 
 class vtkCMBMeshServer;
 class vtkDiscreteModelWrapper;

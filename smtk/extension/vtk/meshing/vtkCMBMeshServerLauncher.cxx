@@ -17,8 +17,8 @@
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
-#include <vector>
 #include <string>
+#include <vector>
 #include <vtksys/SystemTools.hxx>
 
 #include <remus/common/LocateFile.h>

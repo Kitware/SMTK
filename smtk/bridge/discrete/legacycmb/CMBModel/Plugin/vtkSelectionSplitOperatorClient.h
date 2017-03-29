@@ -18,8 +18,8 @@
 #ifndef __vtkSelectionSplitOperatorClient_h
 #define __vtkSelectionSplitOperatorClient_h
 
-#include "vtkSelectionSplitOperatorBase.h"
 #include "cmbSystemConfig.h"
+#include "vtkSelectionSplitOperatorBase.h"
 
 class vtkDiscreteModel;
 class vtkIdTypeArray;

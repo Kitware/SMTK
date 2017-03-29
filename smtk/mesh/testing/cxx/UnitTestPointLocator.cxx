@@ -10,9 +10,9 @@
 
 #include "smtk/mesh/PointLocator.h"
 
+#include "smtk/io/ImportMesh.h"
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
-#include "smtk/io/ImportMesh.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 

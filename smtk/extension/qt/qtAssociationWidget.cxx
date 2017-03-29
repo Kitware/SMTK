@@ -10,11 +10,11 @@
 
 #include "smtk/extension/qt/qtAssociationWidget.h"
 
-#include "smtk/extension/qt/qtUIManager.h"
-#include "smtk/extension/qt/qtTableWidget.h"
 #include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/qtTableWidget.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -23,24 +23,24 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/extension/qt/qtEntityItemModel.h"
+#include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
-#include "smtk/model/EntityListPhrase.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/SimpleModelSubphrases.h"
-#include "smtk/extension/qt/qtEntityItemModel.h"
 
-#include <QStringList>
 #include <QComboBox>
-#include <QVariant>
-#include <QPushButton>
 #include <QHBoxLayout>
-#include <QVBoxLayout>
+#include <QKeyEvent>
 #include <QLabel>
 #include <QListWidget>
-#include <QKeyEvent>
-#include <QPointer>
 #include <QMessageBox>
+#include <QPointer>
+#include <QPushButton>
+#include <QStringList>
+#include <QVBoxLayout>
+#include <QVariant>
 
 #include <algorithm>
 

@@ -12,8 +12,8 @@
 #include "vtkModelEntityOperatorBase.h"
 
 #include "vtkDiscreteModel.h"
-#include "vtkModelUserName.h"
 #include "vtkModelGeometricEntity.h"
+#include "vtkModelUserName.h"
 #include "vtkObjectFactory.h"
 #include "vtkProperty.h"
 #include "vtkSmartPointer.h"

@@ -21,16 +21,16 @@
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Loop.h"
 
-#include "smtk/io/ModelToMesh.h"
 #include "smtk/io/ExportMesh.h"
+#include "smtk/io/ModelToMesh.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 
-#include "smtk/bridge/polygon/Session.h"
 #include "smtk/bridge/polygon/Operator.h"
+#include "smtk/bridge/polygon/Session.h"
 
 #include <fstream>
 

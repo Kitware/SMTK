@@ -10,9 +10,9 @@
 
 #include "smtk/attribute/System.h"
 
-#include "smtk/io/Logger.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
+#include "smtk/io/Logger.h"
 
 #include <iostream>
 

@@ -9,9 +9,9 @@
 //=========================================================================
 #include "smtk/model/Chain.h"
 
+#include "smtk/model/Edge.h"
 #include "smtk/model/EntityRefArrangementOps.h"
 #include "smtk/model/VertexUse.h"
-#include "smtk/model/Edge.h"
 
 namespace smtk {
   namespace model {

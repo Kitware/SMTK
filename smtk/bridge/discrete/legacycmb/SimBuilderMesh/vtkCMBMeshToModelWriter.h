@@ -16,8 +16,8 @@
 #ifndef __vtkCMBMeshToModelWriter_h
 #define __vtkCMBMeshToModelWriter_h
 
-#include "vtkXMLWriter.h"
 #include "cmbSystemConfig.h"
+#include "vtkXMLWriter.h"
 
 class vtkDiscreteModelWrapper;
 

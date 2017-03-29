@@ -10,9 +10,9 @@
 #ifndef __smtk_session_remote_RemusConnection_h
 #define __smtk_session_remote_RemusConnection_h
 
-#include "smtk/bridge/remote/Exports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
+#include "smtk/bridge/remote/Exports.h"
 
 #include "smtk/model/StringData.h"
 
@@ -22,8 +22,8 @@
 #include "remus/client/Client.h"
 #include "remus/client/ServerConnection.h"
 
-#include "remus/server/Server.h"
 #include "remus/server/PortNumbers.h"
+#include "remus/server/Server.h"
 
 #include "remus/proto/JobRequirements.h"
 

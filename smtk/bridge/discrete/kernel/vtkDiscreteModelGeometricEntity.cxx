@@ -10,13 +10,12 @@
 
 #include "vtkDiscreteModelGeometricEntity.h"
 
-#include "vtkModelMaterial.h"
+#include "vtkCell.h"
+#include "vtkCellData.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelRegion.h"
-#include "vtkCell.h"
-#include "vtkCellData.h"
 #include "vtkIdList.h"
 #include "vtkIdTypeArray.h"
 #include "vtkMergeEventData.h"
@@ -24,6 +23,7 @@
 #include "vtkModelFaceUse.h"
 #include "vtkModelItemIterator.h"
 #include "vtkModelLoopUse.h"
+#include "vtkModelMaterial.h"
 #include "vtkModelShellUse.h"
 #include "vtkModelVertex.h"
 #include "vtkModelVertexUse.h"

@@ -8,9 +8,9 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/io/ImportMesh.h"
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
-#include "smtk/io/ImportMesh.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -26,13 +26,13 @@
 #include "vtkPolyData.h"
 #include "vtkPolyDataMapper.h"
 #include "vtkProperty.h"
-#include "vtkRenderer.h"
+#include "vtkRegressionTestImage.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
+#include "vtkRenderer.h"
 #include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
 #include "vtkXMLMultiBlockDataWriter.h"
-#include "vtkRegressionTestImage.h"
 
 #include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 

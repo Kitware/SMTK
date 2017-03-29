@@ -10,8 +10,8 @@
 #ifndef __smtk_ex_session_h
 #define __smtk_ex_session_h
 
-#include "smtk/model/Session.h"
 #include "smtk/common/UUID.h"
+#include "smtk/model/Session.h"
 
 #include "vtkSmartPointer.h"
 

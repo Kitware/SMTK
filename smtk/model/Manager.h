@@ -13,12 +13,12 @@
 #include "smtk/Options.h" // for SMTK_HASH_STORAGE
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
-#include "smtk/SystemConfig.h"
 #include "smtk/SharedPtr.h"
+#include "smtk/SystemConfig.h"
 
-#include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/AttributeAssignments.h"
+#include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Events.h"
 #include "smtk/model/FloatData.h"
@@ -48,8 +48,8 @@
 #endif
 
 #include <algorithm>
-#include <set>
 #include <map>
+#include <set>
 #include <vector>
 
 #include <sstream>

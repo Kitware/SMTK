@@ -11,8 +11,8 @@
 #define __smtk_model_DescriptivePhrase_h
 
 #include "smtk/SharedFromThis.h"
-#include "smtk/model/EntityRef.h"
 #include "smtk/mesh/MeshSet.h"
+#include "smtk/model/EntityRef.h"
 #include "smtk/model/EntityTypeBits.h"
 
 #include <string>

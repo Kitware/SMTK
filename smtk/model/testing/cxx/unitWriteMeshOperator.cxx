@@ -13,8 +13,8 @@
 #include "smtk/attribute/MeshItem.h"
 
 #include "smtk/io/ImportJSON.h"
-#include "smtk/io/ReadMesh.h"
 #include "smtk/io/ModelToMesh.h"
+#include "smtk/io/ReadMesh.h"
 #include "smtk/io/WriteMesh.h"
 
 #include "smtk/model/DefaultSession.h"

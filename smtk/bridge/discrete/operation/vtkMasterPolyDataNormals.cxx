@@ -11,17 +11,17 @@
 
 #include "vtkMasterPolyDataNormals.h"
 
-#include "vtkObjectFactory.h"
-#include "vtkInformation.h"
-#include "vtkInformationVector.h"
-#include "vtkNew.h"
+#include "ModelParserHelper.h"
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkFloatArray.h"
+#include "vtkInformation.h"
+#include "vtkInformationVector.h"
 #include "vtkIntArray.h"
+#include "vtkNew.h"
+#include "vtkObjectFactory.h"
 #include "vtkPointData.h"
 #include "vtkPolyDataNormals.h"
-#include "ModelParserHelper.h"
 
 vtkStandardNewMacro(vtkMasterPolyDataNormals);
 

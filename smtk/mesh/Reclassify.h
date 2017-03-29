@@ -15,8 +15,8 @@
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/mesh/MeshSet.h"
-#include "smtk/model/Vertex.h"
 #include "smtk/model/Edge.h"
+#include "smtk/model/Vertex.h"
 
 namespace smtk {
   namespace mesh {

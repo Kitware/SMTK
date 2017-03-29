@@ -12,8 +12,8 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
-#include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/MeshItem.h"
+#include "smtk/attribute/StringItem.h"
 
 #include "smtk/io/ExportMesh.h"
 #include "smtk/io/mesh/MeshIO.h"
@@ -25,8 +25,8 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Session.h"
 
-#include <string>
 #include <sstream>
+#include <string>
 
 //force to use filesystem version 3
 #define BOOST_FILESYSTEM_VERSION 3

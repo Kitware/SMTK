@@ -10,27 +10,27 @@
 #include "vtkXMLArchiveWriter.h"
 
 #include "vtkInformation.h"
+#include "vtkInformationDoubleKey.h"
+#include "vtkInformationDoubleVectorKey.h"
 #include "vtkInformationIdTypeKey.h"
 #include "vtkInformationIntegerKey.h"
 #include "vtkInformationIntegerVectorKey.h"
-#include "vtkInformationDoubleKey.h"
-#include "vtkInformationStringKey.h"
-#include "vtkInformationDoubleVectorKey.h"
 #include "vtkInformationIterator.h"
+#include "vtkInformationKeyMap.h"
+#include "vtkInformationKeyVectorKey.h"
 #include "vtkInformationObjectBaseKey.h"
 #include "vtkInformationObjectBaseVectorKey.h"
-#include "vtkInformationKeyVectorKey.h"
+#include "vtkInformationStringKey.h"
 #include "vtkInformationStringVectorKey.h"
-#include "vtkInformationKeyMap.h"
+#include "vtkObjectFactory.h"
 #include "vtkSerializableObject.h"
 #include "vtkSerializationHelperMap.h"
-#include "vtkXMLElement.h"
-#include "vtkObjectFactory.h"
 #include "vtkSmartPointer.h"
+#include "vtkXMLElement.h"
 
+#include <algorithm>
 #include <list>
 #include <map>
-#include <algorithm>
 #include <sstream>
 
 vtkStandardNewMacro(vtkXMLArchiveWriter);

@@ -13,19 +13,20 @@
 #include <iostream>
 #include <string>
 
+#include "vtkCMBMeshServer.h"
+#include "vtkCMBModelEntityMesh.h"
+#include "vtkCMBParserBase.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
-#include "vtkCMBModelEntityMesh.h"
 #include "vtkDiscreteModelEntityGroup.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelGeometricEntity.h"
 #include "vtkDiscreteModelVertex.h"
-#include "vtkCMBMeshServer.h"
-#include "vtkCMBParserBase.h"
 #include "vtkMath.h"
 #include "vtkModelItemIterator.h"
 #include "vtkModelMaterial.h"
 
+#include "vtkNew.h"
 #include <vtkAppendPolyData.h>
 #include <vtkCellArray.h>
 #include <vtkCellData.h>
@@ -33,18 +34,17 @@
 #include <vtkIdList.h>
 #include <vtkIdTypeArray.h>
 #include <vtkIntArray.h>
-#include "vtkNew.h"
 #include <vtkObjectFactory.h>
-#include <vtkTrivialProducer.h>
-#include <vtkPolyData.h>
 #include <vtkPointData.h>
+#include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 #include <vtkTriangle.h>
+#include <vtkTrivialProducer.h>
 #include <vtkVector.h>
 #include <vtksys/SystemTools.hxx>
 
-#include "vtkCMBMeshWriter.h"
 #include "cmbFaceMeshHelper.h"
+#include "vtkCMBMeshWriter.h"
 
 using namespace discreteFaceMesherClasses;
 

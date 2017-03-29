@@ -19,11 +19,11 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 
 #include "DiscreteMeshCellIdIterator.h" //needed for iterator
-#include "vtkType.h" //needed for vtkIdType
 #include "vtkSmartPointer.h" //needed for vtkSmartPointer
 #include "vtkStdString.h"  // needed for FileName
-#include <vector> //needed for Face and FaceIds;
+#include "vtkType.h" //needed for vtkIdType
 #include <map> //needed for the edge storage
+#include <vector> //needed for Face and FaceIds;
 
 
 class vtkCell;

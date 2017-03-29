@@ -10,8 +10,8 @@
 #ifndef __pqCMBModelPluginStarter_h
 #define __pqCMBModelPluginStarter_h
 
-#include <QObject>
 #include "cmbSystemConfig.h"
+#include <QObject>
 
 class pqCMBModelPluginStarter : public QObject
 {

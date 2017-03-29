@@ -9,8 +9,8 @@
 //=========================================================================
 #include "smtk/extension/vtk/source/vtkModelRepresentation.h"
 
-#include "smtk/model/Manager.h"
 #include "smtk/model/Entity.h"
+#include "smtk/model/Manager.h"
 
 #include "vtkActor.h"
 #include "vtkApplyColors.h"
@@ -20,17 +20,17 @@
 #include "vtkIdTypeArray.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkObjectFactory.h"
 #include "vtkNew.h"
+#include "vtkObjectFactory.h"
+#include "vtkPoints.h"
 #include "vtkPolyData.h"
 #include "vtkPolyDataMapper.h"
-#include "vtkPoints.h"
 #include "vtkProperty.h"
-#include "vtkRenderer.h"
 #include "vtkRenderView.h"
-#include "vtkStringArray.h"
+#include "vtkRenderer.h"
 #include "vtkSelection.h"
 #include "vtkSelectionNode.h"
+#include "vtkStringArray.h"
 #include "vtkTransformFilter.h"
 #include "vtkViewTheme.h"
 

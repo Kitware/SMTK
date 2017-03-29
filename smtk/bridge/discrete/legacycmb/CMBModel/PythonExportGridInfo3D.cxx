@@ -13,8 +13,8 @@
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEntityGroup.h"
 #include "vtkDiscreteModelFace.h"
-#include "vtkModelGridRepresentation.h"
 #include "vtkModelGeneratedGridRepresentation.h"
+#include "vtkModelGridRepresentation.h"
 
 #include <vtkIdList.h>
 #include <vtkIdTypeArray.h>

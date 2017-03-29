@@ -10,7 +10,9 @@
 
 #include "vtkCMBMapToCMBModel.h"
 
+#include "math.h"
 #include "vtkAbstractArray.h"
+#include "vtkAlgorithm.h"
 #include "vtkCell.h"
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
@@ -20,31 +22,29 @@
 #include "vtkDiscreteModelEdge.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelRegion.h"
-#include "vtkDiscreteModelWrapper.h"
 #include "vtkDiscreteModelVertex.h"
+#include "vtkDiscreteModelWrapper.h"
 #include "vtkDoubleArray.h"
 #include "vtkFieldData.h"
 #include "vtkFloatArray.h"
 #include "vtkIdList.h"
+#include "vtkIdTypeArray.h"
 #include "vtkInstantiator.h"
 #include "vtkIntArray.h"
 #include "vtkLine.h"
+#include "vtkMath.h"
 #include "vtkModelItemIterator.h"
 #include "vtkObjectFactory.h"
+#include "vtkPointData.h"
 #include "vtkPolyData.h"
 #include "vtkPolygon.h"
-#include "vtkAlgorithm.h"
-#include "vtkIdTypeArray.h"
-#include "vtkPointData.h"
-#include "vtkMath.h"
 #include <vtkSmartPointer.h>
-#include "math.h"
 
+#include <algorithm>
+#include <list>
 #include <map>
 #include <set>
-#include <list>
 #include <vector>
-#include <algorithm>
 
 
 

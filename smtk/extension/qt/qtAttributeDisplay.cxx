@@ -10,38 +10,38 @@
 
 #include "smtk/extension/qt/qtAttributeDisplay.h"
 
-#include "smtk/extension/qt/qtUIManager.h"
-#include "smtk/extension/qt/qtTableWidget.h"
-#include "smtk/extension/qt/qtItem.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/System.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
+#include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/qtTableWidget.h"
+#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/model/AttributeAssignments.h"
 #include "smtk/model/Manager.h"
 
+#include <QBrush>
 #include <QCheckBox>
+#include <QColorDialog>
 #include <QComboBox>
 #include <QGridLayout>
-#include <QTableWidgetItem>
-#include <QVariant>
-#include <QPushButton>
 #include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QLabel>
+#include <QHeaderView>
 #include <QKeyEvent>
+#include <QLabel>
+#include <QMessageBox>
 #include <QModelIndex>
 #include <QModelIndexList>
-#include <QMessageBox>
 #include <QPointer>
-#include <QBrush>
-#include <QColorDialog>
-#include <QHeaderView>
+#include <QPushButton>
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include <QStyleOptionViewItem>
+#include <QTableWidgetItem>
+#include <QVBoxLayout>
+#include <QVariant>
 
 #include <iostream>
 #include <set>

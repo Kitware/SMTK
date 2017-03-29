@@ -10,8 +10,8 @@
 
 #include "vtkCMBModelStateOperatorBase.h"
 
-#include "vtkObjectFactory.h"
 #include "vtkDiscreteModel.h"
+#include "vtkObjectFactory.h"
 #include "vtkStringArray.h"
 
 vtkStandardNewMacro(vtkCMBModelStateOperatorBase);

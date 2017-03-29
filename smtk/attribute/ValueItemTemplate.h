@@ -18,9 +18,9 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinitionTemplate.h"
 #include <cassert>
-#include <vector>
-#include <stdio.h>
 #include <sstream>
+#include <stdio.h>
+#include <vector>
 
 namespace smtk
 {

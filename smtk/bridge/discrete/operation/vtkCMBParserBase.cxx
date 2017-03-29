@@ -12,19 +12,19 @@
 #include "vtkCMBParserBase.h"
 
 #include "vtkDiscreteModel.h"
-#include "vtkModelEntity.h"
-#include "vtkModel3dmGridRepresentation.h"
-#include "vtkDiscreteModelGeometricEntity.h"
 #include "vtkDiscreteModelEdge.h"
+#include "vtkDiscreteModelGeometricEntity.h"
+#include "vtkModel3dmGridRepresentation.h"
+#include "vtkModelEntity.h"
 
 #include <vtkCharArray.h>
 #include <vtkFieldData.h>
 #include <vtkIdList.h>
 #include <vtkIdTypeArray.h>
 #include <vtkIntArray.h>
+#include <vtkNew.h>
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
-#include <vtkNew.h>
 
 vtkCMBParserBase::vtkCMBParserBase()
 {

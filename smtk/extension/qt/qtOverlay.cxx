@@ -8,11 +8,11 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/qt/qtOverlay.h"
+#include <QComboBox>
+#include <QEvent>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPainter>
-#include <QEvent>
-#include <QComboBox>
 #include <QStringList>
 
 using namespace smtk::extension;

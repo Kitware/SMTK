@@ -18,8 +18,8 @@
 #ifndef __vtkCMBModelEdgeMesh_h
 #define __vtkCMBModelEdgeMesh_h
 
-#include "vtkCMBModelEntityMesh.h"
 #include "cmbSystemConfig.h"
+#include "vtkCMBModelEntityMesh.h"
 
 class vtkModelEdge;
 class vtkCMBModelVertexMesh;

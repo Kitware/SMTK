@@ -22,8 +22,8 @@
 #include "smtk/mesh/Manager.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/MeshItem.h"
+#include "smtk/attribute/ModelEntityItem.h"
 #include <QtCore/QDir>
 #include <QtCore/QDirIterator>
 #include <QtCore/QFile>

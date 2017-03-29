@@ -45,13 +45,13 @@
 #ifndef __smtkdiscrete_vtkXMLModelWriter_h
 #define __smtkdiscrete_vtkXMLModelWriter_h
 
-#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "Serialize/vtkSerializer.h"
+#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 
 
-#include <vector> // Vector of smart pointers
-#include <sstream>
 #include "vtkSmartPointer.h" // Vector of smart pointers
+#include <sstream>
+#include <vector> // Vector of smart pointers
 
 struct vtkXMLModelWriterInternals;
 class vtkXMLElement;

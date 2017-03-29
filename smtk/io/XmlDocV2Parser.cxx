@@ -11,6 +11,7 @@
 
 #include "smtk/io/XmlDocV2Parser.h"
 #define PUGIXML_HEADER_ONLY
+#include "cJSON.h"
 #include "pugixml/src/pugixml.cpp"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -25,15 +26,14 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/common/View.h"
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/json/Interface.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/json/Interface.h"
-#include "smtk/mesh/Manager.h"
-#include <iostream>
 #include <algorithm>
-#include "cJSON.h"
+#include <iostream>
 
 using namespace pugi;
 using namespace smtk::io;

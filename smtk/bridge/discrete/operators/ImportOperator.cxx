@@ -15,8 +15,8 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/StringItem.h"
 #include "smtk/io/ModelToMesh.h"
 #include "smtk/mesh/Collection.h"
 #include "smtk/model/Manager.h"
@@ -24,31 +24,31 @@
 #include "smtk/model/Operator.h"
 #include "smtk/model/SessionRef.h"
 
+#include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
+#include "vtkDataSetRegionSurfaceFilter.h"
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkModelItem.h"
-#include "vtkModel.h"
-#include "vtkPDataSetReader.h"
 #include "vtkMasterPolyDataNormals.h"
 #include "vtkMergeDuplicateCells.h"
-#include "vtkDataSetRegionSurfaceFilter.h"
-#include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
+#include "vtkModel.h"
+#include "vtkModelItem.h"
+#include "vtkPDataSetReader.h"
 
 #ifdef SMTK_ENABLE_REMUS_SUPPORT
+  #include "smtk/extension/vtk/meshing/vtkCMBTriangleMesher.h"
   #include "smtk/extension/vtk/reader/vtkCMBGeometry2DReader.h"
   #include "smtk/extension/vtk/reader/vtkCMBMapReader.h"
-  #include "smtk/extension/vtk/meshing/vtkCMBTriangleMesher.h"
 #endif
 
 #ifdef SMTK_ENABLE_MOAB_DISCRETE_READER
 #include "smtk/bridge/discrete/moabreader/vtkCmbMoabReader.h"
 #endif
 
-#include <vtksys/SystemTools.hxx>
-#include "ModelParserHelper.h"
 #include "ImportOperator_xml.h"
+#include "ModelParserHelper.h"
+#include <vtksys/SystemTools.hxx>
 
-#include "smtk/io/ExportJSON.h"
 #include "cJSON.h"
+#include "smtk/io/ExportJSON.h"
 
 using namespace smtk::model;
 

@@ -11,11 +11,11 @@
 #define __smtk_session_remote_Session_h
 
 #ifndef SHIBOKEN_SKIP
-#  include "smtk/model/SessionRegistrar.h"
 #  include "smtk/bridge/remote/RemusStaticSessionInfo.h"
+#  include "smtk/model/SessionRegistrar.h"
 #endif // SHIBOKEN_SKIP
-#include "smtk/bridge/remote/Exports.h" // for export macro
 #include "smtk/SharedPtr.h" // for export macro
+#include "smtk/bridge/remote/Exports.h" // for export macro
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/StringData.h"
 

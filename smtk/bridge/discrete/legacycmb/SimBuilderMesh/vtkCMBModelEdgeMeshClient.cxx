@@ -10,12 +10,12 @@
 
 #include "vtkCMBModelEdgeMeshClient.h"
 
-#include "vtkCleanPolylines.h"
 #include "vtkCMBMeshClient.h"
-#include "vtkDiscreteModel.h"
 #include "vtkCMBModelFaceMesh.h"
-#include "vtkDiscreteModelEdge.h"
 #include "vtkCMBModelVertexMesh.h"
+#include "vtkCleanPolylines.h"
+#include "vtkDiscreteModel.h"
+#include "vtkDiscreteModelEdge.h"
 #include "vtkMeshModelEdgesFilter.h"
 #include <vtkModel.h>
 #include <vtkModelEdge.h>
@@ -25,15 +25,15 @@
 
 #include "vtkCellData.h"
 #include "vtkDoubleArray.h"
+#include "vtkSMPropertyHelper.h"
 #include <vtkObjectFactory.h>
 #include <vtkPoints.h>
 #include <vtkPolyData.h>
-#include <vtkSmartPointer.h>
 #include <vtkSMIntVectorProperty.h>
 #include <vtkSMOperatorProxy.h>
-#include <vtkSMProxyManager.h>
-#include "vtkSMPropertyHelper.h"
 #include <vtkSMProxy.h>
+#include <vtkSMProxyManager.h>
+#include <vtkSmartPointer.h>
 
 vtkStandardNewMacro(vtkCMBModelEdgeMeshClient);
 

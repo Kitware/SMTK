@@ -10,24 +10,24 @@
 
 #include "smtk/extension/qt/qtGroupItem.h"
 
-#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtAttributeRefItem.h"
+#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
-#include "smtk/attribute/ValueItem.h"
-#include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/GroupItemDefinition.h"
+#include "smtk/attribute/ValueItem.h"
+#include "smtk/attribute/ValueItemDefinition.h"
 
-#include <QGroupBox>
-#include <QVBoxLayout>
-#include <QPointer>
-#include <QMap>
-#include <QToolButton>
-#include <QTableWidget>
 #include <QCoreApplication>
+#include <QGroupBox>
 #include <QHeaderView>
+#include <QMap>
+#include <QPointer>
+#include <QTableWidget>
+#include <QToolButton>
+#include <QVBoxLayout>
 
 using namespace smtk::extension;
 

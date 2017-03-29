@@ -11,13 +11,13 @@
 
 #include "PythonExportGridInfo.h"
 #include "vtkDiscreteModel.h"
-#include "vtkModelGridRepresentation.h"
 #include "vtkModelGeneratedGridRepresentation.h"
+#include "vtkModelGridRepresentation.h"
 
+#include <sstream>
 #include <vtkIdList.h>
 #include <vtkIdTypeArray.h>
 #include <vtkSmartPointer.h>
-#include <sstream>
 
 using namespace smtk::model;
 

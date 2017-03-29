@@ -12,13 +12,13 @@
 #include "vtkCMBModelBuilderClient.h"
 
 #include "vtkDiscreteModel.h"
-#include "vtkXMLModelReader.h"
 #include "vtkObjectFactory.h"
-#include "vtkSmartPointer.h"
 #include "vtkSMIntVectorProperty.h"
 #include "vtkSMOperatorProxy.h"
 #include "vtkSMProxyManager.h"
 #include "vtkSMStringVectorProperty.h"
+#include "vtkSmartPointer.h"
+#include "vtkXMLModelReader.h"
 
 #include <sstream>
 

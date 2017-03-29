@@ -16,8 +16,8 @@
 #ifndef __vtkModelEdgeOperatorClient_h
 #define __vtkModelEdgeOperatorClient_h
 
-#include "vtkModelEdgeOperatorBase.h"
 #include "cmbSystemConfig.h"
+#include "vtkModelEdgeOperatorBase.h"
 
 class vtkDiscreteModel;
 class vtkModelEntity;

@@ -9,12 +9,12 @@
 //=========================================================================
 #include "smtk/model/operators/DeleteMesh.h"
 
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
+#include "smtk/mesh/MeshSet.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/Session.h"
-#include "smtk/mesh/Manager.h"
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/MeshSet.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/MeshItem.h"

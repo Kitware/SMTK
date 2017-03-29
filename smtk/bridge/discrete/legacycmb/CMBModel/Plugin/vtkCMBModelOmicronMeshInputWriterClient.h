@@ -15,8 +15,8 @@
 #ifndef __vtkCMBModelOmicronMeshInputWriterClient_h
 #define __vtkCMBModelOmicronMeshInputWriterClient_h
 
-#include "vtkObject.h"
 #include "cmbSystemConfig.h"
+#include "vtkObject.h"
 
 class vtkDiscreteModel;
 class vtkSMProxy;

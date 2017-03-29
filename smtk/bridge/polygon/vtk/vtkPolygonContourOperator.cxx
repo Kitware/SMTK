@@ -14,13 +14,13 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
-#include "smtk/model/Operator.h"
 #include "smtk/model/Edge.h"
+#include "smtk/model/Operator.h"
 
+#include "vtkBoundingBox.h"
+#include "vtkObjectFactory.h"
 #include "vtkPoints.h"
 #include "vtkPolyData.h"
-#include "vtkObjectFactory.h"
-#include "vtkBoundingBox.h"
 #include <vector>
 
 vtkStandardNewMacro(vtkPolygonContourOperator);

@@ -15,7 +15,6 @@
 
 #include "DiscreteMesh.h"
 
-#include <algorithm> //Needed for std::max and std::min
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkCellLocator.h"
@@ -25,6 +24,7 @@
 #include "vtkPolyData.h"
 #include "vtkPolygon.h"
 #include "vtkStringArray.h"
+#include <algorithm> //Needed for std::max and std::min
 
 namespace detail
 {

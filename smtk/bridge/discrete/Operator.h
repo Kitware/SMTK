@@ -13,8 +13,8 @@
 #include "smtk/bridge/discrete/Exports.h"
 #include "smtk/bridge/discrete/Session.h"
 
-#include "smtk/model/Operator.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/Operator.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"

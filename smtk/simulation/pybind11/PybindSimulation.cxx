@@ -16,8 +16,8 @@ namespace py = pybind11;
 template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
-#include "PybindUserData.h"
 #include "PybindExportSpec.h"
+#include "PybindUserData.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 

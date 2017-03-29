@@ -8,23 +8,23 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/io/ModelToMesh.h"
 #include "smtk/io/ImportJSON.h"
+#include "smtk/io/ModelToMesh.h"
 #include "smtk/io/WriteMesh.h"
 
+#include "smtk/io/ImportMesh.h"
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
-#include "smtk/io/ImportMesh.h"
 
+#include "smtk/model/EntityIterator.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Volume.h"
-#include "smtk/model/EntityIterator.h"
 
-#include "smtk/model/testing/cxx/helpers.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
+#include "smtk/model/testing/cxx/helpers.h"
 
-#include <sstream>
 #include <fstream>
+#include <sstream>
 
 //force to use filesystem version 3
 #define BOOST_FILESYSTEM_VERSION 3

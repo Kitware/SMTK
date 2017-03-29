@@ -10,9 +10,9 @@
 
 
 #include "qtCollapsibleGroupWidget.h"
+#include "ui_qtCollapsibleGroupWidgetInternals.h"
 #include <QCheckBox>
 #include <QFrame>
-#include "ui_qtCollapsibleGroupWidgetInternals.h"
 using namespace smtk::extension;
 
 //----------------------------------------------------------------------------

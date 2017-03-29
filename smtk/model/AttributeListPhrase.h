@@ -10,8 +10,8 @@
 #ifndef __smtk_model_AttributeListPhrase_h
 #define __smtk_model_AttributeListPhrase_h
 
-#include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/AttributeAssignments.h"
+#include "smtk/model/DescriptivePhrase.h"
 
 #include <string>
 #include <vector>

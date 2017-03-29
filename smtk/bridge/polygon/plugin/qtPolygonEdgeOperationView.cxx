@@ -13,14 +13,14 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
-#include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/extension/qt/qtModelOperationWidget.h"
-#include "smtk/extension/qt/qtModelView.h"
-#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/bridge/polygon/qt/pqArcWidgetManager.h"
 #include "smtk/bridge/polygon/qt/pqPolygonArc.h"
 #include "smtk/bridge/polygon/qt/pqSplitEdgeWidget.h"
 #include "smtk/common/View.h"
+#include "smtk/extension/qt/qtAttribute.h"
+#include "smtk/extension/qt/qtModelOperationWidget.h"
+#include "smtk/extension/qt/qtModelView.h"
+#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/model/Operator.h"
 
 #include "pqActiveObjects.h"
@@ -28,15 +28,15 @@
 #include "pqRenderView.h"
 #include "pqServer.h"
 
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QPointer>
 #include <QCheckBox>
+#include <QHBoxLayout>
 #include <QLabel>
-#include <QTableWidget>
-#include <QScrollArea>
 #include <QMessageBox>
+#include <QPointer>
+#include <QScrollArea>
 #include <QSpacerItem>
+#include <QTableWidget>
+#include <QVBoxLayout>
 
 using namespace smtk::extension;
 

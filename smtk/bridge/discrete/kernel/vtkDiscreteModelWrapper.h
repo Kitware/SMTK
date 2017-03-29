@@ -32,8 +32,8 @@
 #include "vtkWeakPointer.h"
 
 #include <map>
-#include <vector>
 #include <set>
+#include <vector>
 
 class vtkDiscreteModel;
 class vtkModelEntity;

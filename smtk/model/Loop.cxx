@@ -9,8 +9,8 @@
 //=========================================================================
 #include "smtk/model/Loop.h"
 
-#include "smtk/model/EntityRefArrangementOps.h"
 #include "smtk/model/EdgeUse.h"
+#include "smtk/model/EntityRefArrangementOps.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Manager.h"

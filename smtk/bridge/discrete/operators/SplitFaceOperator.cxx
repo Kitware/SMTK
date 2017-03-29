@@ -17,18 +17,18 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
-#include "smtk/model/Operator.h"
 #include "smtk/model/Events.h"
 #include "smtk/model/Face.h"
-#include "smtk/model/Model.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/Model.h"
+#include "smtk/model/Operator.h"
 #include "smtk/model/Volume.h"
 
-#include "vtkDiscreteModelWrapper.h"
 #include "vtkDiscreteModel.h"
+#include "vtkDiscreteModelWrapper.h"
+#include "vtkModel.h"
 #include "vtkModelFace.h"
 #include "vtkModelRegion.h"
-#include "vtkModel.h"
 
 #include <set>
 

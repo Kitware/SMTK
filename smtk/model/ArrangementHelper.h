@@ -10,8 +10,8 @@
 #ifndef __smtk_model_ArrangementHelper_h
 #define __smtk_model_ArrangementHelper_h
 
-#include "smtk/PublicPointerDefs.h"
 #include "smtk/CoreExports.h" // for SMTKCORE_EXPORT
+#include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h" // for smtkTypeMacro
 #include "smtk/model/Session.h"
 

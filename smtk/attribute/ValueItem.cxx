@@ -11,9 +11,9 @@
 
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/System.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
 #include <algorithm> // for std::find

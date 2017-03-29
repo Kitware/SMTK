@@ -9,8 +9,8 @@
 //=========================================================================
 #include "smtk/model/AuxiliaryGeometry.h"
 
-#include "smtk/model/Manager.h"
 #include "smtk/model/Arrangement.h"
+#include "smtk/model/Manager.h"
 
 namespace smtk {
   namespace model {

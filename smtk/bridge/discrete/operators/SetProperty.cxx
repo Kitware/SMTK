@@ -15,12 +15,12 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 
-#include "smtk/mesh/Manager.h"
 #include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/DoubleItem.h"
+#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"

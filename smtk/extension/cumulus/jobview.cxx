@@ -9,13 +9,13 @@
 //=========================================================================
 
 #include "jobview.h"
-#include "jobtablemodel.h"
 #include "cumulusproxy.h"
+#include "jobtablemodel.h"
 
-#include <QMenu>
 #include <QContextMenuEvent>
-#include <QMessageBox>
 #include <QFileDialog>
+#include <QMenu>
+#include <QMessageBox>
 
 namespace cumulus
 {

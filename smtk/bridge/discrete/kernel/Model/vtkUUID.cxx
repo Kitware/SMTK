@@ -36,13 +36,13 @@
 
 // For GetMACAddress
 #ifdef _WIN32
-# include <snmp.h>
 # include <conio.h>
+# include <snmp.h>
 #else
-# include <unistd.h>
 # include <stdlib.h>
 # include <string.h>
 # include <sys/types.h>
+# include <unistd.h>
 #endif
 
 #ifdef CMAKE_HAVE_SYS_IOCTL_H

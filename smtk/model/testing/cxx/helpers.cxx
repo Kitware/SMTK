@@ -8,17 +8,17 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/common/UUID.h"
-#include "smtk/model/Vertex.h"
-#include "smtk/model/Edge.h"
-#include "smtk/model/Face.h"
-#include "smtk/model/Volume.h"
-#include "smtk/model/VertexUse.h"
-#include "smtk/model/EdgeUse.h"
-#include "smtk/model/FaceUse.h"
 #include "smtk/model/Chain.h"
+#include "smtk/model/Edge.h"
+#include "smtk/model/EdgeUse.h"
+#include "smtk/model/Face.h"
+#include "smtk/model/FaceUse.h"
 #include "smtk/model/Loop.h"
-#include "smtk/model/Shell.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/Shell.h"
+#include "smtk/model/Vertex.h"
+#include "smtk/model/VertexUse.h"
+#include "smtk/model/Volume.h"
 
 #include "smtk/model/DescriptivePhrase.h"
 

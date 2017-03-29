@@ -11,9 +11,9 @@
 
 #include "vtkCMBModelEdgeMeshOperator.h"
 
-#include "vtkCMBModelEdgeMeshServer.h"
 #include "vtkCMBMeshServer.h"
 #include "vtkCMBMeshWrapper.h"
+#include "vtkCMBModelEdgeMeshServer.h"
 #include <vtkModel.h>
 #include <vtkModelEdge.h>
 #include <vtkObjectFactory.h>

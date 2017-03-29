@@ -10,8 +10,8 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityTypeBits.h"
 
-#include "smtk/model/testing/cxx/helpers.h"
 #include "smtk/model/IntegerData.h"
+#include "smtk/model/testing/cxx/helpers.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 

@@ -15,8 +15,8 @@
 
 #include "smtk/common/UUID.h"
 
-#include "smtk/model/Manager.h" // For UUIDWithEntity
 #include "smtk/model/EntityIterator.h" // For IteratorStyle
+#include "smtk/model/Manager.h" // For UUIDWithEntity
 
 #ifndef SHIBOKEN_SKIP
 #  include "cJSON.h"

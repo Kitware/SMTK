@@ -10,14 +10,14 @@
 #include "smtk/extension/qt/qtAttribute.h"
 
 #include "smtk/extension/qt/qtAttributeItemWidgetFactory.h"
-#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtModelEntityItem.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DateTimeItem.h"
-#include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DirectoryItem.h"
+#include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/IntItem.h"
@@ -27,9 +27,9 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include <QPointer>
 #include <QFrame>
 #include <QLabel>
+#include <QPointer>
 #include <QVBoxLayout>
 
 #include <stdlib.h> // for atexit()

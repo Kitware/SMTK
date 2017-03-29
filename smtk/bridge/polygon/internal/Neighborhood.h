@@ -13,13 +13,13 @@
 #include "smtk/bridge/polygon/Operator.h"
 #include "smtk/bridge/polygon/internal/ActiveFragmentTree.h"
 
-#include "smtk/model/Edge.h"
 #include "smtk/common/UnionFind.h"
+#include "smtk/model/Edge.h"
 
+#include <list>
 #include <map>
 #include <set>
 #include <vector>
-#include <list>
 
 namespace smtk {
   namespace bridge {

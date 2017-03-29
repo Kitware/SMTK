@@ -10,17 +10,17 @@
 #include "smtk/io/ExportJSON.h"
 #include "smtk/io/ImportJSON.h"
 
+#include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/CellEntity.h"
 #include "smtk/model/UseEntity.h"
 #include "smtk/model/Vertex.h"
 
 #include "smtk/model/testing/cxx/helpers.h"
 
 #include <fstream>
-#include <string>
 #include <iostream>
+#include <string>
 
 using namespace smtk::common;
 using namespace smtk::model;

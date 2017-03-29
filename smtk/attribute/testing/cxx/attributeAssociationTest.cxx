@@ -10,11 +10,11 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
-#include "smtk/attribute/System.h"
 #include "smtk/attribute/StringItemDefinition.h"
+#include "smtk/attribute/System.h"
 
-#include "smtk/model/EntityRef.h"
 #include "smtk/model/Edge.h"
+#include "smtk/model/EntityRef.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Vertex.h"
 

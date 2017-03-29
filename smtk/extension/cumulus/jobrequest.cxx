@@ -8,19 +8,19 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "cumulusproxy.h"
-#include "cJSON.h"
 #include "jobrequest.h"
+#include "cJSON.h"
+#include "cumulusproxy.h"
 #include "utils.h"
 
 #include <QtCore/QDebug>
-#include <QtNetwork/QNetworkAccessManager>
-#include <QtNetwork/QNetworkRequest>
-#include <QtNetwork/QNetworkReply>
-#include <QtNetwork/QNetworkCookie>
-#include <QtCore/QVariant>
 #include <QtCore/QList>
 #include <QtCore/QTimer>
+#include <QtCore/QVariant>
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkCookie>
+#include <QtNetwork/QNetworkReply>
+#include <QtNetwork/QNetworkRequest>
 
 namespace cumulus {
 

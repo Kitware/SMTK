@@ -20,9 +20,9 @@
 #ifndef __vtkADHExporterOperatorBase_h
 #define __vtkADHExporterOperatorBase_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
-#include "cmbSystemConfig.h"
 
 struct ADHExporterOperatorBaseInternals;
 class vtkDiscreteModel;

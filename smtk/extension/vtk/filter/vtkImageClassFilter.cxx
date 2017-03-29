@@ -11,14 +11,14 @@
 #include "vtkImageClassFilter.h"
 #include "vtkOpenCVHelper.h"
 
+#include "vtkImageData.h"
+#include "vtkImageData.h"
+#include "vtkImageImport.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkObjectFactory.h"
-#include "vtkImageData.h"
-#include "vtkSmartPointer.h"
-#include "vtkImageData.h"
 #include "vtkPolyData.h"
-#include "vtkImageImport.h"
+#include "vtkSmartPointer.h"
 
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/imgproc.hpp"

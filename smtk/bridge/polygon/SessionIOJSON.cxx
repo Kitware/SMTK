@@ -21,8 +21,8 @@
 #include "smtk/model/Operator.h"
 
 #include "smtk/bridge/polygon/Session.h"
-#include "smtk/bridge/polygon/internal/Model.h"
 #include "smtk/bridge/polygon/internal/Edge.h"
+#include "smtk/bridge/polygon/internal/Model.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"

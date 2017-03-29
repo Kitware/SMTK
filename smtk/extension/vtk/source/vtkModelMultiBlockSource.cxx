@@ -9,11 +9,12 @@
 //=========================================================================
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
+#include "smtk/extension/vtk/filter/vtkImageSpacingFlip.h"
 #include "smtk/model/AuxiliaryGeometry.h"
-#include "smtk/model/EntityRef.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
 #include "smtk/model/EntityIterator.h"
+#include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Group.h"
@@ -24,42 +25,41 @@
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/UseEntity.h"
 #include "smtk/model/Volume.h"
-#include "smtk/extension/vtk/filter/vtkImageSpacingFlip.h"
 
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkDataObjectTreeIterator.h"
 #include "vtkGDALRasterReader.h"
 #include "vtkIdTypeArray.h"
+#include "vtkImageData.h"
 #include "vtkInformation.h"
 #include "vtkInformationStringKey.h"
 #include "vtkInformationVector.h"
 #include "vtkMultiBlockDataSet.h"
+#include "vtkMultiBlockDataSet.h"
 #include "vtkNew.h"
 #include "vtkOBJReader.h"
 #include "vtkObjectFactory.h"
-#include "vtkPolyData.h"
+#include "vtkPTSReader.h"
 #include "vtkPoints.h"
+#include "vtkPolyData.h"
+#include "vtkPolyData.h"
+#include "vtkPolyDataNormals.h"
 #include "vtkProperty.h"
 #include "vtkStringArray.h"
-#include "vtkPTSReader.h"
-#include "vtkPolyDataNormals.h"
-#include "vtkPolyData.h"
 #include "vtkUnstructuredGrid.h"
-#include "vtkImageData.h"
-#include "vtkMultiBlockDataSet.h"
-#include "vtkXMLPolyDataReader.h"
-#include "vtkXMLUnstructuredGridReader.h"
 #include "vtkXMLImageDataReader.h"
 #include "vtkXMLMultiBlockDataReader.h"
+#include "vtkXMLPolyDataReader.h"
+#include "vtkXMLUnstructuredGridReader.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
 
+#include <errno.h>
 #include <inttypes.h>
 #include <stdlib.h>
-#include <errno.h>
 
 using namespace smtk::model;
 

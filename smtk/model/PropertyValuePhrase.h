@@ -10,8 +10,8 @@
 #ifndef __smtk_model_PropertyValuePhrase_h
 #define __smtk_model_PropertyValuePhrase_h
 
-#include "smtk/model/PropertyListPhrase.h"
 #include "smtk/model/Manager.h" // For PropertyType enum.
+#include "smtk/model/PropertyListPhrase.h"
 
 #include <string>
 #include <vector>

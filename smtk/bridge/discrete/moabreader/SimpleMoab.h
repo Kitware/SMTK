@@ -11,10 +11,10 @@
 #ifndef __smoab_SimpleMoab_h
 #define __smoab_SimpleMoab_h
 
+#include "moab/CN.hpp"
 #include "moab/Core.hpp"
 #include "moab/Interface.hpp"
 #include "moab/Range.hpp"
-#include "moab/CN.hpp"
 
 #include "MBTagConventions.hpp"
 

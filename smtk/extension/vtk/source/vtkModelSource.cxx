@@ -23,13 +23,13 @@
 #include "vtkIdTypeArray.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkObjectFactory.h"
 #include "vtkNew.h"
-#include "vtkPolyData.h"
+#include "vtkObjectFactory.h"
 #include "vtkPoints.h"
+#include "vtkPolyData.h"
 #include "vtkProperty.h"
-#include "vtkRenderer.h"
 #include "vtkRenderView.h"
+#include "vtkRenderer.h"
 #include "vtkStringArray.h"
 
 using namespace smtk::model;

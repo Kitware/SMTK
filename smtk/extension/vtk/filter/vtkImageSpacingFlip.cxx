@@ -12,11 +12,11 @@
 
 #include "vtkObjectFactory.h"
 
+#include "vtkDataObject.h"
+#include "vtkImageData.h"
+#include "vtkImageFlip.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkImageData.h"
-#include "vtkDataObject.h"
-#include "vtkImageFlip.h"
 #include "vtkNew.h"
 
 vtkStandardNewMacro(vtkImageSpacingFlip);

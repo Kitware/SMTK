@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/Options.h"
 #include "smtk/AutoInit.h"
+#include "smtk/Options.h"
 
 smtkComponentInitMacro(smtk_apply_bathymetry_operator);
 smtkComponentInitMacro(smtk_export_edges_to_vtk_operator);

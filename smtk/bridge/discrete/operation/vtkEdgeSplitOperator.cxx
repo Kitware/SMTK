@@ -14,8 +14,8 @@
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkModelUserName.h"
 #include "vtkIdTypeArray.h"
+#include "vtkModelUserName.h"
 #include "vtkObjectFactory.h"
 
 vtkStandardNewMacro(vtkEdgeSplitOperator);

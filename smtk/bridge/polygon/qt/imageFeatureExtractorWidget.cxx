@@ -11,53 +11,53 @@
 #include "imageFeatureExtractorWidget.h"
 #include "ui_imageFeatureExtractor.h"
 
-#include "vtkSmartPointer.h"
-#include "vtkTesting.h"
 #include "vtkNew.h"
 #include "vtkPNGReader.h"
-#include "vtkXMLPolyDataWriter.h"
 #include "vtkPNGWriter.h"
-#include <vtkImageCanvasSource2D.h>
-#include <vtkImageViewer2.h>
-#include <vtkRenderer.h>
-#include <vtkPropPicker.h>
-#include <vtkImageData.h>
-#include <vtkRenderWindow.h>
-#include <vtkInteractorStyle.h>
+#include "vtkSmartPointer.h"
+#include "vtkTesting.h"
+#include "vtkXMLPolyDataWriter.h"
 #include <vtkAssemblyPath.h>
-#include <vtkImageActor.h>
-#include <vtkMath.h>
-#include <vtkVariant.h>
-#include <vtkPropPicker.h>
-#include <vtkTextProperty.h>
-#include <vtkInteractorStyleImage.h>
-#include <vtkImageCanvasSource2D.h>
-#include <vtkImageBlend.h>
-#include <vtkImageMapper3D.h>
-#include <vtkInformationVector.h>
-#include <vtkInformation.h>
-#include <vtkStreamingDemandDrivenPipeline.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkProperty.h>
 #include <vtkContourFilter.h>
-#include <vtkTransformPolyDataFilter.h>
-#include <vtkTransform.h>
+#include <vtkImageActor.h>
+#include <vtkImageBlend.h>
+#include <vtkImageCanvasSource2D.h>
+#include <vtkImageCanvasSource2D.h>
 #include <vtkImageChangeInformation.h>
+#include <vtkImageData.h>
+#include <vtkImageMapper3D.h>
+#include <vtkImageViewer2.h>
+#include <vtkInformation.h>
+#include <vtkInformationVector.h>
+#include <vtkInteractorStyle.h>
+#include <vtkInteractorStyleImage.h>
+#include <vtkMath.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkPropPicker.h>
+#include <vtkPropPicker.h>
+#include <vtkProperty.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderer.h>
+#include <vtkStreamingDemandDrivenPipeline.h>
+#include <vtkTextProperty.h>
+#include <vtkTransform.h>
+#include <vtkTransformPolyDataFilter.h>
+#include <vtkVariant.h>
 
 #include <vtkGDALRasterReader.h>
 #include <vtkXMLImageDataReader.h>
 
-#include <vtkXMLImageDataWriter.h>
 #include <vtkXMLImageDataReader.h>
+#include <vtkXMLImageDataWriter.h>
 
-#include "smtk/extension/vtk/filter/vtkGrabCutFilter.h"
-#include "smtk/extension/vtk/filter/vtkWatershedFilter.h"
-#include "smtk/extension/vtk/filter/vtkImageClassFilter.h"
 #include "smtk/extension/vtk/filter/vtkCleanPolylines.h"
+#include "smtk/extension/vtk/filter/vtkGrabCutFilter.h"
+#include "smtk/extension/vtk/filter/vtkImageClassFilter.h"
+#include "smtk/extension/vtk/filter/vtkWatershedFilter.h"
 
+#include <QCoreApplication>
 #include <QFileDialog>
 #include <QMessageBox>
-#include <QCoreApplication>
 
 class vtkDEMImageCanvasSource2D : public vtkImageCanvasSource2D
 {

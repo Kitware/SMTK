@@ -11,18 +11,18 @@
 #include "smtk/extension/qt/qtInstancedView.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/extension/qt/qtUIManager.h"
-#include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/common/View.h"
+#include "smtk/extension/qt/qtAttribute.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QPointer>
 #include <QCheckBox>
+#include <QHBoxLayout>
 #include <QLabel>
-#include <QTableWidget>
-#include <QScrollArea>
 #include <QMessageBox>
+#include <QPointer>
+#include <QScrollArea>
+#include <QTableWidget>
+#include <QVBoxLayout>
 
 using namespace smtk::attribute;
 using namespace smtk::extension;

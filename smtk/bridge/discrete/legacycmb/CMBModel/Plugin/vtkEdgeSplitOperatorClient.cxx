@@ -14,17 +14,17 @@
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
 #include "vtkDiscreteModelVertex.h"
-#include <vtkIdList.h>
 #include "vtkModelFace.h"
 #include "vtkModelItemIterator.h"
+#include "vtkSplitEventData.h"
+#include <vtkIdList.h>
 #include <vtkNew.h>
 #include <vtkObjectFactory.h>
 #include <vtkSMIdTypeVectorProperty.h>
 #include <vtkSMIntVectorProperty.h>
 #include <vtkSMOperatorProxy.h>
-#include <vtkSmartPointer.h>
 #include <vtkSMProxyManager.h>
-#include "vtkSplitEventData.h"
+#include <vtkSmartPointer.h>
 
 vtkStandardNewMacro(vtkEdgeSplitOperatorClient);
 

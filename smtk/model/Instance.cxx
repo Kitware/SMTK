@@ -9,9 +9,9 @@
 //=========================================================================
 #include "smtk/model/Instance.h"
 
+#include "smtk/model/Arrangement.h"
 #include "smtk/model/EntityRefArrangementOps.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/Arrangement.h"
 
 namespace smtk {
   namespace model {

@@ -13,10 +13,10 @@
 
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEntityGroup.h"
-#include <vtkObjectFactory.h>
+#include <map>
 #include <utility>
 #include <vector>
-#include <map>
+#include <vtkObjectFactory.h>
 
 struct ADHExporterOperatorBaseInternals
 {

@@ -30,10 +30,10 @@
 
 #include "smtk/bridge/polygon/ExtractContours_xml.h"
 
-#include "smtk/io/ExportJSON.h"
-#include <sstream>
 #include "cJSON.h"
+#include "smtk/io/ExportJSON.h"
 #include <limits>
+#include <sstream>
 
 using namespace smtk::model;
 

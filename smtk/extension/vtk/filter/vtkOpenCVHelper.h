@@ -11,13 +11,13 @@
 #ifndef vtkOpenCVHelper_h
 #define vtkOpenCVHelper_h
 
+#include "vtkCellArray.h"
 #include "vtkImageData.h"
-#include "vtkPolyData.h"
-#include "vtkSmartPointer.h"
 #include "vtkImageImport.h"
 #include "vtkPoints.h"
-#include "vtkCellArray.h"
 #include "vtkPolyData.h"
+#include "vtkPolyData.h"
+#include "vtkSmartPointer.h"
 
 #include "opencv2/imgproc.hpp"
 

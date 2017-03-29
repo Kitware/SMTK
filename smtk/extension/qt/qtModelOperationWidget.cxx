@@ -20,31 +20,31 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/System.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/model/Session.h"
+#include "smtk/common/View.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
+#include "smtk/model/Session.h"
 #include "smtk/model/StringData.h"
-#include "smtk/common/View.h"
 
 #include "smtk/io/Logger.h"
 
-#include <QStackedLayout>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QFrame>
 #include <QComboBox>
-#include <QTextEdit>
+#include <QFrame>
+#include <QHBoxLayout>
 #include <QPointer>
 #include <QSpacerItem>
 #include <QSplitter>
+#include <QStackedLayout>
+#include <QTextEdit>
+#include <QVBoxLayout>
 
-#include <map>
 #include <algorithm>    // std::sort
+#include <map>
 
 using namespace smtk::extension;
 using namespace smtk::model;

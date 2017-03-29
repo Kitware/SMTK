@@ -11,8 +11,8 @@
 
 #include "smtk/extension/qt/qtTableWidget.h"
 
-#include <QKeyEvent>
 #include <QHeaderView>
+#include <QKeyEvent>
 using namespace smtk::extension;
 
 //-----------------------------------------------------------------------------

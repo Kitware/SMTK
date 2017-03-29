@@ -12,8 +12,8 @@
 #define __smtk_mesh_Manager_h
 
 #include "smtk/CoreExports.h"
-#include "smtk/SharedFromThis.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/SharedFromThis.h"
 
 #include "smtk/model/EntityRef.h"
 

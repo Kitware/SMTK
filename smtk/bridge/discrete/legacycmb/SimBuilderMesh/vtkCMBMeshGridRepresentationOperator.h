@@ -16,9 +16,9 @@
 #ifndef __vtkCMBMeshGridRepresentationOperator_h
 #define __vtkCMBMeshGridRepresentationOperator_h
 
+#include "cmbSystemConfig.h"
 #include "vtkObject.h"
 #include "vtkWeakPointer.h"
-#include "cmbSystemConfig.h"
 
 class vtkCMBMeshWrapper;
 class vtkAlgorithm;

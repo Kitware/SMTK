@@ -15,10 +15,10 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
-#include "smtk/mesh/Interface.h"
 #include "smtk/mesh/CellTypes.h"
 #include "smtk/mesh/DimensionTypes.h"
 #include "smtk/mesh/Handle.h"
+#include "smtk/mesh/Interface.h"
 #include "smtk/mesh/TypeSet.h"
 
 #include <vector>

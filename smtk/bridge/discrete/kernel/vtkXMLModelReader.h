@@ -28,8 +28,8 @@
 #ifndef __smtkdiscrete_vtkXMLModelReader_h
 #define __smtkdiscrete_vtkXMLModelReader_h
 
-#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "Serialize/vtkSerializer.h"
+#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 
 class vtkDiscreteModel;
 class vtkDiscreteModelEntityGroup;

@@ -14,10 +14,10 @@
 #ifndef __smtk_attribute_ValueItem_h
 #define __smtk_attribute_ValueItem_h
 
+#include "smtk/CoreExports.h"
+#include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/SearchStyle.h"
-#include "smtk/PublicPointerDefs.h"
-#include "smtk/CoreExports.h"
 
 #include <cassert>
 

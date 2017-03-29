@@ -8,13 +8,13 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "vtkCMBModelReader.h"
+#include "vtkCMBModelWriterBase.h"
+#include "vtkCMBParserV4.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
 #include "vtkDiscreteModelFace.h"
-#include "vtkCMBModelReader.h"
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkCMBModelWriterBase.h"
-#include "vtkCMBParserV4.h"
 #include "vtkModelItemIterator.h"
 #include "vtkPolyData.h"
 #include "vtkSmartPointer.h"

@@ -11,9 +11,9 @@
 
 #include "vtkMaterialOperatorBase.h"
 
-#include "vtkModelMaterial.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelFace.h"
+#include "vtkModelMaterial.h"
 #
 #include "vtkDiscreteModelRegion.h"
 #include "vtkIdList.h"

@@ -17,10 +17,10 @@
 #ifndef __vtkCMBMeshServerJobSubmitter_h
 #define __vtkCMBMeshServerJobSubmitter_h
 
-#include "vtkObject.h"
-#include "vtkCmbDiscreteModelModule.h" // For export macro
-#include <string> //needed for member variables
 #include "cmbSystemConfig.h" //needed for warning suppression
+#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "vtkObject.h"
+#include <string> //needed for member variables
 
 class vtkDiscreteModelWrapper;
 

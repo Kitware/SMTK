@@ -10,16 +10,16 @@
 
 #include "vtkCMBModelSelectionPainter.h"
 
-#include "vtkDiscreteModelWrapper.h"
 #include "vtkCompositeDataIterator.h"
+#include "vtkDiscreteModelWrapper.h"
 #include "vtkGarbageCollector.h"
 #include "vtkHardwareSelector.h"
-#include "vtkModelVertex.h"
 #include "vtkModelEdge.h"
 #include "vtkModelFace.h"
+#include "vtkModelGeometricEntity.h"
+#include "vtkModelVertex.h"
 #include "vtkObjectFactory.h"
 #include "vtkRenderer.h"
-#include "vtkModelGeometricEntity.h"
 #include <map>
 #ifndef VTK_IMPLEMENT_MESA_CXX
 # include "vtkOpenGL.h"

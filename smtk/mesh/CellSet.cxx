@@ -11,8 +11,8 @@
 #include "smtk/mesh/CellSet.h"
 #include "smtk/mesh/Collection.h"
 
-#include "smtk/mesh/Interface.h"
 #include "smtk/mesh/ContainsFunctors.h"
+#include "smtk/mesh/Interface.h"
 
 namespace smtk {
 namespace mesh {

@@ -16,8 +16,8 @@
 #ifndef __vtkCMBModelEdgeMeshOperator_h
 #define __vtkCMBModelEdgeMeshOperator_h
 
-#include <vtkObject.h>
 #include "cmbSystemConfig.h"
+#include <vtkObject.h>
 
 class vtkCMBMeshWrapper;
 

@@ -12,9 +12,9 @@
 #include "ui_qtGenerateContoursDialog.h"
 
 #include "pqApplicationCore.h"
+#include "pqDataRepresentation.h"
 #include "pqObjectBuilder.h"
 #include "pqOutputPort.h"
-#include "pqDataRepresentation.h"
 #include "pqPipelineSource.h"
 #include "pqProgressManager.h"
 #include "pqRenderView.h"
@@ -26,19 +26,19 @@
 #include "vtkPVArrayInformation.h"
 #include "vtkPVDataInformation.h"
 #include "vtkPVDataSetAttributesInformation.h"
-#include "vtkSMSourceProxy.h"
-#include "vtkSMPropertyHelper.h"
-#include "vtkSMRepresentationProxy.h"
-#include "vtkSMProxyManager.h"
 #include "vtkSMPVRepresentationProxy.h"
+#include "vtkSMPropertyHelper.h"
+#include "vtkSMProxyManager.h"
+#include "vtkSMRepresentationProxy.h"
+#include "vtkSMSourceProxy.h"
 #include "vtkSMTransferFunctionProxy.h"
 
 #include <QDoubleValidator>
 #include <QFileInfo>
 #include <QIntValidator>
 #include <QMessageBox>
-#include <QVBoxLayout>
 #include <QProgressDialog>
+#include <QVBoxLayout>
 
 //-----------------------------------------------------------------------------
 InternalDoubleValidator::InternalDoubleValidator(QObject * parent)

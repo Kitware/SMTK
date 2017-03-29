@@ -9,8 +9,8 @@
 //=========================================================================
 
 #include "utils.h"
-#include <QtNetwork/QNetworkReply>
 #include <QtCore/QByteArray>
+#include <QtNetwork/QNetworkReply>
 
 #include "cJSON.h"
 

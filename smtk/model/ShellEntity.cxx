@@ -11,8 +11,8 @@
 
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/EntityRefArrangementOps.h"
 #include "smtk/model/Entity.h"
+#include "smtk/model/EntityRefArrangementOps.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/UseEntity.h"
 

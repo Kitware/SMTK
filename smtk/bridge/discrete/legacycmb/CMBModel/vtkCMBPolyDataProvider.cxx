@@ -10,12 +10,12 @@
 
 #include "vtkCMBPolyDataProvider.h"
 
-#include "vtkDiscreteModel.h"
-#include "vtkDiscreteModelWrapper.h"
-#include "vtkDiscreteModelEdge.h"
-#include "vtkDiscreteModelVertex.h"
 #include "vtkCellArray.h"
 #include "vtkCommand.h"
+#include "vtkDiscreteModel.h"
+#include "vtkDiscreteModelEdge.h"
+#include "vtkDiscreteModelVertex.h"
+#include "vtkDiscreteModelWrapper.h"
 #include "vtkIdList.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"

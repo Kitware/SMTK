@@ -30,8 +30,8 @@
 
 #include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
 #ifdef SMTK_ENABLE_REMUS_SUPPORT
-  #include "smtk/extension/vtk/reader/vtkCMBPolygonModelImporter.h"
   #include "smtk/extension/vtk/reader/vtkCMBMapReader.h"
+  #include "smtk/extension/vtk/reader/vtkCMBPolygonModelImporter.h"
 #endif
 
 #include "smtk/bridge/polygon/Import_xml.h"

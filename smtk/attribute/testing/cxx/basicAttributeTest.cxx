@@ -8,10 +8,10 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/attribute/System.h"
-#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/StringItemDefinition.h"
+#include "smtk/attribute/System.h"
 #include <iostream>
 
 int main()

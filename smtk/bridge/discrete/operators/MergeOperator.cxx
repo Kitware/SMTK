@@ -25,9 +25,9 @@
 
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkModelItem.h"
 #include "vtkModel.h"
 #include "vtkModelFace.h"
+#include "vtkModelItem.h"
 #include "vtkModelRegion.h"
 
 #include "MergeOperator_xml.h"

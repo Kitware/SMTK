@@ -12,9 +12,9 @@
 #define imageFeatureExtractorWidget_h
 
 #include "smtk/bridge/polygon/qt/Exports.h"
-#include <vtkSmartPointer.h>
 #include <vtkImageData.h>
 #include <vtkPolyData.h>
+#include <vtkSmartPointer.h>
 
 #include <QDialog>
 

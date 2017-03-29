@@ -19,9 +19,9 @@
 #ifndef __vtkADHExporterOperator_h
 #define __vtkADHExporterOperator_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
-#include "vtkADHExporterOperatorBase.h"
 #include "cmbSystemConfig.h"
+#include "vtkADHExporterOperatorBase.h"
+#include "vtkCmbDiscreteModelModule.h" // For export macro
 
 class vtkDiscreteModelWrapper;
 

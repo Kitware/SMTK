@@ -17,17 +17,17 @@
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkModelUserName.h"
 #include "vtkDoubleArray.h"
 #include "vtkGenericCell.h"
 #include "vtkIdTypeArray.h"
 #include "vtkMath.h"
+#include "vtkModelUserName.h"
 
 #include "vtkModelRegion.h"
+#include "vtkNew.h"
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
 #include "vtkPolygon.h"
-#include "vtkNew.h"
 
 
 vtkStandardNewMacro(vtkEnclosingModelEntityOperator);

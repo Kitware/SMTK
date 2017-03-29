@@ -13,8 +13,8 @@
 
 
 #include "smtk/common/View.h"
-#include <sstream>      // std::istringstream
 #include <algorithm>
+#include <sstream>      // std::istringstream
 
 namespace smtk {
   namespace common {

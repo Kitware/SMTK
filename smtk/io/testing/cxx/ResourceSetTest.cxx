@@ -9,8 +9,8 @@
 //=========================================================================
 
 
-#include "smtk/attribute/System.h"
 #include "smtk/common/ResourceSet.h"
+#include "smtk/attribute/System.h"
 
 #include <iostream>
 

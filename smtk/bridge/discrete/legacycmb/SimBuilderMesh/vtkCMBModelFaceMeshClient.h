@@ -17,8 +17,8 @@
 #ifndef __vtkCMBModelFaceMeshClient_h
 #define __vtkCMBModelFaceMeshClient_h
 
-#include "vtkCMBModelFaceMesh.h"
 #include "cmbSystemConfig.h"
+#include "vtkCMBModelFaceMesh.h"
 
 class VTK_EXPORT vtkCMBModelFaceMeshClient : public vtkCMBModelFaceMesh
 {

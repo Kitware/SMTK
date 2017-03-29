@@ -32,8 +32,8 @@
 
 
 #include "vtkSmartPointer.h" // For collections
-#include <vector> // For vectors
 #include <map> // For maps
+#include <vector> // For vectors
 
 class vtkInformation;
 

@@ -10,8 +10,8 @@
 
 #include "vtkCMBModelVertexMesh.h"
 
-#include <vtkObjectFactory.h>
 #include <vtkModelVertex.h>
+#include <vtkObjectFactory.h>
 
 vtkStandardNewMacro(vtkCMBModelVertexMesh);
 

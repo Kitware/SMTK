@@ -11,13 +11,13 @@
 #ifndef __smoab_detail_ReadSparseTag_h
 #define __smoab_detail_ReadSparseTag_h
 
-#include "SimpleMoab.h"
 #include "CellSets.h"
+#include "SimpleMoab.h"
 
 #include <vtkIntArray.h>
 
-#include <string>
 #include <algorithm>
+#include <string>
 #include <vector>
 
 namespace smoab { namespace detail {

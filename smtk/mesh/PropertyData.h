@@ -12,10 +12,10 @@
 
 #include "smtk/SystemConfig.h"
 
-#include "smtk/model/FloatData.h"
-#include "smtk/model/StringData.h"
-#include "smtk/model/IntegerData.h"
 #include "smtk/mesh/MeshSet.h"
+#include "smtk/model/FloatData.h"
+#include "smtk/model/IntegerData.h"
+#include "smtk/model/StringData.h"
 
 namespace smtk {
   namespace mesh {

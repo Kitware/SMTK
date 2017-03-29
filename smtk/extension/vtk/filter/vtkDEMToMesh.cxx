@@ -9,11 +9,12 @@
 //=========================================================================
 #include "smtk/extension/vtk/filter/vtkDEMToMesh.h"
 
-#include "vtkImageData.h"
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkDataArray.h"
+#include "vtkDoubleArray.h"
 #include "vtkIdTypeArray.h"
+#include "vtkImageData.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkMath.h"
@@ -22,10 +23,9 @@
 #include "vtkPointLocator.h"
 #include "vtkPolyData.h"
 #include "vtkSmartPointer.h"
+#include "vtkUniformGrid.h"
 #include "vtkVector.h"
 #include "vtkXMLPolyDataWriter.h"
-#include "vtkUniformGrid.h"
-#include "vtkDoubleArray.h"
 
 #include "vtkObjectFactory.h"
 

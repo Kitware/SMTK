@@ -13,8 +13,8 @@
 
 #include <pybind11/pybind11.h>
 
-#include "smtk/attribute/ValueItemTemplate.h"
 #include "smtk/attribute/ValueItem.h"
+#include "smtk/attribute/ValueItemTemplate.h"
 
 namespace py = pybind11;
 

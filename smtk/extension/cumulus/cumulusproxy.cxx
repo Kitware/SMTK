@@ -11,20 +11,20 @@
 #include "cumulusproxy.h"
 #include "cJSON.h"
 #include "job.h"
-#include "utils.h"
 #include "jobrequest.h"
+#include "utils.h"
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
-#include <QtNetwork/QNetworkAccessManager>
-#include <QtNetwork/QNetworkRequest>
-#include <QtNetwork/QNetworkReply>
-#include <QtNetwork/QNetworkCookie>
-#include <QtNetwork/QNetworkCookieJar>
-#include <QtCore/QVariant>
 #include <QtCore/QList>
 #include <QtCore/QThread>
 #include <QtCore/QTimer>
+#include <QtCore/QVariant>
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkCookie>
+#include <QtNetwork/QNetworkCookieJar>
+#include <QtNetwork/QNetworkReply>
+#include <QtNetwork/QNetworkRequest>
 
 namespace
 {
