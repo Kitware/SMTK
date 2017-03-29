@@ -35,6 +35,7 @@ namespace
 std::string dataRoot = SMTK_DATA_DIR;
 std::string writeRoot = SMTK_SCRATCH_DIR;
 
+#if 0
 void cleanup( const std::string& file_path )
 {
   //first verify the file exists
@@ -45,6 +46,7 @@ void cleanup( const std::string& file_path )
     ::boost::filesystem::remove( path );
   }
 }
+#endif // 0
 
 }
 
@@ -91,7 +93,6 @@ int UnitTestMeshSessionReadWrite(int argc, char* argv[])
 
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;
-    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
     std::cout << "elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
 
     model = readOpResult->findModelEntity("model")->value();
