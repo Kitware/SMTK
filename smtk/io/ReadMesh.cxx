@@ -47,6 +47,24 @@ std::vector<smtk::io::mesh::MeshIOPtr>& ReadMesh::SupportedIOTypes()
   return supportedIOTypes;
 }
 
+bool ReadMesh::ExtensionIsSupported(const std::string& ext)
+{
+  for (auto& reader : smtk::io::ReadMesh::SupportedIOTypes())
+    {
+    for (auto& format : reader->FileFormats())
+      {
+      if ( format.CanRead() && std::find(format.Extensions.begin(),
+                                         format.Extensions.end(), ext) !=
+           format.Extensions.end() )
+        {
+        return true;
+        }
+      }
+    }
+
+  return false;
+}
+
 smtk::mesh::CollectionPtr
 ReadMesh::operator() (const std::string& filePath,
                       smtk::mesh::ManagerPtr manager,

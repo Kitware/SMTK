@@ -46,6 +46,24 @@ std::vector<smtk::io::mesh::MeshIOPtr>& ImportMesh::SupportedIOTypes()
   return supportedIOTypes;
 }
 
+bool ImportMesh::ExtensionIsSupported(const std::string& ext)
+{
+  for (auto& importer : smtk::io::ImportMesh::SupportedIOTypes())
+    {
+    for (auto& format : importer->FileFormats())
+      {
+      if ( format.CanImport() && std::find(format.Extensions.begin(),
+                                           format.Extensions.end(), ext) !=
+           format.Extensions.end() )
+        {
+        return true;
+        }
+      }
+    }
+
+  return false;
+}
+
 smtk::mesh::CollectionPtr ImportMesh::operator() (
   const std::string& filePath,
   smtk::mesh::ManagerPtr manager,

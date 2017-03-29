@@ -12,6 +12,7 @@
 #define pybind_smtk_io_ImportMesh_h
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "smtk/io/ImportMesh.h"
 
@@ -22,6 +23,7 @@ PySharedPtrClass< smtk::io::ImportMesh > pybind11_init_smtk_io_ImportMesh(py::mo
   PySharedPtrClass< smtk::io::ImportMesh > instance(m, "ImportMesh");
   instance
     .def(py::init<>())
+    .def_static("ExtensionIsSupported", &smtk::io::ImportMesh::ExtensionIsSupported)
     .def("__call__", (smtk::mesh::CollectionPtr (smtk::io::ImportMesh::*)(::std::string const &, ::smtk::mesh::ManagerPtr, ::std::string) const) &smtk::io::ImportMesh::operator())
     .def("__call__", (bool (smtk::io::ImportMesh::*)(::std::string const &, ::smtk::mesh::CollectionPtr, ::std::string) const) &smtk::io::ImportMesh::operator())
     ;
