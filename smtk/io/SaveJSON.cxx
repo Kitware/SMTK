@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/io/ExportJSON.h"
-#include "smtk/io/ExportJSON.txx"
+#include "smtk/io/SaveJSON.h"
+#include "smtk/io/SaveJSON.txx"
 
 #include "smtk/common/Version.h"
 
@@ -156,7 +156,7 @@ namespace smtk {
 
 using smtk::common::UUID;
 
-cJSON* ExportJSON::fromUUIDs(const UUIDs& uids)
+cJSON* SaveJSON::fromUUIDs(const UUIDs& uids)
 {
   cJSON* a = cJSON_CreateArray();
   for (UUIDs::const_iterator it = uids.begin(); it != uids.end(); ++it)
@@ -166,7 +166,7 @@ cJSON* ExportJSON::fromUUIDs(const UUIDs& uids)
   return a;
 }
 
-int ExportJSON::fromModelManager(cJSON* json, ManagerPtr modelMgr, JSONFlags sections)
+int SaveJSON::fromModelManager(cJSON* json, ManagerPtr modelMgr, JSONFlags sections)
 {
   int status = 0;
   if (!json || !modelMgr)
@@ -200,15 +200,15 @@ int ExportJSON::fromModelManager(cJSON* json, ManagerPtr modelMgr, JSONFlags sec
 
   cJSON* mtyp = cJSON_CreateString("Manager");
   cJSON_AddItemToObject(json, "type", mtyp);
-  status = ExportJSON::forManager(body, sess, mesh, modelMgr, sections);
+  status = SaveJSON::forManager(body, sess, mesh, modelMgr, sections);
 
   return status;
 }
 
-std::string ExportJSON::fromModelManager(ManagerPtr modelMgr, JSONFlags sections)
+std::string SaveJSON::fromModelManager(ManagerPtr modelMgr, JSONFlags sections)
 {
   cJSON* top = cJSON_CreateObject();
-  ExportJSON::fromModelManager(top, modelMgr, sections);
+  SaveJSON::fromModelManager(top, modelMgr, sections);
   char* json = cJSON_Print(top);
   std::string result(json);
   free(json);
@@ -216,17 +216,17 @@ std::string ExportJSON::fromModelManager(ManagerPtr modelMgr, JSONFlags sections
   return result;
 }
 
-bool ExportJSON::fromModelManagerToFile(smtk::model::ManagerPtr modelMgr, const char* filename)
+bool SaveJSON::fromModelManagerToFile(smtk::model::ManagerPtr modelMgr, const char* filename)
 {
   if (!filename || !modelMgr)
     return false;
 
   std::ofstream file(filename);
-  file << ExportJSON::fromModelManager(modelMgr, JSON_DEFAULT);
+  file << SaveJSON::fromModelManager(modelMgr, JSON_DEFAULT);
   return true;
 }
 
-int ExportJSON::forManager(
+int SaveJSON::forManager(
   cJSON* dict, cJSON* sess, cJSON* mesh, ManagerPtr modelMgr, JSONFlags sections)
 {
   if (!dict || !modelMgr)
@@ -251,19 +251,19 @@ int ExportJSON::forManager(
       }
     if (sections & JSON_ENTITIES)
       {
-      status &= ExportJSON::forManagerEntity(it, curChild, modelMgr);
-      status &= ExportJSON::forManagerArrangement(
+      status &= SaveJSON::forManagerEntity(it, curChild, modelMgr);
+      status &= SaveJSON::forManagerArrangement(
         modelMgr->arrangements().find(it->first), curChild, modelMgr);
       }
     if (sections & JSON_TESSELLATIONS)
-      status &= ExportJSON::forManagerTessellation(it->first, curChild, modelMgr);
+      status &= SaveJSON::forManagerTessellation(it->first, curChild, modelMgr);
     if (sections & JSON_ANALYSISMESH)
-      status &= ExportJSON::forManagerAnalysis(it->first, curChild, modelMgr);
+      status &= SaveJSON::forManagerAnalysis(it->first, curChild, modelMgr);
     if (sections & JSON_PROPERTIES)
       {
-      status &= ExportJSON::forManagerFloatProperties(it->first, curChild, modelMgr);
-      status &= ExportJSON::forManagerStringProperties(it->first, curChild, modelMgr);
-      status &= ExportJSON::forManagerIntegerProperties(it->first, curChild, modelMgr);
+      status &= SaveJSON::forManagerFloatProperties(it->first, curChild, modelMgr);
+      status &= SaveJSON::forManagerStringProperties(it->first, curChild, modelMgr);
+      status &= SaveJSON::forManagerIntegerProperties(it->first, curChild, modelMgr);
       }
     }
 
@@ -272,19 +272,19 @@ int ExportJSON::forManager(
     smtk::model::SessionRefs sessions = modelMgr->sessions();
     for (smtk::model::SessionRefs::iterator bit = sessions.begin(); bit != sessions.end(); ++bit)
       {
-      status &= ExportJSON::forManagerSession(bit->entity(), sess, modelMgr);
+      status &= SaveJSON::forManagerSession(bit->entity(), sess, modelMgr);
       }
     }
 
   if (sections & JSON_MESHES)
     {
     smtk::mesh::ManagerPtr meshPtr = modelMgr->meshes();
-    status &= ExportJSON::forManagerMeshes(meshPtr, mesh, modelMgr);
+    status &= SaveJSON::forManagerMeshes(meshPtr, mesh, modelMgr);
     }
   return status;
 }
 
-int ExportJSON::forManagerEntity(
+int SaveJSON::forManagerEntity(
   UUIDWithEntity& entry, cJSON* entRec, ManagerPtr model)
 {
   (void)model;
@@ -301,12 +301,12 @@ int ExportJSON::forManagerEntity(
     }
   /*
   if (entry->second.entityFlags() & MODEL_ENTITY)
-    ExportJSON::forModelOperators(entry->first, entRec, model);
+    SaveJSON::forModelOperators(entry->first, entRec, model);
     */
   return 1;
 }
 
-int ExportJSON::forManagerArrangement(
+int SaveJSON::forManagerArrangement(
   const UUIDWithArrangementDictionary& entry, cJSON* dict, ManagerPtr model)
 {
   if (entry == model->arrangements().end())
@@ -337,7 +337,7 @@ int ExportJSON::forManagerArrangement(
   return 1;
 }
 
-int ExportJSON::forManagerTessellation(
+int SaveJSON::forManagerTessellation(
   const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
 {
   UUIDWithTessellation tessIt = model->tessellations().find(uid);
@@ -372,7 +372,7 @@ int ExportJSON::forManagerTessellation(
   return 1;
 }
 
-int ExportJSON::forManagerAnalysis(
+int SaveJSON::forManagerAnalysis(
   const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
 {
   UUIDWithTessellation meshIt = model->analysisMesh().find(uid);
@@ -407,7 +407,7 @@ int ExportJSON::forManagerAnalysis(
   return 1;
 }
 
-int ExportJSON::forFloatData(cJSON* dict, const FloatData& fdata)
+int SaveJSON::forFloatData(cJSON* dict, const FloatData& fdata)
 {
   cJSON* pdict = cJSON_CreateObject();
   cJSON_AddItemToObject(dict, "f", pdict);
@@ -425,7 +425,7 @@ int ExportJSON::forFloatData(cJSON* dict, const FloatData& fdata)
   return 1;
 }
 
-int ExportJSON::forStringData(cJSON* dict, const StringData& sdata)
+int SaveJSON::forStringData(cJSON* dict, const StringData& sdata)
 {
   cJSON* pdict = cJSON_CreateObject();
   cJSON_AddItemToObject(dict, "s", pdict);
@@ -443,7 +443,7 @@ int ExportJSON::forStringData(cJSON* dict, const StringData& sdata)
   return 1;
 }
 
-int ExportJSON::forIntegerData(cJSON* dict, const IntegerData& idata)
+int SaveJSON::forIntegerData(cJSON* dict, const IntegerData& idata)
 {
   cJSON* pdict = cJSON_CreateObject();
   cJSON_AddItemToObject(dict, "i", pdict);
@@ -461,7 +461,7 @@ int ExportJSON::forIntegerData(cJSON* dict, const IntegerData& idata)
   return 1;
 }
 
-int ExportJSON::forManagerFloatProperties(const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
+int SaveJSON::forManagerFloatProperties(const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
 {
   int status = 1;
   UUIDWithFloatProperties entIt = model->floatProperties().find(uid);
@@ -469,10 +469,10 @@ int ExportJSON::forManagerFloatProperties(const smtk::common::UUID& uid, cJSON* 
     { // No properties is not an error
     return status;
     }
-  return ExportJSON::forFloatData(dict, entIt->second);
+  return SaveJSON::forFloatData(dict, entIt->second);
 }
 
-int ExportJSON::forManagerStringProperties(const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
+int SaveJSON::forManagerStringProperties(const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
 {
   int status = 1;
   UUIDWithStringProperties entIt = model->stringProperties().find(uid);
@@ -480,10 +480,10 @@ int ExportJSON::forManagerStringProperties(const smtk::common::UUID& uid, cJSON*
     { // No properties is not an error
     return status;
     }
-  return ExportJSON::forStringData(dict, entIt->second);
+  return SaveJSON::forStringData(dict, entIt->second);
 }
 
-int ExportJSON::forManagerIntegerProperties(const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
+int SaveJSON::forManagerIntegerProperties(const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
 {
   int status = 1;
   UUIDWithIntegerProperties entIt = model->integerProperties().find(uid);
@@ -491,10 +491,10 @@ int ExportJSON::forManagerIntegerProperties(const smtk::common::UUID& uid, cJSON
     { // No properties is not an error
     return status;
     }
-  return ExportJSON::forIntegerData(dict, entIt->second);
+  return SaveJSON::forIntegerData(dict, entIt->second);
 }
 
-int ExportJSON::forManagerSession(
+int SaveJSON::forManagerSession(
   const smtk::common::UUID& uid,
   cJSON* node,
   ManagerPtr modelMgr,
@@ -520,14 +520,14 @@ int ExportJSON::forManagerSession(
     }
 
   smtk::model::Models modelsOfSession = SessionRef(modelMgr, session).models<smtk::model::Models>();
-  ExportJSON::addModelsRecord(modelMgr, modelsOfSession, sess);
-  ExportJSON::addMeshesRecord(modelMgr, modelsOfSession, sess);
+  SaveJSON::addModelsRecord(modelMgr, modelsOfSession, sess);
+  SaveJSON::addMeshesRecord(modelMgr, modelsOfSession, sess);
 
-  status &= ExportJSON::forOperatorDefinitions(session->operatorSystem(), sess);
+  status &= SaveJSON::forOperatorDefinitions(session->operatorSystem(), sess);
   return status;
 }
 
-int ExportJSON::forManagerSessionPartial(
+int SaveJSON::forManagerSessionPartial(
   const smtk::common::UUID& sessionid,
   const smtk::common::UUIDs& modelIds,
   cJSON* node,
@@ -553,23 +553,23 @@ int ExportJSON::forManagerSessionPartial(
     delegate->setReferencePath(refPath);
     status &= delegate->exportJSON(modelMgr, session, modelIds, sess, writeNativeModels);
     }
-  ExportJSON::addModelsRecord(modelMgr, modelIds, sess);
-  ExportJSON::addMeshesRecord(modelMgr, modelIds, sess);
-  status &= ExportJSON::forOperatorDefinitions(session->operatorSystem(), sess);
+  SaveJSON::addModelsRecord(modelMgr, modelIds, sess);
+  SaveJSON::addMeshesRecord(modelMgr, modelIds, sess);
+  status &= SaveJSON::forOperatorDefinitions(session->operatorSystem(), sess);
   return status;
 }
 
 /*
-int ExportJSON::forModelOperators(const smtk::common::UUID& uid, cJSON* entRec, ManagerPtr modelMgr)
+int SaveJSON::forModelOperators(const smtk::common::UUID& uid, cJSON* entRec, ManagerPtr modelMgr)
 {
   smtk::model::Model mod(modelMgr, uid);
   smtk::model::Operators ops(mod.operators());
   cJSON_AddItemToObject(entRec, "ops",
     cJSON_CreateOperatorArray(ops));`
-  return 1; // ExportJSON::forOperators(ops, entRec);
+  return 1; // SaveJSON::forOperators(ops, entRec);
 } */
 
-int ExportJSON::forOperatorDefinitions(smtk::attribute::System* opSys, cJSON* entRec)
+int SaveJSON::forOperatorDefinitions(smtk::attribute::System* opSys, cJSON* entRec)
 {
   smtk::io::Logger log;
   smtk::io::AttributeWriter wri;
@@ -597,20 +597,20 @@ int ExportJSON::forOperatorDefinitions(smtk::attribute::System* opSys, cJSON* en
   return 1;
 }
 
-int ExportJSON::forOperator(OperatorPtr op, cJSON* entRec)
+int SaveJSON::forOperator(OperatorPtr op, cJSON* entRec)
 {
   cJSON_AddOperator(op, entRec);
   return 1;
 }
 
-int ExportJSON::forOperator(smtk::attribute::AttributePtr op, cJSON* entRec)
+int SaveJSON::forOperator(smtk::attribute::AttributePtr op, cJSON* entRec)
 {
   cJSON_AddItemToObject(entRec, "name", cJSON_CreateString(op->type().c_str()));
   cJSON_AddAttributeSpec(entRec, "spec", "specXML", op);
   return 1;
 }
 
-int ExportJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
+int SaveJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
 {
   cJSON_AddItemToObject(entRec, "name", cJSON_CreateString(res->type().c_str()));
   cJSON_AddAttributeSpec(entRec, "result", "resultXML", res);
@@ -626,7 +626,7 @@ int ExportJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
     // TODO: In the future, this may be more conservative (i.e., fewer records
     //       would be included to save time and memory) than ITERATE_MODELS.
     cJSON* records = cJSON_CreateObject();
-    ExportJSON::forEntities(records, ents, smtk::model::ITERATE_MODELS, JSON_CLIENT_DATA);
+    SaveJSON::forEntities(records, ents, smtk::model::ITERATE_MODELS, JSON_CLIENT_DATA);
     cJSON_AddItemToObject(entRec, "records", records);
     }
 
@@ -654,7 +654,7 @@ int ExportJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
     if(collectionIds.size() > 0)
       {
       cJSON* mesh_records = cJSON_CreateObject();
-      ExportJSON::forMeshCollections(mesh_records, collectionIds, meshMgr);
+      SaveJSON::forMeshCollections(mesh_records, collectionIds, meshMgr);
       cJSON_AddItemToObject(entRec, "mesh_records", mesh_records);
       }
     }
@@ -663,7 +663,7 @@ int ExportJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
 }
 
 /// Serialize a session's list of dangling entities held in the given \a modelMgr.
-int ExportJSON::forDanglingEntities(const smtk::common::UUID& sessionId, cJSON* node, ManagerPtr modelMgr)
+int SaveJSON::forDanglingEntities(const smtk::common::UUID& sessionId, cJSON* node, ManagerPtr modelMgr)
 {
   if (!modelMgr || !node || node->type != cJSON_Object)
     return 0;
@@ -691,7 +691,7 @@ int ExportJSON::forDanglingEntities(const smtk::common::UUID& sessionId, cJSON* 
   * data required for a Remus server to start an smtk-model-worker
   * process for use by a RemusRemoteSession instance.
   */
-int ExportJSON::forModelWorker(
+int SaveJSON::forModelWorker(
     cJSON* wdesc,
     const std::string& meshTypeIn, const std::string& meshTypeOut,
     smtk::model::SessionPtr session, const std::string& engine,
@@ -743,7 +743,7 @@ int ExportJSON::forModelWorker(
   * data required to recreate the smtk::mesh Collections
   * associated with the given smtk::model.
   */
-int ExportJSON::forManagerMeshes(
+int SaveJSON::forManagerMeshes(
                      smtk::mesh::ManagerPtr meshes,
                      cJSON* mdesc,
                      smtk::model::ManagerPtr modelMgr)
@@ -777,7 +777,7 @@ int ExportJSON::forManagerMeshes(
   * data required to recreate the mesh Collections
   * associated with the given \a collectionIds of mesh manager (\a meshMgr)
   */
-int ExportJSON::forMeshCollections(
+int SaveJSON::forMeshCollections(
                      cJSON* pnode,
                      const smtk::common::UUIDs& collectionIds,
                      smtk::mesh::ManagerPtr meshMgr)
@@ -814,7 +814,7 @@ int ExportJSON::forMeshCollections(
   * and add it to the parent json node (\a pnode) with
   * all mesh collections associated with the given \a modelid.
   */
-int ExportJSON::forModelMeshes(
+int SaveJSON::forModelMeshes(
                      const smtk::common::UUID& modelid,
                      cJSON* pnode,
                      smtk::model::ManagerPtr modelMgr)
@@ -831,7 +831,7 @@ int ExportJSON::forModelMeshes(
     }
 
   smtk::common::UUIDs cids = meshMgr->associatedCollectionIds(model);
-  return ExportJSON::forMeshCollections(pnode, cids, meshMgr);
+  return SaveJSON::forMeshCollections(pnode, cids, meshMgr);
 }
 
 namespace {
@@ -989,7 +989,7 @@ public:
         {
         cJSON* jMesh = smtk::mesh::to_json(it->first.range());
         cJSON_AddItemToObject(jsonProperties, meshid.c_str(), jMesh);
-        ExportJSON::forFloatData(jMesh, it->second);
+        SaveJSON::forFloatData(jMesh, it->second);
         }
       }
     if(sProperties && sProperties->size() > 0)
@@ -999,7 +999,7 @@ public:
         {
         cJSON* jMesh = smtk::mesh::to_json(it->first.range());
         cJSON_AddItemToObject(jsonProperties, meshid.c_str(), jMesh);
-        ExportJSON::forStringData(jMesh, it->second);
+        SaveJSON::forStringData(jMesh, it->second);
         }
       }
     if(iProperties && iProperties->size() > 0)
@@ -1009,7 +1009,7 @@ public:
         {
         cJSON* jMesh = smtk::mesh::to_json(it->first.range());
         cJSON_AddItemToObject(jsonProperties, meshid.c_str(), jMesh);
-        ExportJSON::forIntegerData(jMesh, it->second);
+        SaveJSON::forIntegerData(jMesh, it->second);
         }
       }
   }
@@ -1042,7 +1042,7 @@ private:
 /**\brief Serialize a single mesh collection
   *
   */
-int ExportJSON::forSingleCollection(cJSON* mdesc,
+int SaveJSON::forSingleCollection(cJSON* mdesc,
                                     smtk::mesh::CollectionPtr collection)
 {
   cJSON* jsonCollection = cJSON_CreateObject();
@@ -1114,17 +1114,17 @@ int ExportJSON::forSingleCollection(cJSON* mdesc,
   * This will add a "models" record to \a sessionRec, and all models
   * will be added as children of "models"
   */
-int ExportJSON::addModelsRecord(
+int SaveJSON::addModelsRecord(
   const smtk::model::ManagerPtr modelMgr,
   const smtk::common::UUIDs& modelIds,
   cJSON* sessionRec)
 {
   smtk::model::Models models;
   smtk::model::EntityRef::EntityRefsFromUUIDs(models, modelMgr, modelIds);
-  return ExportJSON::addModelsRecord(modelMgr, models, sessionRec);
+  return SaveJSON::addModelsRecord(modelMgr, models, sessionRec);
 }
 
-int ExportJSON::addModelsRecord(
+int SaveJSON::addModelsRecord(
   const smtk::model::ManagerPtr modelMgr,
   const smtk::model::Models& inModels,
   cJSON* sessionRec)
@@ -1148,7 +1148,7 @@ int ExportJSON::addModelsRecord(
     // Write out all entities of the model, only the meta data
     smtk::model::Models currentmodels;
     currentmodels.push_back(*modit);
-    ExportJSON::forEntities(
+    SaveJSON::forEntities(
       jmodel, currentmodels,
       smtk::model::ITERATE_MODELS,
       static_cast<smtk::io::JSONFlags>(
@@ -1164,17 +1164,17 @@ int ExportJSON::addModelsRecord(
   * This will add a "mesh_collections" record to \a sessionRec, and all meshes
   * will be added as children of "mesh_collections"
   */
-int ExportJSON::addMeshesRecord(
+int SaveJSON::addMeshesRecord(
   const smtk::model::ManagerPtr modelMgr,
   const smtk::common::UUIDs& modelIds,
   cJSON* sessionRec)
 {
   smtk::model::Models models;
   smtk::model::EntityRef::EntityRefsFromUUIDs(models, modelMgr, modelIds);
-  return ExportJSON::addMeshesRecord(modelMgr, models, sessionRec);
+  return SaveJSON::addMeshesRecord(modelMgr, models, sessionRec);
 }
 
-int ExportJSON::addMeshesRecord(
+int SaveJSON::addMeshesRecord(
   const smtk::model::ManagerPtr modelMgr,
   const smtk::model::Models& inModels,
   cJSON* sessionRec)
@@ -1185,7 +1185,7 @@ int ExportJSON::addMeshesRecord(
     {
     // Write out related mesh collections.
     // When writing a single collection, all its MeshSets will also be written out.
-    smtk::io::ExportJSON::forModelMeshes(modit->entity(), sessionRec, modelMgr);
+    smtk::io::SaveJSON::forModelMeshes(modit->entity(), sessionRec, modelMgr);
     }
   return 1;
 }
@@ -1202,7 +1202,7 @@ int ExportJSON::addMeshesRecord(
   * As with C++ iterators, \a start and \a end describe a
   * half-open interval.
   */
-int ExportJSON::forLog(
+int SaveJSON::forLog(
   cJSON* logrecordarray,
   const smtk::io::Logger& log,
   std::size_t start,
@@ -1272,7 +1272,7 @@ int ExportJSON::forLog(
   * Although not part of the JSON-RPC spec, True, False, and NULL parameters
   * are also accepted by this call.
   */
-cJSON* ExportJSON::createRPCRequest(const std::string& method, cJSON*& params, const std::string& reqId, int paramsType)
+cJSON* SaveJSON::createRPCRequest(const std::string& method, cJSON*& params, const std::string& reqId, int paramsType)
 {
   cJSON* rpcReq = cJSON_CreateObject();
   cJSON_AddItemToObject(rpcReq, "jsonrpc", cJSON_CreateString("2.0"));
@@ -1308,13 +1308,13 @@ cJSON* ExportJSON::createRPCRequest(const std::string& method, cJSON*& params, c
   *
   * This variant stores a single string parameter, \a params.
   */
-cJSON* ExportJSON::createRPCRequest(
+cJSON* SaveJSON::createRPCRequest(
   const std::string& method,
   const std::string& params,
   const std::string& reqId)
 {
   cJSON* paramObj;
-  cJSON* rpcReq = ExportJSON::createRPCRequest(method, paramObj, reqId, cJSON_Array);
+  cJSON* rpcReq = SaveJSON::createRPCRequest(method, paramObj, reqId, cJSON_Array);
   cJSON_AddItemToArray(paramObj, cJSON_CreateString(params.c_str()));
   return rpcReq;
 }
@@ -1325,7 +1325,7 @@ cJSON* ExportJSON::createRPCRequest(
   * object, either by calling cJSON_Delete on it or adding it to another
   * cJSON node that is eventually deleted.
   */
-cJSON* ExportJSON::createStringArray(const std::vector<std::string>& arr)
+cJSON* SaveJSON::createStringArray(const std::vector<std::string>& arr)
 {
   return cJSON_CreateStringArray(&arr[0], static_cast<unsigned>(arr.size()));
 }
@@ -1336,7 +1336,7 @@ cJSON* ExportJSON::createStringArray(const std::vector<std::string>& arr)
   * object, either by calling cJSON_Delete on it or adding it to another
   * cJSON node that is eventually deleted.
   */
-cJSON* ExportJSON::createUUIDArray(const std::vector<smtk::common::UUID>& arr)
+cJSON* SaveJSON::createUUIDArray(const std::vector<smtk::common::UUID>& arr)
 {
   return cJSON_CreateUUIDArray(&arr[0], static_cast<unsigned>(arr.size()));
 }
@@ -1347,7 +1347,7 @@ cJSON* ExportJSON::createUUIDArray(const std::vector<smtk::common::UUID>& arr)
   * object, either by calling cJSON_Delete on it or adding it to another
   * cJSON node that is eventually deleted.
   */
-cJSON* ExportJSON::createIntegerArray(const std::vector<long>& arr)
+cJSON* SaveJSON::createIntegerArray(const std::vector<long>& arr)
 {
   return cJSON_CreateLongArray(&arr[0], static_cast<unsigned>(arr.size()));
 }

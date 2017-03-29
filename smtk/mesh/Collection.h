@@ -323,7 +323,7 @@ private:
   void swapInterfaces(smtk::mesh::CollectionPtr& other);
 
   friend class smtk::mesh::Manager;
-  friend class smtk::io::ImportJSON;
+  friend class smtk::io::LoadJSON;
   friend class smtk::io::ReadMesh;
 
   //called by the manager that manages this collection, means that somebody

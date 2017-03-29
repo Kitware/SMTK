@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/model/operators/ExportSMTKModel.h"
+#include "smtk/model/operators/SaveSMTKModel.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -17,8 +17,8 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/common/CompilerInformation.h"
-#include "smtk/io/ExportJSON.h"
-#include "smtk/io/ExportJSON.txx"
+#include "smtk/io/SaveJSON.h"
+#include "smtk/io/SaveJSON.txx"
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 #include "smtk/model/CellEntity.h"
@@ -39,7 +39,7 @@ using namespace boost::filesystem;
 namespace smtk {
   namespace model {
 
-OperatorResult ExportSMTKModel::operateInternal()
+OperatorResult SaveSMTKModel::operateInternal()
 {
   smtk::attribute::FileItemPtr filenameItem = this->findFile("filename");
   smtk::attribute::IntItemPtr flagsItem = this->findInt("flags");
@@ -141,7 +141,7 @@ OperatorResult ExportSMTKModel::operateInternal()
       }
     }
 
-  smtk::io::ExportJSON::forManagerSessionPartial(
+  smtk::io::SaveJSON::forManagerSessionPartial(
     this->session()->sessionId(),
     this->m_specification->associatedModelEntityIds(),
     top, this->manager(), true, smtkfilepath);
@@ -189,7 +189,7 @@ OperatorResult ExportSMTKModel::operateInternal()
   return result;
 }
 
-void ExportSMTKModel::generateSummary(OperatorResult& res)
+void SaveSMTKModel::generateSummary(OperatorResult& res)
 {
   std::ostringstream msg;
   int outcome = res->findInt("outcome")->value();
@@ -210,12 +210,12 @@ void ExportSMTKModel::generateSummary(OperatorResult& res)
   } //namespace model
 } // namespace smtk
 
-#include "smtk/model/ExportSMTKModel_xml.h"
+#include "smtk/model/SaveSMTKModel_xml.h"
 
 smtkImplementsModelOperator(
   SMTKCORE_EXPORT,
-  smtk::model::ExportSMTKModel,
-  export_smtk_model,
-  "export smtk model",
-  ExportSMTKModel_xml,
+  smtk::model::SaveSMTKModel,
+  save_smtk_model,
+  "save smtk model",
+  SaveSMTKModel_xml,
   smtk::model::Session);

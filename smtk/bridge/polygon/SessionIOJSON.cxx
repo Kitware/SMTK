@@ -14,9 +14,9 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/common/UUID.h"
-#include "smtk/io/ExportJSON.h"
-#include "smtk/io/ExportJSON.txx"
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/SaveJSON.h"
+#include "smtk/io/SaveJSON.txx"
+#include "smtk/io/LoadJSON.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
 
@@ -93,7 +93,7 @@ int SessionIOJSON::importJSON(
           continue;
           }
         // failed to load properties is still OK
-        smtk::io::ImportJSON::ofManagerStringProperties(modelid, curChild, mgr);
+        smtk::io::LoadJSON::ofManagerStringProperties(modelid, curChild, mgr);
         break;
         }
 
@@ -341,7 +341,7 @@ cJSON* SessionIOJSON::serializeFace(const smtk::model::Face& face)
 {
   cJSON* result = cJSON_CreateObject();
   cJSON_AddItemToObject(result, "type", cJSON_CreateString("face"));
-  smtk::io::ExportJSON::forManagerTessellation(face.entity(), result, face.manager());
+  smtk::io::SaveJSON::forManagerTessellation(face.entity(), result, face.manager());
   return result;
 }
 
@@ -378,8 +378,8 @@ cJSON* SessionIOJSON::serializeEdge(internal::EdgePtr edge, const smtk::model::E
     uc >>= 16;
     ptdata[i * stride + 7] = uc & 0xffff;
     }
-  cJSON_AddItemToObject(result, "points", smtk::io::ExportJSON::createIntegerArray(ptdata));
-  smtk::io::ExportJSON::forManagerTessellation(e.entity(), result, e.manager());
+  cJSON_AddItemToObject(result, "points", smtk::io::SaveJSON::createIntegerArray(ptdata));
+  smtk::io::SaveJSON::forManagerTessellation(e.entity(), result, e.manager());
   return result;
 }
 
@@ -409,7 +409,7 @@ cJSON* SessionIOJSON::serializeVertex(internal::VertexPtr vert, const smtk::mode
   ptdata[6] = c & 0xffff;
   c >>= 16;
   ptdata[7] = c & 0xffff;
-  cJSON_AddItemToObject(result, "point", smtk::io::ExportJSON::createIntegerArray(ptdata));
+  cJSON_AddItemToObject(result, "point", smtk::io::SaveJSON::createIntegerArray(ptdata));
   cJSON* iearr = cJSON_CreateArray();
   cJSON_AddItemToObject(result, "edges", iearr);
   // Store CCW-ordered list of incident-edge records:
@@ -421,7 +421,7 @@ cJSON* SessionIOJSON::serializeVertex(internal::VertexPtr vert, const smtk::mode
     loc = &((*loc)->next); // fast way to append to cJSON array
     }
   // Store tessellation to avoid boost re-compute.
-  smtk::io::ExportJSON::forManagerTessellation(v.entity(), result, v.manager());
+  smtk::io::SaveJSON::forManagerTessellation(v.entity(), result, v.manager());
   return result;
 }
 
@@ -457,13 +457,13 @@ internal::pmodel::Ptr SessionIOJSON::deserializeModel(cJSON* record, const smtk:
 
   bool ok = true;
 
-  ok &= (item = cJSON_GetObjectItem(record, "origin")) && smtk::io::ImportJSON::getRealArrayFromJSON(item, origin) == 3;
-  ok &= (item = cJSON_GetObjectItem(record, "x axis")) && smtk::io::ImportJSON::getRealArrayFromJSON(item, xAxis) == 3;
-  ok &= (item = cJSON_GetObjectItem(record, "y axis")) && smtk::io::ImportJSON::getRealArrayFromJSON(item, yAxis) == 3;
-  ok &= (item = cJSON_GetObjectItem(record, "z axis")) && smtk::io::ImportJSON::getRealArrayFromJSON(item, zAxis) == 3;
-  ok &= (item = cJSON_GetObjectItem(record, "i axis")) && smtk::io::ImportJSON::getRealArrayFromJSON(item, iAxis) == 3;
-  ok &= (item = cJSON_GetObjectItem(record, "j axis")) && smtk::io::ImportJSON::getRealArrayFromJSON(item, jAxis) == 3;
-  ok &= (item = cJSON_GetObjectItem(record, "model scale")) && smtk::io::ImportJSON::getIntegerArrayFromJSON(item, msData) == 8;
+  ok &= (item = cJSON_GetObjectItem(record, "origin")) && smtk::io::LoadJSON::getRealArrayFromJSON(item, origin) == 3;
+  ok &= (item = cJSON_GetObjectItem(record, "x axis")) && smtk::io::LoadJSON::getRealArrayFromJSON(item, xAxis) == 3;
+  ok &= (item = cJSON_GetObjectItem(record, "y axis")) && smtk::io::LoadJSON::getRealArrayFromJSON(item, yAxis) == 3;
+  ok &= (item = cJSON_GetObjectItem(record, "z axis")) && smtk::io::LoadJSON::getRealArrayFromJSON(item, zAxis) == 3;
+  ok &= (item = cJSON_GetObjectItem(record, "i axis")) && smtk::io::LoadJSON::getRealArrayFromJSON(item, iAxis) == 3;
+  ok &= (item = cJSON_GetObjectItem(record, "j axis")) && smtk::io::LoadJSON::getRealArrayFromJSON(item, jAxis) == 3;
+  ok &= (item = cJSON_GetObjectItem(record, "model scale")) && smtk::io::LoadJSON::getIntegerArrayFromJSON(item, msData) == 8;
   ok &= (item = cJSON_GetObjectItem(record, "feature size")) && item->type == cJSON_Number && (featureSize = item->valuedouble) > 0;
 
   if (ok)
@@ -490,7 +490,7 @@ internal::pmodel::Ptr SessionIOJSON::deserializeModel(cJSON* record, const smtk:
 void SessionIOJSON::deserializeFace(cJSON* record, const smtk::model::Face& face)
 {
   // Fetch tessellation
-  smtk::io::ImportJSON::ofManagerTessellation(face.entity(), record, face.manager());
+  smtk::io::LoadJSON::ofManagerTessellation(face.entity(), record, face.manager());
 }
 
 internal::EdgePtr SessionIOJSON::deserializeEdge(cJSON* record, const smtk::model::Edge& e)
@@ -501,7 +501,7 @@ internal::EdgePtr SessionIOJSON::deserializeEdge(cJSON* record, const smtk::mode
 
   bool ok = true;
 
-  ok &= (item = cJSON_GetObjectItem(record, "points")) && smtk::io::ImportJSON::getIntegerArrayFromJSON(item, ptdata) > 0;
+  ok &= (item = cJSON_GetObjectItem(record, "points")) && smtk::io::LoadJSON::getIntegerArrayFromJSON(item, ptdata) > 0;
   ok &= (item = cJSON_GetObjectItem(record, "t")) && item->type == cJSON_Object;
 
   if (ok)
@@ -529,7 +529,7 @@ internal::EdgePtr SessionIOJSON::deserializeEdge(cJSON* record, const smtk::mode
       }
 
     // Fetch tessellation
-    smtk::io::ImportJSON::ofManagerTessellation(e.entity(), record, e.manager());
+    smtk::io::LoadJSON::ofManagerTessellation(e.entity(), record, e.manager());
     }
 
   return result;
@@ -544,7 +544,7 @@ internal::VertexPtr SessionIOJSON::deserializeVertex(cJSON* record, const smtk::
   bool ok = true;
 
   ok &= (item = cJSON_GetObjectItem(record, "t")) && item->type == cJSON_Object;
-  ok &= (item = cJSON_GetObjectItem(record, "point")) && smtk::io::ImportJSON::getIntegerArrayFromJSON(item, ptdata) > 0;
+  ok &= (item = cJSON_GetObjectItem(record, "point")) && smtk::io::LoadJSON::getIntegerArrayFromJSON(item, ptdata) > 0;
   ok &= (item = cJSON_GetObjectItem(record, "edges")) && item->type == cJSON_Array;
 
   if (ok)
@@ -581,7 +581,7 @@ internal::VertexPtr SessionIOJSON::deserializeVertex(cJSON* record, const smtk::
       }
 
     // Fetch tessellation
-    smtk::io::ImportJSON::ofManagerTessellation(v.entity(), record, v.manager());
+    smtk::io::LoadJSON::ofManagerTessellation(v.entity(), record, v.manager());
     }
   return result;
 }

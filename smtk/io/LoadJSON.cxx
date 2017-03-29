@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/LoadJSON.h"
 
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/DefaultSession.h"
@@ -363,7 +363,7 @@ int cJSON_GetObjectParameters(cJSON* node, T& obj, smtk::attribute::System* sys,
   * The top level JSON object must be a dictionary with key "type" set to "Manager"
   * and key "topo" set to a dictionary of UUIDs with matching entries.
   */
-int ImportJSON::intoModelManager(
+int LoadJSON::intoModelManager(
   const char* json, ManagerPtr manager)
 {
   int status = 0;
@@ -401,7 +401,7 @@ int ImportJSON::intoModelManager(
   if (mtyp && mtyp->type == cJSON_String && mtyp->valuestring && !strcmp(mtyp->valuestring,"Manager"))
     {
     cJSON* body = cJSON_GetObjectItem(root, "topo");
-    status = ImportJSON::ofManager(body, manager);
+    status = LoadJSON::ofManager(body, manager);
     }
 
   cJSON_Delete(root);
@@ -414,11 +414,11 @@ int ImportJSON::intoModelManager(
   * values that describe entity, tessellation, arrangement, and/or
   * properties associated with the UUID.
   */
-int ImportJSON::ofManager(
+int LoadJSON::ofManager(
   cJSON* dict, ManagerPtr manager)
 {
   smtk::model::BitFlags whatToImport = smtk::model::SESSION_EVERYTHING;
-  return ImportJSON::ofManagerEntityData(dict, manager, whatToImport);
+  return LoadJSON::ofManagerEntityData(dict, manager, whatToImport);
 }
 
 /**\brief Create records in the \a manager from a JSON dictionary, \a dict.
@@ -427,7 +427,7 @@ int ImportJSON::ofManager(
   * values that describe entity, tessellation, arrangement, and/or
   * properties associated with the UUID.
   */
-int ImportJSON::ofManagerEntityData(
+int LoadJSON::ofManagerEntityData(
   cJSON* dict, ManagerPtr manager, smtk::model::BitFlags whatToImport)
 {
   if (!dict || !manager || !whatToImport)
@@ -451,28 +451,28 @@ int ImportJSON::ofManagerEntityData(
       }
     if (whatToImport & SESSION_ENTITY_RECORD)
       {
-      status &= ImportJSON::ofManagerEntity(uid, curChild, manager);
+      status &= LoadJSON::ofManagerEntity(uid, curChild, manager);
       }
     if (whatToImport & SESSION_ARRANGEMENTS)
       {
-      status &= ImportJSON::ofManagerArrangement(uid, curChild, manager);
+      status &= LoadJSON::ofManagerArrangement(uid, curChild, manager);
       }
     if (whatToImport & SESSION_TESSELLATION)
       {
-      status &= ImportJSON::ofManagerTessellation(uid, curChild, manager);
-      status &= ImportJSON::ofManagerAnalysis(uid, curChild, manager);
+      status &= LoadJSON::ofManagerTessellation(uid, curChild, manager);
+      status &= LoadJSON::ofManagerAnalysis(uid, curChild, manager);
       }
     if (whatToImport & SESSION_FLOAT_PROPERTIES)
       {
-      status &= ImportJSON::ofManagerFloatProperties(uid, curChild, manager);
+      status &= LoadJSON::ofManagerFloatProperties(uid, curChild, manager);
       }
     if (whatToImport & SESSION_STRING_PROPERTIES)
       {
-      status &= ImportJSON::ofManagerStringProperties(uid, curChild, manager);
+      status &= LoadJSON::ofManagerStringProperties(uid, curChild, manager);
       }
     if (whatToImport & SESSION_INTEGER_PROPERTIES)
       {
-      status &= ImportJSON::ofManagerIntegerProperties(uid, curChild, manager);
+      status &= LoadJSON::ofManagerIntegerProperties(uid, curChild, manager);
       }
     }
   return status;
@@ -483,7 +483,7 @@ int ImportJSON::ofManagerEntityData(
   * The \a uid is the UUID corresponding to \a cellRec and
   * the resulting record will be inserted into \a manager.
   */
-int ImportJSON::ofManagerEntity(
+int LoadJSON::ofManagerEntity(
   const UUID& uid, cJSON* cellRec, ManagerPtr manager)
 {
   long dim = 0;
@@ -505,7 +505,7 @@ int ImportJSON::ofManagerEntity(
   * The \a uid is the UUID corresponding to \a dict and
   * the resulting record will be inserted into \a manager.
   */
-int ImportJSON::ofManagerArrangement(
+int LoadJSON::ofManagerArrangement(
   const UUID& uid, cJSON* dict, ManagerPtr manager)
 {
   cJSON* arrNode = cJSON_GetObjectItem(dict, "a");
@@ -549,7 +549,7 @@ int ImportJSON::ofManagerArrangement(
   * The \a uid is the UUID corresponding to \a dict and
   * the resulting record will be inserted into \a manager.
   */
-int ImportJSON::ofManagerTessellation(
+int LoadJSON::ofManagerTessellation(
   const UUID& uid, cJSON* dict, ManagerPtr manager)
 {
   cJSON* tessNode = cJSON_GetObjectItem(dict, "t");
@@ -587,7 +587,7 @@ int ImportJSON::ofManagerTessellation(
   * The \a uid is the UUID corresponding to \a dict and
   * the resulting record will be inserted into \a manager.
   */
-int ImportJSON::ofManagerAnalysis(
+int LoadJSON::ofManagerAnalysis(
   const UUID& uid, cJSON* dict, ManagerPtr manager)
 {
   cJSON* meshNode = cJSON_GetObjectItem(dict, "m");
@@ -624,7 +624,7 @@ int ImportJSON::ofManagerAnalysis(
   * The \a uid is the UUID corresponding to \a dict and
   * the resulting record will be inserted into \a manager.
   */
-int ImportJSON::ofManagerFloatProperties(const smtk::common::UUID& uid, cJSON* dict, ManagerPtr manager)
+int LoadJSON::ofManagerFloatProperties(const smtk::common::UUID& uid, cJSON* dict, ManagerPtr manager)
 {
   int status = 0;
   cJSON* floatNode = cJSON_GetObjectItem(dict, "f");
@@ -651,7 +651,7 @@ int ImportJSON::ofManagerFloatProperties(const smtk::common::UUID& uid, cJSON* d
   * The \a uid is the UUID corresponding to \a dict and
   * the resulting record will be inserted into \a manager.
   */
-int ImportJSON::ofManagerStringProperties(const smtk::common::UUID& uid, cJSON* dict, ManagerPtr manager)
+int LoadJSON::ofManagerStringProperties(const smtk::common::UUID& uid, cJSON* dict, ManagerPtr manager)
 {
   int status = 0;
   cJSON* stringNode = cJSON_GetObjectItem(dict, "s");
@@ -677,7 +677,7 @@ int ImportJSON::ofManagerStringProperties(const smtk::common::UUID& uid, cJSON* 
   * The \a uid is the UUID corresponding to \a dict and
   * the resulting record will be inserted into \a manager.
   */
-int ImportJSON::ofManagerIntegerProperties(const smtk::common::UUID& uid, cJSON* dict, ManagerPtr manager)
+int LoadJSON::ofManagerIntegerProperties(const smtk::common::UUID& uid, cJSON* dict, ManagerPtr manager)
 {
   int status = 0;
   cJSON* integerNode = cJSON_GetObjectItem(dict, "i");
@@ -711,7 +711,7 @@ int ImportJSON::ofManagerIntegerProperties(const smtk::common::UUID& uid, cJSON*
   * The \a destSession must be of a proper type for your application
   * (i.e., be able to forward requests for data and operations).
   */
-int ImportJSON::ofRemoteSession(
+int LoadJSON::ofRemoteSession(
   cJSON* node,
   DefaultSessionPtr destSession,
   ManagerPtr context,
@@ -830,7 +830,7 @@ int ImportJSON::ofRemoteSession(
   * special care must be taken to avoid that behavior when importing
   * a session.
   */
-int ImportJSON::ofLocalSession(
+int LoadJSON::ofLocalSession(
   cJSON* node, ManagerPtr context, bool loadNativeModels, const std::string& refPath)
 {
   int status = 0;
@@ -878,7 +878,7 @@ int ImportJSON::ofLocalSession(
           }
         else if (entry->type == cJSON_Array)
           {
-          ImportJSON::getStringArrayFromJSON(entry, optVal);
+          LoadJSON::getStringArrayFromJSON(entry, optVal);
           }
         if (!optVal.empty())
           {
@@ -934,7 +934,7 @@ int ImportJSON::ofLocalSession(
   * Finally, parameter values stored in \a node's "param"
   * string (as XML) are read into the operator's attribute manager.
   */
-int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
+int LoadJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
 {
   cJSON* pnode;
 
@@ -977,7 +977,7 @@ int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
   return 1;
 }
 
-int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::model::RemoteOperatorPtr op)
+int LoadJSON::ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::model::RemoteOperatorPtr op)
 {
   smtk::attribute::System* opSys = op->session()->operatorSystem();
   // Deserialize the OperatorResult into \a resOut:
@@ -1020,18 +1020,18 @@ int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::mode
           }
         mgr->erase(uid);
         }
-      status = ImportJSON::ofManager(records, mgr);
+      status = LoadJSON::ofManager(records, mgr);
       }
 
     if(mesh_records)
       {
-      status &= ImportJSON::ofMeshesOfModel(mesh_records, mgr);
+      status &= LoadJSON::ofMeshesOfModel(mesh_records, mgr);
       }
     }
   return status;
 }
 
-int ImportJSON::ofDanglingEntities(cJSON* node, ManagerPtr context)
+int LoadJSON::ofDanglingEntities(cJSON* node, ManagerPtr context)
 {
   if (!node || !context)
     return 0;
@@ -1073,10 +1073,10 @@ int ImportJSON::ofDanglingEntities(cJSON* node, ManagerPtr context)
   *
   * See the other variant for details.
   */
-int ImportJSON::ofLog(const char* jsonStr, smtk::io::Logger& log)
+int LoadJSON::ofLog(const char* jsonStr, smtk::io::Logger& log)
 {
   cJSON* json = cJSON_Parse(jsonStr);
-  int stat = ImportJSON::ofLog(json, log);
+  int stat = LoadJSON::ofLog(json, log);
   cJSON_Delete(json);
   return stat;
 }
@@ -1089,7 +1089,7 @@ int ImportJSON::ofLog(const char* jsonStr, smtk::io::Logger& log)
   * not formatted as expected, then the return value will be higher than
   * the number of records actually appended to the \a log.
   */
-int ImportJSON::ofLog(cJSON* logrecordarray, smtk::io::Logger& log)
+int LoadJSON::ofLog(cJSON* logrecordarray, smtk::io::Logger& log)
 {
   if (!logrecordarray || logrecordarray->type != cJSON_Array)
     return -1;
@@ -1143,7 +1143,7 @@ int ImportJSON::ofLog(cJSON* logrecordarray, smtk::io::Logger& log)
   * Returns a status value of 1 when everything has been loading in properly
   *
   */
-int ImportJSON::ofMeshesOfModel(cJSON* node,
+int LoadJSON::ofMeshesOfModel(cJSON* node,
                                 smtk::model::ManagerPtr modelMgr,
                                 const std::string& refPath)
 {
@@ -1274,7 +1274,7 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
         collection->associateToModel(associatedModelId);
         }
       //write properties to the new collection
-      status &= ImportJSON::ofMeshProperties(child, collection);
+      status &= LoadJSON::ofMeshProperties(child, collection);
 
       //lastly we need to restore the serialized modified flag state
       //if the currently don't match
@@ -1298,7 +1298,7 @@ int ImportJSON::ofMeshesOfModel(cJSON* node,
   * and added to the mesh \a collection.
   *
   */
-int ImportJSON::ofMeshProperties(cJSON* node,
+int LoadJSON::ofMeshProperties(cJSON* node,
                                 smtk::mesh::CollectionPtr collection)
 {
   cJSON* jsonProperties = cJSON_GetObjectItem(node, "properties");
@@ -1368,7 +1368,7 @@ int ImportJSON::ofMeshProperties(cJSON* node,
   return 1;
 }
 
-std::string ImportJSON::sessionNameFromTagData(cJSON* tagData)
+std::string LoadJSON::sessionNameFromTagData(cJSON* tagData)
 {
   std::ostringstream bname;
   bname << "smtk::model[";
@@ -1381,7 +1381,7 @@ std::string ImportJSON::sessionNameFromTagData(cJSON* tagData)
   if ((enginesJSON = cJSON_GetObjectItem(tagData, "engines")))
     {
     StringList engines;
-    ImportJSON::getStringArrayFromJSON(enginesJSON, engines);
+    LoadJSON::getStringArrayFromJSON(enginesJSON, engines);
     StringList::const_iterator it = engines.begin();
     if (it != engines.end())
       {
@@ -1401,31 +1401,31 @@ std::string ImportJSON::sessionNameFromTagData(cJSON* tagData)
   return bname.str();
 }
 
-smtk::model::StringList ImportJSON::sessionFileTypesFromTagData(cJSON* tagData)
+smtk::model::StringList LoadJSON::sessionFileTypesFromTagData(cJSON* tagData)
 {
   StringList fileTypes;
   cJSON* fileTypesJSON;
   if ((fileTypesJSON = cJSON_GetObjectItem(tagData, "fileTypes")))
-    ImportJSON::getStringArrayFromJSON(fileTypesJSON, fileTypes);
+    LoadJSON::getStringArrayFromJSON(fileTypesJSON, fileTypes);
   return fileTypes;
 }
 
-int ImportJSON::getUUIDArrayFromJSON(cJSON* uidRec, std::vector<smtk::common::UUID>& uids)
+int LoadJSON::getUUIDArrayFromJSON(cJSON* uidRec, std::vector<smtk::common::UUID>& uids)
 {
   return cJSON_GetUUIDArray(uidRec, uids);
 }
 
-int ImportJSON::getStringArrayFromJSON(cJSON* arrayNode, std::vector<std::string>& text)
+int LoadJSON::getStringArrayFromJSON(cJSON* arrayNode, std::vector<std::string>& text)
 {
   return cJSON_GetStringArray(arrayNode, text);
 }
 
-int ImportJSON::getIntegerArrayFromJSON(cJSON* arrayNode, std::vector<long>& values)
+int LoadJSON::getIntegerArrayFromJSON(cJSON* arrayNode, std::vector<long>& values)
 {
   return cJSON_GetIntegerArray(arrayNode, values);
 }
 
-int ImportJSON::getRealArrayFromJSON(cJSON* arrayNode, std::vector<double>& values)
+int LoadJSON::getRealArrayFromJSON(cJSON* arrayNode, std::vector<double>& values)
 {
   return cJSON_GetRealArray(arrayNode, values);
 }

@@ -105,7 +105,7 @@ class TestDiscreteCreateEdges(smtk.testing.TestCase):
         if self.shouldSave:
             ftmp = os.path.join(smtk.testing.TEMP_DIR, 'testcreateedges.json')
             out = file(ftmp, 'w')
-            print >>out, smtk.io.ExportJSON.fromModelManager(self.mgr)
+            print >>out, smtk.io.SaveJSON.fromModelManager(self.mgr)
             out.close()
             os.remove(ftmp)
 

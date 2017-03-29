@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
 
 #include "smtk/mesh/Collection.h"
@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
 
     ManagerPtr sm = Manager::create();
 
-    int status = ImportJSON::intoModelManager(data.c_str(), sm);
+    int status = LoadJSON::intoModelManager(data.c_str(), sm);
     int numModels = static_cast<int>(sm->entitiesMatchingFlagsAs<Models>(smtk::model::MODEL_ENTITY).size());
     std::cout << "Imported models into manager: " << numModels << std::endl;
     if (numModels > 0)

@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
 
 #include "smtk/mesh/Collection.h"

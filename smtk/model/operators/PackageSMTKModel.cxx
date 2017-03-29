@@ -17,8 +17,8 @@
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/common/CompilerInformation.h"
-#include "smtk/io/ExportJSON.h"
-#include "smtk/io/ExportJSON.txx"
+#include "smtk/io/SaveJSON.h"
+#include "smtk/io/SaveJSON.txx"
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 #include "smtk/model/Session.h"
@@ -141,7 +141,7 @@ OperatorResult PackageSMTKModel::operateInternal()
       }
     }
 
-  smtk::io::ExportJSON::forManagerSessionPartial(
+  smtk::io::SaveJSON::forManagerSessionPartial(
     this->session()->sessionId(),
     this->m_specification->associatedModelEntityIds(),
     top, this->manager(), true, smtkfilepath);

@@ -32,7 +32,7 @@
 
 #if defined(SMTK_DISCRETE_SESSION_DEBUG)
 #include "cJSON.h"
-#include "smtk/io/ExportJSON.h"
+#include "smtk/io/SaveJSON.h"
 #endif
 
 using namespace smtk::model;

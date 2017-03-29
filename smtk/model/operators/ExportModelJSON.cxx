@@ -20,8 +20,8 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
-#include "smtk/io/ExportJSON.h"
-#include "smtk/io/ExportJSON.txx"
+#include "smtk/io/SaveJSON.h"
+#include "smtk/io/SaveJSON.txx"
 
 #include <fstream>
 
@@ -60,7 +60,7 @@ smtk::model::OperatorResult ExportModelJSON::operateInternal()
     }
 
   JSONFlags flags = static_cast<JSONFlags>(flagsItem->value(0));
-  std::string jsonStr = smtk::io::ExportJSON::forEntities(
+  std::string jsonStr = smtk::io::SaveJSON::forEntities(
     entities, smtk::model::ITERATE_MODELS, flags);
 
   jsonFile << jsonStr;

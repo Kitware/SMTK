@@ -3,7 +3,7 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="export smtk model" BaseType="operator">
+    <AttDef Type="save smtk model" BaseType="operator">
       <AssociationsDef Name="models" NumberOfRequiredValues="1" Extensible="true">
         <MembershipMask>model</MembershipMask>
       </AssociationsDef>
@@ -37,7 +37,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
-    <AttDef Type="result(export smtk model)" BaseType="result">
+    <AttDef Type="result(save smtk model)" BaseType="result">
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>

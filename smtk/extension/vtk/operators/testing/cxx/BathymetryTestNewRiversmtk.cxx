@@ -74,10 +74,10 @@ int main(int argc, char* argv[])
   std::cout << "\n";
 
   // read the data
-  smtk::model::OperatorPtr readOp = session->op("import smtk model");
+  smtk::model::OperatorPtr readOp = session->op("load smtk model");
   if (!readOp)
     {
-    std::cerr << "No import smtk model operator\n";
+    std::cerr << "No load smtk model operator\n";
     return 1;
     }
 

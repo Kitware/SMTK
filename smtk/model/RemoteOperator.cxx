@@ -27,7 +27,7 @@ std::string RemoteOperator::name() const
   return this->m_name;
 }
 
-/// Set the name of this operator (should only be called by ImportJSON::ofOperator).
+/// Set the name of this operator (should only be called by LoadJSON::ofOperator).
 RemoteOperator::Ptr RemoteOperator::setName(const std::string& opName)
 {
   this->m_name = opName;

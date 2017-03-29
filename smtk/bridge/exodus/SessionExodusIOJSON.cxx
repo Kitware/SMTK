@@ -21,8 +21,8 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
-#include "smtk/io/ExportJSON.h"
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/SaveJSON.h"
+#include "smtk/io/LoadJSON.h"
 
 #include "smtk/common/CompilerInformation.h"
 
@@ -119,7 +119,7 @@ int SessionIOJSON::importJSON(
   common::UUIDArray uids;
   if (preservedUUIDs)
     {
-    smtk::io::ImportJSON::getUUIDArrayFromJSON(preservedUUIDs->child, uids);
+    smtk::io::LoadJSON::getUUIDArrayFromJSON(preservedUUIDs->child, uids);
     }
 
   smtk::model::BitFlags whatToImport;
@@ -138,7 +138,7 @@ int SessionIOJSON::importJSON(
     }
   for (cJSON* entry = models ? models->child : NULL; entry; entry = entry->next)
     {
-    smtk::io::ImportJSON::ofManagerEntityData(entry, modelMgr, whatToImport);
+    smtk::io::LoadJSON::ofManagerEntityData(entry, modelMgr, whatToImport);
     }
 
   return 1;
@@ -219,14 +219,14 @@ int SessionIOJSON::exportJSON(model::ManagerPtr modelMgr, const model::SessionPt
     }
 
   cJSON_AddItemToObject(sessionRec, "preservedUUIDs",
-    smtk::io::ExportJSON::createUUIDArray(uuidArray));
+    smtk::io::SaveJSON::createUUIDArray(uuidArray));
   cJSON_AddItemToObject(sessionRec, "toplevelOffsets",
-    smtk::io::ExportJSON::createIntegerArray(toplevelOffsets));
+    smtk::io::SaveJSON::createIntegerArray(toplevelOffsets));
   cJSON_AddItemToObject(sessionRec, "modelNumbers",
-    smtk::io::ExportJSON::createIntegerArray(modelNumbers));
+    smtk::io::SaveJSON::createIntegerArray(modelNumbers));
   std::vector<std::string> urlArray(modelFiles.begin(), modelFiles.end());
   cJSON_AddItemToObject(sessionRec, "modelFiles",
-    smtk::io::ExportJSON::createStringArray(urlArray));
+    smtk::io::SaveJSON::createStringArray(urlArray));
 
   return 1;
 }

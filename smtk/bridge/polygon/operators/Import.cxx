@@ -36,7 +36,7 @@
 
 #include "smtk/bridge/polygon/Import_xml.h"
 
-#include "smtk/io/ExportJSON.h"
+#include "smtk/io/SaveJSON.h"
 
 #include "vtkCellArray.h"
 #include "vtkCellData.h"

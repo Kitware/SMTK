@@ -13,7 +13,7 @@
 #include "smtk/attribute/MeshItem.h"
 
 #include "smtk/io/ExportMesh.h"
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/LoadJSON.h"
 #include "smtk/io/ImportMesh.h"
 #include "smtk/io/ModelToMesh.h"
 
@@ -47,7 +47,7 @@ void create_simple_mesh_model( smtk::model::ManagerPtr mgr,
     (std::istreambuf_iterator<char>()));
 
   //we should load in the test2D.json file as an smtk to model
-  smtk::io::ImportJSON::intoModelManager(json.c_str(), mgr);
+  smtk::io::LoadJSON::intoModelManager(json.c_str(), mgr);
   mgr->assignDefaultNames();
 
   file.close();

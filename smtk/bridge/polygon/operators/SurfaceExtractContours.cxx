@@ -30,7 +30,7 @@
 #include "smtk/bridge/polygon/SurfaceExtractContours_xml.h"
 
 #include "cJSON.h"
-#include "smtk/io/ExportJSON.h"
+#include "smtk/io/SaveJSON.h"
 #include <limits>
 #include <sstream>
 

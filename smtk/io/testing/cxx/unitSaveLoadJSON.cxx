@@ -7,9 +7,9 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/io/ExportJSON.h"
-#include "smtk/io/ExportJSON.txx"
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/SaveJSON.h"
+#include "smtk/io/SaveJSON.txx"
+#include "smtk/io/LoadJSON.h"
 #include "smtk/io/Logger.h"
 
 #include "smtk/model/Manager.h"
@@ -38,10 +38,10 @@ void testLoggerSerialization1()
 
   cJSON* array = cJSON_CreateArray();
   test(
-    smtk::io::ExportJSON::forLog(array, log) == 0,
+    smtk::io::SaveJSON::forLog(array, log) == 0,
     "Exporting an empty log should return 0");
   test(
-    smtk::io::ImportJSON::ofLog(array, log2) == 0,
+    smtk::io::LoadJSON::ofLog(array, log2) == 0,
     "Importing an empty log should return 0");
   cJSON_Delete(array);
 
@@ -61,11 +61,11 @@ void testLoggerSerialization2()
   std::cout << "Log1 is\n" << log.convertToString() << "\n";
   cJSON* array = cJSON_CreateArray();
   test(
-    smtk::io::ExportJSON::forLog(array, log, 0, log.numberOfRecords() + 100) ==
+    smtk::io::SaveJSON::forLog(array, log, 0, log.numberOfRecords() + 100) ==
     static_cast<int>(log.numberOfRecords()),
     "Exporting too many records should export those we have.");
   test(
-    smtk::io::ImportJSON::ofLog(array, log2) ==
+    smtk::io::LoadJSON::ofLog(array, log2) ==
     static_cast<int>(log.numberOfRecords()),
     "Importing what we exported produced the wrong number of records.");
   std::cout << "Log2 is\n" << log2.convertToString() << "\n";
@@ -79,7 +79,7 @@ void testExportEntityRef(
   const EntityRefs& entities, IteratorStyle relations, int correctCount)
 {
   cJSON* json = cJSON_CreateObject();
-  ExportJSON::forEntities(json, entities, relations, JSON_ENTITIES);
+  SaveJSON::forEntities(json, entities, relations, JSON_ENTITIES);
   int numRecords = 0;
   for (cJSON* child = json->child; child; child = child->next)
     ++numRecords;
@@ -88,7 +88,7 @@ void testExportEntityRef(
     if (!entities.empty())
       entities.begin()->manager()->assignDefaultNames();
     std::cout
-      << ExportJSON::forEntities(entities, relations, JSON_PROPERTIES)
+      << SaveJSON::forEntities(entities, relations, JSON_PROPERTIES)
       << "\n\n"
       << "Exported " << numRecords << ","
       << " expecting " << correctCount
@@ -114,7 +114,7 @@ void testModelExport()
   testExportEntityRef(entities, smtk::model::ITERATE_CHILDREN, 9);
   testExportEntityRef(entities, smtk::model::ITERATE_MODELS, 79);
 
-  std::string json = ExportJSON::forEntities(entities, smtk::model::ITERATE_BARE, JSON_DEFAULT);
+  std::string json = SaveJSON::forEntities(entities, smtk::model::ITERATE_BARE, JSON_DEFAULT);
   std::cout << "json for vertex is \n" << json << "\n";
 }
 
@@ -134,8 +134,8 @@ int main(int argc, char* argv[])
   ManagerPtr sm = Manager::create();
 
   int status = 0;
-  status |= ImportJSON::intoModelManager(data.c_str(), sm);
-  status |= ExportJSON::fromModelManager(json, sm,
+  status |= LoadJSON::intoModelManager(data.c_str(), sm);
+  status |= SaveJSON::fromModelManager(json, sm,
     // Do not export sessions; they will have different UUIDs
     static_cast<JSONFlags>(JSON_ENTITIES | JSON_TESSELLATIONS | JSON_PROPERTIES));
 
@@ -144,8 +144,8 @@ int main(int argc, char* argv[])
   json = cJSON_CreateObject();
   ManagerPtr sm2 = Manager::create();
 
-  status |= ImportJSON::intoModelManager(exported, sm2);
-  status |= ExportJSON::fromModelManager(json, sm2,
+  status |= LoadJSON::intoModelManager(exported, sm2);
+  status |= SaveJSON::fromModelManager(json, sm2,
     // Do not export sessions; they will have different UUIDs
     static_cast<JSONFlags>(JSON_ENTITIES | JSON_TESSELLATIONS | JSON_PROPERTIES));
   char* exported2 = cJSON_Print(json);

@@ -32,7 +32,7 @@
 
 #if defined(SMTK_DISCRETE_SESSION_DEBUG)
 #include "cJSON.h"
-#include "smtk/io/ExportJSON.h"
+#include "smtk/io/SaveJSON.h"
 #endif
 
 using namespace smtk::model;
@@ -90,7 +90,7 @@ OperatorResult ReadOperator::operateInternal()
   models->setValue(0, modelEntity);
 
 #if defined(SMTK_DISCRETE_SESSION_DEBUG)
-  std::string json = smtk::io::ExportJSON::fromModelManager(this->manager());
+  std::string json = smtk::io::SaveJSON::fromModelManager(this->manager());
   std::ofstream file("/tmp/read_op_out.json");
   file << json;
   file.close();

@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
   auto session = manager->createSession("exodus");
 
   // Load model file
-  smtk::model::OperatorPtr readOp = session.op("import smtk model");
+  smtk::model::OperatorPtr readOp = session.op("load smtk model");
   if (!readOp)
   {
     std::cerr << "No operator import-smtk-model\n";

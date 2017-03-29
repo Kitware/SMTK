@@ -11,8 +11,8 @@
 #include "smtk/bridge/remote/RemusRPCWorker.h"
 #include "smtk/bridge/remote/Session.h"
 
-#include "smtk/io/ExportJSON.h"
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/SaveJSON.h"
+#include "smtk/io/LoadJSON.h"
 
 #include "smtk/model/Operator.h"
 #include "smtk/model/SessionRegistrar.h"
@@ -179,7 +179,7 @@ void RemusRPCWorker::processJob(
         {
         smtk::model::StringList sessionTypeNames = this->m_modelMgr->sessionTypeNames();
         cJSON_AddItemToObject(result, "result",
-          smtk::io::ExportJSON::createStringArray(sessionTypeNames));
+          smtk::io::SaveJSON::createStringArray(sessionTypeNames));
         }
       else if (methStr == "session-filetypes")
         {
@@ -203,7 +203,7 @@ void RemusRPCWorker::processJob(
             {
             if(it->second.size())
               cJSON_AddItemToObject(typeObj, it->first.c_str(),
-                smtk::io::ExportJSON::createStringArray(it->second));
+                smtk::io::SaveJSON::createStringArray(it->second));
             }
           cJSON_AddItemToObject(result, "result", typeObj);
           }
@@ -265,7 +265,7 @@ void RemusRPCWorker::processJob(
               {
               this->m_modelMgr->registerSession(session);
               cJSON* sess = cJSON_CreateObject();
-              smtk::io::ExportJSON::forManagerSession(
+              smtk::io::SaveJSON::forManagerSession(
                 session->sessionId(), sess, this->m_modelMgr);
               cJSON_AddItemToObject(result, "result", sess);
               }
@@ -277,7 +277,7 @@ void RemusRPCWorker::processJob(
         cJSON* model = cJSON_CreateObject();
         // Never include session list or tessellation data
         // Until someone makes us.
-        smtk::io::ExportJSON::fromModelManager(model, this->m_modelMgr,
+        smtk::io::SaveJSON::fromModelManager(model, this->m_modelMgr,
           static_cast<smtk::io::JSONFlags>(
             smtk::io::JSON_ENTITIES | smtk::io::JSON_PROPERTIES));
         cJSON_AddItemToObject(result, "result", model);
@@ -287,7 +287,7 @@ void RemusRPCWorker::processJob(
         smtk::model::OperatorPtr localOp;
         if (
           !param ||
-          !smtk::io::ImportJSON::ofOperator(param, localOp, this->m_modelMgr) ||
+          !smtk::io::LoadJSON::ofOperator(param, localOp, this->m_modelMgr) ||
           !localOp)
           {
           this->generateError(result,
@@ -305,7 +305,7 @@ void RemusRPCWorker::processJob(
         smtk::model::OperatorPtr localOp;
         if (
           !param ||
-          !smtk::io::ImportJSON::ofOperator(param, localOp, this->m_modelMgr) ||
+          !smtk::io::LoadJSON::ofOperator(param, localOp, this->m_modelMgr) ||
           !localOp)
           {
           this->generateError(result,
@@ -316,7 +316,7 @@ void RemusRPCWorker::processJob(
           {
           smtk::model::OperatorResult ores = localOp->operate();
           cJSON* oresult = cJSON_CreateObject();
-          smtk::io::ExportJSON::forOperatorResult(ores, oresult);
+          smtk::io::SaveJSON::forOperatorResult(ores, oresult);
           cJSON_AddItemToObject(result, "result", oresult);
           }
         }

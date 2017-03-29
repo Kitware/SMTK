@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/io/ExportJSON.h"
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/SaveJSON.h"
+#include "smtk/io/LoadJSON.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/testing/cxx/helpers.h"
 
@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
 
   // ### Benchmark JSON export ###
   t.mark();
-  std::string json = ExportJSON::fromModelManager(sm);
+  std::string json = SaveJSON::fromModelManager(sm);
   deltaT = t.elapsed();
   std::cout
     << deltaT << " seconds to export "
@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
     {
     ManagerPtr sm2 = Manager::create();
     t.mark();
-    ImportJSON::intoModelManager(json.c_str(), sm2);
+    LoadJSON::intoModelManager(json.c_str(), sm2);
     deltaT = t.elapsed();
     }
   std::cout << deltaT << " seconds to ingest JSON.\n";

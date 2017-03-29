@@ -15,7 +15,7 @@
 #include "smtk/model/EntityIterator.h"
 #include "smtk/model/EntityRef.h"
 
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
@@ -153,7 +153,7 @@ void create_simple_mesh_model( smtk::model::ManagerPtr mgr )
     (std::istreambuf_iterator<char>()));
 
   //we should load in the test2D.json file as an smtk to model
-  smtk::io::ImportJSON::intoModelManager(json.c_str(), mgr);
+  smtk::io::LoadJSON::intoModelManager(json.c_str(), mgr);
   mgr->assignDefaultNames();
 
   file.close();

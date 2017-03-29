@@ -2,8 +2,8 @@
 set(ioSrcs
   AttributeReader.cxx
   AttributeWriter.cxx
-  ExportJSON.cxx
-  ImportJSON.cxx
+  SaveJSON.cxx
+  LoadJSON.cxx
   Logger.cxx
   ModelToMesh.cxx
   OperatorLog.cxx
@@ -19,8 +19,8 @@ set(ioSrcs
 set(ioHeaders
   AttributeReader.h
   AttributeWriter.h
-  ExportJSON.h
-  ImportJSON.h
+  SaveJSON.h
+  LoadJSON.h
   Logger.h
   ModelToMesh.h
   OperatorLog.h

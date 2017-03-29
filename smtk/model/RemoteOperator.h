@@ -26,7 +26,7 @@ typedef smtk::shared_ptr<RemoteOperator> RemoteOperatorPtr;
   * Applications that present model information from a separate process
   * may subclass DefaultSession and add RemoteOperator instances to it
   * which mirror the other process' list of operators.
-  * The ImportJSON class aids in this respect by creating
+  * The LoadJSON class aids in this respect by creating
   * RemoteOperator instances from JSON descriptions of operators
   * when a session inherits DefaultSession.
   *

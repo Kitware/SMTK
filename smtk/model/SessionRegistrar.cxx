@@ -11,7 +11,7 @@
 
 #include "smtk/model/Session.h"
 
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/LoadJSON.h"
 
 #include "cJSON.h"
 
@@ -108,7 +108,7 @@ void SessionRegistrar::parseTags(StaticSessionInfo& session)
             einfo->child)
             {
             StringList fileTypes;
-            smtk::io::ImportJSON::getStringArrayFromJSON(einfo, fileTypes);
+            smtk::io::LoadJSON::getStringArrayFromJSON(einfo, fileTypes);
             if (curEngine.empty())
               curEngine = "*";
             session.FileTypes[curEngine] = fileTypes;

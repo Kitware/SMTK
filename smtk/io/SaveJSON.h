@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_io_ExportJSON_h
-#define __smtk_io_ExportJSON_h
+#ifndef __smtk_io_SaveJSON_h
+#define __smtk_io_SaveJSON_h
 
 #include "smtk/CoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/SystemConfig.h"
@@ -53,7 +53,7 @@ enum JSONFlags
   * These may be used to provide concise answers to specific queries
   * and avoid storing or transmitting a potentially-large string.
   */
-class SMTKCORE_EXPORT ExportJSON
+class SMTKCORE_EXPORT SaveJSON
 {
 public:
   static cJSON* fromUUIDs(const smtk::common::UUIDs& uids);
@@ -174,4 +174,4 @@ public:
   } // namespace model
 } // namespace smtk
 
-#endif // __smtk_io_ExportJSON_h
+#endif // __smtk_io_SaveJSON_h

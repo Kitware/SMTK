@@ -28,9 +28,9 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "PybindAttributeReader.h"
 #include "PybindAttributeWriter.h"
-#include "PybindExportJSON.h"
+#include "PybindSaveJSON.h"
 #include "PybindExportMesh.h"
-#include "PybindImportJSON.h"
+#include "PybindLoadJSON.h"
 #include "PybindImportMesh.h"
 #include "PybindLogger.h"
 #include "PybindModelToMesh.h"
@@ -64,9 +64,9 @@ PYBIND11_PLUGIN(_smtkPybindIO)
   PySharedPtrClass< smtk::io::AttributeReader > smtk_io_AttributeReader = pybind11_init_smtk_io_AttributeReader(io);
   PySharedPtrClass< smtk::io::AttributeWriter > smtk_io_AttributeWriter = pybind11_init_smtk_io_AttributeWriter(io);
   pybind11_init_smtk_io_JSONFlags(io);
-  PySharedPtrClass< smtk::io::ExportJSON > smtk_io_ExportJSON = pybind11_init_smtk_io_ExportJSON(io);
+  PySharedPtrClass< smtk::io::SaveJSON > smtk_io_SaveJSON = pybind11_init_smtk_io_SaveJSON(io);
   PySharedPtrClass< smtk::io::ExportMesh > smtk_io_ExportMesh = pybind11_init_smtk_io_ExportMesh(io);
-  PySharedPtrClass< smtk::io::ImportJSON > smtk_io_ImportJSON = pybind11_init_smtk_io_ImportJSON(io);
+  PySharedPtrClass< smtk::io::LoadJSON > smtk_io_LoadJSON = pybind11_init_smtk_io_LoadJSON(io);
   PySharedPtrClass< smtk::io::ImportMesh > smtk_io_ImportMesh = pybind11_init_smtk_io_ImportMesh(io);
   PySharedPtrClass< smtk::io::ItemExpressionInfo > smtk_io_ItemExpressionInfo = pybind11_init_smtk_io_ItemExpressionInfo(io);
   PySharedPtrClass< smtk::io::Logger > smtk_io_Logger = pybind11_init_smtk_io_Logger(io);

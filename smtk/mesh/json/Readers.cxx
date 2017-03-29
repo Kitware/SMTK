@@ -13,7 +13,7 @@
 #include "smtk/mesh/json/Interface.h"
 #include "smtk/mesh/json/MeshInfo.h"
 
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/LoadJSON.h"
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
@@ -27,7 +27,7 @@
 
 namespace
 {
-  //stolen from ImportJSON
+  //stolen from LoadJSON
   int cJSON_GetStringValue(cJSON* valItem, std::string& val)
     {
     switch (valItem->type)
@@ -97,7 +97,7 @@ namespace detail
     cJSON* modelEntNode = cJSON_GetObjectItem(child,"modelEntityIds");
     if(modelEntNode && modelEntNode->child)
       { //need to pass the array, not the key: [] node
-      smtk::io::ImportJSON::getUUIDArrayFromJSON(modelEntNode->child,
+      smtk::io::LoadJSON::getUUIDArrayFromJSON(modelEntNode->child,
                                                  modelEnts);
       }
     }
@@ -108,7 +108,7 @@ namespace detail
     if(domainNode && domainNode->child)
       {
       std::vector< long > values;
-      smtk::io::ImportJSON::getIntegerArrayFromJSON(domainNode->child,
+      smtk::io::LoadJSON::getIntegerArrayFromJSON(domainNode->child,
                                                     values);
       domains.reserve( values.size() );
       for(std::size_t i=0; i < values.size(); ++i)

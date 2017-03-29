@@ -31,7 +31,7 @@ class UnitTriangulateFace(smtk.testing.TestCase):
         SetActiveSession(self.sess)
         self.modelFile = os.path.join(
             smtk.testing.DATA_DIR, 'mesh', '2d', 'boxWithHole.smtk')
-        self.model = ImportSMTKModel(self.modelFile)[0]
+        self.model = LoadSMTKModel(self.modelFile)[0]
 
     def testMeshing2D(self):
         if smtk.wrappingProtocol() == 'pybind11':

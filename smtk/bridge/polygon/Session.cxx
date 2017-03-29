@@ -51,7 +51,7 @@ Session::Session()
 {
   this->initializeOperatorSystem(Session::s_operators);
   // Lets rename the export model operator definition  to be save model in terms of its label
-  auto attDef  = this->m_operatorSys->findDefinition("export smtk model");
+  auto attDef  = this->m_operatorSys->findDefinition("save smtk model");
   if (attDef)
     {
     attDef->setLabel(" Model - Save");

@@ -118,7 +118,7 @@ class TestDiscreteCreateAndSaveEdges(smtk.testing.TestCase):
 
         if self.shouldSave:
             out = file('testcreateandsaveedges.json', 'w')
-            print >>out, smtk.io.ExportJSON.fromModelManager(self.mgr)
+            print >>out, smtk.io.SaveJSON.fromModelManager(self.mgr)
             out.close()
 
 

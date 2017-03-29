@@ -26,9 +26,9 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/io/ExportJSON.h"
-#include "smtk/io/ExportJSON.txx"
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/SaveJSON.h"
+#include "smtk/io/SaveJSON.txx"
+#include "smtk/io/LoadJSON.h"
 
 //todo: remove this once remus supports automatic transfer of FileHandles
 // and Destructive Read of FileHandles
@@ -61,7 +61,7 @@ std::string extractModelUUIDSAsJSON(smtk::model::Models const& models)
   cJSON* top = cJSON_CreateObject();
   cJSON_AddItemToObject(top,
                         "ids",
-                        smtk::io::ExportJSON::createUUIDArray(modelIds) );
+                        smtk::io::SaveJSON::createUUIDArray(modelIds) );
   char* json = cJSON_Print(top);
   std::string uuidsSerialized(json);
   free(json);
@@ -98,7 +98,7 @@ OperatorResult MeshOperator::operateInternal()
   smtk::attribute::StringItemPtr attributeItem = this->findString("meshingControlAttributes");
 
   //convert the model and uuids to to mesh to a string representation
-  std::string modelSerialized = smtk::io::ExportJSON::fromModelManager(this->manager());
+  std::string modelSerialized = smtk::io::SaveJSON::fromModelManager(this->manager());
   std::string modelUUIDSSerialized = extractModelUUIDSAsJSON(models);
 
   //deserialize the reqs from the string
@@ -170,7 +170,7 @@ OperatorResult MeshOperator::operateInternal()
 
     //parse the job result as json mesh data
     cJSON* root = cJSON_Parse(meshMetaData.data());
-    smtk::io::ImportJSON::ofMeshesOfModel(root, this->manager());
+    smtk::io::LoadJSON::ofMeshesOfModel(root, this->manager());
     cJSON_Delete(root);
 
     //

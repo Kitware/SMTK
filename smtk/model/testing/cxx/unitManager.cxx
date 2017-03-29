@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/io/ExportJSON.h"
+#include "smtk/io/SaveJSON.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
@@ -174,18 +174,18 @@ int main(int argc, char* argv[])
   test(sm->hasStringProperty(uids[11], "name"));
 
   cJSON* root = cJSON_CreateObject();
-  ExportJSON::fromModelManager(root, sm);
-  cJSON_AddItemToObject(root, "nodes", ExportJSON::fromUUIDs(nodes));
-  cJSON_AddItemToObject(root, "edges", ExportJSON::fromUUIDs(edges));
-  cJSON_AddItemToObject(root, "faces", ExportJSON::fromUUIDs(faces));
-  cJSON_AddItemToObject(root, "zones", ExportJSON::fromUUIDs(zones));
-  cJSON_AddItemToObject(root, "bdy(brd(uc13,2),1)", ExportJSON::fromUUIDs(sm->boundaryEntities(sm->bordantEntities(uids[13],2),1)));
-  cJSON_AddItemToObject(root, "bdy(uc20,2)", ExportJSON::fromUUIDs(sm->boundaryEntities(uids[20],2)));
-  cJSON_AddItemToObject(root, "brd(uc20,2)", ExportJSON::fromUUIDs(sm->bordantEntities(uids[20],2)));
-  cJSON_AddItemToObject(root, "bdy(uc20,1)", ExportJSON::fromUUIDs(sm->boundaryEntities(uids[20],1)));
-  cJSON_AddItemToObject(root, "brd(uc20,3)", ExportJSON::fromUUIDs(sm->bordantEntities(uids[20],3)));
-  cJSON_AddItemToObject(root, "lower(uc21,1)", ExportJSON::fromUUIDs(sm->lowerDimensionalBoundaries(uids[21],1)));
-  cJSON_AddItemToObject(root, "upper(uc00,3)", ExportJSON::fromUUIDs(sm->higherDimensionalBordants(uids[0],3)));
+  SaveJSON::fromModelManager(root, sm);
+  cJSON_AddItemToObject(root, "nodes", SaveJSON::fromUUIDs(nodes));
+  cJSON_AddItemToObject(root, "edges", SaveJSON::fromUUIDs(edges));
+  cJSON_AddItemToObject(root, "faces", SaveJSON::fromUUIDs(faces));
+  cJSON_AddItemToObject(root, "zones", SaveJSON::fromUUIDs(zones));
+  cJSON_AddItemToObject(root, "bdy(brd(uc13,2),1)", SaveJSON::fromUUIDs(sm->boundaryEntities(sm->bordantEntities(uids[13],2),1)));
+  cJSON_AddItemToObject(root, "bdy(uc20,2)", SaveJSON::fromUUIDs(sm->boundaryEntities(uids[20],2)));
+  cJSON_AddItemToObject(root, "brd(uc20,2)", SaveJSON::fromUUIDs(sm->bordantEntities(uids[20],2)));
+  cJSON_AddItemToObject(root, "bdy(uc20,1)", SaveJSON::fromUUIDs(sm->boundaryEntities(uids[20],1)));
+  cJSON_AddItemToObject(root, "brd(uc20,3)", SaveJSON::fromUUIDs(sm->bordantEntities(uids[20],3)));
+  cJSON_AddItemToObject(root, "lower(uc21,1)", SaveJSON::fromUUIDs(sm->lowerDimensionalBoundaries(uids[21],1)));
+  cJSON_AddItemToObject(root, "upper(uc00,3)", SaveJSON::fromUUIDs(sm->higherDimensionalBordants(uids[0],3)));
   char* json = cJSON_Print(root);
   std::cout << json << "\n";
   free(json);

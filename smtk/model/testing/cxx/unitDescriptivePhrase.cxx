@@ -13,7 +13,7 @@
 #include "smtk/model/SessionRef.h"
 #include "smtk/model/SimpleModelSubphrases.h"
 
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/LoadJSON.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
       (std::istreambuf_iterator<char>(file)),
       (std::istreambuf_iterator<char>()));
 
-    if (data.empty() || !ImportJSON::intoModelManager(data.c_str(), sm))
+    if (data.empty() || !LoadJSON::intoModelManager(data.c_str(), sm))
       {
       std::cerr << "Error importing model from file \"" << fname << "\"\n";
       return 1;
