@@ -12,10 +12,10 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
 
+#include "smtk/io/ExportMesh.h"
 #include "smtk/io/ImportJSON.h"
 #include "smtk/io/ImportMesh.h"
 #include "smtk/io/ModelToMesh.h"
-#include "smtk/io/ExportMesh.h"
 
 #include "smtk/model/DefaultSession.h"
 

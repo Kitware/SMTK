@@ -16,12 +16,12 @@
 #include "smtk/io/ImportJSON.h"
 
 #include "smtk/model/Arrangement.h"
-#include "smtk/model/SessionRegistrar.h"
-#include "smtk/model/SessionIOJSON.h"
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/RemoteOperator.h"
+#include "smtk/model/SessionIOJSON.h"
+#include "smtk/model/SessionRegistrar.h"
 #include "smtk/model/StringData.h"
 #include "smtk/model/Tessellation.h"
 
@@ -29,15 +29,15 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/System.h"
 
-#include "smtk/mesh/Manager.h"
 #include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
 #include "smtk/mesh/json/Interface.h"
 #include "smtk/mesh/json/Readers.h"
 #include "smtk/mesh/moab/Interface.h"
 
 #include "smtk/io/AttributeReader.h"
-#include "smtk/io/Logger.h"
 #include "smtk/io/ImportMesh.h"
+#include "smtk/io/Logger.h"
 
 #include "smtk/common/CompilerInformation.h"
 

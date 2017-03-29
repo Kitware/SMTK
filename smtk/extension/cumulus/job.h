@@ -14,9 +14,9 @@
 #ifndef __smtk_extension_cumulus_job_h
 #define __smtk_extension_cumulus_job_h
 
-#include <QtCore/QString>
-#include <QtCore/QMetaType>
 #include <QtCore/QList>
+#include <QtCore/QMetaType>
+#include <QtCore/QString>
 
 struct cJSON;
 

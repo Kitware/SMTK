@@ -23,8 +23,8 @@
 #include "smtk/attribute/Item.h" // For Item Types.
 
 #include <queue>
-#include <string>
 #include <set>
+#include <string>
 #include <utility>
 #include <vector>
 

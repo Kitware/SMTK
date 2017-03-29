@@ -10,8 +10,8 @@
 #ifndef __smtk_vtk_ModelAuxiliaryGeometry_h
 #define __smtk_vtk_ModelAuxiliaryGeometry_h
 
-#include "smtk/extension/vtk/source/Exports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/extension/vtk/source/Exports.h"
 
 #include "vtkMultiBlockDataSetAlgorithm.h"
 #include "vtkNew.h"

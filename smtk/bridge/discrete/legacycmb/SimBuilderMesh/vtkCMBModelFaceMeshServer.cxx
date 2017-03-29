@@ -11,13 +11,13 @@
 #include "vtkCMBModelFaceMeshServer.h"
 
 #include "vtkCMBMesh.h"
-#include <vtkModelUserName.h>
-#include <vtkModelFace.h>
-#include <vtkModelEdgeUse.h>
 #include <vtkModelEdge.h>
-#include <vtkModelItemIterator.h>
+#include <vtkModelEdgeUse.h>
+#include <vtkModelFace.h>
 #include <vtkModelFaceUse.h>
+#include <vtkModelItemIterator.h>
 #include <vtkModelLoopUse.h>
+#include <vtkModelUserName.h>
 #include <vtkModelVertex.h>
 #include <vtkObjectFactory.h>
 #include <vtkPolyData.h>

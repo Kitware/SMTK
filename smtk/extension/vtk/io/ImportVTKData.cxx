@@ -42,8 +42,8 @@
 
 #include "moab/ReadUtilIface.hpp"
 
-#include "smtk/mesh/moab/Interface.h"
 #include "smtk/mesh/moab/CellTypeToType.h"
+#include "smtk/mesh/moab/Interface.h"
 
 namespace smtk {
 namespace extension {

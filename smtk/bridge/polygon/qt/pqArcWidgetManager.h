@@ -16,15 +16,15 @@
 #ifndef __smtk_polygon_pq_ArcWidgetManager_h
 #define __smtk_polygon_pq_ArcWidgetManager_h
 
+#include "smtk/PublicPointerDefs.h"
 #include "smtk/bridge/polygon/qt/Exports.h"
 #include "smtk/common/UUID.h"
-#include "smtk/PublicPointerDefs.h"
 
+#include "vtkType.h"
 #include <QList>
 #include <QObject>
 #include <QPointer>
 #include <QWidget>
-#include "vtkType.h"
 
 class qtArcWidget;
 class pqArcWidgetPanel;

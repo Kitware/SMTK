@@ -12,8 +12,8 @@
 /*! \file */
 
 #include "smtk/CoreExports.h"
-#include "smtk/SystemConfig.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/SystemConfig.h"
 #include "smtk/model/Events.h"
 
 namespace smtk {

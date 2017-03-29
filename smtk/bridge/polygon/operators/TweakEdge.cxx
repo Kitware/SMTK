@@ -15,8 +15,8 @@
 
 #include "smtk/io/Logger.h"
 
-#include "smtk/model/Vertex.h"
 #include "smtk/model/Face.h"
+#include "smtk/model/Vertex.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"

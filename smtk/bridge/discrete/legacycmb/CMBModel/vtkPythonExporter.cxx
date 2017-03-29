@@ -11,10 +11,10 @@
 
 #include "vtkPythonExporter.h"
 
-#include <vtkDiscreteModel.h>
-#include "vtkDiscreteModelWrapper.h"
 #include "PythonExportGridInfo2D.h"
 #include "PythonExportGridInfo3D.h"
+#include "vtkDiscreteModelWrapper.h"
+#include <vtkDiscreteModel.h>
 #include <vtkModelGeneratedGridRepresentation.h>
 #include <vtkObjectFactory.h>
 #include <vtkPythonInterpreter.h>
@@ -22,8 +22,8 @@
 #include <vtksys/SystemTools.hxx>
 
 #include <smtk/attribute/Attribute.h>
-#include <smtk/attribute/Item.h>
 #include <smtk/attribute/FileItem.h>
+#include <smtk/attribute/Item.h>
 #include <smtk/attribute/Manager.h>
 #include <smtk/model/Model.h>
 

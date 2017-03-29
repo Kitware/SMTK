@@ -11,8 +11,8 @@
 #define __smtk_common_ResourceSet_h
 
 #include "smtk/CoreExports.h"
-#include "smtk/SystemConfig.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/SystemConfig.h"
 
 #include "smtk/common/Resource.h"
 

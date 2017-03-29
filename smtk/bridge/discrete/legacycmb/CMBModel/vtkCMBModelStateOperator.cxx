@@ -11,14 +11,14 @@
 #include "vtkCMBModelStateOperator.h"
 
 #include "vtkDiscreteModel.h"
+#include "vtkDiscreteModelEdge.h"
+#include "vtkDiscreteModelFace.h"
+#include "vtkDiscreteModelVertex.h"
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkModelItemIterator.h"
 #include "vtkIdList.h"
 #include "vtkIdTypeArray.h"
+#include "vtkModelItemIterator.h"
 #include "vtkObjectFactory.h"
-#include "vtkDiscreteModelFace.h"
-#include "vtkDiscreteModelEdge.h"
-#include "vtkDiscreteModelVertex.h"
 #include "vtkProperty.h"
 #include "vtkStringArray.h"
 

@@ -9,11 +9,11 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
-#include "smtk/model/Session.h"
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Session.h"
 #include "smtk/model/Volume.h"
 
 #include "smtk/common/testing/cxx/helpers.h"

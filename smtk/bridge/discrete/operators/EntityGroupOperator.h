@@ -13,8 +13,8 @@
 
 #include "smtk/bridge/discrete/Exports.h"
 #include "smtk/model/operators/EntityGroupOperator.h"
-#include "vtkModelEntityGroupOperator.h"
 #include "vtkMaterialOperator.h"
+#include "vtkModelEntityGroupOperator.h"
 #include "vtkNew.h"
 
 namespace smtk {

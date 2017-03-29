@@ -12,8 +12,8 @@
 #define __smtk_vtk_vtkPolyFileTokenConverters_h
 
 #include "vtkObjectBase.h"
-#include <limits>
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <string>
 

@@ -10,8 +10,8 @@
 #ifndef __smtk_session_remote_RemusConnections_h
 #define __smtk_session_remote_RemusConnections_h
 
-#include "smtk/bridge/remote/Exports.h"
 #include "smtk/SharedFromThis.h"
+#include "smtk/bridge/remote/Exports.h"
 
 #include <string>
 

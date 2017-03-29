@@ -19,14 +19,14 @@
 
 #include "vtkCellArray.h"
 #include "vtkGeometryFilter.h"
+#include "vtkImageData.h"
 #include "vtkInformation.h"
+#include "vtkInformationDoubleKey.h"
 #include "vtkInformationIntegerKey.h"
 #include "vtkInformationIntegerVectorKey.h"
 #include "vtkInformationObjectBaseVectorKey.h"
 #include "vtkInformationStringKey.h"
-#include "vtkInformationDoubleKey.h"
 #include "vtkPoints.h"
-#include "vtkImageData.h"
 #include "vtkPolyData.h"
 #include "vtkUnsignedIntArray.h"
 

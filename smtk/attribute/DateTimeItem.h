@@ -14,9 +14,9 @@
 #ifndef __smtk_attribute_DateTimeItem_h
 #define __smtk_attribute_DateTimeItem_h
 
+#include "smtk/CoreExports.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/common/DateTimeZonePair.h"
-#include "smtk/CoreExports.h"
 #include <vector>
 
 namespace smtk

@@ -15,8 +15,8 @@
 #ifndef __smtk_extension_qtFileItem_h
 #define __smtk_extension_qtFileItem_h
 
-#include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/Exports.h"
+#include "smtk/extension/qt/qtItem.h"
 
 class qtFileItemInternals;
 class QBoxLayout;

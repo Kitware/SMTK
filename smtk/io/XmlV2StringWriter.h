@@ -13,9 +13,9 @@
 
 #ifndef __smtk_io_XmlV2StringWriter_h
 #define __smtk_io_XmlV2StringWriter_h
-#include "smtk/io/XmlStringWriter.h"  // base
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/io/XmlStringWriter.h"  // base
 
 #include "smtk/io/Logger.h"
 
@@ -23,8 +23,8 @@
 #include "smtk/common/View.h"
 #include "smtk/model/EntityTypeBits.h"
 
-#include <string>
 #include <sstream>
+#include <string>
 #include <vector>
 
 namespace pugi {

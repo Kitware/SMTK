@@ -20,9 +20,9 @@
 #include "smtk/common/UUID.h"
 #include "smtk/model/SessionRef.h"
 
-#include <QTreeView>
-#include <QPoint>
 #include <QMap>
+#include <QPoint>
+#include <QTreeView>
 #include <map>
 #include <utility>
 

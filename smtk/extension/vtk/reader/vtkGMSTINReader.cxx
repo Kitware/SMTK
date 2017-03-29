@@ -10,20 +10,20 @@
 
 #include "vtkGMSTINReader.h"
 
+#include "vtkBitArray.h"
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
-#include "vtkErrorCode.h"
 #include "vtkDoubleArray.h"
+#include "vtkErrorCode.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkIntArray.h"
-#include "vtkBitArray.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkObjectFactory.h"
+#include "vtkPointData.h"
 #include "vtkPoints.h"
 #include "vtkPolyData.h"
 #include "vtkStringArray.h"
-#include "vtkPointData.h"
 #include <string>
 #include <sys/stat.h>
 

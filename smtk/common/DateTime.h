@@ -10,10 +10,10 @@
 #ifndef __smtk_common_DateTime_h
 #define __smtk_common_DateTime_h
 
-#include "smtk/common/TimeZone.h"
 #include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h"
 #include "smtk/common/CompilerInformation.h"
+#include "smtk/common/TimeZone.h"
 
 #ifndef SHIBOKEN_SKIP
 SMTK_THIRDPARTY_PRE_INCLUDE

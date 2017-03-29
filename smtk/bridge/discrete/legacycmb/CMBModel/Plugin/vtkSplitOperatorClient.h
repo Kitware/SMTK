@@ -16,8 +16,8 @@
 #ifndef __vtkSplitOperatorClient_h
 #define __vtkSplitOperatorClient_h
 
-#include "vtkSplitOperatorBase.h"
 #include "cmbSystemConfig.h"
+#include "vtkSplitOperatorBase.h"
 
 class vtkDiscreteModelWrapper;
 class vtkIdTypeArray;

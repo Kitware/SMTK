@@ -20,8 +20,8 @@
 #ifndef __vtkCMBModelBuilder2DClient_h
 #define __vtkCMBModelBuilder2DClient_h
 
-#include "vtkObject.h"
 #include "cmbSystemConfig.h"
+#include "vtkObject.h"
 
 class vtkDiscreteModel;
 class vtkSMProxy;

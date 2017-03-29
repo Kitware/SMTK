@@ -23,8 +23,6 @@
 #include "vtkDoubleArray.h"
 #include "vtkNew.h"
 #include "vtkPVSelectionInformation.h"
-#include "vtkSelection.h"
-#include "vtkSelectionNode.h"
 #include "vtkSMNewWidgetRepresentationProxy.h"
 #include "vtkSMPropertyHelper.h"
 #include "vtkSMProxyManager.h"
@@ -33,6 +31,8 @@
 #include "vtkSMSession.h"
 #include "vtkSMSourceProxy.h"
 #include "vtkSMVectorProperty.h"
+#include "vtkSelection.h"
+#include "vtkSelectionNode.h"
 #include "vtkUnsignedIntArray.h"
 
 #include "smtk/bridge/polygon/qt/pqArcWidgetManager.h"

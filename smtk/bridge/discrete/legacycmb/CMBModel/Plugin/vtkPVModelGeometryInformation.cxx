@@ -19,13 +19,13 @@
 #include "vtkDataSet.h"
 #include "vtkInformation.h"
 
-#include "vtkIdTypeArray.h"
+#include "vtkBoundingBox.h"
 #include "vtkDiscreteModelGeometricEntity.h"
 #include "vtkDiscreteModelWrapper.h"
+#include "vtkIdTypeArray.h"
+#include "vtkMath.h"
 #include "vtkModelGeometricEntity.h"
 #include "vtkObjectFactory.h"
-#include "vtkMath.h"
-#include "vtkBoundingBox.h"
 
 vtkStandardNewMacro(vtkPVModelGeometryInformation);
 

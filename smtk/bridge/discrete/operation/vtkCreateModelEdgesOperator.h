@@ -15,9 +15,9 @@
 #ifndef __smtkdiscrete_vtkCreateModelEdgesOperator_h
 #define __smtkdiscrete_vtkCreateModelEdgesOperator_h
 
+#include "ModelEdgeHelper.h"              // for NewModelEdgeInfo and LoopInfo
 #include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkCreateModelEdgesOperatorBase.h"
-#include "ModelEdgeHelper.h" // for NewModelEdgeInfo and LoopInfo
 
 
 class vtkIdTypeArray;

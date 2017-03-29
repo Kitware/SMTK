@@ -11,12 +11,12 @@
 #ifndef __smtk_extension_qtCheckItemComboBox_h
 #define __smtk_extension_qtCheckItemComboBox_h
 
-#include "smtk/extension/qt/Exports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/extension/qt/Exports.h"
 
-#include <QStyledItemDelegate>
 #include <QComboBox>
 #include <QModelIndex>
+#include <QStyledItemDelegate>
 
 class QStandardItem;
 

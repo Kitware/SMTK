@@ -8,19 +8,19 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/attribute/System.h"
-#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/RefItemDefinition.h"
-#include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/IntItemDefinition.h"
+#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
-#include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/GroupItemDefinition.h"
+#include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/IntItemDefinition.h"
+#include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/VoidItemDefinition.h"
 
 #include "smtk/model/EntityTypeBits.h"

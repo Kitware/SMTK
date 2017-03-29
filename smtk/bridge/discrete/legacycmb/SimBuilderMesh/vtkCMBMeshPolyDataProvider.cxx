@@ -10,15 +10,15 @@
 
 #include "vtkCMBMeshPolyDataProvider.h"
 
-#include <vtkDiscreteModel.h>
-#include "vtkCellArray.h"
 #include "vtkCMBMeshServer.h"
 #include "vtkCMBMeshWrapper.h"
 #include "vtkCMBModelEntityMesh.h"
+#include "vtkCellArray.h"
 #include "vtkIdList.h"
+#include "vtkModelEdge.h"
+#include <vtkDiscreteModel.h>
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
-#include "vtkModelEdge.h"
 #include <vtkObjectFactory.h>
 #include <vtkPolyData.h>
 #include <vtkStreamingDemandDrivenPipeline.h>

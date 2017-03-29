@@ -12,10 +12,10 @@
 
 #include "vtkCMBMesh.h"
 #include "vtkCMBModelVertexMesh.h"
+#include <vtkCMBModelFaceMesh.h>
 #include <vtkModel.h>
 #include <vtkModelEdge.h>
 #include <vtkModelFace.h>
-#include <vtkCMBModelFaceMesh.h>
 #include <vtkModelItemIterator.h>
 #include <vtkModelVertex.h>
 #include <vtkPolyData.h>

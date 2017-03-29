@@ -17,8 +17,8 @@
 #include "vtkDoubleArray.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkObjectFactory.h"
 #include "vtkMath.h"
+#include "vtkObjectFactory.h"
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
 #include "vtkSmartPointer.h"
@@ -26,8 +26,8 @@
 #include "vtkStripper.h"
 #include "vtkTimerLog.h"
 #include "vtkUnstructuredGrid.h"
-#include <map>
 #include <deque>
+#include <map>
 #include <set>
 
 vtkStandardNewMacro(vtkExtractRegionEdges);

@@ -12,9 +12,9 @@
 #include "vtkMergeOperator.h"
 
 #include "vtkDiscreteModel.h"
-#include "vtkDiscreteModelWrapper.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelRegion.h"
+#include "vtkDiscreteModelWrapper.h"
 #include "vtkIdTypeArray.h"
 #include "vtkObjectFactory.h"
 #

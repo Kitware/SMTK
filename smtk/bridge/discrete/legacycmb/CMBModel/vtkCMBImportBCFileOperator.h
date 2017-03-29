@@ -18,9 +18,9 @@
 #ifndef __vtkCMBImportBCFileOperator_h
 #define __vtkCMBImportBCFileOperator_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
-#include "cmbSystemConfig.h"
 
 class vtkDiscreteModelWrapper;
 

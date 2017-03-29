@@ -10,12 +10,12 @@
 
 #include "vtkDiscreteModelRegion.h"
 
+#include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEntityGroup.h"
 #include "vtkInformation.h"
 #include "vtkInformationDoubleVectorKey.h"
 #include "vtkInformationStringKey.h"
 #include "vtkModelMaterial.h"
-#include "vtkDiscreteModel.h"
 #include "vtkModelShellUse.h"
 #include "vtkObjectFactory.h"
 #include "vtkSerializer.h"

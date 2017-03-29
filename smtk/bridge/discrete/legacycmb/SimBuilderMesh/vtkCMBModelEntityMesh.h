@@ -15,8 +15,8 @@
 #ifndef __vtkCMBModelEntityMesh_h
 #define __vtkCMBModelEntityMesh_h
 
-#include <vtkObject.h>
 #include "cmbSystemConfig.h"
+#include <vtkObject.h>
 
 #include <vtkModelGeometricEntity.h>
 #include <vtkWeakPointer.h>

@@ -10,9 +10,9 @@
 #ifndef __smtk_model_ShellEntity_txx
 #define __smtk_model_ShellEntity_txx
 
-#include "smtk/model/ShellEntity.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityRefArrangementOps.h"
+#include "smtk/model/ShellEntity.h"
 
 namespace smtk {
   namespace model {

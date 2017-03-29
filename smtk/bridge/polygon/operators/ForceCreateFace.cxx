@@ -11,9 +11,9 @@
 
 #include "smtk/bridge/polygon/Session.h"
 #include "smtk/bridge/polygon/internal/Config.h"
+#include "smtk/bridge/polygon/internal/Edge.h"
 #include "smtk/bridge/polygon/internal/Model.h"
 #include "smtk/bridge/polygon/internal/Model.txx"
-#include "smtk/bridge/polygon/internal/Edge.h"
 #include "smtk/bridge/polygon/internal/Util.h"
 
 #include "smtk/bridge/polygon/Operator.txx"
@@ -29,13 +29,13 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/model/Tessellation.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Loop.h"
 #include "smtk/model/Manager.txx"
+#include "smtk/model/Tessellation.h"
 
 #include "smtk/bridge/polygon/ForceCreateFace_xml.h"
 

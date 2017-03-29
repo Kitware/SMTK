@@ -15,9 +15,9 @@
 #ifndef __smtk_extension_qtAssociationWidget_h
 #define __smtk_extension_qtAssociationWidget_h
 
-#include <QWidget>
-#include "smtk/extension/qt/Exports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/extension/qt/Exports.h"
+#include <QWidget>
 
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"

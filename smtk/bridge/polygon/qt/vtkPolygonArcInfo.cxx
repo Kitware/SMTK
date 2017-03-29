@@ -9,17 +9,17 @@
 //=========================================================================
 #include "smtk/bridge/polygon/qt/vtkPolygonArcInfo.h"
 
+#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 #include "vtkAlgorithmOutput.h"
 #include "vtkCellArray.h"
 #include "vtkClientServerStream.h"
 #include "vtkCompositeDataIterator.h"
 #include "vtkDataObject.h"
 #include "vtkDataObjectTreeIterator.h"
-#include "vtkObjectFactory.h"
-#include "vtkMultiBlockDataSet.h"
-#include "vtkPolyData.h"
 #include "vtkInformation.h"
-#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
+#include "vtkMultiBlockDataSet.h"
+#include "vtkObjectFactory.h"
+#include "vtkPolyData.h"
 
 vtkStandardNewMacro(vtkPolygonArcInfo);
 

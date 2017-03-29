@@ -15,11 +15,11 @@
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkModelUserName.h"
 #include "vtkIdTypeArray.h"
 #include "vtkIdTypeArray.h"
 #include "vtkModelFaceUse.h"
 #include "vtkModelShellUse.h"
+#include "vtkModelUserName.h"
 #include "vtkObjectFactory.h"
 
 #include "vtkSMDoubleVectorProperty.h"

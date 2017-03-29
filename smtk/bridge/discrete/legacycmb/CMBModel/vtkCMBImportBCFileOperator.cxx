@@ -11,9 +11,9 @@
 
 #include "vtkCMBImportBCFileOperator.h"
 
-#include "vtkModelBCGridRepresentation.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelWrapper.h"
+#include "vtkModelBCGridRepresentation.h"
 #include "vtkObjectFactory.h"
 
 vtkStandardNewMacro(vtkCMBImportBCFileOperator);

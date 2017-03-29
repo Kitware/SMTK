@@ -16,12 +16,12 @@
 #ifndef __vtkPythonExporter_h
 #define __vtkPythonExporter_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
-#include <vector> // for callback method for SMTK Model
-#include <utility> // for pair in callback method for SMTK model
-#include "vtkObject.h"
-#include "smtk/attribute/Manager.h"
 #include "cmbSystemConfig.h"
+#include "smtk/attribute/Manager.h"
+#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "vtkObject.h"
+#include <utility> // for pair in callback method for SMTK model
+#include <vector> // for callback method for SMTK Model
 
 class vtkDiscreteModelWrapper;
 class vtkDiscreteModel;

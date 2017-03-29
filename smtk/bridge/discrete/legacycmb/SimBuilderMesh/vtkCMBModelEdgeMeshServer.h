@@ -19,8 +19,8 @@
 #ifndef __vtkCMBModelEdgeMeshServer_h
 #define __vtkCMBModelEdgeMeshServer_h
 
-#include "vtkCMBModelEdgeMesh.h"
 #include "cmbSystemConfig.h"
+#include "vtkCMBModelEdgeMesh.h"
 
 class VTK_EXPORT vtkCMBModelEdgeMeshServer : public vtkCMBModelEdgeMesh
 {

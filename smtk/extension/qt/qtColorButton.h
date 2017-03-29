@@ -11,11 +11,11 @@
 #ifndef pq_ColorChooserButton_h
 #define pq_ColorChooserButton_h
 
-#include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/Exports.h"
+#include "smtk/extension/qt/qtItem.h"
 
-#include <QToolButton>
 #include <QColor>
+#include <QToolButton>
 
 namespace smtk
 {

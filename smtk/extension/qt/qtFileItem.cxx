@@ -10,26 +10,26 @@
 
 #include "smtk/extension/qt/qtFileItem.h"
 
-#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtOverlay.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
 #include <QCheckBox>
+#include <QComboBox>
+#include <QDoubleValidator>
 #include <QFileDialog>
 #include <QFrame>
 #include <QHBoxLayout>
-#include <QVBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
-#include <QDoubleValidator>
-#include <QVariant>
-#include <QSizePolicy>
 #include <QPointer>
 #include <QPushButton>
-#include <QTextEdit>
-#include <QComboBox>
-#include <QToolButton>
 #include <QSignalMapper>
+#include <QSizePolicy>
+#include <QTextEdit>
+#include <QToolButton>
+#include <QVBoxLayout>
+#include <QVariant>
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DirectoryItem.h"

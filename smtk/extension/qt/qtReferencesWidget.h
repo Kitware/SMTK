@@ -15,9 +15,9 @@
 #ifndef __smtk_extension_qtReferencesWidget_h
 #define __smtk_extension_qtReferencesWidget_h
 
-#include <QWidget>
-#include "smtk/extension/qt/Exports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/extension/qt/Exports.h"
+#include <QWidget>
 
 class qtReferencesWidgetInternals;
 class QListWidgetItem;

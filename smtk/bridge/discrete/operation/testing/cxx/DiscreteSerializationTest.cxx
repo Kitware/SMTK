@@ -8,22 +8,22 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "vtkModelMaterial.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
 #include "vtkDiscreteModelEntityGroup.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelRegion.h"
-#include "vtkXMLModelReader.h"
-#include "vtkXMLModelWriter.h"
 #include "vtkInstantiator.h"
 #include "vtkModelFaceUse.h"
 #include "vtkModelItemIterator.h"
+#include "vtkModelMaterial.h"
 #include "vtkModelShellUse.h"
+#include "vtkXMLModelReader.h"
+#include "vtkXMLModelWriter.h"
 
-#include <vector>
-#include <sstream>
 #include <fstream>
+#include <sstream>
+#include <vector>
 
 // This tests the serialization of the CMB model but doesn't
 // do it with client server.  Instead it does it by just

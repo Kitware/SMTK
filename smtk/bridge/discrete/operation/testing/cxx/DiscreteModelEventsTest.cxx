@@ -8,24 +8,24 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include <vtkCallbackCommand.h>
+#include "vtkCMBModelReadOperator.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
 #include "vtkDiscreteModelFace.h"
-#include "vtkCMBModelReadOperator.h"
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkEdgeSplitOperator.h"
-#include <vtkIdList.h>
-#include <vtkIdTypeArray.h>
 #include "vtkMergeEventData.h"
 #include "vtkMergeOperator.h"
 #include "vtkModelItemIterator.h"
-#include <vtkPolyData.h>
-#include <vtkSmartPointer.h>
+#include "vtkNew.h"
 #include "vtkSplitEventData.h"
 #include "vtkSplitOperator.h"
-#include "vtkNew.h"
 #include <map>
+#include <vtkCallbackCommand.h>
+#include <vtkIdList.h>
+#include <vtkIdTypeArray.h>
+#include <vtkPolyData.h>
+#include <vtkSmartPointer.h>
 
 
 // This tests the events for model geometric entities.

@@ -228,8 +228,8 @@ OperatorResult TriangulateFace::operateInternal()
   } // namespace model
 } // namespace smtk
 
-#include "smtk/extension/delaunay/TriangulateFace_xml.h"
 #include "smtk/extension/delaunay/Exports.h"
+#include "smtk/extension/delaunay/TriangulateFace_xml.h"
 
 smtkImplementsModelOperator(
   SMTKDELAUNAYEXT_EXPORT,

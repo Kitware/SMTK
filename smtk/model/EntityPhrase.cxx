@@ -13,10 +13,10 @@
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Instance.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/PropertyListPhrase.h"
 #include "smtk/model/ShellEntity.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/UseEntity.h"
 
 namespace smtk {

@@ -9,12 +9,12 @@
 //=========================================================================
 #include "smtk/extension/qt/qtEntityItemDelegate.h"
 
-#include "smtk/extension/qt/qtEntityItemModel.h"
 #include "smtk/extension/qt/qtEntityItemEditor.h"
+#include "smtk/extension/qt/qtEntityItemModel.h"
 
 #include <QApplication>
-#include <QPainter>
 #include <QMouseEvent>
+#include <QPainter>
 
 namespace smtk {
   namespace extension {

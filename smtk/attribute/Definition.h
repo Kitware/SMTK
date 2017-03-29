@@ -20,12 +20,12 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h" // For smtkTypeMacro.
-#include "smtk/model/EntityTypeBits.h" // for BitFlags type
 #include "smtk/model/EntityRef.h" //for EntityRef version of canBeAssociated
+#include "smtk/model/EntityTypeBits.h" // for BitFlags type
 
 #include <map>
-#include <string>
 #include <set>
+#include <string>
 #include <vector>
 
 namespace smtk

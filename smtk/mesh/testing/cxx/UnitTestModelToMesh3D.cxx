@@ -14,12 +14,12 @@
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 
+#include "smtk/model/EntityIterator.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Volume.h"
-#include "smtk/model/EntityIterator.h"
 
-#include "smtk/model/testing/cxx/helpers.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
+#include "smtk/model/testing/cxx/helpers.h"
 
 #include <sstream>
 

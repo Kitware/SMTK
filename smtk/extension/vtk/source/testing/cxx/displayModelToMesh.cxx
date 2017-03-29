@@ -27,13 +27,13 @@
 #include "vtkPolyData.h"
 #include "vtkPolyDataMapper.h"
 #include "vtkProperty.h"
-#include "vtkRenderer.h"
+#include "vtkRegressionTestImage.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
+#include "vtkRenderer.h"
 #include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
 #include "vtkXMLMultiBlockDataWriter.h"
-#include "vtkRegressionTestImage.h"
 
 #include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 

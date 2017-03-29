@@ -17,8 +17,8 @@
 #ifndef __vtkCMBMapToCMBModelClient_h
 #define __vtkCMBMapToCMBModelClient_h
 
-#include "vtkObject.h"
 #include "cmbSystemConfig.h"
+#include "vtkObject.h"
 
 class vtkDiscreteModel;
 class vtkSMProxy;

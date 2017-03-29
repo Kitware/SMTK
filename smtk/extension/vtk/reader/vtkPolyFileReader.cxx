@@ -19,24 +19,24 @@
 #include "vtkNew.h"
 #include "vtkObject.h"
 #include "vtkObjectFactory.h"
-#include "vtkPoints.h"
 #include "vtkPointData.h"
+#include "vtkPoints.h"
 #include "vtkPolyData.h"
-#include "vtkXMLPolyDataWriter.h"
 #include "vtkSmartPointer.h"
+#include "vtkXMLPolyDataWriter.h"
 
 #include "vtksys/SystemTools.hxx"
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <limits>
 #include <map>
 #include <sstream>
 #include <string>
 #include <vector>
-#include <limits>
 
-#include "smtk/extension/vtk/reader/vtkPolyFileTokenConverters.h"
 #include "smtk/extension/vtk/reader/vtkPolyFileErrorReporter.h"
+#include "smtk/extension/vtk/reader/vtkPolyFileTokenConverters.h"
 
 vtkStandardNewMacro(vtkPolyFileReader);
 

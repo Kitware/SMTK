@@ -11,17 +11,17 @@
 
 #include "vtkCMBModelReadOperator.h"
 
-#include "vtkDiscreteModel.h"
-#include "vtkDiscreteModelWrapper.h"
+#include "smtk/bridge/discrete/Session.h"
+#include "vtkCMBModelReader.h"
 #include "vtkCMBParserV2.h"
 #include "vtkCMBParserV4.h"
 #include "vtkCMBParserV5.h"
+#include "vtkDiscreteModel.h"
+#include "vtkDiscreteModelWrapper.h"
 #include "vtkFieldData.h"
 #include "vtkNew.h"
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
-#include "vtkCMBModelReader.h"
-#include "smtk/bridge/discrete/Session.h"
 
 namespace
 {

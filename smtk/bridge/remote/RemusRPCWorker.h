@@ -14,8 +14,8 @@
 #include "smtk/SharedFromThis.h"
 
 #ifndef SHIBOKEN_SKIP
-#include "remus/worker/Worker.h"
 #include "remus/worker/Job.h"
+#include "remus/worker/Worker.h"
 #endif // SHIBOKEN_SKIP
 
 #include "smtk/model/StringData.h"

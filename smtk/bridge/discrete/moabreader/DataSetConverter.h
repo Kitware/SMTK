@@ -11,16 +11,16 @@
 #ifndef __smoab_DataSetConverter_h
 #define __smoab_DataSetConverter_h
 
-#include "SimpleMoab.h"
 #include "CellSets.h"
+#include "SimpleMoab.h"
 #include "detail/LoadGeometry.h"
 #include "detail/ReadSparseTag.h"
 
 #include <vtkCellData.h>
 #include <vtkDoubleArray.h>
 #include <vtkFieldData.h>
-#include <vtkIntArray.h>
 #include <vtkIdTypeArray.h>
+#include <vtkIntArray.h>
 #include <vtkNew.h>
 
 #include <algorithm>

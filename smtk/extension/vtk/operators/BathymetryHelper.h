@@ -11,14 +11,14 @@
 #define __smtk_model_BathymetryHelper_h
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/extension/vtk/operators/Exports.h" // for VTKSMTKOPERATORSEXT_EXPORT
 #include "smtk/SharedFromThis.h" // for smtkTypeMacro
+#include "smtk/extension/vtk/operators/Exports.h" // for VTKSMTKOPERATORSEXT_EXPORT
 #include "smtk/mesh/ForEachTypes.h"
 
 #include "vtkSmartPointer.h"
+#include <iostream>
 #include <map>
 #include <vector>
-#include <iostream>
 
 class vtkDataSet;
 class vtkPolyData;

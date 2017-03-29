@@ -15,13 +15,13 @@
 #include "vtkDoubleArray.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkObjectFactory.h"
 #include "vtkMath.h"
 #include "vtkNew.h"
+#include "vtkObjectFactory.h"
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
-#include "vtkStripper.h"
 #include "vtkPolyDataWriter.h"
+#include "vtkStripper.h"
 
 #include <map>
 #include <set>

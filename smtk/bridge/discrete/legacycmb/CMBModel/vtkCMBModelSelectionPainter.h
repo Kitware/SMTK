@@ -16,9 +16,9 @@
 #ifndef __vtkCMBModelSelectionPainter_h
 #define __vtkCMBModelSelectionPainter_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkPainter.h"
-#include "cmbSystemConfig.h"
 
 class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelSelectionPainter : public vtkPainter
 {

@@ -10,8 +10,8 @@
 #ifndef __smtk_model_ExportEdgesToVTK_h
 #define __smtk_model_ExportEdgesToVTK_h
 
-#include "smtk/model/Operator.h"
 #include "smtk/extension/vtk/operators/Exports.h" // For export macro
+#include "smtk/model/Operator.h"
 
 namespace smtk {
   namespace model {

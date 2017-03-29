@@ -11,19 +11,19 @@
 #include "smtk/bridge/remote/RemusConnection.h"
 #include "smtk/bridge/remote/Session.h"
 
-#include "smtk/io/ImportJSON.h"
 #include "smtk/io/ExportJSON.h"
+#include "smtk/io/ImportJSON.h"
 
 #include "smtk/model/Operator.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/common/Paths.h"
 #include "smtk/common/Environment.h"
+#include "smtk/common/Paths.h"
 
 #include "smtk/Function.h"
 

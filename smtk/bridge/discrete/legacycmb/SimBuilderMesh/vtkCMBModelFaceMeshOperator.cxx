@@ -11,9 +11,9 @@
 
 #include "vtkCMBModelFaceMeshOperator.h"
 
-#include "vtkCMBModelFaceMeshServer.h"
 #include "vtkCMBMeshServer.h"
 #include "vtkCMBMeshWrapper.h"
+#include "vtkCMBModelFaceMeshServer.h"
 #include <vtkModel.h>
 #include <vtkModelFace.h>
 #include <vtkObjectFactory.h>

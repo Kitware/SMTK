@@ -10,11 +10,11 @@
 
 
 #include <vtkCMBMeshServer.h>
-#include <vtkDiscreteModel.h>
 #include <vtkCMBModelEdgeMesh.h>
 #include <vtkCMBModelEntityMesh.h>
 #include <vtkCMBModelFaceMesh.h>
 #include <vtkCMBModelReadOperator.h>
+#include <vtkDiscreteModel.h>
 #include <vtkDiscreteModelWrapper.h>
 #include <vtkEdgeSplitOperator.h>
 #include <vtkMergeOperator.h>

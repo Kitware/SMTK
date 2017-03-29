@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/Options.h"
 #include "smtk/AutoInit.h"
+#include "smtk/Options.h"
 
 #ifdef SMTK_ENABLE_MULTISCALE_SESSION
 // If multiscale-session is included in the build, ensure that it is loaded

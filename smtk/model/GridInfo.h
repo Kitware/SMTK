@@ -22,8 +22,8 @@
 #include "smtk/SystemConfig.h"
 
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
 
 namespace smtk
 {

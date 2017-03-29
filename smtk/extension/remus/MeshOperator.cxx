@@ -14,13 +14,13 @@
 #include <remus/client/Client.h>
 #include <remus/proto/SMTKMeshSubmission.h>
 
-#include "smtk/model/Session.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Session.h"
 
-#include "smtk/mesh/Manager.h"
 #include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"

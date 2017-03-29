@@ -25,8 +25,8 @@
 #include "vtkSmartPointer.h"
 
 #include "vtkBoundingBox.h"
-#include <vector>
 #include <map>
+#include <vector>
 
 class vtkTransform;
 class vtkGeoSphereTransform;

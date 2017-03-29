@@ -9,25 +9,25 @@
 //=========================================================================
 
 
+#include "cmbFaceMeshHelper.h"
 #include <vtkCMBMeshServer.h>
-#include <vtkDiscreteModel.h>
 #include <vtkCMBModelEdgeMesh.h>
 #include <vtkCMBModelEntityMesh.h>
 #include <vtkCMBModelFaceMesh.h>
 #include <vtkCMBModelReadOperator.h>
+#include <vtkCellData.h>
+#include <vtkDiscreteModel.h>
 #include <vtkDiscreteModelWrapper.h>
 #include <vtkEdgeSplitOperator.h>
+#include <vtkIdTypeArray.h>
+#include <vtkIntArray.h>
 #include <vtkMergeOperator.h>
 #include <vtkModelEdge.h>
 #include <vtkModelFace.h>
 #include <vtkModelItemIterator.h>
+#include <vtkPointData.h>
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
-#include <vtkPointData.h>
-#include <vtkCellData.h>
-#include <vtkIntArray.h>
-#include <vtkIdTypeArray.h>
-#include "cmbFaceMeshHelper.h"
 
 using namespace discreteFaceMesherClasses;
 

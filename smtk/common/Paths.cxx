@@ -24,8 +24,8 @@
 
 #include <stdio.h>
 
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 
 #if !defined(_WIN32) || defined(__CYGWIN__)
 #  include <unistd.h>

@@ -16,10 +16,10 @@
 #ifndef __smtk_vtk_vtkCMBReaderHelperFunctions_h
 #define __smtk_vtk_vtkCMBReaderHelperFunctions_h
 
+#include <cstring>
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <cstring>
 
 namespace ReaderHelperFunctions
 {

@@ -11,8 +11,8 @@
 #define __smtk_model_SessionRegistrar_h
 #ifndef SHIBOKEN_SKIP
 
-#include "smtk/PublicPointerDefs.h"
 #include "smtk/Function.h"
+#include "smtk/PublicPointerDefs.h"
 #include "smtk/model/StringData.h"
 
 #include <map>

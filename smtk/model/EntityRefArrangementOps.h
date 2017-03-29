@@ -10,8 +10,8 @@
 #ifndef __smtk_model_EntityRefArrangementOps_h
 #define __smtk_model_EntityRefArrangementOps_h
 
-#include "smtk/model/EntityRef.h"
 #include "smtk/model/ArrangementKind.h"
+#include "smtk/model/EntityRef.h"
 
 namespace smtk {
   namespace model {

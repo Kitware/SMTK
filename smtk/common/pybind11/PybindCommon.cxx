@@ -37,9 +37,9 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindResourceSet.h"
 #include "PybindStringUtil.h"
 #include "PybindTimeZone.h"
-#include "PybindUnionFind.h"
 #include "PybindUUID.h"
 #include "PybindUUIDGenerator.h"
+#include "PybindUnionFind.h"
 #include "PybindVersion.h"
 #include "PybindView.h"
 

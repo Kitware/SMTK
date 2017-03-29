@@ -14,16 +14,14 @@
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
 
-#include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
-#include "smtk/common/DateTimeZonePair.h"
-#include "smtk/attribute/DoubleItem.h"
-#include "smtk/attribute/DoubleItemDefinition.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
+#include "smtk/attribute/DoubleItem.h"
+#include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/GroupItem.h"
@@ -32,30 +30,32 @@
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
-#include "smtk/attribute/System.h"
-#include "smtk/attribute/StringItem.h"
-#include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/MeshItemDefinition.h"
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
+#include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/StringItemDefinition.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/VoidItem.h"
 #include "smtk/attribute/VoidItemDefinition.h"
+#include "smtk/common/DateTimeZonePair.h"
 
-#include "smtk/model/EntityRef.h"
 #include "smtk/model/Entity.h"
+#include "smtk/model/EntityRef.h"
 #include "smtk/model/EntityTypeBits.h"
 #include "smtk/model/Manager.h"
 
 #include "smtk/common/StringUtil.h"
 #include "smtk/common/View.h"
 
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 
 using namespace pugi;
 using namespace smtk::io;

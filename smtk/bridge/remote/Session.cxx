@@ -11,15 +11,15 @@
 #include "smtk/bridge/remote/Session.h"
 #include "smtk/bridge/remote/RemusConnection.h"
 
-#include "smtk/io/ImportJSON.h"
 #include "smtk/io/ExportJSON.h"
+#include "smtk/io/ImportJSON.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
-#include "smtk/model/SessionRegistrar.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/RemoteOperator.h"
+#include "smtk/model/SessionRegistrar.h"
 #include "smtk/model/StringData.h"
 
 #include "smtk/Options.h"

@@ -10,9 +10,9 @@
 #include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h" // for Array name
 
-#include "smtk/model/EntityRef.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
+#include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Group.h"
@@ -36,16 +36,16 @@
 #include "vtkMultiBlockDataSet.h"
 #include "vtkNew.h"
 #include "vtkObjectFactory.h"
-#include "vtkPolyData.h"
 #include "vtkPoints.h"
+#include "vtkPolyData.h"
+#include "vtkPolyDataNormals.h"
 #include "vtkProperty.h"
 #include "vtkStringArray.h"
-#include "vtkPolyDataNormals.h"
 
-#include <inttypes.h>
-#include <stdlib.h>
 #include <errno.h>
+#include <inttypes.h>
 #include <iostream>
+#include <stdlib.h>
 
 using namespace smtk::model;
 

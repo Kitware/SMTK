@@ -16,9 +16,9 @@
 #include "vtkCommand.h"
 #include "vtkCubeAxesRepresentation.h"
 #include "vtkObjectFactory.h"
-#include "vtkProcessModule.h"
 #include "vtkPVCompositeRepresentation.h"
 #include "vtkPVXMLElement.h"
+#include "vtkProcessModule.h"
 #include "vtkSelectionRepresentation.h"
 
 vtkStandardNewMacro(vtkSIModelRepresentationProxy);

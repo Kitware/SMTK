@@ -12,15 +12,15 @@
 #include "vtkCMBMeshGridRepresentationClient.h"
 
 #include "vtkDiscreteModel.h"
-#include "vtkXMLModelReader.h"
 #include "vtkObjectFactory.h"
-#include "vtkSmartPointer.h"
 #include "vtkSMIntVectorProperty.h"
 #include "vtkSMOperatorProxy.h"
+#include "vtkSMPropertyHelper.h"
 #include "vtkSMProxyManager.h"
 #include "vtkSMProxyProperty.h"
 #include "vtkSMStringVectorProperty.h"
-#include "vtkSMPropertyHelper.h"
+#include "vtkSmartPointer.h"
+#include "vtkXMLModelReader.h"
 
 #include <sstream>
 

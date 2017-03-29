@@ -9,18 +9,18 @@
 //=========================================================================
 
 #include "girderrequest.h"
-#include "utils.h"
 #include "cJSON.h"
+#include "utils.h"
 
-#include <QtNetwork/QNetworkAccessManager>
-#include <QtNetwork/QNetworkRequest>
-#include <QtNetwork/QNetworkReply>
-#include <QtNetwork/QNetworkCookieJar>
-#include <QtCore/QList>
-#include <QtCore/QMap>
+#include <QDebug>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
-#include <QDebug>
+#include <QtCore/QList>
+#include <QtCore/QMap>
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkCookieJar>
+#include <QtNetwork/QNetworkReply>
+#include <QtNetwork/QNetworkRequest>
 
 
 namespace cumulus {

@@ -13,12 +13,12 @@
 #ifndef __smtk_extension_qtBaseView_h
 #define __smtk_extension_qtBaseView_h
 
-#include <QObject>
-#include <QList>
 #include <QLayout>
+#include <QList>
+#include <QObject>
 
-#include "smtk/extension/qt/Exports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/extension/qt/Exports.h"
 
 class qtBaseViewInternals;
 class QScrollArea;

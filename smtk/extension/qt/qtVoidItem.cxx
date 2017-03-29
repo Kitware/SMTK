@@ -9,13 +9,13 @@
 //=========================================================================
 
 #include "smtk/extension/qt/qtVoidItem.h"
-#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
 #include <QCheckBox>
+#include <QPointer>
 #include <QSizePolicy>
 #include <QVBoxLayout>
-#include <QPointer>
 
 #include "smtk/attribute/VoidItem.h"
 #include "smtk/attribute/VoidItemDefinition.h"

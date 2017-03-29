@@ -19,14 +19,14 @@
 #include "vtkIdTypeArray.h"
 #include "vtkInformation.h"
 #include "vtkObjectFactory.h"
-#include "vtkSelectionSource.h"
 #include "vtkSelection.h"
 #include "vtkSelectionNode.h"
+#include "vtkSelectionSource.h"
 
 //#define CMB_WRITE_MODEL
 #ifdef CMB_WRITE_MODEL
-  #include "vtkNew.h"
   #include "vtkCMBModelWriterBase.h"
+  #include "vtkNew.h"
 #endif
 
 #include <set>

@@ -18,12 +18,12 @@
 #include "smtk/common/UUID.h"
 #include "smtk/common/UUIDGenerator.h"
 
-#include "vtkMultiBlockDataSet.h"
 #include "vtkDataObjectTreeIterator.h"
-#include "vtkNew.h"
-#include "vtkSmartPointer.h"
 #include "vtkInformation.h"
 #include "vtkInformationObjectBaseVectorKey.h"
+#include "vtkMultiBlockDataSet.h"
+#include "vtkNew.h"
+#include "vtkSmartPointer.h"
 
 #include <map>
 #include <vector>

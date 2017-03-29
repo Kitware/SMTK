@@ -10,8 +10,8 @@
 #ifndef __smtk_model_Face_h
 #define __smtk_model_Face_h
 
-#include "smtk/model/CellEntity.h"
 #include "smtk/model/Arrangement.h" // for ArrangementReference
+#include "smtk/model/CellEntity.h"
 
 //#include "smtk/common/Eigen.h" // For Vector3d
 

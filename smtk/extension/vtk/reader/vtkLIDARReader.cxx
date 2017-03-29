@@ -13,18 +13,18 @@
 #include "vtkAppendPolyData.h"
 #include "vtkCellArray.h"
 #include "vtkFloatArray.h"
-#include "vtkPointData.h"
+#include "vtkGeoSphereTransform.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
+#include "vtkMath.h"
 #include "vtkObjectFactory.h"
+#include "vtkPointData.h"
 #include "vtkPolyData.h"
 #include "vtkSmartPointer.h"
-#include "vtkTransform.h"
 #include "vtkStringArray.h"
-#include "vtkMath.h"
-#include "vtkGeoSphereTransform.h"
-#include <sys/types.h>
+#include "vtkTransform.h"
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <vtksys/SystemTools.hxx>
 
 //#define LIDAR_PREVIEW_PIECE_NUM_POINTS 10000

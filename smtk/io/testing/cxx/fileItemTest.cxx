@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/FileItem.h"
@@ -16,7 +17,6 @@
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
-#include "smtk/PublicPointerDefs.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 

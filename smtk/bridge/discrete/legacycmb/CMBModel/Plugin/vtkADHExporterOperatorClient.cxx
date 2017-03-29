@@ -12,13 +12,13 @@
 #include "vtkADHExporterOperatorClient.h"
 
 #include "vtkDiscreteModel.h"
+#include "vtkSMOperatorProxy.h"
+#include <vtkObjectFactory.h>
 #include <vtkSMIdTypeVectorProperty.h>
 #include <vtkSMIntVectorProperty.h>
-#include "vtkSMOperatorProxy.h"
 #include <vtkSMProxy.h>
 #include <vtkSMProxyManager.h>
 #include <vtkSMStringVectorProperty.h>
-#include <vtkObjectFactory.h>
 
 vtkStandardNewMacro(vtkADHExporterOperatorClient);
 

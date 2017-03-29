@@ -13,9 +13,9 @@
 #ifndef __vtkSeedGrowSelectionFilter_h
 #define __vtkSeedGrowSelectionFilter_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkSelectionAlgorithm.h"
-#include "cmbSystemConfig.h"
 
 class DiscreteMesh;
 class vtkDiscreteModelWrapper;

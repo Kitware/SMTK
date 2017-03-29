@@ -11,10 +11,10 @@
 #ifndef __smtk_polygon_pq_SplitEdgeWidget_h
 #define __smtk_polygon_pq_SplitEdgeWidget_h
 
-#include "smtk/bridge/polygon/qt/Exports.h"
 #include "smtk/PublicPointerDefs.h"
-#include <QWidget>
+#include "smtk/bridge/polygon/qt/Exports.h"
 #include <QAction>
+#include <QWidget>
 
 class pqRenderView;
 class pqOutputPort;

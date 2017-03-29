@@ -18,8 +18,8 @@
 
 #include "smtk/mesh/DimensionTypes.h"
 
-#include <string>
 #include <ostream>
+#include <string>
 /**\brief Export a SMTK mesh to a file in the XMS format.
   *
   *

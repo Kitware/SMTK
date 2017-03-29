@@ -9,8 +9,8 @@
 //=========================================================================
 #include "smtk/bridge/multiscale/operators/Dream3DPipelineOperator.h"
 
-#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/IntItem.h"
 #include "smtk/bridge/multiscale/Session.h"
 #include "smtk/extension/vtk/io/ImportVTKData.h"
 #include "smtk/mesh/Collection.h"

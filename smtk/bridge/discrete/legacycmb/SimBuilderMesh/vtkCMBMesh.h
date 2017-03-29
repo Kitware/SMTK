@@ -15,9 +15,9 @@
 #ifndef __vtkCMBMesh_h
 #define __vtkCMBMesh_h
 
+#include "cmbSystemConfig.h"
 #include <vtkObject.h>
 #include <vtkWeakPointer.h>
-#include "cmbSystemConfig.h"
 
 class vtkCMBModelEntityMesh;
 class vtkCollection;

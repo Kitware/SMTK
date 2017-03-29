@@ -12,26 +12,26 @@
 
 #include "smtk/common/Version.h"
 
-#include "smtk/model/SessionRegistrar.h"
-#include "smtk/model/SessionIOJSON.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Arrangement.h"
 #include "smtk/model/Entity.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
+#include "smtk/model/SessionIOJSON.h"
+#include "smtk/model/SessionRegistrar.h"
 #include "smtk/model/Tessellation.h"
-#include "smtk/model/Arrangement.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/System.h"
 
-#include "smtk/mesh/Manager.h"
 #include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
 
 #include "smtk/io/AttributeWriter.h"
-#include "smtk/io/WriteMesh.h"
 #include "smtk/io/Logger.h"
+#include "smtk/io/WriteMesh.h"
 #include "smtk/io/mesh/MeshIO.h"
 
 #include "cJSON.h"

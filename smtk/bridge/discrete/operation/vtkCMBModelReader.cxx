@@ -11,9 +11,9 @@
 
 #include "vtkCMBModelReader.h"
 
+#include "vtkCMBParserBase.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkCMBParserBase.h"
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
 #include "vtkSmartPointer.h"

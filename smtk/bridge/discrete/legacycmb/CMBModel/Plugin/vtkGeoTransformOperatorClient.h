@@ -15,8 +15,8 @@
 #ifndef __vtkGeoTransformOperatorClient_h
 #define __vtkGeoTransformOperatorClient_h
 
-#include "vtkObject.h"
 #include "cmbSystemConfig.h"
+#include "vtkObject.h"
 
 class vtkDiscreteModel;
 class vtkSMProxy;

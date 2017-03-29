@@ -9,15 +9,15 @@
 //=========================================================================
 #include "vtkExtractImageBlock.h"
 
+#include "vtkBoundingBox.h"
+#include "vtkCompositeDataIterator.h"
+#include "vtkImageData.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkObjectFactory.h"
-#include "vtkImageData.h"
-#include "vtkCompositeDataIterator.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
 #include "vtkStructuredData.h"
-#include "vtkBoundingBox.h"
 
 vtkStandardNewMacro(vtkExtractImageBlock);
 

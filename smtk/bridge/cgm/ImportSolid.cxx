@@ -9,28 +9,28 @@
 //=========================================================================
 #include "smtk/bridge/cgm/ImportSolid.h"
 
-#include "smtk/bridge/cgm/Session.h"
 #include "smtk/bridge/cgm/CAUUID.h"
 #include "smtk/bridge/cgm/Engines.h"
+#include "smtk/bridge/cgm/Session.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Group.h"
-#include "smtk/model/Model.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/Model.h"
 
 #include "smtk/common/UUID.h"
 
 #include "CGMApp.hpp"
-#include "DagType.hpp"
 #include "CubitAttribManager.hpp"
 #include "CubitCompat.hpp"
 #include "CubitDefines.h"
 #include "DLIList.hpp"
-#include "InitCGMA.hpp"
+#include "DagType.hpp"
 #include "GeometryModifyTool.hpp"
 #include "GeometryQueryEngine.hpp"
 #include "GeometryQueryTool.hpp"
+#include "InitCGMA.hpp"
 #include "RefEntity.hpp"
 #include "RefEntityFactory.hpp"
 #include "RefGroup.hpp"

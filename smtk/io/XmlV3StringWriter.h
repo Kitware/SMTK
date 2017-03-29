@@ -13,9 +13,9 @@
 
 #ifndef __smtk_io_XmlV3StringWriter_h
 #define __smtk_io_XmlV3StringWriter_h
-#include "smtk/io/XmlV2StringWriter.h"
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/io/XmlV2StringWriter.h"
 
 #include "smtk/attribute/System.h"
 

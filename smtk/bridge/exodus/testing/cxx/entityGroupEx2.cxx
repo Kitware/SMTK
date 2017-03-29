@@ -14,14 +14,14 @@
 #include "smtk/mesh/Manager.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
 
+#include "smtk/model/Edge.h"
+#include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
-#include "smtk/model/Edge.h"
 #include "smtk/model/Vertex.h"
-#include "smtk/model/Group.h"
 
-#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 #include "smtk/common/UUID.h"

@@ -15,9 +15,9 @@
 #include "smtk/mesh/MeshSet.h"
 #include "smtk/mesh/PointSet.h"
 
-#include "smtk/model/Model.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Group.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/Session.h"
 
 #include "vtkAppendPoints.h"

@@ -9,6 +9,8 @@
 //=========================================================================
 #include "smtk/extension/qt/qtModelPanel.h"
 
+#include "smtk/extension/qt/qtEntityItemModel.h"
+#include "smtk/extension/qt/qtModelView.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/EntityRef.h"
@@ -20,8 +22,6 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/StringData.h"
-#include "smtk/extension/qt/qtEntityItemModel.h"
-#include "smtk/extension/qt/qtModelView.h"
 
 #include <QPointer>
 

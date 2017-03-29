@@ -11,9 +11,9 @@
 
 #include "ui_jobtablewidget.h"
 
-#include "jobtablewidget.h"
-#include "jobtablemodel.h"
 #include "cumulusproxy.h"
+#include "jobtablemodel.h"
+#include "jobtablewidget.h"
 
 #include <QMessageBox>
 

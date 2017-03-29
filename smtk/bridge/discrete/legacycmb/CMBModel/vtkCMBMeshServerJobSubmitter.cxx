@@ -22,13 +22,13 @@
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
 
-#include "vtkModelItemIterator.h"
 #include "vtkDiscreteModelRegion.h"
+#include "vtkModelItemIterator.h"
 
-#include <iterator>
-#include <vector>
-#include <string>
 #include <iostream>
+#include <iterator>
+#include <string>
+#include <vector>
 
 #include <remus/client/Client.h>
 

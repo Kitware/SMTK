@@ -10,10 +10,10 @@
 //=========================================================================
 
 #include "smtk/extension/vtk/io/ImportVTKData.h"
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
 #include "smtk/io/ImportMesh.h"
 #include "smtk/io/WriteMesh.h"
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
 
 #include "vtkNew.h"
 #include "vtkParametricBoy.h"
@@ -25,8 +25,8 @@
 #include "vtkWedge.h"
 #include "vtksys/SystemTools.hxx"
 
-#include "vtkXMLUnstructuredGridReader.h"
 #include "vtkXMLPolyDataReader.h"
+#include "vtkXMLUnstructuredGridReader.h"
 
 namespace
 {

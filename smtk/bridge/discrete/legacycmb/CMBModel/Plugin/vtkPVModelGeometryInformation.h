@@ -16,10 +16,10 @@
 #ifndef __vtkPVModelGeometryInformation_h
 #define __vtkPVModelGeometryInformation_h
 
-#include "vtkPVInformation.h"
 #include "cmbSystemConfig.h"
-#include <string>
+#include "vtkPVInformation.h"
 #include <map>
+#include <string>
 
 class vtkIdTypeArray;
 

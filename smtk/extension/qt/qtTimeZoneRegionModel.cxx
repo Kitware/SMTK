@@ -17,8 +17,8 @@
 #include <QSet>
 #include <QStringList>
 #include <QTextStream>
-#include <QtGlobal>
 #include <QVector>
+#include <QtGlobal>
 
 #include <cassert>
 #include <sstream>

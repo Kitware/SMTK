@@ -16,8 +16,8 @@
 #ifndef __vtkCMBModelFaceMeshOperator_h
 #define __vtkCMBModelFaceMeshOperator_h
 
-#include <vtkObject.h>
 #include "cmbSystemConfig.h"
+#include <vtkObject.h>
 
 class vtkCMBMeshWrapper;
 

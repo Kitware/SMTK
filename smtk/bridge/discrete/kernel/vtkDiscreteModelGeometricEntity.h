@@ -25,8 +25,8 @@
 #include "vtkDiscreteModelEntity.h"
 
 
-#include <vector>
 #include "vtkType.h"
+#include <vector>
 
 class vtkModelMaterial;
 class vtkIdList;

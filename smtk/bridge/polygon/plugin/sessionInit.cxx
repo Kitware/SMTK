@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/Options.h"
 #include "smtk/AutoInit.h"
+#include "smtk/Options.h"
 
 smtkComponentInitMacro(smtk_polygon_session);

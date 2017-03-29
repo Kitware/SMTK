@@ -24,22 +24,22 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 
-#include "vtkDataSetWriter.h"
-#include "vtkXMLImageDataWriter.h"
 #include "vtkContourFilter.h"
-#include "vtkThreshold.h"
-#include "vtkFieldData.h"
 #include "vtkDataArray.h"
 #include "vtkDataSetAttributes.h"
-#include "vtkPointData.h"
-#include "vtkUnsignedCharArray.h"
-#include "vtkImageData.h"
-#include "vtkStringArray.h"
-#include "vtkTypeInt32Array.h"
-#include "vtkInformation.h"
-#include "vtkUnstructuredGrid.h"
-#include "vtkPassArrays.h"
+#include "vtkDataSetWriter.h"
+#include "vtkFieldData.h"
 #include "vtkImageConstantPad.h"
+#include "vtkImageData.h"
+#include "vtkInformation.h"
+#include "vtkPassArrays.h"
+#include "vtkPointData.h"
+#include "vtkStringArray.h"
+#include "vtkThreshold.h"
+#include "vtkTypeInt32Array.h"
+#include "vtkUnsignedCharArray.h"
+#include "vtkUnstructuredGrid.h"
+#include "vtkXMLImageDataWriter.h"
 
 #include "vtkVector.h"
 #include "vtkVectorOperators.h"
@@ -266,8 +266,8 @@ smtk::model::OperatorResult WriteOperator::writeLabelMap()
   } //namespace bridge
 } // namespace smtk
 
-#include "smtk/bridge/exodus/WriteOperator_xml.h"
 #include "smtk/bridge/exodus/Exports.h"
+#include "smtk/bridge/exodus/WriteOperator_xml.h"
 
 smtkImplementsModelOperator(
   SMTKEXODUSSESSION_EXPORT,

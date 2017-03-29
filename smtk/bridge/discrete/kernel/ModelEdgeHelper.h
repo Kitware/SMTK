@@ -22,10 +22,10 @@
 
 
 #include <algorithm>
+#include <iostream>
 #include <map>
 #include <string>
 #include <vector>
-#include <iostream>
 
 class NewModelEdgeInfo
 {

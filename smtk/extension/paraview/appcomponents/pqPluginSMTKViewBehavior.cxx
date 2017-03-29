@@ -9,9 +9,9 @@
 //=========================================================================
 #include "smtk/extension/paraview/appcomponents/pqPluginSMTKViewBehavior.h"
 
-#include "smtk/extension/qt/qtSMTKUtilities.h"
 #include "pqApplicationCore.h"
 #include "pqInterfaceTracker.h"
+#include "smtk/extension/qt/qtSMTKUtilities.h"
 
 //-----------------------------------------------------------------------------
 pqPluginSMTKViewBehavior::pqPluginSMTKViewBehavior(QObject* p)

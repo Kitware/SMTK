@@ -15,9 +15,9 @@
 #include "smtk/attribute/Item.h"
 #include "smtk/mesh/MeshSet.h"
 
-#include <string>
-#include <set>
 #include <map>
+#include <set>
+#include <string>
 
 namespace smtk {
   namespace attribute {

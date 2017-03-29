@@ -9,8 +9,8 @@
 //=========================================================================
 #include "smtk/extension/qt/qtEntityItemEditor.h"
 
-#include <QLineEdit>
 #include <QHBoxLayout>
+#include <QLineEdit>
 
 namespace smtk {
   namespace extension {

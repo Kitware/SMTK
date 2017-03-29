@@ -10,8 +10,8 @@
 #include "vtkSerializationHelperMap.h"
 
 #include "vtkCommonSerializationHelper.h"
-#include "vtkSerializationHelper.h"
 #include "vtkObjectFactory.h"
+#include "vtkSerializationHelper.h"
 #include "vtkSmartPointer.h"
 #include "vtkToolkits.h"
 #include <map>

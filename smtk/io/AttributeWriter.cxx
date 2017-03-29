@@ -10,10 +10,10 @@
 
 
 #include "smtk/io/AttributeWriter.h"
+#include "smtk/io/Logger.h"
 #include "smtk/io/XmlStringWriter.h"
 #include "smtk/io/XmlV2StringWriter.h"
 #include "smtk/io/XmlV3StringWriter.h"
-#include "smtk/io/Logger.h"
 #include <cassert>
 #include <fstream>
 

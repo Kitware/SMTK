@@ -19,8 +19,8 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
-#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/GroupItem.h"
+#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 

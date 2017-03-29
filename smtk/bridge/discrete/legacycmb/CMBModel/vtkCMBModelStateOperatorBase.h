@@ -16,10 +16,10 @@
 #ifndef __vtkCMBModelStateOperatorBase_h
 #define __vtkCMBModelStateOperatorBase_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 #include <map>
-#include "cmbSystemConfig.h"
 
 class vtkDiscreteModelWrapper;
 class vtkStringArray;

@@ -13,9 +13,9 @@
 #ifndef __smtk_extension_qtItem_h
 #define __smtk_extension_qtItem_h
 
-#include <QObject>
-#include "smtk/extension/qt/Exports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/extension/qt/Exports.h"
+#include <QObject>
 
 class qtItemInternals;
 

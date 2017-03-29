@@ -25,12 +25,12 @@
 #ifndef __vtkCMBMeshGridRepresentationServer_h
 #define __vtkCMBMeshGridRepresentationServer_h
 
+#include "cmbSystemConfig.h"
 #include "vtkModelGeneratedGridRepresentation.h"
 #include "vtkWeakPointer.h"
-#include "cmbSystemConfig.h"
-#include <vector>
 #include <map>
 #include <set>
+#include <vector>
 
 class vtkPolyData;
 class vtkCMBMeshServer;

@@ -9,10 +9,10 @@
 //=========================================================================
 #include "smtk/model/UseEntity.h"
 
-#include "smtk/model/CellEntity.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Arrangement.h"
+#include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityRefArrangementOps.h"
+#include "smtk/model/Manager.h"
 
 namespace smtk {
   namespace model {

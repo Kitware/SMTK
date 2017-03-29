@@ -28,8 +28,8 @@
 #ifndef __vtkMaterialOperatorClient_h
 #define __vtkMaterialOperatorClient_h
 
-#include "vtkMaterialOperatorBase.h"
 #include "cmbSystemConfig.h"
+#include "vtkMaterialOperatorBase.h"
 
 class vtkCMBMaterial;
 class vtkDiscreteModel;

@@ -11,11 +11,11 @@
 #include <algorithm>
 
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/System.h"
-#include "smtk/attribute/ValueItemDefinition.h"
-#include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/System.h"
+#include "smtk/attribute/ValueItem.h"
+#include "smtk/attribute/ValueItemDefinition.h"
 
 #include <iostream>
 

@@ -11,19 +11,19 @@
 #include "vtkXMLModelWriter.h"
 
 #include "vtkInformation.h"
+#include "vtkInformationDoubleKey.h"
+#include "vtkInformationDoubleVectorKey.h"
 #include "vtkInformationIdTypeKey.h"
 #include "vtkInformationIntegerKey.h"
 #include "vtkInformationIntegerVectorKey.h"
-#include "vtkInformationDoubleKey.h"
-#include "vtkInformationStringKey.h"
-#include "vtkInformationDoubleVectorKey.h"
 #include "vtkInformationIterator.h"
 #include "vtkInformationKeyMap.h"
 #include "vtkInformationObjectBaseKey.h"
-#include "vtkXMLElement.h"
+#include "vtkInformationStringKey.h"
 #include "vtkModel.h"
 #include "vtkModelEntity.h"
 #include "vtkObjectFactory.h"
+#include "vtkXMLElement.h"
 
 #include <list>
 #include <map>

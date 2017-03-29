@@ -31,8 +31,8 @@
 #  pragma GCC diagnostic push
 #  pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
 #endif
-#include "remus/server/Server.h"
 #include "remus/server/PortNumbers.h"
+#include "remus/server/Server.h"
 #include "remus/server/WorkerFactory.h"
 #ifndef _MSC_VER
 #  pragma GCC diagnostic pop

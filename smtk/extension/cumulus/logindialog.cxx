@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "ui_logindialog.h"
 #include "logindialog.h"
+#include "ui_logindialog.h"
 
 namespace cumulus
 {

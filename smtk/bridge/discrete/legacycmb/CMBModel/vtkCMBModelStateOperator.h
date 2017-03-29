@@ -18,10 +18,10 @@
 #ifndef __vtkCMBModelStateOperator_h
 #define __vtkCMBModelStateOperator_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
-#include "vtkCMBModelStateOperatorBase.h"
-#include "vtkSmartPointer.h"
 #include "cmbSystemConfig.h"
+#include "vtkCMBModelStateOperatorBase.h"
+#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "vtkSmartPointer.h"
 
 class vtkStringArray;
 class vtkIdList;

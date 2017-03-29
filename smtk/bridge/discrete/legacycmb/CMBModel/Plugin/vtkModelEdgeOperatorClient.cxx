@@ -14,8 +14,8 @@
 #include "vtkDiscreteModel.h"
 #include "vtkModelUserName.h"
 #
-#include "vtkObjectFactory.h"
 #include "vtkDiscreteModelEdge.h"
+#include "vtkObjectFactory.h"
 #include "vtkSMDoubleVectorProperty.h"
 #include "vtkSMIdTypeVectorProperty.h"
 #include "vtkSMIntVectorProperty.h"

@@ -12,10 +12,10 @@
 #include "vtkCMBMeshGridRepresentationOperator.h"
 
 #include "vtkAlgorithm.h"
-#include "vtkDiscreteModel.h"
 #include "vtkCMBMeshGridRepresentationServer.h"
 #include "vtkCMBMeshServer.h"
 #include "vtkCMBMeshWrapper.h"
+#include "vtkDiscreteModel.h"
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
 

@@ -16,16 +16,16 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
-#include "smtk/model/EntityRef.h"
-#include "smtk/model/EntityPhrase.h"
-#include "smtk/model/Face.h"
-#include "smtk/model/Model.h"
-#include "smtk/model/Group.h"
-#include "smtk/model/SimpleModelSubphrases.h"
-#include "smtk/model/Manager.h"
-#include "smtk/model/Operator.h"
-#include "smtk/model/Tessellation.h"
 #include "smtk/io/ExportJSON.h"
+#include "smtk/model/EntityPhrase.h"
+#include "smtk/model/EntityRef.h"
+#include "smtk/model/Face.h"
+#include "smtk/model/Group.h"
+#include "smtk/model/Manager.h"
+#include "smtk/model/Model.h"
+#include "smtk/model/Operator.h"
+#include "smtk/model/SimpleModelSubphrases.h"
+#include "smtk/model/Tessellation.h"
 
 #include <fstream>
 

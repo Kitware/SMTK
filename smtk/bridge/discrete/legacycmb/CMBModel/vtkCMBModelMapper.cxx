@@ -11,8 +11,8 @@
 #include "vtkCMBModelMapper.h"
 
 #include "vtkBoundingBox.h"
-#include "vtkChooserPainter.h"
 #include "vtkCMBModelSelectionPainter.h"
+#include "vtkChooserPainter.h"
 #include "vtkCommand.h"
 #include "vtkCompositeDataIterator.h"
 #include "vtkCompositeDataPipeline.h"
@@ -26,15 +26,15 @@
 #include "vtkPolyData.h"
 #include "vtkPolyDataPainter.h"
 #include "vtkProperty.h"
-#include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
+#include "vtkRenderer.h"
 #include "vtkSmartPointer.h"
 #include "vtkTexture.h"
 #include "vtkTimerLog.h"
 
-#include "vtkDiscreteModelWrapper.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
+#include "vtkDiscreteModelWrapper.h"
 #include "vtkModelGeometricEntity.h"
 
 vtkStandardNewMacro(vtkCMBModelMapper);

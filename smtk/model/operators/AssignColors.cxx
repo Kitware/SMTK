@@ -14,8 +14,8 @@
 #include "smtk/common/Color.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/StringItem.h"
 
 #include <cstddef> // for size_t
 

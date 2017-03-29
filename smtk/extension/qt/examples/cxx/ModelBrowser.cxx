@@ -9,16 +9,16 @@
 //=========================================================================
 #include "smtk/extension/qt/examples/cxx/ModelBrowser.h"
 
-#include "smtk/extension/qt/qtEntityItemModel.h"
 #include "smtk/extension/qt/qtEntityItemDelegate.h"
+#include "smtk/extension/qt/qtEntityItemModel.h"
 
 #include "smtk/extension/qt/examples/cxx/ui_ModelBrowser.h"
 
-#include "smtk/model/Group.h"
-#include "smtk/model/Model.h"
-#include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityListPhrase.h"
+#include "smtk/model/EntityPhrase.h"
+#include "smtk/model/Group.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/Model.h"
 
 #include <QPushButton>
 #include <QTreeView>

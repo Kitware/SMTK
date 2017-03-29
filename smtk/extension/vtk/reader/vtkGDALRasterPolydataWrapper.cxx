@@ -15,22 +15,22 @@
 #include <vtkCellData.h>
 #include <vtkDoubleArray.h>
 #include <vtkFloatArray.h>
-#include <vtkUniformGrid.h>
-#include <vtkInformationVector.h>
 #include <vtkInformation.h>
+#include <vtkInformationVector.h>
 #include <vtkIntArray.h>
 #include <vtkObjectFactory.h>
 #include <vtkPointData.h>
 #include <vtkPoints.h>
+#include <vtkPolyData.h>
 #include <vtkShortArray.h>
 #include <vtkSmartPointer.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
+#include <vtkStringArray.h>
+#include <vtkUniformGrid.h>
 #include <vtkUnsignedCharArray.h>
 #include <vtkUnsignedIntArray.h>
 #include <vtkUnsignedShortArray.h>
 #include <vtkXMLDataSetWriter.h>
-#include <vtkPolyData.h>
-#include <vtkStringArray.h>
 
 // GDAL's configure defines LT_OBJDIR without checking if it is already set. To
 // circumvent the associated warning, we cache the current value of LT_OBJDIR

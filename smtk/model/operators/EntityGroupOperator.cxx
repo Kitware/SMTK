@@ -12,16 +12,16 @@
 #include "smtk/model/Session.h"
 
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/Manager.h"
-#include "smtk/model/Group.h"
 #include "smtk/model/EntityTypeBits.h"
+#include "smtk/model/Group.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Session.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
-#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/VoidItem.h"
 
 #include "smtk/model/EntityGroupOperator_xml.h"

@@ -12,17 +12,17 @@
 #define __smtk_mesh_Collection_h
 
 #include "smtk/CoreExports.h"
-#include "smtk/SharedFromThis.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/SharedFromThis.h"
 
-#include "smtk/common/UUID.h"
 #include "smtk/common/FileLocation.h"
+#include "smtk/common/UUID.h"
 
 #include "smtk/mesh/CellSet.h"
-#include "smtk/mesh/PointConnectivity.h"
 #include "smtk/mesh/Handle.h"
 #include "smtk/mesh/Interface.h"
 #include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/PointConnectivity.h"
 #include "smtk/mesh/PropertyData.h"
 #include "smtk/mesh/QueryTypes.h"
 #include "smtk/mesh/TypeSet.h"

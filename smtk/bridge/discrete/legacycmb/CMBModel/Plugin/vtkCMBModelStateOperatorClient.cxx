@@ -10,13 +10,13 @@
 
 #include "vtkCMBModelStateOperatorClient.h"
 
-#include "vtkDiscreteModel.h"
 #include "vtkCMBModelBuilderClient.h"
+#include "vtkDiscreteModel.h"
 #include "vtkIdList.h"
 #include "vtkObjectFactory.h"
 #include "vtkSMIntVectorProperty.h"
-#include "vtkSMProxyManager.h"
 #include "vtkSMOperatorProxy.h"
+#include "vtkSMProxyManager.h"
 #include "vtkSMStringVectorProperty.h"
 #include "vtkStringArray.h"
 

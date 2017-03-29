@@ -17,8 +17,8 @@
 #ifndef __vtkCMBModelFaceMeshServer_h
 #define __vtkCMBModelFaceMeshServer_h
 
-#include "vtkCMBModelFaceMesh.h"
 #include "cmbSystemConfig.h"
+#include "vtkCMBModelFaceMesh.h"
 
 class vtkModelFace;
 class vtkCMBModelVertexMesh;

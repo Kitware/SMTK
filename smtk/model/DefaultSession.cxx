@@ -9,9 +9,9 @@
 //=========================================================================
 #include "smtk/model/DefaultSession.h"
 
-#include "smtk/model/SessionRegistrar.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/RemoteOperator.h"
+#include "smtk/model/SessionRegistrar.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"

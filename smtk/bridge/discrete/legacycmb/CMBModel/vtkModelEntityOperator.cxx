@@ -13,9 +13,9 @@
 
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelWrapper.h"
+#include "vtkInformation.h"
 #include "vtkModelEntity.h"
 #include "vtkObjectFactory.h"
-#include "vtkInformation.h"
 #include "vtkProperty.h"
 
 vtkStandardNewMacro(vtkModelEntityOperator);

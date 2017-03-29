@@ -10,19 +10,19 @@
 
 #include "vtkMergeDuplicateCells.h"
 
-#include "vtkInformation.h"
-#include "vtkInformationVector.h"
+#include "ModelParserHelper.h"
 #include "vtkCell.h"
 #include "vtkCellData.h"
 #include "vtkDataArray.h"
 #include "vtkIdList.h"
 #include "vtkIdTypeArray.h"
+#include "vtkInformation.h"
+#include "vtkInformationVector.h"
 #include "vtkIntArray.h"
 #include "vtkMergePoints.h"
 #include "vtkObjectFactory.h"
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
-#include "ModelParserHelper.h"
 
 #include <map>
 #include <vector>

@@ -12,10 +12,10 @@
 #include "smtk/common/StringUtil.h"
 
 #include <algorithm>
-#include <set>
-#include <map>
-#include <vector>
 #include <cctype>
+#include <map>
+#include <set>
+#include <vector>
 
 #include <sstream>
 

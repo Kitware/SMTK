@@ -12,17 +12,17 @@
 #include "vtkModelEntityOperatorClient.h"
 
 #include "vtkDiscreteModel.h"
+#include "vtkModelEntity.h"
 #include "vtkModelGeometricEntity.h"
 #include "vtkModelUserName.h"
-#include "vtkModelEntity.h"
 #include "vtkObjectFactory.h"
-#include "vtkSmartPointer.h"
 #include "vtkSMDoubleVectorProperty.h"
 #include "vtkSMIdTypeVectorProperty.h"
 #include "vtkSMIntVectorProperty.h"
 #include "vtkSMOperatorProxy.h"
 #include "vtkSMProxyManager.h"
 #include "vtkSMStringVectorProperty.h"
+#include "vtkSmartPointer.h"
 
 vtkStandardNewMacro(vtkModelEntityOperatorClient);
 

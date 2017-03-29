@@ -14,8 +14,8 @@
 #ifndef __smtk_extension_cumulus_jobrequest_h
 #define __smtk_extension_cumulus_jobrequest_h
 
-#include "job.h"
 #include "girderrequest.h"
+#include "job.h"
 
 #include <QtCore/QList>
 #include <QtCore/QSet>

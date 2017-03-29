@@ -11,9 +11,9 @@
 
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/EntityRefArrangementOps.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/ShellEntity.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/UseEntity.h"
 
 #include <deque>

@@ -19,8 +19,8 @@
 #ifndef __vtkMergeOperatorClient_h
 #define __vtkMergeOperatorClient_h
 
-#include "vtkMergeOperatorBase.h"
 #include "cmbSystemConfig.h"
+#include "vtkMergeOperatorBase.h"
 
 class vtkDiscreteModel;
 class vtkSMProxy;

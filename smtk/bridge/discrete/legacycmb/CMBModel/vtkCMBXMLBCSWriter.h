@@ -17,9 +17,9 @@
 #ifndef __vtkCMBXMLBCSWriter_h
 #define __vtkCMBXMLBCSWriter_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkXMLWriter.h"
-#include "cmbSystemConfig.h"
 #include <ostream>
 
 class vtkDiscreteModel;

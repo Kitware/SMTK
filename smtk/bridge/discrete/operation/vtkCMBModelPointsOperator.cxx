@@ -11,14 +11,14 @@
 
 #include "vtkCMBModelPointsOperator.h"
 
+#include "vtkAlgorithm.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkObjectFactory.h"
 #include "vtkPointData.h"
-#include "vtkPolyData.h"
-#include "vtkPoints.h"
-#include "vtkAlgorithm.h"
 #include "vtkPointData.h"
+#include "vtkPoints.h"
+#include "vtkPolyData.h"
 
 vtkStandardNewMacro(vtkCMBModelPointsOperator);
 

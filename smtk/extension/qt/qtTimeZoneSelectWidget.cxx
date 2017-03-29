@@ -8,15 +8,15 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/qt/qtTimeZoneSelectWidget.h"
-#include "ui_qtTimeZoneSelectWidget.h"
 #include "qtTimeZoneRegionModel.h"
+#include "ui_qtTimeZoneSelectWidget.h"
 
 #include <QDebug>
 #include <QHeaderView>
 #include <QItemSelectionModel>
 #include <QSortFilterProxyModel>
-#include <QtGlobal>
 #include <QVariant>
+#include <QtGlobal>
 
 namespace {
 // Use internal proxy model to enable sorting and override header text

@@ -10,8 +10,8 @@
 #ifndef __smtk_model_FaceUse_h
 #define __smtk_model_FaceUse_h
 
-#include "smtk/model/UseEntity.h"
 #include "smtk/model/ArrangementKind.h" // for Orientation
+#include "smtk/model/UseEntity.h"
 
 #include <vector>
 

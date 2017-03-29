@@ -21,14 +21,14 @@
 #define __smtk_attribute_ValueItemDefinition_h
 
 #include <cassert>
-#include <string>
-#include <set>
 #include <map>
+#include <set>
+#include <string>
 #include <vector>
 
 #include "smtk/CoreExports.h"
-#include "smtk/attribute/ItemDefinition.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/attribute/ItemDefinition.h"
 
 namespace smtk
 {

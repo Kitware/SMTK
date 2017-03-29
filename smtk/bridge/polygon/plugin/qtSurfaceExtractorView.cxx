@@ -9,16 +9,16 @@
 //=========================================================================
 
 #include "qtSurfaceExtractorView.h"
-#include "smtk/bridge/polygon/qt/imageFeatureExtractorWidget.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
+#include "smtk/bridge/polygon/qt/imageFeatureExtractorWidget.h"
+#include "smtk/common/View.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
-#include "smtk/common/View.h"
 #include "smtk/model/Operator.h"
 
 #include "pqActiveObjects.h"
@@ -31,17 +31,17 @@
 #include "vtkClientServerStream.h"
 #include "vtkProcessModule.h"
 #include "vtkSMPropertyHelper.h"
-#include "vtkSMProxyProperty.h"
 #include "vtkSMProxyManager.h"
-#include "vtkSMSourceProxy.h"
+#include "vtkSMProxyProperty.h"
 #include "vtkSMSession.h"
+#include "vtkSMSourceProxy.h"
 
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QPointer>
-#include <QPushButton>
 #include <QDebug>
 #include <QFileInfo>
+#include <QHBoxLayout>
+#include <QPointer>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 using namespace smtk::extension;
 

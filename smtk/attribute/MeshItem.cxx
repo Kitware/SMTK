@@ -9,11 +9,11 @@
 //=========================================================================
 
 #include "smtk/attribute/MeshItem.h"
-#include "smtk/attribute/MeshItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/MeshItemDefinition.h"
+#include <algorithm>    // for std::find and std::copy
 #include <iostream>
 #include <stdio.h>
-#include <algorithm>    // for std::find and std::copy
 
 using namespace smtk::attribute;
 

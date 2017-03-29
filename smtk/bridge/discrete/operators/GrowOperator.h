@@ -13,12 +13,12 @@
 
 #include "smtk/bridge/discrete/Exports.h"
 #include "smtk/model/Operator.h"
-#include "vtkSelectionSplitOperator.h"
+#include "vtkNew.h"
 #include "vtkSeedGrowSelectionFilter.h"
 #include "vtkSelection.h"
-#include "vtkNew.h"
-#include <set>
+#include "vtkSelectionSplitOperator.h"
 #include <map>
+#include <set>
 
 class vtkDiscreteModelWrapper;
 

@@ -93,8 +93,8 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
 } //namespace bridge
 } // namespace smtk
 
-#include "smtk/bridge/mesh/ReadOperator_xml.h"
 #include "smtk/bridge/mesh/Exports.h"
+#include "smtk/bridge/mesh/ReadOperator_xml.h"
 
 smtkImplementsModelOperator(
   SMTKMESHSESSION_EXPORT,

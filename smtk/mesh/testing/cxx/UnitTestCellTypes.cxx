@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/mesh/CellTypes.h"
 #include "smtk/mesh/CellTraits.h"
+#include "smtk/mesh/CellTypes.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 

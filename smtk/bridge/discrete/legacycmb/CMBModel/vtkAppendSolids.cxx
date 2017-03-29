@@ -20,8 +20,8 @@
 #include "vtkNew.h"
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
-#include<vtkSmartPointer.h>
 #include "vtkTINStitcher.h"
+#include<vtkSmartPointer.h>
 
 #include <map>
 

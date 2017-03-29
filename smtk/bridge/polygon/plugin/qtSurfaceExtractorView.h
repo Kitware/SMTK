@@ -16,8 +16,8 @@
 #define qtSurfaceExtractorView_h
 
 #include "smtk/extension/qt/qtBaseView.h"
-#include <vtkSmartPointer.h>
 #include <vtkPolyData.h>
+#include <vtkSmartPointer.h>
 
 class qtSurfaceExtractorViewInternals;
 

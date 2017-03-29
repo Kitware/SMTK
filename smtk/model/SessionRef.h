@@ -11,8 +11,8 @@
 #define __smtk_model_SessionRef_h
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/model/Model.h"
 #include "smtk/model/EntityRefArrangementOps.h" // for templated methods
+#include "smtk/model/Model.h"
 
 namespace smtk {
   namespace model {

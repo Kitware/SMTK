@@ -20,8 +20,8 @@
 // Steal code from CMB's vtkModelManagerWrapper.
 
 #ifndef SHIBOKEN_SKIP
-#include "smtk/bridge/remote/Session.h"
 #include "smtk/bridge/remote/RemusRPCWorker.h"
+#include "smtk/bridge/remote/Session.h"
 
 #include "smtk/common/Environment.h"
 

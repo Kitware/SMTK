@@ -12,8 +12,8 @@
 
 #include "smtk/bridge/polygon/Session.h"
 
-#include "smtk/model/Operator.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/Operator.h"
 
 /// A convenience macro for generating debug log messages.
 #define smtkOpDebug(x) \

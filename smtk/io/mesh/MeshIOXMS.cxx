@@ -12,8 +12,8 @@
 #include "smtk/io/mesh/MeshIOXMS.h"
 #include "smtk/io/mesh/MeshIO.h"
 
-#include "smtk/mesh/CellTypes.h"
 #include "smtk/mesh/CellSet.h"
+#include "smtk/mesh/CellTypes.h"
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/DimensionTypes.h"
 #include "smtk/mesh/ExtractTessellation.h"

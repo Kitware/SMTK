@@ -11,11 +11,11 @@
 #include "smtk/bridge/remote/RemusRPCWorker.h"
 #include "smtk/bridge/remote/Session.h"
 
-#include "smtk/io/ImportJSON.h"
 #include "smtk/io/ExportJSON.h"
+#include "smtk/io/ImportJSON.h"
 
-#include "smtk/model/SessionRegistrar.h"
 #include "smtk/model/Operator.h"
+#include "smtk/model/SessionRegistrar.h"
 
 #include "smtk/common/StringUtil.h"
 
@@ -30,8 +30,8 @@
 #include "cJSON.h"
 
 #include <algorithm>
-#include <functional>
 #include <cctype>
+#include <functional>
 #include <locale>
 #include <sstream>
 

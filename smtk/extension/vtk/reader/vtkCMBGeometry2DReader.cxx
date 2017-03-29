@@ -28,16 +28,16 @@
 #include "vtkStringArray.h"
 #include "vtkTable.h"
 
-#include "vtkXMLPolyDataWriter.h"
-#include "vtkTableWriter.h"
 #include "smtk/extension/vtk/meshing/vtkDiscoverRegions.h"
 #include "smtk/extension/vtk/meshing/vtkRegionsToLoops.h"
 #include "smtk/extension/vtk/meshing/vtkSplitPlanarLines.h"
+#include "vtkTableWriter.h"
+#include "vtkXMLPolyDataWriter.h"
 
 #include <vtksys/SystemTools.hxx>
 
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 
 vtkStandardNewMacro(vtkCMBGeometry2DReader);
 

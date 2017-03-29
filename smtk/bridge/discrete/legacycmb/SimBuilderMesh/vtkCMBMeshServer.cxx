@@ -10,12 +10,12 @@
 
 #include "vtkCMBMeshServer.h"
 
-#include <vtkCallbackCommand.h>
-#include <vtkDiscreteModel.h>
 #include "vtkCMBModelEdgeMeshServer.h"
 #include "vtkCMBModelFaceMeshServer.h"
-#include <vtkDiscreteModelGeometricEntity.h>
 #include "vtkCMBModelVertexMesh.h"
+#include <vtkCallbackCommand.h>
+#include <vtkDiscreteModel.h>
+#include <vtkDiscreteModelGeometricEntity.h>
 #include <vtkIdList.h>
 #include <vtkMath.h>
 #include <vtkMergeEventData.h>

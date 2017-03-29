@@ -9,32 +9,32 @@
 //=========================================================================
 #include "smtk/extension/qt/qtModelView.h"
 
-#include "smtk/model/Entity.h"
 #include "smtk/model/DescriptivePhrase.h"
+#include "smtk/model/Entity.h"
 #include "smtk/model/FloatData.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/IntegerData.h"
-#include "smtk/model/Model.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/StringData.h"
 
 #include "smtk/extension/qt/qtEntityItemDelegate.h"
 
-#include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityListPhrase.h"
+#include "smtk/model/EntityPhrase.h"
+#include "smtk/model/MeshListPhrase.h"
+#include "smtk/model/MeshPhrase.h"
 #include "smtk/model/Operator.h"
 #include "smtk/model/SessionRef.h"
-#include "smtk/model/MeshPhrase.h"
-#include "smtk/model/MeshListPhrase.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/StringItem.h"
-#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
-#include "smtk/attribute/MeshItem.h"
+#include "smtk/attribute/StringItem.h"
 
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtModelEntityItem.h"
@@ -42,24 +42,24 @@
 #include "smtk/extension/qt/qtOperatorDockWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
-#include "smtk/mesh/Manager.h"
 #include "smtk/mesh/Collection.h"
+#include "smtk/mesh/Manager.h"
 
-#include <QPointer>
-#include <QDropEvent>
+#include <QAction>
+#include <QApplication>
+#include <QColorDialog>
 #include <QDragEnterEvent>
 #include <QDragMoveEvent>
+#include <QDropEvent>
+#include <QHeaderView>
 #include <QMenu>
-#include <QAction>
-#include <QVariant>
+#include <QPointer>
 #include <QScrollArea>
 #include <QVBoxLayout>
-#include <QApplication>
-#include <QHeaderView>
-#include <QColorDialog>
+#include <QVariant>
 
-#include <iomanip>
 #include <algorithm>    // std::sort
+#include <iomanip>
 
 using namespace smtk::model;
 // -----------------------------------------------------------------------------

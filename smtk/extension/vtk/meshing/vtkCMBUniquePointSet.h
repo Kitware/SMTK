@@ -16,15 +16,15 @@
 #ifndef __smtk_vtk_vtkCMBUniquePointSet_
 #define __smtk_vtk_vtkCMBUniquePointSet_
 
-#include "smtk/extension/vtk/meshing/Exports.h" // For export macro
 #include "smtk/common/CompilerInformation.h" //needed for SMTK_MSVC flag
+#include "smtk/extension/vtk/meshing/Exports.h" // For export macro
 
-#include <map>
-#include <vector>
-#include <utility>
-#include <cstddef> // for size_t
-#include "vtkType.h"
 #include "vtkABI.h"
+#include "vtkType.h"
+#include <cstddef> // for size_t
+#include <map>
+#include <utility>
+#include <vector>
 
 struct vtkCMBUniquePointSet_InternalPt
   {

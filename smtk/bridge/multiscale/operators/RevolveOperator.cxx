@@ -217,8 +217,8 @@ smtk::model::OperatorResult RevolveOperator::operateInternal()
   } //namespace bridge
 } // namespace smtk
 
-#include "smtk/bridge/multiscale/RevolveOperator_xml.h"
 #include "smtk/bridge/multiscale/Exports.h"
+#include "smtk/bridge/multiscale/RevolveOperator_xml.h"
 
 smtkImplementsModelOperator(
   SMTKMULTISCALESESSION_EXPORT,

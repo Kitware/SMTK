@@ -17,8 +17,8 @@
 #ifndef __vtkCMBMeshPolyDataProvider_h
 #define __vtkCMBMeshPolyDataProvider_h
 
-#include "vtkPolyDataAlgorithm.h"
 #include "cmbSystemConfig.h"
+#include "vtkPolyDataAlgorithm.h"
 
 class vtkCMBMeshWrapper;
 class vtkDataSet;

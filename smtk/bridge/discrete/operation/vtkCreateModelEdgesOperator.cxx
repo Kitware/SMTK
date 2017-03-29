@@ -11,12 +11,12 @@
 
 #include "vtkCreateModelEdgesOperator.h"
 
+#include "ModelEdgeHelper.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkModelItemListIterator.h"
 #include "vtkNew.h"
-#include "ModelEdgeHelper.h"
 
 #include "vtkObjectFactory.h"
 

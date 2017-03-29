@@ -17,16 +17,16 @@
 #include "smtk/common/Resource.h"    // base class
 #include "smtk/common/UUID.h"
 
-#include "smtk/attribute/Item.h"
-#include "smtk/attribute/ItemDefinition.h"
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/attribute/Item.h"
+#include "smtk/attribute/ItemDefinition.h"
 
+#include <iostream>
 #include <map>
 #include <set>
 #include <string>
 #include <vector>
-#include <iostream>
 
 
 namespace smtk

@@ -7,32 +7,32 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#include "smtk/extension/qt/qtAttribute.h"
+#include "smtk/extension/qt/qtAttributeItemWidgetFactory.h"
 #include "smtk/extension/qt/qtAttributeRefItem.h"
-#include "smtk/extension/qt/qtInputsItem.h"
+#include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtFileItem.h"
 #include "smtk/extension/qt/qtFileItem.h"
 #include "smtk/extension/qt/qtGroupItem.h"
-#include "smtk/extension/qt/qtVoidItem.h"
-#include "smtk/extension/qt/qtModelEntityItem.h"
+#include "smtk/extension/qt/qtInputsItem.h"
 #include "smtk/extension/qt/qtMeshSelectionItem.h"
-#include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtUIManager.h"
-#include "smtk/extension/qt/qtAttributeItemWidgetFactory.h"
+#include "smtk/extension/qt/qtVoidItem.h"
 
 #include "smtk/attribute/DirectoryItem.h"
-#include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/FileItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/MeshSelectionItem.h"
+#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/attribute/System.h"
-#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/StringItemDefinition.h"
+#include "smtk/attribute/System.h"
 
 #include "smtk/common/View.h"
 

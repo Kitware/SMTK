@@ -20,8 +20,8 @@
 #ifndef __smtkdiscrete_vtkDiscreteModel_h
 #define __smtkdiscrete_vtkDiscreteModel_h
 
-#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "Model/vtkModel.h"
+#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 
 
 class vtkCharArray;

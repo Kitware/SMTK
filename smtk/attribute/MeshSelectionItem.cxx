@@ -9,12 +9,12 @@
 //=========================================================================
 
 #include "smtk/attribute/MeshSelectionItem.h"
-#include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/MeshSelectionItemDefinition.h"
+#include <algorithm>    // std::set_difference
 #include <iostream>
 #include <iterator>
 #include <stdio.h>
-#include <algorithm>    // std::set_difference
 
 using namespace smtk::attribute;
 

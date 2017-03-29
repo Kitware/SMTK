@@ -10,12 +10,12 @@
 
 #include "vtkModelFace.h"
 
-#include "vtkModelItemIterator.h"
-#include "vtkModelItemGenericIterator.h"
 #include "vtkModel.h"
 #include "vtkModelEdge.h"
 #include "vtkModelEdgeUse.h"
 #include "vtkModelFaceUse.h"
+#include "vtkModelItemGenericIterator.h"
+#include "vtkModelItemIterator.h"
 #include "vtkModelLoopUse.h"
 #include "vtkModelShellUse.h"
 #include "vtkModelVertex.h"

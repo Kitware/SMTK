@@ -10,10 +10,10 @@
 
 #include "smtk/extension/qt/qtReferencesWidget.h"
 
-#include "smtk/extension/qt/qtUIManager.h"
-#include "smtk/extension/qt/qtTableWidget.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/qtTableWidget.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -22,20 +22,20 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
-#include <QGridLayout>
 #include <QComboBox>
-#include <QTableWidgetItem>
-#include <QVariant>
-#include <QPushButton>
+#include <QGridLayout>
 #include <QHBoxLayout>
-#include <QVBoxLayout>
+#include <QKeyEvent>
 #include <QLabel>
 #include <QListWidget>
-#include <QKeyEvent>
+#include <QMessageBox>
 #include <QModelIndex>
 #include <QModelIndexList>
-#include <QMessageBox>
+#include <QPushButton>
 #include <QSplitter>
+#include <QTableWidgetItem>
+#include <QVBoxLayout>
+#include <QVariant>
 
 #include "ui_qtAttributeAssociation.h"
 

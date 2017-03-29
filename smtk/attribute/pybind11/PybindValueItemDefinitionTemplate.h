@@ -13,8 +13,8 @@
 
 #include <pybind11/pybind11.h>
 
-#include "smtk/attribute/ValueItemDefinitionTemplate.h"
 #include "smtk/attribute/ValueItemDefinition.h"
+#include "smtk/attribute/ValueItemDefinitionTemplate.h"
 #include "smtk/common/DateTimeZonePair.h"
 
 namespace py = pybind11;

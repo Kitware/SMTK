@@ -12,11 +12,11 @@
 
 #include "vtkClientServerStream.h"
 #include "vtkDiscreteModel.h"
+#include "vtkObjectFactory.h"
+#include "vtkProcessModule.h"
 #include "vtkSMIdTypeVectorProperty.h"
 #include "vtkSMIntVectorProperty.h"
 #include "vtkSMStringVectorProperty.h"
-#include "vtkObjectFactory.h"
-#include "vtkProcessModule.h"
 
 vtkStandardNewMacro(vtkSMOperatorProxy);
 //----------------------------------------------------------------------------

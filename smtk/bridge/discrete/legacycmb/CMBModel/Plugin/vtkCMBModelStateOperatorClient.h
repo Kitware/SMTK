@@ -16,8 +16,8 @@
 #ifndef __vtkCMBModelStateOperatorClient_h
 #define __vtkCMBModelStateOperatorClient_h
 
-#include "vtkCMBModelStateOperatorBase.h"
 #include "cmbSystemConfig.h"
+#include "vtkCMBModelStateOperatorBase.h"
 
 class vtkDiscreteModelWrapper;
 class vtkSMOperatorProxy;

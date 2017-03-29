@@ -10,11 +10,11 @@
 #ifndef __smtk_vtk_ModelMultiBlockSource_h
 #define __smtk_vtk_ModelMultiBlockSource_h
 
-#include "smtk/extension/vtk/source/Exports.h"
-#include "smtk/model/CellEntity.h" // for CellEntities
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/UUIDGenerator.h"
+#include "smtk/extension/vtk/source/Exports.h"
+#include "smtk/model/CellEntity.h" // for CellEntities
 
 #include "vtkMultiBlockDataSetAlgorithm.h"
 #include "vtkNew.h"

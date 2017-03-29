@@ -17,10 +17,10 @@
 #ifndef __vtkSelectionSplitOperatorBase_h
 #define __vtkSelectionSplitOperatorBase_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
-#include "vtkObject.h"
 #include "ModelEdgeHelper.h"
 #include "cmbSystemConfig.h"
+#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "vtkObject.h"
 
 class vtkDiscreteModel;
 class vtkIdTypeArray;

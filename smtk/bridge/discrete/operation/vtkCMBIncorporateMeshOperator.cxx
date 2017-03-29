@@ -12,29 +12,29 @@
 #include "vtkCMBIncorporateMeshOperator.h"
 
 #include "vtkAlgorithm.h"
-#include "vtkDiscreteModel.h"
 #include "vtkCMBModelBuilder.h"
+#include "vtkCellArray.h"
+#include "vtkDataSet.h"
+#include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelRegion.h"
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkModelUserName.h"
-#include "vtkCellArray.h"
-#include "vtkDataSet.h"
 #include "vtkFieldData.h"
 #include "vtkIdList.h"
 #include "vtkIncrementalOctreePointLocator.h"
 #include "vtkMasterPolyDataNormals.h"
-#include "vtkModelMaterial.h"
 #include "vtkMergeDuplicateCells.h"
 #include "vtkModelItemIterator.h"
+#include "vtkModelMaterial.h"
+#include "vtkModelUserName.h"
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
 #include "vtkStringArray.h"
 
-#include <vtkNew.h>
-#include <set>
 #include "ModelEdgeHelper.h"
 #include "ModelParserHelper.h"
+#include <set>
+#include <vtkNew.h>
 
 vtkStandardNewMacro(vtkCMBIncorporateMeshOperator);
 

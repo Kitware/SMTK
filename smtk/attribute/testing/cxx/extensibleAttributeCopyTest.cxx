@@ -8,13 +8,13 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/attribute/System.h"
-#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/io/AttributeReader.h"
-#include "smtk/io/Logger.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/System.h"
+#include "smtk/io/AttributeReader.h"
+#include "smtk/io/Logger.h"
 #include <iostream>
 
 namespace

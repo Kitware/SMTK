@@ -13,8 +13,8 @@
 
 #include "smtk/AutoInit.h"
 
-#include "smtk/extension/vtk/io/IOVTKExports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/extension/vtk/io/IOVTKExports.h"
 
 #include "smtk/io/mesh/MeshIO.h"
 

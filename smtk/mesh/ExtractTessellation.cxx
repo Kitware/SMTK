@@ -22,8 +22,8 @@
 #include "smtk/model/Vertex.h"
 
 #include <cmath>
-#include <utility>
 #include <deque>
+#include <utility>
 
 namespace smtk {
 namespace mesh {

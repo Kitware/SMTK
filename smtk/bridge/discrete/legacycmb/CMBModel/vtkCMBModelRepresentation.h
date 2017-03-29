@@ -17,9 +17,9 @@
 #ifndef __vtkCMBModelRepresentation_h
 #define __vtkCMBModelRepresentation_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkGeometryRepresentationWithFaces.h"
-#include "cmbSystemConfig.h"
 
 class vtkCMBModelMapper;
 class vtkIdTypeArray;

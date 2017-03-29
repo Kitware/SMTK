@@ -10,24 +10,24 @@
 
 #include "smtk/extension/qt/qtGroupView.h"
 
-#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtCollapsibleGroupWidget.h"
+#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
 
 #include "smtk/common/View.h"
 
-#include <QScrollArea>
+#include <QApplication>
+#include <QFile>
+#include <QFont>
+#include <QFrame>
 #include <QHBoxLayout>
-#include <QVBoxLayout>
+#include <QLabel>
+#include <QScrollArea>
 #include <QSize>
 #include <QTabWidget>
-#include <QFile>
-#include <QApplication>
+#include <QVBoxLayout>
 #include <QVariant>
-#include <QFrame>
-#include <QLabel>
-#include <QFont>
 
 using namespace smtk::attribute;
 using namespace smtk::extension;

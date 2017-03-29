@@ -15,8 +15,8 @@
 #ifndef __vtkSIModelRepresentationProxy_h
 #define __vtkSIModelRepresentationProxy_h
 
-#include "vtkSIPVRepresentationProxy.h"
 #include "cmbSystemConfig.h"
+#include "vtkSIPVRepresentationProxy.h"
 
 class vtkSIModelRepresentationProxy : public vtkSIPVRepresentationProxy
 {

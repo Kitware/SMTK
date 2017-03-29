@@ -7,10 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/model/SessionRef.h"
 #include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/PropertyListPhrase.h"
+#include "smtk/model/SessionRef.h"
 #include "smtk/model/SimpleModelSubphrases.h"
 
 #include "smtk/io/ImportJSON.h"

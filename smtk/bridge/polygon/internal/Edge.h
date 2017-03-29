@@ -10,8 +10,8 @@
 #ifndef __smtk_bridge_polygon_internal_edge_h
 #define __smtk_bridge_polygon_internal_edge_h
 
-#include "smtk/bridge/polygon/internal/Entity.h"
 #include "smtk/SharedPtr.h"
+#include "smtk/bridge/polygon/internal/Entity.h"
 
 
 #ifndef _WIN32 

@@ -11,8 +11,8 @@
 #include "vtkCellData.h"
 #include "vtkIdTypeArray.h"
 #include "vtkNew.h"
-#include "vtkPolyData.h"
 #include "vtkPointData.h"
+#include "vtkPolyData.h"
 #include "vtkXMLPolyDataReader.h"
 
 #include "smtk/Options.h" // for CGM_HAVE_VERSION_H
@@ -25,21 +25,21 @@
 #  include "cgm_version.h"
 #endif
 #include "AppUtil.hpp"
+#include "Body.hpp"
+#include "BodySM.hpp"
 #include "CGMApp.hpp"
-#include "GeometryQueryTool.hpp"
-#include "FacetModifyEngine.hpp"
-#include "FacetQueryEngine.hpp"
 #include "CubitFacetData.hpp"
 #include "CubitPointData.hpp"
 #include "CubitQuadFacetData.hpp"
 #include "DLIList.hpp"
-#include "Surface.hpp"
-#include "ShellSM.hpp"
+#include "FacetModifyEngine.hpp"
+#include "FacetQueryEngine.hpp"
+#include "GeometryQueryTool.hpp"
 #include "Lump.hpp"
-#include "Body.hpp"
-#include "BodySM.hpp"
 #include "RefFace.hpp"
 #include "RefVertex.hpp"
+#include "ShellSM.hpp"
+#include "Surface.hpp"
 #ifndef _MSC_VER
 #  pragma GCC diagnostic pop
 #endif

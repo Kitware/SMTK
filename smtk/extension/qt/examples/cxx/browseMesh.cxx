@@ -10,11 +10,11 @@
 #include "smtk/extension/qt/qtEntityItemDelegate.h"
 #include "smtk/extension/qt/qtEntityItemModel.h"
 
-#include "smtk/io/ImportJSON.h"
 #include "smtk/io/ExportJSON.h"
-#include "smtk/model/Manager.h"
-#include "smtk/model/EntityPhrase.h"
+#include "smtk/io/ImportJSON.h"
 #include "smtk/model/EntityListPhrase.h"
+#include "smtk/model/EntityPhrase.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/SimpleModelSubphrases.h"
 
 #include "smtk/extension/qt/examples/cxx/ModelBrowser.h"
@@ -23,8 +23,8 @@
 #include "smtk/model/testing/cxx/helpers.h"
 
 #include <QApplication>
-#include <QTreeView>
 #include <QHeaderView>
+#include <QTreeView>
 
 // Mesh related includes
 #include "smtk/io/ModelToMesh.h"
@@ -33,14 +33,14 @@
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 
-#include "smtk/model/Volume.h"
 #include "smtk/model/EntityIterator.h"
+#include "smtk/model/Volume.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
+#include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <fstream>
 #include <sstream>
 
 #include <stdlib.h>

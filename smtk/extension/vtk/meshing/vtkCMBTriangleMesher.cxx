@@ -34,8 +34,8 @@
 #include <list>
 #include <set>
 
-#include "smtk/extension/vtk/meshing/cmbFaceMesherInterface.h"
 #include "smtk/extension/vtk/meshing/cmbFaceMeshHelper.h"
+#include "smtk/extension/vtk/meshing/cmbFaceMesherInterface.h"
 #include "smtk/extension/vtk/meshing/vtkCMBMeshServerLauncher.h"
 #include "smtk/extension/vtk/meshing/vtkCMBPrepareForTriangleMesher.h"
 #include "smtk/extension/vtk/meshing/vtkCMBUniquePointSet.h"

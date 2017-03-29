@@ -17,9 +17,9 @@
 #ifndef __vtkSelectionSplitOperator_h
 #define __vtkSelectionSplitOperator_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkSelectionSplitOperatorBase.h"
-#include "cmbSystemConfig.h"
 
 class vtkDiscreteModel;
 class vtkDiscreteModelWrapper;

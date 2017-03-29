@@ -18,9 +18,9 @@
 #ifndef __vtkCMBModelActor_h
 #define __vtkCMBModelActor_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkPVLODActor.h"
-#include "cmbSystemConfig.h"
 
 class vtkViewport;
 class vtkWindow;

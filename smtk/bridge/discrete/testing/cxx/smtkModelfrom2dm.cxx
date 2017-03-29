@@ -11,19 +11,19 @@
 #include "smtk/io/ImportJSON.h"
 #include "smtk/io/ModelToMesh.h"
 
+#include "smtk/io/ReadMesh.h"
+#include "smtk/io/WriteMesh.h"
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
-#include "smtk/io/ReadMesh.h"
-#include "smtk/io/WriteMesh.h"
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
 #include "smtk/model/Vertex.h"
 
-#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/common/UUID.h"
 
@@ -37,22 +37,22 @@
 #include "vtkPolyData.h"
 #include "vtkPolyDataMapper.h"
 #include "vtkProperty.h"
-#include "vtkRenderer.h"
+#include "vtkRegressionTestImage.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
+#include "vtkRenderer.h"
 #include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
 #include "vtkXMLMultiBlockDataWriter.h"
-#include "vtkRegressionTestImage.h"
 
-#include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 #include "smtk/bridge/discrete/Session.h"
+#include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 
-#include "smtk/model/testing/cxx/helpers.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
+#include "smtk/model/testing/cxx/helpers.h"
 
-#include <sstream>
 #include <fstream>
+#include <sstream>
 
 //force to use filesystem version 3
 #define BOOST_FILESYSTEM_VERSION 3

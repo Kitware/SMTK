@@ -10,44 +10,44 @@
 
 #include "smtk/extension/qt/qtSimpleExpressionView.h"
 
-#include "smtk/extension/qt/qtUIManager.h"
-#include "smtk/extension/qt/qtTableWidget.h"
 #include "smtk/extension/qt/qtAttribute.h"
+#include "smtk/extension/qt/qtTableWidget.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/System.h"
+#include "smtk/attribute/DoubleItem.h"
+#include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
-#include "smtk/attribute/DoubleItem.h"
-#include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
+#include "smtk/attribute/System.h"
 #include "smtk/common/View.h"
 
 #include <QFileDialog>
 #include <QGridLayout>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QKeyEvent>
+#include <QLabel>
+#include <QLineEdit>
 #include <QListWidget>
 #include <QListWidgetItem>
+#include <QMessageBox>
+#include <QModelIndex>
+#include <QModelIndexList>
+#include <QPointer>
+#include <QPushButton>
+#include <QSpinBox>
+#include <QSplitter>
 #include <QString>
 #include <QStringList>
 #include <QTextStream>
-#include <QVariant>
-#include <QPushButton>
-#include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QSpinBox>
-#include <QKeyEvent>
-#include <QModelIndex>
-#include <QModelIndexList>
-#include <QMessageBox>
-#include <QSplitter>
-#include <QLineEdit>
-#include <QLabel>
-#include <QGroupBox>
-#include <QPointer>
+#include <QVariant>
 
 #include <sstream>
 

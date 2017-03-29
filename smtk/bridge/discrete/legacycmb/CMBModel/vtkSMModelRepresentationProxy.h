@@ -15,9 +15,9 @@
 #ifndef __vtkSMModelRepresentationProxy_h
 #define __vtkSMModelRepresentationProxy_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkSMPVRepresentationProxy.h"
-#include "cmbSystemConfig.h"
 
 class VTKCMBDISCRETEMODEL_EXPORT vtkSMModelRepresentationProxy : public vtkSMPVRepresentationProxy
 {

@@ -11,34 +11,34 @@
 #include "smtk/extension/qt/qtInputsItem.h"
 
 #include "smtk/attribute/Definition.h"
-#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtDiscreteValueEditor.h"
 #include "smtk/extension/qt/qtOverlay.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
 #include <QCheckBox>
+#include <QComboBox>
+#include <QDoubleValidator>
 #include <QFrame>
 #include <QHBoxLayout>
-#include <QVBoxLayout>
 #include <QLabel>
 #include <QLayout>
 #include <QLineEdit>
-#include <QDoubleValidator>
-#include <QVariant>
-#include <QSizePolicy>
 #include <QPointer>
+#include <QSizePolicy>
 #include <QTextEdit>
-#include <QComboBox>
 #include <QToolButton>
+#include <QVBoxLayout>
+#include <QVariant>
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/System.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/ValueItemTemplate.h"

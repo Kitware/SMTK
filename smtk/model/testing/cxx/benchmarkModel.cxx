@@ -7,15 +7,15 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/model/Manager.h"
 #include "smtk/io/ExportJSON.h"
 #include "smtk/io/ImportJSON.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/testing/cxx/helpers.h"
 
 #include "cJSON.h"
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 using namespace smtk::common;
 using namespace smtk::model;

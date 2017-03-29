@@ -54,8 +54,8 @@
 #include "vtkSerializer.h"
 
 
-#include <vector> // Vector of smart pointers
 #include "vtkSmartPointer.h" // Vector of smart pointers
+#include <vector> // Vector of smart pointers
 
 struct vtkXMLArchiveWriterInternals;
 class vtkXMLElement;

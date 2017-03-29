@@ -11,9 +11,9 @@
 #ifndef __smtk_extension_qtOverlay_h
 #define _qtOverlay_h
 
-#include <QWidget>
-#include <QPointer>
 #include "smtk/extension/qt/Exports.h"
+#include <QPointer>
+#include <QWidget>
 
 namespace smtk
 {

@@ -12,21 +12,21 @@
 #include "vtkGeoTransformOperator.h"
 
 #include "vtkAbstractArray.h"
+#include "vtkAlgorithm.h"
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkFieldData.h"
 #include "vtkFloatArray.h"
+#include "vtkGeoSphereTransform.h"
 #include "vtkInstantiator.h"
+#include "vtkMath.h"
 #include "vtkObjectFactory.h"
-#include "vtkPolyData.h"
-#include "vtkAlgorithm.h"
 #include "vtkPointData.h"
 #include "vtkPoints.h"
-#include "vtkGeoSphereTransform.h"
+#include "vtkPolyData.h"
 #include "vtkTransform.h"
-#include "vtkMath.h"
 
 vtkStandardNewMacro(vtkGeoTransformOperator);
 

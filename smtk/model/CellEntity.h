@@ -11,9 +11,9 @@
 #define __smtk_model_CellEntity_h
 
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/UseEntity.h" // For UseEntities
-#include "smtk/model/ShellEntity.h" // For ShellEntities
 #include "smtk/model/EntityRefArrangementOps.h" // For appendAllRelations
+#include "smtk/model/ShellEntity.h" // For ShellEntities
+#include "smtk/model/UseEntity.h" // For UseEntities
 
 namespace smtk {
   namespace model {

@@ -14,8 +14,8 @@
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkModelUserName.h"
 #include "vtkIdTypeArray.h"
+#include "vtkModelUserName.h"
 #include "vtkSelectionSplitOperatorClient.h" // for cliet model update
 #
 #include "vtkModelFaceUse.h"

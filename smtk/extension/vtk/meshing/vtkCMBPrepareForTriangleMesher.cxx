@@ -11,12 +11,12 @@
 #include "vtkCMBPrepareForTriangleMesher.h"
 
 #include "vtkCellArray.h"
+#include "vtkCellData.h"
+#include "vtkFieldData.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
-#include "vtkFieldData.h"
-#include "vtkCellData.h"
 
 vtkStandardNewMacro(vtkCMBPrepareForTriangleMesher);
 

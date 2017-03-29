@@ -15,9 +15,9 @@
 #include "vtkModelFace.h"
 #include "vtkModelFaceUse.h"
 #include "vtkModelItemGenericIterator.h"
-#include <set>
 #include "vtkModelShellUse.h"
 #include "vtkObjectFactory.h"
+#include <set>
 
 
 //-----------------------------------------------------------------------------

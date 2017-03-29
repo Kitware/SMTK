@@ -23,12 +23,12 @@
 #endif
 #include "DLIList.hpp"
 #include "FacetModifyEngine.hpp"
-#include "GeometryHealerTool.hpp"
-#include "GeometryQueryTool.hpp"
-#include "GeometryModifyTool.hpp"
 #include "GeometryHealerEngine.hpp"
-#include "GeometryQueryEngine.hpp"
+#include "GeometryHealerTool.hpp"
 #include "GeometryModifyEngine.hpp"
+#include "GeometryModifyTool.hpp"
+#include "GeometryQueryEngine.hpp"
+#include "GeometryQueryTool.hpp"
 #include "InitCGMA.hpp"
 
 #ifdef HAVE_OCC

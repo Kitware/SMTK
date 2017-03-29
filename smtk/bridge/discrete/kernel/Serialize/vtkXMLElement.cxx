@@ -15,9 +15,9 @@
 
 vtkStandardNewMacro(vtkXMLElement);
 
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
 # define SNPRINTF _snprintf

@@ -11,14 +11,14 @@
 #include "vtkCMBModelFaceMeshClient.h"
 
 #include "vtkCMBMeshClient.h"
+#include "vtkSMPropertyHelper.h"
 #include <vtkDiscreteModel.h>
 #include <vtkModelFace.h>
 #include <vtkObjectFactory.h>
-#include <vtkSMOperatorProxy.h>
 #include <vtkPolyData.h>
 #include <vtkSMIntVectorProperty.h>
+#include <vtkSMOperatorProxy.h>
 #include <vtkSMProxyManager.h>
-#include "vtkSMPropertyHelper.h"
 
 vtkStandardNewMacro(vtkCMBModelFaceMeshClient);
 

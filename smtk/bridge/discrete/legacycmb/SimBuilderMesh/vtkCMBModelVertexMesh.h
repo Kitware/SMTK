@@ -14,8 +14,8 @@
 #ifndef __vtkCMBModelVertexMesh_h
 #define __vtkCMBModelVertexMesh_h
 
-#include "vtkCMBModelEntityMesh.h"
 #include "cmbSystemConfig.h"
+#include "vtkCMBModelEntityMesh.h"
 
 class vtkModelVertex;
 

@@ -14,8 +14,8 @@
 #include "vtkInformationObjectBaseKey.h"
 #include "vtkModel.h"
 #include "vtkModelItemIterator.h"
-#include "vtkPolyData.h"
 #include "vtkOpenGLProperty.h"
+#include "vtkPolyData.h"
 
 vtkInformationKeyMacro(vtkModelGeometricEntity, GEOMETRY, ObjectBase);
 

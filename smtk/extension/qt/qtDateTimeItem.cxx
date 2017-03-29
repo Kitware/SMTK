@@ -10,10 +10,10 @@
 
 #include "smtk/extension/qt/qtDateTimeItem.h"
 
-#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtOverlay.h"
 #include "smtk/extension/qt/qtTimeZoneSelectWidget.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"

@@ -13,12 +13,12 @@
 
 #include "vtkDiscreteModel.h"
 #include "vtkObjectFactory.h"
-#include "vtkSmartPointer.h"
 #include "vtkSMDoubleVectorProperty.h"
 #include "vtkSMIntVectorProperty.h"
 #include "vtkSMOperatorProxy.h"
 #include "vtkSMProxyManager.h"
 #include "vtkSMStringVectorProperty.h"
+#include "vtkSmartPointer.h"
 
 vtkStandardNewMacro(vtkCMBModelOmicronMeshInputWriterClient);
 

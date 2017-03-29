@@ -11,10 +11,10 @@
 #define __smtk_model_SubphraseGenerator_h
 
 #include "smtk/model/DescriptivePhrase.h"
-#include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityListPhrase.h"
-#include "smtk/model/MeshPhrase.h"
+#include "smtk/model/EntityPhrase.h"
 #include "smtk/model/MeshListPhrase.h"
+#include "smtk/model/MeshPhrase.h"
 #include "smtk/model/PropertyListPhrase.h"
 
 #include "smtk/model/Manager.h" // For PropertyType enum.

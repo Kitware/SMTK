@@ -14,9 +14,9 @@
 #include "vtkDiscreteModelEdge.h"
 #include "vtkDiscreteModelEntityGroup.h"
 #include "vtkModelEdge.h"
-#include "vtkModelItemIterator.h"
-#include "vtkModelGridRepresentation.h"
 #include "vtkModelGeneratedGridRepresentation.h"
+#include "vtkModelGridRepresentation.h"
+#include "vtkModelItemIterator.h"
 
 #include <vtkIdList.h>
 #include <vtkIdTypeArray.h>

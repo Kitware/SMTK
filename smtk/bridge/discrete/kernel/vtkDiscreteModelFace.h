@@ -14,10 +14,10 @@
 #ifndef __smtkdiscrete_vtkDiscreteModelFace_h
 #define __smtkdiscrete_vtkDiscreteModelFace_h
 
-#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
-#include "vtkModelFace.h"
-#include "vtkDiscreteModelGeometricEntity.h"
 #include "ModelEdgeHelper.h"
+#include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
+#include "vtkDiscreteModelGeometricEntity.h"
+#include "vtkModelFace.h"
 
 
 class vtkDiscreteModelEdge;

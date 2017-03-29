@@ -9,16 +9,16 @@
 //=========================================================================
 #include "smtk/extension/qt/qtItem.h"
 
-#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtOverlay.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
 
-#include <QPointer>
-#include <QLayout>
 #include <QComboBox>
+#include <QLayout>
+#include <QPointer>
 
 using namespace smtk::attribute;
 using namespace smtk::extension;

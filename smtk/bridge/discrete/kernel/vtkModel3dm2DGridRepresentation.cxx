@@ -14,10 +14,10 @@
 #include "vtkDiscreteModelEdge.h"
 #include "vtkDiscreteModelEntityGroup.h"
 #include "vtkDiscreteModelFace.h"
-#include <vtkIdList.h>
-#include <vtkIdTypeArray.h>
 #include "vtkModelItemIterator.h"
 #include "vtkNew.h"
+#include <vtkIdList.h>
+#include <vtkIdTypeArray.h>
 #include <vtkObjectFactory.h>
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>

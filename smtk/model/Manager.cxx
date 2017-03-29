@@ -9,23 +9,23 @@
 //=========================================================================
 #include "smtk/model/Manager.h"
 
-#include "smtk/attribute/System.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/System.h"
 
 #include "smtk/model/AttributeAssignments.h"
-#include "smtk/model/SessionRef.h"
 #include "smtk/model/Chain.h"
 #include "smtk/model/DefaultSession.h"
-#include "smtk/model/EntityIterator.h"
-#include "smtk/model/EntityRefArrangementOps.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
+#include "smtk/model/EntityIterator.h"
+#include "smtk/model/EntityRefArrangementOps.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Instance.h"
 #include "smtk/model/Loop.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/SessionRef.h"
 #include "smtk/model/Shell.h"
 #include "smtk/model/ShellEntity.txx"
 #include "smtk/model/Vertex.h"
@@ -38,8 +38,8 @@
 
 #include <algorithm>
 #include <iterator>
-#include <set>
 #include <map>
+#include <set>
 #include <vector>
 
 #include <sstream>

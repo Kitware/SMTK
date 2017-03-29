@@ -16,8 +16,8 @@
 #include "vtkEdgeSplitOperator.h"
 #include "vtkMergeOperator.h"
 #include "vtkNew.h"
-#include <set>
 #include <map>
+#include <set>
 
 class vtkDiscreteModelWrapper;
 class vtkDiscreteModelVertex;

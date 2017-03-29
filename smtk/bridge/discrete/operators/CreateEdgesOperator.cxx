@@ -19,12 +19,12 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
 
+#include "vtkDiscreteModel.h"
+#include "vtkDiscreteModelWrapper.h"
 #include "vtkModel.h"
 #include "vtkModelFace.h"
 #include "vtkModelItem.h"
 #include "vtkModelItemIterator.h"
-#include "vtkDiscreteModel.h"
-#include "vtkDiscreteModelWrapper.h"
 
 #include "CreateEdgesOperator_xml.h"
 

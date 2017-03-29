@@ -14,9 +14,9 @@
 #ifndef __vtkCMBSMModelProxy_h
 #define __vtkCMBSMModelProxy_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkSMProxy.h"
-#include "cmbSystemConfig.h"
 
 class VTKCMBDISCRETEMODEL_EXPORT vtkCMBSMModelProxy : public vtkSMProxy
 {

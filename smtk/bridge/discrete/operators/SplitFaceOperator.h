@@ -13,8 +13,8 @@
 
 #include "smtk/bridge/discrete/Exports.h"
 #include "smtk/model/Operator.h"
-#include "vtkSplitOperator.h"
 #include "vtkNew.h"
+#include "vtkSplitOperator.h"
 
 namespace smtk {
   namespace bridge {

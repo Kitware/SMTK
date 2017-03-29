@@ -10,26 +10,26 @@
 
 #include "smtk/extension/qt/qtAttributeRefItem.h"
 
-#include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/extension/qt/qtUIManager.h"
-#include "smtk/extension/qt/qtAttributeView.h"
-#include "smtk/extension/qt/qtNewAttributeWidget.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/System.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/System.h"
 #include "smtk/common/View.h"
+#include "smtk/extension/qt/qtAttribute.h"
+#include "smtk/extension/qt/qtAttributeView.h"
+#include "smtk/extension/qt/qtNewAttributeWidget.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
-#include <QVBoxLayout>
+#include <QCheckBox>
+#include <QDialogButtonBox>
 #include <QFrame>
+#include <QGridLayout>
 #include <QLabel>
+#include <QMessageBox>
 #include <QPointer>
 #include <QToolButton>
-#include <QCheckBox>
-#include <QMessageBox>
-#include <QDialogButtonBox>
-#include <QGridLayout>
+#include <QVBoxLayout>
 
 using namespace smtk::attribute;
 using namespace smtk::extension;

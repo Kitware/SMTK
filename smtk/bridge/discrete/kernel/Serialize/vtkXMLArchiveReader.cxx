@@ -11,28 +11,28 @@
 
 #include "vtkInformation.h"
 #include "vtkInformationDoubleKey.h"
+#include "vtkInformationDoubleVectorKey.h"
 #include "vtkInformationIdTypeKey.h"
 #include "vtkInformationIntegerKey.h"
 #include "vtkInformationIntegerVectorKey.h"
-#include "vtkInformationStringKey.h"
-#include "vtkInformationDoubleVectorKey.h"
+#include "vtkInformationKeyMap.h"
+#include "vtkInformationKeyVectorKey.h"
 #include "vtkInformationObjectBaseKey.h"
 #include "vtkInformationObjectBaseVectorKey.h"
-#include "vtkInformationKeyVectorKey.h"
+#include "vtkInformationStringKey.h"
 #include "vtkInformationStringVectorKey.h"
 #include "vtkInstantiator.h"
-#include "vtkInformationKeyMap.h"
-#include "vtkSerializableObject.h"
-#include "vtkSerializationHelperMap.h"
-#include "vtkXMLElement.h"
 #include "vtkModelXMLParser.h"
 #include "vtkObjectFactory.h"
+#include "vtkSerializableObject.h"
+#include "vtkSerializationHelperMap.h"
 #include "vtkSmartPointer.h"
+#include "vtkXMLElement.h"
 
 #include <list>
 #include <map>
-#include <vtksys/SystemTools.hxx>
 #include <sstream>
+#include <vtksys/SystemTools.hxx>
 
 vtkStandardNewMacro(vtkXMLArchiveReader);
 

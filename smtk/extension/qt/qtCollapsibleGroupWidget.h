@@ -14,8 +14,8 @@
 #ifndef __smtk_extension_qtCollapsibleGroupWidget_h
 #define __smtk_extension_qtCollapsibleGroupWidget_h
 
-#include <QWidget>
 #include "smtk/extension/qt/Exports.h"
+#include <QWidget>
 
 class QFrame;
 namespace smtk

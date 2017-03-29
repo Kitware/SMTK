@@ -13,9 +13,9 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Item.h"
-#include <string>
-#include <set>
 #include <map>
+#include <set>
+#include <string>
 
 namespace smtk {
   namespace attribute {

@@ -16,12 +16,12 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/IntItem.h"
 
-#include "smtk/model/Session.h"
-#include "smtk/model/SessionRef.h"
 #include "smtk/model/DefaultSession.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Operator.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Session.h"
+#include "smtk/model/SessionRef.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"

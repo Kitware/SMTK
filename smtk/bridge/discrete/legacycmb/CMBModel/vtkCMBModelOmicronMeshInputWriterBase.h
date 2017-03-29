@@ -14,9 +14,9 @@
 #ifndef __vtkCMBModelOmicronMeshInputWriterBase_h
 #define __vtkCMBModelOmicronMeshInputWriterBase_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
-#include "cmbSystemConfig.h"
 
 //class vtkDiscreteModel;
 //class vtkDiscreteModelGeometricEntity;

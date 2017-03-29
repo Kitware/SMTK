@@ -17,9 +17,9 @@
 
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkObjectFactory.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkNew.h"
+#include "vtkObjectFactory.h"
 #include "vtkSetGet.h"
 
 using smtk::shared_ptr;

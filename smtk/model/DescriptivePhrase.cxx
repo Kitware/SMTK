@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/model/DescriptivePhrase.h"
-#include "smtk/model/SubphraseGenerator.h"
 #include "smtk/mesh/Collection.h"
+#include "smtk/model/SubphraseGenerator.h"
 
 namespace smtk {
   namespace model {

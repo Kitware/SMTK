@@ -13,11 +13,11 @@
 #ifndef __smtk_extension_qtAttribute_h
 #define __smtk_extension_qtAttribute_h
 
+#include "smtk/PublicPointerDefs.h"
+#include "smtk/extension/qt/Exports.h"
 #include <QObject>
 #include <QPointer>
 #include <QWidget>
-#include "smtk/extension/qt/Exports.h"
-#include "smtk/PublicPointerDefs.h"
 
 class qtAttributeInternals;
 class QWidget;

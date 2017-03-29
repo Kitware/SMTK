@@ -30,9 +30,9 @@
 
 #include "smtk/bridge/polygon/Session.h"
 
-#include "smtk/model/Manager.txx"
-#include "smtk/bridge/polygon/internal/Model.txx"
 #include "smtk/bridge/polygon/Session.txx"
+#include "smtk/bridge/polygon/internal/Model.txx"
+#include "smtk/model/Manager.txx"
 
 using namespace smtk::model;
 

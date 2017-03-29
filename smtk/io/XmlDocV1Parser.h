@@ -23,8 +23,8 @@
 
 #include "smtk/model/EntityTypeBits.h"
 
-#include <utility>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace pugi {

@@ -14,36 +14,36 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
-#include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/extension/qt/qtModelOperationWidget.h"
-#include "smtk/extension/qt/qtModelView.h"
-#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/bridge/polygon/qt/pqArcWidgetManager.h"
 #include "smtk/bridge/polygon/qt/pqPolygonArc.h"
 #include "smtk/bridge/polygon/qt/pqSplitEdgeWidget.h"
 #include "smtk/common/View.h"
+#include "smtk/extension/qt/qtAttribute.h"
+#include "smtk/extension/qt/qtModelOperationWidget.h"
+#include "smtk/extension/qt/qtModelView.h"
+#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/model/Operator.h"
 
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
+#include "pqPresetDialog.h"
 #include "pqRenderView.h"
 #include "pqServer.h"
 #include "pqSettings.h"
-#include "pqPresetDialog.h"
 
+#include <QCheckBox>
 #include <QColorDialog>
 #include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QPainter>
-#include <QPointer>
-#include <QPixmap>
-#include <QCheckBox>
 #include <QLabel>
-#include <QPushButton>
-#include <QTableWidget>
-#include <QScrollArea>
 #include <QMessageBox>
+#include <QPainter>
+#include <QPixmap>
+#include <QPointer>
+#include <QPushButton>
+#include <QScrollArea>
 #include <QSpacerItem>
+#include <QTableWidget>
+#include <QVBoxLayout>
 
 #define SMTK_DEFAULT_PALETTE "KAAMS"
 

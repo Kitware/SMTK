@@ -10,19 +10,19 @@
 #include "smtk/extension/vtk/filter/vtkPolyDataStatsFilter.h"
 #include "vtkBoundingBox.h"
 #include "vtkCellArray.h"
-#include "vtkTriangle.h"
+#include "vtkErrorCode.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
+#include "vtkMultiBlockDataSet.h"
 #include "vtkObjectFactory.h"
 #include "vtkPointData.h"
-#include "vtkMultiBlockDataSet.h"
 #include "vtkPolyData.h"
 #include "vtkSmartPointer.h"
-#include "vtkErrorCode.h"
 #include "vtkTransform.h"
-#include <vector>
-#include <sys/types.h>
+#include "vtkTriangle.h"
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <vector>
 #include <vtksys/SystemTools.hxx>
 
 vtkStandardNewMacro(vtkPolyDataStatsFilter);

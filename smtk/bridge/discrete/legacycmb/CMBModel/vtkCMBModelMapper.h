@@ -15,9 +15,9 @@
 #ifndef __vtkCMBModelMapper_h
 #define __vtkCMBModelMapper_h
 
+#include "cmbSystemConfig.h"
 #include "vtkCmbDiscreteModelModule.h" // For export macro
 #include "vtkCompositePolyDataMapper2.h"
-#include "cmbSystemConfig.h"
 
 class vtkProperty;
 class vtkDiscreteModelWrapper;

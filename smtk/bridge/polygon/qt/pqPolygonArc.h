@@ -14,12 +14,12 @@
 #ifndef __smtk_polygon_pq_Arc_h
 #define __smtk_polygon_pq_Arc_h
 
-#include "smtk/bridge/polygon/qt/Exports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/bridge/polygon/qt/Exports.h"
 #include "smtk/common/UUID.h"
+#include "vtkType.h"
 #include <QObject>
 #include <QPointer>
-#include "vtkType.h"
 
 class pqRenderView;
 class pqServer;

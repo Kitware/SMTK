@@ -17,11 +17,11 @@
 
 #include "smtk/common/CompilerInformation.h"
 #include "smtk/extension/vtk/meshing/Exports.h" // For export macro
+#include "vtkABI.h"
+#include "vtkType.h"
+#include <list> // Needed for STL list.
 #include <map> // Needed for STL map.
 #include <set> // Needed for STL set.
-#include <list> // Needed for STL list.
-#include "vtkType.h"
-#include "vtkABI.h"
 
 class vtkPolyData;
 class cmbFaceMesherInterface;

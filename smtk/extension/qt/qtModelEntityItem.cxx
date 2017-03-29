@@ -11,29 +11,29 @@
 #include "smtk/extension/qt/qtModelEntityItem.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/System.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
+#include "smtk/attribute/System.h"
 #include "smtk/common/UUID.h"
-#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtCheckItemComboBox.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
+#include <QAbstractItemView>
 #include <QCheckBox>
+#include <QComboBox>
+#include <QDoubleValidator>
 #include <QFrame>
 #include <QHBoxLayout>
-#include <QVBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
-#include <QDoubleValidator>
-#include <QVariant>
-#include <QSizePolicy>
 #include <QPointer>
-#include <QTextEdit>
-#include <QComboBox>
-#include <QToolButton>
+#include <QSizePolicy>
 #include <QStandardItemModel>
-#include <QAbstractItemView>
+#include <QTextEdit>
+#include <QToolButton>
+#include <QVBoxLayout>
+#include <QVariant>
 
 using namespace smtk::attribute;
 using namespace smtk::extension;

@@ -18,8 +18,8 @@
 #define __smtk_vtk_cmbFaceMesherInterface_h
 
 #include "smtk/extension/vtk/meshing/Exports.h" // For export macro
-#include <string> //for std string
 #include "vtkABI.h"
+#include <string> //for std string
 
 class vtkPolyData;
 

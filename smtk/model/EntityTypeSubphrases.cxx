@@ -9,7 +9,6 @@
 //=========================================================================
 #include "smtk/model/EntityTypeSubphrases.h"
 
-#include "smtk/model/SessionRef.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/EntityPhrase.h"
@@ -17,6 +16,7 @@
 #include "smtk/model/Instance.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/PropertyListPhrase.h"
+#include "smtk/model/SessionRef.h"
 #include "smtk/model/ShellEntity.h"
 #include "smtk/model/UseEntity.h"
 

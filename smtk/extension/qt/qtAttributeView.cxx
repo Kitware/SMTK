@@ -10,50 +10,50 @@
 
 #include "smtk/extension/qt/qtAttributeView.h"
 
-#include "smtk/extension/qt/qtUIManager.h"
-#include "smtk/extension/qt/qtTableWidget.h"
+#include "smtk/extension/qt/qtAssociationWidget.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtAttributeRefItem.h"
-#include "smtk/extension/qt/qtAssociationWidget.h"
 #include "smtk/extension/qt/qtCheckItemComboBox.h"
+#include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/qtReferencesWidget.h"
 #include  "smtk/extension/qt/qtSelectionManager.h"
-#include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/qtTableWidget.h"
+#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtVoidItem.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/ItemDefinition.h"
-#include "smtk/attribute/System.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/GroupItemDefinition.h"
+#include "smtk/attribute/ItemDefinition.h"
+#include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/VoidItem.h"
 
 #include "smtk/common/View.h"
 
-#include <QGridLayout>
-#include <QTableWidgetItem>
-#include <QVariant>
-#include <QPushButton>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QListWidget>
-#include <QKeyEvent>
-#include <QModelIndex>
-#include <QModelIndexList>
-#include <QMessageBox>
-#include <QSplitter>
-#include <QPointer>
 #include <QBrush>
 #include <QColorDialog>
+#include <QGridLayout>
+#include <QHBoxLayout>
 #include <QHeaderView>
+#include <QKeyEvent>
+#include <QLabel>
+#include <QListWidget>
+#include <QMessageBox>
+#include <QModelIndex>
+#include <QModelIndexList>
+#include <QPointer>
+#include <QPushButton>
+#include <QSplitter>
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include <QStyleOptionViewItem>
+#include <QTableWidgetItem>
+#include <QVBoxLayout>
+#include <QVariant>
 
 #include <iostream>
 #include <set>

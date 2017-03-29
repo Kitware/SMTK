@@ -11,27 +11,27 @@
 #include "vtkRegionsToLoops.h"
 
 #include "vtkAppendPolyData.h"
-#include "vtkAssignAttribute.h"
 #include "vtkArrayCalculator.h"
+#include "vtkAssignAttribute.h"
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
+#include "vtkIdTypeArray.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkNew.h"
 #include "vtkObjectFactory.h"
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
-#include "vtkIdTypeArray.h"
 #include "vtkStripper.h"
 #include "vtkTable.h"
 #include "vtkThresholdPoints.h"
 #include "vtkXMLPolyDataWriter.h"
 
+#include "smtk/extension/vtk/meshing/union_find.h"
 #include "smtk/extension/vtk/meshing/vtkCMBMeshServerLauncher.h"
 #include "smtk/extension/vtk/meshing/vtkCMBPrepareForTriangleMesher.h"
 #include "smtk/extension/vtk/meshing/vtkCMBTriangleMesher.h"
 #include "smtk/extension/vtk/meshing/vtkPolylineTriangulator.h"
-#include "smtk/extension/vtk/meshing/union_find.h"
 
 #include <algorithm>
 #include <iterator>

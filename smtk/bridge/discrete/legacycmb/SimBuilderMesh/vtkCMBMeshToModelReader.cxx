@@ -10,26 +10,26 @@
 
 #include "vtkCMBMeshToModelReader.h"
 
+#include "vtkDoubleArray.h"
 #include "vtkIdTypeArray.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkDoubleArray.h"
 #include "vtkObjectFactory.h"
 
+#include "cmbFaceMeshHelper.h"
+#include "vtkCMBMeshGridRepresentationServer.h"
+#include "vtkCMBParserBase.h"
+#include "vtkDataObject.h"
+#include "vtkDiscreteModel.h"
+#include "vtkDiscreteModelWrapper.h"
+#include "vtkFieldData.h"
+#include "vtkIdList.h"
+#include "vtkModelBCGridRepresentation.h"
+#include "vtkNew.h"
+#include "vtkPolyData.h"
 #include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
 #include "vtkXMLDataElement.h"
-#include "vtkDataObject.h"
-#include "vtkFieldData.h"
-#include "vtkModelBCGridRepresentation.h"
-#include "vtkCMBMeshGridRepresentationServer.h"
-#include "vtkDiscreteModel.h"
-#include "vtkDiscreteModelWrapper.h"
-#include "vtkCMBParserBase.h"
-#include "vtkIdList.h"
-#include "vtkNew.h"
-#include "vtkPolyData.h"
-#include "cmbFaceMeshHelper.h"
 
 #include <iomanip>
 #include <sstream>

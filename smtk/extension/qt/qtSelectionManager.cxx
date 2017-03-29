@@ -14,18 +14,18 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"
+#include "smtk/mesh/MeshSet.h"
 #include "smtk/model/DescriptivePhrase.h"
+#include "smtk/model/Edge.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/EntityTypeBits.h"
-#include "smtk/model/SessionRef.h"
-#include "smtk/mesh/MeshSet.h"
-#include "smtk/model/Manager.h"
-#include "smtk/model/Session.h"
-#include "smtk/model/Model.h"
-#include "smtk/model/Volume.h"
 #include "smtk/model/Face.h"
-#include "smtk/model/Edge.h"
+#include "smtk/model/Manager.h"
+#include "smtk/model/Model.h"
+#include "smtk/model/Session.h"
+#include "smtk/model/SessionRef.h"
 #include "smtk/model/Vertex.h"
+#include "smtk/model/Volume.h"
 
 namespace smtk
 {

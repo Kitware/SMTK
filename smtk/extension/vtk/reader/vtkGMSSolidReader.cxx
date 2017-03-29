@@ -10,10 +10,11 @@
 
 #include "vtkGMSSolidReader.h"
 
+#include "smtk/extension/vtk/reader/vtkCMBReaderHelperFunctions.h"
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
-#include "vtkErrorCode.h"
 #include "vtkDoubleArray.h"
+#include "vtkErrorCode.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkIntArray.h"
@@ -22,7 +23,6 @@
 #include "vtkPoints.h"
 #include "vtkPolyData.h"
 #include "vtkStringArray.h"
-#include "smtk/extension/vtk/reader/vtkCMBReaderHelperFunctions.h"
 
 #include <string>
 #include <sys/stat.h>
