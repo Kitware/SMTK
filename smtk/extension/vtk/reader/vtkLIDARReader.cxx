@@ -60,7 +60,6 @@ vtkLIDARReader::vtkLIDARReader()
   this->LimitToMaxNumberOfPoints = false;
 
   this->OutputDataTypeIsDouble = true;
-  this->FileType = VTK_ASCII;
 
   this->Origin[0] = this->Origin[1] = this->Origin[2] = 0;
 }
@@ -266,7 +265,7 @@ int vtkLIDARReader::RequestData(
 
   vtkUnsignedCharArray *scalars = 0;
   vtkFloatArray *intensityArray = 0;
-  if (this->FileType == VTK_ASCII && this->ValuesPerLine == 7)
+  if (this->ValuesPerLine > 5)
     {
     scalars = vtkUnsignedCharArray::New();
     scalars->SetNumberOfComponents(3);
@@ -274,8 +273,7 @@ int vtkLIDARReader::RequestData(
     output->GetPointData()->SetScalars( scalars );
     scalars->UnRegister(this);
     }
-  if (this->FileType == VTK_ASCII &&
-    (this->ValuesPerLine == 7 || this->ValuesPerLine == 4))
+  if ((this->ValuesPerLine == 7 || this->ValuesPerLine == 4))
     {
     intensityArray = vtkFloatArray::New();
     intensityArray->SetName("Intensity");
@@ -448,18 +446,8 @@ int vtkLIDARReader::ReadFileInfo()
 
   // set/determine the filetype
   std::string fileNameStr = this->FileName;
-  if (fileNameStr.find("bin.pts") != std::string::npos ||
-    fileNameStr.find(".bin") != std::string::npos)
-    {
-    this->FileType = VTK_BINARY;
-    }
-  else
-    {
-    this->FileType = VTK_ASCII;
-    }
 
-  if((this->FileType == VTK_ASCII && this->ValuesPerLine > 0) ||
-    this->BytesPerPoint > 0)
+  if((this->ValuesPerLine > 0) || this->BytesPerPoint > 0)
     {
     return READ_OK;
     }
@@ -517,8 +505,7 @@ int vtkLIDARReader::ReadFileInfo()
 //-----------------------------------------------------------------------------
 int vtkLIDARReader::GetPointInfo(ifstream &fin)
 {
-  if((this->FileType == VTK_ASCII && this->ValuesPerLine > 0) ||
-    this->BytesPerPoint > 0)
+  if((this->ValuesPerLine > 0) || this->BytesPerPoint > 0)
     {
     return VTK_OK;
     }
@@ -531,38 +518,37 @@ int vtkLIDARReader::GetPointInfo(ifstream &fin)
   pieceInfo.PieceStartOffset = fin.tellg();
   while(!fin.eof() && numPts <= 0)
     {
-    if (this->FileType == VTK_ASCII)
+    fin.getline(buffer, 2048);
+    long tempNumPts;
+    char temp[2048];
+    // The first non-empty line
+    // could be the number of points - if the first line doesn't
+    // contain a single int then we will need to read the entire file
+    do
       {
-      fin.getline(buffer, 2048);
-      long tempNumPts;
-      char temp[2048];
-      // In the case of an ASCII File the first non-empty line
-      // should be the number of points - consider the file
-      // invalid if the line does not contain a single Int
-      do
+      // Scanf should match the interger part but not the string
+      int numArgs = sscanf(buffer, "%ld%s", &tempNumPts, temp);
+      if (numArgs == 1)
         {
-        // Scanf should match the interger part but not the string
-        int numArgs = sscanf(buffer, "%ld%s", &tempNumPts, temp);
-        if (numArgs == 1)
-          {
-          numPts = static_cast<vtkTypeInt32>(tempNumPts);
-          }
-        else if (numArgs != -1)
-          {
-          vtkErrorMacro(<< "Invalid Pts Format (missing number of points) in the file:" << this->FileName);
-          return VTK_ERROR;
-          }
-        else
-          {
-          fin.getline(buffer, 2048);
-          }
+        numPts = static_cast<vtkTypeInt32>(tempNumPts);
         }
+      else if (numArgs != -1)
+       {
+       // We have a file that doesn't have a number of points line
+      // Instead we need to count the number of lines in the file
+      // Remember we already read in the first line hence numPts starts
+      // at 1
+      for (numPts = 1; fin.getline(buffer, 2048); ++numPts);
+      fin.clear();
+      fin.seekg(0);
+      break;
+      }
+      else
+        {
+        fin.getline(buffer, 2048);
+        }
+      }
       while(!fin.eof() && numPts <= 0);
-      }
-    else
-      {
-      fin.read(reinterpret_cast<char *>(&numPts), sizeof(vtkTypeInt32));
-      }
     // Add the first piece info
     if(this->LIDARPieces.size()==0)
       {
@@ -586,7 +572,7 @@ int vtkLIDARReader::GetPointInfo(ifstream &fin)
 
   float jnk;
   double rgb[3], pt[3];
-  if (this->FileType == VTK_ASCII && this->ValuesPerLine <=0)
+  if (this->ValuesPerLine <=0)
     {
     fin.getline(buffer, 2048);
     this->BytesPerPoint = static_cast<int>(strlen(buffer));
@@ -595,13 +581,7 @@ int vtkLIDARReader::GetPointInfo(ifstream &fin)
       &jnk, rgb, rgb+1, rgb+2);
     }
 
-  if(this->FileType == VTK_BINARY)
-    {
-    this->BytesPerPoint = LIDAR_BINARY_POINT_SIZE;
-    }
-
-  if(this->BytesPerPoint <=0 ||
-    (this->FileType == VTK_ASCII && this->ValuesPerLine <=0))
+  if(this->BytesPerPoint <=0 || (this->ValuesPerLine <=0))
     {
     vtkErrorMacro(<< "Invalid Point Info in the file:" << this->FileName);
     return VTK_ERROR;
@@ -661,9 +641,8 @@ int vtkLIDARReader::ReadPiece(ifstream &fin, int pieceIndex, int onRatio,
 
 
   long numPts = this->LIDARPieces[pieceIndex].NumPoints;
-  float intensity;
   // initialized in case we have piece that doesn't have rgb but 1st did
-  double rgb[3] = {0, 0, 0};
+  double data[4] = {0, 0, 0, 0};
   double pt[3];
   char buffer[2048];
   char progressText[100];
@@ -672,27 +651,11 @@ int vtkLIDARReader::ReadPiece(ifstream &fin, int pieceIndex, int onRatio,
   vtkIdType idx;
   for (long i = 0; i < numPts; i ++)
     {
-    if (this->FileType == VTK_ASCII)
-      {
-      fin.getline(buffer, 2048);
-      }
-    else
-      {
-      fin.read(reinterpret_cast<char*>(pt),sizeof(double)*3);
-      }
+    fin.getline(buffer, 2048);
     if (i % onRatio == 0)
       {
-      if (this->FileType == VTK_ASCII)
-        {
-        sscanf(buffer, "%lf %lf %lf %f %lf %lf %lf", pt, pt+1, pt+2,
-          &intensity, rgb, rgb+1, rgb+2);
-        }
-      else if (onRatio > 1)
-        {
-        // binary data, so we can skip ahead to the next point we want
-        fin.seekg(sizeof(double)*3*(onRatio-1), ios::cur);
-        i += onRatio - 1;
-        }
+      sscanf(buffer, "%lf %lf %lf %lf %lf %lf %lf", pt, pt+1, pt+2,
+             data, data+1, data+2, data+3);
 
       if (this->ConvertFromLatLongToXYZ)
         {
@@ -755,13 +718,17 @@ int vtkLIDARReader::ReadPiece(ifstream &fin, int pieceIndex, int onRatio,
         idx = newPts->InsertNextPoint(pt);
         }
       newVerts->InsertNextCell(1, &idx);
-      if (scalars)
-        {
-        scalars->InsertNextTuple(rgb);
-        }
       if (intensityArray)
         {
-        intensityArray->InsertNextValue( intensity );
+        intensityArray->InsertNextValue( data[0] );
+        if (scalars)
+          {
+          scalars->InsertNextTuple(&(data[1]));
+          }
+        }
+      else if (scalars)
+        {
+        scalars->InsertNextTuple(data);
         }
       pieceIndexArray->InsertNextValue( pieceIndex );
 
@@ -790,15 +757,8 @@ int vtkLIDARReader::ReadPiece(ifstream &fin, int pieceIndex, int onRatio,
     vtkTypeInt32 nextNumPts = -1;
     LIDARPieceInfo pieceInfo;
     pieceInfo.PieceStartOffset = fin.tellg();
-    if (this->FileType == VTK_ASCII)
-      {
-      fin.getline(buffer, 2048);
-      sscanf(buffer, "%d", &nextNumPts);
-      }
-    else
-      {
-      fin.read(reinterpret_cast<char *>(&nextNumPts), sizeof(vtkTypeInt32));
-      }
+    fin.getline(buffer, 2048);
+    sscanf(buffer, "%d", &nextNumPts);
 
     if (nextNumPts < 0)
       {
@@ -851,15 +811,8 @@ int vtkLIDARReader::MoveToStartOfPiece(ifstream &fin, int pieceIndex)
       {
       LIDARPieceInfo pieceInfo;
       pieceInfo.PieceStartOffset = fin.tellg();
-      if (this->FileType == VTK_ASCII)
-        {
-        fin.getline(buffer, 2048);
-        sscanf(buffer, "%d", &numPts);
-        }
-      else
-        {
-        fin.read(reinterpret_cast<char *>(&numPts), sizeof(vtkTypeInt32));
-        }
+      fin.getline(buffer, 2048);
+      sscanf(buffer, "%d", &numPts);
 
       if (numPts <= 0)
         {
@@ -875,7 +828,7 @@ int vtkLIDARReader::MoveToStartOfPiece(ifstream &fin, int pieceIndex)
       }
 
     // if 1st time, read number of values per line, and then back up
-    if (this->FileType == VTK_ASCII && this->ValuesPerLine == -1)
+    if (this->ValuesPerLine == -1)
       {
       float jnk;
       double rgb[3], pt[3];
@@ -897,29 +850,20 @@ int vtkLIDARReader::MoveToStartOfPiece(ifstream &fin, int pieceIndex)
       this->FileName, currentPieceIndex);
     this->SetProgressText(progressText);
     // read to next piece of data
-    if (this->FileType == VTK_ASCII)
+    this->UpdateProgress(0);
+    for (long j = 0; j < numPts; j++)
       {
-      this->UpdateProgress(0);
-      for (long j = 0; j < numPts; j++)
+      fin.getline(buffer, 2048);
+      if ((j%100)==0)
         {
-        fin.getline(buffer, 2048);
-        if ((j%100)==0)
+        this->UpdateProgress( static_cast<double>(j) / static_cast<double>(numPts) );
+        if (this->GetAbortExecute())
           {
-          this->UpdateProgress( static_cast<double>(j) / static_cast<double>(numPts) );
-          if (this->GetAbortExecute())
-            {
-            return READ_ABORT;
-            }
+          return READ_ABORT;
           }
         }
+      }
       //this->UpdateProgress(1.0);
-      }
-    else
-      {
-      // binary data, so we can skip ahead to the next piece (read the rest
-      // of this piece)
-      fin.seekg(sizeof(double)*3*numPts, ios::cur);
-      }
 
     numPts = -1;
     }
