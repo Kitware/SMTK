@@ -50,6 +50,9 @@ void cleanup( const std::string& file_path )
 
 int UnitTestMeshSessionReadWrite(int argc, char* argv[])
 {
+  (void)argc;
+  (void)argv;
+
   smtk::model::ManagerPtr manager = smtk::model::Manager::create();
 
   std::cout << "Available sessions\n";

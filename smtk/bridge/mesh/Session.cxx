@@ -26,7 +26,7 @@ Session::Session()
   this->initializeOperatorSystem(Session::s_operators);
 }
 
-Topology* const Session::topology(smtk::model::Model& model)
+Topology* Session::topology(smtk::model::Model& model)
 {
   std::vector<Topology>::iterator it =
     find_if(this->m_topologies.begin(), this->m_topologies.end(),
@@ -72,7 +72,6 @@ int depth)
 
   // create a mutable copy of our entity ref, since the original one is const
   smtk::model::EntityRef mutableEntityRef(entityRef);
-  smtk::model::BitFlags entityDimBits;
   int dimension = topologyElement.m_dimension;
 
   // if the entity ref is not already valid, we populate it

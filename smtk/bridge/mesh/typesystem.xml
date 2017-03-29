@@ -18,6 +18,9 @@
         <object-type name="Session">
           <include file-name="smtk/bridge/mesh/Session.h" location="local"/>
         </object-type>
+        <object-type name="Topology">
+          <include file-name="smtk/bridge/mesh/Topology.h" location="local"/>
+        </object-type>
       </namespace-type>
     </namespace-type>
   </namespace-type>

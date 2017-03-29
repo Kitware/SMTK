@@ -57,7 +57,7 @@ smtk::model::OperatorResult ImportOperator::operateInternal()
   collection->setModelManager(this->activeSession()->manager());
 
   // Construct the topology
-  this->activeSession()->addTopology(std::move(Topology(collection)));
+  this->activeSession()->addTopology(Topology(collection));
 
   // Our collections will already have a UUID, so here we create a model given
   // the model manager and uuid

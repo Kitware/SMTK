@@ -42,7 +42,7 @@ public:
   virtual ~Session() {}
 
   void addTopology(Topology t) { this->m_topologies.push_back(t); }
-  Topology* const topology(smtk::model::Model& model);
+  Topology* topology(smtk::model::Model& model);
 
 protected:
   Session();
