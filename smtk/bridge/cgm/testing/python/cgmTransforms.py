@@ -17,6 +17,7 @@ if smtk.wrappingProtocol() == 'pybind11':
 import smtk.testing
 from smtk.simple import *
 
+
 class CGMTransforms(smtk.testing.TestCase):
 
     def setUp(self):
@@ -31,13 +32,14 @@ class CGMTransforms(smtk.testing.TestCase):
 
         brick3 = Translate(brick2, [0.5, 0.0, 0.0])[0]
         if not brick3 or brick3.entity() != brick2.entity():
-          print "Expecting entities to match: %s != %s" % (brick2.entity(), brick3.entity())
-          sys.exit(1)
+            print "Expecting entities to match: %s != %s" % (brick2.entity(), brick3.entity())
+            sys.exit(1)
 
-        brick4 = Rotate(brick3, angle=60.0, center=[0.5, 0.0, 0.0], axis=[0.3333, 0.6667, 0.6667])[0]
+        brick4 = Rotate(brick3, angle=60.0, center=[
+                        0.5, 0.0, 0.0], axis=[0.3333, 0.6667, 0.6667])[0]
         if not brick4 or brick4.entity() != brick3.entity():
-          print "Expecting entities to match: %s != %s" % (brick3.entity(), brick4.entity())
-          sys.exit(1)
+            print "Expecting entities to match: %s != %s" % (brick3.entity(), brick4.entity())
+            sys.exit(1)
 
         brick5 = Union([brick1, brick4])
         print brick5, brick5.name(), brick5.flagSummary(0)
@@ -47,10 +49,10 @@ class CGMTransforms(smtk.testing.TestCase):
         if self.haveVTK() and self.haveVTKExtension():
 
             colormap = {
-                #brick3: '#5a5255',
-                #brick4: '#ae5a41',
+                # brick3: '#5a5255',
+                # brick4: '#ae5a41',
                 brick5: '#559e83'
-                #brick6: '#c3cb71'
+                # brick6: '#c3cb71'
                 #'#1b85b8',
                 #'#cb2c31',
                 #'#8b1ec4',
@@ -61,18 +63,19 @@ class CGMTransforms(smtk.testing.TestCase):
 
             # Render groups with colors:
             for body, color in colormap.iteritems():
-              color = self.hex2rgb(color)
-              SetEntityProperty(body, 'color', as_float=color)
-              self.addModelToScene(body)
+                color = self.hex2rgb(color)
+                SetEntityProperty(body, 'color', as_float=color)
+                self.addModelToScene(body)
 
-            self.renderer.SetBackground(1,1,1)
+            self.renderer.SetBackground(1, 1, 1)
             cam = self.renderer.GetActiveCamera()
             cam.SetFocalPoint(0., 0., 0.)
-            cam.SetPosition(19,17,-43)
+            cam.SetPosition(19, 17, -43)
             cam.SetViewUp(-0.891963, -0.122107, -0.435306)
             self.renderer.ResetCamera()
             self.renderWindow.Render()
-            self.assertImageMatchIfFileExists(['baseline', 'smtk', 'cgm', 'transforms.png'])
+            self.assertImageMatchIfFileExists(
+                ['baseline', 'smtk', 'cgm', 'transforms.png'])
             self.interact()
 
         else:
@@ -80,12 +83,14 @@ class CGMTransforms(smtk.testing.TestCase):
                 self.haveVTKExtension(),
                 'Could not import vtk. Python path is {pp}'.format(pp=sys.path))
 
-        # Now verify that self.mgr.closeSession removes the entity record for the session.
+        # Now verify that self.mgr.closeSession removes the entity record for
+        # the session.
         sref = GetActiveSession()
         SetActiveSession(smtk.model.SessionRef())
-        #self.mgr.closeSession(sref)
+        # self.mgr.closeSession(sref)
         #sys.exit(0 if sref.name() == ('invalid id ' + str(sref.entity())) else 1)
 
+
 if __name__ == '__main__':
-  smtk.testing.process_arguments()
-  smtk.testing.main()
+    smtk.testing.process_arguments()
+    smtk.testing.main()

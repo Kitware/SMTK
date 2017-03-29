@@ -12,12 +12,13 @@
 import os
 import sys
 
-BASELINES=[]
-DATA_DIR=''
-TEMP_DIR='.'
-SOURCE_DIR=''
-WORKER_DIR=''
-INTERACTIVE=False
+BASELINES = []
+DATA_DIR = ''
+TEMP_DIR = '.'
+SOURCE_DIR = ''
+WORKER_DIR = ''
+INTERACTIVE = False
+
 
 def find_data(path):
     """Find the full path to a test-data file.
@@ -35,9 +36,11 @@ def find_data(path):
     # Found no matches, return the joined string.
     return p
 
+
 def run_interactive():
     "Should the test run interactively or in batch mode?"
     return INTERACTIVE
+
 
 def process_arguments():
     """Process common options to python tests.
@@ -53,50 +56,51 @@ def process_arguments():
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument("-D", "--data-dir",
-        action="store", dest="datadir", default='',
-        help="Top-level testing data directory.")
+                        action="store", dest="datadir", default='',
+                        help="Top-level testing data directory.")
 
     parser.add_argument("-W", "--worker-dir",
-        action="store", dest="workerdir", default='',
-        help="Directory containing SMTK's Remus worker files.")
+                        action="store", dest="workerdir", default='',
+                        help="Directory containing SMTK's Remus worker files.")
 
     parser.add_argument("-S", "--src-dir",
-        action="store", dest="srcdir", default='',
-        help="Directory containing the SMTK source code.")
+                        action="store", dest="srcdir", default='',
+                        help="Directory containing the SMTK source code.")
 
     parser.add_argument("-T", "--temp-dir",
-        action="store", dest="tempdir", default='',
-        help="Directory where test files may be written.")
+                        action="store", dest="tempdir", default='',
+                        help="Directory where test files may be written.")
 
     parser.add_argument("-V", "--valid-result",
-        action="store", dest="validresult", default='',
-        help="Path to a valid result (baseline) for comparison.")
+                        action="store", dest="validresult", default='',
+                        help="Path to a valid result (baseline) for comparison.")
 
     parser.add_argument("-I", "--interactive",
-        action="store_true", dest="interactive",
-        help="Run interactively rather than exiting immediately.")
+                        action="store_true", dest="interactive",
+                        help="Run interactively rather than exiting immediately.")
 
     args = parser.parse_args()
 
     if args.datadir:
-      DATA_DIR=args.datadir
+        DATA_DIR = args.datadir
 
     if args.workerdir:
-      WORKER_DIR=args.workerdir
+        WORKER_DIR = args.workerdir
 
     if args.srcdir:
-      SOURCE_DIR=args.srcdir
+        SOURCE_DIR = args.srcdir
 
     if args.tempdir:
-      TEMP_DIR=args.tempdir
+        TEMP_DIR = args.tempdir
 
     if args.validresult:
-      BASELINES.append(find_data(args.validresult))
+        BASELINES.append(find_data(args.validresult))
 
     if args.interactive:
-      INTERACTIVE = True
+        INTERACTIVE = True
 
     sys.argv = sys.argv[:1]
+
 
 def compare_image(render_window, baseline_path):
     try:
@@ -105,6 +109,7 @@ def compare_image(render_window, baseline_path):
             render_window, find_data(baseline_path))
     except RuntimeError as e:
         raise AssertionError(*e.args)
+
 
 class TestCaseMeta(type):
     """A metaclass for tests.
@@ -124,6 +129,7 @@ class TestCaseMeta(type):
             except ImportError:
                 pass
         return super(TestCaseMeta, cls).__new__(cls, name, bases, attrs)
+
 
 class TestCase:
     __metaclass__ = TestCaseMeta
@@ -159,26 +165,26 @@ class TestCase:
             self.interactor = vtk.vtkRenderWindowInteractor()
             self.renderWindow.AddRenderer(self.renderer)
             self.renderWindow.SetInteractor(self.interactor)
-            self.renderWindow.SetMultiSamples(0);
+            self.renderWindow.SetMultiSamples(0)
         except ImportError:
             self.skipTest('VTK is not available')
 
     def addToScene(self, msource, **kwargs):
-      import vtk
-      vsource = msource
-      if 'translate' in kwargs:
-          tf = vtk.vtkTransformFilter()
-          tf.SetTransform(vtk.vtkTransform())
-          delta = kwargs['translate']
-          tf.GetTransform().Translate(delta[0], delta[1], delta[2])
-          tf.SetInputConnection(msource.GetOutputPort())
-          vsource = tf
-      ac = vtk.vtkActor()
-      mp = vtk.vtkCompositePolyDataMapper()
-      ac.SetMapper(mp)
-      mp.SetInputConnection(vsource.GetOutputPort())
-      self.renderer.AddActor(ac)
-      return [msource, vsource, mp, ac]
+        import vtk
+        vsource = msource
+        if 'translate' in kwargs:
+            tf = vtk.vtkTransformFilter()
+            tf.SetTransform(vtk.vtkTransform())
+            delta = kwargs['translate']
+            tf.GetTransform().Translate(delta[0], delta[1], delta[2])
+            tf.SetInputConnection(msource.GetOutputPort())
+            vsource = tf
+        ac = vtk.vtkActor()
+        mp = vtk.vtkCompositePolyDataMapper()
+        ac.SetMapper(mp)
+        mp.SetInputConnection(vsource.GetOutputPort())
+        self.renderer.AddActor(ac)
+        return [msource, vsource, mp, ac]
 
     def addModelToScene(self, model):
         import smtk
@@ -191,7 +197,7 @@ class TestCase:
             mbs = vtkSMTKSourceExtPython.vtkModelMultiBlockSource()
             mbs.SetModelManager(self.mgr.pointerAsString())
         mbs.SetModelEntityID(str(model.entity()))
-        #mbs.ShowAnalysisTessellationOff()
+        # mbs.ShowAnalysisTessellationOff()
         return self.addToScene(mbs)
 
     def addMeshToScene(self, mesh):
@@ -229,24 +235,25 @@ class TestCase:
         except ImportError as err:
             self.skipTest('VTK is unavailable')
         except RuntimeError as e:
-            #return False
+            # return False
             raise AssertionError(*e.args)
         return True
 
     def assertImageMatchIfFileExists(self, baseline_path, threshold=10):
         full_baseline = find_data(baseline_path)
         if not os.path.isfile(full_baseline):
-          return True
+            return True
         return self.assertImageMatch(baseline_path, threshold)
 
     @staticmethod
     def hex2rgb(hexstr):
         hh = hexstr[1:] if hexstr[0] == '#' else hexstr
-        rr = int(hh[0:2],16) / 255.
-        gg = int(hh[2:4],16) / 255.
-        bb = int(hh[4:6],16) / 255.
+        rr = int(hh[0:2], 16) / 255.
+        gg = int(hh[2:4], 16) / 255.
+        bb = int(hh[4:6], 16) / 255.
         return (rr, gg, bb)
 
+
 def main():
-  import unittest
-  unittest.main()
+    import unittest
+    unittest.main()

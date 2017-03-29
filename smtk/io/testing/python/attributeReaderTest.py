@@ -17,6 +17,7 @@ if smtk.wrappingProtocol() == 'pybind11':
     import smtk.io
 from smtk.simple import *
 
+
 class TestAttributeReader():
     """A test for AttributeReader"""
 
@@ -42,7 +43,6 @@ class TestAttributeReader():
             print self.logger.convertToString()
             self.status = self.status + 1
 
-
     def testSimpleRead(self):
         # Test definition count
         if len(sys.argv) <= 2:
@@ -63,11 +63,11 @@ class TestAttributeReader():
                 definitionList = self.attsys.definitions()
                 if len(definitionList) != expectedDefinitionCount:
                     print "ERROR: Expecting ", expectedDefinitionCount, \
-                    " definitions, loaded ", len(definitionList)
+                        " definitions, loaded ", len(definitionList)
                     self.status = self.status + 1
                 else:
                     print "Number of definitions loaded:", len(definitionList)
-                    #for i,defn in enumerate(definitionList):
+                    # for i,defn in enumerate(definitionList):
                     #    print i, defn.type(), defn.isAbstract()
 
         # Test attribute count
@@ -89,11 +89,11 @@ class TestAttributeReader():
                 attributeList = self.attsys.attributes()
                 if len(attributeList) != expectedAttributeCount:
                     print "ERROR: Expecting ", expectedAttributeCount, \
-                    " attributes, loaded ", len(attributeList)
+                        " attributes, loaded ", len(attributeList)
                     self.status = self.status + 1
                 else:
                     print "Number of attributes loaded:", len(attributeList)
-                    #for i,att in enumerate(attributeList):
+                    # for i,att in enumerate(attributeList):
                     #    print i, att.name()
 
         return self.status

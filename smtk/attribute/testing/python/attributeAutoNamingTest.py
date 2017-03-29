@@ -28,31 +28,31 @@ if __name__ == '__main__':
     print "System Created"
     def_ = system.createDefinition("testDef")
     if def_ is not None:
-      print "Definition testDef created"
+        print "Definition testDef created"
     else:
-      print "ERROR: Definition testDef not created"
-      status = -1
+        print "ERROR: Definition testDef not created"
+        status = -1
 
     att = system.createAttribute("testDef")
     if att is not None:
-      print "Attribute %s created" % att.name()
+        print "Attribute %s created" % att.name()
     else:
-      print "ERROR: 1st Attribute not created"
-      status = -1
+        print "ERROR: 1st Attribute not created"
+        status = -1
 
     att = system.createAttribute("testDef")
     if att is not None:
-      print "Attribute %s created" % att.name()
+        print "Attribute %s created" % att.name()
     else:
-      print "ERROR: 2nd Attribute not created"
-      status = -1
+        print "ERROR: 2nd Attribute not created"
+        status = -1
 
     att = system.createAttribute("testDef")
     if att is not None:
-      print "Attribute %s created" % att.name()
+        print "Attribute %s created" % att.name()
     else:
-      print "ERROR: 3rd Attribute not created"
-      status = -1
+        print "ERROR: 3rd Attribute not created"
+        status = -1
 
     del system
     print 'System destroyed'

@@ -17,6 +17,7 @@ if smtk.wrappingProtocol() == 'pybind11':
     import smtk.common
     import smtk.io
 
+
 def TestResourceSetReader(readFromFile):
     """A test for ResourceSetReader
     It is a direct port of the Cxx version"""
@@ -65,7 +66,7 @@ def TestResourceSetReader(readFromFile):
             numResources = resources.numberOfResources()
             if numResources != expectedNumber:
                 print "ERROR: Expecting ", expectedNumber, \
-                " resources, loaded ", numResources
+                    " resources, loaded ", numResources
                 status = status + 1
             else:
                 print "Number of resources loaded:", numResources
@@ -76,10 +77,10 @@ def TestResourceSetReader(readFromFile):
                 print id
 
     #print ('dir'), dir(resources)
-    #print help(resources.get)
+    # print help(resources.get)
     res0 = resources.get('att0')
     print 'type', res0.resourceType()
-    #print dir(res0)
+    # print dir(res0)
 
     return status
 

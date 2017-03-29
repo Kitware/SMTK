@@ -31,12 +31,14 @@ _entity_map = {CELL_ENTITY: CellEntity,
                MODEL_ENTITY: Model
                }
 
-def _findEntitiesOfType(self, flags, exactMatch = True):
+
+def _findEntitiesOfType(self, flags, exactMatch=True):
     array = self._findEntitiesOfType(int(flags), exactMatch)
     if len(array) == 0 or flags not in _entity_map:
         return array
     ent = _entity_map[flags]
     return [ent(x) for x in array]
+
 
 Manager.findEntitiesOfType = _findEntitiesOfType
 

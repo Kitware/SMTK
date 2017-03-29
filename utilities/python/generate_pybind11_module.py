@@ -24,31 +24,31 @@ if __name__ == '__main__':
     import argparse
 
     arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument('-I','--include-dirs',
+    arg_parser.add_argument('-I', '--include-dirs',
                             help='Add an include directory to the parser',
                             default="")
 
-    arg_parser.add_argument('-i','--input-directory',
+    arg_parser.add_argument('-i', '--input-directory',
                             help='<Required> Input directory',
                             required=True)
 
-    arg_parser.add_argument('-m','--module',
+    arg_parser.add_argument('-m', '--module',
                             help='<Required> Module name',
                             required=True)
 
-    arg_parser.add_argument('-o','--output-directory',
+    arg_parser.add_argument('-o', '--output-directory',
                             help='Output directory',
                             required=True)
 
-    arg_parser.add_argument('-p','--prefix',
+    arg_parser.add_argument('-p', '--prefix',
                             help='File name prefix',
                             default='Pybind')
 
-    arg_parser.add_argument('-s','--project-source-dir',
+    arg_parser.add_argument('-s', '--project-source-dir',
                             help='Project source directory',
                             default=".")
 
-    arg_parser.add_argument('-v','--verbose',
+    arg_parser.add_argument('-v', '--verbose',
                             help='Print out generated wrapping code',
                             action='store_true')
 
@@ -62,19 +62,20 @@ if __name__ == '__main__':
 
     def stream_with_line_breaks(stream):
         def write(string):
-            stream.write(string.replace('>>','> >'))
+            stream.write(string.replace('>>', '> >'))
             stream.write('\n')
+
         def write_verbose(string):
             write(string)
-            print string.replace('>>','> >')
+            print string.replace('>>', '> >')
         if args.verbose:
             return write_verbose
         else:
             return write
 
     wrapped_objects = {}
-    header_files = [os.path.join(args.input_directory, f) \
-                    for f in os.listdir(args.input_directory) \
+    header_files = [os.path.join(args.input_directory, f)
+                    for f in os.listdir(args.input_directory)
                     if os.path.splitext(f)[1] == ".h"]
     output_files = []
 
@@ -85,7 +86,7 @@ if __name__ == '__main__':
         if not os.path.exists(os.path.dirname(output_file)):
             try:
                 os.makedirs(os.path.dirname(output_file))
-            except OSError as exc: # Guard against race condition
+            except OSError as exc:  # Guard against race condition
                 if exc.errno != errno.EEXIST:
                     raise
         with open(output_file, 'w') as f:
@@ -133,11 +134,13 @@ if __name__ == '__main__':
             parent = "m"
             for ns in get_scope(obj):
                 if ns not in modules:
-                    stream("  py::module %s = %s.def_submodule(\"%s\", \"<description>\");" % (ns, parent, ns))
+                    stream("  py::module %s = %s.def_submodule(\"%s\", \"<description>\");" % (
+                        ns, parent, ns))
                     modules.add(ns)
                 parent = ns
         stream("")
-        stream("  // The order of these function calls is important! It was determined by")
+        stream(
+            "  // The order of these function calls is important! It was determined by")
         stream("  // comparing the dependencies of each of the wrapped objects.")
 
         topological_mapping = {}
@@ -148,7 +151,7 @@ if __name__ == '__main__':
                     parent = base_class.related_class
                     inherits = base_class.declaration_path
                     enable_shared = 'enable_shared_from_this<%s>' \
-                      % full_class_name(obj)
+                        % full_class_name(obj)
                     if inherits != ['::', 'std', enable_shared]:
                         dependencies.add(parent)
             topological_mapping[obj] = dependencies

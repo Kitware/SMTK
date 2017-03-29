@@ -17,6 +17,7 @@ if smtk.wrappingProtocol() == 'pybind11':
     import smtk.model
 import smtk.testing
 
+
 class TestCGMSolidModeling(smtk.testing.TestCase):
 
     def setUp(self):
@@ -25,11 +26,12 @@ class TestCGMSolidModeling(smtk.testing.TestCase):
         sess = self.sref.session()
         self.sref.assignDefaultName()
         print '\n\n%s: type "%s" %s %s' % \
-          (self.sref.name(), sess.name(), self.sref.flagSummary(0), sess.sessionId())
+            (self.sref.name(), sess.name(),
+             self.sref.flagSummary(0), sess.sessionId())
         print '  Site: %s' % (self.sref.site() or 'local')
         for eng in self.sref.engines():
-          print '  Engine %s filetypes:\n    %s' % \
-            (eng, '\n    '.join(self.sref.fileTypes(eng)))
+            print '  Engine %s filetypes:\n    %s' % \
+                (eng, '\n    '.join(self.sref.fileTypes(eng)))
         # We could evaluate the session tag as JSON, but most of
         # the information is available through methods above that
         # we needed to test:
@@ -41,9 +43,9 @@ class TestCGMSolidModeling(smtk.testing.TestCase):
     def testSolidModelingOps(self):
         cs1 = self.sref.op('create sphere')
         cs1.findAsDouble('radius').setValue(1.)
-        #cs1.findAsDouble('inner radius').setValue(0.1) # Crashes
-        #cs1.findAsDouble('inner radius').setValue(-0.1) # Complains bitterly
-        cs1.findAsDouble('inner radius').setValue(0.2) # Actually works
+        # cs1.findAsDouble('inner radius').setValue(0.1) # Crashes
+        # cs1.findAsDouble('inner radius').setValue(-0.1) # Complains bitterly
+        cs1.findAsDouble('inner radius').setValue(0.2)  # Actually works
 
         # CGM's OCC backend apparently does not pay attention to
         # the sphere center parameters:
@@ -61,7 +63,7 @@ class TestCGMSolidModeling(smtk.testing.TestCase):
         sph2 = res2.findModelEntity('created').value(0)
 
         print 'Operators that can associate with ' + sph2.flagSummary(1) + ' include\n  %s' % \
-          '\n  '.join(self.sref.operatorsForAssociation(sph2.entityFlags()))
+            '\n  '.join(self.sref.operatorsForAssociation(sph2.entityFlags()))
 
         u1 = self.sref.op('union')
         u1.associateEntity(sph)
@@ -81,15 +83,17 @@ class TestCGMSolidModeling(smtk.testing.TestCase):
         #json = smtk.io.ExportJSON.fromModelManager(self.mgr)
         #cylFile = open('cyl.json', 'w')
         #print >> cylFile, json
-        #cylFile.close()
+        # cylFile.close()
 
-        # Now verify that self.mgr.closeSession removes the entity record for the session.
+        # Now verify that self.mgr.closeSession removes the entity record for
+        # the session.
         self.mgr.closeSession(self.sref)
         self.assertEqual(
             self.sref.name(),
             'invalid id {uid}'.format(uid=str(self.sref.entity())),
             'Expected invalid session name after closing, got "{s}"'.format(
                 s=self.sref.name()))
+
 
 if __name__ == '__main__':
     smtk.testing.process_arguments()

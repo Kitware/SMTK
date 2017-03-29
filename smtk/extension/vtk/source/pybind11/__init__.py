@@ -13,18 +13,24 @@
 import _smtkPybindVTKSourceFns as _srcfns
 import vtkSMTKSourceExtPython
 
+
 class vtkMeshMultiBlockSource(vtkSMTKSourceExtPython.vtkMeshMultiBlockSource):
     def GetModelManager(self):
         return _srcfns._vtkMeshMultiBlockSource_GetModelManager(self)
+
     def SetModelManager(self, manager):
         return _srcfns._vtkMeshMultiBlockSource_SetModelManager(self, manager)
+
     def GetMeshManager(self):
         return _srcfns._vtkMeshMultiBlockSource_GetMeshManager(self)
+
     def SetMeshManager(self, manager):
         return _srcfns._vtkMeshMultiBlockSource_SetMeshManager(self, manager)
+
 
 class vtkModelMultiBlockSource(vtkSMTKSourceExtPython.vtkModelMultiBlockSource):
     def GetModelManager(self):
         return _srcfns._vtkModelMultiBlockSource_GetModelManager(self)
+
     def SetModelManager(self, manager):
         return _srcfns._vtkModelMultiBlockSource_SetModelManager(self, manager)
