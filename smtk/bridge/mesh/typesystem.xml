@@ -10,6 +10,7 @@
   <suppress-warning text="skipping function 'smtk::bridge::mesh::Session::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::bridge::mesh::Session::SelfType&gt;'"/>
   <suppress-warning text="skipping field 'Session::m_topologies' with unmatched type 'std::vector&lt;Topology&gt;'"/>
   <suppress-warning text="skipping function 'smtk::bridge::mesh::Session::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::mesh::Session::SelfType&gt;'"/>
+<suppress-warning text="skipping function 'smtk::bridge::mesh::Session::topology', unmatched return type 'smtk::bridge::mesh::Topology*'"/>
 
   <!-- Additional objects to be wrapped when building with Exodus -->
   <namespace-type name="smtk" generate = "no">
@@ -17,9 +18,6 @@
       <namespace-type name="mesh" generate = "yes">
         <object-type name="Session">
           <include file-name="smtk/bridge/mesh/Session.h" location="local"/>
-        </object-type>
-        <object-type name="Topology">
-          <include file-name="smtk/bridge/mesh/Topology.h" location="local"/>
         </object-type>
       </namespace-type>
     </namespace-type>
