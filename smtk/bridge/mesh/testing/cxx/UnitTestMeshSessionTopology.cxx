@@ -78,7 +78,6 @@ int ImportModel(smtk::model::Model& model,
 
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;
-    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
     std::cout << "elapsed time: " << elapsed_seconds.count() << "s" << std::endl;
 
     model = importOpResult->findModelEntity("model")->value();
@@ -182,6 +181,9 @@ void VisualizeModel(smtk::model::Model& model)
 
 int UnitTestMeshSessionTopology(int argc, char* argv[])
 {
+  (void)argc;
+  (void)argv;
+
   smtk::model::ManagerPtr manager = smtk::model::Manager::create();
 
   smtk::model::SessionRef session = manager->createSession("mesh");
@@ -243,6 +245,6 @@ int UnitTestMeshSessionTopology(int argc, char* argv[])
       }
   }
 #endif
-  
+
   return 0;
 }
