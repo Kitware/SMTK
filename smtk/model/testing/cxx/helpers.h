@@ -15,9 +15,12 @@
 
 #include <ostream>
 
-namespace smtk {
-  namespace model {
-    namespace testing {
+namespace smtk
+{
+namespace model
+{
+namespace testing
+{
 
 smtk::common::UUIDArray createTet(smtk::model::ManagerPtr sm);
 
@@ -29,7 +32,7 @@ public:
   long long m_val;
 };
 
-std::ostream& operator << (std::ostream& os, const hexconst& x);
+std::ostream& operator<<(std::ostream& os, const hexconst& x);
 
 /// A timer for benchmarking.
 class Timer
@@ -49,8 +52,8 @@ protected:
 /// A method to print DescriptivePhrase instances (recursively) to an ostream.
 void printPhrase(std::ostream& os, int indent, DescriptivePhrasePtr p);
 
-    } // namespace testing
-  } // namespace model
+} // namespace testing
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_testing_helpers_h

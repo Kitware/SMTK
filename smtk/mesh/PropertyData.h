@@ -17,26 +17,28 @@
 #include "smtk/model/IntegerData.h"
 #include "smtk/model/StringData.h"
 
-namespace smtk {
-  namespace mesh {
+namespace smtk
+{
+namespace mesh
+{
 
 #ifdef SMTK_HASH_STORAGE
-    typedef google::sparse_hash_map<smtk::mesh::MeshSet,smtk::model::FloatData>   MeshFloatData;
-    typedef google::sparse_hash_map<smtk::common::UUID, MeshFloatData>   CollectionToMeshFloatData;
-    typedef google::sparse_hash_map<smtk::mesh::MeshSet,smtk::model::StringData>  MeshStringData;
-    typedef google::sparse_hash_map<smtk::common::UUID, MeshStringData>  CollectionToMeshStringData;
-    typedef google::sparse_hash_map<smtk::mesh::MeshSet,smtk::model::IntegerData> MeshIntegerData;
-    typedef google::sparse_hash_map<smtk::common::UUID, MeshIntegerData> CollectionToMeshIntegerData;
-#else // SMTK_HASH_STORAGE
-    typedef std::map<smtk::mesh::MeshSet,smtk::model::FloatData>   MeshFloatData;
-    typedef std::map<smtk::common::UUID, MeshFloatData>   CollectionToMeshFloatData;
-    typedef std::map<smtk::mesh::MeshSet,smtk::model::StringData>  MeshStringData;
-    typedef std::map<smtk::common::UUID, MeshStringData>  CollectionToMeshStringData;
-    typedef std::map<smtk::mesh::MeshSet,smtk::model::IntegerData> MeshIntegerData;
-    typedef std::map<smtk::common::UUID, MeshIntegerData> CollectionToMeshIntegerData;
+typedef google::sparse_hash_map<smtk::mesh::MeshSet, smtk::model::FloatData> MeshFloatData;
+typedef google::sparse_hash_map<smtk::common::UUID, MeshFloatData> CollectionToMeshFloatData;
+typedef google::sparse_hash_map<smtk::mesh::MeshSet, smtk::model::StringData> MeshStringData;
+typedef google::sparse_hash_map<smtk::common::UUID, MeshStringData> CollectionToMeshStringData;
+typedef google::sparse_hash_map<smtk::mesh::MeshSet, smtk::model::IntegerData> MeshIntegerData;
+typedef google::sparse_hash_map<smtk::common::UUID, MeshIntegerData> CollectionToMeshIntegerData;
+#else  // SMTK_HASH_STORAGE
+typedef std::map<smtk::mesh::MeshSet, smtk::model::FloatData> MeshFloatData;
+typedef std::map<smtk::common::UUID, MeshFloatData> CollectionToMeshFloatData;
+typedef std::map<smtk::mesh::MeshSet, smtk::model::StringData> MeshStringData;
+typedef std::map<smtk::common::UUID, MeshStringData> CollectionToMeshStringData;
+typedef std::map<smtk::mesh::MeshSet, smtk::model::IntegerData> MeshIntegerData;
+typedef std::map<smtk::common::UUID, MeshIntegerData> CollectionToMeshIntegerData;
 #endif // SMTK_HASH_STORAGE
 
-  } // namespace mesh
+} // namespace mesh
 } // namespace smtk
 
 #endif // __smtk_mesh_FloatData_h

@@ -52,22 +52,23 @@ using namespace smtk::model;
 using namespace smtk::common;
 using namespace boost::filesystem;
 
-namespace smtk {
-  namespace bridge {
-    namespace exodus {
+namespace smtk
+{
+namespace bridge
+{
+namespace exodus
+{
 
 smtk::model::OperatorResult WriteOperator::operateInternal()
 {
-  smtk::attribute::FileItem::Ptr filenameItem =
-    this->specification()->findFile("filename");
-  smtk::attribute::StringItem::Ptr filetypeItem =
-    this->specification()->findString("filetype");
+  smtk::attribute::FileItem::Ptr filenameItem = this->specification()->findFile("filename");
+  smtk::attribute::StringItem::Ptr filetypeItem = this->specification()->findString("filetype");
 
   std::string filename = filenameItem->value();
   std::string filetype = filetypeItem->value();
 
   if (filetype.empty())
-    { // Infer file type from name
+  { // Infer file type from name
     std::string ext = path(filename).extension().string();
     if (ext == ".nc" || ext == ".ncdf")
       filetype = "slac";
@@ -75,7 +76,7 @@ smtk::model::OperatorResult WriteOperator::operateInternal()
       filetype = "label map";
     else if (ext == ".exo" || ext == ".g" || ext == ".ex2" || ext == ".exii")
       filetype = "exodus";
-    }
+  }
 
   // Downcase the filetype (especially for when we did not infer it):
   std::transform(filetype.begin(), filetype.end(), filetype.begin(), ::tolower);
@@ -91,32 +92,25 @@ smtk::model::OperatorResult WriteOperator::operateInternal()
 
 smtk::model::OperatorResult WriteOperator::writeExodus()
 {
-  smtk::model::OperatorResult result = this->createResult(
-    smtk::model::OPERATION_FAILED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_FAILED);
   return result;
 }
 
 smtk::model::OperatorResult WriteOperator::writeSLAC()
 {
-  smtk::model::OperatorResult result = this->createResult(
-    smtk::model::OPERATION_FAILED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_FAILED);
   return result;
 }
 
-template<typename T>
-void RewriteLabels(
-  vtkImageData* img,
-  T* lblp,
-  double thresh,
+template <typename T>
+void RewriteLabels(vtkImageData* img, T* lblp, double thresh,
 
-  vtkVector3d& scenter,
-  double sradius,
+  vtkVector3d& scenter, double sradius,
 
-  vtkVector3d& basept,
-  vtkVector3d& normal
-  )
+  vtkVector3d& basept, vtkVector3d& normal)
 {
-  enum SimulationVoxelCodes {
+  enum SimulationVoxelCodes
+  {
     VOXEL_VOID = -1,
     AIRWAY = 0,
     ATMOSPHERE = 0, // "Antechamber to the airway"
@@ -134,7 +128,7 @@ void RewriteLabels(
     if (delta < spacing[i])
       delta = spacing[i];
   for (vtkIdType p = 0; p < numPts; ++p)
-    {
+  {
     vtkVector3d ray;
     double dist;
     bool invitro;
@@ -143,29 +137,29 @@ void RewriteLabels(
       lblp[p] = VOXEL_VOID;
     else if ((dist < delta) && (lblp[p] == 1)) // "On" the lower cutoff plane?
       lblp[p] = OUTLET;
-    else if ((dist = sqrt((ray = (x - scenter)).Dot(ray)) - sradius) < delta) // In or on the nose sphere?
-      {
+    else if ((dist = sqrt((ray = (x - scenter)).Dot(ray)) - sradius) <
+      delta) // In or on the nose sphere?
+    {
       invitro = den->GetTuple1(p) < thresh ? false : true;
       // In or on the nose sphere, anything marked "airway" must stay that way:
       if (lblp[p] == 1)
         lblp[p] = AIRWAY;
       else
-        { // ... otherwise, it becomes "atmosphere" or "void":
+      {              // ... otherwise, it becomes "atmosphere" or "void":
         if (invitro) // In the body? Void.
           lblp[p] = VOXEL_VOID;
         else // Outside the body? Make "atmosphere" or "inlet":
           lblp[p] = dist < -delta ? ATMOSPHERE : INLET;
-        }
       }
+    }
     else // We are not near the nostril and above the cut-plane:
       lblp[p] = (lblp[p] == 1 ? AIRWAY : VOXEL_VOID); // Preserve the airway; all else is void.
-    }
+  }
 }
 
 smtk::model::OperatorResult WriteOperator::writeLabelMap()
 {
-  smtk::attribute::FileItem::Ptr filenameItem =
-    this->specification()->findFile("filename");
+  smtk::attribute::FileItem::Ptr filenameItem = this->specification()->findFile("filename");
 
   smtk::attribute::DoubleItem::Ptr noseSphereItem =
     this->specification()->findDouble("nose sphere");
@@ -176,41 +170,34 @@ smtk::model::OperatorResult WriteOperator::writeLabelMap()
   smtk::model::Models datasets =
     this->specification()->associatedModelEntities<smtk::model::Models>();
   if (datasets.empty())
-    {
+  {
     smtkErrorMacro(this->log(), "No models to save.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   smtk::model::Model dataset = datasets[0];
   std::string labelStr;
   StringData const& stringProps(dataset.stringProperties());
   StringData::const_iterator sit;
-  if (
-    (sit = stringProps.find("type")) == stringProps.end() ||
-    sit->second.empty() ||
-    sit->second[0] != "label map" ||
-    (sit = stringProps.find("label array")) == stringProps.end() ||
-    sit->second.empty() ||
-    (labelStr = sit->second[0]).empty())
-    {
+  if ((sit = stringProps.find("type")) == stringProps.end() || sit->second.empty() ||
+    sit->second[0] != "label map" || (sit = stringProps.find("label array")) == stringProps.end() ||
+    sit->second.empty() || (labelStr = sit->second[0]).empty())
+  {
     smtkErrorMacro(this->log(), "Model is not a label map or has no label array.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   EntityHandle handle = this->exodusHandle(dataset);
   vtkMultiBlockDataSet* mbds = handle.object<vtkMultiBlockDataSet>();
   vtkImageData* img;
   vtkDataArray* lbl;
-  if (
-    !mbds ||
-    mbds->GetNumberOfBlocks() < 1 ||
+  if (!mbds || mbds->GetNumberOfBlocks() < 1 ||
     !(img = vtkImageData::SafeDownCast(mbds->GetBlock(0))) ||
-    !(lbl = img->GetPointData()->GetArray(labelStr.c_str()))
-    )
-    {
+    !(lbl = img->GetPointData()->GetArray(labelStr.c_str())))
+  {
     smtkErrorMacro(this->log(), "Model does not have image data with labels attached.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   vtkVector3d scenter(&(*noseSphereItem->begin()));
   double sradius = noseSphereItem->value(3);
@@ -219,10 +206,10 @@ smtk::model::OperatorResult WriteOperator::writeLabelMap()
   for (int i = 0; i < 3; ++i)
     normal[i] = lowerPlaneItem->value(i + 3);
   switch (lbl->GetDataType())
-    {
-    vtkTemplateMacro(
-      RewriteLabels(img, static_cast<VTK_TT*>(lbl->GetVoidPointer(0)), -500.0, scenter, sradius, basept, normal));
-    }
+  {
+    vtkTemplateMacro(RewriteLabels(
+      img, static_cast<VTK_TT*>(lbl->GetVoidPointer(0)), -500.0, scenter, sradius, basept, normal));
+  }
 
   // Omit the density field from the MRI scan (and other, non-label arrays):
   vtkNew<vtkPassArrays> pass;
@@ -236,14 +223,14 @@ smtk::model::OperatorResult WriteOperator::writeLabelMap()
 
   int extent[6];
   img->GetExtent(extent);
-  int dims[3] = {extent[1] - extent[0] + 1, extent[3] - extent[2] + 1, extent[5] - extent[4] + 1};
+  int dims[3] = { extent[1] - extent[0] + 1, extent[3] - extent[2] + 1, extent[5] - extent[4] + 1 };
   for (int i = 0; i < 3; ++i)
-    {
+  {
     if (dims[i] % 16 > 0)
-      {
-      dims[i]  = dims[i] + (16 - (dims[i] % 16));
-      }
+    {
+      dims[i] = dims[i] + (16 - (dims[i] % 16));
     }
+  }
   extent[1] = extent[0] + dims[0] - 1;
   extent[3] = extent[2] + dims[1] - 1;
   extent[5] = extent[4] + dims[2] - 1;
@@ -257,22 +244,16 @@ smtk::model::OperatorResult WriteOperator::writeLabelMap()
   wri->SetFileTypeToBinary();
   wri->Write();
 
-  smtk::model::OperatorResult result = this->createResult(
-    smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
   return result;
 }
 
-    } // namespace exodus
-  } //namespace bridge
+} // namespace exodus
+} //namespace bridge
 } // namespace smtk
 
 #include "smtk/bridge/exodus/Exports.h"
 #include "smtk/bridge/exodus/WriteOperator_xml.h"
 
-smtkImplementsModelOperator(
-  SMTKEXODUSSESSION_EXPORT,
-  smtk::bridge::exodus::WriteOperator,
-  exodus_write,
-  "write",
-  WriteOperator_xml,
-  smtk::bridge::exodus::Session);
+smtkImplementsModelOperator(SMTKEXODUSSESSION_EXPORT, smtk::bridge::exodus::WriteOperator,
+  exodus_write, "write", WriteOperator_xml, smtk::bridge::exodus::Session);

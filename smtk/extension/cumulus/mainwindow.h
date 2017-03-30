@@ -21,7 +21,8 @@ class QIcon;
 class QLabel;
 class QTimer;
 
-namespace Ui {
+namespace Ui
+{
 class MainWindow;
 }
 
@@ -38,18 +39,17 @@ public:
   MainWindow();
   ~MainWindow();
 
-  void girderUrl(const QString &url);
+  void girderUrl(const QString& url);
 
 protected:
   void createMainMenu();
-  void closeEvent(QCloseEvent *theEvent);
-
+  void closeEvent(QCloseEvent* theEvent);
 
 private slots:
-  void displayInfo(const QString &msg);
+  void displayInfo(const QString& msg);
 
 private:
-  Ui::MainWindow *m_ui;
+  Ui::MainWindow* m_ui;
 };
 
 } // end namespace

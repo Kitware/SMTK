@@ -15,11 +15,11 @@
 #include "smtk/Options.h"
 
 #ifndef _MSC_VER
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored"-Wunused-parameter"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 #ifdef CGM_HAVE_VERSION_H
-#  include "cgm_version.h"
+#include "cgm_version.h"
 #endif
 #include "DLIList.hpp"
 #include "FacetModifyEngine.hpp"
@@ -32,18 +32,21 @@
 #include "InitCGMA.hpp"
 
 #ifdef HAVE_OCC
-#  include "OCCModifyEngine.hpp"
+#include "OCCModifyEngine.hpp"
 #endif
 #ifndef _MSC_VER
-#  pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
 #endif
 
 #include <algorithm>
 #include <locale>
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 static bool cgmaInitialized = false;
 static std::string s_currentEngine;
@@ -56,7 +59,7 @@ bool Engines::areInitialized()
 bool Engines::isInitialized(const std::string& engine, const std::vector<std::string>& args)
 {
   std::vector<const char*> targs; // translated arguments
-  targs.push_back("smtk"); // input \a args should not provide program name.
+  targs.push_back("smtk");        // input \a args should not provide program name.
   std::vector<std::string>::const_iterator ait;
   for (ait = args.begin(); ait != args.end(); ++ait)
     targs.push_back(ait->c_str());
@@ -70,13 +73,12 @@ bool Engines::isInitialized(const std::string& engine, const std::vector<std::st
 #endif
 
   smtk::bridge::cgm::CAUUID::registerWithAttributeManager();
-  CubitStatus s = InitCGMA::initialize_cgma(
-    engine.empty() ? "OCC" : engine.c_str());
+  CubitStatus s = InitCGMA::initialize_cgma(engine.empty() ? "OCC" : engine.c_str());
   if (GeometryQueryTool::instance())
-    {
+  {
     const char* modType = GeometryQueryTool::instance()->get_gqe()->modeler_type();
     s_currentEngine = modType ? modType : "Unknown";
-    }
+  }
   cgmaInitialized = true;
   return (s == CUBIT_SUCCESS) ? true : false;
 }
@@ -85,9 +87,9 @@ bool Engines::setDefault(const std::string& engine)
 {
   // If we've never called init, do some extra stuff:
   if (!Engines::areInitialized())
-    {
+  {
     return Engines::isInitialized(engine);
-    }
+  }
   // Otherwise, see if we can create the appropriate engines
   // and set them in the default query/modify tool.
 
@@ -112,19 +114,19 @@ bool Engines::setDefault(const std::string& engine)
 
   GeometryQueryTool::instance()->get_gqe_list(gqes);
   for (int i = 0; i < gqes.size(); ++i)
-    {
+  {
     gqe = gqes.get_and_step();
     const char* mtxt = gqe->modeler_type();
     std::string modeler = (mtxt && mtxt[0] ? mtxt : "(null)");
     std::transform(modeler.begin(), modeler.end(), modeler.begin(),
       std::bind2nd(std::ptr_fun(&std::tolower<char>), std::locale("C")));
     if (modeler == engineLower)
-      {
+    {
       GeometryQueryTool::instance()->set_default_gqe(gqe);
       gqt = GeometryQueryTool::instance();
       break;
-      }
     }
+  }
 
   /* GeometryModifyEngine does not provide modeler_type().
   GeometryModifyTool::instance()->get_gme_list(gmes);
@@ -148,9 +150,9 @@ bool Engines::setDefault(const std::string& engine)
   else
     gme = NULL;
   if (gme)
-    {
+  {
     gmt = GeometryModifyTool::instance(gme);
-    }
+  }
 
   // For now, we cannot rely on anyone providing a healer, so only gmt & gqt are tested:
   defaultChanged = (gmt && gqt ? true : false);
@@ -174,26 +176,26 @@ std::vector<std::string> Engines::listEngines()
   DLIList<GeometryQueryEngine*> gqes;
   GeometryQueryTool::instance()->get_gqe_list(gqes);
   for (int i = 0; i < gqes.size(); ++i)
-    {
+  {
     gqe = gqes.get_and_step();
     if (gqe->is_intermediate_engine())
       continue; // skip, e.g., virtual geometry engine
     const char* kernel = gqe->modeler_type();
     if (!kernel || !kernel[0])
-      {
+    {
       std::string typeName = typeid(*gqe).name();
       if (typeName.find("FacetQueryEngine") != std::string::npos)
-        {
+      {
         kernel = "FACET";
-        }
+      }
       else
-        {
+      {
         std::cerr << "Unknown unnamed query engine, type " << typeName << ". Skipping.\n";
         continue;
-        }
       }
-    result.push_back(kernel);
     }
+    result.push_back(kernel);
+  }
   return result;
 }
 
@@ -204,6 +206,6 @@ bool Engines::shutdown()
   return true;
 }
 
-    } // namespace cgm
-  } //namespace bridge
+} // namespace cgm
+} //namespace bridge
 } // namespace smtk

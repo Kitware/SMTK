@@ -29,26 +29,26 @@ class vtkSMIdTypeVectorProperty;
 class VTK_EXPORT vtkSelectionSplitOperatorClient : public vtkSelectionSplitOperatorBase
 {
 public:
-  static vtkSelectionSplitOperatorClient * New();
-  vtkTypeMacro(vtkSelectionSplitOperatorClient,vtkSelectionSplitOperatorBase);
+  static vtkSelectionSplitOperatorClient* New();
+  vtkTypeMacro(vtkSelectionSplitOperatorClient, vtkSelectionSplitOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // Split the model faces based on the input Selection.
-  virtual bool Operate(vtkDiscreteModel* Model, vtkSMProxy* ServerModelProxy,
-                       vtkSMProxy* SelectionSourceProxy);
+  virtual bool Operate(
+    vtkDiscreteModel* Model, vtkSMProxy* ServerModelProxy, vtkSMProxy* SelectionSourceProxy);
 
   // Description:
   // Update Client model after face split on server with hybrid model
-  static void UpdateSplitEdgeVertIds(
-      vtkDiscreteModel* Model, vtkSMIdTypeVectorProperty* SplitEdgeVertIds,
-      std::map<vtkIdType, std::vector<vtkIdType> >& SplitEdgeMap,
-      std::map<vtkIdType, std::vector<vtkIdType> >& SplitVertMap);
-  static void UpdateCreatedModelEdgeVertIDs(
-      vtkDiscreteModel* Model, vtkSMIdTypeVectorProperty* CreatedModelEdgeVertIDs,
-      std::vector<vtkIdType>& newEdges, std::vector<vtkIdType>& newVerts);
+  static void UpdateSplitEdgeVertIds(vtkDiscreteModel* Model,
+    vtkSMIdTypeVectorProperty* SplitEdgeVertIds,
+    std::map<vtkIdType, std::vector<vtkIdType> >& SplitEdgeMap,
+    std::map<vtkIdType, std::vector<vtkIdType> >& SplitVertMap);
+  static void UpdateCreatedModelEdgeVertIDs(vtkDiscreteModel* Model,
+    vtkSMIdTypeVectorProperty* CreatedModelEdgeVertIDs, std::vector<vtkIdType>& newEdges,
+    std::vector<vtkIdType>& newVerts);
   static void UpdateFaceEdgeLoopIDs(
-      vtkDiscreteModel* Model, vtkSMIdTypeVectorProperty* FaceEdgeLoopIDs);
+    vtkDiscreteModel* Model, vtkSMIdTypeVectorProperty* FaceEdgeLoopIDs);
 
   // Description:
   // This is edge splitting info for splitting hybrid model faces.
@@ -64,8 +64,8 @@ protected:
   virtual ~vtkSelectionSplitOperatorClient();
 
 private:
-  vtkSelectionSplitOperatorClient(const vtkSelectionSplitOperatorClient&);  // Not implemented.
-  void operator=(const vtkSelectionSplitOperatorClient&);  // Not implemented.
+  vtkSelectionSplitOperatorClient(const vtkSelectionSplitOperatorClient&); // Not implemented.
+  void operator=(const vtkSelectionSplitOperatorClient&);                  // Not implemented.
 };
 
 #endif

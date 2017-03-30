@@ -25,9 +25,12 @@
 
 #include "smtk/bridge/polygon/DemoteVertex_xml.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 smtk::model::OperatorResult DemoteVertex::operateInternal()
 {
@@ -41,22 +44,18 @@ smtk::model::OperatorResult DemoteVertex::operateInternal()
   smtk::attribute::ModelEntityItem::Ptr vertItem = this->specification()->associations();
   smtk::model::Vertex vertexToDemote(vertItem->value(0));
   if (!vertexToDemote.isValid())
-    {
-    smtkErrorMacro(this->log(),
-      "The input vertex (" << vertexToDemote.entity() << ") is invalid.");
-      return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  {
+    smtkErrorMacro(this->log(), "The input vertex (" << vertexToDemote.entity() << ") is invalid.");
+    return this->createResult(smtk::model::OPERATION_FAILED);
+  }
 
-  internal::vertex::Ptr storage =
-    this->findStorage<internal::vertex>(
-      vertexToDemote.entity());
+  internal::vertex::Ptr storage = this->findStorage<internal::vertex>(vertexToDemote.entity());
   internal::pmodel* mod = storage->parentAs<internal::pmodel>();
   if (!storage || !mod)
-    {
-    smtkErrorMacro(this->log(),
-      "The input vertex has no storage or no parent model set.");
+  {
+    smtkErrorMacro(this->log(), "The input vertex has no storage or no parent model set.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   smtk::model::EntityRefs created;
   smtk::model::EntityRefs modified;
@@ -64,28 +63,26 @@ smtk::model::OperatorResult DemoteVertex::operateInternal()
   bool ok = mod->demoteModelVertex(mgr, storage, created, modified, expunged);
   smtk::model::OperatorResult opResult;
   if (ok)
-    {
+  {
     opResult = this->createResult(smtk::model::OPERATION_SUCCEEDED);
-    this->addEntitiesToResult(opResult, smtk::model::EntityRefArray(created.begin(), created.end()), CREATED);
-    this->addEntitiesToResult(opResult, smtk::model::EntityRefArray(modified.begin(), modified.end()), MODIFIED);
-    this->addEntitiesToResult(opResult, smtk::model::EntityRefArray(expunged.begin(), expunged.end()), EXPUNGED);
-    }
+    this->addEntitiesToResult(
+      opResult, smtk::model::EntityRefArray(created.begin(), created.end()), CREATED);
+    this->addEntitiesToResult(
+      opResult, smtk::model::EntityRefArray(modified.begin(), modified.end()), MODIFIED);
+    this->addEntitiesToResult(
+      opResult, smtk::model::EntityRefArray(expunged.begin(), expunged.end()), EXPUNGED);
+  }
   else
-    {
+  {
     opResult = this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   return opResult;
 }
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(
-  SMTKPOLYGONSESSION_EXPORT,
-  smtk::bridge::polygon::DemoteVertex,
-  polygon_demote_vertex,
-  "demote vertex",
-  DemoteVertex_xml,
-  smtk::bridge::polygon::Session);
+smtkImplementsModelOperator(SMTKPOLYGONSESSION_EXPORT, smtk::bridge::polygon::DemoteVertex,
+  polygon_demote_vertex, "demote vertex", DemoteVertex_xml, smtk::bridge::polygon::Session);

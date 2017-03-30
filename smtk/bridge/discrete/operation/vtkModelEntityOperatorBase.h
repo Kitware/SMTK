@@ -26,8 +26,8 @@ class vtkModelEntity;
 class SMTKDISCRETESESSION_EXPORT vtkModelEntityOperatorBase : public vtkObject
 {
 public:
-  static vtkModelEntityOperatorBase * New();
-  vtkTypeMacro(vtkModelEntityOperatorBase,vtkObject);
+  static vtkModelEntityOperatorBase* New();
+  vtkTypeMacro(vtkModelEntityOperatorBase, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -72,9 +72,9 @@ public:
   vtkGetMacro(RGBA, double*);
   vtkGetMacro(RepresentationRGBA, double*);
 
-  void SetRGBA(double *Color);
+  void SetRGBA(double* Color);
   void SetRGBA(double R, double G, double B, double A);
-  void SetRepresentationRGBA(double *Color);
+  void SetRepresentationRGBA(double* Color);
   void SetRepresentationRGBA(double R, double G, double B, double A);
 
   // Description:
@@ -85,7 +85,6 @@ public:
   // Description:
   // Return the model entity.
   virtual vtkModelEntity* GetModelEntity(vtkDiscreteModel* Model);
-
 
   // Description:
   // Do the basic operation to modify the model.  This should be
@@ -141,8 +140,8 @@ private:
   // if UserName is not NULL.
   char* UserName;
 
-  vtkModelEntityOperatorBase(const vtkModelEntityOperatorBase&);  // Not implemented.
-  void operator=(const vtkModelEntityOperatorBase&);  // Not implemented.
+  vtkModelEntityOperatorBase(const vtkModelEntityOperatorBase&); // Not implemented.
+  void operator=(const vtkModelEntityOperatorBase&);             // Not implemented.
 };
 
 #endif

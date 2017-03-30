@@ -22,9 +22,12 @@
 class vtkModelItem;
 class vtkModelItemIterator;
 
-namespace smtk {
-  namespace bridge {
-    namespace discrete {
+namespace smtk
+{
+namespace bridge
+{
+namespace discrete
+{
 
 class Session;
 
@@ -40,19 +43,19 @@ protected:
   Session* discreteSession();
   vtkModelItem* discreteEntity(const smtk::model::EntityRef& smtkEntity);
 
-  template<typename T>
+  template <typename T>
   T discreteEntityAs(const smtk::model::EntityRef& smtkEntity);
 };
 
 /// A convenience method for returning the discrete counterpart of an SMTK entity already cast to a subtype.
-template<typename T>
+template <typename T>
 T Operator::discreteEntityAs(const smtk::model::EntityRef& smtkEntity)
 {
   return dynamic_cast<T>(this->discreteEntity(smtkEntity));
 }
 
-    } // namespace discrete
-  } // namespace bridge
+} // namespace discrete
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_discrete_Operator_h

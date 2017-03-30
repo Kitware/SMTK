@@ -22,8 +22,8 @@
 class VTKSMTKREADEREXT_EXPORT vtkCMBGeometryReader : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkCMBGeometryReader *New();
-  vtkTypeMacro(vtkCMBGeometryReader,vtkPolyDataAlgorithm);
+  static vtkCMBGeometryReader* New();
+  vtkTypeMacro(vtkCMBGeometryReader, vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -63,22 +63,20 @@ protected:
   vtkCMBGeometryReader();
   ~vtkCMBGeometryReader();
 
-  int RequestInformation(vtkInformation *,
-                         vtkInformationVector **,
-                         vtkInformationVector *);
-  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
 
-  void PostProcessMesh(vtkDataSet *dataset, bool is3DVolumeMesh,
-    bool passThroughPointIds, const char *regionArrayName, vtkPolyData *output);
+  void PostProcessMesh(vtkDataSet* dataset, bool is3DVolumeMesh, bool passThroughPointIds,
+    const char* regionArrayName, vtkPolyData* output);
 
-  char *FileName;
+  char* FileName;
 
   vtkSetMacro(HasBoundaryEdges, bool);
   vtkSetMacro(RegionIdentifiersModified, bool);
 
 private:
-  vtkCMBGeometryReader(const vtkCMBGeometryReader&);  // Not implemented.
-  void operator=(const vtkCMBGeometryReader&);  // Not implemented.
+  vtkCMBGeometryReader(const vtkCMBGeometryReader&); // Not implemented.
+  void operator=(const vtkCMBGeometryReader&);       // Not implemented.
 
   bool PrepNonClosedSurfaceForModelCreation;
   bool HasBoundaryEdges;

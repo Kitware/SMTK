@@ -12,8 +12,10 @@
 
 #include "smtk/model/EntityRef.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief An EntityRef subclass for representing unmodeled geometry to be included in a scene.
   *
@@ -39,7 +41,7 @@ namespace smtk {
 class SMTKCORE_EXPORT AuxiliaryGeometry : public EntityRef
 {
 public:
-  SMTK_ENTITYREF_CLASS(AuxiliaryGeometry,EntityRef,isAuxiliaryGeometry);
+  SMTK_ENTITYREF_CLASS(AuxiliaryGeometry, EntityRef, isAuxiliaryGeometry);
 
   bool hasUrl() const;
   std::string url() const;
@@ -48,7 +50,7 @@ public:
 
 typedef std::vector<AuxiliaryGeometry> AuxiliaryGeometries;
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_AuxiliaryGeometry_h

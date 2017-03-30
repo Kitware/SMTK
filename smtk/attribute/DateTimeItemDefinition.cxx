@@ -8,17 +8,18 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "smtk/attribute/DateTimeItemDefinition.h"
 #include "smtk/attribute/DateTimeItem.h"
 
 namespace sc = smtk::common;
 using namespace smtk::attribute;
 
-DateTimeItemDefinition::DateTimeItemDefinition(const std::string &myName):
-  ItemDefinition(myName),
-  m_hasDefault(false), m_numberOfRequiredValues(1),
-  m_useTimeZone(true), m_useCalendarPopup(true)
+DateTimeItemDefinition::DateTimeItemDefinition(const std::string& myName)
+  : ItemDefinition(myName)
+  , m_hasDefault(false)
+  , m_numberOfRequiredValues(1)
+  , m_useTimeZone(true)
+  , m_useCalendarPopup(true)
 {
 }
 
@@ -51,25 +52,19 @@ bool DateTimeItemDefinition::isValueValid(const sc::DateTimeZonePair& /*value*/)
   return true;
 }
 
-smtk::attribute::ItemPtr
-DateTimeItemDefinition::buildItem(Attribute *owningAttribute,
-                                int itemPosition) const
+smtk::attribute::ItemPtr DateTimeItemDefinition::buildItem(
+  Attribute* owningAttribute, int itemPosition) const
 {
-  return smtk::attribute::ItemPtr(
-    new DateTimeItem(owningAttribute, itemPosition));
+  return smtk::attribute::ItemPtr(new DateTimeItem(owningAttribute, itemPosition));
 }
 
-smtk::attribute::ItemPtr
-DateTimeItemDefinition::buildItem(Item *owningItem,
-                                int itemPosition,
-                                int subGroupPosition) const
+smtk::attribute::ItemPtr DateTimeItemDefinition::buildItem(
+  Item* owningItem, int itemPosition, int subGroupPosition) const
 {
-  return smtk::attribute::ItemPtr(
-    new DateTimeItem(owningItem, itemPosition, subGroupPosition));
+  return smtk::attribute::ItemPtr(new DateTimeItem(owningItem, itemPosition, subGroupPosition));
 }
 
-ItemDefinitionPtr DateTimeItemDefinition::createCopy(
-  ItemDefinition::CopyInfo& info) const
+ItemDefinitionPtr DateTimeItemDefinition::createCopy(ItemDefinition::CopyInfo& info) const
 {
   (void)info;
 
@@ -77,9 +72,9 @@ ItemDefinitionPtr DateTimeItemDefinition::createCopy(
   ItemDefinition::copyTo(newDef);
 
   if (m_hasDefault)
-    {
+  {
     newDef->setDefaultValue(m_defaultValue);
-    }
+  }
   newDef->setNumberOfRequiredValues(m_numberOfRequiredValues);
   newDef->setDisplayFormat(m_displayFormat);
   newDef->setUseTimeZone(m_useTimeZone);

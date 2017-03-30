@@ -30,7 +30,6 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 
-
 class vtkSerializationHelper;
 class vtkSerializer;
 class vtkXMLElement;
@@ -38,8 +37,8 @@ class vtkXMLElement;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkSerializationHelperMap : public vtkObject
 {
 public:
-  static vtkSerializationHelperMap *New();
-  vtkTypeMacro(vtkSerializationHelperMap,vtkObject);
+  static vtkSerializationHelperMap* New();
+  vtkTypeMacro(vtkSerializationHelperMap, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -49,35 +48,33 @@ public:
 
   // Description:
   // Register (add) a class type / helper with the map.
-  static void RegisterHelperForClass(const char *classType,
-    vtkSerializationHelper* helper);
+  static void RegisterHelperForClass(const char* classType, vtkSerializationHelper* helper);
 
   // Description:
   // UnRegister (remove) a class type / helper in the map, if the registered
   // helper matches.
-  static void UnRegisterHelperForClass(const char *classType,
-    vtkSerializationHelper* helper);
+  static void UnRegisterHelperForClass(const char* classType, vtkSerializationHelper* helper);
 
   // Description:
   // Serialize the input object using a registered helper.  If successful (map
   // entry exists), returns 1 (0 if not).
-  static int Serialize(vtkObject *obj, vtkSerializer *serializer);
+  static int Serialize(vtkObject* obj, vtkSerializer* serializer);
 
   // Description:
   // Get the value for the "type" attribute (generally the ClassName but may be
   // name of Superclass) of the specfied object type from a registerd helper
   // for the object Clas
-  static const char *GetSerializationType(vtkObject *object);
+  static const char* GetSerializationType(vtkObject* object);
 
   // Description:
   // Returns true if the object class type is registered with the map, and thus
   // can be serialized.
-  static bool IsSerializable(vtkObject *obj);
+  static bool IsSerializable(vtkObject* obj);
 
   // Description:
   // Return the serialization helper registered for the indicated class (if one
   // has been registerd); otherwise return NULL
-  static vtkSerializationHelper* GetHelper(const char *classType);
+  static vtkSerializationHelper* GetHelper(const char* classType);
 
   // Description:
   // Removes all helpers from the map.
@@ -88,8 +85,8 @@ protected:
   ~vtkSerializationHelperMap();
 
 private:
-  vtkSerializationHelperMap(const vtkSerializationHelperMap&);  // Not implemented.
-  void operator=(const vtkSerializationHelperMap&);  // Not implemented.
+  vtkSerializationHelperMap(const vtkSerializationHelperMap&); // Not implemented.
+  void operator=(const vtkSerializationHelperMap&);            // Not implemented.
 
   static bool DefaultHelpersInstantiated;
 };

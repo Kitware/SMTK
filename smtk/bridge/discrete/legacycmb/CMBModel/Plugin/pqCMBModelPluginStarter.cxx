@@ -22,7 +22,7 @@
 // ClientServer wrapper initialization functions.
 extern "C" void vtkCmbDiscreteModelCS_Initialize(vtkClientServerInterpreter*);
 
-pqCMBModelPluginStarter::pqCMBModelPluginStarter(QObject* p/*=0*/)
+pqCMBModelPluginStarter::pqCMBModelPluginStarter(QObject* p /*=0*/)
   : QObject(p)
 {
 }
@@ -33,7 +33,7 @@ pqCMBModelPluginStarter::~pqCMBModelPluginStarter()
 
 void pqCMBModelPluginStarter::onStartup()
 {
-    // FIXME SEB Don't need that anymore // vtkCmbDiscreteModelCS_Initialize(vtkClientServerInterpreterInitializer::GetInitializer());
+  // FIXME SEB Don't need that anymore // vtkCmbDiscreteModelCS_Initialize(vtkClientServerInterpreterInitializer::GetInitializer());
 }
 
 void pqCMBModelPluginStarter::onShutdown()

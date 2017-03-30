@@ -37,10 +37,13 @@
 
 using namespace smtk::model;
 
-namespace smtk {
-  namespace bridge {
+namespace smtk
+{
+namespace bridge
+{
 
-  namespace discrete {
+namespace discrete
+{
 
 WriteOperator::WriteOperator()
 {
@@ -52,13 +55,12 @@ bool WriteOperator::ableToOperate()
   smtk::model::Models models =
     this->specification()->associatedModelEntities<smtk::model::Models>();
 
-  bool able2Op =
-    this->ensureSpecification() &&
+  bool able2Op = this->ensureSpecification() &&
     // The SMTK model must be valid
     (models.size() > 0 && models[0].isValid() &&
-    // The CMB model must exist
-    this->discreteSession()->findModelEntity(models[0].entity()));
-  if(!able2Op)
+      // The CMB model must exist
+      this->discreteSession()->findModelEntity(models[0].entity()));
+  if (!able2Op)
     return false;
 
   std::string filename = this->specification()->findFile("filename")->value();
@@ -74,12 +76,12 @@ OperatorResult WriteOperator::operateInternal()
   // make sure the filename has .cmb extension
   std::string ext = vtksys::SystemTools::GetFilenameLastExtension(fname);
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-  if(ext != ".cmb")
-    {
-    std::string tmpname = vtksys::SystemTools::GetFilenameWithoutLastExtension(fname); 
+  if (ext != ".cmb")
+  {
+    std::string tmpname = vtksys::SystemTools::GetFilenameWithoutLastExtension(fname);
     fname = vtksys::SystemTools::GetFilenamePath(fname);
     fname.append("/").append(tmpname).append(".cmb");
-    }
+  }
 
   this->m_op->SetFileName(fname.c_str());
   Session* opsession = this->discreteSession();
@@ -91,18 +93,17 @@ OperatorResult WriteOperator::operateInternal()
     return this->createResult(OPERATION_FAILED);
 
   smtk::model::Model model = models[0];
-  vtkDiscreteModelWrapper* modelWrapper =
-    opsession->findModelEntity(model.entity());
+  vtkDiscreteModelWrapper* modelWrapper = opsession->findModelEntity(model.entity());
 
   // write the file out.
   this->m_op->SetVersion(this->m_currentversion);
   this->m_op->Operate(modelWrapper, this->discreteSession());
 
   if (!this->m_op->GetOperateSucceeded())
-    {
+  {
     std::cerr << "Could not write file \"" << fname << "\".\n";
     return this->createResult(OPERATION_FAILED);
-    }
+  }
 
   OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
   this->specification()->findFile("filename")->setValue(fname);
@@ -117,15 +118,10 @@ Session* WriteOperator::discreteSession() const
   return dynamic_cast<Session*>(this->session());
 }
 
-    } // namespace discrete
-  } // namespace bridge
+} // namespace discrete
+} // namespace bridge
 
 } // namespace smtk
 
-smtkImplementsModelOperator(
-  SMTKDISCRETESESSION_EXPORT,
-  smtk::bridge::discrete::WriteOperator,
-  discrete_write,
-  "write",
-  WriteOperator_xml,
-  smtk::bridge::discrete::Session);
+smtkImplementsModelOperator(SMTKDISCRETESESSION_EXPORT, smtk::bridge::discrete::WriteOperator,
+  discrete_write, "write", WriteOperator_xml, smtk::bridge::discrete::Session);

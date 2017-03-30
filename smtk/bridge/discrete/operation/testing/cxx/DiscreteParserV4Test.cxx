@@ -25,8 +25,10 @@
 
 struct ModelInfo
 {
-  ModelInfo() : NumberOfVertices(0)
-    {}
+  ModelInfo()
+    : NumberOfVertices(0)
+  {
+  }
   // A map from a model entity's unique persistent Id to the
   // number of cells in that entity (0 if it has no cells)
   std::map<vtkIdType, vtkIdType> EdgeInfo;
@@ -36,53 +38,52 @@ struct ModelInfo
 
 // checks the model to see if we get the expected results
 // returns the number of errors we encountered
-int CheckModel(vtkDiscreteModel* Model, ModelInfo & modelInfo)
+int CheckModel(vtkDiscreteModel* Model, ModelInfo& modelInfo)
 
 {
   int Errors = 0;
-  if(Model->GetNumberOfAssociations(vtkModelEdgeType) != static_cast<vtkIdType>(modelInfo.EdgeInfo.size()) ||
-     Model->GetNumberOfAssociations(vtkModelVertexType) != modelInfo.NumberOfVertices ||
-     Model->GetNumberOfAssociations(vtkModelFaceType) != 1)
-    {
+  if (Model->GetNumberOfAssociations(vtkModelEdgeType) !=
+      static_cast<vtkIdType>(modelInfo.EdgeInfo.size()) ||
+    Model->GetNumberOfAssociations(vtkModelVertexType) != modelInfo.NumberOfVertices ||
+    Model->GetNumberOfAssociations(vtkModelFaceType) != 1)
+  {
     vtkGenericWarningMacro("Wrong number of model entities.");
     return 1;
-    }
+  }
 
   vtkModelItemIterator* Edges = Model->NewIterator(vtkModelEdgeType);
-  for(Edges->Begin();!Edges->IsAtEnd();Edges->Next())
+  for (Edges->Begin(); !Edges->IsAtEnd(); Edges->Next())
+  {
+    vtkDiscreteModelEdge* Edge = vtkDiscreteModelEdge::SafeDownCast(Edges->GetCurrentItem());
+    if (modelInfo.EdgeInfo.find(Edge->GetUniquePersistentId()) == modelInfo.EdgeInfo.end())
     {
-    vtkDiscreteModelEdge* Edge = vtkDiscreteModelEdge::SafeDownCast(
-      Edges->GetCurrentItem());
-    if(modelInfo.EdgeInfo.find(Edge->GetUniquePersistentId()) == modelInfo.EdgeInfo.end())
-      {
       vtkGenericWarningMacro("Edge has wrong unique persistent id.");
       Errors++;
-      }
+    }
     else
-      {
+    {
       vtkPolyData* Geometry = vtkPolyData::SafeDownCast(Edge->GetGeometry());
       vtkIdType NumberOfCells = modelInfo.EdgeInfo[Edge->GetUniquePersistentId()];
-      if(Geometry == 0 || Geometry->GetNumberOfCells() != NumberOfCells ||
-       Edge->GetNumberOfCells() != NumberOfCells)
-        {
+      if (Geometry == 0 || Geometry->GetNumberOfCells() != NumberOfCells ||
+        Edge->GetNumberOfCells() != NumberOfCells)
+      {
         vtkGenericWarningMacro("Edge has wrong polydata geometry.");
         Errors++;
-        }
       }
     }
+  }
   Edges->Delete();
 
   vtkModelItemIterator* Faces = Model->NewIterator(vtkModelFaceType);
-  for(Faces->Begin();!Faces->IsAtEnd();Faces->Next())
+  for (Faces->Begin(); !Faces->IsAtEnd(); Faces->Next())
+  {
+    vtkDiscreteModelFace* Face = vtkDiscreteModelFace::SafeDownCast(Faces->GetCurrentItem());
+    if (Face->GetMaterial() == 0)
     {
-    vtkDiscreteModelFace* Face = vtkDiscreteModelFace::SafeDownCast(
-      Faces->GetCurrentItem());
-    if(Face->GetMaterial() == 0)
-      {
       vtkGenericWarningMacro("Model face has no material.");
       Errors++;
-      }
     }
+  }
   Faces->Delete();
 
   cout << "Model check with " << Errors << " errors.\n";
@@ -98,66 +99,64 @@ int CheckModifyModel(vtkDiscreteModel* Model, int SplitPointId)
 
   vtkModelItemIterator* Edges = Model->NewIterator(vtkModelEdgeType);
   Edges->Begin();
-  if(Edges->IsAtEnd())
-    {
+  if (Edges->IsAtEnd())
+  {
     vtkGenericWarningMacro("No model edge to modify.");
     Edges->Delete();
     return 1;
-    }
+  }
   vtkDiscreteModelEdge* Edge = vtkDiscreteModelEdge::SafeDownCast(Edges->GetCurrentItem());
   Edges->Delete();
 
   vtkIdType createdEdgeId = -100, createdVertexId = -100;
-  if(!Edge->Split(SplitPointId, createdVertexId, createdEdgeId))
-    {
+  if (!Edge->Split(SplitPointId, createdVertexId, createdEdgeId))
+  {
     vtkGenericWarningMacro("Edge split operation failed for looped edge.");
     Errors++;
-    }
+  }
 
-  if(createdEdgeId >= 0 && Model->GetNumberOfAssociations(vtkModelEdgeType) == 1)
-    {
+  if (createdEdgeId >= 0 && Model->GetNumberOfAssociations(vtkModelEdgeType) == 1)
+  {
     vtkGenericWarningMacro("Should not have created a new model edge.");
     Errors++;
-    }
+  }
 
   cout << "Edge split with " << Errors << " errors.\n";
 
   return Errors;
 }
 
-int main(int argc, char ** argv)
+int main(int argc, char** argv)
 {
-  if(argc < 2)
-    {
+  if (argc < 2)
+  {
     vtkGenericWarningMacro("Not enough arguments -- need to specify the V4 CMB file.");
     return 1;
-    }
+  }
   int Errors = 0;
 
   vtkDiscreteModelWrapper* ModelWrapper = vtkDiscreteModelWrapper::New();
   vtkDiscreteModel* Model = ModelWrapper->GetModel();
 
-  vtkSmartPointer<vtkCMBModelReader> Reader =
-    vtkSmartPointer<vtkCMBModelReader>::New();
+  vtkSmartPointer<vtkCMBModelReader> Reader = vtkSmartPointer<vtkCMBModelReader>::New();
 
   Reader->SetFileName(argv[1]);
   Reader->Update();
 
   vtkPolyData* MasterPoly = Reader->GetOutput();
 
-  vtkSmartPointer<vtkCMBParserV4> Parser =
-    vtkSmartPointer<vtkCMBParserV4>::New();
-  if(!Parser)
-    {
+  vtkSmartPointer<vtkCMBParserV4> Parser = vtkSmartPointer<vtkCMBParserV4>::New();
+  if (!Parser)
+  {
     vtkGenericWarningMacro("File version not supported.");
     return 1;
-    }
+  }
 
-  if(Parser->Parse(MasterPoly, Model) == 0)
-    {
+  if (Parser->Parse(MasterPoly, Model) == 0)
+  {
     vtkGenericWarningMacro("Could not parse file");
     Errors++;
-    }
+  }
 
   ModelInfo modelInfo;
   modelInfo.EdgeInfo[18] = 6;
@@ -191,11 +190,11 @@ int main(int argc, char ** argv)
   Reader->SetFileName("junkv4.cmb");
   Reader->Update();
 
-  if(Parser->Parse(Reader->GetOutput(), Model) == 0)
-    {
+  if (Parser->Parse(Reader->GetOutput(), Model) == 0)
+  {
     vtkGenericWarningMacro("Could not parse file");
     Errors++;
-    }
+  }
 
   std::cout << "Finished with " << Errors << " errors.\n";
   ModelWrapper->Delete();

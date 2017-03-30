@@ -12,8 +12,10 @@
 
 #include "smtk/model/Operator.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 class SMTKCORE_EXPORT AddAuxiliaryGeometry : public Operator
 {
@@ -27,7 +29,7 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 };
 
-  } //namespace model
+} //namespace model
 } // namespace smtk
 
 #endif // __smtk_model_AddAuxiliaryGeometry_h

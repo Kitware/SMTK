@@ -33,8 +33,8 @@ class vtkModelGeometricEntity;
 class SMTKDISCRETESESSION_EXPORT vtkMaterialOperatorBase : public vtkModelEntityOperatorBase
 {
 public:
-  static vtkMaterialOperatorBase * New();
-  vtkTypeMacro(vtkMaterialOperatorBase,vtkModelEntityOperatorBase);
+  static vtkMaterialOperatorBase* New();
+  vtkTypeMacro(vtkMaterialOperatorBase, vtkModelEntityOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -99,8 +99,8 @@ protected:
   virtual bool AbleToOperate(vtkDiscreteModel* Model);
 
 private:
-  vtkMaterialOperatorBase(const vtkMaterialOperatorBase&);  // Not implemented.
-  void operator=(const vtkMaterialOperatorBase&);  // Not implemented.
+  vtkMaterialOperatorBase(const vtkMaterialOperatorBase&); // Not implemented.
+  void operator=(const vtkMaterialOperatorBase&);          // Not implemented.
 
   // Description:
   // A list of vtkModelGeometricEntitys to add/remove.

@@ -31,14 +31,13 @@ class vtkPoints;
 class SMTKDISCRETESESSION_EXPORT vtkCMBModelBuilder : public vtkObject
 {
 public:
-  static vtkCMBModelBuilder * New();
-  vtkTypeMacro(vtkCMBModelBuilder,vtkObject);
+  static vtkCMBModelBuilder* New();
+  vtkTypeMacro(vtkCMBModelBuilder, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // Load the input polydata into Model.
-  void Operate(vtkDiscreteModelWrapper* modelWrapper,
-    vtkAlgorithm* inputPoly);
+  void Operate(vtkDiscreteModelWrapper* modelWrapper, vtkAlgorithm* inputPoly);
 
   // Description:
   // Returns success (1) or failue (0) for Operation.
@@ -48,22 +47,20 @@ protected:
   vtkCMBModelBuilder();
   virtual ~vtkCMBModelBuilder();
 
-/// copied from vtkTriangulateConcavePolysFilter in CMB/VTKExtension.
+  /// copied from vtkTriangulateConcavePolysFilter in CMB/VTKExtension.
   // Tests whether the cell is concave
-  static bool IsPolygonConcave(vtkPoints *points, vtkIdType npts, vtkIdType *pts);
+  static bool IsPolygonConcave(vtkPoints* points, vtkIdType npts, vtkIdType* pts);
 
 private:
-
   // Description:
   // Internal ivars.
   char* FileName;
-  vtkCMBModelBuilder(const vtkCMBModelBuilder&);  // Not implemented.
-  void operator=(const vtkCMBModelBuilder&);  // Not implemented.
+  vtkCMBModelBuilder(const vtkCMBModelBuilder&); // Not implemented.
+  void operator=(const vtkCMBModelBuilder&);     // Not implemented.
 
-  void ProcessAs2DMesh(vtkDiscreteModelWrapper* ModelWrapper, vtkPolyData *modelPolyData);
+  void ProcessAs2DMesh(vtkDiscreteModelWrapper* ModelWrapper, vtkPolyData* modelPolyData);
 
-  void ComputePointInsideForRegion(vtkDiscreteModelRegion *region,
-    vtkCellLocator *locator);
+  void ComputePointInsideForRegion(vtkDiscreteModelRegion* region, vtkCellLocator* locator);
 
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).

@@ -28,17 +28,17 @@ class vtkCallbackCommand;
 class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelSource : public vtkCompositeDataSetAlgorithm
 {
 public:
-  static vtkCMBModelSource *New();
-  vtkTypeMacro(vtkCMBModelSource,vtkCompositeDataSetAlgorithm);
+  static vtkCMBModelSource* New();
+  vtkTypeMacro(vtkCMBModelSource, vtkCompositeDataSetAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // Copy a model source/wrapper
-  void CopyData(vtkDiscreteModelWrapper *source);
+  void CopyData(vtkDiscreteModelWrapper* source);
 
   // Description:
   // Specify a model source.
-  void SetSource(vtkDiscreteModelWrapper *source);
+  void SetSource(vtkDiscreteModelWrapper* source);
   vtkDiscreteModelWrapper* GetSource();
 
   // Description:
@@ -51,19 +51,18 @@ protected:
   // Description:
   // This is called by the superclass.
   // This is the method you should override.
-  virtual int RequestDataObject(vtkInformation* request,
-    vtkInformationVector** inputData,
-    vtkInformationVector* outputData);
+  virtual int RequestDataObject(
+    vtkInformation* request, vtkInformationVector** inputData, vtkInformationVector* outputData);
 
-  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
   // see algorithm for more info
   virtual int FillOutputPortInformation(int port, vtkInformation* info);
 
   vtkWeakPointer<vtkDiscreteModelWrapper> Source;
 
 private:
-  vtkCMBModelSource(const vtkCMBModelSource&);  // Not implemented.
-  void operator=(const vtkCMBModelSource&);  // Not implemented.
+  vtkCMBModelSource(const vtkCMBModelSource&); // Not implemented.
+  void operator=(const vtkCMBModelSource&);    // Not implemented.
 };
 
 #endif

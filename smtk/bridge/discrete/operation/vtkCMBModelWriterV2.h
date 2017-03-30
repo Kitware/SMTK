@@ -33,12 +33,15 @@
 #include "vtkObject.h"
 #include <vector>
 
-namespace smtk {
-  namespace bridge {
-    namespace discrete {
-      class Session;
-    }
-  }
+namespace smtk
+{
+namespace bridge
+{
+namespace discrete
+{
+class Session;
+}
+}
 }
 
 class vtkDiscreteModel;
@@ -50,8 +53,8 @@ class vtkPolyData;
 class SMTKDISCRETESESSION_EXPORT vtkCMBModelWriterV2 : public vtkObject
 {
 public:
-  static vtkCMBModelWriterV2 * New();
-  vtkTypeMacro(vtkCMBModelWriterV2,vtkObject);
+  static vtkCMBModelWriterV2* New();
+  vtkTypeMacro(vtkCMBModelWriterV2, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -75,8 +78,7 @@ public:
 
   // Description:
   // Return the version being written out.
-  virtual int GetVersion()
-  {return 2;}
+  virtual int GetVersion() { return 2; }
 
 protected:
   vtkCMBModelWriterV2();
@@ -85,12 +87,12 @@ protected:
   // Description:
   // Set the vtkDiscreteModelVertex data in Poly.  Version 2 does not
   // contain this info.
-  virtual void SetModelVertexData(vtkDiscreteModel* /*Model*/, vtkPolyData* /*Poly*/) {};
+  virtual void SetModelVertexData(vtkDiscreteModel* /*Model*/, vtkPolyData* /*Poly*/){};
 
   // Description:
   // Set the vtkDiscreteModelEdge data in Poly.  Version 2 does not
   // contain this data.
-  virtual void SetModelEdgeData(vtkDiscreteModel* /*Model*/, vtkPolyData* /*Poly*/) {};
+  virtual void SetModelEdgeData(vtkDiscreteModel* /*Model*/, vtkPolyData* /*Poly*/){};
 
   // Description:
   // Set the information for the analysis grid with respect to the
@@ -113,39 +115,36 @@ protected:
   // Set the vtkModelEntityGroup data in Poly.
   virtual void SetModelEntityGroupData(vtkDiscreteModel* Model, vtkPolyData* Poly);
 
- // Description:
+  // Description:
   // Set the vtkDiscreteModelEdge data in Poly.
   virtual void SetFloatingEdgeData(vtkDiscreteModel* Model, vtkPolyData* Poly);
 
   // Description:
   // Add arrays to the master \a Poly data containing UUIDs for model entities.
-  virtual void SetUUIDData(vtkDiscreteModel* Model, vtkPolyData* Poly,
-                           smtk::bridge::discrete::Session* session);
+  virtual void SetUUIDData(
+    vtkDiscreteModel* Model, vtkPolyData* Poly, smtk::bridge::discrete::Session* session);
 
   // Description:
   // Set the vtkCMBModelFaceData in Poly.
-  virtual void SetModelEntityData(vtkPolyData* Poly,
-                                  std::vector<vtkModelEntity*> & EntityIds,
-                                  const char* BaseArrayName);
+  virtual void SetModelEntityData(
+    vtkPolyData* Poly, std::vector<vtkModelEntity*>& EntityIds, const char* BaseArrayName);
   // Description:
   // Add a field-data array (named \a arrayName) to \a poly
   // containing UUIDs of all the \a items.
   //
   // Any entry in \a items with no UUID will result in a
   // null UUID in the output array.
-  virtual void SetModelItemUUIDs(
-    vtkDiscreteModel* model, vtkPolyData* poly,
-    std::vector<vtkModelItem*>& items,
-    const char* arrayName,
+  virtual void SetModelItemUUIDs(vtkDiscreteModel* model, vtkPolyData* poly,
+    std::vector<vtkModelItem*>& items, const char* arrayName,
     smtk::bridge::discrete::Session* session);
 
   // Description:
   // Add the file version to the field data of the poly data
-  virtual void AddFileVersion(vtkPolyData *poly);
+  virtual void AddFileVersion(vtkPolyData* poly);
 
 private:
-  vtkCMBModelWriterV2(const vtkCMBModelWriterV2&);  // Not implemented.
-  void operator=(const vtkCMBModelWriterV2&);  // Not implemented.
+  vtkCMBModelWriterV2(const vtkCMBModelWriterV2&); // Not implemented.
+  void operator=(const vtkCMBModelWriterV2&);      // Not implemented.
 
   // Description:
   // The mode to use for the internal vtkXMLPolyDataWriter
@@ -154,7 +153,6 @@ private:
   // Description:
   // The name of the file to be written.
   char* FileName;
-
 };
 
 #endif

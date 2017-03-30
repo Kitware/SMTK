@@ -70,23 +70,17 @@ class vtkModelSelectionHelper : public vtkCommand
 {
 public:
   static vtkModelSelectionHelper* New() { return new vtkModelSelectionHelper; }
-  vtkModelSelectionHelper()
-    {
-    }
-  ~vtkModelSelectionHelper()
-    {
-    }
+  vtkModelSelectionHelper() {}
+  ~vtkModelSelectionHelper() {}
   void PrintSelectionMask(int mask)
-    {
-    cout << "Selecting:"
-      << (mask & smtk::model::DIMENSION_0 ? " Vertices" : "")
-      << (mask & smtk::model::DIMENSION_1 ? " Edges" : "")
-      << (mask & smtk::model::DIMENSION_2 ? " Faces" : "")
-      << (mask & smtk::model::DIMENSION_3 ? " Volumes" : "")
-      << "\n";
-    }
+  {
+    cout << "Selecting:" << (mask & smtk::model::DIMENSION_0 ? " Vertices" : "")
+         << (mask & smtk::model::DIMENSION_1 ? " Edges" : "")
+         << (mask & smtk::model::DIMENSION_2 ? " Faces" : "")
+         << (mask & smtk::model::DIMENSION_3 ? " Volumes" : "") << "\n";
+  }
   virtual void Execute(vtkObject* caller, unsigned long eventId, void* vtkNotUsed(callData))
-    {
+  {
     /*
     cout
       << "Event " << eventId << " caller " << caller
@@ -94,155 +88,145 @@ public:
       << " data " << callData << "\n";
      */
     if (eventId == vtkCommand::KeyPressEvent)
-      {
+    {
       vtkRenderWindowInteractor* iren = vtkRenderWindowInteractor::SafeDownCast(caller);
       if (iren)
-        {
+      {
         char key = iren->GetKeySym()[0];
         if (key == 'm')
-          {
+        {
           this->SwitchInteractors();
           this->PrintSelectionMask(this->Representation->GetSelectionMask());
-          }
+        }
         else if (key == 'd' || key == 'D')
-          {
+        {
           int mask = this->Representation->GetSelectionMask();
-          mask = (mask + 1) % (
-            smtk::model::DIMENSION_0 +
-            smtk::model::DIMENSION_1 +
-            smtk::model::DIMENSION_2 +
-            smtk::model::DIMENSION_3 +
-            1);
-          if (mask == 0) ++mask; // Don't allow "select nothing"
+          mask = (mask + 1) % (smtk::model::DIMENSION_0 + smtk::model::DIMENSION_1 +
+                                smtk::model::DIMENSION_2 + smtk::model::DIMENSION_3 + 1);
+          if (mask == 0)
+            ++mask; // Don't allow "select nothing"
           this->Representation->SetSelectionMask(mask);
           this->PrintSelectionMask(mask);
-          }
+        }
         else if (key == 'q' || key == 'e')
-          {
+        {
           // A quirk of keeping 2 interactors around is that only one's
           // TerminateApp() method actually stops processing the event
           // loop (the one on which Start() was called).
           this->CameraInteractor->TerminateApp();
-          }
         }
       }
+    }
     else if (eventId == vtkCommand::SelectionChangedEvent)
-      {
+    {
       vtkSelection* selection = this->Representation->GetAnnotationLink()->GetCurrentSelection();
       vtkSelectionNode* node = selection->GetNode(0);
-      if (
-        selection && node &&
-        selection->GetNumberOfNodes() == 1 &&
+      if (selection && node && selection->GetNumberOfNodes() == 1 &&
         node->GetContentType() == vtkSelectionNode::PEDIGREEIDS)
-        {
+      {
         cout << "Selection changed to [\n";
         vtkIndent indent;
-        vtkStringArray* uuids = vtkStringArray::SafeDownCast(
-          node->GetSelectionData()->GetAbstractArray(0));
+        vtkStringArray* uuids =
+          vtkStringArray::SafeDownCast(node->GetSelectionData()->GetAbstractArray(0));
         if (uuids)
-          {
+        {
           vtkIdType nids = uuids->GetNumberOfTuples();
           std::set<std::string> uniques;
           for (vtkIdType i = 0; i < nids; ++i)
-            {
+          {
             uniques.insert(uuids->GetValue(i));
-            }
+          }
           std::set<std::string>::iterator it;
           for (it = uniques.begin(); it != uniques.end(); ++it)
-            {
-            cout
-              << indent << *it << "  "
-              << (this->Manager ? this->Manager->name(smtk::common::UUID(*it)) : "--")
-              << "\n";
-            }
+          {
+            cout << indent << *it << "  "
+                 << (this->Manager ? this->Manager->name(smtk::common::UUID(*it)) : "--") << "\n";
           }
+        }
         cout << "]\n";
-        }
-      else if (selection && ! node)
-        {
+      }
+      else if (selection && !node)
+      {
         cout << "Selection cleared\n";
-        }
       }
     }
+  }
 
   void SetSelectionInteractor(vtkRenderWindowInteractor* si)
-    {
+  {
     if (this->SelectionInteractor == si)
-      {
+    {
       return;
-      }
+    }
     if (this->SelectionInteractor)
-      {
+    {
       this->SelectionInteractor->RemoveObserver(this);
-      }
+    }
     this->SelectionInteractor = si;
     if (this->SelectionInteractor)
-      {
+    {
       this->SelectionInteractor->AddObserver(vtkCommand::KeyPressEvent, this);
-      }
     }
+  }
 
   void SetCameraInteractor(vtkRenderWindowInteractor* si)
-    {
+  {
     if (this->CameraInteractor == si)
-      {
+    {
       return;
-      }
+    }
     if (this->CameraInteractor)
-      {
+    {
       this->CameraInteractor->RemoveObserver(this);
-      }
+    }
     this->CameraInteractor = si;
     if (this->CameraInteractor)
-      {
+    {
       this->CameraInteractor->AddObserver(vtkCommand::KeyPressEvent, this);
-      }
     }
+  }
 
   void SetRenderWindow(vtkRenderWindow* rw)
-    {
+  {
     if (this->RenderWindow == rw)
-      {
+    {
       return;
-      }
-    this->RenderWindow = rw;
     }
+    this->RenderWindow = rw;
+  }
 
   void SetRepresentation(vtkModelRepresentation* rep)
-    {
+  {
     if (this->Representation == rep)
-      {
-      return;
-      }
-    this->Representation = rep;
-    }
-
-  void SetManager(smtk::model::ManagerPtr sm)
     {
-    this->Manager = sm;
+      return;
     }
+    this->Representation = rep;
+  }
+
+  void SetManager(smtk::model::ManagerPtr sm) { this->Manager = sm; }
 
   void SwitchInteractors()
-    {
+  {
     if (this->RenderWindow->GetInteractor() == this->CameraInteractor)
-      {
+    {
       this->RenderWindow->SetInteractor(this->SelectionInteractor);
-      }
-    else
-      {
-      this->RenderWindow->SetInteractor(this->CameraInteractor);
-      }
     }
+    else
+    {
+      this->RenderWindow->SetInteractor(this->CameraInteractor);
+    }
+  }
 
   vtkSmartPointer<vtkRenderWindowInteractor> GetSelectionInteractor()
-    {
-	    return this->SelectionInteractor;
-    }
+  {
+    return this->SelectionInteractor;
+  }
 
   vtkSmartPointer<vtkRenderWindowInteractor> GetCameraInteractor()
-    {
-	    return this->CameraInteractor;
-    }
+  {
+    return this->CameraInteractor;
+  }
 
 protected:
   vtkSmartPointer<vtkRenderWindowInteractor> CameraInteractor;
@@ -257,50 +241,43 @@ int main(int argc, char* argv[])
   int debug = argc > 2 ? (argv[2][0] == '-' ? 0 : 1) : 0;
   std::ifstream file(argc > 1 ? argv[1] : "smtkModel.json");
   if (!file.good())
-    {
-    cout
-      << "Could not open file \"" << (argc > 1 ? argv[1] : "smtkModel.json") << "\".\n\n"
-      << "Usage:\n  " << argv[0] << " [[filename] debug]\n"
-      << "where\n"
-      << "  filename is the path to a JSON model.\n"
-      << "  debug    is any character other than '-'; its presence turns the test into an interactive demo.\n\n"
-      ;
+  {
+    cout << "Could not open file \"" << (argc > 1 ? argv[1] : "smtkModel.json") << "\".\n\n"
+         << "Usage:\n  " << argv[0] << " [[filename] debug]\n"
+         << "where\n"
+         << "  filename is the path to a JSON model.\n"
+         << "  debug    is any character other than '-'; its presence turns the test into an "
+            "interactive demo.\n\n";
     return 1;
-    }
+  }
   if (debug)
-    {
-    cout
-      << "\n\n"
-      << "Press 'm' to switch interaction modes (camera motion vs selection)\n"
-      << "      'q' to exit\n\n"
-      ;
-    }
-  std::string data(
-    (std::istreambuf_iterator<char>(file)),
-    (std::istreambuf_iterator<char>()));
+  {
+    cout << "\n\n"
+         << "Press 'm' to switch interaction modes (camera motion vs selection)\n"
+         << "      'q' to exit\n\n";
+  }
+  std::string data((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
 
   ManagerPtr sm = smtk::model::Manager::create();
 
-  int status = ! LoadJSON::intoModelManager(data.c_str(), sm);
-  if (! status)
-    {
+  int status = !LoadJSON::intoModelManager(data.c_str(), sm);
+  if (!status)
+  {
     vtkNew<vtkModelView> view;
     vtkNew<vtkModelSource> src;
     vtkNew<vtkModelRepresentation> rep;
     vtkModelSelectionHelper* hlp = NULL;
     view->SetDisplayHoverText(0);
     if (debug)
-      {
+    {
       hlp = vtkModelSelectionHelper::New();
       view->GetRenderWindow()->SetMultiSamples(16);
-      }
+    }
     else
-      {
+    {
       view->GetRenderWindow()->SetMultiSamples(0);
-      }
-    EntityRefs thingsToDraw =
-      sm->entitiesMatchingFlagsAs<EntityRefs>(
-        smtk::model::MODEL_ENTITY);
+    }
+    EntityRefs thingsToDraw = sm->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::MODEL_ENTITY);
     src->SetEntities(thingsToDraw);
     rep->SetModel(sm);
     rep->SetSelectionMask(smtk::model::DIMENSION_1);
@@ -312,26 +289,27 @@ int main(int argc, char* argv[])
     view->ResetCameraClippingRange();
 
     if (hlp)
-      {
+    {
       rep->AddObserver(vtkCommand::SelectionChangedEvent, hlp);
       hlp->SetSelectionInteractor(view->GetRenderWindow()->GetInteractor());
       vtkRenderWindowInteractor* iac = view->GetRenderWindow()->MakeRenderWindowInteractor();
-      vtkInteractorStyleSwitch::SafeDownCast(iac->GetInteractorStyle())->SetCurrentStyleToTrackballCamera();
+      vtkInteractorStyleSwitch::SafeDownCast(iac->GetInteractorStyle())
+        ->SetCurrentStyleToTrackballCamera();
       view->GetRenderWindow()->SetInteractor(iac);
       hlp->SetCameraInteractor(iac);
       hlp->SetRenderWindow(view->GetRenderWindow());
       hlp->SetRepresentation(rep.GetPointer());
       hlp->SetManager(sm);
-      }
+    }
 
     view->Render();
     view->ResetCamera();
     view->ResetCameraClippingRange();
 
-    status = ! vtkRegressionTestImage(view->GetRenderWindow());
+    status = !vtkRegressionTestImage(view->GetRenderWindow());
 
     if (debug)
-      {
+    {
       sm->assignDefaultNames();
       applyPublicationTheme(view.GetPointer());
       view->GetInteractor()->Start();
@@ -342,9 +320,9 @@ int main(int argc, char* argv[])
       hlp->SetRepresentation(NULL);
       hlp->SetSelectionInteractor(NULL);
       hlp->Delete();
-      }
-    view->RemoveAllRepresentations();
     }
+    view->RemoveAllRepresentations();
+  }
 
   return status;
 }

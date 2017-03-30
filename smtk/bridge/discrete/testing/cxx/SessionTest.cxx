@@ -48,9 +48,9 @@ void prindent(std::ostream& os, int indent, smtk::model::DescriptivePhrase::Ptr 
   smtk::model::DescriptivePhrases sub = p->subphrases();
   indent += 2;
   for (smtk::model::DescriptivePhrases::iterator it = sub.begin(); it != sub.end(); ++it)
-    {
+  {
     prindent(os, indent, *it);
-    }
+  }
 }
 
 int main(int argc, char* argv[])
@@ -77,21 +77,19 @@ int main(int argc, char* argv[])
 
   smtk::model::OperatorPtr readOp = session->op("read");
   if (!readOp)
-    {
+  {
     std::cerr << "No read operator\n";
     return 1;
-    }
+  }
 
   readOp->specification()->findFile("filename")->setValue(std::string(argv[1]));
   std::cout << "Importing " << argv[1] << "\n";
   smtk::model::OperatorResult opresult = readOp->operate();
-  if (
-    opresult->findInt("outcome")->value() !=
-    smtk::model::OPERATION_SUCCEEDED)
-    {
+  if (opresult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  {
     std::cerr << "Read operator failed\n";
     return 1;
-    }
+  }
 
   smtk::model::Model model = opresult->findModelEntity("created")->value();
   manager->assignDefaultNames(); // should force transcription of every entity, but doesn't yet.
@@ -105,61 +103,61 @@ int main(int argc, char* argv[])
   // List model operators
   smtk::model::StringList opNames = model.operatorNames();
   if (!opNames.empty())
-    {
+  {
     std::cout << "\nFound operators:\n";
     for (smtk::model::StringList::const_iterator it = opNames.begin(); it != opNames.end(); ++it)
-      {
+    {
       std::cout << "  " << *it << "\n";
-      }
     }
+  }
 
   // Test a model operator (if some argument beyond filename is given)
   if (argc > 2)
-    {
+  {
     // Find a face with more than 2 triangles
     smtk::model::Faces allFaces;
     smtk::model::EntityRef::EntityRefsFromUUIDs(
-      allFaces, manager,
-      manager->entitiesMatchingFlags(smtk::model::FACE));
+      allFaces, manager, manager->entitiesMatchingFlags(smtk::model::FACE));
     smtk::model::Face f;
     for (smtk::model::Faces::iterator it = allFaces.begin(); it != allFaces.end(); ++it)
-      {
+    {
       f = *it;
       const smtk::model::Tessellation* tess = f.hasTessellation();
       if (tess && tess->conn().size() > 8)
         break;
-      }
+    }
     if (f.isValid() && f.hasTessellation()->conn().size() > 8)
-      {
+    {
       std::cout << "Attempting face split\n";
       smtk::model::OperatorPtr splitFace = model.op("split face");
       splitFace->specification()->findModelEntity("face to split")->setValue(f);
       splitFace->specification()->findModelEntity("model")->setValue(
-          *manager->entitiesMatchingFlagsAs<Models>(smtk::model::MODEL_ENTITY).begin());
+        *manager->entitiesMatchingFlagsAs<Models>(smtk::model::MODEL_ENTITY).begin());
       splitFace->specification()->findDouble("feature angle")->setValue(15.0);
       OperatorResult result = splitFace->operate();
       std::cout << "  Face is " << f.name() << " (" << f.entity() << ")\n";
-      std::cout << "  " << (result->findInt("outcome")->value() == OPERATION_SUCCEEDED ? "OK" : "Failed") << "\n";
-      }
+      std::cout << "  "
+                << (result->findInt("outcome")->value() == OPERATION_SUCCEEDED ? "OK" : "Failed")
+                << "\n";
+    }
     else if (f.isValid())
-      {
+    {
       std::cout << "No faces to split\n";
-      }
+    }
 
     smtk::model::EntityRefArray exports;
     exports.push_back(model);
-    session->ExportEntitiesToFileOfNameAndType(
-      exports, "sessionTest.cmb", "cmb");
+    session->ExportEntitiesToFileOfNameAndType(exports, "sessionTest.cmb", "cmb");
     std::cout << "  done\n";
-    }
+  }
 
   std::string json = smtk::io::SaveJSON::fromModelManager(manager);
   if (!json.empty())
-    {
+  {
     std::ofstream jsonFile("sessionTest.json");
     jsonFile << json;
     jsonFile.close();
-    }
+  }
 
   return 0;
 }

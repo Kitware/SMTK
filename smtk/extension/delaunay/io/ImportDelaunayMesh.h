@@ -16,28 +16,38 @@
 //forward declarers for Manager and Collection
 #include "smtk/PublicPointerDefs.h"
 
-namespace Delaunay {
-namespace Mesh {
+namespace Delaunay
+{
+namespace Mesh
+{
 class Mesh;
 }
 }
 
-namespace smtk {
-namespace mesh {
+namespace smtk
+{
+namespace mesh
+{
 class MeshSet;
 }
 }
 
-namespace smtk {
-namespace model {
+namespace smtk
+{
+namespace model
+{
 class EntityRef;
 }
 }
 
-namespace smtk {
-namespace extension {
-namespace delaunay {
-namespace io {
+namespace smtk
+{
+namespace extension
+{
+namespace delaunay
+{
+namespace io
+{
 
 /**\brief Import a Delaunay mesh into smtk.
   *
@@ -52,15 +62,11 @@ public:
   ImportDelaunayMesh& operator=(const ImportDelaunayMesh&) = delete;
 
   //Import a Delaunay mesh into an existing collection.
-  smtk::mesh::MeshSet operator()(const Delaunay::Mesh::Mesh&,
-                                 smtk::mesh::CollectionPtr) const;
+  smtk::mesh::MeshSet operator()(const Delaunay::Mesh::Mesh&, smtk::mesh::CollectionPtr) const;
 
   //Import a Delaunay mesh as a tessellation for an entity.
-  bool operator()(const Delaunay::Mesh::Mesh&,
-                  smtk::model::EntityRef&) const;
-
+  bool operator()(const Delaunay::Mesh::Mesh&, smtk::model::EntityRef&) const;
 };
-
 }
 }
 }

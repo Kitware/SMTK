@@ -22,14 +22,13 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkSerializationHelper.h"
 
-
 class vtkCamera;
 class vtkSerializer;
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkRenderingSerializationHelper : public vtkSerializationHelper
 {
 public:
-  static vtkRenderingSerializationHelper *New();
+  static vtkRenderingSerializationHelper* New();
   vtkTypeMacro(vtkRenderingSerializationHelper, vtkSerializationHelper);
   void PrintSelf(ostream& os, vtkIndent indent);
 
@@ -48,11 +47,11 @@ public:
 
   // Description:
   // Get the value for the "type" attribute of the specfied object type
-  virtual const char *GetSerializationType(vtkObject *object);
+  virtual const char* GetSerializationType(vtkObject* object);
 
   // Description:
   // Serialize the input object.  Returns 1 if successful.
-  virtual int Serialize(vtkObject *object, vtkSerializer *serializer);
+  virtual int Serialize(vtkObject* object, vtkSerializer* serializer);
 
 protected:
   vtkRenderingSerializationHelper();
@@ -60,12 +59,11 @@ protected:
 
   // Description:
   // Serialize a vtkCamera
-  void SerializeCamera(vtkCamera *camera, vtkSerializer *serializer);
+  void SerializeCamera(vtkCamera* camera, vtkSerializer* serializer);
 
 private:
-  vtkRenderingSerializationHelper(const vtkRenderingSerializationHelper&);  // Not implemented.
-  void operator=(const vtkRenderingSerializationHelper&);  // Not implemented.
-
+  vtkRenderingSerializationHelper(const vtkRenderingSerializationHelper&); // Not implemented.
+  void operator=(const vtkRenderingSerializationHelper&);                  // Not implemented.
 };
 
 #endif

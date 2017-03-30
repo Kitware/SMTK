@@ -17,7 +17,7 @@ class VTKSMTKFILTEREXT_EXPORT vtkDEMToMesh : public vtkPolyDataAlgorithm
 {
 public:
   static vtkDEMToMesh* New();
-  vtkTypeMacro(vtkDEMToMesh,vtkPolyDataAlgorithm);
+  vtkTypeMacro(vtkDEMToMesh, vtkPolyDataAlgorithm);
 
   void SetUseScalerForZ(int v);
 
@@ -27,16 +27,15 @@ protected:
 
   virtual int FillInputPortInformation(int port, vtkInformation* info);
 
-  virtual int RequestData(vtkInformation* req,
-                          vtkInformationVector** inInfo,
-                          vtkInformationVector* outInfo);
+  virtual int RequestData(
+    vtkInformation* req, vtkInformationVector** inInfo, vtkInformationVector* outInfo);
 
   int UseScalerForZ;
   int SubSampleStepSize;
 
 private:
-  vtkDEMToMesh(const vtkDEMToMesh&); // Not implemented.
-  void operator = (const vtkDEMToMesh&); // Not implemented.
+  vtkDEMToMesh(const vtkDEMToMesh&);   // Not implemented.
+  void operator=(const vtkDEMToMesh&); // Not implemented.
 };
 
 #endif // __smtk_vtk_DEMToMesh_h

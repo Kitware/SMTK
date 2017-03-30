@@ -24,9 +24,12 @@
 
 #include "vtkNew.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace discrete {
+namespace smtk
+{
+namespace bridge
+{
+namespace discrete
+{
 
 class Session;
 
@@ -63,11 +66,10 @@ protected:
   vtkNew<vtkCMBMapToCMBModel> m_mapOp;
   vtkNew<vtkGenerateSimpleModelOperator> m_shpOp;
 #endif
-
 };
 
-    } // namespace discrete
-  } // namespace bridge
+} // namespace discrete
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_discrete_ImportOperator_h

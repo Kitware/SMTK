@@ -10,16 +10,18 @@
 //
 //=============================================================================
 
-
 #ifndef __smtk_mesh_moab_CellTypeToType_h
 #define __smtk_mesh_moab_CellTypeToType_h
 
 #include "smtk/mesh/CellTypes.h"
 #include "smtk/mesh/moab/HandleRange.h"
 
-namespace smtk {
-namespace mesh {
-namespace moab {
+namespace smtk
+{
+namespace mesh
+{
+namespace moab
+{
 
 //these aren't exported as they are private functions that only
 //smtk::mesh should call
@@ -27,7 +29,6 @@ namespace moab {
 smtk::mesh::CellType moabToSMTKCell(int t);
 
 int smtkToMOABCell(smtk::mesh::CellType t);
-
 }
 }
 } //namespace smtk::mesh::moab

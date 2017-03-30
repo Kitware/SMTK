@@ -27,7 +27,7 @@ class VTK_EXPORT vtkCMBModelFaceMeshServer : public vtkCMBModelFaceMesh
 {
 public:
   static vtkCMBModelFaceMeshServer* New();
-  vtkTypeMacro(vtkCMBModelFaceMeshServer,vtkCMBModelFaceMesh);
+  vtkTypeMacro(vtkCMBModelFaceMeshServer, vtkCMBModelFaceMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -49,18 +49,17 @@ protected:
   bool BuildMesh(bool meshHigherDimensionalEntities);
 
   bool CreateMeshInfo();
-  bool Triangulate(vtkPolyData *mesh, double length, double angle);
+  bool Triangulate(vtkPolyData* mesh, double length, double angle);
   void DetermineZValueOfFace();
 
 private:
   int FaceMesherFailed;
 
   double ZValue;
-  vtkCMBModelFaceMeshServer(const vtkCMBModelFaceMeshServer&);  // Not implemented.
-  void operator=(const vtkCMBModelFaceMeshServer&);  // Not implemented.
+  vtkCMBModelFaceMeshServer(const vtkCMBModelFaceMeshServer&); // Not implemented.
+  void operator=(const vtkCMBModelFaceMeshServer&);            // Not implemented.
 
-  CmbFaceMesherClasses::ModelFaceRep *FaceInfo;
-
+  CmbFaceMesherClasses::ModelFaceRep* FaceInfo;
 };
 
 #endif

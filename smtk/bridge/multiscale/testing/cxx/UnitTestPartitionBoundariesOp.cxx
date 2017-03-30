@@ -49,26 +49,25 @@ namespace
 
 std::string afrlRoot = std::string(AFRL_DIR);
 
-void cleanup( const std::string& file_path )
+void cleanup(const std::string& file_path)
 {
   //first verify the file exists
-  ::boost::filesystem::path path( file_path );
-  if( ::boost::filesystem::is_regular_file( path ) )
+  ::boost::filesystem::path path(file_path);
+  if (::boost::filesystem::is_regular_file(path))
   {
     //remove the file_path if it exists.
-    ::boost::filesystem::remove( path );
+    ::boost::filesystem::remove(path);
   }
 }
-
 }
 
 int UnitTestPartitionBoundariesOp(int argc, char* argv[])
 {
   if (afrlRoot.empty())
-    {
+  {
     std::cerr << "AFRL directory not defined\n";
     return 1;
-    }
+  }
 
   smtk::model::ManagerPtr manager = smtk::model::Manager::create();
 
@@ -78,8 +77,7 @@ int UnitTestPartitionBoundariesOp(int argc, char* argv[])
     std::cout << "  " << *it << "\n";
   std::cout << "\n";
 
-  smtk::bridge::multiscale::Session::Ptr session =
-    smtk::bridge::multiscale::Session::create();
+  smtk::bridge::multiscale::Session::Ptr session = smtk::bridge::multiscale::Session::create();
   manager->registerSession(session);
 
   std::cout << "Available cmb operators\n";
@@ -95,22 +93,19 @@ int UnitTestPartitionBoundariesOp(int argc, char* argv[])
     return 1;
   }
 
-  dream3dOp->specification()->findFile("point-file")
-    ->setValue(afrlRoot +
-               "/Dream3DPipelines/Inputs/DEF_PTR.RST");
-  dream3dOp->specification()->findFile("step-file")
-    ->setValue(afrlRoot +
-               "/Dream3DPipelines/Inputs/F2_DataExtract_Step623.DAT");
-  dream3dOp->specification()->findFile("pipeline-executable")
-    ->setValue(afrlRoot +
-               "/Placeholders/bin/PipelineRunner");
-  dream3dOp->specification()->findFile("output-file")
-    ->setValue("out.dream3d");
-  dream3dOp->specification()->findString("attribute")
-    ->setToDefault();
+  dream3dOp->specification()
+    ->findFile("point-file")
+    ->setValue(afrlRoot + "/Dream3DPipelines/Inputs/DEF_PTR.RST");
+  dream3dOp->specification()
+    ->findFile("step-file")
+    ->setValue(afrlRoot + "/Dream3DPipelines/Inputs/F2_DataExtract_Step623.DAT");
+  dream3dOp->specification()
+    ->findFile("pipeline-executable")
+    ->setValue(afrlRoot + "/Placeholders/bin/PipelineRunner");
+  dream3dOp->specification()->findFile("output-file")->setValue("out.dream3d");
+  dream3dOp->specification()->findString("attribute")->setToDefault();
 
-  smtk::attribute::FileItem::Ptr statsfiles =
-    dream3dOp->specification()->findFile("stats-files");
+  smtk::attribute::FileItem::Ptr statsfiles = dream3dOp->specification()->findFile("stats-files");
   if (!statsfiles)
   {
     std::cerr << "No stats files!\n";
@@ -125,28 +120,18 @@ int UnitTestPartitionBoundariesOp(int argc, char* argv[])
     return 1;
   }
 
-    statsfiles->
-      setValue(0, afrlRoot +
-               "/Dream3DPipelines/Inputs/randomEquiaxed_mu1.dream3d");
-    statsfiles->
-      setValue(1, afrlRoot +
-               "/Dream3DPipelines/Inputs/randomEquiaxed_mu15.dream3d");
-    statsfiles->
-      setValue(2, afrlRoot +
-               "/Dream3DPipelines/Inputs/randomEquiaxed_mu2.dream3d");
-    statsfiles->
-      setValue(3, afrlRoot +
-               "/Dream3DPipelines/Inputs/randomEquiaxed_mu25.dream3d");
+  statsfiles->setValue(0, afrlRoot + "/Dream3DPipelines/Inputs/randomEquiaxed_mu1.dream3d");
+  statsfiles->setValue(1, afrlRoot + "/Dream3DPipelines/Inputs/randomEquiaxed_mu15.dream3d");
+  statsfiles->setValue(2, afrlRoot + "/Dream3DPipelines/Inputs/randomEquiaxed_mu2.dream3d");
+  statsfiles->setValue(3, afrlRoot + "/Dream3DPipelines/Inputs/randomEquiaxed_mu25.dream3d");
 
   smtk::model::OperatorResult dream3dOpResult = dream3dOp->operate();
   cleanup("out.dream3d");
-  if (
-    dream3dOpResult->findInt("outcome")->value() !=
-    smtk::model::OPERATION_SUCCEEDED)
-    {
+  if (dream3dOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  {
     std::cerr << "Dream3d operator failed\n";
     return 1;
-    }
+  }
 
   smtk::model::Model model = dream3dOpResult->findModelEntity("model")->value();
 
@@ -159,14 +144,15 @@ int UnitTestPartitionBoundariesOp(int argc, char* argv[])
       return 1;
     }
 
-    writeOp->specification()->findFile("filename")->setValue("/Users/tjcorona/Desktop/Dream3DOutputModel.vtk");
+    writeOp->specification()
+      ->findFile("filename")
+      ->setValue("/Users/tjcorona/Desktop/Dream3DOutputModel.vtk");
     // writeOp->specification()->associateEntity(model);
-    bool valueSet = writeOp->specification()->findMesh("mesh")->
-      setValue(manager->meshes()->findCollection(model.entity())->second->meshes());
+    bool valueSet = writeOp->specification()->findMesh("mesh")->setValue(
+      manager->meshes()->findCollection(model.entity())->second->meshes());
 
     smtk::model::OperatorResult writeOpResult = writeOp->operate();
-    if (writeOpResult->findInt("outcome")->value() !=
-        smtk::model::OPERATION_SUCCEEDED)
+    if (writeOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
     {
       std::cerr << "Write operator failed\n";
       return 1;
@@ -183,26 +169,23 @@ int UnitTestPartitionBoundariesOp(int argc, char* argv[])
   revolveOp->specification()->associateEntity(model);
   revolveOp->specification()->findDouble("sweep-angle")->setValue(30.);
   revolveOp->specification()->findInt("resolution")->setValue(15);
-  revolveOp->specification()->findDouble("axis-direction")->setValue(0,0.);
-  revolveOp->specification()->findDouble("axis-direction")->setValue(1,1.);
-  revolveOp->specification()->findDouble("axis-direction")->setValue(2,0.);
-  revolveOp->specification()->findDouble("axis-position")->setValue(0,-0.02);
-  revolveOp->specification()->findDouble("axis-position")->setValue(1,0.);
-  revolveOp->specification()->findDouble("axis-position")->setValue(2,0.);
+  revolveOp->specification()->findDouble("axis-direction")->setValue(0, 0.);
+  revolveOp->specification()->findDouble("axis-direction")->setValue(1, 1.);
+  revolveOp->specification()->findDouble("axis-direction")->setValue(2, 0.);
+  revolveOp->specification()->findDouble("axis-position")->setValue(0, -0.02);
+  revolveOp->specification()->findDouble("axis-position")->setValue(1, 0.);
+  revolveOp->specification()->findDouble("axis-position")->setValue(2, 0.);
 
   smtk::model::OperatorResult revolveOpResult = revolveOp->operate();
-  if (
-    revolveOpResult->findInt("outcome")->value() !=
-    smtk::model::OPERATION_SUCCEEDED)
-    {
+  if (revolveOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  {
     std::cerr << "Revolve operator failed\n";
     return 1;
-    }
+  }
 
   model = revolveOpResult->findModelEntity("model")->value();
 
-  smtk::model::OperatorPtr partitionBoundariesOp =
-    session->op("partition boundaries");
+  smtk::model::OperatorPtr partitionBoundariesOp = session->op("partition boundaries");
   if (!partitionBoundariesOp)
   {
     std::cerr << "No partition boundaries operator\n";
@@ -210,36 +193,29 @@ int UnitTestPartitionBoundariesOp(int argc, char* argv[])
   }
 
   partitionBoundariesOp->specification()->associateEntity(model);
-  partitionBoundariesOp->specification()->findDouble("origin")->
-    setValue(0,-0.02);
-  partitionBoundariesOp->specification()->findDouble("origin")->
-    setValue(1,0.);
-  partitionBoundariesOp->specification()->findDouble("origin")->
-    setValue(2,0.);
-  partitionBoundariesOp->specification()->findDouble("radius")->
-    setValue(1.2);
+  partitionBoundariesOp->specification()->findDouble("origin")->setValue(0, -0.02);
+  partitionBoundariesOp->specification()->findDouble("origin")->setValue(1, 0.);
+  partitionBoundariesOp->specification()->findDouble("origin")->setValue(2, 0.);
+  partitionBoundariesOp->specification()->findDouble("radius")->setValue(1.2);
 
-  smtk::model::OperatorResult partitionBoundariesOpResult =
-    partitionBoundariesOp->operate();
+  smtk::model::OperatorResult partitionBoundariesOpResult = partitionBoundariesOp->operate();
 
-  if (
-    partitionBoundariesOpResult->findInt("outcome")->value() !=
-    smtk::model::OPERATION_SUCCEEDED)
-    {
+  if (partitionBoundariesOpResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
+  {
     std::cerr << "Apply thermal boundaries operator failed\n";
     return 1;
-    }
+  }
 
-  smtk::attribute::ModelEntityItemPtr created = partitionBoundariesOpResult->
-    findModelEntity("created");
+  smtk::attribute::ModelEntityItemPtr created =
+    partitionBoundariesOpResult->findModelEntity("created");
 
   assert(created->numberOfValues() == 3);
 
-  for (smtk::attribute::ModelEntityItem::const_iterator it = created->begin();
-       it != created->end(); ++it)
-    {
+  for (smtk::attribute::ModelEntityItem::const_iterator it = created->begin(); it != created->end();
+       ++it)
+  {
     assert(it->isVertex());
-    }
+  }
 
   return 0;
 }

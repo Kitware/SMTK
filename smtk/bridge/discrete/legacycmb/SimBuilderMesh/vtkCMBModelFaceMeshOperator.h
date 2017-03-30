@@ -24,8 +24,8 @@ class vtkCMBMeshWrapper;
 class VTK_EXPORT vtkCMBModelFaceMeshOperator : public vtkObject
 {
 public:
-  static vtkCMBModelFaceMeshOperator * New();
-  vtkTypeMacro(vtkCMBModelFaceMeshOperator,vtkObject);
+  static vtkCMBModelFaceMeshOperator* New();
+  vtkTypeMacro(vtkCMBModelFaceMeshOperator, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -73,8 +73,8 @@ protected:
   virtual ~vtkCMBModelFaceMeshOperator();
 
 private:
-  vtkCMBModelFaceMeshOperator(const vtkCMBModelFaceMeshOperator&);  // Not implemented.
-  void operator=(const vtkCMBModelFaceMeshOperator&);  // Not implemented.
+  vtkCMBModelFaceMeshOperator(const vtkCMBModelFaceMeshOperator&); // Not implemented.
+  void operator=(const vtkCMBModelFaceMeshOperator&);              // Not implemented.
 
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).

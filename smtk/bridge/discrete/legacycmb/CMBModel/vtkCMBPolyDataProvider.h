@@ -14,7 +14,6 @@
 // creates a filter output of the polydata used to represent the
 // model entity.
 
-
 #ifndef __vtkCMBPolyDataProvider_h
 #define __vtkCMBPolyDataProvider_h
 
@@ -29,8 +28,8 @@ class vtkPolyData;
 class VTKCMBDISCRETEMODEL_EXPORT vtkCMBPolyDataProvider : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkCMBPolyDataProvider *New();
-  vtkTypeMacro(vtkCMBPolyDataProvider,vtkPolyDataAlgorithm);
+  static vtkCMBPolyDataProvider* New();
+  vtkTypeMacro(vtkCMBPolyDataProvider, vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   void SetModelWrapper(vtkDiscreteModelWrapper*);
@@ -64,23 +63,20 @@ protected:
   // Description:
   // This is called by the superclass.
   // This is the method you should override.
-  virtual int RequestData(vtkInformation* request,
-                          vtkInformationVector** inputVector,
-                          vtkInformationVector* outputVector);
+  virtual int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
+    vtkInformationVector* outputVector);
 
   // Description:
   // This is called by the superclass.
   // This is the method you should override.
-  virtual int RequestUpdateExtent(vtkInformation*,
-                                  vtkInformationVector**,
-                                  vtkInformationVector*);
+  virtual int RequestUpdateExtent(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
 
   // see algorithm for more info
   virtual int FillOutputPortInformation(int port, vtkInformation* info);
 
 private:
-  vtkCMBPolyDataProvider(const vtkCMBPolyDataProvider&);  // Not implemented.
-  void operator=(const vtkCMBPolyDataProvider&);  // Not implemented.
+  vtkCMBPolyDataProvider(const vtkCMBPolyDataProvider&); // Not implemented.
+  void operator=(const vtkCMBPolyDataProvider&);         // Not implemented.
 
   vtkDiscreteModelWrapper* ModelWrapper;
   int ItemType;
@@ -88,7 +84,6 @@ private:
   vtkIdType EntityId;
   bool EntityIdIsSet;
   bool CreateEdgePointVerts;
-
 };
 
 #endif

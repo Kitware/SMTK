@@ -16,8 +16,8 @@
 #include "smtk/common/UUID.h"
 
 #include "smtk/model/EntityTypeBits.h" // for entityFlags values
-#include "smtk/model/IntegerData.h" // for IntegerList
-#include "smtk/model/StringData.h" // for StringList
+#include "smtk/model/IntegerData.h"    // for IntegerList
+#include "smtk/model/StringData.h"     // for StringList
 
 #include <map>
 #include <set>
@@ -25,8 +25,10 @@
 #include <string>
 #include <vector>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief A solid model entity, defined by a type and relations to other entities.
   *
@@ -64,16 +66,21 @@ public:
   int invalidateRelationByIndex(int relIdx);
 
   std::string flagSummary(int form = 0) const
-    { return Entity::flagSummary(this->entityFlags(), form); }
+  {
+    return Entity::flagSummary(this->entityFlags(), form);
+  }
   std::string flagDescription(int form = 0) const
-    { return Entity::flagDescription(this->entityFlags(), form); }
+  {
+    return Entity::flagDescription(this->entityFlags(), form);
+  }
 
   static std::string flagDimensionList(BitFlags entityFlags, bool& plural);
   static std::string flagSummaryHelper(BitFlags entityFlags, int form = 0);
   static std::string flagSummary(BitFlags entityFlags, int form = 0);
   static std::string flagDescription(BitFlags entityFlags, int form = 0);
   static int countForType(BitFlags flags, IntegerList& counters, bool incr = false);
-  static std::string defaultNameFromCounters(BitFlags entityFlags, IntegerList& counters, bool incr = true);
+  static std::string defaultNameFromCounters(
+    BitFlags entityFlags, IntegerList& counters, bool incr = true);
   static std::string flagToSpecifierString(BitFlags flagsOrMask, bool textual = true);
   static BitFlags specifierStringToFlag(const std::string& spec);
   static BitFlags dimensionToDimensionBits(int dim);
@@ -87,9 +94,9 @@ protected:
 };
 
 /// An abbreviation for the record type used by maps of Entity records.
-typedef std::pair<smtk::common::UUID,Entity> UUIDEntityPair;
+typedef std::pair<smtk::common::UUID, Entity> UUIDEntityPair;
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_Entity_h

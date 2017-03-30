@@ -30,8 +30,8 @@ class vtkPoints;
 class VTKCMBDISCRETEMODEL_EXPORT vtkGeoTransformOperator : public vtkObject
 {
 public:
-  static vtkGeoTransformOperator * New();
-  vtkTypeMacro(vtkGeoTransformOperator,vtkObject);
+  static vtkGeoTransformOperator* New();
+  vtkTypeMacro(vtkGeoTransformOperator, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -53,11 +53,10 @@ protected:
   virtual ~vtkGeoTransformOperator();
 
 private:
-
   // Description:
   // Internal ivars.
-  vtkGeoTransformOperator(const vtkGeoTransformOperator&);  // Not implemented.
-  void operator=(const vtkGeoTransformOperator&);  // Not implemented.
+  vtkGeoTransformOperator(const vtkGeoTransformOperator&); // Not implemented.
+  void operator=(const vtkGeoTransformOperator&);          // Not implemented.
 
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).
@@ -67,7 +66,6 @@ private:
   vtkSmartPointer<vtkGeoSphereTransform> LatLongTransform1;
   vtkSmartPointer<vtkTransform> LatLongTransform2;
   vtkSmartPointer<vtkPoints> OriginalModelPoints;
-
 };
 
 #endif

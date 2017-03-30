@@ -31,7 +31,8 @@ using namespace smtk::common;
 using namespace smtk::model;
 using smtk::attribute::IntItem;
 
-namespace ex {
+namespace ex
+{
 
 // ++ 2 ++
 OperatorResult CounterOperator::operateInternal()
@@ -40,28 +41,22 @@ OperatorResult CounterOperator::operateInternal()
   OperatorSpecification params = this->specification();
 
   // Get the input model to be processed:
-  Model model =
-    params->findModelEntity("model")->value();
+  Model model = params->findModelEntity("model")->value();
 
   // Decide whether we should count cells or groups
   // of the model:
-  int countGroups =
-    params->findInt("count groups")->value();
+  int countGroups = params->findInt("count groups")->value();
 
   // Create the attribute holding the results of
   // our operation using a convenience method
   // provided by the Operator base class.
   // Our operation is simple; we always succeed.
-  OperatorResult result =
-    this->createResult(OPERATION_SUCCEEDED);
+  OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
 
   // Fetch the item to store our output:
-  smtk::attribute::IntItemPtr cellCount =
-    result->findInt("count");
+  smtk::attribute::IntItemPtr cellCount = result->findInt("count");
 
-  cellCount->setValue(countGroups ?
-    model.groups().size() :
-    model.cells().size());
+  cellCount->setValue(countGroups ? model.groups().size() : model.cells().size());
 
   return result;
 }
@@ -74,11 +69,11 @@ OperatorResult CounterOperator::operateInternal()
 // and provide an auto-init object for registering the
 // operator with the session.
 smtkImplementsModelOperator(
-  /* no export symbol */, // Export symbol (none here)
-  ex::CounterOperator, // The class name (include all namespaces)
-  ex_counter,          // The "component" name (for auto-init)
-  "counter",           // The user-printable operator name.
-  implement_an_operator_xml, // An XML description (or NULL).
+  /* no export symbol */,       // Export symbol (none here)
+  ex::CounterOperator,          // The class name (include all namespaces)
+  ex_counter,                   // The "component" name (for auto-init)
+  "counter",                    // The user-printable operator name.
+  implement_an_operator_xml,    // An XML description (or NULL).
   smtk::model::DefaultSession); // The modeling kernel this operator uses.
 // -- 3 --
 
@@ -89,22 +84,18 @@ void testOperator(Model model)
 
   // Ask the session to create an operator:
   ex::CounterOperator::Ptr op =
-    smtk::dynamic_pointer_cast<ex::CounterOperator>(
-      session->op("counter"));
+    smtk::dynamic_pointer_cast<ex::CounterOperator>(session->op("counter"));
 
   op->ensureSpecification();
-  smtk::attribute::ModelEntityItemPtr input =
-    op->specification()->findModelEntity("model");
+  smtk::attribute::ModelEntityItemPtr input = op->specification()->findModelEntity("model");
   input->setValue(model);
 
   test(!!op, "Could not create operator.");
-  test(
-    op->operate()->findInt("count")->value() == 1,
+  test(op->operate()->findInt("count")->value() == 1,
     "Did not return the proper number of top-level cells.");
 
   op->specification()->findInt("count groups")->setValue(1);
-  test(
-    op->operate()->findInt("count")->value() == 0,
+  test(op->operate()->findInt("count")->value() == 0,
     "Did not return the proper number of top-level group.");
 }
 
@@ -121,12 +112,14 @@ int main()
   model.setSession(session);
   model.addCell(tet);
 
-  try {
+  try
+  {
 
     testOperator(model);
-
-  } catch (const std::string& msg) {
-    (void) msg; // Ignore the message; it's already been printed.
+  }
+  catch (const std::string& msg)
+  {
+    (void)msg; // Ignore the message; it's already been printed.
     std::cerr << "Exiting...\n";
     status = -1;
   }

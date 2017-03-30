@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkCMBMapToCMBModelClient.h"
 
 #include "vtkDiscreteModel.h"
@@ -30,58 +29,54 @@ vtkCMBMapToCMBModelClient::~vtkCMBMapToCMBModelClient()
 {
 }
 
-bool vtkCMBMapToCMBModelClient::Operate(vtkDiscreteModel* Model,
-    vtkSMProxy* ServerModelProxy, vtkSMProxy* PolySourceProxy)
+bool vtkCMBMapToCMBModelClient::Operate(
+  vtkDiscreteModel* Model, vtkSMProxy* ServerModelProxy, vtkSMProxy* PolySourceProxy)
 {
-  if(!this->AbleToOperate(Model)|| PolySourceProxy == NULL ||
-      ServerModelProxy == NULL)
-    {
+  if (!this->AbleToOperate(Model) || PolySourceProxy == NULL || ServerModelProxy == NULL)
+  {
     return 0;
-    }
+  }
 
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
-  vtkSMOperatorProxy* OperatorProxy = vtkSMOperatorProxy::SafeDownCast(
-      manager->NewProxy("CMBModelGroup", "vtkCMBMapToCMBModel"));
-  if(!OperatorProxy)
-    {
+  vtkSMOperatorProxy* OperatorProxy =
+    vtkSMOperatorProxy::SafeDownCast(manager->NewProxy("CMBModelGroup", "vtkCMBMapToCMBModel"));
+  if (!OperatorProxy)
+  {
     vtkErrorMacro("Unable to create builder operator proxy.");
     return 0;
-    }
+  }
   OperatorProxy->SetLocation(ServerModelProxy->GetLocation());
 
   OperatorProxy->Operate(Model, ServerModelProxy, PolySourceProxy);
 
   // check to see if the operation succeeded on the server
   vtkSMIntVectorProperty* OperateSucceeded =
-    vtkSMIntVectorProperty::SafeDownCast(
-        OperatorProxy->GetProperty("OperateSucceeded"));
+    vtkSMIntVectorProperty::SafeDownCast(OperatorProxy->GetProperty("OperateSucceeded"));
 
   OperatorProxy->UpdatePropertyInformation();
 
   int Succeeded = OperateSucceeded->GetElement(0);
   OperatorProxy->Delete();
   OperatorProxy = 0;
-  if(!Succeeded)
-    {
+  if (!Succeeded)
+  {
     return 0;
-    }
+  }
 
   return vtkCMBModelBuilderClient::UpdateClientModel(Model, ServerModelProxy);
 }
 
-
 bool vtkCMBMapToCMBModelClient::AbleToOperate(vtkDiscreteModel* Model)
 {
-  if(!Model)
-    {
+  if (!Model)
+  {
     vtkErrorMacro("Passed in a null model.");
     return 0;
-    }
+  }
   return 1;
 }
 
-
 void vtkCMBMapToCMBModelClient::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }

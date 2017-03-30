@@ -23,7 +23,7 @@
 struct cmbUniquePointSet::Internals
 {
   vtkIdType numPts;
-  std::map<InternalPt,vtkIdType> pt2ptId;
+  std::map<InternalPt, vtkIdType> pt2ptId;
   std::vector<InternalPt> ptId2pt;
 };
 
@@ -40,41 +40,42 @@ cmbUniquePointSet::~cmbUniquePointSet()
 
 vtkIdType cmbUniquePointSet::addPoint(const double& x, const double& y)
 {
-  typedef std::map<InternalPt,vtkIdType>::const_iterator c_it;
-  InternalPt pt = InternalPt(x,y);
+  typedef std::map<InternalPt, vtkIdType>::const_iterator c_it;
+  InternalPt pt = InternalPt(x, y);
   c_it foundPt = this->Internal->pt2ptId.find(pt);
-  if(foundPt == this->Internal->pt2ptId.end())
-    {
+  if (foundPt == this->Internal->pt2ptId.end())
+  {
     this->Internal->ptId2pt.push_back(pt);
-    foundPt = this->Internal->pt2ptId.insert(
-      std::pair<InternalPt,vtkIdType>(pt,this->Internal->numPts++)).first;
-    }
+    foundPt =
+      this->Internal->pt2ptId.insert(std::pair<InternalPt, vtkIdType>(pt, this->Internal->numPts++))
+        .first;
+  }
   return foundPt->second;
 }
 
 vtkIdType cmbUniquePointSet::addPoint(const double* p)
 {
-  return this->addPoint(p[0],p[1]);
+  return this->addPoint(p[0], p[1]);
 }
 
 vtkIdType cmbUniquePointSet::getPointId(const double& x, const double& y) const
 {
-  typedef std::map<InternalPt,vtkIdType>::const_iterator c_it;
-  c_it foundPtId = this->Internal->pt2ptId.find(InternalPt(x,y));
+  typedef std::map<InternalPt, vtkIdType>::const_iterator c_it;
+  c_it foundPtId = this->Internal->pt2ptId.find(InternalPt(x, y));
   return foundPtId == this->Internal->pt2ptId.end() ? -1 : foundPtId->second;
 }
 
 vtkIdType cmbUniquePointSet::getPointId(double* p) const
 {
-  return this->getPointId(p[0],p[1]);
+  return this->getPointId(p[0], p[1]);
 }
 
 bool cmbUniquePointSet::getPoint(const vtkIdType& ptId, double& x, double& y) const
 {
-  if(static_cast<size_t>(ptId) >= this->Internal->ptId2pt.size())
-    {
+  if (static_cast<size_t>(ptId) >= this->Internal->ptId2pt.size())
+  {
     return false;
-    }
+  }
   x = this->Internal->ptId2pt[ptId].x;
   y = this->Internal->ptId2pt[ptId].y;
   return true;
@@ -82,7 +83,7 @@ bool cmbUniquePointSet::getPoint(const vtkIdType& ptId, double& x, double& y) co
 
 bool cmbUniquePointSet::getPoint(const vtkIdType& ptId, double* pt) const
 {
-  return this->getPoint(ptId,pt[0],pt[1]);
+  return this->getPoint(ptId, pt[0], pt[1]);
 }
 
 int cmbUniquePointSet::getNumberOfPoints() const

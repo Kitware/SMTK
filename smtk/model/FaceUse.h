@@ -15,8 +15,10 @@
 
 #include <vector>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 class Edge;
 class EdgeUse;
@@ -35,7 +37,7 @@ typedef std::vector<FaceUse> FaceUses;
 class SMTKCORE_EXPORT FaceUse : public UseEntity
 {
 public:
-  SMTK_ENTITYREF_CLASS(FaceUse,UseEntity,isFaceUse);
+  SMTK_ENTITYREF_CLASS(FaceUse, UseEntity, isFaceUse);
 
   Volume volume() const;
   Shell boundingShell() const;
@@ -43,7 +45,7 @@ public:
   Loops loops() const;
 };
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_FaceUse_h

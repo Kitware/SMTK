@@ -69,7 +69,7 @@ class VTKSMTKMESHINGEXT_EXPORT vtkDiscoverRegions : public vtkPolyDataAlgorithm
 {
 public:
   static vtkDiscoverRegions* New();
-  vtkTypeMacro(vtkDiscoverRegions,vtkPolyDataAlgorithm);
+  vtkTypeMacro(vtkDiscoverRegions, vtkPolyDataAlgorithm);
   virtual void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -120,9 +120,9 @@ public:
   // for each triangle.
   //
   // The default is false.
-  vtkGetMacro(ReportRegionsByModelFace,int);
-  vtkSetMacro(ReportRegionsByModelFace,int);
-  vtkBooleanMacro(ReportRegionsByModelFace,int);
+  vtkGetMacro(ReportRegionsByModelFace, int);
+  vtkSetMacro(ReportRegionsByModelFace, int);
+  vtkBooleanMacro(ReportRegionsByModelFace, int);
 
   // Description:
   // Set/get whether the filter should generate a point interior to each
@@ -137,24 +137,20 @@ public:
   // owning the start edge. The midpoint between the ray source and the
   // first intersection on the odd side is interior to the region by
   // definition.
-  vtkSetMacro(GenerateRegionInteriorPoints,int);
-  vtkGetMacro(GenerateRegionInteriorPoints,int);
-  vtkBooleanMacro(GenerateRegionInteriorPoints,int);
+  vtkSetMacro(GenerateRegionInteriorPoints, int);
+  vtkGetMacro(GenerateRegionInteriorPoints, int);
+  vtkBooleanMacro(GenerateRegionInteriorPoints, int);
 
 protected:
   vtkDiscoverRegions();
   virtual ~vtkDiscoverRegions();
 
-  virtual int FillInputPortInformation(
-    int port, vtkInformation* info);
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
 
-  virtual int FillOutputPortInformation(
-    int port, vtkInformation* info);
+  virtual int FillOutputPortInformation(int port, vtkInformation* info);
 
   virtual int RequestData(
-    vtkInformation* req,
-    vtkInformationVector** inInfo,
-    vtkInformationVector* outInfo);
+    vtkInformation* req, vtkInformationVector** inInfo, vtkInformationVector* outInfo);
 
   int ReportRegionsByModelFace;
   int GenerateRegionInteriorPoints;
@@ -164,7 +160,7 @@ protected:
 
 private:
   vtkDiscoverRegions(const vtkDiscoverRegions&); // Not implemented.
-  void operator = (const vtkDiscoverRegions&); // Not implemented.
+  void operator=(const vtkDiscoverRegions&);     // Not implemented.
 };
 
 #endif // __vtkDiscoverRegions_h

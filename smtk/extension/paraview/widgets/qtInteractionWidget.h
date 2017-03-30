@@ -24,11 +24,11 @@ class vtkEventQtSlotConnect;
 /// qtInteractionWidget is a base class for QWidgets that use a
 /// vtkAbstractWidget/vtkWidgetRepresentation subclasses (via Proxy's of course)
 /// to let user interactive setup parameters.
-class SMTKPQWIDGETSEXT_EXPORT qtInteractionWidget : public QWidget {
+class SMTKPQWIDGETSEXT_EXPORT qtInteractionWidget : public QWidget
+{
   Q_OBJECT;
   typedef QWidget Superclass;
-  Q_PROPERTY(bool enableInteractivity READ isInteractivityEnabled WRITE
-                 setEnableInteractivity);
+  Q_PROPERTY(bool enableInteractivity READ isInteractivityEnabled WRITE setEnableInteractivity);
 
 public:
   virtual ~qtInteractionWidget();
@@ -38,14 +38,14 @@ public:
   /// for interaction. There can only be one view in which the widget can be
   /// shown at a time. If the view is changed, the widget will be remove/hidden
   /// from the previous view. Set to nullptr to hide the widget.
-  void setView(pqView *);
-  pqView *view() const;
+  void setView(pqView*);
+  pqView* view() const;
   //@}
 
   bool isInteractivityEnabled() const { return this->Interactivity; }
 
   /// Provides access to vtkSMNewWidgetRepresentationProxy used.
-  vtkSMNewWidgetRepresentationProxy *widgetProxy() const;
+  vtkSMNewWidgetRepresentationProxy* widgetProxy() const;
 
 public slots:
   //@{
@@ -77,13 +77,11 @@ protected slots:
 
 protected:
   qtInteractionWidget(
-      const vtkSmartPointer<vtkSMNewWidgetRepresentationProxy> &proxy,
-      QWidget *parent = nullptr);
-
+    const vtkSmartPointer<vtkSMNewWidgetRepresentationProxy>& proxy, QWidget* parent = nullptr);
 
   /// Convenience method to create a new proxy for the given type.
-  static vtkSmartPointer<vtkSMNewWidgetRepresentationProxy>
-  createWidget(const char *smgroup, const char *smname);
+  static vtkSmartPointer<vtkSMNewWidgetRepresentationProxy> createWidget(
+    const char* smgroup, const char* smname);
 
 private:
   Q_DISABLE_COPY(qtInteractionWidget);

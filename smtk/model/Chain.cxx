@@ -13,8 +13,10 @@
 #include "smtk/model/EntityRefArrangementOps.h"
 #include "smtk/model/VertexUse.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief Return the high-dimensional cell whose interior is bounded by this shell.
   *
@@ -48,5 +50,5 @@ Chains Chain::containedChains() const
   return this->ShellEntity::containedShellEntities<Chains>();
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

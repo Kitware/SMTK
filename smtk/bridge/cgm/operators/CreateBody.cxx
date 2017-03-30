@@ -42,9 +42,12 @@
 
 #include "smtk/bridge/cgm/CreateBody_xml.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 smtk::model::OperatorResult CreateBody::operateInternal()
 {
@@ -56,56 +59,58 @@ smtk::model::OperatorResult CreateBody::operateInternal()
 
   DLIList<RefEntity*> entList;
   smtk::model::EntityRefArray expunged;
-  if (!this->cgmEntities(*this->specification()->associations().get(), entList, keepInputs, expunged))
-    {
+  if (!this->cgmEntities(
+        *this->specification()->associations().get(), entList, keepInputs, expunged))
+  {
     smtkInfoMacro(log(), "Could not find CGM entities for input cells.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   DLIList<RefEdge*> edgeList;
   DLIList<RefFace*> faceList;
   DLIList<RefVolume*> volumeList;
   for (int i = 0; i < entList.size(); ++i)
-    {
+  {
     RefEntity* ent = entList.get_and_step();
     RefEdge* edge;
     RefFace* face;
     RefVolume* volume;
     if ((edge = dynamic_cast<RefEdge*>(ent)))
-      {
+    {
       edgeList.push(edge);
-      }
+    }
     else if ((face = dynamic_cast<RefFace*>(ent)))
-      {
+    {
       faceList.push(face);
-      }
+    }
     else if ((volume = dynamic_cast<RefVolume*>(ent)))
-      {
+    {
       volumeList.push(volume);
-      }
+    }
     else
-      {
+    {
       smtkInfoMacro(log(), "An input entity was not an edge, face, or volume.");
       return this->createResult(smtk::model::OPERATION_FAILED);
-      }
     }
+  }
 
   DLIList<Body*> cgmBodies;
   Body* bod;
   if (edgeList.size())
-    {
+  {
     // maybe BEST_FIT_SURFACE_TYPE would be better?
     bod = GeometryModifyTool::instance()->make_Body(PLANE_SURFACE_TYPE, edgeList, /*refFace*/ NULL);
     if (!bod)
-      {
-      smtkInfoMacro(log(), "Could not create planar sheet-body from " << edgeList.size() << " edge(s).");
+    {
+      smtkInfoMacro(
+        log(), "Could not create planar sheet-body from " << edgeList.size() << " edge(s).");
       return this->createResult(smtk::model::OPERATION_FAILED);
-      }
+    }
     bod->color(color);
     cgmBodies.push(bod);
-    }
+  }
   for (int i = 0; i < faceList.size(); ++i)
-    {
+  {
     RefFace* face = faceList.get_and_step();
 #if CGM_MAJOR_VERSION >= 15
     bod = GeometryModifyTool::instance()->make_Body(face);
@@ -113,29 +118,27 @@ smtk::model::OperatorResult CreateBody::operateInternal()
     bod = GeometryModifyTool::instance()->make_Body(face, /* extended_from: */ CUBIT_FALSE);
 #endif
     if (!bod)
-      {
-      smtkInfoMacro(log(),
-        "Could not create planar sheet-body from face "
-        << (i + 1) << " of " << edgeList.size() << ".");
+    {
+      smtkInfoMacro(log(), "Could not create planar sheet-body from face "
+          << (i + 1) << " of " << edgeList.size() << ".");
       return this->createResult(smtk::model::OPERATION_FAILED);
-      }
+    }
     bod->color(color);
     cgmBodies.push(bod);
-    }
+  }
   if (volumeList.size())
-    {
+  {
     bod = GeometryModifyTool::instance()->make_Body(volumeList);
     if (!bod)
-      {
+    {
       smtkInfoMacro(log(), "Could not create body from " << volumeList.size() << " volume(s).");
       return this->createResult(smtk::model::OPERATION_FAILED);
-      }
+    }
     bod->color(color);
     cgmBodies.push(bod);
-    }
+  }
 
-  smtk::model::OperatorResult result = this->createResult(
-    smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmBodies, result, CREATED);
   result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
@@ -143,14 +146,9 @@ smtk::model::OperatorResult CreateBody::operateInternal()
   return result;
 }
 
-    } // namespace cgm
-  } //namespace bridge
+} // namespace cgm
+} //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(
-  SMTKCGMSESSION_EXPORT,
-  smtk::bridge::cgm::CreateBody,
-  cgm_create_body,
-  "create body",
-  CreateBody_xml,
-  smtk::bridge::cgm::Session);
+smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::CreateBody, cgm_create_body,
+  "create body", CreateBody_xml, smtk::bridge::cgm::Session);

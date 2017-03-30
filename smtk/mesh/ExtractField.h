@@ -16,26 +16,29 @@
 #include "smtk/mesh/CellSet.h"
 #include "smtk/mesh/MeshSet.h"
 
-namespace smtk {
-namespace model { class EntityRef; class Loop; }
-namespace mesh {
+namespace smtk
+{
+namespace model
+{
+class EntityRef;
+class Loop;
+}
+namespace mesh
+{
 
 class SMTKCORE_EXPORT PreAllocatedField
 {
 
 public:
-  static void determineAllocationLengths(const smtk::mesh::MeshSet& ms,
-                                         std::int64_t& numberOfCells,
-                                         std::int64_t& numberOfPoints);
+  static void determineAllocationLengths(
+    const smtk::mesh::MeshSet& ms, std::int64_t& numberOfCells, std::int64_t& numberOfPoints);
 
-  PreAllocatedField( std::int64_t* cellField,
-                     std::int64_t* pointField );
+  PreAllocatedField(std::int64_t* cellField, std::int64_t* pointField);
 
 private:
-template <typename QueryTag>
-friend SMTKCORE_EXPORT void extractField( const smtk::mesh::MeshSet&,
-                                          const smtk::mesh::PointSet&,
-                                          PreAllocatedField& );
+  template <typename QueryTag>
+  friend SMTKCORE_EXPORT void extractField(
+    const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedField&);
 
   std::int64_t* m_cellField;
   std::int64_t* m_pointField;
@@ -48,27 +51,21 @@ public:
 
   //This class self allocates all the memory needed to extract tessellation
   //and auto extract the tessellation based on the MeshSet you pass in
-  void extractDirichlet( const smtk::mesh::MeshSet& ms );
-  void extractNeumann( const smtk::mesh::MeshSet& ms );
-  void extractDomain( const smtk::mesh::MeshSet& ms );
+  void extractDirichlet(const smtk::mesh::MeshSet& ms);
+  void extractNeumann(const smtk::mesh::MeshSet& ms);
+  void extractDomain(const smtk::mesh::MeshSet& ms);
 
-  void extractDirichlet( const smtk::mesh::MeshSet& cs,
-                         const smtk::mesh::PointSet& ps );
-  void extractNeumann( const smtk::mesh::MeshSet& cs,
-                       const smtk::mesh::PointSet& ps );
-  void extractDomain( const smtk::mesh::MeshSet& cs,
-                      const smtk::mesh::PointSet& ps );
+  void extractDirichlet(const smtk::mesh::MeshSet& cs, const smtk::mesh::PointSet& ps);
+  void extractNeumann(const smtk::mesh::MeshSet& cs, const smtk::mesh::PointSet& ps);
+  void extractDomain(const smtk::mesh::MeshSet& cs, const smtk::mesh::PointSet& ps);
 
   //use these methods to gain access to the field after extraction
-  const std::vector<std::int64_t>& cellData() const
-  { return this->m_cellData; }
-  const std::vector<std::int64_t>& pointData() const
-  { return this->m_pointData; }
+  const std::vector<std::int64_t>& cellData() const { return this->m_cellData; }
+  const std::vector<std::int64_t>& pointData() const { return this->m_pointData; }
 
 private:
   template <typename QueryTag>
-    void extract( const smtk::mesh::MeshSet& ms,
-                  const smtk::mesh::PointSet& ps );
+  void extract(const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps);
 
   std::vector<std::int64_t> m_cellData;
   std::vector<std::int64_t> m_pointData;
@@ -78,34 +75,25 @@ private:
 //the extract method
 #ifndef SHIBOKEN_SKIP
 
-SMTKCORE_EXPORT void extractDirichletField( const smtk::mesh::MeshSet&,
-                                            PreAllocatedField& );
-SMTKCORE_EXPORT void extractNeumannField( const smtk::mesh::MeshSet&,
-                                          PreAllocatedField& );
-SMTKCORE_EXPORT void extractDomainField( const smtk::mesh::MeshSet&,
-                                         PreAllocatedField& );
+SMTKCORE_EXPORT void extractDirichletField(const smtk::mesh::MeshSet&, PreAllocatedField&);
+SMTKCORE_EXPORT void extractNeumannField(const smtk::mesh::MeshSet&, PreAllocatedField&);
+SMTKCORE_EXPORT void extractDomainField(const smtk::mesh::MeshSet&, PreAllocatedField&);
 
 //Extract Field with respect to another PointSet instead of the PointSet
 //contained by the meshset. This is useful if you are sharing a single
 //PointSet among multiple Fields.
-SMTKCORE_EXPORT void extractDirichletField( const smtk::mesh::MeshSet&,
-                                            const smtk::mesh::PointSet&,
-                                            PreAllocatedField& );
-SMTKCORE_EXPORT void extractNeumannField( const smtk::mesh::MeshSet&,
-                                          const smtk::mesh::PointSet&,
-                                          PreAllocatedField& );
-SMTKCORE_EXPORT void extractDomainField( const smtk::mesh::MeshSet&,
-                                         const smtk::mesh::PointSet&,
-                                         PreAllocatedField& );
+SMTKCORE_EXPORT void extractDirichletField(
+  const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedField&);
+SMTKCORE_EXPORT void extractNeumannField(
+  const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedField&);
+SMTKCORE_EXPORT void extractDomainField(
+  const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedField&);
 
 template <typename QueryTag>
-SMTKCORE_EXPORT void extractField( const smtk::mesh::MeshSet&,
-                                   const smtk::mesh::PointSet&,
-                                   PreAllocatedField& );
-
+SMTKCORE_EXPORT void extractField(
+  const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedField&);
 
 #endif //SHIBOKEN_SKIP
-
 }
 }
 

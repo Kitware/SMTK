@@ -20,37 +20,36 @@
 #include "Shape/Polygon.hh"
 #include "Shape/PolygonUtilities.hh"
 
-namespace smtk {
-namespace extension {
-namespace delaunay {
-namespace io {
+namespace smtk
+{
+namespace extension
+{
+namespace delaunay
+{
+namespace io
+{
 
-namespace {
+namespace
+{
 
 template <typename Point, typename PointContainer>
 std::size_t IndexOf(Point& point, const PointContainer& points)
 {
-  return std::distance(points.begin(),
-               std::find(points.begin(), points.end(), point));
+  return std::distance(points.begin(), std::find(points.begin(), points.end(), point));
+}
 }
 
-}
-
-smtk::mesh::MeshSet
-ImportDelaunayMesh::operator()(const Delaunay::Mesh::Mesh& mesh,
-                               smtk::mesh::CollectionPtr collection) const
+smtk::mesh::MeshSet ImportDelaunayMesh::operator()(
+  const Delaunay::Mesh::Mesh& mesh, smtk::mesh::CollectionPtr collection) const
 {
   smtk::mesh::InterfacePtr iface = collection->interface();
   smtk::mesh::AllocatorPtr alloc = iface->allocator();
   smtk::mesh::Handle firstVertex = 0;
   std::vector<double*> coordinateMemory;
 
-  if (!alloc->allocatePoints(mesh.GetVertices().size(),
-                             firstVertex,
-                             coordinateMemory))
+  if (!alloc->allocatePoints(mesh.GetVertices().size(), firstVertex, coordinateMemory))
   {
-    return collection->createMesh(
-      smtk::mesh::CellSet(collection, smtk::mesh::HandleRange()));
+    return collection->createMesh(smtk::mesh::CellSet(collection, smtk::mesh::HandleRange()));
   }
 
   std::size_t idx = 0;
@@ -65,14 +64,10 @@ ImportDelaunayMesh::operator()(const Delaunay::Mesh::Mesh& mesh,
   smtk::mesh::HandleRange createdCellIds;
   smtk::mesh::Handle* connectivity;
 
-  if (!alloc->allocateCells(smtk::mesh::Triangle,
-                            mesh.GetTriangles().size(),
-                            smtk::mesh::verticesPerCell(smtk::mesh::Triangle),
-                            createdCellIds,
-                            connectivity))
+  if (!alloc->allocateCells(smtk::mesh::Triangle, mesh.GetTriangles().size(),
+        smtk::mesh::verticesPerCell(smtk::mesh::Triangle), createdCellIds, connectivity))
   {
-    return collection->createMesh(
-      smtk::mesh::CellSet(collection, smtk::mesh::HandleRange()));
+    return collection->createMesh(smtk::mesh::CellSet(collection, smtk::mesh::HandleRange()));
   }
 
   idx = 0;
@@ -83,15 +78,14 @@ ImportDelaunayMesh::operator()(const Delaunay::Mesh::Mesh& mesh,
     connectivity[idx++] = firstVertex + IndexOf(t.AC().B(), mesh.GetVertices());
   }
 
-  alloc->connectivityModified(createdCellIds,
-                              smtk::mesh::verticesPerCell(smtk::mesh::Triangle),
-                              connectivity);
+  alloc->connectivityModified(
+    createdCellIds, smtk::mesh::verticesPerCell(smtk::mesh::Triangle), connectivity);
 
-  return collection->createMesh(smtk::mesh::CellSet(collection,createdCellIds));
+  return collection->createMesh(smtk::mesh::CellSet(collection, createdCellIds));
 }
 
-bool ImportDelaunayMesh::operator()(const Delaunay::Mesh::Mesh& mesh,
-                                    smtk::model::EntityRef& eRef) const
+bool ImportDelaunayMesh::operator()(
+  const Delaunay::Mesh::Mesh& mesh, smtk::model::EntityRef& eRef) const
 {
   if (!eRef.isValid() || !eRef.isFace())
   {
@@ -100,32 +94,31 @@ bool ImportDelaunayMesh::operator()(const Delaunay::Mesh::Mesh& mesh,
 
   smtk::model::Tessellation* tess = eRef.resetTessellation();
 
-  tess->coords().resize(mesh.GetVertices().size()*3);
+  tess->coords().resize(mesh.GetVertices().size() * 3);
   std::size_t index = 0;
   double xyz[3];
   for (auto& p : mesh.GetVertices())
-    {
+  {
     index = IndexOf(p, mesh.GetVertices());
     xyz[0] = p.x;
     xyz[1] = p.y;
     xyz[2] = 0.;
     tess->setPoint(static_cast<int>(index), xyz);
-    }
+  }
 
   for (auto& t : mesh.GetTriangles())
-    {
+  {
     tess->addTriangle(static_cast<int>(IndexOf(t.AB().A(), mesh.GetVertices())),
-                      static_cast<int>(IndexOf(t.AB().B(), mesh.GetVertices())),
-                      static_cast<int>(IndexOf(t.AC().B(), mesh.GetVertices())));
-    }
+      static_cast<int>(IndexOf(t.AB().B(), mesh.GetVertices())),
+      static_cast<int>(IndexOf(t.AC().B(), mesh.GetVertices())));
+  }
 
   auto bounds = Delaunay::Shape::Bounds(mesh.GetPerimeter());
-  const double bbox[6] = {bounds[0], bounds[1], bounds[2], bounds[3], 0., 0.};
+  const double bbox[6] = { bounds[0], bounds[1], bounds[2], bounds[3], 0., 0. };
   eRef.setBoundingBox(bbox);
 
   return true;
 }
-
 }
 }
 }

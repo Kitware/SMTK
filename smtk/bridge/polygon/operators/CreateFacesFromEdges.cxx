@@ -47,9 +47,12 @@
 namespace poly = boost::polygon;
 using namespace boost::polygon::operators;
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 bool CreateFacesFromEdges::populateEdgeMap()
 {
@@ -60,46 +63,41 @@ bool CreateFacesFromEdges::populateEdgeMap()
 
   // First, collect  edges to process:
   for (int i = 0; i < static_cast<int>(modelItem->numberOfValues()); ++i)
-    {
+  {
     smtk::model::Edge edgeIn(modelItem->value(i));
     if (edgeIn.isValid())
-      {
+    {
       if (model.isValid())
-        {
+      {
         if (model != edgeIn.owningModel())
-          {
-          smtkErrorMacro(this->log(),
-                         "Edges from different models (" << model.name() <<
-                         " and " << edgeIn.owningModel().name() << ") selected.");
+        {
+          smtkErrorMacro(this->log(), "Edges from different models ("
+              << model.name() << " and " << edgeIn.owningModel().name() << ") selected.");
           this->m_result = this->createResult(smtk::model::OPERATION_FAILED);
           return false;
-          }
         }
-      else
-        {
-        model = edgeIn.owningModel();
-        }
-      this->m_edgeMap[edgeIn] = 0;
       }
+      else
+      {
+        model = edgeIn.owningModel();
+      }
+      this->m_edgeMap[edgeIn] = 0;
     }
+  }
   if (this->m_edgeMap.empty() || !model.isValid())
-    {
+  {
     smtkErrorMacro(this->log(), "No edges selected or invalid model specified.");
     this->m_result = this->createResult(smtk::model::OPERATION_FAILED);
     return false;
-    }
+  }
   this->m_model = model;
   return true;
 }
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(
-  SMTKPOLYGONSESSION_EXPORT,
-  smtk::bridge::polygon::CreateFacesFromEdges,
-  polygon_create_faces_from_edges,
-  "create faces from edges",
-  CreateFacesFromEdges_xml,
+smtkImplementsModelOperator(SMTKPOLYGONSESSION_EXPORT, smtk::bridge::polygon::CreateFacesFromEdges,
+  polygon_create_faces_from_edges, "create faces from edges", CreateFacesFromEdges_xml,
   smtk::bridge::polygon::Session);

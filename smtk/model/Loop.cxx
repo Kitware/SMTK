@@ -19,8 +19,10 @@
 
 #include <list>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief Return the high-dimensional cell whose interior is bounded by this shell.
   *
@@ -76,21 +78,20 @@ bool Loop::replaceEdgeUseWithUses(const EdgeUse& original, const EdgeUses& repla
   Manager::Ptr mgr = this->manager(); // Lock mgr
   Entity* entRec = mgr->findEntity(this->entity());
   if (!entRec)
-    {
+  {
     return false;
-    }
+  }
   smtk::common::UUIDArray::iterator loc =
-    std::find(entRec->relations().begin(), entRec->relations().end(),
-      original.entity());
+    std::find(entRec->relations().begin(), entRec->relations().end(), original.entity());
   if (loc == entRec->relations().end())
-    { // original was not in the loop!
+  { // original was not in the loop!
     return false;
-    }
+  }
   Arrangements* arr = mgr->hasArrangementsOfKindForEntity(this->entity(), HAS_USE);
   if (!arr)
-    { // no HAS_USE arrangements means \a original is not present as an arrangement...
+  { // no HAS_USE arrangements means \a original is not present as an arrangement...
     return false;
-    }
+  }
   std::list<EdgeUse> uses;
   smtk::common::RangeDetector<int> rd;
   // Get all of the existing uses of this shell. At the same time, this will wipe away
@@ -100,41 +101,40 @@ bool Loop::replaceEdgeUseWithUses(const EdgeUse& original, const EdgeUses& repla
   std::list<EdgeUse>::iterator uit = std::find(uses.begin(), uses.end(), original);
   bool didFind;
   if (uit == uses.end())
-    {
+  {
     didFind = false;
-    smtkErrorMacro(mgr->log(),
-      "Found use-record " << original.name() << " in loop but could not replace it.");
-    }
+    smtkErrorMacro(
+      mgr->log(), "Found use-record " << original.name() << " in loop but could not replace it.");
+  }
   else
-    { // Insert the replacements and remove the original:
+  { // Insert the replacements and remove the original:
     didFind = true;
     uses.insert(uit, replacements.begin(), replacements.end());
     uses.erase(uit);
-    }
+  }
 
   // Now add the updated uses back to both the relations (in the order RangeDetector provides)
   // and as arrangements (one per range).
 
-  std::map<int,int>::iterator rdit;
+  std::map<int, int>::iterator rdit;
   uit = uses.begin();
   size_t nr;
   // Add relations as required to handle all of the use-records
   smtk::common::UUID dummy;
   while ((nr = rd.size()) < uses.size())
-    {
-    rd.insert(
-      entRec->appendRelation(dummy, true));
-    }
+  {
+    rd.insert(entRec->appendRelation(dummy, true));
+  }
 
   for (rdit = rd.ranges().begin(); rdit != rd.ranges().end(); ++rdit)
-    {
+  {
     int ii;
     for (ii = rdit->first; ii <= rdit->second && uit != uses.end(); ++ii, ++uit)
-      {
+    {
       entRec->relations()[ii] = uit->entity();
-      }
-    arr->push_back(Arrangement::ShellHasUseWithIndexRange(rdit->first, ii));
     }
+    arr->push_back(Arrangement::ShellHasUseWithIndexRange(rdit->first, ii));
+  }
 
   // The above created a new arrangement for the Loop... now we need to
   // (1) remove the original's reference to the loop and
@@ -145,25 +145,25 @@ bool Loop::replaceEdgeUseWithUses(const EdgeUse& original, const EdgeUses& repla
   (void)didRemove;
   //std::cout << "Did remove original " << didRemove << "\n";
   for (EdgeUses::const_iterator rit = replacements.begin(); rit != replacements.end(); ++rit)
-    {
+  {
     Entity* useRec = mgr->findEntity(rit->entity());
     if (!useRec)
-      {
+    {
       continue;
-      }
+    }
     // An edge-use may only belong to a single shell-use... obliterate pre-existing shells:
     Arrangements* ua = mgr->hasArrangementsOfKindForEntity(rit->entity(), HAS_SHELL);
     if (ua && !ua->empty())
-      {
+    {
       ua->clear();
-      }
-    // Now add the shell arrangement:
-    mgr->arrangeEntity(rit->entity(), HAS_SHELL, Arrangement::UseHasShellWithIndex(
-        useRec->appendRelation(this->m_entity)), -1);
     }
+    // Now add the shell arrangement:
+    mgr->arrangeEntity(rit->entity(), HAS_SHELL,
+      Arrangement::UseHasShellWithIndex(useRec->appendRelation(this->m_entity)), -1);
+  }
 
   return didFind ? true : false;
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

@@ -73,11 +73,9 @@ void vtkCMBPolyDataProvider::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 int vtkCMBPolyDataProvider::RequestUpdateExtent(
-  vtkInformation *,
-  vtkInformationVector **,
-  vtkInformationVector *outputVector)
+  vtkInformation*, vtkInformationVector**, vtkInformationVector* outputVector)
 {
-  vtkInformation *outInfo = outputVector->GetInformationObject(0);
+  vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
   int piece, numPieces, ghostLevel;
 
@@ -87,145 +85,135 @@ int vtkCMBPolyDataProvider::RequestUpdateExtent(
 
   // make sure piece is valid
   if (piece < 0 || piece >= numPieces)
-    {
+  {
     return 1;
-    }
+  }
 
   if (ghostLevel < 0)
-    {
+  {
     return 1;
-    }
+  }
 
   return 1;
 }
 
-int vtkCMBPolyDataProvider::RequestData(
-  vtkInformation* /*request*/,
-  vtkInformationVector** vtkNotUsed( inputVector ),
-  vtkInformationVector* outputVector)
+int vtkCMBPolyDataProvider::RequestData(vtkInformation* /*request*/,
+  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
 {
-  if(!this->ModelWrapper ||
-     (this->EntityIdIsSet==0 && this->ItemTypeIsSet == 0) ||
-     (this->EntityIdIsSet == 0 && this->ItemTypeIsSet != 0 &&
-      this->ItemType != vtkModelType) )
-    {
+  if (!this->ModelWrapper || (this->EntityIdIsSet == 0 && this->ItemTypeIsSet == 0) ||
+    (this->EntityIdIsSet == 0 && this->ItemTypeIsSet != 0 && this->ItemType != vtkModelType))
+  {
     vtkErrorMacro("Improper input to filter.");
     return 0;
-    }
+  }
 
-  vtkInformation *outInfo = outputVector->GetInformationObject(0);
-  vtkPolyData *output = vtkPolyData::SafeDownCast(
-    outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkInformation* outInfo = outputVector->GetInformationObject(0);
+  vtkPolyData* output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
   vtkModelEntity* Entity;
   vtkDiscreteModel* Model = this->ModelWrapper->GetModel();
   const DiscreteMesh& MasterGrid = Model->GetMesh();
 
-  if(this->ItemTypeIsSet && this->ItemType == vtkModelType)
+  if (this->ItemTypeIsSet && this->ItemType == vtkModelType)
+  {
+    if (!MasterGrid.IsValid())
     {
-    if(!MasterGrid.IsValid())
-      {
       vtkWarningMacro("Could not get CMBModel polydata.");
       return 0;
-      }
+    }
 
     //polydata represent the whole model
     //so we shallow copy
     output->ShallowCopy(MasterGrid.ShallowCopyFaceData());
-    }
+  }
   else
+  {
+    if (this->ItemTypeIsSet)
     {
-    if(this->ItemTypeIsSet)
-      {
       // the faster search method
       Entity = Model->GetModelEntity(this->ItemType, this->EntityId);
-      }
+    }
     else
-      {
+    {
       Entity = this->ModelWrapper->GetModel()->GetModelEntity(this->EntityId);
-      }
+    }
     vtkModelGeometricEntity* GeomEntity = vtkModelGeometricEntity::SafeDownCast(Entity);
-    if(!GeomEntity)
-      {
+    if (!GeomEntity)
+    {
       vtkWarningMacro("Input is for a non-geometric model entity.");
       return 0;
-      }
-    if(!GeomEntity->GetGeometry())
-      {
+    }
+    if (!GeomEntity->GetGeometry())
+    {
       vtkWarningMacro("Input does not have valid geometry.");
       return 0;
-      }
+    }
 
     // If this is an model edge, we want to add vertex to the polydata, so that
     // the edge points can be shown.
     vtkDiscreteModelEdge* EdgeEntity = vtkDiscreteModelEdge::SafeDownCast(Entity);
-     // model edge with vertexes for points
-    if(EdgeEntity && this->CreateEdgePointVerts)
+    // model edge with vertexes for points
+    if (EdgeEntity && this->CreateEdgePointVerts)
+    {
+      vtkDiscreteModelVertex* vertex1 =
+        vtkDiscreteModelVertex::SafeDownCast(EdgeEntity->GetAdjacentModelVertex(0));
+      vtkDiscreteModelVertex* vertex2 =
+        vtkDiscreteModelVertex::SafeDownCast(EdgeEntity->GetAdjacentModelVertex(1));
+      vtkSmartPointer<vtkIdList> VertexPointIds = vtkSmartPointer<vtkIdList>::New();
+      if (vertex1)
       {
-      vtkDiscreteModelVertex* vertex1 = vtkDiscreteModelVertex::SafeDownCast(
-        EdgeEntity->GetAdjacentModelVertex(0));
-      vtkDiscreteModelVertex* vertex2 = vtkDiscreteModelVertex::SafeDownCast(
-        EdgeEntity->GetAdjacentModelVertex(1));
-      vtkSmartPointer<vtkIdList> VertexPointIds =
-        vtkSmartPointer<vtkIdList>::New();
-      if(vertex1)
-        {
         VertexPointIds->InsertUniqueId(vertex1->GetPointId());
-        }
-      if(vertex2)
-        {
+      }
+      if (vertex2)
+      {
         VertexPointIds->InsertUniqueId(vertex2->GetPointId());
-        }
+      }
       vtkPolyData* edgePoly = vtkPolyData::SafeDownCast(GeomEntity->GetGeometry());
       vtkIdType numCells = edgePoly->GetNumberOfCells();
       vtkIdType npts, *cellPnts;
-      vtkSmartPointer<vtkIdList> PointIds =
-        vtkSmartPointer<vtkIdList>::New();
-      for(vtkIdType i=0; i<numCells; i++)
-        {
+      vtkSmartPointer<vtkIdList> PointIds = vtkSmartPointer<vtkIdList>::New();
+      for (vtkIdType i = 0; i < numCells; i++)
+      {
         edgePoly->GetCellPoints(i, npts, cellPnts);
         for (vtkIdType ptIndex = 0; ptIndex < npts; ptIndex++)
-          {
+        {
           vtkIdType pid = cellPnts[ptIndex];
-          if(VertexPointIds->IsId(pid)<0)
-            {
+          if (VertexPointIds->IsId(pid) < 0)
+          {
             PointIds->InsertUniqueId(pid);
-            }
           }
         }
+      }
       vtkIdType NumberOfPointIds = PointIds->GetNumberOfIds();
       vtkCellArray* Verts = vtkCellArray::New();
       Verts->Allocate(NumberOfPointIds);
-      for(vtkIdType i=0;i<NumberOfPointIds;i++)
-        {
+      for (vtkIdType i = 0; i < NumberOfPointIds; i++)
+      {
         vtkIdType PointId = PointIds->GetId(i);
         Verts->InsertNextCell(1, &PointId);
-        }
+      }
       output->Initialize();
       output->SetPoints(MasterGrid.SharePointsPtr());
       output->SetLines(vtkPolyData::SafeDownCast(GeomEntity->GetGeometry())->GetLines());
-      if(Verts->GetNumberOfCells()>0)
-        {
-        output->SetVerts(Verts);
-        }
-      Verts->Delete();
-      EdgeEntity->SetLineAndPointsGeometry(
-        this->CreateEdgePointVerts ? output : NULL);
-      }
-    else
+      if (Verts->GetNumberOfCells() > 0)
       {
+        output->SetVerts(Verts);
+      }
+      Verts->Delete();
+      EdgeEntity->SetLineAndPointsGeometry(this->CreateEdgePointVerts ? output : NULL);
+    }
+    else
+    {
       output->ShallowCopy(vtkDataObject::SafeDownCast(GeomEntity->GetGeometry()));
       output->SetPoints(MasterGrid.SharePointsPtr());
-      }
     }
+  }
 
   return 1;
 }
 
-int vtkCMBPolyDataProvider::FillOutputPortInformation(
-  int, vtkInformation* info)
+int vtkCMBPolyDataProvider::FillOutputPortInformation(int, vtkInformation* info)
 {
   info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPolyData");
   return 1;
 }
-

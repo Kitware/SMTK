@@ -13,18 +13,20 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Tessellation.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 smtk::model::Edges Vertex::edges() const
 {
   Edges result;
   EntityRefs all = this->bordantEntities(/*dim = */ 1);
   for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
-    {
+  {
     if (it->isEdge())
       result.push_back(*it);
-    }
+  }
   return result;
 }
 
@@ -32,17 +34,16 @@ double* Vertex::coordinates() const
 {
   ManagerPtr mgr = this->manager();
   if (this->isValid())
-    {
-    UUIDWithTessellation tessRec =
-      mgr->tessellations().find(this->m_entity);
+  {
+    UUIDWithTessellation tessRec = mgr->tessellations().find(this->m_entity);
     if (tessRec != mgr->tessellations().end())
-      {
+    {
       if (!tessRec->second.coords().empty())
-        {
+      {
         return &tessRec->second.coords()[0];
-        }
       }
     }
+  }
   return NULL;
 }
 
@@ -67,5 +68,5 @@ smtk::common::Vector3d Vertex::coordinates() const
 }
 */
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

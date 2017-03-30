@@ -25,16 +25,16 @@ void verify_moab_allocator_creation()
   smtk::mesh::InterfacePtr iface = smtk::mesh::moab::make_interface();
   smtk::mesh::CollectionPtr collection = mgr->makeCollection(iface);
 
-  test( collection->isValid(), "collection should be valid");
-  test( !collection->isModified(), "collection shouldn't be modified");
+  test(collection->isValid(), "collection should be valid");
+  test(!collection->isModified(), "collection shouldn't be modified");
 
   //at this point extract the allocator from json and verify that it
   //is NOT null
   smtk::mesh::AllocatorPtr allocator = collection->interface()->allocator();
-  test( !!allocator, "moab allocator should be valid");
+  test(!!allocator, "moab allocator should be valid");
 
   //verify that is modified is true
-  test( collection->isModified(), "collection should be modified once the allocator is accessed");
+  test(collection->isModified(), "collection should be modified once the allocator is accessed");
 }
 
 void verify_json_allocator_creation()
@@ -43,19 +43,17 @@ void verify_json_allocator_creation()
   smtk::mesh::InterfacePtr iface = smtk::mesh::json::make_interface();
   smtk::mesh::CollectionPtr collection = mgr->makeCollection(iface);
 
-  test( collection->isValid(), "collection should be valid");
-  test( !collection->isModified(), "collection shouldn't be modified");
+  test(collection->isValid(), "collection should be valid");
+  test(!collection->isModified(), "collection shouldn't be modified");
 
   //at this point extract the allocator from json and verify that it
   //is null
   smtk::mesh::AllocatorPtr allocator = collection->interface()->allocator();
-  test( !allocator, "json allocator should be NULL");
+  test(!allocator, "json allocator should be NULL");
 
   //verify that is modified is true
-  test( !collection->isModified(), "collection shouldn't be modified");
-
+  test(!collection->isModified(), "collection shouldn't be modified");
 }
-
 }
 
 int UnitTestAllocator(int, char** const)

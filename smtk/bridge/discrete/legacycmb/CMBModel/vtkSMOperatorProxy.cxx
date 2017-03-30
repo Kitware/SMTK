@@ -28,8 +28,7 @@ vtkSMOperatorProxy::~vtkSMOperatorProxy()
 {
 }
 
-void vtkSMOperatorProxy::Operate(vtkDiscreteModel* /*ClientModel*/,
-                                 vtkSMProxy* ModelProxy)
+void vtkSMOperatorProxy::Operate(vtkDiscreteModel* /*ClientModel*/, vtkSMProxy* ModelProxy)
 {
   this->UpdateVTKObjects();
 
@@ -37,11 +36,8 @@ void vtkSMOperatorProxy::Operate(vtkDiscreteModel* /*ClientModel*/,
   ModelProxy->UpdateVTKObjects();
 
   vtkClientServerStream stream;
-  stream  << vtkClientServerStream::Invoke
-          << VTKOBJECT(this)
-          << "Operate"
-          << VTKOBJECT(ModelProxy)
-          << vtkClientServerStream::End;
+  stream << vtkClientServerStream::Invoke << VTKOBJECT(this) << "Operate" << VTKOBJECT(ModelProxy)
+         << vtkClientServerStream::End;
   // calls "Operate" function on object this->GetId() (which gets turned
   // into a pointer on the server) with argument model->GetID() (also
   // becomes a pointer on the server)
@@ -49,8 +45,7 @@ void vtkSMOperatorProxy::Operate(vtkDiscreteModel* /*ClientModel*/,
 }
 
 void vtkSMOperatorProxy::Operate(
-  vtkDiscreteModel* /*ClientModel*/, vtkSMProxy* ModelProxy,
-  vtkSMProxy* InputProxy)
+  vtkDiscreteModel* /*ClientModel*/, vtkSMProxy* ModelProxy, vtkSMProxy* InputProxy)
 {
   this->UpdateVTKObjects();
 
@@ -59,20 +54,15 @@ void vtkSMOperatorProxy::Operate(
   InputProxy->UpdateVTKObjects();
 
   vtkClientServerStream stream;
-  stream  << vtkClientServerStream::Invoke
-          << VTKOBJECT(this)
-          << "Operate"
-          << VTKOBJECT(ModelProxy)
-          << VTKOBJECT(InputProxy)
-          << vtkClientServerStream::End;
+  stream << vtkClientServerStream::Invoke << VTKOBJECT(this) << "Operate" << VTKOBJECT(ModelProxy)
+         << VTKOBJECT(InputProxy) << vtkClientServerStream::End;
   // calls "Operate" function on object this->GetId() (which gets turned
   // into a pointer on the server) with argument model->GetID() (also
   // becomes a pointer on the server)
   this->ExecuteStream(stream);
 }
 
-vtkIdType vtkSMOperatorProxy::Build(vtkDiscreteModel* /*ClientModel*/,
-                                    vtkSMProxy* ModelProxy)
+vtkIdType vtkSMOperatorProxy::Build(vtkDiscreteModel* /*ClientModel*/, vtkSMProxy* ModelProxy)
 {
   this->UpdateVTKObjects();
 
@@ -80,23 +70,19 @@ vtkIdType vtkSMOperatorProxy::Build(vtkDiscreteModel* /*ClientModel*/,
   // that is going to be built, otherwise we cannot call Build for this
   // operator
   vtkSMIdTypeVectorProperty* EntityIdProperty =
-    vtkSMIdTypeVectorProperty::SafeDownCast(
-      this->GetProperty("BuiltEntityId"));
-  if(!EntityIdProperty)
-    {
+    vtkSMIdTypeVectorProperty::SafeDownCast(this->GetProperty("BuiltEntityId"));
+  if (!EntityIdProperty)
+  {
     vtkErrorMacro("Can't find proxy to build entity on server.");
     return -1;
-    }
+  }
 
   // Make sure the proxy have been created on the server side
   ModelProxy->UpdateVTKObjects();
 
   vtkClientServerStream stream;
-  stream  << vtkClientServerStream::Invoke
-          << VTKOBJECT(this)
-          << "Build"
-          << VTKOBJECT(ModelProxy)
-          << vtkClientServerStream::End;
+  stream << vtkClientServerStream::Invoke << VTKOBJECT(this) << "Build" << VTKOBJECT(ModelProxy)
+         << vtkClientServerStream::End;
   // calls "Build" function on object this->GetId() (which gets turned
   // into a pointer on the server) with argument model->GetID() (also
   // becomes a pointer on the server)
@@ -109,8 +95,7 @@ vtkIdType vtkSMOperatorProxy::Build(vtkDiscreteModel* /*ClientModel*/,
   return BuiltEntityId;
 }
 
-bool vtkSMOperatorProxy::Destroy(vtkDiscreteModel* /*ClientModel*/,
-                                 vtkSMProxy* ModelProxy)
+bool vtkSMOperatorProxy::Destroy(vtkDiscreteModel* /*ClientModel*/, vtkSMProxy* ModelProxy)
 {
   this->UpdateVTKObjects();
 
@@ -118,23 +103,19 @@ bool vtkSMOperatorProxy::Destroy(vtkDiscreteModel* /*ClientModel*/,
   // that is going to be built, otherwise we cannot call Build for this
   // operator
   vtkSMIntVectorProperty* DestroySucceededProperty =
-    vtkSMIntVectorProperty::SafeDownCast(
-      this->GetProperty("DestroySucceeded"));
-  if(!DestroySucceededProperty)
-    {
+    vtkSMIntVectorProperty::SafeDownCast(this->GetProperty("DestroySucceeded"));
+  if (!DestroySucceededProperty)
+  {
     vtkErrorMacro("Can't find proxy to destroy entity on server.");
     return 0;
-    }
+  }
 
   // Make sure the proxy have been created on the server side
   ModelProxy->UpdateVTKObjects();
 
   vtkClientServerStream stream;
-  stream  << vtkClientServerStream::Invoke
-          << VTKOBJECT(this)
-          << "Destroy"
-          << VTKOBJECT(ModelProxy)
-          << vtkClientServerStream::End;
+  stream << vtkClientServerStream::Invoke << VTKOBJECT(this) << "Destroy" << VTKOBJECT(ModelProxy)
+         << vtkClientServerStream::End;
   // calls "Build" function on object this->GetId() (which gets turned
   // into a pointer on the server) with argument model->GetID() (also
   // becomes a pointer on the server)
@@ -142,10 +123,10 @@ bool vtkSMOperatorProxy::Destroy(vtkDiscreteModel* /*ClientModel*/,
 
   this->UpdatePropertyInformation();
   // get the built entity's unique persistent id
-  if(DestroySucceededProperty->GetElement(0))
-    {
+  if (DestroySucceededProperty->GetElement(0))
+  {
     return true;
-    }
+  }
   return false;
 }
 
@@ -153,5 +134,3 @@ void vtkSMOperatorProxy::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }
-
-

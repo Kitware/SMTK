@@ -22,33 +22,31 @@ class qtVoidItemInternals;
 
 namespace smtk
 {
-  namespace extension
-  {
-    class SMTKQTEXT_EXPORT qtVoidItem : public qtItem
-    {
-      Q_OBJECT
+namespace extension
+{
+class SMTKQTEXT_EXPORT qtVoidItem : public qtItem
+{
+  Q_OBJECT
 
-    public:
-      qtVoidItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview);
-      virtual ~qtVoidItem();
-      virtual void setLabelVisible(bool);
+public:
+  qtVoidItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview);
+  virtual ~qtVoidItem();
+  virtual void setLabelVisible(bool);
 
-    public slots:
-      void setOutputOptional(int);
+public slots:
+  void setOutputOptional(int);
 
-    protected slots:
-      virtual void updateItemData();
+protected slots:
+  virtual void updateItemData();
 
-    protected:
-      virtual void createWidget();
+protected:
+  virtual void createWidget();
 
-    private:
+private:
+  qtVoidItemInternals* Internals;
 
-      qtVoidItemInternals *Internals;
-
-    }; // class
-  }; // namespace attribute
+}; // class
+}; // namespace attribute
 }; // namespace smtk
-
 
 #endif

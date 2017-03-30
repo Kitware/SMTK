@@ -32,65 +32,53 @@ class VTKSMTKMESHINGEXT_EXPORT vtkRayIntersectionLocator : public vtkCellTreeLoc
 {
 public:
   static vtkRayIntersectionLocator* New();
-  vtkTypeMacro(vtkRayIntersectionLocator,vtkCellTreeLocator);
+  vtkTypeMacro(vtkRayIntersectionLocator, vtkCellTreeLocator);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  virtual int AllIntersectionsAlongSegment(
-    const vtkVector3d& p0,
-    const vtkVector3d& p1,
-    std::vector<vtkVector3d>& points,
-    std::vector<double>& params,
-    std::vector<vtkVector3d>& pcoords,
-    std::vector<vtkIdType>& cellIds,
-    std::vector<int>& subIds);
+  virtual int AllIntersectionsAlongSegment(const vtkVector3d& p0, const vtkVector3d& p1,
+    std::vector<vtkVector3d>& points, std::vector<double>& params,
+    std::vector<vtkVector3d>& pcoords, std::vector<vtkIdType>& cellIds, std::vector<int>& subIds);
 
   // Description:
   // Reimplemented to support bad compilers
-  virtual int IntersectWithLine(double a0[3], double a1[3], double tol,
-    double& t, double x[3], double pcoords[3],
-    int &subId, vtkIdType &cellId,
-    vtkGenericCell *cell);
+  virtual int IntersectWithLine(double a0[3], double a1[3], double tol, double& t, double x[3],
+    double pcoords[3], int& subId, vtkIdType& cellId, vtkGenericCell* cell);
 
   // Description:
   // Reimplemented to support bad compilers
   virtual int IntersectWithLine(
-    double p1[3], double p2[3], double tol, double& t, double x[3],
-    double pcoords[3], int &subId)
-    {
+    double p1[3], double p2[3], double tol, double& t, double x[3], double pcoords[3], int& subId)
+  {
     return this->Superclass::IntersectWithLine(p1, p2, tol, t, x, pcoords, subId);
-    }
+  }
+
+  // Description:
+  // Reimplemented to support bad compilers
+  virtual int IntersectWithLine(double p1[3], double p2[3], double tol, double& t, double x[3],
+    double pcoords[3], int& subId, vtkIdType& cellId)
+  {
+    return this->Superclass::IntersectWithLine(p1, p2, tol, t, x, pcoords, subId, cellId);
+  }
 
   // Description:
   // Reimplemented to support bad compilers
   virtual int IntersectWithLine(
-    double p1[3], double p2[3], double tol, double &t, double x[3],
-    double pcoords[3], int &subId, vtkIdType &cellId)
-    {
-    return this->Superclass::IntersectWithLine(
-      p1, p2, tol, t, x, pcoords, subId, cellId);
-    }
-
-  // Description:
-  // Reimplemented to support bad compilers
-  virtual int IntersectWithLine(
-    const double p1[3], const double p2[3],
-    vtkPoints *points, vtkIdList *cellIds)
-    {
+    const double p1[3], const double p2[3], vtkPoints* points, vtkIdList* cellIds)
+  {
     return this->Superclass::IntersectWithLine(p1, p2, points, cellIds);
-    }
+  }
 
   // Description:
   // Reimplemented to support bad compilers
-  virtual vtkIdType FindCell(double x[3])
-    { return this->Superclass::FindCell(x); }
+  virtual vtkIdType FindCell(double x[3]) { return this->Superclass::FindCell(x); }
 
 protected:
-     vtkRayIntersectionLocator();
-    ~vtkRayIntersectionLocator();
+  vtkRayIntersectionLocator();
+  ~vtkRayIntersectionLocator();
 
 private:
   vtkRayIntersectionLocator(const vtkRayIntersectionLocator&); // Not implemented.
-  void operator = (const vtkRayIntersectionLocator&); // Not implemented.
+  void operator=(const vtkRayIntersectionLocator&);            // Not implemented.
 };
 
 #endif // __vtkRayIntersectionLocator_h

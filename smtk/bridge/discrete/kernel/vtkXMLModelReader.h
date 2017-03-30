@@ -48,14 +48,14 @@ class vtkModelVertexUse;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkXMLModelReader : public vtkSerializer
 {
 public:
-  static vtkXMLModelReader *New();
-  vtkTypeMacro(vtkXMLModelReader,vtkSerializer);
+  static vtkXMLModelReader* New();
+  vtkTypeMacro(vtkXMLModelReader, vtkSerializer);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // This method returns true if the serializer is an output
   // serializer (writer). Returns false.
-  virtual bool IsWriting() {return false;}
+  virtual bool IsWriting() { return false; }
 
   // Description:
   // Main entry point called to read an XML archive.
@@ -73,20 +73,20 @@ public:
 
   // Description:
   // Serializes a single unsigned long.
-  virtual void Serialize(const char* name, unsigned long& val) ;
+  virtual void Serialize(const char* name, unsigned long& val);
 
- // Description:
+  // Description:
   // Serializes an array.
   virtual void Serialize(const char* name, unsigned long*& val, unsigned int& length);
 
-  // Description:
-  // Reads a single vtkIdType.
+// Description:
+// Reads a single vtkIdType.
 #if defined(VTK_USE_64BIT_IDS)
   virtual void Serialize(const char* name, vtkIdType& val);
 #endif
 
-  // Description:
-  // Reads an array.
+// Description:
+// Reads an array.
 #if defined(VTK_USE_64BIT_IDS)
   virtual void Serialize(const char* name, vtkIdType*& val, unsigned int& length);
 #endif
@@ -131,14 +131,12 @@ public:
   // Description:
   // Serializes a vector of vtkSerializableObjects.
   virtual void Serialize(
-    const char* name,
-    std::vector<vtkSmartPointer<vtkObject> >& objs, bool weakPtr = false);
+    const char* name, std::vector<vtkSmartPointer<vtkObject> >& objs, bool weakPtr = false);
 
   // Description:
   // Serializes a map from int to vector of vtkSerializableObject.
   virtual void Serialize(
-    const char* name,
-    std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& objs);
+    const char* name, std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& objs);
 
   // Description:
   // Serialize the model.
@@ -147,8 +145,7 @@ public:
   // Description:
   // Get all XML elements that have a "type" attribute matching type.  The
   // elements collection will be appended with any matching objects.
-  void GetElementsByType(vtkXMLElement* element, const char* type,
-                                vtkCollection* elements);
+  void GetElementsByType(vtkXMLElement* element, const char* type, vtkCollection* elements);
 
 protected:
   vtkXMLModelReader();
@@ -156,13 +153,11 @@ protected:
 
   // Description:
   // Gets the associations.
-  void GetAssociations(vtkXMLElement* elem,
-                       std::map<int, std::vector<vtkIdType> >& objs);
+  void GetAssociations(vtkXMLElement* elem, std::map<int, std::vector<vtkIdType> >& objs);
 
   // Description:
   // Gets the associations for a given entity type.
-  void GetAssociations(vtkXMLElement* elem, int entityType,
-                       std::vector<vtkIdType>& objs);
+  void GetAssociations(vtkXMLElement* elem, int entityType, std::vector<vtkIdType>& objs);
 
   vtkModelLoopUse* ConstructModelLoopUse(int id);
   vtkModelFace* ConstructModelFace(int id);
@@ -176,8 +171,8 @@ protected:
   vtkDiscreteModelEntityGroup* ConstructModelEntityGroup(int id);
 
 private:
-  vtkXMLModelReader(const vtkXMLModelReader&);  // Not implemented.
-  void operator=(const vtkXMLModelReader&);  // Not implemented.
+  vtkXMLModelReader(const vtkXMLModelReader&); // Not implemented.
+  void operator=(const vtkXMLModelReader&);    // Not implemented.
 
   int ParseStream(istream& str);
   vtkObject* ReadObject(vtkIdType id, bool weakPtr);

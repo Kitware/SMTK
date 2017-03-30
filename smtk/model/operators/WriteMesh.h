@@ -12,8 +12,10 @@
 
 #include "smtk/model/Operator.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief A class for writing meshes to file.
   */
@@ -31,7 +33,7 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 };
 
-  } // model namespace
+} // model namespace
 } // smtk namespace
 
 #endif // __smtk_model_WriteMesh_h

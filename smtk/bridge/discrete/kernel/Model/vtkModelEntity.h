@@ -22,7 +22,6 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelItem.h"
 
-
 class vtkInformationDoubleVectorKey;
 class vtkInformationIdTypeKey;
 class vtkInformationIntegerKey;
@@ -35,7 +34,7 @@ class vtkProperty;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkModelEntity : public vtkModelItem
 {
 public:
-  vtkTypeMacro(vtkModelEntity,vtkModelItem);
+  vtkTypeMacro(vtkModelEntity, vtkModelItem);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -110,8 +109,8 @@ protected:
   virtual bool Destroy() = 0;
 
 private:
-  vtkModelEntity(const vtkModelEntity&);  // Not implemented.
-  void operator=(const vtkModelEntity&);  // Not implemented.
+  vtkModelEntity(const vtkModelEntity&); // Not implemented.
+  void operator=(const vtkModelEntity&); // Not implemented.
 
   // Description:
   // vtkInformation for specifying user defined attributes for
@@ -122,4 +121,3 @@ private:
 };
 
 #endif
-

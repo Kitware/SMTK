@@ -24,20 +24,19 @@ int main()
   logger.addRecord(smtk::io::Logger::INFO, "Sample Info String\n");
   std::size_t i, n = logger.numberOfRecords();
   if (n != 4)
-    {
+  {
     std::cerr << "Wrong number of records!  Got " << n << " Should be 4!\n";
     return -1;
-    }
+  }
 
   smtk::io::Logger::Record r;
   for (i = 0; i < n; i++)
-    {
+  {
     r = logger.record(static_cast<int>(i));
-    std::cerr << " Record " << i << ": \n\tSeverity = "
-              << smtk::io::Logger::severityAsString(r.severity)
-              << "\n\tMessage = " << r.message
-              << "\tFile = " << r.fileName << "\n\tLine = "
-              << r.lineNumber << std::endl;
-    }
+    std::cerr << " Record " << i
+              << ": \n\tSeverity = " << smtk::io::Logger::severityAsString(r.severity)
+              << "\n\tMessage = " << r.message << "\tFile = " << r.fileName
+              << "\n\tLine = " << r.lineNumber << std::endl;
+  }
   return 0;
 }

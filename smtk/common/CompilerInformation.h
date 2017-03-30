@@ -30,7 +30,7 @@
 #define SMTK_GCC
 #endif
 
-#if __cplusplus >= 201103L || ( defined(SMTK_MSVC) && _MSC_VER >= 1800  )
+#if __cplusplus >= 201103L || (defined(SMTK_MSVC) && _MSC_VER >= 1800)
 #define SMTK_HAVE_CXX_11
 #endif
 
@@ -40,47 +40,46 @@
 // disable warnings that smtk checks for but third parties do not.
 #if (defined(SMTK_GCC) || defined(SMTK_CLANG))
 
-#define SMTK_THIRDPARTY_GCC_WARNING_PRAGMAS \
-  _Pragma("GCC diagnostic ignored \"-Wconversion\"") \
-  _Pragma("GCC diagnostic ignored \"-Wshadow\"") \
-  _Pragma("GCC diagnostic ignored \"-Wcast-align\"") \
-  _Pragma("GCC diagnostic ignored \"-Wunused-parameter\"") \
-  _Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+#define SMTK_THIRDPARTY_GCC_WARNING_PRAGMAS                                                        \
+  _Pragma("GCC diagnostic ignored \"-Wconversion\"")                                               \
+    _Pragma("GCC diagnostic ignored \"-Wshadow\"")                                                 \
+      _Pragma("GCC diagnostic ignored \"-Wcast-align\"")                                           \
+        _Pragma("GCC diagnostic ignored \"-Wunused-parameter\"")                                   \
+          _Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 
-#define SMTK_THIRDPARTY_CLANG_WARNING_PRAGMAS \
-  _Pragma("clang diagnostic ignored \"-Wabsolute-value\"") \
-  _Pragma("clang diagnostic ignored \"-Wdeprecated-register\"")
+#define SMTK_THIRDPARTY_CLANG_WARNING_PRAGMAS                                                      \
+  _Pragma("clang diagnostic ignored \"-Wabsolute-value\"")                                         \
+    _Pragma("clang diagnostic ignored \"-Wdeprecated-register\"")
 
 #define SMTK_THIRDPARTY_WARNINGS_PUSH _Pragma("GCC diagnostic push")
-#define SMTK_THRIDPARTY_WARNINGS_POP  _Pragma("GCC diagnostic pop")
+#define SMTK_THRIDPARTY_WARNINGS_POP _Pragma("GCC diagnostic pop")
 
-#if defined (SMTK_GCC)
-#define SMTK_THIRDPARTY_PRE_INCLUDE \
-  SMTK_THIRDPARTY_WARNINGS_PUSH \
+#if defined(SMTK_GCC)
+#define SMTK_THIRDPARTY_PRE_INCLUDE                                                                \
+  SMTK_THIRDPARTY_WARNINGS_PUSH                                                                    \
   SMTK_THIRDPARTY_GCC_WARNING_PRAGMAS
 #else /* clang takes GCC pragmas + additional pragmas */
-#define SMTK_THIRDPARTY_PRE_INCLUDE \
-  SMTK_THIRDPARTY_WARNINGS_PUSH \
-  SMTK_THIRDPARTY_GCC_WARNING_PRAGMAS \
+#define SMTK_THIRDPARTY_PRE_INCLUDE                                                                \
+  SMTK_THIRDPARTY_WARNINGS_PUSH                                                                    \
+  SMTK_THIRDPARTY_GCC_WARNING_PRAGMAS                                                              \
   SMTK_THIRDPARTY_CLANG_WARNING_PRAGMAS
 #endif
-#define SMTK_THIRDPARTY_POST_INCLUDE \
-  SMTK_THRIDPARTY_WARNINGS_POP
+#define SMTK_THIRDPARTY_POST_INCLUDE SMTK_THRIDPARTY_WARNINGS_POP
 
 #elif defined(SMTK_MSVC)
-#define SMTK_THIRDPARTY_PRE_INCLUDE \
- __pragma(warning(push)) \
- __pragma(warning(disable:4180))  /*qualifier applied to function type has no meaning; ignored*/ \
- __pragma(warning(disable:4244))  /*conversion from 'double' to 'unsigned int'*/ \
- __pragma(warning(disable:4251))  /*missing DLL-interface*/ \
- __pragma(warning(disable:4267))  /*from size_t to type*/ \
- __pragma(warning(disable:4273))  /*inconsistent dll linkage*/ \
- __pragma(warning(disable:4275))  /*non dll-interface class used as base*/ \
- __pragma(warning(disable:4305))  /*truncation from 'double' to 'float'*/ \
- __pragma(warning(disable:4373))  /*override when parameters differ by const/volatile qualifiers*/ \
- __pragma(warning(disable:4996))  /*using non checked iterators*/
-#define SMTK_THIRDPARTY_POST_INCLUDE \
- __pragma(warning(pop))
+#define SMTK_THIRDPARTY_PRE_INCLUDE                                                                \
+  __pragma(warning(push)) __pragma(                                                                \
+    warning(disable : 4180)) /*qualifier applied to function type has no meaning; ignored*/        \
+    __pragma(warning(disable : 4244)) /*conversion from 'double' to 'unsigned int'*/               \
+    __pragma(warning(disable : 4251)) /*missing DLL-interface*/                                    \
+    __pragma(warning(disable : 4267)) /*from size_t to type*/                                      \
+    __pragma(warning(disable : 4273)) /*inconsistent dll linkage*/                                 \
+    __pragma(warning(disable : 4275)) /*non dll-interface class used as base*/                     \
+    __pragma(warning(disable : 4305)) /*truncation from 'double' to 'float'*/                      \
+    __pragma(                                                                                      \
+      warning(disable : 4373)) /*override when parameters differ by const/volatile qualifiers*/    \
+    __pragma(warning(disable : 4996)) /*using non checked iterators*/
+#define SMTK_THIRDPARTY_POST_INCLUDE __pragma(warning(pop))
 
 #else
 #define SMTK_THIRDPARTY_PRE_INCLUDE

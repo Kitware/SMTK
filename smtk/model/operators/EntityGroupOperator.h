@@ -12,8 +12,10 @@
 
 #include "smtk/model/Operator.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief Create, desctory or modify a model entity group.
   *
@@ -38,7 +40,7 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 };
 
-  } //namespace model
+} //namespace model
 } // namespace smtk
 
 #endif // __smtk_model_EntityGroup_h

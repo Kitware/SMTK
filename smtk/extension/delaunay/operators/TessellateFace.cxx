@@ -13,8 +13,8 @@
 
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/extension/delaunay/io/ImportDelaunayMesh.h"
 #include "smtk/extension/delaunay/io/ExportDelaunayMesh.h"
+#include "smtk/extension/delaunay/io/ImportDelaunayMesh.h"
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
@@ -33,8 +33,10 @@
 
 #include <algorithm>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 TessellateFace::TessellateFace()
 {
@@ -42,20 +44,15 @@ TessellateFace::TessellateFace()
 
 bool TessellateFace::ableToOperate()
 {
-  smtk::model::EntityRef eRef =
-    this->specification()->associations()->value();
+  smtk::model::EntityRef eRef = this->specification()->associations()->value();
 
-  return
-    this->Superclass::ableToOperate() &&
-    eRef.isValid() &&
-    eRef.isFace() &&
+  return this->Superclass::ableToOperate() && eRef.isValid() && eRef.isFace() &&
     eRef.owningModel().isValid();
 }
 
 OperatorResult TessellateFace::operateInternal()
 {
-  smtk::model::Face face = this->specification()->associations()->
-    value().as<smtk::model::Face>();
+  smtk::model::Face face = this->specification()->associations()->value().as<smtk::model::Face>();
 
   bool validatePolygons = this->findVoid("validate polygons")->isEnabled();
 
@@ -76,8 +73,7 @@ OperatorResult TessellateFace::operateInternal()
 
   // make a polygon from the points in the loop
   smtk::extension::delaunay::io::ExportDelaunayMesh exportToDelaunayMesh;
-  std::vector<Delaunay::Shape::Point> points =
-    exportToDelaunayMesh(exteriorLoop);
+  std::vector<Delaunay::Shape::Point> points = exportToDelaunayMesh(exteriorLoop);
 
   // make a polygon validator
   Delaunay::Validation::IsValidPolygon isValidPolygon;
@@ -105,8 +101,7 @@ OperatorResult TessellateFace::operateInternal()
   Delaunay::Discretization::ExcisePolygon excise;
   for (auto& loop : exteriorLoop.containedLoops())
   {
-    std::vector<Delaunay::Shape::Point> points_sub =
-      exportToDelaunayMesh(loop);
+    std::vector<Delaunay::Shape::Point> points_sub = exportToDelaunayMesh(loop);
     Delaunay::Shape::Polygon p_sub(points_sub);
     // if the orientation is not ccw, flip the orientation
     if (Delaunay::Shape::Orientation(p_sub) != 1)
@@ -134,16 +129,11 @@ OperatorResult TessellateFace::operateInternal()
   return result;
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #include "smtk/extension/delaunay/Exports.h"
 #include "smtk/extension/delaunay/TessellateFace_xml.h"
 
-smtkImplementsModelOperator(
-  SMTKDELAUNAYEXT_EXPORT,
-  smtk::model::TessellateFace,
-  delaunay_tessellate_face,
-  "tessellate face",
-  TessellateFace_xml,
-  smtk::model::Session);
+smtkImplementsModelOperator(SMTKDELAUNAYEXT_EXPORT, smtk::model::TessellateFace,
+  delaunay_tessellate_face, "tessellate face", TessellateFace_xml, smtk::model::Session);

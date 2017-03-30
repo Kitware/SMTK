@@ -12,33 +12,32 @@
 
 #include "smtk/bridge/polygon/internal/Config.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 inline internal::HighPrecisionCoord dot2d(const internal::Coord oa[2], const internal::Coord oo[2])
 {
   internal::HighPrecisionCoord result;
-  result =
-    static_cast<internal::HighPrecisionCoord>(oa[0]) * oo[0] +
+  result = static_cast<internal::HighPrecisionCoord>(oa[0]) * oo[0] +
     static_cast<internal::HighPrecisionCoord>(oa[1]) * oo[1];
   return result;
 }
 
-inline internal::HighPrecisionCoord cross2d(const internal::Coord oa[2], const internal::Coord oo[2])
+inline internal::HighPrecisionCoord cross2d(
+  const internal::Coord oa[2], const internal::Coord oo[2])
 {
   internal::HighPrecisionCoord result;
-  result =
-    static_cast<internal::HighPrecisionCoord>(oa[0]) * oo[1] -
+  result = static_cast<internal::HighPrecisionCoord>(oa[0]) * oo[1] -
     static_cast<internal::HighPrecisionCoord>(oa[1]) * oo[0];
   return result;
 }
 
-inline internal::HighPrecisionCoord deltacross2d(
-  const internal::Point& a0,
-  const internal::Point& a1,
-  const internal::Point& b0,
-  const internal::Point& b1)
+inline internal::HighPrecisionCoord deltacross2d(const internal::Point& a0,
+  const internal::Point& a1, const internal::Point& b0, const internal::Point& b1)
 {
   internal::Coord a01[2];
   internal::Coord b01[2];
@@ -50,8 +49,8 @@ inline internal::HighPrecisionCoord deltacross2d(
   return cross2d(a01, b01);
 }
 
-    } // namespace polygon
-  } // namespace bridge
+} // namespace polygon
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_bridge_polygon_internal_Util_h

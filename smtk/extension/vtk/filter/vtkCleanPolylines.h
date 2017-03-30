@@ -23,8 +23,8 @@
 class VTKSMTKFILTEREXT_EXPORT vtkCleanPolylines : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkCleanPolylines *New();
-  vtkTypeMacro(vtkCleanPolylines,vtkPolyDataAlgorithm);
+  static vtkCleanPolylines* New();
+  vtkTypeMacro(vtkCleanPolylines, vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   vtkSetClampMacro(MinimumLineLength, double, 0, VTK_FLOAT_MAX);
@@ -37,32 +37,26 @@ public:
   vtkSetMacro(UseRelativeLineLength, bool);
   vtkGetMacro(UseRelativeLineLength, bool);
 
-//BTX
+  //BTX
 protected:
   vtkCleanPolylines();
 
-  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
-  void TraverseLine(vtkIdType startPid, vtkIdType startCellId,
-        vtkPolyData *input, unsigned char *marks,
-        vtkIdList *ids, double *length,
-                    vtkIdType *lastLineId);
-  void StripLines(vtkPolyData *input, vtkPolyData *result,
-                  vtkDoubleArray *lengths);
-  void RemoveNonManifoldFeatures(vtkPolyData *input, vtkDoubleArray *lengths,
-                                 vtkPolyData *result,
-                                 vtkDoubleArray *newLengths);
-  void TraversePolyLine(vtkIdType startPid, vtkIdType startCellId,
-                        vtkPolyData *input, vtkDoubleArray *lengths,
-                        unsigned char *marks,
-                        vtkIdList *ids, double *length);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  void TraverseLine(vtkIdType startPid, vtkIdType startCellId, vtkPolyData* input,
+    unsigned char* marks, vtkIdList* ids, double* length, vtkIdType* lastLineId);
+  void StripLines(vtkPolyData* input, vtkPolyData* result, vtkDoubleArray* lengths);
+  void RemoveNonManifoldFeatures(
+    vtkPolyData* input, vtkDoubleArray* lengths, vtkPolyData* result, vtkDoubleArray* newLengths);
+  void TraversePolyLine(vtkIdType startPid, vtkIdType startCellId, vtkPolyData* input,
+    vtkDoubleArray* lengths, unsigned char* marks, vtkIdList* ids, double* length);
 
 private:
-  vtkCleanPolylines(const vtkCleanPolylines&);  // Not implemented.
-  void operator=(const vtkCleanPolylines&);  // Not implemented.
+  vtkCleanPolylines(const vtkCleanPolylines&); // Not implemented.
+  void operator=(const vtkCleanPolylines&);    // Not implemented.
 
   double MinimumLineLength;
   bool UseRelativeLineLength;
-//ETX
+  //ETX
 };
 
 #endif

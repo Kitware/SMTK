@@ -13,21 +13,24 @@
 #include "smtk/SharedPtr.h"
 #include "smtk/bridge/polygon/internal/Entity.h"
 
-
-#ifndef _WIN32 
-#  include <sys/types.h> // for ssize_t
+#ifndef _WIN32
+#include <sys/types.h> // for ssize_t
 #else
-#  include <BaseTsd.h>
+#include <BaseTsd.h>
 typedef SSIZE_T ssize_t;
-#  if defined (_MSC_VER) && _MSC_VER < 1900
+#if defined(_MSC_VER) && _MSC_VER < 1900
 typedef SIZE_T size_t;
-#  endif
-#endif  // _WIN32
+#endif
+#endif // _WIN32
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
-      namespace internal {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
+namespace internal
+{
 
 class pmodel;
 
@@ -37,7 +40,7 @@ public:
   smtkTypeMacro(edge);
   smtkCreateMacro(edge);
   smtkSharedFromThisMacro(entity);
-  virtual ~edge() { }
+  virtual ~edge() {}
 
   std::size_t pointsSize() const { return this->m_points.size(); }
 
@@ -54,7 +57,7 @@ public:
   PointSeq::reverse_iterator pointsREnd() { return this->m_points.rend(); }
 
   bool pointsOfSegment(ssize_t idx, Point& lo, Point& hi) const
-    {
+  {
     if (idx < 0 || idx >= static_cast<ssize_t>(this->m_points.size()))
       return false;
 
@@ -63,23 +66,22 @@ public:
       hi = *it;
     hi = *it;
     return true;
-    }
+  }
 
   PointSeq& points() { return this->m_points; }
   const PointSeq& points() const { return this->m_points; }
 
-
 protected:
-  edge() { }
+  edge() {}
 
   friend class pmodel;
 
   PointSeq m_points;
 };
 
-      } // namespace internal
-    } // namespace polygon
-  }  // namespace bridge
+} // namespace internal
+} // namespace polygon
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_bridge_polygon_internal_edge_h

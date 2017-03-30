@@ -53,21 +53,20 @@ using namespace smtk::io;
 int main(int argc, char* argv[])
 {
   int debug = argc > 2 ? (argv[2][0] == '-' ? 0 : 1) : 0;
-  if (argc > 1 )
-    {
+  if (argc > 1)
+  {
     std::ifstream file;
     file.open(argv[1]);
-    if(!file.good())
-      {
-      std::cout
-        << "Could not open file \"" << argv[1] << "\".\n\n";
-        return 1;
-      }
+    if (!file.good())
+    {
+      std::cout << "Could not open file \"" << argv[1] << "\".\n\n";
+      return 1;
+    }
 
     int status = 1;
     ManagerPtr mgr = Manager::create();
     smtk::bridge::discrete::Session::Ptr brg = smtk::bridge::discrete::Session::create();
-//    Session::Ptr brg = mgr->createSessionOfType("discrete");
+    //    Session::Ptr brg = mgr->createSessionOfType("discrete");
     mgr->registerSession(brg);
     Operator::Ptr op;
     OperatorResult result;
@@ -76,17 +75,17 @@ int main(int argc, char* argv[])
     op->findFile("filename")->setValue(argv[1]);
     result = op->operate();
     if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
-      {
+    {
       std::cerr << "Import 2dm Failed: " << argv[1] << std::endl;
       return 1;
-      }
+    }
     Model model2dm = result->findModelEntity("created")->value();
 
     if (model2dm.isValid())
-      {
-// Every time a 2dm file is loaded, new UUIDs will be created for entities,
-// but the entity names should be consistent.
-/*
+    {
+      // Every time a 2dm file is loaded, new UUIDs will be created for entities,
+      // but the entity names should be consistent.
+      /*
 Edge1  117b10e2-c32b-4b65-92fc-72ac5d6aba59
 Edge6  146cc049-b104-48a2-8104-43423b1e5ab7
 Face1  17a75230-31bb-4b8f-9892-ecedcd3a86c1
@@ -110,24 +109,25 @@ Edge5  e6c2e063-e290-40ef-b9e2-19f8a78e8a9d
 Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
 */
       smtk::mesh::ManagerPtr meshmgr = mgr->meshes();
-        typedef std::vector< smtk::mesh::CollectionPtr > AssocCollections;
+      typedef std::vector<smtk::mesh::CollectionPtr> AssocCollections;
       AssocCollections assocCollections = meshmgr->collectionsWithAssociations();
       test(assocCollections.size() == 2, "expecting 2 mesh collections");
       smtk::mesh::CollectionPtr mc = assocCollections[0];
       if (mc->entity() == model2dm.entity())
-	{
-	// this collection has the same entity id as the model. It holds the
-	// tessellation meshes for each model entity. We are looking for the
-	// mesh that is affiliated with the model, not the one that represents
-	// its tessellation.
-	mc = assocCollections[1];
-	}
+      {
+        // this collection has the same entity id as the model. It holds the
+        // tessellation meshes for each model entity. We are looking for the
+        // mesh that is affiliated with the model, not the one that represents
+        // its tessellation.
+        mc = assocCollections[1];
+      }
       test((mc->meshes(smtk::mesh::Dims2)).size() == 4, "Expecting 4 face mesh");
       test((mc->meshes(smtk::mesh::Dims1)).size() == 10, "Expecting 10 edge mesh");
       test((mc->meshes(smtk::mesh::Dims0)).size() == 7, "Expecting 7 vertex mesh");
 
       // edge op
-      Operator::Ptr edgeop = brg->op("modify edge");;
+      Operator::Ptr edgeop = brg->op("modify edge");
+      ;
       edgeop->findModelEntity("model")->setValue(model2dm);
 
       typedef std::vector<Edge> Edges;
@@ -145,19 +145,19 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
       smtk::common::UUID vertex4(vertlist.begin()->entity());
 
       // split Edge1 on point 22
-      int ids[] = {22};
-      std::set<int> pids(ids, ids+1);
+      int ids[] = { 22 };
+      std::set<int> pids(ids, ids + 1);
       smtk::attribute::MeshSelectionItemPtr meshItem = edgeop->findMeshSelection("selection");
       meshItem->reset();
       meshItem->setValues(edge1, pids);
       meshItem->setModifyMode(smtk::attribute::ACCEPT);
       result = edgeop->operate();
       if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
-        {
+      {
         std::cerr << "Split Edge 1 Failed!\n";
         return 1;
-        }
-/*
+      }
+      /*
       // later on we will demote this new vert
       smtk::common::UUID newVertId = smtk::common::UUID::null();
       ModelEntityItemPtr newEnts = result->findModelEntity("created");
@@ -186,10 +186,10 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
       meshItem->setModifyMode(smtk::attribute::ACCEPT);
       result = edgeop->operate();
       if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
-        {
+      {
         std::cerr << "Split Edge 10 Failed!\n";
         return 1;
-        }
+      }
       edges = mgr->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::EDGE);
       std::cout << "after split Edge10, number of edges: " << edges.size() << std::endl;
       test(edges.size() == 12, "Expecting 12 edges");
@@ -206,17 +206,17 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
       meshItem->setModifyMode(smtk::attribute::ACCEPT);
       result = edgeop->operate();
       if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
-        {
+      {
         std::cerr << "Demote Vertex 4 on Edge 10 Failed!\n";
         return 1;
-        }
+      }
       edges = mgr->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::EDGE);
       test(edges.size() == 11, "Expecting 11 edges");
       verts = mgr->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::VERTEX);
       test(verts.size() == 8, "Expecting 8 vertices");
       test((mc->meshes(smtk::mesh::Dims1)).size() == 11, "Expecting 11 edge mesh");
       test((mc->meshes(smtk::mesh::Dims0)).size() == 8, "Expecting 8 vertex mesh");
-/*
+      /*
       // demote new vertex from first split on Edge1, then split Edge1 again on point 15, 
       if(!newVertId.isNull())
         {
@@ -261,15 +261,15 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
       vtkNew<vtkRenderWindow> win;
       src->SetMeshManager(meshmgr);
       src->SetMeshCollectionID(collectionID.toString().c_str());
-      if(debug)
-        {
+      if (debug)
+      {
         win->SetMultiSamples(16);
         src->AllowNormalGenerationOn();
-        }
+      }
       else
-	{
-	win->SetMultiSamples(0);
-	}
+      {
+        win->SetMultiSamples(0);
+      }
       map->SetInputConnection(src->GetOutputPort());
 
       act->SetMapper(map.GetPointer());
@@ -281,9 +281,10 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
       ren->AddActor(act.GetPointer());
 
       vtkRenderWindowInteractor* iac = win->MakeRenderWindowInteractor();
-      vtkInteractorStyleSwitch::SafeDownCast(iac->GetInteractorStyle())->SetCurrentStyleToTrackballCamera();
+      vtkInteractorStyleSwitch::SafeDownCast(iac->GetInteractorStyle())
+        ->SetCurrentStyleToTrackballCamera();
       win->SetInteractor(iac);
-    /*
+      /*
       if (debug && argc > 3)
         {
         vtkNew<vtkXMLMultiBlockDataWriter> wri;
@@ -295,15 +296,15 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
       win->Render();
       ren->ResetCamera();
 
-      status = ! vtkRegressionTestImage(win.GetPointer());
+      status = !vtkRegressionTestImage(win.GetPointer());
       if (debug)
-        {
+      {
         iac->Start();
-        }
       }
+    }
 
     return status;
-    }
+  }
 
   return 0;
 }

@@ -27,7 +27,7 @@ class vtkCMBModelVertexMesh;
 class VTK_EXPORT vtkCMBModelFaceMesh : public vtkCMBModelEntityMesh
 {
 public:
-  vtkTypeMacro(vtkCMBModelFaceMesh,vtkCMBModelEntityMesh);
+  vtkTypeMacro(vtkCMBModelFaceMesh, vtkCMBModelEntityMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual vtkModelGeometricEntity* GetModelGeometricEntity();
@@ -66,7 +66,7 @@ public:
   // 0 indicates no minimum area has been set.
   double GetActualMinimumAngle();
 
-  virtual bool SetLocalMinimumAngle(double angle)=0;
+  virtual bool SetLocalMinimumAngle(double angle) = 0;
 
   vtkGetObjectMacro(ModelFace, vtkModelFace);
 
@@ -75,7 +75,7 @@ public:
   // and false otherwise.
   virtual bool IsModelEntityMeshed()
   {
-    return (this->GetMeshedLength()> 0. && this->MeshedMinimumAngle > 0.);
+    return (this->GetMeshedLength() > 0. && this->MeshedMinimumAngle > 0.);
   }
 
 protected:
@@ -95,8 +95,8 @@ protected:
   virtual bool BuildMesh(bool meshHigherDimensionalEntities) = 0;
 
 private:
-  vtkCMBModelFaceMesh(const vtkCMBModelFaceMesh&);  // Not implemented.
-  void operator=(const vtkCMBModelFaceMesh&);  // Not implemented.
+  vtkCMBModelFaceMesh(const vtkCMBModelFaceMesh&); // Not implemented.
+  void operator=(const vtkCMBModelFaceMesh&);      // Not implemented.
 
   vtkModelFace* ModelFace;
   double MinimumAngle; // in degrees

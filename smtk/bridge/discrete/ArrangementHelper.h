@@ -10,7 +10,7 @@
 #ifndef __smtk_bridge_discrete_ArrangementHelper_h
 #define __smtk_bridge_discrete_ArrangementHelper_h
 
-#include "smtk/SharedFromThis.h" // for smtkTypeMacro
+#include "smtk/SharedFromThis.h"          // for smtkTypeMacro
 #include "smtk/bridge/discrete/Exports.h" // for SMTKDISCRETESESSION_EXPORT
 #include "smtk/model/ArrangementHelper.h"
 
@@ -23,9 +23,12 @@ class vtkModelEdge;
 class vtkModelEdgeUse;
 class vtkModelRegion;
 
-namespace smtk {
-  namespace bridge {
-    namespace discrete {
+namespace smtk
+{
+namespace bridge
+{
+namespace discrete
+{
 
 /**\brief Superclass for session-specific updates to arrangments of entities.
   *
@@ -41,22 +44,15 @@ public:
   ArrangementHelper();
   virtual ~ArrangementHelper();
 
-  void addArrangement(
-    const smtk::model::EntityRef& parent,
-    smtk::model::ArrangementKind k,
+  void addArrangement(const smtk::model::EntityRef& parent, smtk::model::ArrangementKind k,
     const smtk::model::EntityRef& child);
-  void addArrangement(
-    const smtk::model::EntityRef& parent,
-    smtk::model::ArrangementKind k,
-    const smtk::model::EntityRef& child,
-    int sense,
-    smtk::model::Orientation orientation,
-    int iter_pos=0);
+  void addArrangement(const smtk::model::EntityRef& parent, smtk::model::ArrangementKind k,
+    const smtk::model::EntityRef& child, int sense, smtk::model::Orientation orientation,
+    int iter_pos = 0);
   void resetArrangements();
 
   virtual void doneAddingEntities(
-    smtk::model::SessionPtr baseSession,
-   smtk::model::SessionInfoBits flags);
+    smtk::model::SessionPtr baseSession, smtk::model::SessionInfoBits flags);
 
   // Start of discrete-session specific methods:
   int findOrAssignSense(vtkModelEdgeUse* eu1);
@@ -68,40 +64,43 @@ public:
   vtkModelEdgeUse* edgeUseFromChainId(const smtk::common::UUID&);
 
 protected:
-
-  typedef std::map<vtkModelEdgeUse*,int> EdgeUseToSenseMap;
+  typedef std::map<vtkModelEdgeUse*, int> EdgeUseToSenseMap;
   typedef std::map<vtkModelEdge*, EdgeUseToSenseMap> EdgeToUseSenseMap;
   typedef std::map<vtkModelRegion*, smtk::common::UUID> VolumeToUseIdMap;
   typedef std::map<smtk::common::UUID, vtkModelRegion*> UseIdToVolumeMap;
   typedef std::map<vtkModelEdgeUse*, smtk::common::UUID> EdgeToChainIdMap;
   typedef std::map<smtk::common::UUID, vtkModelEdgeUse*> ChainIdToEdgeMap;
 
-  struct Spec {
+  struct Spec
+  {
     smtk::model::EntityRef parent;
     smtk::model::EntityRef child;
     smtk::model::ArrangementKind kind;
     int sense;
     mutable int iter_pos;
 
-    Spec(const smtk::model::EntityRef& p,
-         const smtk::model::EntityRef& c,
-         smtk::model::ArrangementKind k,
-         int s, int ip)
-      : parent(p), child(c), kind(k), sense(s), iter_pos(ip) {}
+    Spec(const smtk::model::EntityRef& p, const smtk::model::EntityRef& c,
+      smtk::model::ArrangementKind k, int s, int ip)
+      : parent(p)
+      , child(c)
+      , kind(k)
+      , sense(s)
+      , iter_pos(ip)
+    {
+    }
 
-    bool operator < (const Spec& other) const
-      {
-      return
-        (this->kind < other.kind ||
-         (this->kind == other.kind &&
-            (this->parent < other.parent ||
-              (this->parent == other.parent &&
-                (this->child < other.child ||
-                  (this->child == other.child &&
-                    this->sense < other.sense)))))) ? true : false;
-      }
+    bool operator<(const Spec& other) const
+    {
+      return (this->kind < other.kind ||
+               (this->kind == other.kind &&
+                 (this->parent < other.parent ||
+                   (this->parent == other.parent &&
+                     (this->child < other.child ||
+                       (this->child == other.child && this->sense < other.sense))))))
+        ? true
+        : false;
+    }
   };
-
 
   std::set<Spec> m_arrangements;
   EdgeToUseSenseMap m_edgeUseSenses;
@@ -112,11 +111,11 @@ protected:
 
 private:
   ArrangementHelper(const ArrangementHelper& other); // Not implemented.
-  void operator = (const ArrangementHelper& other); // Not implemented.
+  void operator=(const ArrangementHelper& other);    // Not implemented.
 };
 
-    } // namespace discrete
-  } // namespace bridge
+} // namespace discrete
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_bridge_discrete_ArrangementHelper_h

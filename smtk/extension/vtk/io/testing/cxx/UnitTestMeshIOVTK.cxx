@@ -27,8 +27,7 @@ void verify_import_unstructured_grid()
   std::string file_path(data_root);
   file_path += "/mesh/3d/nickel_superalloy.vtu";
 
-  test (smtk::io::importMesh(file_path, c),
-        "should be able to import unstructured grid");
+  test(smtk::io::importMesh(file_path, c), "should be able to import unstructured grid");
 }
 
 void verify_import_polydata()
@@ -39,8 +38,7 @@ void verify_import_polydata()
   std::string file_path(data_root);
   file_path += "/scene/BasicScene_12_20_07/PolygonMesh_f8e612a9-876c-4145-9c74-ee6c39f2a157.vtp";
 
-  test (smtk::io::importMesh(file_path, c),
-        "should be able to import polydata");
+  test(smtk::io::importMesh(file_path, c), "should be able to import polydata");
 }
 }
 

@@ -17,8 +17,8 @@
 #define __smtkdiscrete_ModelVertexClassification_H
 
 #include "smtk/common/CompilerInformation.h" //needed for SMTK_MSVC flag
-#include "vtkSMTKDiscreteModelModule.h" // For export macro
-#include "vtkType.h" //needed for vtkIdType
+#include "vtkSMTKDiscreteModelModule.h"      // For export macro
+#include "vtkType.h"                         //needed for vtkIdType
 
 class vtkDiscreteModel;
 class vtkDiscreteModelVertex;
@@ -29,10 +29,10 @@ public:
   ModelVertexClassification(vtkDiscreteModel* model);
   ~ModelVertexClassification();
 
-  vtkDiscreteModelVertex* GetModelVertex( vtkIdType pointId );
-  vtkIdType GetModelId( vtkIdType pointId );
+  vtkDiscreteModelVertex* GetModelVertex(vtkIdType pointId);
+  vtkIdType GetModelId(vtkIdType pointId);
 
-  bool HasModelVertex( vtkIdType pointId ) const;
+  bool HasModelVertex(vtkIdType pointId) const;
 
   //given a point Id will Add a new model vertex to the associated discrete model
   //and return both the ModelVertex and ModelId. If a model vertex is already
@@ -40,12 +40,9 @@ public:
   //ModelId
   // std::pair<vtkIdType, vtkDiscreteModelVertex*>
   // AddModelVertex( vtkIdType pointId, bool bCreateGeometry=false);
-  vtkDiscreteModelVertex* AddModelVertex( vtkIdType pointId,
-                                          bool bCreateGeometry=false);
-  vtkDiscreteModelVertex* AddModelVertex( vtkIdType pointId,
-                                          bool bCreateGeometry,
-                                          vtkIdType& modelId);
-
+  vtkDiscreteModelVertex* AddModelVertex(vtkIdType pointId, bool bCreateGeometry = false);
+  vtkDiscreteModelVertex* AddModelVertex(
+    vtkIdType pointId, bool bCreateGeometry, vtkIdType& modelId);
 
 private:
   struct Internals;

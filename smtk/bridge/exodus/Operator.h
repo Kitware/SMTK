@@ -15,9 +15,12 @@
 
 class vtkDataObject;
 
-namespace smtk {
-  namespace bridge {
-    namespace exodus {
+namespace smtk
+{
+namespace bridge
+{
+namespace exodus
+{
 
 class Session;
 struct EntityHandle;
@@ -36,8 +39,8 @@ protected:
   EntityHandle exodusHandle(const smtk::model::EntityRef& smtkEntity);
 };
 
-    } // namespace exodus
-  } // namespace bridge
+} // namespace exodus
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_exodus_Operator_h

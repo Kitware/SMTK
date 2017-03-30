@@ -25,46 +25,40 @@ class DoubleConverter
 {
 public:
   typedef double type;
-  static double bad_value()
-    {
-    return std::numeric_limits<double>::quiet_NaN();
-    }
+  static double bad_value() { return std::numeric_limits<double>::quiet_NaN(); }
   static double convert(const std::string& token, bool& ok)
-    {
+  {
     const char* ptr = token.c_str();
     char* endptr = NULL;
     double v = strtod(ptr, &endptr);
     if (ptr == endptr)
-      {
+    {
       ok = false;
       return bad_value();
-      }
+    }
     ok = true;
     return v;
-    }
+  }
 };
 
 class Int32Converter
 {
 public:
   typedef vtkTypeInt32 type;
-  static vtkTypeInt32 bad_value()
-    {
-    return std::numeric_limits<vtkTypeInt32>::min();
-    }
+  static vtkTypeInt32 bad_value() { return std::numeric_limits<vtkTypeInt32>::min(); }
   static vtkTypeInt32 convert(const std::string& token, bool& ok)
-    {
+  {
     const char* ptr = token.c_str();
     char* endptr = NULL;
     vtkTypeInt32 v = strtoll(ptr, &endptr, 10);
     if (ptr == endptr)
-      {
+    {
       ok = false;
       return bad_value();
-      }
+    }
     ok = true;
     return v;
-    }
+  }
 };
 
 #endif // __vtkPolyFileTokenConverters_h

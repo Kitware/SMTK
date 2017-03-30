@@ -23,7 +23,6 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelGeometricEntity.h"
 
-
 #include <set>
 #include <vector>
 
@@ -38,7 +37,7 @@ class vtkModelRegion;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkModelFace : public vtkModelGeometricEntity
 {
 public:
-  vtkTypeMacro(vtkModelFace,vtkModelGeometricEntity);
+  vtkTypeMacro(vtkModelFace, vtkModelGeometricEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual int GetType();
@@ -81,8 +80,8 @@ public:
   // Assume that the loop is the face's outer loop
   // Initializes the model face by creating the outer loop for it.
   // The edges need to be passed in in counterclockwise order.
-  virtual void Initialize(int NumEdges, vtkModelEdge** edges,
-                          int* edgeDirections, vtkIdType modelFaceId);
+  virtual void Initialize(
+    int NumEdges, vtkModelEdge** edges, int* edgeDirections, vtkIdType modelFaceId);
 
   // Description:
   // Reads the state of an instance from an archive OR
@@ -92,8 +91,7 @@ public:
 
   // Description:
   // Adds an edge loop to a model face
-  virtual void AddLoop(int numEdges, vtkModelEdge** edges,
-                       int* edgeDirections);
+  virtual void AddLoop(int numEdges, vtkModelEdge** edges, int* edgeDirections);
 
   // Description:
   // Destroy all loopuses of a model face
@@ -122,14 +120,13 @@ protected:
   // Helper function that combines "end" of edgeUse1 with "beginning" of edgeUse2.
   // Edge uses are set up so that second vertexuse of edgeUse1 is merged with
   // the first vertex use of edgeUse2.
-  void CombineModelVertexUses(vtkModelEdgeUse* edgeUse1,
-                              vtkModelEdgeUse* edgeUse2);
+  void CombineModelVertexUses(vtkModelEdgeUse* edgeUse1, vtkModelEdgeUse* edgeUse2);
 
   friend class vtkModel;
 
 private:
-  vtkModelFace(const vtkModelFace&);  // Not implemented.
-  void operator=(const vtkModelFace&);  // Not implemented.
+  vtkModelFace(const vtkModelFace&);   // Not implemented.
+  void operator=(const vtkModelFace&); // Not implemented.
 };
 
 #endif

@@ -23,8 +23,10 @@
 #include "smtk/extension/qt/Exports.h"
 #include <QDockWidget>
 
-namespace smtk {
-  namespace extension {
+namespace smtk
+{
+namespace extension
+{
 
 class SMTKQTEXT_EXPORT qtOperatorDockWidget : public QDockWidget
 {
@@ -35,14 +37,13 @@ public:
   ~qtOperatorDockWidget();
 
 signals:
-   void closing();
+  void closing();
 
 protected:
-   virtual void closeEvent(QCloseEvent * event);
-
+  virtual void closeEvent(QCloseEvent* event);
 };
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_extension_qtOperatorDockWidget_h

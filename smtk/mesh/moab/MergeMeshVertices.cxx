@@ -11,29 +11,32 @@
 //=============================================================================
 #include "smtk/mesh/moab/MergeMeshVertices.h"
 
-namespace smtk {
-  namespace mesh {
-    namespace moab {
+namespace smtk
+{
+namespace mesh
+{
+namespace moab
+{
 
-MergeMeshVertices::MergeMeshVertices(::moab::Interface* iface):
-  mbImpl(iface),
-  mbMergeTag(),
-  deadEnts(),
-  mergedToVertices(),
-  mappingFromDeadToAlive()
+MergeMeshVertices::MergeMeshVertices(::moab::Interface* iface)
+  : mbImpl(iface)
+  , mbMergeTag()
+  , deadEnts()
+  , mergedToVertices()
+  , mappingFromDeadToAlive()
 {
 }
 
 MergeMeshVertices::~MergeMeshVertices()
 {
   if (mbMergeTag)
-    {
+  {
     mbImpl->tag_delete(mbMergeTag);
-    }
+  }
 }
 
-::moab::ErrorCode MergeMeshVertices::merge_entities(const smtk::mesh::HandleRange&  meshsets,
-                                                    const double merge_tol)
+::moab::ErrorCode MergeMeshVertices::merge_entities(
+  const smtk::mesh::HandleRange& meshsets, const double merge_tol)
 {
   using ::moab::AdaptiveKDTree;
   using ::moab::EntityHandle;
@@ -49,12 +52,12 @@ MergeMeshVertices::~MergeMeshVertices()
   ErrorCode rval;
 
   EntityHandle def_val = 0;
-  rval = mbImpl->tag_get_handle("__merge_tag", 1, MB_TYPE_HANDLE,
-        mbMergeTag, MB_TAG_DENSE | MB_TAG_EXCL, &def_val);
+  rval = mbImpl->tag_get_handle(
+    "__merge_tag", 1, MB_TYPE_HANDLE, mbMergeTag, MB_TAG_DENSE | MB_TAG_EXCL, &def_val);
   if (MB_SUCCESS != rval)
-    {
+  {
     return rval;
-    }
+  }
 
   // get all entities;
   // get all vertices connected
@@ -65,50 +68,48 @@ MergeMeshVertices::~MergeMeshVertices()
 
   // get all vertices for the meshsets
   Range entities;
-  for(smtk::mesh::HandleRange::const_iterator i = meshsets.begin();
-      i != meshsets.end();
-      ++i)
-    {
+  for (smtk::mesh::HandleRange::const_iterator i = meshsets.begin(); i != meshsets.end(); ++i)
+  {
     Range tmp;
     rval = mbImpl->get_entities_by_handle(*i, tmp, /*recursive*/ true);
     if (MB_SUCCESS != rval)
-      {
+    {
       return rval;
-      }
-    entities.insert(tmp.begin(), tmp.end());
     }
+    entities.insert(tmp.begin(), tmp.end());
+  }
 
   Range verts;
   rval = mbImpl->get_connectivity(entities, verts);
 
   if (MB_SUCCESS != rval)
-    {
+  {
     return rval;
-    }
+  }
 
   // build a kd tree with the vertices
   AdaptiveKDTree kd(mbImpl);
   EntityHandle tree_root;
   rval = kd.build_tree(verts, &tree_root);
   if (MB_SUCCESS != rval)
-    {
+  {
     return rval;
-    }
+  }
 
   // find matching vertices, mark them
   rval = find_merged_to(tree_root, kd, mbMergeTag);
   if (MB_SUCCESS != rval)
-    {
+  {
     return rval;
-    }
+  }
 
   if (deadEnts.size() > 0)
   {
     rval = map_dead_to_alive(mbMergeTag);
     if (MB_SUCCESS != rval)
-      {
+    {
       return rval;
-      }
+    }
 
     //before we delete any elements, we need to update the connectivity of elements
     //that use the dead vertices
@@ -118,23 +119,22 @@ MergeMeshVertices::~MergeMeshVertices()
     //the replacement vertex added back to it.
     rval = correct_vertex_merge(meshsets);
     if (MB_SUCCESS != rval)
-      {
+    {
       return rval;
-      }
+    }
   }
 
   rval = merge_higher_dimensions(entities);
   if (MB_SUCCESS != rval)
-    {
+  {
     return rval;
-    }
+  }
 
   return MB_SUCCESS;
 }
 
-::moab::ErrorCode MergeMeshVertices::find_merged_to(::moab::EntityHandle &tree_root,
-                                            ::moab::AdaptiveKDTree &tree,
-                                            ::moab::Tag merged_to)
+::moab::ErrorCode MergeMeshVertices::find_merged_to(
+  ::moab::EntityHandle& tree_root, ::moab::AdaptiveKDTree& tree, ::moab::Tag merged_to)
 {
 
   using ::moab::AdaptiveKDTree;
@@ -201,17 +201,15 @@ MergeMeshVertices::~MergeMeshVertices()
 
       // check close-by leaves too
       leaves_out.clear();
-      result = tree.distance_search(from.array(), mergeTol, leaves_out,
-          mergeTol, 1.0e-6, NULL, NULL, &tree_root);
+      result = tree.distance_search(
+        from.array(), mergeTol, leaves_out, mergeTol, 1.0e-6, NULL, NULL, &tree_root);
       leaf_range2.clear();
-      for (std::vector<EntityHandle>::iterator vit = leaves_out.begin();
-          vit != leaves_out.end(); vit++)
+      for (std::vector<EntityHandle>::iterator vit = leaves_out.begin(); vit != leaves_out.end();
+           vit++)
       {
         if (*vit > *it)
         { // if we haven't visited this leaf yet in the outer loop
-          result = mbImpl->get_entities_by_handle(*vit,
-                                                  leaf_range2,
-                                                  ::moab::Interface::UNION);
+          result = mbImpl->get_entities_by_handle(*vit, leaf_range2, ::moab::Interface::UNION);
           if (MB_SUCCESS != result)
             return result;
         }
@@ -223,8 +221,7 @@ MergeMeshVertices::~MergeMeshVertices()
         result = mbImpl->get_coords(leaf_range2, &coords[3 * lr_size]);
         if (MB_SUCCESS != result)
           return result;
-        result = mbImpl->tag_get_data(merged_to, leaf_range2,
-            &merge_tag_val[lr_size]);
+        result = mbImpl->tag_get_data(merged_to, leaf_range2, &merge_tag_val[lr_size]);
         if (MB_SUCCESS != result)
           return result;
         outleaf_merged = false;
@@ -233,8 +230,7 @@ MergeMeshVertices::~MergeMeshVertices()
       // check other verts in this leaf
       for (std::size_t j = i + 1; j < merge_tag_val.size(); j++)
       {
-        EntityHandle to_ent =
-            j >= lr_size ? leaf_range2[j - lr_size] : leaf_range[j];
+        EntityHandle to_ent = j >= lr_size ? leaf_range2[j - lr_size] : leaf_range[j];
 
         if (*rit == to_ent)
           continue;
@@ -256,12 +252,10 @@ MergeMeshVertices::~MergeMeshVertices()
           }
           deadEnts.insert(to_ent);
         }
-
       }
       if (outleaf_merged)
       {
-        result = mbImpl->tag_set_data(merged_to, leaf_range2,
-            &merge_tag_val[leaf_range.size()]);
+        result = mbImpl->tag_set_data(merged_to, leaf_range2, &merge_tag_val[leaf_range.size()]);
         if (MB_SUCCESS != result)
           return result;
         outleaf_merged = false;
@@ -272,7 +266,6 @@ MergeMeshVertices::~MergeMeshVertices()
         if (MB_SUCCESS != result)
           return result;
       }
-
     }
   }
   return MB_SUCCESS;
@@ -309,11 +302,11 @@ MergeMeshVertices::~MergeMeshVertices()
   for (rit = deadEnts.begin(), i = 0; rit != deadEnts.end(); rit++, i++)
   {
     assert(merge_tag_val[i]);
-    if (MBVERTEX==mbImpl->type_from_handle(merge_tag_val[i]) )
-      {
+    if (MBVERTEX == mbImpl->type_from_handle(merge_tag_val[i]))
+    {
       mergedToVertices.insert(merge_tag_val[i]);
-      mappingFromDeadToAlive[*rit]= static_cast<EntityHandle>(merge_tag_val[i]);
-      }
+      mappingFromDeadToAlive[*rit] = static_cast<EntityHandle>(merge_tag_val[i]);
+    }
   }
 
   return MB_SUCCESS;
@@ -323,8 +316,7 @@ MergeMeshVertices::~MergeMeshVertices()
 //we need to make sure that any mesh that is losing an explicit vertex
 //has it replaced with the merged vertex, this isn't handled by perform_merge
 //as it only does dim > 0
-::moab::ErrorCode MergeMeshVertices::correct_vertex_merge(
-                                         const smtk::mesh::HandleRange&  meshsets)
+::moab::ErrorCode MergeMeshVertices::correct_vertex_merge(const smtk::mesh::HandleRange& meshsets)
 {
   using ::moab::EntityHandle;
   using ::moab::ErrorCode;
@@ -333,28 +325,26 @@ MergeMeshVertices::~MergeMeshVertices()
   using ::moab::MB_SUCCESS;
   using ::moab::MB_FAILURE;
 
-  for(smtk::mesh::HandleRange::const_iterator i = meshsets.begin();
-    i != meshsets.end();
-    ++i)
-   {
+  for (smtk::mesh::HandleRange::const_iterator i = meshsets.begin(); i != meshsets.end(); ++i)
+  {
     Range entitiesVerts;
     mbImpl->get_entities_by_dimension(*i, 0 /*dimension*/, entitiesVerts, /*recursive*/ true);
 
     //determine if we have a vert which is going deleted
     Range vertsToDelete = ::moab::intersect(deadEnts, entitiesVerts);
-    if(!vertsToDelete.empty())
-      {
+    if (!vertsToDelete.empty())
+    {
       Range::iterator rit;
       std::size_t j;
       for (rit = vertsToDelete.begin(), j = 0; rit != vertsToDelete.end(); rit++, j++)
-        {
+      {
         //now we add these entities to the new meshset
         EntityHandle t = mappingFromDeadToAlive[*rit];
         mbImpl->add_entities(*i, &t, 1);
-        }
-      mbImpl->remove_entities(*i, vertsToDelete);
       }
+      mbImpl->remove_entities(*i, vertsToDelete);
     }
+  }
 
   return MB_SUCCESS;
 }
@@ -373,60 +363,56 @@ MergeMeshVertices::~MergeMeshVertices()
   ErrorCode result;
 
   for (int dim = 1; dim <= 3; dim++)
-    {
+  {
     Range entsToUpdate;
-    result = mbImpl->get_adjacencies(deadEnts,
-                                     dim,
-                                     false,
-                                     entsToUpdate,
-                                     ::moab::Interface::UNION);
+    result = mbImpl->get_adjacencies(deadEnts, dim, false, entsToUpdate, ::moab::Interface::UNION);
 
-
-    if(MB_SUCCESS!=result)
-      { return result; }
+    if (MB_SUCCESS != result)
+    {
+      return result;
+    }
 
     //get the connectivity for all the deadEnts
     Range::iterator iter = entsToUpdate.begin();
     Range::iterator end = entsToUpdate.end();
     while (iter != end)
-      {
+    {
       int numCellsInSubRange = 0;
       int verts_per_ent = 0;
       EntityHandle* connectivity = NULL;
       result = mbImpl->connect_iterate(iter, end, connectivity, verts_per_ent, numCellsInSubRange);
-      if(MB_SUCCESS!=result)
-        { return result; }
+      if (MB_SUCCESS != result)
+      {
+        return result;
+      }
 
       //now we can iterate the connectivity, fixing it up as needed
       std::size_t index = 0;
-      for(int i=0; i < numCellsInSubRange; ++i, ++iter)
+      for (int i = 0; i < numCellsInSubRange; ++i, ++iter)
+      {
+        for (int j = 0; j < verts_per_ent; ++j, ++index)
         {
-        for(int j=0; j < verts_per_ent; ++j, ++index)
-          {
-          typedef std::map< ::moab::EntityHandle, ::moab::EntityHandle > MapType;
+          typedef std::map< ::moab::EntityHandle, ::moab::EntityHandle> MapType;
           MapType::const_iterator pos = mappingFromDeadToAlive.find(connectivity[index]);
-          if(pos != mappingFromDeadToAlive.end())
-            {
+          if (pos != mappingFromDeadToAlive.end())
+          {
             //when we update the connectivity array we also need to update
             //the adjacencies table. This makes sure that quick lookups
             //are aware of the merging of points
             mbImpl->remove_adjacencies(*iter, connectivity + index, 1);
             connectivity[index] = pos->second;
             mbImpl->add_adjacencies(*iter, connectivity + index, 1, true);
-            }
           }
-
-
         }
       }
     }
+  }
 
   return MB_SUCCESS;
 }
 
-
 //Determine which higher dimensional entities should be merged
-::moab::ErrorCode MergeMeshVertices::merge_higher_dimensions(::moab::Range &elems)
+::moab::ErrorCode MergeMeshVertices::merge_higher_dimensions(::moab::Range& elems)
 {
   using ::moab::EntityHandle;
   using ::moab::ErrorCode;
@@ -442,12 +428,12 @@ MergeMeshVertices::~MergeMeshVertices()
   Range verts;
   result = mbImpl->get_connectivity(elems, verts);
   verts.merge(elems.subset_by_dimension(0)); //don't forget these
-  if (MB_SUCCESS!=result)
+  if (MB_SUCCESS != result)
     return result;
 
   // all higher dim entities that will be merged will be connected to the vertices that were
   // merged earlier; we will look at these vertices only
-  Range vertsOfInterest=intersect(this->mergedToVertices, verts);
+  Range vertsOfInterest = intersect(this->mergedToVertices, verts);
   //Go through each dimension
   Range possibleEntsToMerge, conn, matches, moreDeadEnts;
 
@@ -455,42 +441,38 @@ MergeMeshVertices::~MergeMeshVertices()
   {
     moreDeadEnts.clear();
     possibleEntsToMerge.clear();
-    result = mbImpl->get_adjacencies(vertsOfInterest,
-                                             dim, false, possibleEntsToMerge,
-                                             ::moab::Interface::UNION);
-    if (MB_SUCCESS!=result)
+    result = mbImpl->get_adjacencies(
+      vertsOfInterest, dim, false, possibleEntsToMerge, ::moab::Interface::UNION);
+    if (MB_SUCCESS != result)
       return result;
     //Go through each possible entity and see if it shares vertices with another entity of same dimension
-    for (Range::iterator pit = possibleEntsToMerge.begin();
-        pit != possibleEntsToMerge.end(); pit++)
+    for (Range::iterator pit = possibleEntsToMerge.begin(); pit != possibleEntsToMerge.end(); pit++)
     {
-      EntityHandle eh=*pit;//possible entity to be matched
+      EntityHandle eh = *pit; //possible entity to be matched
       conn.clear();
       //Get the vertices connected to it in a range
-      if(mbImpl->type_from_handle(eh) != MBVERTEX)
-        {
+      if (mbImpl->type_from_handle(eh) != MBVERTEX)
+      {
         result = mbImpl->get_connectivity(&eh, 1, conn);
-        }
+      }
       else
-        {
+      {
         conn.insert(eh);
         result = MB_SUCCESS;
-        }
+      }
 
-      if (MB_SUCCESS!=result)
+      if (MB_SUCCESS != result)
         return result;
       matches.clear();
       // now retrieve all entities connected to all conn vertices
-      result = mbImpl->get_adjacencies(conn, dim, false, matches,
-                                                   ::moab::Interface::INTERSECT);
-      if (MB_SUCCESS!=result)
+      result = mbImpl->get_adjacencies(conn, dim, false, matches, ::moab::Interface::INTERSECT);
+      if (MB_SUCCESS != result)
         return result;
       if (matches.size() > 1)
       {
-        for (Range::iterator matchIt = matches.begin();
-            matchIt != matches.end(); matchIt++)
+        for (Range::iterator matchIt = matches.begin(); matchIt != matches.end(); matchIt++)
         {
-          EntityHandle to_remove=*matchIt;
+          EntityHandle to_remove = *matchIt;
           if (to_remove != eh)
           {
             moreDeadEnts.insert(to_remove);
@@ -501,7 +483,6 @@ MergeMeshVertices::~MergeMeshVertices()
           }
         }
       }
-
     }
     //Delete the entities of dimension dim
     result = mbImpl->delete_entities(moreDeadEnts);
@@ -511,7 +492,6 @@ MergeMeshVertices::~MergeMeshVertices()
   return MB_SUCCESS;
 }
 
-
-    } // namespace moab
-  } // namespace mesh
+} // namespace moab
+} // namespace mesh
 } // namespace smtk

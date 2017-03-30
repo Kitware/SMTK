@@ -16,8 +16,10 @@
 
 #include <sstream>
 
-namespace smtk {
-  namespace common {
+namespace smtk
+{
+namespace common
+{
 
 PathsHelperUnix::PathsHelperUnix()
 {
@@ -29,7 +31,8 @@ PathsHelperUnix::PathsHelperUnix()
   std::set<std::string> workerSearch;
   workerSearch.insert(Paths::currentDirectory());
   workerSearch.insert(Paths::s_toplevelDirCfg + "/var/smtk/workers");
-  workerSearch.insert(Paths::s_toplevelDirCfg + "/var/smtk/" + smtk::common::Version::number() + "/workers");
+  workerSearch.insert(
+    Paths::s_toplevelDirCfg + "/var/smtk/" + smtk::common::Version::number() + "/workers");
 
   Paths::s_executableDir = Paths::s_executable;
   std::string::size_type pos = Paths::s_executableDir.rfind('/');
@@ -41,17 +44,12 @@ PathsHelperUnix::PathsHelperUnix()
   if (Paths::s_executableDir.empty())
     Paths::s_executableDir = Paths::s_toplevelDir + "/bin";
 
-  PathsHelperUnix::AddSplitPaths(
-    workerSearch, Environment::getVariable("SMTK_WORKER_SEARCH_PATH"));
+  PathsHelperUnix::AddSplitPaths(workerSearch, Environment::getVariable("SMTK_WORKER_SEARCH_PATH"));
 
-  Paths::s_workerSearchPaths =
-    std::vector<std::string>(
-      workerSearch.begin(), workerSearch.end());
+  Paths::s_workerSearchPaths = std::vector<std::string>(workerSearch.begin(), workerSearch.end());
 }
 
-void PathsHelperUnix::AddSplitPaths(
-  std::set<std::string>& split,
-  const std::string& src)
+void PathsHelperUnix::AddSplitPaths(std::set<std::string>& split, const std::string& src)
 {
   std::stringstream envSearch(src);
   std::string spath;
@@ -60,5 +58,5 @@ void PathsHelperUnix::AddSplitPaths(
       split.insert(spath);
 }
 
-  } // namespace common
+} // namespace common
 } // namespace smtk

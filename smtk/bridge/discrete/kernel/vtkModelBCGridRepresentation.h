@@ -38,28 +38,28 @@ class VTKSMTKDISCRETEMODEL_EXPORT vtkModelBCGridRepresentation : public vtkModel
 {
 public:
   static vtkModelBCGridRepresentation* New();
-  vtkTypeMacro(vtkModelBCGridRepresentation,vtkModelGridRepresentation);
+  vtkTypeMacro(vtkModelBCGridRepresentation, vtkModelGridRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetBCSNodalAnalysisGridPointIds(vtkDiscreteModel* model,
-    vtkIdType bcsGroupId, int bcGroupType, vtkIdList* pointIds);
+  virtual bool GetBCSNodalAnalysisGridPointIds(
+    vtkDiscreteModel* model, vtkIdType bcsGroupId, int bcGroupType, vtkIdList* pointIds);
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetFloatingEdgeAnalysisGridPointIds(vtkDiscreteModel* model, vtkIdType modelEdgeId,
-                                                   vtkIdList* pointIds);
+  virtual bool GetFloatingEdgeAnalysisGridPointIds(
+    vtkDiscreteModel* model, vtkIdType modelEdgeId, vtkIdList* pointIds);
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetModelEdgeAnalysisPoints(vtkDiscreteModel* model, vtkIdType edgeId,
-                                          vtkIdTypeArray* edgePoints);
+  virtual bool GetModelEdgeAnalysisPoints(
+    vtkDiscreteModel* model, vtkIdType edgeId, vtkIdTypeArray* edgePoints);
 
   // Description:
   // See vtkModelGridRepresentation.
-  virtual bool GetBoundaryGroupAnalysisFacets(vtkDiscreteModel* model, vtkIdType boundaryGroupId,
-                                              vtkIdList* cellIds, vtkIdList* cellSides);
+  virtual bool GetBoundaryGroupAnalysisFacets(
+    vtkDiscreteModel* model, vtkIdType boundaryGroupId, vtkIdList* cellIds, vtkIdList* cellSides);
 
   // Description:
   // Do some type of validation of the mapping information in model.
@@ -76,7 +76,8 @@ public:
 
   bool AddFloatingEdge(vtkIdType floatingEdgeId, vtkIdList* pointIds, vtkDiscreteModel* model);
 
-  bool AddModelFace(vtkIdType modelFaceId, vtkIdList* cellIds, vtkIdList* cellSides, vtkDiscreteModel* model);
+  bool AddModelFace(
+    vtkIdType modelFaceId, vtkIdList* cellIds, vtkIdList* cellSides, vtkDiscreteModel* model);
 
   // Description:
   // Set GridFileName to NULL and clear the analysis grid info.
@@ -94,16 +95,16 @@ public:
 
   // Description:
   // Get the analysis grid information for a given model face.
-  virtual bool GetModelFaceAnalysisFacets(vtkDiscreteModel* model, vtkIdType modelFaceId,
-                                          vtkIdList* cellIds, vtkIdList* cellSides);
+  virtual bool GetModelFaceAnalysisFacets(
+    vtkDiscreteModel* model, vtkIdType modelFaceId, vtkIdList* cellIds, vtkIdList* cellSides);
 
 protected:
   vtkModelBCGridRepresentation();
   virtual ~vtkModelBCGridRepresentation();
 
 private:
-  vtkModelBCGridRepresentation(const vtkModelBCGridRepresentation&);  // Not implemented.
-  void operator=(const vtkModelBCGridRepresentation&);  // Not implemented.
+  vtkModelBCGridRepresentation(const vtkModelBCGridRepresentation&); // Not implemented.
+  void operator=(const vtkModelBCGridRepresentation&);               // Not implemented.
 
   // Description:
   // A mapping from a model edge id to a set of point ids in the analysis grid.
@@ -116,7 +117,5 @@ private:
   // We are assuming, without refinement (we can't handle refined analysis mesh yet),
   // all (N) master(surface) point ids are the first N points in analysis grid.
   std::map<vtkIdType, std::set<std::pair<vtkIdType, int> > > MasterCellToMeshCellInfo;
-
 };
 #endif
-

@@ -23,7 +23,10 @@
 #include <QPushButton>
 #include <QTreeView>
 
-namespace Ui { class qtAttributeAssociation; }
+namespace Ui
+{
+class qtAttributeAssociation;
+}
 
 using namespace smtk::model;
 
@@ -34,23 +37,15 @@ public:
   smtk::extension::QEntityItemDelegate* qdelegate;
 };
 
-ModelBrowser::ModelBrowser(QWidget* p) :
-  QWidget(p)
+ModelBrowser::ModelBrowser(QWidget* p)
+  : QWidget(p)
 {
   this->m_p = new ModelBrowser::Internals;
   this->m_p->setupUi(this);
+  QObject::connect(this->m_p->addGroupButton, SIGNAL(clicked()), this, SLOT(addGroup()));
   QObject::connect(
-    this->m_p->addGroupButton, SIGNAL(clicked()),
-    this, SLOT(addGroup())
-  );
-  QObject::connect(
-    this->m_p->removeFromGroupButton, SIGNAL(clicked()),
-    this, SLOT(removeFromGroup())
-  );
-  QObject::connect(
-    this->m_p->addToGroupButton, SIGNAL(clicked()),
-    this, SLOT(addToGroup())
-  );
+    this->m_p->removeFromGroupButton, SIGNAL(clicked()), this, SLOT(removeFromGroup()));
+  QObject::connect(this->m_p->addToGroupButton, SIGNAL(clicked()), this, SLOT(addToGroup()));
 }
 
 ModelBrowser::~ModelBrowser()
@@ -63,11 +58,8 @@ QTreeView* ModelBrowser::tree() const
   return this->m_p->modelTree;
 }
 
-void ModelBrowser::setup(
-  smtk::model::ManagerPtr manager,
-  smtk::extension::QEntityItemModel* qmodel,
-  smtk::extension::QEntityItemDelegate* qdelegate,
-  smtk::model::DescriptivePhrasePtr root)
+void ModelBrowser::setup(smtk::model::ManagerPtr manager, smtk::extension::QEntityItemModel* qmodel,
+  smtk::extension::QEntityItemDelegate* qdelegate, smtk::model::DescriptivePhrasePtr root)
 {
   this->m_manager = manager;
   qmodel->setRoot(root);
@@ -75,10 +67,9 @@ void ModelBrowser::setup(
   this->m_p->modelTree->setItemDelegate(qdelegate);
   this->m_p->qmodel = qmodel;
   this->m_p->qdelegate = qdelegate;
-  QObject::connect(
-    this->m_p->modelTree->selectionModel(), SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)),
-    this, SLOT(updateButtonStates(const QModelIndex&, const QModelIndex&))
-  );
+  QObject::connect(this->m_p->modelTree->selectionModel(),
+    SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)), this,
+    SLOT(updateButtonStates(const QModelIndex&, const QModelIndex&)));
 }
 
 void ModelBrowser::addGroup()
@@ -86,14 +77,12 @@ void ModelBrowser::addGroup()
   Group newGroup = this->m_manager->addGroup(0, "New Group");
   Models models;
   smtk::model::EntityRef::EntityRefsFromUUIDs(
-    models,
-    this->m_manager,
-    this->m_manager->entitiesMatchingFlags(smtk::model::MODEL_ENTITY));
+    models, this->m_manager, this->m_manager->entitiesMatchingFlags(smtk::model::MODEL_ENTITY));
   if (!models.empty())
-    {
+  {
     models.begin()->addGroup(newGroup);
     std::cout << "Added " << newGroup.name() << " to " << models.begin()->name() << "\n";
-    }
+  }
 }
 
 // Add the entity under the entityref to the first group (ordered by UUID)
@@ -111,13 +100,13 @@ void ModelBrowser::addToGroup()
   group = *groups.begin();
 
   // Only keep the phrase alive as long as we must.
-    {
+  {
     DescriptivePhrasePtr phrase = this->m_p->qmodel->getItem(qidx);
     if (!phrase)
       return;
 
     item = phrase->relatedEntity();
-    }
+  }
 
   if (!item.isValid())
     return;
@@ -125,10 +114,10 @@ void ModelBrowser::addToGroup()
   // Now that our shared pointer keeping "phrase" alive is gone,
   // remove the entity from the group.
   if (group.isValid())
-    {
+  {
     std::cout << "Adding " << item.name() << " to " << group.name() << "\n";
     group.addEntity(item);
-    }
+  }
 }
 
 void ModelBrowser::removeFromGroup()
@@ -136,53 +125,59 @@ void ModelBrowser::removeFromGroup()
   QModelIndex qidx = this->m_p->modelTree->currentIndex();
   Group group;
   if ((group = this->groupParentOfIndex(qidx)).isValid())
-    {
+  {
     EntityRef relEnt;
-      {
+    {
       DescriptivePhrasePtr phrase = this->m_p->qmodel->getItem(qidx);
       if (phrase)
         relEnt = phrase->relatedEntity();
-      }
+    }
     // Now that our shared pointer keeping "phrase" alive is gone,
     // remove the entity from the group.
     if (relEnt.isValid())
-      {
+    {
       // Deselect the current row, select another.
       // This helps un-confuse Qt's treeview.
       QModelIndex sidx = qidx.parent();
       int nsiblings = sidx.model()->rowCount(sidx);
       if (nsiblings)
-        {
+      {
         if (qidx.row() < nsiblings - 1)
           sidx = qidx.sibling(qidx.row() + 1, 0);
         else if (qidx.row() > 0)
           sidx = qidx.sibling(qidx.row() - 1, 0);
-        }
+      }
       if (sidx.model() != qidx.model())
-        {
+      {
         std::cout << "Erp! Models differ: q " << qidx.model() << " s " << sidx.model() << "\n";
-        }
+      }
       if (sidx.parent() != qidx.parent())
-        {
-        std::cout
-          << "Erp! Model parents"
-          << "   s\"" << sidx.model()->data(sidx.parent(), smtk::extension::QEntityItemModel::TitleTextRole).toString().toStdString()
-          << "\" q\"" << sidx.model()->data(qidx.parent(), smtk::extension::QEntityItemModel::TitleTextRole).toString().toStdString()
-          << "\" differ\n";
-        }
+      {
+        std::cout << "Erp! Model parents"
+                  << "   s\""
+                  << sidx.model()
+                       ->data(sidx.parent(), smtk::extension::QEntityItemModel::TitleTextRole)
+                       .toString()
+                       .toStdString()
+                  << "\" q\""
+                  << sidx.model()
+                       ->data(qidx.parent(), smtk::extension::QEntityItemModel::TitleTextRole)
+                       .toString()
+                       .toStdString()
+                  << "\" differ\n";
+      }
       this->m_p->modelTree->selectionModel()->select(
         sidx, QItemSelectionModel::Columns | QItemSelectionModel::SelectCurrent);
       // Removing from the group emits a signal that
       // m_p->qmodel listens for, causing m_p->modelTree redraw.
       group.removeEntity(relEnt);
-      }
     }
+  }
 }
 
 void ModelBrowser::updateButtonStates(const QModelIndex& curr, const QModelIndex&)
 {
-  this->m_p->removeFromGroupButton->setEnabled(
-    groupParentOfIndex(curr).isValid());
+  this->m_p->removeFromGroupButton->setEnabled(groupParentOfIndex(curr).isValid());
 }
 
 /**\brief Does \a qidx refer to an entity that is displayed as the child of a group?
@@ -197,25 +192,25 @@ smtk::model::Group ModelBrowser::groupParentOfIndex(const QModelIndex& qidx)
   smtk::model::Group group;
   DescriptivePhrasePtr phrase = this->m_p->qmodel->getItem(qidx);
   if (phrase)
-    {
+  {
     EntityPhrasePtr ephrase = smtk::dynamic_pointer_cast<EntityPhrase>(phrase);
     if (ephrase && ephrase->relatedEntity().isValid())
-      {
+    {
       phrase = ephrase->parent();
       if (phrase)
-        {
+      {
         ephrase = smtk::dynamic_pointer_cast<EntityPhrase>(phrase);
         if (ephrase && (group = ephrase->relatedEntity().as<smtk::model::Group>()).isValid())
           return group; // direct child of a Group's summary phrase.
         EntityListPhrasePtr lphrase = smtk::dynamic_pointer_cast<EntityListPhrase>(phrase);
         if (lphrase)
-          {
+        {
           ephrase = smtk::dynamic_pointer_cast<EntityPhrase>(lphrase->parent());
           if (ephrase && (group = ephrase->relatedEntity().as<smtk::model::Group>()).isValid())
             return group; // member of a list inside a Group's summary.
-          }
         }
       }
     }
+  }
   return group;
 }

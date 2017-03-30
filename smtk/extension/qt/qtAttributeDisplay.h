@@ -26,49 +26,46 @@ class qtAttributeDisplayInternals;
 
 namespace smtk
 {
-  namespace extension
-  {
+namespace extension
+{
 
-    class qtUIManager;
+class qtUIManager;
 
-    class SMTKQTEXT_EXPORT qtAttributeDisplay : public QWidget
-    {
-      Q_OBJECT
+class SMTKQTEXT_EXPORT qtAttributeDisplay : public QWidget
+{
+  Q_OBJECT
 
-    public:
-      qtAttributeDisplay(QWidget* p, smtk::extension::qtUIManager* uiman);
-      virtual ~qtAttributeDisplay();
+public:
+  qtAttributeDisplay(QWidget* p, smtk::extension::qtUIManager* uiman);
+  virtual ~qtAttributeDisplay();
 
-    public slots:
-      void onShowCategory();
-      void onShowCategory(const std::string& strCategory);
-      void onAttributeDefSelected();
-      void onFieldSelected();
-      virtual void getDefinitionsWithAssociations();
+public slots:
+  void onShowCategory();
+  void onShowCategory(const std::string& strCategory);
+  void onAttributeDefSelected();
+  void onFieldSelected();
+  virtual void getDefinitionsWithAssociations();
 
-    signals:
-      void attColorChanged();
-      void attributeFieldSelected(const QString& attdeftype,
-        const QString& itemname);
+signals:
+  void attColorChanged();
+  void attributeFieldSelected(const QString& attdeftype, const QString& itemname);
 
-    protected slots:
-      void enableShowBy(int enable);
+protected slots:
+  void enableShowBy(int enable);
 
-    protected:
-      virtual void createWidget( );
-      smtk::attribute::ItemPtr getAttributeItemFromItem(QTableWidgetItem * item);
+protected:
+  virtual void createWidget();
+  smtk::attribute::ItemPtr getAttributeItemFromItem(QTableWidgetItem* item);
 
-      void initSelectionFilters(const QString& currentItemName="");
-      void initSelectPropCombo(smtk::attribute::DefinitionPtr attDef,
-                               const QString& currentItemName="");
+  void initSelectionFilters(const QString& currentItemName = "");
+  void initSelectPropCombo(
+    smtk::attribute::DefinitionPtr attDef, const QString& currentItemName = "");
 
-    private:
+private:
+  qtAttributeDisplayInternals* Internals;
 
-      qtAttributeDisplayInternals *Internals;
-
-    }; // class
-  }; // namespace attribute
+}; // class
+}; // namespace attribute
 }; // namespace smtk
-
 
 #endif

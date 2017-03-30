@@ -27,75 +27,70 @@ class QKeyEvent;
 
 namespace smtk
 {
-  namespace extension
-  {
-    class SMTKQTEXT_EXPORT qtSimpleExpressionView : public qtBaseView
-    {
-      Q_OBJECT
+namespace extension
+{
+class SMTKQTEXT_EXPORT qtSimpleExpressionView : public qtBaseView
+{
+  Q_OBJECT
 
-    public:
-      static qtBaseView *createViewWidget(const ViewInfo &info);
-      qtSimpleExpressionView(const ViewInfo &info);
-      virtual ~qtSimpleExpressionView();
+public:
+  static qtBaseView* createViewWidget(const ViewInfo& info);
+  qtSimpleExpressionView(const ViewInfo& info);
+  virtual ~qtSimpleExpressionView();
 
-      void buildSimpleExpression(
-        QString& funcExpr, QString& funcVals, int numberOfComponents);
-      virtual void createNewFunction(smtk::attribute::DefinitionPtr attDef);
-      QListWidgetItem* getSelectedItem();
-      void displayExpressionError(std::string& errorMsg, int errorPos);
-      smtk::attribute::AttributePtr getFunctionFromItem(QListWidgetItem * item);
-      int getNumberOfComponents();
+  void buildSimpleExpression(QString& funcExpr, QString& funcVals, int numberOfComponents);
+  virtual void createNewFunction(smtk::attribute::DefinitionPtr attDef);
+  QListWidgetItem* getSelectedItem();
+  void displayExpressionError(std::string& errorMsg, int errorPos);
+  smtk::attribute::AttributePtr getFunctionFromItem(QListWidgetItem* item);
+  int getNumberOfComponents();
 
-    public slots:
-      void onFuncSelectionChanged(QListWidgetItem * , QListWidgetItem * );
-      void onFuncValueChanged(QTableWidgetItem*);
-      void onFuncNameChanged(QListWidgetItem*);
-      void onCreateNew();
-      void onCSVLoad();
-      void onCopySelected();
-      void onDeleteSelected();
-      void onFuncTableKeyPress(QKeyEvent* );
-      void onAddValue();
-      void onRemoveSelectedValues();
+public slots:
+  void onFuncSelectionChanged(QListWidgetItem*, QListWidgetItem*);
+  void onFuncValueChanged(QTableWidgetItem*);
+  void onFuncNameChanged(QListWidgetItem*);
+  void onCreateNew();
+  void onCSVLoad();
+  void onCopySelected();
+  void onDeleteSelected();
+  void onFuncTableKeyPress(QKeyEvent*);
+  void onAddValue();
+  void onRemoveSelectedValues();
 
-      virtual void createFunctionWithExpression();
-      virtual void onShowCategory()
-      { this->updateAttributeData(); }
+  virtual void createFunctionWithExpression();
+  virtual void onShowCategory() { this->updateAttributeData(); }
 
-    signals:
-      void onCreateFunctionWithExpression(
-        QString& expression, double initVal, double deltaVal, int numVals);
+signals:
+  void onCreateFunctionWithExpression(
+    QString& expression, double initVal, double deltaVal, int numVals);
 
-    protected slots:
-      virtual void updateAttributeData()
-      {this->initFunctionList();}
+protected slots:
+  virtual void updateAttributeData() { this->initFunctionList(); }
 
-    protected:
-      virtual void createWidget();
-      void updateTableHeader();
-      smtk::attribute::GroupItemPtr getArrayDataFromItem(QListWidgetItem * item);
-      smtk::attribute::ValueItemPtr getStringDataFromItem(QListWidgetItem * item);
-      smtk::attribute::GroupItemPtr getSelectedArrayData();
-      smtk::attribute::ValueItemPtr getSelectedStringData();
-      smtk::attribute::AttributePtr getSelectedFunction();
-      smtk::attribute::GroupItemPtr getFunctionArrayData(smtk::attribute::AttributePtr func);
-      smtk::attribute::ValueItemPtr getFunctionStringData(smtk::attribute::AttributePtr func);
-      QListWidgetItem* addFunctionListItem(smtk::attribute::AttributePtr childData);
-      void addNewValue(double* vals, int numVals);
-      void updateFunctionEditorUI(
-        smtk::attribute::ValueItemPtr expressionItem, smtk::attribute::GroupItemPtr arrayItem);
-      void pasteFunctionValues(QString& values, bool clearExp=true);
-      virtual void initFunctionList();
-      virtual void clearFuncExpression();
-      virtual void getAllDefinitions(
-        QList<smtk::attribute::DefinitionPtr>& defs);
+protected:
+  virtual void createWidget();
+  void updateTableHeader();
+  smtk::attribute::GroupItemPtr getArrayDataFromItem(QListWidgetItem* item);
+  smtk::attribute::ValueItemPtr getStringDataFromItem(QListWidgetItem* item);
+  smtk::attribute::GroupItemPtr getSelectedArrayData();
+  smtk::attribute::ValueItemPtr getSelectedStringData();
+  smtk::attribute::AttributePtr getSelectedFunction();
+  smtk::attribute::GroupItemPtr getFunctionArrayData(smtk::attribute::AttributePtr func);
+  smtk::attribute::ValueItemPtr getFunctionStringData(smtk::attribute::AttributePtr func);
+  QListWidgetItem* addFunctionListItem(smtk::attribute::AttributePtr childData);
+  void addNewValue(double* vals, int numVals);
+  void updateFunctionEditorUI(
+    smtk::attribute::ValueItemPtr expressionItem, smtk::attribute::GroupItemPtr arrayItem);
+  void pasteFunctionValues(QString& values, bool clearExp = true);
+  virtual void initFunctionList();
+  virtual void clearFuncExpression();
+  virtual void getAllDefinitions(QList<smtk::attribute::DefinitionPtr>& defs);
 
-    private:
+private:
+  qtSimpleExpressionViewInternals* Internals;
 
-      qtSimpleExpressionViewInternals *Internals;
-
-    }; // class
-  }; // namespace attribute
+}; // class
+}; // namespace attribute
 }; // namespace smtk
 
 #endif

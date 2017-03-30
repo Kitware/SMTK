@@ -31,8 +31,7 @@ protected:
 
 private:
   vtkSIModelRepresentationProxy(const vtkSIModelRepresentationProxy&); // Not implemented
-  void operator=(const vtkSIModelRepresentationProxy&); // Not implemented
-
+  void operator=(const vtkSIModelRepresentationProxy&);                // Not implemented
 };
 
 #endif

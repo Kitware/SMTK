@@ -15,8 +15,10 @@
 
 #include <vector>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 class Face;
 class Shell;
@@ -29,7 +31,7 @@ typedef std::vector<Shell> Shells;
 class SMTKCORE_EXPORT Volume : public CellEntity
 {
 public:
-  SMTK_ENTITYREF_CLASS(Volume,CellEntity,isVolume);
+  SMTK_ENTITYREF_CLASS(Volume, CellEntity, isVolume);
 
   VolumeUse use() const;
   Shells shells() const;
@@ -40,7 +42,7 @@ public:
 
 typedef std::vector<Volume> Volumes;
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_Volume_h

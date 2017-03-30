@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkCMBModelOmicronMeshInputWriter.h"
 
 #include "vtkCompositeDataIterator.h"
@@ -31,7 +30,7 @@ vtkCMBModelOmicronMeshInputWriter::vtkCMBModelOmicronMeshInputWriter()
 {
 }
 
-vtkCMBModelOmicronMeshInputWriter:: ~vtkCMBModelOmicronMeshInputWriter()
+vtkCMBModelOmicronMeshInputWriter::~vtkCMBModelOmicronMeshInputWriter()
 {
 }
 
@@ -39,11 +38,11 @@ bool vtkCMBModelOmicronMeshInputWriter::Write(
   vtkDiscreteModel* model, vtkCMBModelOmicronMeshInputWriterBase* base)
 {
   ofstream buffer(base->GetFileName());
-  if(!buffer)
-    {
+  if (!buffer)
+  {
     vtkErrorMacro("Could not open file " << base->GetFileName());
     return 0;
-    }
+  }
   buffer << base->GetGeometryFileName() << "\n";
   buffer << "tetgen_options: " << base->GetTetGenOptions() << "\n";
   bool retcode = this->Write(model, buffer);
@@ -51,40 +50,37 @@ bool vtkCMBModelOmicronMeshInputWriter::Write(
   return retcode;
 }
 
-bool vtkCMBModelOmicronMeshInputWriter::Write(
-  vtkDiscreteModel* model, std::ostream& buffer)
+bool vtkCMBModelOmicronMeshInputWriter::Write(vtkDiscreteModel* model, std::ostream& buffer)
 {
   if (!model)
-    {
+  {
     vtkErrorMacro("Passed in a null model.");
     return 0;
-    }
+  }
 
-  buffer << "number_of_regions: "
-       << model->GetNumberOfModelEntities(vtkModelRegionType) << "\n";
+  buffer << "number_of_regions: " << model->GetNumberOfModelEntities(vtkModelRegionType) << "\n";
 
   buffer.precision(16);
   vtkModelItemIterator* regions = model->NewIterator(vtkModelRegionType);
-  for(regions->Begin();!regions->IsAtEnd();regions->Next())
-    {
+  for (regions->Begin(); !regions->IsAtEnd(); regions->Next())
+  {
     vtkDiscreteModelRegion* region =
       vtkDiscreteModelRegion::SafeDownCast(regions->GetCurrentItem());
     const char* regionName = vtkModelUserName::GetUserName(region);
-    buffer << "(Object filename, Material ID): \"" << regionName
-         << "\" " << region->GetUniquePersistentId() << "\n";
+    buffer << "(Object filename, Material ID): \"" << regionName << "\" "
+           << region->GetUniquePersistentId() << "\n";
 
-    if(double *pointInside = region->GetPointInside())
-      {
-      buffer << "(point inside object): " << pointInside[0]
-           << " " << pointInside[1] << " " << pointInside[2] << "\n";
-      }
+    if (double* pointInside = region->GetPointInside())
+    {
+      buffer << "(point inside object): " << pointInside[0] << " " << pointInside[1] << " "
+             << pointInside[2] << "\n";
+    }
     else
-      {
+    {
       vtkErrorMacro("Missing required PointInside info!");
       return 0;
-      }
-
     }
+  }
   regions->Delete();
 
   return 1;
@@ -92,5 +88,5 @@ bool vtkCMBModelOmicronMeshInputWriter::Write(
 
 void vtkCMBModelOmicronMeshInputWriter::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }

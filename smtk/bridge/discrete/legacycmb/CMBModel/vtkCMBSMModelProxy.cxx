@@ -28,12 +28,9 @@ vtkCMBSMModelProxy::~vtkCMBSMModelProxy()
 void vtkCMBSMModelProxy::Refresh()
 {
   vtkDiscreteModel* model = vtkDiscreteModel::SafeDownCast(this->GetClientSideObject());
-
 }
 
 void vtkCMBSMModelProxy::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }
-
-

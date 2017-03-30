@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkCMBModelFaceMeshOperator.h"
 
 #include "vtkCMBMeshServer.h"
@@ -41,43 +40,41 @@ void vtkCMBModelFaceMeshOperator::Operate(vtkCMBMeshWrapper* meshWrapper)
   this->OperateSucceeded = 0;
   this->FaceMesherFailed = 0;
 
-  if(this->Id == 0)
-    {  // id not set
+  if (this->Id == 0)
+  { // id not set
     return;
-    }
+  }
   vtkCMBMeshServer* mesh = meshWrapper->GetMesh();
   vtkModel* model = mesh->GetModel();
   vtkModelFace* modelFace =
     vtkModelFace::SafeDownCast(model->GetModelEntity(vtkModelFaceType, this->Id));
-  vtkCMBModelFaceMeshServer* faceMesh = vtkCMBModelFaceMeshServer::SafeDownCast(
-    mesh->GetModelEntityMesh(modelFace));
-  if(!faceMesh)
-    {
+  vtkCMBModelFaceMeshServer* faceMesh =
+    vtkCMBModelFaceMeshServer::SafeDownCast(mesh->GetModelEntityMesh(modelFace));
+  if (!faceMesh)
+  {
     vtkWarningMacro("There is no face mesh on the server for changing local parameters");
     return;
-    }
+  }
   faceMesh->SetLength(this->Length);
   faceMesh->SetMinimumAngle(this->MinimumAngle);
 
   this->OperateSucceeded = 1;
-  if(this->BuildModelEntityMesh)
-    {
+  if (this->BuildModelEntityMesh)
+  {
     this->OperateSucceeded =
       faceMesh->BuildModelEntityMesh(this->MeshHigherDimensionalEntities != 0);
     this->FaceMesherFailed = faceMesh->GetFaceMesherFailed();
-    }
+  }
   return;
 }
 
 void vtkCMBModelFaceMeshOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "OperateSucceeded: " << this->OperateSucceeded << endl;
   os << indent << "Id: " << this->Id << endl;
   os << indent << "Length: " << this->Length << endl;
   os << indent << "MinimumAngle: " << this->MinimumAngle << endl;
-  os << indent << "BuildModelEntityMesh: "
-     << this->BuildModelEntityMesh << endl;
-  os << indent << "MeshHigherDimensionalEntities: "
-     << this->MeshHigherDimensionalEntities << endl;
+  os << indent << "BuildModelEntityMesh: " << this->BuildModelEntityMesh << endl;
+  os << indent << "MeshHigherDimensionalEntities: " << this->MeshHigherDimensionalEntities << endl;
 }

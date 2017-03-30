@@ -16,35 +16,34 @@
 
 #include <QDialog>
 
-namespace Ui {
+namespace Ui
+{
 class LoginDialog;
 }
 
 namespace cumulus
 {
 
-
-class LoginDialog: public QDialog
+class LoginDialog : public QDialog
 {
   Q_OBJECT
 
 public:
-  explicit LoginDialog(QWidget *parentObject = 0);
+  explicit LoginDialog(QWidget* parentObject = 0);
   ~LoginDialog();
 
-  void setErrorMessage(const QString &message);
+  void setErrorMessage(const QString& message);
 
 public slots:
   void accept();
   void reject();
 
 signals:
-  void entered(const QString &username, const QString &password);
+  void entered(const QString& username, const QString& password);
   void canceled();
 
 private:
-  Ui::LoginDialog *ui;
-
+  Ui::LoginDialog* ui;
 };
 
 } // end namespace

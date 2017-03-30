@@ -22,9 +22,12 @@
 #include <set>
 #include <vector>
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 class ActiveFragmentTree;
 class Neighborhood;
@@ -34,23 +37,24 @@ struct SMTKPOLYGONSESSION_EXPORT ModelEdgeInfo
 {
   ModelEdgeInfo()
     : m_allowedOrientations(0)
-    {
+  {
     this->m_visited[0] = this->m_visited[1] = false;
-    }
+  }
   ModelEdgeInfo(int allowedOrientations)
-    {
+  {
     this->m_allowedOrientations = allowedOrientations > 0 ? +1 : allowedOrientations < 0 ? -1 : 0;
     this->m_visited[0] = this->m_visited[1] = false;
-    }
+  }
   ModelEdgeInfo(const ModelEdgeInfo& other)
     : m_allowedOrientations(other.m_allowedOrientations)
-    {
+  {
     for (int i = 0; i < 2; ++i)
       m_visited[i] = other.m_visited[i];
-    }
+  }
 
   int m_allowedOrientations; // 0: all, -1: only negative, +1: only positive
-  bool m_visited[2]; // has the [0]: negative, [1]: positive orientation of the edge been visited already?
+  bool m_visited
+    [2]; // has the [0]: negative, [1]: positive orientation of the edge been visited already?
 };
 
 /// An internal structure used to map model edges to information about the space between them.
@@ -89,8 +93,8 @@ protected:
   internal::Point m_bdsHi;
 };
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_polygon_CreateFaces_h

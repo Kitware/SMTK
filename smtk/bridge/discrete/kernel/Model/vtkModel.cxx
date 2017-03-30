@@ -40,7 +40,7 @@ int vtkModel::GetNumberOfGeometricEntities()
   int numVtx = this->GetNumberOfAssociations(vtkModelVertexType);
   int numEdge = this->GetNumberOfAssociations(vtkModelEdgeType);
   int numFace = this->GetNumberOfAssociations(vtkModelFaceType);
-  return numVtx+numEdge+numFace;
+  return numVtx + numEdge + numFace;
 }
 
 int vtkModel::GetNumberOfModelEntities(int itemType)
@@ -52,50 +52,47 @@ vtkModelEntity* vtkModel::GetModelEntity(vtkIdType uniquePersistentId)
 {
   vtkSmartPointer<vtkIdList> types = vtkSmartPointer<vtkIdList>::New();
   this->GetItemTypesList(types);
-  for(vtkIdType i=0;i<types->GetNumberOfIds();i++)
+  for (vtkIdType i = 0; i < types->GetNumberOfIds(); i++)
+  {
+    vtkModelItemIterator* iter = this->NewIterator(types->GetId(i));
+    for (iter->Begin(); !iter->IsAtEnd(); iter->Next())
     {
-    vtkModelItemIterator* iter=this->NewIterator(types->GetId(i));
-    for(iter->Begin();!iter->IsAtEnd();iter->Next())
+      vtkModelEntity* modelEntity = vtkModelEntity::SafeDownCast(iter->GetCurrentItem());
+      if (modelEntity)
       {
-      vtkModelEntity* modelEntity =
-        vtkModelEntity::SafeDownCast(iter->GetCurrentItem());
-      if(modelEntity)
+        if (modelEntity->GetUniquePersistentId() == uniquePersistentId)
         {
-        if(modelEntity->GetUniquePersistentId() == uniquePersistentId)
-          {
           iter->Delete();
           return modelEntity;
-          }
-        vtkModelEntity* adjacentModelEntity =
-          modelEntity->GetModelEntity(uniquePersistentId);
-        if(adjacentModelEntity)
-          {
+        }
+        vtkModelEntity* adjacentModelEntity = modelEntity->GetModelEntity(uniquePersistentId);
+        if (adjacentModelEntity)
+        {
           iter->Delete();
           return adjacentModelEntity;
-          }
         }
       }
-    iter->Delete();
     }
+    iter->Delete();
+  }
   return 0;
 }
 
 vtkModelEntity* vtkModel::GetModelEntity(int itemType, vtkIdType uniquePersistentId)
 {
-  vtkModelItemIterator* iter=this->NewIterator(itemType);
-  for(iter->Begin();!iter->IsAtEnd();iter->Next())
+  vtkModelItemIterator* iter = this->NewIterator(itemType);
+  for (iter->Begin(); !iter->IsAtEnd(); iter->Next())
+  {
+    vtkModelEntity* modelEntity = vtkModelEntity::SafeDownCast(iter->GetCurrentItem());
+    if (modelEntity)
     {
-    vtkModelEntity* modelEntity =
-      vtkModelEntity::SafeDownCast(iter->GetCurrentItem());
-    if(modelEntity)
+      if (modelEntity->GetUniquePersistentId() == uniquePersistentId)
       {
-      if(modelEntity->GetUniquePersistentId() == uniquePersistentId)
-        {
         iter->Delete();
         return modelEntity;
-        }
       }
     }
+  }
   iter->Delete();
 
   return 0;
@@ -103,14 +100,14 @@ vtkModelEntity* vtkModel::GetModelEntity(int itemType, vtkIdType uniquePersisten
 
 bool vtkModel::DestroyModelGeometricEntity(vtkModelGeometricEntity* entity)
 {
-  if(!entity || !entity->IsDestroyable())
-    {
+  if (!entity || !entity->IsDestroyable())
+  {
     return 0;
-    }
-  if(!entity->Destroy())
-    {
+  }
+  if (!entity->Destroy())
+  {
     return 0;
-    }
+  }
 
   this->RemoveAssociation(entity);
   this->Modified();
@@ -125,22 +122,22 @@ vtkIdType vtkModel::GetNextUniquePersistentId()
 
 int vtkModel::GetModelDimension()
 {
-  if(this->GetNumberOfAssociations(vtkModelRegionType))
-    {
+  if (this->GetNumberOfAssociations(vtkModelRegionType))
+  {
     return 3;
-    }
-  else if(this->GetNumberOfAssociations(vtkModelFaceType))
-    {
+  }
+  else if (this->GetNumberOfAssociations(vtkModelFaceType))
+  {
     return 2;
-    }
-  else if(this->GetNumberOfAssociations(vtkModelEdgeType))
-    {
+  }
+  else if (this->GetNumberOfAssociations(vtkModelEdgeType))
+  {
     return 1;
-    }
-  else if(this->GetNumberOfAssociations(vtkModelVertexType))
-    {
+  }
+  else if (this->GetNumberOfAssociations(vtkModelVertexType))
+  {
     return 0;
-    }
+  }
   return -1;
 }
 
@@ -151,27 +148,26 @@ int vtkModel::GetType()
 
 void vtkModel::Reset()
 {
-  int types[4] = {vtkModelRegionType, vtkModelFaceType,
-                  vtkModelEdgeType, vtkModelVertexType};
-  for(int i=0;i<4;i++)
-    {
+  int types[4] = { vtkModelRegionType, vtkModelFaceType, vtkModelEdgeType, vtkModelVertexType };
+  for (int i = 0; i < 4; i++)
+  {
     vtkModelItemIterator* iter = this->NewIterator(types[i]);
-    for(iter->Begin();!iter->IsAtEnd();iter->Next())
-      {
+    for (iter->Begin(); !iter->IsAtEnd(); iter->Next())
+    {
       vtkModelGeometricEntity* geometricEntity =
         vtkModelGeometricEntity::SafeDownCast(iter->GetCurrentItem());
-      if(!geometricEntity->IsDestroyable())
-        {
+      if (!geometricEntity->IsDestroyable())
+      {
         vtkErrorMacro("A model object is not destroyable.");
-        }
-      if(!geometricEntity->Destroy())
-        {
-        vtkErrorMacro("A model object couldn't be destroyed.");
-        }
       }
+      if (!geometricEntity->Destroy())
+      {
+        vtkErrorMacro("A model object couldn't be destroyed.");
+      }
+    }
     iter->Delete();
     this->RemoveAllAssociations(types[i]);
-    }
+  }
 
   this->LargestUsedUniqueId = 0;
   this->Modified();
@@ -183,19 +179,18 @@ void vtkModel::Serialize(vtkSerializer* ser)
   ser->Serialize("LargestUsedUniqueId", this->LargestUsedUniqueId);
 }
 
-void vtkModel::InvokeModelGeometricEntityEvent(unsigned long theEvent,
-                                               void *callData)
+void vtkModel::InvokeModelGeometricEntityEvent(unsigned long theEvent, void* callData)
 {
-  if(!this->BlockModelGeometricEntityEvent)
-    {
+  if (!this->BlockModelGeometricEntityEvent)
+  {
     this->InvokeEvent(theEvent, callData);
-    }
+  }
 }
 
 void vtkModel::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
-  os << indent << "LargestUsedUniqueId: " << this->LargestUsedUniqueId <<"\n";
-  os << indent << "BlockModelGeometricEntityEvent: "
-     << this->BlockModelGeometricEntityEvent << "\n";
+  this->Superclass::PrintSelf(os, indent);
+  os << indent << "LargestUsedUniqueId: " << this->LargestUsedUniqueId << "\n";
+  os << indent << "BlockModelGeometricEntityEvent: " << this->BlockModelGeometricEntityEvent
+     << "\n";
 }

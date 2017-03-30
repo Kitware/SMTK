@@ -27,7 +27,7 @@ class vtkPolyData;
 class VTK_EXPORT vtkCMBModelEntityMesh : public vtkObject
 {
 public:
-  vtkTypeMacro(vtkCMBModelEntityMesh,vtkObject);
+  vtkTypeMacro(vtkCMBModelEntityMesh, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -52,8 +52,7 @@ public:
   // true if the operation succeeded as desired.  This includes
   // deleting the mesh if the mesh parameters go from valid
   // to invalid values (i.e. a parameter set to 0).
-  virtual bool BuildModelEntityMesh(
-    bool meshHigherDimensionalEntities) = 0;
+  virtual bool BuildModelEntityMesh(bool meshHigherDimensionalEntities) = 0;
 
   // Description:
   // Set/get the model entity mesh length.  If it is 0 it
@@ -79,10 +78,7 @@ public:
   // Description:
   // Return true if the model entity should have a mesh
   // and false otherwise.
-  virtual bool IsModelEntityMeshed()
-  {
-    return (this->MeshedLength > 0.);
-  }
+  virtual bool IsModelEntityMeshed() { return (this->MeshedLength > 0.); }
 
   // Description:
   // Set the local mesh length on the entity.
@@ -106,7 +102,6 @@ protected:
   // classes can use this method.
   vtkSetClampMacro(MeshedLength, double, 0, VTK_FLOAT_MAX);
 
-
 private:
   bool Visible;
   vtkCMBMesh* MasterMesh;
@@ -122,9 +117,8 @@ private:
   // The meshed length of the current mesh if it exists.
   double MeshedLength;
 
-  vtkCMBModelEntityMesh(const vtkCMBModelEntityMesh&);  // Not implemented.
-  void operator=(const vtkCMBModelEntityMesh&);  // Not implemented.
+  vtkCMBModelEntityMesh(const vtkCMBModelEntityMesh&); // Not implemented.
+  void operator=(const vtkCMBModelEntityMesh&);        // Not implemented.
 };
 
 #endif
-

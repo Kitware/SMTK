@@ -18,8 +18,10 @@
 using smtk::attribute::IntItem;
 using smtk::attribute::IntItemPtr;
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /// Return the name of this operator.
 std::string RemoteOperator::name() const
@@ -55,13 +57,8 @@ OperatorResult RemoteOperator::operateInternal()
   return fwdSession->operateDelegate(shared_from_this());
 }
 
-  } // model namespace
+} // model namespace
 } // smtk namespace
 
-smtkImplementsModelOperator(
-  SMTKCORE_EXPORT,
-  smtk::model::RemoteOperator,
-  RemoteOperator,
-  "remote op",
-  NULL /* no XML specification */,
-  smtk::model::DefaultSession);
+smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::model::RemoteOperator, RemoteOperator,
+  "remote op", NULL /* no XML specification */, smtk::model::DefaultSession);

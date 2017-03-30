@@ -23,7 +23,6 @@
 #include "Model/vtkModel.h"
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 
-
 class vtkCharArray;
 class vtkModelGridRepresentation;
 class vtkModelMaterial;
@@ -38,7 +37,7 @@ class vtkIntArray;
 class vtkModelVertex;
 class vtkModelVertexUse;
 
-#include "DiscreteMesh.h" //needed for Discrete Mesh
+#include "DiscreteMesh.h"       //needed for Discrete Mesh
 #include "MeshClassification.h" //needed for Discrete Mesh Classification
 
 #include <string>
@@ -56,7 +55,8 @@ enum vtkDiscreteModelEntityTypes
 
 // Description:
 // All the currently defined CMB Model events are listed here.
-enum DiscreteModelEventIds {
+enum DiscreteModelEventIds
+{
   ModelEntityGroupCreated = 10000,
   ModelEntityGroupAboutToDestroy,
   ModelEntityGroupDestroyed,
@@ -71,27 +71,20 @@ enum DiscreteModelEventIds {
 class VTKSMTKDISCRETEMODEL_EXPORT vtkDiscreteModel : public vtkModel
 {
 public:
-  typedef MeshClassification< vtkDiscreteModelGeometricEntity >
-          ClassificationType;
+  typedef MeshClassification<vtkDiscreteModelGeometricEntity> ClassificationType;
 
   static vtkDiscreteModel* New();
 
-  vtkTypeMacro(vtkDiscreteModel,vtkModel);
+  vtkTypeMacro(vtkDiscreteModel, vtkModel);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // Get the geometric representation of the model.
-  const DiscreteMesh& GetMesh() const
-    {
-    return this->Mesh;
-    }
+  const DiscreteMesh& GetMesh() const { return this->Mesh; }
 
   // Description:
   // Get the classification model to the mesh.
-  ClassificationType& GetMeshClassification()
-    {
-    return this->MeshClassificationInstance;
-    }
+  ClassificationType& GetMeshClassification() { return this->MeshClassificationInstance; }
 
   // Description:
   // Returns true if the DiscreteModel has a non empty Mesh.
@@ -114,7 +107,6 @@ public:
   static const char* GetCellMapArrayName();
   static const char* GetCanonicalSideArrayName();
 
-
   // Description:
   // Function to clear out the current model data.  This must be called
   // in order for a model to be deleted since this removes the
@@ -127,39 +119,30 @@ public:
   // Build a model entity. The model is responsible for the management
   // of the built model entity.  The build model entity is deleted
   // from the model with the corresponding DestroyModel function.
-  virtual vtkModelVertex* BuildModelVertex(vtkIdType pointId,
-    bool bCreateGeometry=false);
-  virtual vtkModelVertex* BuildModelVertex(vtkIdType pointId,
-    vtkIdType vertexId, bool bCreateGeometry=false);
-  virtual vtkModelEdge* BuildModelEdge(vtkModelVertex* vertex0,
-                                       vtkModelVertex* vertex1);
+  virtual vtkModelVertex* BuildModelVertex(vtkIdType pointId, bool bCreateGeometry = false);
+  virtual vtkModelVertex* BuildModelVertex(
+    vtkIdType pointId, vtkIdType vertexId, bool bCreateGeometry = false);
+  virtual vtkModelEdge* BuildModelEdge(vtkModelVertex* vertex0, vtkModelVertex* vertex1);
 
   virtual vtkModelEdge* BuildModelEdge(
     vtkModelVertex* vertex0, vtkModelVertex* vertex1, vtkIdType edgeId);
 
-  virtual vtkModelFace* BuildModelFace(int numEdges, vtkModelEdge** edges,
-                                       int* edgeDirections, vtkModelMaterial* material);
-  virtual vtkModelFace* BuildModelFace(int numEdges, vtkModelEdge** edges,
-                                       int* edgeDirections);
-  virtual vtkModelFace* BuildModelFace(int NumEdges, vtkModelEdge** Edges,
-                                       int* edgeDirections,
-                                       vtkIdType modelFaceId);
+  virtual vtkModelFace* BuildModelFace(
+    int numEdges, vtkModelEdge** edges, int* edgeDirections, vtkModelMaterial* material);
+  virtual vtkModelFace* BuildModelFace(int numEdges, vtkModelEdge** edges, int* edgeDirections);
+  virtual vtkModelFace* BuildModelFace(
+    int NumEdges, vtkModelEdge** Edges, int* edgeDirections, vtkIdType modelFaceId);
   virtual vtkModelRegion* BuildModelRegion();
   virtual vtkModelRegion* BuildModelRegion(vtkIdType modelRegionId);
+  virtual vtkModelRegion* BuildModelRegion(int numFaces, vtkModelFace** faces, int* faceSides);
   virtual vtkModelRegion* BuildModelRegion(
-    int numFaces, vtkModelFace** faces, int* faceSides);
+    int numFaces, vtkModelFace** faces, int* faceSides, vtkIdType modelRegionId);
   virtual vtkModelRegion* BuildModelRegion(
-    int numFaces, vtkModelFace** faces, int* faceSides,
-    vtkIdType modelRegionId);
-  virtual vtkModelRegion* BuildModelRegion(
-    int numFaces, vtkModelFace** faces, int* faceSides,
-    vtkModelMaterial* material);
-  virtual vtkModelRegion* BuildModelRegion(
-    int numFaces, vtkModelFace** faces, int* faceSides,
+    int numFaces, vtkModelFace** faces, int* faceSides, vtkModelMaterial* material);
+  virtual vtkModelRegion* BuildModelRegion(int numFaces, vtkModelFace** faces, int* faceSides,
     vtkIdType modelRegionId, vtkModelMaterial* material);
 
-  virtual bool DestroyModelGeometricEntity(
-    vtkModelGeometricEntity* geomEntity);
+  virtual bool DestroyModelGeometricEntity(vtkModelGeometricEntity* geomEntity);
 
   virtual void GetBounds(double bounds[6]);
 
@@ -185,13 +168,13 @@ public:
   // Description:
   // Build/Destroy a floating vtkDiscreteModelEdge.
   virtual vtkModelEdge* BuildFloatingRegionEdge(
-    double point1[3], double point2[3],
-    int resolution, vtkIdType regionId)
-    {return this->BuildFloatingRegionEdge(this->GetNextUniquePersistentId(),
-      point1, point2, resolution, regionId);}
-  virtual vtkModelEdge* BuildFloatingRegionEdge(vtkIdType edgeId,
-    double point1[3], double point2[3],
-    int resolution, vtkIdType regionId);
+    double point1[3], double point2[3], int resolution, vtkIdType regionId)
+  {
+    return this->BuildFloatingRegionEdge(
+      this->GetNextUniquePersistentId(), point1, point2, resolution, regionId);
+  }
+  virtual vtkModelEdge* BuildFloatingRegionEdge(
+    vtkIdType edgeId, double point1[3], double point2[3], int resolution, vtkIdType regionId);
   virtual bool DestroyModelEdge(vtkDiscreteModelEdge* modelEdge);
 
   vtkGetMacro(AnalysisGridInfo, vtkModelGridRepresentation*);
@@ -227,8 +210,8 @@ protected:
   // Function to get the next default name for a model entity.  It
   // is used for giving a default value when creating a model entity
   // that the user can change.
-  void GetModelEntityDefaultName(int entityType, const char* baseName,
-                                 std::string & defaultEntityName);
+  void GetModelEntityDefaultName(
+    int entityType, const char* baseName, std::string& defaultEntityName);
 
   friend class vtkDiscreteModelGeometricEntity;
   friend class vtkCMBParserBase;
@@ -265,17 +248,16 @@ protected:
   // Description:
   // Flag to whether invoke event
   bool BlockEvent;
-  void InternalInvokeEvent(unsigned long event, void *callData);
+  void InternalInvokeEvent(unsigned long event, void* callData);
 
   vtkStdString FileName;
+
 private:
   DiscreteMesh Mesh;
   ClassificationType MeshClassificationInstance;
 
-  vtkDiscreteModel(const vtkDiscreteModel&);  // Not implemented.
-  void operator=(const vtkDiscreteModel&);  // Not implemented.
-
+  vtkDiscreteModel(const vtkDiscreteModel&); // Not implemented.
+  void operator=(const vtkDiscreteModel&);   // Not implemented.
 };
-
 
 #endif

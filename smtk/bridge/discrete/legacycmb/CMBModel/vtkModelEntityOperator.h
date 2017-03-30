@@ -26,8 +26,8 @@ class vtkModelEntity;
 class VTKCMBDISCRETEMODEL_EXPORT vtkModelEntityOperator : public vtkModelEntityOperatorBase
 {
 public:
-  static vtkModelEntityOperator * New();
-  vtkTypeMacro(vtkModelEntityOperator,vtkModelEntityOperatorBase);
+  static vtkModelEntityOperator* New();
+  vtkTypeMacro(vtkModelEntityOperator, vtkModelEntityOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Prevent warnings about hidden base-class virtuals:
@@ -57,8 +57,8 @@ protected:
   virtual bool AbleToOperate(vtkDiscreteModelWrapper* ModelWrapper);
 
 private:
-  vtkModelEntityOperator(const vtkModelEntityOperator&);  // Not implemented.
-  void operator=(const vtkModelEntityOperator&);  // Not implemented.
+  vtkModelEntityOperator(const vtkModelEntityOperator&); // Not implemented.
+  void operator=(const vtkModelEntityOperator&);         // Not implemented.
 
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).

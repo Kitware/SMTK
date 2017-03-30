@@ -13,9 +13,12 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Manager.txx"
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 /** Consistently delete internal (and only polygon-session-specific) records related to the entities listed in \a container.
   *
@@ -33,44 +36,51 @@ namespace smtk {
   * polygon's internal pmodel class because the container
   * may include cells from multiple models.
   */
-template<typename T, typename U, typename V>
+template <typename T, typename U, typename V>
 void Session::consistentInternalDelete(T& container, U& modified, V& expunged, bool logDebug)
 {
   smtk::model::Manager::Ptr mgr;
   typename T::iterator it;
   for (it = container.begin(); it != container.end(); ++it)
-    {
+  {
     if (!it->isCellEntity())
-      {
-      if (!it->isAuxiliaryGeometry())
-        {
-        smtkWarningMacro(this->log(), "Trying to delete polygon storage for " << it->name() << " (" << it->flagSummary() << ")");
-        }
-      if (!mgr)
-        {
-        mgr = it->manager();
-        }
-      continue;
-      }
-    if (!mgr)
-      {
-      mgr = it->manager();
-      }
-    switch (it->dimensionBits())
-      {
-    case smtk::model::DIMENSION_2: this->removeFaceReferences(*it); break;
-    case smtk::model::DIMENSION_1: this->removeEdgeReferences(*it); break;
-    case smtk::model::DIMENSION_0: this->removeVertReferences(*it); break;
-      }
-    }
-  if (mgr)
     {
-    mgr->deleteEntities(container, modified, expunged, logDebug);
+      if (!it->isAuxiliaryGeometry())
+      {
+        smtkWarningMacro(this->log(), "Trying to delete polygon storage for "
+            << it->name() << " (" << it->flagSummary() << ")");
+      }
+      if (!mgr)
+      {
+        mgr = it->manager();
+      }
+      continue;
     }
+    if (!mgr)
+    {
+      mgr = it->manager();
+    }
+    switch (it->dimensionBits())
+    {
+      case smtk::model::DIMENSION_2:
+        this->removeFaceReferences(*it);
+        break;
+      case smtk::model::DIMENSION_1:
+        this->removeEdgeReferences(*it);
+        break;
+      case smtk::model::DIMENSION_0:
+        this->removeVertReferences(*it);
+        break;
+    }
+  }
+  if (mgr)
+  {
+    mgr->deleteEntities(container, modified, expunged, logDebug);
+  }
 }
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk
 
 #endif // smtk_session_polygon_Session_txx

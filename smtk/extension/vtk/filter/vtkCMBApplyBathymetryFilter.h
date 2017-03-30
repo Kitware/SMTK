@@ -22,20 +22,20 @@ class vtkPoints;
 class VTKSMTKFILTEREXT_EXPORT vtkCMBApplyBathymetryFilter : public vtkDataSetAlgorithm
 {
 public:
-  static vtkCMBApplyBathymetryFilter *New();
-  vtkTypeMacro(vtkCMBApplyBathymetryFilter,vtkDataSetAlgorithm);
+  static vtkCMBApplyBathymetryFilter* New();
+  vtkTypeMacro(vtkCMBApplyBathymetryFilter, vtkDataSetAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   //Description:
   //Set/Get the radius of the cone to use for elevation smoothing
-  vtkSetMacro(ElevationRadius,double);
-  vtkGetMacro(ElevationRadius,double);
+  vtkSetMacro(ElevationRadius, double);
+  vtkGetMacro(ElevationRadius, double);
 
   //Description:
   //Set/Get the highest z value which the input will be set to if
   // UseHighestZValue is set to true. Default is 0.0
-  vtkSetMacro(HighestZValue,double);
-  vtkGetMacro(HighestZValue,double);
+  vtkSetMacro(HighestZValue, double);
+  vtkGetMacro(HighestZValue, double);
 
   // Description:
   // If "on", the input points' highest z values will be set to HighestZValue
@@ -47,8 +47,8 @@ public:
   //Description:
   //Set/Get the lowest z value which the input will be set to if
   // UseLowestZValue is set to true. Default is 0.0
-  vtkSetMacro(LowestZValue,double);
-  vtkGetMacro(LowestZValue,double);
+  vtkSetMacro(LowestZValue, double);
+  vtkGetMacro(LowestZValue, double);
 
   // Description:
   // If "on", the input points' lowest z values will be set to LowestZValue
@@ -60,8 +60,8 @@ public:
   //Description:
   //Set/Get the z value which the input will be set to if
   // FlattenZValues is set to true. Default is 0.0
-  vtkSetMacro(FlatZValue,double);
-  vtkGetMacro(FlatZValue,double);
+  vtkSetMacro(FlatZValue, double);
+  vtkGetMacro(FlatZValue, double);
 
   // Description:
   // If "on", the input points' z values will be set to FlatZValue
@@ -93,17 +93,15 @@ protected:
   vtkCMBApplyBathymetryFilter();
   ~vtkCMBApplyBathymetryFilter();
 
-  virtual int FillInputPortInformation(int port, vtkInformation *info);
-  virtual int RequestData(vtkInformation* request,
-                                 vtkInformationVector** inputVector,
-                                 vtkInformationVector* outputVector);
-
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
+  virtual int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
+    vtkInformationVector* outputVector);
 
   //methods for flattening mesh
   bool FlattenMesh(vtkPoints*);
 
   //methods for apply bathymetry
-  bool ApplyBathymetry(vtkPoints *points);
+  bool ApplyBathymetry(vtkPoints* points);
 
   double ElevationRadius;
   double HighestZValue;
@@ -116,11 +114,11 @@ protected:
   double InvalidValue;
 
   class vtkCmbInternalTerrainInfo;
-  vtkCmbInternalTerrainInfo *TerrainInfo;
+  vtkCmbInternalTerrainInfo* TerrainInfo;
 
 private:
-  vtkCMBApplyBathymetryFilter(const vtkCMBApplyBathymetryFilter&);  // Not implemented.
-  void operator=(const vtkCMBApplyBathymetryFilter&);  // Not implemented.
+  vtkCMBApplyBathymetryFilter(const vtkCMBApplyBathymetryFilter&); // Not implemented.
+  void operator=(const vtkCMBApplyBathymetryFilter&);              // Not implemented.
 };
 
 #endif

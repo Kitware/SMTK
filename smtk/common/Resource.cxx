@@ -11,11 +11,12 @@
 // .SECTION Description
 // .SECTION See Also
 
-
 #include "smtk/common/Resource.h"
 
-namespace smtk {
-  namespace common {
+namespace smtk
+{
+namespace common
+{
 
 Resource::Resource()
 {
@@ -28,7 +29,7 @@ Resource::~Resource()
 std::string Resource::type2String(Resource::Type t)
 {
   switch (t)
-    {
+  {
     case ATTRIBUTE:
       return "attribute";
     case MODEL:
@@ -37,26 +38,26 @@ std::string Resource::type2String(Resource::Type t)
       return "mesh";
     default:
       return "";
-    }
+  }
   return "Error!";
 }
 
-Resource::Type Resource::string2Type(const std::string &s)
+Resource::Type Resource::string2Type(const std::string& s)
 {
   if (s == "attribute")
-    {
+  {
     return ATTRIBUTE;
-    }
+  }
   if (s == "model")
-    {
+  {
     return MODEL;
-    }
+  }
   if (s == "mesh")
-    {
+  {
     return MESH;
-    }
+  }
   return NUMBER_OF_TYPES;
 }
 
-  } // namespace common
+} // namespace common
 } // namespace smtk

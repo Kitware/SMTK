@@ -34,8 +34,8 @@ public:
 
   // Description:
   // Operate on the model on the server with a given input proxy.
-  virtual void Operate(vtkDiscreteModel* ClientModel, vtkSMProxy* ModelProxy,
-                       vtkSMProxy* InputProxy);
+  virtual void Operate(
+    vtkDiscreteModel* ClientModel, vtkSMProxy* ModelProxy, vtkSMProxy* InputProxy);
 
   // Description:
   // Build an object on the model on the server.
@@ -51,9 +51,7 @@ protected:
 
 private:
   vtkSMOperatorProxy(const vtkSMOperatorProxy&); // Not implemented
-  void operator=(const vtkSMOperatorProxy&); // Not implemented
-
+  void operator=(const vtkSMOperatorProxy&);     // Not implemented
 };
 
 #endif
-

@@ -16,14 +16,13 @@
 #include "vtkModelRegion.h"
 #include "vtkObjectFactory.h"
 
-
 vtkModelShellUse* vtkModelShellUse::New()
 {
   vtkObject* ret = vtkObjectFactory::CreateInstance("vtkModelShellUse");
-  if(ret)
-    {
+  if (ret)
+  {
     return static_cast<vtkModelShellUse*>(ret);
-    }
+  }
   return new vtkModelShellUse;
 }
 
@@ -59,8 +58,7 @@ void vtkModelShellUse::RemoveModelFaceUse(vtkModelFaceUse* faceUse)
 
 vtkModelItemIterator* vtkModelShellUse::NewModelFaceUseIterator()
 {
-  vtkModelItemIterator* iter =
-    this->NewIterator(vtkModelFaceUseType);
+  vtkModelItemIterator* iter = this->NewIterator(vtkModelFaceUseType);
   return iter;
 }
 
@@ -71,11 +69,9 @@ int vtkModelShellUse::GetNumberOfModelFaceUses()
 
 vtkModelRegion* vtkModelShellUse::GetModelRegion()
 {
-  vtkModelItemIterator* iter =
-    this->NewIterator(vtkModelRegionType);
+  vtkModelItemIterator* iter = this->NewIterator(vtkModelRegionType);
   iter->Begin();
-  vtkModelRegion* region =
-    vtkModelRegion::SafeDownCast(iter->GetCurrentItem());
+  vtkModelRegion* region = vtkModelRegion::SafeDownCast(iter->GetCurrentItem());
   iter->Delete();
   return region;
 }
@@ -87,6 +83,5 @@ void vtkModelShellUse::Serialize(vtkSerializer* ser)
 
 void vtkModelShellUse::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }
-

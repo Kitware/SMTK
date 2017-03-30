@@ -24,7 +24,6 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 
-
 #include <string>
 
 class vtkInformationKey;
@@ -32,8 +31,8 @@ class vtkInformationKey;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkInformationKeyMap : public vtkObject
 {
 public:
-  static vtkInformationKeyMap *New();
-  vtkTypeMacro(vtkInformationKeyMap,vtkObject);
+  static vtkInformationKeyMap* New();
+  vtkTypeMacro(vtkInformationKeyMap, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -60,8 +59,8 @@ protected:
   ~vtkInformationKeyMap();
 
 private:
-  vtkInformationKeyMap(const vtkInformationKeyMap&);  // Not implemented.
-  void operator=(const vtkInformationKeyMap&);  // Not implemented.
+  vtkInformationKeyMap(const vtkInformationKeyMap&); // Not implemented.
+  void operator=(const vtkInformationKeyMap&);       // Not implemented.
 };
 
 #endif

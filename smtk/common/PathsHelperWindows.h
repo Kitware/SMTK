@@ -17,20 +17,20 @@
 #include <set>
 #include <string>
 
-namespace smtk {
-  namespace common {
+namespace smtk
+{
+namespace common
+{
 
 class SMTKCORE_EXPORT PathsHelperWindows
 {
 public:
   PathsHelperWindows();
 
-  static void AddSplitPaths(
-    std::set<std::string>& splitPaths,
-    const std::string& envVar);
+  static void AddSplitPaths(std::set<std::string>& splitPaths, const std::string& envVar);
 };
 
-  } // namespace common
+} // namespace common
 } // namespace smtk
 
 #endif // __smtk_common_PathsHelperWindows_h

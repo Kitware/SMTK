@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "smtk/extension/qt/qtTableWidget.h"
 
 #include <QHeaderView>
@@ -19,7 +18,7 @@ qtTableWidget::qtTableWidget(QWidget* p)
   : QTableWidget(p)
 {
   //we want the table to always fill the frame
-  this->horizontalHeader()->setStretchLastSection( true );
+  this->horizontalHeader()->setStretchLastSection(true);
 }
 
 qtTableWidget::~qtTableWidget()

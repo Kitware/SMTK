@@ -15,9 +15,12 @@
 
 #include <string>
 
-namespace smtk {
-  namespace bridge {
-    namespace remote {
+namespace smtk
+{
+namespace bridge
+{
+namespace remote
+{
 
 class RemusConnection;
 
@@ -51,8 +54,8 @@ protected:
   Internal* m_data;
 };
 
-    } // namespace remote
-  } // namespace bridge
+} // namespace remote
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_remote_RemusConnections_h

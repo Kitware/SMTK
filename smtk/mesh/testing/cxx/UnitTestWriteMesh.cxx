@@ -21,7 +21,6 @@
 #include <boost/filesystem.hpp>
 using namespace boost::filesystem;
 
-
 namespace
 {
 
@@ -29,15 +28,15 @@ namespace
 std::string data_root = SMTK_DATA_DIR;
 std::string write_root = SMTK_SCRATCH_DIR;
 
-void cleanup( const std::string& file_path )
+void cleanup(const std::string& file_path)
 {
   //first verify the file exists
-  ::boost::filesystem::path path( file_path );
-  if( ::boost::filesystem::is_regular_file( path ) )
-    {
+  ::boost::filesystem::path path(file_path);
+  if (::boost::filesystem::is_regular_file(path))
+  {
     //remove the file_path if it exists.
-    ::boost::filesystem::remove( path );
-    }
+    ::boost::filesystem::remove(path);
+  }
 }
 
 void verify_write_empty_collection()
@@ -50,14 +49,14 @@ void verify_write_empty_collection()
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = manager->makeCollection();
-  test( c->isValid(), "empty collection is empty");
+  test(c->isValid(), "empty collection is empty");
 
   smtk::io::WriteMesh write;
   bool result = write(write_path, c);
 
   //before we verify if the write was good, first remove the output file
-  cleanup( write_path );
-  test ( result == true, "Wrote empty collection to disk");
+  cleanup(write_path);
+  test(result == true, "Wrote empty collection to disk");
 }
 
 void verify_write_null_collection()
@@ -72,9 +71,9 @@ void verify_write_null_collection()
   bool result = write(write_path, c);
 
   //before we verify if the write was good, first remove the output file
-  cleanup( write_path );
+  cleanup(write_path);
 
-  test ( result == false, "Can't save null collection to disk");
+  test(result == false, "Can't save null collection to disk");
 }
 
 void verify_write_valid_collection_hdf5()
@@ -88,31 +87,31 @@ void verify_write_valid_collection_hdf5()
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
   smtk::mesh::CollectionPtr c = read(file_path, manager);
-  test( c->isValid(), "collection should be valid");
-  test( !c->isModified() , "collection shouldn't be marked as modified");
+  test(c->isValid(), "collection should be valid");
+  test(!c->isModified(), "collection shouldn't be marked as modified");
 
   //write out the mesh.
   smtk::io::WriteMesh write;
   bool result = write(write_path, c);
-  if(!result)
-    {
-    cleanup( write_path );
-    test( result == true, "failed to properly write out a valid hdf5 collection");
-    }
+  if (!result)
+  {
+    cleanup(write_path);
+    test(result == true, "failed to properly write out a valid hdf5 collection");
+  }
 
   //reload the written file and verify the number of meshes are the same as the
   //input mesh
   smtk::mesh::CollectionPtr c2 = read(write_path, manager);
-  test( !c2->isModified() , "collection shouldn't be marked as modified");
+  test(!c2->isModified(), "collection shouldn't be marked as modified");
 
   //remove the file from disk
-  cleanup( write_path );
+  cleanup(write_path);
 
   //verify the meshes
-  test( c2->isValid(), "collection should be valid");
-  test( c2->name() == c->name() );
-  test( c2->numberOfMeshes() == c->numberOfMeshes() );
-  test( c2->types() == c->types() );
+  test(c2->isValid(), "collection should be valid");
+  test(c2->name() == c->name());
+  test(c2->numberOfMeshes() == c->numberOfMeshes());
+  test(c2->types() == c->types());
 }
 
 void verify_write_valid_collection_exodus()
@@ -126,30 +125,30 @@ void verify_write_valid_collection_exodus()
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
   smtk::mesh::CollectionPtr c = read(file_path, manager);
-  test( c->isValid(), "collection should be valid");
+  test(c->isValid(), "collection should be valid");
 
   //write out the mesh.
   smtk::io::WriteMesh write;
   bool result = write(write_path, c);
-  if(!result)
-    {
-    cleanup( write_path );
-    test( result == true, "failed to properly write out a valid exodus collection");
-    }
+  if (!result)
+  {
+    cleanup(write_path);
+    test(result == true, "failed to properly write out a valid exodus collection");
+  }
 
   //When exporting as an exodus file we only write out the volume elements
   //so that is what we should verify are the same
   smtk::mesh::CollectionPtr c2 = read(write_path, manager);
 
   //remove the file from disk
-  cleanup( write_path );
+  cleanup(write_path);
 
   //verify the meshes
-  test( c2->isValid(), "collection should be valid");
-  test( c2->name() == c->name() );
+  test(c2->isValid(), "collection should be valid");
+  test(c2->name() == c->name());
 
-  test( c2->meshes( smtk::mesh::Dims3 ).size() == c->meshes( smtk::mesh::Dims3 ).size() );
-  test( c2->cells( smtk::mesh::Dims3 ).size() == c->cells( smtk::mesh::Dims3 ).size() );
+  test(c2->meshes(smtk::mesh::Dims3).size() == c->meshes(smtk::mesh::Dims3).size());
+  test(c2->cells(smtk::mesh::Dims3).size() == c->cells(smtk::mesh::Dims3).size());
 }
 
 void verify_write_valid_collection_using_write_path()
@@ -163,35 +162,35 @@ void verify_write_valid_collection_using_write_path()
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
   smtk::mesh::CollectionPtr c = read(file_path, manager);
-  test( c->isValid(), "collection should be valid");
+  test(c->isValid(), "collection should be valid");
 
-  test( c->readLocation() == file_path, "readLocation should match file_path");
+  test(c->readLocation() == file_path, "readLocation should match file_path");
 
   c->writeLocation(write_path);
-  test( c->writeLocation() == write_path, "writeLocation should match write_path");
-  test( !c->isModified() , "changing write path shouldn't change modified flag");
+  test(c->writeLocation() == write_path, "writeLocation should match write_path");
+  test(!c->isModified(), "changing write path shouldn't change modified flag");
 
   //write out the mesh.
   smtk::io::WriteMesh write;
   bool result = write(c);
-  if(!result)
-    {
-    cleanup( write_path );
-    test( result == true, "failed to properly write out a valid hdf5 collection");
-    }
+  if (!result)
+  {
+    cleanup(write_path);
+    test(result == true, "failed to properly write out a valid hdf5 collection");
+  }
 
   //reload the written file and verify the number of meshes are the same as the
   //input mesh
   smtk::mesh::CollectionPtr c2 = read(write_path, manager);
 
   //remove the file from disk
-  cleanup( write_path );
+  cleanup(write_path);
 
   //verify the meshes
-  test( c2->isValid(), "collection should be valid");
-  test( c2->name() == c->name() );
-  test( c2->numberOfMeshes() == c->numberOfMeshes() );
-  test( c2->types() == c->types() );
+  test(c2->isValid(), "collection should be valid");
+  test(c2->name() == c->name());
+  test(c2->numberOfMeshes() == c->numberOfMeshes());
+  test(c2->types() == c->types());
 }
 
 void verify_write_valid_collection_using_functions()
@@ -204,34 +203,34 @@ void verify_write_valid_collection_using_functions()
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr c = smtk::io::readMesh(file_path, manager);
-  test( c->isValid(), "collection should be valid");
+  test(c->isValid(), "collection should be valid");
 
-  test( c->readLocation() == file_path, "readLocation should match file_path");
+  test(c->readLocation() == file_path, "readLocation should match file_path");
 
   c->writeLocation(write_path);
-  test( c->writeLocation() == write_path, "writeLocation should match write_path");
-  test( !c->isModified() , "changing write path shouldn't change modified flag");
+  test(c->writeLocation() == write_path, "writeLocation should match write_path");
+  test(!c->isModified(), "changing write path shouldn't change modified flag");
 
   //write out the mesh.
   bool result = smtk::io::writeMesh(c);
-  if(!result)
-    {
-    cleanup( write_path );
-    test( result == true, "failed to properly write out a valid hdf5 collection");
-    }
+  if (!result)
+  {
+    cleanup(write_path);
+    test(result == true, "failed to properly write out a valid hdf5 collection");
+  }
 
   //reload the written file and verify the number of meshes are the same as the
   //input mesh
   smtk::mesh::CollectionPtr c2 = smtk::io::readMesh(write_path, manager);
 
   //remove the file from disk
-  cleanup( write_path );
+  cleanup(write_path);
 
   //verify the meshes
-  test( c2->isValid(), "collection should be valid");
-  test( c2->name() == c->name() );
-  test( c2->numberOfMeshes() == c->numberOfMeshes() );
-  test( c2->types() == c->types() );
+  test(c2->isValid(), "collection should be valid");
+  test(c2->name() == c->name());
+  test(c2->numberOfMeshes() == c->numberOfMeshes());
+  test(c2->types() == c->types());
 }
 
 void verify_write_onlyDomain()
@@ -245,34 +244,33 @@ void verify_write_onlyDomain()
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
   smtk::mesh::CollectionPtr c = read(file_path, manager);
-  test( c->isValid(), "collection should be valid");
+  test(c->isValid(), "collection should be valid");
 
   //write out the mesh.
   smtk::io::WriteMesh write;
   bool result = write(write_path, c, smtk::io::mesh::Subset::OnlyDomain);
-  if(!result)
-    {
-    cleanup( write_path );
-    test( result == true, "failed to properly write out only Material");
-    }
+  if (!result)
+  {
+    cleanup(write_path);
+    test(result == true, "failed to properly write out only Material");
+  }
 
   //reload the written file and verify the number of meshes are the same as the
   //input mesh
   smtk::mesh::CollectionPtr c2 = read(write_path, manager);
-  smtk::mesh::CollectionPtr c3 = read(file_path, manager,
-                                        smtk::io::mesh::Subset::OnlyDomain);
+  smtk::mesh::CollectionPtr c3 = read(file_path, manager, smtk::io::mesh::Subset::OnlyDomain);
 
   // remove the file from disk
-  cleanup( write_path );
+  cleanup(write_path);
 
   // //verify the meshes
-  test( c2->isValid(), "collection should be valid");
-  test( c2->name() == c3->name() );
+  test(c2->isValid(), "collection should be valid");
+  test(c2->name() == c3->name());
   //need to dig into why we are getting a meshset on extraction that is not
   //part of the set
-  test( c2->cells().size() == c3->cells().size() );
-  test( c2->pointConnectivity().size() == c3->pointConnectivity().size() );
-  test( c2->types() == c3->types() );
+  test(c2->cells().size() == c3->cells().size());
+  test(c2->pointConnectivity().size() == c3->pointConnectivity().size());
+  test(c2->types() == c3->types());
 }
 
 void verify_write_onlyNeumann()
@@ -286,37 +284,34 @@ void verify_write_onlyNeumann()
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
   smtk::mesh::CollectionPtr c = read(file_path, manager);
-  test( c->isValid(), "collection should be valid");
+  test(c->isValid(), "collection should be valid");
 
   //write out the mesh.
   smtk::io::WriteMesh write;
   bool result = write(write_path, c, smtk::io::mesh::Subset::OnlyNeumann);
-  if(!result)
-    {
-    cleanup( write_path );
-    test( result == true, "failed to properly write out only Neumann");
-    }
+  if (!result)
+  {
+    cleanup(write_path);
+    test(result == true, "failed to properly write out only Neumann");
+  }
 
   //reload the written file and verify the number of meshes are the same as the
   //input mesh
   smtk::mesh::CollectionPtr c2 = read(write_path, manager);
-  smtk::mesh::CollectionPtr c3 = read(file_path, manager,
-                                        smtk::io::mesh::Subset::OnlyNeumann);
+  smtk::mesh::CollectionPtr c3 = read(file_path, manager, smtk::io::mesh::Subset::OnlyNeumann);
 
   // remove the file from disk
-  cleanup( write_path );
+  cleanup(write_path);
 
   // //verify the meshes
-  test( c2->isValid(), "collection should be valid");
-  test( c2->name() == c3->name() );
+  test(c2->isValid(), "collection should be valid");
+  test(c2->name() == c3->name());
   //need to dig into why we are getting a meshset on extraction that is not
   //part of the set
-  test( c2->numberOfMeshes() + 1 == c3->numberOfMeshes() );
-  test( c2->cells().size() == c3->cells().size() );
-  test( c2->pointConnectivity().size() == c3->pointConnectivity().size() );
-  test( c2->types() == c3->types() );
-
-
+  test(c2->numberOfMeshes() + 1 == c3->numberOfMeshes());
+  test(c2->cells().size() == c3->cells().size());
+  test(c2->pointConnectivity().size() == c3->pointConnectivity().size());
+  test(c2->types() == c3->types());
 }
 
 void verify_write_onlyDirichlet()
@@ -330,35 +325,34 @@ void verify_write_onlyDirichlet()
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
   smtk::mesh::CollectionPtr c = read(file_path, manager);
-  test( c->isValid(), "collection should be valid");
+  test(c->isValid(), "collection should be valid");
 
   //write out the mesh.
   smtk::io::WriteMesh write;
   bool result = write(write_path, c, smtk::io::mesh::Subset::OnlyDirichlet);
-  if(!result)
-    {
-    cleanup( write_path );
-    test( result == true, "failed to properly write out only Dirichlet");
-    }
+  if (!result)
+  {
+    cleanup(write_path);
+    test(result == true, "failed to properly write out only Dirichlet");
+  }
 
   //reload the written file and verify the number of meshes are the same as the
   //input mesh
   smtk::mesh::CollectionPtr c2 = read(write_path, manager);
-  smtk::mesh::CollectionPtr c3 = read(file_path, manager,
-                                        smtk::io::mesh::Subset::OnlyDirichlet);
+  smtk::mesh::CollectionPtr c3 = read(file_path, manager, smtk::io::mesh::Subset::OnlyDirichlet);
 
   //remove the file from disk
-  cleanup( write_path );
+  cleanup(write_path);
 
   //verify the meshes
-  test( c2->isValid(), "collection should be valid");
-  test( c2->name() == c3->name() );
+  test(c2->isValid(), "collection should be valid");
+  test(c2->name() == c3->name());
   //need to dig into why we are getting a meshset on extraction that is not
   //part of the set
-  test( c2->numberOfMeshes() + 1 == c3->numberOfMeshes() );
-  test( c2->cells().size() == c3->cells().size() );
-  test( c2->pointConnectivity().size() == c3->pointConnectivity().size() );
-  test( c2->types() == c3->types() );
+  test(c2->numberOfMeshes() + 1 == c3->numberOfMeshes());
+  test(c2->cells().size() == c3->cells().size());
+  test(c2->pointConnectivity().size() == c3->pointConnectivity().size());
+  test(c2->types() == c3->types());
 }
 
 void verify_write_clears_modified_flag()
@@ -372,42 +366,40 @@ void verify_write_clears_modified_flag()
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
   smtk::mesh::CollectionPtr c = read(file_path, manager);
-  test( c->isValid(), "collection should be valid");
-  test( !c->isModified(), "collection loaded from disk shouldn't be modified");
+  test(c->isValid(), "collection should be valid");
+  test(!c->isModified(), "collection loaded from disk shouldn't be modified");
 
-  smtk::mesh::MeshSet meshes3D = c->meshes( smtk::mesh::Dims3 );
+  smtk::mesh::MeshSet meshes3D = c->meshes(smtk::mesh::Dims3);
   smtk::mesh::MeshSet shell = meshes3D.extractShell();
-  test( c->isModified(), "extracting the shell should mark the collection as modified");
+  test(c->isModified(), "extracting the shell should mark the collection as modified");
 
   //write out the mesh.
   smtk::io::WriteMesh write;
- bool result = write(write_path, c);
-  if(!result)
-    {
-    cleanup( write_path );
-    test( result == true, "failed to properly write out the mesh");
-    }
+  bool result = write(write_path, c);
+  if (!result)
+  {
+    cleanup(write_path);
+    test(result == true, "failed to properly write out the mesh");
+  }
 
-  test( !c->isModified(), "after a write the collection should not be modified");
+  test(!c->isModified(), "after a write the collection should not be modified");
 
   //now remove the shell, and verify the mesh is again marked as modified
   c->removeMeshes(shell);
-  test( c->isModified(), "after mesh removal the collection should be modified");
+  test(c->isModified(), "after mesh removal the collection should be modified");
 
   //write out the mesh again
   result = write(write_path, c);
-  if(!result)
-    {
-    cleanup( write_path );
-    test( result == true, "failed to properly write out the mesh");
-    }
-  test( !c->isModified(), "after a write the collection should not be modified");
+  if (!result)
+  {
+    cleanup(write_path);
+    test(result == true, "failed to properly write out the mesh");
+  }
+  test(!c->isModified(), "after a write the collection should not be modified");
 
   //remove the file from disk
-  cleanup( write_path );
+  cleanup(write_path);
 }
-
-
 }
 
 int UnitTestWriteMesh(int, char** const)

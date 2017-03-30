@@ -29,37 +29,34 @@ vtkModelGeometricEntity* vtkCMBModelVertexMesh::GetModelGeometricEntity()
   return this->ModelVertex;
 }
 
-void vtkCMBModelVertexMesh::Initialize(vtkCMBMesh* masterMesh,
-                                       vtkModelVertex* vertex)
+void vtkCMBModelVertexMesh::Initialize(vtkCMBMesh* masterMesh, vtkModelVertex* vertex)
 {
-  if(this->GetMasterMesh() != masterMesh)
-    {
+  if (this->GetMasterMesh() != masterMesh)
+  {
     this->SetMasterMesh(masterMesh);
     this->Modified();
-    }
-  if(this->ModelVertex != vertex)
-    {
+  }
+  if (this->ModelVertex != vertex)
+  {
     this->ModelVertex = vertex;
     this->Modified();
-    }
+  }
 }
 
-bool vtkCMBModelVertexMesh::BuildModelEntityMesh(
-  bool vtkNotUsed(meshHigherDimensionalEntities) )
+bool vtkCMBModelVertexMesh::BuildModelEntityMesh(bool vtkNotUsed(meshHigherDimensionalEntities))
 {
   return false;
 }
 
 void vtkCMBModelVertexMesh::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
-  if(this->ModelVertex)
-    {
+  this->Superclass::PrintSelf(os, indent);
+  if (this->ModelVertex)
+  {
     os << indent << "ModelVertex: " << this->ModelVertex << "\n";
-    }
+  }
   else
-    {
+  {
     os << indent << "ModelVertex: (NULL)\n";
-    }
+  }
 }
-

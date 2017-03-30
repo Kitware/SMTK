@@ -19,7 +19,6 @@
 #include <QSet>
 #include <QTableView>
 
-
 namespace cumulus
 {
 class CumulusProxy;
@@ -29,11 +28,11 @@ class JobView : public QTableView
   Q_OBJECT
 
 public:
-  JobView(QWidget *theParent = 0);
+  JobView(QWidget* theParent = 0);
   ~JobView();
 
-  void contextMenuEvent(QContextMenuEvent *e);
-  void setCumulusProxy(CumulusProxy *cumulusProxy);
+  void contextMenuEvent(QContextMenuEvent* e);
+  void setCumulusProxy(CumulusProxy* cumulusProxy);
 
 private slots:
   void deleteJob();
@@ -41,8 +40,7 @@ private slots:
   void downloadJob();
 
 private:
-  CumulusProxy *m_cumulusProxy;
-
+  CumulusProxy* m_cumulusProxy;
 };
 
 } // end of namespace

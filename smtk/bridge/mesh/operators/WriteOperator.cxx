@@ -29,9 +29,12 @@
 using namespace smtk::model;
 using namespace smtk::common;
 
-namespace smtk {
-namespace bridge {
-namespace mesh {
+namespace smtk
+{
+namespace bridge
+{
+namespace mesh
+{
 
 void breakMaterialsByAssociation(const smtk::mesh::CollectionPtr& c)
 {
@@ -39,52 +42,49 @@ void breakMaterialsByAssociation(const smtk::mesh::CollectionPtr& c)
   smtk::model::EntityRefArray refs = c->meshes().modelEntities();
 
   int domain = 0;
-  for(auto&& ref : refs)
-    {
+  for (auto&& ref : refs)
+  {
     smtk::mesh::MeshSet m = c->findAssociatedMeshes(ref);
     c->setDomainOnMeshes(m, smtk::mesh::Domain(domain++));
-    }
+  }
 }
 
 smtk::model::OperatorResult WriteOperator::operateInternal()
 {
-  smtk::attribute::FileItem::Ptr filePathItem =
-    this->specification()->findFile("filename");
+  smtk::attribute::FileItem::Ptr filePathItem = this->specification()->findFile("filename");
 
   std::string filePath = filePathItem->value();
 
   smtk::model::Models datasets =
     this->specification()->associatedModelEntities<smtk::model::Models>();
   if (datasets.empty())
-    {
+  {
     smtkErrorMacro(this->log(), "No models to save.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   smtk::model::Model dataset = datasets[0];
 
   smtk::mesh::CollectionPtr collection =
-    this->activeSession()->meshManager()
-    ->findCollection( dataset.entity() )->second;
+    this->activeSession()->meshManager()->findCollection(dataset.entity())->second;
 
-  if ( !collection->isValid() )
-    {
+  if (!collection->isValid())
+  {
     smtkErrorMacro(this->log(), "No collection associated with this model.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   breakMaterialsByAssociation(collection);
 
-  bool writeSuccess = smtk::io::writeMesh( filePath, collection );
+  bool writeSuccess = smtk::io::writeMesh(filePath, collection);
 
-  if ( !writeSuccess )
-    {
+  if (!writeSuccess)
+  {
     smtkErrorMacro(this->log(), "Collection failed to write.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
-  smtk::model::OperatorResult result = this->createResult(
-    smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
   return result;
 }
 
@@ -95,10 +95,5 @@ smtk::model::OperatorResult WriteOperator::operateInternal()
 #include "smtk/bridge/mesh/Exports.h"
 #include "smtk/bridge/mesh/WriteOperator_xml.h"
 
-smtkImplementsModelOperator(
-  SMTKMESHSESSION_EXPORT,
-  smtk::bridge::mesh::WriteOperator,
-  mesh_write,
-  "write",
-  WriteOperator_xml,
-  smtk::bridge::mesh::Session);
+smtkImplementsModelOperator(SMTKMESHSESSION_EXPORT, smtk::bridge::mesh::WriteOperator, mesh_write,
+  "write", WriteOperator_xml, smtk::bridge::mesh::Session);

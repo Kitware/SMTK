@@ -29,16 +29,14 @@ class vtkSelection;
 class SMTKDISCRETESESSION_EXPORT vtkSelectionSplitOperator : public vtkSelectionSplitOperatorBase
 {
 public:
-  static vtkSelectionSplitOperator * New();
-  vtkTypeMacro(vtkSelectionSplitOperator,vtkSelectionSplitOperatorBase);
+  static vtkSelectionSplitOperator* New();
+  vtkTypeMacro(vtkSelectionSplitOperator, vtkSelectionSplitOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // Split the model faces based on the input Selection.
-  virtual void Operate(vtkDiscreteModelWrapper* ModelWrapper,
-                       vtkSelectionAlgorithm* Selection);
-  virtual void Operate(vtkDiscreteModelWrapper* modelWrapper,
-                       vtkSelection* selection);
+  virtual void Operate(vtkDiscreteModelWrapper* ModelWrapper, vtkSelectionAlgorithm* Selection);
+  virtual void Operate(vtkDiscreteModelWrapper* modelWrapper, vtkSelection* selection);
 
   // Description:
   // Returns success (1) or failue (0) for Operation.
@@ -59,8 +57,8 @@ private:
   // Return whether or not the operation successfully completed.
   int OperateSucceeded;
 
-  vtkSelectionSplitOperator(const vtkSelectionSplitOperator&);  // Not implemented.
-  void operator=(const vtkSelectionSplitOperator&);  // Not implemented.
+  vtkSelectionSplitOperator(const vtkSelectionSplitOperator&); // Not implemented.
+  void operator=(const vtkSelectionSplitOperator&);            // Not implemented.
 };
 
 #endif

@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkMaterialOperator.h"
 
 #include "vtkDiscreteModel.h"
@@ -34,27 +33,27 @@ vtkMaterialOperator::~vtkMaterialOperator()
 
 bool vtkMaterialOperator::AbleToOperate(vtkDiscreteModelWrapper* ModelWrapper)
 {
-  if(!ModelWrapper)
-    {
+  if (!ModelWrapper)
+  {
     vtkErrorMacro("Passed in a null model wrapper.");
     return 0;
-    }
+  }
   return this->Superclass::AbleToOperate(ModelWrapper->GetModel());
 }
 
 void vtkMaterialOperator::Operate(vtkDiscreteModelWrapper* ModelWrapper)
 {
-  if(!this->AbleToOperate(ModelWrapper))
-    {
+  if (!this->AbleToOperate(ModelWrapper))
+  {
     this->OperateSucceeded = 0;
     return;
-    }
+  }
 
   this->OperateSucceeded = this->Superclass::Operate(ModelWrapper->GetModel());
-  if(this->OperateSucceeded)
-    {
+  if (this->OperateSucceeded)
+  {
     ModelWrapper->Modified();
-    }
+  }
   return;
 }
 
@@ -70,7 +69,7 @@ void vtkMaterialOperator::Destroy(vtkDiscreteModelWrapper* ModelWrapper)
 
 void vtkMaterialOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "OperateSucceeded: " << this->OperateSucceeded << endl;
   os << indent << "BuiltMaterialId: " << this->BuiltMaterialId << endl;
   os << indent << "DestroySucceeded: " << this->DestroySucceeded << endl;

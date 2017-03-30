@@ -15,8 +15,10 @@
 #include <string>
 #include <vector>
 
-namespace smtk {
-  namespace common {
+namespace smtk
+{
+namespace common
+{
 
 class SMTKCORE_EXPORT StringUtil
 {
@@ -29,11 +31,10 @@ public:
   static std::string& upper(std::string& s);
 
   static std::vector<std::string> split(
-    const std::string& s, const std::string& sep,
-    bool omitEmpty, bool trim);
+    const std::string& s, const std::string& sep, bool omitEmpty, bool trim);
 };
 
-  } // namespace common
+} // namespace common
 } // namespace smtk
 
 #endif // __smtk_common_StringUtil_h

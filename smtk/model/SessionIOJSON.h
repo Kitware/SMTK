@@ -14,8 +14,10 @@
 
 struct cJSON;
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief A base class for delegating session I/O to/from JSON.
   *
@@ -28,38 +30,29 @@ public:
   smtkTypeMacro(SessionIOJSON);
   smtkCreateMacro(SessionIOJSON);
 
-  virtual ~SessionIOJSON() { }
+  virtual ~SessionIOJSON() {}
 
-  virtual int importJSON(ManagerPtr modelMgr, const SessionPtr& session,
-                         cJSON* sessionRec, bool loadNativeModels = false);
-  virtual int exportJSON(ManagerPtr modelMgr, const SessionPtr& sessPtr,
-                         cJSON* sessionRec, bool writeNativeModels = false);
+  virtual int importJSON(ManagerPtr modelMgr, const SessionPtr& session, cJSON* sessionRec,
+    bool loadNativeModels = false);
+  virtual int exportJSON(ManagerPtr modelMgr, const SessionPtr& sessPtr, cJSON* sessionRec,
+    bool writeNativeModels = false);
   virtual int exportJSON(ManagerPtr modelMgr, const SessionPtr& session,
-                         const common::UUIDs &modelIds, cJSON* sessionRec,
-                         bool writeNativeModels = false);
+    const common::UUIDs& modelIds, cJSON* sessionRec, bool writeNativeModels = false);
 
 protected:
   virtual int writeNativeModel(smtk::model::ManagerPtr modelMgr,
-                              const smtk::model::SessionPtr& sess,
-                              const smtk::model::Model& model,
-                              std::string& outNativeFile);
-  virtual int loadNativeModel(smtk::model::ManagerPtr modelMgr,
-                              const smtk::model::SessionPtr& sess,
-                              const std::string& inNativeFile,
-                              std::string& loadedURL);
-  virtual std::string getOutputFileNameForNativeModel(
-    smtk::model::ManagerPtr modelMgr,
-    const smtk::model::SessionPtr& sess,
-    const smtk::model::Model& model) const;
+    const smtk::model::SessionPtr& sess, const smtk::model::Model& model,
+    std::string& outNativeFile);
+  virtual int loadNativeModel(smtk::model::ManagerPtr modelMgr, const smtk::model::SessionPtr& sess,
+    const std::string& inNativeFile, std::string& loadedURL);
+  virtual std::string getOutputFileNameForNativeModel(smtk::model::ManagerPtr modelMgr,
+    const smtk::model::SessionPtr& sess, const smtk::model::Model& model) const;
 
-  virtual int loadModelsRecord(smtk::model::ManagerPtr modelMgr,
-                               cJSON* sessionRec);
-  virtual int loadMeshesRecord(smtk::model::ManagerPtr modelMgr,
-                               cJSON* sessionRec);
-
+  virtual int loadModelsRecord(smtk::model::ManagerPtr modelMgr, cJSON* sessionRec);
+  virtual int loadMeshesRecord(smtk::model::ManagerPtr modelMgr, cJSON* sessionRec);
 };
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_SessionIOJSON_h

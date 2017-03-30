@@ -25,11 +25,11 @@ vtkSMTKOperator::~vtkSMTKOperator()
 
 void vtkSMTKOperator::SetSMTKOperator(smtk::model::OperatorPtr op)
 {
-  if(this->m_smtkOp.lock() != op)
-    {
+  if (this->m_smtkOp.lock() != op)
+  {
     this->m_smtkOp = op;
     this->Modified();
-    }
+  }
 }
 
 smtk::model::OperatorPtr vtkSMTKOperator::GetSMTKOperator()
@@ -44,15 +44,13 @@ bool vtkSMTKOperator::AbleToOperate()
 
 smtk::model::OperatorResult vtkSMTKOperator::Operate()
 {
-  return this->m_smtkOp.lock() ? this->m_smtkOp.lock()->operate() :
-         smtk::model::OperatorResult();
+  return this->m_smtkOp.lock() ? this->m_smtkOp.lock()->operate() : smtk::model::OperatorResult();
 }
 
 void vtkSMTKOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  os << indent << "smtk op: " 
-     << (this->m_smtkOp.lock() ? this->m_smtkOp.lock()->name() : "(none)")
+  os << indent << "smtk op: " << (this->m_smtkOp.lock() ? this->m_smtkOp.lock()->name() : "(none)")
      << endl;
 
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }

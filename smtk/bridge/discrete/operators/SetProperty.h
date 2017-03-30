@@ -12,9 +12,12 @@
 
 #include "smtk/bridge/discrete/Operator.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace discrete {
+namespace smtk
+{
+namespace bridge
+{
+namespace discrete
+{
 
 class SMTKDISCRETESESSION_EXPORT SetProperty : public smtk::bridge::discrete::Operator
 {
@@ -27,19 +30,17 @@ public:
 protected:
   virtual smtk::model::OperatorResult operateInternal();
 
-  template<typename V, typename VL, typename VD, typename VI>
+  template <typename V, typename VL, typename VD, typename VI>
   void setPropertyValue(
-    const std::string& name,
-    typename VI::Ptr item,
-    smtk::model::EntityRefArray& entities);
+    const std::string& name, typename VI::Ptr item, smtk::model::EntityRefArray& entities);
 
   void setName(const std::string& name, smtk::model::EntityRefArray& entities);
   void setColor(smtk::attribute::DoubleItemPtr color, smtk::model::EntityRefArray& entities);
   void setVisibility(int visibility, smtk::model::EntityRefArray& entities);
 };
 
-    } //namespace discrete
-  } //namespace bridge
+} //namespace discrete
+} //namespace bridge
 } // namespace smtk
 
 #endif // __smtk_model_SetProperty_h

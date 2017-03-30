@@ -22,13 +22,13 @@ namespace
 void verify_invalid_constructor()
 {
   smtk::mesh::CollectionPtr null_collec;
-  test( !null_collec, "collection  pointer should be invalid");
+  test(!null_collec, "collection  pointer should be invalid");
 
   smtk::mesh::CollectionPtr invalid_collection = smtk::mesh::Collection::create();
-  test( !invalid_collection->isValid() , "collection should be invalid");
+  test(!invalid_collection->isValid(), "collection should be invalid");
 
   smtk::common::UUID uid = invalid_collection->entity();
-  test( (uid==smtk::common::UUID::null()) , "collection uuid should be null");
+  test((uid == smtk::common::UUID::null()), "collection uuid should be null");
 }
 
 void verify_valid_constructor()
@@ -36,23 +36,23 @@ void verify_valid_constructor()
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr collection = mgr->makeCollection();
 
-  test( collection->isValid() , "collection should be valid");
-  test( collection->isModified() == false, "collection shouldn't be marked as modified");
+  test(collection->isValid(), "collection should be valid");
+  test(collection->isModified() == false, "collection shouldn't be marked as modified");
 
   smtk::common::UUID uid = collection->entity();
-  test( (uid!=smtk::common::UUID::null()) , "collection uuid should be valid");
+  test((uid != smtk::common::UUID::null()), "collection uuid should be valid");
 
   //verify the name
-  test( (collection->name() == std::string()) );
+  test((collection->name() == std::string()));
   collection->name("example");
-  test( (collection->name() == std::string("example")) );
+  test((collection->name() == std::string("example")));
 
   //verify the interface name
-  test( (collection->interfaceName() != std::string()) );
+  test((collection->interfaceName() != std::string()));
 
   //verify the read and write location
-  test( (collection->readLocation() == std::string()) );
-  test( (collection->writeLocation() == std::string()) );
+  test((collection->readLocation() == std::string()));
+  test((collection->writeLocation() == std::string()));
 }
 
 void verify_removal_from_collection()
@@ -61,15 +61,15 @@ void verify_removal_from_collection()
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
   smtk::mesh::CollectionPtr collection = mgr->makeCollection();
 
-  test( collection->isValid() , "collection should be valid as it related to a manager");
+  test(collection->isValid(), "collection should be valid as it related to a manager");
 
   //remove the collection
-  const bool result = mgr->removeCollection( collection );
+  const bool result = mgr->removeCollection(collection);
   (void)result;
 
   //verify the collection states that it is now invalid
-  test( collection->isValid() == false, "removal from a manager should cause the collection to be invalid");
-
+  test(collection->isValid() == false,
+    "removal from a manager should cause the collection to be invalid");
 }
 
 void verify_reparenting()
@@ -79,15 +79,15 @@ void verify_reparenting()
   smtk::mesh::ManagerPtr mgr2 = smtk::mesh::Manager::create();
 
   smtk::mesh::CollectionPtr collection = mgr->makeCollection();
-  test( collection->isValid() , "collection should be valid as it related to a manager");
+  test(collection->isValid(), "collection should be valid as it related to a manager");
 
   //reparent to second manager
   bool reparenting_good = collection->reparent(mgr2);
-  test( reparenting_good, "reparenting failed");
-  test( collection->isValid() , "collection should be valid as it related to a manager");
+  test(reparenting_good, "reparenting failed");
+  test(collection->isValid(), "collection should be valid as it related to a manager");
 
-  test( mgr->numberOfCollections() == 0, "Incorrect results from numberOfCollections");
-  test( mgr2->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
+  test(mgr->numberOfCollections() == 0, "Incorrect results from numberOfCollections");
+  test(mgr2->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
 }
 
 void verify_reparenting_invalid_collection()
@@ -97,27 +97,26 @@ void verify_reparenting_invalid_collection()
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
   bool reparenting_good = invalid_collection->reparent(mgr);
 
-  test( reparenting_good, "reparenting failed");
-  test( invalid_collection->isValid() , "collection should be valid as it related to a manager");
-  test( mgr->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
+  test(reparenting_good, "reparenting failed");
+  test(invalid_collection->isValid(), "collection should be valid as it related to a manager");
+  test(mgr->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
 }
 
 void verify_reparenting_twice()
 {
-  smtk::mesh::CollectionPtr collection= smtk::mesh::Collection::create();
+  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create();
 
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
   bool reparenting_good = collection->reparent(mgr);
 
-  test( reparenting_good, "reparenting failed");
-  test( collection->isValid() , "collection should be valid as it related to a manager");
-  test( mgr->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
+  test(reparenting_good, "reparenting failed");
+  test(collection->isValid(), "collection should be valid as it related to a manager");
+  test(mgr->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
 
   reparenting_good = collection->reparent(mgr);
-  test( reparenting_good, "reparenting failed");
-  test( collection->isValid() , "collection should be valid as it related to a manager");
-  test( mgr->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
-
+  test(reparenting_good, "reparenting failed");
+  test(collection->isValid(), "collection should be valid as it related to a manager");
+  test(mgr->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
 }
 
 void verify_reparenting_after_manager_deletion()
@@ -126,19 +125,19 @@ void verify_reparenting_after_manager_deletion()
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
 
   smtk::mesh::CollectionPtr collection = mgr->makeCollection();
-  test( collection->isValid() , "collection should be valid as it related to a manager");
-  test( mgr->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
+  test(collection->isValid(), "collection should be valid as it related to a manager");
+  test(mgr->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
 
   //remove the manager
   mgr.reset();
-  test( !collection->isValid() , "collection shouldn't be valid as manager is deleted");
+  test(!collection->isValid(), "collection shouldn't be valid as manager is deleted");
 
   //reparent to second manager
   smtk::mesh::ManagerPtr mgr2 = smtk::mesh::Manager::create();
   bool reparenting_good = collection->reparent(mgr2);
-  test( reparenting_good, "reparenting failed");
-  test( collection->isValid() , "collection should be valid as it related to a manager");
-  test( mgr2->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
+  test(reparenting_good, "reparenting failed");
+  test(collection->isValid(), "collection should be valid as it related to a manager");
+  test(mgr2->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
 }
 
 void verify_collection_unique_name()
@@ -150,13 +149,15 @@ void verify_collection_unique_name()
   smtk::mesh::CollectionPtr c1 = mgr->makeCollection();
   smtk::mesh::CollectionPtr c2 = mgr->makeCollection();
 
-  c1->name( std::string("a") );
+  c1->name(std::string("a"));
   c1->assignUniqueNameIfNotAlready();
-  test( c1->name() == std::string("a"), "assignUniqueNameIfNotAlready overwrote existing unique name" );
+  test(
+    c1->name() == std::string("a"), "assignUniqueNameIfNotAlready overwrote existing unique name");
 
-  c2->name( std::string("a") );
+  c2->name(std::string("a"));
   c1->assignUniqueNameIfNotAlready();
-  test( c1->name() != std::string("a"), "assignUniqueNameIfNotAlready didn't generate an unique name" );
+  test(
+    c1->name() != std::string("a"), "assignUniqueNameIfNotAlready didn't generate an unique name");
 }
 
 void verify_collection_info_moab()
@@ -165,28 +166,28 @@ void verify_collection_info_moab()
   smtk::mesh::InterfacePtr iface = smtk::mesh::moab::make_interface();
   smtk::mesh::CollectionPtr collection = mgr->makeCollection(iface);
 
-  test( collection->isValid() , "collection should be valid");
+  test(collection->isValid(), "collection should be valid");
 
   smtk::common::UUID uid = collection->entity();
-  test( (uid!=smtk::common::UUID::null()) , "collection uuid should be valid");
+  test((uid != smtk::common::UUID::null()), "collection uuid should be valid");
 
   //verify the name
-  test( (collection->name() == std::string()) );
+  test((collection->name() == std::string()));
   collection->name("example");
-  test( (collection->name() == std::string("example")) );
+  test((collection->name() == std::string("example")));
 
   //verify the interface name
-  test( (collection->interfaceName() != std::string()) );
-  test( (collection->interfaceName() == std::string("moab")) );
+  test((collection->interfaceName() != std::string()));
+  test((collection->interfaceName() == std::string("moab")));
 
   //verify the read and write location
-  test( (collection->readLocation() == std::string()) );
-  test( (collection->writeLocation() == std::string()) );
+  test((collection->readLocation() == std::string()));
+  test((collection->writeLocation() == std::string()));
 
   //set and check read/write location
   collection->writeLocation("foo");
-  test( (collection->readLocation() == std::string()) );
-  test( (collection->writeLocation() == std::string("foo")) );
+  test((collection->readLocation() == std::string()));
+  test((collection->writeLocation() == std::string("foo")));
 }
 
 void verify_collection_info_json()
@@ -195,28 +196,28 @@ void verify_collection_info_json()
   smtk::mesh::InterfacePtr iface = smtk::mesh::json::make_interface();
   smtk::mesh::CollectionPtr collection = mgr->makeCollection(iface);
 
-  test( collection->isValid() , "collection should be valid");
+  test(collection->isValid(), "collection should be valid");
 
   smtk::common::UUID uid = collection->entity();
-  test( (uid!=smtk::common::UUID::null()) , "collection uuid should be valid");
+  test((uid != smtk::common::UUID::null()), "collection uuid should be valid");
 
   //verify the name
-  test( (collection->name() == std::string()) );
+  test((collection->name() == std::string()));
   collection->name("example");
-  test( (collection->name() == std::string("example")) );
+  test((collection->name() == std::string("example")));
 
   //verify the interface name
-  test( (collection->interfaceName() != std::string()) );
-  test( (collection->interfaceName() == std::string("json")) );
+  test((collection->interfaceName() != std::string()));
+  test((collection->interfaceName() == std::string("json")));
 
   //verify the read and write location
-  test( (collection->readLocation() == std::string()) );
-  test( (collection->writeLocation() == std::string()) );
+  test((collection->readLocation() == std::string()));
+  test((collection->writeLocation() == std::string()));
 
   //set and check read/write location
   collection->writeLocation("foo");
-  test( (collection->readLocation() == std::string()) );
-  test( (collection->writeLocation() == std::string("foo")) );
+  test((collection->readLocation() == std::string()));
+  test((collection->writeLocation() == std::string("foo")));
 }
 }
 

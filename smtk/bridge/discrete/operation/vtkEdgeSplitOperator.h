@@ -25,8 +25,8 @@ class vtkModelEntity;
 class SMTKDISCRETESESSION_EXPORT vtkEdgeSplitOperator : public vtkEdgeSplitOperatorBase
 {
 public:
-  static vtkEdgeSplitOperator * New();
-  vtkTypeMacro(vtkEdgeSplitOperator,vtkEdgeSplitOperatorBase);
+  static vtkEdgeSplitOperator* New();
+  vtkTypeMacro(vtkEdgeSplitOperator, vtkEdgeSplitOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -56,8 +56,8 @@ private:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).
   int OperateSucceeded;
 
-  vtkEdgeSplitOperator(const vtkEdgeSplitOperator&);  // Not implemented.
-  void operator=(const vtkEdgeSplitOperator&);  // Not implemented.
+  vtkEdgeSplitOperator(const vtkEdgeSplitOperator&); // Not implemented.
+  void operator=(const vtkEdgeSplitOperator&);       // Not implemented.
 };
 
 #endif

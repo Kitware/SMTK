@@ -27,52 +27,50 @@ class QBoxLayout;
 
 namespace smtk
 {
-  namespace extension
-  {
-    class SMTKQTEXT_EXPORT qtMeshSelectionItem : public qtItem
-    {
-      Q_OBJECT
+namespace extension
+{
+class SMTKQTEXT_EXPORT qtMeshSelectionItem : public qtItem
+{
+  Q_OBJECT
 
-    public:
-      qtMeshSelectionItem(smtk::attribute::ItemPtr, QWidget* p,
-        qtBaseView* bview, Qt::Orientation enumOrient = Qt::Horizontal);
-      virtual ~qtMeshSelectionItem();
-      virtual void setLabelVisible(bool);
-      // update the selection input to the operation
-      virtual void updateInputSelection(
-        const std::map<smtk::common::UUID, std::set<int> >& selectionValues);
+public:
+  qtMeshSelectionItem(smtk::attribute::ItemPtr, QWidget* p, qtBaseView* bview,
+    Qt::Orientation enumOrient = Qt::Horizontal);
+  virtual ~qtMeshSelectionItem();
+  virtual void setLabelVisible(bool);
+  // update the selection input to the operation
+  virtual void updateInputSelection(
+    const std::map<smtk::common::UUID, std::set<int> >& selectionValues);
 
-      smtk::attribute::ModelEntityItemPtr refModelEntityItem();
-      void setUsingCtrlKey(bool);
-      bool usingCtrlKey();
-      // update the cached selection, and return the result in outSelectionValues
-      void syncWithCachedSelection(
-        const smtk::attribute::MeshSelectionItemPtr& meshSelectionItem,
-        std::map<smtk::common::UUID, std::set<int> > &outSelectionValues);
+  smtk::attribute::ModelEntityItemPtr refModelEntityItem();
+  void setUsingCtrlKey(bool);
+  bool usingCtrlKey();
+  // update the cached selection, and return the result in outSelectionValues
+  void syncWithCachedSelection(const smtk::attribute::MeshSelectionItemPtr& meshSelectionItem,
+    std::map<smtk::common::UUID, std::set<int> >& outSelectionValues);
 
-    public slots:
-      void setOutputOptional(int);
-      void clearSelection();
-      void resetSelectionState(bool emitSignal = false);
+public slots:
+  void setOutputOptional(int);
+  void clearSelection();
+  void resetSelectionState(bool emitSignal = false);
 
-    signals:
-      void requestMeshSelection(smtk::attribute::ModelEntityItemPtr pEntItem);
+signals:
+  void requestMeshSelection(smtk::attribute::ModelEntityItemPtr pEntItem);
 
-    protected slots:
-      virtual void updateItemData();
-      virtual void onRequestMeshSelection();
+protected slots:
+  virtual void updateItemData();
+  virtual void onRequestMeshSelection();
 
-    protected:
-      virtual void createWidget();
-      virtual void updateUI();
-      virtual void addMeshOpButtons();
+protected:
+  virtual void createWidget();
+  virtual void updateUI();
+  virtual void addMeshOpButtons();
 
-    private:
+private:
+  qtMeshSelectionItemInternals* Internals;
 
-      qtMeshSelectionItemInternals *Internals;
-
-    }; // class
-  }; // namespace attribute
+}; // class
+}; // namespace attribute
 }; // namespace smtk
 
 #endif

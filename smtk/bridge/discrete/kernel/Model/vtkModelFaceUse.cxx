@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkModelFaceUse.h"
 
 #include "vtkIdList.h"
@@ -36,11 +35,11 @@ vtkModelFaceUse::~vtkModelFaceUse()
 
 bool vtkModelFaceUse::Destroy()
 {
-  if(this->GetModelShellUse())
-    {
+  if (this->GetModelShellUse())
+  {
     vtkErrorMacro("Trying to remove a ModelFaceUse that is still connected to a ModelShellUse.");
     return false;
-    }
+  }
   this->RemoveAllAssociations(vtkModelShellUseType);
 
   return this->DestroyLoopUses();
@@ -49,17 +48,16 @@ bool vtkModelFaceUse::Destroy()
 bool vtkModelFaceUse::DestroyLoopUses()
 {
   vtkModelItemIterator* iter = this->NewIterator(vtkModelLoopUseType);
-  for(iter->Begin();!iter->IsAtEnd();iter->Next())
+  for (iter->Begin(); !iter->IsAtEnd(); iter->Next())
+  {
+    vtkModelLoopUse* loopUse = vtkModelLoopUse::SafeDownCast(iter->GetCurrentItem());
+    if (!loopUse->Destroy())
     {
-    vtkModelLoopUse* loopUse =
-      vtkModelLoopUse::SafeDownCast(iter->GetCurrentItem());
-    if(!loopUse->Destroy())
-      {
       iter->Delete();
       vtkErrorMacro("Problem destroying vtkModelLoopUse.");
       return false;
-      }
     }
+  }
   iter->Delete();
   this->RemoveAllAssociations(vtkModelLoopUseType);
 
@@ -70,8 +68,7 @@ vtkModelShellUse* vtkModelFaceUse::GetModelShellUse()
 {
   vtkModelItemIterator* iter = this->NewIterator(vtkModelShellUseType);
   iter->Begin();
-  vtkModelShellUse* shellUse = vtkModelShellUse::SafeDownCast(
-    iter->GetCurrentItem());
+  vtkModelShellUse* shellUse = vtkModelShellUse::SafeDownCast(iter->GetCurrentItem());
   iter->Delete();
   return shellUse;
 }
@@ -90,10 +87,10 @@ vtkModelLoopUse* vtkModelFaceUse::GetOuterLoopUse()
   vtkModelItemIterator* iter = this->NewIterator(vtkModelLoopUseType);
   vtkModelLoopUse* loopUse = 0;
   iter->Begin();
-  if(!iter->IsAtEnd())
-    {
+  if (!iter->IsAtEnd())
+  {
     loopUse = vtkModelLoopUse::SafeDownCast(iter->GetCurrentItem());
-    }
+  }
   iter->Delete();
   return loopUse;
 }
@@ -115,7 +112,7 @@ void vtkModelFaceUse::Serialize(vtkSerializer* ser)
 
 void vtkModelFaceUse::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }
 
 int vtkModelFaceUse::GetNumberOfLoopUses()
@@ -130,10 +127,10 @@ vtkModelItemIterator* vtkModelFaceUse::NewLoopUseIterator()
 {
   vtkModelItemGenericIterator* loopUses = vtkModelItemGenericIterator::New();
   vtkModelItemIterator* loops = this->NewIterator(vtkModelLoopUseType);
-  for(loops->Begin();!loops->IsAtEnd();loops->Next())
-    {
+  for (loops->Begin(); !loops->IsAtEnd(); loops->Next())
+  {
     loopUses->AddModelItem(loops->GetCurrentItem());
-    }
+  }
   loops->Delete();
   return loopUses;
 }

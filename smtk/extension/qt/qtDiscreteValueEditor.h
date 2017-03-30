@@ -22,34 +22,33 @@ class qtDiscreteValueEditorInternals;
 
 namespace smtk
 {
-  namespace extension
-  {
-    class qtInputsItem;
+namespace extension
+{
+class qtInputsItem;
 
-    class SMTKQTEXT_EXPORT qtDiscreteValueEditor : public QWidget
-    {
-      Q_OBJECT
+class SMTKQTEXT_EXPORT qtDiscreteValueEditor : public QWidget
+{
+  Q_OBJECT
 
-    public:
-      qtDiscreteValueEditor(qtInputsItem *item, int elementIdx, QLayout* childLayout);
-      virtual ~qtDiscreteValueEditor();
-      virtual QSize sizeHint() const;
+public:
+  qtDiscreteValueEditor(qtInputsItem* item, int elementIdx, QLayout* childLayout);
+  virtual ~qtDiscreteValueEditor();
+  virtual QSize sizeHint() const;
 
-    public slots:
-      void onInputValueChanged();
+public slots:
+  void onInputValueChanged();
 
-    protected slots:
-      virtual void updateItemData();
+protected slots:
+  virtual void updateItemData();
 
-    protected:
-      virtual void createWidget();
+protected:
+  virtual void createWidget();
 
-    private:
-      qtDiscreteValueEditorInternals *Internals;
+private:
+  qtDiscreteValueEditorInternals* Internals;
 
-    }; // class
-  }; // namespace attribute
+}; // class
+}; // namespace attribute
 }; // namespace smtk
-
 
 #endif

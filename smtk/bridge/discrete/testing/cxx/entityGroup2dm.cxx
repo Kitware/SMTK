@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
   // basic check info
   if (argc == 1)
   {
-    std::cout<<"Must provide input file as argument"<<std::endl;
+    std::cout << "Must provide input file as argument" << std::endl;
     return 1;
   }
 
@@ -75,9 +75,7 @@ int main(int argc, char* argv[])
   readOp->specification()->findFile("filename")->setValue(std::string(argv[1]));
   std::cout << "Importing " << argv[1] << "\n";
   smtk::model::OperatorResult opresult = readOp->operate();
-  if (
-    opresult->findInt("outcome")->value() !=
-    smtk::model::OPERATION_SUCCEEDED)
+  if (opresult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
   {
     std::cerr << "Read operator failed\n";
     return 1;
@@ -96,11 +94,11 @@ int main(int argc, char* argv[])
   std::cout << "Before creation, group size is: " << groups.size() << endl;
   EntityRefs edges = manager->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::EDGE);
   std::cout << "Edges inside the model is:\n";
-  for (EntityRefs::iterator it = edges.begin();  it != edges.end(); ++it)
+  for (EntityRefs::iterator it = edges.begin(); it != edges.end(); ++it)
   {
-    std::cout << "  " << it->name()<< " \n";
+    std::cout << "  " << it->name() << " \n";
   }
-  std::cout <<std::endl;
+  std::cout << std::endl;
   test(edges.size() == 10, "Expecting 10 edges");
 
   typedef std::vector<Edge> Edges;
@@ -113,14 +111,15 @@ int main(int argc, char* argv[])
   // create entity group operator
   std::cout << "Create the entity group operator\n";
   smtk::model::OperatorPtr egOp = session->op("entity group");
-  if  (!egOp)
+  if (!egOp)
   {
     std::cerr << "No entity group operator!\n";
     return 1;
   }
 
   // Check the optypeItem value
-  std::cout<<"optypeItem current value is: "<< egOp->specification()->findString("Operation")->value() << std::endl;
+  std::cout << "optypeItem current value is: "
+            << egOp->specification()->findString("Operation")->value() << std::endl;
 
   egOp->specification()->findModelEntity("model")->setValue(modelSimple2dm);
   egOp->specification()->findString("group name")->setValue("test edges");
@@ -130,8 +129,7 @@ int main(int argc, char* argv[])
   egOp->specification()->findModelEntity("cell to add")->appendValue(edge2);
 
   smtk::model::OperatorResult egResult = egOp->operate();
-  if (egResult->findInt("outcome")->value() !=
-      smtk::model::OPERATION_SUCCEEDED)
+  if (egResult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
   {
     std::cerr << "Entity group operator failed!\n";
     return 1;
@@ -142,7 +140,7 @@ int main(int argc, char* argv[])
   test(groups.size() == 1, "Expecting 1 group");
 
   std::cout << "The items in groups is:\n";
-  for (EntityRefs::iterator it = groups.begin(); it != groups.end();++it)
+  for (EntityRefs::iterator it = groups.begin(); it != groups.end(); ++it)
   {
     std::cout << "  group name: " << it->name() << "\n";
     smtk::model::Group group = *it;
@@ -156,11 +154,9 @@ int main(int argc, char* argv[])
         std::cout << "    " << name << std::endl;
         //test ((name != "Edge1" && name != "Edge2"),"Edges are not as expeceted!");
       }
-
     }
     test(entries.size() == 2, "Expecting 2 item in the group");
   }
-
 
   return 0;
 }

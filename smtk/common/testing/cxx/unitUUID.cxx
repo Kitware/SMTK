@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 
   // Test casting to a boolean.
   test(!f, "Cast of null UUID to boolean should be false");
-  test( b, "Cast of non-null UUID to boolean should be true");
+  test(b, "Cast of non-null UUID to boolean should be true");
 
   return 0;
 }

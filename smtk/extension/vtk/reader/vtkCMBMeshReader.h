@@ -69,16 +69,20 @@ struct vtkCMBMeshReaderInternals;
 class VTKSMTKREADEREXT_EXPORT vtkCMBMeshReader : public vtkUnstructuredGridAlgorithm
 {
 public:
+  enum vtkCMBMeshDimension
+  {
+    MESH1D = 1,
+    MESH2D = 2,
+    MESH3D = 3
+  };
 
-  enum vtkCMBMeshDimension { MESH1D = 1, MESH2D = 2, MESH3D = 3 };
-
-  static vtkCMBMeshReader *New();
-  vtkTypeMacro(vtkCMBMeshReader,vtkUnstructuredGridAlgorithm);
+  static vtkCMBMeshReader* New();
+  vtkTypeMacro(vtkCMBMeshReader, vtkUnstructuredGridAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // Determine whether the file can be read by this reader.
-  int CanReadFile(const char *);
+  int CanReadFile(const char*);
 
   // Description:
   // Name of the file to be read.
@@ -117,19 +121,15 @@ protected:
   vtkCMBMeshReader();
   ~vtkCMBMeshReader();
 
-  int RequestInformation(vtkInformation *,
-                         vtkInformationVector **,
-                         vtkInformationVector *);
-  int RequestData(vtkInformation *,
-                  vtkInformationVector **,
-                  vtkInformationVector *);
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
 
   int PreviewFile(vtkIdType& ncells, vtkIdType& npts);
-  void ReadCell(int cellType, int npts, vtkUnstructuredGrid* output,
-                vtkIntArray* cellMaterialArray, vtkIdTypeArray* cellIdArray);
+  void ReadCell(int cellType, int npts, vtkUnstructuredGrid* output, vtkIntArray* cellMaterialArray,
+    vtkIdTypeArray* cellIdArray);
   void ReadNode(vtkDoubleArray* dpts, vtkIdTypeArray* nodeIdArray);
 
-  char * FileName;
+  char* FileName;
   bool CreateMeshElementIdArray;
   bool CreateMeshMaterialIdArray;
   bool CreateMeshNodeIdArray;
@@ -137,8 +137,8 @@ protected:
   int MeshDimension;
 
 private:
-  vtkCMBMeshReader(const vtkCMBMeshReader&);  // Not implemented.
-  void operator=(const vtkCMBMeshReader&);  // Not implemented.
+  vtkCMBMeshReader(const vtkCMBMeshReader&); // Not implemented.
+  void operator=(const vtkCMBMeshReader&);   // Not implemented.
 
   vtkCMBMeshReaderInternals* Internals;
 };

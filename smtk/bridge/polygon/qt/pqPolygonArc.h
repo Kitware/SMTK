@@ -32,14 +32,14 @@ class vtkPolygonArcInfo;
 class vtkIdTypeArray;
 class vtkSMProxy;
 
-class  SMTKPOLYGONQTEXT_EXPORT pqPolygonArc : public QObject
+class SMTKPOLYGONQTEXT_EXPORT pqPolygonArc : public QObject
 {
   Q_OBJECT
 
 public:
   //Description: Default constructor that than
   //needs createArc called on once its input for arc shape is created
-  pqPolygonArc(QObject * parent = 0);
+  pqPolygonArc(QObject* parent = 0);
 
   virtual ~pqPolygonArc();
 
@@ -47,20 +47,20 @@ public:
   //Creates the server side arc from the widget poly data that is passed in
   //this method can only be called once per polygonArc.
   //returns true if it created the arc
-  virtual bool createEdge(vtkSMNewWidgetRepresentationProxy *widget);
+  virtual bool createEdge(vtkSMNewWidgetRepresentationProxy* widget);
 
   //Description:
   //Edit this arc representation with the widget proxy passed in
   //this will update the arc state when it is done
-  virtual bool editEdge(vtkSMNewWidgetRepresentationProxy *widget,
-                        const smtk::common::UUID& edgeid);
+  virtual bool editEdge(
+    vtkSMNewWidgetRepresentationProxy* widget, const smtk::common::UUID& edgeid);
 
   //Description:
   //Update the server side arc with the new widget proxy shape
   //returns true if it could update the arc
   //filles the passed in vtkIdTypeArray with arcs that need to be created
-  virtual bool updateArc(vtkSMNewWidgetRepresentationProxy *widget,
-                         vtkIdTypeArray *newlyCreatedArcIds);
+  virtual bool updateArc(
+    vtkSMNewWidgetRepresentationProxy* widget, vtkIdTypeArray* newlyCreatedArcIds);
 
   //Description:
   //Update the server with a connection between this arc
@@ -69,9 +69,9 @@ public:
   //the arcs
   virtual vtkIdType autoConnect(const vtkIdType& secondArcId);
 
-  virtual bool isDefaultConstrained() const{return true;}
+  virtual bool isDefaultConstrained() const { return true; }
   vtkPolygonArcInfo* getArcInfo(int block_index);
-  pqPipelineSource * getSource();
+  pqPipelineSource* getSource();
   void setSource(pqPipelineSource*);
 
   smtk::shared_ptr<smtk::model::Operator> edgeOperator();
@@ -82,19 +82,20 @@ public:
 
   void inheritPolygonRelationships(pqPolygonArc* parent);
 
-  int getPlaneProjectionNormal(){return PlaneProjectionNormal;}
-  double getPlaneProjectionPosition(){return PlaneProjectionPosition;}
+  int getPlaneProjectionNormal() { return PlaneProjectionNormal; }
+  double getPlaneProjectionPosition() { return PlaneProjectionPosition; }
 
-  void setPlaneProjectionNormal(const int &norm)
-      {PlaneProjectionNormal=norm;}
-  void setPlaneProjectionPosition(const double &pos)
-      {PlaneProjectionPosition=pos;}
+  void setPlaneProjectionNormal(const int& norm) { PlaneProjectionNormal = norm; }
+  void setPlaneProjectionPosition(const double& pos) { PlaneProjectionPosition = pos; }
 
   // Overwrite the databounds
   virtual void getDataBounds(double bounds[6]) const
-    { (void)bounds; /*this->getBounds(bounds)*/;}
+  {
+    (void)bounds; /*this->getBounds(bounds)*/
+    ;
+  }
 
-  virtual void setSelectionInput(vtkSMSourceProxy *selectionInput);
+  virtual void setSelectionInput(vtkSMSourceProxy* selectionInput);
   virtual void select();
   virtual void deselect();
 
@@ -114,22 +115,21 @@ signals:
   void activateModel(const smtk::common::UUID& modelid);
 
 protected:
+  vtkPolygonArcInfo* ArcInfo;
 
-  vtkPolygonArcInfo *ArcInfo;
-
-  virtual void setRepresentation(pqDataRepresentation *rep);
-  void updatePlaneProjectionInfo(vtkSMNewWidgetRepresentationProxy *widget);
-  vtkSMProxy* prepareOperation(vtkSMNewWidgetRepresentationProxy *widget);
+  virtual void setRepresentation(pqDataRepresentation* rep);
+  void updatePlaneProjectionInfo(vtkSMNewWidgetRepresentationProxy* widget);
+  vtkSMProxy* prepareOperation(vtkSMNewWidgetRepresentationProxy* widget);
 
   // Indicates the projection normal as lying along the
   // XAxis, YAxis, ZAxis, or Oblique. For X, Y, and Z axes,
   // the projection normal is assumed to be anchored at
   // (0,0,0)
-  int             PlaneProjectionNormal; // for the bounded plane
+  int PlaneProjectionNormal; // for the bounded plane
 
   // Indicates a distance from the origin of the projection
   // normal where the project plane will be placed
-  double          PlaneProjectionPosition;
+  double PlaneProjectionPosition;
 
   double origColor[4];
   double selColor[4];

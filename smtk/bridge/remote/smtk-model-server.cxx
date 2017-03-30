@@ -13,7 +13,7 @@
 #define _WIN32_WINNT 0x0501
 
 // disable conversion from 'size_t' to 'int' warning coming from clpp
-#pragma warning (disable : 4267)
+#pragma warning(disable : 4267)
 #endif
 
 #ifndef SHIBOKEN_SKIP
@@ -28,14 +28,14 @@
 #include "smtk/model/StringData.h"
 
 #ifndef _MSC_VER
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
 #endif
 #include "remus/server/PortNumbers.h"
 #include "remus/server/Server.h"
 #include "remus/server/WorkerFactory.h"
 #ifndef _MSC_VER
-#  pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
 #endif
 
 SMTK_THIRDPARTY_PRE_INCLUDE
@@ -46,8 +46,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 using namespace smtk::model;
 
-int usage(
-  int errCode = 0, const std::string& msg = std::string())
+int usage(int errCode = 0, const std::string& msg = std::string())
 {
   // I. Basic usage info.
   std::cout
@@ -58,8 +57,7 @@ int usage(
     << "  -search=<dir>       Specifies a path to search for RemusWorker (.rw) files\n"
     << "  -client=<host:port> Specifies the host and port to listen for client connections\n"
     << "  -worker=<host:port> Specifies the host and port to listen for worker connections\n"
-    << "\n"
-    ;
+    << "\n";
 
   // II. Print user-specified message and return exit code.
   if (!msg.empty())
@@ -72,27 +70,30 @@ int usage(
 struct ProgOpts
 {
   ProgOpts()
-    :
-      m_printhelp(false), m_clientSet(false), m_workerSet(false),
-      m_clientHost("127.0.0.1"), m_clientPort(remus::server::CLIENT_PORT),
-      m_workerHost("127.0.0.1"), m_workerPort(remus::server::WORKER_PORT)
-    {
+    : m_printhelp(false)
+    , m_clientSet(false)
+    , m_workerSet(false)
+    , m_clientHost("127.0.0.1")
+    , m_clientPort(remus::server::CLIENT_PORT)
+    , m_workerHost("127.0.0.1")
+    , m_workerPort(remus::server::WORKER_PORT)
+  {
     smtk::common::Paths paths;
     this->m_search = paths.workerSearchPaths();
-    }
+  }
 
   void setProgPath(const std::string& selfPath) { this->m_progPath = selfPath; }
   void setPrintHelp() { this->m_printhelp = true; }
   void setClient(const std::string& hostport)
-    {
+  {
     this->convertHostPort(hostport, this->m_clientHost, this->m_clientPort);
     this->m_clientSet = true;
-    }
+  }
   void setWorker(const std::string& hostport)
-    {
+  {
     this->convertHostPort(hostport, this->m_workerHost, this->m_workerPort);
     this->m_workerSet = true;
-    }
+  }
   void clearSearch() { this->m_search.clear(); }
   void addSearch(const std::string& path) { this->m_search.push_back(path); }
 
@@ -107,16 +108,16 @@ struct ProgOpts
   bool workerSet() const { return this->m_workerSet; }
 
   void convertHostPort(const std::string& hostport, std::string& host, int& port)
-    {
+  {
     std::string::size_type pos = hostport.rfind(':');
     if (pos > 0)
       host = hostport.substr(0, pos);
     if (pos + 1 != std::string::npos)
-      {
+    {
       std::stringstream pstr(hostport.substr(pos + 1));
       pstr >> port;
-      }
     }
+  }
 
   bool m_printhelp;
   bool m_clientSet;
@@ -129,45 +130,43 @@ struct ProgOpts
   std::string m_progPath;
 };
 
-int main (int argc, char* argv[])
+int main(int argc, char* argv[])
 {
   ProgOpts opts;
   opts.setProgPath(argv[0]);
   clpp::command_line_parameters_parser args;
   try
-    {
+  {
     args.add_parameter("-no-default-search", &opts, &ProgOpts::clearSearch);
     args.add_parameter("-search", &opts, &ProgOpts::addSearch);
     args.add_parameter("-client", &opts, &ProgOpts::setClient);
     args.add_parameter("-worker", &opts, &ProgOpts::setWorker);
     args.parse(argc, argv);
-    }
+  }
   catch (std::exception& e)
-    {
+  {
     return usage(1, e.what());
-    }
+  }
   if (opts.printHelp())
-    {
+  {
     return usage(0);
-    }
+  }
 
   remus::server::ServerPorts ports;
   if (opts.clientSet() || opts.workerSet())
-    {
+  {
     ports = remus::server::ServerPorts(
-      opts.clientHost(), opts.clientPort(),
-      opts.workerHost(), opts.workerPort());
-    }
+      opts.clientHost(), opts.clientPort(), opts.workerHost(), opts.workerPort());
+  }
 
   boost::shared_ptr<remus::server::WorkerFactory> factory =
-    boost::shared_ptr<remus::server::WorkerFactory>(
-      new remus::server::WorkerFactory);
+    boost::shared_ptr<remus::server::WorkerFactory>(new remus::server::WorkerFactory);
   StringList::const_iterator pathIt;
   for (pathIt = opts.search().begin(); pathIt != opts.search().end(); ++pathIt)
-    {
+  {
     std::cout << "Looking for workers in " << *pathIt << "\n";
     factory->addWorkerSearchDirectory(*pathIt);
-    }
+  }
   factory->setMaxWorkerCount(10);
   remus::common::MeshIOTypeSet mtypes = factory->supportedIOTypes();
   remus::common::MeshIOTypeSet::const_iterator it;
@@ -179,10 +178,11 @@ int main (int argc, char* argv[])
 
   //now that the server is brokering, find out what ports it actually bound too
   ports = server.serverPortInfo();
-  std::cout
-    << "Listening for clients on " << ports.client().host() << ":" << ports.client().port() << "\n"
-    << "Listening for workers on " << ports.worker().host() << ":" << ports.worker().port() << "\n"
-    << "...\n";
+  std::cout << "Listening for clients on " << ports.client().host() << ":" << ports.client().port()
+            << "\n"
+            << "Listening for workers on " << ports.worker().host() << ":" << ports.worker().port()
+            << "\n"
+            << "...\n";
 
   server.waitForBrokeringToFinish();
   return valid ? 0 : 1;

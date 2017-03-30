@@ -24,8 +24,8 @@ class vtkPolyData;
 class VTKPOLYGONOPERATORSEXT_EXPORT vtkPolygonArcProvider : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkPolygonArcProvider *New();
-  vtkTypeMacro(vtkPolygonArcProvider,vtkPolyDataAlgorithm);
+  static vtkPolygonArcProvider* New();
+  vtkTypeMacro(vtkPolygonArcProvider, vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -41,16 +41,15 @@ protected:
   // Description:
   // This is called by the superclass.
   // This is the method you should override.
-  virtual int RequestData(vtkInformation* request,
-                          vtkInformationVector** inputVector,
-                          vtkInformationVector* outputVector);
-  virtual int FillInputPortInformation(int port, vtkInformation *info);
+  virtual int RequestData(vtkInformation* request, vtkInformationVector** inputVector,
+    vtkInformationVector* outputVector);
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
 
   vtkIdType BlockIndex;
 
 private:
-  vtkPolygonArcProvider(const vtkPolygonArcProvider&);  // Not implemented.
-  void operator=(const vtkPolygonArcProvider&);  // Not implemented.
+  vtkPolygonArcProvider(const vtkPolygonArcProvider&); // Not implemented.
+  void operator=(const vtkPolygonArcProvider&);        // Not implemented.
 };
 
 #endif

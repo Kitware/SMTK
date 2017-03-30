@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkCMBModelEdgeMeshOperator.h"
 
 #include "vtkCMBMeshServer.h"
@@ -35,35 +34,33 @@ vtkCMBModelEdgeMeshOperator::~vtkCMBModelEdgeMeshOperator()
 
 void vtkCMBModelEdgeMeshOperator::Operate(vtkCMBMeshWrapper* meshWrapper)
 {
-  if(this->Id == 0)
-    {  // id not set
+  if (this->Id == 0)
+  { // id not set
     this->OperateSucceeded = 0;
     return;
-    }
+  }
   this->OperateSucceeded = 1;
   vtkCMBMeshServer* mesh = meshWrapper->GetMesh();
   vtkModel* model = mesh->GetModel();
   vtkModelEdge* modelEdge =
     vtkModelEdge::SafeDownCast(model->GetModelEntity(vtkModelEdgeType, this->Id));
-  vtkCMBModelEdgeMeshServer* edgeMesh = vtkCMBModelEdgeMeshServer::SafeDownCast(
-    mesh->GetModelEntityMesh(modelEdge));
+  vtkCMBModelEdgeMeshServer* edgeMesh =
+    vtkCMBModelEdgeMeshServer::SafeDownCast(mesh->GetModelEntityMesh(modelEdge));
   edgeMesh->SetLength(this->Length);
-  if(this->BuildModelEntityMesh)
-    {
+  if (this->BuildModelEntityMesh)
+  {
     this->OperateSucceeded =
       edgeMesh->BuildModelEntityMesh(this->MeshHigherDimensionalEntities != 0);
-    }
+  }
   return;
 }
 
 void vtkCMBModelEdgeMeshOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "OperateSucceeded: " << this->OperateSucceeded << endl;
   os << indent << "Id: " << this->Id << endl;
   os << indent << "Length: " << this->Length << endl;
-  os << indent << "BuildModelEntityMesh: "
-     << this->BuildModelEntityMesh << endl;
-  os << indent << "MeshHigherDimensionalEntities: "
-     << this->MeshHigherDimensionalEntities << endl;
+  os << indent << "BuildModelEntityMesh: " << this->BuildModelEntityMesh << endl;
+  os << indent << "MeshHigherDimensionalEntities: " << this->MeshHigherDimensionalEntities << endl;
 }

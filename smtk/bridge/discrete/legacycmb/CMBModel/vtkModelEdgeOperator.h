@@ -25,8 +25,8 @@ class vtkDiscreteModelWrapper;
 class VTKCMBDISCRETEMODEL_EXPORT vtkModelEdgeOperator : public vtkModelEdgeOperatorBase
 {
 public:
-  static vtkModelEdgeOperator * New();
-  vtkTypeMacro(vtkModelEdgeOperator,vtkModelEdgeOperatorBase);
+  static vtkModelEdgeOperator* New();
+  vtkTypeMacro(vtkModelEdgeOperator, vtkModelEdgeOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   using Superclass::Operate;
@@ -50,13 +50,12 @@ protected:
   virtual bool AbleToOperate(vtkDiscreteModelWrapper* ModelWrapper);
 
 private:
-  vtkModelEdgeOperator(const vtkModelEdgeOperator&);  // Not implemented.
-  void operator=(const vtkModelEdgeOperator&);  // Not implemented.
+  vtkModelEdgeOperator(const vtkModelEdgeOperator&); // Not implemented.
+  void operator=(const vtkModelEdgeOperator&);       // Not implemented.
 
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).
   int OperateSucceeded;
-
 };
 
 #endif

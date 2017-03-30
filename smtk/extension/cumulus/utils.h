@@ -20,8 +20,7 @@ class QString;
 
 namespace cumulus
 {
-  QString handleGirderError(QNetworkReply *reply, const QByteArray &bytes);
-
+QString handleGirderError(QNetworkReply* reply, const QByteArray& bytes);
 }
 
 #endif

@@ -13,9 +13,12 @@
 #include "smtk/bridge/multiscale/operators/PythonScript.h"
 #include "vtkObject.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace multiscale {
+namespace smtk
+{
+namespace bridge
+{
+namespace multiscale
+{
 
 /**\brief An operator for executing the AFRL Phase I Demo Dream3D Pipeline.
  *
@@ -39,8 +42,8 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 };
 
-    } // namespace multiscale
-  } // namespace bridge
+} // namespace multiscale
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_multiscale_Dream3DPipeline_h

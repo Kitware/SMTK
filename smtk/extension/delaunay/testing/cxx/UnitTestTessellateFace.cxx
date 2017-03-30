@@ -43,22 +43,21 @@ void removeRefsWithoutTess(smtk::model::EntityRefs& ents)
 {
   smtk::model::EntityIterator it;
   it.traverse(ents.begin(), ents.end(), smtk::model::ITERATE_BARE);
-  std::vector< smtk::model::EntityRef > withoutTess;
+  std::vector<smtk::model::EntityRef> withoutTess;
   for (it.begin(); !it.isAtEnd(); ++it)
+  {
+    if (!it->hasTessellation())
     {
-    if(!it->hasTessellation())
-      {
       withoutTess.push_back(it.current());
-      }
     }
+  }
 
-  typedef std::vector< smtk::model::EntityRef >::const_iterator c_it;
-  for(c_it i=withoutTess.begin(); i < withoutTess.end(); ++i)
-    {
+  typedef std::vector<smtk::model::EntityRef>::const_iterator c_it;
+  for (c_it i = withoutTess.begin(); i < withoutTess.end(); ++i)
+  {
     ents.erase(*i);
-    }
+  }
 }
-
 }
 
 int UnitTestTessellateFace(int, char** const)
@@ -68,8 +67,7 @@ int UnitTestTessellateFace(int, char** const)
   smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
   smtk::mesh::ManagerPtr meshManager = modelManager->meshes();
 
-  smtk::bridge::polygon::Session::Ptr session =
-    smtk::bridge::polygon::Session::create();
+  smtk::bridge::polygon::Session::Ptr session = smtk::bridge::polygon::Session::create();
   modelManager->registerSession(session);
 
   smtk::model::Model model;
@@ -78,7 +76,7 @@ int UnitTestTessellateFace(int, char** const)
     file_path += "/mesh/2d/boxWithHole.smtk";
 
     std::ifstream file(file_path.c_str());
-    if(file.good())
+    if (file.good())
     { //just make sure the file exists
       file.close();
 
@@ -86,10 +84,10 @@ int UnitTestTessellateFace(int, char** const)
 
       op->findFile("filename")->setValue(file_path.c_str());
       smtk::model::OperatorResult result = op->operate();
-      if (result->findInt("outcome")->value() !=  smtk::model::OPERATION_SUCCEEDED)
+      if (result->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
       {
-      std::cerr << "Could not load smtk model!\n";
-      return 1;
+        std::cerr << "Could not load smtk model!\n";
+        return 1;
       }
       model = result->findModelEntity("mesh_created")->value();
     }
@@ -97,12 +95,11 @@ int UnitTestTessellateFace(int, char** const)
 
   {
     smtk::model::EntityRefs currentEnts =
-      modelManager->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(
-        smtk::model::FACE);
+      modelManager->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::FACE);
     removeRefsWithoutTess(currentEnts);
     if (currentEnts.empty())
     {
-      std::cerr<<"No tessellation!"<<std::endl;
+      std::cerr << "No tessellation!" << std::endl;
       return 1;
     }
 
@@ -138,8 +135,7 @@ int UnitTestTessellateFace(int, char** const)
       return 1;
     }
 
-    const smtk::model::Face& tessellatedFace =
-      result->findModelEntity("tess_changed")->value();
+    const smtk::model::Face& tessellatedFace = result->findModelEntity("tess_changed")->value();
     if (face != tessellatedFace)
     {
       std::cerr << "Tessellate face operator did something strange\n";
@@ -153,8 +149,7 @@ int UnitTestTessellateFace(int, char** const)
       return 1;
     }
 
-    if (tess->coords().size() != 8*3 ||
-        tess->conn().size() != 8*4)
+    if (tess->coords().size() != 8 * 3 || tess->conn().size() != 8 * 4)
     {
       std::cerr << "Tessellate face operator did something wrong\n";
       return 1;

@@ -22,9 +22,12 @@
 
 struct cJSON;
 
-namespace smtk {
-  namespace bridge {
-    namespace remote {
+namespace smtk
+{
+namespace bridge
+{
+namespace remote
+{
 
 /**\brief A Remus worker that performs model operations using JSON-RPC.
   *
@@ -48,20 +51,17 @@ public:
   smtkCreateMacro(RemusRPCWorker);
   virtual ~RemusRPCWorker();
 
-  virtual void setOption(
-    const std::string& optName,
-    const std::string& optVal);
+  virtual void setOption(const std::string& optName, const std::string& optVal);
   virtual void clearOptions();
 
 #ifndef SHIBOKEN_SKIP
   void processJob(
-    remus::worker::Worker*& w,
-    remus::worker::Job& jd,
-    remus::proto::JobRequirements& r);
+    remus::worker::Worker*& w, remus::worker::Job& jd, remus::proto::JobRequirements& r);
 #endif // SHIBOKEN_SKIP
 
   smtk::model::ManagerPtr manager();
   void setManager(smtk::model::ManagerPtr);
+
 protected:
   RemusRPCWorker();
 
@@ -74,11 +74,11 @@ protected:
 
 private:
   RemusRPCWorker(const RemusRPCWorker&); // Not implemented.
-  void operator = (const RemusRPCWorker&); // Not implemented.
+  void operator=(const RemusRPCWorker&); // Not implemented.
 };
 
-    } // namespace remote
-  } // namespace bridge
+} // namespace remote
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_remote_RemusRPCWorker_h

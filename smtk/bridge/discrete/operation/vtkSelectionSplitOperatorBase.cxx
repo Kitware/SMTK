@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkSelectionSplitOperatorBase.h"
 
 #include "vtkDiscreteModel.h"
@@ -32,52 +31,50 @@ vtkSelectionSplitOperatorBase::vtkSelectionSplitOperatorBase()
 
 vtkSelectionSplitOperatorBase::~vtkSelectionSplitOperatorBase()
 {
-  if(this->ModifiedPairIDs)
-    {
+  if (this->ModifiedPairIDs)
+  {
     ModifiedPairIDs->Delete();
     ModifiedPairIDs = 0;
-    }
-  if(this->CompletelySelectedIDs)
-    {
+  }
+  if (this->CompletelySelectedIDs)
+  {
     CompletelySelectedIDs->Delete();
     CompletelySelectedIDs = 0;
-    }
+  }
 }
 
-void vtkSelectionSplitOperatorBase::AddModifiedPair(
-  vtkIdType SourceID, vtkIdType TargetID)
+void vtkSelectionSplitOperatorBase::AddModifiedPair(vtkIdType SourceID, vtkIdType TargetID)
 {
-  vtkIdType Ids[2] = {SourceID, TargetID};
+  vtkIdType Ids[2] = { SourceID, TargetID };
   this->ModifiedPairIDs->InsertNextTypedTuple(Ids);
 }
 
-
 bool vtkSelectionSplitOperatorBase::GetModifiedPair(
-  vtkIdType index, vtkIdType & SourceID, vtkIdType & TargetID)
+  vtkIdType index, vtkIdType& SourceID, vtkIdType& TargetID)
 {
-  if(index < 0 || index >= this->ModifiedPairIDs->GetNumberOfTuples())
-    {
+  if (index < 0 || index >= this->ModifiedPairIDs->GetNumberOfTuples())
+  {
     return 0;
-    }
-  SourceID = this->ModifiedPairIDs->GetValue(index*2);
-  TargetID = this->ModifiedPairIDs->GetValue(index*2+1);
+  }
+  SourceID = this->ModifiedPairIDs->GetValue(index * 2);
+  TargetID = this->ModifiedPairIDs->GetValue(index * 2 + 1);
   return 1;
 }
 
 bool vtkSelectionSplitOperatorBase::AbleToOperate(vtkDiscreteModel* Model)
 {
-  if(!Model)
-    {
+  if (!Model)
+  {
     vtkErrorMacro("Passed in a null model.");
     return 0;
-    }
+  }
 
   return 1;
 }
 
 void vtkSelectionSplitOperatorBase::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "ModifiedPairIDs: " << this->ModifiedPairIDs << endl;
   os << indent << "CompletelySelectedIDs: " << this->CompletelySelectedIDs << endl;
 }

@@ -32,7 +32,7 @@ class VTK_EXPORT vtkCMBMeshClient : public vtkCMBMesh
 {
 public:
   static vtkCMBMeshClient* New();
-  vtkTypeMacro(vtkCMBMeshClient,vtkCMBMesh);
+  vtkTypeMacro(vtkCMBMeshClient, vtkCMBMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   void Initialize(vtkModel* model, vtkSMProxy* serverModelProxy);
@@ -43,7 +43,7 @@ public:
   // is still unset.
   virtual bool SetGlobalLength(double length);
 
- // Description:
+  // Description:
   // The global minimum angle allowed for surface elements.
   // If GlobalMinimumAngle is less than or equal to zero, it
   // is still unset.  The maximum value for minimum angle
@@ -55,8 +55,7 @@ public:
   virtual bool BuildModelEntityMeshes();
 
   virtual bool BuildModelMeshRepresentation(
-    const char* fileName, const bool &isAnalysisMesh,
-    vtkSMProxy* meshRepresentionInput=NULL);
+    const char* fileName, const bool& isAnalysisMesh, vtkSMProxy* meshRepresentionInput = NULL);
 
   // Description:
   // Given a vtkModelGeometricEntity, get the associated mesh
@@ -65,8 +64,7 @@ public:
 
   vtkGetObjectMacro(ServerModelProxy, vtkSMProxy);
 
-  vtkSMProxy* GetServerMeshProxy()
-  {return this->ServerMeshProxy;}
+  vtkSMProxy* GetServerMeshProxy() { return this->ServerMeshProxy; }
 
 protected:
   vtkCMBMeshClient();
@@ -93,8 +91,8 @@ protected:
   virtual void ModelEntityBoundaryModified(vtkModelGeometricEntity*);
 
 private:
-  vtkCMBMeshClient(const vtkCMBMeshClient&);  // Not implemented.
-  void operator=(const vtkCMBMeshClient&);  // Not implemented.
+  vtkCMBMeshClient(const vtkCMBMeshClient&); // Not implemented.
+  void operator=(const vtkCMBMeshClient&);   // Not implemented.
 
   vtkSMProxy* ServerMeshProxy;
   vtkSMProxy* ServerModelProxy;

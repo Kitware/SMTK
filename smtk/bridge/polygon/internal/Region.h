@@ -19,9 +19,12 @@
 #include <set>
 #include <vector>
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 /// The set of all regions is a UnionFind (UF) data structure.
 typedef smtk::common::UnionFind<int> RegionIdSet;
@@ -44,10 +47,10 @@ public:
 };
 
 /// A map to hold each region's definition indexed by its UF region ID.
-typedef std::map<RegionIdSet::value_type,smtk::shared_ptr<Region> > RegionDefinitions;
+typedef std::map<RegionIdSet::value_type, smtk::shared_ptr<Region> > RegionDefinitions;
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_polygon_internal_Region_h

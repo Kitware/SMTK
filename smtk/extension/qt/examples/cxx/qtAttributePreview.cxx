@@ -32,48 +32,51 @@
 #include <QWidget>
 
 #ifndef _MSC_VER
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored"-Wunused-parameter"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 #include <boost/lexical_cast.hpp>
 #ifndef _MSC_VER
-#  pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
 #endif
 
 #include <iostream>
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   if (argc < 2)
-    {
+  {
     std::cout << "\n"
-              << "Simple program to load attribute system and display corresponding editor panel" << "\n"
+              << "Simple program to load attribute system and display corresponding editor panel"
+              << "\n"
               << "Usage: qtAttributePreview attribute_filename  [output_filename]"
-              << "  [view_name | view_number]" << "\n"
+              << "  [view_name | view_number]"
+              << "\n"
               << std::endl;
     return -1;
-    }
+  }
 
   // Instantiate and load attribute system
   smtk::attribute::System system;
-  char *inputPath = argv[1];
+  char* inputPath = argv[1];
   std::cout << "Loading simulation file: " << inputPath << std::endl;
   smtk::io::AttributeReader reader;
   smtk::io::Logger inputLogger;
-  bool  err = reader.read(system, inputPath, true, inputLogger);
+  bool err = reader.read(system, inputPath, true, inputLogger);
   if (err)
-    {
-    std::cout << "Error loading simulation file -- exiting" << "\n";
+  {
+    std::cout << "Error loading simulation file -- exiting"
+              << "\n";
     std::cout << inputLogger.convertToString() << std::endl;
     return -2;
-    }
+  }
 
   // If system contains no views, create InstancedView by default
   // assume there is at most one root type view
   smtk::common::ViewPtr root = system.findTopLevelView();
 
   if (!root)
-    {
+  {
     root = smtk::common::View::New("Group", "RootView");
     root->details().setAttribute("TopLevel", "true");
     system.addView(root);
@@ -83,58 +86,53 @@ int main(int argc, char *argv[])
 
     //  Lets add instances of all
     // non-abstract attributE definitions
-    smtk::common::View::Component &viewsComp = root->details().child(viewsIndex);
+    smtk::common::View::Component& viewsComp = root->details().child(viewsIndex);
     std::vector<smtk::attribute::DefinitionPtr> defs;
     std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
     system.findBaseDefinitions(baseDefinitions);
     std::vector<smtk::attribute::DefinitionPtr>::const_iterator baseIter;
 
-    for (baseIter = baseDefinitions.begin();
-         baseIter != baseDefinitions.end();
-         baseIter++)
-      {
+    for (baseIter = baseDefinitions.begin(); baseIter != baseDefinitions.end(); baseIter++)
+    {
       // Add def if not abstract
       if (!(*baseIter)->isAbstract())
-        {
+      {
         //defs.push_back(*baseIter);
-        }
+      }
 
       std::vector<smtk::attribute::DefinitionPtr> derivedDefs;
       system.findAllDerivedDefinitions(*baseIter, true, derivedDefs);
       defs.insert(defs.end(), derivedDefs.begin(), derivedDefs.end());
-      }
+    }
 
     // Instantiate attribute for each concrete definition
     std::vector<smtk::attribute::DefinitionPtr>::const_iterator defIter;
     for (defIter = defs.begin(); defIter != defs.end(); defIter++)
-      {
-      smtk::common::ViewPtr instanced =
-        smtk::common::View::New("Instanced", (*defIter)->type());
+    {
+      smtk::common::ViewPtr instanced = smtk::common::View::New("Instanced", (*defIter)->type());
 
-      smtk::common::View::Component &comp =
+      smtk::common::View::Component& comp =
         instanced->details().addChild("InstancedAttributes").addChild("Att");
       comp.setAttribute("Type", (*defIter)->type());
       comp.setAttribute("Name", (*defIter)->type());
       system.addView(instanced);
-      smtk::attribute::AttributePtr instance =
-        system.createAttribute((*defIter)->type());
+      smtk::attribute::AttributePtr instance = system.createAttribute((*defIter)->type());
       comp.setContents(instance->name());
       viewsComp.addChild("View").setAttribute("Title", (*defIter)->type());
-      }
     }
+  }
 
   smtk::model::ManagerPtr modelManager = system.refModelManager();
 
   // Instantiate Qt application
-  QApplication *app = new QApplication(argc, argv);
+  QApplication* app = new QApplication(argc, argv);
 
   // Instantiate smtk's qtUIManager
-  smtk::extension::qtUIManager *uiManager =
-    new smtk::extension::qtUIManager(system);
+  smtk::extension::qtUIManager* uiManager = new smtk::extension::qtUIManager(system);
 
   // Instantiate empty widget as containter for qtUIManager
-  QWidget *widget = new QWidget();
-  QVBoxLayout *layout = new QVBoxLayout();
+  QWidget* widget = new QWidget();
+  QVBoxLayout* layout = new QVBoxLayout();
   widget->setLayout(layout);
 
   bool useInternalFileBrowser = true;
@@ -143,55 +141,56 @@ int main(int argc, char *argv[])
 
   // Check for input "view" argument
   if (argc <= 3)
-    {
+  {
     // Generate tab group with all views (standard)
     uiManager->setSMTKView(root, widget, useInternalFileBrowser);
-    }
+  }
   else
-    {
+  {
     // Render one view (experimental)
     // First check if argv[3] isa name
     std::string input = argv[3];
     view = system.findView(input);
     if (!view)
-      {
+    {
       std::cout << "ERROR: View \"" << input << "\" not found" << std::endl;
       return -4;
-      }
     }
+  }
 
   if (view)
-    {
+  {
     // Add simple panel (QFrame) for aesthetics
-    QFrame *frame = new QFrame();
+    QFrame* frame = new QFrame();
     frame->setFrameShadow(QFrame::Raised);
     frame->setFrameShape(QFrame::Panel);
     //frame->setStyleSheet("QFrame { background-color: pink; }");
 
-    QVBoxLayout *frameLayout = new QVBoxLayout();
+    QVBoxLayout* frameLayout = new QVBoxLayout();
     frame->setLayout(frameLayout);
     uiManager->setSMTKView(view, frame, useInternalFileBrowser);
     widget->layout()->addWidget(frame);
-    }
+  }
 
   widget->show();
-//  uiManager->rootView()->showAdvanceLevel(0);
+  //  uiManager->rootView()->showAdvanceLevel(0);
   int retcode = app->exec();
   QCoreApplication::processEvents();
   if (argc > 2)
-    {
-    char *outputPath = argv[2];
+  {
+    char* outputPath = argv[2];
     std::cout << "Writing resulting simulation file: " << outputPath << std::endl;
     smtk::io::AttributeWriter writer;
     smtk::io::Logger outputLogger;
-    bool  outputErr = writer.write(system, outputPath, outputLogger);
+    bool outputErr = writer.write(system, outputPath, outputLogger);
     if (outputErr)
-      {
-      std::cout << "Error writing simulation file -- exiting" << "\n"
+    {
+      std::cout << "Error writing simulation file -- exiting"
+                << "\n"
                 << outputLogger.convertToString() << std::endl;
       return -3;
-      }
     }
+  }
 
   // Done
   return retcode;

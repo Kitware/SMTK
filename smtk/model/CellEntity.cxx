@@ -18,9 +18,10 @@
 
 #include <deque>
 
-namespace smtk {
-  namespace model {
-
+namespace smtk
+{
+namespace model
+{
 
 /**\brief Return the model owning this cell (or an invalid entityref if the cell is free).
   *
@@ -28,9 +29,7 @@ namespace smtk {
 Model CellEntity::model() const
 {
   ManagerPtr mgr = this->manager();
-  return Model(
-    mgr,
-    mgr->modelOwningEntity(this->entity()));
+  return Model(mgr, mgr->modelOwningEntity(this->entity()));
 }
 
 /**\brief Report all of the lower-dimensional cells bounding this cell.
@@ -43,44 +42,42 @@ CellEntities CellEntity::boundingCells() const
   CellEntities cells;
   UseEntities useEnts = this->uses<UseEntities>();
   if (!useEnts.empty())
-    {
-    std::deque<ShellEntity> tmp =
-      useEnts[0].shellEntities<std::deque<ShellEntity> >();
+  {
+    std::deque<ShellEntity> tmp = useEnts[0].shellEntities<std::deque<ShellEntity> >();
     ShellEntity shell;
     for (; !tmp.empty(); tmp.pop_front())
-      {
+    {
       shell = tmp.front();
       // Add the shell's use's cells to the output
       UseEntities su = shell.uses<UseEntities>();
       UseEntities::iterator uit;
       for (uit = su.begin(); uit != su.end(); ++uit)
-        {
+      {
         CellEntity ce = uit->cell();
         if (ce.isValid())
           cells.insert(cells.end(), ce);
-        }
+      }
       // Add the shell's inner shells to tmp
-      ShellEntities innerShells =
-        shell.containedShellEntities<ShellEntities>();
+      ShellEntities innerShells = shell.containedShellEntities<ShellEntities>();
       ShellEntities::iterator iit;
       for (iit = innerShells.begin(); iit != innerShells.end(); ++iit)
         tmp.push_back(*iit);
-      }
     }
+  }
   // FIXME: This should be: "else if (this->dimension() > 0)" once
   //        the CGM session properly transcribes use entities.
   if (cells.empty() && this->dimension() > 0)
-    { // Try harder... see if bordantEntities reveals anything
+  { // Try harder... see if bordantEntities reveals anything
     EntityRefs bdys = this->boundaryEntities(this->dimension() - 1);
     EntityRefs::const_iterator it;
     for (it = bdys.begin(); it != bdys.end(); ++it)
-      { // Only add valid cells
+    { // Only add valid cells
       if (it->as<CellEntity>().isValid())
-        {
+      {
         cells.insert(cells.end(), *it);
-        }
       }
     }
+  }
   return cells; // or CellEntities(cells.begin(), cells.end()); if cells is a set.
 }
 
@@ -108,22 +105,20 @@ UseEntities CellEntity::boundingCellUses(Orientation orientation) const
     return result;
   // We have a properly-oriented use; ask for all of its loops, appending
   // each loop's HAS_USE relations to result as we go.
-  std::deque<ShellEntity> tmp =
-    cellUse.shellEntities<std::deque<ShellEntity> >();
+  std::deque<ShellEntity> tmp = cellUse.shellEntities<std::deque<ShellEntity> >();
   ShellEntity shell;
   for (; !tmp.empty(); tmp.pop_front())
-    {
+  {
     shell = tmp.front();
     // Add the shell's use's cells to the output
     UseEntities su = shell.uses<UseEntities>();
     result.insert(result.end(), su.begin(), su.end());
     // Add the shell's inner shells to tmp
-    ShellEntities innerShells =
-      shell.containedShellEntities<ShellEntities>();
+    ShellEntities innerShells = shell.containedShellEntities<ShellEntities>();
     ShellEntities::iterator iit;
     for (iit = innerShells.begin(); iit != innerShells.end(); ++iit)
       tmp.push_back(*iit);
-    }
+  }
   return result;
 }
 
@@ -140,24 +135,24 @@ ShellEntity CellEntity::findShellEntityContainingUse(const UseEntity& bdyUse)
 {
   UseEntities cellUses = this->uses<smtk::model::UseEntities>();
   for (UseEntities::iterator uit = cellUses.begin(); uit != cellUses.end(); ++uit)
-    {
+  {
     ShellEntities shellsOfUse = uit->boundingShellEntities<ShellEntities>();
     for (ShellEntities::iterator sit = shellsOfUse.begin(); sit != shellsOfUse.end(); ++sit)
-      {
+    {
       if (sit->contains(bdyUse))
-        {
+      {
         return *sit;
-        }
+      }
       ShellEntities innerShells = sit->containedShellEntities<ShellEntities>();
       for (ShellEntities::iterator iit = innerShells.begin(); iit != innerShells.end(); ++iit)
-        {
+      {
         if (iit->contains(bdyUse))
-          {
+        {
           return *iit;
-          }
         }
       }
     }
+  }
   // Didn't find anything. Return an invalid shell:
   return ShellEntity();
 }
@@ -173,13 +168,13 @@ ShellEntities CellEntity::findShellEntitiesContainingCell(const CellEntity& cell
   ShellEntities result;
   UseEntities uses = cell.uses<UseEntities>();
   for (UseEntities::iterator it = uses.begin(); it != uses.end(); ++it)
-    {
+  {
     ShellEntity shellEnt = this->findShellEntityContainingUse(*it);
     if (shellEnt.isValid())
-      {
+    {
       result.push_back(shellEnt);
-      }
     }
+  }
   return result;
 }
 
@@ -198,5 +193,5 @@ ShellEntities CellEntity::findShellEntitiesContainingCell(const CellEntity& cell
  * Each sense of a cell has its own use.
  */
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

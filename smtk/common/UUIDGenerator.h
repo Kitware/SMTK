@@ -12,8 +12,10 @@
 
 #include "smtk/common/UUID.h"
 
-namespace smtk {
-  namespace common {
+namespace smtk
+{
+namespace common
+{
 
 class SMTKCORE_EXPORT UUIDGenerator
 {
@@ -29,7 +31,7 @@ protected:
   Internal* P;
 };
 
-  } // namespace common
+} // namespace common
 } // namespace smtk
 
 #endif // __smtk_common_UUIDGenerator_h

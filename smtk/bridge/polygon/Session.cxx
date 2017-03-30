@@ -41,9 +41,12 @@
 using smtk::model::EntityRef;
 using namespace smtk::common;
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 /// Default constructor.
 Session::Session()
@@ -51,11 +54,11 @@ Session::Session()
 {
   this->initializeOperatorSystem(Session::s_operators);
   // Lets rename the export model operator definition  to be save model in terms of its label
-  auto attDef  = this->m_operatorSys->findDefinition("save smtk model");
+  auto attDef = this->m_operatorSys->findDefinition("save smtk model");
   if (attDef)
-    {
+  {
     attDef->setLabel(" Model - Save");
-    }
+  }
 }
 
 /// Virtual destructor. Here because Session overrides virtual methods from Session.
@@ -70,15 +73,13 @@ smtk::model::SessionInfoBits Session::allSupportedInformation() const
 }
 
 smtk::model::SessionInfoBits Session::transcribeInternal(
-  const smtk::model::EntityRef& entity,
-  smtk::model::SessionInfoBits requestedInfo,
-  int depth)
+  const smtk::model::EntityRef& entity, smtk::model::SessionInfoBits requestedInfo, int depth)
 {
-  if(entity.isModel())
-    {
+  if (entity.isModel())
+  {
     smtk::model::EntityRef mutableEnt(entity);
     mutableEnt.setIntegerProperty(SMTK_GEOM_STYLE_PROP, smtk::model::DISCRETE);
-    }
+  }
 
   (void)requestedInfo;
   (void)depth;
@@ -86,8 +87,7 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
 }
 
 void Session::addStorage(
-  const smtk::common::UUID& uid,
-  smtk::bridge::polygon::internal::entity::Ptr s)
+  const smtk::common::UUID& uid, smtk::bridge::polygon::internal::entity::Ptr s)
 {
   this->m_storage[uid] = s;
 }
@@ -111,23 +111,23 @@ bool Session::removeFaceReferences(const smtk::model::Face& face)
   smtk::model::VertexSet fv;
   smtk::model::Edges::iterator eit;
   for (eit = fe.begin(); eit != fe.end(); ++eit)
-    {
+  {
     smtk::model::Vertices ev = eit->vertices();
     fv.insert(ev.begin(), ev.end());
-    }
+  }
   for (smtk::model::VertexSet::iterator vit = fv.begin(); vit != fv.end(); ++vit)
-    {
+  {
     internal::vertex::Ptr vrec = this->findStorage<internal::vertex>(vit->entity());
     // If removeFaceAdjacencies returns 0, it means the face was not
     // listed at that vertex. That is not OK:
     if (!vrec || vrec->removeFaceAdjacencies(face.entity()) <= 0)
-      {
-      smtkErrorMacro(this->log(),
-        "Face " << face.name() << " (" << face.entity() << ") " <<
-        " not bounded by " << vit->name() << " (" << vit->entity() << ")");
+    {
+      smtkErrorMacro(this->log(), "Face " << face.name() << " (" << face.entity() << ") "
+                                          << " not bounded by " << vit->name() << " ("
+                                          << vit->entity() << ")");
       ok = false;
-      }
     }
+  }
   return ok;
 }
 
@@ -141,16 +141,16 @@ bool Session::removeEdgeReferences(const smtk::model::Edge& edge)
 {
   smtk::model::Vertices ev = edge.vertices();
   for (smtk::model::Vertices::iterator vit = ev.begin(); vit != ev.end(); ++vit)
-    {
+  {
     internal::vertex::Ptr vrec = this->findStorage<internal::vertex>(vit->entity());
     // If removeIncidentEdge returns 0, it means the edge was not
     // incident to a vertex supposedly bounding it. That is not OK:
     if (!vrec || vrec->removeIncidentEdge(edge.entity()) <= 0)
-      {
+    {
       std::cerr << "Edge " << edge.name() << " not incident to " << vit->name() << "\n";
       return false;
-      }
     }
+  }
   return this->removeStorage(edge.entity());
 }
 
@@ -163,24 +163,25 @@ bool Session::removeVertReferences(const smtk::model::Vertex& v)
 {
   internal::vertex::Ptr vrec = this->findStorage<internal::vertex>(v.entity());
   if (!vrec || vrec->edgesBegin() != vrec->edgesEnd())
-    {
-    smtkWarningMacro(this->log(), "Could not remove vertex " << v.name() << " because it is invalid or has incident edges.");
+  {
+    smtkWarningMacro(this->log(), "Could not remove vertex "
+        << v.name() << " because it is invalid or has incident edges.");
     return false;
-    }
+  }
   internal::pmodel* pmod = vrec->parentAs<internal::pmodel>();
   if (pmod)
-    {
+  {
     pmod->removeVertexLookup(vrec->point(), v.entity());
-    }
+  }
   return this->removeStorage(v.entity());
 }
 
 smtk::model::SessionIOPtr Session::createIODelegate(const std::string& format)
 {
   if (format == "json")
-    {
+  {
     return SessionIOJSON::create();
-    }
+  }
   return NULL;
 }
 
@@ -209,17 +210,13 @@ internal::EntityIdToPtr::const_iterator Session::endStorage() const
   return this->m_storage.end();
 }
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk
 
 #include "smtk/bridge/polygon/Session_json.h" // For Session_json
 smtkImplementsModelingKernel(
-  SMTKPOLYGONSESSION_EXPORT,
-  polygon,
-  Session_json,
-  smtk::model::SessionHasNoStaticSetup,
-  smtk::bridge::polygon::Session,
-  true /* inherit "universal" operators */
-);
+  SMTKPOLYGONSESSION_EXPORT, polygon, Session_json, smtk::model::SessionHasNoStaticSetup,
+  smtk::bridge::polygon::Session, true /* inherit "universal" operators */
+  );
 smtkComponentInitMacro(smtk_polygon_create_model_operator);

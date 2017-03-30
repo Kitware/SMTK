@@ -24,36 +24,47 @@
 
 #include <vector>
 
-class VTKSMTKDISCRETEMODEL_EXPORT vtkModelGeneratedGridRepresentation : public vtkModelGridRepresentation
+class VTKSMTKDISCRETEMODEL_EXPORT vtkModelGeneratedGridRepresentation
+  : public vtkModelGridRepresentation
 {
 public:
-  vtkTypeMacro(vtkModelGeneratedGridRepresentation,vtkModelGridRepresentation);
+  vtkTypeMacro(vtkModelGeneratedGridRepresentation, vtkModelGridRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  virtual void WriteMeshToFile()=0;
+  virtual void WriteMeshToFile() = 0;
 
   // Description:
   // Get cellIds or area given a group id of model entities.
   // Meant for 2D models with triangle meshes.
-  virtual bool GetGroupFacetIds(vtkDiscreteModel* vtkNotUsed(model),int vtkNotUsed(groupId),
-                                std::vector<int>& vtkNotUsed(cellIds)){return false;}
-  virtual bool GetGroupFacetsArea(vtkDiscreteModel* vtkNotUsed(model),int vtkNotUsed(groupId),
-                                  double& vtkNotUsed(area))
-  {return false;}
+  virtual bool GetGroupFacetIds(vtkDiscreteModel* vtkNotUsed(model), int vtkNotUsed(groupId),
+    std::vector<int>& vtkNotUsed(cellIds))
+  {
+    return false;
+  }
+  virtual bool GetGroupFacetsArea(
+    vtkDiscreteModel* vtkNotUsed(model), int vtkNotUsed(groupId), double& vtkNotUsed(area))
+  {
+    return false;
+  }
 
   // Description:
   // Get cell and point information from the analysis grid.
   virtual bool GetCellPointIds(int vtkNotUsed(cellId), std::vector<int>& vtkNotUsed(pointIds))
-  {return false;}
+  {
+    return false;
+  }
   virtual bool GetPointLocation(int vtkNotUsed(pointId), std::vector<double>& vtkNotUsed(coords))
-  {return false;}
+  {
+    return false;
+  }
 
 protected:
   vtkModelGeneratedGridRepresentation();
   virtual ~vtkModelGeneratedGridRepresentation();
 
 private:
-  vtkModelGeneratedGridRepresentation(const vtkModelGeneratedGridRepresentation&);  // Not implemented.
-  void operator=(const vtkModelGeneratedGridRepresentation&);  // Not implemented.
+  vtkModelGeneratedGridRepresentation(
+    const vtkModelGeneratedGridRepresentation&);              // Not implemented.
+  void operator=(const vtkModelGeneratedGridRepresentation&); // Not implemented.
 };
 #endif

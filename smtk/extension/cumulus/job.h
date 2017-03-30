@@ -27,9 +27,9 @@ class Job
 {
 public:
   Job();
-  Job(const QString &id, const QString &name, const QString &status,
-      const QList<QString> &outputFolderIds, const QString &machine);
-  Job(const Job &job);
+  Job(const QString& id, const QString& name, const QString& status,
+    const QList<QString>& outputFolderIds, const QString& machine);
+  Job(const Job& job);
 
   ~Job();
   QString id() const { return this->m_id; };
@@ -39,7 +39,8 @@ public:
   QList<QString> outputFolderIds() const { return this->m_outputFolderIds; };
   bool isValid() const { return !this->m_id.isEmpty(); };
 
-  static Job fromJSON(cJSON *obj);
+  static Job fromJSON(cJSON* obj);
+
 private:
   QString m_id;
   QString m_name;

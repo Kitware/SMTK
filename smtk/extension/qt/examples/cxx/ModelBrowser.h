@@ -18,11 +18,13 @@
 class QTreeView;
 class QModelIndex;
 
-namespace smtk {
-  namespace extension {
-    class QEntityItemModel;
-    class QEntityItemDelegate;
-  }
+namespace smtk
+{
+namespace extension
+{
+class QEntityItemModel;
+class QEntityItemDelegate;
+}
 }
 
 class ModelBrowser : public QWidget
@@ -34,11 +36,8 @@ public:
 
   QTreeView* tree() const;
 
-  void setup(
-    smtk::model::ManagerPtr s,
-    smtk::extension::QEntityItemModel* qm,
-    smtk::extension::QEntityItemDelegate* qd,
-    smtk::model::DescriptivePhrasePtr root);
+  void setup(smtk::model::ManagerPtr s, smtk::extension::QEntityItemModel* qm,
+    smtk::extension::QEntityItemDelegate* qd, smtk::model::DescriptivePhrasePtr root);
 
 public slots:
   virtual void addGroup();

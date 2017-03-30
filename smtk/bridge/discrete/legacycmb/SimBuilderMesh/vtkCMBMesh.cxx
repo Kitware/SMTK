@@ -58,95 +58,91 @@ vtkModel* vtkCMBMesh::GetModel()
 }
 
 void vtkCMBMesh::ModelGeometricEntityChanged(
-  vtkObject * /*caller*/, unsigned long event, void *cData, void *callData)
+  vtkObject* /*caller*/, unsigned long event, void* cData, void* callData)
 {
   vtkCMBMesh* cmbMesh = static_cast<vtkCMBMesh*>(cData);
   vtkModel* model = cmbMesh->Model;
-  if(event == ModelGeometricEntitySplit)
-    {
+  if (event == ModelGeometricEntitySplit)
+  {
     vtkSplitEventData* splitEventData = static_cast<vtkSplitEventData*>(callData);
-    if(model->GetModelDimension() == 2)
-      {
+    if (model->GetModelDimension() == 2)
+    {
       cmbMesh->ModelEdgeSplit(splitEventData);
-      }
+    }
     else
-      {
+    {
       vtkGenericWarningMacro("Model face split not implemented yet.")
-      }
     }
-  else if(event == ModelGeometricEntitiesAboutToMerge)
-    {
+  }
+  else if (event == ModelGeometricEntitiesAboutToMerge)
+  {
     vtkMergeEventData* mergeEventData = static_cast<vtkMergeEventData*>(callData);
-    if(model->GetModelDimension() == 2)
-      {
-      cmbMesh->ModelEdgeMerge(mergeEventData);
-      }
-    else
-      {
-      vtkGenericWarningMacro("Model face merge not implemented yet.")
-      }
-    }
-  else if(event == ModelGeometricEntityBoundaryModified)
+    if (model->GetModelDimension() == 2)
     {
-    cmbMesh->ModelEntityBoundaryModified(static_cast<vtkModelGeometricEntity*>(callData));
+      cmbMesh->ModelEdgeMerge(mergeEventData);
     }
+    else
+    {
+      vtkGenericWarningMacro("Model face merge not implemented yet.")
+    }
+  }
+  else if (event == ModelGeometricEntityBoundaryModified)
+  {
+    cmbMesh->ModelEntityBoundaryModified(static_cast<vtkModelGeometricEntity*>(callData));
+  }
 }
 
-bool vtkCMBMesh::SetLocalMeshLength(
-  vtkCollection* selectedMeshEntities, double localLen)
+bool vtkCMBMesh::SetLocalMeshLength(vtkCollection* selectedMeshEntities, double localLen)
 {
-  if(!selectedMeshEntities || selectedMeshEntities->GetNumberOfItems()==0)
-    {
+  if (!selectedMeshEntities || selectedMeshEntities->GetNumberOfItems() == 0)
+  {
     return false;
-    }
+  }
   bool res = true;
-  for(int i=0; i<selectedMeshEntities->GetNumberOfItems(); i++)
-    {
+  for (int i = 0; i < selectedMeshEntities->GetNumberOfItems(); i++)
+  {
     vtkSmartPointer<vtkCMBModelEntityMesh> meshEntity =
-      vtkCMBModelEntityMesh::SafeDownCast(
-      selectedMeshEntities->GetItemAsObject(i));
-    if(meshEntity)
-      {
+      vtkCMBModelEntityMesh::SafeDownCast(selectedMeshEntities->GetItemAsObject(i));
+    if (meshEntity)
+    {
       res = res && meshEntity->SetLocalLength(localLen);
-      }
     }
+  }
   return res;
 }
 
-bool vtkCMBMesh::SetLocalMeshMinimumAngle(
-  vtkCollection* selectedMeshEntities, double localMinAngle)
+bool vtkCMBMesh::SetLocalMeshMinimumAngle(vtkCollection* selectedMeshEntities, double localMinAngle)
 {
-  if(!selectedMeshEntities || selectedMeshEntities->GetNumberOfItems()==0)
-    {
+  if (!selectedMeshEntities || selectedMeshEntities->GetNumberOfItems() == 0)
+  {
     return false;
-    }
+  }
   bool res = true;
-  for(int i=0; i<selectedMeshEntities->GetNumberOfItems(); i++)
-    {
+  for (int i = 0; i < selectedMeshEntities->GetNumberOfItems(); i++)
+  {
     vtkSmartPointer<vtkCMBModelFaceMesh> faceMesh =
-      vtkCMBModelFaceMesh::SafeDownCast(
-      selectedMeshEntities->GetItemAsObject(i));
-    if(faceMesh)
-      {
+      vtkCMBModelFaceMesh::SafeDownCast(selectedMeshEntities->GetItemAsObject(i));
+    if (faceMesh)
+    {
       res = res && faceMesh->SetLocalMinimumAngle(localMinAngle);
-      }
     }
+  }
   return res;
 }
 
 void vtkCMBMesh::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 
   os << indent << "Visible: " << this->Visible << "\n";
   os << indent << "GlobalLength: " << this->GlobalLength << "\n";
   os << indent << "GlobalMinimumAngle: " << this->GlobalMinimumAngle << "\n";
-  if(this->Model)
-    {
+  if (this->Model)
+  {
     os << indent << "Model: " << this->Model << "\n";
-    }
+  }
   else
-    {
+  {
     os << indent << "Model: (NULL)\n";
-    }
+  }
 }

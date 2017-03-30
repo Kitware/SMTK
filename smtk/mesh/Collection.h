@@ -33,17 +33,24 @@
 
 #include <vector>
 
-namespace smtk {
+namespace smtk
+{
 
-  //forward declare friends
-  namespace io {
-    class ReadMesh;
-  namespace mesh {
-    class MeshIOMoab;
-  }
-  }
-  namespace model { class EntityIterator; }
-  namespace mesh {
+//forward declare friends
+namespace io
+{
+class ReadMesh;
+namespace mesh
+{
+class MeshIOMoab;
+}
+}
+namespace model
+{
+class EntityIterator;
+}
+namespace mesh
+{
 
 //Flyweight interface around a moab database of meshes. When constructed
 //becomes registered with a manager with a weak relationship.
@@ -55,15 +62,13 @@ class SMTKCORE_EXPORT Collection : public smtk::enable_shared_from_this<Collecti
 #ifndef SHIBOKEN_SKIP
   //Construct a valid collection that is associated with a manager
   //but has an empty interface that can be populated
-  Collection(const smtk::common::UUID& collectionID,
-             smtk::mesh::ManagerPtr mngr );
+  Collection(const smtk::common::UUID& collectionID, smtk::mesh::ManagerPtr mngr);
 
   //Construct a valid collection that has an associated interface
   //in the future we need a better way to make collections refer
   //to different mesh interfaces
-  Collection( const smtk::common::UUID& collectionID,
-              smtk::mesh::InterfacePtr interface,
-              smtk::mesh::ManagerPtr mngr);
+  Collection(const smtk::common::UUID& collectionID, smtk::mesh::InterfacePtr interface,
+    smtk::mesh::ManagerPtr mngr);
 #endif
 
 public:
@@ -105,7 +110,9 @@ public:
   //By default this is set to be the same as the readLocation()
   void writeLocation(const smtk::common::FileLocation& path);
   void writeLocation(const std::string& path)
-  { this->writeLocation(smtk::common::FileLocation(path)); }
+  {
+    this->writeLocation(smtk::common::FileLocation(path));
+  }
   const smtk::common::FileLocation& writeLocation() const;
 
   //clear both the read and write locations for the collection. This
@@ -120,7 +127,6 @@ public:
   //Note: all names will be all lower-case
   std::string interfaceName() const;
 
-
   //fetch the entity id for this uuid
   const smtk::common::UUID entity() const;
 
@@ -130,61 +136,68 @@ public:
   std::size_t numberOfMeshes() const;
 
   //Queries on the full Collection
-  smtk::mesh::TypeSet   types() const;
-  smtk::mesh::MeshSet   meshes( ) const; //all meshes
-  smtk::mesh::CellSet   cells( ) const; //all cells
-  smtk::mesh::PointSet  points( ) const; //all points
+  smtk::mesh::TypeSet types() const;
+  smtk::mesh::MeshSet meshes() const;  //all meshes
+  smtk::mesh::CellSet cells() const;   //all cells
+  smtk::mesh::PointSet points() const; //all points
 
   //todo:
   //find all cells of a given dimension that are attached to ?
   //smtk::mesh::CellSet   connectivity( smtk::mesh::DimensionType dim );
 
-  smtk::mesh::PointConnectivity pointConnectivity( ) const; //all point connectivity info for all cells
+  smtk::mesh::PointConnectivity pointConnectivity()
+    const; //all point connectivity info for all cells
 
   //For any mesh set that has a name we return that name. It is possible
   //that the we have un-named mesh sets.
-  std::vector< std::string > meshNames() const;
+  std::vector<std::string> meshNames() const;
 
   //Find all meshes that have at least one cell of the given type.
   //This means that you can get back meshes of mixed dimension
   //type.
-  smtk::mesh::MeshSet   meshes( smtk::mesh::DimensionType dim ) const;
-  smtk::mesh::MeshSet   meshes( const smtk::mesh::Domain& d ) const;
-  smtk::mesh::MeshSet   meshes( const smtk::mesh::Dirichlet& d ) const;
-  smtk::mesh::MeshSet   meshes( const smtk::mesh::Neumann& n ) const;
-  smtk::mesh::MeshSet   meshes( const std::string& name ) const;
+  smtk::mesh::MeshSet meshes(smtk::mesh::DimensionType dim) const;
+  smtk::mesh::MeshSet meshes(const smtk::mesh::Domain& d) const;
+  smtk::mesh::MeshSet meshes(const smtk::mesh::Dirichlet& d) const;
+  smtk::mesh::MeshSet meshes(const smtk::mesh::Neumann& n) const;
+  smtk::mesh::MeshSet meshes(const std::string& name) const;
 
   //find a cells of a given type or a collection of types
-  smtk::mesh::CellSet   cells( smtk::mesh::CellType cellType ) const;
-  smtk::mesh::CellSet   cells( smtk::mesh::CellTypes cellTypes ) const;
-  smtk::mesh::CellSet   cells( smtk::mesh::DimensionType dim ) const;
+  smtk::mesh::CellSet cells(smtk::mesh::CellType cellType) const;
+  smtk::mesh::CellSet cells(smtk::mesh::CellTypes cellTypes) const;
+  smtk::mesh::CellSet cells(smtk::mesh::DimensionType dim) const;
 
   // Queries by a model Cursor
-  smtk::mesh::TypeSet   findAssociatedTypes( const smtk::model::EntityRef& eref ) const;
-  smtk::mesh::MeshSet   findAssociatedMeshes( const smtk::model::EntityRef& eref ) const;
-  smtk::mesh::MeshSet   findAssociatedMeshes( const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim ) const;
-  smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref ) const;
-  smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType ) const;
-  smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim ) const;
+  smtk::mesh::TypeSet findAssociatedTypes(const smtk::model::EntityRef& eref) const;
+  smtk::mesh::MeshSet findAssociatedMeshes(const smtk::model::EntityRef& eref) const;
+  smtk::mesh::MeshSet findAssociatedMeshes(
+    const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim) const;
+  smtk::mesh::CellSet findAssociatedCells(const smtk::model::EntityRef& eref) const;
+  smtk::mesh::CellSet findAssociatedCells(
+    const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType) const;
+  smtk::mesh::CellSet findAssociatedCells(
+    const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim) const;
 
-  smtk::mesh::TypeSet   findAssociatedTypes( const smtk::common::UUID& id ) const;
-  smtk::mesh::MeshSet   findAssociatedMeshes( const smtk::common::UUID& id ) const;
-  smtk::mesh::MeshSet   findAssociatedMeshes( const smtk::common::UUID& id, smtk::mesh::DimensionType dim ) const;
-  smtk::mesh::CellSet   findAssociatedCells( const smtk::common::UUID& id ) const;
-  smtk::mesh::CellSet   findAssociatedCells( const smtk::common::UUID& id, smtk::mesh::CellType cellType ) const;
-  smtk::mesh::CellSet   findAssociatedCells( const smtk::common::UUID& id, smtk::mesh::DimensionType dim ) const;
+  smtk::mesh::TypeSet findAssociatedTypes(const smtk::common::UUID& id) const;
+  smtk::mesh::MeshSet findAssociatedMeshes(const smtk::common::UUID& id) const;
+  smtk::mesh::MeshSet findAssociatedMeshes(
+    const smtk::common::UUID& id, smtk::mesh::DimensionType dim) const;
+  smtk::mesh::CellSet findAssociatedCells(const smtk::common::UUID& id) const;
+  smtk::mesh::CellSet findAssociatedCells(
+    const smtk::common::UUID& id, smtk::mesh::CellType cellType) const;
+  smtk::mesh::CellSet findAssociatedCells(
+    const smtk::common::UUID& id, smtk::mesh::DimensionType dim) const;
 
-  smtk::mesh::TypeSet   findAssociatedTypes( smtk::model::EntityIterator& refIt ) const;
-  smtk::mesh::MeshSet   findAssociatedMeshes( smtk::model::EntityIterator& refIt ) const;
-  smtk::mesh::MeshSet   findAssociatedMeshes( smtk::model::EntityIterator& refIt,
-                                              smtk::mesh::DimensionType dim ) const;
-  smtk::mesh::CellSet   findAssociatedCells( smtk::model::EntityIterator& refIt ) const;
-  smtk::mesh::CellSet   findAssociatedCells( smtk::model::EntityIterator& refIt,
-                                             smtk::mesh::CellType cellType ) const;
-  smtk::mesh::CellSet   findAssociatedCells( smtk::model::EntityIterator& refIt,
-                                             smtk::mesh::DimensionType dim ) const;
+  smtk::mesh::TypeSet findAssociatedTypes(smtk::model::EntityIterator& refIt) const;
+  smtk::mesh::MeshSet findAssociatedMeshes(smtk::model::EntityIterator& refIt) const;
+  smtk::mesh::MeshSet findAssociatedMeshes(
+    smtk::model::EntityIterator& refIt, smtk::mesh::DimensionType dim) const;
+  smtk::mesh::CellSet findAssociatedCells(smtk::model::EntityIterator& refIt) const;
+  smtk::mesh::CellSet findAssociatedCells(
+    smtk::model::EntityIterator& refIt, smtk::mesh::CellType cellType) const;
+  smtk::mesh::CellSet findAssociatedCells(
+    smtk::model::EntityIterator& refIt, smtk::mesh::DimensionType dim) const;
 
-  bool setAssociation( const smtk::model::EntityRef& eref, const smtk::mesh::MeshSet& meshset );
+  bool setAssociation(const smtk::model::EntityRef& eref, const smtk::mesh::MeshSet& meshset);
 
   //determine if this collection has any associations to a model
   bool hasAssociations() const;
@@ -206,99 +219,112 @@ public:
   //we will return an empty MeshSet.
   //Asking to create a MeshSet from a CellSet that is empty will fail, and
   //we will return an empty MeshSet.
-  smtk::mesh::MeshSet createMesh( const smtk::mesh::CellSet& cells );
+  smtk::mesh::MeshSet createMesh(const smtk::mesh::CellSet& cells);
 
   // Deletion of Items
   //given a collection of meshes this will delete all meshes and any cell or vert
   //that is not referenced by any other mesh
   //This will invalidate any smtk::mesh::MeshSet that contains a reference to
   //one of the meshes that has been deleted.
-  bool removeMeshes( smtk::mesh::MeshSet& meshesToDelete );
+  bool removeMeshes(smtk::mesh::MeshSet& meshesToDelete);
 
   // Domain Queries
   //get all the current domains
-  std::vector< smtk::mesh::Domain > domains() const;
+  std::vector<smtk::mesh::Domain> domains() const;
 
   //get the meshes with a given domain value. If no meshes have
   //this domain value the result will be empty
-  smtk::mesh::MeshSet domainMeshes( const smtk::mesh::Domain& m ) const;
+  smtk::mesh::MeshSet domainMeshes(const smtk::mesh::Domain& m) const;
 
   //Assign a given domain to a collection of meshes. Overwrites
   //any existing domain value
-  bool setDomainOnMeshes(const smtk::mesh::MeshSet& meshes,
-                         const smtk::mesh::Domain& m);
+  bool setDomainOnMeshes(const smtk::mesh::MeshSet& meshes, const smtk::mesh::Domain& m);
 
   // Dirichlet Queries
   //get all the current dirichlet on the points of the mesh
-  std::vector< smtk::mesh::Dirichlet > dirichlets() const;
+  std::vector<smtk::mesh::Dirichlet> dirichlets() const;
 
   //get the meshes with a given dirichlet value. If no meshes have
   //this dirichlet value the result will be empty.
   //Generally Dirichlet meshes only contain vertices
-  smtk::mesh::MeshSet dirichletMeshes( const smtk::mesh::Dirichlet& d ) const;
+  smtk::mesh::MeshSet dirichletMeshes(const smtk::mesh::Dirichlet& d) const;
 
   //Assign a given dirichlet to a collection of meshes. Overwrites
   //any existing dirichlet value
   //Generally Dirichlet meshes only contain vertices
-  bool setDirichletOnMeshes(const smtk::mesh::MeshSet& meshes,
-                            const smtk::mesh::Dirichlet& d);
+  bool setDirichletOnMeshes(const smtk::mesh::MeshSet& meshes, const smtk::mesh::Dirichlet& d);
 
   // Neumann Queries
   //get all the current dirichlet on the points of the mesh
-  std::vector< smtk::mesh::Neumann > neumanns() const;
+  std::vector<smtk::mesh::Neumann> neumanns() const;
 
   //get the meshes with a given neumann value. If no meshes have
   //this material value the result will be empty.
-  smtk::mesh::MeshSet neumannMeshes( const smtk::mesh::Neumann& n ) const;
+  smtk::mesh::MeshSet neumannMeshes(const smtk::mesh::Neumann& n) const;
 
   //Assign a given neumann to a collection of meshes. Overwrites
   //any existing neumann value
   //Generally Neumann meshes only contain vertices
-  bool setNeumannOnMeshes(const smtk::mesh::MeshSet& meshes,
-                          const smtk::mesh::Neumann& n);
+  bool setNeumannOnMeshes(const smtk::mesh::MeshSet& meshes, const smtk::mesh::Neumann& n);
 
   const smtk::mesh::InterfacePtr& interface() const;
 
   void setModelManager(smtk::model::ManagerPtr mgr) { this->m_modelManager = mgr; }
   smtk::model::ManagerPtr modelManager() const { return this->m_modelManager.lock(); }
 
-
   // Float, String, Integer properties for a meshset given its handle range.
-  void setFloatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName, smtk::model::Float propValue);
-  void setFloatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName, const smtk::model::FloatList& propValue);
-  smtk::model::FloatList const& floatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
-  smtk::model::FloatList& floatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName);
+  void setFloatProperty(
+    const smtk::mesh::MeshSet& meshset, const std::string& propName, smtk::model::Float propValue);
+  void setFloatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
+    const smtk::model::FloatList& propValue);
+  smtk::model::FloatList const& floatProperty(
+    const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
+  smtk::model::FloatList& floatProperty(
+    const smtk::mesh::MeshSet& meshset, const std::string& propName);
   bool hasFloatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
   bool removeFloatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName);
 
-  void setStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName, const smtk::model::String& propValue);
-  void setStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName, const smtk::model::StringList& propValue);
-  smtk::model::StringList const& stringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
-  smtk::model::StringList& stringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName);
+  void setStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
+    const smtk::model::String& propValue);
+  void setStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
+    const smtk::model::StringList& propValue);
+  smtk::model::StringList const& stringProperty(
+    const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
+  smtk::model::StringList& stringProperty(
+    const smtk::mesh::MeshSet& meshset, const std::string& propName);
   bool hasStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
   bool removeStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName);
 
-  void setIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName, smtk::model::Integer propValue);
-  void setIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName, const smtk::model::IntegerList& propValue);
-  smtk::model::IntegerList const& integerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
-  smtk::model::IntegerList& integerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName);
+  void setIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
+    smtk::model::Integer propValue);
+  void setIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
+    const smtk::model::IntegerList& propValue);
+  smtk::model::IntegerList const& integerProperty(
+    const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
+  smtk::model::IntegerList& integerProperty(
+    const smtk::mesh::MeshSet& meshset, const std::string& propName);
   bool hasIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
   bool removeIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName);
 #ifndef SHIBOKEN_SKIP
   // For T = {MeshIntegerData, MeshFloatData, MeshStringData}:
-  template<typename T> T* properties();
+  template <typename T>
+  T* properties();
   // For T = {IntegerData, FloatData, StringData}:
-  template<typename T> T* meshProperties(const smtk::mesh::MeshSet& meshset);
-  template<typename T> bool removeProperty(const smtk::mesh::MeshSet& meshset, const std::string& name);
+  template <typename T>
+  T* meshProperties(const smtk::mesh::MeshSet& meshset);
+  template <typename T>
+  bool removeProperty(const smtk::mesh::MeshSet& meshset, const std::string& name);
 #endif // SHIBOKEN_SKIP
 
 private:
-  Collection( const Collection& other ); //blank since we are used by shared_ptr
-  Collection& operator=( const Collection& other ); //blank since we are used by shared_ptr
+  Collection(const Collection& other);            //blank since we are used by shared_ptr
+  Collection& operator=(const Collection& other); //blank since we are used by shared_ptr
 
   //Sets the location that this collection was loaded from
   void readLocation(const std::string& path)
-  { this->readLocation(smtk::common::FileLocation(path)); }
+  {
+    this->readLocation(smtk::common::FileLocation(path));
+  }
   void readLocation(const smtk::common::FileLocation& path);
 
   //Swap the internal interfaces between this Collection and another Collection
@@ -312,7 +338,7 @@ private:
 
   //called by the manager that manages this collection, means that somebody
   //has requested us to be removed from a collection
-  void removeManagerConnection( );
+  void removeManagerConnection();
 
   smtk::common::UUID m_entity;
   std::string m_name;
@@ -329,7 +355,7 @@ private:
   smtk::mesh::Collection::InternalImpl* m_internals;
 };
 
-  } // namespace mesh
+} // namespace mesh
 } // namespace smtk
 
-#endif  //__smtk_mesh_Collection_h
+#endif //__smtk_mesh_Collection_h

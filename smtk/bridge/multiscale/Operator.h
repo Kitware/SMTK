@@ -15,9 +15,12 @@
 
 class vtkDataObject;
 
-namespace smtk {
-  namespace bridge {
-    namespace multiscale {
+namespace smtk
+{
+namespace bridge
+{
+namespace multiscale
+{
 
 class Session;
 
@@ -33,8 +36,8 @@ protected:
   Session* activeSession();
 };
 
-    } // namespace multiscale
-  } // namespace bridge
+} // namespace multiscale
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_multiscale_Operator_h

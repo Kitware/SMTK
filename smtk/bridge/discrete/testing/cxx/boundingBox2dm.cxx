@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
   // basic check info
   if (argc == 1)
   {
-    std::cout<<"Must provide input file as argument"<<std::endl;
+    std::cout << "Must provide input file as argument" << std::endl;
     return 1;
   }
 
@@ -75,9 +75,7 @@ int main(int argc, char* argv[])
   readOp->specification()->findFile("filename")->setValue(std::string(argv[1]));
   std::cout << "Importing " << argv[1] << "\n";
   smtk::model::OperatorResult opresult = readOp->operate();
-  if (
-    opresult->findInt("outcome")->value() !=
-    smtk::model::OPERATION_SUCCEEDED)
+  if (opresult->findInt("outcome")->value() != smtk::model::OPERATION_SUCCEEDED)
   {
     std::cerr << "Read operator failed\n";
     return 1;
@@ -96,16 +94,16 @@ int main(int argc, char* argv[])
   std::cout << "Before creation, group size is: " << groups.size() << endl;
   EntityRefs edges = manager->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::EDGE);
   std::cout << "Edges inside the model is:\n";
-  for (EntityRefs::iterator it = edges.begin();  it != edges.end(); ++it)
+  for (EntityRefs::iterator it = edges.begin(); it != edges.end(); ++it)
   {
-    std::cout << "  " << it->name()<< " \n";
+    std::cout << "  " << it->name() << " \n";
     if (!it->hasFloatProperty(SMTK_BOUNDING_BOX_PROP))
     {
       std::cerr << "edge has no bounding box!\n";
       return 1;
     }
   }
-  std::cout <<std::endl;
+  std::cout << std::endl;
   test(edges.size() == 10, "Expecting 10 edges");
 
   return 0;

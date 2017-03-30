@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkGeoTransformOperatorClient.h"
 
 #include "vtkDiscreteModel.h"
@@ -32,34 +31,32 @@ vtkGeoTransformOperatorClient::vtkGeoTransformOperatorClient()
 
 vtkGeoTransformOperatorClient::~vtkGeoTransformOperatorClient()
 {
-  if(this->OperatorProxy)
-    {
+  if (this->OperatorProxy)
+  {
     this->OperatorProxy->Delete();
     this->OperatorProxy = NULL;
-    }
+  }
 }
 
-bool vtkGeoTransformOperatorClient::Operate(vtkDiscreteModel* Model,
-  vtkSMProxy* ServerModelProxy)
+bool vtkGeoTransformOperatorClient::Operate(vtkDiscreteModel* Model, vtkSMProxy* ServerModelProxy)
 {
-  if(!this->AbleToOperate(Model)||
-     ServerModelProxy == NULL)
-    {
+  if (!this->AbleToOperate(Model) || ServerModelProxy == NULL)
+  {
     return 0;
-    }
+  }
 
-  if(!this->OperatorProxy)
-    {
+  if (!this->OperatorProxy)
+  {
     vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
-    this->OperatorProxy = vtkSMOperatorProxy::SafeDownCast(
-      manager->NewProxy("CMBModelGroup", "GeoTransformOperator"));
-    }
+    this->OperatorProxy =
+      vtkSMOperatorProxy::SafeDownCast(manager->NewProxy("CMBModelGroup", "GeoTransformOperator"));
+  }
 
-  if(!this->OperatorProxy)
-    {
+  if (!this->OperatorProxy)
+  {
     vtkErrorMacro("Unable to create builder operator proxy.");
     return 0;
-    }
+  }
 
   this->OperatorProxy->SetLocation(ServerModelProxy->GetLocation());
 
@@ -72,36 +69,33 @@ bool vtkGeoTransformOperatorClient::Operate(vtkDiscreteModel* Model,
 
   // check to see if the operation succeeded on the server
   vtkSMIntVectorProperty* OperateSucceeded =
-    vtkSMIntVectorProperty::SafeDownCast(
-      this->OperatorProxy->GetProperty("OperateSucceeded"));
+    vtkSMIntVectorProperty::SafeDownCast(this->OperatorProxy->GetProperty("OperateSucceeded"));
 
   this->OperatorProxy->UpdatePropertyInformation();
 
   int Succeeded = OperateSucceeded->GetElement(0);
-  if(!Succeeded)
-    {
+  if (!Succeeded)
+  {
     vtkErrorMacro("Server side operator failed.");
     return 0;
-    }
+  }
 
   return 1;
 }
 
-
 bool vtkGeoTransformOperatorClient::AbleToOperate(vtkDiscreteModel* Model)
 {
-  if(!Model)
-    {
+  if (!Model)
+  {
     vtkErrorMacro("Passed in a null model.");
     return 0;
-    }
+  }
 
   return 1;
 }
 void vtkGeoTransformOperatorClient::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
-  os << indent << "Convert From Lat/Long to xyz: " <<
-    (this->ConvertFromLatLongToXYZ ? "On" : "Off");
-
+  this->Superclass::PrintSelf(os, indent);
+  os << indent
+     << "Convert From Lat/Long to xyz: " << (this->ConvertFromLatLongToXYZ ? "On" : "Off");
 }

@@ -39,32 +39,29 @@
 
 #include "smtk/bridge/cgm/CreateVertex_xml.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 smtk::model::OperatorResult CreateVertex::operateInternal()
 {
-  smtk::attribute::DoubleItem::Ptr pointItem =
-    this->specification()->findDouble("point");
-  smtk::attribute::IntItem::Ptr colorItem =
-    this->specification()->findInt("color");
+  smtk::attribute::DoubleItem::Ptr pointItem = this->specification()->findDouble("point");
+  smtk::attribute::IntItem::Ptr colorItem = this->specification()->findInt("color");
 
   int color = colorItem->value();
-  CubitVector point(
-    pointItem->value(0),
-    pointItem->value(1),
-    pointItem->value(2));
+  CubitVector point(pointItem->value(0), pointItem->value(1), pointItem->value(2));
 
   RefVertex* cgmVert = GeometryModifyTool::instance()->make_RefVertex(point, color);
   if (!cgmVert)
-    {
+  {
     smtkInfoMacro(log(), "Failed to create vertex.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
-  smtk::model::OperatorResult result = this->createResult(
-    smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
 
   DLIList<RefVertex*> cgmEntitiesOut;
   cgmEntitiesOut.push(cgmVert);
@@ -74,14 +71,9 @@ smtk::model::OperatorResult CreateVertex::operateInternal()
   return result;
 }
 
-    } // namespace cgm
-  } //namespace bridge
+} // namespace cgm
+} //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(
-  SMTKCGMSESSION_EXPORT,
-  smtk::bridge::cgm::CreateVertex,
-  cgm_create_vertex,
-  "create vertex",
-  CreateVertex_xml,
-  smtk::bridge::cgm::Session);
+smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::CreateVertex,
+  cgm_create_vertex, "create vertex", CreateVertex_xml, smtk::bridge::cgm::Session);

@@ -12,8 +12,10 @@
 
 #include "smtk/model/Operator.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 class SMTKCORE_EXPORT PackageSMTKModel : public Operator
 {
@@ -28,7 +30,7 @@ protected:
   virtual void generateSummary(OperatorResult&);
 };
 
-  } //namespace model
+} //namespace model
 } // namespace smtk
 
 #endif // __smtk_model_PackageSMTKModel_h

@@ -27,23 +27,23 @@ class vtkStringArray;
 class VTK_EXPORT vtkCreateModelEdgesOperatorClient : public vtkCreateModelEdgesOperatorBase
 {
 public:
-  static vtkCreateModelEdgesOperatorClient * New();
-  vtkTypeMacro(vtkCreateModelEdgesOperatorClient,vtkCreateModelEdgesOperatorBase);
+  static vtkCreateModelEdgesOperatorClient* New();
+  vtkTypeMacro(vtkCreateModelEdgesOperatorClient, vtkCreateModelEdgesOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // Modify the color and/or the visibility of an object. The
   // operator returns true for successful completion.
-  virtual bool Operate(vtkDiscreteModel* Model, vtkSMProxy* ServerModelProxy,
-                       const char* strSerializedModel);
+  virtual bool Operate(
+    vtkDiscreteModel* Model, vtkSMProxy* ServerModelProxy, const char* strSerializedModel);
 
 protected:
   vtkCreateModelEdgesOperatorClient();
   virtual ~vtkCreateModelEdgesOperatorClient();
 
 private:
-  vtkCreateModelEdgesOperatorClient(const vtkCreateModelEdgesOperatorClient&);  // Not implemented.
-  void operator=(const vtkCreateModelEdgesOperatorClient&);  // Not implemented.
+  vtkCreateModelEdgesOperatorClient(const vtkCreateModelEdgesOperatorClient&); // Not implemented.
+  void operator=(const vtkCreateModelEdgesOperatorClient&);                    // Not implemented.
 };
 
 #endif

@@ -17,27 +17,26 @@
  * is known at compile time.
  */
 
-static const char Session_json[] =
-"{"
-"  \"kernel\": \"discrete\","
-"  \"engines\": ["
-"    {"
-"      \"name\": \"native\","
-"      \"filetypes\": ["
-"        \".cmb (CMB Models)\""
-"        ,\".vtk (Legacy VTK Files)\""
-"        ,\".2dm (CMB Mesh Files)\""
-"        ,\".3dm (CMB Mesh Files)\""
-"        ,\".stl (STL Files)\""
+static const char Session_json[] = "{"
+                                   "  \"kernel\": \"discrete\","
+                                   "  \"engines\": ["
+                                   "    {"
+                                   "      \"name\": \"native\","
+                                   "      \"filetypes\": ["
+                                   "        \".cmb (CMB Models)\""
+                                   "        ,\".vtk (Legacy VTK Files)\""
+                                   "        ,\".2dm (CMB Mesh Files)\""
+                                   "        ,\".3dm (CMB Mesh Files)\""
+                                   "        ,\".stl (STL Files)\""
 #ifdef SMTK_ENABLE_MOAB_DISCRETE_READER
-"        ,\".h5m (Moab Files)\""
-"        ,\".sat (Moab Files)\""
-"        ,\".brep (Moab Files)\""
-"        ,\".stp (Moab Files)\""
-"        ,\".cub (Moab Files)\""
-"        ,\".exo (Moab Files)\""
+                                   "        ,\".h5m (Moab Files)\""
+                                   "        ,\".sat (Moab Files)\""
+                                   "        ,\".brep (Moab Files)\""
+                                   "        ,\".stp (Moab Files)\""
+                                   "        ,\".cub (Moab Files)\""
+                                   "        ,\".exo (Moab Files)\""
 #endif
-"      ]"
-"    }"
-"  ]"
-"}";
+                                   "      ]"
+                                   "    }"
+                                   "  ]"
+                                   "}";

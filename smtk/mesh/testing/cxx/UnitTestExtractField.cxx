@@ -34,8 +34,10 @@ std::string mesh_path()
 class SubdivideMesh : public smtk::mesh::MeshForEach
 {
 public:
-  SubdivideMesh(const std::vector<std::size_t>& order) :
-    smtk::mesh::MeshForEach(), m_order(order), m_index(0)
+  SubdivideMesh(const std::vector<std::size_t>& order)
+    : smtk::mesh::MeshForEach()
+    , m_order(order)
+    , m_index(0)
   {
   }
 
@@ -43,12 +45,12 @@ public:
   {
     std::size_t i = this->m_index++ % this->m_order.size();
     if (i != 0)
-      {
+    {
       mesh.setDomain(smtk::mesh::Domain(static_cast<int>(i)));
-      }
+    }
   }
 
-  private:
+private:
   const std::vector<std::size_t>& m_order;
   std::size_t m_index;
 };
@@ -57,33 +59,30 @@ class ValidateCells : public smtk::mesh::CellForEach
 {
 public:
   ValidateCells(const std::vector<smtk::mesh::CellSet>& cellsByDomain,
-                const std::vector<smtk::mesh::Domain>& domains,
-                const std::int64_t* domainAssignments,
-                const smtk::mesh::HandleRange cellRange) :
-    smtk::mesh::CellForEach(),
-    m_cellsByDomain(cellsByDomain),
-    m_domains(domains),
-    m_domainAssignments(domainAssignments),
-    m_cellRange(cellRange),
-    m_index(0)
+    const std::vector<smtk::mesh::Domain>& domains, const std::int64_t* domainAssignments,
+    const smtk::mesh::HandleRange cellRange)
+    : smtk::mesh::CellForEach()
+    , m_cellsByDomain(cellsByDomain)
+    , m_domains(domains)
+    , m_domainAssignments(domainAssignments)
+    , m_cellRange(cellRange)
+    , m_index(0)
   {
   }
 
-  void forCell(const smtk::mesh::Handle& cellId,
-               smtk::mesh::CellType, int)
+  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType, int)
   {
     // default to the value for unlabeled domains
     std::int64_t domainValue = -1;
 
     for (std::size_t i = 0; i < this->m_cellsByDomain.size(); ++i)
+    {
+      if (this->m_cellsByDomain[i].range().find(cellId) != this->m_cellsByDomain[i].range().end())
       {
-      if (this->m_cellsByDomain[i].range().find(cellId) !=
-          this->m_cellsByDomain[i].range().end())
-        {
         domainValue = this->m_domains[i].value();
         break;
-        }
       }
+    }
 
     test(this->m_domainAssignments[this->m_index++] == domainValue);
   }
@@ -99,37 +98,35 @@ class ValidatePoints : public smtk::mesh::PointForEach
 {
 public:
   ValidatePoints(const std::vector<smtk::mesh::PointSet>& pointsByDomain,
-                 const std::vector<smtk::mesh::Domain>& domains,
-                 const std::int64_t* domainAssignments,
-                 const smtk::mesh::HandleRange pointRange) :
-    smtk::mesh::PointForEach(),
-    m_pointsByDomain(pointsByDomain),
-    m_domains(domains),
-    m_domainAssignments(domainAssignments),
-    m_pointRange(pointRange),
-    m_index(0)
+    const std::vector<smtk::mesh::Domain>& domains, const std::int64_t* domainAssignments,
+    const smtk::mesh::HandleRange pointRange)
+    : smtk::mesh::PointForEach()
+    , m_pointsByDomain(pointsByDomain)
+    , m_domains(domains)
+    , m_domainAssignments(domainAssignments)
+    , m_pointRange(pointRange)
+    , m_index(0)
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds,
-                 std::vector<double>&,bool&)
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>&, bool&)
   {
     for (auto point = pointIds.begin(); point != pointIds.end(); ++point)
-      {
+    {
       // default to the value for unlabeled domains
       std::int64_t domainValue = -1;
 
       for (std::size_t i = 0; i < this->m_pointsByDomain.size(); ++i)
-        {
+      {
         if (this->m_pointsByDomain[i].range().find(*point) !=
-            this->m_pointsByDomain[i].range().end())
-          {
+          this->m_pointsByDomain[i].range().end())
+        {
           domainValue = this->m_domains[i].value();
           break;
-          }
         }
-      test(this->m_domainAssignments[this->m_index++] == domainValue);
       }
+      test(this->m_domainAssignments[this->m_index++] == domainValue);
+    }
   }
 
   const std::vector<smtk::mesh::PointSet>& m_pointsByDomain;
@@ -143,26 +140,23 @@ void verify_extract_domain()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = read(mesh_path(), manager,
-                                     smtk::io::mesh::Subset::OnlyNeumann);
-  test( c->isValid(), "collection should be valid");
+  smtk::mesh::CollectionPtr c = read(mesh_path(), manager, smtk::io::mesh::Subset::OnlyNeumann);
+  test(c->isValid(), "collection should be valid");
 
   smtk::mesh::MeshSet meshes = c->meshes();
 
   test(!meshes.is_empty());
 
   // some random order to assign domains
-  std::vector<std::size_t> order = {1,2,3,4,3,5};
+  std::vector<std::size_t> order = { 1, 2, 3, 4, 3, 5 };
 
   SubdivideMesh subdivideMesh(order);
-  smtk::mesh::for_each( meshes, subdivideMesh );
+  smtk::mesh::for_each(meshes, subdivideMesh);
 
   std::int64_t numberOfCells;
   std::int64_t numberOfPoints;
 
-  smtk::mesh::PreAllocatedField::determineAllocationLengths(meshes,
-                                                            numberOfCells,
-                                                            numberOfPoints);
+  smtk::mesh::PreAllocatedField::determineAllocationLengths(meshes, numberOfCells, numberOfPoints);
 
   std::int64_t* cells = new std::int64_t[numberOfCells];
   std::int64_t* points = new std::int64_t[numberOfPoints];
@@ -174,23 +168,20 @@ void verify_extract_domain()
   std::vector<smtk::mesh::CellSet> cellsByDomain;
   std::vector<smtk::mesh::PointSet> pointsByDomain;
   for (auto&& domain : domains)
-    {
+  {
     cellsByDomain.push_back(meshes.subset(domain).cells());
     pointsByDomain.push_back(meshes.subset(domain).points());
-    }
+  }
 
-  ValidateCells validateCells(cellsByDomain, domains, cells,
-                              meshes.cells().range());
-  smtk::mesh::for_each( meshes.cells(), validateCells );
+  ValidateCells validateCells(cellsByDomain, domains, cells, meshes.cells().range());
+  smtk::mesh::for_each(meshes.cells(), validateCells);
 
-  ValidatePoints validatePoints(pointsByDomain, domains, points,
-                                meshes.points().range());
-  smtk::mesh::for_each( meshes.points(), validatePoints );
+  ValidatePoints validatePoints(pointsByDomain, domains, points, meshes.points().range());
+  smtk::mesh::for_each(meshes.points(), validatePoints);
 
-  delete [] cells;
-  delete [] points;
+  delete[] cells;
+  delete[] points;
 }
-
 }
 
 int UnitTestExtractField(int, char** const)

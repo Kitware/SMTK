@@ -23,8 +23,10 @@
   *
   */
 
-namespace smtk {
-  namespace io {
+namespace smtk
+{
+namespace io
+{
 
 class SMTKCORE_EXPORT ImportMesh
 {
@@ -42,31 +44,20 @@ public:
 
   //Load the domain sets from a moab data file as a new collection into the
   //given manager.
-  smtk::mesh::CollectionPtr operator()
-    (const std::string& filePath,
-     smtk::mesh::ManagerPtr manager,
-     std::string domainPropertyName = std::string()) const;
-  bool operator() (const std::string& filePath,
-                   smtk::mesh::CollectionPtr collection,
-                   std::string domainPropertyName = std::string()) const;
+  smtk::mesh::CollectionPtr operator()(const std::string& filePath, smtk::mesh::ManagerPtr manager,
+    std::string domainPropertyName = std::string()) const;
+  bool operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+    std::string domainPropertyName = std::string()) const;
 #endif
 };
 
-SMTKCORE_EXPORT smtk::mesh::CollectionPtr
-importMesh(const std::string& filePath,
-           smtk::mesh::ManagerPtr manager);
-SMTKCORE_EXPORT smtk::mesh::CollectionPtr
-importMesh(const std::string& filePath,
-           smtk::mesh::ManagerPtr manager,
-           const std::string& domainPropertyName);
-SMTKCORE_EXPORT bool
-importMesh(const std::string& filePath,
-           smtk::mesh::CollectionPtr collection);
-SMTKCORE_EXPORT bool
-importMesh(const std::string& filePath,
-           smtk::mesh::CollectionPtr collection,
-           const std::string& domainPropertyName);
-
+SMTKCORE_EXPORT smtk::mesh::CollectionPtr importMesh(
+  const std::string& filePath, smtk::mesh::ManagerPtr manager);
+SMTKCORE_EXPORT smtk::mesh::CollectionPtr importMesh(const std::string& filePath,
+  smtk::mesh::ManagerPtr manager, const std::string& domainPropertyName);
+SMTKCORE_EXPORT bool importMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection);
+SMTKCORE_EXPORT bool importMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+  const std::string& domainPropertyName);
 }
 }
 

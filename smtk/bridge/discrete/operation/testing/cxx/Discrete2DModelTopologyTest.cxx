@@ -17,7 +17,6 @@
 #include "vtkModelVertex.h"
 #include "vtkModelVertexUse.h"
 
-
 #include "vtkModelLoopUse.h"
 
 bool IsSingleFaceModelValid(vtkDiscreteModel* model, int numberOfEdges, int* edgeDirections);
@@ -26,18 +25,19 @@ int main()
 {
   vtkDiscreteModel* model = vtkDiscreteModel::New();
   vtkModelEdge* SingleEdgeModelEdge = model->BuildModelEdge(0, 0);
-  vtkModelEdge* Edges[3] = {SingleEdgeModelEdge, NULL, NULL};
-  int edgeDirections[3] = {1, 0, 0};
-  /*vtkModelFace* SingleEdgeModelFace = */model->BuildModelFace(1, Edges, edgeDirections);
+  vtkModelEdge* Edges[3] = { SingleEdgeModelEdge, NULL, NULL };
+  int edgeDirections[3] = { 1, 0, 0 };
+  /*vtkModelFace* SingleEdgeModelFace = */ model->BuildModelFace(1, Edges, edgeDirections);
   bool Status = !IsSingleFaceModelValid(model, 1, edgeDirections);
-  if(Status)
-    {
+  if (Status)
+  {
     vtkGenericWarningMacro("The single face model with a single model edge is NOT valid!");
-    }
+  }
   else
-    {
-    vtkGenericWarningMacro("SUCCESS: The single face model with a single model edge seems to be valid.");
-    }
+  {
+    vtkGenericWarningMacro(
+      "SUCCESS: The single face model with a single model edge seems to be valid.");
+  }
 
   model->Reset();
 
@@ -47,25 +47,25 @@ int main()
   vtkModelVertex* Vertex1 = model->BuildModelVertex(-4);
   Edges[0] = model->BuildModelEdge(Vertex0, Vertex1);
   Edges[1] = model->BuildModelEdge(Vertex0, Vertex1);
-  /*vtkModelFace* Face0 = */model->BuildModelFace(2, Edges, edgeDirections);
+  /*vtkModelFace* Face0 = */ model->BuildModelFace(2, Edges, edgeDirections);
 
   Status = !IsSingleFaceModelValid(model, 2, edgeDirections);
-  if(Status)
-    {
+  if (Status)
+  {
     vtkGenericWarningMacro("The single face model is NOT valid!");
-    }
+  }
   else
-    {
+  {
     vtkGenericWarningMacro("SUCCESS: The single face model seems to be valid.");
-    }
+  }
 
   model->Reset();
   model->Delete();
 
-  if(Status)
-    {
+  if (Status)
+  {
     vtkGenericWarningMacro("Test failed.");
-    }
+  }
   return Status;
 }
 
@@ -76,57 +76,56 @@ bool IsSingleFaceModelValid(vtkDiscreteModel* model, int numberOfEdges, int* edg
   // see if each model vertex has only a single model vertex use,
   // each model vertex use has 2 model edge uses, and each edge
   // use has a single edge
-  if(numberOfEdges == 1 &&
-     model->GetNumberOfAssociations(vtkModelVertexType) > 1 && // can only be 0 or 1 model vertices
-     model->GetNumberOfAssociations(vtkModelEdgeType) != 1)
-    {
+  if (numberOfEdges == 1 &&
+    model->GetNumberOfAssociations(vtkModelVertexType) > 1 && // can only be 0 or 1 model vertices
+    model->GetNumberOfAssociations(vtkModelEdgeType) != 1)
+  {
     printf("Number of model edges is %d and number of model vertices is %d\n",
-           model->GetNumberOfAssociations(vtkModelVertexType),
-           model->GetNumberOfAssociations(vtkModelEdgeType));
+      model->GetNumberOfAssociations(vtkModelVertexType),
+      model->GetNumberOfAssociations(vtkModelEdgeType));
     vtkGenericWarningMacro("Wrong number of model vertices for single model edge.");
     return false;
-    }
-  else if(numberOfEdges > 1 && ( model->GetNumberOfAssociations(vtkModelEdgeType) != numberOfEdges ||
-                                 model->GetNumberOfAssociations(vtkModelVertexType) != numberOfEdges) )
-    {
+  }
+  else if (numberOfEdges > 1 &&
+    (model->GetNumberOfAssociations(vtkModelEdgeType) != numberOfEdges ||
+      model->GetNumberOfAssociations(vtkModelVertexType) != numberOfEdges))
+  {
     vtkGenericWarningMacro("Wrong number of model edges and/or model vertices.");
     return false;
-    }
+  }
   vtkModelItemIterator* Vertices = model->NewIterator(vtkModelVertexType);
-  for(Vertices->Begin();!Vertices->IsAtEnd();Vertices->Next())
-    {
-    vtkModelVertex* Vertex =
-      vtkModelVertex::SafeDownCast(Vertices->GetCurrentItem());
+  for (Vertices->Begin(); !Vertices->IsAtEnd(); Vertices->Next())
+  {
+    vtkModelVertex* Vertex = vtkModelVertex::SafeDownCast(Vertices->GetCurrentItem());
     // for a single model face it will have two model face uses
     // which will end up creating two model vertex uses for each vertex
-    if(Vertex->GetNumberOfModelVertexUses() != 2)
-      {
+    if (Vertex->GetNumberOfModelVertexUses() != 2)
+    {
       Vertices->Delete();
       return false;
-      }
+    }
     vtkModelItemIterator* VertexUses = Vertex->NewModelVertexUseIterator();
-    for(VertexUses->Begin();!VertexUses->IsAtEnd();VertexUses->Next())
+    for (VertexUses->Begin(); !VertexUses->IsAtEnd(); VertexUses->Next())
+    {
+      vtkModelVertexUse* VertexUse = vtkModelVertexUse::SafeDownCast(VertexUses->GetCurrentItem());
+      if (VertexUse->GetNumberOfModelEdgeUses() != 2)
       {
-      vtkModelVertexUse* VertexUse =
-        vtkModelVertexUse::SafeDownCast(VertexUses->GetCurrentItem());
-      if(VertexUse->GetNumberOfModelEdgeUses() != 2)
-        {
         Vertices->Delete();
         VertexUses->Delete();
         return false;
-        }
       }
-    VertexUses->Delete();
     }
+    VertexUses->Delete();
+  }
   Vertices->Delete();
 
   // checking model face information
-  if(model->GetNumberOfAssociations(vtkModelFaceType) != 1)
-    {
+  if (model->GetNumberOfAssociations(vtkModelFaceType) != 1)
+  {
     vtkGenericWarningMacro("There should be a single model face but there were "
-                           << model->GetNumberOfAssociations(vtkModelFaceType) << " model faces.");
+      << model->GetNumberOfAssociations(vtkModelFaceType) << " model faces.");
     return false;
-    }
+  }
   vtkModelItemIterator* Faces = model->NewIterator(vtkModelFaceType);
   Faces->Begin();
   vtkModelFace* Face = vtkModelFace::SafeDownCast(Faces->GetCurrentItem());
@@ -135,59 +134,62 @@ bool IsSingleFaceModelValid(vtkDiscreteModel* model, int numberOfEdges, int* edg
   vtkModelFaceUse* FaceUse1 = Face->GetModelFaceUse(1);
 
   // checking model edge information.
-  if(model->GetNumberOfAssociations(vtkModelEdgeType) != numberOfEdges)
-    {
+  if (model->GetNumberOfAssociations(vtkModelEdgeType) != numberOfEdges)
+  {
     vtkGenericWarningMacro("There should be two model edges but there were "
-                           << model->GetNumberOfAssociations(vtkModelEdgeType) << " model edges.");
+      << model->GetNumberOfAssociations(vtkModelEdgeType) << " model edges.");
     return false;
-    }
+  }
 
   int counter = 0;
   vtkModelItemIterator* Edges = model->NewIterator(vtkModelEdgeType);
-  for(Edges->Begin();!Edges->IsAtEnd();Edges->Next(),counter++)
-    {
+  for (Edges->Begin(); !Edges->IsAtEnd(); Edges->Next(), counter++)
+  {
     vtkModelEdge* Edge = vtkModelEdge::SafeDownCast(Edges->GetCurrentItem());
-    if(Edge->GetNumberOfModelEdgeUses() != 2)
-      {
+    if (Edge->GetNumberOfModelEdgeUses() != 2)
+    {
       Edges->Delete();
-      vtkGenericWarningMacro("Model edge had " << Edge->GetNumberOfModelEdgeUses()
-                             << " model edge uses but should only have 2 for a simple single model face.");
+      vtkGenericWarningMacro("Model edge had "
+        << Edge->GetNumberOfModelEdgeUses()
+        << " model edge uses but should only have 2 for a simple single model face.");
       return false;
-      }
+    }
     vtkModelEdgeUse* EdgeUse0 = Edge->GetModelEdgeUse(0);
     vtkModelEdgeUse* EdgeUse1 = Edge->GetModelEdgeUse(1);
-    if(edgeDirections[counter] == 0)
-      {
+    if (edgeDirections[counter] == 0)
+    {
       EdgeUse0 = EdgeUse1;
       EdgeUse1 = Edge->GetModelEdgeUse(0);
-      }
-    if(EdgeUse0->GetPairedModelEdgeUse() != EdgeUse1 ||
-       EdgeUse1->GetPairedModelEdgeUse() != EdgeUse0)
-      {
+    }
+    if (EdgeUse0->GetPairedModelEdgeUse() != EdgeUse1 ||
+      EdgeUse1->GetPairedModelEdgeUse() != EdgeUse0)
+    {
       Edges->Delete();
       vtkGenericWarningMacro("The edge use pairs do not match.");
       return false;
-      }
-    if(EdgeUse0->GetDirection() == EdgeUse1->GetDirection())
-      {
+    }
+    if (EdgeUse0->GetDirection() == EdgeUse1->GetDirection())
+    {
       Edges->Delete();
       vtkGenericWarningMacro("The edge use pairs do not have opposite directions.");
       return false;
-      }
-    // ASSUME THERE IS ONLY 1 Loop for the face
-    if(EdgeUse0->GetModelLoopUse() != FaceUse0->GetOuterLoopUse())
-      {
-      Edges->Delete();
-      vtkGenericWarningMacro("Something wrong with the edge use to loop or face to loop adjacency for the negative side.");
-      return false;
-      }
-    if(EdgeUse1->GetModelLoopUse() != FaceUse1->GetOuterLoopUse())
-      {
-      Edges->Delete();
-      vtkGenericWarningMacro("Something wrong with the edge use to loop or face to loop adjacency for the positive side.");
-      return false;
-      }
     }
+    // ASSUME THERE IS ONLY 1 Loop for the face
+    if (EdgeUse0->GetModelLoopUse() != FaceUse0->GetOuterLoopUse())
+    {
+      Edges->Delete();
+      vtkGenericWarningMacro("Something wrong with the edge use to loop or face to loop adjacency "
+                             "for the negative side.");
+      return false;
+    }
+    if (EdgeUse1->GetModelLoopUse() != FaceUse1->GetOuterLoopUse())
+    {
+      Edges->Delete();
+      vtkGenericWarningMacro("Something wrong with the edge use to loop or face to loop adjacency "
+                             "for the positive side.");
+      return false;
+    }
+  }
   Edges->Delete();
 
   return true;

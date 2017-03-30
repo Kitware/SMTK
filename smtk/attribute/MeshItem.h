@@ -19,8 +19,10 @@
 #include <set>
 #include <string>
 
-namespace smtk {
-  namespace attribute {
+namespace smtk
+{
+namespace attribute
+{
 
 /**\brief Provide a way for an attribute to refer to meshsets.
   *
@@ -57,7 +59,7 @@ public:
   virtual void reset();
   // Assigns this item to be equivalent to another.  Options are processed by derived item classes
   // Returns true if success and false if a problem occured.
-  virtual bool assign(smtk::attribute::ConstItemPtr &sourceItem, unsigned int options = 0);
+  virtual bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0);
 
   const_mesh_it begin() const;
   const_mesh_it end() const;
@@ -66,14 +68,13 @@ public:
 protected:
   friend class MeshItemDefinition;
 
-  MeshItem(Attribute *owningAttribute, int itemPosition);
-  MeshItem(Item *owningItem, int position, int subGroupPosition);
+  MeshItem(Attribute* owningAttribute, int itemPosition);
+  MeshItem(Item* owningItem, int position, int subGroupPosition);
   virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
   smtk::mesh::MeshList m_meshValues;
-
 };
 
-  } // namespace attribute
+} // namespace attribute
 } // namespace smtk
 
 #endif // __smtk_attribute_MeshItem_h

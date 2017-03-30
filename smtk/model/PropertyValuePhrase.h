@@ -16,8 +16,10 @@
 #include <string>
 #include <vector>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief Describe the value of a named property for user presentation.
   *
@@ -45,7 +47,7 @@ protected:
   std::string m_propertyName;
 };
 
-  } // model namespace
+} // model namespace
 } // smtk namespace
 
 #endif // __smtk_model_DescriptivePhrase_h

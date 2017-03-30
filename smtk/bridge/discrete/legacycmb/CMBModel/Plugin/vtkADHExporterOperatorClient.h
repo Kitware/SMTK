@@ -29,10 +29,9 @@ class vtkSMProxy;
 class VTK_EXPORT vtkADHExporterOperatorClient : public vtkADHExporterOperatorBase
 {
 public:
-  static vtkADHExporterOperatorClient * New();
-  vtkTypeMacro(vtkADHExporterOperatorClient,vtkADHExporterOperatorBase);
+  static vtkADHExporterOperatorClient* New();
+  vtkTypeMacro(vtkADHExporterOperatorClient, vtkADHExporterOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
-
 
   // Description:
   // Get/Set the text that the client generated
@@ -48,11 +47,11 @@ protected:
   vtkADHExporterOperatorClient();
   virtual ~vtkADHExporterOperatorClient();
 
-  char *ClientText;
+  char* ClientText;
 
 private:
-  vtkADHExporterOperatorClient(const vtkADHExporterOperatorClient&);  // Not implemented.
-  void operator=(const vtkADHExporterOperatorClient&);  // Not implemented.
+  vtkADHExporterOperatorClient(const vtkADHExporterOperatorClient&); // Not implemented.
+  void operator=(const vtkADHExporterOperatorClient&);               // Not implemented.
 };
 
 #endif

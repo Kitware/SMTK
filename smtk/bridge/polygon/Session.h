@@ -16,13 +16,17 @@
 
 #include "smtk/model/Session.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
-      namespace internal {
-        class pmodel;
-        class vertex;
-      }
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
+namespace internal
+{
+class pmodel;
+class vertex;
+}
 
 /**\brief Methods that handle translation between polygon and SMTK instances.
   *
@@ -51,7 +55,7 @@ public:
 
   virtual SessionInfoBits allSupportedInformation() const;
 
-  template<typename T, typename U, typename V>
+  template <typename T, typename U, typename V>
   void consistentInternalDelete(T& container, U& modified, V& expunged, bool logDebug);
 
 protected:
@@ -65,36 +69,38 @@ protected:
   virtual smtk::model::SessionInfoBits transcribeInternal(
     const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1);
 
-  void addStorage(const smtk::common::UUID& uid, smtk::bridge::polygon::internal::entity::Ptr storage);
+  void addStorage(
+    const smtk::common::UUID& uid, smtk::bridge::polygon::internal::entity::Ptr storage);
   bool removeStorage(const smtk::common::UUID& uid);
 
   bool removeFaceReferences(const smtk::model::Face& f);
   bool removeEdgeReferences(const smtk::model::Edge& e);
   bool removeVertReferences(const smtk::model::Vertex& v);
 
-  template<typename T>
+  template <typename T>
   typename T::Ptr findStorage(const smtk::common::UUID& uid)
-    {
+  {
     internal::EntityIdToPtr::iterator it = this->m_storage.find(uid);
     if (it != this->m_storage.end())
       return smtk::dynamic_pointer_cast<T>(it->second);
     static typename T::Ptr blank;
     return blank;
-    }
+  }
 
-  template<typename T>
+  template <typename T>
   T findOrAddStorage(const smtk::common::UUID& uid)
-    {
+  {
     internal::EntityIdToPtr::iterator it = this->m_storage.find(uid);
     if (it != this->m_storage.end())
       return smtk::dynamic_pointer_cast<T>(it->second);
 
     T blank = T::create();
-    it = this->m_storage.insert(
-      internal::EntityIdToPtr::value_type(
-        uid,smtk::dynamic_pointer_cast<internal::entity>(blank))).first;
+    it = this->m_storage
+           .insert(internal::EntityIdToPtr::value_type(
+             uid, smtk::dynamic_pointer_cast<internal::entity>(blank)))
+           .first;
     return smtk::dynamic_pointer_cast<T>(it->second);
-    }
+  }
 
   virtual smtk::model::SessionIOPtr createIODelegate(const std::string& format);
 
@@ -108,12 +114,12 @@ protected:
   int m_nextModelNumber;
 
 private:
-  Session(const Session&); // Not implemented.
-  void operator = (const Session&); // Not implemented.
+  Session(const Session&);        // Not implemented.
+  void operator=(const Session&); // Not implemented.
 };
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_polygon_Session_h

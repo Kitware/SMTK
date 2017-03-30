@@ -12,9 +12,12 @@
 
 #include "smtk/bridge/polygon/Operator.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 /**\brief Tweak the shape of a model edge by redefining its point coordinates.
   */
@@ -31,8 +34,8 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 };
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_polygon_TweakEdge_h

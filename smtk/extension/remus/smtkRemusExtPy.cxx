@@ -28,12 +28,9 @@ smtkComponentInitMacro(smtk_remus_mesh_operator);
 
 extern "C" {
 
-static PyMethodDef methods[] = {
-    {NULL, NULL, 0, NULL}
-};
+static PyMethodDef methods[] = { { NULL, NULL, 0, NULL } };
 
-PyMODINIT_FUNC
-initsmtkRemusExtPy()
+PyMODINIT_FUNC initsmtkRemusExtPy()
 {
   Py_InitModule("smtkRemusExtPy", methods);
   (void)smtk_remus_mesh_operator_ComponentInit_Instance;

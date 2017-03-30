@@ -19,9 +19,12 @@
 
 #include <vector>
 
-namespace smtk {
-namespace bridge {
-namespace mesh {
+namespace smtk
+{
+namespace bridge
+{
+namespace mesh
+{
 
 struct SMTKMESHSESSION_EXPORT Topology
 {
@@ -29,19 +32,20 @@ struct SMTKMESHSESSION_EXPORT Topology
 
   struct Element
   {
-    Element(int dimension=-1) : m_dimension(dimension) {}
+    Element(int dimension = -1)
+      : m_dimension(dimension)
+    {
+    }
 
     int m_dimension;
     smtk::common::UUIDArray m_children;
   };
 
   smtk::mesh::CollectionPtr m_collection;
-  std::map<smtk::common::UUID,Element> m_elements;
+  std::map<smtk::common::UUID, Element> m_elements;
 };
-
 }
 }
 }
-
 
 #endif

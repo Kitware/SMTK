@@ -20,15 +20,20 @@
 
 #include <string>
 
-namespace remus {
-  namespace proto {
-    class JobRequirements;
-  }
+namespace remus
+{
+namespace proto
+{
+class JobRequirements;
+}
 }
 
-namespace smtk {
-  namespace bridge {
-    namespace remote {
+namespace smtk
+{
+namespace bridge
+{
+namespace remote
+{
 
 /**\brief A helper class for the Remus remote session.
   *
@@ -43,19 +48,13 @@ class SMTKREMOTESESSION_EXPORT RemusStaticSessionInfo
 {
 public:
   RemusStaticSessionInfo();
-  RemusStaticSessionInfo(
-    RemusConnectionPtr conn,
-    const remus::proto::JobRequirements& jobReq,
-    const std::string& meshType
-  );
-  RemusStaticSessionInfo(
-    const RemusStaticSessionInfo&);
+  RemusStaticSessionInfo(RemusConnectionPtr conn, const remus::proto::JobRequirements& jobReq,
+    const std::string& meshType);
+  RemusStaticSessionInfo(const RemusStaticSessionInfo&);
 
-  int staticSetup(
-    const std::string& optName,
-    const smtk::model::StringList& optVal);
+  int staticSetup(const std::string& optName, const smtk::model::StringList& optVal);
 
-  smtk::model::SessionPtr operator () () const;
+  smtk::model::SessionPtr operator()() const;
 
   std::string name() const { return this->m_name; }
   std::string tags() const { return this->m_tags; }
@@ -67,8 +66,8 @@ public:
   std::string m_operatorXML;
 };
 
-    } // namespace remote
-  } // namespace bridge
+} // namespace remote
+} // namespace bridge
 } // namespace smtk
 
 #endif // SHIBOKEN_SKIP

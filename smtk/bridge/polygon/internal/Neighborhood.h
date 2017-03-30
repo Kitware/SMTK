@@ -21,11 +21,14 @@
 #include <set>
 #include <vector>
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
-typedef std::vector<std::pair<smtk::model::Edge,bool> > OrientedEdges;
+typedef std::vector<std::pair<smtk::model::Edge, bool> > OrientedEdges;
 
 /**\brief Represent the neighborhood of a sweepline point, x.
   *
@@ -35,16 +38,12 @@ typedef std::vector<std::pair<smtk::model::Edge,bool> > OrientedEdges;
 class Neighborhood
 {
 public:
-  Neighborhood(
-    SweeplinePosition& x,
-    FragmentArray& fragments,
-    SweepEventSet& eventQueue,
-    ActiveFragmentTree& active,
-    smtk::bridge::polygon::Session* sess);
+  Neighborhood(SweeplinePosition& x, FragmentArray& fragments, SweepEventSet& eventQueue,
+    ActiveFragmentTree& active, smtk::bridge::polygon::Session* sess);
 
   int sweep();
 
-  template<typename T>
+  template <typename T>
   void getLoops(T evaluator);
 
   // Internal methods:
@@ -57,21 +56,15 @@ public:
 
   bool isFragmentOutgoing(const EdgeFragment& frag);
 
-  void relateNeighborhoods(
-    FragmentId fA, EdgeFragment& fragA, bool isOutA,
-    FragmentId fB, EdgeFragment& fragB, bool isOutB,
-    RegionId region);
+  void relateNeighborhoods(FragmentId fA, EdgeFragment& fragA, bool isOutA, FragmentId fB,
+    EdgeFragment& fragB, bool isOutB, RegionId region);
   void mergeRelated();
 
   void assignAndMergeRegions(
-    const std::list<FragmentId>::iterator& ringA,
-    const std::list<FragmentId>::iterator& ringB);
+    const std::list<FragmentId>::iterator& ringA, const std::list<FragmentId>::iterator& ringB);
 
-  bool insertFragmentBetween(
-    const std::list<FragmentId>::iterator& ringA,
-    const std::list<FragmentId>::iterator& ringB,
-    FragmentId fragId,
-    EdgeFragment& frag,
+  bool insertFragmentBetween(const std::list<FragmentId>::iterator& ringA,
+    const std::list<FragmentId>::iterator& ringB, FragmentId fragId, EdgeFragment& frag,
     const internal::Point& other);
   void insertFragment(FragmentId fragId, EdgeFragment& frag, const internal::Point& other);
   void queueActiveEdge(FragmentId fragId, EdgeFragment& frag);
@@ -82,16 +75,19 @@ public:
   void advanceSweeplineTo(const internal::Point& pt);
   void removeDeactivatedEdges();
   void dumpRegions();
-  RegionId traverseLoop(OrientedEdges& result, std::set<RegionId>& neighborRegions, FragmentId fragId, bool orientation);
+  RegionId traverseLoop(OrientedEdges& result, std::set<RegionId>& neighborRegions,
+    FragmentId fragId, bool orientation);
   void dumpLoop(OrientedEdges& loopEdges, RegionId contained, std::set<RegionId>& neighborRegions);
   void dumpRegions2();
   void setDebugLevel(int lvl) { this->m_debugLevel = lvl; }
 
-  template<typename T>
-    typename T::Ptr findStorage(const smtk::common::UUID& uid)
-      { return this->m_session->findStorage<T>(uid); }
+  template <typename T>
+  typename T::Ptr findStorage(const smtk::common::UUID& uid)
+  {
+    return this->m_session->findStorage<T>(uid);
+  }
 
-  SweeplinePosition* m_point; // The position used for ordering line segments in m_activeEdges.
+  SweeplinePosition* m_point;  // The position used for ordering line segments in m_activeEdges.
   internal::Point m_nextPoint; // The next point the sweepline will advance to.
   FragmentArray* m_fragments;
   SweepEventSet* m_eventQueue;
@@ -101,15 +97,16 @@ public:
   std::vector<FragmentId> m_fragmentsToQueue;
   std::set<FragmentId> m_fragmentsToDeactivate;
   std::list<FragmentId> m_ring; // offsets into m_fragments that order a neighborhood CCW
-  std::set<std::pair<RegionId,RegionId> > m_related; // regions containing other regions (first = parent, second=child)
+  std::set<std::pair<RegionId, RegionId> >
+    m_related; // regions containing other regions (first = parent, second=child)
   RegionId m_outside;
   smtk::model::Manager::Ptr m_mgr;
   smtk::bridge::polygon::Session* m_session;
   int m_debugLevel;
 };
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_polygon_internal_Neighborhood_h

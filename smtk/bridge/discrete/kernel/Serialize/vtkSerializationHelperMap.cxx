@@ -18,12 +18,10 @@
 #include <string>
 
 #ifdef VTK_USE_RENDERING
- #include "vtkRenderingSerializationHelper.h"
+#include "vtkRenderingSerializationHelper.h"
 #endif
 
 vtkStandardNewMacro(vtkSerializationHelperMap);
-
-
 
 bool vtkSerializationHelperMap::DefaultHelpersInstantiated = false;
 
@@ -49,7 +47,7 @@ vtkSerializationHelperMap::~vtkSerializationHelperMap()
 void vtkSerializationHelperMap::InstantiateDefaultHelpers()
 {
   if (!DefaultHelpersInstantiated)
-    {
+  {
     DefaultHelpersInstantiated = true;
     vtkSmartPointer<vtkCommonSerializationHelper> commonHelper =
       vtkSmartPointer<vtkCommonSerializationHelper>::New();
@@ -59,25 +57,23 @@ void vtkSerializationHelperMap::InstantiateDefaultHelpers()
       vtkSmartPointer<vtkRenderingSerializationHelper>::New();
     renderingHelper->RegisterWithHelperMap();
 #endif
-    }
+  }
 }
 
-void vtkSerializationHelperMap::RegisterHelperForClass(const char *classType,
-                                                          vtkSerializationHelper* helper)
+void vtkSerializationHelperMap::RegisterHelperForClass(
+  const char* classType, vtkSerializationHelper* helper)
 {
   vtkSerializationHelperMapClassMap.ClassMap[classType] = helper;
 }
 
-void vtkSerializationHelperMap::UnRegisterHelperForClass(const char *classType,
-                                                            vtkSerializationHelper* helper)
+void vtkSerializationHelperMap::UnRegisterHelperForClass(
+  const char* classType, vtkSerializationHelper* helper)
 {
-  ClassHelperMapType::iterator iter =
-    vtkSerializationHelperMapClassMap.ClassMap.find(classType);
-  if (iter != vtkSerializationHelperMapClassMap.ClassMap.end() &&
-    iter->second == helper)
-    {
+  ClassHelperMapType::iterator iter = vtkSerializationHelperMapClassMap.ClassMap.find(classType);
+  if (iter != vtkSerializationHelperMapClassMap.ClassMap.end() && iter->second == helper)
+  {
     vtkSerializationHelperMapClassMap.ClassMap.erase(iter);
-    }
+  }
 }
 
 void vtkSerializationHelperMap::RemoveAllHelpers()
@@ -85,61 +81,58 @@ void vtkSerializationHelperMap::RemoveAllHelpers()
   vtkSerializationHelperMapClassMap.ClassMap.clear();
 }
 
-
-bool vtkSerializationHelperMap::IsSerializable(vtkObject *obj)
+bool vtkSerializationHelperMap::IsSerializable(vtkObject* obj)
 {
   ClassHelperMapType::iterator iter =
     vtkSerializationHelperMapClassMap.ClassMap.find(obj->GetClassName());
   if (iter != vtkSerializationHelperMapClassMap.ClassMap.end())
-    {
+  {
     return true;
-    }
+  }
 
   return false;
 }
 
-int vtkSerializationHelperMap::Serialize(vtkObject *object,
-                                            vtkSerializer *serializer)
+int vtkSerializationHelperMap::Serialize(vtkObject* object, vtkSerializer* serializer)
 {
   ClassHelperMapType::iterator iter =
     vtkSerializationHelperMapClassMap.ClassMap.find(object->GetClassName());
   if (iter == vtkSerializationHelperMapClassMap.ClassMap.end())
-    {
+  {
     vtkGenericWarningMacro("Unable to serialize object: " << object->GetClassName());
     return 0;
-    }
+  }
 
   iter->second->Serialize(object, serializer);
 
   return 1;
 }
 
-const char *vtkSerializationHelperMap::GetSerializationType(vtkObject *object)
+const char* vtkSerializationHelperMap::GetSerializationType(vtkObject* object)
 {
   ClassHelperMapType::iterator iter =
     vtkSerializationHelperMapClassMap.ClassMap.find(object->GetClassName());
   if (iter == vtkSerializationHelperMapClassMap.ClassMap.end())
-    {
+  {
     vtkGenericWarningMacro("Unable to get serialization type: " << object->GetClassName());
     return 0;
-    }
+  }
 
   return iter->second->GetSerializationType(object);
 }
 
-vtkSerializationHelper* vtkSerializationHelperMap::GetHelper(const char *classType)
+vtkSerializationHelper* vtkSerializationHelperMap::GetHelper(const char* classType)
 {
-  ClassHelperMapType::iterator iter =
-    vtkSerializationHelperMapClassMap.ClassMap.find(classType);
+  ClassHelperMapType::iterator iter = vtkSerializationHelperMapClassMap.ClassMap.find(classType);
   if (iter == vtkSerializationHelperMapClassMap.ClassMap.end())
-    {
+  {
     return 0;
-    }
+  }
 
   return iter->second;
 }
 
 void vtkSerializationHelperMap::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }

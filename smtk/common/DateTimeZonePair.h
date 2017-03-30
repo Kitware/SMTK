@@ -15,13 +15,15 @@
 #include <iostream>
 #include <string>
 
-namespace smtk {
-  namespace common {
+namespace smtk
+{
+namespace common
+{
 
 //.NAME DateTimeZonePair - simple container for DateTime & TimeZone objects
 class SMTKCORE_EXPORT DateTimeZonePair
 {
- public:
+public:
   DateTimeZonePair();
 
   DateTime dateTime() const;
@@ -39,7 +41,7 @@ class SMTKCORE_EXPORT DateTimeZonePair
   bool operator<(const DateTimeZonePair& dt) const;
   bool operator>(const DateTimeZonePair& dt) const;
 
- protected:
+protected:
   DateTime m_datetime;
   TimeZone m_timezone;
 };
@@ -47,7 +49,7 @@ class SMTKCORE_EXPORT DateTimeZonePair
 SMTKCORE_EXPORT std::ostream& operator<<(std::ostream& os, const DateTimeZonePair& dtz);
 SMTKCORE_EXPORT std::istream& operator>>(std::istream& is, DateTimeZonePair& dtz);
 
-  } // namespace common
+} // namespace common
 } // namespace smtk
 
-#endif  // __smtk_common_DateTimeZonePair_h
+#endif // __smtk_common_DateTimeZonePair_h

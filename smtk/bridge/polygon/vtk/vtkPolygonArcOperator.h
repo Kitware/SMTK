@@ -24,8 +24,8 @@ class vtkContourRepresentation;
 class VTKPOLYGONOPERATORSEXT_EXPORT vtkPolygonArcOperator : public vtkSMTKOperator
 {
 public:
-  static vtkPolygonArcOperator * New();
-  vtkTypeMacro(vtkPolygonArcOperator,vtkSMTKOperator);
+  static vtkPolygonArcOperator* New();
+  vtkTypeMacro(vtkPolygonArcOperator, vtkSMTKOperator);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   //Description:
@@ -43,9 +43,10 @@ protected:
   virtual ~vtkPolygonArcOperator();
 
   vtkContourRepresentation* ArcRepresentation;
+
 private:
-  vtkPolygonArcOperator(const vtkPolygonArcOperator&);  // Not implemented.
-  void operator=(const vtkPolygonArcOperator&);  // Not implemented.
+  vtkPolygonArcOperator(const vtkPolygonArcOperator&); // Not implemented.
+  void operator=(const vtkPolygonArcOperator&);        // Not implemented.
 };
 
 #endif

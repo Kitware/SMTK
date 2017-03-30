@@ -18,13 +18,12 @@
 #include "vtkDiscreteModelGeometricEntity.h"
 #include "vtkModelVertex.h"
 
-
 class vtkInformationIdTypeKey;
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkDiscreteModelVertex : public vtkModelVertex
 {
 public:
-  vtkTypeMacro(vtkDiscreteModelVertex,vtkModelVertex);
+  vtkTypeMacro(vtkDiscreteModelVertex, vtkModelVertex);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -66,9 +65,8 @@ protected:
   friend class vtkCMBMapToCMBModel;
 
 private:
-  vtkDiscreteModelVertex(const vtkDiscreteModelVertex&);  // Not implemented.
-  void operator=(const vtkDiscreteModelVertex&);  // Not implemented.
+  vtkDiscreteModelVertex(const vtkDiscreteModelVertex&); // Not implemented.
+  void operator=(const vtkDiscreteModelVertex&);         // Not implemented.
 };
 
 #endif
-

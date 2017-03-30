@@ -32,8 +32,8 @@ class vtkXMLDataElement;
 class VTKCMBDISCRETEMODEL_EXPORT vtkCMBXMLBCSWriter : public vtkXMLWriter
 {
 public:
-  static vtkCMBXMLBCSWriter *New();
-  vtkTypeMacro(vtkCMBXMLBCSWriter,vtkXMLWriter);
+  static vtkCMBXMLBCSWriter* New();
+  vtkTypeMacro(vtkCMBXMLBCSWriter, vtkXMLWriter);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual const char* GetDefaultFileExtension();
@@ -72,16 +72,15 @@ protected:
 
   const char* GetDataSetName();
 
-
   // Description:
   // Add in the information for vtkCMBModelEdges as a nested element
   // in ParentElement.
-  void AddHardPointsData(vtkXMLDataElement* ParentElement,
-                         vtkDiscreteModel* Model, vtkIndent indent4);
+  void AddHardPointsData(
+    vtkXMLDataElement* ParentElement, vtkDiscreteModel* Model, vtkIndent indent4);
 
 private:
-  vtkCMBXMLBCSWriter(const vtkCMBXMLBCSWriter&);  // Not implemented.
-  void operator=(const vtkCMBXMLBCSWriter&);  // Not implemented.
+  vtkCMBXMLBCSWriter(const vtkCMBXMLBCSWriter&); // Not implemented.
+  void operator=(const vtkCMBXMLBCSWriter&);     // Not implemented.
 
   // Description:
   // The vtkDiscreteModelWrapper for the algorithm to extract the model

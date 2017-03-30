@@ -13,8 +13,10 @@
 #include "smtk/extension/delaunay/Exports.h"
 #include "smtk/model/Operator.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 class Session;
 
@@ -39,7 +41,7 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 };
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_extension_delaunay_TessellateFace_h

@@ -30,16 +30,15 @@
 
 namespace sa = smtk::attribute;
 namespace sc = smtk::common;
-namespace {
+namespace
+{
 
 void verifyDefault()
 {
   // Instantiate item definition
-  sa::DateTimeItemDefinitionPtr dtDef = sa::DateTimeItemDefinition::New(
-    "dt-def");
+  sa::DateTimeItemDefinitionPtr dtDef = sa::DateTimeItemDefinition::New("dt-def");
   test(!!dtDef, "Failed to instantiate DateTimeItemDefinition");
-  test(dtDef->type() == sa::Item::DATE_TIME,
-       "Failed to return DATE_TIME as definition type");
+  test(dtDef->type() == sa::Item::DATE_TIME, "Failed to return DATE_TIME as definition type");
 
   // Instantiate att system, attdef, & attribute
   sa::System system;
@@ -49,13 +48,11 @@ void verifyDefault()
 
   sa::ItemPtr item = att->find("dt-def");
   test(!!item, "Failed to find Item");
-  test(item->type() == sa::Item::DATE_TIME,
-       "Failed to return DATE_TIME as item type");
+  test(item->type() == sa::Item::DATE_TIME, "Failed to return DATE_TIME as item type");
 
   sa::DateTimeItemPtr dtItem = att->findDateTime("dt-def");
   test(!!dtItem, "Failed to find DateTimeItem");
-  test(dtItem->type() == sa::Item::DATE_TIME,
-       "Failed to return DATE_TIME as DateTimeItem type");
+  test(dtItem->type() == sa::Item::DATE_TIME, "Failed to return DATE_TIME as DateTimeItem type");
   test(!dtItem->isSet(), "isSet() failed to return false for default item");
 
   // Set default value
@@ -78,10 +75,10 @@ void verifyDefault()
   smtk::common::DateTimeZonePair dtzSet = dtItemSet->value(0);
   //std::cout << dtzSet << std::endl;
   smtk::common::DateTime dtSet = dtzSet.dateTime();
-  int yr=-1, month=-1, day=-1, hr=-1, minute=-1, sec=-1, msec=-1;
+  int yr = -1, month = -1, day = -1, hr = -1, minute = -1, sec = -1, msec = -1;
   dtSet.components(yr, month, day, hr, minute, sec, msec);
-  bool match = (2016 == yr) && (11 == month) && (5 == day) &&
-    (13 == hr) && (41 == minute) && (33 == sec) && (555 == msec);
+  bool match = (2016 == yr) && (11 == month) && (5 == day) && (13 == hr) && (41 == minute) &&
+    (33 == sec) && (555 == msec);
   test(match, "Failed to read back components");
 }
 
@@ -89,7 +86,7 @@ void verifySerialize()
 {
   // Instantiate writer
   smtk::io::AttributeWriter writer;
-  writer.setMaxFileVersion();  // (need version 3 or later)
+  writer.setMaxFileVersion(); // (need version 3 or later)
   smtk::io::Logger logger;
   std::string contents;
 
@@ -134,7 +131,6 @@ void verifySerialize()
   discreteDef->addConditionalItem("With DateTime", "dt4");
   attDef->addItemDefinition(discreteDef);
 
-
   // Instantiate attribute
   sa::AttributePtr att = outputSystem.createAttribute(attDef);
 
@@ -156,44 +152,39 @@ void verifySerialize()
   // Write to string
   bool writeError = writer.writeContents(outputSystem, contents, logger);
   if (writeError)
-    {
+  {
     std::string reason = logger.convertToString(true);
     test(false, reason);
-    }
+  }
 
-  std::cout << "File contents" << "\n" << contents << std::endl;
+  std::cout << "File contents"
+            << "\n"
+            << contents << std::endl;
 
   // Read back
   sa::System inputSystem;
   smtk::io::AttributeReader reader;
   bool readError = reader.readContents(inputSystem, contents, logger);
   if (readError)
-    {
+  {
     std::string reason = logger.convertToString(true);
     test(false, reason);
-    }
+  }
 
   // Check item-definition contents
   sa::DefinitionPtr inputDef = inputSystem.findDefinition("test-att");
   test(!!inputDef, "Failed to read back definition");
-  test(
-    inputDef->numberOfItemDefinitions() == 4,
-    "Wrong number of item definitions read back");
+  test(inputDef->numberOfItemDefinitions() == 4, "Wrong number of item definitions read back");
   int i1 = inputDef->findItemPosition("dt1");
   sa::ItemDefinitionPtr inputItemDef = inputDef->itemDefinition(i1);
   test(!!inputItemDef, "Failed to read back \"dt1\" ItemDefinition");
   sa::DateTimeItemDefinitionPtr dt1InputDef =
     smtk::dynamic_pointer_cast<sa::DateTimeItemDefinition>(inputItemDef);
   test(!!dt1InputDef, "Failed to read back DateTimeItemDefinition");
-  test(
-    dt1InputDef->displayFormat() == "dd-MMM-yyyy  h:mm:ss.zzz AP",
+  test(dt1InputDef->displayFormat() == "dd-MMM-yyyy  h:mm:ss.zzz AP",
     "Failed to read back definition display format");
-  test(
-    !dt1InputDef->useTimeZone(),
-    "Failed to read back use-time-zone setting");
-  test(
-    !dt1InputDef->useCalendarPopup(),
-    "Failed to read back enable-calendar-popup setting");
+  test(!dt1InputDef->useTimeZone(), "Failed to read back use-time-zone setting");
+  test(!dt1InputDef->useCalendarPopup(), "Failed to read back enable-calendar-popup setting");
   test(dt1InputDef->hasDefault(), "Failed to read back default value");
 
   // Check attribute
@@ -209,61 +200,50 @@ void verifySerialize()
   //std::cout << dtz1Input << std::endl;
 
   smtk::common::DateTime dt1Input = dtz1Input.dateTime();
-  int yr=-1, month=-1, day=-1, hr=-1, minute=-1, sec=-1, msec=-1;
+  int yr = -1, month = -1, day = -1, hr = -1, minute = -1, sec = -1, msec = -1;
   dt1Input.components(yr, month, day, hr, minute, sec, msec);
-  bool match1 = (2016 == yr) && (11 == month) && (10 == day) &&
-    (14 == hr) && (18 == minute) && (0 == sec) && (0 == msec);
+  bool match1 = (2016 == yr) && (11 == month) && (10 == day) && (14 == hr) && (18 == minute) &&
+    (0 == sec) && (0 == msec);
   test(match1, "Failed to set 1st item's DateTime");
 
   smtk::common::TimeZone tz1Input = dtz1Input.timeZone();
-  test(
-    tz1Input.region() == "America/Chicago",
-    "Failed to set attribute item TimeZone");
+  test(tz1Input.region() == "America/Chicago", "Failed to set attribute item TimeZone");
 
   // Check 2nd DateTimeItem
   sa::DateTimeItemPtr dt2ItemInput = inputAtt->findDateTime("dt2");
   smtk::common::DateTimeZonePair dtz2Input = dt2ItemInput->value(0);
 
   smtk::common::DateTime dt2Input = dtz2Input.dateTime();
-  yr=-1, month=-1, day=-1, hr=-1, minute=-1, sec=-1, msec=-1;
+  yr = -1, month = -1, day = -1, hr = -1, minute = -1, sec = -1, msec = -1;
   dt2Input.components(yr, month, day, hr, minute, sec, msec);
-  bool match2 = (1969 == yr) && (7 == month) && (20 == day) &&
-    (20 == hr) && (18 == minute) && (0 == sec) && (0 == msec);
+  bool match2 = (1969 == yr) && (7 == month) && (20 == day) && (20 == hr) && (18 == minute) &&
+    (0 == sec) && (0 == msec);
   test(match2, "Failed to set 2nd item's DateTime");
 
   smtk::common::TimeZone tz2Input = dtz2Input.timeZone();
-  test(
-    tz2Input.region().empty(),
-    "Failed to clear region value for 2nd item's TimeZone");
+  test(tz2Input.region().empty(), "Failed to clear region value for 2nd item's TimeZone");
   test(tz2Input.isUTC(), "Failed to set TimeZone to UTC");
 
   // Check 3rd DateTime (parented by group)
   sa::GroupItemPtr groupItemInput = inputAtt->findGroup("group");
   test(!!groupItemInput, "Failed to find GroupItem");
-  sa::DateTimeItemPtr dt3ItemInput =
-    groupItemInput->findAs<sa::DateTimeItem>("dt3");
+  sa::DateTimeItemPtr dt3ItemInput = groupItemInput->findAs<sa::DateTimeItem>("dt3");
   test(!!dt3ItemInput, "Failed to find DateTimeItem as child of GroupItem");
 
   // Check 4th DateTime (conditional child)
   sa::IntItemPtr discreteItemInput = inputAtt->findInt("discrete");
   test(!!discreteItemInput, "Failed to find discrete IntItem");
-  test(
-    discreteItemInput->setDiscreteIndex(0),
-    "Invalid discrete index 0");
-  test(
-    discreteItemInput->numberOfActiveChildrenItems() == 0,
+  test(discreteItemInput->setDiscreteIndex(0), "Invalid discrete index 0");
+  test(discreteItemInput->numberOfActiveChildrenItems() == 0,
     "Wrong number of active children; should be 0");
-  test(
-    discreteItemInput->setDiscreteIndex(1),
-    "Invalid discrete index 1");
-  test(
-    discreteItemInput->numberOfActiveChildrenItems() == 1,
+  test(discreteItemInput->setDiscreteIndex(1), "Invalid discrete index 1");
+  test(discreteItemInput->numberOfActiveChildrenItems() == 1,
     "Wrong number of active children; should be 1");
   sa::ItemPtr activeChild = discreteItemInput->activeChildItem(0);
   test(activeChild->type() == sa::Item::DATE_TIME, "Active child not DateTime");
 }
 
-}  // end namespace
+} // end namespace
 
 int UnitTestDateTimeItem(int, char** const)
 {

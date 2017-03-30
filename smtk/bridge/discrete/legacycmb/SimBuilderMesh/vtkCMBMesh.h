@@ -29,7 +29,7 @@ class vtkSplitEventData;
 class VTK_EXPORT vtkCMBMesh : public vtkObject
 {
 public:
-  vtkTypeMacro(vtkCMBMesh,vtkObject);
+  vtkTypeMacro(vtkCMBMesh, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -57,14 +57,12 @@ public:
   // Description:
   // Given a vtkModelGeometricEntity, get the associated mesh
   // representation.
-  virtual vtkCMBModelEntityMesh* GetModelEntityMesh(vtkModelGeometricEntity*) =0;
+  virtual vtkCMBModelEntityMesh* GetModelEntityMesh(vtkModelGeometricEntity*) = 0;
 
   // Description:
   // Set the local mesh length/max area/min angle for those selected model entities
-  bool SetLocalMeshLength(
-    vtkCollection* selectedMeshEntities, double localLen);
-  bool SetLocalMeshMinimumAngle(
-    vtkCollection* selectedMeshEntities, double localMinAngle);
+  bool SetLocalMeshLength(vtkCollection* selectedMeshEntities, double localLen);
+  bool SetLocalMeshMinimumAngle(vtkCollection* selectedMeshEntities, double localMinAngle);
 
   vtkModel* GetModel();
 
@@ -83,8 +81,7 @@ protected:
   // Main callback function which delegates the work to specific
   // methods for model entity modifications.
   static void ModelGeometricEntityChanged(
-    vtkObject *caller, unsigned long event,
-    void *cData, void *callData);
+    vtkObject* caller, unsigned long event, void* cData, void* callData);
 
   // Description:
   // Process an edge split event from the model.  With a
@@ -109,23 +106,23 @@ protected:
   vtkWeakPointer<vtkModel> Model;
 
 private:
-  vtkCMBMesh(const vtkCMBMesh&);  // Not implemented.
-  void operator=(const vtkCMBMesh&);  // Not implemented.
+  vtkCMBMesh(const vtkCMBMesh&);     // Not implemented.
+  void operator=(const vtkCMBMesh&); // Not implemented.
 
   bool Visible;
 };
 
 // Return the smaller non-zero length
-inline  double vtkCMBMesh::CombineMeshLengths(double a, double b)
+inline double vtkCMBMesh::CombineMeshLengths(double a, double b)
 {
   if (a == 0.0)
-    {
+  {
     return b;
-    }
+  }
   if (b == 0.0)
-    {
+  {
     return a;
-    }
+  }
   return (a > b) ? b : a;
 }
 
@@ -136,4 +133,3 @@ inline double vtkCMBMesh::CombineMeshMinimumAngles(double a, double b)
 }
 
 #endif
-

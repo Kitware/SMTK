@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkADHExporterOperatorBase.h"
 
 #include "vtkDiscreteModel.h"
@@ -38,28 +37,26 @@ vtkADHExporterOperatorBase::vtkADHExporterOperatorBase()
 vtkADHExporterOperatorBase::~vtkADHExporterOperatorBase()
 {
   this->SetFileName(0);
-  if(this->Internal)
-    {
+  if (this->Internal)
+  {
     delete this->Internal;
     this->Internal = 0;
-    }
+  }
 }
 
 void vtkADHExporterOperatorBase::AddAppliedNodalBC(
   int bcIndex, vtkIdType bcsGroupId, int bcsNodalGroupType)
 {
-  this->Internal->NodalBCs[bcIndex] = std::pair<vtkIdType,int>(
-    bcsGroupId, bcsNodalGroupType);
+  this->Internal->NodalBCs[bcIndex] = std::pair<vtkIdType, int>(bcsGroupId, bcsNodalGroupType);
 }
 
 void vtkADHExporterOperatorBase::AddAppliedNodalBC(
   int bcIndex, vtkDiscreteModelEntityGroup* bcsGroup, int bcsNodalGroupType)
 {
-  if(bcsGroup)
-    {
-    this->AddAppliedNodalBC(bcIndex, bcsGroup->GetUniquePersistentId(),
-      bcsNodalGroupType);
-    }
+  if (bcsGroup)
+  {
+    this->AddAppliedNodalBC(bcIndex, bcsGroup->GetUniquePersistentId(), bcsNodalGroupType);
+  }
 }
 
 int vtkADHExporterOperatorBase::GetNumberOfAppliedNodalBCs()
@@ -67,15 +64,14 @@ int vtkADHExporterOperatorBase::GetNumberOfAppliedNodalBCs()
   return static_cast<int>(this->Internal->NodalBCs.size());
 }
 
-bool vtkADHExporterOperatorBase::GetAppliedNodalBC(int i, int & bcIndex,
-  vtkIdType & bcsGroupId, int & bcsNodalGroupType)
+bool vtkADHExporterOperatorBase::GetAppliedNodalBC(
+  int i, int& bcIndex, vtkIdType& bcsGroupId, int& bcsNodalGroupType)
 {
-  if(i< 0 || i >= this->GetNumberOfAppliedNodalBCs())
-    {
+  if (i < 0 || i >= this->GetNumberOfAppliedNodalBCs())
+  {
     return false;
-    }
-  std::map<int, std::pair<vtkIdType, int> >::iterator it=
-    this->Internal->NodalBCs.begin();
+  }
+  std::map<int, std::pair<vtkIdType, int> >::iterator it = this->Internal->NodalBCs.begin();
   std::advance(it, i);
   bcIndex = it->first;
   bcsGroupId = it->second.first;
@@ -88,8 +84,7 @@ void vtkADHExporterOperatorBase::RemoveAllAppliedNodalBCs()
   this->Internal->NodalBCs.clear();
 }
 
-void vtkADHExporterOperatorBase::AddAppliedElementBC(
-  int bcIndex, vtkIdType faceGroupId)
+void vtkADHExporterOperatorBase::AddAppliedElementBC(int bcIndex, vtkIdType faceGroupId)
 {
   this->Internal->FaceBCs.push_back(std::make_pair(bcIndex, faceGroupId));
 }
@@ -97,10 +92,10 @@ void vtkADHExporterOperatorBase::AddAppliedElementBC(
 void vtkADHExporterOperatorBase::AddAppliedElementBC(
   int bcIndex, vtkDiscreteModelEntityGroup* faceGroup)
 {
-  if(faceGroup)
-    {
+  if (faceGroup)
+  {
     this->AddAppliedElementBC(bcIndex, faceGroup->GetUniquePersistentId());
-    }
+  }
 }
 
 int vtkADHExporterOperatorBase::GetNumberOfAppliedElementBCs()
@@ -108,12 +103,12 @@ int vtkADHExporterOperatorBase::GetNumberOfAppliedElementBCs()
   return static_cast<int>(this->Internal->FaceBCs.size());
 }
 
-bool vtkADHExporterOperatorBase::GetAppliedElementBC(int i, int & bcIndex, vtkIdType & faceGroupId)
+bool vtkADHExporterOperatorBase::GetAppliedElementBC(int i, int& bcIndex, vtkIdType& faceGroupId)
 {
-  if(i< 0 || i >= this->GetNumberOfAppliedElementBCs())
-    {
+  if (i < 0 || i >= this->GetNumberOfAppliedElementBCs())
+  {
     return false;
-    }
+  }
   bcIndex = this->Internal->FaceBCs[i].first;
   faceGroupId = this->Internal->FaceBCs[i].second;
   return true;
@@ -131,15 +126,15 @@ bool vtkADHExporterOperatorBase::Operate(vtkDiscreteModel* /*model*/)
 
 bool vtkADHExporterOperatorBase::AbleToOperate(vtkDiscreteModel* /*model*/)
 {
-  if(this->FileName)
-    {
+  if (this->FileName)
+  {
     return true;
-    }
+  }
   return false;
 }
 
 void vtkADHExporterOperatorBase::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "FileName: " << this->FileName << endl;
 }

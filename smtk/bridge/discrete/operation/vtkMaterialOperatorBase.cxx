@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkMaterialOperatorBase.h"
 
 #include "vtkDiscreteModel.h"
@@ -35,21 +34,21 @@ vtkMaterialOperatorBase::vtkMaterialOperatorBase()
 
 vtkMaterialOperatorBase::~vtkMaterialOperatorBase()
 {
-  if(this->GeometricEntitiesToAdd)
-    {
+  if (this->GeometricEntitiesToAdd)
+  {
     this->GeometricEntitiesToAdd->Delete();
     this->GeometricEntitiesToAdd = 0;
-    }
-  if(this->GeometricEntitiesToRemove)
-    {
+  }
+  if (this->GeometricEntitiesToRemove)
+  {
     this->GeometricEntitiesToRemove->Delete();
     this->GeometricEntitiesToRemove = 0;
-    }
-  if(this->PreviousMaterialsOfGeometricEntities)
-    {
+  }
+  if (this->PreviousMaterialsOfGeometricEntities)
+  {
     this->PreviousMaterialsOfGeometricEntities->Delete();
     this->PreviousMaterialsOfGeometricEntities = 0;
-    }
+  }
 }
 
 void vtkMaterialOperatorBase::SetItemType(int /*itemType*/)
@@ -68,33 +67,31 @@ vtkModelMaterial* vtkMaterialOperatorBase::GetMaterial(vtkDiscreteModel* Model)
 
 bool vtkMaterialOperatorBase::AbleToOperate(vtkDiscreteModel* Model)
 {
-  if(!Model)
-    {
+  if (!Model)
+  {
     vtkErrorMacro("Passed in a null model.");
     return 0;
-    }
-  if(this->GetIsIdSet() == 0)
-    {
+  }
+  if (this->GetIsIdSet() == 0)
+  {
     vtkErrorMacro("No entity id specified.");
     return 0;
-    }
-  if(!this->GetMaterial(Model))
-    {
+  }
+  if (!this->GetMaterial(Model))
+  {
     vtkErrorMacro("Cannot find the material.");
     return 0;
-    }
+  }
 
   return 1;
 }
 
-void vtkMaterialOperatorBase::AddModelGeometricEntity(
-  vtkIdType GeometricEntityId)
+void vtkMaterialOperatorBase::AddModelGeometricEntity(vtkIdType GeometricEntityId)
 {
   this->GeometricEntitiesToAdd->InsertUniqueId(GeometricEntityId);
 }
 
-void vtkMaterialOperatorBase::AddModelGeometricEntity(
-  vtkModelGeometricEntity* GeometricEntity)
+void vtkMaterialOperatorBase::AddModelGeometricEntity(vtkModelGeometricEntity* GeometricEntity)
 {
   this->AddModelGeometricEntity(GeometricEntity->GetUniquePersistentId());
 }
@@ -104,14 +101,12 @@ void vtkMaterialOperatorBase::ClearGeometricEntitiesToAdd()
   this->GeometricEntitiesToAdd->Reset();
 }
 
-void vtkMaterialOperatorBase::RemoveModelGeometricEntity(
-  vtkIdType GeometricEntityId)
+void vtkMaterialOperatorBase::RemoveModelGeometricEntity(vtkIdType GeometricEntityId)
 {
   this->GeometricEntitiesToRemove->InsertUniqueId(GeometricEntityId);
 }
 
-void vtkMaterialOperatorBase::RemoveModelGeometricEntity(
-  vtkModelGeometricEntity* GeometricEntity)
+void vtkMaterialOperatorBase::RemoveModelGeometricEntity(vtkModelGeometricEntity* GeometricEntity)
 {
   this->RemoveModelGeometricEntity(GeometricEntity->GetUniquePersistentId());
 }
@@ -121,69 +116,67 @@ void vtkMaterialOperatorBase::ClearGeometricEntitiesToRemove()
   this->GeometricEntitiesToRemove->Reset();
 }
 
-
 bool vtkMaterialOperatorBase::Operate(vtkDiscreteModel* Model)
 {
-  if(!this->AbleToOperate(Model))
-    {
+  if (!this->AbleToOperate(Model))
+  {
     return 0;
-    }
+  }
 
   vtkModelMaterial* Material = this->GetMaterial(Model);
   this->PreviousMaterialsOfGeometricEntities->Reset();
 
-  for(vtkIdType i=0;i<this->GeometricEntitiesToAdd->GetNumberOfIds();i++)
-    {
+  for (vtkIdType i = 0; i < this->GeometricEntitiesToAdd->GetNumberOfIds(); i++)
+  {
     vtkModelEntity* Entity = Model->GetModelEntity(this->GeometricEntitiesToAdd->GetId(i));
     vtkDiscreteModelGeometricEntity* GeometricEntity = 0;
     vtkDiscreteModelRegion* Region = vtkDiscreteModelRegion::SafeDownCast(Entity);
-    if(Region)
-      {
+    if (Region)
+    {
       GeometricEntity = Region;
-      }
+    }
     else
-      {
+    {
       vtkDiscreteModelFace* Face = vtkDiscreteModelFace::SafeDownCast(Entity);
-      if(Face && Face->GetModelRegion(0) ==  NULL && Face->GetModelRegion(1) == NULL)
-        { // Face can have a material associated with it since it is not associated with a region
+      if (Face && Face->GetModelRegion(0) == NULL && Face->GetModelRegion(1) == NULL)
+      { // Face can have a material associated with it since it is not associated with a region
         GeometricEntity = Face;
-        }
       }
-    if(GeometricEntity && GeometricEntity->GetMaterial() != Material)
-      {
+    }
+    if (GeometricEntity && GeometricEntity->GetMaterial() != Material)
+    {
       vtkModelMaterial* PreviousMaterial = GeometricEntity->GetMaterial();
-      if(PreviousMaterial)
+      if (PreviousMaterial)
         this->PreviousMaterialsOfGeometricEntities->InsertUniqueId(
           PreviousMaterial->GetUniquePersistentId());
       Material->AddModelGeometricEntity(vtkModelGeometricEntity::SafeDownCast(Entity));
-      }
     }
+  }
   // remove entities
-  for(vtkIdType i=0;i<this->GeometricEntitiesToRemove->GetNumberOfIds();i++)
-    {
+  for (vtkIdType i = 0; i < this->GeometricEntitiesToRemove->GetNumberOfIds(); i++)
+  {
     vtkModelEntity* Entity = Model->GetModelEntity(this->GeometricEntitiesToRemove->GetId(i));
     vtkDiscreteModelGeometricEntity* GeometricEntity = 0;
     vtkDiscreteModelRegion* Region = vtkDiscreteModelRegion::SafeDownCast(Entity);
-    if(Region)
-      {
+    if (Region)
+    {
       GeometricEntity = Region;
-      }
+    }
     else
-      {
+    {
       vtkDiscreteModelFace* Face = vtkDiscreteModelFace::SafeDownCast(Entity);
-      if(Face && Face->GetModelRegion(0) ==  NULL && Face->GetModelRegion(1) == NULL)
-        { // Face can have a material associated with it since it is not associated with a region
+      if (Face && Face->GetModelRegion(0) == NULL && Face->GetModelRegion(1) == NULL)
+      { // Face can have a material associated with it since it is not associated with a region
         GeometricEntity = Face;
-        }
-      }
-    if(GeometricEntity)
-      {
-      vtkModelMaterial* PreviousMaterial = GeometricEntity->GetMaterial();
-      if(PreviousMaterial == Material)
-        Material->RemoveModelGeometricEntity(vtkModelGeometricEntity::SafeDownCast(Entity));
       }
     }
-
+    if (GeometricEntity)
+    {
+      vtkModelMaterial* PreviousMaterial = GeometricEntity->GetMaterial();
+      if (PreviousMaterial == Material)
+        Material->RemoveModelGeometricEntity(vtkModelGeometricEntity::SafeDownCast(Entity));
+    }
+  }
 
   return this->Superclass::Operate(Model);
 }
@@ -202,9 +195,9 @@ bool vtkMaterialOperatorBase::Destroy(vtkDiscreteModel* Model)
 
 void vtkMaterialOperatorBase::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
-  os << indent << "GeometricEntitiesToAdd: " <<
-    this->GeometricEntitiesToAdd << endl;
-  os << indent << "PreviousMaterialsOfGeometricEntities: " <<
-    this->PreviousMaterialsOfGeometricEntities << endl;
+  this->Superclass::PrintSelf(os, indent);
+  os << indent << "GeometricEntitiesToAdd: " << this->GeometricEntitiesToAdd << endl;
+  os << indent
+     << "PreviousMaterialsOfGeometricEntities: " << this->PreviousMaterialsOfGeometricEntities
+     << endl;
 }

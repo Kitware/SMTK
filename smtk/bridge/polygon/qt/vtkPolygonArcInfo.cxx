@@ -30,9 +30,8 @@ vtkPolygonArcInfo::vtkPolygonArcInfo()
   this->NumberOfPoints = 0;
   this->ModelEntityID = NULL;
   this->SelectedPointId = -1;
-  this->SelectedPointCoordinates[0] =
-  this->SelectedPointCoordinates[1] = 
-  this->SelectedPointCoordinates[2] = 0.0;
+  this->SelectedPointCoordinates[0] = this->SelectedPointCoordinates[1] =
+    this->SelectedPointCoordinates[2] = 0.0;
 }
 
 vtkPolygonArcInfo::~vtkPolygonArcInfo()
@@ -40,7 +39,7 @@ vtkPolygonArcInfo::~vtkPolygonArcInfo()
   this->SetModelEntityID(NULL);
 }
 
-void vtkPolygonArcInfo::PrintSelf(ostream &os, vtkIndent indent)
+void vtkPolygonArcInfo::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "NumberOfPoints: " << this->NumberOfPoints << endl;
@@ -48,10 +47,8 @@ void vtkPolygonArcInfo::PrintSelf(ostream &os, vtkIndent indent)
   os << indent << "BlockIndex: " << this->BlockIndex << endl;
   os << indent << "ModelEntityID: " << this->ModelEntityID << endl;
   os << indent << "SelectedPointId: " << this->SelectedPointId << endl;
-  os << indent << "SelectedPointCoordinates: "
-               << this->SelectedPointCoordinates[0] << ", "
-               << this->SelectedPointCoordinates[1] << ", "
-               << this->SelectedPointCoordinates[2] << endl;
+  os << indent << "SelectedPointCoordinates: " << this->SelectedPointCoordinates[0] << ", "
+     << this->SelectedPointCoordinates[1] << ", " << this->SelectedPointCoordinates[2] << endl;
 }
 
 void vtkPolygonArcInfo::CopyFromObject(vtkObject* obj)
@@ -60,11 +57,10 @@ void vtkPolygonArcInfo::CopyFromObject(vtkObject* obj)
   this->ClosedLoop = false;
   this->NumberOfPoints = 0;
   this->SetModelEntityID(NULL);
-  vtkMultiBlockDataSetAlgorithm* filterAlg =
-    vtkMultiBlockDataSetAlgorithm::SafeDownCast(obj);
-  if(!filterAlg)
+  vtkMultiBlockDataSetAlgorithm* filterAlg = vtkMultiBlockDataSetAlgorithm::SafeDownCast(obj);
+  if (!filterAlg)
     return;
-/*
+  /*
   vtkModelMultiBlockSource *modelsource = vtkModelMultiBlockSource::SafeDownCast(
     filterAlg->GetInputConnection(0, 0)->GetProducer());
   if (!modelsource)
@@ -73,15 +69,15 @@ void vtkPolygonArcInfo::CopyFromObject(vtkObject* obj)
     }
   this->SetModelEntityID(modelsource->GetModelEntityID());
 */
-  vtkMultiBlockDataSet *mbds = filterAlg->GetOutput();
+  vtkMultiBlockDataSet* mbds = filterAlg->GetOutput();
   if (!mbds || this->BlockIndex < 0)
-    {
+  {
     return;
-    }
+  }
   vtkCompositeDataIterator* iter = mbds->NewIterator();
   iter->SetSkipEmptyNodes(false);
   vtkDataObjectTreeIterator* treeIter = vtkDataObjectTreeIterator::SafeDownCast(iter);
-  if(treeIter)
+  if (treeIter)
   {
     treeIter->VisitOnlyLeavesOff();
   }
@@ -89,79 +85,72 @@ void vtkPolygonArcInfo::CopyFromObject(vtkObject* obj)
   vtkPolyData* edgePoly = NULL;
   vtkInformation* metaInfo = NULL;
   for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem(), index++)
-    {
+  {
     if (index == this->BlockIndex)
-      {
-      edgePoly = vtkPolyData::SafeDownCast( iter->GetCurrentDataObject());
-      if(iter->HasCurrentMetaData())
+    {
+      edgePoly = vtkPolyData::SafeDownCast(iter->GetCurrentDataObject());
+      if (iter->HasCurrentMetaData())
         metaInfo = iter->GetCurrentMetaData();
       break;
-      }
     }
+  }
   iter->Delete();
 
-  if(!edgePoly || edgePoly->GetNumberOfPoints() <= 1
-     || !edgePoly->GetNumberOfCells()
-     || !edgePoly->GetLines())
-    {
+  if (!edgePoly || edgePoly->GetNumberOfPoints() <= 1 || !edgePoly->GetNumberOfCells() ||
+    !edgePoly->GetLines())
+  {
     vtkErrorMacro("The selected edge does not have valid geometry!");
     return;
-    }
+  }
   smtk::common::UUID edgeId = vtkModelMultiBlockSource::GetDataObjectUUID(metaInfo);
-  if(!edgeId.isNull())
-    {
+  if (!edgeId.isNull())
+  {
     this->SetModelEntityID(edgeId.toString().c_str());
-    }
+  }
   else
-    {
+  {
     vtkErrorMacro("Invalid edge UUID in block meta data information object!");
     return;
-    }
+  }
 
   // figure out whether the polyline is a closed loop.
   // We are assuming the cell points are in a proper order for this to work.
   // Check the first point in the first cell with the last point in the last cell
   vtkCellArray* lines = edgePoly->GetLines();
   vtkIdType numCells = lines->GetNumberOfCells();
-  if(numCells == 0)
+  if (numCells == 0)
     return;
   double p1[3], p2[3];
-  vtkIdType *pts,npts;
+  vtkIdType *pts, npts;
   lines->GetCell(0, npts, pts);
-  if(npts == 0)
+  if (npts == 0)
     return;
-  edgePoly->GetPoint(pts[0],p1);
-  if(numCells > 1)
-    {
+  edgePoly->GetPoint(pts[0], p1);
+  if (numCells > 1)
+  {
     // get last cell
     lines->GetCell(numCells - 1, npts, pts);
-    if(npts == 0)
+    if (npts == 0)
       return;
-    }
+  }
   edgePoly->GetPoint(pts[npts - 1], p2);
-  this->ClosedLoop = p1[0] == p2[0]
-                     && p1[1] == p2[1]
-                     && p1[2] == p2[2];
+  this->ClosedLoop = p1[0] == p2[0] && p1[1] == p2[1] && p1[2] == p2[2];
   //get the number of points on the edge
   this->NumberOfPoints = edgePoly->GetNumberOfPoints();
 
-  if(this->SelectedPointId >=0 && this->SelectedPointId < this->NumberOfPoints)
-    {
+  if (this->SelectedPointId >= 0 && this->SelectedPointId < this->NumberOfPoints)
+  {
     edgePoly->GetPoint(this->SelectedPointId, this->SelectedPointCoordinates);
-    }
+  }
 }
 
 void vtkPolygonArcInfo::CopyToStream(vtkClientServerStream* css)
 {
   css->Reset();
   *css << vtkClientServerStream::Reply;
-  *css << this->ClosedLoop
-       << this->NumberOfPoints
-       << this->SelectedPointId
+  *css << this->ClosedLoop << this->NumberOfPoints << this->SelectedPointId
        << vtkClientServerStream::InsertArray(this->SelectedPointCoordinates, 3)
-       << strlen(this->ModelEntityID)
-       << this->ModelEntityID
-       << vtkClientServerStream::End;
+       << strlen(this->ModelEntityID) << this->ModelEntityID << vtkClientServerStream::End;
 }
 
 void vtkPolygonArcInfo::CopyFromStream(const vtkClientServerStream* css)

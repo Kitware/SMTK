@@ -25,7 +25,7 @@ class vtkModelItemIterator;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkModelMaterial : public vtkModelEntity
 {
 public:
-  vtkTypeMacro(vtkModelMaterial,vtkModelEntity);
+  vtkTypeMacro(vtkModelMaterial, vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   bool SetWarehouseId(double* uuid);
@@ -66,12 +66,10 @@ protected:
   virtual bool Destroy();
 
 private:
-  vtkModelMaterial(const vtkModelMaterial&);  // Not implemented.
-  void operator=(const vtkModelMaterial&);  // Not implemented.
+  vtkModelMaterial(const vtkModelMaterial&); // Not implemented.
+  void operator=(const vtkModelMaterial&);   // Not implemented.
 
   friend class vtkDiscreteModel;
-
 };
 
 #endif
-

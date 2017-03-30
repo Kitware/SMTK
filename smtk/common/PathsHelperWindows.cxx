@@ -18,8 +18,10 @@
 
 #include <windows.h>
 
-namespace smtk {
-  namespace common {
+namespace smtk
+{
+namespace common
+{
 
 PathsHelperWindows::PathsHelperWindows()
 {
@@ -36,15 +38,15 @@ PathsHelperWindows::PathsHelperWindows()
   Paths::s_executableDir = Paths::s_executable;
   std::string::size_type pos = Paths::s_executableDir.rfind('/');
   if (pos != std::string::npos)
-    {
+  {
     Paths::s_executableDir = Paths::s_executableDir.substr(0, pos);
-    }
+  }
   else
-    {
+  {
     pos = Paths::s_executableDir.rfind('\\');
     if (pos != std::string::npos)
       Paths::s_executableDir = Paths::s_executableDir.substr(0, pos);
-    }
+  }
 
   if (Paths::s_toplevelDir.empty())
     Paths::s_toplevelDir = Paths::s_toplevelDirCfg;
@@ -52,22 +54,17 @@ PathsHelperWindows::PathsHelperWindows()
     Paths::s_executableDir = Paths::s_toplevelDir;
 
   // Search for workers in the binary directory
-  if (
-    Paths::s_executableDir != Paths::s_toplevelDirCfg &&
+  if (Paths::s_executableDir != Paths::s_toplevelDirCfg &&
     Paths::s_executableDir != Paths::currentDirectory())
     workerSearch.insert(Paths::s_executableDir);
 
   PathsHelperWindows::AddSplitPaths(
     workerSearch, Environment::getVariable("SMTK_WORKER_SEARCH_PATH"));
 
-  Paths::s_workerSearchPaths =
-    std::vector<std::string>(
-      workerSearch.begin(), workerSearch.end());
+  Paths::s_workerSearchPaths = std::vector<std::string>(workerSearch.begin(), workerSearch.end());
 }
 
-void PathsHelperWindows::AddSplitPaths(
-  std::set<std::string>& split,
-  const std::string& src)
+void PathsHelperWindows::AddSplitPaths(std::set<std::string>& split, const std::string& src)
 {
   std::stringstream envSearch(src);
   std::string spath;
@@ -76,5 +73,5 @@ void PathsHelperWindows::AddSplitPaths(
       split.insert(spath);
 }
 
-  } // namespace common
+} // namespace common
 } // namespace smtk

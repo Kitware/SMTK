@@ -10,21 +10,22 @@
 #ifndef qtActiveObjects_h
 #define qtActiveObjects_h
 
-#include <QObject>
-#include "smtk/extension/qt/Exports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/extension/qt/Exports.h"
 #include "smtk/model/Model.h" //for smtk::model::Model
+#include <QObject>
 
-namespace smtk {
-  namespace model {
-    class Model;
-  }
+namespace smtk
+{
+namespace model
+{
+class Model;
+}
 }
 
 class pqView;
 class vtkSMSessionProxyManager;
 class vtkSMViewProxy;
-
 
 /**
   qtActiveObjects keeps track of active objects.
@@ -42,7 +43,7 @@ public:
   static qtActiveObjects& instance();
 
   /// Returns the active model.
-  smtk::model::Model activeModel() const {return this->m_activeModel;}
+  smtk::model::Model activeModel() const { return this->m_activeModel; }
 
 public slots:
   /// Set the active module.

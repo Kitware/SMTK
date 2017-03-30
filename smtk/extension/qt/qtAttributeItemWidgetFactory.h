@@ -15,8 +15,10 @@
 
 #include <QWidget>
 
-namespace smtk {
-  namespace extension {
+namespace smtk
+{
+namespace extension
+{
 
 class qtItem;
 class qtBaseView;
@@ -39,21 +41,31 @@ class qtBaseView;
 class SMTKQTEXT_EXPORT qtAttributeItemWidgetFactory
 {
 public:
-  virtual ~qtAttributeItemWidgetFactory() { }
+  virtual ~qtAttributeItemWidgetFactory() {}
 
-  virtual qtItem* createRefItemWidget(attribute::RefItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
-  virtual qtItem* createValueItemWidget(attribute::ValueItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
-  virtual qtItem* createDirectoryItemWidget(attribute::DirectoryItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
-  virtual qtItem* createFileItemWidget(attribute::FileItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
-  virtual qtItem* createGroupItemWidget(attribute::GroupItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
-  virtual qtItem* createVoidItemWidget(attribute::VoidItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
-  virtual qtItem* createModelEntityItemWidget(attribute::ModelEntityItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
-  virtual qtItem* createMeshSelectionItemWidget(attribute::MeshSelectionItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
-  virtual qtItem* createMeshItemWidget(attribute::MeshItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
-  virtual qtItem* createDateTimeItemWidget(attribute::DateTimeItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
+  virtual qtItem* createRefItemWidget(
+    attribute::RefItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
+  virtual qtItem* createValueItemWidget(
+    attribute::ValueItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
+  virtual qtItem* createDirectoryItemWidget(
+    attribute::DirectoryItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
+  virtual qtItem* createFileItemWidget(
+    attribute::FileItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
+  virtual qtItem* createGroupItemWidget(
+    attribute::GroupItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
+  virtual qtItem* createVoidItemWidget(
+    attribute::VoidItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
+  virtual qtItem* createModelEntityItemWidget(
+    attribute::ModelEntityItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
+  virtual qtItem* createMeshSelectionItemWidget(
+    attribute::MeshSelectionItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
+  virtual qtItem* createMeshItemWidget(
+    attribute::MeshItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
+  virtual qtItem* createDateTimeItemWidget(
+    attribute::DateTimeItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
 };
 
-  } // namespace extension
+} // namespace extension
 } // namespace smtk
 
 #endif // __smtk_extension_qt_qtAttributeItemWidgetFactory_h

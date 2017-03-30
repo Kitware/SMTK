@@ -18,23 +18,23 @@
 class VTKSMTKFILTEREXT_EXPORT vtkGrabCutFilter : public vtkImageAlgorithm
 {
 public:
-  static vtkGrabCutFilter *New();
-  vtkTypeMacro(vtkGrabCutFilter,vtkImageAlgorithm);
+  static vtkGrabCutFilter* New();
+  vtkTypeMacro(vtkGrabCutFilter, vtkImageAlgorithm);
 
-  vtkSetMacro(NumberOfIterations,int);
-  vtkGetMacro(NumberOfIterations,int);
+  vtkSetMacro(NumberOfIterations, int);
+  vtkGetMacro(NumberOfIterations, int);
 
-  vtkSetMacro(PotentialForegroundValue,int);
-  vtkGetMacro(PotentialForegroundValue,int);
+  vtkSetMacro(PotentialForegroundValue, int);
+  vtkGetMacro(PotentialForegroundValue, int);
 
-  vtkSetMacro(PotentialBackgroundValue,int);
-  vtkGetMacro(PotentialBackgroundValue,int);
+  vtkSetMacro(PotentialBackgroundValue, int);
+  vtkGetMacro(PotentialBackgroundValue, int);
 
-  vtkSetMacro(ForegroundValue,int);
-  vtkGetMacro(ForegroundValue,int);
+  vtkSetMacro(ForegroundValue, int);
+  vtkGetMacro(ForegroundValue, int);
 
-  vtkSetMacro(BackgroundValue,int);
-  vtkGetMacro(BackgroundValue,int);
+  vtkSetMacro(BackgroundValue, int);
+  vtkGetMacro(BackgroundValue, int);
 
   void DoGrabCut()
   {
@@ -45,7 +45,6 @@ public:
   ~vtkGrabCutFilter() override;
 
 protected:
-
   int NumberOfIterations;
   int PotentialForegroundValue;
   int PotentialBackgroundValue;
@@ -54,17 +53,16 @@ protected:
 
   vtkGrabCutFilter();
 
-  int FillOutputPortInformation(int port, vtkInformation *info) override;
+  int FillOutputPortInformation(int port, vtkInformation* info) override;
 
-  int RequestData(vtkInformation *, vtkInformationVector **,
-                  vtkInformationVector *) override;
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
 private:
-  vtkGrabCutFilter(const vtkGrabCutFilter&);  // Not implemented.
-  void operator=(const vtkGrabCutFilter&);  // Not implemented.
+  vtkGrabCutFilter(const vtkGrabCutFilter&); // Not implemented.
+  void operator=(const vtkGrabCutFilter&);   // Not implemented.
   bool RunGrabCuts;
   class InternalData;
-  InternalData * internal;
+  InternalData* internal;
 };
 
 #endif

@@ -11,13 +11,16 @@
 #include "smtk/mesh/Collection.h"
 #include "smtk/model/SubphraseGenerator.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 unsigned int DescriptivePhrase::s_nextPhraseId = 0;
 
 DescriptivePhrase::DescriptivePhrase()
-  : m_type(INVALID_DESCRIPTION), m_subphrasesBuilt(false)
+  : m_type(INVALID_DESCRIPTION)
+  , m_subphrasesBuilt(false)
 {
   this->m_phraseId = DescriptivePhrase::s_nextPhraseId++;
 }
@@ -56,10 +59,10 @@ int DescriptivePhrase::argFindChild(const DescriptivePhrase* child) const
   int i = 0;
   DescriptivePhrases::const_iterator it;
   for (it = this->m_subphrases.begin(); it != this->m_subphrases.end(); ++it, ++i)
-    {
+  {
     if (it->get() == child)
       return i;
-    }
+  }
   return -1;
 }
 
@@ -69,63 +72,61 @@ int DescriptivePhrase::argFindChild(const EntityRef& child) const
   int i = 0;
   DescriptivePhrases::const_iterator it;
   for (it = this->m_subphrases.begin(); it != this->m_subphrases.end(); ++it, ++i)
-    {
+  {
     if (it->get()->relatedEntity() == child)
       return i;
-    }
+  }
   return -1;
 }
 
 /// Return the index of the given MeshSet in this instance's subphrases (or -1).
 int DescriptivePhrase::argFindChild(const smtk::mesh::MeshSet& child) const
 {
-  if(child.is_empty())
-    {
+  if (child.is_empty())
+  {
     return -1;
-    }
+  }
   int i = 0;
   DescriptivePhrases::const_iterator it;
   for (it = this->m_subphrases.begin(); it != this->m_subphrases.end(); ++it, ++i)
-    {
-    if (it->get()->phraseType() == MESH_SUMMARY &&
-        !it->get()->relatedMesh().is_empty() &&
-        it->get()->relatedMesh() == child)
+  {
+    if (it->get()->phraseType() == MESH_SUMMARY && !it->get()->relatedMesh().is_empty() &&
+      it->get()->relatedMesh() == child)
       return i;
-    }
+  }
   return -1;
 }
 
 /// Return the index of the given CollectionPtr in this instance's subphrases (or -1).
 int DescriptivePhrase::argFindChild(const smtk::mesh::CollectionPtr& child) const
 {
-  if(!child)
-    {
+  if (!child)
+  {
     return -1;
-    }
+  }
   int i = 0;
   DescriptivePhrases::const_iterator it;
   for (it = this->m_subphrases.begin(); it != this->m_subphrases.end(); ++it, ++i)
-    {
-    if (it->get()->phraseType() == MESH_SUMMARY &&
-        it->get()->relatedMeshCollection() &&
-        it->get()->relatedMeshCollection()->entity() == child->entity())
+  {
+    if (it->get()->phraseType() == MESH_SUMMARY && it->get()->relatedMeshCollection() &&
+      it->get()->relatedMeshCollection()->entity() == child->entity())
       return i;
-    }
+  }
   return -1;
 }
 
 /// Return the index of the given property (name, type) in this instance's subphrases (or -1).
-int DescriptivePhrase::argFindChild(const std::string& propName,
-                                    smtk::model::PropertyType propType) const
+int DescriptivePhrase::argFindChild(
+  const std::string& propName, smtk::model::PropertyType propType) const
 {
   (void)propType;
   int i = 0;
   DescriptivePhrases::const_iterator it;
   for (it = this->m_subphrases.begin(); it != this->m_subphrases.end(); ++it, ++i)
-    {
-    if(propName == (*it)->title() && (*it)->isPropertyValueType())
+  {
+    if (propName == (*it)->title() && (*it)->isPropertyValueType())
       return i;
-    }
+  }
   return -1;
 }
 
@@ -134,9 +135,9 @@ int DescriptivePhrase::indexInParent() const
 {
   const DescriptivePhrasePtr prnt = this->parent();
   if (prnt)
-    {
+  {
     return prnt->argFindChild(this);
-    }
+  }
   return 0;
 }
 
@@ -144,11 +145,8 @@ int DescriptivePhrase::indexInParent() const
 SubphraseGeneratorPtr DescriptivePhrase::findDelegate()
 {
   DescriptivePhrasePtr phr;
-  for (
-    phr = shared_from_this();
-    phr && !phr->m_delegate;
-    phr = phr->parent())
-    /* do nothing */ ;
+  for (phr = shared_from_this(); phr && !phr->m_delegate; phr = phr->parent())
+    /* do nothing */;
   return phr ? phr->m_delegate : SubphraseGeneratorPtr();
 }
 
@@ -156,23 +154,21 @@ SubphraseGeneratorPtr DescriptivePhrase::findDelegate()
 void DescriptivePhrase::buildSubphrases()
 {
   if (!this->m_subphrasesBuilt)
-    {
+  {
     this->m_subphrasesBuilt = true;
     SubphraseGeneratorPtr delegate = this->findDelegate();
     if (delegate)
-      this->m_subphrases =
-        delegate->subphrases(shared_from_this());
-    }
+      this->m_subphrases = delegate->subphrases(shared_from_this());
+  }
 }
 
 /// Return whether this is a property value phrase.
 bool DescriptivePhrase::isPropertyValueType() const
 {
   DescriptivePhraseType phType = this->phraseType();
-  return phType == FLOAT_PROPERTY_VALUE ||
-         phType == INTEGER_PROPERTY_VALUE ||
-         phType == STRING_PROPERTY_VALUE;
+  return phType == FLOAT_PROPERTY_VALUE || phType == INTEGER_PROPERTY_VALUE ||
+    phType == STRING_PROPERTY_VALUE;
 }
 
-  } // model namespace
+} // model namespace
 } // smtk namespace

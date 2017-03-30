@@ -47,91 +47,87 @@
 
 namespace Ui
 {
-ArcPicker::ArcPicker(QObject * parent):
-  QAction(parent),
-  Info(NULL),
-  Arc(NULL),
-  View(NULL),
-  Selecter(NULL),
-  m_isActive(false)
+ArcPicker::ArcPicker(QObject* parent)
+  : QAction(parent)
+  , Info(NULL)
+  , Arc(NULL)
+  , View(NULL)
+  , Selecter(NULL)
+  , m_isActive(false)
 {
   this->setCheckable(true);
 }
 
 ArcPicker::~ArcPicker()
 {
-  if(this->Selecter)
-    {
+  if (this->Selecter)
+  {
     this->Selecter->disconnect();
     delete this->Selecter;
-    }
+  }
 }
 
-void ArcPicker::doPick(pqRenderView *view, pqPolygonArc *arc, PickInfo& arcinfo)
+void ArcPicker::doPick(pqRenderView* view, pqPolygonArc* arc, PickInfo& arcinfo)
 {
-  if(this->Selecter)
-    {
+  if (this->Selecter)
+  {
     delete this->Selecter;
-    }
+  }
   this->m_isActive = false;
   this->View = NULL; //clear the view each time
-  if(view)
-    {
-    this->Selecter = new pqRenderViewSelectionReaction(this,view,
-                          pqRenderViewSelectionReaction::SELECT_SURFACE_CELLS);
+  if (view)
+  {
+    this->Selecter = new pqRenderViewSelectionReaction(
+      this, view, pqRenderViewSelectionReaction::SELECT_SURFACE_CELLS);
 
     // we only want selection on one representation.
     view->setUseMultipleRepresentationSelection(false);
     // things are selected
-    QObject::connect(view,SIGNAL(selected(pqOutputPort*)),
-                     this,SLOT(selectedInfo(pqOutputPort*)),
-                     Qt::UniqueConnection);
+    QObject::connect(view, SIGNAL(selected(pqOutputPort*)), this, SLOT(selectedInfo(pqOutputPort*)),
+      Qt::UniqueConnection);
     // selection is done
-    QObject::connect(view,SIGNAL(selectionModeChanged(bool)),
-                     this,SLOT(onPickingFinished()),
-                     Qt::UniqueConnection);
+    QObject::connect(view, SIGNAL(selectionModeChanged(bool)), this, SLOT(onPickingFinished()),
+      Qt::UniqueConnection);
 
     this->Arc = arc;
     this->View = view;
     this->Info = &arcinfo;
     this->m_isActive = true;
     // make sure we are using the correct source for picking
-    if(arc)
+    if (arc)
       arc->resetOperationSource();
 
     emit triggered(true);
-    }
+  }
 }
 
 vtkSelectionNode* ArcPicker::gatherSelectionNode(
-    pqPipelineSource* source,
-    vtkPVSelectionInformation* selInfo)
+  pqPipelineSource* source, vtkPVSelectionInformation* selInfo)
 {
   vtkSMSourceProxy* smSource = vtkSMSourceProxy::SafeDownCast(source->getProxy());
   vtkSMSourceProxy* selSource = smSource->GetSelectionInput(0);
   selSource->UpdatePipeline();
 
   selSource->GatherInformation(selInfo);
-  if(selInfo->GetSelection() &&
-    selInfo->GetSelection()->GetNumberOfNodes())
-    {
+  if (selInfo->GetSelection() && selInfo->GetSelection()->GetNumberOfNodes())
+  {
     return selInfo->GetSelection()->GetNode(0);
-    }
+  }
   return NULL;
 }
 
 void ArcPicker::selectedInfo(pqOutputPort* port)
 {
   // ignore selections triggered from elsewhere
-  if(!this->m_isActive)
+  if (!this->m_isActive)
     return;
 
   //always update the port
   this->Info->EdgeId = smtk::common::UUID::null();
   this->Info->port = NULL;
 
-  if(port && this->Arc->edgeOperator())
-    {
+  if (port && this->Arc->edgeOperator())
+  {
     // get the selected point id
     // This "IDs" only have three components [composite_index, processId, Index]
     // because the arc source is a block in a Composite Dataset
@@ -139,31 +135,31 @@ void ArcPicker::selectedInfo(pqOutputPort* port)
     // [composite_index, process_id, index]
     vtkSMPropertyHelper selIDs(selSource, "IDs");
     unsigned int count = selIDs.GetNumberOfElements();
-    if(count > 2)
-      {
+    if (count > 2)
+    {
       // get first selected point
       vtkIdType flatIdx = selIDs.GetAsInt(0);
       vtkNew<vtkPolygonArcInfo> arcInfo;
       //collect the information from the server model source
-      vtkSMProxy *proxy = port->getSource()->getProxy();
+      vtkSMProxy* proxy = port->getSource()->getProxy();
       arcInfo->SetBlockIndex(flatIdx - 1);
       proxy->GatherInformation(arcInfo.GetPointer());
-      if(arcInfo->GetModelEntityID())
-        {
+      if (arcInfo->GetModelEntityID())
+      {
         smtk::common::UUID edgeId(arcInfo->GetModelEntityID());
         smtk::model::Edge edge(this->Arc->edgeOperator()->manager(), edgeId);
-        if(edge.isValid())
-          {
+        if (edge.isValid())
+        {
           this->Info->EdgeId = edgeId;
           this->Info->BlockIndex = flatIdx - 1;
           this->Arc->setSource(port->getSource());
           // once find the edge needed, turn off the selection for model source
           port->setSelectionInput(NULL, 0);
           this->View->render();
-          }
         }
       }
-/*
+    }
+    /*
     // get the selected point id
     // This "IDs" only have three components [composite_index, processId, Index]
     // because the arc source is a block in a Composite Dataset
@@ -179,61 +175,58 @@ void ArcPicker::selectedInfo(pqOutputPort* port)
       this->Info->IsValid = true;
       }
 */
-    }
+  }
 }
 
 void ArcPicker::onPickingFinished()
 {
   //we want the connection to happen once the view goes away so
   //remove the connection
-  if(this->Selecter)
-    {
+  if (this->Selecter)
+  {
     this->Selecter->disconnect();
     delete this->Selecter;
     this->Selecter = NULL;
-    }
-  if(this->View)
-    {
+  }
+  if (this->View)
+  {
     this->View->forceRender();
     // reset multiple selection to true
     this->View->setUseMultipleRepresentationSelection(false);
-    }
+  }
   this->m_isActive = false;
   emit this->pickFinished();
 }
 }
 
-
 class pqArcWidgetPanel::pqInternals : public Ui::qtArcWidgetPanel
-  {
-  public:
-    // QPointer<pqPipelineSource> ArcSource;
-  };
+{
+public:
+  // QPointer<pqPipelineSource> ArcSource;
+};
 
-pqArcWidgetPanel::pqArcWidgetPanel(QWidget *parent) :
-  QWidget(parent),
-  Internals(new pqArcWidgetPanel::pqInternals),
-  Picker(parent),
-  View(NULL),
-  Arc(NULL),
-  ArcWidget(NULL),
-  ArcManager(NULL)
+pqArcWidgetPanel::pqArcWidgetPanel(QWidget* parent)
+  : QWidget(parent)
+  , Internals(new pqArcWidgetPanel::pqInternals)
+  , Picker(parent)
+  , View(NULL)
+  , Arc(NULL)
+  , ArcWidget(NULL)
+  , ArcManager(NULL)
 {
   Internals->setupUi(this);
   this->setObjectName("pqArcWidgetPanel");
 
   //connect up the pick buttons
-  QObject::connect(this->Internals->SelectArcButton, SIGNAL(toggled(bool)),
-    this, SLOT(pickWholeArc()));
+  QObject::connect(
+    this->Internals->SelectArcButton, SIGNAL(toggled(bool)), this, SLOT(pickWholeArc()));
 
   //connect up the edit buttons
-  QObject::connect(this->Internals->cancelButton, SIGNAL(clicked()),
-    this, SLOT(cancelEdit()));
+  QObject::connect(this->Internals->cancelButton, SIGNAL(clicked()), this, SLOT(cancelEdit()));
 
   //connect the picker up so we know when it is done.
-  QObject::connect(&this->Picker, SIGNAL(pickFinished()),
-    this, SLOT(arcPicked()), Qt::QueuedConnection);
-
+  QObject::connect(
+    &this->Picker, SIGNAL(pickFinished()), this, SLOT(arcPicked()), Qt::QueuedConnection);
 }
 
 pqArcWidgetPanel::~pqArcWidgetPanel()
@@ -244,14 +237,14 @@ pqArcWidgetPanel::~pqArcWidgetPanel()
 
 void pqArcWidgetPanel::setArc(pqPolygonArc* arc)
 {
-  if(this->Arc != arc)
+  if (this->Arc != arc)
+  {
+    this->Arc = arc;
+    if (this->Arc)
     {
-    this->Arc=arc;
-    if(this->Arc)
-      {
       this->resetWidget();
-      }
     }
+  }
 }
 
 void pqArcWidgetPanel::showEditWidget()
@@ -266,10 +259,10 @@ void pqArcWidgetPanel::showEditWidget()
   this->modifyArc();
 
   // clear selection on the selected port when contourWidget is shown
-  if(this->ArcInfo.port)
-    {
+  if (this->ArcInfo.port)
+  {
     this->ArcInfo.port->setSelectionInput(NULL, 0);
-    }
+  }
 
   emit this->startArcEditing();
 }
@@ -282,117 +275,114 @@ void pqArcWidgetPanel::showPickWidget()
 
   //update the layout
   this->updateGeometry();
-
 }
 
 void pqArcWidgetPanel::pickWholeArc()
 {
-  if(this->Internals->SelectArcButton->isChecked())
-    {
+  if (this->Internals->SelectArcButton->isChecked())
+  {
     // The edge operator will tell which edge to use for editing
-    if ( !this->Arc )
-      {
+    if (!this->Arc)
+    {
       return;
-      }
+    }
     this->Arc->resetOperationSource();
 
-    this->Picker.doPick(this->View,this->Arc, this->ArcInfo);
+    this->Picker.doPick(this->View, this->Arc, this->ArcInfo);
     // clear all selections
     emit this->startArcPicking();
-
-    }
+  }
   else
-    {
+  {
     // update the UI for whole arc
     this->showPickWidget();
-    }
+  }
 }
 
 void pqArcWidgetPanel::arcPicked()
 {
-  if(this->Arc && this->Arc->edgeOperator())
+  if (this->Arc && this->Arc->edgeOperator())
+  {
+    smtk::model::Edge edge(this->Arc->edgeOperator()->manager(), this->ArcInfo.EdgeId);
+    if (edge.isValid())
     {
-    smtk::model::Edge edge(this->Arc->edgeOperator()->manager(),
-                           this->ArcInfo.EdgeId);
-    if(edge.isValid())
-      {
       smtk::attribute::AttributePtr opSpec = this->Arc->edgeOperator()->specification();
       edge.setIntegerProperty("block_index", this->ArcInfo.BlockIndex);
-      if(!opSpec->isEntityAssociated(edge))
-        {
+      if (!opSpec->isEntityAssociated(edge))
+      {
         opSpec->removeAllAssociations();
         opSpec->associateEntity(edge);
-        }
+      }
       this->showEditWidget();
       return;
-      }
     }
+  }
 
   this->resetWidget();
 }
 
 void pqArcWidgetPanel::hideArcWidget()
 {
-  if(this->ArcWidget)
-    {
+  if (this->ArcWidget)
+  {
     this->ArcWidget->setEnableInteractivity(false);
     this->ArcWidget->setVisible(false);
     this->ArcWidget->setView(NULL);
     this->ArcWidget->hide();
-    }
+  }
 }
 
 void pqArcWidgetPanel::modifyArc()
 {
   if (!this->ArcManager)
-    {
+  {
     qCritical() << "There was not valid sub-arc to modify yet.\n";
     return;
-    }
+  }
   pqPolygonArc* arcObj = this->ArcManager->activeArc();
-  if(!arcObj)
-    {
+  if (!arcObj)
+  {
     return;
-    }
+  }
   bool created = false;
   int normal;
   double planePos;
-  if ( !this->ArcWidget )
-    {
+  if (!this->ArcWidget)
+  {
     this->ArcWidget = this->ArcManager->createDefaultContourWidget(normal, planePos);
     this->ArcWidget->setParent(this->Internals->ArcEditWidgtet);
     this->Internals->ContourLayout->addWidget(this->ArcWidget);
 
-    QObject::connect(this->ArcWidget,SIGNAL(contourDone()),
-      this,SLOT(arcEditingFinished()));
+    QObject::connect(this->ArcWidget, SIGNAL(contourDone()), this, SLOT(arcEditingFinished()));
     created = true;
-    }
-  if ( !created )
-    {
+  }
+  if (!created)
+  {
     this->ArcWidget->setView(this->View);
-    if(arcObj)
+    if (arcObj)
+    {
+      if (vtkSMProxy* pointplacer = this->ArcWidget->pointPlacer())
       {
-      if (vtkSMProxy *pointplacer = this->ArcWidget->pointPlacer()) {
-        vtkSMPropertyHelper(pointplacer, "ProjectionNormal").Set(
-          arcObj->getPlaneProjectionNormal());
-        vtkSMPropertyHelper(pointplacer, "ProjectionPosition").Set(
-          arcObj->getPlaneProjectionPosition());
+        vtkSMPropertyHelper(pointplacer, "ProjectionNormal")
+          .Set(arcObj->getPlaneProjectionNormal());
+        vtkSMPropertyHelper(pointplacer, "ProjectionPosition")
+          .Set(arcObj->getPlaneProjectionPosition());
         // pointplacer->MarkModified(pointplacer);
         pointplacer->UpdateVTKObjects();
-        }
       }
     }
+  }
 
   this->ArcWidget->useArcEditingUI(true);
   this->ArcWidget->setEnableInteractivity(true);
   this->ArcWidget->show();
-  if ( arcObj )
-    {
+  if (arcObj)
+  {
     if (!created)
-      {
+    {
       this->ArcWidget->reset(); // FIXME:why even bother reusing? Simply create
                                 // a new widget everytime.
-      }
+    }
 
     //pass the info from the arc into the widget proxy
     this->updateWidgetRepresentation();
@@ -403,7 +393,7 @@ void pqArcWidgetPanel::modifyArc()
     this->ArcWidget->checkContourLoopClosed();
     this->ArcWidget->ModifyMode();
     this->ArcWidget->checkCanBeEdited();
-    }
+  }
 
   this->View->forceRender();
 }
@@ -420,34 +410,29 @@ void pqArcWidgetPanel::resetWidget()
 
 void pqArcWidgetPanel::updateWidgetRepresentation()
 {
-  if ( !this->Arc || !this->Arc->getSource() )
-    {
+  if (!this->Arc || !this->Arc->getSource())
+  {
     return;
-    }
+  }
 
   //create an arc provider for this arc
-  vtkSMProxy* smArcSource = vtkSMProxyManager::GetProxyManager()->NewProxy(
-    "polygon_operators", "PolygonArcProvider");
+  vtkSMProxy* smArcSource =
+    vtkSMProxyManager::GetProxyManager()->NewProxy("polygon_operators", "PolygonArcProvider");
   vtkSMPropertyHelper(smArcSource, "Input").Set(this->Arc->getSource()->getProxy(), 0);
 
   //tell the provider the arc id it needs to be connected too
-  vtkSMSourceProxy *sourceProxy = vtkSMSourceProxy::SafeDownCast(smArcSource);
-  vtkSMPropertyHelper(sourceProxy,"BlockIndex").Set(this->Arc->getAssignedEdgeBlock());
+  vtkSMSourceProxy* sourceProxy = vtkSMSourceProxy::SafeDownCast(smArcSource);
+  vtkSMPropertyHelper(sourceProxy, "BlockIndex").Set(this->Arc->getAssignedEdgeBlock());
   sourceProxy->UpdateVTKObjects();
   sourceProxy->UpdatePipeline();
 
-  vtkSMNewWidgetRepresentationProxy *widgetProxy =
-      this->ArcWidget->widgetProxy();
+  vtkSMNewWidgetRepresentationProxy* widgetProxy = this->ArcWidget->widgetProxy();
   vtkSMProxy* repProxy = widgetProxy->GetRepresentationProxy();
   vtkClientServerStream stream;
-  stream  << vtkClientServerStream::Invoke
-          << VTKOBJECT(sourceProxy) << "GetOutput"
-          << vtkClientServerStream::End
-          << vtkClientServerStream::Invoke
-          << VTKOBJECT(repProxy) << "InitializeContour"
-          << vtkClientServerStream::LastResult
-          << 0
-          << vtkClientServerStream::End;
+  stream << vtkClientServerStream::Invoke << VTKOBJECT(sourceProxy) << "GetOutput"
+         << vtkClientServerStream::End << vtkClientServerStream::Invoke << VTKOBJECT(repProxy)
+         << "InitializeContour" << vtkClientServerStream::LastResult << 0
+         << vtkClientServerStream::End;
   repProxy->GetSession()->ExecuteStream(repProxy->GetLocation(), stream);
 
   smArcSource->FastDelete();
@@ -476,8 +461,7 @@ void pqArcWidgetPanel::cancelEdit()
 void pqArcWidgetPanel::saveEdit()
 {
   // modify/replace the edge with the arc from the arc widget
-  emit this->arcModified(this->ArcWidget,
-                         this->ArcInfo.EdgeId);
+  emit this->arcModified(this->ArcWidget, this->ArcInfo.EdgeId);
 
   //hide the arc widget
   this->hideArcWidget();

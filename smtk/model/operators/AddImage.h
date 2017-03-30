@@ -12,8 +12,10 @@
 
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 class SMTKCORE_EXPORT AddImage : public AddAuxiliaryGeometry
 {
@@ -27,7 +29,7 @@ private:
   virtual smtk::model::OperatorResult operateInternal();
 };
 
-  } //namespace model
+} //namespace model
 } // namespace smtk
 
 #endif // __smtk_model_AddImage_h

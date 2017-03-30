@@ -37,8 +37,8 @@ struct vtkModelItemGenericIteratorInternals;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkModelItemGenericIterator : public vtkModelItemIterator
 {
 public:
-  static vtkModelItemGenericIterator *New();
-  vtkTypeMacro(vtkModelItemGenericIterator,vtkModelItemIterator);
+  static vtkModelItemGenericIterator* New();
+  vtkTypeMacro(vtkModelItemGenericIterator, vtkModelItemIterator);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -83,14 +83,12 @@ protected:
   virtual ~vtkModelItemGenericIterator();
 
 private:
-  vtkModelItemGenericIterator(const vtkModelItemGenericIterator&);  // Not implemented.
-  void operator=(const vtkModelItemGenericIterator&);  // Not implemented.
+  vtkModelItemGenericIterator(const vtkModelItemGenericIterator&); // Not implemented.
+  void operator=(const vtkModelItemGenericIterator&);              // Not implemented.
 
   // Description:
   // Container for the objects to be iterated over.
   vtkModelItemGenericIteratorInternals* Internal;
-
 };
 
 #endif
-

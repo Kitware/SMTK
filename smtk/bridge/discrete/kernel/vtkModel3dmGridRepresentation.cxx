@@ -36,83 +36,79 @@ vtkModel3dmGridRepresentation::vtkModel3dmGridRepresentation()
 
 vtkModel3dmGridRepresentation::~vtkModel3dmGridRepresentation()
 {
-  if(this->ModelPointToAnalysisPoint)
-    {
+  if (this->ModelPointToAnalysisPoint)
+  {
     this->ModelPointToAnalysisPoint->Delete();
     this->ModelPointToAnalysisPoint = NULL;
-    }
-  if(this->ModelCellToAnalysisCells)
-    {
+  }
+  if (this->ModelCellToAnalysisCells)
+  {
     this->ModelCellToAnalysisCells->Delete();
     this->ModelCellToAnalysisCells = NULL;
-    }
-  if(this->ModelCellToAnalysisCellSides)
-    {
+  }
+  if (this->ModelCellToAnalysisCellSides)
+  {
     this->ModelCellToAnalysisCellSides->Delete();
     this->ModelCellToAnalysisCellSides = NULL;
-    }
+  }
 }
 
 bool vtkModel3dmGridRepresentation::GetBCSNodalAnalysisGridPointIds(
-  vtkDiscreteModel* model, vtkIdType bcsGroupId,
-  int bcGroupType, vtkIdList* pointIds)
+  vtkDiscreteModel* model, vtkIdType bcsGroupId, int bcGroupType, vtkIdList* pointIds)
 {
   pointIds->Reset();
-  if(this->IsModelConsistent(model) == false)
-    {
+  if (this->IsModelConsistent(model) == false)
+  {
     this->Reset();
     return false;
-    }
-  if(model->HasInValidMesh())
-    {  // we're on the client and don't know this info
+  }
+  if (model->HasInValidMesh())
+  { // we're on the client and don't know this info
     return false;
-    }
+  }
 
   //pointIds->SetNumberOfIds(
   //  this->ModelPointToAnalysisPoint->GetNumberOfTuples());
 
-  if(vtkDiscreteModelEntityGroup* bcsNodalGroup =
-    vtkDiscreteModelEntityGroup::SafeDownCast(
-    model->GetModelEntity(vtkDiscreteModelEntityGroupType, bcsGroupId)))
+  if (vtkDiscreteModelEntityGroup* bcsNodalGroup = vtkDiscreteModelEntityGroup::SafeDownCast(
+        model->GetModelEntity(vtkDiscreteModelEntityGroupType, bcsGroupId)))
+  {
+    vtkModelItemIterator* iterFace = bcsNodalGroup->NewIterator(vtkModelFaceType);
+    for (iterFace->Begin(); !iterFace->IsAtEnd(); iterFace->Next())
     {
-    vtkModelItemIterator* iterFace=bcsNodalGroup->NewIterator(vtkModelFaceType);
-    for(iterFace->Begin();!iterFace->IsAtEnd();iterFace->Next())
+      vtkDiscreteModelFace* entity = vtkDiscreteModelFace::SafeDownCast(iterFace->GetCurrentItem());
+      if (entity)
       {
-      vtkDiscreteModelFace* entity =
-        vtkDiscreteModelFace::SafeDownCast(iterFace->GetCurrentItem());
-      if(entity)
-        {
         vtkNew<vtkIdList> newPointIds;
-        if(bcGroupType == 1)// vtkSBBCInstance::enBCModelEntityAllNodesType)
-          {
+        if (bcGroupType == 1) // vtkSBBCInstance::enBCModelEntityAllNodesType)
+        {
           entity->GetAllPointIds(newPointIds.GetPointer());
-          }
-        else if(bcGroupType == 2)//vtkSBBCInstance::enBCModelEntityBoundaryNodesType)
-          {
+        }
+        else if (bcGroupType == 2) //vtkSBBCInstance::enBCModelEntityBoundaryNodesType)
+        {
           entity->GetBoundaryPointIds(newPointIds.GetPointer());
-          }
-        else if(bcGroupType == 3)//vtkSBBCInstance::enBCModelEntityInteriorNodesType)
-          {
+        }
+        else if (bcGroupType == 3) //vtkSBBCInstance::enBCModelEntityInteriorNodesType)
+        {
           entity->GetInteriorPointIds(newPointIds.GetPointer());
-          }
+        }
         // Adding the new point ids
-        for(vtkIdType i=0; i<newPointIds->GetNumberOfIds(); i++)
-          {
+        for (vtkIdType i = 0; i < newPointIds->GetNumberOfIds(); i++)
+        {
           pointIds->InsertUniqueId(newPointIds->GetId(i));
-          }
         }
       }
-    iterFace->Delete();
-   // pointIds->Squeeze();
-
-    for(vtkIdType i=0;i<pointIds->GetNumberOfIds();i++)
-      {
-      vtkIdType analysisPointId =
-        this->ModelPointToAnalysisPoint->GetValue(pointIds->GetId(i));
-      pointIds->SetId(i, analysisPointId);
-      }
-    return true;
     }
+    iterFace->Delete();
+    // pointIds->Squeeze();
+
+    for (vtkIdType i = 0; i < pointIds->GetNumberOfIds(); i++)
+    {
+      vtkIdType analysisPointId = this->ModelPointToAnalysisPoint->GetValue(pointIds->GetId(i));
+      pointIds->SetId(i, analysisPointId);
+    }
+    return true;
+  }
   return false;
 }
 
@@ -131,33 +127,31 @@ bool vtkModel3dmGridRepresentation::GetModelEdgeAnalysisPoints(
 }
 
 bool vtkModel3dmGridRepresentation::GetBoundaryGroupAnalysisFacets(
-  vtkDiscreteModel* model, vtkIdType boundaryGroupId,
-  vtkIdList* cellIds, vtkIdList* cellSides)
+  vtkDiscreteModel* model, vtkIdType boundaryGroupId, vtkIdList* cellIds, vtkIdList* cellSides)
 {
   cellIds->Reset();
   cellSides->Reset();
-  if(this->IsModelConsistent(model) == false)
-    {
+  if (this->IsModelConsistent(model) == false)
+  {
     this->Reset();
     return false;
-    }
-  if(model->HasInValidMesh())
-    {  // we're on the client and don't know this info
+  }
+  if (model->HasInValidMesh())
+  { // we're on the client and don't know this info
     return false;
-    }
-  if(vtkDiscreteModelEntityGroup* boundaryGroup =
-     vtkDiscreteModelEntityGroup::SafeDownCast(
-       model->GetModelEntity(vtkDiscreteModelEntityGroupType, boundaryGroupId)))
-    {
+  }
+  if (vtkDiscreteModelEntityGroup* boundaryGroup = vtkDiscreteModelEntityGroup::SafeDownCast(
+        model->GetModelEntity(vtkDiscreteModelEntityGroupType, boundaryGroupId)))
+  {
     vtkModelItemIterator* entities = boundaryGroup->NewModelEntityIterator();
-    for(entities->Begin();!entities->IsAtEnd();entities->Next())
+    for (entities->Begin(); !entities->IsAtEnd(); entities->Next())
+    {
+      if (vtkDiscreteModelGeometricEntity* entity =
+            vtkDiscreteModelGeometricEntity::GetThisDiscreteModelGeometricEntity(
+              vtkModelEntity::SafeDownCast(entities->GetCurrentItem())))
       {
-      if(vtkDiscreteModelGeometricEntity* entity =
-         vtkDiscreteModelGeometricEntity::GetThisDiscreteModelGeometricEntity(
-           vtkModelEntity::SafeDownCast(entities->GetCurrentItem())))
+        for (vtkIdType i = 0; i < entity->GetNumberOfCells(); i++)
         {
-        for(vtkIdType i=0;i<entity->GetNumberOfCells();i++)
-          {
           // we only need (and return) one 3d cell and side that is adjacent
           // to the boundary facet
           vtkIdType masterCellId = entity->GetMasterCellId(i);
@@ -167,68 +161,65 @@ bool vtkModel3dmGridRepresentation::GetBoundaryGroupAnalysisFacets(
           char side;
           this->ModelCellToAnalysisCellSides->GetTypedTuple(masterCellId, &side);
           cellSides->InsertNextId(side);
-          }
         }
       }
+    }
     entities->Delete();
     return true;
-    }
+  }
 
   return false;
 }
 
 bool vtkModel3dmGridRepresentation::IsModelConsistent(vtkDiscreteModel* model)
 {
-  if(model->HasInValidMesh())
-    {  // we're on the server
+  if (model->HasInValidMesh())
+  { // we're on the server
     const DiscreteMesh& mesh = model->GetMesh();
-    if(mesh.GetNumberOfPoints() !=
-       this->ModelPointToAnalysisPoint->GetNumberOfTuples())
-      {
+    if (mesh.GetNumberOfPoints() != this->ModelPointToAnalysisPoint->GetNumberOfTuples())
+    {
       vtkErrorMacro("Model does not match analysis grid.");
       this->Reset();
       return false;
-      }
-    if(mesh.GetNumberOfCells() !=
-       this->ModelCellToAnalysisCellSides->GetNumberOfTuples() ||
-       mesh.GetNumberOfCells() !=
-       this->ModelCellToAnalysisCells->GetNumberOfTuples())
-      {
-      vtkErrorMacro("Model does not match analysis grid.");
-      this->Reset();
-      return false;
-      }
     }
+    if (mesh.GetNumberOfCells() != this->ModelCellToAnalysisCellSides->GetNumberOfTuples() ||
+      mesh.GetNumberOfCells() != this->ModelCellToAnalysisCells->GetNumberOfTuples())
+    {
+      vtkErrorMacro("Model does not match analysis grid.");
+      this->Reset();
+      return false;
+    }
+  }
   return true;
 }
 
-bool vtkModel3dmGridRepresentation::Initialize(
-  const char* fileName, vtkDiscreteModel* model, vtkIdTypeArray* modelPointToAnalysisPoint,
-    vtkIdTypeArray* modelCellToAnalysisCells, vtkCharArray* modelCellToAnalysisCellSides)
+bool vtkModel3dmGridRepresentation::Initialize(const char* fileName, vtkDiscreteModel* model,
+  vtkIdTypeArray* modelPointToAnalysisPoint, vtkIdTypeArray* modelCellToAnalysisCells,
+  vtkCharArray* modelCellToAnalysisCellSides)
 {
   this->SetGridFileName(fileName);
   this->ModelPointToAnalysisPoint->SetNumberOfTuples(
     modelPointToAnalysisPoint->GetNumberOfTuples());
-  for(vtkIdType i=0;i<modelPointToAnalysisPoint->GetNumberOfTuples();i++)
-    {
+  for (vtkIdType i = 0; i < modelPointToAnalysisPoint->GetNumberOfTuples(); i++)
+  {
     vtkIdType value = modelPointToAnalysisPoint->GetValue(i);
     this->ModelPointToAnalysisPoint->SetValue(i, value);
-    }
+  }
   vtkIdType numberOfCells = modelCellToAnalysisCells->GetNumberOfTuples();
-  if(numberOfCells != modelCellToAnalysisCellSides->GetNumberOfTuples())
-    {
+  if (numberOfCells != modelCellToAnalysisCellSides->GetNumberOfTuples())
+  {
     this->Reset();
     return false;
-    }
+  }
   this->ModelCellToAnalysisCells->SetNumberOfTuples(numberOfCells);
   this->ModelCellToAnalysisCellSides->SetNumberOfTuples(numberOfCells);
-  for(vtkIdType i=0;i<numberOfCells;i++)
-    {
+  for (vtkIdType i = 0; i < numberOfCells; i++)
+  {
     vtkIdType value = modelCellToAnalysisCells->GetValue(i);
     this->ModelCellToAnalysisCells->SetValue(i, value);
     char cvalue = modelCellToAnalysisCellSides->GetValue(i);
     this->ModelCellToAnalysisCellSides->SetValue(i, cvalue);
-    }
+  }
 
   return this->IsModelConsistent(model);
 }
@@ -243,12 +234,8 @@ void vtkModel3dmGridRepresentation::Reset()
 
 void vtkModel3dmGridRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
-  os << indent << "ModelPointToAnalysisPoint: "
-     << this->ModelPointToAnalysisPoint << "\n";
-  os << indent << "ModelCellToAnalysisCells: "
-     << this->ModelCellToAnalysisCells << "\n";
-  os << indent << "ModelCellToAnalysisCellSides: "
-     << this->ModelCellToAnalysisCellSides << "\n";
+  this->Superclass::PrintSelf(os, indent);
+  os << indent << "ModelPointToAnalysisPoint: " << this->ModelPointToAnalysisPoint << "\n";
+  os << indent << "ModelCellToAnalysisCells: " << this->ModelCellToAnalysisCells << "\n";
+  os << indent << "ModelCellToAnalysisCellSides: " << this->ModelCellToAnalysisCellSides << "\n";
 }
-

@@ -28,33 +28,33 @@ using namespace smtk::model;
 using namespace smtk::common;
 using namespace boost::filesystem;
 
-namespace smtk {
-  namespace bridge {
-    namespace multiscale {
-
-std::string
-PythonScript::listToArgList(std::vector<std::string>& tokens)
+namespace smtk
 {
-  return this->specToArgList(smtk::attribute::AttributePtr(),tokens);
+namespace bridge
+{
+namespace multiscale
+{
+
+std::string PythonScript::listToArgList(std::vector<std::string>& tokens)
+{
+  return this->specToArgList(smtk::attribute::AttributePtr(), tokens);
 }
 
-std::string
-PythonScript::specToArgList(smtk::attribute::AttributePtr spec)
+std::string PythonScript::specToArgList(smtk::attribute::AttributePtr spec)
 {
   std::vector<std::string> nullList;
-  return this->specToArgList(spec,nullList);
+  return this->specToArgList(spec, nullList);
 }
 
-std::string
-PythonScript::specToArgList(smtk::attribute::AttributePtr spec,
-                                    std::vector<std::string>& additionalTokens)
+std::string PythonScript::specToArgList(
+  smtk::attribute::AttributePtr spec, std::vector<std::string>& additionalTokens)
 {
   std::stringstream preamble;
   preamble << "import sys\n";
   preamble << "sys.argv = [\"pythonscript\"";
   if (spec)
   {
-    for (std::size_t i=0; i<spec->numberOfItems(); i++)
+    for (std::size_t i = 0; i < spec->numberOfItems(); i++)
     {
       smtk::attribute::ItemPtr item =
         smtk::dynamic_pointer_cast<smtk::attribute::Item>(spec->item(i));
@@ -66,9 +66,9 @@ PythonScript::specToArgList(smtk::attribute::AttributePtr spec,
 
       switch (item->type())
       {
-      case smtk::attribute::Item::DOUBLE:
-      case smtk::attribute::Item::INT:
-      case smtk::attribute::Item::STRING:
+        case smtk::attribute::Item::DOUBLE:
+        case smtk::attribute::Item::INT:
+        case smtk::attribute::Item::STRING:
         {
           smtk::attribute::ValueItemPtr valueItem =
             smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(item);
@@ -76,14 +76,14 @@ PythonScript::specToArgList(smtk::attribute::AttributePtr spec,
           if (valueItem && valueItem->name() != "assign names")
           {
             preamble << ",\"--" << valueItem->name() << "\"";
-            for (std::size_t j=0; j<valueItem->numberOfValues();j++)
+            for (std::size_t j = 0; j < valueItem->numberOfValues(); j++)
             {
               preamble << ",\"" << valueItem->valueAsString(j) << "\"";
             }
           }
         }
         break;
-      case smtk::attribute::Item::FILE:
+        case smtk::attribute::Item::FILE:
         {
           smtk::attribute::FileItemPtr fileItem =
             smtk::dynamic_pointer_cast<smtk::attribute::FileItem>(item);
@@ -91,14 +91,14 @@ PythonScript::specToArgList(smtk::attribute::AttributePtr spec,
           if (fileItem)
           {
             preamble << ",\"--" << fileItem->name() << "\"";
-            for (std::size_t j=0; j<fileItem->numberOfValues();j++)
+            for (std::size_t j = 0; j < fileItem->numberOfValues(); j++)
             {
               preamble << ",\"" << fileItem->valueAsString(j) << "\"";
             }
           }
         }
         break;
-      case smtk::attribute::Item::VOID:
+        case smtk::attribute::Item::VOID:
         {
           smtk::attribute::VoidItemPtr voidItem =
             smtk::dynamic_pointer_cast<smtk::attribute::VoidItem>(item);
@@ -109,13 +109,13 @@ PythonScript::specToArgList(smtk::attribute::AttributePtr spec,
           }
         }
         break;
-      default:
-        break;
+        default:
+          break;
       }
     }
   }
 
-  for (std::size_t i=0;i<additionalTokens.size();i++)
+  for (std::size_t i = 0; i < additionalTokens.size(); i++)
   {
     preamble << ",\"" << additionalTokens.at(i) << "\"";
   }
@@ -125,9 +125,8 @@ PythonScript::specToArgList(smtk::attribute::AttributePtr spec,
   return preamble.str();
 }
 
-smtk::model::OperatorResult
-PythonScript::executePythonScript(std::string preamble,
-                                          std::string pythonScript)
+smtk::model::OperatorResult PythonScript::executePythonScript(
+  std::string preamble, std::string pythonScript)
 {
   if (vtkPythonInterpreter::IsInitialized())
   {
@@ -141,11 +140,10 @@ PythonScript::executePythonScript(std::string preamble,
   vtkPythonInterpreter::RunSimpleString(pipeline.str().c_str());
   vtkPythonInterpreter::Finalize();
 
-  smtk::model::OperatorResult result = this->createResult(
-    smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
   return result;
 }
 
-    } // namespace multiscale
-  } //namespace bridge
+} // namespace multiscale
+} //namespace bridge
 } // namespace smtk

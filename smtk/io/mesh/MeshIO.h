@@ -18,17 +18,20 @@
 
 #include <memory>
 
-namespace smtk {
-  namespace io {
-namespace mesh {
+namespace smtk
+{
+namespace io
+{
+namespace mesh
+{
 
-enum class Subset: unsigned int
-  {
+enum class Subset : unsigned int
+{
   EntireCollection,
   OnlyDomain,
   OnlyDirichlet,
   OnlyNeumann,
-  };
+};
 
 /**\brief Base class for mesh IO types
   *
@@ -46,47 +49,37 @@ class SMTKCORE_EXPORT MeshIO
 public:
   virtual ~MeshIO() {}
 
-  virtual smtk::mesh::CollectionPtr
-    importMesh( const std::string&,
-                smtk::mesh::ManagerPtr&,
-                const std::string& ) const
-  { return smtk::mesh::CollectionPtr(); }
-  virtual bool
-    importMesh( const std::string&,
-                smtk::mesh::CollectionPtr,
-                const std::string& ) const { return false; }
+  virtual smtk::mesh::CollectionPtr importMesh(
+    const std::string&, smtk::mesh::ManagerPtr&, const std::string&) const
+  {
+    return smtk::mesh::CollectionPtr();
+  }
+  virtual bool importMesh(const std::string&, smtk::mesh::CollectionPtr, const std::string&) const
+  {
+    return false;
+  }
 
-  virtual bool exportMesh( const std::string&,
-                           smtk::mesh::CollectionPtr ) const { return false; }
-  virtual bool exportMesh( const std::string&,
-                           smtk::mesh::CollectionPtr,
-                           smtk::model::ManagerPtr,
-                           const std::string& ) const { return false; }
+  virtual bool exportMesh(const std::string&, smtk::mesh::CollectionPtr) const { return false; }
+  virtual bool exportMesh(const std::string&, smtk::mesh::CollectionPtr, smtk::model::ManagerPtr,
+    const std::string&) const
+  {
+    return false;
+  }
 
-  virtual smtk::mesh::CollectionPtr
-    read( const std::string&,
-          smtk::mesh::ManagerPtr&,
-          Subset) const { return smtk::mesh::CollectionPtr(); }
-  virtual bool
-    read( const std::string&,
-          smtk::mesh::CollectionPtr,
-          Subset ) const { return false; }
+  virtual smtk::mesh::CollectionPtr read(const std::string&, smtk::mesh::ManagerPtr&, Subset) const
+  {
+    return smtk::mesh::CollectionPtr();
+  }
+  virtual bool read(const std::string&, smtk::mesh::CollectionPtr, Subset) const { return false; }
 
-  virtual bool write( const std::string&,
-                      smtk::mesh::CollectionPtr,
-                      Subset ) const { return false; }
-  virtual bool write( smtk::mesh::CollectionPtr,
-                      Subset ) const { return false; }
+  virtual bool write(const std::string&, smtk::mesh::CollectionPtr, Subset) const { return false; }
+  virtual bool write(smtk::mesh::CollectionPtr, Subset) const { return false; }
 
-  const std::vector<smtk::io::mesh::Format>& FileFormats() const
-    {
-      return this->Formats;
-    }
+  const std::vector<smtk::io::mesh::Format>& FileFormats() const { return this->Formats; }
 
 protected:
   std::vector<smtk::io::mesh::Format> Formats;
 };
-
 }
 }
 }

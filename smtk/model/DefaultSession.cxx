@@ -18,8 +18,10 @@
 
 #include "smtk/AutoInit.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /// Default constructor. Initializes statically-registered operators.
 DefaultSession::DefaultSession()
@@ -28,7 +30,8 @@ DefaultSession::DefaultSession()
 }
 
 /// Indicate that, since we have no "backing store" model, the entire model is already present.
-SessionInfoBits DefaultSession::transcribeInternal(const EntityRef& entity, SessionInfoBits flags, int depth)
+SessionInfoBits DefaultSession::transcribeInternal(
+  const EntityRef& entity, SessionInfoBits flags, int depth)
 {
   (void)entity;
   (void)flags;
@@ -50,8 +53,7 @@ SessionInfoBits DefaultSession::transcribeInternal(const EntityRef& entity, Sess
   * fetch records from the remote session's model manager on demand.
   */
 void DefaultSession::backsRemoteSession(
-  const std::string& remoteSessionName,
-  const smtk::common::UUID& sessId)
+  const std::string& remoteSessionName, const smtk::common::UUID& sessId)
 {
   this->m_remoteSessionName = remoteSessionName;
   this->m_sessionId = sessId;
@@ -79,7 +81,7 @@ OperatorPtr DefaultSession::op(const std::string& opName) const
 {
   OperatorPtr oper = this->Session::op(opName);
   if (!oper && !this->m_remoteSessionName.empty())
-    { // we are a remote session... create any operator our friend classes ask for.
+  { // we are a remote session... create any operator our friend classes ask for.
     RemoteOperatorPtr rop = RemoteOperator::create();
     rop->setName(opName);
     rop->setManager(this->manager());
@@ -90,7 +92,7 @@ OperatorPtr DefaultSession::op(const std::string& opName) const
     DefaultSession* self = const_cast<DefaultSession*>(this);
     rop->setSession(self);
     oper = rop;
-    }
+  }
   return oper;
 }
 
@@ -129,15 +131,11 @@ OperatorResult DefaultSession::operateDelegate(RemoteOperatorPtr oper)
 }
 ///@}
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #include "smtk/model/DefaultSession_json.h" // For DefaultSession_json
 smtkImplementsModelingKernel(
-  SMTKCORE_EXPORT,
-  native,
-  DefaultSession_json,
-  smtk::model::SessionHasNoStaticSetup,
-  smtk::model::DefaultSession,
-  true /* inherit "universal" operators */
-);
+  SMTKCORE_EXPORT, native, DefaultSession_json, smtk::model::SessionHasNoStaticSetup,
+  smtk::model::DefaultSession, true /* inherit "universal" operators */
+  );

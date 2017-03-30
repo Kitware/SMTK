@@ -36,34 +36,34 @@ QColor qtColorButton::chosenColor() const
 
 void qtColorButton::setChosenColor(const QColor& color)
 {
-  if(color.isValid())
+  if (color.isValid())
+  {
+    if (color != this->Color)
     {
-    if(color != this->Color)
-      {
       this->Color = color;
       this->setIcon(this->renderColorSwatch(color));
 
       emit this->chosenColorChanged(this->Color);
-      }
-    emit this->validColorChosen(this->Color);
     }
+    emit this->validColorChosen(this->Color);
+  }
 }
 
 QIcon qtColorButton::renderColorSwatch(const QColor& color)
 {
   int radius = qRound(this->height() * 0.75);
   if (radius <= 10)
-    {
+  {
     radius = 10;
-    }
+  }
 
   QPixmap pix(radius, radius);
-  pix.fill(QColor(0,0,0,0));
+  pix.fill(QColor(0, 0, 0, 0));
 
   QPainter painter(&pix);
   painter.setRenderHint(QPainter::Antialiasing, true);
   painter.setBrush(QBrush(color));
-  painter.drawEllipse(1, 1, radius-2, radius-2);
+  painter.drawEllipse(1, 1, radius - 2, radius - 2);
   painter.end();
 
   return QIcon(pix);
@@ -71,13 +71,13 @@ QIcon qtColorButton::renderColorSwatch(const QColor& color)
 
 void qtColorButton::chooseColor()
 {
-  this->setChosenColor(QColorDialog::getColor(this->Color, this,
-    "Choose Color", QColorDialog::DontUseNativeDialog));
+  this->setChosenColor(
+    QColorDialog::getColor(this->Color, this, "Choose Color", QColorDialog::DontUseNativeDialog));
 }
 
-void qtColorButton::resizeEvent(QResizeEvent *rEvent)
+void qtColorButton::resizeEvent(QResizeEvent* rEvent)
 {
-  (void) rEvent;
+  (void)rEvent;
 
   this->setIcon(this->renderColorSwatch(this->Color));
 }

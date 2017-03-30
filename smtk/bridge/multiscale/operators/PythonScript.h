@@ -12,9 +12,12 @@
 
 #include "smtk/bridge/multiscale/Operator.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace multiscale {
+namespace smtk
+{
+namespace bridge
+{
+namespace multiscale
+{
 
 /**\brief An operator for executing python scripts as standalone executables.
  *
@@ -33,16 +36,16 @@ protected:
 
   // Convert an attribute spec and an additional vector of arguements into a
   // formatted list
-  virtual std::string specToArgList(smtk::attribute::AttributePtr spec,
-                                    std::vector<std::string>& additionalTokens);
+  virtual std::string specToArgList(
+    smtk::attribute::AttributePtr spec, std::vector<std::string>& additionalTokens);
 
   // Execute the python script using the vtkPythonInterpreter
-  virtual smtk::model::OperatorResult
-    executePythonScript(std::string preamble, std::string pythonScript);
+  virtual smtk::model::OperatorResult executePythonScript(
+    std::string preamble, std::string pythonScript);
 };
 
-    } // namespace multiscale
-  } // namespace bridge
+} // namespace multiscale
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_multiscale_PythonScript_h

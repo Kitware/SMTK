@@ -17,37 +17,36 @@
 #include <algorithm>
 #include <vector>
 
-namespace smoab{ namespace detail{
-
+namespace smoab
+{
+namespace detail
+{
 
 class ReduceSpectralMesh
 {
 public:
-  ReduceSpectralMeshReduceHighOrderCell(smoab::Range const& cells, moab::Interface* moab):
-    LinearCellConnectivity(),
-    HighOrderCellConnectivity()
-    {
+  ReduceSpectralMeshReduceHighOrderCell(smoab::Range const& cells, moab::Interface* moab)
+    : LinearCellConnectivity()
+    , HighOrderCellConnectivity()
+  {
     int count = 0;
-    const std::size_t cellSize=cells.size();
-    while(count != cellSize)
-      {
+    const std::size_t cellSize = cells.size();
+    while (count != cellSize)
+    {
       EntityHandle* connectivity;
-      int numVerts=0, iterationCount=0;
+      int numVerts = 0, iterationCount = 0;
       //use the highly efficent calls, since we know that are of the same dimension
-      moab->connect_iterate(cells.begin()+count,
-                            cells.end(),
-                            connectivity,
-                            numVerts,
-                            iterationCount);
+      moab->connect_iterate(
+        cells.begin() + count, cells.end(), connectivity, numVerts, iterationCount);
       //if we didn't read anything, break!
-      if(iterationCount == 0)
-        {
+      if (iterationCount == 0)
+      {
         break;
-        }
+      }
 
       //identify the cell type that we currently have,
       //store that along with the connectivity in a temp storage vector
-      const moab::EntityType type = moab->type_from_handle(*cells.begin()+count);
+      const moab::EntityType type = moab->type_from_handle(*cells.begin() + count);
 
       //instead of storing the connectivity in a single array,
       //what my goal is to have multiple vectors. The first vector
@@ -62,8 +61,8 @@ public:
       //while all these cells are contiously of the same type,
       //quadric hexs in vtk have 20 points, but moab has 21 so we
       //need to store this difference
-      }
     }
+  }
 
 private:
   std::vector<EntityHandle> LinearCellConnectivity;
@@ -71,8 +70,7 @@ private:
 
   std::vector<detail::ContinousCellInfo> LinearCellInfo;
   std::vector<detail::ContinousCellInfo> HighOrderCellInfo;
-
-
-} } //namespace smoab::detail
+}
+} //namespace smoab::detail
 
 #endif

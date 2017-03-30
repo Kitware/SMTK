@@ -16,26 +16,26 @@
 #include <string>
 #include <vector>
 
-namespace smtk {
-  namespace common {
+namespace smtk
+{
+namespace common
+{
 
 /**\brief Utilities for dealing with color conversion.
   */
 class SMTKCORE_EXPORT Color
 {
 public:
-  static bool stringToFloatRGBA(
-    double* rgba, const std::string& colorSpec);
+  static bool stringToFloatRGBA(double* rgba, const std::string& colorSpec);
   /// Convenience to convert a string color specifier into a vector instead of a pointer.
-  static bool stringToFloatRGBA(
-    std::vector<double>& rgba, const std::string& colorSpec)
-    {
+  static bool stringToFloatRGBA(std::vector<double>& rgba, const std::string& colorSpec)
+  {
     rgba.resize(4);
     return Color::stringToFloatRGBA(&rgba[0], colorSpec);
-    }
+  }
 };
 
-  } // namespace common
+} // namespace common
 } // namespace smtk
 
 #endif // smtk_common_Color_h

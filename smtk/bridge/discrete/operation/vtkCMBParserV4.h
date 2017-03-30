@@ -19,7 +19,6 @@
 #include "vtkCMBParserBase.h"
 #include <vector>
 
-
 class vtkDiscreteModel;
 class vtkModelEntity;
 class vtkPolyData;
@@ -28,11 +27,11 @@ class SMTKDISCRETESESSION_EXPORT vtkCMBParserV4 : public vtkCMBParserBase
 {
 public:
   static vtkCMBParserV4* New();
-  vtkTypeMacro(vtkCMBParserV4,vtkCMBParserBase);
+  vtkTypeMacro(vtkCMBParserV4, vtkCMBParserBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  virtual bool Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
-                     smtk::bridge::discrete::Session* session);
+  virtual bool Parse(
+    vtkPolyData* MasterPoly, vtkDiscreteModel* Model, smtk::bridge::discrete::Session* session);
 
 protected:
   vtkCMBParserV4();
@@ -40,13 +39,12 @@ protected:
 
   // Description:
   // Set the unique persistent Id,
-  void SetModelEntityData(
-    vtkPolyData* Poly, std::vector<vtkModelEntity*> & ModelEntities,
+  void SetModelEntityData(vtkPolyData* Poly, std::vector<vtkModelEntity*>& ModelEntities,
     const char* BaseArrayName, vtkDiscreteModel* Model);
 
 private:
-  vtkCMBParserV4(const vtkCMBParserV4&);  // Not implemented.
-  void operator=(const vtkCMBParserV4&);  // Not implemented.
+  vtkCMBParserV4(const vtkCMBParserV4&); // Not implemented.
+  void operator=(const vtkCMBParserV4&); // Not implemented.
 };
 
 #endif

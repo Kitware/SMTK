@@ -19,8 +19,10 @@
 #include "smtk/model/Operator.h"
 #include "smtk/model/SessionRegistrar.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief Alternative constructor using session pointer instead of ID.
   *
@@ -157,8 +159,7 @@ StringList SessionRef::engines() const
   * Valid context strings are "read", "import", "write", and "export".
   * The default is "read".
   */
-StringData SessionRef::fileTypes(
-  const std::string& engine) const
+StringData SessionRef::fileTypes(const std::string& engine) const
 {
   return SessionRegistrar::sessionFileTypes(this->session()->name(), engine);
 }
@@ -189,5 +190,5 @@ void SessionRef::close()
   *       by GroupEntitity::meetsMembershipConstraints.
   */
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

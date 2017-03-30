@@ -14,8 +14,10 @@
 #include "smtk/model/EntityRefArrangementOps.h"
 #include "smtk/model/Manager.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /// Return the cell owning this cell-use.
 CellEntity UseEntity::cell() const
@@ -46,24 +48,23 @@ Orientation UseEntity::orientation() const
   if (!ent)
     return UNDEFINED;
 
-  const Arrangement* arr = mgr->findArrangement(
-    this->m_entity, HAS_CELL, 0);
+  const Arrangement* arr = mgr->findArrangement(this->m_entity, HAS_CELL, 0);
   if (ent && arr)
-    {
+  {
     int idx, esense;
     arr->IndexAndSenseFromUseHasCell(idx, esense);
     smtk::common::UUID cellId = ent->relations()[idx];
     // Now find the cell's HAS_USE record with the same sense as us:
     int arrIdx = mgr->findCellHasUseWithSense(cellId, this->m_entity, esense);
     if (arrIdx >= 0)
-      {
+    {
       // Now find the orientation of that use of the cell:
       Orientation orient;
       mgr->findArrangement(cellId, HAS_USE, arrIdx)
         ->IndexSenseAndOrientationFromCellHasUse(idx, esense, orient);
       return orient;
-      }
     }
+  }
   return UNDEFINED;
 }
 
@@ -73,14 +74,13 @@ int UseEntity::sense() const
   ManagerPtr mgr = this->manager();
   // Find the cell for this use record.
   Entity* ent = mgr->findEntity(this->m_entity);
-  const Arrangement* arr = mgr->findArrangement(
-    this->m_entity, HAS_CELL, 0);
+  const Arrangement* arr = mgr->findArrangement(this->m_entity, HAS_CELL, 0);
   if (ent && arr)
-    {
+  {
     int idx, esense;
     arr->IndexAndSenseFromUseHasCell(idx, esense);
     return esense;
-    }
+  }
   return -1;
 }
 
@@ -149,5 +149,5 @@ UseEntity& UseEntity::addShellEntity(const ShellEntity& shell)
  * This calls addShellEntity for each entry in \a shellContainer.
  */
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

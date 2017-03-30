@@ -12,35 +12,35 @@
 
 #include <fstream>
 
-namespace smtk {
-  namespace io {
+namespace smtk
+{
+namespace io
+{
 
 Logger::~Logger()
 {
   this->setFlushToStream(NULL, false, false);
 }
 
-void Logger::addRecord(Severity s, const std::string &m,
-                       const std::string &fname,
-                       unsigned int line)
+void Logger::addRecord(
+  Severity s, const std::string& m, const std::string& fname, unsigned int line)
 {
   if ((s == Logger::ERROR) || (s == Logger::FATAL))
-    {
+  {
     this->m_hasErrors = true;
-    }
+  }
   this->m_records.push_back(Record(s, m, fname, line));
   std::size_t nr = this->numberOfRecords();
   this->flushRecordsToStream(nr - 1, nr);
 }
 
-void Logger::append(const Logger &l)
+void Logger::append(const Logger& l)
 {
-  this->m_records.insert(this->m_records.end(), l.m_records.begin(),
-                         l.m_records.end());
+  this->m_records.insert(this->m_records.end(), l.m_records.begin(), l.m_records.end());
   if (l.m_hasErrors)
-    {
+  {
     this->m_hasErrors = true;
-    }
+  }
   std::size_t nr = this->numberOfRecords();
   this->flushRecordsToStream(nr - l.numberOfRecords(), nr);
 }
@@ -54,7 +54,7 @@ void Logger::reset()
 std::string Logger::severityAsString(Severity s)
 {
   switch (s)
-    {
+  {
     case DEBUG:
       return "DEBUG";
     case INFO:
@@ -67,7 +67,7 @@ std::string Logger::severityAsString(Severity s)
       return "FATAL";
     default:
       return "UNKNOWN";
-    }
+  }
   return "UNKNOWN";
 }
 
@@ -79,10 +79,10 @@ std::string Logger::toString(std::size_t i, bool includeSourceLoc) const
   std::stringstream ss;
   ss << severityAsString(this->m_records[i].severity) << ": ";
   if (includeSourceLoc && this->m_records[i].fileName != "")
-    {
-    ss << "In " << this->m_records[i].fileName << ", line "
-      << this->m_records[i].lineNumber << ": ";
-    }
+  {
+    ss << "In " << this->m_records[i].fileName << ", line " << this->m_records[i].lineNumber
+       << ": ";
+  }
   ss << this->m_records[i].message << std::endl;
   return ss.str();
 }
@@ -94,15 +94,15 @@ std::string Logger::toString(std::size_t i, std::size_t j, bool includeSourceLoc
 {
   std::stringstream ss;
   for (; i < j; i++)
-    {
+  {
     ss << severityAsString(this->m_records[i].severity) << ": ";
     if (includeSourceLoc && this->m_records[i].fileName != "")
-      {
-      ss << "In " << this->m_records[i].fileName << ", line "
-         << this->m_records[i].lineNumber << ": ";
-      }
-    ss << this->m_records[i].message << std::endl;
+    {
+      ss << "In " << this->m_records[i].fileName << ", line " << this->m_records[i].lineNumber
+         << ": ";
     }
+    ss << this->m_records[i].message << std::endl;
+  }
   return ss.str();
 }
 
@@ -111,23 +111,23 @@ std::string Logger::toHTML(std::size_t i, std::size_t j, bool includeSourceLoc) 
   std::stringstream ss;
   ss << "<table>";
   for (; i < j; i++)
-    {
+  {
     ss << "<tr class=\"" << severityAsString(this->m_records[i].severity) << "\">";
     if (includeSourceLoc)
-      {
+    {
       ss << "<td>";
       if (this->m_records[i].fileName != "")
-        {
+      {
         ss << this->m_records[i].fileName << ", line " << this->m_records[i].lineNumber;
-        }
-      else
-        {
-        ss << "&nbsp;";
-        }
-      ss << "</td>";
       }
-    ss << "<td>" << this->m_records[i].message << "</td></tr>\n";
+      else
+      {
+        ss << "&nbsp;";
+      }
+      ss << "</td>";
     }
+    ss << "<td>" << this->m_records[i].message << "</td></tr>\n";
+  }
   ss << "</table>";
   return ss.str();
 }
@@ -156,8 +156,7 @@ std::string Logger::convertToHTML(bool includeSourceLog) const
   * calling this or other "setFlushTo" methods multiple times
   * will only change where new records are written.
   */
-void Logger::setFlushToStream(
-  std::ostream* output, bool ownFile, bool includePast)
+void Logger::setFlushToStream(std::ostream* output, bool ownFile, bool includePast)
 {
   if (this->m_ownStream)
     delete this->m_stream;
@@ -179,18 +178,18 @@ void Logger::setFlushToStream(
   * calling this or other "setFlushTo" methods multiple times
   * will only change where new records are written.
   */
-bool Logger::setFlushToFile( std::string filename, bool includePast)
+bool Logger::setFlushToFile(std::string filename, bool includePast)
 {
   std::ofstream* file = new std::ofstream(filename.c_str(), std::ios::app);
   if (file->good())
-    {
+  {
     this->setFlushToStream(file, true, includePast);
-    }
+  }
   else
-    {
+  {
     delete file;
     return false;
-    }
+  }
   return true;
 }
 
@@ -231,16 +230,13 @@ void Logger::setFlushToStderr(bool includePast)
 /// This is a helper routine to write records to the stream (if one has been set).
 void Logger::flushRecordsToStream(std::size_t beginRec, std::size_t endRec)
 {
-  if (
-    this->m_stream &&
-    beginRec < endRec &&
-    beginRec < numberOfRecords() &&
+  if (this->m_stream && beginRec < endRec && beginRec < numberOfRecords() &&
     endRec <= numberOfRecords())
-    {
+  {
     (*this->m_stream) << this->toString(beginRec, endRec);
     this->m_stream->flush();
-    }
+  }
 }
 
-  } // namespace io
+} // namespace io
 } // namespace smtk

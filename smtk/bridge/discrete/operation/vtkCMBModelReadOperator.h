@@ -23,19 +23,22 @@ class vtkCMBParserBase;
 class vtkDiscreteModelWrapper;
 class vtkPolyData;
 class vtkDiscreteModel;
-namespace smtk {
-  namespace bridge {
-    namespace discrete {
-      class Session;
-    }
-  }
+namespace smtk
+{
+namespace bridge
+{
+namespace discrete
+{
+class Session;
+}
+}
 }
 
 class SMTKDISCRETESESSION_EXPORT vtkCMBModelReadOperator : public vtkObject
 {
 public:
-  static vtkCMBModelReadOperator * New();
-  vtkTypeMacro(vtkCMBModelReadOperator,vtkObject);
+  static vtkCMBModelReadOperator* New();
+  vtkTypeMacro(vtkCMBModelReadOperator, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -46,13 +49,11 @@ public:
   // different runs so that entity-attribute associations, which is recorded with UUIDs, will
   // be consistent, so is color-by entity UUIDs.
   // If the session is NULL, the UUIDs will be different everytime we load a cmb model.
-  void Operate(vtkDiscreteModelWrapper* ModelWrapper,
-               smtk::bridge::discrete::Session* session);
+  void Operate(vtkDiscreteModelWrapper* ModelWrapper, smtk::bridge::discrete::Session* session);
 
   // Description:
   // Load the file into Model.
-  void Read(vtkDiscreteModel* model,
-            smtk::bridge::discrete::Session* session);
+  void Read(vtkDiscreteModel* model, smtk::bridge::discrete::Session* session);
 
   // Description:
   // Get/Set the name of the input file.
@@ -79,8 +80,8 @@ private:
   // The name of the file to be read in.
   char* FileName;
 
-  vtkCMBModelReadOperator(const vtkCMBModelReadOperator&);  // Not implemented.
-  void operator=(const vtkCMBModelReadOperator&);  // Not implemented.
+  vtkCMBModelReadOperator(const vtkCMBModelReadOperator&); // Not implemented.
+  void operator=(const vtkCMBModelReadOperator&);          // Not implemented.
 
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).

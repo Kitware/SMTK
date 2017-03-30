@@ -28,23 +28,29 @@ class pqPipelineSource;
 class vtkSelectionNode;
 class vtkPVSelectionInformation;
 
-namespace Ui {
+namespace Ui
+{
 
 struct PickInfo
 {
-  pqOutputPort *port;
+  pqOutputPort* port;
   smtk::common::UUID EdgeId;
   vtkIdType BlockIndex;
 
-  PickInfo():port(NULL), EdgeId(smtk::common::UUID::null()), BlockIndex(-1){}
+  PickInfo()
+    : port(NULL)
+    , EdgeId(smtk::common::UUID::null())
+    , BlockIndex(-1)
+  {
+  }
 };
 
 class ArcPicker : public QAction
 {
-Q_OBJECT
+  Q_OBJECT
 
 public:
-  ArcPicker(QObject * parent);
+  ArcPicker(QObject* parent);
   virtual ~ArcPicker();
 signals:
   //called by the selector when a valid selection is finished.
@@ -53,7 +59,7 @@ signals:
   void triggered(bool);
 
 public slots:
-  void doPick(pqRenderView *view, pqPolygonArc *arc, PickInfo& info);
+  void doPick(pqRenderView* view, pqPolygonArc* arc, PickInfo& info);
 
 protected slots:
   //saves the information returned from the selection.
@@ -61,41 +67,37 @@ protected slots:
   // picking arc end point finished
   void onPickingFinished();
   vtkSelectionNode* gatherSelectionNode(
-    pqPipelineSource* source,
-    vtkPVSelectionInformation* selInfo);
+    pqPipelineSource* source, vtkPVSelectionInformation* selInfo);
 
 private:
-
   PickInfo* Info;
   pqPolygonArc* Arc;
   pqRenderView* View;
   pqRenderViewSelectionReaction* Selecter;
   bool m_isActive;
 };
-
 }
 
 class SMTKPOLYGONQTEXT_EXPORT pqArcWidgetPanel : public QWidget
 {
-Q_OBJECT
+  Q_OBJECT
 
 public:
-explicit pqArcWidgetPanel(QWidget *parent = 0);
+  explicit pqArcWidgetPanel(QWidget* parent = 0);
   virtual ~pqArcWidgetPanel();
 
-  virtual void setView(pqRenderView* view) { this->View=view; }
+  virtual void setView(pqRenderView* view) { this->View = view; }
   virtual void setArc(pqPolygonArc* arc);
-  virtual void setArcManager(pqArcWidgetManager* arcManager)
-    {this->ArcManager = arcManager;}
+  virtual void setArcManager(pqArcWidgetManager* arcManager) { this->ArcManager = arcManager; }
 
 signals:
-  void arcModified(qtArcWidget *, const smtk::common::UUID &edgeid);
+  void arcModified(qtArcWidget*, const smtk::common::UUID& edgeid);
   void arcModificationfinished();
   void arcModificationCacelled();
   void startArcEditing();
   void startArcPicking();
 
-friend class pqArcWidgetManager;
+  friend class pqArcWidgetManager;
 
 protected slots:
   //shows the edit widget and hides the pick widget
@@ -136,11 +138,10 @@ private:
 
   Ui::PickInfo ArcInfo;
   Ui::ArcPicker Picker;
-  pqRenderView *View;
-  pqPolygonArc *Arc;
+  pqRenderView* View;
+  pqPolygonArc* Arc;
   QPointer<qtArcWidget> ArcWidget;
   pqArcWidgetManager* ArcManager;
-
 };
 
 #endif // __smtk_polygon_pq_ArcWidgetPanel_h

@@ -22,49 +22,45 @@
 
 namespace smtk
 {
-  namespace attribute
+namespace attribute
+{
+class Attribute;
+class SMTKCORE_EXPORT MeshSelectionItemDefinition : public ItemDefinition
+{
+public:
+  smtkTypeMacro(MeshSelectionItemDefinition);
+  static smtk::attribute::MeshSelectionItemDefinitionPtr New(const std::string& myName)
   {
-    class Attribute;
-    class SMTKCORE_EXPORT MeshSelectionItemDefinition:
-      public ItemDefinition
-    {
-    public:
-      smtkTypeMacro(MeshSelectionItemDefinition);
-      static smtk::attribute::MeshSelectionItemDefinitionPtr New(const std::string &myName)
-      { return smtk::attribute::MeshSelectionItemDefinitionPtr(new MeshSelectionItemDefinition(myName));}
-
-      virtual ~MeshSelectionItemDefinition();
-
-      virtual Item::Type type() const;
-      smtk::model::BitFlags membershipMask() const;
-      void setMembershipMask(smtk::model::BitFlags entMask);
-      std::string refModelEntityName() const
-        { return m_RefModelEntityDefName; }
-      void setRefModelEntityName(const std::string& defName)
-        { m_RefModelEntityDefName = defName; }
-      void setModifyMode(const std::string& mode)
-        { this->m_modifyMode = mode; }
-      std::string modifyMode() const
-        {return this->m_modifyMode;}
-
-      bool isValueValid(const int &val) const;
-
-      virtual smtk::attribute::ItemPtr buildItem(Attribute *owningAttribute,
-                                                int itemPosition) const;
-      virtual smtk::attribute::ItemPtr buildItem(Item *owningItem,
-                                                int position,
-                                                int subGroupPosition) const;
-
-      virtual smtk::attribute::ItemDefinitionPtr
-        createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const;
-    protected:
-      MeshSelectionItemDefinition(const std::string &myName);
-
-      smtk::model::BitFlags m_membershipMask;
-      std::string m_RefModelEntityDefName;
-      std::string m_modifyMode;
-    };
+    return smtk::attribute::MeshSelectionItemDefinitionPtr(new MeshSelectionItemDefinition(myName));
   }
+
+  virtual ~MeshSelectionItemDefinition();
+
+  virtual Item::Type type() const;
+  smtk::model::BitFlags membershipMask() const;
+  void setMembershipMask(smtk::model::BitFlags entMask);
+  std::string refModelEntityName() const { return m_RefModelEntityDefName; }
+  void setRefModelEntityName(const std::string& defName) { m_RefModelEntityDefName = defName; }
+  void setModifyMode(const std::string& mode) { this->m_modifyMode = mode; }
+  std::string modifyMode() const { return this->m_modifyMode; }
+
+  bool isValueValid(const int& val) const;
+
+  virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const;
+  virtual smtk::attribute::ItemPtr buildItem(
+    Item* owningItem, int position, int subGroupPosition) const;
+
+  virtual smtk::attribute::ItemDefinitionPtr createCopy(
+    smtk::attribute::ItemDefinition::CopyInfo& info) const;
+
+protected:
+  MeshSelectionItemDefinition(const std::string& myName);
+
+  smtk::model::BitFlags m_membershipMask;
+  std::string m_RefModelEntityDefName;
+  std::string m_modifyMode;
+};
+}
 }
 
 #endif /* __smtk_attribute_MeshSelectionItemDefinition_h */

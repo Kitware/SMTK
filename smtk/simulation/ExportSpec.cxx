@@ -10,16 +10,17 @@
 
 #include "ExportSpec.h"
 
-namespace smtk {
-  namespace simulation {
+namespace smtk
+{
+namespace simulation
+{
 
 ExportSpec::ExportSpec()
 {
   this->clear();
 }
 
-void
-ExportSpec::clear()
+void ExportSpec::clear()
 {
   m_simulationSystem = NULL;
   m_exportSystem = NULL;
@@ -27,5 +28,5 @@ ExportSpec::clear()
   m_logger.reset();
 }
 
-  } // namespace simulation
+} // namespace simulation
 } // namespace smtk

@@ -32,8 +32,8 @@ class vtkModelEntity;
 class SMTKDISCRETESESSION_EXPORT vtkModelEntityGroupOperatorBase : public vtkModelEntityOperatorBase
 {
 public:
-  static vtkModelEntityGroupOperatorBase * New();
-  vtkTypeMacro(vtkModelEntityGroupOperatorBase,vtkModelEntityOperatorBase);
+  static vtkModelEntityGroupOperatorBase* New();
+  vtkTypeMacro(vtkModelEntityGroupOperatorBase, vtkModelEntityOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -104,8 +104,8 @@ protected:
   virtual bool AbleToOperate(vtkDiscreteModel* Model);
 
 private:
-  vtkModelEntityGroupOperatorBase(const vtkModelEntityGroupOperatorBase&);  // Not implemented.
-  void operator=(const vtkModelEntityGroupOperatorBase&);  // Not implemented.
+  vtkModelEntityGroupOperatorBase(const vtkModelEntityGroupOperatorBase&); // Not implemented.
+  void operator=(const vtkModelEntityGroupOperatorBase&);                  // Not implemented.
 
   // Description:
   // A list of vtkCMBModelEntitys to add.

@@ -21,12 +21,15 @@
 #include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkObject.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace discrete {
-      class Session;
-    }
-  }
+namespace smtk
+{
+namespace bridge
+{
+namespace discrete
+{
+class Session;
+}
+}
 }
 
 class vtkDiscreteModelWrapper;
@@ -36,8 +39,8 @@ class vtkDiscreteModel;
 class SMTKDISCRETESESSION_EXPORT vtkCMBModelWriterBase : public vtkObject
 {
 public:
-  static vtkCMBModelWriterBase * New();
-  vtkTypeMacro(vtkCMBModelWriterBase,vtkObject);
+  static vtkCMBModelWriterBase* New();
+  vtkTypeMacro(vtkCMBModelWriterBase, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -45,13 +48,11 @@ public:
   // The \a session will be used to retrieve UUIDs data array for entities and
   // add it to field data of output.
   // NOTE: vtkCMBModelWriterV2 has implementation using the discrete \a session
-  void Operate(vtkDiscreteModelWrapper* ModelWrapper,
-               smtk::bridge::discrete::Session* session);
+  void Operate(vtkDiscreteModelWrapper* ModelWrapper, smtk::bridge::discrete::Session* session);
 
   // Description:
   // Write the CMB file out.
-  void Write(vtkDiscreteModel* model,
-             smtk::bridge::discrete::Session* session);
+  void Write(vtkDiscreteModel* model, smtk::bridge::discrete::Session* session);
 
   // Description:
   // Get/Set the name of the output file.
@@ -76,8 +77,8 @@ protected:
   virtual ~vtkCMBModelWriterBase();
 
 private:
-  vtkCMBModelWriterBase(const vtkCMBModelWriterBase&);  // Not implemented.
-  void operator=(const vtkCMBModelWriterBase&);  // Not implemented.
+  vtkCMBModelWriterBase(const vtkCMBModelWriterBase&); // Not implemented.
+  void operator=(const vtkCMBModelWriterBase&);        // Not implemented.
 
   // Description:
   // The name of the file to be written.

@@ -12,9 +12,12 @@
 
 #include "smtk/bridge/polygon/Operator.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 /**\brief Create a polygonal model made up of vertices, edges, and faces.
   *
@@ -43,8 +46,8 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 };
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_polygon_CreateModel_h

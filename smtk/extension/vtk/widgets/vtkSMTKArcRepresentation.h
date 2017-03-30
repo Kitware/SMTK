@@ -31,16 +31,17 @@ class vtkPolyData;
 class vtkGlyph3D;
 class vtkPoints;
 
-class VTKSMTKWIDGETSEXT_EXPORT vtkSMTKArcRepresentation : public vtkOrientedGlyphContourRepresentation
+class VTKSMTKWIDGETSEXT_EXPORT vtkSMTKArcRepresentation
+  : public vtkOrientedGlyphContourRepresentation
 {
 public:
   // Description:
   // Instantiate this class.
-  static vtkSMTKArcRepresentation *New();
+  static vtkSMTKArcRepresentation* New();
 
   // Description:
   // Standard methods for instances of this class.
-  vtkTypeMacro(vtkSMTKArcRepresentation,vtkOrientedGlyphContourRepresentation);
+  vtkTypeMacro(vtkSMTKArcRepresentation, vtkOrientedGlyphContourRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
@@ -49,9 +50,9 @@ public:
   // was modifed. If used remember to turn off during construction
   // of the initial points
   // Default is to set it to false.
-  vtkSetMacro( LoggingEnabled, int );
-  vtkGetMacro( LoggingEnabled, int );
-  vtkBooleanMacro( LoggingEnabled, int );
+  vtkSetMacro(LoggingEnabled, int);
+  vtkGetMacro(LoggingEnabled, int);
+  vtkBooleanMacro(LoggingEnabled, int);
 
   //needed to make sure selected nodes are highlighted properly
   virtual int SetNthNodeSelected(int) override;
@@ -67,11 +68,11 @@ public:
   // returned.
   // Override vtkContourRepresentation to make sure that if there is
   // no point yet in the representation, don't do any point locating.
-  virtual int ActivateNode( double displayPos[2] );
+  virtual int ActivateNode(double displayPos[2]);
 
   //overloaded for logging purposes
   virtual int DeleteNthNode(int n) override;
-  virtual int SetActiveNodeToWorldPosition( double worldPos[3],double worldOrient[9] ) override;
+  virtual int SetActiveNodeToWorldPosition(double worldPos[3], double worldOrient[9]) override;
   virtual int SetActiveNodeToWorldPosition(double worldPos[3]) override;
   virtual int AddNodeOnContour(int X, int Y) override;
   int AddNodeAtDisplayPosition(int X, int Y) override;
@@ -81,11 +82,11 @@ public:
   // A method that the widget and its representation use to
   // communicate with each other.
   // Re-implement to add initial 0-point checking
-  virtual int ComputeInteractionState(int X, int Y, int modified=0) override;
+  virtual int ComputeInteractionState(int X, int Y, int modified = 0) override;
 
   // Description:
   // Get the points in this contour as a vtkPolyData.
-  virtual vtkPolyData * GetContourRepresentationAsPolyData() override;
+  virtual vtkPolyData* GetContourRepresentationAsPolyData() override;
 
   //Description:
   // Get the flags for a given point
@@ -96,21 +97,18 @@ public:
   // Description:
   // Controls whether the contour widget can be moved to the edit mode.
   // Default is 1.
-  vtkSetMacro( CanEdit, int );
-  vtkGetMacro( CanEdit, int );
-  vtkBooleanMacro( CanEdit, int );
+  vtkSetMacro(CanEdit, int);
+  vtkGetMacro(CanEdit, int);
+  vtkBooleanMacro(CanEdit, int);
 
-  vtkSetMacro( PointSelectMode, int );
-  vtkGetMacro( PointSelectMode, int );
-  vtkBooleanMacro( PointSelectMode, int );
+  vtkSetMacro(PointSelectMode, int);
+  vtkGetMacro(PointSelectMode, int);
+  vtkBooleanMacro(PointSelectMode, int);
 
-  void SetPointSelectCallBack(vtkCommand * cp); // takes ownership
+  void SetPointSelectCallBack(vtkCommand* cp); // takes ownership
   //Description:
   // Expose method in superClass
-  void InitializeContour( vtkPolyData * poly, vtkIdList *)
-  {
-    this->Initialize(poly);
-  }
+  void InitializeContour(vtkPolyData* poly, vtkIdList*) { this->Initialize(poly); }
 
 protected:
   vtkSMTKArcRepresentation();
@@ -130,7 +128,7 @@ protected:
   //Note: While this method will only render the first line cell in the polydata
   //it will compute if the contour is closed based on this first cell number of points
   //versus the number of points in the polydata. So don't have any extra points
-  virtual void Initialize( vtkPolyData * );
+  virtual void Initialize(vtkPolyData*);
 
   //support logging of point changes
   int LoggingEnabled;
@@ -139,18 +137,16 @@ protected:
   int CanEdit;
 
   int PointSelectMode;
-  vtkCommand * PointSelectCallBack;
+  vtkCommand* PointSelectCallBack;
 
   class vtkInternalMap;
-  vtkInternalMap *ModifiedPointMap;
-
+  vtkInternalMap* ModifiedPointMap;
 
   void UpdatePropertyMap(int index, int flags);
 
-
 private:
-  vtkSMTKArcRepresentation(const vtkSMTKArcRepresentation&);  //Not implemented
-  void operator=(const vtkSMTKArcRepresentation&);  //Not implemented
+  vtkSMTKArcRepresentation(const vtkSMTKArcRepresentation&); //Not implemented
+  void operator=(const vtkSMTKArcRepresentation&);           //Not implemented
 
   unsigned pointId;
 };

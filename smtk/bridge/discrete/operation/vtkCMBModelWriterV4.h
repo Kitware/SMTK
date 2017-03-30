@@ -33,7 +33,6 @@
 #include "vtkCMBModelWriterV2.h"
 #include <vector>
 
-
 class vtkDiscreteModel;
 class vtkCMBModelWriterBase;
 class vtkModelEntity;
@@ -42,12 +41,10 @@ class vtkPolyData;
 class SMTKDISCRETESESSION_EXPORT vtkCMBModelWriterV4 : public vtkCMBModelWriterV2
 {
 public:
-  static vtkCMBModelWriterV4 * New();
-  vtkTypeMacro(vtkCMBModelWriterV4,vtkCMBModelWriterV2);
+  static vtkCMBModelWriterV4* New();
+  vtkTypeMacro(vtkCMBModelWriterV4, vtkCMBModelWriterV2);
   void PrintSelf(ostream& os, vtkIndent indent);
-  virtual int GetVersion()
-  {return 4;}
-
+  virtual int GetVersion() { return 4; }
 
 protected:
   vtkCMBModelWriterV4();
@@ -68,11 +65,11 @@ protected:
   // Description:
   // Set the vtkDiscreteModelEdge data in Poly. Floating edges act just like
   // every other edge so we should have it already taken care of.
-  virtual void SetFloatingEdgeData(vtkDiscreteModel* /*Model*/, vtkPolyData* /*Poly*/) {};
+  virtual void SetFloatingEdgeData(vtkDiscreteModel* /*Model*/, vtkPolyData* /*Poly*/){};
 
 private:
-  vtkCMBModelWriterV4(const vtkCMBModelWriterV4&);  // Not implemented.
-  void operator=(const vtkCMBModelWriterV4&);  // Not implemented.
+  vtkCMBModelWriterV4(const vtkCMBModelWriterV4&); // Not implemented.
+  void operator=(const vtkCMBModelWriterV4&);      // Not implemented.
 };
 
 #endif

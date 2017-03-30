@@ -22,38 +22,37 @@ class qtGroupItemInternals;
 
 namespace smtk
 {
-  namespace extension
-  {
-    class SMTKQTEXT_EXPORT qtGroupItem : public qtItem
-    {
-      Q_OBJECT
+namespace extension
+{
+class SMTKQTEXT_EXPORT qtGroupItem : public qtItem
+{
+  Q_OBJECT
 
-    public:
-      qtGroupItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview,
-                  Qt::Orientation enVectorItemOrient = Qt::Horizontal);
-      virtual ~qtGroupItem();
-      virtual void setLabelVisible(bool);
+public:
+  qtGroupItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview,
+    Qt::Orientation enVectorItemOrient = Qt::Horizontal);
+  virtual ~qtGroupItem();
+  virtual void setLabelVisible(bool);
 
-    protected slots:
-      virtual void updateItemData();
-      virtual void setEnabledState(bool checked);
-      virtual void onAddSubGroup();
-      virtual void onRemoveSubGroup();
-      virtual void onChildWidgetSizeChanged();
-      virtual void onChildItemModified();
+protected slots:
+  virtual void updateItemData();
+  virtual void setEnabledState(bool checked);
+  virtual void onAddSubGroup();
+  virtual void onRemoveSubGroup();
+  virtual void onChildWidgetSizeChanged();
+  virtual void onChildItemModified();
 
-    protected:
-      virtual void createWidget();
-      virtual void addSubGroup(int i);
-      virtual void updateExtensibleState();
-      virtual void addItemsToTable(int i);
+protected:
+  virtual void createWidget();
+  virtual void addSubGroup(int i);
+  virtual void updateExtensibleState();
+  virtual void addItemsToTable(int i);
 
-    private:
-      qtGroupItemInternals *Internals;
+private:
+  qtGroupItemInternals* Internals;
 
-    }; // class
-  }; // namespace attribute
+}; // class
+}; // namespace attribute
 }; // namespace smtk
-
 
 #endif

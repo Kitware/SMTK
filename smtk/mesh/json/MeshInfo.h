@@ -20,20 +20,20 @@
 #include "smtk/mesh/Handle.h"
 #include "smtk/mesh/TypeSet.h"
 
-
-namespace smtk {
-namespace mesh {
-namespace json {
+namespace smtk
+{
+namespace mesh
+{
+namespace json
+{
 
 class SMTKCORE_EXPORT MeshInfo
 {
 public:
   MeshInfo();
 
-  MeshInfo( smtk::mesh::Handle meshId,
-            const smtk::mesh::HandleRange& cells,
-            const smtk::mesh::HandleRange& points,
-            smtk::mesh::TypeSet types);
+  MeshInfo(smtk::mesh::Handle meshId, const smtk::mesh::HandleRange& cells,
+    const smtk::mesh::HandleRange& points, smtk::mesh::TypeSet types);
 
   smtk::mesh::Handle mesh() const { return this->m_mesh; }
 
@@ -46,22 +46,21 @@ public:
 
   smtk::mesh::HandleRange points() const;
 
-  bool has(const smtk::mesh::Domain &d) const;
-  bool has(const smtk::mesh::Dirichlet &bc) const;
-  bool has(const smtk::mesh::Neumann &bc) const;
+  bool has(const smtk::mesh::Domain& d) const;
+  bool has(const smtk::mesh::Dirichlet& bc) const;
+  bool has(const smtk::mesh::Neumann& bc) const;
 
   const std::vector<smtk::mesh::Domain>& domains() const { return this->m_domains; }
   const std::vector<smtk::mesh::Dirichlet>& dirichlets() const { return this->m_dirichlets; }
   const std::vector<smtk::mesh::Neumann>& neumanns() const { return this->m_neumanns; }
   const smtk::common::UUIDArray& modelUUIDS() const { return this->m_uuids; }
 
-  void set(const std::vector<smtk::mesh::Domain> &ds)       { this->m_domains = ds; }
-  void set(const std::vector<smtk::mesh::Dirichlet> &bcs)   { this->m_dirichlets = bcs; }
-  void set(const std::vector<smtk::mesh::Neumann> &bcs)     { this->m_neumanns = bcs; }
-  void set(const smtk::common::UUIDArray& array)            { this->m_uuids = array; }
+  void set(const std::vector<smtk::mesh::Domain>& ds) { this->m_domains = ds; }
+  void set(const std::vector<smtk::mesh::Dirichlet>& bcs) { this->m_dirichlets = bcs; }
+  void set(const std::vector<smtk::mesh::Neumann>& bcs) { this->m_neumanns = bcs; }
+  void set(const smtk::common::UUIDArray& array) { this->m_uuids = array; }
 
-  bool operator==(const smtk::mesh::Handle& other) const
-    { return other == this->m_mesh; }
+  bool operator==(const smtk::mesh::Handle& other) const { return other == this->m_mesh; }
 
 private:
   smtk::mesh::Handle m_mesh;
@@ -74,10 +73,8 @@ private:
   std::vector<smtk::mesh::Neumann> m_neumanns;
   smtk::common::UUIDArray m_uuids;
 };
-
 }
 }
 }
-
 
 #endif

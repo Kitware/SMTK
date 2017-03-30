@@ -14,9 +14,8 @@
 
 using namespace smtk::attribute;
 
-MeshSelectionItemDefinition::
-MeshSelectionItemDefinition(const std::string &myName):
-  ItemDefinition(myName)
+MeshSelectionItemDefinition::MeshSelectionItemDefinition(const std::string& myName)
+  : ItemDefinition(myName)
 {
   this->m_membershipMask = smtk::model::ANY_ENTITY;
 }
@@ -40,29 +39,26 @@ void MeshSelectionItemDefinition::setMembershipMask(smtk::model::BitFlags entMas
   this->m_membershipMask = entMask;
 }
 
-bool MeshSelectionItemDefinition::isValueValid(const int &val) const
+bool MeshSelectionItemDefinition::isValueValid(const int& val) const
 {
   return val >= 0;
 }
 
 smtk::attribute::ItemPtr MeshSelectionItemDefinition::buildItem(
-  Attribute *owningAttribute, int itemPosition) const
+  Attribute* owningAttribute, int itemPosition) const
 {
-  return smtk::attribute::ItemPtr(new MeshSelectionItem(owningAttribute,
-                                              itemPosition));
+  return smtk::attribute::ItemPtr(new MeshSelectionItem(owningAttribute, itemPosition));
 }
 
 smtk::attribute::ItemPtr MeshSelectionItemDefinition::buildItem(
-Item *owningItem, int itemPosition, int subGroupPosition) const
+  Item* owningItem, int itemPosition, int subGroupPosition) const
 {
-  return smtk::attribute::ItemPtr(new MeshSelectionItem(owningItem,
-                                              itemPosition,
-                                              subGroupPosition));
+  return smtk::attribute::ItemPtr(
+    new MeshSelectionItem(owningItem, itemPosition, subGroupPosition));
 }
 
-smtk::attribute::ItemDefinitionPtr
-smtk::attribute::MeshSelectionItemDefinition::
-createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
+smtk::attribute::ItemDefinitionPtr smtk::attribute::MeshSelectionItemDefinition::createCopy(
+  smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   (void)info;
 

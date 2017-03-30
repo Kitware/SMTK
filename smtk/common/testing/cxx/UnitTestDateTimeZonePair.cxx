@@ -16,9 +16,10 @@
 #include <sstream>
 
 namespace sc = smtk::common;
-namespace {
+namespace
+{
 
-void   verifyNotSet()
+void verifyNotSet()
 {
   std::cout << "verifyNotSet()" << std::endl;
   sc::DateTimeZonePair dtzOut;
@@ -36,7 +37,7 @@ void   verifyNotSet()
   test(!tzIn1.isSet(), "Failed to show timezone as not set");
 }
 
-void   verifyNoTimeZone()
+void verifyNoTimeZone()
 {
   std::cout << "verifyNoTimeZone()" << std::endl;
   sc::DateTimeZonePair dtzOut;
@@ -56,15 +57,15 @@ void   verifyNoTimeZone()
 
   int yr, month, day, hr, minute, sec, msec;
   dtIn1.components(yr, month, day, hr, minute, sec, msec);
-  bool match1 = (yr == 2016) && (month == 11) && (day == 8) &&
-    (hr == 16) && (minute == 28) && (sec == 2) && (msec == 321);
+  bool match1 = (yr == 2016) && (month == 11) && (day == 8) && (hr == 16) && (minute == 28) &&
+    (sec == 2) && (msec == 321);
   test(match1, "Failed to set DateTime when no TimeZone specified");
 
   sc::TimeZone tzIn1 = dtzIn1.timeZone();
   test(!tzIn1.isSet(), "Failed to show timezone as unSet()");
 }
 
-void   verifyTimeZoneOnly()
+void verifyTimeZoneOnly()
 {
   std::cout << "verifyTimeZoneOnly()" << std::endl;
   sc::DateTimeZonePair dtzOut;
@@ -87,7 +88,7 @@ void   verifyTimeZoneOnly()
   test(!!tzIn1.isSet(), "Failed to show timezone/TimeZoneOnly as set");
 }
 
-void   verifyUTC()
+void verifyUTC()
 {
   std::cout << "verifyUTC()" << std::endl;
   sc::DateTimeZonePair dtzOut;
@@ -111,8 +112,8 @@ void   verifyUTC()
 
   int yr, month, day, hr, minute, sec, msec;
   dtIn1.components(yr, month, day, hr, minute, sec, msec);
-  bool match1 = (yr == 1999) && (month == 12) && (day == 31) &&
-    (hr == 23) && (minute == 59) && (sec == 59) && (msec == 999);
+  bool match1 = (yr == 1999) && (month == 12) && (day == 31) && (hr == 23) && (minute == 59) &&
+    (sec == 59) && (msec == 999);
   test(match1, "Failed to set DateTime when UTC specified");
 
   sc::TimeZone tzIn1 = dtzIn1.timeZone();
@@ -120,7 +121,7 @@ void   verifyUTC()
   test(!!tzIn1.isUTC(), "Failed to return true for isUTC()");
 }
 
-void   verifyRegionTimeZone()
+void verifyRegionTimeZone()
 {
   std::cout << "verifyRegionTimeZone()" << std::endl;
   sc::DateTimeZonePair dtzOut;
@@ -137,7 +138,6 @@ void   verifyRegionTimeZone()
   ss << dtzOut;
   std::cout << "RegionTimeZone:" << ss.str() << std::endl;
 
-
   sc::DateTimeZonePair dtzIn1;
   ss.seekg(0);
   ss >> dtzIn1;
@@ -145,18 +145,16 @@ void   verifyRegionTimeZone()
 
   int yr, month, day, hr, minute, sec, msec;
   dtIn1.components(yr, month, day, hr, minute, sec, msec);
-  bool match1 = (yr == 2000) && (month == 1) && (day == 2) &&
-    (hr == 3) && (minute == 4) && (sec == 5) && (msec == 6);
+  bool match1 = (yr == 2000) && (month == 1) && (day == 2) && (hr == 3) && (minute == 4) &&
+    (sec == 5) && (msec == 6);
   test(match1, "Failed to set DateTime when RegionTimeZone specified");
 
   sc::TimeZone tzIn1 = dtzIn1.timeZone();
   test(!!tzIn1.isSet(), "Failed to show region timezone as set()");
-  test(
-    tzIn1.region() == "Europe/London",
-    "Failed to return correct time zone region");
+  test(tzIn1.region() == "Europe/London", "Failed to return correct time zone region");
 }
 
-void   verifyPosixTimeZone()
+void verifyPosixTimeZone()
 {
   std::cout << "verifyPosixTimeZone()" << std::endl;
   sc::DateTimeZonePair dtzOut;
@@ -174,7 +172,6 @@ void   verifyPosixTimeZone()
   ss << dtzOut;
   std::cout << "PosixTimeZone:" << ss.str() << std::endl;
 
-
   // Deserialize
   sc::DateTimeZonePair dtzIn1;
   ss.seekg(0);
@@ -183,19 +180,18 @@ void   verifyPosixTimeZone()
 
   int yr, month, day, hr, minute, sec, msec;
   dtIn1.components(yr, month, day, hr, minute, sec, msec);
-  bool match1 = (yr == 1776) && (month == 7) && (day == 4) &&
-    (hr == 12) && (minute == 0) && (sec == 1) && (msec == 500);
+  bool match1 = (yr == 1776) && (month == 7) && (day == 4) && (hr == 12) && (minute == 0) &&
+    (sec == 1) && (msec == 500);
   test(match1, "Failed to set DateTime when PosixTimeZone specified");
 
   sc::TimeZone tzIn1 = dtzIn1.timeZone();
   test(!!tzIn1.isSet(), "Failed to show posix timezone as set()");
   std::cout << "posix string: " << tzIn1.posixString() << std::endl;
-  test(
-    tzIn1.posixString() == "PST-08",  // note it's -08 NOT -8
+  test(tzIn1.posixString() == "PST-08", // note it's -08 NOT -8
     "Failed to return correct posix time zone");
 }
 
-}  // end namespace
+} // end namespace
 
 int UnitTestDateTimeZonePair(int, char** const)
 {

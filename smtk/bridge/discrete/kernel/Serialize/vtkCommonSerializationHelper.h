@@ -23,7 +23,6 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkSerializationHelper.h"
 
-
 class vtkDataArray;
 class vtkSerializer;
 class vtkTransform;
@@ -31,7 +30,7 @@ class vtkTransform;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkCommonSerializationHelper : public vtkSerializationHelper
 {
 public:
-  static vtkCommonSerializationHelper *New();
+  static vtkCommonSerializationHelper* New();
   vtkTypeMacro(vtkCommonSerializationHelper, vtkSerializationHelper);
   void PrintSelf(ostream& os, vtkIndent indent);
 
@@ -50,11 +49,11 @@ public:
 
   // Description:
   // Get the value for the "type" attribute of the specfied object type
-  virtual const char *GetSerializationType(vtkObject *object);
+  virtual const char* GetSerializationType(vtkObject* object);
 
   // Description:
   // Serialize the input object.  Returns 1 if successful.
-  virtual int Serialize(vtkObject *object, vtkSerializer *serializer);
+  virtual int Serialize(vtkObject* object, vtkSerializer* serializer);
 
 protected:
   vtkCommonSerializationHelper();
@@ -62,16 +61,15 @@ protected:
 
   // Description:
   // Serialize a vtkTransform
-  void SerializeTransform(vtkTransform *transform, vtkSerializer *serializer);
+  void SerializeTransform(vtkTransform* transform, vtkSerializer* serializer);
 
   // Description:
   // Serialize vtkIdTypeArray, vtkIntArray, or vtkDoubleArray
-  void SerializeDataArray(vtkDataArray *dataArray, vtkSerializer *serializer);
+  void SerializeDataArray(vtkDataArray* dataArray, vtkSerializer* serializer);
 
 private:
-  vtkCommonSerializationHelper(const vtkCommonSerializationHelper&);  // Not implemented.
-  void operator=(const vtkCommonSerializationHelper&);  // Not implemented.
-
+  vtkCommonSerializationHelper(const vtkCommonSerializationHelper&); // Not implemented.
+  void operator=(const vtkCommonSerializationHelper&);               // Not implemented.
 };
 
 #endif

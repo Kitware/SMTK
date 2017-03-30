@@ -19,13 +19,16 @@
 
 using namespace smtk::model;
 
-namespace smtk {
-  namespace bridge {
-  namespace discrete {
+namespace smtk
+{
+namespace bridge
+{
+namespace discrete
+{
 
 bool RemoveModel::ableToOperate()
 {
-  if(!this->ensureSpecification())
+  if (!this->ensureSpecification())
     return false;
   std::size_t numModels = this->associatedEntitiesAs<Models>().size();
   return numModels > 0;
@@ -37,18 +40,15 @@ smtk::model::OperatorResult RemoveModel::operateInternal()
   bool success = true;
   EntityRefArray expunged;
   Models remModels = this->associatedEntitiesAs<Models>();
-  for(Models::iterator it = remModels.begin();
-      it != remModels.end(); ++it)
-    {
+  for (Models::iterator it = remModels.begin(); it != remModels.end(); ++it)
+  {
     success = this->discreteSession()->removeModelEntity(*it);
-    if(!success)
+    if (!success)
       break;
     expunged.push_back(*it);
-    }
+  }
 
-  OperatorResult result =
-    this->createResult(
-      success ?  OPERATION_SUCCEEDED : OPERATION_FAILED);
+  OperatorResult result = this->createResult(success ? OPERATION_SUCCEEDED : OPERATION_FAILED);
 
   if (success)
     result->findModelEntity("expunged")->setValues(expunged.begin(), expunged.end());
@@ -59,17 +59,11 @@ Session* RemoveModel::discreteSession() const
 {
   return dynamic_cast<Session*>(this->session());
 }
-
-    }
-  } //namespace model
+}
+} //namespace model
 } // namespace smtk
 
 #include "RemoveModel_xml.h"
 
-smtkImplementsModelOperator(
-  SMTKDISCRETESESSION_EXPORT,
-  smtk::bridge::discrete::RemoveModel,
-  discrete_remove_model,
-  "remove model",
-  RemoveModel_xml,
-  smtk::bridge::discrete::Session);
+smtkImplementsModelOperator(SMTKDISCRETESESSION_EXPORT, smtk::bridge::discrete::RemoveModel,
+  discrete_remove_model, "remove model", RemoveModel_xml, smtk::bridge::discrete::Session);

@@ -35,7 +35,6 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 
-
 class VTKSMTKDISCRETEMODEL_EXPORT vtkUUID : public vtkObject
 {
 public:
@@ -58,23 +57,22 @@ public:
   // Description:
   // Convert a (16-byte) binary UUID to its string form (in hexadecimal):
   // XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
-  static void ConvertBinaryUUIDToString(unsigned char uuid[16],
-    std::string &uuidString);
+  static void ConvertBinaryUUIDToString(unsigned char uuid[16], std::string& uuidString);
 
   // Description:
   // Get the 6-byte binary MAC address.  Returns -1 on failure.
   static int GetMACAddress(unsigned char addr[6]);
 
 protected:
-  vtkUUID() {};
-  ~vtkUUID() {};
+  vtkUUID(){};
+  ~vtkUUID(){};
 
 private:
-  vtkUUID(const vtkUUID&); // Not implemented.
+  vtkUUID(const vtkUUID&);        // Not implemented.
   void operator=(const vtkUUID&); // Not implemented.
 
   // the main (system specific) code for determining the MAC address
-  static int GetMacAddrSys(unsigned char *addr);
+  static int GetMacAddrSys(unsigned char* addr);
 };
 
 #endif

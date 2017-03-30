@@ -9,7 +9,6 @@
 //=========================================================================
 #include "vtkSerializer.h"
 
-
 vtkSerializer::vtkSerializer()
 {
   this->ArchiveVersion = 0;
@@ -17,5 +16,5 @@ vtkSerializer::vtkSerializer()
 
 void vtkSerializer::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }

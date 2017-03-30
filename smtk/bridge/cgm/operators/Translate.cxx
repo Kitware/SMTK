@@ -43,9 +43,12 @@
 
 using namespace smtk::model;
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 smtk::model::OperatorResult Translate::operateInternal()
 {
@@ -58,32 +61,31 @@ smtk::model::OperatorResult Translate::operateInternal()
   DLIList<RefEntity*> cgmEntitiesOut;
   RefEntity* refEntity;
   for (it = bodiesIn.begin(); it != bodiesIn.end(); ++it)
-    {
+  {
     refEntity = this->cgmEntity(*it);
     if (refEntity)
-      {
+    {
       cgmEntitiesIn.append(refEntity);
-      this->manager()->erase(*it); // We will re-transcribe momentarily. TODO: This could be more efficient.
-      }
+      this->manager()->erase(
+        *it); // We will re-transcribe momentarily. TODO: This could be more efficient.
     }
+  }
 
   int nb = cgmEntitiesIn.size();
 
-  GeometryQueryTool::instance()->translate(
-    cgmEntitiesIn,
-    offset->value(0), offset->value(1), offset->value(2),
+  GeometryQueryTool::instance()->translate(cgmEntitiesIn, offset->value(0), offset->value(1),
+    offset->value(2),
     true, // (check before transforming)
     cgmEntitiesOut);
   if (cgmEntitiesOut.size() != nb)
-    {
+  {
     smtkInfoMacro(log(), "Failed to translate bodies or wrong number"
-      << " (" << cgmEntitiesOut.size() << " != " << nb << ")"
-      << " of resulting bodies.");
+        << " (" << cgmEntitiesOut.size() << " != " << nb << ")"
+        << " of resulting bodies.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
-  smtk::model::OperatorResult result = this->createResult(
-    smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmEntitiesOut, result, MODIFIED);
   // Nothing expunged.
@@ -91,14 +93,9 @@ smtk::model::OperatorResult Translate::operateInternal()
   return result;
 }
 
-    } // namespace cgm
-  } //namespace bridge
+} // namespace cgm
+} //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(
-  SMTKCGMSESSION_EXPORT,
-  smtk::bridge::cgm::Translate,
-  cgm_translate,
-  "translate",
-  Translate_xml,
-  smtk::bridge::cgm::Session);
+smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::Translate, cgm_translate,
+  "translate", Translate_xml, smtk::bridge::cgm::Session);

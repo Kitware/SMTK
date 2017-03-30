@@ -30,17 +30,16 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 
-
 #include "vtkSmartPointer.h" // For collections
-#include <map> // For maps
-#include <vector> // For vectors
+#include <map>               // For maps
+#include <vector>            // For vectors
 
 class vtkInformation;
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkSerializer : public vtkObject
 {
 public:
-  vtkTypeMacro(vtkSerializer,vtkObject);
+  vtkTypeMacro(vtkSerializer, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -60,18 +59,18 @@ public:
   // Serializes a single unsigned long.
   virtual void Serialize(const char* name, unsigned long& val) = 0;
 
- // Description:
+  // Description:
   // Serializes an array.
   virtual void Serialize(const char* name, unsigned long*& val, unsigned int& length) = 0;
 
-  // Description:
-  // Serializes a single vtkIdType.
+// Description:
+// Serializes a single vtkIdType.
 #if defined(VTK_USE_64BIT_IDS)
   virtual void Serialize(const char* name, vtkIdType& val) = 0;
 #endif
 
-  // Description:
-  // Serializes an array.
+// Description:
+// Serializes an array.
 #if defined(VTK_USE_64BIT_IDS)
   virtual void Serialize(const char* name, vtkIdType*& val, unsigned int& length) = 0;
 #endif
@@ -103,14 +102,13 @@ public:
 
   // Description:
   // Serializes a vector of vtkObjects.
-  virtual void Serialize(const char* name,
-    std::vector<vtkSmartPointer<vtkObject> >& objs,
-    bool weakPtr = false) = 0;
+  virtual void Serialize(
+    const char* name, std::vector<vtkSmartPointer<vtkObject> >& objs, bool weakPtr = false) = 0;
 
   // Description:
   // Serializes a map from int to vector of vtkObjects.
-  virtual void Serialize(const char* name,
-    std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& objs) = 0;
+  virtual void Serialize(
+    const char* name, std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& objs) = 0;
 
   // Description:
   // Set/Get the archive version. Make sure to set the version before
@@ -132,15 +130,15 @@ public:
   // push_back.
   template <typename Container>
   static std::vector<vtkSmartPointer<vtkObject> > ToBase(Container& from)
-    {
+  {
     std::vector<vtkSmartPointer<vtkObject> > retVal;
     typename Container::iterator iter = from.begin();
-    for(; iter != from.end(); iter++)
-      {
+    for (; iter != from.end(); iter++)
+    {
       retVal.push_back(*iter);
-      }
-    return retVal;
     }
+    return retVal;
+  }
 
   // Description:
   // Helper function to make it easier to read into containers of sub-classes
@@ -154,17 +152,15 @@ public:
   // The container must support forward iteration, begin(), end(), and
   // push_back.
   template <typename T, typename Container>
-  static void FromBase(
-    std::vector<vtkSmartPointer<vtkObject> >& from, Container& to)
+  static void FromBase(std::vector<vtkSmartPointer<vtkObject> >& from, Container& to)
+  {
+    std::vector<vtkSmartPointer<vtkObject> >::iterator iter = from.begin();
+    for (; iter != from.end(); iter++)
     {
-    std::vector<vtkSmartPointer<vtkObject> >::iterator iter =
-      from.begin();
-    for(; iter != from.end(); iter++)
-      {
-//      to.push_back(static_cast<T*>(iter->GetPointer()));
+      //      to.push_back(static_cast<T*>(iter->GetPointer()));
       to.insert(to.end(), static_cast<T*>(iter->GetPointer()));
-      }
     }
+  }
 
   // Description:
   // Helper function to make it easier to write maps of containers of sub-classes
@@ -177,18 +173,17 @@ public:
   // The container must support forward iteration, begin(), end(), and
   // push_back.
   template <typename Container>
-  static std::map<int, std::vector<vtkSmartPointer<vtkObject> > >
-    ToBase(std::map<int, Container>& from)
-    {
+  static std::map<int, std::vector<vtkSmartPointer<vtkObject> > > ToBase(
+    std::map<int, Container>& from)
+  {
     std::map<int, std::vector<vtkSmartPointer<vtkObject> > > retVal;
-    typename std::map<int, Container>::iterator iter =
-      from.begin();
-    for(; iter != from.end(); iter++)
-      {
+    typename std::map<int, Container>::iterator iter = from.begin();
+    for (; iter != from.end(); iter++)
+    {
       retVal[iter->first] = (ToBase<Container>(iter->second));
-      }
-    return retVal;
     }
+    return retVal;
+  }
 
   // Description:
   // Helper function to make it easier to read maps of containers of sub-classes
@@ -202,18 +197,16 @@ public:
   // push_back.
   template <typename T, typename Container>
   static void FromBase(
-    std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& from,
-    std::map<int, Container>& to)
-    {
+    std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& from, std::map<int, Container>& to)
+  {
     std::map<int, std::vector<vtkSmartPointer<vtkObject> > >::iterator iter = from.begin();
-    for(; iter != from.end(); iter++)
-      {
-      std::vector<vtkSmartPointer<vtkObject> >& f =
-        iter->second;
+    for (; iter != from.end(); iter++)
+    {
+      std::vector<vtkSmartPointer<vtkObject> >& f = iter->second;
       Container& t = to[iter->first];
       FromBase<T, Container>(f, t);
-      }
     }
+  }
 
 protected:
   vtkSerializer();
@@ -221,7 +214,7 @@ protected:
 
 private:
   vtkSerializer(const vtkSerializer&);  // Not implemented.
-  void operator=(const vtkSerializer&);  // Not implemented.
+  void operator=(const vtkSerializer&); // Not implemented.
 
   unsigned int ArchiveVersion;
 };

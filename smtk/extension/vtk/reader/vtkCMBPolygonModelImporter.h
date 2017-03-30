@@ -22,8 +22,8 @@
 class VTKSMTKREADEREXT_EXPORT vtkCMBPolygonModelImporter : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkCMBPolygonModelImporter *New();
-  vtkTypeMacro(vtkCMBPolygonModelImporter,vtkPolyDataAlgorithm);
+  static vtkCMBPolygonModelImporter* New();
+  vtkTypeMacro(vtkCMBPolygonModelImporter, vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -33,25 +33,25 @@ public:
 
   /// BoundaryStyle enumerants
   enum BoundaryStyleValue
-    {
+  {
     NONE,
     RELATIVE_MARGIN,
     ABSOLUTE_MARGIN,
     ABSOLUTE_BOUNDS,
     IMPORTED_POLYGON
-    };
+  };
 
   // Description:
   // Set/get whether or how a clip boundary should be added to the model.
   //
   // The default is NONE.
   // \sa BoundaryStyleValue
-  vtkSetClampMacro(BoundaryStyle,int,NONE,IMPORTED_POLYGON);
-  vtkGetMacro(BoundaryStyle,int);
-  void SetBoundaryStyleToNone()            { this->SetBoundaryStyle(NONE); }
-  void SetBoundaryStyleToAbsoluteBounds()  { this->SetBoundaryStyle(ABSOLUTE_BOUNDS); }
-  void SetBoundaryStyleToAbsoluteMargin()  { this->SetBoundaryStyle(ABSOLUTE_MARGIN); }
-  void SetBoundaryStyleToRelativeMargin()  { this->SetBoundaryStyle(RELATIVE_MARGIN); }
+  vtkSetClampMacro(BoundaryStyle, int, NONE, IMPORTED_POLYGON);
+  vtkGetMacro(BoundaryStyle, int);
+  void SetBoundaryStyleToNone() { this->SetBoundaryStyle(NONE); }
+  void SetBoundaryStyleToAbsoluteBounds() { this->SetBoundaryStyle(ABSOLUTE_BOUNDS); }
+  void SetBoundaryStyleToAbsoluteMargin() { this->SetBoundaryStyle(ABSOLUTE_MARGIN); }
+  void SetBoundaryStyleToRelativeMargin() { this->SetBoundaryStyle(RELATIVE_MARGIN); }
   void SetBoundaryStyleToImportedPolygon() { this->SetBoundaryStyle(IMPORTED_POLYGON); }
 
   // Description:
@@ -63,8 +63,8 @@ public:
   // Each is a percentage. When one number is passed, it is applied uniformly to all
   // margins. When two are passed, the first is applied to the horizontal margins and
   // the second to the vertical. When all 4 are passed, each margin is explicitly specified.
-  vtkSetVector4Macro(RelativeMargin,double);
-  vtkGetVector4Macro(RelativeMargin,double);
+  vtkSetVector4Macro(RelativeMargin, double);
+  vtkGetVector4Macro(RelativeMargin, double);
   virtual void SetRelativeMarginString(const char* text);
 
   // Description:
@@ -76,8 +76,8 @@ public:
   // When one number is passed, it is applied uniformly to all
   // margins. When two are passed, the first is applied to the horizontal margins and
   // the second to the vertical. When all 4 are passed, each margin is explicitly specified.
-  vtkSetVector4Macro(AbsoluteMargin,double);
-  vtkGetVector4Macro(AbsoluteMargin,double);
+  vtkSetVector4Macro(AbsoluteMargin, double);
+  vtkGetVector4Macro(AbsoluteMargin, double);
   virtual void SetAbsoluteMarginString(const char* text);
 
   // Description:
@@ -86,8 +86,8 @@ public:
   // The default is the invalid tuple (+1, -1, +1, -1) and the units are world coordinate units.
   // If fewer or more than 4 values are specified, the bounds are set to
   // the invalid tuple (+1, -1, +1, -1).
-  vtkSetVector4Macro(AbsoluteBounds,double);
-  vtkGetVector4Macro(AbsoluteBounds,double);
+  vtkSetVector4Macro(AbsoluteBounds, double);
+  vtkGetVector4Macro(AbsoluteBounds, double);
   virtual void SetAbsoluteBoundsString(const char* text);
 
   // Description:
@@ -105,13 +105,9 @@ protected:
   int GetMarginFromString(const char* text, double margin[4]);
 
   int RequestInformation(
-    vtkInformation* request,
-    vtkInformationVector** inInfo,
-    vtkInformationVector* outInfo);
+    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo);
   int RequestData(
-    vtkInformation* request,
-    vtkInformationVector** inInfo,
-    vtkInformationVector* outInfo);
+    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo);
 
   char* FileName;
   int BoundaryStyle;
@@ -121,8 +117,8 @@ protected:
   char* BoundaryFile;
 
 private:
-  vtkCMBPolygonModelImporter(const vtkCMBPolygonModelImporter&);  // Not implemented.
-  void operator=(const vtkCMBPolygonModelImporter&);  // Not implemented.
+  vtkCMBPolygonModelImporter(const vtkCMBPolygonModelImporter&); // Not implemented.
+  void operator=(const vtkCMBPolygonModelImporter&);             // Not implemented.
 };
 
 #endif // __vtkCMBPolygonModelImporter_h

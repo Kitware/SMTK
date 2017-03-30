@@ -14,8 +14,10 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Manager.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief Return the index of a relationship between \a a and \a b if it exists.
   *
@@ -25,12 +27,12 @@ int EntityRefArrangementOps::findSimpleRelationship(
 {
   int na = a.numberOfArrangementsOfKind(k);
   for (int i = 0; i < na; ++i)
-    {
+  {
     if (a.relationFromArrangement(k, i, 0) == b)
-      {
+    {
       return i;
-      }
     }
+  }
   return -1;
 }
 
@@ -43,21 +45,20 @@ int EntityRefArrangementOps::findOrAddSimpleRelationship(
 {
   int relidx = EntityRefArrangementOps::findSimpleRelationship(a, k, b);
   if (relidx < 0)
-    {
+  {
     Entity* ent = a.manager()->findEntity(a.entity());
     if (ent)
-      {
+    {
       int offset = ent->findOrAppendRelation(b.entity());
-      relidx = a.manager()->arrangeEntity(
-        a.entity(), k, Arrangement::SimpleIndex(offset));
-      }
-    else
-      {
-      relidx = -1;
-      }
+      relidx = a.manager()->arrangeEntity(a.entity(), k, Arrangement::SimpleIndex(offset));
     }
+    else
+    {
+      relidx = -1;
+    }
+  }
   return relidx;
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

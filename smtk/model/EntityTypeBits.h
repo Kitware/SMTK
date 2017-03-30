@@ -15,8 +15,10 @@
 
 #include <string>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /// The integer type used to hold bit values describing an entity's type.
 typedef unsigned int BitFlags;
@@ -170,32 +172,92 @@ enum EntityTypeBits
 };
 // clang-format on
 
-inline bool isCellEntity(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == CELL_ENTITY; }
-inline bool isVertex(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == CELL_0D; }
-inline bool isEdge(BitFlags entityFlags)   { return (entityFlags & ANY_ENTITY) == CELL_1D; }
-inline bool isFace(BitFlags entityFlags)   { return (entityFlags & ANY_ENTITY) == CELL_2D; }
-inline bool isVolume(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == CELL_3D; }
+inline bool isCellEntity(BitFlags entityFlags)
+{
+  return (entityFlags & ENTITY_MASK) == CELL_ENTITY;
+}
+inline bool isVertex(BitFlags entityFlags)
+{
+  return (entityFlags & ANY_ENTITY) == CELL_0D;
+}
+inline bool isEdge(BitFlags entityFlags)
+{
+  return (entityFlags & ANY_ENTITY) == CELL_1D;
+}
+inline bool isFace(BitFlags entityFlags)
+{
+  return (entityFlags & ANY_ENTITY) == CELL_2D;
+}
+inline bool isVolume(BitFlags entityFlags)
+{
+  return (entityFlags & ANY_ENTITY) == CELL_3D;
+}
 
-inline bool isUseEntity(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == USE_ENTITY; }
-inline bool isVertexUse(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == USE_0D; }
-inline bool isEdgeUse(BitFlags entityFlags)   { return (entityFlags & ANY_ENTITY) == USE_1D; }
-inline bool isFaceUse(BitFlags entityFlags)   { return (entityFlags & ANY_ENTITY) == USE_2D; }
-inline bool isVolumeUse(BitFlags entityFlags)   { return (entityFlags & ANY_ENTITY) == USE_3D; }
+inline bool isUseEntity(BitFlags entityFlags)
+{
+  return (entityFlags & ENTITY_MASK) == USE_ENTITY;
+}
+inline bool isVertexUse(BitFlags entityFlags)
+{
+  return (entityFlags & ANY_ENTITY) == USE_0D;
+}
+inline bool isEdgeUse(BitFlags entityFlags)
+{
+  return (entityFlags & ANY_ENTITY) == USE_1D;
+}
+inline bool isFaceUse(BitFlags entityFlags)
+{
+  return (entityFlags & ANY_ENTITY) == USE_2D;
+}
+inline bool isVolumeUse(BitFlags entityFlags)
+{
+  return (entityFlags & ANY_ENTITY) == USE_3D;
+}
 
-inline bool isShellEntity(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == SHELL_ENTITY; }
-inline bool isChain(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == SHELL_0D; }
-inline bool isLoop(BitFlags entityFlags)  { return (entityFlags & ANY_ENTITY) == SHELL_1D; }
-inline bool isShell(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == SHELL_2D; }
+inline bool isShellEntity(BitFlags entityFlags)
+{
+  return (entityFlags & ENTITY_MASK) == SHELL_ENTITY;
+}
+inline bool isChain(BitFlags entityFlags)
+{
+  return (entityFlags & ANY_ENTITY) == SHELL_0D;
+}
+inline bool isLoop(BitFlags entityFlags)
+{
+  return (entityFlags & ANY_ENTITY) == SHELL_1D;
+}
+inline bool isShell(BitFlags entityFlags)
+{
+  return (entityFlags & ANY_ENTITY) == SHELL_2D;
+}
 
 // Note that unlike other tests, groups may have ENTITY_MASK bits other than GROUP_ENTITY set and still be considered groups.
 // That's because groups can also encode constraints on membership with these bits. For now.
-inline bool isGroup(BitFlags entityFlags)    { return (entityFlags & GROUP_ENTITY) == GROUP_ENTITY; }
-inline bool isModel(BitFlags entityFlags)    { return (entityFlags & ENTITY_MASK) == MODEL_ENTITY; }
-inline bool isInstance(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == INSTANCE_ENTITY; }
-inline bool isAuxiliaryGeometry(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == AUX_GEOM_ENTITY; }
-inline bool isConcept(BitFlags entityFlags)  { return (entityFlags & ENTITY_MASK) == CONCEPT_ENTITY; }
+inline bool isGroup(BitFlags entityFlags)
+{
+  return (entityFlags & GROUP_ENTITY) == GROUP_ENTITY;
+}
+inline bool isModel(BitFlags entityFlags)
+{
+  return (entityFlags & ENTITY_MASK) == MODEL_ENTITY;
+}
+inline bool isInstance(BitFlags entityFlags)
+{
+  return (entityFlags & ENTITY_MASK) == INSTANCE_ENTITY;
+}
+inline bool isAuxiliaryGeometry(BitFlags entityFlags)
+{
+  return (entityFlags & ENTITY_MASK) == AUX_GEOM_ENTITY;
+}
+inline bool isConcept(BitFlags entityFlags)
+{
+  return (entityFlags & ENTITY_MASK) == CONCEPT_ENTITY;
+}
 
-inline bool isSessionRef(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == SESSION; }
+inline bool isSessionRef(BitFlags entityFlags)
+{
+  return (entityFlags & ENTITY_MASK) == SESSION;
+}
 
 /**\brief Enumerate how model domains are represented.
   *
@@ -222,11 +284,11 @@ inline bool isSessionRef(BitFlags entityFlags) { return (entityFlags & ENTITY_MA
   */
 enum ModelGeometryStyle
 {
-  DISCRETE,     /**< Cells are discretized as a polygonal/polyhedral piecewise
+  DISCRETE,  /**< Cells are discretized as a polygonal/polyhedral piecewise
                      linear complex (PLC) with a supporting tessellation that
                      are usually composed of multiple primitive geometric
                      shapes like triangles or tetrahedra. */
-  PARAMETRIC    /**< Cells are defined by a map from parametric coordinates to
+  PARAMETRIC /**< Cells are defined by a map from parametric coordinates to
                      world coordinates, usually as analytic splines. */
 };
 
@@ -236,13 +298,15 @@ enum ModelGeometryStyle
 inline std::string ModelGeometryStyleName(ModelGeometryStyle s)
 {
   switch (s)
-    {
-  case DISCRETE:   return "discrete";
-  case PARAMETRIC: return "parametric";
-  default:
-    // fall through
-    break;
-    }
+  {
+    case DISCRETE:
+      return "discrete";
+    case PARAMETRIC:
+      return "parametric";
+    default:
+      // fall through
+      break;
+  }
   return "undefined";
 }
 
@@ -256,7 +320,7 @@ inline ModelGeometryStyle NamedModelGeometryStyle(const std::string& s)
   return PARAMETRIC;
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_EntityTypeBits_h

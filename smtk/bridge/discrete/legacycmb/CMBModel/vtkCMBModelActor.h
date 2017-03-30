@@ -28,19 +28,19 @@ class vtkWindow;
 class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelActor : public vtkPVLODActor
 {
 public:
-  vtkTypeMacro(vtkCMBModelActor,vtkPVLODActor);
+  vtkTypeMacro(vtkCMBModelActor, vtkPVLODActor);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  static vtkCMBModelActor *New();
+  static vtkCMBModelActor* New();
 
   // Description:
   // This causes the actor to be rendered. It, in turn, will render the actor's
   // property and then mapper.
-  virtual void Render(vtkRenderer *, vtkMapper *);
+  virtual void Render(vtkRenderer*, vtkMapper*);
 
   // Description:
   // Support the standard render methods.
-  virtual int RenderOpaqueGeometry(vtkViewport *viewport);
+  virtual int RenderOpaqueGeometry(vtkViewport* viewport);
 
 protected:
   vtkCMBModelActor();
@@ -48,12 +48,12 @@ protected:
 
   // Description:
   // Pre/Post process for model rendering
-  virtual void PreModelRender(vtkRenderer *ren);
-  virtual void PostModelRender(vtkRenderer *ren);
+  virtual void PreModelRender(vtkRenderer* ren);
+  virtual void PostModelRender(vtkRenderer* ren);
 
 private:
   vtkCMBModelActor(const vtkCMBModelActor&); // Not implemented.
-  void operator=(const vtkCMBModelActor&); // Not implemented.
+  void operator=(const vtkCMBModelActor&);   // Not implemented.
 };
 
 #endif

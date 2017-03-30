@@ -35,10 +35,11 @@
 using namespace smtk::model;
 using smtk::attribute::IntItem;
 
-template<typename T>
+template <typename T>
 void printVec(const std::vector<T>& v, const char* typeName, char sep = '\0')
 {
-  if (v.empty()) return;
+  if (v.empty())
+    return;
   std::cout << " " << typeName << "(" << v.size() << "): [";
   std::cout << " " << v[0];
   if (sep)
@@ -50,24 +51,22 @@ void printVec(const std::vector<T>& v, const char* typeName, char sep = '\0')
   std::cout << " ]";
 }
 
-
 int WillOperateWatcher(OperatorEventType event, const Operator& op, void* user)
 {
   test(event == WILL_OPERATE, "WillOperate callback invoked with bad event type");
   int shouldCancel = *reinterpret_cast<int*>(user);
-  std::cout
-    << "Operator " << op.name() << " about to run: "
-    << (shouldCancel ? "will" : "will not") << " request cancellation.\n";
+  std::cout << "Operator " << op.name() << " about to run: " << (shouldCancel ? "will" : "will not")
+            << " request cancellation.\n";
   return shouldCancel;
 }
 
-int DidOperateWatcher(OperatorEventType event, const Operator& op, OperatorResult result, void* user)
+int DidOperateWatcher(
+  OperatorEventType event, const Operator& op, OperatorResult result, void* user)
 {
   test(event == DID_OPERATE, "DidOperate callback invoked with bad event type");
   IntItem::Ptr outcome = result->findInt("outcome");
-  std::cout
-    << "Operator " << op.name() << " did operate"
-    << " (outcome = \"" << outcomeAsString(outcome->value()) << "\")\n";
+  std::cout << "Operator " << op.name() << " did operate"
+            << " (outcome = \"" << outcomeAsString(outcome->value()) << "\")\n";
   // increment the number of times the parameter was modified.
   (*reinterpret_cast<int*>(user))++;
   return 0;
@@ -92,26 +91,24 @@ public:
 
   TestOutcomeOperator()
     : m_able(false) // fail operation until told otherwise
-    {
-    }
+  {
+  }
   virtual bool ableToOperate()
-    {
+  {
     this->ensureSpecification();
     return
       // Force failure?
-      this->m_able &&
-      this->m_specification &&
-      this->m_specification->isValid();
-    }
+      this->m_able && this->m_specification && this->m_specification->isValid();
+  }
   bool m_able; // Used to force UNABLE_TO_OPERATE result.
 
 protected:
   virtual OperatorResult operateInternal()
-    {
-    return this->createResult(
-      this->specification()->findInt("shouldSucceed")->value() ?
-      OPERATION_SUCCEEDED : OPERATION_FAILED);
-    }
+  {
+    return this->createResult(this->specification()->findInt("shouldSucceed")->value()
+        ? OPERATION_SUCCEEDED
+        : OPERATION_FAILED);
+  }
 };
 
 // Implementation corresponding to smtkDeclareModelOperator() above.
@@ -130,10 +127,15 @@ smtkImplementsModelOperator(
  */
 
 smtk::model::OperatorPtr TestOutcomeOperator::baseCreate()
-{ return TestOutcomeOperator::create(); }
+{
+  return TestOutcomeOperator::create();
+}
 
 std::string TestOutcomeOperator::operatorName("outcome test");
-std::string TestOutcomeOperator::className() const { return "TestOutcomeOperator"; }
+std::string TestOutcomeOperator::className() const
+{
+  return "TestOutcomeOperator";
+}
 
 void testExPostFactoOperatorRegistration(Manager::Ptr manager)
 {
@@ -143,34 +145,32 @@ void testExPostFactoOperatorRegistration(Manager::Ptr manager)
   typedef std::vector<smtk::attribute::DefinitionPtr> OpListType;
   // Add operator descriptions to the default session of our manager.
   smtk::model::SessionPtr session = defSess.session();
-  smtk::attribute::DefinitionPtr opBase =
-    session->operatorSystem()->findDefinition("operator");
+  smtk::attribute::DefinitionPtr opBase = session->operatorSystem()->findDefinition("operator");
   OpListType origOpList;
   session->operatorSystem()->derivedDefinitions(opBase, origOpList);
 
   // Register the operator
   session->registerOperator(
-    TestOutcomeOperator::operatorName,
-    unitOutcomeOperator_xml,
-    &TestOutcomeOperator::baseCreate);
+    TestOutcomeOperator::operatorName, unitOutcomeOperator_xml, &TestOutcomeOperator::baseCreate);
 
   // Now enumerate attribute definitions that inherit "operator".
   OpListType opList;
   session->operatorSystem()->derivedDefinitions(opBase, opList);
   std::cout << "Imported XML for operators:\n";
   for (OpListType::iterator it = opList.begin(); it != opList.end(); ++it)
-    {
+  {
     std::cout << "  \"" << (*it)->type() << "\"\n";
-    }
+  }
   std::cout << "\n";
 
   if (opList.size() != origOpList.size() + 1)
-    {
+  {
     std::ostringstream err;
-    err << "Error: Expected " << (origOpList.size() + 1) << " operator(s), found " << opList.size() << "\n";
+    err << "Error: Expected " << (origOpList.size() + 1) << " operator(s), found " << opList.size()
+        << "\n";
     std::cerr << err.str();
     throw err.str();
-    }
+  }
 }
 
 void testOperatorOutcomes(Manager::Ptr manager)
@@ -184,20 +184,23 @@ void testOperatorOutcomes(Manager::Ptr manager)
   op->observe(DID_OPERATE, DidOperateWatcher, &numberOfFailedOperations);
 
   // Verify that ableToOperate() is called and complains:
-  test(op->operate()->findInt("outcome")->value() == UNABLE_TO_OPERATE, "Should have been unable to operate.");
-  std::cout
-    << "Operator " << op->name() << " should be unable to operate"
-    << " (outcome = \"" << outcomeAsString(op->operate()->findInt("outcome")->value()) << "\""
-    << ").\n--\n";
+  test(op->operate()->findInt("outcome")->value() == UNABLE_TO_OPERATE,
+    "Should have been unable to operate.");
+  std::cout << "Operator " << op->name() << " should be unable to operate"
+            << " (outcome = \"" << outcomeAsString(op->operate()->findInt("outcome")->value())
+            << "\""
+            << ").\n--\n";
 
   // Verify that the WILL_OPERATE observer is called and cancels the operation:
   op->m_able = true;
-  test(op->operate()->findInt("outcome")->value() == OPERATION_CANCELED, "Operation should have been canceled.");
+  test(op->operate()->findInt("outcome")->value() == OPERATION_CANCELED,
+    "Operation should have been canceled.");
   std::cout << "--\n";
 
   // Verify that the operation fails when "shouldSucceed" parameter is zero.
   shouldCancel = 0;
-  test(op->operate()->findInt("outcome")->value() == OPERATION_FAILED, "Operation should have failed.");
+  test(op->operate()->findInt("outcome")->value() == OPERATION_FAILED,
+    "Operation should have failed.");
   std::cout << "--\n";
 
   // Verify that removing observer bypasses cancellation.
@@ -208,7 +211,8 @@ void testOperatorOutcomes(Manager::Ptr manager)
   op->specification()->findInt("shouldSucceed")->setValue(1);
 
   // Verify that the operation succeeds when "shouldSucceed" parameter is non-zero.
-  test(op->operate()->findInt("outcome")->value() == OPERATION_SUCCEEDED, "Operation should have succeeded.");
+  test(op->operate()->findInt("outcome")->value() == OPERATION_SUCCEEDED,
+    "Operation should have succeeded.");
   std::cout << "--\n";
 
   // Now test values passed to callbacks:
@@ -223,9 +227,7 @@ void testSessionAssociation(Manager::Ptr manager)
   Model model = manager->addModel(3, 3, "Model Airplane");
   model.setSession(*manager->sessions().begin());
   StringList modelOpNames = model.operatorNames();
-  test(
-    std::find(modelOpNames.begin(), modelOpNames.end(), "outcome test") !=
-    modelOpNames.end(),
+  test(std::find(modelOpNames.begin(), modelOpNames.end(), "outcome test") != modelOpNames.end(),
     "Expected \"outcome test\" operator defined for the test model.");
 
   // Test op(name) method
@@ -252,15 +254,17 @@ int main()
 
   Manager::Ptr manager = Manager::create();
 
-  try {
+  try
+  {
 
     testSessionList(manager);
     testExPostFactoOperatorRegistration(manager);
     testOperatorOutcomes(manager);
     testSessionAssociation(manager);
-
-  } catch (const std::string& msg) {
-    (void) msg; // Ignore the message; it's already been printed.
+  }
+  catch (const std::string& msg)
+  {
+    (void)msg; // Ignore the message; it's already been printed.
     std::cerr << "Exiting...\n";
     status = -1;
   }

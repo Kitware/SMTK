@@ -17,13 +17,12 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkXMLParser.h"
 
-
 class vtkXMLElement;
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkModelXMLParser : public vtkXMLParser
 {
 public:
-  vtkTypeMacro(vtkModelXMLParser,vtkXMLParser);
+  vtkTypeMacro(vtkModelXMLParser, vtkXMLParser);
   void PrintSelf(ostream& os, vtkIndent indent);
   static vtkModelXMLParser* New();
 
@@ -68,8 +67,8 @@ protected:
   virtual int ParseXML();
 
 private:
-  vtkModelXMLParser(const vtkModelXMLParser&);  // Not implemented.
-  void operator=(const vtkModelXMLParser&);  // Not implemented.
+  vtkModelXMLParser(const vtkModelXMLParser&); // Not implemented.
+  void operator=(const vtkModelXMLParser&);    // Not implemented.
 };
 
 #endif

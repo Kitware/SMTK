@@ -27,50 +27,42 @@
 #include <limits>
 #include <utility>
 
-namespace smtk {
-namespace mesh {
+namespace smtk
+{
+namespace mesh
+{
 
 void PreAllocatedField::determineAllocationLengths(
-  const smtk::mesh::MeshSet& ms,
-  std::int64_t& numberOfCells,
-  std::int64_t& numberOfPoints)
+  const smtk::mesh::MeshSet& ms, std::int64_t& numberOfCells, std::int64_t& numberOfPoints)
 {
   std::int64_t connectivityLength;
-  PreAllocatedTessellation::determineAllocationLengths(ms.cells(),
-                                                       connectivityLength,
-                                                       numberOfCells,
-                                                       numberOfPoints);
+  PreAllocatedTessellation::determineAllocationLengths(
+    ms.cells(), connectivityLength, numberOfCells, numberOfPoints);
 }
 
-PreAllocatedField::PreAllocatedField(std::int64_t* cellField,
-                                     std::int64_t* pointField):
-  m_cellField(cellField),
-  m_pointField(pointField)
+PreAllocatedField::PreAllocatedField(std::int64_t* cellField, std::int64_t* pointField)
+  : m_cellField(cellField)
+  , m_pointField(pointField)
 {
-
 }
 
 template <typename QueryTag>
-void Field::extract( const smtk::mesh::MeshSet& ms,
-                     const smtk::mesh::PointSet& ps )
+void Field::extract(const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps)
 {
   //determine the lengths
   std::int64_t numberOfCells = -1;
   std::int64_t numberOfPoints = -1;
 
-  PreAllocatedField::determineAllocationLengths(ms,
-                                                numberOfCells,
-                                                numberOfPoints);
-  this->m_cellData.resize( numberOfCells );
+  PreAllocatedField::determineAllocationLengths(ms, numberOfCells, numberOfPoints);
+  this->m_cellData.resize(numberOfCells);
   //since the input PointSet can contain more points that the computed number,
   //set numberOfPoints to the PointSet size.
   numberOfPoints = ps.size();
-  this->m_pointData.resize( numberOfPoints );
+  this->m_pointData.resize(numberOfPoints);
 
-  smtk::mesh::PreAllocatedField field(&this->m_cellData[0],
-                                      &this->m_pointData[0]);
+  smtk::mesh::PreAllocatedField field(&this->m_cellData[0], &this->m_pointData[0]);
 
-  extractField<QueryTag>(ms,ps,field);
+  extractField<QueryTag>(ms, ps, field);
 }
 
 template void Field::extract<smtk::mesh::Dirichlet>(
@@ -80,55 +72,49 @@ template void Field::extract<smtk::mesh::Neumann>(
 template void Field::extract<smtk::mesh::Domain>(
   const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps);
 
-void Field::extractDirichlet( const smtk::mesh::MeshSet& ms )
+void Field::extractDirichlet(const smtk::mesh::MeshSet& ms)
 {
   this->extract<smtk::mesh::Dirichlet>(ms, ms.points());
 }
 
-void Field::extractNeumann( const smtk::mesh::MeshSet& ms )
+void Field::extractNeumann(const smtk::mesh::MeshSet& ms)
 {
   this->extract<smtk::mesh::Neumann>(ms, ms.points());
 }
 
-void Field::extractDomain( const smtk::mesh::MeshSet& ms )
+void Field::extractDomain(const smtk::mesh::MeshSet& ms)
 {
   this->extract<smtk::mesh::Domain>(ms, ms.points());
 }
 
-void Field::extractDirichlet( const smtk::mesh::MeshSet& ms,
-                              const smtk::mesh::PointSet& ps )
+void Field::extractDirichlet(const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps)
 {
   this->extract<smtk::mesh::Dirichlet>(ms, ps);
 }
 
-void Field::extractNeumann( const smtk::mesh::MeshSet& ms,
-                            const smtk::mesh::PointSet& ps )
+void Field::extractNeumann(const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps)
 {
   this->extract<smtk::mesh::Neumann>(ms, ps);
 }
 
-void Field::extractDomain( const smtk::mesh::MeshSet& ms,
-                           const smtk::mesh::PointSet& ps )
+void Field::extractDomain(const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps)
 {
   this->extract<smtk::mesh::Domain>(ms, ps);
 }
 
 namespace
 {
-void QueryTags(const smtk::mesh::MeshSet& ms,
-               std::vector<smtk::mesh::Dirichlet>& tags)
+void QueryTags(const smtk::mesh::MeshSet& ms, std::vector<smtk::mesh::Dirichlet>& tags)
 {
   tags = ms.dirichlets();
 }
 
-void QueryTags(const smtk::mesh::MeshSet& ms,
-               std::vector<smtk::mesh::Neumann>& tags)
+void QueryTags(const smtk::mesh::MeshSet& ms, std::vector<smtk::mesh::Neumann>& tags)
 {
   tags = ms.neumanns();
 }
 
-void QueryTags(const smtk::mesh::MeshSet& ms,
-               std::vector<smtk::mesh::Domain>& tags)
+void QueryTags(const smtk::mesh::MeshSet& ms, std::vector<smtk::mesh::Domain>& tags)
 {
   tags = ms.domains();
 }
@@ -136,11 +122,13 @@ void QueryTags(const smtk::mesh::MeshSet& ms,
 template <typename QueryTag>
 struct TaggedRangeForQuery
 {
-  TaggedRangeForQuery(QueryTag tag, std::pair<std::size_t, std::size_t> range) :
-    m_tag(tag), m_range(range) {}
+  TaggedRangeForQuery(QueryTag tag, std::pair<std::size_t, std::size_t> range)
+    : m_tag(tag)
+    , m_range(range)
+  {
+  }
 
-  friend bool operator< (const TaggedRangeForQuery &left,
-                         const TaggedRangeForQuery &right)
+  friend bool operator<(const TaggedRangeForQuery& left, const TaggedRangeForQuery& right)
   {
     return left.m_range.first < right.m_range.first;
   }
@@ -148,13 +136,11 @@ struct TaggedRangeForQuery
   QueryTag m_tag;
   std::pair<std::size_t, std::size_t> m_range;
 };
-
 }
 
 template <typename QueryTag>
-void extractField( const smtk::mesh::MeshSet& ms,
-                   const smtk::mesh::PointSet& ps,
-                   PreAllocatedField& field)
+void extractField(
+  const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps, PreAllocatedField& field)
 {
   // We need to preserve the internal ordering of the cells and points in
   // MeshSet <ms>. So, we first separate <ms> into discrete submeshes for each
@@ -185,32 +171,32 @@ void extractField( const smtk::mesh::MeshSet& ms,
   smtk::mesh::MeshSet nullSet = ms;
   meshes.reserve(tags.size());
   for (auto&& tag : tags)
-    {
+  {
     smtk::mesh::MeshSet subset = ms.subset(tag);
     meshes.push_back(std::make_pair(tag, subset));
     nullSet = set_difference(nullSet, subset);
-    }
+  }
 
   // We need an unused value to assign our null tag. We start with -1, and
   // increment until we find an unused value.
   int nullValue = -1;
   while (true)
-    {
+  {
     bool foundUniqueValue = true;
     for (auto&& subset : meshes)
-      {
+    {
       if (subset.first.value() == nullValue)
-        {
+      {
         foundUniqueValue = false;
         break;
-        }
       }
-    if (foundUniqueValue)
-      {
-      break;
-      }
-    ++nullValue;
     }
+    if (foundUniqueValue)
+    {
+      break;
+    }
+    ++nullValue;
+  }
 
   // Now that our null tag and null set are constructed, we add them as a pair
   // to our meshes array.
@@ -236,32 +222,26 @@ void extractField( const smtk::mesh::MeshSet& ms,
   cellRanges.reserve(meshes.size());
   pointRanges.reserve(meshes.size());
   for (auto&& subset : meshes)
-    {
-    smtk::mesh::CellSet subcells = set_intersect(remainingCells,
-                                                 subset.second.cells());
-    smtk::mesh::PointSet subpoints = set_intersect(remainingPoints,
-                                                   subset.second.points());
+  {
+    smtk::mesh::CellSet subcells = set_intersect(remainingCells, subset.second.cells());
+    smtk::mesh::PointSet subpoints = set_intersect(remainingPoints, subset.second.points());
     for (auto range = subcells.range().const_pair_begin();
          range != subcells.range().const_pair_end(); ++range)
-      {
-      cellRanges.push_back(
-        TaggedRange(subset.first,
-                    std::make_pair(cells.range().index(range->first),
-                                   cells.range().index(range->second))));
-      }
+    {
+      cellRanges.push_back(TaggedRange(subset.first,
+        std::make_pair(cells.range().index(range->first), cells.range().index(range->second))));
+    }
 
     for (auto range = subpoints.range().const_pair_begin();
          range != subpoints.range().const_pair_end(); ++range)
-      {
-      pointRanges.push_back(
-        TaggedRange(subset.first,
-                    std::make_pair(points.range().index(range->first),
-                                   points.range().index(range->second))));
-      }
+    {
+      pointRanges.push_back(TaggedRange(subset.first,
+        std::make_pair(points.range().index(range->first), points.range().index(range->second))));
+    }
 
     remainingCells = set_difference(remainingCells, subcells);
     remainingPoints = set_difference(remainingPoints, subpoints);
-    }
+  }
 
   // Since each range is contiguous and represents a partition of the underlying
   // cells/points of the input meshset, we use as a sort function a comparator
@@ -273,23 +253,21 @@ void extractField( const smtk::mesh::MeshSet& ms,
   // field arrays.
   std::size_t cellRangeStart = 0;
   for (auto&& range : cellRanges)
-    {
-      std::size_t span = range.m_range.second - range.m_range.first + 1;
-      std::fill(&field.m_cellField[cellRangeStart],
-                &field.m_cellField[cellRangeStart] + span,
-                range.m_tag.value());
-      cellRangeStart += span;
-    }
+  {
+    std::size_t span = range.m_range.second - range.m_range.first + 1;
+    std::fill(&field.m_cellField[cellRangeStart], &field.m_cellField[cellRangeStart] + span,
+      range.m_tag.value());
+    cellRangeStart += span;
+  }
 
   std::size_t pointRangeStart = 0;
   for (auto&& range : pointRanges)
-    {
-      std::size_t span = range.m_range.second - range.m_range.first + 1;
-      std::fill(&field.m_pointField[pointRangeStart],
-                &field.m_pointField[pointRangeStart] + span,
-                range.m_tag.value());
-      pointRangeStart += span;
-    }
+  {
+    std::size_t span = range.m_range.second - range.m_range.first + 1;
+    std::fill(&field.m_pointField[pointRangeStart], &field.m_pointField[pointRangeStart] + span,
+      range.m_tag.value());
+    pointRangeStart += span;
+  }
 }
 
 template void extractField<smtk::mesh::Dirichlet>(
@@ -299,45 +277,37 @@ template void extractField<smtk::mesh::Neumann>(
 template void extractField<smtk::mesh::Domain>(
   const smtk::mesh::MeshSet&, const smtk::mesh::PointSet&, PreAllocatedField&);
 
-void extractDirichletField( const smtk::mesh::MeshSet& ms,
-                            PreAllocatedField& field)
+void extractDirichletField(const smtk::mesh::MeshSet& ms, PreAllocatedField& field)
 {
   extractField<smtk::mesh::Dirichlet>(ms, ms.points(), field);
 }
 
-void extractNeumannField( const smtk::mesh::MeshSet& ms,
-                          PreAllocatedField& field)
+void extractNeumannField(const smtk::mesh::MeshSet& ms, PreAllocatedField& field)
 {
   extractField<smtk::mesh::Neumann>(ms, ms.points(), field);
 }
 
-void extractDomainField( const smtk::mesh::MeshSet& ms,
-                         PreAllocatedField& field)
+void extractDomainField(const smtk::mesh::MeshSet& ms, PreAllocatedField& field)
 {
   extractField<smtk::mesh::Domain>(ms, ms.points(), field);
 }
 
-void extractDirichletField( const smtk::mesh::MeshSet& ms,
-                            const smtk::mesh::PointSet& ps,
-                            PreAllocatedField& field)
+void extractDirichletField(
+  const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps, PreAllocatedField& field)
 {
   extractField<smtk::mesh::Dirichlet>(ms, ps, field);
 }
 
-void extractNeumannField( const smtk::mesh::MeshSet& ms,
-                          const smtk::mesh::PointSet& ps,
-                          PreAllocatedField& field)
+void extractNeumannField(
+  const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps, PreAllocatedField& field)
 {
   extractField<smtk::mesh::Neumann>(ms, ps, field);
 }
 
-void extractDomainField( const smtk::mesh::MeshSet& ms,
-                         const smtk::mesh::PointSet& ps,
-                         PreAllocatedField& field)
+void extractDomainField(
+  const smtk::mesh::MeshSet& ms, const smtk::mesh::PointSet& ps, PreAllocatedField& field)
 {
   extractField<smtk::mesh::Domain>(ms, ps, field);
 }
-
-
 }
 }

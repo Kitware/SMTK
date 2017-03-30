@@ -22,47 +22,44 @@ class qtGroupViewInternals;
 
 namespace smtk
 {
-  namespace extension
-  {
-    class SMTKQTEXT_EXPORT qtGroupView : public qtBaseView
-    {
-      Q_OBJECT
+namespace extension
+{
+class SMTKQTEXT_EXPORT qtGroupView : public qtBaseView
+{
+  Q_OBJECT
 
-    public:
-      static qtBaseView *createViewWidget(const ViewInfo &info);
-      qtGroupView(const ViewInfo &info);
-      virtual ~qtGroupView();
+public:
+  static qtBaseView* createViewWidget(const ViewInfo& info);
+  qtGroupView(const ViewInfo& info);
+  virtual ~qtGroupView();
 
-      void getChildView(const std::string &viewType,
-                        QList<qtBaseView*>& views);
-      qtBaseView* getChildView(int pageIndex);
+  void getChildView(const std::string& viewType, QList<qtBaseView*>& views);
+  qtBaseView* getChildView(int pageIndex);
 
-      virtual void addChildView(qtBaseView*);
-      virtual void clearChildViews();
-      const QList<qtBaseView*>& childViews() const;
+  virtual void addChildView(qtBaseView*);
+  virtual void clearChildViews();
+  const QList<qtBaseView*>& childViews() const;
 
-    public slots:
-      virtual void updateUI();
-      virtual void showAdvanceLevelOverlay(bool show);
-      virtual void updateModelAssociation();
-      virtual void onShowCategory();
+public slots:
+  virtual void updateUI();
+  virtual void showAdvanceLevelOverlay(bool show);
+  virtual void updateModelAssociation();
+  virtual void onShowCategory();
 
-    protected:
-      virtual void createWidget( );
-      virtual void addGroupBoxEntry(qtBaseView*);
-      virtual void addTabEntry(qtBaseView*);
-      virtual void addTileEntry(qtBaseView*);
+protected:
+  virtual void createWidget();
+  virtual void addGroupBoxEntry(qtBaseView*);
+  virtual void addTabEntry(qtBaseView*);
+  virtual void addTileEntry(qtBaseView*);
 
-    protected slots:
-      void updateCurrentTab(int);
+protected slots:
+  void updateCurrentTab(int);
 
-    private:
+private:
+  qtGroupViewInternals* Internals;
 
-      qtGroupViewInternals *Internals;
-
-    }; // class
-  }; // namespace attribute
+}; // class
+}; // namespace attribute
 }; // namespace smtk
-
 
 #endif

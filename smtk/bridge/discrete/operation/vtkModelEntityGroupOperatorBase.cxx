@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkModelEntityGroupOperatorBase.h"
 
 #include "vtkDiscreteModel.h"
@@ -33,16 +32,16 @@ vtkModelEntityGroupOperatorBase::vtkModelEntityGroupOperatorBase()
 
 vtkModelEntityGroupOperatorBase::~vtkModelEntityGroupOperatorBase()
 {
-  if(this->EntitiesToAdd)
-    {
+  if (this->EntitiesToAdd)
+  {
     this->EntitiesToAdd->Delete();
     this->EntitiesToAdd = 0;
-    }
-  if(this->EntitiesToRemove)
-    {
+  }
+  if (this->EntitiesToRemove)
+  {
     this->EntitiesToRemove->Delete();
     this->EntitiesToRemove = 0;
-    }
+  }
 }
 
 void vtkModelEntityGroupOperatorBase::SetItemType(int /*itemType*/)
@@ -53,54 +52,49 @@ void vtkModelEntityGroupOperatorBase::SetItemType(int /*itemType*/)
 
 void vtkModelEntityGroupOperatorBase::SetBuildEnityType(int enType)
 {
-  if(this->BuildEnityType != enType &&
-    (enType == vtkModelFaceType || enType == vtkModelEdgeType))
-    {
+  if (this->BuildEnityType != enType && (enType == vtkModelFaceType || enType == vtkModelEdgeType))
+  {
     this->BuildEnityType = enType;
     this->Modified();
-    }
+  }
 }
 
 vtkDiscreteModelEntityGroup* vtkModelEntityGroupOperatorBase::GetModelEntityGroup(
   vtkDiscreteModel* Model)
 {
-  vtkModelEntity* Entity =
-    this->vtkModelEntityOperatorBase::GetModelEntity(Model);
-  vtkDiscreteModelEntityGroup* EntityGroup =
-    vtkDiscreteModelEntityGroup::SafeDownCast(Entity);
+  vtkModelEntity* Entity = this->vtkModelEntityOperatorBase::GetModelEntity(Model);
+  vtkDiscreteModelEntityGroup* EntityGroup = vtkDiscreteModelEntityGroup::SafeDownCast(Entity);
 
   return EntityGroup;
 }
 
 bool vtkModelEntityGroupOperatorBase::AbleToOperate(vtkDiscreteModel* Model)
 {
-  if(!Model)
-    {
+  if (!Model)
+  {
     vtkErrorMacro("Passed in a null model.");
     return 0;
-    }
-  if(this->GetIsIdSet() == 0)
-    {
+  }
+  if (this->GetIsIdSet() == 0)
+  {
     vtkErrorMacro("No entity id specified.");
     return 0;
-    }
-  if(!this->GetModelEntityGroup(Model))
-    {
+  }
+  if (!this->GetModelEntityGroup(Model))
+  {
     vtkErrorMacro("Cannot find the entity group.");
     return 0;
-    }
+  }
 
   return 1;
 }
 
-void vtkModelEntityGroupOperatorBase::AddModelEntity(
-  vtkIdType EntityId)
+void vtkModelEntityGroupOperatorBase::AddModelEntity(vtkIdType EntityId)
 {
   this->EntitiesToAdd->InsertUniqueId(EntityId);
 }
 
-void vtkModelEntityGroupOperatorBase::AddModelEntity(
-  vtkDiscreteModelEntity* ModelEntity)
+void vtkModelEntityGroupOperatorBase::AddModelEntity(vtkDiscreteModelEntity* ModelEntity)
 {
   vtkModelEntity* Ent = ModelEntity->GetThisModelEntity();
   this->AddModelEntity(Ent->GetUniquePersistentId());
@@ -111,14 +105,12 @@ void vtkModelEntityGroupOperatorBase::ClearEntitiesToAdd()
   this->EntitiesToAdd->Reset();
 }
 
-void vtkModelEntityGroupOperatorBase::RemoveModelEntity(
-  vtkIdType EntityId)
+void vtkModelEntityGroupOperatorBase::RemoveModelEntity(vtkIdType EntityId)
 {
   this->EntitiesToRemove->InsertUniqueId(EntityId);
 }
 
-void vtkModelEntityGroupOperatorBase::RemoveModelEntity(
-  vtkDiscreteModelEntity* ModelEntity)
+void vtkModelEntityGroupOperatorBase::RemoveModelEntity(vtkDiscreteModelEntity* ModelEntity)
 {
   vtkModelEntity* Ent = ModelEntity->GetThisModelEntity();
   this->RemoveModelEntity(Ent->GetUniquePersistentId());
@@ -131,64 +123,60 @@ void vtkModelEntityGroupOperatorBase::ClearEntitiesToRemove()
 
 bool vtkModelEntityGroupOperatorBase::Operate(vtkDiscreteModel* Model)
 {
-  if(!this->AbleToOperate(Model))
-    {
+  if (!this->AbleToOperate(Model))
+  {
     return 0;
-    }
+  }
 
   vtkDiscreteModelEntityGroup* EntityGroup = this->GetModelEntityGroup(Model);
 
   vtkIdType i;
-  for(i=0;i<this->EntitiesToAdd->GetNumberOfIds();i++)
-    {
-    vtkModelEntity* Entity =
-      Model->GetModelEntity(this->EntitiesToAdd->GetId(i));
+  for (i = 0; i < this->EntitiesToAdd->GetNumberOfIds(); i++)
+  {
+    vtkModelEntity* Entity = Model->GetModelEntity(this->EntitiesToAdd->GetId(i));
 
-    if(Model->GetModelDimension() == 3)
+    if (Model->GetModelDimension() == 3)
+    {
+      if (Entity->GetType() != vtkModelFaceType && Entity->GetType() != vtkModelEdgeType)
       {
-      if(Entity->GetType() != vtkModelFaceType && Entity->GetType() != vtkModelEdgeType)
-        {
         vtkWarningMacro("Unsupported entity type for a model entity group.");
         continue;
-        }
       }
-    else if(Model->GetModelDimension() == 2)
+    }
+    else if (Model->GetModelDimension() == 2)
+    {
+      if (Entity->GetType() != vtkModelEdgeType)
       {
-      if(Entity->GetType() != vtkModelEdgeType)
-        {
         vtkWarningMacro("Currently only model edges can be added to a model entity group.");
         continue;
-        }
       }
+    }
 
-    vtkDiscreteModelEntity* CMBEntity = vtkDiscreteModelEntity::GetThisDiscreteModelEntity(
-      Entity);
+    vtkDiscreteModelEntity* CMBEntity = vtkDiscreteModelEntity::GetThisDiscreteModelEntity(Entity);
 
     EntityGroup->AddModelEntity(CMBEntity);
-    }
+  }
 
-  for(i=0;i<this->EntitiesToRemove->GetNumberOfIds();i++)
-    {
-    vtkModelEntity* Entity =
-      Model->GetModelEntity(this->EntitiesToRemove->GetId(i));
+  for (i = 0; i < this->EntitiesToRemove->GetNumberOfIds(); i++)
+  {
+    vtkModelEntity* Entity = Model->GetModelEntity(this->EntitiesToRemove->GetId(i));
 
-    vtkDiscreteModelEntity* CMBEntity = vtkDiscreteModelEntity::GetThisDiscreteModelEntity(
-      Entity);
+    vtkDiscreteModelEntity* CMBEntity = vtkDiscreteModelEntity::GetThisDiscreteModelEntity(Entity);
 
     EntityGroup->RemoveModelEntity(CMBEntity);
-    }
+  }
 
   return this->Superclass::Operate(Model);
 }
 
 vtkIdType vtkModelEntityGroupOperatorBase::Build(vtkDiscreteModel* Model)
 {
-  if(Model->GetModelDimension() == 2)
-    {
+  if (Model->GetModelDimension() == 2)
+  {
     this->SetBuildEnityType(vtkModelEdgeType);
-    }
-  vtkDiscreteModelEntityGroup* EntityGroup = Model->BuildModelEntityGroup(
-    this->BuildEnityType, 0, 0);
+  }
+  vtkDiscreteModelEntityGroup* EntityGroup =
+    Model->BuildModelEntityGroup(this->BuildEnityType, 0, 0);
   return EntityGroup->GetUniquePersistentId();
 }
 
@@ -200,7 +188,7 @@ bool vtkModelEntityGroupOperatorBase::Destroy(vtkDiscreteModel* Model)
 
 void vtkModelEntityGroupOperatorBase::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "EntitiesToAdd: " << this->EntitiesToAdd << endl;
   os << indent << "EntitiesToRemove: " << this->EntitiesToRemove << endl;
 }

@@ -30,17 +30,19 @@ using namespace smtk::model;
 using smtk::attribute::FileItem;
 using smtk::attribute::StringItem;
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
 {
   EntityRefArray entities = this->associatedEntitiesAs<EntityRefArray>();
   if (entities.empty())
-    {
+  {
     smtkErrorMacro(this->log(), "No parent specified.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
   EntityRef parent = entities[0];
   smtk::attribute::FileItemPtr urlItem = this->findFile("url");
@@ -48,57 +50,50 @@ smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
   smtk::attribute::IntItemPtr dimItem = this->findInt("dimension");
   int dim = dimItem != nullptr ? dimItem->value(0) : 2;
 
-  smtk::attribute::VoidItem::Ptr separateRepOption =
-    this->findVoid("separate representation");
+  smtk::attribute::VoidItem::Ptr separateRepOption = this->findVoid("separate representation");
   bool bSeparateRep = separateRepOption->isEnabled();
 
   AuxiliaryGeometry auxGeom;
   if (parent.isModel())
-    {
+  {
     auxGeom = parent.manager()->addAuxiliaryGeometry(parent.as<Model>(), dim);
-    }
+  }
   else
-    {
+  {
     auxGeom = parent.manager()->addAuxiliaryGeometry(parent.as<AuxiliaryGeometry>(), dim);
-    }
+  }
   auxGeom.assignDefaultName();
   auxGeom.setIntegerProperty("display as separate representation", bSeparateRep ? 1 : 0);
 
   if (!urlItem->value().empty())
-    {
+  {
     path filePath(urlItem->value());
     auxGeom.setUrl(filePath.string());
     // Grab the file name as the name for the aux geometry
     auxGeom.setName(filePath.filename().string());
-    }
+  }
   // nullptr check for AddImage operator
   if (dtypeItem != nullptr && !dtypeItem->value(0).empty())
-    {
+  {
     auxGeom.setStringProperty("type", dtypeItem->value(0));
-    }
+  }
 
-  smtk::model::OperatorResult result = this->createResult(
-    smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
 
   this->addEntityToResult(result, parent, MODIFIED);
   this->addEntityToResult(result, auxGeom, CREATED);
   if (auxGeom.hasUrl())
-    {
+  {
     result->findModelEntity("tess_changed")->setValue(auxGeom);
-    }
+  }
 
   return result;
 }
 
-  } //namespace model
+} //namespace model
 } // namespace smtk
 
 #include "smtk/model/AddAuxiliaryGeometry_xml.h"
 
-smtkImplementsModelOperator(
-  SMTKCORE_EXPORT,
-  smtk::model::AddAuxiliaryGeometry,
-  add_auxiliary_geometry,
-  "add auxiliary geometry",
-  AddAuxiliaryGeometry_xml,
-  smtk::model::Session);
+smtkImplementsModelOperator(SMTKCORE_EXPORT, smtk::model::AddAuxiliaryGeometry,
+  add_auxiliary_geometry, "add auxiliary geometry", AddAuxiliaryGeometry_xml, smtk::model::Session);

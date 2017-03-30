@@ -17,68 +17,60 @@
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtItem.h"
-#include "smtk/model/EntityTypeBits.h" // for smtk::model::BitFlags
 #include "smtk/extension/qt/qtSelectionManager.h"
+#include "smtk/model/EntityTypeBits.h" // for smtk::model::BitFlags
 
 class qtModelEntityItemInternals;
 class QBoxLayout;
 
 namespace smtk
 {
-  namespace extension
-  {
-    enum class SelectionModifier;
-    class SMTKQTEXT_EXPORT qtModelEntityItem : public qtItem
-    {
-      Q_OBJECT
+namespace extension
+{
+enum class SelectionModifier;
+class SMTKQTEXT_EXPORT qtModelEntityItem : public qtItem
+{
+  Q_OBJECT
 
-    public:
+public:
+  qtModelEntityItem(smtk::attribute::ItemPtr, QWidget* p, qtBaseView* bview,
+    Qt::Orientation enumOrient = Qt::Horizontal);
+  virtual ~qtModelEntityItem();
+  virtual void setLabelVisible(bool);
+  virtual void associateEntities(
+    const smtk::model::EntityRefs& selEntityRefs, bool resetExisting = true);
+  smtk::attribute::ModelEntityItemPtr modelEntityItem();
 
-      qtModelEntityItem(smtk::attribute::ItemPtr, QWidget* p,
-        qtBaseView* bview, Qt::Orientation enumOrient = Qt::Horizontal);
-      virtual ~qtModelEntityItem();
-      virtual void setLabelVisible(bool);
-      virtual void associateEntities(
-          const smtk::model::EntityRefs& selEntityRefs,
-          bool resetExisting = true);
-      smtk::attribute::ModelEntityItemPtr modelEntityItem();
+  bool add(const smtk::model::EntityRef& val);
+  bool remove(const smtk::model::EntityRef& val);
 
-      bool add(const smtk::model::EntityRef& val);
-      bool remove(const smtk::model::EntityRef& val);
+public slots:
+  void setOutputOptional(int);
+  virtual void onRequestEntityAssociation();
 
-    public slots:
-      void setOutputOptional(int);
-      virtual void onRequestEntityAssociation();
+signals:
+  void requestEntityAssociation();
+  void entityListHighlighted(const smtk::common::UUIDs& uuids);
+  void sendSelectionFromModelEntityToSelectionManager(const smtk::model::EntityRefs& selEntities,
+    const smtk::mesh::MeshSets& selMeshes, const smtk::model::DescriptivePhrases& DesPhrases,
+    const smtk::extension::SelectionModifier modifierFlag, const smtk::model::StringList skipList);
 
-    signals:
-      void requestEntityAssociation();
-      void entityListHighlighted(
-        const smtk::common::UUIDs& uuids);
-      void sendSelectionFromModelEntityToSelectionManager(
-                            const smtk::model::EntityRefs &selEntities,
-                            const smtk::mesh::MeshSets &selMeshes,
-                            const smtk::model::DescriptivePhrases &DesPhrases,
-                            const smtk::extension::SelectionModifier modifierFlag,
-                            const smtk::model::StringList skipList
-                            );
+protected slots:
+  virtual void updateItemData();
+  virtual void popupViewItemSelected();
+  virtual void clearEntityAssociations();
 
-    protected slots:
-      virtual void updateItemData();
-      virtual void popupViewItemSelected();
-      virtual void clearEntityAssociations();
+protected:
+  virtual void createWidget();
+  virtual void loadAssociatedEntities();
+  virtual void updateUI();
+  virtual void addEntityAssociationWidget();
 
-    protected:
-      virtual void createWidget();
-      virtual void loadAssociatedEntities();
-      virtual void updateUI();
-      virtual void addEntityAssociationWidget();
+private:
+  qtModelEntityItemInternals* Internals;
 
-    private:
-
-      qtModelEntityItemInternals *Internals;
-
-    }; // class
-  }; // namespace extension
+}; // class
+}; // namespace extension
 }; // namespace smtk
 
 #endif

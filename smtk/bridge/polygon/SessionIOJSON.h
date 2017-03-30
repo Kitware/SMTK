@@ -20,9 +20,12 @@
 
 struct cJSON;
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 /**\brief A base class for delegating session I/O to/from JSON.
   *
@@ -35,24 +38,14 @@ public:
   smtkTypeMacro(SessionIOJSON);
   smtkCreateMacro(SessionIOJSON);
 
-  virtual ~SessionIOJSON() { }
+  virtual ~SessionIOJSON() {}
 
-  virtual int importJSON(
-    smtk::model::ManagerPtr mgr,
-    const smtk::model::SessionPtr& session,
-    cJSON* sessionRec,
-    bool loadNativeModels = false);
-  virtual int exportJSON(
-    smtk::model::ManagerPtr mgr,
-    const smtk::model::SessionPtr& sessPtr,
-    cJSON* sessionRec,
-    bool writeNativeModels = false);
-  virtual int exportJSON(
-    smtk::model::ManagerPtr mgr,
-    const smtk::model::SessionPtr& session,
-    const common::UUIDs &modelIds,
-    cJSON* sessionRec,
-    bool writeNativeModels = false);
+  virtual int importJSON(smtk::model::ManagerPtr mgr, const smtk::model::SessionPtr& session,
+    cJSON* sessionRec, bool loadNativeModels = false);
+  virtual int exportJSON(smtk::model::ManagerPtr mgr, const smtk::model::SessionPtr& sessPtr,
+    cJSON* sessionRec, bool writeNativeModels = false);
+  virtual int exportJSON(smtk::model::ManagerPtr mgr, const smtk::model::SessionPtr& session,
+    const common::UUIDs& modelIds, cJSON* sessionRec, bool writeNativeModels = false);
 
 protected:
   cJSON* serializeModel(internal::ModelPtr pmodel, const smtk::model::Model& mod);
@@ -69,8 +62,8 @@ protected:
   internal::vertex::incident_edge_data deserializeIncidentEdgeRecord(cJSON* record);
 };
 
-    } // namespace polygon
-  } // namespace bridge
+} // namespace polygon
+} // namespace bridge
 } // namespace smtk
 
 #endif // smtk_bridge_polygon_SessionIOJSON_h

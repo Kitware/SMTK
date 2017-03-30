@@ -28,8 +28,8 @@ class vtkDiscreteModelWrapper;
 class VTKCMBDISCRETEMODEL_EXPORT vtkADHExporterOperator : public vtkADHExporterOperatorBase
 {
 public:
-  static vtkADHExporterOperator * New();
-  vtkTypeMacro(vtkADHExporterOperator,vtkADHExporterOperatorBase);
+  static vtkADHExporterOperator* New();
+  vtkTypeMacro(vtkADHExporterOperator, vtkADHExporterOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   using Superclass::Operate;
@@ -55,16 +55,15 @@ protected:
   // Check to see if everything is properly set for the operator.
   virtual bool AbleToOperate(vtkDiscreteModelWrapper* ModelWrapper);
 
-  char *ClientText;
+  char* ClientText;
 
 private:
-  vtkADHExporterOperator(const vtkADHExporterOperator&);  // Not implemented.
-  void operator=(const vtkADHExporterOperator&);  // Not implemented.
+  vtkADHExporterOperator(const vtkADHExporterOperator&); // Not implemented.
+  void operator=(const vtkADHExporterOperator&);         // Not implemented.
 
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).
   int OperateSucceeded;
-
 };
 
 #endif

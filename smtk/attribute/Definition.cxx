@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "smtk/attribute/Definition.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -22,13 +21,11 @@
 #include <sstream>
 
 using namespace smtk::attribute;
-double Definition::s_notApplicableBaseColor[4] = {0.0, 0.0, 0.0, 0.0};
-double Definition::s_defaultBaseColor[4] = {1.0, 1.0, 1.0, 1.0};
+double Definition::s_notApplicableBaseColor[4] = { 0.0, 0.0, 0.0, 0.0 };
+double Definition::s_defaultBaseColor[4] = { 1.0, 1.0, 1.0, 1.0 };
 
 Definition::Definition(
-  const std::string &myType,
-  smtk::attribute::DefinitionPtr myBaseDef,
-  System* mySystem)
+  const std::string& myType, smtk::attribute::DefinitionPtr myBaseDef, System* mySystem)
 {
   this->m_system = mySystem;
   this->m_baseDefinition = myBaseDef;
@@ -44,13 +41,13 @@ Definition::Definition(
   this->m_isDefaultColorSet = false;
   this->m_rootName = this->m_type;
   if (myBaseDef)
-    {
+  {
     this->m_baseItemOffset = myBaseDef->numberOfItemDefinitions();
-    }
+  }
   else
-    {
+  {
     this->m_baseItemOffset = 0;
-    }
+  }
 }
 
 Definition::~Definition()
@@ -61,14 +58,14 @@ bool Definition::isA(smtk::attribute::ConstDefinitionPtr targetDef) const
 {
   // Walk up the inheritence tree until we either hit the root or
   // encounter this definition
-  const Definition *def = this;
+  const Definition* def = this;
   for (def = this; def; def = def->m_baseDefinition.get())
-    {
+  {
     if (def == targetDef.get())
-      {
+    {
       return true;
-      }
     }
+  }
   return false;
 }
 
@@ -79,18 +76,17 @@ bool Definition::conflicts(smtk::attribute::DefinitionPtr def) const
   // ASSUMING isUnique has been set consistantly first verify that both definitions
   // are suppose to be unique
   if (!(this->isUnique() && def->isUnique()))
-    {
+  {
     return false;
-    }
+  }
   // Test the trivial case that they are the same definition
   if (this == def.get())
-    {
+  {
     return true;
-    }
+  }
 
   // Get the most "basic" definition that is unique
-   smtk::attribute::ConstDefinitionPtr baseDef =
-     this->m_system->findIsUniqueBaseClass(def);
+  smtk::attribute::ConstDefinitionPtr baseDef = this->m_system->findIsUniqueBaseClass(def);
   // See if the other definition is derived from this base definition.
   // If it is not then we know there is no conflict
   return def->isA(baseDef);
@@ -113,7 +109,7 @@ bool Definition::conflicts(smtk::attribute::DefinitionPtr def) const
 ModelEntityItemDefinitionPtr Definition::associationRule() const
 {
   if (!this->m_associationRule)
-    {
+  {
     std::ostringstream assocName;
     assocName << this->type() << "Associations";
     // We pretend to be const because allocating this object should have
@@ -122,7 +118,7 @@ ModelEntityItemDefinitionPtr Definition::associationRule() const
     Definition* self = const_cast<Definition*>(this);
     self->m_associationRule = ModelEntityItemDefinition::New(assocName.str());
     self->m_associationRule->setMembershipMask(0); // nothing allowed by default.
-    }
+  }
   return this->m_associationRule;
 }
 
@@ -139,7 +135,7 @@ void Definition::setAssociationRule(ModelEntityItemDefinitionPtr rule)
   */
 smtk::model::BitFlags Definition::associationMask() const
 {
-  return !! this->m_associationRule ? this->m_associationRule->membershipMask() : 0;
+  return !!this->m_associationRule ? this->m_associationRule->membershipMask() : 0;
 }
 
 /**\brief Set the mask specifying which types of model entities this attribute can be associated with.
@@ -195,8 +191,10 @@ bool Definition::canBeAssociated(smtk::model::BitFlags flag) const
   // This is a simpler version of Group::meetsMembershipConstraintsInternal().
   smtk::model::BitFlags mask = this->associationMask();
   smtk::model::BitFlags memberTest = flag & mask;
-  if (!(memberTest & smtk::model::ANY_DIMENSION) && (mask & smtk::model::ANY_DIMENSION)) return false;
-  if (!(memberTest & smtk::model::ENTITY_MASK) && (mask & smtk::model::ENTITY_MASK)) return false;
+  if (!(memberTest & smtk::model::ANY_DIMENSION) && (mask & smtk::model::ANY_DIMENSION))
+    return false;
+  if (!(memberTest & smtk::model::ENTITY_MASK) && (mask & smtk::model::ENTITY_MASK))
+    return false;
   return true;
 }
 
@@ -209,9 +207,8 @@ bool Definition::canBeAssociated(smtk::model::BitFlags flag) const
   *   Conflicts will contain a list of attributes that prevent an attribute
   *   of this type from being associated
   */
-bool
-Definition::canBeAssociated(smtk::model::EntityRef /*entity*/,
-                            std::vector<Attribute *>* /*inConflicts*/) const
+bool Definition::canBeAssociated(
+  smtk::model::EntityRef /*entity*/, std::vector<Attribute*>* /*inConflicts*/) const
 {
   // TO DO - Need to pull in Model Entity class to do this
   // Procedure:
@@ -224,30 +221,29 @@ Definition::canBeAssociated(smtk::model::EntityRef /*entity*/,
   return false;
 }
 
-void Definition::buildAttribute(Attribute *att) const
+void Definition::buildAttribute(Attribute* att) const
 {
   // If there is a super definition have it prep the attribute and add its items
-  const Definition *bdef = this->m_baseDefinition.get();
+  const Definition* bdef = this->m_baseDefinition.get();
   if (bdef)
-    {
+  {
     bdef->buildAttribute(att);
-    }
+  }
   else
-    {
+  {
     // This is the "base definition" so first we should make sure the attribute
     // is "empty" of items and associations
     att->removeAllItems();
     att->m_associations = ModelEntityItemPtr();
-    }
+  }
 
   // If the definition allows associations, create an item to hold them:
   if (this->associationMask())
-    {
+  {
     att->m_associations =
-      smtk::dynamic_pointer_cast<ModelEntityItem>(
-        this->associationRule()->buildItem(att, -2));
+      smtk::dynamic_pointer_cast<ModelEntityItem>(this->associationRule()->buildItem(att, -2));
     att->m_associations->setDefinition(this->associationRule());
-    }
+  }
 
   // Next - for each item definition we have build and add the appropriate
   // item to the attribute
@@ -255,21 +251,21 @@ void Definition::buildAttribute(Attribute *att) const
   std::size_t i, j, n = this->m_itemDefs.size();
   j = att->numberOfItems();
   for (i = 0; i < n; i++, j++)
-    {
+  {
     comp = this->m_itemDefs[i]->buildItem(att, static_cast<int>(j));
     comp->setDefinition(this->m_itemDefs[i]);
     att->addItem(comp);
-    }
+  }
 }
 
-bool Definition::isMemberOf(const std::vector<std::string> &inCategories) const
+bool Definition::isMemberOf(const std::vector<std::string>& inCategories) const
 {
   std::size_t i, n = inCategories.size();
   for (i = 0; i < n; i++)
-    {
+  {
     if (this->isMemberOf(inCategories[i]))
       return true;
-    }
+  }
   return false;
 }
 
@@ -277,9 +273,9 @@ bool Definition::addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
 {
   // First see if there is a item by the same name
   if (this->findItemPosition(cdef->name()) >= 0)
-    {
+  {
     return false;
-    }
+  }
   std::size_t n = this->m_itemDefs.size();
   this->m_itemDefs.push_back(cdef);
   this->m_itemDefPositions[cdef->name()] = static_cast<int>(n);
@@ -291,60 +287,60 @@ void Definition::updateDerivedDefinitions()
 {
   DefinitionPtr def = this->shared_from_this();
   if (def)
-    {
+  {
     this->m_system->updateDerivedDefinitionIndexOffsets(def);
-    }
+  }
 }
 
 void Definition::setCategories()
 {
   if (this->m_baseDefinition)
-    {
+  {
     this->m_categories = this->m_baseDefinition->m_categories;
-    }
+  }
   else
-    {
+  {
     this->m_categories.clear();
-    }
+  }
   std::size_t i, n = this->m_itemDefs.size();
   for (i = 0; i < n; i++)
-    {
+  {
     this->m_itemDefs[i]->updateCategories();
-    const std::set<std::string> &itemCats = this->m_itemDefs[i]->categories();
+    const std::set<std::string>& itemCats = this->m_itemDefs[i]->categories();
     this->m_categories.insert(itemCats.begin(), itemCats.end());
-    }
+  }
 }
 
 smtk::attribute::ItemDefinitionPtr Definition::itemDefinition(int ith) const
 {
   // Is the item in this defintion?
   if (ith >= static_cast<int>(this->m_baseItemOffset))
-    {
-    assert(this->m_itemDefs.size() > static_cast<std::size_t>(ith-this->m_baseItemOffset));
-    return this->m_itemDefs[static_cast<std::size_t>(ith-this->m_baseItemOffset)];
-    }
+  {
+    assert(this->m_itemDefs.size() > static_cast<std::size_t>(ith - this->m_baseItemOffset));
+    return this->m_itemDefs[static_cast<std::size_t>(ith - this->m_baseItemOffset)];
+  }
   else if (this->m_baseDefinition)
-    {
+  {
     return this->m_baseDefinition->itemDefinition(ith);
-    }
+  }
   return smtk::attribute::ItemDefinitionPtr();
 }
 
-int Definition::findItemPosition(const std::string &name) const
+int Definition::findItemPosition(const std::string& name) const
 {
   std::map<std::string, int>::const_iterator it;
   it = this->m_itemDefPositions.find(name);
   if (it == this->m_itemDefPositions.end())
-    {
+  {
     // Check the base definition if there is one
     if (this->m_baseDefinition)
-      {
+    {
       return this->m_baseDefinition->findItemPosition(name);
-      }
-    else
-      {
-      return -1; // named item doesn't exist
-      }
     }
+    else
+    {
+      return -1; // named item doesn't exist
+    }
+  }
   return it->second + static_cast<int>(this->m_baseItemOffset);
 }

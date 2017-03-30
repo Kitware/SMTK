@@ -117,8 +117,7 @@ qtItem* qtAttributeItemWidgetFactory::createMeshSelectionItemWidget(
 qtItem* qtAttributeItemWidgetFactory::createMeshItemWidget(
   MeshItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient)
 {
-  return new qtMeshItem(
-    smtk::dynamic_pointer_cast<MeshItem>(item), p, bview, orient);
+  return new qtMeshItem(smtk::dynamic_pointer_cast<MeshItem>(item), p, bview, orient);
 }
 
 /**\brief Create a widget that illustrates an item whose value is a date-time

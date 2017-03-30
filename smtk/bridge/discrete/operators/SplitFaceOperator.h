@@ -16,9 +16,12 @@
 #include "vtkNew.h"
 #include "vtkSplitOperator.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace discrete {
+namespace smtk
+{
+namespace bridge
+{
+namespace discrete
+{
 
 class Session;
 
@@ -37,14 +40,13 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
   Session* discreteSession() const;
   int fetchCMBFaceId() const;
-  int fetchCMBCellId(
-    const smtk::attribute::ModelEntityItemPtr& entItem, int idx ) const;
+  int fetchCMBCellId(const smtk::attribute::ModelEntityItemPtr& entItem, int idx) const;
 
   vtkNew<vtkSplitOperator> m_op;
 };
 
-    } // namespace discrete
-  } // namespace bridge
+} // namespace discrete
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_discrete_SplitFaceOperator_h

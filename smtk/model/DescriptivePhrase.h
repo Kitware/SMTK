@@ -18,29 +18,32 @@
 #include <string>
 #include <vector>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /// Possible types of relationships that the iterator will report
-enum DescriptivePhraseType {
-  ENTITY_LIST,                  //!< Multiple entities should be summarized.
-  ENTITY_SUMMARY,               //!< Summarize an entity by displaying its name, type, and dimension.
-  ARRANGEMENT_LIST,             //!< The entity has multiple arrangements (of a single kind).
-  ATTRIBUTE_LIST,               //!< The entity has multiple attribute values defined on it.
-  FLOAT_PROPERTY_LIST,          //!< The entity has a list of floating-point properties.
-  STRING_PROPERTY_LIST,         //!< The entity has a list of string properties.
-  INTEGER_PROPERTY_LIST,        //!< The entity has a list of integer properties.
-  ENTITY_HAS_FLOAT_PROPERTY,    //!< The entity has floating-point properties.
-  ENTITY_HAS_STRING_PROPERTY,   //!< The entity has string properties.
-  ENTITY_HAS_INTEGER_PROPERTY,  //!< The entity has integer properties.
-  ATTRIBUTE_ASSOCIATION,        //!< The entity is associated with an attribute.
-  FLOAT_PROPERTY_VALUE,         //!< One property of an entity has a list of floating-point values.
-  STRING_PROPERTY_VALUE,        //!< One property of an entity has a list of string values.
-  INTEGER_PROPERTY_VALUE,       //!< One property of an entity has a list of integer values.
-  ENTITY_HAS_SUBPHRASES,        //!< The entity has many phrases of one type; this phrase summarizes them.
-  MESH_SUMMARY,                 //!< Summarize an meshset or collection by displaying its name, type, and dimension.
-  MESH_LIST,                    //!< Summarize a list of meshsets or collections.
-  INVALID_DESCRIPTION           //!< This is used to indicate an invalid or empty descriptive phrase.
+enum DescriptivePhraseType
+{
+  ENTITY_LIST,                 //!< Multiple entities should be summarized.
+  ENTITY_SUMMARY,              //!< Summarize an entity by displaying its name, type, and dimension.
+  ARRANGEMENT_LIST,            //!< The entity has multiple arrangements (of a single kind).
+  ATTRIBUTE_LIST,              //!< The entity has multiple attribute values defined on it.
+  FLOAT_PROPERTY_LIST,         //!< The entity has a list of floating-point properties.
+  STRING_PROPERTY_LIST,        //!< The entity has a list of string properties.
+  INTEGER_PROPERTY_LIST,       //!< The entity has a list of integer properties.
+  ENTITY_HAS_FLOAT_PROPERTY,   //!< The entity has floating-point properties.
+  ENTITY_HAS_STRING_PROPERTY,  //!< The entity has string properties.
+  ENTITY_HAS_INTEGER_PROPERTY, //!< The entity has integer properties.
+  ATTRIBUTE_ASSOCIATION,       //!< The entity is associated with an attribute.
+  FLOAT_PROPERTY_VALUE,        //!< One property of an entity has a list of floating-point values.
+  STRING_PROPERTY_VALUE,       //!< One property of an entity has a list of string values.
+  INTEGER_PROPERTY_VALUE,      //!< One property of an entity has a list of integer values.
+  ENTITY_HAS_SUBPHRASES, //!< The entity has many phrases of one type; this phrase summarizes them.
+  MESH_SUMMARY, //!< Summarize an meshset or collection by displaying its name, type, and dimension.
+  MESH_LIST,    //!< Summarize a list of meshsets or collections.
+  INVALID_DESCRIPTION //!< This is used to indicate an invalid or empty descriptive phrase.
 };
 
 class DescriptivePhrase;
@@ -75,26 +78,34 @@ class SMTKCORE_EXPORT DescriptivePhrase : smtkEnableSharedPtr(DescriptivePhrase)
 {
 public:
   smtkTypeMacro(DescriptivePhrase);
-  virtual ~DescriptivePhrase() { }
+  virtual ~DescriptivePhrase() {}
 
   Ptr setup(DescriptivePhraseType phraseType, Ptr parent = Ptr());
   Ptr setDelegate(SubphraseGeneratorPtr delegate);
 
-  virtual std::string title()                                  { return std::string(); }
-  virtual bool isTitleMutable() const                          { return false; }
-  virtual bool setTitle(const std::string& newTitle)           { (void)newTitle; return false; }
+  virtual std::string title() { return std::string(); }
+  virtual bool isTitleMutable() const { return false; }
+  virtual bool setTitle(const std::string& newTitle)
+  {
+    (void)newTitle;
+    return false;
+  }
 
-  virtual std::string subtitle()                               { return std::string(); }
-  virtual bool isSubtitleMutable() const                       { return false; }
-  virtual bool setSubtitle(const std::string& newSubtitle)     { (void)newSubtitle; return false; }
+  virtual std::string subtitle() { return std::string(); }
+  virtual bool isSubtitleMutable() const { return false; }
+  virtual bool setSubtitle(const std::string& newSubtitle)
+  {
+    (void)newSubtitle;
+    return false;
+  }
 
-  virtual DescriptivePhraseType phraseType() const             { return this->m_type; }
+  virtual DescriptivePhraseType phraseType() const { return this->m_type; }
 
-  virtual DescriptivePhrasePtr parent() const                  { return this->m_parent.lock(); }
+  virtual DescriptivePhrasePtr parent() const { return this->m_parent.lock(); }
   virtual DescriptivePhrases& subphrases();
   virtual DescriptivePhrases subphrases() const;
-  virtual bool areSubphrasesBuilt() const                      { return this->m_subphrasesBuilt; }
-  virtual void markDirty(bool dirty = true)                    { this->m_subphrasesBuilt = !dirty; }
+  virtual bool areSubphrasesBuilt() const { return this->m_subphrasesBuilt; }
+  virtual void markDirty(bool dirty = true) { this->m_subphrasesBuilt = !dirty; }
   virtual int argFindChild(const DescriptivePhrase* child) const;
   virtual int argFindChild(const EntityRef& child) const;
   virtual int argFindChild(const smtk::mesh::MeshSet& child) const;
@@ -102,22 +113,32 @@ public:
   virtual int argFindChild(const std::string& propName, smtk::model::PropertyType propType) const;
   int indexInParent() const;
 
-  virtual EntityRef relatedEntity() const                      { return EntityRef(); }
-  virtual smtk::common::UUID relatedEntityId() const           { return this->relatedEntity().entity(); }
-  virtual smtk::model::BitFlags relatedBitFlags() const        { return this->relatedEntity().entityFlags();}
-  virtual ArrangementKind relatedArrangementKind() const       { return KINDS_OF_ARRANGEMENTS; }
-  virtual smtk::common::UUID relatedAttributeId() const        { return smtk::common::UUID::null(); }
-  virtual std::string relatedPropertyName() const              { return std::string(); }
-  virtual PropertyType relatedPropertyType() const             { return INVALID_PROPERTY; }
+  virtual EntityRef relatedEntity() const { return EntityRef(); }
+  virtual smtk::common::UUID relatedEntityId() const { return this->relatedEntity().entity(); }
+  virtual smtk::model::BitFlags relatedBitFlags() const
+  {
+    return this->relatedEntity().entityFlags();
+  }
+  virtual ArrangementKind relatedArrangementKind() const { return KINDS_OF_ARRANGEMENTS; }
+  virtual smtk::common::UUID relatedAttributeId() const { return smtk::common::UUID::null(); }
+  virtual std::string relatedPropertyName() const { return std::string(); }
+  virtual PropertyType relatedPropertyType() const { return INVALID_PROPERTY; }
 
-  virtual FloatList relatedColor() const                       { return FloatList(4, -1.); }
-  virtual bool isRelatedColorMutable() const                   { return false; }
-  virtual bool setRelatedColor(const FloatList& rgba)          { (void)rgba; return false; }
+  virtual FloatList relatedColor() const { return FloatList(4, -1.); }
+  virtual bool isRelatedColorMutable() const { return false; }
+  virtual bool setRelatedColor(const FloatList& rgba)
+  {
+    (void)rgba;
+    return false;
+  }
 
-  virtual smtk::mesh::CollectionPtr relatedMeshCollection() const { return smtk::mesh::CollectionPtr(); }
-  virtual smtk::mesh::MeshSet relatedMesh() const              { return smtk::mesh::MeshSet(); }
+  virtual smtk::mesh::CollectionPtr relatedMeshCollection() const
+  {
+    return smtk::mesh::CollectionPtr();
+  }
+  virtual smtk::mesh::MeshSet relatedMesh() const { return smtk::mesh::MeshSet(); }
 
-  unsigned int phraseId() const                                { return this->m_phraseId; }
+  unsigned int phraseId() const { return this->m_phraseId; }
 
   SubphraseGeneratorPtr findDelegate();
   virtual bool isPropertyValueType() const;
@@ -138,7 +159,7 @@ private:
   static unsigned int s_nextPhraseId;
 };
 
-  } // model namespace
+} // model namespace
 } // smtk namespace
 
 #endif // __smtk_model_DescriptivePhrase_h

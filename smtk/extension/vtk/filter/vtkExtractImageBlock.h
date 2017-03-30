@@ -40,28 +40,20 @@ public:
 
 protected:
   vtkExtractImageBlock();
-  ~vtkExtractImageBlock() override {};
+  ~vtkExtractImageBlock() override{};
 
-  int FillInputPortInformation(int port, vtkInformation *info) override;
-  int RequestInformation (vtkInformation *,
-                          vtkInformationVector **,
-                          vtkInformationVector *) override;
+  int FillInputPortInformation(int port, vtkInformation* info) override;
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
   /// Implementation of the algorithm.
-  int RequestData(vtkInformation *,
-                          vtkInformationVector **,
-                          vtkInformationVector *) override;
-
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
 private:
   vtkExtractImageBlock(const vtkExtractImageBlock&); // Not implemented.
-  void operator=(const vtkExtractImageBlock&); // Not implemented.
+  void operator=(const vtkExtractImageBlock&);       // Not implemented.
 
   int BlockIndex;
   int Extent[6];
-
 };
 
 #endif
-
-

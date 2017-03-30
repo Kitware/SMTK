@@ -22,50 +22,45 @@
 
 #include <string>
 
-namespace smtk {
-namespace extension {
-namespace vtk {
-namespace io {
+namespace smtk
+{
+namespace extension
+{
+namespace vtk
+{
+namespace io
+{
 
-MeshIOVTK::MeshIOVTK() : MeshIO()
+MeshIOVTK::MeshIOVTK()
+  : MeshIO()
 {
   this->Formats.push_back(
-    smtk::io::mesh::Format("vtk unstructured grid",
-                           std::vector<std::string>({ ".vtu" }),
-                           smtk::io::mesh::Format::Import |
-                           smtk::io::mesh::Format::Export));
+    smtk::io::mesh::Format("vtk unstructured grid", std::vector<std::string>({ ".vtu" }),
+      smtk::io::mesh::Format::Import | smtk::io::mesh::Format::Export));
   this->Formats.push_back(
-    smtk::io::mesh::Format("vtk polydata",
-                           std::vector<std::string>({ ".vtp" }),
-                           smtk::io::mesh::Format::Import |
-                           smtk::io::mesh::Format::Export));
+    smtk::io::mesh::Format("vtk polydata", std::vector<std::string>({ ".vtp" }),
+      smtk::io::mesh::Format::Import | smtk::io::mesh::Format::Export));
 }
 
-smtk::mesh::CollectionPtr
-MeshIOVTK::importMesh( const std::string& filePath,
-                        smtk::mesh::ManagerPtr& manager,
-                       const std::string& domainPropertyName ) const
+smtk::mesh::CollectionPtr MeshIOVTK::importMesh(const std::string& filePath,
+  smtk::mesh::ManagerPtr& manager, const std::string& domainPropertyName) const
 {
   smtk::extension::vtk::io::ImportVTKData import;
-  return import( filePath, manager, domainPropertyName );
+  return import(filePath, manager, domainPropertyName);
 }
 
-bool MeshIOVTK::importMesh( const std::string& filePath,
-                            smtk::mesh::CollectionPtr collection,
-                            const std::string& domainPropertyName ) const
+bool MeshIOVTK::importMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+  const std::string& domainPropertyName) const
 {
   smtk::extension::vtk::io::ImportVTKData import;
-  return import( filePath, collection, domainPropertyName );
+  return import(filePath, collection, domainPropertyName);
 }
 
-bool MeshIOVTK::exportMesh( const std::string& filePath,
-                            smtk::mesh::CollectionPtr collection) const
+bool MeshIOVTK::exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection) const
 {
   smtk::extension::vtk::io::ExportVTKData export_;
-  return export_( filePath, collection, "" );
+  return export_(filePath, collection, "");
 }
-
-
 }
 }
 }
@@ -74,7 +69,7 @@ bool MeshIOVTK::exportMesh( const std::string& filePath,
 void smtk_extension_vtk_io_MeshIOVTK_AutoInit_Construct()
 {
   smtk::io::ImportMesh::SupportedIOTypes().push_back(
-  smtk::io::mesh::MeshIOPtr( new smtk::extension::vtk::io::MeshIOVTK() ) );
+    smtk::io::mesh::MeshIOPtr(new smtk::extension::vtk::io::MeshIOVTK()));
 }
 
 void smtk_extension_vtk_io_MeshIOVTK_AutoInit_Destruct()

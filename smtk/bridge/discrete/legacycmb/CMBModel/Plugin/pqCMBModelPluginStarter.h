@@ -17,8 +17,9 @@ class pqCMBModelPluginStarter : public QObject
 {
   Q_OBJECT
   typedef QObject Superclass;
+
 public:
-  pqCMBModelPluginStarter(QObject* p=0);
+  pqCMBModelPluginStarter(QObject* p = 0);
   ~pqCMBModelPluginStarter();
 
   // Callback for shutdown.
@@ -29,7 +30,7 @@ public:
 
 private:
   pqCMBModelPluginStarter(const pqCMBModelPluginStarter&); // Not implemented.
-  void operator=(const pqCMBModelPluginStarter&); // Not implemented.
+  void operator=(const pqCMBModelPluginStarter&);          // Not implemented.
 };
 
 #endif

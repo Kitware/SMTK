@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 // .NAME vtkCompleteShells - search for holes in shells and "complete" them
 // .SECTION Description
 // Filter to search for holes in shells and complete them, for further
@@ -75,33 +74,29 @@ protected:
   vtkCompleteShells();
   ~vtkCompleteShells();
 
-  virtual int FillInputPortInformation(int port, vtkInformation *info);
+  virtual int FillInputPortInformation(int port, vtkInformation* info);
 
   /// Implementation of the algorithm.
-  virtual int RequestData(vtkInformation *,
-                          vtkInformationVector **,
-                          vtkInformationVector *);
+  virtual int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
 
 private:
   vtkCompleteShells(const vtkCompleteShells&); // Not implemented.
-  void operator=(const vtkCompleteShells&); // Not implemented.
+  void operator=(const vtkCompleteShells&);    // Not implemented.
 
-  void FindRegionEdge(vtkPolyData *input, vtkDataArray *cellNormals,
-    vtkIntArray *regionArray, vtkIdTypeArray *modelFaceArray,
-    vtkIdType cellIndex, char *visited);
+  void FindRegionEdge(vtkPolyData* input, vtkDataArray* cellNormals, vtkIntArray* regionArray,
+    vtkIdTypeArray* modelFaceArray, vtkIdType cellIndex, char* visited);
 
-  vtkIdType FindHoleFillingModelFace(vtkPolyData *input,
-    vtkDataArray *cellNormals, vtkIdType currentCellId,
-    vtkIdList *neighborIds, vtkIdType *pts, int ptIndex, int otherPtIndex);
+  vtkIdType FindHoleFillingModelFace(vtkPolyData* input, vtkDataArray* cellNormals,
+    vtkIdType currentCellId, vtkIdList* neighborIds, vtkIdType* pts, int ptIndex, int otherPtIndex);
 
-  void FindClosestEnclosingRegion( int regionId, vtkIdType modelFaceId,
-    vtkPolyData *input, vtkDataArray *cellNormals, vtkIntArray *regionArray,
-    vtkIdTypeArray *modelFaceArray, vtkCellLocator *locator );
+  void FindClosestEnclosingRegion(int regionId, vtkIdType modelFaceId, vtkPolyData* input,
+    vtkDataArray* cellNormals, vtkIntArray* regionArray, vtkIdTypeArray* modelFaceArray,
+    vtkCellLocator* locator);
 
   // Description:
   // The name of the vtkIntArray that specifies what region each mesh facet/cell
   // is associated with in the input to the filter.
-  char *ModelRegionArrayName;
+  char* ModelRegionArrayName;
 
   // Description:
   // The name of the vtkCellData vtkIdTypeArray used to store the
@@ -115,7 +110,6 @@ private:
   int MinimumSubmergedVoteCountToAvoidWarning;
 
   vtkCompleteShellsInternals* Internals;
-
 };
 
 #endif

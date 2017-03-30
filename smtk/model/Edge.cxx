@@ -17,8 +17,10 @@
 
 #include "smtk/common/GeometryUtilities.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief Return all the uses of this edge.
   *
@@ -50,10 +52,10 @@ EdgeUse Edge::findOrAddEdgeUse(Orientation orientation, int sense)
 {
   smtk::model::Manager::Ptr mgr(this->m_manager.lock());
   if (this->isValid())
-    {
+  {
     return EdgeUse(mgr,
       mgr->findCreateOrReplaceCellUseOfSenseAndOrientation(this->m_entity, sense, orientation));
-    }
+  }
   return EdgeUse();
 }
 
@@ -70,13 +72,12 @@ smtk::model::Faces Edge::faces() const
   Faces result;
   EntityRefs all = this->bordantEntities(/*dim = */ 2);
   for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
-    {
+  {
     if (it->isFace())
       result.push_back(*it);
-    }
+  }
   return result;
 }
-
 
 /**\brief Return the vertices which bound this edge.
   *
@@ -94,31 +95,33 @@ smtk::model::Vertices Edge::vertices() const
   Vertices result;
   EntityRefs all = this->boundaryEntities(/*dim = */ 0);
   for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
-    {
+  {
     if (it->isVertex())
       result.push_back(*it);
-    }
+  }
 
   // Now attempt to get the order correct for cases we can handle.
   if (result.size() == 2 && result[0] != result[1])
-    {
+  {
     const Tessellation* etess = this->hasTessellation();
     if (etess)
-      {
+    {
       int i0, i1;
       if (etess->vertexIdsOfPolylineEndpoints(0, i0, i1))
-        {
-        double v0d = smtk::common::distance2(&(etess->coords()[3 * i0]), &(result[0].coordinates()[0]));
-        double v1d = smtk::common::distance2(&(etess->coords()[3 * i1]), &(result[0].coordinates()[0]));
+      {
+        double v0d =
+          smtk::common::distance2(&(etess->coords()[3 * i0]), &(result[0].coordinates()[0]));
+        double v1d =
+          smtk::common::distance2(&(etess->coords()[3 * i1]), &(result[0].coordinates()[0]));
         if (v0d > v1d)
-          { // swap the vertices
+        { // swap the vertices
           smtk::model::Vertex tmp = result[0];
           result[0] = result[1];
           result[1] = tmp;
-          }
         }
       }
     }
+  }
   return result;
 }
 
@@ -149,5 +152,5 @@ smtk::common::Vector3d Edge::coordinates() const
 }
 */
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

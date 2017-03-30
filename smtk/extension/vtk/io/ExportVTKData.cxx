@@ -47,45 +47,45 @@
 #include "smtk/mesh/moab/CellTypeToType.h"
 #include "smtk/mesh/moab/Interface.h"
 
-namespace smtk {
-namespace extension {
-namespace vtk {
-namespace io {
+namespace smtk
+{
+namespace extension
+{
+namespace vtk
+{
+namespace io
+{
 
 ExportVTKData::ExportVTKData()
 {
-
 }
 
-bool ExportVTKData::operator()(const std::string& filename,
-                               smtk::mesh::CollectionPtr collection,
-                               std::string domainPropertyName) const
+bool ExportVTKData::operator()(const std::string& filename, smtk::mesh::CollectionPtr collection,
+  std::string domainPropertyName) const
 {
-  std::string extension =
-    vtksys::SystemTools::GetFilenameLastExtension(filename.c_str());
+  std::string extension = vtksys::SystemTools::GetFilenameLastExtension(filename.c_str());
 
   // Dispatch based on the file extension
   if (extension == ".vtu")
-   {
-   vtkSmartPointer<vtkUnstructuredGrid> ug =
-     vtkSmartPointer<vtkUnstructuredGrid>::New();
-   this->operator()(collection->meshes(), ug, domainPropertyName);
-   vtkNew<vtkXMLUnstructuredGridWriter> writer;
-   writer->SetFileName(filename.c_str());
-   writer->SetInputData(ug);
-   writer->Write();
-   return true;
-   }
+  {
+    vtkSmartPointer<vtkUnstructuredGrid> ug = vtkSmartPointer<vtkUnstructuredGrid>::New();
+    this->operator()(collection->meshes(), ug, domainPropertyName);
+    vtkNew<vtkXMLUnstructuredGridWriter> writer;
+    writer->SetFileName(filename.c_str());
+    writer->SetInputData(ug);
+    writer->Write();
+    return true;
+  }
   else if (extension == ".vtp")
-   {
-   vtkSmartPointer<vtkPolyData> pd = vtkSmartPointer<vtkPolyData>::New();
-   this->operator()(collection->meshes(), pd, domainPropertyName);
-   vtkNew<vtkXMLPolyDataWriter> writer;
-   writer->SetFileName(filename.c_str());
-   writer->SetInputData(pd);
-   writer->Write();
-   return true;
-   }
+  {
+    vtkSmartPointer<vtkPolyData> pd = vtkSmartPointer<vtkPolyData>::New();
+    this->operator()(collection->meshes(), pd, domainPropertyName);
+    vtkNew<vtkXMLPolyDataWriter> writer;
+    writer->SetFileName(filename.c_str());
+    writer->SetInputData(pd);
+    writer->Write();
+    return true;
+  }
 
   return false;
 }
@@ -94,12 +94,16 @@ namespace
 {
 
 // functions to shunt past data transfer if input and output types match
-void constructNewArrayIfNecessary(vtkIdType*&, vtkIdType*&, std::int64_t) {}
+void constructNewArrayIfNecessary(vtkIdType*&, vtkIdType*&, std::int64_t)
+{
+}
 void transferDataIfNecessary(vtkIdType*& in, vtkIdType*& out, std::int64_t)
 {
   out = in;
 }
-void deleteOldArrayIfNecessary(vtkIdType*&, vtkIdType*&) {}
+void deleteOldArrayIfNecessary(vtkIdType*&, vtkIdType*&)
+{
+}
 
 // functions for allocation, transfer and deallocation when there is a type
 // mismatch
@@ -112,43 +116,39 @@ void constructNewArrayIfNecessary(T*&, vtkIdType*& out, std::int64_t len)
 template <typename T>
 void transferDataIfNecessary(T*& in, vtkIdType*& out, std::int64_t len)
 {
-  for (std::int64_t i=0;i<len;i++)
-    {
+  for (std::int64_t i = 0; i < len; i++)
+  {
     out[i] = in[i];
-    }
+  }
 }
 
 template <typename T>
 void deleteOldArrayIfNecessary(T*& in, vtkIdType*&)
 {
-  delete [] in;
+  delete[] in;
+}
 }
 
-}
-
-void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
-                               vtkPolyData* pd,
-                               std::string domainPropertyName) const
+void ExportVTKData::operator()(
+  const smtk::mesh::MeshSet& meshset, vtkPolyData* pd, std::string domainPropertyName) const
 {
   // We are only exporting the highest dimension cellset starting with 2
   int dimension = 2;
   smtk::mesh::TypeSet types = meshset.types();
-  while (dimension >=0 && !types.hasDimension(
-           static_cast<smtk::mesh::DimensionType>(dimension)))
-    {
+  while (dimension >= 0 && !types.hasDimension(static_cast<smtk::mesh::DimensionType>(dimension)))
+  {
     --dimension;
-    }
+  }
 
   if (dimension < 0)
-    {
+  {
     // We have been passed a meshset with no elements of dimension 2 or lower.
     return;
-    }
+  }
 
-  smtk::mesh::CellSet cellset =
-    meshset.cells(static_cast<smtk::mesh::DimensionType>(dimension));
+  smtk::mesh::CellSet cellset = meshset.cells(static_cast<smtk::mesh::DimensionType>(dimension));
 
-  std::int64_t connectivityLength= -1;
+  std::int64_t connectivityLength = -1;
   std::int64_t numberOfCells = -1;
   std::int64_t numberOfPoints = -1;
 
@@ -161,34 +161,29 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
   connectivityLength += numberOfCells;
 
   //create raw data buffers to hold our data
-  double* pointsData = new double[3*numberOfPoints];
+  double* pointsData = new double[3 * numberOfPoints];
   unsigned char* cellTypesData = new unsigned char[numberOfCells];
   std::int64_t* cellLocationsData_ = new std::int64_t[numberOfCells];
   std::int64_t* connectivityData_ = new std::int64_t[connectivityLength];
 
   //extract tessellation information
-  smtk::mesh::PreAllocatedTessellation tess(connectivityData_,
-                                            cellLocationsData_,
-                                            cellTypesData, pointsData);
+  smtk::mesh::PreAllocatedTessellation tess(
+    connectivityData_, cellLocationsData_, cellTypesData, pointsData);
   smtk::mesh::extractTessellation(cellset, tess);
 
   vtkIdType* cellLocationsData;
-    {
-    constructNewArrayIfNecessary(cellLocationsData_, cellLocationsData,
-                                 numberOfCells);
-    transferDataIfNecessary(cellLocationsData_, cellLocationsData,
-                            numberOfCells);
+  {
+    constructNewArrayIfNecessary(cellLocationsData_, cellLocationsData, numberOfCells);
+    transferDataIfNecessary(cellLocationsData_, cellLocationsData, numberOfCells);
     deleteOldArrayIfNecessary(cellLocationsData_, cellLocationsData);
-    }
+  }
 
   vtkIdType* connectivityData;
-    {
-    constructNewArrayIfNecessary(connectivityData_, connectivityData,
-                                 connectivityLength);
-    transferDataIfNecessary(connectivityData_, connectivityData,
-                            connectivityLength);
+  {
+    constructNewArrayIfNecessary(connectivityData_, connectivityData, connectivityLength);
+    transferDataIfNecessary(connectivityData_, connectivityData, connectivityLength);
     deleteOldArrayIfNecessary(connectivityData_, connectivityData);
-    }
+  }
 
   // create vtk data arrays to hold our data
   vtkNew<vtkDoubleArray> pointsArray;
@@ -198,14 +193,14 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
 
   // transfer ownership of our raw data arrays to the vtk data arrays
   pointsArray->SetNumberOfComponents(3);
-  pointsArray->SetArray(pointsData, 3*numberOfPoints, false,
-                        vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
-  cellTypes->SetArray(cellTypesData, numberOfCells, false,
-                      vtkUnsignedCharArray::VTK_DATA_ARRAY_DELETE);
-  cellLocations->SetArray(cellLocationsData, numberOfCells, false,
-                          vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
-  connectivity->SetArray(connectivityData, connectivityLength, false,
-                         vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
+  pointsArray->SetArray(
+    pointsData, 3 * numberOfPoints, false, vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
+  cellTypes->SetArray(
+    cellTypesData, numberOfCells, false, vtkUnsignedCharArray::VTK_DATA_ARRAY_DELETE);
+  cellLocations->SetArray(
+    cellLocationsData, numberOfCells, false, vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
+  connectivity->SetArray(
+    connectivityData, connectivityLength, false, vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
 
   vtkNew<vtkPoints> points;
   points->SetData(pointsArray.GetPointer());
@@ -214,21 +209,21 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
   vtkNew<vtkCellArray> cells;
   cells->SetCells(numberOfCells, connectivity.GetPointer());
 
-  if ( dimension == 2 )
-    {
+  if (dimension == 2)
+  {
     pd->SetPolys(cells.GetPointer());
-    }
-  else if ( dimension == 1 )
-    {
+  }
+  else if (dimension == 1)
+  {
     pd->SetLines(cells.GetPointer());
-    }
-  else if ( dimension == 0 )
-    {
+  }
+  else if (dimension == 0)
+  {
     pd->SetVerts(cells.GetPointer());
-    }
+  }
 
   if (!domainPropertyName.empty())
-    {
+  {
     std::int64_t* cellData_ = new std::int64_t[numberOfCells];
     std::int64_t* pointData_ = new std::int64_t[numberOfPoints];
 
@@ -237,38 +232,36 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
     smtk::mesh::extractDomainField(meshset, field);
 
     vtkIdType* cellData;
-      {
+    {
       constructNewArrayIfNecessary(cellData_, cellData, numberOfCells);
       transferDataIfNecessary(cellData_, cellData, numberOfCells);
       deleteOldArrayIfNecessary(cellData_, cellData);
-      }
+    }
 
     vtkNew<vtkIdTypeArray> cellDataArray;
     cellDataArray->SetName(domainPropertyName.c_str());
-    cellDataArray->SetArray(cellData, numberOfCells, false,
-                            vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
+    cellDataArray->SetArray(cellData, numberOfCells, false, vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
     pd->GetCellData()->AddArray(cellDataArray.GetPointer());
 
     vtkIdType* pointData;
-      {
+    {
       constructNewArrayIfNecessary(pointData_, pointData, numberOfPoints);
       transferDataIfNecessary(pointData_, pointData, numberOfPoints);
       deleteOldArrayIfNecessary(pointData_, pointData);
-      }
+    }
 
     vtkNew<vtkIdTypeArray> pointDataArray;
     pointDataArray->SetName(domainPropertyName.c_str());
-    pointDataArray->SetArray(pointData, numberOfPoints, false,
-                            vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
+    pointDataArray->SetArray(
+      pointData, numberOfPoints, false, vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
     pd->GetPointData()->AddArray(pointDataArray.GetPointer());
-    }
+  }
 }
 
-void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
-                               vtkUnstructuredGrid* ug,
-                               std::string domainPropertyName) const
+void ExportVTKData::operator()(
+  const smtk::mesh::MeshSet& meshset, vtkUnstructuredGrid* ug, std::string domainPropertyName) const
 {
-  std::int64_t connectivityLength= -1;
+  std::int64_t connectivityLength = -1;
   std::int64_t numberOfCells = -1;
   std::int64_t numberOfPoints = -1;
 
@@ -281,34 +274,29 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
   connectivityLength += numberOfCells;
 
   //create raw data buffers to hold our data
-  double* pointsData = new double[3*numberOfPoints];
+  double* pointsData = new double[3 * numberOfPoints];
   unsigned char* cellTypesData = new unsigned char[numberOfCells];
   std::int64_t* cellLocationsData_ = new std::int64_t[numberOfCells];
   std::int64_t* connectivityData_ = new std::int64_t[connectivityLength];
 
   //extract tessellation information
-  smtk::mesh::PreAllocatedTessellation tess(connectivityData_,
-                                            cellLocationsData_,
-                                            cellTypesData, pointsData);
+  smtk::mesh::PreAllocatedTessellation tess(
+    connectivityData_, cellLocationsData_, cellTypesData, pointsData);
   smtk::mesh::extractTessellation(meshset, tess);
 
   vtkIdType* cellLocationsData;
-    {
-    constructNewArrayIfNecessary(cellLocationsData_, cellLocationsData,
-                                 numberOfCells);
-    transferDataIfNecessary(cellLocationsData_, cellLocationsData,
-                            numberOfCells);
+  {
+    constructNewArrayIfNecessary(cellLocationsData_, cellLocationsData, numberOfCells);
+    transferDataIfNecessary(cellLocationsData_, cellLocationsData, numberOfCells);
     deleteOldArrayIfNecessary(cellLocationsData_, cellLocationsData);
-    }
+  }
 
   vtkIdType* connectivityData;
-    {
-    constructNewArrayIfNecessary(connectivityData_, connectivityData,
-                                 connectivityLength);
-    transferDataIfNecessary(connectivityData_, connectivityData,
-                            connectivityLength);
+  {
+    constructNewArrayIfNecessary(connectivityData_, connectivityData, connectivityLength);
+    transferDataIfNecessary(connectivityData_, connectivityData, connectivityLength);
     deleteOldArrayIfNecessary(connectivityData_, connectivityData);
-    }
+  }
 
   // create vtk data arrays to hold our data
   vtkNew<vtkDoubleArray> pointsArray;
@@ -318,14 +306,14 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
 
   // transfer ownership of our raw data arrays to the vtk data arrays
   pointsArray->SetNumberOfComponents(3);
-  pointsArray->SetArray(pointsData, 3*numberOfPoints, false,
-                        vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
-  cellTypes->SetArray(cellTypesData, numberOfCells, false,
-                      vtkUnsignedCharArray::VTK_DATA_ARRAY_DELETE);
-  cellLocations->SetArray(cellLocationsData, numberOfCells, false,
-                          vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
-  connectivity->SetArray(connectivityData, connectivityLength, false,
-                         vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
+  pointsArray->SetArray(
+    pointsData, 3 * numberOfPoints, false, vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
+  cellTypes->SetArray(
+    cellTypesData, numberOfCells, false, vtkUnsignedCharArray::VTK_DATA_ARRAY_DELETE);
+  cellLocations->SetArray(
+    cellLocationsData, numberOfCells, false, vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
+  connectivity->SetArray(
+    connectivityData, connectivityLength, false, vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
 
   vtkNew<vtkPoints> points;
   points->SetData(pointsArray.GetPointer());
@@ -334,11 +322,10 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
   cells->SetCells(numberOfCells, connectivity.GetPointer());
 
   ug->SetPoints(points.GetPointer());
-  ug->SetCells(cellTypes.GetPointer(), cellLocations.GetPointer(),
-               cells.GetPointer());
+  ug->SetCells(cellTypes.GetPointer(), cellLocations.GetPointer(), cells.GetPointer());
 
   if (!domainPropertyName.empty())
-    {
+  {
     std::int64_t* cellData_ = new std::int64_t[numberOfCells];
     std::int64_t* pointData_ = new std::int64_t[numberOfPoints];
 
@@ -347,33 +334,31 @@ void ExportVTKData::operator()(const smtk::mesh::MeshSet& meshset,
     smtk::mesh::extractDomainField(meshset, field);
 
     vtkIdType* cellData;
-      {
+    {
       constructNewArrayIfNecessary(cellData_, cellData, numberOfCells);
       transferDataIfNecessary(cellData_, cellData, numberOfCells);
       deleteOldArrayIfNecessary(cellData_, cellData);
-      }
+    }
 
     vtkNew<vtkIdTypeArray> cellDataArray;
     cellDataArray->SetName(domainPropertyName.c_str());
-    cellDataArray->SetArray(cellData, numberOfCells, false,
-                            vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
+    cellDataArray->SetArray(cellData, numberOfCells, false, vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
     ug->GetCellData()->AddArray(cellDataArray.GetPointer());
 
     vtkIdType* pointData;
-      {
+    {
       constructNewArrayIfNecessary(pointData_, pointData, numberOfPoints);
       transferDataIfNecessary(pointData_, pointData, numberOfPoints);
       deleteOldArrayIfNecessary(pointData_, pointData);
-      }
+    }
 
     vtkNew<vtkIdTypeArray> pointDataArray;
     pointDataArray->SetName(domainPropertyName.c_str());
-    pointDataArray->SetArray(pointData, numberOfPoints, false,
-                            vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
+    pointDataArray->SetArray(
+      pointData, numberOfPoints, false, vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
     ug->GetPointData()->AddArray(pointDataArray.GetPointer());
-    }
+  }
 }
-
 }
 }
 }

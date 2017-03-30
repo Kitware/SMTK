@@ -41,21 +41,21 @@
   * in a class hierarchy.
   */
 #ifndef SHIBOKEN_SKIP
-#  define smtkTypeMacro(...) \
-  typedef __VA_ARGS__ SelfType; \
-  typedef smtk::shared_ptr< __VA_ARGS__ > Ptr; \
-  typedef smtk::shared_ptr< const __VA_ARGS__ > ConstPtr; \
-  typedef smtk::weak_ptr< __VA_ARGS__ > WeakPtr; \
-  typedef smtk::weak_ptr< const __VA_ARGS__ > WeakConstPtr; \
-  virtual std::string classname() const { return #__VA_ARGS__ ; }
+#define smtkTypeMacro(...)                                                                         \
+  typedef __VA_ARGS__ SelfType;                                                                    \
+  typedef smtk::shared_ptr<__VA_ARGS__> Ptr;                                                       \
+  typedef smtk::shared_ptr<const __VA_ARGS__> ConstPtr;                                            \
+  typedef smtk::weak_ptr<__VA_ARGS__> WeakPtr;                                                     \
+  typedef smtk::weak_ptr<const __VA_ARGS__> WeakConstPtr;                                          \
+  virtual std::string classname() const { return #__VA_ARGS__; }
 #else
 // This is required because shiboken cannot properly parse the #__VA_ARGS__ in classname() above:
-#  define smtkTypeMacro(...) \
-  typedef __VA_ARGS__ SelfType; \
-  typedef smtk::shared_ptr< __VA_ARGS__ > Ptr; \
-  typedef smtk::shared_ptr< const __VA_ARGS__ > ConstPtr; \
-  typedef smtk::weak_ptr< __VA_ARGS__ > WeakPtr; \
-  typedef smtk::weak_ptr< const __VA_ARGS__ > WeakConstPtr
+#define smtkTypeMacro(...)                                                                         \
+  typedef __VA_ARGS__ SelfType;                                                                    \
+  typedef smtk::shared_ptr<__VA_ARGS__> Ptr;                                                       \
+  typedef smtk::shared_ptr<const __VA_ARGS__> ConstPtr;                                            \
+  typedef smtk::weak_ptr<__VA_ARGS__> WeakPtr;                                                     \
+  typedef smtk::weak_ptr<const __VA_ARGS__> WeakConstPtr
 #endif
 
 /**\brief Add a typedef to the superclass of this class.
@@ -69,9 +69,9 @@
   * parameters, since preprocessor macros do not properly
   * handle commas inside template parameter lists.
   */
-#define smtkSuperclassMacro(...) \
-  typedef __VA_ARGS__ Superclass; \
-  typedef smtk::shared_ptr< __VA_ARGS__ > SuperclassPtr
+#define smtkSuperclassMacro(...)                                                                   \
+  typedef __VA_ARGS__ Superclass;                                                                  \
+  typedef smtk::shared_ptr<__VA_ARGS__> SuperclassPtr
 
 /**\brief Add static create() methods to a class.
   *
@@ -94,18 +94,18 @@
   * whose value is transformed before the returned value
   * can be assigned to a variable.
   */
-#define smtkCreateMacro(...) \
-  static smtk::shared_ptr<SelfType> create() \
-    { \
-    smtk::shared_ptr< __VA_ARGS__ > shared(new SelfType); \
-    return smtk::static_pointer_cast<SelfType>(shared); \
-    } \
-  /* variant for declarative programming: */ \
-  static smtk::shared_ptr<SelfType> create(smtk::shared_ptr<SelfType>& ref) \
-    { \
-    ref = SelfType::create(); \
-    return ref; \
-    }
+#define smtkCreateMacro(...)                                                                       \
+  static smtk::shared_ptr<SelfType> create()                                                       \
+  {                                                                                                \
+    smtk::shared_ptr<__VA_ARGS__> shared(new SelfType);                                            \
+    return smtk::static_pointer_cast<SelfType>(shared);                                            \
+  }                                                                                                \
+  /* variant for declarative programming: */                                                       \
+  static smtk::shared_ptr<SelfType> create(smtk::shared_ptr<SelfType>& ref)                        \
+  {                                                                                                \
+    ref = SelfType::create();                                                                      \
+    return ref;                                                                                    \
+  }
 
 /**\brief An abbreviation for enabling shared pointers.
   *
@@ -132,8 +132,9 @@
   * For non-abstract classes, it is recommended that you
   * call smtkCreateMacro() as a safe way to expose public construction.
   */
-#define smtkEnableSharedPtr(...) \
-  public smtk::enable_shared_from_this< __VA_ARGS__ >
+#define smtkEnableSharedPtr(...)                                                                   \
+public                                                                                             \
+  smtk::enable_shared_from_this<__VA_ARGS__>
 
 /**\brief A macro to help with derived classes whose bases enable shared_from_this().
   *
@@ -166,23 +167,21 @@
   * in the derived class that returns a shared pointer
   * of the proper type.
   */
-#define smtkSharedFromThisMacro(...) \
-  typedef __VA_ARGS__ SharedPtrBaseType; \
-  smtk::shared_ptr<SelfType> shared_from_this() \
-    { \
-    return smtk::static_pointer_cast<SelfType>( \
-      SharedPtrBaseType::shared_from_this()); \
-    } \
-  smtk::shared_ptr<const SelfType> shared_from_this() const \
-    { \
-    return smtk::static_pointer_cast<const SelfType>( \
-      SharedPtrBaseType::shared_from_this()); \
-    }
+#define smtkSharedFromThisMacro(...)                                                               \
+  typedef __VA_ARGS__ SharedPtrBaseType;                                                           \
+  smtk::shared_ptr<SelfType> shared_from_this()                                                    \
+  {                                                                                                \
+    return smtk::static_pointer_cast<SelfType>(SharedPtrBaseType::shared_from_this());             \
+  }                                                                                                \
+  smtk::shared_ptr<const SelfType> shared_from_this() const                                        \
+  {                                                                                                \
+    return smtk::static_pointer_cast<const SelfType>(SharedPtrBaseType::shared_from_this());       \
+  }
 
 /// A convenience macro for declaring shared_from_this and create methods.
-#define smtkSharedPtrCreateMacro(...) \
-  smtkSharedFromThisMacro( __VA_ARGS__ ); \
-  smtkCreateMacro( __VA_ARGS__ )
+#define smtkSharedPtrCreateMacro(...)                                                              \
+  smtkSharedFromThisMacro(__VA_ARGS__);                                                            \
+  smtkCreateMacro(__VA_ARGS__)
 
 /**\brief A convenience macro to use in the body of create methods that take arguments.
   *
@@ -215,11 +214,7 @@
   * be inserted into the wrong pool of shared pointers leading
   * to premature deletion or multiple-deletion.
   */
-#define smtkSharedPtrHelper(...) \
-  smtk::static_pointer_cast<SelfType>( \
-    SharedPtrBaseType::Ptr( \
-    __VA_ARGS__ \
-    ) \
-  )
+#define smtkSharedPtrHelper(...)                                                                   \
+  smtk::static_pointer_cast<SelfType>(SharedPtrBaseType::Ptr(__VA_ARGS__))
 
 #endif // __smtk_SharedFromThis_h

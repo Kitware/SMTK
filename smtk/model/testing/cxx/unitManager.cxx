@@ -38,20 +38,21 @@ int entityManagerEvent(ManagerEventType evt, const smtk::model::EntityRef&, void
   return 0;
 }
 
-int addEntityToModel(ManagerEventType evt, const smtk::model::EntityRef& src, const smtk::model::EntityRef& related, void*)
+int addEntityToModel(ManagerEventType evt, const smtk::model::EntityRef& src,
+  const smtk::model::EntityRef& related, void*)
 {
   if (evt.first == ADD_EVENT)
-    {
+  {
     if (src.isModel())
-      {
+    {
       if (related.isGroup())
         ++subgroups;
       else if (related.isCellEntity())
         ++subcells;
       else if (related.isModel())
         ++submodels;
-      }
     }
+  }
   return 0;
 }
 
@@ -60,31 +61,31 @@ int main(int argc, char* argv[])
   (void)argc;
   (void)argv;
   ManagerPtr sm = Manager::create();
-  sm->observe(std::make_pair(ANY_EVENT,ENTITY_ENTRY), &entityManagerEvent, NULL);
-  sm->observe(std::make_pair(ANY_EVENT,MODEL_INCLUDES_FREE_CELL), &addEntityToModel, NULL);
-  sm->observe(std::make_pair(ANY_EVENT,MODEL_INCLUDES_GROUP), &addEntityToModel, NULL);
-  sm->observe(std::make_pair(ANY_EVENT,MODEL_INCLUDES_MODEL), &addEntityToModel, NULL);
+  sm->observe(std::make_pair(ANY_EVENT, ENTITY_ENTRY), &entityManagerEvent, NULL);
+  sm->observe(std::make_pair(ANY_EVENT, MODEL_INCLUDES_FREE_CELL), &addEntityToModel, NULL);
+  sm->observe(std::make_pair(ANY_EVENT, MODEL_INCLUDES_GROUP), &addEntityToModel, NULL);
+  sm->observe(std::make_pair(ANY_EVENT, MODEL_INCLUDES_MODEL), &addEntityToModel, NULL);
 
   UUIDArray uids = createTet(sm);
 
   BitFlags uc00Flags = sm->findEntity(uids[0])->entityFlags();
-  test( smtk::model::isVertex(uc00Flags),          "isVertex(vertexFlags) incorrect");
-  test(!smtk::model::isEdge(uc00Flags),            "isEdge(vertexFlags) incorrect");
-  test(!smtk::model::isFace(uc00Flags),            "isFace(vertexFlags) incorrect");
-  test(!smtk::model::isVolume(uc00Flags),          "isVolume(vertexFlags) incorrect");
-  test(!smtk::model::isChain(uc00Flags),           "isChain(vertexFlags) incorrect");
-  test(!smtk::model::isLoop(uc00Flags),            "isLoop(vertexFlags) incorrect");
-  test(!smtk::model::isShell(uc00Flags),           "isShell(vertexFlags) incorrect");
-  test(!smtk::model::isVertexUse(uc00Flags),       "isVertexUse(vertexFlags) incorrect");
-  test(!smtk::model::isEdgeUse(uc00Flags),         "isEdgeUse(vertexFlags) incorrect");
-  test(!smtk::model::isFaceUse(uc00Flags),         "isFaceUse(vertexFlags) incorrect");
+  test(smtk::model::isVertex(uc00Flags), "isVertex(vertexFlags) incorrect");
+  test(!smtk::model::isEdge(uc00Flags), "isEdge(vertexFlags) incorrect");
+  test(!smtk::model::isFace(uc00Flags), "isFace(vertexFlags) incorrect");
+  test(!smtk::model::isVolume(uc00Flags), "isVolume(vertexFlags) incorrect");
+  test(!smtk::model::isChain(uc00Flags), "isChain(vertexFlags) incorrect");
+  test(!smtk::model::isLoop(uc00Flags), "isLoop(vertexFlags) incorrect");
+  test(!smtk::model::isShell(uc00Flags), "isShell(vertexFlags) incorrect");
+  test(!smtk::model::isVertexUse(uc00Flags), "isVertexUse(vertexFlags) incorrect");
+  test(!smtk::model::isEdgeUse(uc00Flags), "isEdgeUse(vertexFlags) incorrect");
+  test(!smtk::model::isFaceUse(uc00Flags), "isFaceUse(vertexFlags) incorrect");
 
-  test( smtk::model::isCellEntity(uc00Flags),      "isCellEntity(vertexFlags) incorrect");
-  test(!smtk::model::isUseEntity(uc00Flags),       "isUseEntity(vertexFlags) incorrect");
-  test(!smtk::model::isShellEntity(uc00Flags),     "isShellEntity(vertexFlags) incorrect");
-  test(!smtk::model::isGroup(uc00Flags),     "isGroup(vertexFlags) incorrect");
-  test(!smtk::model::isModel(uc00Flags),     "isModel(vertexFlags) incorrect");
-  test(!smtk::model::isInstance(uc00Flags),  "isInstance(vertexFlags) incorrect");
+  test(smtk::model::isCellEntity(uc00Flags), "isCellEntity(vertexFlags) incorrect");
+  test(!smtk::model::isUseEntity(uc00Flags), "isUseEntity(vertexFlags) incorrect");
+  test(!smtk::model::isShellEntity(uc00Flags), "isShellEntity(vertexFlags) incorrect");
+  test(!smtk::model::isGroup(uc00Flags), "isGroup(vertexFlags) incorrect");
+  test(!smtk::model::isModel(uc00Flags), "isModel(vertexFlags) incorrect");
+  test(!smtk::model::isInstance(uc00Flags), "isInstance(vertexFlags) incorrect");
 
   UUIDs nodes = sm->entitiesOfDimension(0);
   UUIDs edges = sm->entitiesOfDimension(1);
@@ -104,9 +105,9 @@ int main(int argc, char* argv[])
   sm->setStringProperty(uids[21], "name", "Tetrahedron"); // Resets name to length 1.
   test(sm->stringProperty(uids[0], "velocity")[0] == "vx");
   test(sm->stringProperty(uids[0], "velocity")[1] == "vy");
-  test(sm->stringProperty(uids[0], "velocity").size() == 3); // Test multi-entry length.
+  test(sm->stringProperty(uids[0], "velocity").size() == 3);  // Test multi-entry length.
   test(sm->stringProperty(uids[21], "velocity").size() == 0); // Test missing entry length.
-  test(sm->stringProperty(uids[21], "name").size() == 1); // Test length of reset property.
+  test(sm->stringProperty(uids[21], "name").size() == 1);     // Test length of reset property.
   double d3vals[] = { 1.0, 0.0, 2.0 };
   int i2vals[] = { 100, 200 };
   FloatList v3(d3vals, d3vals + 3);
@@ -148,11 +149,11 @@ int main(int argc, char* argv[])
   // Test addModel
   UUIDArray::size_type modelStart = uids.size();
   for (int i = 0; i < 53; ++i)
-    {
+  {
     uids.push_back(sm->addModel().entity());
     test(sm->hasIntegerProperty(uids.back(), "cell_counters"));
     test(sm->hasStringProperty(uids.back(), "name"));
-    }
+  }
   sm->findEntity(uids[21])->relations().push_back(uids[modelStart]);
   // Correct computation of hexavigesimal name strings:
   test(sm->stringProperty(uids[modelStart + 0], "name")[0] == "Model A");
@@ -179,13 +180,18 @@ int main(int argc, char* argv[])
   cJSON_AddItemToObject(root, "edges", SaveJSON::fromUUIDs(edges));
   cJSON_AddItemToObject(root, "faces", SaveJSON::fromUUIDs(faces));
   cJSON_AddItemToObject(root, "zones", SaveJSON::fromUUIDs(zones));
-  cJSON_AddItemToObject(root, "bdy(brd(uc13,2),1)", SaveJSON::fromUUIDs(sm->boundaryEntities(sm->bordantEntities(uids[13],2),1)));
-  cJSON_AddItemToObject(root, "bdy(uc20,2)", SaveJSON::fromUUIDs(sm->boundaryEntities(uids[20],2)));
-  cJSON_AddItemToObject(root, "brd(uc20,2)", SaveJSON::fromUUIDs(sm->bordantEntities(uids[20],2)));
-  cJSON_AddItemToObject(root, "bdy(uc20,1)", SaveJSON::fromUUIDs(sm->boundaryEntities(uids[20],1)));
-  cJSON_AddItemToObject(root, "brd(uc20,3)", SaveJSON::fromUUIDs(sm->bordantEntities(uids[20],3)));
-  cJSON_AddItemToObject(root, "lower(uc21,1)", SaveJSON::fromUUIDs(sm->lowerDimensionalBoundaries(uids[21],1)));
-  cJSON_AddItemToObject(root, "upper(uc00,3)", SaveJSON::fromUUIDs(sm->higherDimensionalBordants(uids[0],3)));
+  cJSON_AddItemToObject(root, "bdy(brd(uc13,2),1)",
+    SaveJSON::fromUUIDs(sm->boundaryEntities(sm->bordantEntities(uids[13], 2), 1)));
+  cJSON_AddItemToObject(
+    root, "bdy(uc20,2)", SaveJSON::fromUUIDs(sm->boundaryEntities(uids[20], 2)));
+  cJSON_AddItemToObject(root, "brd(uc20,2)", SaveJSON::fromUUIDs(sm->bordantEntities(uids[20], 2)));
+  cJSON_AddItemToObject(
+    root, "bdy(uc20,1)", SaveJSON::fromUUIDs(sm->boundaryEntities(uids[20], 1)));
+  cJSON_AddItemToObject(root, "brd(uc20,3)", SaveJSON::fromUUIDs(sm->bordantEntities(uids[20], 3)));
+  cJSON_AddItemToObject(
+    root, "lower(uc21,1)", SaveJSON::fromUUIDs(sm->lowerDimensionalBoundaries(uids[21], 1)));
+  cJSON_AddItemToObject(
+    root, "upper(uc00,3)", SaveJSON::fromUUIDs(sm->higherDimensionalBordants(uids[0], 3)));
   char* json = cJSON_Print(root);
   std::cout << json << "\n";
   free(json);
@@ -197,18 +203,27 @@ int main(int argc, char* argv[])
   smtk::common::UUID aid1, aid2;
   aid1 = smtk::common::UUID::random();
   aid2 = smtk::common::UUID::random();
-  test( sm->associateAttribute(NULL, /*attribId*/aid1, uids[0]), "Inserting a new attribute should succeed");
-  test( sm->associateAttribute(NULL, /*attribId*/aid2, uids[0]), "Inserting a new attribute should succeed");
-  test( sm->associateAttribute(NULL, /*attribId*/aid1, uids[0]), "Inserting an attribute twice should succeed");
-  test( sm->disassociateAttribute(NULL, /*attribId*/aid1, uids[0]), "Removing a non-existent attribute should fail");
-  test(!sm->disassociateAttribute(NULL, /*attribId*/aid1, uids[1]), "Removing a non-existent attribute should fail");
+  test(sm->associateAttribute(NULL, /*attribId*/ aid1, uids[0]),
+    "Inserting a new attribute should succeed");
+  test(sm->associateAttribute(NULL, /*attribId*/ aid2, uids[0]),
+    "Inserting a new attribute should succeed");
+  test(sm->associateAttribute(NULL, /*attribId*/ aid1, uids[0]),
+    "Inserting an attribute twice should succeed");
+  test(sm->disassociateAttribute(NULL, /*attribId*/ aid1, uids[0]),
+    "Removing a non-existent attribute should fail");
+  test(!sm->disassociateAttribute(NULL, /*attribId*/ aid1, uids[1]),
+    "Removing a non-existent attribute should fail");
 
   // Test removal of arrangement information and entities.
   // Remove a volume from its volume use and the model containing it.
-  test(sm->unarrangeEntity(uids[21], EMBEDDED_IN, 0, true) == 1, "Detaching a Volume from its parent Model did not succeed.");
-  test(sm->unarrangeEntity(uids[21], EMBEDDED_IN, 0, true) == 0, "Detaching a Volume from a non-existent Model did not fail.");
-  test(sm->unarrangeEntity(uids[21], HAS_USE, 0, true) == 2, "Detaching a Volume/VolumeUse failed.");
-  test(sm->findEntity(uids[21]) == NULL, "unarrangeEntity(..., true) failed to remove the entity afterwards.");
+  test(sm->unarrangeEntity(uids[21], EMBEDDED_IN, 0, true) == 1,
+    "Detaching a Volume from its parent Model did not succeed.");
+  test(sm->unarrangeEntity(uids[21], EMBEDDED_IN, 0, true) == 0,
+    "Detaching a Volume from a non-existent Model did not fail.");
+  test(
+    sm->unarrangeEntity(uids[21], HAS_USE, 0, true) == 2, "Detaching a Volume/VolumeUse failed.");
+  test(sm->findEntity(uids[21]) == NULL,
+    "unarrangeEntity(..., true) failed to remove the entity afterwards.");
   test(sm->erase(uids[0]), "Failed to erase a vertex.");
 
   std::cout << entCount << " total entities:\n";

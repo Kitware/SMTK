@@ -25,7 +25,7 @@ namespace pqSplitEdgeWidgetInternals
 {
 class EdgePointPicker : public QAction
 {
-Q_OBJECT
+  Q_OBJECT
 
 public:
   EdgePointPicker(QObject* p);
@@ -46,10 +46,10 @@ signals:
 
 class SMTKPOLYGONQTEXT_EXPORT pqSplitEdgeWidget : public QWidget
 {
-Q_OBJECT
+  Q_OBJECT
 
 public:
-explicit pqSplitEdgeWidget(QWidget *parent = 0);
+  explicit pqSplitEdgeWidget(QWidget* parent = 0);
   virtual ~pqSplitEdgeWidget();
 
   virtual void setView(pqRenderView* view);
@@ -73,7 +73,7 @@ private:
 
   pqSplitEdgeWidgetInternals::EdgePointPicker* m_edgePointPicker;
 
-  pqRenderView *View;
+  pqRenderView* View;
   smtk::weak_ptr<smtk::model::Operator> m_edgeOp;
 };
 

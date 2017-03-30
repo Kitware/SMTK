@@ -31,17 +31,17 @@ public:
   virtual void SetRepresentation(int type);
 
   enum ModelRepresentationType
-    {
-    POINTS=0,
-    WIREFRAME=1,
-    SURFACE=2,
-    SURFACE_WITH_EDGES=3,
-    USER_DEFINED=100,
+  {
+    POINTS = 0,
+    WIREFRAME = 1,
+    SURFACE = 2,
+    SURFACE_WITH_EDGES = 3,
+    USER_DEFINED = 100,
     // Special identifiers for back faces.
-    FOLLOW_FRONTFACE=400,
-    CULL_BACKFACE=401,
-    CULL_FRONTFACE=402
-    };
+    FOLLOW_FRONTFACE = 400,
+    CULL_BACKFACE = 401,
+    CULL_FRONTFACE = 402
+  };
 
 protected:
   vtkSMModelRepresentationProxy();
@@ -53,8 +53,7 @@ protected:
 
 private:
   vtkSMModelRepresentationProxy(const vtkSMModelRepresentationProxy&); // Not implemented
-  void operator=(const vtkSMModelRepresentationProxy&); // Not implemented
-
+  void operator=(const vtkSMModelRepresentationProxy&);                // Not implemented
 };
 
 #endif

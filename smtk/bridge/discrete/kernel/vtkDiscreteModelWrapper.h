@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 // .NAME vtkDiscreteModelWrapper - The new CMB model
 //
 // .SECTION Description
@@ -81,15 +80,15 @@ public:
   // ,FaceId/EdgeId->ReverseClassification map and VertexId->ReverseClassification map
   // Return 0 on failure, 1 on success
   int RebuildModel(const char* serializedModel,
-                   std::map<vtkIdType, vtkSmartPointer<vtkIdList> > & faceToIds,
-                   std::map<vtkIdType, vtkSmartPointer<vtkIdList> > & edgeToIds,
-                   std::map<vtkIdType, vtkIdType> & vertexToIds,
-                   std::map<vtkIdType, vtkSmartPointer<vtkProperty> > &entityToProperties);
+    std::map<vtkIdType, vtkSmartPointer<vtkIdList> >& faceToIds,
+    std::map<vtkIdType, vtkSmartPointer<vtkIdList> >& edgeToIds,
+    std::map<vtkIdType, vtkIdType>& vertexToIds,
+    std::map<vtkIdType, vtkSmartPointer<vtkProperty> >& entityToProperties);
 
   // Description:
   // Add model entities as child dataset.
-  void AddGeometricEntities(std::set<vtkIdType> &entities);
-  void AddGeometricEntities(std::vector<vtkModelGeometricEntity*> &entities);
+  void AddGeometricEntities(std::set<vtkIdType>& entities);
+  void AddGeometricEntities(std::vector<vtkModelGeometricEntity*>& entities);
   void AddGeometricEntities(int entType);
 
   // Description:
@@ -116,7 +115,7 @@ public:
   // Description:
   // Retrieve a vtkDiscreteModelWrapper stored inside an information object.
   static vtkDiscreteModelWrapper* GetData(vtkInformation* info);
-  static vtkDiscreteModelWrapper* GetData(vtkInformationVector* v, int i=0);
+  static vtkDiscreteModelWrapper* GetData(vtkInformationVector* v, int i = 0);
 
   // Description:
   // This is a convenient method to switch the points for all the
@@ -137,8 +136,7 @@ public:
   virtual vtkMTimeType GetMTime();
   // Description:
   // Get the composite index given an entity id, return true if EntityId is found
-  bool GetChildIndexByEntityId(
-    vtkIdType EntityId, unsigned int& index);
+  bool GetChildIndexByEntityId(vtkIdType EntityId, unsigned int& index);
   // Description:
   // Get the EntityId given composite index, return true if success
   bool GetEntityIdByChildIndex(unsigned int index, vtkIdType& entityId);
@@ -147,8 +145,8 @@ public:
 
   // Description:
   // Callback function to handle DomainSetCreated/Destroyed event from CMBModel
-  static void ModelEntitySetGeometryCallback(vtkObject *caller,
-    unsigned long event, void *clientData, void *callData);
+  static void ModelEntitySetGeometryCallback(
+    vtkObject* caller, unsigned long event, void* clientData, void* callData);
 
 protected:
   vtkDiscreteModelWrapper();
@@ -169,9 +167,8 @@ protected:
   vtkCallbackCommand* ModelCBC;
 
 private:
-  vtkDiscreteModelWrapper(const vtkDiscreteModelWrapper&);  // Not implemented.
-  void operator=(const vtkDiscreteModelWrapper&);  // Not implemented.
-
+  vtkDiscreteModelWrapper(const vtkDiscreteModelWrapper&); // Not implemented.
+  void operator=(const vtkDiscreteModelWrapper&);          // Not implemented.
 };
 
 #endif

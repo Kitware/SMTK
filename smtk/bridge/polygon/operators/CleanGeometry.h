@@ -12,9 +12,12 @@
 
 #include "smtk/bridge/polygon/Operator.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 /**\brief Create one or more edges given a set of point coordinates.
   *
@@ -32,40 +35,33 @@ public:
 protected:
   virtual smtk::model::OperatorResult operateInternal();
 
-  template<typename T, typename U, typename V, typename W, typename X>
-  bool splitEdgeAsNeeded(
-    const smtk::model::Edge& curEdge,
-    internal::EdgePtr storage,
-    T& result,
-    U& lkup,
-    V& rlkup,
-    W& reslkup,
-    X& endpoints,
-    smtk::model::EntityRefArray& created,
-    smtk::model::EntityRefArray& modified,
-    smtk::model::EntityRefArray& expunged);
+  template <typename T, typename U, typename V, typename W, typename X>
+  bool splitEdgeAsNeeded(const smtk::model::Edge& curEdge, internal::EdgePtr storage, T& result,
+    U& lkup, V& rlkup, W& reslkup, X& endpoints, smtk::model::EntityRefArray& created,
+    smtk::model::EntityRefArray& modified, smtk::model::EntityRefArray& expunged);
 
-  template<typename T>
+  template <typename T>
   void addVertex(const smtk::model::Vertex& vertex, T& pointMap);
 
-  template<typename T>
+  template <typename T>
   void addEdgePoints(const smtk::model::Edge& edge, T& pointMap);
 
-  template<typename T>
+  template <typename T>
   void addEdgeEndpoints(const smtk::model::Edge& edge, T& pointMap);
 
-  template<typename T, typename U, typename V>
-  void addDeferredSplits(const smtk::model::Edge& edge, T& actions, U& allpoints, U& endpoints, V& created);
+  template <typename T, typename U, typename V>
+  void addDeferredSplits(
+    const smtk::model::Edge& edge, T& actions, U& allpoints, U& endpoints, V& created);
 
-  template<typename T, typename U, typename V, typename W>
+  template <typename T, typename U, typename V, typename W>
   bool applyDeferredSplit(T mgr, U& action, V& allpoints, W& created);
 
-  template<typename T, typename U>
+  template <typename T, typename U>
   bool deleteIfDuplicates(T& edgePair, U& modified, U& expunged);
 };
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_polygon_CleanGeometry_h

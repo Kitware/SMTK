@@ -27,8 +27,8 @@ class vtkSMProxy;
 class VTK_EXPORT vtkCMBModelWriterClient : public vtkObject
 {
 public:
-  static vtkCMBModelWriterClient * New();
-  vtkTypeMacro(vtkCMBModelWriterClient,vtkObject);
+  static vtkCMBModelWriterClient* New();
+  vtkTypeMacro(vtkCMBModelWriterClient, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -51,8 +51,8 @@ protected:
   virtual ~vtkCMBModelWriterClient();
 
 private:
-  vtkCMBModelWriterClient(const vtkCMBModelWriterClient&);  // Not implemented.
-  void operator=(const vtkCMBModelWriterClient&);  // Not implemented.
+  vtkCMBModelWriterClient(const vtkCMBModelWriterClient&); // Not implemented.
+  void operator=(const vtkCMBModelWriterClient&);          // Not implemented.
 
   // Description:
   // The name of the file to be written.

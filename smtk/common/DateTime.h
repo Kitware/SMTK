@@ -24,8 +24,10 @@ SMTK_THIRDPARTY_POST_INCLUDE
 #include <iostream>
 #include <string>
 
-namespace smtk {
-  namespace common {
+namespace smtk
+{
+namespace common
+{
 
 //.NAME DateTime - Date & time representation generally based on ISO 8601.
 //.SECTION Description
@@ -36,64 +38,34 @@ public:
   DateTime();
 
   /// Explicitly sets each component WITH time zone conversion
-  bool setComponents(
-    TimeZone timeZone,
-    int year,
-    int month = 1,
-    int day = 1,
-    int hour = 0,
-    int minute = 0,
-    int second = 0,
-    int millisecond = 0)
+  bool setComponents(TimeZone timeZone, int year, int month = 1, int day = 1, int hour = 0,
+    int minute = 0, int second = 0, int millisecond = 0)
   {
-    return this->setComponents(
-      year, month, day, hour, minute, second, millisecond, &timeZone);
+    return this->setComponents(year, month, day, hour, minute, second, millisecond, &timeZone);
   }
 
   /// Explicitly sets each component WITHOUT time zone conversion
-  bool setComponents(
-    int year,
-    int month = 1,
-    int day = 1,
-    int hour = 0,
-    int minute = 0,
-    int second = 0,
-    int millisecond = 0)
+  bool setComponents(int year, int month = 1, int day = 1, int hour = 0, int minute = 0,
+    int second = 0, int millisecond = 0)
   {
-  return this->setComponents(
-    year, month, day, hour, minute, second, millisecond, NULL);
+    return this->setComponents(year, month, day, hour, minute, second, millisecond, NULL);
   }
 
 #ifndef SHIBOKEN_SKIP
   // Reimplemented in Shiboken typesystem
 
   // Returns each component WITH time zone conversion
-  bool components(
-    TimeZone timeZone,
-    int& year,
-    int& month,
-    int& day,
-    int& hour,
-    int& minute,
-    int& second,
-    int& millisecond) const
+  bool components(TimeZone timeZone, int& year, int& month, int& day, int& hour, int& minute,
+    int& second, int& millisecond) const
   {
-    return this->components(
-      year, month, day, hour, minute, second, millisecond, &timeZone);
+    return this->components(year, month, day, hour, minute, second, millisecond, &timeZone);
   }
 
   // Returns each component WITHOUT time zone conversion
   bool components(
-    int& year,
-    int& month,
-    int& day,
-    int& hour,
-    int& minute,
-    int& second,
-    int& millisecond) const
+    int& year, int& month, int& day, int& hour, int& minute, int& second, int& millisecond) const
   {
-    return this->components(
-      year, month, day, hour, minute, second, millisecond, NULL);
+    return this->components(year, month, day, hour, minute, second, millisecond, NULL);
   }
 #endif
 
@@ -121,30 +93,16 @@ protected:
 #ifndef SHIBOKEN_SKIP
   boost::posix_time::ptime m_ptime;
 
-  bool setComponents(
-    int year,
-    int month,
-    int day,
-    int hour,
-    int minute,
-    int second,
-    int millisecond,
-    TimeZone *timeZone);
+  bool setComponents(int year, int month, int day, int hour, int minute, int second,
+    int millisecond, TimeZone* timeZone);
 
-  bool components(
-    int& year,
-    int& month,
-    int& day,
-    int& hour,
-    int& minute,
-    int& second,
-    int& millisecond,
-    TimeZone *timeZone) const;
+  bool components(int& year, int& month, int& day, int& hour, int& minute, int& second,
+    int& millisecond, TimeZone* timeZone) const;
 
 #endif
 };
 
-  } // namespace common
+} // namespace common
 } // namespace smtk
 
 #endif // __smtk_common_DateTime_h

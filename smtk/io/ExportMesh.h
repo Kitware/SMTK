@@ -23,8 +23,10 @@
   *
   */
 
-namespace smtk {
-  namespace io {
+namespace smtk
+{
+namespace io
+{
 
 class SMTKCORE_EXPORT ExportMesh
 {
@@ -39,23 +41,16 @@ public:
   static std::vector<smtk::io::mesh::MeshIOPtr>& SupportedIOTypes();
 #endif
 
-  bool operator() ( const std::string& filePath,
-                    smtk::mesh::CollectionPtr collection ) const;
-  bool operator() ( const std::string& filePath,
-                     smtk::mesh::CollectionPtr collection,
-                     smtk::model::ManagerPtr manager,
-                     const std::string& modelPropertyName ) const;
+  bool operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection) const;
+  bool operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+    smtk::model::ManagerPtr manager, const std::string& modelPropertyName) const;
 };
 
 SMTKCORE_EXPORT
-bool exportMesh( const std::string& filePath,
-                 smtk::mesh::CollectionPtr collection );
+bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection);
 SMTKCORE_EXPORT
-bool exportMesh( const std::string& filePath,
-                 smtk::mesh::CollectionPtr collection,
-                 smtk::model::ManagerPtr manager,
-                 const std::string& modelPropertyName );
-
+bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+  smtk::model::ManagerPtr manager, const std::string& modelPropertyName);
 }
 }
 

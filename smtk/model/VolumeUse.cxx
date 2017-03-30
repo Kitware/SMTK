@@ -12,8 +12,10 @@
 #include "smtk/model/Shell.h"
 #include "smtk/model/Volume.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 // The volume bounded by this face use (if any)
 Volume VolumeUse::volume() const
@@ -27,5 +29,5 @@ Shells VolumeUse::shells() const
   return this->shellEntities<Shells>();
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

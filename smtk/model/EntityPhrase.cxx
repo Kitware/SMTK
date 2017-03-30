@@ -19,8 +19,10 @@
 #include "smtk/model/ShellEntity.h"
 #include "smtk/model/UseEntity.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 EntityPhrase::EntityPhrase()
 {
@@ -53,18 +55,17 @@ bool EntityPhrase::setTitle(const std::string& newTitle)
 {
   // The title is the name, so set the name as long as we're allowed.
   if (this->isTitleMutable() && this->m_entity.name() != newTitle)
-    {
+  {
     if (!newTitle.empty())
       this->m_entity.setName(newTitle);
     else
-      {
+    {
       this->m_entity.removeStringProperty("name");
       // Don't let name be a blank... assign a default.
-      this->m_entity.manager()->assignDefaultName(
-        this->m_entity.entity());
-      }
-    return true;
+      this->m_entity.manager()->assignDefaultName(this->m_entity.entity());
     }
+    return true;
+  }
   return false;
 }
 
@@ -110,23 +111,22 @@ FloatList EntityPhrase::relatedColor() const
 bool EntityPhrase::isRelatedColorMutable() const
 {
   // Disable assign model color here since it's doing nothing
-  return (this->m_mutability & 0x4) && this->m_entity.isValid() &&
-      (!this->m_entity.isModel());
+  return (this->m_mutability & 0x4) && this->m_entity.isValid() && (!this->m_entity.isModel());
 }
 
 bool EntityPhrase::setRelatedColor(const FloatList& rgba)
 {
   if (this->isRelatedColorMutable())
-    {
+  {
     bool colorValid = rgba.size() == 4;
     for (int i = 0; colorValid && i < 4; ++i)
       colorValid &= (rgba[i] >= 0. && rgba[i] <= 1.);
     if (colorValid)
-      {
+    {
       this->m_entity.setColor(rgba);
       return true;
-      }
     }
+  }
   return false;
 }
 
@@ -142,12 +142,11 @@ DescriptivePhrases EntityPhrase::PhrasesFromUUIDs(
   DescriptivePhrases result;
   smtk::common::UUIDs::const_iterator it;
   for (it = uids.begin(); it != uids.end(); ++it)
-    {
-    result.push_back(
-      EntityPhrase::create()->setup(EntityRef(manager, *it)));
-    }
+  {
+    result.push_back(EntityPhrase::create()->setup(EntityRef(manager, *it)));
+  }
   return result;
 }
 
-  } // model namespace
+} // model namespace
 } // smtk namespace

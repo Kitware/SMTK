@@ -14,13 +14,11 @@
 // a target geometric entity.  The properties of the target entity
 // (e.g. color, BCS/ModelEntityGroup associations) will not be changed.
 
-
 #ifndef __smtkdiscrete_vtkMergeOperatorBase_h
 #define __smtkdiscrete_vtkMergeOperatorBase_h
 
 #include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkObject.h"
-
 
 class vtkDiscreteModel;
 class vtkDiscreteModelGeometricEntity;
@@ -29,8 +27,8 @@ class vtkIdTypeArray;
 class SMTKDISCRETESESSION_EXPORT vtkMergeOperatorBase : public vtkObject
 {
 public:
-  static vtkMergeOperatorBase * New();
-  vtkTypeMacro(vtkMergeOperatorBase,vtkObject);
+  static vtkMergeOperatorBase* New();
+  vtkTypeMacro(vtkMergeOperatorBase, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -106,8 +104,8 @@ private:
   vtkIdType TargetId;
   int IsTargetIdSet;
 
-  vtkMergeOperatorBase(const vtkMergeOperatorBase&);  // Not implemented.
-  void operator=(const vtkMergeOperatorBase&);  // Not implemented.
+  vtkMergeOperatorBase(const vtkMergeOperatorBase&); // Not implemented.
+  void operator=(const vtkMergeOperatorBase&);       // Not implemented.
 };
 
 #endif

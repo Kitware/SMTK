@@ -24,7 +24,7 @@ class VTK_EXPORT vtkCMBModelFaceMeshClient : public vtkCMBModelFaceMesh
 {
 public:
   static vtkCMBModelFaceMeshClient* New();
-  vtkTypeMacro(vtkCMBModelFaceMeshClient,vtkCMBModelFaceMesh);
+  vtkTypeMacro(vtkCMBModelFaceMeshClient, vtkCMBModelFaceMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -45,8 +45,8 @@ protected:
   bool BuildMesh(bool meshHigherDimensionalEntities);
 
 private:
-  vtkCMBModelFaceMeshClient(const vtkCMBModelFaceMeshClient&);  // Not implemented.
-  void operator=(const vtkCMBModelFaceMeshClient&);  // Not implemented.
+  vtkCMBModelFaceMeshClient(const vtkCMBModelFaceMeshClient&); // Not implemented.
+  void operator=(const vtkCMBModelFaceMeshClient&);            // Not implemented.
 };
 
 #endif

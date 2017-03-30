@@ -15,9 +15,12 @@
 
 #include "RefEntity.hpp"
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 /// Return a shared pointer to the session backing a CGM operator.
 Session* Operator::cgmSession()
@@ -46,6 +49,6 @@ RefEntity* Operator::cgmEntity(const smtk::model::EntityRef& smtkEntity)
   return ent;
 }
 
-    } // namespace cgm
-  } //namespace bridge
+} // namespace cgm
+} //namespace bridge
 } // namespace smtk

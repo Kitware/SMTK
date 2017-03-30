@@ -29,22 +29,21 @@ class vtkSMProxy;
 class VTK_EXPORT vtkCMBModelBuilder2DClient : public vtkObject
 {
 public:
-  static vtkCMBModelBuilder2DClient * New();
-  vtkTypeMacro(vtkCMBModelBuilder2DClient,vtkObject);
+  static vtkCMBModelBuilder2DClient* New();
+  vtkTypeMacro(vtkCMBModelBuilder2DClient, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // Using the input poly on the server to set up the modle
   // and serializes the model to the client.
   // Returns true if the operation was successful.
-  virtual bool Operate(vtkDiscreteModel* Model, vtkSMProxy* ModelWrapper,
-                       vtkSMProxy* PolySourceProxy, int cleanVerts);
+  virtual bool Operate(
+    vtkDiscreteModel* Model, vtkSMProxy* ModelWrapper, vtkSMProxy* PolySourceProxy, int cleanVerts);
 
   // Description:
   // Static function to serialize an entire model from the server
   // to the client.  Returns true if the update was successful.
-  static bool UpdateClientModel(vtkDiscreteModel* ClientModel,
-                                vtkSMProxy* ModelWrapper);
+  static bool UpdateClientModel(vtkDiscreteModel* ClientModel, vtkSMProxy* ModelWrapper);
 
 protected:
   vtkCMBModelBuilder2DClient();
@@ -55,9 +54,8 @@ protected:
   virtual bool AbleToOperate(vtkDiscreteModel* Model);
 
 private:
-
-  vtkCMBModelBuilder2DClient(const vtkCMBModelBuilder2DClient&);  // Not implemented.
-  void operator=(const vtkCMBModelBuilder2DClient&);  // Not implemented.
+  vtkCMBModelBuilder2DClient(const vtkCMBModelBuilder2DClient&); // Not implemented.
+  void operator=(const vtkCMBModelBuilder2DClient&);             // Not implemented.
 };
 
 #endif

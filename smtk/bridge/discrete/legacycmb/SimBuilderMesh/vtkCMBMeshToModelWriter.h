@@ -24,8 +24,8 @@ class vtkDiscreteModelWrapper;
 class VTK_EXPORT vtkCMBMeshToModelWriter : public vtkXMLWriter
 {
 public:
-  static vtkCMBMeshToModelWriter *New();
-  vtkTypeMacro(vtkCMBMeshToModelWriter,vtkXMLWriter);
+  static vtkCMBMeshToModelWriter* New();
+  vtkTypeMacro(vtkCMBMeshToModelWriter, vtkXMLWriter);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual const char* GetDefaultFileExtension();
@@ -53,14 +53,13 @@ protected:
   const char* GetDataSetName();
 
 private:
-  vtkCMBMeshToModelWriter(const vtkCMBMeshToModelWriter&);  // Not implemented.
-  void operator=(const vtkCMBMeshToModelWriter&);  // Not implemented.
+  vtkCMBMeshToModelWriter(const vtkCMBMeshToModelWriter&); // Not implemented.
+  void operator=(const vtkCMBMeshToModelWriter&);          // Not implemented.
 
   // Description:
   // The vtkDiscreteModelWrapper for the algorithm to extract the model
   // information from.
   vtkDiscreteModelWrapper* ModelWrapper;
-
 };
 
 #endif

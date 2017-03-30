@@ -5,10 +5,7 @@
 
 int main()
 {
-  std::cout
-    << "Compiled with SMTK version "
-    << smtk::common::Version::number()
-    << "\n";
+  std::cout << "Compiled with SMTK version " << smtk::common::Version::number() << "\n";
   return 0;
 }
 // -- 1 --

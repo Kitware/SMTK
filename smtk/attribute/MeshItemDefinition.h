@@ -22,46 +22,45 @@
 
 namespace smtk
 {
-  namespace attribute
+namespace attribute
+{
+class Attribute;
+class SMTKCORE_EXPORT MeshItemDefinition : public ItemDefinition
+{
+public:
+  smtkTypeMacro(MeshItemDefinition);
+  static smtk::attribute::MeshItemDefinitionPtr New(const std::string& myName)
   {
-    class Attribute;
-    class SMTKCORE_EXPORT MeshItemDefinition:
-      public ItemDefinition
-    {
-    public:
-      smtkTypeMacro(MeshItemDefinition);
-      static smtk::attribute::MeshItemDefinitionPtr New(const std::string &myName)
-      { return smtk::attribute::MeshItemDefinitionPtr(new MeshItemDefinition(myName));}
-
-      virtual ~MeshItemDefinition();
-
-      virtual Item::Type type() const;
-      std::size_t numberOfRequiredValues() const;
-      void setNumberOfRequiredValues(std::size_t esize);
-      std::size_t maxNumberOfValues() const { return this->m_maxNumberOfValues; }
-      void setMaxNumberOfValues(std::size_t maxNum);
-
-      bool isValueValid(const smtk::mesh::MeshSet &val) const;
-      bool isExtensible() const { return this->m_isExtensible; }
-      void setIsExtensible(bool extensible) { this->m_isExtensible = extensible; }
-
-      virtual smtk::attribute::ItemPtr buildItem(Attribute *owningAttribute,
-                                                int itemPosition) const;
-      virtual smtk::attribute::ItemPtr buildItem(Item *owningItem,
-                                                int position,
-                                                int subGroupPosition) const;
-
-      virtual smtk::attribute::ItemDefinitionPtr
-        createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const;
-    protected:
-      MeshItemDefinition(const std::string &myName);
-
-      std::size_t m_numberOfRequiredValues;
-      std::size_t m_maxNumberOfValues;
-      bool m_isExtensible;
-
-    };
+    return smtk::attribute::MeshItemDefinitionPtr(new MeshItemDefinition(myName));
   }
+
+  virtual ~MeshItemDefinition();
+
+  virtual Item::Type type() const;
+  std::size_t numberOfRequiredValues() const;
+  void setNumberOfRequiredValues(std::size_t esize);
+  std::size_t maxNumberOfValues() const { return this->m_maxNumberOfValues; }
+  void setMaxNumberOfValues(std::size_t maxNum);
+
+  bool isValueValid(const smtk::mesh::MeshSet& val) const;
+  bool isExtensible() const { return this->m_isExtensible; }
+  void setIsExtensible(bool extensible) { this->m_isExtensible = extensible; }
+
+  virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const;
+  virtual smtk::attribute::ItemPtr buildItem(
+    Item* owningItem, int position, int subGroupPosition) const;
+
+  virtual smtk::attribute::ItemDefinitionPtr createCopy(
+    smtk::attribute::ItemDefinition::CopyInfo& info) const;
+
+protected:
+  MeshItemDefinition(const std::string& myName);
+
+  std::size_t m_numberOfRequiredValues;
+  std::size_t m_maxNumberOfValues;
+  bool m_isExtensible;
+};
+}
 }
 
 #endif /* __smtk_attribute_MeshItemDefinition_h */

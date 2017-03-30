@@ -28,16 +28,15 @@ class QProgressDialog;
 
 namespace Ui
 {
-  class qtGenerateContoursDialog;
+class qtGenerateContoursDialog;
 };
 
 class SMTKPQWIDGETSEXT_EXPORT pqGenerateContoursDialog : public QDialog
 {
   Q_OBJECT
 public:
-  pqGenerateContoursDialog(pqPipelineSource*,
-    const bool& mapScalars2Colors,
-    QWidget *parent = NULL, Qt::WindowFlags flags= 0);
+  pqGenerateContoursDialog(pqPipelineSource*, const bool& mapScalars2Colors, QWidget* parent = NULL,
+    Qt::WindowFlags flags = 0);
   virtual ~pqGenerateContoursDialog();
 
   int exec();
@@ -62,24 +61,24 @@ protected:
   void setupProgressBar(QWidget* progressWidget);
   void disableWhileProcessing();
 
-  Ui::qtGenerateContoursDialog *InternalWidget;
+  Ui::qtGenerateContoursDialog* InternalWidget;
 
-  QDialog *MainDialog;
-  pqRenderView *RenderView;
-  pqPipelineSource *ImageSource;
-  pqPipelineSource *ImageMesh;
+  QDialog* MainDialog;
+  pqRenderView* RenderView;
+  pqPipelineSource* ImageSource;
+  pqPipelineSource* ImageMesh;
   pqDataRepresentation* ImageRepresentation;
 
-  pqDataRepresentation *ContourRepresentation;
-  pqPipelineSource *ContourSource;
-  pqPipelineSource *CleanPolyLines;
+  pqDataRepresentation* ContourRepresentation;
+  pqPipelineSource* ContourSource;
+  pqPipelineSource* CleanPolyLines;
   QString ProgressMessage;
   bool ProgressMessagesMustMatch;
   double ContourValue;
   double MinimumLineLength;
   bool UseRelativeLineLength;
-  QDoubleValidator *ContourValidator;
-  QProgressDialog *Progress;
+  QDoubleValidator* ContourValidator;
+  QProgressDialog* Progress;
   smtk::weak_ptr<smtk::model::Operator> m_edgeOp;
 };
 
@@ -88,8 +87,8 @@ class SMTKPQWIDGETSEXT_EXPORT InternalDoubleValidator : public QDoubleValidator
 {
   Q_OBJECT
 public:
-    InternalDoubleValidator(QObject * parent);
-    virtual void fixup(QString &input) const;
+  InternalDoubleValidator(QObject* parent);
+  virtual void fixup(QString& input) const;
 };
 
 #endif

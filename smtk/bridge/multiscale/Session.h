@@ -15,19 +15,23 @@
 #include "smtk/bridge/mesh/Session.h"
 #include "smtk/model/EntityRef.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 class ArrangementHelper;
-
-  }
+}
 }
 
-namespace smtk {
-  namespace bridge {
-    namespace multiscale {
+namespace smtk
+{
+namespace bridge
+{
+namespace multiscale
+{
 
-class SMTKMULTISCALESESSION_EXPORT Session: public smtk::bridge::mesh::Session
+class SMTKMULTISCALESESSION_EXPORT Session : public smtk::bridge::mesh::Session
 {
 public:
   smtkTypeMacro(smtk::bridge::multiscale::Session);
@@ -47,13 +51,12 @@ protected:
   Session();
 
 private:
-  Session(const Session&); // Not implemented.
-  void operator = (const Session&); // Not implemented.
+  Session(const Session&);        // Not implemented.
+  void operator=(const Session&); // Not implemented.
 };
 
-    } // namespace multiscale
-  } // namespace bridge
+} // namespace multiscale
+} // namespace bridge
 } // namespace smtk
-
 
 #endif // __smtk_session_multiscale_Session_h

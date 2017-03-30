@@ -19,7 +19,6 @@
 
 vtkInformationKeyMacro(vtkModelGeometricEntity, GEOMETRY, ObjectBase);
 
-
 vtkModelGeometricEntity::vtkModelGeometricEntity()
 {
   this->InitDefaultDisplayProperty();
@@ -37,17 +36,14 @@ void vtkModelGeometricEntity::SetGeometry(vtkObject* geometry)
 {
   this->GetProperties()->Set(GEOMETRY(), geometry);
   this->Modified();
-  this->GetModel()->InvokeModelGeometricEntityEvent(
-    ModelEntityGeometrySet, this);
+  this->GetModel()->InvokeModelGeometricEntityEvent(ModelEntityGeometrySet, this);
 }
 
 vtkObject* vtkModelGeometricEntity::GetGeometry()
 {
-  vtkObject* object = vtkObject::SafeDownCast(
-    this->GetProperties()->Get(GEOMETRY()));
+  vtkObject* object = vtkObject::SafeDownCast(this->GetProperties()->Get(GEOMETRY()));
   return object;
 }
-
 
 void vtkModelGeometricEntity::InitDefaultDisplayProperty()
 {
@@ -66,59 +62,56 @@ void vtkModelGeometricEntity::SetDisplayProperty(vtkProperty* prop)
 
 vtkProperty* vtkModelGeometricEntity::GetDisplayProperty()
 {
-  vtkProperty* object = vtkProperty::SafeDownCast(
-    this->GetProperties()->Get(DISPLAY_PROPERTY()));
+  vtkProperty* object = vtkProperty::SafeDownCast(this->GetProperties()->Get(DISPLAY_PROPERTY()));
   return object;
 }
 
 void vtkModelGeometricEntity::SetPickable(int pickable)
 {
-  if(this->GetProperties()->Has(PICKABLE()) &&
-    pickable == this->GetProperties()->Get(PICKABLE()))
-    {
+  if (this->GetProperties()->Has(PICKABLE()) && pickable == this->GetProperties()->Get(PICKABLE()))
+  {
     return;
-    }
+  }
   this->GetProperties()->Set(PICKABLE(), pickable);
   this->Modified();
 }
 
 int vtkModelGeometricEntity::GetPickable()
 {
-  if(this->GetProperties()->Has(PICKABLE()))
-    {
+  if (this->GetProperties()->Has(PICKABLE()))
+  {
     return this->GetProperties()->Get(PICKABLE());
-    }
+  }
   return 1;
 }
 
 void vtkModelGeometricEntity::SetShowTexture(int show)
 {
-  if(this->GetProperties()->Has(SHOWTEXTURE()) &&
+  if (this->GetProperties()->Has(SHOWTEXTURE()) &&
     show == this->GetProperties()->Get(SHOWTEXTURE()))
-    {
+  {
     return;
-    }
+  }
   this->GetProperties()->Set(SHOWTEXTURE(), show);
   this->Modified();
 }
 
 int vtkModelGeometricEntity::GetShowTexture()
 {
-  if(this->GetProperties()->Has(SHOWTEXTURE()))
-    {
+  if (this->GetProperties()->Has(SHOWTEXTURE()))
+  {
     return this->GetProperties()->Get(SHOWTEXTURE());
-    }
+  }
   return 0;
 }
 
 bool vtkModelGeometricEntity::GetBounds(double bounds[6])
 {
-  if(vtkPolyData* entityPoly =
-     vtkPolyData::SafeDownCast(this->GetGeometry()))
-    {
+  if (vtkPolyData* entityPoly = vtkPolyData::SafeDownCast(this->GetGeometry()))
+  {
     entityPoly->GetBounds(bounds);
     return true;
-    }
+  }
   return false;
 }
 
@@ -138,7 +131,7 @@ void vtkModelGeometricEntity::Serialize(vtkSerializer* ser)
 
 void vtkModelGeometricEntity::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 
   os << indent << "Representation : " << this->GetGeometry() << "\n";
 }

@@ -28,8 +28,8 @@ class vtkIdTypeArray;
 class VTKCMBDISCRETEMODEL_EXPORT vtkSelectionSplitOperatorBase : public vtkObject
 {
 public:
-  static vtkSelectionSplitOperatorBase * New();
-  vtkTypeMacro(vtkSelectionSplitOperatorBase,vtkObject);
+  static vtkSelectionSplitOperatorBase* New();
+  vtkTypeMacro(vtkSelectionSplitOperatorBase, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -54,8 +54,7 @@ public:
   // the Id of the geometric model entity that was split and TargetID is
   // the Id of the geometric model entity that was created from the split.
   // The function returns true if it succeeded.
-  bool GetModifiedPair(vtkIdType index, vtkIdType & SourceID,
-                       vtkIdType & TargetID);
+  bool GetModifiedPair(vtkIdType index, vtkIdType& SourceID, vtkIdType& TargetID);
 
   // Description:
   // Set/get the current existing face Id, which is used to retrieve
@@ -67,17 +66,29 @@ public:
   // Get FaceSplitInfo arrays AFTER a split operation, based on
   // CurrentExistingFaceId
   virtual vtkIdTypeArray* GetSplitEdgeVertIds()
-  { return this->GetSplitEdgeVertIds(this->CurrentExistingFaceId);}
+  {
+    return this->GetSplitEdgeVertIds(this->CurrentExistingFaceId);
+  }
   virtual vtkIdTypeArray* GetCreatedModelEdgeVertIDs()
-  { return this->GetCreatedModelEdgeVertIDs(this->CurrentExistingFaceId);}
+  {
+    return this->GetCreatedModelEdgeVertIDs(this->CurrentExistingFaceId);
+  }
   virtual vtkIdTypeArray* GetFaceEdgeLoopIDs()
-  { return this->GetFaceEdgeLoopIDs(this->CurrentExistingFaceId);}
+  {
+    return this->GetFaceEdgeLoopIDs(this->CurrentExistingFaceId);
+  }
   virtual vtkIdTypeArray* GetSplitEdgeVertIds(vtkIdType existingfaceid)
-  { return this->FaceSplitInfo[existingfaceid].SplitEdgeVertIds;}
+  {
+    return this->FaceSplitInfo[existingfaceid].SplitEdgeVertIds;
+  }
   virtual vtkIdTypeArray* GetCreatedModelEdgeVertIDs(vtkIdType existingfaceid)
-  { return this->FaceSplitInfo[existingfaceid].CreatedModelEdgeVertIDs;}
+  {
+    return this->FaceSplitInfo[existingfaceid].CreatedModelEdgeVertIDs;
+  }
   virtual vtkIdTypeArray* GetFaceEdgeLoopIDs(vtkIdType existingfaceid)
-  { return this->FaceSplitInfo[existingfaceid].FaceEdgeLoopIDs;}
+  {
+    return this->FaceSplitInfo[existingfaceid].FaceEdgeLoopIDs;
+  }
 
 protected:
   vtkSelectionSplitOperatorBase();
@@ -112,8 +123,8 @@ private:
   // to all of the resulting model faces.
   vtkIdTypeArray* CompletelySelectedIDs;
 
-  vtkSelectionSplitOperatorBase(const vtkSelectionSplitOperatorBase&);  // Not implemented.
-  void operator=(const vtkSelectionSplitOperatorBase&);  // Not implemented.
+  vtkSelectionSplitOperatorBase(const vtkSelectionSplitOperatorBase&); // Not implemented.
+  void operator=(const vtkSelectionSplitOperatorBase&);                // Not implemented.
 };
 
 #endif

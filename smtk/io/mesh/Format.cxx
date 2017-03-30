@@ -10,15 +10,17 @@
 
 #include <smtk/io/mesh/Format.h>
 
-namespace smtk {
-  namespace io {
-namespace mesh {
+namespace smtk
+{
+namespace io
+{
+namespace mesh
+{
 
 const Format::IOFlags Format::Import = IOFlags(0x1);
 const Format::IOFlags Format::Export = IOFlags(0x2);
 const Format::IOFlags Format::Read = IOFlags(0x4);
 const Format::IOFlags Format::Write = IOFlags(0x8);
-
 }
 }
 }

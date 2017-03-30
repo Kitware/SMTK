@@ -16,8 +16,10 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Session.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief Return information about how the modeling kernel represents this model.
   *
@@ -26,11 +28,11 @@ namespace smtk {
 ModelGeometryStyle Model::geometryStyle() const
 {
   if (this->hasIntegerProperty(SMTK_GEOM_STYLE_PROP))
-    {
+  {
     const smtk::model::IntegerList& plist(this->integerProperty(SMTK_GEOM_STYLE_PROP));
     if (!plist.empty())
       return static_cast<ModelGeometryStyle>(plist[0]);
-    }
+  }
   return PARAMETRIC;
 }
 
@@ -83,10 +85,10 @@ void Model::setSession(const SessionRef& sess)
     curSess.removeMemberEntity(*this);
 
   if (sess.isValid())
-    {
+  {
     SessionRef mutableSess(sess);
     mutableSess.addMemberEntity(*this);
-    }
+  }
 }
 
 /// Return the cells directly owned by this model.
@@ -95,24 +97,24 @@ CellEntities Model::cells() const
   CellEntities result;
   ManagerPtr mgr = this->manager();
   if (!mgr)
-    {
+  {
     return result;
-    }
+  }
   EntityRefArrangementOps::appendAllRelations(*this, INCLUDES, result);
   if (result.empty())
-    { // We may have a "simple" model that has no arrangements but does have relations.
+  { // We may have a "simple" model that has no arrangements but does have relations.
     const Entity* erec = mgr->findEntity(this->m_entity);
     if (erec)
-      {
+    {
       smtk::common::UUIDArray::const_iterator rit;
       for (rit = erec->relations().begin(); rit != erec->relations().end(); ++rit)
-        {
+      {
         CellEntity cell(mgr, *rit);
         if (cell.isValid())
           result.push_back(cell);
-        }
       }
     }
+  }
   return result;
 }
 
@@ -160,14 +162,14 @@ Model& Model::removeCell(const CellEntity& c)
   UUIDWithEntity ent;
   ent = mgr->topology().find(this->m_entity);
   if (ent != mgr->topology().end())
-    {
+  {
     mgr->elideOneEntityReference(ent, c.entity());
-    }
+  }
   ent = mgr->topology().find(c.entity());
   if (ent != mgr->topology().end())
-    {
+  {
     mgr->elideOneEntityReference(ent, this->m_entity);
-    }
+  }
   return *this;
 }
 
@@ -175,11 +177,11 @@ Model& Model::addGroup(const Group& g)
 {
   ManagerPtr mgr = this->manager();
   if (this->isValid() && g.isValid())
-    {
+  {
     EntityRefArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, g);
     EntityRefArrangementOps::findOrAddSimpleRelationship(g, SUBSET_OF, *this);
     mgr->trigger(std::make_pair(ADD_EVENT, MODEL_INCLUDES_GROUP), *this, g);
-    }
+  }
   return *this;
 }
 
@@ -187,13 +189,13 @@ Model& Model::removeGroup(const Group& g)
 {
   ManagerPtr mgr = this->manager();
   if (this->isValid() && g.isValid())
-    {
+  {
     int aidx = EntityRefArrangementOps::findSimpleRelationship(*this, SUPERSET_OF, g);
     if (aidx >= 0 && mgr->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
-      {
+    {
       mgr->trigger(ManagerEventType(DEL_EVENT, MODEL_INCLUDES_GROUP), *this, g);
-      }
     }
+  }
   return *this;
 }
 
@@ -296,13 +298,13 @@ EntityRefs Model::entitiesWithTessellation() const
   EntityRefs touched;
   this->findEntitiesWithTessellation(entityrefMap, touched);
   EntityRefs result;
-  for(std::map<EntityRef,EntityRef>::iterator it = entityrefMap.begin();
-      it != entityrefMap.end(); ++it)
-    {
+  for (std::map<EntityRef, EntityRef>::iterator it = entityrefMap.begin(); it != entityrefMap.end();
+       ++it)
+  {
     result.insert(it->first);
-    }
+  }
   return result;
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

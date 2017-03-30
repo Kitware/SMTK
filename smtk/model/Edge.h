@@ -16,8 +16,10 @@
 
 #include <vector>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 class EdgeUse;
 class Vertex;
@@ -30,7 +32,7 @@ typedef std::vector<Vertex> Vertices;
 class SMTKCORE_EXPORT Edge : public CellEntity
 {
 public:
-  SMTK_ENTITYREF_CLASS(Edge,CellEntity,isEdge);
+  SMTK_ENTITYREF_CLASS(Edge, CellEntity, isEdge);
 
   EdgeUses edgeUses() const;
 
@@ -42,7 +44,7 @@ public:
   EdgeUse findOrAddEdgeUse(Orientation o, int sense = 0);
 };
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_Edge_h

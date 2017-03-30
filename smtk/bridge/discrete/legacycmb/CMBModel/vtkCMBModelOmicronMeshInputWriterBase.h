@@ -25,8 +25,8 @@ class vtkDiscreteModelWrapper;
 class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelOmicronMeshInputWriterBase : public vtkObject
 {
 public:
-  static vtkCMBModelOmicronMeshInputWriterBase * New();
-  vtkTypeMacro(vtkCMBModelOmicronMeshInputWriterBase,vtkObject);
+  static vtkCMBModelOmicronMeshInputWriterBase* New();
+  vtkTypeMacro(vtkCMBModelOmicronMeshInputWriterBase, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -62,8 +62,9 @@ protected:
   virtual ~vtkCMBModelOmicronMeshInputWriterBase();
 
 private:
-  vtkCMBModelOmicronMeshInputWriterBase(const vtkCMBModelOmicronMeshInputWriterBase&);  // Not implemented.
-  void operator=(const vtkCMBModelOmicronMeshInputWriterBase&);  // Not implemented.
+  vtkCMBModelOmicronMeshInputWriterBase(
+    const vtkCMBModelOmicronMeshInputWriterBase&);              // Not implemented.
+  void operator=(const vtkCMBModelOmicronMeshInputWriterBase&); // Not implemented.
 
   // Description:
   // The name of the file to be written.

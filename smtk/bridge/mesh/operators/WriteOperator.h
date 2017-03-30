@@ -12,9 +12,12 @@
 
 #include "smtk/bridge/mesh/Operator.h"
 
-namespace smtk {
-namespace bridge {
-namespace mesh {
+namespace smtk
+{
+namespace bridge
+{
+namespace mesh
+{
 
 class SMTKMESHSESSION_EXPORT WriteOperator : public Operator
 {

@@ -23,15 +23,12 @@ class VTK_EXPORT vtkCMBModelVertexMesh : public vtkCMBModelEntityMesh
 {
 public:
   static vtkCMBModelVertexMesh* New();
-  vtkTypeMacro(vtkCMBModelVertexMesh,vtkCMBModelEntityMesh);
+  vtkTypeMacro(vtkCMBModelVertexMesh, vtkCMBModelEntityMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
   // Description:
   // Get the actual length the model edge will be meshed with.
   // 0 indicates no length has been set.
-  virtual double GetActualLength()
-  {
-    return this->GetLength();
-  }
+  virtual double GetActualLength() { return this->GetLength(); }
 
   // Description:
   // Set the local mesh length on the entity.
@@ -55,21 +52,17 @@ public:
   // Description:
   // Return true if the model entity should have a mesh
   // and false otherwise.
-  virtual bool IsModelEntityMeshed()
-  {
-    return false;
-  }
+  virtual bool IsModelEntityMeshed() { return false; }
 
 protected:
   vtkCMBModelVertexMesh();
   virtual ~vtkCMBModelVertexMesh();
 
 private:
-  vtkCMBModelVertexMesh(const vtkCMBModelVertexMesh&);  // Not implemented.
-  void operator=(const vtkCMBModelVertexMesh&);  // Not implemented.
+  vtkCMBModelVertexMesh(const vtkCMBModelVertexMesh&); // Not implemented.
+  void operator=(const vtkCMBModelVertexMesh&);        // Not implemented.
 
   vtkModelVertex* ModelVertex;
 };
 
 #endif
-

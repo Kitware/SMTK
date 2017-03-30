@@ -19,55 +19,47 @@
 
 namespace smtk
 {
-  namespace io
-  {
-    class SMTKCORE_EXPORT XmlDocV2Parser : public XmlDocV1Parser
-    {
-    public:
-      XmlDocV2Parser(smtk::attribute::System &system);
-      virtual ~XmlDocV2Parser();
-      virtual void process(pugi::xml_document &doc);
-      virtual void process(pugi::xml_node &rootNode)
-      { XmlDocV1Parser::process(rootNode); }
+namespace io
+{
+class SMTKCORE_EXPORT XmlDocV2Parser : public XmlDocV1Parser
+{
+public:
+  XmlDocV2Parser(smtk::attribute::System& system);
+  virtual ~XmlDocV2Parser();
+  virtual void process(pugi::xml_document& doc);
+  virtual void process(pugi::xml_node& rootNode) { XmlDocV1Parser::process(rootNode); }
 
-      static bool canParse(pugi::xml_node &node);
-      static bool canParse(pugi::xml_document &doc);
-      static pugi::xml_node getRootNode(pugi::xml_document &doc);
+  static bool canParse(pugi::xml_node& node);
+  static bool canParse(pugi::xml_document& doc);
+  static pugi::xml_node getRootNode(pugi::xml_document& doc);
 
-    protected:
-      virtual void processDefinition(pugi::xml_node &defNode,
-                                     smtk::attribute::DefinitionPtr def);
-      virtual void processDirectoryItem(pugi::xml_node &node,
-                                        smtk::attribute::DirectoryItemPtr item);
-      virtual void processDirectoryDef(pugi::xml_node &node,
-                               smtk::attribute::DirectoryItemDefinitionPtr idef);
-      virtual void processFileItem(pugi::xml_node &node,
-                           smtk::attribute::FileItemPtr item);
-      virtual void processFileDef(pugi::xml_node &node,
-                          smtk::attribute::FileItemDefinitionPtr idef);
-      virtual void processModelInfo(pugi::xml_node &root);
-      virtual void processModelEntityItem(pugi::xml_node &node,
-                                          smtk::attribute::ModelEntityItemPtr item);
-      virtual void processMeshSelectionItem(pugi::xml_node &node,
-                          attribute::MeshSelectionItemPtr idef);
-      virtual void processMeshSelectionDef(pugi::xml_node &node,
-                            smtk::attribute::MeshSelectionItemDefinitionPtr idef);
-      virtual void processMeshEntityItem(pugi::xml_node &node,
-                          attribute::MeshItemPtr item);
-      virtual void processMeshEntityDef(pugi::xml_node &node,
-                            smtk::attribute::MeshItemDefinitionPtr idef);
-      virtual void processStringDef(pugi::xml_node &node,
-                                    smtk::attribute::StringItemDefinitionPtr idef);
-      virtual void processViews(pugi::xml_node &root);
-      virtual void processViewComponent(smtk::common::View::Component &comp,
-                                        pugi::xml_node &node, bool isTopComp);
+protected:
+  virtual void processDefinition(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr def);
+  virtual void processDirectoryItem(pugi::xml_node& node, smtk::attribute::DirectoryItemPtr item);
+  virtual void processDirectoryDef(
+    pugi::xml_node& node, smtk::attribute::DirectoryItemDefinitionPtr idef);
+  virtual void processFileItem(pugi::xml_node& node, smtk::attribute::FileItemPtr item);
+  virtual void processFileDef(pugi::xml_node& node, smtk::attribute::FileItemDefinitionPtr idef);
+  virtual void processModelInfo(pugi::xml_node& root);
+  virtual void processModelEntityItem(
+    pugi::xml_node& node, smtk::attribute::ModelEntityItemPtr item);
+  virtual void processMeshSelectionItem(pugi::xml_node& node, attribute::MeshSelectionItemPtr idef);
+  virtual void processMeshSelectionDef(
+    pugi::xml_node& node, smtk::attribute::MeshSelectionItemDefinitionPtr idef);
+  virtual void processMeshEntityItem(pugi::xml_node& node, attribute::MeshItemPtr item);
+  virtual void processMeshEntityDef(
+    pugi::xml_node& node, smtk::attribute::MeshItemDefinitionPtr idef);
+  virtual void processStringDef(
+    pugi::xml_node& node, smtk::attribute::StringItemDefinitionPtr idef);
+  virtual void processViews(pugi::xml_node& root);
+  virtual void processViewComponent(
+    smtk::common::View::Component& comp, pugi::xml_node& node, bool isTopComp);
 
-      virtual smtk::common::UUID getAttributeID(pugi::xml_node &attNode);
-    private:
+  virtual smtk::common::UUID getAttributeID(pugi::xml_node& attNode);
 
-    };
-  }
+private:
+};
 }
-
+}
 
 #endif /* __smtk_io_XmlDocV2Parser_h */

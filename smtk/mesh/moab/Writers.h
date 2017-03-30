@@ -10,14 +10,15 @@
 //
 //=============================================================================
 
-
 #ifndef __smtk_mesh_moab_Writers_h
 #define __smtk_mesh_moab_Writers_h
 
 #include "smtk/PublicPointerDefs.h"
 
-namespace smtk {
-namespace mesh {
+namespace smtk
+{
+namespace mesh
+{
 namespace moab
 {
 
@@ -32,8 +33,6 @@ bool write_neumann(const std::string& path, const smtk::mesh::CollectionPtr& c);
 
 //Write all the dirichlet sets in a file into an existing collection
 bool write_dirichlet(const std::string& path, const smtk::mesh::CollectionPtr& c);
-
-
 }
 }
 }

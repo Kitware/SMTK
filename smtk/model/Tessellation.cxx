@@ -11,8 +11,10 @@
 
 #include <float.h>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 Tessellation::Tessellation()
 {
@@ -23,9 +25,9 @@ int Tessellation::addCoords(double* a)
 {
   std::vector<double>::size_type ipt = this->m_coords.size();
   for (int i = 0; i < 3; ++i)
-    {
+  {
     this->m_coords.push_back(a[i]);
-    }
+  }
   return static_cast<int>(ipt / 3);
 }
 
@@ -56,22 +58,14 @@ Tessellation& Tessellation::addLine(double* a, double* b)
 /// Add three 3-D point coordinates to the tessellation plus a triangle record.
 Tessellation& Tessellation::addTriangle(double* a, double* b, double* c)
 {
-  return
-    this->addTriangle(
-      this->addCoords(a),
-      this->addCoords(b),
-      this->addCoords(c));
+  return this->addTriangle(this->addCoords(a), this->addCoords(b), this->addCoords(c));
 }
 
 /// Add four 3-D point coordinates to the tessellation plus a quadrilateral record.
 Tessellation& Tessellation::addQuad(double* a, double* b, double* c, double* d)
 {
-  return
-    this->addQuad(
-      this->addCoords(a),
-      this->addCoords(b),
-      this->addCoords(c),
-      this->addCoords(d));
+  return this->addQuad(
+    this->addCoords(a), this->addCoords(b), this->addCoords(c), this->addCoords(d));
 }
 
 /// Add a vertex record using a pre-existing point coordinate (referenced by ID).
@@ -118,9 +112,9 @@ void Tessellation::setPoint(std::size_t id, const double* points)
 {
   if (id <= this->m_coords.size())
   {
-    this->coords()[3*id] = points[0];
-    this->coords()[3*id+1] = points[1];
-    this->coords()[3*id+2] = points[2];
+    this->coords()[3 * id] = points[0];
+    this->coords()[3 * id + 1] = points[1];
+    this->coords()[3 * id + 2] = points[2];
   }
 }
 
@@ -151,7 +145,9 @@ Tessellation::size_type Tessellation::begin() const
   * the connectivity array appear to be usable as iterators.
   */
 Tessellation::size_type Tessellation::end() const
-{ return -1; }
+{
+  return -1;
+}
 
 /**\brief Advance an offset into the connectivity record to the next cell.
   */
@@ -159,17 +155,17 @@ Tessellation::size_type Tessellation::nextCellOffset(size_type curOffset) const
 {
   size_type cell_type;
   size_type num_verts = this->numberOfCellVertices(curOffset, &cell_type);
-  if (num_verts == 0) return this->end();
+  if (num_verts == 0)
+    return this->end();
 
   int num_cell_props = this->numCellPropsFromType(cell_type);
   int num_vert_props = this->numVertexPropsFromType(cell_type);
 
-  size_type unchecked_next =
-    curOffset + (cell_type & TESS_VARYING_VERT_CELL ? 2 : 1) + num_verts * (1 + num_vert_props) + num_cell_props;
-  size_type next =
-    (unchecked_next < 0 || unchecked_next >= static_cast<int>(this->m_conn.size())) ?
-    this->end() :
-    unchecked_next;
+  size_type unchecked_next = curOffset + (cell_type & TESS_VARYING_VERT_CELL ? 2 : 1) +
+    num_verts * (1 + num_vert_props) + num_cell_props;
+  size_type next = (unchecked_next < 0 || unchecked_next >= static_cast<int>(this->m_conn.size()))
+    ? this->end()
+    : unchecked_next;
   return next;
 }
 
@@ -182,10 +178,8 @@ Tessellation::size_type Tessellation::nextCellOffset(size_type curOffset) const
   */
 Tessellation::size_type Tessellation::cellType(size_type offset) const
 {
-  return
-    (offset < 0 || offset >= static_cast<int>(this->m_conn.size())) ?
-    TESS_INVALID_CELL :
-    this->m_conn[offset];
+  return (offset < 0 || offset >= static_cast<int>(this->m_conn.size())) ? TESS_INVALID_CELL
+                                                                         : this->m_conn[offset];
 }
 
 /**\brief Return the number of vertices in the tessellation primitive
@@ -199,22 +193,27 @@ Tessellation::size_type Tessellation::numberOfCellVertices(
   size_type offset, size_type* cellTypeOut) const
 {
   size_type cell_type = this->cellType(offset);
-  if (cellTypeOut) *cellTypeOut = cell_type;
+  if (cellTypeOut)
+    *cellTypeOut = cell_type;
 
   size_type cell_shape = this->cellShapeFromType(cell_type);
   switch (cell_shape)
-    {
-  case TESS_VERTEX:           return 1;
-  case TESS_TRIANGLE:         return 3;
-  case TESS_QUAD:             return 4;
-  case TESS_POLYVERTEX:
-  case TESS_POLYLINE:
-  case TESS_POLYGON:
-  case TESS_TRIANGLE_STRIP:
-                              return this->m_conn[offset + 1];
-  default:
-  case TESS_INVALID_CELL:     break;
-    }
+  {
+    case TESS_VERTEX:
+      return 1;
+    case TESS_TRIANGLE:
+      return 3;
+    case TESS_QUAD:
+      return 4;
+    case TESS_POLYVERTEX:
+    case TESS_POLYLINE:
+    case TESS_POLYGON:
+    case TESS_TRIANGLE_STRIP:
+      return this->m_conn[offset + 1];
+    default:
+    case TESS_INVALID_CELL:
+      break;
+  }
   return 0;
 }
 
@@ -228,13 +227,14 @@ Tessellation::size_type Tessellation::numberOfCellVertices(
   * in the connectivity (such as normal-vector IDs, color IDs, material
   * IDs, etc.).
   */
-Tessellation::size_type Tessellation::vertexIdsOfCell(size_type offset, std::vector<int>& cellConn) const
+Tessellation::size_type Tessellation::vertexIdsOfCell(
+  size_type offset, std::vector<int>& cellConn) const
 {
   size_type cell_type;
   size_type num_verts = this->numberOfCellVertices(offset, &cell_type);
-  ++ offset;
+  ++offset;
   if (cell_type & TESS_VARYING_VERT_CELL)
-    ++ offset; // advance to first vertex.
+    ++offset; // advance to first vertex.
   cellConn.insert(cellConn.end(), &this->m_conn[offset], &this->m_conn[offset] + num_verts);
   return num_verts;
 }
@@ -244,11 +244,12 @@ Tessellation::size_type Tessellation::materialIdOfCell(size_type offset) const
 {
   size_type cell_type;
   size_type num_verts = this->numberOfCellVertices(offset, &cell_type);
-  if (!(cell_type & TESS_FACE_MATERIAL)) return -1;
+  if (!(cell_type & TESS_FACE_MATERIAL))
+    return -1;
 
-  ++ offset;
+  ++offset;
   if (cell_type & TESS_VARYING_VERT_CELL)
-    ++ offset; // advance to first vertex.
+    ++offset;          // advance to first vertex.
   offset += num_verts; // advance past vertices
   return this->m_conn[offset];
 }
@@ -264,9 +265,9 @@ bool Tessellation::vertexIdsOfPolylineEndpoints(size_type offset, int& first, in
   size_type ct;
   size_type nv = this->numberOfCellVertices(offset, &ct);
   if (ct != TESS_POLYLINE || nv < 2)
-    {
+  {
     return false;
-    }
+  }
   first = this->m_conn[2];
   last = this->m_conn[nv + 1];
   return true;
@@ -280,10 +281,7 @@ bool Tessellation::vertexIdsOfPolylineEndpoints(size_type offset, int& first, in
 Tessellation::size_type Tessellation::insertNextCell(std::vector<int>& cellConn)
 {
   size_type insert_pos = static_cast<size_type>(this->m_conn.size());
-  return
-    this->insertCell(insert_pos, cellConn) ?
-    insert_pos :
-    this->end();
+  return this->insertCell(insert_pos, cellConn) ? insert_pos : this->end();
 }
 
 /**\brief Insert by specifying exactly the values
@@ -294,10 +292,7 @@ Tessellation::size_type Tessellation::insertNextCell(std::vector<int>& cellConn)
 Tessellation::size_type Tessellation::insertNextCell(size_type connLen, const int* cellConn)
 {
   size_type insert_pos = static_cast<size_type>(this->m_conn.size());
-  return
-    this->insertCell(insert_pos, connLen, cellConn) ?
-    insert_pos :
-    this->end();
+  return this->insertCell(insert_pos, connLen, cellConn) ? insert_pos : this->end();
 }
 
 /**\brief Insert a cell by specifying exactly the values
@@ -308,10 +303,7 @@ Tessellation::size_type Tessellation::insertNextCell(size_type connLen, const in
 bool Tessellation::insertCell(size_type offset, std::vector<int>& cellConn)
 {
   size_type conn_length = static_cast<size_type>(cellConn.size());
-  return
-    conn_length > 0 ?
-      this->insertCell(offset, conn_length, &cellConn[0]) :
-      false;
+  return conn_length > 0 ? this->insertCell(offset, conn_length, &cellConn[0]) : false;
 }
 
 /**\brief Insert a cell by specifying exactly the values
@@ -335,47 +327,52 @@ bool Tessellation::insertCell(size_type offset, std::vector<int>& cellConn)
 bool Tessellation::insertCell(size_type offset, size_type conn_length, const int* cellConn)
 {
   if (conn_length < 2) // Must have cell type plus at least one vertex ID
-    {
-    std::cerr
-      << "ERROR: conn length " << conn_length << " too short. Skipping.\n";
+  {
+    std::cerr << "ERROR: conn length " << conn_length << " too short. Skipping.\n";
     return false;
-    }
+  }
 
   size_type num_verts;
   size_type cell_type = cellConn[0];
   size_type cell_shape = this->cellShapeFromType(cell_type);
   switch (cell_shape)
-    {
-  case TESS_VERTEX:           num_verts = 1; break;
-  case TESS_TRIANGLE:         num_verts = 3; break;
-  case TESS_QUAD:             num_verts = 4; break;
-  case TESS_POLYVERTEX:
-  case TESS_POLYLINE:
-  case TESS_POLYGON:
-  case TESS_TRIANGLE_STRIP:
-                              num_verts = cellConn[1]; break;
-  default:
-  case TESS_INVALID_CELL:     std::cerr << "ERROR: Unknown cell type " << cell_type << "\n";
-                              return false;
-    }
+  {
+    case TESS_VERTEX:
+      num_verts = 1;
+      break;
+    case TESS_TRIANGLE:
+      num_verts = 3;
+      break;
+    case TESS_QUAD:
+      num_verts = 4;
+      break;
+    case TESS_POLYVERTEX:
+    case TESS_POLYLINE:
+    case TESS_POLYGON:
+    case TESS_TRIANGLE_STRIP:
+      num_verts = cellConn[1];
+      break;
+    default:
+    case TESS_INVALID_CELL:
+      std::cerr << "ERROR: Unknown cell type " << cell_type << "\n";
+      return false;
+  }
 
   // Determine whether cellConn is the proper length.
   // If not, then stop. Otherwise, insert more crud.
   int num_cell_props = this->numCellPropsFromType(cell_type);
   int num_vert_props = this->numVertexPropsFromType(cell_type);
-  size_type expected_length =
-    1 + // cell type
+  size_type expected_length = 1 +                    // cell type
     ((cell_type & TESS_VARYING_VERT_CELL) ? 1 : 0) + // number of verts (when required)
-    num_cell_props + // per-cell property offsets
+    num_cell_props +                                 // per-cell property offsets
     num_verts * (1 + num_vert_props); // cell connectivity + per-vertex property offsets
 
   if (conn_length != expected_length)
-    {
-    std::cerr
-      << "ERROR: Expected conn length " << expected_length
-      << " got " << conn_length << ". Skipping.\n";
+  {
+    std::cerr << "ERROR: Expected conn length " << expected_length << " got " << conn_length
+              << ". Skipping.\n";
     return false;
-    }
+  }
 
   std::vector<int>::iterator cur_insert = this->m_conn.begin() + offset;
   this->m_conn.insert(cur_insert, cellConn, cellConn + conn_length);
@@ -392,10 +389,14 @@ Tessellation::size_type Tessellation::cellShapeFromType(size_type ctype)
 int Tessellation::numCellPropsFromType(size_type ctype)
 {
   int num_cell_props = 0;
-  if (ctype & TESS_FACE_MATERIAL)      ++num_cell_props;
-  if (ctype & TESS_FACE_UV)            ++num_cell_props;
-  if (ctype & TESS_FACE_NORMAL)        ++num_cell_props;
-  if (ctype & TESS_FACE_COLOR)         ++num_cell_props;
+  if (ctype & TESS_FACE_MATERIAL)
+    ++num_cell_props;
+  if (ctype & TESS_FACE_UV)
+    ++num_cell_props;
+  if (ctype & TESS_FACE_NORMAL)
+    ++num_cell_props;
+  if (ctype & TESS_FACE_COLOR)
+    ++num_cell_props;
   return num_cell_props;
 }
 
@@ -405,9 +406,12 @@ int Tessellation::numCellPropsFromType(size_type ctype)
 int Tessellation::numVertexPropsFromType(size_type ctype)
 {
   int num_vert_props = 0;
-  if (ctype & TESS_FACE_VERTEX_UV)     ++num_vert_props;
-  if (ctype & TESS_FACE_VERTEX_NORMAL) ++num_vert_props;
-  if (ctype & TESS_FACE_VERTEX_COLOR)  ++num_vert_props;
+  if (ctype & TESS_FACE_VERTEX_UV)
+    ++num_vert_props;
+  if (ctype & TESS_FACE_VERTEX_NORMAL)
+    ++num_vert_props;
+  if (ctype & TESS_FACE_VERTEX_COLOR)
+    ++num_vert_props;
   return num_vert_props;
 }
 
@@ -417,10 +421,10 @@ int Tessellation::numVertexPropsFromType(size_type ctype)
 void Tessellation::invalidBoundingBox(double bbox[6])
 {
   for (int cc = 0; cc < 3; ++cc)
-    {
+  {
     bbox[2 * cc] = DBL_MAX;
     bbox[2 * cc + 1] = -DBL_MAX;
-    }
+  }
 }
 
 /**\brief Compute the bounding box of the tessellation.
@@ -437,41 +441,41 @@ void Tessellation::invalidBoundingBox(double bbox[6])
 bool Tessellation::getBoundingBox(double bbox[6]) const
 {
   if (this->m_coords.empty())
-    {
+  {
     return false;
-    }
+  }
 
   std::vector<double>::const_iterator cit;
   int cc; // component being considered (x, y, z)
 
   // If the current bounds are invalid, set both min and max to the first point:
   if (bbox[0] > bbox[1])
-    {
+  {
     for (cc = 0, cit = this->m_coords.begin(); cc < 3 && cit != this->m_coords.end(); ++cit, ++cc)
-      {
+    {
       bbox[2 * cc] = *cit;
       bbox[2 * cc + 1] = *cit;
-      }
+    }
     // If we only had 2 coordinates, the 3rd is assumed to be 0:
     for (; cc < 3; ++cc)
-      {
+    {
       bbox[2 * cc] = bbox[2 * cc + 1] = 0.0;
-      }
     }
+  }
   // Now update the bounds using all the coordinates we have:
   for (cc = 0, cit = this->m_coords.begin(); cit != this->m_coords.end(); ++cit, ++cc)
-    {
+  {
     if (*cit < bbox[2 * (cc % 3)])
-      { // Update min
+    { // Update min
       bbox[2 * (cc % 3)] = *cit;
-      }
-    else if (*cit > bbox[2 * (cc % 3) + 1])
-      { // Update max
-      bbox[2 * (cc % 3) + 1] = *cit;
-      }
     }
+    else if (*cit > bbox[2 * (cc % 3) + 1])
+    { // Update max
+      bbox[2 * (cc % 3) + 1] = *cit;
+    }
+  }
   return true;
 }
 
-  } // model namespace
+} // model namespace
 } // smtk namespace

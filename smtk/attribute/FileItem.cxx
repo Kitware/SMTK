@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItemDefinition.h"
@@ -18,28 +17,24 @@
 
 using namespace smtk::attribute;
 
-FileItem::FileItem(Attribute *owningAttribute,
-                   int itemPosition):
-  FileSystemItem(owningAttribute, itemPosition)
+FileItem::FileItem(Attribute* owningAttribute, int itemPosition)
+  : FileSystemItem(owningAttribute, itemPosition)
 {
 }
 
-FileItem::FileItem(Item *inOwningItem,
-                   int itemPosition,
-                   int inSubGroupPosition):
-  FileSystemItem(inOwningItem, itemPosition, inSubGroupPosition)
+FileItem::FileItem(Item* inOwningItem, int itemPosition, int inSubGroupPosition)
+  : FileSystemItem(inOwningItem, itemPosition, inSubGroupPosition)
 {
 }
 
-bool FileItem::
-setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
+bool FileItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 {
   bool isSet = FileSystemItem::setDefinition(adef);
 
   if (isSet && this->numberOfRequiredValues())
-    {
+  {
     this->m_recentValues.clear();
-    }
+  }
 
   return isSet;
 }
@@ -55,7 +50,7 @@ Item::Type FileItem::type() const
 
 void FileItem::addRecentValue(const std::string& val)
 {
-  if(std::find(this->m_recentValues.begin(), this->m_recentValues.end(), val)
-     == this->m_recentValues.end())
+  if (std::find(this->m_recentValues.begin(), this->m_recentValues.end(), val) ==
+    this->m_recentValues.end())
     this->m_recentValues.push_back(val);
 }

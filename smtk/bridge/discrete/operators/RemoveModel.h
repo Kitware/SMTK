@@ -13,9 +13,12 @@
 #include "smtk/bridge/discrete/Exports.h"
 #include "smtk/model/Operator.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace discrete {
+namespace smtk
+{
+namespace bridge
+{
+namespace discrete
+{
 
 class Session;
 
@@ -33,11 +36,9 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 
   Session* discreteSession() const;
-
 };
-
-    }
-  } //namespace model
+}
+} //namespace model
 } // namespace smtk
 
 #endif // __smtk_session_discrete_RemoveModel_h

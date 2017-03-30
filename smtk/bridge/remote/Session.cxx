@@ -11,8 +11,8 @@
 #include "smtk/bridge/remote/Session.h"
 #include "smtk/bridge/remote/RemusConnection.h"
 
-#include "smtk/io/SaveJSON.h"
 #include "smtk/io/LoadJSON.h"
+#include "smtk/io/SaveJSON.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"
@@ -33,12 +33,14 @@ using namespace smtk::common;
 using namespace smtk::model;
 using namespace smtk::io;
 
-namespace smtk {
-  namespace bridge {
-    namespace remote {
+namespace smtk
+{
+namespace bridge
+{
+namespace remote
+{
 
-std::map<std::string,RemusStaticSessionInfo>*
-  Session::s_remotes = NULL;
+std::map<std::string, RemusStaticSessionInfo>* Session::s_remotes = NULL;
 
 Session::Session()
 {
@@ -55,8 +57,7 @@ Session::~Session()
   * it for a worker of the given type.
   */
 Session::Ptr Session::setup(
-  RemusConnection* remusServerConnection,
-  remus::proto::JobRequirements& jreq)
+  RemusConnection* remusServerConnection, remus::proto::JobRequirements& jreq)
 {
   this->m_remusConn = remusServerConnection;
   this->m_remusWorkerReqs = jreq;
@@ -82,20 +83,16 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
   cJSON* err = NULL;
   cJSON* res;
 
-  if (
-    !resp ||
-    (err = cJSON_GetObjectItem(resp, "error")) ||
-    !(res = cJSON_GetObjectItem(resp, "result")) ||
-    res->type != cJSON_True)
-    {
+  if (!resp || (err = cJSON_GetObjectItem(resp, "error")) ||
+    !(res = cJSON_GetObjectItem(resp, "result")) || res->type != cJSON_True)
+  {
     return smtk::model::SESSION_NOTHING;
-    }
+  }
 
   return smtk::model::SESSION_NOTHING;
 }
 
-bool Session::ableToOperateDelegate(
-  smtk::model::RemoteOperatorPtr op)
+bool Session::ableToOperateDelegate(smtk::model::RemoteOperatorPtr op)
 {
   cJSON* par;
   cJSON* req = SaveJSON::createRPCRequest("operator-able", par, /*id*/ "1", cJSON_Object);
@@ -109,20 +106,16 @@ bool Session::ableToOperateDelegate(
   cJSON* err = NULL;
   cJSON* res;
 
-  if (
-    !resp ||
-    (err = cJSON_GetObjectItem(resp, "error")) ||
-    !(res = cJSON_GetObjectItem(resp, "result")) ||
-    res->type != cJSON_True)
-    {
+  if (!resp || (err = cJSON_GetObjectItem(resp, "error")) ||
+    !(res = cJSON_GetObjectItem(resp, "result")) || res->type != cJSON_True)
+  {
     return false;
-    }
+  }
 
   return true;
 }
 
-smtk::model::OperatorResult Session::operateDelegate(
-  smtk::model::RemoteOperatorPtr op)
+smtk::model::OperatorResult Session::operateDelegate(smtk::model::RemoteOperatorPtr op)
 {
   cJSON* par;
   cJSON* req = SaveJSON::createRPCRequest("operator-apply", par, /*id*/ "1", cJSON_Object);
@@ -136,28 +129,26 @@ smtk::model::OperatorResult Session::operateDelegate(
   cJSON* res;
   smtk::model::OperatorResult result;
 
-  if (
-    !resp ||
-    (err = cJSON_GetObjectItem(resp, "error")) ||
+  if (!resp || (err = cJSON_GetObjectItem(resp, "error")) ||
     !(res = cJSON_GetObjectItem(resp, "result")) ||
     !smtk::io::LoadJSON::ofOperatorResult(res, result, op))
-    {
+  {
     return op->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
   smtk::attribute::ModelEntityItem::Ptr models = result->findModelEntity("model");
   if (models)
-    {
+  {
     // Any operator that returns a special "model" item in its result
     // will have those UUIDs added to its dangling entities.
     int numModels = static_cast<int>(models->numberOfValues());
     std::cout << "Result has " << numModels << " models\n";
     for (int i = 0; i < numModels; ++i)
-      {
+    {
       std::cout << "   " << models->value(i).entity().toString() << " dangling\n";
       this->declareDanglingEntity(models->value(i));
       this->transcribe(models->value(i), smtk::model::SESSION_EVERYTHING);
-      }
     }
+  }
 
   return result;
 }
@@ -165,37 +156,31 @@ smtk::model::OperatorResult Session::operateDelegate(
 void Session::cleanupSessionTypes()
 {
   if (Session::s_remotes)
-    {
+  {
     delete Session::s_remotes;
     Session::s_remotes = NULL;
-    }
+  }
 }
 
-RemusStaticSessionInfo Session::createFunctor(
-  RemusConnectionPtr remusConn,
-  const remus::proto::JobRequirements& jobReq,
-  const std::string& meshType)
+RemusStaticSessionInfo Session::createFunctor(RemusConnectionPtr remusConn,
+  const remus::proto::JobRequirements& jobReq, const std::string& meshType)
 {
   RemusStaticSessionInfo binfo(remusConn, jobReq, meshType);
   if (!Session::s_remotes)
-    {
-    Session::s_remotes = new std::map<std::string,RemusStaticSessionInfo>;
+  {
+    Session::s_remotes = new std::map<std::string, RemusStaticSessionInfo>;
     atexit(Session::cleanupSessionTypes);
-    }
+  }
   (*Session::s_remotes)[binfo.name()] = binfo;
   return binfo;
 }
 
-    } // namespace remote
-  } // namespace bridge
+} // namespace remote
+} // namespace bridge
 } // namespace smtk
 
 smtkImplementsModelingKernel(
-  SMTKREMOTESESSION_EXPORT,
-  remus_remote,
-  "",
-  smtk::model::SessionHasNoStaticSetup,
-  smtk::bridge::remote::Session,
-  false /* do not inherit local operators */
-);
+  SMTKREMOTESESSION_EXPORT, remus_remote, "", smtk::model::SessionHasNoStaticSetup,
+  smtk::bridge::remote::Session, false /* do not inherit local operators */
+  );
 #endif // SHIBOKEN_SKIP

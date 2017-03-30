@@ -28,18 +28,18 @@ vtkExtractImageBlock::vtkExtractImageBlock()
   this->Extent[1] = this->Extent[3] = this->Extent[5] = -1;
 }
 
-int vtkExtractImageBlock::FillInputPortInformation(int, vtkInformation *info)
+int vtkExtractImageBlock::FillInputPortInformation(int, vtkInformation* info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkMultiBlockDataSet");
   return 1;
 }
 
-void vtkExtractImageBlock::SetExtent(int *extent)
+void vtkExtractImageBlock::SetExtent(int* extent)
 {
   int description = vtkStructuredData::SetExtent(extent, this->Extent);
-  if ( description < 0 ) //improperly specified
+  if (description < 0) //improperly specified
   {
-    vtkErrorMacro (<< "Bad Extent, retaining previous values");
+    vtkErrorMacro(<< "Bad Extent, retaining previous values");
     return;
   }
 
@@ -64,19 +64,17 @@ void vtkExtractImageBlock::SetExtent(int x1, int x2, int y1, int y2, int z1, int
 }
 
 // Fill in the WholeExtent and spacing information from the image block
-int vtkExtractImageBlock::RequestInformation (
-  vtkInformation * vtkNotUsed(request),
-  vtkInformationVector ** vtkNotUsed(inputVector),
-  vtkInformationVector *outputVector)
+int vtkExtractImageBlock::RequestInformation(vtkInformation* vtkNotUsed(request),
+  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
 {
   double bounds[6];
-  for(int i=0; i<6; i++)
+  for (int i = 0; i < 6; i++)
     bounds[i] = (double)this->Extent[i];
 
   vtkBoundingBox bbox(bounds);
-  if(bbox.IsValid())
+  if (bbox.IsValid())
   {
-    vtkInformation *outInfo = outputVector->GetInformationObject(0);
+    vtkInformation* outInfo = outputVector->GetInformationObject(0);
     outInfo->Set(vtkStreamingDemandDrivenPipeline::WHOLE_EXTENT(), this->Extent, 6);
     outInfo->Set(vtkStreamingDemandDrivenPipeline::UPDATE_EXTENT(), this->Extent, 6);
   }
@@ -84,67 +82,64 @@ int vtkExtractImageBlock::RequestInformation (
   return 1;
 }
 
-int vtkExtractImageBlock::RequestData(
-  vtkInformation *vtkNotUsed(request),
-  vtkInformationVector **inputVector,
-  vtkInformationVector *outputVector)
+int vtkExtractImageBlock::RequestData(vtkInformation* vtkNotUsed(request),
+  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
 {
-  vtkMultiBlockDataSet *input = vtkMultiBlockDataSet::GetData(inputVector[0], 0);
-  vtkInformation *outInfo = outputVector->GetInformationObject(0);
-  vtkImageData *output = vtkImageData::SafeDownCast(
-                               outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkMultiBlockDataSet* input = vtkMultiBlockDataSet::GetData(inputVector[0], 0);
+  vtkInformation* outInfo = outputVector->GetInformationObject(0);
+  vtkImageData* output = vtkImageData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
   if (!input)
-    {
+  {
     vtkErrorMacro("Input not specified!");
     return 0;
-    }
+  }
 
   if (this->BlockIndex < 0 ||
-      static_cast<unsigned int>(this->BlockIndex) >= input->GetNumberOfBlocks() )
-    {
+    static_cast<unsigned int>(this->BlockIndex) >= input->GetNumberOfBlocks())
+  {
     vtkErrorMacro("Must specify a valid block index to extract!");
     return 0;
-    }
+  }
 
   vtkCompositeDataIterator* iter = input->NewIterator();
 
   int numberOfLeaves = 0;
   for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem())
-    {
+  {
     numberOfLeaves++;
-    }
+  }
 
   if (numberOfLeaves <= this->BlockIndex)
-    {
+  {
     iter->Delete();
     vtkErrorMacro("Specified Index is too large!");
     return 0;
-    }
+  }
 
   // Copy selected block over to the output.
   int index = 0;
-  vtkImageData *block = NULL;
+  vtkImageData* block = NULL;
   for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem(), index++)
-    {
+  {
     if (index == this->BlockIndex)
-      {
-      block = vtkImageData::SafeDownCast( iter->GetCurrentDataObject());
+    {
+      block = vtkImageData::SafeDownCast(iter->GetCurrentDataObject());
       break;
-      }
     }
+  }
   iter->Delete();
 
   if (block)
-    {
-    output->ShallowCopy( block );
+  {
+    output->ShallowCopy(block);
     return 1;
-    }
+  }
   else
-    {
+  {
     vtkErrorMacro("The specified block is either null or not valid image data!");
     return 0;
-    }
+  }
 }
 
 void vtkExtractImageBlock::PrintSelf(ostream& os, vtkIndent indent)
@@ -152,4 +147,3 @@ void vtkExtractImageBlock::PrintSelf(ostream& os, vtkIndent indent)
   this->Superclass::PrintSelf(os, indent);
   os << indent << "Block Index: " << this->BlockIndex << "\n";
 }
-

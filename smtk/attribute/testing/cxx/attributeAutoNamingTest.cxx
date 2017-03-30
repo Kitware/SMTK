@@ -16,53 +16,53 @@
 int main()
 {
   int status = 0;
-    {
+  {
     smtk::attribute::System system;
     std::cout << "System Created\n";
     smtk::attribute::DefinitionPtr def = system.createDefinition("testDef");
     if (def)
-      {
+    {
       std::cout << "Definition testDef created\n";
-      }
+    }
     else
-      {
+    {
       std::cout << "ERROR: Definition testDef not created\n";
       status = -1;
-      }
+    }
 
     smtk::attribute::AttributePtr att = system.createAttribute("testDef");
     if (att)
-      {
+    {
       std::cout << "Attribute " << att->name() << " created\n";
-      }
+    }
     else
-      {
+    {
       std::cout << "ERROR: 1st Attribute not created\n";
       status = -1;
-      }
+    }
 
     att = system.createAttribute("testDef");
     if (att)
-      {
+    {
       std::cout << "Attribute " << att->name() << " created\n";
-      }
+    }
     else
-      {
+    {
       std::cout << "ERROR: 2nd Attribute not created\n";
       status = -1;
-      }
+    }
 
     att = system.createAttribute("testDef");
     if (att)
-      {
+    {
       std::cout << "Attribute " << att->name() << " created\n";
-      }
+    }
     else
-      {
+    {
       std::cout << "ERROR: 3rd Attribute not created\n";
       status = -1;
-      }
-    std::cout << "System destroyed\n";
     }
-    return status;
+    std::cout << "System destroyed\n";
+  }
+  return status;
 }

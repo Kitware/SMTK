@@ -25,9 +25,12 @@
   *
   */
 
-namespace smtk {
-  namespace io {
-namespace mesh {
+namespace smtk
+{
+namespace io
+{
+namespace mesh
+{
 
 class SMTKCORE_EXPORT MeshIOXMS : public MeshIO
 {
@@ -38,35 +41,25 @@ public:
   //Occurrences that can cause write to fail:
   // Collection is empty
   // Collection has no Triangles or Quads
-  bool exportMesh( std::ostream& stream,
-                   smtk::mesh::CollectionPtr collection,
-                   smtk::mesh::DimensionType dim ) const;
+  bool exportMesh(std::ostream& stream, smtk::mesh::CollectionPtr collection,
+    smtk::mesh::DimensionType dim) const;
 
-  bool exportMesh( const std::string& filePath,
-                   smtk::mesh::CollectionPtr collection,
-                   smtk::mesh::DimensionType dim ) const;
+  bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+    smtk::mesh::DimensionType dim) const;
 
-  bool exportMesh( const std::string& filePath ,
-                   smtk::mesh::CollectionPtr collection ) const override;
+  bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection) const override;
 
-  bool exportMesh( std::ostream& stream,
-                   smtk::mesh::CollectionPtr collection,
-                   smtk::model::ManagerPtr manager,
-                   const std::string& modelPropertyName,
-                   smtk::mesh::DimensionType dim ) const;
+  bool exportMesh(std::ostream& stream, smtk::mesh::CollectionPtr collection,
+    smtk::model::ManagerPtr manager, const std::string& modelPropertyName,
+    smtk::mesh::DimensionType dim) const;
 
-  bool exportMesh( const std::string& filePath,
-                   smtk::mesh::CollectionPtr collection,
-                   smtk::model::ManagerPtr manager,
-                   const std::string& modelPropertyName,
-                   smtk::mesh::DimensionType dim ) const;
+  bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+    smtk::model::ManagerPtr manager, const std::string& modelPropertyName,
+    smtk::mesh::DimensionType dim) const;
 
-  bool exportMesh( const std::string& filePath,
-                   smtk::mesh::CollectionPtr collection,
-                   smtk::model::ManagerPtr manager,
-                   const std::string& modelPropertyName ) const override;
+  bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+    smtk::model::ManagerPtr manager, const std::string& modelPropertyName) const override;
 };
-
 }
 }
 }

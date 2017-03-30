@@ -32,15 +32,19 @@
 
 namespace smtk
 {
-  namespace common { class UUID; }
-  namespace attribute
-  {
+namespace common
+{
+class UUID;
+}
+namespace attribute
+{
 
 class Attribute;
 class ModelEntityItemDefinition;
 class SMTKCORE_EXPORT ModelEntityItem : public Item
 {
-friend class ModelEntityItemDefinition;
+  friend class ModelEntityItemDefinition;
+
 public:
   typedef smtk::model::EntityRefArray::const_iterator const_iterator;
 
@@ -57,8 +61,10 @@ public:
   bool setValue(const smtk::model::EntityRef& val);
   bool setValue(std::size_t element, const smtk::model::EntityRef& val);
 
-  template<typename I> bool setValues(I vbegin, I vend, std::size_t offset = 0);
-  template<typename I> bool appendValues(I vbegin, I vend);
+  template <typename I>
+  bool setValues(I vbegin, I vend, std::size_t offset = 0);
+  template <typename I>
+  bool appendValues(I vbegin, I vend);
 
   bool appendValue(const smtk::model::EntityRef& val);
   bool removeValue(std::size_t element);
@@ -70,7 +76,7 @@ public:
   // Assigns this item to be equivalent to another.  Options are processed by derived item classes
   // Returns true if success and false if a problem occured.  By default, the model enity is assigned.
   // Use IGNORE_MODEL_ENTITIES option to prevent this (defined in Item.h).
-  virtual bool assign(smtk::attribute::ConstItemPtr &sourceItem, unsigned int options = 0);
+  virtual bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0);
 
   bool isExtensible() const;
 
@@ -86,48 +92,47 @@ public:
 protected:
   friend class Definition;
 
-  ModelEntityItem(Attribute *owningAttribute, int itemPosition);
-  ModelEntityItem(Item *owningItem, int myPosition, int mySubGroupPosition);
+  ModelEntityItem(Attribute* owningAttribute, int itemPosition);
+  ModelEntityItem(Item* owningItem, int myPosition, int mySubGroupPosition);
 
   virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
-
 
   smtk::model::EntityRefArray m_values;
 };
 
-template<typename I>
+template <typename I>
 bool ModelEntityItem::setValues(I vbegin, I vend, std::size_t offset)
 {
   bool ok = false;
   std::size_t num = vend - vbegin + offset;
   if (this->setNumberOfValues(num))
-    {
+  {
     ok = true;
     std::size_t i = 0;
     for (I it = vbegin; it != vend; ++it, ++i)
-      {
+    {
       if (!this->setValue(offset + i, *it))
-        {
+      {
         ok = false;
         break;
-        }
       }
     }
+  }
   // Enable or disable the item if it is optional.
   if (ok)
-    {
+  {
     this->setIsEnabled(num > 0 ? true : false);
-    }
+  }
   return ok;
 }
 
-template<typename I>
+template <typename I>
 bool ModelEntityItem::appendValues(I vbegin, I vend)
 {
   return this->setValues(vbegin, vend, this->numberOfValues());
 }
 
-  } // namespace attribute
+} // namespace attribute
 } // namespace smtk
 
 #endif /* __smtk_attribute_ModelEntityItem_h */

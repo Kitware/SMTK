@@ -38,16 +38,16 @@ void testExplicitTraversal(IteratorStyle style, int correctCount)
   int count1 = 0;
   std::cout << "\n---\n\n";
   for (it.begin(); !it.isAtEnd(); ++it)
-    {
+  {
     std::cout << "  " << it->name() << " (" << it->flagSummary() << ")\n";
     ++count1;
-    }
+  }
 
-  std::cout << "\n---\n\n" << "  " << count1 << "\n";
+  std::cout << "\n---\n\n"
+            << "  " << count1 << "\n";
   std::ostringstream msg;
-  msg
-    << "Expected to iterate over " << correctCount
-    << " entities, did iterate over " << count1 << ".";
+  msg << "Expected to iterate over " << correctCount << " entities, did iterate over " << count1
+      << ".";
   test(count1 == correctCount, msg.str());
 }
 
@@ -67,20 +67,21 @@ void testModelTraversal()
   int count1 = 0;
   std::cout << "\n---\n\n";
   for (it.begin(); !it.isAtEnd(); ++it)
-    {
+  {
     std::cout << "  " << it->name() << " (" << it->flagSummary() << ")\n";
     ++count1;
-    }
+  }
 
   int count2 = 0;
   std::cout << "\n---\n\n";
   for (it.begin(); !it.isAtEnd(); ++it)
-    {
+  {
     std::cout << "  " << it->name() << " (" << it->flagSummary() << ")\n";
     ++count2;
-    }
+  }
 
-  std::cout << "\n---\n\n" << "  " << count1 << "  " << count2 << "\n";
+  std::cout << "\n---\n\n"
+            << "  " << count1 << "  " << count2 << "\n";
   test(count1 == 79, "Expected to iterate over 79 entities");
   test(count1 == count2, "Expected iterating twice to count the same number of items.");
 }

@@ -25,38 +25,36 @@
 #include <iostream>
 #include <string>
 
-namespace pugi {
+namespace pugi
+{
 class xml_node;
 }
 
-namespace smtk {
-  namespace io {
+namespace smtk
+{
+namespace io
+{
 
 class SMTKCORE_EXPORT ResourceSetReader
 {
   typedef std::map<std::string, smtk::common::ResourcePtr> ResourceMapType;
- public:
+
+public:
   bool readFile(std::string filename, smtk::common::ResourceSet& resources,
-                smtk::io::Logger& logger, bool loadLinkedFiles = true);
+    smtk::io::Logger& logger, bool loadLinkedFiles = true);
   bool readString(const std::string& content, smtk::common::ResourceSet& resources,
-                  smtk::io::Logger& logger, bool loadLinkedFiles = true,
-                  ResourceMapType *resourceMap=NULL);
+    smtk::io::Logger& logger, bool loadLinkedFiles = true, ResourceMapType* resourceMap = NULL);
 
- protected:
-
-  bool readEmbeddedAttSystem(pugi::xml_node& element,
-                             smtk::common::ResourcePtr& resource,
-                             std::string& linkStartPath,
-                             smtk::io::Logger& logger);
-  bool readIncludedManager(const pugi::xml_node& element,
-                           smtk::common::ResourcePtr& resource,
-                           std::string& path,
-                           smtk::io::Logger& logger);
-  std::string buildIncludePath(const smtk::common::ResourceSet& resources,
-                               const std::string link) const;
+protected:
+  bool readEmbeddedAttSystem(pugi::xml_node& element, smtk::common::ResourcePtr& resource,
+    std::string& linkStartPath, smtk::io::Logger& logger);
+  bool readIncludedManager(const pugi::xml_node& element, smtk::common::ResourcePtr& resource,
+    std::string& path, smtk::io::Logger& logger);
+  std::string buildIncludePath(
+    const smtk::common::ResourceSet& resources, const std::string link) const;
 };
 
-  }  // namespace io
-}  // namespace smtk
+} // namespace io
+} // namespace smtk
 
 #endif // __smtk_io_ResourceSetReader_h

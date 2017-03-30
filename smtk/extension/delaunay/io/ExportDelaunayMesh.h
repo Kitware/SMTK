@@ -16,22 +16,30 @@
 //forward declarers for Manager and Collection
 #include "smtk/PublicPointerDefs.h"
 
-namespace Delaunay {
-namespace Shape {
+namespace Delaunay
+{
+namespace Shape
+{
 class Point;
 }
 }
 
-namespace smtk {
-namespace model {
+namespace smtk
+{
+namespace model
+{
 class Loop;
 }
 }
 
-namespace smtk {
-namespace extension {
-namespace delaunay {
-namespace io {
+namespace smtk
+{
+namespace extension
+{
+namespace delaunay
+{
+namespace io
+{
 
 /**\brief Export from smtk into a Delaunay mesh
   *
@@ -44,16 +52,13 @@ public:
   ExportDelaunayMesh& operator=(const ExportDelaunayMesh&) = delete;
 
   //Export a model loop with a tessellation into a vector of Delaunay points.
-  std::vector<Delaunay::Shape::Point> operator()(
-    const smtk::model::Loop&) const;
+  std::vector<Delaunay::Shape::Point> operator()(const smtk::model::Loop&) const;
 
   //Export a model loop with a mesh representation stored in the given
   // collection into a vector of Delaunay points.
   std::vector<Delaunay::Shape::Point> operator()(
     const smtk::model::Loop&, smtk::mesh::CollectionPtr&) const;
-
 };
-
 }
 }
 }

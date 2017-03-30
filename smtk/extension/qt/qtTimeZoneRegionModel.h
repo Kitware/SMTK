@@ -26,35 +26,34 @@
 
 namespace smtk
 {
-  namespace extension
-  {
-    class SMTKQTEXT_EXPORT qtTimeZoneRegionModel : public QAbstractItemModel
-    {
-      Q_OBJECT
+namespace extension
+{
+class SMTKQTEXT_EXPORT qtTimeZoneRegionModel : public QAbstractItemModel
+{
+  Q_OBJECT
 
-    public:
-      qtTimeZoneRegionModel(QObject *parent = NULL);
-      virtual ~qtTimeZoneRegionModel();
-      void initialize();
+public:
+  qtTimeZoneRegionModel(QObject* parent = NULL);
+  virtual ~qtTimeZoneRegionModel();
+  void initialize();
 
-      virtual QModelIndex index(
-        int row, int column, const QModelIndex& parent = QModelIndex()) const;
-      virtual QModelIndex parent(const QModelIndex& index) const;
-      virtual int rowCount(const QModelIndex & parent = QModelIndex()) const;
-      virtual int columnCount(const QModelIndex & parent = QModelIndex()) const;
-      virtual QVariant data(
-        const QModelIndex& index, int role = Qt::DisplayRole) const;
-      //virtual Qt::ItemFlags flags(const QModelIndex& modelIndex) const;
-      virtual QVariant headerData(
-        int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+  virtual QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
+  virtual QModelIndex parent(const QModelIndex& index) const;
+  virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
+  virtual int columnCount(const QModelIndex& parent = QModelIndex()) const;
+  virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+  //virtual Qt::ItemFlags flags(const QModelIndex& modelIndex) const;
+  virtual QVariant headerData(
+    int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
-      QString regionId(const QModelIndex& index) const;
-      QModelIndex findModelIndex(const QString& region) const;
-    private:
-      class TimeZoneRegionModelInternal;
-      TimeZoneRegionModelInternal *Internal;
-    }; // class qtTimeZoneRegionModel
-  }; // namespace extension
+  QString regionId(const QModelIndex& index) const;
+  QModelIndex findModelIndex(const QString& region) const;
+
+private:
+  class TimeZoneRegionModelInternal;
+  TimeZoneRegionModelInternal* Internal;
+}; // class qtTimeZoneRegionModel
+}; // namespace extension
 }; // namespace smtk
 
 #endif

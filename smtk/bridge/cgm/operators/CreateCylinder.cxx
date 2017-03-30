@@ -39,14 +39,16 @@
 
 #include "smtk/bridge/cgm/CreateCylinder_xml.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 smtk::model::OperatorResult CreateCylinder::operateInternal()
 {
-  smtk::attribute::DoubleItem::Ptr heightItem =
-    this->specification()->findDouble("height");
+  smtk::attribute::DoubleItem::Ptr heightItem = this->specification()->findDouble("height");
   smtk::attribute::DoubleItem::Ptr majorBaseRadiusItem =
     this->specification()->findDouble("major base radius");
   smtk::attribute::DoubleItem::Ptr minorBaseRadiusItem =
@@ -65,16 +67,16 @@ smtk::model::OperatorResult CreateCylinder::operateInternal()
   DLIList<RefEntity*> imported;
   //int prevAutoFlag = CGMApp::instance()->attrib_manager()->auto_flag();
   //CGMApp::instance()->attrib_manager()->auto_flag(CUBIT_TRUE);
-  Body* cgmBody = GeometryModifyTool::instance()->cylinder(height, majorBaseRadius, minorBaseRadius, majorTopRadius);
+  Body* cgmBody = GeometryModifyTool::instance()->cylinder(
+    height, majorBaseRadius, minorBaseRadius, majorTopRadius);
   //CGMApp::instance()->attrib_manager()->auto_flag(prevAutoFlag);
   if (!cgmBody)
-    {
+  {
     smtkInfoMacro(log(), "Failed to create body.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
-  smtk::model::OperatorResult result = this->createResult(
-    smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
 
   DLIList<Body*> cgmBodiesOut;
   cgmBodiesOut.push(cgmBody);
@@ -84,14 +86,9 @@ smtk::model::OperatorResult CreateCylinder::operateInternal()
   return result;
 }
 
-    } // namespace cgm
-  } //namespace bridge
+} // namespace cgm
+} //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(
-  SMTKCGMSESSION_EXPORT,
-  smtk::bridge::cgm::CreateCylinder,
-  cgm_create_cylinder,
-  "create cylinder",
-  CreateCylinder_xml,
-  smtk::bridge::cgm::Session);
+smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::CreateCylinder,
+  cgm_create_cylinder, "create cylinder", CreateCylinder_xml, smtk::bridge::cgm::Session);

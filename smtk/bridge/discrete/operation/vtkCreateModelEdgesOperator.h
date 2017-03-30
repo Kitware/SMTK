@@ -19,21 +19,20 @@
 #include "smtk/bridge/discrete/Exports.h" // For export macro
 #include "vtkCreateModelEdgesOperatorBase.h"
 
-
 class vtkIdTypeArray;
 class vtkDiscreteModelWrapper;
 class vtkDiscreteModel;
 class vtkDiscreteModelEdge;
 class vtkPolyData;
 
-class SMTKDISCRETESESSION_EXPORT vtkCreateModelEdgesOperator :
-  public vtkCreateModelEdgesOperatorBase
+class SMTKDISCRETESESSION_EXPORT vtkCreateModelEdgesOperator
+  : public vtkCreateModelEdgesOperatorBase
 {
 public:
   class NewModelEdgeInfo;
   class LoopInfo;
-  static vtkCreateModelEdgesOperator * New();
-  vtkTypeMacro(vtkCreateModelEdgesOperator,vtkCreateModelEdgesOperatorBase);
+  static vtkCreateModelEdgesOperator* New();
+  vtkTypeMacro(vtkCreateModelEdgesOperator, vtkCreateModelEdgesOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -48,7 +47,7 @@ public:
   // Set the ShowEdges flag, default to off.
   vtkSetMacro(ShowEdges, int);
   vtkGetMacro(ShowEdges, int);
-  vtkBooleanMacro(ShowEdges,int);
+  vtkBooleanMacro(ShowEdges, int);
 
 protected:
   vtkCreateModelEdgesOperator();
@@ -64,11 +63,11 @@ private:
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).
   int OperateSucceeded;
-  vtkDiscreteModel *Model;
+  vtkDiscreteModel* Model;
   int ShowEdges;
 
-  vtkCreateModelEdgesOperator(const vtkCreateModelEdgesOperator&);  // Not implemented.
-  void operator=(const vtkCreateModelEdgesOperator&);  // Not implemented.
+  vtkCreateModelEdgesOperator(const vtkCreateModelEdgesOperator&); // Not implemented.
+  void operator=(const vtkCreateModelEdgesOperator&);              // Not implemented.
 };
 
 #endif

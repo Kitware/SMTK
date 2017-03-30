@@ -12,8 +12,10 @@
 #include <QHBoxLayout>
 #include <QLineEdit>
 
-namespace smtk {
-  namespace extension {
+namespace smtk
+{
+namespace extension
+{
 
 QEntityItemEditor::QEntityItemEditor(QWidget* super)
   : QWidget(super)
@@ -21,9 +23,7 @@ QEntityItemEditor::QEntityItemEditor(QWidget* super)
   this->m_title = new QLineEdit(this);
   this->setFocusProxy(this->m_title);
   new QHBoxLayout(this);
-  QObject::connect(
-    this->m_title, SIGNAL(editingFinished()),
-    this, SIGNAL(editingFinished()));
+  QObject::connect(this->m_title, SIGNAL(editingFinished()), this, SIGNAL(editingFinished()));
 }
 
 QEntityItemEditor::~QEntityItemEditor()
@@ -47,5 +47,5 @@ void QEntityItemEditor::setTitle(const QString& text)
   this->m_title->setText(text);
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

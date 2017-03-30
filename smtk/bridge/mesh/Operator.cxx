@@ -10,9 +10,12 @@
 #include "smtk/bridge/mesh/Operator.h"
 #include "smtk/bridge/mesh/Session.h"
 
-namespace smtk {
-namespace bridge {
-namespace mesh {
+namespace smtk
+{
+namespace bridge
+{
+namespace mesh
+{
 
 /// Return a shared pointer to the session backing a Mesh operator.
 Session* Operator::activeSession()

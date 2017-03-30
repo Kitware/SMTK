@@ -38,10 +38,10 @@ vtkInformationKeyMacro(vtkDiscreteModelEdge, LINEADNPOINTSGEOMETRY, ObjectBase);
 vtkDiscreteModelEdge* vtkDiscreteModelEdge::New()
 {
   vtkObject* ret = vtkObjectFactory::CreateInstance("vtkDiscreteModelEdge");
-  if(ret)
-    {
+  if (ret)
+  {
     return static_cast<vtkDiscreteModelEdge*>(ret);
-    }
+  }
   return new vtkDiscreteModelEdge;
 }
 
@@ -60,33 +60,32 @@ vtkDiscreteModelEdge::~vtkDiscreteModelEdge()
 bool vtkDiscreteModelEdge::IsDestroyable()
 {
   vtkModelItemIterator* edgeUseIter = this->NewModelEdgeUseIterator();
-  for(edgeUseIter->Begin();!edgeUseIter->IsAtEnd();edgeUseIter->Next())
+  for (edgeUseIter->Begin(); !edgeUseIter->IsAtEnd(); edgeUseIter->Next())
+  {
+    if (vtkModelEdgeUse::SafeDownCast(edgeUseIter->GetCurrentItem())->GetModelLoopUse())
     {
-    if(vtkModelEdgeUse::SafeDownCast(edgeUseIter->GetCurrentItem())->GetModelLoopUse())
-      {
       edgeUseIter->Delete();
       return false;
-      }
     }
+  }
   edgeUseIter->Delete();
   return true;
 }
 
 bool vtkDiscreteModelEdge::Destroy()
 {
-  this->GetModel()->InvokeModelGeometricEntityEvent(
-    ModelGeometricEntityAboutToDestroy, this);
+  this->GetModel()->InvokeModelGeometricEntityEvent(ModelGeometricEntityAboutToDestroy, this);
   vtkModelItemIterator* EdgeUseIter = this->NewModelEdgeUseIterator();
-  for(EdgeUseIter->Begin();!EdgeUseIter->IsAtEnd();EdgeUseIter->Next())
+  for (EdgeUseIter->Begin(); !EdgeUseIter->IsAtEnd(); EdgeUseIter->Next())
+  {
+    if (!vtkModelEdgeUse::SafeDownCast(EdgeUseIter->GetCurrentItem())->Destroy())
     {
-    if(!vtkModelEdgeUse::SafeDownCast(EdgeUseIter->GetCurrentItem())->Destroy())
-      {
       vtkErrorMacro("Problem destroying edge use of an edge.");
       this->Modified();
       EdgeUseIter->Delete();
       return false;
-      }
     }
+  }
   EdgeUseIter->Delete();
   this->RemoveAllAssociations(vtkModelEdgeUseType);
   // For the floating edge, we have associations with regions
@@ -105,64 +104,62 @@ void vtkDiscreteModelEdge::AddRegionAssociation(vtkIdType regionId)
 {
   vtkDiscreteModelRegion* region = vtkDiscreteModelRegion::SafeDownCast(
     this->GetModel()->GetModelEntity(vtkModelRegionType, regionId));
-  if(region)
-    {
+  if (region)
+  {
     this->AddAssociation(region);
-    this->GetModel()->InvokeModelGeometricEntityEvent(
-      ModelGeometricEntityBoundaryModified, region);
-    }
+    this->GetModel()->InvokeModelGeometricEntityEvent(ModelGeometricEntityBoundaryModified, region);
+  }
 }
 
 vtkObject* vtkDiscreteModelEdge::GetGeometry()
 {
-  if(vtkObject* object = this->Superclass::GetGeometry())
-    {
+  if (vtkObject* object = this->Superclass::GetGeometry())
+  {
     return object;
-    }
-  if(this->GetNumberOfAssociations(vtkModelRegionType))
-    {
+  }
+  if (this->GetNumberOfAssociations(vtkModelRegionType))
+  {
     vtkDiscreteModel* model = vtkDiscreteModel::SafeDownCast(this->GetModel());
-    if(model->HasValidMesh())
-      { // only construct the representation if it is a floating edge on the server
+    if (model->HasValidMesh())
+    { // only construct the representation if it is a floating edge on the server
       this->ConstructRepresentation();
       return this->Superclass::GetGeometry();
-      }
     }
+  }
   return 0;
 }
 
 bool vtkDiscreteModelEdge::ConstructRepresentation()
 {
-  if(this->GetGeometry())
-    {
+  if (this->GetGeometry())
+  {
     return 1;
-    }
+  }
   vtkModelVertex* vertex1 = this->GetAdjacentModelVertex(0);
   vtkModelVertex* vertex2 = this->GetAdjacentModelVertex(1);
-  if(!vertex1 || !vertex2)
-    {
+  if (!vertex1 || !vertex2)
+  {
     vtkWarningMacro("Cannot construct model edge representation without model vertices.");
     return false;
-    }
-  vtkSmartPointer<vtkLineSource> lineSource =
-    vtkSmartPointer<vtkLineSource>::New();
+  }
+  vtkSmartPointer<vtkLineSource> lineSource = vtkSmartPointer<vtkLineSource>::New();
   double xyz[3];
-  if(vertex1->GetPoint(xyz))
-    {
+  if (vertex1->GetPoint(xyz))
+  {
     lineSource->SetPoint1(xyz);
-    }
+  }
   else
-    {
+  {
     vtkErrorMacro("Model vertex does not have a point set yet.");
-    }
-  if(vertex2->GetPoint(xyz))
-    {
+  }
+  if (vertex2->GetPoint(xyz))
+  {
     lineSource->SetPoint2(xyz);
-    }
+  }
   else
-    {
+  {
     vtkErrorMacro("Model vertex does not have a point set yet.");
-    }
+  }
   lineSource->SetResolution(this->GetLineResolution());
   lineSource->Update();
 
@@ -175,42 +172,41 @@ bool vtkDiscreteModelEdge::ConstructRepresentation()
 }
 
 bool vtkDiscreteModelEdge::Split(
-  vtkIdType splitPointId, vtkIdType & createdVertexId,
-  vtkIdType & createdEdgeId)
+  vtkIdType splitPointId, vtkIdType& createdVertexId, vtkIdType& createdEdgeId)
 {
   vtkObject* geometry = this->GetGeometry();
   vtkPolyData* poly = vtkPolyData::SafeDownCast(geometry);
 
-  if(poly == 0 || poly->GetNumberOfCells() == 0)
+  if (poly == 0 || poly->GetNumberOfCells() == 0)
+  {
+    if (geometry)
     {
-    if(geometry)
-      {
       // we are on the server...
       return 0;
-      }
+    }
     // BoundaryRep has not been set -> return error
     return 0;
-    }
-  if(splitPointId >= poly->GetNumberOfPoints() || splitPointId < 0)
-    {
+  }
+  if (splitPointId >= poly->GetNumberOfPoints() || splitPointId < 0)
+  {
     vtkErrorMacro("Bad point id for model edge split.");
     return 0;
-    }
+  }
 
   // on server, go ahead and perform the split first determine if
   // it is a loop with no starting or ending point because if it
   // is splitting won't create a new model edge, it will just
   // modify the current model edge
 
-  if(this->GetAdjacentModelVertex(0) == 0)
-    {
+  if (this->GetAdjacentModelVertex(0) == 0)
+  {
     createdEdgeId = -1;
     createdVertexId = -1;
-    if(this->SplitModelEdgeLoop(splitPointId) == false)
-      {
+    if (this->SplitModelEdgeLoop(splitPointId) == false)
+    {
       vtkErrorMacro("Unable to split edge loop.");
       return 0;
-      }
+    }
     vtkModelVertex* newVertex = this->GetAdjacentModelVertex(0);
     createdVertexId = newVertex->GetUniquePersistentId();
     vtkIdList* createdEntityIds = vtkIdList::New();
@@ -219,45 +215,42 @@ bool vtkDiscreteModelEdge::Split(
     splitEventData->SetSourceEntity(this);
     splitEventData->SetCreatedModelEntityIds(createdEntityIds);
     createdEntityIds->Delete();
-    this->GetModel()->InvokeModelGeometricEntityEvent(ModelGeometricEntitySplit,
-                                                      splitEventData);
+    this->GetModel()->InvokeModelGeometricEntityEvent(ModelGeometricEntitySplit, splitEventData);
     splitEventData->Delete();
     return true;
-    }
+  }
 
-  vtkIdType modelEdgeStartPoint = vtkDiscreteModelVertex::SafeDownCast(
-    this->GetAdjacentModelVertex(0))->GetPointId();
-  vtkIdType modelEdgeEndPoint = vtkDiscreteModelVertex::SafeDownCast(
-    this->GetAdjacentModelVertex(1))->GetPointId();
-  if(splitPointId == modelEdgeStartPoint || splitPointId == modelEdgeEndPoint)
-    {
+  vtkIdType modelEdgeStartPoint =
+    vtkDiscreteModelVertex::SafeDownCast(this->GetAdjacentModelVertex(0))->GetPointId();
+  vtkIdType modelEdgeEndPoint =
+    vtkDiscreteModelVertex::SafeDownCast(this->GetAdjacentModelVertex(1))->GetPointId();
+  if (splitPointId == modelEdgeStartPoint || splitPointId == modelEdgeEndPoint)
+  {
     vtkWarningMacro("Picked an end point for splitting a model edge.");
     return 0;
-    }
+  }
 
   poly->BuildLinks();
   // if a model vertex already exists at splitPointId we don't need to split
-  vtkSmartPointer<vtkIdList> pointCells =
-    vtkSmartPointer<vtkIdList>::New();
+  vtkSmartPointer<vtkIdList> pointCells = vtkSmartPointer<vtkIdList>::New();
   poly->GetPointCells(modelEdgeEndPoint, pointCells);
-  if(pointCells->GetNumberOfIds() != 1 &&
-     (pointCells->GetNumberOfIds() != 2 && modelEdgeStartPoint == modelEdgeEndPoint))
-    {
+  if (pointCells->GetNumberOfIds() != 1 &&
+    (pointCells->GetNumberOfIds() != 2 && modelEdgeStartPoint == modelEdgeEndPoint))
+  {
     vtkWarningMacro("Improper grid.");
     return 0;
-    }
+  }
   poly->GetPointCells(splitPointId, pointCells);
-  if(pointCells->GetNumberOfIds() < 2)
-    {
+  if (pointCells->GetNumberOfIds() < 2)
+  {
     vtkWarningMacro("Improper splitting point for splitting an edge.");
     poly->DeleteLinks();
     return 0;
-    }
+  }
 
   // we do a cell walk from the split point to the end the edge polydata
   // and those are the cells that get assigned to the new model edge
-  vtkSmartPointer<vtkIdList> newModelEdgeCells =
-    vtkSmartPointer<vtkIdList>::New(); 
+  vtkSmartPointer<vtkIdList> newModelEdgeCells = vtkSmartPointer<vtkIdList>::New();
   vtkSmartPointer<vtkIdList> currentPtIds = vtkSmartPointer<vtkIdList>::New();
 
   /*
@@ -276,22 +269,22 @@ bool vtkDiscreteModelEdge::Split(
   */
 
   vtkIdType currentCellId = -1;
-  for(int i=0; i < pointCells->GetNumberOfIds(); ++i)
-    {
+  for (int i = 0; i < pointCells->GetNumberOfIds(); ++i)
+  {
     poly->GetCellPoints(pointCells->GetId(i), currentPtIds);
-    if( splitPointId == currentPtIds->GetId(0) )
-      {
+    if (splitPointId == currentPtIds->GetId(0))
+    {
       currentCellId = pointCells->GetId(i);
       break;
-      }
     }
+  }
 
-  if(currentCellId < 0)
-    {
+  if (currentCellId < 0)
+  {
     vtkWarningMacro("Could not find a proper line cell to start splitting edge.");
     poly->DeleteLinks();
     return false;
-    }
+  }
 
   /*
   * Now start the walk from the cell that uses the split
@@ -310,74 +303,73 @@ bool vtkDiscreteModelEdge::Split(
 
   newModelEdgeCells->InsertNextId(currentCellId);
   vtkIdType currentPointId = splitPointId;
-  while(currentCellId >= 0)
-    {
+  while (currentCellId >= 0)
+  {
     vtkIdType nextCellId = -1;
     poly->GetCellPoints(currentCellId, currentPtIds);
 
-    for(int i=0; i<2 && nextCellId == -1 ;i++)
+    for (int i = 0; i < 2 && nextCellId == -1; i++)
+    {
+      if (currentPtIds->GetId(i) != currentPointId)
       {
-      if(currentPtIds->GetId(i) != currentPointId)
-        {
         poly->GetPointCells(currentPtIds->GetId(i), pointCells);
-        if(currentPtIds->GetId(i) == modelEdgeEndPoint)
-          {
+        if (currentPtIds->GetId(i) == modelEdgeEndPoint)
+        {
           nextCellId = -2; // stop condition
-          }
+        }
         else
+        {
+          for (int j = 0; j < 2 && nextCellId == -1; j++)
           {
-          for(int j=0;j<2 && nextCellId == -1;j++)
+            if (pointCells->GetId(j) != currentCellId)
             {
-            if(pointCells->GetId(j) != currentCellId)
-              {
               nextCellId = pointCells->GetId(j);
               newModelEdgeCells->InsertNextId(nextCellId);
               currentPointId = currentPtIds->GetId(i);
-              }
             }
-          if(nextCellId < 0)
-            {
+          }
+          if (nextCellId < 0)
+          {
             vtkWarningMacro("Could not perform grid walk.");
             return 0;
-            }
           }
         }
       }
-    currentCellId = nextCellId;
     }
+    currentCellId = nextCellId;
+  }
 
   //Now we convert from local id space to global id space
-    {
+  {
     const vtkIdType size = newModelEdgeCells->GetNumberOfIds();
-    for(vtkIdType s=0; s < size; ++s)
-      {
+    for (vtkIdType s = 0; s < size; ++s)
+    {
       const vtkIdType mc = this->GetMasterCellId(newModelEdgeCells->GetId(s));
       newModelEdgeCells->SetId(s, mc);
-      }
     }
+  }
 
   // we could save this for later use but for now assume we should
   // delete to save memory
   poly->DeleteLinks();
-  if(newModelEdgeCells->GetNumberOfIds() >= poly->GetNumberOfCells())
-    {
+  if (newModelEdgeCells->GetNumberOfIds() >= poly->GetNumberOfCells())
+  {
     vtkErrorMacro("Bad list of cells to split off from existing model edge.");
     return 0;
-    }
+  }
   vtkDiscreteModel* model = vtkDiscreteModel::SafeDownCast(this->GetModel());
   vtkModelVertex* vertex = model->BuildModelVertex(splitPointId);
   createdVertexId = vertex->GetUniquePersistentId();
   bool blockEvent = this->GetModel()->GetBlockModelGeometricEntityEvent();
   this->GetModel()->SetBlockModelGeometricEntityEvent(1);
-  vtkDiscreteModelEdge* newEdge = vtkDiscreteModelEdge::SafeDownCast(model->BuildModelEdge(0,0));
+  vtkDiscreteModelEdge* newEdge = vtkDiscreteModelEdge::SafeDownCast(model->BuildModelEdge(0, 0));
   this->GetModel()->SetBlockModelGeometricEntityEvent(blockEvent);
   this->Superclass::SplitModelEdge(vertex, newEdge);
   // now create the poly data for the new edge
   newEdge->AddCellsToGeometry(newModelEdgeCells);
   createdEdgeId = newEdge->GetUniquePersistentId();
   this->GetModel()->InvokeModelGeometricEntityEvent(ModelGeometricEntityCreated, newEdge);
-  this->GetModel()->InvokeModelGeometricEntityEvent(
-    ModelGeometricEntityBoundaryModified, this);
+  this->GetModel()->InvokeModelGeometricEntityEvent(ModelGeometricEntityBoundaryModified, this);
 
   vtkIdList* createdEntityIds = vtkIdList::New();
   createdEntityIds->InsertNextId(createdVertexId);
@@ -386,23 +378,21 @@ bool vtkDiscreteModelEdge::Split(
   splitEventData->SetSourceEntity(this);
   splitEventData->SetCreatedModelEntityIds(createdEntityIds);
   createdEntityIds->Delete();
-  this->GetModel()->InvokeModelGeometricEntityEvent(ModelGeometricEntitySplit,
-                                                    splitEventData);
+  this->GetModel()->InvokeModelGeometricEntityEvent(ModelGeometricEntitySplit, splitEventData);
   splitEventData->Delete();
 
   vtkModelItemIterator* faces = newEdge->NewAdjacentModelFaceIterator();
-  for(faces->Begin();!faces->IsAtEnd();faces->Next())
-    {
+  for (faces->Begin(); !faces->IsAtEnd(); faces->Next())
+  {
     vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
-    face->GetModel()->InvokeModelGeometricEntityEvent(
-      ModelGeometricEntityBoundaryModified, face);
-    }
+    face->GetModel()->InvokeModelGeometricEntityEvent(ModelGeometricEntityBoundaryModified, face);
+  }
   faces->Delete();
   vtkDiscreteModelVertex* ModelVertex = vtkDiscreteModelVertex::SafeDownCast(vertex);
-  if(ModelVertex)
-    {
+  if (ModelVertex)
+  {
     ModelVertex->CreateGeometry();
-    }
+  }
   return 1;
 }
 
@@ -411,25 +401,25 @@ bool vtkDiscreteModelEdge::SplitModelEdgeLoop(vtkIdType pointId)
   vtkDiscreteModel* model = vtkDiscreteModel::SafeDownCast(this->GetModel());
   vtkModelVertex* vertex = model->BuildModelVertex(pointId);
   bool result = this->Superclass::SplitModelEdgeLoop(vertex);
-  if(result)
-    {
+  if (result)
+  {
     vtkDiscreteModelVertex* ModelVertex = vtkDiscreteModelVertex::SafeDownCast(vertex);
-    if(ModelVertex)
-      {
+    if (ModelVertex)
+    {
       ModelVertex->CreateGeometry();
-      }
     }
+  }
   return result;
 }
 
 void vtkDiscreteModelEdge::SetLineResolution(int lineResolution)
 {
-  if(lineResolution > 0 && lineResolution != this->GetLineResolution())
-    {
+  if (lineResolution > 0 && lineResolution != this->GetLineResolution())
+  {
     this->GetProperties()->Set(LINERESOLUTION(), lineResolution);
     // this->UpdateGeometry();
     this->Modified();
-    }
+  }
 }
 
 int vtkDiscreteModelEdge::GetLineResolution()
@@ -445,8 +435,7 @@ void vtkDiscreteModelEdge::SetLineAndPointsGeometry(vtkObject* geometry)
 
 vtkObject* vtkDiscreteModelEdge::GetLineAndPointsGeometry()
 {
-  vtkObject* object = vtkObject::SafeDownCast(
-    this->GetProperties()->Get(LINEADNPOINTSGEOMETRY()));
+  vtkObject* object = vtkObject::SafeDownCast(this->GetProperties()->Get(LINEADNPOINTSGEOMETRY()));
   return object;
 }
 
@@ -457,11 +446,9 @@ void vtkDiscreteModelEdge::Serialize(vtkSerializer* ser)
 
 vtkModelRegion* vtkDiscreteModelEdge::GetModelRegion()
 {
-  vtkModelItemIterator* iter =
-    this->NewIterator(vtkModelRegionType);
+  vtkModelItemIterator* iter = this->NewIterator(vtkModelRegionType);
   iter->Begin();
-  vtkModelRegion* region =
-    vtkModelRegion::SafeDownCast(iter->GetCurrentItem());
+  vtkModelRegion* region = vtkModelRegion::SafeDownCast(iter->GetCurrentItem());
   iter->Delete();
   return region;
 }
@@ -469,23 +456,23 @@ void vtkDiscreteModelEdge::GetAllPointIds(vtkIdList* ptsList)
 {
   ptsList->Reset();
   vtkPolyData* edgePoly = vtkPolyData::SafeDownCast(this->GetGeometry());
-  if(edgePoly == NULL)
-    {  // we're on the client and don't know this info
+  if (edgePoly == NULL)
+  { // we're on the client and don't know this info
     return;
-    }
+  }
   //ptsList->SetNumberOfIds(edgePoly->GetNumberOfPoints());
   vtkNew<vtkIdList> cellPtsIds;
-  for(vtkIdType i=0;i<edgePoly->GetNumberOfCells();i++)
-    {
+  for (vtkIdType i = 0; i < edgePoly->GetNumberOfCells(); i++)
+  {
     edgePoly->GetCellPoints(i, cellPtsIds.GetPointer());
-    if(cellPtsIds->GetNumberOfIds() != 2)
-      {
+    if (cellPtsIds->GetNumberOfIds() != 2)
+    {
       vtkErrorMacro("Bad cell type.");
       return;
-      }
+    }
     ptsList->InsertUniqueId(cellPtsIds->GetId(0));
     ptsList->InsertUniqueId(cellPtsIds->GetId(1));
-    }
+  }
   //ptsList->Squeeze();
 }
 void vtkDiscreteModelEdge::GetInteriorPointIds(vtkIdList* ptsList)
@@ -493,28 +480,28 @@ void vtkDiscreteModelEdge::GetInteriorPointIds(vtkIdList* ptsList)
   vtkNew<vtkIdList> boundaryPtsList;
   this->GetAllPointIds(ptsList);
   this->GetBoundaryPointIds(boundaryPtsList.GetPointer());
-  for(vtkIdType i=0;i<boundaryPtsList->GetNumberOfIds();i++)
-    {
+  for (vtkIdType i = 0; i < boundaryPtsList->GetNumberOfIds(); i++)
+  {
     ptsList->DeleteId(boundaryPtsList->GetId(i));
-    }
+  }
 }
 void vtkDiscreteModelEdge::GetBoundaryPointIds(vtkIdList* ptsList)
 {
   ptsList->Reset();
   vtkPolyData* edgePoly = vtkPolyData::SafeDownCast(this->GetGeometry());
-  if(edgePoly == NULL)
-    {  // we're on the client and don't know this info
+  if (edgePoly == NULL)
+  { // we're on the client and don't know this info
     return;
-    }
-  for(int i=0; i<2; i++)
-    {
+  }
+  for (int i = 0; i < 2; i++)
+  {
     vtkDiscreteModelVertex* modelVertex =
       vtkDiscreteModelVertex::SafeDownCast(this->GetAdjacentModelVertex(i));
-    if(modelVertex)
-      {
+    if (modelVertex)
+    {
       ptsList->InsertUniqueId(modelVertex->GetPointId());
-      }
     }
+  }
 }
 
 bool vtkDiscreteModelEdge::AddCellsToGeometry(vtkIdList* masterCellIds)
@@ -526,18 +513,18 @@ bool vtkDiscreteModelEdge::AddCellsToGeometry(vtkIdList* masterCellIds)
   //otherwise we are doing something like a split and we already have
   //have ids in edge index space
   bool idsModified = false;
-  if(numCells > 0 && cellids[0] >= 0)
-    {
-    DiscreteMesh::FlatIdSpaceToEdgeIdSpace(cellids,numCells);
+  if (numCells > 0 && cellids[0] >= 0)
+  {
+    DiscreteMesh::FlatIdSpaceToEdgeIdSpace(cellids, numCells);
     idsModified = true;
-    }
+  }
 
   bool retVal = vtkDiscreteModelGeometricEntity::AddCellsToGeometry(masterCellIds);
 
-  if(idsModified)
-    { // transform the ids back
-    DiscreteMesh::EdgeIdSpaceToFlatIdSpace(cellids,numCells);
-    }
+  if (idsModified)
+  { // transform the ids back
+    DiscreteMesh::EdgeIdSpaceToFlatIdSpace(cellids, numCells);
+  }
   return retVal;
 }
 
@@ -546,16 +533,12 @@ bool vtkDiscreteModelEdge::AddCellsClassificationToMesh(vtkIdList* cellids)
   // now add cells on this entity
   vtkModelGeometricEntity* thisEntity =
     vtkModelGeometricEntity::SafeDownCast(this->GetThisModelEntity());
-  vtkDiscreteModel* model = vtkDiscreteModel::SafeDownCast(
-                                thisEntity->GetModel());
+  vtkDiscreteModel* model = vtkDiscreteModel::SafeDownCast(thisEntity->GetModel());
 
-  vtkPolyData* entityPoly = vtkPolyData::SafeDownCast(
-                                                    thisEntity->GetGeometry());
-
+  vtkPolyData* entityPoly = vtkPolyData::SafeDownCast(thisEntity->GetGeometry());
 
   const DiscreteMesh& mesh = model->GetMesh();
-  vtkDiscreteModel::ClassificationType& classification =
-                                            model->GetMeshClassification();
+  vtkDiscreteModel::ClassificationType& classification = model->GetMeshClassification();
 
   vtkNew<vtkIdList> pointIds;
   vtkIdType nextPId = -1, numCells = cellids->GetNumberOfIds();
@@ -565,69 +548,68 @@ bool vtkDiscreteModelEdge::AddCellsClassificationToMesh(vtkIdList* cellids)
   // unless it is a circular loop  and in that case it doesn't matter
   std::set<vtkIdType> endPIDS;
   vtkIdType i;
-  for (i=0; i< numCells;i++)
-    {
+  for (i = 0; i < numCells; i++)
+  {
     nextCellId = cellids->GetId(i);
-    mesh.GetCellPointIds(nextCellId,pointIds.GetPointer());
-    endPIDS.insert(pointIds->GetId(pointIds->GetNumberOfIds() -1));
-    }
- for (i=0; i< numCells;i++)
-    {
+    mesh.GetCellPointIds(nextCellId, pointIds.GetPointer());
+    endPIDS.insert(pointIds->GetId(pointIds->GetNumberOfIds() - 1));
+  }
+  for (i = 0; i < numCells; i++)
+  {
     nextCellId = cellids->GetId(i);
-    mesh.GetCellPointIds(nextCellId,pointIds.GetPointer());
+    mesh.GetCellPointIds(nextCellId, pointIds.GetPointer());
     if (endPIDS.find(pointIds->GetId(0)) == endPIDS.end())
-      {
+    {
       // We found the starting cell!
-     break;
-      }
+      break;
     }
+  }
   // Did we fund a loop edge?  (i.e. we did not find a PID that was not included in two different cells)
   if (i == numCells)
-    {
+  {
     nextCellId = cellids->GetId(0);
-    }
-  for(i=0; i< numCells;i++)
-    {
+  }
+  for (i = 0; i < numCells; i++)
+  {
     // Is this the first cell being inserted?
     if (!i)
-      {
-      mesh.GetCellPointIds(nextCellId,pointIds.GetPointer());
-      }
+    {
+      mesh.GetCellPointIds(nextCellId, pointIds.GetPointer());
+    }
     else
-      {
+    {
       // Need to find the next cell along the edge - assuming most of the time the cells are
       // already sorted we will initial start at the next available ID
       vtkIdType j, k;
       bool found;
-      for (found = false, j =(i+1) % numCells, k=0;
-        !found && (k < numCells); j=(j+1) % numCells, k++)
-        {
+      for (found = false, j = (i + 1) % numCells, k = 0; !found && (k < numCells);
+           j = (j + 1) % numCells, k++)
+      {
         nextCellId = cellids->GetId(j);
-        mesh.GetCellPointIds(nextCellId,pointIds.GetPointer());
+        mesh.GetCellPointIds(nextCellId, pointIds.GetPointer());
         if (pointIds->GetId(0) == nextPId)
-          {
-          found = true;
-          }
-        }
-      if (!found)
         {
-        std::cerr << "\tERROR!!!  Edge is not continuous!!\n";
+          found = true;
         }
       }
-     const vtkIdType cellType = mesh.GetCellType(nextCellId);
-     const vtkIdType newLocalCellId =
-              entityPoly->InsertNextCell(cellType,pointIds.GetPointer());
-     this->GetReverseClassificationArray()->InsertNextTypedTuple(&nextCellId);
+      if (!found)
+      {
+        std::cerr << "\tERROR!!!  Edge is not continuous!!\n";
+      }
+    }
+    const vtkIdType cellType = mesh.GetCellType(nextCellId);
+    const vtkIdType newLocalCellId = entityPoly->InsertNextCell(cellType, pointIds.GetPointer());
+    this->GetReverseClassificationArray()->InsertNextTypedTuple(&nextCellId);
 
     // update the classification on the model to this info
     classification.SetEntity(nextCellId, newLocalCellId, this);
-    nextPId = pointIds->GetId(pointIds->GetNumberOfIds() -1);
-    }
+    nextPId = pointIds->GetId(pointIds->GetNumberOfIds() - 1);
+  }
 
-  if(cellids->GetNumberOfIds())
-    {
+  if (cellids->GetNumberOfIds())
+  {
     entityPoly->Modified();
-    }
+  }
 
   return true;
 }
@@ -635,17 +617,16 @@ bool vtkDiscreteModelEdge::AddCellsClassificationToMesh(vtkIdList* cellids)
 bool vtkDiscreteModelEdge::IsEdgeCellPoint(vtkIdType pointId)
 {
   vtkPolyData* edgePoly = vtkPolyData::SafeDownCast(this->GetGeometry());
-  if(edgePoly == NULL)
-    {  // we're on the client and don't know this info
+  if (edgePoly == NULL)
+  { // we're on the client and don't know this info
     return false;
-    }
-  vtkSmartPointer<vtkIdList> pointCells =
-    vtkSmartPointer<vtkIdList>::New();
+  }
+  vtkSmartPointer<vtkIdList> pointCells = vtkSmartPointer<vtkIdList>::New();
   edgePoly->GetPointCells(pointId, pointCells);
   return (pointCells->GetNumberOfIds() != 0);
 }
 
 void vtkDiscreteModelEdge::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
 }

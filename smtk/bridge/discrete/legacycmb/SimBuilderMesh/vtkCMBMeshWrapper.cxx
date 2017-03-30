@@ -26,29 +26,29 @@ vtkCMBMeshWrapper::vtkCMBMeshWrapper()
 
 vtkCMBMeshWrapper::~vtkCMBMeshWrapper()
 {
-  if(this->Mesh)
-    {
+  if (this->Mesh)
+  {
     this->Mesh->Delete();
     this->Mesh = NULL;
-    }
+  }
 }
 
 vtkCMBMeshServer* vtkCMBMeshWrapper::GetMesh()
 {
-  if(!this->Mesh)
-    {
+  if (!this->Mesh)
+  {
     this->Mesh = vtkCMBMeshServer::New();
-    }
+  }
   return this->Mesh;
 }
 
 void vtkCMBMeshWrapper::SetModelWrapper(vtkDiscreteModelWrapper* modelWrapper)
 {
-  if(modelWrapper == NULL)
-    {
+  if (modelWrapper == NULL)
+  {
     vtkErrorMacro("ModelWrapper is NULL");
     return;
-    }
+  }
   this->GetMesh()->Initialize(modelWrapper->GetModel());
 }
 
@@ -67,12 +67,12 @@ void vtkCMBMeshWrapper::SetGlobalMinimumAngle(double angle)
 void vtkCMBMeshWrapper::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
-  if(this->Mesh)
-    {
+  if (this->Mesh)
+  {
     os << indent << "Mesh: " << this->Mesh << endl;
-    }
+  }
   else
-    {
+  {
     os << indent << "Mesh: (NULL)\n";
-    }
+  }
 }

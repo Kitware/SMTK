@@ -22,63 +22,63 @@
 class qtAttributeInternals;
 class QWidget;
 
-namespace smtk {
-  namespace extension {
+namespace smtk
+{
+namespace extension
+{
 
-  class qtAttributeItemWidgetFactory;
-  class qtBaseView;
-  class qtItem;
+class qtAttributeItemWidgetFactory;
+class qtBaseView;
+class qtItem;
 
-  class SMTKQTEXT_EXPORT qtAttribute : public QObject
-    {
-      Q_OBJECT
+class SMTKQTEXT_EXPORT qtAttribute : public QObject
+{
+  Q_OBJECT
 
-    public:
-      qtAttribute(smtk::attribute::AttributePtr, QWidget* parent, qtBaseView* view);
-      virtual ~qtAttribute();
+public:
+  qtAttribute(smtk::attribute::AttributePtr, QWidget* parent, qtBaseView* view);
+  virtual ~qtAttribute();
 
-      smtk::attribute::AttributePtr attribute();
-      QWidget* widget()
-      {return this->m_widget;}
-      QWidget* parentWidget();
+  smtk::attribute::AttributePtr attribute();
+  QWidget* widget() { return this->m_widget; }
+  QWidget* parentWidget();
 
-      virtual void addItem(qtItem*);
-      QList<qtItem*>& items() const;
-      virtual void showAdvanceLevelOverlay(bool show);
+  virtual void addItem(qtItem*);
+  QList<qtItem*>& items() const;
+  virtual void showAdvanceLevelOverlay(bool show);
 
-      // A basic layout for an attribute
-      void createBasicLayout(bool includeAssociations);
-      
-      // create all the items
-      static qtItem* createItem(smtk::attribute::ItemPtr item, QWidget* p, qtBaseView* view,
-        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
+  // A basic layout for an attribute
+  void createBasicLayout(bool includeAssociations);
 
-      static void setItemWidgetFactory(qtAttributeItemWidgetFactory* f);
-      static qtAttributeItemWidgetFactory* itemWidgetFactory();
+  // create all the items
+  static qtItem* createItem(smtk::attribute::ItemPtr item, QWidget* p, qtBaseView* view,
+    Qt::Orientation enVectorItemOrient = Qt::Horizontal);
 
-    public slots:
-      virtual void onRequestEntityAssociation();
+  static void setItemWidgetFactory(qtAttributeItemWidgetFactory* f);
+  static qtAttributeItemWidgetFactory* itemWidgetFactory();
 
-    signals:
-       // Signal indicates that the underlying item has been modified
-      void modified();
-      void itemModified(qtItem *);
-      
+public slots:
+  virtual void onRequestEntityAssociation();
 
-    protected:
-      virtual void createWidget();
+signals:
+  // Signal indicates that the underlying item has been modified
+  void modified();
+  void itemModified(qtItem*);
 
-      QPointer<QWidget> m_widget;
-      static qtAttributeItemWidgetFactory* s_factory;
+protected:
+  virtual void createWidget();
 
-    protected slots:
-      void onItemModified();
+  QPointer<QWidget> m_widget;
+  static qtAttributeItemWidgetFactory* s_factory;
 
-    private:
-      qtAttributeInternals* m_internals;
-    };
+protected slots:
+  void onItemModified();
 
-  } // namespace attribute
+private:
+  qtAttributeInternals* m_internals;
+};
+
+} // namespace attribute
 } // namespace smtk
 
 #endif

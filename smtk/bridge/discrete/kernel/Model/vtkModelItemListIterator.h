@@ -35,8 +35,8 @@ struct vtkModelItemListIteratorInternals;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkModelItemListIterator : public vtkModelItemIterator
 {
 public:
-  static vtkModelItemListIterator *New();
-  vtkTypeMacro(vtkModelItemListIterator,vtkModelItemIterator);
+  static vtkModelItemListIterator* New();
+  vtkTypeMacro(vtkModelItemListIterator, vtkModelItemIterator);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -76,16 +76,14 @@ protected:
   virtual ~vtkModelItemListIterator();
 
 private:
-  vtkModelItemListIterator(const vtkModelItemListIterator&);  // Not implemented.
-  void operator=(const vtkModelItemListIterator&);  // Not implemented.
+  vtkModelItemListIterator(const vtkModelItemListIterator&); // Not implemented.
+  void operator=(const vtkModelItemListIterator&);           // Not implemented.
 
   // Description:
   // Root is the object that will have its associated model entities
   // iterated over.
   vtkModelItem* Root;
   vtkModelItemListIteratorInternals* Internal;
-
 };
 
 #endif
-

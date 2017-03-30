@@ -26,8 +26,8 @@ class vtkAlgorithm;
 class VTK_EXPORT vtkCMBMeshGridRepresentationOperator : public vtkObject
 {
 public:
-  static vtkCMBMeshGridRepresentationOperator * New();
-  vtkTypeMacro(vtkCMBMeshGridRepresentationOperator,vtkObject);
+  static vtkCMBMeshGridRepresentationOperator* New();
+  vtkTypeMacro(vtkCMBMeshGridRepresentationOperator, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -60,9 +60,9 @@ protected:
   virtual ~vtkCMBMeshGridRepresentationOperator();
 
 private:
-
-  vtkCMBMeshGridRepresentationOperator(const vtkCMBMeshGridRepresentationOperator&);  // Not implemented.
-  void operator=(const vtkCMBMeshGridRepresentationOperator&);  // Not implemented.
+  vtkCMBMeshGridRepresentationOperator(
+    const vtkCMBMeshGridRepresentationOperator&);              // Not implemented.
+  void operator=(const vtkCMBMeshGridRepresentationOperator&); // Not implemented.
 
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).

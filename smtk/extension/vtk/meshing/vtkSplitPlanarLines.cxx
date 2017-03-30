@@ -40,7 +40,7 @@ struct SegmentRecord
 };
 
 typedef std::vector<SegmentRecord> SegmentRecords;
-typedef std::map<vtkIdType,SegmentRecords> HitList;
+typedef std::map<vtkIdType, SegmentRecords> HitList;
 
 vtkStandardNewMacro(vtkSplitPlanarLines);
 
@@ -59,15 +59,9 @@ void vtkSplitPlanarLines::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "Tolerance: " << this->Tolerance << "\n";
 }
 
-
-inline void EraseHit(
-  std::vector<vtkVector3d>& points,
-  std::vector<vtkVector3d>& pcoords,
-  std::vector<double>& tvals,
-  std::vector<vtkIdType>& cellIds,
-  std::vector<int>& subIds,
-  vtkIdType i,
-  vtkIdType& nhits)
+inline void EraseHit(std::vector<vtkVector3d>& points, std::vector<vtkVector3d>& pcoords,
+  std::vector<double>& tvals, std::vector<vtkIdType>& cellIds, std::vector<int>& subIds,
+  vtkIdType i, vtkIdType& nhits)
 {
   tvals.erase(tvals.begin() + i);
   points.erase(points.begin() + i);
@@ -77,22 +71,17 @@ inline void EraseHit(
   --nhits;
 }
 
-void IntersectSegments(
-  vtkPolyData* input,
-  vtkIdType cellId,
-  vtkRayIntersectionLocator* clocator,
-  HitList& hits,
-  vtkPolyData* output,
-  vtkIncrementalOctreePointLocator* plocator,
+void IntersectSegments(vtkPolyData* input, vtkIdType cellId, vtkRayIntersectionLocator* clocator,
+  HitList& hits, vtkPolyData* output, vtkIncrementalOctreePointLocator* plocator,
   vtkIdTypeArray* pedigreeIds)
 {
   vtkIdType npts;
   vtkIdType* conn;
   input->GetCellPoints(cellId, npts, conn);
   if (npts < 2)
-    {
+  {
     return;
-    }
+  }
   vtkPoints* opts = output->GetPoints();
   std::vector<vtkVector3d> points;
   std::vector<vtkVector3d> pcoords;
@@ -107,7 +96,7 @@ void IntersectSegments(
   vtkPointData* pd = output->GetPointData();
   opts->GetPoint(conn[0], ptA.GetData());
   for (int j = 1; j < npts; ++j)
-    {
+  {
     opts->GetPoint(conn[j], ptB.GetData());
     clocator->AllIntersectionsAlongSegment(ptA, ptB, points, tvals, pcoords, cellIds, subIds);
     // Now we must remove hits from cells with an ID less than cellId
@@ -116,29 +105,26 @@ void IntersectSegments(
     // degenerate output segments.
     nhits = static_cast<vtkIdType>(cellIds.size());
     HitList::iterator hitit;
-    for (vtkIdType i = 0; i < nhits; )
-      {
+    for (vtkIdType i = 0; i < nhits;)
+    {
       bool notErased = true;
-      if (
-        cellIds[i] < cellId ||
-        (cellIds[i] == cellId && subIds[i] < j - 1))
-        { // Remove the hit. If it really exists, it is already stored in "hits".
+      if (cellIds[i] < cellId || (cellIds[i] == cellId && subIds[i] < j - 1))
+      { // Remove the hit. If it really exists, it is already stored in "hits".
         EraseHit(points, pcoords, tvals, cellIds, subIds, i, nhits);
         notErased = false;
-        }
+      }
       else
-        {
+      {
         // We are responsible for this hit...
         // add it to other cell's entries in hits.
         if (pcoords[i][0] > 0. && pcoords[i][0] < 1.)
-          {
+        {
           hitit = hits.find(cellIds[i]);
           if (hitit == hits.end())
-            {
+          {
             SegmentRecords empty;
-            hitit = hits.insert(
-              std::pair<vtkIdType,SegmentRecords>(cellIds[i], empty)).first;
-            }
+            hitit = hits.insert(std::pair<vtkIdType, SegmentRecords>(cellIds[i], empty)).first;
+          }
           SegmentRecord srec;
           srec.CellId = cellIds[i];
           srec.SubId = subIds[i];
@@ -146,21 +132,21 @@ void IntersectSegments(
           srec.Param[1] = tvals[i];
           srec.Point = points[i];
           hitit->second.push_back(srec);
-          }
         }
+      }
       // We might have recorded the hit for another cell above,
       // but if it's at the beginning or end of *this* segment,
       // we don't need it:
       if ((tvals[i] == 0. || tvals[i] == 1.) && notErased)
-        {
+      {
         EraseHit(points, pcoords, tvals, cellIds, subIds, i, nhits);
         notErased = false;
-        }
-      if (notErased)
-        {
-        ++i;
-        }
       }
+      if (notErased)
+      {
+        ++i;
+      }
+    }
     // We must also add in relevant entries from the "hits" map,
     // for which the other cell was responsible.
     // Having one cell responsible for each possible pair of
@@ -169,12 +155,12 @@ void IntersectSegments(
     // other.
     hitit = hits.find(cellId);
     if (hitit != hits.end())
-      {
+    {
       SegmentRecords::iterator sit;
       for (sit = hitit->second.begin(); sit != hitit->second.end(); ++sit)
-        {
+      {
         if (sit->SubId == j - 1)
-          {
+        {
           points.push_back(sit->Point);
           tvals.push_back(sit->Param[0]);
           subIds.push_back(sit->SubId);
@@ -183,18 +169,18 @@ void IntersectSegments(
           SegmentRecords::iterator tmp = sit - 1;
           hitit->second.erase(sit);
           sit = tmp;
-          }
         }
       }
+    }
     // Finally, we must sort all the lists by tvals in order to
     // report subsegments correctly.
     vtkNew<vtkIdList> permutation;
     nhits = static_cast<vtkIdType>(cellIds.size());
     permutation->SetNumberOfIds(nhits);
     for (vtkIdType i = 0; i < nhits; ++i)
-      {
+    {
       permutation->SetId(i, i);
-      }
+    }
     vtkNew<vtkDoubleArray> twrapper;
     twrapper->SetArray(&tvals[0], nhits, 1);
     vtkSortDataArray::Sort(twrapper.GetPointer(), permutation.GetPointer());
@@ -202,39 +188,39 @@ void IntersectSegments(
     vtkIdType seg[2];
     seg[0] = plocator->FindClosestPoint(ptA.GetData());
     for (vtkIdType i = 0; i < nhits; ++i)
+    {
+      if (i > 0 && tvals[i] == tvals[i - 1])
       {
-      if ( i > 0 && tvals[i] == tvals[i - 1])
-        {
         continue; // Ignore duplicate t-values. Yes, this happens.
-        }
-      if (plocator->InsertUniquePoint((ptA + tvals[i]*(ptB - ptA)).GetData(), seg[1]))
-        { // Interpolate along edge to get new point data
+      }
+      if (plocator->InsertUniquePoint((ptA + tvals[i] * (ptB - ptA)).GetData(), seg[1]))
+      { // Interpolate along edge to get new point data
         pd->InterpolateEdge(pd, seg[1], conn[j - 1], conn[j], tvals[i]);
-        }
+      }
       if (seg[0] != seg[1])
-        {
+      {
         vtkIdType segId = output->GetLines()->InsertNextCell(2, seg);
         cd->CopyData(icd, cellId, segId);
         if (pedigreeIds)
-          {
+        {
           pedigreeIds->InsertNextValue(cellId);
-          }
-        seg[0] = seg[1];
         }
+        seg[0] = seg[1];
       }
+    }
     if (nhits == 0 || tvals[nhits - 1] < 1.)
-      {
+    {
       seg[1] = plocator->FindClosestPoint(ptB.GetData());
       if (seg[0] != seg[1])
-        {
+      {
         vtkIdType segId = output->GetLines()->InsertNextCell(2, seg);
         if (pedigreeIds)
-          {
+        {
           pedigreeIds->InsertNextValue(cellId);
-          }
-        cd->CopyData(icd, cellId, segId);
         }
+        cd->CopyData(icd, cellId, segId);
       }
+    }
 
     // Clear lists for next segment
     points.clear();
@@ -244,21 +230,17 @@ void IntersectSegments(
     subIds.clear();
     // Reuse ptA as the endpoint of the next segment in the polyline.
     ptA = ptB;
-    }
+  }
 }
 
 int vtkSplitPlanarLines::RequestData(
-  vtkInformation* /*req*/,
-  vtkInformationVector** inVec,
-  vtkInformationVector* outVec)
+  vtkInformation* /*req*/, vtkInformationVector** inVec, vtkInformationVector* outVec)
 {
   // Get input and output data for request:
   vtkInformation* inInfo = inVec[0]->GetInformationObject(0);
   vtkInformation* outInfo = outVec->GetInformationObject(0);
-  vtkPolyData* input = vtkPolyData::SafeDownCast(
-    inInfo->Get(vtkDataObject::DATA_OBJECT()));
-  vtkPolyData* output = vtkPolyData::SafeDownCast(
-    outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkPolyData* input = vtkPolyData::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkPolyData* output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
   // Build locator on input so GetCellPoints() works.
   input->BuildCells();
@@ -290,18 +272,17 @@ int vtkSplitPlanarLines::RequestData(
   pedigreeIds->SetName("vtkPedigreeIds");
   bool haveInputPedigree = input->GetCellData()->GetPedigreeIds() ? true : false;
   for (vtkIdType cellId = numVerts; cellId < firstPolyCell; ++cellId)
-    {
-    IntersectSegments(
-      input, cellId, clocator.GetPointer(), hits, output, plocator.GetPointer(),
+  {
+    IntersectSegments(input, cellId, clocator.GetPointer(), hits, output, plocator.GetPointer(),
       haveInputPedigree ? NULL : pedigreeIds.GetPointer());
-    }
+  }
   // Only add cell pedigree Ids if the input had none.
   // If the input had them, then copying cell data to each
   // output segment will leave the existing ones intact.
   if (!haveInputPedigree)
-    {
+  {
     output->GetCellData()->SetPedigreeIds(pedigreeIds.GetPointer());
-    }
+  }
 
   return 1;
 }

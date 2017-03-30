@@ -12,9 +12,12 @@
 
 #include "smtk/bridge/polygon/internal/Fragment.h" // for various internal types help by CreateFaces
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
 
 typedef std::set<FragmentId, EdgeFragmentComparator> ActiveFragmentTreeType;
 
@@ -34,13 +37,14 @@ public:
   using ActiveFragmentTreeType::rend;
 
   void insertActiveFragment(FragmentId f);
-  std::pair<FragmentId, FragmentId> boundingFragments(const internal::Point& pt, bool strict = false) const;
+  std::pair<FragmentId, FragmentId> boundingFragments(
+    const internal::Point& pt, bool strict = false) const;
 
   const EdgeFragment& fragment(FragmentId f) const;
 };
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_polygon_ActiveFragmentTree_h

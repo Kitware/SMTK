@@ -25,12 +25,12 @@ class vtkDiscreteModelWrapper;
 class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelSelectionSource : public vtkSelectionAlgorithm
 {
 public:
-  static vtkCMBModelSelectionSource *New();
-  vtkTypeMacro(vtkCMBModelSelectionSource,vtkSelectionAlgorithm);
+  static vtkCMBModelSelectionSource* New();
+  vtkTypeMacro(vtkCMBModelSelectionSource, vtkSelectionAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
-  void CopyData(vtkSelection *selection);
+  void CopyData(vtkSelection* selection);
   vtkGetObjectMacro(Selection, vtkSelection);
 
   // Description:
@@ -48,7 +48,7 @@ protected:
   vtkCMBModelSelectionSource();
   ~vtkCMBModelSelectionSource();
 
-  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
   void RemoveAllSelectedEntityIdsInternal();
 
   // Description:
@@ -56,16 +56,15 @@ protected:
   // information from.
   vtkDiscreteModelWrapper* ModelWrapper;
 
-  vtkSelectionSource *Source;
+  vtkSelectionSource* Source;
   vtkSelection* Selection;
 
 private:
-  vtkCMBModelSelectionSource(const vtkCMBModelSelectionSource&);  // Not implemented.
-  void operator=(const vtkCMBModelSelectionSource&);  // Not implemented.
+  vtkCMBModelSelectionSource(const vtkCMBModelSelectionSource&); // Not implemented.
+  void operator=(const vtkCMBModelSelectionSource&);             // Not implemented.
 
   class vtkInternal;
   vtkInternal* Internal;
-
 };
 
 #endif

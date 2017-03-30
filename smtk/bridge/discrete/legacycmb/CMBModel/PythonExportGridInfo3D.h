@@ -19,33 +19,28 @@
 
 class vtkDiscreteModel;
 
-
 class PythonExportGridInfo3D : public PythonExportGridInfo
 {
   typedef smtk::model::GridInfo::ApiStatus ApiStatus;
 
- public:
+public:
   /// Constructor & destructor
-  PythonExportGridInfo3D(vtkDiscreteModel *model);
+  PythonExportGridInfo3D(vtkDiscreteModel* model);
   virtual ~PythonExportGridInfo3D();
 
   /// Returns analysis grid cells for specified model entity.
-  virtual std::vector<int>
-  analysisGridCells(int modelEntityId, ApiStatus& status);
+  virtual std::vector<int> analysisGridCells(int modelEntityId, ApiStatus& status);
 
   /// Returns "grid items" for the geometry on the boundary of a model entity.
-  virtual std::vector<std::pair<int, int> >
-  boundaryItemsOf(int modelEntityId, ApiStatus& status);
+  virtual std::vector<std::pair<int, int> > boundaryItemsOf(int modelEntityId, ApiStatus& status);
 
   /// Returns "grid items" for the geometry of a model entity that is on
   //  the boundary of a next-higher-dimension model entity.
-  virtual std::vector<std::pair<int, int> >
-  asBoundaryItems(int modelEntityId,
-                  int boundedModelEntityId,
-                  ApiStatus& status);
+  virtual std::vector<std::pair<int, int> > asBoundaryItems(
+    int modelEntityId, int boundedModelEntityId, ApiStatus& status);
 
 protected:
-  virtual std::string getClassName() const;  // for status messages
+  virtual std::string getClassName() const; // for status messages
 };
 
-#endif  /* __PythonExportGridInfo3D_h */
+#endif /* __PythonExportGridInfo3D_h */

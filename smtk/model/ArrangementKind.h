@@ -14,8 +14,10 @@
 
 #include <string>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief Constants that describe a cell-use's orientation relative to its parent cell.
   *
@@ -34,24 +36,26 @@ namespace smtk {
   * because it may not have a NEGATIVE orientation relative to its cell-uses.
   * If it did, it would be composed with oppositely-oriented cell-uses.
   */
-enum Orientation {
-  NEGATIVE = -1,  //!< The entity is oriented opposite to the underlying geometry
-  POSITIVE = +1,  //!< The entity is codirectional with the underlying geometry
-  UNDEFINED = 0   //!< The relative orientation is unknown or unknowable.
+enum Orientation
+{
+  NEGATIVE = -1, //!< The entity is oriented opposite to the underlying geometry
+  POSITIVE = +1, //!< The entity is codirectional with the underlying geometry
+  UNDEFINED = 0  //!< The relative orientation is unknown or unknowable.
 };
 
 // === WARNING === If you change this enum, also update string names in Arrangement.cxx!
 /// Specification of how a cell's relations are arranged.
-enum ArrangementKind {
+enum ArrangementKind
+{
   // Enums specific to cell, use, and shell relationships:
-  INCLUDES,     //!< How another cell is contained in the interior of this cell.
-  HAS_CELL,     //!< How a use or shell is related to its cell.
-  HAS_SHELL,    //!< How this cell is bounded by cells of lower dimension or how a use participates in a shell.
-  HAS_USE,      //!< How this cell's shells are combined into a single orientation for use by bordant cells.
-  EMBEDDED_IN,  //!< How this cell is embedded in the interior of a cell of higher dimension
+  INCLUDES, //!< How another cell is contained in the interior of this cell.
+  HAS_CELL, //!< How a use or shell is related to its cell.
+  HAS_SHELL, //!< How this cell is bounded by cells of lower dimension or how a use participates in a shell.
+  HAS_USE, //!< How this cell's shells are combined into a single orientation for use by bordant cells.
+  EMBEDDED_IN, //!< How this cell is embedded in the interior of a cell of higher dimension
   // Enums specific to group relationships:
-  SUBSET_OF,    //!< This entity is a subset of the related entity.
-  SUPERSET_OF,  //!< This entity is a superset of the related entity.
+  SUBSET_OF,   //!< This entity is a subset of the related entity.
+  SUPERSET_OF, //!< This entity is a superset of the related entity.
   // Enums specific to instance relationships:
   INSTANCE_OF,  //!< This entity is an instance of the related entity.
   INSTANCED_BY, //!< This entity has an instance (duplicate) that is the related entity.
@@ -71,7 +75,7 @@ SMTKCORE_EXPORT std::string AbbreviationForArrangementKind(ArrangementKind k);
 
 SMTKCORE_EXPORT ArrangementKind Dual(EntityTypeBits entType, ArrangementKind k);
 
-  } // model namespace
+} // model namespace
 } // smtk namespace
 
 #endif // __smtk_model_ArrangementKind_h

@@ -23,10 +23,14 @@
   *
   */
 
-namespace smtk {
-namespace extension {
-namespace vtk {
-namespace io {
+namespace smtk
+{
+namespace extension
+{
+namespace vtk
+{
+namespace io
+{
 
 class SMTKIOVTK_EXPORT MeshIOVTK : public smtk::io::mesh::MeshIO
 {
@@ -37,21 +41,16 @@ public:
   //Load a vtk XML data file as a new collection into the given manager
   //Returns an invalid collection that is NOT part of the manager if the
   //file can't be loaded
-  smtk::mesh::CollectionPtr
-    importMesh( const std::string& filePath,
-                smtk::mesh::ManagerPtr& manager,
-                const std::string& domainPropertyName ) const override;
+  smtk::mesh::CollectionPtr importMesh(const std::string& filePath, smtk::mesh::ManagerPtr& manager,
+    const std::string& domainPropertyName) const override;
 
   //Merge a vtk data file into an existing valid collection.
-  bool importMesh( const std::string& filePath,
-                   smtk::mesh::CollectionPtr collection,
-                   const std::string& domainPropertyName ) const override;
+  bool importMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+    const std::string& domainPropertyName) const override;
 
   //Epxort a collection to a VTK XML unstructured grid or polydata.
-  bool exportMesh( const std::string& filePath,
-                   smtk::mesh::CollectionPtr collection ) const override;
+  bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection) const override;
 };
-
 }
 }
 }

@@ -25,8 +25,8 @@ class vtkSMOperatorProxy;
 class VTK_EXPORT vtkGeoTransformOperatorClient : public vtkObject
 {
 public:
-  static vtkGeoTransformOperatorClient * New();
-  vtkTypeMacro(vtkGeoTransformOperatorClient,vtkObject);
+  static vtkGeoTransformOperatorClient* New();
+  vtkTypeMacro(vtkGeoTransformOperatorClient, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -50,10 +50,10 @@ protected:
   virtual bool AbleToOperate(vtkDiscreteModel* Model);
 
   bool ConvertFromLatLongToXYZ;
-private:
 
-  vtkGeoTransformOperatorClient(const vtkGeoTransformOperatorClient&);  // Not implemented.
-  void operator=(const vtkGeoTransformOperatorClient&);  // Not implemented.
+private:
+  vtkGeoTransformOperatorClient(const vtkGeoTransformOperatorClient&); // Not implemented.
+  void operator=(const vtkGeoTransformOperatorClient&);                // Not implemented.
   vtkSMOperatorProxy* OperatorProxy;
 };
 

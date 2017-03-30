@@ -26,8 +26,8 @@ class vtkModelEntity;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkModelUserName : public vtkObject
 {
 public:
-  static vtkModelUserName *New();
-  vtkTypeMacro(vtkModelUserName,vtkObject);
+  static vtkModelUserName* New();
+  vtkTypeMacro(vtkModelUserName, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   static void SetUserName(vtkModelEntity* entity, const char* userName);
@@ -37,12 +37,11 @@ public:
   static vtkInformationStringKey* USERNAME();
 
 protected:
-  vtkModelUserName() {};
-  ~vtkModelUserName() {};
+  vtkModelUserName(){};
+  ~vtkModelUserName(){};
 
 private:
-  vtkModelUserName(const vtkModelUserName&);  // Not implemented.
-  void operator=(const vtkModelUserName&);  // Not implemented.
+  vtkModelUserName(const vtkModelUserName&); // Not implemented.
+  void operator=(const vtkModelUserName&);   // Not implemented.
 };
 #endif
-

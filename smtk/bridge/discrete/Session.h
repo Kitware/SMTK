@@ -50,15 +50,20 @@ class vtkModelVertex;
 class vtkModelVertexUse;
 class vtkUnsignedIntArray;
 
-namespace smtk {
-  namespace model {
-    class Group;
-  }
+namespace smtk
+{
+namespace model
+{
+class Group;
+}
 }
 
-namespace smtk {
-  namespace bridge {
-    namespace discrete {
+namespace smtk
+{
+namespace bridge
+{
+namespace discrete
+{
 
 class ArrangementHelper;
 class vtkItemWatcherCommand;
@@ -105,10 +110,8 @@ public:
   vtkUnsignedIntArray* retrieveUUIDs(
     vtkDiscreteModel* model, const std::vector<vtkModelItem*>& ents);
 
-  int ExportEntitiesToFileOfNameAndType(
-    const std::vector<smtk::model::EntityRef>& entities,
-    const std::string& filename,
-    const std::string& filetype);
+  int ExportEntitiesToFileOfNameAndType(const std::vector<smtk::model::EntityRef>& entities,
+    const std::string& filename, const std::string& filetype);
 
   vtkDiscreteModelWrapper* findModelEntity(const smtk::common::UUID& uid) const;
 
@@ -131,27 +134,40 @@ protected:
 
   virtual smtk::model::Entity* addEntityRecord(const smtk::model::EntityRef& entRef);
   virtual smtk::model::ArrangementHelper* createArrangementHelper();
-  virtual int findOrAddCellAdjacencies(const smtk::model::CellEntity& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddCellUses(const smtk::model::CellEntity& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddOwningCell(const smtk::model::UseEntity& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddShellAdjacencies(const smtk::model::UseEntity& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddUseAdjacencies(const smtk::model::ShellEntity& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddGroupOwner(const smtk::model::Group& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddFreeCells(const smtk::model::Model& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddRelatedModels(const smtk::model::Model& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddPrototype(const smtk::model::Instance& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddRelatedModels(const smtk::model::SessionRef& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddRelatedGroups(const smtk::model::EntityRef& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
-  virtual int findOrAddRelatedInstances(const smtk::model::EntityRef& entRef, SessionInfoBits request, smtk::model::ArrangementHelper* helper);
-  virtual SessionInfoBits findOrAddArrangements(const smtk::model::EntityRef& entRef, smtk::model::Entity* entRec, SessionInfoBits flags, smtk::model::ArrangementHelper* helper);
-  virtual SessionInfoBits updateProperties(const smtk::model::EntityRef& entRef, smtk::model::Entity* entRec, SessionInfoBits flags, smtk::model::ArrangementHelper* helper);
-  virtual SessionInfoBits updateTessellation(const smtk::model::EntityRef& entRef, SessionInfoBits flags, smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddCellAdjacencies(const smtk::model::CellEntity& entRef,
+    SessionInfoBits request, smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddCellUses(const smtk::model::CellEntity& entRef, SessionInfoBits request,
+    smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddOwningCell(const smtk::model::UseEntity& entRef, SessionInfoBits request,
+    smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddShellAdjacencies(const smtk::model::UseEntity& entRef,
+    SessionInfoBits request, smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddUseAdjacencies(const smtk::model::ShellEntity& entRef,
+    SessionInfoBits request, smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddGroupOwner(const smtk::model::Group& entRef, SessionInfoBits request,
+    smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddFreeCells(const smtk::model::Model& entRef, SessionInfoBits request,
+    smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddRelatedModels(const smtk::model::Model& entRef, SessionInfoBits request,
+    smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddPrototype(const smtk::model::Instance& entRef, SessionInfoBits request,
+    smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddRelatedModels(const smtk::model::SessionRef& entRef, SessionInfoBits request,
+    smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddRelatedGroups(const smtk::model::EntityRef& entRef, SessionInfoBits request,
+    smtk::model::ArrangementHelper* helper);
+  virtual int findOrAddRelatedInstances(const smtk::model::EntityRef& entRef,
+    SessionInfoBits request, smtk::model::ArrangementHelper* helper);
+  virtual SessionInfoBits findOrAddArrangements(const smtk::model::EntityRef& entRef,
+    smtk::model::Entity* entRec, SessionInfoBits flags, smtk::model::ArrangementHelper* helper);
+  virtual SessionInfoBits updateProperties(const smtk::model::EntityRef& entRef,
+    smtk::model::Entity* entRec, SessionInfoBits flags, smtk::model::ArrangementHelper* helper);
+  virtual SessionInfoBits updateTessellation(const smtk::model::EntityRef& entRef,
+    SessionInfoBits flags, smtk::model::ArrangementHelper* helper);
 
   smtk::common::UUID trackModel(
-    vtkDiscreteModelWrapper* mod, const std::string& url,
-    smtk::model::ManagerPtr storage);
-  bool assignUUIDToEntity(
-    const smtk::common::UUID& itemId, vtkModelItem* item);
+    vtkDiscreteModelWrapper* mod, const std::string& url, smtk::model::ManagerPtr storage);
+  bool assignUUIDToEntity(const smtk::common::UUID& itemId, vtkModelItem* item);
   smtk::common::UUID findOrSetEntityUUID(vtkModelItem* item);
   smtk::common::UUID findOrSetEntityUUID(vtkInformation* itemProperties);
   void untrackEntity(const smtk::common::UUID& itemId);
@@ -159,75 +175,64 @@ protected:
   //static vtkDiscreteModel* owningModel(vtkModelItem* e);
   vtkModelItem* entityForUUID(const smtk::common::UUID& uid);
 
-  smtk::model::EntityRef addCMBEntityToManager(
-    const smtk::common::UUID& entity, vtkModelItem* refEnt, smtk::model::ManagerPtr storage, int relDepth = 1);
+  smtk::model::EntityRef addCMBEntityToManager(const smtk::common::UUID& entity,
+    vtkModelItem* refEnt, smtk::model::ManagerPtr storage, int relDepth = 1);
 
-  smtk::model::Model addBodyToManager(const smtk::common::UUID&, vtkModel*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Group addGroupToManager(const smtk::common::UUID&, vtkDiscreteModelEntityGroup*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Group addMaterialToManager(const smtk::common::UUID&, vtkModelMaterial*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::FaceUse addFaceUseToManager(const smtk::common::UUID&, vtkModelFaceUse*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::EdgeUse addEdgeUseToManager(const smtk::common::UUID&, vtkModelEdgeUse*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::VertexUse addVertexUseToManager(const smtk::common::UUID&, vtkModelVertexUse*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Shell addShellToManager(const smtk::common::UUID&, vtkModelShellUse*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Loop addLoopToManager(const smtk::common::UUID&, vtkModelLoopUse*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Volume addVolumeToManager(const smtk::common::UUID&, vtkModelRegion*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Face addFaceToManager(const smtk::common::UUID&, vtkModelFace*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Edge addEdgeToManager(const smtk::common::UUID&, vtkModelEdge*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Vertex addVertexToManager(const smtk::common::UUID&, vtkModelVertex*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::Model addBodyToManager(
+    const smtk::common::UUID&, vtkModel*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::Group addGroupToManager(const smtk::common::UUID&, vtkDiscreteModelEntityGroup*,
+    smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::Group addMaterialToManager(
+    const smtk::common::UUID&, vtkModelMaterial*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::FaceUse addFaceUseToManager(
+    const smtk::common::UUID&, vtkModelFaceUse*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::EdgeUse addEdgeUseToManager(
+    const smtk::common::UUID&, vtkModelEdgeUse*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::VertexUse addVertexUseToManager(
+    const smtk::common::UUID&, vtkModelVertexUse*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::Shell addShellToManager(
+    const smtk::common::UUID&, vtkModelShellUse*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::Loop addLoopToManager(
+    const smtk::common::UUID&, vtkModelLoopUse*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::Volume addVolumeToManager(
+    const smtk::common::UUID&, vtkModelRegion*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::Face addFaceToManager(
+    const smtk::common::UUID&, vtkModelFace*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::Edge addEdgeToManager(
+    const smtk::common::UUID&, vtkModelEdge*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::Vertex addVertexToManager(
+    const smtk::common::UUID&, vtkModelVertex*, smtk::model::ManagerPtr, int relDepth = 1);
 
-  template<class P, typename H>
+  template <class P, typename H>
   void addEntities(P& parent, vtkModelItemIterator* it, const H& method, int relDepth);
 
-  template<class P, typename C, typename H>
+  template <class P, typename C, typename H>
   void addEntityArray(P& parent, C& childContainer, const H& method, int relDepth);
 
-  void addEntity(
-    const smtk::model::EntityRef& parent,
-    vtkModelItem* child,
-    smtk::model::ArrangementKind k,
-    ArrangementHelper* helper,
-    int sense = -1,
-    smtk::model::Orientation orientation = smtk::model::UNDEFINED,
-    int iterpos=0);
+  void addEntity(const smtk::model::EntityRef& parent, vtkModelItem* child,
+    smtk::model::ArrangementKind k, ArrangementHelper* helper, int sense = -1,
+    smtk::model::Orientation orientation = smtk::model::UNDEFINED, int iterpos = 0);
 
-  void addEntity(
-    vtkModelItem* parent,
-    const smtk::model::EntityRef& child,
-    smtk::model::ArrangementKind k,
-    ArrangementHelper* helper,
-    int sense = -1,
-    smtk::model::Orientation orientation = smtk::model::UNDEFINED,
-    int iterpos=0);
+  void addEntity(vtkModelItem* parent, const smtk::model::EntityRef& child,
+    smtk::model::ArrangementKind k, ArrangementHelper* helper, int sense = -1,
+    smtk::model::Orientation orientation = smtk::model::UNDEFINED, int iterpos = 0);
 
-  int addEntities(
-    const smtk::model::EntityRef& parent,
-    vtkModelItemIterator* it,
-    smtk::model::ArrangementKind k,
-    ArrangementHelper* helper);
-  template<typename T>
-  int addEntities(
-    const smtk::model::EntityRef& parent,
-    vtkModelItemIterator* it,
-    smtk::model::ArrangementKind k,
-    ArrangementHelper* helper,
-    T& senseLookup);
+  int addEntities(const smtk::model::EntityRef& parent, vtkModelItemIterator* it,
+    smtk::model::ArrangementKind k, ArrangementHelper* helper);
+  template <typename T>
+  int addEntities(const smtk::model::EntityRef& parent, vtkModelItemIterator* it,
+    smtk::model::ArrangementKind k, ArrangementHelper* helper, T& senseLookup);
 
-  int addEntities(
-    vtkModelItemIterator* it,
-    const smtk::model::EntityRef& parent,
-    smtk::model::ArrangementKind k,
-    ArrangementHelper* helper);
+  int addEntities(vtkModelItemIterator* it, const smtk::model::EntityRef& parent,
+    smtk::model::ArrangementKind k, ArrangementHelper* helper);
 
-  template<typename T>
-  int addEntities(
-    vtkModelItemIterator* it,
-    const smtk::model::EntityRef& parent,
-    smtk::model::ArrangementKind k,
-    ArrangementHelper* helper,
-    T& senseLookup);
+  template <typename T>
+  int addEntities(vtkModelItemIterator* it, const smtk::model::EntityRef& parent,
+    smtk::model::ArrangementKind k, ArrangementHelper* helper, T& senseLookup);
 
   bool addTessellation(const smtk::model::EntityRef& cellOut, vtkModelGeometricEntity* cellIn);
-  bool addProperties(smtk::model::EntityRef& cellOut, vtkModelItem* cellIn, smtk::model::BitFlags props = 0xff);
+  bool addProperties(
+    smtk::model::EntityRef& cellOut, vtkModelItem* cellIn, smtk::model::BitFlags props = 0xff);
 
   // This will remove Model from smtk manager and vtkDiscreteModelWrapper form kernel
   bool removeModelEntity(const smtk::model::EntityRef& entity);
@@ -239,15 +244,15 @@ protected:
   std::map<smtk::common::UUID, vtkWeakPointer<vtkModelItem> > m_itemsToRefs;
 
   /// Track which models are tracked by which sessions.
-  std::map<vtkDiscreteModel*,WeakPtr> m_modelsToSessions;
+  std::map<vtkDiscreteModel*, WeakPtr> m_modelsToSessions;
   /// Associate UUIDs to vtkDiscreteModelWrapper instances.
-  std::map<smtk::common::UUID,vtkSmartPointer<vtkDiscreteModelWrapper> > m_modelIdsToRefs;
+  std::map<smtk::common::UUID, vtkSmartPointer<vtkDiscreteModelWrapper> > m_modelIdsToRefs;
   /// Associate vtkDiscreteModelWrapper instances to UUIDs.
   std::map<vtkSmartPointer<vtkDiscreteModelWrapper>, smtk::common::UUID> m_modelRefsToIds;
 };
 
-    } // namespace discrete
-  } // namespace bridge
+} // namespace discrete
+} // namespace bridge
 
 } // namespace smtk
 

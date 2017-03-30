@@ -16,9 +16,12 @@
 #include "vtkCMBModelReadOperator.h"
 #include "vtkNew.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace discrete {
+namespace smtk
+{
+namespace bridge
+{
+namespace discrete
+{
 
 class Session;
 
@@ -45,8 +48,8 @@ protected:
   vtkNew<vtkCMBModelReadOperator> m_op;
 };
 
-    } // namespace discrete
-  } // namespace bridge
+} // namespace discrete
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_discrete_ReadOperator_h

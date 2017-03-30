@@ -25,8 +25,10 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 using namespace boost::filesystem;
 
-namespace smtk {
-  namespace io {
+namespace smtk
+{
+namespace io
+{
 
 ReadMesh::ReadMesh()
 {
@@ -40,35 +42,33 @@ std::vector<smtk::io::mesh::MeshIOPtr>& ReadMesh::SupportedIOTypes()
 {
   static std::vector<smtk::io::mesh::MeshIOPtr> supportedIOTypes;
   if (supportedIOTypes.empty())
-    {
-    supportedIOTypes.push_back( mesh::MeshIOPtr( new mesh::MeshIOXMS() ) );
-    supportedIOTypes.push_back( mesh::MeshIOPtr( new mesh::MeshIOMoab() ) );
-    }
+  {
+    supportedIOTypes.push_back(mesh::MeshIOPtr(new mesh::MeshIOXMS()));
+    supportedIOTypes.push_back(mesh::MeshIOPtr(new mesh::MeshIOMoab()));
+  }
   return supportedIOTypes;
 }
 
 bool ReadMesh::ExtensionIsSupported(const std::string& ext)
 {
   for (auto& reader : smtk::io::ReadMesh::SupportedIOTypes())
-    {
+  {
     for (auto& format : reader->FileFormats())
+    {
+      if (format.CanRead() &&
+        std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
+          format.Extensions.end())
       {
-      if ( format.CanRead() && std::find(format.Extensions.begin(),
-                                         format.Extensions.end(), ext) !=
-           format.Extensions.end() )
-        {
         return true;
-        }
       }
     }
+  }
 
   return false;
 }
 
-smtk::mesh::CollectionPtr
-ReadMesh::operator() (const std::string& filePath,
-                      smtk::mesh::ManagerPtr manager,
-                      mesh::Subset subset) const
+smtk::mesh::CollectionPtr ReadMesh::operator()(
+  const std::string& filePath, smtk::mesh::ManagerPtr manager, mesh::Subset subset) const
 {
   // Grab the file extension
   std::string ext = boost::filesystem::extension(filePath);
@@ -78,36 +78,35 @@ ReadMesh::operator() (const std::string& filePath,
 
   // Search for an appropriate reader
   for (auto&& reader : smtk::io::ReadMesh::SupportedIOTypes())
-    {
+  {
     for (auto&& format : reader->FileFormats())
+    {
+      if (format.CanRead() &&
+        std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
+          format.Extensions.end())
       {
-      if ( format.CanRead() && std::find(format.Extensions.begin(),
-                                         format.Extensions.end(), ext) !=
-           format.Extensions.end() )
-        {
         // read the collection
         collection = reader->read(filePath, manager, subset);
         break;
-        }
       }
     }
+  }
 
   if (!collection)
-    {
+  {
     collection = smtk::mesh::Collection::create();
     collection->readLocation(filePath);
-    }
+  }
   else
-    {
+  {
     collection->readLocation(filePath);
-    }
+  }
 
   return collection;
 }
 
-bool ReadMesh::operator() (const std::string& filePath,
-                           smtk::mesh::CollectionPtr collection,
-                           mesh::Subset subset) const
+bool ReadMesh::operator()(
+  const std::string& filePath, smtk::mesh::CollectionPtr collection, mesh::Subset subset) const
 {
   // Grab the file extension
   std::string ext = boost::filesystem::extension(filePath);
@@ -115,82 +114,66 @@ bool ReadMesh::operator() (const std::string& filePath,
 
   // Search for an appropriate reader
   for (auto&& reader : smtk::io::ReadMesh::SupportedIOTypes())
-    {
+  {
     for (auto&& format : reader->FileFormats())
+    {
+      if (format.CanRead() &&
+        std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
+          format.Extensions.end())
       {
-      if ( format.CanRead() && std::find(format.Extensions.begin(),
-                                         format.Extensions.end(), ext) !=
-           format.Extensions.end() )
-        {
         // read the collection
         return reader->read(filePath, collection, subset);
-        }
       }
     }
+  }
   return false;
 }
 
-smtk::mesh::CollectionPtr
-readMesh( const std::string& filePath,
-          smtk::mesh::ManagerPtr manager,
-          mesh::Subset subset )
+smtk::mesh::CollectionPtr readMesh(
+  const std::string& filePath, smtk::mesh::ManagerPtr manager, mesh::Subset subset)
 {
   ReadMesh read;
-  return read( filePath, manager, subset );
+  return read(filePath, manager, subset);
 }
-smtk::mesh::CollectionPtr
-readEntireCollection( const std::string& filePath,
-                      smtk::mesh::ManagerPtr manager )
+smtk::mesh::CollectionPtr readEntireCollection(
+  const std::string& filePath, smtk::mesh::ManagerPtr manager)
 {
   return smtk::io::readMesh(filePath, manager, mesh::Subset::EntireCollection);
 }
-smtk::mesh::CollectionPtr
-readDomain( const std::string& filePath,
-            smtk::mesh::ManagerPtr manager )
+smtk::mesh::CollectionPtr readDomain(const std::string& filePath, smtk::mesh::ManagerPtr manager)
 {
   return smtk::io::readMesh(filePath, manager, mesh::Subset::OnlyDomain);
 }
-smtk::mesh::CollectionPtr
-readDirichlet( const std::string& filePath,
-               smtk::mesh::ManagerPtr manager )
+smtk::mesh::CollectionPtr readDirichlet(const std::string& filePath, smtk::mesh::ManagerPtr manager)
 {
   return smtk::io::readMesh(filePath, manager, mesh::Subset::OnlyDirichlet);
 }
-smtk::mesh::CollectionPtr
-readNeumann( const std::string& filePath,
-             smtk::mesh::ManagerPtr manager )
+smtk::mesh::CollectionPtr readNeumann(const std::string& filePath, smtk::mesh::ManagerPtr manager)
 {
   return smtk::io::readMesh(filePath, manager, mesh::Subset::OnlyNeumann);
 }
 
-bool readMesh( const std::string& filePath,
-               smtk::mesh::CollectionPtr collection,
-               mesh::Subset subset )
+bool readMesh(
+  const std::string& filePath, smtk::mesh::CollectionPtr collection, mesh::Subset subset)
 {
   ReadMesh read;
   return read(filePath, collection, subset);
 }
-bool readEntireCollection( const std::string& filePath,
-                           smtk::mesh::CollectionPtr collection )
+bool readEntireCollection(const std::string& filePath, smtk::mesh::CollectionPtr collection)
 {
-  return smtk::io::readMesh(filePath, collection,
-                            mesh::Subset::EntireCollection);
+  return smtk::io::readMesh(filePath, collection, mesh::Subset::EntireCollection);
 }
-bool readDomain( const std::string& filePath,
-                 smtk::mesh::CollectionPtr collection )
+bool readDomain(const std::string& filePath, smtk::mesh::CollectionPtr collection)
 {
   return smtk::io::readMesh(filePath, collection, mesh::Subset::OnlyDomain);
 }
-bool readDirichlet( const std::string& filePath,
-                    smtk::mesh::CollectionPtr collection )
+bool readDirichlet(const std::string& filePath, smtk::mesh::CollectionPtr collection)
 {
   return smtk::io::readMesh(filePath, collection, mesh::Subset::OnlyDirichlet);
 }
-bool readNeumann( const std::string& filePath,
-                  smtk::mesh::CollectionPtr collection )
+bool readNeumann(const std::string& filePath, smtk::mesh::CollectionPtr collection)
 {
   return smtk::io::readMesh(filePath, collection, mesh::Subset::OnlyNeumann);
 }
-
 }
 }

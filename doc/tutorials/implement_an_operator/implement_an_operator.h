@@ -6,7 +6,8 @@
 #include <string>
 
 // ++ 1 ++
-namespace ex {
+namespace ex
+{
 
 class CounterOperator : public smtk::model::Operator
 {
@@ -16,15 +17,14 @@ public:
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
   // ...
-// -- 1 --
+  // -- 1 --
 
-// ++ 2 ++
-  virtual bool ableToOperate()
-    { return this->ensureSpecification(); }
+  // ++ 2 ++
+  virtual bool ableToOperate() { return this->ensureSpecification(); }
 
 protected:
   virtual smtk::model::OperatorResult operateInternal();
-// -- 2 --
+  // -- 2 --
 };
 
 } // namespace ex

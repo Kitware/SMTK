@@ -21,8 +21,8 @@
 class VTKSMTKREADEREXT_EXPORT vtkCMBSTLReader : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkCMBSTLReader * New();
-  vtkTypeMacro(vtkCMBSTLReader,vtkPolyDataAlgorithm);
+  static vtkCMBSTLReader* New();
+  vtkTypeMacro(vtkCMBSTLReader, vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -34,13 +34,11 @@ protected:
   vtkCMBSTLReader();
   virtual ~vtkCMBSTLReader();
 
-  int RequestInformation(vtkInformation *,
-                         vtkInformationVector **,
-                         vtkInformationVector *);
-  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
 
 private:
-  vtkCMBSTLReader(const vtkCMBSTLReader&);  // Not implemented.
+  vtkCMBSTLReader(const vtkCMBSTLReader&); // Not implemented.
   void operator=(const vtkCMBSTLReader&);  // Not implemented.
 
   // Description:

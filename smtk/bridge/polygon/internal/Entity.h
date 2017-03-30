@@ -14,10 +14,14 @@
 #include "smtk/bridge/polygon/PointerDefs.h"
 #include "smtk/bridge/polygon/internal/Config.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
-      namespace internal {
+namespace smtk
+{
+namespace bridge
+{
+namespace polygon
+{
+namespace internal
+{
 
 /**\brief A base class for all internal entity storage.
   *
@@ -36,29 +40,31 @@ public:
   entity* parent() const { return this->m_parent; }
   void setParent(entity* p) { this->m_parent = p; }
 
-  template<typename T>
-  T* parentAs() const { return dynamic_cast<T*>(this->m_parent); }
+  template <typename T>
+  T* parentAs() const
+  {
+    return dynamic_cast<T*>(this->m_parent);
+  }
 
 protected:
   entity()
     : m_parent(NULL)
-    { }
+  {
+  }
   entity(const Id& uid, entity* p)
-    : m_parent(p), m_id(uid)
-    { }
-  virtual ~entity()
-    {
-    this->m_parent = NULL;
-    }
+    : m_parent(p)
+    , m_id(uid)
+  {
+  }
+  virtual ~entity() { this->m_parent = NULL; }
 
   entity* m_parent;
   Id m_id;
 };
 
-      } // namespace internal
-    } // namespace polygon
-  }  // namespace bridge
+} // namespace internal
+} // namespace polygon
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_bridge_polygon_internal_Entity_h
-

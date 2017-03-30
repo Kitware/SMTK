@@ -39,9 +39,12 @@
 
 #include "smtk/bridge/cgm/CreateBrick_xml.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 smtk::model::OperatorResult CreateBrick::operateInternal()
 {
@@ -62,18 +65,18 @@ smtk::model::OperatorResult CreateBrick::operateInternal()
   Body* cgmBody;
   int method = methodItem->discreteIndex(0);
   switch (method)
+  {
+    case 0: // axis-aligned cuboid
     {
-  case 0: // axis-aligned cuboid
-      {
       double width = widthItem->value();
       double depth = depthItem->value();
       double height = heightItem->value();
 
       cgmBody = GeometryModifyTool::instance()->brick(width, depth, height);
-      }
+    }
     break;
-  case 1: // parallelepiped
-      {
+    case 1: // parallelepiped
+    {
       CubitVector center;
       CubitVector axes[3];
       CubitVector extension;
@@ -99,19 +102,18 @@ smtk::model::OperatorResult CreateBrick::operateInternal()
       extension.z(extensionItem->value(2));
 
       cgmBody = GeometryModifyTool::instance()->brick(center, axes, extension);
-      }
-    break;
-  default:
-    cgmBody = NULL;
     }
+    break;
+    default:
+      cgmBody = NULL;
+  }
   if (!cgmBody)
-    {
+  {
     smtkInfoMacro(log(), "Failed to create body.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
-  smtk::model::OperatorResult result = this->createResult(
-    smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
 
   DLIList<Body*> cgmBodiesOut;
   cgmBodiesOut.push(cgmBody);
@@ -121,14 +123,9 @@ smtk::model::OperatorResult CreateBrick::operateInternal()
   return result;
 }
 
-    } // namespace cgm
-  } //namespace bridge
+} // namespace cgm
+} //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(
-  SMTKCGMSESSION_EXPORT,
-  smtk::bridge::cgm::CreateBrick,
-  cgm_create_brick,
-  "create brick",
-  CreateBrick_xml,
-  smtk::bridge::cgm::Session);
+smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::CreateBrick, cgm_create_brick,
+  "create brick", CreateBrick_xml, smtk::bridge::cgm::Session);

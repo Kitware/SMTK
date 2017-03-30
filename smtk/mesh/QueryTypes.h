@@ -23,26 +23,25 @@
 
 #include "smtk/common/UUID.h"
 
-namespace smtk {
-namespace mesh {
+namespace smtk
+{
+namespace mesh
+{
 
 class SMTKCORE_EXPORT IntegerTag
 {
 public:
-  explicit IntegerTag(int value):
-     m_value(value)
-    {
-    }
+  explicit IntegerTag(int value)
+    : m_value(value)
+  {
+  }
 
   int value() const { return m_value; }
 
   //custom operators to make comparing tags easy
-  bool operator<(const IntegerTag& other) const
-    { return this->m_value < other.m_value; }
-  bool operator==(const IntegerTag& other) const
-    { return this->m_value == other.m_value; }
-  bool operator!=(const IntegerTag& other) const
-    { return this->m_value != other.m_value; }
+  bool operator<(const IntegerTag& other) const { return this->m_value < other.m_value; }
+  bool operator==(const IntegerTag& other) const { return this->m_value == other.m_value; }
+  bool operator!=(const IntegerTag& other) const { return this->m_value != other.m_value; }
 
 private:
   int m_value;
@@ -51,58 +50,67 @@ private:
 class SMTKCORE_EXPORT Domain : public IntegerTag
 {
 public:
-  explicit Domain(int value) : IntegerTag(value) {}
+  explicit Domain(int value)
+    : IntegerTag(value)
+  {
+  }
 };
 
 class SMTKCORE_EXPORT Dirichlet : public IntegerTag
 {
 public:
-  explicit Dirichlet(int value) : IntegerTag(value) {}
+  explicit Dirichlet(int value)
+    : IntegerTag(value)
+  {
+  }
 };
 
 class SMTKCORE_EXPORT Neumann : public IntegerTag
 {
 public:
-  explicit Neumann(int value) : IntegerTag(value) {}
+  explicit Neumann(int value)
+    : IntegerTag(value)
+  {
+  }
 };
 
-template<int S>
+template <int S>
 class SMTKCORE_EXPORT OpaqueTag
 {
 public:
-  explicit OpaqueTag(const unsigned char* value):
-    m_value(value, value + S)
-    {
-    }
+  explicit OpaqueTag(const unsigned char* value)
+    : m_value(value, value + S)
+  {
+  }
 
   inline static int size() { return S; }
 
   const unsigned char* value() const { return &m_value[0]; }
 
   //custom operators to make comparing tags easy
-  inline bool operator < (const OpaqueTag& other) const
-    {
+  inline bool operator<(const OpaqueTag& other) const
+  {
     for (int i = 0; i < S; ++i)
       if (this->m_value < other.m_value)
         return true;
       else if (this->m_value > other.m_value)
         return false;
     return false;
-    }
-  inline bool operator == (const OpaqueTag& other) const
-    {
+  }
+  inline bool operator==(const OpaqueTag& other) const
+  {
     for (int i = 0; i < S; ++i)
       if (this->m_value != other.m_value)
         return false;
     return true;
-    }
-  inline bool operator != (const OpaqueTag& other) const
-    {
+  }
+  inline bool operator!=(const OpaqueTag& other) const
+  {
     for (int i = 0; i < S; ++i)
       if (this->m_value != other.m_value)
         return true;
     return false;
-    }
+  }
 
 private:
   std::vector<unsigned char> m_value;
@@ -111,28 +119,30 @@ private:
 class SMTKCORE_EXPORT UUIDTag : public OpaqueTag<smtk::common::UUID::SIZE>
 {
 public:
-  explicit UUIDTag(const smtk::common::UUID& value):
-    OpaqueTag<smtk::common::UUID::SIZE>(value.begin())
-    {
-    }
+  explicit UUIDTag(const smtk::common::UUID& value)
+    : OpaqueTag<smtk::common::UUID::SIZE>(value.begin())
+  {
+  }
 
   smtk::common::UUID uuid() const
-    {
-    return smtk::common::UUID(
-      this->value(), this->value() + smtk::common::UUID::SIZE);
-    }
+  {
+    return smtk::common::UUID(this->value(), this->value() + smtk::common::UUID::SIZE);
+  }
 };
 
 class SMTKCORE_EXPORT Model : public UUIDTag
 {
 public:
-  explicit Model(const smtk::common::UUID& value) : UUIDTag(value) {}
+  explicit Model(const smtk::common::UUID& value)
+    : UUIDTag(value)
+  {
+  }
 };
 
 enum ContainmentType
 {
-  PartiallyContained=1,
-  FullyContained=2
+  PartiallyContained = 1,
+  FullyContained = 2
 };
 }
 }

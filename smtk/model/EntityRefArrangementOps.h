@@ -13,8 +13,10 @@
 #include "smtk/model/ArrangementKind.h"
 #include "smtk/model/EntityRef.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief A class to help obtain entityrefs from arrangement information.
   *
@@ -26,195 +28,193 @@ public:
   static int findOrAddSimpleRelationship(const EntityRef& a, ArrangementKind k, const EntityRef& b);
 
   /// Return the first relation of kind \a k as the specified entityref type \a T.
-  template<typename T>
+  template <typename T>
   static T firstRelation(const EntityRef& c, ArrangementKind k)
-    {
+  {
     Entity* entRec;
     Arrangements* arr;
     if (c.checkForArrangements(k, entRec, arr))
-      {
+    {
       smtk::common::UUIDArray const& relations(entRec->relations());
       for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
-        {
+      {
         std::vector<int>::iterator it;
         for (it = arrIt->details().begin(); it != arrIt->details().end(); ++it)
-          {
+        {
           return T(c.manager(), relations[*it]);
-          }
         }
       }
-    return T();
     }
+    return T();
+  }
 
   /**\brief Append all the relations of kind \a k to \a result.
     *
     * This will verify that each relation is valid before
     * inserting it into \a result.
     */
-  template<typename T>
+  template <typename T>
   static void appendAllRelations(const EntityRef& c, ArrangementKind k, T& result)
-    {
+  {
     Entity* entRec;
     Arrangements* arr;
     if (c.checkForArrangements(k, entRec, arr))
-      {
+    {
       switch (k)
-        {
-      case HAS_USE:
-        if (isCellEntity(entRec->entityFlags()))
+      {
+        case HAS_USE:
+          if (isCellEntity(entRec->entityFlags()))
           {
-          appendAllCellHasUseRelations(c.manager(), entRec, arr, result);
-          return;
+            appendAllCellHasUseRelations(c.manager(), entRec, arr, result);
+            return;
           }
-        else if (isShellEntity(entRec->entityFlags()))
+          else if (isShellEntity(entRec->entityFlags()))
           {
-          appendAllShellHasUseRelations(c.manager(), entRec, arr, result);
-          return;
+            appendAllShellHasUseRelations(c.manager(), entRec, arr, result);
+            return;
           }
-        break;
-      case HAS_CELL:
-        if (isUseEntity(entRec->entityFlags()))
+          break;
+        case HAS_CELL:
+          if (isUseEntity(entRec->entityFlags()))
           {
-          appendAllUseHasCellRelations(c.manager(), entRec, arr, result);
-          return;
+            appendAllUseHasCellRelations(c.manager(), entRec, arr, result);
+            return;
           }
-        break;
-      default:
-        break;
-        }
-      appendAllSimpleRelations(c.manager(), entRec, arr, result);
+          break;
+        default:
+          break;
       }
+      appendAllSimpleRelations(c.manager(), entRec, arr, result);
     }
+  }
 
   /**\brief Helper methods used by appendAllRelations.
     */
-  template<typename T>
+  template <typename T>
   static void appendAllUseHasCellRelations(
     ManagerPtr manager, Entity* entRec, Arrangements* arr, T& result)
-    {
+  {
     smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
-      {
+    {
       // Use HAS_CELL arrangements are specified as [relIdx, sense] tuples.
       int relIdx, relSense;
-      if (
-        arrIt->IndexAndSenseFromUseHasCell(relIdx, relSense) &&
-        relIdx >= 0)
-        {
+      if (arrIt->IndexAndSenseFromUseHasCell(relIdx, relSense) && relIdx >= 0)
+      {
         typename T::value_type entry(manager, relations[relIdx]);
         if (entry.isValid())
           result.insert(result.end(), entry);
-        }
       }
     }
-  template<typename T>
+  }
+  template <typename T>
   static void appendAllCellHasUseRelations(
     ManagerPtr manager, Entity* entRec, Arrangements* arr, T& result)
-    {
+  {
     smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
-      {
+    {
       // Cell HAS_USE arrangements are specified as [relIdx, sense, orientation] tuples.
       int relIdx, relSense;
       Orientation relOrient;
-      if (
-        arrIt->IndexSenseAndOrientationFromCellHasUse(relIdx, relSense, relOrient) &&
-        relIdx >= 0)
-        {
+      if (arrIt->IndexSenseAndOrientationFromCellHasUse(relIdx, relSense, relOrient) && relIdx >= 0)
+      {
         typename T::value_type entry(manager, relations[relIdx]);
         if (entry.isValid())
           result.insert(result.end(), entry);
-        }
       }
     }
-  template<typename T>
+  }
+  template <typename T>
   static void appendAllShellHasUseRelations(
     ManagerPtr manager, Entity* entRec, Arrangements* arr, T& result)
-    {
+  {
     smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
-      {
+    {
       // Shell HAS_USE arrangements are specified as [min,max[ offset-ranges,
       // not arrays of offset values.
       int i0, i1;
       arrIt->IndexRangeFromShellHasUse(i0, i1);
       for (int i = i0; i < i1; ++i)
-        {
+      {
         typename T::value_type entry(manager, relations[i]);
         if (entry.isValid())
           result.insert(result.end(), entry);
-        }
       }
     }
+  }
   /// Invalidate all the relations participating in shell-has-use arrangements, clear the arrangements,
   /// and place the use records in \a result (in sequential order).
   /// Add the indices of the invalidated relations to \a rangeDetector.
   ///
   /// This can be used as a first step in rewriting loops (which must have edge-uses remain in order).
-  template<typename T, typename U>
+  template <typename T, typename U>
   static void popAllShellHasUseRelations(
     ManagerPtr manager, Entity* entRec, Arrangements* arr, T& result, U& rangeDetector)
-    {
+  {
     smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
-      {
+    {
       // Shell HAS_USE arrangements are specified as [min,max[ offset-ranges,
       // not arrays of offset values.
       int i0, i1;
       arrIt->IndexRangeFromShellHasUse(i0, i1);
       for (int i = i0; i < i1; ++i)
-        {
+      {
         typename T::value_type entry(manager, relations[i]);
         rangeDetector.insert(i);
         entRec->invalidateRelationByIndex(i);
         if (entry.isValid())
-          {
+        {
           result.insert(result.end(), entry);
-          }
         }
       }
-    arr->clear();
     }
-  template<typename T>
+    arr->clear();
+  }
+  template <typename T>
   static void appendAllSimpleRelations(
     ManagerPtr manager, Entity* entRec, Arrangements* arr, T& result)
-    {
+  {
     smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
-      {
+    {
       std::vector<int>::iterator it;
       for (it = arrIt->details().begin(); it != arrIt->details().end(); ++it)
-        {
-        if (*it < 0) continue; // Ignore invalid indices
+      {
+        if (*it < 0)
+          continue; // Ignore invalid indices
         typename T::value_type entry(manager, relations[*it]);
         if (entry.isValid())
-          {
+        {
           result.insert(result.end(), entry);
-          }
         }
       }
     }
+  }
 };
 
 // What follows are methods of EntityRef that require EntityRefArrangementOps.
 // This breaks an include-dependency cycle.
 
-template<typename T> T EntityRef::embeddedEntities() const
+template <typename T>
+T EntityRef::embeddedEntities() const
 {
   T result;
   EntityRefArrangementOps::appendAllRelations(*this, INCLUDES, result);
   return result;
 }
 
-template<typename T> T EntityRef::instances() const
+template <typename T>
+T EntityRef::instances() const
 {
   T result;
   EntityRefArrangementOps::appendAllRelations(*this, INSTANCED_BY, result);
   return result;
 }
 
-
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_EntityRefArrangementOps_h

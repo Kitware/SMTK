@@ -24,52 +24,51 @@ class QWidget;
 
 namespace smtk
 {
-  namespace extension
-  {
-    class SMTKQTEXT_EXPORT qtFileItem : public qtItem
-    {
-      Q_OBJECT
+namespace extension
+{
+class SMTKQTEXT_EXPORT qtFileItem : public qtItem
+{
+  Q_OBJECT
 
-    public:
-      qtFileItem(smtk::attribute::FileSystemItemPtr, QWidget* p,
-        qtBaseView* bview, Qt::Orientation enumOrient = Qt::Horizontal);
-      virtual ~qtFileItem();
-      virtual void setLabelVisible(bool);
+public:
+  qtFileItem(smtk::attribute::FileSystemItemPtr, QWidget* p, qtBaseView* bview,
+    Qt::Orientation enumOrient = Qt::Horizontal);
+  virtual ~qtFileItem();
+  virtual void setLabelVisible(bool);
 
-      void enableFileBrowser(bool state=true);
-      bool isDirectory();
-      virtual void setInputValue(const QString&);
+  void enableFileBrowser(bool state = true);
+  bool isDirectory();
+  virtual void setInputValue(const QString&);
 
-    public slots:
-      virtual void onInputValueChanged();
-      void setOutputOptional(int);
-      virtual void onLaunchFileBrowser();
-      virtual void updateFileComboList(const QString&);
+public slots:
+  virtual void onInputValueChanged();
+  void setOutputOptional(int);
+  virtual void onLaunchFileBrowser();
+  virtual void updateFileComboList(const QString&);
 
-    signals:
-      void launchFileBrowser();
+signals:
+  void launchFileBrowser();
 
-    protected slots:
-      virtual void updateItemData();
-      virtual void onAddNewValue();
-      virtual void onRemoveValue();
-      virtual void setActiveField(QWidget*);
+protected slots:
+  virtual void updateItemData();
+  virtual void onAddNewValue();
+  virtual void onRemoveValue();
+  virtual void setActiveField(QWidget*);
 
-    protected:
-      virtual void createWidget();
-      QWidget* createFileBrowseWidget(int elementIdx);
-      virtual void loadInputValues();
-      virtual void updateUI();
-      virtual void addInputEditor(int i);
-      virtual void updateExtensibleState();
-      virtual void clearChildWidgets();
+protected:
+  virtual void createWidget();
+  QWidget* createFileBrowseWidget(int elementIdx);
+  virtual void loadInputValues();
+  virtual void updateUI();
+  virtual void addInputEditor(int i);
+  virtual void updateExtensibleState();
+  virtual void clearChildWidgets();
 
-    private:
+private:
+  qtFileItemInternals* Internals;
 
-      qtFileItemInternals *Internals;
-
-    }; // class
-  }; // namespace attribute
+}; // class
+}; // namespace attribute
 }; // namespace smtk
 
 #endif

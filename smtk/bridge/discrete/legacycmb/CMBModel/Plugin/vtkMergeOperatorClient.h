@@ -28,8 +28,8 @@ class vtkSMProxy;
 class VTK_EXPORT vtkMergeOperatorClient : public vtkMergeOperatorBase
 {
 public:
-  static vtkMergeOperatorClient * New();
-  vtkTypeMacro(vtkMergeOperatorClient,vtkMergeOperatorBase);
+  static vtkMergeOperatorClient* New();
+  vtkTypeMacro(vtkMergeOperatorClient, vtkMergeOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   using Superclass::Operate;
@@ -45,8 +45,8 @@ protected:
   virtual ~vtkMergeOperatorClient();
 
 private:
-  vtkMergeOperatorClient(const vtkMergeOperatorClient&);  // Not implemented.
-  void operator=(const vtkMergeOperatorClient&);  // Not implemented.
+  vtkMergeOperatorClient(const vtkMergeOperatorClient&); // Not implemented.
+  void operator=(const vtkMergeOperatorClient&);         // Not implemented.
 };
 
 #endif

@@ -22,12 +22,13 @@
 
 class vtkSMProxy;
 
-class SMTKPQWIDGETSEXT_EXPORT qtArcWidget : public qtInteractionWidget {
+class SMTKPQWIDGETSEXT_EXPORT qtArcWidget : public qtInteractionWidget
+{
   Q_OBJECT;
   typedef qtInteractionWidget Superclass;
 
 public:
-  qtArcWidget(QWidget *parent = nullptr);
+  qtArcWidget(QWidget* parent = nullptr);
   virtual ~qtArcWidget();
 
   /// Changes the line color to magenta.
@@ -35,7 +36,7 @@ public:
   void deemphasize() { this->setLineColor(QColor::fromRgbF(1.0, 1.0, 1.0)); }
 
   /// Set the line color
-  virtual void setLineColor(const QColor &color);
+  virtual void setLineColor(const QColor& color);
 
   /// Update the UI to be in the Arc Editing mode.
   /// In this mode, for whole arc, the Visibility, Closed, Delete, buttonRectArc
@@ -43,7 +44,7 @@ public:
   virtual void useArcEditingUI(bool isWholeArc);
 
   /// Returns the point placer proxy.
-  vtkSMProxy *pointPlacer() const;
+  vtkSMProxy* pointPlacer() const;
 signals:
   /// Signal emitted when the representation proxy's "ClosedLoop" property
   /// is modified.

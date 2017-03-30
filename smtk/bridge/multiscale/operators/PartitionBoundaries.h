@@ -13,9 +13,12 @@
 #include "smtk/bridge/multiscale/Operator.h"
 #include "vtkObject.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace multiscale {
+namespace smtk
+{
+namespace bridge
+{
+namespace multiscale
+{
 
 /**\brief An operator for partitioning the AFRL Phase I Demo model.
  *
@@ -35,8 +38,8 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 };
 
-    } // namespace multiscale
-  } // namespace bridge
+} // namespace multiscale
+} // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_session_multiscale_PartitionBoundaries_h

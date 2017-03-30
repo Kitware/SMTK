@@ -27,8 +27,10 @@ SMTK_THIRDPARTY_POST_INCLUDE
 #include <string>
 #include <vector>
 
-namespace smtk {
-  namespace common {
+namespace smtk
+{
+namespace common
+{
 
 //.NAME UUID - An RFC4122-compliant Universally Unique IDentifier (UUID)
 //.SECTION Description
@@ -63,7 +65,8 @@ public:
   static UUID random();
   static UUID null();
 
-  enum {
+  enum
+  {
     SIZE = 16
   };
   static size_type size() { return SIZE; }
@@ -76,11 +79,11 @@ public:
 
   std::string toString() const;
 
-  bool operator != (UUID const& other) const;
-  bool operator == (UUID const& other) const;
-  bool operator < (UUID const& other) const;
+  bool operator!=(UUID const& other) const;
+  bool operator==(UUID const& other) const;
+  bool operator<(UUID const& other) const;
 
-  UUID& operator = (UUID const& other);
+  UUID& operator=(UUID const& other);
 
   operator bool() const;
 
@@ -111,10 +114,10 @@ typedef std::set<UUID> UUIDs;
 typedef std::vector<UUID> UUIDArray;
 typedef std::vector<UUIDArray> UUIDArrays;
 
-SMTKCORE_EXPORT std::ostream& operator << (std::ostream& stream, const UUID& uid);
-SMTKCORE_EXPORT std::istream& operator >> (std::istream& stream, UUID& uid);
+SMTKCORE_EXPORT std::ostream& operator<<(std::ostream& stream, const UUID& uid);
+SMTKCORE_EXPORT std::istream& operator>>(std::istream& stream, UUID& uid);
 
-  } // namespace common
+} // namespace common
 } // namespace smtk
 
 SMTK_HASH_NS_BEGIN
@@ -125,20 +128,19 @@ template <>
 struct hash<smtk::common::UUID>
 {
   size_t operator()(const smtk::common::UUID& uid) const
-    {
+  {
     // Use the last sizeof(size_t) bytes as the hash since UUIDs
     // put their version number in the 4 LSBs of the 8th byte, which
     // causes collisions when sizeof(size_t) == 8.
     // This will need to be revisited if we switch to node-based
     // UUIDs, but for random UUIDs it works well.
     return *reinterpret_cast<const size_t*>(uid.begin() + uid.size() - sizeof(size_t));
-    }
+  }
 };
 #else
 // Specialize hash typecast operators
 template <>
-inline size_t
-hash<const smtk::common::UUID&>::operator()(const smtk::common::UUID& uid) const
+inline size_t hash<const smtk::common::UUID&>::operator()(const smtk::common::UUID& uid) const
 {
   // Use the last sizeof(size_t) bytes as the hash since UUIDs
   // put their version number in the 4 LSBs of the 8th byte, which
@@ -149,8 +151,7 @@ hash<const smtk::common::UUID&>::operator()(const smtk::common::UUID& uid) const
 }
 
 template <>
-inline size_t
-hash<smtk::common::UUID>::operator()(smtk::common::UUID uid) const
+inline size_t hash<smtk::common::UUID>::operator()(smtk::common::UUID uid) const
 {
   // Use the last sizeof(size_t) bytes as the hash since UUIDs
   // put their version number in the 4 LSBs of the 8th byte, which

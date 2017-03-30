@@ -17,8 +17,10 @@
 
 #include <vector>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 class Edge;
 class FaceUse;
@@ -34,7 +36,7 @@ typedef std::vector<Volume> Volumes;
 class SMTKCORE_EXPORT Face : public CellEntity
 {
 public:
-  SMTK_ENTITYREF_CLASS(Face,CellEntity,isFace);
+  SMTK_ENTITYREF_CLASS(Face, CellEntity, isFace);
 
   Edges edges() const;
   Volumes volumes() const;
@@ -44,7 +46,7 @@ public:
   void setFaceUse(Orientation o, const FaceUse& u);
 };
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_Face_h

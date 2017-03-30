@@ -19,7 +19,6 @@
 #include "vtkDiscreteModelGeometricEntity.h"
 #include "vtkModelFace.h"
 
-
 class vtkDiscreteModelEdge;
 class vtkDiscreteModelFaceUse;
 class vtkDiscreteModelVertex;
@@ -29,20 +28,19 @@ class vtkBitArray;
 class vtkPolyData;
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkDiscreteModelFace : public vtkModelFace,
-  public vtkDiscreteModelGeometricEntity
+                                                         public vtkDiscreteModelGeometricEntity
 {
 public:
-  vtkTypeMacro(vtkDiscreteModelFace,vtkModelFace);
+  vtkTypeMacro(vtkDiscreteModelFace, vtkModelFace);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  static vtkDiscreteModelFace *New();
+  static vtkDiscreteModelFace* New();
 
   // Description:
   // Split this model face based on SplitAngle.  The function
   // fills the created model face UniquePersistentId and edge splitinfo in
   // FaceSplitInfo, and returns true if successful.
-  bool Split(double splitAngle,
-    std::map<vtkIdType, FaceEdgeSplitInfo>& FaceSplitInfo);
+  bool Split(double splitAngle, std::map<vtkIdType, FaceEdgeSplitInfo>& FaceSplitInfo);
 
   // Description:
   // Get All/Boundary/Interior point Ids of this model face.
@@ -64,11 +62,9 @@ public:
   // Description:
   // Extract the edges of the face and build new model edges from the extracted
   // edges with proper loop and use information.
-  void BuildEdges(bool showEdge, FaceEdgeSplitInfo& splitInfo,
-    bool saveLoopInfo=true);
+  void BuildEdges(bool showEdge, FaceEdgeSplitInfo& splitInfo, bool saveLoopInfo = true);
 
 protected:
-
   friend class vtkDiscreteModel;
   friend class vtkCMBMapToCMBModel;
   friend class vtkModelBCGridRepresentation;
@@ -84,8 +80,7 @@ protected:
   // may result in many new faces from existing face, and we only want to cache
   // the loopinfo for existing face after the last new face is created.
   vtkDiscreteModelFace* BuildFromExistingModelFace(
-    vtkIdList* cellIds, FaceEdgeSplitInfo& splitInfo,
-    bool saveLoopForExistingFace);
+    vtkIdList* cellIds, FaceEdgeSplitInfo& splitInfo, bool saveLoopForExistingFace);
 
   // Description:
   // Invoked from BuildFromExistingModelFace when existing model face
@@ -109,14 +104,10 @@ protected:
   // other model faces along that edge
   std::string EncodeModelFaces(vtkIdType facetId, vtkIdType v0, vtkIdType v1);
 
-  void WalkLoop(vtkIdType startingEdge, vtkPolyData *edges,
-                std::vector<bool> &visited,
-                vtkIdTypeArray *facetIds,
-                NewModelEdgeInfo &newEdgesInfo,
-                LoopInfo &loopInfo);
-  void CreateModelEdges(NewModelEdgeInfo &newEdgesInfo,
-    std::map<int, vtkDiscreteModelEdge*> &newEdges,
-    bool bShow, FaceEdgeSplitInfo& splitInfo);
+  void WalkLoop(vtkIdType startingEdge, vtkPolyData* edges, std::vector<bool>& visited,
+    vtkIdTypeArray* facetIds, NewModelEdgeInfo& newEdgesInfo, LoopInfo& loopInfo);
+  void CreateModelEdges(NewModelEdgeInfo& newEdgesInfo,
+    std::map<int, vtkDiscreteModelEdge*>& newEdges, bool bShow, FaceEdgeSplitInfo& splitInfo);
 
   // Description:
   // Reads the state of an instance from an archive OR
@@ -125,11 +116,10 @@ protected:
   virtual void Serialize(vtkSerializer* ser);
 
 private:
-  vtkDiscreteModelFace(const vtkDiscreteModelFace&);  // Not implemented.
-  void operator=(const vtkDiscreteModelFace&);  // Not implemented.
+  vtkDiscreteModelFace(const vtkDiscreteModelFace&); // Not implemented.
+  void operator=(const vtkDiscreteModelFace&);       // Not implemented.
 
   void CreateModelFaceUses();
 };
 
 #endif
-

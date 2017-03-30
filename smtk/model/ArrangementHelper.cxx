@@ -12,8 +12,10 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Manager.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /// Private constructor since this class is a base class which should not be instantiated.
 ArrangementHelper::ArrangementHelper()
@@ -80,5 +82,5 @@ void ArrangementHelper::reset(const smtk::model::EntityRef& ent)
     mutableEnt.removeTessellation();
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

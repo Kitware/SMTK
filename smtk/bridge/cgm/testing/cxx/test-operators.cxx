@@ -47,8 +47,7 @@ smtkComponentInitMacro(smtk_cgm_boolean_union_operator);
 smtkComponentInitMacro(smtk_cgm_create_sphere_operator);
 smtkComponentInitMacro(smtk_cgm_create_prism_operator);
 
-int usage(
-  int errCode = 0, const std::string& msg = std::string())
+int usage(int errCode = 0, const std::string& msg = std::string())
 {
   // I. Basic usage info.
   std::cout
@@ -57,13 +56,14 @@ int usage(
     << "where options may include\n"
     << "  -sph-radius=<radius>       Specifies the radius of a sphere.\n"
     << "  -sph-center=<cx,cy,cz>     Specifies the center of a sphere.\n"
-    << "  -sph-hollow=<radius>       Specifies the radius of a portion of the sphere to hollow out.\n"
+    << "  -sph-hollow=<radius>       Specifies the radius of a portion of the sphere to hollow "
+       "out.\n"
     << "  -pri-height=<height>       Specifies the height of a prismatic regular polygon.\n"
-    << "  -pri-number=<num sides>    Specifies the number of sides of a prismatic regular polygon.\n"
+    << "  -pri-number=<num sides>    Specifies the number of sides of a prismatic regular "
+       "polygon.\n"
     << "  -pri-major=<major radius>  Specifies the major radius of a prismatic regular polygon.\n"
     << "  -pri-minor=<minor radius>  Specifies the minor radius of a prismatic regular polygon.\n"
-    << "\n"
-    ;
+    << "\n";
 
   // II. Print user-specified message and return exit code.
   if (!msg.empty())
@@ -76,12 +76,18 @@ int usage(
 struct ProgOpts
 {
   ProgOpts()
-    :
-      m_sphRadius(1.0), m_sphCenter(3,0.), m_sphHollow(0.0),
-      m_priHeight(0.2), m_priNumber(3), m_priMajor(1.0), m_priMinor(1.0),
-      m_relErr("0.001"), m_angErr("2.0"), m_printHelp(false)
-    {
-    }
+    : m_sphRadius(1.0)
+    , m_sphCenter(3, 0.)
+    , m_sphHollow(0.0)
+    , m_priHeight(0.2)
+    , m_priNumber(3)
+    , m_priMajor(1.0)
+    , m_priMinor(1.0)
+    , m_relErr("0.001")
+    , m_angErr("2.0")
+    , m_printHelp(false)
+  {
+  }
 
   void setSphereRadius(double x) { this->m_sphRadius = x; }
   void setSphereCenter(const std::vector<double>& x) { this->m_sphCenter = x; }
@@ -112,7 +118,7 @@ struct ProgOpts
   std::vector<double> m_sphCenter;
   double m_sphHollow;
   double m_priHeight;
-  int    m_priNumber;
+  int m_priNumber;
   double m_priMajor;
   double m_priMinor;
   std::string m_relErr;
@@ -120,12 +126,12 @@ struct ProgOpts
   bool m_printHelp;
 };
 
-int main (int argc, char* argv[])
+int main(int argc, char* argv[])
 {
   ProgOpts opts;
   clpp::command_line_parameters_parser args;
   try
-    {
+  {
     args.add_parameter("-sph-radius", &opts, &ProgOpts::setSphereRadius);
     args.add_parameter("-sph-cx", &opts, &ProgOpts::setSphereCenterX);
     args.add_parameter("-sph-cy", &opts, &ProgOpts::setSphereCenterY);
@@ -139,37 +145,39 @@ int main (int argc, char* argv[])
     args.add_parameter("-err-angle", &opts, &ProgOpts::setAngleError);
     args.add_parameter("-help", &opts, &ProgOpts::setPrintHelp);
     args.parse(argc, argv);
-    }
+  }
   catch (std::exception& e)
-    {
+  {
     return usage(1, e.what());
-    }
+  }
   if (opts.printHelp())
-    {
+  {
     return usage(0);
-    }
+  }
 
   Manager::Ptr mgr = Manager::create();
   Session::Ptr brg = mgr->createSessionOfType("cgm");
   mgr->registerSession(brg);
   StringList err(1);
-  err[0] = opts.relativeChordError(); brg->setup("tessellation maximum relative chord error", err);
-  err[0] = opts.angleError(); brg->setup("tessellation maximum angle error", err);
+  err[0] = opts.relativeChordError();
+  brg->setup("tessellation maximum relative chord error", err);
+  err[0] = opts.angleError();
+  brg->setup("tessellation maximum angle error", err);
   Operator::Ptr op;
   OperatorResult result;
 
   op = brg->op("create sphere");
   op->findDouble("radius")->setValue(opts.sphereRadius());
-  op->findDouble("center")->setValue(0,opts.sphereCenter()[0]);
-  op->findDouble("center")->setValue(1,opts.sphereCenter()[1]);
-  op->findDouble("center")->setValue(2,opts.sphereCenter()[2]);
+  op->findDouble("center")->setValue(0, opts.sphereCenter()[0]);
+  op->findDouble("center")->setValue(1, opts.sphereCenter()[1]);
+  op->findDouble("center")->setValue(2, opts.sphereCenter()[2]);
   op->findDouble("inner radius")->setValue(opts.sphereHollow());
   result = op->operate();
   if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
-    {
+  {
     std::cerr << "Sphere Fail\n";
     return 1;
-    }
+  }
   Model sphere = result->findModelEntity("created")->value();
 
   op = brg->op("create prism");
@@ -179,10 +187,10 @@ int main (int argc, char* argv[])
   op->findDouble("minor radius")->setValue(opts.prismMinor());
   result = op->operate();
   if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
-    {
+  {
     std::cerr << "Prism Fail\n";
     return 1;
-    }
+  }
   Model prism = result->findModelEntity("created")->value();
 
   Models operands;
@@ -190,8 +198,7 @@ int main (int argc, char* argv[])
   operands.push_back(prism);
   SessionRef bs(mgr, brg->sessionId());
   StringList validOps = bs.operatorsForAssociation(operands);
-  test(!validOps.empty(),
-    "Expected at least 1 operator (union) that can act on model entities.");
+  test(!validOps.empty(), "Expected at least 1 operator (union) that can act on model entities.");
   test(std::find(validOps.begin(), validOps.end(), "union") != validOps.end(),
     "Expected the union operator to be valid.");
 
@@ -201,10 +208,10 @@ int main (int argc, char* argv[])
   test(op->associateEntity(prism), "Could not associate prism to union operator");
   result = op->operate();
   if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)
-    {
+  {
     std::cerr << "Union Fail\n";
     return 1;
-    }
+  }
 
   smtk::attribute::ModelEntityItem::Ptr bodies = result->findModelEntity("modified");
   std::cout << "Created " << bodies->value().flagSummary() << "\n";

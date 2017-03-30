@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
 #include "smtk/io/XmlStringWriter.h"
@@ -20,13 +19,17 @@
 #define DEFAULT_FILE_VERSION 2
 #define MAX_FILE_VERSION 3
 
-namespace smtk {
-  namespace io {
+namespace smtk
+{
+namespace io
+{
 
-AttributeWriter::AttributeWriter():
-  m_fileVersion(DEFAULT_FILE_VERSION),
-  m_includeDefinitions(true), m_includeInstances(true),
-  m_includeModelInformation(true), m_includeViews(true)
+AttributeWriter::AttributeWriter()
+  : m_fileVersion(DEFAULT_FILE_VERSION)
+  , m_includeDefinitions(true)
+  , m_includeInstances(true)
+  , m_includeModelInformation(true)
+  , m_includeViews(true)
 {
 }
 
@@ -34,10 +37,10 @@ bool AttributeWriter::setFileVersion(unsigned int version)
 {
   // Validate input
   if ((version >= 2) && (version <= MAX_FILE_VERSION))
-    {
+  {
     this->m_fileVersion = version;
     return true;
-    }
+  }
 
   // (else)
   return false;
@@ -53,43 +56,40 @@ unsigned int AttributeWriter::fileVersion() const
   return this->m_fileVersion;
 }
 
-bool AttributeWriter::write(const smtk::attribute::System &system,
-                            const std::string &filename,
-                            Logger &logger)
+bool AttributeWriter::write(
+  const smtk::attribute::System& system, const std::string& filename, Logger& logger)
 {
   logger.reset();
-  XmlStringWriter *theWriter = this->newXmlStringWriter(system);
+  XmlStringWriter* theWriter = this->newXmlStringWriter(system);
   theWriter->includeDefinitions(this->m_includeDefinitions);
   theWriter->includeInstances(this->m_includeInstances);
   theWriter->includeModelInformation(this->m_includeModelInformation);
   theWriter->includeViews(this->m_includeViews);
 
   std::string result = theWriter->convertToString(logger);
-  if(!logger.hasErrors())
-	{
-	std::ofstream outfile;
-	outfile.open(filename.c_str(), std::ofstream::out | std::ofstream::trunc);
-        if (!outfile)
-          {
-          smtkErrorMacro(logger, "Error opening file for writing: " << filename);
-          }
-        else
-          {
-          outfile << result;
-          }
-	outfile.close();
-	}
+  if (!logger.hasErrors())
+  {
+    std::ofstream outfile;
+    outfile.open(filename.c_str(), std::ofstream::out | std::ofstream::trunc);
+    if (!outfile)
+    {
+      smtkErrorMacro(logger, "Error opening file for writing: " << filename);
+    }
+    else
+    {
+      outfile << result;
+    }
+    outfile.close();
+  }
   delete theWriter;
   return logger.hasErrors();
 }
 
-bool AttributeWriter::writeContents(const smtk::attribute::System &system,
-                                    std::string &filecontents,
-                                    Logger &logger,
-                                    bool no_declaration)
+bool AttributeWriter::writeContents(const smtk::attribute::System& system,
+  std::string& filecontents, Logger& logger, bool no_declaration)
 {
   logger.reset();
-  XmlStringWriter *theWriter = this->newXmlStringWriter(system);
+  XmlStringWriter* theWriter = this->newXmlStringWriter(system);
   theWriter->includeDefinitions(this->m_includeDefinitions);
   theWriter->includeInstances(this->m_includeInstances);
   theWriter->includeModelInformation(this->m_includeModelInformation);
@@ -99,12 +99,11 @@ bool AttributeWriter::writeContents(const smtk::attribute::System &system,
   return logger.hasErrors();
 }
 
-XmlStringWriter *AttributeWriter::newXmlStringWriter(
-  const smtk::attribute::System& system) const
+XmlStringWriter* AttributeWriter::newXmlStringWriter(const smtk::attribute::System& system) const
 {
-  XmlStringWriter *writer = NULL;
+  XmlStringWriter* writer = NULL;
   switch (this->m_fileVersion)
-    {
+  {
     case 2:
       writer = new XmlV2StringWriter(system);
       break;
@@ -116,11 +115,11 @@ XmlStringWriter *AttributeWriter::newXmlStringWriter(
     default:
       assert("Invalid file version");
       break;
-    }
+  }
   return writer;
 }
 
-  } // namespace io
+} // namespace io
 } // namespace smtk
 
 #undef DEFAULT_FILE_VERSION

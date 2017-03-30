@@ -16,14 +16,17 @@
 
 #include <sstream>
 
-namespace smtk {
-  namespace common {
+namespace smtk
+{
+namespace common
+{
 
 boost::local_time::tz_database TimeZone::s_database;
 bool TimeZone::s_databaseLoaded = false;
 
 TimeZone::TimeZone()
-  : m_boostTimeZone(0),  m_isUTC(false)
+  : m_boostTimeZone(0)
+  , m_isUTC(false)
 {
 }
 
@@ -50,7 +53,7 @@ bool TimeZone::setRegion(const std::string& region)
 {
   // Load database if needed
   if (!TimeZone::s_databaseLoaded)
-    {
+  {
     std::string tzSpec(timezonespec_csv);
     std::istringstream ss(tzSpec);
 
@@ -59,14 +62,14 @@ bool TimeZone::setRegion(const std::string& region)
     std::getline(ss, buff);
     TimeZone::s_database.load_from_stream(ss);
     TimeZone::s_databaseLoaded = true;
-    }
+  }
 
   this->m_boostTimeZone = s_database.time_zone_from_region(region);
   if (!this->isSet())
-    {
+  {
     this->m_region.clear();
     return false;
-    }
+  }
 
   // else
   this->m_isUTC = false;
@@ -82,22 +85,23 @@ std::string TimeZone::region() const
 bool TimeZone::setPosixString(const std::string& posixTimeZoneString)
 {
   try
-    {
+  {
     boost::local_time::time_zone_ptr tz(
       new boost::local_time::posix_time_zone(posixTimeZoneString));
     this->m_boostTimeZone = tz;
-    }
+  }
   catch (std::exception& e)
-    {
+  {
 #ifndef NDEBUG
     std::cerr << "exception: " << e.what() << std::endl;
 #else
-    (void)e;;
+    (void)e;
+    ;
 #endif
     boost::local_time::time_zone_ptr tzNull(0);
     this->m_boostTimeZone = tzNull;
     return false;
-    }
+  }
 
   this->m_isUTC = false;
   this->m_region.clear();
@@ -107,29 +111,28 @@ bool TimeZone::setPosixString(const std::string& posixTimeZoneString)
 std::string TimeZone::posixString() const
 {
   if (this->m_isUTC)
-    {
+  {
     return "UTC+0";
-    }
+  }
   return this->m_boostTimeZone->to_posix_string();
 }
 
 std::string TimeZone::stdZoneName() const
 {
   if (this->m_boostTimeZone)
-    {
+  {
     return this->m_boostTimeZone->std_zone_name();
-    }
+  }
   // else
   return std::string();
 }
 
-
 std::string TimeZone::stdZoneAbbreviation() const
 {
   if (this->m_boostTimeZone)
-    {
+  {
     return this->m_boostTimeZone->std_zone_abbrev();
-    }
+  }
   // else
   return std::string();
 }
@@ -137,9 +140,9 @@ std::string TimeZone::stdZoneAbbreviation() const
 std::string TimeZone::dstZoneName() const
 {
   if (this->m_boostTimeZone)
-    {
+  {
     return this->m_boostTimeZone->dst_zone_name();
-    }
+  }
   // else
   return std::string();
 }
@@ -147,9 +150,9 @@ std::string TimeZone::dstZoneName() const
 std::string TimeZone::dstZoneAbbreviation() const
 {
   if (this->m_boostTimeZone)
-    {
+  {
     return this->m_boostTimeZone->dst_zone_abbrev();
-    }
+  }
   // else
   return std::string();
 }
@@ -157,9 +160,9 @@ std::string TimeZone::dstZoneAbbreviation() const
 bool TimeZone::hasDST() const
 {
   if (this->m_boostTimeZone)
-    {
+  {
     return this->m_boostTimeZone->has_dst();
-    }
+  }
   // else
   return false;
 }
@@ -167,13 +170,12 @@ bool TimeZone::hasDST() const
 bool TimeZone::utcOffset(int& hours, int& minutes) const
 {
   if (this->m_boostTimeZone)
-    {
-    boost::posix_time::time_duration delta =
-      this->m_boostTimeZone->base_utc_offset();
+  {
+    boost::posix_time::time_duration delta = this->m_boostTimeZone->base_utc_offset();
     hours = delta.hours();
     minutes = delta.minutes();
     return true;
-    }
+  }
   // else
   return false;
 }
@@ -181,13 +183,12 @@ bool TimeZone::utcOffset(int& hours, int& minutes) const
 bool TimeZone::dstShift(int& hours, int& minutes) const
 {
   if (this->m_boostTimeZone)
-    {
-    boost::posix_time::time_duration delta =
-      this->m_boostTimeZone->dst_offset();
+  {
+    boost::posix_time::time_duration delta = this->m_boostTimeZone->dst_offset();
     hours = delta.hours();
     minutes = delta.minutes();
     return true;
-    }
+  }
   // else
   return false;
 }
@@ -197,6 +198,5 @@ const boost::local_time::time_zone_ptr TimeZone::boostPointer() const
   return this->m_boostTimeZone;
 }
 
-  } // namespace common
+} // namespace common
 } // namespace smtk
-

@@ -29,7 +29,7 @@ class VTK_EXPORT vtkCMBModelEdgeMeshClient : public vtkCMBModelEdgeMesh
 {
 public:
   static vtkCMBModelEdgeMeshClient* New();
-  vtkTypeMacro(vtkCMBModelEdgeMeshClient,vtkCMBModelEdgeMesh);
+  vtkTypeMacro(vtkCMBModelEdgeMeshClient, vtkCMBModelEdgeMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -53,8 +53,8 @@ protected:
   bool BuildMesh(bool meshHigherDimensionalEntities);
 
 private:
-  vtkCMBModelEdgeMeshClient(const vtkCMBModelEdgeMeshClient&);  // Not implemented.
-  void operator=(const vtkCMBModelEdgeMeshClient&);  // Not implemented.
+  vtkCMBModelEdgeMeshClient(const vtkCMBModelEdgeMeshClient&); // Not implemented.
+  void operator=(const vtkCMBModelEdgeMeshClient&);            // Not implemented.
 };
 
 #endif

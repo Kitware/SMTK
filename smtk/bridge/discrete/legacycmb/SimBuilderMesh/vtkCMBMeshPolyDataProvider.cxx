@@ -70,11 +70,9 @@ void vtkCMBMeshPolyDataProvider::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 int vtkCMBMeshPolyDataProvider::RequestUpdateExtent(
-  vtkInformation *,
-  vtkInformationVector **,
-  vtkInformationVector *outputVector)
+  vtkInformation*, vtkInformationVector**, vtkInformationVector* outputVector)
 {
-  vtkInformation *outInfo = outputVector->GetInformationObject(0);
+  vtkInformation* outInfo = outputVector->GetInformationObject(0);
 
   int piece, numPieces, ghostLevel;
 
@@ -84,108 +82,100 @@ int vtkCMBMeshPolyDataProvider::RequestUpdateExtent(
 
   // make sure piece is valid
   if (piece < 0 || piece >= numPieces)
-    {
+  {
     return 1;
-    }
+  }
 
   if (ghostLevel < 0)
-    {
+  {
     return 1;
-    }
+  }
 
   return 1;
 }
 
-int vtkCMBMeshPolyDataProvider::RequestData(
-  vtkInformation* /*request*/,
-  vtkInformationVector** vtkNotUsed( inputVector ),
-  vtkInformationVector* outputVector)
+int vtkCMBMeshPolyDataProvider::RequestData(vtkInformation* /*request*/,
+  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
 {
-  if(!this->MeshWrapper ||
-     (this->EntityIdIsSet==0 && this->ItemTypeIsSet == 0) ||
-     (this->EntityIdIsSet == 0 && this->ItemTypeIsSet != 0 &&
-      this->ItemType != vtkModelType) )
-    {
+  if (!this->MeshWrapper || (this->EntityIdIsSet == 0 && this->ItemTypeIsSet == 0) ||
+    (this->EntityIdIsSet == 0 && this->ItemTypeIsSet != 0 && this->ItemType != vtkModelType))
+  {
     vtkErrorMacro("Improper input to filter.");
     return 0;
-    }
+  }
 
-  vtkInformation *outInfo = outputVector->GetInformationObject(0);
-  vtkPolyData *output = vtkPolyData::SafeDownCast(
-    outInfo->Get(vtkDataObject::DATA_OBJECT()));
+  vtkInformation* outInfo = outputVector->GetInformationObject(0);
+  vtkPolyData* output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
   vtkModelEntity* entity = NULL;
   vtkModel* model = this->MeshWrapper->GetMesh()->GetModel();
-  if(this->ItemTypeIsSet)
-    {
+  if (this->ItemTypeIsSet)
+  {
     // the faster search method
     entity = model->GetModelEntity(this->ItemType, this->EntityId);
-    }
+  }
   else
-    {
+  {
     entity = model->GetModelEntity(this->EntityId);
-    }
-  vtkModelGeometricEntity* geometricEntity =
-    vtkModelGeometricEntity::SafeDownCast(entity);
-  if(geometricEntity == NULL)
-    {
+  }
+  vtkModelGeometricEntity* geometricEntity = vtkModelGeometricEntity::SafeDownCast(entity);
+  if (geometricEntity == NULL)
+  {
     vtkErrorMacro("Must have a geometric entity.");
     return 0;
-    }
+  }
   vtkCMBModelEntityMesh* modelEntityMesh =
     this->MeshWrapper->GetMesh()->GetModelEntityMesh(geometricEntity);
-  if(!modelEntityMesh->GetModelEntityMesh())
-    {
+  if (!modelEntityMesh->GetModelEntityMesh())
+  {
     vtkWarningMacro("Input does not have valid geometry.");
     return 0;
-    }
+  }
 
   // If this is an meshed model edge, we want to add vertex to the mesh polydata,
   // so that the mesh edge points can be shown.
   vtkModelEdge* EdgeEntity = vtkModelEdge::SafeDownCast(entity);
-  if(EdgeEntity && this->CreateEdgePointVerts)
-    {
+  if (EdgeEntity && this->CreateEdgePointVerts)
+  {
     vtkPolyData* edgePoly = modelEntityMesh->GetModelEntityMesh();
     vtkIdType numCells = edgePoly->GetNumberOfCells();
     vtkIdType npts, *cellPnts;
-    vtkSmartPointer<vtkIdList> PointIds =
-      vtkSmartPointer<vtkIdList>::New();
-    for(vtkIdType i=0; i<numCells; i++)
-      {
+    vtkSmartPointer<vtkIdList> PointIds = vtkSmartPointer<vtkIdList>::New();
+    for (vtkIdType i = 0; i < numCells; i++)
+    {
       edgePoly->GetLines()->GetCell(i, npts, cellPnts);
       for (vtkIdType ptIndex = 0; ptIndex < npts; ptIndex++)
-        {
+      {
         vtkIdType pid = cellPnts[ptIndex];
         PointIds->InsertUniqueId(pid);
-        }
       }
+    }
     vtkIdType NumberOfPointIds = PointIds->GetNumberOfIds();
     vtkCellArray* Verts = vtkCellArray::New();
     Verts->Allocate(NumberOfPointIds);
-    for(vtkIdType i=0;i<NumberOfPointIds;i++)
-      {
+    for (vtkIdType i = 0; i < NumberOfPointIds; i++)
+    {
       vtkIdType PointId = PointIds->GetId(i);
       Verts->InsertNextCell(1, &PointId);
-      }
+    }
     output->Initialize();
     output->SetPoints(edgePoly->GetPoints());
     output->SetLines(edgePoly->GetLines());
-    if(Verts->GetNumberOfCells()>0)
-      {
-      output->SetVerts(Verts);
-      }
-    Verts->Delete();
-    }
-  else
+    if (Verts->GetNumberOfCells() > 0)
     {
-    output->ShallowCopy(modelEntityMesh->GetModelEntityMesh());
+      output->SetVerts(Verts);
     }
+    Verts->Delete();
+  }
+  else
+  {
+    output->ShallowCopy(modelEntityMesh->GetModelEntityMesh());
+  }
 
   return 1;
 }
 
-int vtkCMBMeshPolyDataProvider::FillOutputPortInformation(
-  int, vtkInformation* info)
+int vtkCMBMeshPolyDataProvider::FillOutputPortInformation(int, vtkInformation* info)
 {
   info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPolyData");
   return 1;

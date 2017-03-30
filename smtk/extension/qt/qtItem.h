@@ -21,84 +21,81 @@ class qtItemInternals;
 
 /* Define a casting macro for use by the constants below.  */
 #if defined(__cplusplus)
-# define smtk_TYPE_CAST(T, V) static_cast< T >(V)
+#define smtk_TYPE_CAST(T, V) static_cast<T>(V)
 #else
-# define smtk_TYPE_CAST(T, V) ((T)(V))
+#define smtk_TYPE_CAST(T, V) ((T)(V))
 #endif
 
-#define smtk_INT_MIN                 smtk_TYPE_CAST(int, ~(~0u >> 1))
-#define smtk_INT_MAX                 smtk_TYPE_CAST(int, ~0u >> 1)
-#define smtk_UNSIGNED_INT_MIN        smtk_TYPE_CAST(unsigned int, 0)
-#define smtk_UNSIGNED_INT_MAX        smtk_TYPE_CAST(unsigned int, ~0u)
-#define smtk_LONG_MIN                smtk_TYPE_CAST(long, ~(~0ul >> 1))
-#define smtk_LONG_MAX                smtk_TYPE_CAST(long, ~0ul >> 1)
-#define smtk_UNSIGNED_LONG_MIN       smtk_TYPE_CAST(unsigned long, 0ul)
-#define smtk_UNSIGNED_LONG_MAX       smtk_TYPE_CAST(unsigned long, ~0ul)
-#define smtk_FLOAT_MIN               smtk_TYPE_CAST(float, -1.0e+38f)
-#define smtk_FLOAT_MAX               smtk_TYPE_CAST(float,  1.0e+38f)
-#define smtk_DOUBLE_MIN              smtk_TYPE_CAST(double, -1.0e+299)
-#define smtk_DOUBLE_MAX              smtk_TYPE_CAST(double,  1.0e+299)
+#define smtk_INT_MIN smtk_TYPE_CAST(int, ~(~0u >> 1))
+#define smtk_INT_MAX smtk_TYPE_CAST(int, ~0u >> 1)
+#define smtk_UNSIGNED_INT_MIN smtk_TYPE_CAST(unsigned int, 0)
+#define smtk_UNSIGNED_INT_MAX smtk_TYPE_CAST(unsigned int, ~0u)
+#define smtk_LONG_MIN smtk_TYPE_CAST(long, ~(~0ul >> 1))
+#define smtk_LONG_MAX smtk_TYPE_CAST(long, ~0ul >> 1)
+#define smtk_UNSIGNED_LONG_MIN smtk_TYPE_CAST(unsigned long, 0ul)
+#define smtk_UNSIGNED_LONG_MAX smtk_TYPE_CAST(unsigned long, ~0ul)
+#define smtk_FLOAT_MIN smtk_TYPE_CAST(float, -1.0e+38f)
+#define smtk_FLOAT_MAX smtk_TYPE_CAST(float, 1.0e+38f)
+#define smtk_DOUBLE_MIN smtk_TYPE_CAST(double, -1.0e+299)
+#define smtk_DOUBLE_MAX smtk_TYPE_CAST(double, 1.0e+299)
 
 #define smtk_DOUBLE_CONSTRAINT_PRECISION 0.000001
 #define smtk_USER_DATA_TYPE 10000
 
 namespace smtk
 {
-  namespace extension
-  {
-    class qtBaseView;
-    class qtUIManager;
+namespace extension
+{
+class qtBaseView;
+class qtUIManager;
 
-    class SMTKQTEXT_EXPORT qtItem : public QObject
-    {
-      Q_OBJECT
+class SMTKQTEXT_EXPORT qtItem : public QObject
+{
+  Q_OBJECT
 
-    public:
-      qtItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview);
-      virtual ~qtItem();
+public:
+  qtItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview);
+  virtual ~qtItem();
 
-      smtk::attribute::ItemPtr getObject();
-      qtUIManager* uiManager() const;
+  smtk::attribute::ItemPtr getObject();
+  qtUIManager* uiManager() const;
 
-      QWidget* widget()
-      {return this->Widget;}
-      QWidget* parentWidget();
+  QWidget* widget() { return this->Widget; }
+  QWidget* parentWidget();
 
-      virtual void addChildItem(qtItem*);
-      virtual void clearChildItems();
-      QList<qtItem*>& childItems() const;
+  virtual void addChildItem(qtItem*);
+  virtual void clearChildItems();
+  QList<qtItem*>& childItems() const;
 
-      bool isLeafItem()
-        {return this->IsLeafItem;}
+  bool isLeafItem() { return this->IsLeafItem; }
 
-      virtual void setLabelVisible(bool) {;}
+  virtual void setLabelVisible(bool) { ; }
 
-      bool passAdvancedCheck();
-      void showAdvanceLevelOverlay(bool);
+  bool passAdvancedCheck();
+  void showAdvanceLevelOverlay(bool);
 
-    signals:
-       void widgetSizeChanged();
-       // Signal indicates that the underlying item has been modified
-       void modified();
+signals:
+  void widgetSizeChanged();
+  // Signal indicates that the underlying item has been modified
+  void modified();
 
-    protected slots:
-      virtual void updateItemData();
-      virtual void onAdvanceLevelChanged(int levelIdx);
-      virtual void onChildWidgetSizeChanged(){;}
+protected slots:
+  virtual void updateItemData();
+  virtual void onAdvanceLevelChanged(int levelIdx);
+  virtual void onChildWidgetSizeChanged() { ; }
 
-   protected:
-      virtual void createWidget() {;}
-      virtual qtBaseView* baseView();
-      virtual void setAdvanceLevel(int level);
+protected:
+  virtual void createWidget() { ; }
+  virtual qtBaseView* baseView();
+  virtual void setAdvanceLevel(int level);
 
-      QWidget* Widget;
-      bool IsLeafItem;
+  QWidget* Widget;
+  bool IsLeafItem;
 
-    private:
-
-      qtItemInternals *Internals;
-    }; // class
-  }; // namespace attribute
+private:
+  qtItemInternals* Internals;
+}; // class
+}; // namespace attribute
 }; // namespace smtk
 
 #endif

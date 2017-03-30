@@ -26,9 +26,9 @@ class VTKSMTKSOURCEEXT_EXPORT vtkModelSource : public vtkPolyDataAlgorithm
 public:
   static vtkModelSource* New();
   virtual void PrintSelf(ostream& os, vtkIndent indent);
-  vtkTypeMacro(vtkModelSource,vtkPolyDataAlgorithm);
+  vtkTypeMacro(vtkModelSource, vtkPolyDataAlgorithm);
 
-  vtkGetObjectMacro(CachedOutput,vtkPolyData);
+  vtkGetObjectMacro(CachedOutput, vtkPolyData);
 
   smtk::model::EntityRefs GetEntities();
   void SetEntities(const smtk::model::EntityRefs&);
@@ -39,16 +39,15 @@ protected:
   vtkModelSource();
   virtual ~vtkModelSource();
 
-  struct SortByDim {
-    bool operator () (const smtk::model::EntityRef& a, const smtk::model::EntityRef& b)
-      {
-      return
-        (a.dimension() < b.dimension()) ||
-        (a.dimension() == b.dimension() && a < b) ?
-        true : false;
-      }
+  struct SortByDim
+  {
+    bool operator()(const smtk::model::EntityRef& a, const smtk::model::EntityRef& b)
+    {
+      return (a.dimension() < b.dimension()) || (a.dimension() == b.dimension() && a < b) ? true
+                                                                                          : false;
+    }
   };
-  typedef std::set<smtk::model::EntityRef,SortByDim> EntityRefsByDim;
+  typedef std::set<smtk::model::EntityRef, SortByDim> EntityRefsByDim;
 
   void AccumulateSortedEntities(
     EntityRefsByDim& accum, vtkIdType& npts, smtk::model::EntityRefs& toplevel);
@@ -59,9 +58,7 @@ protected:
   //virtual int FillOutputPortInformation(int port, vtkInformation* request);
 
   virtual int RequestData(
-    vtkInformation* request,
-    vtkInformationVector** inInfo,
-    vtkInformationVector* outInfo);
+    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo);
 
   void SetCachedOutput(vtkPolyData*);
 
@@ -71,7 +68,7 @@ protected:
 
 private:
   vtkModelSource(const vtkModelSource&); // Not implemented.
-  void operator = (const vtkModelSource&); // Not implemented.
+  void operator=(const vtkModelSource&); // Not implemented.
 };
 
 #endif // __smtk_vtk_ModelSource_h

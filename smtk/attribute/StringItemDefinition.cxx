@@ -8,14 +8,14 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
 using namespace smtk::attribute;
 
-StringItemDefinition::StringItemDefinition(const std::string &myName):
-  ValueItemDefinitionTemplate<std::string>(myName), m_multiline(false),
-  m_secure(false)
+StringItemDefinition::StringItemDefinition(const std::string& myName)
+  : ValueItemDefinitionTemplate<std::string>(myName)
+  , m_multiline(false)
+  , m_secure(false)
 {
 }
 
@@ -28,27 +28,20 @@ Item::Type StringItemDefinition::type() const
   return Item::STRING;
 }
 
-smtk::attribute::ItemPtr
-StringItemDefinition::buildItem(Attribute *owningAttribute,
-                                int itemPosition) const
+smtk::attribute::ItemPtr StringItemDefinition::buildItem(
+  Attribute* owningAttribute, int itemPosition) const
 {
-  return smtk::attribute::ItemPtr(new StringItem(owningAttribute,
-                                                itemPosition));
+  return smtk::attribute::ItemPtr(new StringItem(owningAttribute, itemPosition));
 }
 
-smtk::attribute::ItemPtr
-StringItemDefinition::buildItem(Item *owningItem,
-                                int itemPosition,
-                                int subGroupPosition) const
+smtk::attribute::ItemPtr StringItemDefinition::buildItem(
+  Item* owningItem, int itemPosition, int subGroupPosition) const
 {
-  return smtk::attribute::ItemPtr(new StringItem(owningItem,
-                                                itemPosition,
-                                                subGroupPosition));
+  return smtk::attribute::ItemPtr(new StringItem(owningItem, itemPosition, subGroupPosition));
 }
 
-smtk::attribute::ItemDefinitionPtr
-smtk::attribute::StringItemDefinition::
-createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
+smtk::attribute::ItemDefinitionPtr smtk::attribute::StringItemDefinition::createCopy(
+  smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   smtk::attribute::StringItemDefinitionPtr newDef =
     smtk::attribute::StringItemDefinition::New(this->name());

@@ -26,8 +26,8 @@ class vtkDiscreteModelEdge;
 class VTKCMBDISCRETEMODEL_EXPORT vtkModelEdgeOperatorBase : public vtkModelEntityOperatorBase
 {
 public:
-  static vtkModelEdgeOperatorBase * New();
-  vtkTypeMacro(vtkModelEdgeOperatorBase,vtkModelEntityOperatorBase);
+  static vtkModelEdgeOperatorBase* New();
+  vtkTypeMacro(vtkModelEdgeOperatorBase, vtkModelEntityOperatorBase);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -53,8 +53,8 @@ protected:
   virtual bool AbleToOperate(vtkDiscreteModel* Model);
 
 private:
-  vtkModelEdgeOperatorBase(const vtkModelEdgeOperatorBase&);  // Not implemented.
-  void operator=(const vtkModelEdgeOperatorBase&);  // Not implemented.
+  vtkModelEdgeOperatorBase(const vtkModelEdgeOperatorBase&); // Not implemented.
+  void operator=(const vtkModelEdgeOperatorBase&);           // Not implemented.
 
   int IsLineResolutionSet;
   int LineResolution;

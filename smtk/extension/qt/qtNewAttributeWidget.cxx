@@ -17,22 +17,25 @@
 using namespace smtk::attribute;
 
 #include "ui_qtNewAttributeWidget.h"
-namespace Ui { class qtNewAttributeWidget; }
+namespace Ui
+{
+class qtNewAttributeWidget;
+}
 
 class qtNewAttributeWidget::PIMPL : public Ui::qtNewAttributeWidget
 {
 public:
   PIMPL(QWidget* parentW)
   {
-  this->BaseWidget = parentW ?
-    qobject_cast<QComboBox*>(parentW) : NULL;;
+    this->BaseWidget = parentW ? qobject_cast<QComboBox*>(parentW) : NULL;
+    ;
   }
   ~PIMPL() {}
   QPointer<QComboBox> BaseWidget;
 };
 
-qtNewAttributeWidget::qtNewAttributeWidget(QWidget* parentW):
-  Superclass(parentW->parentWidget(), Qt::Dialog|Qt::FramelessWindowHint)
+qtNewAttributeWidget::qtNewAttributeWidget(QWidget* parentW)
+  : Superclass(parentW->parentWidget(), Qt::Dialog | Qt::FramelessWindowHint)
 {
   this->Private = new qtNewAttributeWidget::PIMPL(parentW);
   this->Private->setupUi(this);
@@ -47,17 +50,16 @@ qtNewAttributeWidget::~qtNewAttributeWidget()
 
 void qtNewAttributeWidget::setBaseWidget(QWidget* widget)
 {
-  this->Private->BaseWidget = widget ?
-    qobject_cast<QComboBox*>(widget) : NULL;;
+  this->Private->BaseWidget = widget ? qobject_cast<QComboBox*>(widget) : NULL;
+  ;
 }
 
-int qtNewAttributeWidget::showWidget(const QString& name,
-                                     const QList<QString>& attTypes)
+int qtNewAttributeWidget::showWidget(const QString& name, const QList<QString>& attTypes)
 {
-  if(!this->Private->BaseWidget)
-    {
+  if (!this->Private->BaseWidget)
+  {
     return QDialog::Rejected;
-    }
+  }
   this->Private->comboBoxType->clear();
   this->Private->comboBoxType->addItems(attTypes);
   this->Private->comboBoxType->setCurrentIndex(0);
@@ -66,8 +68,8 @@ int qtNewAttributeWidget::showWidget(const QString& name,
   mappedPoint.setX(0);
   mappedPoint = this->Private->BaseWidget->mapToGlobal(mappedPoint);
   mappedPoint = this->mapFromGlobal(mappedPoint);
-  this->setGeometry( mappedPoint.x(), mappedPoint.y()-2*this->height(),
-                     this->Private->BaseWidget->width(), this->height());
+  this->setGeometry(mappedPoint.x(), mappedPoint.y() - 2 * this->height(),
+    this->Private->BaseWidget->width(), this->height());
   this->setModal(true);
   return this->exec();
 }

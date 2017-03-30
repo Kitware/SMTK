@@ -36,8 +36,10 @@
 //required for insert_iterator on VS2010+
 #include <iterator>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 SubphraseGenerator::SubphraseGenerator()
 {
   m_directlimit = 4;
@@ -84,11 +86,11 @@ int SubphraseGenerator::directLimit() const
   */
 bool SubphraseGenerator::setDirectLimit(int val)
 {
-  if(val != 0)
-    {
+  if (val != 0)
+  {
     this->m_directlimit = val;
     return true;
-    }
+  }
   return false;
 }
 
@@ -97,7 +99,7 @@ bool SubphraseGenerator::setDirectLimit(int val)
   * Subclasses should override this method.
   */
 bool SubphraseGenerator::shouldOmitProperty(
-    DescriptivePhrase::Ptr parent, PropertyType ptype, const std::string& pname) const
+  DescriptivePhrase::Ptr parent, PropertyType ptype, const std::string& pname) const
 {
   (void)parent;
   (void)ptype;
@@ -117,7 +119,6 @@ void SubphraseGenerator::setSkipProperties(bool val)
 {
   m_skipProperties = val;
 }
-
 
 /**\brief Get/Set whether entity attributes will be skiped for subphrases.
   *
@@ -154,22 +155,20 @@ void SubphraseGenerator::attributesOfEntity(
   DescriptivePhrase::Ptr src, const EntityRef& ent, DescriptivePhrases& result)
 {
   if (!m_skipAttributes && ent.hasAttributes())
-    {
-    result.push_back(
-      AttributeListPhrase::create()->setup(
-        ent, ent.attributes(), src));
-    }
+  {
+    result.push_back(AttributeListPhrase::create()->setup(ent, ent.attributes(), src));
+  }
 }
 
 void SubphraseGenerator::propertiesOfEntity(
   DescriptivePhrase::Ptr src, const EntityRef& ent, DescriptivePhrases& result)
 {
-  if(!this->m_skipProperties)
-    {
+  if (!this->m_skipProperties)
+  {
     this->stringPropertiesOfEntity(src, ent, result);
     this->integerPropertiesOfEntity(src, ent, result);
     this->floatPropertiesOfEntity(src, ent, result);
-    }
+  }
 }
 
 void SubphraseGenerator::floatPropertiesOfEntity(
@@ -177,9 +176,9 @@ void SubphraseGenerator::floatPropertiesOfEntity(
 {
   std::set<std::string> pnames = ent.floatPropertyNames();
   if (!pnames.empty())
-    {
+  {
     this->addEntityProperties(FLOAT_PROPERTY, pnames, src, result);
-    }
+  }
 }
 
 void SubphraseGenerator::stringPropertiesOfEntity(
@@ -187,9 +186,9 @@ void SubphraseGenerator::stringPropertiesOfEntity(
 {
   std::set<std::string> pnames = ent.stringPropertyNames();
   if (!pnames.empty())
-    {
+  {
     this->addEntityProperties(STRING_PROPERTY, pnames, src, result);
-    }
+  }
 }
 
 void SubphraseGenerator::integerPropertiesOfEntity(
@@ -197,21 +196,19 @@ void SubphraseGenerator::integerPropertiesOfEntity(
 {
   std::set<std::string> pnames = ent.integerPropertyNames();
   if (!pnames.empty())
-    {
+  {
     this->addEntityProperties(INTEGER_PROPERTY, pnames, src, result);
-    }
+  }
 }
-
 
 void SubphraseGenerator::cellOfUse(
   DescriptivePhrase::Ptr src, const UseEntity& ent, DescriptivePhrases& result)
 {
   CellEntity parentCell = ent.cell();
   if (parentCell.isValid())
-    {
-    result.push_back(
-      EntityPhrase::create()->setup(parentCell, src));
-    }
+  {
+    result.push_back(EntityPhrase::create()->setup(parentCell, src));
+  }
 }
 
 void SubphraseGenerator::boundingShellsOfUse(
@@ -228,7 +225,6 @@ void SubphraseGenerator::toplevelShellsOfUse(
   addEntityPhrases(toplevelShells, src, this->directLimit(), result);
 }
 
-
 void SubphraseGenerator::usesOfCell(
   DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result)
 {
@@ -242,10 +238,8 @@ void SubphraseGenerator::inclusionsOfCell(
   EntityRefs inclusions = ent.inclusions<EntityRefs>();
   CellEntities boundingCells = ent.boundingCells();
   EntityRefs strictInclusions;
-  std::set_difference(
-    inclusions.begin(), inclusions.end(),
-    boundingCells.begin(), boundingCells.end(),
-    std::inserter(strictInclusions, strictInclusions.end()));
+  std::set_difference(inclusions.begin(), inclusions.end(), boundingCells.begin(),
+    boundingCells.end(), std::inserter(strictInclusions, strictInclusions.end()));
   addEntityPhrases(strictInclusions, src, this->directLimit(), result);
 }
 
@@ -262,7 +256,6 @@ void SubphraseGenerator::usesOfShell(
   UseEntities shellUses = ent.uses<UseEntities>();
   addEntityPhrases(shellUses, src, this->directLimit(), result);
 }
-
 
 void SubphraseGenerator::membersOfGroup(
   DescriptivePhrase::Ptr src, const Group& grp, DescriptivePhrases& result)
@@ -313,23 +306,18 @@ void SubphraseGenerator::prototypeOfInstance(
 {
   EntityRef instanceOf = ent.prototype();
   if (instanceOf.isValid())
-    {
-    result.push_back(
-      EntityPhrase::create()->setup(
-        instanceOf, src));
-    }
+  {
+    result.push_back(EntityPhrase::create()->setup(instanceOf, src));
+  }
 }
-
 
 void SubphraseGenerator::modelsOfSession(
   DescriptivePhrase::Ptr src, const SessionRef& sess, DescriptivePhrases& result)
 {
   // We need the models to be unique, no duplicated entries.
-  std::set<smtk::model::Model> modelsOf = 
-    sess.models< std::set<smtk::model::Model> >();
+  std::set<smtk::model::Model> modelsOf = sess.models<std::set<smtk::model::Model> >();
   addEntityPhrases(modelsOf, src, this->directLimit(), result);
 }
-
 
 void SubphraseGenerator::entitiesOfEntityList(
   EntityListPhrase::Ptr src, const EntityRefArray& ents, DescriptivePhrases& result)
@@ -338,130 +326,122 @@ void SubphraseGenerator::entitiesOfEntityList(
   BitFlags unionFlags = 0;
 
   for (EntityRefArray::const_iterator it = ents.begin(); it != ents.end(); ++it)
-    {
-    result.push_back(
-      EntityPhrase::create()->setup(*it, src));
+  {
+    result.push_back(EntityPhrase::create()->setup(*it, src));
     commonFlags &= it->entityFlags();
     unionFlags |= it->entityFlags();
-    }
+  }
   src->setFlags(commonFlags, unionFlags);
 }
 
 void SubphraseGenerator::propertiesOfPropertyList(
-   PropertyListPhrase::Ptr src, PropertyType p, DescriptivePhrases& result)
+  PropertyListPhrase::Ptr src, PropertyType p, DescriptivePhrases& result)
 {
   if (src && !src->propertyNames().empty())
-    { // We already have a filtered subset of names; use it.
+  { // We already have a filtered subset of names; use it.
     this->addEntityProperties(p, src->propertyNames(), src, result);
     return;
-    }
+  }
   // We need to filter the property names.
   std::set<std::string> pnames;
   EntityRef ent = src->relatedEntity();
   switch (p)
-    {
-  case FLOAT_PROPERTY:
-    pnames = ent.floatPropertyNames();
-    break;
-  case STRING_PROPERTY:
-    pnames = ent.stringPropertyNames();
-    break;
-  case INTEGER_PROPERTY:
-    pnames = ent.integerPropertyNames();
-    break;
-  case INVALID_PROPERTY:
-  default:
-    break;
-    }
+  {
+    case FLOAT_PROPERTY:
+      pnames = ent.floatPropertyNames();
+      break;
+    case STRING_PROPERTY:
+      pnames = ent.stringPropertyNames();
+      break;
+    case INTEGER_PROPERTY:
+      pnames = ent.integerPropertyNames();
+      break;
+    case INVALID_PROPERTY:
+    default:
+      break;
+  }
   if (!pnames.empty())
-    {
+  {
     this->addEntityProperties(p, pnames, src, result);
-    }
+  }
 }
 
 /// Add subphrases (or a list of them) to \a result for the specified properties.
-void SubphraseGenerator::addEntityProperties(
-  PropertyType ptype, std::set<std::string>& props,
+void SubphraseGenerator::addEntityProperties(PropertyType ptype, std::set<std::string>& props,
   DescriptivePhrase::Ptr parnt, DescriptivePhrases& result)
 {
   std::set<std::string>::const_iterator it;
-  for (it = props.begin(); it != props.end(); )
-    {
+  for (it = props.begin(); it != props.end();)
+  {
     std::string pname = *it;
     ++it;
     if (this->shouldOmitProperty(parnt, ptype, pname))
       props.erase(pname);
-    }
+  }
   // First, use the generator to prune entries we do not wish to display.
   // Now, add either the properties directly or as a list.
   if (this->directLimit() < 0 || static_cast<int>(props.size()) < this->directLimit())
-    {
+  {
     for (it = props.begin(); it != props.end(); ++it)
-      {
-      result.push_back(
-        PropertyValuePhrase::create()->setup(ptype, *it, parnt));
-      }
-    }
-  else
     {
-    result.push_back(
-      PropertyListPhrase::create()->setup(
-        parnt->relatedEntity(), ptype, props, parnt));
+      result.push_back(PropertyValuePhrase::create()->setup(ptype, *it, parnt));
     }
+  }
+  else
+  {
+    result.push_back(
+      PropertyListPhrase::create()->setup(parnt->relatedEntity(), ptype, props, parnt));
+  }
 }
 
-void SubphraseGenerator::meshsetsOfMesh(
-  MeshPhrase::Ptr meshphr, DescriptivePhrases& result)
+void SubphraseGenerator::meshsetsOfMesh(MeshPhrase::Ptr meshphr, DescriptivePhrases& result)
 {
   smtk::mesh::MeshSet meshes = meshphr->relatedMesh();
   // if this is a mesh collection
-  if(meshphr->isCollection())
-    {
+  if (meshphr->isCollection())
+  {
     this->meshsetsOfCollectionByDim(meshphr, smtk::mesh::Dims3, result);
     this->meshsetsOfCollectionByDim(meshphr, smtk::mesh::Dims2, result);
     this->meshsetsOfCollectionByDim(meshphr, smtk::mesh::Dims1, result);
     this->meshsetsOfCollectionByDim(meshphr, smtk::mesh::Dims0, result);
-    }
+  }
   // if this is a MeshSet
-  else if(meshes.size() > 1)
-    {
+  else if (meshes.size() > 1)
+  {
     // if the MeshSet contains more than one mesh, we need to create subphrases for
     // each subset, otherwise the meshphr will represent the relatedMesh.
-    for(std::size_t i=0; i < meshes.size(); ++i)
-      {
-      result.push_back(
-        MeshPhrase::create()->setup(meshes.subset(i), meshphr));
-      }
+    for (std::size_t i = 0; i < meshes.size(); ++i)
+    {
+      result.push_back(MeshPhrase::create()->setup(meshes.subset(i), meshphr));
     }
+  }
 }
 
 void SubphraseGenerator::meshsetsOfCollectionByDim(
   MeshPhrase::Ptr meshphr, smtk::mesh::DimensionType dim, DescriptivePhrases& result)
 {
-  if(meshphr->isCollection())
-    {
+  if (meshphr->isCollection())
+  {
     smtk::mesh::CollectionPtr meshcollection = meshphr->relatedMeshCollection();
     smtk::mesh::MeshSet dimMeshes = meshcollection->meshes(dim);
-    if(!dimMeshes.is_empty())
-      {
-      result.push_back(
-        MeshPhrase::create()->setup(dimMeshes, meshphr));
-      }
+    if (!dimMeshes.is_empty())
+    {
+      result.push_back(MeshPhrase::create()->setup(dimMeshes, meshphr));
     }
+  }
 }
 
-void SubphraseGenerator::meshesOfMeshList(
-  MeshListPhrase::Ptr src, DescriptivePhrases& result)
+void SubphraseGenerator::meshesOfMeshList(MeshListPhrase::Ptr src, DescriptivePhrases& result)
 {
-  if(src->relatedCollections().size() > 0)
-    {
+  if (src->relatedCollections().size() > 0)
+  {
     addMeshPhrases(src->relatedCollections(), src, this->directLimit(), result);
-    }
-  else if(src->relatedMeshes().size() > 0)
-    {
+  }
+  else if (src->relatedMeshes().size() > 0)
+  {
     addMeshPhrases(src->relatedMeshes(), src, this->directLimit(), result);
-    }
+  }
 }
 
-  } // namespace model
+} // namespace model
 } // namespace smtk

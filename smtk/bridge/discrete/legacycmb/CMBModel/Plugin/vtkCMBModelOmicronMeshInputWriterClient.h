@@ -11,7 +11,6 @@
 // .NAME vtkCMBModelOmicronMeshInputWriterClient -
 // .SECTION Description
 
-
 #ifndef __vtkCMBModelOmicronMeshInputWriterClient_h
 #define __vtkCMBModelOmicronMeshInputWriterClient_h
 
@@ -24,8 +23,8 @@ class vtkSMProxy;
 class VTK_EXPORT vtkCMBModelOmicronMeshInputWriterClient : public vtkObject
 {
 public:
-  static vtkCMBModelOmicronMeshInputWriterClient * New();
-  vtkTypeMacro(vtkCMBModelOmicronMeshInputWriterClient,vtkObject);
+  static vtkCMBModelOmicronMeshInputWriterClient* New();
+  vtkTypeMacro(vtkCMBModelOmicronMeshInputWriterClient, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -56,8 +55,9 @@ protected:
   virtual ~vtkCMBModelOmicronMeshInputWriterClient();
 
 private:
-  vtkCMBModelOmicronMeshInputWriterClient(const vtkCMBModelOmicronMeshInputWriterClient&);  // Not implemented.
-  void operator=(const vtkCMBModelOmicronMeshInputWriterClient&);  // Not implemented.
+  vtkCMBModelOmicronMeshInputWriterClient(
+    const vtkCMBModelOmicronMeshInputWriterClient&);              // Not implemented.
+  void operator=(const vtkCMBModelOmicronMeshInputWriterClient&); // Not implemented.
 
   // Description:
   // The name of the file to be written.

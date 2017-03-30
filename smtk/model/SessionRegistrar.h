@@ -17,8 +17,10 @@
 
 #include <map>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 /**\brief A (generic) function-pointer to perform pre-construction session setup.
   *
@@ -41,14 +43,14 @@ namespace smtk {
   * and thus methods to recover from an impossible configuration are left
   * to Session subclasses to implement.
   */
-typedef smtk::function<
-  int (const std::string&, const StringList& val)> SessionStaticSetup;
+typedef smtk::function<int(const std::string&, const StringList& val)> SessionStaticSetup;
 
 /// A (generic) function-pointer to construct a session instance.
 typedef smtk::function<SessionPtr()> SessionConstructor;
 
 /// A record associating session information with a constructor method.
-struct StaticSessionInfo {
+struct StaticSessionInfo
+{
   std::string Name;
   SessionStaticSetup Setup;
   SessionConstructor Constructor;
@@ -59,28 +61,31 @@ struct StaticSessionInfo {
   StringList Engines;
   StringData FileTypes;
 
-  StaticSessionInfo() : TagsParsed(false) { }
-  StaticSessionInfo(
-    const std::string& bname,
-    const std::string& btags,
-    SessionStaticSetup bsetup,
-    SessionConstructor bctor,
-    OperatorConstructors* opctors)
-    : Name(bname), Setup(bsetup), Constructor(bctor), OpConstructors(opctors), Tags(btags), TagsParsed(false)
-    { }
+  StaticSessionInfo()
+    : TagsParsed(false)
+  {
+  }
+  StaticSessionInfo(const std::string& bname, const std::string& btags, SessionStaticSetup bsetup,
+    SessionConstructor bctor, OperatorConstructors* opctors)
+    : Name(bname)
+    , Setup(bsetup)
+    , Constructor(bctor)
+    , OpConstructors(opctors)
+    , Tags(btags)
+    , TagsParsed(false)
+  {
+  }
 };
 
 /// A map of session names to constructors.
-typedef std::map<std::string,StaticSessionInfo> SessionConstructors;
+typedef std::map<std::string, StaticSessionInfo> SessionConstructors;
 
 /**\brief A helper for sessions that do not perform static setup.
   *
   * If a session subclass does not require setup,
   * pass this to SessionRegistrar::registerSession().
   */
-inline int SessionHasNoStaticSetup(
-  const std::string&,
-  const StringList&)
+inline int SessionHasNoStaticSetup(const std::string&, const StringList&)
 {
   return 1;
 }
@@ -95,12 +100,8 @@ inline int SessionHasNoStaticSetup(
 class SMTKCORE_EXPORT SessionRegistrar
 {
 public:
-  static bool registerSession(
-    const std::string& bname,
-    const std::string& tags,
-    SessionStaticSetup bsetup,
-    SessionConstructor bctor,
-    OperatorConstructors* sopcons);
+  static bool registerSession(const std::string& bname, const std::string& tags,
+    SessionStaticSetup bsetup, SessionConstructor bctor, OperatorConstructors* sopcons);
   static StringList sessionTypeNames();
   static std::string sessionTags(const std::string& bname);
   static std::string sessionSite(const std::string& bname);
@@ -122,7 +123,7 @@ protected:
   static SessionConstructors* s_sessions(bool del = false);
 };
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // SHIBOKEN_SKIP

@@ -10,7 +10,7 @@
 #ifndef __smtk_io_LoadJSON_h
 #define __smtk_io_LoadJSON_h
 
-#include "smtk/CoreExports.h" // For SMTKCORE_EXPORT macro.
+#include "smtk/CoreExports.h"       // For SMTKCORE_EXPORT macro.
 #include "smtk/PublicPointerDefs.h" // For ManagerPtr
 
 #include "smtk/common/UUID.h"
@@ -20,8 +20,10 @@
 
 struct cJSON;
 
-namespace smtk {
-  namespace io {
+namespace smtk
+{
+namespace io
+{
 
 class Logger;
 
@@ -37,37 +39,41 @@ class SMTKCORE_EXPORT LoadJSON
 public:
   static int intoModelManager(const char* json, smtk::model::ManagerPtr manager);
   static int ofManager(cJSON* body, smtk::model::ManagerPtr manager);
-  static int ofManagerEntityData(cJSON* body, smtk::model::ManagerPtr manager, smtk::model::BitFlags whatToImport);
-  static int ofManagerEntity(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
-  static int ofManagerArrangement(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
-  static int ofManagerTessellation(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
-  static int ofManagerAnalysis(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
-  static int ofManagerFloatProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
-  static int ofManagerStringProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
-  static int ofManagerIntegerProperties(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
+  static int ofManagerEntityData(
+    cJSON* body, smtk::model::ManagerPtr manager, smtk::model::BitFlags whatToImport);
+  static int ofManagerEntity(
+    const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
+  static int ofManagerArrangement(
+    const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
+  static int ofManagerTessellation(
+    const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
+  static int ofManagerAnalysis(
+    const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
+  static int ofManagerFloatProperties(
+    const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
+  static int ofManagerStringProperties(
+    const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
+  static int ofManagerIntegerProperties(
+    const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
   // This function has no implementation!
-  static int forManagerMeshes(smtk::mesh::ManagerPtr meshes, cJSON*, smtk::model::ManagerPtr modelMgr);
-  static int ofRemoteSession(
-    cJSON*,
-    smtk::model::DefaultSessionPtr destSession,
-    smtk::model::ManagerPtr context,
-    const std::string& refPath = std::string());
-  static int ofLocalSession(
-    cJSON*,
-    smtk::model::ManagerPtr context,
-    bool loadNativeModels = false,
+  static int forManagerMeshes(
+    smtk::mesh::ManagerPtr meshes, cJSON*, smtk::model::ManagerPtr modelMgr);
+  static int ofRemoteSession(cJSON*, smtk::model::DefaultSessionPtr destSession,
+    smtk::model::ManagerPtr context, const std::string& refPath = std::string());
+  static int ofLocalSession(cJSON*, smtk::model::ManagerPtr context, bool loadNativeModels = false,
     const std::string& referencePath = std::string());
 
   static int ofOperator(cJSON* node, smtk::model::OperatorPtr& op, smtk::model::ManagerPtr context);
-  static int ofOperatorResult(cJSON* node, smtk::model::OperatorResult& resOut, smtk::model::RemoteOperatorPtr op);
+  static int ofOperatorResult(
+    cJSON* node, smtk::model::OperatorResult& resOut, smtk::model::RemoteOperatorPtr op);
   static int ofDanglingEntities(cJSON* node, smtk::model::ManagerPtr context);
 
   static int ofLog(const char* jsonStr, smtk::io::Logger& log);
   static int ofLog(cJSON* logrecordarray, smtk::io::Logger& log);
 
   //write all mesh collections that have associations to a model
-  static int ofMeshesOfModel(cJSON* node, smtk::model::ManagerPtr modelMgr,
-                            const std::string& refPath = std::string());
+  static int ofMeshesOfModel(
+    cJSON* node, smtk::model::ManagerPtr modelMgr, const std::string& refPath = std::string());
   //write all mesh properties for the collection
   static int ofMeshProperties(cJSON* node, smtk::mesh::CollectionPtr collection);
   // Mid-level helpers:
@@ -81,7 +87,7 @@ public:
   static int getRealArrayFromJSON(cJSON* arrayNode, std::vector<double>& values);
 };
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_io_LoadJSON_h

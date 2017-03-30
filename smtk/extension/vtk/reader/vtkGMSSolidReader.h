@@ -29,8 +29,8 @@ struct vtkGMSSolidReaderInternals;
 class VTKSMTKREADEREXT_EXPORT vtkGMSSolidReader : public vtkMultiBlockDataSetAlgorithm
 {
 public:
-  static vtkGMSSolidReader *New();
-  vtkTypeMacro(vtkGMSSolidReader,vtkMultiBlockDataSetAlgorithm);
+  static vtkGMSSolidReader* New();
+  vtkTypeMacro(vtkGMSSolidReader, vtkMultiBlockDataSetAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -42,22 +42,18 @@ protected:
   vtkGMSSolidReader();
   ~vtkGMSSolidReader();
 
-  int RequestInformation(vtkInformation *,
-                         vtkInformationVector **,
-                         vtkInformationVector *);
-  int RequestData(vtkInformation *,
-                  vtkInformationVector **,
-                  vtkInformationVector *);
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
 
   int ReadSolid(unsigned int block, vtkMultiBlockDataSet* output);
   void ReadTriangles(vtkCellArray*, vtkUnsignedCharArray*);
   void ReadVerts(vtkDoubleArray*);
 
-  char * FileName;
+  char* FileName;
 
 private:
-  vtkGMSSolidReader(const vtkGMSSolidReader&);  // Not implemented.
-  void operator=(const vtkGMSSolidReader&);  // Not implemented.
+  vtkGMSSolidReader(const vtkGMSSolidReader&); // Not implemented.
+  void operator=(const vtkGMSSolidReader&);    // Not implemented.
 
   vtkGMSSolidReaderInternals* Internals;
 };

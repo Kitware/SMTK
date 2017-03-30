@@ -15,12 +15,14 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include <boost/uuid/uuid_io.hpp>
 SMTK_THIRDPARTY_POST_INCLUDE
 
-namespace smtk {
-  namespace common {
+namespace smtk
+{
+namespace common
+{
 
 /// Default constructor creates a nil UUID (IsNull() == true).
 UUID::UUID()
- : m_data()
+  : m_data()
 {
 }
 
@@ -34,9 +36,9 @@ UUID::UUID(const UUID& other)
 UUID::UUID(const_iterator inBegin, const_iterator inEnd)
 {
   for (iterator it = this->m_data.begin(); inBegin != inEnd; ++it, ++inBegin)
-    {
+  {
     *it = *inBegin;
-    }
+  }
 }
 
 /// Construct a UUID from a text string (36 characters long, including hyphens).
@@ -107,32 +109,32 @@ std::string UUID::toString() const
 }
 
 /// Compare two UUIDs for inequality.
-bool UUID::operator != (const UUID& other) const
+bool UUID::operator!=(const UUID& other) const
 {
   return this->m_data != other.m_data;
 }
 
 /// Compare two UUIDs for equality.
-bool UUID::operator == (const UUID& other) const
+bool UUID::operator==(const UUID& other) const
 {
   return this->m_data == other.m_data;
 }
 
 /// Compare two UUIDs for ordering.
-bool UUID::operator < (const UUID& other) const
+bool UUID::operator<(const UUID& other) const
 {
   return this->m_data < other.m_data;
 }
 
 /// Assignment operator.
-UUID& UUID::operator = (const UUID& other)
+UUID& UUID::operator=(const UUID& other)
 {
   this->m_data = other.m_data;
   return *this;
 }
 
 /// Cast-to-boolean operator
-UUID::operator bool () const
+UUID::operator bool() const
 {
   return this->isNull() ? false : true;
 }
@@ -145,14 +147,14 @@ std::size_t UUID::hash() const
 }
 
 /// Write a UUID to a stream (as a string).
-std::ostream& operator << (std::ostream& stream, const UUID& uid)
+std::ostream& operator<<(std::ostream& stream, const UUID& uid)
 {
   stream << uid.toString().c_str();
   return stream;
 }
 
 /// Read a UUID from a stream (as a string).
-std::istream& operator >> (std::istream& stream, UUID& uid)
+std::istream& operator>>(std::istream& stream, UUID& uid)
 {
   std::string txt;
   stream >> txt;
@@ -160,5 +162,5 @@ std::istream& operator >> (std::istream& stream, UUID& uid)
   return stream;
 }
 
-  } // namespace common
+} // namespace common
 } // namespace smtk

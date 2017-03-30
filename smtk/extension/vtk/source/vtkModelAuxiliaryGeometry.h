@@ -32,9 +32,9 @@ class VTKSMTKSOURCEEXT_EXPORT vtkModelAuxiliaryGeometry : public vtkMultiBlockDa
 public:
   static vtkModelAuxiliaryGeometry* New();
   void PrintSelf(ostream& os, vtkIndent indent) override;
-  vtkTypeMacro(vtkModelAuxiliaryGeometry,vtkMultiBlockDataSetAlgorithm);
+  vtkTypeMacro(vtkModelAuxiliaryGeometry, vtkMultiBlockDataSetAlgorithm);
 
-  vtkGetObjectMacro(CachedOutput,vtkMultiBlockDataSet);
+  vtkGetObjectMacro(CachedOutput, vtkMultiBlockDataSet);
 
   smtk::model::ManagerPtr GetModelManager();
   void SetModelManager(smtk::model::ManagerPtr);
@@ -51,18 +51,13 @@ protected:
   ~vtkModelAuxiliaryGeometry() override;
 
   vtkSmartPointer<vtkDataObject> GenerateRepresentationFromModel(
-    const smtk::model::AuxiliaryGeometry& entity,
-    bool genNormals);
+    const smtk::model::AuxiliaryGeometry& entity, bool genNormals);
 
-  int RequestInformation (
-  vtkInformation * request,
-  vtkInformationVector **inputVector,
-  vtkInformationVector *outputVector) override;
+  int RequestInformation(vtkInformation* request, vtkInformationVector** inputVector,
+    vtkInformationVector* outputVector) override;
 
   int RequestData(
-    vtkInformation* request,
-    vtkInformationVector** inInfo,
-    vtkInformationVector* outInfo) override;
+    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
 
   void SetCachedOutput(vtkMultiBlockDataSet*);
 
@@ -75,7 +70,7 @@ protected:
 
 private:
   vtkModelAuxiliaryGeometry(const vtkModelAuxiliaryGeometry&); // Not implemented.
-  void operator = (const vtkModelAuxiliaryGeometry&); // Not implemented.
+  void operator=(const vtkModelAuxiliaryGeometry&);            // Not implemented.
 };
 
 #endif // __smtk_vtk_ModelAuxiliaryGeometry_h

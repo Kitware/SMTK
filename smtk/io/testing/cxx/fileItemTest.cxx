@@ -49,11 +49,11 @@ int testFileItemSerialization()
   si::AttributeReader reader;
   bool err = reader.readContents(readbackSystem, content, logger);
   if (err)
-    {
+  {
     std::cout << "ERROR\n";
     std::cout << logger.convertToString();
     return -1;
-    }
+  }
 
   // Check file item
   sa::AttributePtr readbackAtt = readbackSystem.findAttribute("file-item-att");

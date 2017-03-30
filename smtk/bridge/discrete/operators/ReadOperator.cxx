@@ -37,10 +37,13 @@
 
 using namespace smtk::model;
 
-namespace smtk {
-  namespace bridge {
+namespace smtk
+{
+namespace bridge
+{
 
-  namespace discrete {
+namespace discrete
+{
 
 ReadOperator::ReadOperator()
 {
@@ -48,7 +51,7 @@ ReadOperator::ReadOperator()
 
 bool ReadOperator::ableToOperate()
 {
-  if(!this->specification()->isValid())
+  if (!this->specification()->isValid())
     return false;
 
   std::string filename = this->specification()->findFile("filename")->value();
@@ -74,18 +77,17 @@ OperatorResult ReadOperator::operateInternal()
   // Now assign a UUID to the model and associate its filename with
   // a URL property (if things went OK).
   if (!this->m_op->GetOperateSucceeded())
-    {
+  {
     std::cerr << "Could not read file \"" << fname << "\".\n";
     return this->createResult(OPERATION_FAILED);
-    }
+  }
 
-  smtk::common::UUID modelId = this->discreteSession()->trackModel(
-    mod.GetPointer(), fname, this->manager());
+  smtk::common::UUID modelId =
+    this->discreteSession()->trackModel(mod.GetPointer(), fname, this->manager());
   smtk::model::EntityRef modelEntity(this->manager(), modelId);
 
   OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
-  smtk::attribute::ModelEntityItemPtr models =
-    result->findModelEntity("created");
+  smtk::attribute::ModelEntityItemPtr models = result->findModelEntity("created");
   models->setNumberOfValues(1);
   models->setValue(0, modelEntity);
 
@@ -97,8 +99,7 @@ OperatorResult ReadOperator::operateInternal()
 #endif
 
   modelEntity.as<smtk::model::Model>().setSession(
-    smtk::model::SessionRef(
-      this->manager(), this->session()->sessionId()));
+    smtk::model::SessionRef(this->manager(), this->session()->sessionId()));
 
   return result;
 }
@@ -108,15 +109,10 @@ Session* ReadOperator::discreteSession() const
   return dynamic_cast<Session*>(this->session());
 }
 
-    } // namespace discrete
-  } // namespace bridge
+} // namespace discrete
+} // namespace bridge
 
 } // namespace smtk
 
-smtkImplementsModelOperator(
-  SMTKDISCRETESESSION_EXPORT,
-  smtk::bridge::discrete::ReadOperator,
-  discrete_read,
-  "read",
-  ReadOperator_xml,
-  smtk::bridge::discrete::Session);
+smtkImplementsModelOperator(SMTKDISCRETESESSION_EXPORT, smtk::bridge::discrete::ReadOperator,
+  discrete_read, "read", ReadOperator_xml, smtk::bridge::discrete::Session);

@@ -9,59 +9,55 @@
 //=============================================================================
 #include "smtk/bridge/polygon/internal/SweepEvent.h"
 
-namespace smtk {
-  namespace bridge {
-    namespace polygon {
-
-bool SweepEvent::operator < (const SweepEvent& other) const
+namespace smtk
 {
-  return
-    (this->m_posn.x() < other.point().x() ||
-     (this->m_posn.x() == other.point().x() &&
-      (this->m_posn.y() < other.point().y() ||
-       (this->m_posn.y() == other.point().y() &&
-        (this->m_type < other.type() ||
-         (this->m_type == other.type() &&
-          ( // Types match, perform type-specific comparisons:
-            (this->m_type == SEGMENT_START &&
-             (this->m_edge < other.m_edge ||
-              (this->m_edge == other.m_edge && this->m_indx < other.m_indx))) ||
-            (this->m_type == SEGMENT_END &&
-             (this->m_frag[0] < other.m_frag[0])) ||
-            (this->m_type == SEGMENT_CROSS &&
-             (this->m_frag[0] < other.m_frag[0] ||
-              (this->m_frag[0] == other.m_frag[0] &&
-               (this->m_frag[1] < other.m_frag[1]))))
-          ))))))) ?
-    true : false;
+namespace bridge
+{
+namespace polygon
+{
+
+bool SweepEvent::operator<(const SweepEvent& other) const
+{
+  return (this->m_posn.x() < other.point().x() ||
+           (this->m_posn.x() == other.point().x() &&
+             (this->m_posn.y() < other.point().y() ||
+               (this->m_posn.y() == other.point().y() &&
+                 (this->m_type < other.type() ||
+                   (this->m_type == other.type() &&
+                     ( // Types match, perform type-specific comparisons:
+                       (this->m_type == SEGMENT_START &&
+                         (this->m_edge < other.m_edge ||
+                           (this->m_edge == other.m_edge && this->m_indx < other.m_indx))) ||
+                       (this->m_type == SEGMENT_END && (this->m_frag[0] < other.m_frag[0])) ||
+                       (this->m_type == SEGMENT_CROSS &&
+                         (this->m_frag[0] < other.m_frag[0] ||
+                           (this->m_frag[0] == other.m_frag[0] &&
+                             (this->m_frag[1] < other.m_frag[1])))))))))))
+    ? true
+    : false;
 }
 
 SweepEvent SweepEvent::SegmentStart(
-  const internal::Point& p0,
-  const internal::Point& p1,
-  const smtk::model::Edge& edge,
-  int segId)
+  const internal::Point& p0, const internal::Point& p1, const smtk::model::Edge& edge, int segId)
 {
   SweepEvent event;
   event.m_type = SEGMENT_START;
   if (p0.x() < p1.x() || (p0.x() == p1.x() && p0.y() < p1.y()))
-    {
+  {
     event.m_posn = p0;
     event.m_frag[0] = +1;
-    }
+  }
   else
-    {
+  {
     event.m_posn = p1;
     event.m_frag[0] = -1;
-    }
+  }
   event.m_edge = edge;
   event.m_indx = segId;
   return event;
 }
 
-SweepEvent SweepEvent::SegmentEnd(
-  const internal::Point& posn,
-  RegionIdSet::value_type fragId)
+SweepEvent SweepEvent::SegmentEnd(const internal::Point& posn, RegionIdSet::value_type fragId)
 {
   SweepEvent event;
   event.m_type = SEGMENT_END;
@@ -71,9 +67,7 @@ SweepEvent SweepEvent::SegmentEnd(
 }
 
 SweepEvent SweepEvent::SegmentCross(
-  const internal::Point& crossPos,
-  RegionIdSet::value_type fragId0,
-  RegionIdSet::value_type fragId1)
+  const internal::Point& crossPos, RegionIdSet::value_type fragId0, RegionIdSet::value_type fragId1)
 {
   SweepEvent event;
   event.m_type = SEGMENT_CROSS;
@@ -83,38 +77,34 @@ SweepEvent SweepEvent::SegmentCross(
   return event;
 }
 
-bool SweepEvent::RemoveCrossing(
-  SweepEventSet& queue,
-  FragmentId fragId0,
-  FragmentId fragId1)
+bool SweepEvent::RemoveCrossing(SweepEventSet& queue, FragmentId fragId0, FragmentId fragId1)
 {
   for (SweepEventSet::iterator it = queue.begin(); it != queue.end(); ++it)
-    {
+  {
     switch (it->m_type)
-      {
-    case SEGMENT_START:
-      break;
-    case SEGMENT_CROSS:
-      if (
-        static_cast<const FragmentId>(it->m_frag[0]) == fragId0 &&
-        static_cast<const FragmentId>(it->m_frag[1]) == fragId1)
+    {
+      case SEGMENT_START:
+        break;
+      case SEGMENT_CROSS:
+        if (static_cast<const FragmentId>(it->m_frag[0]) == fragId0 &&
+          static_cast<const FragmentId>(it->m_frag[1]) == fragId1)
         {
-        queue.erase(it);
-        return true;
+          queue.erase(it);
+          return true;
         }
-      break;
-    case SEGMENT_END:
-      if (static_cast<const FragmentId>(it->m_frag[0]) == fragId0 ||
+        break;
+      case SEGMENT_END:
+        if (static_cast<const FragmentId>(it->m_frag[0]) == fragId0 ||
           static_cast<const FragmentId>(it->m_frag[0]) == fragId1)
         { // Terminate early... crossing event must come before either edge ends.
-        return false;
+          return false;
         }
-      break;
-      }
+        break;
     }
+  }
   return false;
 }
 
-    } // namespace polygon
-  } //namespace bridge
+} // namespace polygon
+} //namespace bridge
 } // namespace smtk

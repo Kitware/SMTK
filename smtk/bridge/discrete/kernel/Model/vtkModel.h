@@ -60,7 +60,8 @@ enum ModelEntityTypes
 
 // Description:
 // All the currently defined Model events are listed here.
-enum ModelEventIds {
+enum ModelEventIds
+{
   ModelGeometricEntityCreated = 11000,
   ModelGeometricEntityBoundaryModified,
   ModelGeometricEntityAboutToDestroy,
@@ -73,7 +74,7 @@ enum ModelEventIds {
 class VTKSMTKDISCRETEMODEL_EXPORT vtkModel : public vtkModelItem
 {
 public:
-  vtkTypeMacro(vtkModel,vtkModelItem);
+  vtkTypeMacro(vtkModel, vtkModelItem);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -85,12 +86,9 @@ public:
   // state, the implementations of these methods will have to do
   // all of the operations necessary to get them into a valid state
   // (e.g. create a valid model shell use for a model region).
-  virtual vtkModelEdge* BuildModelEdge(vtkModelVertex* vertex0,
-                                       vtkModelVertex* vertex1) = 0;
-  virtual vtkModelFace* BuildModelFace(int numEdges, vtkModelEdge** edges,
-                                       int* edgeDirections) = 0;
-  virtual vtkModelRegion* BuildModelRegion(int numFaces, vtkModelFace** faces,
-                                           int* faceSides) = 0;
+  virtual vtkModelEdge* BuildModelEdge(vtkModelVertex* vertex0, vtkModelVertex* vertex1) = 0;
+  virtual vtkModelFace* BuildModelFace(int numEdges, vtkModelEdge** edges, int* edgeDirections) = 0;
+  virtual vtkModelRegion* BuildModelRegion(int numFaces, vtkModelFace** faces, int* faceSides) = 0;
   virtual vtkModelRegion* BuildModelRegion() = 0;
 
   // Description:
@@ -157,10 +155,10 @@ protected:
   // Build up the associations of a model geometric entity.  This avoids
   // the problems of dealing with friend classes for models derived
   // from vtkModel.
-  void BuildModelEdgeAssociations(vtkModelEdge* edge, vtkModelVertex* vertex0,
-                                  vtkModelVertex* vertex1);
-  void BuildModelRegionAssociations(vtkModelRegion* region, int numFaces,
-                                    vtkModelFace** faces, int* faceSides);
+  void BuildModelEdgeAssociations(
+    vtkModelEdge* edge, vtkModelVertex* vertex0, vtkModelVertex* vertex1);
+  void BuildModelRegionAssociations(
+    vtkModelRegion* region, int numFaces, vtkModelFace** faces, int* faceSides);
 
   // Description:
   // Set/get LargestUsedUniqueId.
@@ -172,7 +170,7 @@ protected:
   // Description:
   // Flag to whether invoke event
   bool BlockModelGeometricEntityEvent;
-  void InvokeModelGeometricEntityEvent(unsigned long event, void *callData);
+  void InvokeModelGeometricEntityEvent(unsigned long event, void* callData);
   friend class vtkDiscreteModelEdge;
   friend class vtkDiscreteModelFace;
   friend class vtkDiscreteModelGeometricEntity;
@@ -185,8 +183,8 @@ protected:
   friend class vtkEdgeSplitOperatorClient;
 
 private:
-  vtkModel(const vtkModel&);  // Not implemented.
-  void operator=(const vtkModel&);  // Not implemented.
+  vtkModel(const vtkModel&);       // Not implemented.
+  void operator=(const vtkModel&); // Not implemented.
 
   // Description:
   // Used to make sure that all model entities have a unique persistent Id.  This
@@ -196,4 +194,3 @@ private:
 };
 
 #endif
-

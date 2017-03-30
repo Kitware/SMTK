@@ -17,8 +17,10 @@
 #include "smtk/CoreExports.h"
 #include "smtk/mesh/QueryTypes.h"
 
-namespace smtk {
-namespace mesh {
+namespace smtk
+{
+namespace mesh
+{
 
 class SMTKCORE_EXPORT TypeSet
 {
@@ -27,12 +29,10 @@ public:
   TypeSet();
 
   //dimensions are inferred by what cell types are enabled
-  TypeSet( smtk::mesh::CellTypes ctypes,
-           bool hasM,
-           bool hasC);
+  TypeSet(smtk::mesh::CellTypes ctypes, bool hasM, bool hasC);
 
-  bool operator==( const TypeSet& other ) const;
-  bool operator!=( const TypeSet& other ) const;
+  bool operator==(const TypeSet& other) const;
+  bool operator!=(const TypeSet& other) const;
 
   bool hasMeshes() const;
   bool hasCells() const;
@@ -41,12 +41,12 @@ public:
   //What this means is that we don't consider having points ( coordinates )
   //a reason to mark a dim of 0 to true, that only happens if you have
   //Vertex cell types
-  bool hasDimension( smtk::mesh::DimensionType dt ) const;
-  bool hasCell( smtk::mesh::CellType ct ) const;
+  bool hasDimension(smtk::mesh::DimensionType dt) const;
+  bool hasCell(smtk::mesh::CellType ct) const;
 
   const smtk::mesh::CellTypes& cellTypes() const { return this->m_cellTypes; }
 
-  TypeSet& operator += (const TypeSet& other);
+  TypeSet& operator+=(const TypeSet& other);
 
 private:
   smtk::mesh::CellTypes m_cellTypes;
@@ -54,8 +54,6 @@ private:
   bool m_hasMesh;
   bool m_hasCell;
 };
-
-
 }
 }
 

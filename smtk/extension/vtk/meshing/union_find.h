@@ -20,15 +20,15 @@
 struct UnionFindSet
 {
   UnionFindSet(vtkIdType parent, vtkIdType rank = 0)
-    {
+  {
     this->Parent = parent;
     this->Rank = rank;
-    }
+  }
   UnionFindSet(const UnionFindSet& other)
-    {
+  {
     this->Parent = other.Parent;
     this->Rank = other.Rank;
-    }
+  }
   vtkIdType Parent;
   vtkIdType Rank;
 };
@@ -46,10 +46,9 @@ public:
   /// Get the current root sets (entries in Sets whose parents are themselves)
   std::set<vtkIdType> Roots();
   /// Popoulate a map with remaining disjoint sets numbered starting at \a startCount.
-  void CollapseIds(std::map<vtkIdType,vtkIdType>& collapsedIds, vtkIdType startCount);
+  void CollapseIds(std::map<vtkIdType, vtkIdType>& collapsedIds, vtkIdType startCount);
   /// Return the number of sets that have been created.
-  vtkIdType Size() const
-    { return static_cast<vtkIdType>(this->Sets.size()); }
+  vtkIdType Size() const { return static_cast<vtkIdType>(this->Sets.size()); }
 
   std::vector<UnionFindSet> Sets;
 };
@@ -57,7 +56,7 @@ public:
 inline vtkIdType UnionFind::NewSet()
 {
   vtkIdType setId = static_cast<vtkIdType>(this->Sets.size());
-  UnionFindSet entry(setId,0);
+  UnionFindSet entry(setId, 0);
   this->Sets.push_back(entry);
   return setId;
 }
@@ -68,21 +67,21 @@ inline vtkIdType UnionFind::MergeSets(vtkIdType a, vtkIdType b)
   vtkIdType bRoot = this->Find(b);
 
   if (aRoot == bRoot)
-    {
+  {
     return aRoot;
-    }
+  }
 
   vtkIdType aRank = this->Sets[aRoot].Rank;
   vtkIdType bRank = this->Sets[bRoot].Rank;
   if (aRank < bRank)
-    {
+  {
     this->Sets[aRoot].Parent = bRoot;
     return bRoot;
-    }
+  }
   else if (bRank == aRank)
-    {
+  {
     ++this->Sets[aRoot].Rank;
-    }
+  }
   this->Sets[bRoot].Parent = aRoot;
   return aRoot;
 }
@@ -90,14 +89,14 @@ inline vtkIdType UnionFind::MergeSets(vtkIdType a, vtkIdType b)
 inline vtkIdType UnionFind::Find(vtkIdType src)
 {
   if (src < 0 || src > vtkIdType(this->Sets.size()))
-    {
+  {
     return -1;
-    }
+  }
   vtkIdType parent = this->Sets[src].Parent;
   if (parent != src)
-    {
+  {
     this->Sets[src].Parent = this->Find(parent);
-    }
+  }
   return this->Sets[src].Parent;
 }
 
@@ -107,30 +106,30 @@ inline std::set<vtkIdType> UnionFind::Roots()
   std::vector<UnionFindSet>::iterator it;
   vtkIdType i = 0;
   for (it = this->Sets.begin(); it != this->Sets.end(); ++it, ++i)
-    {
+  {
     if (i == it->Parent)
-      {
+    {
       roots.insert(i);
-      }
     }
+  }
   return roots;
 }
 
 inline void UnionFind::CollapseIds(
-  std::map<vtkIdType,vtkIdType>& collapsedIds, vtkIdType startCount)
+  std::map<vtkIdType, vtkIdType>& collapsedIds, vtkIdType startCount)
 {
   std::set<vtkIdType> roots = this->Roots();
   std::set<vtkIdType>::iterator it;
   for (it = roots.begin(); it != roots.end(); ++it)
-    {
+  {
     // Do not relabel any pre-existing entries in collapsedIds.
-    std::map<vtkIdType,vtkIdType>::iterator cit = collapsedIds.find(*it);
+    std::map<vtkIdType, vtkIdType>::iterator cit = collapsedIds.find(*it);
     if (cit == collapsedIds.end())
-      {
+    {
       //cout << "Collapse " << *it << " to " << startCount << "\n";
       collapsedIds[*it] = startCount++;
-      }
     }
+  }
 }
 
 #endif // __union_find_h

@@ -30,8 +30,8 @@ struct vtkGMSTINReaderInternals;
 class VTKSMTKREADEREXT_EXPORT vtkGMSTINReader : public vtkMultiBlockDataSetAlgorithm
 {
 public:
-  static vtkGMSTINReader *New();
-  vtkTypeMacro(vtkGMSTINReader,vtkMultiBlockDataSetAlgorithm);
+  static vtkGMSTINReader* New();
+  vtkTypeMacro(vtkGMSTINReader, vtkMultiBlockDataSetAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -43,21 +43,17 @@ protected:
   vtkGMSTINReader();
   ~vtkGMSTINReader();
 
-  int RequestInformation(vtkInformation *,
-                         vtkInformationVector **,
-                         vtkInformationVector *);
-  int RequestData(vtkInformation *,
-                  vtkInformationVector **,
-                  vtkInformationVector *);
+  int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
+  int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*);
 
   int ReadTIN(unsigned int block, vtkMultiBlockDataSet* output);
   void ReadTriangles(vtkCellArray*);
   void ReadVerts(vtkPolyData*);
 
-  char * FileName;
+  char* FileName;
 
 private:
-  vtkGMSTINReader(const vtkGMSTINReader&);  // Not implemented.
+  vtkGMSTINReader(const vtkGMSTINReader&); // Not implemented.
   void operator=(const vtkGMSTINReader&);  // Not implemented.
 
   vtkGMSTINReaderInternals* Internals;

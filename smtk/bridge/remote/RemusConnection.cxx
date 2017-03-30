@@ -11,8 +11,8 @@
 #include "smtk/bridge/remote/RemusConnection.h"
 #include "smtk/bridge/remote/Session.h"
 
-#include "smtk/io/SaveJSON.h"
 #include "smtk/io/LoadJSON.h"
+#include "smtk/io/SaveJSON.h"
 
 #include "smtk/model/Operator.h"
 
@@ -46,9 +46,12 @@ using namespace smtk::model;
 using namespace smtk::io;
 using namespace smtk::placeholders;
 
-namespace smtk {
-  namespace bridge {
-    namespace remote {
+namespace smtk
+{
+namespace bridge
+{
+namespace remote
+{
 
 RemusConnection::RemusConnection()
 {
@@ -84,11 +87,11 @@ void RemusConnection::clearSearchDirs(bool clearDefaultsToo)
 {
   this->m_searchDirs.clear();
   if (!clearDefaultsToo)
-    {
+  {
     Paths paths;
     StringList spaths = paths.workerSearchPaths();
     this->m_searchDirs = searchdir_t(spaths.begin(), spaths.end());
-    }
+  }
 }
 
 /**\brief Initiate the connection to the Remus server.
@@ -101,24 +104,25 @@ bool RemusConnection::connectToServer(const std::string& hostname, int port)
 {
   // TODO: Drop any current connection and reset sessions? Copy-on-connect? ???
   if (hostname.empty() || hostname == "local")
-    {
+  {
     // Start a process-local server
     boost::shared_ptr<remus::server::WorkerFactory> factory(new remus::server::WorkerFactory());
     int maxWorkers = 5;
     std::string env = smtk::common::Environment::getVariable("SMTK_REMUS_MAX_WORKERS");
     if (!env.empty())
-      {
+    {
       std::stringstream envVal(env);
       envVal >> maxWorkers;
-      }
+    }
     factory->setMaxWorkerCount(maxWorkers);
 
     // Add search directories, if any.
-    for (searchdir_t::const_iterator it = this->m_searchDirs.begin(); it != this->m_searchDirs.end(); ++it)
+    for (searchdir_t::const_iterator it = this->m_searchDirs.begin();
+         it != this->m_searchDirs.end(); ++it)
       factory->addWorkerSearchDirectory(*it);
 
-    this->m_localServer = smtk::shared_ptr<remus::Server>(
-      new remus::Server(remus::server::ServerPorts(),factory));
+    this->m_localServer =
+      smtk::shared_ptr<remus::Server>(new remus::Server(remus::server::ServerPorts(), factory));
     this->m_localServer->startBrokering();
 
     // Connect to the process-local server
@@ -127,18 +131,16 @@ bool RemusConnection::connectToServer(const std::string& hostname, int port)
     //The server could have bound to a different port than the one requested.
     //This happens when another remus server is active, so ask the server
     //for the information on how to connect to it.
-    this->m_conn = remus::client::make_ServerConnection( ports.client().endpoint() );
+    this->m_conn = remus::client::make_ServerConnection(ports.client().endpoint());
     //since the server and client are local they can share the same context
-    this->m_conn.context( ports.context() );
-    }
+    this->m_conn.context(ports.context());
+  }
   else
-    {
+  {
     this->m_conn = remus::client::ServerConnection(hostname, port);
-    }
+  }
 
-  this->m_client =
-    smtk::shared_ptr<remus::client::Client>(
-      new remus::client::Client(this->m_conn));
+  this->m_client = smtk::shared_ptr<remus::client::Client>(new remus::client::Client(this->m_conn));
   this->m_remoteSessionNameToType.clear();
   return true;
 }
@@ -148,40 +150,39 @@ std::vector<std::string> RemusConnection::sessionTypeNames()
 {
   std::vector<std::string> resultVec;
   if (this->m_remoteSessionNameToType.empty())
-    {
+  {
     if (!this->m_client)
       this->connectToServer();
     remus::common::MeshIOTypeSet mtypes = this->m_client->supportedIOTypes();
     remus::common::MeshIOTypeSet::const_iterator mit;
     for (mit = mtypes.begin(); mit != mtypes.end(); ++mit)
-      {
+    {
       if (mit->outputType() == "smtk::model[native]") // TODO: Eliminate this magic string?
-        {
+      {
         // Obtain the solid-modeling kernel "requirements", including the file types and operators.
         remus::proto::JobRequirementsSet kernelInfos = this->m_client->retrieveRequirements(*mit);
         remus::proto::JobRequirementsSet::const_iterator kit;
         for (kit = kernelInfos.begin(); kit != kernelInfos.end(); ++kit)
-          {
+        {
           const remus::proto::JobRequirements& kernelInfo(*kit);
           RemusStaticSessionInfo binfo =
-            Session::createFunctor(
-              shared_from_this(), kernelInfo, mit->inputType());
+            Session::createFunctor(shared_from_this(), kernelInfo, mit->inputType());
           // FIXME: If we implemented it, we could pass a method to
           //        accept remotely-provided pre-construction setup
           //        options to the session. But that is too fancy for now.
-          smtk::model::SessionRegistrar::registerSession(
-            binfo.name(), binfo.tags(),
-            smtk::bind(&RemusStaticSessionInfo::staticSetup, binfo, _1, _2),
-            binfo, SessionRegistrar::sessionOperatorConstructors(binfo.name()));
+          smtk::model::SessionRegistrar::registerSession(binfo.name(), binfo.tags(),
+            smtk::bind(&RemusStaticSessionInfo::staticSetup, binfo, _1, _2), binfo,
+            SessionRegistrar::sessionOperatorConstructors(binfo.name()));
           this->m_remoteSessionNameToType[binfo.name()] = mit->inputType();
-          smtkInfoMacro(log(), "Added model worker named \""
-            << binfo.name() << "\", type \"" << mit->inputType() << "\".");
-          }
+          smtkInfoMacro(log(), "Added model worker named \"" << binfo.name() << "\", type \""
+                                                             << mit->inputType() << "\".");
         }
       }
     }
-  std::map<std::string,std::string>::const_iterator bit;
-  for (bit = this->m_remoteSessionNameToType.begin(); bit != this->m_remoteSessionNameToType.end(); ++bit)
+  }
+  std::map<std::string, std::string>::const_iterator bit;
+  for (bit = this->m_remoteSessionNameToType.begin(); bit != this->m_remoteSessionNameToType.end();
+       ++bit)
     resultVec.push_back(bit->first);
 
   return resultVec;
@@ -191,11 +192,9 @@ std::vector<std::string> RemusConnection::sessionTypeNames()
   *
   */
 int RemusConnection::staticSetup(
-  const std::string& sessionName,
-  const std::string& optName,
-  const smtk::model::StringList& optVal)
+  const std::string& sessionName, const std::string& optName, const smtk::model::StringList& optVal)
 {
-  (void) this->sessionTypeNames(); // ensure that we've fetched the session names from the server.
+  (void)this->sessionTypeNames(); // ensure that we've fetched the session names from the server.
   if (this->m_remoteSessionNameToType.find(sessionName) == this->m_remoteSessionNameToType.end())
     return 0;
 
@@ -220,12 +219,12 @@ int RemusConnection::staticSetup(
     !(rval = cJSON_GetObjectItem(result, "result")) ||
     // Is the "result" field an Object with a child that is also an object?
     rval->type != cJSON_Number)
-    {
+  {
     // TODO: See if result has "error" key and report it.
     if (result)
       cJSON_Delete(result);
     return 0;
-    }
+  }
   return rval->valueint;
 }
 
@@ -234,7 +233,7 @@ int RemusConnection::staticSetup(
   */
 UUID RemusConnection::beginSession(const std::string& sessionName)
 {
-  (void) this->sessionTypeNames(); // ensure that we've fetched the session names from the server.
+  (void)this->sessionTypeNames(); // ensure that we've fetched the session names from the server.
   if (this->m_remoteSessionNameToType.find(sessionName) == this->m_remoteSessionNameToType.end())
     return UUID::null();
 
@@ -244,8 +243,7 @@ UUID RemusConnection::beginSession(const std::string& sessionName)
 
   cJSON* params;
   cJSON* req = SaveJSON::createRPCRequest("create-session", params, /*id*/ "1", cJSON_Object);
-  cJSON_AddItemToObject(
-    params, "session-name",
+  cJSON_AddItemToObject(params, "session-name",
     cJSON_CreateString(sessionName.c_str())); //jreq.meshTypes().inputType().c_str()));
 
   cJSON* result = this->jsonRPCRequest(req, jreq);
@@ -262,36 +260,29 @@ UUID RemusConnection::beginSession(const std::string& sessionName)
     // Does the result Object have a field named "result" (req'd by JSON-RPC)?
     !(sessionObj = cJSON_GetObjectItem(result, "result")) ||
     // Is the "result" field an Object with a child that is also an object?
-    sessionObj->type != cJSON_Object ||
-    !(sessionIdObj = sessionObj->child) ||
+    sessionObj->type != cJSON_Object || !(sessionIdObj = sessionObj->child) ||
     sessionIdObj->type != cJSON_Object ||
     // Does the first child have a valid name? (This is the session ID)
-    !sessionIdObj->string ||
-    !sessionIdObj->string[0] ||
+    !sessionIdObj->string || !sessionIdObj->string[0] ||
     // Does the first child have fields "name" and "ops" of type String and Array?
-    !(nameObj = cJSON_GetObjectItem(sessionIdObj, "name")) ||
-    nameObj->type != cJSON_String ||
-    !nameObj->valuestring ||
-    !nameObj->valuestring[0] ||
-    !(opsObj = cJSON_GetObjectItem(sessionIdObj, "ops")) ||
-    opsObj->type != cJSON_String
-    )
-      {
-      // TODO: See if result has "error" key and report it.
-      if (result)
-        cJSON_Delete(result);
-      return UUID::null();
-      }
+    !(nameObj = cJSON_GetObjectItem(sessionIdObj, "name")) || nameObj->type != cJSON_String ||
+    !nameObj->valuestring || !nameObj->valuestring[0] ||
+    !(opsObj = cJSON_GetObjectItem(sessionIdObj, "ops")) || opsObj->type != cJSON_String)
+  {
+    // TODO: See if result has "error" key and report it.
+    if (result)
+      cJSON_Delete(result);
+    return UUID::null();
+  }
 
   // OK, construct a special "forwarding" session locally.
   Session::Ptr session = Session::create();
   session->setup(this, jreq);
   // The LoadJSON registers this session with the model manager.
-  if (smtk::io::LoadJSON::ofRemoteSession(
-      sessionIdObj, session, this->m_modelMgr))
-    {
+  if (smtk::io::LoadJSON::ofRemoteSession(sessionIdObj, session, this->m_modelMgr))
+  {
     // Failure.
-    }
+  }
   //this->m_modelMgr->registerSession(session);
 
   cJSON_Delete(result);
@@ -313,8 +304,7 @@ UUID RemusConnection::beginSession(const std::string& sessionName)
   */
 bool RemusConnection::endSession(const UUID& sessionId)
 {
-  std::map<UUID,std::string>::iterator it =
-    this->m_remoteSessionRefIds.find(sessionId);
+  std::map<UUID, std::string>::iterator it = this->m_remoteSessionRefIds.find(sessionId);
   if (it == this->m_remoteSessionRefIds.end())
     return false;
 
@@ -322,7 +312,7 @@ bool RemusConnection::endSession(const UUID& sessionId)
   smtk::model::Session::Ptr sessionBase = SessionRef(this->m_modelMgr, sessionId).session();
   Session::Ptr session = smtk::dynamic_pointer_cast<Session>(sessionBase);
   if (session)
-    {
+  {
     this->m_modelMgr->unregisterSession(session);
 
     // Tell the server to unregister this session.
@@ -332,7 +322,7 @@ bool RemusConnection::endSession(const UUID& sessionId)
       "{\"jsonrpc\":\"2.0\", \"method\":\"delete-session\", \"params\":{\"session-id\":\"" +
       sessionId.toString() + "\"}}";
     this->jsonRPCNotification(note, session->remusRequirements());
-    }
+  }
 
   // Now remove the entry from the proxy's list of sessions.
   this->m_remoteSessionRefIds.erase(it);
@@ -342,8 +332,7 @@ bool RemusConnection::endSession(const UUID& sessionId)
 /**\brief Obtain a Session given its session ID.
   *
   */
-Session::Ptr RemusConnection::findSession(
-  const smtk::common::UUID& sessionId)
+Session::Ptr RemusConnection::findSession(const smtk::common::UUID& sessionId)
 {
   smtk::model::Session::Ptr sess = SessionRef(this->m_modelMgr, sessionId).session();
   return smtk::dynamic_pointer_cast<Session>(sess);
@@ -351,12 +340,12 @@ Session::Ptr RemusConnection::findSession(
 
 /**\brief Return a list of file types supported by a particular session.
   */
-StringData RemusConnection::supportedFileTypes(
-  const std::string& sessionName)
+StringData RemusConnection::supportedFileTypes(const std::string& sessionName)
 {
   StringData resultMap;
   cJSON* params;
-  cJSON* request = SaveJSON::createRPCRequest("session-filetypes", params, /*id*/ "1", cJSON_Object);
+  cJSON* request =
+    SaveJSON::createRPCRequest("session-filetypes", params, /*id*/ "1", cJSON_Object);
   cJSON_AddItemToObject(params, "session-name", cJSON_CreateString(sessionName.c_str()));
 
   // Now we need a worker to contact. If one already exists of the
@@ -366,44 +355,39 @@ StringData RemusConnection::supportedFileTypes(
   Session::Ptr session = this->findSessionForRemusType(sessionName);
   remus::proto::JobRequirements jreq;
   if (session)
-    {
+  {
     jreq = session->remusRequirements();
-    }
+  }
   else if (!this->findRequirementsForRemusType(jreq, sessionName))
-    {
+  {
     return resultMap;
-    }
+  }
   cJSON* result = this->jsonRPCRequest(request, jreq);
   cJSON* engines;
-  if (
-    !result ||
-    result->type != cJSON_Object ||
-    !(engines = cJSON_GetObjectItem(result, "result")) ||
-    engines->type != cJSON_Object)
-    {
-    smtkErrorMacro(this->log(),
-      "Invalid filetype response \""
-      << (result ? cJSON_Print(result) : "null") << "\"");
+  if (!result || result->type != cJSON_Object ||
+    !(engines = cJSON_GetObjectItem(result, "result")) || engines->type != cJSON_Object)
+  {
+    smtkErrorMacro(this->log(), "Invalid filetype response \""
+        << (result ? cJSON_Print(result) : "null") << "\"");
     // TODO: See if result has "error" key and report it.
     if (result)
       cJSON_Delete(result);
     return StringData();
-    }
+  }
 
-  smtkDebugMacro(this->log(),
-    "Filetype response: " << cJSON_Print(engines));
-  for (cJSON* engine = engines->child; (engine = engine->next); )
-    {
-    smtkDebugMacro(this->log(),
-      "  engine: " << engine->string << " types: " << cJSON_Print(engine->child));
+  smtkDebugMacro(this->log(), "Filetype response: " << cJSON_Print(engines));
+  for (cJSON* engine = engines->child; (engine = engine->next);)
+  {
+    smtkDebugMacro(
+      this->log(), "  engine: " << engine->string << " types: " << cJSON_Print(engine->child));
     if (engine->string && engine->string[0])
-      {
-      std::pair<std::string,StringList> keyval;
+    {
+      std::pair<std::string, StringList> keyval;
       keyval.first = engine->string;
       StringData::iterator it = resultMap.insert(keyval).first;
       smtk::io::LoadJSON::getStringArrayFromJSON(engine, it->second);
-      }
     }
+  }
   cJSON_Delete(result);
   return resultMap;
 }
@@ -415,93 +399,89 @@ StringData RemusConnection::supportedFileTypes(
   * to infer it.
   */
 smtk::model::OperatorResult RemusConnection::readFile(
-  const std::string& fileName,
-  const std::string& fileType,
-  const std::string& sessionName)
+  const std::string& fileName, const std::string& fileType, const std::string& sessionName)
 {
   std::string actualSessionName;
   if (sessionName.empty())
+  {
+    (void)this->sessionTypeNames(); // ensure that we've fetched the session names from the server.
+    std::map<std::string, std::string>::const_iterator bnit;
+    for (bnit = this->m_remoteSessionNameToType.begin();
+         bnit != this->m_remoteSessionNameToType.end() && actualSessionName.empty(); ++bnit)
     {
-    (void) this->sessionTypeNames(); // ensure that we've fetched the session names from the server.
-    std::map<std::string,std::string>::const_iterator bnit;
-    for (
-      bnit = this->m_remoteSessionNameToType.begin();
-      bnit != this->m_remoteSessionNameToType.end() && actualSessionName.empty();
-      ++bnit)
-      {
       StringData fileTypesForSession = this->supportedFileTypes(bnit->first);
       StringData::const_iterator dit;
       for (dit = fileTypesForSession.begin(); dit != fileTypesForSession.end(); ++dit)
-        {
+      {
         StringList::const_iterator fit;
         if (dit->first != "default" && bnit->second.find(dit->first) == std::string::npos)
           continue; // skip file types for non-default engines
         // OK, either the session has only the default engine or this record matches
         // the worker's default engine:
         for (fit = dit->second.begin(); fit != dit->second.end(); ++fit)
-          {
+        {
           std::string::size_type fEnd;
           std::string::size_type eEnd = fit->find(' ');
           std::string ext(*fit, 0, eEnd);
           smtkInfoMacro(log(), "Looking for \"" << ext << "\".");
           if ((fEnd = fileName.rfind(ext)) && (fileName.size() - fEnd == eEnd))
-            { // matching substring is indeed at end of fileName
+          { // matching substring is indeed at end of fileName
             actualSessionName = bnit->first;
-            smtkInfoMacro(log(), "Found session type " << actualSessionName << " for " << fileName << ".");
+            smtkInfoMacro(
+              log(), "Found session type " << actualSessionName << " for " << fileName << ".");
             break;
-            }
           }
         }
       }
     }
+  }
   else
-    {
+  {
     actualSessionName = sessionName;
-    }
+  }
   Session::Ptr session = this->findSessionForRemusType(actualSessionName);
   if (!session)
-    { // No existing session of that type. Create a new remote session.
+  { // No existing session of that type. Create a new remote session.
     UUID sessionId = this->beginSession(actualSessionName);
 
     session =
-      smtk::dynamic_pointer_cast<Session>(
-        SessionRef(this->m_modelMgr, sessionId).session());
-    }
+      smtk::dynamic_pointer_cast<Session>(SessionRef(this->m_modelMgr, sessionId).session());
+  }
   if (!session)
-    {
-    smtkInfoMacro(log(), "Could not find or create session of type \"" << actualSessionName << "\".");
+  {
+    smtkInfoMacro(
+      log(), "Could not find or create session of type \"" << actualSessionName << "\".");
     return smtk::model::OperatorResult();
-    }
-  smtkInfoMacro(log(), "Found session " << session->sessionId() << " (" << actualSessionName << ").");
+  }
+  smtkInfoMacro(
+    log(), "Found session " << session->sessionId() << " (" << actualSessionName << ").");
 
   smtk::model::OperatorPtr readOp = session->op("read");
   if (!readOp)
-    {
+  {
     smtkInfoMacro(log(), "Could not create read operator for session"
-      << " \"" << actualSessionName << "\""
-      << " (" << session->sessionId() << ").");
+        << " \"" << actualSessionName << "\""
+        << " (" << session->sessionId() << ").");
     return smtk::model::OperatorResult();
-    }
+  }
 
   readOp->specification()->findFile("filename")->setValue(fileName);
-  smtk::attribute::StringItem::Ptr fileTypeItem =
-    readOp->specification()->findString("filetype");
+  smtk::attribute::StringItem::Ptr fileTypeItem = readOp->specification()->findString("filetype");
   if (fileTypeItem)
-    {
+  {
     fileTypeItem->setValue(fileType);
-    }
+  }
 
   smtk::model::OperatorResult result = readOp->operate();
 
   // Fetch affected models
-  smtk::attribute::ModelEntityItem::Ptr models =
-    result->findModelEntity("model");
+  smtk::attribute::ModelEntityItem::Ptr models = result->findModelEntity("model");
   if (models)
-    {
+  {
     int numModels = static_cast<int>(models->numberOfValues());
     for (int i = 0; i < numModels; ++i)
       this->fetchWholeModel(models->value(i).entity());
-    }
+  }
   this->m_modelMgr->assignDefaultNames();
   return result;
 }
@@ -569,11 +549,8 @@ void RemusConnection::fetchWholeModel(const UUID& modelId)
   cJSON* model;
   cJSON* topo;
   //smtkInfoMacro(log(), " ----- \n\n\n" << cJSON_Print(response) << "\n ----- \n\n.");
-  if (
-    response &&
-    (model = cJSON_GetObjectItem(response, "result")) &&
-    model->type == cJSON_Object &&
-    (topo = cJSON_GetObjectItem(model, "topo")))
+  if (response && (model = cJSON_GetObjectItem(response, "result")) &&
+    model->type == cJSON_Object && (topo = cJSON_GetObjectItem(model, "topo")))
     smtk::io::LoadJSON::ofManager(topo, this->m_modelMgr);
   cJSON_Delete(response);
 }
@@ -598,16 +575,13 @@ cJSON* RemusConnection::jsonRPCRequest(cJSON* req, const remus::proto::JobRequir
 }
 
 /// Perform a synchronous JSON-RPC request.
-cJSON* RemusConnection::jsonRPCRequest(const std::string& request, const remus::proto::JobRequirements& jreq)
+cJSON* RemusConnection::jsonRPCRequest(
+  const std::string& request, const remus::proto::JobRequirements& jreq)
 {
   remus::proto::JobContent jcnt(remus::common::ContentFormat::JSON, request);
   remus::proto::JobSubmission jsub(jreq);
-  jsub.insert(
-    remus::proto::JobSubmission::value_type(
-      "request",
-      remus::proto::JobContent(
-        remus::common::ContentFormat::JSON,
-        request)));
+  jsub.insert(remus::proto::JobSubmission::value_type(
+    "request", remus::proto::JobContent(remus::common::ContentFormat::JSON, request)));
   // Submit the job
   remus::proto::Job jd = this->m_client->submitJob(jsub);
 
@@ -632,16 +606,13 @@ void RemusConnection::jsonRPCNotification(cJSON* note, const remus::proto::JobRe
   free(noteStr);
 }
 
-void RemusConnection::jsonRPCNotification(const std::string& note, const remus::proto::JobRequirements& jreq)
+void RemusConnection::jsonRPCNotification(
+  const std::string& note, const remus::proto::JobRequirements& jreq)
 {
   remus::proto::JobContent jcnt(remus::common::ContentFormat::JSON, note);
   remus::proto::JobSubmission jsub(jreq);
-  jsub.insert(
-    remus::proto::JobSubmission::value_type(
-      "request",
-      remus::proto::JobContent(
-        remus::common::ContentFormat::JSON,
-        note)));
+  jsub.insert(remus::proto::JobSubmission::value_type(
+    "request", remus::proto::JobContent(remus::common::ContentFormat::JSON, note)));
   // Submit the job
   remus::proto::Job jd = this->m_client->submitJob(jsub);
   (void)jd;
@@ -674,23 +645,22 @@ smtk::io::Logger& RemusConnection::log()
   *
   * If none is found, a "null" shared-pointer is returned.
   */
-Session::Ptr RemusConnection::findSessionForRemusType(
-  const std::string& rtype)
+Session::Ptr RemusConnection::findSessionForRemusType(const std::string& rtype)
 {
   Session::Ptr session;
-  std::map<UUID,std::string>::const_iterator bit;
+  std::map<UUID, std::string>::const_iterator bit;
   for (bit = this->m_remoteSessionRefIds.begin(); bit != this->m_remoteSessionRefIds.end(); ++bit)
-    {
+  {
     if (bit->second == rtype)
-      {
+    {
       smtk::model::Session::Ptr sessionBase = SessionRef(this->m_modelMgr, bit->first).session();
       session = smtk::dynamic_pointer_cast<Session>(sessionBase);
       if (session)
-        {
+      {
         return session;
-        }
       }
     }
+  }
   return session;
 }
 
@@ -699,33 +669,33 @@ Session::Ptr RemusConnection::findSessionForRemusType(
   * If none exists, the method returns false and \a jreq is not set;
   * otherwise it returns true.
   */
-bool RemusConnection::findRequirementsForRemusType(remus::proto::JobRequirements& jreq, const std::string& worker)
+bool RemusConnection::findRequirementsForRemusType(
+  remus::proto::JobRequirements& jreq, const std::string& worker)
 {
-  std::map<std::string,std::string>::const_iterator wit =
+  std::map<std::string, std::string>::const_iterator wit =
     this->m_remoteSessionNameToType.find(worker);
   if (wit == this->m_remoteSessionNameToType.end())
     return false;
 
-  remus::proto::JobRequirementsSet reqSet =
-    this->m_client->retrieveRequirements(
-      remus::common::MeshIOType(wit->second, "smtk::model[native]"));
+  remus::proto::JobRequirementsSet reqSet = this->m_client->retrieveRequirements(
+    remus::common::MeshIOType(wit->second, "smtk::model[native]"));
   if (!reqSet.size())
     return false;
   remus::proto::JobRequirementsSet::const_iterator kit;
   for (kit = reqSet.begin(); kit != reqSet.end(); ++kit)
-    {
+  {
     const remus::proto::JobRequirements& kernelInfo(*kit);
     if (kernelInfo.workerName() != worker)
       continue;
 
     jreq = *kit;
     return true;
-    }
+  }
 
   return false;
 }
 
-    } // namespace remote
-  } // namespace bridge
+} // namespace remote
+} // namespace bridge
 } // namespace smtk
 #endif // SHIBOKEN_SKIP

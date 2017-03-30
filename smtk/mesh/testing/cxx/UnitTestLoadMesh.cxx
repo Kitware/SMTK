@@ -15,7 +15,6 @@
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
-
 namespace
 {
 
@@ -29,11 +28,11 @@ void verify_load_bad_mesh()
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
   smtk::mesh::CollectionPtr c = read(file_path, manager);
-  test( !c->isValid(), "collection should be invalid");
-  test( c->entity().isNull(), "uuid should be invalid");
+  test(!c->isValid(), "collection should be invalid");
+  test(c->entity().isNull(), "uuid should be invalid");
 
-  test( (c->readLocation() == file_path), "read location of collection shouldnt be empty");
-  test( (c->writeLocation() == file_path), "read location of collection shouldnt be empty");
+  test((c->readLocation() == file_path), "read location of collection shouldnt be empty");
+  test((c->writeLocation() == file_path), "read location of collection shouldnt be empty");
 }
 
 void verify_load_valid_mesh()
@@ -44,12 +43,12 @@ void verify_load_valid_mesh()
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
   smtk::mesh::CollectionPtr c = read(file_path, manager);
-  test( c->isValid(), "collection should be valid");
+  test(c->isValid(), "collection should be valid");
 
   std::size_t numMeshes = c->numberOfMeshes();
   std::cout << "number of meshes in twoassm_out is: " << numMeshes << std::endl;
-  test( numMeshes!=0, "dataset once loaded should have more than zero meshes");
-  test( numMeshes == 53, "dataset once loaded should have 53 meshes");
+  test(numMeshes != 0, "dataset once loaded should have more than zero meshes");
+  test(numMeshes == 53, "dataset once loaded should have 53 meshes");
 }
 
 void verify_load_writeLocation()
@@ -60,10 +59,10 @@ void verify_load_writeLocation()
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
   smtk::mesh::CollectionPtr c = read(file_path, manager);
-  test( c->isValid(), "collection should be valid");
+  test(c->isValid(), "collection should be valid");
 
-  test( c->readLocation() == file_path, "collection readLocation is wrong");
-  test( c->writeLocation() == file_path, "collection default writeLocation is wrong");
+  test(c->readLocation() == file_path, "collection readLocation is wrong");
+  test(c->writeLocation() == file_path, "collection default writeLocation is wrong");
 }
 
 void verify_load_multiple_meshes()
@@ -77,24 +76,23 @@ void verify_load_multiple_meshes()
   smtk::mesh::CollectionPtr c1 = read(first_file_path, manager);
   smtk::mesh::CollectionPtr c2 = read(second_file_path, manager);
 
-  test( c1->isValid(), "collection should be valid");
-  test( c2->isValid(), "collection should be valid");
+  test(c1->isValid(), "collection should be valid");
+  test(c2->isValid(), "collection should be valid");
 
   //verify the size of twoassm
   {
-  std::size_t numMeshes = c1->numberOfMeshes();
-  std::cout << "number of meshes in twoassm_out is: " << numMeshes << std::endl;
-  test( numMeshes!=0, "dataset once loaded should have more than zero meshes");
-  test( numMeshes == 53, "dataset once loaded should have 53 meshes");
+    std::size_t numMeshes = c1->numberOfMeshes();
+    std::cout << "number of meshes in twoassm_out is: " << numMeshes << std::endl;
+    test(numMeshes != 0, "dataset once loaded should have more than zero meshes");
+    test(numMeshes == 53, "dataset once loaded should have 53 meshes");
   }
-
 
   //verify the size of 64bricks
   {
-  std::size_t numMeshes = c2->numberOfMeshes();
-  std::cout << "number of meshes in 64bricks_12ktet is: " << numMeshes << std::endl;
-  test( numMeshes!=0, "dataset once loaded should have more than zero meshes");
-  test( numMeshes == 800, "dataset once loaded should have 800 meshes");
+    std::size_t numMeshes = c2->numberOfMeshes();
+    std::cout << "number of meshes in 64bricks_12ktet is: " << numMeshes << std::endl;
+    test(numMeshes != 0, "dataset once loaded should have more than zero meshes");
+    test(numMeshes == 800, "dataset once loaded should have 800 meshes");
   }
 
   //verify the manager has two collections
@@ -109,12 +107,12 @@ void verify_load_same_mesh_multiple_times()
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
   smtk::mesh::CollectionPtr c1 = read(file_path, manager);
-  test( c1->isValid(), "collection should be valid");
+  test(c1->isValid(), "collection should be valid");
   test(manager->numberOfCollections() == 1);
 
   //load the same mesh a second time and confirm that is valid
   smtk::mesh::CollectionPtr c2 = read(file_path, manager);
-  test( c2->isValid(), "collection should be valid");
+  test(c2->isValid(), "collection should be valid");
   test(manager->numberOfCollections() == 2);
 }
 
@@ -125,14 +123,12 @@ void verify_load_onlyNeumann()
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = read(file_path, manager,
-                                     smtk::io::mesh::Subset::OnlyNeumann);
-  test( c->isValid(), "collection should be valid");
+  smtk::mesh::CollectionPtr c = read(file_path, manager, smtk::io::mesh::Subset::OnlyNeumann);
+  test(c->isValid(), "collection should be valid");
 
   std::size_t numMeshes = c->numberOfMeshes();
   std::cout << "number of neumann meshes in 64bricks_12ktet is: " << numMeshes << std::endl;
-  test( numMeshes == 221, "dataset once loaded should have 221 meshes");
-
+  test(numMeshes == 221, "dataset once loaded should have 221 meshes");
 }
 
 void verify_load_onlyDirichlet()
@@ -142,13 +138,12 @@ void verify_load_onlyDirichlet()
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = read(file_path, manager,
-                                     smtk::io::mesh::Subset::OnlyDirichlet);
-  test( c->isValid(), "collection should be valid");
+  smtk::mesh::CollectionPtr c = read(file_path, manager, smtk::io::mesh::Subset::OnlyDirichlet);
+  test(c->isValid(), "collection should be valid");
 
   std::size_t numMeshes = c->numberOfMeshes();
   std::cout << "number of dirichlet meshes in 64bricks_12ktet is: " << numMeshes << std::endl;
-  test( numMeshes == 221, "dataset once loaded should have 221 meshes");
+  test(numMeshes == 221, "dataset once loaded should have 221 meshes");
 }
 
 void verify_load_bad_onlyDomain()
@@ -159,11 +154,9 @@ void verify_load_bad_onlyDomain()
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = read(file_path, manager,
-                                     smtk::io::mesh::Subset::OnlyDomain);
+  smtk::mesh::CollectionPtr c = read(file_path, manager, smtk::io::mesh::Subset::OnlyDomain);
   //this dataset has no domain sets
-  test( !c->isValid(), "collection should be invalid");
-
+  test(!c->isValid(), "collection should be invalid");
 }
 
 void verify_load_bad_onlyNeumann()
@@ -174,13 +167,11 @@ void verify_load_bad_onlyNeumann()
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = read(file_path, manager,
-                                     smtk::io::mesh::Subset::OnlyNeumann);
+  smtk::mesh::CollectionPtr c = read(file_path, manager, smtk::io::mesh::Subset::OnlyNeumann);
 
   //this dataset has no neumann sets, since it doesn't exist
   //all other tests data sets have neumann sets
-  test( !c->isValid(), "collection should be invalid");
-
+  test(!c->isValid(), "collection should be invalid");
 }
 
 void verify_load_bad_onlyDirichlet()
@@ -192,13 +183,11 @@ void verify_load_bad_onlyDirichlet()
 
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = read(file_path, manager,
-                                     smtk::io::mesh::Subset::OnlyDirichlet);
+  smtk::mesh::CollectionPtr c = read(file_path, manager, smtk::io::mesh::Subset::OnlyDirichlet);
 
   //this dataset has no dirichlet sets
-  test( !c->isValid(), "collection should be invalid");
+  test(!c->isValid(), "collection should be invalid");
 }
-
 }
 
 int UnitTestLoadMesh(int, char** const)

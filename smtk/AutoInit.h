@@ -18,13 +18,11 @@
 // See smtk/model/Session.h and its subclasses for an example of how
 // these macros are used to register components with the model Manager.
 
-#define smtkAutoInitComponentMacro(C) \
-  void C##_AutoInit_Construct(); \
+#define smtkAutoInitComponentMacro(C)                                                              \
+  void C##_AutoInit_Construct();                                                                   \
   void C##_AutoInit_Destruct();
-#define smtkAutoInitConstructMacro(C) \
-  C##_AutoInit_Construct();
-#define smtkAutoInitDestructMacro(C) \
-  C##_AutoInit_Destruct();
+#define smtkAutoInitConstructMacro(C) C##_AutoInit_Construct();
+#define smtkAutoInitDestructMacro(C) C##_AutoInit_Destruct();
 
 /**\brief Register an SMTK component for use.
   *
@@ -45,13 +43,13 @@
   * dynamic C++ initialization and and the global function
   * smtk_cgm_session_AutoInit_Destruct is called during finalization.
   */
-#define smtkComponentInitMacro(C) \
-  smtkAutoInitComponentMacro(C) \
-  static struct C##_ComponentInit {                                           \
-    /* Call <mod>_AutoInit_Construct during initialization.  */               \
-    C##_ComponentInit()  { smtkAutoInitConstructMacro(C) }                    \
-    /* Call <mod>_AutoInit_Destruct during finalization.  */                  \
-    ~C##_ComponentInit() { smtkAutoInitDestructMacro(C)  }                    \
+#define smtkComponentInitMacro(C)                                                                  \
+  smtkAutoInitComponentMacro(C) static struct C##_ComponentInit                                    \
+  {                                                                                                \
+    /* Call <mod>_AutoInit_Construct during initialization.  */                                    \
+    C##_ComponentInit() { smtkAutoInitConstructMacro(C) }                                          \
+    /* Call <mod>_AutoInit_Destruct during finalization.  */                                       \
+    ~C##_ComponentInit() { smtkAutoInitDestructMacro(C) }                                          \
   } C##_ComponentInit_Instance;
 
 #endif // __smtk_AutoInit_h

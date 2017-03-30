@@ -12,8 +12,10 @@
 
 #include "smtk/model/ShellEntity.h"
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 class Face;
 class FaceUse;
@@ -31,7 +33,7 @@ typedef std::vector<EdgeUse> EdgeUses;
 class SMTKCORE_EXPORT Loop : public ShellEntity
 {
 public:
-  SMTK_ENTITYREF_CLASS(Loop,ShellEntity,isLoop);
+  SMTK_ENTITYREF_CLASS(Loop, ShellEntity, isLoop);
 
   Face face() const;
   FaceUse faceUse() const;
@@ -42,7 +44,7 @@ public:
   bool replaceEdgeUseWithUses(const EdgeUse& original, const EdgeUses& replacements);
 };
 
-  } // namespace model
+} // namespace model
 } // namespace smtk
 
 #endif // __smtk_model_Loop_h

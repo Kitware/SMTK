@@ -17,7 +17,6 @@
 #include "smtk/bridge/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"
 
-
 class vtkModelFaceUse;
 class vtkModelItemIterator;
 class vtkModelRegion;
@@ -25,7 +24,7 @@ class vtkModelRegion;
 class VTKSMTKDISCRETEMODEL_EXPORT vtkModelShellUse : public vtkModelEntity
 {
 public:
-  vtkTypeMacro(vtkModelShellUse,vtkModelEntity);
+  vtkTypeMacro(vtkModelShellUse, vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual int GetType();
@@ -68,9 +67,8 @@ protected:
   friend class vtkDiscreteModelGeometricEntity;
 
 private:
-  vtkModelShellUse(const vtkModelShellUse&);  // Not implemented.
-  void operator=(const vtkModelShellUse&);  // Not implemented.
+  vtkModelShellUse(const vtkModelShellUse&); // Not implemented.
+  void operator=(const vtkModelShellUse&);   // Not implemented.
 };
 
 #endif
-

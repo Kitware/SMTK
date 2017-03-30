@@ -43,9 +43,12 @@
 
 using namespace smtk::model;
 
-namespace smtk {
-  namespace bridge {
-    namespace cgm {
+namespace smtk
+{
+namespace bridge
+{
+namespace cgm
+{
 
 smtk::model::OperatorResult Reflect::operateInternal()
 {
@@ -59,32 +62,31 @@ smtk::model::OperatorResult Reflect::operateInternal()
   DLIList<RefEntity*> cgmEntitiesOut;
   RefEntity* refEntity;
   for (it = bodiesIn.begin(); it != bodiesIn.end(); ++it)
-    {
+  {
     refEntity = this->cgmEntity(*it);
     if (refEntity)
-      {
+    {
       cgmEntitiesIn.append(refEntity);
-      this->manager()->erase(*it); // We will re-transcribe momentarily. TODO: This could be more efficient.
-      }
+      this->manager()->erase(
+        *it); // We will re-transcribe momentarily. TODO: This could be more efficient.
     }
+  }
 
   int nb = cgmEntitiesIn.size();
   CubitVector basepoint(basepointItem->value(0), basepointItem->value(1), basepointItem->value(2));
   CubitVector direction(directionItem->value(0), directionItem->value(1), directionItem->value(2));
-  GeometryQueryTool::instance()->reflect(
-    cgmEntitiesIn, basepoint, direction,
+  GeometryQueryTool::instance()->reflect(cgmEntitiesIn, basepoint, direction,
     true, // (check to transform)
     cgmEntitiesOut);
   if (cgmEntitiesOut.size() != nb)
-    {
+  {
     smtkInfoMacro(log(), "Failed to reflect bodies or wrong number"
-      << " (" << cgmEntitiesOut.size() << " != " << nb << ")"
-      << " of resulting bodies.");
+        << " (" << cgmEntitiesOut.size() << " != " << nb << ")"
+        << " of resulting bodies.");
     return this->createResult(smtk::model::OPERATION_FAILED);
-    }
+  }
 
-  smtk::model::OperatorResult result = this->createResult(
-    smtk::model::OPERATION_SUCCEEDED);
+  smtk::model::OperatorResult result = this->createResult(smtk::model::OPERATION_SUCCEEDED);
 
   this->addEntitiesToResult(cgmEntitiesOut, result, MODIFIED);
   // Nothing expunged.
@@ -92,14 +94,9 @@ smtk::model::OperatorResult Reflect::operateInternal()
   return result;
 }
 
-    } // namespace cgm
-  } //namespace bridge
+} // namespace cgm
+} //namespace bridge
 } // namespace smtk
 
-smtkImplementsModelOperator(
-  SMTKCGMSESSION_EXPORT,
-  smtk::bridge::cgm::Reflect,
-  cgm_reflect,
-  "reflect",
-  Reflect_xml,
-  smtk::bridge::cgm::Session);
+smtkImplementsModelOperator(SMTKCGMSESSION_EXPORT, smtk::bridge::cgm::Reflect, cgm_reflect,
+  "reflect", Reflect_xml, smtk::bridge::cgm::Session);

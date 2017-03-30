@@ -27,30 +27,28 @@
 
 class QKeyEvent;
 
-namespace smtk {
-  namespace extension {
-    class SMTKQTEXT_EXPORT qtTableWidget : public QTableWidget
-    {
-      Q_OBJECT
+namespace smtk
+{
+namespace extension
+{
+class SMTKQTEXT_EXPORT qtTableWidget : public QTableWidget
+{
+  Q_OBJECT
 
-    public:
+public:
+  qtTableWidget(QWidget* p = NULL);
+  ~qtTableWidget();
 
-      qtTableWidget(QWidget* p = NULL);
-      ~qtTableWidget();
+  QModelIndexList getSelectedIndexes() const { return this->selectedIndexes(); }
+public slots:
 
-      QModelIndexList getSelectedIndexes() const
-      {
-	return this->selectedIndexes();
-      }
-      public slots:
+signals:
+  void keyPressed(QKeyEvent*);
 
-	signals:
-      void keyPressed(QKeyEvent*);
-      
-      protected slots:
-	virtual void keyPressEvent(QKeyEvent*);
-    };
-  };
+protected slots:
+  virtual void keyPressEvent(QKeyEvent*);
+};
+};
 };
 
 #endif // __smtk_extension_qtTableWidget_h

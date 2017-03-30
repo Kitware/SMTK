@@ -26,7 +26,7 @@ class VTK_EXPORT vtkCMBModelEdgeMeshServer : public vtkCMBModelEdgeMesh
 {
 public:
   static vtkCMBModelEdgeMeshServer* New();
-  vtkTypeMacro(vtkCMBModelEdgeMeshServer,vtkCMBModelEdgeMesh);
+  vtkTypeMacro(vtkCMBModelEdgeMeshServer, vtkCMBModelEdgeMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
   // Description:
   // Set the local mesh length on the entity.
@@ -53,8 +53,8 @@ protected:
 
 private:
   bool UseLengthAlongEdge;
-  vtkCMBModelEdgeMeshServer(const vtkCMBModelEdgeMeshServer&);  // Not implemented.
-  void operator=(const vtkCMBModelEdgeMeshServer&);  // Not implemented.
+  vtkCMBModelEdgeMeshServer(const vtkCMBModelEdgeMeshServer&); // Not implemented.
+  void operator=(const vtkCMBModelEdgeMeshServer&);            // Not implemented.
 };
 
 #endif

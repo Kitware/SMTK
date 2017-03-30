@@ -16,8 +16,10 @@
 
 #include <sstream>
 
-namespace smtk {
-  namespace model {
+namespace smtk
+{
+namespace model
+{
 
 AttributeListPhrase::AttributeListPhrase()
 {
@@ -67,5 +69,5 @@ bool AttributeListPhrase::buildSubphrasesInternal()
   return true;
 }
 
-  } // model namespace
+} // model namespace
 } // smtk namespace

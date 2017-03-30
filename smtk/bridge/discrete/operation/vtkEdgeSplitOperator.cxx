@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-
 #include "vtkEdgeSplitOperator.h"
 
 #include "vtkDiscreteModel.h"
@@ -29,23 +28,22 @@ vtkEdgeSplitOperator::~vtkEdgeSplitOperator()
 {
 }
 
-vtkModelEntity* vtkEdgeSplitOperator::GetModelEntity(
-  vtkDiscreteModelWrapper* ModelWrapper)
+vtkModelEntity* vtkEdgeSplitOperator::GetModelEntity(vtkDiscreteModelWrapper* ModelWrapper)
 {
-  if(!ModelWrapper || !this->GetIsEdgeIdSet())
-    {
+  if (!ModelWrapper || !this->GetIsEdgeIdSet())
+  {
     return 0;
-    }
+  }
   return this->Superclass::GetModelEntity(ModelWrapper->GetModel());
 }
 
 bool vtkEdgeSplitOperator::AbleToOperate(vtkDiscreteModelWrapper* ModelWrapper)
 {
-  if(!ModelWrapper)
-    {
+  if (!ModelWrapper)
+  {
     vtkErrorMacro("Passed in a null model.");
     return 0;
-    }
+  }
   return this->Superclass::AbleToOperate(ModelWrapper->GetModel());
 }
 
@@ -53,33 +51,32 @@ void vtkEdgeSplitOperator::Operate(vtkDiscreteModelWrapper* ModelWrapper)
 {
   vtkDebugMacro("Operating on a model.");
 
-  if(!this->AbleToOperate(ModelWrapper))
-    {
+  if (!this->AbleToOperate(ModelWrapper))
+  {
     this->OperateSucceeded = 0;
     return;
-    }
+  }
 
   vtkDiscreteModelEdge* Edge =
     vtkDiscreteModelEdge::SafeDownCast(this->GetModelEntity(ModelWrapper));
 
   vtkIdType newEdgeId = -1, newVertexId;
-  this->OperateSucceeded =
-    Edge->Split(this->GetPointId(), newVertexId, newEdgeId);
-  if(this->OperateSucceeded)
-    {
+  this->OperateSucceeded = Edge->Split(this->GetPointId(), newVertexId, newEdgeId);
+  if (this->OperateSucceeded)
+  {
     this->SetCreatedModelEdgeId(newEdgeId);
     this->SetCreatedModelVertexId(newVertexId);
     std::set<vtkIdType> newEnts;
     newEnts.insert(newEdgeId);
     newEnts.insert(newVertexId);
     ModelWrapper->AddGeometricEntities(newEnts);
-    }
+  }
   vtkDebugMacro("Finished operating on a model.");
   return;
 }
 
 void vtkEdgeSplitOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
-  this->Superclass::PrintSelf(os,indent);
+  this->Superclass::PrintSelf(os, indent);
   os << indent << "OperateSucceeded: " << this->OperateSucceeded << endl;
 }
