@@ -70,9 +70,11 @@
 #elif defined(SMTK_MSVC)
 #define SMTK_THIRDPARTY_PRE_INCLUDE \
  __pragma(warning(push)) \
+ __pragma(warning(disable:4180))  /*qualifier applied to function type has no meaning; ignored*/ \
  __pragma(warning(disable:4244))  /*conversion from 'double' to 'unsigned int'*/ \
  __pragma(warning(disable:4251))  /*missing DLL-interface*/ \
  __pragma(warning(disable:4267))  /*from size_t to type*/ \
+ __pragma(warning(disable:4273))  /*inconsistent dll linkage*/ \
  __pragma(warning(disable:4275))  /*non dll-interface class used as base*/ \
  __pragma(warning(disable:4305))  /*truncation from 'double' to 'float'*/ \
  __pragma(warning(disable:4373))  /*override when parameters differ by const/volatile qualifiers*/ \
