@@ -18,6 +18,7 @@ if smtk.wrappingProtocol() == 'pybind11':
     import smtk.common
 from smtk.simple import *
 
+
 def RSTest():
     """Tests for ResourceSet
     Currently does not test for ResourceInfo
@@ -32,7 +33,8 @@ def RSTest():
     system1 = smtk.attribute.System.New()
     print system1
     print system1.resourceType()
-    result = resourceSet.addResource(system1, "system1", "", smtk.common.ResourceSet.TEMPLATE);
+    result = resourceSet.addResource(
+        system1, "system1", "", smtk.common.ResourceSet.TEMPLATE)
 
     n = resourceSet.numberOfResources()
     if result == False:
@@ -42,10 +44,9 @@ def RSTest():
         print("Wrong number of resources: %i, should be 1" % n)
         status = status + 1
 
-
-
     system2 = smtk.attribute.System.New()
-    result = resourceSet.addResource(system2, "system2", "path2", smtk.common.ResourceSet.INSTANCE);
+    result = resourceSet.addResource(
+        system2, "system2", "path2", smtk.common.ResourceSet.INSTANCE)
 
     n = resourceSet.numberOfResources()
     if result == False:
@@ -55,8 +56,8 @@ def RSTest():
         print("Wrong number of resources: %i, should be 2" % n)
         status = status + 1
 
-
-    result = resourceSet.addResource(system1, "system1-different-id", "", smtk.common.ResourceSet.SCENARIO);
+    result = resourceSet.addResource(
+        system1, "system1-different-id", "", smtk.common.ResourceSet.SCENARIO)
     n = resourceSet.numberOfResources()
     if result == False:
         print("addResource() call failed")
@@ -64,7 +65,6 @@ def RSTest():
     elif n != 3:
         print("Wrong number of resources: %i, should be 3" % n)
         status = status + 1
-
 
     result = resourceSet.addResource(system2, "system2")
     n = resourceSet.numberOfResources()
@@ -75,7 +75,6 @@ def RSTest():
         print("Wrong number of resources: %i, should be 3" % n)
         status = status + 1
 
-
     ids = resourceSet.resourceIds()
     if len(ids) != 3:
         print("Wrong number of ids: %i, should be 3")
@@ -84,14 +83,15 @@ def RSTest():
         expectedNames = ["system1", "system2", "system1-different-id"]
         for i in range(len(ids)):
             if ids[i] != expectedNames[i]:
-                print("Wrong resource name %s, should be %s" % (ids[i], expectedNames[i]) )
+                print("Wrong resource name %s, should be %s" %
+                      (ids[i], expectedNames[i]))
                 status = status + 1
-
 
     # Missing: ResourceInfo tests (function not implemented)
 
     # Note: ResourcePtr is not implemented (and cannot be due Resource being abstract -- shiboken issues)
-    # Note: ResourceSet.get is modified by shiboken to return a ResourcePtr/shared_ptr<Resource>
+    # Note: ResourceSet.get is modified by shiboken to return a
+    # ResourcePtr/shared_ptr<Resource>
 
     resource = resourceSet.get("system2")
     if resource == None:
@@ -99,14 +99,17 @@ def RSTest():
         status = status + 1
     rtype = resource.resourceType()
     if rtype != smtk.common.Resource.ATTRIBUTE:
-        print("Incorrect resource type %s, should be smtk.common.Resource.ATTRIBUTE" % rtype)
+        print(
+            "Incorrect resource type %s, should be smtk.common.Resource.ATTRIBUTE" % rtype)
         status = status + 1
 
     print("Number of errors: %i" % status)
     return status
 
+
 def test():
     return RSTest()
+
 
 if __name__ == '__main__':
     sys.exit(test())

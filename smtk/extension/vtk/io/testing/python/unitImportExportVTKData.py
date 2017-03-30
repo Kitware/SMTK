@@ -21,30 +21,33 @@ import vtk
 
 import inspect
 
+
 def make_EmptyPolyData():
     return vtk.vtkPolyData()
+
 
 def make_TrianglePolyData():
     PB = vtk.vtkParametricBoy()
     PFS = vtk.vtkParametricFunctionSource()
-    PFS.SetParametricFunction( PB )
+    PFS.SetParametricFunction(PB)
 
-    PFS.SetUResolution( 400 )
-    PFS.SetVResolution( 500 )
+    PFS.SetUResolution(400)
+    PFS.SetVResolution(500)
     PFS.Update()
 
     result = vtk.vtkPolyData()
 
-    result.ShallowCopy( PFS.GetOutput() )
+    result.ShallowCopy(PFS.GetOutput())
     return result
+
 
 def make_TriangleUGrid():
     PB = vtk.vtkParametricBoy()
     PFS = vtk.vtkParametricFunctionSource()
-    PFS.SetParametricFunction( PB )
+    PFS.SetParametricFunction(PB)
 
-    PFS.SetUResolution( 400 )
-    PFS.SetVResolution( 500 )
+    PFS.SetUResolution(400)
+    PFS.SetVResolution(500)
     PFS.Update()
 
     appendFilter = vtk.vtkAppendFilter()
@@ -53,8 +56,9 @@ def make_TriangleUGrid():
 
     result = vtk.vtkUnstructuredGrid()
 
-    result.ShallowCopy( appendFilter.GetOutput() )
+    result.ShallowCopy(appendFilter.GetOutput())
     return result
+
 
 def make_MixedVolUGrid():
     points = vtk.vtkPoints()
@@ -81,13 +85,14 @@ def make_MixedVolUGrid():
     aTetra.GetPointIds().SetId(2, 6)
     aTetra.GetPointIds().SetId(3, 3)
 
-    result =vtk.vtkUnstructuredGrid()
-    result.SetPoints( points )
+    result = vtk.vtkUnstructuredGrid()
+    result.SetPoints(points)
     result.Allocate(2)
     result.InsertNextCell(aTetra.GetCellType(), aTetra.GetPointIds())
     result.InsertNextCell(aWedge.GetCellType(), aWedge.GetPointIds())
 
     return result
+
 
 def test_same_datasets(ds, ds2):
     EPSILON = 1.e-6
@@ -105,15 +110,16 @@ def test_same_datasets(ds, ds2):
         assert(it.GetNumberOfPoints() == it2.GetNumberOfPoints())
         points = it.GetPoints()
         points2 = it2.GetPoints()
-        xyz = [0.,0.,0.]
-        xyz2 = [0.,0.,0.]
+        xyz = [0., 0., 0.]
+        xyz2 = [0., 0., 0.]
         for i in range(points.GetNumberOfPoints()):
-            points.GetPoint(i,xyz)
-            points2.GetPoint(i,xyz2)
+            points.GetPoint(i, xyz)
+            points2.GetPoint(i, xyz2)
             for j in range(3):
-                assert(abs(xyz[j]-xyz2[j]) < EPSILON)
+                assert(abs(xyz[j] - xyz2[j]) < EPSILON)
         it.GoToNextCell()
         it2.GoToNextCell()
+
 
 def verify_null_polydata():
     manager = smtk.mesh.Manager.create()
@@ -123,7 +129,9 @@ def verify_null_polydata():
     c = imprt(pd, manager)
 
     if not (c == None):
-        raise RuntimeError("collection should be invalid for a empty poly data")
+        raise RuntimeError(
+            "collection should be invalid for a empty poly data")
+
 
 def verify_tri_polydata():
     manager = smtk.mesh.Manager.create()
@@ -137,7 +145,8 @@ def verify_tri_polydata():
     if c.numberOfMeshes() != 1:
         raise RuntimeError("collection should only have a single mesh")
     if c.cells().size() != pd.GetNumberOfCells():
-        raise RuntimeError("collection and polydata should have the same number of cells")
+        raise RuntimeError(
+            "collection and polydata should have the same number of cells")
 
     meshes = c.meshes(smtk.mesh.Dims2)
     if meshes.size() != 1:
@@ -153,6 +162,7 @@ def verify_tri_polydata():
     pd2 = vtk.vtkPolyData()
     exprt(meshes, pd2)
     test_same_datasets(pd, pd2)
+
 
 def verify_tri_ugrid():
     manager = smtk.mesh.Manager.create()
@@ -181,6 +191,7 @@ def verify_tri_ugrid():
     exprt(meshes, ug2)
     test_same_datasets(ug, ug2)
 
+
 def verify_mixed_cell_ugrid():
     manager = smtk.mesh.Manager.create()
     imprt = smtk.io.vtk.ImportVTKData()
@@ -193,7 +204,8 @@ def verify_mixed_cell_ugrid():
     if c.numberOfMeshes() != 1:
         raise RuntimeError("collection should only have a single mesh")
     if c.cells().size() != ug.GetNumberOfCells():
-        raise RuntimeError("collection and unsigned grid should have the same number of cells")
+        raise RuntimeError(
+            "collection and unsigned grid should have the same number of cells")
 
     meshes = c.meshes(smtk.mesh.Dims3)
     if meshes.size() != 1:
@@ -205,6 +217,7 @@ def verify_mixed_cell_ugrid():
     ug2 = vtk.vtkUnstructuredGrid()
     exprt(meshes, ug2)
     test_same_datasets(ug, ug2)
+
 
 if __name__ == '__main__':
     smtk.testing.process_arguments()

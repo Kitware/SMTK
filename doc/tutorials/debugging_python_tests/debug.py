@@ -3,6 +3,7 @@ Verify that our documentation on running unit tests in the interpreter is correc
 """
 import smtk.testing
 
+
 class DebugAPythonTest(smtk.testing.TestCase):
 
     def testDebugReadFile(self):
@@ -11,13 +12,14 @@ class DebugAPythonTest(smtk.testing.TestCase):
         # ++ 1 ++
         import smtk
         import smtk.testing
-        import os, sys
+        import os
+        import sys
 
         # Make sure the test is in our Python path:
         # srcdir = '/src'
         sys.path.append(
             os.path.join(
-              srcdir, 'smtk', 'bridge', 'discrete', 'testing', 'python'))
+                srcdir, 'smtk', 'bridge', 'discrete', 'testing', 'python'))
         # Import the test case class:
         from discreteReadFile import TestDiscreteSession
 
@@ -34,6 +36,7 @@ class DebugAPythonTest(smtk.testing.TestCase):
         x.testRead()
         # -- 2 --
 
+
 if __name__ == '__main__':
-  smtk.testing.process_arguments()
-  smtk.testing.main()
+    smtk.testing.process_arguments()
+    smtk.testing.main()

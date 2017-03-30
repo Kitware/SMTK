@@ -16,56 +16,63 @@ import sys
 import os
 
 readTheDocs = os.environ.get('READTHEDOCS', None) == 'True'
-sys.path.append(os.getcwd()) # So that the findfigure package can be imported
-sourcedir = sys.argv[-2] # FIXME: Is the penultimate argument always the source dir?
-builddir = sys.argv[-1] # FIXME: Is the final argument always be the build dir?
+sys.path.append(os.getcwd())  # So that the findfigure package can be imported
+# FIXME: Is the penultimate argument always the source dir?
+sourcedir = sys.argv[-2]
+# FIXME: Is the final argument always be the build dir?
+builddir = sys.argv[-1]
+
 
 def setup(app):
-  app.add_stylesheet("theme-overrides.css") # prevent stupid-wide table columns.
+    # prevent stupid-wide table columns.
+    app.add_stylesheet("theme-overrides.css")
+
 
 def runDoxygen(rtdsrcdir, rtdblddir, doxyfileIn, doxyfileOut):
-  """Run Doxygen as part of generating user documentation.
+    """Run Doxygen as part of generating user documentation.
 
-  This is only meant to be used on readthedocs.org to generate
-  reference documentation for linking into the user's guide and
-  tutorial. It should eventually be replaced by something that
-  fetches tag files, XML files, and references remotely-generated
-  documentation from an actual SMTK build.
-  """
-  import re
-  import subprocess
-  dxiname = open(os.path.join(rtdsrcdir, doxyfileIn), 'r')
-  cfg = dxiname.read()
-  orgdir = os.path.abspath(os.getcwd())
-  srcdir = os.path.abspath(os.path.join(os.getcwd(), '..'))
-  bindir = srcdir
-  refdir = os.path.abspath(os.path.join(rtdblddir, 'doc', 'reference'))
-  cfg2 = re.sub('@SMTK_SOURCE_DIR@', srcdir, \
-         re.sub('@SMTK_BINARY_DIR@', os.path.abspath(rtdblddir), cfg))
-  try:
-    os.makedirs(refdir)
-  except OSError as e:
-    if 'File exists' in e:
-      pass
-  except:
-    print 'Failed to create doxygen reference directory %s' % refdir
-    return
-  dxoname = os.path.abspath(os.path.join(refdir, doxyfileOut))
-  dxo = open(dxoname, 'w')
-  print >>dxo, cfg2
-  dxo.close()
-  os.chdir(refdir)
-  print 'Running Doxygen on %s' % dxoname
-  rcode = subprocess.call(('doxygen', dxoname))
-  print '   Doxygen returned %s' % rcode
-  os.chdir(orgdir)
+    This is only meant to be used on readthedocs.org to generate
+    reference documentation for linking into the user's guide and
+    tutorial. It should eventually be replaced by something that
+    fetches tag files, XML files, and references remotely-generated
+    documentation from an actual SMTK build.
+    """
+    import re
+    import subprocess
+    dxiname = open(os.path.join(rtdsrcdir, doxyfileIn), 'r')
+    cfg = dxiname.read()
+    orgdir = os.path.abspath(os.getcwd())
+    srcdir = os.path.abspath(os.path.join(os.getcwd(), '..'))
+    bindir = srcdir
+    refdir = os.path.abspath(os.path.join(rtdblddir, 'doc', 'reference'))
+    cfg2 = re.sub('@SMTK_SOURCE_DIR@', srcdir,
+                  re.sub('@SMTK_BINARY_DIR@', os.path.abspath(rtdblddir), cfg))
+    try:
+        os.makedirs(refdir)
+    except OSError as e:
+        if 'File exists' in e:
+            pass
+    except:
+        print 'Failed to create doxygen reference directory %s' % refdir
+        return
+    dxoname = os.path.abspath(os.path.join(refdir, doxyfileOut))
+    dxo = open(dxoname, 'w')
+    print >>dxo, cfg2
+    dxo.close()
+    os.chdir(refdir)
+    print 'Running Doxygen on %s' % dxoname
+    rcode = subprocess.call(('doxygen', dxoname))
+    print '   Doxygen returned %s' % rcode
+    os.chdir(orgdir)
+
 
 if readTheDocs:
-  """Run Doxygen ourselves"""
-  # Run doxygen ourselves on ReadTheDocs.org so that doxylinks will work.
-  runDoxygen(sourcedir, builddir, 'sparsehash.doxyfile.in', 'sparsehash.doxyfile')
-  runDoxygen(sourcedir, builddir, 'cjson.doxyfile.in', 'cjson.doxyfile')
-  runDoxygen(sourcedir, builddir, 'smtk.doxyfile.in', 'smtk.doxyfile')
+    """Run Doxygen ourselves"""
+    # Run doxygen ourselves on ReadTheDocs.org so that doxylinks will work.
+    runDoxygen(sourcedir, builddir, 'sparsehash.doxyfile.in',
+               'sparsehash.doxyfile')
+    runDoxygen(sourcedir, builddir, 'cjson.doxyfile.in', 'cjson.doxyfile')
+    runDoxygen(sourcedir, builddir, 'smtk.doxyfile.in', 'smtk.doxyfile')
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -163,11 +170,11 @@ pygments_style = 'sphinx'
 # -- Findfigure configuration ---------------------------------------------
 
 findfigure_paths = {
-  '*':[
-    sourcedir,
-    os.path.join(sourcedir, 'images', 'userguide', 'figures'),
-    builddir,
-    os.path.join(builddir,'..')]
+    '*': [
+        sourcedir,
+        os.path.join(sourcedir, 'images', 'userguide', 'figures'),
+        builddir,
+        os.path.join(builddir, '..')]
 }
 
 # -- Action diagram configuration -----------------------------------------
@@ -190,20 +197,20 @@ todo_include_todos = True
 tagbase = os.path.join(builddir, '..', '..', 'reference')
 refbase = os.path.join('..', '..', 'reference')
 if readTheDocs:
-  # We store the reference documentation inside the user-doc build
-  # directory on readthedocs so that it will get installed properly.
-  tagbase = os.path.abspath(os.path.join(builddir, 'doc', 'reference'))
-  refbase = os.path.join('doc', 'reference')
+    # We store the reference documentation inside the user-doc build
+    # directory on readthedocs so that it will get installed properly.
+    tagbase = os.path.abspath(os.path.join(builddir, 'doc', 'reference'))
+    refbase = os.path.join('doc', 'reference')
 doxylink = {
-  'smtk' : (
-    os.path.join(tagbase, 'smtk.tags'),
-    os.path.join(refbase, 'smtk', 'html')),
-  'cjson' : (
-    os.path.join(tagbase, 'cjson.tags'),
-    os.path.join(refbase, 'cjson', 'html')),
-  'sparsehash' : (
-    os.path.join(tagbase, 'sparsehash.tags'),
-    os.path.join(refbase, 'sparsehash', 'html'))
+    'smtk': (
+        os.path.join(tagbase, 'smtk.tags'),
+        os.path.join(refbase, 'smtk', 'html')),
+    'cjson': (
+        os.path.join(tagbase, 'cjson.tags'),
+        os.path.join(refbase, 'cjson', 'html')),
+    'sparsehash': (
+        os.path.join(tagbase, 'sparsehash.tags'),
+        os.path.join(refbase, 'sparsehash', 'html'))
 }
 
 # A boolean that decides whether parentheses are appended to
@@ -214,7 +221,7 @@ doxylink = {
 # -- Breath configuration -------------------------------------------------
 
 breathe_projects = {
-  'smtk':os.path.join(builddir, '..', '..', 'reference', 'smtk', 'xml') + os.path.sep,
+    'smtk': os.path.join(builddir, '..', '..', 'reference', 'smtk', 'xml') + os.path.sep,
 }
 breathe_default_project = 'smtk'
 breathe_default_members = ['members', 'protected-members', 'undoc-members']
@@ -225,14 +232,14 @@ breathe_default_members = ['members', 'protected-members', 'undoc-members']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 if readTheDocs:
-  html_theme = 'default'
+    html_theme = 'default'
 else:
-  try:
-    import sphinx_rtd_theme
-    html_theme = 'sphinx_rtd_theme'
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-  except:
-    html_theme = 'haiku'
+    try:
+        import sphinx_rtd_theme
+        html_theme = 'sphinx_rtd_theme'
+        html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+    except:
+        html_theme = 'haiku'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -317,22 +324,22 @@ htmlhelp_basename = 'SMTKdoc'
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
+    # The paper size ('letterpaper' or 'a4paper').
+    #'papersize': 'letterpaper',
 
-# The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+    # The font size ('10pt', '11pt' or '12pt').
+    #'pointsize': '10pt',
 
-# Additional stuff for the LaTeX preamble.
-#'preamble': '',
+    # Additional stuff for the LaTeX preamble.
+    #'preamble': '',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'SMTK.tex', u'SMTK Documentation',
-   u'Kitware, Inc.', 'manual'),
+    ('index', 'SMTK.tex', u'SMTK Documentation',
+     u'Kitware, Inc.', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -375,9 +382,9 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'SMTK', u'SMTK Documentation',
-   u'Kitware, Inc.', 'SMTK', 'One line description of project.',
-   'Miscellaneous'),
+    ('index', 'SMTK', u'SMTK Documentation',
+     u'Kitware, Inc.', 'SMTK', 'One line description of project.',
+     'Miscellaneous'),
 ]
 
 # Documents to append as an appendix to all manuals.

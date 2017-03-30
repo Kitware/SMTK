@@ -30,7 +30,8 @@ if __name__ == '__main__':
 
     expDef = system.createDefinition("ExpDef")
     expDef.setBriefDescription("Sample Expression")
-    expDef.setDetailedDescription("Sample Expression for testing\nThere is not much here!")
+    expDef.setDetailedDescription(
+        "Sample Expression for testing\nThere is not much here!")
     eitemdef = smtk.attribute.StringItemDefinition.New("Expression String")
     expDef.addItemDefinition(eitemdef)
     eitemdef2 = smtk.attribute.StringItemDefinition.New("Aux String")
@@ -38,7 +39,7 @@ if __name__ == '__main__':
     eitemdef.setDefaultValue("sample")
 
     base = system.createDefinition("BaseDef")
-    #Lets add some item definitions
+    # Lets add some item definitions
     iitemdef = smtk.attribute.IntItemDefinition.New("IntItem1")
     base.addItemDefinition(iitemdef)
     iitemdef.addCategory("Flow")
@@ -56,8 +57,8 @@ if __name__ == '__main__':
     ditemdef.setExpressionDefinition(expDef)
     # Check to make sure we can use expressions
     if not ditemdef.allowsExpressions():
-      print "ERROR - Item Def does not allow expressions"
-      status = -1
+        print "ERROR - Item Def does not allow expressions"
+        status = -1
     ditemdef = smtk.attribute.DoubleItemDefinition.New("DoubleItem2")
     def1.addItemDefinition(ditemdef)
     ditemdef.setDefaultValue(-35.2)
@@ -77,49 +78,50 @@ if __name__ == '__main__':
     system.updateCategories()
     # Lets see what categories the attribute definitions think they are
     if expDef.numberOfCategories() != 0:
-      categories = expDef.categories()
-      print "ERROR: ExpDef's categories: "
-      for it in categories:
-        print "\t \"%s\""%it
+        categories = expDef.categories()
+        print "ERROR: ExpDef's categories: "
+        for it in categories:
+            print "\t \"%s\"" % it
     else:
-      print "ExpDef has no categories"
+        print "ExpDef has no categories"
     if def2.numberOfCategories() != 0:
-      categories = def2.categories()
-      print "Def2's categories: "
-      for it in categories:
-        print "\t \"%s\""%it
+        categories = def2.categories()
+        print "Def2's categories: "
+        for it in categories:
+            print "\t \"%s\"" % it
     else:
-      print "ERROR: Def2 has no categories!"
-    # Lets test creating an attribute by passing in the expression definition explicitly
+        print "ERROR: Def2 has no categories!"
+    # Lets test creating an attribute by passing in the expression definition
+    # explicitly
     expAtt = system.createAttribute("Exp1", expDef)
     att = system.createAttribute("testAtt", "Derived2")
     if att is not None:
-      print "Attribute testAtt created"
+        print "Attribute testAtt created"
     else:
-      print "ERROR: Attribute testAtt not created"
-      status = -1
+        print "ERROR: Attribute testAtt not created"
+        status = -1
 
     # Find the expression enabled item
     item = att.item(2)
     vitem = smtk.attribute.ValueItem.CastTo(item)
     if vitem.allowsExpressions():
-      vitem.setExpression(expAtt)
-      print "Expression Set on %s"%vitem.name()
+        vitem.setExpression(expAtt)
+        print "Expression Set on %s" % vitem.name()
     else:
-      print "ERROR: Can not set expression on %s"%vitem.name()
-      status = -1
+        print "ERROR: Can not set expression on %s" % vitem.name()
+        status = -1
 
     n = att.numberOfItems()
     print "Items of testAtt:\n"
-    for i in range(0,n,1):
-      item = att.item(i)
-      print "\t %s Type = %s"%(item.name(), smtk.attribute.Item.type2String(item.type()))
-      vitem = smtk.attribute.ValueItem.CastTo(item)
-      if vitem is not None:
-        if vitem.isExpression(0):
-          print "\t\tusing Expression: %s"%vitem.expression(0).name()
-        else:
-          print "\t\tValue = %s"%vitem.valueAsString()
+    for i in range(0, n, 1):
+        item = att.item(i)
+        print "\t %s Type = %s" % (item.name(), smtk.attribute.Item.type2String(item.type()))
+        vitem = smtk.attribute.ValueItem.CastTo(item)
+        if vitem is not None:
+            if vitem.isExpression(0):
+                print "\t\tusing Expression: %s" % vitem.expression(0).name()
+            else:
+                print "\t\tValue = %s" % vitem.valueAsString()
 #    writer = smtk.attribute.XmlV1StringWriter(system)
 #    print writer.convertToString()
 

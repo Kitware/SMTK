@@ -13,7 +13,9 @@ import unittest
 import smtk
 import smtk.testing
 from smtk.simple import *
-import os, sys
+import os
+import sys
+
 
 class IntegrationRemoteCGMWorker(unittest.TestCase):
     """Start a remote model worker session and run
@@ -28,8 +30,8 @@ class IntegrationRemoteCGMWorker(unittest.TestCase):
         print 'Session names\n  ' + '\n  '.join(self.conn.sessionTypeNames())
         cgmWorkerName = 'smtk::model[cgm{OpenCascade}@ctest]'
         if cgmWorkerName not in self.conn.sessionTypeNames():
-          print 'Skipping test due to missing worker.'
-          self.skipTest('Remote CGM session unavailable.')
+            print 'Skipping test due to missing worker.'
+            self.skipTest('Remote CGM session unavailable.')
         sess = self.mgr.createSession(cgmWorkerName)
         print 'Created session'
         SetActiveSession(sess)
@@ -37,7 +39,7 @@ class IntegrationRemoteCGMWorker(unittest.TestCase):
     def testGeometryCreation(self):
         brick = CreateBrick()
         print 'Created brick %s' % brick.name()
-        tbrick = Translate(brick, [5,0,0])
+        tbrick = Translate(brick, [5, 0, 0])
         self.assertEqual(
             len(tbrick), 1, 'Expected 1 model result')
         print 'Translated brick %s' % tbrick[0].name()
@@ -51,10 +53,11 @@ class IntegrationRemoteCGMWorker(unittest.TestCase):
         filename = os.path.join(smtk.testing.DATA_DIR, 'cgm', 'pyramid.brep')
         pyramid = Read(filename)[0]
         brick = CreateBrick()
-        brick = Translate(brick, [0,0,-1])[0]
-        result = Union([brick,pyramid])
+        brick = Translate(brick, [0, 0, -1])[0]
+        result = Union([brick, pyramid])
         filename = os.path.join(smtk.testing.TEMP_DIR, 'house.brep')
-        status = Write(filename, [result,])
+        status = Write(filename, [result, ])
+
 
 if __name__ == '__main__':
     smtk.testing.process_arguments()

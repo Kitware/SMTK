@@ -13,7 +13,7 @@
 _sessions = []
 
 if @SMTK_VTK_SUPPORT_ENABLED@:
-  _sessions.append("vtk")
+    _sessions.append("vtk")
 
 __all__ = (_sessions)
 

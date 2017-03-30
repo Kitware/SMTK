@@ -46,7 +46,6 @@ except ImportError:
 import smtk
 
 
-
 # Use one AttDef as the global/default expression, initialized in main()
 global_exp_def = None
 
@@ -177,7 +176,6 @@ def process_multivalue_elem(elem, group_item, category, categories, indent=''):
 
 
 def process_information_elem(elem, defn, categories, indent=''):
-
     '''
     Processes <InformationValue> element
     '''
@@ -198,7 +196,8 @@ def process_information_elem(elem, defn, categories, indent=''):
         group_elem = elem.find('Group')
         if group_elem is not None:
             category = group_elem.attrib.get('Name')
-        process_multivalue_elem(mvalue_elem, item, category, categories, child_indent)
+        process_multivalue_elem(
+            mvalue_elem, item, category, categories, child_indent)
         defn.addItemDefinition(item)
         return
 
@@ -221,7 +220,6 @@ def process_information_elem(elem, defn, categories, indent=''):
 
 
 def process_instance_elem(system, elem, view, categories, indent=''):
-
     '''
     Processes <Instance> element
     '''
@@ -242,7 +240,8 @@ def process_templates_elem(system, elem, view, categories, indent=''):
     child_indent = '  ' + indent
     for child in elem.findall('Instance'):
         if child.tag == 'Instance':
-            process_instance_elem(system, child, view, categories, child_indent)
+            process_instance_elem(system, child, view,
+                                  categories, child_indent)
 
     for child in elem.findall('InformationValue'):
         defn = create_definition(system, child)
@@ -293,7 +292,8 @@ def process_toplevel_group(system, elem, indent=''):
     child_indent = '  ' + indent
     for child in elem:
         print indent, child.tag, child.attrib.get('Section')
-        #if child.tag == 'TopLevel' and child.attrib.get('Section') == 'Materials':
+        # if child.tag == 'TopLevel' and child.attrib.get('Section') ==
+        # 'Materials':
         process_toplevel_elem(system, child, child_indent)
 
 

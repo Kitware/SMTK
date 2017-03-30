@@ -18,24 +18,26 @@ if smtk.wrappingProtocol() == 'pybind11':
 import smtk.testing
 import sys
 
+
 def test_file_load():
     m = smtk.mesh.Manager.create()
 
     # Load the mesh file
     print 'data_dir', smtk.testing.DATA_DIR
-    mesh_path = os.path.join(smtk.testing.DATA_DIR, 'mesh', '3d/sixth_hexflatcore.h5m')
-    c = smtk.io.importMesh(mesh_path,m)
+    mesh_path = os.path.join(smtk.testing.DATA_DIR,
+                             'mesh', '3d/sixth_hexflatcore.h5m')
+    c = smtk.io.importMesh(mesh_path, m)
     if not c.isValid():
         raise RuntimeError("Failed to read valid mesh")
     print c
     print c.numberOfMeshes()
 
-    #now dump some very basic info about the collection
-    print c.meshes( ).size()
+    # now dump some very basic info about the collection
+    print c.meshes().size()
     print c.cells().size()
     print c.points().size()
 
-    #now dump some very basic info about all the meshes
+    # now dump some very basic info about all the meshes
     m = c.meshes()
     print 'info on all meshes'
     print len(m.domains())
@@ -46,5 +48,5 @@ def test_file_load():
 
 
 if __name__ == '__main__':
-  smtk.testing.process_arguments()
-  test_file_load()
+    smtk.testing.process_arguments()
+    test_file_load()

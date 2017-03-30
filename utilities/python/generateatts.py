@@ -96,14 +96,15 @@ def set_item(item, item_description, refitem_list):
 
             # Process each sub group
             for i in range(n):
-                #print groups_description[i]
-                success &= process_items(item, groups_description[i], refitem_list, i)
+                # print groups_description[i]
+                success &= process_items(
+                    item, groups_description[i], refitem_list, i)
             return success
 
     if item.type() == smtk.attribute.Item.ATTRIBUTE_REF:
         # RefItem instances get set after all attributes have been created
         refitem_list.append((item, item_description))
-        #print 'refitem_list', refitem_list
+        # print 'refitem_list', refitem_list
         return True
 
     expression = item_description.get('expression')
@@ -173,7 +174,7 @@ def process_items(parent, parent_description, refitem_list, group_index=None):
     debug_flag = False
 
     item_list = parent_description.get('items', list())
-    #if debug_flag:
+    # if debug_flag:
     #    #print 'item_list', item_list
     for item_description in item_list:
         item_name = item_description.get('name')
@@ -221,7 +222,7 @@ def fetch_attribute(system, att_type, name, att_id):
         # Check for single attribute instance
         att_list = system.findAttributes(att_type)
         if len(att_list) == 1:
-            #print 'Found single attribute type \"%s\"' % att_type
+            # print 'Found single attribute type \"%s\"' % att_type
             att = att_list[0]
 
     if att is None:
@@ -257,19 +258,19 @@ def fetch_attribute(system, att_type, name, att_id):
 
 # ---------------------------------------------------------------------
 def fetch_subgroup_item(group_item, group_index, item_name):
-  '''Finds item in one subgroup.
+    '''Finds item in one subgroup.
 
-  Returns None if not found.
-  This function is needed because GroupItem.find(size_t, std::string)
-  returns a const Item and we need a non-const item
-  '''
-  n = group_item.numberOfItemsPerGroup()
-  for i in range(n):
-    item = group_item.item(group_index, i)
-    if item.name() == item_name:
-      return item
-  # else
-  return None
+    Returns None if not found.
+    This function is needed because GroupItem.find(size_t, std::string)
+    returns a const Item and we need a non-const item
+    '''
+    n = group_item.numberOfItemsPerGroup()
+    for i in range(n):
+        item = group_item.item(group_index, i)
+        if item.name() == item_name:
+            return item
+    # else
+    return None
 
 
 # ---------------------------------------------------------------------
@@ -337,7 +338,7 @@ def generate_sim(system, description):
         count = generate_atts(system, att_description, refitem_list)
 
         # Process RefItem instances after all attributes created:
-        #print 'refitem_list', refitem_list
+        # print 'refitem_list', refitem_list
         for item, description in refitem_list:
             attname = description.get('attributeref')
             if attname is None:
@@ -355,7 +356,8 @@ def generate_sim(system, description):
 # ---------------------------------------------------------------------
 if __name__ == '__main__':
     epilog = 'Note: you must specify EITHER --yaml_filename OR --json_filename'
-    parser = argparse.ArgumentParser(description=app_description, epilog=epilog)
+    parser = argparse.ArgumentParser(
+        description=app_description, epilog=epilog)
     parser.add_argument('-t', '--template_filename', required=True)
     parser.add_argument('-s', '--sim_filename')
 
@@ -373,7 +375,6 @@ if __name__ == '__main__':
         print 'e.g. \"export PYTHONPATH=/path-to-SMTK/thirdparty/PyYaml\"'
         print
         sys.exit(-2)
-
 
     #  Load template file
     logger = smtk.util.Logger()

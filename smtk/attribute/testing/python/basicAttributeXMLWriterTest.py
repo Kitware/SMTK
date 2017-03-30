@@ -22,7 +22,7 @@ if smtk.wrappingProtocol() == 'pybind11':
     from smtk import io
     from smtk import model
 
-#print(dir(smtk.io))
+# print(dir(smtk.io))
 
 if __name__ == '__main__':
     import sys
@@ -30,8 +30,8 @@ if __name__ == '__main__':
     status = 0
 
     if len(sys.argv) != 2:
-      print 'Usage: %s filename' % sys.argv[0]
-      sys.exit(-1)
+        print 'Usage: %s filename' % sys.argv[0]
+        sys.exit(-1)
 
     system = smtk.attribute.System()
     print 'System created'
@@ -69,13 +69,15 @@ if __name__ == '__main__':
     # Lets create an attribute to represent an expression
     expDef = system.createDefinition('ExpDef')
     expDef.setBriefDescription('Sample Expression')
-    expDef.setDetailedDescription('Sample Expression for testing\nThere is not much here!')
+    expDef.setDetailedDescription(
+        'Sample Expression for testing\nThere is not much here!')
     eitemdef = smtk.attribute.StringItemDefinition.New('Expression String')
     expDef.addItemDefinition(eitemdef)
     eitemdef2 = smtk.attribute.StringItemDefinition.New('Aux String')
     expDef.addItemDefinition(eitemdef2)
     eitemdef.setDefaultValue('sample')
-    eitemdef3 = smtk.attribute.ModelEntityItemDefinition.New('Model Expression')
+    eitemdef3 = smtk.attribute.ModelEntityItemDefinition.New(
+        'Model Expression')
     expDef.addItemDefinition(eitemdef3)
     eitemdef4 = smtk.attribute.ModelEntityItemDefinition.New('Aux String')
     expDef.addItemDefinition(eitemdef4)
@@ -93,11 +95,11 @@ if __name__ == '__main__':
     iitemdef.addCategory('Time')
     iitemdef = smtk.attribute.IntItemDefinition.New('IntItem2')
     base.addItemDefinition(iitemdef)
-    iitemdef.setDefaultValue(10);
-    iitemdef.addCategory('Heat');
+    iitemdef.setDefaultValue(10)
+    iitemdef.addCategory('Heat')
 
     def1 = system.createDefinition('Derived1', 'BaseDef')
-    def1.setAssociationMask(int(smtk.model.MODEL_DOMAIN)) # belongs on model
+    def1.setAssociationMask(int(smtk.model.MODEL_DOMAIN))  # belongs on model
     # Lets add some item definitions
     ditemdef = smtk.attribute.DoubleItemDefinition.New('DoubleItem1')
     def1.addItemDefinition(ditemdef)
@@ -106,8 +108,8 @@ if __name__ == '__main__':
     ditemdef.setExpressionDefinition(expDef)
     # Check to make sure we can use expressions
     if not ditemdef.allowsExpressions():
-      print 'ERROR - Item Def does not allow expressions'
-      status = -1
+        print 'ERROR - Item Def does not allow expressions'
+        status = -1
     ditemdef = smtk.attribute.DoubleItemDefinition.New('DoubleItem2')
     def1.addItemDefinition(ditemdef)
     ditemdef.setDefaultValue(-35.2)
@@ -137,19 +139,20 @@ if __name__ == '__main__':
     uitemdef = smtk.attribute.ModelEntityItemDefinition.New('ModelEntityItem2')
     def2.addItemDefinition(uitemdef)
     uitemdef.addCategory('General')
-    uitemdef.setMembershipMask(int(smtk.model.GROUP_ENTITY | smtk.model.HOMOGENOUS_GROUP))
+    uitemdef.setMembershipMask(
+        int(smtk.model.GROUP_ENTITY | smtk.model.HOMOGENOUS_GROUP))
     dirdef = smtk.attribute.DirectoryItemDefinition.New('DirectoryItem')
     def2.addItemDefinition(dirdef)
     dirdef.setShouldExist(True)
     dirdef.setShouldBeRelative(True)
     fdef = smtk.attribute.FileItemDefinition.New('FileItem')
     def2.addItemDefinition(fdef)
-    fdef.setShouldBeRelative(True);
+    fdef.setShouldBeRelative(True)
     gdef = smtk.attribute.GroupItemDefinition.New('GroupItem')
     def2.addItemDefinition(gdef)
-    fdef2 =  smtk.attribute.FileItemDefinition.New('File1')
+    fdef2 = smtk.attribute.FileItemDefinition.New('File1')
     gdef.addItemDefinition(fdef2)
-    gdef1 =  smtk.attribute.GroupItemDefinition.New('SubGroup')
+    gdef1 = smtk.attribute.GroupItemDefinition.New('SubGroup')
     gdef.addItemDefinition(gdef1)
     sitemdef = smtk.attribute.StringItemDefinition.New('GroupString')
     gdef1.addItemDefinition(sitemdef)
@@ -166,14 +169,15 @@ if __name__ == '__main__':
 
     # Process Categories
     system.updateCategories()
-    # Lets test creating an attribute by passing in the expression definition explicitly
+    # Lets test creating an attribute by passing in the expression definition
+    # explicitly
     expAtt = system.createAttribute('Exp1', expDef)
     att = system.createAttribute('testAtt', 'Derived2')
     if att is None:
-      print 'ERROR: Attribute testAtt not created'
-      status = -1
+        print 'ERROR: Attribute testAtt not created'
+        status = -1
 
-    #Find the expression enabled item
+    # Find the expression enabled item
     item = att.item(2)
     vitem = smtk.attribute.ValueItem.CastTo(item)
     writer = smtk.io.AttributeWriter()

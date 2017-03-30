@@ -64,7 +64,7 @@ wallBCDef.addItemDefinition(heatflux)
 # IV. Put limits on some of the values
 # ++ 4 ++
 viscosity.setMinRange(0, True)
-viscosity.setUnits('Pa * s') # or Poise [P]
+viscosity.setUnits('Pa * s')  # or Poise [P]
 
 temperature.setMinRange(-273.15, True)
 temperature.setUnits('deg C')
@@ -92,7 +92,7 @@ matProp = asys.createAttribute('fluid', matDef)
 # ++ 6 ++
 # Read in an SMTK-native B-Rep model:
 # TODO: Replace with resource.readModel()
-jsonFile = open(modelFileName,'r')
+jsonFile = open(modelFileName, 'r')
 json = jsonFile.read()
 smtk.io.ImportJSON.intoModelManager(json, mmgr)
 
@@ -101,34 +101,34 @@ models = mmgr.findEntitiesByProperty('name', 'Test Model')
 model = smtk.model.Model(models[0])
 groups = model.groups()
 if groups and len(groups):
-  wallGroup = (g for g in groups if g.name() == 'wall').next()
-  inletGroup = (g for g in groups if g.name() == 'inlet').next()
-  outletGroup = (g for g in groups if g.name() == 'outlet').next()
-  fluidGroup = (g for g in groups if g.name() == 'fluid').next()
+    wallGroup = (g for g in groups if g.name() == 'wall').next()
+    inletGroup = (g for g in groups if g.name() == 'inlet').next()
+    outletGroup = (g for g in groups if g.name() == 'outlet').next()
+    fluidGroup = (g for g in groups if g.name() == 'fluid').next()
 
-  fluidIC.associateEntity(fluidGroup)
-  outletBC.associateEntity(outletGroup)
-  inletBC.associateEntity(inletGroup)
-  wallBC.associateEntity(wallGroup)
+    fluidIC.associateEntity(fluidGroup)
+    outletBC.associateEntity(outletGroup)
+    inletBC.associateEntity(inletGroup)
+    wallBC.associateEntity(wallGroup)
 # -- 6 --
 
 # VII. Loop over conditions of interest and create
 #      an input deck for each.
 # ++ 7 ++
 # FIXME: Actually put this inside a loop that exports input decks.
-matProp.findDouble('viscosity').setValue(1.002e-3) # [Pa * s]
+matProp.findDouble('viscosity').setValue(1.002e-3)  # [Pa * s]
 
-fluidIC.findDouble('temperature').setValue(25) # [C]
-fluidIC.findDouble('velocity').setValue(0, 0.) # [m / s]
-fluidIC.findDouble('velocity').setValue(1, 0.) # [m / s]
+fluidIC.findDouble('temperature').setValue(25)  # [C]
+fluidIC.findDouble('velocity').setValue(0, 0.)  # [m / s]
+fluidIC.findDouble('velocity').setValue(1, 0.)  # [m / s]
 
-outletBC.findDouble('pressure').setValue(101300) # [Pa]
+outletBC.findDouble('pressure').setValue(101300)  # [Pa]
 
-inletBC.findDouble('velocity').setValue(0, 0.25) # [m / s]
-inletBC.findDouble('velocity').setValue(1, 0.00) # [m / s]
-inletBC.findDouble('temperature').setValue(50) # [C]
+inletBC.findDouble('velocity').setValue(0, 0.25)  # [m / s]
+inletBC.findDouble('velocity').setValue(1, 0.00)  # [m / s]
+inletBC.findDouble('temperature').setValue(50)  # [C]
 
-wallBC.findDouble('heatflux').setValue(1.0) # [W / m^2 / K]
+wallBC.findDouble('heatflux').setValue(1.0)  # [W / m^2 / K]
 # -- 7 --
 
 # ++ xxx ++

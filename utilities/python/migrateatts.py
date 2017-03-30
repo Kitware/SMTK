@@ -42,6 +42,7 @@ def usage():
     print '  log_filename:    (optional) name of message log file'
     print
 
+
 def to_concrete_item_definition(defn, logger):
     '''
     Needed to downcast itemDefinition
@@ -86,7 +87,7 @@ def copy_group_item(src_item, dst_item, defn, manager, logger):
         return False
 
     if defn.numberOfRequiredGroups() > 1 and \
-        src_item.numberOfItemsPerGroup() != dst_item.numberOfItemsPerGroup():
+            src_item.numberOfItemsPerGroup() != dst_item.numberOfItemsPerGroup():
         message = '  Cannot copy group item %s' % src_item.name() + \
             'because its number of groups (%d) and items per group (%d)' % \
             (src_item.numberOfGroups(), src_item.numberOfItemsPerGroup()) + \
@@ -210,12 +211,13 @@ def copy_item(src_item, dst_item, defn, manager, logger):
     concrete_defn = to_concrete_item_definition(defn, logger)
 
     if src_item.type() == smtk.attribute.Item.ATTRIBUTE_REF:
-        logger.addWarning('  Sorry - Cannot yet copy AttributeRefItem instances')
+        logger.addWarning(
+            '  Sorry - Cannot yet copy AttributeRefItem instances')
         return False
 
     if src_item.type() == smtk.attribute.Item.GROUP:
-        return copy_group_item(concrete_src_item, concrete_dst_item, \
-            concrete_defn, manager, logger)
+        return copy_group_item(concrete_src_item, concrete_dst_item,
+                               concrete_defn, manager, logger)
 
     valitem_list = [
         smtk.attribute.Item.DOUBLE,
@@ -223,8 +225,8 @@ def copy_item(src_item, dst_item, defn, manager, logger):
         smtk.attribute.Item.STRING
     ]
     if src_item.type() in valitem_list:
-        return copy_value_item(concrete_src_item, concrete_dst_item, \
-            concrete_defn, manager, logger)
+        return copy_value_item(concrete_src_item, concrete_dst_item,
+                               concrete_defn, manager, logger)
 
     else:
         message = '  Sorry - cannot yet copy item type %s' % src_item.type()
@@ -238,7 +240,7 @@ def copy_attribute(src_att, defn, logger):
     Copies attribute to new manager
     Returns boolean indicating success status
     '''
-    #print 'dst defn', defn
+    # print 'dst defn', defn
     message = 'Copying attribute type %s id %d' % \
         (src_att.type(), src_att.id())
     logger.addRecord(smtk.util.Logger.INFO, message)
@@ -317,12 +319,12 @@ def migrate(src_system, dst_system):
     # Make list of att types, and put expressions first
     att_type_list = src_dict.keys()
     exp_type = 'PolyLinearFunction'
-    exp_positions = [i for i,x in enumerate(att_type_list) if x == exp_type]
+    exp_positions = [i for i, x in enumerate(att_type_list) if x == exp_type]
     if exp_positions:
         i = exp_positions[0]
         del att_type_list[i]
         att_type_list.insert(0, exp_type)
-    #print 'att_types', att_type_list
+    # print 'att_types', att_type_list
 
     # Traverse contents of table in att_type_list order
     dst_count = 0

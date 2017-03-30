@@ -10,7 +10,9 @@
 #
 #=============================================================================
 
-__all__ = ('common', 'attribute', 'model', 'mesh', 'io', 'bridge', 'simulation')
+__all__ = ('common', 'attribute', 'model',
+           'mesh', 'io', 'bridge', 'simulation')
+
 
 def wrappingProtocol():
     return 'pybind11'

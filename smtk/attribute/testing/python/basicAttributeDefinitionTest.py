@@ -41,10 +41,10 @@ if __name__ == '__main__':
     def_.addItemDefinition(itemdef)
 
     icompdef2 = smtk.attribute.IntItemDefinition.New('IntComp2')
-    icompdef2.setDefaultValue(10);
+    icompdef2.setDefaultValue(10)
     itemdef2 = smtk.attribute.IntItemDefinition.ToItemDefinition(icompdef2)
-    def_.addItemDefinition(itemdef2);
-    def1 = system.createDefinition("testDef");
+    def_.addItemDefinition(itemdef2)
+    def1 = system.createDefinition("testDef")
     if def1 is None:
         print 'Duplicated definition testDef not created'
     else:

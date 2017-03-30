@@ -32,16 +32,16 @@ if __name__ == '__main__':
 
     system = smtk.attribute.System()
     print 'System created'
-    base = system.createDefinition("BaseDef");
+    base = system.createDefinition("BaseDef")
 
-    #Lets add some item definitions
+    # Lets add some item definitions
     icompdef = smtk.attribute.IntItemDefinition.New(itemNames[0])
     itemdef = smtk.attribute.IntItemDefinition.ToItemDefinition(icompdef)
-    base.addItemDefinition(itemdef);
+    base.addItemDefinition(itemdef)
     icompdef2 = smtk.attribute.IntItemDefinition.New(itemNames[1])
-    icompdef2.setDefaultValue(10);
+    icompdef2.setDefaultValue(10)
     itemdef2 = smtk.attribute.IntItemDefinition.ToItemDefinition(icompdef2)
-    base.addItemDefinition(itemdef2);
+    base.addItemDefinition(itemdef2)
 
     def1 = system.createDefinition('Derived1', 'BaseDef')
     # Lets add some item definitions
@@ -67,41 +67,48 @@ if __name__ == '__main__':
     # Lets add some item definitions
     scompdef = smtk.attribute.ModelEntityItemDefinition.New(itemNames[6])
     scompdef.setMembershipMask(int(smtk.model.FACE))
-    scompdef.setIsExtensible(True) # Need to set this or numberOfRequiredValues
-    itemdef = smtk.attribute.ModelEntityItemDefinition.ToItemDefinition(scompdef)
+    # Need to set this or numberOfRequiredValues
+    scompdef.setIsExtensible(True)
+    itemdef = smtk.attribute.ModelEntityItemDefinition.ToItemDefinition(
+        scompdef)
     def3.addItemDefinition(itemdef)
     scompdef3 = smtk.attribute.ModelEntityItemDefinition.New(itemNames[7])
-    scompdef3.setMembershipMask(int(smtk.model.CELL_ENTITY | smtk.model.GROUP_ENTITY | smtk.model.HOMOGENOUS_GROUP))
-    scompdef3.setIsExtensible(True) # Need to set this or numberOfRequiredValues
-    itemdef3 = smtk.attribute.ModelEntityItemDefinition.ToItemDefinition(scompdef3)
+    scompdef3.setMembershipMask(int(
+        smtk.model.CELL_ENTITY | smtk.model.GROUP_ENTITY | smtk.model.HOMOGENOUS_GROUP))
+    # Need to set this or numberOfRequiredValues
+    scompdef3.setIsExtensible(True)
+    itemdef3 = smtk.attribute.ModelEntityItemDefinition.ToItemDefinition(
+        scompdef3)
     def3.addItemDefinition(itemdef3)
 
     # Lets test out the find item position method
-    pstatus = 0;
-    for j in range(0,6):
-      if (def2.findItemPosition(itemNames[j]) != j):
-        print "Incorrect Position Returned for %s, position returned is %d, but it should be %d\n" % (itemNames[j], def2.findItemPosition(itemNames[j]), j)
-        pstatus = -1
+    pstatus = 0
+    for j in range(0, 6):
+        if (def2.findItemPosition(itemNames[j]) != j):
+            print "Incorrect Position Returned for %s, position returned is %d, but it should be %d\n" % (itemNames[j], def2.findItemPosition(itemNames[j]), j)
+            pstatus = -1
     if pstatus == 0:
-      print "Initial Position Test Passed!\n"
+        print "Initial Position Test Passed!\n"
     else:
-      print "Initial Position Test Failed!\n"
-      status = -1
+        print "Initial Position Test Failed!\n"
+        status = -1
 
-    # Lets add a  component to the base def and verify that positions are reordered
-    stringItemDefinition = smtk.attribute.StringItemDefinition.New("InsertStringItem")
+    # Lets add a  component to the base def and verify that positions are
+    # reordered
+    stringItemDefinition = smtk.attribute.StringItemDefinition.New(
+        "InsertStringItem")
     base.addItemDefinition(stringItemDefinition)
     pstatus = 0
-    for j in range(2,6):
-      if def2.findItemPosition(itemNames[j]) != (j+1):
-        print "Incorrect Position Returned for %s, position returned is %d, but it should be %d\n" % (itemNames[j], def2.findItemPosition(itemNames[j]), j+1)
-        pstatus = -1;
+    for j in range(2, 6):
+        if def2.findItemPosition(itemNames[j]) != (j + 1):
+            print "Incorrect Position Returned for %s, position returned is %d, but it should be %d\n" % (itemNames[j], def2.findItemPosition(itemNames[j]), j + 1)
+            pstatus = -1
 
     if pstatus == 0:
-      print "Insertion Position Test Passed!\n"
+        print "Insertion Position Test Passed!\n"
     else:
-      print "Insertion Position Test Failed!\n"
-      status = -1
+        print "Insertion Position Test Failed!\n"
+        status = -1
 
     att = system.createAttribute('testAtt', 'Derived2')
     if not att is None:
@@ -111,39 +118,39 @@ if __name__ == '__main__':
         status = -1
     comp = att.find("DoubleComp1")
     if not comp is None:
-       vvcomp = smtk.attribute.ValueItem.CastTo(comp)
-       print " Value = %s"%vvcomp.valueAsString()
+        vvcomp = smtk.attribute.ValueItem.CastTo(comp)
+        print " Value = %s" % vvcomp.valueAsString()
     else:
-       print "ERROR: could not find the base's item"
-       status = -1;
+        print "ERROR: could not find the base's item"
+        status = -1
 
     n = att.numberOfItems()
     for i in range(n):
         comp = att.item(i)
-        print '\t%s Type = %s, ' % (comp.name(), \
-          smtk.attribute.Item.type2String(comp.type())),
+        print '\t%s Type = %s, ' % (comp.name(),
+                                    smtk.attribute.Item.type2String(comp.type())),
         vcomp = smtk.attribute.ValueItem.CastTo(comp)
         if vcomp:
-          if vcomp.type() == smtk.attribute.Item.DOUBLE:
-            print ' Value = %s' % vcomp.valueAsString()
-          elif vcomp.type() == smtk.attribute.Item.INT:
-            print ' Value = %s' % vcomp.valueAsString()
-          elif vcomp.type() == smtk.attribute.Item.STRING:
-            print 'String Val = %s' % vcomp.valueAsString()
+            if vcomp.type() == smtk.attribute.Item.DOUBLE:
+                print ' Value = %s' % vcomp.valueAsString()
+            elif vcomp.type() == smtk.attribute.Item.INT:
+                print ' Value = %s' % vcomp.valueAsString()
+            elif vcomp.type() == smtk.attribute.Item.STRING:
+                print 'String Val = %s' % vcomp.valueAsString()
         else:
-          ecomp = smtk.attribute.ModelEntityItem.CastTo(comp)
-          if ecomp:
-            if ecomp.type() == smtk.attribute.Item.MODEL_ENTITY:
-              print ' Value = %s' % ecomp.valueAsString()
-          else:
-            print comp
+            ecomp = smtk.attribute.ModelEntityItem.CastTo(comp)
+            if ecomp:
+                if ecomp.type() == smtk.attribute.Item.MODEL_ENTITY:
+                    print ' Value = %s' % ecomp.valueAsString()
+            else:
+                print comp
 
     # ======
     # Now test setting entity-valued attribute-items
     # I. Create a model manager and add some entities to it:
     mmgr = smtk.model.Manager.create()
     system.setRefModelManager(mmgr)
-    mdl = mmgr.addModel(3,3,'TestModel')
+    mdl = mmgr.addModel(3, 3, 'TestModel')
     edg = mmgr.addEdge()
     fac = mmgr.addFace()
     gr0 = mmgr.addGroup(smtk.model.HOMOGENOUS_GROUP, 'GroupA')
@@ -158,58 +165,60 @@ if __name__ == '__main__':
     else:
         print 'ERROR: Attribute testMEAtt not created'
         status = -1
-    # III. Find the face-only attribute item and try fuzzing its arguments a bit
+    # III. Find the face-only attribute item and try fuzzing its arguments a
+    # bit
     comp = att.find("ModelComp1_FACE")
     if not comp is None:
-       print comp
-       fcomp = smtk.attribute.ModelEntityItem.CastTo(comp)
-       print fcomp
-       print dir(fcomp)
-       if fcomp.appendValue(edg):
-         print 'ERROR: Face-only attribute value accepted an edge'
-         status = -1
-       if not fcomp.appendValue(fac):
-         print 'ERROR: Face-only attribute value did not accept a face'
-         status = -1
-       print " Value = %s" % fcomp.valueAsString()
+        print comp
+        fcomp = smtk.attribute.ModelEntityItem.CastTo(comp)
+        print fcomp
+        print dir(fcomp)
+        if fcomp.appendValue(edg):
+            print 'ERROR: Face-only attribute value accepted an edge'
+            status = -1
+        if not fcomp.appendValue(fac):
+            print 'ERROR: Face-only attribute value did not accept a face'
+            status = -1
+        print " Value = %s" % fcomp.valueAsString()
     else:
-       print "ERROR: could not find the base's item"
-       status = -1;
-    # IV. Find the homogenous-group-only attribute item and try fuzzing its arguments a bit
+        print "ERROR: could not find the base's item"
+        status = -1
+    # IV. Find the homogenous-group-only attribute item and try fuzzing its
+    # arguments a bit
     comp = att.find("ModelComp2_GROUP")
     if not comp is None:
-       gcomp = smtk.attribute.ModelEntityItem.CastTo(comp)
-       if not gcomp.appendValue(gr0):
-         print 'ERROR: Homogenous-group-only attribute value did not accept a homogenous group'
-         status = -1
-       if gcomp.appendValue(gr1):
-         print 'ERROR: Homogenous-group-only attribute value accepted a more relaxed group'
-         status = -1
-       print " Value = %s" % gcomp.valueAsString()
+        gcomp = smtk.attribute.ModelEntityItem.CastTo(comp)
+        if not gcomp.appendValue(gr0):
+            print 'ERROR: Homogenous-group-only attribute value did not accept a homogenous group'
+            status = -1
+        if gcomp.appendValue(gr1):
+            print 'ERROR: Homogenous-group-only attribute value accepted a more relaxed group'
+            status = -1
+        print " Value = %s" % gcomp.valueAsString()
     else:
-       print "ERROR: could not find the base's item"
-       status = -1;
+        print "ERROR: could not find the base's item"
+        status = -1
 
     n = att.numberOfItems()
     for i in range(n):
         comp = att.item(i)
-        print '\t%s Type = %s, ' % (comp.name(), \
-          smtk.attribute.Item.type2String(comp.type())),
+        print '\t%s Type = %s, ' % (comp.name(),
+                                    smtk.attribute.Item.type2String(comp.type())),
         vcomp = smtk.attribute.ValueItem.CastTo(comp)
         if vcomp:
-          if vcomp.type() == smtk.attribute.Item.DOUBLE:
-            print ' Value = %s' % vcomp.valueAsString()
-          elif vcomp.type() == smtk.attribute.Item.INT:
-            print ' Value = %s' % vcomp.valueAsString()
-          elif vcomp.type() == smtk.attribute.Item.STRING:
-            print 'String Val = %s' % vcomp.valueAsString()
+            if vcomp.type() == smtk.attribute.Item.DOUBLE:
+                print ' Value = %s' % vcomp.valueAsString()
+            elif vcomp.type() == smtk.attribute.Item.INT:
+                print ' Value = %s' % vcomp.valueAsString()
+            elif vcomp.type() == smtk.attribute.Item.STRING:
+                print 'String Val = %s' % vcomp.valueAsString()
         else:
-          ecomp = smtk.attribute.ModelEntityItem.CastTo(comp)
-          if ecomp:
-            if ecomp.type() == smtk.attribute.Item.MODEL_ENTITY:
-              print ' Value = %s' % ecomp.valueAsString()
-          else:
-            print comp
+            ecomp = smtk.attribute.ModelEntityItem.CastTo(comp)
+            if ecomp:
+                if ecomp.type() == smtk.attribute.Item.MODEL_ENTITY:
+                    print ' Value = %s' % ecomp.valueAsString()
+            else:
+                print comp
     # ======
 
     del system

@@ -9,7 +9,8 @@
 #  PURPOSE.  See the above copyright notice for more information.
 #
 #=============================================================================
-import os, sys
+import os
+import sys
 import unittest
 import smtk
 if smtk.wrappingProtocol() == 'pybind11':
@@ -19,6 +20,7 @@ if smtk.wrappingProtocol() == 'pybind11':
     import smtk.model
 import smtk.testing
 from smtk.simple import *
+
 
 class MultiSessionDescriptivePhrase(unittest.TestCase):
 
@@ -34,13 +36,13 @@ class MultiSessionDescriptivePhrase(unittest.TestCase):
 
         self.mgr = smtk.model.Manager.create()
         self.sessions = {}
-        for (session_type,path) in self.session_files.items():
+        for (session_type, path) in self.session_files.items():
             sref = self.mgr.createSession(session_type)
             sref.setName(sref.flagSummary(0))
             SetActiveSession(sref)
-            self.sessions[session_type] = {'session_ref':sref}
+            self.sessions[session_type] = {'session_ref': sref}
 
-            filename = os.path.join(*([smtk.testing.DATA_DIR,] + path))
+            filename = os.path.join(*([smtk.testing.DATA_DIR, ] + path))
             self.sessions[session_type]['entities'] = Read(filename)
             print 'Session ', session_type, ' entities ', self.sessions[session_type]['entities']
         self.mgr.assignDefaultNames()
@@ -64,7 +66,7 @@ class MultiSessionDescriptivePhrase(unittest.TestCase):
             record = 'url ({:1})'.format(os.path.split(phrase.subtitle())[-1])
 
         if depth > 3:
-            return [record,]
+            return [record, ]
         subs = [self.recursePhrase(x, depth + 1) for x in phrase.subphrases()]
         return [record, subs]
 
@@ -89,10 +91,11 @@ class MultiSessionDescriptivePhrase(unittest.TestCase):
         self.assertEqual(allPhrases, self.correct, "Phrases mismatched.")
 
     def tearDown(self):
-      # Release all references to sessions.
-      # This should cause a clean shutdown of each session.
-      self.sessions = {}
+        # Release all references to sessions.
+        # This should cause a clean shutdown of each session.
+        self.sessions = {}
+
 
 if __name__ == '__main__':
-  smtk.testing.process_arguments()
-  unittest.main()
+    smtk.testing.process_arguments()
+    unittest.main()

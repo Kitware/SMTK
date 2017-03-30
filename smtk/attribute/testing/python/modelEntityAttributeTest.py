@@ -37,28 +37,33 @@ if __name__ == '__main__':
 
     me_e_def = smtk.attribute.ModelEntityItemDefinition.New('Edges')
     me_f_def = smtk.attribute.ModelEntityItemDefinition.New('Faces')
-    me_hg_def = smtk.attribute.ModelEntityItemDefinition.New('EdgeOrFaceGroups')
+    me_hg_def = smtk.attribute.ModelEntityItemDefinition.New(
+        'EdgeOrFaceGroups')
     # Must explicitly cast from ItemDefinition in order to add to Definition
     # Use ToItemDefinition() method that was added to typesystem
     e_def = smtk.attribute.ModelEntityItemDefinition.ToItemDefinition(me_e_def)
     f_def = smtk.attribute.ModelEntityItemDefinition.ToItemDefinition(me_f_def)
-    hg_def = smtk.attribute.ModelEntityItemDefinition.ToItemDefinition(me_hg_def)
-    #def_.addItemDefinition(e_def)
-    #def_.addItemDefinition(f_def)
+    hg_def = smtk.attribute.ModelEntityItemDefinition.ToItemDefinition(
+        me_hg_def)
+    # def_.addItemDefinition(e_def)
+    # def_.addItemDefinition(f_def)
     me_e_def.setTypeMask(smtk.model.EDGE | smtk.model.GROUP_ENTITY)
-    me_f_def.setTypeMask(smtk.model.FACE | smtk.model.GROUP_ENTITY | smtk.model.HOMOGENEOUS_GROUP)
-    me_hg_def.setTypeMask(smtk.model.EDGE | smtk.model.FACE | smtk.model.GROUP_ENTITY | smtk.model.HOMOGENEOUS_GROUP)
+    me_f_def.setTypeMask(
+        smtk.model.FACE | smtk.model.GROUP_ENTITY | smtk.model.HOMOGENEOUS_GROUP)
+    me_hg_def.setTypeMask(smtk.model.EDGE | smtk.model.FACE |
+                          smtk.model.GROUP_ENTITY | smtk.model.HOMOGENEOUS_GROUP)
     sweepCurves = attribSys.createAttribute('SweepCurves', 'Edges')
     sweepSurfaces = attribSys.createAttribute('SweepSurfaces', 'Faces')
-    funkyGroup = attribSys.createAttribute('EdgesOrFacesNotBoth', 'EdgeOrFaceGroups')
+    funkyGroup = attribSys.createAttribute(
+        'EdgesOrFacesNotBoth', 'EdgeOrFaceGroups')
     fgroup = modelMgr.addGroup(0, 'FaceGroup')
     egroup = modelMgr.addGroup(0, 'EdgeGroup')
     mgroup = modelMgr.addGroup(0, 'MixedGroup')
     faces = []
     edges = []
     for i in range(5):
-      faces.append(modelMgr.addFace())
-      edges.append(modelMgr.addEdge())
+        faces.append(modelMgr.addFace())
+        edges.append(modelMgr.addEdge())
     mixed = faces[:2] + edges[:2]
     [egroup.addEntity(x) for x in edges[2:4]]
     [fgroup.addEntity(x) for x in faces[2:4]]
@@ -69,15 +74,18 @@ if __name__ == '__main__':
     sweepCurves.appendValue(egroup)     # Should be OK
     sweepCurves.appendValue(fgroup)     # Should NOT be OK
 
-    sweepSurfaces.appendValue(faces[4]) # Should be OK
-    sweepSurfaces.appendValue(edges[4]) # Should NOT be OK
+    sweepSurfaces.appendValue(faces[4])  # Should be OK
+    sweepSurfaces.appendValue(edges[4])  # Should NOT be OK
     sweepSurfaces.appendValue(fgroup)   # Should be OK
     sweepSurfaces.appendValue(egroup)   # Should NOT be OK
 
     # Now try fancy stuff
-    funkyGroup.appendValue(fgroup)      # Should be OK (all entries are faces or groups of faces)
-    funkyGroup.appendValue(egroup)      # Should be OK (each group has only faces or only edges)
-    funkyGroup.appendValue(mgroup)      # Should NOT be OK (group has both edges and faces)
+    # Should be OK (all entries are faces or groups of faces)
+    funkyGroup.appendValue(fgroup)
+    # Should be OK (each group has only faces or only edges)
+    funkyGroup.appendValue(egroup)
+    # Should NOT be OK (group has both edges and faces)
+    funkyGroup.appendValue(mgroup)
 
     sweepCurves.reset()
     sweepSurfaces.reset()
