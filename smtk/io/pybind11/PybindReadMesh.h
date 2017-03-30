@@ -12,6 +12,7 @@
 #define pybind_smtk_io_ReadMesh_h
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "smtk/io/ReadMesh.h"
 
@@ -22,6 +23,7 @@ PySharedPtrClass< smtk::io::ReadMesh > pybind11_init_smtk_io_ReadMesh(py::module
   PySharedPtrClass< smtk::io::ReadMesh > instance(m, "ReadMesh");
   instance
     .def(py::init<>())
+    .def_static("ExtensionIsSupported", &smtk::io::ReadMesh::ExtensionIsSupported)
     .def("__call__", (smtk::mesh::CollectionPtr (smtk::io::ReadMesh::*)(::std::string const &, ::smtk::mesh::ManagerPtr, ::smtk::io::mesh::Subset) const) &smtk::io::ReadMesh::operator())
     .def("__call__", (bool (smtk::io::ReadMesh::*)(::std::string const &, ::smtk::mesh::CollectionPtr, ::smtk::io::mesh::Subset) const) &smtk::io::ReadMesh::operator())
     ;

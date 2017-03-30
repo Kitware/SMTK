@@ -38,6 +38,8 @@ public:
 
   static std::vector<smtk::io::mesh::MeshIOPtr>& SupportedIOTypes();
 
+  static bool ExtensionIsSupported(const std::string& ext);
+
   //Load the domain sets from a moab data file as a new collection into the
   //given manager.
   smtk::mesh::CollectionPtr operator()
