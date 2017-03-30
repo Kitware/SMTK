@@ -9,4 +9,5 @@ BreakBeforeBraces: Allman
 ColumnLimit: 100
 Standard: Cpp03
 FixNamespaceComments: true
+ReflowComments: false
 ...
