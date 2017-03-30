@@ -10,3 +10,4 @@
 *.py    our-py-style
 
 thirdparty/**  -format.clang-format -format.autopep8
+**/pybind11/*  -format.clang-format
