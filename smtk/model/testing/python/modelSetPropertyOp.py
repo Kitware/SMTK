@@ -39,7 +39,7 @@ class TestModelSetPropertyOp(unittest.TestCase):
             json = f.read()
 
         self.assertTrue(not json == None, 'Unable to load input file')
-        self.assertTrue(smtk.io.ImportJSON.intoModelManager(
+        self.assertTrue(smtk.io.LoadJSON.intoModelManager(
             json, mgr), 'Unable to parse JSON input file')
 
         mgr.assignDefaultNames()

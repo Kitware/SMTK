@@ -32,7 +32,7 @@
 #endif // SHIBOKEN_SKIP
 
 namespace smtk {
-  namespace io { class ImportJSON; }
+  namespace io { class LoadJSON; }
   namespace model { class RemoteOperator; }
   namespace bridge {
     namespace remote {
@@ -71,7 +71,7 @@ public:
 
 protected:
   friend class model::RemoteOperator;
-  friend class io::ImportJSON;
+  friend class io::LoadJSON;
   friend class RemusConnection;
 
   Session();

@@ -906,11 +906,11 @@ void qtModelView::operatorInvoked()
   this->initOperatorsDock(opName, session);
 
 //  cJSON* json = cJSON_CreateObject();
-//  ExportJSON::forOperator(brOp, json);
+//  SaveJSON::forOperator(brOp, json);
 //  std::cout << "Found operator " << cJSON_Print(json) << ")\n";
 //  OperatorResult result = brOp->operate();
 //  json = cJSON_CreateObject();
-//  ExportJSON::forOperatorResult(result, json);
+//  SaveJSON::forOperatorResult(result, json);
 //  std::cout << "Result " << cJSON_Print(json) << "\n";
 
 //  emit this->operationRequested(uid, action->text());
@@ -1038,11 +1038,11 @@ bool qtModelView::requestOperation(
     }
   return true;
 //  cJSON* json = cJSON_CreateObject();
-//  ExportJSON::forOperator(brOp, json);
+//  SaveJSON::forOperator(brOp, json);
 //  std::cout << "Found operator " << cJSON_Print(json) << ")\n";
 //  OperatorResult result = brOp->operate();
 //  json = cJSON_CreateObject();
-//  ExportJSON::forOperatorResult(result, json);
+//  SaveJSON::forOperatorResult(result, json);
 //  std::cout << "Result " << cJSON_Print(json) << "\n";
 
 //  emit this->operationRequested(uid, action->text());

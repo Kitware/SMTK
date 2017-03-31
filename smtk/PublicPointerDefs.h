@@ -193,8 +193,8 @@ namespace smtk
 
   namespace io
   {
-    class ExportJSON;
-    class ImportJSON;
+    class SaveJSON;
+    class LoadJSON;
     class OperatorLog;
     class Logger;
   }

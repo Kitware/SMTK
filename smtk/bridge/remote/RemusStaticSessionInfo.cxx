@@ -15,7 +15,7 @@
 #include "smtk/bridge/remote/RemusConnection.h"
 #include "smtk/bridge/remote/Session.h"
 
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/LoadJSON.h"
 
 #include "remus/proto/JobRequirements.h"
 
@@ -57,8 +57,8 @@ RemusStaticSessionInfo::RemusStaticSessionInfo(
     info, "server", cJSON_CreateString(this->m_conn->connection().endpoint().c_str()));
   this->m_name = !jobReq.workerName().empty() ?
     jobReq.workerName() :
-    ImportJSON::sessionNameFromTagData(info);
-  //StringList fileTypes = ImportJSON::sessionFileTypesFromTagData(info);
+    LoadJSON::sessionNameFromTagData(info);
+  //StringList fileTypes = LoadJSON::sessionFileTypesFromTagData(info);
   cJSON_Delete(info);
   if (jobReq.hasRequirements())
     this->m_operatorXML = jobReq.requirements();

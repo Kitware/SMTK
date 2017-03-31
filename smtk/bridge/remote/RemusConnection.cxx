@@ -11,8 +11,8 @@
 #include "smtk/bridge/remote/RemusConnection.h"
 #include "smtk/bridge/remote/Session.h"
 
-#include "smtk/io/ExportJSON.h"
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/SaveJSON.h"
+#include "smtk/io/LoadJSON.h"
 
 #include "smtk/model/Operator.h"
 
@@ -205,10 +205,10 @@ int RemusConnection::staticSetup(
 
   //FIXME: Sanitize sessionName!
   cJSON* params;
-  cJSON* request = ExportJSON::createRPCRequest("session-setup", params, /*id*/ "1");
+  cJSON* request = SaveJSON::createRPCRequest("session-setup", params, /*id*/ "1");
   cJSON_AddItemToObject(params, "session-name", cJSON_CreateString(sessionName.c_str()));
   cJSON_AddItemToObject(params, "option-name", cJSON_CreateString(optName.c_str()));
-  cJSON_AddItemToObject(params, "option-value", ExportJSON::createStringArray(optVal));
+  cJSON_AddItemToObject(params, "option-value", SaveJSON::createStringArray(optVal));
   cJSON* result = this->jsonRPCRequest(request, jreq);
   cJSON* rval;
   if (
@@ -243,7 +243,7 @@ UUID RemusConnection::beginSession(const std::string& sessionName)
     return UUID::null();
 
   cJSON* params;
-  cJSON* req = ExportJSON::createRPCRequest("create-session", params, /*id*/ "1", cJSON_Object);
+  cJSON* req = SaveJSON::createRPCRequest("create-session", params, /*id*/ "1", cJSON_Object);
   cJSON_AddItemToObject(
     params, "session-name",
     cJSON_CreateString(sessionName.c_str())); //jreq.meshTypes().inputType().c_str()));
@@ -286,8 +286,8 @@ UUID RemusConnection::beginSession(const std::string& sessionName)
   // OK, construct a special "forwarding" session locally.
   Session::Ptr session = Session::create();
   session->setup(this, jreq);
-  // The ImportJSON registers this session with the model manager.
-  if (smtk::io::ImportJSON::ofRemoteSession(
+  // The LoadJSON registers this session with the model manager.
+  if (smtk::io::LoadJSON::ofRemoteSession(
       sessionIdObj, session, this->m_modelMgr))
     {
     // Failure.
@@ -356,7 +356,7 @@ StringData RemusConnection::supportedFileTypes(
 {
   StringData resultMap;
   cJSON* params;
-  cJSON* request = ExportJSON::createRPCRequest("session-filetypes", params, /*id*/ "1", cJSON_Object);
+  cJSON* request = SaveJSON::createRPCRequest("session-filetypes", params, /*id*/ "1", cJSON_Object);
   cJSON_AddItemToObject(params, "session-name", cJSON_CreateString(sessionName.c_str()));
 
   // Now we need a worker to contact. If one already exists of the
@@ -401,7 +401,7 @@ StringData RemusConnection::supportedFileTypes(
       std::pair<std::string,StringList> keyval;
       keyval.first = engine->string;
       StringData::iterator it = resultMap.insert(keyval).first;
-      smtk::io::ImportJSON::getStringArrayFromJSON(engine, it->second);
+      smtk::io::LoadJSON::getStringArrayFromJSON(engine, it->second);
       }
     }
   cJSON_Delete(result);
@@ -564,7 +564,7 @@ void RemusConnection::fetchWholeModel(const UUID& modelId)
     return;
 
   cJSON* params;
-  cJSON* request = ExportJSON::createRPCRequest("fetch-model", params, /*id*/ "1", cJSON_Array);
+  cJSON* request = SaveJSON::createRPCRequest("fetch-model", params, /*id*/ "1", cJSON_Array);
   cJSON* response = this->jsonRPCRequest(request, session->remusRequirements());
   cJSON* model;
   cJSON* topo;
@@ -574,7 +574,7 @@ void RemusConnection::fetchWholeModel(const UUID& modelId)
     (model = cJSON_GetObjectItem(response, "result")) &&
     model->type == cJSON_Object &&
     (topo = cJSON_GetObjectItem(model, "topo")))
-    smtk::io::ImportJSON::ofManager(topo, this->m_modelMgr);
+    smtk::io::LoadJSON::ofManager(topo, this->m_modelMgr);
   cJSON_Delete(response);
 }
 

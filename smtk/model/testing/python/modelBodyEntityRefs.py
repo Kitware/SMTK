@@ -110,7 +110,7 @@ if __name__ == '__main__':
             uids[4]).pushRelation(uids[3])
 
         store.assignDefaultNames()
-        print smtk.io.ExportJSON.fromModelManager(store)
+        print smtk.io.SaveJSON.fromModelManager(store)
 
         status = \
             len(vert1.edges()) != 2 or \

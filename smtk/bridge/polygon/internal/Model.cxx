@@ -26,7 +26,7 @@
 #include "smtk/model/Vertex.h"
 
 #include "smtk/io/Logger.h"
-//#include "smtk/io/ExportJSON.h"
+//#include "smtk/io/SaveJSON.h"
 
 #include "smtk/bridge/polygon/Session.h"
 

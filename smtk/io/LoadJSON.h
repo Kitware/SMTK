@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_io_ImportJSON_h
-#define __smtk_io_ImportJSON_h
+#ifndef __smtk_io_LoadJSON_h
+#define __smtk_io_LoadJSON_h
 
 #include "smtk/CoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/PublicPointerDefs.h" // For ManagerPtr
@@ -32,7 +32,7 @@ class Logger;
   * These may be used to update relevant entities without
   * storing or transmitting a potentially-large string.
   */
-class SMTKCORE_EXPORT ImportJSON
+class SMTKCORE_EXPORT LoadJSON
 {
 public:
   static int intoModelManager(const char* json, smtk::model::ManagerPtr manager);
@@ -84,4 +84,4 @@ public:
   } // namespace model
 } // namespace smtk
 
-#endif // __smtk_io_ImportJSON_h
+#endif // __smtk_io_LoadJSON_h

@@ -13,9 +13,9 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/common/CompilerInformation.h"
 #include "smtk/common/UUID.h"
-#include "smtk/io/ExportJSON.h"
-#include "smtk/io/ExportJSON.txx"
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/SaveJSON.h"
+#include "smtk/io/SaveJSON.txx"
+#include "smtk/io/LoadJSON.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Operator.h"
 
@@ -83,7 +83,7 @@ int SessionIOJSON::importJSON(ManagerPtr modelMgr,
           continue;
           }
         // failed to load properties is still OK
-        smtk::io::ImportJSON::ofManagerStringProperties(modelid, curChild, modelMgr);
+        smtk::io::LoadJSON::ofManagerStringProperties(modelid, curChild, modelMgr);
         break;
         }
 
@@ -164,7 +164,7 @@ int SessionIOJSON::loadModelsRecord(ManagerPtr modelMgr,
       continue;
       }
     // model meta info
-    status &= smtk::io::ImportJSON::ofManager(modelentry, modelMgr);
+    status &= smtk::io::LoadJSON::ofManager(modelentry, modelMgr);
     }
 
   return status;
@@ -185,7 +185,7 @@ int SessionIOJSON::loadMeshesRecord(ManagerPtr modelMgr,
     // smtkInfoMacro(modelMgr->log(), "Expecting a \"mesh_collections\" entry!");
     return 1;
     }
-  return smtk::io::ImportJSON::ofMeshesOfModel(sessionRec, modelMgr,
+  return smtk::io::LoadJSON::ofMeshesOfModel(sessionRec, modelMgr,
                                                this->referencePath());
 }
 

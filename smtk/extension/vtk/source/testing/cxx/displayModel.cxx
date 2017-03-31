@@ -10,7 +10,7 @@
 #include "smtk/extension/vtk/source/vtkModelRepresentation.h"
 #include "smtk/extension/vtk/source/vtkModelSource.h"
 #include "smtk/extension/vtk/source/vtkModelView.h"
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/LoadJSON.h"
 
 #include "smtk/model/Manager.h"
 
@@ -281,7 +281,7 @@ int main(int argc, char* argv[])
 
   ManagerPtr sm = smtk::model::Manager::create();
 
-  int status = ! ImportJSON::intoModelManager(data.c_str(), sm);
+  int status = ! LoadJSON::intoModelManager(data.c_str(), sm);
   if (! status)
     {
     vtkNew<vtkModelView> view;

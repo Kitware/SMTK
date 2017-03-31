@@ -49,7 +49,7 @@ print sm.entitiesOfDimension(3)
 try:
     # If the file isn't present, just skip loading geometry.
     jsonData = file(airFoilFile, 'r').read()
-    ok = smtk.io.ImportJSON.intoModelManager(jsonData, sm)
+    ok = smtk.io.LoadJSON.intoModelManager(jsonData, sm)
 except:
     pass
 
@@ -106,4 +106,4 @@ else:
         UUID('bcf0ed16-3f05-4043-9313-a6a3617121fb'),
     ])
 
-json = smtk.io.ExportJSON.fromModelManager(sm)
+json = smtk.io.SaveJSON.fromModelManager(sm)

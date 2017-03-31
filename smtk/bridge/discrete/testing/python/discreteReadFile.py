@@ -180,7 +180,7 @@ class TestDiscreteSession(smtk.testing.TestCase):
         print '\nFree cells:\n  %s' % '\n  '.join([x.name() for x in mod.cells()])
         print '\nGroups:\n  %s\n' % '\n  '.join([x.name() for x in mod.groups()])
         if (numCells >= 0 and len(mod.cells()) != numCells) or (numGroups >= 0 and len(mod.groups()) != numGroups):
-            print smtk.io.ExportJSON.fromModelManager(self.mgr)
+            print smtk.io.SaveJSON.fromModelManager(self.mgr)
 
         self.assertEqual(
             mod.geometryStyle(), smtk.model.DISCRETE,
@@ -203,7 +203,7 @@ class TestDiscreteSession(smtk.testing.TestCase):
 
         if self.shouldSave:
             out = file('test.json', 'w')
-            print >>out, smtk.io.ExportJSON.fromModelManager(self.mgr)
+            print >>out, smtk.io.SaveJSON.fromModelManager(self.mgr)
             out.close()
 
 

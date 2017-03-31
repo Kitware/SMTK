@@ -11,6 +11,7 @@
 #=============================================================================
 import os
 import smtk
+from smtk.simple import *
 if smtk.wrappingProtocol() == 'pybind11':
     import smtk.model
     import smtk.bridge.exodus
@@ -29,17 +30,10 @@ class TestExodusSession(smtk.testing.TestCase):
         model_manager = smtk.model.Manager.create()
         sess = model_manager.createSession('exodus')
         sess.assignDefaultName()
+        SetActiveSession(sess)
 
-        op = sess.op("import smtk model")
-        # print 'op', op
-        if 'shiboken' == smtk.wrappingProtocol():
-            op.findFile("filename", smtk.attribute.ALL_CHILDREN).setValue(
-                0, smtk_file)
-        else:
-            op.findFile('filename').setValue(smtk_file)
-        self.assertTrue(op.ableToOperate(),
-                        'Import operator not able to operate')
-        result = op.operate()
+        LoadSMTKModel(smtk_file)
+        result = GetLastResult()
 
         outcome = result.findInt('outcome').value(0)
         self.assertEqual(

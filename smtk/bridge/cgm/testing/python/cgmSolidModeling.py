@@ -80,7 +80,7 @@ class TestCGMSolidModeling(smtk.testing.TestCase):
         SetActiveSession(self.sref)
         cyl = CreateCylinder(top_radius=1.0)
 
-        #json = smtk.io.ExportJSON.fromModelManager(self.mgr)
+        #json = smtk.io.SaveJSON.fromModelManager(self.mgr)
         #cylFile = open('cyl.json', 'w')
         #print >> cylFile, json
         # cylFile.close()

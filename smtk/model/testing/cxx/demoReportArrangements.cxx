@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/io/ExportJSON.h"
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/SaveJSON.h"
+#include "smtk/io/LoadJSON.h"
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityRef.h"
@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
   ManagerPtr sm = Manager::create();
 
   int status = 0;
-  status |= ImportJSON::intoModelManager(data.c_str(), sm);
+  status |= LoadJSON::intoModelManager(data.c_str(), sm);
   if (status)
     {
     if (argc > 3)

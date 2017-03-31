@@ -127,7 +127,7 @@ def PrintResultLog(res, always=False):
         tmplog = smtk.io.Logger()
         if slog.numberOfValues() < 1:
             return
-        smtk.io.ImportJSON.ofLog(slog.value(0), tmplog)
+        smtk.io.LoadJSON.ofLog(slog.value(0), tmplog)
         print '\n'.join(
             [
               tmplog.severityAsString(tmplog.record(i).severity) + ': ' +
@@ -347,10 +347,10 @@ def Delete(ents, **kwargs):
     return [exp.value(i) for i in range(exp.numberOfValues())]
 
 
-def ImportSMTKModel(filename):
-    """Import an SMTK model into the active session."""
+def LoadSMTKModel(filename):
+    """Load an SMTK model into the active session."""
     sess = GetActiveSession()
-    op = sess.op('import smtk model')
+    op = sess.op('load smtk model')
     if smtk.wrappingProtocol() == 'pybind11':
         fname = op.findFile('filename', int(smtk.attribute.ALL_CHILDREN))
     else:

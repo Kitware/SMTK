@@ -48,7 +48,7 @@
 #include <vtksys/SystemTools.hxx>
 
 #include "cJSON.h"
-#include "smtk/io/ExportJSON.h"
+#include "smtk/io/SaveJSON.h"
 
 using namespace smtk::model;
 
@@ -118,7 +118,7 @@ OperatorResult ImportOperator::operateInternal()
 
 /*
   cJSON* json = cJSON_CreateObject();
-  smtk::io::ExportJSON::forOperator(this->specification(), json);
+  smtk::io::SaveJSON::forOperator(this->specification(), json);
   std::cout << "Import Operator: " << cJSON_Print(json) << "\n";
   cJSON_Delete(json);
 

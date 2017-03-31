@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/model/operators/ImportSMTKModel.h"
+#include "smtk/model/operators/LoadSMTKModel.h"
 
 #include "smtk/model/Session.h"
 
@@ -24,7 +24,7 @@
 
 #include "smtk/common/CompilerInformation.h"
 
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/LoadJSON.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
@@ -43,7 +43,7 @@ using smtk::attribute::IntItem;
 namespace smtk {
   namespace model {
 
-smtk::model::OperatorResult ImportSMTKModel::operateInternal()
+smtk::model::OperatorResult LoadSMTKModel::operateInternal()
 {
   smtk::attribute::FileItemPtr filenameItem = this->findFile("filename");
   smtk::attribute::VoidItemPtr loadmeshItem = this->findAs<smtk::attribute::VoidItem>("loadmesh");
@@ -81,7 +81,7 @@ smtk::model::OperatorResult ImportSMTKModel::operateInternal()
   cJSON* root = cJSON_Parse(data.c_str());
   if (root && root->type == cJSON_Object && root->child)
     {
-    status = smtk::io::ImportJSON::ofLocalSession(root->child, this->manager(), true,
+    status = smtk::io::LoadJSON::ofLocalSession(root->child, this->manager(), true,
       path(filename).parent_path().string());
     }
 
@@ -145,12 +145,12 @@ smtk::model::OperatorResult ImportSMTKModel::operateInternal()
   } //namespace model
 } // namespace smtk
 
-#include "smtk/model/ImportSMTKModel_xml.h"
+#include "smtk/model/LoadSMTKModel_xml.h"
 
 smtkImplementsModelOperator(
   SMTKCORE_EXPORT,
-  smtk::model::ImportSMTKModel,
-  import_smtk_model,
-  "import smtk model",
-  ImportSMTKModel_xml,
+  smtk::model::LoadSMTKModel,
+  load_smtk_model,
+  "load smtk model",
+  LoadSMTKModel_xml,
   smtk::model::Session);

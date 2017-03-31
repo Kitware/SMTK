@@ -9,7 +9,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#include "smtk/io/ExportJSON.h"
+#include "smtk/io/SaveJSON.h"
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityRef.h"

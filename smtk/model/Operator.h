@@ -131,7 +131,7 @@ enum OperatorOutcome
   * inspects the model manager's Logger instance.
   * If any new records were created, they are serialized and
   * set as the result attribute's "log" item.
-  * You may use ImportJSON to deserialize the log and present
+  * You may use LoadJSON to deserialize the log and present
   * it to users in your application.
   * This serialization is performed since SMTK operations are
   * often run in a remote process from the end-user application.

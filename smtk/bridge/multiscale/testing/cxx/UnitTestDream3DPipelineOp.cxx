@@ -19,7 +19,7 @@
 
 #include "smtk/mesh/Manager.h"
 
-#include "smtk/io/ExportJSON.h"
+#include "smtk/io/SaveJSON.h"
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"

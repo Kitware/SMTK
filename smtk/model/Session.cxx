@@ -980,7 +980,7 @@ OperatorConstructor Session::findOperatorConstructorInternal(
 
 /**\brief Subclasses may override this method to export additional state.
   *
-  * Importers (e.g., ImportJSON) and exporters (e.g., ExportJSON) will
+  * Importers (e.g., LoadJSON) and exporters (e.g., SaveJSON) will
   * call this method to obtain a session I/O class instance specific to
   * the given \a format. If a valid SessionIO shared-pointer is
   * returned, it will be dynamically cast to a format-specific subclass

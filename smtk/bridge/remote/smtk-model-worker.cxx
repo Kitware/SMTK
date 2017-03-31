@@ -27,7 +27,7 @@
 
 #include "smtk/model/Manager.h"
 
-#include "smtk/io/ExportJSON.h"
+#include "smtk/io/SaveJSON.h"
 #include "smtk/io/Logger.h"
 
 #include "remus/worker/Worker.h"
@@ -276,7 +276,7 @@ int main(int argc, char* argv[])
     smtk::attribute::System* opsys = session->operatorSystem();
     cJSON* spec = cJSON_CreateObject();
     std::string opspec;
-    if (smtk::io::ExportJSON::forOperatorDefinitions(opsys, spec))
+    if (smtk::io::SaveJSON::forOperatorDefinitions(opsys, spec))
       opspec = cJSON_GetObjectItem(spec, "ops")->valuestring;
     cJSON_Delete(spec);
     requirements = make_JobRequirements(
@@ -291,7 +291,7 @@ int main(int argc, char* argv[])
     // Generate the Remus Worker (.RW) file.
     cJSON* desc = cJSON_CreateObject();
     // FIXME: workerPath() should return path of worker RELATIVE TO RWFile!
-    if (smtk::io::ExportJSON::forModelWorker(
+    if (smtk::io::SaveJSON::forModelWorker(
         desc, io_type.inputType(), io_type.outputType(),
         session, wkOpts.engine(),
         wkOpts.site(), wkOpts.root(),

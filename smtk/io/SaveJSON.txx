@@ -1,7 +1,7 @@
-#ifndef __smtk_io_ExportJSON_txx
-#define __smtk_io_ExportJSON_txx
+#ifndef __smtk_io_SaveJSON_txx
+#define __smtk_io_SaveJSON_txx
 
-#include "smtk/io/ExportJSON.h"
+#include "smtk/io/SaveJSON.h"
 
 #include "smtk/model/EntityIterator.h"
 
@@ -14,7 +14,7 @@ namespace smtk {
   *
   */
 template<typename T>
-int ExportJSON::forEntities(
+int SaveJSON::forEntities(
   cJSON* json,
   const T& entities,
   smtk::model::IteratorStyle relatedEntities,
@@ -48,17 +48,17 @@ int ExportJSON::forEntities(
       }
     if (sections & JSON_ENTITIES)
       {
-      status &= ExportJSON::forManagerEntity(it, curChild, modelMgr);
-      status &= ExportJSON::forManagerArrangement(
+      status &= SaveJSON::forManagerEntity(it, curChild, modelMgr);
+      status &= SaveJSON::forManagerArrangement(
         modelMgr->arrangements().find(it->first), curChild, modelMgr);
       }
     if (sections & JSON_TESSELLATIONS)
-      status &= ExportJSON::forManagerTessellation(it->first, curChild, modelMgr);
+      status &= SaveJSON::forManagerTessellation(it->first, curChild, modelMgr);
     if (sections & JSON_PROPERTIES)
       {
-      status &= ExportJSON::forManagerFloatProperties(it->first, curChild, modelMgr);
-      status &= ExportJSON::forManagerStringProperties(it->first, curChild, modelMgr);
-      status &= ExportJSON::forManagerIntegerProperties(it->first, curChild, modelMgr);
+      status &= SaveJSON::forManagerFloatProperties(it->first, curChild, modelMgr);
+      status &= SaveJSON::forManagerStringProperties(it->first, curChild, modelMgr);
+      status &= SaveJSON::forManagerIntegerProperties(it->first, curChild, modelMgr);
       }
     }
   return status;
@@ -68,7 +68,7 @@ int ExportJSON::forEntities(
   *
   */
 template<typename T>
-std::string ExportJSON::forEntities(
+std::string SaveJSON::forEntities(
   const T& entities,
   smtk::model::IteratorStyle relatedEntities,
   JSONFlags sections)
@@ -76,7 +76,7 @@ std::string ExportJSON::forEntities(
   using namespace smtk::model;
 
   cJSON* top = cJSON_CreateObject();
-  ExportJSON::forEntities(top, entities, relatedEntities, sections);
+  SaveJSON::forEntities(top, entities, relatedEntities, sections);
   char* json = cJSON_Print(top);
   std::string result(json);
   free(json);
@@ -87,4 +87,4 @@ std::string ExportJSON::forEntities(
   } // namespace io
 } // namespace smtk
 
-#endif // __smtk_io_ExportJSON_txx
+#endif // __smtk_io_SaveJSON_txx

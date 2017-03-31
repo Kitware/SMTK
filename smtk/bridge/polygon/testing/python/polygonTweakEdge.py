@@ -45,7 +45,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
 
     def createTestEdges(self, mod):
 
-        # print smtk.io.ExportJSON.fromModelManager(self.mgr,
+        # print smtk.io.SaveJSON.fromModelManager(self.mgr,
         # smtk.io.JSON_DEFAULT)
 
         openEdgeTestVerts = [[4, 3.5], [3, 3.5]]

@@ -72,7 +72,7 @@ std::string DefaultSession::remoteName() const
   * 1. No existing operator matches the given name.
   * 2. The remoteName() method returns a non-empty string (i..e, backsRemoteSession
   *    has been called).
-  * 3. A friend class (such as ImportJSON) has called setImportingOperators(true)
+  * 3. A friend class (such as LoadJSON) has called setImportingOperators(true)
   *    and not subsequently called setImportingOperators(false).
   */
 OperatorPtr DefaultSession::op(const std::string& opName) const

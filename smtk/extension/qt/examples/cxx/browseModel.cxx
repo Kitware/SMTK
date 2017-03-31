@@ -10,8 +10,8 @@
 #include "smtk/extension/qt/qtEntityItemDelegate.h"
 #include "smtk/extension/qt/qtEntityItemModel.h"
 
-#include "smtk/io/ExportJSON.h"
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/SaveJSON.h"
+#include "smtk/io/LoadJSON.h"
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/Manager.h"
@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 
 
   smtk::model::ManagerPtr model = smtk::model::Manager::create();
-  smtk::io::ImportJSON::intoModelManager(json.c_str(), model);
+  smtk::io::LoadJSON::intoModelManager(json.c_str(), model);
   model->assignDefaultNames();
 
   smtk::extension::QEntityItemModel* qmodel = new smtk::extension::QEntityItemModel;
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
   if (argc > 4)
     {
     std::ofstream result(argv[4]);
-    result << smtk::io::ExportJSON::fromModelManager(model).c_str() << "\n";
+    result << smtk::io::SaveJSON::fromModelManager(model).c_str() << "\n";
     result.close();
     }
 

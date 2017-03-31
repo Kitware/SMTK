@@ -58,7 +58,7 @@
 
 #include "cJSON.h"
 #include "smtk/common/UUID.h"
-#include "smtk/io/ExportJSON.h"
+#include "smtk/io/SaveJSON.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 
@@ -499,7 +499,7 @@ void ExportBodyToJSONFile(
   const std::string& filename)
 {
   cJSON* json = cJSON_CreateObject();
-  smtk::io::ExportJSON::fromModelManager(json, manager);
+  smtk::io::SaveJSON::fromModelManager(json, manager);
   char* exported = cJSON_Print(json);
   cJSON_Delete(json);
   FILE* fid = fopen(filename.c_str(), "w");

@@ -3,7 +3,7 @@ set(ioTests
   fileItemTest
   loggerTest
   ResourceSetTest
-  unitImportExportJSON
+  unitSaveLoadJSON
 )
 
 foreach (test ${ioTests})

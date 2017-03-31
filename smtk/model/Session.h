@@ -363,8 +363,8 @@ public:
   virtual bool mergeProperties(const EntityRefs& from, EntityRef& to) const;
 
 protected:
-  friend class io::ExportJSON;
-  friend class io::ImportJSON;
+  friend class io::SaveJSON;
+  friend class io::LoadJSON;
   friend class Manager;
 
   Session();

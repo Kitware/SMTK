@@ -11,7 +11,7 @@
 
 #include "vtkSMTKJsonModelReader.h"
 
-#include "smtk/model/ImportJSON.h"
+#include "smtk/model/LoadJSON.h"
 #include "smtk/model/Manager.h"
 #include "vtkModelMultiBlockSource.h"
 
@@ -82,10 +82,10 @@ int vtkSMTKJsonModelReader::RequestData(
 //vtkErrorMacro( << "json model (data): " << data.c_str());
   ManagerPtr sm = Manager::create();
 
-  int status = ! ImportJSON::intoModelManager(data.c_str(), sm);
+  int status = ! LoadJSON::intoModelManager(data.c_str(), sm);
   if (status)
     {
-    vtkErrorMacro( << "Error status from ImportJSON: " << status);
+    vtkErrorMacro( << "Error status from LoadJSON: " << status);
     return 0;
     }
 

@@ -16,7 +16,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
-#include "smtk/io/ExportJSON.h"
+#include "smtk/io/SaveJSON.h"
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"
@@ -153,7 +153,7 @@ int main(int argc, char* argv[])
     std::cout << "  done\n";
     }
 
-  std::string json = smtk::io::ExportJSON::fromModelManager(manager);
+  std::string json = smtk::io::SaveJSON::fromModelManager(manager);
   if (!json.empty())
     {
     std::ofstream jsonFile("sessionTest.json");

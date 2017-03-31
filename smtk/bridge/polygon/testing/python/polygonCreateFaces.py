@@ -61,7 +61,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
         self.assertEqual(mod.floatProperty('feature size'), [feature_size, ], 'Bad feature size {:1} vs {:2}'.format(
             mod.floatProperty('feature size')[0], feature_size))
 
-        # print smtk.io.ExportJSON.fromModelManager(self.mgr,
+        # print smtk.io.SaveJSON.fromModelManager(self.mgr,
         # smtk.io.JSON_DEFAULT)
 
         # Print a summary of the model:
@@ -134,7 +134,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
         res = GetLastResult()
         logStr = res.findString('log').value(0)
         log = smtk.io.Logger()
-        smtk.io.ImportJSON.ofLog(logStr, log)
+        smtk.io.LoadJSON.ofLog(logStr, log)
         print log.convertToString()
         self.assertEqual(
             log.numberOfRecords(), 4,

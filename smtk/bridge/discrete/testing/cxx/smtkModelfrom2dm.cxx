@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
 
 #include "smtk/io/ReadMesh.h"
@@ -158,7 +158,7 @@ int main(int argc, char* argv[])
       std::string write_path(write_root);
       write_path += "/test2D_2dm_save.smtk";
 
-      op = brg->op("export smtk model");
+      op = brg->op("save smtk model");
       op->findFile("filename")->setValue(write_path);
       op->associateEntity(model2dm);
       //write out the smtk model.
@@ -172,7 +172,7 @@ int main(int argc, char* argv[])
       // Erase the original model before loading the saved smtk model
       mgr->eraseModel(model2dm);
 
-      op = brg->op("import smtk model");
+      op = brg->op("load smtk model");
       op->findFile("filename")->setValue(write_path);
       result = op->operate();
       if (result->findInt("outcome")->value() != OPERATION_SUCCEEDED)

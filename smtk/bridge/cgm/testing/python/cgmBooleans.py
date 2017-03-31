@@ -89,7 +89,7 @@ class TestCGMBooleans(smtk.testing.TestCase):
             mod.geometryStyle(), smtk.model.PARAMETRIC,
             'Expected a parametric solid model, got {gs}'.format(gs=mod.geometryStyle()))
         if self.writeJSON:
-            json = smtk.io.ExportJSON.fromModelManager(self.mgr)
+            json = smtk.io.SaveJSON.fromModelManager(self.mgr)
             sphFile = open('boolean.json', 'w')
             print >> sphFile, json
             sphFile.close()

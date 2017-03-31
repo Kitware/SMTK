@@ -11,8 +11,8 @@
 #include "smtk/bridge/remote/Session.h"
 #include "smtk/bridge/remote/RemusConnection.h"
 
-#include "smtk/io/ExportJSON.h"
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/SaveJSON.h"
+#include "smtk/io/LoadJSON.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"
@@ -73,7 +73,7 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
   const smtk::model::EntityRef& entity, smtk::model::SessionInfoBits flags, int depth)
 {
   cJSON* par;
-  cJSON* req = ExportJSON::createRPCRequest("fetch-entity", par, /*id*/ "1", cJSON_Object);
+  cJSON* req = SaveJSON::createRPCRequest("fetch-entity", par, /*id*/ "1", cJSON_Object);
   cJSON_AddItemToObject(par, "entity", cJSON_CreateString(entity.entity().toString().c_str()));
   cJSON_AddItemToObject(par, "flags", cJSON_CreateNumber(flags));
   cJSON_AddItemToObject(par, "depth", cJSON_CreateNumber(depth));
@@ -98,8 +98,8 @@ bool Session::ableToOperateDelegate(
   smtk::model::RemoteOperatorPtr op)
 {
   cJSON* par;
-  cJSON* req = ExportJSON::createRPCRequest("operator-able", par, /*id*/ "1", cJSON_Object);
-  smtk::io::ExportJSON::forOperator(op->specification(), par);
+  cJSON* req = SaveJSON::createRPCRequest("operator-able", par, /*id*/ "1", cJSON_Object);
+  smtk::io::SaveJSON::forOperator(op->specification(), par);
   // Add the session's session ID so it can be properly instantiated on the server.
   cJSON_AddItemToObject(par, "sessionId", cJSON_CreateString(this->sessionId().toString().c_str()));
 
@@ -125,8 +125,8 @@ smtk::model::OperatorResult Session::operateDelegate(
   smtk::model::RemoteOperatorPtr op)
 {
   cJSON* par;
-  cJSON* req = ExportJSON::createRPCRequest("operator-apply", par, /*id*/ "1", cJSON_Object);
-  smtk::io::ExportJSON::forOperator(op->specification(), par);
+  cJSON* req = SaveJSON::createRPCRequest("operator-apply", par, /*id*/ "1", cJSON_Object);
+  smtk::io::SaveJSON::forOperator(op->specification(), par);
   // Add the session's session ID so it can be properly instantiated on the server.
   cJSON_AddItemToObject(par, "sessionId", cJSON_CreateString(this->sessionId().toString().c_str()));
 
@@ -140,7 +140,7 @@ smtk::model::OperatorResult Session::operateDelegate(
     !resp ||
     (err = cJSON_GetObjectItem(resp, "error")) ||
     !(res = cJSON_GetObjectItem(resp, "result")) ||
-    !smtk::io::ImportJSON::ofOperatorResult(res, result, op))
+    !smtk::io::LoadJSON::ofOperatorResult(res, result, op))
     {
     return op->createResult(smtk::model::OPERATION_FAILED);
     }

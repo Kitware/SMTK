@@ -10,7 +10,7 @@
 #include "smtk/model/Operator.h"
 #include "smtk/model/Manager.h"
 
-#include "smtk/io/ExportJSON.h"
+#include "smtk/io/SaveJSON.h"
 #include "smtk/io/Logger.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -135,7 +135,7 @@ OperatorResult Operator::operate()
     if (logEnd > logStart)
       { // Serialize relevant log records to JSON.
       cJSON* array = cJSON_CreateArray();
-      smtk::io::ExportJSON::forLog(array, this->log(), logStart, logEnd);
+      smtk::io::SaveJSON::forLog(array, this->log(), logStart, logEnd);
       char* logstr = cJSON_Print(array);
       cJSON_Delete(array);
       result->findString("log")->appendValue(logstr);

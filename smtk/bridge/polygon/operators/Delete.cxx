@@ -13,7 +13,7 @@
 #include "smtk/bridge/polygon/Session.txx"
 #include "smtk/bridge/polygon/internal/Model.h"
 
-#include "smtk/io/ExportJSON.h"
+#include "smtk/io/SaveJSON.h"
 #include "smtk/io/Logger.h"
 
 #include "smtk/model/CellEntity.h"

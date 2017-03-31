@@ -40,7 +40,7 @@ namespace smtk {
   *
   * Note that the I/O format being handled will dictate
   * additional subclass methods to be implemented.
-  * For example, ImportJSON and ExportJSON will dynamically
+  * For example, LoadJSON and SaveJSON will dynamically
   * cast the returned shared pointer to a SessionIOJSON
   * instance and (if it is non-null) call methods which
   * accept cJSON pointers.

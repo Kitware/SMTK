@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/LoadJSON.h"
 
 #include "smtk/model/Manager.h"
 
@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 
   ManagerPtr sm = Manager::create();
 
-  int status = ! ImportJSON::intoModelManager(data.c_str(), sm);
+  int status = ! LoadJSON::intoModelManager(data.c_str(), sm);
   if (! status)
     {
     vtkNew<vtkActor> act;

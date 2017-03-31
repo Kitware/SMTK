@@ -10,8 +10,8 @@
 #include "smtk/AutoInit.h"
 #include "smtk/Options.h"
 
-#include "smtk/io/ExportJSON.h"
-#include "smtk/io/ImportJSON.h"
+#include "smtk/io/SaveJSON.h"
+#include "smtk/io/LoadJSON.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DirectoryItem.h"
@@ -299,7 +299,7 @@ int main()
     // Now we want to mirror the remote manager locally.
     // Serialize the "remote" session:
     cJSON* sessJSON = cJSON_CreateObject();
-    ExportJSON::forManagerSession(remoteSession->sessionId(), sessJSON, remoteMgr);
+    SaveJSON::forManagerSession(remoteSession->sessionId(), sessJSON, remoteMgr);
     // ... and import the session locally to a new session object.
     TestForwardingSession::Ptr localSession = TestForwardingSession::create();
     localSession->remoteSession = remoteSession;
@@ -308,7 +308,7 @@ int main()
     SessionRef localSess(localMgr, localSession->sessionId());
     test(localSession->operatorNames().size() == 0, "Forwarding session should have no operators by default.");
     printSessionOperatorNames(localSess, "local, pre-import");
-    ImportJSON::ofRemoteSession(sessJSON->child, localSession, localMgr);
+    LoadJSON::ofRemoteSession(sessJSON->child, localSession, localMgr);
     printSessionOperatorNames(localSess, "local, post-import");
     test(localSession->operatorNames().size() == remoteSession->operatorNames().size(),
       "Forwarding session operator count should match remote session after import.");
@@ -365,9 +365,9 @@ int main()
       danglers.insert(ugen.random());
     localSession->addSomeRemoteDanglers(danglers);
     cJSON* jsonDanglers = cJSON_CreateObject();
-    smtk::io::ExportJSON::forDanglingEntities(remoteSession->sessionId(), jsonDanglers, remoteMgr);
+    smtk::io::SaveJSON::forDanglingEntities(remoteSession->sessionId(), jsonDanglers, remoteMgr);
     //std::cout << "\n\n\n" << cJSON_Print(jsonDanglers) << "\n\n\n";
-    smtk::io::ImportJSON::ofDanglingEntities(jsonDanglers, localMgr);
+    smtk::io::LoadJSON::ofDanglingEntities(jsonDanglers, localMgr);
     test(localSession->checkLocalDanglers(danglers, localMgr), "All generated danglers should have been serialized.");
 
   } catch (const std::string& msg) {

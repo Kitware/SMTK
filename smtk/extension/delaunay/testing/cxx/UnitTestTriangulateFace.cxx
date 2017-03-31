@@ -85,13 +85,13 @@ int UnitTestTriangulateFace(int, char** const)
     { //just make sure the file exists
       file.close();
 
-      smtk::model::Operator::Ptr op = session->op("import smtk model");
+      smtk::model::Operator::Ptr op = session->op("load smtk model");
 
       op->findFile("filename")->setValue(file_path.c_str());
       smtk::model::OperatorResult result = op->operate();
       if (result->findInt("outcome")->value() !=  smtk::model::OPERATION_SUCCEEDED)
       {
-      std::cerr << "Import smtk model!\n";
+      std::cerr << "Could not load smtk model!\n";
       return 1;
       }
       model = result->findModelEntity("mesh_created")->value();

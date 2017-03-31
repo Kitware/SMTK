@@ -172,7 +172,7 @@ class TestDiscreteSplitEdge(smtk.testing.TestCase):
 
         if self.shouldSave:
             out = file('test.json', 'w')
-            print >>out, smtk.io.ExportJSON.fromModelManager(self.mgr)
+            print >>out, smtk.io.SaveJSON.fromModelManager(self.mgr)
             out.close()
 
 

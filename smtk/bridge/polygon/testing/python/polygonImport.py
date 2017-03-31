@@ -69,7 +69,7 @@ class TestPolygonImport(smtk.testing.TestCase):
                          'Import failed to create a single model')
         mod = smtk.model.Model(cre.value(0))
         if self.writeJSON:
-            smtk.io.ExportJSON.fromModelManagerToFile(
+            smtk.io.SaveJSON.fromModelManagerToFile(
                 self.mgr, '/tmp/shapefile.json')
             print 'Wrote /tmp/shapefile.json'
 

@@ -57,7 +57,7 @@ class TestExportImport(smtk.testing.TestCase):
         # Export and then import
         ftmp = os.path.join(smtk.testing.TEMP_DIR, str(uuid.uuid4()) + '.json')
         #   Export to ftmp
-        exp = sess.op('export smtk model')
+        exp = sess.op('save smtk model')
         if smtk.wrappingProtocol() == 'pybind11':
             SetVectorValue(exp.findFile('filename', int(
                 smtk.attribute.SearchStyle.ACTIVE_CHILDREN)), [ftmp, ])
@@ -74,7 +74,7 @@ class TestExportImport(smtk.testing.TestCase):
         se2 = mm2.createSession(sessionType)
         SetActiveSession(se2)
         #   Import from ftmp
-        imp = se2.op('import smtk model')
+        imp = se2.op('load smtk model')
         if smtk.wrappingProtocol() == 'pybind11':
             SetVectorValue(imp.findFile('filename', int(
                 smtk.attribute.ACTIVE_CHILDREN)), [ftmp, ])

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "ImportSMTKModel" Operator -->
+<!-- Description of the model "LoadSMTKModel" Operator -->
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="import smtk model" BaseType="operator">
+    <AttDef Type="load smtk model" BaseType="operator">
       <BriefDescription>
         Import a JSON description of smtk model(s).
       </BriefDescription>
@@ -21,7 +21,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
-    <AttDef Type="result(import smtk model)" BaseType="result">
+    <AttDef Type="result(load smtk model)" BaseType="result">
       <ItemDefinitions>
         <ModelEntity Name="mesh_created" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
       </ItemDefinitions>
