@@ -93,7 +93,12 @@ typedef unsigned int BitFlags;
   * Finally, the INVALID enumerant indicates that an entity does not
   * exist or should be considered ill-posed.
   */
+
+#ifndef SHIBOKEN_SKIP
+enum EntityTypeBits : BitFlags
+#else
 enum EntityTypeBits
+#endif
 {
   // Dimensionality bits:
   DIMENSION_0          = 0x00000001, //!< The entity may include 0-dimensional components

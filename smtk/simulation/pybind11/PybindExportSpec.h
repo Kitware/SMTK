@@ -41,7 +41,7 @@ py::class_< smtk::simulation::ExportSpec > pybind11_init_smtk_simulation_ExportS
 
     // Converter method used by CMB vtkPythonExporter
     .def_static("_InternalConverterDoNotUse_", [](const std::string& specAddressString) {
-      unsigned long memAddress;
+      unsigned long long memAddress;
       std::stringstream ss;
       ss << std::hex << specAddressString;
       ss >> memAddress;
