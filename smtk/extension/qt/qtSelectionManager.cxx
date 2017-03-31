@@ -39,6 +39,7 @@ namespace smtk
     m_mask |= smtk::model::EDGE;
     m_mask |= smtk::model::VERTEX;
     this->m_modelMgr = nullptr;
+    this->m_selectionModifier = SelectionModifier::SELECTION_DEFAULT;
   }
 
   void qtSelectionManager::getSelectedEntities(smtk::common::UUIDs &selEntities)
@@ -54,11 +55,40 @@ namespace smtk
   void qtSelectionManager::updateSelectedItems(
   const smtk::common::UUIDs &selEntities, const smtk::mesh::MeshSets &selMeshes)
   { // select from render view
-    this->clearAllSelections();
-    this->m_selEntities.insert(selEntities.begin(),selEntities.end());
-    this->m_selMeshes.insert(selMeshes.begin(),selMeshes.end());
+    if (this->m_selectionModifier == SelectionModifier::SELECTION_DEFAULT)
+    { // clear and select
+      this->clearAllSelections();
+      this->filterEntitySelectionsByMask(const_cast<smtk::common::UUIDs &>
+                                         (selEntities), this->m_selEntities);
+      this->m_selMeshes.insert(selMeshes.begin(),selMeshes.end());
 
-    this->filterSelectionsByMask();
+    }
+    else if (this->m_selectionModifier == SelectionModifier::SELECTION_ADDITION)
+    { // add to current selection
+      smtk::common::UUIDs currentSelFiltered;
+      this->filterEntitySelectionsByMask(const_cast<smtk::common::UUIDs &>
+                                         (selEntities), currentSelFiltered);
+      this->m_selEntities.insert(currentSelFiltered.begin(), currentSelFiltered.end());
+      this->m_selMeshes.insert(selMeshes.begin(),selMeshes.end());
+
+    }
+    else
+    { //subtract from current selection
+      smtk::common::UUIDs currentSelFiltered;
+      this->filterEntitySelectionsByMask(const_cast<smtk::common::UUIDs &>
+                                         (selEntities), currentSelFiltered);
+      for (const auto& selEnt: currentSelFiltered)
+      {
+         this->m_selEntities.erase(selEnt);
+      }
+
+      for (const auto& selMesh: selMeshes)
+      {
+         this->m_selMeshes.erase(selMesh);
+      }
+    }
+
+    this->m_selectionModifier = SelectionModifier::SELECTION_DEFAULT; // reset
 
     emit  broadcastToModelTree(this->m_selEntities,this->m_selMeshes,
                                true);
@@ -140,11 +170,11 @@ namespace smtk
     this->m_desPhrases.clear();
   }
 
-  void qtSelectionManager::filterSelectionsByMask()
+  void qtSelectionManager::filterEntitySelectionsByMask(
+      smtk::common::UUIDs &currentSelEnt, smtk::common::UUIDs &filteredSelEnt)
   {
-    smtk::common::UUIDs currentSelEnt(this->m_selEntities);
-    this->m_selEntities.clear();
- // For now rubber band selection only support F/E/V
+    filteredSelEnt.clear();
+    // For now rubber band selection only support F/E/V
     for(smtk::common::UUIDs::iterator uuid = currentSelEnt.begin(); uuid != currentSelEnt.end(); uuid++)
     {
       smtk::model::EntityRef ent = smtk::model::EntityRef(this->m_modelMgr, *uuid);
@@ -154,13 +184,13 @@ namespace smtk
         if ((ent.entityFlags() & smtk::model::CELL_ENTITY) &&
              ((ent.entityFlags() & smtk::model::ANY_DIMENSION) & this->m_mask))
         {
-          this->m_selEntities.insert(*uuid);
+          filteredSelEnt.insert(*uuid);
         }
       }
 
       if (ent.entityFlags() & smtk::model::GROUP_CONSTRAINT_MASK)
       {
-        this->m_selEntities.insert(*uuid);
+        filteredSelEnt.insert(*uuid);
       }
 
       // Comment out for now since tessellation for volume and model is not added
