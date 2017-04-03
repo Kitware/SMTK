@@ -19,27 +19,15 @@
 #include "smtk/common/CompilerInformation.h" //needed for SMTK_MSVC flag
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkType.h" //needed for vtkIdType
-#include <map> //need to store the set of point ids
-
 
 class vtkDiscreteModel;
 class vtkDiscreteModelVertex;
-
-#ifdef SMTK_MSVC
-// ignore warning about declarations:
-// type name first seen using 'struct' now seen using 'class'
-# pragma warning (disable : 4099)
-
-  template class VTKSMTKDISCRETEMODEL_EXPORT std::pair<vtkIdType,
-                                                       vtkDiscreteModelVertex*>;
-  template class VTKSMTKDISCRETEMODEL_EXPORT std::map<vtkIdType,
-                                 std::pair<vtkIdType,vtkDiscreteModelVertex*> >;
-#endif
 
 class VTKSMTKDISCRETEMODEL_EXPORT ModelVertexClassification
 {
 public:
   ModelVertexClassification(vtkDiscreteModel* model);
+  ~ModelVertexClassification();
 
   vtkDiscreteModelVertex* GetModelVertex( vtkIdType pointId );
   vtkIdType GetModelId( vtkIdType pointId );
@@ -50,14 +38,18 @@ public:
   //and return both the ModelVertex and ModelId. If a model vertex is already
   //associated with that pointId this will return the exists ModelVertex and
   //ModelId
-  std::pair<vtkIdType, vtkDiscreteModelVertex*>
-  AddModelVertex( vtkIdType pointId, bool bCreateGeometry=false);
+  // std::pair<vtkIdType, vtkDiscreteModelVertex*>
+  // AddModelVertex( vtkIdType pointId, bool bCreateGeometry=false);
+  vtkDiscreteModelVertex* AddModelVertex( vtkIdType pointId,
+                                          bool bCreateGeometry=false);
+  vtkDiscreteModelVertex* AddModelVertex( vtkIdType pointId,
+                                          bool bCreateGeometry,
+                                          vtkIdType& modelId);
 
 
 private:
-  typedef std::pair<vtkIdType, vtkDiscreteModelVertex*> ModelVertexInfo;
-  std::map<vtkIdType,ModelVertexInfo> ModelVertInfo;
-  vtkDiscreteModel* Model;
+  struct Internals;
+  Internals* Internal;
 };
 
 #endif //__ModelVertexClassification_H

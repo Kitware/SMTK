@@ -808,7 +808,8 @@ CreateModelEdges(NewModelEdgeInfo &newEdgesInfo,
       // last mesh edge added
       mesh.GetCellPointIds(edgeCells->GetId(numEdges-1), edgePnts.GetPointer());
 
-      v1 = vertexInfo.AddModelVertex(edgePnts->GetId(1), true).second;
+      vtkIdType modelId;
+      v1 = vertexInfo.AddModelVertex(edgePnts->GetId(1), true, modelId);
       if (v0 && v1)
         {
         gedge =
@@ -844,7 +845,8 @@ CreateModelEdges(NewModelEdgeInfo &newEdgesInfo,
     // Get the first vertex of the edge
     mesh.GetCellPointIds(info[i].first, edgePnts.GetPointer());
 
-    v0 = vertexInfo.AddModelVertex(edgePnts->GetId(0), true).second;
+    vtkIdType modelId;
+    v0 = vertexInfo.AddModelVertex(edgePnts->GetId(0), true, modelId);
     // Add the mesh edge to the list
     edgeCells->InsertNextId(info[i].first);
     }
@@ -859,7 +861,8 @@ CreateModelEdges(NewModelEdgeInfo &newEdgesInfo,
     // last mesh edge added
     mesh.GetCellPointIds(edgeCells->GetId(numEdges-1), edgePnts.GetPointer());
 
-    v1 = vertexInfo.AddModelVertex(edgePnts->GetId(1), true).second;
+    vtkIdType modelId;
+    v1 = vertexInfo.AddModelVertex(edgePnts->GetId(1), true, modelId);
     if (v0 && v1)
       {
       gedge =
