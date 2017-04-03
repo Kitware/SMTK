@@ -60,8 +60,11 @@ std::vector<Delaunay::Shape::Point> pointsInLoop(
   {
     points.push_back(Delaunay::Shape::Point(fpoints[i], fpoints[i+1]));
   }
-  // loops have a redundant point at the end. We need to remove it.
-  points.pop_back();
+  // loops sometimes have a redundant point at the end. We need to remove it.
+  if (points.front() == points.back())
+  {
+    points.pop_back();
+  }
 
   return points;
 }
