@@ -427,7 +427,7 @@ void smtkAssignColorsView::chooseDefaultColorAndApply()
   pqSettings* settings = pqApplicationCore::instance()->settings();
   QColor nextDefault =
     QColorDialog::getColor(
-      settings->value("ModelBuilder/Operators/AssignColors/defaultColor", Qt::white).
+      settings->value("ModelBuilder/Operators/AssignColors/defaultColor", QColor(Qt::white)).
       value<QColor>(),
       nullptr, "Choose a default color for \"assign colors\"", QColorDialog::DontUseNativeDialog);
   settings->setValue("ModelBuilder/Operators/AssignColors/defaultColor", nextDefault);
@@ -450,7 +450,7 @@ void smtkAssignColorsView::applyDefaultColor()
 
   pqSettings* settings = pqApplicationCore::instance()->settings();
   QColor color = settings->value(
-    "ModelBuilder/Operators/AssignColors/defaultColor", Qt::white).value<QColor>();
+    "ModelBuilder/Operators/AssignColors/defaultColor", QColor(Qt::white)).value<QColor>();
 
   //std::cout << "Apply default color\n";
 
