@@ -1,0 +1,23 @@
+# This is a configuration file describing some, but not all, of the formatting
+# rules the SMTK project enforces via clang-format. See http://editorconfig.org/
+# for information about how to get your favorite editor to use it automatically.
+
+root = true
+
+[*.{h,txx,cxx,c,sbt,xml,json,py,txt,md,cmake,rst,in}]
+end-of-line = lf
+insert_final_newline = true
+trim_trailing_whitespace  = true
+
+[*.{h,txx,cxx,c,sbt,xml,json,txt,md,cmake,rst}]
+indent_style = space
+indent_size = 4
+max_line_length = 100
+
+[*.{h,txx,cxx,c}]
+indent_brace_style = Allman
+
+[*.py]
+charset = utf-8
+indent_style = space
+indent_size = 4
