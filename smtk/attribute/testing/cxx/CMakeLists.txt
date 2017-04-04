@@ -11,6 +11,7 @@ set(attributeTests
   expressionTest
   expressionTest2
   extensibleAttributeCopyTest
+  fileValidationTest
   attributeAssociationTest
   attributeAutoNamingTest
   attributeReferencingTest

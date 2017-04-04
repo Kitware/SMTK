@@ -33,7 +33,7 @@ namespace smtk
       virtual ~FileSystemItemDefinition();
 
       virtual Item::Type type() const;
-      bool isValueValid(const std::string &val) const;
+      virtual bool isValueValid(const std::string &val) const;
 
       // Returns or Sets the def's extensiblity property.  If true then items from this def
       // can have a variable number of items.  The number of items is always <= to number of
