@@ -36,6 +36,9 @@ namespace smtk
 
       virtual Item::Type type() const;
       virtual bool isValueValid(const std::string &val) const;
+      // return the index of the filter that accepts val, or -1 if the value is
+      // invalid
+      int filterId(const std::string &val) const;
 
       virtual smtk::attribute::ItemPtr buildItem(Attribute *owningAttribute,
                                                 int itemPosition) const;

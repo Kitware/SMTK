@@ -40,7 +40,32 @@
 #include "smtk/attribute/FileSystemItemDefinition.h"
 #include "smtk/attribute/System.h"
 
+#include <cassert>
+
 //#include "pqApplicationCore.h"
+
+// We use either STL regex or Boost regex, depending on support. These flags
+// correspond to the equivalent logic used to determine the inclusion of Boost's
+// regex library.
+#if defined(SMTK_CLANG) ||                        \
+  (defined(SMTK_GCC) &&                           \
+   __GNUC__ > 4 ||                                \
+   (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)) ||     \
+  defined(SMTK_MSVC)
+#include <regex>
+using std::regex;
+using std::sregex_token_iterator;
+using std::regex_replace;
+using std::regex_search;
+using std::regex_match;
+#else
+#include <boost/regex.hpp>
+using boost::regex;
+using boost::sregex_token_iterator;
+using boost::regex_replace;
+using boost::regex_search;
+using boost::regex_match;
+#endif
 
 using namespace smtk::attribute;
 using namespace smtk::extension;
@@ -54,6 +79,7 @@ public:
   bool IsDirectory;
   QFileDialog *FileBrowser;
   QPointer<QComboBox> fileCombo;
+  QPointer<QComboBox> fileExtCombo;
 
   QPointer<QGridLayout> EntryLayout;
   QPointer<QLabel> theLabel;
@@ -146,6 +172,25 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
       fileTextWidget = fileCombo;
       this->Internals->fileCombo = fileCombo;
       }
+
+    if (!fDef->shouldExist())
+      {
+      std::string filters = fDef->getFileFilters();
+      regex re(";;");
+      sregex_token_iterator it(filters.begin(),
+                               filters.end(),
+                               re, -1), last;
+      if (it != last && std::next(it) != last)
+        {
+        this->Internals->fileExtCombo = new QComboBox(frame);
+        this->Internals->fileExtCombo->setEditable(false);
+        for (; it != last; ++it)
+          {
+          this->Internals->fileExtCombo->addItem(
+            QString::fromStdString(it->str()));
+          }
+        }
+      }
     }
 
   if(fileTextWidget == NULL)
@@ -169,6 +214,10 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   QHBoxLayout* layout = new QHBoxLayout(frame);
   layout->setContentsMargins(0, 0, 0, 0);
   layout->addWidget(fileTextWidget);
+  if (this->Internals->fileExtCombo)
+  {
+    layout->addWidget(this->Internals->fileExtCombo);
+  }
   layout->addWidget(fileBrowserButton);
   layout->setAlignment(Qt::AlignCenter);
 
@@ -210,8 +259,6 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
     QObject::connect(lineEdit, SIGNAL(textChanged(const QString &)),
       this, SLOT(onInputValueChanged()));
     this->Internals->SignalMapper->setMapping(fileBrowserButton, lineEdit);
-    QObject::connect(lineEdit, SIGNAL(editingFinished()),
-                     this, SLOT(onEditingFinished()));
 
     const smtk::attribute::FileSystemItemDefinition *fSystemItemDef =
       dynamic_cast<const smtk::attribute::FileSystemItemDefinition*>(
@@ -230,6 +277,27 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
     else
       {
       this->baseView()->uiManager()->setWidgetColorToInvalid(lineEdit);
+      }
+
+    if (this->Internals->fileExtCombo)
+      {
+      QObject::connect(this->Internals->fileExtCombo,
+                       SIGNAL(textChanged(const QString &)),
+                       this->Internals->SignalMapper, SLOT(map()));
+      QObject::connect(this->Internals->fileExtCombo,
+                       SIGNAL(currentIndexChanged(int)),
+                       this->Internals->SignalMapper, SLOT(map()));
+      this->Internals->SignalMapper->setMapping(this->Internals->fileExtCombo,
+                                                lineEdit);
+      QObject::connect(this->Internals->SignalMapper, SIGNAL(mapped(QWidget*)),
+                       this, SLOT(setActiveField(QWidget*)));
+
+    QObject::connect(this->Internals->fileExtCombo,
+                     SIGNAL(editTextChanged(const QString &)),
+      this, SLOT(onInputValueChanged()));
+    QObject::connect(this->Internals->fileExtCombo,
+                     SIGNAL(currentIndexChanged(int)),
+      this, SLOT(onInputValueChanged()));
       }
     }
   else if(fileCombo)
@@ -278,21 +346,58 @@ void qtFileItem::onInputValueChanged()
   smtk::attribute::FileSystemItemPtr item =
     dynamic_pointer_cast<attribute::FileSystemItem>(this->getObject());
   int elementIdx = editBox->property("ElementIndex").toInt();
+  std::string value = editBox->text().toStdString();
 
-  if(!editBox->text().isEmpty())
+  if(!value.empty())
     {
-    item->setValue(elementIdx, editBox->text().toStdString());
+    smtk::attribute::FileItemPtr fItem =
+      smtk::dynamic_pointer_cast<smtk::attribute::FileItem>(item);
+    const smtk::attribute::FileSystemItemDefinition *fSystemItemDef =
+      dynamic_cast<const smtk::attribute::FileSystemItemDefinition*>(
+        item->definition().get());
+    const smtk::attribute::FileItemDefinition *fItemDef =
+      dynamic_cast<const smtk::attribute::FileItemDefinition*>(fSystemItemDef);
+    if (fItemDef && this->Internals->fileExtCombo)
+      {
+      int filterId = fItemDef->filterId(value);
+      if (filterId != -1)
+        {
+        // the value has a suffix that matches our definition, so we set the
+        // file type combobox to reflect the update.
+        assert(this->Internals->fileExtCombo != nullptr);
+        this->Internals->fileExtCombo->setCurrentIndex(filterId);
+        }
+      }
+
+    if (fSystemItemDef->isValueValid(value) || !this->Internals->fileExtCombo)
+      {
+      item->setValue(elementIdx, value);
+      }
+    else
+      {
+      // the value does not have a suffix that matches our definition, so we
+      // set the extension according to the combo box.
+
+      std::string filter =
+        this->Internals->fileExtCombo->currentText().toStdString();
+      std::size_t begin = filter.find_first_of("*",
+                                               filter.find_first_of("(")) + 1;
+      std::size_t end = filter.find_first_of(" \n\r\t)", begin);
+      std::string acceptableSuffix = filter.substr(begin, end - begin);
+
+      item->setValue(elementIdx,
+                     value + acceptableSuffix);
+      }
+
     emit this->modified();
+
     if (!this->isDirectory())
       {
       this->updateFileComboList(editBox->text());
       }
     this->baseView()->valueChanged(this->getObject());
 
-    const smtk::attribute::FileSystemItemDefinition *fSystemItemDef =
-      dynamic_cast<const smtk::attribute::FileSystemItemDefinition*>(
-        item->definition().get());
-    if (fSystemItemDef->isValueValid(editBox->text().toStdString()))
+    if (fSystemItemDef->isValueValid(item->value(elementIdx)))
       {
       if (item->isUsingDefault(elementIdx))
         {
@@ -313,50 +418,6 @@ void qtFileItem::onInputValueChanged()
     item->unset(elementIdx);
     this->baseView()->uiManager()->setWidgetColorToInvalid(editBox);
     emit(modified());
-   }
-}
-
-
-void qtFileItem::onEditingFinished()
-{
-  // For files, check if the extension in the input is valid. If it is not,
-  // append a valid extension to it.
-
-  if(this->Internals->fileCombo || this->Internals->IsDirectory)
-    {
-    return;
-    }
-
-  // The right line edit should be associated with the "DataItem" property,
-  // since this call will come after onInputValueChanged()
-  QLineEdit* lineEdit = static_cast<QLineEdit*>(
-    this->property("DataItem").value<void *>());
-
-  QString value = lineEdit->text();
-
-  if (!value.isEmpty())
-    {
-    smtk::attribute::FileItemPtr fItem;
-    smtk::attribute::ItemPtr item =
-      smtk::dynamic_pointer_cast<smtk::attribute::Item>(this->getObject());
-
-    fItem = smtk::dynamic_pointer_cast<smtk::attribute::FileItem>(item);
-    const smtk::attribute::FileItemDefinition *fItemDef =
-      dynamic_cast<const smtk::attribute::FileItemDefinition*>(fItem->definition().get());
-    if (fItemDef->isValueValid(value.toStdString()) == false)
-      {
-      QFileInfo fi(value);
-
-      std::string filters = fItemDef->getFileFilters();
-      std::size_t begin = filters.find_first_of("*",
-                                                filters.find_first_of("(")) + 1;
-      std::size_t end = filters.find_first_of(" \n\r\t)", begin);
-      QString acceptableSuffix(filters.substr(begin, end - begin).c_str());
-
-      value = fi.absolutePath() + QString("/") + fi.baseName() + acceptableSuffix;
-      lineEdit->setText(value);
-      this->baseView()->uiManager()->setWidgetColorToNormal(lineEdit);
-      }
     }
 }
 
@@ -449,8 +510,35 @@ void qtFileItem::setInputValue(const QString& val)
     return;
     }
 
+  QString value = val;
+
+  // For files, check if the extension in val is valid. If it is not, append a
+  // valid extension to it.
+  if (!value.isEmpty() && !this->Internals->IsDirectory)
+    {
+    smtk::attribute::FileItemPtr fItem;
+    smtk::attribute::ItemPtr item =
+      smtk::dynamic_pointer_cast<smtk::attribute::Item>(this->getObject());
+
+    fItem = smtk::dynamic_pointer_cast<smtk::attribute::FileItem>(item);
+    const smtk::attribute::FileItemDefinition *fItemDef =
+      dynamic_cast<const smtk::attribute::FileItemDefinition*>(fItem->definition().get());
+    if (fItemDef->isValueValid(val.toStdString()) == false)
+      {
+      QFileInfo fi(val);
+
+      std::string filters = fItemDef->getFileFilters();
+      std::size_t begin = filters.find_first_of("*",
+                                                filters.find_first_of("(")) + 1;
+      std::size_t end = filters.find_first_of(" \n\r\t", begin);
+      QString acceptableSuffix(filters.substr(begin, end - begin).c_str());
+
+      value = fi.absolutePath() + fi.baseName() + acceptableSuffix;
+      }
+    }
+
   // this itself will not trigger onInputValueChanged
-  lineEdit->setText(val);
+  lineEdit->setText(value);
   this->onInputValueChanged();
 }
 

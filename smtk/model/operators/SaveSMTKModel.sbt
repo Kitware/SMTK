@@ -17,7 +17,7 @@
         <File
           Name="filename"
           Label="SMTK Model File Name "
-          FileFilters="SMTK Model (*.smtk);;All files (*.*)"
+          FileFilters="SMTK Model (*.smtk)"
           NumberOfRequiredValues="1">
           <BriefDescription>The destination file for the JSON.</BriefDescription>
         </File>
