@@ -24,17 +24,14 @@
 
 vtkStandardNewMacro(vtkModel3dm2DGridRepresentation);
 
-//----------------------------------------------------------------------------
 vtkModel3dm2DGridRepresentation::vtkModel3dm2DGridRepresentation()
 {
 }
 
-//----------------------------------------------------------------------------
 vtkModel3dm2DGridRepresentation::~vtkModel3dm2DGridRepresentation()
 {
 }
 
-//----------------------------------------------------------------------------
 bool vtkModel3dm2DGridRepresentation::GetBCSNodalAnalysisGridPointIds(
   vtkDiscreteModel* model, vtkIdType bcsGroupId,
   int bcGroupType, vtkIdList* pointIds)
@@ -87,7 +84,6 @@ bool vtkModel3dm2DGridRepresentation::GetBCSNodalAnalysisGridPointIds(
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool vtkModel3dm2DGridRepresentation::GetFloatingEdgeAnalysisGridPointIds(
   vtkDiscreteModel* /*model*/, vtkIdType /*nodalGroupId*/, vtkIdList* /*pointIds*/)
 {
@@ -95,7 +91,6 @@ bool vtkModel3dm2DGridRepresentation::GetFloatingEdgeAnalysisGridPointIds(
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool vtkModel3dm2DGridRepresentation::GetModelEdgeAnalysisPoints(
   vtkDiscreteModel* model, vtkIdType edgeId, vtkIdTypeArray* edgePoints)
 {
@@ -127,7 +122,6 @@ bool vtkModel3dm2DGridRepresentation::GetModelEdgeAnalysisPoints(
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkModel3dm2DGridRepresentation::GetBoundaryGroupAnalysisFacets(
   vtkDiscreteModel* /*model*/, vtkIdType /*boundaryGroupId*/,
   vtkIdList* /*cellIds*/, vtkIdList* /*cellSides*/)
@@ -135,7 +129,6 @@ bool vtkModel3dm2DGridRepresentation::GetBoundaryGroupAnalysisFacets(
   return false;
 }
 
-//----------------------------------------------------------------------------
 void vtkModel3dm2DGridRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

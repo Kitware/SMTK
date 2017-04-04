@@ -15,24 +15,20 @@
 
 vtkStandardNewMacro(vtkCMBModelVertexMesh);
 
-//----------------------------------------------------------------------------
 vtkCMBModelVertexMesh::vtkCMBModelVertexMesh()
 {
   this->ModelVertex = NULL;
 }
 
-//----------------------------------------------------------------------------
 vtkCMBModelVertexMesh::~vtkCMBModelVertexMesh()
 {
 }
 
-//----------------------------------------------------------------------------
 vtkModelGeometricEntity* vtkCMBModelVertexMesh::GetModelGeometricEntity()
 {
   return this->ModelVertex;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelVertexMesh::Initialize(vtkCMBMesh* masterMesh,
                                        vtkModelVertex* vertex)
 {
@@ -48,14 +44,12 @@ void vtkCMBModelVertexMesh::Initialize(vtkCMBMesh* masterMesh,
     }
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelVertexMesh::BuildModelEntityMesh(
   bool vtkNotUsed(meshHigherDimensionalEntities) )
 {
   return false;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelVertexMesh::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

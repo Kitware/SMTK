@@ -46,7 +46,6 @@
 
 using namespace smtk::extension;
 
-//----------------------------------------------------------------------------
 class qtExtractContoursViewInternals
 {
 public:
@@ -116,7 +115,6 @@ public:
   QPointer<pqPipelineSource> CurrentImage;
 };
 
-//----------------------------------------------------------------------------
 qtBaseView *
 qtExtractContoursView::createViewWidget(const ViewInfo &info)
 {
@@ -125,7 +123,6 @@ qtExtractContoursView::createViewWidget(const ViewInfo &info)
   return view;
 }
 
-//----------------------------------------------------------------------------
 qtExtractContoursView::
 qtExtractContoursView(const ViewInfo &info) :
   qtBaseView(info)
@@ -133,12 +130,11 @@ qtExtractContoursView(const ViewInfo &info) :
   this->Internals = new qtExtractContoursViewInternals;
 }
 
-//----------------------------------------------------------------------------
 qtExtractContoursView::~qtExtractContoursView()
 {
   delete this->Internals;
 }
-//----------------------------------------------------------------------------
+
 void qtExtractContoursView::createWidget( )
 {
   smtk::common::ViewPtr view = this->getObject();
@@ -176,7 +172,6 @@ void qtExtractContoursView::createWidget( )
   layout->addWidget(contourButton);
 }
 
-//----------------------------------------------------------------------------
 void qtExtractContoursView::updateAttributeData()
 {
   smtk::common::ViewPtr view = this->getObject();
@@ -228,13 +223,12 @@ void qtExtractContoursView::updateAttributeData()
   this->Internals->CurrentAtt = this->Internals->createAttUI(att, this->Widget, this);
 
 }
-//----------------------------------------------------------------------------
+
 void qtExtractContoursView::startContourOperation()
 {
   this->operationSelected(this->Internals->CurrentOp.lock());
 }
 
-//----------------------------------------------------------------------------
 void qtExtractContoursView::requestOperation(const smtk::model::OperatorPtr& op)
 {
   if(!op || !op->specification())
@@ -244,7 +238,6 @@ void qtExtractContoursView::requestOperation(const smtk::model::OperatorPtr& op)
   this->uiManager()->activeModelView()->requestOperation(op, false);
 }
 
-//----------------------------------------------------------------------------
 void qtExtractContoursView::cancelOperation(const smtk::model::OperatorPtr& op)
 {
   if( !op || !this->Widget || !this->Internals->CurrentAtt )
@@ -255,7 +248,6 @@ void qtExtractContoursView::cancelOperation(const smtk::model::OperatorPtr& op)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtExtractContoursView::acceptContours(pqPipelineSource* contourSource)
 {
   if(!contourSource || !this->Internals->CurrentAtt ||
@@ -315,7 +307,6 @@ pqPipelineSource* internal_createImageSource(const std::string& imageurl)
   return source;
 }
 
-//----------------------------------------------------------------------------
 void qtExtractContoursView::operationSelected(const smtk::model::OperatorPtr& op)
 {
   if(!this->Internals->CurrentAtt || !this->Widget || op->name() != "extract contours")
@@ -362,13 +353,11 @@ void qtExtractContoursView::operationSelected(const smtk::model::OperatorPtr& op
     }
 }
 
-//----------------------------------------------------------------------------
 void qtExtractContoursView::showAdvanceLevelOverlay(bool show)
 {
   this->qtBaseView::showAdvanceLevelOverlay(show);
 }
 
-//----------------------------------------------------------------------------
 void qtExtractContoursView::requestModelEntityAssociation()
 {
   this->updateAttributeData();

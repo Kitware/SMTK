@@ -11,12 +11,10 @@
 
 using namespace smtk::extension;
 
-//-----------------------------------------------------------------------------
 qtViewInterface::qtViewInterface()
 {
 }
 
-//-----------------------------------------------------------------------------
 qtViewInterface::~qtViewInterface()
 {
 }

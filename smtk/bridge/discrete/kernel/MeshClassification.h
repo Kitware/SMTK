@@ -54,7 +54,6 @@ private:
   classificationVectorType Classifications[2];
 };
 
-//=============================================================================
 template<class EntityType>
 EntityType* MeshClassification<EntityType>::GetEntity(vtkIdType meshId) const
 {
@@ -62,7 +61,6 @@ EntityType* MeshClassification<EntityType>::GetEntity(vtkIdType meshId) const
   return this->GetVectorFromId(meshId)[index].second;
 }
 
-//=============================================================================
 template<class EntityType>
 vtkIdType MeshClassification<EntityType>::GetEntityIndex(vtkIdType meshId) const
 {
@@ -70,7 +68,6 @@ vtkIdType MeshClassification<EntityType>::GetEntityIndex(vtkIdType meshId) const
   return this->GetVectorFromId(meshId)[index].first;
 }
 
-//=============================================================================
 template<class EntityType>
 void MeshClassification<EntityType>::SetEntity(vtkIdType meshId,
                                                vtkIdType entityIndex,
@@ -81,7 +78,6 @@ void MeshClassification<EntityType>::SetEntity(vtkIdType meshId,
   this->GetVectorFromId(meshId)[index]=element;
 }
 
-//=============================================================================
 template<class EntityType>
 void MeshClassification<EntityType>::resize(vtkIdType sz, DataType type)
 {
@@ -89,7 +85,6 @@ void MeshClassification<EntityType>::resize(vtkIdType sz, DataType type)
   this->GetVectorFromId(-type).resize(sz);
 }
 
-//=============================================================================
 template<class EntityType>
 vtkIdType MeshClassification<EntityType>::size(DataType type) const
 {
@@ -97,8 +92,6 @@ vtkIdType MeshClassification<EntityType>::size(DataType type) const
   return this->GetVectorFromId(-type).size();
 }
 
-
-//=============================================================================
 template<class EntityType>
 bool MeshClassification<EntityType>::IsValidMeshId(vtkIdType meshId) const
 {

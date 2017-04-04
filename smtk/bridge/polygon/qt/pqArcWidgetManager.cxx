@@ -34,7 +34,6 @@
 
 #include <QDebug>
 
-//-----------------------------------------------------------------------------
 pqArcWidgetManager::pqArcWidgetManager(pqServer *server, pqRenderView *view)
 {
   //server and view need to be set before we call createContourWidget
@@ -47,13 +46,11 @@ pqArcWidgetManager::pqArcWidgetManager(pqServer *server, pqRenderView *view)
   this->EnableWidgetApplyButton = true;
 }
 
-//-----------------------------------------------------------------------------
 pqArcWidgetManager::~pqArcWidgetManager()
 {
   this->reset();
 }
 
-//-----------------------------------------------------------------------------
 void pqArcWidgetManager::reset()
 {
   this->Server = NULL;
@@ -77,7 +74,6 @@ void pqArcWidgetManager::reset()
   this->View = NULL;
 }
 
-//-----------------------------------------------------------------------------
 pqPolygonArc* pqArcWidgetManager::activeArc()
 {
   return this->Arc;
@@ -92,7 +88,6 @@ void pqArcWidgetManager::setActiveArc(pqPolygonArc* arc)
     }
 }
 
-//-----------------------------------------------------------------------------
 int pqArcWidgetManager::create()
 {
   if(this->EditWidget && this->EditWidget->isVisible())
@@ -135,7 +130,6 @@ int pqArcWidgetManager::create()
     return 1;
 }
 
-//-----------------------------------------------------------------------------
 int pqArcWidgetManager::edit()
 {
   delete this->ArcWidget;
@@ -171,7 +165,6 @@ int pqArcWidgetManager::edit()
   return 1;
 }
 
-//----------------------------------------------------------------------------
 void pqArcWidgetManager::cancelOperation(const smtk::model::OperatorPtr& op)
 {
   if( !this->Arc || this->Arc->edgeOperator() != op)
@@ -188,7 +181,6 @@ void pqArcWidgetManager::cancelOperation(const smtk::model::OperatorPtr& op)
     emit this->operationCancelled();
 }
 
-//-----------------------------------------------------------------------------
 void pqArcWidgetManager::enableApplyButton(bool state)
 {
   this->EnableWidgetApplyButton = state;
@@ -197,7 +189,7 @@ void pqArcWidgetManager::enableApplyButton(bool state)
     this->ArcWidget->enableApplyButton(state);
     }
 }
-//-----------------------------------------------------------------------------
+
 void pqArcWidgetManager::createEdge()
 {
   if ( !this->Arc )
@@ -227,7 +219,6 @@ void pqArcWidgetManager::createEdge()
   emit this->operationDone();
 }
 
-//-----------------------------------------------------------------------------
 void pqArcWidgetManager::editingFinished()
 {
   this->ActiveWidget = NULL;
@@ -235,7 +226,6 @@ void pqArcWidgetManager::editingFinished()
   emit this->operationDone();
 }
 
-//-----------------------------------------------------------------------------
 void pqArcWidgetManager::updateEdge(qtArcWidget *subArcWidget,
                                     const smtk::common::UUID &edgeId) {
   if ( (!this->Arc) || this->ActiveWidget != this->EditWidget)
@@ -297,14 +287,12 @@ void pqArcWidgetManager::updateEdge(qtArcWidget *subArcWidget,
     }
 }
 
-//-----------------------------------------------------------------------------
 qtArcWidget *pqArcWidgetManager::createDefaultContourWidget(int &normal,
                                                             double &planePos) {
   this->getDefaultArcPlane(normal, planePos);
   return this->createContourWidget(normal, planePos);
 }
 
-//-----------------------------------------------------------------------------
 qtArcWidget *pqArcWidgetManager::createContourWidget(int normal,
                                                      double position) {
   qtArcWidget *widget = new qtArcWidget(nullptr);
@@ -326,7 +314,6 @@ qtArcWidget *pqArcWidgetManager::createContourWidget(int normal,
   return widget;
 }
 
-//-----------------------------------------------------------------------------
 pqPolygonArc* pqArcWidgetManager::createLegacyV1Contour(
   const int &normal,const double &position,const int &closedLoop,
   vtkDoubleArray* nodePositions, vtkIdTypeArray* SelIndices)
@@ -376,7 +363,6 @@ pqPolygonArc* pqArcWidgetManager::createLegacyV1Contour(
   return obj;
 }
 
-//-----------------------------------------------------------------------------
 void pqArcWidgetManager::getDefaultArcPlane(
   int& orthoPlane, double& projpos)
 {
@@ -414,7 +400,6 @@ void pqArcWidgetManager::getDefaultArcPlane(
     }
 }
 
-//-----------------------------------------------------------------------------
 void pqArcWidgetManager::resetArcPlane(
   int normal, double planePos)
 {
@@ -426,7 +411,6 @@ void pqArcWidgetManager::resetArcPlane(
     }
 }
 
-//-----------------------------------------------------------------------------
 void pqArcWidgetManager::disableArcWidget()
 {
   delete this->ArcWidget;

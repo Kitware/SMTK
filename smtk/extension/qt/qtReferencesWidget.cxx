@@ -43,14 +43,12 @@ namespace Ui { class qtAttributeAssociation; }
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 class qtReferencesWidgetInternals : public Ui::qtAttributeAssociation
 {
 public:
 
 };
 
-//----------------------------------------------------------------------------
 qtReferencesWidget::qtReferencesWidget(
   QWidget* _p): QWidget(_p)
 {
@@ -60,13 +58,11 @@ qtReferencesWidget::qtReferencesWidget(
   this->initWidget( );
 }
 
-//----------------------------------------------------------------------------
 qtReferencesWidget::~qtReferencesWidget()
 {
   delete this->Internals;
 }
 
-//----------------------------------------------------------------------------
 void qtReferencesWidget::initWidget( )
 {
   // signals/slots
@@ -86,7 +82,6 @@ void qtReferencesWidget::initWidget( )
 
 }
 
-//----------------------------------------------------------------------------
 void qtReferencesWidget::showAttributeReferences(
   smtk::attribute::AttributePtr att, QString& /*category*/)
 {
@@ -111,25 +106,22 @@ void qtReferencesWidget::showAttributeReferences(
   this->Internals->AvailableList->blockSignals(false);
 }
 
-//----------------------------------------------------------------------------
 void qtReferencesWidget::onCurrentListSelectionChanged(
   QListWidgetItem * /*current*/, QListWidgetItem * /*previous*/)
 {
 }
 
-//----------------------------------------------------------------------------
 void qtReferencesWidget::onAvailableListSelectionChanged(
   QListWidgetItem * /*current*/, QListWidgetItem * /*previous*/)
 {
 }
 
-//-----------------------------------------------------------------------------
 smtk::attribute::AttributePtr qtReferencesWidget::getSelectedAttribute(
   QListWidget* theList)
 {
   return this->getAttributeFromItem(this->getSelectedItem(theList));
 }
-//-----------------------------------------------------------------------------
+
 smtk::attribute::AttributePtr qtReferencesWidget::getAttributeFromItem(
   QListWidgetItem * item)
 {
@@ -137,12 +129,12 @@ smtk::attribute::AttributePtr qtReferencesWidget::getAttributeFromItem(
     static_cast<Attribute*>(item->data(Qt::UserRole).value<void *>()) : NULL;
   return rawPtr ? rawPtr->shared_from_this() : smtk::attribute::AttributePtr();
 }
-//-----------------------------------------------------------------------------
+
 QListWidgetItem *qtReferencesWidget::getSelectedItem(QListWidget* theList)
 {
   return theList->currentItem();
 }
-//----------------------------------------------------------------------------
+
 QListWidgetItem* qtReferencesWidget::addAttributeRefListItem(
   QListWidget* theList, smtk::attribute::ItemPtr refItem)
 {
@@ -158,17 +150,17 @@ QListWidgetItem* qtReferencesWidget::addAttributeRefListItem(
   theList->addItem(item);
   return item;
 }
-//----------------------------------------------------------------------------
+
 void qtReferencesWidget::onRemoveAssigned()
 {
 
 }
-//----------------------------------------------------------------------------
+
 void qtReferencesWidget::onAddAvailable()
 {
 
 }
-//----------------------------------------------------------------------------
+
 void qtReferencesWidget::onExchange()
 {
 

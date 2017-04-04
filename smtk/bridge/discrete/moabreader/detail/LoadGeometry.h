@@ -79,7 +79,6 @@ class LoadGeometry
   smoab::Range Points;
 
 public:
-  //----------------------------------------------------------------------------
   //warning cells input to constructor is held by reference
   LoadGeometry(const smoab::Range& cells,
                int topologyDim,
@@ -93,7 +92,6 @@ public:
 
   const smoab::Range& moabPoints() const { return this->Points; }
 
-  //----------------------------------------------------------------------------
   //todo: have support for using only a subsection of the input cells
   template<typename vtkDataSetType>
   void fill(vtkDataSetType *dataSet)
@@ -108,7 +106,6 @@ public:
     }
 
 private:
-  //----------------------------------------------------------------------------
   void addCoordinates(vtkPointSet *grid)
     {
     //this is sorta of hackish as moabPoints is only valid
@@ -131,7 +128,6 @@ private:
     grid->SetPoints(newPoints.GetPointer());
     }
 
-  //----------------------------------------------------------------------------
   template<typename vtkDataSetType>
   void addGridsTopology(vtkDataSetType* grid,
                         vtkIdType numCells,

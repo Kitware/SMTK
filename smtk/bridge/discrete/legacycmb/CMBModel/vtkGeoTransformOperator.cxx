@@ -30,7 +30,6 @@
 
 vtkStandardNewMacro(vtkGeoTransformOperator);
 
-//-----------------------------------------------------------------------------
 vtkGeoTransformOperator::vtkGeoTransformOperator()
 {
   this->OperateSucceeded = 0;
@@ -40,12 +39,10 @@ vtkGeoTransformOperator::vtkGeoTransformOperator()
   this->OriginalModelPoints = vtkSmartPointer<vtkPoints>::New();
 }
 
-//-----------------------------------------------------------------------------
 vtkGeoTransformOperator:: ~vtkGeoTransformOperator()
 {
 }
 
-//-----------------------------------------------------------------------------
 void vtkGeoTransformOperator::Operate(
   vtkDiscreteModelWrapper* ModelWrapper)
 {
@@ -109,7 +106,6 @@ void vtkGeoTransformOperator::Operate(
   return;
 }
 
-//-----------------------------------------------------------------------------
 void vtkGeoTransformOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

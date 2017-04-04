@@ -97,7 +97,6 @@ namespace smtk
     private:
     };
 
-//----------------------------------------------------------------------------
     template<typename DataT>
     ValueItemTemplate<DataT>::ValueItemTemplate(Attribute *owningAttribute,
                                                 int itemPosition):
@@ -105,7 +104,6 @@ namespace smtk
     {
     }
 
-//----------------------------------------------------------------------------
     template<typename DataT>
     ValueItemTemplate<DataT>::ValueItemTemplate(Item *inOwningItem,
                                                 int itemPosition,
@@ -114,7 +112,7 @@ namespace smtk
       m_dummy(1, DataT())
     {
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     bool ValueItemTemplate<DataT>::
     setDefinition(smtk::attribute::ConstItemDefinitionPtr tdef)
@@ -152,7 +150,7 @@ namespace smtk
         }
       return true;
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     bool ValueItemTemplate<DataT>::setValue(size_t element, const DataT &val)
     {
@@ -205,7 +203,7 @@ namespace smtk
         }
       return false;
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     void ValueItemTemplate<DataT>::updateDiscreteValue(std::size_t element)
     {
@@ -213,7 +211,7 @@ namespace smtk
       this->m_values[element] =
         def->discreteValue(static_cast<size_t>(this->m_discreteIndices[element]));
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     std::string
     ValueItemTemplate<DataT>::valueAsString(std::size_t element) const
@@ -235,7 +233,7 @@ namespace smtk
         }
       return "VALUE_IS_NOT_SET";
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     bool
     ValueItemTemplate<DataT>::appendValue(const DataT &val)
@@ -285,7 +283,7 @@ namespace smtk
         }
       return false;
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     bool
     ValueItemTemplate<DataT>::setNumberOfValues(std::size_t newSize)
@@ -369,7 +367,7 @@ namespace smtk
         }
       return true;
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     bool
     ValueItemTemplate<DataT>::removeValue(std::size_t element)
@@ -398,7 +396,7 @@ namespace smtk
         }
       return true;
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     bool
     ValueItemTemplate<DataT>::setToDefault(std::size_t element)
@@ -423,7 +421,7 @@ namespace smtk
         }
       return true;
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     bool
     ValueItemTemplate<DataT>::isUsingDefault() const
@@ -449,7 +447,7 @@ namespace smtk
         }
       return true;
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     bool
     ValueItemTemplate<DataT>::isUsingDefault(std::size_t element) const
@@ -469,7 +467,7 @@ namespace smtk
         this->m_values[element] == dvals[element] :
         this->m_values[element] == dval);
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     DataT
     ValueItemTemplate<DataT>::defaultValue() const
@@ -480,7 +478,7 @@ namespace smtk
 
       return def->defaultValue();
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     const std::vector<DataT>&
     ValueItemTemplate<DataT>::defaultValues() const
@@ -491,7 +489,7 @@ namespace smtk
 
       return def->defaultValues();
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     void
     ValueItemTemplate<DataT>::reset()
@@ -560,7 +558,7 @@ namespace smtk
         }
       ValueItem::reset();
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     bool
     ValueItemTemplate<DataT>::appendExpression(smtk::attribute::AttributePtr exp)
@@ -574,7 +572,7 @@ namespace smtk
         }
       return false;
     }
-//----------------------------------------------------------------------------
+
     template<typename DataT>
     bool
     ValueItemTemplate<DataT>::

@@ -26,17 +26,14 @@
 
 vtkStandardNewMacro(vtkModelFaceUse);
 
-//-----------------------------------------------------------------------------
 vtkModelFaceUse::vtkModelFaceUse()
 {
 }
 
-//-----------------------------------------------------------------------------
 vtkModelFaceUse::~vtkModelFaceUse()
 {
 }
 
-//-----------------------------------------------------------------------------
 bool vtkModelFaceUse::Destroy()
 {
   if(this->GetModelShellUse())
@@ -49,7 +46,6 @@ bool vtkModelFaceUse::Destroy()
   return this->DestroyLoopUses();
 }
 
-//-----------------------------------------------------------------------------
 bool vtkModelFaceUse::DestroyLoopUses()
 {
   vtkModelItemIterator* iter = this->NewIterator(vtkModelLoopUseType);
@@ -70,7 +66,6 @@ bool vtkModelFaceUse::DestroyLoopUses()
   return true;
 }
 
-//-----------------------------------------------------------------------------
 vtkModelShellUse* vtkModelFaceUse::GetModelShellUse()
 {
   vtkModelItemIterator* iter = this->NewIterator(vtkModelShellUseType);
@@ -81,7 +76,6 @@ vtkModelShellUse* vtkModelFaceUse::GetModelShellUse()
   return shellUse;
 }
 
-//-----------------------------------------------------------------------------
 vtkModelFace* vtkModelFaceUse::GetModelFace()
 {
   vtkModelItemIterator* iter = this->NewIterator(vtkModelFaceType);
@@ -91,7 +85,6 @@ vtkModelFace* vtkModelFaceUse::GetModelFace()
   return face;
 }
 
-//-----------------------------------------------------------------------------
 vtkModelLoopUse* vtkModelFaceUse::GetOuterLoopUse()
 {
   vtkModelItemIterator* iter = this->NewIterator(vtkModelLoopUseType);
@@ -105,30 +98,26 @@ vtkModelLoopUse* vtkModelFaceUse::GetOuterLoopUse()
   return loopUse;
 }
 
-//-----------------------------------------------------------------------------
 void vtkModelFaceUse::AddLoopUse(vtkModelLoopUse* loopUse)
 {
   this->AddAssociation(loopUse);
 }
 
-//-----------------------------------------------------------------------------
 int vtkModelFaceUse::GetType()
 {
   return vtkModelFaceUseType;
 }
 
-//-----------------------------------------------------------------------------
 void vtkModelFaceUse::Serialize(vtkSerializer* ser)
 {
   this->Superclass::Serialize(ser);
 }
 
-//-----------------------------------------------------------------------------
 void vtkModelFaceUse::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }
-//-----------------------------------------------------------------------------
+
 int vtkModelFaceUse::GetNumberOfLoopUses()
 {
   vtkModelItemIterator* loops = this->NewIterator(vtkModelLoopUseType);
@@ -137,7 +126,6 @@ int vtkModelFaceUse::GetNumberOfLoopUses()
   return size;
 }
 
-//-----------------------------------------------------------------------------
 vtkModelItemIterator* vtkModelFaceUse::NewLoopUseIterator()
 {
   vtkModelItemGenericIterator* loopUses = vtkModelItemGenericIterator::New();
@@ -149,5 +137,3 @@ vtkModelItemIterator* vtkModelFaceUse::NewLoopUseIterator()
   loops->Delete();
   return loopUses;
 }
-//-----------------------------------------------------------------------------
-

@@ -22,14 +22,12 @@
 
 using namespace smtk::extension;
 
-//----------------------------------------------------------------------------
 class qtVoidItemInternals
 {
 public:
   QPointer<QCheckBox> optionalCheck;
 };
 
-//----------------------------------------------------------------------------
 qtVoidItem::qtVoidItem(
   smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview) :
    qtItem(dataObj, p, bview)
@@ -39,12 +37,11 @@ qtVoidItem::qtVoidItem(
   this->createWidget();
 }
 
-//----------------------------------------------------------------------------
 qtVoidItem::~qtVoidItem()
 {
   delete this->Internals;
 }
-//----------------------------------------------------------------------------
+
 void qtVoidItem::setLabelVisible(bool visible)
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
@@ -59,7 +56,6 @@ void qtVoidItem::setLabelVisible(bool visible)
   this->Internals->optionalCheck->setText(visible ? txtLabel : "");
 }
 
-//----------------------------------------------------------------------------
 void qtVoidItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
@@ -100,7 +96,6 @@ void qtVoidItem::createWidget()
   this->updateItemData();
 }
 
-//----------------------------------------------------------------------------
 void qtVoidItem::updateItemData()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
@@ -111,7 +106,7 @@ void qtVoidItem::updateItemData()
   this->Internals->optionalCheck->setChecked(dataObj->isEnabled());
   this->qtItem::updateItemData();
 }
-//----------------------------------------------------------------------------
+
 void qtVoidItem::setOutputOptional(int state)
 {
   bool enable = state ? true : false;

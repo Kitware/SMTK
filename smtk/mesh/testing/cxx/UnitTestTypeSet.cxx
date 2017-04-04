@@ -18,7 +18,6 @@
 namespace
 {
 
-//----------------------------------------------------------------------------
 void verify_basic_typeset()
 {
   smtk::mesh::TypeSet t_set;
@@ -38,7 +37,6 @@ void verify_basic_typeset()
     }
 }
 
-//----------------------------------------------------------------------------
 void verify_typeset_constructors()
 {
   //just verify that all the copy constructors work
@@ -64,7 +62,6 @@ void verify_typeset_constructors()
 
 }
 
-//----------------------------------------------------------------------------
 void verify_typeset_cellTypes()
 {
   //now verify a typeset with a couple things set
@@ -76,7 +73,6 @@ void verify_typeset_cellTypes()
   test( correct_types == t_set.cellTypes() );
 }
 
-//----------------------------------------------------------------------------
 void verify_typeset_with_cells_and_dims()
 {
   //now verify a typeset with a couple things set
@@ -111,7 +107,6 @@ void verify_typeset_with_cells_and_dims()
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestTypeSet(int, char** const)
 {
   //first lets test the very basic interactions.

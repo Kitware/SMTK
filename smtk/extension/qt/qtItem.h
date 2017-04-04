@@ -19,15 +19,12 @@
 
 class qtItemInternals;
 
-/*--------------------------------------------------------------------------*/
 /* Define a casting macro for use by the constants below.  */
 #if defined(__cplusplus)
 # define smtk_TYPE_CAST(T, V) static_cast< T >(V)
 #else
 # define smtk_TYPE_CAST(T, V) ((T)(V))
 #endif
-
-/*--------------------------------------------------------------------------*/
 
 #define smtk_INT_MIN                 smtk_TYPE_CAST(int, ~(~0u >> 1))
 #define smtk_INT_MAX                 smtk_TYPE_CAST(int, ~0u >> 1)
@@ -44,8 +41,6 @@ class qtItemInternals;
 
 #define smtk_DOUBLE_CONSTRAINT_PRECISION 0.000001
 #define smtk_USER_DATA_TYPE 10000
-
-/*--------------------------------------------------------------------------*/
 
 namespace smtk
 {

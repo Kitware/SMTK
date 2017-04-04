@@ -89,9 +89,6 @@ struct vtkXMLArchiveReaderInternals
   std::list<vtkSmartPointer<vtkObject> > ObjectStack;
 };
 
-
-
-//----------------------------------------------------------------------------
 vtkXMLArchiveReader::vtkXMLArchiveReader()
 {
   this->Internal = new vtkXMLArchiveReaderInternals;
@@ -99,14 +96,12 @@ vtkXMLArchiveReader::vtkXMLArchiveReader()
   this->RootElement = 0;
 }
 
-//----------------------------------------------------------------------------
 vtkXMLArchiveReader::~vtkXMLArchiveReader()
 {
   this->SetRootElement(0);
   delete this->Internal;
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveReader::Serialize(istream& str, const char*,
                                        std::vector<vtkSmartPointer<vtkObject> >& objs)
 {
@@ -119,7 +114,6 @@ void vtkXMLArchiveReader::Serialize(istream& str, const char*,
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveReader::Serialize(vtkXMLElement *rootElement,
                                        const char*,
                                        std::vector<vtkSmartPointer<vtkObject> >& objs)
@@ -132,7 +126,6 @@ void vtkXMLArchiveReader::Serialize(vtkXMLElement *rootElement,
   this->Serialize(objs);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveReader::Serialize(std::vector<vtkSmartPointer<vtkObject> >& objs)
 {
   unsigned int nnested = this->RootElement->GetNumberOfNestedElements();
@@ -161,7 +154,6 @@ void vtkXMLArchiveReader::Serialize(std::vector<vtkSmartPointer<vtkObject> >& ob
   this->Internal = 0;
 }
 
-//----------------------------------------------------------------------------
 vtkObject* vtkXMLArchiveReader::ReadObject(int id, bool weakPtr)
 {
   // There will never be an object with id 0
@@ -224,7 +216,6 @@ vtkObject* vtkXMLArchiveReader::ReadObject(int id, bool weakPtr)
   return obj;
 }
 
-//----------------------------------------------------------------------------
 int vtkXMLArchiveReader::ParseStream(istream& str)
 {
   vtkSmartPointer<vtkModelXMLParser> parser =
@@ -235,7 +226,6 @@ int vtkXMLArchiveReader::ParseStream(istream& str)
   return result;
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
@@ -257,7 +247,6 @@ vtkXMLElement* BaseSerialize(vtkXMLArchiveReaderInternals* internal,
 }
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveReader::Serialize(const char* name,
                                        std::vector<vtkSmartPointer<vtkObject> >& objs,
                                        bool vtkNotUsed(weakPtr)/*=false*/)
@@ -291,7 +280,6 @@ void vtkXMLArchiveReader::Serialize(const char* name,
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveReader::Serialize(const char* name,
                                        std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& map)
 {
@@ -326,7 +314,6 @@ void SerializeScalarKey(vtkInformation* info, KeyType* key, vtkXMLElement* elem)
     }
 }
 
-//----------------------------------------------------------------------------
 template <typename KeyType, typename ValueType>
 void SerializeVectorKey(vtkInformation* info, KeyType* key, vtkXMLElement* elem)
 {
@@ -346,7 +333,6 @@ void SerializeVectorKey(vtkInformation* info, KeyType* key, vtkXMLElement* elem)
     }
 }
 
-//----------------------------------------------------------------------------
 void SerializeStringVectorKey(vtkInformation* info,
           vtkInformationStringVectorKey* key, vtkXMLElement* elem)
 {
@@ -382,7 +368,6 @@ void SerializeStringVectorKey(vtkInformation* info,
   delete[] lengths;
 }
 
-//----------------------------------------------------------------------------
 void SerializeKeyVectorKey(vtkInformation* info,
           vtkInformationKeyVectorKey* key, vtkXMLElement* elem)
 {
@@ -425,13 +410,11 @@ void SerializeKeyVectorKey(vtkInformation* info,
 
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveReader::Serialize(const char* name, vtkInformation* info)
 {
   this->Serialize(BaseSerialize(this->Internal, name), info);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveReader::Serialize(vtkXMLElement* elem, vtkInformation* info)
 {
   if (!elem)
@@ -547,7 +530,6 @@ void vtkXMLArchiveReader::Serialize(vtkXMLElement* elem, vtkInformation* info)
 
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveReader::Serialize(const char* name, vtkObject*& obj,
                                        bool weakPtr/*=false*/)
 {
@@ -565,7 +547,6 @@ void vtkXMLArchiveReader::Serialize(const char* name, vtkObject*& obj,
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveReader::Serialize(const char* name, int& val)
 {
   vtkXMLElement* elem = BaseSerialize(this->Internal, name);
@@ -577,7 +558,6 @@ void vtkXMLArchiveReader::Serialize(const char* name, int& val)
   elem->GetScalarAttribute("value", &val);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveReader::Serialize(const char* name,
                                        int*& val,
                                        unsigned int& length)
@@ -601,7 +581,6 @@ void vtkXMLArchiveReader::Serialize(const char* name,
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveReader::Serialize(const char* name, unsigned long& val)
 {
   vtkXMLElement* elem = BaseSerialize(this->Internal, name);
@@ -613,7 +592,6 @@ void vtkXMLArchiveReader::Serialize(const char* name, unsigned long& val)
   elem->GetScalarAttribute("value", &val);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveReader::Serialize(const char* name,
                                        unsigned long*& val,
                                        unsigned int& length)
@@ -637,7 +615,6 @@ void vtkXMLArchiveReader::Serialize(const char* name,
     }
 }
 
-//----------------------------------------------------------------------------
 #if defined(VTK_USE_64BIT_IDS)
 void vtkXMLArchiveReader::Serialize(const char* name, vtkIdType& val)
 {
@@ -650,7 +627,6 @@ void vtkXMLArchiveReader::Serialize(const char* name, vtkIdType& val)
   elem->GetScalarAttribute("value", &val);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveReader::Serialize(const char* name, vtkIdType*& val,
                                        unsigned int& length)
 {
@@ -674,7 +650,6 @@ void vtkXMLArchiveReader::Serialize(const char* name, vtkIdType*& val,
 }
 #endif // if defined(VTK_USE_64BIT_IDS)
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveReader::Serialize(const char* name, double& val)
 {
   vtkXMLElement* elem = BaseSerialize(this->Internal, name);
@@ -686,7 +661,6 @@ void vtkXMLArchiveReader::Serialize(const char* name, double& val)
   elem->GetScalarAttribute("value", &val);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveReader::Serialize(const char* name,
                                        double*& val,
                                        unsigned int& length)
@@ -710,7 +684,6 @@ void vtkXMLArchiveReader::Serialize(const char* name,
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveReader::Serialize(const char* name, char*& str)
 {
   vtkXMLElement* elem = BaseSerialize(this->Internal, name);
@@ -727,7 +700,6 @@ void vtkXMLArchiveReader::Serialize(const char* name, char*& str)
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLArchiveReader::Serialize(const char* name, std::string& str)
 {
   vtkXMLElement* elem = BaseSerialize(this->Internal, name);

@@ -49,7 +49,6 @@
 using namespace smtk::extension;
 using namespace smtk::model;
 
-//----------------------------------------------------------------------------
 class qtModelOperationWidgetInternals
 {
 public:
@@ -86,21 +85,18 @@ public:
   }
 };
 
-//----------------------------------------------------------------------------
 qtModelOperationWidget::qtModelOperationWidget(QWidget* _p): QWidget(_p)
 {
   this->Internals = new qtModelOperationWidgetInternals();
   this->initWidget();
 }
 
-//----------------------------------------------------------------------------
 qtModelOperationWidget::~qtModelOperationWidget()
 {
   this->setSession(smtk::model::SessionPtr());
   delete this->Internals;
 }
 
-//----------------------------------------------------------------------------
 void qtModelOperationWidget::initWidget( )
 {
   this->setObjectName("modelOperationWidget");
@@ -146,7 +142,6 @@ void qtModelOperationWidget::initWidget( )
     SIGNAL(currentIndexChanged(int)), this, SLOT(onOperationSelected()));
 }
 
-//-----------------------------------------------------------------------------
 QSize qtModelOperationWidget::sizeHint() const
 {
   if(this->Internals->OperationsLayout->currentWidget())
@@ -167,7 +162,6 @@ QSize qtModelOperationWidget::sizeHint() const
   return QSize(500, 650);
 }
 
-//----------------------------------------------------------------------------
 void qtModelOperationWidget::setSession(smtk::model::SessionPtr session)
 {
   if(this->Internals->CurrentSession.lock() == session)
@@ -205,7 +199,7 @@ void qtModelOperationWidget::setSession(smtk::model::SessionPtr session)
   this->Internals->OperationCombo->blockSignals(false);
   this->Internals->OperatorMap.clear();
 }
-//----------------------------------------------------------------------------
+
 void qtModelOperationWidget::setModelView(qtModelView* mv)
 {
   if (this->Internals->ModelView != mv)
@@ -213,19 +207,17 @@ void qtModelOperationWidget::setModelView(qtModelView* mv)
     this->Internals->ModelView = mv;
     }
 }
-//----------------------------------------------------------------------------
+
 qtModelView *qtModelOperationWidget::modelView()
 {
   return this->Internals->ModelView;
 }
 
-//----------------------------------------------------------------------------
 void qtModelOperationWidget::cancelCurrentOperator()
 {
   this->cancelOperator(this->Internals->CurrrentOpName);
 }
 
-//----------------------------------------------------------------------------
 void qtModelOperationWidget::cancelOperator(const std::string& opName)
 {
   if(this->Internals->OperatorMap.contains(opName))
@@ -235,7 +227,6 @@ void qtModelOperationWidget::cancelOperator(const std::string& opName)
     }
 }
 
-//----------------------------------------------------------------------------
 bool qtModelOperationWidget::checkExistingOperator(const std::string& opName)
 {
   // if the operator is already created, just set its UI to be current widget
@@ -249,7 +240,6 @@ bool qtModelOperationWidget::checkExistingOperator(const std::string& opName)
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool qtModelOperationWidget::initOperatorUI(
   const smtk::model::OperatorPtr& brOp)
 {
@@ -371,7 +361,6 @@ bool qtModelOperationWidget::initOperatorUI(
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool qtModelOperationWidget::setCurrentOperator(
   const std::string& opName, smtk::model::SessionPtr session)
 {
@@ -402,7 +391,7 @@ bool qtModelOperationWidget::setCurrentOperator(
     }
   return this->initOperatorUI(brOp);
 }
-//----------------------------------------------------------------------------
+
 smtk::model::OperatorPtr qtModelOperationWidget::existingOperator(
   const std::string& opName)
 {
@@ -414,7 +403,7 @@ smtk::model::OperatorPtr qtModelOperationWidget::existingOperator(
 
   return brOp;
 }
-//----------------------------------------------------------------------------
+
 void qtModelOperationWidget::expungeEntities(
         const smtk::model::EntityRefs& expungedEnts)
 {
@@ -442,7 +431,6 @@ void qtModelOperationWidget::expungeEntities(
     }
 }
 
-//----------------------------------------------------------------------------
 void qtModelOperationWidget::onOperationSelected()
 {
   std::string opName =
@@ -450,7 +438,7 @@ void qtModelOperationWidget::onOperationSelected()
   this->setCurrentOperator(opName,
     this->Internals->CurrentSession.lock());
 }
-//----------------------------------------------------------------------------
+
 void qtModelOperationWidget::onOperate()
 {
   std::string opLabel = this->Internals->OperationCombo->currentText().toStdString();
@@ -469,7 +457,6 @@ void qtModelOperationWidget::displayResult(const smtk::io::Logger& log)
   this->Internals->ResultLog->setText(txt);
 }
 
-//----------------------------------------------------------------------------
 void qtModelOperationWidget::onMeshSelectionItemCreated(
   smtk::extension::qtMeshSelectionItem* meshItem)
 {

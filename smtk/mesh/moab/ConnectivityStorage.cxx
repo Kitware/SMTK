@@ -23,7 +23,6 @@ namespace mesh {
 namespace moab {
 
 
-//----------------------------------------------------------------------------
 ConnectivityStorage::ConnectivityStorage(
                          ::moab::Interface* iface,
                          const smtk::mesh::HandleRange& cells):
@@ -136,12 +135,10 @@ ConnectivityStorage::ConnectivityStorage(
   this->NumberOfVerts = vertCount;
 }
 
-//----------------------------------------------------------------------------
 ConnectivityStorage::~ConnectivityStorage( )
 {
 }
 
-//----------------------------------------------------------------------------
 void ConnectivityStorage::initTraversal(
                        smtk::mesh::ConnectivityStorage::IterationState& state )
 {
@@ -149,7 +146,6 @@ void ConnectivityStorage::initTraversal(
   state.ptrOffsetInVector = 0;
 }
 
-//----------------------------------------------------------------------------
 bool ConnectivityStorage::fetchNextCell(
                        smtk::mesh::ConnectivityStorage::IterationState& state,
                        smtk::mesh::CellType& cellType,
@@ -187,7 +183,6 @@ bool ConnectivityStorage::fetchNextCell(
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool ConnectivityStorage::equal( smtk::mesh::ConnectivityStorage* base_other ) const
 {
   if( this == base_other ) { return true;}

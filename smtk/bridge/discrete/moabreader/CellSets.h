@@ -15,7 +15,6 @@
 
 namespace smoab
 {
-//----------------------------------------------------------------------------
 class CellSet
 {
 public:
@@ -43,11 +42,9 @@ private:
   smoab::Range Cells;
 };
 
-//----------------------------------------------------------------------------
 //CellSets are just a vector of CellSets
 typedef std::vector<CellSet> CellSets;
 
-//----------------------------------------------------------------------------
 //templated so it works with FaceCellSets and CellSets
 template<typename T>
 smoab::Range getParents(const T& set)
@@ -62,7 +59,6 @@ smoab::Range getParents(const T& set)
   return result;
 }
 
-//----------------------------------------------------------------------------
 //templated so it works with FaceCellSets and CellSets
 template<typename T>
 smoab::Range getAllCells(const T& set)
@@ -78,7 +74,6 @@ smoab::Range getAllCells(const T& set)
   return result;
 }
 
-//------------------------------------------------------------------------------
 template<typename T>
 std::vector<T> getTagValues(const smoab::Tag* tag,
                             const smoab::CellSets &sets,

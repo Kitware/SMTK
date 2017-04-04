@@ -23,7 +23,6 @@
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-//----------------------------------------------------------------------------
 class qtItemInternals
 {
 public:
@@ -45,8 +44,6 @@ public:
  QPointer<QComboBox> AdvLevelCombo;
 };
 
-
-//----------------------------------------------------------------------------
 qtItem::qtItem(smtk::attribute::ItemPtr dataObject, QWidget* p, qtBaseView* bview)
 {
   this->Internals  = new qtItemInternals(dataObject, p, bview);
@@ -57,7 +54,6 @@ qtItem::qtItem(smtk::attribute::ItemPtr dataObject, QWidget* p, qtBaseView* bvie
   //this->createWidget();
 }
 
-//----------------------------------------------------------------------------
 qtItem::~qtItem()
 {
   this->clearChildItems();
@@ -72,12 +68,11 @@ qtItem::~qtItem()
     }
 }
 
-//----------------------------------------------------------------------------
 qtBaseView* qtItem::baseView()
 {
   return this->Internals->BaseView;
 }
-//----------------------------------------------------------------------------
+
 qtUIManager* qtItem::uiManager() const
 {
   if (this->Internals->BaseView) 
@@ -87,7 +82,6 @@ qtUIManager* qtItem::uiManager() const
   return NULL;
 }
 
-//----------------------------------------------------------------------------
 void qtItem::updateItemData()
 {
 //  if(this->widget() && this->baseView()->advanceLevelVisible())
@@ -96,7 +90,6 @@ void qtItem::updateItemData()
 //    }
 }
 
-//----------------------------------------------------------------------------
 void qtItem::addChildItem(qtItem* child)
 {
   if(!this->Internals->ChildItems.contains(child))
@@ -104,12 +97,12 @@ void qtItem::addChildItem(qtItem* child)
     this->Internals->ChildItems.append(child);
     }
 }
-//----------------------------------------------------------------------------
+
 QList<qtItem*>& qtItem::childItems() const
 {
   return this->Internals->ChildItems;
 }
-//----------------------------------------------------------------------------
+
 void qtItem::clearChildItems()
 {
   for(int i=0; i < this->Internals->ChildItems.count(); i++)
@@ -119,19 +112,16 @@ void qtItem::clearChildItems()
   this->Internals->ChildItems.clear();
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::ItemPtr qtItem::getObject()
 {
   return this->Internals->DataObject.lock();
 }
 
-//----------------------------------------------------------------------------
 QWidget* qtItem::parentWidget()
 {
   return this->Internals->ParentWidget;
 }
 
-//----------------------------------------------------------------------------
 bool qtItem::passAdvancedCheck()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
@@ -139,7 +129,6 @@ bool qtItem::passAdvancedCheck()
     dataObj->advanceLevel());
 }
 
-//----------------------------------------------------------------------------
 void qtItem::showAdvanceLevelOverlay(bool show)
 {
   if(!this->widget())
@@ -206,14 +195,12 @@ void qtItem::showAdvanceLevelOverlay(bool show)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtItem::onAdvanceLevelChanged(int levelIdx)
 {
   int level = this->Internals->AdvLevelCombo->itemData(levelIdx).toInt();
   this->setAdvanceLevel(level);
 }
 
-//----------------------------------------------------------------------------
 void qtItem::setAdvanceLevel(int l)
 {
   this->getObject()->setAdvanceLevel(0, l);

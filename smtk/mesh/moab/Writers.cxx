@@ -30,7 +30,6 @@ namespace
     return (!!t && t->isValid());
   }
 
-  //--------------------------------------------------------------------------
   bool moab_write( const smtk::mesh::moab::InterfacePtr& interface,
                    const std::string& path,
                    const char* subset_name_to_write)
@@ -111,7 +110,6 @@ namespace
   return written;
   }
 
-  //--------------------------------------------------------------------------
   //requires that interface is not a null shared ptr
   bool write_file( const smtk::mesh::moab::InterfacePtr& interface,
                    const std::string& path,

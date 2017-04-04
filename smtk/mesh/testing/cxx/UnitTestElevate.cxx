@@ -28,7 +28,6 @@ namespace
 std::string data_root = SMTK_DATA_DIR;
 std::string write_root = SMTK_SCRATCH_DIR;
 
-//----------------------------------------------------------------------------
 void create_simple_mesh_model( smtk::model::ManagerPtr mgr )
 {
   std::string file_path(data_root);
@@ -47,7 +46,6 @@ void create_simple_mesh_model( smtk::model::ManagerPtr mgr )
   file.close();
 }
 
-//----------------------------------------------------------------------------
 void verify_empty_elevate()
 {
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
@@ -87,8 +85,6 @@ void verify_empty_elevate()
   }
 }
 
-
-//----------------------------------------------------------------------------
 template<typename T>
 void verify_elevate_self()
 {
@@ -138,7 +134,6 @@ void verify_elevate_self()
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestElevate(int, char** const)
 {
 

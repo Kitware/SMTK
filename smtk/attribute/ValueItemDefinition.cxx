@@ -21,7 +21,6 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 ValueItemDefinition::ValueItemDefinition(const std::string &myName):
   ItemDefinition(myName)
 {
@@ -35,11 +34,10 @@ ValueItemDefinition::ValueItemDefinition(const std::string &myName):
   this->m_expressionDefinition->setNumberOfRequiredValues(1);
 }
 
-//----------------------------------------------------------------------------
 ValueItemDefinition::~ValueItemDefinition()
 {
 }
-//----------------------------------------------------------------------------
+
 bool ValueItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {
   if (esize == this->m_numberOfRequiredValues)
@@ -62,7 +60,7 @@ bool ValueItemDefinition::setNumberOfRequiredValues(std::size_t esize)
     }
   return true;
 }
-//----------------------------------------------------------------------------
+
 bool  ValueItemDefinition::setMaxNumberOfValues(std::size_t esize)
 {
   if (esize && (esize < this->m_numberOfRequiredValues))
@@ -72,7 +70,7 @@ bool  ValueItemDefinition::setMaxNumberOfValues(std::size_t esize)
   this->m_maxNumberOfValues = esize;
   return true;
 }
-//----------------------------------------------------------------------------
+
 void ValueItemDefinition::setValueLabel(std::size_t element, const std::string &elabel)
 {
   if (this->m_isExtensible)
@@ -87,7 +85,7 @@ void ValueItemDefinition::setValueLabel(std::size_t element, const std::string &
   assert(this->m_valueLabels.size() > element);
   this->m_valueLabels[element] = elabel;
 }
-//----------------------------------------------------------------------------
+
 void ValueItemDefinition::setCommonValueLabel(const std::string &elabel)
 {
   if (this->m_valueLabels.size() != 1)
@@ -99,7 +97,6 @@ void ValueItemDefinition::setCommonValueLabel(const std::string &elabel)
   this->m_valueLabels[0] = elabel;
 }
 
-//----------------------------------------------------------------------------
 std::string ValueItemDefinition::valueLabel(std::size_t element) const
 {
   if (this->m_useCommonLabel)
@@ -113,7 +110,7 @@ std::string ValueItemDefinition::valueLabel(std::size_t element) const
     }
   return ""; // If we threw execeptions this method could return const string &
 }
-//----------------------------------------------------------------------------
+
 bool ValueItemDefinition::isValidExpression(smtk::attribute::AttributePtr exp) const
 {
   if (this->m_expressionDefinition->attributeDefinition() &&
@@ -123,23 +120,23 @@ bool ValueItemDefinition::isValidExpression(smtk::attribute::AttributePtr exp) c
     }
   return false;
 }
-//----------------------------------------------------------------------------
+
 bool ValueItemDefinition::allowsExpressions() const
 {
   return this->m_expressionDefinition->attributeDefinition() ? true : false;
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::DefinitionPtr ValueItemDefinition::expressionDefinition() const
 {
   return this->m_expressionDefinition->attributeDefinition();
 }
-//----------------------------------------------------------------------------
+
 void
 ValueItemDefinition::setExpressionDefinition(smtk::attribute::DefinitionPtr exp)
 {
   this->m_expressionDefinition->setAttributeDefinition(exp);
 }
-//----------------------------------------------------------------------------
+
 void
 ValueItemDefinition::buildExpressionItem(ValueItem *vitem, int position) const
 {
@@ -150,7 +147,7 @@ ValueItemDefinition::buildExpressionItem(ValueItem *vitem, int position) const
   assert(vitem->m_expressions.size() > static_cast<size_t>(position));
   vitem->m_expressions[static_cast<size_t>(position)] = aref;
 }
-//----------------------------------------------------------------------------
+
 void
 ValueItemDefinition::buildChildrenItems(ValueItem *vitem) const
 {
@@ -163,14 +160,14 @@ ValueItemDefinition::buildChildrenItems(ValueItem *vitem) const
     vitem->m_childrenItems[it->first] = child;
     }
 }
-//----------------------------------------------------------------------------
+
 void ValueItemDefinition::setDefaultDiscreteIndex(int discreteIndex)
 {
   this->m_defaultDiscreteIndex = discreteIndex;
   this->updateDiscreteValue();
   this->m_hasDefault = true;
 }
-//----------------------------------------------------------------------------
+
 bool ValueItemDefinition::
 addChildItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
 {
@@ -182,7 +179,7 @@ addChildItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
   this->m_itemDefs[cdef->name()] = cdef;
   return true;
 }
-//----------------------------------------------------------------------------
+
 bool ValueItemDefinition::
 addConditionalItem(const std::string &valueName, const std::string &itemName)
 {
@@ -210,7 +207,7 @@ addConditionalItem(const std::string &valueName, const std::string &itemName)
   this->m_itemToValueAssociations[itemName].insert(valueName);
   return true;
 }
-//----------------------------------------------------------------------------
+
 std::vector<std::string>
 ValueItemDefinition::conditionalItems(const std::string &valueName) const
 {
@@ -232,7 +229,7 @@ ValueItemDefinition::conditionalItems(const std::string &valueName) const
     }
   return citer->second;
 }
-//----------------------------------------------------------------------------
+
 void ValueItemDefinition::setIsExtensible(bool mode)
 {
   this->m_isExtensible = mode;
@@ -249,7 +246,7 @@ void ValueItemDefinition::setIsExtensible(bool mode)
     this->setCommonValueLabel("");
     }
 }
-//----------------------------------------------------------------------------
+
 void ValueItemDefinition::
 copyTo(ValueItemDefinitionPtr def,
        smtk::attribute::ItemDefinition::CopyInfo& info) const

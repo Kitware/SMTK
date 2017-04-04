@@ -39,7 +39,6 @@ void cleanup( const std::string& file_path )
     }
 }
 
-//----------------------------------------------------------------------------
 void verify_write_empty_collection()
 {
   std::string write_path(write_root);
@@ -56,7 +55,6 @@ void verify_write_empty_collection()
   test ( result == false, "nothing to write for an empty collection");
 }
 
-//----------------------------------------------------------------------------
 void verify_write_null_collection()
 {
   std::string write_path(write_root);
@@ -73,7 +71,6 @@ void verify_write_null_collection()
   test ( result == false, "Can't save null collection to disk");
 }
 
-//----------------------------------------------------------------------------
 void verify_write_valid_collection()
 {
   std::string file_path(data_root);
@@ -102,7 +99,6 @@ void verify_write_valid_collection()
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestExportMesh2DM(int, char** const)
 {
   verify_write_empty_collection();

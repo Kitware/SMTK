@@ -18,14 +18,12 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 FileSystemItem::FileSystemItem(Attribute *owningAttribute,
                              int itemPosition):
   Item(owningAttribute, itemPosition)
 {
 }
 
-//----------------------------------------------------------------------------
 FileSystemItem::FileSystemItem(Item *inOwningItem,
                              int itemPosition,
                              int inSubGroupPosition):
@@ -33,7 +31,6 @@ FileSystemItem::FileSystemItem(Item *inOwningItem,
 {
 }
 
-//----------------------------------------------------------------------------
 bool FileSystemItem::
 setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 {
@@ -67,12 +64,10 @@ setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
   return true;
 }
 
-//----------------------------------------------------------------------------
 FileSystemItem::~FileSystemItem()
 {
 }
 
-//----------------------------------------------------------------------------
 bool FileSystemItem::isValid() const
 {
   // If the item is not enabled or if all of its values are set then it is valid
@@ -91,7 +86,6 @@ bool FileSystemItem::isValid() const
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool FileSystemItem::isExtensible() const
 {
   auto def =
@@ -102,7 +96,7 @@ bool FileSystemItem::isExtensible() const
     }
   return def->isExtensible();
 }
-//----------------------------------------------------------------------------
+
 std::size_t FileSystemItem::numberOfRequiredValues() const
 {
   const FileSystemItemDefinition *def =
@@ -113,7 +107,7 @@ std::size_t FileSystemItem::numberOfRequiredValues() const
     }
   return def->numberOfRequiredValues();
 }
-//----------------------------------------------------------------------------
+
 std::size_t FileSystemItem::maxNumberOfValues() const
 {
   const FileSystemItemDefinition *def =
@@ -124,7 +118,7 @@ std::size_t FileSystemItem::maxNumberOfValues() const
     }
   return def->maxNumberOfValues();
 }
-//----------------------------------------------------------------------------
+
 bool FileSystemItem::shouldBeRelative() const
 {
   const FileSystemItemDefinition *def =
@@ -135,7 +129,7 @@ bool FileSystemItem::shouldBeRelative() const
     }
   return true;
 }
-//----------------------------------------------------------------------------
+
 bool FileSystemItem::shouldExist() const
 {
   const FileSystemItemDefinition *def =
@@ -146,7 +140,7 @@ bool FileSystemItem::shouldExist() const
     }
   return true;
 }
-//----------------------------------------------------------------------------
+
 bool FileSystemItem::setValue(std::size_t element, const std::string &val)
 {
   const FileSystemItemDefinition *def =
@@ -161,7 +155,7 @@ bool FileSystemItem::setValue(std::size_t element, const std::string &val)
     }
   return false;
 }
-//----------------------------------------------------------------------------
+
 std::string
 FileSystemItem::valueAsString(std::size_t element,
                              const std::string &format) const
@@ -196,7 +190,6 @@ FileSystemItem::const_iterator FileSystemItem::end() const
   return this->m_values.end();
 }
 
-//----------------------------------------------------------------------------
 bool
 FileSystemItem::appendValue(const std::string &val)
 {
@@ -221,7 +214,7 @@ FileSystemItem::appendValue(const std::string &val)
     }
   return false;
 }
-//----------------------------------------------------------------------------
+
 bool
 FileSystemItem::removeValue(int element)
 {
@@ -239,7 +232,7 @@ FileSystemItem::removeValue(int element)
   this->m_isSet.erase(this->m_isSet.begin()+element);
   return true;
 }
-//----------------------------------------------------------------------------
+
 bool FileSystemItem::setNumberOfValues(std::size_t newSize)
 {
   // If the current size is the same just return
@@ -276,7 +269,7 @@ bool FileSystemItem::setNumberOfValues(std::size_t newSize)
     }
   return true;
 }
-//----------------------------------------------------------------------------
+
 bool FileSystemItem::hasDefault() const
 {
   auto def = static_cast<const FileSystemItemDefinition *>(this->definition().get());
@@ -286,7 +279,7 @@ bool FileSystemItem::hasDefault() const
     }
   return def->hasDefault();
 }
-//----------------------------------------------------------------------------
+
 bool FileSystemItem::setToDefault(std::size_t element)
 {
   auto def = static_cast<const FileSystemItemDefinition *>(this->definition().get());
@@ -298,7 +291,7 @@ bool FileSystemItem::setToDefault(std::size_t element)
   this->setValue(element, def->defaultValue());
   return true;
 }
-//----------------------------------------------------------------------------
+
 bool FileSystemItem::isUsingDefault() const
 {
   auto def = static_cast<const FileSystemItemDefinition *>(this->definition().get());
@@ -320,7 +313,7 @@ bool FileSystemItem::isUsingDefault() const
     }
   return true;
 }
-//----------------------------------------------------------------------------
+
  bool FileSystemItem::isUsingDefault(std::size_t element) const
 {
   auto def = static_cast<const FileSystemItemDefinition *>(this->definition().get());
@@ -333,7 +326,7 @@ bool FileSystemItem::isUsingDefault() const
     }
   return false;
 }
-//----------------------------------------------------------------------------
+
 std::string FileSystemItem::defaultValue() const
 {
   auto def = static_cast<const FileSystemItemDefinition *>(this->definition().get());
@@ -343,7 +336,7 @@ std::string FileSystemItem::defaultValue() const
     }
   return def->defaultValue();
 }
-//----------------------------------------------------------------------------
+
 void
 FileSystemItem::reset()
 {
@@ -370,7 +363,7 @@ FileSystemItem::reset()
       }
     }
 }
-//----------------------------------------------------------------------------
+
 bool FileSystemItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
   // Assigns my contents to be same as sourceItem
@@ -398,4 +391,3 @@ bool FileSystemItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 
   return Item::assign(sourceItem, options);
 }
-//----------------------------------------------------------------------------

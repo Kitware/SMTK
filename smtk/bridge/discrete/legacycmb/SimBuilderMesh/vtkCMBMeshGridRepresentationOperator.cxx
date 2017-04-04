@@ -21,7 +21,6 @@
 
 vtkStandardNewMacro(vtkCMBMeshGridRepresentationOperator);
 
-//----------------------------------------------------------------------------
 vtkCMBMeshGridRepresentationOperator::vtkCMBMeshGridRepresentationOperator()
 {
   this->GridFileName = 0;
@@ -30,13 +29,11 @@ vtkCMBMeshGridRepresentationOperator::vtkCMBMeshGridRepresentationOperator()
   this->MeshRepresentationSource = NULL;
 }
 
-//----------------------------------------------------------------------------
 vtkCMBMeshGridRepresentationOperator:: ~vtkCMBMeshGridRepresentationOperator()
 {
   this->SetGridFileName(0);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshGridRepresentationOperator::Operate(vtkCMBMeshWrapper* meshWrapper)
 {
   this->OperateSucceeded = 0;
@@ -88,14 +85,13 @@ void vtkCMBMeshGridRepresentationOperator::Operate(vtkCMBMeshWrapper* meshWrappe
     }
   return;
 }
-//----------------------------------------------------------------------------
+
 void vtkCMBMeshGridRepresentationOperator::SetMeshRepresentationInput(
   vtkAlgorithm* meshSource)
 {
   this->MeshRepresentationSource = meshSource;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshGridRepresentationOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

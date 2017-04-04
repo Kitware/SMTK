@@ -21,7 +21,6 @@
 namespace smtk {
 namespace mesh {
 
-//----------------------------------------------------------------------------
 class Manager::InternalStorageImpl
 {
 public:
@@ -38,7 +37,6 @@ public:
   {
   }
 
-  //----------------------------------------------------------------------------
   //Returns true when adding a new collection or a collection that already
   //exists.
   bool add(const smtk::common::UUID& uid,
@@ -59,7 +57,6 @@ public:
     return can_add || !not_already_added;
   }
 
-  //----------------------------------------------------------------------------
   bool remove( const smtk::common::UUID& uid )
   {
     iterator to_remove = this->Collections.find( uid );
@@ -72,29 +69,24 @@ public:
     return false;
   }
 
-  //----------------------------------------------------------------------------
   const_iterator begin() const
     { return this->Collections.begin(); }
   iterator begin()
     { return this->Collections.begin(); }
 
-  //----------------------------------------------------------------------------
   const_iterator end() const
     { return this->Collections.end(); }
   iterator end()
     { return this->Collections.end(); }
 
-  //----------------------------------------------------------------------------
   const_iterator find( const smtk::common::UUID& uid) const
     {
     return this->Collections.find( uid );
     }
 
-  //----------------------------------------------------------------------------
   bool has( const smtk::common::UUID& uid) const
     { return this->Collections.find( uid ) != this->Collections.end(); }
 
-  //----------------------------------------------------------------------------
   std::size_t size() const
     { return this->Collections.size(); }
 
@@ -102,7 +94,6 @@ private:
   ContainerType Collections;
 };
 
-//----------------------------------------------------------------------------
 class Manager::InternalNameGeneratorImpl
 {
 public:
@@ -130,7 +121,6 @@ private:
 };
 
 
-//----------------------------------------------------------------------------
 Manager::Manager():
   m_collector( new InternalStorageImpl() ),
   m_nameGenerator( new InternalNameGeneratorImpl() ),
@@ -139,19 +129,16 @@ Manager::Manager():
 
 }
 
-//----------------------------------------------------------------------------
 Manager::~Manager()
 { //needs to be in impl file
 }
 
-//----------------------------------------------------------------------------
 smtk::common::UUID Manager::nextEntityId()
 {
   //return the next random uuid
   return this->m_uuidGenerator.random();
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr Manager::makeCollection()
 {
   smtk::mesh::CollectionPtr collection( new smtk::mesh::Collection(
@@ -162,7 +149,6 @@ smtk::mesh::CollectionPtr Manager::makeCollection()
   return collection;
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr Manager::makeCollection(const smtk::common::UUID& collectionID)
 {
   smtk::mesh::CollectionPtr collection( new smtk::mesh::Collection(
@@ -173,7 +159,6 @@ smtk::mesh::CollectionPtr Manager::makeCollection(const smtk::common::UUID& coll
   return collection;
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr Manager::makeCollection(smtk::mesh::InterfacePtr interface)
 {
   smtk::mesh::CollectionPtr collection( new smtk::mesh::Collection(
@@ -185,7 +170,6 @@ smtk::mesh::CollectionPtr Manager::makeCollection(smtk::mesh::InterfacePtr inter
   return collection;
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr Manager::makeCollection(const smtk::common::UUID& collectionID,
                                                   smtk::mesh::InterfacePtr interface)
 {
@@ -198,45 +182,37 @@ smtk::mesh::CollectionPtr Manager::makeCollection(const smtk::common::UUID& coll
   return collection;
 }
 
-
-//----------------------------------------------------------------------------
 bool Manager::addCollection(const smtk::mesh::CollectionPtr& collection)
 {
   //do we need to re-parent the collection?
   return this->m_collector->add(collection->entity(), collection);
 }
 
-//----------------------------------------------------------------------------
 std::size_t Manager::numberOfCollections() const
 {
   return this->m_collector->size();
 }
 
-//----------------------------------------------------------------------------
 bool Manager::hasCollection( const smtk::mesh::CollectionPtr& collection ) const
 {
   return this->m_collector->has( collection->entity() );
 }
 
-//----------------------------------------------------------------------------
 Manager::const_iterator Manager::collectionBegin() const
 {
   return this->m_collector->begin();
 }
 
-//----------------------------------------------------------------------------
 Manager::const_iterator Manager::collectionEnd() const
 {
   return this->m_collector->end();
 }
 
-//----------------------------------------------------------------------------
 Manager::const_iterator Manager::findCollection( const smtk::common::UUID& collectionID ) const
 {
   return this->m_collector->find(collectionID);
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr Manager::collection( const smtk::common::UUID& collectionID ) const
 {
   const_iterator result = this->m_collector->find(collectionID);
@@ -248,13 +224,11 @@ smtk::mesh::CollectionPtr Manager::collection( const smtk::common::UUID& collect
   return result->second;
 }
 
-//----------------------------------------------------------------------------
 bool Manager::removeCollection( const smtk::mesh::CollectionPtr& collection )
 {
   return this->m_collector->remove( collection->entity() );
 }
 
-//----------------------------------------------------------------------------
 std::vector<smtk::mesh::CollectionPtr>
 Manager::collectionsWithAssociations() const
 {
@@ -271,7 +245,6 @@ Manager::collectionsWithAssociations() const
   return result;
 }
 
-//----------------------------------------------------------------------------
 bool Manager::isAssociatedToACollection( const smtk::model::EntityRef& eref ) const
 {
   bool isAssociated = false;
@@ -286,7 +259,6 @@ bool Manager::isAssociatedToACollection( const smtk::model::EntityRef& eref ) co
   return isAssociated;
 }
 
-//----------------------------------------------------------------------------
 std::vector<smtk::mesh::CollectionPtr>
 Manager::associatedCollections( const smtk::model::EntityRef& eref) const
 {
@@ -306,7 +278,6 @@ Manager::associatedCollections( const smtk::model::EntityRef& eref) const
   return result;
 }
 
-//----------------------------------------------------------------------------
 smtk::common::UUIDs
 Manager::associatedCollectionIds( const smtk::model::EntityRef& eref) const
 {
@@ -326,7 +297,6 @@ Manager::associatedCollectionIds( const smtk::model::EntityRef& eref) const
   return result;
 }
 
-//----------------------------------------------------------------------------
 bool
 Manager::assignUniqueName( smtk::mesh::CollectionPtr collection )
 {

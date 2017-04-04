@@ -14,7 +14,6 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 MeshItemDefinition::
 MeshItemDefinition(const std::string &myName):
   ItemDefinition(myName)
@@ -24,11 +23,10 @@ MeshItemDefinition(const std::string &myName):
   this->m_maxNumberOfValues = 0;
 }
 
-//----------------------------------------------------------------------------
 MeshItemDefinition::~MeshItemDefinition()
 {
 }
-//----------------------------------------------------------------------------
+
 Item::Type MeshItemDefinition::type() const
 {
   return Item::MESH_ENTITY;
@@ -55,19 +53,18 @@ void MeshItemDefinition::setMaxNumberOfValues(std::size_t maxNum)
   this->m_maxNumberOfValues = maxNum;
 }
 
-//----------------------------------------------------------------------------
 bool MeshItemDefinition::isValueValid(const smtk::mesh::MeshSet &val) const
 {
   return !val.is_empty(); // should we allow empty meshset?
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemPtr MeshItemDefinition::buildItem(
   Attribute *owningAttribute, int itemPosition) const
 {
   return smtk::attribute::ItemPtr(new MeshItem(owningAttribute,
                                               itemPosition));
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemPtr MeshItemDefinition::buildItem(
 Item *owningItem, int itemPosition, int subGroupPosition) const
 {
@@ -76,7 +73,6 @@ Item *owningItem, int itemPosition, int subGroupPosition) const
                                               subGroupPosition));
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::ItemDefinitionPtr
 smtk::attribute::MeshItemDefinition::
 createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
@@ -91,4 +87,3 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
   newDef->setMaxNumberOfValues(m_maxNumberOfValues);
   return newDef;
 }
-//----------------------------------------------------------------------------

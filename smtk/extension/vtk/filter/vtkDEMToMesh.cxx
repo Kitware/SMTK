@@ -32,7 +32,6 @@
 #include <map>
 #include <sstream>
 
-// -----------------------------------------------------------------------------
 vtkStandardNewMacro(vtkDEMToMesh);
 
 vtkDEMToMesh::vtkDEMToMesh()

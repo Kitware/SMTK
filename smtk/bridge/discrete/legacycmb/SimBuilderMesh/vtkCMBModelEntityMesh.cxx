@@ -14,7 +14,6 @@
 
 vtkCxxSetObjectMacro(vtkCMBModelEntityMesh, ModelEntityMesh, vtkPolyData);
 
-//----------------------------------------------------------------------------
 vtkCMBModelEntityMesh::vtkCMBModelEntityMesh()
 {
   this->Visible = true;
@@ -24,13 +23,11 @@ vtkCMBModelEntityMesh::vtkCMBModelEntityMesh()
   this->MeshedLength = 0;
 }
 
-//----------------------------------------------------------------------------
 vtkCMBModelEntityMesh::~vtkCMBModelEntityMesh()
 {
   this->SetModelEntityMesh(NULL);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelEntityMesh::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
@@ -55,5 +52,3 @@ void vtkCMBModelEntityMesh::PrintSelf(ostream& os, vtkIndent indent)
     os << indent << "ModelEntityMesh: (NULL)\n";
     }
 }
-//----------------------------------------------------------------------------
-

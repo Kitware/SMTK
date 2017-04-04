@@ -19,36 +19,30 @@
 namespace smtk {
   namespace common {
 
-//----------------------------------------------------------------------------
 DateTimeZonePair::DateTimeZonePair() : m_datetime(), m_timezone()
 {
 }
 
-//----------------------------------------------------------------------------
 DateTime DateTimeZonePair::dateTime() const
 {
   return m_datetime;
 }
 
-//----------------------------------------------------------------------------
 TimeZone DateTimeZonePair::timeZone() const
 {
   return m_timezone;
 }
 
-//----------------------------------------------------------------------------
 void DateTimeZonePair::setDateTime(const DateTime& dt)
 {
   m_datetime = dt;
 }
 
-//----------------------------------------------------------------------------
 void DateTimeZonePair::setTimeZone(const TimeZone& tz)
 {
   m_timezone = tz;
 }
 
-//----------------------------------------------------------------------------
 std::string DateTimeZonePair::serialize() const
 {
   // Generate json output string
@@ -92,7 +86,6 @@ std::string DateTimeZonePair::serialize() const
   return outputString;
 }
 
-//----------------------------------------------------------------------------
 bool DateTimeZonePair::deserialize(const std::string& content)
 {
   cJSON *inputJson = cJSON_Parse(content.c_str());
@@ -143,7 +136,6 @@ bool DateTimeZonePair::deserialize(const std::string& content)
   return true;
 }
 
-//----------------------------------------------------------------------------
 std::string DateTimeZonePair::jsonString() const
 {
   // Create json string, equivalent to javascript Date.toJson() output.
@@ -168,25 +160,21 @@ std::string DateTimeZonePair::jsonString() const
   return json;
 }
 
-//----------------------------------------------------------------------------
 bool DateTimeZonePair::operator==(const DateTimeZonePair& dtz) const
 {
   return this->m_datetime == dtz.m_datetime;
 }
 
-//----------------------------------------------------------------------------
 bool DateTimeZonePair::operator<(const DateTimeZonePair& dtz) const
 {
   return this->m_datetime < dtz.m_datetime;
 }
 
-//----------------------------------------------------------------------------
 bool DateTimeZonePair::operator>(const DateTimeZonePair& dtz) const
 {
   return this->m_datetime > dtz.m_datetime;
 }
 
-//----------------------------------------------------------------------------
 std::ostream& operator<<(std::ostream& os, const DateTimeZonePair& dtz)
 {
   // Convert to string and write out
@@ -195,7 +183,6 @@ std::ostream& operator<<(std::ostream& os, const DateTimeZonePair& dtz)
   return os;
 }
 
-//----------------------------------------------------------------------------
 std::istream& operator>>(std::istream& is, DateTimeZonePair& dtz)
 {
   // Todo reset the input dtz
@@ -206,8 +193,6 @@ std::istream& operator>>(std::istream& is, DateTimeZonePair& dtz)
   dtz.deserialize(inputText);
   return is;
 }
-
-//----------------------------------------------------------------------------
 
   } // namespace common
 } // namespace smtk

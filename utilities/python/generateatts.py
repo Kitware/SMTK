@@ -29,7 +29,6 @@ except ImportError:
     sys.exit(-1)
 
 
-# ---------------------------------------------------------------------
 def generate_model_items(system, model_description):
     '''
     Constructs model based on input description
@@ -50,7 +49,6 @@ def generate_model_items(system, model_description):
     return model
 
 
-# ---------------------------------------------------------------------
 def set_item_value(item, value, index=0):
     '''
     Sets value, casting to type as needed
@@ -67,7 +65,6 @@ def set_item_value(item, value, index=0):
     item.setValue(index, value)
 
 
-# ---------------------------------------------------------------------
 def set_item(item, item_description, refitem_list):
     '''
     Recursive method to set contents of Item instances
@@ -139,7 +136,6 @@ def set_item(item, item_description, refitem_list):
             set_item_value(item, value)
 
 
-# ---------------------------------------------------------------------
 def process_children_items(item, item_description, refitem_list):
     '''Updates children items of current item
 
@@ -163,7 +159,6 @@ def process_children_items(item, item_description, refitem_list):
         set_item(concrete_child, child_description, refitem_list)
 
 
-# ---------------------------------------------------------------------
 def process_items(parent, parent_description, refitem_list, group_index=None):
     '''
     Traverses all items contained by parent
@@ -201,7 +196,6 @@ def process_items(parent, parent_description, refitem_list, group_index=None):
     return success
 
 
-# ---------------------------------------------------------------------
 def fetch_attribute(system, att_type, name, att_id):
     '''
     Retrieves or creates attribute as needed
@@ -256,7 +250,6 @@ def fetch_attribute(system, att_type, name, att_id):
     return att
 
 
-# ---------------------------------------------------------------------
 def fetch_subgroup_item(group_item, group_index, item_name):
     '''Finds item in one subgroup.
 
@@ -273,7 +266,6 @@ def fetch_subgroup_item(group_item, group_index, item_name):
     return None
 
 
-# ---------------------------------------------------------------------
 def generate_atts(system, attributes_description, refitem_list):
     '''
     Constructs attributes based on input description
@@ -318,7 +310,6 @@ def generate_atts(system, attributes_description, refitem_list):
     return count
 
 
-# ---------------------------------------------------------------------
 def generate_sim(system, description):
     '''
     Generates smtk attribute system
@@ -353,7 +344,6 @@ def generate_sim(system, description):
     return count
 
 
-# ---------------------------------------------------------------------
 if __name__ == '__main__':
     epilog = 'Note: you must specify EITHER --yaml_filename OR --json_filename'
     parser = argparse.ArgumentParser(

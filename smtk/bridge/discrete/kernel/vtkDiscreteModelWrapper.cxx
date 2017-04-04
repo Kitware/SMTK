@@ -46,7 +46,6 @@ vtkStandardNewMacro(vtkDiscreteModelWrapper);
 vtkCxxSetObjectMacro(vtkDiscreteModelWrapper, SerializedModel, vtkStringArray);
 vtkInformationKeyMacro(vtkDiscreteModelWrapper, NAME, String);
 
-//----------------------------------------------------------------------------
 vtkDiscreteModelWrapper::vtkDiscreteModelWrapper()
 {
   this->ModelCBC = vtkCallbackCommand::New();
@@ -61,7 +60,6 @@ vtkDiscreteModelWrapper::vtkDiscreteModelWrapper()
   this->SerializedModel = 0;
 }
 
-//----------------------------------------------------------------------------
 vtkDiscreteModelWrapper::~vtkDiscreteModelWrapper()
 {
   if(this->Model)
@@ -75,7 +73,6 @@ vtkDiscreteModelWrapper::~vtkDiscreteModelWrapper()
  this->SetSerializedModel(0);
 }
 
-//----------------------------------------------------------------------------
 void vtkDiscreteModelWrapper::ResetModel()
 {
   if(this->Model)
@@ -84,7 +81,6 @@ void vtkDiscreteModelWrapper::ResetModel()
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkDiscreteModelWrapper::SetGeometricEntityPoints(vtkPoints* points)
 {
   vtkDiscreteModel* model = this->GetModel();
@@ -119,7 +115,6 @@ void vtkDiscreteModelWrapper::SetGeometricEntityPoints(vtkPoints* points)
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 void vtkDiscreteModelWrapper::SetGeometricEntityPointData(
    vtkPointData* pointData)
 {
@@ -154,12 +149,11 @@ void vtkDiscreteModelWrapper::SetGeometricEntityPointData(
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 vtkDiscreteModel* vtkDiscreteModelWrapper::GetModel()
 {
   return this->Model;
 }
-//----------------------------------------------------------------------------
+
 void vtkDiscreteModelWrapper::SetModel(vtkDiscreteModel *model)
 {
   if ( this->Model == model)
@@ -217,7 +211,6 @@ vtkDiscreteModelWrapper* vtkDiscreteModelWrapper::GetData(vtkInformationVector* 
   return vtkDiscreteModelWrapper::GetData(v->GetInformationObject(i));
 }
 
-//----------------------------------------------------------------------------
 const char* vtkDiscreteModelWrapper::GetAnalysisGridFileName()
 {
   if(this->Model->GetAnalysisGridInfo())
@@ -227,21 +220,18 @@ const char* vtkDiscreteModelWrapper::GetAnalysisGridFileName()
   return NULL;
 }
 
-//----------------------------------------------------------------------------
 vtkModelEntity* vtkDiscreteModelWrapper::GetModelEntity(
   vtkIdType uniquePersistentId)
 {
   return this->Model->GetModelEntity(uniquePersistentId);
 }
 
-//----------------------------------------------------------------------------
 vtkModelEntity* vtkDiscreteModelWrapper::GetModelEntity(
   int itemType, vtkIdType uniquePersistentId)
 {
   return this->Model->GetModelEntity(itemType, uniquePersistentId);
 }
 
-//----------------------------------------------------------------------------
 vtkStringArray* vtkDiscreteModelWrapper::SerializeModel()
 {
   vtkDebugMacro("Serializing the model on the server.");
@@ -275,7 +265,6 @@ vtkStringArray* vtkDiscreteModelWrapper::SerializeModel()
   return this->SerializedModel;
 }
 
-//----------------------------------------------------------------------------
 int vtkDiscreteModelWrapper::RebuildModel(const char* data,
   std::map<vtkIdType, vtkSmartPointer<vtkIdList> > & faceToIds,
   std::map<vtkIdType, vtkSmartPointer<vtkIdList> > & edgeToIds,
@@ -369,7 +358,6 @@ int vtkDiscreteModelWrapper::RebuildModel(const char* data,
   return 1;
 }
 
-//----------------------------------------------------------------------------
 bool vtkDiscreteModelWrapper::GetEntityIdByChildIndex(
   unsigned int index, vtkIdType& entityId)
 {
@@ -383,7 +371,7 @@ bool vtkDiscreteModelWrapper::GetEntityIdByChildIndex(
     }
   return false;
 }
-//----------------------------------------------------------------------------
+
 vtkProperty* vtkDiscreteModelWrapper::GetEntityPropertyByEntityId(
   vtkIdType entityId)
 {
@@ -395,7 +383,6 @@ vtkProperty* vtkDiscreteModelWrapper::GetEntityPropertyByEntityId(
   return NULL;
 }
 
-//----------------------------------------------------------------------------
 vtkProperty* vtkDiscreteModelWrapper::GetEntityPropertyByChildIndex(
   unsigned int index)
 {
@@ -410,7 +397,7 @@ vtkProperty* vtkDiscreteModelWrapper::GetEntityPropertyByChildIndex(
     }
   return NULL;
 }
-//----------------------------------------------------------------------------
+
 vtkModelEntity* vtkDiscreteModelWrapper::GetEntityObjectByFlatIndex(
   unsigned int index)
 {
@@ -426,7 +413,6 @@ vtkModelEntity* vtkDiscreteModelWrapper::GetEntityObjectByFlatIndex(
   return NULL;
 }
 
-//----------------------------------------------------------------------------
 bool vtkDiscreteModelWrapper::GetChildIndexByEntityId(
   vtkIdType entityId, unsigned int& index)
 {
@@ -449,7 +435,6 @@ bool vtkDiscreteModelWrapper::GetChildIndexByEntityId(
   return false;
 }
 
-//----------------------------------------------------------------------------
 void vtkDiscreteModelWrapper::InitializeWithModelGeometry()
 {
   this->Initialize();
@@ -460,7 +445,6 @@ void vtkDiscreteModelWrapper::InitializeWithModelGeometry()
   this->AddGeometricEntities(vtkModelVertexType);
 }
 
-//----------------------------------------------------------------------------
 void vtkDiscreteModelWrapper::AddGeometricEntities(int entType)
 {
   std::vector<vtkModelGeometricEntity*> entities;
@@ -475,7 +459,6 @@ void vtkDiscreteModelWrapper::AddGeometricEntities(int entType)
   entities.clear();
 }
 
-//----------------------------------------------------------------------------
 void vtkDiscreteModelWrapper::AddGeometricEntities(std::set<vtkIdType> &entities)
 {
   std::vector<vtkModelGeometricEntity*> geoentities;
@@ -496,7 +479,6 @@ void vtkDiscreteModelWrapper::AddGeometricEntities(std::set<vtkIdType> &entities
   geoentities.clear();
 }
 
-//----------------------------------------------------------------------------
 void vtkDiscreteModelWrapper::AddGeometricEntities(
   std::vector<vtkModelGeometricEntity*> &entities)
 {
@@ -525,7 +507,6 @@ void vtkDiscreteModelWrapper::AddGeometricEntities(
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkDiscreteModelWrapper::ModelEntitySetGeometryCallback(vtkObject *caller,
   unsigned long event, void *clientData, void *callData)
 {

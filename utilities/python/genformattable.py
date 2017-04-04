@@ -6,8 +6,6 @@ from CMB 2.0 format file input.
 import sys
 import xml.etree.ElementTree as ET
 
-# ---------------------------------------------------------------------
-
 
 def process_file_element(scope, elem):
     file_type = elem.attrib.get('Type')
@@ -47,7 +45,6 @@ def process_file_element(scope, elem):
         scope.output.write('\n')
 
 
-# ---------------------------------------------------------------------
 if __name__ == '__main__':
     import argparse
     print

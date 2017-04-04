@@ -15,7 +15,6 @@
 namespace sc = smtk::common;
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 DateTimeItemDefinition::DateTimeItemDefinition(const std::string &myName):
   ItemDefinition(myName),
   m_hasDefault(false), m_numberOfRequiredValues(1),
@@ -23,18 +22,15 @@ DateTimeItemDefinition::DateTimeItemDefinition(const std::string &myName):
 {
 }
 
-//----------------------------------------------------------------------------
 DateTimeItemDefinition::~DateTimeItemDefinition()
 {
 }
 
-//----------------------------------------------------------------------------
 Item::Type DateTimeItemDefinition::type() const
 {
   return Item::DATE_TIME;
 }
 
-//----------------------------------------------------------------------------
 bool DateTimeItemDefinition::setDefaultValue(const sc::DateTimeZonePair& value)
 {
   this->m_defaultValue = value;
@@ -42,14 +38,12 @@ bool DateTimeItemDefinition::setDefaultValue(const sc::DateTimeZonePair& value)
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool DateTimeItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {
   this->m_numberOfRequiredValues = esize;
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool DateTimeItemDefinition::isValueValid(const sc::DateTimeZonePair& /*value*/) const
 {
   // Currently, all values are valid
@@ -57,7 +51,6 @@ bool DateTimeItemDefinition::isValueValid(const sc::DateTimeZonePair& /*value*/)
   return true;
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::ItemPtr
 DateTimeItemDefinition::buildItem(Attribute *owningAttribute,
                                 int itemPosition) const
@@ -66,7 +59,6 @@ DateTimeItemDefinition::buildItem(Attribute *owningAttribute,
     new DateTimeItem(owningAttribute, itemPosition));
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::ItemPtr
 DateTimeItemDefinition::buildItem(Item *owningItem,
                                 int itemPosition,
@@ -76,7 +68,6 @@ DateTimeItemDefinition::buildItem(Item *owningItem,
     new DateTimeItem(owningItem, itemPosition, subGroupPosition));
 }
 
-//----------------------------------------------------------------------------
 ItemDefinitionPtr DateTimeItemDefinition::createCopy(
   ItemDefinition::CopyInfo& info) const
 {
@@ -96,4 +87,3 @@ ItemDefinitionPtr DateTimeItemDefinition::createCopy(
 
   return newDef;
 }
-//----------------------------------------------------------------------------

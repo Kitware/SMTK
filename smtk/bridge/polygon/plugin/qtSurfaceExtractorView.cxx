@@ -45,7 +45,6 @@
 
 using namespace smtk::extension;
 
-//----------------------------------------------------------------------------
 class qtSurfaceExtractorViewInternals
 {
 public:
@@ -80,7 +79,6 @@ public:
   imageFeatureExtractorWidget * ExtractorWidget;
 };
 
-//----------------------------------------------------------------------------
 qtBaseView *
 qtSurfaceExtractorView::createViewWidget(const ViewInfo &info)
 {
@@ -89,7 +87,6 @@ qtSurfaceExtractorView::createViewWidget(const ViewInfo &info)
   return view;
 }
 
-//----------------------------------------------------------------------------
 qtSurfaceExtractorView::
 qtSurfaceExtractorView(const ViewInfo &info) :
   qtBaseView(info)
@@ -98,12 +95,11 @@ qtSurfaceExtractorView(const ViewInfo &info) :
   this->Internals->ExtractorWidget = NULL;// new imageFeatureExtractorWidget();
 }
 
-//----------------------------------------------------------------------------
 qtSurfaceExtractorView::~qtSurfaceExtractorView()
 {
   delete this->Internals;
 }
-//----------------------------------------------------------------------------
+
 void qtSurfaceExtractorView::createWidget( )
 {
   smtk::common::ViewPtr view = this->getObject();
@@ -141,7 +137,6 @@ void qtSurfaceExtractorView::createWidget( )
   layout->addWidget(contourButton);
 }
 
-//----------------------------------------------------------------------------
 void qtSurfaceExtractorView::updateAttributeData()
 {
   smtk::common::ViewPtr view = this->getObject();
@@ -193,13 +188,11 @@ void qtSurfaceExtractorView::updateAttributeData()
   this->Internals->CurrentAtt = this->Internals->createAttUI(att, this->Widget, this);
 }
 
-//----------------------------------------------------------------------------
 void qtSurfaceExtractorView::startContourOperation()
 {
   this->operationSelected(this->Internals->CurrentOp.lock());
 }
 
-//----------------------------------------------------------------------------
 void qtSurfaceExtractorView::requestOperation(const smtk::model::OperatorPtr& op)
 {
   if(!op || !op->specification())
@@ -209,7 +202,6 @@ void qtSurfaceExtractorView::requestOperation(const smtk::model::OperatorPtr& op
   this->uiManager()->activeModelView()->requestOperation(op, false);
 }
 
-//----------------------------------------------------------------------------
 void qtSurfaceExtractorView::cancelOperation(const smtk::model::OperatorPtr& op)
 {
   (void) op;
@@ -221,7 +213,6 @@ void qtSurfaceExtractorView::cancelOperation(const smtk::model::OperatorPtr& op)
     }*/
 }
 
-//----------------------------------------------------------------------------
 void qtSurfaceExtractorView::acceptContours(vtkSmartPointer<vtkPolyData> contourSource)
 {
   if(!contourSource || !this->Internals->CurrentAtt ||
@@ -276,7 +267,6 @@ pqPipelineSource* internal_createImageSource(const std::string& imageurl)
 }
  */
 
-//----------------------------------------------------------------------------
 void qtSurfaceExtractorView::operationSelected(const smtk::model::OperatorPtr& op)
 {
   if(!this->Internals->CurrentAtt || !this->Widget || op->name() != "extract surface contours")
@@ -345,13 +335,11 @@ void qtSurfaceExtractorView::operationSelected(const smtk::model::OperatorPtr& o
 
 }
 
-//----------------------------------------------------------------------------
 void qtSurfaceExtractorView::showAdvanceLevelOverlay(bool show)
 {
   this->qtBaseView::showAdvanceLevelOverlay(show);
 }
 
-//----------------------------------------------------------------------------
 void qtSurfaceExtractorView::requestModelEntityAssociation()
 {
   this->updateAttributeData();

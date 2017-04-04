@@ -98,7 +98,6 @@ int vtkSMTKJsonModelReader::RequestData(
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkSMTKJsonModelReader::RequestInformation(
   vtkInformation *request,
   vtkInformationVector **inputVector,

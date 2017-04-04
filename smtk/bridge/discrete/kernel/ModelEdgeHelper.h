@@ -72,7 +72,6 @@ protected:
   vtkIdType currentModelEdgeId, taggedIndex, numberOfNewEdgesSinceTag;
 };
 
-//----------------------------------------------------------------------------
 class LoopInfo
 {
 public:
@@ -88,7 +87,6 @@ public:
   std::vector<std::pair<vtkIdType, bool> > loop;
 };
 
-//----------------------------------------------------------------------------
 class FaceEdgeSplitInfo
 {
 public:
@@ -118,13 +116,12 @@ public:
   vtkSmartPointer<vtkIdTypeArray> FaceEdgeLoopIDs;
 };
 
-//----------------------------------------------------------------------------
 void inline NewModelEdgeInfo::ClearTaggedFaceInfo()
 {
   this->taggedFaceInfo = "";
   this->numberOfNewEdgesSinceTag = 0;
 }
-//----------------------------------------------------------------------------
+
 void inline NewModelEdgeInfo::Reset()
 {
   this->info.clear();
@@ -134,7 +131,7 @@ void inline NewModelEdgeInfo::Reset()
   this->taggedIndex = -1;
   this->numberOfNewEdgesSinceTag = 0;
 }
-//----------------------------------------------------------------------------
+
 // Returns the id of the model edge that owns the mesh edge
 // Note that all model edge ids are negative to indicate they need to be
 // replaced by valid Ids
@@ -168,7 +165,7 @@ InsertMeshEdge(vtkIdType edgeId, const std::string &faceInfo)
                                                          this->currentModelEdgeId));
   return this->currentModelEdgeId;
 }
-//----------------------------------------------------------------------------
+
 inline bool NewModelEdgeInfo::
 CheckLastModelEdge(vtkIdType &gedge)
 {
@@ -213,13 +210,11 @@ CheckLastModelEdge(vtkIdType &gedge)
   return true;
 }
 
-//----------------------------------------------------------------------------
 inline std::string NewModelEdgeInfo::to_key(vtkIdList* list)
 {
   return to_key(list->GetPointer(0),list->GetNumberOfIds());
 }
 
-//----------------------------------------------------------------------------
 inline std::string NewModelEdgeInfo::to_key(const vtkIdType* data,
                                                        vtkIdType len)
 {
@@ -247,7 +242,6 @@ inline std::string NewModelEdgeInfo::to_key(const vtkIdType* data,
   return std::string(hash);
 }
 
-//----------------------------------------------------------------------------
 //Insert a model edge only if it is not the same as the last one inserted
 inline void LoopInfo::
 InsertModelEdge(vtkIdType edgeId, bool orientation)
@@ -259,7 +253,6 @@ InsertModelEdge(vtkIdType edgeId, bool orientation)
     }
 }
 
-//----------------------------------------------------------------------------
 inline void LoopInfo::RemoveModelEdge(vtkIdType gedge)
 {
   std::vector<std::pair<vtkIdType, bool> >::iterator iter;
@@ -274,7 +267,6 @@ inline void LoopInfo::RemoveModelEdge(vtkIdType gedge)
   this->loop.erase(iter);
 }
 
-//----------------------------------------------------------------------------
 inline void FaceEdgeSplitInfo::Reset()
 {
   this->SplitEdgeVertIds = vtkSmartPointer<vtkIdTypeArray>::New();
@@ -289,7 +281,6 @@ inline void FaceEdgeSplitInfo::Reset()
   this->FaceEdgeLoopIDs->SetNumberOfTuples(0);
 }
 
-//----------------------------------------------------------------------------
 inline void FaceEdgeSplitInfo::DeepCopy(FaceEdgeSplitInfo& splitInfo)
 {
   this->Reset();

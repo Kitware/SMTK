@@ -13,22 +13,20 @@
 #include "smtk/attribute/IntItem.h"
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 IntItemDefinition::IntItemDefinition(const std::string &myName):
   ValueItemDefinitionTemplate<int>(myName)
 {
 }
 
-//----------------------------------------------------------------------------
 IntItemDefinition::~IntItemDefinition()
 {
 }
-//----------------------------------------------------------------------------
+
 Item::Type IntItemDefinition::type() const
 {
   return Item::INT;
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemPtr
 IntItemDefinition::buildItem(Attribute *owningAttribute,
                              int itemPosition) const
@@ -36,7 +34,7 @@ IntItemDefinition::buildItem(Attribute *owningAttribute,
   return smtk::attribute::ItemPtr(new IntItem(owningAttribute,
                                              itemPosition));
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemPtr
 IntItemDefinition::buildItem(Item *owningItem,
                              int itemPosition,
@@ -46,7 +44,7 @@ IntItemDefinition::buildItem(Item *owningItem,
                                              itemPosition,
                                              subGroupPosition));
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemDefinitionPtr
 smtk::attribute::IntItemDefinition::
 createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
@@ -57,4 +55,3 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
   ValueItemDefinitionTemplate<int>::copyTo(newDef, info);
   return newDef;
 }
-//----------------------------------------------------------------------------

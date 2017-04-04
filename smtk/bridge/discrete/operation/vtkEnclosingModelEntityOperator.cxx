@@ -32,7 +32,6 @@
 
 vtkStandardNewMacro(vtkEnclosingModelEntityOperator);
 
-//----------------------------------------------------------------------------
 vtkEnclosingModelEntityOperator::vtkEnclosingModelEntityOperator()
 {
   this->OperateSucceeded = 0;
@@ -40,7 +39,6 @@ vtkEnclosingModelEntityOperator::vtkEnclosingModelEntityOperator()
   this->EnclosingEntity = 0;
 }
 
-//----------------------------------------------------------------------------
 vtkEnclosingModelEntityOperator::~vtkEnclosingModelEntityOperator()
 {
   if (this->CellLocator)
@@ -49,13 +47,11 @@ vtkEnclosingModelEntityOperator::~vtkEnclosingModelEntityOperator()
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkEnclosingModelEntityOperator::BuildLinks(vtkDiscreteModelWrapper* modelWrapper)
 {
   modelWrapper->GetModel()->GetMesh().BuildLinks();
 }
 
-//----------------------------------------------------------------------------
 void vtkEnclosingModelEntityOperator::Operate(vtkDiscreteModelWrapper* modelWrapper,
                                               double *pt)
 {
@@ -199,7 +195,6 @@ void vtkEnclosingModelEntityOperator::Operate(vtkDiscreteModelWrapper* modelWrap
   return;
 }
 
-//----------------------------------------------------------------------------
 void vtkEnclosingModelEntityOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

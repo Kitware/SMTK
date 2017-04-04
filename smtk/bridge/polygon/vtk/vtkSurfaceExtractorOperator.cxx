@@ -23,17 +23,14 @@
 
 vtkStandardNewMacro(vtkSurfaceExtractorOperator);
 
-//----------------------------------------------------------------------------
 vtkSurfaceExtractorOperator::vtkSurfaceExtractorOperator()
 {
 }
 
-//----------------------------------------------------------------------------
 vtkSurfaceExtractorOperator::~vtkSurfaceExtractorOperator()
 {
 }
 
-//----------------------------------------------------------------------------
 bool vtkSurfaceExtractorOperator::AbleToOperate()
 {
   bool able2Op = this->m_smtkOp.lock()
@@ -43,7 +40,6 @@ bool vtkSurfaceExtractorOperator::AbleToOperate()
   return able2Op;
 }
 
-//----------------------------------------------------------------------------
 smtk::model::OperatorResult vtkSurfaceExtractorOperator::Operate()
 {
   // ONLY for create-edge-with-widget and edit-edge operations,
@@ -58,7 +54,6 @@ smtk::model::OperatorResult vtkSurfaceExtractorOperator::Operate()
   return edgeResult;
 }
 
-//----------------------------------------------------------------------------
 void vtkSurfaceExtractorOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

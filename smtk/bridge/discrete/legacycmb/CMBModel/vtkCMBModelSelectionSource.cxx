@@ -33,7 +33,6 @@ public:
 vtkStandardNewMacro(vtkCMBModelSelectionSource);
 vtkCxxSetObjectMacro(vtkCMBModelSelectionSource, ModelWrapper, vtkDiscreteModelWrapper);
 
-//-----------------------------------------------------------------------------
 vtkCMBModelSelectionSource::vtkCMBModelSelectionSource()
 {
   this->Internal = new vtkInternal();
@@ -43,7 +42,6 @@ vtkCMBModelSelectionSource::vtkCMBModelSelectionSource()
   this->ModelWrapper = 0;
 }
 
-//-----------------------------------------------------------------------------
 vtkCMBModelSelectionSource::~vtkCMBModelSelectionSource()
 {
   this->SetModelWrapper(0);
@@ -52,7 +50,6 @@ vtkCMBModelSelectionSource::~vtkCMBModelSelectionSource()
   delete this->Internal;
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBModelSelectionSource::CopyData(vtkSelection *selection)
 {
   if(this->Internal->SelectedEntityIds.size()>0)
@@ -63,21 +60,18 @@ void vtkCMBModelSelectionSource::CopyData(vtkSelection *selection)
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelSelectionSource::AddSelectedEntityId(vtkIdType SelectedEntityId)
 {
   this->Internal->SelectedEntityIds.insert(SelectedEntityId);
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelSelectionSource::RemoveAllSelectedEntityIds()
 {
   this->RemoveAllSelectedEntityIdsInternal();
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelSelectionSource::RemoveAllSelectedEntityIdsInternal()
 {
   if(this->Internal->SelectedEntityIds.size()>0)
@@ -86,7 +80,6 @@ void vtkCMBModelSelectionSource::RemoveAllSelectedEntityIdsInternal()
     }
 }
 
-//-----------------------------------------------------------------------------
 int vtkCMBModelSelectionSource::RequestData(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **vtkNotUsed(inputVector),
@@ -153,7 +146,6 @@ int vtkCMBModelSelectionSource::RequestData(
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBModelSelectionSource::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

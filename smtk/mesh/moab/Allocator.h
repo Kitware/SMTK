@@ -26,7 +26,6 @@ namespace smtk {
 namespace mesh {
 namespace moab {
 
-//----------------------------------------------------------------------------
 class SMTKCORE_EXPORT Allocator : public smtk::mesh::Allocator
 {
 public:

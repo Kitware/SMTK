@@ -14,7 +14,6 @@
 
 vtkStandardNewMacro(vtkModelXMLParser);
 
-//----------------------------------------------------------------------------
 vtkModelXMLParser::vtkModelXMLParser()
 {
   this->FileName = 0;
@@ -26,7 +25,6 @@ vtkModelXMLParser::vtkModelXMLParser()
   this->RootElement = 0;
 }
 
-//----------------------------------------------------------------------------
 vtkModelXMLParser::~vtkModelXMLParser()
 {
   unsigned int i;
@@ -42,7 +40,6 @@ vtkModelXMLParser::~vtkModelXMLParser()
   this->SetFileName(0);
 }
 
-//----------------------------------------------------------------------------
 void vtkModelXMLParser::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
@@ -50,7 +47,6 @@ void vtkModelXMLParser::PrintSelf(ostream& os, vtkIndent indent)
      << "\n";
 }
 
-//----------------------------------------------------------------------------
 void vtkModelXMLParser::StartElement(const char* name, const char** atts)
 {
   vtkXMLElement* element = vtkXMLElement::New();
@@ -70,7 +66,6 @@ void vtkModelXMLParser::StartElement(const char* name, const char** atts)
   this->PushOpenElement(element);
 }
 
-//----------------------------------------------------------------------------
 void vtkModelXMLParser::EndElement(const char* vtkNotUsed(name))
 {
   vtkXMLElement* finished = this->PopOpenElement();
@@ -86,7 +81,6 @@ void vtkModelXMLParser::EndElement(const char* vtkNotUsed(name))
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkModelXMLParser::CharacterDataHandler(const char* data, int length)
 {
   unsigned int numOpen = this->NumberOfOpenElements;
@@ -96,7 +90,6 @@ void vtkModelXMLParser::CharacterDataHandler(const char* data, int length)
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkModelXMLParser::PushOpenElement(vtkXMLElement* element)
 {
   if(this->NumberOfOpenElements == this->OpenElementsSize)
@@ -117,7 +110,6 @@ void vtkModelXMLParser::PushOpenElement(vtkXMLElement* element)
   this->OpenElements[pos] = element;
 }
 
-//----------------------------------------------------------------------------
 vtkXMLElement* vtkModelXMLParser::PopOpenElement()
 {
   if(this->NumberOfOpenElements > 0)
@@ -128,13 +120,11 @@ vtkXMLElement* vtkModelXMLParser::PopOpenElement()
   return 0;
 }
 
-//----------------------------------------------------------------------------
 void vtkModelXMLParser::PrintXML(ostream& os)
 {
   this->RootElement->PrintXML(os, vtkIndent());
 }
 
-//----------------------------------------------------------------------------
 int vtkModelXMLParser::ParseXML()
 {
   if (this->RootElement)
@@ -145,7 +135,6 @@ int vtkModelXMLParser::ParseXML()
   return this->Superclass::ParseXML();
 }
 
-//----------------------------------------------------------------------------
 vtkXMLElement* vtkModelXMLParser::GetRootElement()
 {
   return this->RootElement;

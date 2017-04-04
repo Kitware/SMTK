@@ -111,7 +111,6 @@ vtkSmartPointer<T> ReadData(const smtk::model::AuxiliaryGeometry& auxGeom)
   return data;
 }
 
-//----------------------------------------------------------------------------
 // Fill in the WholeExtent and spacing information from the image block
 int vtkModelAuxiliaryGeometry::RequestInformation (
   vtkInformation * vtkNotUsed(request),

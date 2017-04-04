@@ -18,14 +18,12 @@
 namespace smtk {
   namespace common {
 
-//----------------------------------------------------------------------------
 /// Default constructor creates invalid ptime
 DateTime::DateTime()
   : m_ptime(boost::posix_time::not_a_date_time)
 {
 }
 
-//----------------------------------------------------------------------------
 bool DateTime::setComponents(
   int yr, int month, int day,
   int hr, int min, int sec, int msec,
@@ -61,7 +59,6 @@ bool DateTime::setComponents(
   return this->isSet();
 }
 
-//----------------------------------------------------------------------------
 bool DateTime::components(
   int& yr, int& month, int& day,
   int& hr, int& min, int& sec, int& msec,
@@ -116,13 +113,11 @@ bool DateTime::components(
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool DateTime::isSet() const
 {
   return !this->m_ptime.is_special();
 }
 
-//----------------------------------------------------------------------------
 // Parse input string in canonical format only: YYYYMMDDThhmmss[.zzzzzz]
 bool DateTime::deserialize(const std::string& ts)
 {
@@ -152,14 +147,12 @@ bool DateTime::deserialize(const std::string& ts)
   return this->isSet();
 }
 
-//----------------------------------------------------------------------------
 // Converts data to canonical string format only: YYYYMMDDThhmmss.zzzzzz
 std::string DateTime::serialize() const
 {
   return boost::posix_time::to_iso_string(this->m_ptime);
 }
 
-//----------------------------------------------------------------------------
 /// Parse string using boost time_from_string(), NOT ISO compliant
 bool DateTime::parseBoostFormat(const std::string& ts)
 {
@@ -181,19 +174,16 @@ bool DateTime::parseBoostFormat(const std::string& ts)
   return this->isSet();
 }
 
-//----------------------------------------------------------------------------
 bool DateTime::operator==(const DateTime& dt) const
 {
   return this->m_ptime == dt.m_ptime;
 }
 
-//----------------------------------------------------------------------------
 bool DateTime::operator<(const DateTime& dt) const
 {
   return this->m_ptime < dt.m_ptime;
 }
 
-//----------------------------------------------------------------------------
 bool DateTime::operator>(const DateTime& dt) const
 {
   return this->m_ptime > dt.m_ptime;

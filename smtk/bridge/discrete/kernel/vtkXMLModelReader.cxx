@@ -114,7 +114,6 @@ vtkXMLModelReader::~vtkXMLModelReader()
   this->SetModel(0);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLModelReader::GetElementsByType(
   vtkXMLElement* element, const char* type, vtkCollection* elements)
 {

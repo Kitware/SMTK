@@ -31,7 +31,6 @@
 namespace
 {
 
-//----------------------------------------------------------------------------
 template<typename TReader>
 vtkDataSet* readXMLFile(const std::string& fileName)
 {
@@ -42,7 +41,6 @@ vtkDataSet* readXMLFile(const std::string& fileName)
   return vtkDataSet::SafeDownCast(reader->GetOutput());
 }
 
-//-------------------------------------------------------------------------
 class Filter : public smtk::mesh::CellForEach
 {
 public:
@@ -53,7 +51,6 @@ public:
   smtk::mesh::HandleRange validPoints;
 };
 
-//-------------------------------------------------------------------------
 class CoolingPlateFilter : public Filter
 {
   double yvalue;
@@ -74,7 +71,6 @@ public:
       }
     }
 
-//-------------------------------------------------------------------------
   void forCell(const smtk::mesh::Handle&,
                smtk::mesh::CellType,
                int numPts)
@@ -106,7 +102,6 @@ public:
   }
 };
 
-//-------------------------------------------------------------------------
 class OuterEdgeFilter : public Filter
 {
   double origin[3];
@@ -122,7 +117,6 @@ public:
       }
     }
 
-//-------------------------------------------------------------------------
   void forCell(const smtk::mesh::Handle&,
                smtk::mesh::CellType,
                int numPts)
@@ -209,7 +203,6 @@ public:
   }
 };
 
-//-------------------------------------------------------------------------
 void labelShellWithMaterial(const smtk::mesh::CollectionPtr& c,
                             const smtk::mesh::MeshSet& shell)
 {
@@ -240,7 +233,6 @@ void labelShellWithMaterial(const smtk::mesh::CollectionPtr& c,
 
   static int nextDirId = 0;
 
-//-------------------------------------------------------------------------
 bool labelIntersection(const smtk::mesh::CollectionPtr& c,
                        const smtk::mesh::MeshSet& shell,
                        Filter& filter)
@@ -283,7 +275,6 @@ bool labelIntersection(const smtk::mesh::CollectionPtr& c,
   return true;
 }
 
-//----------------------------------------------------------------------------
 void breakMaterialsByCellType(const smtk::mesh::CollectionPtr& c)
 {
   //for each material we iterate the meshsets
@@ -317,7 +308,6 @@ void breakMaterialsByCellType(const smtk::mesh::CollectionPtr& c)
     }
 }
 
-//----------------------------------------------------------------------------
 template<typename vtkDataSetType >
 smtk::mesh::CollectionPtr convert(vtkDataSetType* input,
                                   smtk::mesh::ManagerPtr manager,
@@ -336,7 +326,6 @@ smtk::mesh::CollectionPtr convert(vtkDataSetType* input,
   return collection;
 }
 
-//-------------------------------------------------------------------------
 void extractMaterials(smtk::mesh::CollectionPtr c, double radius, double* origin, std::string outputFile, double* bounds)
   {
   //extract the exterior-shell for all meshes.

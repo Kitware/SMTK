@@ -19,7 +19,6 @@
 #include "vtkSMPropertyHelper.h"
 #include "vtkSMSessionProxyManager.h"
 
-//-----------------------------------------------------------------------------
 qtInteractionWidget::qtInteractionWidget(
     const vtkSmartPointer<vtkSMNewWidgetRepresentationProxy> &smproxy,
     QWidget *parentWdg)
@@ -34,10 +33,8 @@ qtInteractionWidget::qtInteractionWidget(
                             SIGNAL(widgetEndInteraction()));
 }
 
-//-----------------------------------------------------------------------------
 qtInteractionWidget::~qtInteractionWidget() { this->setView(nullptr); }
 
-//-----------------------------------------------------------------------------
 vtkSmartPointer<vtkSMNewWidgetRepresentationProxy>
 qtInteractionWidget::createWidget(const char *smgroup, const char *smname) {
   pqServer *server = pqActiveObjects::instance().activeServer();
@@ -57,12 +54,10 @@ qtInteractionWidget::createWidget(const char *smgroup, const char *smname) {
   return reprProxy;
 }
 
-//-----------------------------------------------------------------------------
 vtkSMNewWidgetRepresentationProxy *qtInteractionWidget::widgetProxy() const {
   return this->WidgetProxy;
 }
 
-//-----------------------------------------------------------------------------
 void qtInteractionWidget::setView(pqView *aview) {
   if (this->View != aview) {
     if (vtkSMProxy *viewProxy = this->View ? this->View->getProxy() : nullptr) {
@@ -84,10 +79,8 @@ void qtInteractionWidget::setView(pqView *aview) {
   }
 }
 
-//-----------------------------------------------------------------------------
 pqView *qtInteractionWidget::view() const { return this->View; }
 
-//-----------------------------------------------------------------------------
 void qtInteractionWidget::setEnableInteractivity(bool val) {
   bool trueInteractivity = (val && this->view());
 
@@ -105,7 +98,6 @@ void qtInteractionWidget::setEnableInteractivity(bool val) {
   }
 }
 
-//-----------------------------------------------------------------------------
 void qtInteractionWidget::render() {
   if (this->View) {
     this->View->render();

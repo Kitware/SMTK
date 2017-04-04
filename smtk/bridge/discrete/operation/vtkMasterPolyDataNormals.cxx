@@ -114,17 +114,14 @@ private:
 
 }
 
-//----------------------------------------------------------------------------
 vtkMasterPolyDataNormals::vtkMasterPolyDataNormals()
 {
 }
 
-//----------------------------------------------------------------------------
 vtkMasterPolyDataNormals::~vtkMasterPolyDataNormals()
 {
 }
 
-//----------------------------------------------------------------------------
 int vtkMasterPolyDataNormals::RequestData(
   vtkInformation* vtkNotUsed(request),
   vtkInformationVector** inputVector,
@@ -271,7 +268,6 @@ int vtkMasterPolyDataNormals::RequestData(
   return 1;
 }
 
-//----------------------------------------------------------------------------
 void vtkMasterPolyDataNormals::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);

@@ -240,14 +240,14 @@ namespace smtk
       double m_color[4];
 #endif // SHIBOKEN_SKIP
     };
-//----------------------------------------------------------------------------
+
     inline smtk::simulation::UserDataPtr Attribute::userData(const std::string &key) const
     {
       std::map<std::string, smtk::simulation::UserDataPtr >::const_iterator it =
         this->m_userData.find(key);
       return ((it == this->m_userData.end()) ? smtk::simulation::UserDataPtr() : it->second);
     }
-//----------------------------------------------------------------------------
+
     inline void Attribute::setColor(double r, double g, double b, double a)
     {
       this->m_isColorSet = true;
@@ -257,7 +257,6 @@ namespace smtk
       this->m_color[3]= a;
     }
 
-//----------------------------------------------------------------------------
     template<typename T> T Attribute::modelEntitiesAs(const std::string& iname) const
     {
       T result;
@@ -278,7 +277,7 @@ namespace smtk
         }
       return result;
     }
-//----------------------------------------------------------------------------
+
     template<typename T> T Attribute::associatedModelEntities() const
     {
       T result;
@@ -298,7 +297,7 @@ namespace smtk
         }
       return result;
     }
-//----------------------------------------------------------------------------
+
     /**\brief Return an item given its path, converted to a given pointer type.
       */
     template<typename T>
@@ -313,19 +312,18 @@ namespace smtk
       }
     return result;
     }
-//----------------------------------------------------------------------------
+
     template<typename T>
     typename T::Ptr Attribute::findAs(const std::string& iname, SearchStyle style)
     {
     return smtk::dynamic_pointer_cast<T>(this->find(iname, style));
     }
-//----------------------------------------------------------------------------
+
     template<typename T>
     typename T::ConstPtr Attribute::findAs(const std::string& iname, SearchStyle style) const
     {
     return smtk::dynamic_pointer_cast<const T>(this->find(iname, style));
     }
-//----------------------------------------------------------------------------
   } // attribute namespace
 } // smtk namespace
 

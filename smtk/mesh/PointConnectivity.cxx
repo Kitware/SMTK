@@ -14,7 +14,6 @@
 namespace smtk {
 namespace mesh {
 
-//----------------------------------------------------------------------------
 PointConnectivity::PointConnectivity(const smtk::mesh::CollectionPtr& parent,
                                      const smtk::mesh::HandleRange& range):
   m_parent(parent),
@@ -24,7 +23,6 @@ PointConnectivity::PointConnectivity(const smtk::mesh::CollectionPtr& parent,
 
 }
 
-//----------------------------------------------------------------------------
 PointConnectivity::PointConnectivity(const smtk::mesh::PointConnectivity& other):
   m_parent(other.m_parent),
   m_connectivity(other.m_connectivity)
@@ -32,13 +30,11 @@ PointConnectivity::PointConnectivity(const smtk::mesh::PointConnectivity& other)
 
 }
 
-//----------------------------------------------------------------------------
 PointConnectivity::~PointConnectivity()
 {
 
 }
 
-//----------------------------------------------------------------------------
 PointConnectivity& PointConnectivity::operator=(const PointConnectivity& other)
 {
   this->m_parent = other.m_parent;
@@ -46,38 +42,32 @@ PointConnectivity& PointConnectivity::operator=(const PointConnectivity& other)
   return *this;
 }
 
-//----------------------------------------------------------------------------
 bool PointConnectivity::operator==(const PointConnectivity& other) const
 {
   return this->m_parent == other.m_parent &&
          this->m_connectivity->equal(other.m_connectivity.get());
 }
 
-//----------------------------------------------------------------------------
 bool PointConnectivity::operator!=(const PointConnectivity& other) const
 {
   return !(*this == other);
 }
 
-//----------------------------------------------------------------------------
 std::size_t PointConnectivity::size( ) const
 {
   return this->m_connectivity->vertSize();
 }
 
-//----------------------------------------------------------------------------
 std::size_t PointConnectivity::numberOfCells( ) const
 {
   return this->m_connectivity->cellSize();
 }
 
-//----------------------------------------------------------------------------
 bool PointConnectivity::is_empty( ) const
 {
   return this->m_connectivity->cellSize() == 0;
 }
 
-//----------------------------------------------------------------------------
 void PointConnectivity::initCellTraversal()
 {
   //we store the iteration of the traversal inside ourselves not inside
@@ -88,7 +78,6 @@ void PointConnectivity::initCellTraversal()
   this->m_connectivity->initTraversal( this->m_iteratorLocation );
 }
 
-//----------------------------------------------------------------------------
 bool PointConnectivity::fetchNextCell(int& numPts, const smtk::mesh::Handle* &points)
 {
   smtk::mesh::CellType cellType;
@@ -98,7 +87,6 @@ bool PointConnectivity::fetchNextCell(int& numPts, const smtk::mesh::Handle* &po
                                              points);
 }
 
-//----------------------------------------------------------------------------
 bool PointConnectivity::fetchNextCell( smtk::mesh::CellType& cellType,
                                        int& numPts,
                                        const smtk::mesh::Handle* &points)

@@ -21,7 +21,6 @@ namespace
 std::string data_root = SMTK_DATA_DIR;
 
 
-//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr load_hex_mesh(smtk::mesh::ManagerPtr mngr)
 {
   std::string file_path(data_root);
@@ -33,7 +32,6 @@ smtk::mesh::CollectionPtr load_hex_mesh(smtk::mesh::ManagerPtr mngr)
   return c;
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr load_tet_mesh(smtk::mesh::ManagerPtr mngr)
 {
   std::string file_path(data_root);
@@ -45,7 +43,6 @@ smtk::mesh::CollectionPtr load_tet_mesh(smtk::mesh::ManagerPtr mngr)
   return c;
 }
 
-//----------------------------------------------------------------------------
 void verify_hex_typeset_queries(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::TypeSet types = c->types();
@@ -91,7 +88,6 @@ void verify_hex_typeset_queries(const smtk::mesh::CollectionPtr& c)
 
 }
 
-//----------------------------------------------------------------------------
 void verify_tet_typeset_queries(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::TypeSet types = c->types();
@@ -153,7 +149,6 @@ void verify_tet_typeset_queries(const smtk::mesh::CollectionPtr& c)
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestTypeSetFromData(int, char** const)
 {
   smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();

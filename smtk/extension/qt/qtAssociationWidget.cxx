@@ -64,7 +64,6 @@ namespace detail
   };
 }
 
-//----------------------------------------------------------------------------
 class qtAssociationWidgetInternals : public Ui::qtAttributeAssociation
 {
 public:
@@ -75,7 +74,6 @@ public:
   QPointer<qtBaseView> View;
 };
 
-//----------------------------------------------------------------------------
 qtAssociationWidget::qtAssociationWidget(
   QWidget* _p, qtBaseView* bview): QWidget(_p)
 {
@@ -88,13 +86,11 @@ qtAssociationWidget::qtAssociationWidget(
   this->Internals->boundaryGroup->setVisible(false);
 }
 
-//----------------------------------------------------------------------------
 qtAssociationWidget::~qtAssociationWidget()
 {
   delete this->Internals;
 }
 
-//----------------------------------------------------------------------------
 void qtAssociationWidget::initWidget( )
 {
   this->Internals->NodalDropDown = new QComboBox(this);
@@ -130,7 +126,6 @@ void qtAssociationWidget::initWidget( )
 
 }
 
-//----------------------------------------------------------------------------
 void qtAssociationWidget::showDomainsAssociation(
   std::vector<smtk::model::Group>& theDomains,
   std::vector<smtk::attribute::DefinitionPtr>& attDefs)
@@ -184,7 +179,6 @@ void qtAssociationWidget::showDomainsAssociation(
   this->Internals->DomainMaterialTable->blockSignals(false);
 }
 
-//----------------------------------------------------------------------------
 void qtAssociationWidget::updateAvailableListBySelection(const
        smtk::common::UUIDs& selEntites)
 {
@@ -226,7 +220,6 @@ bool qtAssociationWidget::hasSelectedItem()
         false : true;
 }
 
-//----------------------------------------------------------------------------
 void qtAssociationWidget::showAttributeAssociation(
   smtk::model::EntityRef theEntiy,
   std::vector<smtk::attribute::DefinitionPtr>& attDefs)
@@ -295,7 +288,7 @@ void qtAssociationWidget::showAttributeAssociation(
   this->Internals->CurrentList->blockSignals(false);
   this->Internals->AvailableList->blockSignals(false);
 }
-//----------------------------------------------------------------------------
+
 void qtAssociationWidget::showEntityAssociation(
   smtk::attribute::AttributePtr theAtt)
 {
@@ -390,7 +383,6 @@ void qtAssociationWidget::showEntityAssociation(
   this->Internals->AvailableList->blockSignals(false);
 }
 
-//----------------------------------------------------------------------------
 std::set<smtk::model::EntityRef> qtAssociationWidget::processAttUniqueness(
                                             smtk::attribute::DefinitionPtr attDef,
                                             const smtk::model::EntityRefs &assignedIds)
@@ -434,7 +426,6 @@ std::set<smtk::model::EntityRef> qtAssociationWidget::processAttUniqueness(
   return allUsedModelIds;
 }
 
-//----------------------------------------------------------------------------
 QList<smtk::attribute::DefinitionPtr>
 qtAssociationWidget::processDefUniqueness(const smtk::model::EntityRef& theEntity,
                                           smtk::attribute::System* attSystem)
@@ -474,7 +465,6 @@ qtAssociationWidget::processDefUniqueness(const smtk::model::EntityRef& theEntit
   return uniqueDefs;
 }
 
-//----------------------------------------------------------------------------
 void qtAssociationWidget::onEntitySelected()
 {
   QListWidget* const listW = qobject_cast<QListWidget*>(QObject::sender());
@@ -499,14 +489,12 @@ void qtAssociationWidget::onEntitySelected()
     }
 }
 
-//-----------------------------------------------------------------------------
 smtk::attribute::AttributePtr qtAssociationWidget::getSelectedAttribute(
   QListWidgetItem * item)
 {
   return this->getAttribute(item);
 }
 
-//-----------------------------------------------------------------------------
 smtk::attribute::AttributePtr qtAssociationWidget::getAttribute(
   QListWidgetItem * item)
 {
@@ -515,14 +503,12 @@ smtk::attribute::AttributePtr qtAssociationWidget::getAttribute(
   return rawPtr ? rawPtr->shared_from_this() : smtk::attribute::AttributePtr();
 }
 
-//-----------------------------------------------------------------------------
 smtk::model::EntityRef qtAssociationWidget::getSelectedModelEntityItem(
   QListWidgetItem * item)
 {
   return this->getModelEntityItem(item);
 }
 
-//-----------------------------------------------------------------------------
 smtk::model::EntityRef qtAssociationWidget::getModelEntityItem(
   QListWidgetItem * item)
 {
@@ -540,7 +526,6 @@ smtk::model::EntityRef qtAssociationWidget::getModelEntityItem(
   return smtk::model::EntityRef();
 }
 
-//-----------------------------------------------------------------------------
 QList<QListWidgetItem*> qtAssociationWidget::getSelectedItems(QListWidget * theList) const
 {
   if(theList->selectedItems().count())
@@ -555,7 +540,6 @@ QList<QListWidgetItem*> qtAssociationWidget::getSelectedItems(QListWidget * theL
   return result;
 }
 
-//-----------------------------------------------------------------------------
 void qtAssociationWidget::removeItem(QListWidget* theList,
                                              QListWidgetItem * selItem)
 {
@@ -565,7 +549,6 @@ void qtAssociationWidget::removeItem(QListWidget* theList,
     }
 }
 
-//----------------------------------------------------------------------------
 QListWidgetItem* qtAssociationWidget::addModelAssociationListItem(
   QListWidget* theList, smtk::model::EntityRef modelItem, bool sort)
 {
@@ -584,7 +567,6 @@ QListWidgetItem* qtAssociationWidget::addModelAssociationListItem(
   return item;
 }
 
-//----------------------------------------------------------------------------
 QListWidgetItem* qtAssociationWidget::addAttributeAssociationItem(
   QListWidget* theList, smtk::attribute::AttributePtr att, bool sort)
 {
@@ -603,7 +585,6 @@ QListWidgetItem* qtAssociationWidget::addAttributeAssociationItem(
   return item;
 }
 
-//----------------------------------------------------------------------------
 void qtAssociationWidget::addDomainListItem(
   const smtk::model::Group& domainEnt, QList<smtk::attribute::AttributePtr>& allAtts)
 {
@@ -650,7 +631,6 @@ void qtAssociationWidget::addDomainListItem(
   this->Internals->DomainMaterialTable->setItem(numRows-1, 1, new QTableWidgetItem());
 }
 
-//----------------------------------------------------------------------------
 void qtAssociationWidget::onRemoveAssigned()
 {
   this->Internals->CurrentList->blockSignals(true);
@@ -697,7 +677,6 @@ void qtAssociationWidget::onRemoveAssigned()
    }
 }
 
-//----------------------------------------------------------------------------
 void qtAssociationWidget::onAddAvailable()
 {
   this->Internals->CurrentList->blockSignals(true);
@@ -763,7 +742,6 @@ void qtAssociationWidget::onAddAvailable()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtAssociationWidget::onExchange()
 {
   this->Internals->CurrentList->blockSignals(true);
@@ -857,7 +835,6 @@ void qtAssociationWidget::onExchange()
 
 }
 
-//----------------------------------------------------------------------------
 void qtAssociationWidget::onNodalOptionChanged(int idx)
 {
   smtk::attribute::AttributePtr currAtt = this->Internals->CurrentAtt.lock();
@@ -884,7 +861,6 @@ void qtAssociationWidget::onNodalOptionChanged(int idx)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtAssociationWidget::onDomainAssociationChanged()
 {
   smtk::attribute::System *attSystem = this->Internals->View->uiManager()->attSystem();
@@ -927,7 +903,6 @@ void qtAssociationWidget::onDomainAssociationChanged()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtAssociationWidget::updateListItemSelectionAfterChange(QList<QListWidgetItem*> selItems, QListWidget* list)
 {
   list->blockSignals(true);

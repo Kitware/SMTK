@@ -34,7 +34,6 @@ class LoadPoly
   smoab::Range Points;
 
 public:
-  //----------------------------------------------------------------------------
   //warning cells input to constructor is held by reference
   LoadPoly(const smoab::Range& cells,
            const smoab::Interface& interface):
@@ -46,7 +45,6 @@ public:
 
   const smoab::Range& moabPoints() const { return this->Points; }
 
-  //----------------------------------------------------------------------------
   //todo: have support for using only a subsection of the input cells
   void fill(vtkPolyData *dataSet)
     {
@@ -60,7 +58,6 @@ public:
     }
 
 private:
-  //----------------------------------------------------------------------------
   void addCoordinates(vtkPointSet *grid)
     {
     //this is sorta of hackish as moabPoints is only valid
@@ -83,7 +80,6 @@ private:
     grid->SetPoints(newPoints.GetPointer());
     }
 
-  //----------------------------------------------------------------------------
   void addGridsTopology(vtkPolyData* data,
                         vtkIdType numCells,
                         vtkIdType numConnectivity) const

@@ -103,7 +103,7 @@ public:
 };
 
 vtkStandardNewMacro(vtkCMBModelRepresentation);
-//----------------------------------------------------------------------------
+
 vtkCMBModelRepresentation::vtkCMBModelRepresentation()
 {
   this->Internal = new vtkInternal();
@@ -138,7 +138,6 @@ vtkCMBModelRepresentation::vtkCMBModelRepresentation()
   this->LODModelMapper->SetInterpolateScalarsBeforeMapping(0);
 }
 
-//----------------------------------------------------------------------------
 vtkCMBModelRepresentation::~vtkCMBModelRepresentation()
 {
   this->LODTextureCrop->Delete();
@@ -156,14 +155,12 @@ vtkCMBModelRepresentation::~vtkCMBModelRepresentation()
   delete this->Internal;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelRepresentation::RemoveLargeTextureInput()
 {
   this->SetInputConnection(1, 0);
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelRepresentation::AddToView(vtkView* view)
 {
   vtkPVRenderView* rview = vtkPVRenderView::SafeDownCast(view);
@@ -175,7 +172,6 @@ bool vtkCMBModelRepresentation::AddToView(vtkView* view)
   return this->Superclass::AddToView(view);
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelRepresentation::RemoveFromView(vtkView* view)
 {
   vtkPVRenderView* rview = vtkPVRenderView::SafeDownCast(view);
@@ -187,7 +183,6 @@ bool vtkCMBModelRepresentation::RemoveFromView(vtkView* view)
   return this->Superclass::RemoveFromView(view);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelRepresentation::SetVisibility(bool val)
 {
   this->Superclass::SetVisibility(val);
@@ -195,13 +190,12 @@ void vtkCMBModelRepresentation::SetVisibility(bool val)
   this->Actor->SetVisibility((val && this->ModelVisibility)? 1 : 0);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelRepresentation::SetModelVisibility(bool val)
 {
   this->ModelVisibility = val;
   this->Actor->SetVisibility((val && this->ModelVisibility)? 1 : 0);
 }
-//----------------------------------------------------------------------------
+
 void vtkCMBModelRepresentation::SetCMBModel(vtkDiscreteModelWrapper* model)
 {
   this->ModelMapper->SetCMBModel(model);
@@ -210,7 +204,6 @@ void vtkCMBModelRepresentation::SetCMBModel(vtkDiscreteModelWrapper* model)
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBModelRepresentation::FillInputPortInformation(int port,
   vtkInformation *info)
 {
@@ -229,7 +222,6 @@ int vtkCMBModelRepresentation::FillInputPortInformation(int port,
   return 0;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelRepresentation::UpdateColoringParameters()
 {
   this->Superclass::UpdateColoringParameters();
@@ -267,13 +259,11 @@ void vtkCMBModelRepresentation::UpdateColoringParameters()
   //this->ModelMapper->UpdateColorProperties();
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }
 
-//----------------------------------------------------------------------------
 vtkSelection* vtkCMBModelRepresentation::ConvertSelection(
   vtkView* _view, vtkSelection* selection)
 {
@@ -320,7 +310,6 @@ vtkSelection* vtkCMBModelRepresentation::ConvertSelection(
   return output;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBModelRepresentation::ProcessViewRequest(
   vtkInformationRequestKey* request_type,
   vtkInformation* inInfo, vtkInformation* outInfo)
@@ -382,7 +371,6 @@ int vtkCMBModelRepresentation::ProcessViewRequest(
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBModelRepresentation::RequestData(vtkInformation* request,
   vtkInformationVector** inputVector, vtkInformationVector* outputVector)
 {
@@ -451,8 +439,6 @@ int vtkCMBModelRepresentation::RequestData(vtkInformation* request,
   return this->vtkPVDataRepresentation::RequestData(request, inputVector, outputVector);
 }
 
-
-//----------------------------------------------------------------------------
 void vtkCMBModelRepresentation::AddSelectedEntityId(vtkIdType SelectedEntityId)
 {
   this->Internal->SelectedEntityIds.insert(SelectedEntityId);
@@ -460,14 +446,12 @@ void vtkCMBModelRepresentation::AddSelectedEntityId(vtkIdType SelectedEntityId)
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelRepresentation::RemoveAllSelectedEntityIds()
 {
   this->RemoveAllSelectedEntityIdsInternal();
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelRepresentation::RemoveAllSelectedEntityIdsInternal()
 {
   if(this->Internal->SelectedEntityIds.size()>0)
@@ -479,12 +463,11 @@ void vtkCMBModelRepresentation::RemoveAllSelectedEntityIdsInternal()
   this->LastSelectedEntityIds->SetNumberOfTuples(0);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelRepresentation::SetShowEdgePoints(bool bVal)
 {
   this->ModelMapper->SetShowEdgePoints(bVal);
 }
-//----------------------------------------------------------------------------
+
 void vtkCMBModelRepresentation::SetRepresentation(int rep)
 {
   this->Superclass::SetRepresentation(rep);
@@ -501,7 +484,7 @@ void vtkCMBModelRepresentation::SetRepresentation(int rep)
     }
 */
 }
-//----------------------------------------------------------------------------
+
 void vtkCMBModelRepresentation::SetColor(double r, double g, double b)
 {
   // The Color Should NOT be passed to the individual entity, because
@@ -509,63 +492,54 @@ void vtkCMBModelRepresentation::SetColor(double r, double g, double b)
   this->Superclass::SetColor(r, g, b);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelRepresentation::SetLineWidth(double val)
 {
   this->Superclass::SetLineWidth(val);
 //  this->Internal->SetLineWidth(val);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelRepresentation::SetOpacity(double val)
 {
   this->Superclass::SetOpacity(val);
 //  this->Internal->SetOpacity(val);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelRepresentation::SetPointSize(double val)
 {
   this->Superclass::SetPointSize(val);
 //  this->Internal->SetPointSize(val);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelRepresentation::SetAmbientColor(double r, double g, double b)
 {
   this->Superclass::SetAmbientColor(r, g, b);
 //  this->Internal->SetAmbientColor(r, g, b);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelRepresentation::SetDiffuseColor(double r, double g, double b)
 {
   this->Superclass::SetDiffuseColor(r, g, b);
 //  this->Internal->SetDiffuseColor(r, g, b);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelRepresentation::SetEdgeColor(double r, double g, double b)
 {
   this->Superclass::SetEdgeColor(r, g, b);
 //  this->Internal->SetDiffuseColor(r, g, b);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelRepresentation::SetInterpolation(int val)
 {
   this->Superclass::SetInterpolation(val);
 //  this->Internal->SetInterpolation(val);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelRepresentation::SetSpecularColor(double r, double g, double b)
 {
   this->Superclass::SetSpecularColor(r, g, b);
 //  this->Internal->SetSpecularColor(r, g, b);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelRepresentation::SetSpecularPower(double val)
 {
   this->Superclass::SetSpecularPower(val);
@@ -574,9 +548,7 @@ void vtkCMBModelRepresentation::SetSpecularPower(double val)
 
 //**************************************************************************
 // Forwarded to vtkCMBModelMapper
-//----------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------
 double* vtkCMBModelRepresentation::GetBounds()
 {
   double bounds[6];

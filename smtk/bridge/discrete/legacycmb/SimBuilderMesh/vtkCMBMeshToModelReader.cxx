@@ -41,7 +41,6 @@ using namespace discreteFaceMesherClasses;
 vtkStandardNewMacro(vtkCMBMeshToModelReader);
 vtkCxxSetObjectMacro(vtkCMBMeshToModelReader, ModelWrapper, vtkDiscreteModelWrapper);
 
-//----------------------------------------------------------------------------
 // copied from vtkXMLUnstructuredDataReader.cxx
 template <class TIn, class TOut>
 void MeshToModelCopyArray(TIn* in, TOut* out,
@@ -53,7 +52,6 @@ void MeshToModelCopyArray(TIn* in, TOut* out,
     }
 }
 
-//----------------------------------------------------------------------------
 vtkCMBMeshToModelReader::vtkCMBMeshToModelReader()
 {
   this->SetNumberOfInputPorts(0);
@@ -62,36 +60,32 @@ vtkCMBMeshToModelReader::vtkCMBMeshToModelReader()
   this->AnalysisGridFileName = NULL;
 }
 
-//----------------------------------------------------------------------------
 vtkCMBMeshToModelReader::~vtkCMBMeshToModelReader()
 {
   this->SetModelWrapper(0);
   this->SetAnalysisGridFileName(NULL);
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBMeshToModelReader::GetDataSetMajorVersion()
 {
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBMeshToModelReader::GetDataSetMinorVersion()
 {
   return 0;
 }
 
-//-----------------------------------------------------------------------------
 const char* vtkCMBMeshToModelReader::GetDataSetName()
 {
   return "PolyData";
 }
-//----------------------------------------------------------------------------
+
 void vtkCMBMeshToModelReader::SetupEmptyOutput()
 {
   this->GetCurrentOutput()->Initialize();
 }
-//----------------------------------------------------------------------------
+
 int vtkCMBMeshToModelReader::CanReadFileVersion(int major, int minor)
 {
   if (major == 1 && minor==0)
@@ -101,7 +95,6 @@ int vtkCMBMeshToModelReader::CanReadFileVersion(int major, int minor)
   return 0;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBMeshToModelReader::ReadPrimaryElement(vtkXMLDataElement* ePrimary)
 {
   if(!ePrimary || !this->vtkXMLReader::ReadPrimaryElement(ePrimary))
@@ -114,7 +107,7 @@ int vtkCMBMeshToModelReader::ReadPrimaryElement(vtkXMLDataElement* ePrimary)
     "AnalysisMeshFileName"));
   return 1;
 }
-//----------------------------------------------------------------------------
+
 void vtkCMBMeshToModelReader::ReadXMLData()
 {
   if(!this->ModelWrapper || !this->ModelWrapper->GetModel())
@@ -165,7 +158,7 @@ void vtkCMBMeshToModelReader::ReadXMLData()
     this->DataError = 1;
     }
 }
-//-----------------------------------------------------------------------------
+
 int vtkCMBMeshToModelReader::LoadAnalysisGridInfo(vtkFieldData* fieldData)
 {
   if(this->ModelDimension == 2)
@@ -178,7 +171,7 @@ int vtkCMBMeshToModelReader::LoadAnalysisGridInfo(vtkFieldData* fieldData)
     }
   return 0;
 }
-//----------------------------------------------------------------------------
+
 int vtkCMBMeshToModelReader::FillOutputPortInformation(
   int, vtkInformation* info)
 {
@@ -186,7 +179,6 @@ int vtkCMBMeshToModelReader::FillOutputPortInformation(
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 int vtkCMBMeshToModelReader::Load2DAnalysisGridInfo(vtkFieldData* fieldData)
 {
   vtkDiscreteModel* model = this->ModelWrapper->GetModel();
@@ -226,7 +218,7 @@ int vtkCMBMeshToModelReader::Load2DAnalysisGridInfo(vtkFieldData* fieldData)
     }
   return 0;
 }
-//-----------------------------------------------------------------------------
+
 int vtkCMBMeshToModelReader::Load3DAnalysisGridInfo(vtkFieldData* fieldData)
 {
   vtkDiscreteModel* model = this->ModelWrapper->GetModel();
@@ -300,8 +292,8 @@ int vtkCMBMeshToModelReader::Load3DAnalysisGridInfo(vtkFieldData* fieldData)
 
   return 0;
 }
+
 // copied from vtkCMBParserBase.cxx
-//----------------------------------------------------------------------------
 vtkIdTypeArray* vtkCMBMeshToModelReader::NewIdTypeArray(vtkDataArray* a)
 {
   if(!a)
@@ -340,7 +332,6 @@ vtkIdTypeArray* vtkCMBMeshToModelReader::NewIdTypeArray(vtkDataArray* a)
   return ida;
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBMeshToModelReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

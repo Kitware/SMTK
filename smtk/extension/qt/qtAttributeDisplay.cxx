@@ -48,7 +48,6 @@
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-//----------------------------------------------------------------------------
 class qtAttributeDisplayInternals
 {
 public:
@@ -84,7 +83,6 @@ public:
 
 };
 
-//----------------------------------------------------------------------------
 qtAttributeDisplay::
 qtAttributeDisplay(QWidget* p, smtk::extension::qtUIManager* uiman) : QWidget(p)
 {
@@ -93,13 +91,11 @@ qtAttributeDisplay(QWidget* p, smtk::extension::qtUIManager* uiman) : QWidget(p)
   this->createWidget( );
 }
 
-//----------------------------------------------------------------------------
 qtAttributeDisplay::~qtAttributeDisplay()
 {
   delete this->Internals;
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeDisplay::createWidget( )
 {
   if(!this->Internals->UIManager)
@@ -182,14 +178,12 @@ void qtAttributeDisplay::createWidget( )
   this->getDefinitionsWithAssociations();
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeDisplay::enableShowBy(int enable)
 {
   this->Internals->ShowCategoryCombo->setEnabled(enable);
   this->onShowCategory();
 }
 
-//-----------------------------------------------------------------------------
 smtk::attribute::ItemPtr qtAttributeDisplay::getAttributeItemFromItem(
   QTableWidgetItem * item)
 {
@@ -198,7 +192,6 @@ smtk::attribute::ItemPtr qtAttributeDisplay::getAttributeItemFromItem(
   return rawPtr ? rawPtr->shared_from_this() : smtk::attribute::ItemPtr();
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeDisplay::onShowCategory()
 {
   bool useCategory = this->Internals->FilterByCheck->isChecked();
@@ -206,7 +199,6 @@ void qtAttributeDisplay::onShowCategory()
     this->Internals->ShowCategoryCombo->currentText().toStdString() : "");
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeDisplay::onShowCategory(const std::string& strCategory)
 {
   this->Internals->SelectPropCombo->blockSignals(true);
@@ -255,7 +247,6 @@ void qtAttributeDisplay::onShowCategory(const std::string& strCategory)
 //  this->updateTableWithProperties();
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeDisplay::initSelectionFilters(const QString& currentItemName)
 {
 //  this->Internals->ValuesTable->setVisible(1);
@@ -271,7 +262,6 @@ void qtAttributeDisplay::initSelectionFilters(const QString& currentItemName)
   //  this->updateTableWithProperties();
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeDisplay::initSelectPropCombo(
   smtk::attribute::DefinitionPtr attDef, const QString& currentItemName)
 {
@@ -334,8 +324,6 @@ void qtAttributeDisplay::initSelectPropCombo(
   this->Internals->SelectPropCombo->blockSignals(false);
 }
 
-
-//----------------------------------------------------------------------------
 void qtAttributeDisplay::onFieldSelected()
 {
    Definition* rawPtr = static_cast<Definition*>(
@@ -356,14 +344,12 @@ void qtAttributeDisplay::onFieldSelected()
     irawPtr ? irawPtr->name().c_str() : "");
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeDisplay::onAttributeDefSelected()
 {
   this->initSelectionFilters(this->Internals->SelectPropCombo->currentText());
   //this->updateTableWithProperties();
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeDisplay::getDefinitionsWithAssociations()
 {
   if(!this->Internals->UIManager)

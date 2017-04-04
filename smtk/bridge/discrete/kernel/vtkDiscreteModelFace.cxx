@@ -500,7 +500,6 @@ void vtkDiscreteModelFace::BuildEdges(bool showEdge,
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkDiscreteModelFace::WalkLoop(vtkIdType startingEdge,
                                            vtkPolyData *edges,
                                            std::vector<bool> &visited,
@@ -726,7 +725,6 @@ void vtkDiscreteModelFace::WalkLoop(vtkIdType startingEdge,
     }
 }
 
-//----------------------------------------------------------------------------
 std::string vtkDiscreteModelFace::
 EncodeModelFaces(vtkIdType facetId, vtkIdType v0, vtkIdType v1)
 {
@@ -760,7 +758,7 @@ EncodeModelFaces(vtkIdType facetId, vtkIdType v0, vtkIdType v1)
 
   return NewModelEdgeInfo::to_key(cellIds.GetPointer());
 }
-//----------------------------------------------------------------------------
+
 void vtkDiscreteModelFace::
 CreateModelEdges(NewModelEdgeInfo &newEdgesInfo,
                  std::map<int, vtkDiscreteModelEdge*> &newEdges,
@@ -894,7 +892,6 @@ CreateModelEdges(NewModelEdgeInfo &newEdgesInfo,
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkDiscreteModelFace::SplitEdges(vtkDiscreteModelFace* newModelFace,
   FaceEdgeSplitInfo& splitInfo)
 {

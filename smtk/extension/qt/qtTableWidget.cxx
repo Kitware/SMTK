@@ -15,7 +15,6 @@
 #include <QKeyEvent>
 using namespace smtk::extension;
 
-//-----------------------------------------------------------------------------
 qtTableWidget::qtTableWidget(QWidget* p)
   : QTableWidget(p)
 {
@@ -23,12 +22,10 @@ qtTableWidget::qtTableWidget(QWidget* p)
   this->horizontalHeader()->setStretchLastSection( true );
 }
 
-//-----------------------------------------------------------------------------
 qtTableWidget::~qtTableWidget()
 {
 }
 
-//----------------------------------------------------------------------------
 void qtTableWidget::keyPressEvent(QKeyEvent* e)
 {
   emit this->keyPressed(e);

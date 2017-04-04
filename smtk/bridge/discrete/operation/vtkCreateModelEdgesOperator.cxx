@@ -28,12 +28,10 @@ vtkCreateModelEdgesOperator::vtkCreateModelEdgesOperator()
   this->ShowEdges = 0;
 }
 
-//----------------------------------------------------------------------------
 vtkCreateModelEdgesOperator::~vtkCreateModelEdgesOperator()
 {
 }
 
-//----------------------------------------------------------------------------
 bool vtkCreateModelEdgesOperator::AbleToOperate(vtkDiscreteModelWrapper* ModelWrapper)
 {
   if(!ModelWrapper)
@@ -44,7 +42,6 @@ bool vtkCreateModelEdgesOperator::AbleToOperate(vtkDiscreteModelWrapper* ModelWr
   return this->Superclass::AbleToOperate(ModelWrapper->GetModel());
 }
 
-//----------------------------------------------------------------------------
 void vtkCreateModelEdgesOperator::Operate(vtkDiscreteModelWrapper* ModelWrapper)
 {
   vtkDebugMacro("Operating on a model.");
@@ -85,7 +82,6 @@ void vtkCreateModelEdgesOperator::Operate(vtkDiscreteModelWrapper* ModelWrapper)
   return;
 }
 
-//----------------------------------------------------------------------------
 void vtkCreateModelEdgesOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

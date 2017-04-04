@@ -31,7 +31,6 @@ except ImportError:
     sys.exit(-1)
 
 
-# ---------------------------------------------------------------------------
 def get_base_definitions(defn, def_list):
     '''Recursively builds list of base definitions
 
@@ -45,7 +44,6 @@ def get_base_definitions(defn, def_list):
     return get_base_definitions(base_def, def_list)
 
 
-# ---------------------------------------------------------------------------
 def list_items(parent, level, options):
     ''' Lists items contained by parent
 
@@ -77,7 +75,6 @@ def list_items(parent, level, options):
             list_items(concrete_item, level + 1, options)
 
 
-# ---------------------------------------------------------------------------
 def list_definition(system, defn, level, options):
     '''Lists one definition in indented-text format
 
@@ -96,7 +93,6 @@ def list_definition(system, defn, level, options):
     list_items(defn, sublevel, options)
 
 
-# ---------------------------------------------------------------------------
 def list_by_view(system, view, level, options):
     '''Lists definitions in indented-text format, organized by view
 
@@ -131,7 +127,6 @@ def list_by_view(system, view, level, options):
             list_definition(system, defn, sublevel, options)
 
 
-# ---------------------------------------------------------------------------
 def list_definitions(system, options):
     '''Lists all definitions in indented-text format
 
@@ -160,7 +155,6 @@ def list_definitions(system, options):
         list_definition(system, defn, 1, options)
 
 
-# ---------------------------------------------------------------------------
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=app_description)
     parser.add_argument('-t', '--template_filename', required=True)

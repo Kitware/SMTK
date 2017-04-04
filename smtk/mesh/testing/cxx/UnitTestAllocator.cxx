@@ -19,7 +19,6 @@
 namespace
 {
 
-//----------------------------------------------------------------------------
 void verify_moab_allocator_creation()
 {
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
@@ -38,7 +37,6 @@ void verify_moab_allocator_creation()
   test( collection->isModified(), "collection should be modified once the allocator is accessed");
 }
 
-//----------------------------------------------------------------------------
 void verify_json_allocator_creation()
 {
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
@@ -60,7 +58,6 @@ void verify_json_allocator_creation()
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestAllocator(int, char** const)
 {
   verify_moab_allocator_creation();

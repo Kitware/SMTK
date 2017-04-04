@@ -20,7 +20,6 @@ public:
   pqPropertyLinks Links;
 };
 
-//-----------------------------------------------------------------------------
 qtLineWidget::qtLineWidget(QWidget *parentWdg)
     : Superclass(qtInteractionWidget::createWidget("representations",
                                                    "LineWidgetRepresentation"),
@@ -82,10 +81,8 @@ qtLineWidget::qtLineWidget(QWidget *parentWdg)
   this->connect(&links, SIGNAL(qtWidgetChanged()), SLOT(render()));
 }
 
-//-----------------------------------------------------------------------------
 qtLineWidget::~qtLineWidget() {}
 
-//-----------------------------------------------------------------------------
 void qtLineWidget::setLineColor(const QColor &acolor) {
   double dcolor[3] = {acolor.redF(), acolor.greenF(), acolor.blueF()};
   if (vtkSMProxy *proxy = this->widgetProxy()) {
@@ -95,7 +92,6 @@ void qtLineWidget::setLineColor(const QColor &acolor) {
   }
 }
 
-//-----------------------------------------------------------------------------
 QColor qtLineWidget::color() const {
   if (vtkSMProxy *proxy = this->widgetProxy()) {
     double dcolor[3];
@@ -106,7 +102,6 @@ QColor qtLineWidget::color() const {
   return QColor();
 }
 
-//-----------------------------------------------------------------------------
 void qtLineWidget::setPoints(const double p1[3], const double p2[3]) {
   vtkSMProxy *wdg = this->widgetProxy();
   Q_ASSERT(wdg);
@@ -117,7 +112,6 @@ void qtLineWidget::setPoints(const double p1[3], const double p2[3]) {
   this->render();
 }
 
-//-----------------------------------------------------------------------------
 void qtLineWidget::points(double p1[3], double p2[3]) const {
   vtkSMProxy *wdg = this->widgetProxy();
   Q_ASSERT(wdg);
@@ -125,11 +119,8 @@ void qtLineWidget::points(double p1[3], double p2[3]) const {
   vtkSMPropertyHelper(wdg, "Point2WorldPosition").Get(p2, 3);
 }
 
-//-----------------------------------------------------------------------------
 void qtLineWidget::xAxis() {}
 
-//-----------------------------------------------------------------------------
 void qtLineWidget::yAxis() {}
 
-//-----------------------------------------------------------------------------
 void qtLineWidget::zAxis() {}

@@ -17,14 +17,12 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 DirectoryItem::DirectoryItem(Attribute *owningAttribute,
                              int itemPosition):
   FileSystemItem(owningAttribute, itemPosition)
 {
 }
 
-//----------------------------------------------------------------------------
 DirectoryItem::DirectoryItem(Item *inOwningItem,
                              int itemPosition,
                              int inSubGroupPosition):
@@ -32,12 +30,10 @@ DirectoryItem::DirectoryItem(Item *inOwningItem,
 {
 }
 
-//----------------------------------------------------------------------------
 DirectoryItem::~DirectoryItem()
 {
 }
 
-//----------------------------------------------------------------------------
 Item::Type DirectoryItem::type() const
 {
   return DIRECTORY;

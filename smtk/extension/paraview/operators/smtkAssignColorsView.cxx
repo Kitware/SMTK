@@ -49,7 +49,6 @@
 
 using namespace smtk::extension;
 
-//----------------------------------------------------------------------------
 class smtkAssignColorsViewInternals : public Ui::AssignColorsParameters
 {
 public:
@@ -139,14 +138,12 @@ public:
   smtk::weak_ptr<smtk::model::Operator> CurrentOp;
 };
 
-//----------------------------------------------------------------------------
 smtkAssignColorsView::smtkAssignColorsView(const ViewInfo &info)
   : qtBaseView(info)
 {
   this->Internals = new smtkAssignColorsViewInternals;
 }
 
-//----------------------------------------------------------------------------
 smtkAssignColorsView::~smtkAssignColorsView()
 {
   delete this->Internals;
@@ -161,7 +158,6 @@ bool smtkAssignColorsView::displayItem(smtk::attribute::ItemPtr item)
   return this->qtBaseView::displayItem(item);
 }
 
-//----------------------------------------------------------------------------
 qtBaseView* smtkAssignColorsView::createViewWidget(const ViewInfo &info)
 {
   smtkAssignColorsView *view = new smtkAssignColorsView(info);
@@ -169,8 +165,6 @@ qtBaseView* smtkAssignColorsView::createViewWidget(const ViewInfo &info)
   return view;
 }
 
-
-//----------------------------------------------------------------------------
 QIcon smtkAssignColorsView::renderColorSwatch(const QColor& color, int radius)
 {
   if (radius < 10)
@@ -189,7 +183,6 @@ QIcon smtkAssignColorsView::renderColorSwatch(const QColor& color, int radius)
   return QIcon(pix);
 }
 
-//----------------------------------------------------------------------------
 QIcon smtkAssignColorsView::renderPaletteSwatch(
   const QList<QColor>& colors,
   int width,
@@ -215,7 +208,6 @@ QIcon smtkAssignColorsView::renderPaletteSwatch(
   return QIcon(pix);
 }
 
-//----------------------------------------------------------------------------
 QIcon smtkAssignColorsView::renderInvalidSwatch(int radius)
 {
   if (radius < 10)
@@ -243,13 +235,11 @@ QIcon smtkAssignColorsView::renderInvalidSwatch(int radius)
   return QIcon(pix);
 }
 
-//----------------------------------------------------------------------------
 void smtkAssignColorsView::attributeModified()
 {
   // Always enable the apply button here.
 }
 
-//----------------------------------------------------------------------------
 void smtkAssignColorsView::createWidget( )
 {
   smtk::common::ViewPtr view = this->getObject();
@@ -338,7 +328,6 @@ void smtkAssignColorsView::createWidget( )
     this, SLOT(cancelOperation(const smtk::model::OperatorPtr&)));
 }
 
-//----------------------------------------------------------------------------
 void smtkAssignColorsView::updateAttributeData()
 {
   smtk::common::ViewPtr view = this->getObject();
@@ -393,7 +382,6 @@ void smtkAssignColorsView::updateAttributeData()
   this->Internals->CurrentAtt = this->Internals->createAttUI(att, this->Widget, this);
 }
 
-//----------------------------------------------------------------------------
 void smtkAssignColorsView::requestOperation(const smtk::model::OperatorPtr& op)
 {
   if (!op || !op->specification())
@@ -403,7 +391,6 @@ void smtkAssignColorsView::requestOperation(const smtk::model::OperatorPtr& op)
   this->uiManager()->activeModelView()->requestOperation(op, false);
 }
 
-//----------------------------------------------------------------------------
 void smtkAssignColorsView::cancelOperation(const smtk::model::OperatorPtr& op)
 {
   if ( !op || !this->Widget || !this->Internals->CurrentAtt )
@@ -413,7 +400,6 @@ void smtkAssignColorsView::cancelOperation(const smtk::model::OperatorPtr& op)
   // Reset widgets here
 }
 
-//----------------------------------------------------------------------------
 void smtkAssignColorsView::valueChanged(smtk::attribute::ItemPtr valItem)
 {
   (void)valItem;
@@ -421,7 +407,6 @@ void smtkAssignColorsView::valueChanged(smtk::attribute::ItemPtr valItem)
   this->requestOperation(this->Internals->CurrentOp.lock());
 }
 
-//----------------------------------------------------------------------------
 void smtkAssignColorsView::chooseDefaultColorAndApply()
 {
   pqSettings* settings = pqApplicationCore::instance()->settings();
@@ -439,7 +424,6 @@ void smtkAssignColorsView::chooseDefaultColorAndApply()
   this->applyDefaultColor();
 }
 
-//----------------------------------------------------------------------------
 void smtkAssignColorsView::applyDefaultColor()
 {
   auto op = this->Internals->CurrentOp.lock();
@@ -462,7 +446,6 @@ void smtkAssignColorsView::applyDefaultColor()
   this->requestOperation(op);
 }
 
-//----------------------------------------------------------------------------
 void smtkAssignColorsView::setDefaultPaletteAndApply(const Json::Value& preset)
 {
   std::string name(preset["Name"].asString().c_str());
@@ -476,7 +459,6 @@ void smtkAssignColorsView::setDefaultPaletteAndApply(const Json::Value& preset)
   this->applyDefaultPalette();
 }
 
-//----------------------------------------------------------------------------
 void smtkAssignColorsView::applyDefaultPalette()
 {
   auto op = this->Internals->CurrentOp.lock();
@@ -507,7 +489,6 @@ void smtkAssignColorsView::applyDefaultPalette()
   this->requestOperation(op);
 }
 
-//----------------------------------------------------------------------------
 void smtkAssignColorsView::removeColors()
 {
   auto op = this->Internals->CurrentOp.lock();
@@ -522,19 +503,16 @@ void smtkAssignColorsView::removeColors()
   this->requestOperation(op);
 }
 
-//----------------------------------------------------------------------------
 void smtkAssignColorsView::clearSelection()
 {
   this->uiManager()->activeModelView()->clearSelection();
 }
 
-//----------------------------------------------------------------------------
 void smtkAssignColorsView::showAdvanceLevelOverlay(bool show)
 {
   this->qtBaseView::showAdvanceLevelOverlay(show);
 }
 
-//----------------------------------------------------------------------------
 void smtkAssignColorsView::requestModelEntityAssociation()
 {
   this->updateAttributeData();

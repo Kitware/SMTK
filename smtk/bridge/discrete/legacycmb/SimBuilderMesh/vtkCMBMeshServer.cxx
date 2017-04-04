@@ -42,13 +42,11 @@ public:
   std::map<vtkModelFace*, vtkSmartPointer<vtkCMBModelFaceMeshServer> > ModelFaces;
 };
 
-//----------------------------------------------------------------------------
 vtkCMBMeshServer::vtkCMBMeshServer()
 {
   this->Internal = new vtkCMBMeshServerInternals;
 }
 
-//----------------------------------------------------------------------------
 vtkCMBMeshServer::~vtkCMBMeshServer()
 {
   if(this->CallbackCommand)
@@ -66,7 +64,6 @@ vtkCMBMeshServer::~vtkCMBMeshServer()
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshServer::Initialize(vtkModel* model)
 {
   if(model == NULL)
@@ -120,7 +117,6 @@ void vtkCMBMeshServer::Initialize(vtkModel* model)
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBMeshServer::SetGlobalLength(double globalLength)
 {
   if(this->GlobalLength == globalLength)
@@ -137,7 +133,6 @@ bool vtkCMBMeshServer::SetGlobalLength(double globalLength)
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBMeshServer::SetGlobalMinimumAngle(double minAngle)
 {
   if(this->GlobalMinimumAngle == minAngle)
@@ -160,7 +155,6 @@ bool vtkCMBMeshServer::SetGlobalMinimumAngle(double minAngle)
   return true;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshServer::Reset()
 {
   this->Internal->ModelEdges.clear();
@@ -177,7 +171,6 @@ void vtkCMBMeshServer::Reset()
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 vtkCMBModelEntityMesh* vtkCMBMeshServer::GetModelEntityMesh(
   vtkModelGeometricEntity* entity)
 {
@@ -206,7 +199,6 @@ vtkCMBModelEntityMesh* vtkCMBMeshServer::GetModelEntityMesh(
   return NULL;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshServer::ModelEdgeSplit(vtkSplitEventData* splitEventData)
 {
   vtkModelEdge* sourceEdge = vtkModelEdge::SafeDownCast(
@@ -239,7 +231,6 @@ void vtkCMBMeshServer::ModelEdgeSplit(vtkSplitEventData* splitEventData)
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshServer::ModelEdgeMerge(vtkMergeEventData* mergeEventData)
 {
   vtkModelEdge* sourceEdge = vtkModelEdge::SafeDownCast(
@@ -261,7 +252,6 @@ void vtkCMBMeshServer::ModelEdgeMerge(vtkMergeEventData* mergeEventData)
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshServer::ModelEntityBoundaryModified(vtkModelGeometricEntity* entity)
 {
   if(entity->IsA("vtkModelEdge") != 0)
@@ -290,7 +280,6 @@ void vtkCMBMeshServer::ModelEntityBoundaryModified(vtkModelGeometricEntity* enti
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBMeshServer::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

@@ -13,7 +13,6 @@
 #include "pqInterfaceTracker.h"
 #include "smtk/extension/qt/qtSMTKUtilities.h"
 
-//-----------------------------------------------------------------------------
 pqPluginSMTKViewBehavior::pqPluginSMTKViewBehavior(QObject* p)
   : Superclass(p)
 {
@@ -26,7 +25,6 @@ pqPluginSMTKViewBehavior::pqPluginSMTKViewBehavior(QObject* p)
     }
 }
 
-//-----------------------------------------------------------------------------
 void pqPluginSMTKViewBehavior::addPluginInterface(QObject* iface)
 {
   smtk::extension::qtViewInterface* svi = qobject_cast<

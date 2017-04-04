@@ -836,8 +836,6 @@ int SaveJSON::forModelMeshes(
 
 namespace {
 
-
-//--------------------------------------------------------------------------
 template< typename T>
 void writeIntegerValues( cJSON* parent,
                         std::vector<T> const& values,
@@ -851,7 +849,6 @@ void writeIntegerValues( cJSON* parent,
   cJSON_AddItemToObject(parent, name.c_str(), a);
 }
 
-//--------------------------------------------------------------------------
 void writeHandleValues( cJSON* parent,
                         smtk::mesh::HandleRange const& values,
                         std::string name )
@@ -863,7 +860,6 @@ void writeHandleValues( cJSON* parent,
                         json);
 }
 
-//--------------------------------------------------------------------------
 void writeBoundaryConditions( cJSON* parent, const smtk::mesh::MeshSet& mesh)
 {
   cJSON* boundaryJson = cJSON_CreateObject();
@@ -903,7 +899,6 @@ void writeBoundaryConditions( cJSON* parent, const smtk::mesh::MeshSet& mesh)
     }
 }
 
-//--------------------------------------------------------------------------
 void writeUUIDValues( cJSON* parent,
                 smtk::common::UUIDArray const& values,
                 std::string name )
@@ -924,7 +919,6 @@ public:
   {
   }
 
-  //--------------------------------------------------------------------------
   void write(const smtk::mesh::MeshSet& mesh, cJSON* parent,
              bool writeMeshes, bool writeCellAndPoints)
   {
@@ -962,7 +956,6 @@ public:
     writeUUIDValues(parent, modelEntityIds, std::string("modelEntityIds") );
   }
 
-  //--------------------------------------------------------------------------
   void writeProperties(const smtk::mesh::CollectionPtr& collection,
                        cJSON* parent)
   {
@@ -1014,7 +1007,6 @@ public:
       }
   }
 
-  //--------------------------------------------------------------------------
   void forMesh(smtk::mesh::MeshSet& mesh)
   {
     cJSON* meshJson = cJSON_CreateObject();

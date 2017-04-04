@@ -14,7 +14,6 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 MeshSelectionItemDefinition::
 MeshSelectionItemDefinition(const std::string &myName):
   ItemDefinition(myName)
@@ -22,41 +21,37 @@ MeshSelectionItemDefinition(const std::string &myName):
   this->m_membershipMask = smtk::model::ANY_ENTITY;
 }
 
-//----------------------------------------------------------------------------
 MeshSelectionItemDefinition::~MeshSelectionItemDefinition()
 {
 }
-//----------------------------------------------------------------------------
+
 Item::Type MeshSelectionItemDefinition::type() const
 {
   return Item::MESH_SELECTION;
 }
 
-//----------------------------------------------------------------------------
 smtk::model::BitFlags MeshSelectionItemDefinition::membershipMask() const
 {
   return this->m_membershipMask;
 }
 
-//----------------------------------------------------------------------------
 void MeshSelectionItemDefinition::setMembershipMask(smtk::model::BitFlags entMask)
 {
   this->m_membershipMask = entMask;
 }
 
-//----------------------------------------------------------------------------
 bool MeshSelectionItemDefinition::isValueValid(const int &val) const
 {
   return val >= 0;
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemPtr MeshSelectionItemDefinition::buildItem(
   Attribute *owningAttribute, int itemPosition) const
 {
   return smtk::attribute::ItemPtr(new MeshSelectionItem(owningAttribute,
                                               itemPosition));
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemPtr MeshSelectionItemDefinition::buildItem(
 Item *owningItem, int itemPosition, int subGroupPosition) const
 {
@@ -65,7 +60,6 @@ Item *owningItem, int itemPosition, int subGroupPosition) const
                                               subGroupPosition));
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::ItemDefinitionPtr
 smtk::attribute::MeshSelectionItemDefinition::
 createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
@@ -78,4 +72,3 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
   instance->setRefModelEntityName(this->refModelEntityName());
   return instance;
 }
-//----------------------------------------------------------------------------

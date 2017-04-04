@@ -99,14 +99,12 @@ void qtCheckItemComboBox::hidePopup()
   this->setCurrentIndex(0);
 }
 
-//-----------------------------------------------------------------------------
 void qtCheckItemComboBox::showPopup()
 {
   this->view()->updateGeometry();
   this->QComboBox::showPopup();
 }
 
-//-----------------------------------------------------------------------------
 qtModelEntityItemCombo::qtModelEntityItemCombo(
   qtModelEntityItem *entitem, QWidget * inParent, const QString& displayExt)
 : qtCheckItemComboBox(inParent, displayExt), m_ModelEntityItem(entitem)
@@ -117,7 +115,6 @@ qtModelEntityItemCombo::qtModelEntityItemCombo(
   //this->viewContainer()
 }
 
-//----------------------------------------------------------------------------
 void qtModelEntityItemCombo::init()
 {
   this->blockSignals(true);
@@ -185,14 +182,12 @@ void qtModelEntityItemCombo::init()
   this->hidePopup();
 }
 
-//-----------------------------------------------------------------------------
 void qtModelEntityItemCombo::showPopup()
 {
   this->init();
   this->qtCheckItemComboBox::showPopup();
 }
 
-//-----------------------------------------------------------------------------
 bool qtModelEntityItemCombo::eventFilter(QObject* editor, QEvent* evt)
 {
   if(evt->type()==QEvent::MouseButtonRelease)
@@ -218,7 +213,6 @@ bool qtModelEntityItemCombo::eventFilter(QObject* editor, QEvent* evt)
   return QObject::eventFilter(editor, evt);
 }
 
-//----------------------------------------------------------------------------
 void qtModelEntityItemCombo::itemCheckChanged(
   const QModelIndex& topLeft, const QModelIndex& )
 {
@@ -252,7 +246,6 @@ void qtModelEntityItemCombo::itemCheckChanged(
     }
 }
 
-//-----------------------------------------------------------------------------
 qtMeshItemCombo::qtMeshItemCombo(
   qtMeshItem *entitem, QWidget * inParent, const QString& displayExt)
 : qtCheckItemComboBox(inParent, displayExt), m_MeshItem(entitem)
@@ -260,7 +253,6 @@ qtMeshItemCombo::qtMeshItemCombo(
   this->setMinimumWidth(80);
 }
 
-//----------------------------------------------------------------------------
 void qtMeshItemCombo::init()
 {
   this->blockSignals(true);
@@ -349,14 +341,12 @@ void qtMeshItemCombo::init()
   this->hidePopup();
 }
 
-//-----------------------------------------------------------------------------
 void qtMeshItemCombo::showPopup()
 {
   this->init();
   this->qtCheckItemComboBox::showPopup();
 }
 
-//-----------------------------------------------------------------------------
 bool qtMeshItemCombo::eventFilter(QObject* editor, QEvent* evt)
 {
   if(evt->type()==QEvent::MouseButtonRelease)
@@ -382,7 +372,6 @@ bool qtMeshItemCombo::eventFilter(QObject* editor, QEvent* evt)
   return QObject::eventFilter(editor, evt);
 }
 
-//----------------------------------------------------------------------------
 void qtMeshItemCombo::itemCheckChanged(
   const QModelIndex& topLeft, const QModelIndex& )
 {

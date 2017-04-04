@@ -14,13 +14,11 @@ namespace smtk {
 
 
 
-//----------------------------------------------------------------------------
 MeshForEach::~MeshForEach()
 {
 
 }
 
-//----------------------------------------------------------------------------
 CellForEach::CellForEach(bool wantCoordinates):
   m_pointIds(NULL),
   m_coords(NULL),
@@ -29,13 +27,11 @@ CellForEach::CellForEach(bool wantCoordinates):
 
 }
 
-//----------------------------------------------------------------------------
 CellForEach::~CellForEach()
 {
 
 }
 
-//----------------------------------------------------------------------------
 PointForEach::~PointForEach()
 {
 

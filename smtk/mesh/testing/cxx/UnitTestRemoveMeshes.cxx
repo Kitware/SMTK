@@ -24,7 +24,6 @@ namespace
 std::string data_root = SMTK_DATA_DIR;
 
 
-//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
 {
   std::string file_path(data_root);
@@ -36,7 +35,6 @@ smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
   return c;
 }
 
-//----------------------------------------------------------------------------
 void reset(const smtk::mesh::CollectionPtr& c)
 {
   std::string file_path(data_root);
@@ -46,7 +44,6 @@ void reset(const smtk::mesh::CollectionPtr& c)
   smtk::io::importMesh(file_path,c);
 }
 
-//----------------------------------------------------------------------------
 void verify_remove_empty_mesh(const smtk::mesh::CollectionPtr& c)
 {
   const std::size_t numMeshesBeforeRemoval = c->numberOfMeshes();
@@ -62,7 +59,6 @@ void verify_remove_empty_mesh(const smtk::mesh::CollectionPtr& c)
        "deleting no meshes shouldn't modify number of meshes");
 }
 
-//----------------------------------------------------------------------------
 void verify_remove_mesh_from_other_collection(
     smtk::mesh::ManagerPtr mngr,
     const smtk::mesh::CollectionPtr& c)
@@ -85,7 +81,6 @@ void verify_remove_mesh_from_other_collection(
   mngr->removeCollection(otherc);
 }
 
-//----------------------------------------------------------------------------
 void verify_remove_invalid_meshes(const smtk::mesh::CollectionPtr& c)
 {
   const std::size_t numMeshesBeforeRemoval = c->numberOfMeshes();
@@ -107,7 +102,6 @@ void verify_remove_invalid_meshes(const smtk::mesh::CollectionPtr& c)
 
 }
 
-//----------------------------------------------------------------------------
 void verify_remove_already_removed_meshes(const smtk::mesh::CollectionPtr& c)
 {
   const std::size_t numMeshesBeforeRemoval = c->numberOfMeshes();
@@ -133,7 +127,6 @@ void verify_remove_already_removed_meshes(const smtk::mesh::CollectionPtr& c)
   reset(c);
 }
 
-//----------------------------------------------------------------------------
 void verify_remove_single_mesh(const smtk::mesh::CollectionPtr& c)
 {
   const std::size_t numMeshesBeforeRemoval = c->numberOfMeshes();
@@ -157,7 +150,6 @@ void verify_remove_single_mesh(const smtk::mesh::CollectionPtr& c)
   reset(c);
 }
 
-//----------------------------------------------------------------------------
 void verify_remove_multiple_meshes(const smtk::mesh::CollectionPtr& c)
 {
   const std::size_t numMeshesBeforeRemoval = c->numberOfMeshes();
@@ -185,7 +177,6 @@ void verify_remove_multiple_meshes(const smtk::mesh::CollectionPtr& c)
   reset(c);
 }
 
-//----------------------------------------------------------------------------
 void verify_remove_all_meshes(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::MeshSet allMeshes = c->meshes();
@@ -203,7 +194,6 @@ void verify_remove_all_meshes(const smtk::mesh::CollectionPtr& c)
   reset(c);
 }
 
-//----------------------------------------------------------------------------
 void verify_remove_meshes_removes_unused_cells(const smtk::mesh::CollectionPtr& c)
 {
   const std::size_t numMeshesBeforeRemoval = c->numberOfMeshes();
@@ -236,7 +226,6 @@ void verify_remove_meshes_removes_unused_cells(const smtk::mesh::CollectionPtr& 
   reset(c);
 }
 
-//----------------------------------------------------------------------------
 void verify_remove_verts_with_model_association(const smtk::mesh::CollectionPtr& c)
 {
   //make a mesh that only holds verts
@@ -275,7 +264,6 @@ void verify_remove_verts_with_model_association(const smtk::mesh::CollectionPtr&
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestRemoveMeshes(int, char** const)
 {
   smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();

@@ -21,7 +21,6 @@
 
 using namespace smtk::attribute;
 
-//-----------------------------------------------------------------------------
 qtColorButton::qtColorButton(QWidget* p)
   : QToolButton(p)
 {
@@ -30,13 +29,11 @@ qtColorButton::qtColorButton(QWidget* p)
   this->connect(this, SIGNAL(clicked()), SLOT(chooseColor()));
 }
 
-//-----------------------------------------------------------------------------
 QColor qtColorButton::chosenColor() const
 {
   return this->Color;
 }
 
-//-----------------------------------------------------------------------------
 void qtColorButton::setChosenColor(const QColor& color)
 {
   if(color.isValid())
@@ -52,7 +49,6 @@ void qtColorButton::setChosenColor(const QColor& color)
     }
 }
 
-//-----------------------------------------------------------------------------
 QIcon qtColorButton::renderColorSwatch(const QColor& color)
 {
   int radius = qRound(this->height() * 0.75);
@@ -73,14 +69,12 @@ QIcon qtColorButton::renderColorSwatch(const QColor& color)
   return QIcon(pix);
 }
 
-//-----------------------------------------------------------------------------
 void qtColorButton::chooseColor()
 {
   this->setChosenColor(QColorDialog::getColor(this->Color, this,
     "Choose Color", QColorDialog::DontUseNativeDialog));
 }
 
-//-----------------------------------------------------------------------------
 void qtColorButton::resizeEvent(QResizeEvent *rEvent)
 {
   (void) rEvent;

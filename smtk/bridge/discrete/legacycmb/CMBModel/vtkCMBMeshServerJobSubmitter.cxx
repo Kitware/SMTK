@@ -36,7 +36,6 @@ vtkStandardNewMacro(vtkCMBMeshServerJobSubmitter)
 
 namespace
 {
-  //----------------------------------------------------------------------------
   template< typename ValueType>
   inline bool writeToStream(std::ostream& buffer,
                             const ValueType* begin,
@@ -61,7 +60,6 @@ namespace
     return true;
   }
 
-  //----------------------------------------------------------------------------
   template< typename ValueType>
   inline bool writeToStream(std::ostream& buffer,
                      vtkTypedDataArrayIterator<ValueType> begin,
@@ -83,7 +81,6 @@ namespace
 
   }
 
-  //----------------------------------------------------------------------------
   inline  bool writeToStream(std::ostream& buffer, vtkDataArray* data)
   {
     bool written = false;
@@ -101,7 +98,6 @@ namespace
     return written;
   }
 
-  //---------------------------------------------------------------------------
   template<typename T>
   inline void serialize_mesh(T &buffer, vtkSmartPointer<vtkPolyData> mesh)
   {
@@ -110,7 +106,6 @@ namespace
     buffer << std::endl;
   }
 
-  //---------------------------------------------------------------------------
   template<typename T>
   inline void serialize_classification(T &buffer, vtkDiscreteModel* model)
   {
@@ -137,7 +132,6 @@ namespace
     buffer << std::endl;
   }
 
-  //---------------------------------------------------------------------------
   template<typename T>
   inline void serialize_region(T &buffer, vtkDiscreteModel* model)
   {
@@ -177,7 +171,6 @@ namespace
 
 }
 
-//-----------------------------------------------------------------------------
 vtkCMBMeshServerJobSubmitter::vtkCMBMeshServerJobSubmitter():
   Endpoint(),
   Submission(),
@@ -186,13 +179,11 @@ vtkCMBMeshServerJobSubmitter::vtkCMBMeshServerJobSubmitter():
 
 }
 
-//-----------------------------------------------------------------------------
 vtkCMBMeshServerJobSubmitter::~vtkCMBMeshServerJobSubmitter()
 {
 
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBMeshServerJobSubmitter::Operate(
                                          vtkDiscreteModelWrapper* modelWrapper)
 {
@@ -236,21 +227,18 @@ void vtkCMBMeshServerJobSubmitter::Operate(
 }
 
 
-//-----------------------------------------------------------------------------
 void vtkCMBMeshServerJobSubmitter::SetEndpoint(const char* ep)
 {
   this->Endpoint = std::string(ep);
   this->Modified();
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBMeshServerJobSubmitter::SetSubmission(const char* submission)
 {
   this->Submission = std::string(submission);
   this->Modified();
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBMeshServerJobSubmitter::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

@@ -22,17 +22,14 @@
 
 vtkStandardNewMacro(vtkCMBModelFaceMeshClient);
 
-//----------------------------------------------------------------------------
 vtkCMBModelFaceMeshClient::vtkCMBModelFaceMeshClient()
 {
 }
 
-//----------------------------------------------------------------------------
 vtkCMBModelFaceMeshClient::~vtkCMBModelFaceMeshClient()
 {
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelFaceMeshClient::SendLengthAndAngleToServer()
 {
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
@@ -77,7 +74,6 @@ bool vtkCMBModelFaceMeshClient::SendLengthAndAngleToServer()
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelFaceMeshClient::BuildMesh(bool /*meshHigherDimensionalEntities*/)
 {
   this->SetMeshedLength(0);
@@ -144,7 +140,6 @@ bool vtkCMBModelFaceMeshClient::BuildMesh(bool /*meshHigherDimensionalEntities*/
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelFaceMeshClient::SetLocalLength(double length)
 {
   if(length == this->GetLength())
@@ -155,7 +150,6 @@ bool vtkCMBModelFaceMeshClient::SetLocalLength(double length)
   return this->SendLengthAndAngleToServer();
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelFaceMeshClient::SetLocalMinimumAngle(double minAngle)
 {
   if(minAngle == this->GetMinimumAngle())
@@ -166,7 +160,6 @@ bool vtkCMBModelFaceMeshClient::SetLocalMinimumAngle(double minAngle)
   return this->SendLengthAndAngleToServer();
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelFaceMeshClient::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

@@ -9,7 +9,6 @@ import sys
 
 import smtk
 
-# ---------------------------------------------------------------------------
 if __name__ == '__main__':
     description = 'Load resource file and write with options'
     parser = argparse.ArgumentParser(description=description)

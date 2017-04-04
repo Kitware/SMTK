@@ -49,7 +49,6 @@ void qtOverlay::paintEvent(QPaintEvent *)
   p.fillRect(rect(), this->m_overlayColor);
 }
 
-//----------------------------------------------------------------------------
 qtOverlayFilter::qtOverlayFilter(QWidget* onWidget, QObject * parentO) : QObject(parentO)
 {
   m_Active = true;
@@ -58,7 +57,7 @@ qtOverlayFilter::qtOverlayFilter(QWidget* onWidget, QObject * parentO) : QObject
   m_overlayOn = onWidget;
   onWidget->installEventFilter(this);
 }
-//----------------------------------------------------------------------------
+
 qtOverlayFilter::~qtOverlayFilter()
 {
   delete this->m_overlay;

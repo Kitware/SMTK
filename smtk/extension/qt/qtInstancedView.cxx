@@ -27,7 +27,6 @@
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-//----------------------------------------------------------------------------
 class qtInstancedViewInternals
 {
 public:
@@ -38,7 +37,6 @@ public:
   QList< QPointer<qtAttribute> > AttInstances;
 };
 
-//----------------------------------------------------------------------------
 qtBaseView *
 qtInstancedView::createViewWidget(const ViewInfo &info)
 {
@@ -47,7 +45,6 @@ qtInstancedView::createViewWidget(const ViewInfo &info)
   return view;
 }
 
-//----------------------------------------------------------------------------
 qtInstancedView::
 qtInstancedView(const ViewInfo &info) :
   qtBaseView(info)
@@ -56,12 +53,11 @@ qtInstancedView(const ViewInfo &info) :
 
 }
 
-//----------------------------------------------------------------------------
 qtInstancedView::~qtInstancedView()
 {
   delete this->Internals;
 }
-//----------------------------------------------------------------------------
+
 void qtInstancedView::createWidget( )
 {
   if(!this->getObject())
@@ -88,7 +84,6 @@ void qtInstancedView::createWidget( )
   this->updateAttributeData();
 }
 
-//----------------------------------------------------------------------------
 void qtInstancedView::updateAttributeData()
 {
   smtk::common::ViewPtr view = this->getObject();
@@ -184,7 +179,7 @@ void qtInstancedView::updateAttributeData()
       }
     }
 }
-//----------------------------------------------------------------------------
+
 void qtInstancedView::showAdvanceLevelOverlay(bool show)
 {
   foreach(qtAttribute* att, this->Internals->AttInstances)
@@ -197,7 +192,6 @@ void qtInstancedView::showAdvanceLevelOverlay(bool show)
   this->qtBaseView::showAdvanceLevelOverlay(show);
 }
 
-//----------------------------------------------------------------------------
 bool qtInstancedView::isValid() const
 {
   foreach(qtAttribute* att, this->Internals->AttInstances)
@@ -210,7 +204,6 @@ bool qtInstancedView::isValid() const
   return true;
 }
 
-//----------------------------------------------------------------------------
 void qtInstancedView::requestModelEntityAssociation()
 {
   foreach(qtAttribute* att, this->Internals->AttInstances)

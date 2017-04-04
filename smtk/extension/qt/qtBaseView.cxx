@@ -30,7 +30,6 @@
 
 using namespace smtk::extension;
 
-//----------------------------------------------------------------------------
 class qtBaseViewInternals
 {
 public:
@@ -68,8 +67,6 @@ public:
 
 };
 
-
-//----------------------------------------------------------------------------
 qtBaseView::qtBaseView(const ViewInfo &info)
 {
   this->m_viewInfo = info;
@@ -88,7 +85,6 @@ qtBaseView::qtBaseView(const ViewInfo &info)
     }
 }
 
-//----------------------------------------------------------------------------
 qtBaseView::~qtBaseView()
 {
   if (this->Internals)
@@ -101,7 +97,6 @@ qtBaseView::~qtBaseView()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtBaseView::getDefinitions(
   smtk::attribute::DefinitionPtr attDef,
   QList<smtk::attribute::DefinitionPtr>& defs)
@@ -122,7 +117,7 @@ void qtBaseView::getDefinitions(
       }
     }
 }
-//----------------------------------------------------------------------------
+
 bool qtBaseView::displayItem(smtk::attribute::ItemPtr item)
 {
   if (!item)
@@ -133,14 +128,12 @@ bool qtBaseView::displayItem(smtk::attribute::ItemPtr item)
     this->uiManager()->passItemCategoryCheck(item->definition());
 }
 
-//----------------------------------------------------------------------------
 void qtBaseView::valueChanged(smtk::attribute::ItemPtr item)
 {
   emit this->modified(item);
   this->uiManager()->onViewUIModified(this, item);
 }
 
-//----------------------------------------------------------------------------
 bool qtBaseView::setFixedLabelWidth(int w)
 {
   w = std::min(w, this->uiManager()->maxValueLabelLength());
@@ -148,7 +141,7 @@ bool qtBaseView::setFixedLabelWidth(int w)
   this->m_fixedLabelWidth = w;
   return false;
 }
-//----------------------------------------------------------------------------
+
 void qtBaseView::buildUI()
 {
   if (this->m_isTopLevel && (!this->m_topLevelInitialized))
@@ -190,7 +183,7 @@ void qtBaseView::buildUI()
 
   this->m_ScrollArea->setWidget(this->Widget);
 }
-//----------------------------------------------------------------------------
+
 void qtBaseView::makeTopLevel()
 {
 
@@ -403,7 +396,6 @@ bool qtBaseView::categoryEnabled()
         this->Internals->ShowCategoryCombo->isEnabled();
 }
 
-//----------------------------------------------------------------------------
 void qtBaseView::onAdvanceLevelChanged(int levelIdx)
 {
   // If this is not a toplevel widget don't do anything
@@ -415,7 +407,7 @@ void qtBaseView::onAdvanceLevelChanged(int levelIdx)
   int level = this->Internals->AdvLevelCombo->itemData(levelIdx).toInt();
   this->showAdvanceLevel(level);
 }
-//----------------------------------------------------------------------------
+
 int qtBaseView::advanceLevel()
 {
   return this->Internals->AdvLevelCombo->currentIndex();

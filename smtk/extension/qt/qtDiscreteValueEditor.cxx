@@ -28,7 +28,6 @@
 
 using namespace smtk::extension;
 
-//----------------------------------------------------------------------------
 class qtDiscreteValueEditorInternals
 {
 public:
@@ -60,7 +59,6 @@ public:
 
 };
 
-//----------------------------------------------------------------------------
 qtDiscreteValueEditor::qtDiscreteValueEditor(
   qtInputsItem *item, int elementIdx, QLayout* childLayout) :
    QWidget(item->widget())
@@ -70,13 +68,12 @@ qtDiscreteValueEditor::qtDiscreteValueEditor(
   this->createWidget();
 }
 
-//----------------------------------------------------------------------------
 qtDiscreteValueEditor::~qtDiscreteValueEditor()
 {
   this->Internals->clearChildItems();
   delete this->Internals;
 }
-//----------------------------------------------------------------------------
+
 void qtDiscreteValueEditor::createWidget()
 {
   smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->valueItem();
@@ -130,7 +127,6 @@ void qtDiscreteValueEditor::createWidget()
   this->onInputValueChanged();
 }
 
-//----------------------------------------------------------------------------
 void qtDiscreteValueEditor::updateItemData()
 {
   smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->valueItem();
@@ -165,7 +161,6 @@ void qtDiscreteValueEditor::updateItemData()
   combo->setCurrentIndex(setIndex);
 }
 
-//----------------------------------------------------------------------------
 void qtDiscreteValueEditor::onInputValueChanged()
 {
   if(!this->Internals->m_inputItem->baseView()->uiManager())
@@ -275,7 +270,6 @@ void qtDiscreteValueEditor::onInputValueChanged()
   this->Internals->m_inputItem->baseView()->childrenResized();
 }
 
-//-----------------------------------------------------------------------------
 QSize qtDiscreteValueEditor::sizeHint() const
 {
   return QSize(this->Internals->m_combo->width(),

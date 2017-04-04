@@ -223,7 +223,6 @@ private:
   vtkStdString FileName;
 };
 
-//----------------------------------------------------------------------------
 class DiscreteMesh::EdgePoints
 {
 public:
@@ -241,8 +240,6 @@ public:
   }
 };
 
-
-//----------------------------------------------------------------------------
 class DiscreteMesh::Face
 {
   struct point
@@ -288,7 +285,6 @@ public:
   vtkIdType GetNumberOfPoints() const { return this->PointIds.size(); }
 };
 
-//----------------------------------------------------------------------------
 class DiscreteMesh::FaceResult: private std::vector<vtkIdType>
 {
   typedef vtkIdType T;
@@ -311,7 +307,6 @@ public:
 
 };
 
-//----------------------------------------------------------------------------
 inline vtkIdType DiscreteMesh::
 AddEdgeIfNotExisting(vtkIdType p0, vtkIdType p1, bool& orientation,
                      bool &createdEdge) const
@@ -321,7 +316,6 @@ AddEdgeIfNotExisting(vtkIdType p0, vtkIdType p1, bool& orientation,
                                     createdEdge);
 }
 
-//----------------------------------------------------------------------------
 inline bool DiscreteMesh::
 EdgeExists(vtkIdType p0, vtkIdType p1, vtkIdType &edgeId) const
 {

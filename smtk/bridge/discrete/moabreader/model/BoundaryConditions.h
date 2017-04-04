@@ -16,8 +16,6 @@
 namespace smoab {
 namespace model {
 
-
-//----------------------------------------------------------------------------
 template<typename T>
 class BoundaryConditions
 {
@@ -44,7 +42,6 @@ private:
 
 };
 
-//----------------------------------------------------------------------------
 template<typename T>
 smoab::model::BoundaryConditions<T> extractBCS(
                                         const smoab::model::FaceCellSets &faces,

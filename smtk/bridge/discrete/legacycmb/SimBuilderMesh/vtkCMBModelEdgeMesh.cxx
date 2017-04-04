@@ -20,25 +20,20 @@
 #include <vtkModelVertex.h>
 #include <vtkPolyData.h>
 
-
-//----------------------------------------------------------------------------
 vtkCMBModelEdgeMesh::vtkCMBModelEdgeMesh()
 {
   this->ModelEdge = NULL;
 }
 
-//----------------------------------------------------------------------------
 vtkCMBModelEdgeMesh::~vtkCMBModelEdgeMesh()
 {
 }
 
-//----------------------------------------------------------------------------
 vtkModelGeometricEntity* vtkCMBModelEdgeMesh::GetModelGeometricEntity()
 {
   return this->ModelEdge;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelEdgeMesh::Initialize(vtkCMBMesh* masterMesh, vtkModelEdge* edge)
 {
   if(masterMesh == NULL || edge == NULL)
@@ -53,7 +48,6 @@ void vtkCMBModelEdgeMesh::Initialize(vtkCMBMesh* masterMesh, vtkModelEdge* edge)
   this->SetModelEntityMesh(NULL);
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelEdgeMesh::BuildModelEntityMesh(
   bool meshHigherDimensionalEntities)
 {
@@ -90,7 +84,6 @@ bool vtkCMBModelEdgeMesh::BuildModelEntityMesh(
   return this->BuildMesh(meshHigherDimensionalEntities);
 }
 
-//----------------------------------------------------------------------------
 vtkCMBModelVertexMesh* vtkCMBModelEdgeMesh::GetAdjacentModelVertexMesh(
   int which)
 {
@@ -104,7 +97,6 @@ vtkCMBModelVertexMesh* vtkCMBModelEdgeMesh::GetAdjacentModelVertexMesh(
     this->GetMasterMesh()->GetModelEntityMesh(modelVertex));
 }
 
-//----------------------------------------------------------------------------
 double vtkCMBModelEdgeMesh::GetActualLength()
 {
   double actualLength = this->GetLength();
@@ -139,7 +131,6 @@ double vtkCMBModelEdgeMesh::GetActualLength()
   return actualLength;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelEdgeMesh::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
@@ -152,5 +143,3 @@ void vtkCMBModelEdgeMesh::PrintSelf(ostream& os, vtkIndent indent)
     os << indent << "ModelEdge: (NULL)\n";
     }
 }
-//----------------------------------------------------------------------------
-

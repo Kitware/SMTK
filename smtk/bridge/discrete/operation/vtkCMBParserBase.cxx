@@ -34,7 +34,6 @@ vtkCMBParserBase:: ~vtkCMBParserBase()
 {
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBParserBase::SetGeometry(vtkDiscreteModel* Model, vtkObject* Geometry)
 {
   //we need an efficient way to DeepCopy just the structure of the geometry.
@@ -52,21 +51,18 @@ void vtkCMBParserBase::SetGeometry(vtkDiscreteModel* Model, vtkObject* Geometry)
   Model->SetMesh(mesh);
 }
 
-//-----------------------------------------------------------------------------
 bool vtkCMBParserBase::AddCellsToGeometry(vtkDiscreteModelGeometricEntity* Entity,
                                          vtkIdList* MasterCellIds)
 {
   return Entity->AddCellsToGeometry(MasterCellIds);
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBParserBase::SetUniquePersistentId(vtkModelEntity* Entity,
                                              vtkIdType Id)
 {
   Entity->SetUniquePersistentId(Id);
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBParserBase::SetLargestUsedUniqueId(vtkModel* Model, vtkIdType MaxId)
 {
   if(Model->GetLargestUsedUniqueId() < MaxId)
@@ -75,7 +71,6 @@ void vtkCMBParserBase::SetLargestUsedUniqueId(vtkModel* Model, vtkIdType MaxId)
     }
 }
 
-//----------------------------------------------------------------------------
 // copied from vtkXMLUnstructuredDataReader.cxx
 template <class TIn, class TOut>
 void vtkCMBParserBaseCopyArray(TIn* in, TOut* out,
@@ -87,7 +82,6 @@ void vtkCMBParserBaseCopyArray(TIn* in, TOut* out,
     }
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBParserBase::SetAnalysisGridInfo(
   vtkDiscreteModel* model, vtkDataArray* pointMapArray, vtkDataArray* cellMapArray,
   vtkCharArray* canonicalSideArray)
@@ -148,7 +142,6 @@ void vtkCMBParserBase::SetAnalysisGridInfo(
   analysisGridInfo->Delete();
 }
 
-//----------------------------------------------------------------------------
 vtkIdTypeArray* vtkCMBParserBase::NewIdTypeArray(vtkDataArray* a)
 {
   if(!a)
@@ -185,7 +178,6 @@ vtkIdTypeArray* vtkCMBParserBase::NewIdTypeArray(vtkDataArray* a)
   return ida;
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBParserBase::SeparateCellClassification(vtkDiscreteModel* model,
                                 vtkIdTypeArray* cellClassification,
                                 vtkCMBParserBase::CellToModelType& cellToModelMap) const
@@ -219,7 +211,6 @@ void vtkCMBParserBase::SeparateCellClassification(vtkDiscreteModel* model,
     }
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBParserBase::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

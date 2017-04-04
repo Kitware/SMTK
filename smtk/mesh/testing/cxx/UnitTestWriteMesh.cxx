@@ -39,7 +39,6 @@ void cleanup( const std::string& file_path )
     }
 }
 
-//----------------------------------------------------------------------------
 void verify_write_empty_collection()
 {
   std::string file_path(data_root);
@@ -60,7 +59,6 @@ void verify_write_empty_collection()
   test ( result == true, "Wrote empty collection to disk");
 }
 
-//----------------------------------------------------------------------------
 void verify_write_null_collection()
 {
   std::string write_path(write_root);
@@ -78,7 +76,6 @@ void verify_write_null_collection()
   test ( result == false, "Can't save null collection to disk");
 }
 
-//----------------------------------------------------------------------------
 void verify_write_valid_collection_hdf5()
 {
   std::string file_path(data_root);
@@ -117,7 +114,6 @@ void verify_write_valid_collection_hdf5()
   test( c2->types() == c->types() );
 }
 
-//----------------------------------------------------------------------------
 void verify_write_valid_collection_exodus()
 {
   std::string file_path(data_root);
@@ -155,7 +151,6 @@ void verify_write_valid_collection_exodus()
   test( c2->cells( smtk::mesh::Dims3 ).size() == c->cells( smtk::mesh::Dims3 ).size() );
 }
 
-//----------------------------------------------------------------------------
 void verify_write_valid_collection_using_write_path()
 {
   std::string file_path(data_root);
@@ -198,7 +193,6 @@ void verify_write_valid_collection_using_write_path()
   test( c2->types() == c->types() );
 }
 
-//----------------------------------------------------------------------------
 void verify_write_valid_collection_using_functions()
 {
   std::string file_path(data_root);
@@ -239,7 +233,6 @@ void verify_write_valid_collection_using_functions()
   test( c2->types() == c->types() );
 }
 
-//----------------------------------------------------------------------------
 void verify_write_onlyDomain()
 {
   std::string file_path(data_root);
@@ -281,7 +274,6 @@ void verify_write_onlyDomain()
   test( c2->types() == c3->types() );
 }
 
-//----------------------------------------------------------------------------
 void verify_write_onlyNeumann()
 {
   std::string file_path(data_root);
@@ -326,7 +318,6 @@ void verify_write_onlyNeumann()
 
 }
 
-//----------------------------------------------------------------------------
 void verify_write_onlyDirichlet()
 {
   std::string file_path(data_root);
@@ -369,7 +360,6 @@ void verify_write_onlyDirichlet()
   test( c2->types() == c3->types() );
 }
 
-//----------------------------------------------------------------------------
 void verify_write_clears_modified_flag()
 {
   std::string file_path(data_root);
@@ -419,7 +409,6 @@ void verify_write_clears_modified_flag()
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestWriteMesh(int, char** const)
 {
   verify_write_empty_collection();

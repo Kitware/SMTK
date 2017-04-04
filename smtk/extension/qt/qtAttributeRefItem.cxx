@@ -56,20 +56,19 @@ namespace qtAttRefComboInternal {
   }
 };
 
-//-----------------------------------------------------------------------------
 qtAttRefCombo::qtAttRefCombo(smtk::attribute::ItemPtr refitem, QWidget * inParent)
 : QComboBox(inParent), m_RefItem(refitem)
 {
   this->setMinimumWidth(80);
 }
+
 /*
-//-----------------------------------------------------------------------------
 QSize qtAttRefCombo::sizeHint() const
 {
   return QSize(150, this->height());
 }
 */
-//-----------------------------------------------------------------------------
+
 void qtAttRefCombo::showPopup()
 {
   QList<QString> attNames;
@@ -101,7 +100,6 @@ void qtAttRefCombo::showPopup()
   this->QComboBox::showPopup();
 }
 
-//----------------------------------------------------------------------------
 class qtAttributeRefItemInternals
 {
 public:
@@ -119,7 +117,6 @@ public:
   bool UserSetAttVisibility;
 };
 
-//----------------------------------------------------------------------------
 qtAttributeRefItem::qtAttributeRefItem(
   smtk::attribute::ItemPtr dataObj, QWidget* p,  qtBaseView* view,
   Qt::Orientation enVectorItemOrient ) :
@@ -132,7 +129,6 @@ qtAttributeRefItem::qtAttributeRefItem(
   this->createWidget();
 }
 
-//----------------------------------------------------------------------------
 qtAttributeRefItem::~qtAttributeRefItem()
 {
   foreach(int eleIdx, this->Internals->RefAtts.keys())
@@ -146,7 +142,6 @@ qtAttributeRefItem::~qtAttributeRefItem()
   delete this->Internals;
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeRefItem::setLabelVisible(bool visible)
 {
   if (this->Internals->theLabel)
@@ -163,13 +158,11 @@ void qtAttributeRefItem::setLabelVisible(bool visible)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeRefItem::setAttributeEditorVisible(bool visible)
 {
   this->Internals->EditButton->setVisible(visible);
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeRefItem::setAttributeWidgetVisible(bool visible)
 {
   this->Internals->CollapseButton->setVisible(visible);
@@ -177,7 +170,6 @@ void qtAttributeRefItem::setAttributeWidgetVisible(bool visible)
   this->Internals->UserSetAttVisibility = visible;
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeRefItem::onToggleAttributeWidgetVisibility()
 {
   foreach(qtAttribute* qa, this->Internals->RefAtts.values())
@@ -192,7 +184,6 @@ void qtAttributeRefItem::onToggleAttributeWidgetVisibility()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeRefItem::setAttributesVisible(bool visible)
 {
   foreach(qtAttribute* qa, this->Internals->RefAtts.values())
@@ -207,7 +198,7 @@ void qtAttributeRefItem::setAttributesVisible(bool visible)
     this->baseView()->childrenResized();
     }
 }
-//----------------------------------------------------------------------------
+
 void qtAttributeRefItem::onLaunchAttributeView()
 {
   if(!this->getObject())
@@ -244,7 +235,6 @@ void qtAttributeRefItem::onLaunchAttributeView()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeRefItem::createWidget()
 {
   if(!this->getObject())
@@ -385,7 +375,6 @@ void qtAttributeRefItem::createWidget()
    this->updateItemData();
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeRefItem::updateAttWidgetState(qtAttribute* qa)
 {
   if(qa && qa->widget())
@@ -400,7 +389,6 @@ void qtAttributeRefItem::updateAttWidgetState(qtAttribute* qa)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeRefItem::updateItemData()
 {
   smtk::attribute::RefItemPtr item =dynamic_pointer_cast<RefItem>(this->getObject());
@@ -456,7 +444,6 @@ void qtAttributeRefItem::updateItemData()
   this->qtItem::updateItemData();
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeRefItem::setOutputOptional(int state)
 {
   bool enable = state ? true : false;
@@ -482,7 +469,6 @@ void qtAttributeRefItem::setOutputOptional(int state)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeRefItem::onInputValueChanged()
 {
   QComboBox* const comboBox = qobject_cast<QComboBox*>(
@@ -494,7 +480,6 @@ void qtAttributeRefItem::onInputValueChanged()
   this->refreshUI(comboBox);
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
 {
   int curIdx = comboBox->currentIndex();

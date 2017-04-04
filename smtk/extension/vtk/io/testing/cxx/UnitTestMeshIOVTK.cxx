@@ -44,7 +44,6 @@ void verify_import_polydata()
 }
 }
 
-//----------------------------------------------------------------------------
 int UnitTestMeshIOVTK(int argc, char* argv[])
 {
   (void)argc;

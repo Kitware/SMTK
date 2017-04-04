@@ -27,9 +27,6 @@
 #include <map>
 #include <vector>
 
-
-
-//----------------------------------------------------------------------------
 class vtkMergeDuplicateCells::vtkInternal
 {
 public:
@@ -44,7 +41,6 @@ public:
 
 vtkStandardNewMacro(vtkMergeDuplicateCells);
 
-//----------------------------------------------------------------------------
 vtkMergeDuplicateCells::vtkMergeDuplicateCells()
 {
   this->ModelFaceArrayName = 0;
@@ -53,7 +49,6 @@ vtkMergeDuplicateCells::vtkMergeDuplicateCells()
   this->Internal = new vtkInternal();
 }
 
-//----------------------------------------------------------------------------
 vtkMergeDuplicateCells::~vtkMergeDuplicateCells()
 {
   this->SetModelFaceArrayName (0);
@@ -61,7 +56,6 @@ vtkMergeDuplicateCells::~vtkMergeDuplicateCells()
   delete this->Internal;
 }
 
-//----------------------------------------------------------------------------
 bool vtkMergeDuplicateCells::GetModelFaceRegions(
   vtkIdType ModelFaceId, vtkIdType & ModelRegion0Id,vtkIdType & ModelRegion1Id)
 {
@@ -83,15 +77,12 @@ bool vtkMergeDuplicateCells::GetModelFaceRegions(
   return false;
 }
 
-
-//----------------------------------------------------------------------------
 int vtkMergeDuplicateCells::FillInputPortInformation(int, vtkInformation *info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkMergeDuplicateCells::RequestData(
   vtkInformation * /*request*/,
   vtkInformationVector **inputVector,
@@ -229,7 +220,6 @@ int vtkMergeDuplicateCells::RequestData(
   return 1;
 }
 
-//----------------------------------------------------------------------------
 void vtkMergeDuplicateCells::InsertCell(vtkPolyData* input, vtkIdType cellId,
                                         vtkPolyData* Poly,
                                         vtkIdType Region0, vtkIdType Region1,
@@ -248,7 +238,6 @@ void vtkMergeDuplicateCells::InsertCell(vtkPolyData* input, vtkIdType cellId,
   ModelFaceIdArray->InsertNextTypedTuple(&FaceId);
 }
 
-//----------------------------------------------------------------------------
 void vtkMergeDuplicateCells::FillCellFaceInfo(
   vtkIdType Region0, vtkIdType Region1, vtkIdTypeArray* ModelFaceIdArray)
 {
@@ -262,7 +251,6 @@ void vtkMergeDuplicateCells::FillCellFaceInfo(
   ModelFaceIdArray->InsertNextTypedTuple(&FaceId);
 }
 
-//----------------------------------------------------------------------------
 vtkIdType vtkMergeDuplicateCells::GetModelFaceId(int Region0, int Region1)
 {
   std::pair<int, int> Regions(Region0, Region1);
@@ -276,7 +264,6 @@ vtkIdType vtkMergeDuplicateCells::GetModelFaceId(int Region0, int Region1)
   return it->second;
 }
 
-//----------------------------------------------------------------------------
 bool vtkMergeDuplicateCells::HasDuplicateCells(vtkPolyData* polyData)
 {
   if(!polyData)
@@ -301,7 +288,6 @@ bool vtkMergeDuplicateCells::HasDuplicateCells(vtkPolyData* polyData)
   return false;
 }
 
-//----------------------------------------------------------------------------
 void vtkMergeDuplicateCells::SetModelFaceRegionInfo(vtkPolyData* Poly)
 {
   vtkIdTypeArray* ModelFaceAdjacentRegionsId = vtkIdTypeArray::New();
@@ -324,7 +310,6 @@ void vtkMergeDuplicateCells::SetModelFaceRegionInfo(vtkPolyData* Poly)
   ModelFaceAdjacentRegionsId->Delete();
 }
 
-//----------------------------------------------------------------------------
 void vtkMergeDuplicateCells::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);

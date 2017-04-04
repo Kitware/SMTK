@@ -60,7 +60,6 @@
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-//----------------------------------------------------------------------------
 class qtAttributeViewInternals
 {
 public:
@@ -121,7 +120,6 @@ public:
 
 };
 
-//----------------------------------------------------------------------------
 qtBaseView *
 qtAttributeView::createViewWidget(const ViewInfo &info)
 {
@@ -147,7 +145,6 @@ qtAttributeView::createViewWidget(const ViewInfo &info)
   return view;
 }
 
-//----------------------------------------------------------------------------
 qtAttributeView::
 qtAttributeView(const ViewInfo &info) :
   qtBaseView(info)
@@ -155,20 +152,17 @@ qtAttributeView(const ViewInfo &info) :
   this->Internals = new qtAttributeViewInternals;
 }
 
-//----------------------------------------------------------------------------
 qtAttributeView::~qtAttributeView()
 {
   delete this->Internals;
 }
 
-//----------------------------------------------------------------------------
 const QMap<QString, QList<smtk::attribute::DefinitionPtr> > &qtAttributeView::
  attDefinitionMap() const
  {
    return this->Internals->AttDefMap;
  }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::createWidget( )
 {
   if(!this->getObject())
@@ -405,12 +399,11 @@ void qtAttributeView::createWidget( )
   this->updateModelAssociation();
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::updateModelAssociation()
 {
   this->onShowCategory();
 }
-//-----------------------------------------------------------------------------
+
 smtk::attribute::AttributePtr qtAttributeView::getAttributeFromItem(
   QTableWidgetItem * item)
 {
@@ -422,7 +415,7 @@ smtk::attribute::AttributePtr qtAttributeView::getAttributeFromItem(
     }
   return smtk::attribute::AttributePtr();
 }
-//-----------------------------------------------------------------------------
+
 smtk::attribute::ItemPtr qtAttributeView::getAttributeItemFromItem(
   QTableWidgetItem * item)
 {
@@ -434,20 +427,18 @@ smtk::attribute::ItemPtr qtAttributeView::getAttributeItemFromItem(
     }
   return smtk::attribute::ItemPtr();
 }
-//-----------------------------------------------------------------------------
+
 smtk::attribute::AttributePtr qtAttributeView::getSelectedAttribute()
 {
   return this->getAttributeFromItem(this->getSelectedItem());
 }
 
-//-----------------------------------------------------------------------------
 QTableWidgetItem *qtAttributeView::getSelectedItem()
 {
   return this->Internals->ListTable->selectedItems().count()>0 ?
     this->Internals->ListTable->selectedItems().value(0) : NULL;
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::updateAssociationEnableState(
   smtk::attribute::AttributePtr theAtt)
 {
@@ -464,7 +455,6 @@ void qtAttributeView::updateAssociationEnableState(
   this->Internals->ReferencesWidget->setVisible(rvisible);
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::onListBoxSelectionChanged()
 {
   if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_PROPERTY)
@@ -501,7 +491,6 @@ void qtAttributeView::onListBoxSelectionChanged()
   this->updateSelectionOfEntities();
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::onAttributeNameChanged(QTableWidgetItem* item)
 {
   smtk::attribute::AttributePtr aAttribute = this->getAttributeFromItem(item);
@@ -513,7 +502,7 @@ void qtAttributeView::onAttributeNameChanged(QTableWidgetItem* item)
     this->updateSelectionOfEntities();
     }
 }
-//----------------------------------------------------------------------------
+
 void qtAttributeView::onAttributeCellChanged(int row, int col)
 {
   if(col == 0 && this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute)
@@ -523,7 +512,7 @@ void qtAttributeView::onAttributeCellChanged(int row, int col)
     this->updateSelectionOfEntities();
     }
 }
-//----------------------------------------------------------------------------
+
 void qtAttributeView::updateTableWithProperties()
 {
   if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute)
@@ -606,7 +595,6 @@ void qtAttributeView::updateTableWithProperties()
   this->Internals->ValuesTable->resizeRowsToContents();
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::insertTableColumn(QTableWidget* vtWidget, int insertCol,
   const QString& title, int advancedlevel)
 {
@@ -619,7 +607,6 @@ void qtAttributeView::insertTableColumn(QTableWidget* vtWidget, int insertCol,
     }
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::updateSelectionOfEntities()
 {
   smtk::extension::qtSelectionManager* selMgr = this->uiManager()->
@@ -633,7 +620,6 @@ void qtAttributeView::updateSelectionOfEntities()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::onAttributeValueChanged(QTableWidgetItem* item)
 {
   Item* linkedData = item ?
@@ -646,7 +632,7 @@ void qtAttributeView::onAttributeValueChanged(QTableWidgetItem* item)
      linkedData->shared_from_this(), item);
     }
 }
-//----------------------------------------------------------------------------
+
 void qtAttributeView::updateChildWidgetsEnableState(
   smtk::attribute::ItemPtr attItem, QTableWidgetItem* item)
 {
@@ -676,7 +662,6 @@ void qtAttributeView::updateChildWidgetsEnableState(
     }
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::updateItemWidgetsEnableState(
   smtk::attribute::ItemPtr inData, int& startRow, bool enabled)
 {
@@ -711,7 +696,6 @@ void qtAttributeView::updateItemWidgetsEnableState(
     }
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::onCreateNew()
 {
   if(!this->Internals->m_attDefinitions.size())
@@ -744,7 +728,6 @@ void qtAttributeView::onCreateNew()
   this->createNewAttribute(newAttDef);
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::createNewAttribute(
   smtk::attribute::DefinitionPtr attDef)
 {
@@ -765,7 +748,6 @@ void qtAttributeView::createNewAttribute(
   this->updateSelectionOfEntities();
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::onCopySelected()
 {
   smtk::attribute::AttributePtr newObject, selObject = this->getSelectedAttribute();
@@ -788,7 +770,6 @@ void qtAttributeView::onCopySelected()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::onDeleteSelected()
 {
   smtk::attribute::AttributePtr selObject = this->getSelectedAttribute();
@@ -807,7 +788,6 @@ void qtAttributeView::onDeleteSelected()
     }
 }
 
-//----------------------------------------------------------------------------
 QTableWidgetItem* qtAttributeView::addAttributeListItem(
   smtk::attribute::AttributePtr childData)
 {
@@ -845,7 +825,6 @@ QTableWidgetItem* qtAttributeView::addAttributeListItem(
   return item;
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::onViewBy(int viewBy)
 {
   if(!this->Internals->m_attDefinitions.size())
@@ -945,7 +924,6 @@ void qtAttributeView::onViewBy(int viewBy)
   frame->handle(1)->setEnabled(viewAtt);
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::onViewByWithDefinition(
   int viewBy, smtk::attribute::DefinitionPtr attDef)
 {
@@ -969,14 +947,13 @@ void qtAttributeView::onViewByWithDefinition(
       }
     }
 }
-//----------------------------------------------------------------------------
+
 void qtAttributeView::onShowCategory()
 {
   int viewBy = this->Internals->ViewByCombo->currentIndex();
   this->onViewBy(viewBy);
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::updateTableWithAttribute(
   smtk::attribute::AttributePtr att)
 {
@@ -1008,7 +985,7 @@ void qtAttributeView::updateTableWithAttribute(
       }
     }
 }
-//----------------------------------------------------------------------------
+
 void qtAttributeView::initSelectionFilters()
 {
   bool viewAtt = this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute;
@@ -1042,7 +1019,6 @@ void qtAttributeView::initSelectionFilters()
   this->updateTableWithProperties();
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::initSelectPropCombo(
   smtk::attribute::DefinitionPtr attDef)
 {
@@ -1112,7 +1088,6 @@ void qtAttributeView::initSelectPropCombo(
   this->Internals->SelectPropCombo->hidePopup();
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::initSelectAttCombo(smtk::attribute::DefinitionPtr attDef)
 {
   this->Internals->SelectAttCombo->blockSignals(true);
@@ -1166,7 +1141,6 @@ void qtAttributeView::initSelectAttCombo(smtk::attribute::DefinitionPtr attDef)
   this->Internals->SelectAttCombo->hidePopup();
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::propertyFilterChanged(
   const QModelIndex& topLeft, const QModelIndex& /* bottomRight */)
 {
@@ -1205,7 +1179,6 @@ void qtAttributeView::propertyFilterChanged(
     }
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::attributeFilterChanged(
   const QModelIndex& topLeft, const QModelIndex& /* bottomRight */)
 {
@@ -1236,7 +1209,6 @@ void qtAttributeView::attributeFilterChanged(
     }
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::addComparativeAttribute(
   smtk::attribute::AttributePtr att)
 {
@@ -1274,7 +1246,6 @@ void qtAttributeView::addComparativeAttribute(
     }
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::removeComparativeAttribute(
   smtk::attribute::AttributePtr att)
 {
@@ -1295,7 +1266,6 @@ void qtAttributeView::removeComparativeAttribute(
 //  vtWidget->resizeRowsToContents();
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::onPropertyDefSelected()
 {
   if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute)
@@ -1323,7 +1293,6 @@ void qtAttributeView::onPropertyDefSelected()
   this->updateTableWithProperties();
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::removeComparativeProperty(const QString& propertyName)
 {
   if(!this->Internals->m_attDefinitions.size())
@@ -1342,7 +1311,7 @@ void qtAttributeView::removeComparativeProperty(const QString& propertyName)
     }
 //  vtWidget->resizeRowsToContents();
 }
-//----------------------------------------------------------------------------
+
 void qtAttributeView::addComparativeProperty(
   QStandardItem* current, smtk::attribute::DefinitionPtr attDef)
 {
@@ -1412,13 +1381,11 @@ void qtAttributeView::addComparativeProperty(
     }
 }
 
-//----------------------------------------------------------------------------
 int qtAttributeView::currentViewBy()
 {
   return this->Internals->ViewByCombo->currentIndex();
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::getAllDefinitions()
 {
   smtk::common::ViewPtr view = this->getObject();
@@ -1500,7 +1467,6 @@ void qtAttributeView::getAllDefinitions()
 #endif
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::onListBoxClicked(QTableWidgetItem* item)
 {
   if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute)
@@ -1529,7 +1495,6 @@ void qtAttributeView::onListBoxClicked(QTableWidgetItem* item)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtAttributeView::childrenResized()
 {
   if(this->Internals->ValuesTable->isVisible())
@@ -1540,7 +1505,7 @@ void qtAttributeView::childrenResized()
     this->Widget->update();
     }
 }
-//----------------------------------------------------------------------------
+
 void qtAttributeView::showAdvanceLevelOverlay(bool show)
 {
   if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute &&

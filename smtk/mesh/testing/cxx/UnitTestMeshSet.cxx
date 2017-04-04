@@ -22,7 +22,6 @@ namespace
 std::string data_root = SMTK_DATA_DIR;
 
 
-//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
 {
   std::string file_path(data_root);
@@ -34,7 +33,6 @@ smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
   return c;
 }
 
-//----------------------------------------------------------------------------
 void verify_num_meshes(const smtk::mesh::CollectionPtr& c)
 {
   std::size_t numMeshes = c->numberOfMeshes();
@@ -47,7 +45,6 @@ void verify_num_meshes(const smtk::mesh::CollectionPtr& c)
   test( all_meshes.is_empty() == false );
 }
 
-//----------------------------------------------------------------------------
 void verify_constructors(const smtk::mesh::CollectionPtr& c)
 {
   std::vector< std::string > mesh_names = c->meshNames();
@@ -70,7 +67,6 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
   test( ms3.is_empty() == false );
 }
 
-//----------------------------------------------------------------------------
 void verify_comparisons(const smtk::mesh::CollectionPtr& c)
 {
   std::vector< std::string > mesh_names = c->meshNames();
@@ -93,7 +89,6 @@ void verify_comparisons(const smtk::mesh::CollectionPtr& c)
   test(one_a != two_b);
 }
 
-//----------------------------------------------------------------------------
 void verify_typeset(const smtk::mesh::CollectionPtr& c)
 {
   //verify that empty meshset set has empty type set
@@ -121,7 +116,6 @@ void verify_typeset(const smtk::mesh::CollectionPtr& c)
   }
 }
 
-//----------------------------------------------------------------------------
 void verify_mesh_by_name(const smtk::mesh::CollectionPtr& c)
 {
   std::vector< std::string > mesh_names = c->meshNames();
@@ -148,7 +142,6 @@ void verify_mesh_by_name(const smtk::mesh::CollectionPtr& c)
      "Number of meshes with names should be less than total number of meshes");
 }
 
-//----------------------------------------------------------------------------
 void verify_meshset_by_dim(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::MeshSet all_meshes = c->meshes();
@@ -178,7 +171,6 @@ void verify_meshset_by_dim(const smtk::mesh::CollectionPtr& c)
   test( all_dims == all_meshes);
 }
 
-//----------------------------------------------------------------------------
 void verify_meshset_of_only_a_dim(const smtk::mesh::CollectionPtr& c)
 {
   //verify that we can extract a meshset whose cells are all of the same
@@ -219,7 +211,6 @@ void verify_meshset_of_only_a_dim(const smtk::mesh::CollectionPtr& c)
   test( types.hasCell(smtk::mesh::Hexahedron) == true );
 }
 
-//----------------------------------------------------------------------------
 void verify_meshset_subset_dim(const smtk::mesh::CollectionPtr& c)
 {
   //verify that we can subset by dimension
@@ -242,7 +233,6 @@ void verify_subset_tag(const smtk::mesh::CollectionPtr& c,
     }
 }
 
-//----------------------------------------------------------------------------
 void verify_meshset_subset_tag(const smtk::mesh::CollectionPtr& c)
 {
   //verify that we can extract a sub meshset based on the tags
@@ -266,7 +256,6 @@ void verify_meshset_subset_tag(const smtk::mesh::CollectionPtr& c)
 
 }
 
-//----------------------------------------------------------------------------
 void verify_meshset_add_tags(const smtk::mesh::CollectionPtr& c)
 {
   //verify that we can add tags to a meshset
@@ -283,7 +272,6 @@ void verify_meshset_add_tags(const smtk::mesh::CollectionPtr& c)
 }
 
 
-//----------------------------------------------------------------------------
 void verify_meshset_intersect(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::MeshSet all_meshes = c->meshes();
@@ -318,7 +306,6 @@ void verify_meshset_intersect(const smtk::mesh::CollectionPtr& c)
 
 }
 
-//----------------------------------------------------------------------------
 void verify_meshset_union(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::MeshSet all_meshes = c->meshes();
@@ -357,7 +344,6 @@ void verify_meshset_union(const smtk::mesh::CollectionPtr& c)
 
 }
 
-//----------------------------------------------------------------------------
 void verify_meshset_subtract(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::MeshSet all_meshes = c->meshes();
@@ -389,7 +375,6 @@ void verify_meshset_subtract(const smtk::mesh::CollectionPtr& c)
         "subtract of two meshes produced wrong size" );
 }
 
-//----------------------------------------------------------------------------
 class CountMeshesAndCells : public smtk::mesh::MeshForEach
 {
   //keep the range of cells we have seen so we can verify that we
@@ -399,7 +384,6 @@ class CountMeshesAndCells : public smtk::mesh::MeshForEach
   //don't iterate over a mesh more than once
   int numMeshesIteratedOver;
 public:
-  //--------------------------------------------------------------------------
   CountMeshesAndCells( smtk::mesh::CollectionPtr collection ):
     smtk::mesh::MeshForEach(),
     cellsSeen( collection->meshes("InvalidName").cells() ),
@@ -408,7 +392,6 @@ public:
     {
     }
 
-  //--------------------------------------------------------------------------
   void forMesh(smtk::mesh::MeshSet& mesh)
   {
   this->numMeshesIteratedOver++;
@@ -420,7 +403,6 @@ public:
   smtk::mesh::CellSet cells() const { return cellsSeen; }
 };
 
-//----------------------------------------------------------------------------
 void verify_meshset_for_each(const smtk::mesh::CollectionPtr& c)
 {
   CountMeshesAndCells functor(c);
@@ -435,7 +417,6 @@ void verify_meshset_for_each(const smtk::mesh::CollectionPtr& c)
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestMeshSet(int, char** const)
 {
   smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();

@@ -34,7 +34,6 @@ vtkStandardNewMacro(vtkLIDARReader);
 
 vtkCxxSetObjectMacro(vtkLIDARReader, Transform, vtkTransform);
 
-//-----------------------------------------------------------------------------
 vtkLIDARReader::vtkLIDARReader()
 {
   this->FileName = NULL;
@@ -64,14 +63,12 @@ vtkLIDARReader::vtkLIDARReader()
   this->Origin[0] = this->Origin[1] = this->Origin[2] = 0;
 }
 
-//-----------------------------------------------------------------------------
 vtkLIDARReader::~vtkLIDARReader()
 {
   this->SetFileName(0);
   this->SetTransform(static_cast<vtkTransform*>(0));
 }
 
-//-----------------------------------------------------------------------------
 void vtkLIDARReader::SetConvertFromLatLongToXYZ(bool mode)
 {
   if (this->ConvertFromLatLongToXYZ == mode)
@@ -92,7 +89,6 @@ void vtkLIDARReader::SetConvertFromLatLongToXYZ(bool mode)
   this->Modified();
 }
 
-//-----------------------------------------------------------------------------
 // vtkSetStringMacro except we clear some variables if we update the value
 void vtkLIDARReader::SetFileName(const char *filename)
 {
@@ -137,7 +133,6 @@ void vtkLIDARReader::SetFileName(const char *filename)
   this->Modified();
 }
 
-//-----------------------------------------------------------------------------
 void vtkLIDARReader::AddRequestedPieceForRead(int pieceIdx, int onRatio)
 {
   if(pieceIdx >= 0 && onRatio > 0)
@@ -147,20 +142,17 @@ void vtkLIDARReader::AddRequestedPieceForRead(int pieceIdx, int onRatio)
     }
 }
 
-//-----------------------------------------------------------------------------
 void vtkLIDARReader::RemoveAllRequestedReadPieces()
 {
   this->RequestedReadPieces.clear();
   this->Modified();
 }
 
-//-----------------------------------------------------------------------------
 int vtkLIDARReader::GetKnownNumberOfPieces()
 {
   return static_cast<int>(this->LIDARPieces.size());
 }
 
-//-----------------------------------------------------------------------------
 vtkIdType vtkLIDARReader::GetTotalNumberOfPoints()
 {
   if (this->LIDARPieces.size() == 0)
@@ -180,7 +172,6 @@ vtkIdType vtkLIDARReader::GetTotalNumberOfPoints()
   return totalNumPts;
 }
 
-//-----------------------------------------------------------------------------
 vtkIdType vtkLIDARReader::GetNumberOfPointsInPiece(int pieceIndex)
 {
   if (pieceIndex < 0 || pieceIndex >= static_cast<int>(this->LIDARPieces.size()))
@@ -191,7 +182,6 @@ vtkIdType vtkLIDARReader::GetNumberOfPointsInPiece(int pieceIndex)
   return this->LIDARPieces[pieceIndex].NumPoints;
 }
 
-//-----------------------------------------------------------------------------
 void vtkLIDARReader::SetTransform(double elements[16])
 {
   vtkTransform *tmpTransform = vtkTransform::New();
@@ -200,7 +190,6 @@ void vtkLIDARReader::SetTransform(double elements[16])
   tmpTransform->Delete();
 }
 
-//-----------------------------------------------------------------------------
 int vtkLIDARReader::RequestData(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **vtkNotUsed(inputVector),
@@ -403,7 +392,6 @@ int vtkLIDARReader::RequestData(
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 vtkIdType vtkLIDARReader::GetEstimatedNumOfOutPoints()
 {
   vtkIdType numOutputPts = 0;
@@ -436,7 +424,6 @@ vtkIdType vtkLIDARReader::GetEstimatedNumOfOutPoints()
   return numOutputPts;
 }
 
-//-----------------------------------------------------------------------------
 int vtkLIDARReader::ReadFileInfo()
 {
   if (this->CompleteFileHasBeenRead)
@@ -502,7 +489,6 @@ int vtkLIDARReader::ReadFileInfo()
   return res;
 }
 
-//-----------------------------------------------------------------------------
 int vtkLIDARReader::GetPointInfo(ifstream &fin)
 {
   if((this->ValuesPerLine > 0) || this->BytesPerPoint > 0)
@@ -590,7 +576,6 @@ int vtkLIDARReader::GetPointInfo(ifstream &fin)
   return VTK_OK;
 }
 
-//-----------------------------------------------------------------------------
 int vtkLIDARReader::ReadPiece(ifstream &fin, int pieceIndex, int onRatio,
                               long totalNumPts,
                               vtkPoints *newPts, vtkCellArray *newVerts,
@@ -776,7 +761,6 @@ int vtkLIDARReader::ReadPiece(ifstream &fin, int pieceIndex, int onRatio,
   return res;
 }
 
-//-----------------------------------------------------------------------------
 //  attempt to move to specified piece
 int vtkLIDARReader::MoveToStartOfPiece(ifstream &fin, int pieceIndex)
 {
@@ -872,7 +856,6 @@ int vtkLIDARReader::MoveToStartOfPiece(ifstream &fin, int pieceIndex)
 }
 
 
-//-----------------------------------------------------------------------------
 void vtkLIDARReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
@@ -883,8 +866,6 @@ void vtkLIDARReader::PrintSelf(ostream& os, vtkIndent indent)
     (this->ConvertFromLatLongToXYZ ? "On" : "Off");
 }
 
-
-//----------------------------------------------------------------------------
 int vtkLIDARReader::RequestInformation(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **vtkNotUsed(inputVector),

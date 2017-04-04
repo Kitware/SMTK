@@ -27,7 +27,6 @@
 
 vtkStandardNewMacro(vtkModel3dmGridRepresentation);
 
-//----------------------------------------------------------------------------
 vtkModel3dmGridRepresentation::vtkModel3dmGridRepresentation()
 {
   this->ModelPointToAnalysisPoint = vtkIdTypeArray::New();
@@ -35,7 +34,6 @@ vtkModel3dmGridRepresentation::vtkModel3dmGridRepresentation()
   this->ModelCellToAnalysisCellSides = vtkCharArray::New();
 }
 
-//----------------------------------------------------------------------------
 vtkModel3dmGridRepresentation::~vtkModel3dmGridRepresentation()
 {
   if(this->ModelPointToAnalysisPoint)
@@ -55,7 +53,6 @@ vtkModel3dmGridRepresentation::~vtkModel3dmGridRepresentation()
     }
 }
 
-//----------------------------------------------------------------------------
 bool vtkModel3dmGridRepresentation::GetBCSNodalAnalysisGridPointIds(
   vtkDiscreteModel* model, vtkIdType bcsGroupId,
   int bcGroupType, vtkIdList* pointIds)
@@ -119,7 +116,6 @@ bool vtkModel3dmGridRepresentation::GetBCSNodalAnalysisGridPointIds(
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool vtkModel3dmGridRepresentation::GetFloatingEdgeAnalysisGridPointIds(
   vtkDiscreteModel*, vtkIdType, vtkIdList*)
 {
@@ -127,7 +123,6 @@ bool vtkModel3dmGridRepresentation::GetFloatingEdgeAnalysisGridPointIds(
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool vtkModel3dmGridRepresentation::GetModelEdgeAnalysisPoints(
   vtkDiscreteModel*, vtkIdType, vtkIdTypeArray*)
 {
@@ -135,7 +130,6 @@ bool vtkModel3dmGridRepresentation::GetModelEdgeAnalysisPoints(
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool vtkModel3dmGridRepresentation::GetBoundaryGroupAnalysisFacets(
   vtkDiscreteModel* model, vtkIdType boundaryGroupId,
   vtkIdList* cellIds, vtkIdList* cellSides)
@@ -183,7 +177,6 @@ bool vtkModel3dmGridRepresentation::GetBoundaryGroupAnalysisFacets(
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool vtkModel3dmGridRepresentation::IsModelConsistent(vtkDiscreteModel* model)
 {
   if(model->HasInValidMesh())
@@ -209,7 +202,6 @@ bool vtkModel3dmGridRepresentation::IsModelConsistent(vtkDiscreteModel* model)
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkModel3dmGridRepresentation::Initialize(
   const char* fileName, vtkDiscreteModel* model, vtkIdTypeArray* modelPointToAnalysisPoint,
     vtkIdTypeArray* modelCellToAnalysisCells, vtkCharArray* modelCellToAnalysisCellSides)
@@ -241,7 +233,6 @@ bool vtkModel3dmGridRepresentation::Initialize(
   return this->IsModelConsistent(model);
 }
 
-//----------------------------------------------------------------------------
 void vtkModel3dmGridRepresentation::Reset()
 {
   this->Superclass::Reset();
@@ -250,7 +241,6 @@ void vtkModel3dmGridRepresentation::Reset()
   this->ModelCellToAnalysisCellSides->SetNumberOfTuples(0);
 }
 
-//----------------------------------------------------------------------------
 void vtkModel3dmGridRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

@@ -22,19 +22,17 @@
 
 vtkStandardNewMacro(vtkCMBModelSource);
 
-//-----------------------------------------------------------------------------
 vtkCMBModelSource::vtkCMBModelSource()
 {
   this->Source = 0;
   this->SetNumberOfInputPorts(0);
 }
 
-//-----------------------------------------------------------------------------
 vtkCMBModelSource::~vtkCMBModelSource()
 {
   this->SetSource(0);
 }
-//----------------------------------------------------------------------------
+
 void vtkCMBModelSource::SetSource(vtkDiscreteModelWrapper *source)
 {
   if ( this->Source == source)
@@ -51,13 +49,11 @@ void vtkCMBModelSource::SetSource(vtkDiscreteModelWrapper *source)
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 vtkDiscreteModelWrapper* vtkCMBModelSource::GetSource()
 {
   return this->Source;
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBModelSource::CopyData(vtkDiscreteModelWrapper *source)
 {
   if(this->Source && source && this->Source != source)
@@ -67,7 +63,6 @@ void vtkCMBModelSource::CopyData(vtkDiscreteModelWrapper *source)
     }
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBModelSource::FillOutputPortInformation(
   int vtkNotUsed(port), vtkInformation* info)
 {
@@ -75,7 +70,6 @@ int vtkCMBModelSource::FillOutputPortInformation(
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 vtkMTimeType vtkCMBModelSource::GetMTime()
 {
   vtkMTimeType mtime = this->Superclass::GetMTime();
@@ -90,7 +84,6 @@ vtkMTimeType vtkCMBModelSource::GetMTime()
   return mtime;
 }
 
-//-----------------------------------------------------------------------------
 int vtkCMBModelSource::RequestDataObject(
                                    vtkInformation *vtkNotUsed(request),
                                    vtkInformationVector **vtkNotUsed(inputVector),
@@ -109,7 +102,7 @@ int vtkCMBModelSource::RequestDataObject(
       }
     return 1;
 }
-//-----------------------------------------------------------------------------
+
 int vtkCMBModelSource::RequestData(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **vtkNotUsed(inputVector),
@@ -130,7 +123,6 @@ int vtkCMBModelSource::RequestData(
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 void vtkCMBModelSource::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

@@ -129,11 +129,9 @@ smtk::mesh::HandleRange ImportDelaunayMesh(const Delaunay::Mesh::Mesh& mesh,
 
 }
 
-//-----------------------------------------------------------------------------
 namespace smtk {
   namespace model {
 
-//-----------------------------------------------------------------------------
 TriangulateFace::TriangulateFace()
 {
 }
@@ -150,7 +148,6 @@ bool TriangulateFace::ableToOperate()
     eRef.owningModel().isValid();
 }
 
-//-----------------------------------------------------------------------------
 OperatorResult TriangulateFace::operateInternal()
 {
   smtk::model::Face face =

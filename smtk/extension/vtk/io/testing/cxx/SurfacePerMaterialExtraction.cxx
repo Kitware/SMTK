@@ -33,7 +33,6 @@
 namespace
 {
 
-//----------------------------------------------------------------------------
 template<typename TReader>
 vtkDataSet* readXMLFile(const std::string& fileName)
 {
@@ -45,19 +44,16 @@ vtkDataSet* readXMLFile(const std::string& fileName)
 }
 
 
-//----------------------------------------------------------------------------
 class ShellPerMesh : public smtk::mesh::MeshForEach
 {
   int currentMaterialValue;
 public:
-  //--------------------------------------------------------------------------
   ShellPerMesh():
     smtk::mesh::MeshForEach(),
     currentMaterialValue(0)
     {
     }
 
-  //--------------------------------------------------------------------------
   void forMesh(smtk::mesh::MeshSet& mesh)
   {
   smtk::mesh::CellSet existingShellCells = mesh.cells( smtk::mesh::Dims2 );
@@ -76,7 +72,6 @@ public:
   }
 };
 
-//----------------------------------------------------------------------------
 void createShellPerMaterial(const smtk::mesh::CollectionPtr& c)
 {
   //for each material we iterate the meshsets
@@ -94,7 +89,7 @@ void createShellPerMaterial(const smtk::mesh::CollectionPtr& c)
     c->removeMeshes( domainMeshes );
     }
 }
-//----------------------------------------------------------------------------
+
 void breakMaterialsByCellType(const smtk::mesh::CollectionPtr& c)
 {
   //for each material we iterate the meshsets
@@ -140,7 +135,6 @@ void breakMaterialsByCellType(const smtk::mesh::CollectionPtr& c)
     }
 }
 
-//----------------------------------------------------------------------------
 template<typename vtkDataSetType >
 smtk::mesh::CollectionPtr convert(vtkDataSetType* input,
                                   smtk::mesh::ManagerPtr manager,
@@ -159,7 +153,6 @@ smtk::mesh::CollectionPtr convert(vtkDataSetType* input,
   return collection;
 }
 
-//----------------------------------------------------------------------------
 void extractSurfaces(smtk::mesh::CollectionPtr c, std::string outputFile)
   {
   std::cout << "Info on input: " << std::endl;

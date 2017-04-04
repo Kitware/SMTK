@@ -21,7 +21,6 @@
 
 vtkStandardNewMacro(vtkExtractImageBlock);
 
-//----------------------------------------------------------------------------
 vtkExtractImageBlock::vtkExtractImageBlock()
 {
   this->BlockIndex = -1;
@@ -29,14 +28,12 @@ vtkExtractImageBlock::vtkExtractImageBlock()
   this->Extent[1] = this->Extent[3] = this->Extent[5] = -1;
 }
 
-//----------------------------------------------------------------------------
 int vtkExtractImageBlock::FillInputPortInformation(int, vtkInformation *info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkMultiBlockDataSet");
   return 1;
 }
 
-//----------------------------------------------------------------------------
 void vtkExtractImageBlock::SetExtent(int *extent)
 {
   int description = vtkStructuredData::SetExtent(extent, this->Extent);
@@ -54,7 +51,6 @@ void vtkExtractImageBlock::SetExtent(int *extent)
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 void vtkExtractImageBlock::SetExtent(int x1, int x2, int y1, int y2, int z1, int z2)
 {
   int ext[6];
@@ -66,7 +62,7 @@ void vtkExtractImageBlock::SetExtent(int x1, int x2, int y1, int y2, int z1, int
   ext[5] = z2;
   this->SetExtent(ext);
 }
-//----------------------------------------------------------------------------
+
 // Fill in the WholeExtent and spacing information from the image block
 int vtkExtractImageBlock::RequestInformation (
   vtkInformation * vtkNotUsed(request),
@@ -88,7 +84,6 @@ int vtkExtractImageBlock::RequestInformation (
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkExtractImageBlock::RequestData(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **inputVector,
@@ -152,7 +147,6 @@ int vtkExtractImageBlock::RequestData(
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkExtractImageBlock::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);

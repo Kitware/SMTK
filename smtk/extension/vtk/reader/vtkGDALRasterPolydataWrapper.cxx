@@ -61,7 +61,6 @@ vtkStandardNewMacro(vtkGDALRasterPolydataWrapper);
 
 vtkCxxSetObjectMacro(vtkGDALRasterPolydataWrapper, Transform, vtkTransform);
 
-//-----------------------------------------------------------------------------
 vtkGDALRasterPolydataWrapper::vtkGDALRasterPolydataWrapper()
 :RealNumberOfOutputPoints(-1)
 {
@@ -75,51 +74,43 @@ vtkGDALRasterPolydataWrapper::vtkGDALRasterPolydataWrapper()
   this->Origin[0] = this->Origin[1] = this->Origin[2] = 0;
 }
 
-//-----------------------------------------------------------------------------
 vtkGDALRasterPolydataWrapper::~vtkGDALRasterPolydataWrapper()
 {
   this->Reader->SetFileName(0);
   this->SetTransform(static_cast<vtkTransform*>(0));
 }
 
-//-----------------------------------------------------------------------------
 const char* vtkGDALRasterPolydataWrapper::GetProjectionString() const
 {
   return this->Reader->GetProjectionString();
 }
 
-//-----------------------------------------------------------------------------
 const double* vtkGDALRasterPolydataWrapper::GetGeoCornerPoints()
 {
   return this->Reader->GetGeoCornerPoints();
 }
 
-//-----------------------------------------------------------------------------
 int* vtkGDALRasterPolydataWrapper::GetDataExtent()
 {
   return this->Reader->GetDataExtent();
 }
 
-//-----------------------------------------------------------------------------
 const std::vector<std::string>& vtkGDALRasterPolydataWrapper::GetMetaData()
 {
   return this->Reader->GetMetaData();
 }
 
-//-----------------------------------------------------------------------------
 std::vector<std::string> vtkGDALRasterPolydataWrapper::GetDomainMetaData(
                                                                 const std::string& domain)
 {
   return this->Reader->GetDomainMetaData(domain);
 }
 
-//-----------------------------------------------------------------------------
 const std::string& vtkGDALRasterPolydataWrapper::GetDriverShortName()
 {
   return this->Reader->GetDriverShortName();
 }
 
-//-----------------------------------------------------------------------------
 const std::string& vtkGDALRasterPolydataWrapper::GetDriverLongName()
 {
   return this->Reader->GetDriverLongName();
@@ -146,7 +137,6 @@ std::string vtkGDALRasterPolydataWrapper::GetFileName()
 #define strdup _strdup
 #endif
 
-//-----------------------------------------------------------------------------
 int vtkGDALRasterPolydataWrapper::RequestData(vtkInformation* vtkNotUsed(request),
                                      vtkInformationVector** vtkNotUsed(inputVector),
                                      vtkInformationVector* outputVector)
@@ -256,7 +246,6 @@ int vtkGDALRasterPolydataWrapper::RequestData(vtkInformation* vtkNotUsed(request
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 int vtkGDALRasterPolydataWrapper::RequestInformation(vtkInformation * vtkNotUsed(request),
                                             vtkInformationVector **vtkNotUsed(inputVector),
                                             vtkInformationVector * vtkNotUsed(outputVector))
@@ -266,7 +255,6 @@ int vtkGDALRasterPolydataWrapper::RequestInformation(vtkInformation * vtkNotUsed
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 int vtkGDALRasterPolydataWrapper::FillOutputPortInformation(int port, vtkInformation* info)
 {
   if (port == 0)
@@ -281,13 +269,11 @@ int vtkGDALRasterPolydataWrapper::FillOutputPortInformation(int port, vtkInforma
     }
 }
 
-//-----------------------------------------------------------------------------
 double vtkGDALRasterPolydataWrapper::GetInvalidValue()
 {
   return this->Reader->GetInvalidValue();
 }
 
-//-----------------------------------------------------------------------------
 int vtkGDALRasterPolydataWrapper
 ::RequestDataObject(vtkInformation *,
                     vtkInformationVector** vtkNotUsed(inputVector) ,

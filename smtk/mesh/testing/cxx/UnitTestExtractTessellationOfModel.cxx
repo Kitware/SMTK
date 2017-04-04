@@ -28,7 +28,6 @@
 namespace
 {
 
-//----------------------------------------------------------------------------
 class VerifyCells : public smtk::mesh::CellForEach
 {
   smtk::mesh::HandleRange m_cells;
@@ -42,7 +41,6 @@ class VerifyCells : public smtk::mesh::CellForEach
 
   bool m_is_vtk;
 public:
-//--------------------------------------------------------------------------
 VerifyCells( const smtk::mesh::CellSet& cells,
              const std::vector<std::int64_t>& conn,
              const std::vector<std::int64_t>& locations,
@@ -60,7 +58,6 @@ VerifyCells( const smtk::mesh::CellSet& cells,
   {
   }
 
-//--------------------------------------------------------------------------
 void forCell(const smtk::mesh::Handle& cellId,
              smtk::mesh::CellType cellType,
              int numPts)
@@ -93,7 +90,6 @@ void forCell(const smtk::mesh::Handle& cellId,
   this->m_currentLocation += numPts;
 }
 
-//--------------------------------------------------------------------------
 smtk::mesh::CellSet cells(smtk::mesh::CollectionPtr c) const
 {
   return smtk::mesh::CellSet(c,m_cells);
@@ -101,7 +97,6 @@ smtk::mesh::CellSet cells(smtk::mesh::CollectionPtr c) const
 
 };
 
-//----------------------------------------------------------------------------
 template<typename T>
 class VerifyPoints : public smtk::mesh::PointForEach
 {
@@ -114,7 +109,6 @@ VerifyPoints( const std::vector<T>& points ):
   m_currentIndex(0)
 {
 }
-//--------------------------------------------------------------------------
 void forPoints(const smtk::mesh::HandleRange& pointIds,
                std::vector<double>& xyz,
                bool& coordinatesModified)
@@ -140,7 +134,6 @@ void forPoints(const smtk::mesh::HandleRange& pointIds,
 std::string data_root = SMTK_DATA_DIR;
 
 
-//----------------------------------------------------------------------------
 void create_simple_mesh_model( smtk::model::ManagerPtr mgr )
 {
   std::string file_path(data_root);
@@ -159,7 +152,6 @@ void create_simple_mesh_model( smtk::model::ManagerPtr mgr )
   file.close();
 }
 
-//----------------------------------------------------------------------------
 void verify_alloc_lengths_entityref(const smtk::model::EntityRef& eRef,
                                     const smtk::mesh::CollectionPtr& c)
 {
@@ -188,7 +180,6 @@ void verify_alloc_lengths_entityref(const smtk::model::EntityRef& eRef,
 
 }
 
-//----------------------------------------------------------------------------
 void verify_extract(const smtk::model::EntityRef& eRef,
                     const smtk::mesh::CollectionPtr& c)
 {
@@ -217,7 +208,6 @@ void verify_extract(const smtk::model::EntityRef& eRef,
   smtk::mesh::for_each(cells.points(), vp);
 }
 
-//----------------------------------------------------------------------------
 void verify_extract_volume_meshes_by_global_points_to_vtk(
   const smtk::model::EntityRef& eRef, const smtk::mesh::CollectionPtr& c)
 {
@@ -251,7 +241,6 @@ void verify_extract_volume_meshes_by_global_points_to_vtk(
   test( vc.cells(c) == cells);
 }
 
-//----------------------------------------------------------------------------
 void removeOnesWithoutTess(smtk::model::EntityRefs& ents)
 {
   smtk::model::EntityIterator it;
@@ -274,7 +263,6 @@ void removeOnesWithoutTess(smtk::model::EntityRefs& ents)
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestExtractTessellationOfModel(int, char** const)
 {
   // Somehow grab an EntityRef with an associated tessellation

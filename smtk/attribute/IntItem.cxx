@@ -14,33 +14,30 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 IntItem::IntItem(Attribute *owningAttribute,
                  int itemPosition):
   ValueItemTemplate<int>(owningAttribute, itemPosition)
 {
 }
 
-//----------------------------------------------------------------------------
 IntItem::IntItem(Item *inOwningItem,
                  int itemPosition,
                  int mySubGroupPosition):
   ValueItemTemplate<int>(inOwningItem, itemPosition, mySubGroupPosition)
 {
 }
-//----------------------------------------------------------------------------
+
 IntItem::~IntItem()
 {
 }
-//----------------------------------------------------------------------------
+
 Item::Type IntItem::type() const
 {
   return INT;
 }
-//----------------------------------------------------------------------------
+
 bool IntItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
   // Assigns my contents to be same as sourceItem
   return ValueItemTemplate<int>::assign(sourceItem, options);
 }
-//----------------------------------------------------------------------------

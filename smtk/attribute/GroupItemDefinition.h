@@ -118,7 +118,7 @@ namespace smtk
       bool m_useCommonLabel;
     private:
     };
-//----------------------------------------------------------------------------
+
     inline int GroupItemDefinition::
     findItemPosition(const std::string &inName) const
     {

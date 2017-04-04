@@ -32,7 +32,6 @@
 
 namespace detail
 {
-//------------------------------------------------------------------------------
 template<typename T>
 void readSparseTag(T *array,
                    const smoab::CellSets& cellSet,
@@ -46,7 +45,6 @@ void readSparseTag(T *array,
    reader.fill(array,tag);
  }
 
-//------------------------------------------------------------------------------
 smoab::CellSets getCellRange(const smoab::Interface& interface,
                              smoab::Tag* parentTag,
                              smoab::GeomTag* dimTag=NULL)
@@ -79,7 +77,6 @@ smoab::CellSets getCellRange(const smoab::Interface& interface,
   return sets;
 }
 
-//------------------------------------------------------------------------------
 smoab::CellSets extractShells(const smoab::Interface& interface,
                               smoab::Tag* shellTag)
 {
@@ -128,7 +125,7 @@ if(extractShell && !shells.empty())
 
 
 vtkStandardNewMacro(vtkCmbMoabReader)
-//------------------------------------------------------------------------------
+
 vtkCmbMoabReader::vtkCmbMoabReader():
   FileName(NULL)
 {
@@ -136,13 +133,11 @@ vtkCmbMoabReader::vtkCmbMoabReader():
   this->SetNumberOfOutputPorts(1);
 }
 
-//------------------------------------------------------------------------------
 vtkCmbMoabReader::~vtkCmbMoabReader()
 {
   this->SetFileName(0);
 }
 
-//------------------------------------------------------------------------------
 int vtkCmbMoabReader::RequestData(vtkInformation *vtkNotUsed(request),
                 vtkInformationVector **vtkNotUsed(inputVector),
                 vtkInformationVector *outputVector)
@@ -303,7 +298,6 @@ int vtkCmbMoabReader::RequestData(vtkInformation *vtkNotUsed(request),
   return 1;
 }
 
-//------------------------------------------------------------------------------
 void vtkCmbMoabReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

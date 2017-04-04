@@ -87,7 +87,6 @@ struct LoopType
 
 typedef std::multimap< int, LoopType > LoopMapType;
 
-//----------------------------------------------------------------------------
 class vtkExtractRegionEdges::vtkInternal
 {
 public:
@@ -115,7 +114,6 @@ public:
     }
 };
 
-//----------------------------------------------------------------------------
 void vtkExtractRegionEdges::vtkInternal::BuildRegionEdges(vtkPolyData *linePolyData)
 {
   vtkPoints *points = linePolyData->GetPoints();
@@ -216,7 +214,6 @@ void vtkExtractRegionEdges::vtkInternal::BuildRegionEdges(vtkPolyData *linePolyD
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkExtractRegionEdges::vtkInternal::BuildRegionLoops(int regionId)
 {
   EdgeMapType::iterator regionStart = this->EdgeMap.lower_bound( regionId );
@@ -318,7 +315,6 @@ void vtkExtractRegionEdges::vtkInternal::BuildRegionLoops(int regionId)
 }
 
 
-//----------------------------------------------------------------------------
 void vtkExtractRegionEdges::vtkInternal::AddLoopToFieldData(vtkFieldData *fieldData,
                                                             vtkStringArray *loopNameArray,
                                                             LoopMapType::const_iterator &loopIter,
@@ -347,7 +343,6 @@ void vtkExtractRegionEdges::vtkInternal::AddLoopToFieldData(vtkFieldData *fieldD
     }
 }
 
-//----------------------------------------------------------------------------
 vtkExtractRegionEdges::vtkExtractRegionEdges()
 {
   this->Internal = new vtkInternal;
@@ -355,21 +350,18 @@ vtkExtractRegionEdges::vtkExtractRegionEdges()
   this->RegionIdentifiersModified = false;
 }
 
-//----------------------------------------------------------------------------
 vtkExtractRegionEdges::~vtkExtractRegionEdges()
 {
   this->SetRegionArrayName(0);
   delete this->Internal;
 }
 
-//----------------------------------------------------------------------------
 int vtkExtractRegionEdges::FillInputPortInformation(int, vtkInformation *info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPointSet");
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkExtractRegionEdges::RequestData(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **inputVector,
@@ -440,7 +432,6 @@ int vtkExtractRegionEdges::RequestData(
   return 1;
 }
 
-//----------------------------------------------------------------------------
 void vtkExtractRegionEdges::ExtractRegionEdgeSegments(vtkPolyData *input,
                                                       vtkCellArray *lines,
                                                       vtkPolyData *linePolyData)
@@ -535,7 +526,6 @@ void vtkExtractRegionEdges::ExtractRegionEdgeSegments(vtkPolyData *input,
   linePolyData->BuildLinks();
 }
 
-//----------------------------------------------------------------------------
 void vtkExtractRegionEdges::BuildRegionLoops(vtkPolyData *linePolyData)
 {
   // 1st build edges from the segments
@@ -549,7 +539,6 @@ void vtkExtractRegionEdges::BuildRegionLoops(vtkPolyData *linePolyData)
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkExtractRegionEdges::ConvertInputToPolyData(vtkPointSet *pointSetInput,
                                                    vtkPolyData *polyData)
 {
@@ -602,7 +591,6 @@ void vtkExtractRegionEdges::ConvertInputToPolyData(vtkPointSet *pointSetInput,
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkExtractRegionEdges::UpdateRegionIdentifiersIfNecessary(vtkPolyData *outputPD)
 {
   // use region edges to update the region ids... so that each loop will be a
@@ -741,7 +729,6 @@ void vtkExtractRegionEdges::UpdateRegionIdentifiersIfNecessary(vtkPolyData *outp
   newRegionIds->Delete();
 }
 
-//----------------------------------------------------------------------------
 void vtkExtractRegionEdges::SetupOutputFieldData(vtkPolyData *output)
 {
   // geometry / topology is setup, now setup the field data
@@ -850,7 +837,6 @@ void vtkExtractRegionEdges::SetupOutputFieldData(vtkPolyData *output)
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkExtractRegionEdges::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

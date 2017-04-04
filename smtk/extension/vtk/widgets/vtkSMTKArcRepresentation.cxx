@@ -60,8 +60,6 @@ namespace
 }
 class vtkSMTKArcRepresentation::vtkInternalMap : public vtkInternalMapBase {};
 
-
-//----------------------------------------------------------------------
 vtkSMTKArcRepresentation::vtkSMTKArcRepresentation()
 {
   this->LinesMapper->SetScalarModeToUseCellData();
@@ -77,7 +75,6 @@ vtkSMTKArcRepresentation::vtkSMTKArcRepresentation()
   this->PointSelectCallBack = nullptr;
 }
 
-//----------------------------------------------------------------------
 vtkSMTKArcRepresentation::~vtkSMTKArcRepresentation()
 {
   if (PointSelectCallBack)
@@ -90,7 +87,7 @@ vtkSMTKArcRepresentation::~vtkSMTKArcRepresentation()
     delete this->ModifiedPointMap;
     }
 }
-//----------------------------------------------------------------------
+
 int vtkSMTKArcRepresentation::GetNumberOfSelectedNodes()
 {
   int numSelected = 0;
@@ -106,7 +103,6 @@ int vtkSMTKArcRepresentation::GetNumberOfSelectedNodes()
   return numSelected;
 }
 
-//----------------------------------------------------------------------
 int vtkSMTKArcRepresentation::SetNthNodeSelected(int n)
 {
   if ( n < 0 ||
@@ -125,7 +121,6 @@ int vtkSMTKArcRepresentation::SetNthNodeSelected(int n)
   return 1;
 }
 
-//----------------------------------------------------------------------
 int vtkSMTKArcRepresentation::ToggleActiveNodeSelected()
 {
   if ( this->ActiveNode < 0 ||
@@ -150,7 +145,6 @@ int vtkSMTKArcRepresentation::ToggleActiveNodeSelected()
 
 }
 
-//----------------------------------------------------------------------
 int vtkSMTKArcRepresentation::ActivateNode( double displayPos[2] )
 {
   // if there is no nodes yet, nothing to activate.
@@ -162,7 +156,6 @@ int vtkSMTKArcRepresentation::ActivateNode( double displayPos[2] )
   return this->vtkContourRepresentation::ActivateNode(displayPos);
 }
 
-//----------------------------------------------------------------------
 int vtkSMTKArcRepresentation::DeleteNthNode(int n)
 {
   if(PointSelectMode)
@@ -196,13 +189,11 @@ int vtkSMTKArcRepresentation::DeleteNthNode(int n)
   return good;
 }
 
-//-----------------------------------------------------------------------------
 void vtkSMTKArcRepresentation::UpdateLines(int index)
 {
   this->Superclass::UpdateLines(index);
 }
 
-//-----------------------------------------------------------------------------
 void vtkSMTKArcRepresentation::BuildRepresentation()
 {
   this->Superclass::BuildRepresentation();
@@ -232,7 +223,6 @@ void vtkSMTKArcRepresentation::BuildRepresentation()
     }
 }
 
-//-----------------------------------------------------------------------------
 int vtkSMTKArcRepresentation::SetActiveNodeToWorldPosition( double worldPos[3],double worldOrient[9] )
 {
   int ret = this->Superclass::SetActiveNodeToWorldPosition(worldPos,worldOrient);
@@ -243,7 +233,6 @@ int vtkSMTKArcRepresentation::SetActiveNodeToWorldPosition( double worldPos[3],d
   return ret;
 }
 
-//-----------------------------------------------------------------------------
 int vtkSMTKArcRepresentation::SetActiveNodeToWorldPosition(double worldPos[3])
 {
   int ret = this->Superclass::SetActiveNodeToWorldPosition(worldPos);
@@ -270,7 +259,6 @@ void vtkSMTKArcRepresentation::StartWidgetInteraction(double startEventPos[2])
   }
 }
 
-//----------------------------------------------------------------------
 int vtkSMTKArcRepresentation::AddNodeOnContour(int X, int Y)
 {
   if(PointSelectMode)
@@ -368,7 +356,6 @@ int vtkSMTKArcRepresentation::AddNodeAtDisplayPosition(int X, int Y)
   return r;
 }
 
-//----------------------------------------------------------------------
 void vtkSMTKArcRepresentation::UpdatePropertyMap(int index, int flags)
 {
   if ( this->GetLoggingEnabled() == 1 )
@@ -397,7 +384,6 @@ void vtkSMTKArcRepresentation::UpdatePropertyMap(int index, int flags)
     }
 }
 
-//-------------------------------------------------------------------------
 int vtkSMTKArcRepresentation::ComputeInteractionState(int X, int Y, int modified)
 {
   if(this->FocalPoint->GetNumberOfPoints() == 0)
@@ -427,7 +413,6 @@ int vtkSMTKArcRepresentation::ComputeInteractionState(int X, int Y, int modified
   return Superclass::ComputeInteractionState(X,Y,modified);
 }
 
-//-----------------------------------------------------------------------------
 vtkPolyData* vtkSMTKArcRepresentation::GetContourRepresentationAsPolyData()
 {
   // Make sure we are up to date with any changes made in the placer
@@ -452,7 +437,6 @@ vtkPolyData* vtkSMTKArcRepresentation::GetContourRepresentationAsPolyData()
   return Lines;
  }
 
-//-----------------------------------------------------------------------------
 int vtkSMTKArcRepresentation::GetNodeModifiedFlags(int n)
 {
   int flag = 0;
@@ -465,7 +449,6 @@ int vtkSMTKArcRepresentation::GetNodeModifiedFlags(int n)
    return flag;
 }
 
-//-----------------------------------------------------------------------------
 void vtkSMTKArcRepresentation::SetPointSelectCallBack(vtkCommand * cp)
 {
   if(this->PointSelectCallBack)
@@ -475,7 +458,6 @@ void vtkSMTKArcRepresentation::SetPointSelectCallBack(vtkCommand * cp)
   this->PointSelectCallBack = cp;
 }
 
-//----------------------------------------------------------------------
 void vtkSMTKArcRepresentation::Initialize( vtkPolyData * pd )
 {
   //make sure to reset the mapping each time we init
@@ -622,7 +604,6 @@ void vtkSMTKArcRepresentation::Initialize( vtkPolyData * pd )
   this->VisibilityOn();
 }
 
-//-----------------------------------------------------------------------------
 void vtkSMTKArcRepresentation::PrintSelf(ostream& os,
                                                       vtkIndent indent)
 {

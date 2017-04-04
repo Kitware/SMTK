@@ -110,7 +110,6 @@ namespace
 
 using namespace CmbFaceMesherClasses;
 
-//----------------------------------------------------------------------------
 meshVertex::meshVertex():
 x(0),
 y(0),
@@ -118,7 +117,6 @@ modelId(-1),
 modelEntityType(vtkModelTypeCOPY)
 {}
 
-//----------------------------------------------------------------------------
 meshVertex::meshVertex(const double& a, const double& b):
 x(a),
 y(b),
@@ -126,7 +124,6 @@ modelId(-1),
 modelEntityType(vtkModelTypeCOPY)
 {}
 
-//----------------------------------------------------------------------------
 meshVertex::meshVertex(const double& a, const double& b,
       const vtkIdType& id, const int& type):
 x(a),
@@ -135,35 +132,30 @@ modelId(id),
 modelEntityType(type)
 {}
 
-//----------------------------------------------------------------------------
 bool meshVertex::operator ==(const meshVertex &p) const
 {
   return  ((this->x == p.x) &&
           (this->x == p.x && this->y && p.y));
 }
 
-//----------------------------------------------------------------------------
 bool meshVertex::operator <(const meshVertex &p) const
 {
   return  ((this->x < p.x) ||
           (this->x == p.x && this->y < p.y));
 }
 
-//----------------------------------------------------------------------------
 meshEdge::meshEdge():
 First(-1),
 Second(-1),
 ModelId(-1)
 {}
 
-//----------------------------------------------------------------------------
 meshEdge::meshEdge(const vtkIdType& f, const vtkIdType& s):
 First(f),
 Second(s),
 ModelId(-1)
 {}
 
-//----------------------------------------------------------------------------
 meshEdge::meshEdge(const vtkIdType& f, const vtkIdType& s,
                          const vtkIdType& id):
 First(f),
@@ -171,26 +163,23 @@ Second(s),
 ModelId(id)
 {}
 
-//----------------------------------------------------------------------------
 bool meshEdge::operator==(const meshEdge &p) const
 {
   return ((this->First == p.First) &&
          (this->First == p.First && this->Second == p.Second));
 }
 
-//----------------------------------------------------------------------------
 bool meshEdge::operator<(const meshEdge &p) const
 {
   return ((this->First < p.First) ||
          (this->First == p.First && this->Second < p.Second));
 }
 
-//----------------------------------------------------------------------------
 int meshEdge::modelEntityType() const
 {
   return vtkModelEdgeTypeCOPY;
 }
-//----------------------------------------------------------------------------
+
 struct ModelEdgeRep::Internals
 {
   vtkIdType Id;
@@ -199,37 +188,32 @@ struct ModelEdgeRep::Internals
   std::set<meshVertex> ModelVerts;
 };
 
-//----------------------------------------------------------------------------
 ModelEdgeRep::ModelEdgeRep(const int &id)
 {
   this->Internal = new Internals();
   this->Internal->Id = id;
 }
-//----------------------------------------------------------------------------
+
 ModelEdgeRep::~ModelEdgeRep()
 {
   delete this->Internal;
 }
 
-//----------------------------------------------------------------------------
 int ModelEdgeRep::numberOfEdges() const
 {
   return static_cast<int>(this->Internal->Segments.size());
 }
 
-//----------------------------------------------------------------------------
 int ModelEdgeRep::numberOfVertices() const
 {
   return static_cast<int>(this->Internal->MeshPoints.size());
 }
 
-//----------------------------------------------------------------------------
 const vtkIdType& ModelEdgeRep::getId() const
 {
   return this->Internal->Id;
 }
 
-//----------------------------------------------------------------------------
 void ModelEdgeRep::addModelVert(const vtkIdType &id, double point[3])
 {
   meshVertex modelVert(point[0],point[1],id,vtkModelVertexTypeCOPY);
@@ -237,7 +221,6 @@ void ModelEdgeRep::addModelVert(const vtkIdType &id, double point[3])
   this->updateModelRealtionships();
 }
 
-//----------------------------------------------------------------------------
 void ModelEdgeRep::setMeshPoints(vtkPolyData *mesh, vtkIdType offset/*=0*/, vtkIdType size/*=-1*/)
 {
 
@@ -281,7 +264,6 @@ void ModelEdgeRep::setMeshPoints(vtkPolyData *mesh, vtkIdType offset/*=0*/, vtkI
 //relationship. If the point matches a model vert
 //it will have the id of the model vert and be set too vtkModelVertexType
 //else it will have the id of the edge and be set to vtkModelEdgeType
-//----------------------------------------------------------------------------
 void ModelEdgeRep::updateModelRealtionships()
 {
   //not a fast algorithm. brue force compare
@@ -301,7 +283,6 @@ void ModelEdgeRep::updateModelRealtionships()
 
 }
 
-//----------------------------------------------------------------------------
 struct ModelLoopRep::Internals
 {
   vtkIdType Id;
@@ -334,7 +315,6 @@ struct ModelLoopRep::Internals
   std::map<vtkIdType,meshVertex> IdsToPoints;
 };
 
-//----------------------------------------------------------------------------
 ModelLoopRep::ModelLoopRep()
 {
   this->Internal = new Internals();
@@ -342,7 +322,6 @@ ModelLoopRep::ModelLoopRep()
   this->Internal->IsOuterLoop = true;
 }
 
-//----------------------------------------------------------------------------
 ModelLoopRep::ModelLoopRep(const vtkIdType& id, const bool& isInternal)
 {
   this->Internal = new Internals();
@@ -350,13 +329,11 @@ ModelLoopRep::ModelLoopRep(const vtkIdType& id, const bool& isInternal)
   this->Internal->IsOuterLoop = isInternal;
 }
 
-//----------------------------------------------------------------------------
 ModelLoopRep::~ModelLoopRep()
 {
   delete this->Internal;
 }
 
-//----------------------------------------------------------------------------
 bool ModelLoopRep::operator==(const ModelLoopRep& lr) const
 {
   return (this->Internal->Id == lr.Internal->Id &&
@@ -367,19 +344,16 @@ bool ModelLoopRep::operator==(const ModelLoopRep& lr) const
           this->Internal->IdsToPoints == lr.Internal->IdsToPoints);
 }
 
-//----------------------------------------------------------------------------
 bool ModelLoopRep::operator<(const ModelLoopRep& lr) const
 {
   return (this->Internal->Id < lr.Internal->Id);
 }
 
-//----------------------------------------------------------------------------
 bool ModelLoopRep::isOuterLoop() const
 {
   return this->Internal->IsOuterLoop;
 }
 
-//----------------------------------------------------------------------------
 bool ModelLoopRep::isDegenerateLoop() const
 {
   bool isDegenerate = true;
@@ -428,13 +402,11 @@ bool ModelLoopRep::isDegenerateLoop() const
   return isDegenerate;
 }
 
-//----------------------------------------------------------------------------
 bool ModelLoopRep::edgeExists(const vtkIdType &e) const
 {
   return this->Internal->ModelEdges.count(e) > 0;
 }
 
-//----------------------------------------------------------------------------
 void ModelLoopRep::addEdge(const ModelEdgeRep &edge)
 {
   if ( !this->edgeExists(edge.getId()) )
@@ -451,7 +423,6 @@ void ModelLoopRep::addEdge(const ModelEdgeRep &edge)
     }
 }
 
-//----------------------------------------------------------------------------
 void ModelLoopRep::addEdgeToLoop(const ModelEdgeRep &edge)
 {
   //remove the mesh points from the edge, and into the loop.
@@ -478,7 +449,7 @@ void ModelLoopRep::addEdgeToLoop(const ModelEdgeRep &edge)
     this->Internal->Segments.insert(es);
     }
 }
-//----------------------------------------------------------------------------
+
 vtkIdType ModelLoopRep::insertPoint(const meshVertex &point)
 {
   std::pair<std::map<meshVertex,vtkIdType>::iterator,bool> ret;
@@ -498,7 +469,6 @@ vtkIdType ModelLoopRep::insertPoint(const meshVertex &point)
   return ret.first->second;
 }
 
-//----------------------------------------------------------------------------
 const meshVertex* ModelLoopRep::getPoint(const vtkIdType &id) const
 {
   std::map<vtkIdType,meshVertex>::const_iterator it;
@@ -510,7 +480,6 @@ const meshVertex* ModelLoopRep::getPoint(const vtkIdType &id) const
   return &it->second;
 }
 
-//----------------------------------------------------------------------------
 const meshVertex* ModelLoopRep::getPoint(const double &x, const double &y) const
 {
   std::map<meshVertex,vtkIdType>::const_iterator it;
@@ -523,7 +492,6 @@ const meshVertex* ModelLoopRep::getPoint(const double &x, const double &y) const
   return &it->first;
 }
 
-//----------------------------------------------------------------------------
 vtkIdType ModelLoopRep::getMeshVertexId(const double &x, const double &y) const
 {
   std::map<meshVertex,vtkIdType>::const_iterator it;
@@ -536,7 +504,6 @@ vtkIdType ModelLoopRep::getMeshVertexId(const double &x, const double &y) const
   return it->second;
 }
 
-//----------------------------------------------------------------------------
 bool ModelLoopRep::pointClassification(const vtkIdType &pointId,
     int &modelEntityType, vtkIdType &uniqueId) const
 {
@@ -558,7 +525,6 @@ bool ModelLoopRep::pointClassification(const vtkIdType &pointId,
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool ModelLoopRep::pointClassification(const double &x, const double &y,
     int &modelEntityType, vtkIdType &uniqueId) const
 {
@@ -579,7 +545,7 @@ bool ModelLoopRep::pointClassification(const double &x, const double &y,
     }
   return false;
 }
-//----------------------------------------------------------------------------
+
 bool ModelLoopRep::edgeClassification(const vtkIdType &pointId1, const vtkIdType &pointId2,
   int &modelEntityType, vtkIdType &uniqueId) const
 {
@@ -616,8 +582,6 @@ bool ModelLoopRep::edgeClassification(const vtkIdType &pointId1, const vtkIdType
   return false;
 }
 
-
-//----------------------------------------------------------------------------
 bool ModelLoopRep::edgeClassification(const double &x1, const double &y1,
     const double &x2, const double &y2,
     int &modelEntityType, vtkIdType &uniqueId) const
@@ -634,19 +598,16 @@ bool ModelLoopRep::edgeClassification(const double &x1, const double &y1,
     }
 }
 
-//----------------------------------------------------------------------------
 int ModelLoopRep::numberOfVertices() const
 {
   return static_cast<int>(this->Internal->PointsToIds.size());
 }
 
-//----------------------------------------------------------------------------
 int ModelLoopRep::numberOfEdges() const
 {
   return static_cast<int>(this->Internal->Segments.size());
 }
 
-//----------------------------------------------------------------------------
 void ModelLoopRep::addDataToTriangleInterface(cmbFaceMesherInterface *ti,
    int &pointIndex, int &segmentIndex, int &holeIndex)
 {
@@ -719,7 +680,6 @@ bool ModelLoopRep::findAPointInside(double& x,double& y) const
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool ModelLoopRep::isNonManifoldEdge(const vtkIdType &modelEdgeId) const
 {
   std::map<vtkIdType,int>::const_iterator modelEdgeIt;
@@ -733,7 +693,6 @@ bool ModelLoopRep::isNonManifoldEdge(const vtkIdType &modelEdgeId) const
   return modelEdgeIt->second > 1;
 }
 
-//----------------------------------------------------------------------------
 bool ModelLoopRep::findPointInsideConvex(double& x,double& y) const
 {
   //use center of bounding box as the point.
@@ -754,7 +713,6 @@ bool ModelLoopRep::findPointInsideConvex(double& x,double& y) const
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool ModelLoopRep::findPointInsideConcave(double& x,double& y) const
 {
   //construct a circle that is larger than the bounding box.
@@ -849,7 +807,7 @@ bool ModelLoopRep::findPointInsideConcave(double& x,double& y) const
   //we have a problem!
   return false;
 }
-//----------------------------------------------------------------------------
+
 bool ModelLoopRep::isBoundaryPoint(const double& x, const double& y) const
 {
   //find if the point is collinear to any of the edges
@@ -868,7 +826,6 @@ bool ModelLoopRep::isBoundaryPoint(const double& x, const double& y) const
   return collinear;
 }
 
-//----------------------------------------------------------------------------
 bool ModelLoopRep::isPointInside(const double& x, const double& y) const
 {
 
@@ -905,7 +862,7 @@ bool ModelLoopRep::isPointInside(const double& x, const double& y) const
     }
   return inside;
 }
-//----------------------------------------------------------------------------
+
 void ModelLoopRep::bounds( double b[4] ) const
 {
   std::map<meshVertex,vtkIdType>::const_iterator pointIt;
@@ -932,7 +889,6 @@ void ModelLoopRep::bounds( double b[4] ) const
     }
 }
 
-//----------------------------------------------------------------------------
 const meshEdge * ModelLoopRep::findClosestSegment(const double &x,
   const double &y, meshVertex &vertex) const
 {
@@ -983,31 +939,26 @@ const meshEdge * ModelLoopRep::findClosestSegment(const double &x,
   return result;
 }
 
-//----------------------------------------------------------------------------
 struct ModelFaceRep::Internals
 {
   std::list<ModelLoopRep> Loops;
 };
 
-//----------------------------------------------------------------------------
 ModelFaceRep::ModelFaceRep()
 {
   this->Internal = new Internals();
 }
 
-//----------------------------------------------------------------------------
 ModelFaceRep::~ModelFaceRep()
 {
   delete this->Internal;
 }
 
-//----------------------------------------------------------------------------
 void ModelFaceRep::addLoop(const ModelLoopRep &loop)
 {
   this->Internal->Loops.push_back(loop);
 }
 
-//----------------------------------------------------------------------------
 int ModelFaceRep::numberOfVertices()
 {
   //we presume model verts are not shared between loops for this pass
@@ -1019,7 +970,7 @@ int ModelFaceRep::numberOfVertices()
     }
   return sum;
 }
-//----------------------------------------------------------------------------
+
 int ModelFaceRep::numberOfEdges()
 {
   int sum=0;
@@ -1030,7 +981,7 @@ int ModelFaceRep::numberOfEdges()
     }
   return sum;
 }
-//----------------------------------------------------------------------------
+
 int ModelFaceRep::numberOfHoles()
 {
   int sum=0;
@@ -1041,7 +992,7 @@ int ModelFaceRep::numberOfHoles()
     }
   return sum;
 }
-//----------------------------------------------------------------------------
+
 bool ModelFaceRep::bounds( double b[4])
   {
   std::list<ModelLoopRep>::iterator it = this->Internal->Loops.begin();
@@ -1056,7 +1007,7 @@ bool ModelFaceRep::bounds( double b[4])
   //vtkWarningMacro("Called bounds on ModelFaceRep without any outer loops");
   return false;
   }
-//----------------------------------------------------------------------------
+
 void ModelFaceRep::fillTriangleInterface(cmbFaceMesherInterface *ti)
 {
   int pIdx = 0, sId = 0, hId=0;
@@ -1087,7 +1038,6 @@ bool ModelFaceRep::RelateMeshToModel(vtkPolyData *mesh, const vtkIdType &facePer
   return valid;
 }
 
-//----------------------------------------------------------------------------
 bool ModelFaceRep::RelateMeshPointsToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId)
 {
   //Currently not needed, as cell relationship is good enough
@@ -1162,7 +1112,6 @@ bool ModelFaceRep::RelateMeshPointsToModel(vtkPolyData *mesh, const vtkIdType &f
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool ModelFaceRep::RelateMeshCellsToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId)
 {
   //we presume we only have triangle cells
@@ -1288,7 +1237,6 @@ bool ModelFaceRep::RelateMeshCellsToModel(vtkPolyData *mesh, const vtkIdType &fa
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool ModelFaceRep::SetFaceIdOnMesh(vtkPolyData *mesh,
   const vtkIdType &facePersistenId)
 {

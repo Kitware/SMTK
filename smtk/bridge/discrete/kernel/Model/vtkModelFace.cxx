@@ -25,8 +25,6 @@
 
 #include <set>
 
-
-//-----------------------------------------------------------------------------
 vtkModelFace::vtkModelFace()
 {
   // We build the face uses automatically because we know all we need
@@ -39,12 +37,10 @@ vtkModelFace::vtkModelFace()
   faceUse1->FastDelete();
 }
 
-//-----------------------------------------------------------------------------
 vtkModelFace::~vtkModelFace()
 {
 }
 
-//-----------------------------------------------------------------------------
 bool vtkModelFace::IsDestroyable()
 {
   for(int i=0;i<2;i++)
@@ -57,7 +53,6 @@ bool vtkModelFace::IsDestroyable()
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 bool vtkModelFace::Destroy()
 {
   this->GetModel()->InvokeModelGeometricEntityEvent(
@@ -78,7 +73,6 @@ bool vtkModelFace::Destroy()
   return 1;
 }
 
-//-----------------------------------------------------------------------------
 bool vtkModelFace::DestroyLoopUses()
 {
   bool res = this->GetModelFaceUse(0)->DestroyLoopUses();
@@ -89,7 +83,6 @@ bool vtkModelFace::DestroyLoopUses()
   return this->GetModelFaceUse(1)->DestroyLoopUses();
 }
 
-//-----------------------------------------------------------------------------
 void vtkModelFace::Initialize(
   int numEdges, vtkModelEdge** edges, int* edgeDirections,
   vtkIdType modelFaceId)
@@ -104,7 +97,6 @@ void vtkModelFace::Initialize(
   this->GetModel()->SetBlockModelGeometricEntityEvent(blockSignal);
 }
 
-//-----------------------------------------------------------------------------
 // "end" of 1 combines with "beginning" of 2
 void vtkModelFace::CombineModelVertexUses(
   vtkModelEdgeUse* edgeUse1, vtkModelEdgeUse* edgeUse2)
@@ -142,13 +134,11 @@ void vtkModelFace::CombineModelVertexUses(
     }
 }
 
-//-----------------------------------------------------------------------------
 int vtkModelFace::GetType()
 {
   return vtkModelFaceType;
 }
 
-//-----------------------------------------------------------------------------
 vtkModelFaceUse* vtkModelFace::GetModelFaceUse(int direction)
 {
   vtkModelItemIterator* iter = this->NewIterator(vtkModelFaceUseType);
@@ -162,7 +152,6 @@ vtkModelFaceUse* vtkModelFace::GetModelFaceUse(int direction)
   return ret;
 }
 
-//-----------------------------------------------------------------------------
 int vtkModelFace::GetNumberOfModelRegions()
 {
   int result = 0;
@@ -176,7 +165,6 @@ int vtkModelFace::GetNumberOfModelRegions()
   return result;
 }
 
-//-----------------------------------------------------------------------------
 vtkModelRegion* vtkModelFace::GetModelRegion(int direction)
 {
   vtkModelFaceUse* faceUse = this->GetModelFaceUse(direction);
@@ -188,7 +176,6 @@ vtkModelRegion* vtkModelFace::GetModelRegion(int direction)
   return shellUse->GetModelRegion();
 }
 
-//-----------------------------------------------------------------------------
 int vtkModelFace::GetNumberOfModelEdges()
 {
   std::set<vtkIdType> edgeIds;
@@ -211,7 +198,6 @@ int vtkModelFace::GetNumberOfModelEdges()
   return static_cast<int>(edgeIds.size());
 }
 
-//-----------------------------------------------------------------------------
 void vtkModelFace::GetModelEdgeIds(std::set<vtkIdType>& edgeIds)
 {
   vtkModelItemIterator* loopUses =
@@ -233,7 +219,6 @@ void vtkModelFace::GetModelEdgeIds(std::set<vtkIdType>& edgeIds)
   loopUses->Delete();
 }
 
-//-----------------------------------------------------------------------------
 void vtkModelFace::GetModelEdges(std::vector<vtkModelEdge*>& edges)
 {
   vtkModelItemIterator* loopUses =
@@ -254,7 +239,6 @@ void vtkModelFace::GetModelEdges(std::vector<vtkModelEdge*>& edges)
   loopUses->Delete();
 }
 
-//-----------------------------------------------------------------------------
 void vtkModelFace::GetModelVertexIds(std::set<vtkIdType>& verIds)
 {
   vtkModelItemIterator* loopUses =
@@ -284,7 +268,6 @@ void vtkModelFace::GetModelVertexIds(std::set<vtkIdType>& verIds)
   loopUses->Delete();
 }
 
-//-----------------------------------------------------------------------------
 vtkModelItemIterator* vtkModelFace::NewAdjacentModelEdgeIterator()
 {
   vtkModelItemGenericIterator* edgeIterator =
@@ -309,19 +292,16 @@ vtkModelItemIterator* vtkModelFace::NewAdjacentModelEdgeIterator()
   return edgeIterator;
 }
 
-//-----------------------------------------------------------------------------
 void vtkModelFace::Serialize(vtkSerializer* ser)
 {
   this->Superclass::Serialize(ser);
 }
 
-//-----------------------------------------------------------------------------
 void vtkModelFace::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }
 
-//-----------------------------------------------------------------------------
 void vtkModelFace::AddLoop(int numEdges, vtkModelEdge** edges,
                            int* edgeDirections)
 {
@@ -415,7 +395,6 @@ void vtkModelFace::AddLoop(int numEdges, vtkModelEdge** edges,
     ModelGeometricEntityBoundaryModified, this);
 }
 
-//-----------------------------------------------------------------------------
 int vtkModelFace::GetNumberOfHoles()
 {
   vtkSmartPointer<vtkModelItemIterator> loopUses;
@@ -461,7 +440,6 @@ int vtkModelFace::GetNumberOfHoles()
   return numberOfHoles;
 }
 
-//-----------------------------------------------------------------------------
 int vtkModelFace::GetNumberOfDegenerateLoops()
 {
   int numberOfLoopUses = this->GetModelFaceUse(0)->GetNumberOfLoopUses();

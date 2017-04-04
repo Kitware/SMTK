@@ -24,26 +24,22 @@
 vtkStandardNewMacro(vtkPolygonArcProvider);
 //vtkCxxSetObjectMacro(vtkPolygonArcProvider,CachedOutput,vtkPolyData);
 
-//----------------------------------------------------------------------------
 vtkPolygonArcProvider::vtkPolygonArcProvider()
 {
   this->SetNumberOfInputPorts(1);
   this->SetNumberOfOutputPorts(1);
 }
 
-//----------------------------------------------------------------------------
 vtkPolygonArcProvider::~vtkPolygonArcProvider()
 {
 }
 
-//----------------------------------------------------------------------------
 int vtkPolygonArcProvider::FillInputPortInformation(int, vtkInformation *info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkMultiBlockDataSet");
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkPolygonArcProvider::RequestData(vtkInformation *,
       vtkInformationVector **inputVector, vtkInformationVector *outputVector)
 {
@@ -96,7 +92,6 @@ int vtkPolygonArcProvider::RequestData(vtkInformation *,
   return 1;
 }
 
-//----------------------------------------------------------------------------
 void vtkPolygonArcProvider::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);

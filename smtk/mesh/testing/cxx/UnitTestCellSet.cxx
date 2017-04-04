@@ -21,8 +21,6 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-
-//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
 {
   std::string file_path(data_root);
@@ -33,7 +31,6 @@ smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
   return c;
 }
 
-//----------------------------------------------------------------------------
 void verify_constructors(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::MeshSet all_meshes = c->meshes();
@@ -52,7 +49,6 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
   test( equalToZeroDim.is_empty() == false );
 }
 
-//----------------------------------------------------------------------------
 void verify_subsets(const smtk::mesh::CollectionPtr& c)
 {
   std::vector< std::string > mesh_names = c->meshNames();
@@ -90,7 +86,6 @@ void verify_subsets(const smtk::mesh::CollectionPtr& c)
   test( ps4 == ps5 );
 }
 
-//----------------------------------------------------------------------------
 void verify_empty(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::MeshSet no_mesh = c->meshes( "bad name string" );
@@ -112,7 +107,6 @@ void verify_empty(const smtk::mesh::CollectionPtr& c)
 
 }
 
-//----------------------------------------------------------------------------
 void verify_comparisons(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::CellSet zeroDim =  c->cells( smtk::mesh::Dims0 );
@@ -135,7 +129,6 @@ void verify_comparisons(const smtk::mesh::CollectionPtr& c)
 
 }
 
-//----------------------------------------------------------------------------
 void verify_typeset(const smtk::mesh::CollectionPtr& c)
 {
   //verify that empty cell set has empty type set
@@ -166,7 +159,6 @@ void verify_typeset(const smtk::mesh::CollectionPtr& c)
   //verify_cell_count_by_type
 }
 
-//----------------------------------------------------------------------------
 void verify_all_cells(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::MeshSet all_meshes = c->meshes();
@@ -183,7 +175,6 @@ void verify_all_cells(const smtk::mesh::CollectionPtr& c)
   test( all_cells_from_collec == all_cells_from_ms);
 }
 
-//----------------------------------------------------------------------------
 void verify_cell_count_by_type(smtk::mesh::MeshSet ms)
 {
   //verify that all cells size is equal to the vector of cellsets where
@@ -217,7 +208,6 @@ void verify_cell_count_by_type(smtk::mesh::MeshSet ms)
   test( ms.types().cellTypes() == all_typeset.cellTypes());
 }
 
-//----------------------------------------------------------------------------
 void verify_cell_count_by_dim(smtk::mesh::MeshSet ms)
 {
   //verify that all cells size is equal to the vector of cellsets where
@@ -251,8 +241,6 @@ void verify_cell_count_by_dim(smtk::mesh::MeshSet ms)
   test( ms.types().cellTypes() == all_typeset.cellTypes());
 }
 
-
-//----------------------------------------------------------------------------
 void verify_cells_by_type(const smtk::mesh::CollectionPtr& c)
 {
   //1. verify that all cells size is equal to the vector of cellsets where
@@ -306,8 +294,6 @@ void verify_cells_by_type(const smtk::mesh::CollectionPtr& c)
   verify_cell_count_by_dim( c->meshes( smtk::mesh::Dims3 ) );
 }
 
-
-//----------------------------------------------------------------------------
 void verify_cells_by_types(const smtk::mesh::CollectionPtr& c)
 {
 
@@ -327,7 +313,6 @@ void verify_cells_by_types(const smtk::mesh::CollectionPtr& c)
   test( associatedCells == c->cells() );
 }
 
-//----------------------------------------------------------------------------
 void verify_cells_by_dim(const smtk::mesh::CollectionPtr& c)
 {
 
@@ -352,7 +337,6 @@ void verify_cells_by_dim(const smtk::mesh::CollectionPtr& c)
 
 }
 
-//----------------------------------------------------------------------------
 void verify_cellset_intersect(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::MeshSet no_meshes = c->meshes( "bad name string" );
@@ -401,7 +385,6 @@ void verify_cellset_intersect(const smtk::mesh::CollectionPtr& c)
 
 }
 
-//----------------------------------------------------------------------------
 void verify_cellset_union(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::MeshSet all_meshes = c->meshes();
@@ -442,7 +425,6 @@ void verify_cellset_union(const smtk::mesh::CollectionPtr& c)
 
 }
 
-//----------------------------------------------------------------------------
 void verify_cellset_subtract(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::CellSet all_cells = c->cells();
@@ -479,7 +461,6 @@ void verify_cellset_subtract(const smtk::mesh::CollectionPtr& c)
         "subtract of two meshes produced wrong size" );
 }
 
-//----------------------------------------------------------------------------
 void verify_cellset_point_intersect(const smtk::mesh::CollectionPtr& c)
 {
   using namespace smtk::mesh;
@@ -527,7 +508,6 @@ void verify_cellset_point_intersect(const smtk::mesh::CollectionPtr& c)
 
 }
 
-//----------------------------------------------------------------------------
 void verify_cellset_point_difference(const smtk::mesh::CollectionPtr& c)
 {
   using namespace smtk::mesh;
@@ -574,8 +554,6 @@ void verify_cellset_point_difference(const smtk::mesh::CollectionPtr& c)
   }
 }
 
-
-//----------------------------------------------------------------------------
 class CountCells : public smtk::mesh::CellForEach
 {
   //keep the range of points we have seen so we can verify that we
@@ -597,7 +575,6 @@ class CountCells : public smtk::mesh::CellForEach
   //array for this cellset
   int numPointsSeen;
 public:
-  //--------------------------------------------------------------------------
   CountCells( ):
     smtk::mesh::CellForEach(),
     pointsSeen( ),
@@ -607,7 +584,6 @@ public:
     {
     }
 
-  //--------------------------------------------------------------------------
   void forCell(const smtk::mesh::Handle& cellId,
                smtk::mesh::CellType cellType, int numPts)
   {
@@ -628,7 +604,6 @@ public:
   smtk::mesh::CellTypes cellTypes() const { return cellTypesSeen; }
 };
 
-//----------------------------------------------------------------------------
 void verify_cellset_for_each(const smtk::mesh::CollectionPtr& c)
 {
   CountCells functor;
@@ -670,7 +645,6 @@ void verify_cellset_for_each(const smtk::mesh::CollectionPtr& c)
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestCellSet(int, char** const)
 {
   smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();

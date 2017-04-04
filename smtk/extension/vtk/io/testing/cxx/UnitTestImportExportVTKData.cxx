@@ -28,13 +28,11 @@
 namespace
 {
 
-//----------------------------------------------------------------------------
 vtkSmartPointer< vtkPolyData > make_EmptyPolyData()
 {
   return vtkSmartPointer< vtkPolyData >::New();
 }
 
-//----------------------------------------------------------------------------
 vtkSmartPointer< vtkPolyData > make_TrianglePolyData()
 {
   //use a vtk parametric source to construct polydata on the fly
@@ -52,7 +50,6 @@ vtkSmartPointer< vtkPolyData > make_TrianglePolyData()
   return result;
 }
 
-//----------------------------------------------------------------------------
 vtkSmartPointer< vtkUnstructuredGrid > make_TriangleUGrid()
 {
   //use a vtk parametric source to construct polydata on the fly
@@ -74,7 +71,6 @@ vtkSmartPointer< vtkUnstructuredGrid > make_TriangleUGrid()
   return result;
 }
 
-//----------------------------------------------------------------------------
 vtkSmartPointer< vtkUnstructuredGrid > make_MixedVolUGrid()
 {
   //manually create a mixed wedge and tet volume
@@ -114,8 +110,6 @@ vtkSmartPointer< vtkUnstructuredGrid > make_MixedVolUGrid()
   return result;
 }
 
-//----------------------------------------------------------------------------
-
 double EPSILON = 1.e-6;
 
 void test_same_datasets(vtkDataSet* ds, vtkDataSet* ds2)
@@ -149,7 +143,6 @@ void test_same_datasets(vtkDataSet* ds, vtkDataSet* ds2)
   it2->Delete();
 }
 
-//----------------------------------------------------------------------------
 void verify_null_polydata()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
@@ -160,7 +153,6 @@ void verify_null_polydata()
   test( !c, "collection should be invalid for a NULL poly data");
 }
 
-//----------------------------------------------------------------------------
 void verify_empty_polydata()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
@@ -170,7 +162,6 @@ void verify_empty_polydata()
   test( !c, "collection should invalid for empty poly data");
 }
 
-//----------------------------------------------------------------------------
 void verify_tri_polydata()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
@@ -196,8 +187,6 @@ void verify_tri_polydata()
   test_same_datasets(pd, pd2);
 }
 
-
-//----------------------------------------------------------------------------
 void verify_tri_ugrid()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
@@ -224,7 +213,6 @@ void verify_tri_ugrid()
   test_same_datasets(ug, ug2);
 }
 
-//----------------------------------------------------------------------------
 void verify_mixed_cell_ugrid()
 {
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
@@ -255,7 +243,6 @@ void verify_mixed_cell_ugrid()
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestImportExportVTKData(int argc, char* argv[])
 {
   (void)argc;

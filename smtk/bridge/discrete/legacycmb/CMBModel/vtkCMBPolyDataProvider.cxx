@@ -29,7 +29,6 @@
 vtkStandardNewMacro(vtkCMBPolyDataProvider);
 vtkCxxSetObjectMacro(vtkCMBPolyDataProvider, ModelWrapper, vtkDiscreteModelWrapper);
 
-//----------------------------------------------------------------------------
 vtkCMBPolyDataProvider::vtkCMBPolyDataProvider()
 {
   // by default assume filters have one input and one output
@@ -44,20 +43,17 @@ vtkCMBPolyDataProvider::vtkCMBPolyDataProvider()
   this->CreateEdgePointVerts = false;
 }
 
-//----------------------------------------------------------------------------
 vtkCMBPolyDataProvider::~vtkCMBPolyDataProvider()
 {
   this->SetModelWrapper(0);
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBPolyDataProvider::SetItemType(int itemType)
 {
   this->ItemType = itemType;
   this->ItemTypeIsSet = 1;
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBPolyDataProvider::SetEntityId(vtkIdType Id)
 {
   this->EntityId = Id;
@@ -65,7 +61,6 @@ void vtkCMBPolyDataProvider::SetEntityId(vtkIdType Id)
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBPolyDataProvider::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
@@ -77,7 +72,6 @@ void vtkCMBPolyDataProvider::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "CreateEdgePointVerts: " << this->CreateEdgePointVerts << endl;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBPolyDataProvider::RequestUpdateExtent(
   vtkInformation *,
   vtkInformationVector **,
@@ -105,7 +99,6 @@ int vtkCMBPolyDataProvider::RequestUpdateExtent(
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBPolyDataProvider::RequestData(
   vtkInformation* /*request*/,
   vtkInformationVector** vtkNotUsed( inputVector ),
@@ -229,7 +222,6 @@ int vtkCMBPolyDataProvider::RequestData(
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBPolyDataProvider::FillOutputPortInformation(
   int, vtkInformation* info)
 {

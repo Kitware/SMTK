@@ -30,7 +30,6 @@
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-//----------------------------------------------------------------------------
 class qtOperatorViewInternals
 {
 public:
@@ -43,7 +42,6 @@ public:
   QPointer<QPushButton> m_applyButton;
 };
 
-//----------------------------------------------------------------------------
 qtBaseView *
 qtOperatorView::createViewWidget(const ViewInfo &info)
 {
@@ -58,7 +56,6 @@ qtOperatorView::createViewWidget(const ViewInfo &info)
   return view;
 }
 
-//----------------------------------------------------------------------------
 qtOperatorView::
 qtOperatorView(const OperatorViewInfo &info) :
   qtBaseView(info), m_applied(false)
@@ -76,12 +73,11 @@ qtOperatorView(const OperatorViewInfo &info) :
     }
 }
 
-//----------------------------------------------------------------------------
 qtOperatorView::~qtOperatorView()
 {
   delete this->Internals;
 }
-//----------------------------------------------------------------------------
+
 void qtOperatorView::createWidget( )
 {
   QVBoxLayout* parentlayout = static_cast<QVBoxLayout*> (
@@ -122,7 +118,6 @@ void qtOperatorView::createWidget( )
   this->Internals->m_applyButton->setEnabled((!this->m_applied) && iview->isValid());
 }
 
-//----------------------------------------------------------------------------
 void qtOperatorView::onModifiedParameters()
 {
   this->m_applied = false;
@@ -130,19 +125,17 @@ void qtOperatorView::onModifiedParameters()
      setEnabled(this->Internals->m_instancedView->isValid());
 }
 
-//----------------------------------------------------------------------------
 void qtOperatorView::showAdvanceLevelOverlay(bool show)
 {
   this->Internals->m_instancedView->showAdvanceLevelOverlay(show);
   this->qtBaseView::showAdvanceLevelOverlay(show);
 }
 
-//----------------------------------------------------------------------------
 void qtOperatorView::requestModelEntityAssociation()
 {
   this->Internals->m_instancedView->requestModelEntityAssociation();
 }
-//----------------------------------------------------------------------------
+
 void qtOperatorView::onOperate()
 {
   if ((!this->m_applied) && this->Internals->m_instancedView->isValid())

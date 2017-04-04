@@ -47,7 +47,6 @@ void cleanup( const std::string& file_path )
     }
 }
 
-//----------------------------------------------------------------------------
 void create_simple_model( smtk::model::ManagerPtr mgr )
 {
   std::size_t numTetsInModel = 4;
@@ -66,7 +65,6 @@ void create_simple_model( smtk::model::ManagerPtr mgr )
 
 }
 
-//----------------------------------------------------------------------------
 void verify_writing_and_loading_collection()
 {
   std::string write_path(write_root);
@@ -123,7 +121,6 @@ void verify_writing_and_loading_collection()
        "a collection with a writeLocation is always read back in as not modified");
 }
 
-//----------------------------------------------------------------------------
 void verify_writing_and_loading_multiple_collections()
 {
   std::string write_path(write_root);
@@ -170,7 +167,6 @@ void verify_writing_and_loading_multiple_collections()
   test(collections.size() == 2, "number of collections with associations incorrect");
 }
 
-//----------------------------------------------------------------------------
 void verify_writing_and_loading_collections_without_file_path()
 {
   std::string write_path(write_root);
@@ -249,7 +245,6 @@ void verify_writing_and_loading_collections_without_file_path()
 }
 
 
-//----------------------------------------------------------------------------
 void verify_writing_of_single_collection_to_disk()
 {
   std::string file_path(data_root);
@@ -281,7 +276,6 @@ void verify_writing_of_single_collection_to_disk()
   test(exportGood == 1, "Expected the Export of forSingleCollection to pass");
 }
 
-//----------------------------------------------------------------------------
 void verify_writing_of_single_collection_to_json()
 {
   std::string file_path(data_root);
@@ -311,7 +305,6 @@ void verify_writing_of_single_collection_to_json()
   test(exportGood == 1, "Expected the Export of forSingleCollection to pass");
 }
 
-//----------------------------------------------------------------------------
 void verify_reading_of_single_collection_from_json()
 {
   std::string file_path(data_root);
@@ -380,7 +373,6 @@ void verify_reading_of_single_collection_from_json()
   cleanup( write_path );
 }
 
-//----------------------------------------------------------------------------
 void verify_loading_existing_collection_fails()
 {
   std::string write_path(write_root);
@@ -415,7 +407,6 @@ void verify_loading_existing_collection_fails()
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestReadWriteMeshJSON(int, char** const)
 {
   verify_writing_and_loading_collection();

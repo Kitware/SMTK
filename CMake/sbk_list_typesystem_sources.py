@@ -14,19 +14,13 @@ class_types = set([
 ])
 scope_types = class_types.union(['namespace-type'])
 
-#------------------------------------------------------------------------------
-
 
 def mangleQualifiedName(name):
     return name.replace('::', '_')
 
-#------------------------------------------------------------------------------
-
 
 def mangleTemplateArgs(args):
     return mangleQualifiedName(args.replace(' ', '').replace(',', '_'))
-
-#------------------------------------------------------------------------------
 
 
 def typeName(attrs):
@@ -36,30 +30,23 @@ def typeName(attrs):
     else:
         return mangleQualifiedName(attrs['name'])
 
-#==============================================================================
-
 
 class typesystem_parser(xml.sax.ContentHandler):
-    #-------------------------------------------------------------------------
     def __init__(self):
         self.current_namespace = []
         self.package_name = None
         self.package_prefix_path = None
 
-    #-------------------------------------------------------------------------
     def printFile(self, name):
         print os.path.join(self.package_prefix_path, name.lower())
 
-    #-------------------------------------------------------------------------
     def printFiles(self, prefix, extensions):
         for extension in extensions:
             self.printFile(prefix + '.' + extension)
 
-    #-------------------------------------------------------------------------
     def printWrapperFiles(self, names):
         self.printFiles('_'.join(names) + '_wrapper', ['cpp', 'h'])
 
-    #-------------------------------------------------------------------------
     def startElement(self, name, attrs):
         if name == 'typesystem':
             self.package_name = attrs['package']
@@ -88,13 +75,11 @@ class typesystem_parser(xml.sax.ContentHandler):
             if(generate):
                 self.printWrapperFiles(self.current_namespace)
 
-    #-------------------------------------------------------------------------
     def endElement(self, name):
         if name in scope_types:
             self.current_namespace.pop()
 
 
-#==============================================================================
 if __name__ == '__main__':
     if len(sys.argv) < 3:
         sys.exit(1)

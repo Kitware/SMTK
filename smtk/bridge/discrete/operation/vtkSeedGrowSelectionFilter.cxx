@@ -31,7 +31,6 @@
 #include <set>
 #
 
-//----------------------------------------------------------------------------
 class vtkSeedGrowSelectionFilter::vtkInternal
 {
 public:
@@ -79,7 +78,6 @@ public:
 vtkStandardNewMacro(vtkSeedGrowSelectionFilter);
 vtkCxxSetObjectMacro(vtkSeedGrowSelectionFilter, ModelWrapper, vtkDiscreteModelWrapper);
 
-//----------------------------------------------------------------------------
 vtkSeedGrowSelectionFilter::vtkSeedGrowSelectionFilter()
 {
   this->FeatureAngle = 70.0;
@@ -93,7 +91,6 @@ vtkSeedGrowSelectionFilter::vtkSeedGrowSelectionFilter()
   this->ModelWrapper = 0;
 }
 
-//----------------------------------------------------------------------------
 vtkSeedGrowSelectionFilter::~vtkSeedGrowSelectionFilter()
 {
   delete this->Internal;
@@ -101,7 +98,6 @@ vtkSeedGrowSelectionFilter::~vtkSeedGrowSelectionFilter()
   this->SetModelWrapper(0);
 }
 
-//----------------------------------------------------------------------------
 void vtkSeedGrowSelectionFilter::SetFaceCellId(vtkIdType faceId, vtkIdType cellId)
 {
   if(this->CellId == cellId && this->ModelFaceId == faceId)
@@ -113,28 +109,26 @@ void vtkSeedGrowSelectionFilter::SetFaceCellId(vtkIdType faceId, vtkIdType cellI
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 void vtkSeedGrowSelectionFilter::RemoveAllGrowFaceIds()
 {
   this->Internal->ModelFaceIds.clear();
   this->Modified();
 }
 
-//----------------------------------------------------------------------------
 void vtkSeedGrowSelectionFilter::SetGrowFaceIds(vtkIdType* faceIds)
 {
   this->Internal->updateIDs(faceIds);
 
   this->Modified();
 }
-//----------------------------------------------------------------------------
+
 void vtkSeedGrowSelectionFilter::SetGrowFaceIds(
   const std::set<vtkIdType>& faceIds)
 {
   this->Internal->setIDs(faceIds);
   this->Modified();
 }
-//----------------------------------------------------------------------------
+
 void vtkSeedGrowSelectionFilter::GrowFromCell(const DiscreteMesh *mesh, vtkIntArray* marked, vtkIdType inputCellId,
   vtkIdTypeArray* outSelectionList)
 {
@@ -202,7 +196,6 @@ void vtkSeedGrowSelectionFilter::GrowFromCell(const DiscreteMesh *mesh, vtkIntAr
   otherPts->Delete();
 }
 
-//----------------------------------------------------------------------------
 void vtkSeedGrowSelectionFilter::GrowAndRemoveFromSelection(
   const DiscreteMesh *mesh, vtkIntArray* marked, vtkIdType inputCellId,
   vtkIdTypeArray* outSelectionList, vtkSelection* inSelection)
@@ -305,7 +298,6 @@ void vtkSeedGrowSelectionFilter::GrowAndRemoveFromSelection(
   pts->Delete();
 }
 
-//----------------------------------------------------------------------------
 void vtkSeedGrowSelectionFilter::ComputeNormal(
   vtkIdList* ptids, const DiscreteMesh* mesh, double* normal)
 {
@@ -331,7 +323,6 @@ void vtkSeedGrowSelectionFilter::ComputeNormal(
     }
 }
 
-//----------------------------------------------------------------------------
 bool vtkSeedGrowSelectionFilter::AreCellNormalsConsistent(
   vtkIdType pointId1, vtkIdType pointId2, vtkIdList * neighborCellIds)
 {
@@ -347,14 +338,12 @@ bool vtkSeedGrowSelectionFilter::AreCellNormalsConsistent(
   return true;
 }
 
-//----------------------------------------------------------------------------
 void vtkSeedGrowSelectionFilter::SetSelectionConnection(
   vtkAlgorithmOutput* algOutput)
 {
   this->SetInputConnection(0, algOutput);
 }
 
-//----------------------------------------------------------------------------
 void vtkSeedGrowSelectionFilter::SetInputSelection(vtkSelection* inSelection)
 {
   // if this is set, the selection from input connection will not be used.
@@ -363,7 +352,6 @@ void vtkSeedGrowSelectionFilter::SetInputSelection(vtkSelection* inSelection)
     this->Internal->InputSelection->DeepCopy(inSelection);
 }
 
-//----------------------------------------------------------------------------
 void vtkSeedGrowSelectionFilter::MergeGrowSelection(
   vtkSelection* selection, vtkIntArray* marked,
   vtkIdTypeArray* outSelectionList)
@@ -392,7 +380,6 @@ void vtkSeedGrowSelectionFilter::MergeGrowSelection(
     }
 }
 
-//----------------------------------------------------------------------------
 int vtkSeedGrowSelectionFilter::RequestData(
   vtkInformation* vtkNotUsed(request),
   vtkInformationVector** inputVector,
@@ -516,7 +503,6 @@ int vtkSeedGrowSelectionFilter::RequestData(
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkSeedGrowSelectionFilter::FillInputPortInformation(
   int /*port*/, vtkInformation *info)
 {
@@ -526,7 +512,6 @@ int vtkSeedGrowSelectionFilter::FillInputPortInformation(
   return 1;
 }
 
-//----------------------------------------------------------------------------
 void vtkSeedGrowSelectionFilter::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);

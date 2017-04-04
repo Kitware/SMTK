@@ -36,7 +36,6 @@ namespace
 namespace smtk {
 namespace mesh {
 
-//----------------------------------------------------------------------------
 TypeSet::TypeSet():
   m_cellTypes(),
   m_dimTypes(),
@@ -46,7 +45,6 @@ TypeSet::TypeSet():
 
 }
 
-//----------------------------------------------------------------------------
 TypeSet::TypeSet( smtk::mesh::CellTypes ctypes,
                   bool hasM, bool hasC ):
   m_cellTypes(ctypes),
@@ -57,7 +55,6 @@ TypeSet::TypeSet( smtk::mesh::CellTypes ctypes,
 
 }
 
-//----------------------------------------------------------------------------
 bool TypeSet::operator==( const TypeSet& other ) const
 {
   //m_dimTypes are derived from m_cellTypes so we only need to compare
@@ -68,38 +65,32 @@ bool TypeSet::operator==( const TypeSet& other ) const
 
 }
 
-//----------------------------------------------------------------------------
 bool TypeSet::operator!=( const TypeSet& other ) const
 {
   return !(*this == other);
 }
 
-//----------------------------------------------------------------------------
 bool TypeSet::hasMeshes() const
 {
   return this->m_hasMesh;
 }
 
-//----------------------------------------------------------------------------
 bool TypeSet::hasCells() const
 {
     return this->m_hasCell;
 }
 
-//----------------------------------------------------------------------------
 bool TypeSet::hasDimension( smtk::mesh::DimensionType dt ) const
 {
   return this->m_dimTypes[ dt ];
 }
 
-//----------------------------------------------------------------------------
 bool TypeSet::hasCell( smtk::mesh::CellType ct ) const
 {
   assert(ct != smtk::mesh::CellType_MAX);
   return this->m_cellTypes[ ct ];
 }
 
-//----------------------------------------------------------------------------
 TypeSet& TypeSet::operator += (const TypeSet& other)
 {
   // Bitwise-OR of types.

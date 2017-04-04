@@ -40,7 +40,6 @@
 
 using namespace smtk::extension;
 
-//----------------------------------------------------------------------------
 class qtPolygonEdgeOperationViewInternals
 {
 public:
@@ -106,7 +105,6 @@ public:
   smtk::weak_ptr<smtk::model::Operator> CurrentOp;
 };
 
-//----------------------------------------------------------------------------
 qtBaseView *
 qtPolygonEdgeOperationView::createViewWidget(const ViewInfo &info)
 {
@@ -115,13 +113,12 @@ qtPolygonEdgeOperationView::createViewWidget(const ViewInfo &info)
   return view;
 }
 
-//----------------------------------------------------------------------------
 void qtPolygonEdgeOperationView::attributeModified()
 {
   this->Internals->ArcManager->
     enableApplyButton(this->Internals->CurrentAtt->attribute()->isValid());
 }
-//----------------------------------------------------------------------------
+
 qtPolygonEdgeOperationView::
 qtPolygonEdgeOperationView(const ViewInfo &info) :
   qtBaseView(info)
@@ -129,12 +126,11 @@ qtPolygonEdgeOperationView(const ViewInfo &info) :
   this->Internals = new qtPolygonEdgeOperationViewInternals;
 }
 
-//----------------------------------------------------------------------------
 qtPolygonEdgeOperationView::~qtPolygonEdgeOperationView()
 {
   delete this->Internals;
 }
-//----------------------------------------------------------------------------
+
 void qtPolygonEdgeOperationView::createWidget( )
 {
   smtk::common::ViewPtr view = this->getObject();
@@ -173,7 +169,6 @@ void qtPolygonEdgeOperationView::createWidget( )
     this, SLOT(cancelOperation(const smtk::model::OperatorPtr&)));
 }
 
-//----------------------------------------------------------------------------
 void qtPolygonEdgeOperationView::updateAttributeData()
 {
   smtk::common::ViewPtr view = this->getObject();
@@ -265,7 +260,6 @@ void qtPolygonEdgeOperationView::updateAttributeData()
   this->operationSelected(edgeOp);
 }
 
-//----------------------------------------------------------------------------
 void qtPolygonEdgeOperationView::requestOperation(const smtk::model::OperatorPtr& op)
 {
   if(!op || !op->specification())
@@ -275,7 +269,6 @@ void qtPolygonEdgeOperationView::requestOperation(const smtk::model::OperatorPtr
   this->uiManager()->activeModelView()->requestOperation(op, false);
 }
 
-//----------------------------------------------------------------------------
 void qtPolygonEdgeOperationView::cancelOperation(const smtk::model::OperatorPtr& op)
 {
   if( !op || !this->Widget || !this->Internals->CurrentAtt )
@@ -289,7 +282,7 @@ void qtPolygonEdgeOperationView::cancelOperation(const smtk::model::OperatorPtr&
     this->Internals->SplitEdgeWidget->resetWidget();
     }
 }
-//----------------------------------------------------------------------------
+
 void qtPolygonEdgeOperationView::valueChanged(smtk::attribute::ItemPtr valitem)
 {
   // "create edge" op "construction method" changed.
@@ -309,7 +302,6 @@ void qtPolygonEdgeOperationView::valueChanged(smtk::attribute::ItemPtr valitem)
   this->operationSelected(this->Internals->CurrentOp.lock());
 }
 
-//----------------------------------------------------------------------------
 void qtPolygonEdgeOperationView::arcOperationDone()
 {
   if(!this->Internals->CurrentAtt || !this->Widget ||
@@ -321,13 +313,11 @@ void qtPolygonEdgeOperationView::arcOperationDone()
   this->operationSelected(this->Internals->CurrentOp.lock());
 }
 
-//----------------------------------------------------------------------------
 void qtPolygonEdgeOperationView::clearSelection()
 {
   this->uiManager()->activeModelView()->clearSelection();
 }
 
-//----------------------------------------------------------------------------
 void qtPolygonEdgeOperationView::operationSelected(const smtk::model::OperatorPtr& op)
 {
   if(!this->Internals->CurrentAtt || !this->Widget)
@@ -440,13 +430,11 @@ void qtPolygonEdgeOperationView::operationSelected(const smtk::model::OperatorPt
     }
 }
 
-//----------------------------------------------------------------------------
 void qtPolygonEdgeOperationView::showAdvanceLevelOverlay(bool show)
 {
   this->qtBaseView::showAdvanceLevelOverlay(show);
 }
 
-//----------------------------------------------------------------------------
 void qtPolygonEdgeOperationView::requestModelEntityAssociation()
 {
   this->updateAttributeData();

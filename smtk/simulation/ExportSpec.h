@@ -31,7 +31,6 @@ namespace smtk
     class SMTKCORE_EXPORT ExportSpec
     {
     public:
-      // ----------------------------------------
       // Data-get methods, intended to be called from python scripts
       smtk::attribute::System *getSimulationAttributes() const
       { return m_simulationSystem; }
@@ -42,7 +41,6 @@ namespace smtk
       smtk::io::Logger getLogger() const
       { return m_logger; }
 
-      // ----------------------------------------
       // Constructor and data-set methods, intended to be called from C/C++ code
       ExportSpec();
       void clear();

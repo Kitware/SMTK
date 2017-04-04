@@ -48,10 +48,8 @@ SBT_FILENAME = 'Basic2DFluid.sbt'
 SBI_FILENAME = 'Basic2DFluid.sbi'
 
 
-# ---------------------------------------------------------------------
 class TestModelAttributes(unittest.TestCase):
 
-    # ---------------------------------------------------------------------
     def load_xref(self, scope, folder=None):
         '''Parses cross-reference file to initialize lists of entity uuids.
 
@@ -91,7 +89,6 @@ class TestModelAttributes(unittest.TestCase):
             logging.error('Problem loading %s' % path)
             sys.exit(3)
 
-    # ---------------------------------------------------------------------
     def generate_attributes(self, scope):
         '''Builds and returns attribute system
 
@@ -182,7 +179,6 @@ class TestModelAttributes(unittest.TestCase):
 
         return system
 
-    # ---------------------------------------------------------------------
     def check_attributes(self, scope, system):
         '''Checks for attributes and associations
 

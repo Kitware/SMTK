@@ -23,18 +23,16 @@
 #include <string>
 
 vtkStandardNewMacro(vtkSMModelRepresentationProxy);
-//----------------------------------------------------------------------------
+
 vtkSMModelRepresentationProxy::vtkSMModelRepresentationProxy()
 {
   this->Representation = SURFACE;
 }
 
-//----------------------------------------------------------------------------
 vtkSMModelRepresentationProxy::~vtkSMModelRepresentationProxy()
 {
 }
 
-//----------------------------------------------------------------------------
 void vtkSMModelRepresentationProxy::SetRepresentation(int repr)
 {
   if (this->Representation != repr)
@@ -67,7 +65,6 @@ void vtkSMModelRepresentationProxy::SetRepresentation(int repr)
   this->InvalidateDataInformation();
 }
 
-//----------------------------------------------------------------------------
 void vtkSMModelRepresentationProxy::CreateVTKObjects()
 {
   if (this->ObjectsCreated)
@@ -124,7 +121,6 @@ void vtkSMModelRepresentationProxy::CreateVTKObjects()
 */
 }
 
-//----------------------------------------------------------------------------
 void vtkSMModelRepresentationProxy::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);

@@ -40,14 +40,12 @@
 #include <QProgressDialog>
 #include <QVBoxLayout>
 
-//-----------------------------------------------------------------------------
 InternalDoubleValidator::InternalDoubleValidator(QObject * parent)
   :QDoubleValidator(parent)
 {
 
 }
 
-//-----------------------------------------------------------------------------
 void InternalDoubleValidator::fixup(QString &input) const
 {
   if ( input.length() == 0 )
@@ -103,7 +101,6 @@ inline bool internal_COLOR_REP_BY_ARRAY(
   return res;
 }
 
-//-----------------------------------------------------------------------------
 pqGenerateContoursDialog::pqGenerateContoursDialog(
                                           pqPipelineSource* imagesource,
                                           const bool& mapScalars2Colors,
@@ -249,7 +246,6 @@ pqGenerateContoursDialog::pqGenerateContoursDialog(
   //                 this, SLOT(abort()));
 }
 
-//-----------------------------------------------------------------------------
 pqGenerateContoursDialog::~pqGenerateContoursDialog()
 {
   delete this->InternalWidget;
@@ -283,12 +279,12 @@ pqGenerateContoursDialog::~pqGenerateContoursDialog()
     this->ImageSource = 0;
     }
 }
-//-----------------------------------------------------------------------------
+
 int pqGenerateContoursDialog::exec()
 {
   return this->MainDialog->exec();
 }
-//-----------------------------------------------------------------------------
+
 void pqGenerateContoursDialog::generateContours()
 {
   this->Progress = new QProgressDialog(this->MainDialog);
@@ -378,7 +374,6 @@ void pqGenerateContoursDialog::generateContours()
   this->Progress = NULL;
 }
 
-//-----------------------------------------------------------------------------
 void pqGenerateContoursDialog::onAccecptContours()
 {
   this->Progress = new QProgressDialog(this->MainDialog);
@@ -396,7 +391,6 @@ void pqGenerateContoursDialog::onAccecptContours()
 
 }
 
-//-----------------------------------------------------------------------------
 void pqGenerateContoursDialog::onCancel()
 {
   this->MainDialog->done(QDialog::Rejected);
@@ -404,13 +398,11 @@ void pqGenerateContoursDialog::onCancel()
   // disconnect progressManager????
 }
 
-//-----------------------------------------------------------------------------
 void pqGenerateContoursDialog::close()
 {
   this->onCancel();
 }
 
-//-----------------------------------------------------------------------------
 void pqGenerateContoursDialog::updateProgress(const QString& message, int progress)
 {
   // Is there any progress being reported?
@@ -423,7 +415,6 @@ void pqGenerateContoursDialog::updateProgress(const QString& message, int progre
   QCoreApplication::processEvents();
 }
 
-//-----------------------------------------------------------------------------
 void pqGenerateContoursDialog::disableWhileProcessing()
 {
   this->InternalWidget->loadImageFrame->setEnabled(false);
@@ -431,7 +422,6 @@ void pqGenerateContoursDialog::disableWhileProcessing()
   this->InternalWidget->okCancelBox->setEnabled(false);
 }
 
-//-----------------------------------------------------------------------------
 void pqGenerateContoursDialog::updateContourButtonStatus()
 {
   if (this->ContourValue == this->InternalWidget->contourValue->text().toDouble() &&
@@ -445,7 +435,7 @@ void pqGenerateContoursDialog::updateContourButtonStatus()
     this->InternalWidget->generateContoursButton->setEnabled(true);
     }
 }
-//-----------------------------------------------------------------------------
+
 void pqGenerateContoursDialog::onOpacityChanged(int opacity)
 {
   if(this->ImageRepresentation)
@@ -457,7 +447,6 @@ void pqGenerateContoursDialog::onOpacityChanged(int opacity)
     }
 }
 
-//-----------------------------------------------------------------------------
 void pqGenerateContoursDialog::onMapScalars(int mapScalars2Colors)
 {
   if(pqDataRepresentation* imagerep = this->ImageRepresentation)

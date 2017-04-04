@@ -18,14 +18,12 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 RefItem::RefItem(Attribute *owningAttribute,
                  int itemPosition):
   Item(owningAttribute, itemPosition)
 {
 }
 
-//----------------------------------------------------------------------------
 RefItem::RefItem(Item *inOwningItem,
                  int itemPosition,
                  int mySubGroupPosition):
@@ -33,7 +31,6 @@ RefItem::RefItem(Item *inOwningItem,
 {
 }
 
-//----------------------------------------------------------------------------
 bool RefItem::
 setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 {
@@ -56,12 +53,11 @@ setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
   return true;
 }
 
-//----------------------------------------------------------------------------
 RefItem::~RefItem()
 {
   this->clearAllReferences();
 }
-//----------------------------------------------------------------------------
+
 void RefItem::clearAllReferences()
 {
   std::size_t i, n = this->m_values.size();
@@ -75,13 +71,12 @@ void RefItem::clearAllReferences()
       }
     }
 }
-//----------------------------------------------------------------------------
+
 Item::Type RefItem::type() const
 {
   return ATTRIBUTE_REF;
 }
 
-//----------------------------------------------------------------------------
 bool RefItem::isValid() const
 {
   // If the item is not enabled or if all of its values are set then it is valid
@@ -102,7 +97,7 @@ bool RefItem::isValid() const
 
  return true;
 }
-//----------------------------------------------------------------------------
+
 std::size_t RefItem::numberOfRequiredValues() const
 {
   const RefItemDefinition *def =
@@ -113,7 +108,7 @@ std::size_t RefItem::numberOfRequiredValues() const
     }
   return def->numberOfRequiredValues();
 }
-//----------------------------------------------------------------------------
+
 bool RefItem::setValue(std::size_t element, smtk::attribute::AttributePtr att)
 {
   const RefItemDefinition *def =
@@ -132,7 +127,7 @@ bool RefItem::setValue(std::size_t element, smtk::attribute::AttributePtr att)
     }
   return false;
 }
-//----------------------------------------------------------------------------
+
 std::string
 RefItem::valueAsString(std::size_t element,
                        const std::string &format) const
@@ -167,7 +162,6 @@ RefItem::const_iterator RefItem::end() const
   return this->m_values.end();
 }
 
-//----------------------------------------------------------------------------
 bool
 RefItem::appendValue(smtk::attribute::AttributePtr val)
 {
@@ -187,7 +181,7 @@ RefItem::appendValue(smtk::attribute::AttributePtr val)
     }
   return false;
 }
-//----------------------------------------------------------------------------
+
 bool
 RefItem::removeValue(std::size_t element)
 {
@@ -208,7 +202,7 @@ RefItem::removeValue(std::size_t element)
   this->m_values.erase(this->m_values.begin()+element);
   return true;
 }
-//----------------------------------------------------------------------------
+
 bool
 RefItem::setNumberOfValues(std::size_t newSize)
 {
@@ -243,7 +237,7 @@ RefItem::setNumberOfValues(std::size_t newSize)
   this->m_values.resize(newSize);
   return true;
 }
-//----------------------------------------------------------------------------
+
 void
 RefItem::unset(std::size_t element)
 {
@@ -260,7 +254,7 @@ RefItem::unset(std::size_t element)
     att->removeReference(this, element);
     }
 }
-//----------------------------------------------------------------------------
+
 void
 RefItem::reset()
 {
@@ -280,7 +274,7 @@ RefItem::reset()
     }
   Item::reset();
 }
-//----------------------------------------------------------------------------
+
 bool RefItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
   // Assigns my contents to be same as sourceItem
@@ -332,4 +326,3 @@ bool RefItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 
   return Item::assign(sourceItem, options);
 }
-//----------------------------------------------------------------------------

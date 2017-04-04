@@ -23,7 +23,6 @@
 
 vtkStandardNewMacro(vtkPolygonArcInfo);
 
-//----------------------------------------------------------------------------
 vtkPolygonArcInfo::vtkPolygonArcInfo()
 {
   this->BlockIndex = -1;
@@ -36,13 +35,11 @@ vtkPolygonArcInfo::vtkPolygonArcInfo()
   this->SelectedPointCoordinates[2] = 0.0;
 }
 
-//----------------------------------------------------------------------------
 vtkPolygonArcInfo::~vtkPolygonArcInfo()
 {
   this->SetModelEntityID(NULL);
 }
 
-//----------------------------------------------------------------------------
 void vtkPolygonArcInfo::PrintSelf(ostream &os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
@@ -57,7 +54,6 @@ void vtkPolygonArcInfo::PrintSelf(ostream &os, vtkIndent indent)
                << this->SelectedPointCoordinates[2] << endl;
 }
 
-//----------------------------------------------------------------------------
 void vtkPolygonArcInfo::CopyFromObject(vtkObject* obj)
 {
   //reset member variables to defaults
@@ -155,7 +151,6 @@ void vtkPolygonArcInfo::CopyFromObject(vtkObject* obj)
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkPolygonArcInfo::CopyToStream(vtkClientServerStream* css)
 {
   css->Reset();
@@ -169,7 +164,6 @@ void vtkPolygonArcInfo::CopyToStream(vtkClientServerStream* css)
        << vtkClientServerStream::End;
 }
 
-//----------------------------------------------------------------------------
 void vtkPolygonArcInfo::CopyFromStream(const vtkClientServerStream* css)
 {
   css->GetArgument(0, 0, &this->ClosedLoop);

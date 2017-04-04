@@ -42,13 +42,11 @@ void vtkModelItemGenericIterator::PrintSelf(ostream& os, vtkIndent indent)
   this->Superclass::PrintSelf(os,indent);
 }
 
-//---------------------------------------------------------------------------
 void vtkModelItemGenericIterator::Begin()
 {
   this->Internal->Iterator = this->Internal->Objects.begin();
 }
 
-//---------------------------------------------------------------------------
 int vtkModelItemGenericIterator::IsAtEnd()
 {
   if ( this->Internal->Iterator == this->Internal->Objects.end() )
@@ -58,7 +56,6 @@ int vtkModelItemGenericIterator::IsAtEnd()
   return 0;
 }
 
-//---------------------------------------------------------------------------
 void vtkModelItemGenericIterator::Next()
 {
   if (!this->IsAtEnd())
@@ -68,7 +65,6 @@ void vtkModelItemGenericIterator::Next()
     }
 }
 
-//---------------------------------------------------------------------------
 vtkModelItem* vtkModelItemGenericIterator::GetCurrentItem()
 {
   if (!this->IsAtEnd())
@@ -79,13 +75,11 @@ vtkModelItem* vtkModelItemGenericIterator::GetCurrentItem()
   return 0;
 }
 
-//---------------------------------------------------------------------------
 void vtkModelItemGenericIterator::AddModelItem(vtkModelItem* modelItem)
 {
   this->Internal->Objects.push_back(modelItem);
 }
 
-//---------------------------------------------------------------------------
 void vtkModelItemGenericIterator::AddUniqueModelItem(vtkModelItem* modelItem)
 {
   for(vtkModelItemGenericIteratorInternals::ContainerIterator it=
@@ -100,21 +94,18 @@ void vtkModelItemGenericIterator::AddUniqueModelItem(vtkModelItem* modelItem)
   this->Internal->Objects.push_back(modelItem);
 }
 
-//---------------------------------------------------------------------------
 void vtkModelItemGenericIterator::RemoveModelItem(vtkModelItem* modelItem)
 {
   this->Internal->Objects.remove(modelItem);
 }
 
-//---------------------------------------------------------------------------
 void vtkModelItemGenericIterator::RemoveAllModelItems()
 {
   this->Internal->Objects.clear();
   this->Internal->Iterator = this->Internal->Objects.begin();
 }
-//---------------------------------------------------------------------------
+
 int vtkModelItemGenericIterator::Size()
 {
   return static_cast<int>(this->Internal->Objects.size());
 }
-//---------------------------------------------------------------------------

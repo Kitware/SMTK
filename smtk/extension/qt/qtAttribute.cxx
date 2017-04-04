@@ -39,7 +39,6 @@ using namespace smtk::extension;
 
 qtAttributeItemWidgetFactory* qtAttribute::s_factory = NULL;
 
-//----------------------------------------------------------------------------
 class qtAttributeInternals
 {
 public:
@@ -59,7 +58,6 @@ public:
  QPointer<qtBaseView> m_view;
 };
 
-//----------------------------------------------------------------------------
 qtAttribute::qtAttribute(smtk::attribute::AttributePtr myAttribute, QWidget* p,
    qtBaseView* myView)
 {
@@ -68,7 +66,6 @@ qtAttribute::qtAttribute(smtk::attribute::AttributePtr myAttribute, QWidget* p,
   this->createWidget();
 }
 
-//----------------------------------------------------------------------------
 qtAttribute::~qtAttribute()
 {
   // First Clear all the items
@@ -86,7 +83,6 @@ qtAttribute::~qtAttribute()
   delete this->m_internals;
 }
 
-//----------------------------------------------------------------------------
 void qtAttribute::createWidget()
 {
   if(!this->attribute() || (!this->attribute()->numberOfItems() &&
@@ -136,7 +132,6 @@ void qtAttribute::createWidget()
   this->m_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
 }
 
-//----------------------------------------------------------------------------
 void qtAttribute::addItem(qtItem* child)
 {
   if(!this->m_internals->m_items.contains(child))
@@ -147,13 +142,11 @@ void qtAttribute::addItem(qtItem* child)
     }
 }
 
-//----------------------------------------------------------------------------
 QList<qtItem*>& qtAttribute::items() const
 {
   return this->m_internals->m_items;
 }
 
-//----------------------------------------------------------------------------
 void qtAttribute::showAdvanceLevelOverlay(bool show)
 {
   for(int i=0; i < this->m_internals->m_items.count(); i++)
@@ -162,7 +155,6 @@ void qtAttribute::showAdvanceLevelOverlay(bool show)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtAttribute::createBasicLayout(bool includeAssociations)
 {
   //If there is no main widget there is nothing to show
@@ -199,7 +191,7 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
       }
     }
 }
-//----------------------------------------------------------------------------
+
 void qtAttribute::onRequestEntityAssociation()
 {
   foreach(qtItem* item, this->m_internals->m_items)
@@ -209,19 +201,16 @@ void qtAttribute::onRequestEntityAssociation()
     }
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::AttributePtr qtAttribute::attribute()
 {
   return this->m_internals->m_attribute.lock();
 }
 
-//----------------------------------------------------------------------------
 QWidget* qtAttribute::parentWidget()
 {
   return this->m_internals->m_parentWidget;
 }
 
-//----------------------------------------------------------------------------
 qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW,
   qtBaseView* bview, Qt::Orientation enVectorItemOrient)
 {

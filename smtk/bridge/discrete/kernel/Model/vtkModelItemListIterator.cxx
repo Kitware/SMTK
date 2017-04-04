@@ -55,7 +55,6 @@ int vtkModelItemListIterator::GetItemType()
   return this->Internal->ItemType;
 }
 
-//---------------------------------------------------------------------------
 void vtkModelItemListIterator::Begin()
 {
   if (!this->Root)
@@ -73,7 +72,6 @@ void vtkModelItemListIterator::Begin()
     this->Root->Internal->Associations[this->Internal->ItemType].begin();
 }
 
-//---------------------------------------------------------------------------
 int vtkModelItemListIterator::IsAtEnd()
 {
   if (!this->Root)
@@ -91,7 +89,6 @@ int vtkModelItemListIterator::IsAtEnd()
   return 0;
 }
 
-//---------------------------------------------------------------------------
 void vtkModelItemListIterator::Next()
 {
   if (!this->Root)
@@ -107,7 +104,6 @@ void vtkModelItemListIterator::Next()
     }
 }
 
-//---------------------------------------------------------------------------
 vtkModelItem* vtkModelItemListIterator::GetCurrentItem()
 {
   if (!this->Root)
@@ -123,7 +119,7 @@ vtkModelItem* vtkModelItemListIterator::GetCurrentItem()
 
   return 0;
 }
-//---------------------------------------------------------------------------
+
 int vtkModelItemListIterator::Size()
 {
   if (!this->Root)

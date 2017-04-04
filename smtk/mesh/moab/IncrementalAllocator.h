@@ -31,7 +31,6 @@ namespace smtk {
 namespace mesh {
 namespace moab {
 
-//----------------------------------------------------------------------------
 class SMTKCORE_EXPORT IncrementalAllocator :
     public smtk::mesh::IncrementalAllocator,
     protected smtk::mesh::moab::BufferedCellAllocator

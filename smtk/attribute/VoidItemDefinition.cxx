@@ -15,18 +15,16 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 VoidItemDefinition::
 VoidItemDefinition(const std::string &myName):
   ItemDefinition(myName)
 {
 }
 
-//----------------------------------------------------------------------------
 VoidItemDefinition::~VoidItemDefinition()
 {
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemPtr
 VoidItemDefinition::buildItem(Attribute *owningAttribute,
                               int itemPosition) const
@@ -34,7 +32,7 @@ VoidItemDefinition::buildItem(Attribute *owningAttribute,
   return smtk::attribute::ItemPtr(new VoidItem(owningAttribute,
                                               itemPosition));
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemPtr
 VoidItemDefinition::buildItem(Item *owningItem,
                               int itemPosition,
@@ -44,12 +42,12 @@ VoidItemDefinition::buildItem(Item *owningItem,
                                               itemPosition,
                                               subGroupPosition));
 }
-//----------------------------------------------------------------------------
+
 Item::Type VoidItemDefinition::type() const
 {
   return Item::VOID;
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemDefinitionPtr
 smtk::attribute::VoidItemDefinition::
 createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
@@ -61,4 +59,3 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
   ItemDefinition::copyTo(instance);
   return instance;
 }
-//----------------------------------------------------------------------------

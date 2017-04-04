@@ -51,7 +51,6 @@ namespace moab {
 
 namespace detail
 {
-//----------------------------------------------------------------------------
 smtk::mesh::HandleRange vectorToRange(std::vector< ::moab::EntityHandle >& vresult)
 {
   smtk::mesh::HandleRange resulting_range;
@@ -68,7 +67,6 @@ smtk::mesh::HandleRange vectorToRange(std::vector< ::moab::EntityHandle >& vresu
   return resulting_range;
 }
 
-//----------------------------------------------------------------------------
 template<typename T, typename U>
 std::vector< T > computeDenseIntTagValues(U tag,
                                        const smtk::mesh::HandleRange& meshsets,
@@ -123,7 +121,6 @@ std::vector< T > computeDenseIntTagValues(U tag,
   return result;
 }
 
-//----------------------------------------------------------------------------
 template<typename T, typename U>
 T computeDenseOpaqueTagValues(
   U tag,
@@ -165,7 +162,6 @@ T computeDenseOpaqueTagValues(
   return result;
 }
 
-//----------------------------------------------------------------------------
 template<typename T, typename U>
 T computeDenseOpaqueTagValue(
   U tag,
@@ -188,7 +184,6 @@ T computeDenseOpaqueTagValue(
   return result;
 }
 
-//----------------------------------------------------------------------------
 template<typename T>
 bool setDenseTagValues(T tag, const smtk::mesh::HandleRange& handles,
                        ::moab::Interface* iface)
@@ -204,7 +199,6 @@ bool setDenseTagValues(T tag, const smtk::mesh::HandleRange& handles,
   return (rval == ::moab::MB_SUCCESS);
 }
 
-//----------------------------------------------------------------------------
 template<typename T>
 bool setDenseOpaqueTagValues(T tag, const smtk::mesh::HandleRange& handles,
                        ::moab::Interface* iface)
@@ -222,7 +216,6 @@ bool setDenseOpaqueTagValues(T tag, const smtk::mesh::HandleRange& handles,
   return (rval == ::moab::MB_SUCCESS);
 }
 
-//----------------------------------------------------------------------------
 template<typename T>
 bool setDenseOpaqueTagValue(T tag, const smtk::mesh::Handle& handle,
                            ::moab::Interface* iface)
@@ -263,7 +256,6 @@ smtk::mesh::moab::InterfacePtr extract_interface( const smtk::mesh::CollectionPt
   return (mi == NULL) ? NULL : mi->moabInterface();
 }
 
-//----------------------------------------------------------------------------
 Interface::Interface():
   m_iface( new ::moab::Core() ),
   m_alloc( ),
@@ -275,19 +267,16 @@ Interface::Interface():
   this->m_iAlloc.reset( new smtk::mesh::moab::IncrementalAllocator( this->m_iface.get() ) );
 }
 
-//----------------------------------------------------------------------------
 Interface::~Interface()
 {
 
 }
 
-//----------------------------------------------------------------------------
 bool Interface::isModified() const
 {
   return this->m_modified;
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::AllocatorPtr Interface::allocator()
 {
   //mark us as modified as the caller is going to add something to the database
@@ -295,7 +284,6 @@ smtk::mesh::AllocatorPtr Interface::allocator()
   return this->m_alloc;
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::BufferedCellAllocatorPtr Interface::bufferedCellAllocator()
 {
   //mark us as modified as the caller is going to add something to the database
@@ -303,7 +291,6 @@ smtk::mesh::BufferedCellAllocatorPtr Interface::bufferedCellAllocator()
   return this->m_bcAlloc;
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::IncrementalAllocatorPtr Interface::incrementalAllocator()
 {
   //mark us as modified as the caller is going to add something to the database
@@ -313,7 +300,6 @@ smtk::mesh::IncrementalAllocatorPtr Interface::incrementalAllocator()
   return this->m_iAlloc;
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::ConnectivityStoragePtr Interface::connectivityStorage(
                                       const smtk::mesh::HandleRange& cells)
 {
@@ -324,7 +310,6 @@ smtk::mesh::ConnectivityStoragePtr Interface::connectivityStorage(
   return cs;
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
                                       const smtk::mesh::HandleRange& points)
 {
@@ -333,7 +318,6 @@ smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
                                                  points) );
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
                                       const double* const xyzs,
                                       std::size_t numPoints,
@@ -350,7 +334,6 @@ smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
                                                  ignoreZValues) );
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
                                       const float* const xyzs,
                                       std::size_t numPoints,
@@ -367,13 +350,11 @@ smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
                                                  ignoreZValues) );
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::Handle Interface::getRoot() const
 {
   return m_iface->get_root_set();
 }
 
-//----------------------------------------------------------------------------
 bool Interface::createMesh(const smtk::mesh::HandleRange& cells,
                            smtk::mesh::Handle& meshHandle)
 {
@@ -426,7 +407,6 @@ bool Interface::createMesh(const smtk::mesh::HandleRange& cells,
   return false;
 }
 
-//----------------------------------------------------------------------------
 std::size_t Interface::numMeshes(smtk::mesh::Handle handle) const
 {
   int num_ents = 0;
@@ -434,8 +414,6 @@ std::size_t Interface::numMeshes(smtk::mesh::Handle handle) const
   return static_cast<std::size_t>(num_ents);
 }
 
-
-//----------------------------------------------------------------------------
 smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle) const
 
 {
@@ -444,7 +422,6 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle) const
   return range;
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
                                                 int dimension) const
 
@@ -470,7 +447,6 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
   return detail::vectorToRange(matching_ents);
 }
 
-//----------------------------------------------------------------------------
 //find all entity sets that have this exact name tag
 smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
                                                 const std::string& name) const
@@ -500,7 +476,6 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
   return detail::vectorToRange(matching_ents);
 }
 
-//----------------------------------------------------------------------------
 //find all entity sets that have this exact name tag
 smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
                                                const smtk::mesh::Domain &domain) const
@@ -523,7 +498,6 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
   return result;
 }
 
-//----------------------------------------------------------------------------
 //find all entity sets that have this exact name tag
 smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
                                                const smtk::mesh::Dirichlet &dirichlet) const
@@ -546,7 +520,6 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
   return result;
 }
 
-//----------------------------------------------------------------------------
 //find all entity sets that have this exact name tag
 smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
                                                const smtk::mesh::Neumann &neumann) const
@@ -569,7 +542,6 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle,
   return result;
 }
 
-//----------------------------------------------------------------------------
 //get all cells held by this range
 smtk::mesh::HandleRange Interface::getCells(const HandleRange &meshsets) const
 
@@ -586,7 +558,6 @@ smtk::mesh::HandleRange Interface::getCells(const HandleRange &meshsets) const
 }
 
 
-//----------------------------------------------------------------------------
 //get all cells held by this range handle of a given cell type
 smtk::mesh::HandleRange Interface::getCells(const HandleRange &meshsets,
                                              smtk::mesh::CellType cellType) const
@@ -609,7 +580,6 @@ smtk::mesh::HandleRange Interface::getCells(const HandleRange &meshsets,
   return entitiesCells;
 }
 
-//----------------------------------------------------------------------------
 //get all cells held by this range handle of a given cell type(s)
 smtk::mesh::HandleRange Interface::getCells(const smtk::mesh::HandleRange& meshsets,
                                              const smtk::mesh::CellTypes& cellTypes) const
@@ -646,7 +616,6 @@ smtk::mesh::HandleRange Interface::getCells(const smtk::mesh::HandleRange& meshs
   return entitiesCells;
 }
 
-//----------------------------------------------------------------------------
 //get all cells held by this range handle of a given dimension
 smtk::mesh::HandleRange Interface::getCells(const smtk::mesh::HandleRange& meshsets,
                                             smtk::mesh::DimensionType dim) const
@@ -665,7 +634,6 @@ smtk::mesh::HandleRange Interface::getCells(const smtk::mesh::HandleRange& meshs
   return entitiesCells;
 }
 
-//----------------------------------------------------------------------------
 //get all cells held by this range handle of a given dimension
 smtk::mesh::HandleRange Interface::getPoints(const smtk::mesh::HandleRange& cells) const
 
@@ -675,7 +643,6 @@ smtk::mesh::HandleRange Interface::getPoints(const smtk::mesh::HandleRange& cell
   return pointIds;
 }
 
-//----------------------------------------------------------------------------
 bool Interface::getCoordinates(const smtk::mesh::HandleRange& points,
                                double* xyz) const
 
@@ -689,7 +656,6 @@ bool Interface::getCoordinates(const smtk::mesh::HandleRange& points,
   return true;
 }
 
-//----------------------------------------------------------------------------
 namespace { class GetCoords : public smtk::mesh::PointForEach {
 public:
   std::size_t xyz_index;
@@ -710,7 +676,6 @@ public:
   }
 }; }
 
-//----------------------------------------------------------------------------
 bool Interface::getCoordinates(const smtk::mesh::HandleRange& points,
                                float* xyz) const
 
@@ -726,7 +691,6 @@ bool Interface::getCoordinates(const smtk::mesh::HandleRange& points,
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool Interface::setCoordinates(const smtk::mesh::HandleRange& points,
                                const double* const xyz)
 
@@ -740,7 +704,6 @@ bool Interface::setCoordinates(const smtk::mesh::HandleRange& points,
   return true;
 }
 
-//----------------------------------------------------------------------------
 namespace { class SetCoords : public smtk::mesh::PointForEach {
 public:
   std::size_t xyz_index;
@@ -762,7 +725,6 @@ public:
   }
 }; }
 
-//----------------------------------------------------------------------------
 bool Interface::setCoordinates(const smtk::mesh::HandleRange& points,
                                const float* const xyz)
 
@@ -773,8 +735,6 @@ bool Interface::setCoordinates(const smtk::mesh::HandleRange& points,
   return false;
 }
 
-
-//----------------------------------------------------------------------------
 std::vector< std::string > Interface::computeNames(const smtk::mesh::HandleRange& meshsets) const
 {
   //construct a name tag query helper class
@@ -794,7 +754,6 @@ std::vector< std::string > Interface::computeNames(const smtk::mesh::HandleRange
   return std::vector< std::string >(unique_names.begin(), unique_names.end());
 }
 
-//----------------------------------------------------------------------------
 std::vector< smtk::mesh::Domain > Interface::computeDomainValues(const smtk::mesh::HandleRange& meshsets) const
 {
   tag::QueryMaterialTag mtag(0,this->moabInterface());
@@ -803,8 +762,6 @@ std::vector< smtk::mesh::Domain > Interface::computeDomainValues(const smtk::mes
                                                              this->moabInterface());
 }
 
-
-//----------------------------------------------------------------------------
 std::vector< smtk::mesh::Dirichlet > Interface::computeDirichletValues(const smtk::mesh::HandleRange& meshsets) const
 {
   tag::QueryDirichletTag dtag(0,this->moabInterface());
@@ -813,7 +770,6 @@ std::vector< smtk::mesh::Dirichlet > Interface::computeDirichletValues(const smt
                                                               this->moabInterface());
 }
 
-//----------------------------------------------------------------------------
 std::vector< smtk::mesh::Neumann > Interface::computeNeumannValues(const smtk::mesh::HandleRange& meshsets) const
 {
   tag::QueryNeumannTag ntag(0,this->moabInterface());
@@ -822,7 +778,6 @@ std::vector< smtk::mesh::Neumann > Interface::computeNeumannValues(const smtk::m
                                                             this->moabInterface());
 }
 
-//----------------------------------------------------------------------------
 /**\brief Return the set of all UUIDs set on all entities in the meshsets.
   *
   */
@@ -833,7 +788,6 @@ smtk::common::UUIDArray Interface::computeModelEntities(const smtk::mesh::Handle
     mtag, meshsets, this->moabInterface());
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::TypeSet Interface::computeTypes(const smtk::mesh::HandleRange& range) const
 {
   typedef smtk::mesh::HandleRange::const_iterator cit;
@@ -887,7 +841,6 @@ smtk::mesh::TypeSet Interface::computeTypes(const smtk::mesh::HandleRange& range
   return smtk::mesh::TypeSet( ctypes, hasM, hasC );
 }
 
-//----------------------------------------------------------------------------
 bool Interface::computeShell(const smtk::mesh::HandleRange& meshes,
                              smtk::mesh::HandleRange& shell) const
 {
@@ -936,7 +889,6 @@ bool Interface::computeShell(const smtk::mesh::HandleRange& meshes,
   return (rval == ::moab::MB_SUCCESS);
  }
 
-//----------------------------------------------------------------------------
 bool Interface::mergeCoincidentContactPoints(const smtk::mesh::HandleRange& meshes,
                                              double tolerance)
 {
@@ -959,7 +911,6 @@ bool Interface::mergeCoincidentContactPoints(const smtk::mesh::HandleRange& mesh
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool Interface::setDomain(const smtk::mesh::HandleRange& meshsets,
                             const smtk::mesh::Domain& domain) const
 {
@@ -977,7 +928,6 @@ bool Interface::setDomain(const smtk::mesh::HandleRange& meshsets,
   return tagged;
 }
 
-//----------------------------------------------------------------------------
 bool Interface::setDirichlet(const smtk::mesh::HandleRange& meshsets,
                              const smtk::mesh::Dirichlet& dirichlet) const
 {
@@ -1000,7 +950,6 @@ bool Interface::setDirichlet(const smtk::mesh::HandleRange& meshsets,
   return tagged;
 }
 
-//----------------------------------------------------------------------------
 bool Interface::setNeumann(const smtk::mesh::HandleRange& meshsets,
                            const smtk::mesh::Neumann& neumann) const
 {
@@ -1041,7 +990,6 @@ bool Interface::setNeumann(const smtk::mesh::HandleRange& meshsets,
   return tagged;
 }
 
-//----------------------------------------------------------------------------
 /**\brief Set the model entity assigned to each meshset member to \a ent.
   */
 bool Interface::setAssociation(const smtk::common::UUID& modelUUID,
@@ -1065,7 +1013,6 @@ bool Interface::setAssociation(const smtk::common::UUID& modelUUID,
   return tagged;
 }
 
-//----------------------------------------------------------------------------
 /**\brief Find mesh entities associated with the given model entity.
   *
   */
@@ -1095,7 +1042,6 @@ smtk::mesh::HandleRange Interface::findAssociations(
   return result;
 }
 
-//----------------------------------------------------------------------------
 // brief Set the model entity assigned to the root of this interface.
 //
 bool Interface::setRootAssociation(const smtk::common::UUID& modelUUID) const
@@ -1119,7 +1065,6 @@ bool Interface::setRootAssociation(const smtk::common::UUID& modelUUID) const
   return tagged;
 }
 
-//----------------------------------------------------------------------------
 /// brief Get the model entity assigned to the root of this interface.
 //
 smtk::common::UUID Interface::rootAssociation() const
@@ -1139,28 +1084,24 @@ smtk::common::UUID Interface::rootAssociation() const
   return smtk::common::UUID::null();
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::HandleRange Interface::rangeIntersect(const smtk::mesh::HandleRange& a,
                                                  const smtk::mesh::HandleRange& b) const
 {
   return ::moab::intersect(a,b);
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::HandleRange Interface::rangeDifference(const smtk::mesh::HandleRange& a,
                                                    const smtk::mesh::HandleRange& b) const
 {
   return ::moab::subtract(a,b);
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::HandleRange Interface::rangeUnion(const smtk::mesh::HandleRange& a,
                                               const smtk::mesh::HandleRange& b) const
 {
   return ::moab::unite(a,b);
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::HandleRange Interface::pointIntersect(const smtk::mesh::HandleRange& a,
                                                   const smtk::mesh::HandleRange& b,
                                                   smtk::mesh::PointConnectivity& bpc,
@@ -1201,7 +1142,6 @@ smtk::mesh::HandleRange Interface::pointIntersect(const smtk::mesh::HandleRange&
   return detail::vectorToRange(vresult);
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange& a,
                                                    const smtk::mesh::HandleRange& b,
                                                    smtk::mesh::PointConnectivity& bpc,
@@ -1242,7 +1182,6 @@ smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange
   return detail::vectorToRange(vresult);
 }
 
-//----------------------------------------------------------------------------
 void Interface::pointForEach(const HandleRange &points,
                              smtk::mesh::PointForEach& filter) const
 {
@@ -1318,7 +1257,6 @@ void Interface::pointForEach(const HandleRange &points,
   return;
 }
 
-//----------------------------------------------------------------------------
 void Interface::cellForEach(const HandleRange &cells,
                             smtk::mesh::PointConnectivity& pc,
                             smtk::mesh::CellForEach& filter) const
@@ -1367,7 +1305,6 @@ void Interface::cellForEach(const HandleRange &cells,
   return;
 }
 
-//----------------------------------------------------------------------------
 void Interface::meshForEach(const smtk::mesh::HandleRange &meshes,
                             smtk::mesh::MeshForEach& filter) const
 {
@@ -1387,7 +1324,6 @@ void Interface::meshForEach(const smtk::mesh::HandleRange &meshes,
   return;
 }
 
-//----------------------------------------------------------------------------
 bool Interface::deleteHandles(const smtk::mesh::HandleRange& toDel)
 {
   //step 1. verify HandleRange isnt empty
@@ -1441,7 +1377,6 @@ bool Interface::deleteHandles(const smtk::mesh::HandleRange& toDel)
 
 }
 
-//----------------------------------------------------------------------------
 ::moab::Interface* Interface::moabInterface() const
 {
   return this->m_iface.get();

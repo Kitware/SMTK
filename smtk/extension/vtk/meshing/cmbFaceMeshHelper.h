@@ -23,7 +23,6 @@
 class vtkPolyData;
 class cmbFaceMesherInterface;
 
-//-----------------------------------------------------------------------------
 namespace CmbFaceMesherClasses
 {
 class VTKSMTKMESHINGEXT_EXPORT meshVertex

@@ -34,8 +34,6 @@ public:
   bool findSkins(smoab::CellSets &surfaceCellSets);
 };
 
-
-//----------------------------------------------------------------------------
 bool ExtractShell::findSkins(smoab::CellSets &surfaceCellSets)
 {
   typedef smoab::Range::const_iterator Iterator;

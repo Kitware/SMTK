@@ -92,7 +92,6 @@ smtk::mesh::CellType vtkToSMTKCell(int t)
   return ctype;
   }
 
-//----------------------------------------------------------------------------
 template <typename VTKDataSetType>
 smtk::mesh::HandleRange convertVTKDataSet(
   VTKDataSetType* dataset, smtk::mesh::BufferedCellAllocatorPtr& alloc)
@@ -127,7 +126,6 @@ smtk::mesh::HandleRange convertVTKDataSet(
   return alloc->cells();
 }
 
-//----------------------------------------------------------------------------
 template<typename TReader>
 vtkDataSet* readXMLFile(const std::string& fileName)
 {
@@ -138,7 +136,6 @@ vtkDataSet* readXMLFile(const std::string& fileName)
   return vtkDataSet::SafeDownCast(reader->GetOutput());
 }
 
-//----------------------------------------------------------------------------
 bool convertDomain(vtkCellData* cellData,
                    const smtk::mesh::InterfacePtr& iface,
                    const smtk::mesh::HandleRange& cells,
@@ -193,13 +190,11 @@ bool convertDomain(vtkCellData* cellData,
 
 }
 
-//----------------------------------------------------------------------------
 ImportVTKData::ImportVTKData()
 {
 
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr
 ImportVTKData::operator()(const std::string& filename,
                           smtk::mesh::ManagerPtr& manager,
@@ -210,7 +205,6 @@ ImportVTKData::operator()(const std::string& filename,
     collection : smtk::mesh::CollectionPtr();
 }
 
-//----------------------------------------------------------------------------
 bool ImportVTKData::operator()(const std::string& filename,
                                smtk::mesh::CollectionPtr collection,
                                std::string materialPropertyName) const
@@ -238,7 +232,6 @@ bool ImportVTKData::operator()(const std::string& filename,
   return false;
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::MeshSet ImportVTKData::operator()(
   vtkPolyData* polydata, smtk::mesh::CollectionPtr collection) const
 {
@@ -266,7 +259,6 @@ smtk::mesh::MeshSet ImportVTKData::operator()(
   return collection->createMesh(smtk::mesh::CellSet(collection, cells));
 }
 
-//----------------------------------------------------------------------------
 bool ImportVTKData::operator()(vtkPolyData* polydata,
                                smtk::mesh::CollectionPtr collection,
                                std::string materialPropertyName) const
@@ -306,7 +298,6 @@ bool ImportVTKData::operator()(vtkPolyData* polydata,
     }
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr
 ImportVTKData::operator()(vtkPolyData* polydata,
                           smtk::mesh::ManagerPtr& manager,
@@ -317,7 +308,6 @@ ImportVTKData::operator()(vtkPolyData* polydata,
     smtk::mesh::CollectionPtr();
 }
 
-//----------------------------------------------------------------------------
 bool ImportVTKData::operator()(vtkUnstructuredGrid* ugrid,
                                smtk::mesh::CollectionPtr collection,
                                std::string materialPropertyName) const
@@ -353,7 +343,6 @@ bool ImportVTKData::operator()(vtkUnstructuredGrid* ugrid,
     }
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr
 ImportVTKData::operator()(vtkUnstructuredGrid* ugrid,
                           smtk::mesh::ManagerPtr& manager,

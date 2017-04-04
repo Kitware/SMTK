@@ -27,7 +27,6 @@
 
 vtkStandardNewMacro(vtkCMBModelFaceMeshServer);
 
-//----------------------------------------------------------------------------
 vtkCMBModelFaceMeshServer::vtkCMBModelFaceMeshServer()
 {
   this->ZValue = -1;
@@ -37,7 +36,6 @@ vtkCMBModelFaceMeshServer::vtkCMBModelFaceMeshServer()
   poly->FastDelete();
 }
 
-//----------------------------------------------------------------------------
 vtkCMBModelFaceMeshServer::~vtkCMBModelFaceMeshServer()
 {
   if (this->FaceInfo)
@@ -47,7 +45,6 @@ vtkCMBModelFaceMeshServer::~vtkCMBModelFaceMeshServer()
     }
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelFaceMeshServer::SetLocalLength(double length)
 {
   if(length == this->GetLength())
@@ -58,7 +55,6 @@ bool vtkCMBModelFaceMeshServer::SetLocalLength(double length)
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelFaceMeshServer::SetLocalMinimumAngle(double minAngle)
 {
   if(minAngle == this->GetMinimumAngle())
@@ -69,7 +65,6 @@ bool vtkCMBModelFaceMeshServer::SetLocalMinimumAngle(double minAngle)
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelFaceMeshServer::BuildMesh(bool /*meshHigherDimensionalEntities*/)
 {
   this->FaceMesherFailed = 0;
@@ -119,7 +114,6 @@ bool vtkCMBModelFaceMeshServer::BuildMesh(bool /*meshHigherDimensionalEntities*/
   return valid;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelFaceMeshServer::CreateMeshInfo()
 {
   //we need to walk the topology once to determine the following:
@@ -179,7 +173,6 @@ bool vtkCMBModelFaceMeshServer::CreateMeshInfo()
   return true;
 }
 
-//----------------------------------------------------------------------------
 bool vtkCMBModelFaceMeshServer::Triangulate(vtkPolyData *mesh,
                                             double length, double angle)
 {
@@ -215,8 +208,6 @@ bool vtkCMBModelFaceMeshServer::Triangulate(vtkPolyData *mesh,
   return valid;
 }
 
-
-//----------------------------------------------------------------------------
 void vtkCMBModelFaceMeshServer::DetermineZValueOfFace()
 {
   vtkModelFace* modelFace = vtkModelFace::SafeDownCast(this->GetModelGeometricEntity());
@@ -246,7 +237,6 @@ void vtkCMBModelFaceMeshServer::DetermineZValueOfFace()
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkCMBModelFaceMeshServer::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

@@ -29,7 +29,6 @@ namespace io {
 namespace detail
 {
 
-//----------------------------------------------------------------------------
 smtk::mesh::CellType tessToSMTKCell(smtk::model::Tessellation::size_type cell_shape)
 {
   smtk::mesh::CellType ctype = smtk::mesh::CellType_MAX;
@@ -49,7 +48,6 @@ smtk::mesh::CellType tessToSMTKCell(smtk::model::Tessellation::size_type cell_sh
   return ctype;
 }
 
-//----------------------------------------------------------------------------
 void removeOnesWithoutTess(smtk::model::EntityRefs& ents)
 {
   smtk::model::EntityIterator it;
@@ -70,7 +68,6 @@ void removeOnesWithoutTess(smtk::model::EntityRefs& ents)
     }
 }
 
-//----------------------------------------------------------------------------
 template<typename MappingType>
 bool convert_vertices(const smtk::model::EntityRefs& ents,
                       MappingType& mapping,
@@ -132,7 +129,6 @@ bool convert_vertices(const smtk::model::EntityRefs& ents,
 
 }
 
-//----------------------------------------------------------------------------
 template<typename HandleData>
 void convert_fixed_size_cell(std::vector<int>& cell_conn,
                          smtk::mesh::CellType cellType,
@@ -156,7 +152,6 @@ void convert_fixed_size_cell(std::vector<int>& cell_conn,
     }
 }
 
-//----------------------------------------------------------------------------
 template<typename HandleData>
 void convert_vertex(std::vector<int>&,
                     smtk::mesh::CellType cellType,
@@ -178,7 +173,6 @@ void convert_vertex(std::vector<int>&,
                         global_coordinate_offset+numVerts-1);
 }
 
-//----------------------------------------------------------------------------
 template<typename HandleData>
 void convert_poly_line(std::vector<int>& cell_conn,
                        smtk::mesh::CellType cellType,
@@ -205,7 +199,6 @@ void convert_poly_line(std::vector<int>& cell_conn,
     }
 }
 
-//----------------------------------------------------------------------------
 template<typename MappingType>
 std::map<smtk::model::EntityRef, smtk::mesh::HandleRange>
 convert_cells(const smtk::model::EntityRefs& ents,
@@ -355,7 +348,6 @@ convert_cells(const smtk::model::EntityRefs& ents,
   return newlyCreatedCells;
 }
 
-//----------------------------------------------------------------------------
 /// Recursively find all the entities with tessellation
 void find_entities_with_tessellation(
   const smtk::model::EntityRef& root,
@@ -397,8 +389,6 @@ void find_entities_with_tessellation(
 }
 } //namespace detail
 
-
-//----------------------------------------------------------------------------
 ModelToMesh::ModelToMesh():
   m_mergeDuplicates(true),
   m_tolerance(-1)
@@ -406,7 +396,6 @@ ModelToMesh::ModelToMesh():
 
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& meshManager,
                                                   const smtk::model::ManagerPtr& modelManager) const
 {
@@ -502,7 +491,6 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::mesh::ManagerPtr& 
 
 }
 
-//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::model::Model& model) const
 {
   typedef smtk::model::EntityRefs EntityRefs;

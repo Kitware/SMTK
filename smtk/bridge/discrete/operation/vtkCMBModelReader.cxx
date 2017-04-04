@@ -63,7 +63,6 @@ int vtkCMBModelReader::RequestData(
   return 1;
 }
 
-//----------------------------------------------------------------------------
 int vtkCMBModelReader::RequestInformation(
   vtkInformation *vtkNotUsed(request),
   vtkInformationVector **vtkNotUsed(inputVector),

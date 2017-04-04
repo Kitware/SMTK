@@ -41,7 +41,6 @@
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-//----------------------------------------------------------------------------
 class qtMeshSelectionItemInternals
 {
 public:
@@ -102,7 +101,6 @@ public:
   std::map<smtk::common::UUID, std::set<int> > m_outSelection;
 };
 
-//----------------------------------------------------------------------------
 qtMeshSelectionItem::qtMeshSelectionItem(
   smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview,
    Qt::Orientation enVectorItemOrient) : qtItem(dataObj, p, bview)
@@ -117,18 +115,16 @@ qtMeshSelectionItem::qtMeshSelectionItem(
     }
 }
 
-//----------------------------------------------------------------------------
 qtMeshSelectionItem::~qtMeshSelectionItem()
 {
   delete this->Internals;
 }
-//----------------------------------------------------------------------------
+
 void qtMeshSelectionItem::setLabelVisible(bool visible)
 {
   this->Internals->theLabel->setVisible(visible);
 }
 
-//----------------------------------------------------------------------------
 void qtMeshSelectionItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
@@ -142,7 +138,6 @@ void qtMeshSelectionItem::createWidget()
   this->updateItemData();
 }
 
-//----------------------------------------------------------------------------
 void qtMeshSelectionItem::updateItemData()
 {
   this->updateUI();
@@ -172,7 +167,6 @@ QToolButton* internal_createToolButton(
   return retButton;
 }
 
-//----------------------------------------------------------------------------
 void qtMeshSelectionItem::addMeshOpButtons()
 {
 /*
@@ -237,7 +231,6 @@ void qtMeshSelectionItem::addMeshOpButtons()
   this->Internals->ButtonGroup = bgroup;
 }
 
-//----------------------------------------------------------------------------
 void qtMeshSelectionItem::updateUI()
 {
   //smtk::attribute::ItemPtr dataObj = this->getObject();
@@ -328,7 +321,6 @@ void qtMeshSelectionItem::updateUI()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtMeshSelectionItem::setOutputOptional(int state)
 {
   smtk::attribute::MeshSelectionItemPtr item =
@@ -347,7 +339,6 @@ void qtMeshSelectionItem::setOutputOptional(int state)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtMeshSelectionItem::clearSelection()
 {
   smtk::attribute::MeshSelectionItemPtr meshSelectionItem =
@@ -358,7 +349,7 @@ void qtMeshSelectionItem::clearSelection()
     }
   meshSelectionItem->reset();
 }
-//----------------------------------------------------------------------------
+
 void qtMeshSelectionItem::resetSelectionState(bool emitSignal)
 {
   this->Internals->uncheckOpButtons();
@@ -380,7 +371,6 @@ void qtMeshSelectionItem::resetSelectionState(bool emitSignal)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtMeshSelectionItem::updateInputSelection(
   const std::map<smtk::common::UUID, std::set<int> >& selectionValues)
 {
@@ -443,7 +433,6 @@ void qtMeshSelectionItem::updateInputSelection(
     }
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::ModelEntityItemPtr qtMeshSelectionItem::refModelEntityItem()
 {
   smtk::attribute::MeshSelectionItemPtr meshSelectionItem =
@@ -457,7 +446,7 @@ smtk::attribute::ModelEntityItemPtr qtMeshSelectionItem::refModelEntityItem()
   smtk::attribute::AttributePtr att = meshSelectionItem->attribute();
   return att->findModelEntity(itemDef->refModelEntityName());
 }
-//----------------------------------------------------------------------------
+
 void qtMeshSelectionItem::setUsingCtrlKey(bool val)
 {
   smtk::attribute::MeshSelectionItemPtr meshSelectionItem =
@@ -468,7 +457,7 @@ void qtMeshSelectionItem::setUsingCtrlKey(bool val)
     }
   meshSelectionItem->setCtrlKeyDown(val);
 }
-//----------------------------------------------------------------------------
+
 bool qtMeshSelectionItem::usingCtrlKey()
 {
   smtk::attribute::MeshSelectionItemPtr meshSelectionItem =
@@ -480,7 +469,6 @@ bool qtMeshSelectionItem::usingCtrlKey()
   return meshSelectionItem->isCtrlKeyDown();
 }
 
-//----------------------------------------------------------------------------
 void qtMeshSelectionItem::onRequestMeshSelection()
 {
   QToolButton* const cButton = qobject_cast<QToolButton*>(
@@ -534,7 +522,6 @@ void qtMeshSelectionItem::onRequestMeshSelection()
     emit this->requestMeshSelection(modelEntities);
 }
 
-//----------------------------------------------------------------------------
 void qtMeshSelectionItem::syncWithCachedSelection(
   const smtk::attribute::MeshSelectionItemPtr& resultSelectionItem,
   std::map<smtk::common::UUID, std::set<int> > &outSelectionValues)

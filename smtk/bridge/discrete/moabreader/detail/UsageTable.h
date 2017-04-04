@@ -81,8 +81,6 @@ private:
   std::set<internal::KeyType> SingleUsageIds;
 };
 
-
-//----------------------------------------------------------------------------
 void UsageTable::incrementUsage(
                         const std::vector<smoab::EntityHandle>& entities,
                         const std::vector<int>& usageId)
@@ -108,7 +106,6 @@ void UsageTable::incrementUsage(
     }
 }
 
-//----------------------------------------------------------------------------
 smoab::Range UsageTable::multipleUsage() const
 {
   smoab::Range multiples;
@@ -118,7 +115,6 @@ smoab::Range UsageTable::multipleUsage() const
   return multiples;
 }
 
-//----------------------------------------------------------------------------
 smoab::Range UsageTable::singleUsage() const
 {
   smoab::Range single;

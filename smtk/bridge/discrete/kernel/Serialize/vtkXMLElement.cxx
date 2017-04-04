@@ -34,7 +34,6 @@ struct vtkXMLElementInternals
   std::string CharacterData;
 };
 
-//----------------------------------------------------------------------------
 vtkXMLElement::vtkXMLElement()
 {
   this->Name = 0;
@@ -44,7 +43,6 @@ vtkXMLElement::vtkXMLElement()
   this->Internal = new vtkXMLElementInternals;
 }
 
-//----------------------------------------------------------------------------
 vtkXMLElement::~vtkXMLElement()
 {
   this->SetName(0);
@@ -53,7 +51,6 @@ vtkXMLElement::~vtkXMLElement()
   delete this->Internal;
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLElement::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
@@ -69,7 +66,6 @@ void vtkXMLElement::PrintSelf(ostream& os, vtkIndent indent)
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLElement::AddAttribute(const char* attrName,
                                    unsigned int attrValue)
 {
@@ -78,7 +74,6 @@ void vtkXMLElement::AddAttribute(const char* attrName,
   this->AddAttribute(attrName, valueStr.str().c_str());
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLElement::AddAttribute(const char* attrName, int attrValue)
 {
   std::ostringstream valueStr;
@@ -86,7 +81,6 @@ void vtkXMLElement::AddAttribute(const char* attrName, int attrValue)
   this->AddAttribute(attrName, valueStr.str().c_str());
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLElement::AddAttribute(const char* attrName, unsigned long attrValue)
 {
   std::ostringstream valueStr;
@@ -95,7 +89,6 @@ void vtkXMLElement::AddAttribute(const char* attrName, unsigned long attrValue)
 }
 
 #if defined(VTK_USE_64BIT_IDS)
-//----------------------------------------------------------------------------
 void vtkXMLElement::AddAttribute(const char* attrName, vtkIdType attrValue)
 {
   std::ostringstream valueStr;
@@ -104,7 +97,6 @@ void vtkXMLElement::AddAttribute(const char* attrName, vtkIdType attrValue)
 }
 #endif
 
-//----------------------------------------------------------------------------
 void vtkXMLElement::AddAttribute(const char* attrName, double attrValue)
 {
   std::ostringstream valueStr;
@@ -112,7 +104,6 @@ void vtkXMLElement::AddAttribute(const char* attrName, double attrValue)
   this->AddAttribute(attrName, valueStr.str().c_str());
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLElement::AddAttribute(const char* attrName,
                                    const char* attrValue)
 {
@@ -125,7 +116,6 @@ void vtkXMLElement::AddAttribute(const char* attrName,
   this->Internal->AttributeValues.push_back(attrValue);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLElement::AddAttribute(const char* attrName,
                                     double* vals,
                                     unsigned int length)
@@ -146,7 +136,6 @@ void vtkXMLElement::AddAttribute(const char* attrName,
   this->AddAttribute(attrName, valueStr.str().c_str());
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLElement::AddAttribute(const char *attrName,
                                     int *vals,
                                     unsigned int length)
@@ -165,7 +154,6 @@ void vtkXMLElement::AddAttribute(const char *attrName,
   this->AddAttribute(attrName, valueStr.str().c_str());
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLElement::AddAttribute(const char* attrName,
                                     unsigned long* vals,
                                     unsigned int length)
@@ -185,7 +173,6 @@ void vtkXMLElement::AddAttribute(const char* attrName,
 }
 
 #if defined(VTK_USE_64BIT_IDS)
-//----------------------------------------------------------------------------
 void vtkXMLElement::AddAttribute(const char* attrName,
                                     vtkIdType* vals,
                                     unsigned int length)
@@ -205,7 +192,6 @@ void vtkXMLElement::AddAttribute(const char* attrName,
 }
 #endif
 
-//----------------------------------------------------------------------------
 void vtkXMLElement::SetAttribute(const char *attrName,
                                     const char *attrValue)
 {
@@ -229,7 +215,6 @@ void vtkXMLElement::SetAttribute(const char *attrName,
   this->AddAttribute(attrName, attrValue);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLElement::ReadXMLAttributes(const char** atts)
 {
   this->Internal->AttributeNames.clear();
@@ -250,13 +235,11 @@ void vtkXMLElement::ReadXMLAttributes(const char** atts)
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLElement::RemoveAllNestedElements()
 {
   this->Internal->NestedElements.clear();
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLElement::RemoveNestedElement(vtkXMLElement* element)
 {
   std::vector<vtkSmartPointer<vtkXMLElement> >::iterator iter
@@ -271,13 +254,11 @@ void vtkXMLElement::RemoveNestedElement(vtkXMLElement* element)
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLElement::AddNestedElement(vtkXMLElement* element)
 {
   this->AddNestedElement(element, 1);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLElement::AddNestedElement(vtkXMLElement* element, int setParent)
 {
   if (setParent)
@@ -287,13 +268,11 @@ void vtkXMLElement::AddNestedElement(vtkXMLElement* element, int setParent)
   this->Internal->NestedElements.push_back(element);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLElement::AddCharacterData(const char* data, int length)
 {
   this->Internal->CharacterData.append(data, length);
 }
 
-//----------------------------------------------------------------------------
 const char *vtkXMLElement::GetAttribute(const char *name)
 {
   size_t numAttributes = this->Internal->AttributeNames.size();
@@ -308,19 +287,16 @@ const char *vtkXMLElement::GetAttribute(const char *name)
   return 0;
 }
 
-//----------------------------------------------------------------------------
 const char* vtkXMLElement::GetCharacterData()
 {
   return this->Internal->CharacterData.c_str();
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLElement::PrintXML()
 {
   this->PrintXML(cout, vtkIndent());
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLElement::PrintXML(ostream& os, vtkIndent indent)
 {
   os << indent << "<" << (this->Name?this->Name:"NoName");
@@ -355,25 +331,21 @@ void vtkXMLElement::PrintXML(ostream& os, vtkIndent indent)
     }
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLElement::SetParent(vtkXMLElement* parent)
 {
   this->Parent = parent;
 }
 
-//----------------------------------------------------------------------------
 vtkXMLElement* vtkXMLElement::GetParent()
 {
   return this->Parent;
 }
 
-//----------------------------------------------------------------------------
 unsigned int vtkXMLElement::GetNumberOfNestedElements()
 {
   return static_cast<unsigned int>(this->Internal->NestedElements.size());
 }
 
-//----------------------------------------------------------------------------
 vtkXMLElement* vtkXMLElement::GetNestedElement(unsigned int index)
 {
   if(static_cast<size_t>(index) < this->Internal->NestedElements.size())
@@ -383,13 +355,11 @@ vtkXMLElement* vtkXMLElement::GetNestedElement(unsigned int index)
   return 0;
 }
 
-//----------------------------------------------------------------------------
 vtkXMLElement* vtkXMLElement::LookupElement(const char* id)
 {
   return this->LookupElementUpScope(id);
 }
 
-//----------------------------------------------------------------------------
 vtkXMLElement* vtkXMLElement::FindNestedElement(const char* id)
 {
   size_t numberOfNestedElements = this->Internal->NestedElements.size();
@@ -405,7 +375,6 @@ vtkXMLElement* vtkXMLElement::FindNestedElement(const char* id)
   return 0;
 }
 
-//----------------------------------------------------------------------------
 vtkXMLElement* vtkXMLElement::FindNestedElementByName(const char* name)
 {
   vtkXMLElementInternals::VectorOfElements::iterator iter =
@@ -421,7 +390,6 @@ vtkXMLElement* vtkXMLElement::FindNestedElementByName(const char* name)
   return 0;
 }
 
-//----------------------------------------------------------------------------
 vtkXMLElement* vtkXMLElement::LookupElementInScope(const char* id)
 {
   // Pull off the first qualifier.
@@ -444,7 +412,6 @@ vtkXMLElement* vtkXMLElement::LookupElementInScope(const char* id)
   return next;
 }
 
-//----------------------------------------------------------------------------
 vtkXMLElement* vtkXMLElement::LookupElementUpScope(const char* id)
 {
   // Pull off the first qualifier.
@@ -472,35 +439,30 @@ vtkXMLElement* vtkXMLElement::LookupElementUpScope(const char* id)
   return start;
 }
 
-//----------------------------------------------------------------------------
 unsigned int vtkXMLElement::GetScalarAttribute(const char* name,
                                                   int* value)
 {
   return this->GetVectorAttribute(name, 1, value);
 }
 
-//----------------------------------------------------------------------------
 unsigned int vtkXMLElement::GetScalarAttribute(const char* name,
                                                   unsigned int* value)
 {
   return this->GetVectorAttribute(name, 1, value);
 }
 
-//----------------------------------------------------------------------------
 unsigned int vtkXMLElement::GetScalarAttribute(const char* name,
                                                   unsigned long* value)
 {
   return this->GetVectorAttribute(name, 1, value);
 }
 
-//----------------------------------------------------------------------------
 unsigned int vtkXMLElement::GetScalarAttribute(const char* name,
                                                   float* value)
 {
   return this->GetVectorAttribute(name, 1, value);
 }
 
-//----------------------------------------------------------------------------
 unsigned int vtkXMLElement::GetScalarAttribute(const char* name,
                                                   double* value)
 {
@@ -508,7 +470,6 @@ unsigned int vtkXMLElement::GetScalarAttribute(const char* name,
 }
 
 #if defined(VTK_USE_64BIT_IDS)
-//----------------------------------------------------------------------------
 unsigned int vtkXMLElement::GetScalarAttribute(const char* name,
                                                   vtkIdType* value)
 {
@@ -516,7 +477,6 @@ unsigned int vtkXMLElement::GetScalarAttribute(const char* name,
 }
 #endif
 
-//----------------------------------------------------------------------------
 template <class T>
 unsigned int vtkXMLVectorAttributeParse(const char* str,
                                            unsigned int length,
@@ -533,7 +493,6 @@ unsigned int vtkXMLVectorAttributeParse(const char* str,
   return length;
 }
 
-//----------------------------------------------------------------------------
 unsigned int vtkXMLElement::GetVectorAttribute(const char* name,
                                                   unsigned int length,
                                                   int* data)
@@ -541,7 +500,6 @@ unsigned int vtkXMLElement::GetVectorAttribute(const char* name,
   return vtkXMLVectorAttributeParse(this->GetAttribute(name), length, data);
 }
 
-//----------------------------------------------------------------------------
 unsigned int vtkXMLElement::GetVectorAttribute(const char* name,
                                                   unsigned int length,
                                                   unsigned int* data)
@@ -549,7 +507,6 @@ unsigned int vtkXMLElement::GetVectorAttribute(const char* name,
   return vtkXMLVectorAttributeParse(this->GetAttribute(name), length, data);
 }
 
-//----------------------------------------------------------------------------
 unsigned int vtkXMLElement::GetVectorAttribute(const char* name,
                                                   unsigned int length,
                                                   unsigned long* data)
@@ -557,7 +514,6 @@ unsigned int vtkXMLElement::GetVectorAttribute(const char* name,
   return vtkXMLVectorAttributeParse(this->GetAttribute(name), length, data);
 }
 
-//----------------------------------------------------------------------------
 unsigned int vtkXMLElement::GetVectorAttribute(const char* name,
                                                   unsigned int length,
                                                   float* data)
@@ -565,7 +521,6 @@ unsigned int vtkXMLElement::GetVectorAttribute(const char* name,
   return vtkXMLVectorAttributeParse(this->GetAttribute(name), length, data);
 }
 
-//----------------------------------------------------------------------------
 unsigned int vtkXMLElement::GetVectorAttribute(const char* name,
                                                   unsigned int length,
                                                   double* data)
@@ -574,7 +529,6 @@ unsigned int vtkXMLElement::GetVectorAttribute(const char* name,
 }
 
 #if defined(VTK_USE_64BIT_IDS)
-//----------------------------------------------------------------------------
 unsigned int vtkXMLElement::GetVectorAttribute(const char* name,
                                                   unsigned int length,
                                                   vtkIdType* data)
@@ -583,28 +537,24 @@ unsigned int vtkXMLElement::GetVectorAttribute(const char* name,
 }
 #endif
 
-//----------------------------------------------------------------------------
 unsigned int vtkXMLElement::GetCharacterDataAsVector(unsigned int length,
                                                         int* data)
 {
   return vtkXMLVectorAttributeParse(this->GetCharacterData(), length, data);
 }
 
-//----------------------------------------------------------------------------
 unsigned int vtkXMLElement::GetCharacterDataAsVector(unsigned int length,
                                                         float* data)
 {
   return vtkXMLVectorAttributeParse(this->GetCharacterData(), length, data);
 }
 
-//----------------------------------------------------------------------------
 unsigned int vtkXMLElement::GetCharacterDataAsVector(unsigned int length,
                                                         double* data)
 {
   return vtkXMLVectorAttributeParse(this->GetCharacterData(), length, data);
 }
 
-//----------------------------------------------------------------------------
 void vtkXMLElement::GetElementsByName(const char* name, vtkCollection* elements)
 {
   if (!elements)
@@ -640,7 +590,6 @@ void vtkXMLElement::GetElementsByName(const char* name, vtkCollection* elements)
 }
 
 
-//----------------------------------------------------------------------------
 vtkStdString vtkXMLElement::Encode(const char* plaintext)
 {
   //escape any characters that are not allowed in XML
@@ -681,7 +630,6 @@ vtkStdString vtkXMLElement::Encode(const char* plaintext)
 
 
 #if defined(VTK_USE_64BIT_IDS)
-//----------------------------------------------------------------------------
 unsigned int vtkXMLElement::GetCharacterDataAsVector(unsigned int length,
                                                         vtkIdType* data)
 {

@@ -37,7 +37,6 @@ logging.basicConfig(level=logging.DEBUG)
 SBT_FILENAME = 'copyDefinitionTest.sbt'
 SBI_FILENAME = 'copyDefinitionTest.sbi'
 
-# ---------------------------------------------------------------------
 if __name__ == '__main__':
     # First (and) only argument is the path to the smtk data directory
     if len(sys.argv) < 2:

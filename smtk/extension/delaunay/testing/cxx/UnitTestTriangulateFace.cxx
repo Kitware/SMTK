@@ -63,7 +63,6 @@ void removeRefsWithoutTess(smtk::model::EntityRefs& ents)
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestTriangulateFace(int, char** const)
 {
   // Somehow grab an EntityRef with an associated tessellation

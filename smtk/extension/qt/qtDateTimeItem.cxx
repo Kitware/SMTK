@@ -46,7 +46,6 @@
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-//----------------------------------------------------------------------------
 class qtDateTimeItem::qtDateTimeItemInternals
 {
 public:
@@ -75,7 +74,6 @@ public:
   QPointer<QToolButton> AddItemButton;
 };
 
-//----------------------------------------------------------------------------
 qtDateTimeItem::qtDateTimeItem(
   smtk::attribute::DateTimeItemPtr item, QWidget* p, qtBaseView* bview,
    Qt::Orientation enVectorItemOrient) : qtItem(item, p, bview)
@@ -128,19 +126,16 @@ qtDateTimeItem::qtDateTimeItem(
   this->createWidget();
 }
 
-//----------------------------------------------------------------------------
 qtDateTimeItem::~qtDateTimeItem()
 {
   delete this->Internals;
 }
 
-//----------------------------------------------------------------------------
 void qtDateTimeItem::setLabelVisible(bool visible)
 {
   this->Internals->theLabel->setVisible(visible);
 }
 
-//----------------------------------------------------------------------------
 QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
 {
   smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
@@ -265,7 +260,6 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
   return frame;
 }
 
-//----------------------------------------------------------------------------
 void qtDateTimeItem::setOutputOptional(int state)
 {
   smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
@@ -308,19 +302,16 @@ void qtDateTimeItem::setOutputOptional(int state)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtDateTimeItem::updateItemData()
 {
   this->updateUI();
   this->qtItem::updateItemData();
 }
 
-//----------------------------------------------------------------------------
 void qtDateTimeItem::onChildWidgetSizeChanged()
 {
 }
 
-//----------------------------------------------------------------------------
 // void qtDateTimeItem::onAddNewValue()
 // {
 //   smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
@@ -337,7 +328,6 @@ void qtDateTimeItem::onChildWidgetSizeChanged()
 //     }
 // }
 
-//----------------------------------------------------------------------------
 // void qtDateTimeItem::onRemoveValue()
 // {
 //   QToolButton* const minusButton = qobject_cast<QToolButton*>(
@@ -377,7 +367,6 @@ void qtDateTimeItem::onChildWidgetSizeChanged()
 //   this->updateExtensibleState();
 // }
 
-//----------------------------------------------------------------------------
 void qtDateTimeItem::onDateTimeChanged(const QDateTime& qdatetime)
 {
   smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
@@ -405,13 +394,11 @@ void qtDateTimeItem::onDateTimeChanged(const QDateTime& qdatetime)
   this->updateBackground(dtEdit, valid);
 }
 
-//----------------------------------------------------------------------------
 void qtDateTimeItem::onRegionSelected()
 {
   this->Internals->TimeZoneDialogAcceptButton->setEnabled(true);
 }
 
-//----------------------------------------------------------------------------
 void qtDateTimeItem::onTimeZoneUnset()
 {
   QAction *action = dynamic_cast<QAction*>(this->sender());
@@ -422,7 +409,6 @@ void qtDateTimeItem::onTimeZoneUnset()
 
   this->updateTimeZoneMenu(action);
 }
-//----------------------------------------------------------------------------
 void qtDateTimeItem::onTimeZoneUTC()
 {
   QAction *action = dynamic_cast<QAction*>(this->sender());
@@ -433,7 +419,6 @@ void qtDateTimeItem::onTimeZoneUTC()
   this->updateTimeZoneMenu(action);
 }
 
-//----------------------------------------------------------------------------
 void qtDateTimeItem::onTimeZoneRegion()
 {
   QAction *action = dynamic_cast<QAction*>(this->sender());
@@ -452,13 +437,11 @@ void qtDateTimeItem::onTimeZoneRegion()
   this->updateTimeZoneMenu(action);
 }
 
-//----------------------------------------------------------------------------
 smtk::attribute::DateTimeItemPtr qtDateTimeItem::datetimeItem()
 {
   return dynamic_pointer_cast<smtk::attribute::DateTimeItem>(this->getObject());
 }
 
-//----------------------------------------------------------------------------
 void qtDateTimeItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
@@ -473,7 +456,6 @@ void qtDateTimeItem::createWidget()
   this->updateItemData();
 }
 
-//----------------------------------------------------------------------------
 void qtDateTimeItem::loadInputValues()
 {
   smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
@@ -508,7 +490,6 @@ void qtDateTimeItem::loadInputValues()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtDateTimeItem::updateUI()
 {
   smtk::attribute::DateTimeItemPtr dataObj = this->datetimeItem();
@@ -602,7 +583,6 @@ void qtDateTimeItem::updateUI()
     }
 }
 
-//----------------------------------------------------------------------------
 void qtDateTimeItem::addInputEditor(int i)
 {
   smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
@@ -692,7 +672,6 @@ void qtDateTimeItem::addInputEditor(int i)
   //this->updateExtensibleState();
 }
 
-//----------------------------------------------------------------------------
 // void qtDateTimeItem::updateExtensibleState()
 // {
 //   smtk::attribute::DateTimeItemPtr item =
@@ -713,7 +692,6 @@ void qtDateTimeItem::addInputEditor(int i)
 //     }
 // }
 
-//----------------------------------------------------------------------------
 void qtDateTimeItem::clearChildWidgets()
 {
   smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
@@ -753,7 +731,6 @@ void qtDateTimeItem::clearChildWidgets()
   this->Internals->ChildrenMap.clear();
 }
 
-//----------------------------------------------------------------------------
 void qtDateTimeItem::updateBackground(QDateTimeEdit *dtEdit, bool valid)
 {
   smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
@@ -783,7 +760,6 @@ void qtDateTimeItem::updateBackground(QDateTimeEdit *dtEdit, bool valid)
   dtEdit->setStyleSheet(ss);
 }
 
-//----------------------------------------------------------------------------
 void qtDateTimeItem::updateTimeZoneMenu(QAction *selectedAction)
 {
   foreach (QAction *action, this->Internals->TimeZoneMenu->actions())
@@ -793,7 +769,6 @@ void qtDateTimeItem::updateTimeZoneMenu(QAction *selectedAction)
     }
 }
 
-//----------------------------------------------------------------------------
 void qtDateTimeItem::setTimeZone(std::size_t element, const QString& region)
 {
   smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
@@ -805,7 +780,6 @@ void qtDateTimeItem::setTimeZone(std::size_t element, const QString& region)
   item->setValue(element, tzPair);
 }
 
-//----------------------------------------------------------------------------
 void qtDateTimeItem::setTimeZoneToUTC(std::size_t element)
 {
   smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
@@ -816,5 +790,3 @@ void qtDateTimeItem::setTimeZoneToUTC(std::size_t element)
   tzPair.setTimeZone(tz);
   item->setValue(element, tzPair);
 }
-
-//----------------------------------------------------------------------------

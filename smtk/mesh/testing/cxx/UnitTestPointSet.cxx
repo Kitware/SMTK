@@ -22,7 +22,6 @@ namespace
 std::string data_root = SMTK_DATA_DIR;
 
 
-//----------------------------------------------------------------------------
 smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
 {
   std::string file_path(data_root);
@@ -34,7 +33,6 @@ smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
   return c;
 }
 
-//----------------------------------------------------------------------------
 void verify_constructors(const smtk::mesh::CollectionPtr& c)
 {
   std::vector< std::string > mesh_names = c->meshNames();
@@ -58,7 +56,6 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
   test( ps3.is_empty() == false );
 }
 
-//----------------------------------------------------------------------------
 void verify_subsets(const smtk::mesh::CollectionPtr& c)
 {
   std::vector< std::string > mesh_names = c->meshNames();
@@ -94,7 +91,6 @@ void verify_subsets(const smtk::mesh::CollectionPtr& c)
   test( ps4 == ps5 );
 }
 
-//----------------------------------------------------------------------------
 void verify_comparisons(const smtk::mesh::CollectionPtr& c)
 {
   std::vector< std::string > mesh_names = c->meshNames();
@@ -117,7 +113,6 @@ void verify_comparisons(const smtk::mesh::CollectionPtr& c)
   test(one_a != two_b);
 }
 
-//----------------------------------------------------------------------------
 void verify_contains(const smtk::mesh::CollectionPtr& c)
 {
   //need to verify that point_set contains actually works
@@ -142,7 +137,6 @@ void verify_contains(const smtk::mesh::CollectionPtr& c)
     }
 }
 
-//----------------------------------------------------------------------------
 void verify_find(const smtk::mesh::CollectionPtr& c)
 {
   //need to verify that point_set contains actually works
@@ -166,7 +160,6 @@ void verify_find(const smtk::mesh::CollectionPtr& c)
     }
 }
 
-//----------------------------------------------------------------------------
 void verify_get(const smtk::mesh::CollectionPtr& c)
 {
   //this is really hard to test currently as we only have bulk gets() on
@@ -187,7 +180,6 @@ void verify_get(const smtk::mesh::CollectionPtr& c)
     }
 }
 
-//----------------------------------------------------------------------------
 void verify_float_get(const smtk::mesh::CollectionPtr& c)
 {
 
@@ -209,7 +201,6 @@ void verify_float_get(const smtk::mesh::CollectionPtr& c)
     }
 }
 
-//----------------------------------------------------------------------------
 void verify_set(const smtk::mesh::CollectionPtr& c)
 {
 
@@ -245,7 +236,6 @@ void verify_set(const smtk::mesh::CollectionPtr& c)
   all_points.set(coords); //roll back to original points
 }
 
-//----------------------------------------------------------------------------
 void verify_float_set(const smtk::mesh::CollectionPtr& c)
 {
 
@@ -281,7 +271,6 @@ void verify_float_set(const smtk::mesh::CollectionPtr& c)
   all_points.set(coords); //roll back to original points
 }
 
-//----------------------------------------------------------------------------
 void verify_pointset_intersect(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::PointSet all_points = c->points();
@@ -316,7 +305,6 @@ void verify_pointset_intersect(const smtk::mesh::CollectionPtr& c)
 
 }
 
-//----------------------------------------------------------------------------
 void verify_pointset_union(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::PointSet all_points = c->points();
@@ -345,7 +333,6 @@ void verify_pointset_union(const smtk::mesh::CollectionPtr& c)
   test( union_output == all_points, "Result of union should be the same as all_points");
 }
 
-//----------------------------------------------------------------------------
 void verify_pointset_subtract(const smtk::mesh::CollectionPtr& c)
 {
   smtk::mesh::PointSet all_points = c->points();
@@ -377,20 +364,17 @@ void verify_pointset_subtract(const smtk::mesh::CollectionPtr& c)
         "subtract of two meshes produced wrong size" );
 }
 
-//----------------------------------------------------------------------------
 class CountPoints : public smtk::mesh::PointForEach
 {
   //keep a physical count of number of ponts so that we can verify we
   //don't iterate over a point more than once
   int numPointsIteratedOver;
 public:
-  //--------------------------------------------------------------------------
   CountPoints( smtk::mesh::CollectionPtr ):
     numPointsIteratedOver(0)
     {
     }
 
-  //--------------------------------------------------------------------------
   void forPoints(const smtk::mesh::HandleRange& pointIds,
                  std::vector<double>& xyz,
                  bool& coordinatesModified)
@@ -411,7 +395,6 @@ public:
   int numberOfPointsVisited() const { return numPointsIteratedOver; }
 };
 
-//----------------------------------------------------------------------------
 void verify_pointset_for_each_read(const smtk::mesh::CollectionPtr& c)
 {
   CountPoints functor(c);
@@ -422,11 +405,9 @@ void verify_pointset_for_each_read(const smtk::mesh::CollectionPtr& c)
 }
 
 
-//----------------------------------------------------------------------------
 class FlattenZ : public smtk::mesh::PointForEach
 {
 public:
-  //--------------------------------------------------------------------------
   void forPoints(const smtk::mesh::HandleRange& pointIds,
                  std::vector<double>& xyz,
                  bool& coordinatesModified)
@@ -445,11 +426,9 @@ public:
   }
 };
 
-//----------------------------------------------------------------------------
 class VerifyZ : public smtk::mesh::PointForEach
 {
 public:
-  //--------------------------------------------------------------------------
   void forPoints(const smtk::mesh::HandleRange& pointIds,
                  std::vector<double>& xyz,
                  bool& coordinatesModified)
@@ -467,7 +446,6 @@ public:
   }
 };
 
-//----------------------------------------------------------------------------
 void verify_pointset_for_each_modify(const smtk::mesh::CollectionPtr& c)
 {
   //first modify all the points to have 0 for the z value
@@ -482,7 +460,6 @@ void verify_pointset_for_each_modify(const smtk::mesh::CollectionPtr& c)
 
 }
 
-//----------------------------------------------------------------------------
 int UnitTestPointSet(int, char** const)
 {
   smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();

@@ -20,7 +20,6 @@ namespace model {
 
 const smoab::EntityHandle VOID_REGION=0;
 
-//----------------------------------------------------------------------------
 class FaceCellSet : public CellSet
 {
 public:
@@ -36,12 +35,8 @@ private:
   int ID;
 };
 
-
-//----------------------------------------------------------------------------
 typedef std::vector<FaceCellSet> FaceCellSets;
 
-
-//----------------------------------------------------------------------------
 //class that store the regions that a faces is adjacent too
 struct FacesAdjRegions
 {
@@ -74,7 +69,7 @@ struct FacesAdjRegions
   smoab::EntityHandle Region0;
   smoab::EntityHandle Region1;
 };
-//----------------------------------------------------------------------------
+
 smoab::model::FaceCellSets findFaceSets(smoab::CellSets shells,
                                  smoab::CellSets boundaries,
                                  std::set<smoab::model::FacesAdjRegions>& faceMaps)
@@ -190,7 +185,6 @@ smoab::model::FaceCellSets findFaceSets(smoab::CellSets shells,
   return faces;
 }
 
-//----------------------------------------------------------------------------
 template<typename T>
 std::vector<T> faceIdsPerCell(const smoab::model::FaceCellSets& faces)
 {
@@ -229,7 +223,6 @@ std::vector<T> faceIdsPerCell(const smoab::model::FaceCellSets& faces)
   return faceIds;
 }
 
-//----------------------------------------------------------------------------
 template<typename T>
 std::map<smoab::EntityHandle,T> findRegions(
     const std::set<smoab::model::FacesAdjRegions>& regionFaceAdj,
@@ -312,7 +305,6 @@ std::map<smoab::EntityHandle,T> findRegions(
   return returnValues;
   }
 
-//----------------------------------------------------------------------------
 template<typename T>
 std::map<smoab::EntityHandle,T> findDomains(const smoab::CellSets& parentSets,
     const smoab::Tag *domainTag,

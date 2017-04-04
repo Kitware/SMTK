@@ -21,21 +21,19 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 ValueItem::ValueItem(Attribute *owningAttribute,
                      int itemPosition):
   Item(owningAttribute, itemPosition)
 {
 }
 
-//----------------------------------------------------------------------------
 ValueItem::ValueItem(Item *inOwningItem,
                      int itemPosition,
                      int mySubGroupPosition):
   Item(inOwningItem, itemPosition, mySubGroupPosition)
 {
 }
-//----------------------------------------------------------------------------
+
 bool ValueItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef)
 {
    // Note that we do a dynamic cast here since we don't
@@ -83,7 +81,7 @@ bool ValueItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef)
 
   return true;
 }
-//----------------------------------------------------------------------------
+
 ValueItem::~ValueItem()
 {
   // we need to detach all items that are owned by this. i.e. the expression items
@@ -93,7 +91,7 @@ ValueItem::~ValueItem()
     this->m_expressions[i]->detachOwningItem();
     }
 }
-//----------------------------------------------------------------------------
+
 bool ValueItem::isValid() const
 {
   // If the item is not enabled or if all of its values are set then it is valid
@@ -130,7 +128,6 @@ bool ValueItem::isValid() const
  return true;
 }
 
-//----------------------------------------------------------------------------
 bool ValueItem::hasDefault() const
 {
   const ValueItemDefinition *def =
@@ -141,7 +138,7 @@ bool ValueItem::hasDefault() const
     }
   return def->hasDefault();
 }
-//----------------------------------------------------------------------------
+
 bool ValueItem::isDiscreteIndexValid(int value) const
 {
   const ValueItemDefinition *def =
@@ -152,7 +149,7 @@ bool ValueItem::isDiscreteIndexValid(int value) const
     }
   return def->isDiscreteIndexValid(value);
 }
-//----------------------------------------------------------------------------
+
 bool ValueItem::isExtensible() const
 {
   const ValueItemDefinition *def =
@@ -163,7 +160,7 @@ bool ValueItem::isExtensible() const
     }
   return def->isExtensible();
 }
-//----------------------------------------------------------------------------
+
 std::size_t ValueItem::numberOfRequiredValues() const
 {
   const ValueItemDefinition *def =
@@ -174,7 +171,7 @@ std::size_t ValueItem::numberOfRequiredValues() const
     }
   return def->numberOfRequiredValues();
 }
-//----------------------------------------------------------------------------
+
 std::size_t ValueItem::maxNumberOfValues() const
 {
   const ValueItemDefinition *def =
@@ -185,7 +182,7 @@ std::size_t ValueItem::maxNumberOfValues() const
     }
   return def->maxNumberOfValues();
 }
-//----------------------------------------------------------------------------
+
 bool ValueItem::allowsExpressions() const
 {
   const ValueItemDefinition *def =
@@ -196,7 +193,7 @@ bool ValueItem::allowsExpressions() const
     }
   return def->allowsExpressions();
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::AttributePtr ValueItem::expression(std::size_t element) const
 {
   assert(this->m_isSet.size() > element);
@@ -212,7 +209,7 @@ smtk::attribute::AttributePtr ValueItem::expression(std::size_t element) const
     }
   return smtk::attribute::AttributePtr();
 }
-//----------------------------------------------------------------------------
+
 bool ValueItem::setExpression(std::size_t element,
                               smtk::attribute::AttributePtr exp)
 {
@@ -242,7 +239,7 @@ bool ValueItem::setExpression(std::size_t element,
     }
   return false;
 }
-//----------------------------------------------------------------------------
+
 bool ValueItem::appendExpression(smtk::attribute::AttributePtr exp)
 {
   const ValueItemDefinition *def =
@@ -272,18 +269,18 @@ bool ValueItem::appendExpression(smtk::attribute::AttributePtr exp)
   this->m_isSet.push_back(true);
   return true;
 }
-//----------------------------------------------------------------------------
+
 bool ValueItem::isDiscrete() const
 {
   return static_cast<const ValueItemDefinition*>(this->m_definition.get())->
     isDiscrete();
 }
-//----------------------------------------------------------------------------
+
 void ValueItem::reset()
 {
   Item::reset();
 }
-//----------------------------------------------------------------------------
+
 bool ValueItem::setDiscreteIndex(std::size_t element, int index)
 {
   if (!this->isDiscrete())
@@ -315,7 +312,7 @@ bool ValueItem::setDiscreteIndex(std::size_t element, int index)
     }
   return false;
 }
-//----------------------------------------------------------------------------
+
 void ValueItem::updateActiveChildrenItems()
 {
   // This is only for Discrete Value Items
@@ -348,7 +345,7 @@ void ValueItem::updateActiveChildrenItems()
     this->m_activeChildrenItems.push_back(this->m_childrenItems[citems[i]]);
     }
 }
-//----------------------------------------------------------------------------
+
 bool ValueItem::assign(ConstItemPtr &sourceItem, unsigned int options)
 {
   // Assigns my contents to be same as sourceItem

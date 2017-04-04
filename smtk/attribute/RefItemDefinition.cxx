@@ -19,7 +19,6 @@
 
 using namespace smtk::attribute;
 
-//----------------------------------------------------------------------------
 RefItemDefinition::
 RefItemDefinition(const std::string &myName):
   ItemDefinition(myName), m_definition()
@@ -28,17 +27,15 @@ RefItemDefinition(const std::string &myName):
   this->m_numberOfRequiredValues = 0;
 }
 
-//----------------------------------------------------------------------------
 RefItemDefinition::~RefItemDefinition()
 {
 }
-//----------------------------------------------------------------------------
+
 Item::Type RefItemDefinition::type() const
 {
   return Item::ATTRIBUTE_REF;
 }
 
-//----------------------------------------------------------------------------
 bool
 RefItemDefinition::isValueValid(smtk::attribute::AttributePtr att) const
 {
@@ -52,7 +49,7 @@ RefItemDefinition::isValueValid(smtk::attribute::AttributePtr att) const
     }
   return true;
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemPtr
 RefItemDefinition::buildItem(Attribute *owningAttribute,
                                       int itemPosition) const
@@ -60,7 +57,7 @@ RefItemDefinition::buildItem(Attribute *owningAttribute,
   return smtk::attribute::ItemPtr(new RefItem(owningAttribute,
                                                      itemPosition));
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemPtr
 RefItemDefinition::buildItem(Item *owningItem,
                                       int itemPosition,
@@ -70,7 +67,7 @@ RefItemDefinition::buildItem(Item *owningItem,
                                                       itemPosition,
                                                       subGroupPosition));
 }
-//----------------------------------------------------------------------------
+
 void RefItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {
   if (esize == this->m_numberOfRequiredValues)
@@ -83,7 +80,7 @@ void RefItemDefinition::setNumberOfRequiredValues(std::size_t esize)
     this->m_valueLabels.resize(esize);
     }
 }
-//----------------------------------------------------------------------------
+
 void RefItemDefinition::setValueLabel(std::size_t element, const std::string &elabel)
 {
   if (this->m_numberOfRequiredValues == 0)
@@ -97,7 +94,7 @@ void RefItemDefinition::setValueLabel(std::size_t element, const std::string &el
   this->m_useCommonLabel = false;
   this->m_valueLabels[element] = elabel;
 }
-//----------------------------------------------------------------------------
+
 void RefItemDefinition::setCommonValueLabel(const std::string &elabel)
 {
   if (this->m_valueLabels.size() != 1)
@@ -108,7 +105,6 @@ void RefItemDefinition::setCommonValueLabel(const std::string &elabel)
   this->m_valueLabels[0] = elabel;
 }
 
-//----------------------------------------------------------------------------
 std::string RefItemDefinition::valueLabel(std::size_t element) const
 {
   if (this->m_useCommonLabel)
@@ -121,7 +117,7 @@ std::string RefItemDefinition::valueLabel(std::size_t element) const
     }
   return ""; // If we threw execeptions this method could return const string &
 }
-//----------------------------------------------------------------------------
+
 smtk::attribute::ItemDefinitionPtr
 smtk::attribute::RefItemDefinition::
 createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
@@ -167,4 +163,3 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 
   return newRef;
 }
-//----------------------------------------------------------------------------
