@@ -72,7 +72,7 @@ bool DateTime::components(
     return false;
     }
 
-  if (timeZone)
+  if (timeZone && timeZone->isSet() && !timeZone->isUTC())
     {
     // Convert to local time
     boost::local_time::local_date_time local(

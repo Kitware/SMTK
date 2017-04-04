@@ -32,6 +32,7 @@ class SMTKCORE_EXPORT DateTimeZonePair
 
   std::string serialize() const;
   bool deserialize(const std::string& content);
+  std::string jsonString() const;
 
   // Relational operators
   bool operator==(const DateTimeZonePair& dt) const;

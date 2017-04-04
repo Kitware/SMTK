@@ -11,8 +11,13 @@
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
 
+#include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/GroupItem.h"
+#include "smtk/attribute/GroupItemDefinition.h"
+#include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/System.h"
 #include "smtk/common/DateTime.h"
@@ -116,7 +121,23 @@ void verifySerialize()
   sa::DateTimeItemDefinitionPtr dt2Def = sa::DateTimeItemDefinition::New("dt2");
   attDef->addItemDefinition(dt2Def);
 
-  // Intstantiate attribute
+  // Group item w/3rd DateTime
+  sa::GroupItemDefinitionPtr groupDef = sa::GroupItemDefinition::New("group");
+  sa::DateTimeItemDefinitionPtr dt3Def = sa::DateTimeItemDefinition::New("dt3");
+  groupDef->addItemDefinition(dt3Def);
+  attDef->addItemDefinition(groupDef);
+
+  // Discrete item w/child 4th DateTime
+  sa::IntItemDefinitionPtr discreteDef = sa::IntItemDefinition::New("discrete");
+  discreteDef->addDiscreteValue(0, "Without DateTime");
+  discreteDef->addDiscreteValue(1, "With DateTime");
+  sa::DateTimeItemDefinitionPtr dt4Def = sa::DateTimeItemDefinition::New("dt4");
+  discreteDef->addChildItemDefinition(dt4Def);
+  discreteDef->addConditionalItem("With DateTime", "dt4");
+  attDef->addItemDefinition(discreteDef);
+
+
+  // Instantiate attribute
   sa::AttributePtr att = outputSystem.createAttribute(attDef);
 
   // Get first item and set to the default value
@@ -158,7 +179,7 @@ void verifySerialize()
   sa::DefinitionPtr inputDef = inputSystem.findDefinition("test-att");
   test(!!inputDef, "Failed to read back definition");
   test(
-    inputDef->numberOfItemDefinitions() == 2,
+    inputDef->numberOfItemDefinitions() == 4,
     "Wrong number of item definitions read back");
   int i1 = inputDef->findItemPosition("dt1");
   sa::ItemDefinitionPtr inputItemDef = inputDef->itemDefinition(i1);
@@ -217,6 +238,31 @@ void verifySerialize()
     tz2Input.region().empty(),
     "Failed to clear region value for 2nd item's TimeZone");
   test(tz2Input.isUTC(), "Failed to set TimeZone to UTC");
+
+  // Check 3rd DateTime (parented by group)
+  sa::GroupItemPtr groupItemInput = inputAtt->findGroup("group");
+  test(!!groupItemInput, "Failed to find GroupItem");
+  sa::DateTimeItemPtr dt3ItemInput =
+    groupItemInput->findAs<sa::DateTimeItem>("dt3");
+  test(!!dt3ItemInput, "Failed to find DateTimeItem as child of GroupItem");
+
+  // Check 4th DateTime (conditional child)
+  sa::IntItemPtr discreteItemInput = inputAtt->findInt("discrete");
+  test(!!discreteItemInput, "Failed to find discrete IntItem");
+  test(
+    discreteItemInput->setDiscreteIndex(0),
+    "Invalid discrete index 0");
+  test(
+    discreteItemInput->numberOfActiveChildrenItems() == 0,
+    "Wrong number of active children; should be 0");
+  test(
+    discreteItemInput->setDiscreteIndex(1),
+    "Invalid discrete index 1");
+  test(
+    discreteItemInput->numberOfActiveChildrenItems() == 1,
+    "Wrong number of active children; should be 1");
+  sa::ItemPtr activeChild = discreteItemInput->activeChildItem(0);
+  test(activeChild->type() == sa::Item::DATE_TIME, "Active child not DateTime");
 }
 
 }  // end namespace

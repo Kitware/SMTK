@@ -10,6 +10,11 @@
 
 #include "smtk/common/DateTimeZonePair.h"
 #include "cJSON.h"
+#include <cstdio>  // for snprintf()
+
+#if defined(_MSC_VER) && _MSC_VER < 1900
+# define snprintf(buf, cnt, fmt, ...) _snprintf_s(buf, cnt, cnt, fmt, __VA_ARGS__)
+#endif
 
 namespace smtk {
   namespace common {
@@ -136,6 +141,31 @@ bool DateTimeZonePair::deserialize(const std::string& content)
 
   cJSON_Delete(inputJson);
   return true;
+}
+
+//----------------------------------------------------------------------------
+std::string DateTimeZonePair::jsonString() const
+{
+  // Create json string, equivalent to javascript Date.toJson() output.
+  // Format is  yyyy-mm-ddThh:mm:ss.mmmZ, e.g. 2016-03-31T13:44:30.095Z.
+  int year=0, month=0, day=0, hour=0, minute=0, second=0, millisecond=0;
+  bool ok = this->m_datetime.components(
+    this->m_timezone, year, month, day, hour, minute, second, millisecond);
+  if (!ok)
+    {
+    // If invalid or not set, return empty string
+    return std::string();
+    }
+
+  char buffer[64];
+  snprintf(
+    buffer,
+    sizeof(buffer),
+    "%4d-%02d-%02dT%02d:%02d:%02d.%03dZ",
+    year, month, day, hour, minute, second, millisecond);
+
+  std::string json = buffer;
+  return json;
 }
 
 //----------------------------------------------------------------------------
