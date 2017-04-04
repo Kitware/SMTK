@@ -39,9 +39,9 @@ Item::Type FileSystemItemDefinition::type() const
 
 //----------------------------------------------------------------------------
 bool
-FileSystemItemDefinition::isValueValid(const std::string &/*val*/) const
+FileSystemItemDefinition::isValueValid(const std::string &val) const
 {
-  return true;
+  return !val.empty();
 }
 //----------------------------------------------------------------------------
 void FileSystemItemDefinition::setIsExtensible(bool mode)

@@ -66,8 +66,14 @@ int main()
   {
   smtk::attribute::FileItemPtr file = att->findFile("multipleExtensions");
 
-  // try to set the file name to a disallowed value
-  bool ok = file->setValue("foo");
+  bool ok = file->setValue("");
+  if (ok != false)
+    {
+    std::cerr << "Empty ile name was not properly filtered.\n";
+    return 1;
+    }
+
+  ok = file->setValue("foo");
   if (ok != false)
     {
     std::cerr << "File name with no extension was not properly filtered.\n";
@@ -99,8 +105,14 @@ int main()
   {
   smtk::attribute::FileItemPtr file = att->findFile("anyExtension");
 
-  // try to set the file name to a disallowed value
-  bool ok = file->setValue("foo");
+  bool ok = file->setValue("");
+  if (ok != false)
+    {
+    std::cerr << "Empty ile name was not properly filtered.\n";
+    return 1;
+    }
+
+  ok = file->setValue("foo");
   if (ok != true)
     {
     std::cerr << "File name with no extension was rejected.\n";
