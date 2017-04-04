@@ -291,6 +291,12 @@ OperatorResult ImportOperator::operateInternal()
     return this->createResult(OPERATION_FAILED);
     }
 
+  // Now that the model is imported, we need to set the associated file name as
+  // the .cmb file, rather than the original file from which the import
+  // occurred. Otherwise, the imported file extension will be incorrectly used
+  // when subsequently serializing to disk.
+  filename = (vtksys::SystemTools::GetFilenameWithoutLastExtension(filename) +
+              ".cmb");
   smtk::common::UUID modelId = this->discreteSession()->trackModel(
     mod.GetPointer(), filename, this->manager());
   smtk::model::EntityRef modelEntity(this->manager(), modelId);
