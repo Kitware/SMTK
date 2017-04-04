@@ -1292,6 +1292,17 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
           smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
           }
       break;
+      case smtk::attribute::Item::DATE_TIME:
+        if( (cidef = idef->addItemDefinition<smtk::attribute::DateTimeItemDefinition>(citemName)) )
+          {
+          this->processDateTimeDef(cinode,
+            smtk::dynamic_pointer_cast<smtk::attribute::DateTimeItemDefinition>(cidef));
+          }
+        else
+          {
+          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          }
+        break;
     default:
       smtkErrorMacro(this->m_logger, "Unsupported Item definition Type: "
                      << cinode.name()
@@ -1629,7 +1640,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
         if (!idef)
           {
           smtkErrorMacro(this->m_logger,
-                         "Failed to create String Item definition Type: " << child.name()
+                         "Failed to create Model Entity Item definition Type: " << child.name()
                          << " needed to create Group Definition: " << def->name());
           continue;
           }
@@ -1652,7 +1663,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
         if (!idef)
           {
           smtkErrorMacro(this->m_logger,
-                         "Failed to create String Item definition Type: " << child.name()
+                         "Failed to create Mesh Selection Item definition Type: " << child.name()
                          << " needed to create Group Definition: " << def->name());
           continue;
           }
@@ -1663,12 +1674,24 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
         if (!idef)
           {
           smtkErrorMacro(this->m_logger,
-                         "Failed to create String Item definition Type: " << child.name()
+                         "Failed to create Mesh Entity Item definition Type: " << child.name()
                          << " needed to create Group Definition: " << def->name());
           continue;
           }
         this->processMeshEntityDef(child,
           smtk::dynamic_pointer_cast<smtk::attribute::MeshItemDefinition>(idef));
+        break;
+      case smtk::attribute::Item::DATE_TIME:
+        idef = def->addItemDefinition<smtk::attribute::DateTimeItemDefinition>(itemName);
+        if (!idef)
+          {
+          smtkErrorMacro(this->m_logger,
+                         "Failed to create DateTime Item definition Type: " << child.name()
+                         << " needed to create Group Definition: " << def->name());
+          continue;
+          }
+        this->processDateTimeDef(child,
+          smtk::dynamic_pointer_cast<smtk::attribute::DateTimeItemDefinition>(idef));
         break;
       default:
         smtkErrorMacro(this->m_logger,
