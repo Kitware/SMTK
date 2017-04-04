@@ -35,6 +35,7 @@ namespace smtk
       virtual ~FileItemDefinition();
 
       virtual Item::Type type() const;
+      virtual bool isValueValid(const std::string &val) const;
 
       virtual smtk::attribute::ItemPtr buildItem(Attribute *owningAttribute,
                                                 int itemPosition) const;
@@ -53,6 +54,8 @@ namespace smtk
     protected:
       FileItemDefinition(const std::string &myName);
 
+      // A string describing file filters in the Qt format. For example:
+      // "Ext1 (*.ex1);;Ext2 or 3 (*.ex2 *.ex3);;All (*.*)"
       std::string m_fileFilters;
 
      private:
