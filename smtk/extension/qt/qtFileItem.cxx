@@ -216,6 +216,8 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
     QObject::connect(lineEdit, SIGNAL(textChanged(const QString &)),
       this, SLOT(onInputValueChanged()));
     this->Internals->SignalMapper->setMapping(fileBrowserButton, lineEdit);
+    QObject::connect(lineEdit, SIGNAL(editingFinished()),
+                     this, SLOT(onEditingFinished()));
     }
   else if(fileCombo)
     {
@@ -285,6 +287,50 @@ void qtFileItem::onInputValueChanged()
     item->unset(elementIdx);
     emit(modified());
    }
+}
+
+
+//----------------------------------------------------------------------------
+void qtFileItem::onEditingFinished()
+{
+  // For files, check if the extension in the input is valid. If it is not,
+  // append a valid extension to it.
+
+  if(this->Internals->fileCombo || this->Internals->IsDirectory)
+    {
+    return;
+    }
+
+  // The right line edit should be associated with the "DataItem" property,
+  // since this call will come after onInputValueChanged()
+  QLineEdit* lineEdit = static_cast<QLineEdit*>(
+    this->property("DataItem").value<void *>());
+
+  QString value = lineEdit->text();
+
+  if (!value.isEmpty())
+    {
+    smtk::attribute::FileItemPtr fItem;
+    smtk::attribute::ItemPtr item =
+      smtk::dynamic_pointer_cast<smtk::attribute::Item>(this->getObject());
+
+    fItem = smtk::dynamic_pointer_cast<smtk::attribute::FileItem>(item);
+    const smtk::attribute::FileItemDefinition *fItemDef =
+      dynamic_cast<const smtk::attribute::FileItemDefinition*>(fItem->definition().get());
+    if (fItemDef->isValueValid(value.toStdString()) == false)
+      {
+      QFileInfo fi(value);
+
+      std::string filters = fItemDef->getFileFilters();
+      std::size_t begin = filters.find_first_of("*",
+                                                filters.find_first_of("(")) + 1;
+      std::size_t end = filters.find_first_of(" \n\r\t)", begin);
+      QString acceptableSuffix(filters.substr(begin, end - begin).c_str());
+
+      value = fi.absolutePath() + QString("/") + fi.baseName() + acceptableSuffix;
+      lineEdit->setText(value);
+      }
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -378,6 +424,7 @@ void qtFileItem::setInputValue(const QString& val)
     {
     return;
     }
+
   // this itself will not trigger onInputValueChanged
   lineEdit->setText(val);
   this->onInputValueChanged();
