@@ -218,6 +218,25 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
     this->Internals->SignalMapper->setMapping(fileBrowserButton, lineEdit);
     QObject::connect(lineEdit, SIGNAL(editingFinished()),
                      this, SLOT(onEditingFinished()));
+
+    const smtk::attribute::FileSystemItemDefinition *fSystemItemDef =
+      dynamic_cast<const smtk::attribute::FileSystemItemDefinition*>(
+        item->definition().get());
+    if (fSystemItemDef->isValueValid(lineEdit->text().toStdString()))
+      {
+      if (item->isUsingDefault(elementIdx))
+        {
+        this->baseView()->uiManager()->setWidgetColorToDefault(lineEdit);
+        }
+      else
+        {
+        this->baseView()->uiManager()->setWidgetColorToNormal(lineEdit);
+        }
+      }
+    else
+      {
+      this->baseView()->uiManager()->setWidgetColorToInvalid(lineEdit);
+      }
     }
   else if(fileCombo)
     {
@@ -267,11 +286,6 @@ void qtFileItem::onInputValueChanged()
     dynamic_pointer_cast<attribute::FileSystemItem>(this->getObject());
   int elementIdx = editBox->property("ElementIndex").toInt();
 
-  if((item && item->isSet(elementIdx) &&
-      item->value(elementIdx) == editBox->text().toStdString()))
-    {
-    return;
-    }
   if(!editBox->text().isEmpty())
     {
     item->setValue(elementIdx, editBox->text().toStdString());
@@ -281,10 +295,30 @@ void qtFileItem::onInputValueChanged()
       this->updateFileComboList(editBox->text());
       }
     this->baseView()->valueChanged(this->getObject());
+
+    const smtk::attribute::FileSystemItemDefinition *fSystemItemDef =
+      dynamic_cast<const smtk::attribute::FileSystemItemDefinition*>(
+        item->definition().get());
+    if (fSystemItemDef->isValueValid(editBox->text().toStdString()))
+      {
+      if (item->isUsingDefault(elementIdx))
+        {
+        this->baseView()->uiManager()->setWidgetColorToDefault(editBox);
+        }
+      else
+        {
+        this->baseView()->uiManager()->setWidgetColorToNormal(editBox);
+        }
+      }
+    else
+      {
+      this->baseView()->uiManager()->setWidgetColorToInvalid(editBox);
+      }
     }
   else
     {
     item->unset(elementIdx);
+    this->baseView()->uiManager()->setWidgetColorToInvalid(editBox);
     emit(modified());
    }
 }
@@ -329,6 +363,7 @@ void qtFileItem::onEditingFinished()
 
       value = fi.absolutePath() + QString("/") + fi.baseName() + acceptableSuffix;
       lineEdit->setText(value);
+      this->baseView()->uiManager()->setWidgetColorToNormal(lineEdit);
       }
     }
 }
